@@ -77,9 +77,9 @@ const GrabMetroDevice = connect<
   ReduxState
 >(({connections: {devices}}) => ({
   metroDevice: devices.find(
-    device => device.os === 'Metro' && !device.isArchived,
+    (device) => device.os === 'Metro' && !device.isArchived,
   ) as MetroDevice,
-}))(function({
+}))(function ({
   metroDevice,
   onHasDevice,
 }: GrabMetroDeviceStoreProps & GrabMetroDeviceOwnProps) {
@@ -217,7 +217,7 @@ export default class ReactDevTools extends FlipperDevicePlugin<
         'Starting DevTools server on ' + port,
       );
       ReactDevToolsStandalone.setContentDOMNode(devToolsNode)
-        .setStatusListener(status => {
+        .setStatusListener((status) => {
           this.setStatus(ConnectionStatus.Initializing, status);
         })
         .startServer(port);
@@ -251,7 +251,7 @@ export default class ReactDevTools extends FlipperDevicePlugin<
         {!this.devtoolsHaveStarted() ? this.renderStatus() : null}
         <Container ref={this.containerRef} />
         <GrabMetroDevice
-          onHasDevice={device => {
+          onHasDevice={(device) => {
             this.metroDevice = device;
           }}
         />

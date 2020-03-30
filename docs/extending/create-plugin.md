@@ -200,7 +200,7 @@ addPlugin({
 
 ## Background Plugins
 
-In some cases you may want to provide data to Flipper even when your plugin is not currently active. Returning true in `runInBackground()` will result in `onConnect` being called as soon as Flipper connects, and allow you to use the connection at any time.
+In some cases you may want to provide data to Flipper even when your plugin is not currently active. Returning true in `runInBackground()` will result in `onConnect` being called as soon as Flipper connects, and allow you to use the connection at any time. See the [Client Plugin Lifecycle](client-plugin-lifecycle) for more details.
 
 This should be used in combination with a `persistedStateReducer` on the desktop side. See the [JS Plugin API](js-plugin-api#background-plugins) for details.
 

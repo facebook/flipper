@@ -198,11 +198,11 @@ class PluginContainer extends PureComponent<Props, State> {
           activePlugin,
           pluginKey,
           this.store,
-          progress => {
+          (progress) => {
             this.setState({progress});
           },
           this.idler,
-        ).then(completed => {
+        ).then((completed) => {
           const duration = Date.now() - start;
           this.props.logger.track(
             'duration',
@@ -345,7 +345,7 @@ class PluginContainer extends PureComponent<Props, State> {
           }
         : pluginState,
       setStaticView: (payload: StaticView) => this.props.setStaticView(payload),
-      setPersistedState: state => setPluginState({pluginKey, state}),
+      setPersistedState: (state) => setPluginState({pluginKey, state}),
       target,
       deepLinkPayload: this.props.deepLinkPayload,
       selectPlugin: (pluginID: string, deepLinkPayload: string | null) => {
@@ -353,7 +353,7 @@ class PluginContainer extends PureComponent<Props, State> {
         // check if plugin will be available
         if (
           target instanceof Client &&
-          target.plugins.some(p => p === pluginID)
+          target.plugins.some((p) => p === pluginID)
         ) {
           this.props.selectPlugin({selectedPlugin: pluginID, deepLinkPayload});
           return true;
@@ -371,8 +371,9 @@ class PluginContainer extends PureComponent<Props, State> {
       <React.Fragment>
         <Container key="plugin">
           <ErrorBoundary
-            heading={`Plugin "${activePlugin.title ||
-              'Unknown'}" encountered an error during render`}>
+            heading={`Plugin "${
+              activePlugin.title || 'Unknown'
+            }" encountered an error during render`}>
             {React.createElement(activePlugin, props)}
           </ErrorBoundary>
         </Container>

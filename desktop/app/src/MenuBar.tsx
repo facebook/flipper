@@ -81,18 +81,18 @@ export function setupMenuBar(
   // collect all keyboard actions from all plugins
   const registeredActions: Set<KeyboardAction> = new Set(
     plugins
-      .map(plugin => plugin.keyboardActions || [])
+      .map((plugin) => plugin.keyboardActions || [])
       .reduce((acc: KeyboardActions, cv) => acc.concat(cv), [])
       .map((action: DefaultKeyboardAction | KeyboardAction) =>
         typeof action === 'string'
-          ? defaultKeyboardActions.find(a => a.action === action)
+          ? defaultKeyboardActions.find((a) => a.action === action)
           : action,
       )
       .filter(notNull),
   );
 
   // add keyboard actions to
-  registeredActions.forEach(keyboardAction => {
+  registeredActions.forEach((keyboardAction) => {
     if (keyboardAction != null) {
       appendMenuItem(template, actionHandler, keyboardAction);
     }
@@ -102,15 +102,15 @@ export function setupMenuBar(
   const applicationMenu = electron.remote.Menu.buildFromTemplate(template);
 
   // add menu items to map, so we can modify them easily later
-  registeredActions.forEach(keyboardAction => {
+  registeredActions.forEach((keyboardAction) => {
     if (keyboardAction != null) {
       const {topLevelMenu, label, action} = keyboardAction;
       const menu = applicationMenu.items.find(
-        menuItem => menuItem.label === topLevelMenu,
+        (menuItem) => menuItem.label === topLevelMenu,
       );
       if (menu && menu.submenu) {
         const menuItem = menu.submenu.items.find(
-          menuItem => menuItem.label === label,
+          (menuItem) => menuItem.label === label,
         );
         menuItem && menuItems.set(action, menuItem);
       }
@@ -131,7 +131,7 @@ function appendMenuItem(
     return;
   }
   const itemIndex = template.findIndex(
-    menu => menu.label === keyboardAction.topLevelMenu,
+    (menu) => menu.label === keyboardAction.topLevelMenu,
   );
   if (itemIndex > -1 && template[itemIndex].submenu != null) {
     (template[itemIndex].submenu as MenuItemConstructorOptions[]).push({
@@ -160,16 +160,18 @@ export function activateMenuItems(
 
   // enable keyboard actions for the current plugin
   if (activePlugin.constructor.keyboardActions != null) {
-    (activePlugin.constructor.keyboardActions || []).forEach(keyboardAction => {
-      const action =
-        typeof keyboardAction === 'string'
-          ? keyboardAction
-          : keyboardAction.action;
-      const item = menuItems.get(action);
-      if (item != null) {
-        item.enabled = true;
-      }
-    });
+    (activePlugin.constructor.keyboardActions || []).forEach(
+      (keyboardAction) => {
+        const action =
+          typeof keyboardAction === 'string'
+            ? keyboardAction
+            : keyboardAction.action;
+        const item = menuItems.get(action);
+        if (item != null) {
+          item.enabled = true;
+        }
+      },
+    );
   }
 
   // set the application menu again to make sure it updates
@@ -206,7 +208,7 @@ function getTemplate(
     {
       label: 'Import Flipper File...',
       accelerator: 'CommandOrControl+O',
-      click: function() {
+      click: function () {
         showOpenDialog(store);
       },
     },
@@ -218,7 +220,7 @@ function getTemplate(
   const supportRequestSubmenu = [
     {
       label: 'Create...',
-      click: function() {
+      click: function () {
         // Dispatch an action to open the export screen of Support Request form
         store.dispatch(setStaticView(SupportRequestFormV2));
       },
@@ -278,7 +280,7 @@ function getTemplate(
         {
           label: 'Reload',
           accelerator: 'CmdOrCtrl+R',
-          click: function(
+          click: function (
             _,
             focusedWindow: electron.BrowserWindow | undefined,
           ) {
@@ -289,14 +291,14 @@ function getTemplate(
         },
         {
           label: 'Toggle Full Screen',
-          accelerator: (function() {
+          accelerator: (function () {
             if (process.platform === 'darwin') {
               return 'Ctrl+Command+F';
             } else {
               return 'F11';
             }
           })(),
-          click: function(
+          click: function (
             _,
             focusedWindow: electron.BrowserWindow | undefined,
           ) {
@@ -307,20 +309,20 @@ function getTemplate(
         },
         {
           label: 'Manage Plugins...',
-          click: function() {
+          click: function () {
             store.dispatch(setActiveSheet(ACTIVE_SHEET_PLUGINS));
           },
         },
         {
           label: 'Toggle Developer Tools',
-          accelerator: (function() {
+          accelerator: (function () {
             if (process.platform === 'darwin') {
               return 'Alt+Command+I';
             } else {
               return 'Ctrl+Shift+I';
             }
           })(),
-          click: function(
+          click: function (
             _,
             focusedWindow: electron.BrowserWindow | undefined,
           ) {
@@ -357,7 +359,7 @@ function getTemplate(
       submenu: [
         {
           label: 'Getting started',
-          click: function() {
+          click: function () {
             shell.openExternal(
               'https://fbflipper.com/docs/getting-started.html',
             );
@@ -365,7 +367,7 @@ function getTemplate(
         },
         {
           label: 'Create plugins',
-          click: function() {
+          click: function () {
             shell.openExternal(
               'https://fbflipper.com/docs/tutorial/intro.html',
             );
@@ -373,7 +375,7 @@ function getTemplate(
         },
         {
           label: 'Report problems',
-          click: function() {
+          click: function () {
             shell.openExternal('https://github.com/facebook/flipper/issues');
           },
         },
@@ -427,13 +429,13 @@ function getTemplate(
         {
           label: 'Quit',
           accelerator: 'Command+Q',
-          click: function() {
+          click: function () {
             app.quit();
           },
         },
       ],
     });
-    const windowMenu = template.find(function(m) {
+    const windowMenu = template.find(function (m) {
       return m.role === 'window';
     });
     if (windowMenu) {

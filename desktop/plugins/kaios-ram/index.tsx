@@ -120,14 +120,14 @@ export default class KaiOSGraphs extends FlipperDevicePlugin<State, any, any> {
     return (this.device as KaiOSDevice).adb
       .shell(this.device.serial, command)
       .then(adb.util.readAll)
-      .then(output => {
+      .then((output) => {
         return output.toString().trim();
       });
   };
 
   getMemory = () => {
-    return this.executeShell('b2g-info').then(output => {
-      const lines = output.split('\n').map(line => line.trim());
+    return this.executeShell('b2g-info').then((output) => {
+      const lines = output.split('\n').map((line) => line.trim());
       let freeMem = null;
       for (const line of lines) {
         // TODO: regex validation
@@ -161,7 +161,7 @@ export default class KaiOSGraphs extends FlipperDevicePlugin<State, any, any> {
           const restOfTheFields = fields.slice(-appInfoSectionFieldsCount + 1);
           fields = [name, ...restOfTheFields];
           if (
-            EXCLUDE_PROCESS_NAME_SUBSTRINGS.some(excludeSubstr =>
+            EXCLUDE_PROCESS_NAME_SUBSTRINGS.some((excludeSubstr) =>
               name.includes(excludeSubstr),
             )
           ) {
@@ -216,7 +216,7 @@ export default class KaiOSGraphs extends FlipperDevicePlugin<State, any, any> {
   updateFreeMem = () => {
     // This can be improved by using immutable.js
     // If more points are necessary
-    return this.getMemory().then(point => {
+    return this.getMemory().then((point) => {
       const points = [...this.state.points.slice(-MAX_POINTS + 1), point];
       const colors = this.getColors(point);
       let newState = {};
@@ -261,7 +261,7 @@ export default class KaiOSGraphs extends FlipperDevicePlugin<State, any, any> {
             <LineChart data={pointsToDraw}>
               <XAxis type="number" domain={[0, MAX_POINTS]} dataKey="idx" />
               <YAxis type="number" domain={[0, Y_AXIS_EXPECTED_MAX_MEM]} />
-              {names.map(name => (
+              {names.map((name) => (
                 <Line
                   key={`line-${name}`}
                   type="linear"

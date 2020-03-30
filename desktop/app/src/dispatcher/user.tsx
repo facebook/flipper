@@ -11,22 +11,28 @@ import {Store} from '../reducers/index';
 import {Logger} from '../fb-interfaces/Logger';
 import {login, logout} from '../reducers/user';
 import {getUser, logoutUser} from '../fb-stubs/user';
+import {sideEffect} from '../utils/sideEffect';
 
 export default (store: Store, _logger: Logger) => {
   getUser()
-    .then(user => {
+    .then((user) => {
       store.dispatch(login(user));
     })
-    .catch(e => {
+    .catch((e) => {
       store.dispatch(logout());
       console.error(e);
     });
 
   let prevUserName = store.getState().user.name;
-  store.subscribe(() => {
-    if (prevUserName && !store.getState().user.name) {
-      logoutUser();
-    }
-    prevUserName = store.getState().user.name;
-  });
+  sideEffect(
+    store,
+    {name: 'logout', throttleMs: 500},
+    (state) => state.user.name,
+    (userName) => {
+      if (prevUserName && !userName) {
+        logoutUser();
+      }
+      prevUserName = userName;
+    },
+  );
 };

@@ -55,7 +55,7 @@ function MainSidebarUtilsSection({
   return (
     <div style={{flexShrink: 0, borderTop: `1px solid ${colors.blackAlpha10}`}}>
       {showWatchDebugRoot &&
-        (function() {
+        (function () {
           const active = isStaticViewActive(staticView, WatchTools);
           return (
             <ListItem
@@ -74,7 +74,7 @@ function MainSidebarUtilsSection({
           );
         })()}
       <RenderNotificationsEntry />
-      {(function() {
+      {(function () {
         const active = isStaticViewActive(staticView, SupportRequestFormV2);
         return (
           <ListItem

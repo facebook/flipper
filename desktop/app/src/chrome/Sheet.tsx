@@ -95,7 +95,7 @@ class Sheet extends Component<Props, State> {
         in={Boolean(this.props.activeSheet) && this.state.isVisible}
         timeout={0}
         onExited={() => this.props.onHideSheet()}>
-        {state => (
+        {(state) => (
           <DialogContainer state={state}>
             <div
               /* This is the target for React.portal, it should not be

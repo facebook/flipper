@@ -52,12 +52,7 @@ export default async function runBuild(
         createModuleIdFactory,
       },
       transformer: {
-        babelTransformerPath: path.resolve(
-          __dirname,
-          '..',
-          'transforms',
-          'index.js',
-        ),
+        babelTransformerPath: require.resolve('flipper-babel-transformer'),
       },
     },
     {

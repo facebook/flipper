@@ -47,7 +47,7 @@ const TableHeaderColumnContainer = styled.div({
 TableHeaderColumnContainer.displayName = 'TableHead:TableHeaderColumnContainer';
 
 const TableHeadContainer = styled(FlexRow)<{horizontallyScrollable?: boolean}>(
-  props => ({
+  (props) => ({
     borderBottom: `1px solid ${colors.sectionHeaderBorder}`,
     color: colors.light50,
     flexShrink: 0,
@@ -63,7 +63,7 @@ const TableHeadContainer = styled(FlexRow)<{horizontallyScrollable?: boolean}>(
 TableHeadContainer.displayName = 'TableHead:TableHeadContainer';
 
 const TableHeadColumnContainer = styled.div<{width: string | number}>(
-  props => ({
+  (props) => ({
     position: 'relative',
     backgroundColor: colors.white,
     flexShrink: props.width === 'flex' ? 1 : 0,
@@ -211,13 +211,13 @@ export default class TableHead extends PureComponent<{
 }> {
   buildContextMenu = (): MenuItemConstructorOptions[] => {
     const visibles = this.props.columnOrder
-      .map(c => (c.visible ? c.key : null))
+      .map((c) => (c.visible ? c.key : null))
       .filter(Boolean)
       .reduce((acc, cv) => {
         acc.add(cv);
         return acc;
       }, new Set());
-    return Object.keys(this.props.columns).map(key => {
+    return Object.keys(this.props.columns).map((key) => {
       const visible = visibles.has(key);
       return {
         label: this.props.columns[key].value,

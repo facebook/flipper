@@ -116,11 +116,11 @@ export default class FileList extends Component<FileListProps, FileListState> {
         const name = files.shift();
         if (name) {
           this.fetchFile(name)
-            .then(data => {
+            .then((data) => {
               filesSet.set(name, data);
               next();
             })
-            .catch(err => {
+            .catch((err) => {
               setState({error: err, files: EMPTY_MAP});
             });
         }
@@ -147,7 +147,7 @@ export default class FileList extends Component<FileListProps, FileListState> {
   initialFetch(props: FileListProps) {
     this.removeWatcher();
 
-    fs.access(props.src, fs.constants.R_OK, err => {
+    fs.access(props.src, fs.constants.R_OK, (err) => {
       if (err) {
         this.setState({error: err, files: EMPTY_MAP});
         return;
@@ -159,7 +159,7 @@ export default class FileList extends Component<FileListProps, FileListState> {
         this.fetchFiles();
       });
 
-      this.watcher.on('error', err => {
+      this.watcher.on('error', (err) => {
         this.setState({error: err, files: EMPTY_MAP});
         this.removeWatcher();
       });

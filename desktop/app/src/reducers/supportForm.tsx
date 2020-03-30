@@ -117,7 +117,7 @@ export class Group {
       setStaticView(require('../fb-stubs/SupportRequestFormV2').default),
     );
     const selectedApp = store.getState().connections.selectedApp;
-    const selectedClient = store.getState().connections.clients.find(o => {
+    const selectedClient = store.getState().connections.clients.find((o) => {
       return o.id === store.getState().connections.selectedApp;
     });
     let errorMessage: string | undefined = undefined;
@@ -160,10 +160,10 @@ export class Group {
           errorMessage,
           'Deeplink',
           10000,
-          payload => {
+          (payload) => {
             store.dispatch(addStatusMessage(payload));
           },
-          payload => {
+          (payload) => {
             store.dispatch(removeStatusMessage(payload));
           },
         );
@@ -175,10 +175,10 @@ export class Group {
         'Please select an app and the device from the dropdown.',
         'Deeplink',
         10000,
-        payload => {
+        (payload) => {
           store.dispatch(addStatusMessage(payload));
         },
-        payload => {
+        (payload) => {
           store.dispatch(removeStatusMessage(payload));
         },
       );
@@ -199,8 +199,8 @@ export class Group {
 
     store.dispatch(
       setSelectedPlugins(
-        this.getPluginsToSelect().filter(s => {
-          return pluginsList.map(s => s.id).includes(s);
+        this.getPluginsToSelect().filter((s) => {
+          return pluginsList.map((s) => s.id).includes(s);
         }),
       ),
     );
@@ -231,7 +231,7 @@ export class Group {
     const emptyPlugins: Array<string> = [];
     for (const plugin of this.requiredPlugins) {
       if (
-        !activePersistentPlugins.find(o => {
+        !activePersistentPlugins.find((o) => {
           return o.id === plugin;
         })
       ) {

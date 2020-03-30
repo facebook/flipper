@@ -29,7 +29,7 @@ export function getFileName(extension: 'png' | 'mp4'): string {
 export function capture(device: BaseDevice): Promise<string> {
   const pngPath = path.join(CAPTURE_LOCATION, getFileName('png'));
   return reportPlatformFailures(
-    device.screenshot().then(buffer => writeBufferToFile(pngPath, buffer)),
+    device.screenshot().then((buffer) => writeBufferToFile(pngPath, buffer)),
     'captureScreenshot',
   );
 }
@@ -43,7 +43,7 @@ export const writeBufferToFile = (
   buffer: Buffer,
 ): Promise<string> => {
   return new Promise((resolve, reject) => {
-    fs.writeFile(filePath, buffer, err => {
+    fs.writeFile(filePath, buffer, (err) => {
       if (err) {
         reject(err);
       } else {

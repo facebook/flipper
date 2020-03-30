@@ -93,7 +93,7 @@ export default class UpdateIndicator extends React.PureComponent<Props, State> {
   componentDidMount() {
     if (isProduction() && config().launcherEnabled) {
       reportPlatformFailures(
-        checkForUpdate(this.props.version).then(res => {
+        checkForUpdate(this.props.version).then((res) => {
           if (res.kind === 'error') {
             console.warn('Version check failure: ', res.msg);
             throw new Error(res.msg);

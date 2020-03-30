@@ -59,7 +59,7 @@ export default class IOSDevice extends BaseDevice {
     const command = `xcrun simctl io booted screenshot ${tmpFilePath}`;
     return promisify(exec)(command)
       .then(() => promisify(fs.readFile)(tmpFilePath))
-      .then(buffer => {
+      .then((buffer) => {
         return promisify(fs.unlink)(tmpFilePath).then(() => buffer);
       });
   }
@@ -213,7 +213,7 @@ export default class IOSDevice extends BaseDevice {
           this.recordingLocation = undefined;
           return recordingLocation!;
         })
-        .catch(_e => {
+        .catch((_e) => {
           this.recordingLocation = undefined;
           console.error(_e);
           return null;

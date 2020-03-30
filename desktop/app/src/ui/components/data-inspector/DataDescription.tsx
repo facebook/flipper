@@ -50,7 +50,7 @@ const NumberValue = styled.span({
 });
 NumberValue.displayName = 'DataDescription:NumberValue';
 
-const ColorBox = styled.span<{color: string}>(props => ({
+const ColorBox = styled.span<{color: string}>((props) => ({
   backgroundColor: props.color,
   boxShadow: 'inset 0 0 1px rgba(0, 0, 0, 1)',
   display: 'inline-block',
@@ -375,9 +375,9 @@ class ColorEditor extends Component<{
             <CompactPicker
               color={colorInfo}
               colors={this.props.colorSet
-                .filter(x => x != 0)
+                .filter((x) => x != 0)
                 .map(parseColor)
-                .map(rgba => {
+                .map((rgba) => {
                   if (!rgba) {
                     return '';
                   }
@@ -527,7 +527,7 @@ function parseColor(
   }
 
   const size = val.length;
-  const [r, g, b] = parts.map(num => {
+  const [r, g, b] = parts.map((num) => {
     if (size === 3) {
       return parseInt(num + num, 16);
     } else {

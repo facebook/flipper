@@ -8,7 +8,7 @@
  */
 
 const electronBinary: string = require('electron') as any;
-import codeFrame from 'babel-code-frame';
+import codeFrame from '@babel/code-frame';
 import socketIo from 'socket.io';
 import express, {Express} from 'express';
 import detect from 'detect-port';
@@ -23,7 +23,8 @@ import Watchman from '../static/watchman';
 import Metro from 'metro';
 import MetroResolver from 'metro-resolver';
 import {default as getWatchFolders} from '../static/get-watch-folders';
-import {staticDir, pluginsDir, appDir} from './paths';
+import {staticDir, pluginsDir, appDir, babelTransformationsDir} from './paths';
+import isFB from './isFB';
 
 const ansiToHtmlConverter = new AnsiToHtmlConverter();
 
@@ -40,6 +41,9 @@ function launchElectron({
   bundleURL: string;
   electronURL: string;
 }) {
+  if (process.argv.includes('--no-embedded-plugins')) {
+    process.env.FLIPPER_NO_EMBEDDED_PLUGINS = 'true';
+  }
   const args = [
     path.join(staticDir, 'index.js'),
     '--remote-debugging-port=9222',
@@ -88,7 +92,7 @@ async function startMetroServer(app: Express) {
     projectRoot: appDir,
     watchFolders,
     transformer: {
-      babelTransformerPath: path.join(staticDir, 'transforms', 'index.js'),
+      babelTransformerPath: path.join(babelTransformationsDir, 'transform-app'),
     },
     resolver: {
       resolverMainFields: ['flipper:source', 'module', 'main'],
@@ -149,7 +153,7 @@ function startAssetServer(
 
   app.use(express.static(staticDir));
 
-  app.use(function(err: any, req: any, res: any, _next: any) {
+  app.use(function (err: any, req: any, res: any, _next: any) {
     knownErrors[req.url] = err;
     outputScreen();
     res.status(500).send('Something broke, check the console!');
@@ -157,7 +161,7 @@ function startAssetServer(
 
   const server = http.createServer(app);
 
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     server.listen(port, 'localhost', () => resolve({app, server}));
   });
 }
@@ -166,7 +170,7 @@ async function addWebsocket(server: http.Server) {
   const io = socketIo(server);
 
   // notify connected clients that there's errors in the console
-  io.on('connection', client => {
+  io.on('connection', (client) => {
     if (hasErrors()) {
       client.emit('hasErrors', ansiToHtmlConverter.toHtml(buildErrorScreen()));
     }
@@ -178,7 +182,7 @@ async function addWebsocket(server: http.Server) {
     const watchman = new Watchman(path.resolve(__dirname, '..'));
     await watchman.initialize();
     await Promise.all(
-      ['src', 'pkg', 'doctor'].map(dir =>
+      ['app', 'pkg', 'doctor'].map((dir) =>
         watchman.startWatchFiles(
           dir,
           () => {
@@ -251,6 +255,9 @@ function outputScreen(socket?: socketIo.Server) {
 }
 
 (async () => {
+  if (isFB && process.env.FLIPPER_FB === undefined) {
+    process.env.FLIPPER_FB = 'true';
+  }
   const port = await detect(DEFAULT_PORT);
   const {app, server} = await startAssetServer(port);
   const socket = await addWebsocket(server);

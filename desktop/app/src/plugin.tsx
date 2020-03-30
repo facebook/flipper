@@ -241,7 +241,7 @@ export class FlipperPlugin<
         });
         this.realClient.subscribe(id, method, callback);
       },
-      supportsMethod: method => this.realClient.supportsMethod(id, method),
+      supportsMethod: (method) => this.realClient.supportsMethod(id, method),
     };
   }
 

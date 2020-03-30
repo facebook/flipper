@@ -114,7 +114,7 @@ const StyledButton = styled.div<{
   pulse?: boolean;
   disabled?: boolean;
   dropdown?: Array<MenuItemConstructorOptions>;
-}>(props => ({
+}>((props) => ({
   backgroundColor:
     props.windowIsFocused && !props.disabled
       ? colors.white

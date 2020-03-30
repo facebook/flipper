@@ -210,7 +210,7 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
 
       const newDevices = state.devices.slice();
       const existing = state.devices.findIndex(
-        device => device.serial === payload.serial,
+        (device) => device.serial === payload.serial,
       );
       if (existing !== -1) {
         console.debug(
@@ -231,9 +231,9 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
       const deviceSerials = action.payload;
 
       return updateSelection(
-        produce(state, draft => {
+        produce(state, (draft) => {
           draft.devices = draft.devices.filter(
-            device => !deviceSerials.has(device.serial),
+            (device) => !deviceSerials.has(device.serial),
           );
         }),
       );
@@ -265,7 +265,7 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
 
     case 'STAR_PLUGIN': {
       const {selectedPlugin, selectedApp} = action.payload;
-      return produce(state, draft => {
+      return produce(state, (draft) => {
         if (!draft.userStarredPlugins[selectedApp]) {
           draft.userStarredPlugins[selectedApp] = [selectedPlugin];
         } else {
@@ -291,7 +291,7 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
       return updateSelection({
         ...state,
         clients: state.clients.concat(payload),
-        uninitializedClients: state.uninitializedClients.filter(c => {
+        uninitializedClients: state.uninitializedClients.filter((c) => {
           return (
             c.deviceId !== payload.query.device_id ||
             c.client.appName !== payload.query.app
@@ -335,7 +335,7 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
       return {
         ...state,
         uninitializedClients: state.uninitializedClients
-          .filter(entry => !isEqual(entry.client, payload))
+          .filter((entry) => !isEqual(entry.client, payload))
           .concat([{client: payload}])
           .sort((a, b) => a.client.appName.localeCompare(b.client.appName)),
       };
@@ -345,7 +345,7 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
       return {
         ...state,
         uninitializedClients: state.uninitializedClients
-          .map(c =>
+          .map((c) =>
             isEqual(c.client, payload.client)
               ? {...c, deviceId: payload.deviceId}
               : c,
@@ -365,7 +365,7 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
       return {
         ...state,
         uninitializedClients: state.uninitializedClients
-          .map(c =>
+          .map((c) =>
             isEqual(c.client, payload.client)
               ? {...c, errorMessage: errorMessage}
               : c,
@@ -392,10 +392,10 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
     case 'REGISTER_PLUGINS': {
       // plugins are registered after creating the base devices, so update them
       const plugins = action.payload;
-      plugins.forEach(plugin => {
+      plugins.forEach((plugin) => {
         if (plugin.prototype instanceof FlipperDevicePlugin) {
           // smell: devices are mutable
-          state.devices.forEach(device => {
+          state.devices.forEach((device) => {
             // @ts-ignore
             if (plugin.supportsDevice(device)) {
               device.devicePlugins = [
@@ -429,7 +429,7 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
 
     if (error) {
       const deviceNotSupportedError = nextState.errors.find(
-        error => error.message === deviceNotSupportedErrorMessage,
+        (error) => error.message === deviceNotSupportedErrorMessage,
       );
       if (deviceNotSupportedError) {
         deviceNotSupportedError.message = error;
@@ -445,7 +445,7 @@ function mergeError(
   errors: FlipperError[],
   newError: FlipperError,
 ): FlipperError[] {
-  const idx = errors.findIndex(error => error.message === newError.message);
+  const idx = errors.findIndex((error) => error.message === newError.message);
   const results = errors.slice();
   if (idx !== -1) {
     results[idx] = {
@@ -555,12 +555,12 @@ export function getClientById(
   clients: Client[],
   clientId: string | null | undefined,
 ): Client | undefined {
-  return clients.find(client => client.id === clientId);
+  return clients.find((client) => client.id === clientId);
 }
 
 export function canBeDefaultDevice(device: BaseDevice) {
   return !DEFAULT_DEVICE_BLACKLIST.some(
-    blacklistedDevice => device instanceof blacklistedDevice,
+    (blacklistedDevice) => device instanceof blacklistedDevice,
   );
 }
 
@@ -585,9 +585,9 @@ function updateSelection(state: Readonly<State>): State {
   if (!device) {
     device =
       state.devices.find(
-        device => device.title === state.userPreferredDevice,
+        (device) => device.title === state.userPreferredDevice,
       ) ||
-      state.devices.find(device => canBeDefaultDevice(device)) ||
+      state.devices.find((device) => canBeDefaultDevice(device)) ||
       null;
   }
   updates.selectedDevice = device;

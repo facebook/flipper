@@ -8,7 +8,7 @@
  * @flow strict-local
  */
 
-import React from 'react';
+import React, {useState} from 'react';
 
 import {
   SafeAreaView,
@@ -17,6 +17,7 @@ import {
   View,
   Text,
   StatusBar,
+  Button,
 } from 'react-native';
 
 import {
@@ -29,7 +30,10 @@ import {
 
 import FlipperTicTacToe from './FlipperTicTacToe';
 
+const API = 'https://status.npmjs.org/';
+
 const App: () => React$Node = () => {
+  const [npmStatus, setNpmStatus] = useState('NPM status: unknown');
   return (
     <>
       <StatusBar barStyle="dark-content" />
@@ -46,6 +50,29 @@ const App: () => React$Node = () => {
           <View style={styles.body}>
             <View style={styles.sectionContainer}>
               <FlipperTicTacToe />
+            </View>
+            <View style={styles.sectionContainer}>
+              <Text style={styles.sectionTitle}>Network & Logging</Text>
+              <Text style={styles.sectionDescription}>{npmStatus}</Text>
+              <Button
+                title="Is NPM up?"
+                onPress={() => {
+                  console.log('Making request to ' + API);
+                  fetch(API, {headers: {accept: 'application/json'}})
+                    .then(res => res.json())
+                    .then(data => {
+                      console.log(
+                        'Got status: ' + JSON.stringify(data, null, 2),
+                      );
+                      setNpmStatus(data.status.description);
+                    })
+                    .catch(e => {
+                      console.error('Failed to fetch status: ' + e);
+                      console.error(e);
+                      setNpmStatus('Error: ' + e);
+                    });
+                }}
+              />
             </View>
             <View style={styles.sectionContainer}>
               <Text style={styles.sectionTitle}>Step One</Text>

@@ -17,7 +17,7 @@ import React from 'react';
 import {ColorProperty} from 'csstype';
 
 const Token = styled(Text)<{focused?: boolean; color?: ColorProperty}>(
-  props => ({
+  (props) => ({
     display: 'inline-flex',
     alignItems: 'center',
     backgroundColor: props.focused
@@ -43,7 +43,7 @@ Token.displayName = 'FilterToken:Token';
 const Key = styled(Text)<{
   type: 'exclude' | 'include' | 'enum';
   focused?: boolean;
-}>(props => ({
+}>((props) => ({
   position: 'relative',
   fontWeight: 500,
   paddingRight: 12,
@@ -73,7 +73,7 @@ const Value = styled(Text)({
 });
 Value.displayName = 'FilterToken:Value';
 
-const Chevron = styled.div<{focused?: boolean}>(props => ({
+const Chevron = styled.div<{focused?: boolean}>((props) => ({
   border: 0,
   paddingLeft: 3,
   paddingRight: 1,
@@ -187,7 +187,7 @@ export default class FilterToken extends PureComponent<Props> {
     if (filter.type === 'enum') {
       let {value} = filter;
       if (value.indexOf(newValue) > -1) {
-        value = value.filter(v => v !== newValue);
+        value = value.filter((v) => v !== newValue);
       } else {
         value = value.concat([newValue]);
       }
@@ -214,7 +214,7 @@ export default class FilterToken extends PureComponent<Props> {
 
     if (filter.type === 'enum') {
       const getEnum = (value: string) =>
-        filter.enum.find(e => e.value === value);
+        filter.enum.find((e) => e.value === value);
       const firstValue = getEnum(filter.value[0]);
       const secondValue = getEnum(filter.value[1]);
       if (filter.value.length === 0) {

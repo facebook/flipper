@@ -124,6 +124,6 @@ function MetroButton({device}: Props) {
 
 export default connect<Props, {}, {}, State>(({connections: {devices}}) => ({
   device: devices.find(
-    device => device.os === 'Metro' && !device.isArchived,
+    (device) => device.os === 'Metro' && !device.isArchived,
   ) as MetroDevice,
 }))(MetroButton);

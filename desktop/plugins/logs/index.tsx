@@ -209,7 +209,7 @@ const LOG_TYPES: {
 const DEFAULT_FILTERS = [
   {
     type: 'enum',
-    enum: Object.keys(LOG_TYPES).map(value => ({
+    enum: Object.keys(LOG_TYPES).map((value) => ({
       label: LOG_TYPES[value].label,
       value,
     })),
@@ -474,14 +474,14 @@ export default class LogTable extends FlipperDevicePlugin<
     const supportedColumns = this.device.supportedColumns();
     this.columns = keepKeys(COLUMNS, supportedColumns);
     this.columnSizes = keepKeys(COLUMN_SIZE, supportedColumns);
-    this.columnOrder = INITIAL_COLUMN_ORDER.filter(obj =>
+    this.columnOrder = INITIAL_COLUMN_ORDER.filter((obj) =>
       supportedColumns.includes(obj.key),
     );
 
     const initialState = addEntriesToState(
       this.device
         .getLogs()
-        .map(log => processEntry(log, String(this.counter++))),
+        .map((log) => processEntry(log, String(this.counter++))),
       this.state,
     );
     this.state = {
@@ -502,7 +502,7 @@ export default class LogTable extends FlipperDevicePlugin<
 
   incrementCounterIfNeeded = (entry: DeviceLogEntry) => {
     let counterUpdated = false;
-    const counters = this.state.counters.map(counter => {
+    const counters = this.state.counters.map((counter) => {
       if (entry.message.match(counter.expression)) {
         counterUpdated = true;
         if (counter.notify) {
@@ -539,7 +539,7 @@ export default class LogTable extends FlipperDevicePlugin<
         const thisBatch = this.batch;
         this.batch = [];
         this.queued = false;
-        this.setState(state => addEntriesToState(thisBatch, state));
+        this.setState((state) => addEntriesToState(thisBatch, state));
       }, 100);
     }
   };
@@ -555,7 +555,7 @@ export default class LogTable extends FlipperDevicePlugin<
   }
 
   clearLogs = () => {
-    this.device.clearLogs().catch(e => {
+    this.device.clearLogs().catch((e) => {
       console.error('Failed to clear logs: ', e);
     });
     this.setState({
@@ -563,7 +563,7 @@ export default class LogTable extends FlipperDevicePlugin<
       rows: [],
       highlightedRows: new Set(),
       key2entry: {},
-      counters: this.state.counters.map(counter => ({
+      counters: this.state.counters.map((counter) => ({
         ...counter,
         count: 0,
       })),
@@ -574,13 +574,13 @@ export default class LogTable extends FlipperDevicePlugin<
     let paste = '';
     const mapFn = (row: TableBodyRow) =>
       Object.keys(COLUMNS)
-        .map(key => textContent(row.columns[key].value))
+        .map((key) => textContent(row.columns[key].value))
         .join('\t');
 
     if (this.state.highlightedRows.size > 0) {
       // create paste from selection
       paste = this.state.rows
-        .filter(row => this.state.highlightedRows.has(row.key))
+        .filter((row) => this.state.highlightedRows.has(row.key))
         .map(mapFn)
         .join('\n');
     } else {
@@ -611,7 +611,7 @@ export default class LogTable extends FlipperDevicePlugin<
     return (
       <LogWatcher
         counters={this.state.counters}
-        onChange={counters =>
+        onChange={(counters) =>
           this.setState({counters}, () =>
             window.localStorage.setItem(
               LOG_WATCHER_LOCAL_STORAGE_KEY,

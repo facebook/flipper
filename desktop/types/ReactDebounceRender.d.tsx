@@ -8,7 +8,7 @@
  */
 
 declare module 'react-debounce-render' {
-  export default function<P>(
+  export default function <P>(
     component: React.ComponentType<P>,
     maxWait: number,
     options: {

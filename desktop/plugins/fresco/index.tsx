@@ -145,7 +145,7 @@ export default class FlipperImagesPlugin extends FlipperPlugin<
         };
       });
       const idSet: Set<string> = levels.reduce((acc, level: CacheInfo) => {
-        level.imageIds.forEach(id => {
+        level.imageIds.forEach((id) => {
           acc.add(id);
         });
         return acc;
@@ -243,7 +243,7 @@ export default class FlipperImagesPlugin extends FlipperPlugin<
     isLeakTrackingEnabled = false,
   }: PersistedState): Array<Notification> =>
     closeableReferenceLeaks
-      .filter(_ => isLeakTrackingEnabled)
+      .filter((_) => isLeakTrackingEnabled)
       .map((event: AndroidCloseableReferenceLeakEvent) => ({
         id: event.identityHashCode,
         title: `Leaked CloseableReference: ${event.className}`,
@@ -288,7 +288,7 @@ export default class FlipperImagesPlugin extends FlipperPlugin<
     }
 
     const imageList = images.map((image: CacheInfo) => {
-      const imageIdList = image.imageIds.filter(imageID => {
+      const imageIdList = image.imageIds.filter((imageID) => {
         const filteredEvents = events.filter((event: ImageEventWithId) => {
           const output =
             event.attribution &&
@@ -361,7 +361,7 @@ export default class FlipperImagesPlugin extends FlipperPlugin<
   updateCaches = (reason: string) => {
     debugLog('Requesting images list (reason=' + reason + ')');
     this.client.call('listImages').then((response: ImagesListResponse) => {
-      response.levels.forEach(data =>
+      response.levels.forEach((data) =>
         this.imagePool ? this.imagePool.fetchImages(data.imageIds) : undefined,
       );
       this.props.setPersistedState({images: response.levels});
@@ -426,7 +426,7 @@ export default class FlipperImagesPlugin extends FlipperPlugin<
     }
 
     const maybeImage = this.props.persistedState.imagesMap[selectedImage];
-    const events = this.props.persistedState.events.filter(e =>
+    const events = this.props.persistedState.events.filter((e) =>
       e.imageIds.includes(selectedImage),
     );
     return <ImagesSidebar image={maybeImage} events={events} />;

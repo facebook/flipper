@@ -24,7 +24,7 @@ const LabelText = styled(Text)({
 });
 LabelText.displayName = 'Select:LabelText';
 
-const SelectMenu = styled.select<{grow?: boolean}>(props => ({
+const SelectMenu = styled.select<{grow?: boolean}>((props) => ({
   flexGrow: props.grow ? 1 : 0,
 }));
 SelectMenu.displayName = 'Select:SelectMenu';

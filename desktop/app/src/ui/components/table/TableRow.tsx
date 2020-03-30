@@ -59,7 +59,7 @@ const backgroundColor = (props: TableBodyRowContainerProps) => {
 };
 
 const TableBodyRowContainer = styled(FlexRow)<TableBodyRowContainerProps>(
-  props => ({
+  (props) => ({
     backgroundColor: backgroundColor(props),
     boxShadow: props.zebra ? 'none' : 'inset 0 -1px #E9EBEE',
     color: props.highlighted ? colors.white : props.color || undefined,
@@ -173,7 +173,7 @@ export default class TableRow extends React.PureComponent<Props> {
         highlightOnHover={row.highlightOnHover}
         data-key={row.key}
         {...row.style}>
-        {columnKeys.map(key => {
+        {columnKeys.map((key) => {
           const col = row.columns[key];
 
           const isFilterable = Boolean(col && col.isFilterable);

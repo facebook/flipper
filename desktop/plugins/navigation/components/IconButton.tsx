@@ -49,7 +49,7 @@ const IconButton = styled.div({
   },
 });
 
-export default function(props: Props) {
+export default function (props: Props) {
   return (
     <RippleEffect>
       <IconButton className="icon-button" onClick={props.onClick}>

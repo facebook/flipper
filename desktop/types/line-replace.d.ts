@@ -8,7 +8,7 @@
  */
 
 declare module 'line-replace' {
-  export default function(args: {
+  export default function (args: {
     file: string;
     line: number;
     text: string;

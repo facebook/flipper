@@ -64,7 +64,7 @@ test('TestIdler can be controlled', async () => {
   expect(idler.shouldIdle()).toBe(true);
 
   let threw = false;
-  const p = idler.idle().catch(e => {
+  const p = idler.idle().catch((e) => {
     threw = true;
     expect(e).toMatchInlineSnapshot(
       `[CancelledPromiseError: Idler got killed]`,

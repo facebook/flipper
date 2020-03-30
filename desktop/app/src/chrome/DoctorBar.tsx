@@ -59,7 +59,7 @@ class DoctorBar extends Component<Props, State> {
   static getDerivedStateFromProps(props: Props, state: State): State | null {
     const failedCategories = Object.values(
       props.healthcheckReport.categories,
-    ).filter(cat => hasProblems(cat.result));
+    ).filter((cat) => hasProblems(cat.result));
     if (failedCategories.length == 1) {
       const failedCat = failedCategories[0];
       if (failedCat.key === 'ios' || failedCat.key === 'android') {
@@ -131,7 +131,7 @@ class DoctorBar extends Component<Props, State> {
     );
   }
   setVisible(visible: boolean) {
-    this.setState(prevState => {
+    this.setState((prevState) => {
       return {
         ...prevState,
         visible,

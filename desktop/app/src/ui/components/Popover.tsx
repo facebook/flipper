@@ -26,7 +26,7 @@ type Opts = {
   skewLeft?: boolean;
 };
 
-const PopoverContainer = styled(FlexColumn)<{opts?: Opts}>(props => ({
+const PopoverContainer = styled(FlexColumn)<{opts?: Opts}>((props) => ({
   backgroundColor: colors.white,
   borderRadius: 7,
   border: '1px solid rgba(0,0,0,0.3)',

@@ -23,9 +23,9 @@ export function push(
   filepath: string,
   contents: string,
 ): Promise<void> {
-  return validateAppName(app).then(validApp =>
-    validateFilePath(filepath).then(validFilepath =>
-      validateFileContent(contents).then(validContent =>
+  return validateAppName(app).then((validApp) =>
+    validateFilePath(filepath).then((validFilepath) =>
+      validateFileContent(contents).then((validContent) =>
         _push(client, deviceId, validApp, validFilepath, validContent),
       ),
     ),
@@ -38,8 +38,8 @@ export function pull(
   app: string,
   path: string,
 ): Promise<string> {
-  return validateAppName(app).then(validApp =>
-    validateFilePath(path).then(validPath =>
+  return validateAppName(app).then((validApp) =>
+    validateFilePath(path).then((validPath) =>
       _pull(client, deviceId, validApp, validPath),
     ),
   );

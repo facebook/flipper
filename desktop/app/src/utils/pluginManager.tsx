@@ -67,8 +67,10 @@ async function installPluginFromTempDir(pluginDir: string) {
   const pluginFiles = await fs.readdir(pluginDir);
   await Promise.all(
     pluginFiles
-      .filter(f => f !== 'node_modules')
-      .map(f => fs.move(path.join(pluginDir, f), path.join(destinationDir, f))),
+      .filter((f) => f !== 'node_modules')
+      .map((f) =>
+        fs.move(path.join(pluginDir, f), path.join(destinationDir, f)),
+      ),
   );
 }
 
@@ -139,7 +141,7 @@ export async function readInstalledPlugins(): Promise<PluginMap> {
   const dirs = await fs.readdir(PLUGIN_DIR);
   const plugins = await Promise.all<[string, PluginDefinition]>(
     dirs.map(
-      name =>
+      (name) =>
         new Promise(async (resolve, reject) => {
           if (!(await fs.lstat(path.join(PLUGIN_DIR, name))).isDirectory()) {
             return resolve(undefined);
@@ -188,7 +190,7 @@ export async function findPluginUpdates(
               return [currentPlugin.name, {kind: 'up-to-date'}];
             }
           })
-          .catch(err => [currentPlugin.name, {kind: 'error', error: err}]),
+          .catch((err) => [currentPlugin.name, {kind: 'error', error: err}]),
     ),
   );
 }

@@ -34,7 +34,7 @@ const Text = styled.span<{
   wordWrap?: WordWrapProperty;
   whiteSpace?: WhiteSpaceProperty;
   cursor?: CursorProperty;
-}>(props => ({
+}>((props) => ({
   color: props.color ? props.color : 'inherit',
   cursor: props.cursor ? props.cursor : 'auto',
   display: 'inline',

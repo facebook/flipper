@@ -34,7 +34,7 @@ export class Idler implements BaseIdler {
     const now = performance.now();
     if (now - this.lastIdle > this.interval) {
       this.lastIdle = now;
-      return new Promise(resolve => {
+      return new Promise((resolve) => {
         if (typeof requestIdleCallback !== 'undefined') {
           requestIdleCallback(() => {
             resolve();
@@ -88,7 +88,7 @@ export class TestIdler implements BaseIdler {
     if (this.resolver) {
       throw new Error('Already idling');
     }
-    return new Promise<void>(resolve => {
+    return new Promise<void>((resolve) => {
       this.resolver = () => {
         this.resolver = undefined;
         this.hasProgressed = false;

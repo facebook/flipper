@@ -33,7 +33,7 @@ type MouseEventHandler = (
   event: React.MouseEvent<HTMLDivElement, MouseEvent>,
 ) => void;
 
-const Markers = styled.div<{totalTime: number}>(props => ({
+const Markers = styled.div<{totalTime: number}>((props) => ({
   position: 'relative',
   margin: 10,
   height: props.totalTime,
@@ -56,7 +56,7 @@ const Point = styled(FlexRow)<{
   threadColor: string;
   selected: boolean;
   cut: boolean;
-}>(props => ({
+}>((props) => ({
   position: 'absolute',
   top: props.positionY,
   left: 0,
@@ -187,8 +187,8 @@ export default class MarkerTimeline extends Component<Props, State> {
 
       timePoints.push({
         timestamp,
-        markerNames: points.map(p => p.label),
-        markerKeys: points.map(p => p.key),
+        markerNames: points.map((p) => p.label),
+        markerKeys: points.map((p) => p.key),
         positionY,
         isCut,
         color,

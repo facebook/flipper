@@ -126,7 +126,7 @@ export default class StackTrace extends Component<{
       return acc;
     }, {});
 
-    const columnOrder = Object.keys(COLUMNS).map(key => ({
+    const columnOrder = Object.keys(COLUMNS).map((key) => ({
       key,
       visible: Boolean(columns[key]),
     }));

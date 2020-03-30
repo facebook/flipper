@@ -118,7 +118,7 @@ export default class BaseDevice {
 
   _notifyLogListeners(entry: DeviceLogEntry) {
     if (this.logListeners.size > 0) {
-      this.logListeners.forEach(listener => {
+      this.logListeners.forEach((listener) => {
         // prevent breaking other listeners, if one listener doesn't work.
         try {
           listener(entry);
@@ -176,8 +176,8 @@ export default class BaseDevice {
 
   loadDevicePlugins(devicePlugins?: Map<string, typeof FlipperDevicePlugin>) {
     this.devicePlugins = Array.from(devicePlugins ? devicePlugins.values() : [])
-      .filter(plugin => plugin.supportsDevice(this))
+      .filter((plugin) => plugin.supportsDevice(this))
       .sort(sortPluginsByName)
-      .map(plugin => plugin.id);
+      .map((plugin) => plugin.id);
   }
 }

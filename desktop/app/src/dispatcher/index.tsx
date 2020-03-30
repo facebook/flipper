@@ -26,7 +26,7 @@ import {Store} from '../reducers/index';
 import {Dispatcher} from './types';
 import {notNull} from '../utils/typeUtils';
 
-export default function(store: Store, logger: Logger): () => Promise<void> {
+export default function (store: Store, logger: Logger): () => Promise<void> {
   // This only runs in development as when the reload
   // kicks in it doesn't unregister the shortcuts
   if (process.env.NODE_ENV === 'development') {
@@ -48,7 +48,7 @@ export default function(store: Store, logger: Logger): () => Promise<void> {
     reactNative,
   ].filter(notNull);
   const globalCleanup = dispatchers
-    .map(dispatcher => dispatcher(store, logger))
+    .map((dispatcher) => dispatcher(store, logger))
     .filter(Boolean);
   return () => {
     return Promise.all(globalCleanup).then(() => {});

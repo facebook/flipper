@@ -172,7 +172,7 @@ class BugReporterDialog extends Component<Props, State> {
                   success: id,
                 });
               })
-              .catch(err => {
+              .catch((err) => {
                 this.setState({
                   error: err.message,
                   submitting: false,

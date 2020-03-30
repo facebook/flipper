@@ -123,7 +123,7 @@ export class InspectorSidebar extends Component<Props, State> {
 
     const sections: Array<any> =
       (extensions &&
-        extensions.map(ext =>
+        extensions.map((ext) =>
           ext(
             this.props.client,
             this.props.realClient,

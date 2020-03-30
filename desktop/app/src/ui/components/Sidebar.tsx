@@ -31,7 +31,7 @@ const SidebarContainer = styled(FlexColumn)<{
   position: 'right' | 'top' | 'left' | 'bottom';
   backgroundColor?: BackgroundClipProperty;
   overflow?: boolean;
-}>(props => ({
+}>((props) => ({
   backgroundColor: props.backgroundColor || colors.macOSTitleBarBackgroundBlur,
   borderLeft: props.position === 'right' ? '1px solid #b3b3b3' : 'none',
   borderTop: props.position === 'bottom' ? '1px solid #b3b3b3' : 'none',

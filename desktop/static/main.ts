@@ -25,6 +25,7 @@ import fixPath from 'fix-path';
 import {exec} from 'child_process';
 import compilePlugins from './compilePlugins';
 import setup from './setup';
+import isFB from './fb-stubs/isFB';
 import delegateToLauncher from './launcher';
 import expandTilde from 'expand-tilde';
 import yargs from 'yargs';
@@ -85,6 +86,10 @@ const argv = yargs
 
 const {config, configPath, flipperDir} = setup(argv);
 
+if (isFB && process.env.FLIPPER_FB === undefined) {
+  process.env.FLIPPER_FB = 'true';
+}
+
 const skipLoadingEmbeddedPlugins = process.env.FLIPPER_NO_EMBEDDED_PLUGINS;
 
 const pluginPaths = (config.pluginPaths ?? [])
@@ -127,8 +132,8 @@ compilePlugins(
   },
   pluginPaths,
   path.join(flipperDir, 'plugins'),
-).then(dynamicPlugins => {
-  ipcMain.on('get-dynamic-plugins', event => {
+).then((dynamicPlugins) => {
+  ipcMain.on('get-dynamic-plugins', (event) => {
     event.returnValue = dynamicPlugins;
   });
   pluginsCompiled = true;
@@ -163,7 +168,7 @@ app.on('window-all-closed', () => {
 
 app.on('will-finish-launching', () => {
   // Protocol handler for osx
-  app.on('open-url', function(event, url) {
+  app.on('open-url', function (event, url) {
     event.preventDefault();
     deeplinkURL = url;
     argv.url = url;
@@ -225,7 +230,7 @@ app.on('will-quit', () => {
   globalShortcut.unregisterAll();
 });
 
-ipcMain.on('componentDidMount', _event => {
+ipcMain.on('componentDidMount', (_event) => {
   if (deeplinkURL) {
     win.webContents.send('flipper-protocol-handler', deeplinkURL);
     deeplinkURL = undefined;
@@ -237,7 +242,7 @@ ipcMain.on('componentDidMount', _event => {
   }
 });
 
-ipcMain.on('getLaunchTime', event => {
+ipcMain.on('getLaunchTime', (event) => {
   if (launchStartTime) {
     event.sender.send('getLaunchTime', launchStartTime);
     // set launchTime to null to only report it once, to prevents reporting wrong
@@ -255,7 +260,7 @@ ipcMain.on(
 
       // Forwarding notification events to renderer process
       // https://electronjs.org/docs/api/notification#instance-events
-      ['show', 'click', 'close', 'reply', 'action'].forEach(eventName => {
+      ['show', 'click', 'close', 'reply', 'action'].forEach((eventName) => {
         // TODO: refactor this to make typescript happy
         // @ts-ignore
         n.on(eventName, (event, ...args) => {

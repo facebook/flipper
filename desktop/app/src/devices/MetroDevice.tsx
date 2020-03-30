@@ -162,7 +162,7 @@ export default class MetroDevice extends BaseDevice {
         type,
         tag: message.type,
         message: message.data
-          .map(v =>
+          .map((v) =>
             v && typeof v === 'object' ? JSON.stringify(v, null, 2) : v,
           )
           .join(' '),

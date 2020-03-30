@@ -53,7 +53,7 @@ export interface Props {
 }
 
 const defaultProps: Props = {
-  onPathChanged: _ => {},
+  onPathChanged: (_) => {},
   placeholderText: '',
   defaultPath: '/',
   showHiddenFiles: false,
@@ -92,12 +92,12 @@ export default function FileSelector({
         placeholder={placeholderText}
         value={value}
         isValid={true}
-        onDrop={e => {
+        onDrop={(e) => {
           if (e.dataTransfer.files.length) {
             onChange(e.dataTransfer.files[0].path);
           }
         }}
-        onChange={e => {
+        onChange={(e) => {
           onChange(e.target.value);
         }}
       />

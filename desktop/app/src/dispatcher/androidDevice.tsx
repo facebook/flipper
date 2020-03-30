@@ -33,14 +33,14 @@ function createDevice(
 
     adbClient
       .getProperties(device.id)
-      .then(async props => {
+      .then(async (props) => {
         try {
           let name = props['ro.product.model'];
           if (type === 'emulator') {
             name = (await getRunningEmulatorName(device.id)) || name;
           }
           const isKaiOSDevice = Object.keys(props).some(
-            name => name.startsWith('kaios') || name.startsWith('ro.kaios'),
+            (name) => name.startsWith('kaios') || name.startsWith('ro.kaios'),
           );
           const androidLikeDevice = new (isKaiOSDevice
             ? KaiOSDevice
@@ -53,7 +53,7 @@ function createDevice(
           reject(e);
         }
       })
-      .catch(e => {
+      .catch((e) => {
         if (
           e &&
           e.message &&
@@ -74,7 +74,7 @@ export async function getActiveAndroidDevices(
   const client = await getAdbClient(store);
   const androidDevices = await client.listDevices();
   const devices = await Promise.all(
-    androidDevices.map(device => createDevice(client, device)),
+    androidDevices.map((device) => createDevice(client, device)),
   );
   return devices.filter(Boolean) as any;
 }
@@ -108,7 +108,7 @@ export default (store: Store, logger: Logger) => {
     // get emulators
     promisify(which)('emulator')
       .catch(() => `${process.env.ANDROID_HOME || ''}/tools/emulator`)
-      .then(emulatorPath => {
+      .then((emulatorPath) => {
         child_process.exec(
           `${emulatorPath} -list-avds`,
           (error: Error | null, data: string | null) => {
@@ -126,11 +126,11 @@ export default (store: Store, logger: Logger) => {
       });
 
     getAdbClient(store)
-      .then(client => {
+      .then((client) => {
         client
           .trackDevices()
-          .then(tracker => {
-            tracker.on('error', err => {
+          .then((tracker) => {
+            tracker.on('error', (err) => {
               if (err.message === 'Connection closed') {
                 // adb server has shutdown, remove all android devices
                 const {connections} = store.getState();
@@ -148,13 +148,13 @@ export default (store: Store, logger: Logger) => {
               }
             });
 
-            tracker.on('add', async device => {
+            tracker.on('add', async (device) => {
               if (device.type !== 'offline') {
                 registerDevice(client, device, store);
               }
             });
 
-            tracker.on('change', async device => {
+            tracker.on('change', async (device) => {
               if (device.type === 'offline') {
                 unregisterDevices([device.id]);
               } else {
@@ -162,7 +162,7 @@ export default (store: Store, logger: Logger) => {
               }
             });
 
-            tracker.on('remove', device => {
+            tracker.on('remove', (device) => {
               unregisterDevices([device.id]);
             });
           })
@@ -174,7 +174,7 @@ export default (store: Store, logger: Logger) => {
             }
           });
       })
-      .catch(e => {
+      .catch((e) => {
         console.error(`Failed to watch for android devices: ${e.message}`);
       });
   };
@@ -201,7 +201,7 @@ export default (store: Store, logger: Logger) => {
         (device: BaseDevice) =>
           device.serial === androidDevice.serial && device.isArchived,
       )
-      .map(device => device.serial);
+      .map((device) => device.serial);
 
     store.dispatch({
       type: 'UNREGISTER_DEVICES',
@@ -223,7 +223,7 @@ export default (store: Store, logger: Logger) => {
   }
 
   async function unregisterDevices(deviceIds: Array<string>) {
-    deviceIds.forEach(id =>
+    deviceIds.forEach((id) =>
       logger.track('usage', 'unregister-device', {
         os: 'Android',
         serial: id,
@@ -231,10 +231,10 @@ export default (store: Store, logger: Logger) => {
     );
 
     const archivedDevices = deviceIds
-      .map(id => {
+      .map((id) => {
         const device = store
           .getState()
-          .connections.devices.find(device => device.serial === id);
+          .connections.devices.find((device) => device.serial === id);
         if (device && !device.isArchived) {
           return device.archive();
         }
@@ -259,7 +259,7 @@ export default (store: Store, logger: Logger) => {
 
   // cleanup method
   return () =>
-    getAdbClient(store).then(client => {
+    getAdbClient(store).then((client) => {
       client.kill();
     });
 };

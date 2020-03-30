@@ -44,10 +44,10 @@ export default (store: Store) => {
         const devices = store
           .getState()
           .connections.devices.filter(
-            device => device.os === 'Metro' && !device.isArchived,
+            (device) => device.os === 'Metro' && !device.isArchived,
           ) as MetroDevice[];
 
-        devices.forEach(device => device.sendCommand(shortcut.command));
+        devices.forEach((device) => device.sendCommand(shortcut.command));
       }),
   );
 };

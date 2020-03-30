@@ -29,6 +29,7 @@ import path from 'path';
 import {default as config} from '../utils/processConfig';
 import isProduction from '../utils/isProduction';
 import {notNull} from '../utils/typeUtils';
+import {sideEffect} from '../utils/sideEffect';
 
 export type PluginDefinition = {
   id?: string;
@@ -63,20 +64,17 @@ export default (store: Store, _logger: Logger) => {
   store.dispatch(addFailedPlugins(failedPlugins));
   store.dispatch(registerPlugins(initialPlugins));
 
-  let state: State | null = null;
-  store.subscribe(() => {
-    const newState = store.getState().plugins;
-    if (state !== newState) {
+  sideEffect(
+    store,
+    {name: 'setupMenuBar', throttleMs: 100},
+    (state) => state.plugins,
+    (plugins, store) => {
       setupMenuBar(
-        [
-          ...newState.devicePlugins.values(),
-          ...newState.clientPlugins.values(),
-        ],
+        [...plugins.devicePlugins.values(), ...plugins.clientPlugins.values()],
         store,
       );
-    }
-    state = newState;
-  });
+    },
+  );
 };
 
 function getBundledPlugins(): Array<PluginDefinition> {
@@ -100,8 +98,8 @@ function getBundledPlugins(): Array<PluginDefinition> {
   }
 
   return bundledPlugins
-    .filter(plugin => notNull(plugin.out))
-    .map(plugin => ({
+    .filter((plugin) => notNull(plugin.out))
+    .map((plugin) => ({
       ...plugin,
       out: path.join(pluginPath, plugin.out!),
     }));
@@ -164,7 +162,7 @@ export const requirePlugin = (
       }
 
       // set values from package.json as static variables on class
-      Object.keys(pluginDefinition).forEach(key => {
+      Object.keys(pluginDefinition).forEach((key) => {
         if (key === 'name') {
           plugin.id = plugin.id || pluginDefinition.name;
         } else if (key === 'id') {

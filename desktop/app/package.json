@@ -10,9 +10,6 @@
   "category": "facebook-intern",
   "privileged": true,
   "license": "MIT",
-  "resolutions": {
-    "adbkit/adbkit-logcat": "2"
-  },
   "dependencies": {
     "@emotion/core": "^10.0.22",
     "@emotion/styled": "^10.0.23",
@@ -60,7 +57,7 @@
     "react": "16.13.0",
     "react-color": "^2.11.7",
     "react-debounce-render": "^6.0.0",
-    "react-devtools-core": "^4.0.6",
+    "react-devtools-core": "^4.6.0",
     "react-dom": "^16.13.0",
     "react-markdown": "^4.2.2",
     "react-player": "^1.15.2",
@@ -91,7 +88,7 @@
       "tmp",
       "flipper-doctor"
     ]
-  },  
+  },
   "optionalDependencies": {
     "7zip-bin-mac": "^1.0.1"
   }

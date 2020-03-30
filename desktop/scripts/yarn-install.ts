@@ -21,11 +21,11 @@ const YARN_PATH =
     : 'yarn' + (WINDOWS ? '.cmd' : '');
 
 Promise.all(
-  PACKAGES.map(pattern =>
+  PACKAGES.map((pattern) =>
     glob(path.join(__dirname, '..', pattern, 'package.json')),
   ),
 )
-  .then(async packages => {
+  .then(async (packages) => {
     const flattenPackages = packages.reduce((acc, cv) => acc.concat(cv), []);
     console.log(
       `Installing dependencies for ${flattenPackages.length} plugins`,
@@ -56,7 +56,7 @@ Promise.all(
   })
   // eslint-disable-next-line
   .then(() => console.log('📦  Installed all plugin dependencies!'))
-  .catch(err => {
+  .catch((err) => {
     console.error(err);
     console.error('❌  Installing plugin dependencies failed.');
     process.exit(1);

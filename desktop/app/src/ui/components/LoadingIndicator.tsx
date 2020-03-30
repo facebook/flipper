@@ -19,7 +19,7 @@ const animation = keyframes({
   },
 });
 
-const LoadingIndicator = styled.div<{size: number}>(props => ({
+const LoadingIndicator = styled.div<{size: number}>((props) => ({
   animation: `${animation} 1s infinite linear`,
   width: props.size,
   height: props.size,

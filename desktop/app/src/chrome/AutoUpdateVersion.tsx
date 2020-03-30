@@ -57,7 +57,7 @@ export default class AutoUpdateVersion extends Component<Props, State> {
         notification.onclick = remote.autoUpdater.quitAndInstall;
       });
 
-      remote.autoUpdater.on('error', error => {
+      remote.autoUpdater.on('error', (error) => {
         this.setState({updater: 'error', error: error.toString()});
       });
 

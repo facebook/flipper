@@ -57,7 +57,7 @@ const ShortcutKeysContainer = styled(FlexRow)<{invalid: boolean}>(
     flexGrow: 1,
     padding: 2,
   },
-  props => ({borderColor: props.invalid ? colors.red : colors.light15}),
+  (props) => ({borderColor: props.invalid ? colors.red : colors.light15}),
 );
 
 const ShortcutKeyContainer = styled.div({
@@ -183,7 +183,7 @@ const KeyboardShortcutInput = (props: {
           ([metaKey, altKey, ctrlKey, shiftKey].includes(true) &&
             character !== '') ||
             [metaKey, altKey, ctrlKey, shiftKey, character].every(
-              value => !value,
+              (value) => !value,
             ),
         ),
       500,

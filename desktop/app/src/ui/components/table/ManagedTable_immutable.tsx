@@ -141,7 +141,7 @@ type ManagedTableState = {
   shouldScrollToBottom: boolean;
 };
 
-const Container = styled(FlexColumn)<{canOverflow?: boolean}>(props => ({
+const Container = styled(FlexColumn)<{canOverflow?: boolean}>((props) => ({
   overflow: props.canOverflow ? 'scroll' : 'visible',
   flexGrow: 1,
 }));
@@ -161,10 +161,7 @@ class ManagedTable extends React.Component<
 
   getTableKey = (): string => {
     return (
-      'TABLE_COLUMNS_' +
-      Object.keys(this.props.columns)
-        .join('_')
-        .toUpperCase()
+      'TABLE_COLUMNS_' + Object.keys(this.props.columns).join('_').toUpperCase()
     );
   };
 
@@ -172,7 +169,7 @@ class ManagedTable extends React.Component<
     columnOrder:
       JSON.parse(window.localStorage.getItem(this.getTableKey()) || 'null') ||
       this.props.columnOrder ||
-      Object.keys(this.props.columns).map(key => ({key, visible: true})),
+      Object.keys(this.props.columns).map((key) => ({key, visible: true})),
     columnSizes:
       this.props.tableKey && globalTableState[this.props.tableKey]
         ? globalTableState[this.props.tableKey]
@@ -316,7 +313,7 @@ class ManagedTable extends React.Component<
       const {highlightedRows} = this.state;
       const lastItemKey = Array.from(this.state.highlightedRows).pop();
       const lastItemIndex = this.props.rows.findIndex(
-        row => row.key === lastItemKey,
+        (row) => row.key === lastItemKey,
       );
       const newIndex = Math.min(
         rows.size - 1,
@@ -497,8 +494,8 @@ class ManagedTable extends React.Component<
             {
               label: 'Copy cell',
               submenu: this.state.columnOrder
-                .filter(c => c.visible)
-                .map(c => c.key)
+                .filter((c) => c.visible)
+                .map((c) => c.key)
                 .map((column, index) => ({
                   label: this.props.columns[column].value,
                   click: () => {
@@ -540,9 +537,9 @@ class ManagedTable extends React.Component<
 
   getHeaderText = (): string => {
     return this.state.columnOrder
-      .filter(c => c.visible)
-      .map(c => c.key)
-      .map(key => this.props.columns[key].value)
+      .filter((c) => c.visible)
+      .map((c) => c.key)
+      .map((key) => this.props.columns[key].value)
       .join('\t');
   };
 
@@ -553,7 +550,7 @@ class ManagedTable extends React.Component<
       return '';
     }
     return this.props.rows
-      .filter(row => highlightedRows.has(row.key))
+      .filter((row) => highlightedRows.has(row.key))
       .map(
         (row: TableBodyRow) =>
           row.copyText || this.getTextContentOfRow(row.key).join('\t'),
@@ -562,7 +559,7 @@ class ManagedTable extends React.Component<
   };
 
   getTextContentOfRow = (key: string): Array<string> => {
-    const row = this.props.rows.find(row => row.key === key);
+    const row = this.props.rows.find((row) => row.key === key);
     if (!row) {
       return [];
     }
@@ -606,7 +603,7 @@ class ManagedTable extends React.Component<
     const {onAddFilter, multiline, zebra, rows} = this.props;
     const {columnOrder, columnSizes, highlightedRows} = this.state;
     const columnKeys = columnOrder
-      .map(k => (k.visible ? k.key : null))
+      .map((k) => (k.visible ? k.key : null))
       .filter(notNull);
 
     const row = rows.get(index);
@@ -619,8 +616,8 @@ class ManagedTable extends React.Component<
         key={row.key}
         columnSizes={columnSizes}
         columnKeys={columnKeys}
-        onMouseDown={e => this.onHighlight(e, row, index)}
-        onMouseEnter={e => this.onMouseEnterRow(e, row, index)}
+        onMouseDown={(e) => this.onHighlight(e, row, index)}
+        onMouseEnter={(e) => this.onMouseEnterRow(e, row, index)}
         multiline={multiline}
         rowLineHeight={24}
         highlighted={highlightedRows.has(row.key)}
@@ -690,7 +687,7 @@ class ManagedTable extends React.Component<
                   }>
                   <List
                     itemCount={rows.size}
-                    itemSize={index =>
+                    itemSize={(index) =>
                       (rows.get(index) && rows.get(index)!.height) ||
                       rowLineHeight ||
                       DEFAULT_ROW_HEIGHT

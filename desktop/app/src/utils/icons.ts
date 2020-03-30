@@ -90,7 +90,7 @@ export function buildIconURL(name: string, size: number, density: number) {
       if (!existing.includes(size)) {
         // Check if that icon actually exists!
         fetch(url)
-          .then(res => {
+          .then((res) => {
             if (res.status === 200 && !existing.includes(size)) {
               // the icon exists
               existing.push(size);
@@ -112,7 +112,7 @@ export function buildIconURL(name: string, size: number, density: number) {
               );
             }
           })
-          .catch(e => console.error(e));
+          .catch((e) => console.error(e));
       }
     } else {
       console.warn(
@@ -132,7 +132,7 @@ export function getIconURL(name: string, size: number, density: number) {
   let requestedSize = size;
   if (!AVAILABLE_SIZES.includes(size)) {
     // find the next largest size
-    const possibleSize = AVAILABLE_SIZES.find(size => {
+    const possibleSize = AVAILABLE_SIZES.find((size) => {
       return size > requestedSize;
     });
 
@@ -146,7 +146,7 @@ export function getIconURL(name: string, size: number, density: number) {
 
   if (!DENSITIES.includes(density)) {
     // find the next largest size
-    const possibleDensity = DENSITIES.find(scale => {
+    const possibleDensity = DENSITIES.find((scale) => {
       return scale > density;
     });
 

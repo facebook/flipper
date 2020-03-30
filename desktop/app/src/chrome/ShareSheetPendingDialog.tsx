@@ -33,7 +33,7 @@ const Uploading = styled(Text)({
   marginTop: 15,
 });
 
-export default function(props: {
+export default function (props: {
   statusMessage: string;
   statusUpdate: string | null;
   hideNavButtons?: boolean;

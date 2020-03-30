@@ -1,0 +1,55 @@
+{
+  "name": "flipper-babel-transformer",
+  "version": "0.2.0",
+  "description": "Babel transformer for Flipper plugins",
+  "repository": "facebook/flipper",
+  "main": "lib/index.js",
+  "flipper:source": "src",
+  "types": "lib/index.d.ts",
+  "license": "MIT",
+  "bugs": "https://github.com/facebook/flipper/issues",
+  "dependencies": {
+    "@babel/core": "^7.9.0",
+    "@babel/generator": "^7.9.0",
+    "@babel/parser": "^7.9.0",
+    "@babel/types": "^7.9.0",
+    "@babel/traverse": "^7.9.0",
+    "@babel/plugin-proposal-class-properties": "^7.8.3",
+    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.8.3",
+    "@babel/plugin-proposal-object-rest-spread": "^7.9.0",
+    "@babel/plugin-proposal-optional-chaining": "^7.9.0",
+    "@babel/plugin-transform-flow-strip-types": "^7.9.0",
+    "@babel/plugin-transform-modules-commonjs": "^7.9.0",
+    "@babel/plugin-transform-typescript": "^7.9.0",
+    "@babel/preset-env": "^7.9.0",
+    "@babel/preset-react": "^7.9.1",
+    "@types/fs-extra": "^8.1.0",
+    "@types/node": "^13.7.5",
+    "fs-extra": "^8.1.0",
+    "metro": "^0.58.0",
+    "tslib": "^1"
+  },
+  "devDependencies": {
+    "@types/jest": "25.1.4",
+    "jest": "^25.1.0",
+    "prettier": "^2.0.0",
+    "ts-jest": "^25.2.1",
+    "ts-node": "^8",
+    "typescript": "^3.7.2"
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "prepack": "rm -rf lib && tsc -b",
+    "prepublishOnly": "yarn test",
+    "test": "jest --config jestconfig.json"
+  },
+  "files": [
+    "lib/**/*",
+    "src/**/*"
+  ],
+  "homepage": "https://github.com/facebook/flipper",
+  "keywords": [
+    "Flipper"
+  ],
+  "author": "Facebook, Inc"
+}

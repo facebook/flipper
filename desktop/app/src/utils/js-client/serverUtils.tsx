@@ -169,12 +169,12 @@ export class JSClientFlipperConnection<M>
   }
 
   connectionStatus(): Flowable<ConnectionStatus> {
-    return new Flowable<ConnectionStatus>(subscriber => {
+    return new Flowable<ConnectionStatus>((subscriber) => {
       subscriber.onSubscribe({
         cancel: () => {
           this.connStatusSubscribers.delete(subscriber);
         },
-        request: _ => {
+        request: (_) => {
           this.connStatusSubscribers.add(subscriber);
           subscriber.onNext(this.connStatus);
         },
@@ -184,7 +184,7 @@ export class JSClientFlipperConnection<M>
 
   close(): void {
     this.connStatus = {kind: 'CLOSED'};
-    this.connStatusSubscribers.forEach(subscriber => {
+    this.connStatusSubscribers.forEach((subscriber) => {
       subscriber.onNext(this.connStatus);
     });
   }
@@ -199,7 +199,7 @@ export class JSClientFlipperConnection<M>
 
   // TODO: fully implement and return actual result
   requestResponse(payload: Payload<string, M>): Single<Payload<string, M>> {
-    return new Single(subscriber => {
+    return new Single((subscriber) => {
       const method =
         payload.data != null ? JSON.parse(payload.data).method : 'not-defined';
       if (method != 'getPlugins') {

@@ -41,7 +41,7 @@ export function decodeBody(container: Request | Response): string {
 }
 
 function decompress(body: string): string {
-  const charArray = body.split('').map(x => x.charCodeAt(0));
+  const charArray = body.split('').map((x) => x.charCodeAt(0));
 
   const byteArray = new Uint8Array(charArray);
 

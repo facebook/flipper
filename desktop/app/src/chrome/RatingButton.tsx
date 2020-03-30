@@ -41,7 +41,7 @@ class PredefinedComment extends Component<{
   selected: boolean;
   onClick: (_: unknown) => unknown;
 }> {
-  static Container = styled.div<{selected: boolean}>(props => {
+  static Container = styled.div<{selected: boolean}>((props) => {
     return {
       border: '1px solid #f2f3f5',
       cursor: 'pointer',
@@ -151,9 +151,9 @@ class FeedbackComponent extends Component<
     const selectedPredefinedComments: Array<string> = Object.entries(
       this.state.predefinedComments,
     )
-      .map(x => ({comment: x[0], enabled: x[1]}))
-      .filter(x => x.enabled)
-      .map(x => x.comment);
+      .map((x) => ({comment: x[0], enabled: x[1]}))
+      .filter((x) => x.enabled)
+      .map((x) => x.comment);
     const currentRating = this.state.rating;
     if (currentRating) {
       this.props.submitComment(
@@ -189,9 +189,11 @@ class FeedbackComponent extends Component<
           }}>
           <Glyph
             name={
-              (this.state.hoveredRating
-              ? index < this.state.hoveredRating
-              : index < (this.state.rating || 0))
+              (
+                this.state.hoveredRating
+                  ? index < this.state.hoveredRating
+                  : index < (this.state.rating || 0)
+              )
                 ? 'star'
                 : 'star-outline'
             }
@@ -236,8 +238,8 @@ class FeedbackComponent extends Component<
               style={{height: 30, width: '100%'}}
               placeholder={this.props.promptData.commentPlaceholder}
               value={this.state.comment}
-              onChange={e => this.setState({comment: e.target.value})}
-              onKeyDown={e =>
+              onChange={(e) => this.setState({comment: e.target.value})}
+              onKeyDown={(e) =>
                 e.key == 'Enter' && this.onCommentSubmitted(this.state.comment)
               }
               autoFocus={true}
@@ -296,7 +298,7 @@ class RatingButton extends Component<PropsFromState, State> {
   constructor(props: PropsFromState) {
     super(props);
     if (GK.get('flipper_rating')) {
-      UserFeedback.getPrompt().then(prompt => {
+      UserFeedback.getPrompt().then((prompt) => {
         this.setState({promptData: prompt});
         setTimeout(this.triggerPopover.bind(this), 30000);
       });

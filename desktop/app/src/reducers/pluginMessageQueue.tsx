@@ -67,7 +67,7 @@ export default function reducer(
 
     case 'CLEAR_MESSAGE_QUEUE': {
       const {pluginKey, amount} = action.payload;
-      return produce(state, draft => {
+      return produce(state, (draft) => {
         const messages = draft[pluginKey];
         if (messages) {
           messages.splice(0, amount);

@@ -24,6 +24,7 @@ import GK from '../fb-stubs/GK';
 import {deconstructPluginKey} from '../utils/clientUtils';
 import NotificationScreen from '../chrome/NotificationScreen';
 import {getPluginTitle} from '../utils/pluginUtils';
+import {sideEffect} from '../utils/sideEffect';
 
 type NotificationEvents = 'show' | 'click' | 'close' | 'reply' | 'action';
 const NOTIFICATION_THROTTLE = 5 * 1000; // in milliseconds
@@ -84,110 +85,114 @@ export default (store: Store, logger: Logger) => {
     },
   );
 
-  store.subscribe(() => {
-    const {notifications, pluginStates} = store.getState();
+  sideEffect(
+    store,
+    {name: 'notifications', throttleMs: 500},
+    ({notifications, pluginStates, plugins}) => ({
+      notifications,
+      pluginStates,
+      devicePlugins: plugins.devicePlugins,
+      clientPlugins: plugins.clientPlugins,
+    }),
+    ({notifications, pluginStates, devicePlugins, clientPlugins}, store) => {
+      function getPlugin(name: string) {
+        return devicePlugins.get(name) ?? clientPlugins.get(name);
+      }
 
-    const clientPlugins: Map<string, typeof FlipperPlugin> = store.getState()
-      .plugins.clientPlugins;
+      Object.keys(pluginStates).forEach((key) => {
+        if (knownPluginStates.get(key) !== pluginStates[key]) {
+          knownPluginStates.set(key, pluginStates[key]);
+          const plugin = deconstructPluginKey(key);
+          const pluginName = plugin.pluginName;
+          const client = plugin.client;
 
-    const devicePlugins: Map<
-      string,
-      typeof FlipperDevicePlugin
-    > = store.getState().plugins.devicePlugins;
+          if (!pluginName) {
+            return;
+          }
 
-    const pluginMap: Map<
-      string,
-      typeof FlipperPlugin | typeof FlipperDevicePlugin
-    > = new Map<string, typeof FlipperDevicePlugin | typeof FlipperPlugin>([
-      ...clientPlugins,
-      ...devicePlugins,
-    ]);
-
-    Object.keys(pluginStates).forEach(key => {
-      if (knownPluginStates.get(key) !== pluginStates[key]) {
-        knownPluginStates.set(key, pluginStates[key]);
-        const plugin = deconstructPluginKey(key);
-        const pluginName = plugin.pluginName;
-        const client = plugin.client;
-
-        if (!pluginName) {
-          return;
-        }
-
-        const persistingPlugin:
-          | undefined
-          | typeof FlipperPlugin
-          | typeof FlipperDevicePlugin = pluginMap.get(pluginName);
-        if (persistingPlugin && persistingPlugin.getActiveNotifications) {
-          store.dispatch(
-            setActiveNotifications({
-              notifications: persistingPlugin.getActiveNotifications(
+          const persistingPlugin:
+            | undefined
+            | typeof FlipperPlugin
+            | typeof FlipperDevicePlugin = getPlugin(pluginName);
+          if (persistingPlugin && persistingPlugin.getActiveNotifications) {
+            try {
+              const notifications = persistingPlugin.getActiveNotifications(
                 pluginStates[key],
-              ),
-              client,
-              pluginId: pluginName,
-            }),
-          );
+              );
+              store.dispatch(
+                setActiveNotifications({
+                  notifications,
+                  client,
+                  pluginId: pluginName,
+                }),
+              );
+            } catch (e) {
+              console.error(
+                'Failed to compute notifications for plugin ' + pluginName,
+                e,
+              );
+            }
+          }
         }
-      }
-    });
+      });
 
-    const {
-      activeNotifications,
-      blacklistedPlugins,
-      blacklistedCategories,
-    } = notifications;
+      const {
+        activeNotifications,
+        blacklistedPlugins,
+        blacklistedCategories,
+      } = notifications;
 
-    activeNotifications.forEach((n: PluginNotification) => {
-      if (
-        !isHeadless() &&
-        store.getState().connections.selectedPlugin !== 'notifications' &&
-        !knownNotifications.has(n.notification.id) &&
-        blacklistedPlugins.indexOf(n.pluginId) === -1 &&
-        (!n.notification.category ||
-          blacklistedCategories.indexOf(n.notification.category) === -1)
-      ) {
-        const prevNotificationTime: number =
-          lastNotificationTime.get(n.pluginId) || 0;
-        lastNotificationTime.set(n.pluginId, new Date().getTime());
-        knownNotifications.add(n.notification.id);
-
+      activeNotifications.forEach((n: PluginNotification) => {
         if (
-          new Date().getTime() - prevNotificationTime <
-          NOTIFICATION_THROTTLE
+          !isHeadless() &&
+          store.getState().connections.selectedPlugin !== 'notifications' &&
+          !knownNotifications.has(n.notification.id) &&
+          blacklistedPlugins.indexOf(n.pluginId) === -1 &&
+          (!n.notification.category ||
+            blacklistedCategories.indexOf(n.notification.category) === -1)
         ) {
-          // Don't send a notification if the plugin has sent a notification
-          // within the NOTIFICATION_THROTTLE.
-          return;
+          const prevNotificationTime: number =
+            lastNotificationTime.get(n.pluginId) || 0;
+          lastNotificationTime.set(n.pluginId, new Date().getTime());
+          knownNotifications.add(n.notification.id);
+
+          if (
+            new Date().getTime() - prevNotificationTime <
+            NOTIFICATION_THROTTLE
+          ) {
+            // Don't send a notification if the plugin has sent a notification
+            // within the NOTIFICATION_THROTTLE.
+            return;
+          }
+          const plugin = getPlugin(n.pluginId);
+          ipcRenderer.send('sendNotification', {
+            payload: {
+              title: n.notification.title,
+              body: textContent(n.notification.message),
+              actions: [
+                {
+                  type: 'button',
+                  text: 'Show',
+                },
+                {
+                  type: 'button',
+                  text: 'Hide similar',
+                },
+                {
+                  type: 'button',
+                  text: `Hide all ${
+                    plugin != null ? getPluginTitle(plugin) : ''
+                  }`,
+                },
+              ],
+              closeButtonText: 'Hide',
+            },
+            closeAfter: 10000,
+            pluginNotification: n,
+          });
+          logger.track('usage', 'native-notification', n.notification);
         }
-        const plugin = pluginMap.get(n.pluginId);
-        ipcRenderer.send('sendNotification', {
-          payload: {
-            title: n.notification.title,
-            body: textContent(n.notification.message),
-            actions: [
-              {
-                type: 'button',
-                text: 'Show',
-              },
-              {
-                type: 'button',
-                text: 'Hide similar',
-              },
-              {
-                type: 'button',
-                text: `Hide all ${
-                  plugin != null ? getPluginTitle(plugin) : ''
-                }`,
-              },
-            ],
-            closeButtonText: 'Hide',
-          },
-          closeAfter: 10000,
-          pluginNotification: n,
-        });
-        logger.track('usage', 'native-notification', n.notification);
-      }
-    });
-  });
+      });
+    },
+  );
 };

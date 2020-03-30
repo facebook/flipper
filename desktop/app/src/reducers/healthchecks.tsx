@@ -82,24 +82,24 @@ export type HealthcheckReport = {
 
 function recomputeHealthcheckStatus(draft: State): void {
   draft.healthcheckReport.result = computeAggregatedResult(
-    Object.values(draft.healthcheckReport.categories).map(c => c.result),
+    Object.values(draft.healthcheckReport.categories).map((c) => c.result),
   );
 }
 
 function computeAggregatedResult(
   results: HealthcheckResult[],
 ): HealthcheckResult {
-  return results.some(r => r.status === 'IN_PROGRESS')
+  return results.some((r) => r.status === 'IN_PROGRESS')
     ? {status: 'IN_PROGRESS'}
-    : results.every(r => r.status === 'SUCCESS')
+    : results.every((r) => r.status === 'SUCCESS')
     ? {status: 'SUCCESS'}
-    : results.some(r => r.status === 'FAILED' && !r.isAcknowledged)
+    : results.some((r) => r.status === 'FAILED' && !r.isAcknowledged)
     ? {status: 'FAILED', isAcknowledged: false}
-    : results.some(r => r.status === 'FAILED')
+    : results.some((r) => r.status === 'FAILED')
     ? {status: 'FAILED', isAcknowledged: true}
-    : results.some(r => r.status === 'WARNING' && !r.isAcknowledged)
+    : results.some((r) => r.status === 'WARNING' && !r.isAcknowledged)
     ? {status: 'WARNING', isAcknowledged: false}
-    : results.some(r => r.status === 'WARNING')
+    : results.some((r) => r.status === 'WARNING')
     ? {status: 'WARNING', isAcknowledged: true}
     : {status: 'SKIPPED'};
 }
@@ -158,7 +158,7 @@ const start = produce((draft: State, healthchecks: Healthchecks) => {
             result: {status: 'IN_PROGRESS'},
             label: category.label,
             checks: createDict<HealthcheckReportItem>(
-              category.healthchecks.map(check => [
+              category.healthchecks.map((check) => [
                 check.key,
                 {
                   key: check.key,
@@ -176,11 +176,11 @@ const start = produce((draft: State, healthchecks: Healthchecks) => {
 
 const finish = produce((draft: State) => {
   Object.values(draft.healthcheckReport.categories)
-    .filter(cat => cat.result.status !== 'SKIPPED')
-    .forEach(cat => {
+    .filter((cat) => cat.result.status !== 'SKIPPED')
+    .forEach((cat) => {
       cat.result.message = undefined;
       cat.result = computeAggregatedResult(
-        Object.values(cat.checks).map(c => c.result),
+        Object.values(cat.checks).map((c) => c.result),
       );
     });
   recomputeHealthcheckStatus(draft);
@@ -191,18 +191,18 @@ const finish = produce((draft: State) => {
 
 const acknowledge = produce((draft: State) => {
   draft.acknowledgedProblems = ([] as string[]).concat(
-    ...Object.values(draft.healthcheckReport.categories).map(cat =>
+    ...Object.values(draft.healthcheckReport.categories).map((cat) =>
       Object.values(cat.checks)
         .filter(
-          chk =>
+          (chk) =>
             chk.result.status === 'FAILED' || chk.result.status === 'WARNING',
         )
-        .map(chk => chk.key),
+        .map((chk) => chk.key),
     ),
   );
-  Object.values(draft.healthcheckReport.categories).forEach(cat => {
+  Object.values(draft.healthcheckReport.categories).forEach((cat) => {
     cat.result.isAcknowledged = true;
-    Object.values(cat.checks).forEach(chk => {
+    Object.values(cat.checks).forEach((chk) => {
       chk.result.isAcknowledged = true;
     });
   });
@@ -211,9 +211,9 @@ const acknowledge = produce((draft: State) => {
 
 function setAcknowledgedProblemsToEmpty(draft: State) {
   draft.acknowledgedProblems = [];
-  Object.values(draft.healthcheckReport.categories).forEach(cat => {
+  Object.values(draft.healthcheckReport.categories).forEach((cat) => {
     cat.result.isAcknowledged = false;
-    Object.values(cat.checks).forEach(chk => {
+    Object.values(cat.checks).forEach((chk) => {
       chk.result.isAcknowledged = false;
     });
   });

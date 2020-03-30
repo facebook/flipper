@@ -29,9 +29,9 @@ export default class JsonFileStorage {
   private parseFile(): Promise<any> {
     return promises
       .readFile(this.filepath)
-      .then(buffer => buffer.toString())
+      .then((buffer) => buffer.toString())
       .then(this.deserializeValue)
-      .catch(e => {
+      .catch((e) => {
         console.warn(
           `Failed to read settings file: "${this.filepath}". ${e}. Replacing file with default settings.`,
         );
@@ -50,7 +50,7 @@ export default class JsonFileStorage {
   // Not thread-safe.
   setItem(_key: string, value: any, callback?: (_: any) => any): Promise<any> {
     const originalValue = this.parseFile();
-    const writePromise = originalValue.then(_ =>
+    const writePromise = originalValue.then((_) =>
       this.writeContents(this.serializeValue(value)),
     );
 
@@ -62,7 +62,7 @@ export default class JsonFileStorage {
 
   removeItem(_key: string, callback?: () => any): Promise<void> {
     return this.writeContents(prettyStringify({}))
-      .then(_ => callback && callback())
+      .then((_) => callback && callback())
       .then(() => {});
   }
 
@@ -89,7 +89,7 @@ export default class JsonFileStorage {
   writeContents(content: string): Promise<void> {
     const dir = path.dirname(this.filepath);
     return promisify(exists)(dir)
-      .then(dirExists =>
+      .then((dirExists) =>
         dirExists ? Promise.resolve() : promises.mkdir(dir, {recursive: true}),
       )
       .then(() => promises.writeFile(this.filepath, content));

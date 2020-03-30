@@ -71,6 +71,9 @@ android {
         testImplementation deps.testRules
         testImplementation deps.hamcrest
         testImplementation deps.junit
+
+        api 'com.parse.bolts:bolts-tasks:1.4.0'
+        api 'com.parse.bolts:bolts-applinks:1.4.0'
     }
 }
 

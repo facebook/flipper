@@ -34,7 +34,7 @@ export default class Watchman {
       this.client!.once('error', onError);
       this.client!.capabilityCheck(
         {optional: [], required: ['relative_root']},
-        error => {
+        (error) => {
           if (error) {
             onError(error);
             return;
@@ -83,7 +83,10 @@ export default class Watchman {
             expression: [
               'allof',
               ['not', ['type', 'd']],
-              ...options!.excludes.map(e => ['not', ['match', e, 'wholename']]),
+              ...options!.excludes.map((e) => [
+                'not',
+                ['match', e, 'wholename'],
+              ]),
             ],
             fields: ['name'],
             since: clock,
@@ -94,11 +97,11 @@ export default class Watchman {
 
           const id = uuid();
 
-          this.client!.command(['subscribe', this.watch, id, sub], error => {
+          this.client!.command(['subscribe', this.watch, id, sub], (error) => {
             if (error) {
               return reject(error);
             }
-            this.client!.on('subscription', resp => {
+            this.client!.on('subscription', (resp) => {
               if (resp.subscription !== id || !resp.files) {
                 return;
               }

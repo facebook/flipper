@@ -43,7 +43,7 @@ export const appMatchPatternsToAutoCompleteProvider = (
     icon: 'mobile',
     matchPatterns: new Map<string, URI>(),
   };
-  appMatchPatterns.forEach(appMatchPattern => {
+  appMatchPatterns.forEach((appMatchPattern) => {
     const matchPattern =
       appMatchPattern.className + ' - ' + appMatchPattern.pattern;
     autoCompleteProvider.matchPatterns.set(

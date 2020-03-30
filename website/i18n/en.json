@@ -12,6 +12,9 @@
       "extending/arch": {
         "title": "Architecture"
       },
+      "extending/client-plugin-lifecycle": {
+        "title": "Client Plugin Lifecycle"
+      },
       "extending/create-plugin": {
         "title": "Client Plugin API"
       },
@@ -86,6 +89,9 @@
       },
       "features/network-plugin": {
         "title": "Network"
+      },
+      "features/react-native": {
+        "title": "React Native Support"
       },
       "features/sandbox-plugin": {
         "title": "Sandbox"

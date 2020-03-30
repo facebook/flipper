@@ -21,7 +21,7 @@ const IconContainer = styled.div({
 });
 IconContainer.displayName = 'ButtonGroupChain:IconContainer';
 
-const ButtonGroupChainContainer = styled.div<{iconSize: number}>(props => ({
+const ButtonGroupChainContainer = styled.div<{iconSize: number}>((props) => ({
   display: 'inline-flex',
   marginLeft: 10,
   '&:first-child>*:not(:first-child):nth-child(odd)': {

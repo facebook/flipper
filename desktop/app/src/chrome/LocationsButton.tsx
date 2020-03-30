@@ -49,12 +49,7 @@ const shortenText = (text: string, MAX_CHARACTERS = 30): string => {
   if (text.length <= MAX_CHARACTERS) {
     return text;
   } else {
-    return (
-      text
-        .split('')
-        .slice(0, MAX_CHARACTERS)
-        .join('') + '...'
-    );
+    return text.split('').slice(0, MAX_CHARACTERS).join('') + '...';
   }
 };
 
@@ -94,7 +89,7 @@ class LocationsButton extends Component<Props, State> {
   };
 
   updateBookmarks = () => {
-    readBookmarksFromDB().then(bookmarksMap => {
+    readBookmarksFromDB().then((bookmarksMap) => {
       const bookmarks: Array<Bookmark> = [];
       bookmarksMap.forEach((bookmark: Bookmark) => {
         bookmarks.push(bookmark);

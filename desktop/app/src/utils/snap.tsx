@@ -89,8 +89,8 @@ export function maybeSnapLeft(
   // │A│B│
   // └─┴─┘
   const snapRight = getPossibleSnappedPosition(windows, {
-    getGap: win => win.left - (props.width + left),
-    getNew: win => win.left - props.width,
+    getGap: (win) => win.left - (props.width + left),
+    getNew: (win) => win.left - props.width,
   });
   if (snapRight != null) {
     return snapRight;
@@ -101,8 +101,8 @@ export function maybeSnapLeft(
   // │B│A│
   // └─┴─┘
   const snapLeft = getPossibleSnappedPosition(windows, {
-    getGap: win => left - (win.left + win.width),
-    getNew: win => win.left + win.width,
+    getGap: (win) => left - (win.left + win.width),
+    getNew: (win) => win.left + win.width,
   });
   if (snapLeft != null) {
     return snapLeft;
@@ -122,8 +122,8 @@ export function maybeSnapTop(
   // │ │B│
   // └─┴─┘
   const snapBottom2 = getPossibleSnappedPosition(windows, {
-    getGap: win => top - win.top - win.height,
-    getNew: win => win.top + win.height,
+    getGap: (win) => top - win.top - win.height,
+    getNew: (win) => win.top + win.height,
   });
   if (snapBottom2 != null) {
     return snapBottom2;
@@ -136,8 +136,8 @@ export function maybeSnapTop(
   // │A│
   // └─┘
   const snapBottom = getPossibleSnappedPosition(windows, {
-    getGap: win => top - win.top - win.height,
-    getNew: win => win.top + win.height,
+    getGap: (win) => top - win.top - win.height,
+    getNew: (win) => win.top + win.height,
   });
   if (snapBottom != null) {
     return snapBottom;
@@ -149,8 +149,8 @@ export function maybeSnapTop(
   // │ ├─┘
   // └─┘
   const snapTop = getPossibleSnappedPosition(windows, {
-    getGap: win => top - win.top,
-    getNew: win => win.top,
+    getGap: (win) => top - win.top,
+    getNew: (win) => win.top,
   });
   if (snapTop != null) {
     return snapTop;

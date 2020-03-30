@@ -45,7 +45,7 @@ OrderableContainer.displayName = 'Orderable:OrderableContainer';
 
 const OrderableItemContainer = styled.div<{
   orientation: 'vertical' | 'horizontal';
-}>(props => ({
+}>((props) => ({
   display: props.orientation === 'vertical' ? 'block' : 'inline-block',
 }));
 OrderableItemContainer.displayName = 'Orderable:OrderableItemContainer';
@@ -407,7 +407,7 @@ export default class Orderable extends React.Component<
       <OrderableContainer
         className={this.props.className}
         ref={this.setContainerRef}>
-        {order.map(key => {
+        {order.map((key) => {
           const item = items[key];
           if (item) {
             return (

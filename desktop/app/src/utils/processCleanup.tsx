@@ -25,15 +25,15 @@ export async function killOrphanedInstrumentsProcesses() {
     ?.toString()
     .split('\n')
     .filter(notNull)
-    .map(a => /^(\S+)\s+1\s+(\d+)\s+(.+)$/.exec(a))
+    .map((a) => /^(\S+)\s+1\s+(\d+)\s+(.+)$/.exec(a))
     .filter(notNull)
-    .filter(m => m[1] === process.env.USER)
+    .filter((m) => m[1] === process.env.USER)
     .filter(
-      m =>
+      (m) =>
         m[3] &&
-        ['/instruments', '/DTServiceHub'].some(name => m[3].endsWith(name)),
+        ['/instruments', '/DTServiceHub'].some((name) => m[3].endsWith(name)),
     )
-    .forEach(m => {
+    .forEach((m) => {
       const pid = m[2];
       console.debug(`Killing orphaned Instruments process: ${pid}`);
       kill(parseInt(pid, 10), 'SIGKILL');

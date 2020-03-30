@@ -91,7 +91,7 @@ class ScreenCaptureButtons extends Component<Props, State> {
     if (!selectedDevice) {
       return;
     }
-    const path = await selectedDevice.stopScreenCapture().catch(e => {
+    const path = await selectedDevice.stopScreenCapture().catch((e) => {
       console.error(e);
     });
     path ? openFile(path) : 0;
@@ -107,7 +107,7 @@ class ScreenCaptureButtons extends Component<Props, State> {
       this.setState({
         recording: true,
       });
-      this.startRecording().catch(e => {
+      this.startRecording().catch((e) => {
         this.setState({
           recording: false,
         });

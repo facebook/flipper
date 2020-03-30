@@ -22,7 +22,7 @@ public abstract class ErrorReportingRunnable implements Runnable {
   public final void run() {
     try {
       runOrThrow();
-    } catch (Exception e) {
+    } catch (Throwable e) {
       if (mConnection != null) {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);

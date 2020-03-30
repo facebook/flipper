@@ -26,6 +26,7 @@ import invariant from 'invariant';
 import {flipperRecorderAddEvent} from './utils/pluginStateRecorder';
 import {getPluginKey} from './utils/pluginUtils';
 import {processMessageLater} from './utils/messageQueue';
+import {sideEffect} from './utils/sideEffect';
 
 type Plugins = Array<string>;
 
@@ -116,7 +117,7 @@ export default class Client extends EventEmitter {
   store: Store;
   activePlugins: Set<string>;
   device: Promise<BaseDevice>;
-  _deviceResolve: (device: BaseDevice) => void = _ => {};
+  _deviceResolve: (device: BaseDevice) => void = (_) => {};
   _deviceSet: false | BaseDevice = false;
   logger: Logger;
   lastSeenDeviceList: Array<BaseDevice>;
@@ -194,7 +195,7 @@ export default class Client extends EventEmitter {
         const device = this.store
           .getState()
           .connections.devices.find(
-            device => device.serial === this.query.device_id,
+            (device) => device.serial === this.query.device_id,
           );
         if (device) {
           resolve(device);
@@ -207,24 +208,28 @@ export default class Client extends EventEmitter {
           console.error(error);
           reject(error);
         }, 5000);
-        unsubscribe = this.store.subscribe(() => {
-          const newDeviceList = this.store.getState().connections.devices;
-          if (newDeviceList === this.lastSeenDeviceList) {
-            return;
-          }
-          this.lastSeenDeviceList = this.store.getState().connections.devices;
-          const matchingDevice = newDeviceList.find(
-            device => device.serial === this.query.device_id,
-          );
-          if (matchingDevice) {
-            clearTimeout(timeout);
-            resolve(matchingDevice);
-            unsubscribe();
-          }
-        });
+        unsubscribe = sideEffect(
+          this.store,
+          {name: 'waitForDevice', throttleMs: 100},
+          (state) => state.connections.devices,
+          (newDeviceList) => {
+            if (newDeviceList === this.lastSeenDeviceList) {
+              return;
+            }
+            this.lastSeenDeviceList = newDeviceList;
+            const matchingDevice = newDeviceList.find(
+              (device) => device.serial === this.query.device_id,
+            );
+            if (matchingDevice) {
+              clearTimeout(timeout);
+              resolve(matchingDevice);
+              unsubscribe();
+            }
+          },
+        );
       }),
       'client-setMatchingDevice',
-    ).then(device => {
+    ).then((device) => {
       this._deviceSet = device;
       this._deviceResolve(device);
     });
@@ -244,10 +249,10 @@ export default class Client extends EventEmitter {
     const plugins = await this.rawCall<{plugins: Plugins}>(
       'getPlugins',
       false,
-    ).then(data => data.plugins);
+    ).then((data) => data.plugins);
     this.plugins = plugins;
     const nativeplugins = plugins
-      .map(plugin => /_nativeplugin_([^_]+)_([^_]+)/.exec(plugin))
+      .map((plugin) => /_nativeplugin_([^_]+)_([^_]+)/.exec(plugin))
       .filter(notNull)
       .map(([id, type, title]) => {
         // TODO put this in another component, and make the "types" registerable
@@ -318,7 +323,7 @@ export default class Client extends EventEmitter {
           }: ${error.message} + \nDevice Stack Trace: ${error.stacktrace}`,
           'deviceError',
         );
-        this.device.then(device => handleError(this.store, device, error));
+        this.device.then((device) => handleError(this.store, device, error));
       } else if (method === 'refreshPlugins') {
         this.refreshPlugins();
       } else if (method === 'execute') {
@@ -389,7 +394,7 @@ export default class Client extends EventEmitter {
       reject(data.error);
       const {error} = data;
       if (error) {
-        this.device.then(device => handleError(this.store, device, error));
+        this.device.then((device) => handleError(this.store, device, error));
       }
     } else {
       // ???
@@ -466,7 +471,7 @@ export default class Client extends EventEmitter {
           this.connection
             .requestResponse({data: JSON.stringify(data)})
             .subscribe({
-              onComplete: payload => {
+              onComplete: (payload) => {
                 if (!fromPlugin || this.isAcceptingMessagesFromPlugin(plugin)) {
                   const logEventName = this.getLogEventName(data);
                   this.logger.trackTimeSince(mark, logEventName);
@@ -478,7 +483,7 @@ export default class Client extends EventEmitter {
                 }
               },
               // Open fresco then layout and you get errors because responses come back after deinit.
-              onError: e => {
+              onError: (e) => {
                 if (this.isAcceptingMessagesFromPlugin(plugin)) {
                   reject(e);
                 }
@@ -555,8 +560,9 @@ export default class Client extends EventEmitter {
   send(api: string, method: string, params?: Object): void {
     if (!isProduction()) {
       console.warn(
-        `${api}:${method ||
-          ''} client.send() is deprecated. Please use call() instead so you can handle errors.`,
+        `${api}:${
+          method || ''
+        } client.send() is deprecated. Please use call() instead so you can handle errors.`,
       );
     }
     return this.rawSend('execute', {api, method, params});

@@ -286,7 +286,7 @@ class DoctorSheet extends Component<Props, State> {
   }
 
   onAcknowledgeOnCloseChanged(acknowledge: boolean): void {
-    this.setState(prevState => {
+    this.setState((prevState) => {
       return {
         ...prevState,
         acknowledgeOnClose: acknowledge,
@@ -304,7 +304,9 @@ class DoctorSheet extends Component<Props, State> {
 
   getCheckMessage(checkKey: string): string {
     for (const cat of Object.values(this.props.healthcheckReport.categories)) {
-      const check = Object.values(cat.checks).find(chk => chk.key === checkKey);
+      const check = Object.values(cat.checks).find(
+        (chk) => chk.key === checkKey,
+      );
       if (check) {
         return check.result.message || '';
       }
@@ -328,7 +330,7 @@ class DoctorSheet extends Component<Props, State> {
                     />
                     {category.result.status !== 'SKIPPED' && (
                       <CategoryContainer>
-                        {Object.values(category.checks).map(check => (
+                        {Object.values(category.checks).map((check) => (
                           <HealthcheckDisplay
                             key={check.key}
                             selected={check.key === this.state.selectedCheckKey}

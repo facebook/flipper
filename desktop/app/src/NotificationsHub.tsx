@@ -108,16 +108,18 @@ class NotificationsTable extends Component<Props & SearchableProps, State> {
     if (this.props.filters.length !== prevProps.filters.length) {
       this.props.updatePluginBlacklist(
         this.props.filters
-          .filter(f => f.type === 'exclude' && f.key.toLowerCase() === 'plugin')
-          .map(f => String(f.value)),
+          .filter(
+            (f) => f.type === 'exclude' && f.key.toLowerCase() === 'plugin',
+          )
+          .map((f) => String(f.value)),
       );
 
       this.props.updateCategoryBlacklist(
         this.props.filters
           .filter(
-            f => f.type === 'exclude' && f.key.toLowerCase() === 'category',
+            (f) => f.type === 'exclude' && f.key.toLowerCase() === 'category',
           )
-          .map(f => String(f.value)),
+          .map((f) => String(f.value)),
       );
     }
 
@@ -162,7 +164,7 @@ class NotificationsTable extends Component<Props & SearchableProps, State> {
 
     // filter plugins
     const blacklistedPlugins = new Set(
-      this.props.blacklistedPlugins.map(p => p.toLowerCase()),
+      this.props.blacklistedPlugins.map((p) => p.toLowerCase()),
     );
     if (blacklistedPlugins.has(n.pluginId.toLowerCase())) {
       return false;
@@ -172,7 +174,7 @@ class NotificationsTable extends Component<Props & SearchableProps, State> {
     const {category} = n.notification;
     if (category) {
       const blacklistedCategories = new Set(
-        this.props.blacklistedCategories.map(p => p.toLowerCase()),
+        this.props.blacklistedCategories.map((p) => p.toLowerCase()),
       );
       if (blacklistedCategories.has(category.toLowerCase())) {
         return false;
@@ -320,7 +322,7 @@ type NotificationBoxProps = {
   severity: keyof typeof SEVERITY_COLOR_MAP;
 };
 
-const NotificationBox = styled(FlexRow)<NotificationBoxProps>(props => ({
+const NotificationBox = styled(FlexRow)<NotificationBoxProps>((props) => ({
   backgroundColor: props.inactive ? 'transparent' : colors.white,
   opacity: props.inactive ? 0.5 : 1,
   alignItems: 'flex-start',
@@ -360,7 +362,7 @@ const Title = styled.div({
 });
 
 const NotificationContent = styled(FlexColumn)<{isSelected?: boolean}>(
-  props => ({
+  (props) => ({
     marginLeft: 6,
     marginRight: 10,
     flexGrow: 1,

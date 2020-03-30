@@ -37,7 +37,7 @@ const NonWrappingText = styled(Text)({
 });
 NonWrappingText.displayName = 'TypeBasedValueRenderer:NonWrappingText';
 
-const BooleanValue = styled(NonWrappingText)<{active?: boolean}>(props => ({
+const BooleanValue = styled(NonWrappingText)<{active?: boolean}>((props) => ({
   '&::before': {
     content: '""',
     display: 'inline-block',

@@ -194,7 +194,7 @@ export function computeUsageSummary(
 
   return intervals.reduce<UsageSummary>(
     (acc: UsageSummary, x: UsageInterval) =>
-      produce(acc, draft => {
+      produce(acc, (draft) => {
         draft.total.focusedTime += x.focused ? x.length : 0;
         draft.total.unfocusedTime += x.focused ? 0 : x.length;
         const pluginName = x.plugin ?? 'none';

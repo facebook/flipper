@@ -136,7 +136,7 @@ const SidebarSection: React.FC<{
   return (
     <>
       <SidebarSectionButton
-        onClick={() => setCollapsed(s => !s)}
+        onClick={() => setCollapsed((s) => !s)}
         level={level}
         color={color}
         collapsed={collapsed}>
@@ -212,7 +212,7 @@ class MainSidebar2 extends PureComponent<Props, State> {
       <Sidebar position="left" width={250} backgroundColor={colors.light02}>
         <Plugins>
           {devices.length ? (
-            devices.map(device => this.renderDevice(device))
+            devices.map((device) => this.renderDevice(device))
           ) : (
             <NoDevices />
           )}
@@ -234,7 +234,7 @@ class MainSidebar2 extends PureComponent<Props, State> {
       selectedDevice,
     } = this.props;
     const clients = getAvailableClients(device, this.props.clients);
-    const devicePluginsItems = device.devicePlugins.map(pluginName => {
+    const devicePluginsItems = device.devicePlugins.map((pluginName) => {
       const plugin = this.props.devicePlugins.get(pluginName)!;
       return (
         <PluginSidebarListItem
@@ -272,7 +272,7 @@ class MainSidebar2 extends PureComponent<Props, State> {
         ) : (
           <div style={{marginTop: 6}}>{devicePluginsItems}</div>
         )}
-        {clients.map(client => (
+        {clients.map((client) => (
           <PluginList
             device={device}
             key={client.id}
@@ -293,7 +293,7 @@ class MainSidebar2 extends PureComponent<Props, State> {
     const {uninitializedClients} = this.props;
     return uninitializedClients.length > 0 ? (
       <SidebarSection title="Connecting..." key="unitializedClients" level={1}>
-        {uninitializedClients.map(entry => (
+        {uninitializedClients.map((entry) => (
           <SidebarSection
             color={getColorByApp(entry.client.appName)}
             key={JSON.stringify(entry.client)}
@@ -387,14 +387,14 @@ function groupPluginsByCategory(plugins: FlipperPlugins): PluginsByCategory {
   const sortedPlugins = plugins.slice().sort(sortPluginsByName);
   const byCategory: {[cat: string]: FlipperPlugins} = {};
   const res: PluginsByCategory = [];
-  sortedPlugins.forEach(plugin => {
+  sortedPlugins.forEach((plugin) => {
     const category = plugin.category || '';
     (byCategory[category] || (byCategory[category] = [])).push(plugin);
   });
   // Sort categories
   Object.keys(byCategory)
     .sort()
-    .forEach(category => {
+    .forEach((category) => {
       res.push([category, byCategory[category]]);
     });
   return res;
@@ -464,7 +464,7 @@ const PluginList = memo(function PluginList({
   // client is a mutable structure, so we need the event emitter to detect the addition of plugins....
   const [_, setPluginsChanged] = useState(0);
   useEffect(() => {
-    const listener = () => setPluginsChanged(v => v + 1);
+    const listener = () => setPluginsChanged((v) => v + 1);
     client.on('plugins-change', listener);
     return () => {
       client.off('plugins-change', listener);
@@ -494,7 +494,7 @@ const PluginList = memo(function PluginList({
   const selectedNonFavoritePlugin =
     selectedApp === client.id &&
     client.plugins.includes(selectedPlugin!) &&
-    !favoritePlugins.find(plugin => plugin.id === selectedPlugin);
+    !favoritePlugins.find((plugin) => plugin.id === selectedPlugin);
   const allPluginsStarred = favoritePlugins.length === allPlugins.length;
 
   return (
@@ -526,7 +526,7 @@ const PluginList = memo(function PluginList({
           defaultCollapsed={
             favoritePlugins.length > 0 && !selectedNonFavoritePlugin
           }
-          title={collapsed => (
+          title={(collapsed) => (
             <ShowMoreButton collapsed={collapsed}>
               <Glyph
                 color={colors.macOSTitleBarIconBlur}
@@ -585,7 +585,7 @@ const PluginsByCategory = memo(function PluginsByCategory({
               <CategoryName>{category}</CategoryName>
             </ListItem>
           )}
-          {plugins.map(plugin => (
+          {plugins.map((plugin) => (
             <PluginSidebarListItem
               key={plugin.id}
               isActive={

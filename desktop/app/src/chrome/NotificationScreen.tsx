@@ -66,12 +66,12 @@ class Notifications extends PureComponent<Props, State> {
             onSelectPlugin={selectPlugin}
             logger={logger}
             defaultFilters={[
-              ...blacklistedPlugins.map(value => ({
+              ...blacklistedPlugins.map((value) => ({
                 value,
                 type: 'exclude',
                 key: 'plugin',
               })),
-              ...blacklistedCategories.map(value => ({
+              ...blacklistedCategories.map((value) => ({
                 value,
                 type: 'exclude',
                 key: 'category',

@@ -536,8 +536,8 @@ class JSONTextFormatter {
         // Multiple top level JSON roots, map them one by one
         return body
           .split('\n')
-          .map(json => JSON.parse(json))
-          .map(data => <JSONText>{data}</JSONText>);
+          .map((json) => JSON.parse(json))
+          .map((data) => <JSONText>{data}</JSONText>);
       }
     }
   };
@@ -603,7 +603,7 @@ class JSONFormatter {
           <ManagedDataInspector
             collapsed={true}
             expandRoot={true}
-            data={roots.map(json => JSON.parse(json))}
+            data={roots.map((json) => JSON.parse(json))}
           />
         );
       }
@@ -705,7 +705,7 @@ class GraphQLFormatter {
         const parsedResponses = body
           .replace(/}{/g, '}\r\n{')
           .split('\n')
-          .map(json => JSON.parse(json));
+          .map((json) => JSON.parse(json));
         return (
           <div>
             {this.parsedServerTimeForFirstFlush(parsedResponses)}
@@ -802,7 +802,7 @@ class InsightsInspector extends Component<{insights: Insights}> {
       buildRow('Post processing time', insights.postProcessingTime, formatTime),
       buildRow('Bytes transfered', insights.bytesTransfered, formatBytes),
       buildRow('Transfer speed', insights.transferSpeed, formatSpeed),
-    ].filter(r => r != null);
+    ].filter((r) => r != null);
 
     return rows.length > 0 ? (
       <ManagedTable

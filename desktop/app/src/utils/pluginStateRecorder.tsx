@@ -46,7 +46,7 @@ async function flipperStartPluginRecording(state: State) {
     throw new Error('A plugin recording is already running');
   }
   const app = state.connections.selectedApp;
-  const client = state.connections.clients.find(client => client.id === app);
+  const client = state.connections.clients.find((client) => client.id === app);
   if (!app || !client) {
     throw new Error('Can only record plugin states if a device is selected');
   }

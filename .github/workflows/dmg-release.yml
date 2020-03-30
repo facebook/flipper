@@ -8,6 +8,8 @@ jobs:
   build:
 
     runs-on: macos-latest
+    env:
+      desktop-directory: ./desktop
 
     steps:
     - uses: actions/checkout@v1
@@ -16,8 +18,10 @@ jobs:
         node-version: '12.x'
     - name: Install
       run: yarn
+      working-directory: ${{env.desktop-directory}}
     - name: Build
       run: yarn build --mac --mac-dmg
+      working-directory: ${{env.desktop-directory}}
     - name: Upload
       uses: skx/github-action-publish-binaries@master
       env:

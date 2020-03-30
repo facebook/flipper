@@ -61,7 +61,7 @@ export default function reducer(
   action: Actions,
 ): State {
   if (action.type === 'REGISTER_PLUGINS') {
-    return produce(state, draft => {
+    return produce(state, (draft) => {
       const {devicePlugins, clientPlugins} = draft;
       action.payload.forEach((p: PluginClass) => {
         if (devicePlugins.has(p.id) || clientPlugins.has(p.id)) {

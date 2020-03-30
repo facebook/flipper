@@ -56,7 +56,7 @@ export default function reducer(
       ],
     };
   } else if (action.type === 'windowIsFocused') {
-    return produce(state, draft => {
+    return produce(state, (draft) => {
       draft.timeline.push({
         type: 'WINDOW_FOCUS_CHANGE',
         time: action.payload.time,
@@ -64,7 +64,7 @@ export default function reducer(
       });
     });
   } else if (action.type === 'SELECT_PLUGIN') {
-    return produce(state, draft => {
+    return produce(state, (draft) => {
       draft.timeline.push({
         type: 'PLUGIN_SELECTED',
         time: action.payload.time,

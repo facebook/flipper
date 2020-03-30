@@ -53,7 +53,7 @@ export function currentActiveApps(
     .filter(
       ({os}: {os: string}) => os && selectedDevice && os == selectedDevice.os,
     )
-    .map(client => client.appName);
+    .map((client) => client.appName);
   return currentActiveApps;
 }
 

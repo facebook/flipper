@@ -26,7 +26,7 @@ import {TooltipOptions} from '../TooltipProvider';
 export {DataValueExtractor} from './DataPreview';
 
 const BaseContainer = styled.div<{depth?: number; disabled?: boolean}>(
-  props => ({
+  (props) => ({
     fontFamily: 'Menlo, monospace',
     fontSize: 11,
     lineHeight: '17px',
@@ -277,10 +277,10 @@ function isComponentExpanded(
   if (diffType === 'object') {
     const sortedDataValues = Object.keys(data)
       .sort()
-      .map(key => data[key]);
+      .map((key) => data[key]);
     const sortedDiffValues = Object.keys(diffValue)
       .sort()
-      .map(key => diffValue[key]);
+      .map((key) => diffValue[key]);
     if (JSON.stringify(sortedDataValues) !== JSON.stringify(sortedDiffValues)) {
       return true;
     }
