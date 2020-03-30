@@ -118,7 +118,6 @@ export default class Client extends EventEmitter {
   activePlugins: Set<string>;
   device: Promise<BaseDevice>;
   _deviceResolve: (device: BaseDevice) => void = (_) => {};
-  _deviceSet: false | BaseDevice = false;
   logger: Logger;
   lastSeenDeviceList: Array<BaseDevice>;
   broadcastCallbacks: Map<string, Map<string, Set<Function>>>;
@@ -162,9 +161,6 @@ export default class Client extends EventEmitter {
       : new Promise((resolve, _reject) => {
           this._deviceResolve = resolve;
         });
-    if (device) {
-      this._deviceSet = device;
-    }
 
     const client = this;
     if (conn) {
@@ -184,11 +180,8 @@ export default class Client extends EventEmitter {
   /* All clients should have a corresponding Device in the store.
      However, clients can connect before a device is registered, so wait a
      while for the device to be registered if it isn't already. */
-  setMatchingDevice(): void {
-    if (this._deviceSet) {
-      return;
-    }
-    reportPlatformFailures(
+  async setMatchingDevice(): Promise<void> {
+    return reportPlatformFailures(
       new Promise<BaseDevice>((resolve, reject) => {
         let unsubscribe: () => void = () => {};
 
@@ -230,7 +223,6 @@ export default class Client extends EventEmitter {
       }),
       'client-setMatchingDevice',
     ).then((device) => {
-      this._deviceSet = device;
       this._deviceResolve(device);
     });
   }
@@ -330,29 +322,21 @@ export default class Client extends EventEmitter {
         invariant(data.params, 'expected params');
         const params: Params = data.params;
 
-        const device = this.getDeviceSync();
-        if (device) {
-          const persistingPlugin:
-            | typeof FlipperPlugin
-            | typeof FlipperDevicePlugin
-            | undefined =
-            this.store.getState().plugins.clientPlugins.get(params.api) ||
-            this.store.getState().plugins.devicePlugins.get(params.api);
+        const persistingPlugin:
+          | typeof FlipperPlugin
+          | typeof FlipperDevicePlugin
+          | undefined =
+          this.store.getState().plugins.clientPlugins.get(params.api) ||
+          this.store.getState().plugins.devicePlugins.get(params.api);
 
-          if (persistingPlugin && persistingPlugin.persistedStateReducer) {
-            const pluginKey = getPluginKey(this.id, device, params.api);
-            flipperRecorderAddEvent(pluginKey, params.method, params.params);
-            processMessageLater(
-              this.store,
-              pluginKey,
-              persistingPlugin,
-              params,
-            );
-          }
-        } else {
-          console.warn(
-            `Received a message for plugin ${params.api}.${params.method}, which will be ignored because the device has not connected yet`,
+        if (persistingPlugin && persistingPlugin.persistedStateReducer) {
+          const pluginKey = getPluginKey(
+            this.id,
+            {serial: this.query.device_id},
+            params.api,
           );
+          flipperRecorderAddEvent(pluginKey, params.method, params.params);
+          processMessageLater(this.store, pluginKey, persistingPlugin, params);
         }
         const apiCallbacks = this.broadcastCallbacks.get(params.api);
         if (!apiCallbacks) {
@@ -491,10 +475,6 @@ export default class Client extends EventEmitter {
             });
       }
     });
-  }
-
-  getDeviceSync(): BaseDevice | undefined {
-    return this._deviceSet || undefined;
   }
 
   startTimingRequestResponse(data: RequestMetadata) {

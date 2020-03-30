@@ -35,7 +35,7 @@ export function pluginsClassMap(
 
 export function getPluginKey(
   selectedAppId: string | null,
-  baseDevice: BaseDevice | null,
+  baseDevice: {serial: string} | null,
   pluginID: string,
 ): string {
   if (selectedAppId) {
