@@ -1,0 +1,12 @@
+{
+  "name": "flipper-plugin-hermesdebuggerrn",
+  "version": "1.0.0",
+  "main": "index.tsx",
+  "license": "MIT",
+  "title": "Hermes Debugger (RN)",
+  "icon": "apps",
+  "keywords": ["flipper-plugin"],
+  "bugs": {
+    "email": "rickhanlonii@fb.com"
+  }
+}
