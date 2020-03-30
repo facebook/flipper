@@ -66,6 +66,9 @@ fi
 
 echo "Preparing release $VERSION..."
 
+# Updating "flipper" npm package to the same version
+npm -C "$DESKTOP_DIR"app version "$VERSION"
+
 # Update react-native-flipper to the very same version
 npm -C "$SONAR_DIR"react-native/react-native-flipper version "$VERSION"
 

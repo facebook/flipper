@@ -1,7 +1,6 @@
 {
   "name": "flipper",
-  "version": "0.34.0",
-  "versionDate": "2018-4-12",
+  "version": "0.35.0",
   "description": "Mobile development tool",
   "productName": "Flipper",
   "author": "Facebook Inc",

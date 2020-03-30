@@ -1,6 +1,12 @@
 {
   "name": "flipper-project",
   "version": "0.35.0",
+  "description": "Mobile development tool",
+  "productName": "Flipper",
+  "author": "Facebook Inc",
+  "icon": "icon.png",
+  "category": "facebook-intern",
+  "privileged": true,
   "private": true,
   "workspaces": {
     "packages": [
