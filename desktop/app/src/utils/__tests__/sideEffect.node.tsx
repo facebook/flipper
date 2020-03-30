@@ -183,7 +183,8 @@ describe('sideeffect', () => {
     expect(warn.mock.calls[0][0]).toContain("Side effect 'test' took");
   });
 
-  test('throttles correctly', async () => {
+  // TODO(T64747771): Disabled as it appears to be non-deterministic.
+  test.skip('throttles correctly', async () => {
     unsubscribe = sideEffect(
       store,
       {name: 'test', throttleMs: 100},
