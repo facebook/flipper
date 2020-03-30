@@ -8,6 +8,7 @@
  */
 
 import {default as doTransform} from './transform';
+import {default as flipperEnv} from './flipper-env';
 
 export default function transform({
   filename,
@@ -24,10 +25,10 @@ export default function transform({
 }) {
   presets = presets ?? [require('@babel/preset-react')];
   plugins = plugins ?? [];
-  if (process.env.FLIPPER_FB) {
+  if (flipperEnv.FLIPPER_FB) {
     plugins.push(require('./fb-stubs'));
   }
-  if (process.env.BUILD_HEADLESS) {
+  if (flipperEnv.FLIPPER_HEADLESS) {
     plugins.push(require('./electron-stubs'));
   }
   plugins.push(require('./electron-requires'));

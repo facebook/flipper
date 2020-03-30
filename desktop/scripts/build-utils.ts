@@ -24,6 +24,8 @@ import {
   babelTransformationsDir,
 } from './paths';
 
+const dev = process.env.NODE_ENV !== 'production';
+
 async function mostRecentlyChanged(
   dir: string,
   ignores: string[],
@@ -89,9 +91,9 @@ async function compile(
       },
     },
     {
-      dev: false,
+      dev,
       minify: false,
-      resetCache: true,
+      resetCache: !dev,
       sourceMap: true,
       entry,
       out: path.join(buildFolder, 'bundle.js'),
@@ -145,7 +147,7 @@ export async function compileRenderer(buildFolder: string) {
   }
 }
 
-export async function compileMain({dev}: {dev: boolean}) {
+export async function compileMain() {
   const out = path.join(staticDir, 'main.bundle.js');
   process.env.FLIPPER_ELECTRON_VERSION = require('electron/package.json').version;
   // check if main needs to be compiled
@@ -182,7 +184,7 @@ export async function compileMain({dev}: {dev: boolean}) {
       dev,
       minify: false,
       sourceMap: true,
-      resetCache: true,
+      resetCache: !dev,
     });
     console.log('✅  Compiled main bundle.');
   } catch (err) {

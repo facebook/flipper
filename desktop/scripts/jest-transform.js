@@ -15,6 +15,8 @@ if (isFB && process.env.FLIPPER_FB === undefined) {
   process.env.FLIPPER_FB = 'true';
 }
 
+process.env.FLIPPER_TEST_RUNNER = 'true';
+
 module.exports = {
   process(src, filename, config, options) {
     return transform({

@@ -9,6 +9,7 @@
 
 import {default as doTransform} from './transform';
 import {default as getCacheKey} from './get-cache-key';
+import {default as flipperEnv} from './flipper-env';
 
 module.exports = {
   transform,
@@ -26,10 +27,10 @@ function transform({
 }) {
   const presets = [require('@babel/preset-react')];
   const plugins = [];
-  if (process.env.FLIPPER_FB) {
+  if (flipperEnv.FLIPPER_FB) {
     plugins.push(require('./fb-stubs'));
   }
-  if (process.env.BUILD_HEADLESS) {
+  if (flipperEnv.FLIPPER_HEADLESS) {
     plugins.push(require('./electron-stubs'));
   }
   plugins.push(require('./electron-requires'));

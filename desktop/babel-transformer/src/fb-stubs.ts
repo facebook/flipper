@@ -18,7 +18,7 @@ const requireFromFolder = (folder: string, path: string) =>
   new RegExp(folder + '/[A-Za-z0-9.-_]+(.js)?$', 'g').test(path);
 
 module.exports = () => ({
-  name: 'replace-dynamic-requires',
+  name: 'replace-fb-stubs',
   visitor: {
     CallExpression(path: NodePath<CallExpression>, state: any) {
       if (

@@ -98,7 +98,7 @@ async function createZip(buildDir: string, distDir: string, targets: string[]) {
   // developement iteration by not including any plugins.
   const skipPlugins = process.argv.indexOf('--no-plugins') > -1;
 
-  process.env.BUILD_HEADLESS = 'true';
+  process.env.FLIPPER_HEADLESS = 'true';
   const buildDir = await buildFolder();
   // eslint-disable-next-line no-console
   console.log('Created build directory', buildDir);

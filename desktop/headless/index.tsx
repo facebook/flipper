@@ -30,6 +30,8 @@ import {getStringFromErrorLike} from '../app/src/utils/index';
 import AndroidDevice from '../app/src/devices/AndroidDevice';
 import {Store} from 'flipper';
 
+process.env.FLIPPER_HEADLESS = 'true';
+
 type Action = {exit: boolean; result?: string};
 
 type UserArguments = {

@@ -263,7 +263,7 @@ function outputScreen(socket?: socketIo.Server) {
   const socket = await addWebsocket(server);
   await startMetroServer(app);
   outputScreen(socket);
-  await compileMain({dev: true});
+  await compileMain();
   shutdownElectron = launchElectron({
     devServerURL: `http://localhost:${port}`,
     bundleURL: `http://localhost:${port}/src/init.bundle`,

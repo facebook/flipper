@@ -33,8 +33,6 @@ export type CompileOptions = {
   recompileOnChanges: boolean;
 };
 
-type DynamicCompileOptions = CompileOptions & {force: boolean};
-
 export type PluginManifest = {
   version: string;
   name: string;
@@ -69,10 +67,7 @@ export default async function (
   const compilations = pMap(
     Object.values(plugins),
     (plugin) => {
-      const dynamicOptions: DynamicCompileOptions = Object.assign(options, {
-        force: false,
-      });
-      return compilePlugin(plugin, pluginCache, dynamicOptions);
+      return compilePlugin(plugin, pluginCache, options);
     },
     {concurrency: 4},
   );
@@ -244,11 +239,12 @@ async function mostRecentlyChanged(dir: string) {
 async function compilePlugin(
   pluginInfo: PluginInfo,
   pluginCache: string,
-  options: DynamicCompileOptions,
+  {force, failSilently}: CompileOptions,
 ): Promise<CompiledPluginInfo | null> {
   const {rootDir, manifest, entry, name} = pluginInfo;
   const bundleMain = manifest.bundleMain ?? path.join('dist', 'index.js');
   const bundlePath = path.join(rootDir, bundleMain);
+  const dev = process.env.NODE_ENV !== 'production';
   if (await fs.pathExists(bundlePath)) {
     // eslint-disable-next-line no-console
     const out = path.join(rootDir, bundleMain);
@@ -262,7 +258,7 @@ async function compilePlugin(
     const result = Object.assign({}, pluginInfo.manifest, {out});
     const rootDirCtime = await mostRecentlyChanged(rootDir);
     if (
-      !options.force &&
+      !force &&
       (await fs.pathExists(out)) &&
       rootDirCtime < (await fs.lstat(out)).ctime
     ) {
@@ -296,13 +292,14 @@ async function compilePlugin(
           {
             entry: entry.replace(rootDir, '.'),
             out,
-            dev: false,
+            dev,
             sourceMap: true,
             minify: false,
+            resetCache: !dev,
           },
         );
       } catch (e) {
-        if (options.failSilently) {
+        if (failSilently) {
           console.error(
             `❌  Plugin ${name} is ignored, because it could not be compiled.`,
           );

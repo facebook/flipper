@@ -10,6 +10,7 @@
 import {default as generate} from '@babel/generator';
 import {parse} from '@babel/parser';
 import {transformFromAstSync} from '@babel/core';
+import {default as flipperEnv} from './flipper-env';
 
 export default function transform({
   filename,
@@ -77,7 +78,7 @@ export default function transform({
     plugins,
     presets,
     sourceMaps: true,
-    retainLines: !!options.isTestRunner,
+    retainLines: !!flipperEnv.FLIPPER_TEST_RUNNER,
   });
   if (!transformed) {
     throw new Error('Failed to transform');
@@ -88,7 +89,7 @@ export default function transform({
       filename,
       sourceFileName: filename,
       sourceMaps: true,
-      retainLines: !!options.isTestRunner,
+      retainLines: !!flipperEnv.FLIPPER_TEST_RUNNER,
     },
     src,
   );
