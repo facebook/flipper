@@ -66,6 +66,9 @@ dependencies {
     testImplementation deps.hamcrest
     testImplementation deps.junit
 
+    def fragment_version = "1.2.3"
+    implementation "androidx.fragment:fragment:$fragment_version"
+
     debugImplementation project(':android')
     debugImplementation project(':fresco-plugin')
     debugImplementation project(':network-plugin')
