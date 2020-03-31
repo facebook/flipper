@@ -52,12 +52,14 @@ FLIPPERKIT_VERSION_TAG='flipperkit_version'
 OLD_VERSION_POD_ARG=$(< "$FLIPPER_PODSPEC_PATH" grep "$FLIPPERKIT_VERSION_TAG =" )
 OLD_VERSION="${OLD_VERSION_POD_ARG##* }"
 
+source "$DIR"/setup-env.sh
+
 # if we got called with a rev argument, we got triggered from our automatic sandcastle job
 if [ "$SANDCASTLE_REVISION" != "" ]; 
 then
   # In future, bump majors instead of minors?
   echo "Automatically bumping version to next minor in package.json"
-  npm -C "$DESKTOP_DIR" version minor
+  yarn --cwd "$DESKTOP_DIR" version minor --no-git-tag-version
   VERSION=$(jq -r '.version' "$DESKTOP_DIR"/package.json)
 else
   echo "The currently released version is $OLD_VERSION. What should the version of the next release be?"
@@ -66,11 +68,11 @@ fi
 
 echo "Preparing release $VERSION..."
 
-# Updating "flipper" npm package to the same version
-npm -C "$DESKTOP_DIR"app version "$VERSION"
+# Update all the packages included as workspaces to the very same version
+yarn --cwd "$DESKTOP_DIR" bump-workspace-versions "$VERSION"
 
 # Update react-native-flipper to the very same version
-npm -C "$SONAR_DIR"react-native/react-native-flipper version "$VERSION"
+yarn --cwd "$SONAR_DIR"/react-native/react-native-flipper version --new-version "$VERSION" --no-git-tag-version
 
 # This could be one expression with GNU sed, but I guess we want to support the BSD crap, too.
 SNAPSHOT_MINOR_VERSION=$(echo "$VERSION" | sed -Ee 's/([0-9]+)\.([0-9]+)\.([0-9]+)/\3 + 1/' | bc)
