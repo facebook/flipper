@@ -59,7 +59,7 @@ if [ "$SANDCASTLE_REVISION" != "" ];
 then
   # In future, bump majors instead of minors?
   echo "Automatically bumping version to next minor in package.json"
-  yarn --cwd "$DESKTOP_DIR" version minor --no-git-tag-version
+  npm -C "$DESKTOP_DIR" version minor
   VERSION=$(jq -r '.version' "$DESKTOP_DIR"/package.json)
 else
   echo "The currently released version is $OLD_VERSION. What should the version of the next release be?"
