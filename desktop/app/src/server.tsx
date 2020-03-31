@@ -32,10 +32,7 @@ import JSDevice from './devices/JSDevice';
 import {WebsocketClientFlipperConnection} from './utils/js-client/websocketClientFlipperConnection';
 import querystring from 'querystring';
 import {IncomingMessage} from 'http';
-import {isTest} from './utils/isProduction';
-// Electron tries to get you to use browser's ws instead, so can't use import.
-// @ts-ignore
-const ws = isTest() ? require('ws') : require('../../node_modules/ws/index.js');
+import ws from 'ws';
 
 type ClientInfo = {
   connection: FlipperClientConnection<any, any> | null | undefined;
