@@ -43,7 +43,7 @@ test('config is decoded from env with defaults', () => {
     pluginPaths: [],
     lastWindowPosition: undefined,
     launcherMsg: undefined,
-    updaterEnabled: true,
+    updaterEnabled: false,
     screenCapturePath: undefined,
     launcherEnabled: true,
   });

@@ -36,11 +36,13 @@ export default function config(): ProcessConfig {
       pluginPaths: json.pluginPaths || [],
       lastWindowPosition: json.lastWindowPosition,
       launcherMsg: json.launcherMsg,
-      updaterEnabled:
-        typeof json.updaterEnabled === 'boolean' ? json.updaterEnabled : true,
+      // TODO(T64836070): The built-in updater is disabled as we don't have a strategy for signing prod builds right now.
+      updaterEnabled: false,
       screenCapturePath: json.screenCapturePath,
       launcherEnabled:
-        typeof json.launcherEnabled === 'boolean' ? json.launcherEnabled : true,
+        typeof json.launcherEnabled === 'boolean'
+          ? json.launcherEnabled
+          : false,
     };
   }
 
