@@ -108,6 +108,26 @@ type AddSaltToDeviceSerialOptions = {
   statusUpdate?: (msg: string) => void;
 };
 
+export function displayFetchMetadataErrors(
+  fetchMetaDataErrors: {
+    [plugin: string]: Error;
+  } | null,
+): {title: string; errorArray: Array<Error>} {
+  const errors = fetchMetaDataErrors ? Object.values(fetchMetaDataErrors) : [];
+  const pluginsWithFetchMetadataErrors = fetchMetaDataErrors
+    ? Object.keys(fetchMetaDataErrors)
+    : [];
+  const title =
+    fetchMetaDataErrors && pluginsWithFetchMetadataErrors.length > 0
+      ? `Export was successfull, but plugin${
+          pluginsWithFetchMetadataErrors.length > 1 ? 's' : ''
+        } ${pluginsWithFetchMetadataErrors.join(
+          ', ',
+        )} might be ignored because of the following errors.`
+      : '';
+  return {title, errorArray: errors};
+}
+
 export function processClients(
   clients: Array<ClientExport>,
   serial: string,
@@ -344,7 +364,7 @@ type ProcessStoreOptions = {
 export const processStore = async (
   options: ProcessStoreOptions,
   idler?: Idler,
-): Promise<ExportType | null> => {
+): Promise<ExportType> => {
   const {
     activeNotifications,
     device,
@@ -410,7 +430,7 @@ export const processStore = async (
 
     return exportFlipperData;
   }
-  return null;
+  throw new Error('Selected device is null, please select a device');
 };
 
 export async function fetchMetadata(
@@ -419,9 +439,12 @@ export async function fetchMetadata(
   state: ReduxState,
   statusUpdate?: (msg: string) => void,
   idler?: Idler,
-): Promise<{pluginStates: PluginStatesState; errorArray: Array<Error>}> {
+): Promise<{
+  pluginStates: PluginStatesState;
+  errors: {[plugin: string]: Error} | null;
+}> {
   const newPluginState = {...pluginStates};
-  const errorArray: Array<Error> = [];
+  let errorObject: {[plugin: string]: Error} | null = null;
 
   for (const {
     pluginName,
@@ -448,12 +471,20 @@ export async function fetchMetadata(
           ),
           `Timed out while collecting data for ${pluginName}`,
         );
+        if (!data) {
+          throw new Error(
+            `Metadata returned by the ${pluginName} is undefined`,
+          );
+        }
         getLogger().trackTimeSince(fetchMetaDataMarker, fetchMetaDataMarker, {
           pluginId,
         });
         newPluginState[pluginKey] = data;
       } catch (e) {
-        errorArray.push(e);
+        if (!errorObject) {
+          errorObject = {};
+        }
+        errorObject[pluginName] = e;
         getLogger().trackTimeSince(fetchMetaDataMarker, fetchMetaDataMarker, {
           pluginId,
           error: e,
@@ -463,7 +494,7 @@ export async function fetchMetadata(
     }
   }
 
-  return {pluginStates: newPluginState, errorArray};
+  return {pluginStates: newPluginState, errors: errorObject};
 }
 
 async function processQueues(
@@ -550,7 +581,10 @@ export async function getStoreExport(
   store: MiddlewareAPI,
   statusUpdate?: (msg: string) => void,
   idler?: Idler,
-): Promise<{exportData: ExportType | null; errorArray: Array<Error>}> {
+): Promise<{
+  exportData: ExportType;
+  fetchMetaDataErrors: {[plugin: string]: Error} | null;
+}> {
   const state = store.getState();
   const {clients, selectedApp, selectedDevice} = state.connections;
   const pluginsToProcess = determinePluginsToProcess(
@@ -578,7 +612,7 @@ export async function getStoreExport(
   getLogger().trackTimeSince(fetchMetaDataMarker, fetchMetaDataMarker, {
     plugins: state.plugins.selectedPlugins,
   });
-  const {errorArray} = metadata;
+  const {errors} = metadata;
   const newPluginState = metadata.pluginStates;
 
   const {activeNotifications} = state.notifications;
@@ -597,7 +631,7 @@ export async function getStoreExport(
     },
     idler,
   );
-  return {exportData, errorArray};
+  return {exportData, fetchMetaDataErrors: errors};
 }
 
 export async function exportStore(
@@ -607,58 +641,43 @@ export async function exportStore(
   statusUpdate?: (msg: string) => void,
 ): Promise<{
   serializedString: string;
-  errorArray: Array<Error>;
-  exportStoreData: ExportType | null;
+  fetchMetaDataErrors: {
+    [plugin: string]: Error;
+  } | null;
+  exportStoreData: ExportType;
 }> {
   getLogger().track('usage', EXPORT_FLIPPER_TRACE_EVENT);
   performance.mark(EXPORT_FLIPPER_TRACE_TIME_SERIALIZATION_EVENT);
   statusUpdate && statusUpdate('Preparing to export Flipper data...');
   const state = store.getState();
-  const {exportData, errorArray} = await getStoreExport(
+  const {exportData, fetchMetaDataErrors} = await getStoreExport(
     store,
     statusUpdate,
     idler,
   );
-  if (exportData != null) {
-    if (includeSupportDetails) {
-      exportData.supportRequestDetails = {
-        ...state.supportForm?.supportFormV2,
-        appName:
-          state.connections.selectedApp == null
-            ? ''
-            : deconstructClientId(state.connections.selectedApp).app,
-      };
-    }
-
-    statusUpdate && statusUpdate('Serializing Flipper data...');
-    const serializedString = JSON.stringify(exportData);
-    if (serializedString.length <= 0) {
-      throw new Error('Serialize function returned empty string');
-    }
-    getLogger().trackTimeSince(
-      EXPORT_FLIPPER_TRACE_TIME_SERIALIZATION_EVENT,
-      EXPORT_FLIPPER_TRACE_TIME_SERIALIZATION_EVENT,
-      {
-        plugins: state.plugins.selectedPlugins,
-      },
-    );
-    if (errorArray.length > 0) {
-      const errorStr = errorArray.join(', ');
-      logPlatformSuccessRate('export-store-task', {
-        kind: 'failure',
-        supportedOperation: true,
-        error: errorStr,
-      });
-      console.error('Export Store Task Failures: ', errorStr);
-    }
-    return {serializedString, errorArray, exportStoreData: exportData};
-  } else {
-    return {
-      serializedString: '{}',
-      errorArray: [],
-      exportStoreData: exportData,
+  if (includeSupportDetails) {
+    exportData.supportRequestDetails = {
+      ...state.supportForm?.supportFormV2,
+      appName:
+        state.connections.selectedApp == null
+          ? ''
+          : deconstructClientId(state.connections.selectedApp).app,
     };
   }
+
+  statusUpdate && statusUpdate('Serializing Flipper data...');
+  const serializedString = JSON.stringify(exportData);
+  if (serializedString.length <= 0) {
+    throw new Error('Serialize function returned empty string');
+  }
+  getLogger().trackTimeSince(
+    EXPORT_FLIPPER_TRACE_TIME_SERIALIZATION_EVENT,
+    EXPORT_FLIPPER_TRACE_TIME_SERIALIZATION_EVENT,
+    {
+      plugins: state.plugins.selectedPlugins,
+    },
+  );
+  return {serializedString, fetchMetaDataErrors, exportStoreData: exportData};
 }
 
 export const exportStoreToFile = (
@@ -667,13 +686,17 @@ export const exportStoreToFile = (
   includeSupportDetails: boolean,
   idler?: Idler,
   statusUpdate?: (msg: string) => void,
-): Promise<{errorArray: Array<Error>}> => {
+): Promise<{
+  fetchMetaDataErrors: {
+    [plugin: string]: Error;
+  } | null;
+}> => {
   return exportStore(store, includeSupportDetails, idler, statusUpdate).then(
-    ({serializedString, errorArray}) => {
+    ({serializedString, fetchMetaDataErrors}) => {
       return promisify(fs.writeFile)(exportFilePath, serializedString).then(
         () => {
           store.dispatch(resetSupportFormV2State());
-          return {errorArray};
+          return {fetchMetaDataErrors};
         },
       );
     },

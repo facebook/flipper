@@ -12,6 +12,8 @@ import {Text, styled, Info, VBox} from '../ui';
 
 type Props = {
   errors: Array<Error>;
+  title: string;
+  type: 'info' | 'spinning' | 'warning' | 'error';
 };
 
 const ErrorMessage = styled(Text)({
@@ -47,10 +49,8 @@ export default class Popover extends PureComponent<Props> {
     }
     return (
       <VBox scrollable={true} maxHeight={300}>
-        <Info type="error">
-          <Title bold>
-            The following errors occurred while exporting your data
-          </Title>
+        <Info type={this.props.type}>
+          <Title bold>{this.props.title}</Title>
           {this.props.errors.map((e: Error) => (
             <ErrorMessage code>{formatError(e)}</ErrorMessage>
           ))}

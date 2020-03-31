@@ -30,7 +30,11 @@ import {
   DataExportResult,
   DataExportError,
 } from '../fb-stubs/user';
-import {exportStore, EXPORT_FLIPPER_TRACE_EVENT} from '../utils/exportData';
+import {
+  exportStore,
+  EXPORT_FLIPPER_TRACE_EVENT,
+  displayFetchMetadataErrors,
+} from '../utils/exportData';
 import {clipboard} from 'electron';
 import ShareSheetErrorList from './ShareSheetErrorList';
 import {reportPlatformFailures} from '../utils/metrics';
@@ -78,7 +82,9 @@ type Props = {
 
 type State = {
   runInBackground: boolean;
-  errorArray: Array<Error>;
+  fetchMetaDataErrors: {
+    [plugin: string]: Error;
+  } | null;
   result: DataExportError | DataExportResult | null;
   statusUpdate: string | null;
 };
@@ -87,7 +93,7 @@ export default class ShareSheetExportUrl extends Component<Props, State> {
   static contextType = ReactReduxContext;
 
   state: State = {
-    errorArray: [],
+    fetchMetaDataErrors: null,
     result: null,
     statusUpdate: null,
     runInBackground: false,
@@ -124,7 +130,10 @@ export default class ShareSheetExportUrl extends Component<Props, State> {
           this.setState({statusUpdate: msg});
         }
       };
-      const {serializedString, errorArray} = await reportPlatformFailures(
+      const {
+        serializedString,
+        fetchMetaDataErrors,
+      } = await reportPlatformFailures(
         exportStore(this.store, false, this.idler, statusUpdate),
         `${EXPORT_FLIPPER_TRACE_EVENT}:UI_LINK`,
       );
@@ -145,7 +154,7 @@ export default class ShareSheetExportUrl extends Component<Props, State> {
       getLogger().trackTimeSince(uploadMarker, uploadMarker, {
         plugins: this.store.getState().plugins.selectedPlugins,
       });
-      this.setState({errorArray, result});
+      this.setState({fetchMetaDataErrors, result});
       const flipperUrl = (result as DataExportResult).flipperUrl;
       if (flipperUrl) {
         clipboard.writeText(String(flipperUrl));
@@ -223,11 +232,12 @@ export default class ShareSheetExportUrl extends Component<Props, State> {
   }
 
   render() {
-    const {result, statusUpdate, errorArray} = this.state;
+    const {result, statusUpdate, fetchMetaDataErrors} = this.state;
     if (!result) {
       return this.renderPending(statusUpdate);
     }
 
+    const {title, errorArray} = displayFetchMetadataErrors(fetchMetaDataErrors);
     return (
       <ReactReduxContext.Consumer>
         {({store}) => (
@@ -251,7 +261,11 @@ export default class ShareSheetExportUrl extends Component<Props, State> {
                       data might contain sensitve information like access tokens
                       used in network requests.
                     </InfoText>
-                    <ShareSheetErrorList errors={errorArray} />
+                    <ShareSheetErrorList
+                      errors={errorArray}
+                      title={title}
+                      type={'warning'}
+                    />
                   </>
                 ) : (
                   <>

@@ -83,9 +83,9 @@ export async function exportMetricsWithoutTrace(
     store.getState(),
   );
   const newPluginStates = metadata.pluginStates;
-  const {errorArray} = metadata;
-  if (errorArray.length > 0) {
-    console.error(errorArray);
+  const {errors} = metadata;
+  if (errors) {
+    console.error(errors);
   }
 
   const metrics = await exportMetrics(

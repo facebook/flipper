@@ -18,6 +18,7 @@ import {Idler} from '../utils/Idler';
 import {
   exportStoreToFile,
   EXPORT_FLIPPER_TRACE_EVENT,
+  displayFetchMetadataErrors,
 } from '../utils/exportData';
 import ShareSheetErrorList from './ShareSheetErrorList';
 import ShareSheetPendingDialog from './ShareSheetPendingDialog';
@@ -53,7 +54,9 @@ type Props = {
 };
 
 type State = {
-  errorArray: Array<Error>;
+  fetchMetaDataErrors: {
+    [plugin: string]: Error;
+  } | null;
   result:
     | {
         kind: 'success';
@@ -77,7 +80,7 @@ export default class ShareSheetExportFile extends Component<Props, State> {
   }
 
   state: State = {
-    errorArray: [],
+    fetchMetaDataErrors: null,
     result: {kind: 'pending'},
     statusUpdate: null,
     runInBackground: false,
@@ -106,7 +109,7 @@ export default class ShareSheetExportFile extends Component<Props, State> {
       if (!this.props.file) {
         return;
       }
-      const {errorArray} = await reportPlatformFailures(
+      const {fetchMetaDataErrors} = await reportPlatformFailures(
         exportStoreToFile(
           this.props.file,
           this.store,
@@ -130,18 +133,31 @@ export default class ShareSheetExportFile extends Component<Props, State> {
         });
         return;
       }
-      this.setState({errorArray, result: {kind: 'success'}});
+      this.setState({fetchMetaDataErrors, result: {kind: 'success'}});
       this.props.logger.trackTimeSince(mark, 'export:file-success');
     } catch (err) {
+      const result: {
+        kind: 'error';
+        error: Error;
+      } = {
+        kind: 'error',
+        error: err,
+      };
       if (!this.state.runInBackground) {
-        this.setState({errorArray: [], result: {kind: 'error', error: err}});
+        // Show the error in UI.
+        this.setState({result});
       }
-      this.props.logger.trackTimeSince(mark, 'export:file-error');
+      this.store.dispatch(unsetShare());
+      this.props.logger.trackTimeSince(mark, 'export:file-error', result);
       throw err;
     }
   }
 
   renderSuccess() {
+    const {title, errorArray} = displayFetchMetadataErrors(
+      this.state.fetchMetaDataErrors,
+    );
+
     return (
       <ReactReduxContext.Consumer>
         {({store}) => (
@@ -153,7 +169,11 @@ export default class ShareSheetExportFile extends Component<Props, State> {
                 might contain sensitive information like access tokens used in
                 network requests.
               </InfoText>
-              <ShareSheetErrorList errors={this.state.errorArray} />
+              <ShareSheetErrorList
+                errors={errorArray}
+                title={title}
+                type={'warning'}
+              />
             </FlexColumn>
             <FlexRow>
               <Spacer />

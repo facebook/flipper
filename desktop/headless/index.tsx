@@ -182,8 +182,10 @@ async function exitActions(
           );
           outputAndExit(payload);
         } else {
-          const {serializedString, errorArray} = await exportStore(store);
-          errorArray.forEach(console.error);
+          const {serializedString, fetchMetaDataErrors} = await exportStore(
+            store,
+          );
+          console.error('Error while fetching metadata', fetchMetaDataErrors);
           outputAndExit(serializedString);
         }
       } catch (e) {
