@@ -54,6 +54,10 @@ OLD_VERSION="${OLD_VERSION_POD_ARG##* }"
 
 source "$DIR"/setup-env.sh
 
+if [[ ! -d "$DESKTOP_DIR/node_modules" ]]; then
+  yarn --cwd "$DESKTOP_DIR" install --ignore-scripts --ignore-engines
+fi
+
 # if we got called with a rev argument, we got triggered from our automatic sandcastle job
 if [ "$SANDCASTLE_REVISION" != "" ]; 
 then
