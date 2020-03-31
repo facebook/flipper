@@ -143,6 +143,7 @@
     "@types/uuid": "^7.0.0",
     "@types/which": "^1.3.2",
     "@types/ws": "^7.2.0",
+    "@types/yargs": "^15.0.4",
     "@types/yazl": "^2.4.2",
     "@typescript-eslint/eslint-plugin": "^2.19.2",
     "@typescript-eslint/parser": "^2.19.2",
@@ -177,7 +178,8 @@
     "rimraf": "^3.0.2",
     "ts-jest": "^25.1.0",
     "ts-node": "^8.8.1",
-    "typescript": "^3.7.2"
+    "typescript": "^3.7.2",
+    "yargs": "^15.3.1"
   },
   "scripts": {
     "preinstall": "node scripts/prepare-watchman-config.js && yarn config set ignore-engines",
@@ -211,7 +213,8 @@
     "lint:eslint": "eslint . --ext .js,.ts,.tsx",
     "lint:flow": "flow check",
     "lint": "yarn lint:eslint && yarn lint:flow && yarn lint:tsc",
-    "bump-workspace-versions": "cross-env TS_NODE_FILES=true node --require ts-node/register scripts/bump-workspace-versions.ts",
+    "bump-versions": "cross-env TS_NODE_FILES=true node --require ts-node/register scripts/bump-versions.ts",
+    "publish-packages": "cross-env TS_NODE_FILES=true node --require ts-node/register scripts/publish-packages.ts",
     "everything": "yarn reset && yarn install && yarn lint && yarn test && yarn test-electron && yarn build --mac --mac-dmg --win --linux && yarn build-headless --mac --linux && yarn start"
   },
   "optionalDependencies": {

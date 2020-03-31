@@ -69,7 +69,7 @@ fi
 echo "Preparing release $VERSION..."
 
 # Update all the packages included as workspaces to the very same version
-yarn --cwd "$DESKTOP_DIR" bump-workspace-versions "$VERSION"
+yarn --cwd "$DESKTOP_DIR" bump-versions --new-version "$VERSION"
 
 # Update react-native-flipper to the very same version
 yarn --cwd "$SONAR_DIR"/react-native/react-native-flipper version --new-version "$VERSION" --no-git-tag-version

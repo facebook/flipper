@@ -2285,7 +2285,7 @@
   dependencies:
     "@types/yargs-parser" "*"
 
-"@types/yargs@^15.0.0":
+"@types/yargs@^15.0.0", "@types/yargs@^15.0.4":
   version "15.0.4"
   resolved "https://registry.yarnpkg.com/@types/yargs/-/yargs-15.0.4.tgz#7e5d0f8ca25e9d5849f2ea443cf7c402decd8299"
   integrity sha512-9T1auFmbPZoxHz0enUFlUuKRy3it01R+hlggyVUMtnCTQRunsQYifnSGb8hET4Xo8yiC0o0r1paW3ud5+rbURg==
@@ -11972,7 +11972,7 @@ yargs@^14.2.0:
     y18n "^4.0.0"
     yargs-parser "^15.0.0"
 
-yargs@^15.0.0, yargs@^15.0.1, yargs@^15.1.0:
+yargs@^15.0.0, yargs@^15.1.0, yargs@^15.3.1:
   version "15.3.1"
   resolved "https://registry.yarnpkg.com/yargs/-/yargs-15.3.1.tgz#9505b472763963e54afe60148ad27a330818e98b"
   integrity sha512-92O1HWEjw27sBfgmXiixJWT5hRBp2eobqXicLtPBIDBhYB+1HpwZlXmbW2luivBJHBzki+7VyCLRtAkScbTBQA==
