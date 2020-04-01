@@ -79,7 +79,8 @@
     "acorn": "7.1.1",
     "minimist": "1.2.2",
     "metro/temp": "0.9.0",
-    "ws": "7.2.3"
+    "ws": "7.2.3",
+    "kind-of": "6.0.3"
   },
   "jest": {
     "transform": {
