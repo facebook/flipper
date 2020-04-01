@@ -8,8 +8,14 @@
 package com.facebook.flipper.plugins.inspector.descriptors.utils.stethocopies;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Build;
+import android.util.Log;
+
+import androidx.fragment.app.FragmentManager;
+
 import java.lang.reflect.Field;
+import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
@@ -37,7 +43,7 @@ public abstract class FragmentCompat<
 
   static {
     sHasSupportFragment =
-        ReflectionUtil.tryGetClassForName("android.support.v4.app.Fragment") != null;
+        ReflectionUtil.tryGetClassForName("androidx.fragment.app.Fragment") != null;
   }
 
   @Nullable
@@ -82,20 +88,22 @@ public abstract class FragmentCompat<
     @Nullable
     @Override
     public List<FRAGMENT> getAddedFragments(FRAGMENT_MANAGER fragmentManager) {
-      // This field is actually sitting on FragmentManagerImpl, which derives from FragmentManager.
-      if (mFieldMAdded == null) {
-        Field fieldMAdded =
-            ReflectionUtil.tryGetDeclaredField(fragmentManager.getClass(), "mAdded");
+      if (fragmentManager instanceof android.app.FragmentManager) {
+        // This field is actually sitting on FragmentManagerImpl, which derives from
+        // FragmentManager.
+        if (mFieldMAdded == null) {
+          Field fieldMAdded =
+              ReflectionUtil.tryGetDeclaredField(fragmentManager.getClass(), "mAdded");
 
-        if (fieldMAdded != null) {
-          fieldMAdded.setAccessible(true);
-          mFieldMAdded = fieldMAdded;
+          if (fieldMAdded != null) {
+            fieldMAdded.setAccessible(true);
+            mFieldMAdded = fieldMAdded;
+          }
         }
+      } else if (fragmentManager instanceof androidx.fragment.app.FragmentManager) {
+        return (List<FRAGMENT>) ((FragmentManager) fragmentManager).getFragments();
       }
-
-      return (mFieldMAdded != null)
-          ? (List<FRAGMENT>) ReflectionUtil.getFieldValue(mFieldMAdded, fragmentManager)
-          : null;
+      return Collections.emptyList();
     }
   }
 }
