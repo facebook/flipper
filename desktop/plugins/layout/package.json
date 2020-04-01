@@ -7,7 +7,7 @@
     "flipper-plugin"
   ],
   "dependencies": {
-    "deep-equal": "^2.0.1",
+    "deep-equal": "^2.0.2",
     "lodash": "^4.17.15",
     "lodash.clonedeep": "^4.5.0",
     "lodash.debounce": "^4.0.8"
