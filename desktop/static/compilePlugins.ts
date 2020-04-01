@@ -21,6 +21,9 @@ import getWatchFolders from './get-watch-folders';
 
 const HOME_DIR = homedir();
 
+let metroDir: string | undefined;
+const metroDirPromise = getMetroDir().then((dir) => (metroDir = dir));
+
 const DEFAULT_COMPILE_OPTIONS: CompileOptions = {
   force: false,
   failSilently: true,
@@ -236,6 +239,19 @@ async function mostRecentlyChanged(dir: string) {
     .map((f) => fs.lstatSync(f).ctime)
     .reduce((a, b) => (a > b ? a : b), new Date(0));
 }
+async function getMetroDir() {
+  let dir = __dirname;
+  while (true) {
+    const dirToCheck = path.join(dir, 'node_modules', 'metro');
+    if (await fs.pathExists(dirToCheck)) return dirToCheck;
+    const nextDir = path.dirname(dir);
+    if (!nextDir || nextDir === '' || nextDir === dir) {
+      break;
+    }
+    dir = nextDir;
+  }
+  return __dirname;
+}
 async function compilePlugin(
   pluginInfo: PluginInfo,
   pluginCache: string,
@@ -273,7 +289,9 @@ async function compilePlugin(
           {
             reporter: {update: () => {}},
             projectRoot: rootDir,
-            watchFolders: [__dirname].concat(await getWatchFolders(rootDir)),
+            watchFolders: [metroDir || (await metroDirPromise)].concat(
+              await getWatchFolders(rootDir),
+            ),
             serializer: {
               getRunModuleStatement: (moduleID: string) =>
                 `module.exports = global.__r(${moduleID}).default;`,
