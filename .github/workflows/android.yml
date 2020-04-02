@@ -15,6 +15,8 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
+    - name: Install NDK 20
+      run: sudo /usr/local/lib/android/tools/bin/sdkmanager --install "ndk;20.0.5594570" --sdk_root=${ANDROID_SDK_ROOT}
     - name: Build with Gradle
       run: ./gradlew :sample:assembleDebug :sample:assembleRelease
     - name: Rename apk
