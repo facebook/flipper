@@ -13,4 +13,5 @@ export default {
   showLogin: false,
   showFlipperRating: false,
   warnFBEmployees: true,
+  isFBBuild: false,
 };

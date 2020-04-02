@@ -19,6 +19,7 @@ import {reportPlatformFailures} from '../utils/metrics';
 import React from 'react';
 import {shell} from 'electron';
 import config from '../utils/processConfig';
+import isFBBuild from '../fb-stubs/config';
 
 const Container = styled(FlexRow)({
   alignItems: 'center',
@@ -91,7 +92,7 @@ export default class UpdateIndicator extends React.PureComponent<Props, State> {
   }
 
   componentDidMount() {
-    if (isProduction() && config().launcherEnabled) {
+    if (isProduction() && (config().launcherEnabled || !isFBBuild)) {
       reportPlatformFailures(
         checkForUpdate(this.props.version).then((res) => {
           if (res.kind === 'error') {
