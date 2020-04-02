@@ -9,7 +9,7 @@ Displaying your data in a table might work for many use-cases. However, dependin
 ## Replacing the table
 
 For our sea mammals app, we might not only want to see them listed as image URLs in a table but render the actual images in nice little cards. When selecting one of the cards we still want to display all details in the sidebar.
-![Custom cards UI for our sea mammals plugin](/docs/assets/js-custom.png)
+![Custom cards UI for our sea mammals plugin](assets/js-custom.png)
 
 Currently, the default export in our `index.tsx` is from `createTablePlugin`. Now we are going to replace this with a custom React component extending `FlipperPlugin`.
 

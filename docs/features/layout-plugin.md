@@ -11,7 +11,7 @@ The Layout tab supports [Litho](https://fblitho.com) and [ComponentKit](https://
 
 If you hover over a view or component in Flipper we will highlight the corresponding item in your app. This is perfect for debugging the bounds of your views and making sure you have the correct visual padding.
 
-![Layout plugin](/docs/assets/layout.png)
+![Layout plugin](assets/layout.png)
 
 
 ## Quick edits

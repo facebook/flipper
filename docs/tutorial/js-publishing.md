@@ -41,7 +41,7 @@ in the bottom of the left sidebar and selecting the
 "Install Plugins" tab. It may take a few moments for the
 search index to update and your plugin to appear.
 
-![Install plugins](/docs/assets/install-plugins.png)
+![Install plugins](assets/install-plugins.png)
 
 ## Native Distribution
 

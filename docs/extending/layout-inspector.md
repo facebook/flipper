@@ -6,7 +6,7 @@ title: Extending Layout Inspector
 The Layout Inspector plugin can be extended to support new kinds of UI components. You can also extend it to customize the data made available in the sidebar.
 Depending on whether you want to expose new data on Android or iOS, there are different interfaces you can use.
 
-![Layout Inspector](/docs/assets/layoutinspector.png)
+![Layout Inspector](assets/layoutinspector.png)
 
 ## Android
 

@@ -3,7 +3,7 @@ id: react-native
 title: React Native Support
 ---
 
-![React Native + React DevTools](/docs/assets/react-native-react.png)
+![React Native + React DevTools](assets/react-native-react.png)
 
 The React Native and Developer tooling teams at Facebook work in close collaboration to make sure Flipper offers top-notch value out of the box for React Native development. 
 Integration between React Native and Flipper is enabled out of the box in React Native version 0.62 and higher.
@@ -16,7 +16,7 @@ In Flipper there is a dedicated device type, “React Native”, that connects t
 
 If Metro is connected, two new buttons will appear in Flipper’s main toolbar: “Reload” and “Open Dev Menu”. Both do exactly what their name suggests, without needing the agility of a pianist to get to the right keyboard combo inside your emulator. The “React Native” device will feature two plugins out of the box: “Logs” and “React DevTools”. 
 
-![React Native Action Buttons and Logs](/docs/assets/react-native-logs.png)
+![React Native Action Buttons and Logs](assets/react-native-logs.png)
 
 The React DevTools allows you to inspect the component tree and tune the props and state of your React components. 
 
@@ -39,7 +39,7 @@ Beyond the React Native specific Flipper plugins described above, with Flipper y
 One of the greatest values of Flipper is its extensibility. Many teams across Facebook already have written their own one-off plugins that help with analysing very specific use cases. 
 Writing plugins for Flipper doesn't require any native code, as the Flipper SDK is exposed directly to JavaScript through the [react-native-flipper](https://www.npmjs.com/package/react-native-flipper) package.  
 
-![Tic Tac Toe example plugin](/docs/assets/react-native-tictactoe.png)
+![Tic Tac Toe example plugin](assets/react-native-tictactoe.png)
 _Example Flipper plugin: playing a game of Tic Tac Toe using Flipper and some emulators_
 
 If you would love to build a specific (or generic) extension for Flipper check out the following pointers! Plugins for Flipper can be distributed through NPM so sharing them is trivial.
