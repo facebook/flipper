@@ -6,7 +6,7 @@ matrix:
     - language: node_js
       os: linux
       node_js:
-        - "11"
+        - "12"
 
       install:
         - cd website
@@ -30,13 +30,13 @@ matrix:
     - language: node_js
       os: linux
       node_js:
-        - "11"
+        - "12"
 
       install:
         - cd desktop
         - yarn
 
-      script:        
+      script:
         - yarn lint
         - yarn test
         - yarn build --linux --version=$TRAVIS_BUILD_NUMBER
