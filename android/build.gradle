@@ -11,6 +11,7 @@ apply plugin: 'maven'
 android {
     compileSdkVersion rootProject.compileSdkVersion
     buildToolsVersion rootProject.buildToolsVersion
+    ndkVersion "21.0.6113669"
     // Uncomment this and enable the database plugin test when roboelectric is upgraded
     // testOptions.unitTests.includeAndroidResources = true
 
