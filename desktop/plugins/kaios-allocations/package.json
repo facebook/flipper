@@ -13,7 +13,7 @@
     "postinstall": "patch-package"
   },
   "devDependencies": {
-    "patch-package": "^6.2.0",
+    "patch-package": "^6.2.2",
     "postinstall-postinstall": "^2.0.0"
   },
   "dependencies": {
