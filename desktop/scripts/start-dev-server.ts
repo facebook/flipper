@@ -8,7 +8,7 @@
  */
 
 const electronBinary: string = require('electron') as any;
-import codeFrame from 'babel-code-frame';
+import codeFrame from '@babel/code-frame';
 import socketIo from 'socket.io';
 import express, {Express} from 'express';
 import detect from 'detect-port';
@@ -17,16 +17,18 @@ import AnsiToHtmlConverter from 'ansi-to-html';
 import chalk from 'chalk';
 import http from 'http';
 import path from 'path';
-import fs from 'fs';
+import fs from 'fs-extra';
 import {compileMain} from './build-utils';
 import Watchman from '../static/watchman';
 import Metro from 'metro';
 import MetroResolver from 'metro-resolver';
+import {default as getWatchFolders} from '../static/get-watch-folders';
+import {staticDir, pluginsDir, appDir, babelTransformationsDir} from './paths';
+import isFB from './isFB';
 
 const ansiToHtmlConverter = new AnsiToHtmlConverter();
 
 const DEFAULT_PORT = (process.env.PORT || 3000) as number;
-const STATIC_DIR = path.join(__dirname, '..', 'static');
 
 let shutdownElectron: (() => void) | undefined = undefined;
 
@@ -39,14 +41,17 @@ function launchElectron({
   bundleURL: string;
   electronURL: string;
 }) {
+  if (process.argv.includes('--no-embedded-plugins')) {
+    process.env.FLIPPER_NO_EMBEDDED_PLUGINS = 'true';
+  }
   const args = [
-    path.join(STATIC_DIR, 'index.js'),
+    path.join(staticDir, 'index.js'),
     '--remote-debugging-port=9222',
     ...process.argv,
   ];
 
   const proc = child.spawn(electronBinary, args, {
-    cwd: STATIC_DIR,
+    cwd: staticDir,
     env: {
       ...process.env,
       SONAR_ROOT: process.cwd(),
@@ -75,18 +80,19 @@ function launchElectron({
   };
 }
 
-function startMetroServer(app: Express) {
-  const projectRoot = path.join(__dirname, '..');
-  return Metro.runMetro({
-    projectRoot,
-    watchFolders: [projectRoot],
+async function startMetroServer(app: Express) {
+  const watchFolders = [
+    ...(await getWatchFolders(appDir)),
+    path.join(pluginsDir, 'navigation'),
+    path.join(pluginsDir, 'fb', 'layout', 'sidebar_extensions'),
+    path.join(pluginsDir, 'fb', 'mobileconfig'),
+    path.join(pluginsDir, 'fb', 'watch'),
+  ].filter(fs.pathExistsSync);
+  const metroBundlerServer = await Metro.runMetro({
+    projectRoot: appDir,
+    watchFolders,
     transformer: {
-      babelTransformerPath: path.join(
-        projectRoot,
-        'static',
-        'transforms',
-        'index.js',
-      ),
+      babelTransformerPath: path.join(babelTransformationsDir, 'transform-app'),
     },
     resolver: {
       resolverMainFields: ['flipper:source', 'module', 'main'],
@@ -103,9 +109,8 @@ function startMetroServer(app: Express) {
       },
     },
     watch: true,
-  }).then((metroBundlerServer: any) => {
-    app.use(metroBundlerServer.processRequest.bind(metroBundlerServer));
   });
+  app.use(metroBundlerServer.processRequest.bind(metroBundlerServer));
 }
 
 function startAssetServer(
@@ -141,14 +146,14 @@ function startAssetServer(
   });
 
   app.get('/', (req, res) => {
-    fs.readFile(path.join(STATIC_DIR, 'index.dev.html'), (err, content) => {
+    fs.readFile(path.join(staticDir, 'index.dev.html'), (err, content) => {
       res.end(content);
     });
   });
 
-  app.use(express.static(STATIC_DIR));
+  app.use(express.static(staticDir));
 
-  app.use(function(err: any, req: any, res: any, _next: any) {
+  app.use(function (err: any, req: any, res: any, _next: any) {
     knownErrors[req.url] = err;
     outputScreen();
     res.status(500).send('Something broke, check the console!');
@@ -156,7 +161,7 @@ function startAssetServer(
 
   const server = http.createServer(app);
 
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     server.listen(port, 'localhost', () => resolve({app, server}));
   });
 }
@@ -165,7 +170,7 @@ async function addWebsocket(server: http.Server) {
   const io = socketIo(server);
 
   // notify connected clients that there's errors in the console
-  io.on('connection', client => {
+  io.on('connection', (client) => {
     if (hasErrors()) {
       client.emit('hasErrors', ansiToHtmlConverter.toHtml(buildErrorScreen()));
     }
@@ -177,7 +182,7 @@ async function addWebsocket(server: http.Server) {
     const watchman = new Watchman(path.resolve(__dirname, '..'));
     await watchman.initialize();
     await Promise.all(
-      ['src', 'pkg', 'doctor'].map(dir =>
+      ['app', 'pkg', 'doctor'].map((dir) =>
         watchman.startWatchFiles(
           dir,
           () => {
@@ -250,12 +255,15 @@ function outputScreen(socket?: socketIo.Server) {
 }
 
 (async () => {
+  if (isFB && process.env.FLIPPER_FB === undefined) {
+    process.env.FLIPPER_FB = 'true';
+  }
   const port = await detect(DEFAULT_PORT);
   const {app, server} = await startAssetServer(port);
   const socket = await addWebsocket(server);
   await startMetroServer(app);
   outputScreen(socket);
-  await compileMain({dev: true});
+  await compileMain();
   shutdownElectron = launchElectron({
     devServerURL: `http://localhost:${port}`,
     bundleURL: `http://localhost:${port}/src/init.bundle`,

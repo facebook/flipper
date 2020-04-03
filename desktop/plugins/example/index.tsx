@@ -102,7 +102,7 @@ export default class Example extends FlipperPlugin<State, any, PersistedState> {
         <Text>{this.state.prompt}</Text>
         <Input
           placeholder="Message"
-          onChange={event => {
+          onChange={(event) => {
             this.setState({message: event.target.value});
           }}
         />

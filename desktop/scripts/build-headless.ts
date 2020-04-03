@@ -7,18 +7,20 @@
  * @format
  */
 
-import fs from 'fs';
+import fs from 'fs-extra';
 import path from 'path';
 import lineReplace from 'line-replace';
 import yazl from 'yazl';
 const {exec: createBinary} = require('pkg');
 import {
   buildFolder,
-  compile,
+  compileHeadless,
   compileDefaultPlugins,
   getVersionNumber,
   genMercurialRevision,
 } from './build-utils';
+import isFB from './isFB';
+import {distDir} from './paths';
 
 const PLUGINS_FOLDER_NAME = 'plugins';
 
@@ -29,7 +31,7 @@ function preludeBundle(
 ) {
   const revisionStr =
     buildRevision == null ? '' : `global.__REVISION__="${buildRevision}";`;
-  return new Promise(resolve =>
+  return new Promise((resolve) =>
     lineReplace({
       file: path.join(dir, 'bundle.js'),
       line: 1,
@@ -41,18 +43,18 @@ function preludeBundle(
 }
 
 async function createZip(buildDir: string, distDir: string, targets: string[]) {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     const zip = new yazl.ZipFile();
 
     // add binaries for each target
-    targets.forEach(target => {
+    targets.forEach((target) => {
       const binary = `flipper-${target === 'mac' ? 'macos' : target}`;
       zip.addFile(path.join(buildDir, binary), binary);
     });
 
     // add plugins
     const pluginDir = path.join(buildDir, PLUGINS_FOLDER_NAME);
-    fs.readdirSync(pluginDir).forEach(file => {
+    fs.readdirSync(pluginDir).forEach((file) => {
       zip.addFile(
         path.join(pluginDir, file),
         path.join(PLUGINS_FOLDER_NAME, file),
@@ -68,6 +70,9 @@ async function createZip(buildDir: string, distDir: string, targets: string[]) {
 }
 
 (async () => {
+  if (isFB) {
+    process.env.FLIPPER_FB = 'true';
+  }
   const targets: {mac?: string; linux?: string; win?: string} = {};
   let platformPostfix: string = '';
   if (process.argv.indexOf('--mac') > -1) {
@@ -93,12 +98,11 @@ async function createZip(buildDir: string, distDir: string, targets: string[]) {
   // developement iteration by not including any plugins.
   const skipPlugins = process.argv.indexOf('--no-plugins') > -1;
 
-  process.env.BUILD_HEADLESS = 'true';
+  process.env.FLIPPER_HEADLESS = 'true';
   const buildDir = await buildFolder();
-  const distDir = path.join(__dirname, '..', '..', 'dist');
   // eslint-disable-next-line no-console
   console.log('Created build directory', buildDir);
-  await compile(buildDir, path.join(__dirname, '..', 'headless', 'index.tsx'));
+  await compileHeadless(buildDir);
   const versionNumber = getVersionNumber();
   const buildRevision = await genMercurialRevision();
   await preludeBundle(buildDir, versionNumber, buildRevision);
@@ -114,6 +118,7 @@ async function createZip(buildDir: string, distDir: string, targets: string[]) {
     Object.values(targets).join(','),
     '--debug',
   ]);
+  await fs.ensureDir(distDir);
   await createZip(buildDir, distDir, Object.keys(targets));
   // eslint-disable-next-line no-console
   console.log('✨  Done');

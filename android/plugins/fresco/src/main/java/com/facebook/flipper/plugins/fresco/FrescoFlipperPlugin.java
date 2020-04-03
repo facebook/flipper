@@ -10,7 +10,11 @@ package com.facebook.flipper.plugins.fresco;
 import android.graphics.Bitmap;
 import android.util.Base64;
 import android.util.Pair;
+import bolts.Continuation;
+import bolts.Task;
 import com.facebook.cache.common.CacheKey;
+import com.facebook.cache.common.SimpleCacheKey;
+import com.facebook.cache.disk.DiskStorage;
 import com.facebook.common.internal.ByteStreams;
 import com.facebook.common.internal.Predicate;
 import com.facebook.common.memory.PooledByteBuffer;
@@ -42,6 +46,7 @@ import com.facebook.imagepipeline.debug.DebugImageTracker;
 import com.facebook.imagepipeline.debug.FlipperImageTracker;
 import com.facebook.imagepipeline.image.CloseableBitmap;
 import com.facebook.imagepipeline.image.CloseableImage;
+import com.facebook.imagepipeline.image.EncodedImage;
 import com.facebook.imageutils.BitmapUtil;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -50,6 +55,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.annotation.Nullable;
 
 /**
@@ -175,7 +181,11 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin
                     .dumpCacheContent();
 
             try {
-              responder.success(getImageList(bitmapMemoryCache, encodedMemoryCache));
+              responder.success(
+                  getImageList(
+                      bitmapMemoryCache,
+                      encodedMemoryCache,
+                      imagePipelineFactory.getMainFileCache().getDumpInfo().entries));
               mPerfLogger.endMarker("Sonar.Fresco.listImages");
             } finally {
               bitmapMemoryCache.release();
@@ -195,8 +205,8 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin
             }
 
             mPerfLogger.startMarker("Sonar.Fresco.getImage");
-            String imageId = params.getString("imageId");
-            CacheKey cacheKey = mFlipperImageTracker.getCacheKey(imageId);
+            final String imageId = params.getString("imageId");
+            final CacheKey cacheKey = mFlipperImageTracker.getCacheKey(imageId);
             if (cacheKey == null) {
               respondError(responder, "ImageId " + imageId + " was evicted from cache");
               mPerfLogger.cancelMarker("Sonar.Fresco.getImage");
@@ -204,33 +214,35 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin
             }
 
             final ImagePipelineFactory imagePipelineFactory = Fresco.getImagePipelineFactory();
-            // load from bitmap cache
+
+            // try to load from bitmap cache
             CloseableReference<CloseableImage> ref =
                 imagePipelineFactory.getBitmapCountingMemoryCache().get(cacheKey);
             try {
               if (ref != null) {
                 loadFromBitmapCache(ref, imageId, cacheKey, responder);
-              } else {
-                // try to load from encoded cache
-                CloseableReference<PooledByteBuffer> encodedRef =
-                    imagePipelineFactory.getEncodedCountingMemoryCache().get(cacheKey);
-                try {
-                  if (encodedRef != null) {
-                    loadFromEncodedCache(encodedRef, imageId, cacheKey, responder);
-                  } else {
-                    respondError(responder, "no bitmap withId=" + imageId);
-                    mPerfLogger.cancelMarker("Sonar.Fresco.getImage");
-                    return;
-                  }
-                } finally {
-                  CloseableReference.closeSafely(encodedRef);
-                }
+                mPerfLogger.endMarker("Sonar.Fresco.getImage");
+                return;
               }
             } finally {
               CloseableReference.closeSafely(ref);
             }
 
-            mPerfLogger.endMarker("Sonar.Fresco.getImage");
+            // try to load from encoded cache
+            CloseableReference<PooledByteBuffer> encodedRef =
+                imagePipelineFactory.getEncodedCountingMemoryCache().get(cacheKey);
+            try {
+              if (encodedRef != null) {
+                loadFromEncodedCache(encodedRef, imageId, cacheKey, responder);
+                mPerfLogger.endMarker("Sonar.Fresco.getImage");
+                return;
+              }
+            } finally {
+              CloseableReference.closeSafely(encodedRef);
+            }
+
+            // try to load from disk
+            loadFromDisk(imageId, cacheKey, responder);
           }
 
           private void loadFromBitmapCache(
@@ -245,7 +257,12 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin
 
               responder.success(
                   getImageData(
-                      imageId, encodedBitmap, bitmap, mFlipperImageTracker.getUriString(cacheKey)));
+                      imageId,
+                      mFlipperImageTracker.getUriString(cacheKey),
+                      bitmap.getWidth(),
+                      bitmap.getHeight(),
+                      bitmap.getSizeInBytes(),
+                      encodedBitmap));
             } else {
               // TODO: T48376327, it might happened that ref.get() may not be casted to
               // CloseableBitmap, this issue is tracked in the before mentioned task
@@ -268,17 +285,49 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin
             }
 
             responder.success(
-                new FlipperObject.Builder()
-                    .put("imageId", imageId)
-                    .put("uri", mFlipperImageTracker.getUriString(cacheKey))
-                    .put("width", dimensions.first)
-                    .put("height", dimensions.second)
-                    .put("sizeBytes", encodedArray.length)
-                    .put(
-                        "data",
-                        "data:image/jpeg;base64,"
-                            + Base64.encodeToString(encodedArray, Base64.DEFAULT))
-                    .build());
+                getImageData(
+                    imageId,
+                    mFlipperImageTracker.getUriString(cacheKey),
+                    dimensions.first,
+                    dimensions.second,
+                    encodedArray.length,
+                    dataFromEncodedArray(encodedArray)));
+          }
+
+          private void loadFromDisk(
+              final String imageId, final CacheKey cacheKey, final FlipperResponder responder) {
+            Task<EncodedImage> t =
+                Fresco.getImagePipelineFactory()
+                    .getMainBufferedDiskCache()
+                    .get(cacheKey, new AtomicBoolean(false));
+
+            t.continueWith(
+                new Continuation<EncodedImage, Void>() {
+                  public Void then(Task<EncodedImage> task) throws Exception {
+                    if (task.isCancelled() || task.isFaulted()) {
+                      respondError(responder, "no bitmap withId=" + imageId);
+                      mPerfLogger.cancelMarker("Sonar.Fresco.getImage");
+                      return null;
+                    }
+                    final EncodedImage image = task.getResult();
+                    try {
+                      byte[] encodedArray = ByteStreams.toByteArray(image.getInputStream());
+
+                      responder.success(
+                          getImageData(
+                              imageId,
+                              mFlipperImageTracker.getLocalPath(cacheKey),
+                              image.getWidth(),
+                              image.getHeight(),
+                              encodedArray.length,
+                              dataFromEncodedArray(encodedArray)));
+                    } finally {
+                      EncodedImage.closeSafely(image);
+                    }
+                    mPerfLogger.endMarker("Sonar.Fresco.getImage");
+                    return null;
+                  }
+                });
           }
         });
 
@@ -350,9 +399,14 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin
     }
   }
 
+  private static String dataFromEncodedArray(byte[] encodedArray) {
+    return "data:image/jpeg;base64," + Base64.encodeToString(encodedArray, Base64.DEFAULT);
+  }
+
   private FlipperObject getImageList(
       final CountingMemoryCacheInspector.DumpInfo bitmapMemoryCache,
-      final CountingMemoryCacheInspector.DumpInfo encodedMemoryCache) {
+      final CountingMemoryCacheInspector.DumpInfo encodedMemoryCache,
+      final List<DiskStorage.DiskDumpInfoEntry> diskEntries) {
     return new FlipperObject.Builder()
         .put(
             "levels",
@@ -363,7 +417,8 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin
                 // encoded
                 .put(getUsedStats("Used encoded images", encodedMemoryCache))
                 .put(getCachedStats("Cached encoded images", encodedMemoryCache))
-                // TODO (t31947642): list images on disk
+                // disk
+                .put(getDiskStats("Disk images", diskEntries))
                 .build())
         .build();
   }
@@ -388,15 +443,25 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin
         .build();
   }
 
+  private FlipperObject getDiskStats(
+      final String cacheType, List<DiskStorage.DiskDumpInfoEntry> diskEntries) {
+    return new FlipperObject.Builder()
+        .put("cacheType", cacheType)
+        .put("clearKey", "disk")
+        .put("sizeBytes", Fresco.getImagePipelineFactory().getMainFileCache().getSize())
+        .put("imageIds", buildImageIdListDisk(diskEntries))
+        .build();
+  }
+
   private static FlipperObject getImageData(
-      String imageID, String encodedBitmap, CloseableBitmap bitmap, String uriString) {
+      String imageID, String uriString, int width, int height, int sizeBytes, String data) {
     return new FlipperObject.Builder()
         .put("imageId", imageID)
         .put("uri", uriString)
-        .put("width", bitmap.getWidth())
-        .put("height", bitmap.getHeight())
-        .put("sizeBytes", bitmap.getSizeInBytes())
-        .put("data", encodedBitmap)
+        .put("width", width)
+        .put("height", height)
+        .put("sizeBytes", sizeBytes)
+        .put("data", data)
         .build();
   }
 
@@ -414,7 +479,6 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin
   }
 
   private FlipperArray buildImageIdList(List<DumpInfoEntry<CacheKey, CloseableImage>> images) {
-
     FlipperArray.Builder builder = new FlipperArray.Builder();
     for (DumpInfoEntry<CacheKey, CloseableImage> entry : images) {
       final FlipperImageTracker.ImageDebugData imageDebugData =
@@ -422,6 +486,22 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin
 
       if (imageDebugData == null) {
         builder.put(mFlipperImageTracker.trackImage(entry.key).getUniqueId());
+      } else {
+        builder.put(imageDebugData.getUniqueId());
+      }
+    }
+    return builder.build();
+  }
+
+  private FlipperArray buildImageIdListDisk(List<DiskStorage.DiskDumpInfoEntry> diskEntries) {
+    FlipperArray.Builder builder = new FlipperArray.Builder();
+    for (DiskStorage.DiskDumpInfoEntry entry : diskEntries) {
+      final CacheKey entryCacheKey = new SimpleCacheKey(entry.id, true);
+      final FlipperImageTracker.ImageDebugData imageDebugData =
+          mFlipperImageTracker.getImageDebugData(entryCacheKey);
+
+      if (imageDebugData == null) {
+        builder.put(mFlipperImageTracker.trackImage(entry.path, entryCacheKey).getUniqueId());
       } else {
         builder.put(imageDebugData.getUniqueId());
       }

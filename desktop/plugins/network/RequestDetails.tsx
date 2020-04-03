@@ -184,7 +184,9 @@ export default class RequestDetails extends Component<
             {response.headers.length > 0 ? (
               <Panel
                 key={'responseheaders'}
-                heading={'Response Headers'}
+                heading={`Response Headers${
+                  response.isMock ? ' (Mocked)' : ''
+                }`}
                 floating={false}
                 padded={false}>
                 <HeaderInspector headers={response.headers} />
@@ -192,7 +194,7 @@ export default class RequestDetails extends Component<
             ) : null}
             <Panel
               key={'responsebody'}
-              heading={'Response Body'}
+              heading={`Response Body${response.isMock ? ' (Mocked)' : ''}`}
               floating={false}
               padded={!formattedText}>
               <ResponseBodyInspector
@@ -534,8 +536,8 @@ class JSONTextFormatter {
         // Multiple top level JSON roots, map them one by one
         return body
           .split('\n')
-          .map(json => JSON.parse(json))
-          .map(data => <JSONText>{data}</JSONText>);
+          .map((json) => JSON.parse(json))
+          .map((data) => <JSONText>{data}</JSONText>);
       }
     }
   };
@@ -601,7 +603,7 @@ class JSONFormatter {
           <ManagedDataInspector
             collapsed={true}
             expandRoot={true}
-            data={roots.map(json => JSON.parse(json))}
+            data={roots.map((json) => JSON.parse(json))}
           />
         );
       }
@@ -703,7 +705,7 @@ class GraphQLFormatter {
         const parsedResponses = body
           .replace(/}{/g, '}\r\n{')
           .split('\n')
-          .map(json => JSON.parse(json));
+          .map((json) => JSON.parse(json));
         return (
           <div>
             {this.parsedServerTimeForFirstFlush(parsedResponses)}
@@ -800,7 +802,7 @@ class InsightsInspector extends Component<{insights: Insights}> {
       buildRow('Post processing time', insights.postProcessingTime, formatTime),
       buildRow('Bytes transfered', insights.bytesTransfered, formatBytes),
       buildRow('Transfer speed', insights.transferSpeed, formatSpeed),
-    ].filter(r => r != null);
+    ].filter((r) => r != null);
 
     return rows.length > 0 ? (
       <ManagedTable

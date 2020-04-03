@@ -106,7 +106,7 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
     const {selectedApp} = this.props;
     this.subscribeToNavigationEvents();
     this.getDevice()
-      .then(device => getAppMatchPatterns(selectedApp, device))
+      .then((device) => getAppMatchPatterns(selectedApp, device))
       .then((patterns: Array<AppMatchPattern>) => {
         this.props.setPersistedState({
           appMatchPatterns: patterns,
@@ -118,7 +118,7 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
       .catch(() => {
         /* Silently fail here. */
       });
-    readBookmarksFromDB().then(bookmarks => {
+    readBookmarksFromDB().then((bookmarks) => {
       this.props.setPersistedState({
         bookmarks: bookmarks,
         bookmarksProvider: bookmarksToAutoCompleteProvider(bookmarks),

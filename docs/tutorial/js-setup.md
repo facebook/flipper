@@ -7,7 +7,7 @@ sidebar_label: Building a desktop plugin
 Now that we have the native side covered, let's display the data we're sending
 on the desktop side.
 
-![Custom cards UI for our sea mammals plugin](/docs/assets/js-custom.png)
+![Custom cards UI for our sea mammals plugin](assets/js-custom.png)
 
 ## Dynamic Plugin loading
 

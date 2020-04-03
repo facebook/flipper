@@ -5,7 +5,7 @@ title: Features
 
 Flipper itself only provides the architectural platform. What makes it useful are the plugins built on top of it: [Logs](logs-plugin.md), [Layout Inspector](layout-plugin.md) and [Network Inspector](network-plugin.md) are all plugins. Plugins can be built very specific to your business logic and the use-cases you have in your app. We are shipping Flipper with a couple of built-in all-purpose plugins, but we encourage you to build your own. Each plugin needs to be enabled individually.
 
-![Layout plugin](/docs/assets/plugins.png)
+![Layout plugin](assets/plugins.png)
 
 ## Build your own plugin
 

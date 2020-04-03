@@ -236,7 +236,7 @@ export async function runHealthchecks(): Promise<
                 key,
                 label,
                 isRequired: isRequired ?? true,
-                result: await run(environmentInfo).catch(e => {
+                result: await run(environmentInfo).catch((e) => {
                   console.error(e);
                   // TODO Improve result type to be: OK | Problem(message, fix...)
                   return {
@@ -273,7 +273,7 @@ async function tryExecuteCommand(
 
 async function isWatchmanAvailable(): Promise<boolean> {
   const client = new watchman.Client();
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     const complete = (result: boolean) => {
       resolve(result);
       client.removeAllListeners('error');
@@ -282,7 +282,7 @@ async function isWatchmanAvailable(): Promise<boolean> {
     client.once('error', () => complete(false));
     client.capabilityCheck(
       {optional: [], required: ['relative_root']},
-      error => {
+      (error) => {
         if (error) {
           complete(false);
           return;

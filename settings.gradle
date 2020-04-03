@@ -7,7 +7,6 @@
 
 include ':android'
 include ':folly'
-include ':easywsclient'
 include ':sonarcpp'
 include ':sample'
 include ':tutorial'
@@ -18,7 +17,6 @@ include ':rsocket'
 include ':third-party'
 include ':noop'
 
-project(':easywsclient').projectDir = file('libs/easywsclient')
 project(':sonarcpp').projectDir = file('xplat')
 project(':sample').projectDir = file('android/sample')
 project(':tutorial').projectDir = file('android/tutorial')

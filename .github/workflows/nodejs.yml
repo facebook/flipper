@@ -8,7 +8,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     env:
-      desktop-directory: ./desktop    
+      desktop-directory: ./desktop
 
     strategy:
       matrix:

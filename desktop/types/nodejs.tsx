@@ -12,6 +12,7 @@ declare module NodeJS {
     __REVISION__: string | undefined;
     __VERSION__: string;
     electronRequire: (name: string) => any;
+    electronResolve: (name: string) => string;
     window: Window | undefined;
     WebSocket: any;
     fetch: any;

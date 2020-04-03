@@ -1,6 +1,6 @@
 project 'Tutorial.xcodeproj'
 swift_version = "4.1"
-flipperkit_version = '0.33.1'
+flipperkit_version = '0.35.0'
 use_frameworks!
 
 target 'Tutorial' do
@@ -27,7 +27,7 @@ target 'Tutorial' do
     installer.pod_targets.each do |pod|
         if $static_framework.include?(pod.name)
           def pod.build_type;
-            Pod::Target::BuildType.static_library
+            Pod::BuildType.static_library
           end
         end
       end

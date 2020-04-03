@@ -68,7 +68,7 @@ export default class Search extends Component<Props, State> {
     this.timer = setTimeout(() => this.performSearch(value), 200);
   };
 
-  onKeyDown = (e: React.KeyboardEvent) => {
+  onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       this.performSearch(this.state.value);
     }
@@ -99,7 +99,7 @@ export default class Search extends Component<Props, State> {
     } else {
       this.props.client
         .call('getSearchResults', {query, axEnabled: this.props.inAXMode})
-        .then(response =>
+        .then((response) =>
           this.displaySearchResults(response, this.props.inAXMode),
         );
     }
@@ -123,14 +123,14 @@ export default class Search extends Component<Props, State> {
     });
 
     const searchResults = this.getElementsFromSearchResultTree(results);
-    const searchResultIDs = new Set(searchResults.map(r => r.element.id));
+    const searchResultIDs = new Set(searchResults.map((r) => r.element.id));
     const elements: ElementMap = searchResults.reduce(
       (acc: ElementMap, {element}: SearchResultTree) => ({
         ...acc,
         [element.id]: {
           ...element,
           // expand all search results, that we have have children for
-          expanded: element.children.some(c => searchResultIDs.has(c)),
+          expanded: element.children.some((c) => searchResultIDs.has(c)),
         },
       }),
       this.props.persistedState.elements,
@@ -148,7 +148,7 @@ export default class Search extends Component<Props, State> {
             [axElement.id]: {
               ...axElement,
               // expand all search results, that we have have children for
-              expanded: axElement.children.some(c => searchResultIDs.has(c)),
+              expanded: axElement.children.some((c) => searchResultIDs.has(c)),
             },
           };
         },
@@ -160,7 +160,7 @@ export default class Search extends Component<Props, State> {
 
     this.props.onSearchResults({
       matches: new Set(
-        searchResults.filter(x => x.isMatch).map(x => x.element.id),
+        searchResults.filter((x) => x.isMatch).map((x) => x.element.id),
       ),
       query: query,
     });

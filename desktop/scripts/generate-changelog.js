@@ -42,7 +42,7 @@ console.log(
 );
 
 // # get all commit summaries since last release | find all changelog entries, but make sure there is only one line per commit by temporarily replacing newlines
-const hgLogCommand = `hg log -r "${firstCommit}::${lastCommit} and file('../*')" --template "{phabdiff} - {sub('\n','${newlineMarker}', desc)}\n"`;
+const hgLogCommand = `hg log -r "${firstCommit}::${lastCommit} and file('glob:../../**/*')" --template "{phabdiff} - {sub('\n','${newlineMarker}', desc)}\n"`;
 const hgLog = cp.execSync(hgLogCommand, {cwd: __dirname}).toString();
 
 const diffRe = /^D\d+/;

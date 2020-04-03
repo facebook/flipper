@@ -105,7 +105,7 @@ class Card extends React.Component<
     selected: boolean;
   } & Row
 > {
-  static Container = styled(FlexColumn)<{selected?: boolean}>(props => ({
+  static Container = styled(FlexColumn)<{selected?: boolean}>((props) => ({
     margin: 10,
     borderRadius: 5,
     border: '2px solid black',

@@ -3,7 +3,7 @@ id: intro
 title: Intro
 ---
 
-![Android App Tutorial](/docs/assets/android-tutorial.png)
+![Android App Tutorial](assets/android-tutorial.png)
 
 In this tutorial, we show you how how easy it is to build a Flipper plugin
 for Android and iOS that extracts data from your native application and

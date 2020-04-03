@@ -11,21 +11,26 @@ import path from 'path';
 import {createStore, Dispatch, Middleware, MiddlewareAPI} from 'redux';
 import {applyMiddleware} from 'redux';
 import yargs, {Argv} from 'yargs';
-import dispatcher from '../src/dispatcher/index';
-import reducers, {Actions, State} from '../src/reducers/index';
-import {init as initLogger} from '../src/fb-stubs/Logger';
-import {exportStore} from '../src/utils/exportData';
+import dispatcher from '../app/src/dispatcher/index';
+import reducers, {Actions, State} from '../app/src/reducers/index';
+import {init as initLogger} from '../app/src/fb-stubs/Logger';
+import {exportStore} from '../app/src/utils/exportData';
 import {
   exportMetricsWithoutTrace,
   exportMetricsFromTrace,
-} from '../src/utils/exportMetrics';
-import {listDevices} from '../src/utils/listDevices';
+} from '../app/src/utils/exportMetrics';
+import {listDevices} from '../app/src/utils/listDevices';
 import setup from '../static/setup';
-import {getPersistentPlugins, pluginsClassMap} from '../src/utils/pluginUtils';
-import {serialize} from '../src/utils/serialization';
-import {getStringFromErrorLike} from '../src/utils/index';
-import AndroidDevice from '../src/devices/AndroidDevice';
+import {
+  getPersistentPlugins,
+  pluginsClassMap,
+} from '../app/src/utils/pluginUtils';
+import {serialize} from '../app/src/utils/serialization';
+import {getStringFromErrorLike} from '../app/src/utils/index';
+import AndroidDevice from '../app/src/devices/AndroidDevice';
 import {Store} from 'flipper';
+
+process.env.FLIPPER_HEADLESS = 'true';
 
 type Action = {exit: boolean; result?: string};
 
@@ -177,8 +182,10 @@ async function exitActions(
           );
           outputAndExit(payload);
         } else {
-          const {serializedString, errorArray} = await exportStore(store);
-          errorArray.forEach(console.error);
+          const {serializedString, fetchMetaDataErrors} = await exportStore(
+            store,
+          );
+          console.error('Error while fetching metadata', fetchMetaDataErrors);
           outputAndExit(serializedString);
         }
       } catch (e) {
@@ -280,7 +287,7 @@ async function startFlipper(userArguments: UserArguments) {
     async (userArguments: UserArguments) => {
       if (userArguments.listDevices) {
         const devices = await listDevices(store);
-        const mapped = devices.map(device => {
+        const mapped = devices.map((device) => {
           return {
             os: device.os,
             title: device.title,
@@ -307,7 +314,7 @@ async function startFlipper(userArguments: UserArguments) {
       if (selectedDeviceID) {
         const devices = await listDevices(store);
         const matchedDevice = devices.find(
-          device => device.serial === selectedDeviceID,
+          (device) => device.serial === selectedDeviceID,
         );
         if (matchedDevice) {
           if (matchedDevice instanceof AndroidDevice) {
@@ -335,7 +342,7 @@ async function startFlipper(userArguments: UserArguments) {
     },
     async (userArguments: UserArguments, store: Store) => {
       const {selectPlugins} = userArguments;
-      const selectedPlugins = selectPlugins.filter(selectPlugin => {
+      const selectedPlugins = selectPlugins.filter((selectPlugin) => {
         return selectPlugin != undefined;
       });
       if (selectedPlugins) {

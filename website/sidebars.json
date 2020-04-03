@@ -12,11 +12,17 @@
       "features/shared-preferences-plugin",
       "features/leak-canary-plugin",
       "features/crash-reporter-plugin",
-      "features/share-flipper-data"
+      "features/share-flipper-data",
+      "features/react-native"
     ]
   },
   "setup": {
-    "Using Flipper": ["getting-started", "troubleshooting"],
+    "Getting Started": [
+      "getting-started/index",
+      "getting-started/android-native",
+      "getting-started/ios-native",
+      "getting-started/react-native"
+    ],
     "Plugin Setup": [
       "setup/layout-plugin",
       "setup/navigation-plugin",
@@ -28,10 +34,16 @@
       "setup/leak-canary-plugin",
       "setup/crash-reporter-plugin"
     ],
-    "Advanced Usage": ["custom-ports", "stetho"]
+    "Advanced": [
+      "custom-ports",
+      "stetho",
+      "troubleshooting"
+    ]
   },
   "extending": {
-    "Extending Flipper": ["extending/index"],
+    "Extending Flipper": [
+      "extending/index"
+    ],
     "Tutorial": [
       "tutorial/intro",
       "tutorial/ios",
@@ -50,6 +62,7 @@
       "extending/styling-components",
       "extending/search-and-filter",
       "extending/create-plugin",
+      "extending/client-plugin-lifecycle",
       "extending/send-data",
       "extending/error-handling",
       "extending/testing",
@@ -60,6 +73,9 @@
       "extending/establishing-a-connection",
       "extending/supporting-layout"
     ],
-    "Internals": ["extending/arch", "extending/layout-inspector"]
+    "Internals": [
+      "extending/arch",
+      "extending/layout-inspector"
+    ]
   }
 }

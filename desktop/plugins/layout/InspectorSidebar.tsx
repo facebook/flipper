@@ -148,12 +148,12 @@ const Sidebar: React.FC<Props> = (props: Props) => {
 
   const sections: Array<React.ReactNode> = (
     (SidebarExtensions &&
-      SidebarExtensions.map(ext =>
+      SidebarExtensions.map((ext) =>
         ext(props.client, props.realClient, element.id, props.logger),
       )) ||
     []
   ).concat(
-    sectionDefs.map(def => (
+    sectionDefs.map((def) => (
       <InspectorSidebarSection
         tooltips={props.tooltips}
         key={def.key}
@@ -165,7 +165,7 @@ const Sidebar: React.FC<Props> = (props: Props) => {
   );
 
   useEffect(() => {
-    sectionKeys.map(key =>
+    sectionKeys.map((key) =>
       props.logger.track('usage', `layout-sidebar-extension:${key}:loaded`),
     );
   }, [props.element?.data]);

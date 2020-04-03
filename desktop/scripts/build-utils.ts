@@ -15,8 +15,16 @@ import path from 'path';
 import fs from 'fs-extra';
 import {spawn} from 'promisify-child-process';
 import recursiveReaddir from 'recursive-readdir';
+import {default as getWatchFolders} from '../static/get-watch-folders';
+import {
+  appDir,
+  staticDir,
+  pluginsDir,
+  headlessDir,
+  babelTransformationsDir,
+} from './paths';
 
-const projectRoot = path.join(__dirname, '..');
+const dev = process.env.NODE_ENV !== 'production';
 
 async function mostRecentlyChanged(
   dir: string,
@@ -26,7 +34,7 @@ async function mostRecentlyChanged(
     recursiveReaddir,
   )(dir, ignores);
   return files
-    .map(f => fs.lstatSync(f).ctime)
+    .map((f) => fs.lstatSync(f).ctime)
     .reduce((a, b) => (a > b ? a : b), new Date(0));
 }
 
@@ -41,16 +49,11 @@ export function compileDefaultPlugins(
 ) {
   return compilePlugins(
     null,
-    skipAll
-      ? []
-      : [
-          path.join(__dirname, '..', 'plugins'),
-          path.join(__dirname, '..', 'plugins', 'fb'),
-        ],
+    skipAll ? [] : [pluginsDir, path.join(pluginsDir, 'fb')],
     defaultPluginDir,
     {force: true, failSilently: false, recompileOnChanges: false},
   )
-    .then(defaultPlugins =>
+    .then((defaultPlugins) =>
       fs.writeFileSync(
         path.join(defaultPluginDir, 'index.json'),
         JSON.stringify(
@@ -64,20 +67,22 @@ export function compileDefaultPlugins(
     .catch(die);
 }
 
-export function compile(buildFolder: string, entry: string) {
-  console.log(`⚙️  Compiling renderer bundle...`);
-  return Metro.runBuild(
+async function compile(
+  buildFolder: string,
+  projectRoot: string,
+  watchFolders: string[],
+  entry: string,
+) {
+  await Metro.runBuild(
     {
       reporter: {update: () => {}},
-      projectRoot: projectRoot,
-      watchFolders: [projectRoot],
+      projectRoot,
+      watchFolders,
       serializer: {},
       transformer: {
         babelTransformerPath: path.join(
-          projectRoot,
-          'static',
-          'transforms',
-          'index.js',
+          babelTransformationsDir,
+          'transform-app',
         ),
       },
       resolver: {
@@ -86,21 +91,65 @@ export function compile(buildFolder: string, entry: string) {
       },
     },
     {
-      dev: false,
+      dev,
       minify: false,
-      resetCache: true,
+      resetCache: !dev,
       sourceMap: true,
       entry,
       out: path.join(buildFolder, 'bundle.js'),
     },
-  )
-    .then(() => console.log('✅  Compiled renderer bundle.'))
-    .catch(die);
+  );
 }
 
-export async function compileMain({dev}: {dev: boolean}) {
-  const staticDir = path.resolve(projectRoot, 'static');
+export async function compileHeadless(buildFolder: string) {
+  console.log(`⚙️  Compiling headless bundle...`);
+  const watchFolders = [
+    headlessDir,
+    ...(await getWatchFolders(staticDir)),
+    ...(await getWatchFolders(appDir)),
+    path.join(pluginsDir, 'navigation'),
+    path.join(pluginsDir, 'fb', 'layout', 'sidebar_extensions'),
+    path.join(pluginsDir, 'fb', 'mobileconfig'),
+    path.join(pluginsDir, 'fb', 'watch'),
+  ].filter(fs.pathExistsSync);
+  try {
+    await compile(
+      buildFolder,
+      headlessDir,
+      watchFolders,
+      path.join(headlessDir, 'index.tsx'),
+    );
+    console.log('✅  Compiled headless bundle.');
+  } catch (err) {
+    die(err);
+  }
+}
+
+export async function compileRenderer(buildFolder: string) {
+  console.log(`⚙️  Compiling renderer bundle...`);
+  const watchFolders = [
+    ...(await getWatchFolders(appDir)),
+    path.join(pluginsDir, 'navigation'),
+    path.join(pluginsDir, 'fb', 'layout', 'sidebar_extensions'),
+    path.join(pluginsDir, 'fb', 'mobileconfig'),
+    path.join(pluginsDir, 'fb', 'watch'),
+  ].filter(fs.pathExistsSync);
+  try {
+    await compile(
+      buildFolder,
+      appDir,
+      watchFolders,
+      path.join(appDir, 'src', 'init.tsx'),
+    );
+    console.log('✅  Compiled renderer bundle.');
+  } catch (err) {
+    die(err);
+  }
+}
+
+export async function compileMain() {
   const out = path.join(staticDir, 'main.bundle.js');
+  process.env.FLIPPER_ELECTRON_VERSION = require('electron/package.json').version;
   // check if main needs to be compiled
   if (await fs.pathExists(out)) {
     const staticDirCtime = await mostRecentlyChanged(staticDir, ['*.bundle.*']);
@@ -110,18 +159,16 @@ export async function compileMain({dev}: {dev: boolean}) {
       return;
     }
   }
-  console.log(`⚙️  Compiling main bundle...`);
+  console.log('⚙️  Compiling main bundle...');
   try {
     const config = Object.assign({}, await Metro.loadConfig(), {
       reporter: {update: () => {}},
       projectRoot: staticDir,
-      watchFolders: [projectRoot],
+      watchFolders: await getWatchFolders(staticDir),
       transformer: {
         babelTransformerPath: path.join(
-          projectRoot,
-          'static',
-          'transforms',
-          'index.js',
+          babelTransformationsDir,
+          'transform-main',
         ),
       },
       resolver: {
@@ -137,7 +184,7 @@ export async function compileMain({dev}: {dev: boolean}) {
       dev,
       minify: false,
       sourceMap: true,
-      resetCache: true,
+      resetCache: !dev,
     });
     console.log('✅  Compiled main bundle.');
   } catch (err) {
@@ -155,7 +202,7 @@ export function buildFolder(): Promise<string> {
         resolve(buildFolder);
       }
     });
-  }).catch(e => {
+  }).catch((e) => {
     die(e);
     return '';
   });
@@ -173,7 +220,7 @@ export function getVersionNumber() {
 export function genMercurialRevision(): Promise<string | null> {
   return spawn('hg', ['log', '-r', '.', '-T', '{node}'], {encoding: 'utf8'})
     .then(
-      res =>
+      (res) =>
         (res &&
           (typeof res.stdout === 'string'
             ? res.stdout

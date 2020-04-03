@@ -185,7 +185,7 @@ export default class CPUFrequencyTable extends FlipperDevicePlugin<
     return (this.device as AndroidDevice).adb
       .shell(this.device.serial, command)
       .then(adb.util.readAll)
-      .then(function(output: {toString: () => {trim: () => string}}) {
+      .then(function (output: {toString: () => {trim: () => string}}) {
         return callback(output.toString().trim());
       });
   };
@@ -664,7 +664,7 @@ export default class CPUFrequencyTable extends FlipperDevicePlugin<
             floating={false}
             zebra={true}
             rows={this.frequencyRows(this.state.cpuFreq)}
-            onRowHighlighted={selectedIds => {
+            onRowHighlighted={(selectedIds) => {
               this.setState({
                 selectedIds: selectedIds.map(parseInt),
               });

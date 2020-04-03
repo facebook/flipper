@@ -9,7 +9,7 @@
  */
 
 import path from 'path';
-import fs from 'fs';
+import fs from 'fs-extra';
 import Metro from 'metro';
 import util from 'util';
 import recursiveReaddir from 'recursive-readdir';
@@ -17,8 +17,12 @@ import expandTilde from 'expand-tilde';
 import pMap from 'p-map';
 import {homedir} from 'os';
 import Watchman from './watchman';
+import getWatchFolders from './get-watch-folders';
 
 const HOME_DIR = homedir();
+
+let metroDir: string | undefined;
+const metroDirPromise = getMetroDir().then((dir) => (metroDir = dir));
 
 const DEFAULT_COMPILE_OPTIONS: CompileOptions = {
   force: false,
@@ -31,8 +35,6 @@ export type CompileOptions = {
   failSilently: boolean;
   recompileOnChanges: boolean;
 };
-
-type DynamicCompileOptions = CompileOptions & {force: boolean};
 
 export type PluginManifest = {
   version: string;
@@ -51,7 +53,7 @@ type PluginInfo = {
 
 export type CompiledPluginInfo = PluginManifest & {out: string};
 
-export default async function(
+export default async function (
   reloadCallback: (() => void) | null,
   pluginPaths: string[],
   pluginCache: string,
@@ -59,25 +61,22 @@ export default async function(
 ) {
   options = Object.assign({}, DEFAULT_COMPILE_OPTIONS, options);
   const plugins = pluginEntryPoints(pluginPaths);
-  if (!fs.existsSync(pluginCache)) {
-    fs.mkdirSync(pluginCache);
+  if (!(await fs.pathExists(pluginCache))) {
+    await fs.mkdir(pluginCache);
   }
   if (options.recompileOnChanges) {
     await startWatchChanges(plugins, reloadCallback, pluginCache, options);
   }
   const compilations = pMap(
     Object.values(plugins),
-    plugin => {
-      const dynamicOptions: DynamicCompileOptions = Object.assign(options, {
-        force: false,
-      });
-      return compilePlugin(plugin, pluginCache, dynamicOptions);
+    (plugin) => {
+      return compilePlugin(plugin, pluginCache, options);
     },
     {concurrency: 4},
   );
 
   const dynamicPlugins = (await compilations).filter(
-    c => c !== null,
+    (c) => c !== null,
   ) as CompiledPluginInfo[];
   console.log('✅  Compiled all plugins.');
   return dynamicPlugins;
@@ -90,7 +89,7 @@ async function startWatchingPluginsUsingWatchman(
   // Initializing a watchman for each folder containing plugins
   const watchmanRootMap: {[key: string]: Watchman} = {};
   await Promise.all(
-    plugins.map(async plugin => {
+    plugins.map(async (plugin) => {
       const watchmanRoot = path.resolve(plugin.rootDir, '..');
       if (!watchmanRootMap[watchmanRoot]) {
         watchmanRootMap[watchmanRoot] = new Watchman(watchmanRoot);
@@ -100,7 +99,7 @@ async function startWatchingPluginsUsingWatchman(
   );
   // Start watching plugins using the initialized watchmans
   await Promise.all(
-    plugins.map(async plugin => {
+    plugins.map(async (plugin) => {
       const watchmanRoot = path.resolve(plugin.rootDir, '..');
       const watchman = watchmanRootMap[watchmanRoot];
       await watchman.startWatchFiles(
@@ -142,7 +141,7 @@ async function startWatchChanges(
     // no hot reloading for plugins in .flipper folder. This is to prevent
     // Flipper from reloading, while we are doing changes on thirdparty plugins.
     .filter(
-      plugin => !plugin.rootDir.startsWith(path.join(HOME_DIR, '.flipper')),
+      (plugin) => !plugin.rootDir.startsWith(path.join(HOME_DIR, '.flipper')),
     );
   try {
     await startWatchingPluginsUsingWatchman(filteredPlugins, onPluginChanged);
@@ -184,9 +183,9 @@ function pluginEntryPoints(additionalPaths: string[] = []) {
   if (typeof additionalPaths === 'string') {
     additionalPaths = [additionalPaths];
   }
-  additionalPaths.forEach(additionalPath => {
+  additionalPaths.forEach((additionalPath) => {
     const additionalPlugins = entryPointForPluginFolder(additionalPath);
-    Object.keys(additionalPlugins).forEach(key => {
+    Object.keys(additionalPlugins).forEach((key) => {
       entryPoints[key] = additionalPlugins[key];
     });
   });
@@ -199,9 +198,9 @@ function entryPointForPluginFolder(pluginPath: string) {
   }
   return fs
     .readdirSync(pluginPath)
-    .filter(name => fs.lstatSync(path.join(pluginPath, name)).isDirectory())
+    .filter((name) => fs.lstatSync(path.join(pluginPath, name)).isDirectory())
     .filter(Boolean)
-    .map(name => {
+    .map((name) => {
       let packageJSON;
       try {
         packageJSON = fs
@@ -237,18 +236,32 @@ function entryPointForPluginFolder(pluginPath: string) {
 async function mostRecentlyChanged(dir: string) {
   const files = await util.promisify<string, string[]>(recursiveReaddir)(dir);
   return files
-    .map(f => fs.lstatSync(f).ctime)
+    .map((f) => fs.lstatSync(f).ctime)
     .reduce((a, b) => (a > b ? a : b), new Date(0));
+}
+async function getMetroDir() {
+  let dir = __dirname;
+  while (true) {
+    const dirToCheck = path.join(dir, 'node_modules', 'metro');
+    if (await fs.pathExists(dirToCheck)) return dirToCheck;
+    const nextDir = path.dirname(dir);
+    if (!nextDir || nextDir === '' || nextDir === dir) {
+      break;
+    }
+    dir = nextDir;
+  }
+  return __dirname;
 }
 async function compilePlugin(
   pluginInfo: PluginInfo,
   pluginCache: string,
-  options: DynamicCompileOptions,
+  {force, failSilently}: CompileOptions,
 ): Promise<CompiledPluginInfo | null> {
   const {rootDir, manifest, entry, name} = pluginInfo;
   const bundleMain = manifest.bundleMain ?? path.join('dist', 'index.js');
   const bundlePath = path.join(rootDir, bundleMain);
-  if (fs.existsSync(bundlePath)) {
+  const dev = process.env.NODE_ENV !== 'production';
+  if (await fs.pathExists(bundlePath)) {
     // eslint-disable-next-line no-console
     const out = path.join(rootDir, bundleMain);
     console.log(`🥫  Using pre-built version of ${name}: ${out}...`);
@@ -261,48 +274,50 @@ async function compilePlugin(
     const result = Object.assign({}, pluginInfo.manifest, {out});
     const rootDirCtime = await mostRecentlyChanged(rootDir);
     if (
-      !options.force &&
-      fs.existsSync(out) &&
-      rootDirCtime < fs.lstatSync(out).ctime
+      !force &&
+      (await fs.pathExists(out)) &&
+      rootDirCtime < (await fs.lstat(out)).ctime
     ) {
       // eslint-disable-next-line no-console
       console.log(`🥫  Using cached version of ${name}...`);
       return result;
     } else {
-      console.log(`⚙️  Compiling ${name}...`); // eslint-disable-line no-console
+      // eslint-disable-line no-console
+      console.log(`⚙️  Compiling ${name}...`);
       try {
         await Metro.runBuild(
           {
             reporter: {update: () => {}},
             projectRoot: rootDir,
-            watchFolders: [__dirname, rootDir],
+            watchFolders: [metroDir || (await metroDirPromise)].concat(
+              await getWatchFolders(rootDir),
+            ),
             serializer: {
               getRunModuleStatement: (moduleID: string) =>
                 `module.exports = global.__r(${moduleID}).default;`,
               createModuleIdFactory,
             },
             transformer: {
-              babelTransformerPath: path.join(
-                __dirname,
-                'transforms',
-                'index.js',
-              ),
+              babelTransformerPath: global.electronResolve
+                ? global.electronResolve('flipper-babel-transformer') // when compilation is executing in Electron main process
+                : require.resolve('flipper-babel-transformer'), // when compilation is is executing in Node.js script
             },
             resolver: {
               sourceExts: ['tsx', 'ts', 'js'],
-              blacklistRE: /(\/|\\)(sonar|flipper|flipper-public)(\/|\\)(dist|doctor)(\/|\\)|(\.native\.js$)/,
+              blacklistRE: /\.native\.js$/,
             },
           },
           {
             entry: entry.replace(rootDir, '.'),
             out,
-            dev: false,
+            dev,
             sourceMap: true,
             minify: false,
+            resetCache: !dev,
           },
         );
       } catch (e) {
-        if (options.failSilently) {
+        if (failSilently) {
           console.error(
             `❌  Plugin ${name} is ignored, because it could not be compiled.`,
           );

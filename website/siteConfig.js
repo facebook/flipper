@@ -17,7 +17,7 @@ const siteConfig = {
   projectName: 'flipper',
   headerLinks: [
     {doc: 'features/index', label: 'Features'},
-    {doc: 'getting-started', label: 'Setup'},
+    {doc: 'getting-started/index', label: 'Setup'},
     {doc: 'extending/index', label: 'Extending'},
     {href: repoUrl, label: 'GitHub'},
   ],

@@ -76,7 +76,7 @@ export default (props: Props) => {
                 }
                 className={event.className}
                 uri={event.uri}
-                onNavigate={uri => {
+                onNavigate={(uri) => {
                   if (timelineRef.current != null) {
                     timelineRef.current.scrollTo(0, 0);
                   }

@@ -51,23 +51,29 @@ public final class ContextDescriptorUtils {
           || sThemeImplThemeKeyField == null
           || sThemeKeyResIdField == null
           || sThemeImplAssetManagerField == null) {
-        sThemeImplField = theme.getClass().getDeclaredField("mThemeImpl");
-        sThemeImplField.setAccessible(true);
 
-        themeImpl = sThemeImplField.get(theme);
-        sThemeImplThemeKeyField = themeImpl.getClass().getDeclaredField("mKey");
-        sThemeImplThemeKeyField.setAccessible(true);
+        // Early exiting as this bit of code causes too much of the metadata to be created and
+        // ultimately leads to out of memory exception. Reference D20441839
+        // sThemeImplField = theme.getClass().getDeclaredField("mThemeImpl");
+        // sThemeImplField.setAccessible(true);
 
-        sThemeImplAssetManagerField = themeImpl.getClass().getDeclaredField("mAssets");
-        sThemeImplAssetManagerField.setAccessible(true);
+        // themeImpl = sThemeImplField.get(theme);
+        // sThemeImplThemeKeyField = themeImpl.getClass().getDeclaredField("mKey");
+        // sThemeImplThemeKeyField.setAccessible(true);
 
-        sAssetManagerGetStyleAttributesMethod =
-            assetManager.getClass().getDeclaredMethod("getStyleAttributes", int.class);
-        sAssetManagerGetStyleAttributesMethod.setAccessible(true);
+        // sThemeImplAssetManagerField = themeImpl.getClass().getDeclaredField("mAssets");
+        // sThemeImplAssetManagerField.setAccessible(true);
 
-        themeKey = sThemeImplThemeKeyField.get(themeImpl);
-        sThemeKeyResIdField = themeKey.getClass().getDeclaredField("mResId");
-        sThemeKeyResIdField.setAccessible(true);
+        // sAssetManagerGetStyleAttributesMethod =
+        //     assetManager.getClass().getDeclaredMethod("getStyleAttributes", int.class);
+        // sAssetManagerGetStyleAttributesMethod.setAccessible(true);
+
+        // themeKey = sThemeImplThemeKeyField.get(themeImpl);
+        // sThemeKeyResIdField = themeKey.getClass().getDeclaredField("mResId");
+        // sThemeKeyResIdField.setAccessible(true);
+
+        return builderMap;
+
       } else {
         themeImpl = sThemeImplField.get(theme);
         themeKey = sThemeImplThemeKeyField.get(themeImpl);
@@ -77,6 +83,9 @@ public final class ContextDescriptorUtils {
       TypedValue typedValue = new TypedValue();
       Resources resources = context.getResources();
       for (int themeId : appliedThemeResIds) {
+        if (themeId == 0) {
+          continue;
+        }
         String name = resources.getResourceName(themeId);
         // The res id array can have duplicates
         if (builderMap.containsKey(name)) {

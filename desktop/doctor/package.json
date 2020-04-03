@@ -1,6 +1,6 @@
 {
   "name": "flipper-doctor",
-  "version": "0.7.0",
+  "version": "0.35.0",
   "description": "Utility for checking for issues with a flipper installation",
   "main": "lib/index.js",
   "flipper:source": "src",
@@ -18,13 +18,13 @@
     "eslint-plugin-prettier": "^3.1.1",
     "eslint-plugin-react": "^7.16.0",
     "jest": "^24.9.0",
-    "prettier": "^1.19.1",
-    "ts-jest": "^24.1.0",
+    "prettier": "^2.0.0",
+    "ts-jest": "^25.3.0",
     "tslint-config-prettier": "^1.18.0",
     "typescript": "^3.7.2"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -b",
     "prepare": "yarn run build",
     "prepublishOnly": "yarn test && yarn run lint",
     "preversion": "yarn run lint",

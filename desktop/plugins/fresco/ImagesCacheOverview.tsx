@@ -43,13 +43,13 @@ type ToggleProps = {
   toggled: boolean;
 };
 
-const ToolbarToggleButton = styled(ToggleButton)(_props => ({
+const ToolbarToggleButton = styled(ToggleButton)(() => ({
   alignSelf: 'center',
   marginRight: 4,
   minWidth: 30,
 }));
 
-const ToggleLabel = styled(Text)(_props => ({
+const ToggleLabel = styled(Text)(() => ({
   whiteSpace: 'nowrap',
 }));
 
@@ -94,7 +94,7 @@ type ImagesCacheOverviewState = {
   size: number;
 };
 
-const StyledSelect = styled(Select)(props => ({
+const StyledSelect = styled(Select)((props) => ({
   marginLeft: 6,
   marginRight: 6,
   height: '100%',
@@ -307,7 +307,7 @@ class ImageGrid extends PureComponent<{
         onClear={this.props.onClear}
       />,
       <ImageGrid.Content key="content">
-        {images.map(imageId => (
+        {images.map((imageId) => (
           <ImageItem
             imageId={imageId}
             image={this.props.imagesMap[imageId]}
@@ -316,7 +316,8 @@ class ImageGrid extends PureComponent<{
             onSelected={onImageSelected}
             size={this.props.size}
             numberOfRequests={
-              this.props.events.filter(e => e.imageIds.includes(imageId)).length
+              this.props.events.filter((e) => e.imageIds.includes(imageId))
+                .length
             }
           />
         ))}
@@ -392,7 +393,7 @@ class ImageItem extends PureComponent<{
   size: number;
   numberOfRequests: number;
 }> {
-  static Container = styled(FlexBox)<{size: number}>(props => ({
+  static Container = styled(FlexBox)<{size: number}>((props) => ({
     float: 'left',
     alignItems: 'center',
     justifyContent: 'center',
@@ -416,7 +417,7 @@ class ImageItem extends PureComponent<{
     padding: '0 0',
   });
 
-  static SelectedHighlight = styled.div<{selected: boolean}>(props => ({
+  static SelectedHighlight = styled.div<{selected: boolean}>((props) => ({
     borderColor: colors.highlight,
     borderStyle: 'solid',
     borderWidth: props.selected ? 3 : 0,
@@ -430,7 +431,7 @@ class ImageItem extends PureComponent<{
   }));
 
   static HoverOverlay = styled(FlexColumn)<{selected: boolean; size: number}>(
-    props => ({
+    (props) => ({
       alignItems: 'center',
       backgroundColor: colors.whiteAlpha80,
       bottom: props.selected ? 4 : 0,

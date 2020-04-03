@@ -1,25 +1,24 @@
 {
+  "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "module": "commonjs",
-    "lib": ["es7", "dom", "es2017"],
-    "esModuleInterop": true,
-    "target": "es6",
-    "removeComments": true,
-    "preserveConstEnums": true,
-    "sourceMap": true,
-    "jsx": "react",
-    "moduleResolution": "node",
     "baseUrl": ".",
-    "downlevelIteration": true,    
-    "skipLibCheck": true,
     "paths": {
-      "flipper": ["./src"],
+      "flipper": ["./app/src"],
       "flipper-doctor": ["./doctor/src"],
       "flipper-pkg": ["./pkg/src"],
-      "live-plugin-manager": ["./types/live-plugin-manager.d.tsx"]
-    },
-    "strict": true
+      "live-plugin-manager": ["./types/live-plugin-manager.d.tsx"],
+      "flipper-babel-transformer": ["./babel-transformer/src"]
+    }
   },
-  "include": ["src/**/*", "doctor/**/*", "pkg/**/*", "static/**/*", "scripts/**/*", "types/**/*", "headless/**/*", "plugins/**/*"],
+  "include": [
+    "src/**/*",
+    "doctor/**/*",
+    "pkg/**/*",
+    "static/**/*",
+    "scripts/**/*",
+    "types/**/*",
+    "headless/**/*",
+    "plugins/**/*"
+  ],
   "exclude": ["node_modules", "**/*.spec.ts"]
 }

@@ -13,7 +13,7 @@ import {Glyph, PureComponent, styled, Toolbar, Spacer, colors} from 'flipper';
 import {Tree} from 'react-d3-tree';
 import {Fragment} from 'react';
 
-const Legend = styled.div(props => ({
+const Legend = styled.div((props) => ({
   color: colors.dark50,
   marginLeft: 20,
   '&::before': {
@@ -98,7 +98,7 @@ class NodeLabel extends PureComponent<Props, State> {
     collapsed: false,
   };
 
-  showNodeData = e => {
+  showNodeData = (e) => {
     e.stopPropagation();
     this.props.onLabelClicked(this.props?.nodeData);
   };
@@ -136,7 +136,7 @@ class NodeLabel extends PureComponent<Props, State> {
 
 export default class extends PureComponent<Props, State> {
   treeFromFlatArray = (data: TreeData) => {
-    const tree = data.map(n => {
+    const tree = data.map((n) => {
       let fill = colors.blueGreyTint70;
       if (n.didTriggerStateUpdate) {
         fill = colors.lemon;
@@ -184,12 +184,12 @@ export default class extends PureComponent<Props, State> {
       }
     }, new Map());
 
-    tree.forEach(n => {
+    tree.forEach((n) => {
       n.children = parentMap.get(n.attributes.identifier) || [];
     });
 
     // find the root node
-    return tree.find(node => !node.attributes.parent);
+    return tree.find((node) => !node.attributes.parent);
   };
 
   treeFromHierarchy = (data: SectionComponentHierarchy): Object => {
@@ -244,7 +244,7 @@ export default class extends PureComponent<Props, State> {
     return (
       <Fragment>
         <Container
-          innerRef={ref => {
+          innerRef={(ref) => {
             this.treeContainer = ref;
           }}>
           <style>

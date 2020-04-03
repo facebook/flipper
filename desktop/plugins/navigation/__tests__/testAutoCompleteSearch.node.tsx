@@ -18,7 +18,7 @@ const stringCombination = (patterns: Array<string>, k: number) => {
   const returnArr: Array<string> = new Array(0);
   const args = new Array(k).fill(0).map((_, idx) => idx);
   (function build(args) {
-    const pattern = args.map(i => patterns[i]).join('');
+    const pattern = args.map((i) => patterns[i]).join('');
     returnArr.push(pattern);
     if (args[args.length - 1] < n - 1) {
       for (let i = args.length - 1; i >= 0; i--) {
@@ -55,7 +55,7 @@ const constructMatchPatterns: () => Map<string, URI> = () => {
     'yzyzyzyzyzyzyzyzyzyzyzyzy',
   ];
 
-  stringCombination(patterns, NUM_PATERNS_PER_ENTRY).forEach(pattern =>
+  stringCombination(patterns, NUM_PATERNS_PER_ENTRY).forEach((pattern) =>
     matchPatterns.set(pattern, pattern),
   );
 

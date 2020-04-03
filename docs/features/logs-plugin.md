@@ -5,7 +5,7 @@ title: Logs
 
 The Logs plugin shows device logs without any additional setup. This is a device plugin, meaning that it is not tied to any specific app and there is no additional setup needed to see the logs.
 
-![Logs plugin](/docs/assets/logs.png)
+![Logs plugin](assets/logs.png)
 
 ## Filtering
 

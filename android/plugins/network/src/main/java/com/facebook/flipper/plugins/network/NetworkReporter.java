@@ -55,6 +55,7 @@ public interface NetworkReporter {
     public String statusReason;
     public List<Header> headers = new ArrayList<>();
     public byte[] body;
+    public boolean isMock = false;
 
     public Header getFirstHeader(final String name) {
       for (Header header : headers) {

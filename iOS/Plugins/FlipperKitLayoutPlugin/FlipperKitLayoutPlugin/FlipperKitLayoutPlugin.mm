@@ -24,9 +24,8 @@
   NSMapTable<NSString*, id>* _trackedObjects;
   NSString* _lastHighlightedNode;
   NSMutableSet* _invalidObjects;
-  Boolean _invalidateMessageQueued;
-  NSDate* _lastInvalidateMessage;
-  std::mutex invalidObjectsMutex;
+  BOOL _invalidateMessageQueued;
+  std::mutex _invalidObjectsMutex;
 
   id<NSObject> _rootNode;
   id<SKTapListener> _tapListener;
@@ -49,10 +48,7 @@
   if (self = [super init]) {
     _descriptorMapper = mapper;
     _trackedObjects = [NSMapTable strongToWeakObjectsMapTable];
-    _lastHighlightedNode = nil;
     _invalidObjects = [NSMutableSet new];
-    _invalidateMessageQueued = false;
-    _lastInvalidateMessage = [NSDate date];
     _rootNode = rootNode;
     _tapListener = tapListener;
 
@@ -399,36 +395,33 @@
   [descriptor invalidateNode:node];
 
   // Collect invalidate messages before sending in a batch
-  std::lock_guard<std::mutex> lock(invalidObjectsMutex);
+  std::lock_guard<std::mutex> lock(_invalidObjectsMutex);
   [_invalidObjects addObject:nodeId];
   if (_invalidateMessageQueued) {
     return;
   }
-  _invalidateMessageQueued = true;
+  _invalidateMessageQueued = YES;
 
-  if (_lastInvalidateMessage.timeIntervalSinceNow < -1) {
-    dispatch_after(
-        dispatch_time(DISPATCH_TIME_NOW, 500 * NSEC_PER_MSEC),
-        dispatch_get_main_queue(),
-        ^{
-          [self reportInvalidatedObjects];
-        });
-  }
+  dispatch_after(
+      dispatch_time(DISPATCH_TIME_NOW, 500 * NSEC_PER_MSEC),
+      dispatch_get_main_queue(),
+      ^{
+        [self _reportInvalidatedObjects];
+      });
 }
 
-- (void)reportInvalidatedObjects {
-  std::lock_guard<std::mutex> lock(invalidObjectsMutex);
+- (void)_reportInvalidatedObjects {
   NSMutableArray* nodes = [NSMutableArray new];
-  for (NSString* nodeId in self->_invalidObjects) {
-    [nodes addObject:[NSDictionary dictionaryWithObject:nodeId forKey:@"id"]];
-  }
-  [self->_connection send:@"invalidate"
-               withParams:[NSDictionary dictionaryWithObject:nodes
-                                                      forKey:@"nodes"]];
-  self->_lastInvalidateMessage = [NSDate date];
-  self->_invalidObjects = [NSMutableSet new];
-  self->_invalidateMessageQueued = false;
-  return;
+  { // scope mutex acquisition
+    std::lock_guard<std::mutex> lock(_invalidObjectsMutex);
+    for (NSString* nodeId in _invalidObjects) {
+      [nodes addObject:@{@"id" : nodeId}];
+    }
+    _invalidObjects = [NSMutableSet new];
+    _invalidateMessageQueued = NO;
+  } // release mutex before calling out to other code
+
+  [_connection send:@"invalidate" withParams:@{@"nodes" : nodes}];
 }
 
 - (void)updateNodeReference:(id<NSObject>)node {

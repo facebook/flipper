@@ -99,7 +99,7 @@ If you experience errors such as `Undefined symbol: associated type descriptor f
 1. Go to the tab `Build Settings`;
 1. Search for `LD_RUNPATH_SEARCH_PATHS` (make sure that `All` is selected);
 1. Double-click `Runpath Search Paths` and, in the dialog that opens, click on the plus button at the bottom-left corner and paste `/usr/lib/swift $(inherited)` there;
-   ![Screenshot showing the places mentioned in the first steps](/docs/assets/troubleshooting-react-native-ios-swift.png)
+   ![Screenshot showing the places mentioned in the first steps](assets/troubleshooting-react-native-ios-swift.png)
 1. Now search for `LIBRARY_SEARCH_PATHS`;
 1. Double-click `Library Search Paths` and, in the dialog that opens, add the following items:
 
@@ -112,6 +112,6 @@ If you experience errors such as `Undefined symbol: associated type descriptor f
    _Note: all of them should be added as `non-recursive` (the default)._
 
    In the end it should look like this:
-   ![Screenshot showing the places mentioned in the last steps](/docs/assets/troubleshooting-react-native-ios-swift-2.png)
+   ![Screenshot showing the places mentioned in the last steps](assets/troubleshooting-react-native-ios-swift-2.png)
 
 1. Now you can run your build normally.

@@ -9,7 +9,7 @@ The images plugin allows you to inspect what images were fetched, where they are
 coming from and selectively clear caches. Currently, the plugin supports
 [Fresco](https://github.com/facebook/fresco/) as backend.
 
-![Images plugin](/docs/assets/images-plugin.png)
+![Images plugin](assets/images-plugin.png)
 
 ## Cache Inspector
 

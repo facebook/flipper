@@ -9,7 +9,7 @@ Ensure that you already have an explicit dependency in your application's
 
 ```groovy
 dependencies {
-  debugImplementation 'com.facebook.flipper:flipper-leakcanary-plugin:0.33.1'
+  debugImplementation 'com.facebook.flipper:flipper-leakcanary-plugin:0.35.0'
   debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.1'
   releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.1'
 }

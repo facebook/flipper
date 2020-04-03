@@ -104,7 +104,7 @@ export default class SandboxView extends FlipperPlugin<
               placeholder="Sandbox URL (e.g. unixname.sb.facebook.com)"
               key="sandbox-url"
               onChange={this.onChangeSandbox}
-              onKeyPress={event => {
+              onKeyPress={(event) => {
                 if (event.key === 'Enter') {
                   this.onSendSandboxEnvironment(this.state.customSandbox);
                 }
@@ -124,7 +124,7 @@ export default class SandboxView extends FlipperPlugin<
             Success!
           </SandboxView.FeedbackMessage>
         </SandboxView.TextInputLayout>
-        {this.state.sandboxes.map(sandbox => (
+        {this.state.sandboxes.map((sandbox) => (
           <ButtonContainer>
             <BigButton
               key={sandbox.value}

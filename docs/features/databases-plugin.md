@@ -13,7 +13,7 @@ The Databases plugin provides developers with read-write access to their databas
 - see logs of past executed queries
 
 
-![Databases Plugin 1](/docs/assets/databases-plugin-1.png)
-![Databases Plugin 2](/docs/assets/databases-plugin-2.png)
+![Databases Plugin 1](assets/databases-plugin-1.png)
+![Databases Plugin 2](assets/databases-plugin-2.png)
 
 Note: this plugin is only available for Android.

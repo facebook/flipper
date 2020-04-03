@@ -1,24 +1,16 @@
 {
   "name": "flipper-static",
-  "version": "1.0.0",
+  "version": "0.35.0",
   "main": "index.js",
+  "private": true,
   "license": "MIT",
   "dependencies": {
-    "@babel/core": "^7.8.3",
-    "@babel/generator": "^7.8.3",
-    "@babel/parser": "^7.8.3",
-    "@babel/plugin-proposal-class-properties": "^7.8.3",
-    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.8.3",
-    "@babel/plugin-proposal-object-rest-spread": "^7.8.3",
-    "@babel/plugin-proposal-optional-chaining": "^7.8.3",
-    "@babel/plugin-transform-flow-strip-types": "^7.8.3",
-    "@babel/plugin-transform-modules-commonjs": "^7.8.3",
-    "@babel/plugin-transform-typescript": "^7.8.3",
-    "@babel/preset-react": "^7.8.3",
     "electron-devtools-installer": "^2.2.4",
     "expand-tilde": "^2.0.2",
     "fb-watchman": "^2.0.0",
     "fix-path": "^3.0.0",
+    "fs-extra": "^8.1.0",
+    "flipper-babel-transformer": "0.35.0",
     "mem": "^6.0.0",
     "metro": "^0.58.0",
     "mkdirp": "^1.0.0",
@@ -26,14 +18,7 @@
     "recursive-readdir": "2.2.2",
     "uuid": "^7.0.1",
     "xdg-basedir": "^4.0.0",
-    "yargs": "^15.0.1"
-  },
-  "resolutions": {
-    "metro/temp": "0.9.0",
-    "ws": "7.2.0"
-  },
-  "devDependencies": {
-    "@babel/preset-env": "^7.8.3",
-    "@types/electron-devtools-installer": "^2.2.0"
+    "yargs": "^15.3.1",
+    "ws": "^7.2.3"
   }
 }
