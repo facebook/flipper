@@ -17,7 +17,12 @@
     ]
   },
   "setup": {
-    "Using Flipper": ["getting-started", "troubleshooting"],
+    "Getting Started": [
+      "getting-started/index",
+      "getting-started/android-native",
+      "getting-started/ios-native",
+      "getting-started/react-native"
+    ],
     "Plugin Setup": [
       "setup/layout-plugin",
       "setup/navigation-plugin",
@@ -29,10 +34,16 @@
       "setup/leak-canary-plugin",
       "setup/crash-reporter-plugin"
     ],
-    "Advanced Usage": ["custom-ports", "stetho"]
+    "Advanced": [
+      "custom-ports",
+      "stetho",
+      "troubleshooting"
+    ]
   },
   "extending": {
-    "Extending Flipper": ["extending/index"],
+    "Extending Flipper": [
+      "extending/index"
+    ],
     "Tutorial": [
       "tutorial/intro",
       "tutorial/ios",
@@ -62,6 +73,9 @@
       "extending/establishing-a-connection",
       "extending/supporting-layout"
     ],
-    "Internals": ["extending/arch", "extending/layout-inspector"]
+    "Internals": [
+      "extending/arch",
+      "extending/layout-inspector"
+    ]
   }
 }

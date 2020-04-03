@@ -102,8 +102,20 @@
       "features/shared-preferences-plugin": {
         "title": "Shared Preferences"
       },
-      "getting-started": {
-        "title": "Getting Started"
+      "getting-started/android-native": {
+        "title": "Set up your Android app",
+        "sidebar_label": "Android"
+      },
+      "getting-started/index": {
+        "title": "Desktop App"
+      },
+      "getting-started/ios-native": {
+        "title": "Set up your iOS app",
+        "sidebar_label": "iOS"
+      },
+      "getting-started/react-native": {
+        "title": "Set up your React Native App",
+        "sidebar_label": "React Native"
       },
       "setup/crash-reporter-plugin": {
         "title": "Crash Reporter Setup",
@@ -185,9 +197,9 @@
     },
     "categories": {
       "Features": "Features",
-      "Using Flipper": "Using Flipper",
+      "Getting Started": "Getting Started",
       "Plugin Setup": "Plugin Setup",
-      "Advanced Usage": "Advanced Usage",
+      "Advanced": "Advanced",
       "Extending Flipper": "Extending Flipper",
       "Tutorial": "Tutorial",
       "Plugin Development": "Plugin Development",

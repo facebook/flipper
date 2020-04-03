@@ -1,124 +1,14 @@
 ---
-id: getting-started
-title: Getting Started
+id: ios-native
+title: Set up your iOS app
+sidebar_label: iOS
 ---
 
-Flipper helps you debug Android and iOS apps running in an emulator/simulator or connected physical development devices. Flipper consists of two parts:
+We support both Swift and Objective-C for Flipper with CocoaPods as build and distribution mechanism. 
 
-- The desktop app
-- The native mobile SDKs for Android and iOS
+## CocoaPods
 
-To use Flipper, you need to add the mobile SDK to your app. If you are using React Native 0.62 or higher, this is largely done automatically for you.
-
-## Setup
-
-### Desktop app
-
-The desktop part of Flipper doesn't need any particular setup. Simply download the latest build for [Mac](https://www.facebook.com/fbflipper/public/mac), [Linux](https://www.facebook.com/fbflipper/public/linux) or [Windows](https://www.facebook.com/fbflipper/public/windows) and launch it. In order to work properly, Flipper requires a working installation of the Android and (if where applicable) iOS development tools on your system, as well as the [OpenSSL](https://www.openssl.org) binary on your `$PATH`.
-
-Once you start Flipper and launch an emulator/simulator or connect a device, you will already be able to see the device logs in Flipper. To see app specific data, you need to integrate our native SDKs with your app.
-
-![Logs plugin](assets/initial.png)
-
-## Setup your Android app
-
-It's recommended that you add the following activity to the manifest, which can help diagnose integration issues and other problems:
-
-```xml
-<activity android:name="com.facebook.flipper.android.diagnostics.FlipperDiagnosticActivity"
-        android:exported="true"/>
-```
-
-Flipper is distributed via JCenter. Add the dependencies to your `build.gradle` file.
-You should also explicitly depend on [`soloader`](https://github.com/facebook/soloader)
-instead of relying on transitive dependency resolution which is getting deprecated
-with Gradle 5.
-
-We provide a "no-op" implementation of some oft-used Flipper interfaces you can
-use to make it easier to strip Flipper from your release builds.
-
-```groovy
-repositories {
-  jcenter()
-}
-
-dependencies {
-  debugImplementation 'com.facebook.flipper:flipper:0.35.0'
-  debugImplementation 'com.facebook.soloader:soloader:0.8.2'
-
-  releaseImplementation 'com.facebook.flipper:flipper-noop:0.35.0'
-}
-```
-
-<div class="warning">
-
-Please note that our `flipper-noop` package provides a limited subset of the
-APIs provided by the `flipper` package and does not provide any plugin stubs.
-It is recommended that you keep all Flipper instantiation code in a separate
-build variant to ensure it doesn't accidentally make it into your production
-builds. Check out [the sample
-app](https://github.com/facebook/flipper/tree/master/android/sample/src) to
-see how to organise your Flipper initialization into debug and release
-variants.
-
-Alternatively, have a look at the third-party
-[flipper-android-no-op](https://github.com/theGlenn/flipper-android-no-op)
-repository, which provides empty implementations for several Flipper plugins.
-
-</div>
-
-Now you can initialize Flipper in your Application's `onCreate` method, which involves
-initializing SoLoader (for loading the C++ part of Flipper) and starting a `FlipperClient`.
-
-```java
-import com.facebook.flipper.android.AndroidFlipperClient;
-import com.facebook.flipper.android.utils.FlipperUtils;
-import com.facebook.flipper.core.FlipperClient;
-import com.facebook.flipper.plugins.inspector.DescriptorMapping;
-import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin;
-
-
-public class MyApplication extends Application {
-
-  @Override
-  public void onCreate() {
-    super.onCreate();
-    SoLoader.init(this, false);
-
-    if (BuildConfig.DEBUG && FlipperUtils.shouldEnableFlipper(this)) {
-      final FlipperClient client = AndroidFlipperClient.getInstance(this);
-      client.addPlugin(new InspectorFlipperPlugin(this, DescriptorMapping.withDefaults()));
-      client.start();
-    }
-  }
-}
-```
-
-### Android Snapshots
-
-Feeling adventurous? We publish Android snapshot releases directly off of `master`.
-
-You can get the latest version by adding the Maven Snapshot repository to your sources
-and pointing to the most recent `-SNAPSHOT` version.
-
-```groovy
-repositories {
-  maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
-}
-
-dependencies {
-  debugImplementation 'com.facebook.flipper:flipper:0.35.1-SNAPSHOT'
-  debugImplementation 'com.facebook.soloader:soloader:0.8.2'
-
-  releaseImplementation 'com.facebook.flipper:flipper-noop:0.35.1-SNAPSHOT'
-}
-```
-
-## Setup your iOS app
-
-We support both Swift and Objective-C for Flipper with CocoaPods as build and distribution mechanism. For CocoaPods 1.9+ following is the configuration.
-
-### CocoaPods
+The following configuration assumed CocoaPods 1.9+.
 
 <!--DOCUSAURUS_CODE_TABS-->
 <!--Objective-C-->
@@ -264,7 +154,7 @@ On the first run of `pod install`, `FB_SONARKIT_ENABLED=1` may not be added in t
 
 </div>
 
-### For pure Objective-C projects
+## For pure Objective-C projects
 
 For pure Objective-C projects, add the following things in your settings:
 
@@ -272,8 +162,8 @@ For pure Objective-C projects, add the following things in your settings:
 2. Add the following in `LIBRARY_SEARCH_PATHS`
 
 ```
-					"\"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)\"",
-					"\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\"",	
+"\"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)\"",
+"\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\"",	
 ```
 3. If after the above two steps there are still error's like `Undefined symbol _swift_getFunctionReplacement` then set `DEAD_CODE_STRIPPING` to `YES`. Reference for this fix is [here](https://forums.swift.org/t/undefined-symbol-swift-getfunctionreplacement/30495/4)
 
@@ -338,51 +228,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 <!--END_DOCUSAURUS_CODE_TABS-->
 
-## Enabling plugins on Android / iOS
+## Enabling plugins
 
-Finally, you need to add plugins to your Flipper client. Above we have only added the Layout Inspector plugin to get you started. See [Network Plugin](setup/network-plugin.md) and [Layout Inspector Plugin](setup/layout-plugin.md) for information on how to add them, and also enable Litho or ComponentKit support. You can check the sample apps in the [GitHub repo](https://github.com/facebook/flipper) for examples of integrating other plugins.
-
-## Setup your React Native app
-
-<div class="warning">
-
-This tutorial is for React Native applications using version **0.62.0**, please refer to the following if you are using a different version:
-
-* [Flipper on RN < 0.61.5 tutorial](https://github.com/facebook/flipper/blob/da25241f7fbb06dffd913958559044d758c54fb8/docs/getting-started.md#setup-your-react-native-app)
-* [Flipper on RN 0.61.5 - 0.62 tutorial](https://github.com/facebook/flipper/blob/4297b3061f14ceca4d184aa3eebd0731b5bf20f5/docs/getting-started.md#setup-your-react-native-app)
-
-</div>
-
-
-After generating your project with `npx react-native init`, the Flipper integration is setup out-of-the-box for debug builds:
-
-* For Android, start the Flipper Desktop application, and start your project using `yarn android`. Your application should appear in Flipper.
-* For iOS, run `pod install` once in the `ios` directory of your project. After that, run `yarn ios` and start Flipper. Your application should show up in Flipper.
-
-By default, the following plugins will be available:
-
-* Layout Inspector
-* Network
-* Databases
-* Images
-* Shared Preferences
-* Crash Reporter
-* React DevTools
-* Metro Logs
-
-Additional plugins might be installed through NPM, please follow the instructions as provided by the plugin authors.
-
-To create your own plugins and integrate with Flipper using JavaScript, check out our [writing plugins for React Native](tutorial/react-native) tutorial!
-
-If you ever need to update the Flipper SDKs used in your project, the versions can be bumped in the `ios/Podfile` and `android/gradle.properties` files of your project. 
-
-<div class="warning">
-
-For Android, Flipper works with both emulators and physical devices connected through USB. However on iOS, we don't support physical devices yet.
-
-</div>
+Finally, you need to add plugins to your Flipper client. Above, we have only added the Layout Inspector plugin to get you started. See [Network Plugin](setup/network-plugin.md) and [Layout Inspector Plugin](setup/layout-plugin.md) for information on how to add them, and also enable Litho or ComponentKit support. You can check the sample apps in the [GitHub repo](https://github.com/facebook/flipper) for examples of integrating other plugins.
 
 ## Having trouble?
 
-
 See the [troubleshooting page](troubleshooting.html) for help with known problems.
+
+<div class="warning">
+
+On iOS, we currently do not support connecting to physical devices.
+
+</div>
