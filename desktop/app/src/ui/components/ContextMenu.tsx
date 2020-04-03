@@ -7,7 +7,14 @@
  * @format
  */
 
-import {createElement, useContext, useCallback} from 'react';
+import {
+  createElement,
+  useContext,
+  useCallback,
+  forwardRef,
+  Ref,
+  ReactElement,
+} from 'react';
 import {ContextMenuContext} from './ContextMenuProvider';
 import FlexColumn from './FlexColumn';
 import {MenuItemConstructorOptions} from 'electron';
@@ -33,13 +40,10 @@ type Props<C> = {
  *
  * Separators can be added by `{type: 'separator'}`
  */
-export default function ContextMenu<C>({
-  items,
-  buildItems,
-  component,
-  children,
-  ...otherProps
-}: Props<C>) {
+export default forwardRef(function ContextMenu<C>(
+  {items, buildItems, component, children, ...otherProps}: Props<C>,
+  ref: Ref<any> | null,
+) {
   const contextMenuManager = useContext(ContextMenuContext);
   const onContextMenu = useCallback(() => {
     if (items != null) {
@@ -51,9 +55,10 @@ export default function ContextMenu<C>({
   return createElement(
     component || FlexColumn,
     {
+      ref,
       onContextMenu,
       ...otherProps,
     },
     children,
   );
-}
+}) as <T>(p: Props<T> & {ref?: Ref<any>}) => ReactElement;
