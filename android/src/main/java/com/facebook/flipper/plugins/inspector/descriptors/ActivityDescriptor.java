@@ -8,6 +8,7 @@
 package com.facebook.flipper.plugins.inspector.descriptors;
 
 import android.app.Activity;
+import android.util.Log;
 import android.view.Window;
 import com.facebook.flipper.core.FlipperDynamic;
 import com.facebook.flipper.core.FlipperObject;
@@ -24,6 +25,8 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 public class ActivityDescriptor extends NodeDescriptor<Activity> {
+
+  private static final String TAG = "ActivityDescriptor";
 
   @Override
   public void init(Activity node) {}
@@ -112,9 +115,14 @@ public class ActivityDescriptor extends NodeDescriptor<Activity> {
     }
 
     FragmentManagerAccessor fragmentManagerAccessor = compat.forFragmentManager();
-    List<Object> addedFragments = fragmentManagerAccessor.getAddedFragments(fragmentManager);
+    List<Object> addedFragments = null;
+    try {
+      addedFragments = fragmentManagerAccessor.getAddedFragments(fragmentManager);
+    } catch (Exception e) {
+      Log.e(TAG, "Failed to obtain list of fragments.", e);
+    }
     if (addedFragments == null) {
-      return Collections.EMPTY_LIST;
+      return Collections.emptyList();
     }
 
     final List<Object> dialogFragments = new ArrayList<>();

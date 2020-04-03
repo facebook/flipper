@@ -8,11 +8,15 @@
 package com.facebook.flipper.plugins.inspector.descriptors.utils.stethocopies;
 
 import android.app.Activity;
+import android.util.Log;
 import android.view.View;
+import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
 
 public final class FragmentCompatUtil {
+  private static final String TAG = "FragmentCompatUtil";
+
   private FragmentCompatUtil() {}
 
   public static boolean isDialogFragment(Object fragment) {
@@ -79,7 +83,13 @@ public final class FragmentCompatUtil {
   @Nullable
   private static Object findFragmentForViewInFragmentManager(
       FragmentCompat compat, Object fragmentManager, View view) {
-    List<?> fragments = compat.forFragmentManager().getAddedFragments(fragmentManager);
+    List<?> fragments;
+    try {
+      fragments = compat.forFragmentManager().getAddedFragments(fragmentManager);
+    } catch (Exception e) {
+      fragments = Collections.emptyList();
+      Log.e(TAG, "Failed to obtain list of fragments.", e);
+    }
 
     if (fragments != null) {
       for (int i = 0, N = fragments.size(); i < N; ++i) {
