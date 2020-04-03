@@ -1,0 +1,102 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>Set up your React Native App · Flipper</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="&lt;div class=&quot;warning&quot;&gt;"/><meta name="docsearch:language" content="en"/><meta property="og:title" content="Set up your React Native App · Flipper"/><meta property="og:type" content="website"/><meta property="og:url" content="https://fbflipper.com//index.html"/><meta property="og:description" content="&lt;div class=&quot;warning&quot;&gt;"/><meta name="twitter:card" content="summary"/><link rel="shortcut icon" href="/img/icon.png"/><link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script><script type="text/javascript" src="/js/code-blocks-buttons.js"></script><script type="text/javascript" src="/js/google-analytics.js"></script><script src="/js/scrollSpy.js"></script><link rel="stylesheet" href="/css/main.css"/><script src="/js/codetabs.js"></script></head><body class="sideNavVisible separateOnPageNav"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/"><img class="logo" src="/img/icon.png" alt="Flipper"/><h2 class="headerTitleWithLogo">Flipper</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class=""><a href="/docs/features/index.html" target="_self">Features</a></li><li class="siteNavGroupActive"><a href="/docs/getting-started/index.html" target="_self">Setup</a></li><li class=""><a href="/docs/extending/index.html" target="_self">Extending</a></li><li class=""><a href="https://github.com/facebook/flipper" target="_self">GitHub</a></li><li class="navSearchWrapper reactNavSearchWrapper"><input type="text" id="search_input_react" placeholder="Search" title="Search"/></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><div class="hamburger-menu"><div class="line1"></div><div class="line2"></div><div class="line3"></div></div></div><h2><i>›</i><span>Getting Started</span></h2><div class="tocToggler" id="tocToggler"><i class="icon-toc"></i></div></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle">Getting Started</h3><ul class=""><li class="navListItem"><a class="navItem" href="/docs/getting-started/index.html">Desktop App</a></li><li class="navListItem"><a class="navItem" href="/docs/getting-started/android-native.html">Android</a></li><li class="navListItem"><a class="navItem" href="/docs/getting-started/ios-native.html">iOS</a></li><li class="navListItem navListItemActive"><a class="navItem" href="/docs/getting-started/react-native.html">React Native</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Plugin Setup</h3><ul class=""><li class="navListItem"><a class="navItem" href="/docs/setup/layout-plugin.html">Layout Inspector</a></li><li class="navListItem"><a class="navItem" href="/docs/setup/navigation-plugin.html">Navigation</a></li><li class="navListItem"><a class="navItem" href="/docs/setup/network-plugin.html">Network</a></li><li class="navListItem"><a class="navItem" href="/docs/setup/databases-plugin.html">Databases</a></li><li class="navListItem"><a class="navItem" href="/docs/setup/images-plugin.html">Images</a></li><li class="navListItem"><a class="navItem" href="/docs/setup/sandbox-plugin.html">Sandbox</a></li><li class="navListItem"><a class="navItem" href="/docs/setup/shared-preferences-plugin.html">Shared Preferences</a></li><li class="navListItem"><a class="navItem" href="/docs/setup/leak-canary-plugin.html">LeakCanary</a></li><li class="navListItem"><a class="navItem" href="/docs/setup/crash-reporter-plugin.html">Crash Reporter</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Advanced</h3><ul class=""><li class="navListItem"><a class="navItem" href="/docs/custom-ports.html">Using different ports</a></li><li class="navListItem"><a class="navItem" href="/docs/stetho.html">Stetho Guidance</a></li><li class="navListItem"><a class="navItem" href="/docs/troubleshooting.html">Troubleshooting Issues</a></li></ul></div></div></section></div><script>
+            var coll = document.getElementsByClassName('collapsible');
+            var checkActiveCategory = true;
+            for (var i = 0; i < coll.length; i++) {
+              var links = coll[i].nextElementSibling.getElementsByTagName('*');
+              if (checkActiveCategory){
+                for (var j = 0; j < links.length; j++) {
+                  if (links[j].classList.contains('navListItemActive')){
+                    coll[i].nextElementSibling.classList.toggle('hide');
+                    coll[i].childNodes[1].classList.toggle('rotate');
+                    checkActiveCategory = false;
+                    break;
+                  }
+                }
+              }
+
+              coll[i].addEventListener('click', function() {
+                var arrow = this.childNodes[1];
+                arrow.classList.toggle('rotate');
+                var content = this.nextElementSibling;
+                content.classList.toggle('hide');
+              });
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+              createToggler('#navToggler', '#docsNav', 'docsSliderActive');
+              createToggler('#tocToggler', 'body', 'tocActive');
+
+              var headings = document.querySelector('.toc-headings');
+              headings && headings.addEventListener('click', function(event) {
+                var el = event.target;
+                while(el !== headings){
+                  if (el.tagName === 'A') {
+                    document.body.classList.remove('tocActive');
+                    break;
+                  } else{
+                    el = el.parentNode;
+                  }
+                }
+              }, false);
+
+              function createToggler(togglerSelector, targetSelector, className) {
+                var toggler = document.querySelector(togglerSelector);
+                var target = document.querySelector(targetSelector);
+
+                if (!toggler) {
+                  return;
+                }
+
+                toggler.onclick = function(event) {
+                  event.preventDefault();
+
+                  target.classList.toggle(className);
+                };
+              }
+            });
+        </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/flipper/blob/master/docs/getting-started/react-native.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">Set up your React Native App</h1></header><article><div><span><div class="warning">
+<p>This tutorial is for React Native applications using version <strong>0.62.0</strong>, please refer to the following if you are using a different version:</p>
+<ul>
+<li><a href="https://github.com/facebook/flipper/blob/da25241f7fbb06dffd913958559044d758c54fb8/docs/getting-started.md#setup-your-react-native-app">Flipper on RN &lt; 0.61.5 tutorial</a></li>
+<li><a href="https://github.com/facebook/flipper/blob/4297b3061f14ceca4d184aa3eebd0731b5bf20f5/docs/getting-started.md#setup-your-react-native-app">Flipper on RN 0.61.5 - 0.62 tutorial</a></li>
+</ul>
+</div>
+<p>After generating your project with <code>npx react-native init</code>, the Flipper integration is setup out-of-the-box for debug builds:</p>
+<ul>
+<li>For Android, start the Flipper Desktop application, and start your project using <code>yarn android</code>. Your application should appear in Flipper.</li>
+<li>For iOS, run <code>pod install</code> once in the <code>ios</code> directory of your project. After that, run <code>yarn ios</code> and start Flipper. Your application should show up in Flipper.</li>
+</ul>
+<p>By default, the following plugins will be available:</p>
+<ul>
+<li>Layout Inspector</li>
+<li>Network</li>
+<li>Databases</li>
+<li>Images</li>
+<li>Shared Preferences</li>
+<li>Crash Reporter</li>
+<li>React DevTools</li>
+<li>Metro Logs</li>
+</ul>
+<p>Additional plugins might be installed through NPM, please follow the instructions as provided by the plugin authors.</p>
+<p>To create your own plugins and integrate with Flipper using JavaScript, check out our <a href="tutorial/react-native">writing plugins for React Native</a> tutorial!</p>
+<p>If you ever need to update the Flipper SDKs used in your project, the versions can be bumped in the <code>ios/Podfile</code> and <code>android/gradle.properties</code> files of your project.</p>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/docs/getting-started/ios-native.html"><span class="arrow-prev">← </span><span class="function-name-prevnext">iOS</span></a><a class="docs-next button" href="/docs/setup/layout-plugin.html"><span>Layout Inspector</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/" class="nav-home"><img src="/img/mascot.png" alt="Flipper mascot" title="I&#x27;m a dolphin not a whale!" width="66"/></a><div><h5>Docs</h5><a href="/docs/getting-started.html">Getting Started</a><a href="/docs/extending/js-setup.html">Creating Plugins</a></div><div><h5>Plugins</h5><a href="/docs/features/logs-plugin.html">Log Viewer</a><a href="/docs/features/layout-plugin.html">Layout Inspector</a><a href="/docs/features/network-plugin.html">Network Inspector</a></div><div><h5>More</h5><a href="https://twitter.com/flipper_fb">Twitter</a><a href="https://github.com/facebook/flipper">GitHub</a><a class="github-button" href="https://github.com/facebook/flipper" data-icon="octicon-star" data-count-href="/facebook/flipper/stargazers" data-show-count="true" data-count-aria-label="# stargazers on GitHub" aria-label="Star this project on GitHub">Star</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2020 Facebook</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>
+                document.addEventListener('keyup', function(e) {
+                  if (e.target !== document.body) {
+                    return;
+                  }
+                  // keyCode for '/' (slash)
+                  if (e.keyCode === 191) {
+                    const search = document.getElementById('search_input_react');
+                    search && search.focus();
+                  }
+                });
+              </script><script>
+              var search = docsearch({
+                
+                apiKey: '2df980e7ffc95c19552790f7cad32666',
+                indexName: 'fbflipper',
+                inputSelector: '#search_input_react',
+                algoliaOptions: {"hitsPerPage":5}
+              });
+            </script></body></html>
