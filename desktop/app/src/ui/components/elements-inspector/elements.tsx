@@ -223,6 +223,7 @@ type ElementsRowProps = {
   style?: Object;
   contextMenuExtensions: Array<ContextMenuExtension>;
   decorateRow?: DecorateRow;
+  forwardedRef: React.Ref<HTMLDivElement> | null;
 };
 
 type ElementsRowState = {
@@ -324,6 +325,7 @@ class ElementsRow extends PureComponent<ElementsRowProps, ElementsRowState> {
       even,
       matchingSearchQuery,
       decorateRow,
+      forwardedRef,
     } = this.props;
     const hasChildren = element.children && element.children.length > 0;
 
@@ -378,6 +380,7 @@ class ElementsRow extends PureComponent<ElementsRowProps, ElementsRowState> {
 
     return (
       <ElementsRowContainer
+        ref={forwardedRef}
         buildItems={this.getContextMenu}
         key={id}
         level={level}
@@ -465,6 +468,7 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
   static defaultProps = {
     alternateRowColor: true,
   };
+  _outerRef = React.createRef<HTMLDivElement>();
   constructor(props: ElementsProps, context: Object) {
     super(props, context);
     this.state = {
@@ -512,6 +516,22 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
     }
 
     return {flatElements, flatKeys, maxDepth};
+  }
+
+  _calculateScrollTop(
+    parentHeight: number,
+    parentOffsetTop: number,
+    childHeight: number,
+    childOffsetTop: number,
+  ): number {
+    const childOffsetMid = childOffsetTop + childHeight / 2;
+    if (
+      parentOffsetTop < childOffsetMid &&
+      childOffsetMid < parentOffsetTop + parentHeight
+    ) {
+      return parentOffsetTop;
+    }
+    return childOffsetMid - parentHeight / 2;
   }
 
   selectElement = (key: ElementID) => {
@@ -651,6 +671,25 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
         childrenCount={childrenCount}
         contextMenuExtensions={contextMenuExtensions || []}
         decorateRow={decorateRow}
+        forwardedRef={
+          selected == row.key
+            ? (selectedRow) => {
+                if (!selectedRow || !this._outerRef.current) {
+                  return;
+                }
+                const outer = this._outerRef.current;
+                outer.scrollTo(
+                  0,
+                  this._calculateScrollTop(
+                    outer.offsetHeight,
+                    outer.scrollTop,
+                    selectedRow.offsetHeight,
+                    selectedRow.offsetTop,
+                  ),
+                );
+              }
+            : null
+        }
       />
     );
   };
@@ -658,7 +697,10 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
   render() {
     return (
       <ElementsBox>
-        <ElementsContainer onKeyDown={this.onKeyDown} tabIndex={0}>
+        <ElementsContainer
+          onKeyDown={this.onKeyDown}
+          tabIndex={0}
+          ref={this._outerRef}>
           {this.state.flatElements.map(this.buildRow)}
         </ElementsContainer>
       </ElementsBox>

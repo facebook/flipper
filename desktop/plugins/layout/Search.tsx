@@ -68,7 +68,7 @@ export default class Search extends Component<Props, State> {
     this.timer = setTimeout(() => this.performSearch(value), 200);
   };
 
-  onKeyDown = (e: React.KeyboardEvent) => {
+  onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       this.performSearch(this.state.value);
     }

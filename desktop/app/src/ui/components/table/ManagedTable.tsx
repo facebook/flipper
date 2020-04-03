@@ -431,15 +431,15 @@ export class ManagedTable extends React.Component<
       highlightedRows.add(row.key);
     } else if (e.shiftKey && this.props.multiHighlight) {
       // range select
-      const lastItemKey = Array.from(this.state.highlightedRows).pop()!;
+      const lastItemKey = Array.from(highlightedRows).pop()!;
       highlightedRows = new Set([
         ...highlightedRows,
         ...this.selectInRange(lastItemKey, row.key),
       ]);
     } else {
       // single select
-      this.state.highlightedRows.clear();
-      this.state.highlightedRows.add(row.key);
+      highlightedRows.clear();
+      highlightedRows.add(row.key);
     }
 
     this.onRowHighlighted(highlightedRows);
