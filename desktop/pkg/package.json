@@ -1,6 +1,6 @@
 {
   "name": "flipper-pkg",
-  "version": "0.35.0",
+  "version": "0.36.0",
   "description": "Utility for building and publishing Flipper plugins",
   "repository": "facebook/flipper",
   "main": "lib/index.js",
@@ -20,7 +20,7 @@
     "@types/node": "^13.7.5",
     "cli-ux": "^5.4.5",
     "fs-extra": "^8.1.0",
-    "flipper-babel-transformer": "0.35.0",
+    "flipper-babel-transformer": "0.36.0",
     "inquirer": "^7.0.5",
     "metro": "^0.58.0",
     "tslib": "^1"

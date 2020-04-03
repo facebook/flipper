@@ -15,7 +15,7 @@ The following configuration assumed CocoaPods 1.9+.
 
 ```ruby
 project 'MyApp.xcodeproj'
-flipperkit_version = '0.35.0'
+flipperkit_version = '0.36.0'
 
 target 'MyApp' do
   platform :ios, '9.0'
@@ -77,7 +77,7 @@ end
 
 ```ruby
 project 'MyApp.xcodeproj'
-flipperkit_version = '0.35.0'
+flipperkit_version = '0.36.0'
 
 target 'MyApp' do
   platform :ios, '9.0'
