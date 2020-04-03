@@ -74,7 +74,10 @@ export default class UpdateIndicator extends React.PureComponent<Props, State> {
 
     const container = (
       <Container>
-        <span onClick={() => shell.openExternal(result.url)}>
+        <span
+          onClick={() => shell.openExternal(result.url)}
+          role="button"
+          tabIndex={0}>
           <Glyph
             color={getSeverityColor(this.props.launcherMsg.severity)}
             name="caution-triangle"
