@@ -361,7 +361,7 @@ function getTemplate(
           label: 'Getting started',
           click: function () {
             shell.openExternal(
-              'https://fbflipper.com/docs/getting-started.html',
+              'https://fbflipper.com/docs/getting-started/index.html',
             );
           },
         },
