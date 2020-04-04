@@ -17,10 +17,10 @@ class Index extends React.Component {
           <div className="content">
             <h1>Extensible mobile app&nbsp;debugger</h1>
             <h2>
-              Flipper is a platform for debugging iOS, Android
-              and React Native apps. Visualize, inspect, and control your apps
-              from a simple desktop interface. Use Flipper as is or extend it
-              using the plugin API.
+              Flipper is a platform for debugging iOS, Android and React Native
+              apps. Visualize, inspect, and control your apps from a simple
+              desktop interface. Use Flipper as is or extend it using the plugin
+              API.
             </h2>
             <div className="row">
               <p
@@ -128,7 +128,7 @@ class Index extends React.Component {
           </div>
         </div>
         <div className="wrapper landing-cta">
-          <a href="/docs/getting-started.html" className="landing-btn primary">
+          <a href="/docs/getting-started/" className="landing-btn primary">
             Integrate Flipper In Your App
           </a>
           <a

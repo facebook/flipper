@@ -40,7 +40,7 @@ On a terminal, run the following:
 ```bash
 adb shell am start -n <APP_PACKAGE>/com.facebook.flipper.android.diagnostics.FlipperDiagnosticActivity
 ```
-This will only work if you added `FlipperDiagnosticActivity` to your `AndroidManifest.xml`. See [getting started](getting-started.html) for help.
+This will only work if you added `FlipperDiagnosticActivity` to your `AndroidManifest.xml`. See [getting started](getting-started/) for help.
 
 #### iOS
 You'll need to manually add this [ViewController](https://github.com/facebook/flipper/blob/master/iOS/FlipperKit/FlipperDiagnosticsViewController.m) to your app to see the in-app diagnostics.
@@ -91,7 +91,7 @@ debugImplementation('com.facebook.flipper:flipper:*') {
 
 ### Build errors in React Native
 
-If you experience errors such as `Undefined symbol: associated type descriptor for FloatLiteralType` or `Undefined symbol: __swift_FORCE_LOAD_$_swiftCompatibility50` after going through the [Getting Started](/docs/getting-started.html) tutorial you must do as follows:
+If you experience errors such as `Undefined symbol: associated type descriptor for FloatLiteralType` or `Undefined symbol: __swift_FORCE_LOAD_$_swiftCompatibility50` after going through the [Getting Started](/docs/getting-started/) tutorial you must do as follows:
 
 1. Open your project in Xcode;
 1. Click in your project's name on the left side;
