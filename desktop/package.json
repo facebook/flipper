@@ -173,7 +173,7 @@
     "metro-resolver": "^0.58.0",
     "p-filter": "^2.1.0",
     "p-map": "^4.0.0",
-    "prettier": "^2.0.0",
+    "prettier": "^2.0.3",
     "react-async": "^10.0.0",
     "recursive-readdir": "^2.2.2",
     "redux-mock-store": "^1.5.3",
