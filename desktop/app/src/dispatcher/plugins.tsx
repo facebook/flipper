@@ -10,7 +10,6 @@
 import {Store} from '../reducers/index';
 import {Logger} from '../fb-interfaces/Logger';
 import {FlipperPlugin, FlipperDevicePlugin} from '../plugin';
-import {State} from '../reducers/plugins';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import adbkit from 'adbkit';
