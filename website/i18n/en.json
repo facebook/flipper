@@ -113,6 +113,14 @@
         "title": "Set up your iOS app",
         "sidebar_label": "iOS"
       },
+      "getting-started/react-native-android": {
+        "title": "Manually set up your React Native Android App",
+        "sidebar_label": "React Native for Android"
+      },
+      "getting-started/react-native-ios": {
+        "title": "Manually set up your React Native iOS App",
+        "sidebar_label": "React Native for iOS"
+      },
       "getting-started/react-native": {
         "title": "Set up your React Native App",
         "sidebar_label": "React Native"

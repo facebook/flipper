@@ -21,7 +21,9 @@
       "getting-started/index",
       "getting-started/android-native",
       "getting-started/ios-native",
-      "getting-started/react-native"
+      "getting-started/react-native",
+      "getting-started/react-native-android",
+      "getting-started/react-native-ios"
     ],
     "Plugin Setup": [
       "setup/layout-plugin",
