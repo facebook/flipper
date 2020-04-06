@@ -18,7 +18,7 @@
   },
   "dependencies": {},
   "resolutions": {
-    "minimist": "1.2.2",
+    "minimist": "1.2.3",
     "kind-of": "6.0.3"
   }
 }
