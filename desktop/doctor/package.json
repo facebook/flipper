@@ -9,7 +9,7 @@
   "devDependencies": {
     "@types/fb-watchman": "2.0.0",
     "@types/jest": "^25.1.5",
-    "@typescript-eslint/eslint-plugin": "^2.8.0",
+    "@typescript-eslint/eslint-plugin": "^2.27.0",
     "eslint": "^6.6.0",
     "eslint-plugin-babel": "^5.3.0",
     "eslint-plugin-flowtype": "^4.5.2",
