@@ -294,7 +294,11 @@ const addSaltToDeviceSerial = async (
     deviceType: device.deviceType,
     title: device.title,
     os: device.os,
-    logEntries: selectedPlugins.includes('DeviceLogs') ? device.getLogs() : [],
+    logEntries: selectedPlugins.includes('DeviceLogs')
+      ? device.getLogs(
+          new Date(new Date().getTime() - 1000 * 60 * 10), // Last 10 mins of logs
+        )
+      : [],
     screenshotHandle: deviceScreenshot,
   });
   statusUpdate &&
