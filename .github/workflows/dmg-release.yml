@@ -23,6 +23,21 @@ jobs:
       run: yarn build --mac --mac-dmg
       working-directory: ${{env.desktop-directory}}
     - name: Upload
+      uses: actions/upload-artifact@v1
+      with:
+        name: 'Flipper-mac.dmg'
+        path: 'dist/Flipper-mac.dmg'
+  publish:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+    - name: Download
+      uses: actions/download-artifact@v1
+      with:
+        name: 'Flipper-mac.dmg'
+        path: 'dist/Flipper-mac.dmg'
+    - name: Publish
       uses: skx/github-action-publish-binaries@master
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
