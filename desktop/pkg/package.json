@@ -30,7 +30,7 @@
     "@types/jest": "25.1.4",
     "globby": "^10",
     "jest": "^25.1.0",
-    "prettier": "^2.0.0",
+    "prettier": "^2.0.4",
     "rimraf": "^3.0.2",
     "ts-jest": "^25.2.1",
     "ts-node": "^8",
