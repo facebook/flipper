@@ -30,6 +30,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
 
+    steps:
     - name: Download
       uses: actions/download-artifact@v1
       with:
