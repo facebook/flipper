@@ -31,21 +31,19 @@
     "globby": "^10",
     "jest": "^25.1.0",
     "prettier": "^2.0.0",
+    "rimraf": "^3.0.2",
     "ts-jest": "^25.2.1",
     "ts-node": "^8",
     "typescript": "^3.7.2"
   },
   "scripts": {
+    "reset": "rimraf lib *.tsbuildinfo",
     "prebuild": "cd ../babel-transformer && yarn build",
     "build": "tsc -b",
-    "postpack": "rm -f oclif.manifest.json",
-    "prepack": "rm -rf lib && yarn build && oclif-dev manifest && oclif-dev readme",
-    "prepare": "yarn run build",
-    "prepublishOnly": "yarn test && yarn run lint",
-    "preversion": "yarn run lint",
-    "test": "jest --config jestconfig.json",
-    "run": "bin/run",
-    "version": "oclif-dev readme && git add README.md"
+    "postpack": "rimraf oclif.manifest.json",
+    "prepack": "yarn reset && yarn build && oclif-dev manifest && oclif-dev readme",
+    "run": "yarn build && bin/run",
+    "version": "oclif-dev readme && hg add README.md"
   },
   "engines": {
     "node": ">=8.0.0"

@@ -118,6 +118,7 @@ export async function publishPackages({
   }
   const publicPackages = workspaces.packages.filter((pkg) => !pkg.json.private);
   for (const pkg of publicPackages) {
+    console.log(`Publishing ${pkg.json.name}...`);
     execSync(cmd, {cwd: pkg.dir, stdio: 'inherit'});
   }
 }

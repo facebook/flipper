@@ -4,55 +4,53 @@
 Flipper plugins.
 
 <!-- toc -->
+* [flipper-pkg](#flipper-pkg)
 * [Usage](#usage)
 * [Commands](#commands)
 <!-- tocstop -->
 # Usage
 <!-- usage -->
 ```sh-session
-$ npm install -g mycli
-$ mycli COMMAND
+$ npm install -g flipper-pkg
+$ flipper-pkg COMMAND
 running command...
-$ mycli (-v|--version|version)
-mycli/0.0.0 darwin-x64 node-v12.14.0
-$ mycli --help [COMMAND]
+$ flipper-pkg (-v|--version|version)
+flipper-pkg/0.35.0 darwin-x64 node-v12.15.0
+$ flipper-pkg --help [COMMAND]
 USAGE
-  $ mycli COMMAND
+  $ flipper-pkg COMMAND
 ...
 ```
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`mycli hello [FILE]`](#mycli-hello-file)
-* [`mycli help [COMMAND]`](#mycli-help-command)
+* [`flipper-pkg bundle DIRECTORY`](#flipper-pkg-bundle-directory)
+* [`flipper-pkg help [COMMAND]`](#flipper-pkg-help-command)
 
-## `mycli hello [FILE]`
+## `flipper-pkg bundle DIRECTORY`
 
-describe the command here
+bundle a plugin folder into a distributable archive
 
 ```
 USAGE
-  $ mycli hello [FILE]
+  $ flipper-pkg bundle DIRECTORY
 
 OPTIONS
-  -f, --force
-  -h, --help       show CLI help
-  -n, --name=name  name to print
+  -o, --output=output  [default: .] Where to output the bundle, file or directory. Defaults to '.'.
 
 EXAMPLE
-  $ mycli hello
-  hello world from ./src/hello.ts!
+  $ flipper-pkg bundle path/to/plugin
 ```
 
-_See code: [src/commands/hello.ts](https://github.com/passy/mycli/blob/v0.0.0/src/commands/hello.ts)_
+_See code: [src/commands/bundle.ts](https://github.com/facebook/flipper/blob/v0.35.0/src/commands/bundle.ts)_
 
-## `mycli help [COMMAND]`
+## `flipper-pkg help [COMMAND]`
 
-display help for mycli
+display help for flipper-pkg
 
 ```
 USAGE
-  $ mycli help [COMMAND]
+  $ flipper-pkg help [COMMAND]
 
 ARGUMENTS
   COMMAND  command to show help for

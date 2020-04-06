@@ -39,10 +39,9 @@
     "typescript": "^3.7.2"
   },
   "scripts": {
+    "reset": "rimraf lib *.tsbuildinfo",
     "build": "tsc -b",
-    "prepack": "rimraf lib *.tsbuildinfo && tsc -b",
-    "prepublishOnly": "yarn test",
-    "test": "jest --config jestconfig.json"
+    "prepack": "yarn reset && yarn build"
   },
   "files": [
     "lib/**/*",

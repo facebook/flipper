@@ -24,13 +24,9 @@
     "typescript": "^3.7.2"
   },
   "scripts": {
+    "reset": "rimraf lib *.tsbuildinfo",
     "build": "tsc -b",
-    "prepare": "yarn run build",
-    "prepublishOnly": "yarn test && yarn run lint",
-    "preversion": "yarn run lint",
-    "test": "jest --config jestconfig.json --passWithNoTests",
-    "lint": "eslint -c ../.eslintrc.js src/**/* --ext .js,.ts  && tsc --noemit",
-    "fix": "eslint -c ../.eslintrc.js src/**/* --fix --ext .js,.ts",
+    "prepack": "yarn reset && yarn build",
     "run": "yarn run build && node lib/cli.js"
   },
   "files": [
