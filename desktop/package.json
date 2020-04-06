@@ -149,7 +149,7 @@
     "@typescript-eslint/eslint-plugin": "^2.19.2",
     "@typescript-eslint/parser": "^2.19.2",
     "babel-eslint": "^10.0.1",
-    "electron": "8.0.1",
+    "electron": "8.2.1",
     "electron-builder": "^22.3.2",
     "eslint": "^6.7.0",
     "eslint-config-fbjs": "^3.1.1",
