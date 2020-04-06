@@ -159,7 +159,10 @@ class Server extends EventEmitter {
         req: IncomingMessage;
         secure: boolean;
       }) => {
-        return info.origin.startsWith('chrome-extension://');
+        return (
+          info.origin.startsWith('chrome-extension://') ||
+          info.origin.startsWith('localhost:')
+        );
       },
     });
     wss.on('connection', (ws: WebSocket, message: any) => {
