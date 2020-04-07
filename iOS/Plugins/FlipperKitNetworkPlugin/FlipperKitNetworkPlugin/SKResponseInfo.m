@@ -31,7 +31,7 @@
 + (BOOL)shouldStripReponseBodyWithResponse:(NSURLResponse*)response {
   // Only HTTP(S) responses have Content-Type headers
   if (![response isKindOfClass:[NSHTTPURLResponse class]]) {
-    return NO;
+    return YES;
   }
 
   NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*)response;
