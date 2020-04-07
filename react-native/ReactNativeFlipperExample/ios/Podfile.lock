@@ -233,7 +233,7 @@ PODS:
     - React-cxxreact (= 0.62.0-rc.5)
     - React-jsi (= 0.62.0-rc.5)
   - React-jsinspector (0.62.0-rc.5)
-  - react-native-flipper (0.33.1):
+  - react-native-flipper (0.36.0):
     - React
   - React-RCTActionSheet (0.62.0-rc.5):
     - React-Core/RCTActionSheetHeaders (= 0.62.0-rc.5)
@@ -429,7 +429,7 @@ SPEC CHECKSUMS:
   React-jsi: 6eb628cbb8b427609cc7867da5c390b57284fb88
   React-jsiexecutor: 7f96dd5e1264c67b2143e73af54f86abda99cde6
   React-jsinspector: a3017d13fbcb7f4c42dcbcd415b97135ac3f0f41
-  react-native-flipper: 990dbc0e906748023932ed8a25142057be261239
+  react-native-flipper: adfd8c60f693b84567611332c1ee1418041d0b90
   React-RCTActionSheet: f4c23f31ca9a1f85a734ce18a31de1dfd0054ddb
   React-RCTAnimation: 8e7f07139ce580b939700ba4af8f8daa0da8884c
   React-RCTBlob: 449577dc262e0fa7455fac8468d9b64fb9a9d919
