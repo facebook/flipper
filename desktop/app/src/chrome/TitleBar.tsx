@@ -45,6 +45,7 @@ import React from 'react';
 import {State} from '../reducers';
 import {reportUsage} from '../utils/metrics';
 import FpsGraph from './FpsGraph';
+import NetworkGraph from './NetworkGraph';
 import MetroButton from './MetroButton';
 
 const AppTitleBar = styled(FlexRow)<{focused?: boolean}>(({focused}) => ({
@@ -167,6 +168,7 @@ class TitleBar extends React.Component<Props, StateFromProps> {
         )}
         <Spacer />
 
+        {!isProduction() && <NetworkGraph height={20} width={60} />}
         {!isProduction() && <FpsGraph height={20} width={60} />}
 
         {config.showFlipperRating ? <RatingButton /> : null}

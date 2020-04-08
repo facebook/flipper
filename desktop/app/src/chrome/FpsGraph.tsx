@@ -84,7 +84,12 @@ export default function FpsGraph({
 
   return (
     <div>
-      <canvas ref={canvasRef} width={width} height={height} />
+      <canvas
+        ref={canvasRef}
+        width={width}
+        height={height}
+        title="Current framerate in FPS"
+      />
     </div>
   );
 }
