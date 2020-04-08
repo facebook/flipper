@@ -54,6 +54,20 @@ export default (store: Store, logger: Logger) => {
       ...oldExitData,
       timeSinceLastStartup,
     });
+    // create fresh exit data
+    const {
+      selectedDevice,
+      selectedApp,
+      selectedPlugin,
+    } = store.getState().connections;
+    persistExitData(
+      {
+        selectedDevice,
+        selectedApp,
+        selectedPlugin,
+      },
+      false,
+    );
   }
 
   function droppedFrameDetection(
@@ -81,7 +95,7 @@ export default (store: Store, logger: Logger) => {
     );
   }
 
-  ipcRenderer.on('trackUsage', () => {
+  ipcRenderer.on('trackUsage', (_e, ...args: any[]) => {
     const state = store.getState();
     const {
       selectedDevice,
@@ -90,7 +104,10 @@ export default (store: Store, logger: Logger) => {
       clients,
     } = state.connections;
 
-    persistExitData({selectedDevice, selectedPlugin, selectedApp});
+    persistExitData(
+      {selectedDevice, selectedPlugin, selectedApp},
+      args[0] === 'exit',
+    );
 
     const currentTime = Date.now();
     const usageSummary = computeUsageSummary(state.usageTracking, currentTime);
@@ -220,6 +237,7 @@ interface ExitData {
   deviceTitle: string;
   plugin: string;
   app: string;
+  cleanExit: boolean;
 }
 
 function loadExitData(): ExitData | undefined {
@@ -229,7 +247,11 @@ function loadExitData(): ExitData | undefined {
   const data = window.localStorage.getItem(flipperExitDataKey);
   if (data) {
     try {
-      return JSON.parse(data);
+      const res = JSON.parse(data);
+      if (res.cleanExit === undefined) {
+        res.cleanExit = true; // avoid skewing results for historical data where this info isn't present
+      }
+      return res;
     } catch (e) {
       console.warn('Failed to parse flipperExitData', e);
     }
@@ -237,11 +259,14 @@ function loadExitData(): ExitData | undefined {
   return undefined;
 }
 
-export function persistExitData(state: {
-  selectedDevice: BaseDevice | null;
-  selectedPlugin: string | null;
-  selectedApp: string | null;
-}) {
+export function persistExitData(
+  state: {
+    selectedDevice: BaseDevice | null;
+    selectedPlugin: string | null;
+    selectedApp: string | null;
+  },
+  cleanExit: boolean,
+) {
   if (!window.localStorage) {
     return;
   }
@@ -252,6 +277,7 @@ export function persistExitData(state: {
     deviceTitle: state.selectedDevice ? state.selectedDevice.title : '',
     plugin: state.selectedPlugin || '',
     app: state.selectedApp ? deconstructClientId(state.selectedApp).app : '',
+    cleanExit,
   };
   window.localStorage.setItem(
     flipperExitDataKey,

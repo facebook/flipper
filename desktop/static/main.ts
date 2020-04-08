@@ -310,7 +310,7 @@ function tryCreateWindow() {
     });
     win.once('ready-to-show', () => win.show());
     win.once('close', () => {
-      win.webContents.send('trackUsage');
+      win.webContents.send('trackUsage', 'exit');
       if (process.env.NODE_ENV === 'development') {
         // Removes as a default protocol for debug builds. Because even when the
         // production application is installed, and one tries to deeplink through
