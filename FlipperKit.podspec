@@ -50,7 +50,7 @@ Pod::Spec.new do |spec|
   spec.subspec 'FBCxxFollyDynamicConvert' do |ss|
     ss.header_dir = 'FBCxxFollyDynamicConvert'
     ss.compiler_flags = folly_compiler_flags
-    ss.dependency 'Flipper-Folly', '~> 2.1'
+    ss.dependency 'Flipper-Folly', '~> 2.2'
     ss.source_files = 'iOS/FlipperKit/FBCxxFollyDynamicConvert/**/*.{h,mm}'
     # We set these files as private headers since they only need to be accessed
     # by other FlipperKit source files

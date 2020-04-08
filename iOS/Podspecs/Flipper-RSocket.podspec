@@ -5,12 +5,12 @@
 
 Pod::Spec.new do |spec|
   spec.name = 'Flipper-RSocket'
-  spec.version = '1.0.0'
+  spec.version = '1.1.0'
   spec.license = { :type => 'MIT' }
   spec.homepage = 'https://github.com/rsocket/rsocket-cpp'
   spec.summary = 'C++ implementation of RSocket'
   spec.authors = 'Facebook'
-  spec.source = { :git => 'https://github.com/priteshrnandgaonkar/rsocket-cpp.git', :tag => "0.10.4"}
+  spec.source = { :git => 'https://github.com/priteshrnandgaonkar/rsocket-cpp.git', :tag => "0.11.0"}
   spec.module_name = 'RSocket'
   spec.static_framework = true
   spec.source_files = 'rsocket/benchmarks/*',
@@ -25,7 +25,7 @@ Pod::Spec.new do |spec|
 
   spec.libraries = "stdc++"
   spec.compiler_flags = '-std=c++1y'
-  spec.dependency 'Flipper-Folly', '~> 2.0'
+  spec.dependency 'Flipper-Folly', '~> 2.2'
   spec.compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_LIBGFLAGS=0 -DFOLLY_HAVE_LIBJEMALLOC=0 -DFOLLY_HAVE_PREADV=0 -DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0 -DFOLLY_USE_SYMBOLIZER=0  -frtti
     -fexceptions
     -std=c++14
