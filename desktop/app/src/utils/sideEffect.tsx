@@ -33,7 +33,7 @@ export function sideEffect<
   effect: (selectedState: V, store: Store) => void,
 ): () => void {
   let scheduled = false;
-  let lastRun = 0;
+  let lastRun = -1;
   let lastSelectedValue: V = selector(store.getState());
   let timeout: NodeJS.Timeout;
 
@@ -78,7 +78,9 @@ export function sideEffect<
     timeout = setTimeout(
       run,
       // Run ASAP (but async) or, if we recently did run, delay until at least 'throttle' time has expired
-      Math.max(1, lastRun + options.throttleMs - performance.now()),
+      lastRun === -1
+        ? 1
+        : Math.max(1, lastRun + options.throttleMs - performance.now()),
     );
   });
 

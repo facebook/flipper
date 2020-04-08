@@ -183,42 +183,42 @@ describe('sideeffect', () => {
     expect(warn.mock.calls[0][0]).toContain("Side effect 'test' took");
   });
 
-  // TODO(T64747771): Disabled as it appears to be non-deterministic.
-  test.skip('throttles correctly', async () => {
+  test('throttles correctly', async () => {
     unsubscribe = sideEffect(
       store,
-      {name: 'test', throttleMs: 100},
+      {name: 'test', throttleMs: 1000},
       (s) => s.counter.count,
       (number) => {
         events.push(`counter: ${number}`);
       },
     );
 
+    // Fires immediately
     store.dispatch({type: 'inc'});
-    await sleep(10);
+    await sleep(100);
     expect(events).toEqual(['counter: 1']);
 
     // no new tick in the next 100 ms
-    await sleep(30);
+    await sleep(300);
     store.dispatch({type: 'inc'});
 
-    await sleep(30);
+    await sleep(300);
     store.dispatch({type: 'inc'});
 
     expect(events).toEqual(['counter: 1']);
-    await sleep(100);
+    await sleep(1000);
     expect(events).toEqual(['counter: 1', 'counter: 3']);
 
     // long time now effect, it will fire right away again
-    await sleep(200);
+    await sleep(2000);
 
     // ..but firing an event that doesn't match the selector doesn't reset the timer
     store.dispatch({type: 'unrelated'});
-    await sleep(10);
+    await sleep(100);
 
     store.dispatch({type: 'inc'});
     store.dispatch({type: 'inc'});
-    await sleep(10);
+    await sleep(100);
     expect(events).toEqual(['counter: 1', 'counter: 3', 'counter: 5']);
   });
 });
