@@ -19,6 +19,7 @@ import {
 import {Idler, BaseIdler} from './Idler';
 import {pluginIsStarred, getSelectedPluginKey} from '../reducers/connections';
 import {deconstructPluginKey} from './clientUtils';
+import {onBytesReceived} from '../dispatcher/tracking';
 
 const MAX_BACKGROUND_TASK_TIME = 25;
 
@@ -28,6 +29,8 @@ type StatEntry = {
   messageCountTotal: number; // amount of message received for this plugin
   messageCountDelta: number; // amout of messages received since previous tracking tick
   maxTime: number; // maximum time spend in a single reducer call
+  bytesReceivedTotal: number; // Bytes received
+  bytesReceivedDelta: number; // Bytes received since last tick
 };
 
 const pluginBackgroundStats = new Map<string, StatEntry>();
@@ -36,8 +39,18 @@ export function resetPluginBackgroundStatsDelta() {
   pluginBackgroundStats.forEach((stat) => {
     stat.cpuTimeDelta = 0;
     stat.messageCountDelta = 0;
+    stat.bytesReceivedDelta = 0;
   });
 }
+
+onBytesReceived((plugin: string, bytes: number) => {
+  if (!pluginBackgroundStats.has(plugin)) {
+    pluginBackgroundStats.set(plugin, createEmptyStat());
+  }
+  const stat = pluginBackgroundStats.get(plugin)!;
+  stat.bytesReceivedTotal += bytes;
+  stat.bytesReceivedDelta += bytes;
+});
 
 export function getPluginBackgroundStats(): {
   cpuTime: number; // amount of ms cpu used since the last stats (typically every minute)
@@ -71,6 +84,8 @@ if (window) {
             messageCountDelta,
             messageCountTotal,
             maxTime,
+            bytesReceivedTotal,
+            bytesReceivedDelta,
           },
         ]) => ({
           plugin,
@@ -79,21 +94,29 @@ if (window) {
           cpuTimeDelta,
           messageCountDelta,
           maxTime,
+          bytesReceivedTotal,
+          bytesReceivedDelta,
         }),
       ),
     );
   };
 }
 
+function createEmptyStat(): StatEntry {
+  return {
+    cpuTimeDelta: 0,
+    cpuTimeTotal: 0,
+    messageCountDelta: 0,
+    messageCountTotal: 0,
+    maxTime: 0,
+    bytesReceivedTotal: 0,
+    bytesReceivedDelta: 0,
+  };
+}
+
 function addBackgroundStat(plugin: string, cpuTime: number) {
   if (!pluginBackgroundStats.has(plugin)) {
-    pluginBackgroundStats.set(plugin, {
-      cpuTimeDelta: 0,
-      cpuTimeTotal: 0,
-      messageCountDelta: 0,
-      messageCountTotal: 0,
-      maxTime: 0,
-    });
+    pluginBackgroundStats.set(plugin, createEmptyStat());
   }
   const stat = pluginBackgroundStats.get(plugin)!;
   stat.cpuTimeDelta += cpuTime;

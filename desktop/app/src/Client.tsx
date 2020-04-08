@@ -27,6 +27,7 @@ import {flipperRecorderAddEvent} from './utils/pluginStateRecorder';
 import {getPluginKey} from './utils/pluginUtils';
 import {processMessageLater} from './utils/messageQueue';
 import {sideEffect} from './utils/sideEffect';
+import {emitBytesReceived} from './dispatcher/tracking';
 
 type Plugins = Array<string>;
 
@@ -321,6 +322,8 @@ export default class Client extends EventEmitter {
       } else if (method === 'execute') {
         invariant(data.params, 'expected params');
         const params: Params = data.params;
+        const bytes = msg.length * 2; // string lengths are measured in UTF-16 units (not characters), so 2 bytes per char
+        emitBytesReceived(params.api, bytes);
 
         const persistingPlugin:
           | typeof FlipperPlugin
@@ -459,10 +462,15 @@ export default class Client extends EventEmitter {
                 if (!fromPlugin || this.isAcceptingMessagesFromPlugin(plugin)) {
                   const logEventName = this.getLogEventName(data);
                   this.logger.trackTimeSince(mark, logEventName);
+                  emitBytesReceived(
+                    plugin || 'unknown',
+                    payload.data.length * 2,
+                  );
                   const response: {
                     success?: Object;
                     error?: ErrorType;
                   } = JSON.parse(payload.data);
+
                   this.onResponse(response, resolve, reject);
                 }
               },

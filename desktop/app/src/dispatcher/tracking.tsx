@@ -42,6 +42,28 @@ export type UsageSummary = {
 
 export const fpsEmitter = new EventEmitter();
 
+// var is fine, let doesn't have the correct hoisting semantics
+// eslint-disable-next-line no-var
+var bytesReceivedEmitter: EventEmitter;
+
+export function onBytesReceived(
+  callback: (plugin: string, bytes: number) => void,
+): () => void {
+  if (!bytesReceivedEmitter) {
+    bytesReceivedEmitter = new EventEmitter();
+  }
+  bytesReceivedEmitter.on('bytesReceived', callback);
+  return () => {
+    bytesReceivedEmitter.off('bytesReceived', callback);
+  };
+}
+
+export function emitBytesReceived(plugin: string, bytes: number) {
+  if (bytesReceivedEmitter) {
+    bytesReceivedEmitter.emit('bytesReceived', plugin, bytes);
+  }
+}
+
 export default (store: Store, logger: Logger) => {
   let droppedFrames: number = 0;
   let largeFrameDrops: number = 0;
