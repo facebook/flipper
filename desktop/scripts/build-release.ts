@@ -105,12 +105,16 @@ async function buildDist(buildFolder: string) {
       publish: 'never',
       config: {
         appId: `com.facebook.sonar`,
+        productName: 'Flipper',
         directories: {
           buildResources: buildFolder,
           output: distDir,
         },
         electronDownload: electronDownloadOptions,
         npmRebuild: false,
+        linux: {
+          executableName: 'flipper',
+        },
       },
       projectDir: buildFolder,
       targets,
