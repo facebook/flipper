@@ -16,6 +16,7 @@ import {UnsupportedError} from './metrics';
 import adbkit, {Client} from 'adbkit';
 
 const allowedAppNameRegex = /^[a-zA-Z0-9._\-]+$/;
+const appNotApplicationRegex = /is not an application/;
 const appNotDebuggableRegex = /debuggable/;
 const operationNotPermittedRegex = /not permitted/;
 const logTag = 'androidContainerUtility';
@@ -48,6 +49,21 @@ export function validateFileContent(content: string): Promise<FileContent> {
   );
 }
 
+enum RunAsErrorCode {
+  NotAnApp = 1,
+  NotDebuggable = 2,
+}
+
+class RunAsError extends Error {
+  code: RunAsErrorCode;
+
+  constructor(code: RunAsErrorCode, message?: string) {
+    super(message);
+    this.code = code;
+    Object.setPrototypeOf(this, new.target.prototype);
+  }
+}
+
 export function _push(
   client: Client,
   deviceId: string,
@@ -70,7 +86,24 @@ export function _pull(
   app: AppName,
   path: FilePath,
 ): Promise<string> {
-  return executeCommandAsApp(client, deviceId, app, `cat '${path}'`);
+  return executeCommandAsApp(client, deviceId, app, `cat '${path}'`).catch(
+    (error) => {
+      if (
+        error instanceof RunAsError &&
+        error.code == RunAsErrorCode.NotAnApp
+      ) {
+        // Fall back to running the command directly. This will work if adb is running as root.
+        return client
+          .shell(deviceId, `echo "cat ${path}" | su`)
+          .then(adbkit.util.readAll)
+          .then((buffer) => buffer.toString())
+          .catch(() => {
+            throw error;
+          });
+      }
+      throw error;
+    },
+  );
 }
 
 // Keep this method private since it relies on pre-validated arguments
@@ -85,8 +118,15 @@ function executeCommandAsApp(
     .then(adbkit.util.readAll)
     .then((buffer) => buffer.toString())
     .then((output) => {
+      if (output.match(appNotApplicationRegex)) {
+        throw new RunAsError(
+          RunAsErrorCode.NotAnApp,
+          `Android package ${app} is not an application. To use it with Flipper, either run adb as root or add an <application> tag to AndroidManifest.xml`,
+        );
+      }
       if (output.match(appNotDebuggableRegex)) {
-        throw new Error(
+        throw new RunAsError(
+          RunAsErrorCode.NotDebuggable,
           `Android app ${app} is not debuggable. To use it with Flipper, add android:debuggable="true" to the application section of AndroidManifest.xml`,
         );
       }
