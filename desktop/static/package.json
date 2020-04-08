@@ -5,7 +5,7 @@
   "private": true,
   "license": "MIT",
   "dependencies": {
-    "electron-devtools-installer": "^2.2.4",
+    "electron-devtools-installer": "^3.0.0",
     "expand-tilde": "^2.0.2",
     "fb-watchman": "^2.0.0",
     "fix-path": "^3.0.0",
