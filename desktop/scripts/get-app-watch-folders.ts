@@ -9,7 +9,7 @@
 
 import fs from 'fs-extra';
 import path from 'path';
-import getWatchFolders from '../static/get-watch-folders';
+import getWatchFolders from '../static/getWatchFolders';
 import {appDir, pluginsDir} from './paths';
 
 /**

@@ -15,7 +15,7 @@ import path from 'path';
 import fs from 'fs-extra';
 import {spawn} from 'promisify-child-process';
 import recursiveReaddir from 'recursive-readdir';
-import getWatchFolders from '../static/get-watch-folders';
+import getWatchFolders from '../static/getWatchFolders';
 import getAppWatchFolders from './get-app-watch-folders';
 import {
   appDir,
