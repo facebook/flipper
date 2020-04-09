@@ -7,9 +7,8 @@
  * @format
  */
 
-import {promises, exists} from 'fs';
+import {readFile, pathExists, mkdirp, writeFile} from 'fs-extra';
 import path from 'path';
-import {promisify} from 'util';
 
 /**
  * Redux-persist storage engine for storing state in a human readable JSON file.
@@ -27,8 +26,7 @@ export default class JsonFileStorage {
   }
 
   private parseFile(): Promise<any> {
-    return promises
-      .readFile(this.filepath)
+    return readFile(this.filepath)
       .then((buffer) => buffer.toString())
       .then(this.deserializeValue)
       .catch((e) => {
@@ -88,11 +86,9 @@ export default class JsonFileStorage {
 
   writeContents(content: string): Promise<void> {
     const dir = path.dirname(this.filepath);
-    return promisify(exists)(dir)
-      .then((dirExists) =>
-        dirExists ? Promise.resolve() : promises.mkdir(dir, {recursive: true}),
-      )
-      .then(() => promises.writeFile(this.filepath, content));
+    return pathExists(dir)
+      .then((dirExists) => (dirExists ? Promise.resolve() : mkdirp(dir)))
+      .then(() => writeFile(this.filepath, content));
   }
 }
 

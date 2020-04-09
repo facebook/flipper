@@ -13,7 +13,7 @@ import globImport from 'glob';
 import {exec as execImport} from 'child_process';
 const glob = util.promisify(globImport);
 const exec = util.promisify(execImport);
-const PACKAGES = ['plugins/*', 'plugins/fb/*', 'plugins/fb/layout/*'];
+const PACKAGES = ['plugins/fb/*', 'plugins/fb/layout/*'];
 const WINDOWS = /^win/.test(process.platform);
 const YARN_PATH =
   process.argv.length > 2
