@@ -1,6 +1,6 @@
 {
   "name": "flipper",
-  "version": "0.36.0",
+  "version": "0.37.0",
   "description": "Mobile development tool",
   "productName": "Flipper",
   "author": "Facebook Inc",
@@ -32,7 +32,7 @@
     "expand-tilde": "^2.0.2",
     "express": "^4.15.2",
     "fb-watchman": "^2.0.0",
-    "flipper-doctor": "0.36.0",
+    "flipper-doctor": "0.37.0",
     "fs-extra": "^8.0.1",
     "immer": "^6.0.0",
     "immutable": "^4.0.0-rc.12",

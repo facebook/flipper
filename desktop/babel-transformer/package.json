@@ -1,6 +1,6 @@
 {
   "name": "flipper-babel-transformer",
-  "version": "0.36.0",
+  "version": "0.37.0",
   "description": "Babel transformer for Flipper plugins",
   "repository": "facebook/flipper",
   "main": "lib/index.js",

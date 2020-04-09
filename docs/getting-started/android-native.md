@@ -24,10 +24,10 @@ repositories {
 }
 
 dependencies {
-  debugImplementation 'com.facebook.flipper:flipper:0.36.0'
+  debugImplementation 'com.facebook.flipper:flipper:0.37.0'
   debugImplementation 'com.facebook.soloader:soloader:0.8.2'
 
-  releaseImplementation 'com.facebook.flipper:flipper-noop:0.36.0'
+  releaseImplementation 'com.facebook.flipper:flipper-noop:0.37.0'
 }
 ```
 

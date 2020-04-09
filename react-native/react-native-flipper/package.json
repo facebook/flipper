@@ -1,7 +1,7 @@
 {
   "name": "react-native-flipper",
   "title": "React Native Flipper Bindings",
-  "version": "0.36.0",
+  "version": "0.37.0",
   "description": "TODO",
   "main": "index.js",
   "types": "index.d.ts",

@@ -1,3 +1,10 @@
+# 0.37.0 (8/4/2020)
+
+ * D20868923 -  Fix connections on Android devices with older SDKs (19)
+ * D20822063 -  The QPL plugin now shows qpl start times
+ * D20836635 -  Stabilized QPL plugin to avoid crashes with iOS devices, normalized event times to always report in milliseconds.
+
+
 # 0.36.0 (3/4/2020)
 
  * D20673166 -  New Hermes Debugger plugin for React Native apps.
