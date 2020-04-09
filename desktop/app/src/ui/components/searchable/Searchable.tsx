@@ -335,8 +335,8 @@ const Searchable = (
 
     matchTags = debounce((searchTerm: string, matchEnd: boolean) => {
       const filterPattern = matchEnd
-        ? /([a-z][\w]*[!]?[:=][^\s]+)($|\s)/gi
-        : /([a-z][\w]*[!]?[:=][^\s]+)\s/gi;
+        ? /([a-z]\w*[!]?[:=]\S+)($|\s)/gi
+        : /([a-z]\w*[!]?[:=]\S+)\s/gi;
       const match = searchTerm.match(filterPattern);
       if (match && match.length > 0) {
         match.forEach((filter: string) => {

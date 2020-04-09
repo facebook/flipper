@@ -275,10 +275,10 @@ export function parseCrashLog(
   const fallbackReason = UNKNOWN_CRASH_REASON;
   switch (os) {
     case 'iOS': {
-      const regex = /Exception Type: *[\w]*/;
+      const regex = /Exception Type: *\w*/;
       const arr = regex.exec(content);
       const exceptionString = arr ? arr[0] : '';
-      const exceptionRegex = /[\w]*$/;
+      const exceptionRegex = /\w*$/;
       const tmp = exceptionRegex.exec(exceptionString);
       const exception = tmp && tmp[0].length ? tmp[0] : fallbackReason;
 
