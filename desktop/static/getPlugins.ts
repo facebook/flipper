@@ -10,9 +10,7 @@
 import path from 'path';
 import fs from 'fs-extra';
 import expandTilde from 'expand-tilde';
-import {homedir} from 'os';
-
-const HOME_DIR = homedir();
+import getPluginFolders from './getPluginFolders';
 
 export type PluginManifest = {
   version: string;
@@ -29,19 +27,16 @@ export type PluginInfo = {
   manifest: PluginManifest;
 };
 
-export default function getPluginEntryPoints(additionalPaths: string[] = []) {
-  const defaultPluginPath = path.join(HOME_DIR, '.flipper', 'node_modules');
-  const entryPoints = entryPointForPluginFolder(defaultPluginPath);
-  if (typeof additionalPaths === 'string') {
-    additionalPaths = [additionalPaths];
-  }
-  additionalPaths.forEach((additionalPath) => {
+export default async function getPlugins(includeThirdparty: boolean = false) {
+  const pluginFolders = await getPluginFolders(includeThirdparty);
+  const entryPoints: {[key: string]: PluginInfo} = {};
+  pluginFolders.forEach((additionalPath) => {
     const additionalPlugins = entryPointForPluginFolder(additionalPath);
     Object.keys(additionalPlugins).forEach((key) => {
       entryPoints[key] = additionalPlugins[key];
     });
   });
-  return entryPoints;
+  return Object.values(entryPoints);
 }
 function entryPointForPluginFolder(pluginPath: string) {
   pluginPath = expandTilde(pluginPath);
@@ -62,6 +57,9 @@ function entryPointForPluginFolder(pluginPath: string) {
       if (packageJSON) {
         try {
           const json = JSON.parse(packageJSON);
+          if (json.workspaces) {
+            return;
+          }
           if (!json.keywords || !json.keywords.includes('flipper-plugin')) {
             console.log(
               `Skipping package "${json.name}" as its "keywords" field does not contain tag "flipper-plugin"`,

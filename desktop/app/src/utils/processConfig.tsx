@@ -11,7 +11,6 @@ import {remote} from 'electron';
 
 export type ProcessConfig = {
   disabledPlugins: Set<string>;
-  pluginPaths: Array<string>;
   lastWindowPosition: {
     x: number;
     y: number;
@@ -33,7 +32,6 @@ export default function config(): ProcessConfig {
     );
     configObj = {
       disabledPlugins: new Set(json.disabledPlugins || []),
-      pluginPaths: json.pluginPaths || [],
       lastWindowPosition: json.lastWindowPosition,
       launcherMsg: json.launcherMsg,
       // TODO(T64836070): The built-in updater is disabled as we don't have a strategy for signing prod builds right now.

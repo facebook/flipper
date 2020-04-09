@@ -9,9 +9,9 @@
 
 import path from 'path';
 import Watchman from './watchman';
-import {PluginInfo} from './getPluginEntryPoints';
+import {PluginInfo} from './getPlugins';
 
-export default async function watchPlugins(
+export default async function startWatchPlugins(
   plugins: PluginInfo[],
   compilePlugin: (plugin: PluginInfo) => void | Promise<void>,
 ) {

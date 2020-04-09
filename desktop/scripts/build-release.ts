@@ -16,9 +16,9 @@ import {
   compileRenderer,
   compileMain,
   die,
-  compileDefaultPlugins,
   getVersionNumber,
   genMercurialRevision,
+  generatePluginEntryPoints,
 } from './build-utils';
 import fetch from 'node-fetch';
 import {getIcons, buildLocalIconPath, getIconURL} from '../app/src/utils/icons';
@@ -126,7 +126,9 @@ async function buildDist(buildFolder: string) {
 }
 
 async function copyStaticFolder(buildFolder: string) {
+  console.log(`⚙️  Copying static package with dependencies...`);
   await copyPackageWithDependencies(staticDir, buildFolder);
+  console.log('✅  Copied static package with dependencies.');
 }
 
 function downloadIcons(buildFolder: string) {
@@ -184,11 +186,9 @@ function downloadIcons(buildFolder: string) {
   console.log('Created build directory', dir);
 
   await compileMain();
+  await generatePluginEntryPoints();
   await copyStaticFolder(dir);
   await downloadIcons(dir);
-  if (!process.argv.includes('--no-embedded-plugins')) {
-    await compileDefaultPlugins(path.join(dir, 'defaultPlugins'));
-  }
   await compileRenderer(dir);
   const versionNumber = getVersionNumber();
   const hgRevision = await genMercurialRevision();
