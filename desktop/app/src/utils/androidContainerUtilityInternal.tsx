@@ -15,7 +15,7 @@
 import {UnsupportedError} from './metrics';
 import adbkit, {Client} from 'adbkit';
 
-const allowedAppNameRegex = /^[a-zA-Z0-9._\-]+$/;
+const allowedAppNameRegex = /^[\w._\-]+$/;
 const appNotApplicationRegex = /is not an application/;
 const appNotDebuggableRegex = /debuggable/;
 const operationNotPermittedRegex = /not permitted/;

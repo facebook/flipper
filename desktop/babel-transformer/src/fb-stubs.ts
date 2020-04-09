@@ -15,7 +15,7 @@ const isFBFile = (filePath: string) =>
   filePath.includes(`${path.sep}fb${path.sep}`);
 
 const requireFromFolder = (folder: string, path: string) =>
-  new RegExp(folder + '/[A-Za-z0-9.-_]+(.js)?$', 'g').test(path);
+  new RegExp(folder + '/[\w.-_]+(.js)?$', 'g').test(path);
 
 module.exports = () => ({
   name: 'replace-fb-stubs',

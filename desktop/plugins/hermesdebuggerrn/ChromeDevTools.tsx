@@ -13,7 +13,7 @@ import electron from 'electron';
 
 const devToolsNodeId = (url: string) =>
   `hermes-chromedevtools-out-of-react-node-${url.replace(
-    /[^a-zA-Z0-9]+/g,
+    /\W+/g,
     '-',
   )}`;
 

@@ -46,7 +46,7 @@ const deviceClientCertFile = 'device.crt';
 const caSubject = '/C=US/ST=CA/L=Menlo Park/O=Sonar/CN=SonarCA';
 const serverSubject = '/C=US/ST=CA/L=Menlo Park/O=Sonar/CN=localhost';
 const minCertExpiryWindowSeconds = 24 * 60 * 60;
-const allowedAppNameRegex = /^[a-zA-Z0-9._\-]+$/;
+const allowedAppNameRegex = /^[\w._\-]+$/;
 const logTag = 'CertificateProvider';
 /*
  * RFC2253 specifies the unamiguous x509 subject format.
