@@ -241,7 +241,22 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
     case 'SELECT_PLUGIN': {
       const {payload} = action;
       const {selectedPlugin, selectedApp, deepLinkPayload} = payload;
-      const selectedDevice = payload.selectedDevice || state.selectedDevice;
+      let selectedDevice =
+        selectedApp === null
+          ? null
+          : payload.selectedDevice || state.selectedDevice;
+      if (deepLinkPayload) {
+        const deepLinkParams = new URLSearchParams(deepLinkPayload || '');
+        const deviceParam = deepLinkParams.get('device');
+        const deviceMatch = state.devices.find((v) => v.title === deviceParam);
+        if (deviceMatch) {
+          selectedDevice = deviceMatch;
+        } else {
+          console.warn(
+            `Could not find matching device "${deviceParam}" requested through deep-link.`,
+          );
+        }
+      }
       if (!selectDevice) {
         console.warn('Trying to select a plugin before a device was selected!');
       }
