@@ -209,7 +209,11 @@ function entryPointForPluginFolder(pluginPath: string) {
       } catch (e) {}
       if (packageJSON) {
         try {
-          const pkg = JSON.parse(packageJSON) as PluginManifest;
+          const json = JSON.parse(packageJSON);
+          if (json.workspaces) {
+            return null;
+          }
+          const pkg = json as PluginManifest;
           const plugin: PluginInfo = {
             manifest: pkg,
             name: pkg.name,
