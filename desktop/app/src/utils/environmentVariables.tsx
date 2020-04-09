@@ -16,7 +16,7 @@ export function parseFlipperPorts(
   // Malformed numbers will get parsed to NaN which is not > 0
   if (
     ports.length === 2 &&
-    components.every((x) => /^[0-9]+$/.test(x)) &&
+    components.every((x) => /^\d+$/.test(x)) &&
     ports.every((x) => x > 0)
   ) {
     return {
