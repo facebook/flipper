@@ -5,6 +5,9 @@
   "license": "MIT",
   "title": "KaiOS: big allocations",
   "icon": "apps",
+  "keywords": [
+    "flipper-plugin"
+  ],
   "bugs": {
     "email": "oncall+wa_kaios@xmail.facebook.com",
     "url": "https://fb.workplace.com/groups/wa.kaios/"
