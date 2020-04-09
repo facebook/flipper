@@ -30,6 +30,7 @@ const {
   GRAPHQL_IOS_SUPPORT_GROUP_ID,
   GRAPHQL_ANDROID_SUPPORT_GROUP_ID,
   LITHO_SUPPORT_GROUP_ID,
+  COMPONENTKIT_GROUP_ID,
 } = constants;
 type SubmediaType =
   | {uploadID: string; status: 'Uploaded'}
@@ -254,7 +255,8 @@ export class Group {
 export type GroupNames =
   | 'Litho Support'
   | 'GraphQL Android Support'
-  | 'GraphQL iOS Support';
+  | 'GraphQL iOS Support'
+  | 'ComponentKit';
 
 export const LITHO_GROUP = new Group(
   'Litho Support',
@@ -280,10 +282,19 @@ export const GRAPHQL_IOS_GROUP = new Group(
   ['iOS'],
 );
 
+export const COMPONENTKIT_GROUP = new Group(
+  'ComponentKit',
+  COMPONENTKIT_GROUP_ID,
+  ['Inspector'],
+  ['Sections', 'DeviceLogs'],
+  ['iOS'],
+);
+
 export const SUPPORTED_GROUPS: Array<Group> = [
   LITHO_GROUP,
   GRAPHQL_ANDROID_GROUP,
   GRAPHQL_IOS_GROUP,
+  COMPONENTKIT_GROUP,
 ];
 
 export type MediaType = Array<MediaObject>;
