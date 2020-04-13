@@ -14,7 +14,7 @@ class Docs extends React.Component {
     return (
       <script
         dangerouslySetInnerHTML={{
-          __html: "window.location.href = '/docs/getting-started.html'",
+          __html: "window.location.href = '/docs/getting-started/index.html'",
         }}
       />
     );
