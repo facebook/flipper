@@ -90,7 +90,7 @@ target 'your-app-name' do
   # For enabling Flipper.
   # Note that if you use_framework!, flipper will not work.
   # Disable these lines if you are doing use_framework!
-  flipper_pods()
+  add_flipper_pods()
   post_install do |installer|
     flipper_post_install(installer)
   end
