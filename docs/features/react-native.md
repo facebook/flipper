@@ -46,3 +46,9 @@ If you would love to build a specific (or generic) extension for Flipper check o
 
 → Creating a React Native Flipper Plugin https://fbflipper.com/docs/tutorial/react-native.html  
 → Create a Flipper Desktop Plugin https://fbflipper.com/docs/tutorial/js-setup.html 
+
+### Community React Native plugins for Flipper
+
+The React Native community has also started to build plugins for Flipper.
+
+* [Reactotron's](https://infinite.red/reactotron) [Flipper plugin](https://github.com/infinitered/flipper-plugin-reactotron) is an example of a standalone React Native desktop app, [ported to work as a Flipper plugin](https://shift.infinite.red/better-react-native-debugging-with-reactotron-in-flipper-6b823af29220).
