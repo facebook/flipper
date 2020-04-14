@@ -25,12 +25,19 @@ import {
   styled,
 } from 'flipper';
 import {State as Store} from '../reducers';
-
+import LoadingIndicator from '../ui/components/LoadingIndicator';
 const Container = styled(FlexColumn)({
   padding: 10,
   width: 400,
   height: 300,
 });
+
+const CenteredContainer = styled(FlexColumn)<{size: number}>(({size}) => ({
+  justifyContent: 'center',
+  alignItems: 'center',
+  width: size,
+  height: size,
+}));
 
 const Icon = styled(Glyph)({
   marginRight: 8,
@@ -193,10 +200,14 @@ class BugReporterDialog extends Component<Props, State> {
   };
 
   onCancel = () => {
+    if (this.state.submitting) {
+      this.props.bugReporter.abort();
+    }
     this.setState({
       error: null,
       title: '',
       description: '',
+      submitting: false,
     });
     this.props.onHide();
   };
@@ -234,79 +245,90 @@ class BugReporterDialog extends Component<Props, State> {
         </FlexCenter>
       );
     } else {
-      content = (
-        <Fragment>
-          <Title>Report a bug in Flipper</Title>
-          <TitleInput
-            placeholder="Title"
-            value={title}
-            ref={this.setTitleRef}
-            onChange={this.onTitleChange}
-            disabled={submitting}
-          />
+      if (submitting) {
+        content = (
+          <Fragment>
+            <FlexCenter grow={true}>
+              <CenteredContainer size={200}>
+                <LoadingIndicator size={16} />
+                <Title> Submitting... </Title>
+              </CenteredContainer>
+            </FlexCenter>
+            <Footer>
+              <SubmitButtonContainer>
+                <Button onClick={this.onCancel} disabled={false} compact padded>
+                  Cancel
+                </Button>
+              </SubmitButtonContainer>
+            </Footer>
+          </Fragment>
+        );
+      } else {
+        content = (
+          <Fragment>
+            <Title>Report a bug in Flipper</Title>
+            <TitleInput
+              placeholder="Title"
+              value={title}
+              ref={this.setTitleRef}
+              onChange={this.onTitleChange}
+            />
 
-          <DescriptionTextarea
-            placeholder="Describe your problem in as much detail as possible."
-            value={description}
-            ref={this.setDescriptionRef}
-            onChange={this.onDescriptionChange}
-            disabled={submitting}
-          />
-          {activePlugin && activePlugin.bugs && (
-            <InfoBox>
-              <Icon color={colors.light50} name="info-circle" />
-              <span>
-                If your bug is related to the{' '}
-                <strong>
-                  {(activePlugin && activePlugin.title) || activePlugin.id}{' '}
-                  plugin
-                </strong>
-                {activePlugin && activePlugin.bugs && activePlugin.bugs.url && (
-                  <span>
-                    , you might find useful information about it here:{' '}
-                    <Link href={activePlugin.bugs.url || ''}>
-                      {activePlugin.bugs.url}
-                    </Link>
-                  </span>
-                )}
-                {activePlugin && activePlugin.bugs && activePlugin.bugs.email && (
-                  <span>
-                    , you might also want contact{' '}
-                    <Link href={'mailto:' + String(activePlugin.bugs.email)}>
-                      {activePlugin.bugs.email}
-                    </Link>
-                    , the author/oncall of this plugin, directly
-                  </span>
-                )}
-                .
-              </span>
-            </InfoBox>
-          )}
+            <DescriptionTextarea
+              placeholder="Describe your problem in as much detail as possible."
+              value={description}
+              ref={this.setDescriptionRef}
+              onChange={this.onDescriptionChange}
+            />
+            {activePlugin && activePlugin.bugs && (
+              <InfoBox>
+                <Icon color={colors.light50} name="info-circle" />
+                <span>
+                  If your bug is related to the{' '}
+                  <strong>
+                    {(activePlugin && activePlugin.title) || activePlugin.id}{' '}
+                    plugin
+                  </strong>
+                  {activePlugin && activePlugin.bugs && activePlugin.bugs.url && (
+                    <span>
+                      , you might find useful information about it here:{' '}
+                      <Link href={activePlugin.bugs.url || ''}>
+                        {activePlugin.bugs.url}
+                      </Link>
+                    </span>
+                  )}
+                  {activePlugin &&
+                    activePlugin.bugs &&
+                    activePlugin.bugs.email && (
+                      <span>
+                        , you might also want contact{' '}
+                        <Link
+                          href={'mailto:' + String(activePlugin.bugs.email)}>
+                          {activePlugin.bugs.email}
+                        </Link>
+                        , the author/oncall of this plugin, directly
+                      </span>
+                    )}
+                  .
+                </span>
+              </InfoBox>
+            )}
 
-          <Footer>
-            {error != null && <Text color={colors.red}>{error}</Text>}
-            <SubmitButtonContainer>
-              <Button
-                onClick={this.onCancel}
-                disabled={submitting}
-                compact
-                padded>
-                Cancel
-              </Button>
-              <Button
-                type="primary"
-                onClick={this.onSubmit}
-                disabled={submitting}
-                compact
-                padded>
-                Submit Report
-              </Button>
-            </SubmitButtonContainer>
-          </Footer>
-        </Fragment>
-      );
+            <Footer>
+              {error != null && <Text color={colors.red}>{error}</Text>}
+              <SubmitButtonContainer>
+                <Button onClick={this.onCancel} compact padded>
+                  Cancel
+                </Button>
+                <Button type="primary" onClick={this.onSubmit} compact padded>
+                  Submit Report
+                </Button>
+              </SubmitButtonContainer>
+            </Footer>
+          </Fragment>
+        );
+      }
     }
-
     return <Container>{content}</Container>;
   }
 }

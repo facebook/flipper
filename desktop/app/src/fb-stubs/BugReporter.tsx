@@ -12,6 +12,9 @@ import {Store} from '../reducers/index';
 
 export default class BugReporter {
   constructor(_logManager: Logger, _store: Store) {}
+  public abort() {
+    console.log('Stub implementation of an abort function.');
+  }
   async report(_title: string, _body: string): Promise<number> {
     return Promise.resolve(-1);
   }
