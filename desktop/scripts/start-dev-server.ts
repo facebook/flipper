@@ -35,24 +35,26 @@ const DEFAULT_PORT = (process.env.PORT || 3000) as number;
 
 let shutdownElectron: (() => void) | undefined = undefined;
 
-function launchElectron({
-  devServerURL,
-  bundleURL,
-  electronURL,
-}: {
-  devServerURL: string;
-  bundleURL: string;
-  electronURL: string;
-}) {
-  if (process.argv.includes('--no-embedded-plugins')) {
-    process.env.FLIPPER_NO_EMBEDDED_PLUGINS = 'true';
-  }
+if (isFB && process.env.FLIPPER_FB === undefined) {
+  process.env.FLIPPER_FB = 'true';
+}
+if (process.argv.includes('--no-embedded-plugins')) {
+  process.env.FLIPPER_NO_EMBEDDED_PLUGINS = 'true';
+}
+if (process.argv.includes('--fast-refresh')) {
+  process.env.FLIPPER_FAST_REFRESH = 'true';
+}
+
+function launchElectron(port: number) {
+  const entry = process.env.FLIPPER_FAST_REFRESH ? 'init-fast-refresh' : 'init';
+  const devServerURL = `http://localhost:${port}`;
+  const bundleURL = `http://localhost:${port}/src/${entry}.bundle?platform=web&dev=true&minify=false`;
+  const electronURL = `http://localhost:${port}/index.dev.html`;
   const args = [
     path.join(staticDir, 'index.js'),
     '--remote-debugging-port=9222',
     ...process.argv,
   ];
-
   const proc = child.spawn(electronBinary, args, {
     cwd: staticDir,
     env: {
@@ -83,17 +85,20 @@ function launchElectron({
   };
 }
 
-async function startMetroServer(app: Express) {
+async function startMetroServer(app: Express, server: http.Server) {
   const watchFolders = (await getAppWatchFolders()).concat(
     await getPluginFolders(),
   );
-  const metroBundlerServer = await Metro.runMetro({
+  const baseConfig = await Metro.loadConfig();
+  const config = Object.assign({}, baseConfig, {
     projectRoot: appDir,
     watchFolders,
     transformer: {
+      ...baseConfig.transformer,
       babelTransformerPath: path.join(babelTransformationsDir, 'transform-app'),
     },
     resolver: {
+      ...baseConfig.resolver,
       resolverMainFields: ['flipper:source', 'module', 'main'],
       blacklistRE: /\.native\.js$/,
       resolveRequest: (context: any, moduleName: string, platform: string) => {
@@ -110,7 +115,9 @@ async function startMetroServer(app: Express) {
     },
     watch: true,
   });
-  app.use(metroBundlerServer.processRequest.bind(metroBundlerServer));
+  const connectMiddleware = await Metro.createConnectMiddleware(config);
+  app.use(connectMiddleware.middleware);
+  connectMiddleware.attachHmrServer(server);
 }
 
 function startAssetServer(
@@ -137,11 +144,7 @@ function startAssetServer(
     if (shutdownElectron) {
       shutdownElectron();
     }
-    shutdownElectron = launchElectron({
-      devServerURL: `http://localhost:${port}`,
-      bundleURL: `http://localhost:${port}/src/init.bundle`,
-      electronURL: `http://localhost:${port}/index.dev.html`,
-    });
+    shutdownElectron = launchElectron(port);
     res.end();
   });
 
@@ -176,8 +179,16 @@ async function addWebsocket(server: http.Server) {
     }
   });
 
-  // refresh the app on changes
-  // this can be removed once metroServer notifies us about file changes
+  // Refresh the app on changes.
+  // When Fast Refresh enabled, reloads are performed by HMRClient, so don't need to watch manually here.
+  if (!process.env.FLIPPER_FAST_REFRESH) {
+    await startWatchChanges(io);
+  }
+
+  return io;
+}
+
+async function startWatchChanges(io: socketIo.Server) {
   try {
     const watchman = new Watchman(path.resolve(__dirname, '..'));
     await watchman.initialize();
@@ -204,8 +215,6 @@ async function addWebsocket(server: http.Server) {
       err,
     );
   }
-
-  return io;
 }
 
 const knownErrors: {[key: string]: any} = {};
@@ -259,19 +268,12 @@ function outputScreen(socket?: socketIo.Server) {
 }
 
 (async () => {
-  if (isFB && process.env.FLIPPER_FB === undefined) {
-    process.env.FLIPPER_FB = 'true';
-  }
   const port = await detect(DEFAULT_PORT);
   const {app, server} = await startAssetServer(port);
   const socket = await addWebsocket(server);
-  await startMetroServer(app);
+  await startMetroServer(app, server);
   outputScreen(socket);
   await compileMain();
   await generatePluginEntryPoints();
-  shutdownElectron = launchElectron({
-    devServerURL: `http://localhost:${port}`,
-    bundleURL: `http://localhost:${port}/src/init.bundle`,
-    electronURL: `http://localhost:${port}/index.dev.html`,
-  });
+  shutdownElectron = launchElectron(port);
 })();

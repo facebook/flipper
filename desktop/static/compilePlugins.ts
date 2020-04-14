@@ -41,7 +41,13 @@ export default async function (
   reloadCallback: (() => void) | null,
   pluginCache: string,
   options: CompileOptions = DEFAULT_COMPILE_OPTIONS,
-) {
+): Promise<CompiledPluginInfo[]> {
+  if (process.env.FLIPPER_FAST_REFRESH) {
+    console.log(
+      '🥫  Skipping loading of third-party plugins because Fast Refresh is enabled',
+    );
+    return [];
+  }
   options = Object.assign({}, DEFAULT_COMPILE_OPTIONS, options);
   const defaultPlugins = (
     await fs.readJson(path.join(__dirname, 'defaultPlugins', 'index.json'))
