@@ -13,7 +13,7 @@
   "bugs": "https://github.com/facebook/flipper/issues",
   "dependencies": {
     "@oclif/command": "^1",
-    "@oclif/config": "^1",
+    "@oclif/config": "^1.15.1",
     "@oclif/plugin-help": "^2",
     "@types/fs-extra": "^8.1.0",
     "@types/inquirer": "^6.5.0",
