@@ -27,7 +27,6 @@ import compilePlugins from './compilePlugins';
 import setup from './setup';
 import isFB from './fb-stubs/isFB';
 import delegateToLauncher from './launcher';
-import expandTilde from 'expand-tilde';
 import yargs from 'yargs';
 
 const VERSION: string = (global as any).__VERSION__;
@@ -90,25 +89,7 @@ if (isFB && process.env.FLIPPER_FB === undefined) {
   process.env.FLIPPER_FB = 'true';
 }
 
-const skipLoadingEmbeddedPlugins = process.env.FLIPPER_NO_EMBEDDED_PLUGINS;
-
-const pluginPaths = (config.pluginPaths ?? [])
-  .concat([
-    path.join(configPath, '..', 'thirdparty'),
-    ...(skipLoadingEmbeddedPlugins
-      ? []
-      : [
-          path.join(__dirname, '..', 'plugins'),
-          path.join(__dirname, '..', 'plugins', 'fb'),
-        ]),
-  ])
-  .map(expandTilde)
-  .filter(fs.existsSync);
-
-process.env.CONFIG = JSON.stringify({
-  ...config,
-  pluginPaths,
-});
+process.env.CONFIG = JSON.stringify(config);
 
 // possible reference to main app window
 let win: BrowserWindow;
@@ -124,15 +105,11 @@ setInterval(() => {
   }
 }, 60 * 1000);
 
-compilePlugins(
-  () => {
-    if (win) {
-      win.reload();
-    }
-  },
-  pluginPaths,
-  path.join(flipperDir, 'plugins'),
-).then((dynamicPlugins) => {
+compilePlugins(() => {
+  if (win) {
+    win.reload();
+  }
+}, path.join(flipperDir, 'plugins')).then((dynamicPlugins) => {
   ipcMain.on('get-dynamic-plugins', (event) => {
     event.returnValue = dynamicPlugins;
   });

@@ -16,7 +16,6 @@ afterEach(() => {
 test('config is decoded from env', () => {
   process.env.CONFIG = JSON.stringify({
     disabledPlugins: ['pluginA', 'pluginB', 'pluginC'],
-    pluginPaths: ['/a/path', 'b/path'],
     lastWindowPosition: {x: 4, y: 8, width: 15, height: 16},
     launcherMsg: 'wubba lubba dub dub',
     updaterEnabled: false,
@@ -26,7 +25,6 @@ test('config is decoded from env', () => {
 
   expect(config()).toEqual({
     disabledPlugins: new Set(['pluginA', 'pluginB', 'pluginC']),
-    pluginPaths: ['/a/path', 'b/path'],
     lastWindowPosition: {x: 4, y: 8, width: 15, height: 16},
     launcherMsg: 'wubba lubba dub dub',
     updaterEnabled: false,
@@ -40,7 +38,6 @@ test('config is decoded from env with defaults', () => {
 
   expect(config()).toEqual({
     disabledPlugins: new Set([]),
-    pluginPaths: [],
     lastWindowPosition: undefined,
     launcherMsg: undefined,
     updaterEnabled: false,

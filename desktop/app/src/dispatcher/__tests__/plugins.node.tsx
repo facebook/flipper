@@ -7,23 +7,28 @@
  * @format
  */
 
+jest.mock('../../defaultPlugins/index');
+
 import dispatcher, {
   getDynamicPlugins,
   checkDisabled,
   checkGK,
   requirePlugin,
-} from '../plugins.tsx';
+} from '../plugins';
 import path from 'path';
 import {ipcRenderer, remote} from 'electron';
 import {FlipperPlugin} from 'flipper';
-import reducers from '../../reducers/index.tsx';
-import {init as initLogger} from '../../fb-stubs/Logger.tsx';
+import reducers, {State} from '../../reducers/index';
+import {init as initLogger} from '../../fb-stubs/Logger';
 import configureStore from 'redux-mock-store';
-import {TEST_PASSING_GK, TEST_FAILING_GK} from '../../fb-stubs/GK.tsx';
+import {TEST_PASSING_GK, TEST_FAILING_GK} from '../../fb-stubs/GK';
 import TestPlugin from './TestPlugin';
-import {resetConfigForTesting} from '../../utils/processConfig.tsx';
+import {resetConfigForTesting} from '../../utils/processConfig';
+import {PluginDefinition} from '../../reducers/pluginManager';
 
-const mockStore = configureStore([])(reducers(undefined, {type: 'INIT'}));
+const mockStore = configureStore<State, {}>([])(
+  reducers(undefined, {type: 'INIT'}),
+);
 const logger = initLogger(mockStore);
 
 beforeEach(() => {
@@ -37,18 +42,20 @@ test('dispatcher dispatches REGISTER_PLUGINS', () => {
 });
 
 test('getDynamicPlugins returns empty array on errors', () => {
-  ipcRenderer.sendSync = jest.fn();
-  ipcRenderer.sendSync.mockImplementation(() => {
+  const sendSyncMock = jest.fn();
+  sendSyncMock.mockImplementation(() => {
     throw new Error('ooops');
   });
+  ipcRenderer.sendSync = sendSyncMock;
   const res = getDynamicPlugins();
   expect(res).toEqual([]);
 });
 
 test('getDynamicPlugins from main process via ipc', () => {
   const plugins = [{name: 'test'}];
-  ipcRenderer.sendSync = jest.fn();
-  ipcRenderer.sendSync.mockReturnValue(plugins);
+  const sendSyncMock = jest.fn();
+  sendSyncMock.mockReturnValue(plugins);
+  ipcRenderer.sendSync = sendSyncMock;
   const res = getDynamicPlugins();
   expect(res).toEqual(plugins);
 });
@@ -94,7 +101,7 @@ test('checkGK for passing plugin', () => {
 });
 
 test('checkGK for failing plugin', () => {
-  const gatekeepedPlugins = [];
+  const gatekeepedPlugins: PluginDefinition[] = [];
   const name = 'pluginID';
   const plugins = checkGK(gatekeepedPlugins)({
     name,
@@ -118,14 +125,11 @@ test('requirePlugin returns null for invalid requires', () => {
 
 test('requirePlugin loads plugin', () => {
   const name = 'pluginID';
-  const homepage = 'https://fb.workplace.com/groups/flippersupport/';
   const requireFn = requirePlugin([], require);
   const plugin = requireFn({
     name,
-    homepage,
-    out: path.join(__dirname, 'TestPlugin.js'),
+    out: path.join(__dirname, 'TestPlugin'),
   });
-  expect(plugin.prototype).toBeInstanceOf(FlipperPlugin);
-  expect(plugin.homepage).toBe(homepage);
-  expect(plugin.id).toBe(TestPlugin.id);
+  expect(plugin!.prototype).toBeInstanceOf(FlipperPlugin);
+  expect(plugin!.id).toBe(TestPlugin.id);
 });

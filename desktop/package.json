@@ -189,7 +189,7 @@
   },
   "scripts": {
     "preinstall": "node scripts/prepare-watchman-config.js && yarn config set ignore-engines",
-    "postinstall": "patch-package && ./ts-node scripts/yarn-install-fb-plugins.ts",
+    "postinstall": "patch-package && ./ts-node scripts/yarn-install-fb-plugins.ts &&  ./ts-node scripts/generate-plugin-entry-points.ts",
     "rm-dist": "rimraf ../dist",
     "rm-modules": "rimraf **/*/node_modules node_modules",
     "rm-temp": "rimraf $TMPDIR/jest* $TMPDIR/react-native-packager*",
@@ -208,7 +208,7 @@
     "build:dev": "cross-env NODE_ENV=development ./ts-node scripts/build-release.ts $@",
     "prebuild-headless": "yarn build:babel-transformer",
     "build-headless": "cross-env NODE_ENV=production ./ts-node scripts/build-headless.ts $@",
-    "open-dist": "open ../dist/mac/Flipper.app --args --launcher=false",
+    "open-dist": "open ../dist/mac/Flipper.app --args --launcher=false --inspect=9229",
     "fix": "eslint . --fix --ext .js,.ts,.tsx",
     "test": "yarn build:babel-transformer && jest --env=jest-environment-jsdom-sixteen --testPathPattern=\"node\\.(js|ts|tsx)$\" --no-cache",
     "test:debug": "yarn build:babel-transformer && node --inspect node_modules/.bin/jest --runInBand --env=jest-environment-jsdom-sixteen",

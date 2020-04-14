@@ -7,13 +7,4 @@
  * @format
  */
 
-import {FlipperPlugin} from 'flipper';
-
-export default class extends FlipperPlugin {
-  static id = 'Static ID';
-}
-
-test('TestPlugin', () => {
-  // supress jest warning
-  expect(true).toBeTruthy();
-});
+export default {} as any;

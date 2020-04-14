@@ -15,12 +15,8 @@ import recursiveReaddir from 'recursive-readdir';
 import pMap from 'p-map';
 import {homedir} from 'os';
 import getWatchFolders from './getWatchFolders';
-import {
-  default as getPluginEntryPoints,
-  PluginManifest,
-  PluginInfo,
-} from './getPluginEntryPoints';
-import watchPlugins from './watchPlugins';
+import {default as getPlugins, PluginManifest, PluginInfo} from './getPlugins';
+import startWatchPlugins from './startWatchPlugins';
 
 const HOME_DIR = homedir();
 
@@ -43,46 +39,53 @@ export type CompiledPluginInfo = PluginManifest & {out: string};
 
 export default async function (
   reloadCallback: (() => void) | null,
-  pluginPaths: string[],
   pluginCache: string,
   options: CompileOptions = DEFAULT_COMPILE_OPTIONS,
 ) {
   options = Object.assign({}, DEFAULT_COMPILE_OPTIONS, options);
-  const plugins = getPluginEntryPoints(pluginPaths);
-  if (!(await fs.pathExists(pluginCache))) {
-    await fs.mkdir(pluginCache);
-  }
+  const defaultPlugins = (
+    await fs.readJson(path.join(__dirname, 'defaultPlugins', 'index.json'))
+  ).map((p: any) => p.name) as string[];
+  const dynamicPlugins = (await getPlugins(true)).filter(
+    (p) => !defaultPlugins.includes(p.name),
+  );
+  await fs.ensureDir(pluginCache);
   if (options.recompileOnChanges) {
-    await startWatchChanges(plugins, reloadCallback, pluginCache, options);
+    await startWatchChanges(
+      dynamicPlugins,
+      reloadCallback,
+      pluginCache,
+      options,
+    );
   }
   const compilations = pMap(
-    Object.values(plugins),
+    dynamicPlugins,
     (plugin) => {
       return compilePlugin(plugin, pluginCache, options);
     },
     {concurrency: 4},
   );
 
-  const dynamicPlugins = (await compilations).filter(
+  const compiledDynamicPlugins = (await compilations).filter(
     (c) => c !== null,
   ) as CompiledPluginInfo[];
   console.log('✅  Compiled all plugins.');
-  return dynamicPlugins;
+  return compiledDynamicPlugins;
 }
 async function startWatchChanges(
-  plugins: {[key: string]: PluginInfo},
+  plugins: PluginInfo[],
   reloadCallback: (() => void) | null,
   pluginCache: string,
   options: CompileOptions = DEFAULT_COMPILE_OPTIONS,
 ) {
-  const filteredPlugins = Object.values(plugins)
+  const filteredPlugins = plugins
     // no hot reloading for plugins in .flipper folder. This is to prevent
     // Flipper from reloading, while we are doing changes on thirdparty plugins.
     .filter(
       (plugin) => !plugin.rootDir.startsWith(path.join(HOME_DIR, '.flipper')),
     );
-  const watchOptions = Object.assign(options, {force: true});
-  await watchPlugins(filteredPlugins, (plugin) =>
+  const watchOptions = Object.assign({}, options, {force: true});
+  await startWatchPlugins(filteredPlugins, (plugin) =>
     compilePlugin(plugin, pluginCache, watchOptions).then(
       reloadCallback ?? (() => {}),
     ),

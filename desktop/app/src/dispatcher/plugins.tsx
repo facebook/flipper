@@ -30,6 +30,9 @@ import isProduction from '../utils/isProduction';
 import {notNull} from '../utils/typeUtils';
 import {sideEffect} from '../utils/sideEffect';
 
+// eslint-disable-next-line import/no-unresolved
+import {default as defaultPluginsIndex} from '../defaultPlugins/index';
+
 export type PluginDefinition = {
   id?: string;
   name: string;
@@ -77,31 +80,31 @@ export default (store: Store, _logger: Logger) => {
 };
 
 function getBundledPlugins(): Array<PluginDefinition> {
-  if (!isProduction() || process.env.FLIPPER_NO_EMBEDDED_PLUGINS) {
-    // Plugins are only bundled in production builds
-    return [];
-  }
-
   // DefaultPlugins that are included in the bundle.
   // List of defaultPlugins is written at build time
   const pluginPath =
-    process.env.BUNDLED_PLUGIN_PATH || path.join(__dirname, 'defaultPlugins');
+    process.env.BUNDLED_PLUGIN_PATH ||
+    (isProduction()
+      ? path.join(__dirname, 'defaultPlugins')
+      : './defaultPlugins/index.json');
 
   let bundledPlugins: Array<PluginDefinition> = [];
   try {
-    bundledPlugins = global.electronRequire(
-      path.join(pluginPath, 'index.json'),
-    );
+    bundledPlugins = global.electronRequire(pluginPath);
   } catch (e) {
     console.error(e);
   }
 
   return bundledPlugins
     .filter((plugin) => notNull(plugin.out))
-    .map((plugin) => ({
-      ...plugin,
-      out: path.join(pluginPath, plugin.out!),
-    }));
+    .map(
+      (plugin) =>
+        ({
+          ...plugin,
+          out: path.join(pluginPath, plugin.out!),
+        } as PluginDefinition),
+    )
+    .concat(bundledPlugins.filter((plugin) => !plugin.out));
 }
 
 export function getDynamicPlugins() {
@@ -152,7 +155,9 @@ export const requirePlugin = (
     pluginDefinition: PluginDefinition,
   ): typeof FlipperPlugin | typeof FlipperDevicePlugin | null => {
     try {
-      let plugin = reqFn(pluginDefinition.out);
+      let plugin = pluginDefinition.out
+        ? reqFn(pluginDefinition.out)
+        : defaultPluginsIndex[pluginDefinition.name];
       if (plugin.default) {
         plugin = plugin.default;
       }

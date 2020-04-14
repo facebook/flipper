@@ -18,13 +18,16 @@ import chalk from 'chalk';
 import http from 'http';
 import path from 'path';
 import fs from 'fs-extra';
-import {compileMain} from './build-utils';
+import {compileMain, generatePluginEntryPoints} from './build-utils';
 import Watchman from '../static/watchman';
 import Metro from 'metro';
 import MetroResolver from 'metro-resolver';
-import getAppWatchFolders from './get-app-watch-folders';
 import {staticDir, appDir, babelTransformationsDir} from './paths';
 import isFB from './isFB';
+import getAppWatchFolders from './get-app-watch-folders';
+import getPlugins from '../static/getPlugins';
+import getPluginFolders from '../static/getPluginFolders';
+import startWatchPlugins from '../static/startWatchPlugins';
 
 const ansiToHtmlConverter = new AnsiToHtmlConverter();
 
@@ -81,7 +84,9 @@ function launchElectron({
 }
 
 async function startMetroServer(app: Express) {
-  const watchFolders = await getAppWatchFolders();
+  const watchFolders = (await getAppWatchFolders()).concat(
+    await getPluginFolders(),
+  );
   const metroBundlerServer = await Metro.runMetro({
     projectRoot: appDir,
     watchFolders,
@@ -101,6 +106,7 @@ async function startMetroServer(app: Express) {
           platform,
         );
       },
+      sourceExts: ['js', 'jsx', 'ts', 'tsx', 'json', 'mjs'],
     },
     watch: true,
   });
@@ -170,7 +176,7 @@ async function addWebsocket(server: http.Server) {
     }
   });
 
-  // refresh the app on changes to the src folder
+  // refresh the app on changes
   // this can be removed once metroServer notifies us about file changes
   try {
     const watchman = new Watchman(path.resolve(__dirname, '..'));
@@ -188,6 +194,10 @@ async function addWebsocket(server: http.Server) {
         ),
       ),
     );
+    const plugins = await getPlugins();
+    await startWatchPlugins(plugins, () => {
+      io.emit('refresh');
+    });
   } catch (err) {
     console.error(
       'Failed to start watching for changes using Watchman, continue without hot reloading',
@@ -258,6 +268,7 @@ function outputScreen(socket?: socketIo.Server) {
   await startMetroServer(app);
   outputScreen(socket);
   await compileMain();
+  await generatePluginEntryPoints();
   shutdownElectron = launchElectron({
     devServerURL: `http://localhost:${port}`,
     bundleURL: `http://localhost:${port}/src/init.bundle`,

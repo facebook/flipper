@@ -12,3 +12,5 @@ website/build
 react-native/ReactNativeFlipperExample
 scripts/generate-changelog.js
 static/index.js
+static/defaultPlugins/index.json
+app/src/defaultPlugins/index.tsx

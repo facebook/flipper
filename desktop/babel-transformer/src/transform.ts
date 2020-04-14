@@ -28,9 +28,15 @@ export default function transform({
   presets = presets ?? [require('@babel/preset-react')];
   plugins = plugins ?? [];
   const isTypeScript = filename.endsWith('.tsx') || filename.endsWith('.ts');
+  const commonJs = [
+    require('@babel/plugin-transform-modules-commonjs'),
+    {
+      strictMode: false,
+    },
+  ];
   if (!isTypeScript) {
     plugins.unshift(
-      require('@babel/plugin-transform-modules-commonjs'),
+      commonJs,
       require('@babel/plugin-proposal-object-rest-spread'),
       require('@babel/plugin-proposal-class-properties'),
       require('@babel/plugin-transform-flow-strip-types'),
@@ -42,7 +48,7 @@ export default function transform({
     plugins.unshift(
       require('@babel/plugin-transform-typescript'),
       require('@babel/plugin-proposal-class-properties'),
-      require('@babel/plugin-transform-modules-commonjs'),
+      commonJs,
       require('@babel/plugin-proposal-optional-chaining'),
       require('@babel/plugin-proposal-nullish-coalescing-operator'),
     );
