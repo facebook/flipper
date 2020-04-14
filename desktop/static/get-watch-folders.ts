@@ -10,7 +10,10 @@
 import fs from 'fs-extra';
 import path from 'path';
 
-export default async (packageDir: string) => {
+export default async (packageDir: string): Promise<string[]> => {
+  if (!(await fs.pathExists(packageDir))) {
+    return [];
+  }
   const watchDirs: string[] = [packageDir];
   const pkg = await fs.readJson(path.join(packageDir, 'package.json'));
   while (true) {

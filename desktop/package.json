@@ -189,7 +189,7 @@
   },
   "scripts": {
     "preinstall": "node scripts/prepare-watchman-config.js && yarn config set ignore-engines",
-    "postinstall": "./ts-node scripts/yarn-install.ts && patch-package",
+    "postinstall": "patch-package && ./ts-node scripts/yarn-install-fb-plugins.ts",
     "rm-dist": "rimraf ../dist",
     "rm-modules": "rimraf **/*/node_modules node_modules",
     "rm-temp": "rimraf $TMPDIR/jest* $TMPDIR/react-native-packager*",

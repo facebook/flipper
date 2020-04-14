@@ -15,7 +15,8 @@ import path from 'path';
 import fs from 'fs-extra';
 import {spawn} from 'promisify-child-process';
 import recursiveReaddir from 'recursive-readdir';
-import {default as getWatchFolders} from '../static/get-watch-folders';
+import getWatchFolders from '../static/get-watch-folders';
+import getAppWatchFolders from './get-app-watch-folders';
 import {
   appDir,
   staticDir,
@@ -106,12 +107,10 @@ export async function compileHeadless(buildFolder: string) {
   const watchFolders = [
     headlessDir,
     ...(await getWatchFolders(staticDir)),
-    ...(await getWatchFolders(appDir)),
-    path.join(pluginsDir, 'navigation'),
-    path.join(pluginsDir, 'fb', 'layout', 'sidebar_extensions'),
-    path.join(pluginsDir, 'fb', 'mobileconfig'),
-    path.join(pluginsDir, 'fb', 'watch'),
-  ].filter(fs.pathExistsSync);
+    ...(await getAppWatchFolders()),
+  ]
+    .filter((value, index, self) => self.indexOf(value) === index)
+    .filter(fs.pathExistsSync);
   try {
     await compile(
       buildFolder,
@@ -127,13 +126,7 @@ export async function compileHeadless(buildFolder: string) {
 
 export async function compileRenderer(buildFolder: string) {
   console.log(`⚙️  Compiling renderer bundle...`);
-  const watchFolders = [
-    ...(await getWatchFolders(appDir)),
-    path.join(pluginsDir, 'navigation'),
-    path.join(pluginsDir, 'fb', 'layout', 'sidebar_extensions'),
-    path.join(pluginsDir, 'fb', 'mobileconfig'),
-    path.join(pluginsDir, 'fb', 'watch'),
-  ].filter(fs.pathExistsSync);
+  const watchFolders = await getAppWatchFolders();
   try {
     await compile(
       buildFolder,

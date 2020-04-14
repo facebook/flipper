@@ -22,8 +22,8 @@ import {compileMain} from './build-utils';
 import Watchman from '../static/watchman';
 import Metro from 'metro';
 import MetroResolver from 'metro-resolver';
-import {default as getWatchFolders} from '../static/get-watch-folders';
-import {staticDir, pluginsDir, appDir, babelTransformationsDir} from './paths';
+import getAppWatchFolders from './get-app-watch-folders';
+import {staticDir, appDir, babelTransformationsDir} from './paths';
 import isFB from './isFB';
 
 const ansiToHtmlConverter = new AnsiToHtmlConverter();
@@ -81,13 +81,7 @@ function launchElectron({
 }
 
 async function startMetroServer(app: Express) {
-  const watchFolders = [
-    ...(await getWatchFolders(appDir)),
-    path.join(pluginsDir, 'navigation'),
-    path.join(pluginsDir, 'fb', 'layout', 'sidebar_extensions'),
-    path.join(pluginsDir, 'fb', 'mobileconfig'),
-    path.join(pluginsDir, 'fb', 'watch'),
-  ].filter(fs.pathExistsSync);
+  const watchFolders = await getAppWatchFolders();
   const metroBundlerServer = await Metro.runMetro({
     projectRoot: appDir,
     watchFolders,
