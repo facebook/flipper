@@ -210,7 +210,10 @@ function entryPointForPluginFolder(pluginPath: string) {
       if (packageJSON) {
         try {
           const json = JSON.parse(packageJSON);
-          if (json.workspaces) {
+          if (!json.keywords || !json.keywords.includes('flipper-plugin')) {
+            console.log(
+              `Skipping package "${json.name}", because its "keywords" field does not contain tag "flipper-plugin"`,
+            );
             return null;
           }
           const pkg = json as PluginManifest;
