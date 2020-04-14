@@ -15,13 +15,34 @@ Add this code to your `ios/Podfile`:
 ```ruby
 platform :ios, '9.0'
 
-def flipper_pods()
-  flipperkit_version = '0.37.0'
-  pod 'FlipperKit', '~>' + flipperkit_version, :configuration => 'Debug'
-  pod 'FlipperKit/FlipperKitLayoutPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
-  pod 'FlipperKit/SKIOSNetworkPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
-  pod 'FlipperKit/FlipperKitUserDefaultsPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
-  pod 'FlipperKit/FlipperKitReactPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
+def add_flipper_pods!(versions = {})
+  versions['Flipper'] ||= '~> 0.37.0'
+  versions['DoubleConversion'] ||= '1.1.7'
+  versions['Flipper-Folly'] ||= '~> 2.2'
+  versions['Flipper-Glog'] ||= '0.3.6'
+  versions['Flipper-PeerTalk'] ||= '~> 0.0.4'
+  versions['Flipper-RSocket'] ||= '~> 1.1'
+  pod 'FlipperKit', versions['Flipper'], :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitLayoutPlugin', versions['Flipper'], :configuration => 'Debug'
+  pod 'FlipperKit/SKIOSNetworkPlugin', versions['Flipper'], :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitUserDefaultsPlugin', versions['Flipper'], :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitReactPlugin', versions['Flipper'], :configuration => 'Debug'
+  # List all transitive dependencies for FlipperKit pods
+  # to avoid them being linked in Release builds
+  pod 'Flipper', versions['Flipper'], :configuration => 'Debug'
+  pod 'Flipper-DoubleConversion', versions['DoubleConversion'], :configuration => 'Debug'
+  pod 'Flipper-Folly', versions['Flipper-Folly'], :configuration => 'Debug'
+  pod 'Flipper-Glog', versions['Flipper-Glog'], :configuration => 'Debug'
+  pod 'Flipper-PeerTalk', versions['Flipper-PeerTalk'], :configuration => 'Debug'
+  pod 'Flipper-RSocket', versions['Flipper-RSocket'], :configuration => 'Debug'
+  pod 'FlipperKit/Core', versions['Flipper'], :configuration => 'Debug'
+  pod 'FlipperKit/CppBridge', versions['Flipper'], :configuration => 'Debug'
+  pod 'FlipperKit/FBCxxFollyDynamicConvert', versions['Flipper'], :configuration => 'Debug'
+  pod 'FlipperKit/FBDefines', versions['Flipper'], :configuration => 'Debug'
+  pod 'FlipperKit/FKPortForwarding', versions['Flipper'], :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitHighlightOverlay', versions['Flipper'], :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitLayoutTextSearchable', versions['Flipper'], :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitNetworkPlugin', versions['Flipper'], :configuration => 'Debug'
 end
 
 # Post Install processing for Flipper
@@ -37,14 +58,21 @@ def flipper_post_install(installer)
   app_project = Xcodeproj::Project.open(file_name)
   app_project.native_targets.each do |target|
     target.build_configurations.each do |config|
-      cflags = config.build_settings['OTHER_CFLAGS'] || '$(inherited) '
-      unless cflags.include? '-DFB_SONARKIT_ENABLED=1'
-        puts 'Adding -DFB_SONARKIT_ENABLED=1 in OTHER_CFLAGS...'
-        cflags << '-DFB_SONARKIT_ENABLED=1'
+      if (config.build_settings['OTHER_SWIFT_FLAGS'])
+        unless config.build_settings['OTHER_SWIFT_FLAGS'].include? '-DFB_SONARKIT_ENABLED'
+          puts 'Adding -DFB_SONARKIT_ENABLED ...'
+          swift_flags = config.build_settings['OTHER_SWIFT_FLAGS']
+          if swift_flags.split.last != '-Xcc'
+            config.build_settings['OTHER_SWIFT_FLAGS'] << ' -Xcc'
+          end
+          config.build_settings['OTHER_SWIFT_FLAGS'] << ' -DFB_SONARKIT_ENABLED'
+        end
+      else
+        puts 'OTHER_SWIFT_FLAGS does not exist thus assigning it to `$(inherited) -Xcc -DFB_SONARKIT_ENABLED`'
+        config.build_settings['OTHER_SWIFT_FLAGS'] = '$(inherited) -Xcc -DFB_SONARKIT_ENABLED'
       end
-      config.build_settings['OTHER_CFLAGS'] = cflags
+      app_project.save
     end
-    app_project.save
   end
   installer.pods_project.save
 end
@@ -151,12 +179,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     #if FB_SONARKIT_ENABLED
       let client = FlipperClient.shared()
       let layoutDescriptorMapper = SKDescriptorMapper(defaults: ())
-      FlipperKitLayoutComponentKitSupport.setUpWith(layoutDescriptorMapper)
       client?.add(FlipperKitLayoutPlugin(rootNode: application, with: layoutDescriptorMapper!))
       client?.add(FKUserDefaultsPlugin(suiteName: nil))
       client?.add(FlipperKitReactPlugin())
       client?.add(FlipperKitNetworkPlugin(networkAdapter: SKIOSNetworkAdapter()))
-      client?.add(FlipperReactPerformancePlugin.sharedInstance())
       client?.start()
     #endif
     #endif
