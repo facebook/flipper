@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow strict-local
  */
 
 import path from 'path';
@@ -13,11 +12,15 @@ import fs from 'fs-extra';
 import Metro from 'metro';
 import util from 'util';
 import recursiveReaddir from 'recursive-readdir';
-import expandTilde from 'expand-tilde';
 import pMap from 'p-map';
 import {homedir} from 'os';
-import Watchman from './watchman';
-import getWatchFolders from './get-watch-folders';
+import getWatchFolders from './getWatchFolders';
+import {
+  default as getPluginEntryPoints,
+  PluginManifest,
+  PluginInfo,
+} from './getPluginEntryPoints';
+import watchPlugins from './watchPlugins';
 
 const HOME_DIR = homedir();
 
@@ -36,21 +39,6 @@ export type CompileOptions = {
   recompileOnChanges: boolean;
 };
 
-export type PluginManifest = {
-  version: string;
-  name: string;
-  main?: string;
-  bundleMain?: string;
-  [key: string]: any;
-};
-
-type PluginInfo = {
-  rootDir: string;
-  name: string;
-  entry: string;
-  manifest: PluginManifest;
-};
-
 export type CompiledPluginInfo = PluginManifest & {out: string};
 
 export default async function (
@@ -60,7 +48,7 @@ export default async function (
   options: CompileOptions = DEFAULT_COMPILE_OPTIONS,
 ) {
   options = Object.assign({}, DEFAULT_COMPILE_OPTIONS, options);
-  const plugins = pluginEntryPoints(pluginPaths);
+  const plugins = getPluginEntryPoints(pluginPaths);
   if (!(await fs.pathExists(pluginCache))) {
     await fs.mkdir(pluginCache);
   }
@@ -81,76 +69,24 @@ export default async function (
   console.log('✅  Compiled all plugins.');
   return dynamicPlugins;
 }
-
-async function startWatchingPluginsUsingWatchman(
-  plugins: PluginInfo[],
-  onPluginChanged: (plugin: PluginInfo) => void,
-) {
-  // Initializing a watchman for each folder containing plugins
-  const watchmanRootMap: {[key: string]: Watchman} = {};
-  await Promise.all(
-    plugins.map(async (plugin) => {
-      const watchmanRoot = path.resolve(plugin.rootDir, '..');
-      if (!watchmanRootMap[watchmanRoot]) {
-        watchmanRootMap[watchmanRoot] = new Watchman(watchmanRoot);
-        await watchmanRootMap[watchmanRoot].initialize();
-      }
-    }),
-  );
-  // Start watching plugins using the initialized watchmans
-  await Promise.all(
-    plugins.map(async (plugin) => {
-      const watchmanRoot = path.resolve(plugin.rootDir, '..');
-      const watchman = watchmanRootMap[watchmanRoot];
-      await watchman.startWatchFiles(
-        path.relative(watchmanRoot, plugin.rootDir),
-        () => onPluginChanged(plugin),
-        {
-          excludes: ['**/__tests__/**/*', '**/node_modules/**/*', '**/.*'],
-        },
-      );
-    }),
-  );
-}
-
 async function startWatchChanges(
   plugins: {[key: string]: PluginInfo},
   reloadCallback: (() => void) | null,
   pluginCache: string,
   options: CompileOptions = DEFAULT_COMPILE_OPTIONS,
 ) {
-  // eslint-disable-next-line no-console
-  console.log('🕵️‍  Watching for plugin changes');
-
-  const delayedCompilation: {[key: string]: NodeJS.Timeout | null} = {};
-  const kCompilationDelayMillis = 1000;
-  const onPluginChanged = (plugin: PluginInfo) => {
-    if (!delayedCompilation[plugin.name]) {
-      delayedCompilation[plugin.name] = setTimeout(() => {
-        delayedCompilation[plugin.name] = null;
-        // eslint-disable-next-line no-console
-        console.log(`🕵️‍  Detected changes in ${plugin.name}`);
-        const watchOptions = Object.assign(options, {force: true});
-        compilePlugin(plugin, pluginCache, watchOptions).then(
-          reloadCallback ?? (() => {}),
-        );
-      }, kCompilationDelayMillis);
-    }
-  };
   const filteredPlugins = Object.values(plugins)
     // no hot reloading for plugins in .flipper folder. This is to prevent
     // Flipper from reloading, while we are doing changes on thirdparty plugins.
     .filter(
       (plugin) => !plugin.rootDir.startsWith(path.join(HOME_DIR, '.flipper')),
     );
-  try {
-    await startWatchingPluginsUsingWatchman(filteredPlugins, onPluginChanged);
-  } catch (err) {
-    console.error(
-      'Failed to start watching plugin files using Watchman, continue without hot reloading',
-      err,
-    );
-  }
+  const watchOptions = Object.assign(options, {force: true});
+  await watchPlugins(filteredPlugins, (plugin) =>
+    compilePlugin(plugin, pluginCache, watchOptions).then(
+      reloadCallback ?? (() => {}),
+    ),
+  );
 }
 function hash(string: string) {
   let hash = 0;
@@ -177,69 +113,6 @@ const createModuleIdFactory = () => (filePath: string) => {
   }
   return id;
 };
-function pluginEntryPoints(additionalPaths: string[] = []) {
-  const defaultPluginPath = path.join(HOME_DIR, '.flipper', 'node_modules');
-  const entryPoints = entryPointForPluginFolder(defaultPluginPath);
-  if (typeof additionalPaths === 'string') {
-    additionalPaths = [additionalPaths];
-  }
-  additionalPaths.forEach((additionalPath) => {
-    const additionalPlugins = entryPointForPluginFolder(additionalPath);
-    Object.keys(additionalPlugins).forEach((key) => {
-      entryPoints[key] = additionalPlugins[key];
-    });
-  });
-  return entryPoints;
-}
-function entryPointForPluginFolder(pluginPath: string) {
-  pluginPath = expandTilde(pluginPath);
-  if (!fs.existsSync(pluginPath)) {
-    return {};
-  }
-  return fs
-    .readdirSync(pluginPath)
-    .filter((name) => fs.lstatSync(path.join(pluginPath, name)).isDirectory())
-    .filter(Boolean)
-    .map((name) => {
-      let packageJSON;
-      try {
-        packageJSON = fs
-          .readFileSync(path.join(pluginPath, name, 'package.json'))
-          .toString();
-      } catch (e) {}
-      if (packageJSON) {
-        try {
-          const json = JSON.parse(packageJSON);
-          if (!json.keywords || !json.keywords.includes('flipper-plugin')) {
-            console.log(
-              `Skipping package "${json.name}", because its "keywords" field does not contain tag "flipper-plugin"`,
-            );
-            return null;
-          }
-          const pkg = json as PluginManifest;
-          const plugin: PluginInfo = {
-            manifest: pkg,
-            name: pkg.name,
-            entry: path.join(pluginPath, name, pkg.main || 'index.js'),
-            rootDir: path.join(pluginPath, name),
-          };
-          return plugin;
-        } catch (e) {
-          console.error(
-            `Could not load plugin "${pluginPath}", because package.json is invalid.`,
-          );
-          console.error(e);
-          return null;
-        }
-      }
-      return null;
-    })
-    .filter(Boolean)
-    .reduce<{[key: string]: PluginInfo}>((acc, cv) => {
-      acc[cv!.name] = cv!;
-      return acc;
-    }, {});
-}
 async function mostRecentlyChanged(dir: string) {
   const files = await util.promisify<string, string[]>(recursiveReaddir)(dir);
   return files
