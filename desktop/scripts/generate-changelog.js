@@ -5,7 +5,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @noformat
+ * @format
  */
 
 /**
@@ -19,13 +19,16 @@ const cp = require('child_process');
 
 const desktopRoot = path.resolve(__dirname, '..');
 const root = path.resolve(desktopRoot, '..');
+const staticDir = path.join(desktopRoot, 'static');
 
-const version = JSON.parse(fs.readFileSync(path.join(desktopRoot, 'package.json'), 'utf8')).version;
+const version = JSON.parse(
+  fs.readFileSync(path.join(desktopRoot, 'package.json'), 'utf8'),
+).version;
 
 const now = new Date();
 const date = `${now.getDate()}/${now.getMonth() + 1}/${now.getFullYear()}`;
 const newlineMarker = '__NEWLINE_MARKER__';
-const fChangelog = path.resolve(root, 'CHANGELOG.md');
+const fChangelog = path.resolve(staticDir, 'CHANGELOG.md');
 
 const lastCommit = cp
   .execSync(`hg log --limit 1 --template '{node}'`, {cwd: root})
@@ -33,12 +36,12 @@ const lastCommit = cp
 const firstCommit = cp
   .execSync(
     `hg log --limit 1 --template '{node}' --keyword 'Flipper Release: v'`,
-    {cwd: root}
+    {cwd: root},
   )
   .toString();
 
 console.log(
-  `Generating changelog for version ${version} based on ${firstCommit}..${lastCommit}`
+  `Generating changelog for version ${version} based on ${firstCommit}..${lastCommit}`,
 );
 
 // # get all commit summaries since last release | find all changelog entries, but make sure there is only one line per commit by temporarily replacing newlines
