@@ -58,6 +58,12 @@ def flipper_post_install(installer)
   app_project = Xcodeproj::Project.open(file_name)
   app_project.native_targets.each do |target|
     target.build_configurations.each do |config|
+      cflags = config.build_settings['OTHER_CFLAGS'] || '$(inherited) '
+      unless cflags.include? '-DFB_SONARKIT_ENABLED=1'
+        puts 'Adding -DFB_SONARKIT_ENABLED=1 in OTHER_CFLAGS...'
+        cflags << '-DFB_SONARKIT_ENABLED=1'
+      end
+      config.build_settings['OTHER_CFLAGS'] = cflags
       if (config.build_settings['OTHER_SWIFT_FLAGS'])
         unless config.build_settings['OTHER_SWIFT_FLAGS'].include? '-DFB_SONARKIT_ENABLED'
           puts 'Adding -DFB_SONARKIT_ENABLED ...'
