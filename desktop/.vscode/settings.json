@@ -5,6 +5,7 @@
   "eslint.packageManager": "yarn",
   "eslint.codeActionsOnSave.mode": "all",
   "editor.formatOnSave": true,
+  "prettier.formatAlreadyFormattedFilesOnSave": false,
   "files.eol": "\n",
   "editor.codeActionsOnSave": {
     "source.fixAll": true
