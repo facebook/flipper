@@ -95,6 +95,7 @@ matrix:
         - tail -100 ./build.log
 
     - language: objective-c
+      podfile: iOS/Tutorial/Podfile
       cache:
         cocoapods: true
         directories:
