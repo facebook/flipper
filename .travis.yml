@@ -42,6 +42,7 @@ matrix:
         - yarn build --linux --version=$TRAVIS_BUILD_NUMBER
 
     - language: objective-c
+      podfile: iOS/Sample/Podfile
       cache:
         cocoapods: true
         directories:
@@ -69,6 +70,7 @@ matrix:
         - tail -100 ./build.log
 
     - language: objective-c
+      podfile: iOS/SampleSwift/Podfile
       cache:
         cocoapods: true
         directories:
