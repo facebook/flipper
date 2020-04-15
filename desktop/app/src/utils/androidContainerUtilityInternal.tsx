@@ -72,12 +72,24 @@ export function _push(
   contents: FileContent,
 ): Promise<void> {
   console.debug(`Deploying ${filename} to ${deviceId}:${app}`, logTag);
-  return executeCommandAsApp(
-    client,
-    deviceId,
-    app,
-    `echo "${contents}" > '${filename}' && chmod 644 '${filename}'`,
-  ).then((_) => undefined);
+  const command = `echo "${contents}" > '${filename}' && chmod 644 '${filename}'`;
+  return executeCommandAsApp(client, deviceId, app, command)
+    .then((_) => undefined)
+    .catch((error) => {
+      if (
+        error instanceof RunAsError &&
+        error.code == RunAsErrorCode.NotAnApp
+      ) {
+        // Fall back to running the command directly. This will work if adb is running as root.
+        return executeCommandWithSu(client, deviceId, app, command)
+          .then((_) => undefined)
+          .catch((e) => {
+            console.debug(e);
+            throw error;
+          });
+      }
+      throw error;
+    });
 }
 
 export function _pull(
@@ -86,24 +98,18 @@ export function _pull(
   app: AppName,
   path: FilePath,
 ): Promise<string> {
-  return executeCommandAsApp(client, deviceId, app, `cat '${path}'`).catch(
-    (error) => {
-      if (
-        error instanceof RunAsError &&
-        error.code == RunAsErrorCode.NotAnApp
-      ) {
-        // Fall back to running the command directly. This will work if adb is running as root.
-        return client
-          .shell(deviceId, `echo "cat ${path}" | su`)
-          .then(adbkit.util.readAll)
-          .then((buffer) => buffer.toString())
-          .catch(() => {
-            throw error;
-          });
-      }
-      throw error;
-    },
-  );
+  const command = `cat '${path}'`;
+  return executeCommandAsApp(client, deviceId, app, command).catch((error) => {
+    if (error instanceof RunAsError && error.code == RunAsErrorCode.NotAnApp) {
+      // Fall back to running the command directly. This will work if adb is running as root.
+      return executeCommandWithSu(client, deviceId, app, command).catch((e) => {
+        // Throw the original error.
+        console.debug(e);
+        throw error;
+      });
+    }
+    throw error;
+  });
 }
 
 // Keep this method private since it relies on pre-validated arguments
@@ -113,8 +119,33 @@ function executeCommandAsApp(
   app: string,
   command: string,
 ): Promise<string> {
+  return _executeCommandWithRunner(
+    client,
+    deviceId,
+    app,
+    command,
+    `run-as '${app}'`,
+  );
+}
+
+function executeCommandWithSu(
+  client: Client,
+  deviceId: string,
+  app: string,
+  command: string,
+): Promise<string> {
+  return _executeCommandWithRunner(client, deviceId, app, command, 'su');
+}
+
+function _executeCommandWithRunner(
+  client: Client,
+  deviceId: string,
+  app: string,
+  command: string,
+  runner: string,
+): Promise<string> {
   return client
-    .shell(deviceId, `echo '${command}' | run-as '${app}'`)
+    .shell(deviceId, `echo '${command}' | ${runner}`)
     .then(adbkit.util.readAll)
     .then((buffer) => buffer.toString())
     .then((output) => {
