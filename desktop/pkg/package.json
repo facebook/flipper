@@ -22,7 +22,7 @@
     "fs-extra": "^8.1.0",
     "flipper-babel-transformer": "0.37.0",
     "inquirer": "^7.0.5",
-    "metro": "^0.58.0",
+    "metro": "^0.59.0",
     "tslib": "^1"
   },
   "devDependencies": {
