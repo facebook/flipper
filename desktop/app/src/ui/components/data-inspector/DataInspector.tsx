@@ -647,12 +647,10 @@ export default class DataInspector extends Component<DataInspectorProps> {
     );
 
     if (!isExpandable && onDelete) {
-      contextMenuItems.push(
-        {
-          label: 'Delete',
-          click: () => { this.handleDelete(this.props.path) },
-        },
-      );
+      contextMenuItems.push({
+        label: 'Delete',
+        click: () => this.handleDelete(this.props.path),
+      });
     }
 
     return (

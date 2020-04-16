@@ -213,14 +213,14 @@ export default class extends FlipperPlugin<SharedPreferencesState> {
     this.client
       .call('deleteSharedPreference', {
         sharedPreferencesName: this.state.selectedPreferences,
-        preferenceName: path[0]
+        preferenceName: path[0],
       })
       .then((results: SharedPreferences) => {
         const update = {
           name: this.state.selectedPreferences,
           preferences: results,
         };
-        this.dispatchAction({ update, type: 'UpdateSharedPreferences' });
+        this.dispatchAction({update, type: 'UpdateSharedPreferences'});
       });
   };
 
