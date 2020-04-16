@@ -7,11 +7,11 @@
  * @format
  */
 
-import {DataInspectorExpanded} from './DataInspector';
-import {PureComponent} from 'react';
+import { DataInspectorExpanded } from './DataInspector';
+import { PureComponent } from 'react';
 import DataInspector from './DataInspector';
 import React from 'react';
-import {DataValueExtractor} from './DataPreview';
+import { DataValueExtractor } from './DataPreview';
 
 type ManagedDataInspectorProps = {
   /**
@@ -37,6 +37,10 @@ type ManagedDataInspectorProps = {
    */
   setValue?: (path: Array<string>, val: any) => void;
   /**
+   * Callback when a delete action is invoked.
+   */
+  onDelete?: (path: Array<string>) => void;
+  /**
    * Whether all objects and arrays should be collapsed by default.
    */
   collapsed?: boolean;
@@ -59,7 +63,7 @@ type ManagedDataInspectorState = {
 export default class ManagedDataInspector extends PureComponent<
   ManagedDataInspectorProps,
   ManagedDataInspectorState
-> {
+  > {
   constructor(props: ManagedDataInspectorProps, context: Object) {
     super(props, context);
     this.state = {
@@ -68,7 +72,7 @@ export default class ManagedDataInspector extends PureComponent<
   }
 
   onExpanded = (expanded: DataInspectorExpanded) => {
-    this.setState({expanded});
+    this.setState({ expanded });
   };
 
   render() {
@@ -80,6 +84,7 @@ export default class ManagedDataInspector extends PureComponent<
         setValue={this.props.setValue}
         expanded={this.state.expanded}
         onExpanded={this.onExpanded}
+        onDelete={this.props.onDelete}
         expandRoot={this.props.expandRoot}
         collapsed={this.props.collapsed}
         tooltips={this.props.tooltips}
