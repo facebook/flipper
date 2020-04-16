@@ -20,7 +20,7 @@ plugins {
     id 'de.undercouch.download' version '4.0.1'
     id 'com.jfrog.bintray' version '1.8.4'
     id 'com.github.dcendents.android-maven' version '2.1'
-    id 'com.github.ben-manes.versions' version '0.21.0'
+    id 'com.github.ben-manes.versions' version '0.28.0'
 }
 
 ext.isSnapshot = { VERSION_NAME.endsWith('-SNAPSHOT') }
@@ -68,7 +68,7 @@ ext.deps = [
         // Annotations
         jsr305             : 'com.google.code.findbugs:jsr305:3.0.2',
         inferAnnotations   : 'com.facebook.infer.annotation:infer-annotation:0.11.2',
-        proguardAnnotations: 'com.facebook.yoga:proguard-annotations:1.14.1',
+        proguardAnnotations: 'com.facebook.yoga:proguard-annotations:1.16.0',
         // Litho
         lithoAnnotations   : "com.facebook.litho:litho-annotations:$LITHO_VERSION",
         lithoCore          : "com.facebook.litho:litho-core:$LITHO_VERSION",
