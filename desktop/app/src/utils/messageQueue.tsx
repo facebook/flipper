@@ -54,12 +54,15 @@ onBytesReceived((plugin: string, bytes: number) => {
 
 export function getPluginBackgroundStats(): {
   cpuTime: number; // amount of ms cpu used since the last stats (typically every minute)
+  bytesReceived: number;
   byPlugin: {[plugin: string]: StatEntry};
 } {
   let cpuTime: number = 0;
+  let bytesReceived: number = 0;
   const byPlugin = Array.from(pluginBackgroundStats.entries()).reduce(
     (aggregated, [pluginName, data]) => {
       cpuTime += data.cpuTimeDelta;
+      bytesReceived += data.bytesReceivedDelta;
       aggregated[pluginName] = data;
       return aggregated;
     },
@@ -67,6 +70,7 @@ export function getPluginBackgroundStats(): {
   );
   return {
     cpuTime,
+    bytesReceived,
     byPlugin,
   };
 }
@@ -140,7 +144,6 @@ function processMessage(
   },
   message: {method: string; params?: any},
 ): State {
-  const statName = `${plugin.id}.${message.method}`;
   const reducerStartTime = Date.now();
   flipperRecorderAddEvent(pluginKey, message.method, message.params);
   try {
@@ -149,7 +152,7 @@ function processMessage(
       message.method,
       message.params,
     );
-    addBackgroundStat(statName, Date.now() - reducerStartTime);
+    addBackgroundStat(plugin.id, Date.now() - reducerStartTime);
     return newPluginState;
   } catch (e) {
     console.error(`Failed to process event for plugin ${plugin.id}`, e);

@@ -149,7 +149,22 @@ export default (store: Store, logger: Logger) => {
         }),
     );
 
-    logger.track('usage', 'plugin-stats', getPluginBackgroundStats());
+    const bgStats = getPluginBackgroundStats();
+    logger.track('usage', 'plugin-stats', {
+      cpuTime: bgStats.cpuTime,
+      bytesReceived: bgStats.bytesReceived,
+    });
+    for (const key of Object.keys(bgStats.byPlugin)) {
+      const {
+        cpuTimeTotal: _a,
+        messageCountTotal: _b,
+        bytesReceivedTotal: _c,
+        ...dataWithoutTotal
+      } = bgStats.byPlugin[key];
+      if (Object.values(dataWithoutTotal).some((v) => v > 0)) {
+        logger.track('usage', 'plugin-stats-plugin', dataWithoutTotal, key);
+      }
+    }
     resetPluginBackgroundStatsDelta();
 
     if (
