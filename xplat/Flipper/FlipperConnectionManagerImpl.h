@@ -69,7 +69,7 @@ class FlipperConnectionManagerImpl : public FlipperConnectionManager {
 
   void startSync();
   void doCertificateExchange();
-  void connectSecurely();
+  bool connectSecurely();
   bool isCertificateExchangeNeeded();
   void requestSignedCertFromFlipper();
   bool isRunningInOwnThread();

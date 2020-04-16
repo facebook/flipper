@@ -129,32 +129,30 @@ void FlipperConnectionManagerImpl::startSync() {
     if (isClientSetupStep) {
       doCertificateExchange();
     } else {
-      connectSecurely();
+      if (!connectSecurely()) {
+        // The expected code path when flipper desktop is not running.
+        // Don't count as a failed attempt, or it would invalidate the
+        // connection files for no reason. On iOS devices, we can always connect
+        // to the local port forwarding server even when it can't connect to
+        // flipper. In that case we get a Network error instead of a Port not
+        // open error, so we treat them the same.
+        step->fail(
+            "No route to flipper found. Is flipper desktop running? Retrying...");
+        reconnect();
+      }
     }
     step->complete();
   } catch (const folly::AsyncSocketException& e) {
-    if (e.getType() == folly::AsyncSocketException::NOT_OPEN ||
-        e.getType() == folly::AsyncSocketException::NETWORK_ERROR) {
-      // The expected code path when flipper desktop is not running.
-      // Don't count as a failed attempt, or it would invalidate the connection
-      // files for no reason. On iOS devices, we can always connect to the local
-      // port forwarding server even when it can't connect to flipper. In that
-      // case we get a Network error instead of a Port not open error, so we
-      // treat them the same.
-      step->fail(
-          "No route to flipper found. Is flipper desktop running? Retrying...");
+    if (e.getType() == folly::AsyncSocketException::SSL_ERROR) {
+      auto message = std::string(e.what()) +
+          "\nMake sure the date and time of your device is up to date.";
+      log(message);
+      step->fail(message);
     } else {
-      if (e.getType() == folly::AsyncSocketException::SSL_ERROR) {
-        auto message = std::string(e.what()) +
-            "\nMake sure the date and time of your device is up to date.";
-        log(message);
-        step->fail(message);
-      } else {
-        log(e.what());
-        step->fail(e.what());
-      }
-      failedConnectionAttempts_++;
+      log(e.what());
+      step->fail(e.what());
     }
+    failedConnectionAttempts_++;
     reconnect();
   } catch (const std::exception& e) {
     log(e.what());
@@ -194,7 +192,7 @@ void FlipperConnectionManagerImpl::doCertificateExchange() {
   requestSignedCertFromFlipper();
 }
 
-void FlipperConnectionManagerImpl::connectSecurely() {
+bool FlipperConnectionManagerImpl::connectSecurely() {
   rsocket::SetupParameters parameters;
   folly::SocketAddress address;
 
@@ -216,7 +214,8 @@ void FlipperConnectionManagerImpl::connectSecurely() {
       contextStore_->getSSLContext();
   auto connectingSecurely = flipperState_->start("Connect securely");
   connectionIsTrusted_ = true;
-  client_ =
+
+  auto newClient =
       rsocket::RSocket::createConnectedClient(
           std::make_unique<rsocket::TcpConnectionFactory>(
               *connectionEventBase_->getEventBase(),
@@ -227,9 +226,24 @@ void FlipperConnectionManagerImpl::connectSecurely() {
           std::chrono::seconds(connectionKeepaliveSeconds), // keepaliveInterval
           nullptr, // stats
           std::make_shared<ConnectionEvents>(this))
+          .thenError<folly::AsyncSocketException>([](const auto& e) {
+            if (e.getType() == folly::AsyncSocketException::NOT_OPEN ||
+                e.getType() == folly::AsyncSocketException::NETWORK_ERROR) {
+              // This is the state where no Flipper desktop client is connected.
+              // We don't want an exception thrown here.
+              return std::unique_ptr<rsocket::RSocketClient>(nullptr);
+            }
+            throw e;
+          })
           .get();
+  if (newClient.get() == nullptr) {
+    return false;
+  }
+
+  client_ = std::move(newClient);
   connectingSecurely->complete();
   failedConnectionAttempts_ = 0;
+  return true;
 }
 
 void FlipperConnectionManagerImpl::reconnect() {
