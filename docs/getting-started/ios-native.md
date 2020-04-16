@@ -234,7 +234,7 @@ Finally, you need to add plugins to your Flipper client. Above, we have only add
 
 ## Having trouble?
 
-See the [troubleshooting page](troubleshooting.html) for help with known problems.
+See the [troubleshooting page](../troubleshooting) for help with known problems.
 
 <div class="warning">
 

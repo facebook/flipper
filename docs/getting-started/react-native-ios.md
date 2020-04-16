@@ -170,7 +170,7 @@ Lastly, open the Flipper desktop app, and run `yarn ios` in your terminal.
 
 ## Troubleshooting
 
-If you can't build your app after adding Flipper, you may need to configure the Swift compiler. To do so, adding an empty Swift file in your project is the easiest way.
+See the [troubleshooting page](../troubleshooting) for help with known problems.
 
 ## Further Steps
 
