@@ -7,11 +7,11 @@
  * @format
  */
 
-import { DataInspectorExpanded } from './DataInspector';
-import { PureComponent } from 'react';
+import {DataInspectorExpanded} from './DataInspector';
+import {PureComponent} from 'react';
 import DataInspector from './DataInspector';
 import React from 'react';
-import { DataValueExtractor } from './DataPreview';
+import {DataValueExtractor} from './DataPreview';
 
 type ManagedDataInspectorProps = {
   /**
@@ -63,7 +63,7 @@ type ManagedDataInspectorState = {
 export default class ManagedDataInspector extends PureComponent<
   ManagedDataInspectorProps,
   ManagedDataInspectorState
-  > {
+> {
   constructor(props: ManagedDataInspectorProps, context: Object) {
     super(props, context);
     this.state = {
@@ -72,7 +72,7 @@ export default class ManagedDataInspector extends PureComponent<
   }
 
   onExpanded = (expanded: DataInspectorExpanded) => {
-    this.setState({ expanded });
+    this.setState({expanded});
   };
 
   render() {

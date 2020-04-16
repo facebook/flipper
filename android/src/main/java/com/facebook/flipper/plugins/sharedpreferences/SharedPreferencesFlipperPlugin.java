@@ -13,8 +13,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.preference.PreferenceManager;
-import android.util.Log;
-
 import com.facebook.flipper.core.FlipperConnection;
 import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.core.FlipperPlugin;
@@ -211,7 +209,7 @@ public class SharedPreferencesFlipperPlugin implements FlipperPlugin {
             SharedPreferences sharedPrefs = getSharedPreferencesFor(sharedPreferencesName);
             Object originalValue = sharedPrefs.getAll().get(preferenceName);
             SharedPreferences.Editor editor = sharedPrefs.edit();
-Log.e("AAA","AAA SET "+sharedPreferencesName+" "+preferenceName);
+
             if (originalValue instanceof Boolean) {
               editor.putBoolean(preferenceName, params.getBoolean("preferenceValue"));
             } else if (originalValue instanceof Long) {
@@ -242,8 +240,6 @@ Log.e("AAA","AAA SET "+sharedPreferencesName+" "+preferenceName);
                 String preferenceName = params.getString("preferenceName");
                 SharedPreferences sharedPrefs = getSharedPreferencesFor(sharedPreferencesName);
                 SharedPreferences.Editor editor = sharedPrefs.edit();
-                Log.e("AAA","AAA DELETE "+sharedPreferencesName+" "+preferenceName);
-
                 editor.remove(preferenceName);
                 editor.apply();
                 responder.success(getFlipperObjectFor(sharedPreferencesName));

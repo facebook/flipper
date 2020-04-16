@@ -18,16 +18,16 @@ import {
   styled,
   Select,
 } from 'flipper';
-import { FlipperPlugin } from 'flipper';
+import {FlipperPlugin} from 'flipper';
 
-import { clone } from 'lodash';
+import {clone} from 'lodash';
 
 type SharedPreferencesChangeEvent = {|
   preferences: string,
-    name: string,
-      time: number,
-        deleted: boolean,
-          value: string,
+  name: string,
+  time: number,
+  deleted: boolean,
+  value: string,
 |};
 
 export type SharedPreferences = {|
@@ -45,7 +45,7 @@ type SharedPreferencesMap = {
 
 type SharedPreferencesState = {|
   selectedPreferences: ?string,
-    sharedPreferences: SharedPreferencesMap,
+  sharedPreferences: SharedPreferencesMap,
 |};
 
 const CHANGELOG_COLUMNS = {
@@ -93,7 +93,7 @@ export default class extends FlipperPlugin<SharedPreferencesState> {
   reducers = {
     UpdateSharedPreferences(state: SharedPreferencesState, results: Object) {
       const update = results.update;
-      const entry = state.sharedPreferences[update.name] || { changesList: [] };
+      const entry = state.sharedPreferences[update.name] || {changesList: []};
       entry.preferences = update.preferences;
       state.sharedPreferences[update.name] = entry;
       return {
@@ -156,17 +156,17 @@ export default class extends FlipperPlugin<SharedPreferencesState> {
   init() {
     this.client
       .call('getAllSharedPreferences')
-      .then((results: { [name: string]: SharedPreferences }) => {
+      .then((results: {[name: string]: SharedPreferences}) => {
         Object.entries(results).forEach(([name, prefs]) => {
-          const update = { name: name, preferences: prefs };
-          this.dispatchAction({ update, type: 'UpdateSharedPreferences' });
+          const update = {name: name, preferences: prefs};
+          this.dispatchAction({update, type: 'UpdateSharedPreferences'});
         });
       });
 
     this.client.subscribe(
       'sharedPreferencesChange',
       (change: SharedPreferencesChangeEvent) => {
-        this.dispatchAction({ change, type: 'ChangeSharedPreferences' });
+        this.dispatchAction({change, type: 'ChangeSharedPreferences'});
       },
     );
   }
@@ -198,7 +198,7 @@ export default class extends FlipperPlugin<SharedPreferencesState> {
           name: this.state.selectedPreferences,
           preferences: results,
         };
-        this.dispatchAction({ update, type: 'UpdateSharedPreferences' });
+        this.dispatchAction({update, type: 'UpdateSharedPreferences'});
       });
   };
 
@@ -209,8 +209,7 @@ export default class extends FlipperPlugin<SharedPreferencesState> {
     });
   };
 
-  onDel = (path: Array<string>) => {
-
+  onSharedPreferencesDeleted = (path: Array<string>) => {
     this.client
       .call('deleteSharedPreference', {
         sharedPreferencesName: this.state.selectedPreferences,
@@ -223,9 +222,6 @@ export default class extends FlipperPlugin<SharedPreferencesState> {
         };
         this.dispatchAction({ update, type: 'UpdateSharedPreferences' });
       });
-
-    //deleteSharedPreference
-    //alert(key)
   };
 
   render() {
@@ -242,7 +238,7 @@ export default class extends FlipperPlugin<SharedPreferencesState> {
     return (
       <RootColumn grow={true}>
         <Heading>
-          <span style={{ marginRight: '16px' }}>Preference File</span>
+          <span style={{marginRight: '16px'}}>Preference File</span>
           <Select
             options={Object.keys(this.state.sharedPreferences)
               .sort((a, b) => (a.toLowerCase() > b.toLowerCase() ? 1 : -1))
@@ -260,7 +256,7 @@ export default class extends FlipperPlugin<SharedPreferencesState> {
             <ManagedDataInspector
               data={entry.preferences}
               setValue={this.onSharedPreferencesChanged}
-              onDelete={this.onDel}
+              onDelete={this.onSharedPreferencesDeleted}
             />
           </InspectorColumn>
           <ChangelogColumn>

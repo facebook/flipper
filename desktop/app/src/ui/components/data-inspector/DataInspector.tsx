@@ -8,24 +8,24 @@
  */
 
 import DataDescription from './DataDescription';
-import { MenuTemplate } from '../ContextMenu';
-import { Component } from 'react';
+import {MenuTemplate} from '../ContextMenu';
+import {Component} from 'react';
 import ContextMenu from '../ContextMenu';
 import Tooltip from '../Tooltip';
 import styled from '@emotion/styled';
 import createPaste from '../../../fb-stubs/createPaste';
-import { reportInteraction } from '../../../utils/InteractionTracker';
-import DataPreview, { DataValueExtractor, InspectorName } from './DataPreview';
-import { getSortedKeys } from './utils';
-import { colors } from '../colors';
-import { clipboard } from 'electron';
+import {reportInteraction} from '../../../utils/InteractionTracker';
+import DataPreview, {DataValueExtractor, InspectorName} from './DataPreview';
+import {getSortedKeys} from './utils';
+import {colors} from '../colors';
+import {clipboard} from 'electron';
 import deepEqual from 'deep-equal';
 import React from 'react';
-import { TooltipOptions } from '../TooltipProvider';
+import {TooltipOptions} from '../TooltipProvider';
 
-export { DataValueExtractor } from './DataPreview';
+export {DataValueExtractor} from './DataPreview';
 
-const BaseContainer = styled.div<{ depth?: number; disabled?: boolean }>(
+const BaseContainer = styled.div<{depth?: number; disabled?: boolean}>(
   (props) => ({
     fontFamily: 'Menlo, monospace',
     fontSize: 11,
@@ -150,35 +150,35 @@ const defaultValueExtractor: DataValueExtractor = (value: any) => {
   const type = typeof value;
 
   if (type === 'number') {
-    return { mutable: true, type: 'number', value };
+    return {mutable: true, type: 'number', value};
   }
 
   if (type === 'string') {
-    return { mutable: true, type: 'string', value };
+    return {mutable: true, type: 'string', value};
   }
 
   if (type === 'boolean') {
-    return { mutable: true, type: 'boolean', value };
+    return {mutable: true, type: 'boolean', value};
   }
 
   if (type === 'undefined') {
-    return { mutable: true, type: 'undefined', value };
+    return {mutable: true, type: 'undefined', value};
   }
 
   if (value === null) {
-    return { mutable: true, type: 'null', value };
+    return {mutable: true, type: 'null', value};
   }
 
   if (Array.isArray(value)) {
-    return { mutable: true, type: 'array', value };
+    return {mutable: true, type: 'array', value};
   }
 
   if (Object.prototype.toString.call(value) === '[object Date]') {
-    return { mutable: true, type: 'date', value };
+    return {mutable: true, type: 'date', value};
   }
 
   if (type === 'object') {
-    return { mutable: true, type: 'object', value };
+    return {mutable: true, type: 'object', value};
   }
 };
 
@@ -237,20 +237,20 @@ const diffMetadataExtractor: DiffMetadataExtractor = (
   diff?: any,
 ) => {
   if (diff == null) {
-    return [{ data: data[key] }];
+    return [{data: data[key]}];
   }
 
   const val = data[key];
   const diffVal = diff[key];
   if (!data.hasOwnProperty(key)) {
-    return [{ data: diffVal, status: 'removed' }];
+    return [{data: diffVal, status: 'removed'}];
   }
   if (!diff.hasOwnProperty(key)) {
-    return [{ data: val, status: 'added' }];
+    return [{data: val, status: 'added'}];
   }
 
   if (isPureObject(diffVal) && isPureObject(val)) {
-    return [{ data: val, diff: diffVal }];
+    return [{data: val, diff: diffVal}];
   }
 
   if (diffVal !== val) {
@@ -258,12 +258,12 @@ const diffMetadataExtractor: DiffMetadataExtractor = (
     // the value from the diff prop
     // The property name still exists, but the values may be different.
     return [
-      { data: val, status: 'added' },
-      { data: diffVal, status: 'removed' },
+      {data: val, status: 'added'},
+      {data: diffVal, status: 'removed'},
     ];
   }
 
-  return Object.prototype.hasOwnProperty.call(data, key) ? [{ data: val }] : [];
+  return Object.prototype.hasOwnProperty.call(data, key) ? [{data: val}] : [];
 };
 
 function isComponentExpanded(
@@ -311,11 +311,11 @@ export default class DataInspector extends Component<DataInspectorProps> {
     path: Array<string>;
     ancestry: Array<Object>;
   } = {
-      expanded: {},
-      depth: 0,
-      path: [],
-      ancestry: [],
-    };
+    expanded: {},
+    depth: 0,
+    path: [],
+    ancestry: [],
+  };
 
   interaction: (name: string, data?: any) => void;
 
@@ -331,7 +331,7 @@ export default class DataInspector extends Component<DataInspectorProps> {
   }
 
   shouldComponentUpdate(nextProps: DataInspectorProps) {
-    const { props } = this;
+    const {props} = this;
 
     // check if any expanded paths effect this subtree
     if (nextProps.expanded !== props.expanded) {
@@ -363,7 +363,7 @@ export default class DataInspector extends Component<DataInspectorProps> {
   }
 
   isExpanded(pathParts: Array<string>) {
-    const { expanded } = this.props;
+    const {expanded} = this.props;
 
     // if we no expanded object then expand everything
     if (expanded == null) {
@@ -387,7 +387,7 @@ export default class DataInspector extends Component<DataInspectorProps> {
   }
 
   setExpanded(pathParts: Array<string>, isExpanded: boolean) {
-    const { expanded, onExpanded } = this.props;
+    const {expanded, onExpanded} = this.props;
     if (!onExpanded || !expanded) {
       return;
     }
@@ -418,7 +418,7 @@ export default class DataInspector extends Component<DataInspectorProps> {
   extractValue = (data: any, depth: number) => {
     let res;
 
-    const { extractValue } = this.props;
+    const {extractValue} = this.props;
     if (extractValue) {
       res = extractValue(data, depth);
     }
@@ -449,7 +449,7 @@ export default class DataInspector extends Component<DataInspectorProps> {
 
     // the data inspector makes values read only when setValue isn't set so we just need to set it
     // to null and the readOnly status will be propagated to all children
-    let { setValue } = this.props;
+    let {setValue} = this.props;
 
     const res = this.extractValue(data, depth);
     const resDiff = this.extractValue(diff, depth);
@@ -462,7 +462,7 @@ export default class DataInspector extends Component<DataInspectorProps> {
         setValue = null;
       }
 
-      ({ type, value, extra } = res);
+      ({type, value, extra} = res);
     } else {
       return null;
     }
@@ -476,11 +476,11 @@ export default class DataInspector extends Component<DataInspectorProps> {
       isExpandable &&
       (resDiff != null
         ? isComponentExpanded(
-          value,
-          resDiff.type,
-          resDiff.value,
-          expandRoot === true || this.isExpanded(path),
-        )
+            value,
+            resDiff.type,
+            resDiff.value,
+            expandRoot === true || this.isExpanded(path),
+          )
         : expandRoot === true || this.isExpanded(path));
 
     let expandGlyph = '';
@@ -505,7 +505,7 @@ export default class DataInspector extends Component<DataInspectorProps> {
 
       const diffValue = diff && resDiff ? resDiff.value : null;
 
-      const keys = getSortedKeys({ ...value, ...diffValue });
+      const keys = getSortedKeys({...value, ...diffValue});
 
       const Added = styled.div({
         backgroundColor: colors.tealTint70,
@@ -646,7 +646,7 @@ export default class DataInspector extends Component<DataInspectorProps> {
       },
     );
 
-    if (!isExpandable) {
+    if (!isExpandable && onDelete) {
       contextMenuItems.push(
         {
           label: 'Delete',
