@@ -94,7 +94,7 @@ static CKFlexboxComponentChild findFlexboxLayoutParams(
     _size = layout.size;
     _position = position;
     _identifier = [parentKey stringByAppendingString:layout.component
-                                 ? NSStringFromClass([layout.component class])
+                                 ? layout.component.className
                                  : @"(null)"];
 
     if (_component && reuseWrapper) {
