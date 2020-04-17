@@ -174,6 +174,9 @@ export default class Client extends EventEmitter {
         onSubscribe(subscription) {
           subscription.request(Number.MAX_SAFE_INTEGER);
         },
+        onError(payload) {
+          console.error('[client] connection status error ', payload);
+        },
       });
     }
   }

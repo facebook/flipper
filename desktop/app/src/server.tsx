@@ -230,7 +230,8 @@ class Server extends EventEmitter {
         cleanup();
       });
 
-      ws.on('error', () => {
+      ws.on('error', (error) => {
+        console.error('[server] ws connection error ', error);
         cleanup();
       });
     });
@@ -265,13 +266,16 @@ class Server extends EventEmitter {
       onNext(payload) {
         if (payload.kind == 'ERROR' || payload.kind == 'CLOSED') {
           client.then((client) => {
-            console.debug(`Device disconnected ${client.id}`, 'server');
+            console.log(`Device disconnected ${client.id}`, 'server', payload);
             server.removeConnection(client.id);
           });
         }
       },
       onSubscribe(subscription) {
         subscription.request(Number.MAX_SAFE_INTEGER);
+      },
+      onError(error) {
+        console.error('[server] connection status error ', error);
       },
     });
 
