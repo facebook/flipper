@@ -6,6 +6,7 @@
     "allowJs": true,
     "esModuleInterop": true
   },
+  "references": [{"path": "../babel-transformer"}],
   "include": ["src"],
   "exclude": ["node_modules", "**/__tests__/*"]
 }

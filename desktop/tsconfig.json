@@ -10,15 +10,5 @@
       "flipper-babel-transformer": ["./babel-transformer/src"]
     }
   },
-  "include": [
-    "src/**/*",
-    "doctor/**/*",
-    "pkg/**/*",
-    "static/**/*",
-    "scripts/**/*",
-    "types/**/*",
-    "headless/**/*",
-    "plugins/**/*"
-  ],
   "exclude": ["node_modules", "**/*.spec.ts"]
 }

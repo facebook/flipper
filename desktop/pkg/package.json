@@ -38,7 +38,6 @@
   },
   "scripts": {
     "reset": "rimraf lib *.tsbuildinfo",
-    "prebuild": "cd ../babel-transformer && yarn build",
     "build": "tsc -b",
     "postpack": "rimraf oclif.manifest.json",
     "prepack": "yarn reset && yarn build && oclif-dev manifest && oclif-dev readme",
