@@ -170,9 +170,11 @@ class Server extends EventEmitter {
       const query = querystring.decode(message.url.split('?')[1]);
       const deviceId: string =
         typeof query.deviceId === 'string' ? query.deviceId : 'webbrowser';
+      const device =
+        typeof query.device === 'string' ? query.device : 'WebSocket';
       this.store.dispatch({
         type: 'REGISTER_DEVICE',
-        payload: new JSDevice(deviceId, 'Web Browser', 1),
+        payload: new JSDevice(deviceId, device, 1),
       });
 
       const cleanup = () => {
