@@ -69,6 +69,8 @@ const nameTooltipOptions: TooltipOptions = {
 
 export type DataInspectorSetValue = (path: Array<string>, val: any) => void;
 
+export type DataInspectorDeleteValue = (path: Array<string>) => void;
+
 export type DataInspectorExpanded = {
   [key: string]: boolean;
 };
@@ -122,6 +124,10 @@ type DataInspectorProps = {
    * Callback whenever the current expanded paths is changed.
    */
   onExpanded?: ((expanded: DataInspectorExpanded) => void) | undefined | null;
+  /**
+   * Callback whenever delete action is invoked on current path.
+   */
+  onDelete?: DataInspectorDeleteValue | undefined | null;
   /**
    * Callback when a value is edited.
    */
@@ -351,6 +357,7 @@ export default class DataInspector extends Component<DataInspectorProps> {
       nextProps.depth !== props.depth ||
       !deepEqual(nextProps.path, props.path) ||
       nextProps.onExpanded !== props.onExpanded ||
+      nextProps.onDelete !== props.onDelete ||
       nextProps.setValue !== props.setValue
     );
   }
@@ -399,6 +406,15 @@ export default class DataInspector extends Component<DataInspectorProps> {
     this.setExpanded(this.props.path, !isExpanded);
   };
 
+  handleDelete = (path: Array<string>) => {
+    const onDelete = this.props.onDelete;
+    if (!onDelete) {
+      return;
+    }
+
+    onDelete(path);
+  };
+
   extractValue = (data: any, depth: number) => {
     let res;
 
@@ -424,6 +440,7 @@ export default class DataInspector extends Component<DataInspectorProps> {
       extractValue,
       name,
       onExpanded,
+      onDelete,
       path,
       ancestry,
       collapsed,
@@ -508,6 +525,7 @@ export default class DataInspector extends Component<DataInspectorProps> {
               expanded={expandedPaths}
               collapsed={collapsed}
               onExpanded={onExpanded}
+              onDelete={onDelete}
               path={path.concat(key)}
               depth={depth + 1}
               key={key}
@@ -627,6 +645,13 @@ export default class DataInspector extends Component<DataInspectorProps> {
         click: () => clipboard.writeText(JSON.stringify(data, null, 2)),
       },
     );
+
+    if (!isExpandable && onDelete) {
+      contextMenuItems.push({
+        label: 'Delete',
+        click: () => this.handleDelete(this.props.path),
+      });
+    }
 
     return (
       <BaseContainer
