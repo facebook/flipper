@@ -78,6 +78,11 @@ const argv = yargs
         '[Internal] Used to provide a user message from the launcher to the user.',
       type: 'string',
     },
+    'open-dev-tools': {
+      describe: 'Open Dev Tools window on startup.',
+      default: false,
+      type: 'boolean',
+    },
   })
   .version(VERSION)
   .help()
@@ -285,7 +290,12 @@ function tryCreateWindow() {
         nativeWindowOpen: true,
       },
     });
-    win.once('ready-to-show', () => win.show());
+    win.once('ready-to-show', () => {
+      win.show();
+      if (argv['open-dev-tools']) {
+        win.webContents.openDevTools();
+      }
+    });
     win.once('close', () => {
       win.webContents.send('trackUsage', 'exit');
       if (process.env.NODE_ENV === 'development') {
