@@ -19,7 +19,7 @@
     "eslint-plugin-react": "^7.16.0",
     "jest": "^25.1.5",
     "prettier": "^2.0.0",
-    "ts-jest": "^25.3.0",
+    "ts-jest": "^25.4.0",
     "tslint-config-prettier": "^1.18.0",
     "typescript": "^3.7.2"
   },
