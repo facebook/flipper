@@ -20,14 +20,13 @@ jobs:
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
-    
-    - name: Print current dir
-      run: pwd
+      
+    - name: Figure out iphone simulator
+      run: IPHONESIMULATOR=$(xcodebuild -showsdks | grep -o "iphonesimulator[0-9]\\+\\.[0-9]\\+$") && echo $IPHONESIMULATOR
       
     - name: Install dependencies
       run: pod install --repo-update
 
     # Runs a set of commands using the runners shell
     - name: Build Sample app
-      run: |
-        xcodebuild build -workspace Sample.xcworkspace -scheme Sample -destination generic/platform=iOS
+      run: xcodebuild build -workspace Sample.xcworkspace -scheme Sample -sdk $IPHONESIMULATOR
