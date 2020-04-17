@@ -1,0 +1,17 @@
+name: Label issues
+
+# This workflow is triggered on issue comments.
+on:
+  issue_comment:
+    types: created
+
+jobs:
+  applyNeedsAttentionLabel:
+    name: Apply Needs Attention Label
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Apply Needs Attention Label
+        uses: hramos/needs-attention@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
