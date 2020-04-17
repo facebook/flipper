@@ -4,9 +4,10 @@
     "outDir": "lib",
     "rootDir": "src",
     "allowJs": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "composite": true
   },
-  "references": [{"path": "../pkg-lib"}],
+  "references": [{"path": "../babel-transformer"}],
   "include": ["src"],
   "exclude": ["node_modules", "**/__tests__/*"]
 }

@@ -7,5 +7,5 @@
  * @format
  */
 
-export {run} from '@oclif/command';
-export const PKG = 'flipper-pkg';
+export {default as runBuild} from './runBuild';
+export {default as getWatchFolders} from './getWatchFolders';

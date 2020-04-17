@@ -20,10 +20,8 @@
     "@types/node": "^13.7.5",
     "cli-ux": "^5.4.5",
     "fs-extra": "^8.1.0",
-    "flipper-babel-transformer": "0.37.0",
-    "inquirer": "^7.0.5",
-    "metro": "^0.59.0",
-    "tslib": "^1"
+    "flipper-pkg-lib": "0.37.0",
+    "inquirer": "^7.0.5"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1",

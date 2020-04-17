@@ -7,5 +7,6 @@
  * @format
  */
 
-export {run} from '@oclif/command';
-export const PKG = 'flipper-pkg';
+test('tests are working', () => {
+  expect(true).toBeTruthy();
+});

@@ -15,6 +15,7 @@
       "doctor",
       "headless-tests",
       "pkg",
+      "pkg-lib",
       "static",
       "plugins/*"
     ],
@@ -98,7 +99,8 @@
     "moduleNameMapper": {
       "^flipper$": "<rootDir>/app/src",
       "^flipper-doctor$": "<rootDir>/doctor/src",
-      "^flipper-pkg$": "<rootDir>/pkg/src"
+      "^flipper-pkg$": "<rootDir>/pkg/src",
+      "^flipper-pkg-lib$": "<rootDir>/pkg-lib/src"
     },
     "clearMocks": true
   },
@@ -168,7 +170,8 @@
     "eslint-plugin-prettier": "^3.1.2",
     "eslint-plugin-react": "^7.16.0",
     "eslint-plugin-relay": "^1.4.1",
-    "flipper-pkg": "0.37.0",
+    "flipper-babel-transformer": "0.37.0",
+    "flipper-pkg-lib": "0.37.0",
     "flow-bin": "^0.122.0",
     "fs-extra": "^8.1.0",
     "glob": "^7.1.2",

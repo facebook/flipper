@@ -6,6 +6,7 @@
       "flipper": ["./app/src"],
       "flipper-doctor": ["./doctor/src"],
       "flipper-pkg": ["./pkg/src"],
+      "flipper-pkg-lib": ["./pkg-lib/src"],
       "live-plugin-manager": ["./types/live-plugin-manager.d.tsx"],
       "flipper-babel-transformer": ["./babel-transformer/src"]
     }

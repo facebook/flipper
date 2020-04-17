@@ -14,7 +14,7 @@ import * as inquirer from 'inquirer';
 import * as path from 'path';
 import * as yarn from '../utils/yarn';
 import cli from 'cli-ux';
-import runBuild from '../utils/runBuild';
+import {runBuild} from 'flipper-pkg-lib';
 
 async function deriveOutputFileName(inputDirectory: string): Promise<string> {
   const packageJson = await readJSON(path.join(inputDirectory, 'package.json'));

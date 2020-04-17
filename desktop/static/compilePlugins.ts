@@ -14,7 +14,7 @@ import util from 'util';
 import recursiveReaddir from 'recursive-readdir';
 import pMap from 'p-map';
 import {homedir} from 'os';
-import {getWatchFolders} from 'flipper-pkg';
+import {getWatchFolders} from 'flipper-pkg-lib';
 import {default as getPlugins, PluginManifest, PluginInfo} from './getPlugins';
 import startWatchPlugins from './startWatchPlugins';
 

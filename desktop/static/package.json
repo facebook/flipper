@@ -11,7 +11,7 @@
     "fix-path": "^3.0.0",
     "fs-extra": "^8.1.0",
     "flipper-babel-transformer": "0.37.0",
-    "flipper-pkg": "0.37.0",
+    "flipper-pkg-lib": "0.37.0",
     "mem": "^6.0.0",
     "metro": "^0.59.0",
     "mkdirp": "^1.0.0",

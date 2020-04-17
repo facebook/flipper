@@ -9,7 +9,7 @@
 
 import fs from 'fs-extra';
 import path from 'path';
-import {getWatchFolders} from 'flipper-pkg';
+import {getWatchFolders} from 'flipper-pkg-lib';
 import {appDir, pluginsDir} from './paths';
 
 /**

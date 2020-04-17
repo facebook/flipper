@@ -12,7 +12,7 @@ import tmp from 'tmp';
 import path from 'path';
 import fs from 'fs-extra';
 import {spawn} from 'promisify-child-process';
-import {getWatchFolders} from 'flipper-pkg';
+import {getWatchFolders} from 'flipper-pkg-lib';
 import getAppWatchFolders from './get-app-watch-folders';
 import getPlugins from '../static/getPlugins';
 import {
