@@ -72,13 +72,6 @@ This should only be necessary if you have an existing app that cannot be upgrade
 
 <span class="hljs-comment"># Post Install processing for Flipper</span>
 <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">flipper_post_install</span><span class="hljs-params">(installer)</span></span>
-  installer.pods_project.targets.each <span class="hljs-keyword">do</span> <span class="hljs-params">|target|</span>
-    <span class="hljs-keyword">if</span> target.name == <span class="hljs-string">'YogaKit'</span>
-      target.build_configurations.each <span class="hljs-keyword">do</span> <span class="hljs-params">|config|</span>
-        config.build_settings[<span class="hljs-string">'SWIFT_VERSION'</span>] = <span class="hljs-string">'4.1'</span>
-      <span class="hljs-keyword">end</span>
-    <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">end</span>
   file_name = Dir.glob(<span class="hljs-string">"*.xcodeproj"</span>)[<span class="hljs-number">0</span>]
   app_project = Xcodeproj::Project.open(file_name)
   app_project.native_targets.each <span class="hljs-keyword">do</span> <span class="hljs-params">|target|</span>
