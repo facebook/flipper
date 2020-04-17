@@ -8,7 +8,7 @@
  */
 
 import Metro from 'metro';
-import * as path from 'path';
+import getWatchFolders from './getWatchFolders';
 
 function hash(string: string) {
   let hash = 0;
@@ -41,27 +41,28 @@ export default async function runBuild(
   entry: string,
   out: string,
 ) {
-  await Metro.runBuild(
-    {
-      reporter: {update: () => {}},
-      projectRoot: inputDirectory,
-      watchFolders: [inputDirectory, path.resolve(__dirname, '..', '..')],
-      serializer: {
-        getRunModuleStatement: (moduleID: string) =>
-          `module.exports = global.__r(${moduleID}).default;`,
-        createModuleIdFactory,
-      },
-      transformer: {
-        babelTransformerPath: require.resolve('flipper-babel-transformer'),
-      },
+  const baseConfig = await Metro.loadConfig();
+  const config = Object.assign({}, baseConfig, {
+    reporter: {update: () => {}},
+    projectRoot: inputDirectory,
+    watchFolders: [inputDirectory, ...(await getWatchFolders(inputDirectory))],
+    serializer: {
+      ...baseConfig.serializer,
+      getRunModuleStatement: (moduleID: string) =>
+        `module.exports = global.__r(${moduleID}).default;`,
+      createModuleIdFactory,
     },
-    {
-      dev: false,
-      minify: false,
-      resetCache: true,
-      sourceMap: true,
-      entry,
-      out,
+    transformer: {
+      ...baseConfig.transformer,
+      babelTransformerPath: require.resolve('flipper-babel-transformer'),
     },
-  );
+  });
+  await Metro.runBuild(config, {
+    dev: false,
+    minify: false,
+    resetCache: false,
+    sourceMap: true,
+    entry,
+    out,
+  });
 }

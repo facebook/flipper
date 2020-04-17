@@ -10,3 +10,4 @@
 export {run} from '@oclif/command';
 export const PKG = 'flipper-pkg';
 export {default as runBuild} from './utils/runBuild';
+export {default as getWatchFolders} from './utils/getWatchFolders';

@@ -19,6 +19,12 @@ export default async function getPluginFolders(
   if (includeThirdparty) {
     pluginFolders.push(path.join(homedir(), '.flipper', 'thirdparty'));
   }
+  if (process.env.FLIPPER_NO_EMBEDDED_PLUGINS === 'true') {
+    console.log(
+      '🥫  Skipping embedded plugins because "--no-embedded-plugins" flag provided',
+    );
+    return pluginFolders;
+  }
   const flipperConfigPath = path.join(homedir(), '.flipper', 'config.json');
   if (await fs.pathExists(flipperConfigPath)) {
     const config = await fs.readJson(flipperConfigPath);

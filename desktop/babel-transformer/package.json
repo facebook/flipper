@@ -26,7 +26,6 @@
     "@types/fs-extra": "^8.1.0",
     "@types/node": "^13.7.5",
     "fs-extra": "^8.1.0",
-    "metro": "^0.59.0",
     "tslib": "^1"
   },
   "devDependencies": {
