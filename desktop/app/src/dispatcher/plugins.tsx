@@ -165,15 +165,11 @@ export const requirePlugin = (
         throw new Error(`Plugin ${plugin.name} is not a FlipperBasePlugin`);
       }
 
+      plugin.id = plugin.id || pluginDefinition.id;
+
       // set values from package.json as static variables on class
       Object.keys(pluginDefinition).forEach((key) => {
-        if (key === 'name') {
-          plugin.id = plugin.id || pluginDefinition.name;
-        } else if (key === 'id') {
-          throw new Error(
-            'Field "id" not allowed in package.json. The plugin\'s name will be used as ID"',
-          );
-        } else {
+        if (key !== 'name' && key !== 'id') {
           plugin[key] =
             plugin[key] || pluginDefinition[key as keyof PluginDefinition];
         }

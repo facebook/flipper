@@ -1,5 +1,6 @@
 {
   "name": "flipper-plugin-network",
+  "id": "Network",
   "specVersion": 2,
   "flipperBundlerEntry": "index.tsx",
   "main": "dist/index.js",

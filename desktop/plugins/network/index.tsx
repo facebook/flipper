@@ -122,7 +122,6 @@ export const NetworkRouteContext = createContext<NetworkRouteManager>(
 );
 
 export default class extends FlipperPlugin<State, any, PersistedState> {
-  static id = 'Network';
   static keyboardActions: Array<DefaultKeyboardAction> = ['clear'];
   static subscribed = [];
   static defaultPersistedState = {

@@ -31,6 +31,7 @@ test('getPluginDetailsV1', async () => {
       "dir": "./plugins/flipper-plugin-test",
       "gatekeeper": "GK_flipper_plugin_test",
       "icon": undefined,
+      "id": "flipper-plugin-test",
       "main": "dist/index.js",
       "name": "flipper-plugin-test",
       "source": "src/index.tsx",
@@ -42,6 +43,66 @@ test('getPluginDetailsV1', async () => {
 });
 
 test('getPluginDetailsV2', async () => {
+  const pluginV2 = {
+    specVersion: 2,
+    name: 'flipper-plugin-test',
+    title: 'Test',
+    version: '3.0.1',
+    main: 'dist/bundle.js',
+    flipperBundlerEntry: 'src/index.tsx',
+    gatekeeper: 'GK_flipper_plugin_test',
+  };
+  fsMock.readJson.mockImplementation(() => pluginV2);
+  const details = await getPluginDetails('./plugins/flipper-plugin-test');
+  expect(details).toMatchInlineSnapshot(`
+    Object {
+      "bugs": undefined,
+      "category": undefined,
+      "dir": "./plugins/flipper-plugin-test",
+      "gatekeeper": "GK_flipper_plugin_test",
+      "icon": undefined,
+      "id": "flipper-plugin-test",
+      "main": "dist/bundle.js",
+      "name": "flipper-plugin-test",
+      "source": "src/index.tsx",
+      "specVersion": 2,
+      "title": "Test",
+      "version": "3.0.1",
+    }
+  `);
+});
+
+test('id used as title if the latter omited', async () => {
+  const pluginV2 = {
+    specVersion: 2,
+    name: 'flipper-plugin-test',
+    id: 'test',
+    version: '3.0.1',
+    main: 'dist/bundle.js',
+    flipperBundlerEntry: 'src/index.tsx',
+    gatekeeper: 'GK_flipper_plugin_test',
+  };
+  fsMock.readJson.mockImplementation(() => pluginV2);
+  const details = await getPluginDetails('./plugins/flipper-plugin-test');
+  expect(details).toMatchInlineSnapshot(`
+    Object {
+      "bugs": undefined,
+      "category": undefined,
+      "dir": "./plugins/flipper-plugin-test",
+      "gatekeeper": "GK_flipper_plugin_test",
+      "icon": undefined,
+      "id": "test",
+      "main": "dist/bundle.js",
+      "name": "flipper-plugin-test",
+      "source": "src/index.tsx",
+      "specVersion": 2,
+      "title": "test",
+      "version": "3.0.1",
+    }
+  `);
+});
+
+test('name without "flipper-plugin-" prefix is used as title if the latter omited', async () => {
   const pluginV2 = {
     specVersion: 2,
     name: 'flipper-plugin-test',
@@ -59,11 +120,12 @@ test('getPluginDetailsV2', async () => {
       "dir": "./plugins/flipper-plugin-test",
       "gatekeeper": "GK_flipper_plugin_test",
       "icon": undefined,
+      "id": "flipper-plugin-test",
       "main": "dist/bundle.js",
       "name": "flipper-plugin-test",
       "source": "src/index.tsx",
       "specVersion": 2,
-      "title": undefined,
+      "title": "test",
       "version": "3.0.1",
     }
   `);

@@ -42,9 +42,10 @@ async function getPluginDetailsV1(
     version: packageJson.version,
     main: path.join('dist', 'index.js'),
     source: packageJson.main,
+    id: packageJson.name,
     gatekeeper: packageJson.gatekeeper,
     icon: packageJson.icon,
-    title: packageJson.title,
+    title: packageJson.title || packageJson.name,
     category: packageJson.category,
     bugs: packageJson.bugs,
   };
@@ -62,10 +63,19 @@ async function getPluginDetailsV2(
     version: packageJson.version,
     main: packageJson.main,
     source: packageJson.flipperBundlerEntry,
+    id: packageJson.id || packageJson.name,
     gatekeeper: packageJson.gatekeeper,
     icon: packageJson.icon,
-    title: packageJson.displayName || packageJson.title,
+    title:
+      packageJson.title || packageJson.id || getTitleFromName(packageJson.name),
     category: packageJson.category,
     bugs: packageJson.bugs,
   };
+}
+
+function getTitleFromName(name: string) {
+  const prefix = 'flipper-plugin-';
+  if (name.startsWith(prefix)) {
+    return name.substr(prefix.length);
+  }
 }
