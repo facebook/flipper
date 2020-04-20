@@ -135,7 +135,7 @@
     "@types/react-redux": "^7.1.5",
     "@types/react-test-renderer": "^16.9.1",
     "@types/react-transition-group": "^4.2.2",
-    "@types/react-virtualized": "^9.21.7",
+    "@types/react-virtualized": "^9.21.9",
     "@types/react-virtualized-auto-sizer": "^1.0.0",
     "@types/react-window": "^1.8.1",
     "@types/recursive-readdir": "^2.2.0",
