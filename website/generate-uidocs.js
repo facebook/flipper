@@ -22,7 +22,7 @@ Flipper has a lot of built in React components to build UIs. You can import them
 
 const TARGET = __dirname + '/../docs/extending/ui-components.md';
 
-glob(__dirname + '/../src/ui/components/**/*.tsx', (err, files) => {
+glob(__dirname + '/../desktop/app/src/ui/components/**/*.tsx', (err, files) => {
   const content = files
     .map(f => [f, fs.readFileSync(f)])
     .map(([name, file]) => {
