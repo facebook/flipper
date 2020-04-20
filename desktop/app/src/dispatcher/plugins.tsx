@@ -96,15 +96,15 @@ function getBundledPlugins(): Array<PluginDefinition> {
   }
 
   return bundledPlugins
-    .filter((plugin) => notNull(plugin.out))
+    .filter((plugin) => notNull(plugin.entry))
     .map(
       (plugin) =>
         ({
           ...plugin,
-          out: path.join(pluginPath, plugin.out!),
+          entry: path.resolve(pluginPath, plugin.entry!),
         } as PluginDefinition),
     )
-    .concat(bundledPlugins.filter((plugin) => !plugin.out));
+    .concat(bundledPlugins.filter((plugin) => !plugin.entry));
 }
 
 export function getDynamicPlugins() {
@@ -155,8 +155,8 @@ export const requirePlugin = (
     pluginDefinition: PluginDefinition,
   ): typeof FlipperPlugin | typeof FlipperDevicePlugin | null => {
     try {
-      let plugin = pluginDefinition.out
-        ? reqFn(pluginDefinition.out)
+      let plugin = pluginDefinition.entry
+        ? reqFn(pluginDefinition.entry)
         : defaultPluginsIndex[pluginDefinition.name];
       if (plugin.default) {
         plugin = plugin.default;

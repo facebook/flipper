@@ -9,3 +9,5 @@
 
 export {default as runBuild} from './runBuild';
 export {default as getWatchFolders} from './getWatchFolders';
+export {default as PluginDetails} from './PluginDetails';
+export {default as getPluginDetails} from './getPluginDetails';

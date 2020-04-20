@@ -14,7 +14,7 @@ import * as inquirer from 'inquirer';
 import * as path from 'path';
 import * as yarn from '../utils/yarn';
 import cli from 'cli-ux';
-import {runBuild} from 'flipper-pkg-lib';
+import {runBuild, getPluginDetails} from 'flipper-pkg-lib';
 
 async function deriveOutputFileName(inputDirectory: string): Promise<string> {
   const packageJson = await readJSON(path.join(inputDirectory, 'package.json'));
@@ -100,22 +100,14 @@ export default class Bundle extends Command {
     await yarn.install(inputDirectory);
     cli.action.stop();
 
-    cli.action.start('Reading package.json');
-    const packageJson = await readJSON(
-      path.join(inputDirectory, 'package.json'),
-    );
-    const entry =
-      packageJson.main ??
-      ((await pathExists(path.join(inputDirectory, 'index.tsx')))
-        ? 'index.tsx'
-        : 'index.jsx');
-    const bundleMain = packageJson.bundleMain ?? path.join('dist', 'index.js');
-    const out = path.resolve(inputDirectory, bundleMain);
-    cli.action.stop(`done. Entry: ${entry}. Bundle main: ${bundleMain}.`);
+    cli.action.start('Reading plugin details');
+    const plugin = await getPluginDetails(inputDirectory);
+    const out = path.resolve(inputDirectory, plugin.main);
+    cli.action.stop(`done. Source: ${plugin.source}. Main: ${plugin.main}.`);
 
     cli.action.start(`Compiling`);
     await ensureDir(path.dirname(out));
-    await runBuild(inputDirectory, entry, out);
+    await runBuild(inputDirectory, plugin.source, out);
     cli.action.stop();
 
     cli.action.start(`Packing to ${outputFile}`);

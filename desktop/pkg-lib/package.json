@@ -4,7 +4,7 @@
   "description": "Library for building and publishing Flipper plugins",
   "repository": "facebook/flipper",
   "main": "lib/index.js",
-  "flipper:source": "src",
+  "flipperBundlerEntry": "src",
   "types": "lib/index.d.ts",
   "license": "MIT",
   "bugs": "https://github.com/facebook/flipper/issues",

@@ -69,14 +69,14 @@ test('checkDisabled', () => {
   expect(
     disabled({
       name: 'other Name',
-      out: './test/index.js',
+      entry: './test/index.js',
     }),
   ).toBeTruthy();
 
   expect(
     disabled({
       name: disabledPlugin,
-      out: './test/index.js',
+      entry: './test/index.js',
     }),
   ).toBeFalsy();
 });
@@ -85,7 +85,7 @@ test('checkGK for plugin without GK', () => {
   expect(
     checkGK([])({
       name: 'pluginID',
-      out: './test/index.js',
+      entry: './test/index.js',
     }),
   ).toBeTruthy();
 });
@@ -95,7 +95,7 @@ test('checkGK for passing plugin', () => {
     checkGK([])({
       name: 'pluginID',
       gatekeeper: TEST_PASSING_GK,
-      out: './test/index.js',
+      entry: './test/index.js',
     }),
   ).toBeTruthy();
 });
@@ -106,7 +106,7 @@ test('checkGK for failing plugin', () => {
   const plugins = checkGK(gatekeepedPlugins)({
     name,
     gatekeeper: TEST_FAILING_GK,
-    out: './test/index.js',
+    entry: './test/index.js',
   });
 
   expect(plugins).toBeFalsy();
@@ -117,7 +117,7 @@ test('requirePlugin returns null for invalid requires', () => {
   const requireFn = requirePlugin([], require);
   const plugin = requireFn({
     name: 'pluginID',
-    out: 'this/path/does not/exist',
+    entry: 'this/path/does not/exist',
   });
 
   expect(plugin).toBeNull();
@@ -128,7 +128,7 @@ test('requirePlugin loads plugin', () => {
   const requireFn = requirePlugin([], require);
   const plugin = requireFn({
     name,
-    out: path.join(__dirname, 'TestPlugin'),
+    entry: path.join(__dirname, 'TestPlugin'),
   });
   expect(plugin!.prototype).toBeInstanceOf(FlipperPlugin);
   expect(plugin!.id).toBe(TestPlugin.id);

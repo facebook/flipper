@@ -33,16 +33,13 @@ export function die(err: Error) {
 
 export async function generatePluginEntryPoints() {
   console.log('⚙️  Generating plugin entry points...');
-  const pluginEntryPoints = await getPlugins();
+  const plugins = await getPlugins();
   if (await fs.pathExists(defaultPluginsIndexDir)) {
     await fs.remove(defaultPluginsIndexDir);
   }
   await fs.mkdirp(defaultPluginsIndexDir);
-  await fs.writeJSON(
-    path.join(defaultPluginsIndexDir, 'index.json'),
-    pluginEntryPoints.map((plugin) => plugin.manifest),
-  );
-  const pluginRequres = pluginEntryPoints
+  await fs.writeJSON(path.join(defaultPluginsIndexDir, 'index.json'), plugins);
+  const pluginRequres = plugins
     .map((x) => `  '${x.name}': require('${x.name}')`)
     .join(',\n');
   const generatedIndex = `
@@ -76,7 +73,7 @@ async function compile(
         ),
       },
       resolver: {
-        resolverMainFields: ['flipper:source', 'module', 'main'],
+        resolverMainFields: ['flipperBundlerEntry', 'module', 'main'],
         blacklistRE: /\.native\.js$/,
         sourceExts: ['js', 'jsx', 'ts', 'tsx', 'json', 'mjs'],
       },
@@ -151,7 +148,7 @@ export async function compileMain() {
       },
       resolver: {
         sourceExts: ['tsx', 'ts', 'js'],
-        resolverMainFields: ['flipper:source', 'module', 'main'],
+        resolverMainFields: ['flipperBundlerEntry', 'module', 'main'],
         blacklistRE: /\.native\.js$/,
       },
     });

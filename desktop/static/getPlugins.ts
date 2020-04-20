@@ -11,82 +11,95 @@ import path from 'path';
 import fs from 'fs-extra';
 import expandTilde from 'expand-tilde';
 import getPluginFolders from './getPluginFolders';
+import {PluginDetails, getPluginDetails} from 'flipper-pkg-lib';
+import pmap from 'p-map';
+import pfilter from 'p-filter';
 
-export type PluginManifest = {
-  version: string;
-  name: string;
-  main?: string;
-  bundleMain?: string;
-  [key: string]: any;
-};
-
-export type PluginInfo = {
-  rootDir: string;
-  name: string;
-  entry: string;
-  manifest: PluginManifest;
-};
-
-export default async function getPlugins(includeThirdparty: boolean = false) {
+export default async function getPlugins(
+  includeThirdparty: boolean = false,
+): Promise<PluginDetails[]> {
   const pluginFolders = await getPluginFolders(includeThirdparty);
-  const entryPoints: {[key: string]: PluginInfo} = {};
-  pluginFolders.forEach((additionalPath) => {
-    const additionalPlugins = entryPointForPluginFolder(additionalPath);
-    Object.keys(additionalPlugins).forEach((key) => {
-      entryPoints[key] = additionalPlugins[key];
+  const entryPoints: {[key: string]: PluginDetails} = {};
+  const additionalPlugins = await pmap(pluginFolders, (path) =>
+    entryPointForPluginFolder(path),
+  );
+  for (const p of additionalPlugins) {
+    Object.keys(p).forEach((key) => {
+      entryPoints[key] = p[key];
     });
-  });
+  }
   return Object.values(entryPoints);
 }
-function entryPointForPluginFolder(pluginPath: string) {
-  pluginPath = expandTilde(pluginPath);
-  if (!fs.existsSync(pluginPath)) {
+async function entryPointForPluginFolder(
+  pluginsDir: string,
+): Promise<{[key: string]: PluginDetails}> {
+  pluginsDir = expandTilde(pluginsDir);
+  if (!fs.existsSync(pluginsDir)) {
     return {};
   }
-  return fs
-    .readdirSync(pluginPath)
-    .filter((name) => fs.lstatSync(path.join(pluginPath, name)).isDirectory())
-    .filter(Boolean)
-    .map((name) => {
-      let packageJSON;
-      try {
-        packageJSON = fs
-          .readFileSync(path.join(pluginPath, name, 'package.json'))
-          .toString();
-      } catch (e) {}
-      if (packageJSON) {
+  return await fs
+    .readdir(pluginsDir)
+    .then((entries) =>
+      entries.map((name) => ({
+        dir: path.join(pluginsDir, name),
+        manifestPath: path.join(pluginsDir, name, 'package.json'),
+      })),
+    )
+    .then((entries) =>
+      pfilter(entries, ({manifestPath}) => fs.pathExists(manifestPath)),
+    )
+    .then((packages) =>
+      pmap(packages, async ({manifestPath, dir}) => {
         try {
-          const json = JSON.parse(packageJSON);
-          if (json.workspaces) {
-            return;
-          }
-          if (!json.keywords || !json.keywords.includes('flipper-plugin')) {
-            console.log(
-              `Skipping package "${json.name}" as its "keywords" field does not contain tag "flipper-plugin"`,
-            );
-            return null;
-          }
-          const pkg = json as PluginManifest;
-          const plugin: PluginInfo = {
-            manifest: pkg,
-            name: pkg.name,
-            entry: path.join(pluginPath, name, pkg.main || 'index.js'),
-            rootDir: path.join(pluginPath, name),
+          const manifest = await fs.readJson(manifestPath);
+          return {
+            dir,
+            manifest,
           };
-          return plugin;
         } catch (e) {
           console.error(
-            `Could not load plugin "${pluginPath}", because package.json is invalid.`,
+            `Could not load plugin from "${dir}", because package.json is invalid.`,
           );
           console.error(e);
           return null;
         }
-      }
-      return null;
-    })
-    .filter(Boolean)
-    .reduce<{[key: string]: PluginInfo}>((acc, cv) => {
-      acc[cv!.name] = cv!;
-      return acc;
-    }, {});
+      }),
+    )
+    .then((packages) => packages.filter(notNull))
+    .then((packages) => packages.filter(({manifest}) => !manifest.workspaces))
+    .then((packages) =>
+      packages.filter(({manifest: {keywords, name}}) => {
+        if (!keywords || !keywords.includes('flipper-plugin')) {
+          console.log(
+            `Skipping package "${name}" as its "keywords" field does not contain tag "flipper-plugin"`,
+          );
+          return false;
+        }
+        return true;
+      }),
+    )
+    .then((packages) =>
+      pmap(packages, async ({manifest, dir}) => {
+        try {
+          return await getPluginDetails(dir, manifest);
+        } catch (e) {
+          console.error(
+            `Could not load plugin from "${dir}", because package.json is invalid.`,
+          );
+          console.error(e);
+          return null;
+        }
+      }),
+    )
+    .then((plugins) => plugins.filter(notNull))
+    .then((plugins) =>
+      plugins.reduce<{[key: string]: PluginDetails}>((acc, cv) => {
+        acc[cv!.name] = cv!;
+        return acc;
+      }, {}),
+    );
+}
+
+function notNull<T>(x: T | null | undefined): x is T {
+  return x !== null && x !== undefined;
 }

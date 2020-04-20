@@ -99,7 +99,7 @@ async function startMetroServer(app: Express, server: http.Server) {
     },
     resolver: {
       ...baseConfig.resolver,
-      resolverMainFields: ['flipper:source', 'module', 'main'],
+      resolverMainFields: ['flipperBundlerEntry', 'module', 'main'],
       blacklistRE: /\.native\.js$/,
       resolveRequest: (context: any, moduleName: string, platform: string) => {
         if (moduleName.startsWith('./localhost:3000')) {

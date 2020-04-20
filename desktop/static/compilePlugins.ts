@@ -14,8 +14,8 @@ import util from 'util';
 import recursiveReaddir from 'recursive-readdir';
 import pMap from 'p-map';
 import {homedir} from 'os';
-import {getWatchFolders} from 'flipper-pkg-lib';
-import {default as getPlugins, PluginManifest, PluginInfo} from './getPlugins';
+import {getWatchFolders, PluginDetails} from 'flipper-pkg-lib';
+import getPlugins from './getPlugins';
 import startWatchPlugins from './startWatchPlugins';
 
 const HOME_DIR = homedir();
@@ -35,13 +35,13 @@ export type CompileOptions = {
   recompileOnChanges: boolean;
 };
 
-export type CompiledPluginInfo = PluginManifest & {out: string};
+export type CompiledPluginDetails = PluginDetails & {entry: string};
 
 export default async function (
   reloadCallback: (() => void) | null,
   pluginCache: string,
   options: CompileOptions = DEFAULT_COMPILE_OPTIONS,
-): Promise<CompiledPluginInfo[]> {
+): Promise<CompiledPluginDetails[]> {
   if (process.env.FLIPPER_FAST_REFRESH) {
     console.log(
       '🥫  Skipping loading of third-party plugins because Fast Refresh is enabled',
@@ -74,12 +74,12 @@ export default async function (
 
   const compiledDynamicPlugins = (await compilations).filter(
     (c) => c !== null,
-  ) as CompiledPluginInfo[];
+  ) as CompiledPluginDetails[];
   console.log('✅  Compiled all plugins.');
   return compiledDynamicPlugins;
 }
 async function startWatchChanges(
-  plugins: PluginInfo[],
+  plugins: PluginDetails[],
   reloadCallback: (() => void) | null,
   pluginCache: string,
   options: CompileOptions = DEFAULT_COMPILE_OPTIONS,
@@ -88,7 +88,7 @@ async function startWatchChanges(
     // no hot reloading for plugins in .flipper folder. This is to prevent
     // Flipper from reloading, while we are doing changes on thirdparty plugins.
     .filter(
-      (plugin) => !plugin.rootDir.startsWith(path.join(HOME_DIR, '.flipper')),
+      (plugin) => !plugin.dir.startsWith(path.join(HOME_DIR, '.flipper')),
     );
   const watchOptions = Object.assign({}, options, {force: true});
   await startWatchPlugins(filteredPlugins, (plugin) =>
@@ -142,30 +142,32 @@ async function getMetroDir() {
   return __dirname;
 }
 async function compilePlugin(
-  pluginInfo: PluginInfo,
+  pluginDetails: PluginDetails,
   pluginCache: string,
   {force, failSilently}: CompileOptions,
-): Promise<CompiledPluginInfo | null> {
-  const {rootDir, manifest, entry, name} = pluginInfo;
-  const bundleMain = manifest.bundleMain ?? path.join('dist', 'index.js');
-  const bundlePath = path.join(rootDir, bundleMain);
+): Promise<CompiledPluginDetails | null> {
+  const {dir, specVersion, version, main, source, name} = pluginDetails;
   const dev = process.env.NODE_ENV !== 'production';
-  if (await fs.pathExists(bundlePath)) {
+  if (specVersion > 1) {
     // eslint-disable-next-line no-console
-    const out = path.join(rootDir, bundleMain);
-    console.log(`🥫  Using pre-built version of ${name}: ${out}...`);
-    return Object.assign({}, pluginInfo.manifest, {out});
+    const entry = path.join(dir, main);
+    if (await fs.pathExists(entry)) {
+      console.log(`🥫  Using pre-built version of ${name}: ${entry}...`);
+      return Object.assign({}, pluginDetails, {entry});
+    } else {
+      console.error(
+        `❌  Plugin ${name} is ignored, because its entry point not found: ${entry}.`,
+      );
+      return null;
+    }
   } else {
-    const out = path.join(
-      pluginCache,
-      `${name}@${manifest.version || '0.0.0'}.js`,
-    );
-    const result = Object.assign({}, pluginInfo.manifest, {out});
-    const rootDirCtime = await mostRecentlyChanged(rootDir);
+    const entry = path.join(pluginCache, `${name}@${version || '0.0.0'}.js`);
+    const result = Object.assign({}, pluginDetails, {entry});
+    const rootDirCtime = await mostRecentlyChanged(dir);
     if (
       !force &&
-      (await fs.pathExists(out)) &&
-      rootDirCtime < (await fs.lstat(out)).ctime
+      (await fs.pathExists(entry)) &&
+      rootDirCtime < (await fs.lstat(entry)).ctime
     ) {
       // eslint-disable-next-line no-console
       console.log(`🥫  Using cached version of ${name}...`);
@@ -177,9 +179,9 @@ async function compilePlugin(
         await Metro.runBuild(
           {
             reporter: {update: () => {}},
-            projectRoot: rootDir,
+            projectRoot: dir,
             watchFolders: [metroDir || (await metroDirPromise)].concat(
-              await getWatchFolders(rootDir),
+              await getWatchFolders(dir),
             ),
             serializer: {
               getRunModuleStatement: (moduleID: string) =>
@@ -197,8 +199,8 @@ async function compilePlugin(
             },
           },
           {
-            entry: entry.replace(rootDir, '.'),
-            out,
+            entry: source,
+            out: entry,
             dev,
             sourceMap: true,
             minify: false,

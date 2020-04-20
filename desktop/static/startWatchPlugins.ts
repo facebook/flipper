@@ -9,18 +9,18 @@
 
 import path from 'path';
 import Watchman from './watchman';
-import {PluginInfo} from './getPlugins';
+import {PluginDetails} from 'flipper-pkg-lib';
 
 export default async function startWatchPlugins(
-  plugins: PluginInfo[],
-  compilePlugin: (plugin: PluginInfo) => void | Promise<void>,
+  plugins: PluginDetails[],
+  compilePlugin: (plugin: PluginDetails) => void | Promise<void>,
 ) {
   // eslint-disable-next-line no-console
   console.log('🕵️‍  Watching for plugin changes');
 
   const delayedCompilation: {[key: string]: NodeJS.Timeout | null} = {};
   const kCompilationDelayMillis = 1000;
-  const onPluginChanged = (plugin: PluginInfo) => {
+  const onPluginChanged = (plugin: PluginDetails) => {
     if (!delayedCompilation[plugin.name]) {
       delayedCompilation[plugin.name] = setTimeout(() => {
         delayedCompilation[plugin.name] = null;
@@ -41,14 +41,14 @@ export default async function startWatchPlugins(
 }
 
 async function startWatchingPluginsUsingWatchman(
-  plugins: PluginInfo[],
-  onPluginChanged: (plugin: PluginInfo) => void,
+  plugins: PluginDetails[],
+  onPluginChanged: (plugin: PluginDetails) => void,
 ) {
   // Initializing a watchman for each folder containing plugins
   const watchmanRootMap: {[key: string]: Watchman} = {};
   await Promise.all(
     plugins.map(async (plugin) => {
-      const watchmanRoot = path.resolve(plugin.rootDir, '..');
+      const watchmanRoot = path.resolve(plugin.dir, '..');
       if (!watchmanRootMap[watchmanRoot]) {
         watchmanRootMap[watchmanRoot] = new Watchman(watchmanRoot);
         await watchmanRootMap[watchmanRoot].initialize();
@@ -58,10 +58,10 @@ async function startWatchingPluginsUsingWatchman(
   // Start watching plugins using the initialized watchmans
   await Promise.all(
     plugins.map(async (plugin) => {
-      const watchmanRoot = path.resolve(plugin.rootDir, '..');
+      const watchmanRoot = path.resolve(plugin.dir, '..');
       const watchman = watchmanRootMap[watchmanRoot];
       await watchman.startWatchFiles(
-        path.relative(watchmanRoot, plugin.rootDir),
+        path.relative(watchmanRoot, plugin.dir),
         () => onPluginChanged(plugin),
         {
           excludes: ['**/__tests__/**/*', '**/node_modules/**/*', '**/.*'],

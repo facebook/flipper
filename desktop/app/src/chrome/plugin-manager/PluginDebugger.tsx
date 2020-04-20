@@ -143,14 +143,7 @@ class PluginDebugger extends Component<Props> {
   getRows(): Array<TableBodyRow> {
     const rows: Array<TableBodyRow> = [];
 
-    // bundled plugins are loaded from the defaultPlugins directory within
-    // Flipper's package.
-    const externalPluginPath = (p: any) =>
-      p.out
-        ? p.out.startsWith('./defaultPlugins/')
-          ? null
-          : p.entry
-        : 'Native Plugin';
+    const externalPluginPath = (p: any) => p.entry || 'Native Plugin';
 
     this.props.gatekeepedPlugins.forEach((plugin) =>
       rows.push(
