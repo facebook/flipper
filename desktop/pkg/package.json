@@ -37,6 +37,7 @@
   "scripts": {
     "reset": "rimraf lib *.tsbuildinfo",
     "build": "tsc -b",
+    "readme": "oclif-dev readme",
     "postpack": "rimraf oclif.manifest.json",
     "prepack": "yarn reset && yarn build && oclif-dev manifest && oclif-dev readme",
     "run": "yarn build && bin/run",

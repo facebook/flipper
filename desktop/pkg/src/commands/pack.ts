@@ -21,25 +21,25 @@ async function deriveOutputFileName(inputDirectory: string): Promise<string> {
   return `${packageJson.name || ''}-${packageJson.version}.tgz`;
 }
 
-export default class Bundle extends Command {
+export default class Pack extends Command {
   public static description =
-    'bundle a plugin folder into a distributable archive';
+    'packs a plugin folder into a distributable archive';
 
-  public static examples = [`$ flipper-pkg bundle path/to/plugin`];
+  public static examples = [`$ flipper-pkg pack path/to/plugin`];
 
   public static flags = {
     output: flags.string({
       char: 'o',
       default: '.',
       description:
-        "Where to output the bundle, file or directory. Defaults to '.'.",
+        "Where to output the package, file or directory. Defaults to '.'.",
     }),
   };
 
   public static args = [{name: 'directory', required: true}];
 
   public async run() {
-    const {args, flags: parsedFlags} = this.parse(Bundle);
+    const {args, flags: parsedFlags} = this.parse(Pack);
 
     const stat = await fs.lstat(args.directory);
     if (!stat.isDirectory()) {
@@ -94,7 +94,7 @@ export default class Bundle extends Command {
     const inputDirectory = path.resolve(args.directory);
     const outputFile = path.resolve(output);
 
-    this.log(`⚙️  Bundling ${inputDirectory} to ${outputFile}...`);
+    this.log(`⚙️  Packing ${inputDirectory} to ${outputFile}...`);
 
     cli.action.start('Installing dependencies');
     await yarn.install(inputDirectory);
@@ -114,6 +114,6 @@ export default class Bundle extends Command {
     await yarn.pack(inputDirectory, outputFile);
     cli.action.stop();
 
-    this.log(`✅  Bundled ${inputDirectory} to ${outputFile}`);
+    this.log(`✅  Packed ${inputDirectory} to ${outputFile}`);
   }
 }
