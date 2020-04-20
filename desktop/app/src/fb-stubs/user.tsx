@@ -22,7 +22,7 @@ export async function internGraphPOSTAPIRequest(
   throw new Error('Feature not implemented');
 }
 
-export async function graphQLQuery(_query: string) {
+export async function graphQLQuery(_query: string): Promise<any> {
   throw new Error('Feature not implemented');
 }
 
