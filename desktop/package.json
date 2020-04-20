@@ -233,5 +233,12 @@
   },
   "optionalDependencies": {
     "7zip-bin-mac": "^1.0.1"
+  },
+  "greenkeeper": {
+    "ignore": [
+      "electron",
+      "electron-builder",
+      "@jest-runner/electron"
+    ]
   }
 }
