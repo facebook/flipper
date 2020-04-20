@@ -8,6 +8,7 @@
  */
 
 import {Command, flags} from '@oclif/command';
+import {args} from '@oclif/parser';
 import {promises as fs} from 'fs';
 import {mkdirp, pathExists, readJSON, ensureDir} from 'fs-extra';
 import * as inquirer from 'inquirer';
@@ -32,11 +33,19 @@ export default class Pack extends Command {
       char: 'o',
       default: '.',
       description:
-        "Where to output the package, file or directory. Defaults to '.'.",
+        'Where to output the package, file or directory. Defaults to the current working directory.',
     }),
   };
 
-  public static args = [{name: 'directory', required: true}];
+  public static args: args.IArg[] = [
+    {
+      name: 'directory',
+      required: false,
+      default: '.',
+      description:
+        'Path to plugin package directory to pack. Defaults to the current working directory.',
+    },
+  ];
 
   public async run() {
     const {args, flags: parsedFlags} = this.parse(Pack);
