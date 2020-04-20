@@ -9,6 +9,25 @@
 
 import Metro from 'metro';
 import getWatchFolders from './getWatchFolders';
+import path from 'path';
+import fs from 'fs-extra';
+
+let metroDir: string | undefined;
+const metroDirPromise = getMetroDir().then((dir) => (metroDir = dir));
+
+async function getMetroDir() {
+  let dir = __dirname;
+  while (true) {
+    const dirToCheck = path.join(dir, 'node_modules', 'metro');
+    if (await fs.pathExists(dirToCheck)) return dirToCheck;
+    const nextDir = path.dirname(dir);
+    if (!nextDir || nextDir === '' || nextDir === dir) {
+      break;
+    }
+    dir = nextDir;
+  }
+  return __dirname;
+}
 
 function hash(string: string) {
   let hash = 0;
@@ -41,11 +60,14 @@ export default async function runBuild(
   entry: string,
   out: string,
 ) {
+  const dev = process.env.NODE_ENV !== 'production';
   const baseConfig = await Metro.loadConfig();
   const config = Object.assign({}, baseConfig, {
     reporter: {update: () => {}},
     projectRoot: inputDirectory,
-    watchFolders: [inputDirectory, ...(await getWatchFolders(inputDirectory))],
+    watchFolders: [metroDir || (await metroDirPromise)].concat(
+      await getWatchFolders(inputDirectory),
+    ),
     serializer: {
       ...baseConfig.serializer,
       getRunModuleStatement: (moduleID: string) =>
@@ -56,11 +78,17 @@ export default async function runBuild(
       ...baseConfig.transformer,
       babelTransformerPath: require.resolve('flipper-babel-transformer'),
     },
+    resolver: {
+      ...baseConfig.resolver,
+      resolverMainFields: ['flipperBundlerEntry', 'module', 'main'],
+      sourceExts: ['js', 'jsx', 'ts', 'tsx', 'json', 'mjs'],
+      blacklistRE: /\.native\.js$/,
+    },
   });
   await Metro.runBuild(config, {
-    dev: false,
+    dev,
     minify: false,
-    resetCache: false,
+    resetCache: !dev,
     sourceMap: true,
     entry,
     out,
