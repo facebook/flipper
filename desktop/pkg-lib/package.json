@@ -9,14 +9,14 @@
   "license": "MIT",
   "bugs": "https://github.com/facebook/flipper/issues",
   "dependencies": {
-    "@types/fs-extra": "^8.1.0",
-    "@types/node": "^13.7.5",
     "fs-extra": "^8.1.0",
     "flipper-babel-transformer": "0.37.0",
     "metro": "^0.59.0"
   },
   "devDependencies": {
+    "@types/fs-extra": "^8.1.0",
     "@types/jest": "^25.1.0",
+    "@types/node": "^13.7.5",
     "globby": "^10",
     "jest": "^25.1.0",
     "prettier": "^2.0.0",
