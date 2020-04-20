@@ -191,7 +191,7 @@
     "redux-mock-store": "^1.5.3",
     "rimraf": "^3.0.2",
     "ts-jest": "^25.4.0",
-    "ts-node": "^8.8.1",
+    "ts-node": "^8.9.0",
     "typescript": "^3.7.2",
     "yargs": "^15.3.1"
   },
