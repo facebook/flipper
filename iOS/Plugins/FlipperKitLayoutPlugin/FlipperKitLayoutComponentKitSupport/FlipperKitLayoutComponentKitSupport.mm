@@ -16,6 +16,8 @@
 
 #import "SKComponentLayoutDescriptor.h"
 #import "SKComponentLayoutWrapper.h"
+#import "SKComponentMountedView.h"
+#import "SKComponentMountedViewDescriptor.h"
 #import "SKComponentRootViewDescriptor.h"
 
 @implementation FlipperKitLayoutComponentKitSupport
@@ -29,6 +31,9 @@
   [mapper registerDescriptor:[[SKComponentLayoutDescriptor alloc]
                                  initWithDescriptorMapper:mapper]
                     forClass:[SKComponentLayoutWrapper class]];
+  [mapper registerDescriptor:[[SKComponentMountedViewDescriptor alloc]
+                                 initWithDescriptorMapper:mapper]
+                    forClass:[SKComponentMountedView class]];
 }
 
 @end
