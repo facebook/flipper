@@ -8,7 +8,7 @@
  */
 
 import {transform} from '@babel/core';
-import electronRequiresMainPlugin = require('../electron-requires-main');
+const electronRequiresMainPlugin = require('../electron-requires-main');
 
 const babelOptions = {
   ast: true,

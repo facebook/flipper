@@ -8,11 +8,7 @@
  */
 
 import fs from 'fs-extra';
-import {mocked} from 'ts-jest/utils';
 import getPluginDetails from '../getPluginDetails';
-
-jest.mock('fs-extra');
-const fsMock = mocked(fs, true);
 
 test('getPluginDetailsV1', async () => {
   const pluginV1 = {
@@ -22,7 +18,8 @@ test('getPluginDetailsV1', async () => {
     main: 'src/index.tsx',
     gatekeeper: 'GK_flipper_plugin_test',
   };
-  fsMock.readJson.mockImplementation(() => pluginV1);
+  jest.mock('fs-extra', () => jest.fn());
+  fs.readJson = jest.fn().mockImplementation(() => pluginV1);
   const details = await getPluginDetails('./plugins/flipper-plugin-test');
   expect(details).toMatchInlineSnapshot(`
     Object {
@@ -52,7 +49,8 @@ test('getPluginDetailsV2', async () => {
     flipperBundlerEntry: 'src/index.tsx',
     gatekeeper: 'GK_flipper_plugin_test',
   };
-  fsMock.readJson.mockImplementation(() => pluginV2);
+  jest.mock('fs-extra', () => jest.fn());
+  fs.readJson = jest.fn().mockImplementation(() => pluginV2);
   const details = await getPluginDetails('./plugins/flipper-plugin-test');
   expect(details).toMatchInlineSnapshot(`
     Object {
@@ -82,7 +80,8 @@ test('id used as title if the latter omited', async () => {
     flipperBundlerEntry: 'src/index.tsx',
     gatekeeper: 'GK_flipper_plugin_test',
   };
-  fsMock.readJson.mockImplementation(() => pluginV2);
+  jest.mock('fs-extra', () => jest.fn());
+  fs.readJson = jest.fn().mockImplementation(() => pluginV2);
   const details = await getPluginDetails('./plugins/flipper-plugin-test');
   expect(details).toMatchInlineSnapshot(`
     Object {
@@ -111,7 +110,8 @@ test('name without "flipper-plugin-" prefix is used as title if the latter omite
     flipperBundlerEntry: 'src/index.tsx',
     gatekeeper: 'GK_flipper_plugin_test',
   };
-  fsMock.readJson.mockImplementation(() => pluginV2);
+  jest.mock('fs-extra', () => jest.fn());
+  fs.readJson = jest.fn().mockImplementation(() => pluginV2);
   const details = await getPluginDetails('./plugins/flipper-plugin-test');
   expect(details).toMatchInlineSnapshot(`
     Object {
