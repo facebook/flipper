@@ -16,4 +16,4 @@ The desktop part of Flipper doesn't need any particular setup. Simply download t
 
 Once you start Flipper and launch an emulator/simulator or connect a device, you will already be able to see the device logs in Flipper. To see app specific data, you need to integrate our native SDKs with your app.
 
-![Logs plugin](/docs/assets/initial.png)
+![Logs plugin](assets/initial.png)
