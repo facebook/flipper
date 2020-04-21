@@ -40,7 +40,7 @@ async function getPluginDetailsV1(
     dir: pluginDir,
     name: packageJson.name,
     version: packageJson.version,
-    main: path.join('dist', 'index.js'),
+    main: 'dist/index.js',
     source: packageJson.main,
     id: packageJson.name,
     gatekeeper: packageJson.gatekeeper,
