@@ -32,7 +32,7 @@ export const uriComponents = (url: string): Array<string> => {
     return [];
   }
   const match: Array<string> | undefined | null = url.match(
-    /^flipper:\/\/([^\/]*)\/([^\/]*)\/?(.*)$/,
+    /^flipper:\/\/([^\/]*)\/([^\/\?]*)\/?(.*)$/,
   );
   if (match) {
     return match.map(decodeURIComponent).slice(1).filter(Boolean);
