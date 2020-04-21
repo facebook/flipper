@@ -1,3 +1,14 @@
+# 0.38.0 (21/4/2020)
+
+ * D20805231 -  Internals: plugins added as "yarn workspaces" into the root package.json to simplify dependency management between them
+ * D20898133 -  Internals: it is now possible to add modules for re-use by different plugins into `desktop/plugins` folder.
+ * D20864002 -  Internals: include default plugins into the main bundle instead producing separate bundles for them.
+ * D20993073 -  Experimental support for Fast Refresh in dev mode can be enabled by `yarn start --fast-refresh`.
+ * D21074769 -  new command-line flag "--open-dev-tools" to automatically open Chrome Dev Tools for Flipper debugging.
+ * D21074173 -  Support new packaging format for plugins.
+ * D21129691 -  "flipper-pkg bundle" command for bundling plugins before publishing.
+
+
 # 0.37.0 (8/4/2020)
 
  * D20868923 -  Fix connections on Android devices with older SDKs (19)
