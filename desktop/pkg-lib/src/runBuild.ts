@@ -77,6 +77,13 @@ export default async function runBuild(
     transformer: {
       ...baseConfig.transformer,
       babelTransformerPath: require.resolve('flipper-babel-transformer'),
+      minifierPath: 'metro-minify-terser',
+      minifierConfig: {
+        // see: https://www.npmjs.com/package/terser
+        keep_fnames: true,
+        module: true,
+        warnings: true,
+      },
     },
     resolver: {
       ...baseConfig.resolver,
@@ -87,7 +94,7 @@ export default async function runBuild(
   });
   await Metro.runBuild(config, {
     dev,
-    minify: false,
+    minify: !dev,
     resetCache: !dev,
     sourceMap: true,
     entry,

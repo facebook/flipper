@@ -180,6 +180,7 @@
     "jest-environment-jsdom-sixteen": "^1.0.3",
     "jest-fetch-mock": "^3.0.0",
     "metro": "^0.59.0",
+    "metro-minify-terser": "^0.59.0",
     "metro-resolver": "^0.59.0",
     "p-filter": "^2.1.0",
     "p-map": "^4.0.0",

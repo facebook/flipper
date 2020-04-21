@@ -54,6 +54,16 @@ export async function generatePluginEntryPoints() {
   console.log('✅  Generated plugin entry points.');
 }
 
+const minifierConfig = {
+  minifierPath: 'metro-minify-terser',
+  minifierConfig: {
+    // see: https://www.npmjs.com/package/terser
+    keep_fnames: true,
+    module: true,
+    warnings: true,
+  },
+};
+
 async function compile(
   buildFolder: string,
   projectRoot: string,
@@ -71,6 +81,7 @@ async function compile(
           babelTransformationsDir,
           'transform-app',
         ),
+        ...minifierConfig,
       },
       resolver: {
         resolverMainFields: ['flipperBundlerEntry', 'module', 'main'],
@@ -80,7 +91,7 @@ async function compile(
     },
     {
       dev,
-      minify: false,
+      minify: !dev,
       resetCache: !dev,
       sourceMap: true,
       entry,
@@ -145,6 +156,7 @@ export async function compileMain() {
           babelTransformationsDir,
           'transform-main',
         ),
+        ...minifierConfig,
       },
       resolver: {
         sourceExts: ['tsx', 'ts', 'js'],
@@ -157,7 +169,7 @@ export async function compileMain() {
       entry: path.join(staticDir, 'main.ts'),
       out,
       dev,
-      minify: false,
+      minify: !dev,
       sourceMap: true,
       resetCache: !dev,
     });
