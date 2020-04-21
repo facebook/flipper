@@ -102,7 +102,10 @@ static std::vector<std::pair<NSString*, SKSubDescriptor>>& subDescriptors() {
       [[NSMutableDictionary alloc] init];
 
   for (const auto& pair : subDescriptors()) {
-    [extraData setObject:pair.second(node) forKey:pair.first];
+    NSString* value = pair.second(node);
+    if (value) {
+      [extraData setObject:value forKey:pair.first];
+    }
   }
   if (extraData.count > 0) {
     [data addObject:[SKNamed newWithName:@"Extra Sections"
