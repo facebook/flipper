@@ -184,7 +184,7 @@
     "metro-resolver": "^0.59.0",
     "p-filter": "^2.1.0",
     "p-map": "^4.0.0",
-    "prettier": "^2.0.0",
+    "prettier": "^2.0.5",
     "pretty-format": "^25.4.0",
     "react-async": "^10.0.0",
     "react-refresh": "^0.8.1",
