@@ -131,6 +131,7 @@ export {default as FlexRow} from './ui/components/FlexRow';
 export {default as FlexColumn} from './ui/components/FlexColumn';
 export {default as FlexCenter} from './ui/components/FlexCenter';
 export {default as Toolbar, Spacer} from './ui/components/Toolbar';
+export {default as ToolbarIcon} from './ui/components/ToolbarIcon';
 export {default as Panel} from './ui/components/Panel';
 export {default as Text} from './ui/components/Text';
 export {default as TextParagraph} from './ui/components/TextParagraph';

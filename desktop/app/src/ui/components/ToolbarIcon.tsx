@@ -7,7 +7,9 @@
  * @format
  */
 
-import {Glyph, styled, colors} from 'flipper';
+import Glyph from './Glyph';
+import {colors} from './colors';
+import styled from '@emotion/styled';
 import React from 'react';
 
 type Props = {

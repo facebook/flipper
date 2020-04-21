@@ -28,9 +28,9 @@ import {
   constants,
   ReduxState,
   ArchivedDevice,
+  ToolbarIcon,
 } from 'flipper';
 import Inspector from './Inspector';
-import ToolbarIcon from './ToolbarIcon';
 import InspectorSidebar from './InspectorSidebar';
 import Search from './Search';
 import ProxyArchiveClient from './ProxyArchiveClient';
