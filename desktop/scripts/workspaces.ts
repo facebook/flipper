@@ -68,33 +68,48 @@ async function savePackageJson({dir, json}: Package) {
   });
 }
 
+function updateDependencies(
+  dependencies: {[key: string]: string},
+  packagesToUpdate: string[],
+  newVersion: string,
+): boolean {
+  if (!dependencies) {
+    return false;
+  }
+  let updated = false;
+  for (const packageName of packagesToUpdate) {
+    if (
+      dependencies[packageName] !== undefined &&
+      dependencies[packageName] !== newVersion
+    ) {
+      dependencies[packageName] = newVersion;
+      updated = true;
+    }
+  }
+  return updated;
+}
+
 async function bumpWorkspaceVersions(
   {rootPackage, packages}: Workspaces,
   newVersion?: string,
 ): Promise<string> {
   newVersion = newVersion || (rootPackage.json.version as string);
-  if (rootPackage.json.version !== newVersion) {
-    rootPackage.json.version = newVersion;
-    await savePackageJson(rootPackage);
-  }
+  const allPackages = [rootPackage, ...packages];
   const localPackageNames = packages.map(({json}) => json.name as string);
-  for (const pkg of packages) {
+  for (const pkg of allPackages) {
     const json = pkg.json;
     let changed = false;
     if (json.version !== newVersion) {
       json.version = newVersion;
       changed = true;
     }
-    if (json.dependencies) {
-      for (const localPackageName of localPackageNames) {
-        if (
-          json.dependencies[localPackageName] !== undefined &&
-          json.dependencies[localPackageName] !== newVersion
-        ) {
-          json.dependencies[localPackageName] = newVersion;
-          changed = true;
-        }
-      }
+    if (updateDependencies(json.dependencies, localPackageNames, newVersion)) {
+      changed = true;
+    }
+    if (
+      updateDependencies(json.devDependencies, localPackageNames, newVersion)
+    ) {
+      changed = true;
     }
     if (changed) {
       await savePackageJson(pkg);
