@@ -50,6 +50,14 @@ test('transform React identifier to global.React', () => {
   expect(code).toBe('global.React;');
 });
 
+test('do NOT transform local React namespace import to global.React', () => {
+  const src = `import * as React from 'react';`;
+  const ast = parse(src, {sourceType: 'module'});
+  const transformed = transformFromAstSync(ast, src, babelOptions)!.ast;
+  const {code} = generate(transformed!);
+  expect(code).toMatchInlineSnapshot(`"import * as React from 'react';"`);
+});
+
 test('throw error when requiring outside the plugin', () => {
   const src = 'require("../test.js")';
   const ast = parse(src);

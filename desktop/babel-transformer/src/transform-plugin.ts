@@ -20,8 +20,8 @@ export default function transform({
   filename: string;
   options: any;
   src: string;
-  presets: any[];
-  plugins: any[];
+  presets?: any[];
+  plugins?: any[];
 }) {
   presets = presets ?? [require('@babel/preset-react')];
   plugins = plugins ?? [];

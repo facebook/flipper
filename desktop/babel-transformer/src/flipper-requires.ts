@@ -31,6 +31,12 @@ function isExcludedPath(path: string) {
   }
   return false;
 }
+function isReactImportIdentifier(path: NodePath<Identifier>) {
+  return (
+    path.parentPath.node.type === 'ImportNamespaceSpecifier' &&
+    path.parentPath.node.local.name === 'React'
+  );
+}
 module.exports = () => ({
   visitor: {
     CallExpression(path: NodePath<CallExpression>, state: any) {
@@ -80,6 +86,7 @@ module.exports = () => ({
       if (
         path.node.name === 'React' &&
         (path.parentPath.node as any).id !== path.node &&
+        !isReactImportIdentifier(path) &&
         !isExcludedPath(state.file.opts.filename)
       ) {
         path.replaceWith(identifier('global.React'));
