@@ -87,7 +87,7 @@ public class FlipperOkhttpInterceptor
   public Response intercept(Interceptor.Chain chain) throws IOException {
     final Request request = chain.request();
     final String identifier = UUID.randomUUID().toString();
-    mPlugin.reportRequest(convertRequest(request, identifier));
+    final RequestInfo requestInfo = convertRequestWithoutBody(request, identifier);
 
     // Check if there is a mock response
     final Response mockResponse = mIsMockResponseSupported ? getMockResponse(request) : null;
@@ -95,6 +95,15 @@ public class FlipperOkhttpInterceptor
     final ResponseBody body = response.body();
     final ResponseInfo responseInfo = convertResponse(response, body, identifier);
     responseInfo.isMock = mockResponse != null;
+    // Add request body
+    try {
+      if (request.body() != null) {
+        requestInfo.body = bodyToByteArray(request, mMaxBodyBytes);
+      }
+    } catch (IOException e) {
+      // We can safely ignore this as some requests don't allow their body to be read more than once
+    }
+    mPlugin.reportRequest(requestInfo);
     mPlugin.reportResponse(responseInfo);
     return response;
   }
@@ -108,7 +117,8 @@ public class FlipperOkhttpInterceptor
     return buffer.readByteArray(Math.min(buffer.size(), maxBodyBytes));
   }
 
-  private RequestInfo convertRequest(Request request, String identifier) throws IOException {
+  private RequestInfo convertRequestWithoutBody(Request request, String identifier)
+      throws IOException {
     final List<NetworkReporter.Header> headers = convertHeader(request.headers());
     final RequestInfo info = new RequestInfo();
     info.requestId = identifier;
@@ -116,9 +126,6 @@ public class FlipperOkhttpInterceptor
     info.headers = headers;
     info.method = request.method();
     info.uri = request.url().toString();
-    if (request.body() != null) {
-      info.body = bodyToByteArray(request, mMaxBodyBytes);
-    }
 
     return info;
   }
