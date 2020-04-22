@@ -597,21 +597,19 @@ class DataDescriptionContainer extends Component<{
       case 'text':
       case 'string':
         const isUrl = val.startsWith('http://') || val.startsWith('https://');
-        const editIcon = (
-          <Glyph
-            name="pencil"
-            variant="outline"
-            color={colors.light20}
-            size={16}
-            style={{cursor: 'pointer', marginLeft: 8}}
-          />
-        );
-
         if (isUrl) {
           return (
             <>
               <Link href={val}>{val}</Link>
-              {editable && editIcon}
+              {editable && (
+                <Glyph
+                  name="pencil"
+                  variant="outline"
+                  color={colors.light20}
+                  size={16}
+                  style={{cursor: 'pointer', marginLeft: 8}}
+                />
+              )}
             </>
           );
         } else {
