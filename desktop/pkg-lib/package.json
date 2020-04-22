@@ -11,7 +11,8 @@
   "dependencies": {
     "fs-extra": "^8.1.0",
     "flipper-babel-transformer": "0.38.0",
-    "metro": "^0.59.0"
+    "metro": "^0.59.0",
+    "metro-minify-terser": "^0.59.0"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.1.0",
