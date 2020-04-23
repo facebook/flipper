@@ -11,6 +11,7 @@ import static com.facebook.flipper.plugins.inspector.ThrowableMessageMatcher.has
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 
 import android.app.Application;
 import android.graphics.Rect;
@@ -288,12 +289,12 @@ public class InspectorFlipperPluginTest {
     plugin.mSetSearchActive.onReceive(
         new FlipperObject.Builder().put("active", true).build(), responder);
 
-    Mockito.verify(decorView, Mockito.times(1)).addView(Mockito.any(TouchOverlayView.class));
+    Mockito.verify(decorView, Mockito.times(1)).addView(any(TouchOverlayView.class));
 
     plugin.mSetSearchActive.onReceive(
         new FlipperObject.Builder().put("active", false).build(), responder);
 
-    Mockito.verify(decorView, Mockito.times(1)).removeView(Mockito.any(TouchOverlayView.class));
+    Mockito.verify(decorView, Mockito.times(1)).removeView(any(TouchOverlayView.class));
   }
 
   @Test
