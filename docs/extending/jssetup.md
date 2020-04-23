@@ -1,47 +1,100 @@
 ---
 id: js-setup
-title: JavaScript Plugin Definition
+title: Desktop Plugin Development
 ---
 
-All JavaScript Flipper plugins must be self-contained in a directory. This directory must contain at a minimum the following two files:
+## Workflow
+
+In a nutshell, the workflow for creating Flipper Desktop Plugin is the following:
+1) [To make your custom plugins discoverable by Flipper](#dynamically-loading-plugins), create a directory to contain them, e.g. `~/flipper-plugins`, and add this path to the `pluginPaths` property in the Flipper config (`~/.flipper/config.json`).
+2) Create a directory for your plugin inside the directory created at step 1, e.g. `~/flipper-plugins/my-plugin`.
+3) [Define your plugin](#plugin-definition) in the directory created at step 2.
+4) [Start a development build of Flipper](#development-build) which will automatically [transpile, bundle and load](#transpiling-and-bundling) the defined plugin, as well as all other plugins found in the directories specified as `pluginPaths` in the Flipper config.
+5) [Debug your plugin](debugging), make necessary changes and verify them in the running Flipper development build instance which will re-load the changed components automatically.
+6) If you want to be sure the plugin works as expected with a release build, you can [package it as a tarball](#packaging-to-file) and [install it from the file system](#installation-from-file) into a released version of Flipper.
+7) Finally, [bundle the plugin and publish it to npm](#publishing-to-npm), so it can be discovered and installed by any Flipper user.
+
+## Dynamically Loading Plugins
+
+Flipper loads and runs plugins it finds in a configurable location. The paths searched are specified in `~/.flipper/config.json`. These paths, `pluginPaths`, should contain one folder for each of the plugins it stores. An example config setting and plugin file structure is shown below:
+
+`~/.flipper/config.json`:
+```
+{
+  ...,
+  "pluginPaths": ["~/flipper-plugins"]
+}
+```
+Plugin File example structure:
+```
+~ flipper-plugins/
+    my-plugin/
+      package.json
+      src/index.tsx
+      dist/bundle.js
+```
+
+## Plugin Definition
+
+All Flipper Desktop plugins must be self-contained in a directory. This directory must contain at a minimum package.json and entry source file, e.g.:
 * package.json
-* index.tsx
+* src/index.tsx
 
-The best way to initialize a JS plugin is to create a directory, and run `yarn init` inside it. Make sure your package name is the same as the identifier of the client plugin, e.g. if your Java plugin returns `myplugin` from its `getId()` method, the `name` field in your `package.json` should also be `myplugin`.
+The best way to initialize a JS plugin is to create a directory, and run `yarn init` inside it. By convention, the `name` of a Flipper plugin package should start with `flipper-plugin-`, e.g. `flipper-plugin-myplugin`.
 
-Plugins can be written in plain ES6 JavaScript, [Flow](https://flow.org/) or [TypeScript](https://www.typescriptlang.org/) but we recommend you use TypeScript for the best development experience. We also recommend you use the file extension `.tsx` when using TypeScript which adds support for inline React expressions.
+Make sure that the `id` field in your package.json is the same as the identifier of the client plugin, e.g. if your Java plugin returns `myplugin` from its `getId()` method, the `id` field in your `package.json` should also be `myplugin`.
 
-After `yarn init` finishes, create an `index.tsx` file which will be the entry point to your plugin. An example `package.json` file could look like this:
+Flipper has [tooling for transpiling and bundling](#transpiling-and-bundling) which allows writing plugins in plain ES6 JavaScript, [Flow](https://flow.org/) or [TypeScript](https://www.typescriptlang.org/) but we recommend you use **TypeScript** for the best development experience. We also recommend you use the file extension `.tsx` when using TypeScript which adds support for inline React expressions.
+
+After `yarn init` finishes, create an `src/index.tsx` file which will be the entry point to your plugin. An example `package.json` file could look like this:
 
 Example `package.json`:
 ```
 {
-  "name": "myplugin",
+  "name": "flipper-plugin-myplugin",
+  "id": "myplugin",
+  "specVersion": 2,
   "version": "1.0.0",
-  "main": "index.tsx",
+  "main": "dist/bundle.js",
+  "flipperBundlerEntry": "src/index.tsx",
   "license": "MIT",
   "keywords": ["flipper-plugin"],
-  "dependencies": {},
   "title": "My Plugin",
   "icon": "apps",
   "bugs": {
     "email": "you@example.com"
   },
+  "scripts": {
+    "prepack": "flipper-pkg bundle"
+  }
   "dependencies": {
     "flipper": "latest"
+  },
+  "devDependencies": {
+    "flipper-pkg": "latest"
   }
 }
 ```
 
 Important attributes of `package.json`:
 
-`name` Used as the plugin identifier and **must match the mobile plugin Identifier**.
+- `name` Npm package name. Should start with `flipper-plugin-` by convention, so Flipper plugins can be easily found on npm.
 
-`title` Shown in the main sidebar as the human readable name of the plugin.
+- `specVersion` Version of the Flipper plugin specification. Currently, Flipper supports plugins defined using version 2 of the specification which is described in the current section.
 
-`icon` Determines the plugin icon which is displayed in the main sidebar.
+- `id` Used as the plugin native identifier and **must match the mobile plugin identifier**.
 
-`bugs` Specify an email and/or url, where plugin bugs should be reported.
+- `main` Points to the plugin bundle which will be loaded by Flipper. The "flipper-pkg" utility uses this field to determine output location during plugin bundling.
+
+- `flipperBundlerEntry` Points to the source entry point which will be used for plugin code bundling. "flipper-pkg" takes the path specified in `flipperBundlerEntry` as source, transpiles and bundles it, and saves the output to the path specified in `main`.
+
+- `keywords` The field must contain the `flipper-plugin` keyword, otherwise Flipper won't discover the plugin. Additionally, the field can also contain any other keywords for better plugin discoverability.
+
+- `title` Shown in the main sidebar as the human-readable name of the plugin.
+
+- `icon` Determines the plugin icon which is displayed in the main sidebar. The list of available icons is static for now: https://github.com/facebook/flipper/blob/master/desktop/static/icons.json.
+
+- `bugs` Specify an email and/or url, where plugin bugs should be reported.
 
 In `index.tsx` you will define the plugin in JavaScript. This file must export a default class that extends `FlipperPlugin`. Browse our [JS API docs](js-plugin-api) to see what you can do, and make sure to check out our [UI Component Library](ui-components.md) for lots of pre-made components.
 
@@ -56,38 +109,26 @@ export default class extends FlipperPlugin {
 }
 ```
 
-### Dynamically loading plugins
-
-Flipper will load and run plugins it finds in a configurable location. The paths searched are specified in `~/.flipper/config.json`. These paths, `pluginPaths`, should contain one folder for each of the plugins it stores. An example config setting and plugin file structure is shown below:
-
-`~/.flipper/config.json`:
-```
-{
-  ...,
-  "pluginPaths": ["~/flipper-plugins"]
-}
-```
-Plugin File Structure:
-```
-~ flipper-plugins/
-    my-plugin/
-      package.json
-      index.tsx
-```
-
 ### npm dependencies
 
 If you need any dependencies in your plugin, you can install them using `yarn add`.
 
-### ES6, babel-transforms and bundling
+## Development Build
 
-Our plugin-loader is capable of all ES6 goodness, Flow annotations, TypeScript, and JSX and applies the required babel-transforms without you having to care about this. You don't need to bundle your plugin, you can simply use ES6 imports and it will work out of the box.
+A Flipper development build should be used for plugin debugging. It is also used for Flipper core development and provides the following features:
 
-## Working on the core
+- Automatic transpilation and bundling of loaded plugins: ES6, Flow, TypeScript, JSX.
+- Automatic refresh after code changes.
+- React and Redux Dev Tools.
+- [Debugging](debugging) using Chrome Dev Tools or Visual Studio Code.
 
-If you only want to work on a plugin, you don't need to run the development build of Flipper, but you can use the production release. However, if you want to contribute to Flipper's core, add additional UI components, or do anything outside the scope of a single plugins this is how you run the development version of Flipper.
+Prerequisites for Flipper development build:
+- node ≥ 8
+- yarn ≥ 1.5
+- git
+- watchman
 
-Make sure you have a recent version of node.js and yarn installed on your system (node ≥ 8, yarn ≥ 1.5). Then run the following commands:
+To start a development build, clone the Flipper repository, install the dependencies and execute the `start` script:
 
 ```
 git clone https://github.com/facebook/flipper.git
@@ -95,3 +136,65 @@ cd flipper/desktop
 yarn
 yarn start
 ```
+
+## Transpiling and Bundling
+
+As we already mentioned, the [Flipper development build](#development-build) automatically transpiles and bundles plugins on loading. It is capable of all the ES6 goodness, Flow annotations, TypeScript, as well as JSX and applies the required babel-transforms.
+
+The Flipper release build, in contrast, does not transpile or bundle plugins on loading. For production usage, plugins should be [bundled before publishing](#packaging-and-publishing) using [flipper-pkg](https://classic.yarnpkg.com/en/package/flipper-pkg). This utility applies the same modifications as the plugin loader of the development build.
+
+The tool is published to npm and can be installed as a `devDependency` for the plugin package, or as a global CLI tool:
+```
+yarn global add flipper-pkg
+```
+
+Then, to bundle the plugin, execute the following command in its folder:
+```
+flipper-pkg bundle
+```
+This command reads the `package.json`, takes the path specified in the `flipperBundleEntry` field as entry point, transpiles and bundles all the required code, and outputs the produced bundle to the path specified in field `main`.
+
+You can get the list of other available commands by invoking `flipper-pkg help`, and get detailed description for any command by invoking `flipper-pkg help [COMMAND]`. You can also check README on npmjs.com for usage details: https://www.npmjs.com/package/flipper-pkg.
+
+## Packaging and Publishing
+
+### Publishing to npm
+
+Flipper plugins are essentially standard npm packages. So you can publish them by executing `yarn publish` or `npm publish` in the plugin directory. The only requirements are:
+1) `package.json` and code [must follow the Flipper plugin specification](#plugin-definition)
+2) code must be bundled using "flipper-pkg" before packing or publishing. This can be done by executing `flipper-pkg bundle` on `prepack` step:
+    ```
+    {
+      ...
+      "devDependencies": {
+        ...
+        "flipper-pkg": "latest"
+      },
+      "scripts": {
+        ...
+        "prepack": "flipper-pkg bundle"
+      }
+    }
+    ```
+
+### Packaging to File
+
+To package plugin as a tarball, you can use the same command as for packaging any other npm package, e.g. `yarn pack` or `npm pack`.
+
+"flipper-pkg" also provides a convenient command `pack` which:
+1) Installs the plugin dependencies
+2) Bundles the plugin
+3) Creates the tarball and saves it at the specified location
+
+E.g. to package plugin located at `~/flipper-plugins/my-plugin` to `~/Desktop`, execute the following command:
+```
+flipper-pkg pack ~/flipper-plugins/my-plugin -o ~/Desktop
+```
+
+### Installation from File
+
+It is possible to install plugins into Flipper from tarballs. This is useful in cases when you need to try a plugin version which is not published to npm, or if you want to distribute plugin privately:
+1) Launch Flipper
+2) Click the "Manage Plugins" button in the bottom-left corner
+3) Select the "Install Plugins" tab in the opened sheet
+4) Specify the path to the plugin package (or just drag and drop it) and click "Install"

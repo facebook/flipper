@@ -1,7 +1,7 @@
 ---
 id: js-setup
-title: Building a Flipper desktop plugin
-sidebar_label: Building a desktop plugin
+title: Building a Desktop Plugin
+sidebar_label: Building a Desktop Plugin
 ---
 
 Now that we have the native side covered, let's display the data we're sending

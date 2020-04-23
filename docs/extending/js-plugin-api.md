@@ -1,6 +1,6 @@
 ---
 id: js-plugin-api
-title: JavaScript Plugin API
+title: Desktop Plugin API
 ---
 
 <div class="warning">
@@ -9,7 +9,7 @@ This page describes the JavaScript API that is used to implement plugins inside 
 
 </div>
 
-Provided a plugin is setup as defined in [JS Plugin Definiton](js-setup), the basic requirement of a Flipper plugin is that `index.tsx` exports a default class that extends `FlipperPlugin`.
+Provided a plugin is setup as defined in [Desktop Plugin Development](js-setup), the basic requirement of a Flipper plugin is that `index.tsx` exports a default class that extends `FlipperPlugin`.
 
 `FlipperPlugin` is an extension of `React.Component` with extra Flipper-related functionality. This means to define the UI of your plugin, you just need to implement this React component.
 
