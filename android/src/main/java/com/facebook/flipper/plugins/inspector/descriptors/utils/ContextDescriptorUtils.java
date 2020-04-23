@@ -51,26 +51,23 @@ public final class ContextDescriptorUtils {
           || sThemeImplThemeKeyField == null
           || sThemeKeyResIdField == null
           || sThemeImplAssetManagerField == null) {
+        sThemeImplField = theme.getClass().getDeclaredField("mThemeImpl");
+        sThemeImplField.setAccessible(true);
 
-        // Early exiting as this bit of code causes too much of the metadata to be created and
-        // ultimately leads to out of memory exception. Reference D20441839
-        // sThemeImplField = theme.getClass().getDeclaredField("mThemeImpl");
-        // sThemeImplField.setAccessible(true);
+        themeImpl = sThemeImplField.get(theme);
+        sThemeImplThemeKeyField = themeImpl.getClass().getDeclaredField("mKey");
+        sThemeImplThemeKeyField.setAccessible(true);
 
-        // themeImpl = sThemeImplField.get(theme);
-        // sThemeImplThemeKeyField = themeImpl.getClass().getDeclaredField("mKey");
-        // sThemeImplThemeKeyField.setAccessible(true);
+        sThemeImplAssetManagerField = themeImpl.getClass().getDeclaredField("mAssets");
+        sThemeImplAssetManagerField.setAccessible(true);
 
-        // sThemeImplAssetManagerField = themeImpl.getClass().getDeclaredField("mAssets");
-        // sThemeImplAssetManagerField.setAccessible(true);
+        sAssetManagerGetStyleAttributesMethod =
+            assetManager.getClass().getDeclaredMethod("getStyleAttributes", int.class);
+        sAssetManagerGetStyleAttributesMethod.setAccessible(true);
 
-        // sAssetManagerGetStyleAttributesMethod =
-        //     assetManager.getClass().getDeclaredMethod("getStyleAttributes", int.class);
-        // sAssetManagerGetStyleAttributesMethod.setAccessible(true);
-
-        // themeKey = sThemeImplThemeKeyField.get(themeImpl);
-        // sThemeKeyResIdField = themeKey.getClass().getDeclaredField("mResId");
-        // sThemeKeyResIdField.setAccessible(true);
+        themeKey = sThemeImplThemeKeyField.get(themeImpl);
+        sThemeKeyResIdField = themeKey.getClass().getDeclaredField("mResId");
+        sThemeKeyResIdField.setAccessible(true);
 
         return builderMap;
 
