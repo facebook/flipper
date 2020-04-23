@@ -115,6 +115,9 @@ async function buildDist(buildFolder: string) {
         linux: {
           executableName: 'flipper',
         },
+        mac: {
+          bundleVersion: '50.0.0',
+        },
       },
       projectDir: buildFolder,
       targets,
