@@ -19,7 +19,7 @@ import FlexBox from '../FlexBox';
 import Glyph from '../Glyph';
 import FilterToken from './FilterToken';
 import styled from '@emotion/styled';
-import debounce from 'lodash.debounce';
+import {debounce} from 'lodash';
 import ToggleButton from '../ToggleSwitch';
 import React from 'react';
 import Layout from '../Layout';

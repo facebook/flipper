@@ -10,7 +10,7 @@
 import {Element} from 'flipper';
 import {PersistedState} from './index';
 import {SearchResultTree} from './Search';
-import cloneDeep from 'lodash.clonedeep';
+import {cloneDeep} from 'lodash';
 
 const propsForPersistedState = (
   AXMode: boolean,

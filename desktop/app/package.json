@@ -10,6 +10,7 @@
   "privileged": true,
   "license": "MIT",
   "dependencies": {
+    "@algolia/client-search": "4.1.0",
     "@emotion/core": "^10.0.22",
     "@emotion/styled": "^10.0.23",
     "@iarna/toml": "^2.2.3",
@@ -30,7 +31,6 @@
     "detect-port": "^1.1.1",
     "emotion": "^10.0.23",
     "expand-tilde": "^2.0.2",
-    "express": "^4.15.2",
     "fb-watchman": "^2.0.0",
     "flipper-doctor": "0.39.0",
     "fs-extra": "^8.0.1",
@@ -39,8 +39,7 @@
     "invariant": "^2.2.2",
     "line-replace": "^1.0.2",
     "live-plugin-manager": "^0.14.0",
-    "lodash.debounce": "^4.0.8",
-    "lodash.isequal": "^4.5.0",
+    "lodash": "^4.17.15",
     "mkdirp": "^1.0.0",
     "node-fetch": "^2.3.0",
     "npm-api": "^1.0.0",
@@ -54,6 +53,7 @@
     "prop-types": "^15.6.0",
     "query-string": "^6.10.1",
     "react": "16.13.0",
+    "react-async": "^10.0.0",
     "react-color": "^2.11.7",
     "react-debounce-render": "^6.0.0",
     "react-devtools-core": "^4.6.0",
@@ -69,7 +69,10 @@
     "redux-persist": "^6.0.0",
     "remote-redux-devtools": "^0.5.16",
     "rsocket-core": "^0.0.19",
+    "rsocket-flowable": "^0.0.14",
     "rsocket-tcp-server": "^0.0.19",
+    "rsocket-types": "^0.0.16",
+    "semver": "^7.3.2",
     "socket.io": "^2.0.4",
     "string-natural-compare": "^3.0.0",
     "tmp": "0.0.33",
@@ -84,5 +87,13 @@
   },
   "optionalDependencies": {
     "7zip-bin-mac": "^1.0.1"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^10.0.2",
+    "metro": "^0.59.0",
+    "pretty-format": "^25.4.0",
+    "react-refresh": "^0.8.1",
+    "redux-mock-store": "^1.0.1",
+    "ts-jest": "^25.4.0"
   }
 }

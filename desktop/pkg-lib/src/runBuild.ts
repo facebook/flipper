@@ -77,7 +77,7 @@ export default async function runBuild(
     transformer: {
       ...baseConfig.transformer,
       babelTransformerPath: require.resolve('flipper-babel-transformer'),
-      minifierPath: 'metro-minify-terser',
+      minifierPath: require.resolve('metro-minify-terser'),
       minifierConfig: {
         // see: https://www.npmjs.com/package/terser
         keep_fnames: true,

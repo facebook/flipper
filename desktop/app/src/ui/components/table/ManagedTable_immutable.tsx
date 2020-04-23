@@ -30,7 +30,7 @@ import ContextMenu from '../ContextMenu';
 import FlexColumn from '../FlexColumn';
 import createPaste from '../../../fb-stubs/createPaste';
 import debounceRender from 'react-debounce-render';
-import debounce from 'lodash.debounce';
+import {debounce} from 'lodash';
 import {DEFAULT_ROW_HEIGHT} from './types';
 import textContent from '../../../utils/textContent';
 import {notNull} from '../../../utils/typeUtils';

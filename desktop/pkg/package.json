@@ -14,6 +14,7 @@
   "dependencies": {
     "@oclif/command": "^1",
     "@oclif/config": "^1",
+    "@oclif/parser": "^3",
     "@oclif/plugin-help": "^2",
     "cli-ux": "^5.4.5",
     "fs-extra": "^8.1.0",

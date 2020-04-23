@@ -8,17 +8,12 @@
   ],
   "dependencies": {
     "deep-equal": "^2.0.1",
-    "lodash": "^4.17.15",
-    "lodash.clonedeep": "^4.5.0",
-    "lodash.debounce": "^4.0.8"
+    "lodash": "^4.17.15"
   },
   "title": "Layout",
   "icon": "target",
   "bugs": {
     "email": "oncall+flipper@xmail.facebook.com",
     "url": "https://fb.workplace.com/groups/flippersupport/"
-  },
-  "devDependencies": {
-    "@types/lodash.clonedeep": "^4.5.6"
   }
 }

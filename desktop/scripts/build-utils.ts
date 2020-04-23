@@ -55,7 +55,7 @@ export async function generatePluginEntryPoints() {
 }
 
 const minifierConfig = {
-  minifierPath: 'metro-minify-terser',
+  minifierPath: require.resolve('metro-minify-terser'),
   minifierConfig: {
     // see: https://www.npmjs.com/package/terser
     keep_fnames: true,
