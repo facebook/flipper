@@ -16,7 +16,7 @@ Add this code to your `ios/Podfile`:
 platform :ios, '9.0'
 
 def flipper_pods()
-  flipperkit_version = '0.38.0'
+  flipperkit_version = '0.39.0'
   pod 'FlipperKit', '~>' + flipperkit_version, :configuration => 'Debug'
   pod 'FlipperKit/FlipperKitLayoutPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
   pod 'FlipperKit/SKIOSNetworkPlugin', '~>' + flipperkit_version, :configuration => 'Debug'

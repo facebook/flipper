@@ -1,6 +1,6 @@
 {
   "name": "flipper-pkg",
-  "version": "0.38.0",
+  "version": "0.39.0",
   "description": "Utility for building and publishing Flipper plugins",
   "repository": "facebook/flipper",
   "main": "lib/index.js",
@@ -17,7 +17,7 @@
     "@oclif/plugin-help": "^2",
     "cli-ux": "^5.4.5",
     "fs-extra": "^8.1.0",
-    "flipper-pkg-lib": "0.38.0",
+    "flipper-pkg-lib": "0.39.0",
     "inquirer": "^7.0.5"
   },
   "devDependencies": {
