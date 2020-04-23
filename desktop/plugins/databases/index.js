@@ -1038,10 +1038,12 @@ export default class DatabasesPlugin extends FlipperPlugin<
   };
 
   renderStructure() {
-    return [
-      renderDatabaseColumns(this.state.currentStructure),
-      renderDatabaseIndexes(this.state.currentStructure),
-    ];
+    return (
+      <>
+        {renderDatabaseColumns(this.state.currentStructure)}
+        {renderDatabaseIndexes(this.state.currentStructure)}
+      </>
+    );
   }
 
   renderSidebar = (table: QueriedTable) => {

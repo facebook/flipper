@@ -22,7 +22,7 @@ import styled from '@emotion/styled';
 import debounce from 'lodash.debounce';
 import ToggleButton from '../ToggleSwitch';
 import React from 'react';
-import VerticalContainer from '../Layout';
+import Layout from '../Layout';
 
 const SearchBar = styled(Toolbar)({
   height: 42,
@@ -466,7 +466,7 @@ const Searchable = (
     render() {
       const {placeholder, actions, ...props} = this.props;
       return (
-        <VerticalContainer scrollable>
+        <Layout>
           <SearchBar position="top" key="searchbar">
             <SearchBox tabIndex={-1}>
               <SearchIcon
@@ -534,7 +534,7 @@ const Searchable = (
             bodySearchEnabled={this.state.bodySearchEnabled}
             filters={this.state.filters}
           />
-        </VerticalContainer>
+        </Layout>
       );
     }
   };

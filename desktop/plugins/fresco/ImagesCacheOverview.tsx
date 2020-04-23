@@ -299,30 +299,32 @@ class ImageGrid extends PureComponent<{
       return null;
     }
 
-    return [
-      <ImageGridHeader
-        key="header"
-        title={this.props.title}
-        subtitle={this.props.subtitle}
-        onClear={this.props.onClear}
-      />,
-      <ImageGrid.Content key="content">
-        {images.map((imageId) => (
-          <ImageItem
-            imageId={imageId}
-            image={this.props.imagesMap[imageId]}
-            key={imageId}
-            selected={selectedImage != null && selectedImage === imageId}
-            onSelected={onImageSelected}
-            size={this.props.size}
-            numberOfRequests={
-              this.props.events.filter((e) => e.imageIds.includes(imageId))
-                .length
-            }
-          />
-        ))}
-      </ImageGrid.Content>,
-    ];
+    return (
+      <>
+        <ImageGridHeader
+          key="header"
+          title={this.props.title}
+          subtitle={this.props.subtitle}
+          onClear={this.props.onClear}
+        />
+        <ImageGrid.Content key="content">
+          {images.map((imageId) => (
+            <ImageItem
+              imageId={imageId}
+              image={this.props.imagesMap[imageId]}
+              key={imageId}
+              selected={selectedImage != null && selectedImage === imageId}
+              onSelected={onImageSelected}
+              size={this.props.size}
+              numberOfRequests={
+                this.props.events.filter((e) => e.imageIds.includes(imageId))
+                  .length
+              }
+            />
+          ))}
+        </ImageGrid.Content>
+      </>
+    );
   }
 }
 

@@ -566,12 +566,17 @@ class DataDescriptionContainer extends Component<{
           return <UndefinedValue>(not set)</UndefinedValue>;
         } else if (colorInfo) {
           const {a, b, g, r} = colorInfo;
-          return [
-            <ColorBox key="color-box" color={`rgba(${r}, ${g}, ${b}, ${a})`} />,
-            <ColorValue key="value">
-              rgba({r}, {g}, {b}, {a === 1 ? '1' : a.toFixed(2)})
-            </ColorValue>,
-          ];
+          return (
+            <>
+              <ColorBox
+                key="color-box"
+                color={`rgba(${r}, ${g}, ${b}, ${a})`}
+              />
+              <ColorValue key="value">
+                rgba({r}, {g}, {b}, {a === 1 ? '1' : a.toFixed(2)})
+              </ColorValue>
+            </>
+          );
         } else {
           return <span>Malformed color</span>;
         }
@@ -583,12 +588,17 @@ class DataDescriptionContainer extends Component<{
           return <UndefinedValue>(not set)</UndefinedValue>;
         } else if (colorInfo) {
           const {a, b, g, r} = colorInfo;
-          return [
-            <ColorBox key="color-box" color={`rgba(${r}, ${g}, ${b}, ${a})`} />,
-            <ColorValue key="value">
-              rgba({r}, {g}, {b}, {a === 1 ? '1' : a.toFixed(2)})
-            </ColorValue>,
-          ];
+          return (
+            <>
+              <ColorBox
+                key="color-box"
+                color={`rgba(${r}, ${g}, ${b}, ${a})`}
+              />
+              <ColorValue key="value">
+                rgba({r}, {g}, {b}, {a === 1 ? '1' : a.toFixed(2)})
+              </ColorValue>
+            </>
+          );
         } else {
           return <span>Malformed color</span>;
         }
