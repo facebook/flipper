@@ -124,7 +124,7 @@
     "@types/fb-watchman": "^2.0.0",
     "@types/fs-extra": "^8.0.0",
     "@types/glob": "^7.1.1",
-    "@types/invariant": "^2.2.31",
+    "@types/invariant": "^2.2.32",
     "@types/jest": "^25.1.0",
     "@types/lodash": "^4.14.150",
     "@types/mkdirp": "^1.0.0",
