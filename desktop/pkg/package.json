@@ -16,6 +16,7 @@
     "@oclif/config": "^1",
     "@oclif/parser": "^3",
     "@oclif/plugin-help": "^2",
+    "@oclif/plugin-warn-if-update-available": "^1.7.0",
     "cli-ux": "^5.4.5",
     "fs-extra": "^8.1.0",
     "flipper-pkg-lib": "0.39.0",
@@ -62,7 +63,8 @@
     "commands": "./lib/commands",
     "bin": "flipper-pkg",
     "plugins": [
-      "@oclif/plugin-help"
+      "@oclif/plugin-help",
+      "@oclif/plugin-warn-if-update-available"
     ]
   }
 }
