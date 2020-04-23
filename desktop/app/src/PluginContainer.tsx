@@ -55,7 +55,7 @@ const Container = styled(FlexColumn)({
 export const SidebarContainer = styled(FlexRow)({
   backgroundColor: colors.light02,
   height: '100%',
-  overflow: 'scroll',
+  overflow: 'auto',
 });
 
 const Waiting = styled(FlexColumn)({

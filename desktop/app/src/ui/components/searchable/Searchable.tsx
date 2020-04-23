@@ -22,6 +22,7 @@ import styled from '@emotion/styled';
 import debounce from 'lodash.debounce';
 import ToggleButton from '../ToggleSwitch';
 import React from 'react';
+import VerticalContainer from '../Layout';
 
 const SearchBar = styled(Toolbar)({
   height: 42,
@@ -464,73 +465,77 @@ const Searchable = (
 
     render() {
       const {placeholder, actions, ...props} = this.props;
-      return [
-        <SearchBar position="top" key="searchbar">
-          <SearchBox tabIndex={-1}>
-            <SearchIcon
-              name="magnifying-glass"
-              color={colors.macOSTitleBarIcon}
-              size={16}
-            />
-            {this.state.filters.map((filter, i) => (
-              <FilterToken
-                key={`${filter.key}:${filter.type}`}
-                index={i}
-                filter={filter}
-                focused={i === this.state.focusedToken}
-                onFocus={this.onTokenFocus}
-                onDelete={this.removeFilter}
-                onReplace={this.replaceFilter}
-                onBlur={this.onTokenBlur}
+      return (
+        <VerticalContainer scrollable>
+          <SearchBar position="top" key="searchbar">
+            <SearchBox tabIndex={-1}>
+              <SearchIcon
+                name="magnifying-glass"
+                color={colors.macOSTitleBarIcon}
+                size={16}
               />
-            ))}
-            <SearchInput
-              placeholder={placeholder}
-              onChange={this.onChangeSearchTerm}
-              value={this.state.searchTerm}
-              ref={this.setInputRef}
-              onFocus={this.onInputFocus}
-              onBlur={this.onInputBlur}
-              isValidInput={
-                this.state.regexEnabled
-                  ? this.state.compiledRegex !== null
-                  : true
-              }
-              regex={Boolean(this.state.regexEnabled && this.state.searchTerm)}
-            />
-            {(this.state.searchTerm || this.state.filters.length > 0) && (
-              <Clear onClick={this.clear}>&times;</Clear>
-            )}
-          </SearchBox>
-          {this.props.allowRegexSearch ? (
-            <ToggleButton
-              toggled={this.state.regexEnabled}
-              onClick={this.onRegexToggled}
-              label={'Regex'}
-            />
-          ) : null}
-          {this.props.allowBodySearch ? (
-            <ToggleButton
-              toggled={this.state.bodySearchEnabled}
-              onClick={this.onBodySearchToggled}
-              label={'Body'}
-              tooltip={
-                'Search request and response bodies (warning: this can be quite slow)'
-              }
-            />
-          ) : null}
-          {actions != null && <Actions>{actions}</Actions>}
-        </SearchBar>,
-        <Component
-          {...props}
-          key="table"
-          addFilter={this.addFilter}
-          searchTerm={this.state.searchTerm}
-          regexEnabled={this.state.regexEnabled}
-          bodySearchEnabled={this.state.bodySearchEnabled}
-          filters={this.state.filters}
-        />,
-      ];
+              {this.state.filters.map((filter, i) => (
+                <FilterToken
+                  key={`${filter.key}:${filter.type}`}
+                  index={i}
+                  filter={filter}
+                  focused={i === this.state.focusedToken}
+                  onFocus={this.onTokenFocus}
+                  onDelete={this.removeFilter}
+                  onReplace={this.replaceFilter}
+                  onBlur={this.onTokenBlur}
+                />
+              ))}
+              <SearchInput
+                placeholder={placeholder}
+                onChange={this.onChangeSearchTerm}
+                value={this.state.searchTerm}
+                ref={this.setInputRef}
+                onFocus={this.onInputFocus}
+                onBlur={this.onInputBlur}
+                isValidInput={
+                  this.state.regexEnabled
+                    ? this.state.compiledRegex !== null
+                    : true
+                }
+                regex={Boolean(
+                  this.state.regexEnabled && this.state.searchTerm,
+                )}
+              />
+              {(this.state.searchTerm || this.state.filters.length > 0) && (
+                <Clear onClick={this.clear}>&times;</Clear>
+              )}
+            </SearchBox>
+            {this.props.allowRegexSearch ? (
+              <ToggleButton
+                toggled={this.state.regexEnabled}
+                onClick={this.onRegexToggled}
+                label={'Regex'}
+              />
+            ) : null}
+            {this.props.allowBodySearch ? (
+              <ToggleButton
+                toggled={this.state.bodySearchEnabled}
+                onClick={this.onBodySearchToggled}
+                label={'Body'}
+                tooltip={
+                  'Search request and response bodies (warning: this can be quite slow)'
+                }
+              />
+            ) : null}
+            {actions != null && <Actions>{actions}</Actions>}
+          </SearchBar>
+          <Component
+            {...props}
+            key="table"
+            addFilter={this.addFilter}
+            searchTerm={this.state.searchTerm}
+            regexEnabled={this.state.regexEnabled}
+            bodySearchEnabled={this.state.bodySearchEnabled}
+            filters={this.state.filters}
+          />
+        </VerticalContainer>
+      );
     }
   };
 
