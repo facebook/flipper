@@ -159,6 +159,7 @@
     "ansi-to-html": "^0.6.3",
     "babel-eslint": "^10.0.1",
     "chalk": "^3.0.0",
+    "cross-env": "^7.0.2",
     "detect-port": "^1.1.1",
     "electron": "8.0.1",
     "electron-builder": "^22.3.2",
