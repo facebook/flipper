@@ -22,6 +22,7 @@ import {
   FlipperDevicePlugin,
   FlipperPlugin,
   callClient,
+  supportsMethod,
   FlipperBasePlugin,
 } from '../plugin';
 import {default as BaseDevice} from '../devices/BaseDevice';
@@ -472,6 +473,7 @@ export async function fetchMetadata(
             state,
             idler,
             statusUpdate,
+            supportsMethod(client, pluginId),
           ),
           `Timed out while collecting data for ${pluginName}`,
         );
