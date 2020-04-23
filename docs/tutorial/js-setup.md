@@ -5,7 +5,8 @@ sidebar_label: Building a Desktop Plugin
 ---
 
 Now that we have the native side covered, let's display the data we're sending
-on the desktop side.
+on the desktop side. You can check out the full workflow of building Flipper desktop
+plugins here: https://fbflipper.com/docs/extending/js-setup.html.
 
 ![Custom cards UI for our sea mammals plugin](assets/js-custom.png)
 
@@ -40,22 +41,36 @@ $ cd sea-mammals
 $ yarn init
 ```
 
-When choosing the package name, remember to use the name we have specified on the native side as ID.
-In our case, that is "sea-mammals". Once done, open the `package.json`. In addition to the name,
-you can also specify a title to show in the Flipper sidebar and an icon to display here. For instance:
+Open the `package.json` and edit it. There are a few important things:
+1) "name" must start with "flipper-plugin-"
+2) "keywords" must contain "flipper-plugin"
+3) "id" must be the same as used on native side, e.g. returned by getId() method in Android plugin. In our case that is "sea-mammals".
+4) "specVersion" must contain the version of the specification according to which the plugin is defined.  Currently, Flipper supports plugins defined by the specification version 2, while version 1 is being deprecated.
+5) "title" and "icon" are optional fields specifying the plugin item appearance in the Flipper sidebar.
+
+For instance:
 
 ```json
 {
-  "name": "sea-mammals",
-  "version": "1.0.0",
-  "main": "index.tsx",
+  "name": "flipper-plugin-sea-mammals",
+  "id": "sea-mammals",
+  "specVersion": 2,
+  "version": "2.0.0",
+  "main": "dist/bundle.js",
+  "flipperBundlerEntry": "src/index.tsx",
   "license": "MIT",
   "keywords": ["flipper-plugin"],
   "icon": "apps",
   "title": "Sea Mammals",
   "category": "Example Plugin",
+  "scripts": {
+    "prepack": "flipper-pkg bundle"
+  },
   "dependencies": {
     "flipper": "latest"
+  },
+  "devDependencies": {
+    "flipper-pkg": "latest"
   }
 }
 ```

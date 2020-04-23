@@ -11,21 +11,31 @@ two rules:
 - The package name should to start with "flipper-plugin-". This makes
   it easier to see what the purpose of the package is.
 - The package must include the keyword "flipper-plugin".
+- Source code of the plugin must be bundled by "flipper-pkg" tool.
 
 A valid example `package.json` could look like this:
 
 ```json
 {
-  "name": "flipper-plugin-example",
-  "version": "1.0.0",
-  "description": "An example for a Flipper plugin",
-  "main": "index.tsx",
+  "name": "flipper-plugin-sea-mammals",
+  "id": "sea-mammals",
+  "specVersion": 2,
+  "version": "2.0.0",
+  "main": "dist/bundle.js",
+  "flipperBundlerEntry": "src/index.tsx",
   "license": "MIT",
   "keywords": ["flipper-plugin"],
-  "title": "Example Plugin",
   "icon": "apps",
-  "bugs": {
-    "url": "https://github.com/facebook/flipper/issues/"
+  "title": "Sea Mammals",
+  "category": "Example Plugin",
+  "scripts": {
+    "prepack": "flipper-pkg bundle"
+  },
+  "dependencies": {
+    "flipper": "latest"
+  },
+  "devDependencies": {
+    "flipper-pkg": "latest"
   }
 }
 ```

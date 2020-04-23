@@ -1,13 +1,28 @@
 {
-  "name": "sea-mammals",
-  "version": "1.0.0",
-  "main": "index.tsx",
+  "name": "flipper-plugin-sea-mammals",
+  "id": "sea-mammals",
+  "private": true,
+  "specVersion": 2,
+  "version": "2.0.0",
+  "main": "dist/bundle.js",
+  "flipperBundlerEntry": "src/index.tsx",
   "license": "MIT",
-  "keywords": ["flipper-plugin"],
+  "keywords": [
+    "flipper-plugin"
+  ],
   "icon": "apps",
   "title": "Sea Mammals",
   "category": "Example Plugin",
   "bugs": {
     "email": "realpassy@fb.com"
+  },
+  "scripts": {
+    "prepack": "flipper-pkg bundle"
+  },
+  "dependencies": {
+    "flipper": "0.39.0"
+  },
+  "devDependencies": {
+    "flipper-pkg": "0.39.0"
   }
 }

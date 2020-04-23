@@ -27,6 +27,10 @@ export interface Workspaces {
   packages: Package[];
 }
 
+function isPlugin(dir: string) {
+  return dir.startsWith(pluginsDir);
+}
+
 export async function getWorkspaces(): Promise<Workspaces> {
   const rootPackageJson = await fs.readJson(path.join(rootDir, 'package.json'));
   const packageGlobs = rootPackageJson.workspaces.packages as string[];
@@ -37,9 +41,7 @@ export async function getWorkspaces(): Promise<Workspaces> {
           glob(path.join(rootDir, pattern, '')),
         )),
       ),
-      async (dir) =>
-        !dir.startsWith(pluginsDir) &&
-        (await fs.pathExists(path.join(dir, 'package.json'))),
+      async (dir) => await fs.pathExists(path.join(dir, 'package.json')),
     ),
     async (dir) => {
       const json = await fs.readJson(path.join(dir, 'package.json'));
@@ -95,11 +97,13 @@ async function bumpWorkspaceVersions(
 ): Promise<string> {
   newVersion = newVersion || (rootPackage.json.version as string);
   const allPackages = [rootPackage, ...packages];
-  const localPackageNames = packages.map(({json}) => json.name as string);
+  const localPackageNames = packages
+    .filter((pkg) => !isPlugin(pkg.dir))
+    .map(({json}) => json.name as string);
   for (const pkg of allPackages) {
-    const json = pkg.json;
+    const {dir, json} = pkg;
     let changed = false;
-    if (json.version !== newVersion) {
+    if (json.version !== newVersion && !isPlugin(dir)) {
       json.version = newVersion;
       changed = true;
     }
