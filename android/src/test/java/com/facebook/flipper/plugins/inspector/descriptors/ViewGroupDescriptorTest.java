@@ -9,7 +9,7 @@ package com.facebook.flipper.plugins.inspector.descriptors;
 
 import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,8 +36,7 @@ public class ViewGroupDescriptorTest {
     root.layout(0, 0, 100, 100);
 
     final Touch touch = Mockito.mock(Touch.class);
-    Mockito.when(touch.containedIn(any(int.class), any(int.class), any(int.class), any(int.class)))
-        .thenReturn(true);
+    Mockito.when(touch.containedIn(anyInt(), anyInt(), anyInt(), anyInt())).thenReturn(true);
     descriptor.hitTest(root, touch);
     Mockito.verify(touch, Mockito.times(1)).continueWithOffset(0, 0, 0);
   }
@@ -55,8 +54,7 @@ public class ViewGroupDescriptorTest {
     root.layout(0, 0, 100, 100);
 
     final Touch touch = Mockito.mock(Touch.class);
-    Mockito.when(touch.containedIn(any(int.class), any(int.class), any(int.class), any(int.class)))
-        .thenReturn(true);
+    Mockito.when(touch.containedIn(anyInt(), anyInt(), anyInt(), anyInt())).thenReturn(true);
     descriptor.hitTest(root, touch);
     Mockito.verify(touch, Mockito.times(1)).finish();
   }
