@@ -66,10 +66,11 @@ For instance:
   "scripts": {
     "prepack": "flipper-pkg bundle"
   },
-  "dependencies": {
+  "peerDependencies": {
     "flipper": "latest"
   },
   "devDependencies": {
+    "flipper": "latest",
     "flipper-pkg": "latest"
   }
 }

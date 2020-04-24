@@ -19,10 +19,11 @@
   "scripts": {
     "prepack": "flipper-pkg bundle"
   },
-  "dependencies": {
+  "peerDependencies": {
     "flipper": "0.39.0"
   },
   "devDependencies": {
+    "flipper": "0.39.0",
     "flipper-pkg": "0.39.0"
   }
 }
