@@ -7,7 +7,7 @@
  * @format
  */
 
-jest.mock('../../defaultPlugins/index');
+jest.mock('../../defaultPlugins');
 
 import dispatcher, {
   getDynamicPlugins,
@@ -114,7 +114,7 @@ test('checkGK for failing plugin', () => {
 });
 
 test('requirePlugin returns null for invalid requires', () => {
-  const requireFn = requirePlugin([], require);
+  const requireFn = requirePlugin([], {}, require);
   const plugin = requireFn({
     name: 'pluginID',
     entry: 'this/path/does not/exist',
@@ -125,7 +125,7 @@ test('requirePlugin returns null for invalid requires', () => {
 
 test('requirePlugin loads plugin', () => {
   const name = 'pluginID';
-  const requireFn = requirePlugin([], require);
+  const requireFn = requirePlugin([], {}, require);
   const plugin = requireFn({
     name,
     entry: path.join(__dirname, 'TestPlugin'),
