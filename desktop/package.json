@@ -187,6 +187,7 @@
     "flow-bin": "0.123.0",
     "fs-extra": "^9.0.0",
     "glob": "^7.1.2",
+    "ignore": "^5.1.4",
     "invariant": "^2.2.4",
     "jest": "^25.1.0",
     "jest-environment-jsdom-sixteen": "^1.0.3",

@@ -13,12 +13,13 @@
     "flipper-pkg-lib": "0.39.0",
     "mem": "^6.0.0",
     "mkdirp": "^1.0.0",
-    "p-map": "^4.0.0",
     "p-filter": "^2.1.0",
+    "p-map": "^4.0.0",
     "recursive-readdir": "^2.2.2",
     "uuid": "^7.0.1",
+    "ws": "^7.2.3",
     "xdg-basedir": "^4.0.0",
-    "yargs": "^15.3.1",
-    "ws": "^7.2.3"
+    "ignore": "^5.1.4",
+    "yargs": "^15.3.1"
   }
 }

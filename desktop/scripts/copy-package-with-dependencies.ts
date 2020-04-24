@@ -9,6 +9,16 @@
 
 import fs from 'fs-extra';
 import path from 'path';
+import ignore from 'ignore';
+
+const DEFAULT_BUILD_IGNORES = [
+  '/node_modules',
+  'README*',
+  'LICENSE*',
+  '*.ts',
+  '*.ls',
+  'Gruntfile*',
+];
 
 /**
  * This function copies package into the specified target dir with all its dependencies:
@@ -39,10 +49,18 @@ async function copyPackageWithDependenciesRecursive(
   if ((await fs.stat(packageDir)).isSymbolicLink()) {
     packageDir = await fs.readlink(packageDir);
   }
+  const ignores = await fs
+    .readFile(path.join(packageDir, '.buildignore'), 'utf-8')
+    .then((l) => l.split('\n'))
+    .catch((_e) => [])
+    .then((l: Array<string>) => ignore().add(DEFAULT_BUILD_IGNORES.concat(l)));
   await fs.copy(packageDir, targetDir, {
     dereference: true,
     recursive: true,
-    filter: (src) => !src.startsWith(path.join(packageDir, 'node_modules')),
+    filter: (src) => {
+      const relativePath = path.relative(packageDir, src);
+      return relativePath === '' || !ignores.ignores(relativePath);
+    },
   });
   const pkg = await fs.readJson(path.join(packageDir, 'package.json'));
   const dependencies = (pkg.dependencies ?? {}) as {[key: string]: string};
