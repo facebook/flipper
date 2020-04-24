@@ -36,10 +36,11 @@ jobs:
       uses: actions/download-artifact@v1
       with:
         name: 'Flipper-mac.dmg'
-        path: 'dist/Flipper-mac.dmg'
+        path: 'Flipper-mac.dmg'
+    - run: ls -la Flipper-mac.dmg
     - name: Publish
       uses: skx/github-action-publish-binaries@master
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        args: 'dist/Flipper-mac.dmg'
+        args: 'Flipper-mac.dmg'
