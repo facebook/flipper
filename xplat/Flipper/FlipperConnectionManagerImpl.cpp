@@ -127,7 +127,11 @@ void FlipperConnectionManagerImpl::startSync() {
                         : "Establish main connection");
   try {
     if (isClientSetupStep) {
-      doCertificateExchange();
+      bool success = doCertificateExchange();
+      if (!success) {
+        reconnect();
+        return;
+      }
     } else {
       if (!connectSecurely()) {
         // The expected code path when flipper desktop is not running.
@@ -162,7 +166,7 @@ void FlipperConnectionManagerImpl::startSync() {
   }
 }
 
-void FlipperConnectionManagerImpl::doCertificateExchange() {
+bool FlipperConnectionManagerImpl::doCertificateExchange() {
   rsocket::SetupParameters parameters;
   folly::SocketAddress address;
 
@@ -173,7 +177,7 @@ void FlipperConnectionManagerImpl::doCertificateExchange() {
 
   auto connectingInsecurely = flipperState_->start("Connect insecurely");
   connectionIsTrusted_ = false;
-  client_ =
+  auto newClient =
       rsocket::RSocket::createConnectedClient(
           std::make_unique<rsocket::TcpConnectionFactory>(
               *connectionEventBase_->getEventBase(), std::move(address)),
@@ -182,7 +186,22 @@ void FlipperConnectionManagerImpl::doCertificateExchange() {
           std::chrono::seconds(connectionKeepaliveSeconds), // keepaliveInterval
           nullptr, // stats
           std::make_shared<ConnectionEvents>(this))
+          .thenError<folly::AsyncSocketException>([](const auto& e) {
+            if (e.getType() == folly::AsyncSocketException::NOT_OPEN ||
+                e.getType() == folly::AsyncSocketException::NETWORK_ERROR) {
+              // This is the state where no Flipper desktop client is connected.
+              // We don't want an exception thrown here.
+              return std::unique_ptr<rsocket::RSocketClient>(nullptr);
+            }
+            throw e;
+          })
           .get();
+
+  if (newClient.get() == nullptr) {
+    return false;
+  }
+
+  client_ = std::move(newClient);
   connectingInsecurely->complete();
 
   auto resettingState = flipperState_->start("Reset state");
@@ -190,6 +209,7 @@ void FlipperConnectionManagerImpl::doCertificateExchange() {
   resettingState->complete();
 
   requestSignedCertFromFlipper();
+  return true;
 }
 
 bool FlipperConnectionManagerImpl::connectSecurely() {
