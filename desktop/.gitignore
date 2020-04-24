@@ -3,3 +3,4 @@ node_modules/
 *.tsbuildinfo
 /static/defaultPlugins/index.json
 /app/src/defaultPlugins/index.tsx
+/coverage

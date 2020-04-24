@@ -104,7 +104,12 @@
       "^flipper-pkg$": "<rootDir>/pkg/src",
       "^flipper-pkg-lib$": "<rootDir>/pkg-lib/src"
     },
-    "clearMocks": true
+    "clearMocks": true,
+    "coverageReporters": [
+      "json-summary",
+      "lcov",
+      "html"
+    ]
   },
   "devDependencies": {
     "@babel/code-frame": "^7.8.3",
