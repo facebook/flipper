@@ -7,7 +7,7 @@
     "flipper-plugin"
   ],
   "dependencies": {
-    "deep-equal": "^2.0.1",
+    "deep-equal": "^2.0.3",
     "lodash": "^4.17.15"
   },
   "title": "Layout",
