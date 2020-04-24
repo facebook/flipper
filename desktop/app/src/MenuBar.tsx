@@ -25,6 +25,7 @@ import {Store} from './reducers/';
 import electron, {MenuItemConstructorOptions} from 'electron';
 import {notNull} from './utils/typeUtils';
 import constants from './fb-stubs/constants';
+import {Logger} from './fb-interfaces/Logger';
 
 export type DefaultKeyboardAction = 'clear' | 'goToBottom' | 'createPaste';
 export type TopLevelMenu = 'Edit' | 'View' | 'Window' | 'Help';
@@ -72,11 +73,13 @@ function actionHandler(action: string) {
 export function setupMenuBar(
   plugins: Array<typeof FlipperPlugin | typeof FlipperDevicePlugin>,
   store: Store,
+  logger: Logger,
 ) {
   const template = getTemplate(
     electron.remote.app,
     electron.remote.shell,
     store,
+    logger,
   );
   // collect all keyboard actions from all plugins
   const registeredActions: Set<KeyboardAction> = new Set(
@@ -184,6 +187,7 @@ function getTemplate(
   app: electron.App,
   shell: electron.Shell,
   store: Store,
+  logger: Logger,
 ): Array<MenuItemConstructorOptions> {
   const exportSubmenu = [
     {
@@ -285,6 +289,7 @@ function getTemplate(
             focusedWindow: electron.BrowserWindow | undefined,
           ) {
             if (focusedWindow) {
+              logger.track('usage', 'reload');
               focusedWindow.reload();
             }
           },
