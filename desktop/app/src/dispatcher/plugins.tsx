@@ -68,7 +68,7 @@ export default (store: Store, _logger: Logger) => {
 
   sideEffect(
     store,
-    {name: 'setupMenuBar', throttleMs: 100},
+    {name: 'setupMenuBar', throttleMs: 1000, fireImmediately: true},
     (state) => state.plugins,
     (plugins, store) => {
       setupMenuBar(
