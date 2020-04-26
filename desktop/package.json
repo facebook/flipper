@@ -199,7 +199,7 @@
     "node-fetch": "^2.6.0",
     "p-filter": "^2.1.0",
     "p-map": "^4.0.0",
-    "pkg": "^4.4.1",
+    "pkg": "^4.4.8",
     "prettier": "^2.0.0",
     "pretty-format": "^25.4.0",
     "promisify-child-process": "^3.1.3",
