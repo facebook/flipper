@@ -257,7 +257,8 @@
     12
   ],
   "triangle-down": [
-    12
+    12,
+    16
   ],
   "triangle-right": [
     12
@@ -398,5 +399,8 @@
   ],
   "business-briefcase": [
     16
+  ],
+  "log": [
+    12
   ]
 }
