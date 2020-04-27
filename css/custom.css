@@ -1,0 +1,512 @@
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+:root {
+  --ifm-color-primary: #121020;
+  --ifm-navbar-background-color: var(--ifm-color-primary);
+  --ifm-navbar-link-color: #ebedf0;
+  --ifm-navbar-shadow: none;
+  --ifm-navbar-link-hover-color: var(--ifm-navbar-link-color);
+  --ifm-footer-link-color: #ebedf0;
+  --ifm-footer-link-hover-color: var(--ifm-footer-link-color);
+}
+
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'San Francisco', -apple-system, BlinkMacSystemFont,
+    '.SFNSText-Regular', 'Helvetica Neue', Helvetica, sans-serif;
+}
+
+.headerTitleWithLogo {
+  font-weight: 400;
+}
+
+.splash {
+  min-height: 700px;
+  background: linear-gradient(#121020, #21233e);
+  text-align: center;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.splash h1 {
+  color: white;
+  font-size: 44px;
+  line-height: 100%;
+  margin-top: 15px;
+  margin-bottom: 25px;
+  font-weight: 200;
+  letter-spacing: 1px;
+}
+
+.splash h2 {
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 300;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 50px;
+  font-size: 20px;
+  line-height: 140%;
+  max-width: 750px;
+  letter-spacing: 1px;
+}
+
+.landing-btn {
+  display: inline-block;
+  padding: 7px 20px;
+  margin: 0 10px;
+  border-radius: 6px;
+  border: 1px solid #777;
+}
+
+.splash .landing-btn.landing-btn-label {
+  background-color: #0066af;
+  border-color: #0066af;
+}
+
+.landing-btn-left {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  margin-right: 0;
+  padding-right: 10px;
+}
+
+.landing-btn-middle {
+  border-radius: 0;
+  margin: 0;
+  padding: 7px 10px;
+}
+
+.landing-btn-right {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  margin-left: 0;
+  padding-left: 10px;
+}
+
+.landing-btn.primary:hover {
+  background-color: #0066af;
+  border-color: #0066af;
+}
+
+.landing-btn.primary {
+  background-color: #008cf2;
+  color: white;
+  border-color: #008cf2;
+  color: white;
+}
+
+.splash .landing-btn {
+  color: white;
+  border-color: white;
+}
+
+.splash .landing-btn.primary {
+  border-color: #008cf2;
+}
+
+.splash .shadow {
+  position: absolute;
+  background-image: linear-gradient(to top, rgba(0, 0, 0, 0.1), transparent);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 15px;
+  z-index: 2;
+}
+
+.center {
+  text-align: center;
+}
+
+@keyframes slideIn {
+  0% {
+    transform: translate(-50%, -320px);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(-50%, -360px);
+    opacity: 1;
+  }
+}
+
+.slideshow {
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  animation: 0.6s ease-out 0.2s 1 slideIn forwards;
+  max-width: 100%;
+  width: 1116px;
+}
+
+.splashScreen {
+  opacity: 0;
+  position: absolute;
+  left: 0;
+  top: 0;
+  max-width: 100%;
+  width: 1116px;
+}
+
+@keyframes slideshow2 {
+  20%,
+  55% {
+    opacity: 0;
+  }
+  25%,
+  50% {
+    opacity: 1;
+  }
+}
+@keyframes slideshow3 {
+  45%,
+  80% {
+    opacity: 0;
+  }
+  50%,
+  75% {
+    opacity: 1;
+  }
+}
+@keyframes slideshow4 {
+  65%,
+  100% {
+    opacity: 0;
+  }
+  70%,
+  95% {
+    opacity: 1;
+  }
+}
+
+.slideshow .splashScreen:nth-child(1) {
+  opacity: 1;
+}
+.slideshow .splashScreen:nth-child(2) {
+  animation: 16s slideshow2 infinite;
+}
+.slideshow .splashScreen:nth-child(3) {
+  animation: 16s slideshow3 infinite;
+}
+.slideshow .splashScreen:nth-child(4) {
+  animation: 16s slideshow4 infinite;
+}
+
+.content {
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 50px 15px;
+}
+
+.content.row {
+  display: flex;
+  flex-direction: row;
+  margin: 60px auto;
+}
+
+.content .col {
+  flex-basis: 0;
+  flex-grow: 1;
+  padding: 10px 20px;
+  align-self: center;
+}
+
+.col h3 {
+  font-size: 28px;
+  font-weight: 300;
+  margin-bottom: 20px;
+  margin-top: 0;
+}
+
+.col h4 {
+  margin: 0;
+  font-weight: 500;
+  font-size: 0.8em;
+  opacity: 0.7;
+  text-transform: uppercase;
+}
+
+.col p {
+  opacity: 0.7;
+}
+
+footer.nav-footer {
+  box-shadow: none;
+  background: #121020;
+  font-size: 15px;
+}
+
+nav.toc .toggleNav,
+nav.toc .toggleNav .navGroup.navGroupActive {
+  background: transparent;
+}
+
+nav.toc .toggleNav .navGroup.navGroupActive ul {
+  padding: 0;
+  margin-bottom: 20px;
+}
+
+nav.toc .toggleNav ul li a {
+  margin: 0;
+  font-size: 1em;
+  opacity: 0.7;
+}
+
+nav.toc .toggleNav .navGroup.navGroupActive h3 {
+  background: none;
+  color: inherit;
+  font-weight: 500;
+  padding: 0;
+  margin: 0;
+}
+
+.sitemap {
+  width: 100%;
+}
+
+a.learnmore {
+  display: inline-block;
+  margin-top: 10px;
+  color: $actionColor;
+}
+
+a.learnmore:hover {
+  opacity: 0.7;
+}
+
+.toc .toggleNav ul li.navListItemActive a {
+  opacity: 1;
+}
+
+code,
+pre code {
+  font-size: 0.85em;
+  margin-left: 2px;
+  margin-right: 2px;
+}
+
+pre code {
+  background: none;
+  box-shadow: none;
+  border-left-color: #585760;
+  border-left-width: 3px;
+  margin-left: 0;
+  line-height: 1.4;
+  border-radius: 0;
+}
+
+.mainContainer {
+  font-size: 1em;
+  line-height: 100%;
+}
+
+.mainContainer .wrapper .post h1,
+.mainContainer .wrapper .post h2,
+.mainContainer .wrapper .post h3 {
+  font-weight: 400;
+}
+
+.mainContainer .wrapper .post h2 {
+  font-weight: 300;
+  font-size: 28px;
+}
+
+.mainContainer .wrapper .post h1 {
+  font-weight: 300;
+}
+
+.mainContainer .wrapper .post *:not(h2) + h2,
+.mainContainer .wrapper .post *:not(h2) + h3 {
+  margin-top: 40px;
+}
+
+.mainContainer .wrapper p,
+.blockElement p,
+.mainContainer .wrapper ul li,
+.mainContainer .wrapper ol li {
+  line-height: 1.4;
+}
+
+.mainContainer article a {
+  color: $actionColor;
+}
+
+.mainContainer article a:hover {
+  opacity: 0.8;
+}
+
+.mainContainer article table {
+  width: 100%;
+  border: 0;
+}
+
+.mainContainer article table td:nth-child(1) {
+  width: 15%;
+  min-width: 140px;
+}
+.mainContainer article table td:nth-child(2) {
+  width: 25%;
+}
+table tr {
+  border-bottom: 1px solid #e5e5e5;
+}
+
+table tr td {
+  vertical-align: top;
+  border: 0;
+}
+
+table tr th {
+  border: 0;
+  text-transform: none;
+}
+
+table tr th code,
+table tr td code {
+  background: none;
+  margin: 0;
+  color: inherit;
+  border: 0;
+  box-shadow: none;
+}
+
+table tr:nth-of-type(odd) {
+  background: none;
+}
+
+table tr:hover {
+  background: #f5f5f5;
+}
+
+footer .sitemap {
+  overflow: hidden;
+}
+
+footer .sitemap .nav-home,
+footer .fbOpenSource {
+  opacity: 1;
+}
+
+footer iframe {
+  margin-top: 8px;
+}
+
+@media screen and (max-width: 736px) {
+  .docsNavContainer,
+  .docsSliderActive nav.toc .navBreadcrumb {
+    margin-top: 0;
+    background-color: #f5f7f9;
+    border-bottom: 1px solid #d9dde1;
+  }
+
+  nav.toc section .navGroups {
+    padding: 50px 20px 60px;
+  }
+
+  .content.row {
+    flex-direction: column;
+  }
+
+  .splash .slideshow {
+    margin-top: 80px;
+  }
+
+  .content.row {
+    margin-top: 0px;
+    margin-bottom: 0px;
+  }
+
+  footer .sitemap {
+    margin: 0;
+  }
+
+  footer .sitemap > div {
+    padding: 20px;
+  }
+
+  .splash h1 {
+    font-size: 36px;
+    margin-top: 0;
+  }
+
+  .fixedHeaderContainer a {
+    margin-left: auto;
+    margin-right: auto;
+    padding-right: 15px;
+  }
+}
+
+@media screen and (max-width: 680px) {
+  .splash .splashScreen {
+    margin-top: 20px;
+    top: 120%;
+  }
+}
+
+@media only screen and (min-width: 736px) {
+  .navigationSlider .slidingNav ul li a {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  .navigationSlider .slidingNav ul li:last-child a {
+    padding-right: 0;
+  }
+}
+
+.warning {
+  background-color: rgb(253, 245, 212);
+  border-left: 4px solid rgb(241, 196, 15);
+  padding: 12px;
+  margin-bottom: 16px;
+}
+
+.warning *:last-child {
+  margin-bottom: 0px;
+}
+
+.content.row {
+  position: relative;
+}
+
+.content.row:not(:last-child)::after {
+  display: block;
+  height: 1px;
+  left: 25%;
+  right: 25%;
+  bottom: -10px;
+  background: #f0f0f0;
+  content: '';
+  position: absolute;
+}
+
+.landing-cta {
+  padding-top: 30px;
+  padding-bottom: 80px;
+  text-align: center;
+}
+.button {
+  text-transform: none;
+  border: none;
+  font-size: 0.8em;
+  border-radius: 999em;
+  background-color: rgba(0, 0, 0, 0.05);
+  padding: 0.5em 1em;
+  font-weight: 500;
+  margin-top: 8px;
+}
+
+.button:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  color: inherit;
+}
