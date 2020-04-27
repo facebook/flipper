@@ -5,6 +5,16 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+:root {
+  --ifm-color-primary: #121020;
+  --ifm-navbar-background-color: var(--ifm-color-primary);
+  --ifm-navbar-link-color: #ebedf0;
+  --ifm-navbar-shadow: none;
+  --ifm-navbar-link-hover-color: var(--ifm-navbar-link-color);
+  --ifm-footer-link-color: #ebedf0;
+  --ifm-footer-link-hover-color: var(--ifm-footer-link-color);
+}
+
 body,
 h1,
 h2,
@@ -463,11 +473,6 @@ footer iframe {
 
 .warning *:last-child {
   margin-bottom: 0px;
-}
-
-.navListItem a[href='/docs/features/index.html'] {
-  /* Hide sidebar link to "Features"-pages, because it is linked in header */
-  display: none !important;
 }
 
 .content.row {

@@ -20,7 +20,7 @@ title: UI Components
 
 Flipper has a lot of built in React components to build UIs. You can import them directly using e.g. \`import {Button} from 'flipper'\`.`;
 
-const TARGET = __dirname + '/../docs/extending/ui-components.md';
+const TARGET = __dirname + '/../docs/extending/ui-components.mdx';
 
 glob(__dirname + '/../desktop/app/src/ui/components/**/*.tsx', (err, files) => {
   const content = files

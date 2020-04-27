@@ -23,7 +23,7 @@ matrix:
           skip-cleanup: true
           github-token: $GITHUB_TOKEN
           fqdn: fbflipper.com
-          local-dir: website/build/flipper
+          local-dir: website/build
           keep-history: true
           on:
             branch: master
