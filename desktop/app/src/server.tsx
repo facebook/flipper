@@ -193,6 +193,7 @@ class Server extends EventEmitter {
           case 'connect': {
             const app = message.app;
             const plugins = message.plugins;
+            let resolvedClient: Client | null = null;
             const client = this.addConnection(
               new WebsocketClientFlipperConnection(ws, app, plugins),
               {
@@ -203,15 +204,18 @@ class Server extends EventEmitter {
                 sdk_version: 1,
               },
               {},
-            );
+            ).then((c) => (resolvedClient = c));
             clients[app] = client;
-            client.then((c) => {
-              ws.on('message', (m: any) => {
-                const parsed = JSON.parse(m.toString());
-                if (parsed.app === app) {
-                  c.onMessage(JSON.stringify(parsed.payload));
+
+            ws.on('message', (m: any) => {
+              const parsed = JSON.parse(m.toString());
+              if (parsed.app === app) {
+                const message = JSON.stringify(parsed.payload);
+                if (resolvedClient) {
+                  resolvedClient.onMessage(message);
                 }
-              });
+                client.then((c) => c.onMessage(message));
+              }
             });
             break;
           }
