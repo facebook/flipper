@@ -17,9 +17,15 @@
     "recharts": "1.7.1"
   },
   "devDependencies": {
-    "@types/recharts": "1.8.8"
+    "@types/recharts": "1.8.10"
   },
   "resolutions": {
     "@types/react": "16.9.17"
+  },
+  "greenkeeper": {
+    "ignore": [
+      "recharts",
+      "@types/recharts"
+    ]
   }
 }
