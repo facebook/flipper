@@ -31,7 +31,7 @@ import {notNull} from '../utils/typeUtils';
 import {sideEffect} from '../utils/sideEffect';
 
 // eslint-disable-next-line import/no-unresolved
-import {default as defaultPluginsIndex} from '../defaultPlugins/index';
+import getPluginIndex from '../utils/getDefaultPluginsIndex';
 
 export type PluginDefinition = {
   id?: string;
@@ -53,12 +53,14 @@ export default (store: Store, logger: Logger) => {
   const disabledPlugins: Array<PluginDefinition> = [];
   const failedPlugins: Array<[PluginDefinition, string]> = [];
 
+  const defaultPluginsIndex = getPluginIndex();
+
   const initialPlugins: Array<
     typeof FlipperPlugin | typeof FlipperDevicePlugin
   > = [...getBundledPlugins(), ...getDynamicPlugins()]
     .filter(checkDisabled(disabledPlugins))
     .filter(checkGK(gatekeepedPlugins))
-    .map(requirePlugin(failedPlugins))
+    .map(requirePlugin(failedPlugins, defaultPluginsIndex))
     .filter(notNull);
 
   store.dispatch(addGatekeepedPlugins(gatekeepedPlugins));
@@ -150,6 +152,7 @@ export const checkDisabled = (disabledPlugins: Array<PluginDefinition>) => (
 
 export const requirePlugin = (
   failedPlugins: Array<[PluginDefinition, string]>,
+  defaultPluginsIndex: any,
   reqFn: Function = global.electronRequire,
 ) => {
   return (
