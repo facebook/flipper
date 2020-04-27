@@ -221,7 +221,11 @@ export function processMessageLater(
         ),
       );
       break;
-    // In all other cases, messages will be dropped...
+    default:
+      // In all other cases, messages will be dropped...
+      console.warn(
+        `Received message for disabled plugin ${plugin.id}: ${message.method}, dropping..`,
+      );
   }
 }
 

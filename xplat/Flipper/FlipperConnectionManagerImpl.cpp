@@ -35,7 +35,7 @@ static constexpr int maxPayloadSize = 0xFFFFFF;
 // Not a public-facing version number.
 // Used for compatibility checking with desktop flipper.
 // To be bumped for every core platform interface change.
-static constexpr int sdkVersion = 3;
+static constexpr int sdkVersion = 4;
 
 namespace facebook {
 namespace flipper {

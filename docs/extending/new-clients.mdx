@@ -70,6 +70,23 @@ Response = {
 }
 ```
 
+
+### getBackgroundPlugins
+
+Returns a subset of the available plugins returned by `getPlugin`. The background connections will automatically receive a connection from Flipper once it starts (and if the plugins are enabled), rather than waiting for the user to open the plugin.
+
+```
+Request = {
+  "method": "getBackgroundPlugins",
+}
+
+Response = {
+  "success": {
+    "plugins": Array<string>
+  },
+}
+```
+
 ### init
 Initialize a plugin. This should result in an onConnected call on the appropriate plugin. Plugins should by nature be lazy and should not be initialized up front as this may incur significant cost. The Flipper desktop client knows when a plugin is needed and should control when to initialize them.
 ```

@@ -269,18 +269,25 @@ export class FlipperPlugin<
 
   _teardown() {
     // automatically unsubscribe subscriptions
+    const pluginId = this.constructor.id;
     for (const {method, callback} of this.subscriptions) {
-      this.realClient.unsubscribe(this.constructor.id, method, callback);
+      this.realClient.unsubscribe(pluginId, method, callback);
     }
     // run plugin teardown
     this.teardown();
-    if (this.realClient.connected) {
-      this.realClient.deinitPlugin(this.constructor.id);
+    if (
+      this.realClient.connected &&
+      !this.realClient.isBackgroundPlugin(pluginId)
+    ) {
+      this.realClient.deinitPlugin(pluginId);
     }
   }
 
   _init() {
-    this.realClient.initPlugin(this.constructor.id);
+    const pluginId = this.constructor.id;
+    if (!this.realClient.isBackgroundPlugin(pluginId)) {
+      this.realClient.initPlugin(pluginId);
+    }
     this.init();
   }
 }

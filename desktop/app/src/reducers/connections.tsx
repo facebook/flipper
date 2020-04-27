@@ -277,6 +277,9 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
 
     case 'STAR_PLUGIN': {
       const {selectedPlugin, selectedApp} = action.payload;
+      const client = state.clients.find(
+        (client) => client.query.app === selectedApp,
+      );
       return produce(state, (draft) => {
         if (!draft.userStarredPlugins[selectedApp]) {
           draft.userStarredPlugins[selectedApp] = [selectedPlugin];
@@ -285,8 +288,14 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
           const idx = plugins.indexOf(selectedPlugin);
           if (idx === -1) {
             plugins.push(selectedPlugin);
+            if (client?.isBackgroundPlugin(selectedPlugin)) {
+              client.initPlugin(selectedPlugin);
+            }
           } else {
             plugins.splice(idx, 1);
+            if (client?.isBackgroundPlugin(selectedPlugin)) {
+              client.deinitPlugin(selectedPlugin);
+            }
           }
         }
       });
