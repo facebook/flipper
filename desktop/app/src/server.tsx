@@ -213,8 +213,9 @@ class Server extends EventEmitter {
                 const message = JSON.stringify(parsed.payload);
                 if (resolvedClient) {
                   resolvedClient.onMessage(message);
+                } else {
+                  client.then((c) => c.onMessage(message));
                 }
-                client.then((c) => c.onMessage(message));
               }
             });
             break;
