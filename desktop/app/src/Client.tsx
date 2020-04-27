@@ -24,7 +24,10 @@ import createTableNativePlugin from './plugins/TableNativePlugin';
 import {EventEmitter} from 'events';
 import invariant from 'invariant';
 import {flipperRecorderAddEvent} from './utils/pluginStateRecorder';
-import {getPluginKey} from './utils/pluginUtils';
+import {
+  getPluginKey,
+  defaultEnabledBackgroundPlugins,
+} from './utils/pluginUtils';
 import {processMessageLater} from './utils/messageQueue';
 import {sideEffect} from './utils/sideEffect';
 import {emitBytesReceived} from './dispatcher/tracking';
@@ -241,16 +244,21 @@ export default class Client extends EventEmitter {
     return this.backgroundPlugins.includes(pluginId);
   }
 
+  shouldConnectAsBackgroundPlugin(pluginId: string) {
+    return (
+      defaultEnabledBackgroundPlugins.includes(pluginId) ||
+      this.store
+        .getState()
+        .connections.userStarredPlugins[this.query.app]?.includes(pluginId)
+    );
+  }
+
   async init() {
     this.setMatchingDevice();
     await this.loadPlugins();
     this.backgroundPlugins = await this.getBackgroundPlugins();
     this.backgroundPlugins.forEach((plugin) => {
-      if (
-        this.store
-          .getState()
-          .connections.userStarredPlugins[this.query.app]?.includes(plugin)
-      ) {
+      if (this.shouldConnectAsBackgroundPlugin(plugin)) {
         this.initPlugin(plugin);
       }
     });
@@ -312,9 +320,7 @@ export default class Client extends EventEmitter {
     newBackgroundPlugins.forEach((plugin) => {
       if (
         !oldBackgroundPlugins.includes(plugin) &&
-        this.store
-          .getState()
-          .connections.userStarredPlugins[this.query.app]?.includes(plugin)
+        this.shouldConnectAsBackgroundPlugin(plugin)
       ) {
         this.initPlugin(plugin);
       }

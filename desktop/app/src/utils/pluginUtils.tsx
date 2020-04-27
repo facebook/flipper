@@ -8,7 +8,6 @@
  */
 
 import {FlipperDevicePlugin, FlipperPlugin, FlipperBasePlugin} from '../plugin';
-import BaseDevice from '../devices/BaseDevice';
 import {State as PluginStatesState} from '../reducers/pluginStates';
 import {State as PluginsState} from '../reducers/plugins';
 import {State as PluginMessageQueueState} from '../reducers/pluginMessageQueue';
@@ -16,6 +15,8 @@ import {PluginDefinition} from '../dispatcher/plugins';
 import {deconstructPluginKey, deconstructClientId} from './clientUtils';
 
 type Client = import('../Client').default;
+
+export const defaultEnabledBackgroundPlugins = ['Navigation']; // The navigation plugin is enabled always, to make sure the navigation features works
 
 export function pluginsClassMap(
   plugins: PluginsState,

@@ -20,6 +20,7 @@ import {Idler, BaseIdler} from './Idler';
 import {pluginIsStarred, getSelectedPluginKey} from '../reducers/connections';
 import {deconstructPluginKey} from './clientUtils';
 import {onBytesReceived} from '../dispatcher/tracking';
+import {defaultEnabledBackgroundPlugins} from './pluginUtils';
 
 const MAX_BACKGROUND_TASK_TIME = 25;
 
@@ -223,9 +224,10 @@ export function processMessageLater(
       break;
     default:
       // In all other cases, messages will be dropped...
-      console.warn(
-        `Received message for disabled plugin ${plugin.id}: ${message.method}, dropping..`,
-      );
+      if (!defaultEnabledBackgroundPlugins.includes(plugin.id))
+        console.error(
+          `Received message for disabled plugin ${plugin.id}, dropping..`,
+        );
   }
 }
 
