@@ -18,6 +18,17 @@ export async function internGraphPOSTAPIRequest(
   _formFields: {
     [key: string]: any;
   } = {},
+  _internGraphUrl?: string,
+): Promise<any> {
+  throw new Error('Feature not implemented');
+}
+
+export async function internGraphGETAPIRequest(
+  _endpoint: string,
+  _params: {
+    [key: string]: any;
+  } = {},
+  _internGraphUrl?: string,
 ): Promise<any> {
   throw new Error('Feature not implemented');
 }

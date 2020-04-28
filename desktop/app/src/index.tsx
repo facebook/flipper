@@ -17,7 +17,11 @@ export {serialize, deserialize} from './utils/serialization';
 export * from './utils/jsonTypes';
 export {default as GK} from './fb-stubs/GK';
 export {default as createPaste} from './fb-stubs/createPaste';
-export {internGraphPOSTAPIRequest, graphQLQuery} from './fb-stubs/user';
+export {
+  internGraphGETAPIRequest,
+  internGraphPOSTAPIRequest,
+  graphQLQuery,
+} from './fb-stubs/user';
 export {
   FlipperBasePlugin,
   FlipperPlugin,
