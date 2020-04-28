@@ -28,6 +28,7 @@ USAGE
 * [`flipper-pkg help [COMMAND]`](#flipper-pkg-help-command)
 * [`flipper-pkg init [DIRECTORY]`](#flipper-pkg-init-directory)
 * [`flipper-pkg lint [DIRECTORY]`](#flipper-pkg-lint-directory)
+* [`flipper-pkg migrate [DIRECTORY]`](#flipper-pkg-migrate-directory)
 * [`flipper-pkg pack [DIRECTORY]`](#flipper-pkg-pack-directory)
 
 ## `flipper-pkg bundle [DIRECTORY]`
@@ -66,15 +67,15 @@ _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.2.3
 
 ## `flipper-pkg init [DIRECTORY]`
 
-initializes Flipper desktop plugin template in the provided directory
+initializes a Flipper desktop plugin template in the provided directory
 
 ```
 USAGE
   $ flipper-pkg init [DIRECTORY]
 
 ARGUMENTS
-  DIRECTORY  [default: .] Path to directory where plugin package template should be initialized. Defaults to the current
-             working directory.
+  DIRECTORY  [default: .] Path to the directory where the plugin package template should be initialized. Defaults to the
+             current working directory.
 
 EXAMPLE
   $ flipper-pkg init path/to/plugin
@@ -98,6 +99,27 @@ EXAMPLE
 ```
 
 _See code: [src/commands/lint.ts](https://github.com/facebook/flipper/blob/v0.39.0/src/commands/lint.ts)_
+
+## `flipper-pkg migrate [DIRECTORY]`
+
+migrates a Flipper desktop plugin to the latest version of specification
+
+```
+USAGE
+  $ flipper-pkg migrate [DIRECTORY]
+
+ARGUMENTS
+  DIRECTORY  [default: .] Path to the plugin directory. Defaults to the current working directory.
+
+OPTIONS
+  --no-dependencies  Do not add or change package dependencies during migration.
+  --no-scripts       Do not add or change package scripts during migration.
+
+EXAMPLE
+  $ flipper-pkg migrate path/to/plugin
+```
+
+_See code: [src/commands/migrate.ts](https://github.com/facebook/flipper/blob/v0.39.0/src/commands/migrate.ts)_
 
 ## `flipper-pkg pack [DIRECTORY]`
 

@@ -132,6 +132,14 @@ Flipper has [tooling for transpiling and bundling](#transpiling-and-bundling) wh
 
 If you need any dependencies in your plugin, you can install them using `yarn add`.
 
+## Migration to the new Plugin Specification
+
+Flipper plugins are defined according to the specification. As with any specification, it is evolving, so new versions of it can be released. Currently Flipper supports plugins defined using version 2 of specification which is described in this page. Previous version of specification is being deprecated, and we encourage all the plugins still using it to migrate.
+
+The main difference of version 2 is that plugins are transpiled and bundled before packaging, while in version 1 this was done in run-time on plugin installation. There are no plugin API changes, so only the `package.json` changes are required to migrate.
+
+The easiest way for migration is using of command `flipper-pkg migrate`. It will automatically migrate your plugin definition to the latest version.
+
 ## Development Build
 
 A Flipper development build should be used for plugin debugging. It is also used for Flipper core development and provides the following features:

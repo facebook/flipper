@@ -29,7 +29,7 @@ test('getPluginDetailsV1', async () => {
       "gatekeeper": "GK_flipper_plugin_test",
       "icon": undefined,
       "id": "flipper-plugin-test",
-      "main": "dist/index.js",
+      "main": "dist/bundle.js",
       "name": "flipper-plugin-test",
       "source": "src/index.tsx",
       "specVersion": 1,
