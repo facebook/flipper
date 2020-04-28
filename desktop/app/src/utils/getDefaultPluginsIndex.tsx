@@ -9,5 +9,6 @@
 
 export default function () {
   // eslint-disable-next-line import/no-unresolved
-  return require('../defaultPlugins');
+  const index = require('../defaultPlugins');
+  return index.default || index;
 }
