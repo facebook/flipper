@@ -14,3 +14,5 @@ The connection is bi-directional allowing the desktop to query information from 
 
 By querying data and responding to pushing from the client a Flipper plugin is able to visualize data, debug problems, and change behavior of running applications. Flipper provides the platform to build these tools on top of and does not limit what kind of tools that may be.
 There are two kinds of plugins in Flipper, client plugins and desktop plugins. Client plugins expose information as an API to desktop plugins whose responsibility it is to render this information in an easy-to-digest way. Client plugins are written once for each platform in the platform's native language. Desktop plugins are written only once in JavaScript using React and consume the APIs exposed by the client plugins.
+
+<img alt="Flipper communication diagram" src={useBaseUrl("img/flipper-communication-diagram.png")} />
