@@ -16,7 +16,7 @@ import {runBuild, getPluginDetails} from 'flipper-pkg-lib';
 export default class Bundle extends Command {
   public static description = 'transpiles and bundles plugin';
 
-  public static examples = [`$ flipper-pkg bundle optional/path/to/directory`];
+  public static examples = [`$ flipper-pkg bundle path/to/plugin`];
 
   public static args: args.IArg[] = [
     {

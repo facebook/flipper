@@ -1,8 +1,8 @@
 {
+  "$schema": "https://fbflipper.com/schemas/plugin-package/v2.json",
   "name": "flipper-plugin-sea-mammals",
   "id": "sea-mammals",
   "private": true,
-  "specVersion": 2,
   "version": "2.0.0",
   "main": "dist/bundle.js",
   "flipperBundlerEntry": "src/index.tsx",
@@ -17,7 +17,8 @@
     "email": "realpassy@fb.com"
   },
   "scripts": {
-    "prepack": "flipper-pkg bundle"
+    "lint": "flipper-pkg lint",
+    "prepack": "flipper-pkg lint && flipper-pkg bundle"
   },
   "peerDependencies": {
     "flipper": "0.39.0"

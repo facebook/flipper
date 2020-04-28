@@ -2,6 +2,7 @@ node_modules
 .DS_Store
 lib/core/metadata.js
 lib/core/MetadataBlog.js
+static/schemas
 website/translated_docs
 build/
 website/yarn.lock

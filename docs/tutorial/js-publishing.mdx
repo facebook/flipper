@@ -18,9 +18,9 @@ A valid example `package.json` could look like this:
 
 ```json
 {
+  "$schema": "https://fbflipper.com/schemas/plugin-package/v2.json",
   "name": "flipper-plugin-sea-mammals",
   "id": "sea-mammals",
-  "specVersion": 2,
   "version": "2.0.0",
   "main": "dist/bundle.js",
   "flipperBundlerEntry": "src/index.tsx",
@@ -30,7 +30,7 @@ A valid example `package.json` could look like this:
   "title": "Sea Mammals",
   "category": "Example Plugin",
   "scripts": {
-    "prepack": "flipper-pkg bundle"
+    "prepack": "flipper-pkg lint && flipper-pkg bundle"
   },
   "dependencies": {
     "flipper": "latest"

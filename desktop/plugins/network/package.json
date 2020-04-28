@@ -1,7 +1,7 @@
 {
+  "$schema": "https://fbflipper.com/schemas/plugin-package/v2.json",
   "name": "flipper-plugin-network",
   "id": "Network",
-  "specVersion": 2,
   "flipperBundlerEntry": "index.tsx",
   "main": "dist/index.js",
   "title": "Network",

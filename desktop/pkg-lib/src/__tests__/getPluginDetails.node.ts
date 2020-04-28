@@ -41,7 +41,7 @@ test('getPluginDetailsV1', async () => {
 
 test('getPluginDetailsV2', async () => {
   const pluginV2 = {
-    specVersion: 2,
+    $schema: 'https://fbflipper.com/schemas/plugin-package/v2.json',
     name: 'flipper-plugin-test',
     title: 'Test',
     version: '3.0.1',
@@ -72,7 +72,7 @@ test('getPluginDetailsV2', async () => {
 
 test('id used as title if the latter omited', async () => {
   const pluginV2 = {
-    specVersion: 2,
+    $schema: 'https://fbflipper.com/schemas/plugin-package/v2.json',
     name: 'flipper-plugin-test',
     id: 'test',
     version: '3.0.1',
@@ -103,7 +103,7 @@ test('id used as title if the latter omited', async () => {
 
 test('name without "flipper-plugin-" prefix is used as title if the latter omited', async () => {
   const pluginV2 = {
-    specVersion: 2,
+    $schema: 'https://fbflipper.com/schemas/plugin-package/v2.json',
     name: 'flipper-plugin-test',
     version: '3.0.1',
     main: 'dist/bundle.js',

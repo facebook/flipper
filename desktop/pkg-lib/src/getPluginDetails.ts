@@ -17,9 +17,12 @@ export default async function (
 ): Promise<PluginDetails> {
   packageJson =
     packageJson || (await fs.readJson(path.join(pluginDir, 'package.json')));
-  const specVersion = !packageJson.specVersion
-    ? 1
-    : (packageJson.specVersion as number);
+  const specVersion =
+    packageJson.$schema &&
+    packageJson.$schema ===
+      'https://fbflipper.com/schemas/plugin-package/v2.json'
+      ? 2
+      : 1;
   switch (specVersion) {
     case 1:
       return await getPluginDetailsV1(pluginDir, packageJson);

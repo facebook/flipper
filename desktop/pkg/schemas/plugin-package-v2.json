@@ -1,0 +1,52 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "allOf": [
+    {"$ref": "https://schemastore.azurewebsites.net/schemas/json/package.json"}
+  ],
+  "properties": {
+    "name": {
+      "description": "The name of the package. Must start with \"flipper-plugin-\" prefix.",
+      "type": "string",
+      "maxLength": 214,
+      "pattern": "^flipper-plugin-[a-z0-9-._~]*$",
+      "errorMessage": "should start with \"flipper-plugin-\", e.g. \"flipper-plugin-example\""
+    },
+    "id": {
+      "type": "string",
+      "description": "Used as the plugin native identifier and must match the mobile plugin identifier. Also shown in the Flipper main sidebar if \"title\" property is omitted."
+    },
+    "flipperBundlerEntry": {
+      "type": "string",
+      "filePathExists": true,
+      "description": "Points to the source entry point which will be used for the plugin code bundling. \"flipper-pkg\" takes the path specified in this property as source, transpiles and bundles it, and saves the output to the path specified in property \"main\"."
+    },
+    "title": {
+      "type": "string",
+      "description": "Shown in the Flipper main sidebar as the human-readable name of the plugin. If omitted, \"id\" is used instead."
+    },
+    "icon": {
+      "type": "string",
+      "description": "Determines the plugin icon which is displayed in the main sidebar. The list of available icons is static for now and can be found in https://github.com/facebook/flipper/blob/master/desktop/static/icons.json."
+    },
+    "keywords": {
+      "description": "This helps people discover your package as it's listed in 'npm search'. To make the plugin discoverable in Flipper, the property must contain \"flipper-plugin\" keyword.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "contains": {
+        "type": "string",
+        "pattern": "flipper-plugin"
+      },
+      "errorMessage": "should contain keyword \"flipper-plugin\""
+    }
+  },
+  "required": [
+    "name",
+    "version",
+    "id",
+    "main",
+    "flipperBundlerEntry",
+    "keywords"
+  ]
+}

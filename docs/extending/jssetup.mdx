@@ -51,9 +51,9 @@ After `yarn init` finishes, create an `src/index.tsx` file which will be the ent
 Example `package.json`:
 ```
 {
+  "$schema": "https://fbflipper.com/schemas/plugin-package/v2.json",
   "name": "flipper-plugin-myplugin",
   "id": "myplugin",
-  "specVersion": 2,
   "version": "1.0.0",
   "main": "dist/bundle.js",
   "flipperBundlerEntry": "src/index.tsx",
@@ -65,12 +65,14 @@ Example `package.json`:
     "email": "you@example.com"
   },
   "scripts": {
-    "prepack": "flipper-pkg bundle"
+    "lint": "flipper-pkg lint",
+    "prepack": "flipper-pkg lint && flipper-pkg bundle"
   }
-  "dependencies": {
+  "peerDependencies": {
     "flipper": "latest"
   },
   "devDependencies": {
+    "flipper": "latest",
     "flipper-pkg": "latest"
   }
 }
@@ -78,9 +80,9 @@ Example `package.json`:
 
 Important attributes of `package.json`:
 
-- `name` Npm package name. Should start with `flipper-plugin-` by convention, so Flipper plugins can be easily found on npm.
+- `$schema` must contain URI identifying scheme according to which the plugin is defined. Currently, Flipper supports plugins defined by the specification version 2 (https://fbflipper.com/schemas/plugin-package/v2.json), while version 1 is being deprecated.
 
-- `specVersion` Version of the Flipper plugin specification. Currently, Flipper supports plugins defined using version 2 of the specification which is described in the current section.
+- `name` Npm package name. Should start with `flipper-plugin-` by convention, so Flipper plugins can be easily found on npm.
 
 - `id` Used as the plugin native identifier and **must match the mobile plugin identifier**.
 
@@ -108,6 +110,10 @@ export default class extends FlipperPlugin {
   }
 }
 ```
+
+### Validation
+
+Plugin definition can be validated using command `flipper-pkg lint`. The command shows all the mismatches which should be fixed to make plugin definition valid.
 
 ### npm dependencies
 

@@ -5,7 +5,8 @@
     "rootDir": "src",
     "allowJs": true,
     "esModuleInterop": true,
-    "composite": true
+    "composite": true,
+    "incremental": true
   },
   "references": [{"path": "../babel-transformer"}],
   "include": ["src"],

@@ -5,7 +5,8 @@
     "rootDir": "src",
     "allowJs": true,
     "esModuleInterop": true,
-    "composite": true
+    "composite": true,
+    "incremental": true
   },
   "include": ["src"],
   "exclude": ["node_modules", "**/__tests__/*"]

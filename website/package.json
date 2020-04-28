@@ -1,7 +1,8 @@
 {
   "scripts": {
-    "start": "yarn generate-uidocs && docusaurus start",
-    "build": "yarn generate-uidocs && docusaurus build",
+    "copy-schema": "fcli ensure static/schemas/plugin-package && fcli copy ../desktop/pkg/schemas/plugin-package-v2.json static/schemas/plugin-package/v2.json -o",
+    "start": "yarn copy-schema && yarn generate-uidocs && docusaurus start",
+    "build": "yarn copy-schema && yarn generate-uidocs && docusaurus build",
     "publish-gh-pages": "docusaurus deploy",
     "write-translations": "docusaurus write-translations",
     "version": "docusaurus version",
@@ -13,14 +14,14 @@
     "@docusaurus/core": "^2.0.0-alpha.50",
     "@docusaurus/preset-classic": "^2.0.0-alpha.50",
     "docblock-parser": "^1.0.0",
+    "file-cli": "^1.2.0",
     "glob": "^7.1.3",
     "react-docgen": "^5.2.1",
     "classnames": "^2.2.6",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "resolutions": {
     "minimist": "1.2.3",
     "kind-of": "6.0.3"

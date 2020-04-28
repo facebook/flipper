@@ -4,7 +4,8 @@
     "outDir": "lib",
     "rootDir": "src",
     "allowJs": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "incremental": true
   },
   "references": [{"path": "../pkg-lib"}],
   "include": ["src"],
