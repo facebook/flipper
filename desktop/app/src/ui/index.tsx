@@ -151,6 +151,7 @@ export {
   ElementAttribute,
   Element,
   ElementSearchResultSet,
+  ElementsInspectorProps,
 } from './components/elements-inspector/ElementsInspector';
 export {Elements} from './components/elements-inspector/elements';
 export {ContextMenuExtension} from './components/elements-inspector/elements';

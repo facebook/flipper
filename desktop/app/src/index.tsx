@@ -168,6 +168,7 @@ export {
   ElementAttribute,
   Element,
   ElementSearchResultSet,
+  ElementsInspectorProps,
 } from './ui/components/elements-inspector/ElementsInspector';
 export {Elements} from './ui/components/elements-inspector/elements';
 export {ContextMenuExtension} from './ui/components/elements-inspector/elements';
