@@ -9,6 +9,7 @@
 
 import runLint from '../utils/runLint';
 import fs from 'fs-extra';
+import path from 'path';
 
 const validPackageJson = {
   $schema: 'https://fbflipper.com/schemas/plugin-package/v2.json',
@@ -124,7 +125,9 @@ test('flippeBundlerEntry must point to an existing file', async () => {
   testPackageJson.flipperBundlerEntry = 'unexisting/file';
   fs.pathExistsSync = jest
     .fn()
-    .mockImplementation((path) => !path.includes('unexisting/file'));
+    .mockImplementation(
+      (filePath) => !filePath.includes(path.join('unexisting', 'file')),
+    );
   const json = JSON.stringify(testPackageJson);
   fs.readFile = jest.fn().mockResolvedValue(new Buffer(json));
   const result = await runLint('dir');
