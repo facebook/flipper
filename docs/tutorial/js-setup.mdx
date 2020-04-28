@@ -29,20 +29,31 @@ Your file will then look something like this:
 }
 ```
 
+## Installing flipper-pkg
+
+`flipper-pkg` tool helps to define, validate and package Flipper desktop plugins. You can install it globally using:
+```
+yarn global add flipper-pkg
+```
+or
+```
+npm install flipper-pkg --global
+```
+
 ## Creating the Plugin Package
 
-With the loading part out of the way, we can create the new plugin. For that, first
-create a new folder inside the custom plugins directory. Then use `yarn init` (`npm init` if that's more your style)
-to initialise a new JavaScript package:
+With the loading part out of the way, we can create the new plugin. For that, first create a new folder inside the custom plugins directory. Then use `flpper-pkg init` to initialise a new Flipper desktop plugin package:
 
 ```bash
 $ cd ~/Flipper/custom-plugins/
 $ mkdir sea-mammals
 $ cd sea-mammals
-$ yarn init
+$ flipper-pkg init
 ```
 
-Open the `package.json` and edit it. There are a few important things:
+The tool will ask you to provide "id" and "title" for your plugin. Use "sea-mammals" as "id" and "Sea Mammals" as "title". After that the tool will create two files in the directory: `package.json` and `src/index.tsx`.
+
+Open the `package.json` to check the fields:
 1) "$schema" must contain URI identifying scheme according to which the plugin is defined. Currently, Flipper supports plugins defined by the specification version 2 (https://fbflipper.com/schemas/plugin-package/v2.json), while version 1 is being deprecated.
 2) "name" must start with "flipper-plugin-"
 3) "keywords" must contain "flipper-plugin"

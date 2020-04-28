@@ -22,7 +22,8 @@
     "cli-ux": "^5.4.5",
     "flipper-pkg-lib": "0.39.0",
     "fs-extra": "^8.1.0",
-    "inquirer": "^7.0.5"
+    "inquirer": "^7.1.0",
+    "recursive-readdir": "^2.2.2"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1",

@@ -36,19 +36,28 @@ Plugin File example structure:
 
 ## Plugin Definition
 
+### flipper-pkg
+
+CLI tool `flipper-pkg` helps to initialize, validate, and package Flipper desktop plugins.
+
+The tool is published to npm and can be installed as a `devDependency` for the plugin package, or as a global CLI tool:
+```
+yarn global add flipper-pkg
+```
+or
+```
+npm install flipper-pkg --global
+```
+
+### Package Format
+
 All Flipper Desktop plugins must be self-contained in a directory. This directory must contain at a minimum package.json and entry source file, e.g.:
 * package.json
 * src/index.tsx
 
-The best way to initialize a JS plugin is to create a directory, and run `yarn init` inside it. By convention, the `name` of a Flipper plugin package should start with `flipper-plugin-`, e.g. `flipper-plugin-myplugin`.
+The best way to initialize a JS plugin is to create a directory, and run `flipper-pkg init` inside it ("flipper-pkg" should be installed globally before that). It will ask few questions and initialize the plugin for you.
 
-Make sure that the `id` field in your package.json is the same as the identifier of the client plugin, e.g. if your Java plugin returns `myplugin` from its `getId()` method, the `id` field in your `package.json` should also be `myplugin`.
-
-Flipper has [tooling for transpiling and bundling](#transpiling-and-bundling) which allows writing plugins in plain ES6 JavaScript, [Flow](https://flow.org/) or [TypeScript](https://www.typescriptlang.org/) but we recommend you use **TypeScript** for the best development experience. We also recommend you use the file extension `.tsx` when using TypeScript which adds support for inline React expressions.
-
-After `yarn init` finishes, create an `src/index.tsx` file which will be the entry point to your plugin. An example `package.json` file could look like this:
-
-Example `package.json`:
+After `flipper-pkg init` finished, you should have files `package.json` and `src/index.tsx` files in the directory. The first file is the plugin package manifest and the second is the entry point to your plugin. An example `package.json` file could look like this:
 ```
 {
   "$schema": "https://fbflipper.com/schemas/plugin-package/v2.json",
@@ -84,7 +93,7 @@ Important attributes of `package.json`:
 
 - `name` Npm package name. Should start with `flipper-plugin-` by convention, so Flipper plugins can be easily found on npm.
 
-- `id` Used as the plugin native identifier and **must match the mobile plugin identifier**.
+- `id` Used as the plugin native identifier and **must match the mobile plugin identifier**, e.g. returned by `getId` method of your Java plugin.
 
 - `main` Points to the plugin bundle which will be loaded by Flipper. The "flipper-pkg" utility uses this field to determine output location during plugin bundling.
 
@@ -114,6 +123,10 @@ export default class extends FlipperPlugin {
 ### Validation
 
 Plugin definition can be validated using command `flipper-pkg lint`. The command shows all the mismatches which should be fixed to make plugin definition valid.
+
+### Transpilation
+
+Flipper has [tooling for transpiling and bundling](#transpiling-and-bundling) which allows writing plugins in plain ES6 JavaScript, [Flow](https://flow.org/) or [TypeScript](https://www.typescriptlang.org/) but we recommend you use **TypeScript** for the best development experience. We also recommend you use the file extension `.tsx` when using TypeScript which adds support for inline React expressions.
 
 ### npm dependencies
 

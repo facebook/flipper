@@ -26,6 +26,7 @@ USAGE
 <!-- commands -->
 * [`flipper-pkg bundle [DIRECTORY]`](#flipper-pkg-bundle-directory)
 * [`flipper-pkg help [COMMAND]`](#flipper-pkg-help-command)
+* [`flipper-pkg init [DIRECTORY]`](#flipper-pkg-init-directory)
 * [`flipper-pkg lint [DIRECTORY]`](#flipper-pkg-lint-directory)
 * [`flipper-pkg pack [DIRECTORY]`](#flipper-pkg-pack-directory)
 
@@ -62,6 +63,24 @@ OPTIONS
 ```
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.2.3/src/commands/help.ts)_
+
+## `flipper-pkg init [DIRECTORY]`
+
+initializes Flipper desktop plugin template in the provided directory
+
+```
+USAGE
+  $ flipper-pkg init [DIRECTORY]
+
+ARGUMENTS
+  DIRECTORY  [default: .] Path to directory where plugin package template should be initialized. Defaults to the current
+             working directory.
+
+EXAMPLE
+  $ flipper-pkg init path/to/plugin
+```
+
+_See code: [src/commands/init.ts](https://github.com/facebook/flipper/blob/v0.39.0/src/commands/init.ts)_
 
 ## `flipper-pkg lint [DIRECTORY]`
 
