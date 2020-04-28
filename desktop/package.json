@@ -19,7 +19,8 @@
       "pkg",
       "pkg-lib",
       "static",
-      "plugins/*"
+      "plugins/*",
+      "e2e"
     ],
     "nohoist": [
       "flipper-plugin-kaios-big-allocations/firefox-client"
@@ -244,6 +245,7 @@
     "test:debug": "yarn build:pkg && node --inspect node_modules/.bin/jest --runInBand --env=jest-environment-jsdom-sixteen",
     "test-electron": "yarn build:pkg && jest --env=jest-environment-jsdom-sixteen --testPathPattern=\"electron\\.(js|ts|tsx)$\" --testEnvironment=@jest-runner/electron/environment --runner=@jest-runner/electron --no-cache",
     "test-with-device": "yarn build:pkg && USE_ELECTRON_STUBS=1 jest --env=jest-environment-jsdom-sixteen --testPathPattern=\"device\\.(js|ts|tsx)$\" --detectOpenHandles --no-cache",
+    "test-e2e": "cd e2e && yarn test",
     "lint:tsc": "tsc --noemit",
     "lint:eslint": "eslint . --ext .js,.ts,.tsx",
     "lint:flow": "flow check",
