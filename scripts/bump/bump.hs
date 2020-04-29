@@ -32,7 +32,7 @@ releaseReplacements =
   ,("docs/getting-started/android-native.mdx", spaces >> "releaseImplementation 'com.facebook.flipper:flipper-noop:" *> releaseVersion <* "'")
   ,("docs/getting-started/react-native-android.mdx", spaces >> "debugImplementation 'com.facebook.flipper:flipper:" *> releaseVersion <* "'")
   ,("docs/getting-started/react-native-android.mdx", spaces >> "debugImplementation 'com.facebook.flipper:flipper-network-plugin:" *> releaseVersion <* "'")
-  ,("docs/setup/leak-canary-plugin.md", spaces >> "debugImplementation 'com.facebook.flipper:flipper-leakcanary-plugin:" *> releaseVersion <* "'")
+  ,("docs/setup/leak-canary-plugin.mdx", spaces >> "debugImplementation 'com.facebook.flipper:flipper-leakcanary-plugin:" *> releaseVersion <* "'")
   ,("docs/setup/layout-plugin.mdx", spaces >> "debugImplementation 'com.facebook.flipper:flipper-litho-plugin:" *> releaseVersion <* "'")
   ,("docs/setup/network-plugin.mdx", spaces >> "debugImplementation 'com.facebook.flipper:flipper-network-plugin:" *> releaseVersion <* "'")
   ,("docs/setup/images-plugin.mdx", spaces >> "debugImplementation 'com.facebook.flipper:flipper-images-plugin:" *> releaseVersion <* "'")
