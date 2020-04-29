@@ -54,13 +54,14 @@ $ flipper-pkg init
 The tool will ask you to provide "id" and "title" for your plugin. Use "sea-mammals" as "id" and "Sea Mammals" as "title". After that the tool will create two files in the directory: `package.json` and `src/index.tsx`.
 
 Open the `package.json` to check the fields:
-1) "$schema" must contain URI identifying scheme according to which the plugin is defined. Currently, Flipper supports plugins defined by the specification version 2 (https://fbflipper.com/schemas/plugin-package/v2.json), while version 1 is being deprecated.
-2) "name" must start with "flipper-plugin-"
-3) "keywords" must contain "flipper-plugin"
-4) "id" must be the same as used on native side, e.g. returned by getId() method in Android plugin. In our case that is "sea-mammals".
-5) "flipperBundlerEntry" must point to the source entry point which will be used by "flipper-pkg" to produce the plugin bundle.
-6) "main" must point to the place where the produced bundle will be written.
-7) "title" and "icon" are optional fields specifying the plugin item appearance in the Flipper sidebar.
+
+1. "$schema" must contain URI identifying scheme according to which the plugin is defined. Currently, Flipper supports plugins defined by the specification version 2 (https://fbflipper.com/schemas/plugin-package/v2.json), while version 1 is being deprecated.
+2. "name" must start with "flipper-plugin-"
+3. "keywords" must contain "flipper-plugin"
+4. "id" must be the same as used on native side, e.g. returned by getId() method in Android plugin. In our case that is "sea-mammals".
+5. "flipperBundlerEntry" must point to the source entry point which will be used by "flipper-pkg" to produce the plugin bundle.
+6. "main" must point to the place where the produced bundle will be written.
+7. "title" and "icon" are optional fields specifying the plugin item appearance in the Flipper sidebar.
 
 For instance:
 

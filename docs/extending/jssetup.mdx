@@ -6,13 +6,14 @@ title: Desktop Plugin Development
 ## Workflow
 
 In a nutshell, the workflow for creating Flipper Desktop Plugin is the following:
-1) [To make your custom plugins discoverable by Flipper](#dynamically-loading-plugins), create a directory to contain them, e.g. `~/flipper-plugins`, and add this path to the `pluginPaths` property in the Flipper config (`~/.flipper/config.json`).
-2) Create a directory for your plugin inside the directory created at step 1, e.g. `~/flipper-plugins/my-plugin`.
-3) [Define your plugin](#plugin-definition) in the directory created at step 2.
-4) [Start a development build of Flipper](#development-build) which will automatically [transpile, bundle and load](#transpiling-and-bundling) the defined plugin, as well as all other plugins found in the directories specified as `pluginPaths` in the Flipper config.
-5) [Debug your plugin](debugging), make necessary changes and verify them in the running Flipper development build instance which will re-load the changed components automatically.
-6) If you want to be sure the plugin works as expected with a release build, you can [package it as a tarball](#packaging-to-file) and [install it from the file system](#installation-from-file) into a released version of Flipper.
-7) Finally, [bundle the plugin and publish it to npm](#publishing-to-npm), so it can be discovered and installed by any Flipper user.
+
+1. [To make your custom plugins discoverable by Flipper](#dynamically-loading-plugins), create a directory to contain them, e.g. `~/flipper-plugins`, and add this path to the `pluginPaths` property in the Flipper config (`~/.flipper/config.json`).
+2. Create a directory for your plugin inside the directory created at step 1, e.g. `~/flipper-plugins/my-plugin`.
+3. [Define your plugin](#plugin-definition) in the directory created at step 2.
+4. [Start a development build of Flipper](#development-build) which will automatically [transpile, bundle and load](#transpiling-and-bundling) the defined plugin, as well as all other plugins found in the directories specified as `pluginPaths` in the Flipper config.
+5. [Debug your plugin](debugging), make necessary changes and verify them in the running Flipper development build instance which will re-load the changed components automatically.
+6. If you want to be sure the plugin works as expected with a release build, you can [package it as a tarball](#packaging-to-file) and [install it from the file system](#installation-from-file) into a released version of Flipper.
+7. Finally, [bundle the plugin and publish it to npm](#publishing-to-npm), so it can be discovered and installed by any Flipper user.
 
 ## Dynamically Loading Plugins
 
@@ -188,8 +189,9 @@ You can get the list of other available commands by invoking `flipper-pkg help`,
 ### Publishing to npm
 
 Flipper plugins are essentially standard npm packages. So you can publish them by executing `yarn publish` or `npm publish` in the plugin directory. The only requirements are:
-1) `package.json` and code [must follow the Flipper plugin specification](#plugin-definition)
-2) code must be bundled using "flipper-pkg" before packing or publishing. This can be done by executing `flipper-pkg bundle` on `prepack` step:
+
+1. `package.json` and code [must follow the Flipper plugin specification](#plugin-definition)
+2. code must be bundled using "flipper-pkg" before packing or publishing. This can be done by executing `flipper-pkg bundle` on `prepack` step:
     ```
     {
       ...
@@ -209,9 +211,10 @@ Flipper plugins are essentially standard npm packages. So you can publish them b
 To package plugin as a tarball, you can use the same command as for packaging any other npm package, e.g. `yarn pack` or `npm pack`.
 
 "flipper-pkg" also provides a convenient command `pack` which:
-1) Installs the plugin dependencies
-2) Bundles the plugin
-3) Creates the tarball and saves it at the specified location
+
+1. Installs the plugin dependencies
+2. Bundles the plugin
+3. Creates the tarball and saves it at the specified location
 
 E.g. to package plugin located at `~/flipper-plugins/my-plugin` to `~/Desktop`, execute the following command:
 ```
@@ -221,7 +224,8 @@ flipper-pkg pack ~/flipper-plugins/my-plugin -o ~/Desktop
 ### Installation from File
 
 It is possible to install plugins into Flipper from tarballs. This is useful in cases when you need to try a plugin version which is not published to npm, or if you want to distribute plugin privately:
-1) Launch Flipper
-2) Click the "Manage Plugins" button in the bottom-left corner
-3) Select the "Install Plugins" tab in the opened sheet
-4) Specify the path to the plugin package (or just drag and drop it) and click "Install"
+
+1. Launch Flipper
+2. Click the "Manage Plugins" button in the bottom-left corner
+3. Select the "Install Plugins" tab in the opened sheet
+4. Specify the path to the plugin package (or just drag and drop it) and click "Install"
