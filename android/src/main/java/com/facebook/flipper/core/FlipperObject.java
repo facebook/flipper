@@ -69,6 +69,18 @@ public class FlipperObject {
     return new FlipperArray((JSONArray) o);
   }
 
+  public Object get(String name) {
+    final Object o = mJson.opt(name);
+
+    if (o instanceof JSONObject) {
+      return new FlipperObject((JSONObject) o);
+    } else if (o instanceof JSONArray) {
+      return new FlipperArray((JSONArray) o);
+    } else {
+      return o;
+    }
+  }
+
   public boolean contains(String name) {
     return mJson.has(name);
   }
