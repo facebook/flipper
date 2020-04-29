@@ -14,7 +14,7 @@ import React from 'react';
 
 export type Value =
   | {
-      type: 'string';
+      type: 'string' | 'blob';
       value: string;
     }
   | {
@@ -59,6 +59,7 @@ export function renderValue(val: Value) {
           {val.value.toString()}
         </BooleanValue>
       );
+    case 'blob':
     case 'string':
       return <NonWrappingText>{val.value}</NonWrappingText>;
     case 'integer':
