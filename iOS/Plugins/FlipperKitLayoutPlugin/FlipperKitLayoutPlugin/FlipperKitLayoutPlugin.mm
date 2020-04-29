@@ -91,15 +91,6 @@
                   responder);
             }];
 
-  [connection receive:@"getAllNodes"
-            withBlock:^(NSDictionary* params, id<FlipperResponder> responder) {
-              FlipperPerformBlockOnMainThread(
-                  ^{
-                    [weakSelf onCallGetAllNodesWithResponder:responder];
-                  },
-                  responder);
-            }];
-
   [connection receive:@"getNodes"
             withBlock:^(NSDictionary* params, id<FlipperResponder> responder) {
               FlipperPerformBlockOnMainThread(
@@ -186,19 +177,6 @@
 }
 
 - (void)populateAllNodesFromNode:(nonnull NSString*)identifier
-                    inDictionary:
-                        (nonnull NSMutableDictionary<NSString*, NSDictionary*>*)
-                            mutableDict {
-  NSDictionary* nodeDict = [self getNode:identifier];
-  mutableDict[identifier] = nodeDict;
-  NSArray* arr = nodeDict[@"children"];
-  for (NSString* childIdentifier in arr) {
-    [self populateAllNodesFromNode:childIdentifier inDictionary:mutableDict];
-  }
-  return;
-}
-
-- (void)populateAllNodesFromNode:(nonnull NSString*)identifier
                          inArray:(nonnull NSMutableArray<NSDictionary*>*)
                                      mutableArray {
   NSDictionary* nodeDict = [self getNode:identifier];
@@ -210,26 +188,6 @@
   for (NSString* childIdentifier in children) {
     [self populateAllNodesFromNode:childIdentifier inArray:mutableArray];
   }
-}
-
-- (void)onCallGetAllNodesWithResponder:(nonnull id<FlipperResponder>)responder {
-  NSMutableArray<NSDictionary*>* allNodes = @[].mutableCopy;
-  NSString* identifier = [self trackObject:_rootNode];
-  NSDictionary* rootNode = [self getNode:identifier];
-  if (!rootNode) {
-    return [responder error:@{
-      @"error" : [NSString
-          stringWithFormat:
-              @"getNode returned nil for the rootNode %@, while getting all the nodes",
-              identifier]
-    }];
-  }
-  [allNodes addObject:rootNode];
-  NSMutableDictionary* allNodesDict = @{}.mutableCopy;
-  [self populateAllNodesFromNode:identifier inDictionary:allNodesDict];
-  [responder success:@{
-    @"allNodes" : @{@"rootElement" : identifier, @"elements" : allNodesDict}
-  }];
 }
 
 - (NSMutableArray*)getChildrenForNode:(id)node
