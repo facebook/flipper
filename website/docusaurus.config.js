@@ -43,7 +43,7 @@ const siteConfig = {
         {
           title: 'Plugins',
           items: [
-            {label: 'Core Plugins', to: 'docs/features'},
+            {label: 'Core Plugins', to: 'docs/features/index'},
             {
               label: 'Community Plugins',
               to: 'https://www.npmjs.com/search?q=keywords:flipper-plugin',

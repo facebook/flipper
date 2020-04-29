@@ -3,6 +3,8 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
+ * @format
  */
 
 import React from 'react';
@@ -10,8 +12,8 @@ import Layout from '@theme/Layout';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
 export default function Index() {
-    return (
-      <Layout title="index">
+  return (
+    <Layout title="index">
       <div>
         <div className="splash">
           <div className="content">
@@ -43,16 +45,24 @@ export default function Index() {
                 href="https://www.facebook.com/fbflipper/public/windows">
                 Windows
               </a>
-              <a className="landing-btn" href={useBaseUrl("docs/features/index")}>
+              <a
+                className="landing-btn"
+                href={useBaseUrl('docs/features/index')}>
                 Learn more
               </a>
             </div>
             <div className="slideshow">
-              <img src={useBaseUrl("img/logs.png")} className="splashScreen" />
-              <img src={useBaseUrl("img/layout.png")} className="splashScreen" />
-              <img src={useBaseUrl("img/network.png")} className="splashScreen" />
+              <img src={useBaseUrl('img/logs.png')} className="splashScreen" />
               <img
-                src={useBaseUrl("img/crashreporterplugin.png")}
+                src={useBaseUrl('img/layout.png')}
+                className="splashScreen"
+              />
+              <img
+                src={useBaseUrl('img/network.png')}
+                className="splashScreen"
+              />
+              <img
+                src={useBaseUrl('img/crashreporterplugin.png')}
                 className="splashScreen"
               />
             </div>
@@ -62,8 +72,10 @@ export default function Index() {
         <div className="content row">
           <div className="col">
             <img
-              src={useBaseUrl("img/inspector.png")}
-              srcSet={`${useBaseUrl('img/inspector.png')} 1x, ${useBaseUrl('img/inspector@2x.png')} 2x`}
+              src={useBaseUrl('img/inspector.png')}
+              srcSet={`${useBaseUrl('img/inspector.png')} 1x, ${useBaseUrl(
+                'img/inspector@2x.png',
+              )} 2x`}
             />
           </div>
           <div className="col">
@@ -75,7 +87,7 @@ export default function Index() {
               useful tools including a log viewer, interactive layout inspector,
               and network inspector.
             </p>
-            <a className="learnmore" href={useBaseUrl("docs/features/index")}>
+            <a className="learnmore" href={useBaseUrl('docs/features/index')}>
               Learn more
             </a>
           </div>
@@ -91,22 +103,26 @@ export default function Index() {
               data back and forth, calling functions, and listening for events
               on the mobile app.
             </p>
-            <a className="learnmore" href={useBaseUrl("docs/extending/index")}>
+            <a className="learnmore" href={useBaseUrl('docs/extending/index')}>
               Learn more
             </a>
           </div>
           <div className="col center">
             <img
-              src={useBaseUrl("img/FlipperKit.png")}
-              srcSet={`${useBaseUrl('img/FlipperKit.png')} 1x, ${useBaseUrl('img/FlipperKit@2x.png')} 2x`}
+              src={useBaseUrl('img/FlipperKit.png')}
+              srcSet={`${useBaseUrl('img/FlipperKit.png')} 1x, ${useBaseUrl(
+                'img/FlipperKit@2x.png',
+              )} 2x`}
             />
           </div>
         </div>
         <div className="content row">
           <div className="col">
             <img
-              src={useBaseUrl("img/plugins.png")}
-              srcSet={`${useBaseUrl('img/plugins.png')} 1x, ${useBaseUrl('img/plugins@2x.png')} 2x`}
+              src={useBaseUrl('img/plugins.png')}
+              srcSet={`${useBaseUrl('img/plugins.png')} 1x, ${useBaseUrl(
+                'img/plugins@2x.png',
+              )} 2x`}
             />
           </div>
           <div className="col">
@@ -128,7 +144,9 @@ export default function Index() {
           </div>
         </div>
         <div className="wrapper landing-cta">
-          <a href="/docs/getting-started/" className="landing-btn primary">
+          <a
+            href={useBaseUrl('docs/getting-started/index')}
+            className="landing-btn primary">
             Integrate Flipper In Your App
           </a>
           <a
@@ -139,6 +157,6 @@ export default function Index() {
           </a>
         </div>
       </div>
-      </Layout>
-    );
+    </Layout>
+  );
 }
