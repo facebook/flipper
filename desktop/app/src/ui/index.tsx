@@ -121,7 +121,7 @@ export {default as Tooltip} from './components/Tooltip';
 export {default as TooltipProvider} from './components/TooltipProvider';
 export {default as ResizeSensor} from './components/ResizeSensor';
 export {default as StatusIndicator} from './components/StatusIndicator';
-
+export {default as Line} from './components/Line';
 // typography
 export {default as HorizontalRule} from './components/HorizontalRule';
 export {default as VerticalRule} from './components/VerticalRule';

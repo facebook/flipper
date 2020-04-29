@@ -30,15 +30,21 @@ const SearchBar = styled(Toolbar)({
 });
 SearchBar.displayName = 'Searchable:SearchBar';
 
-export const SearchBox = styled(FlexBox)({
-  backgroundColor: colors.white,
-  borderRadius: '999em',
-  border: `1px solid ${colors.light15}`,
-  height: '100%',
-  width: '100%',
-  alignItems: 'center',
-  paddingLeft: 4,
-});
+export const SearchBox = styled(FlexBox)<{isInvalidInput?: boolean}>(
+  (props) => {
+    return {
+      backgroundColor: colors.white,
+      borderRadius: '999em',
+      border: `1px solid ${
+        !props.isInvalidInput ? colors.light15 : colors.red
+      }`,
+      height: '100%',
+      width: '100%',
+      alignItems: 'center',
+      paddingLeft: 4,
+    };
+  },
+);
 SearchBox.displayName = 'Searchable:SearchBox';
 
 export const SearchInput = styled(Input)<{
