@@ -1,3 +1,8 @@
+# 0.40.0 (29/4/2020)
+
+ * D20942453 -  Background plugins will no longer receive a Flipper connection if they are disabled. This should significantly reduce the overall load of Flipper both on the device and desktop when unused plugins are disabled used, which could otherwise generate 10MB/s of network traffic certain scenarios. All plugins *should* be able to handle to this gracefully, but since this is quite a fundamental change, reach out to the Flipper team when in doubt!
+
+
 # 0.38.0 (21/4/2020)
 
  * D20805231 -  Internals: plugins added as "yarn workspaces" into the root package.json to simplify dependency management between them

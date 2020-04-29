@@ -24,7 +24,7 @@
     "flipper": "0.39.0"
   },
   "devDependencies": {
-    "flipper": "0.39.0",
-    "flipper-pkg": "0.39.0"
+    "flipper": "0.40.0",
+    "flipper-pkg": "0.40.0"
   }
 }
