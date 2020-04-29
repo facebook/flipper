@@ -7,6 +7,8 @@
  * @format
  */
 
+import {OS} from '../devices/BaseDevice';
+
 export default Object.freeze({
   GRAPH_APP_ID: '',
   GRAPH_CLIENT_TOKEN: '',
@@ -29,8 +31,14 @@ export default Object.freeze({
   FEEDBACK_GROUP_LINK: 'https://github.com/facebook/flipper/issues',
 
   // Workplace Group ID's
-  LITHO_SUPPORT_GROUP_ID: 0,
-  GRAPHQL_ANDROID_SUPPORT_GROUP_ID: 0,
-  GRAPHQL_IOS_SUPPORT_GROUP_ID: 0,
-  COMPONENTKIT_GROUP_ID: 0,
+  DEFAULT_SUPPORT_GROUP: {
+    name: 'Default Support Group',
+    workplaceGroupID: 0,
+    requiredPlugins: ['Inspector'],
+    defaultPlugins: ['DeviceLogs'],
+    supportedOS: ['Android'] as Array<OS>,
+    deeplinkSuffix: 'default',
+  },
+
+  SUPPORT_GROUPS: [],
 });
