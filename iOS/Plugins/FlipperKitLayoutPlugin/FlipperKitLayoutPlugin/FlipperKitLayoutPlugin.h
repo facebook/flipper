@@ -10,6 +10,7 @@
 #import <Foundation/Foundation.h>
 
 #import <FlipperKit/FlipperPlugin.h>
+#import <FlipperKit/SKMacros.h>
 
 #import "SKDescriptorMapper.h"
 #import "SKInvalidation.h"
@@ -28,5 +29,8 @@
 @property(nonatomic, readonly, strong) SKDescriptorMapper* descriptorMapper;
 
 @end
+
+/** Exposed for tests only. */
+SK_EXTERN_C dispatch_queue_t SKLayoutPluginSerialBackgroundQueue(void);
 
 #endif

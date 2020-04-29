@@ -258,7 +258,10 @@
     [elements addObject:node];
   }
 
-  [responder success:@{@"elements" : elements}];
+  // Converting to folly::dynamic is expensive, do it on a bg queue:
+  dispatch_async(SKLayoutPluginSerialBackgroundQueue(), ^{
+    [responder success:@{@"elements" : elements}];
+  });
 }
 
 - (void)onCallSetData:(NSString*)objectId
@@ -559,5 +562,23 @@
 }
 
 @end
+
+/**
+ Operations like converting NSDictionary to folly::dynamic can be expensive.
+ Do them on this serial background queue to avoid blocking the main thread.
+ (Of course, ideally we wouldn't bother with building NSDictionary objects
+ in the first place, in favor of just using folly::dynamic directly...)
+ */
+dispatch_queue_t SKLayoutPluginSerialBackgroundQueue(void) {
+  static dispatch_queue_t queue;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    queue = dispatch_queue_create("flipper.layout.bg", DISPATCH_QUEUE_SERIAL);
+    // This should be relatively high priority, to prevent Flipper lag.
+    dispatch_set_target_queue(
+        queue, dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0));
+  });
+  return queue;
+}
 
 #endif
