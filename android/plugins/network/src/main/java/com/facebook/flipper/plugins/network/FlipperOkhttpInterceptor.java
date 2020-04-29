@@ -31,6 +31,7 @@ import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.Protocol;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 import okio.Buffer;
@@ -85,40 +86,46 @@ public class FlipperOkhttpInterceptor
 
   @Override
   public Response intercept(Interceptor.Chain chain) throws IOException {
-    final Request request = chain.request();
+    Request request = chain.request();
+    final Pair<Request, Buffer> requestWithClonedBody = cloneBodyAndInvalidateRequest(request);
+    request = requestWithClonedBody.first;
     final String identifier = UUID.randomUUID().toString();
-    final RequestInfo requestInfo = convertRequestWithoutBody(request, identifier);
+    mPlugin.reportRequest(convertRequest(request, requestWithClonedBody.second, identifier));
 
     // Check if there is a mock response
     final Response mockResponse = mIsMockResponseSupported ? getMockResponse(request) : null;
     final Response response = mockResponse != null ? mockResponse : chain.proceed(request);
-    final ResponseBody body = response.body();
-    final ResponseInfo responseInfo = convertResponse(response, body, identifier);
-    responseInfo.isMock = mockResponse != null;
-    // Add request body
-    try {
-      if (request.body() != null) {
-        requestInfo.body = bodyToByteArray(request, mMaxBodyBytes);
-      }
-    } catch (IOException e) {
-      // We can safely ignore this as some requests don't allow their body to be read more than once
-    }
-    mPlugin.reportRequest(requestInfo);
+    final Buffer responseBody = cloneBodyForResponse(response, mMaxBodyBytes);
+    final ResponseInfo responseInfo =
+        convertResponse(response, responseBody, identifier, mockResponse != null);
     mPlugin.reportResponse(responseInfo);
     return response;
   }
 
-  private static byte[] bodyToByteArray(final Request request, final long maxBodyBytes)
+  private static byte[] bodyBufferToByteArray(final Buffer bodyBuffer, final long maxBodyBytes)
       throws IOException {
-    final Buffer buffer = new Buffer();
-    if (request.body() != null) {
-      request.body().writeTo(buffer);
-    }
-    return buffer.readByteArray(Math.min(buffer.size(), maxBodyBytes));
+    return bodyBuffer.readByteArray(Math.min(bodyBuffer.size(), maxBodyBytes));
   }
 
-  private RequestInfo convertRequestWithoutBody(Request request, String identifier)
+  /// This method return original Request and body Buffer, while the original Request may be
+  /// invalidated because body may not be read more than once
+  private static Pair<Request, Buffer> cloneBodyAndInvalidateRequest(final Request request)
       throws IOException {
+    if (request.body() != null) {
+      final Request.Builder builder = request.newBuilder();
+      final MediaType mediaType = request.body().contentType();
+      final Buffer originalBuffer = new Buffer();
+      request.body().writeTo(originalBuffer);
+      final Buffer clonedBuffer = originalBuffer.clone();
+      final RequestBody newOriginalBody =
+          RequestBody.create(mediaType, originalBuffer.readByteString());
+      return new Pair<>(builder.method(request.method(), newOriginalBody).build(), clonedBuffer);
+    }
+    return new Pair<>(request, null);
+  }
+
+  private RequestInfo convertRequest(
+      Request request, final Buffer bodyBuffer, final String identifier) throws IOException {
     final List<NetworkReporter.Header> headers = convertHeader(request.headers());
     final RequestInfo info = new RequestInfo();
     info.requestId = identifier;
@@ -126,28 +133,38 @@ public class FlipperOkhttpInterceptor
     info.headers = headers;
     info.method = request.method();
     info.uri = request.url().toString();
+    if (bodyBuffer != null) {
+      info.body = bodyBufferToByteArray(bodyBuffer, mMaxBodyBytes);
+      bodyBuffer.close();
+    }
 
     return info;
   }
 
-  private ResponseInfo convertResponse(Response response, ResponseBody body, String identifier)
+  private static Buffer cloneBodyForResponse(final Response response, long maxBodyBytes)
       throws IOException {
+    if (response.body() != null
+        && response.body().source() != null
+        && response.body().source().buffer() != null) {
+      final BufferedSource source = response.body().source();
+      source.request(maxBodyBytes);
+      return source.buffer().clone();
+    }
+    return null;
+  }
+
+  private ResponseInfo convertResponse(
+      Response response, Buffer bodyBuffer, String identifier, boolean isMock) throws IOException {
     final List<NetworkReporter.Header> headers = convertHeader(response.headers());
     final ResponseInfo info = new ResponseInfo();
     info.requestId = identifier;
     info.timeStamp = response.receivedResponseAtMillis();
     info.statusCode = response.code();
     info.headers = headers;
-    Buffer buffer = null;
-    try {
-      final BufferedSource source = body.source();
-      source.request(mMaxBodyBytes);
-      buffer = source.buffer().clone();
-      info.body = buffer.readByteArray();
-    } finally {
-      if (buffer != null) {
-        buffer.close();
-      }
+    info.isMock = isMock;
+    if (bodyBuffer != null) {
+      info.body = bodyBufferToByteArray(bodyBuffer, mMaxBodyBytes);
+      bodyBuffer.close();
     }
 
     return info;
