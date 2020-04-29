@@ -3,6 +3,8 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
+ * @format
  */
 
 :root {
@@ -220,21 +222,6 @@ h6 {
   flex-grow: 1;
   padding: 10px 20px;
   align-self: center;
-}
-
-.col h3 {
-  font-size: 28px;
-  font-weight: 300;
-  margin-bottom: 20px;
-  margin-top: 0;
-}
-
-.col h4 {
-  margin: 0;
-  font-weight: 500;
-  font-size: 0.8em;
-  opacity: 0.7;
-  text-transform: uppercase;
 }
 
 .col p {
