@@ -9,6 +9,7 @@
 
 :root {
   --ifm-color-primary: #121020;
+  --ifm-link-color: #3578e5;
   --ifm-navbar-background-color: var(--ifm-color-primary);
   --ifm-navbar-link-color: #ebedf0;
   --ifm-navbar-shadow: none;
