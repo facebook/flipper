@@ -115,6 +115,11 @@ async function bumpWorkspaceVersions(
     ) {
       changed = true;
     }
+    if (
+      updateDependencies(json.peerDependencies, localPackageNames, newVersion)
+    ) {
+      changed = true;
+    }
     if (changed) {
       await savePackageJson(pkg);
     }
