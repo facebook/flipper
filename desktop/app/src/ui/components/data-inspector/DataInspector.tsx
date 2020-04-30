@@ -358,7 +358,9 @@ export default class DataInspector extends Component<DataInspectorProps> {
       !deepEqual(nextProps.path, props.path) ||
       nextProps.onExpanded !== props.onExpanded ||
       nextProps.onDelete !== props.onDelete ||
-      nextProps.setValue !== props.setValue
+      nextProps.setValue !== props.setValue ||
+      nextProps.collapsed !== props.collapsed ||
+      nextProps.expandRoot !== props.expandRoot
     );
   }
 
