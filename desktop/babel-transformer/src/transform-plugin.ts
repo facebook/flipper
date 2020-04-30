@@ -10,28 +10,25 @@
 import {default as doTransform} from './transform';
 import {default as flipperEnv} from './flipper-env';
 
+const presets = [require('@babel/preset-react')];
+const plugins = [
+  require('./electron-requires'),
+  require('./plugin-flipper-requires'),
+];
+if (flipperEnv.FLIPPER_HEADLESS) {
+  plugins.unshift(require('./electron-stubs'));
+}
+if (flipperEnv.FLIPPER_FB) {
+  plugins.unshift(require('./fb-stubs'));
+}
 export default function transform({
   filename,
   options,
   src,
-  presets,
-  plugins,
 }: {
   filename: string;
   options: any;
   src: string;
-  presets?: any[];
-  plugins?: any[];
 }) {
-  presets = presets ?? [require('@babel/preset-react')];
-  plugins = plugins ?? [];
-  if (flipperEnv.FLIPPER_FB) {
-    plugins.push(require('./fb-stubs'));
-  }
-  if (flipperEnv.FLIPPER_HEADLESS) {
-    plugins.push(require('./electron-stubs'));
-  }
-  plugins.push(require('./electron-requires'));
-  plugins.push(require('./plugin-flipper-requires'));
   return doTransform({filename, options, src, presets, plugins});
 }
