@@ -22,6 +22,7 @@ import {clipboard} from 'electron';
 import deepEqual from 'deep-equal';
 import React from 'react';
 import {TooltipOptions} from '../TooltipProvider';
+import {shallowEqual} from 'react-redux';
 
 export {DataValueExtractor} from './DataPreview';
 
@@ -266,16 +267,7 @@ const diffMetadataExtractor: DiffMetadataExtractor = (
   return Object.prototype.hasOwnProperty.call(data, key) ? [{data: val}] : [];
 };
 
-function isComponentExpanded(
-  data: any,
-  diffType: string,
-  diffValue: any,
-  isExpanded: boolean,
-) {
-  if (isExpanded) {
-    return true;
-  }
-
+function isComponentExpanded(data: any, diffType: string, diffValue: any) {
   if (diffValue == null) {
     return false;
   }
@@ -299,6 +291,7 @@ function isComponentExpanded(
 }
 
 type DataInspectorState = {
+  shouldExpand: boolean;
   isExpanded: boolean;
   isExpandable: boolean;
   res: any;
@@ -327,12 +320,14 @@ export default class DataInspector extends Component<
     ancestry: [],
   };
 
+  expandHandle: any = undefined;
   interaction: (name: string, data?: any) => void;
 
   constructor(props: DataInspectorProps) {
     super(props);
     this.interaction = reportInteraction('DataInspector', props.path.join(':'));
     this.state = {
+      shouldExpand: false,
       isExpandable: false,
       isExpanded: false,
       res: undefined,
@@ -346,7 +341,13 @@ export default class DataInspector extends Component<
     );
   }
 
-  shouldComponentUpdate(nextProps: DataInspectorProps) {
+  shouldComponentUpdate(
+    nextProps: DataInspectorProps,
+    nextState: DataInspectorState,
+  ) {
+    if (!shallowEqual(nextState, this.state)) {
+      return true;
+    }
     const {props} = this;
 
     // check if any expanded paths effect this subtree
@@ -382,7 +383,7 @@ export default class DataInspector extends Component<
 
   static getDerivedStateFromProps(
     nextProps: DataInspectorProps,
-    _currentState: DataInspectorState,
+    currentState: DataInspectorState,
   ): DataInspectorState {
     const {data, depth, diff, expandRoot, path} = nextProps;
 
@@ -391,6 +392,7 @@ export default class DataInspector extends Component<
 
     if (!res) {
       return {
+        shouldExpand: false,
         isExpanded: false,
         isExpandable: false,
         res,
@@ -399,29 +401,35 @@ export default class DataInspector extends Component<
     }
 
     const isExpandable = DataInspector.isExpandable(res.value);
-    const isExpanded =
-      isExpandable &&
-      (resDiff != null
-        ? isComponentExpanded(
-            res.value,
-            resDiff.type,
-            resDiff.value,
-            expandRoot === true || DataInspector.isExpanded(nextProps, path),
-          )
-        : expandRoot === true || DataInspector.isExpanded(nextProps, path));
+    let shouldExpand = false;
+    if (isExpandable) {
+      if (
+        expandRoot === true ||
+        DataInspector.shouldBeExpanded(nextProps, path)
+      ) {
+        shouldExpand = true;
+      } else if (resDiff) {
+        shouldExpand = isComponentExpanded(
+          res.value,
+          resDiff.type,
+          resDiff.value,
+        );
+      }
+    }
 
     return {
-      isExpanded,
+      isExpanded: currentState.isExpanded,
+      shouldExpand,
       isExpandable,
       res,
       resDiff,
     };
   }
 
-  static isExpanded(props: DataInspectorProps, pathParts: Array<string>) {
+  static shouldBeExpanded(props: DataInspectorProps, pathParts: Array<string>) {
     const {expanded} = props;
 
-    // if we no expanded object then expand everything
+    // if we have no expanded object then expand everything
     if (expanded == null) {
       return true;
     }
@@ -442,6 +450,33 @@ export default class DataInspector extends Component<
     return true;
   }
 
+  componentDidMount() {
+    this.expandIfNeeded();
+  }
+
+  componentDidUpdate() {
+    this.expandIfNeeded();
+  }
+
+  componentWillUnmount() {
+    cancelIdleCallback(this.expandHandle);
+  }
+
+  expandIfNeeded() {
+    if (this.state.isExpanded !== this.state.shouldExpand) {
+      cancelIdleCallback(this.expandHandle);
+      if (!this.state.shouldExpand) {
+        this.setState({isExpanded: false});
+      } else {
+        this.expandHandle = requestIdleCallback(() => {
+          this.setState({
+            isExpanded: true,
+          });
+        });
+      }
+    }
+  }
+
   setExpanded(pathParts: Array<string>, isExpanded: boolean) {
     const {expanded, onExpanded} = this.props;
     if (!onExpanded || !expanded) {
@@ -457,7 +492,11 @@ export default class DataInspector extends Component<
   }
 
   handleClick = () => {
-    const isExpanded = DataInspector.isExpanded(this.props, this.props.path);
+    cancelIdleCallback(this.expandHandle);
+    const isExpanded = DataInspector.shouldBeExpanded(
+      this.props,
+      this.props.path,
+    );
     this.interaction(isExpanded ? 'collapsed' : 'expanded');
     this.setExpanded(this.props.path, !isExpanded);
   };
