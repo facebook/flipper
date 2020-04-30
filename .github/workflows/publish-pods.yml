@@ -1,0 +1,36 @@
+name: Publish Pods
+on:
+  pull_request:
+      branches:
+      - publish-pods-gh
+
+jobs:
+  publish_flipper_pod:
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install Dependences
+      run: pod repo update
+
+    - name: Pod Version
+      run: pod --version
+
+    - name: Push Flipper
+      run: pod trunk push ./Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
+
+  publish_flipperkit_pod:
+    runs-on: macos-latest
+    needs: publish_flipper_pod
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install Dependences
+      run: pod repo update
+
+    - name: Pod Version
+      run: pod --version
+
+    - name: Push Flipper
+      run: pod trunk push ./FlipperKit.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
