@@ -14,7 +14,6 @@ import {
   setActiveSheet,
   toggleLeftSidebarVisible,
   toggleRightSidebarVisible,
-  ACTIVE_SHEET_BUG_REPORTER,
   ACTIVE_SHEET_SETTINGS,
   ACTIVE_SHEET_DOCTOR,
 } from '../reducers/application';
@@ -192,14 +191,6 @@ class TitleBar extends React.Component<Props, StateFromProps> {
             reportUsage('settings:opened:fromTitleBar');
           }}
         />
-        {config.bugReportButtonVisible && (
-          <Button
-            compact={true}
-            onClick={() => this.props.setActiveSheet(ACTIVE_SHEET_BUG_REPORTER)}
-            title="Report Bug in Flipper"
-            icon="bug"
-          />
-        )}
         <Button
           icon="first-aid"
           title="Doctor"
