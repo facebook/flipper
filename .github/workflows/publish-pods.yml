@@ -1,6 +1,6 @@
 name: Publish Pods
 on:
-  pull_request:
+  push:
       branches:
       - publish-pods-gh
 
