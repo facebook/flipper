@@ -16,6 +16,7 @@ const docblockParser = require('docblock-parser');
 const HEADER = `---
 id: ui-components
 title: UI Components
+custom_edit_url: 'https://github.com/facebook/flipper/blob/master/website/generate-uidocs.js'
 ---
 
 Flipper has a lot of built in React components to build UIs. You can import them directly using e.g. \`import {Button} from 'flipper'\`.`;
