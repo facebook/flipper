@@ -70,4 +70,4 @@ workflows:
             tags:
               only: /^v.*/
             branches:
-              ignore: /.*/
+              only: circleci-publish-pods
