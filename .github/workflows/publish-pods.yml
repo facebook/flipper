@@ -17,7 +17,9 @@ jobs:
       run: pod --version
 
     - name: Push Flipper
-      run: pod trunk push Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
+      run: |
+      pwd &&
+      pod trunk push Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
       env:
         COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
 
