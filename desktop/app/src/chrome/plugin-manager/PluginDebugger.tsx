@@ -218,7 +218,7 @@ class PluginDebugger extends Component<Props> {
           emulator/simulator currently running on your system, or is there a
           development device connected via USB? There are some devices/emulators
           known to have problems connecting to Flipper. Check out the{' '}
-          <Link href="https://fbflipper.com/docs/troubleshooting.html#known-incompatibilities">
+          <Link href="https://fbflipper.com/docs/troubleshooting#known-incompatibilities">
             known incompatibilities
           </Link>
           .
@@ -249,7 +249,7 @@ class PluginDebugger extends Component<Props> {
           <InfoText>
             To debug why Flipper couldn't establish a connection to the app,
             check out our documentation about{' '}
-            <Link href="https://fbflipper.com/docs/troubleshooting.html#connection-issues">
+            <Link href="https://fbflipper.com/docs/troubleshooting#connection-issues">
               connection issues
             </Link>
             .

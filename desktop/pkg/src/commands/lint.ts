@@ -35,7 +35,7 @@ export default class Lint extends Command {
       const errors = await runLint(inputDirectory);
       if (errors) {
         this.error(
-          `Plugin package definition is invalid. See https://fbflipper.com/docs/extending/js-setup.html#plugin-definition for details.\n${errors.join(
+          `Plugin package definition is invalid. See https://fbflipper.com/docs/extending/js-setup#plugin-definition for details.\n${errors.join(
             '\n',
           )}`,
         );

@@ -365,15 +365,15 @@ function getTemplate(
         {
           label: 'Getting started',
           click: function () {
-            shell.openExternal('https://fbflipper.com/docs/getting-started/');
+            shell.openExternal(
+              'https://fbflipper.com/docs/getting-started/index',
+            );
           },
         },
         {
           label: 'Create plugins',
           click: function () {
-            shell.openExternal(
-              'https://fbflipper.com/docs/tutorial/intro.html',
-            );
+            shell.openExternal('https://fbflipper.com/docs/tutorial/intro');
           },
         },
         {
