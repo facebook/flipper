@@ -10,7 +10,7 @@
 import {parse} from '@babel/parser';
 import {transformFromAstSync} from '@babel/core';
 import {default as generate} from '@babel/generator';
-const flipperRequires = require('../flipper-requires');
+const flipperRequires = require('../plugin-flipper-requires');
 
 const babelOptions = {
   ast: true,

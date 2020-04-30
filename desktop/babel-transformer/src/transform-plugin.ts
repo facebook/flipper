@@ -32,6 +32,6 @@ export default function transform({
     plugins.push(require('./electron-stubs'));
   }
   plugins.push(require('./electron-requires'));
-  plugins.push(require('./flipper-requires'));
+  plugins.push(require('./plugin-flipper-requires'));
   return doTransform({filename, options, src, presets, plugins});
 }

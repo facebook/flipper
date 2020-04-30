@@ -28,6 +28,7 @@ import getAppWatchFolders from './get-app-watch-folders';
 import getPlugins from '../static/getPlugins';
 import getPluginFolders from '../static/getPluginFolders';
 import startWatchPlugins from '../static/startWatchPlugins';
+import ensurePluginFoldersWatchable from '../static/ensurePluginFoldersWatchable';
 
 const ansiToHtmlConverter = new AnsiToHtmlConverter();
 
@@ -268,12 +269,13 @@ function outputScreen(socket?: socketIo.Server) {
 }
 
 (async () => {
+  await generatePluginEntryPoints();
+  await ensurePluginFoldersWatchable();
   const port = await detect(DEFAULT_PORT);
   const {app, server} = await startAssetServer(port);
   const socket = await addWebsocket(server);
   await startMetroServer(app, server);
   outputScreen(socket);
   await compileMain();
-  await generatePluginEntryPoints();
   shutdownElectron = launchElectron(port);
 })();

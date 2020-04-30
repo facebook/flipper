@@ -35,5 +35,6 @@ function transform({
   }
   plugins.push(require('./electron-requires'));
   plugins.push(require('./import-react'));
+  plugins.push(require('./app-flipper-requires'));
   return doTransform({filename, options, src, presets, plugins});
 }

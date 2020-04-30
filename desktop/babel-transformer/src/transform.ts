@@ -11,6 +11,7 @@ import {default as generate} from '@babel/generator';
 import {parse} from '@babel/parser';
 import {transformFromAstSync} from '@babel/core';
 import {default as flipperEnv} from './flipper-env';
+import {resolve} from 'path';
 
 export default function transform({
   filename,
@@ -25,6 +26,7 @@ export default function transform({
   presets?: any[];
   plugins?: any[];
 }) {
+  filename = resolve(options.projectRoot, filename);
   presets = presets ?? [require('@babel/preset-react')];
   plugins = plugins ?? [];
   const isTypeScript = filename.endsWith('.tsx') || filename.endsWith('.ts');

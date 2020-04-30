@@ -16,6 +16,7 @@ import {homedir} from 'os';
 import {runBuild, PluginDetails} from 'flipper-pkg-lib';
 import getPlugins from './getPlugins';
 import startWatchPlugins from './startWatchPlugins';
+import ensurePluginFoldersWatchable from './ensurePluginFoldersWatchable';
 
 const HOME_DIR = homedir();
 
@@ -44,6 +45,7 @@ export default async function (
     );
     return [];
   }
+  await ensurePluginFoldersWatchable();
   options = Object.assign({}, DEFAULT_COMPILE_OPTIONS, options);
   const defaultPlugins = (
     await fs.readJson(path.join(__dirname, 'defaultPlugins', 'index.json'))
