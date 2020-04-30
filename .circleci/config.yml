@@ -43,9 +43,13 @@ jobs:
           command: |
             pod trunk push ./Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
       - run:
+          name: "Repo update"
+          command: |
+            pod repo update
+      - run:
           name: "Push FlipperKit Pod"
           command: |
-            pod trunk push ./FlipperKit.podspec --use-libraries --allow-warnings --verbose --skip-import-validation --swift-version=4.2
+            pod trunk push ./FlipperKit.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
 
 workflows:
   version: 2
