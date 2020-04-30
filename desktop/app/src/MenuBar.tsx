@@ -379,7 +379,7 @@ function getTemplate(
         {
           label: 'Report problems',
           click: function () {
-            shell.openExternal('https://github.com/facebook/flipper/issues');
+            shell.openExternal(constants.FEEDBACK_GROUP_LINK);
           },
         },
         {
