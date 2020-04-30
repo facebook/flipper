@@ -91,27 +91,6 @@
     "ws": "7.2.3",
     "kind-of": "6.0.3"
   },
-  "jest": {
-    "transform": {
-      "^.*__tests__/.*\\.tsx?$": "ts-jest",
-      "\\.(js|tsx?)$": "<rootDir>/scripts/jest-transform.js"
-    },
-    "setupFiles": [
-      "<rootDir>/scripts/jest-setup.js"
-    ],
-    "moduleNameMapper": {
-      "^flipper$": "<rootDir>/app/src",
-      "^flipper-doctor$": "<rootDir>/doctor/src",
-      "^flipper-pkg$": "<rootDir>/pkg/src",
-      "^flipper-pkg-lib$": "<rootDir>/pkg-lib/src"
-    },
-    "clearMocks": true,
-    "coverageReporters": [
-      "json-summary",
-      "lcov",
-      "html"
-    ]
-  },
   "devDependencies": {
     "@babel/code-frame": "^7.8.3",
     "@jest-runner/electron": "^2.0.2",
@@ -241,10 +220,11 @@
     "build-headless": "cross-env NODE_ENV=production ./ts-node scripts/build-headless.ts $@",
     "open-dist": "open ../dist/mac/Flipper.app --args --launcher=false --inspect=9229",
     "fix": "eslint . --fix --ext .js,.ts,.tsx",
-    "test": "yarn build:pkg && jest --env=jest-environment-jsdom-sixteen --testPathPattern=\"node\\.(js|ts|tsx)$\" --no-cache",
-    "test:debug": "yarn build:pkg && node --inspect node_modules/.bin/jest --runInBand --env=jest-environment-jsdom-sixteen",
-    "test-electron": "yarn build:pkg && jest --env=jest-environment-jsdom-sixteen --testPathPattern=\"electron\\.(js|ts|tsx)$\" --testEnvironment=@jest-runner/electron/environment --runner=@jest-runner/electron --no-cache",
-    "test-with-device": "yarn build:pkg && USE_ELECTRON_STUBS=1 jest --env=jest-environment-jsdom-sixteen --testPathPattern=\"device\\.(js|ts|tsx)$\" --detectOpenHandles --no-cache",
+    "pretest": "yarn build:pkg",
+    "test": "jest",
+    "test:debug": "yarn build:pkg && node --inspect node_modules/.bin/jest --runInBand",
+    "test-electron": "yarn build:pkg && jest --testMatch=\"**/**.electron\\.(js|jsx|ts|tsx)\" --testEnvironment=@jest-runner/electron/environment --runner=@jest-runner/electron",
+    "test-with-device": "yarn build:pkg && USE_ELECTRON_STUBS=1 jest --testMatch=\"**/**.device\\.(js|jsx|ts|tsx)\" --detectOpenHandles",
     "test-e2e": "cd e2e && yarn test",
     "lint:tsc": "tsc --noemit",
     "lint:eslint": "eslint . --ext .js,.ts,.tsx",

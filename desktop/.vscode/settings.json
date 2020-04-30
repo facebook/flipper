@@ -26,5 +26,10 @@
   },
   "[javascriptreact]": {
     "editor.defaultFormatter": "dbaeumer.vscode-eslint"
-  }
+  },
+  "jest.autoEnable": false,
+  "jest.enableInlineErrorMessages": true,
+  "jest.runAllTestsFirst": false,
+  "jest.pathToConfig": "jest.config.js",
+  "jest.pathToJest": "node_modules/.bin/jest"
 }
