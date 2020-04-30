@@ -19,6 +19,8 @@ jobs:
 
     - name: Push Flipper
       run: pod trunk push ./Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
+      env:
+        COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
 
   publish_flipperkit_pod:
     runs-on: macos-latest
@@ -34,3 +36,5 @@ jobs:
 
     - name: Push Flipper
       run: pod trunk push ./FlipperKit.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
+      env:
+        COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
