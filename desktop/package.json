@@ -3,7 +3,12 @@
   "version": "0.40.0",
   "description": "Mobile development tool",
   "productName": "Flipper",
-  "author": "Facebook Inc",
+  "author": {
+    "name": "Facebook Inc",
+    "email": "",
+    "url": "https://github.com/facebook"
+  },
+  "homepage": "https://fbflipper.com/",
   "icon": "icon.png",
   "category": "facebook-intern",
   "privileged": true,
@@ -41,6 +46,13 @@
       "extendInfo": {
         "NSUserNotificationAlertStyle": "alert"
       }
+    },
+    "linux": {
+      "icon": "icon.icns",
+      "category": "Development"
+    },
+    "deb": {
+      "icon": "icon.icns"
     },
     "dmg": {
       "background": "dmgBackground.png",
@@ -90,6 +102,27 @@
     "**/metro/**/ws": "1.1.5",
     "ws": "7.2.3",
     "kind-of": "6.0.3"
+  },
+  "jest": {
+    "transform": {
+      "^.*__tests__/.*\\.tsx?$": "ts-jest",
+      "\\.(js|tsx?)$": "<rootDir>/scripts/jest-transform.js"
+    },
+    "setupFiles": [
+      "<rootDir>/scripts/jest-setup.js"
+    ],
+    "moduleNameMapper": {
+      "^flipper$": "<rootDir>/app/src",
+      "^flipper-doctor$": "<rootDir>/doctor/src",
+      "^flipper-pkg$": "<rootDir>/pkg/src",
+      "^flipper-pkg-lib$": "<rootDir>/pkg-lib/src"
+    },
+    "clearMocks": true,
+    "coverageReporters": [
+      "json-summary",
+      "lcov",
+      "html"
+    ]
   },
   "devDependencies": {
     "@babel/code-frame": "^7.8.3",
@@ -220,11 +253,10 @@
     "build-headless": "cross-env NODE_ENV=production ./ts-node scripts/build-headless.ts $@",
     "open-dist": "open ../dist/mac/Flipper.app --args --launcher=false --inspect=9229",
     "fix": "eslint . --fix --ext .js,.ts,.tsx",
-    "pretest": "yarn build:pkg",
-    "test": "jest",
-    "test:debug": "yarn build:pkg && node --inspect node_modules/.bin/jest --runInBand",
-    "test-electron": "yarn build:pkg && jest --testMatch=\"**/**.electron\\.(js|jsx|ts|tsx)\" --testEnvironment=@jest-runner/electron/environment --runner=@jest-runner/electron",
-    "test-with-device": "yarn build:pkg && USE_ELECTRON_STUBS=1 jest --testMatch=\"**/**.device\\.(js|jsx|ts|tsx)\" --detectOpenHandles",
+    "test": "yarn build:pkg && jest --env=jest-environment-jsdom-sixteen --testPathPattern=\"node\\.(js|ts|tsx)$\" --no-cache",
+    "test:debug": "yarn build:pkg && node --inspect node_modules/.bin/jest --runInBand --env=jest-environment-jsdom-sixteen",
+    "test-electron": "yarn build:pkg && jest --env=jest-environment-jsdom-sixteen --testPathPattern=\"electron\\.(js|ts|tsx)$\" --testEnvironment=@jest-runner/electron/environment --runner=@jest-runner/electron --no-cache",
+    "test-with-device": "yarn build:pkg && USE_ELECTRON_STUBS=1 jest --env=jest-environment-jsdom-sixteen --testPathPattern=\"device\\.(js|ts|tsx)$\" --detectOpenHandles --no-cache",
     "test-e2e": "cd e2e && yarn test",
     "lint:tsc": "tsc --noemit",
     "lint:eslint": "eslint . --ext .js,.ts,.tsx",
@@ -232,7 +264,7 @@
     "lint": "yarn lint:eslint && yarn lint:flow && yarn lint:tsc",
     "bump-versions": "./ts-node scripts/bump-versions.ts",
     "publish-packages": "./ts-node scripts/publish-packages.ts",
-    "everything": "yarn reset && yarn install && yarn lint && yarn test && yarn test-electron && yarn build --mac --mac-dmg --win --linux && yarn build-headless --mac --linux && yarn start"
+    "everything": "yarn reset && yarn install && yarn lint && yarn test && yarn test-electron && yarn build --mac --mac-dmg --win --linux --linux-deb && yarn build-headless --mac --linux && yarn start"
   },
   "optionalDependencies": {
     "7zip-bin-mac": "^1.0.1"
