@@ -5,7 +5,7 @@
   "productName": "Flipper",
   "author": {
     "name": "Facebook Inc",
-    "email": "",
+    "email": "n/a",
     "url": "https://github.com/facebook"
   },
   "homepage": "https://fbflipper.com/",
@@ -253,6 +253,7 @@
     "build-headless": "cross-env NODE_ENV=production ./ts-node scripts/build-headless.ts $@",
     "open-dist": "open ../dist/mac/Flipper.app --args --launcher=false --inspect=9229",
     "fix": "eslint . --fix --ext .js,.ts,.tsx",
+    "pretest": "yarn build:pkg",
     "test": "yarn build:pkg && jest --env=jest-environment-jsdom-sixteen --testPathPattern=\"node\\.(js|ts|tsx)$\" --no-cache",
     "test:debug": "yarn build:pkg && node --inspect node_modules/.bin/jest --runInBand --env=jest-environment-jsdom-sixteen",
     "test-electron": "yarn build:pkg && jest --env=jest-environment-jsdom-sixteen --testPathPattern=\"electron\\.(js|ts|tsx)$\" --testEnvironment=@jest-runner/electron/environment --runner=@jest-runner/electron --no-cache",

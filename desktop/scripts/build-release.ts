@@ -199,14 +199,12 @@ function downloadIcons(buildFolder: string) {
   await generatePluginEntryPoints();
   await copyStaticFolder(dir);
   await downloadIcons(dir);
-  console.log(await fs.readdirSync(dir));
   await compileRenderer(dir);
   const versionNumber = getVersionNumber();
   const hgRevision = await genMercurialRevision();
   await modifyPackageManifest(dir, versionNumber, hgRevision);
   await fs.ensureDir(distDir);
   await generateManifest(versionNumber);
-
   await buildDist(dir);
   // eslint-disable-next-line no-console
   console.log('✨  Done');
