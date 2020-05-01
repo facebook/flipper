@@ -19,20 +19,20 @@ target 'MyApp' do
 
   # It is likely that you'll only want to include Flipper in debug builds,
   # in which case you add the `:configuration` directive:
-  pod 'FlipperKit', '~>' + flipperkit_version, :configuration => [:debug]
-  pod 'FlipperKit/FlipperKitLayoutComponentKitSupport', '~>' + flipperkit_version, :configuration => [:debug]
-  pod 'FlipperKit/SKIOSNetworkPlugin', '~>' + flipperkit_version, :configuration => [:debug]
-  pod 'FlipperKit/FlipperKitUserDefaultsPlugin', '~>' + flipperkit_version, :configuration => [:debug]
+  pod 'FlipperKit', '~>' + flipperkit_version, :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitLayoutComponentKitSupport', '~>' + flipperkit_version, :configuration => 'Debug'
+  pod 'FlipperKit/SKIOSNetworkPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitUserDefaultsPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
   # ...unfortunately at this time that means you'll need to explicitly mark
   # transitive dependencies as being for debug build only as well:
-  pod 'Flipper-DoubleConversion', :configuration => [:debug]
-  pod 'Flipper-Folly', :configuration => [:debug]
-  pod 'Flipper-Glog', :configuration => [:debug]
-  pod 'Flipper-PeerTalk', :configuration => [:debug]
-  pod 'CocoaLibEvent', :configuration => [:debug]
-  pod 'boost-for-react-native', :configuration => [:debug]
-  pod 'OpenSSL-Universal', :configuration => [:debug]
-  pod 'CocoaAsyncSocket', :configuration => [:debug]
+  pod 'Flipper-DoubleConversion', :configuration => 'Debug'
+  pod 'Flipper-Folly', :configuration => 'Debug'
+  pod 'Flipper-Glog', :configuration => 'Debug'
+  pod 'Flipper-PeerTalk', :configuration => 'Debug'
+  pod 'CocoaLibEvent', :configuration => 'Debug'
+  pod 'boost-for-react-native', :configuration => 'Debug'
+  pod 'OpenSSL-Universal', :configuration => 'Debug'
+  pod 'CocoaAsyncSocket', :configuration => 'Debug'
   # ...except, of course, those transitive dependencies that your
   # application itself depends, e.g.:
   pod 'ComponentKit', '~> 0.30'
@@ -43,7 +43,9 @@ target 'MyApp' do
   # it's dependencies to be built as a static library and all other pods to
   # be dynamic.
   #
-  # NOTE
+  # NOTE Doing this may lead to a broken build if any of these are also
+  #      transitive dependencies of other dependencies and are expected
+  #      to be built as frameworks.
   #
   # $static_framework = ['FlipperKit', 'Flipper', 'Flipper-Folly',
   #   'CocoaAsyncSocket', 'ComponentKit', 'Flipper-DoubleConversion',

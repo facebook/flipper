@@ -5,51 +5,21 @@ source 'https://cdn.cocoapods.org'
 target 'Sample' do
   platform :ios, '9.0'
 
-  pod 'FlipperKit', :path => '../../FlipperKit.podspec', :configuration => [:debug]
-  pod 'FlipperKit/FlipperKitLayoutComponentKitSupport', :path => '../../FlipperKit.podspec', :configuration => [:debug]
-  pod 'FlipperKit/SKIOSNetworkPlugin', :path => '../../FlipperKit.podspec', :configuration => [:debug]
-  pod 'FlipperKit/FlipperKitUserDefaultsPlugin', :path => '../../FlipperKit.podspec', :configuration => [:debug]
-  pod 'FlipperKit/FlipperKitExamplePlugin', :path => '../../FlipperKit.podspec', :configuration => [:debug]
-  pod 'FlipperKit/FlipperKitReactPlugin', :path => '../../FlipperKit.podspec', :configuration => [:debug]
-  pod 'Flipper', :path => '../../Flipper.podspec', :configuration => [:debug]
-
-  # It is likely that you'll only want to include Flipper in debug builds,
-  # unfortunately at this time that means you'll need to explicitly mark
-  # transitive dependencies as being for debug build only as well.
-  pod 'Flipper-DoubleConversion', :configuration => [:debug]
-  pod 'Flipper-Folly', :configuration => [:debug]
-  pod 'Flipper-Glog', :configuration => [:debug]
-  pod 'Flipper-PeerTalk', :configuration => [:debug]
-  pod 'CocoaLibEvent', :configuration => [:debug]
-  pod 'boost-for-react-native', :configuration => [:debug]
-  pod 'OpenSSL-Universal', :configuration => [:debug]
-  pod 'CocoaAsyncSocket', :configuration => [:debug]
-  # Except, of course, those transitive dependencies that your application
-  # itself depends, e.g.:
+  # See docs/getting-started/ios-native.mdx
+  pod 'FlipperKit', :path => '../../FlipperKit.podspec', :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitLayoutComponentKitSupport', :path => '../../FlipperKit.podspec', :configuration => 'Debug'
+  pod 'FlipperKit/SKIOSNetworkPlugin', :path => '../../FlipperKit.podspec', :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitUserDefaultsPlugin', :path => '../../FlipperKit.podspec', :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitExamplePlugin', :path => '../../FlipperKit.podspec', :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitReactPlugin', :path => '../../FlipperKit.podspec', :configuration => 'Debug'
+  pod 'Flipper', :path => '../../Flipper.podspec', :configuration => 'Debug'
+  pod 'Flipper-DoubleConversion', :configuration => 'Debug'
+  pod 'Flipper-Folly', :configuration => 'Debug'
+  pod 'Flipper-Glog', :configuration => 'Debug'
+  pod 'Flipper-PeerTalk', :configuration => 'Debug'
+  pod 'CocoaLibEvent', :configuration => 'Debug'
+  pod 'boost-for-react-native', :configuration => 'Debug'
+  pod 'OpenSSL-Universal', :configuration => 'Debug'
+  pod 'CocoaAsyncSocket', :configuration => 'Debug'
   pod 'ComponentKit', '~> 0.30'
-
-  # If you use `use_frameworks!` in your Podfile,
-  # uncomment the below $static_framework array and also
-  # the pre_install section.  This will cause Flipper and
-  # it's dependencies to be built as a static library and all other pods to
-  # be dynamic.
-  #
-  # NOTE That this may break your build when also depending [transitively] on
-  #      these dependencies and expecting them to be built as frameworks.
-  #
-  # $static_framework = ['FlipperKit', 'Flipper', 'Flipper-Folly',
-  #   'CocoaAsyncSocket', 'ComponentKit', 'DoubleConversion',
-  #   'glog', 'Flipper-PeerTalk', 'Flipper-RSocket', 'Yoga', 'YogaKit',
-  #   'CocoaLibEvent', 'OpenSSL-Universal', 'boost-for-react-native']
-  #
-  # pre_install do |installer|
-  #   Pod::Installer::Xcode::TargetValidator.send(:define_method, :verify_no_static_framework_transitive_dependencies) {}
-  #   installer.pod_targets.each do |pod|
-  #       if $static_framework.include?(pod.name)
-  #         def pod.build_type;
-  #           Pod::Target::BuildType.static_library
-  #         end
-  #       end
-  #     end
-  # end
 end
