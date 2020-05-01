@@ -1,8 +1,8 @@
 name: Publish Pods
 on:
   push:
-      branches:
-      - publish-pods-gh
+      tags:
+      - v*
 
 jobs:
   publish_flipper_pod:
