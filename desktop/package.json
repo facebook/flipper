@@ -103,27 +103,6 @@
     "ws": "7.2.3",
     "kind-of": "6.0.3"
   },
-  "jest": {
-    "transform": {
-      "^.*__tests__/.*\\.tsx?$": "ts-jest",
-      "\\.(js|tsx?)$": "<rootDir>/scripts/jest-transform.js"
-    },
-    "setupFiles": [
-      "<rootDir>/scripts/jest-setup.js"
-    ],
-    "moduleNameMapper": {
-      "^flipper$": "<rootDir>/app/src",
-      "^flipper-doctor$": "<rootDir>/doctor/src",
-      "^flipper-pkg$": "<rootDir>/pkg/src",
-      "^flipper-pkg-lib$": "<rootDir>/pkg-lib/src"
-    },
-    "clearMocks": true,
-    "coverageReporters": [
-      "json-summary",
-      "lcov",
-      "html"
-    ]
-  },
   "devDependencies": {
     "@babel/code-frame": "^7.8.3",
     "@jest-runner/electron": "^2.0.2",
