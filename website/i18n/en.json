@@ -34,10 +34,10 @@
         "title": "Clients and Plugins"
       },
       "extending/js-plugin-api": {
-        "title": "JavaScript Plugin API"
+        "title": "Desktop Plugin API"
       },
       "extending/js-setup": {
-        "title": "JavaScript Plugin Definition"
+        "title": "Desktop Plugin Development"
       },
       "extending/layout-inspector": {
         "title": "Extending Layout Inspector"
@@ -113,6 +113,14 @@
         "title": "Set up your iOS app",
         "sidebar_label": "iOS"
       },
+      "getting-started/react-native-android": {
+        "title": "Manually set up your React Native Android App",
+        "sidebar_label": "React Native for Android"
+      },
+      "getting-started/react-native-ios": {
+        "title": "Manually set up your React Native iOS App",
+        "sidebar_label": "React Native for iOS"
+      },
       "getting-started/react-native": {
         "title": "Set up your React Native App",
         "sidebar_label": "React Native"
@@ -179,8 +187,8 @@
         "sidebar_label": "Publishing"
       },
       "tutorial/js-setup": {
-        "title": "Building a Flipper desktop plugin",
-        "sidebar_label": "Building a desktop plugin"
+        "title": "Building a Desktop Plugin",
+        "sidebar_label": "Building a Desktop Plugin"
       },
       "tutorial/js-table": {
         "title": "Showing a table"

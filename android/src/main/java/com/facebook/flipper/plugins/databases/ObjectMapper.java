@@ -24,11 +24,12 @@ import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 public class ObjectMapper {
 
-  private static final int MAX_BLOB_LENGTH = 512;
-  private static final String UNKNOWN_BLOB_LABEL = "{blob}";
+  private static final int MAX_BLOB_LENGTH = 5120;
+  private static final String UNKNOWN_BLOB_LABEL_FORMAT = "{%d-byte %s blob}";
 
   public static FlipperArray databaseListToFlipperArray(
       Collection<DatabaseDescriptorHolder> databaseDescriptorHolderList) {
@@ -229,9 +230,17 @@ public class ObjectMapper {
         } catch (UnsupportedEncodingException e) {
           // Fall through...
         }
+      } else {
+        // try UTF-8
+        try {
+          return new String(blob, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+          // Fall through...
+        }
       }
+      return String.format(Locale.US, UNKNOWN_BLOB_LABEL_FORMAT, blob.length, "binary");
     }
-    return UNKNOWN_BLOB_LABEL;
+    return String.format(Locale.US, UNKNOWN_BLOB_LABEL_FORMAT, blob.length, "large");
   }
 
   private static boolean fastIsAscii(byte[] blob) {

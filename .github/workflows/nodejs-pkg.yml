@@ -18,9 +18,6 @@ jobs:
     - name: install
       working-directory: ${{env.pkg-directory}}
       run: yarn
-    - name: test
-      working-directory: ${{env.pkg-directory}}
-      run: yarn test
     - name: run
       working-directory: ${{env.pkg-directory}}
       run: bin/run

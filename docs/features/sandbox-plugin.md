@@ -1,8 +1,0 @@
----
-id: sandbox-plugin
-title: Sandbox
----
-
-→ [See setup instructions for the Sandbox plugin](setup/sandbox-plugin.md)
-
-The sandbox plugin allows developers to test changes in their apps by pointing them to a sandbox environment. It provides a simple UI to set and modify the URL to a development host that acts as a sandbox directly on the desktop, which prevents you from entering potentially long and complicated URL inside your app. 

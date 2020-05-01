@@ -11,6 +11,20 @@ import {default as doTransform} from './transform';
 import {default as getCacheKey} from './get-cache-key';
 import {default as flipperEnv} from './flipper-env';
 
+const presets = [
+  [
+    require('@babel/preset-env'),
+    {targets: {electron: flipperEnv.FLIPPER_ELECTRON_VERSION}},
+  ],
+];
+const plugins = [
+  require('./electron-requires-main'),
+  require('./electron-process'),
+];
+if (flipperEnv.FLIPPER_FB) {
+  plugins.unshift(require('./fb-stubs'));
+}
+
 module.exports = {
   transform,
   getCacheKey,
@@ -25,17 +39,5 @@ function transform({
   options: any;
   src: string;
 }) {
-  const presets = [
-    [
-      require('@babel/preset-env'),
-      {targets: {electron: flipperEnv.FLIPPER_ELECTRON_VERSION}},
-    ],
-  ];
-  const plugins = [];
-  if (flipperEnv.FLIPPER_FB) {
-    plugins.push(require('./fb-stubs'));
-  }
-  plugins.push(require('./electron-requires-main'));
-  plugins.push(require('./electron-process'));
   return doTransform({filename, options, src, presets, plugins});
 }

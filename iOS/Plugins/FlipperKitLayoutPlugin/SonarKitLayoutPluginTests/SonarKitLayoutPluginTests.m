@@ -67,6 +67,11 @@
   SonarReceiver receiver = connection.receivers[@"getNodes"];
   receiver(@{@"ids" : @[]}, responder);
 
+  dispatch_barrier_sync(
+      SKLayoutPluginSerialBackgroundQueue(),
+      ^{
+      });
+
   XCTAssertTrue(([responder.successes containsObject:@{@"elements" : @[]}]));
 }
 
@@ -95,6 +100,11 @@
   SonarReceiver receiver = connection.receivers[@"getNodes"];
   receiver(
       @{@"ids" : @[ @"testNode1", @"testNode2", @"testNode3" ]}, responder);
+
+  dispatch_barrier_sync(
+      SKLayoutPluginSerialBackgroundQueue(),
+      ^{
+      });
 
   XCTAssertTrue(([responder.successes containsObject:@{
     @"elements" : @[
@@ -148,6 +158,11 @@
   connection.receivers[@"getRoot"](@{}, responder);
   SonarReceiver getNodesCall = connection.receivers[@"getNodes"];
   getNodesCall(@{@"ids" : @[ @"testNode1", @"testNode2" ]}, responder);
+
+  dispatch_barrier_sync(
+      SKLayoutPluginSerialBackgroundQueue(),
+      ^{
+      });
 
   SonarReceiver setHighlighted = connection.receivers[@"setHighlighted"];
   setHighlighted(@{@"id" : @"testNode2"}, responder);
@@ -248,6 +263,11 @@
   // Setup in order to track nodes successfully
   connection.receivers[@"getRoot"](@{}, responder);
   connection.receivers[@"getNodes"](@{@"ids" : @[ @"testNode2" ]}, responder);
+
+  dispatch_barrier_sync(
+      SKLayoutPluginSerialBackgroundQueue(),
+      ^{
+      });
 
   // Modify the name of testNode3
   connection.receivers[@"setData"](

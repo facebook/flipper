@@ -24,9 +24,13 @@ import createTableNativePlugin from './plugins/TableNativePlugin';
 import {EventEmitter} from 'events';
 import invariant from 'invariant';
 import {flipperRecorderAddEvent} from './utils/pluginStateRecorder';
-import {getPluginKey} from './utils/pluginUtils';
+import {
+  getPluginKey,
+  defaultEnabledBackgroundPlugins,
+} from './utils/pluginUtils';
 import {processMessageLater} from './utils/messageQueue';
 import {sideEffect} from './utils/sideEffect';
+import {emitBytesReceived} from './dispatcher/tracking';
 
 type Plugins = Array<string>;
 
@@ -113,6 +117,7 @@ export default class Client extends EventEmitter {
   sdkVersion: number;
   messageIdCounter: number;
   plugins: Plugins;
+  backgroundPlugins: Plugins;
   connection: FlipperClientConnection<any, any> | null | undefined;
   store: Store;
   activePlugins: Set<string>;
@@ -144,6 +149,7 @@ export default class Client extends EventEmitter {
     super();
     this.connected = true;
     this.plugins = plugins ? plugins : [];
+    this.backgroundPlugins = [];
     this.connection = conn;
     this.id = id;
     this.query = query;
@@ -172,6 +178,9 @@ export default class Client extends EventEmitter {
         },
         onSubscribe(subscription) {
           subscription.request(Number.MAX_SAFE_INTEGER);
+        },
+        onError(payload) {
+          console.error('[client] connection status error ', payload);
         },
       });
     }
@@ -231,13 +240,32 @@ export default class Client extends EventEmitter {
     return this.plugins.includes(Plugin.id);
   }
 
+  isBackgroundPlugin(pluginId: string) {
+    return this.backgroundPlugins.includes(pluginId);
+  }
+
+  shouldConnectAsBackgroundPlugin(pluginId: string) {
+    return (
+      defaultEnabledBackgroundPlugins.includes(pluginId) ||
+      this.store
+        .getState()
+        .connections.userStarredPlugins[this.query.app]?.includes(pluginId)
+    );
+  }
+
   async init() {
     this.setMatchingDevice();
-    await this.getPlugins();
+    await this.loadPlugins();
+    this.backgroundPlugins = await this.getBackgroundPlugins();
+    this.backgroundPlugins.forEach((plugin) => {
+      if (this.shouldConnectAsBackgroundPlugin(plugin)) {
+        this.initPlugin(plugin);
+      }
+    });
   }
 
   // get the supported plugins
-  async getPlugins(): Promise<Plugins> {
+  async loadPlugins(): Promise<Plugins> {
     const plugins = await this.rawCall<{plugins: Plugins}>(
       'getPlugins',
       false,
@@ -261,9 +289,42 @@ export default class Client extends EventEmitter {
     return plugins;
   }
 
+  // get the supported background plugins
+  async getBackgroundPlugins(): Promise<Plugins> {
+    if (this.sdkVersion < 4) {
+      return [];
+    }
+    return await this.rawCall<{plugins: Plugins}>(
+      'getBackgroundPlugins',
+      false,
+    ).then((data) => data.plugins);
+  }
+
   // get the plugins, and update the UI
   async refreshPlugins() {
-    await this.getPlugins();
+    const oldBackgroundPlugins = this.backgroundPlugins;
+    await this.loadPlugins();
+    const newBackgroundPlugins = await this.getBackgroundPlugins();
+    this.backgroundPlugins = newBackgroundPlugins;
+    // diff the background plugin list, disconnect old, connect new ones
+    oldBackgroundPlugins.forEach((plugin) => {
+      if (
+        !newBackgroundPlugins.includes(plugin) &&
+        this.store
+          .getState()
+          .connections.userStarredPlugins[this.query.app]?.includes(plugin)
+      ) {
+        this.deinitPlugin(plugin);
+      }
+    });
+    newBackgroundPlugins.forEach((plugin) => {
+      if (
+        !oldBackgroundPlugins.includes(plugin) &&
+        this.shouldConnectAsBackgroundPlugin(plugin)
+      ) {
+        this.initPlugin(plugin);
+      }
+    });
     this.emit('plugins-change');
   }
 
@@ -321,6 +382,8 @@ export default class Client extends EventEmitter {
       } else if (method === 'execute') {
         invariant(data.params, 'expected params');
         const params: Params = data.params;
+        const bytes = msg.length * 2; // string lengths are measured in UTF-16 units (not characters), so 2 bytes per char
+        emitBytesReceived(params.api, bytes);
 
         const persistingPlugin:
           | typeof FlipperPlugin
@@ -459,10 +522,15 @@ export default class Client extends EventEmitter {
                 if (!fromPlugin || this.isAcceptingMessagesFromPlugin(plugin)) {
                   const logEventName = this.getLogEventName(data);
                   this.logger.trackTimeSince(mark, logEventName);
+                  emitBytesReceived(
+                    plugin || 'unknown',
+                    payload.data.length * 2,
+                  );
                   const response: {
                     success?: Object;
                     error?: ErrorType;
                   } = JSON.parse(payload.data);
+
                   this.onResponse(response, resolve, reject);
                 }
               },

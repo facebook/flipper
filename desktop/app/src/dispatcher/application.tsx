@@ -9,12 +9,7 @@
 
 import {remote, ipcRenderer, IpcRendererEvent} from 'electron';
 import {toggleAction} from '../reducers/application';
-import {
-  Group,
-  GRAPHQL_ANDROID_GROUP,
-  GRAPHQL_IOS_GROUP,
-  LITHO_GROUP,
-} from '../reducers/supportForm';
+import {Group, SUPPORTED_GROUPS} from '../reducers/supportForm';
 import {Store} from '../reducers/index';
 import {Logger} from '../fb-interfaces/Logger';
 import {parseFlipperPorts} from '../utils/environmentVariables';
@@ -32,7 +27,7 @@ export const uriComponents = (url: string): Array<string> => {
     return [];
   }
   const match: Array<string> | undefined | null = url.match(
-    /^flipper:\/\/([^\/]*)\/([^\/]*)\/?(.*)$/,
+    /^flipper:\/\/([^\/]*)\/([^\/\?]*)\/?(.*)$/,
   );
   if (match) {
     return match.map(decodeURIComponent).slice(1).filter(Boolean);
@@ -111,18 +106,15 @@ export default (store: Store, _logger: Logger) => {
     },
   );
 
-  function deeplinkFormParamToGroups(formParam: string | null): Group | null {
+  function deeplinkFormParamToGroups(
+    formParam: string | null,
+  ): Group | undefined {
     if (!formParam) {
-      return null;
+      return undefined;
     }
-    if (formParam.toLowerCase() === 'litho') {
-      return LITHO_GROUP;
-    } else if (formParam.toLowerCase() === 'graphql_android') {
-      return GRAPHQL_ANDROID_GROUP;
-    } else if (formParam.toLowerCase() === 'graphql_ios') {
-      return GRAPHQL_IOS_GROUP;
-    }
-    return null;
+    return SUPPORTED_GROUPS.find((grp) => {
+      return grp.deeplinkSuffix.toLowerCase() === formParam.toLowerCase();
+    });
   }
 
   ipcRenderer.on(

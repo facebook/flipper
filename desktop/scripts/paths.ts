@@ -12,6 +12,7 @@ import path from 'path';
 export const rootDir = path.resolve(__dirname, '..');
 export const appDir = path.join(rootDir, 'app');
 export const staticDir = path.join(rootDir, 'static');
+export const defaultPluginsIndexDir = path.join(staticDir, 'defaultPlugins');
 export const pluginsDir = path.join(rootDir, 'plugins');
 export const headlessDir = path.join(rootDir, 'headless');
 export const distDir = path.resolve(rootDir, '..', 'dist');

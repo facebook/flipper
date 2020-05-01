@@ -7,15 +7,15 @@
  * @format
  */
 
-// eslint-disable-next-line import/no-unresolved
-const {transform} = require('../babel-transformer/lib/transform-jest');
 const isFB = require('./isFB');
 
 if (isFB && process.env.FLIPPER_FB === undefined) {
   process.env.FLIPPER_FB = 'true';
 }
-
 process.env.FLIPPER_TEST_RUNNER = 'true';
+
+// eslint-disable-next-line import/no-unresolved
+const {transform} = require('../babel-transformer/lib/transform-jest');
 
 module.exports = {
   process(src, filename, config, options) {

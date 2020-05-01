@@ -67,6 +67,18 @@ public class FlipperArray {
     return new FlipperArray((JSONArray) o);
   }
 
+  public Object get(int index) {
+    final Object o = mJson.opt(index);
+
+    if (o instanceof JSONObject) {
+      return new FlipperObject((JSONObject) o);
+    } else if (o instanceof JSONArray) {
+      return new FlipperArray((JSONArray) o);
+    } else {
+      return o;
+    }
+  }
+
   public int length() {
     return mJson.length();
   }

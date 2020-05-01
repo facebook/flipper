@@ -14,7 +14,6 @@ import {
   setActiveSheet,
   toggleLeftSidebarVisible,
   toggleRightSidebarVisible,
-  ACTIVE_SHEET_BUG_REPORTER,
   ACTIVE_SHEET_SETTINGS,
   ACTIVE_SHEET_DOCTOR,
 } from '../reducers/application';
@@ -45,6 +44,7 @@ import React from 'react';
 import {State} from '../reducers';
 import {reportUsage} from '../utils/metrics';
 import FpsGraph from './FpsGraph';
+import NetworkGraph from './NetworkGraph';
 import MetroButton from './MetroButton';
 
 const AppTitleBar = styled(FlexRow)<{focused?: boolean}>(({focused}) => ({
@@ -167,6 +167,7 @@ class TitleBar extends React.Component<Props, StateFromProps> {
         )}
         <Spacer />
 
+        {!isProduction() && <NetworkGraph height={20} width={60} />}
         {!isProduction() && <FpsGraph height={20} width={60} />}
 
         {config.showFlipperRating ? <RatingButton /> : null}
@@ -190,14 +191,6 @@ class TitleBar extends React.Component<Props, StateFromProps> {
             reportUsage('settings:opened:fromTitleBar');
           }}
         />
-        {config.bugReportButtonVisible && (
-          <Button
-            compact={true}
-            onClick={() => this.props.setActiveSheet(ACTIVE_SHEET_BUG_REPORTER)}
-            title="Report Bug in Flipper"
-            icon="bug"
-          />
-        )}
         <Button
           icon="first-aid"
           title="Doctor"

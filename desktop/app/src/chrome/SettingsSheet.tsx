@@ -22,7 +22,7 @@ import {flush} from '../utils/persistor';
 import ToggledSection from './settings/ToggledSection';
 import {FilePathConfigField, ConfigText} from './settings/configFields';
 import KeyboardShortcutInput from './settings/KeyboardShortcutInput';
-import isEqual from 'lodash.isequal';
+import {isEqual} from 'lodash';
 import restartFlipper from '../utils/restartFlipper';
 import LauncherSettingsPanel from '../fb-stubs/LauncherSettingsPanel';
 import {reportUsage} from '../utils/metrics';

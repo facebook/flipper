@@ -31,6 +31,15 @@ export function callClient(
   return (method, params) => client.call(id, method, false, params);
 }
 
+// This function is intended to be called from outside of the plugin.
+// If you want to `supportsMethod` from the plugin use, this.client.supportsMethod
+export function supportsMethod(
+  client: Client,
+  id: string,
+): (method: string) => Promise<boolean> {
+  return (method) => client.supportsMethod(id, method);
+}
+
 export interface PluginClient {
   // eslint-disable-next-line
   send(method: string, params?: Parameters): void;
@@ -109,6 +118,7 @@ export abstract class FlipperBasePlugin<
         store: ReduxState | undefined,
         idler?: Idler,
         statusUpdate?: (msg: string) => void,
+        supportsMethod?: (method: string) => Promise<boolean>,
       ) => Promise<StaticPersistedState | undefined>)
     | null;
   static getActiveNotifications:
@@ -259,18 +269,25 @@ export class FlipperPlugin<
 
   _teardown() {
     // automatically unsubscribe subscriptions
+    const pluginId = this.constructor.id;
     for (const {method, callback} of this.subscriptions) {
-      this.realClient.unsubscribe(this.constructor.id, method, callback);
+      this.realClient.unsubscribe(pluginId, method, callback);
     }
     // run plugin teardown
     this.teardown();
-    if (this.realClient.connected) {
-      this.realClient.deinitPlugin(this.constructor.id);
+    if (
+      this.realClient.connected &&
+      !this.realClient.isBackgroundPlugin(pluginId)
+    ) {
+      this.realClient.deinitPlugin(pluginId);
     }
   }
 
   _init() {
-    this.realClient.initPlugin(this.constructor.id);
+    const pluginId = this.constructor.id;
+    if (!this.realClient.isBackgroundPlugin(pluginId)) {
+      this.realClient.initPlugin(pluginId);
+    }
     this.init();
   }
 }

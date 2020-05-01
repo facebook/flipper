@@ -147,7 +147,8 @@
   ],
   "magnifying-glass": [
     16,
-    20
+    20,
+    24
   ],
   "messages": [
     12
@@ -186,6 +187,7 @@
   ],
   "question-circle": [
     12,
+    16,
     20
   ],
   "question": [
@@ -236,6 +238,7 @@
   ],
   "tools": [
     12,
+    16,
     20
   ],
   "translate": [
@@ -255,7 +258,8 @@
     12
   ],
   "triangle-down": [
-    12
+    12,
+    16
   ],
   "triangle-right": [
     12
@@ -383,6 +387,21 @@
     12
   ],
   "sankey-diagram": [
+    12
+  ],
+  "media-stack": [
+    16
+  ],
+  "question-hexagon": [
+    16
+  ],
+  "briefcase": [
+    16
+  ],
+  "business-briefcase": [
+    16
+  ],
+  "log": [
     12
   ]
 }

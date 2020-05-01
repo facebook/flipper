@@ -1,24 +1,25 @@
 {
   "name": "flipper-static",
-  "version": "0.35.0",
+  "version": "0.40.0",
   "main": "index.js",
   "private": true,
   "license": "MIT",
   "dependencies": {
-    "electron-devtools-installer": "^2.2.4",
+    "electron-devtools-installer": "^3.0.0",
     "expand-tilde": "^2.0.2",
     "fb-watchman": "^2.0.0",
     "fix-path": "^3.0.0",
+    "flipper-pkg-lib": "0.40.0",
     "fs-extra": "^8.1.0",
-    "flipper-babel-transformer": "0.35.0",
+    "ignore": "^5.1.4",
     "mem": "^6.0.0",
-    "metro": "^0.58.0",
     "mkdirp": "^1.0.0",
+    "p-filter": "^2.1.0",
     "p-map": "^4.0.0",
-    "recursive-readdir": "2.2.2",
+    "recursive-readdir": "^2.2.2",
     "uuid": "^7.0.1",
+    "ws": "^7.2.3",
     "xdg-basedir": "^4.0.0",
-    "yargs": "^15.3.1",
-    "ws": "^7.2.3"
+    "yargs": "^15.3.1"
   }
 }

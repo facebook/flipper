@@ -15,7 +15,7 @@ import {
   ElementSearchResultSet,
 } from 'flipper';
 import {Component} from 'react';
-import debounce from 'lodash.debounce';
+import {debounce} from 'lodash';
 import {PersistedState, ElementMap} from './';
 import React from 'react';
 

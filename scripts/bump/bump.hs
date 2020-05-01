@@ -28,19 +28,21 @@ import qualified Control.Foldl as F
 releaseReplacements :: [(FilePath, Pattern Version)]
 releaseReplacements =
   [("gradle.properties", "VERSION_NAME=" *> anyVersion)
-  ,("docs/getting-started/android-native.md", spaces >> "debugImplementation 'com.facebook.flipper:flipper:" *> releaseVersion <* "'")
-  ,("docs/getting-started/android-native.md", spaces >> "releaseImplementation 'com.facebook.flipper:flipper-noop:" *> releaseVersion <* "'")
-  ,("docs/setup/leak-canary-plugin.md", spaces >> "debugImplementation 'com.facebook.flipper:flipper-leakcanary-plugin:" *> releaseVersion <* "'")
-  ,("docs/setup/layout-plugin.md", spaces >> "debugImplementation 'com.facebook.flipper:flipper-litho-plugin:" *> releaseVersion <* "'")
-  ,("docs/setup/network-plugin.md", spaces >> "debugImplementation 'com.facebook.flipper:flipper-network-plugin:" *> releaseVersion <* "'")
-  ,("docs/setup/images-plugin.md", spaces >> "debugImplementation 'com.facebook.flipper:flipper-images-plugin:" *> releaseVersion <* "'")
+  ,("docs/getting-started/android-native.mdx", spaces >> "debugImplementation 'com.facebook.flipper:flipper:" *> releaseVersion <* "'")
+  ,("docs/getting-started/android-native.mdx", spaces >> "releaseImplementation 'com.facebook.flipper:flipper-noop:" *> releaseVersion <* "'")
+  ,("docs/getting-started/react-native-android.mdx", spaces >> "debugImplementation 'com.facebook.flipper:flipper:" *> releaseVersion <* "'")
+  ,("docs/getting-started/react-native-android.mdx", spaces >> "debugImplementation 'com.facebook.flipper:flipper-network-plugin:" *> releaseVersion <* "'")
+  ,("docs/setup/leak-canary-plugin.mdx", spaces >> "debugImplementation 'com.facebook.flipper:flipper-leakcanary-plugin:" *> releaseVersion <* "'")
+  ,("docs/setup/layout-plugin.mdx", spaces >> "debugImplementation 'com.facebook.flipper:flipper-litho-plugin:" *> releaseVersion <* "'")
+  ,("docs/setup/network-plugin.mdx", spaces >> "debugImplementation 'com.facebook.flipper:flipper-network-plugin:" *> releaseVersion <* "'")
+  ,("docs/setup/images-plugin.mdx", spaces >> "debugImplementation 'com.facebook.flipper:flipper-images-plugin:" *> releaseVersion <* "'")
   ]
 
 snapshotReplacements :: [(FilePath, Pattern Version)]
 snapshotReplacements =
   [("gradle.properties", "VERSION_NAME=" *> anyVersion)
-  ,("docs/getting-started/android-native.md", spaces >> "debugImplementation 'com.facebook.flipper:flipper:" *> snapshotVersion <* "'")
-  ,("docs/getting-started/android-native.md", spaces >> "releaseImplementation 'com.facebook.flipper:flipper-noop:" *> snapshotVersion <* "'")
+  ,("docs/getting-started/android-native.mdx", spaces >> "debugImplementation 'com.facebook.flipper:flipper:" *> snapshotVersion <* "'")
+  ,("docs/getting-started/android-native.mdx", spaces >> "releaseImplementation 'com.facebook.flipper:flipper-noop:" *> snapshotVersion <* "'")
   ]
 
 flipperPath :: FilePath -> FilePath

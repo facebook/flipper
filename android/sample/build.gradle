@@ -10,6 +10,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion rootProject.compileSdkVersion
     buildToolsVersion rootProject.buildToolsVersion
+    ndkVersion rootProject.ndkVersion
     defaultConfig {
         minSdkVersion 21
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'

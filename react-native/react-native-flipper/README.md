@@ -15,11 +15,11 @@ Note that this package requires React Native 0.62 or higher.
 ## Usage
 
 How to build Flipper plugins is explained in the flipper documentation:
-[Creating a Flipper plugin](https://fbflipper.com/docs/extending/index.html).
+[Creating a Flipper plugin](https://fbflipper.com/docs/extending/index).
 Building a Flipper plugin involves building a plugin for the Desktop app, and a plugin that runs on a Device (Native Android, Native IOS or React Native). This package is only needed for the plugin that runs on the mobile device, in React Native, and wants to use the JavaScript bridge.
 
 This package exposes one method: `addPlugin`.
-The `addPlugin` accepts a `plugin` parameter, that registers a client plugin and will fire the relevant callbacks if the corresponding desktop plugin is selected in the Flipper Desktop. The full plugin API is documented [here](https://fbflipper.com/docs/extending/create-plugin.html).
+The `addPlugin` accepts a `plugin` parameter, that registers a client plugin and will fire the relevant callbacks if the corresponding desktop plugin is selected in the Flipper Desktop. The full plugin API is documented [here](https://fbflipper.com/docs/extending/create-plugin).
 
 ## Example
 

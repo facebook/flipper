@@ -122,7 +122,7 @@ export function getHealthchecks(): Healthchecks {
                 };
               }
               return await tryExecuteCommand(
-                path.join(platformToolsDir, 'adb') + ' version',
+                `"${path.join(platformToolsDir, 'adb')}" version`,
               );
             }
             return await tryExecuteCommand('adb version');

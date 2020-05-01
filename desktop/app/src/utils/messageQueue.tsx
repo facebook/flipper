@@ -19,6 +19,8 @@ import {
 import {Idler, BaseIdler} from './Idler';
 import {pluginIsStarred, getSelectedPluginKey} from '../reducers/connections';
 import {deconstructPluginKey} from './clientUtils';
+import {onBytesReceived} from '../dispatcher/tracking';
+import {defaultEnabledBackgroundPlugins} from './pluginUtils';
 
 const MAX_BACKGROUND_TASK_TIME = 25;
 
@@ -28,6 +30,8 @@ type StatEntry = {
   messageCountTotal: number; // amount of message received for this plugin
   messageCountDelta: number; // amout of messages received since previous tracking tick
   maxTime: number; // maximum time spend in a single reducer call
+  bytesReceivedTotal: number; // Bytes received
+  bytesReceivedDelta: number; // Bytes received since last tick
 };
 
 const pluginBackgroundStats = new Map<string, StatEntry>();
@@ -36,17 +40,30 @@ export function resetPluginBackgroundStatsDelta() {
   pluginBackgroundStats.forEach((stat) => {
     stat.cpuTimeDelta = 0;
     stat.messageCountDelta = 0;
+    stat.bytesReceivedDelta = 0;
   });
 }
 
+onBytesReceived((plugin: string, bytes: number) => {
+  if (!pluginBackgroundStats.has(plugin)) {
+    pluginBackgroundStats.set(plugin, createEmptyStat());
+  }
+  const stat = pluginBackgroundStats.get(plugin)!;
+  stat.bytesReceivedTotal += bytes;
+  stat.bytesReceivedDelta += bytes;
+});
+
 export function getPluginBackgroundStats(): {
   cpuTime: number; // amount of ms cpu used since the last stats (typically every minute)
+  bytesReceived: number;
   byPlugin: {[plugin: string]: StatEntry};
 } {
   let cpuTime: number = 0;
+  let bytesReceived: number = 0;
   const byPlugin = Array.from(pluginBackgroundStats.entries()).reduce(
     (aggregated, [pluginName, data]) => {
       cpuTime += data.cpuTimeDelta;
+      bytesReceived += data.bytesReceivedDelta;
       aggregated[pluginName] = data;
       return aggregated;
     },
@@ -54,6 +71,7 @@ export function getPluginBackgroundStats(): {
   );
   return {
     cpuTime,
+    bytesReceived,
     byPlugin,
   };
 }
@@ -71,6 +89,8 @@ if (window) {
             messageCountDelta,
             messageCountTotal,
             maxTime,
+            bytesReceivedTotal,
+            bytesReceivedDelta,
           },
         ]) => ({
           plugin,
@@ -79,21 +99,29 @@ if (window) {
           cpuTimeDelta,
           messageCountDelta,
           maxTime,
+          bytesReceivedTotal,
+          bytesReceivedDelta,
         }),
       ),
     );
   };
 }
 
+function createEmptyStat(): StatEntry {
+  return {
+    cpuTimeDelta: 0,
+    cpuTimeTotal: 0,
+    messageCountDelta: 0,
+    messageCountTotal: 0,
+    maxTime: 0,
+    bytesReceivedTotal: 0,
+    bytesReceivedDelta: 0,
+  };
+}
+
 function addBackgroundStat(plugin: string, cpuTime: number) {
   if (!pluginBackgroundStats.has(plugin)) {
-    pluginBackgroundStats.set(plugin, {
-      cpuTimeDelta: 0,
-      cpuTimeTotal: 0,
-      messageCountDelta: 0,
-      messageCountTotal: 0,
-      maxTime: 0,
-    });
+    pluginBackgroundStats.set(plugin, createEmptyStat());
   }
   const stat = pluginBackgroundStats.get(plugin)!;
   stat.cpuTimeDelta += cpuTime;
@@ -117,7 +145,6 @@ function processMessage(
   },
   message: {method: string; params?: any},
 ): State {
-  const statName = `${plugin.id}.${message.method}`;
   const reducerStartTime = Date.now();
   flipperRecorderAddEvent(pluginKey, message.method, message.params);
   try {
@@ -126,7 +153,7 @@ function processMessage(
       message.method,
       message.params,
     );
-    addBackgroundStat(statName, Date.now() - reducerStartTime);
+    addBackgroundStat(plugin.id, Date.now() - reducerStartTime);
     return newPluginState;
   } catch (e) {
     console.error(`Failed to process event for plugin ${plugin.id}`, e);
@@ -195,7 +222,12 @@ export function processMessageLater(
         ),
       );
       break;
-    // In all other cases, messages will be dropped...
+    default:
+      // In all other cases, messages will be dropped...
+      if (!defaultEnabledBackgroundPlugins.includes(plugin.id))
+        console.error(
+          `Received message for disabled plugin ${plugin.id}, dropping..`,
+        );
   }
 }
 

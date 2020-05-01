@@ -33,6 +33,9 @@ import {
   Spacer,
   colors,
   DetailSidebar,
+  SearchInput,
+  SearchBox,
+  SearchIcon,
 } from 'flipper';
 
 const Waiting = styled(FlexBox)((props) => ({
@@ -62,6 +65,7 @@ type State = {
   focusedChangeSet: ?UpdateTreeGenerationChangesetApplicationPayload,
   userSelectedGenerationId: ?string,
   selectedTreeNode: ?Object,
+  searchString: string,
 };
 
 type PersistedState = {
@@ -153,6 +157,7 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
     focusedChangeSet: null,
     userSelectedGenerationId: null,
     selectedTreeNode: null,
+    searchString: '',
   };
 
   onTreeGenerationFocused = (focusedGenerationId: ?string) => {
@@ -239,6 +244,54 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
     });
   };
 
+  onChange = (e: any) => {
+    this.setState({searchString: e.target.value});
+  };
+
+  generationValues = () => {
+    const {generations} = this.props.persistedState;
+    const generationKeys = Object.keys(generations);
+    return (generationKeys.map(
+      (key) => generations[key],
+    ): Array<TreeGeneration>);
+  };
+
+  matchesCurrentSearchString = (s: string) => {
+    return s.toLowerCase().includes(this.state.searchString.toLowerCase());
+  };
+
+  matchingGenerationKeys = () => {
+    const matchingKeys: Array<string> = this.generationValues()
+      .filter((g) => {
+        if (g.payload) {
+          const componentClassName: ?string = g.payload['component_class_name'];
+          if (componentClassName) {
+            return this.matchesCurrentSearchString(componentClassName);
+          }
+        }
+        return g.tree?.some((node) => {
+          return this.matchesCurrentSearchString(node.name);
+        });
+      })
+      .map((g) => {
+        return g.surface_key;
+      });
+
+    return new Set<string>(matchingKeys);
+  };
+
+  filteredGenerations = () => {
+    if (this.state.searchString.length <= 0) {
+      return Object.values(this.props.persistedState.generations);
+    }
+
+    const matchingKeys = this.matchingGenerationKeys();
+
+    return (this.generationValues().filter((g) => {
+      return matchingKeys.has(g.surface_key);
+    }): Array<TreeGeneration>);
+  };
+
   render() {
     const {generations} = this.props.persistedState;
     if (Object.values(this.props.persistedState.generations).length === 0) {
@@ -256,6 +309,18 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
     return (
       <React.Fragment>
         <Toolbar>
+          <SearchBox tabIndex={-1}>
+            <SearchIcon
+              name="magnifying-glass"
+              color={colors.macOSTitleBarIcon}
+              size={16}
+            />
+            <SearchInput
+              placeholder={'Search'}
+              onChange={this.onChange}
+              value={this.state.searchString}
+            />
+          </SearchBox>
           <Spacer />
           {this.props.persistedState.recording ? (
             <Button
@@ -276,7 +341,7 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
         </Toolbar>
         <Sidebar position="top" minHeight={80} height={80}>
           <EventTable
-            generations={Object.values(generations)}
+            generations={this.filteredGenerations()}
             focusedGenerationId={focusedGenerationId}
             onClick={this.onTreeGenerationFocused}
           />

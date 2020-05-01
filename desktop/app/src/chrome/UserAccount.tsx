@@ -19,6 +19,7 @@ import {findDOMNode} from 'react-dom';
 import React, {PureComponent} from 'react';
 import {getUser} from '../fb-stubs/user';
 import config from '../fb-stubs/config';
+import {State as Store} from '../reducers';
 
 const Container = styled(FlexRow)({
   alignItems: 'center',
@@ -125,8 +126,6 @@ class UserAccount extends PureComponent<Props> {
   }
 }
 
-// @TODO: TS_MIGRATION
-type Store = any;
 export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
   ({user}) => ({
     user,

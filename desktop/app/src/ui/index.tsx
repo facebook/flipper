@@ -110,6 +110,7 @@ export {default as FlexRow} from './components/FlexRow';
 export {default as FlexColumn} from './components/FlexColumn';
 export {default as FlexCenter} from './components/FlexCenter';
 export {default as Toolbar, Spacer} from './components/Toolbar';
+export {default as ToolbarIcon} from './components/ToolbarIcon';
 export {default as Panel} from './components/Panel';
 export {default as Text} from './components/Text';
 export {default as TextParagraph} from './components/TextParagraph';
@@ -120,7 +121,7 @@ export {default as Tooltip} from './components/Tooltip';
 export {default as TooltipProvider} from './components/TooltipProvider';
 export {default as ResizeSensor} from './components/ResizeSensor';
 export {default as StatusIndicator} from './components/StatusIndicator';
-
+export {default as Line} from './components/Line';
 // typography
 export {default as HorizontalRule} from './components/HorizontalRule';
 export {default as VerticalRule} from './components/VerticalRule';
@@ -150,6 +151,7 @@ export {
   ElementAttribute,
   Element,
   ElementSearchResultSet,
+  ElementsInspectorProps,
 } from './components/elements-inspector/ElementsInspector';
 export {Elements} from './components/elements-inspector/elements';
 export {ContextMenuExtension} from './components/elements-inspector/elements';
@@ -172,3 +174,4 @@ export {default as CenteredView} from './components/CenteredView';
 export {default as Info} from './components/Info';
 export {default as Bordered} from './components/Bordered';
 export {default as AlternatingRows} from './components/AlternatingRows';
+export {default as Layout} from './components/Layout';

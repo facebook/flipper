@@ -37,6 +37,10 @@ type ManagedDataInspectorProps = {
    */
   setValue?: (path: Array<string>, val: any) => void;
   /**
+   * Callback when a delete action is invoked.
+   */
+  onDelete?: (path: Array<string>) => void;
+  /**
    * Whether all objects and arrays should be collapsed by default.
    */
   collapsed?: boolean;
@@ -80,6 +84,7 @@ export default class ManagedDataInspector extends PureComponent<
         setValue={this.props.setValue}
         expanded={this.state.expanded}
         onExpanded={this.onExpanded}
+        onDelete={this.props.onDelete}
         expandRoot={this.props.expandRoot}
         collapsed={this.props.collapsed}
         tooltips={this.props.tooltips}

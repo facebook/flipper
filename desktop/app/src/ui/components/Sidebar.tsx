@@ -181,9 +181,7 @@ export default class Sidebar extends Component<SidebarProps, SidebarState> {
         width={horizontal ? (onResize ? width : this.state.width) : undefined}
         minHeight={minHeight}
         maxHeight={maxHeight}
-        height={
-          !horizontal ? (onResize ? height : this.state.height) : undefined
-        }
+        height={!horizontal ? (onResize ? height : this.state.height) : '100%'}
         resizable={resizable}
         onResize={this.onResize}>
         <SidebarContainer position={position} backgroundColor={backgroundColor}>

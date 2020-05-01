@@ -134,8 +134,12 @@ export default class BaseDevice {
     this._notifyLogListeners(entry);
   }
 
-  getLogs() {
-    return this.logEntries;
+  getLogs(startDate: Date | null = null) {
+    return startDate != null
+      ? this.logEntries.filter((log) => {
+          return log.date > startDate;
+        })
+      : this.logEntries;
   }
 
   clearLogs(): Promise<void> {

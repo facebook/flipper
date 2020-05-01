@@ -8,9 +8,8 @@
  */
 
 import {FlipperClientConnection} from '../../Client';
-import {Payload} from 'rsocket-types';
 import {Flowable, Single} from 'rsocket-flowable';
-import {ConnectionStatus, ISubscriber} from 'rsocket-types';
+import {Payload, ConnectionStatus, ISubscriber} from 'rsocket-types';
 import WebSocket from 'ws';
 
 export class WebsocketClientFlipperConnection<M>

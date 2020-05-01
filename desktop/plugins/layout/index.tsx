@@ -28,9 +28,9 @@ import {
   constants,
   ReduxState,
   ArchivedDevice,
+  ToolbarIcon,
 } from 'flipper';
 import Inspector from './Inspector';
-import ToolbarIcon from './ToolbarIcon';
 import InspectorSidebar from './InspectorSidebar';
 import Search from './Search';
 import ProxyArchiveClient from './ProxyArchiveClient';
@@ -77,6 +77,9 @@ const FlipperADButton = styled(Button)({
   margin: 10,
 });
 
+type ClientGetNodesCalls = 'getNodes' | 'getAXNodes';
+type ClientMethodCalls = 'getRoot' | 'getAXRoot' | ClientGetNodesCalls;
+
 export default class Layout extends FlipperPlugin<State, any, PersistedState> {
   FlipperADBar() {
     return (
@@ -98,19 +101,84 @@ export default class Layout extends FlipperPlugin<State, any, PersistedState> {
   }
 
   static exportPersistedState = async (
-    callClient: (
-      method: 'getAllNodes',
-    ) => Promise<{
-      allNodes: PersistedState;
-    }>,
+    callClient: (method: ClientMethodCalls, params?: any) => Promise<any>,
     persistedState: PersistedState | undefined,
     store: ReduxState | undefined,
+    _idler?: Idler | undefined,
+    statusUpdate?: (msg: string) => void,
+    supportsMethod?: (method: ClientMethodCalls) => Promise<boolean>,
   ): Promise<PersistedState | undefined> => {
     if (!store) {
       return persistedState;
     }
-    const {allNodes} = await callClient('getAllNodes');
-    return allNodes;
+    statusUpdate && statusUpdate('Fetching Root Node...');
+    // We need not check the if the client supports `getRoot` as if it should and if it doesn't we will get a suppressed notification in Flipper and things will still export, but we will get an error surfaced.
+    const rootElement: Element | null = await callClient('getRoot');
+    const rootAXElement: Element | null =
+      supportsMethod && (await supportsMethod('getAXRoot')) // getAXRoot only relevant for Android
+        ? await callClient('getAXRoot')
+        : null;
+    const elements: ElementMap = {};
+
+    if (rootElement) {
+      statusUpdate && statusUpdate('Fetching Child Nodes...');
+      await Layout.getAllNodes(
+        rootElement,
+        elements,
+        callClient,
+        'getNodes',
+        supportsMethod,
+      );
+    }
+    const AXelements: ElementMap = {};
+    if (rootAXElement) {
+      statusUpdate && statusUpdate('Fetching Child AX Nodes...');
+      await Layout.getAllNodes(
+        rootAXElement,
+        AXelements,
+        callClient,
+        'getAXNodes',
+        supportsMethod,
+      );
+    }
+    statusUpdate && statusUpdate('Finished Fetching Child Nodes...');
+    return {
+      rootElement: rootElement != undefined ? rootElement.id : null,
+      rootAXElement: rootAXElement != undefined ? rootAXElement.id : null,
+      elements,
+      AXelements,
+    };
+  };
+
+  static getAllNodes = async (
+    root: Element,
+    nodeMap: ElementMap,
+    callClient: (method: ClientGetNodesCalls, params?: any) => Promise<any>,
+    method: ClientGetNodesCalls,
+    supportsMethod?: (method: ClientGetNodesCalls) => Promise<boolean>,
+  ): Promise<void> => {
+    nodeMap[root.id] = root;
+    if (
+      root.children.length > 0 &&
+      supportsMethod &&
+      (await supportsMethod(method))
+    ) {
+      await callClient(method, {ids: root.children}).then(
+        async ({elements}: {elements: Array<Element>}) => {
+          await Promise.all(
+            elements.map(async (elem) => {
+              await Layout.getAllNodes(
+                elem,
+                nodeMap,
+                callClient,
+                method,
+                supportsMethod,
+              );
+            }),
+          );
+        },
+      );
+    }
   };
 
   static serializePersistedState: (

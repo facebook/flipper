@@ -28,6 +28,7 @@ export default function Tooltip(props: TooltipProps) {
   const tooltipManager = useContext(TooltipContext);
   const ref = useRef<HTMLDivElement | null>();
   const isOpen = useRef<boolean>(false);
+  const {title, options} = props;
 
   useEffect(
     () => () => {
@@ -35,22 +36,22 @@ export default function Tooltip(props: TooltipProps) {
         tooltipManager.close();
       }
     },
-    [],
+    [title, options],
   );
 
   const onMouseEnter = useCallback(() => {
-    if (ref.current && props.title) {
-      tooltipManager.open(ref.current, props.title, props.options || {});
+    if (ref.current && title) {
+      tooltipManager.open(ref.current, title, options || {});
       isOpen.current = true;
     }
-  }, []);
+  }, [options, title, isOpen, ref]);
 
   const onMouseLeave = useCallback(() => {
     if (isOpen.current) {
       tooltipManager.close();
       isOpen.current = false;
     }
-  }, []);
+  }, [isOpen]);
 
   return (
     <TooltipContainer

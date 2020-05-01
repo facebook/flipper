@@ -46,7 +46,15 @@ function createDevice(
             ? KaiOSDevice
             : AndroidDevice)(device.id, type, name, adbClient);
           if (ports) {
-            await androidLikeDevice.reverse([ports.secure, ports.insecure]);
+            await androidLikeDevice
+              .reverse([ports.secure, ports.insecure])
+              // We may not be able to establish a reverse connection, e.g. for old Android SDKs.
+              // This is *generally* fine, because we hard-code the ports on the SDK side.
+              .catch((e) => {
+                console.warn(
+                  `Failed to reverse-proxy ports on device ${androidLikeDevice.serial}: ${e}`,
+                );
+              });
           }
           resolve(androidLikeDevice);
         } catch (e) {

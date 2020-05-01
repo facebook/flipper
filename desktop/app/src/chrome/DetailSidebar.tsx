@@ -12,6 +12,7 @@ import ReactDOM from 'react-dom';
 import Sidebar from '../ui/components/Sidebar';
 import {connect} from 'react-redux';
 import {toggleRightSidebarAvailable} from '../reducers/application';
+import {State as Store} from '../reducers';
 
 type OwnProps = {
   children: any;
@@ -64,8 +65,6 @@ class DetailSidebar extends React.Component<Props> {
   }
 }
 
-// @TODO: TS_MIGRATION
-type Store = any;
 export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
   ({application: {rightSidebarVisible, rightSidebarAvailable}}) => ({
     rightSidebarVisible,

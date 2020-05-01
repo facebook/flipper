@@ -28,12 +28,12 @@ export function sideEffect<
   State = Store extends ReduxStore<infer S, any> ? S : never
 >(
   store: Store,
-  options: {name: string; throttleMs: number},
+  options: {name: string; throttleMs: number; fireImmediately?: boolean},
   selector: (state: State) => V,
   effect: (selectedState: V, store: Store) => void,
 ): () => void {
   let scheduled = false;
-  let lastRun = 0;
+  let lastRun = -1;
   let lastSelectedValue: V = selector(store.getState());
   let timeout: NodeJS.Timeout;
 
@@ -54,9 +54,9 @@ export function sideEffect<
     const duration = lastRun - start;
     if (duration > 15 && duration > options.throttleMs / 10) {
       console.warn(
-        `Side effect '${
-          options.name
-        }' took ${duration}ms, which exceeded its budget of ${Math.floor(
+        `Side effect '${options.name}' took ${Math.round(
+          duration,
+        )}ms, which exceeded its budget of ${Math.floor(
           options.throttleMs / 10,
         )}ms. Please make the effect faster or increase the throttle time.`,
       );
@@ -78,9 +78,15 @@ export function sideEffect<
     timeout = setTimeout(
       run,
       // Run ASAP (but async) or, if we recently did run, delay until at least 'throttle' time has expired
-      Math.max(1, lastRun + options.throttleMs - performance.now()),
+      lastRun === -1
+        ? 1
+        : Math.max(1, lastRun + options.throttleMs - performance.now()),
     );
   });
+
+  if (options.fireImmediately) {
+    run();
+  }
 
   return () => {
     clearTimeout(timeout);

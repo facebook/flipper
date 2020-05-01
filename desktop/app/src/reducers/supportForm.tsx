@@ -26,11 +26,8 @@ import {State as PluginMessageQueueState} from '../reducers/pluginMessageQueue';
 import Client from '../Client';
 import {OS} from '../devices/BaseDevice';
 
-const {
-  GRAPHQL_IOS_SUPPORT_GROUP_ID,
-  GRAPHQL_ANDROID_SUPPORT_GROUP_ID,
-  LITHO_SUPPORT_GROUP_ID,
-} = constants;
+const {DEFAULT_SUPPORT_GROUP} = constants;
+
 type SubmediaType =
   | {uploadID: string; status: 'Uploaded'}
   | {status: 'NotUploaded' | 'Uploading'};
@@ -46,23 +43,26 @@ export type GroupValidationErrors = {
 
 export class Group {
   constructor(
-    name: GroupNames,
+    name: string,
     workplaceGroupID: number,
     requiredPlugins: Array<string>,
     defaultPlugins: Array<string>,
     supportedOS: Array<OS>,
+    deeplinkSuffix: string,
   ) {
     this.name = name;
     this.requiredPlugins = requiredPlugins;
     this.defaultPlugins = defaultPlugins;
     this.workplaceGroupID = workplaceGroupID;
     this.supportedOS = supportedOS;
+    this.deeplinkSuffix = deeplinkSuffix;
   }
-  readonly name: GroupNames;
+  readonly name: string;
   requiredPlugins: Array<string>;
   defaultPlugins: Array<string>;
   workplaceGroupID: number;
   supportedOS: Array<OS>;
+  deeplinkSuffix: string;
 
   getPluginsToSelect(): Array<string> {
     return Array.from(
@@ -251,39 +251,36 @@ export class Group {
   }
 }
 
-export type GroupNames =
-  | 'Litho Support'
-  | 'GraphQL Android Support'
-  | 'GraphQL iOS Support';
-
-export const LITHO_GROUP = new Group(
-  'Litho Support',
-  LITHO_SUPPORT_GROUP_ID,
-  ['Inspector'],
-  ['Sections', 'DeviceLogs'],
-  ['Android'],
-);
-
-export const GRAPHQL_ANDROID_GROUP = new Group(
-  'GraphQL Android Support',
-  GRAPHQL_ANDROID_SUPPORT_GROUP_ID,
-  ['GraphQL', 'Network'],
-  ['DeviceLogs'],
-  ['Android'],
-);
-
-export const GRAPHQL_IOS_GROUP = new Group(
-  'GraphQL iOS Support',
-  GRAPHQL_IOS_SUPPORT_GROUP_ID,
-  ['GraphQL', 'Network'],
-  ['DeviceLogs'],
-  ['iOS'],
+const DEFAULT_GROUP = new Group(
+  DEFAULT_SUPPORT_GROUP.name,
+  DEFAULT_SUPPORT_GROUP.workplaceGroupID,
+  DEFAULT_SUPPORT_GROUP.requiredPlugins,
+  DEFAULT_SUPPORT_GROUP.defaultPlugins,
+  DEFAULT_SUPPORT_GROUP.supportedOS,
+  DEFAULT_SUPPORT_GROUP.deeplinkSuffix,
 );
 
 export const SUPPORTED_GROUPS: Array<Group> = [
-  LITHO_GROUP,
-  GRAPHQL_ANDROID_GROUP,
-  GRAPHQL_IOS_GROUP,
+  DEFAULT_GROUP,
+  ...constants.SUPPORT_GROUPS.map(
+    ({
+      name,
+      workplaceGroupID,
+      requiredPlugins,
+      defaultPlugins,
+      supportedOS,
+      deeplinkSuffix,
+    }) => {
+      return new Group(
+        name,
+        workplaceGroupID,
+        requiredPlugins,
+        defaultPlugins,
+        supportedOS,
+        deeplinkSuffix,
+      );
+    },
+  ),
 ];
 
 export type MediaType = Array<MediaObject>;
@@ -336,7 +333,7 @@ export const initialState: () => State = () => ({
     ].join('\n'),
     commitHash: '',
     appName: '',
-    selectedGroup: LITHO_GROUP,
+    selectedGroup: DEFAULT_GROUP,
   },
 });
 export default function reducer(

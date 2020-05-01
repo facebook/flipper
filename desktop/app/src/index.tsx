@@ -17,7 +17,11 @@ export {serialize, deserialize} from './utils/serialization';
 export * from './utils/jsonTypes';
 export {default as GK} from './fb-stubs/GK';
 export {default as createPaste} from './fb-stubs/createPaste';
-export {internGraphPOSTAPIRequest, graphQLQuery} from './fb-stubs/user';
+export {
+  internGraphGETAPIRequest,
+  internGraphPOSTAPIRequest,
+  graphQLQuery,
+} from './fb-stubs/user';
 export {
   FlipperBasePlugin,
   FlipperPlugin,
@@ -131,6 +135,7 @@ export {default as FlexRow} from './ui/components/FlexRow';
 export {default as FlexColumn} from './ui/components/FlexColumn';
 export {default as FlexCenter} from './ui/components/FlexCenter';
 export {default as Toolbar, Spacer} from './ui/components/Toolbar';
+export {default as ToolbarIcon} from './ui/components/ToolbarIcon';
 export {default as Panel} from './ui/components/Panel';
 export {default as Text} from './ui/components/Text';
 export {default as TextParagraph} from './ui/components/TextParagraph';
@@ -163,6 +168,7 @@ export {
   ElementAttribute,
   Element,
   ElementSearchResultSet,
+  ElementsInspectorProps,
 } from './ui/components/elements-inspector/ElementsInspector';
 export {Elements} from './ui/components/elements-inspector/elements';
 export {ContextMenuExtension} from './ui/components/elements-inspector/elements';

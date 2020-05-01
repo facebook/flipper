@@ -167,7 +167,7 @@ export default class KaiOSGraphs extends FlipperDevicePlugin<State, any, any> {
           ) {
             continue;
           }
-          if (fields[1].match(/[^0-9]+/)) {
+          if (fields[1].match(/\D+/)) {
             // TODO: probably implement this through something other than b2g
             throw new Error('Support for names with spaces is not implemented');
           }

@@ -143,14 +143,7 @@ class PluginDebugger extends Component<Props> {
   getRows(): Array<TableBodyRow> {
     const rows: Array<TableBodyRow> = [];
 
-    // bundled plugins are loaded from the defaultPlugins directory within
-    // Flipper's package.
-    const externalPluginPath = (p: any) =>
-      p.out
-        ? p.out.startsWith('./defaultPlugins/')
-          ? null
-          : p.entry
-        : 'Native Plugin';
+    const externalPluginPath = (p: any) => p.entry || 'Native Plugin';
 
     this.props.gatekeepedPlugins.forEach((plugin) =>
       rows.push(
@@ -225,7 +218,7 @@ class PluginDebugger extends Component<Props> {
           emulator/simulator currently running on your system, or is there a
           development device connected via USB? There are some devices/emulators
           known to have problems connecting to Flipper. Check out the{' '}
-          <Link href="https://fbflipper.com/docs/troubleshooting.html#known-incompatibilities">
+          <Link href="https://fbflipper.com/docs/troubleshooting#known-incompatibilities">
             known incompatibilities
           </Link>
           .
@@ -256,7 +249,7 @@ class PluginDebugger extends Component<Props> {
           <InfoText>
             To debug why Flipper couldn't establish a connection to the app,
             check out our documentation about{' '}
-            <Link href="https://fbflipper.com/docs/troubleshooting.html#connection-issues">
+            <Link href="https://fbflipper.com/docs/troubleshooting#connection-issues">
               connection issues
             </Link>
             .

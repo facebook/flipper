@@ -1,0 +1,22 @@
+{
+  "name": "flipper-e2e",
+  "version": "0.40.0",
+  "private": true,
+  "description": "E2E test suite for Flipper",
+  "repository": "facebook/flipper",
+  "main": "./main.ts",
+  "license": "MIT",
+  "bugs": "https://github.com/facebook/flipper/issues",
+  "dependencies": {},
+  "devDependencies": {
+    "spectron": "^10.0.1"
+  },
+  "scripts": {
+    "test": "../ts-node ./main.ts"
+  },
+  "homepage": "https://github.com/facebook/flipper",
+  "keywords": [
+    "Flipper"
+  ],
+  "author": "Facebook, Inc"
+}

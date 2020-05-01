@@ -42,6 +42,28 @@ export type UsageSummary = {
 
 export const fpsEmitter = new EventEmitter();
 
+// var is fine, let doesn't have the correct hoisting semantics
+// eslint-disable-next-line no-var
+var bytesReceivedEmitter: EventEmitter;
+
+export function onBytesReceived(
+  callback: (plugin: string, bytes: number) => void,
+): () => void {
+  if (!bytesReceivedEmitter) {
+    bytesReceivedEmitter = new EventEmitter();
+  }
+  bytesReceivedEmitter.on('bytesReceived', callback);
+  return () => {
+    bytesReceivedEmitter.off('bytesReceived', callback);
+  };
+}
+
+export function emitBytesReceived(plugin: string, bytes: number) {
+  if (bytesReceivedEmitter) {
+    bytesReceivedEmitter.emit('bytesReceived', plugin, bytes);
+  }
+}
+
 export default (store: Store, logger: Logger) => {
   let droppedFrames: number = 0;
   let largeFrameDrops: number = 0;
@@ -54,6 +76,20 @@ export default (store: Store, logger: Logger) => {
       ...oldExitData,
       timeSinceLastStartup,
     });
+    // create fresh exit data
+    const {
+      selectedDevice,
+      selectedApp,
+      selectedPlugin,
+    } = store.getState().connections;
+    persistExitData(
+      {
+        selectedDevice,
+        selectedApp,
+        selectedPlugin,
+      },
+      false,
+    );
   }
 
   function droppedFrameDetection(
@@ -81,7 +117,7 @@ export default (store: Store, logger: Logger) => {
     );
   }
 
-  ipcRenderer.on('trackUsage', () => {
+  ipcRenderer.on('trackUsage', (_e, ...args: any[]) => {
     const state = store.getState();
     const {
       selectedDevice,
@@ -90,7 +126,10 @@ export default (store: Store, logger: Logger) => {
       clients,
     } = state.connections;
 
-    persistExitData({selectedDevice, selectedPlugin, selectedApp});
+    persistExitData(
+      {selectedDevice, selectedPlugin, selectedApp},
+      args[0] === 'exit',
+    );
 
     const currentTime = Date.now();
     const usageSummary = computeUsageSummary(state.usageTracking, currentTime);
@@ -110,7 +149,22 @@ export default (store: Store, logger: Logger) => {
         }),
     );
 
-    logger.track('usage', 'plugin-stats', getPluginBackgroundStats());
+    const bgStats = getPluginBackgroundStats();
+    logger.track('usage', 'plugin-stats', {
+      cpuTime: bgStats.cpuTime,
+      bytesReceived: bgStats.bytesReceived,
+    });
+    for (const key of Object.keys(bgStats.byPlugin)) {
+      const {
+        cpuTimeTotal: _a,
+        messageCountTotal: _b,
+        bytesReceivedTotal: _c,
+        ...dataWithoutTotal
+      } = bgStats.byPlugin[key];
+      if (Object.values(dataWithoutTotal).some((v) => v > 0)) {
+        logger.track('usage', 'plugin-stats-plugin', dataWithoutTotal, key);
+      }
+    }
     resetPluginBackgroundStatsDelta();
 
     if (
@@ -220,6 +274,7 @@ interface ExitData {
   deviceTitle: string;
   plugin: string;
   app: string;
+  cleanExit: boolean;
 }
 
 function loadExitData(): ExitData | undefined {
@@ -229,7 +284,11 @@ function loadExitData(): ExitData | undefined {
   const data = window.localStorage.getItem(flipperExitDataKey);
   if (data) {
     try {
-      return JSON.parse(data);
+      const res = JSON.parse(data);
+      if (res.cleanExit === undefined) {
+        res.cleanExit = true; // avoid skewing results for historical data where this info isn't present
+      }
+      return res;
     } catch (e) {
       console.warn('Failed to parse flipperExitData', e);
     }
@@ -237,11 +296,14 @@ function loadExitData(): ExitData | undefined {
   return undefined;
 }
 
-export function persistExitData(state: {
-  selectedDevice: BaseDevice | null;
-  selectedPlugin: string | null;
-  selectedApp: string | null;
-}) {
+export function persistExitData(
+  state: {
+    selectedDevice: BaseDevice | null;
+    selectedPlugin: string | null;
+    selectedApp: string | null;
+  },
+  cleanExit: boolean,
+) {
   if (!window.localStorage) {
     return;
   }
@@ -252,6 +314,7 @@ export function persistExitData(state: {
     deviceTitle: state.selectedDevice ? state.selectedDevice.title : '',
     plugin: state.selectedPlugin || '',
     app: state.selectedApp ? deconstructClientId(state.selectedApp).app : '',
+    cleanExit,
   };
   window.localStorage.setItem(
     flipperExitDataKey,

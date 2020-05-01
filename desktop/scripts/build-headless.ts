@@ -15,14 +15,12 @@ const {exec: createBinary} = require('pkg');
 import {
   buildFolder,
   compileHeadless,
-  compileDefaultPlugins,
   getVersionNumber,
   genMercurialRevision,
+  generatePluginEntryPoints,
 } from './build-utils';
 import isFB from './isFB';
 import {distDir} from './paths';
-
-const PLUGINS_FOLDER_NAME = 'plugins';
 
 function preludeBundle(
   dir: string,
@@ -50,15 +48,6 @@ async function createZip(buildDir: string, distDir: string, targets: string[]) {
     targets.forEach((target) => {
       const binary = `flipper-${target === 'mac' ? 'macos' : target}`;
       zip.addFile(path.join(buildDir, binary), binary);
-    });
-
-    // add plugins
-    const pluginDir = path.join(buildDir, PLUGINS_FOLDER_NAME);
-    fs.readdirSync(pluginDir).forEach((file) => {
-      zip.addFile(
-        path.join(pluginDir, file),
-        path.join(PLUGINS_FOLDER_NAME, file),
-      );
     });
 
     // write zip file
@@ -94,22 +83,15 @@ async function createZip(buildDir: string, distDir: string, targets: string[]) {
     // platformPostfix is automatically added by pkg
     platformPostfix = '';
   }
-  // Compiling all plugins takes a long time. Use this flag for quicker
-  // developement iteration by not including any plugins.
-  const skipPlugins = process.argv.indexOf('--no-plugins') > -1;
-
   process.env.FLIPPER_HEADLESS = 'true';
   const buildDir = await buildFolder();
   // eslint-disable-next-line no-console
   console.log('Created build directory', buildDir);
+  await generatePluginEntryPoints();
   await compileHeadless(buildDir);
   const versionNumber = getVersionNumber();
   const buildRevision = await genMercurialRevision();
   await preludeBundle(buildDir, versionNumber, buildRevision);
-  await compileDefaultPlugins(
-    path.join(buildDir, PLUGINS_FOLDER_NAME),
-    skipPlugins,
-  );
   await createBinary([
     path.join(buildDir, 'bundle.js'),
     '--output',

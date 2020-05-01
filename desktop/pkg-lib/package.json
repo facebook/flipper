@@ -1,0 +1,42 @@
+{
+  "name": "flipper-pkg-lib",
+  "version": "0.40.0",
+  "description": "Library for building and publishing Flipper plugins",
+  "repository": "facebook/flipper",
+  "main": "lib/index.js",
+  "flipperBundlerEntry": "src",
+  "types": "lib/index.d.ts",
+  "license": "MIT",
+  "bugs": "https://github.com/facebook/flipper/issues",
+  "dependencies": {
+    "fs-extra": "^8.1.0",
+    "flipper-babel-transformer": "0.40.0",
+    "metro": "^0.59.0",
+    "metro-minify-terser": "^0.59.0"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^8.1.0",
+    "@types/jest": "^25.1.0",
+    "@types/node": "^13.7.5",
+    "globby": "^10",
+    "jest": "^25.1.0",
+    "prettier": "^2.0.0",
+    "rimraf": "^3.0.2",
+    "ts-jest": "^25.2.1",
+    "ts-node": "^8",
+    "typescript": "^3.7.2"
+  },
+  "scripts": {
+    "reset": "rimraf lib *.tsbuildinfo",
+    "build": "tsc -b",
+    "prepack": "yarn reset && yarn build"
+  },
+  "files": [
+    "lib/**/*"
+  ],
+  "homepage": "https://github.com/facebook/flipper",
+  "keywords": [
+    "Flipper"
+  ],
+  "author": "Facebook, Inc"
+}

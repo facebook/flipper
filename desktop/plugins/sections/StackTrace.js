@@ -12,9 +12,7 @@ import {colors, StackTrace} from 'flipper';
 
 const FacebookLibraries = ['Facebook'];
 
-const REGEX = new RegExp(
-  '(?<library>[A-Za-z0-9]*) *(?<address>0x[A-Za-z0-9]*) (?<caller>(.*)) \\+ (?<lineNumber>[0-9]*)',
-);
+const REGEX = /\d+\s+(?<library>(\s|\w|\.)+\w)\s+(?<address>0x\w+?)\s+(?<caller>.+) \+ (?<lineNumber>\d+)/;
 
 function isSystemLibrary(libraryName: ?string): boolean {
   return !FacebookLibraries.includes(libraryName);

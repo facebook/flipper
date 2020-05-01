@@ -91,15 +91,6 @@
                   responder);
             }];
 
-  [connection receive:@"getAllNodes"
-            withBlock:^(NSDictionary* params, id<FlipperResponder> responder) {
-              FlipperPerformBlockOnMainThread(
-                  ^{
-                    [weakSelf onCallGetAllNodesWithResponder:responder];
-                  },
-                  responder);
-            }];
-
   [connection receive:@"getNodes"
             withBlock:^(NSDictionary* params, id<FlipperResponder> responder) {
               FlipperPerformBlockOnMainThread(
@@ -186,19 +177,6 @@
 }
 
 - (void)populateAllNodesFromNode:(nonnull NSString*)identifier
-                    inDictionary:
-                        (nonnull NSMutableDictionary<NSString*, NSDictionary*>*)
-                            mutableDict {
-  NSDictionary* nodeDict = [self getNode:identifier];
-  mutableDict[identifier] = nodeDict;
-  NSArray* arr = nodeDict[@"children"];
-  for (NSString* childIdentifier in arr) {
-    [self populateAllNodesFromNode:childIdentifier inDictionary:mutableDict];
-  }
-  return;
-}
-
-- (void)populateAllNodesFromNode:(nonnull NSString*)identifier
                          inArray:(nonnull NSMutableArray<NSDictionary*>*)
                                      mutableArray {
   NSDictionary* nodeDict = [self getNode:identifier];
@@ -210,26 +188,6 @@
   for (NSString* childIdentifier in children) {
     [self populateAllNodesFromNode:childIdentifier inArray:mutableArray];
   }
-}
-
-- (void)onCallGetAllNodesWithResponder:(nonnull id<FlipperResponder>)responder {
-  NSMutableArray<NSDictionary*>* allNodes = @[].mutableCopy;
-  NSString* identifier = [self trackObject:_rootNode];
-  NSDictionary* rootNode = [self getNode:identifier];
-  if (!rootNode) {
-    return [responder error:@{
-      @"error" : [NSString
-          stringWithFormat:
-              @"getNode returned nil for the rootNode %@, while getting all the nodes",
-              identifier]
-    }];
-  }
-  [allNodes addObject:rootNode];
-  NSMutableDictionary* allNodesDict = @{}.mutableCopy;
-  [self populateAllNodesFromNode:identifier inDictionary:allNodesDict];
-  [responder success:@{
-    @"allNodes" : @{@"rootElement" : identifier, @"elements" : allNodesDict}
-  }];
 }
 
 - (NSMutableArray*)getChildrenForNode:(id)node
@@ -258,7 +216,10 @@
     [elements addObject:node];
   }
 
-  [responder success:@{@"elements" : elements}];
+  // Converting to folly::dynamic is expensive, do it on a bg queue:
+  dispatch_async(SKLayoutPluginSerialBackgroundQueue(), ^{
+    [responder success:@{@"elements" : elements}];
+  });
 }
 
 - (void)onCallSetData:(NSString*)objectId
@@ -559,5 +520,23 @@
 }
 
 @end
+
+/**
+ Operations like converting NSDictionary to folly::dynamic can be expensive.
+ Do them on this serial background queue to avoid blocking the main thread.
+ (Of course, ideally we wouldn't bother with building NSDictionary objects
+ in the first place, in favor of just using folly::dynamic directly...)
+ */
+dispatch_queue_t SKLayoutPluginSerialBackgroundQueue(void) {
+  static dispatch_queue_t queue;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    queue = dispatch_queue_create("flipper.layout.bg", DISPATCH_QUEUE_SERIAL);
+    // This should be relatively high priority, to prevent Flipper lag.
+    dispatch_set_target_queue(
+        queue, dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0));
+  });
+  return queue;
+}
 
 #endif

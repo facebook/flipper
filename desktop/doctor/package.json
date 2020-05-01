@@ -1,14 +1,14 @@
 {
   "name": "flipper-doctor",
-  "version": "0.35.0",
+  "version": "0.40.0",
   "description": "Utility for checking for issues with a flipper installation",
   "main": "lib/index.js",
-  "flipper:source": "src",
+  "flipperBundlerEntry": "src",
   "types": "lib/index.d.ts",
   "license": "MIT",
   "devDependencies": {
     "@types/fb-watchman": "2.0.0",
-    "@types/jest": "^24.0.21",
+    "@types/jest": "^25.1.5",
     "@typescript-eslint/eslint-plugin": "^2.8.0",
     "eslint": "^6.6.0",
     "eslint-plugin-babel": "^5.3.0",
@@ -17,20 +17,16 @@
     "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-prettier": "^3.1.1",
     "eslint-plugin-react": "^7.16.0",
-    "jest": "^24.9.0",
+    "jest": "^25.1.5",
     "prettier": "^2.0.0",
     "ts-jest": "^25.3.0",
     "tslint-config-prettier": "^1.18.0",
     "typescript": "^3.7.2"
   },
   "scripts": {
+    "reset": "rimraf lib *.tsbuildinfo",
     "build": "tsc -b",
-    "prepare": "yarn run build",
-    "prepublishOnly": "yarn test && yarn run lint",
-    "preversion": "yarn run lint",
-    "test": "jest --config jestconfig.json --passWithNoTests",
-    "lint": "eslint -c ../.eslintrc.js src/**/* --ext .js,.ts  && tsc --noemit",
-    "fix": "eslint -c ../.eslintrc.js src/**/* --fix --ext .js,.ts",
+    "prepack": "yarn reset && yarn build",
     "run": "yarn run build && node lib/cli.js"
   },
   "files": [
@@ -42,7 +38,7 @@
   ],
   "author": "Facebook, Inc",
   "dependencies": {
-    "@types/node": "^13.7.7",
+    "@types/node": "^13.11.0",
     "envinfo": "^7.4.0",
     "fb-watchman": "^2.0.1"
   }

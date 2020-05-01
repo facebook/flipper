@@ -78,6 +78,11 @@
 }
 
 - (void)didObserveResponse:(SKResponseInfo*)response {
+  // Only track HTTP(S) calls, data URLs cannot be casted to NSHTTPURLResponse
+  if (![response.response isKindOfClass:[NSHTTPURLResponse class]]) {
+    return;
+  }
+
   NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*)response.response;
 
   NSMutableArray<NSDictionary<NSString*, id>*>* headers = [NSMutableArray new];

@@ -1,10 +1,10 @@
 {
   "name": "flipper-babel-transformer",
-  "version": "0.35.0",
+  "version": "0.40.0",
   "description": "Babel transformer for Flipper plugins",
   "repository": "facebook/flipper",
   "main": "lib/index.js",
-  "flipper:source": "src",
+  "flipperBundlerEntry": "src",
   "types": "lib/index.d.ts",
   "license": "MIT",
   "bugs": "https://github.com/facebook/flipper/issues",
@@ -26,7 +26,6 @@
     "@types/fs-extra": "^8.1.0",
     "@types/node": "^13.7.5",
     "fs-extra": "^8.1.0",
-    "metro": "^0.58.0",
     "tslib": "^1"
   },
   "devDependencies": {
@@ -39,10 +38,9 @@
     "typescript": "^3.7.2"
   },
   "scripts": {
+    "reset": "rimraf lib *.tsbuildinfo",
     "build": "tsc -b",
-    "prepack": "rimraf lib *.tsbuildinfo && tsc -b",
-    "prepublishOnly": "yarn test",
-    "test": "jest --config jestconfig.json"
+    "prepack": "yarn reset && yarn build"
   },
   "files": [
     "lib/**/*",

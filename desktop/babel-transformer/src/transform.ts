@@ -8,9 +8,55 @@
  */
 
 import {default as generate} from '@babel/generator';
-import {parse} from '@babel/parser';
+import {parse, ParserPlugin} from '@babel/parser';
 import {transformFromAstSync} from '@babel/core';
 import {default as flipperEnv} from './flipper-env';
+import {resolve} from 'path';
+
+const jsParsePlugins: ParserPlugin[] = [
+  'jsx',
+  ['flow', {all: true}],
+  'classProperties',
+  'objectRestSpread',
+  'optionalChaining',
+  'nullishCoalescingOperator',
+];
+const tsParsePluins: ParserPlugin[] = [
+  'jsx',
+  'typescript',
+  'classProperties',
+  'optionalChaining',
+  'nullishCoalescingOperator',
+];
+const commonJsPlugin = [
+  require('@babel/plugin-transform-modules-commonjs'),
+  {
+    strictMode: false,
+  },
+];
+const classPropertiesPlugin = require('@babel/plugin-proposal-class-properties');
+const optionalChainingPlugin = require('@babel/plugin-proposal-optional-chaining');
+const coalescingOperatorPlugin = require('@babel/plugin-proposal-nullish-coalescing-operator');
+const objectRestSpreadPlugin = require('@babel/plugin-proposal-object-rest-spread');
+const flowStripTypesPlugin = require('@babel/plugin-transform-flow-strip-types');
+const dynamicRequiresPlugin = require('./dynamic-requires');
+const typeScriptPlugin = require('@babel/plugin-transform-typescript');
+const tsTransformPlugins = [
+  typeScriptPlugin,
+  classPropertiesPlugin,
+  commonJsPlugin,
+  optionalChainingPlugin,
+  coalescingOperatorPlugin,
+];
+const jsTransformPlugins = [
+  commonJsPlugin,
+  objectRestSpreadPlugin,
+  classPropertiesPlugin,
+  flowStripTypesPlugin,
+  optionalChainingPlugin,
+  coalescingOperatorPlugin,
+  dynamicRequiresPlugin,
+];
 
 export default function transform({
   filename,
@@ -25,46 +71,13 @@ export default function transform({
   presets?: any[];
   plugins?: any[];
 }) {
+  filename = resolve(options.projectRoot, filename);
   presets = presets ?? [require('@babel/preset-react')];
   plugins = plugins ?? [];
   const isTypeScript = filename.endsWith('.tsx') || filename.endsWith('.ts');
-  if (!isTypeScript) {
-    plugins.unshift(
-      require('@babel/plugin-transform-modules-commonjs'),
-      require('@babel/plugin-proposal-object-rest-spread'),
-      require('@babel/plugin-proposal-class-properties'),
-      require('@babel/plugin-transform-flow-strip-types'),
-      require('@babel/plugin-proposal-optional-chaining'),
-      require('@babel/plugin-proposal-nullish-coalescing-operator'),
-      require('./dynamic-requires'),
-    );
-  } else {
-    plugins.unshift(
-      require('@babel/plugin-transform-typescript'),
-      require('@babel/plugin-proposal-class-properties'),
-      require('@babel/plugin-transform-modules-commonjs'),
-      require('@babel/plugin-proposal-optional-chaining'),
-      require('@babel/plugin-proposal-nullish-coalescing-operator'),
-    );
-  }
   const ast = parse(src, {
     sourceFilename: filename,
-    plugins: isTypeScript
-      ? [
-          'jsx',
-          'typescript',
-          'classProperties',
-          'optionalChaining',
-          'nullishCoalescingOperator',
-        ]
-      : [
-          'jsx',
-          ['flow', {all: true}],
-          'classProperties',
-          'objectRestSpread',
-          'optionalChaining',
-          'nullishCoalescingOperator',
-        ],
+    plugins: isTypeScript ? tsParsePluins : jsParsePlugins,
     sourceType: 'module',
   });
   const transformed = transformFromAstSync(ast, src, {
@@ -75,7 +88,10 @@ export default function transform({
     compact: false,
     root: options.projectRoot,
     filename,
-    plugins,
+    plugins: [
+      ...(isTypeScript ? tsTransformPlugins : jsTransformPlugins),
+      ...plugins,
+    ],
     presets,
     sourceMaps: true,
     retainLines: !!flipperEnv.FLIPPER_TEST_RUNNER,

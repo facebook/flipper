@@ -108,8 +108,8 @@ class FlipperClient : public FlipperConnectionManager::Callbacks {
   std::mutex mutex_;
   std::shared_ptr<FlipperState> flipperState_;
 
+  void connect(std::shared_ptr<FlipperPlugin> plugin);
   void disconnect(std::shared_ptr<FlipperPlugin> plugin);
-  void startBackgroundPlugins();
   std::string callstack();
   void handleError(std::exception& e);
 };

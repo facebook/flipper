@@ -209,6 +209,21 @@ export default class extends FlipperPlugin<SharedPreferencesState> {
     });
   };
 
+  onSharedPreferencesDeleted = (path: Array<string>) => {
+    this.client
+      .call('deleteSharedPreference', {
+        sharedPreferencesName: this.state.selectedPreferences,
+        preferenceName: path[0],
+      })
+      .then((results: SharedPreferences) => {
+        const update = {
+          name: this.state.selectedPreferences,
+          preferences: results,
+        };
+        this.dispatchAction({update, type: 'UpdateSharedPreferences'});
+      });
+  };
+
   render() {
     const selectedPreferences = this.state.selectedPreferences;
     if (selectedPreferences == null) {
@@ -241,6 +256,7 @@ export default class extends FlipperPlugin<SharedPreferencesState> {
             <ManagedDataInspector
               data={entry.preferences}
               setValue={this.onSharedPreferencesChanged}
+              onDelete={this.onSharedPreferencesDeleted}
             />
           </InspectorColumn>
           <ChangelogColumn>

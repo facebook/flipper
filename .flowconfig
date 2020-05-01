@@ -6,10 +6,13 @@
 .*\.ts
 .*/node_modules/.*
 <PROJECT_ROOT>/scripts/.*
+<PROJECT_ROOT>/desktop/.*/lib/.*
 <PROJECT_ROOT>/desktop/scripts/.*
 <PROJECT_ROOT>/desktop/static/.*
 <PROJECT_ROOT>/desktop/pkg/.*
+<PROJECT_ROOT>/desktop/pkg-lib/.*
 <PROJECT_ROOT>/desktop/doctor/.*
+<PROJECT_ROOT>/desktop/app/.*
 <PROJECT_ROOT>/desktop/babel-transformer/.*
 <PROJECT_ROOT>/desktop/plugins/fb/relaydevtools/relay-devtools/DevtoolsUI.js$
 <PROJECT_ROOT>/website/.*
@@ -40,4 +43,4 @@ untyped-import
 untyped-type-import
 
 [version]
-0.121.0
+0.123.0

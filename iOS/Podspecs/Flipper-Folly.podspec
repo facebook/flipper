@@ -5,13 +5,13 @@
 
 Pod::Spec.new do |spec|
   spec.name = 'Flipper-Folly'
-  spec.version = '2.1.1'
+  spec.version = '2.2.0'
   spec.license = { :type => 'Apache License, Version 2.0' }
   spec.homepage = 'https://github.com/facebook/folly'
   spec.summary = 'An open-source C++ library developed and used at Facebook.'
   spec.authors = 'Facebook'
   spec.source = { :git => 'https://github.com/facebook/folly.git',
-                  :tag => "v2019.03.25.00"}
+                  :tag => "v2020.04.06.00"}
   spec.module_name = 'folly'
   spec.dependency 'boost-for-react-native'
   spec.dependency 'Flipper-Glog'
@@ -29,6 +29,7 @@ Pod::Spec.new do |spec|
     -Wno-comment
     -Wno-return-type
     -Wno-global-constructors'
+
   spec.source_files = "folly/*.h",
                       "folly/concurrency/*.h",
                       "folly/container/*.h",
@@ -58,6 +59,7 @@ Pod::Spec.new do |spec|
                       "folly/synchronization/detail/*.h",
                       "folly/system/*.h",
                       "folly/tracing/*.h",
+                      "folly/chrono/*.h",
                       "folly/*.cpp",
                       "folly/concurrency/*.cpp",
                       "folly/container/detail/*.cpp",
@@ -81,6 +83,7 @@ Pod::Spec.new do |spec|
                       "folly/synchronization/*.cpp",
                       "folly/system/*.cpp"
 
+  spec.exclude_files = "folly/synchronization/Rcu.cpp", "folly/synchronization/Rcu.h"
   spec.header_mappings_dir = 'folly'
   spec.header_dir          = 'folly'
   spec.libraries           = "stdc++"
@@ -88,7 +91,6 @@ Pod::Spec.new do |spec|
   spec.public_header_files =  "folly/**/*.h"
 
   spec.pod_target_xcconfig = {  "USE_HEADERMAP" => "NO",
-                                "ARCHS" => "${ARCHS_STANDARD_64_BIT}",
                                 "CLANG_CXX_LANGUAGE_STANDARD" => "c++11",
                                 "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/Flipper-DoubleConversion\""
                               }

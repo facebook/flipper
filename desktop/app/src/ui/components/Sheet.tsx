@@ -47,7 +47,7 @@ type State = {
 type Props = OwnProps & DispatchFromProps & StateFromProps;
 
 /**
- * Usage: <Sheet>{onHide => <YourSheetContent onHide={onHide} />}</Sheet>
+ * Usage: `<Sheet>{onHide => <YourSheetContent onHide={onHide} />}</Sheet>`
  */
 class Sheet extends Component<Props, State> {
   static getDerivedStateFromProps(props: Props) {
