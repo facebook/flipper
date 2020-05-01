@@ -1,6 +1,6 @@
 project 'SampleSwift.xcodeproj'
 source 'https://github.com/facebook/Sonar.git'
-source 'https://github.com/CocoaPods/Specs'
+source 'https://cdn.cocoapods.org'
 
 target 'SampleSwift' do
   platform :ios, '10.0'

@@ -1,3 +1,4 @@
+source 'https://cdn.cocoapods.org'
 project 'Tutorial.xcodeproj'
 swift_version = "4.1"
 flipperkit_version = '0.40.0'

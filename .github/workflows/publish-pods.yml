@@ -58,16 +58,19 @@ jobs:
       run: |
           cd Sample/
           pod install
+          ls
 
     - name: Update SampleSwift's Podfile.lock
       run: |
           cd SampleSwift/
           pod install
+          ls
 
     - name: Update Tutorial's Podfile.lock
       run: |
           cd Tutorial/
           pod install
+          ls
 
     - name: Add and Commit the files
       uses: EndBug/add-and-commit@v4 # You can change this to use a specific version
