@@ -103,7 +103,7 @@ jobs:
 
         # Name of the branch to use, if different from the one that triggered the workflow
         # Default: the branch that triggered the workflow (from GITHUB_REF)
-        ref: update-podfile-lock
+        # ref: update-podfile-lock-4
       env:
         # This is necessary in order to push a commit to the repo
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Leave this line unchanged
