@@ -128,7 +128,8 @@ Pod::Spec.new do |spec|
   spec.subspec "FlipperKitLayoutComponentKitSupport" do |ss|
     ss.header_dir = "FlipperKitLayoutComponentKitSupport"
     ss.dependency             'FlipperKit/Core'
-    ss.dependency             'ComponentKit', '~> 0.0'
+    ss.dependency             'ComponentKit', '~> 0.30'
+    ss.dependency             'RenderCore', '~> 0.30'
     ss.dependency             'FlipperKit/FlipperKitLayoutPlugin'
     ss.dependency             'FlipperKit/FlipperKitLayoutTextSearchable'
     ss.dependency             'FlipperKit/FlipperKitHighlightOverlay'
