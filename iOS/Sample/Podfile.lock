@@ -69,13 +69,22 @@ PODS:
     - Yoga (~> 1.14)
 
 DEPENDENCIES:
+  - boost-for-react-native
+  - CocoaAsyncSocket
+  - CocoaLibEvent
+  - ComponentKit (~> 0.30)
   - Flipper (from `../../Flipper.podspec`)
+  - Flipper-DoubleConversion
+  - Flipper-Folly
+  - Flipper-Glog
+  - Flipper-PeerTalk
   - FlipperKit (from `../../FlipperKit.podspec`)
   - FlipperKit/FlipperKitExamplePlugin (from `../../FlipperKit.podspec`)
   - FlipperKit/FlipperKitLayoutComponentKitSupport (from `../../FlipperKit.podspec`)
   - FlipperKit/FlipperKitReactPlugin (from `../../FlipperKit.podspec`)
   - FlipperKit/FlipperKitUserDefaultsPlugin (from `../../FlipperKit.podspec`)
   - FlipperKit/SKIOSNetworkPlugin (from `../../FlipperKit.podspec`)
+  - OpenSSL-Universal
 
 SPEC REPOS:
   https://cdn.cocoapods.org/:
@@ -110,12 +119,12 @@ SPEC CHECKSUMS:
   Flipper-Glog: 1dfd6abf1e922806c52ceb8701a3599a79a200a6
   Flipper-PeerTalk: 116d8f857dc6ef55c7a5a75ea3ceaafe878aadc9
   Flipper-RSocket: 64e7431a55835eb953b0bf984ef3b90ae9fdddd7
-  FlipperKit: b317598ee7d42b45879cf508b2121eeae2bd9d3e
+  FlipperKit: 5033c83ce150a14949ffbdb4ddf2f1a741b4bf72
   OpenSSL-Universal: 8b48cc0d10c1b2923617dfe5c178aa9ed2689355
   RenderCore: d779c47622b313ce2d51bb36d084517af38b0dc1
   Yoga: cff67a400f6b74dc38eb0bad4f156673d9aa980c
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: a759cceb319c62a65506a86e1d29fceb92d8d625
+PODFILE CHECKSUM: 50681589e4d3a2e00732a867bc76cc0a1db91489
 
 COCOAPODS: 1.8.4
