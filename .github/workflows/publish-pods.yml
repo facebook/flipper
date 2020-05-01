@@ -57,19 +57,19 @@ jobs:
     - name: Update Sample's Podfile.lock
       run: |
           cd Sample/
-          pod install
+          pod update
           ls
 
     - name: Update SampleSwift's Podfile.lock
       run: |
           cd SampleSwift/
-          pod install
+          pod update
           ls
 
     - name: Update Tutorial's Podfile.lock
       run: |
           cd Tutorial/
-          pod install
+          pod update
           ls
 
     - name: Add and Commit the files
