@@ -7,33 +7,30 @@
 
 use crate::types::{PackType, Platform};
 use std::fmt;
-use std::io;
 use std::path::PathBuf;
 
 #[derive(Debug)]
 pub enum Error {
-    IOError(io::Error),
     MissingPackFile(Platform, PackType, PathBuf),
+    MissingPackDefinition(Platform, PackType),
 }
 
-impl From<io::Error> for Error {
-    fn from(e: io::Error) -> Self {
-        Error::IOError(e)
-    }
-}
+impl std::error::Error for Error {}
 
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        use Error::*;
-
         match self {
-            IOError(e) => write!(f, "IO Error: {}", e),
             Error::MissingPackFile(platform, pack_type, path) => write!(
                 f,
                 "Couldn't open file to pack for platform {:?} and type {:?}: {}",
                 platform,
                 pack_type,
                 path.to_string_lossy()
+            ),
+            Error::MissingPackDefinition(platform, pack_type) => write!(
+                f,
+                "Missing packlist definition for platform {:?} and pack type {:?}.",
+                platform, pack_type,
             ),
         }
     }

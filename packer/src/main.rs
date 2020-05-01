@@ -8,6 +8,7 @@
 mod error;
 mod types;
 
+use anyhow::{bail, Result};
 use clap::value_t_or_exit;
 use std::collections::BTreeMap;
 use std::fs::File;
@@ -26,7 +27,7 @@ fn pack(
     dist_dir: &std::path::PathBuf,
     pack_list: &PackList,
     output_directory: &std::path::PathBuf,
-) -> Result<(), error::Error> {
+) -> Result<()> {
     let mut frameworks_path = output_directory.clone();
     frameworks_path.push("frameworks.tar");
     let mut frameworks_tar = tar::Builder::new(File::create(frameworks_path)?);
@@ -64,15 +65,12 @@ fn pack_platform(
     pack_list: &PackList,
     pack_type: &PackType,
     tar_builder: &mut tar::Builder<File>,
-) -> Result<(), error::Error> {
+) -> Result<()> {
     let pack_files = pack_list
         .0
         .get(platform)
         .and_then(|f| f.get(pack_type))
-        .expect(&format!(
-            "Missing packlist definition for platform {:?} and pack type {:?}.",
-            platform, pack_type
-        ));
+        .ok_or_else(|| error::Error::MissingPackDefinition(platform.clone(), pack_type.clone()))?;
     let base_dir = match platform {
         Platform::Mac => path::Path::new(dist_dir).join("mac"),
         // TODO: Verify this.
@@ -83,7 +81,7 @@ fn pack_platform(
     for f in pack_files {
         let full_path = path::Path::new(&base_dir).join(f);
         if !full_path.exists() {
-            return Err(error::Error::MissingPackFile(
+            bail!(error::Error::MissingPackFile(
                 platform.clone(),
                 pack_type.clone(),
                 full_path,
