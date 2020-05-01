@@ -92,11 +92,10 @@ jobs:
 
         # The local path to the directory where your repository is located. You should use actions/checkout first to set it up
         # Default: '.'
-        cwd: '.'
 
         # Whether to use the --force option on `git add`, in order to bypass eventual gitignores
         # Default: false
-        force: false
+        force: true
 
         # The message for the commit
         # Default: 'Commit from GitHub Actions'
