@@ -80,7 +80,6 @@ jobs:
       with:
         # The arguments for the `git add` command (see the paragraph below for more info)
         # Default: '.'
-        add: '*/Podfile.lock'
 
         # The name of the user that will be displayed as the author of the commit
         # Default: author of the commit that triggered the run
