@@ -6,6 +6,7 @@
  */
 
 use clap::arg_enum;
+use std::fmt::{self, Display};
 
 arg_enum! {
     #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, serde::Deserialize)]
@@ -22,4 +23,14 @@ arg_enum! {
 pub enum PackType {
     Frameworks,
     Core,
+}
+
+impl Display for PackType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        use PackType::*;
+        match *self {
+            Frameworks => write!(f, "frameworks"),
+            Core => write!(f, "core"),
+        }
+    }
 }

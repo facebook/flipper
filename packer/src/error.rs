@@ -12,7 +12,7 @@ use std::path::PathBuf;
 #[derive(Debug)]
 pub enum Error {
     MissingPackFile(Platform, PackType, PathBuf),
-    MissingPackDefinition(Platform, PackType),
+    MissingPlatformDefinition(Platform),
 }
 
 impl std::error::Error for Error {}
@@ -27,10 +27,10 @@ impl fmt::Display for Error {
                 pack_type,
                 path.to_string_lossy()
             ),
-            Error::MissingPackDefinition(platform, pack_type) => write!(
+            Error::MissingPlatformDefinition(platform) => write!(
                 f,
-                "Missing packlist definition for platform {:?} and pack type {:?}.",
-                platform, pack_type,
+                "Platform {} is not defined in the given packlist.",
+                platform
             ),
         }
     }

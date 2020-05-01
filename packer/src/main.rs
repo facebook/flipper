@@ -28,49 +28,34 @@ fn pack(
     pack_list: &PackList,
     output_directory: &std::path::PathBuf,
 ) -> Result<()> {
-    let mut frameworks_path = output_directory.clone();
-    frameworks_path.push("frameworks.tar");
-    let mut frameworks_tar = tar::Builder::new(File::create(frameworks_path)?);
-    // MacOS uses symlinks for bundling multiple framework versions and pointing
-    // to the "Current" one.
-    frameworks_tar.follow_symlinks(false);
-    pack_platform(
-        platform,
-        dist_dir,
-        pack_list,
-        &PackType::Frameworks,
-        &mut frameworks_tar,
-    )?;
-    frameworks_tar.finish()?;
-
-    // TODO: Instead of hard-coding the two types, just iterate over the packlist.
-    let mut core_path = output_directory.clone();
-    core_path.push("core.tar");
-    let mut core_tar = tar::Builder::new(File::create(core_path)?);
-    pack_platform(
-        platform,
-        dist_dir,
-        pack_list,
-        &PackType::Core,
-        &mut core_tar,
-    )?;
-
-    eprintln!("Written.");
+    let packtype_paths = pack_list
+        .0
+        .get(platform)
+        .ok_or_else(|| error::Error::MissingPlatformDefinition(platform.clone()))?;
+    for (pack_type, pack_files) in packtype_paths {
+        print!(
+            "Packing for platform {:?} type {:?} ...",
+            platform, pack_type
+        );
+        let output_path = path::Path::new(output_directory).join(format!("{}.tar", pack_type));
+        let mut tar = tar::Builder::new(File::create(output_path)?);
+        // MacOS uses symlinks for bundling multiple framework versions and pointing
+        // to the "Current" one.
+        tar.follow_symlinks(false);
+        pack_platform(platform, dist_dir, pack_files, pack_type, &mut tar)?;
+        tar.finish()?;
+        println!(" done.");
+    }
     Ok(())
 }
 
 fn pack_platform(
     platform: &Platform,
     dist_dir: &std::path::PathBuf,
-    pack_list: &PackList,
+    pack_files: &Vec<path::PathBuf>,
     pack_type: &PackType,
     tar_builder: &mut tar::Builder<File>,
 ) -> Result<()> {
-    let pack_files = pack_list
-        .0
-        .get(platform)
-        .and_then(|f| f.get(pack_type))
-        .ok_or_else(|| error::Error::MissingPackDefinition(platform.clone(), pack_type.clone()))?;
     let base_dir = match platform {
         Platform::Mac => path::Path::new(dist_dir).join("mac"),
         // TODO: Verify this.
