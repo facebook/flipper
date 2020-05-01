@@ -80,6 +80,7 @@ jobs:
       with:
         commit_message: Apply php-cs-fixer changes
         branch: update-podfile-lock
+        file_pattern: '*/Podfile.lock'
       env:
         # This is necessary in order to push a commit to the repo
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Leave this line unchanged
