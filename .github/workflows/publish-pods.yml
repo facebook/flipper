@@ -79,8 +79,8 @@ jobs:
       uses: stefanzweifel/git-auto-commit-action@v4.1.6 # You can change this to use a specific version
       with:
         commit_message: Apply php-cs-fixer changes
-        branch: update-podfile-lock
-        file_pattern: '*/Podfile.lock'
+        branch: 'update-podfile-lock'
+        file_pattern: '*'
       env:
         # This is necessary in order to push a commit to the repo
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Leave this line unchanged
