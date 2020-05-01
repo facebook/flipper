@@ -82,7 +82,7 @@ module.exports =
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 437);
+/******/ 	return __webpack_require__(__webpack_require__.s = 438);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -452,7 +452,7 @@ if (false) { var throwOnDirectAccess, ReactIs; } else {
 "use strict";
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _context__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(66);
+/* harmony import */ var _context__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(67);
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -556,7 +556,7 @@ module.exports = Token;
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(41);
 /* harmony import */ var _docusaurus_isInternalUrl__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(20);
-/* harmony import */ var _docusaurus_ExecutionEnvironment__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(68);
+/* harmony import */ var _docusaurus_ExecutionEnvironment__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(43);
 /* harmony import */ var _docusaurus_ExecutionEnvironment__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_docusaurus_ExecutionEnvironment__WEBPACK_IMPORTED_MODULE_4__);
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
@@ -3062,7 +3062,7 @@ var react = __webpack_require__(2);
 var react_default = /*#__PURE__*/__webpack_require__.n(react);
 
 // EXTERNAL MODULE: ./node_modules/@docusaurus/core/lib/client/exports/Head.js
-var Head = __webpack_require__(67);
+var Head = __webpack_require__(68);
 
 // EXTERNAL MODULE: ./node_modules/@docusaurus/core/lib/client/exports/isInternalUrl.js
 var isInternalUrl = __webpack_require__(20);
@@ -3136,7 +3136,7 @@ var Link = __webpack_require__(10);
 var interopRequireWildcard = __webpack_require__(4);
 
 // EXTERNAL MODULE: ./node_modules/@docusaurus/core/lib/client/exports/router.js
-var router = __webpack_require__(43);
+var router = __webpack_require__(44);
 
 // EXTERNAL MODULE: ./node_modules/@docusaurus/theme-search-algolia/src/theme/SearchBar/styles.css
 var styles = __webpack_require__(368);
@@ -3160,7 +3160,7 @@ var component = __webpack_require__(239);
 var component_default = /*#__PURE__*/__webpack_require__.n(component);
 
 // EXTERNAL MODULE: ./node_modules/@docusaurus/theme-classic/src/theme/Toggle/styles.module.css
-var Toggle_styles_module = __webpack_require__(51);
+var Toggle_styles_module = __webpack_require__(52);
 var Toggle_styles_module_default = /*#__PURE__*/__webpack_require__.n(Toggle_styles_module);
 
 // CONCATENATED MODULE: ./node_modules/@docusaurus/theme-classic/src/theme/Toggle/index.js
@@ -3171,7 +3171,7 @@ var Toggle_styles_module_default = /*#__PURE__*/__webpack_require__.n(Toggle_sty
  * LICENSE file in the root directory of this source tree.
  */const Moon=()=>/*#__PURE__*/react_default.a.createElement("span",{className:classnames_default()(Toggle_styles_module_default.a.toggle,Toggle_styles_module_default.a.moon)});const Sun=()=>/*#__PURE__*/react_default.a.createElement("span",{className:classnames_default()(Toggle_styles_module_default.a.toggle,Toggle_styles_module_default.a.sun)});/* harmony default export */ var Toggle = (function(props){const{isClient}=Object(useDocusaurusContext["a" /* default */])();return/*#__PURE__*/react_default.a.createElement(component_default.a,Object(esm_extends["a" /* default */])({disabled:!isClient,icons:{checked:/*#__PURE__*/react_default.a.createElement(Moon,null),unchecked:/*#__PURE__*/react_default.a.createElement(Sun,null)}},props));});
 // EXTERNAL MODULE: ./node_modules/@docusaurus/theme-classic/src/theme/hooks/useThemeContext.js
-var useThemeContext = __webpack_require__(44);
+var useThemeContext = __webpack_require__(45);
 
 // CONCATENATED MODULE: ./node_modules/@docusaurus/theme-classic/src/theme/hooks/useLocationHash.js
 /**
@@ -3194,7 +3194,7 @@ var useLockBodyScroll = __webpack_require__(72);
 var useLogo = __webpack_require__(73);
 
 // EXTERNAL MODULE: ./node_modules/@docusaurus/theme-classic/src/theme/Navbar/styles.module.css
-var Navbar_styles_module = __webpack_require__(52);
+var Navbar_styles_module = __webpack_require__(53);
 var Navbar_styles_module_default = /*#__PURE__*/__webpack_require__.n(Navbar_styles_module);
 
 // CONCATENATED MODULE: ./node_modules/@docusaurus/theme-classic/src/theme/Navbar/index.js
@@ -8551,6 +8551,17 @@ Prism.languages.yml = Prism.languages.yaml;
 
 /***/ }),
 /* 43 */
+/***/ (function(module, exports) {
+
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */const canUseDOM=!!(typeof window!=='undefined'&&window.document&&window.document.createElement);const ExecutionEnvironment={canUseDOM,canUseEventListeners:canUseDOM&&!!(window.addEventListener||window.attachEvent),canUseIntersectionObserver:canUseDOM&&'IntersectionObserver'in window,canUseViewport:canUseDOM&&!!window.screen};module.exports=ExecutionEnvironment;
+
+/***/ }),
+/* 44 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -8569,7 +8580,7 @@ Prism.languages.yml = Prism.languages.yaml;
  */
 
 /***/ }),
-/* 44 */
+/* 45 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -8584,7 +8595,7 @@ Prism.languages.yml = Prism.languages.yaml;
  */function useThemeContext(){return Object(react__WEBPACK_IMPORTED_MODULE_0__["useContext"])(_theme_ThemeContext__WEBPACK_IMPORTED_MODULE_1__[/* default */ "a"]);}/* harmony default export */ __webpack_exports__["a"] = (useThemeContext);
 
 /***/ }),
-/* 45 */
+/* 46 */
 /***/ (function(module, exports) {
 
 // Exports
@@ -8598,7 +8609,7 @@ module.exports = {
 
 
 /***/ }),
-/* 46 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Hack = __webpack_require__(83);
@@ -8673,7 +8684,7 @@ module.exports = restoreFromOptimizing;
 
 
 /***/ }),
-/* 47 */
+/* 48 */
 /***/ (function(module, exports) {
 
 /* -*- Mode: js; js-indent-level: 2; -*- */
@@ -9167,7 +9178,7 @@ exports.computeSourceURL = computeSourceURL;
 
 
 /***/ }),
-/* 48 */
+/* 49 */
 /***/ (function(module, exports) {
 
 var REMOTE_RESOURCE_PATTERN = /^(\w+:\/\/|\/\/)/;
@@ -9180,7 +9191,7 @@ module.exports = isRemoteResource;
 
 
 /***/ }),
-/* 49 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9273,7 +9284,7 @@ module.exports = {
 
 
 /***/ }),
-/* 50 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9612,7 +9623,7 @@ Loadable.preloadReady = function () {
 module.exports = Loadable;
 
 /***/ }),
-/* 51 */
+/* 52 */
 /***/ (function(module, exports) {
 
 // Exports
@@ -9624,7 +9635,7 @@ module.exports = {
 
 
 /***/ }),
-/* 52 */
+/* 53 */
 /***/ (function(module, exports) {
 
 // Exports
@@ -9637,7 +9648,7 @@ module.exports = {
 
 
 /***/ }),
-/* 53 */
+/* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var systemLineBreak = __webpack_require__(111).EOL;
@@ -9859,7 +9870,7 @@ module.exports = {
 
 
 /***/ }),
-/* 54 */
+/* 55 */
 /***/ (function(module, exports) {
 
 function formatPosition(metadata) {
@@ -9876,7 +9887,7 @@ module.exports = formatPosition;
 
 
 /***/ }),
-/* 55 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Marker = __webpack_require__(13);
@@ -10141,7 +10152,7 @@ module.exports = isMergeable;
 
 
 /***/ }),
-/* 56 */
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var mergeIntoShorthands = __webpack_require__(270);
@@ -10152,7 +10163,7 @@ var restoreWithComponents = __webpack_require__(87);
 
 var wrapForOptimizing = __webpack_require__(35).all;
 var removeUnused = __webpack_require__(112);
-var restoreFromOptimizing = __webpack_require__(46);
+var restoreFromOptimizing = __webpack_require__(47);
 
 var OptimizationLevel = __webpack_require__(27).OptimizationLevel;
 
@@ -10187,7 +10198,7 @@ module.exports = optimizeProperties;
 
 
 /***/ }),
-/* 57 */
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var wrapSingle = __webpack_require__(35).single;
@@ -10226,7 +10237,7 @@ module.exports = {
 
 
 /***/ }),
-/* 58 */
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // TODO: it'd be great to merge it with the other canReorder functionality
@@ -10325,13 +10336,13 @@ module.exports = {
 
 
 /***/ }),
-/* 59 */
+/* 60 */
 /***/ (function(module, exports) {
 
 module.exports = require("http");
 
 /***/ }),
-/* 60 */
+/* 61 */
 /***/ (function(module, exports) {
 
 var NO_PROTOCOL_RESOURCE_PATTERN = /^\/\//;
@@ -10344,7 +10355,7 @@ module.exports = hasProtocol;
 
 
 /***/ }),
-/* 61 */
+/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10523,7 +10534,7 @@ module.exports = {
 
 
 /***/ }),
-/* 62 */
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10539,7 +10550,7 @@ module.exports = {
 
 
 /***/ }),
-/* 63 */
+/* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -10555,7 +10566,7 @@ if (typeof process !== 'undefined' && process.type === 'renderer') {
 
 
 /***/ }),
-/* 64 */
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10652,7 +10663,7 @@ module.exports = shouldUseNative() ? Object.assign : function (target, source) {
 
 
 /***/ }),
-/* 65 */
+/* 66 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -10665,7 +10676,7 @@ module.exports = shouldUseNative() ? Object.assign : function (target, source) {
 /* harmony import */ var react_fast_compare__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(react_fast_compare__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(2);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var object_assign__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(64);
+/* harmony import */ var object_assign__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(65);
 /* harmony import */ var object_assign__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(object_assign__WEBPACK_IMPORTED_MODULE_4__);
 
 
@@ -11568,7 +11579,7 @@ HelmetExport.renderStatic = HelmetExport.rewind;
 
 
 /***/ }),
-/* 66 */
+/* 67 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -11582,30 +11593,19 @@ HelmetExport.renderStatic = HelmetExport.rewind;
  *//* harmony default export */ __webpack_exports__["a"] = (react__WEBPACK_IMPORTED_MODULE_0___default.a.createContext({}));
 
 /***/ }),
-/* 67 */
+/* 68 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var react_helmet__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(65);
+/* harmony import */ var react_helmet__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(66);
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */function Head(props){return/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_helmet__WEBPACK_IMPORTED_MODULE_1__[/* Helmet */ "a"],props);}/* harmony default export */ __webpack_exports__["a"] = (Head);
-
-/***/ }),
-/* 68 */
-/***/ (function(module, exports) {
-
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */const canUseDOM=!!(typeof window!=='undefined'&&window.document&&window.document.createElement);const ExecutionEnvironment={canUseDOM,canUseEventListeners:canUseDOM&&!!(window.addEventListener||window.attachEvent),canUseIntersectionObserver:canUseDOM&&'IntersectionObserver'in window,canUseViewport:canUseDOM&&!!window.screen};module.exports=ExecutionEnvironment;
 
 /***/ }),
 /* 69 */
@@ -11726,7 +11726,7 @@ function renderRoutes(routes, extraProps, switchProps) {
 
 "use strict";
 /* harmony import */ var _docusaurus_useDocusaurusContext__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(6);
-/* harmony import */ var _theme_hooks_useThemeContext__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(44);
+/* harmony import */ var _theme_hooks_useThemeContext__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(45);
 /* harmony import */ var _docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(3);
 /* harmony import */ var _docusaurus_isInternalUrl__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(20);
 /**
@@ -11762,7 +11762,7 @@ function renderRoutes(routes, extraProps, switchProps) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony default export */ __webpack_exports__["a"] = ({"plugins":[],"themes":[],"customFields":{},"themeConfig":{"navbar":{"title":"Flipper","logo":{"alt":"Flipper Logo","src":"img/icon.png"},"links":[{"to":"docs/features/index","label":"Features","position":"right"},{"to":"docs/getting-started/index","label":"Setup","position":"right"},{"to":"docs/extending/index","label":"Extending","position":"right"},{"href":"https://github.com/facebook/flipper","label":"GitHub","position":"right"}]},"disableDarkMode":true,"footer":{"style":"dark","links":[{"title":"Learn","items":[{"label":"Getting Started","to":"docs/getting-started/index"},{"label":"Plugin Creation Tutorial","to":"docs/tutorial/intro"}]},{"title":"Plugins","items":[{"label":"Core Plugins","to":"docs/features/index"},{"label":"Community Plugins","to":"https://www.npmjs.com/search?q=keywords:flipper-plugin"}]},{"title":"More","items":[{"label":"Twitter","to":"https://twitter.com/flipper_fb"},{"label":"GitHub","to":"https://github.com/facebook/flipper"}]}],"copyright":"Copyright © 2020 Facebook","logo":{"alt":"Flipper Mascot","src":"img/mascot.png","title":"I'm a dolphin not a whale!"}},"algolia":{"apiKey":"2df980e7ffc95c19552790f7cad32666","indexName":"fbflipper","algoliaOptions":{"hitsPerPage":5}}},"title":"Flipper","tagline":"Extensible mobile app debugging","url":"https://fbflipper.com/","baseUrl":"/","projectName":"flipper","favicon":"img/icon.png","scripts":["https://buttons.github.io/buttons.js","https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js","/js/code-blocks-buttons.js","/js/google-analytics.js"],"stylesheets":[],"presets":[["@docusaurus/preset-classic",{"docs":{"path":"../docs","sidebarPath":"/home/travis/build/facebook/flipper/website/sidebars.json","editUrl":"https://github.com/facebook/flipper/blob/master/website"},"theme":{"customCss":"/home/travis/build/facebook/flipper/website/static/css/custom.css"}}]]});
+/* harmony default export */ __webpack_exports__["a"] = ({"plugins":["docusaurus-plugin-internaldocs-fb"],"themes":[],"customFields":{},"themeConfig":{"navbar":{"title":"Flipper","logo":{"alt":"Flipper Logo","src":"img/icon.png"},"links":[{"to":"docs/features/index","label":"Features","position":"right"},{"to":"docs/getting-started/index","label":"Setup","position":"right"},{"to":"docs/extending/index","label":"Extending","position":"right"},{"href":"https://github.com/facebook/flipper","label":"GitHub","position":"right"}]},"disableDarkMode":true,"footer":{"style":"dark","links":[{"title":"Learn","items":[{"label":"Getting Started","to":"docs/getting-started/index"},{"label":"Plugin Creation Tutorial","to":"docs/tutorial/intro"}]},{"title":"Plugins","items":[{"label":"Core Plugins","to":"docs/features/index"},{"label":"Community Plugins","to":"https://www.npmjs.com/search?q=keywords:flipper-plugin"}]},{"title":"More","items":[{"label":"Twitter","to":"https://twitter.com/flipper_fb"},{"label":"GitHub","to":"https://github.com/facebook/flipper"}]}],"copyright":"Copyright © 2020 Facebook","logo":{"alt":"Flipper Mascot","src":"img/mascot.png","title":"I'm a dolphin not a whale!"}},"algolia":{"apiKey":"2df980e7ffc95c19552790f7cad32666","indexName":"fbflipper","algoliaOptions":{"hitsPerPage":5}}},"title":"Flipper","tagline":"Extensible mobile app debugging","url":"https://fbflipper.com/","baseUrl":"/","projectName":"flipper","favicon":"img/icon.png","scripts":["https://buttons.github.io/buttons.js","https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js","/js/code-blocks-buttons.js","/js/google-analytics.js"],"stylesheets":[],"presets":[["@docusaurus/preset-classic",{"docs":{"path":"../docs","sidebarPath":"/home/travis/build/facebook/flipper/website/sidebars.json","editUrl":"https://github.com/facebook/flipper/blob/master/website"},"theme":{"customCss":"/home/travis/build/facebook/flipper/website/static/css/custom.css"}}]]});
 
 /***/ }),
 /* 76 */
@@ -12203,7 +12203,7 @@ var parse_numeric_range_default = /*#__PURE__*/__webpack_require__.n(parse_numer
 var useDocusaurusContext = __webpack_require__(6);
 
 // EXTERNAL MODULE: ./node_modules/@docusaurus/theme-classic/src/theme/hooks/useThemeContext.js
-var useThemeContext = __webpack_require__(44);
+var useThemeContext = __webpack_require__(45);
 
 // EXTERNAL MODULE: ./node_modules/@docusaurus/theme-classic/src/theme/CodeBlock/styles.module.css
 var styles_module = __webpack_require__(29);
@@ -12802,9 +12802,9 @@ module.exports = sortSelectors;
 /* 82 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Spaces = __webpack_require__(53).Spaces;
+var Spaces = __webpack_require__(54).Spaces;
 var Marker = __webpack_require__(13);
-var formatPosition = __webpack_require__(54);
+var formatPosition = __webpack_require__(55);
 
 var CASE_ATTRIBUTE_PATTERN = /[\s"'][iI]\s*\]/;
 var CASE_RESTORE_PATTERN = /([\d\w])([iI])\]/g;
@@ -13093,8 +13093,8 @@ module.exports = split;
 
 var emptyCharacter = '';
 
-var Breaks = __webpack_require__(53).Breaks;
-var Spaces = __webpack_require__(53).Spaces;
+var Breaks = __webpack_require__(54).Breaks;
+var Spaces = __webpack_require__(54).Spaces;
 
 var Marker = __webpack_require__(13);
 var Token = __webpack_require__(9);
@@ -13507,8 +13507,8 @@ exports.SourceNode = __webpack_require__(309).SourceNode;
 var path = __webpack_require__(7);
 var url = __webpack_require__(23);
 
-var isRemoteResource = __webpack_require__(48);
-var hasProtocol = __webpack_require__(60);
+var isRemoteResource = __webpack_require__(49);
+var hasProtocol = __webpack_require__(61);
 
 var HTTP_PROTOCOL = 'http:';
 
@@ -14907,7 +14907,7 @@ module.exports = cloneArray;
  */
 
 var base64VLQ = __webpack_require__(121);
-var util = __webpack_require__(47);
+var util = __webpack_require__(48);
 var ArraySet = __webpack_require__(122).ArraySet;
 var MappingList = __webpack_require__(305).MappingList;
 
@@ -15483,7 +15483,7 @@ exports.decode = function base64VLQ_decode(aStr, aIndex, aOutParam) {
  * http://opensource.org/licenses/BSD-3-Clause
  */
 
-var util = __webpack_require__(47);
+var util = __webpack_require__(48);
 var has = Object.prototype.hasOwnProperty;
 var hasNativeMap = typeof Map !== "undefined";
 
@@ -18230,7 +18230,7 @@ function coerce (version, options) {
 
 module.exports = buildSearchMethod;
 
-var errors = __webpack_require__(49);
+var errors = __webpack_require__(50);
 
 /**
  * Creates a search method to be used in clients
@@ -22926,7 +22926,7 @@ var react = __webpack_require__(2);
 var react_default = /*#__PURE__*/__webpack_require__.n(react);
 
 // EXTERNAL MODULE: ./node_modules/@docusaurus/core/lib/client/exports/Head.js
-var Head = __webpack_require__(67);
+var Head = __webpack_require__(68);
 
 // EXTERNAL MODULE: ./node_modules/@docusaurus/core/lib/client/exports/isInternalUrl.js
 var isInternalUrl = __webpack_require__(20);
@@ -22959,7 +22959,7 @@ var classnames = __webpack_require__(8);
 var classnames_default = /*#__PURE__*/__webpack_require__.n(classnames);
 
 // EXTERNAL MODULE: ./node_modules/@docusaurus/theme-classic/src/theme/DocItem/styles.module.css
-var styles_module = __webpack_require__(45);
+var styles_module = __webpack_require__(46);
 var styles_module_default = /*#__PURE__*/__webpack_require__.n(styles_module);
 
 // CONCATENATED MODULE: ./node_modules/@docusaurus/theme-classic/src/theme/DocItem/index.js
@@ -23037,7 +23037,7 @@ var MDXComponents = __webpack_require__(76);
 var NotFound = __webpack_require__(103);
 
 // EXTERNAL MODULE: ./node_modules/@docusaurus/core/lib/client/exports/router.js
-var router = __webpack_require__(43);
+var router = __webpack_require__(44);
 
 // EXTERNAL MODULE: ./node_modules/@docusaurus/theme-classic/src/theme/DocPage/styles.module.css
 var DocPage_styles_module = __webpack_require__(78);
@@ -24767,7 +24767,7 @@ module.exports = Object.assign(
   __webpack_require__(363),
   __webpack_require__(365),
   __webpack_require__(24),
-  __webpack_require__(62)
+  __webpack_require__(63)
 )
 
 // Export fs.promises as a getter property so that we don't trigger
@@ -26324,7 +26324,7 @@ module.exports = JSON.parse("{\"name\":\"@docusaurus/core\",\"description\":\"Ea
  * LICENSE file in the root directory of this source tree.
  */
 
-var l=__webpack_require__(64),n="function"===typeof Symbol&&Symbol.for,p=n?Symbol.for("react.element"):60103,q=n?Symbol.for("react.portal"):60106,r=n?Symbol.for("react.fragment"):60107,t=n?Symbol.for("react.strict_mode"):60108,u=n?Symbol.for("react.profiler"):60114,v=n?Symbol.for("react.provider"):60109,w=n?Symbol.for("react.context"):60110,x=n?Symbol.for("react.forward_ref"):60112,y=n?Symbol.for("react.suspense"):60113,z=n?Symbol.for("react.memo"):60115,A=n?Symbol.for("react.lazy"):
+var l=__webpack_require__(65),n="function"===typeof Symbol&&Symbol.for,p=n?Symbol.for("react.element"):60103,q=n?Symbol.for("react.portal"):60106,r=n?Symbol.for("react.fragment"):60107,t=n?Symbol.for("react.strict_mode"):60108,u=n?Symbol.for("react.profiler"):60114,v=n?Symbol.for("react.provider"):60109,w=n?Symbol.for("react.context"):60110,x=n?Symbol.for("react.forward_ref"):60112,y=n?Symbol.for("react.suspense"):60113,z=n?Symbol.for("react.memo"):60115,A=n?Symbol.for("react.lazy"):
 60116,B="function"===typeof Symbol&&Symbol.iterator;function C(a){for(var b="https://reactjs.org/docs/error-decoder.html?invariant="+a,c=1;c<arguments.length;c++)b+="&args[]="+encodeURIComponent(arguments[c]);return"Minified React error #"+a+"; visit "+b+" for the full message or use the non-minified dev environment for full errors and additional helpful warnings."}
 var D={isMounted:function(){return!1},enqueueForceUpdate:function(){},enqueueReplaceState:function(){},enqueueSetState:function(){}},E={};function F(a,b,c){this.props=a;this.context=b;this.refs=E;this.updater=c||D}F.prototype.isReactComponent={};F.prototype.setState=function(a,b){if("object"!==typeof a&&"function"!==typeof a&&null!=a)throw Error(C(85));this.updater.enqueueSetState(this,a,b,"setState")};F.prototype.forceUpdate=function(a){this.updater.enqueueForceUpdate(this,a,"forceUpdate")};
 function G(){}G.prototype=F.prototype;function H(a,b,c){this.props=a;this.context=b;this.refs=E;this.updater=c||D}var I=H.prototype=new G;I.constructor=H;l(I,F.prototype);I.isPureReactComponent=!0;var J={current:null},K=Object.prototype.hasOwnProperty,L={key:!0,ref:!0,__self:!0,__source:!0};
@@ -26368,7 +26368,7 @@ if (true) {
  * LICENSE file in the root directory of this source tree.
  */
 
-var k=__webpack_require__(64),m=__webpack_require__(2),aa=__webpack_require__(108);function r(a){for(var b="https://reactjs.org/docs/error-decoder.html?invariant="+a,c=1;c<arguments.length;c++)b+="&args[]="+encodeURIComponent(arguments[c]);return"Minified React error #"+a+"; visit "+b+" for the full message or use the non-minified dev environment for full errors and additional helpful warnings."}
+var k=__webpack_require__(65),m=__webpack_require__(2),aa=__webpack_require__(108);function r(a){for(var b="https://reactjs.org/docs/error-decoder.html?invariant="+a,c=1;c<arguments.length;c++)b+="&args[]="+encodeURIComponent(arguments[c]);return"Minified React error #"+a+"; visit "+b+" for the full message or use the non-minified dev environment for full errors and additional helpful warnings."}
 var u="function"===typeof Symbol&&Symbol.for,ba=u?Symbol.for("react.portal"):60106,v=u?Symbol.for("react.fragment"):60107,ca=u?Symbol.for("react.strict_mode"):60108,da=u?Symbol.for("react.profiler"):60114,w=u?Symbol.for("react.provider"):60109,ea=u?Symbol.for("react.context"):60110,fa=u?Symbol.for("react.concurrent_mode"):60111,ha=u?Symbol.for("react.forward_ref"):60112,B=u?Symbol.for("react.suspense"):60113,ia=u?Symbol.for("react.suspense_list"):60120,ja=u?Symbol.for("react.memo"):60115,ka=u?Symbol.for("react.lazy"):
 60116,la=u?Symbol.for("react.block"):60121,ma=u?Symbol.for("react.fundamental"):60117,na=u?Symbol.for("react.scope"):60119;function oa(a){if(-1===a._status){a._status=0;var b=a._ctor;b=b();a._result=b;b.then(function(c){0===a._status&&(c=c.default,a._status=1,a._result=c)},function(c){0===a._status&&(a._status=2,a._result=c)})}}
 function C(a){if(null==a)return null;if("function"===typeof a)return a.displayName||a.name||null;if("string"===typeof a)return a;switch(a){case v:return"Fragment";case ba:return"Portal";case da:return"Profiler";case ca:return"StrictMode";case B:return"Suspense";case ia:return"SuspenseList"}if("object"===typeof a)switch(a.$$typeof){case ea:return"Context.Consumer";case w:return"Context.Provider";case ha:var b=a.render;b=b.displayName||b.name||"";return a.displayName||(""!==b?"ForwardRef("+b+")":"ForwardRef");
@@ -26969,7 +26969,7 @@ var validator = __webpack_require__(292);
 
 var compatibilityFrom = __webpack_require__(293);
 var fetchFrom = __webpack_require__(294);
-var formatFrom = __webpack_require__(53).formatFrom;
+var formatFrom = __webpack_require__(54).formatFrom;
 var inlineFrom = __webpack_require__(298);
 var inlineRequestFrom = __webpack_require__(299);
 var inlineTimeoutFrom = __webpack_require__(300);
@@ -27155,7 +27155,7 @@ var tidyAtRule = __webpack_require__(267);
 
 var Hack = __webpack_require__(83);
 var removeUnused = __webpack_require__(112);
-var restoreFromOptimizing = __webpack_require__(46);
+var restoreFromOptimizing = __webpack_require__(47);
 var wrapForOptimizing = __webpack_require__(35).all;
 
 var OptimizationLevel = __webpack_require__(27).OptimizationLevel;
@@ -27163,7 +27163,7 @@ var OptimizationLevel = __webpack_require__(27).OptimizationLevel;
 var Token = __webpack_require__(9);
 var Marker = __webpack_require__(13);
 
-var formatPosition = __webpack_require__(54);
+var formatPosition = __webpack_require__(55);
 var split = __webpack_require__(84);
 
 var serializeRules = __webpack_require__(11).rules;
@@ -28212,7 +28212,7 @@ var removeDuplicates = __webpack_require__(288);
 var removeUnusedAtRules = __webpack_require__(289);
 var restructure = __webpack_require__(290);
 
-var optimizeProperties = __webpack_require__(56);
+var optimizeProperties = __webpack_require__(57);
 
 var OptimizationLevel = __webpack_require__(27).OptimizationLevel;
 
@@ -28341,9 +28341,9 @@ module.exports = level2Optimize;
 /* 269 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isMergeable = __webpack_require__(55);
+var isMergeable = __webpack_require__(56);
 
-var optimizeProperties = __webpack_require__(56);
+var optimizeProperties = __webpack_require__(57);
 
 var sortSelectors = __webpack_require__(81);
 var tidyRules = __webpack_require__(82);
@@ -28402,10 +28402,10 @@ var hasInherit = __webpack_require__(115);
 var populateComponents = __webpack_require__(86);
 
 var compactable = __webpack_require__(30);
-var deepClone = __webpack_require__(57).deep;
+var deepClone = __webpack_require__(58).deep;
 var restoreWithComponents = __webpack_require__(87);
 
-var restoreFromOptimizing = __webpack_require__(46);
+var restoreFromOptimizing = __webpack_require__(47);
 var wrapSingle = __webpack_require__(35).single;
 
 var serializeBody = __webpack_require__(11).body;
@@ -28855,7 +28855,7 @@ var wrapSingle = __webpack_require__(35).single;
 var Token = __webpack_require__(9);
 var Marker = __webpack_require__(13);
 
-var formatPosition = __webpack_require__(54);
+var formatPosition = __webpack_require__(55);
 
 function _anyIsInherit(values) {
   var i, l;
@@ -29808,7 +29808,7 @@ module.exports = understandable;
 /* 274 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var shallowClone = __webpack_require__(57).shallow;
+var shallowClone = __webpack_require__(58).shallow;
 
 var Token = __webpack_require__(9);
 var Marker = __webpack_require__(13);
@@ -30126,11 +30126,11 @@ var overridesNonComponentShorthand = __webpack_require__(279);
 var sameVendorPrefixesIn = __webpack_require__(117).same;
 
 var compactable = __webpack_require__(30);
-var deepClone = __webpack_require__(57).deep;
+var deepClone = __webpack_require__(58).deep;
 var restoreWithComponents = __webpack_require__(87);
-var shallowClone = __webpack_require__(57).shallow;
+var shallowClone = __webpack_require__(58).shallow;
 
-var restoreFromOptimizing = __webpack_require__(46);
+var restoreFromOptimizing = __webpack_require__(47);
 
 var Token = __webpack_require__(9);
 var Marker = __webpack_require__(13);
@@ -30713,8 +30713,8 @@ module.exports = overridesNonComponentShorthand;
 /* 280 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var canReorder = __webpack_require__(58).canReorder;
-var canReorderSingle = __webpack_require__(58).canReorderSingle;
+var canReorder = __webpack_require__(59).canReorder;
+var canReorderSingle = __webpack_require__(59).canReorderSingle;
 var extractProperties = __webpack_require__(88);
 var rulesOverlap = __webpack_require__(118);
 
@@ -30945,7 +30945,7 @@ module.exports = specificity;
 /* 283 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isMergeable = __webpack_require__(55);
+var isMergeable = __webpack_require__(56);
 
 var sortSelectors = __webpack_require__(81);
 var tidyRules = __webpack_require__(82);
@@ -31031,10 +31031,10 @@ module.exports = mergeNonAdjacentByBody;
 /* 284 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var canReorder = __webpack_require__(58).canReorder;
+var canReorder = __webpack_require__(59).canReorder;
 var extractProperties = __webpack_require__(88);
 
-var optimizeProperties = __webpack_require__(56);
+var optimizeProperties = __webpack_require__(57);
 
 var serializeRules = __webpack_require__(11).rules;
 
@@ -31115,9 +31115,9 @@ module.exports = mergeNonAdjacentBySelector;
 /* 285 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isMergeable = __webpack_require__(55);
+var isMergeable = __webpack_require__(56);
 
-var optimizeProperties = __webpack_require__(56);
+var optimizeProperties = __webpack_require__(57);
 
 var cloneArray = __webpack_require__(119);
 
@@ -31425,7 +31425,7 @@ module.exports = removeDuplicates;
 var populateComponents = __webpack_require__(86);
 
 var wrapForOptimizing = __webpack_require__(35).single;
-var restoreFromOptimizing = __webpack_require__(46);
+var restoreFromOptimizing = __webpack_require__(47);
 
 var Token = __webpack_require__(9);
 
@@ -31677,9 +31677,9 @@ module.exports = removeUnusedAtRules;
 /* 290 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var canReorderSingle = __webpack_require__(58).canReorderSingle;
+var canReorderSingle = __webpack_require__(59).canReorderSingle;
 var extractProperties = __webpack_require__(88);
-var isMergeable = __webpack_require__(55);
+var isMergeable = __webpack_require__(56);
 var tidyRuleDuplicates = __webpack_require__(291);
 
 var Token = __webpack_require__(9);
@@ -32836,7 +32836,7 @@ module.exports = fetchFrom;
 /* 295 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var http = __webpack_require__(59);
+var http = __webpack_require__(60);
 var https = __webpack_require__(36);
 var url = __webpack_require__(23);
 
@@ -33172,7 +33172,7 @@ exports.decode = function (charCode) {
  * http://opensource.org/licenses/BSD-3-Clause
  */
 
-var util = __webpack_require__(47);
+var util = __webpack_require__(48);
 
 /**
  * Determine whether mappingB is after mappingA with respect to generated
@@ -33257,7 +33257,7 @@ exports.MappingList = MappingList;
  * http://opensource.org/licenses/BSD-3-Clause
  */
 
-var util = __webpack_require__(47);
+var util = __webpack_require__(48);
 var binarySearch = __webpack_require__(307);
 var ArraySet = __webpack_require__(122).ArraySet;
 var base64VLQ = __webpack_require__(121);
@@ -34646,7 +34646,7 @@ exports.quickSort = function (ary, comparator) {
  */
 
 var SourceMapGenerator = __webpack_require__(120).SourceMapGenerator;
-var util = __webpack_require__(47);
+var util = __webpack_require__(48);
 
 // Matches a Windows-style `\r\n` newline or a `\n` newline used by all other
 // operating systems these days (capturing the result).
@@ -35073,9 +35073,9 @@ var restoreImport = __webpack_require__(126);
 var tokenize = __webpack_require__(318);
 var Token = __webpack_require__(9);
 var Marker = __webpack_require__(13);
-var hasProtocol = __webpack_require__(60);
+var hasProtocol = __webpack_require__(61);
 var isImport = __webpack_require__(127);
-var isRemoteResource = __webpack_require__(48);
+var isRemoteResource = __webpack_require__(49);
 
 var UNKNOWN_URI = 'uri:unknown';
 
@@ -35413,9 +35413,9 @@ var rebaseLocalMap = __webpack_require__(123);
 var rebaseRemoteMap = __webpack_require__(124);
 
 var Token = __webpack_require__(9);
-var hasProtocol = __webpack_require__(60);
+var hasProtocol = __webpack_require__(61);
 var isDataUriResource = __webpack_require__(313);
-var isRemoteResource = __webpack_require__(48);
+var isRemoteResource = __webpack_require__(49);
 
 var MAP_MARKER_PATTERN = /^\/\*# sourceMappingURL=(\S+) \*\/$/;
 
@@ -35686,8 +35686,8 @@ var path = __webpack_require__(7);
 
 var isAllowedResource = __webpack_require__(90);
 
-var hasProtocol = __webpack_require__(60);
-var isRemoteResource = __webpack_require__(48);
+var hasProtocol = __webpack_require__(61);
+var isRemoteResource = __webpack_require__(49);
 
 function loadOriginalSources(context, callback) {
   var loadContext = {
@@ -36061,7 +36061,7 @@ module.exports = rewriteUrl;
 var Marker = __webpack_require__(13);
 var Token = __webpack_require__(9);
 
-var formatPosition = __webpack_require__(54);
+var formatPosition = __webpack_require__(55);
 
 var Level = {
   BLOCK: 'block',
@@ -36694,7 +36694,7 @@ module.exports = serializeStyles;
 var SourceMapGenerator = __webpack_require__(89).SourceMapGenerator;
 var all = __webpack_require__(85).all;
 
-var isRemoteResource = __webpack_require__(48);
+var isRemoteResource = __webpack_require__(49);
 
 var isWindows = process.platform == 'win32';
 
@@ -39449,7 +39449,7 @@ const fs = __webpack_require__(12)
 const path = __webpack_require__(7)
 const mkdirpSync = __webpack_require__(18).mkdirsSync
 const utimesSync = __webpack_require__(133).utimesMillisSync
-const stat = __webpack_require__(61)
+const stat = __webpack_require__(62)
 
 function copySync (src, dest, opts) {
   if (typeof opts === 'function') {
@@ -39771,7 +39771,7 @@ const path = __webpack_require__(7)
 const mkdirp = __webpack_require__(18).mkdirs
 const pathExists = __webpack_require__(24).pathExists
 const utimes = __webpack_require__(133).utimesMillis
-const stat = __webpack_require__(61)
+const stat = __webpack_require__(62)
 
 function copy (src, dest, opts, cb) {
   if (typeof opts === 'function' && !cb) {
@@ -39989,7 +39989,7 @@ const u = __webpack_require__(14).fromCallback
 const fs = __webpack_require__(12)
 const path = __webpack_require__(7)
 const mkdir = __webpack_require__(18)
-const remove = __webpack_require__(62)
+const remove = __webpack_require__(63)
 
 const emptyDir = u(function emptyDir (dir, callback) {
   callback = callback || function () {}
@@ -40966,9 +40966,9 @@ module.exports = {
 const fs = __webpack_require__(12)
 const path = __webpack_require__(7)
 const copySync = __webpack_require__(131).copySync
-const removeSync = __webpack_require__(62).removeSync
+const removeSync = __webpack_require__(63).removeSync
 const mkdirpSync = __webpack_require__(18).mkdirpSync
-const stat = __webpack_require__(61)
+const stat = __webpack_require__(62)
 
 function moveSync (src, dest, opts) {
   opts = opts || {}
@@ -41033,10 +41033,10 @@ module.exports = {
 const fs = __webpack_require__(12)
 const path = __webpack_require__(7)
 const copy = __webpack_require__(134).copy
-const remove = __webpack_require__(62).remove
+const remove = __webpack_require__(63).remove
 const mkdirp = __webpack_require__(18).mkdirp
 const pathExists = __webpack_require__(24).pathExists
-const stat = __webpack_require__(61)
+const stat = __webpack_require__(62)
 
 function move (src, dest, opts, cb) {
   if (typeof opts === 'function') {
@@ -42469,7 +42469,7 @@ module.exports = __webpack_require__(144);
 // This is the Node.JS entry point
 module.exports = algoliasearch;
 
-var debug = __webpack_require__(63)('algoliasearch:nodejs');
+var debug = __webpack_require__(64)('algoliasearch:nodejs');
 var crypto = __webpack_require__(110);
 var zlib = __webpack_require__(382);
 
@@ -42481,7 +42481,7 @@ var isNode010 = semver.satisfies(process.version, '=0.10');
 var places = __webpack_require__(385);
 
 var AlgoliaSearchServer = __webpack_require__(389);
-var errors = __webpack_require__(49);
+var errors = __webpack_require__(50);
 
 // does not work on node <= 0.8
 if (isNotSupported) {
@@ -42552,7 +42552,7 @@ function AlgoliaSearchNodeJS(applicationID, apiKey, opts) {
 inherits(AlgoliaSearchNodeJS, AlgoliaSearchServer);
 
 AlgoliaSearchNodeJS.prototype._request = function request(rawUrl, opts) {
-  var http = __webpack_require__(59);
+  var http = __webpack_require__(60);
   var https = __webpack_require__(36);
   var url = __webpack_require__(23);
 
@@ -44974,7 +44974,7 @@ var deprecate = __webpack_require__(96);
 var deprecatedMessage = __webpack_require__(97);
 var AlgoliaSearchCore = __webpack_require__(394);
 var inherits = __webpack_require__(38);
-var errors = __webpack_require__(49);
+var errors = __webpack_require__(50);
 
 function AlgoliaSearch() {
   AlgoliaSearchCore.apply(this, arguments);
@@ -45745,7 +45745,7 @@ var IndexCore = __webpack_require__(148);
 var deprecate = __webpack_require__(96);
 var deprecatedMessage = __webpack_require__(97);
 var exitPromise = __webpack_require__(153);
-var errors = __webpack_require__(49);
+var errors = __webpack_require__(50);
 
 var deprecateForwardToSlaves = deprecate(
   function() {},
@@ -47257,7 +47257,7 @@ IndexBrowser.prototype._clean = function() {
 
 module.exports = AlgoliaSearchCore;
 
-var errors = __webpack_require__(49);
+var errors = __webpack_require__(50);
 var exitPromise = __webpack_require__(153);
 var IndexCore = __webpack_require__(148);
 var store = __webpack_require__(395);
@@ -47295,7 +47295,7 @@ var RESET_APP_DATA_TIMER =
  *           If you provide them, you will less benefit from our HA implementation
  */
 function AlgoliaSearchCore(applicationID, apiKey, opts) {
-  var debug = __webpack_require__(63)('algoliasearch');
+  var debug = __webpack_require__(64)('algoliasearch');
 
   var clone = __webpack_require__(28);
   var isArray = __webpack_require__(15);
@@ -47441,7 +47441,7 @@ AlgoliaSearchCore.prototype.addAlgoliaAgent = function(algoliaAgent) {
 AlgoliaSearchCore.prototype._jsonRequest = function(initialOpts) {
   this._checkAppIdData();
 
-  var requestDebug = __webpack_require__(63)('algoliasearch:' + initialOpts.url);
+  var requestDebug = __webpack_require__(64)('algoliasearch:' + initialOpts.url);
 
 
   var body;
@@ -48229,7 +48229,7 @@ function removeCredentials(headers) {
 /* 395 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var debug = __webpack_require__(63)('algoliasearch:src/hostIndexState.js');
+var debug = __webpack_require__(64)('algoliasearch:src/hostIndexState.js');
 var localStorageNamespace = 'algoliasearch-client-js';
 
 var store;
@@ -48497,7 +48497,7 @@ function getParsedProxy() {
 }
 
 function getKeepaliveAgent(protocol) {
-  var http = __webpack_require__(59);
+  var http = __webpack_require__(60);
   var https = __webpack_require__(36);
 
   var HttpsAgent = __webpack_require__(154).HttpsAgent;
@@ -49019,7 +49019,7 @@ module.exports = HttpsAgent;
 
 var net = __webpack_require__(95)
   , tls = __webpack_require__(403)
-  , http = __webpack_require__(59)
+  , http = __webpack_require__(60)
   , https = __webpack_require__(36)
   , events = __webpack_require__(98)
   , assert = __webpack_require__(93)
@@ -51966,7 +51966,7 @@ function pointerCoord(event) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var prism_react_renderer_prism__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(42);
-/* harmony import */ var _docusaurus_ExecutionEnvironment__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(68);
+/* harmony import */ var _docusaurus_ExecutionEnvironment__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(43);
 /* harmony import */ var _docusaurus_ExecutionEnvironment__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_docusaurus_ExecutionEnvironment__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _generated_docusaurus_config__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(75);
 /**
@@ -52505,12 +52505,27 @@ if (true) {
 
 /***/ }),
 /* 436 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _docusaurus_ExecutionEnvironment__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(43);
+/* harmony import */ var _docusaurus_ExecutionEnvironment__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_docusaurus_ExecutionEnvironment__WEBPACK_IMPORTED_MODULE_0__);
+/**
+ * (c) Facebook, Inc. and its affiliates. Confidential and proprietary.
+ *
+ * @format
+ *//* harmony default export */ __webpack_exports__["default"] = ((function(){function __internaldocs_set_redirect(location){fetch('https://internalfb.com/intern/internaldocs/check',{credentials:'include'}).then(r=>r.json()).then(response=>{if(!response.showBanner||!response.redirectTo){return;}const banner=document.getElementById('internaldocs-banner');const aTag=document.getElementById('internaldocs-banner-link');if(aTag&&banner){const url=response.redirectTo+(location&&location.pathname?location.pathname:'');aTag.href=url;banner.style.display='block';}}).catch(e=>{// This is expected when external users view the page. Do nothing.
+});}if(_docusaurus_ExecutionEnvironment__WEBPACK_IMPORTED_MODULE_0___default.a.canUseDOM){__internaldocs_set_redirect(window.location);}return{onRouteUpdate:({location})=>{__internaldocs_set_redirect(location);}};})());
+
+/***/ }),
+/* 437 */
 /***/ (function(module, exports) {
 
 
 
 /***/ }),
-/* 437 */
+/* 438 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -52536,13 +52551,13 @@ var server = __webpack_require__(230);
 var server_default = /*#__PURE__*/__webpack_require__.n(server);
 
 // EXTERNAL MODULE: ./node_modules/react-helmet/es/Helmet.js
-var Helmet = __webpack_require__(65);
+var Helmet = __webpack_require__(66);
 
 // EXTERNAL MODULE: ./node_modules/react-loadable-ssr-addon/lib/index.js
 var lib = __webpack_require__(233);
 
 // EXTERNAL MODULE: ./node_modules/react-loadable/lib/index.js
-var react_loadable_lib = __webpack_require__(50);
+var react_loadable_lib = __webpack_require__(51);
 var react_loadable_lib_default = /*#__PURE__*/__webpack_require__.n(react_loadable_lib);
 
 // EXTERNAL MODULE: ./node_modules/html-minifier-terser/src/htmlminifier.js
@@ -52629,14 +52644,14 @@ var docusaurus_config = __webpack_require__(75);
 var renderRoutes = __webpack_require__(69);
 
 // EXTERNAL MODULE: ./node_modules/@docusaurus/core/lib/client/exports/context.js
-var exports_context = __webpack_require__(66);
+var exports_context = __webpack_require__(67);
 
 // EXTERNAL MODULE: ./node_modules/nprogress/nprogress.js
 var nprogress = __webpack_require__(79);
 var nprogress_default = /*#__PURE__*/__webpack_require__.n(nprogress);
 
 // CONCATENATED MODULE: ./.docusaurus/client-modules.js
-/* harmony default export */ var client_modules = ([__webpack_require__(429),__webpack_require__(430),__webpack_require__(431),__webpack_require__(432)]);
+/* harmony default export */ var client_modules = ([__webpack_require__(429),__webpack_require__(430),__webpack_require__(431),__webpack_require__(432),__webpack_require__(436)]);
 // CONCATENATED MODULE: ./node_modules/@docusaurus/core/lib/client/client-lifecycles-dispatcher.js
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
@@ -52658,7 +52673,7 @@ lifecycles[lifecycleAction]=function(...args){dispatchLifecycleAction(lifecycleA
  */ // Memoize previously normalized pathnames.
 const pathnames={};function normalizeLocation(location){if(pathnames[location.pathname]){return{...location,pathname:pathnames[location.pathname]};}let pathname=location.pathname||'/';pathname=pathname.trim().replace(/\/index\.html$/,'');if(pathname===''){pathname='/';}pathnames[location.pathname]=pathname;return{...location,pathname};}/* harmony default export */ var client_normalizeLocation = (normalizeLocation);
 // EXTERNAL MODULE: ./node_modules/nprogress/nprogress.css
-var nprogress_nprogress = __webpack_require__(436);
+var nprogress_nprogress = __webpack_require__(437);
 
 // CONCATENATED MODULE: ./node_modules/@docusaurus/core/lib/client/PendingNavigation.js
 /**
