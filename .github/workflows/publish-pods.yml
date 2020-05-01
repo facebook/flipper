@@ -83,11 +83,11 @@ jobs:
 
         # The name of the user that will be displayed as the author of the commit
         # Default: author of the commit that triggered the run
-        author_name: My GitHub Actions Bot
+        author_name: Pritesh Nandgaonkar
 
         # The email of the user that will be displayed as the author of the commit
         # Default: author of the commit that triggered the run
-        author_email: my-github-actions-bot@example.org
+        author_email: pncooldude91@gmail.com
 
         # The local path to the directory where your repository is located. You should use actions/checkout first to set it up
         # Default: '.'
