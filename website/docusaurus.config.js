@@ -81,6 +81,7 @@ const siteConfig = {
     '/js/google-analytics.js',
   ],
   stylesheets: [],
+  plugins: ['docusaurus-plugin-internaldocs-fb'],
   presets: [
     [
       '@docusaurus/preset-classic',
