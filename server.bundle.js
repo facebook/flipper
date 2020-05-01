@@ -52515,7 +52515,7 @@ __webpack_require__.r(__webpack_exports__);
  * (c) Facebook, Inc. and its affiliates. Confidential and proprietary.
  *
  * @format
- *//* harmony default export */ __webpack_exports__["default"] = ((function(){function __internaldocs_set_redirect(location){fetch('https://internalfb.com/intern/internaldocs/check',{credentials:'include'}).then(r=>r.json()).then(response=>{if(!response.showBanner||!response.redirectTo){return;}const banner=document.getElementById('internaldocs-banner');const aTag=document.getElementById('internaldocs-banner-link');if(aTag&&banner){const url=response.redirectTo+(location&&location.pathname?location.pathname:'');aTag.href=url;banner.style.display='block';}}).catch(e=>{// This is expected when external users view the page. Do nothing.
+ *//* harmony default export */ __webpack_exports__["default"] = ((function(){function __internaldocs_set_redirect(location){fetch('https://www.internalfb.com/intern/internaldocs/check',{credentials:'include'}).then(r=>r.json()).then(response=>{if(!response.showBanner||!response.redirectTo){return;}const banner=document.getElementById('internaldocs-banner');const aTag=document.getElementById('internaldocs-banner-link');if(aTag&&banner){const url=response.redirectTo+(location&&location.pathname?location.pathname:'');aTag.href=url;banner.style.display='block';}}).catch(e=>{// This is expected when external users view the page. Do nothing.
 });}if(_docusaurus_ExecutionEnvironment__WEBPACK_IMPORTED_MODULE_0___default.a.canUseDOM){__internaldocs_set_redirect(window.location);}return{onRouteUpdate:({location})=>{__internaldocs_set_redirect(location);}};})());
 
 /***/ }),
