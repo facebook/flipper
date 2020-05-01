@@ -1,0 +1,60 @@
+PODS:
+  - boost-for-react-native (1.63.0)
+  - CocoaAsyncSocket (7.6.3)
+  - CocoaLibEvent (1.0.0)
+  - DoubleConversion (1.1.5)
+  - Flipper (0.17.1):
+    - Flipper-Folly (~> 1.2)
+    - Flipper-RSocket (~> 0.10)
+  - Flipper-Folly (1.2.0):
+    - boost-for-react-native
+    - CocoaLibEvent (~> 1.0)
+    - DoubleConversion
+    - glog
+    - OpenSSL-Static (= 1.0.2.c1)
+  - Flipper-PeerTalk (0.0.3)
+  - Flipper-RSocket (0.10.1):
+    - Flipper-Folly (~> 1.2)
+  - glog (0.3.4)
+  - OpenSSL-Static (1.0.2.c1)
+
+DEPENDENCIES:
+  - CocoaAsyncSocket (~> 7.6)
+  - DoubleConversion (~> 1.1)
+  - Flipper (from `../Flipper.podspec`)
+  - Flipper-Folly (~> 1.2)
+  - Flipper-PeerTalk (~> 0.0)
+  - Flipper-RSocket (~> 0.10)
+  - glog (~> 0.3)
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - boost-for-react-native
+    - CocoaAsyncSocket
+    - CocoaLibEvent
+    - DoubleConversion
+    - Flipper-Folly
+    - Flipper-PeerTalk
+    - Flipper-RSocket
+    - glog
+    - OpenSSL-Static
+
+EXTERNAL SOURCES:
+  Flipper:
+    :path: "../Flipper.podspec"
+
+SPEC CHECKSUMS:
+  boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
+  CocoaAsyncSocket: eafaa68a7e0ec99ead0a7b35015e0bf25d2c8987
+  CocoaLibEvent: 2fab71b8bd46dd33ddb959f7928ec5909f838e3f
+  DoubleConversion: e22e0762848812a87afd67ffda3998d9ef29170c
+  Flipper: 4e49f9efae321307aa5a09b20efee9abbf47c565
+  Flipper-Folly: dca3dc1f3b70d9566fe9f677bd779cd9d788e3cc
+  Flipper-PeerTalk: 1528aa2921d8f31c7142ada592cc82ea3692fd5d
+  Flipper-RSocket: 083b84f06867efbebfd4a9e38974753ca2a3bbd6
+  glog: 1de0bb937dccdc981596d3b5825ebfb765017ded
+  OpenSSL-Static: bd17e34564a8591ad76b740318683a6caa19a13e
+
+PODFILE CHECKSUM: 15d323d0bfe2082df368ce444af1535e1b469da1
+
+COCOAPODS: 1.6.1
