@@ -40,7 +40,6 @@ jobs:
       env:
         COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
     commit_podfile_lock:
-    needs: publish_flipperkit_pod
     runs-on: macos-latest
     defaults:
       run:
