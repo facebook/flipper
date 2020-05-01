@@ -25,18 +25,18 @@
 
 @implementation FlipperClientTests
 facebook::flipper::FlipperClient* client;
-facebook::flipper::test::FlipperConnectionManagerMock* socket;
+facebook::flipper::test::FlipperConnectionManagerMock* sock;
 FlipperClient* objcClient;
 
 - (void)setUp {
   // Put setup code here. This method is called before the invocation of each
   // test method in the class.
-  socket = new facebook::flipper::test::FlipperConnectionManagerMock;
+  sock = new facebook::flipper::test::FlipperConnectionManagerMock;
   auto state = std::make_shared<FlipperState>();
 
   client = new facebook::flipper::FlipperClient(
       std::unique_ptr<facebook::flipper::test::FlipperConnectionManagerMock>{
-          socket},
+          sock},
       state);
   objcClient = [[FlipperClient alloc] initWithCppClient:client];
 }
@@ -84,7 +84,7 @@ FlipperClient* objcClient;
   std::unique_ptr<facebook::flipper::FlipperResponderMock> responder =
       std::make_unique<facebook::flipper::FlipperResponderMock>(
           &successes, &errors);
-  socket->callbacks->onMessageReceived(message, std::move(responder));
+  sock->callbacks->onMessageReceived(message, std::move(responder));
   folly::dynamic expected =
       folly::dynamic::object("plugins", folly::dynamic::array());
   XCTAssertEqual(successes.size(), 1);
@@ -146,7 +146,7 @@ FlipperClient* objcClient;
   std::unique_ptr<facebook::flipper::FlipperResponder> responder =
       std::make_unique<facebook::flipper::FlipperResponderMock>();
 
-  socket->callbacks->onMessageReceived(messageInit, std::move(responder));
+  sock->callbacks->onMessageReceived(messageInit, std::move(responder));
   XCTAssertTrue(pluginConnected);
   [objcClient stop];
   XCTAssertFalse(pluginConnected);
@@ -172,19 +172,19 @@ FlipperClient* objcClient;
       "params", folly::dynamic::object("plugin", "cat"));
   std::unique_ptr<facebook::flipper::FlipperResponder> responder =
       std::make_unique<facebook::flipper::FlipperResponderMock>();
-  socket->callbacks->onMessageReceived(messageInit, std::move(responder));
+  sock->callbacks->onMessageReceived(messageInit, std::move(responder));
   XCTAssertTrue(pluginConnected);
 
   folly::dynamic messageDeInit = folly::dynamic::object("method", "deinit")(
       "params", folly::dynamic::object("plugin", "cat"));
   std::unique_ptr<facebook::flipper::FlipperResponder> responder2 =
       std::make_unique<facebook::flipper::FlipperResponderMock>();
-  socket->callbacks->onMessageReceived(messageDeInit, std::move(responder2));
+  sock->callbacks->onMessageReceived(messageDeInit, std::move(responder2));
   XCTAssertFalse(pluginConnected);
 
   std::unique_ptr<facebook::flipper::FlipperResponder> responder3 =
       std::make_unique<facebook::flipper::FlipperResponderMock>();
-  socket->callbacks->onMessageReceived(messageInit, std::move(responder3));
+  sock->callbacks->onMessageReceived(messageInit, std::move(responder3));
   XCTAssertTrue(pluginConnected);
 
   [objcClient stop];
@@ -212,7 +212,7 @@ FlipperClient* objcClient;
   std::unique_ptr<facebook::flipper::FlipperResponder> responder =
       std::make_unique<facebook::flipper::FlipperResponderMock>();
   XCTAssertNoThrow(
-      socket->callbacks->onMessageReceived(messageInit, std::move(responder)));
+      sock->callbacks->onMessageReceived(messageInit, std::move(responder)));
   XCTAssertTrue(pluginConnected);
 }
 
@@ -235,7 +235,7 @@ FlipperClient* objcClient;
       "params", folly::dynamic::object("plugin", "cat"));
   std::unique_ptr<facebook::flipper::FlipperResponder> responder =
       std::make_unique<facebook::flipper::FlipperResponderMock>();
-  socket->callbacks->onMessageReceived(messageInit, std::move(responder));
+  sock->callbacks->onMessageReceived(messageInit, std::move(responder));
 
   XCTAssertNoThrow(
       [objcClient stop]); // Stopping client will call disconnect of the plugin
@@ -264,7 +264,7 @@ FlipperClient* objcClient;
       "params", folly::dynamic::object("plugin", "PluginIdentifier"));
   std::unique_ptr<facebook::flipper::FlipperResponder> responder1 =
       std::make_unique<facebook::flipper::FlipperResponderMock>();
-  socket->callbacks->onMessageReceived(messageInit, std::move(responder1));
+  sock->callbacks->onMessageReceived(messageInit, std::move(responder1));
   folly::dynamic message = folly::dynamic::object("id", 1)("method", "execute")(
       "params",
       folly::dynamic::object("api", "PluginIdentifier")(
@@ -272,7 +272,7 @@ FlipperClient* objcClient;
   std::unique_ptr<facebook::flipper::FlipperResponder> responder2 =
       std::make_unique<facebook::flipper::FlipperResponderMock>();
 
-  socket->callbacks->onMessageReceived(message, std::move(responder2));
+  sock->callbacks->onMessageReceived(message, std::move(responder2));
 
   XCTAssertTrue(isCalled);
 }
@@ -300,7 +300,7 @@ FlipperClient* objcClient;
       "params", folly::dynamic::object("plugin", "PluginIdentifier"));
   std::unique_ptr<facebook::flipper::FlipperResponder> responder =
       std::make_unique<facebook::flipper::FlipperResponderMock>();
-  socket->callbacks->onMessageReceived(messageInit, std::move(responder));
+  sock->callbacks->onMessageReceived(messageInit, std::move(responder));
 
   folly::dynamic message = folly::dynamic::object("id", 1)("method", "execute")(
       "params",
@@ -308,7 +308,7 @@ FlipperClient* objcClient;
           "method", "MethodName"));
   std::unique_ptr<facebook::flipper::FlipperResponder> responder2 =
       std::make_unique<facebook::flipper::FlipperResponderMock>();
-  socket->callbacks->onMessageReceived(message, std::move(responder2));
+  sock->callbacks->onMessageReceived(message, std::move(responder2));
 
   XCTAssertTrue(isCalled);
 }
@@ -338,7 +338,7 @@ FlipperClient* objcClient;
       "params", folly::dynamic::object("plugin", "PluginIdentifier"));
   std::unique_ptr<facebook::flipper::FlipperResponder> responder =
       std::make_unique<facebook::flipper::FlipperResponderMock>();
-  socket->callbacks->onMessageReceived(messageInit, std::move(responder));
+  sock->callbacks->onMessageReceived(messageInit, std::move(responder));
 
   folly::dynamic message = folly::dynamic::object("id", 1)("method", "execute")(
       "params",
@@ -351,7 +351,7 @@ FlipperClient* objcClient;
           &successes, &errors);
 
   XCTAssertNoThrow(
-      socket->callbacks->onMessageReceived(message, std::move(responder2)));
+      sock->callbacks->onMessageReceived(message, std::move(responder2)));
   XCTAssertTrue(isCalled);
   XCTAssertEqual(successes.size(), 0);
   XCTAssertEqual(errors.size(), 1);
