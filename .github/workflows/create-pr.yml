@@ -1,0 +1,19 @@
+name: Publish Pods
+on:
+  push:
+    branches:
+      - bot-update-podfile-lock
+
+jobs:
+  create_pr:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Create PR to Update Podfile.lock
+      uses: peter-evans/create-pull-request@v2
+      with:
+        title: 'Automated: Update Podfile.lock'
+        body: 'This PR is triggered due to the push on bot-update-podfile-lock. It is meant to update the Podfile.lock'
+        base: 'master'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
