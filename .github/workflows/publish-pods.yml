@@ -76,34 +76,10 @@ jobs:
           git status
 
     - name: Add and Commit the files
-      uses: EndBug/add-and-commit@v4 # You can change this to use a specific version
+      uses: stefanzweifel/git-auto-commit-action@v4.1.6 # You can change this to use a specific version
       with:
-        # The arguments for the `git add` command (see the paragraph below for more info)
-        # Default: '.'
-        add: '.'
-
-        # The name of the user that will be displayed as the author of the commit
-        # Default: author of the commit that triggered the run
-        author_name: My GitHub Actions Bot
-
-        # The email of the user that will be displayed as the author of the commit
-        # Default: author of the commit that triggered the run
-        author_email: my-github-actions-bot@example.org
-
-        # The local path to the directory where your repository is located. You should use actions/checkout first to set it up
-        # Default: '.'
-
-        # Whether to use the --force option on `git add`, in order to bypass eventual gitignores
-        # Default: false
-        force: true
-
-        # The message for the commit
-        # Default: 'Commit from GitHub Actions'
-        message: 'Automated Commit: Update Podfile.lock'
-
-        # Name of the branch to use, if different from the one that triggered the workflow
-        # Default: the branch that triggered the workflow (from GITHUB_REF)
-        ref: 'update-podfile-lock'
+        commit_message: Apply php-cs-fixer changes
+        branch: update-podfile-lock
       env:
         # This is necessary in order to push a commit to the repo
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Leave this line unchanged
