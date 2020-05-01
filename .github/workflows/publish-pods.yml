@@ -39,7 +39,7 @@ jobs:
         for i in {1..5}; do pod trunk push FlipperKit.podspec --use-libraries --allow-warnings --verbose --skip-import-validation && break || sleep 20; done
       env:
         COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
-    commit_podfile_lock:
+  commit_podfile_lock:
     needs: publish_flipperkit_pod
     runs-on: macos-latest
     defaults:
