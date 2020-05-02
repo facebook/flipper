@@ -79,6 +79,6 @@ jobs:
         author_email: mail@example.com
         force: true
         message: 'Automated Commit: Update Podfile.lock'
-        ref: bot-update-podfile-lock
+        ref: bot-update-podfile-lock-DO-NOT-USE
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
