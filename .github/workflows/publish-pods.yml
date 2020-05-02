@@ -76,11 +76,11 @@ jobs:
       run: |
           git diff
     - name: Add and Commit the files
-      uses: EndBug/add-and-commit@v4 # You can change this to use a specific version
+      uses: EndBug/add-and-commit@v4
       with:
         author_name: Pritesh Nandgaonkar
         author_email: pncooldude91@gmail.com
-        force: false
+        force: true
         add: '.'
         cwd: '.'
         message: 'Automated Commit: Update Podfile.lock'
