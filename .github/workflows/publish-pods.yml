@@ -78,6 +78,7 @@ jobs:
         author_name: Github Action Bot
         author_email: mail@example.com
         force: true
+        add: '.'
         message: 'Automated Commit: Update Podfile.lock'
         ref: bot-update-podfile-lock-DO-NOT-USE
       env:
