@@ -72,13 +72,17 @@ jobs:
     - name: Git status
       run: |
           git status
+    - name: Git diff
+      run: |
+          git diff
     - name: Add and Commit the files
       uses: EndBug/add-and-commit@v4 # You can change this to use a specific version
       with:
-        author_name: Github Action Bot
-        author_email: mail@example.com
-        force: true
+        author_name: Pritesh Nandgaonkar
+        author_email: pncooldude91@gmail.com
+        force: false
         add: '.'
+        cwd: '.'
         message: 'Automated Commit: Update Podfile.lock'
         ref: bot-update-podfile-lock-DO-NOT-USE
       env:
