@@ -78,6 +78,9 @@ jobs:
     - name: Git branch
       run: |
           git branch
+    - name: Git remote
+      run: |
+          git remote -v
     - name: Add and Commit the files
       uses: EndBug/add-and-commit@v4
       with:
