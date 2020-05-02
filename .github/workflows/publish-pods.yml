@@ -54,16 +54,16 @@ jobs:
     - name: Pod Version
       run: pod --version
 
-    - name: Update Sample's Podfile.lock
-      run: |
-          cd Sample/
-          pod update
-          ls
-    - name: Update SampleSwift's Podfile.lock
-      run: |
-          cd SampleSwift/
-          pod update
-          ls
+    # - name: Update Sample's Podfile.lock
+    #   run: |
+    #       cd Sample/
+    #       pod update
+    #       ls
+    # - name: Update SampleSwift's Podfile.lock
+    #   run: |
+    #       cd SampleSwift/
+    #       pod update
+    #       ls
     - name: Update Tutorial's Podfile.lock
       run: |
           cd Tutorial/
