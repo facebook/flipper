@@ -75,6 +75,9 @@ jobs:
     - name: Git diff
       run: |
           git diff
+    - name: Git branch
+      run: |
+          git branch
     - name: Add and Commit the files
       uses: EndBug/add-and-commit@v4
       with:
