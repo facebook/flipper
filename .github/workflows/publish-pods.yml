@@ -79,6 +79,15 @@ jobs:
             git remote -v
       - name: Remove Pods
         run: rm -rf iOS/Tutorial/Pods
+      - name: Fetch branches
+        run: |
+            git fetch origin auto-podfile-update
+      - name: Checkout to that branch
+        run: |
+            git checkout auto-podfile-update
+      - name: Check current branch
+        run: |
+            git branch
       - name: Pull origin
         run: |
             git pull origin bot-update-podfile-lock-DO-NOT-USE --allow-unrelated-histories || exit 0
