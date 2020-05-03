@@ -1,8 +1,8 @@
 name: Publish Pods
 on:
   push:
-      tags:
-      - v*
+      branches:
+      - auto-podfile-update
 
 jobs:
   publish_flipper_pod:
@@ -39,3 +39,61 @@ jobs:
         for i in {1..5}; do pod trunk push FlipperKit.podspec --use-libraries --allow-warnings --verbose --skip-import-validation && break || sleep 20; done
       env:
         COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
+
+  commit_podfile_lock:
+      runs-on: macos-latest
+      defaults:
+        run:
+          working-directory: iOS
+
+      steps:
+      - uses: actions/checkout@v2
+      - name: Install Dependencies
+        run: pod repo update
+
+      - name: Pod Version
+        run: pod --version
+
+      # - name: Update Sample's Podfile.lock
+      #   run: |
+      #       cd Sample/
+      #       pod update
+      #       ls
+      # - name: Update SampleSwift's Podfile.lock
+      #   run: |
+      #       cd SampleSwift/
+      #       pod update
+      #       ls
+      - name: Update Tutorial's Podfile.lock
+        run: |
+            cd Tutorial/
+            pod update
+            ls
+      - name: Git status
+        run: |
+            git status
+      - name: Git diff
+        run: |
+            git diff
+      - name: Git branch
+        run: |
+            git branch
+      - name: Git remote
+        run: |
+            git remote -v
+      - name: Remove Pods
+        run: rm -rf iOS/Tutorial/Pods
+      - name: Pull bot-update-podfile-lock-DO-NOT-USE
+        run: git pull origin bot-update-podfile-lock-DO-NOT-USE
+      - name: Add and Commit the files
+        uses: EndBug/add-and-commit@v4
+        with:
+          author_name: Pritesh Nandgaonkar
+          author_email: pncooldude91@gmail.com
+          force: true
+          add: '.'
+          cwd: '.'
+          message: 'Automated Commit: Update Podfile.lock'
+          ref: bot-update-podfile-lock-DO-NOT-USE
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
