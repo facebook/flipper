@@ -86,7 +86,11 @@ jobs:
       - name: Pull origin
         run: |
             git pull origin bot-update-podfile-lock-DO-NOT-USE --allow-unrelated-histories || exit 0
-            cat .github/workflows/publish-pods.yml
+
+      - name: log yml file
+        run: cat .github/workflows/publish-pods.yml
+      - name: Turn warning off
+        run: git config core.autocrlf true
       - name: Add and Commit the files
         uses: EndBug/add-and-commit@v4
         with:
