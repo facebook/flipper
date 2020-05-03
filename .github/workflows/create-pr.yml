@@ -2,7 +2,7 @@ name: Publish Pods
 on:
   push:
     branches:
-      - bot-update-podfile-lock-DO-NOT-USE
+      - auto-podfile-update
 
 jobs:
   create_pr:
