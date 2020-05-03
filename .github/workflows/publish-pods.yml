@@ -42,10 +42,6 @@ jobs:
 
   commit_podfile_lock:
       runs-on: macos-latest
-      defaults:
-        run:
-          working-directory: iOS
-
       steps:
       - uses: actions/checkout@v2
       - name: Install Dependencies
@@ -66,7 +62,7 @@ jobs:
       #       ls
       - name: Update Tutorial's Podfile.lock
         run: |
-            cd Tutorial/
+            cd iOS/Tutorial/
             pod update
             ls
       - name: Git status
