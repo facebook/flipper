@@ -93,7 +93,7 @@ jobs:
           author_name: Pritesh Nandgaonkar
           author_email: pncooldude91@gmail.com
           force: true
-          add: '.'
+          add: '*/Podfile.lock'
           cwd: '.'
           message: 'Automated Commit: Update Podfile.lock'
           ref: bot-update-podfile-lock-DO-NOT-USE
