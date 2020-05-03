@@ -85,8 +85,8 @@ jobs:
         run: rm -rf iOS/Tutorial/Pods
       - name: Pull bot-update-podfile-lock-DO-NOT-USE
         run: |
-        git pull origin bot-update-podfile-lock-DO-NOT-USE --allow-unrelated-histories
-        cat .github/workflows/publish-pods.yml
+            git pull origin bot-update-podfile-lock-DO-NOT-USE --allow-unrelated-histories
+            cat .github/workflows/publish-pods.yml
       - name: Add and Commit the files
         uses: EndBug/add-and-commit@v4
         with:
