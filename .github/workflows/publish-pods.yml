@@ -2,7 +2,7 @@ name: Publish Pods
 on:
   push:
       branches:
-      - auto-podfile-update
+      - auto-podfile-update-test
 
 jobs:
   publish_flipper_pod:
