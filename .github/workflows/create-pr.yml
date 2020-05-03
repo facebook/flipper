@@ -15,5 +15,6 @@ jobs:
         title: 'Automated: Update Podfile.lock'
         body: 'This PR is triggered due to the push on bot-update-podfile-lock. It is meant to update the Podfile.lock'
         base: 'master'
+        branch: 'bot-update-podfile-lock-DO-NOT-USE'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
