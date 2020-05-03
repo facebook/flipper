@@ -79,12 +79,11 @@ jobs:
             git remote -v
       - name: Remove Pods
         run: rm -rf iOS/Tutorial/Pods
-      # - name: Pull origin
-      #   run: |
-      #       git pull origin bot-update-podfile-lock-DO-NOT-USE --allow-unrelated-histories || exit 0
-
-      # - name: log yml file
-      #   run: ls && cat .github/workflows/publish-pods.yml
+      - name: Pull origin
+        run: |
+            git pull origin bot-update-podfile-lock-DO-NOT-USE --allow-unrelated-histories || exit 0
+      - name: log yml file
+        run: ls && cat .github/workflows/publish-pods.yml
       - name: Turn warning off
         run: git config core.autocrlf true
       - name: Add and Commit the files
