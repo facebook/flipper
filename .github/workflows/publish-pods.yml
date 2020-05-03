@@ -98,8 +98,8 @@ jobs:
       - name: Add and Commit the files
         uses: EndBug/add-and-commit@v4
         with:
-          author_name: Pritesh Nandgaonkar
-          author_email: pncooldude91@gmail.com
+          author_name: Github Action Bot
+          author_email: githubbot@example.com
           force: true
           add: '*/Podfile.lock'
           cwd: '.'
