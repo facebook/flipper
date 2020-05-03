@@ -1,8 +1,8 @@
-name: Publish Pods
+name: Create PR
 on:
   push:
     branches:
-      - auto-podfile-update
+      - bot-update-podfile-lock-DO-NOT-USE
 
 jobs:
   create_pr:
