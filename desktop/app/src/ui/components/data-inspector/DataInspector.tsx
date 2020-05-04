@@ -23,6 +23,7 @@ import deepEqual from 'deep-equal';
 import React from 'react';
 import {TooltipOptions} from '../TooltipProvider';
 import {shallowEqual} from 'react-redux';
+import {Highlight} from './Highlight';
 
 export {DataValueExtractor} from './DataPreview';
 
@@ -62,6 +63,14 @@ const ExpandControl = styled.span({
   whiteSpace: 'pre',
 });
 ExpandControl.displayName = 'DataInspector:ExpandControl';
+
+const Added = styled.div({
+  backgroundColor: colors.tealTint70,
+});
+
+const Removed = styled.div({
+  backgroundColor: colors.cherryTint70,
+});
 
 const nameTooltipOptions: TooltipOptions = {
   position: 'toLeft',
@@ -145,6 +154,10 @@ type DataInspectorProps = {
    * Object of properties that will have tooltips
    */
   tooltips?: any;
+  /**
+   * Text to highlight, in case searching is used
+   */
+  highlight?: string;
 };
 
 const defaultValueExtractor: DataValueExtractor = (value: any) => {
@@ -377,7 +390,8 @@ export default class DataInspector extends Component<
       nextProps.onDelete !== props.onDelete ||
       nextProps.setValue !== props.setValue ||
       nextProps.collapsed !== props.collapsed ||
-      nextProps.expandRoot !== props.expandRoot
+      nextProps.expandRoot !== props.expandRoot ||
+      nextProps.highlight !== props.highlight
     );
   }
 
@@ -544,6 +558,7 @@ export default class DataInspector extends Component<
       ancestry,
       collapsed,
       tooltips,
+      highlight,
     } = this.props;
 
     const {resDiff, isExpandable, isExpanded, res} = this.state;
@@ -585,13 +600,6 @@ export default class DataInspector extends Component<
 
       const keys = getSortedKeys({...value, ...diffValue});
 
-      const Added = styled.div({
-        backgroundColor: colors.tealTint70,
-      });
-      const Removed = styled.div({
-        backgroundColor: colors.cherryTint70,
-      });
-
       for (const key of keys) {
         const diffMetadataArr = diffMetadataExtractor(value, key, diffValue);
         for (const metadata of diffMetadataArr) {
@@ -611,6 +619,7 @@ export default class DataInspector extends Component<
               data={metadata.data}
               diff={metadata.diff}
               tooltips={tooltips}
+              highlight={highlight}
             />
           );
 
@@ -648,7 +657,9 @@ export default class DataInspector extends Component<
           title={tooltips != null && tooltips[name]}
           key="name"
           options={nameTooltipOptions}>
-          <InspectorName>{name}</InspectorName>
+          <InspectorName>
+            <Highlight text={name} highlight={this.props.highlight} />
+          </InspectorName>
         </Tooltip>,
       );
       nameElems.push(<span key="sep">: </span>);
@@ -664,6 +675,7 @@ export default class DataInspector extends Component<
           type={type}
           value={value}
           extra={extra}
+          highlight={highlight}
         />
       );
     } else {
