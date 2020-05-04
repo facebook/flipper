@@ -15,6 +15,7 @@ bundle.map
 **/Pods/
 **/xcuserdata/
 build/
+Podfile.lock
 
 android/third-party/external/
 
