@@ -95,6 +95,10 @@ jobs:
       #   run: ls && cat .github/workflows/publish-pods.yml
       # - name: Turn warning off
       #   run: git config core.autocrlf true
+      - name: Set username
+        run: |
+          git config --global user.name 'Pritesh Nandgaonkar'
+          git config --global user.email 'prit91@fb.com'
       - name: Create PR to Update Podfile.lock
         uses: peter-evans/create-pull-request@v2
         with:
