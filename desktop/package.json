@@ -3,7 +3,12 @@
   "version": "0.40.0",
   "description": "Mobile development tool",
   "productName": "Flipper",
-  "author": "Facebook Inc",
+  "author": {
+    "name": "Facebook Inc",
+    "email": "n/a",
+    "url": "https://github.com/facebook"
+  },
+  "homepage": "https://fbflipper.com/",
   "icon": "icon.png",
   "category": "facebook-intern",
   "privileged": true,
@@ -41,6 +46,13 @@
       "extendInfo": {
         "NSUserNotificationAlertStyle": "alert"
       }
+    },
+    "linux": {
+      "icon": "icon.icns",
+      "category": "Development"
+    },
+    "deb": {
+      "icon": "icon.icns"
     },
     "dmg": {
       "background": "dmgBackground.png",
@@ -232,7 +244,7 @@
     "lint": "yarn lint:eslint && yarn lint:flow && yarn lint:tsc",
     "bump-versions": "./ts-node scripts/bump-versions.ts",
     "publish-packages": "./ts-node scripts/publish-packages.ts",
-    "everything": "yarn reset && yarn install && yarn lint && yarn test && yarn test-electron && yarn build --mac --mac-dmg --win --linux && yarn build-headless --mac --linux && yarn start"
+    "everything": "yarn reset && yarn install && yarn lint && yarn test && yarn test-electron && yarn build --mac --mac-dmg --win --linux --linux-deb && yarn build-headless --mac --linux && yarn start"
   },
   "optionalDependencies": {
     "7zip-bin-mac": "^1.0.1"

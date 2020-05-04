@@ -80,6 +80,13 @@ async function buildDist(buildFolder: string) {
   }
   if (process.argv.indexOf('--linux') > -1) {
     targetsRaw.push(Platform.LINUX.createTarget(['zip']));
+
+    const argv = process.argv.slice(2);
+    if (argv.indexOf('--linux-deb') > -1) {
+      // linux targets can be:
+      // AppImage, snap, deb, rpm, freebsd, pacman, p5p, apk, 7z, zip, tar.xz, tar.lz, tar.gz, tar.bz2, dir
+      targetsRaw.push(Platform.LINUX.createTarget(['deb']));
+    }
   }
   if (process.argv.indexOf('--win') > -1) {
     targetsRaw.push(Platform.WINDOWS.createTarget(['zip']));
