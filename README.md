@@ -121,7 +121,7 @@ Older yarn versions might show an error / hang with the message 'Waiting for the
 
 # Documentation
 
-Find the full documentation for this project at [fbflipper.com](https://fbflipper.com/docs).
+Find the full documentation for this project at [fbflipper.com](https://fbflipper.com/docs/features/index/).
 
 Our documentation is built with [Docusaurus](https://docusaurus.io/). You can build
 it locally by running this:
