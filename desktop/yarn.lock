@@ -8197,10 +8197,10 @@ lie@~3.3.0:
   dependencies:
     immediate "~3.0.5"
 
-line-replace@^1.0.2:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/line-replace/-/line-replace-1.0.3.tgz#6970df2a0e93e52e5d418a1da5787e5cee151ec1"
-  integrity sha512-2f/Od+55wuPNto23mgxliWU19xOrHZo6joqtNYQraInC1xwsWBN1uN352tuIUCAHsUZKSgbNjwZjWi19C0nmfg==
+line-replace@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/line-replace/-/line-replace-2.0.1.tgz#227c8839003b178dd080ca67fd280eb537f8c168"
+  integrity sha512-CSr3f6gynLCA9R+RBS0IDIfv7a8OAXcuyq+CHgq0WzbQ7KSJQfF5DgtpRVxpSp1KBNXogtzbNqAeUjrmHYTPYA==
 
 lines-and-columns@^1.1.6:
   version "1.1.6"
