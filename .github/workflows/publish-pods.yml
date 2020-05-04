@@ -41,6 +41,7 @@ jobs:
         COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
 
   commit_podfile_lock:
+      needs: publish_flipperkit_pod
       runs-on: macos-latest
       steps:
       - uses: actions/checkout@v2
@@ -49,21 +50,28 @@ jobs:
 
       - name: Pod Version
         run: pod --version
-      # - name: Update Sample's Podfile.lock
-      #   run: |
-      #       cd Sample/
-      #       pod update
-      #       ls
-      # - name: Update SampleSwift's Podfile.lock
-      #   run: |
-      #       cd SampleSwift/
-      #       pod update
-      #       ls
+      - name: Update Sample's Podfile.lock
+        run: |
+            cd iOS/Sample/
+            pod update
+            ls
+      - name: Update SampleSwift's Podfile.lock
+        run: |
+            cd iOS/SampleSwift/
+            pod update
+            ls
       - name: Update Tutorial's Podfile.lock
         run: |
             cd iOS/Tutorial/
             pod update
             ls
+      # Followed this https://github.com/peter-evans/create-pull-request/blob/master/docs/concepts-guidelines.md#creating-pull-requests-on-tag-push
+      - name: Create a temporary tag branch
+        run: |
+          git config --global user.name 'GitHub'
+          git config --global user.email 'noreply@github.com'
+          git checkout -b temp-${GITHUB_REF:10}
+          git push --set-upstream origin temp-${GITHUB_REF:10}
       - name: Git status
         run: |
             git status
@@ -73,20 +81,11 @@ jobs:
       - name: Git branch
         run: |
             git branch
-      - name: Git remote
-        run: |
-            git remote -v
       - name: Remove Pods
         run: rm -rf iOS/Tutorial/Pods
       - name: Check current branch
         run: |
             git branch
-      - name: Create a temporary tag branch
-        run: |
-          git config --global user.name 'GitHub'
-          git config --global user.email 'noreply@github.com'
-          git checkout -b temp-${GITHUB_REF:10}
-          git push --set-upstream origin temp-${GITHUB_REF:10}
       - name: Create PR to Update Podfile.lock
         uses: peter-evans/create-pull-request@v2
         with:
@@ -101,6 +100,6 @@ jobs:
           labels: automated pr
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        - name: Delete tag branch
+      - name: Delete tag branch
         run: |
           git push --delete origin temp-${GITHUB_REF:10}
