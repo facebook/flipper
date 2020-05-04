@@ -113,6 +113,7 @@ jobs:
           committer: 'Pritesh Nandgaonkar <prit91@fb.com>'
           author: 'Pritesh Nandgaonkar <prit91@fb.com>'
           labels: automated pr
+          draft: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       # - name: Add and Commit the files
