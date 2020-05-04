@@ -131,6 +131,7 @@ const ElementsRowAttributeValue = styled.span({
 });
 ElementsRowAttributeValue.displayName = 'Elements:ElementsRowAttributeValue';
 
+// Merge this functionality with components/Highlight
 class PartialHighlight extends PureComponent<{
   selected: boolean;
   highlighted: string | undefined | null;

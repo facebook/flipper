@@ -12,6 +12,7 @@ import {PureComponent} from 'react';
 import DataInspector from './DataInspector';
 import React from 'react';
 import {DataValueExtractor} from './DataPreview';
+import {HighlightProvider} from '../Highlight';
 
 type ManagedDataInspectorProps = {
   /**
@@ -48,11 +49,18 @@ type ManagedDataInspectorProps = {
    * Object of all properties that will have tooltips
    */
   tooltips?: Object;
+  /**
+   * Filter nodes by some search text
+   */
+  filter?: string;
 };
 
 type ManagedDataInspectorState = {
   expanded: DataInspectorExpanded;
+  filter: string;
 };
+
+const MAX_RESULTS = 50;
 
 /**
  * Wrapper around `DataInspector` that handles expanded state.
@@ -68,6 +76,69 @@ export default class ManagedDataInspector extends PureComponent<
     super(props, context);
     this.state = {
       expanded: {},
+      filter: '',
+    };
+  }
+
+  static getDerivedStateFromProps(
+    nextProps: ManagedDataInspectorProps,
+    currentState: ManagedDataInspectorState,
+  ) {
+    if (nextProps.filter === currentState.filter) {
+      return null;
+    }
+    if (!nextProps.filter) {
+      return {
+        filter: '',
+        // reset expanded when removing filter
+        expanded: currentState.filter ? {} : currentState.expanded,
+      };
+    }
+
+    const filter = nextProps.filter!.toLowerCase();
+    const paths: (number | string)[][] = [];
+
+    function walk(value: any, path: (number | string)[]) {
+      if (paths.length > MAX_RESULTS) {
+        return;
+      }
+
+      if (!value) {
+        return;
+      }
+      if (typeof value !== 'object') {
+        if (('' + value).toLowerCase().includes(filter!)) {
+          paths.push(path.slice());
+        }
+      } else if (Array.isArray(value)) {
+        value.forEach((value, index) => {
+          path.push(index);
+          walk(value, path);
+          path.pop();
+        });
+      } else {
+        // a plain object
+        Object.keys(value).forEach((key) => {
+          path.push(key);
+          walk(key, path); // is the key interesting?
+          walk(value[key], path);
+          path.pop();
+        });
+      }
+    }
+
+    if (filter.length >= 2) {
+      walk(nextProps.data, []);
+    }
+    const expanded: Record<string, boolean> = {};
+    paths.forEach((path) => {
+      for (let i = 1; i < path.length; i++)
+        expanded[path.slice(0, i).join('.')] = true;
+    });
+
+    return {
+      expanded,
+      filter,
     };
   }
 
@@ -77,18 +148,20 @@ export default class ManagedDataInspector extends PureComponent<
 
   render() {
     return (
-      <DataInspector
-        data={this.props.data}
-        diff={this.props.diff}
-        extractValue={this.props.extractValue}
-        setValue={this.props.setValue}
-        expanded={this.state.expanded}
-        onExpanded={this.onExpanded}
-        onDelete={this.props.onDelete}
-        expandRoot={this.props.expandRoot}
-        collapsed={this.props.collapsed}
-        tooltips={this.props.tooltips}
-      />
+      <HighlightProvider text={this.props.filter}>
+        <DataInspector
+          data={this.props.data}
+          diff={this.props.diff}
+          extractValue={this.props.extractValue}
+          setValue={this.props.setValue}
+          expanded={this.state.expanded}
+          onExpanded={this.onExpanded}
+          onDelete={this.props.onDelete}
+          expandRoot={this.props.expandRoot}
+          collapsed={this.props.filter ? true : this.props.collapsed}
+          tooltips={this.props.tooltips}
+        />
+      </HighlightProvider>
     );
   }
 }

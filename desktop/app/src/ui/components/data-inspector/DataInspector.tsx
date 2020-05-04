@@ -23,6 +23,7 @@ import deepEqual from 'deep-equal';
 import React from 'react';
 import {TooltipOptions} from '../TooltipProvider';
 import {shallowEqual} from 'react-redux';
+import {HighlightContext} from '../Highlight';
 
 export {DataValueExtractor} from './DataPreview';
 
@@ -62,6 +63,14 @@ const ExpandControl = styled.span({
   whiteSpace: 'pre',
 });
 ExpandControl.displayName = 'DataInspector:ExpandControl';
+
+const Added = styled.div({
+  backgroundColor: colors.tealTint70,
+});
+
+const Removed = styled.div({
+  backgroundColor: colors.cherryTint70,
+});
 
 const nameTooltipOptions: TooltipOptions = {
   position: 'toLeft',
@@ -308,6 +317,9 @@ export default class DataInspector extends Component<
   DataInspectorProps,
   DataInspectorState
 > {
+  static contextType = HighlightContext; // Replace with useHighlighter
+  context!: React.ContextType<typeof HighlightContext>;
+
   static defaultProps: {
     expanded: DataInspectorExpanded;
     depth: number;
@@ -547,6 +559,7 @@ export default class DataInspector extends Component<
     } = this.props;
 
     const {resDiff, isExpandable, isExpanded, res} = this.state;
+    const highlighter = this.context; // useHighlighter();
 
     if (!res) {
       return null;
@@ -584,13 +597,6 @@ export default class DataInspector extends Component<
       const diffValue = diff && resDiff ? resDiff.value : null;
 
       const keys = getSortedKeys({...value, ...diffValue});
-
-      const Added = styled.div({
-        backgroundColor: colors.tealTint70,
-      });
-      const Removed = styled.div({
-        backgroundColor: colors.cherryTint70,
-      });
 
       for (const key of keys) {
         const diffMetadataArr = diffMetadataExtractor(value, key, diffValue);
@@ -648,7 +654,7 @@ export default class DataInspector extends Component<
           title={tooltips != null && tooltips[name]}
           key="name"
           options={nameTooltipOptions}>
-          <InspectorName>{name}</InspectorName>
+          <InspectorName>{highlighter.render(name)}</InspectorName>
         </Tooltip>,
       );
       nameElems.push(<span key="sep">: </span>);

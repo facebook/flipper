@@ -175,3 +175,4 @@ export {default as Info} from './components/Info';
 export {default as Bordered} from './components/Bordered';
 export {default as AlternatingRows} from './components/AlternatingRows';
 export {default as Layout} from './components/Layout';
+export * from './components/Highlight';

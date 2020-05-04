@@ -18,6 +18,7 @@ import {colors} from '../colors';
 import Input from '../Input';
 import React, {KeyboardEvent} from 'react';
 import Glyph from '../Glyph';
+import {HighlightContext} from '../Highlight';
 
 const NullValue = styled.span({
   color: 'rgb(128, 128, 128)',
@@ -284,7 +285,7 @@ export default class DataDescription extends PureComponent<
   }
 }
 
-class ColorEditor extends Component<{
+class ColorEditor extends PureComponent<{
   value: any;
   colorSet?: Array<string | number>;
   commit: (opts: DescriptionCommitOptions) => void;
@@ -544,6 +545,9 @@ class DataDescriptionContainer extends Component<{
   editable: boolean;
   commit: (opts: DescriptionCommitOptions) => void;
 }> {
+  static contextType = HighlightContext; // Replace with useHighlighter
+  context!: React.ContextType<typeof HighlightContext>;
+
   onChangeCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.props.commit({
       clear: true,
@@ -555,6 +559,7 @@ class DataDescriptionContainer extends Component<{
 
   render(): any {
     const {type, editable, value: val} = this.props;
+    const highlighter = this.context;
 
     switch (type) {
       case 'number':
@@ -609,7 +614,7 @@ class DataDescriptionContainer extends Component<{
         if (val.startsWith('http://') || val.startsWith('https://')) {
           return (
             <>
-              <Link href={val}>{val}</Link>
+              <Link href={val}>{highlighter.render(val)}</Link>
               <Glyph
                 name="pencil"
                 variant="outline"
@@ -620,11 +625,13 @@ class DataDescriptionContainer extends Component<{
             </>
           );
         } else {
-          return <StringValue>"{String(val || '')}"</StringValue>;
+          return (
+            <StringValue>{highlighter.render(`"${val || ''}"`)}</StringValue>
+          );
         }
 
       case 'enum':
-        return <StringValue>{String(val)}</StringValue>;
+        return <StringValue>{highlighter.render(val)}</StringValue>;
 
       case 'boolean':
         return editable ? (
