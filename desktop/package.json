@@ -151,7 +151,7 @@
     "@types/ws": "^7.2.0",
     "@types/yargs": "^15.0.4",
     "@types/yazl": "^2.4.2",
-    "@typescript-eslint/eslint-plugin": "^2.27.0",
+    "@typescript-eslint/eslint-plugin": "^2.31.0",
     "@typescript-eslint/parser": "^2.19.2",
     "ansi-to-html": "^0.6.3",
     "babel-eslint": "^10.0.1",
