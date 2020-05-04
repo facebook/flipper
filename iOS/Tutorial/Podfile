@@ -16,7 +16,7 @@ target 'Tutorial' do
   # uncomment the below $static_framework array and also
   # the pre_install section.  This will cause Flipper and
   # it's dependencies to be static and all other pods to
-  # be dynamic. dfdfsf
+  # be dynamic. dfdfsf sdf
   $static_framework = ['FlipperKit', 'Flipper', 'Flipper-Folly',
     'CocoaAsyncSocket', 'ComponentKit', 'Flipper-DoubleConversion',
     'Flipper-Glog', 'Flipper-PeerTalk', 'Flipper-RSocket', 'Yoga', 'YogaKit',
