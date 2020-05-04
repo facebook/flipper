@@ -10,10 +10,7 @@
 import {connect} from 'react-redux';
 import React, {Component} from 'react';
 import {ShareType} from '../reducers/application';
-import {State as PluginState} from '../reducers/plugins';
-import {State as PluginStatesState} from '../reducers/pluginStates';
 import {State as Store} from '../reducers';
-import {State as PluginMessageQueueState} from '../reducers/pluginMessageQueue';
 import {ActiveSheet} from '../reducers/application';
 import {selectedPlugins as actionForSelectedPlugins} from '../reducers/plugins';
 import {getActivePersistentPlugins} from '../utils/pluginUtils';
@@ -26,7 +23,6 @@ import ListView from './ListView';
 import {Dispatch, Action} from 'redux';
 import {unsetShare} from '../reducers/application';
 import {FlexColumn, styled} from '../ui';
-import Client from '../Client';
 
 type OwnProps = {
   onHide: () => void;

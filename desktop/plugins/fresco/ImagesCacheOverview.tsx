@@ -94,12 +94,12 @@ type ImagesCacheOverviewState = {
   size: number;
 };
 
-const StyledSelect = styled(Select)((props) => ({
+const _StyledSelect = styled(Select)({
   marginLeft: 6,
   marginRight: 6,
   height: '100%',
   maxWidth: 164,
-}));
+});
 
 export default class ImagesCacheOverview extends PureComponent<
   ImagesCacheOverviewProps,

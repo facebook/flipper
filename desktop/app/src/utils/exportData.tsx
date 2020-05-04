@@ -45,7 +45,6 @@ import {deconstructClientId, deconstructPluginKey} from '../utils/clientUtils';
 import {performance} from 'perf_hooks';
 import {processMessageQueue} from './messageQueue';
 import {getPluginTitle} from './pluginUtils';
-import {logPlatformSuccessRate} from './metrics';
 import {capture} from './screenshot';
 import {uploadFlipperMedia} from '../fb-stubs/user';
 

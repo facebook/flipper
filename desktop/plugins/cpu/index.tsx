@@ -8,7 +8,7 @@
  */
 
 import {FlipperDevicePlugin, Device, AndroidDevice} from 'flipper';
-import adb, {Client as ADBClient} from 'adbkit';
+import adb from 'adbkit';
 import TemperatureTable from './TemperatureTable';
 
 import {
