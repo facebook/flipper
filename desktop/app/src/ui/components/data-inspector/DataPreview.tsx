@@ -106,7 +106,7 @@ export default class DataPreview extends PureComponent<{
 
         propertyNodes.push(
           <span key={key}>
-            <InspectorName>Highlight{key}</InspectorName>
+            <InspectorName>{key}</InspectorName>
             {ellipsis}
           </span>,
         );

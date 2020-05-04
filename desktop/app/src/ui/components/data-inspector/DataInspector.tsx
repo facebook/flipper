@@ -23,7 +23,7 @@ import deepEqual from 'deep-equal';
 import React from 'react';
 import {TooltipOptions} from '../TooltipProvider';
 import {shallowEqual} from 'react-redux';
-import {Highlight} from './Highlight';
+import {HighlightContext} from '../Highlight';
 
 export {DataValueExtractor} from './DataPreview';
 
@@ -154,10 +154,6 @@ type DataInspectorProps = {
    * Object of properties that will have tooltips
    */
   tooltips?: any;
-  /**
-   * Text to highlight, in case searching is used
-   */
-  highlight?: string;
 };
 
 const defaultValueExtractor: DataValueExtractor = (value: any) => {
@@ -321,6 +317,9 @@ export default class DataInspector extends Component<
   DataInspectorProps,
   DataInspectorState
 > {
+  static contextType = HighlightContext; // Replace with useHighlighter
+  context!: React.ContextType<typeof HighlightContext>;
+
   static defaultProps: {
     expanded: DataInspectorExpanded;
     depth: number;
@@ -390,8 +389,7 @@ export default class DataInspector extends Component<
       nextProps.onDelete !== props.onDelete ||
       nextProps.setValue !== props.setValue ||
       nextProps.collapsed !== props.collapsed ||
-      nextProps.expandRoot !== props.expandRoot ||
-      nextProps.highlight !== props.highlight
+      nextProps.expandRoot !== props.expandRoot
     );
   }
 
@@ -558,10 +556,10 @@ export default class DataInspector extends Component<
       ancestry,
       collapsed,
       tooltips,
-      highlight,
     } = this.props;
 
     const {resDiff, isExpandable, isExpanded, res} = this.state;
+    const highlighter = this.context; // useHighlighter();
 
     if (!res) {
       return null;
@@ -619,7 +617,6 @@ export default class DataInspector extends Component<
               data={metadata.data}
               diff={metadata.diff}
               tooltips={tooltips}
-              highlight={highlight}
             />
           );
 
@@ -657,9 +654,7 @@ export default class DataInspector extends Component<
           title={tooltips != null && tooltips[name]}
           key="name"
           options={nameTooltipOptions}>
-          <InspectorName>
-            <Highlight text={name} highlight={this.props.highlight} />
-          </InspectorName>
+          <InspectorName>{highlighter.render(name)}</InspectorName>
         </Tooltip>,
       );
       nameElems.push(<span key="sep">: </span>);
@@ -675,7 +670,6 @@ export default class DataInspector extends Component<
           type={type}
           value={value}
           extra={extra}
-          highlight={highlight}
         />
       );
     } else {

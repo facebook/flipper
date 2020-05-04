@@ -18,7 +18,7 @@ import {colors} from '../colors';
 import Input from '../Input';
 import React, {KeyboardEvent} from 'react';
 import Glyph from '../Glyph';
-import {Highlight} from './Highlight';
+import {HighlightContext} from '../Highlight';
 
 const NullValue = styled.span({
   color: 'rgb(128, 128, 128)',
@@ -85,7 +85,6 @@ type DataDescriptionProps = {
   value: any;
   extra?: any;
   setValue: DataInspectorSetValue | null | undefined;
-  highlight?: string;
 };
 
 type DescriptionCommitOptions = {
@@ -280,14 +279,13 @@ export default class DataDescription extends PureComponent<
           editable={Boolean(this.props.setValue)}
           commit={this.commit}
           onEdit={this.onEditStart}
-          highlight={this.props.highlight}
         />
       );
     }
   }
 }
 
-class ColorEditor extends Component<{
+class ColorEditor extends PureComponent<{
   value: any;
   colorSet?: Array<string | number>;
   commit: (opts: DescriptionCommitOptions) => void;
@@ -449,7 +447,6 @@ class DataDescriptionPreview extends Component<{
   editable: boolean;
   commit: (opts: DescriptionCommitOptions) => void;
   onEdit?: () => void;
-  highlight?: string;
 }> {
   onClick = () => {
     const {onEdit} = this.props;
@@ -467,7 +464,6 @@ class DataDescriptionPreview extends Component<{
         value={value}
         editable={this.props.editable}
         commit={this.props.commit}
-        highlight={this.props.highlight}
       />
     );
 
@@ -548,8 +544,10 @@ class DataDescriptionContainer extends Component<{
   value: any;
   editable: boolean;
   commit: (opts: DescriptionCommitOptions) => void;
-  highlight?: string;
 }> {
+  static contextType = HighlightContext; // Replace with useHighlighter
+  context!: React.ContextType<typeof HighlightContext>;
+
   onChangeCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.props.commit({
       clear: true,
@@ -561,6 +559,7 @@ class DataDescriptionContainer extends Component<{
 
   render(): any {
     const {type, editable, value: val} = this.props;
+    const highlighter = this.context;
 
     switch (type) {
       case 'number':
@@ -615,9 +614,7 @@ class DataDescriptionContainer extends Component<{
         if (val.startsWith('http://') || val.startsWith('https://')) {
           return (
             <>
-              <Link href={val}>
-                <Highlight text={val} highlight={this.props.highlight} />
-              </Link>
+              <Link href={val}>{highlighter.render(val)}</Link>
               <Glyph
                 name="pencil"
                 variant="outline"
@@ -629,21 +626,12 @@ class DataDescriptionContainer extends Component<{
           );
         } else {
           return (
-            <StringValue>
-              <Highlight
-                text={`"${val || ''}"`}
-                highlight={this.props.highlight}
-              />
-            </StringValue>
+            <StringValue>{highlighter.render(`"${val || ''}"`)}</StringValue>
           );
         }
 
       case 'enum':
-        return (
-          <StringValue>
-            <Highlight text={val} highlight={this.props.highlight} />
-          </StringValue>
-        );
+        return <StringValue>{highlighter.render(val)}</StringValue>;
 
       case 'boolean':
         return editable ? (

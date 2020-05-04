@@ -8,10 +8,11 @@
  */
 
 import * as React from 'react';
-import {render, fireEvent, waitFor} from '@testing-library/react';
+import {render, fireEvent, waitFor, act} from '@testing-library/react';
 
 jest.mock('../../../../fb/Logger');
 import ManagedDataInspector from '../ManagedDataInspector';
+import {sleep} from '../../../../utils';
 
 const mocks = {
   requestIdleCallback(fn: Function) {
@@ -105,14 +106,19 @@ test('can filter for data', async () => {
   );
   await res.findByText(/awesomely/); // everything is shown
 
-  res.rerender(
-    <ManagedDataInspector
-      data={json}
-      collapsed={false}
-      expandRoot
-      filter="sOn"
-    />,
-  );
+  // act here is used to make sure the highlight changes have propagated
+  await act(async () => {
+    res.rerender(
+      <ManagedDataInspector
+        data={json}
+        collapsed={false}
+        expandRoot
+        filter="sOn"
+      />,
+    );
+    await sleep(200);
+  });
+
   const element = await res.findByText(/son/); // N.B. search for 'son', as the text was split up
   // snapshot to make sure the hilighiting did it's job
   expect(element.parentElement).toMatchInlineSnapshot(`
@@ -132,23 +138,36 @@ test('can filter for data', async () => {
   });
 
   // find by key
-  res.rerender(
-    <ManagedDataInspector
-      data={json}
-      collapsed={false}
-      expandRoot
-      filter="somel"
-    />,
-  );
+  await act(async () => {
+    res.rerender(
+      <ManagedDataInspector
+        data={json}
+        collapsed={false}
+        expandRoot
+        filter="somel"
+      />,
+    );
+    await sleep(200);
+  });
+
   await res.findByText(/cool/);
   // hides the other part of the tree
   await waitFor(() => {
     expect(res.queryByText(/json/)).toBeNull();
   });
 
-  res.rerender(
-    <ManagedDataInspector data={json} collapsed={false} expandRoot filter="" />,
-  );
+  await act(async () => {
+    res.rerender(
+      <ManagedDataInspector
+        data={json}
+        collapsed={false}
+        expandRoot
+        filter=""
+      />,
+    );
+    await sleep(200);
+  });
+
   // everything visible again
   await res.findByText(/awesomely/);
   await res.findByText(/json/);

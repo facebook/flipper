@@ -12,6 +12,7 @@ import {PureComponent} from 'react';
 import DataInspector from './DataInspector';
 import React from 'react';
 import {DataValueExtractor} from './DataPreview';
+import {HighlightProvider} from '../Highlight';
 
 type ManagedDataInspectorProps = {
   /**
@@ -147,19 +148,20 @@ export default class ManagedDataInspector extends PureComponent<
 
   render() {
     return (
-      <DataInspector
-        data={this.props.data}
-        diff={this.props.diff}
-        extractValue={this.props.extractValue}
-        setValue={this.props.setValue}
-        expanded={this.state.expanded}
-        onExpanded={this.onExpanded}
-        onDelete={this.props.onDelete}
-        expandRoot={this.props.expandRoot}
-        collapsed={this.props.filter ? true : this.props.collapsed}
-        tooltips={this.props.tooltips}
-        highlight={this.props.filter}
-      />
+      <HighlightProvider text={this.props.filter}>
+        <DataInspector
+          data={this.props.data}
+          diff={this.props.diff}
+          extractValue={this.props.extractValue}
+          setValue={this.props.setValue}
+          expanded={this.state.expanded}
+          onExpanded={this.onExpanded}
+          onDelete={this.props.onDelete}
+          expandRoot={this.props.expandRoot}
+          collapsed={this.props.filter ? true : this.props.collapsed}
+          tooltips={this.props.tooltips}
+        />
+      </HighlightProvider>
     );
   }
 }
