@@ -90,10 +90,6 @@ jobs:
       run: |
           git branch
 
-    - name: Check current branch
-      run: |
-          git branch
-
     - name: Create PR to Update Podfile.lock
       uses: peter-evans/create-pull-request@v2
       with:
