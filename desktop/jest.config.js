@@ -9,7 +9,7 @@
 
 module.exports = {
   transform: {
-    '^.*__tests__/.*\\.tsx?$': 'ts-jest',
+    '^.*__tests__(/|\\\\).*\\.tsx?$': 'ts-jest',
     '\\.(js|tsx?)$': '<rootDir>/scripts/jest-transform.js',
   },
   setupFiles: ['<rootDir>/scripts/jest-setup.js'],
