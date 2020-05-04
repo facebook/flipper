@@ -1,8 +1,8 @@
 name: Publish Pods
 on:
   push:
-      branches:
-      - auto-podfile-update
+    tags:
+      - 'v*'
 
 jobs:
   publish_flipper_pod:
@@ -49,7 +49,6 @@ jobs:
 
       - name: Pod Version
         run: pod --version
-
       # - name: Update Sample's Podfile.lock
       #   run: |
       #       cd Sample/
@@ -79,31 +78,15 @@ jobs:
             git remote -v
       - name: Remove Pods
         run: rm -rf iOS/Tutorial/Pods
-      - name: Fetch branches
-        run: |
-            git fetch origin auto-podfile-update
-      - name: Checkout to that branch
-        run: |
-            git checkout auto-podfile-update
       - name: Check current branch
         run: |
             git branch
-      # - name: Pull origin
-      #   run: |
-      #       git pull origin bot-update-podfile-lock-DO-NOT-USE --allow-unrelated-histories || exit 0
-      # - name: log yml file
-      #   run: ls && cat .github/workflows/publish-pods.yml
-      # - name: Turn warning off
-      #   run: git config core.autocrlf true
-      - name: Set username
+      - name: Create a temporary tag branch
         run: |
-          git config --global user.name 'Pritesh Nandgaonkar'
-          git config --global user.email 'prit91@fb.com'
-          git config --global committer.name 'Pritesh Nandgaonkar'
-          git config --global committer.email 'prit91@fb.com'
-          git config --global author.name 'Pritesh Nandgaonkar'
-          git config --global author.email 'prit91@fb.com'
-
+          git config --global user.name 'GitHub'
+          git config --global user.email 'noreply@github.com'
+          git checkout -b temp-${GITHUB_REF:10}
+          git push --set-upstream origin temp-${GITHUB_REF:10}
       - name: Create PR to Update Podfile.lock
         uses: peter-evans/create-pull-request@v2
         with:
@@ -115,23 +98,9 @@ jobs:
             [1]: https://github.com/peter-evans/create-pull-request
           base: 'master'
           branch-suffix: short-commit-hash
-          committer: 'Pritesh Nandgaonkar <prit91@fb.com>'
-          author: 'Pritesh Nandgaonkar <prit91@fb.com>'
           labels: automated pr
-          draft: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # CPR_COMMITTER: 'Pritesh Nandgaonkar <prit91@fb.com>'
-          # CPR_AUTHOR: 'Pritesh Nandgaonkar <prit91@fb.com>'
-      # - name: Add and Commit the files
-      #   uses: EndBug/add-and-commit@v4
-      #   with:
-      #     author_name: Github Action Bot
-      #     author_email: githubbot@example.com
-      #     force: true
-      #     add: '*/Podfile.lock'
-      #     cwd: '.'
-      #     message: 'Automated Commit: Update Podfile.lock'
-      #     ref: bot-update-podfile-lock-DO-NOT-USE
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        - name: Delete tag branch
+        run: |
+          git push --delete origin temp-${GITHUB_REF:10}
