@@ -1,8 +1,8 @@
 name: Publish Pods
 on:
   push:
-    tags:
-      - v*
+    branches:
+      - auto-podfile-update
 
 jobs:
   publish_flipper_pod:
