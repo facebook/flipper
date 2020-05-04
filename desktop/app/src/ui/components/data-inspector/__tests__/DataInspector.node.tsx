@@ -10,7 +10,12 @@
 import * as React from 'react';
 import {render, fireEvent, waitFor} from '@testing-library/react';
 
-jest.mock('../../../../fb-stubs/Logger');
+try {
+  jest.mock('../../../../fb/Logger');
+} catch {
+  jest.mock('../../../../fb-stubs/Logger');
+}
+
 import ManagedDataInspector from '../ManagedDataInspector';
 
 const mocks = {
