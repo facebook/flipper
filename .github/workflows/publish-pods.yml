@@ -99,6 +99,11 @@ jobs:
         run: |
           git config --global user.name 'Pritesh Nandgaonkar'
           git config --global user.email 'prit91@fb.com'
+          git config --global committer.name 'Pritesh Nandgaonkar'
+          git config --global committer.email 'prit91@fb.com'
+          git config --global author.name 'Pritesh Nandgaonkar'
+          git config --global author.email 'prit91@fb.com'
+
       - name: Create PR to Update Podfile.lock
         uses: peter-evans/create-pull-request@v2
         with:
@@ -116,6 +121,8 @@ jobs:
           draft: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # CPR_COMMITTER: 'Pritesh Nandgaonkar <prit91@fb.com>'
+          # CPR_AUTHOR: 'Pritesh Nandgaonkar <prit91@fb.com>'
       # - name: Add and Commit the files
       #   uses: EndBug/add-and-commit@v4
       #   with:
