@@ -371,6 +371,10 @@
       });
 }
 
+- (void)invalidateRootNode {
+  [self invalidateNode:_rootNode];
+}
+
 - (void)_reportInvalidatedObjects {
   NSMutableArray* nodes = [NSMutableArray new];
   { // scope mutex acquisition
