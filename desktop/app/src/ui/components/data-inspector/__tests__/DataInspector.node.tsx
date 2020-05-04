@@ -60,7 +60,7 @@ const json = {
 
 describe('DataInspector', () => {
   if (process.platform === 'win32') {
-    console.warn('Skipping because of mocking failure on Windows.');
+    test('Skipping on Windows due to mocking not working', () => {});
     return;
   }
 
