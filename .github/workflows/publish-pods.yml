@@ -97,11 +97,6 @@ jobs:
       #   run: git config core.autocrlf true
       - name: Create PR to Update Podfile.lock
         uses: peter-evans/create-pull-request@v2
-        with:
-          title: 'Automated: Update Podfile.lock'
-          body: 'This PR is triggered due to the push on bot-update-podfile-lock. It is meant to update the Podfile.lock'
-          base: 'master'
-          branch: 'bot-update-podfile-lock-DO-NOT-USE'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMIT_MESSAGE: 'Automated: Update Podfile.lock'
