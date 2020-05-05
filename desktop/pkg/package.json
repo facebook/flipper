@@ -1,6 +1,6 @@
 {
   "name": "flipper-pkg",
-  "version": "0.40.2",
+  "version": "0.41.0",
   "description": "Utility for building and publishing Flipper plugins",
   "repository": "facebook/flipper",
   "main": "lib/index.js",
@@ -20,7 +20,7 @@
     "ajv": "^6.12.2",
     "ajv-errors": "^1.0.1",
     "cli-ux": "^5.4.5",
-    "flipper-pkg-lib": "0.40.0",
+    "flipper-pkg-lib": "0.41.0",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.1.0",
     "lodash": "^4.17.15",

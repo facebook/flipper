@@ -1,3 +1,9 @@
+# 0.41.0 (5/5/2020)
+
+ * D21302821 -  The JSON inspector in plugins like GraphQL no longer freezes Flipper temporarily when expanding large data sets and will remain interactive during
+ * D21347880 -  It is now possible to search inside GraphQL responses
+
+
 # 0.40.0 (29/4/2020)
 
  * D20942453 -  Background plugins will no longer receive a Flipper connection if they are disabled. This should significantly reduce the overall load of Flipper both on the device and desktop when unused plugins are disabled used, which could otherwise generate 10MB/s of network traffic certain scenarios. All plugins *should* be able to handle to this gracefully, but since this is quite a fundamental change, reach out to the Flipper team when in doubt!

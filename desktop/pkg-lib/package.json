@@ -1,6 +1,6 @@
 {
   "name": "flipper-pkg-lib",
-  "version": "0.40.0",
+  "version": "0.41.0",
   "description": "Library for building and publishing Flipper plugins",
   "repository": "facebook/flipper",
   "main": "lib/index.js",
@@ -10,7 +10,7 @@
   "bugs": "https://github.com/facebook/flipper/issues",
   "dependencies": {
     "fs-extra": "^8.1.0",
-    "flipper-babel-transformer": "0.40.0",
+    "flipper-babel-transformer": "0.41.0",
     "metro": "^0.59.0",
     "metro-minify-terser": "^0.59.0"
   },
