@@ -13,7 +13,7 @@
     "url": "https://fb.workplace.com/groups/wa.kaios/"
   },
   "dependencies": {
-    "promisify-child-process": "^3.1.3",
+    "promisify-child-process": "^4.0.1",
     "recharts": "1.7.1"
   },
   "devDependencies": {
