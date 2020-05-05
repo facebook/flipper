@@ -4,50 +4,22 @@ source 'https://github.com/CocoaPods/Specs'
 
 target 'Sample' do
   platform :ios, '9.0'
-  pod 'FlipperKit', :path => '../../FlipperKit.podspec'
-  pod 'FlipperKit/FlipperKitLayoutComponentKitSupport', :path => '../../FlipperKit.podspec'
-  pod 'FlipperKit/SKIOSNetworkPlugin', :path => '../../FlipperKit.podspec'
-  pod 'FlipperKit/FlipperKitUserDefaultsPlugin', :path => '../../FlipperKit.podspec'
-  pod 'FlipperKit/FlipperKitExamplePlugin', :path => '../../FlipperKit.podspec'
-  pod 'FlipperKit/FlipperKitReactPlugin', :path => '../../FlipperKit.podspec'
-  pod 'Flipper', :path => '../../Flipper.podspec'
 
-  # If you use `use_frameworks!` in your Podfile,
-  # uncomment the below $static_framework array and also
-  # the pre_install section.  This will cause Flipper and
-  # it's dependencies to be built as a static library and all other pods to
-  # be dynamic.
-  # $static_framework = ['FlipperKit', 'Flipper', 'Flipper-Folly',
-  #   'CocoaAsyncSocket', 'ComponentKit', 'DoubleConversion',
-  #   'glog', 'Flipper-PeerTalk', 'Flipper-RSocket', 'Yoga', 'YogaKit',
-  #   'CocoaLibEvent', 'OpenSSL-Universal', 'boost-for-react-native']
-  #
-  # pre_install do |installer|
-  #   Pod::Installer::Xcode::TargetValidator.send(:define_method, :verify_no_static_framework_transitive_dependencies) {}
-  #   installer.pod_targets.each do |pod|
-  #       if $static_framework.include?(pod.name)
-  #         def pod.build_type;
-  #           Pod::Target::BuildType.static_library
-  #         end
-  #       end
-  #     end
-  # end
-
-  # It also adds -DFB_SONARKIT_ENABLED=1 flag to OTHER_CFLAGS, necessary to build expose Flipper classes in the header files
-  post_install do |installer|
-    file_name = Dir.glob("*.xcodeproj")[0]
-    app_project = Xcodeproj::Project.open(file_name)
-    app_project.native_targets.each do |target|
-      target.build_configurations.each do |config|
-        cflags = config.build_settings['OTHER_CFLAGS'] || '$(inherited) '
-        unless cflags.include? '-DFB_SONARKIT_ENABLED=1'
-          puts 'Adding -DFB_SONARKIT_ENABLED=1 in OTHER_CFLAGS...'
-          cflags << '-DFB_SONARKIT_ENABLED=1'
-        end
-        config.build_settings['OTHER_CFLAGS'] = cflags
-      end
-      app_project.save
-    end
-    installer.pods_project.save
-   end
+  # See docs/getting-started/ios-native.mdx
+  pod 'FlipperKit', :path => '../../FlipperKit.podspec', :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitLayoutComponentKitSupport', :path => '../../FlipperKit.podspec', :configuration => 'Debug'
+  pod 'FlipperKit/SKIOSNetworkPlugin', :path => '../../FlipperKit.podspec', :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitUserDefaultsPlugin', :path => '../../FlipperKit.podspec', :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitExamplePlugin', :path => '../../FlipperKit.podspec', :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitReactPlugin', :path => '../../FlipperKit.podspec', :configuration => 'Debug'
+  pod 'Flipper', :path => '../../Flipper.podspec', :configuration => 'Debug'
+  pod 'Flipper-DoubleConversion', :configuration => 'Debug'
+  pod 'Flipper-Folly', :configuration => 'Debug'
+  pod 'Flipper-Glog', :configuration => 'Debug'
+  pod 'Flipper-PeerTalk', :configuration => 'Debug'
+  pod 'CocoaLibEvent', :configuration => 'Debug'
+  pod 'boost-for-react-native', :configuration => 'Debug'
+  pod 'OpenSSL-Universal', :configuration => 'Debug'
+  pod 'CocoaAsyncSocket', :configuration => 'Debug'
+  pod 'ComponentKit', '~> 0.30'
 end

@@ -85,6 +85,7 @@ Pod::Spec.new do |spec|
                                "ONLY_ACTIVE_ARCH": "YES",
                                "DEFINES_MODULE" => "YES",
                                "HEADER_SEARCH_PATHS" => header_search_paths }
+    ss.xcconfig = { "GCC_PREPROCESSOR_DEFINITIONS" => "FB_SONARKIT_ENABLED=1", "OTHER_SWIFT_FLAGS" => "-Xcc -DFB_SONARKIT_ENABLED=1" }
   end
 
   spec.subspec 'FlipperKitHighlightOverlay' do |ss|
@@ -128,7 +129,8 @@ Pod::Spec.new do |spec|
   spec.subspec "FlipperKitLayoutComponentKitSupport" do |ss|
     ss.header_dir = "FlipperKitLayoutComponentKitSupport"
     ss.dependency             'FlipperKit/Core'
-    ss.dependency             'ComponentKit', '~> 0.0'
+    ss.dependency             'ComponentKit', '~> 0.30'
+    ss.dependency             'RenderCore', '~> 0.30'
     ss.dependency             'FlipperKit/FlipperKitLayoutPlugin'
     ss.dependency             'FlipperKit/FlipperKitLayoutTextSearchable'
     ss.dependency             'FlipperKit/FlipperKitHighlightOverlay'

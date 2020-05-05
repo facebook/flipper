@@ -10,7 +10,7 @@
 #import <ComponentKit/CKComponentLayout.h>
 #import <ComponentKit/CKFlexboxComponent.h>
 #import <ComponentKit/CKOptional.h>
-#import <ComponentKit/CKVariant.h>
+#import <RenderCore/CKVariant.h>
 
 #import <vector>
 
