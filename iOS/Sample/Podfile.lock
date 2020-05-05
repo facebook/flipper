@@ -77,7 +77,7 @@ DEPENDENCIES:
   - FlipperKit/SKIOSNetworkPlugin (from `../../FlipperKit.podspec`)
 
 SPEC REPOS:
-  https://github.com/CocoaPods/Specs.git:
+  https://github.com/CocoaPods/Specs:
     - boost-for-react-native
     - CocoaAsyncSocket
     - CocoaLibEvent
@@ -117,4 +117,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 9b01f1cb04603f5fbcd01503289f723790ebf130
 
-COCOAPODS: 1.8.4
+COCOAPODS: 1.9.1
