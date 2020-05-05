@@ -71,7 +71,7 @@
   "devDependencies": {
     "@testing-library/react": "^10.0.2",
     "metro": "^0.59.0",
-    "pretty-format": "^25.4.0",
+    "pretty-format": "^26.0.1",
     "react-refresh": "^0.8.1",
     "redux-mock-store": "^1.0.1",
     "ts-jest": "^25.4.0"
