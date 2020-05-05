@@ -57,6 +57,8 @@ type ManagedDataInspectorProps = {
 
 type ManagedDataInspectorState = {
   expanded: DataInspectorExpanded;
+  filterExpanded: DataInspectorExpanded;
+  userExpanded: DataInspectorExpanded;
   filter: string;
 };
 
@@ -76,6 +78,8 @@ export default class ManagedDataInspector extends PureComponent<
     super(props, context);
     this.state = {
       expanded: {},
+      userExpanded: {},
+      filterExpanded: {},
       filter: '',
     };
   }
@@ -90,8 +94,9 @@ export default class ManagedDataInspector extends PureComponent<
     if (!nextProps.filter) {
       return {
         filter: '',
+        filterExpanded: {},
         // reset expanded when removing filter
-        expanded: currentState.filter ? {} : currentState.expanded,
+        expanded: currentState.userExpanded,
       };
     }
 
@@ -130,20 +135,30 @@ export default class ManagedDataInspector extends PureComponent<
     if (filter.length >= 2) {
       walk(nextProps.data, []);
     }
-    const expanded: Record<string, boolean> = {};
+    const filterExpanded: Record<string, boolean> = {};
     paths.forEach((path) => {
       for (let i = 1; i < path.length; i++)
-        expanded[path.slice(0, i).join('.')] = true;
+        filterExpanded[path.slice(0, i).join('.')] = true;
     });
 
     return {
-      expanded,
+      filterExpanded,
+      expanded: {...currentState.userExpanded, ...filterExpanded},
       filter,
     };
   }
 
-  onExpanded = (expanded: DataInspectorExpanded) => {
-    this.setState({expanded});
+  onExpanded = (path: string, isExpanded: boolean) => {
+    this.setState({
+      userExpanded: {
+        ...this.state.userExpanded,
+        [path]: isExpanded,
+      },
+      expanded: {
+        ...this.state.expanded,
+        [path]: isExpanded,
+      },
+    });
   };
 
   render() {

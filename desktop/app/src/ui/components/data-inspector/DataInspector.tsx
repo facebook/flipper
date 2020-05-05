@@ -133,7 +133,7 @@ type DataInspectorProps = {
   /**
    * Callback whenever the current expanded paths is changed.
    */
-  onExpanded?: ((expanded: DataInspectorExpanded) => void) | undefined | null;
+  onExpanded?: ((path: string, expanded: boolean) => void) | undefined | null;
   /**
    * Callback whenever delete action is invoked on current path.
    */
@@ -497,10 +497,7 @@ export default class DataInspector extends Component<
 
     const path = pathParts.join('.');
 
-    onExpanded({
-      ...expanded,
-      [path]: isExpanded,
-    });
+    onExpanded(path, isExpanded);
   }
 
   handleClick = () => {

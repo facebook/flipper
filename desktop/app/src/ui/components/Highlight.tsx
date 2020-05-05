@@ -59,14 +59,19 @@ function createHighlightManager(initialText: string = ''): HighlightManager {
     }, [text]);
 
     const index = text.toLowerCase().indexOf(currentFilter);
-    if (index === -1) {
-      return <span>{text}</span>;
-    }
     return (
       <span ref={elem}>
-        {text.substr(0, index)}
-        <Highlighted>{text.substr(index, currentFilter.length)}</Highlighted>
-        {text.substr(index + currentFilter.length)}
+        {index === -1 ? (
+          text
+        ) : (
+          <>
+            {text.substr(0, index)}
+            <Highlighted>
+              {text.substr(index, currentFilter.length)}
+            </Highlighted>
+            {text.substr(index + currentFilter.length)}
+          </>
+        )}
       </span>
     );
   });
