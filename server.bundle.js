@@ -22388,22 +22388,42 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _mdx_js_react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(0);
-const frontMatter={id:'ios-native',title:'Set up your iOS app',sidebar_label:'iOS'};const metadata={"id":"getting-started/ios-native","title":"Set up your iOS app","description":"We support both Swift and Objective-C for Flipper with CocoaPods as build and distribution mechanism. ","source":"@site/../docs/getting-started/ios-native.mdx","permalink":"/docs/getting-started/ios-native","editUrl":"https://github.com/facebook/flipper/blob/master/website/../docs/getting-started/ios-native.mdx","sidebar_label":"iOS","sidebar":"setup","previous":{"title":"Set up your Android app","permalink":"/docs/getting-started/android-native"},"next":{"title":"Set up your React Native App","permalink":"/docs/getting-started/react-native"}};/* @jsx mdx */const rightToc=[{value:'CocoaPods',id:'cocoapods',children:[]},{value:'For pure Objective-C projects',id:'for-pure-objective-c-projects',children:[]},{value:'Enabling plugins',id:'enabling-plugins',children:[]},{value:'Having trouble?',id:'having-trouble',children:[]}];const makeShortcode=name=>function MDXDefaultShortcode(props){console.warn("Component "+name+" was not imported, exported, or provided by MDXProvider as global scope");return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",props);};const layoutProps={rightToc};const MDXLayout="wrapper";function MDXContent({components,...props}){return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(MDXLayout,Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({},layoutProps,props,{components:components,mdxType:"MDXLayout"}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`We support both Swift and Objective-C for Flipper with CocoaPods as build and distribution mechanism. `),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"cocoapods"},`CocoaPods`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The following configuration assumed CocoaPods 1.9+.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("pre",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("code",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"pre"},{"className":"language-ruby"}),`project 'MyApp.xcodeproj'
+const frontMatter={id:'ios-native',title:'Set up your iOS app',sidebar_label:'iOS'};const metadata={"id":"getting-started/ios-native","title":"Set up your iOS app","description":"We support both Swift and Objective-C for Flipper with CocoaPods as build and distribution mechanism.","source":"@site/../docs/getting-started/ios-native.mdx","permalink":"/docs/getting-started/ios-native","editUrl":"https://github.com/facebook/flipper/blob/master/website/../docs/getting-started/ios-native.mdx","sidebar_label":"iOS","sidebar":"setup","previous":{"title":"Set up your Android app","permalink":"/docs/getting-started/android-native"},"next":{"title":"Set up your React Native App","permalink":"/docs/getting-started/react-native"}};/* @jsx mdx */const rightToc=[{value:'CocoaPods',id:'cocoapods',children:[]},{value:'For pure Objective-C projects',id:'for-pure-objective-c-projects',children:[]},{value:'Enabling plugins',id:'enabling-plugins',children:[]},{value:'Having trouble?',id:'having-trouble',children:[]}];const makeShortcode=name=>function MDXDefaultShortcode(props){console.warn("Component "+name+" was not imported, exported, or provided by MDXProvider as global scope");return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",props);};const layoutProps={rightToc};const MDXLayout="wrapper";function MDXContent({components,...props}){return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(MDXLayout,Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({},layoutProps,props,{components:components,mdxType:"MDXLayout"}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`We support both Swift and Objective-C for Flipper with CocoaPods as build and distribution mechanism.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"cocoapods"},`CocoaPods`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The following configuration assumed CocoaPods 1.9+.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("pre",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("code",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"pre"},{"className":"language-ruby"}),`project 'MyApp.xcodeproj'
 flipperkit_version = '0.40.0'
 
 target 'MyApp' do
   platform :ios, '9.0'
-  # use_framework!
-  pod 'FlipperKit', '~>' + flipperkit_version
-  pod 'FlipperKit/FlipperKitLayoutComponentKitSupport', '~>' + flipperkit_version
-  pod 'FlipperKit/SKIOSNetworkPlugin', '~>' + flipperkit_version
-  pod 'FlipperKit/FlipperKitUserDefaultsPlugin', '~>' + flipperkit_version
+
+  # It is likely that you'll only want to include Flipper in debug builds,
+  # in which case you add the \`:configuration\` directive:
+  pod 'FlipperKit', '~>' + flipperkit_version, :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitLayoutComponentKitSupport', '~>' + flipperkit_version, :configuration => 'Debug'
+  pod 'FlipperKit/SKIOSNetworkPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitUserDefaultsPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
+  # ...unfortunately at this time that means you'll need to explicitly mark
+  # transitive dependencies as being for debug build only as well:
+  pod 'Flipper-DoubleConversion', :configuration => 'Debug'
+  pod 'Flipper-Folly', :configuration => 'Debug'
+  pod 'Flipper-Glog', :configuration => 'Debug'
+  pod 'Flipper-PeerTalk', :configuration => 'Debug'
+  pod 'CocoaLibEvent', :configuration => 'Debug'
+  pod 'boost-for-react-native', :configuration => 'Debug'
+  pod 'OpenSSL-Universal', :configuration => 'Debug'
+  pod 'CocoaAsyncSocket', :configuration => 'Debug'
+  # ...except, of course, those transitive dependencies that your
+  # application itself depends, e.g.:
+  pod 'ComponentKit', '~> 0.30'
 
   # If you use \`use_frameworks!\` in your Podfile,
   # uncomment the below $static_framework array and also
   # the pre_install section.  This will cause Flipper and
   # it's dependencies to be built as a static library and all other pods to
   # be dynamic.
+  #
+  # NOTE Doing this may lead to a broken build if any of these are also
+  #      transitive dependencies of other dependencies and are expected
+  #      to be built as frameworks.
+  #
   # $static_framework = ['FlipperKit', 'Flipper', 'Flipper-Folly',
   #   'CocoaAsyncSocket', 'ComponentKit', 'Flipper-DoubleConversion',
   #   'Flipper-Glog', 'Flipper-PeerTalk', 'Flipper-RSocket', 'Yoga', 'YogaKit',
@@ -22419,93 +22439,9 @@ target 'MyApp' do
   #       end
   #     end
   # end
-
-  # This post_install hook adds the -DFB_SONARKIT_ENABLED=1 flag to OTHER_CFLAGS, necessary to expose Flipper classes in the header files
-  post_install do |installer|
-    file_name = Dir.glob("*.xcodeproj")[0]
-    app_project = Xcodeproj::Project.open(file_name)
-    app_project.native_targets.each do |target|
-      target.build_configurations.each do |config|
-        cflags = config.build_settings['OTHER_CFLAGS'] || '$(inherited) '
-        unless cflags.include? '-DFB_SONARKIT_ENABLED=1'
-          puts 'Adding -DFB_SONARKIT_ENABLED=1 in OTHER_CFLAGS...'
-          cflags << '-DFB_SONARKIT_ENABLED=1'
-        end
-        config.build_settings['OTHER_CFLAGS'] = cflags
-      end
-      app_project.save
-    end
-    installer.pods_project.save
-   end
 end
-`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("pre",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("code",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"pre"},{"className":"language-ruby"}),`project 'MyApp.xcodeproj'
-flipperkit_version = '0.40.0'
-
-target 'MyApp' do
-  platform :ios, '9.0'
-
-  pod 'FlipperKit', '~>' + flipperkit_version
-  # Layout and network plugins are not yet supported for swift projects
-  pod 'FlipperKit/FlipperKitLayoutComponentKitSupport', '~>' + flipperkit_version
-  pod 'FlipperKit/SKIOSNetworkPlugin', '~>' + flipperkit_version
-  pod 'FlipperKit/FlipperKitUserDefaultsPlugin', '~>' + flipperkit_version
-
-  # If you use \`use_frameworks!\` in your Podfile,
-  # uncomment the below $static_framework array and also
-  # the pre_install section.  This will cause Flipper and
-  # it's dependencies to be built as a static library and all other pods to
-  # be dynamic.
-  # $static_framework = ['FlipperKit', 'Flipper', 'Flipper-Folly',
-  #   'CocoaAsyncSocket', 'ComponentKit', 'Flipper-DoubleConversion',
-  #   'Flipper-Glog', 'Flipper-PeerTalk', 'Flipper-RSocket', 'Yoga', 'YogaKit',
-  #   'CocoaLibEvent', 'OpenSSL-Universal', 'boost-for-react-native']
-  #
-  # pre_install do |installer|
-  #   Pod::Installer::Xcode::TargetValidator.send(:define_method, :verify_no_static_framework_transitive_dependencies) {}
-  #   installer.pod_targets.each do |pod|
-  #       if $static_framework.include?(pod.name)
-  #         def pod.build_type;
-  #           Pod::BuildType.static_library
-  #         end
-  #       end
-  #     end
-  # end
-
-
-  # This post_install hook adds the -DFB_SONARKIT_ENABLED flag to OTHER_SWIFT_FLAGS, necessary to build swift target
-  post_install do |installer|
-    installer.pods_project.targets.each do |target|
-      if target.name == 'YogaKit'
-        target.build_configurations.each do |config|
-          config.build_settings['SWIFT_VERSION'] = '4.1'
-        end
-      end
-    end
-    file_name = Dir.glob("*.xcodeproj")[0]
-    app_project = Xcodeproj::Project.open(file_name)
-    app_project.native_targets.each do |target|
-        target.build_configurations.each do |config|
-          if (config.build_settings['OTHER_SWIFT_FLAGS'])
-            unless config.build_settings['OTHER_SWIFT_FLAGS'].include? '-DFB_SONARKIT_ENABLED'
-              puts 'Adding -DFB_SONARKIT_ENABLED ...'
-              swift_flags = config.build_settings['OTHER_SWIFT_FLAGS']
-              if swift_flags.split.last != '-Xcc'
-                config.build_settings['OTHER_SWIFT_FLAGS'] << ' -Xcc'
-              end
-              config.build_settings['OTHER_SWIFT_FLAGS'] << ' -DFB_SONARKIT_ENABLED'
-            end
-          else
-            puts 'OTHER_SWIFT_FLAGS does not exist thus assigning it to \`$(inherited) -Xcc -DFB_SONARKIT_ENABLED\`'
-            config.build_settings['OTHER_SWIFT_FLAGS'] = '$(inherited) -Xcc -DFB_SONARKIT_ENABLED'
-          end
-          app_project.save
-        end
-      end
-      installer.pods_project.save
-  end
-end
-`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`You need to compile your project with the `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`FB_SONARKIT_ENABLED=1`),` compiler flag. The above `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`post_install`),` hook adds this compiler flag to your project settings.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",{class:"warning"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`On the first run of `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`pod install`),`, `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`FB_SONARKIT_ENABLED=1`),` may not be added in the "Build Settings" of your project, but in all the subsequent runs of `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`pod install`),`, the above `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`post_install`),` hook successfully adds the compiler flag. So before running your app, make sure that `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`FB_SONARKIT_ENABLED=1`),` is present in `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`OTHER_CFLAGS`),` and `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`OTHER_SWIFT_FLAGS`),` for Objective-C and Swift projects respectively.`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"for-pure-objective-c-projects"},`For pure Objective-C projects`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`For pure Objective-C projects, add the following things in your settings:`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("ol",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ol"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"li"},`/usr/lib/swift`),` as the first entry of the `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"li"},`LD_RUNPATH_SEARCH_PATHS`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ol"},`Add the following in `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"li"},`LIBRARY_SEARCH_PATHS`))),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("pre",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("code",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"pre"},{}),`"\\"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)\\"",
-"\\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\\"",  
+`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"for-pure-objective-c-projects"},`For pure Objective-C projects`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`For pure Objective-C projects, add the following things in your settings:`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("ol",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ol"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"li"},`/usr/lib/swift`),` as the first entry of the `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"li"},`LD_RUNPATH_SEARCH_PATHS`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ol"},`Add the following in `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"li"},`LIBRARY_SEARCH_PATHS`))),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("pre",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("code",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"pre"},{}),`"\\"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)\\"",
+"\\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\\"",
 `)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("ol",{"start":3},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ol"},`If after the above two steps there are still error's like `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"li"},`Undefined symbol _swift_getFunctionReplacement`),` then set `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"li"},`DEAD_CODE_STRIPPING`),` to `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"li"},`YES`),`. Reference for this fix is `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"li"},{"href":"https://forums.swift.org/t/undefined-symbol-swift-getfunctionreplacement/30495/4"}),`here`))),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`This is done to overcome a bug with Xcode 11 which fails to compile swift code when bitcode is enabled. Flipper transitively depends on YogaKit which is written in Swift. More about this issue can be found `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"https://twitter.com/krzyzanowskim/status/1151549874653081601?s=21"}),`here`),` and `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"https://github.com/Carthage/Carthage/issues/2825"}),`here`),`.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Install the dependencies by running `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`pod install`),`. You can now import and initialize Flipper in your
 AppDelegate.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("pre",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("code",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"pre"},{"className":"language-objective-c"}),`#import <FlipperKit/FlipperClient.h>
 #import <FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h>
