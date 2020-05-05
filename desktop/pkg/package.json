@@ -12,7 +12,7 @@
   },
   "bugs": "https://github.com/facebook/flipper/issues",
   "dependencies": {
-    "@oclif/command": "^1",
+    "@oclif/command": "^1.6.1",
     "@oclif/config": "^1",
     "@oclif/parser": "^3",
     "@oclif/plugin-help": "^3.0.0",
