@@ -1,0 +1,8 @@
+version: 1
+update_configs:
+  - package_manager: "javascript"
+    directory: "/desktop"
+    update_schedule: "weekly"
+  - package_manager: "rust:cargo"
+    directory: "/packer"
+    update_schedule: "weekly"
