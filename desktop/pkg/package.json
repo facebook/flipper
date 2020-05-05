@@ -1,6 +1,6 @@
 {
   "name": "flipper-pkg",
-  "version": "0.40.1",
+  "version": "0.40.2",
   "description": "Utility for building and publishing Flipper plugins",
   "repository": "facebook/flipper",
   "main": "lib/index.js",
@@ -57,7 +57,8 @@
     "/npm-shrinkwrap.json",
     "/oclif.manifest.json",
     "/lib/**/*",
-    "/schemas/**/*"
+    "/schemas/**/*",
+    "/templates/**/*"
   ],
   "homepage": "https://github.com/facebook/flipper",
   "keywords": [

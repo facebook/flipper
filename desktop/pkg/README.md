@@ -15,7 +15,7 @@ $ npm install -g flipper-pkg
 $ flipper-pkg COMMAND
 running command...
 $ flipper-pkg (-v|--version|version)
-flipper-pkg/0.40.1 darwin-x64 node-v12.15.0
+flipper-pkg/0.40.2 darwin-x64 node-v12.15.0
 $ flipper-pkg --help [COMMAND]
 USAGE
   $ flipper-pkg COMMAND
@@ -46,7 +46,7 @@ EXAMPLE
   $ flipper-pkg bundle path/to/plugin
 ```
 
-_See code: [src/commands/bundle.ts](https://github.com/facebook/flipper/blob/v0.40.1/src/commands/bundle.ts)_
+_See code: [src/commands/bundle.ts](https://github.com/facebook/flipper/blob/v0.40.2/src/commands/bundle.ts)_
 
 ## `flipper-pkg help [COMMAND]`
 
@@ -81,7 +81,7 @@ EXAMPLE
   $ flipper-pkg init path/to/plugin
 ```
 
-_See code: [src/commands/init.ts](https://github.com/facebook/flipper/blob/v0.40.1/src/commands/init.ts)_
+_See code: [src/commands/init.ts](https://github.com/facebook/flipper/blob/v0.40.2/src/commands/init.ts)_
 
 ## `flipper-pkg lint [DIRECTORY]`
 
@@ -98,7 +98,7 @@ EXAMPLE
   $ flipper-pkg lint path/to/plugin
 ```
 
-_See code: [src/commands/lint.ts](https://github.com/facebook/flipper/blob/v0.40.1/src/commands/lint.ts)_
+_See code: [src/commands/lint.ts](https://github.com/facebook/flipper/blob/v0.40.2/src/commands/lint.ts)_
 
 ## `flipper-pkg migrate [DIRECTORY]`
 
@@ -119,7 +119,7 @@ EXAMPLE
   $ flipper-pkg migrate path/to/plugin
 ```
 
-_See code: [src/commands/migrate.ts](https://github.com/facebook/flipper/blob/v0.40.1/src/commands/migrate.ts)_
+_See code: [src/commands/migrate.ts](https://github.com/facebook/flipper/blob/v0.40.2/src/commands/migrate.ts)_
 
 ## `flipper-pkg pack [DIRECTORY]`
 
@@ -140,7 +140,7 @@ EXAMPLE
   $ flipper-pkg pack path/to/plugin
 ```
 
-_See code: [src/commands/pack.ts](https://github.com/facebook/flipper/blob/v0.40.1/src/commands/pack.ts)_
+_See code: [src/commands/pack.ts](https://github.com/facebook/flipper/blob/v0.40.2/src/commands/pack.ts)_
 <!-- commandsstop -->
 
 
