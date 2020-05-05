@@ -121,7 +121,7 @@ export default class Panel extends React.Component<
       borderTop: 'none',
       flexGrow: 1,
       padding: props.padded ? 10 : 0,
-      overflow: 'hidden',
+      overflow: 'visible',
     }),
   );
   state = {
