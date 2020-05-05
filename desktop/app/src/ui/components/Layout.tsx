@@ -51,8 +51,8 @@ const Layout: React.FC<
     children: [React.ReactNode, React.ReactNode];
   } & Props
 > = ({children, ...props}) => {
-  if (children.length > 2) {
-    throw new Error('VerticalContainer expects exactly 2 children');
+  if (children.length !== 2) {
+    throw new Error('Layout expects exactly 2 children');
   }
   const top = children[0];
   const main = children[1];
