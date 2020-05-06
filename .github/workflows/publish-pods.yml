@@ -65,16 +65,11 @@ jobs:
           ls
 
     - name: Update Tutorial's Podfile.lock
-      uses: nick-invision/retry@v1
-      with:
-        timeout_minutes: 60
-        retry_wait_seconds: 60
-        max_attempts: 15
-        command: |
-                cd iOS/Tutorial/
-                # Retry updating FlipperKit 20 times. Putting this hack unless we have cocoapods 1.10. More information related to the bug https://github.com/CocoaPods/CocoaPods/issues/9502#issuecomment-579486258
-                for i in {1..20}; do pod update && break || sleep 30; done
-                ls
+      run: |
+          cd iOS/Tutorial/
+          # Retrying an update, as Flipper and FlipperKit pod may take time to get updated on CocoaPods. Putting this hack unless we have cocoapods 1.10. More information related to the bug https://github.com/CocoaPods/CocoaPods/issues/9502#issuecomment-579486258
+          for i in {1..20}; do pod update && break || sleep 30; done
+          ls
 
     # Followed this https://github.com/peter-evans/create-pull-request/blob/master/docs/concepts-guidelines.md#creating-pull-requests-on-tag-push
     - name: Create a temporary tag branch
