@@ -34,12 +34,9 @@ jobs:
       run: pod --version
 
     - name: Push FlipperKit
-      uses: nick-invision/retry@v1
-      with:
-        timeout_minutes: 60
-        retry_wait_seconds: 60
-        max_attempts: 15
-        command: pod trunk push FlipperKit.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
+      run: |
+          # Retry publishing FlipperKit 20 times. Putting this hack unless we have cocoapods 1.10. More information related to the bug https://github.com/CocoaPods/CocoaPods/issues/9502#issuecomment-579486258
+          for i in {1..20}; do pod trunk push FlipperKit.podspec --use-libraries --allow-warnings --verbose --skip-import-validation && break || sleep 30; done
       env:
         COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
 
@@ -75,7 +72,8 @@ jobs:
         max_attempts: 15
         command: |
                 cd iOS/Tutorial/
-                pod update
+                # Retry updating FlipperKit 20 times. Putting this hack unless we have cocoapods 1.10. More information related to the bug https://github.com/CocoaPods/CocoaPods/issues/9502#issuecomment-579486258
+                for i in {1..20}; do pod update && break || sleep 30; done
                 ls
 
     # Followed this https://github.com/peter-evans/create-pull-request/blob/master/docs/concepts-guidelines.md#creating-pull-requests-on-tag-push
