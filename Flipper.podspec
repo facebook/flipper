@@ -3,7 +3,7 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-flipperkit_version = '0.41.5'
+flipperkit_version = '0.41.0'
 Pod::Spec.new do |spec|
   spec.name = 'Flipper'
   spec.version = flipperkit_version
@@ -12,7 +12,7 @@ Pod::Spec.new do |spec|
   spec.summary = 'SonarKit core cpp code with network implementation'
   spec.authors = 'Facebook'
   spec.source = { :git => 'https://github.com/facebook/Sonar.git',
-                  :tag => 'v0.41.0' }
+                  :tag => 'v'+flipperkit_version }
   spec.module_name = 'Flipper'
   spec.public_header_files = 'xplat/Flipper/*.h','xplat/utils/*.h'
   spec.source_files = 'xplat/Flipper/*.{h,cpp,m,mm}','xplat/Flipper/utils/*.{h,cpp,m,mm}'
