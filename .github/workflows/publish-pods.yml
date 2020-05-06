@@ -37,8 +37,8 @@ jobs:
       uses: nick-invision/retry@v1
       with:
         timeout_minutes: 60
-        retry_wait_seconds: 10
-        max_attempts: 5
+        retry_wait_seconds: 30
+        max_attempts: 15
         command: pod trunk push FlipperKit.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
       env:
         COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
@@ -71,8 +71,8 @@ jobs:
       uses: nick-invision/retry@v1
       with:
         timeout_minutes: 60
-        retry_wait_seconds: 10
-        max_attempts: 5
+        retry_wait_seconds: 30
+        max_attempts: 15
         command: |
                 cd iOS/Tutorial/
                 pod update
