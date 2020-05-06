@@ -21,11 +21,5 @@
   },
   "resolutions": {
     "@types/react": "16.9.17"
-  },
-  "greenkeeper": {
-    "ignore": [
-      "recharts",
-      "@types/recharts"
-    ]
   }
 }
