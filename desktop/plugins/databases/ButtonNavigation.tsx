@@ -8,17 +8,18 @@
  */
 
 import {Button, ButtonGroup, Glyph, colors} from 'flipper';
+import React from 'react';
 
-export default function ButtonNavigation(props: {|
+export default function ButtonNavigation(props: {
   /** Back button is enabled */
-  canGoBack: boolean,
+  canGoBack: boolean;
   /** Forwards button is enabled */
-  canGoForward: boolean,
+  canGoForward: boolean;
   /** Callback when back button is clicked */
-  onBack: () => void,
+  onBack: () => void;
   /** Callback when forwards button is clicked */
-  onForward: () => void,
-|}) {
+  onForward: () => void;
+}) {
   return (
     <ButtonGroup>
       <Button disabled={!props.canGoBack} onClick={props.onBack}>

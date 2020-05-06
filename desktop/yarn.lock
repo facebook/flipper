@@ -1854,6 +1854,11 @@
   dependencies:
     "@types/d3-path" "*"
 
+"@types/dateformat@^3.0.1":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/@types/dateformat/-/dateformat-3.0.1.tgz#98d747a2e5e9a56070c6bf14e27bff56204e34cc"
+  integrity sha512-KlPPdikagvL6ELjWsljbyDIPzNCeliYkqRpI+zea99vBBbCIA5JNshZAwQKTON139c87y9qvTFVgkFd14rtS4g==
+
 "@types/debug@^4.1.5":
   version "4.1.5"
   resolved "https://registry.yarnpkg.com/@types/debug/-/debug-4.1.5.tgz#b14efa8852b7768d898906613c23f688713e02cd"
@@ -2260,6 +2265,11 @@
   integrity sha512-cI98INy7tYnweTsUlp8ocveVdAxENUThO0JsLSCs51cjOP2yV5Mqo5QszMDPckyRRA+PO6+wBgKvGvHUCc23TQ==
   dependencies:
     "@types/node" "*"
+
+"@types/sql-formatter@^2.3.0":
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/@types/sql-formatter/-/sql-formatter-2.3.0.tgz#d2584c54f865fd57a7fe7e88ee8ed3623b23da33"
+  integrity sha512-Xh9kEOaKWhm3vYD5lUjYFFiSfpN4y3/iQCJUAVwFaQ1rVvHs4WXTa5C8E7gyF3kxwsMS8KgttW7WBAPtFlsvAg==
 
 "@types/stack-utils@^1.0.1":
   version "1.0.1"

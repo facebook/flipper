@@ -7,68 +7,68 @@
  * @format
  */
 
-import type {PluginClient, Value} from 'flipper';
+import {PluginClient, Value} from 'flipper';
 
-type ClientCall<Params, Response> = (Params) => Promise<Response>;
+type ClientCall<Params, Response> = (arg: Params) => Promise<Response>;
 
 type DatabaseListRequest = {};
 
 type DatabaseListResponse = Array<{
-  id: number,
-  name: string,
-  tables: Array<string>,
+  id: number;
+  name: string;
+  tables: Array<string>;
 }>;
 
 type QueryTableRequest = {
-  databaseId: number,
-  table: string,
-  order?: string,
-  reverse: boolean,
-  start: number,
-  count: number,
+  databaseId: number;
+  table: string;
+  order?: string;
+  reverse: boolean;
+  start: number;
+  count: number;
 };
 
 type QueryTableResponse = {
-  columns: Array<string>,
-  values: Array<Array<Value>>,
-  start: number,
-  count: number,
-  total: number,
+  columns: Array<string>;
+  values: Array<Array<Value>>;
+  start: number;
+  count: number;
+  total: number;
 };
 
 type GetTableStructureRequest = {
-  databaseId: number,
-  table: string,
+  databaseId: number;
+  table: string;
 };
 
 type GetTableStructureResponse = {
-  structureColumns: Array<string>,
-  structureValues: Array<Array<Value>>,
-  indexesColumns: Array<string>,
-  indexesValues: Array<Array<Value>>,
-  definition: string,
+  structureColumns: Array<string>;
+  structureValues: Array<Array<Value>>;
+  indexesColumns: Array<string>;
+  indexesValues: Array<Array<Value>>;
+  definition: string;
 };
 
 type ExecuteSqlRequest = {
-  databaseId: number,
-  value: string,
+  databaseId: number;
+  value: string;
 };
 
 type ExecuteSqlResponse = {
-  type: string,
-  columns: Array<string>,
-  values: Array<Array<Value>>,
-  insertedId: number,
-  affectedCount: number,
+  type: string;
+  columns: Array<string>;
+  values: Array<Array<Value>>;
+  insertedId: number;
+  affectedCount: number;
 };
 
 type GetTableInfoRequest = {
-  databaseId: number,
-  table: string,
+  databaseId: number;
+  table: string;
 };
 
 type GetTableInfoResponse = {
-  definition: string,
+  definition: string;
 };
 
 export class DatabaseClient {
@@ -78,16 +78,15 @@ export class DatabaseClient {
     this.client = pluginClient;
   }
 
-  getDatabases: ClientCall<DatabaseListRequest, DatabaseListResponse> = (
-    params,
-  ) => this.client.call('databaseList', {});
+  getDatabases: ClientCall<DatabaseListRequest, DatabaseListResponse> = () =>
+    this.client.call('databaseList', {});
 
   getTableData: ClientCall<QueryTableRequest, QueryTableResponse> = (params) =>
     this.client.call('getTableData', params);
 
   getTableStructure: ClientCall<
     GetTableStructureRequest,
-    GetTableStructureResponse,
+    GetTableStructureResponse
   > = (params) => this.client.call('getTableStructure', params);
 
   getExecution: ClientCall<ExecuteSqlRequest, ExecuteSqlResponse> = (params) =>

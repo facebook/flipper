@@ -25,13 +25,16 @@ import {
   DetailSidebar,
   Panel,
   ManagedDataInspector,
+  TableBodyColumn,
+  TableRows,
+  Props as FlipperPluginProps,
 } from 'flipper';
-import {Component} from 'react';
-import type {TableBodyRow, TableRowSortOrder} from 'flipper';
+import React, {Component, KeyboardEvent, ChangeEvent} from 'react';
+import {TableBodyRow, TableRowSortOrder} from 'flipper';
 import {FlipperPlugin} from 'flipper';
 import {DatabaseClient} from './ClientProtocol';
 import {renderValue} from 'flipper';
-import type {Value} from 'flipper';
+import {Value} from 'flipper';
 import ButtonNavigation from './ButtonNavigation';
 import sqlFormatter from 'sql-formatter';
 import dateFormat from 'dateformat';
@@ -50,55 +53,65 @@ const ErrorBar = styled.div({
   lineHeight: '26px',
   textAlign: 'center',
 });
+const QueryHistoryManagedTable = styled(ManagedTable)({paddingLeft: 16});
+const PageInfoContainer = styled(FlexRow)({alignItems: 'center'});
+const TableInfoTextArea = styled(Textarea)({
+  width: '98%',
+  height: '100%',
+  marginLeft: '1%',
+  marginTop: '1%',
+  marginBottom: '1%',
+  readOnly: true,
+});
 
-type DatabasesPluginState = {|
-  selectedDatabase: number,
-  selectedDatabaseTable: ?string,
-  pageRowNumber: number,
-  databases: Array<DatabaseEntry>,
-  outdatedDatabaseList: boolean,
-  viewMode: 'data' | 'structure' | 'SQL' | 'tableInfo' | 'queryHistory',
-  error: ?null,
-  currentPage: ?Page,
-  currentStructure: ?Structure,
-  currentSort: ?TableRowSortOrder,
-  query: ?Query,
-  queryResult: ?QueryResult,
-  favorites: Array<string>,
-  executionTime: number,
-  tableInfo: string,
-  queryHistory: Array<Query>,
-|};
-
-type Page = {
-  databaseId: number,
-  table: string,
-  columns: Array<string>,
-  rows: Array<TableBodyRow>,
-  start: number,
-  count: number,
-  total: number,
+type DatabasesPluginState = {
+  selectedDatabase: number;
+  selectedDatabaseTable: string | null;
+  pageRowNumber: number;
+  databases: Array<DatabaseEntry>;
+  outdatedDatabaseList: boolean;
+  viewMode: 'data' | 'structure' | 'SQL' | 'tableInfo' | 'queryHistory';
+  error: null;
+  currentPage: Page | null;
+  currentStructure: Structure | null;
+  currentSort: TableRowSortOrder | null;
+  query: Query | null;
+  queryResult: QueryResult | null;
+  favorites: Array<string>;
+  executionTime: number;
+  tableInfo: string;
+  queryHistory: Array<Query>;
 };
 
-type Structure = {|
-  databaseId: number,
-  table: string,
-  columns: Array<string>,
-  rows: Array<TableBodyRow>,
-  indexesColumns: Array<string>,
-  indexesValues: Array<TableBodyRow>,
-|};
+type Page = {
+  databaseId: number;
+  table: string;
+  columns: Array<string>;
+  rows: Array<TableBodyRow>;
+  start: number;
+  count: number;
+  total: number;
+};
+
+type Structure = {
+  databaseId: number;
+  table: string;
+  columns: Array<string>;
+  rows: Array<TableBodyRow>;
+  indexesColumns: Array<string>;
+  indexesValues: Array<TableBodyRow>;
+};
 
 type QueryResult = {
-  table: ?QueriedTable,
-  id: ?number,
-  count: ?number,
+  table: QueriedTable | null;
+  id: number | null;
+  count: number | null;
 };
 
 type QueriedTable = {
-  columns: Array<string>,
-  rows: Array<TableBodyRow>,
-  highlightedRows: Array<number>,
+  columns: Array<string>;
+  rows: Array<TableBodyRow>;
+  highlightedRows: Array<number>;
 };
 
 type Actions =
@@ -122,112 +135,112 @@ type Actions =
   | UpdateQueryEvent;
 
 type DatabaseEntry = {
-  id: number,
-  name: string,
-  tables: Array<string>,
+  id: number;
+  name: string;
+  tables: Array<string>;
 };
 
-type Query = {|
-  value: string,
-  time: string,
-|};
+type Query = {
+  value: string;
+  time: string;
+};
 
-type UpdateDatabasesEvent = {|
-  databases: Array<{name: string, id: number, tables: Array<string>}>,
-  type: 'UpdateDatabases',
-|};
+type UpdateDatabasesEvent = {
+  databases: Array<{name: string; id: number; tables: Array<string>}>;
+  type: 'UpdateDatabases';
+};
 
-type SelectDatabaseEvent = {|
-  type: 'UpdateSelectedDatabase',
-  database: number,
-|};
+type SelectDatabaseEvent = {
+  type: 'UpdateSelectedDatabase';
+  database: number;
+};
 
-type SelectDatabaseTableEvent = {|
-  type: 'UpdateSelectedDatabaseTable',
-  table: string,
-|};
+type SelectDatabaseTableEvent = {
+  type: 'UpdateSelectedDatabaseTable';
+  table: string;
+};
 
-type UpdateViewModeEvent = {|
-  type: 'UpdateViewMode',
-  viewMode: 'data' | 'structure' | 'SQL' | 'tableInfo' | 'queryHistory',
-|};
+type UpdateViewModeEvent = {
+  type: 'UpdateViewMode';
+  viewMode: 'data' | 'structure' | 'SQL' | 'tableInfo' | 'queryHistory';
+};
 
-type UpdatePageEvent = {|
-  type: 'UpdatePage',
-  databaseId: number,
-  table: string,
-  columns: Array<string>,
-  values: Array<Array<any>>,
-  start: number,
-  count: number,
-  total: number,
-|};
+type UpdatePageEvent = {
+  type: 'UpdatePage';
+  databaseId: number;
+  table: string;
+  columns: Array<string>;
+  values: Array<Array<any>>;
+  start: number;
+  count: number;
+  total: number;
+};
 
-type UpdateStructureEvent = {|
-  type: 'UpdateStructure',
-  databaseId: number,
-  table: string,
-  columns: Array<string>,
-  rows: Array<Array<any>>,
-  indexesColumns: Array<string>,
-  indexesValues: Array<Array<any>>,
-|};
+type UpdateStructureEvent = {
+  type: 'UpdateStructure';
+  databaseId: number;
+  table: string;
+  columns: Array<string>;
+  rows: Array<Array<any>>;
+  indexesColumns: Array<string>;
+  indexesValues: Array<Array<any>>;
+};
 
-type DisplaySelectEvent = {|
-  type: 'DisplaySelect',
-  columns: Array<string>,
-  values: Array<Array<any>>,
-|};
+type DisplaySelectEvent = {
+  type: 'DisplaySelect';
+  columns: Array<string>;
+  values: Array<Array<any>>;
+};
 
-type DisplayInsertEvent = {|
-  type: 'DisplayInsert',
-  id: number,
-|};
+type DisplayInsertEvent = {
+  type: 'DisplayInsert';
+  id: number;
+};
 
-type DisplayUpdateDeleteEvent = {|
-  type: 'DisplayUpdateDelete',
-  count: number,
-|};
+type DisplayUpdateDeleteEvent = {
+  type: 'DisplayUpdateDelete';
+  count: number;
+};
 
-type UpdateTableInfoEvent = {|
-  type: 'UpdateTableInfo',
-  tableInfo: string,
-|};
+type UpdateTableInfoEvent = {
+  type: 'UpdateTableInfo';
+  tableInfo: string;
+};
 
 type NextPageEvent = {
-  type: 'NextPage',
+  type: 'NextPage';
 };
 
 type PreviousPageEvent = {
-  type: 'PreviousPage',
+  type: 'PreviousPage';
 };
 
 type ExecuteEvent = {
-  type: 'Execute',
+  type: 'Execute';
 };
 
 type RefreshEvent = {
-  type: 'Refresh',
+  type: 'Refresh';
 };
 
 type UpdateFavoritesEvent = {
-  type: 'UpdateFavorites',
-  favorites: ?Array<string>,
+  type: 'UpdateFavorites';
+  favorites: Array<string> | undefined;
 };
 
 type SortByChangedEvent = {
-  type: 'SortByChanged',
-  sortOrder: TableRowSortOrder,
+  type: 'SortByChanged';
+  sortOrder: TableRowSortOrder;
 };
 
 type GoToRowEvent = {
-  type: 'GoToRow',
-  row: number,
+  type: 'GoToRow';
+  row: number;
 };
 
 type UpdateQueryEvent = {
-  type: 'UpdateQuery',
-  value: string,
+  type: 'UpdateQuery';
+  value: string;
 };
 
 function transformRow(
@@ -235,14 +248,14 @@ function transformRow(
   row: Array<Value>,
   index: number,
 ): TableBodyRow {
-  const transformedColumns = {};
+  const transformedColumns: {[key: string]: TableBodyColumn} = {};
   for (let i = 0; i < columns.length; i++) {
     transformedColumns[columns[i]] = {value: renderValue(row[i])};
   }
   return {key: String(index), columns: transformedColumns};
 }
 
-function renderTable(page: ?Page, component: DatabasesPlugin) {
+function renderTable(page: Page | null, component: DatabasesPlugin) {
   if (!page) {
     return null;
   }
@@ -254,10 +267,13 @@ function renderTable(page: ?Page, component: DatabasesPlugin) {
         key: name,
         visible: true,
       }))}
-      columns={page.columns.reduce((acc, val) => {
-        acc[val] = {value: val, resizable: true, sortable: true};
-        return acc;
-      }, {})}
+      columns={page.columns.reduce(
+        (acc, val) =>
+          Object.assign({}, acc, {
+            [val]: {value: val, resizable: true, sortable: true},
+          }),
+        {},
+      )}
       zebra={true}
       rows={page.rows}
       horizontallyScrollable={true}
@@ -268,12 +284,12 @@ function renderTable(page: ?Page, component: DatabasesPlugin) {
           sortOrder,
         });
       }}
-      initialSortOrder={component.state.currentSort}
+      initialSortOrder={component.state.currentSort ?? undefined}
     />
   );
 }
 
-function renderDatabaseColumns(structure: ?Structure) {
+function renderDatabaseColumns(structure: Structure | null) {
   if (!structure) {
     return null;
   }
@@ -285,10 +301,11 @@ function renderDatabaseColumns(structure: ?Structure) {
           key: name,
           visible: true,
         }))}
-        columns={structure.columns.reduce((acc, val) => {
-          acc[val] = {value: val, resizable: true};
-          return acc;
-        }, {})}
+        columns={structure.columns.reduce(
+          (acc, val) =>
+            Object.assign({}, acc, {[val]: {value: val, resizable: true}}),
+          {},
+        )}
         zebra={true}
         rows={structure.rows || []}
         horizontallyScrollable={true}
@@ -297,7 +314,7 @@ function renderDatabaseColumns(structure: ?Structure) {
   );
 }
 
-function renderDatabaseIndexes(structure: ?Structure) {
+function renderDatabaseIndexes(structure: Structure | null) {
   if (!structure) {
     return null;
   }
@@ -309,10 +326,11 @@ function renderDatabaseIndexes(structure: ?Structure) {
           key: name,
           visible: true,
         }))}
-        columns={structure.indexesColumns.reduce((acc, val) => {
-          acc[val] = {value: val, resizable: true};
-          return acc;
-        }, {})}
+        columns={structure.indexesColumns.reduce(
+          (acc, val) =>
+            Object.assign({}, acc, {[val]: {value: val, resizable: true}}),
+          {},
+        )}
         zebra={true}
         rows={structure.indexesValues || []}
         horizontallyScrollable={true}
@@ -335,13 +353,13 @@ function renderQueryHistory(history: Array<Query>) {
       resizable: true,
     },
   };
-  const rows = [];
+  const rows: TableRows = [];
   if (history.length > 0) {
     for (const query of history) {
       const time = query.time;
       const value = query.value;
       rows.push({
-        key: query,
+        key: value,
         columns: {time: {value: time}, query: {value: value}},
       });
     }
@@ -349,8 +367,7 @@ function renderQueryHistory(history: Array<Query>) {
 
   return (
     <FlexRow grow={true}>
-      <ManagedTable
-        style={{paddingLeft: 16}}
+      <QueryHistoryManagedTable
         floating={false}
         columns={columns}
         columnSizes={{time: 75}}
@@ -363,15 +380,15 @@ function renderQueryHistory(history: Array<Query>) {
 }
 
 type PageInfoProps = {
-  currentRow: number,
-  count: number,
-  totalRows: number,
-  onChange: (currentRow: number, count: number) => void,
+  currentRow: number;
+  count: number;
+  totalRows: number;
+  onChange: (currentRow: number, count: number) => void;
 };
 
 class PageInfo extends Component<
   PageInfoProps,
-  {isOpen: boolean, inputValue: string},
+  {isOpen: boolean; inputValue: string}
 > {
   constructor(props: PageInfoProps) {
     super(props);
@@ -382,11 +399,11 @@ class PageInfo extends Component<
     this.setState({isOpen: true});
   }
 
-  onInputChanged(e) {
+  onInputChanged(e: ChangeEvent<any>) {
     this.setState({inputValue: e.target.value});
   }
 
-  onSubmit(e: SyntheticKeyboardEvent<>) {
+  onSubmit(e: KeyboardEvent) {
     if (e.key === 'Enter') {
       const rowNumber = parseInt(this.state.inputValue, 10);
       this.props.onChange(rowNumber - 1, this.props.count);
@@ -396,7 +413,7 @@ class PageInfo extends Component<
 
   render() {
     return (
-      <FlexRow grow={true} alignItems={'center'}>
+      <PageInfoContainer grow={true}>
         <div style={{flex: 1}} />
         <Text>
           {this.props.count === this.props.totalRows
@@ -410,7 +427,7 @@ class PageInfo extends Component<
         {this.state.isOpen ? (
           <Input
             tabIndex={-1}
-            placeholder={this.props.currentRow + 1}
+            placeholder={(this.props.currentRow + 1).toString()}
             onChange={this.onInputChanged.bind(this)}
             onKeyDown={this.onSubmit.bind(this)}
           />
@@ -421,7 +438,7 @@ class PageInfo extends Component<
             Go To Row
           </Button>
         )}
-      </FlexRow>
+      </PageInfoContainer>
     );
   }
 }
@@ -429,6 +446,7 @@ class PageInfo extends Component<
 export default class DatabasesPlugin extends FlipperPlugin<
   DatabasesPluginState,
   Actions,
+  {}
 > {
   databaseClient: DatabaseClient;
 
@@ -451,7 +469,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
     queryHistory: [],
   };
 
-  reducers = [
+  reducers = ([
     [
       'UpdateDatabases',
       (
@@ -648,7 +666,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
       'NextPage',
       (
         state: DatabasesPluginState,
-        event: UpdatePageEvent,
+        _event: UpdatePageEvent,
       ): DatabasesPluginState => {
         return {
           ...state,
@@ -661,7 +679,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
       'PreviousPage',
       (
         state: DatabasesPluginState,
-        event: UpdatePageEvent,
+        _event: UpdatePageEvent,
       ): DatabasesPluginState => {
         return {
           ...state,
@@ -674,7 +692,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
       'Execute',
       (
         state: DatabasesPluginState,
-        results: ExecuteEvent,
+        _results: ExecuteEvent,
       ): DatabasesPluginState => {
         const timeBefore = Date.now();
         if (
@@ -756,7 +774,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
       'Refresh',
       (
         state: DatabasesPluginState,
-        event: RefreshEvent,
+        _event: RefreshEvent,
       ): DatabasesPluginState => {
         return {
           ...state,
@@ -831,17 +849,42 @@ export default class DatabasesPlugin extends FlipperPlugin<
         };
       },
     ],
-  ].reduce((acc, val) => {
-    const name = val[0];
-    const f = val[1];
+  ] as Array<
+    [
+      string,
+      (
+        state: DatabasesPluginState,
+        event: UpdateQueryEvent,
+      ) => DatabasesPluginState,
+    ]
+  >).reduce(
+    (
+      acc: {
+        [name: string]: (
+          state: DatabasesPluginState,
+          event: UpdateQueryEvent,
+        ) => DatabasesPluginState;
+      },
+      val: [
+        string,
+        (
+          state: DatabasesPluginState,
+          event: UpdateQueryEvent,
+        ) => DatabasesPluginState,
+      ],
+    ) => {
+      const name = val[0];
+      const f = val[1];
 
-    acc[name] = (previousState, event) => {
-      const newState = f(previousState, event);
-      this.onStateChanged(previousState, newState);
-      return newState;
-    };
-    return acc;
-  }, {});
+      acc[name] = (previousState, event) => {
+        const newState = f(previousState, event);
+        this.onStateChanged(previousState, newState);
+        return newState;
+      };
+      return acc;
+    },
+    {},
+  );
 
   onStateChanged(
     previousState: DatabasesPluginState,
@@ -938,6 +981,12 @@ export default class DatabasesPlugin extends FlipperPlugin<
     }
   }
 
+  // to keep eslint happy
+  constructor(props: FlipperPluginProps<{}>) {
+    super(props);
+    this.databaseClient = new DatabaseClient(this.client);
+  }
+
   init() {
     this.databaseClient = new DatabaseClient(this.client);
     this.databaseClient.getDatabases({}).then((databases) => {
@@ -1026,7 +1075,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
     this.setState({query: selected.target.value});
   };
 
-  onGoToRow = (row: number, count: number) => {
+  onGoToRow = (row: number, _count: number) => {
     this.dispatchAction({type: 'GoToRow', row: row});
   };
 
@@ -1092,7 +1141,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
     );
   };
 
-  sidebarRows = (id: number, table: QueriedTable) => {
+  sidebarRows(id: number, table: QueriedTable): TableRows {
     const columns = table.columns;
     const row = table.rows[id];
     if (columns.length === 1) {
@@ -1116,14 +1165,14 @@ export default class DatabasesPlugin extends FlipperPlugin<
       }
       return sidebarArray;
     } else {
-      return columns.map<Object>((column, i) =>
+      return columns.map((column, i) =>
         this.buildSidebarRow(columns[i], row.columns[columns[i]].value),
       );
     }
-  };
+  }
 
-  buildSidebarRow = (key: string, val: any) => {
-    let output = '';
+  buildSidebarRow(key: string, val: any): TableBodyRow {
+    let output: any = '';
     // TODO(T60896483): Narrow the scope of this try/catch block.
     try {
       const parsed = JSON.parse(val.props.children);
@@ -1147,9 +1196,9 @@ export default class DatabasesPlugin extends FlipperPlugin<
       },
       key: key,
     };
-  };
+  }
 
-  renderQuery(query: ?QueryResult) {
+  renderQuery(query: QueryResult | null) {
     if (!query || query === null) {
       return null;
     }
@@ -1170,10 +1219,11 @@ export default class DatabasesPlugin extends FlipperPlugin<
               key: name,
               visible: true,
             }))}
-            columns={columns.reduce((acc, val) => {
-              acc[val] = {value: val, resizable: true};
-              return acc;
-            }, {})}
+            columns={columns.reduce(
+              (acc, val) =>
+                Object.assign({}, acc, {[val]: {value: val, resizable: true}}),
+              {},
+            )}
             zebra={true}
             rows={rows}
             horizontallyScrollable={true}
@@ -1183,7 +1233,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
                   table: {
                     columns: columns,
                     rows: rows,
-                    highlightedRows: highlightedRows,
+                    highlightedRows: highlightedRows.map(parseInt),
                   },
                   id: null,
                   count: null,
@@ -1270,10 +1320,10 @@ export default class DatabasesPlugin extends FlipperPlugin<
             <Select
               options={this.state.databases
                 .map((x) => x.name)
-                .reduce((obj, item) => {
-                  obj[item] = item;
-                  return obj;
-                }, {})}
+                .reduce(
+                  (obj, item) => Object.assign({}, obj, {[item]: item}),
+                  {},
+                )}
               selected={
                 this.state.databases[this.state.selectedDatabase - 1]?.name
               }
@@ -1296,10 +1346,10 @@ export default class DatabasesPlugin extends FlipperPlugin<
               <Select
                 options={this.state.databases
                   .map((x) => x.name)
-                  .reduce((obj, item) => {
-                    obj[item] = item;
-                    return obj;
-                  }, {})}
+                  .reduce(
+                    (obj, item) => Object.assign({}, obj, {[item]: item}),
+                    {},
+                  )}
                 selected={
                   this.state.databases[this.state.selectedDatabase - 1]?.name
                 }
@@ -1323,7 +1373,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
                   this.state.query !== null &&
                   typeof this.state.query !== 'undefined'
                     ? this.state.query.value
-                    : null
+                    : undefined
                 }
               />
             }
@@ -1333,7 +1383,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
               <ButtonGroup>
                 <Button
                   icon={'star'}
-                  iconSize={14}
+                  iconSize={12}
                   iconVariant={
                     this.state.query !== null &&
                     typeof this.state.query !== 'undefined' &&
@@ -1386,15 +1436,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
               ? this.renderQuery(this.state.queryResult)
               : null}
             {this.state.viewMode === 'tableInfo' ? (
-              <Textarea
-                style={{
-                  width: '98%',
-                  height: '100%',
-                  marginLeft: '1%',
-                  marginTop: '1%',
-                  marginBottom: '1%',
-                  readOnly: true,
-                }}
+              <TableInfoTextArea
                 value={sqlFormatter.format(this.state.tableInfo)}
               />
             ) : null}
