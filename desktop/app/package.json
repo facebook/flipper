@@ -60,7 +60,7 @@
     "semver": "^7.3.2",
     "string-natural-compare": "^3.0.0",
     "tmp": "0.0.33",
-    "uuid": "^7.0.1",
+    "uuid": "^8.0.0",
     "which": "^2.0.1",
     "ws": "^7.2.3",
     "xdg-basedir": "^4.0.0"

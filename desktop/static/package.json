@@ -17,7 +17,7 @@
     "p-filter": "^2.1.0",
     "p-map": "^4.0.0",
     "recursive-readdir": "^2.2.2",
-    "uuid": "^7.0.1",
+    "uuid": "^8.0.0",
     "ws": "^7.2.3",
     "xdg-basedir": "^4.0.0",
     "yargs": "^15.3.1"
