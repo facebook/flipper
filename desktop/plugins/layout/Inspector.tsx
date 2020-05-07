@@ -25,6 +25,8 @@ type GetNodesOptions = {
   forAccessibilityEvent?: boolean;
 };
 
+type ElementSelectorNode = {[id: string]: ElementSelectorNode};
+
 type Props = {
   ax?: boolean;
   client: PluginClient;
@@ -131,8 +133,12 @@ export default class Inspector extends Component<Props> {
 
     this.props.client.subscribe(
       this.call().SELECT,
-      ({path}: {path: Array<ElementID>}) => {
-        this.getAndExpandPath(path);
+      ({path, tree}: {path?: Array<ElementID>; tree?: ElementSelectorNode}) => {
+        if (tree) {
+          this._getAndExpandPathFromTree(tree);
+        } else if (path) {
+          this.getAndExpandPath(path);
+        }
       },
     );
 
@@ -289,6 +295,48 @@ export default class Inspector extends Component<Props> {
   async getAndExpandPath(path: Array<ElementID>) {
     await Promise.all(path.map((id) => this.getChildren(id, {})));
     this.onElementSelected(path[path.length - 1]);
+  }
+
+  getElementLeaves(tree: ElementSelectorNode): Array<ElementID> {
+    return tree
+      ? Object.entries(tree).reduce(
+          (
+            currLeafNode: Array<ElementID>,
+            [id, children]: [ElementID, ElementSelectorNode],
+          ): Array<ElementID> =>
+            currLeafNode.concat(
+              Object.keys(children).length > 0
+                ? this.getElementLeaves(children)
+                : [id],
+            ),
+          [],
+        )
+      : [];
+  }
+
+  /// Return path from given tree structure and id if id is not null; otherwise return any path
+  getPathForNode(
+    tree: ElementSelectorNode,
+    nodeID: ElementID | null,
+  ): Array<ElementID> | null {
+    for (const node in tree) {
+      if (
+        node === nodeID ||
+        (nodeID === null && Object.keys(tree[node]).length == 0)
+      ) {
+        return [node];
+      }
+      const path = this.getPathForNode(tree[node], nodeID);
+      if (path !== null) {
+        return [node].concat(path);
+      }
+    }
+    return null;
+  }
+
+  // NOTE: this will be used in the future when we remove path and use tree instead
+  async _getAndExpandPathFromTree(tree: ElementSelectorNode) {
+    this.getAndExpandPath(this.getPathForNode(tree, null) ?? []);
   }
 
   onElementSelected = debounce((selectedKey: ElementID) => {
