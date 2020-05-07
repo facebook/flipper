@@ -331,7 +331,7 @@ export default class Inspector extends Component<Props, State> {
 
   async getAndExpandPath(path: Array<ElementID>) {
     await Promise.all(path.map((id) => this.getChildren(id, {})));
-    this.onElementSelected(path[path.length - 1]);
+    this.onElementSelected()(path[path.length - 1]);
   }
 
   getElementLeaves(tree: ElementSelectorNode): Array<ElementID> {
@@ -376,9 +376,32 @@ export default class Inspector extends Component<Props, State> {
     this.getAndExpandPath(this.getPathForNode(tree, null) ?? []);
   }
 
-  onElementSelected = debounce((selectedKey: ElementID) => {
-    this.onElementHovered(selectedKey);
-    this.props.onSelect(selectedKey);
+  onElementSelected = (option?: {
+    cancelSelector?: boolean;
+    expandPathToElement?: boolean;
+  }) =>
+    debounce(async (selectedKey: ElementID) => {
+      if (option?.cancelSelector) {
+        this.setState({elementSelector: null, axElementSelector: null});
+      }
+      if (option?.expandPathToElement) {
+        const data = this.props.ax
+          ? this.state.axElementSelector
+          : this.state.elementSelector;
+        await this.getAndExpandPath(
+          this.getPathForNode(data?.tree ?? {}, selectedKey) ?? [],
+        );
+      }
+      this.onElementHovered(selectedKey);
+      this.props.onSelect(selectedKey);
+    });
+
+  onElementSelectedAtMainSection = this.onElementSelected({
+    cancelSelector: true,
+  });
+
+  onElementSelectedAndExpanded = this.onElementSelected({
+    expandPathToElement: true,
   });
 
   onElementHovered = debounce((key: ElementID | null | undefined) => {
@@ -417,7 +440,7 @@ export default class Inspector extends Component<Props, State> {
     return this.root() ? (
       <ElementsInspectorContainer>
         <ElementsInspector
-          onElementSelected={this.onElementSelected}
+          onElementSelected={this.onElementSelectedAtMainSection}
           onElementHovered={this.onElementHovered}
           onElementExpanded={this.onElementExpanded}
           onValueChanged={this.props.onDataValueChanged}
@@ -432,7 +455,7 @@ export default class Inspector extends Component<Props, State> {
           <MultipleSelectorSection
             initialSelectedElement={this.selected()}
             elements={selectorData.elements}
-            onElementSelected={this.onElementSelected}
+            onElementSelected={this.onElementSelectedAndExpanded}
             onElementHovered={this.onElementHovered}
           />
         ) : null}
