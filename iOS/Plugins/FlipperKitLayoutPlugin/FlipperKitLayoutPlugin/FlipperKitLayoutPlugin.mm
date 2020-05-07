@@ -321,17 +321,30 @@
     __block id<NSObject> rootNode = _rootNode;
 
     [_tapListener listenForTapWithBlock:^(CGPoint touchPoint) {
-      SKTouch* touch = [[SKTouch alloc]
-            initWithTouchPoint:touchPoint
-                  withRootNode:rootNode
-          withDescriptorMapper:self->_descriptorMapper
-               finishWithBlock:^(NSArray<NSString*>* path) {
-                 [connection send:@"select" withParams:@{@"path" : path}];
-               }];
+      SKTouch* touch =
+          [[SKTouch alloc] initWithTouchPoint:touchPoint
+                                 withRootNode:rootNode
+                         withDescriptorMapper:self->_descriptorMapper
+                              finishWithBlock:^(id<NSObject> node) {
+                                [self updateNodeReference:node];
+                              }];
 
       SKNodeDescriptor* descriptor =
           [self->_descriptorMapper descriptorForClass:[rootNode class]];
       [descriptor hitTest:touch forNode:rootNode];
+      [touch retrieveSelectTree:^(NSDictionary* tree) {
+        NSMutableArray* path = [NSMutableArray new];
+        NSDictionary* subtree = tree;
+        NSEnumerator* enumerator = [tree keyEnumerator];
+        id nodeId;
+        while ((nodeId = [enumerator nextObject])) {
+          subtree = subtree[nodeId];
+          [path addObject:nodeId];
+          enumerator = [subtree keyEnumerator];
+        }
+        [connection send:@"select"
+              withParams:@{@"path" : path, @"tree" : tree}];
+      }];
     }];
   } else {
     [_tapListener unmount];

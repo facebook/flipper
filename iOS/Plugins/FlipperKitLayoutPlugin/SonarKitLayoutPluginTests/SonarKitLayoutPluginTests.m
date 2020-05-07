@@ -207,8 +207,11 @@
   // Fake a tap at `testNode3`
   [tapListener tapAt:(CGPoint){26, 43}];
 
-  XCTAssertTrue(([connection.sent[@"select"]
-      containsObject:@{@"path" : @[ @"testNode2", @"testNode3" ]}]));
+  NSLog(@"%@", connection.sent[@"select"]);
+  XCTAssertTrue(([connection.sent[@"select"] containsObject:@{
+    @"path" : @[ @"testNode2", @"testNode3" ],
+    @"tree" : @{@"testNode2" : @{@"testNode3" : @{}}}
+  }]));
 }
 
 - (void)testSetSearchActiveMountAndUnmount {
