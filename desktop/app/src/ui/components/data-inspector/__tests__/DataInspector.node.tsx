@@ -177,3 +177,17 @@ test('can filter for data', async () => {
   await res.findByText(/awesomely/);
   await res.findByText(/json/);
 });
+
+test('can render recursive data for data', async () => {
+  const json = {
+    a: {
+      recursive: undefined as any,
+    },
+  };
+  json.a.recursive = json;
+
+  const res = render(
+    <ManagedDataInspector data={json} collapsed={false} expandRoot />,
+  );
+  await res.findByText(/Recursive/);
+});

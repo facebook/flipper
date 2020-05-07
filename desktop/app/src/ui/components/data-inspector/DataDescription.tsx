@@ -12,7 +12,6 @@ import {DataInspectorSetValue} from './DataInspector';
 import {PureComponent} from 'react';
 import styled from '@emotion/styled';
 import {SketchPicker, CompactPicker} from 'react-color';
-import {Component, Fragment} from 'react';
 import Popover from '../Popover';
 import {colors} from '../colors';
 import Input from '../Input';
@@ -276,7 +275,7 @@ export default class DataDescription extends PureComponent<
           type={this.props.type}
           value={this.props.value}
           extra={this.props.extra}
-          editable={Boolean(this.props.setValue)}
+          editable={!!this.props.setValue}
           commit={this.commit}
           onEdit={this.onEditStart}
         />
@@ -359,7 +358,7 @@ class ColorEditor extends PureComponent<{
   render() {
     const colorInfo = parseColor(this.props.value);
     if (!colorInfo) {
-      return <Fragment />;
+      return null;
     }
 
     return (
@@ -440,7 +439,7 @@ class ColorEditor extends PureComponent<{
   }
 }
 
-class DataDescriptionPreview extends Component<{
+class DataDescriptionPreview extends PureComponent<{
   type: string;
   value: any;
   extra?: any;
@@ -539,7 +538,9 @@ function parseColor(
   return {a, b, g, r};
 }
 
-class DataDescriptionContainer extends Component<{
+const pencilStyle = {cursor: 'pointer', marginLeft: 8};
+
+class DataDescriptionContainer extends PureComponent<{
   type: string;
   value: any;
   editable: boolean;
@@ -563,7 +564,7 @@ class DataDescriptionContainer extends Component<{
 
     switch (type) {
       case 'number':
-        return <NumberValue>{Number(val)}</NumberValue>;
+        return <NumberValue>{+val}</NumberValue>;
 
       case 'color': {
         const colorInfo = parseColor(val);
@@ -620,7 +621,7 @@ class DataDescriptionContainer extends Component<{
                 variant="outline"
                 color={colors.light20}
                 size={16}
-                style={{cursor: 'pointer', marginLeft: 8}}
+                style={pencilStyle}
               />
             </>
           );
@@ -637,12 +638,12 @@ class DataDescriptionContainer extends Component<{
         return editable ? (
           <input
             type="checkbox"
-            checked={Boolean(val)}
+            checked={!!val}
             disabled={!editable}
             onChange={this.onChangeCheckbox}
           />
         ) : (
-          <StringValue>{String(val)}</StringValue>
+          <StringValue>{'' + val}</StringValue>
         );
 
       case 'undefined':

@@ -63,6 +63,7 @@ type ManagedDataInspectorState = {
 };
 
 const MAX_RESULTS = 50;
+const EMPTY_ARRAY: any[] = [];
 
 /**
  * Wrapper around `DataInspector` that handles expanded state.
@@ -88,7 +89,7 @@ export default class ManagedDataInspector extends PureComponent<
     nextProps: ManagedDataInspectorProps,
     currentState: ManagedDataInspectorState,
   ) {
-    if (nextProps.filter === currentState.filter) {
+    if (nextProps.filter?.toLowerCase() === currentState.filter) {
       return null;
     }
     if (!nextProps.filter) {
@@ -175,6 +176,9 @@ export default class ManagedDataInspector extends PureComponent<
           expandRoot={this.props.expandRoot}
           collapsed={this.props.filter ? true : this.props.collapsed}
           tooltips={this.props.tooltips}
+          parentPath={EMPTY_ARRAY}
+          depth={0}
+          parentAncestry={EMPTY_ARRAY}
         />
       </HighlightProvider>
     );
