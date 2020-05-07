@@ -531,7 +531,10 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
   static defaultPersistedState = {crashes: []};
 
   static supportsDevice(device: Device) {
-    return device.os === 'iOS' || device.os === 'Android';
+    return (
+      (device.os === 'iOS' && device.deviceType !== 'physical') ||
+      device.os === 'Android'
+    );
   }
 
   static notificationID: number = 0;
