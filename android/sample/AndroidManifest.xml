@@ -39,6 +39,14 @@
         <data android:scheme="flipper" android:host="deep_link_activity" />
       </intent-filter>
     </activity>
+    <activity android:name=".LayoutTestActivity">
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data android:scheme="flipper" android:host="layout_test_activity" />
+      </intent-filter>
+    </activity>
     <activity android:name="com.facebook.flipper.android.diagnostics.FlipperDiagnosticActivity"
         android:exported="true"/>
     <activity android:name="com.facebook.flipper.connectivitytest.ConnectionTestActivity"

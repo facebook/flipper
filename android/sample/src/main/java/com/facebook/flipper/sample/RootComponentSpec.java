@@ -78,8 +78,15 @@ public class RootComponentSpec {
                 .clickHandler(RootComponent.openAlternateActivityOne(c)))
         .child(
             Text.create(c)
-                .text("Crash this app")
+                .text("Navigate to layout test page")
                 .key("7")
+                .marginDip(YogaEdge.ALL, 10)
+                .textSizeSp(20)
+                .clickHandler(RootComponent.openAlternateLayoutTestActivity(c)))
+        .child(
+            Text.create(c)
+                .text("Crash this app")
+                .key("8")
                 .marginDip(YogaEdge.ALL, 10)
                 .textSizeSp(20)
                 .clickHandler(RootComponent.triggerCrash(c)))
@@ -118,6 +125,12 @@ public class RootComponentSpec {
   @OnEvent(ClickEvent.class)
   static void openAlternateActivityOne(final ComponentContext c) {
     final Intent intent = new Intent(c.getAndroidContext(), DeepLinkActivity.class);
+    c.getAndroidContext().startActivity(intent);
+  }
+
+  @OnEvent(ClickEvent.class)
+  static void openAlternateLayoutTestActivity(final ComponentContext c) {
+    final Intent intent = new Intent(c.getAndroidContext(), LayoutTestActivity.class);
     c.getAndroidContext().startActivity(intent);
   }
 
