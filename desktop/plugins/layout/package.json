@@ -10,6 +10,9 @@
     "deep-equal": "^2.0.1",
     "lodash": "^4.17.15"
   },
+  "devDependencies": {
+    "@testing-library/react": "^10.0.2"
+  },
   "title": "Layout",
   "icon": "target",
   "bugs": {
