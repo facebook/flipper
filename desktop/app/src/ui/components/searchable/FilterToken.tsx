@@ -47,7 +47,6 @@ const Key = styled(Text)<{
   position: 'relative',
   fontWeight: 500,
   paddingRight: 12,
-  textTransform: 'capitalize',
   lineHeight: '21px',
   '&:after': {
     content: props.type === 'exclude' ? '"≠"' : '"="',
