@@ -13,11 +13,19 @@ import {
   PluginClient,
   ElementsInspector,
   ElementSearchResultSet,
+  FlexColumn,
+  styled,
 } from 'flipper';
-import {Component} from 'react';
 import {debounce} from 'lodash';
+import {Component} from 'react';
 import {PersistedState, ElementMap} from './';
 import React from 'react';
+import MultipleSelectorSection from './MultipleSelectionSection';
+
+const ElementsInspectorContainer = styled(FlexColumn)({
+  width: '100%',
+  justifyContent: 'space-between',
+});
 
 type GetNodesOptions = {
   force?: boolean;
@@ -25,7 +33,12 @@ type GetNodesOptions = {
   forAccessibilityEvent?: boolean;
 };
 
-type ElementSelectorNode = {[id: string]: ElementSelectorNode};
+export type ElementSelectorNode = {[id: string]: ElementSelectorNode};
+export type ElementSelectorData = {
+  leaves: Array<ElementID>;
+  tree: ElementSelectorNode;
+  elements: ElementMap;
+};
 
 type Props = {
   ax?: boolean;
@@ -41,7 +54,14 @@ type Props = {
   searchResults: ElementSearchResultSet | null;
 };
 
-export default class Inspector extends Component<Props> {
+type State = {
+  elementSelector: ElementSelectorData | null;
+  axElementSelector: ElementSelectorData | null;
+};
+
+export default class Inspector extends Component<Props, State> {
+  state: State = {elementSelector: null, axElementSelector: null};
+
   call() {
     return {
       GET_ROOT: this.props.ax ? 'getAXRoot' : 'getRoot',
@@ -133,11 +153,28 @@ export default class Inspector extends Component<Props> {
 
     this.props.client.subscribe(
       this.call().SELECT,
-      ({path, tree}: {path?: Array<ElementID>; tree?: ElementSelectorNode}) => {
-        if (tree) {
-          this._getAndExpandPathFromTree(tree);
-        } else if (path) {
+      async ({
+        path,
+        tree,
+      }: {
+        path?: Array<ElementID>;
+        tree?: ElementSelectorNode;
+      }) => {
+        if (path) {
           this.getAndExpandPath(path);
+        }
+        if (tree) {
+          const leaves = this.getElementLeaves(tree);
+          const elementArray = await this.getNodes(leaves, {});
+          const elements = leaves.reduce(
+            (acc, cur, idx) => ({...acc, [cur]: elementArray[idx]}),
+            {},
+          );
+          if (this.props.ax) {
+            this.setState({axElementSelector: {tree, leaves, elements}});
+          } else {
+            this.setState({elementSelector: {tree, leaves, elements}});
+          }
         }
       },
     );
@@ -373,19 +410,33 @@ export default class Inspector extends Component<Props> {
   };
 
   render() {
+    const selectorData = this.props.ax
+      ? this.state.axElementSelector
+      : this.state.elementSelector;
+
     return this.root() ? (
-      <ElementsInspector
-        onElementSelected={this.onElementSelected}
-        onElementHovered={this.onElementHovered}
-        onElementExpanded={this.onElementExpanded}
-        onValueChanged={this.props.onDataValueChanged}
-        searchResults={this.props.searchResults}
-        selected={this.selected()}
-        root={this.root()}
-        elements={this.elements()}
-        focused={this.focused()}
-        contextMenuExtensions={this.getAXContextMenuExtensions()}
-      />
+      <ElementsInspectorContainer>
+        <ElementsInspector
+          onElementSelected={this.onElementSelected}
+          onElementHovered={this.onElementHovered}
+          onElementExpanded={this.onElementExpanded}
+          onValueChanged={this.props.onDataValueChanged}
+          searchResults={this.props.searchResults}
+          selected={this.selected()}
+          root={this.root()}
+          elements={this.elements()}
+          focused={this.focused()}
+          contextMenuExtensions={this.getAXContextMenuExtensions()}
+        />
+        {selectorData && selectorData.leaves.length > 1 ? (
+          <MultipleSelectorSection
+            initialSelectedElement={this.selected()}
+            elements={selectorData.elements}
+            onElementSelected={this.onElementSelected}
+            onElementHovered={this.onElementHovered}
+          />
+        ) : null}
+      </ElementsInspectorContainer>
     ) : null;
   }
 }

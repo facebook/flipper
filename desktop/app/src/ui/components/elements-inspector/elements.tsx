@@ -20,7 +20,7 @@ import styled from '@emotion/styled';
 import {clipboard, MenuItemConstructorOptions} from 'electron';
 import React, {MouseEvent, KeyboardEvent} from 'react';
 
-const ROW_HEIGHT = 23;
+export const ROW_HEIGHT = 23;
 
 const backgroundColor = (props: {
   selected: boolean;
