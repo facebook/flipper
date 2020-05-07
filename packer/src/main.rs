@@ -13,11 +13,13 @@ use clap::value_t_or_exit;
 use rayon::prelude::{IntoParallelIterator, ParallelIterator};
 use std::collections::BTreeMap;
 use std::fs::File;
-use std::io::{stdout, BufReader, Read, Write};
+use std::io::{BufReader, Read, Write};
 use std::path;
 use types::{PackType, Platform};
 
 const DEFAULT_PACKLIST: &str = include_str!("packlist.yaml");
+// This is to ensure that all progress bar prefixes are aligned.
+const PROGRESS_PREFIX_LEN: usize = 24;
 
 type PackListPlatform = BTreeMap<PackType, Vec<path::PathBuf>>;
 
@@ -32,24 +34,35 @@ struct PackManifest {
     files: BTreeMap<PackType, HashSum>,
 }
 
+fn default_progress_bar(len: u64) -> indicatif::ProgressBar {
+    let pb = indicatif::ProgressBar::new(len as u64 * 2);
+    pb.set_style(
+        indicatif::ProgressStyle::default_bar()
+            .template("{prefix:.bold}▕{bar:.magenta}▏{msg}")
+            .progress_chars("█▓▒░  "),
+    );
+    pb
+}
+
 fn pack(
     platform: &Platform,
     dist_dir: &std::path::PathBuf,
     pack_list: &PackList,
     output_directory: &std::path::PathBuf,
 ) -> Result<Vec<(PackType, path::PathBuf)>> {
+    let pb = default_progress_bar(pack_list.0.len() as u64 * 2 - 1);
+    pb.set_prefix(&format!(
+        "{:width$}",
+        "Packing archives",
+        width = PROGRESS_PREFIX_LEN
+    ));
     let packtype_paths = pack_list
         .0
         .get(platform)
         .ok_or_else(|| error::Error::MissingPlatformDefinition(platform.clone()))?;
-    packtype_paths
+    let res = packtype_paths
         .into_par_iter()
         .map(|(pack_type, pack_files)| {
-            print!(
-                "Packing for platform {:?} type {:?} ... ",
-                platform, pack_type
-            );
-            let _ = stdout().flush();
             let output_path = path::Path::new(output_directory).join(format!("{}.tar", pack_type));
             let mut tar = tar::Builder::new(File::create(&output_path).with_context(|| {
                 format!(
@@ -61,12 +74,16 @@ fn pack(
             // to the "Current" one.
             tar.follow_symlinks(false);
             pack_platform(platform, dist_dir, pack_files, pack_type, &mut tar)?;
+            pb.inc(1);
             tar.finish()?;
-            println!("done.");
+            pb.inc(1);
 
             Ok((*pack_type, output_path))
         })
-        .collect()
+        .collect();
+
+    pb.finish();
+    res
 }
 
 fn pack_platform(
@@ -165,11 +182,7 @@ fn manifest(
     archive_paths: &[(PackType, path::PathBuf)],
     output_directory: &path::PathBuf,
 ) -> Result<path::PathBuf> {
-    print!("Generating manifest ... ");
-    let _ = stdout().flush();
-    // TODO: This could easily be parallelised.
     let archive_manifest = gen_manifest(&archive_paths)?;
-    println!("done.");
     write_manifest(&output_directory, &archive_manifest)
 }
 
@@ -193,11 +206,18 @@ fn gen_manifest(archive_paths: &[(PackType, path::PathBuf)]) -> Result<PackManif
 fn gen_manifest_files(
     archive_paths: &[(PackType, path::PathBuf)],
 ) -> Result<BTreeMap<PackType, HashSum>> {
+    let pb = default_progress_bar(archive_paths.len() as u64 - 1);
+    pb.set_prefix(&format!(
+        "{:width$}",
+        "Computing manifest",
+        width = PROGRESS_PREFIX_LEN
+    ));
     let res = archive_paths
         .into_par_iter()
         .map(|(pack_type, path)| {
             let reader = BufReader::new(File::open(path)?);
             let hash = sha256_digest(reader)?;
+            pb.inc(1);
             Ok((*pack_type, hash))
         })
         .collect::<Result<Vec<_>>>()?
@@ -209,6 +229,7 @@ fn gen_manifest_files(
                 acc
             },
         );
+    pb.finish();
     Ok(res)
 }
 
