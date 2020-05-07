@@ -10,6 +10,7 @@ mod types;
 
 use anyhow::{bail, Context, Result};
 use clap::value_t_or_exit;
+use rayon::prelude::{IntoParallelIterator, ParallelIterator};
 use std::collections::BTreeMap;
 use std::fs::File;
 use std::io::{stdout, BufReader, Read, Write};
@@ -42,7 +43,7 @@ fn pack(
         .get(platform)
         .ok_or_else(|| error::Error::MissingPlatformDefinition(platform.clone()))?;
     packtype_paths
-        .into_iter()
+        .into_par_iter()
         .map(|(pack_type, pack_files)| {
             print!(
                 "Packing for platform {:?} type {:?} ... ",
@@ -193,7 +194,7 @@ fn gen_manifest_files(
     archive_paths: &[(PackType, path::PathBuf)],
 ) -> Result<BTreeMap<PackType, HashSum>> {
     let res = archive_paths
-        .into_iter()
+        .into_par_iter()
         .map(|(pack_type, path)| {
             let reader = BufReader::new(File::open(path)?);
             let hash = sha256_digest(reader)?;
