@@ -227,7 +227,7 @@ export default class Layout extends FlipperPlugin<State, any, PersistedState> {
 
   init() {
     if (!this.props.persistedState) {
-      // If the selected plugin from the previous session was layout, then while importing the flipper trace, the redux store doesn't get updated in the first render, due to which the plugin crashes, as it has no persisted state
+      // If the selected plugin from the previous session was layout, then while importing the flipper export, the redux store doesn't get updated in the first render, due to which the plugin crashes, as it has no persisted state
       this.props.setPersistedState(this.constructor.defaultPersistedState);
     }
     // persist searchActive state when moving between plugins to prevent multiple

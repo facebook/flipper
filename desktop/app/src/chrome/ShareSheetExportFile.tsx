@@ -127,8 +127,8 @@ export default class ShareSheetExportFile extends Component<Props, State> {
       );
       this.store.dispatch(unsetShare());
       if (this.state.runInBackground) {
-        new Notification('Sharable Flipper trace created', {
-          body: `Flipper trace exported to the ${this.props.file}`,
+        new Notification('Shareable Flipper Export created', {
+          body: `Saved to ${this.props.file}`,
           requireInteraction: true,
         });
         return;
@@ -215,7 +215,7 @@ export default class ShareSheetExportFile extends Component<Props, State> {
           <ShareSheetPendingDialog
             width={500}
             statusUpdate={statusUpdate}
-            statusMessage="Exporting Flipper trace..."
+            statusMessage="Creating Flipper Export..."
             onCancel={() => this.cancelAndHide(store)}
             onRunInBackground={() => {
               this.setState({runInBackground: true});
