@@ -9,6 +9,7 @@
 
 import {
   styled,
+  produce,
   Toolbar,
   Select,
   FlexColumn,
@@ -91,6 +92,7 @@ type Page = {
   start: number;
   count: number;
   total: number;
+  highlightedRows: Array<number>;
 };
 
 type Structure = {
@@ -253,40 +255,6 @@ function transformRow(
     transformedColumns[columns[i]] = {value: renderValue(row[i])};
   }
   return {key: String(index), columns: transformedColumns};
-}
-
-function renderTable(page: Page | null, component: DatabasesPlugin) {
-  if (!page) {
-    return null;
-  }
-  return (
-    <ManagedTable
-      tableKey={`databases-${page.databaseId}-${page.table}`}
-      floating={false}
-      columnOrder={page.columns.map((name) => ({
-        key: name,
-        visible: true,
-      }))}
-      columns={page.columns.reduce(
-        (acc, val) =>
-          Object.assign({}, acc, {
-            [val]: {value: val, resizable: true, sortable: true},
-          }),
-        {},
-      )}
-      zebra={true}
-      rows={page.rows}
-      horizontallyScrollable={true}
-      multiHighlight={true}
-      onSort={(sortOrder: TableRowSortOrder) => {
-        component.dispatchAction({
-          type: 'SortByChanged',
-          sortOrder,
-        });
-      }}
-      initialSortOrder={component.state.currentSort ?? undefined}
-    />
-  );
 }
 
 function renderDatabaseColumns(structure: Structure | null) {
@@ -566,6 +534,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
             rows: event.values.map((row: Array<Value>, index: number) =>
               transformRow(event.columns, row, index),
             ),
+            highlightedRows: [],
             ...event,
           },
         };
@@ -1198,6 +1167,54 @@ export default class DatabasesPlugin extends FlipperPlugin<
     };
   }
 
+  renderTable(page: Page | null) {
+    if (!page) {
+      return null;
+    }
+    return (
+      <FlexRow grow={true}>
+        <ManagedTable
+          tableKey={`databases-${page.databaseId}-${page.table}`}
+          floating={false}
+          columnOrder={page.columns.map((name) => ({
+            key: name,
+            visible: true,
+          }))}
+          columns={page.columns.reduce(
+            (acc, val) =>
+              Object.assign({}, acc, {
+                [val]: {value: val, resizable: true, sortable: true},
+              }),
+            {},
+          )}
+          zebra={true}
+          rows={page.rows}
+          horizontallyScrollable={true}
+          multiHighlight={true}
+          onRowHighlighted={(highlightedRows) =>
+            this.setState(
+              produce((draftState: DatabasesPluginState) => {
+                if (draftState.currentPage !== null) {
+                  draftState.currentPage.highlightedRows = highlightedRows.map(
+                    parseInt,
+                  );
+                }
+              }),
+            )
+          }
+          onSort={(sortOrder: TableRowSortOrder) => {
+            this.dispatchAction({
+              type: 'SortByChanged',
+              sortOrder,
+            });
+          }}
+          initialSortOrder={this.state.currentSort ?? undefined}
+        />
+        {this.renderSidebar(page)}
+      </FlexRow>
+    );
+  }
+
   renderQuery(query: QueryResult | null) {
     if (!query || query === null) {
       return null;
@@ -1427,7 +1444,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
         <FlexRow grow={true}>
           <FlexColumn grow={true}>
             {this.state.viewMode === 'data'
-              ? renderTable(this.state.currentPage, this)
+              ? this.renderTable(this.state.currentPage)
               : null}
             {this.state.viewMode === 'structure'
               ? this.renderStructure()
