@@ -18,7 +18,17 @@ arg_enum! {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, serde::Deserialize)]
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    serde::Deserialize,
+    serde::Serialize
+)]
 #[serde(rename_all = "lowercase")]
 pub enum PackType {
     Frameworks,
