@@ -20,7 +20,7 @@ import {Idler} from './utils/Idler';
 import {StaticView} from './reducers/connections';
 import {State as ReduxState} from './reducers';
 import {DEFAULT_MAX_QUEUE_SIZE} from './reducers/pluginMessageQueue';
-type Parameters = any;
+type Parameters = {[key: string]: any};
 
 // This function is intended to be called from outside of the plugin.
 // If you want to `call` from the plugin use, this.client.call
@@ -46,7 +46,7 @@ export interface PluginClient {
   // eslint-disable-next-line
   call(method: string, params?: Parameters): Promise<any>;
   // eslint-disable-next-line
-  subscribe(method: string, callback: (params: Parameters) => void): void;
+  subscribe(method: string, callback: (params: any) => void): void;
   // eslint-disable-next-line
   supportsMethod(method: string): Promise<boolean>;
 }
