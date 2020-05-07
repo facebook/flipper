@@ -10,7 +10,7 @@
 @protocol SKInvalidationDelegate
 
 - (void)invalidateNode:(id<NSObject>)node;
-
+- (void)invalidateRootNode;
 - (void)updateNodeReference:(id<NSObject>)node;
 
 @end

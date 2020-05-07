@@ -15,7 +15,6 @@ bundle.map
 **/Pods/
 **/xcuserdata/
 build/
-Podfile.lock
 
 android/third-party/external/
 
@@ -36,4 +35,4 @@ libs/*/bin/**/*.class
 *.DS_Store
 
 # Automatically generated
-docs/extending/ui-components.md
+docs/extending/ui-components.mdx

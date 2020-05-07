@@ -1,9 +1,11 @@
 {
-  "name": "React",
+  "name": "flipper-plugin-react-devtools",
   "version": "1.0.1",
   "main": "index.tsx",
   "license": "MIT",
-  "keywords": ["flipper-plugin"],
+  "keywords": [
+    "flipper-plugin"
+  ],
   "dependencies": {
     "address": "^1.1.2",
     "get-port": "^5.0.0",

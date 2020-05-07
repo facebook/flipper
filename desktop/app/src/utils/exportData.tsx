@@ -22,6 +22,7 @@ import {
   FlipperDevicePlugin,
   FlipperPlugin,
   callClient,
+  supportsMethod,
   FlipperBasePlugin,
 } from '../plugin';
 import {default as BaseDevice} from '../devices/BaseDevice';
@@ -44,7 +45,6 @@ import {deconstructClientId, deconstructPluginKey} from '../utils/clientUtils';
 import {performance} from 'perf_hooks';
 import {processMessageQueue} from './messageQueue';
 import {getPluginTitle} from './pluginUtils';
-import {logPlatformSuccessRate} from './metrics';
 import {capture} from './screenshot';
 import {uploadFlipperMedia} from '../fb-stubs/user';
 
@@ -383,7 +383,7 @@ export const processStore = async (
 
   if (device) {
     const {serial} = device;
-    statusUpdate && statusUpdate('Capturing screenshot');
+    statusUpdate && statusUpdate('Capturing screenshot...');
     const deviceScreenshot = await capture(device).catch((e) => {
       console.warn('Failed to capture device screenshot when exporting. ' + e);
       return null;
@@ -413,7 +413,7 @@ export const processStore = async (
       idler,
     );
 
-    statusUpdate && statusUpdate('Uploading screenshot');
+    statusUpdate && statusUpdate('Uploading screenshot...');
     const deviceScreenshotLink =
       deviceScreenshot &&
       (await uploadFlipperMedia(deviceScreenshot, 'Image').catch((e) => {
@@ -472,6 +472,7 @@ export async function fetchMetadata(
             state,
             idler,
             statusUpdate,
+            supportsMethod(client, pluginId),
           ),
           `Timed out while collecting data for ${pluginName}`,
         );

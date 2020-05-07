@@ -9,7 +9,8 @@
 
 #import "SKDescriptorMapper.h"
 
-typedef void (^SKTouchFinishDelegate)(NSArray<NSString*>* path);
+typedef void (^SKTouchFinishDelegate)(id<NSObject> currentNode);
+typedef void (^SKProcessFinishDelegate)(NSDictionary* tree);
 
 @interface SKTouch : NSObject
 
@@ -22,6 +23,8 @@ typedef void (^SKTouchFinishDelegate)(NSArray<NSString*>* path);
                     withOffset:(CGPoint)offset;
 
 - (void)finish;
+
+- (void)retrieveSelectTree:(SKProcessFinishDelegate)callback;
 
 - (BOOL)containedIn:(CGRect)bounds;
 

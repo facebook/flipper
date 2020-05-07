@@ -312,6 +312,10 @@ TEST_F(FlipperClientTest, testExceptionUnknownApi) {
 }
 
 TEST_F(FlipperClientTest, testBackgroundPluginActivated) {
+  dynamic messageInit = dynamic::object("method", "init")(
+      "params", dynamic::object("plugin", "Test"));
+  dynamic messageDeinit = dynamic::object("method", "deinit")(
+      "params", dynamic::object("plugin", "Test"));
   bool pluginConnected = false;
   const auto connectionCallback = [&](std::shared_ptr<FlipperConnection> conn) {
     pluginConnected = true;
@@ -322,7 +326,26 @@ TEST_F(FlipperClientTest, testBackgroundPluginActivated) {
 
   client->addPlugin(plugin);
   client->start();
-  EXPECT_TRUE(pluginConnected);
+  EXPECT_FALSE(pluginConnected);
+
+  {
+    auto responder = std::make_unique<FlipperResponderMock>();
+    socket->onMessageReceived(messageInit, getResponder());
+    EXPECT_TRUE(pluginConnected);
+  }
+
+  {
+    auto responder = std::make_unique<FlipperResponderMock>();
+    socket->onMessageReceived(messageDeinit, getResponder());
+    EXPECT_FALSE(pluginConnected);
+  }
+
+  {
+    auto responder = std::make_unique<FlipperResponderMock>();
+    socket->onMessageReceived(messageInit, getResponder());
+    EXPECT_TRUE(pluginConnected);
+  }
+
   client->stop();
   EXPECT_FALSE(pluginConnected);
 }

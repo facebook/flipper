@@ -1,10 +1,10 @@
 {
   "name": "flipper-pkg",
-  "version": "0.37.0",
+  "version": "0.41.0",
   "description": "Utility for building and publishing Flipper plugins",
   "repository": "facebook/flipper",
   "main": "lib/index.js",
-  "flipper:source": "src",
+  "flipperBundlerEntry": "src",
   "types": "lib/index.d.ts",
   "license": "MIT",
   "bin": {
@@ -14,20 +14,24 @@
   "dependencies": {
     "@oclif/command": "^1",
     "@oclif/config": "^1",
-    "@oclif/plugin-help": "^2",
-    "@types/fs-extra": "^8.1.0",
-    "@types/inquirer": "^6.5.0",
-    "@types/node": "^13.7.5",
+    "@oclif/parser": "^3",
+    "@oclif/plugin-help": "^3.0.0",
+    "@oclif/plugin-warn-if-update-available": "^1.7.0",
+    "ajv": "^6.12.2",
+    "ajv-errors": "^1.0.1",
     "cli-ux": "^5.4.5",
+    "flipper-pkg-lib": "0.41.0",
     "fs-extra": "^8.1.0",
-    "flipper-babel-transformer": "0.37.0",
-    "inquirer": "^7.0.5",
-    "metro": "^0.58.0",
-    "tslib": "^1"
+    "inquirer": "^7.1.0",
+    "lodash": "^4.17.15",
+    "recursive-readdir": "^2.2.2"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1",
+    "@types/fs-extra": "^8.1.0",
+    "@types/inquirer": "^6.5.0",
     "@types/jest": "^25.1.0",
+    "@types/node": "^13.7.5",
     "globby": "^10",
     "jest": "^25.1.0",
     "prettier": "^2.0.0",
@@ -38,8 +42,8 @@
   },
   "scripts": {
     "reset": "rimraf lib *.tsbuildinfo",
-    "prebuild": "cd ../babel-transformer && yarn build",
     "build": "tsc -b",
+    "readme": "oclif-dev readme",
     "postpack": "rimraf oclif.manifest.json",
     "prepack": "yarn reset && yarn build && oclif-dev manifest && oclif-dev readme",
     "run": "yarn build && bin/run",
@@ -52,7 +56,9 @@
     "/bin",
     "/npm-shrinkwrap.json",
     "/oclif.manifest.json",
-    "lib/**/*"
+    "/lib/**/*",
+    "/schemas/**/*",
+    "/templates/**/*"
   ],
   "homepage": "https://github.com/facebook/flipper",
   "keywords": [
@@ -63,7 +69,8 @@
     "commands": "./lib/commands",
     "bin": "flipper-pkg",
     "plugins": [
-      "@oclif/plugin-help"
+      "@oclif/plugin-help",
+      "@oclif/plugin-warn-if-update-available"
     ]
   }
 }

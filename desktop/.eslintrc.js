@@ -12,6 +12,16 @@ const fbjs = require('eslint-config-fbjs');
 // enforces copyright header and @format directive to be present in every file
 const pattern = /^\*\r?\n[\S\s]*Facebook[\S\s]* \* @format\r?\n/;
 
+const builtInModules = [
+  'flipper',
+  'react',
+  'react-dom',
+  'electron',
+  'adbkit',
+  'immer',
+  '@emotion/styled',
+];
+
 const prettierConfig = {
   // arrowParens=always is the default for Prettier 2.0, but other configs
   // at Facebook appear to be leaking into this file, which is still on
@@ -35,6 +45,7 @@ module.exports = {
     'prettier',
     '@typescript-eslint',
     'import',
+    'node',
   ],
   rules: {
     // disable rules from eslint-config-fbjs
@@ -61,9 +72,9 @@ module.exports = {
     'header/header': [2, 'block', {pattern}],
     'prettier/prettier': [2, prettierConfig],
     'flowtype/object-type-delimiter': [0],
-
-    // import
     'import/no-unresolved': [2, {commonjs: true, amd: true}],
+    'node/no-extraneous-import': [2, {allowModules: builtInModules}],
+    'node/no-extraneous-require': [2, {allowModules: builtInModules}],
   },
   settings: {
     'import/resolver': {

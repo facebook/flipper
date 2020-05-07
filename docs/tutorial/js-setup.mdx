@@ -1,0 +1,98 @@
+---
+id: js-setup
+title: Building a Desktop Plugin
+sidebar_label: Building a Desktop Plugin
+---
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+Now that we have the native side covered, let's display the data we're sending
+on the desktop side. You can check out the full workflow of building Flipper desktop
+plugins here: https://fbflipper.com/docs/extending/js-setup.
+
+<img alt="Custom cards UI for our sea mammals plugin" src={useBaseUrl("img/js-custom.png")} />
+
+## Dynamic Plugin loading
+
+By default, Flipper will start with the plugins it was bundled with. You can
+configure it to also look for plugins in custom directories. To do that,
+modify the `~/.flipper/config.json` file that is created the first time
+you start Flipper and add a newly created directory the `pluginPaths` attribute.
+
+Your file will then look something like this:
+
+```json
+{
+  "pluginPaths": [
+    "~/Flipper/custom-plugins/"
+  ],
+  ...
+}
+```
+
+## Installing flipper-pkg
+
+`flipper-pkg` tool helps to define, validate and package Flipper desktop plugins. You can install it globally using:
+```
+yarn global add flipper-pkg
+```
+or
+```
+npm install flipper-pkg --global
+```
+
+## Creating the Plugin Package
+
+With the loading part out of the way, we can create the new plugin. For that, first create a new folder inside the custom plugins directory. Then use `flpper-pkg init` to initialise a new Flipper desktop plugin package:
+
+```bash
+$ cd ~/Flipper/custom-plugins/
+$ mkdir sea-mammals
+$ cd sea-mammals
+$ flipper-pkg init
+```
+
+The tool will ask you to provide "id" and "title" for your plugin. Use "sea-mammals" as "id" and "Sea Mammals" as "title". After that the tool will create two files in the directory: `package.json` and `src/index.tsx`.
+
+Open the `package.json` to check the fields:
+
+1. "$schema" must contain URI identifying scheme according to which the plugin is defined. Currently, Flipper supports plugins defined by the specification version 2 (https://fbflipper.com/schemas/plugin-package/v2.json), while version 1 is being deprecated.
+2. "name" must start with "flipper-plugin-"
+3. "keywords" must contain "flipper-plugin"
+4. "id" must be the same as used on native side, e.g. returned by getId() method in Android plugin. In our case that is "sea-mammals".
+5. "flipperBundlerEntry" must point to the source entry point which will be used by "flipper-pkg" to produce the plugin bundle.
+6. "main" must point to the place where the produced bundle will be written.
+7. "title" and "icon" are optional fields specifying the plugin item appearance in the Flipper sidebar.
+
+For instance:
+
+```json
+{
+  "$schema": "https://fbflipper.com/schemas/plugin-package/v2.json",
+  "name": "flipper-plugin-sea-mammals",
+  "id": "sea-mammals",
+  "version": "2.0.0",
+  "main": "dist/bundle.js",
+  "flipperBundlerEntry": "src/index.tsx",
+  "license": "MIT",
+  "keywords": ["flipper-plugin"],
+  "icon": "apps",
+  "title": "Sea Mammals",
+  "category": "Example Plugin",
+  "scripts": {
+    "lint": "flipper-pkg lint",
+    "prepack": "flipper-pkg lint && flipper-pkg bundle"
+  },
+  "peerDependencies": {
+    "flipper": "latest"
+  },
+  "devDependencies": {
+    "flipper": "latest",
+    "flipper-pkg": "latest"
+  }
+}
+```
+*See [package.json](https://github.com/facebook/flipper/blob/master/desktop/plugins/seamammals/package.json)*
+
+To ensure there are no errors in the defined plugin, install packages (using `yarn install` or `npm install`) and execute script `lint` (`yarn lint` or `npm run lint`) which shows all the mismatches that should be fixed to make the plugin definition valid.
+
+Now that our package has been set up, we are ready to build a UI for our plugin. Either by using a standardized table-based plugin, or by creating a custom UI.

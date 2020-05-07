@@ -139,7 +139,7 @@ export default class ShareSheetExportUrl extends Component<Props, State> {
       );
       const uploadMarker = `${EXPORT_FLIPPER_TRACE_EVENT}:upload`;
       performance.mark(uploadMarker);
-      statusUpdate('Uploading Flipper Trace...');
+      statusUpdate('Uploading Flipper Export...');
       const result = await reportPlatformFailures(
         shareFlipperData(serializedString),
         `${SHARE_FLIPPER_TRACE_EVENT}`,
@@ -154,16 +154,19 @@ export default class ShareSheetExportUrl extends Component<Props, State> {
       getLogger().trackTimeSince(uploadMarker, uploadMarker, {
         plugins: this.store.getState().plugins.selectedPlugins,
       });
-      this.setState({fetchMetaDataErrors, result});
       const flipperUrl = (result as DataExportResult).flipperUrl;
       if (flipperUrl) {
-        clipboard.writeText(String(flipperUrl));
         this.store.dispatch(setExportURL(flipperUrl));
-        new Notification('Sharable Flipper trace created', {
-          body: 'URL copied to clipboard',
-          requireInteraction: true,
-        });
+        if (this.state.runInBackground) {
+          clipboard.writeText(String(flipperUrl));
+          new Notification('Shareable Flipper Export created', {
+            body: 'URL copied to clipboard',
+            requireInteraction: true,
+          });
+        }
       }
+      this.setState({fetchMetaDataErrors, result});
+      this.store.dispatch(unsetShare());
       this.store.dispatch(resetSupportFormV2State());
       this.props.logger.trackTimeSince(mark, 'export:url-success');
     } catch (e) {
@@ -216,7 +219,7 @@ export default class ShareSheetExportUrl extends Component<Props, State> {
           <ShareSheetPendingDialog
             width={500}
             statusUpdate={statusUpdate}
-            statusMessage="Uploading Flipper trace..."
+            statusMessage="Uploading Flipper Export..."
             onCancel={this.cancelAndHide(store)}
             onRunInBackground={() => {
               this.setState({runInBackground: true});
@@ -250,7 +253,7 @@ export default class ShareSheetExportUrl extends Component<Props, State> {
                     <InfoText>
                       Flipper's data was successfully uploaded. This URL can be
                       used to share with other Flipper users. Opening it will
-                      import the data from your trace.
+                      import the data from your export.
                     </InfoText>
                     <Copy
                       value={(result as DataExportResult).flipperUrl}

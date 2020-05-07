@@ -30,6 +30,9 @@ import isProduction from '../utils/isProduction';
 import {notNull} from '../utils/typeUtils';
 import {sideEffect} from '../utils/sideEffect';
 
+// eslint-disable-next-line import/no-unresolved
+import getPluginIndex from '../utils/getDefaultPluginsIndex';
+
 export type PluginDefinition = {
   id?: string;
   name: string;
@@ -38,7 +41,7 @@ export type PluginDefinition = {
   entry?: string;
 };
 
-export default (store: Store, _logger: Logger) => {
+export default (store: Store, logger: Logger) => {
   // expose Flipper and exact globally for dynamically loaded plugins
   const globalObject: any = typeof window === 'undefined' ? global : window;
   globalObject.React = React;
@@ -50,12 +53,14 @@ export default (store: Store, _logger: Logger) => {
   const disabledPlugins: Array<PluginDefinition> = [];
   const failedPlugins: Array<[PluginDefinition, string]> = [];
 
+  const defaultPluginsIndex = getPluginIndex();
+
   const initialPlugins: Array<
     typeof FlipperPlugin | typeof FlipperDevicePlugin
   > = [...getBundledPlugins(), ...getDynamicPlugins()]
     .filter(checkDisabled(disabledPlugins))
     .filter(checkGK(gatekeepedPlugins))
-    .map(requirePlugin(failedPlugins))
+    .map(requirePlugin(failedPlugins, defaultPluginsIndex))
     .filter(notNull);
 
   store.dispatch(addGatekeepedPlugins(gatekeepedPlugins));
@@ -65,43 +70,44 @@ export default (store: Store, _logger: Logger) => {
 
   sideEffect(
     store,
-    {name: 'setupMenuBar', throttleMs: 100},
+    {name: 'setupMenuBar', throttleMs: 1000, fireImmediately: true},
     (state) => state.plugins,
     (plugins, store) => {
       setupMenuBar(
         [...plugins.devicePlugins.values(), ...plugins.clientPlugins.values()],
         store,
+        logger,
       );
     },
   );
 };
 
 function getBundledPlugins(): Array<PluginDefinition> {
-  if (!isProduction() || process.env.FLIPPER_NO_EMBEDDED_PLUGINS) {
-    // Plugins are only bundled in production builds
-    return [];
-  }
-
   // DefaultPlugins that are included in the bundle.
   // List of defaultPlugins is written at build time
   const pluginPath =
-    process.env.BUNDLED_PLUGIN_PATH || path.join(__dirname, 'defaultPlugins');
+    process.env.BUNDLED_PLUGIN_PATH ||
+    (isProduction()
+      ? path.join(__dirname, 'defaultPlugins')
+      : './defaultPlugins/index.json');
 
   let bundledPlugins: Array<PluginDefinition> = [];
   try {
-    bundledPlugins = global.electronRequire(
-      path.join(pluginPath, 'index.json'),
-    );
+    bundledPlugins = global.electronRequire(pluginPath);
   } catch (e) {
     console.error(e);
   }
 
   return bundledPlugins
-    .filter((plugin) => notNull(plugin.out))
-    .map((plugin) => ({
-      ...plugin,
-      out: path.join(pluginPath, plugin.out!),
-    }));
+    .filter((plugin) => notNull(plugin.entry))
+    .map(
+      (plugin) =>
+        ({
+          ...plugin,
+          entry: path.resolve(pluginPath, plugin.entry!),
+        } as PluginDefinition),
+    )
+    .concat(bundledPlugins.filter((plugin) => !plugin.entry));
 }
 
 export function getDynamicPlugins() {
@@ -146,13 +152,16 @@ export const checkDisabled = (disabledPlugins: Array<PluginDefinition>) => (
 
 export const requirePlugin = (
   failedPlugins: Array<[PluginDefinition, string]>,
+  defaultPluginsIndex: any,
   reqFn: Function = global.electronRequire,
 ) => {
   return (
     pluginDefinition: PluginDefinition,
   ): typeof FlipperPlugin | typeof FlipperDevicePlugin | null => {
     try {
-      let plugin = reqFn(pluginDefinition.out);
+      let plugin = pluginDefinition.entry
+        ? reqFn(pluginDefinition.entry)
+        : defaultPluginsIndex[pluginDefinition.name];
       if (plugin.default) {
         plugin = plugin.default;
       }
@@ -160,15 +169,11 @@ export const requirePlugin = (
         throw new Error(`Plugin ${plugin.name} is not a FlipperBasePlugin`);
       }
 
+      plugin.id = plugin.id || pluginDefinition.id;
+
       // set values from package.json as static variables on class
       Object.keys(pluginDefinition).forEach((key) => {
-        if (key === 'name') {
-          plugin.id = plugin.id || pluginDefinition.name;
-        } else if (key === 'id') {
-          throw new Error(
-            'Field "id" not allowed in package.json. The plugin\'s name will be used as ID"',
-          );
-        } else {
+        if (key !== 'name' && key !== 'id') {
           plugin[key] =
             plugin[key] || pluginDefinition[key as keyof PluginDefinition];
         }

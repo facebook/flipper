@@ -29,7 +29,7 @@ import ContextMenu from '../ContextMenu';
 import FlexColumn from '../FlexColumn';
 import createPaste from '../../../fb-stubs/createPaste';
 import debounceRender from 'react-debounce-render';
-import debounce from 'lodash.debounce';
+import {debounce} from 'lodash';
 import {DEFAULT_ROW_HEIGHT} from './types';
 import textContent from '../../../utils/textContent';
 import {notNull} from '../../../utils/typeUtils';
@@ -151,6 +151,7 @@ type ManagedTableState = {
 const Container = styled(FlexColumn)<{canOverflow?: boolean}>((props) => ({
   overflow: props.canOverflow ? 'scroll' : 'visible',
   flexGrow: 1,
+  height: '100%',
 }));
 Container.displayName = 'ManagedTable:Container';
 

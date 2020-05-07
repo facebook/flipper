@@ -34,6 +34,7 @@
 }
 
 - (void)hitTest:(SKTouch*)touch forNode:(UIApplication*)node {
+  bool finish = true;
   for (NSInteger index = [self childCountForNode:node] - 1; index >= 0;
        index--) {
     UIWindow* child = [self childForNode:node atIndex:index];
@@ -43,11 +44,12 @@
 
     if ([touch containedIn:child.frame]) {
       [touch continueWithChildIndex:index withOffset:child.frame.origin];
-      return;
+      finish = false;
     }
   }
-
-  [touch finish];
+  if (finish) {
+    [touch finish];
+  }
 }
 
 - (NSArray<UIWindow*>*)visibleChildrenForNode:(UIApplication*)node {

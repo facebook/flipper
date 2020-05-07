@@ -27,6 +27,10 @@ export interface Workspaces {
   packages: Package[];
 }
 
+function isPlugin(dir: string) {
+  return dir.startsWith(pluginsDir);
+}
+
 export async function getWorkspaces(): Promise<Workspaces> {
   const rootPackageJson = await fs.readJson(path.join(rootDir, 'package.json'));
   const packageGlobs = rootPackageJson.workspaces.packages as string[];
@@ -37,9 +41,7 @@ export async function getWorkspaces(): Promise<Workspaces> {
           glob(path.join(rootDir, pattern, '')),
         )),
       ),
-      async (dir) =>
-        !dir.startsWith(pluginsDir) &&
-        (await fs.pathExists(path.join(dir, 'package.json'))),
+      async (dir) => await fs.pathExists(path.join(dir, 'package.json')),
     ),
     async (dir) => {
       const json = await fs.readJson(path.join(dir, 'package.json'));
@@ -68,33 +70,55 @@ async function savePackageJson({dir, json}: Package) {
   });
 }
 
+function updateDependencies(
+  dependencies: {[key: string]: string},
+  packagesToUpdate: string[],
+  newVersion: string,
+): boolean {
+  if (!dependencies) {
+    return false;
+  }
+  let updated = false;
+  for (const packageName of packagesToUpdate) {
+    if (
+      dependencies[packageName] !== undefined &&
+      dependencies[packageName] !== newVersion
+    ) {
+      dependencies[packageName] = newVersion;
+      updated = true;
+    }
+  }
+  return updated;
+}
+
 async function bumpWorkspaceVersions(
   {rootPackage, packages}: Workspaces,
   newVersion?: string,
 ): Promise<string> {
   newVersion = newVersion || (rootPackage.json.version as string);
-  if (rootPackage.json.version !== newVersion) {
-    rootPackage.json.version = newVersion;
-    await savePackageJson(rootPackage);
-  }
-  const localPackageNames = packages.map(({json}) => json.name as string);
-  for (const pkg of packages) {
-    const json = pkg.json;
+  const allPackages = [rootPackage, ...packages];
+  const localPackageNames = packages
+    .filter((pkg) => !isPlugin(pkg.dir))
+    .map(({json}) => json.name as string);
+  for (const pkg of allPackages) {
+    const {dir, json} = pkg;
     let changed = false;
-    if (json.version !== newVersion) {
+    if (json.version !== newVersion && !isPlugin(dir)) {
       json.version = newVersion;
       changed = true;
     }
-    if (json.dependencies) {
-      for (const localPackageName of localPackageNames) {
-        if (
-          json.dependencies[localPackageName] !== undefined &&
-          json.dependencies[localPackageName] !== newVersion
-        ) {
-          json.dependencies[localPackageName] = newVersion;
-          changed = true;
-        }
-      }
+    if (updateDependencies(json.dependencies, localPackageNames, newVersion)) {
+      changed = true;
+    }
+    if (
+      updateDependencies(json.devDependencies, localPackageNames, newVersion)
+    ) {
+      changed = true;
+    }
+    if (
+      updateDependencies(json.peerDependencies, localPackageNames, newVersion)
+    ) {
+      changed = true;
     }
     if (changed) {
       await savePackageJson(pkg);

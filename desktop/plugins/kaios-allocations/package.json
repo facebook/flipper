@@ -1,10 +1,13 @@
 {
-  "name": "kaios-big-allocations",
+  "name": "flipper-plugin-kaios-big-allocations",
   "version": "1.0.0",
   "main": "index.tsx",
   "license": "MIT",
   "title": "KaiOS: big allocations",
   "icon": "apps",
+  "keywords": [
+    "flipper-plugin"
+  ],
   "bugs": {
     "email": "oncall+wa_kaios@xmail.facebook.com",
     "url": "https://fb.workplace.com/groups/wa.kaios/"
@@ -13,17 +16,11 @@
     "postinstall": "patch-package"
   },
   "devDependencies": {
-    "patch-package": "^6.2.0",
-    "postinstall-postinstall": "^2.0.0"
+    "patch-package": "^6.2.0"
   },
   "dependencies": {
     "firefox-client": "0.3.0",
     "promisify-child-process": "^3.1.1"
-  },
-  "greenkeeper": {
-    "ignore": [
-      "firefox-client"
-    ]
   },
   "resolutions": {
     "minimist": "1.2.3"

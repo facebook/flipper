@@ -12,7 +12,6 @@ import {FlexColumn, FlexRow, styled} from 'flipper';
 import {connect} from 'react-redux';
 import TitleBar from './chrome/TitleBar';
 import MainSidebar2 from './chrome/mainsidebar/MainSidebar2';
-import BugReporterDialog from './chrome/BugReporterDialog';
 import ErrorBar from './chrome/ErrorBar';
 import DoctorBar from './chrome/DoctorBar';
 import ShareSheetExportUrl from './chrome/ShareSheetExportUrl';
@@ -26,7 +25,6 @@ import {ipcRenderer, remote} from 'electron';
 import {
   ActiveSheet,
   ShareType,
-  ACTIVE_SHEET_BUG_REPORTER,
   ACTIVE_SHEET_PLUGINS,
   ACTIVE_SHEET_SHARE_DATA,
   ACTIVE_SHEET_SIGN_IN,
@@ -41,7 +39,6 @@ import {
   ACTIVE_SHEET_CHANGELOG_RECENT_ONLY,
 } from './reducers/application';
 import {Logger} from './fb-interfaces/Logger';
-import BugReporter from './fb-stubs/BugReporter';
 import {State as Store} from './reducers/index';
 import {StaticView, FlipperError} from './reducers/connections';
 import PluginManager from './chrome/plugin-manager/PluginManager';
@@ -54,7 +51,6 @@ const version = remote.app.getVersion();
 
 type OwnProps = {
   logger: Logger;
-  bugReporter: BugReporter;
 };
 
 type StateFromProps = {
@@ -99,13 +95,6 @@ export class App extends React.Component<Props> {
   getSheet = (onHide: () => any) => {
     const {activeSheet} = this.props;
     switch (activeSheet) {
-      case ACTIVE_SHEET_BUG_REPORTER:
-        return (
-          <BugReporterDialog
-            bugReporter={this.props.bugReporter}
-            onHide={onHide}
-          />
-        );
       case ACTIVE_SHEET_PLUGINS:
         return <PluginManager onHide={onHide} />;
       case ACTIVE_SHEET_SIGN_IN:

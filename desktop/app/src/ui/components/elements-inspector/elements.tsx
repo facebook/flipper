@@ -20,7 +20,7 @@ import styled from '@emotion/styled';
 import {clipboard, MenuItemConstructorOptions} from 'electron';
 import React, {MouseEvent, KeyboardEvent} from 'react';
 
-const ROW_HEIGHT = 23;
+export const ROW_HEIGHT = 23;
 
 const backgroundColor = (props: {
   selected: boolean;
@@ -131,6 +131,7 @@ const ElementsRowAttributeValue = styled.span({
 });
 ElementsRowAttributeValue.displayName = 'Elements:ElementsRowAttributeValue';
 
+// Merge this functionality with components/Highlight
 class PartialHighlight extends PureComponent<{
   selected: boolean;
   highlighted: string | undefined | null;
@@ -513,6 +514,17 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
 
     if (props.root != null) {
       seed(props.root, 1);
+    } else {
+      const virtualRoots: Set<string> = new Set();
+      Object.keys(props.elements).forEach((id) => virtualRoots.add(id));
+      for (const [currentId, element] of Object.entries(props.elements)) {
+        if (!element) {
+          virtualRoots.delete(currentId);
+        } else {
+          element.children.forEach((id) => virtualRoots.delete(id));
+        }
+      }
+      virtualRoots.forEach((id) => seed(id, 1));
     }
 
     return {flatElements, flatKeys, maxDepth};

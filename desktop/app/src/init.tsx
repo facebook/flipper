@@ -14,7 +14,6 @@ import ContextMenuProvider from './ui/components/ContextMenuProvider';
 import GK from './fb-stubs/GK';
 import {init as initLogger} from './fb-stubs/Logger';
 import App from './App';
-import BugReporter from './fb-stubs/BugReporter';
 import setupPrefetcher from './fb-stubs/Prefetcher';
 import {persistStore} from 'redux-persist';
 import {Store} from './reducers/index';
@@ -36,7 +35,6 @@ import {CacheProvider} from '@emotion/core';
 import {enableMapSet} from 'immer';
 
 const logger = initLogger(store);
-const bugReporter = new BugReporter(logger, store);
 
 enableMapSet();
 
@@ -64,7 +62,7 @@ const AppFrame = () => {
                 }}
               />
             ) : (
-              <App logger={logger} bugReporter={bugReporter} />
+              <App logger={logger} />
             )}
           </CacheProvider>
         </Provider>

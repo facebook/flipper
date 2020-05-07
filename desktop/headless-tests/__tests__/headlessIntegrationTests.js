@@ -123,7 +123,7 @@ test(
   'Output includes fileVersion',
   () => {
     return runHeadless(basicArgs).then((result) => {
-      expect(result.output.fileVersion).toMatch(/[0-9]+\.[0-9]+\.[0-9]+/);
+      expect(result.output.fileVersion).toMatch(/\d+\.\d+\.\d+/);
     });
   },
   TEST_TIMEOUT_MS,

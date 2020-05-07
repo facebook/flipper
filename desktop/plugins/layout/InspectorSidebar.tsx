@@ -149,7 +149,7 @@ const Sidebar: React.FC<Props> = (props: Props) => {
   const sections: Array<React.ReactNode> = (
     (SidebarExtensions &&
       SidebarExtensions.map((ext) =>
-        ext(props.client, props.realClient, element.id, props.logger),
+        ext(props.client, props.realClient, element, props.logger),
       )) ||
     []
   ).concat(

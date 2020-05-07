@@ -1,11 +1,17 @@
 {
-    "name": "flipper-js-client",
-    "version": "1.0.0",
-    "main": "index.js",
-    "license": "MIT",
-    "title": "Flipper JS Client",
-    "icon": "apps",
-    "bugs": {
-      "email": "timurvaliev@fb.com"
-    }
+  "name": "flipper-js-client",
+  "version": "0.41.0",
+  "private": true,
+  "main": "index.js",
+  "license": "MIT",
+  "title": "Flipper JS Client",
+  "icon": "apps",
+  "bugs": {
+    "email": "timurvaliev@fb.com"
+  },
+  "dependencies": {
+    "rsocket-flowable": "^0.0.14",
+    "rsocket-types": "^0.0.16",
+    "ws": "^7.2.3"
   }
+}

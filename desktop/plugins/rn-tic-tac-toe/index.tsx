@@ -124,9 +124,7 @@ export default class ReactNativeTicTacToe extends FlipperPlugin<
           <Info type="info">
             This plugin demonstrates how to create pure JavaScript Flipper
             plugins for React Native. Find out how to create a similar plugin at{' '}
-            <a
-              href="https://fbflipper.com/docs/tutorial/intro.html"
-              target="blank">
+            <a href="https://fbflipper.com/docs/tutorial/intro" target="blank">
               fbflipper.com
             </a>
             .

@@ -221,4 +221,26 @@ describe('sideeffect', () => {
     await sleep(100);
     expect(events).toEqual(['counter: 1', 'counter: 3', 'counter: 5']);
   });
+
+  test('can fire immediately', async () => {
+    store.dispatch({type: 'inc'});
+    store.dispatch({type: 'inc'});
+
+    unsubscribe = sideEffect(
+      store,
+      {name: 'test', throttleMs: 1, fireImmediately: true},
+      (s) => s,
+      (s) => {
+        events.push(`counter: ${s.counter.count}`);
+      },
+    );
+
+    expect(events).toEqual(['counter: 2']);
+    store.dispatch({type: 'inc'});
+    store.dispatch({type: 'inc'});
+    // arrive as a single effect
+    await sleep(10);
+    expect(events).toEqual(['counter: 2', 'counter: 4']);
+    unsubscribe?.();
+  });
 });

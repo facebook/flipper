@@ -26,13 +26,13 @@ export function sendDidMountMessage(webview: WebviewTag) {
  *
  * @param webview
  * @param text
- * This helper function is for appending flipper trace in the questions input text field.
- * It also updates the Flipper trace state in the form which makes it pass the validation.
+ * This helper function is for appending flipper export in the questions input text field.
+ * It also updates the Flipper export state in the form which makes it pass the validation.
  * One should use it only for the pages backed by NTUsersFormContainer.react.js
  */
-export function sendFlipperTrace(webview: WebviewTag, text: string) {
+export function sendFlipperExport(webview: WebviewTag, text: string) {
   webview.send('hostMessage', {
-    type: 'flipperTrace',
+    type: 'flipperExport',
     payload: text,
   });
 }

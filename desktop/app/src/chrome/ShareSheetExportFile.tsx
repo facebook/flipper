@@ -125,15 +125,14 @@ export default class ShareSheetExportFile extends Component<Props, State> {
         ),
         `${EXPORT_FLIPPER_TRACE_EVENT}:UI_FILE`,
       );
-      this.store.dispatch(unsetShare());
       if (this.state.runInBackground) {
-        new Notification('Sharable Flipper trace created', {
-          body: `Flipper trace exported to the ${this.props.file}`,
+        new Notification('Shareable Flipper Export created', {
+          body: `Saved to ${this.props.file}`,
           requireInteraction: true,
         });
-        return;
       }
       this.setState({fetchMetaDataErrors, result: {kind: 'success'}});
+      this.store.dispatch(unsetShare());
       this.props.logger.trackTimeSince(mark, 'export:file-success');
     } catch (err) {
       const result: {
@@ -215,7 +214,7 @@ export default class ShareSheetExportFile extends Component<Props, State> {
           <ShareSheetPendingDialog
             width={500}
             statusUpdate={statusUpdate}
-            statusMessage="Exporting Flipper trace..."
+            statusMessage="Creating Flipper Export..."
             onCancel={() => this.cancelAndHide(store)}
             onRunInBackground={() => {
               this.setState({runInBackground: true});

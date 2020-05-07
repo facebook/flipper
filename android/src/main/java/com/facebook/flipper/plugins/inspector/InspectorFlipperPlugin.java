@@ -9,6 +9,7 @@ package com.facebook.flipper.plugins.inspector;
 
 import android.app.Application;
 import android.content.Context;
+import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +26,9 @@ import com.facebook.flipper.plugins.common.MainThreadFlipperReceiver;
 import com.facebook.flipper.plugins.inspector.descriptors.ApplicationDescriptor;
 import com.facebook.flipper.plugins.inspector.descriptors.utils.AccessibilityUtil;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Stack;
 import javax.annotation.Nullable;
 
 public class InspectorFlipperPlugin implements FlipperPlugin {
@@ -473,60 +476,110 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
     }
   }
 
-  private Touch createTouch(final int touchX, final int touchY, final boolean ax) throws Exception {
-    final FlipperArray.Builder path = new FlipperArray.Builder();
-    path.put(trackObject(mApplication));
+  private Pair<Touch, Stack<FlipperObject.Builder>> createTouch(
+      final int touchX, final int touchY, final boolean ax) throws Exception {
+    final Stack<FlipperObject.Builder> objStack = new Stack<>();
+    objStack.push(new FlipperObject.Builder());
 
-    return new Touch() {
-      int x = touchX;
-      int y = touchY;
-      Object node = mApplication;
+    final Stack<Object> nodes = new Stack<>();
+    nodes.push(mApplication);
 
-      @Override
-      public void finish() {
-        mConnection.send(
-            ax ? "selectAX" : "select", new FlipperObject.Builder().put("path", path).build());
-      }
+    final Touch touch =
+        new Touch() {
+          int x = touchX;
+          int y = touchY;
 
-      @Override
-      public void continueWithOffset(final int childIndex, final int offsetX, final int offsetY) {
-        final Touch touch = this;
-
-        new ErrorReportingRunnable(mConnection) {
           @Override
-          protected void runOrThrow() throws Exception {
-            x -= offsetX;
-            y -= offsetY;
+          public void finish() {}
 
-            if (ax) {
-              node = assertNotNull(descriptorForObject(node).getAXChildAt(node, childIndex));
-            } else {
-              node = assertNotNull(descriptorForObject(node).getChildAt(node, childIndex));
-            }
+          @Override
+          public void continueWithOffset(
+              final int childIndex, final int offsetX, final int offsetY) {
+            final Touch touch = this;
 
-            path.put(trackObject(node));
-            final NodeDescriptor<Object> descriptor = descriptorForObject(node);
+            new ErrorReportingRunnable(mConnection) {
+              @Override
+              protected void runOrThrow() throws Exception {
+                Object nextNode;
+                final Object currNode = nodes.peek();
+                x -= offsetX;
+                y -= offsetY;
 
-            if (ax) {
-              descriptor.axHitTest(node, touch);
-            } else {
-              descriptor.hitTest(node, touch);
-            }
+                if (ax) {
+                  nextNode =
+                      assertNotNull(
+                          descriptorForObject(currNode).getAXChildAt(currNode, childIndex));
+                } else {
+                  nextNode =
+                      assertNotNull(descriptorForObject(currNode).getChildAt(currNode, childIndex));
+                }
+
+                nodes.push(nextNode);
+                final String nodeID = trackObject(nextNode);
+                final NodeDescriptor<Object> descriptor = descriptorForObject(nextNode);
+                objStack.push(new FlipperObject.Builder());
+
+                if (ax) {
+                  descriptor.axHitTest(nextNode, touch);
+                } else {
+                  descriptor.hitTest(nextNode, touch);
+                }
+
+                x += offsetX;
+                y += offsetY;
+                nodes.pop();
+                final FlipperObject objTree = objStack.pop().build();
+                objStack.peek().put(nodeID, objTree);
+              }
+            }.run();
           }
-        }.run();
-      }
 
-      @Override
-      public boolean containedIn(int l, int t, int r, int b) {
-        return x >= l && x <= r && y >= t && y <= b;
-      }
-    };
+          @Override
+          public boolean containedIn(int l, int t, int r, int b) {
+            return x >= l && x <= r && y >= t && y <= b;
+          }
+        };
+
+    return new Pair<>(touch, objStack);
+  }
+
+  // This is mainly for backward compatibility
+  private FlipperArray getPathFromTree(FlipperObject tree) {
+    final FlipperArray.Builder pathBuilder = new FlipperArray.Builder();
+    FlipperObject subtree = tree;
+    Iterator<String> it = subtree.keys();
+    while (it.hasNext()) {
+      final String key = it.next();
+      pathBuilder.put(key);
+      subtree = subtree.getObject(key);
+      it = subtree.keys();
+    }
+    return pathBuilder.build();
   }
 
   void hitTest(final int touchX, final int touchY) throws Exception {
     final NodeDescriptor<Object> descriptor = descriptorForObject(mApplication);
-    descriptor.hitTest(mApplication, createTouch(touchX, touchY, false));
-    descriptor.axHitTest(mApplication, createTouch(touchX, touchY, true));
+    FlipperObject treeObj;
+
+    Pair<Touch, Stack<FlipperObject.Builder>> pair = createTouch(touchX, touchY, false);
+    descriptor.hitTest(mApplication, pair.first);
+    treeObj = new FlipperObject.Builder().put(trackObject(mApplication), pair.second.pop()).build();
+    mConnection.send(
+        "select",
+        new FlipperObject.Builder()
+            .put("tree", treeObj)
+            .put("path", getPathFromTree(treeObj))
+            .build());
+
+    pair = createTouch(touchX, touchY, true);
+    descriptor.axHitTest(mApplication, pair.first);
+    treeObj = new FlipperObject.Builder().put(trackObject(mApplication), pair.second.pop()).build();
+    mConnection.send(
+        "selectAX",
+        new FlipperObject.Builder()
+            .put("tree", treeObj)
+            .put("path", getPathFromTree(treeObj))
+            .build());
   }
 
   private void setHighlighted(

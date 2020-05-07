@@ -46,8 +46,8 @@ DESKTOP_DIR="$SONAR_DIR/desktop"
 FLIPPERKIT_PODSPEC_PATH="$SONAR_DIR/FlipperKit.podspec"
 FLIPPER_PODSPEC_PATH="$SONAR_DIR/Flipper.podspec"
 TUTORIAL_PODFILE_PATH="$SONAR_DIR/iOS/Tutorial/Podfile"
-IOS_GETTING_STARTED_DOC="$SONAR_DIR/docs/getting-started/ios-native.md"
-RN_IOS_GETTING_STARTED_DOC="$SONAR_DIR/docs/getting-started/react-native-ios.md"
+IOS_GETTING_STARTED_DOC="$SONAR_DIR/docs/getting-started/ios-native.mdx"
+RN_IOS_GETTING_STARTED_DOC="$SONAR_DIR/docs/getting-started/react-native-ios.mdx"
 SPECS_DIR="$SONAR_DIR/Specs/"
 FLIPPERKIT_VERSION_TAG='flipperkit_version'
 OLD_VERSION_POD_ARG=$(< "$FLIPPER_PODSPEC_PATH" grep "$FLIPPERKIT_VERSION_TAG =" )

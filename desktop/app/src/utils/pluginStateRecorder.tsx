@@ -65,7 +65,7 @@ async function flipperStartPluginRecording(state: State) {
   };
 
   // Note that we don't use the plugin's own serializeState, as that might interact with the
-  // device state, and is used for exporting Flipper traces.
+  // device state, and is used for creating Flipper Exports.
   pluginRecordingState.startState = await serialize(
     state.pluginStates[pluginKey] || plugin.defaultPersistedState,
   );

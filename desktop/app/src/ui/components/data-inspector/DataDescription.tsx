@@ -12,12 +12,12 @@ import {DataInspectorSetValue} from './DataInspector';
 import {PureComponent} from 'react';
 import styled from '@emotion/styled';
 import {SketchPicker, CompactPicker} from 'react-color';
-import {Component, Fragment} from 'react';
 import Popover from '../Popover';
 import {colors} from '../colors';
 import Input from '../Input';
 import React, {KeyboardEvent} from 'react';
 import Glyph from '../Glyph';
+import {HighlightContext} from '../Highlight';
 
 const NullValue = styled.span({
   color: 'rgb(128, 128, 128)',
@@ -275,7 +275,7 @@ export default class DataDescription extends PureComponent<
           type={this.props.type}
           value={this.props.value}
           extra={this.props.extra}
-          editable={Boolean(this.props.setValue)}
+          editable={!!this.props.setValue}
           commit={this.commit}
           onEdit={this.onEditStart}
         />
@@ -284,7 +284,7 @@ export default class DataDescription extends PureComponent<
   }
 }
 
-class ColorEditor extends Component<{
+class ColorEditor extends PureComponent<{
   value: any;
   colorSet?: Array<string | number>;
   commit: (opts: DescriptionCommitOptions) => void;
@@ -358,7 +358,7 @@ class ColorEditor extends Component<{
   render() {
     const colorInfo = parseColor(this.props.value);
     if (!colorInfo) {
-      return <Fragment />;
+      return null;
     }
 
     return (
@@ -439,7 +439,7 @@ class ColorEditor extends Component<{
   }
 }
 
-class DataDescriptionPreview extends Component<{
+class DataDescriptionPreview extends PureComponent<{
   type: string;
   value: any;
   extra?: any;
@@ -538,12 +538,17 @@ function parseColor(
   return {a, b, g, r};
 }
 
-class DataDescriptionContainer extends Component<{
+const pencilStyle = {cursor: 'pointer', marginLeft: 8};
+
+class DataDescriptionContainer extends PureComponent<{
   type: string;
   value: any;
   editable: boolean;
   commit: (opts: DescriptionCommitOptions) => void;
 }> {
+  static contextType = HighlightContext; // Replace with useHighlighter
+  context!: React.ContextType<typeof HighlightContext>;
+
   onChangeCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.props.commit({
       clear: true,
@@ -555,10 +560,11 @@ class DataDescriptionContainer extends Component<{
 
   render(): any {
     const {type, editable, value: val} = this.props;
+    const highlighter = this.context;
 
     switch (type) {
       case 'number':
-        return <NumberValue>{Number(val)}</NumberValue>;
+        return <NumberValue>{+val}</NumberValue>;
 
       case 'color': {
         const colorInfo = parseColor(val);
@@ -566,12 +572,17 @@ class DataDescriptionContainer extends Component<{
           return <UndefinedValue>(not set)</UndefinedValue>;
         } else if (colorInfo) {
           const {a, b, g, r} = colorInfo;
-          return [
-            <ColorBox key="color-box" color={`rgba(${r}, ${g}, ${b}, ${a})`} />,
-            <ColorValue key="value">
-              rgba({r}, {g}, {b}, {a === 1 ? '1' : a.toFixed(2)})
-            </ColorValue>,
-          ];
+          return (
+            <>
+              <ColorBox
+                key="color-box"
+                color={`rgba(${r}, ${g}, ${b}, ${a})`}
+              />
+              <ColorValue key="value">
+                rgba({r}, {g}, {b}, {a === 1 ? '1' : a.toFixed(2)})
+              </ColorValue>
+            </>
+          );
         } else {
           return <span>Malformed color</span>;
         }
@@ -583,12 +594,17 @@ class DataDescriptionContainer extends Component<{
           return <UndefinedValue>(not set)</UndefinedValue>;
         } else if (colorInfo) {
           const {a, b, g, r} = colorInfo;
-          return [
-            <ColorBox key="color-box" color={`rgba(${r}, ${g}, ${b}, ${a})`} />,
-            <ColorValue key="value">
-              rgba({r}, {g}, {b}, {a === 1 ? '1' : a.toFixed(2)})
-            </ColorValue>,
-          ];
+          return (
+            <>
+              <ColorBox
+                key="color-box"
+                color={`rgba(${r}, ${g}, ${b}, ${a})`}
+              />
+              <ColorValue key="value">
+                rgba({r}, {g}, {b}, {a === 1 ? '1' : a.toFixed(2)})
+              </ColorValue>
+            </>
+          );
         } else {
           return <span>Malformed color</span>;
         }
@@ -600,7 +616,7 @@ class DataDescriptionContainer extends Component<{
         if (isUrl) {
           return (
             <>
-              <Link href={val}>{val}</Link>
+              <Link href={val}>{highlighter.render(val)}</Link>
               {editable && (
                 <Glyph
                   name="pencil"
@@ -613,22 +629,24 @@ class DataDescriptionContainer extends Component<{
             </>
           );
         } else {
-          return <StringValue>"{String(val || '')}"</StringValue>;
+          return (
+            <StringValue>{highlighter.render(`"${val || ''}"`)}</StringValue>
+          );
         }
 
       case 'enum':
-        return <StringValue>{String(val)}</StringValue>;
+        return <StringValue>{highlighter.render(val)}</StringValue>;
 
       case 'boolean':
         return editable ? (
           <input
             type="checkbox"
-            checked={Boolean(val)}
+            checked={!!val}
             disabled={!editable}
             onChange={this.onChangeCheckbox}
           />
         ) : (
-          <StringValue>{String(val)}</StringValue>
+          <StringValue>{'' + val}</StringValue>
         );
 
       case 'undefined':

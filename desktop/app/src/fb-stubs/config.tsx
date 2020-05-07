@@ -9,7 +9,6 @@
 
 export default {
   updateServer: 'https://www.facebook.com/fbflipper/public/latest.json',
-  bugReportButtonVisible: false,
   showLogin: false,
   showFlipperRating: false,
   warnFBEmployees: true,

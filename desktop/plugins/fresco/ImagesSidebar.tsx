@@ -115,7 +115,7 @@ class EventDetails extends Component<{
           <DataDescription
             type="number"
             value={event.startTime}
-            setValue={function (path: Array<string>, val: any) {}}
+            setValue={null}
           />
         </p>
         <p>
@@ -124,17 +124,13 @@ class EventDetails extends Component<{
           <DataDescription
             type="number"
             value={event.endTime}
-            setValue={function (path: Array<string>, val: any) {}}
+            setValue={null}
           />
         </p>
         <p>
           <DataDescriptionKey>Source</DataDescriptionKey>
           <span key="sep">: </span>
-          <DataDescription
-            type="string"
-            value={event.source}
-            setValue={function (path: Array<string>, val: any) {}}
-          />
+          <DataDescription type="string" value={event.source} setValue={null} />
         </p>
         <p>
           <DataDescriptionKey>Requested on cold start</DataDescriptionKey>
@@ -162,7 +158,7 @@ class EventDetails extends Component<{
         <DataDescription
           type="string"
           value={viewport.width + 'x' + viewport.height}
-          setValue={function (path: Array<string>, val: any) {}}
+          setValue={null}
         />
       </p>
     );

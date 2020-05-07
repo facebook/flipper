@@ -24,7 +24,10 @@ const WelcomeScreen = isHeadless()
 import NotificationScreen from '../chrome/NotificationScreen';
 import SupportRequestFormV2 from '../fb-stubs/SupportRequestFormV2';
 import SupportRequestDetails from '../fb-stubs/SupportRequestDetails';
-import {getPluginKey} from '../utils/pluginUtils';
+import {
+  getPluginKey,
+  defaultEnabledBackgroundPlugins,
+} from '../utils/pluginUtils';
 import {deconstructClientId} from '../utils/clientUtils';
 import {FlipperDevicePlugin} from '../plugin';
 import {RegisterPluginAction} from './plugins';
@@ -241,10 +244,7 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
     case 'SELECT_PLUGIN': {
       const {payload} = action;
       const {selectedPlugin, selectedApp, deepLinkPayload} = payload;
-      let selectedDevice =
-        selectedApp === null
-          ? null
-          : payload.selectedDevice || state.selectedDevice;
+      let selectedDevice = payload.selectedDevice;
       if (deepLinkPayload) {
         const deepLinkParams = new URLSearchParams(deepLinkPayload || '');
         const deviceParam = deepLinkParams.get('device');
@@ -280,6 +280,9 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
 
     case 'STAR_PLUGIN': {
       const {selectedPlugin, selectedApp} = action.payload;
+      const client = state.clients.find(
+        (client) => client.query.app === selectedApp,
+      );
       return produce(state, (draft) => {
         if (!draft.userStarredPlugins[selectedApp]) {
           draft.userStarredPlugins[selectedApp] = [selectedPlugin];
@@ -288,8 +291,20 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
           const idx = plugins.indexOf(selectedPlugin);
           if (idx === -1) {
             plugins.push(selectedPlugin);
+            if (
+              !defaultEnabledBackgroundPlugins.includes(selectedPlugin) &&
+              client?.isBackgroundPlugin(selectedPlugin)
+            ) {
+              client.initPlugin(selectedPlugin);
+            }
           } else {
             plugins.splice(idx, 1);
+            if (
+              !defaultEnabledBackgroundPlugins.includes(selectedPlugin) &&
+              client?.isBackgroundPlugin(selectedPlugin)
+            ) {
+              client.deinitPlugin(selectedPlugin);
+            }
           }
         }
       });

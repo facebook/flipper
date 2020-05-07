@@ -40,6 +40,7 @@ function createMockFlipperPluginWithExportPersistedState(id: string) {
       callClient: (string, ?Object) => Promise<Object>,
       persistedState: ?{msg: string},
       store: ?ReduxState,
+      supportsMethod?: (string) => Promise<boolean>,
     ): Promise<?{msg: string}> => {
       return Promise.resolve({
         msg: 'MockFlipperPluginWithExportPersistedState',

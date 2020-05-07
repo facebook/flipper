@@ -67,6 +67,11 @@
   SonarReceiver receiver = connection.receivers[@"getNodes"];
   receiver(@{@"ids" : @[]}, responder);
 
+  dispatch_barrier_sync(
+      SKLayoutPluginSerialBackgroundQueue(),
+      ^{
+      });
+
   XCTAssertTrue(([responder.successes containsObject:@{@"elements" : @[]}]));
 }
 
@@ -95,6 +100,11 @@
   SonarReceiver receiver = connection.receivers[@"getNodes"];
   receiver(
       @{@"ids" : @[ @"testNode1", @"testNode2", @"testNode3" ]}, responder);
+
+  dispatch_barrier_sync(
+      SKLayoutPluginSerialBackgroundQueue(),
+      ^{
+      });
 
   XCTAssertTrue(([responder.successes containsObject:@{
     @"elements" : @[
@@ -149,6 +159,11 @@
   SonarReceiver getNodesCall = connection.receivers[@"getNodes"];
   getNodesCall(@{@"ids" : @[ @"testNode1", @"testNode2" ]}, responder);
 
+  dispatch_barrier_sync(
+      SKLayoutPluginSerialBackgroundQueue(),
+      ^{
+      });
+
   SonarReceiver setHighlighted = connection.receivers[@"setHighlighted"];
   setHighlighted(@{@"id" : @"testNode2"}, responder);
 
@@ -192,8 +207,11 @@
   // Fake a tap at `testNode3`
   [tapListener tapAt:(CGPoint){26, 43}];
 
-  XCTAssertTrue(([connection.sent[@"select"]
-      containsObject:@{@"path" : @[ @"testNode2", @"testNode3" ]}]));
+  NSLog(@"%@", connection.sent[@"select"]);
+  XCTAssertTrue(([connection.sent[@"select"] containsObject:@{
+    @"path" : @[ @"testNode2", @"testNode3" ],
+    @"tree" : @{@"testNode2" : @{@"testNode3" : @{}}}
+  }]));
 }
 
 - (void)testSetSearchActiveMountAndUnmount {
@@ -248,6 +266,11 @@
   // Setup in order to track nodes successfully
   connection.receivers[@"getRoot"](@{}, responder);
   connection.receivers[@"getNodes"](@{@"ids" : @[ @"testNode2" ]}, responder);
+
+  dispatch_barrier_sync(
+      SKLayoutPluginSerialBackgroundQueue(),
+      ^{
+      });
 
   // Modify the name of testNode3
   connection.receivers[@"setData"](

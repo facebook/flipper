@@ -20,6 +20,7 @@ import {Idler, BaseIdler} from './Idler';
 import {pluginIsStarred, getSelectedPluginKey} from '../reducers/connections';
 import {deconstructPluginKey} from './clientUtils';
 import {onBytesReceived} from '../dispatcher/tracking';
+import {defaultEnabledBackgroundPlugins} from './pluginUtils';
 
 const MAX_BACKGROUND_TASK_TIME = 25;
 
@@ -54,12 +55,15 @@ onBytesReceived((plugin: string, bytes: number) => {
 
 export function getPluginBackgroundStats(): {
   cpuTime: number; // amount of ms cpu used since the last stats (typically every minute)
+  bytesReceived: number;
   byPlugin: {[plugin: string]: StatEntry};
 } {
   let cpuTime: number = 0;
+  let bytesReceived: number = 0;
   const byPlugin = Array.from(pluginBackgroundStats.entries()).reduce(
     (aggregated, [pluginName, data]) => {
       cpuTime += data.cpuTimeDelta;
+      bytesReceived += data.bytesReceivedDelta;
       aggregated[pluginName] = data;
       return aggregated;
     },
@@ -67,6 +71,7 @@ export function getPluginBackgroundStats(): {
   );
   return {
     cpuTime,
+    bytesReceived,
     byPlugin,
   };
 }
@@ -140,7 +145,6 @@ function processMessage(
   },
   message: {method: string; params?: any},
 ): State {
-  const statName = `${plugin.id}.${message.method}`;
   const reducerStartTime = Date.now();
   flipperRecorderAddEvent(pluginKey, message.method, message.params);
   try {
@@ -149,7 +153,7 @@ function processMessage(
       message.method,
       message.params,
     );
-    addBackgroundStat(statName, Date.now() - reducerStartTime);
+    addBackgroundStat(plugin.id, Date.now() - reducerStartTime);
     return newPluginState;
   } catch (e) {
     console.error(`Failed to process event for plugin ${plugin.id}`, e);
@@ -218,7 +222,12 @@ export function processMessageLater(
         ),
       );
       break;
-    // In all other cases, messages will be dropped...
+    default:
+      // In all other cases, messages will be dropped...
+      if (!defaultEnabledBackgroundPlugins.includes(plugin.id))
+        console.error(
+          `Received message for disabled plugin ${plugin.id}, dropping..`,
+        );
   }
 }
 

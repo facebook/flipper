@@ -253,6 +253,7 @@ public class ViewGroupDescriptor extends NodeDescriptor<ViewGroup> {
   }
 
   private void runHitTest(ViewGroup node, Touch touch) {
+    boolean finish = true;
     for (int i = node.getChildCount() - 1; i >= 0; i--) {
       final View child = node.getChildAt(i);
       if (child instanceof HiddenNode
@@ -273,11 +274,11 @@ public class ViewGroupDescriptor extends NodeDescriptor<ViewGroup> {
 
       if (hit) {
         touch.continueWithOffset(i, left, top);
-        return;
+        finish = false;
       }
     }
 
-    touch.finish();
+    if (finish) touch.finish();
   }
 
   @Override

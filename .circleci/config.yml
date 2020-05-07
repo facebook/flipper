@@ -28,25 +28,6 @@ jobs:
           command: |
             yes | sdkmanager "platforms;android-27" || true
             ./gradlew :android:assembleRelease && scripts/publish-android-release.sh
-  publish-pods:
-    macos:
-      xcode: "10.2.1"
-    steps:
-      - checkout
-      - run: curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
-      - run:
-          name: "Pod version"
-          command: |
-            pod --version
-      - run:
-          name: "Push Flipper Pod"
-          command: |
-            pod trunk push ./Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
-      - run:
-          name: "Push FlipperKit Pod"
-          command: |
-            pod trunk push ./FlipperKit.podspec --use-libraries --allow-warnings --verbose --skip-import-validation --swift-version=4.2
-
 workflows:
   version: 2
   build-and-deploy:
@@ -56,12 +37,6 @@ workflows:
             branches:
               only: master
       - release:
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
-      - publish-pods:
           filters:
             tags:
               only: /^v.*/

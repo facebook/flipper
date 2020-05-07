@@ -8,7 +8,6 @@
  */
 
 global.electronRequire = require;
-global.electronResolve = require.resolve;
 global.electronProcess = process;
 
 require('./main.bundle.js');

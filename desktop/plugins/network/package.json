@@ -1,21 +1,27 @@
 {
-  "name": "Network",
+  "$schema": "https://fbflipper.com/schemas/plugin-package/v2.json",
+  "name": "flipper-plugin-network",
+  "id": "Network",
+  "flipperBundlerEntry": "index.tsx",
+  "main": "dist/index.js",
+  "title": "Network",
+  "description": "Use the Network inspector to inspect outgoing network traffic in your apps.",
+  "icon": "internet",
   "version": "1.0.0",
-  "main": "index.tsx",
   "license": "MIT",
   "keywords": [
     "flipper-plugin"
   ],
+  "bugs": {
+    "email": "oncall+flipper@xmail.facebook.com",
+    "url": "https://fb.workplace.com/groups/flippersupport/"
+  },
   "dependencies": {
-    "@types/pako": "^1.0.1",
     "lodash": "^4.17.11",
     "pako": "^1.0.11",
     "xml-beautifier": "^0.4.0"
   },
-  "icon": "internet",
-  "title": "Network",
-  "bugs": {
-    "email": "oncall+flipper@xmail.facebook.com",
-    "url": "https://fb.workplace.com/groups/flippersupport/"
+  "devDependencies": {
+    "@types/pako": "^1.0.1"
   }
 }

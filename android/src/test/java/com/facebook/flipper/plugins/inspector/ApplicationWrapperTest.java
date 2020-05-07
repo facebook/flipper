@@ -9,6 +9,7 @@ package com.facebook.flipper.plugins.inspector;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 
 import android.app.Activity;
 import android.app.Application;
@@ -40,7 +41,7 @@ public class ApplicationWrapperTest {
               }
             })
         .when(app)
-        .registerActivityLifecycleCallbacks(Mockito.any(ActivityLifecycleCallbacks.class));
+        .registerActivityLifecycleCallbacks(any(ActivityLifecycleCallbacks.class));
 
     mWrapper = new ApplicationWrapper(app);
   }

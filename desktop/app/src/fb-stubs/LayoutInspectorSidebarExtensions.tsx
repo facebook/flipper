@@ -7,14 +7,14 @@
  * @format
  */
 
-import {PluginClient, Client, ElementID} from 'flipper';
+import {PluginClient, Client, Element} from 'flipper';
 import {Logger} from 'app/src/fb-interfaces/Logger';
 
 export default [] as Array<
   (
     client: PluginClient,
     realClient: Client,
-    selectedNode: ElementID,
+    selectedNode: Element,
     logger: Logger,
   ) => React.ReactNode
 >;

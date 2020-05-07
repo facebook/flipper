@@ -367,6 +367,7 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
 
   @Override
   public void hitTest(DebugComponent node, Touch touch) {
+    boolean finish = true;
     for (int i = getChildCount(node) - 1; i >= 0; i--) {
       final Object child = getChildAt(node, i);
       if (child instanceof DebugComponent) {
@@ -375,17 +376,17 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
 
         if (touch.containedIn(bounds.left, bounds.top, bounds.right, bounds.bottom)) {
           touch.continueWithOffset(i, bounds.left, bounds.top);
-          return;
+          finish = false;
         }
       } else if (child instanceof View || child instanceof Drawable) {
         // Components can only mount one view or drawable and its bounds are the same as the
         // hosting component.
         touch.continueWithOffset(i, 0, 0);
-        return;
+        finish = false;
       }
     }
 
-    touch.finish();
+    if (finish) touch.finish();
   }
 
   @Override

@@ -29,6 +29,7 @@
 
 #import "CKComponent+Sonar.h"
 #import "SKComponentLayoutWrapper.h"
+#import "SKComponentMountedView.h"
 #import "SKSubDescriptor.h"
 #import "Utils.h"
 
@@ -64,21 +65,26 @@ static std::vector<std::pair<NSString*, SKSubDescriptor>>& subDescriptors() {
 }
 
 - (NSUInteger)childCountForNode:(SKComponentLayoutWrapper*)node {
-  NSUInteger count = node.children.size();
-  if (count == 0) {
-    count = node.component.viewContext.view ? 1 : 0;
+  if (!node) {
+    return 0; // -children will return garbage if invoked on nil
   }
-  return count;
+  return node.children.match(
+      [](SKLeafViewChild) -> NSUInteger { return 1; },
+      [](SKMountedViewChild) -> NSUInteger { return 1; },
+      [](const std::vector<SKComponentLayoutWrapper*>& components)
+          -> NSUInteger { return components.size(); });
 }
 
 - (id)childForNode:(SKComponentLayoutWrapper*)node atIndex:(NSUInteger)index {
-  if (node.children.size() == 0) {
-    if (node.rootNode == node.component.viewContext.view) {
-      return nil;
-    }
-    return node.component.viewContext.view;
+  if (!node) {
+    return nil; // -children will return garbage if invoked on nil
   }
-  return node.children[index];
+  return node.children.match(
+      [](SKLeafViewChild leafView) -> id { return leafView.view; },
+      [](SKMountedViewChild mountedView) -> id { return mountedView.view; },
+      [&](const std::vector<SKComponentLayoutWrapper*>& components) -> id {
+        return components[index];
+      });
 }
 
 - (NSArray<SKNamed<NSDictionary<NSString*, NSObject*>*>*>*)dataForNode:
@@ -86,18 +92,20 @@ static std::vector<std::pair<NSString*, SKSubDescriptor>>& subDescriptors() {
   NSMutableArray<SKNamed<NSDictionary<NSString*, NSObject*>*>*>* data =
       [NSMutableArray new];
 
-  if (node.isFlexboxChild) {
-    [data
-        addObject:[SKNamed
-                      newWithName:@"Layout"
-                        withValue:[self
-                                      propsForFlexboxChild:node.flexboxChild]]];
+  if (node) {
+    node.flexboxChild.apply([&](const CKFlexboxComponentChild& child) {
+      [data addObject:[SKNamed newWithName:@"Layout"
+                                 withValue:[self propsForFlexboxChild:child]]];
+    });
   }
   NSMutableDictionary<NSString*, NSObject*>* extraData =
       [[NSMutableDictionary alloc] init];
 
   for (const auto& pair : subDescriptors()) {
-    [extraData setObject:pair.second(node) forKey:pair.first];
+    NSString* value = pair.second(node);
+    if (value) {
+      [extraData setObject:value forKey:pair.first];
+    }
   }
   if (extraData.count > 0) {
     [data addObject:[SKNamed newWithName:@"Extra Sections"
@@ -163,29 +171,34 @@ static std::vector<std::pair<NSString*, SKSubDescriptor>>& subDescriptors() {
 }
 
 - (void)hitTest:(SKTouch*)touch forNode:(SKComponentLayoutWrapper*)node {
-  if (node.children.size() == 0) {
-    UIView* componentView = node.component.viewContext.view;
-    if (componentView != nil) {
-      if ([touch containedIn:componentView.bounds]) {
-        [touch continueWithChildIndex:0 withOffset:componentView.bounds.origin];
-        return;
-      }
-    }
+  if (!node) {
+    return; // -children will return garbage if invoked on nil
   }
-
-  NSInteger index = 0;
-  for (index = node.children.size() - 1; index >= 0; index--) {
-    const auto child = node.children[index];
-
-    CGRect frame = {.origin = child.position, .size = child.size};
-
-    if ([touch containedIn:frame]) {
-      [touch continueWithChildIndex:index withOffset:child.position];
-      return;
-    }
+  BOOL didContinueTouch = node.children.match(
+      [&](SKLeafViewChild leafView) -> BOOL {
+        [touch continueWithChildIndex:0 withOffset:{0, 0}];
+        return YES;
+      },
+      [&](SKMountedViewChild mountedView) -> BOOL {
+        [touch continueWithChildIndex:0 withOffset:{0, 0}];
+        return YES;
+      },
+      [&](std::vector<SKComponentLayoutWrapper*> children) -> BOOL {
+        BOOL continueTouch = NO;
+        for (auto it = children.rbegin(); it != children.rend(); ++it) {
+          SKComponentLayoutWrapper* wrapper = *it;
+          CGRect frame = {.origin = wrapper.position, .size = wrapper.size};
+          if ([touch containedIn:frame]) {
+            NSUInteger index = std::distance(children.begin(), it.base()) - 1;
+            [touch continueWithChildIndex:index withOffset:wrapper.position];
+            continueTouch = YES;
+          }
+        }
+        return continueTouch;
+      });
+  if (!didContinueTouch) {
+    [touch finish];
   }
-
-  [touch finish];
 }
 
 - (BOOL)matchesQuery:(NSString*)query forNode:(id)node {

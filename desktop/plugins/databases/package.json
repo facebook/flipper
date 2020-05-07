@@ -3,12 +3,18 @@
   "version": "1.0.0",
   "title": "Databases",
   "icon": "internet",
-  "main": "index.js",
+  "main": "index.tsx",
   "license": "MIT",
-  "keywords": ["flipper-plugin"],
+  "keywords": [
+    "flipper-plugin"
+  ],
   "dependencies": {
-    "sql-formatter": "^2.3.3",
-    "dateformat": "^3.0.3"
+    "dateformat": "^3.0.3",
+    "sql-formatter": "^2.3.3"
+  },
+  "devDependencies": {
+    "@types/dateformat": "^3.0.1",
+    "@types/sql-formatter": "^2.3.0"
   },
   "bugs": {
     "email": "oncall+flipper@xmail.facebook.com",

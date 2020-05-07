@@ -1,0 +1,86 @@
+---
+id: ios
+title: Building an iOS Plugin
+---
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+<img alt="iOS Tutorial App" src={useBaseUrl("img/ios-tutorial-app.png")} />
+
+For the purpose of the tutorial, we will assume you already have an existing iOS application in
+which you have a feed or list of items. As the Flipper team, we obviously concern ourselves mostly
+with sea mammals, so this is what our app displays. The actual display logic is not what's interesting
+here, but how we can make this data available in our Flipper desktop app.
+
+You can find the source code of the project [on GitHub](https://github.com/facebook/flipper/tree/c55bebd1be545c63dde93e143dd5c341dc2fd20b/iOS/Tutorial/Tutorial).
+
+## Creating a Plugin
+
+On iOS, a Flipper plugin is a class that implements the
+[`FlipperPlugin`](https://github.com/facebook/flipper/blob/master/iOS/FlipperKit/FlipperPlugin.h)
+interface.
+
+The interface is rather small and only comprises four methods:
+
+- `(NSString *)identifier`: Specify a unique string so the JavaScript side knows where to talk to. This must match the name attribute in the `package.json` we will look into later in this tutorial.
+- `(void)didConnect:(id<FlipperConnection>)connection`: This method is called when the desktop client connects and is ready to receive or send data.
+- `(void)didDisconnect`: We're sure you can figure this one out.
+- `(BOOL)runInBackground`: Unless this is true, only the currently selected plugin in the Flipper UI can communicate with the device. Its an optional method which you can override. Default value used is `false`.
+
+Let's implement these methods for our sealife app:
+
+```swift
+import Foundation
+import FlipperKit
+
+class SeaMammalsPlugin: NSObject, FlipperPlugin {
+  var connection: FlipperConnection? = nil
+  let mammals: [MarineMammal]
+
+  init(_ marineMammals: [MarineMammal]) {
+      mammals = marineMammals
+  }
+
+  func identifier() -> String! {
+    return "sea-mammals"
+  }
+
+  func didConnect(_ connection: FlipperConnection!) {
+    self.connection = connection
+    for (index, mammal) in mammals.enumerated() {
+      connection.send("newRow", withParams: ["id": index, "title": mammal.name, "url": mammal.image.absoluteString])
+    }
+  }
+
+  func didDisconnect() {
+    connection = nil;
+  }
+}
+```
+
+The two interesting bits here are `didConnect` and `connection.send`. `connection.send` sends a message
+to the desktop app and is identified with the name "newRow".
+
+For our sample app, we're dealing with a static data source. However, in real
+life, you will likely dynamically receive new data as the user interacts with
+the app. So while we just send all the data we have at once in `didConnect`,
+you would normally set up a listener here to instead call `connection.send("newRow", params)` as new data
+arrives. `params` are nothing but a dictionary which contains the data which you want to send over the wire to the desktop app.
+
+## Registering your Plugin
+
+Now all you need to do is let Flipper know about your new plugin. You do this
+by calling `add` on your `FlipperClient`, which is normally created
+at application startup.
+
+```swift
+let client = FlipperClient.shared()
+// Add all sorts of other amazing plugins here ...
+client?.add(SeaMammalsPlugin(MarineMammal.defaultList))
+client?.start()
+```
+
+## What next
+
+When starting your application now, Flipper will tell the desktop application
+about the plugin it supports, including "sea-mammals" and will look for a
+corresponding JavaScript plugin by that name. Before building it's JavaScript counterpart, first lets build a Flipper Plugin in Android.

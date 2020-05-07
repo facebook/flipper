@@ -188,20 +188,22 @@ function renderToolbar(section: ToolbarSection) {
           </Button>
         );
       case 'input':
-        return [
-          <Label>{item.label}</Label>,
-          <Select
-            options={item.options.reduce(
-              (obj: {[key: string]: string}, item) => {
-                obj[item] = item;
-                return obj;
-              },
-              {},
-            )}
-            selected={item.value}
-            onChange={() => {}}
-          />,
-        ];
+        return (
+          <>
+            <Label>{item.label}</Label>
+            <Select
+              options={item.options.reduce(
+                (obj: {[key: string]: string}, item) => {
+                  obj[item] = item;
+                  return obj;
+                },
+                {},
+              )}
+              selected={item.value}
+              onChange={() => {}}
+            />
+          </>
+        );
     }
   });
   return (

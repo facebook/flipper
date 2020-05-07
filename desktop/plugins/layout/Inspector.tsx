@@ -13,16 +13,31 @@ import {
   PluginClient,
   ElementsInspector,
   ElementSearchResultSet,
+  FlexColumn,
+  styled,
 } from 'flipper';
+import {debounce} from 'lodash';
 import {Component} from 'react';
-import debounce from 'lodash.debounce';
 import {PersistedState, ElementMap} from './';
 import React from 'react';
+import MultipleSelectorSection from './MultipleSelectionSection';
+
+const ElementsInspectorContainer = styled(FlexColumn)({
+  width: '100%',
+  justifyContent: 'space-between',
+});
 
 type GetNodesOptions = {
   force?: boolean;
   ax?: boolean;
   forAccessibilityEvent?: boolean;
+};
+
+export type ElementSelectorNode = {[id: string]: ElementSelectorNode};
+export type ElementSelectorData = {
+  leaves: Array<ElementID>;
+  tree: ElementSelectorNode;
+  elements: ElementMap;
 };
 
 type Props = {
@@ -39,7 +54,14 @@ type Props = {
   searchResults: ElementSearchResultSet | null;
 };
 
-export default class Inspector extends Component<Props> {
+type State = {
+  elementSelector: ElementSelectorData | null;
+  axElementSelector: ElementSelectorData | null;
+};
+
+export default class Inspector extends Component<Props, State> {
+  state: State = {elementSelector: null, axElementSelector: null};
+
   call() {
     return {
       GET_ROOT: this.props.ax ? 'getAXRoot' : 'getRoot',
@@ -131,8 +153,29 @@ export default class Inspector extends Component<Props> {
 
     this.props.client.subscribe(
       this.call().SELECT,
-      ({path}: {path: Array<ElementID>}) => {
-        this.getAndExpandPath(path);
+      async ({
+        path,
+        tree,
+      }: {
+        path?: Array<ElementID>;
+        tree?: ElementSelectorNode;
+      }) => {
+        if (path) {
+          this.getAndExpandPath(path);
+        }
+        if (tree) {
+          const leaves = this.getElementLeaves(tree);
+          const elementArray = await this.getNodes(leaves, {});
+          const elements = leaves.reduce(
+            (acc, cur, idx) => ({...acc, [cur]: elementArray[idx]}),
+            {},
+          );
+          if (this.props.ax) {
+            this.setState({axElementSelector: {tree, leaves, elements}});
+          } else {
+            this.setState({elementSelector: {tree, leaves, elements}});
+          }
+        }
       },
     );
 
@@ -288,12 +331,77 @@ export default class Inspector extends Component<Props> {
 
   async getAndExpandPath(path: Array<ElementID>) {
     await Promise.all(path.map((id) => this.getChildren(id, {})));
-    this.onElementSelected(path[path.length - 1]);
+    this.onElementSelected()(path[path.length - 1]);
   }
 
-  onElementSelected = debounce((selectedKey: ElementID) => {
-    this.onElementHovered(selectedKey);
-    this.props.onSelect(selectedKey);
+  getElementLeaves(tree: ElementSelectorNode): Array<ElementID> {
+    return tree
+      ? Object.entries(tree).reduce(
+          (
+            currLeafNode: Array<ElementID>,
+            [id, children]: [ElementID, ElementSelectorNode],
+          ): Array<ElementID> =>
+            currLeafNode.concat(
+              Object.keys(children).length > 0
+                ? this.getElementLeaves(children)
+                : [id],
+            ),
+          [],
+        )
+      : [];
+  }
+
+  /// Return path from given tree structure and id if id is not null; otherwise return any path
+  getPathForNode(
+    tree: ElementSelectorNode,
+    nodeID: ElementID | null,
+  ): Array<ElementID> | null {
+    for (const node in tree) {
+      if (
+        node === nodeID ||
+        (nodeID === null && Object.keys(tree[node]).length == 0)
+      ) {
+        return [node];
+      }
+      const path = this.getPathForNode(tree[node], nodeID);
+      if (path !== null) {
+        return [node].concat(path);
+      }
+    }
+    return null;
+  }
+
+  // NOTE: this will be used in the future when we remove path and use tree instead
+  async _getAndExpandPathFromTree(tree: ElementSelectorNode) {
+    this.getAndExpandPath(this.getPathForNode(tree, null) ?? []);
+  }
+
+  onElementSelected = (option?: {
+    cancelSelector?: boolean;
+    expandPathToElement?: boolean;
+  }) =>
+    debounce(async (selectedKey: ElementID) => {
+      if (option?.cancelSelector) {
+        this.setState({elementSelector: null, axElementSelector: null});
+      }
+      if (option?.expandPathToElement) {
+        const data = this.props.ax
+          ? this.state.axElementSelector
+          : this.state.elementSelector;
+        await this.getAndExpandPath(
+          this.getPathForNode(data?.tree ?? {}, selectedKey) ?? [],
+        );
+      }
+      this.onElementHovered(selectedKey);
+      this.props.onSelect(selectedKey);
+    });
+
+  onElementSelectedAtMainSection = this.onElementSelected({
+    cancelSelector: true,
+  });
+
+  onElementSelectedAndExpanded = this.onElementSelected({
+    expandPathToElement: true,
   });
 
   onElementHovered = debounce((key: ElementID | null | undefined) => {
@@ -325,19 +433,33 @@ export default class Inspector extends Component<Props> {
   };
 
   render() {
+    const selectorData = this.props.ax
+      ? this.state.axElementSelector
+      : this.state.elementSelector;
+
     return this.root() ? (
-      <ElementsInspector
-        onElementSelected={this.onElementSelected}
-        onElementHovered={this.onElementHovered}
-        onElementExpanded={this.onElementExpanded}
-        onValueChanged={this.props.onDataValueChanged}
-        searchResults={this.props.searchResults}
-        selected={this.selected()}
-        root={this.root()}
-        elements={this.elements()}
-        focused={this.focused()}
-        contextMenuExtensions={this.getAXContextMenuExtensions()}
-      />
+      <ElementsInspectorContainer>
+        <ElementsInspector
+          onElementSelected={this.onElementSelectedAtMainSection}
+          onElementHovered={this.onElementHovered}
+          onElementExpanded={this.onElementExpanded}
+          onValueChanged={this.props.onDataValueChanged}
+          searchResults={this.props.searchResults}
+          selected={this.selected()}
+          root={this.root()}
+          elements={this.elements()}
+          focused={this.focused()}
+          contextMenuExtensions={this.getAXContextMenuExtensions()}
+        />
+        {selectorData && selectorData.leaves.length > 1 ? (
+          <MultipleSelectorSection
+            initialSelectedElement={this.selected()}
+            elements={selectorData.elements}
+            onElementSelected={this.onElementSelectedAndExpanded}
+            onElementHovered={this.onElementHovered}
+          />
+        ) : null}
+      </ElementsInspectorContainer>
     ) : null;
   }
 }

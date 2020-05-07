@@ -8,6 +8,7 @@
 package com.facebook.flipper.core;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import javax.annotation.Nullable;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -69,8 +70,24 @@ public class FlipperObject {
     return new FlipperArray((JSONArray) o);
   }
 
+  public Object get(String name) {
+    final Object o = mJson.opt(name);
+
+    if (o instanceof JSONObject) {
+      return new FlipperObject((JSONObject) o);
+    } else if (o instanceof JSONArray) {
+      return new FlipperArray((JSONArray) o);
+    } else {
+      return o;
+    }
+  }
+
   public boolean contains(String name) {
     return mJson.has(name);
+  }
+
+  public Iterator<String> keys() {
+    return mJson.keys();
   }
 
   public String toJsonString() {

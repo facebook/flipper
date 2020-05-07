@@ -9,7 +9,7 @@
 
 import DataDescription from './DataDescription';
 import {MenuTemplate} from '../ContextMenu';
-import {Component} from 'react';
+import {memo, useMemo, useRef, useState, useEffect, useCallback} from 'react';
 import ContextMenu from '../ContextMenu';
 import Tooltip from '../Tooltip';
 import styled from '@emotion/styled';
@@ -19,9 +19,9 @@ import DataPreview, {DataValueExtractor, InspectorName} from './DataPreview';
 import {getSortedKeys} from './utils';
 import {colors} from '../colors';
 import {clipboard} from 'electron';
-import deepEqual from 'deep-equal';
 import React from 'react';
 import {TooltipOptions} from '../TooltipProvider';
+import {useHighlighter} from '../Highlight';
 
 export {DataValueExtractor} from './DataPreview';
 
@@ -62,12 +62,22 @@ const ExpandControl = styled.span({
 });
 ExpandControl.displayName = 'DataInspector:ExpandControl';
 
+const Added = styled.div({
+  backgroundColor: colors.tealTint70,
+});
+
+const Removed = styled.div({
+  backgroundColor: colors.cherryTint70,
+});
+
 const nameTooltipOptions: TooltipOptions = {
   position: 'toLeft',
   showTail: true,
 };
 
 export type DataInspectorSetValue = (path: Array<string>, val: any) => void;
+
+export type DataInspectorDeleteValue = (path: Array<string>) => void;
 
 export type DataInspectorExpanded = {
   [key: string]: boolean;
@@ -104,7 +114,7 @@ type DataInspectorProps = {
   /**
    * An array containing the current location of the data relative to its root.
    */
-  path: Array<string>;
+  parentPath: Array<string>;
   /**
    * Whether to expand the root by default.
    */
@@ -121,7 +131,11 @@ type DataInspectorProps = {
   /**
    * Callback whenever the current expanded paths is changed.
    */
-  onExpanded?: ((expanded: DataInspectorExpanded) => void) | undefined | null;
+  onExpanded?: ((path: string, expanded: boolean) => void) | undefined | null;
+  /**
+   * Callback whenever delete action is invoked on current path.
+   */
+  onDelete?: DataInspectorDeleteValue | undefined | null;
   /**
    * Callback when a value is edited.
    */
@@ -133,7 +147,7 @@ type DataInspectorProps = {
   /**
    * Ancestry of parent objects, used to avoid recursive objects.
    */
-  ancestry: Array<Object>;
+  parentAncestry: Array<Object>;
   /**
    * Object of properties that will have tooltips
    */
@@ -189,7 +203,12 @@ function getRootContextMenu(
     return cached;
   }
 
-  const stringValue = JSON.stringify(data, null, 2);
+  let stringValue: string;
+  try {
+    stringValue = JSON.stringify(data, null, 2);
+  } catch (e) {
+    stringValue = '<circular structure>';
+  }
   const menu: Array<Electron.MenuItemConstructorOptions> = [
     {
       label: 'Copy entire tree',
@@ -260,16 +279,7 @@ const diffMetadataExtractor: DiffMetadataExtractor = (
   return Object.prototype.hasOwnProperty.call(data, key) ? [{data: val}] : [];
 };
 
-function isComponentExpanded(
-  data: any,
-  diffType: string,
-  diffValue: any,
-  isExpanded: boolean,
-) {
-  if (isExpanded) {
-    return true;
-  }
-
+function isComponentExpanded(data: any, diffType: string, diffValue: any) {
   if (diffValue == null) {
     return false;
   }
@@ -292,183 +302,163 @@ function isComponentExpanded(
   return false;
 }
 
+type DataInspectorState = {
+  shouldExpand: boolean;
+  isExpanded: boolean;
+  isExpandable: boolean;
+  res: any;
+  resDiff: any;
+};
+
+const recursiveMarker = <RecursiveBaseWrapper>Recursive</RecursiveBaseWrapper>;
+
 /**
  * An expandable data inspector.
  *
  * This component is fairly low level. It's likely you're looking for
  * [`<ManagedDataInspector>`]().
  */
-export default class DataInspector extends Component<DataInspectorProps> {
-  static defaultProps: {
-    expanded: DataInspectorExpanded;
-    depth: number;
-    path: Array<string>;
-    ancestry: Array<Object>;
-  } = {
-    expanded: {},
-    depth: 0,
-    path: [],
-    ancestry: [],
-  };
+const DataInspector: React.FC<DataInspectorProps> = memo(
+  function DataInspectorImpl({
+    data,
+    depth,
+    diff,
+    expandRoot,
+    parentPath,
+    onExpanded,
+    onDelete,
+    extractValue: extractValueProp,
+    expanded: expandedPaths,
+    name,
+    parentAncestry,
+    collapsed,
+    tooltips,
+    setValue: setValueProp,
+  }) {
+    const highlighter = useHighlighter();
 
-  interaction: (name: string, data?: any) => void;
-
-  constructor(props: DataInspectorProps) {
-    super(props);
-    this.interaction = reportInteraction('DataInspector', props.path.join(':'));
-  }
-
-  static isExpandable(data: any) {
-    return (
-      typeof data === 'object' && data !== null && Object.keys(data).length > 0
+    const shouldExpand = useRef(false);
+    const expandHandle = useRef(undefined as any);
+    const [renderExpanded, setRenderExpanded] = useState(false);
+    const path = useMemo(
+      () => (name === undefined ? parentPath : parentPath.concat([name])),
+      [parentPath, name],
     );
-  }
 
-  shouldComponentUpdate(nextProps: DataInspectorProps) {
-    const {props} = this;
-
-    // check if any expanded paths effect this subtree
-    if (nextProps.expanded !== props.expanded) {
-      const path = nextProps.path.join('.');
-
-      for (const key in nextProps.expanded) {
-        if (key.startsWith(path) === false) {
-          // this key doesn't effect us
-          continue;
+    const extractValue = useCallback(
+      (data: any, depth: number) => {
+        let res;
+        if (extractValueProp) {
+          res = extractValueProp(data, depth);
         }
-
-        if (nextProps.expanded[key] !== props.expanded[key]) {
-          return true;
+        if (!res) {
+          res = defaultValueExtractor(data, depth);
         }
-      }
-    }
-
-    // basic equality checks for the rest
-    return (
-      nextProps.data !== props.data ||
-      nextProps.diff !== props.diff ||
-      nextProps.name !== props.name ||
-      nextProps.depth !== props.depth ||
-      !deepEqual(nextProps.path, props.path) ||
-      nextProps.onExpanded !== props.onExpanded ||
-      nextProps.setValue !== props.setValue
+        return res;
+      },
+      [extractValueProp],
     );
-  }
 
-  isExpanded(pathParts: Array<string>) {
-    const {expanded} = this.props;
-
-    // if we no expanded object then expand everything
-    if (expanded == null) {
-      return true;
-    }
-
-    const path = pathParts.join('.');
-
-    // check if there's a setting for this path
-    if (Object.prototype.hasOwnProperty.call(expanded, path)) {
-      return expanded[path];
-    }
-
-    // check if all paths are collapsed
-    if (this.props.collapsed === true) {
-      return false;
-    }
-
-    // by default all items are expanded
-    return true;
-  }
-
-  setExpanded(pathParts: Array<string>, isExpanded: boolean) {
-    const {expanded, onExpanded} = this.props;
-    if (!onExpanded || !expanded) {
-      return;
-    }
-
-    const path = pathParts.join('.');
-
-    onExpanded({
-      ...expanded,
-      [path]: isExpanded,
-    });
-  }
-
-  handleClick = () => {
-    const isExpanded = this.isExpanded(this.props.path);
-    this.interaction(isExpanded ? 'collapsed' : 'expanded');
-    this.setExpanded(this.props.path, !isExpanded);
-  };
-
-  extractValue = (data: any, depth: number) => {
-    let res;
-
-    const {extractValue} = this.props;
-    if (extractValue) {
-      res = extractValue(data, depth);
-    }
-
-    if (!res) {
-      res = defaultValueExtractor(data, depth);
-    }
-
-    return res;
-  };
-
-  render(): any {
-    const {
-      data,
-      diff,
-      depth,
-      expanded: expandedPaths,
-      expandRoot,
+    const res = useMemo(() => extractValue(data, depth), [
       extractValue,
-      name,
-      onExpanded,
-      path,
-      ancestry,
-      collapsed,
-      tooltips,
-    } = this.props;
+      data,
+      depth,
+    ]);
+    const resDiff = useMemo(() => extractValue(diff, depth), [
+      extractValue,
+      data,
+      depth,
+    ]);
+    const ancestry = useMemo(
+      () => (res ? parentAncestry!.concat([res.value]) : []),
+      [parentAncestry, res?.value],
+    );
 
-    // the data inspector makes values read only when setValue isn't set so we just need to set it
-    // to null and the readOnly status will be propagated to all children
-    let {setValue} = this.props;
-
-    const res = this.extractValue(data, depth);
-    const resDiff = this.extractValue(diff, depth);
-
-    let type;
-    let value;
-    let extra;
-    if (res) {
-      if (!res.mutable) {
-        setValue = null;
-      }
-
-      ({type, value, extra} = res);
+    let isExpandable = false;
+    if (!res) {
+      shouldExpand.current = false;
     } else {
+      isExpandable = isValueExpandable(res.value);
+    }
+
+    if (isExpandable) {
+      if (
+        expandRoot === true ||
+        shouldBeExpanded(expandedPaths, path, collapsed)
+      ) {
+        shouldExpand.current = true;
+      } else if (resDiff) {
+        shouldExpand.current = isComponentExpanded(
+          res!.value,
+          resDiff.type,
+          resDiff.value,
+        );
+      }
+    }
+
+    useEffect(() => {
+      if (!shouldExpand.current) {
+        setRenderExpanded(false);
+      } else {
+        expandHandle.current = requestIdleCallback(() => {
+          setRenderExpanded(true);
+        });
+      }
+      return () => {
+        cancelIdleCallback(expandHandle.current);
+      };
+    }, [shouldExpand.current]);
+
+    const setExpanded = useCallback(
+      (pathParts: Array<string>, isExpanded: boolean) => {
+        if (!onExpanded || !expandedPaths) {
+          return;
+        }
+        const path = pathParts.join('.');
+        onExpanded(path, isExpanded);
+      },
+      [onExpanded, expandedPaths],
+    );
+
+    const handleClick = useCallback(() => {
+      cancelIdleCallback(expandHandle.current);
+      const isExpanded = shouldBeExpanded(expandedPaths, path, collapsed);
+      reportInteraction('DataInspector', path.join(':'))(
+        isExpanded ? 'collapsed' : 'expanded',
+        undefined,
+      );
+      setExpanded(path, !isExpanded);
+    }, [expandedPaths, path, collapsed]);
+
+    const handleDelete = useCallback(
+      (path: Array<string>) => {
+        if (!onDelete) {
+          return;
+        }
+        onDelete(path);
+      },
+      [onDelete],
+    );
+
+    /**
+     * RENDERING
+     */
+    if (!res) {
       return null;
     }
 
-    if (ancestry.includes(value)) {
-      return <RecursiveBaseWrapper>Recursive</RecursiveBaseWrapper>;
-    }
+    // the data inspector makes values read only when setValue isn't set so we just need to set it
+    // to null and the readOnly status will be propagated to all children
+    const setValue = res.mutable ? setValueProp : null;
+    const {value, type, extra} = res;
 
-    const isExpandable = DataInspector.isExpandable(value);
-    const isExpanded =
-      isExpandable &&
-      (resDiff != null
-        ? isComponentExpanded(
-            value,
-            resDiff.type,
-            resDiff.value,
-            expandRoot === true || this.isExpanded(path),
-          )
-        : expandRoot === true || this.isExpanded(path));
+    if (parentAncestry!.includes(value)) {
+      return recursiveMarker;
+    }
 
     let expandGlyph = '';
     if (isExpandable) {
-      if (isExpanded) {
+      if (shouldExpand.current) {
         expandGlyph = '▼';
       } else {
         expandGlyph = '▶';
@@ -480,35 +470,26 @@ export default class DataInspector extends Component<DataInspectorProps> {
     }
 
     let propertyNodesContainer = null;
-    if (isExpandable && isExpanded) {
+    if (isExpandable && renderExpanded) {
       const propertyNodes = [];
-
-      // ancestry of children, including its owner object
-      const childAncestry = ancestry.concat([value]);
 
       const diffValue = diff && resDiff ? resDiff.value : null;
 
       const keys = getSortedKeys({...value, ...diffValue});
-
-      const Added = styled.div({
-        backgroundColor: colors.tealTint70,
-      });
-      const Removed = styled.div({
-        backgroundColor: colors.cherryTint70,
-      });
 
       for (const key of keys) {
         const diffMetadataArr = diffMetadataExtractor(value, key, diffValue);
         for (const metadata of diffMetadataArr) {
           const dataInspectorNode = (
             <DataInspector
-              ancestry={childAncestry}
+              parentAncestry={ancestry}
               extractValue={extractValue}
               setValue={setValue}
               expanded={expandedPaths}
               collapsed={collapsed}
               onExpanded={onExpanded}
-              path={path.concat(key)}
+              onDelete={onDelete}
+              parentPath={path}
               depth={depth + 1}
               key={key}
               name={key}
@@ -552,7 +533,7 @@ export default class DataInspector extends Component<DataInspectorProps> {
           title={tooltips != null && tooltips[name]}
           key="name"
           options={nameTooltipOptions}>
-          <InspectorName>{name}</InspectorName>
+          <InspectorName>{highlighter.render(name)}</InspectorName>
         </Tooltip>,
       );
       nameElems.push(<span key="sep">: </span>);
@@ -560,7 +541,7 @@ export default class DataInspector extends Component<DataInspectorProps> {
 
     // create description or preview
     let descriptionOrPreview;
-    if (isExpanded || !isExpandable) {
+    if (renderExpanded || !isExpandable) {
       descriptionOrPreview = (
         <DataDescription
           path={path}
@@ -575,7 +556,7 @@ export default class DataInspector extends Component<DataInspectorProps> {
         <DataPreview
           type={type}
           value={value}
-          extractValue={this.extractValue}
+          extractValue={extractValue}
           depth={depth}
         />
       );
@@ -590,7 +571,7 @@ export default class DataInspector extends Component<DataInspectorProps> {
 
     let wrapperStart;
     let wrapperEnd;
-    if (isExpanded) {
+    if (renderExpanded) {
       if (type === 'object') {
         wrapperStart = <Wrapper>{'{'}</Wrapper>;
         wrapperEnd = <Wrapper>{'}'}</Wrapper>;
@@ -607,8 +588,8 @@ export default class DataInspector extends Component<DataInspectorProps> {
     if (isExpandable) {
       contextMenuItems.push(
         {
-          label: isExpanded ? 'Collapse' : 'Expand',
-          click: this.handleClick,
+          label: shouldExpand.current ? 'Collapse' : 'Expand',
+          click: handleClick,
         },
         {
           type: 'separator',
@@ -628,15 +609,19 @@ export default class DataInspector extends Component<DataInspectorProps> {
       },
     );
 
+    if (!isExpandable && onDelete) {
+      contextMenuItems.push({
+        label: 'Delete',
+        click: () => handleDelete(path),
+      });
+    }
+
     return (
       <BaseContainer
         depth={depth}
-        disabled={
-          Boolean(this.props.setValue) === true && Boolean(setValue) === false
-        }>
+        disabled={!!setValueProp && !!setValue === false}>
         <ContextMenu component="span" items={contextMenuItems}>
-          <PropertyContainer
-            onClick={isExpandable ? this.handleClick : undefined}>
+          <PropertyContainer onClick={isExpandable ? handleClick : undefined}>
             {expandedPaths && <ExpandControl>{expandGlyph}</ExpandControl>}
             {descriptionOrPreview}
             {wrapperStart}
@@ -646,5 +631,88 @@ export default class DataInspector extends Component<DataInspectorProps> {
         {wrapperEnd}
       </BaseContainer>
     );
+  },
+  dataInspectorPropsAreEqual,
+);
+
+function shouldBeExpanded(
+  expanded: DataInspectorExpanded,
+  pathParts: Array<string>,
+  collapsed?: boolean,
+) {
+  // if we have no expanded object then expand everything
+  if (expanded == null) {
+    return true;
   }
+
+  const path = pathParts.join('.');
+
+  // check if there's a setting for this path
+  if (Object.prototype.hasOwnProperty.call(expanded, path)) {
+    return expanded[path];
+  }
+
+  // check if all paths are collapsed
+  if (collapsed === true) {
+    return false;
+  }
+
+  // by default all items are expanded
+  return true;
 }
+
+function dataInspectorPropsAreEqual(
+  props: DataInspectorProps,
+  nextProps: DataInspectorProps,
+) {
+  // Optimization: it would be much faster to not pass the expanded tree
+  // down the tree, but rather introduce an ExpandStateManager, and subscribe per node
+
+  // check if any expanded paths effect this subtree
+  if (nextProps.expanded !== props.expanded) {
+    const path = !nextProps.name
+      ? '' // root
+      : !nextProps.parentPath.length
+      ? nextProps.name // root element
+      : nextProps.parentPath.join('.') + '.' + nextProps.name;
+
+    // we are being collapsed
+    if (props.expanded[path] !== nextProps.expanded[path]) {
+      return false;
+    }
+
+    // one of our children was expande
+    for (const key in nextProps.expanded) {
+      if (key.startsWith(path) === false) {
+        // this key doesn't effect us
+        continue;
+      }
+
+      if (nextProps.expanded[key] !== props.expanded[key]) {
+        return false;
+      }
+    }
+  }
+
+  // basic equality checks for the rest
+  return (
+    nextProps.data === props.data &&
+    nextProps.diff === props.diff &&
+    nextProps.name === props.name &&
+    nextProps.depth === props.depth &&
+    nextProps.parentPath === props.parentPath &&
+    nextProps.onExpanded === props.onExpanded &&
+    nextProps.onDelete === props.onDelete &&
+    nextProps.setValue === props.setValue &&
+    nextProps.collapsed === props.collapsed &&
+    nextProps.expandRoot === props.expandRoot
+  );
+}
+
+function isValueExpandable(data: any) {
+  return (
+    typeof data === 'object' && data !== null && Object.keys(data).length > 0
+  );
+}
+
+export default DataInspector;

@@ -23,9 +23,19 @@ module.exports = () => ({
         node.arguments[0].type === 'StringLiteral'
       ) {
         const source = node.arguments[0].value;
-        if (!source.startsWith('./')) {
+        if (!source.startsWith('./') && !source.startsWith('../')) {
           node.callee.name = 'electronRequire';
         }
+      }
+      if (
+        node.callee.type === 'MemberExpression' &&
+        node.callee.object.type === 'Identifier' &&
+        node.callee.object.name === 'require' &&
+        node.callee.property.name === 'resolve' &&
+        node.arguments.length === 1 &&
+        node.arguments[0].type == 'StringLiteral'
+      ) {
+        node.callee.object.name = 'electronRequire';
       }
     },
   },

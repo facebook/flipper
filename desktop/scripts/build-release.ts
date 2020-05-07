@@ -16,9 +16,9 @@ import {
   compileRenderer,
   compileMain,
   die,
-  compileDefaultPlugins,
   getVersionNumber,
   genMercurialRevision,
+  generatePluginEntryPoints,
 } from './build-utils';
 import fetch from 'node-fetch';
 import {getIcons, buildLocalIconPath, getIconURL} from '../app/src/utils/icons';
@@ -80,6 +80,13 @@ async function buildDist(buildFolder: string) {
   }
   if (process.argv.indexOf('--linux') > -1) {
     targetsRaw.push(Platform.LINUX.createTarget(['zip']));
+
+    const argv = process.argv.slice(2);
+    if (argv.indexOf('--linux-deb') > -1) {
+      // linux targets can be:
+      // AppImage, snap, deb, rpm, freebsd, pacman, p5p, apk, 7z, zip, tar.xz, tar.lz, tar.gz, tar.bz2, dir
+      targetsRaw.push(Platform.LINUX.createTarget(['deb']));
+    }
   }
   if (process.argv.indexOf('--win') > -1) {
     targetsRaw.push(Platform.WINDOWS.createTarget(['zip']));
@@ -115,6 +122,9 @@ async function buildDist(buildFolder: string) {
         linux: {
           executableName: 'flipper',
         },
+        mac: {
+          bundleVersion: '50.0.0',
+        },
       },
       projectDir: buildFolder,
       targets,
@@ -126,7 +136,9 @@ async function buildDist(buildFolder: string) {
 }
 
 async function copyStaticFolder(buildFolder: string) {
+  console.log(`⚙️  Copying static package with dependencies...`);
   await copyPackageWithDependencies(staticDir, buildFolder);
+  console.log('✅  Copied static package with dependencies.');
 }
 
 function downloadIcons(buildFolder: string) {
@@ -184,11 +196,9 @@ function downloadIcons(buildFolder: string) {
   console.log('Created build directory', dir);
 
   await compileMain();
+  await generatePluginEntryPoints();
   await copyStaticFolder(dir);
   await downloadIcons(dir);
-  if (!process.argv.includes('--no-embedded-plugins')) {
-    await compileDefaultPlugins(path.join(dir, 'defaultPlugins'));
-  }
   await compileRenderer(dir);
   const versionNumber = getVersionNumber();
   const hgRevision = await genMercurialRevision();

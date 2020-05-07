@@ -170,9 +170,11 @@ class Server extends EventEmitter {
       const query = querystring.decode(message.url.split('?')[1]);
       const deviceId: string =
         typeof query.deviceId === 'string' ? query.deviceId : 'webbrowser';
+      const device =
+        typeof query.device === 'string' ? query.device : 'WebSocket';
       this.store.dispatch({
         type: 'REGISTER_DEVICE',
-        payload: new JSDevice(deviceId, 'Web Browser', 1),
+        payload: new JSDevice(deviceId, device, 1),
       });
 
       const cleanup = () => {
@@ -191,6 +193,7 @@ class Server extends EventEmitter {
           case 'connect': {
             const app = message.app;
             const plugins = message.plugins;
+            let resolvedClient: Client | null = null;
             const client = this.addConnection(
               new WebsocketClientFlipperConnection(ws, app, plugins),
               {
@@ -201,15 +204,19 @@ class Server extends EventEmitter {
                 sdk_version: 1,
               },
               {},
-            );
+            ).then((c) => (resolvedClient = c));
             clients[app] = client;
-            client.then((c) => {
-              ws.on('message', (m: any) => {
-                const parsed = JSON.parse(m.toString());
-                if (parsed.app === app) {
-                  c.onMessage(JSON.stringify(parsed.payload));
+
+            ws.on('message', (m: any) => {
+              const parsed = JSON.parse(m.toString());
+              if (parsed.app === app) {
+                const message = JSON.stringify(parsed.payload);
+                if (resolvedClient) {
+                  resolvedClient.onMessage(message);
+                } else {
+                  client.then((c) => c.onMessage(message));
                 }
-              });
+              }
             });
             break;
           }
@@ -228,7 +235,8 @@ class Server extends EventEmitter {
         cleanup();
       });
 
-      ws.on('error', () => {
+      ws.on('error', (error) => {
+        console.error('[server] ws connection error ', error);
         cleanup();
       });
     });
@@ -263,13 +271,16 @@ class Server extends EventEmitter {
       onNext(payload) {
         if (payload.kind == 'ERROR' || payload.kind == 'CLOSED') {
           client.then((client) => {
-            console.debug(`Device disconnected ${client.id}`, 'server');
+            console.log(`Device disconnected ${client.id}`, 'server', payload);
             server.removeConnection(client.id);
           });
         }
       },
       onSubscribe(subscription) {
         subscription.request(Number.MAX_SAFE_INTEGER);
+      },
+      onError(error) {
+        console.error('[server] connection status error ', error);
       },
     });
 

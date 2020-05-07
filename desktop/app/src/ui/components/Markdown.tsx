@@ -30,8 +30,8 @@ const Heading = styled.div<{level: number}>((props) => ({
   fontWeight: props.level > 1 ? 'bold' : 'normal',
 }));
 const ListItem = styled.li({
-  'list-style-type': 'circle',
-  'list-style-position': 'inside',
+  listStyleType: 'circle',
+  listStylePosition: 'inside',
   marginLeft: 10,
 });
 const Strong = styled.span({

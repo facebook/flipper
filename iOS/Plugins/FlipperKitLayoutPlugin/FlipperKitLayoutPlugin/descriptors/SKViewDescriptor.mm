@@ -497,6 +497,7 @@ return dataMutations;
 }
 
 - (void)hitTest:(SKTouch*)touch forNode:(UIView*)node {
+  bool finish = true;
   for (NSInteger index = [self childCountForNode:node] - 1; index >= 0;
        index--) {
     id<NSObject> childNode = [self childForNode:node atIndex:index];
@@ -518,11 +519,13 @@ return dataMutations;
 
     if ([touch containedIn:viewForNode.frame]) {
       [touch continueWithChildIndex:index withOffset:viewForNode.frame.origin];
-      return;
+      finish = false;
     }
   }
 
-  [touch finish];
+  if (finish) {
+    [touch finish];
+  }
 }
 
 static void initEnumDictionaries() {

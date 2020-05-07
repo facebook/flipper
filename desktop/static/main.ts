@@ -27,7 +27,6 @@ import compilePlugins from './compilePlugins';
 import setup from './setup';
 import isFB from './fb-stubs/isFB';
 import delegateToLauncher from './launcher';
-import expandTilde from 'expand-tilde';
 import yargs from 'yargs';
 
 const VERSION: string = (global as any).__VERSION__;
@@ -79,6 +78,11 @@ const argv = yargs
         '[Internal] Used to provide a user message from the launcher to the user.',
       type: 'string',
     },
+    'open-dev-tools': {
+      describe: 'Open Dev Tools window on startup.',
+      default: false,
+      type: 'boolean',
+    },
   })
   .version(VERSION)
   .help()
@@ -90,25 +94,7 @@ if (isFB && process.env.FLIPPER_FB === undefined) {
   process.env.FLIPPER_FB = 'true';
 }
 
-const skipLoadingEmbeddedPlugins = process.env.FLIPPER_NO_EMBEDDED_PLUGINS;
-
-const pluginPaths = (config.pluginPaths ?? [])
-  .concat([
-    path.join(configPath, '..', 'thirdparty'),
-    ...(skipLoadingEmbeddedPlugins
-      ? []
-      : [
-          path.join(__dirname, '..', 'plugins'),
-          path.join(__dirname, '..', 'plugins', 'fb'),
-        ]),
-  ])
-  .map(expandTilde)
-  .filter(fs.existsSync);
-
-process.env.CONFIG = JSON.stringify({
-  ...config,
-  pluginPaths,
-});
+process.env.CONFIG = JSON.stringify(config);
 
 // possible reference to main app window
 let win: BrowserWindow;
@@ -124,15 +110,11 @@ setInterval(() => {
   }
 }, 60 * 1000);
 
-compilePlugins(
-  () => {
-    if (win) {
-      win.reload();
-    }
-  },
-  pluginPaths,
-  path.join(flipperDir, 'plugins'),
-).then((dynamicPlugins) => {
+compilePlugins(() => {
+  if (win) {
+    win.reload();
+  }
+}, path.join(flipperDir, 'plugins')).then((dynamicPlugins) => {
   ipcMain.on('get-dynamic-plugins', (event) => {
     event.returnValue = dynamicPlugins;
   });
@@ -308,7 +290,12 @@ function tryCreateWindow() {
         nativeWindowOpen: true,
       },
     });
-    win.once('ready-to-show', () => win.show());
+    win.once('ready-to-show', () => {
+      win.show();
+      if (argv['open-dev-tools']) {
+        win.webContents.openDevTools();
+      }
+    });
     win.once('close', () => {
       win.webContents.send('trackUsage', 'exit');
       if (process.env.NODE_ENV === 'development') {

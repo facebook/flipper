@@ -1,4 +1,4 @@
-# Flipper [![Build Status](https://travis-ci.org/facebook/flipper.svg?branch=master)](https://travis-ci.org/facebook/flipper) [![Android Maven Badge](https://img.shields.io/maven-metadata/v/https/jcenter.bintray.com/com/facebook/flipper/flipper/maven-metadata.xml.svg?color=green&label=android)](https://bintray.com/facebook/maven/com.facebook.flipper%3Aflipper) [![iOS](https://img.shields.io/cocoapods/v/FlipperKit.svg?label=iOS&color=blue)](https://cocoapods.org/pods/Flipper) [![Greenkeeper badge](https://badges.greenkeeper.io/facebook/flipper.svg)](https://greenkeeper.io/)
+# Flipper [![Build Status](https://travis-ci.org/facebook/flipper.svg?branch=master)](https://travis-ci.org/facebook/flipper) [![Android Maven Badge](https://img.shields.io/maven-metadata/v/https/jcenter.bintray.com/com/facebook/flipper/flipper/maven-metadata.xml.svg?color=green&label=android)](https://bintray.com/facebook/maven/com.facebook.flipper%3Aflipper) [![iOS](https://img.shields.io/cocoapods/v/FlipperKit.svg?label=iOS&color=blue)](https://cocoapods.org/pods/Flipper)
 
 Flipper (formerly Sonar) is a platform for debugging mobile apps on iOS and Android. Visualize, inspect, and control your apps from a simple desktop interface. Use Flipper as is or extend it using the plugin API.
 
@@ -50,7 +50,7 @@ This repository includes all parts of Flipper. This includes:
 
 # Getting started
 
-Please refer to our [Getting Started guide](https://fbflipper.com/docs/getting-started/) to set up Flipper.
+Please refer to our [Getting Started guide](https://fbflipper.com/docs/getting-started/index) to set up Flipper.
 
 ## Requirements
 
@@ -121,7 +121,7 @@ Older yarn versions might show an error / hang with the message 'Waiting for the
 
 # Documentation
 
-Find the full documentation for this project at [fbflipper.com](https://fbflipper.com/docs).
+Find the full documentation for this project at [fbflipper.com](https://fbflipper.com/).
 
 Our documentation is built with [Docusaurus](https://docusaurus.io/). You can build
 it locally by running this:

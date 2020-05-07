@@ -1,0 +1,115 @@
+---
+id: android-native
+title: Set up your Android app
+sidebar_label: Android
+---
+
+To set up Flipper for Android, you need to add the neccessary dependencies to your
+app, initialize the Flipper client and enable the plugins you want to use. Optionally,
+you can hook up the diagnostics Activity to help you troubleshoot connection issues.
+
+## Dependencies
+
+Flipper is distributed via JCenter. Add the dependencies to your `build.gradle` file.
+You should also explicitly depend on [`soloader`](https://github.com/facebook/soloader)
+instead of relying on transitive dependency resolution which is getting deprecated
+with Gradle 5.
+
+We provide a "no-op" implementation of some oft-used Flipper interfaces you can
+use to make it easier to strip Flipper from your release builds.
+
+```groovy
+repositories {
+  jcenter()
+}
+
+dependencies {
+  debugImplementation 'com.facebook.flipper:flipper:0.41.0'
+  debugImplementation 'com.facebook.soloader:soloader:0.9.0'
+
+  releaseImplementation 'com.facebook.flipper:flipper-noop:0.41.0'
+}
+```
+
+<div class="warning">
+
+Please note that our `flipper-noop` package provides a limited subset of the
+APIs provided by the `flipper` package and does not provide any plugin stubs.
+It is recommended that you keep all Flipper instantiation code in a separate
+build variant to ensure it doesn't accidentally make it into your production
+builds. Check out [the sample
+app](https://github.com/facebook/flipper/tree/master/android/sample/src) to
+see how to organise your Flipper initialization into debug and release
+variants.
+
+Alternatively, have a look at the third-party
+[flipper-android-no-op](https://github.com/theGlenn/flipper-android-no-op)
+repository, which provides empty implementations for several Flipper plugins.
+
+</div>
+
+## Application Setup
+
+Now you can initialize Flipper in your Application's `onCreate` method, which involves
+initializing SoLoader (for loading the C++ part of Flipper) and starting a `FlipperClient`.
+
+```java
+import com.facebook.flipper.android.AndroidFlipperClient;
+import com.facebook.flipper.android.utils.FlipperUtils;
+import com.facebook.flipper.core.FlipperClient;
+import com.facebook.flipper.plugins.inspector.DescriptorMapping;
+import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin;
+
+
+public class MyApplication extends Application {
+
+  @Override
+  public void onCreate() {
+    super.onCreate();
+    SoLoader.init(this, false);
+
+    if (BuildConfig.DEBUG && FlipperUtils.shouldEnableFlipper(this)) {
+      final FlipperClient client = AndroidFlipperClient.getInstance(this);
+      client.addPlugin(new InspectorFlipperPlugin(this, DescriptorMapping.withDefaults()));
+      client.start();
+    }
+  }
+}
+```
+
+## Diagnostics
+
+It's recommended that you add the following activity to the manifest, which can help diagnose integration issues and other problems:
+
+```xml
+<activity android:name="com.facebook.flipper.android.diagnostics.FlipperDiagnosticActivity"
+        android:exported="true"/>
+```
+
+## Android Snapshots
+
+Feeling adventurous? We publish Android snapshot releases directly off of `master`.
+
+You can get the latest version by adding the Maven Snapshot repository to your sources
+and pointing to the most recent `-SNAPSHOT` version.
+
+```groovy
+repositories {
+  maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+}
+
+dependencies {
+  debugImplementation 'com.facebook.flipper:flipper:0.41.1-SNAPSHOT'
+  debugImplementation 'com.facebook.soloader:soloader:0.9.0'
+
+  releaseImplementation 'com.facebook.flipper:flipper-noop:0.41.1-SNAPSHOT'
+}
+```
+
+## Enabling plugins
+
+Finally, you need to add plugins to your Flipper client. Above, we have only added the Layout Inspector plugin to get you started. See [Network Plugin](../setup/network-plugin) and [Layout Inspector Plugin](../setup/layout-plugin) for information on how to add them, and also enable Litho or ComponentKit support. You can check the sample apps in the [GitHub repo](https://github.com/facebook/flipper) for examples of integrating other plugins.
+
+## Having trouble?
+
+See the [troubleshooting page](../troubleshooting) for help with known problems.

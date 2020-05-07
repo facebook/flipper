@@ -82,6 +82,15 @@ static NSString* const kAppSuiteUserDefaultsName = @"App Suite UserDefaults";
                                     forKey:preferenceName];
               [responder success:[sharedPreferences dictionaryRepresentation]];
             }];
+
+  [connection receive:@"deleteSharedPreference"
+            withBlock:^(NSDictionary* params, id<FlipperResponder> responder) {
+              NSUserDefaults* sharedPreferences =
+                  [self sharedPreferencesForParams:params];
+              NSString* preferenceName = params[@"preferenceName"];
+              [sharedPreferences removeObjectForKey:preferenceName];
+              [responder success:[sharedPreferences dictionaryRepresentation]];
+            }];
 }
 
 - (void)didDisconnect {

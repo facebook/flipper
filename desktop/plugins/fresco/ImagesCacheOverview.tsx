@@ -94,12 +94,12 @@ type ImagesCacheOverviewState = {
   size: number;
 };
 
-const StyledSelect = styled(Select)((props) => ({
+const _StyledSelect = styled(Select)({
   marginLeft: 6,
   marginRight: 6,
   height: '100%',
   maxWidth: 164,
-}));
+});
 
 export default class ImagesCacheOverview extends PureComponent<
   ImagesCacheOverviewProps,
@@ -299,30 +299,32 @@ class ImageGrid extends PureComponent<{
       return null;
     }
 
-    return [
-      <ImageGridHeader
-        key="header"
-        title={this.props.title}
-        subtitle={this.props.subtitle}
-        onClear={this.props.onClear}
-      />,
-      <ImageGrid.Content key="content">
-        {images.map((imageId) => (
-          <ImageItem
-            imageId={imageId}
-            image={this.props.imagesMap[imageId]}
-            key={imageId}
-            selected={selectedImage != null && selectedImage === imageId}
-            onSelected={onImageSelected}
-            size={this.props.size}
-            numberOfRequests={
-              this.props.events.filter((e) => e.imageIds.includes(imageId))
-                .length
-            }
-          />
-        ))}
-      </ImageGrid.Content>,
-    ];
+    return (
+      <>
+        <ImageGridHeader
+          key="header"
+          title={this.props.title}
+          subtitle={this.props.subtitle}
+          onClear={this.props.onClear}
+        />
+        <ImageGrid.Content key="content">
+          {images.map((imageId) => (
+            <ImageItem
+              imageId={imageId}
+              image={this.props.imagesMap[imageId]}
+              key={imageId}
+              selected={selectedImage != null && selectedImage === imageId}
+              onSelected={onImageSelected}
+              size={this.props.size}
+              numberOfRequests={
+                this.props.events.filter((e) => e.imageIds.includes(imageId))
+                  .length
+              }
+            />
+          ))}
+        </ImageGrid.Content>
+      </>
+    );
   }
 }
 

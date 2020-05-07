@@ -229,6 +229,22 @@ public class SharedPreferencesFlipperPlugin implements FlipperPlugin {
             responder.success(getFlipperObjectFor(sharedPreferencesName));
           }
         });
+
+    connection.receive(
+        "deleteSharedPreference",
+        new FlipperReceiver() {
+          @Override
+          public void onReceive(FlipperObject params, FlipperResponder responder)
+              throws IllegalArgumentException {
+            String sharedPreferencesName = params.getString("sharedPreferencesName");
+            String preferenceName = params.getString("preferenceName");
+            SharedPreferences sharedPrefs = getSharedPreferencesFor(sharedPreferencesName);
+            SharedPreferences.Editor editor = sharedPrefs.edit();
+            editor.remove(preferenceName);
+            editor.apply();
+            responder.success(getFlipperObjectFor(sharedPreferencesName));
+          }
+        });
   }
 
   @Override

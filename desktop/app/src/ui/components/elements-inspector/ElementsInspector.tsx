@@ -40,6 +40,7 @@ export type ElementAttribute = {
 export type ElementExtraInfo = {
   linkedNode?: string; // id of linked node in opposite tree
   expandWithParent?: boolean;
+  linkedTree?: string;
 };
 
 export type Element = {
@@ -53,7 +54,7 @@ export type Element = {
   extraInfo: ElementExtraInfo;
 };
 
-export default class ElementsInspector extends Component<{
+export type ElementsInspectorProps = {
   onElementExpanded: (key: ElementID, deep: boolean) => void;
   onElementSelected: (key: ElementID) => void;
   onElementHovered:
@@ -70,7 +71,11 @@ export default class ElementsInspector extends Component<{
   alternateRowColor?: boolean;
   contextMenuExtensions?: Array<ContextMenuExtension>;
   decorateRow?: DecorateRow;
-}> {
+};
+
+export default class ElementsInspector extends Component<
+  ElementsInspectorProps
+> {
   static defaultProps = {
     alternateRowColor: true,
   };

@@ -138,9 +138,7 @@ export default class WelcomeScreen extends PureComponent<Props, State> {
           <Item
             onClick={() =>
               shell &&
-              shell.openExternal(
-                'https://fbflipper.com/docs/features/index.html',
-              )
+              shell.openExternal('https://fbflipper.com/docs/features/index')
             }>
             <Icon size={20} name="rocket" color={brandColors.Flipper} />
             <FlexColumn>
@@ -153,9 +151,7 @@ export default class WelcomeScreen extends PureComponent<Props, State> {
           <Item
             onClick={() =>
               shell &&
-              shell.openExternal(
-                'https://fbflipper.com/docs/tutorial/intro.html',
-              )
+              shell.openExternal('https://fbflipper.com/docs/tutorial/intro')
             }>
             <Icon size={20} name="magic-wand" color={brandColors.Flipper} />
             <FlexColumn>
@@ -166,7 +162,9 @@ export default class WelcomeScreen extends PureComponent<Props, State> {
           <Item
             onClick={() =>
               shell &&
-              shell.openExternal('https://fbflipper.com/docs/getting-started/')
+              shell.openExternal(
+                'https://fbflipper.com/docs/getting-started/index',
+              )
             }>
             <Icon size={20} name="tools" color={brandColors.Flipper} />
             <FlexColumn>

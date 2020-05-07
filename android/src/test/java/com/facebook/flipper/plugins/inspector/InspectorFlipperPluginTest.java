@@ -11,6 +11,7 @@ import static com.facebook.flipper.plugins.inspector.ThrowableMessageMatcher.has
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 
 import android.app.Application;
 import android.graphics.Rect;
@@ -269,8 +270,19 @@ public class InspectorFlipperPluginTest {
         hasItem(
             new FlipperObject.Builder()
                 .put(
+                    "tree",
+                    new FlipperObject.Builder()
+                        .put(
+                            "com.facebook.flipper",
+                            new FlipperObject.Builder()
+                                .put(
+                                    "test",
+                                    new FlipperObject.Builder()
+                                        .put("3", new FlipperObject.Builder())
+                                        .put("1", new FlipperObject.Builder()))))
+                .put(
                     "path",
-                    new FlipperArray.Builder().put("com.facebook.flipper").put("test").put("3"))
+                    new FlipperArray.Builder().put("com.facebook.flipper").put("test").put("1"))
                 .build()));
   }
 
@@ -288,12 +300,12 @@ public class InspectorFlipperPluginTest {
     plugin.mSetSearchActive.onReceive(
         new FlipperObject.Builder().put("active", true).build(), responder);
 
-    Mockito.verify(decorView, Mockito.times(1)).addView(Mockito.any(TouchOverlayView.class));
+    Mockito.verify(decorView, Mockito.times(1)).addView(any(TouchOverlayView.class));
 
     plugin.mSetSearchActive.onReceive(
         new FlipperObject.Builder().put("active", false).build(), responder);
 
-    Mockito.verify(decorView, Mockito.times(1)).removeView(Mockito.any(TouchOverlayView.class));
+    Mockito.verify(decorView, Mockito.times(1)).removeView(any(TouchOverlayView.class));
   }
 
   @Test
@@ -390,16 +402,17 @@ public class InspectorFlipperPluginTest {
 
     @Override
     public void hitTest(TestNode node, Touch touch) {
+      boolean finish = true;
       for (int i = node.children.size() - 1; i >= 0; i--) {
         final TestNode child = node.children.get(i);
         final Rect bounds = child.bounds;
         if (touch.containedIn(bounds.left, bounds.top, bounds.right, bounds.bottom)) {
           touch.continueWithOffset(i, bounds.left, bounds.top);
-          return;
+          finish = false;
         }
       }
 
-      touch.finish();
+      if (finish) touch.finish();
     }
 
     @Override

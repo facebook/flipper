@@ -18,12 +18,13 @@
 #import <ComponentKit/CKInspectableView.h>
 
 #import "CKComponent+Sonar.h"
+#import "SKComponentMountedView.h"
 
 static char const kLayoutWrapperKey = ' ';
 
-static CKFlexboxComponentChild findFlexboxLayoutParams(
-    CKComponent* parent,
-    CKComponent* child) {
+static CK::Optional<CKFlexboxComponentChild> findFlexboxLayoutParams(
+    id<CKMountable> parent,
+    id<CKMountable> child) {
   if ([parent isKindOfClass:[CKFlexboxComponent class]]) {
     static Ivar ivar =
         class_getInstanceVariable([CKFlexboxComponent class], "_children");
@@ -42,7 +43,7 @@ static CKFlexboxComponentChild findFlexboxLayoutParams(
     }
   }
 
-  return {};
+  return CK::none;
 }
 
 @implementation SKComponentLayoutWrapper
@@ -66,6 +67,7 @@ static CKFlexboxComponentChild findFlexboxLayoutParams(
   SKComponentLayoutWrapper* const wrapper = [[SKComponentLayoutWrapper alloc]
       initWithLayout:layout
             position:CGPointMake(0, 0)
+        flexboxChild:CK::none
            parentKey:[NSString
                          stringWithFormat:@"%@%d.",
                                           parentKey,
@@ -85,6 +87,8 @@ static CKFlexboxComponentChild findFlexboxLayoutParams(
 
 - (instancetype)initWithLayout:(const CKComponentLayout&)layout
                       position:(CGPoint)position
+                  flexboxChild:
+                      (CK::Optional<CKFlexboxComponentChild>)flexboxChild
                      parentKey:(NSString*)parentKey
                   reuseWrapper:(CKComponentReuseWrapper*)reuseWrapper
                       rootNode:(id<CKInspectableView>)node {
@@ -93,8 +97,9 @@ static CKFlexboxComponentChild findFlexboxLayoutParams(
     _component = (CKComponent*)layout.component;
     _size = layout.size;
     _position = position;
+    _flexboxChild = flexboxChild;
     _identifier = [parentKey stringByAppendingString:layout.component
-                                 ? NSStringFromClass([layout.component class])
+                                 ? layout.component.className
                                  : @"(null)"];
 
     if (_component && reuseWrapper) {
@@ -105,6 +110,7 @@ static CKFlexboxComponentChild findFlexboxLayoutParams(
       }
     }
 
+    std::vector<SKComponentLayoutWrapper*> childComponents;
     if (layout.children != nullptr) {
       int index = 0;
       for (const auto& child : *layout.children) {
@@ -115,16 +121,25 @@ static CKFlexboxComponentChild findFlexboxLayoutParams(
             [[SKComponentLayoutWrapper alloc]
                 initWithLayout:child.layout
                       position:child.position
+                  flexboxChild:findFlexboxLayoutParams(
+                                   _component, child.layout.component)
                      parentKey:[_identifier
                                    stringByAppendingFormat:@"[%d].", index++]
                   reuseWrapper:reuseWrapper
                       rootNode:node];
-        childWrapper->_isFlexboxChild =
-            [_component isKindOfClass:[CKFlexboxComponent class]];
-        childWrapper->_flexboxChild = findFlexboxLayoutParams(
-            _component, (CKComponent*)child.layout.component);
-        _children.push_back(childWrapper);
+        childComponents.push_back(childWrapper);
       }
+    }
+
+    UIView* mountedView = _component.mountedView;
+    if (mountedView && !childComponents.empty()) {
+      _children = SKMountedViewChild{[[SKComponentMountedView alloc]
+          initWithView:mountedView
+              children:childComponents]};
+    } else if (mountedView) {
+      _children = SKLeafViewChild{mountedView}; // leaf view
+    } else {
+      _children = childComponents;
     }
   }
 
