@@ -514,6 +514,13 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
 
     if (props.root != null) {
       seed(props.root, 1);
+    } else {
+      const virtualRoots: Set<string> = new Set();
+      Object.keys(props.elements).forEach((id) => virtualRoots.add(id));
+      Object.values(props.elements).forEach((element) =>
+        element.children.forEach((id) => virtualRoots.delete(id)),
+      );
+      virtualRoots.forEach((id) => seed(id, 1));
     }
 
     return {flatElements, flatKeys, maxDepth};
