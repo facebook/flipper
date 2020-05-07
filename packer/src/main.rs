@@ -42,8 +42,8 @@ fn pack(
         .get(platform)
         .ok_or_else(|| error::Error::MissingPlatformDefinition(platform.clone()))?;
     packtype_paths
-        .iter()
-        .try_fold(vec![], |mut acc, (pack_type, pack_files)| {
+        .into_iter()
+        .map(|(pack_type, pack_files)| {
             print!(
                 "Packing for platform {:?} type {:?} ... ",
                 platform, pack_type
@@ -63,9 +63,9 @@ fn pack(
             tar.finish()?;
             println!("done.");
 
-            acc.push((*pack_type, output_path));
-            Ok(acc)
+            Ok((*pack_type, output_path))
         })
+        .collect()
 }
 
 fn pack_platform(
@@ -192,14 +192,23 @@ fn gen_manifest(archive_paths: &[(PackType, path::PathBuf)]) -> Result<PackManif
 fn gen_manifest_files(
     archive_paths: &[(PackType, path::PathBuf)],
 ) -> Result<BTreeMap<PackType, HashSum>> {
-    archive_paths.into_iter().try_fold(
-        BTreeMap::new(),
-        |mut acc: BTreeMap<PackType, HashSum>, (pack_type, path)| {
+    let res = archive_paths
+        .into_iter()
+        .map(|(pack_type, path)| {
             let reader = BufReader::new(File::open(path)?);
-            acc.insert(*pack_type, sha256_digest(reader)?);
-            Ok(acc)
-        },
-    )
+            let hash = sha256_digest(reader)?;
+            Ok((*pack_type, hash))
+        })
+        .collect::<Result<Vec<_>>>()?
+        .into_iter()
+        .fold(
+            BTreeMap::new(),
+            |mut acc: BTreeMap<PackType, HashSum>, (pack_type, hash_sum)| {
+                acc.insert(pack_type, hash_sum);
+                acc
+            },
+        );
+    Ok(res)
 }
 
 #[cfg(test)]
