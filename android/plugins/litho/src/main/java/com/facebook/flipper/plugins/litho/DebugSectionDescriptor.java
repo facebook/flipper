@@ -171,7 +171,7 @@ public class DebugSectionDescriptor extends NodeDescriptor<DebugSection> {
 
     // For a DiffSectionSpec, check if child view to see if the touch is in its bounds.
     // For a GroupSectionSpec, check the bounds of the entire section.
-
+    boolean finish = true;
     if (node.isDiffSectionSpec()) {
       for (int i = 0; i < childCount; i++) {
         View child = (View) getChildAt(node, i);
@@ -183,10 +183,9 @@ public class DebugSectionDescriptor extends NodeDescriptor<DebugSection> {
         final boolean hit = touch.containedIn(left, top, right, bottom);
         if (hit) {
           touch.continueWithOffset(i, left, top);
-          return;
+          finish = false;
         }
       }
-      touch.finish();
     } else {
       for (int i = 0; i < childCount; i++) {
         DebugSection child = (DebugSection) getChildAt(node, i);
@@ -194,11 +193,11 @@ public class DebugSectionDescriptor extends NodeDescriptor<DebugSection> {
         final boolean hit = touch.containedIn(bounds.left, bounds.top, bounds.right, bounds.bottom);
         if (hit) {
           touch.continueWithOffset(i, 0, 0);
-          return;
+          finish = false;
         }
       }
-      touch.finish();
     }
+    if (finish) touch.finish();
   }
 
   @Override
