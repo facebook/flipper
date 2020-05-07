@@ -12,32 +12,32 @@ import {colors} from './colors';
 import styled from '@emotion/styled';
 import React from 'react';
 
-type Props = {
-  title: string;
+type Props = React.ComponentProps<typeof ToolbarIconContainer> & {
+  active?: boolean;
   icon: string;
-  active: boolean;
+  title: string;
   onClick: () => void;
 };
 
-const ToolbarIcon = styled.div({
+const ToolbarIconContainer = styled.div({
   marginRight: 9,
   marginTop: -3,
   marginLeft: 4,
   position: 'relative', // for settings popover positioning
 });
 
-export default function (props: Props) {
+export default function ToolbarIcon({active, icon, ...props}: Props) {
   return (
-    <ToolbarIcon onClick={props.onClick} title={props.title}>
+    <ToolbarIconContainer {...props}>
       <Glyph
-        name={props.icon}
+        name={icon}
         size={16}
         color={
-          props.active
+          active
             ? colors.macOSTitleBarIconSelected
             : colors.macOSTitleBarIconActive
         }
       />
-    </ToolbarIcon>
+    </ToolbarIconContainer>
   );
 }
