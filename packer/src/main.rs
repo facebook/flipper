@@ -8,7 +8,7 @@
 mod error;
 mod types;
 
-use anyhow::{bail, Result};
+use anyhow::{bail, Context, Result};
 use clap::value_t_or_exit;
 use std::collections::BTreeMap;
 use std::fs::File;
@@ -45,18 +45,23 @@ fn pack(
         .iter()
         .try_fold(vec![], |mut acc, (pack_type, pack_files)| {
             print!(
-                "Packing for platform {:?} type {:?} ...",
+                "Packing for platform {:?} type {:?} ... ",
                 platform, pack_type
             );
             let _ = stdout().flush();
             let output_path = path::Path::new(output_directory).join(format!("{}.tar", pack_type));
-            let mut tar = tar::Builder::new(File::create(&output_path)?);
+            let mut tar = tar::Builder::new(File::create(&output_path).with_context(|| {
+                format!(
+                    "Couldn't open file for writing: {}",
+                    &output_path.to_string_lossy()
+                )
+            })?);
             // MacOS uses symlinks for bundling multiple framework versions and pointing
             // to the "Current" one.
             tar.follow_symlinks(false);
             pack_platform(platform, dist_dir, pack_files, pack_type, &mut tar)?;
             tar.finish()?;
-            println!(" done.");
+            println!("done.");
 
             acc.push((*pack_type, output_path));
             Ok(acc)
@@ -143,6 +148,12 @@ fn main() -> Result<(), anyhow::Error> {
         serde_yaml::from_str(&pack_list_str).expect("Failed to deserialize YAML packlist.");
     let output_directory =
         &path::PathBuf::from(args.value_of("output").expect("argument has default"));
+    std::fs::create_dir_all(output_directory).with_context(|| {
+        format!(
+            "Failed to create output directory '{}'.",
+            output_directory.to_string_lossy()
+        )
+    })?;
     let archive_paths = pack(&platform, &dist_dir, &pack_list, output_directory)?;
     manifest(&archive_paths, &output_directory)?;
 
@@ -153,11 +164,11 @@ fn manifest(
     archive_paths: &[(PackType, path::PathBuf)],
     output_directory: &path::PathBuf,
 ) -> Result<path::PathBuf> {
-    print!("Generating manifest ...");
+    print!("Generating manifest ... ");
     let _ = stdout().flush();
     // TODO: This could easily be parallelised.
     let archive_manifest = gen_manifest(&archive_paths)?;
-    println!(" done.");
+    println!("done.");
     write_manifest(&output_directory, &archive_manifest)
 }
 
@@ -166,7 +177,8 @@ fn write_manifest(
     archive_manifest: &PackManifest,
 ) -> Result<path::PathBuf> {
     let path = path::PathBuf::from(output_directory).join("manifest.json");
-    let mut file = File::create(&path)?;
+    let mut file = File::create(&path)
+        .with_context(|| format!("Failed to write manifest to {}", &path.to_string_lossy()))?;
     file.write_all(&serde_json::to_string_pretty(archive_manifest)?.as_bytes())?;
     Ok(path)
 }
