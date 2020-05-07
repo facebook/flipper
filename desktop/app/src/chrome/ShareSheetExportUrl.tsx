@@ -154,16 +154,19 @@ export default class ShareSheetExportUrl extends Component<Props, State> {
       getLogger().trackTimeSince(uploadMarker, uploadMarker, {
         plugins: this.store.getState().plugins.selectedPlugins,
       });
-      this.setState({fetchMetaDataErrors, result});
       const flipperUrl = (result as DataExportResult).flipperUrl;
       if (flipperUrl) {
-        clipboard.writeText(String(flipperUrl));
         this.store.dispatch(setExportURL(flipperUrl));
-        new Notification('Shareable Flipper Export created', {
-          body: 'URL copied to clipboard',
-          requireInteraction: true,
-        });
+        if (this.state.runInBackground) {
+          clipboard.writeText(String(flipperUrl));
+          new Notification('Shareable Flipper Export created', {
+            body: 'URL copied to clipboard',
+            requireInteraction: true,
+          });
+        }
       }
+      this.setState({fetchMetaDataErrors, result});
+      this.store.dispatch(unsetShare());
       this.store.dispatch(resetSupportFormV2State());
       this.props.logger.trackTimeSince(mark, 'export:url-success');
     } catch (e) {
