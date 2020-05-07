@@ -72,16 +72,19 @@
     return; // -children will return garbage if invoked on nil
   }
   const auto& children = node.children;
+  bool finish = true;
   for (auto it = children.rbegin(); it != children.rend(); ++it) {
     SKComponentLayoutWrapper* child = *it;
     CGRect frame = {.origin = child.position, .size = child.size};
     if ([touch containedIn:frame]) {
       NSUInteger index = std::distance(children.begin(), it.base()) - 1;
       [touch continueWithChildIndex:index withOffset:child.position];
-      return;
+      finish = false;
     }
   }
-  [touch finish];
+  if (finish) {
+    [touch finish];
+  }
 }
 
 - (BOOL)matchesQuery:(NSString*)query forNode:(SKComponentMountedView*)node {

@@ -184,16 +184,17 @@ static std::vector<std::pair<NSString*, SKSubDescriptor>>& subDescriptors() {
         return YES;
       },
       [&](std::vector<SKComponentLayoutWrapper*> children) -> BOOL {
+        BOOL continueTouch = NO;
         for (auto it = children.rbegin(); it != children.rend(); ++it) {
           SKComponentLayoutWrapper* wrapper = *it;
           CGRect frame = {.origin = wrapper.position, .size = wrapper.size};
           if ([touch containedIn:frame]) {
             NSUInteger index = std::distance(children.begin(), it.base()) - 1;
             [touch continueWithChildIndex:index withOffset:wrapper.position];
-            return YES;
+            continueTouch = YES;
           }
         }
-        return NO;
+        return continueTouch;
       });
   if (!didContinueTouch) {
     [touch finish];
