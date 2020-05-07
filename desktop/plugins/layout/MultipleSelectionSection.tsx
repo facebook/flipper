@@ -13,6 +13,7 @@ import {
   Element,
   ElementID,
   ElementsInspector,
+  Glyph,
   colors,
   styled,
 } from 'flipper';
@@ -38,6 +39,12 @@ const MultipleSelectorSectionTitle = styled(FlexBox)({
   textAlign: 'center',
 });
 
+const Chevron = styled(Glyph)({
+  marginRight: 4,
+  marginLeft: -2,
+  marginBottom: 1,
+});
+
 type MultipleSelectorSectionProps = {
   initialSelectedElement: ElementID | null | undefined;
   elements: {[id: string]: Element};
@@ -59,23 +66,30 @@ const MultipleSelectorSection: React.FC<MultipleSelectorSectionProps> = memo(
     const [selectedId, setSelectedId] = useState<ElementID | null | undefined>(
       initialSelectedElement,
     );
+    const [collapsed, setCollapsed] = useState(false);
     return (
       <MultipleSelectorSectionContainer>
-        <MultipleSelectorSectionTitle>
+        <MultipleSelectorSectionTitle
+          onClick={() => {
+            setCollapsed(!collapsed);
+          }}>
+          <Chevron name={collapsed ? 'chevron-up' : 'chevron-down'} size={12} />
           Multiple elements found at the target coordinates
         </MultipleSelectorSectionTitle>
-        <ElementsInspector
-          onElementSelected={(key: string) => {
-            setSelectedId(key);
-            onElementSelected(key);
-          }}
-          onElementHovered={onElementHovered}
-          onElementExpanded={() => {}}
-          onValueChanged={null}
-          root={null}
-          selected={selectedId}
-          elements={elements}
-        />
+        {!collapsed && (
+          <ElementsInspector
+            onElementSelected={(key: string) => {
+              setSelectedId(key);
+              onElementSelected(key);
+            }}
+            onElementHovered={onElementHovered}
+            onElementExpanded={() => {}}
+            onValueChanged={null}
+            root={null}
+            selected={selectedId}
+            elements={elements}
+          />
+        )}
       </MultipleSelectorSectionContainer>
     );
   },
