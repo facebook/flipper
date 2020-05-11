@@ -455,6 +455,11 @@ function buildRow(
   if (request == null) {
     return null;
   }
+
+  if (request.url == null) {
+    return null;
+  }
+  
   const url = new URL(request.url);
   const domain = url.host + url.pathname;
   const friendlyName = getHeaderValue(request.headers, 'X-FB-Friendly-Name');
