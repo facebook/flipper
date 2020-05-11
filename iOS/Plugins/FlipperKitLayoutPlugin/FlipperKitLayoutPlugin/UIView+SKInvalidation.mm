@@ -63,17 +63,20 @@ static auto shouldInvalidateRootNode(UIView* view) -> bool {
 }
 
 - (void)swizzle_removeFromSuperview {
+  UIView* oldSuperview = self.superview;
+  // Be careful that we always call the swizzled implementation
+  // before any early returns or mischief below!
+  [self swizzle_removeFromSuperview];
+
   id<SKInvalidationDelegate> delegate =
       [SKInvalidation sharedInstance].delegate;
-  if (delegate != nil && self.superview != nil) {
-    if (shouldInvalidateRootNode(self.superview)) {
+  if (delegate != nil && oldSuperview != nil) {
+    if (shouldInvalidateRootNode(oldSuperview)) {
       [delegate invalidateRootNode];
       return;
     }
-    [delegate invalidateNode:self.superview];
+    [delegate invalidateNode:oldSuperview];
   }
-
-  [self swizzle_removeFromSuperview];
 }
 
 @end
