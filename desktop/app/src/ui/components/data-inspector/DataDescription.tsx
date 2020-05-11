@@ -612,17 +612,20 @@ class DataDescriptionContainer extends PureComponent<{
 
       case 'text':
       case 'string':
-        if (val.startsWith('http://') || val.startsWith('https://')) {
+        const isUrl = val.startsWith('http://') || val.startsWith('https://');
+        if (isUrl) {
           return (
             <>
               <Link href={val}>{highlighter.render(val)}</Link>
-              <Glyph
-                name="pencil"
-                variant="outline"
-                color={colors.light20}
-                size={16}
-                style={pencilStyle}
-              />
+              {editable && (
+                <Glyph
+                  name="pencil"
+                  variant="outline"
+                  color={colors.light20}
+                  size={16}
+                  style={{cursor: 'pointer', marginLeft: 8}}
+                />
+              )}
             </>
           );
         } else {
