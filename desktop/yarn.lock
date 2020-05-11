@@ -2099,10 +2099,10 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react-dom@*", "@types/react-dom@16.9.4", "@types/react-dom@^16.9.4":
-  version "16.9.4"
-  resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-16.9.4.tgz#0b58df09a60961dcb77f62d4f1832427513420df"
-  integrity sha512-fya9xteU/n90tda0s+FtN5Ym4tbgxpq/hb/Af24dvs6uYnYn+fspaxw5USlw0R8apDNwxsqumdRoCoKitckQqw==
+"@types/react-dom@*", "@types/react-dom@16.9.8", "@types/react-dom@^16.9.8":
+  version "16.9.8"
+  resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-16.9.8.tgz#fe4c1e11dfc67155733dfa6aa65108b4971cb423"
+  integrity sha512-ykkPQ+5nFknnlU6lDd947WbQ6TE3NNzbQAkInC2EKY1qeYdTKp7onFusmYZb+ityzx2YviqT6BXSu+LyWWJwcA==
   dependencies:
     "@types/react" "*"
 
