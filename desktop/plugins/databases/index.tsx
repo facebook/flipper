@@ -445,7 +445,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
         results: UpdateDatabasesEvent,
       ): DatabasesPluginState => {
         const updates = results.databases;
-        const databases = updates;
+        const databases = updates.sort((db1, db2) => db1.id - db2.id);
         const selectedDatabase =
           state.selectedDatabase ||
           (Object.values(databases)[0]
