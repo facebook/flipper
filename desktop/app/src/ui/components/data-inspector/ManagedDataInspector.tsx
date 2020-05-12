@@ -14,7 +14,7 @@ import React from 'react';
 import {DataValueExtractor} from './DataPreview';
 import {HighlightProvider} from '../Highlight';
 
-type ManagedDataInspectorProps = {
+export type ManagedDataInspectorProps = {
   /**
    * Object to inspect.
    */
