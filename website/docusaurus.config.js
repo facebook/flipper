@@ -46,15 +46,15 @@ const siteConfig = {
             {label: 'Core Plugins', to: 'docs/features/index'},
             {
               label: 'Community Plugins',
-              to: 'https://www.npmjs.com/search?q=keywords:flipper-plugin',
+              href: 'https://www.npmjs.com/search?q=keywords:flipper-plugin',
             },
           ],
         },
         {
           title: 'More',
           items: [
-            {label: 'Twitter', to: 'https://twitter.com/flipper_fb'},
-            {label: 'GitHub', to: repoUrl},
+            {label: 'Twitter', href: 'https://twitter.com/flipper_fb'},
+            {label: 'GitHub', href: repoUrl},
           ],
         },
       ],
