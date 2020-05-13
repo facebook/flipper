@@ -13,7 +13,7 @@ use clap::value_t_or_exit;
 use rayon::prelude::{IntoParallelIterator, ParallelIterator};
 use std::collections::BTreeMap;
 use std::fs::File;
-use std::io::{BufReader, Read, Write};
+use std::io::{BufReader, BufWriter, Read, Write};
 use std::path;
 use types::{PackType, Platform};
 
@@ -146,6 +146,9 @@ fn main() -> Result<(), anyhow::Error> {
         .arg(clap::Arg::from_usage(
             "-p, --packlist=packlist.yaml 'Custom list of files to pack.'",
         ))
+        .arg(clap::Arg::from_usage(
+            "--no-compression 'Skip compressing the archives (for debugging)'",
+        ))
         .arg(
             clap::Arg::from_usage("[PLATFORM] 'Platform to build for'")
                 .case_insensitive(true)
@@ -158,6 +161,7 @@ fn main() -> Result<(), anyhow::Error> {
     let dist_dir = path::PathBuf::from(
         shellexpand::tilde(args.value_of("dist").expect("argument has default")).to_string(),
     );
+    let compress = !args.is_present("no-compression");
     let pack_list_str = args
         .value_of("packlist")
         .map(|f| std::fs::read_to_string(f).expect(&format!("Failed to open packfile {}.", f)))
@@ -173,9 +177,53 @@ fn main() -> Result<(), anyhow::Error> {
         )
     })?;
     let archive_paths = pack(&platform, &dist_dir, &pack_list, output_directory)?;
-    manifest(&archive_paths, &output_directory)?;
+    let compressed_archive_paths = if compress {
+        compress_paths(&archive_paths)?
+    } else {
+        archive_paths
+    };
+    manifest(&compressed_archive_paths, &output_directory)?;
 
     Ok(())
+}
+
+/// Takes a list of archive paths, compresses them with LZMA and returns
+/// the updated paths.
+/// TODO: Remove compressed artifacts.
+fn compress_paths(
+    archive_paths: &[(PackType, path::PathBuf)],
+) -> Result<Vec<(PackType, path::PathBuf)>> {
+    let pb = default_progress_bar(archive_paths.len() as u64 - 1);
+    pb.set_prefix(&format!(
+        "{:width$}",
+        "Compressing archives",
+        width = PROGRESS_PREFIX_LEN
+    ));
+    let res = archive_paths
+        .into_par_iter()
+        .map(|(pack_type, path)| {
+            let input_file = File::open(&path).with_context(|| {
+                format!("Failed to open archive '{}'.", &path.to_string_lossy())
+            })?;
+            let mut reader = BufReader::new(input_file);
+            let mut output_path = path::PathBuf::from(path);
+            output_path.set_extension("tar.xz");
+            let output_file: File = File::create(&output_path).with_context(|| {
+                format!(
+                    "Failed opening compressed archive '{}' for writing.",
+                    &output_path.to_string_lossy()
+                )
+            })?;
+            let writer = BufWriter::new(output_file);
+            let mut encoder = xz2::write::XzEncoder::new(writer, 9);
+            std::io::copy(&mut reader, &mut encoder)?;
+            pb.inc(1);
+            Ok((*pack_type, output_path))
+        })
+        .collect::<Result<Vec<(PackType, path::PathBuf)>>>()?;
+    pb.finish();
+
+    Ok(res)
 }
 
 fn manifest(
