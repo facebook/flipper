@@ -194,7 +194,7 @@
     "pkg": "^4.4.1",
     "prettier": "^2.0.0",
     "pretty-format": "^26.0.0",
-    "promisify-child-process": "^3.1.3",
+    "promisify-child-process": "^4.1.0",
     "react-async": "^10.0.0",
     "react-refresh": "^0.8.1",
     "recursive-readdir": "^2.2.2",

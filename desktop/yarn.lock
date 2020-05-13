@@ -1055,7 +1055,7 @@
     core-js-pure "^3.0.0"
     regenerator-runtime "^0.13.4"
 
-"@babel/runtime@^7.0.0", "@babel/runtime@^7.1.2", "@babel/runtime@^7.1.5", "@babel/runtime@^7.4.5", "@babel/runtime@^7.5.5", "@babel/runtime@^7.7.2", "@babel/runtime@^7.7.4", "@babel/runtime@^7.8.4", "@babel/runtime@^7.8.7", "@babel/runtime@^7.9.2":
+"@babel/runtime@^7.0.0", "@babel/runtime@^7.1.2", "@babel/runtime@^7.4.5", "@babel/runtime@^7.5.5", "@babel/runtime@^7.7.2", "@babel/runtime@^7.7.4", "@babel/runtime@^7.8.4", "@babel/runtime@^7.8.7", "@babel/runtime@^7.9.2":
   version "7.9.2"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.9.2.tgz#d90df0583a3a252f09aaa619665367bae518db06"
   integrity sha512-NE2DtOdufG7R5vnfQUTehdTfNycfUANEtCa9PssN9O/xmTzP4E08UI797ixaei6hBEVL9BI/PsdJS5x7mWoB9Q==
@@ -10341,12 +10341,10 @@ promise@^7.1.1:
   dependencies:
     asap "~2.0.3"
 
-promisify-child-process@^3.1.1, promisify-child-process@^3.1.3:
-  version "3.1.4"
-  resolved "https://registry.yarnpkg.com/promisify-child-process/-/promisify-child-process-3.1.4.tgz#3321827f283c0be30de1354bec1c6c627f02d53c"
-  integrity sha512-tLifJs99E4oOXUz/dKQjRgdchfiepmYQzBVrcVX9BtUWi9aGJeGSf2KgXOWBW1JFsSYgLkl1Z9HRm8i0sf4cTg==
-  dependencies:
-    "@babel/runtime" "^7.1.5"
+promisify-child-process@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/promisify-child-process/-/promisify-child-process-4.1.0.tgz#b910c4592880c69254bae0ddd080b89a3d25182c"
+  integrity sha512-oj4hb3nOOYAP4g/n4ruq2ij1mgAHJjqBGYTUfpvUQmAVh+bRcBkk11C9A/do7Ebtm6qtLDOHekVvlxNn1bFPEA==
 
 prompts@^2.0.1:
   version "2.2.1"
