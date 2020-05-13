@@ -88,7 +88,7 @@ export default async function runBuild(
     resolver: {
       ...baseConfig.resolver,
       resolverMainFields: ['flipperBundlerEntry', 'module', 'main'],
-      sourceExts: ['js', 'jsx', 'ts', 'tsx', 'json', 'mjs'],
+      sourceExts: ['js', 'jsx', 'ts', 'tsx', 'json', 'mjs', 'cjs'],
       blacklistRE: /\.native\.js$/,
     },
   });

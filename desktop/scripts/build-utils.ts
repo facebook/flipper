@@ -87,7 +87,7 @@ async function compile(
       resolver: {
         resolverMainFields: ['flipperBundlerEntry', 'module', 'main'],
         blacklistRE: /\.native\.js$/,
-        sourceExts: ['js', 'jsx', 'ts', 'tsx', 'json', 'mjs'],
+        sourceExts: ['js', 'jsx', 'ts', 'tsx', 'json', 'mjs', 'cjs'],
       },
     },
     {

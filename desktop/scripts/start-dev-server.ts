@@ -112,7 +112,7 @@ async function startMetroServer(app: Express, server: http.Server) {
           platform,
         );
       },
-      sourceExts: ['js', 'jsx', 'ts', 'tsx', 'json', 'mjs'],
+      sourceExts: ['js', 'jsx', 'ts', 'tsx', 'json', 'mjs', 'cjs'],
     },
     watch: true,
   });
