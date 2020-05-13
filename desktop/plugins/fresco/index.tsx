@@ -141,7 +141,7 @@ export default class FlipperImagesPlugin extends FlipperPlugin<
         }
         pluginData = {
           ...pluginData,
-          events: [{eventId: index, ...event}, ...pluginData.events],
+          events: [{...event, eventId: index}, ...pluginData.events],
         };
       });
       const idSet: Set<string> = levels.reduce((acc, level: CacheInfo) => {

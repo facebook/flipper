@@ -111,7 +111,6 @@ function Visualizer(props: {
             userSelect: 'none',
           }}></div>
       )}
-      />
     </VisualizerContainer>
   );
 }

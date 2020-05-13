@@ -2,6 +2,8 @@
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "baseUrl": ".",
+    "skipLibCheck": true,
+    "noEmit": true,
     "paths": {
       "flipper": ["./app/src"],
       "flipper-doctor": ["./doctor/src"],
@@ -11,5 +13,5 @@
       "flipper-babel-transformer": ["./babel-transformer/src"]
     }
   },
-  "exclude": ["node_modules", "**/*.spec.ts"]
+  "exclude": ["**/node_modules/", "**/*.spec.ts"]
 }

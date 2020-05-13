@@ -194,8 +194,8 @@ export default class FilterToken extends PureComponent<Props> {
         value = [];
       }
       const newFilter: Filter = {
-        type: 'enum',
         ...filter,
+        type: 'enum',
         value,
       };
       this.props.onReplace(index, newFilter);

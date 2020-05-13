@@ -14,6 +14,7 @@ import isProduction from './utils/isProduction';
 
 export const store = createStore<StoreState, Actions, any, any>(
   reducers,
+  // @ts-ignore Type definition mismatch
   window.__REDUX_DEVTOOLS_EXTENSION__
     ? window.__REDUX_DEVTOOLS_EXTENSION__({
         // @ts-ignore: stateSanitizer is not part of type definition.
