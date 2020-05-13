@@ -1,3 +1,9 @@
+# 0.42.0 (12/5/2020)
+
+ * D21214898 -  Add multiple selector to layout inspector to allow user to select components at a position
+ * D21450694 -  Calling `client.call()` or `client.send()` now fails to type-check if params is not an object, to match client implementations.
+
+
 # 0.41.0 (5/5/2020)
 
  * D21302821 -  The JSON inspector in plugins like GraphQL no longer freezes Flipper temporarily when expanding large data sets and will remain interactive during
