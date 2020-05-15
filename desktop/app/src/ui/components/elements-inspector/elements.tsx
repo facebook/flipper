@@ -690,15 +690,17 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
                   return;
                 }
                 const outer = this._outerRef.current;
-                outer.scrollTo(
-                  0,
-                  this._calculateScrollTop(
-                    outer.offsetHeight,
-                    outer.scrollTop,
-                    selectedRow.offsetHeight,
-                    selectedRow.offsetTop,
-                  ),
-                );
+                if (outer.scrollTo) {
+                  outer.scrollTo(
+                    0,
+                    this._calculateScrollTop(
+                      outer.offsetHeight,
+                      outer.scrollTop,
+                      selectedRow.offsetHeight,
+                      selectedRow.offsetTop,
+                    ),
+                  );
+                }
               }
             : null
         }
