@@ -73,7 +73,7 @@ class ScreenCaptureButtons extends Component<Props, State> {
   captureScreenshot: Promise<void> | any = async () => {
     const {selectedDevice} = this.props;
     if (selectedDevice != null) {
-      await capture(selectedDevice);
+      await capture(selectedDevice).then(openFile);
     }
   };
 
