@@ -22,7 +22,7 @@ const tmpName = promisify(tmpNameCallback) as (
 // Cross platform way to find the /tmp directory or equivalent.
 // The tempPath set should be persistent across app restarts.
 const tempPathPromise: Promise<string> = tmpName({
-  template: '/tmp/tmp-XXXXXX',
+  template: 'tmp-XXXXXX',
 }).then((name) => resolve(name, '..', 'flipper'));
 
 export default function initCrashReporter(sessionId: string): Promise<void> {
