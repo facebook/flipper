@@ -8,6 +8,7 @@
  */
 
 import React from 'react';
+import {styled, colors, FlexColumn} from 'flipper';
 
 import electron from 'electron';
 
@@ -17,7 +18,10 @@ const devToolsNodeId = (url: string) =>
 // TODO: build abstractionf or this: T62306732
 const TARGET_CONTAINER_ID = 'flipper-out-of-contents-container'; // should be a hook in the future
 
-function createDevToolsNode(url: string): HTMLElement {
+function createDevToolsNode(
+  url: string,
+  marginTop: string | null,
+): HTMLElement {
   const existing = findDevToolsNode(url);
   if (existing) {
     return existing;
@@ -40,6 +44,11 @@ function createDevToolsNode(url: string): HTMLElement {
   iframe.src = url.replace(/^chrome-/, '');
 
   wrapper.appendChild(iframe);
+
+  if (marginTop) {
+    document.getElementById(TARGET_CONTAINER_ID)!.style.marginTop = marginTop;
+  }
+
   document.getElementById(TARGET_CONTAINER_ID)!.appendChild(wrapper);
   return wrapper;
 }
@@ -61,15 +70,24 @@ function detachDevTools(devToolsNode: HTMLElement | null) {
   }
 }
 
+const EmptyContainer = styled(FlexColumn)({
+  height: '100%',
+  width: '100%',
+  justifyContent: 'center',
+  alignItems: 'center',
+  backgroundColor: colors.light02,
+});
+
 type ChromeDevToolsProps = {
   url: string;
+  marginTop: string | null;
 };
 
 export default class ChromeDevTools extends React.Component<
   ChromeDevToolsProps
 > {
-  createDevTools(url: string) {
-    const devToolsNode = createDevToolsNode(url);
+  createDevTools(url: string, marginTop: string | null) {
+    const devToolsNode = createDevToolsNode(url, marginTop);
     attachDevTools(devToolsNode);
   }
 
@@ -78,7 +96,7 @@ export default class ChromeDevTools extends React.Component<
   }
 
   componentDidMount() {
-    this.createDevTools(this.props.url);
+    this.createDevTools(this.props.url, this.props.marginTop);
   }
 
   componentWillUnmount() {
@@ -90,11 +108,11 @@ export default class ChromeDevTools extends React.Component<
     const newUrl = this.props.url;
     if (oldUrl != newUrl) {
       this.hideDevTools(oldUrl);
-      this.createDevTools(newUrl);
+      this.createDevTools(newUrl, this.props.marginTop);
     }
   }
 
   render() {
-    return <div style={{height: 0}} />;
+    return <EmptyContainer />;
   }
 }

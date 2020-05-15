@@ -8,8 +8,16 @@
  */
 
 import React from 'react';
-import {FlipperDevicePlugin, Device} from 'flipper';
+import {
+  FlipperDevicePlugin,
+  Device,
+  styled,
+  colors,
+  FlexRow,
+  FlexColumn,
+} from 'flipper';
 import LaunchScreen from './LaunchScreen';
+import Banner, {isBannerEnabled} from './Banner';
 import SelectScreen from './SelectScreen';
 import ErrorScreen from './ErrorScreen';
 import ChromeDevTools from './ChromeDevTools';
@@ -35,6 +43,22 @@ type State = Readonly<{
   selectedTarget?: Target | null;
   error?: Error | null;
 }>;
+
+const Content = styled(FlexRow)({
+  height: '100%',
+  width: '100%',
+  flexGrow: 1,
+  justifyContent: 'center',
+  alignItems: 'center',
+});
+
+const Container = styled(FlexColumn)({
+  height: '100%',
+  width: '100%',
+  justifyContent: 'flex-start',
+  alignItems: 'flex-start',
+  backgroundColor: colors.light02,
+});
 
 export default class extends FlipperDevicePlugin<State, any, any> {
   static title = 'Hermes Debugger';
@@ -117,11 +141,21 @@ export default class extends FlipperDevicePlugin<State, any, any> {
 
   handleSelect = (selectedTarget: Target) => this.setState({selectedTarget});
 
-  render() {
+  renderContent() {
     const {error, selectedTarget, targets} = this.state;
 
     if (selectedTarget) {
-      return <ChromeDevTools url={selectedTarget.devtoolsFrontendUrl} />;
+      let bannerMargin = null;
+      if (isBannerEnabled()) {
+        bannerMargin = '29px';
+      }
+
+      return (
+        <ChromeDevTools
+          url={selectedTarget.devtoolsFrontendUrl}
+          marginTop={bannerMargin}
+        />
+      );
     } else if (targets != null && targets.length === 0) {
       return <LaunchScreen />;
     } else if (targets != null && targets.length > 0) {
@@ -131,5 +165,14 @@ export default class extends FlipperDevicePlugin<State, any, any> {
     } else {
       return null;
     }
+  }
+
+  render() {
+    return (
+      <Container>
+        <Banner />
+        <Content>{this.renderContent()}</Content>
+      </Container>
+    );
   }
 }
