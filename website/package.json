@@ -11,8 +11,8 @@
   },
   "devDependencies": {
     "@babel/parser": "^7.8.3",
-    "@docusaurus/core": "^2.0.0-alpha.50",
-    "@docusaurus/preset-classic": "^2.0.0-alpha.50",
+    "@docusaurus/core": "^2.0.0-alpha.54",
+    "@docusaurus/preset-classic": "^2.0.0-alpha.54",
     "classnames": "^2.2.6",
     "docblock-parser": "^1.0.0",
     "docusaurus-plugin-internaldocs-fb": "^0.2.0",
