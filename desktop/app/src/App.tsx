@@ -68,6 +68,14 @@ type DispatchProps = {
 const MainContent = styled(FlexRow)({
   height: 'calc(100vh - 38px)',
 });
+
+const PluginContent = styled(FlexRow)({
+  width: '100%',
+  height: '100%',
+  position: 'relative',
+});
+
+PluginContent.displayName = 'App:PluginContent';
 MainContent.displayName = 'App:MainContent';
 
 type Props = StateFromProps & OwnProps & DispatchProps;
@@ -151,17 +159,26 @@ export class App extends React.Component<Props> {
         <Sheet>{this.getSheet}</Sheet>
         <MainContent>
           {this.props.leftSidebarVisible && <MainSidebar2 />}
-          {this.props.staticView != null ? (
-            React.createElement(this.props.staticView, {
-              logger: this.props.logger,
-            })
-          ) : (
-            <PluginContainer logger={this.props.logger} />
-          )}
-          <div
-            id="flipper-out-of-contents-container"
-            style={{width: '100%', display: 'none'}}
-          />
+          <PluginContent>
+            {this.props.staticView != null ? (
+              React.createElement(this.props.staticView, {
+                logger: this.props.logger,
+              })
+            ) : (
+              <PluginContainer logger={this.props.logger} />
+            )}
+            <div
+              id="flipper-out-of-contents-container"
+              style={{
+                display: 'none',
+                position: 'absolute',
+                right: 0,
+                bottom: 0,
+                left: 0,
+                top: 0,
+              }}
+            />
+          </PluginContent>
         </MainContent>
         <StatusBar />
       </FlexColumn>
