@@ -41,7 +41,7 @@
     "query-string": "^6.10.1",
     "react": "16.13.0",
     "react-async": "^10.0.0",
-    "react-color": "^2.11.7",
+    "react-color": "^2.18.1",
     "react-debounce-render": "^6.0.0",
     "react-dom": "^16.13.0",
     "react-markdown": "^4.2.2",
