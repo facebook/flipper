@@ -183,7 +183,7 @@
     "invariant": "^2.2.4",
     "jest": "^25.1.0",
     "jest-environment-jsdom-sixteen": "^1.0.3",
-    "jest-fetch-mock": "^3.0.0",
+    "jest-fetch-mock": "^3.0.3",
     "line-replace": "^2.0.1",
     "metro": "^0.59.0",
     "metro-minify-terser": "^0.59.0",

@@ -7577,10 +7577,10 @@ jest-environment-node@^25.5.0:
     jest-util "^25.5.0"
     semver "^6.3.0"
 
-jest-fetch-mock@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/jest-fetch-mock/-/jest-fetch-mock-3.0.0.tgz#7d03c24a9c38da8daa0272179f1b3e123b2d43e9"
-  integrity sha512-lPizzB0qLury+RNutT//G+XVPihMU4Eb/RJziXMdlBSr9jkrj1wKEvf3dGfzX9/1x3Npg5/LdG579q+1Bey/cg==
+jest-fetch-mock@^3.0.3:
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/jest-fetch-mock/-/jest-fetch-mock-3.0.3.tgz#31749c456ae27b8919d69824f1c2bd85fe0a1f3b"
+  integrity sha512-Ux1nWprtLrdrH4XwE7O7InRY6psIi3GOsqNESJgMJ+M5cv4A8Lh7SN9d2V2kKRZ8ebAfcd1LNyZguAOb6JiDqw==
   dependencies:
     cross-fetch "^3.0.4"
     promise-polyfill "^8.1.3"
