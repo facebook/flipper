@@ -5,7 +5,7 @@ authors = ["Facebook, Inc."]
 edition = "2018"
 
 [dependencies]
-clap = "^2.33.0"
+clap = "^2.33.1"
 shellexpand = "^2.0.0"
 tar = "^0.4.26"
 serde = { version = "^1.0.106", features = ["derive"] }
