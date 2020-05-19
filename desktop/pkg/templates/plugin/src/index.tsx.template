@@ -1,5 +1,5 @@
 import React from 'react';
-import {FlipperPlugin, FlexColumn, KeyboardActions} from 'flipper';
+import {FlipperPlugin, View, KeyboardActions} from 'flipper';
 
 type State = {};
 
@@ -37,11 +37,11 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
 
   render() {
     return (
-      <FlexColumn>
+      <View scrollable>
         {this.props.persistedState.data.map((d) => (
-          <div>{d}</div>
+          <div>{JSON.stringify(d, null, 2)}<hr/></div>
         ))}
-      </FlexColumn>
-    );
+      </View>
+    )
   }
 }
