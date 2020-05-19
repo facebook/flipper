@@ -20,6 +20,8 @@
     "flipper": "latest"
   },
   "devDependencies": {
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
     "flipper": "latest",
     "flipper-pkg": "latest"
   }
