@@ -7,8 +7,7 @@
  * @format
  */
 
-import React from 'react';
-import {QueriedTable} from '.';
+import React, {useMemo} from 'react';
 import {
   Text,
   DetailSidebar,
@@ -17,53 +16,29 @@ import {
   TableRows,
   TableBodyRow,
   ManagedDataInspector,
+  Value,
+  renderValue,
 } from 'flipper';
 
-function sidebarRows(id: number, table: QueriedTable): TableRows {
-  const columns = table.columns;
-  const row = table.rows[id];
-  if (columns.length === 1) {
-    const sidebarArray = [];
-    // TODO(T60896483): Narrow the scope of this try/catch block.
-    try {
-      const parsed = JSON.parse(row.columns[columns[0]].value.props.children);
-      for (const key in parsed) {
-        sidebarArray.push(
-          buildSidebarRow(key, {
-            props: {
-              children: parsed[key],
-            },
-          }),
-        );
-      }
-    } catch (e) {
-      sidebarArray.push(
-        buildSidebarRow(columns[0], row.columns[columns[0]].value),
-      );
-    }
-    return sidebarArray;
-  } else {
-    return columns.map((column, i) =>
-      buildSidebarRow(columns[i], row.columns[columns[i]].value),
-    );
-  }
+type DatabaseDetailSidebarProps = {
+  columnLabels: Array<string>;
+  columnValues: Array<Value>;
+};
+
+function sidebarRows(labels: Array<string>, values: Array<Value>): TableRows {
+  return labels.map((label, idx) => buildSidebarRow(label, values[idx]));
 }
 
-function buildSidebarRow(key: string, val: any): TableBodyRow {
-  let output: any = '';
+function buildSidebarRow(key: string, val: Value): TableBodyRow {
+  let output = renderValue(val, true);
   // TODO(T60896483): Narrow the scope of this try/catch block.
-  try {
-    const parsed = JSON.parse(val.props.children);
-    for (const key in parsed) {
-      try {
-        parsed[key] = JSON.parse(parsed[key]);
-      } catch (err) {}
-    }
-    output = (
-      <ManagedDataInspector data={parsed} expandRoot={false} collapsed />
-    );
-  } catch (error) {
-    output = val;
+  if (val.type === 'string') {
+    try {
+      const parsed = JSON.parse(val.value);
+      output = (
+        <ManagedDataInspector data={parsed} expandRoot={false} collapsed />
+      );
+    } catch (_error) {}
   }
   return {
     columns: {
@@ -76,32 +51,29 @@ function buildSidebarRow(key: string, val: any): TableBodyRow {
   };
 }
 
-export default React.memo(function DatabaseDetailSidebar(props: {
-  table: QueriedTable;
-}) {
-  const {table} = props;
-  if (
-    table.highlightedRows === null ||
-    typeof table.highlightedRows === 'undefined' ||
-    table.highlightedRows.length !== 1
-  ) {
-    return null;
-  }
-  const id = table.highlightedRows[0];
-  const cols = {
-    col: {
-      value: 'Column',
-      resizable: true,
-    },
-    val: {
-      value: 'Value',
-      resizable: true,
-    },
-  };
-  const colSizes = {
-    col: '35%',
-    val: 'flex',
-  };
+const cols = {
+  col: {
+    value: 'Column',
+    resizable: true,
+  },
+  val: {
+    value: 'Value',
+    resizable: true,
+  },
+};
+const colSizes = {
+  col: '35%',
+  val: 'flex',
+};
+
+export default React.memo(function DatabaseDetailSidebar(
+  props: DatabaseDetailSidebarProps,
+) {
+  const {columnLabels, columnValues} = props;
+  const rows = useMemo(() => sidebarRows(columnLabels, columnValues), [
+    columnLabels,
+    columnValues,
+  ]);
   return (
     <DetailSidebar>
       <Panel
@@ -117,7 +89,7 @@ export default React.memo(function DatabaseDetailSidebar(props: {
           autoHeight={true}
           floating={false}
           zebra={false}
-          rows={sidebarRows(id, table)}
+          rows={rows}
         />
       </Panel>
     </DetailSidebar>

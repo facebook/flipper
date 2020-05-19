@@ -26,13 +26,14 @@ import {
   TableBodyColumn,
   TableRows,
   Props as FlipperPluginProps,
+  TableBodyRow,
+  TableRowSortOrder,
+  FlipperPlugin,
+  Value,
+  renderValue,
 } from 'flipper';
 import React, {Component, KeyboardEvent, ChangeEvent} from 'react';
-import {TableBodyRow, TableRowSortOrder} from 'flipper';
-import {FlipperPlugin} from 'flipper';
 import {DatabaseClient} from './ClientProtocol';
-import {renderValue} from 'flipper';
-import {Value} from 'flipper';
 import ButtonNavigation from './ButtonNavigation';
 import DatabaseDetailSidebar from './DatabaseDetailSidebar';
 import sqlFormatter from 'sql-formatter';
@@ -86,7 +87,7 @@ type Page = {
   databaseId: number;
   table: string;
   columns: Array<string>;
-  rows: Array<TableBodyRow>;
+  rows: Array<Array<Value>>;
   start: number;
   count: number;
   total: number;
@@ -110,7 +111,7 @@ type QueryResult = {
 
 export type QueriedTable = {
   columns: Array<string>;
-  rows: Array<TableBodyRow>;
+  rows: Array<Array<Value>>;
   highlightedRows: Array<number>;
 };
 
@@ -170,7 +171,7 @@ type UpdatePageEvent = {
   databaseId: number;
   table: string;
   columns: Array<string>;
-  values: Array<Array<any>>;
+  values: Array<Array<Value>>;
   start: number;
   count: number;
   total: number;
@@ -181,15 +182,15 @@ type UpdateStructureEvent = {
   databaseId: number;
   table: string;
   columns: Array<string>;
-  rows: Array<Array<any>>;
+  rows: Array<Array<Value>>;
   indexesColumns: Array<string>;
-  indexesValues: Array<Array<any>>;
+  indexesValues: Array<Array<Value>>;
 };
 
 type DisplaySelectEvent = {
   type: 'DisplaySelect';
   columns: Array<string>;
-  values: Array<Array<any>>;
+  values: Array<Array<Value>>;
 };
 
 type DisplayInsertEvent = {
@@ -529,9 +530,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
         return {
           ...state,
           currentPage: {
-            rows: event.values.map((row: Array<Value>, index: number) =>
-              transformRow(event.columns, row, index),
-            ),
+            rows: event.values,
             highlightedRows: [],
             ...event,
           },
@@ -573,9 +572,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
           queryResult: {
             table: {
               columns: event.columns,
-              rows: event.values.map((row: Array<Value>, index: number) =>
-                transformRow(event.columns, row, index),
-              ),
+              rows: event.values,
               highlightedRows: [],
             },
             id: null,
@@ -1083,7 +1080,9 @@ export default class DatabasesPlugin extends FlipperPlugin<
             {},
           )}
           zebra={true}
-          rows={page.rows}
+          rows={page.rows.map((row: Array<Value>, index: number) =>
+            transformRow(page.columns, row, index),
+          )}
           horizontallyScrollable={true}
           multiHighlight={true}
           onRowHighlighted={(highlightedRows) =>
@@ -1105,7 +1104,12 @@ export default class DatabasesPlugin extends FlipperPlugin<
           }}
           initialSortOrder={this.state.currentSort ?? undefined}
         />
-        <DatabaseDetailSidebar table={page} />
+        {page.highlightedRows.length === 1 && (
+          <DatabaseDetailSidebar
+            columnLabels={page.columns}
+            columnValues={page.rows[page.highlightedRows[0]]}
+          />
+        )}
       </FlexRow>
     );
   }
@@ -1137,7 +1141,9 @@ export default class DatabasesPlugin extends FlipperPlugin<
               {},
             )}
             zebra={true}
-            rows={rows}
+            rows={rows.map((row: Array<Value>, index: number) =>
+              transformRow(columns, row, index),
+            )}
             horizontallyScrollable={true}
             onRowHighlighted={(highlightedRows) => {
               this.setState({
@@ -1153,7 +1159,12 @@ export default class DatabasesPlugin extends FlipperPlugin<
               });
             }}
           />
-          <DatabaseDetailSidebar table={table} />
+          {table.highlightedRows.length === 1 && (
+            <DatabaseDetailSidebar
+              columnLabels={table.columns}
+              columnValues={table.rows[table.highlightedRows[0]]}
+            />
+          )}
         </FlexRow>
       );
     } else if (query.id && query.id !== null) {
