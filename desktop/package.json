@@ -171,7 +171,7 @@
     "eslint-plugin-jsx-a11y": "^6.0.3",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^3.1.2",
-    "eslint-plugin-react": "^7.16.0",
+    "eslint-plugin-react": "^7.20.0",
     "eslint-plugin-relay": "^1.4.1",
     "express": "^4.15.2",
     "flipper-babel-transformer": "0.43.0",
