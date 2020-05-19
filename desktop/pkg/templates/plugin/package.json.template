@@ -13,7 +13,8 @@
   "title": "{{title}}",
   "scripts": {
     "lint": "flipper-pkg lint",
-    "prepack": "flipper-pkg lint && flipper-pkg bundle"
+    "prepack": "flipper-pkg lint && flipper-pkg bundle",
+    "build": "flipper-pkg bundle"
   },
   "peerDependencies": {
     "flipper": "latest"
