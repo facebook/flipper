@@ -23,9 +23,6 @@ import {
   getStringFromErrorLike,
   Spacer,
   Textarea,
-  DetailSidebar,
-  Panel,
-  ManagedDataInspector,
   TableBodyColumn,
   TableRows,
   Props as FlipperPluginProps,
@@ -37,6 +34,7 @@ import {DatabaseClient} from './ClientProtocol';
 import {renderValue} from 'flipper';
 import {Value} from 'flipper';
 import ButtonNavigation from './ButtonNavigation';
+import DatabaseDetailSidebar from './DatabaseDetailSidebar';
 import sqlFormatter from 'sql-formatter';
 import dateFormat from 'dateformat';
 
@@ -110,7 +108,7 @@ type QueryResult = {
   count: number | null;
 };
 
-type QueriedTable = {
+export type QueriedTable = {
   columns: Array<string>;
   rows: Array<TableBodyRow>;
   highlightedRows: Array<number>;
@@ -252,7 +250,7 @@ function transformRow(
 ): TableBodyRow {
   const transformedColumns: {[key: string]: TableBodyColumn} = {};
   for (let i = 0; i < columns.length; i++) {
-    transformedColumns[columns[i]] = {value: renderValue(row[i])};
+    transformedColumns[columns[i]] = {value: renderValue(row[i], true)};
   }
   return {key: String(index), columns: transformedColumns};
 }
@@ -1064,109 +1062,6 @@ export default class DatabasesPlugin extends FlipperPlugin<
     );
   }
 
-  renderSidebar = (table: QueriedTable) => {
-    if (
-      table.highlightedRows === null ||
-      typeof table.highlightedRows === 'undefined' ||
-      table.highlightedRows.length !== 1
-    ) {
-      return null;
-    }
-    const id = table.highlightedRows[0];
-    const cols = {
-      col: {
-        value: 'Column',
-        resizable: true,
-      },
-      val: {
-        value: 'Value',
-        resizable: true,
-      },
-    };
-    const colSizes = {
-      col: '35%',
-      val: 'flex',
-    };
-    return (
-      <DetailSidebar width={500}>
-        <Panel
-          padded={true}
-          heading="Row details"
-          floating={false}
-          collapsable={true}
-          grow={true}>
-          <ManagedTable
-            highlightableRows={false}
-            columnSizes={colSizes}
-            multiline={true}
-            columns={cols}
-            autoHeight={true}
-            floating={false}
-            zebra={true}
-            rows={this.sidebarRows(id, table)}
-          />
-        </Panel>
-      </DetailSidebar>
-    );
-  };
-
-  sidebarRows(id: number, table: QueriedTable): TableRows {
-    const columns = table.columns;
-    const row = table.rows[id];
-    if (columns.length === 1) {
-      const sidebarArray = [];
-      // TODO(T60896483): Narrow the scope of this try/catch block.
-      try {
-        const parsed = JSON.parse(row.columns[columns[0]].value.props.children);
-        for (const key in parsed) {
-          sidebarArray.push(
-            this.buildSidebarRow(key, {
-              props: {
-                children: parsed[key],
-              },
-            }),
-          );
-        }
-      } catch (e) {
-        sidebarArray.push(
-          this.buildSidebarRow(columns[0], row.columns[columns[0]].value),
-        );
-      }
-      return sidebarArray;
-    } else {
-      return columns.map((column, i) =>
-        this.buildSidebarRow(columns[i], row.columns[columns[i]].value),
-      );
-    }
-  }
-
-  buildSidebarRow(key: string, val: any): TableBodyRow {
-    let output: any = '';
-    // TODO(T60896483): Narrow the scope of this try/catch block.
-    try {
-      const parsed = JSON.parse(val.props.children);
-      for (const key in parsed) {
-        try {
-          parsed[key] = JSON.parse(parsed[key]);
-        } catch (err) {}
-      }
-      output = (
-        <ManagedDataInspector data={parsed} expandRoot={false} collapsed />
-      );
-    } catch (error) {
-      output = val;
-    }
-    return {
-      columns: {
-        col: {value: <Text>{key}</Text>},
-        val: {
-          value: output,
-        },
-      },
-      key: key,
-    };
-  }
-
   renderTable(page: Page | null) {
     if (!page) {
       return null;
@@ -1210,7 +1105,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
           }}
           initialSortOrder={this.state.currentSort ?? undefined}
         />
-        {this.renderSidebar(page)}
+        <DatabaseDetailSidebar table={page} />
       </FlexRow>
     );
   }
@@ -1258,7 +1153,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
               });
             }}
           />
-          {this.renderSidebar(table)}
+          <DatabaseDetailSidebar table={table} />
         </FlexRow>
       );
     } else if (query.id && query.id !== null) {

@@ -29,6 +29,14 @@ export type Value =
       type: 'null';
     };
 
+const WrappingText = styled(Text)({
+  wordWrap: 'break-word',
+  width: '100%',
+  lineHeight: '125%',
+  padding: '3px 0',
+});
+WrappingText.displayName = 'TypeBasedValueRenderer:WrappingText';
+
 const NonWrappingText = styled(Text)({
   overflow: 'hidden',
   textOverflow: 'ellipsis',
@@ -51,7 +59,8 @@ const BooleanValue = styled(NonWrappingText)<{active?: boolean}>((props) => ({
 }));
 BooleanValue.displayName = 'TypeBasedValueRenderer:BooleanValue';
 
-export function renderValue(val: Value) {
+export function renderValue(val: Value, wordWrap?: boolean) {
+  const TextComponent = wordWrap ? WrappingText : NonWrappingText;
   switch (val.type) {
     case 'boolean':
       return (
@@ -61,15 +70,15 @@ export function renderValue(val: Value) {
       );
     case 'blob':
     case 'string':
-      return <NonWrappingText>{val.value}</NonWrappingText>;
+      return <TextComponent>{val.value}</TextComponent>;
     case 'integer':
     case 'float':
     case 'double':
     case 'number':
-      return <NonWrappingText>{val.value}</NonWrappingText>;
+      return <TextComponent>{val.value}</TextComponent>;
     case 'null':
-      return <NonWrappingText>NULL</NonWrappingText>;
+      return <TextComponent>NULL</TextComponent>;
     default:
-      return <NonWrappingText />;
+      return <TextComponent />;
   }
 }
