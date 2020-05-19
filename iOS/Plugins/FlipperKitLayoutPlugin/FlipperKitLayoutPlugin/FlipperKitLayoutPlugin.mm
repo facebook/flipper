@@ -164,10 +164,15 @@
 }
 
 - (void)didDisconnect {
-  // Clear the last highlight if there is any
-  [self onCallSetHighlighted:nil withResponder:nil];
-  // Disable search if it is active
-  [self onCallSetSearchActive:NO withConnection:nil];
+  // removeFromSuperlayer (SKHighlightOverlay) needs to be called on main thread
+  FlipperPerformBlockOnMainThread(
+      ^{
+        // Clear the last highlight if there is any
+        [self onCallSetHighlighted:nil withResponder:nil];
+        // Disable search if it is active
+        [self onCallSetSearchActive:NO withConnection:nil];
+      },
+      nil);
 }
 
 - (void)onCallGetRoot:(id<FlipperResponder>)responder {
