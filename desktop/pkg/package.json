@@ -47,7 +47,8 @@
     "postpack": "rimraf oclif.manifest.json",
     "prepack": "yarn reset && yarn build && oclif-dev manifest && oclif-dev readme",
     "run": "yarn build && bin/run",
-    "version": "oclif-dev readme && hg add README.md"
+    "version": "oclif-dev readme && hg add README.md",
+    "test": "yarn jest"
   },
   "engines": {
     "node": ">=8.0.0"

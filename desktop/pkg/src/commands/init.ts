@@ -56,52 +56,61 @@ export default class Init extends Command {
       },
     ];
     const pluginDirectory: string = path.resolve(process.cwd(), args.directory);
-
     const title: string = (await inquirer.prompt(titleQuestion)).title;
-    const packageNameSuffix = id.toLowerCase().replace(' ', '-');
-    const templateItems = await recursiveReaddir(templateDir);
-    const outputDirectory = path.join(
-      pluginDirectory,
-      'flipper-plugin-' + packageNameSuffix,
-    );
+    const packageName = getPackageNameFromId(id);
+    const outputDirectory = path.join(pluginDirectory, packageName);
 
     if (fs.existsSync(outputDirectory)) {
       console.error(`Directory '${outputDirectory}' already exists`);
       process.exit(1);
     }
-    await fs.ensureDir(outputDirectory);
-
     console.log(
       `⚙️  Initializing Flipper desktop template in ${outputDirectory}`,
     );
+    await fs.ensureDir(outputDirectory);
+    initTemplate(id, title, outputDirectory);
 
-    for (const item of templateItems) {
-      const lstat = await fs.lstat(item);
-      if (lstat.isFile()) {
-        const file = path.relative(templateDir, item);
-        const dir = path.dirname(file);
-        const newDir = path.join(outputDirectory, dir);
-        const newFile = file.endsWith('.template')
-          ? path.join(
-              outputDirectory,
-              file.substring(0, file.length - templateExt.length),
-            )
-          : path.join(outputDirectory, file);
-        await fs.ensureDir(newDir);
-        const content = (await fs.readFile(item))
-          .toString()
-          .replace('{{id}}', id)
-          .replace('{{title}}', title)
-          .replace('{{package_name_suffix}}', packageNameSuffix);
-        await fs.writeFile(newFile, content);
-      }
-    }
+    console.log(`⚙️  Installing dependencies`);
     spawnSync('yarn', ['install'], {cwd: outputDirectory, stdio: [0, 1, 2]});
+
     console.log(
-      `✅  Plugin directory initialized. Package name: flipper-plugin-${packageNameSuffix}.`,
+      `✅  Plugin directory initialized. Package name: ${packageName}.`,
     );
-    console.log(
-      `   Run 'cd flipper-plugin-${packageNameSuffix} && yarn watch' to get started!`,
-    );
+    console.log(`   Run 'cd ${packageName} && yarn watch' to get started!`);
+  }
+}
+
+function getPackageNameFromId(id: string): string {
+  return 'flipper-plugin-' + id.toLowerCase().replace(/[^a-zA-Z0-9\-_]+/g, '-');
+}
+
+export async function initTemplate(
+  id: string,
+  title: string,
+  outputDirectory: string,
+) {
+  const packageName = getPackageNameFromId(id);
+  const templateItems = await recursiveReaddir(templateDir);
+
+  for (const item of templateItems) {
+    const lstat = await fs.lstat(item);
+    if (lstat.isFile()) {
+      const file = path.relative(templateDir, item);
+      const dir = path.dirname(file);
+      const newDir = path.join(outputDirectory, dir);
+      const newFile = file.endsWith(templateExt)
+        ? path.join(
+            outputDirectory,
+            file.substring(0, file.length - templateExt.length),
+          )
+        : path.join(outputDirectory, file);
+      await fs.ensureDir(newDir);
+      const content = (await fs.readFile(item))
+        .toString()
+        .replace('{{id}}', id)
+        .replace('{{title}}', title)
+        .replace('{{package_name}}', packageName);
+      await fs.writeFile(newFile, content);
+    }
   }
 }

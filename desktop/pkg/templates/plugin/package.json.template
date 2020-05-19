@@ -1,6 +1,6 @@
 {
   "$schema": "https://fbflipper.com/schemas/plugin-package/v2.json",
-  "name": "flipper-plugin-{{package_name_suffix}}",
+  "name": "{{package_name}}",
   "id": "{{id}}",
   "version": "1.0.0",
   "main": "dist/bundle.js",
