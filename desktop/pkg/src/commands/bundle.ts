@@ -7,7 +7,7 @@
  * @format
  */
 
-import {Command} from '@oclif/command';
+import {Command, flags} from '@oclif/command';
 import {args} from '@oclif/parser';
 import fs from 'fs-extra';
 import path from 'path';
@@ -28,8 +28,12 @@ export default class Bundle extends Command {
     },
   ];
 
+  public static flags = {
+    watch: flags.boolean(),
+  };
+
   public async run() {
-    const {args} = this.parse(Bundle);
+    const {args, flags} = this.parse(Bundle);
     const inputDirectory: string = path.resolve(process.cwd(), args.directory);
     const stat = await fs.lstat(inputDirectory);
     if (!stat.isDirectory()) {
@@ -44,6 +48,53 @@ export default class Bundle extends Command {
     const plugin = await getPluginDetails(inputDirectory);
     const out = path.resolve(inputDirectory, plugin.main);
     await fs.ensureDir(path.dirname(out));
-    await runBuild(inputDirectory, plugin.source, out);
+
+    const success = await runBuildOnce(inputDirectory, plugin.source, out);
+    if (!flags.watch) {
+      process.exit(success ? 0 : 1);
+    } else {
+      enterWatchMode(inputDirectory, plugin.source, out);
+    }
   }
+}
+
+async function runBuildOnce(
+  inputDirectory: string,
+  source: string,
+  out: string,
+) {
+  try {
+    await runBuild(inputDirectory, source, out);
+    console.log('✅  Build succeeded');
+    return true;
+  } catch (e) {
+    console.error(e);
+    console.error('🥵  Build failed');
+    return false;
+  }
+}
+
+function enterWatchMode(inputDirectory: string, source: string, out: string) {
+  console.log(`⏳  Waiting for changes...`);
+  let isBuilding = false;
+  let pendingChanges = false;
+  fs.watch(
+    path.join(inputDirectory, 'src'),
+    {
+      recursive: true,
+    },
+    async () => {
+      pendingChanges = true;
+      if (isBuilding) {
+        return; // prevent kicking of a second build
+      }
+      isBuilding = true;
+      while (pendingChanges) {
+        pendingChanges = false;
+        await runBuildOnce(inputDirectory, source, out);
+      }
+      isBuilding = false;
+      console.log(`⏳  Waiting for changes...`);
+    },
+  );
 }
