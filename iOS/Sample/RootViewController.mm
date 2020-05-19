@@ -29,10 +29,11 @@
 - (instancetype)init {
   if (self = [super init]) {
     _rootCKHostingView = [[CKComponentHostingView alloc]
-        initWithComponentProvider:[self class]
-                sizeRangeProvider:[CKComponentFlexibleSizeRangeProvider
-                                      providerWithFlexibility:
-                                          CKComponentSizeRangeFlexibleHeight]];
+        initWithComponentProviderFunc:componentForModel
+                    sizeRangeProvider:
+                        [CKComponentFlexibleSizeRangeProvider
+                            providerWithFlexibility:
+                                CKComponentSizeRangeFlexibleHeight]];
 
     [self.view addSubview:_rootCKHostingView];
     [self loadViewIfNeeded];
@@ -51,8 +52,9 @@
   _rootCKHostingView.frame = self.view.bounds;
 }
 
-+ (CKComponent*)componentForModel:(id<NSObject>)model
-                          context:(id<NSObject>)context {
+static CKComponent* componentForModel(
+    id<NSObject> model,
+    id<NSObject> context) {
   return [CKBackgroundLayoutComponent
       newWithComponent:
           [CKFlexboxComponent newWithView:{}
