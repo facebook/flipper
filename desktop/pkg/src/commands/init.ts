@@ -11,6 +11,7 @@ import {Command} from '@oclif/command';
 import {args} from '@oclif/parser';
 import path from 'path';
 import fs from 'fs-extra';
+import {spawnSync} from 'child_process';
 import recursiveReaddirImport from 'recursive-readdir';
 import {promisify} from 'util';
 import inquirer from 'inquirer';
@@ -37,18 +38,12 @@ export default class Init extends Command {
 
   public async run() {
     const {args} = this.parse(Init);
-    const outputDirectory: string = path.resolve(process.cwd(), args.directory);
-    console.log(
-      `⚙️  Initializing Flipper desktop template in ${outputDirectory}`,
-    );
-    const defaultID = path.basename(outputDirectory);
     const idQuestion: inquirer.QuestionCollection = [
       {
         type: 'input',
         name: 'id',
         message:
           'ID (must match native plugin ID, e.g. returned by getId() in Android plugin):',
-        default: defaultID,
       },
     ];
     const id: string = (await inquirer.prompt(idQuestion)).id;
@@ -60,9 +55,26 @@ export default class Init extends Command {
         default: id,
       },
     ];
+    const pluginDirectory: string = path.resolve(process.cwd(), args.directory);
+
     const title: string = (await inquirer.prompt(titleQuestion)).title;
     const packageNameSuffix = id.toLowerCase().replace(' ', '-');
     const templateItems = await recursiveReaddir(templateDir);
+    const outputDirectory = path.join(
+      pluginDirectory,
+      'flipper-plugin-' + packageNameSuffix,
+    );
+
+    if (fs.existsSync(outputDirectory)) {
+      console.error(`Directory '${outputDirectory}' already exists`);
+      process.exit(1);
+    }
+    await fs.ensureDir(outputDirectory);
+
+    console.log(
+      `⚙️  Initializing Flipper desktop template in ${outputDirectory}`,
+    );
+
     for (const item of templateItems) {
       const lstat = await fs.lstat(item);
       if (lstat.isFile()) {
@@ -84,8 +96,12 @@ export default class Init extends Command {
         await fs.writeFile(newFile, content);
       }
     }
+    spawnSync('yarn', ['install'], {cwd: outputDirectory, stdio: [0, 1, 2]});
     console.log(
-      `✅  Plugin template initialized. Package name: flipper-plugin-${packageNameSuffix}.`,
+      `✅  Plugin directory initialized. Package name: flipper-plugin-${packageNameSuffix}.`,
+    );
+    console.log(
+      `   Run 'cd flipper-plugin-${packageNameSuffix} && yarn watch' to get started!`,
     );
   }
 }
