@@ -472,7 +472,7 @@ const Searchable = (
     render() {
       const {placeholder, actions, ...props} = this.props;
       return (
-        <Layout>
+        <Layout.Top>
           <SearchBar position="top" key="searchbar">
             <SearchBox tabIndex={-1}>
               <SearchIcon
@@ -540,7 +540,7 @@ const Searchable = (
             bodySearchEnabled={this.state.bodySearchEnabled}
             filters={this.state.filters}
           />
-        </Layout>
+        </Layout.Top>
       );
     }
   };
