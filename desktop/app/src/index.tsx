@@ -177,6 +177,7 @@ export {default as ElementsInspector} from './ui/components/elements-inspector/E
 export {InspectorSidebar} from './ui/components/elements-inspector/sidebar';
 export {Console} from './ui/components/console';
 export {default as Sheet} from './ui/components/Sheet';
+export {default as FileSelector} from './ui/components/FileSelector';
 export {KeyboardActions} from './MenuBar';
 export {getFlipperMediaCDN} from './fb-stubs/user';
 export {Rect} from './utils/geometry';
