@@ -89,9 +89,11 @@ const BUBBLE_LR_POSITION_HORIZONTAL_OFFSET = 5;
 // offset on bubble when tail is showing
 const BUBBLE_SHOWTAIL_OFFSET = 5;
 // horizontal offset on tail when position is 'above' or 'below'
-const TAIL_AB_POSITION_HORIZONTAL_OFFSET = 15;
-// vertical offset on tail when position is 'toLeft' or 'toRight'
+const TAIL_AB_POSITION_HORIZONTAL_OFFSET = 4;
+// horizontal offset on tail when position is 'toLeft' or 'toRight'
 const TAIL_LR_POSITION_HORIZONTAL_OFFSET = 5;
+// vertical offset on tail when position is 'toLeft' or 'toRight'
+const TAIL_LR_POSITION_VERTICAL_OFFSET = 12;
 
 const TooltipTail = styled.div<{
   top: TopProperty<number>;
@@ -229,13 +231,13 @@ function getTooltipTail(tooltip: TooltipObject) {
     bottom = window.innerHeight - tooltip.rect.top;
   } else if (opts.position === 'toRight') {
     left = tooltip.rect.right + TAIL_LR_POSITION_HORIZONTAL_OFFSET;
-    top = tooltip.rect.top;
+    top = tooltip.rect.top + TAIL_LR_POSITION_VERTICAL_OFFSET;
   } else if (opts.position === 'toLeft') {
     right =
       window.innerWidth -
       tooltip.rect.left +
       TAIL_LR_POSITION_HORIZONTAL_OFFSET;
-    top = tooltip.rect.top;
+    top = tooltip.rect.top + TAIL_LR_POSITION_VERTICAL_OFFSET;
   }
 
   return (
@@ -258,7 +260,7 @@ function getTooltipBubble(tooltip: TooltipObject) {
   let right: RightProperty<number> = 'auto';
 
   if (opts.position === 'below') {
-    left = tooltip.rect.left;
+    left = tooltip.rect.left + BUBBLE_BELOW_POSITION_VERTICAL_OFFSET;
     top = tooltip.rect.bottom;
     if (opts.showTail) {
       top += BUBBLE_SHOWTAIL_OFFSET;
@@ -268,13 +270,13 @@ function getTooltipBubble(tooltip: TooltipObject) {
     if (opts.showTail) {
       bottom += BUBBLE_SHOWTAIL_OFFSET;
     }
-    left = tooltip.rect.left;
+    left = tooltip.rect.left + BUBBLE_BELOW_POSITION_VERTICAL_OFFSET;
   } else if (opts.position === 'toRight') {
     left = tooltip.rect.right + BUBBLE_LR_POSITION_HORIZONTAL_OFFSET;
     if (opts.showTail) {
       left += BUBBLE_SHOWTAIL_OFFSET;
     }
-    top = tooltip.rect.top + BUBBLE_BELOW_POSITION_VERTICAL_OFFSET;
+    top = tooltip.rect.top;
   } else if (opts.position === 'toLeft') {
     right =
       window.innerWidth -
@@ -283,7 +285,7 @@ function getTooltipBubble(tooltip: TooltipObject) {
     if (opts.showTail) {
       right += BUBBLE_SHOWTAIL_OFFSET;
     }
-    top = tooltip.rect.top + BUBBLE_BELOW_POSITION_VERTICAL_OFFSET;
+    top = tooltip.rect.top;
   }
 
   return (
