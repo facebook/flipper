@@ -9,12 +9,16 @@
 
 import React from 'react';
 import styled from '@emotion/styled';
+import {BackgroundProperty} from 'csstype';
 
-const Scrollable: React.FC<{children: React.ReactNode}> = styled('div')({
+type Props = {children: React.ReactNode; background?: BackgroundProperty<any>};
+
+const Scrollable: React.FC<Props> = styled('div')<Props>(({background}) => ({
   width: '100%',
   height: '100%',
   overflow: 'auto',
-});
+  background,
+}));
 Scrollable.displayName = 'Scrollable';
 
 export default Scrollable;
