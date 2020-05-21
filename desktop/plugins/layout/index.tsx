@@ -29,6 +29,7 @@ import {
   ArchivedDevice,
   ToolbarIcon,
   Layout,
+  Scrollable,
 } from 'flipper';
 import Inspector from './Inspector';
 import InspectorSidebar from './InspectorSidebar';
@@ -410,14 +411,16 @@ export default class LayoutPlugin extends FlipperPlugin<
     );
 
     const axInspector = this.state.inAXMode ? (
-      <FlexRow>
+      <FlexRow style={{height: '100%'}}>
         <VerticalRule />
-        <Inspector
-          {...inspectorProps}
-          onSelect={(selectedAXElement) => this.setState({selectedAXElement})}
-          showsSidebar={true}
-          ax
-        />
+        <Scrollable>
+          <Inspector
+            {...inspectorProps}
+            onSelect={(selectedAXElement) => this.setState({selectedAXElement})}
+            showsSidebar={true}
+            ax
+          />
+        </Scrollable>
       </FlexRow>
     ) : null;
 

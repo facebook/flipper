@@ -12,7 +12,6 @@ import {reportInteraction} from '../../../utils/InteractionTracker';
 import ContextMenu from '../ContextMenu';
 import {PureComponent, ReactElement} from 'react';
 import FlexRow from '../FlexRow';
-import FlexColumn from '../FlexColumn';
 import Glyph from '../Glyph';
 import {colors} from '../colors';
 import Text from '../Text';
@@ -60,7 +59,6 @@ const ElementsRowContainer = styled(ContextMenu)<any>((props) => ({
   flexShrink: 0,
   flexWrap: 'nowrap',
   height: ROW_HEIGHT,
-  minWidth: '100%',
   paddingLeft: (props.level - 1) * 12,
   paddingRight: 20,
   position: 'relative',
@@ -421,7 +419,8 @@ function containsKeyInSearchResults(
   return searchResults != undefined && searchResults.matches.has(key);
 }
 
-const ElementsContainer = styled(FlexColumn)({
+const ElementsContainer = styled('div')({
+  display: 'table',
   backgroundColor: colors.white,
   minHeight: '100%',
   minWidth: '100%',
