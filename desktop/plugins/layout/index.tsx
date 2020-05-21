@@ -12,7 +12,6 @@ import {
   Element,
   ElementSearchResultSet,
   PluginClient,
-  FlexColumn,
   FlexRow,
   FlipperPlugin,
   Toolbar,
@@ -29,6 +28,7 @@ import {
   ReduxState,
   ArchivedDevice,
   ToolbarIcon,
+  Layout,
 } from 'flipper';
 import Inspector from './Inspector';
 import InspectorSidebar from './InspectorSidebar';
@@ -80,7 +80,11 @@ const FlipperADButton = styled(Button)({
 type ClientGetNodesCalls = 'getNodes' | 'getAXNodes';
 type ClientMethodCalls = 'getRoot' | 'getAXRoot' | ClientGetNodesCalls;
 
-export default class Layout extends FlipperPlugin<State, any, PersistedState> {
+export default class LayoutPlugin extends FlipperPlugin<
+  State,
+  any,
+  PersistedState
+> {
   FlipperADBar() {
     return (
       <FlipperADBarContainer>
@@ -122,7 +126,7 @@ export default class Layout extends FlipperPlugin<State, any, PersistedState> {
 
     if (rootElement) {
       statusUpdate && statusUpdate('Fetching Child Nodes...');
-      await Layout.getAllNodes(
+      await LayoutPlugin.getAllNodes(
         rootElement,
         elements,
         callClient,
@@ -133,7 +137,7 @@ export default class Layout extends FlipperPlugin<State, any, PersistedState> {
     const AXelements: ElementMap = {};
     if (rootAXElement) {
       statusUpdate && statusUpdate('Fetching Child AX Nodes...');
-      await Layout.getAllNodes(
+      await LayoutPlugin.getAllNodes(
         rootAXElement,
         AXelements,
         callClient,
@@ -167,7 +171,7 @@ export default class Layout extends FlipperPlugin<State, any, PersistedState> {
         async ({elements}: {elements: Array<Element>}) => {
           await Promise.all(
             elements.map(async (elem) => {
-              await Layout.getAllNodes(
+              await LayoutPlugin.getAllNodes(
                 elem,
                 nodeMap,
                 callClient,
@@ -333,7 +337,7 @@ export default class Layout extends FlipperPlugin<State, any, PersistedState> {
       ax: this.state.inAXMode,
     });
   };
-  showFlipperADBar: boolean = false;
+  showFlipperADBar: boolean = true;
 
   getScreenDimensions(): {width: number; height: number} | null {
     if (this.state.screenDimensions) {
@@ -405,115 +409,118 @@ export default class Layout extends FlipperPlugin<State, any, PersistedState> {
       />
     );
 
-    const axInspector = this.state.inAXMode && (
-      <Inspector
-        {...inspectorProps}
-        onSelect={(selectedAXElement) => this.setState({selectedAXElement})}
-        showsSidebar={true}
-        ax
-      />
-    );
-
-    const divider = this.state.inAXMode && <VerticalRule />;
+    const axInspector = this.state.inAXMode ? (
+      <FlexRow>
+        <VerticalRule />
+        <Inspector
+          {...inspectorProps}
+          onSelect={(selectedAXElement) => this.setState({selectedAXElement})}
+          showsSidebar={true}
+          ax
+        />
+      </FlexRow>
+    ) : null;
 
     const showAnalyzeYogaPerformanceButton = GK.get('flipper_yogaperformance');
 
     const screenDimensions = this.getScreenDimensions();
 
+    if (!this.state.init) {
+      return null;
+    }
     return (
-      <FlexColumn grow={true}>
-        {this.state.init && (
-          <>
-            <Toolbar>
-              {!this.props.isArchivedDevice && (
-                <ToolbarIcon
-                  onClick={this.onToggleTargetMode}
-                  title="Toggle target mode"
-                  icon="target"
-                  active={this.state.inTargetMode}
-                />
-              )}
-              {this.realClient.query.os === 'Android' && (
-                <ToolbarIcon
-                  onClick={this.onToggleAXMode}
-                  title="Toggle to see the accessibility hierarchy"
-                  icon="accessibility"
-                  active={this.state.inAXMode}
-                />
-              )}
-              {!this.props.isArchivedDevice && (
-                <ToolbarIcon
-                  onClick={this.onToggleAlignmentMode}
-                  title="Toggle AlignmentMode to show alignment lines"
-                  icon="borders"
-                  active={this.state.inAlignmentMode}
-                />
-              )}
-              {this.props.isArchivedDevice &&
-                this.state.visualizerScreenshot && (
-                  <ToolbarIcon
-                    onClick={this.onToggleVisualizer}
-                    title="Toggle visual recreation of layout"
-                    icon="mobile"
-                    active={!!this.state.visualizerWindow}
-                  />
-                )}
+      <>
+        <Layout.Top>
+          <Toolbar>
+            {!this.props.isArchivedDevice && (
+              <ToolbarIcon
+                onClick={this.onToggleTargetMode}
+                title="Toggle target mode"
+                icon="target"
+                active={this.state.inTargetMode}
+              />
+            )}
+            {this.realClient.query.os === 'Android' && (
+              <ToolbarIcon
+                onClick={this.onToggleAXMode}
+                title="Toggle to see the accessibility hierarchy"
+                icon="accessibility"
+                active={this.state.inAXMode}
+              />
+            )}
+            {!this.props.isArchivedDevice && (
+              <ToolbarIcon
+                onClick={this.onToggleAlignmentMode}
+                title="Toggle AlignmentMode to show alignment lines"
+                icon="borders"
+                active={this.state.inAlignmentMode}
+              />
+            )}
+            {this.props.isArchivedDevice && this.state.visualizerScreenshot && (
+              <ToolbarIcon
+                onClick={this.onToggleVisualizer}
+                title="Toggle visual recreation of layout"
+                icon="mobile"
+                active={!!this.state.visualizerWindow}
+              />
+            )}
 
-              <Search
-                client={this.getClient()}
-                setPersistedState={this.props.setPersistedState}
-                persistedState={this.props.persistedState}
-                onSearchResults={(searchResults) =>
-                  this.setState({searchResults})
-                }
-                inAXMode={this.state.inAXMode}
-                initialQuery={this.props.deepLinkPayload}
-              />
-            </Toolbar>
-            <FlexRow grow={true}>
+            <Search
+              client={this.getClient()}
+              setPersistedState={this.props.setPersistedState}
+              persistedState={this.props.persistedState}
+              onSearchResults={(searchResults) =>
+                this.setState({searchResults})
+              }
+              inAXMode={this.state.inAXMode}
+              initialQuery={this.props.deepLinkPayload}
+            />
+          </Toolbar>
+          <Layout.Bottom>
+            <Layout.Right>
               {inspector}
-              {divider}
               {axInspector}
-            </FlexRow>
-            {this.showFlipperADBar && this.FlipperADBar()}
-            <DetailSidebar>
-              <InspectorSidebar
-                client={this.getClient()}
-                realClient={this.realClient}
-                element={element}
-                onValueChanged={this.onDataValueChanged}
-                logger={this.props.logger}
-              />
-              {showAnalyzeYogaPerformanceButton &&
-              element &&
-              element.decoration === 'litho' ? (
-                <Button
-                  icon={'share-external'}
-                  compact={true}
-                  style={{marginTop: 8, marginRight: 12}}
-                  onClick={() => {
-                    this.props.selectPlugin('YogaPerformance', element!.id);
-                  }}>
-                  Analyze Yoga Performance
-                </Button>
-              ) : null}
-            </DetailSidebar>
-            {this.state.visualizerWindow &&
-              screenDimensions &&
-              (this.state.visualizerScreenshot ? (
-                <VisualizerPortal
-                  container={this.state.visualizerWindow.document.body}
-                  elements={this.props.persistedState.elements}
-                  highlightedElement={this.state.highlightedElement}
-                  screenshotURL={this.state.visualizerScreenshot}
-                  screenDimensions={screenDimensions}
-                />
-              ) : (
-                'Loading...'
-              ))}
-          </>
-        )}
-      </FlexColumn>
+            </Layout.Right>
+            {this.showFlipperADBar ? this.FlipperADBar() : null}
+          </Layout.Bottom>
+        </Layout.Top>
+
+        <DetailSidebar>
+          <InspectorSidebar
+            client={this.getClient()}
+            realClient={this.realClient}
+            element={element}
+            onValueChanged={this.onDataValueChanged}
+            logger={this.props.logger}
+          />
+          {showAnalyzeYogaPerformanceButton &&
+          element &&
+          element.decoration === 'litho' ? (
+            <Button
+              icon={'share-external'}
+              compact={true}
+              style={{marginTop: 8, marginRight: 12}}
+              onClick={() => {
+                this.props.selectPlugin('YogaPerformance', element!.id);
+              }}>
+              Analyze Yoga Performance
+            </Button>
+          ) : null}
+        </DetailSidebar>
+        {this.state.visualizerWindow &&
+          screenDimensions &&
+          (this.state.visualizerScreenshot ? (
+            <VisualizerPortal
+              container={this.state.visualizerWindow.document.body}
+              elements={this.props.persistedState.elements}
+              highlightedElement={this.state.highlightedElement}
+              screenshotURL={this.state.visualizerScreenshot}
+              screenDimensions={screenDimensions}
+            />
+          ) : (
+            'Loading...'
+          ))}
+      </>
     );
   }
 }

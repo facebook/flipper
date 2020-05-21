@@ -7,14 +7,14 @@
  * @format
  */
 
+import React from 'react';
 import styled from '@emotion/styled';
 
-const VerticalRule = styled.div({
-  backgroundColor: '#c9ced4',
-  width: 3,
-  margin: '0',
-  flexShrink: 0,
+const Scrollable: React.FC<{children: React.ReactNode}> = styled('div')({
+  width: '100%',
+  height: '100%',
+  overflow: 'auto',
 });
-VerticalRule.displayName = 'VerticalRule';
+Scrollable.displayName = 'Scrollable';
 
-export default VerticalRule;
+export default Scrollable;

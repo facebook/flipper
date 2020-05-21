@@ -19,6 +19,7 @@ import Text from '../Text';
 import styled from '@emotion/styled';
 import {clipboard, MenuItemConstructorOptions} from 'electron';
 import React, {MouseEvent, KeyboardEvent} from 'react';
+import {Scrollable} from '../..';
 
 export const ROW_HEIGHT = 23;
 
@@ -424,16 +425,8 @@ const ElementsContainer = styled(FlexColumn)({
   backgroundColor: colors.white,
   minHeight: '100%',
   minWidth: '100%',
-  overflow: 'auto',
 });
 ElementsContainer.displayName = 'Elements:ElementsContainer';
-
-const ElementsBox = styled(FlexColumn)({
-  alignItems: 'flex-start',
-  flex: 1,
-  overflow: 'auto',
-});
-ElementsBox.displayName = 'Elements:ElementsBox';
 
 export type DecorateRow = (e: Element) => ReactElement<any> | undefined | null;
 
@@ -710,14 +703,14 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
 
   render() {
     return (
-      <ElementsBox>
+      <Scrollable>
         <ElementsContainer
           onKeyDown={this.onKeyDown}
           tabIndex={0}
           ref={this._outerRef}>
           {this.state.flatElements.map(this.buildRow)}
         </ElementsContainer>
-      </ElementsBox>
+      </Scrollable>
     );
   }
 }
