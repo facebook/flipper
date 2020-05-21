@@ -225,7 +225,7 @@ export function processMessageLater(
     default:
       // In all other cases, messages will be dropped...
       if (!defaultEnabledBackgroundPlugins.includes(plugin.id))
-        console.error(
+        console.warn(
           `Received message for disabled plugin ${plugin.id}, dropping..`,
         );
   }
