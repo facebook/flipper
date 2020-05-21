@@ -1,6 +1,6 @@
 {
   "name": "flipper-project",
-  "version": "0.43.0",
+  "version": "0.44.0",
   "description": "Mobile development tool",
   "productName": "Flipper",
   "author": {
@@ -174,8 +174,8 @@
     "eslint-plugin-react": "^7.20.0",
     "eslint-plugin-relay": "^1.4.1",
     "express": "^4.15.2",
-    "flipper-babel-transformer": "0.43.0",
-    "flipper-pkg-lib": "0.43.0",
+    "flipper-babel-transformer": "0.44.0",
+    "flipper-pkg-lib": "0.44.0",
     "flow-bin": "0.124.0",
     "fs-extra": "^9.0.0",
     "glob": "^7.1.2",

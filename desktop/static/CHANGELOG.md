@@ -1,3 +1,8 @@
+# 0.44.0 (21/5/2020)
+
+ * D21283157 -  Fixed several minor layout issues in the Layout plugin
+
+
 # 0.42.0 (12/5/2020)
 
  * D21214898 -  Add multiple selector to layout inspector to allow user to select components at a position
