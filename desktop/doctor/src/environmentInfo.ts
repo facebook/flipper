@@ -31,7 +31,7 @@ export type EnvironmentInfo = {
   };
 };
 
-async function retrieveAndParseEnvInfo(): Promise<any> {
+async function retrieveAndParseEnvInfo(): Promise<EnvironmentInfo> {
   return JSON.parse(
     await run(
       {
