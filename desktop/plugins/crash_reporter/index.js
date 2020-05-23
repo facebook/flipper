@@ -344,13 +344,13 @@ function truncate(baseString: string, numOfChars: number): string {
 }
 
 export function parsePath(content: string): ?string {
-  const regex = /Path: *[\w\-\/\.\t\ \_\%]*\n/;
+  const regex = /Path: *[\w\/.\t\s%-]*\n/;
   const arr = regex.exec(content);
   if (!arr || arr.length <= 0) {
     return null;
   }
   const pathString = arr[0];
-  const pathRegex = /[\w\-\/\.\t\ \_\%]*\n/;
+  const pathRegex = /[\w\/\.\t\s%-]*\n/;
   const tmp = pathRegex.exec(pathString);
   if (!tmp || tmp.length == 0) {
     return null;
