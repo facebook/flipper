@@ -38,24 +38,28 @@ export type Healthcheck = {
   key: string;
   label: string;
   isRequired?: boolean;
-  run: (env: EnvironmentInfo) => Promise<HealthchecRunResult>;
+  run: (env: EnvironmentInfo) => Promise<HealthCheckRunResult>;
 };
 
-export type HealthchecRunResult = {
+export type HealthCheckRunResult = {
   hasProblem: boolean;
   message: string;
+};
+
+export type HealthCheckCategoryResult = {
+  key: string;
+  label: string;
+  isRequired: boolean;
+  result: {
+    hasProblem: boolean;
+  };
 };
 
 export type CategoryResult = [
   string,
   {
     label: string;
-    results: Array<{
-      key: string;
-      label: string;
-      isRequired: boolean;
-      result: {hasProblem: boolean};
-    }>;
+    results: HealthCheckCategoryResult[];
   },
 ];
 
@@ -69,28 +73,27 @@ export function getHealthchecks(): Healthchecks {
         {
           key: 'common.openssl',
           label: 'OpenSSL Installed',
-          run: async (_: EnvironmentInfo) => {
+          run: async () => {
             const result = await tryExecuteCommand('openssl version');
             const hasProblem = result.hasProblem;
-            const message = hasProblem
-              ? `OpenSSL (https://wiki.openssl.org/index.php/Binaries) is not installed or not added to PATH. ${result.message}.`
-              : `OpenSSL (https://wiki.openssl.org/index.php/Binaries) is installed and added to PATH. ${result.message}.`;
             return {
               hasProblem,
-              message,
+              message: `OpenSSL (https://wiki.openssl.org/index.php/Binaries) is${
+                hasProblem ? ' not' : ''
+              } not installed or not added to PATH. ${result.message}.`,
             };
           },
         },
         {
           key: 'common.watchman',
           label: 'Watchman Installed',
-          run: async (_: EnvironmentInfo) => {
+          run: async () => {
             const isAvailable = await isWatchmanAvailable();
             return {
               hasProblem: !isAvailable,
-              message: isAvailable
-                ? 'Watchman file watching service (https://facebook.github.io/watchman/) is installed and added to PATH. Live reloading after changes during Flipper plugin development is enabled.'
-                : 'Watchman file watching service (https://facebook.github.io/watchman/) is not installed or not added to PATH. Live reloading after changes during Flipper plugin development is disabled.',
+              message: `Watchman file watching service (https://facebook.github.io/watchman/) is${
+                isAvailable ? '' : ' not'
+              } installed or not added to PATH. Live reloading after changes during Flipper plugin development is disabled.`,
             };
           },
         },
@@ -105,7 +108,7 @@ export function getHealthchecks(): Healthchecks {
           key: 'android.sdk',
           label: 'SDK Installed',
           isRequired: true,
-          run: async (_: EnvironmentInfo) => {
+          run: async () => {
             if (process.env.ANDROID_HOME) {
               const androidHome = process.env.ANDROID_HOME;
               if (!fs.existsSync(androidHome)) {
@@ -256,7 +259,7 @@ export async function runHealthchecks(): Promise<
 
 async function tryExecuteCommand(
   command: string,
-): Promise<HealthchecRunResult> {
+): Promise<HealthCheckRunResult> {
   try {
     const output = await promisify(exec)(command);
     return {
