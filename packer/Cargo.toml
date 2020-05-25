@@ -7,7 +7,7 @@ edition = "2018"
 [dependencies]
 clap = "^2.33.1"
 shellexpand = "^2.0.0"
-tar = "^0.4.26"
+tar = "^0.4.28"
 serde = { version = "^1.0.106", features = ["derive"] }
 serde_yaml = "^0.8.11"
 anyhow = "^1.0.31"
