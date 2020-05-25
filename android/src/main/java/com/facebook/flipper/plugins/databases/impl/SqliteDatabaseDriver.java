@@ -9,16 +9,18 @@ package com.facebook.flipper.plugins.databases.impl;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
-import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
-import android.database.sqlite.SQLiteStatement;
 import android.text.TextUtils;
 import androidx.annotation.Nullable;
+import androidx.sqlite.db.SimpleSQLiteQuery;
+import androidx.sqlite.db.SupportSQLiteDatabase;
+import androidx.sqlite.db.SupportSQLiteQuery;
+import androidx.sqlite.db.SupportSQLiteStatement;
 import com.facebook.flipper.plugins.databases.DatabaseDescriptor;
 import com.facebook.flipper.plugins.databases.DatabaseDriver;
 import com.facebook.flipper.plugins.databases.impl.SqliteDatabaseDriver.SqliteDatabaseDescriptor;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -40,16 +42,7 @@ public class SqliteDatabaseDriver extends DatabaseDriver<SqliteDatabaseDescripto
   public SqliteDatabaseDriver(final Context context) {
     this(
         context,
-        new SqliteDatabaseProvider() {
-          @Override
-          public List<File> getDatabaseFiles() {
-            List<File> databaseFiles = new ArrayList<>();
-            for (String databaseName : context.databaseList()) {
-              databaseFiles.add(context.getDatabasePath(databaseName));
-            }
-            return databaseFiles;
-          }
-        });
+        new DefaultSqliteDatabaseProvider(context));
   }
 
   public SqliteDatabaseDriver(
@@ -57,13 +50,7 @@ public class SqliteDatabaseDriver extends DatabaseDriver<SqliteDatabaseDescripto
     this(
         context,
         sqliteDatabaseProvider,
-        new SqliteDatabaseConnectionProvider() {
-          @Override
-          public SQLiteDatabase openDatabase(File databaseFile) throws SQLiteException {
-            int flags = SQLiteDatabase.OPEN_READWRITE;
-            return SQLiteDatabase.openDatabase(databaseFile.getAbsolutePath(), null, flags);
-          }
-        });
+        new DefaultSqliteDatabaseConnectionProvider());
   }
 
   public SqliteDatabaseDriver(
@@ -90,11 +77,11 @@ public class SqliteDatabaseDriver extends DatabaseDriver<SqliteDatabaseDescripto
   @Override
   public List<String> getTableNames(SqliteDatabaseDescriptor databaseDescriptor) {
     try {
-      SQLiteDatabase database =
+      SupportSQLiteDatabase database =
           sqliteDatabaseConnectionProvider.openDatabase(databaseDescriptor.file);
       try {
         Cursor cursor =
-            database.rawQuery(
+            database.query(
                 "SELECT name FROM " + SCHEMA_TABLE + " WHERE type IN (?, ?)",
                 new String[] {"table", "view"});
         try {
@@ -107,7 +94,7 @@ public class SqliteDatabaseDriver extends DatabaseDriver<SqliteDatabaseDescripto
           cursor.close();
         }
       } finally {
-        database.close();
+        close(database);
       }
     } catch (SQLiteException ex) {
       return Collections.emptyList();
@@ -117,7 +104,7 @@ public class SqliteDatabaseDriver extends DatabaseDriver<SqliteDatabaseDescripto
   @Override
   public DatabaseExecuteSqlResponse executeSQL(
       SqliteDatabaseDescriptor databaseDescriptor, String query) {
-    SQLiteDatabase database =
+    SupportSQLiteDatabase database =
         sqliteDatabaseConnectionProvider.openDatabase(databaseDescriptor.file);
     try {
       String firstWordUpperCase = getFirstWord(query).toUpperCase();
@@ -135,7 +122,7 @@ public class SqliteDatabaseDriver extends DatabaseDriver<SqliteDatabaseDescripto
           return executeRawQuery(database, query);
       }
     } finally {
-      database.close();
+      close(database);
     }
   }
 
@@ -147,13 +134,24 @@ public class SqliteDatabaseDriver extends DatabaseDriver<SqliteDatabaseDescripto
       boolean reverse,
       int start,
       int count) {
-    SQLiteDatabase database =
+    SupportSQLiteDatabase database =
         sqliteDatabaseConnectionProvider.openDatabase(databaseDescriptor.file);
     try {
       String orderBy = order != null ? order + (reverse ? " DESC" : " ASC") : null;
-      String limitBy = start + ", " + count;
-      Cursor cursor = database.query(table, null, null, null, null, null, orderBy, limitBy);
-      long total = DatabaseUtils.queryNumEntries(database, table);
+      String limit = start + ", " + count;
+      SupportSQLiteQuery query;
+      if (orderBy != null) {
+        query = new SimpleSQLiteQuery(
+            "SELECT * from " + table + " ORDER BY ? LIMIT ?",
+            new Object[] {orderBy, limit});
+      } else {
+        query = new SimpleSQLiteQuery(
+            "SELECT * from " + table + " ORDER BY ?",
+            new Object[] {limit});
+      }
+
+      Cursor cursor = database.query(query);
+      long total = queryNumEntries(database, table);
       try {
         String[] columnNames = cursor.getColumnNames();
         List<List<Object>> rows = cursorToList(cursor);
@@ -163,19 +161,19 @@ public class SqliteDatabaseDriver extends DatabaseDriver<SqliteDatabaseDescripto
         cursor.close();
       }
     } finally {
-      database.close();
+      close(database);
     }
   }
 
   @Override
   public DatabaseGetTableStructureResponse getTableStructure(
       SqliteDatabaseDescriptor databaseDescriptor, String table) {
-    SQLiteDatabase database =
+    SupportSQLiteDatabase database =
         sqliteDatabaseConnectionProvider.openDatabase(databaseDescriptor.file);
     try {
-      Cursor structureCursor = database.rawQuery("PRAGMA table_info(" + table + ")", null);
-      Cursor foreignKeysCursor = database.rawQuery("PRAGMA foreign_key_list(" + table + ")", null);
-      Cursor indexesCursor = database.rawQuery("PRAGMA index_list(" + table + ")", null);
+      Cursor structureCursor = database.query("PRAGMA table_info(" + table + ")", null);
+      Cursor foreignKeysCursor = database.query("PRAGMA foreign_key_list(" + table + ")", null);
+      Cursor indexesCursor = database.query("PRAGMA index_list(" + table + ")", null);
 
       try {
         // Structure & foreign keys
@@ -221,7 +219,7 @@ public class SqliteDatabaseDriver extends DatabaseDriver<SqliteDatabaseDescripto
         while (indexesCursor.moveToNext()) {
           List<String> indexedColumnNames = new ArrayList<>();
           String indexName = indexesCursor.getString(indexesCursor.getColumnIndex("name"));
-          Cursor indexInfoCursor = database.rawQuery("PRAGMA index_info(" + indexName + ")", null);
+          Cursor indexInfoCursor = database.query("PRAGMA index_info(" + indexName + ")", null);
           try {
             while (indexInfoCursor.moveToNext()) {
               indexedColumnNames.add(
@@ -246,19 +244,19 @@ public class SqliteDatabaseDriver extends DatabaseDriver<SqliteDatabaseDescripto
         indexesCursor.close();
       }
     } finally {
-      database.close();
+      close(database);
     }
   }
 
   @Override
   public DatabaseGetTableInfoResponse getTableInfo(
       SqliteDatabaseDescriptor databaseDescriptor, String table) {
-    SQLiteDatabase database =
+    SupportSQLiteDatabase database =
         sqliteDatabaseConnectionProvider.openDatabase(databaseDescriptor.file);
     try {
 
       Cursor definitionCursor =
-          database.rawQuery(
+          database.query(
               "SELECT sql FROM " + SCHEMA_TABLE + " WHERE name=?", new String[] {table});
       try {
 
@@ -271,7 +269,7 @@ public class SqliteDatabaseDriver extends DatabaseDriver<SqliteDatabaseDescripto
         definitionCursor.close();
       }
     } finally {
-      database.close();
+      close(database);
     }
   }
 
@@ -304,20 +302,20 @@ public class SqliteDatabaseDriver extends DatabaseDriver<SqliteDatabaseDescripto
   }
 
   private static DatabaseExecuteSqlResponse executeUpdateDelete(
-      SQLiteDatabase database, String query) {
-    SQLiteStatement statement = database.compileStatement(query);
+      SupportSQLiteDatabase database, String query) {
+    SupportSQLiteStatement statement = database.compileStatement(query);
     int count = statement.executeUpdateDelete();
     return DatabaseExecuteSqlResponse.successfulUpdateDelete(count);
   }
 
-  private static DatabaseExecuteSqlResponse executeInsert(SQLiteDatabase database, String query) {
-    SQLiteStatement statement = database.compileStatement(query);
+  private static DatabaseExecuteSqlResponse executeInsert(SupportSQLiteDatabase database, String query) {
+    SupportSQLiteStatement statement = database.compileStatement(query);
     long insertedId = statement.executeInsert();
     return DatabaseExecuteSqlResponse.successfulInsert(insertedId);
   }
 
-  private static DatabaseExecuteSqlResponse executeSelect(SQLiteDatabase database, String query) {
-    Cursor cursor = database.rawQuery(query, null);
+  private static DatabaseExecuteSqlResponse executeSelect(SupportSQLiteDatabase database, String query) {
+    Cursor cursor = database.query(query, null);
     try {
       String[] columnNames = cursor.getColumnNames();
       List<List<Object>> rows = cursorToList(cursor);
@@ -327,7 +325,7 @@ public class SqliteDatabaseDriver extends DatabaseDriver<SqliteDatabaseDescripto
     }
   }
 
-  private static DatabaseExecuteSqlResponse executeRawQuery(SQLiteDatabase database, String query) {
+  private static DatabaseExecuteSqlResponse executeRawQuery(SupportSQLiteDatabase database, String query) {
     database.execSQL(query);
     return DatabaseExecuteSqlResponse.successfulRawQuery();
   }
@@ -358,6 +356,24 @@ public class SqliteDatabaseDriver extends DatabaseDriver<SqliteDatabaseDescripto
       case Cursor.FIELD_TYPE_STRING:
       default:
         return cursor.getString(column);
+    }
+  }
+
+  private long queryNumEntries(SupportSQLiteDatabase database, String table) {
+    Cursor cursor = database.query("SELECT COUNT(*) FROM " + table);
+    try {
+      cursor.moveToFirst();
+      return cursor.getLong(0);
+    } finally {
+      cursor.close();
+    }
+  }
+
+  private void close(SupportSQLiteDatabase database) {
+    try {
+      database.close();
+    } catch (IOException e) {
+      // ignore
     }
   }
 
