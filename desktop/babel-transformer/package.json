@@ -18,7 +18,7 @@
     "@babel/plugin-proposal-optional-chaining": "^7.9.0",
     "@babel/plugin-transform-flow-strip-types": "^7.9.0",
     "@babel/plugin-transform-modules-commonjs": "^7.9.0",
-    "@babel/plugin-transform-typescript": "^7.9.0",
+    "@babel/plugin-transform-typescript": "^7.9.6",
     "@babel/preset-env": "^7.9.0",
     "@babel/preset-react": "^7.9.1",
     "@babel/traverse": "^7.9.0",
