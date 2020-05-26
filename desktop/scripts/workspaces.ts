@@ -20,15 +20,12 @@ const glob = promisify(globImport);
 export interface Package {
   dir: string;
   json: any;
+  isPlugin: boolean;
 }
 
 export interface Workspaces {
   rootPackage: Package;
   packages: Package[];
-}
-
-function isPlugin(dir: string) {
-  return dir.startsWith(pluginsDir);
 }
 
 export async function getWorkspaces(): Promise<Workspaces> {
@@ -48,6 +45,7 @@ export async function getWorkspaces(): Promise<Workspaces> {
       return {
         dir,
         json,
+        isPlugin: dir.startsWith(pluginsDir),
       };
     },
   );
@@ -55,6 +53,7 @@ export async function getWorkspaces(): Promise<Workspaces> {
     rootPackage: {
       dir: rootDir,
       json: rootPackageJson,
+      isPlugin: false,
     },
     packages,
   };
@@ -109,14 +108,14 @@ async function bumpWorkspaceVersions(
   newVersion = newVersion || (rootPackage.json.version as string);
   const allPackages = [rootPackage, ...packages];
   const localPackageNames = packages
-    .filter((pkg) => !isPlugin(pkg.dir))
+    .filter((pkg) => !pkg.isPlugin)
     .map(({json}) => json.name as string);
   for (const pkg of allPackages) {
-    const {dir, json} = pkg;
+    const {json} = pkg;
     let changed = false;
-    if (json.version !== newVersion && !isPlugin(dir)) {
+    if (json.version !== newVersion && !pkg.isPlugin) {
       console.log(
-        `Bumping version of ${pkg.json.name} from ${json.version} to ${newVersion}`,
+        `Bumping version of ${json.name} from ${json.version} to ${newVersion}`,
       );
       json.version = newVersion;
       changed = true;
@@ -180,7 +179,9 @@ export async function publishPackages({
   if (proxy) {
     cmd += ` --http-proxy ${proxy} --https-proxy ${proxy}`;
   }
-  const publicPackages = workspaces.packages.filter((pkg) => !pkg.json.private);
+  const publicPackages = workspaces.packages.filter(
+    (pkg) => !pkg.json.private && !pkg.isPlugin,
+  );
   for (const pkg of publicPackages) {
     if (dryRun) {
       console.log(`DRYRUN: Skipping npm publishing for ${pkg.json.name}`);
