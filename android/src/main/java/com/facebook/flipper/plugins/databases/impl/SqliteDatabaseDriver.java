@@ -12,9 +12,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
 import android.text.TextUtils;
 import androidx.annotation.Nullable;
-import androidx.sqlite.db.SimpleSQLiteQuery;
 import androidx.sqlite.db.SupportSQLiteDatabase;
-import androidx.sqlite.db.SupportSQLiteQuery;
 import androidx.sqlite.db.SupportSQLiteStatement;
 import com.facebook.flipper.plugins.databases.DatabaseDescriptor;
 import com.facebook.flipper.plugins.databases.DatabaseDriver;
@@ -138,15 +136,14 @@ public class SqliteDatabaseDriver extends DatabaseDriver<SqliteDatabaseDescripto
         sqliteDatabaseConnectionProvider.openDatabase(databaseDescriptor.file);
     try {
       String orderBy = order != null ? order + (reverse ? " DESC" : " ASC") : null;
-      String limit = start + ", " + count;
       String query;
       if (orderBy != null) {
-        query = "SELECT * from " + table + " ORDER BY " + orderBy + " LIMIT " + limit;
+        query = "SELECT * from " + table + " ORDER BY " + orderBy + " LIMIT ?, ?";
       } else {
-        query = "SELECT * from " + table + " LIMIT " + limit;
+        query = "SELECT * from " + table + " LIMIT ?, ?";
       }
 
-      Cursor cursor = database.query(query);
+      Cursor cursor = database.query(query, new Object[] {start, count});
       long total = queryNumEntries(database, table);
       try {
         String[] columnNames = cursor.getColumnNames();
