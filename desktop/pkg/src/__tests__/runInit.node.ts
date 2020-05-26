@@ -18,7 +18,7 @@ beforeEach(() => {
     // no implementation
   }
   function writeFile(name: string, contents: string) {
-    files[name] = contents;
+    files[name.replace(/\\/g, '/')] = contents;
   }
 
   files = {};
