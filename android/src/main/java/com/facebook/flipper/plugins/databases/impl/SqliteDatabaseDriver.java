@@ -139,15 +139,11 @@ public class SqliteDatabaseDriver extends DatabaseDriver<SqliteDatabaseDescripto
     try {
       String orderBy = order != null ? order + (reverse ? " DESC" : " ASC") : null;
       String limit = start + ", " + count;
-      SupportSQLiteQuery query;
+      String query;
       if (orderBy != null) {
-        query = new SimpleSQLiteQuery(
-            "SELECT * from " + table + " ORDER BY ? LIMIT ?",
-            new Object[] {orderBy, limit});
+        query = "SELECT * from " + table + " ORDER BY " + orderBy + " LIMIT " + limit;
       } else {
-        query = new SimpleSQLiteQuery(
-            "SELECT * from " + table + " ORDER BY ?",
-            new Object[] {limit});
+        query = "SELECT * from " + table + " LIMIT " + limit;
       }
 
       Cursor cursor = database.query(query);
