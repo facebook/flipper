@@ -61,23 +61,6 @@ export type PersistedState = {
   elements: ElementMap;
   AXelements: ElementMap;
 };
-
-const FlipperADBarContainer = styled(FlexRow)({
-  backgroundColor: colors.warningTint,
-  flexGrow: 1,
-  justifyContent: 'center',
-  alignItems: 'center',
-  borderWidth: 2,
-});
-
-const FlipperADText = styled(Text)({
-  padding: 10,
-});
-
-const FlipperADButton = styled(Button)({
-  margin: 10,
-});
-
 type ClientGetNodesCalls = 'getNodes' | 'getAXNodes';
 type ClientMethodCalls = 'getRoot' | 'getAXRoot' | ClientGetNodesCalls;
 
@@ -86,25 +69,6 @@ export default class LayoutPlugin extends FlipperPlugin<
   any,
   PersistedState
 > {
-  FlipperADBar() {
-    return (
-      <FlipperADBarContainer>
-        <FlipperADText>
-          You can now submit support requests to Litho Group from Flipper. This
-          automatically attaches critical information for reproducing your issue
-          with just a single click.
-        </FlipperADText>
-        <FlipperADButton
-          type="primary"
-          onClick={() => {
-            this.props.setStaticView(SupportRequestFormV2);
-          }}>
-          Try it out
-        </FlipperADButton>
-      </FlipperADBarContainer>
-    );
-  }
-
   static exportPersistedState = async (
     callClient: (method: ClientMethodCalls, params?: any) => Promise<any>,
     persistedState: PersistedState | undefined,
@@ -338,7 +302,6 @@ export default class LayoutPlugin extends FlipperPlugin<
       ax: this.state.inAXMode,
     });
   };
-  showFlipperADBar: boolean = true;
 
   getScreenDimensions(): {width: number; height: number} | null {
     if (this.state.screenDimensions) {
@@ -399,9 +362,7 @@ export default class LayoutPlugin extends FlipperPlugin<
     } else if (selectedElement) {
       element = this.props.persistedState.elements[selectedElement];
     }
-    if (!constants.IS_PUBLIC_BUILD && !this.showFlipperADBar) {
-      this.showFlipperADBar = element != null && element.decoration === 'litho';
-    }
+
     const inspector = (
       <Inspector
         {...inspectorProps}
@@ -480,11 +441,8 @@ export default class LayoutPlugin extends FlipperPlugin<
             />
           </Toolbar>
           <Layout.Bottom>
-            <Layout.Right>
-              {inspector}
-              {axInspector}
-            </Layout.Right>
-            {this.showFlipperADBar ? this.FlipperADBar() : null}
+            {inspector}
+            {axInspector}
           </Layout.Bottom>
         </Layout.Top>
 
