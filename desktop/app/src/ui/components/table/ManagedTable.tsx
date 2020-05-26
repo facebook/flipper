@@ -402,6 +402,10 @@ export class ManagedTable extends React.Component<
   }
 
   onHighlight = (e: React.MouseEvent, row: TableBodyRow, index: number) => {
+    if (!this.props.highlightableRows) {
+      return;
+    }
+
     if (e.shiftKey) {
       // prevents text selection
       e.preventDefault();
