@@ -183,3 +183,4 @@ export {KeyboardActions} from './MenuBar';
 export {getFlipperMediaCDN} from './fb-stubs/user';
 export {Rect} from './utils/geometry';
 export {Logger} from './fb-interfaces/Logger';
+export {callVSCode, getVSCodeUrl} from './utils/vscodeUtils';

@@ -79,3 +79,7 @@ export async function getFlipperMediaCDN(
 ): Promise<string> {
   throw new Error('Feature not implemented');
 }
+
+export async function getPreferredEditorUriScheme(): Promise<string> {
+  return 'vscode';
+}
