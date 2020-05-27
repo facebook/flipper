@@ -40,6 +40,8 @@ echo "✨ Making a new release..."
 
 # When starting this job from SandcastleFlipperAutoReleaseCommand, we pass in the revision to release
 SANDCASTLE_REVISION="$1"
+# Either 'patch', 'minor', or 'major'
+VERSION_PART="${2:-minor}"
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 SONAR_DIR="$DIR/../"
 DESKTOP_DIR="$SONAR_DIR/desktop"
@@ -62,9 +64,8 @@ fi
 # if we got called with a rev argument, we got triggered from our automatic sandcastle job
 if [ "$SANDCASTLE_REVISION" != "" ]; 
 then
-  # In future, bump majors instead of minors?
-  echo "Automatically bumping version to next minor in package.json"
-  npm -C "$DESKTOP_DIR" version minor
+  echo "Automatically bumping version to next $VERSION_PART version in package.json"
+  npm -C "$DESKTOP_DIR" version "$VERSION_PART"
   VERSION=$(jq -r '.version' "$DESKTOP_DIR"/package.json)
 else
   echo "The currently released version is $OLD_VERSION. What should the version of the next release be?"
