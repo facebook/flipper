@@ -36,6 +36,7 @@ import React, {Component, KeyboardEvent, ChangeEvent} from 'react';
 import {DatabaseClient} from './ClientProtocol';
 import ButtonNavigation from './ButtonNavigation';
 import DatabaseDetailSidebar from './DatabaseDetailSidebar';
+import DatabaseStructure from './DatabaseStructure';
 import sqlFormatter from 'sql-formatter';
 import dateFormat from 'dateformat';
 
@@ -94,13 +95,13 @@ type Page = {
   highlightedRows: Array<number>;
 };
 
-type Structure = {
+export type Structure = {
   databaseId: number;
   table: string;
   columns: Array<string>;
-  rows: Array<TableBodyRow>;
+  rows: Array<Array<Value>>;
   indexesColumns: Array<string>;
-  indexesValues: Array<TableBodyRow>;
+  indexesValues: Array<Array<Value>>;
 };
 
 type QueryResult = {
@@ -254,56 +255,6 @@ function transformRow(
     transformedColumns[columns[i]] = {value: renderValue(row[i], true)};
   }
   return {key: String(index), columns: transformedColumns};
-}
-
-function renderDatabaseColumns(structure: Structure | null) {
-  if (!structure) {
-    return null;
-  }
-  return (
-    <FlexRow grow={true}>
-      <ManagedTable
-        floating={false}
-        columnOrder={structure.columns.map((name) => ({
-          key: name,
-          visible: true,
-        }))}
-        columns={structure.columns.reduce(
-          (acc, val) =>
-            Object.assign({}, acc, {[val]: {value: val, resizable: true}}),
-          {},
-        )}
-        zebra={true}
-        rows={structure.rows || []}
-        horizontallyScrollable={true}
-      />
-    </FlexRow>
-  );
-}
-
-function renderDatabaseIndexes(structure: Structure | null) {
-  if (!structure) {
-    return null;
-  }
-  return (
-    <FlexRow grow={true}>
-      <ManagedTable
-        floating={false}
-        columnOrder={structure.indexesColumns.map((name) => ({
-          key: name,
-          visible: true,
-        }))}
-        columns={structure.indexesColumns.reduce(
-          (acc, val) =>
-            Object.assign({}, acc, {[val]: {value: val, resizable: true}}),
-          {},
-        )}
-        zebra={true}
-        rows={structure.indexesValues || []}
-        horizontallyScrollable={true}
-      />
-    </FlexRow>
-  );
 }
 
 function renderQueryHistory(history: Array<Query>) {
@@ -549,14 +500,9 @@ export default class DatabasesPlugin extends FlipperPlugin<
             databaseId: event.databaseId,
             table: event.table,
             columns: event.columns,
-            rows: event.rows.map((row: Array<Value>, index: number) =>
-              transformRow(event.columns, row, index),
-            ),
+            rows: event.rows,
             indexesColumns: event.indexesColumns,
-            indexesValues: event.indexesValues.map(
-              (row: Array<Value>, index: number) =>
-                transformRow(event.indexesColumns, row, index),
-            ),
+            indexesValues: event.indexesValues,
           },
         };
       },
@@ -1050,15 +996,6 @@ export default class DatabasesPlugin extends FlipperPlugin<
     });
   };
 
-  renderStructure() {
-    return (
-      <>
-        {renderDatabaseColumns(this.state.currentStructure)}
-        {renderDatabaseIndexes(this.state.currentStructure)}
-      </>
-    );
-  }
-
   renderTable(page: Page | null) {
     if (!page) {
       return null;
@@ -1352,9 +1289,9 @@ export default class DatabasesPlugin extends FlipperPlugin<
             {this.state.viewMode === 'data'
               ? this.renderTable(this.state.currentPage)
               : null}
-            {this.state.viewMode === 'structure'
-              ? this.renderStructure()
-              : null}
+            {this.state.viewMode === 'structure' ? (
+              <DatabaseStructure structure={this.state.currentStructure} />
+            ) : null}
             {this.state.viewMode === 'SQL'
               ? this.renderQuery(this.state.queryResult)
               : null}
