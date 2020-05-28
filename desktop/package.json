@@ -234,6 +234,7 @@
     "fix": "eslint . --fix --ext .js,.ts,.tsx",
     "pretest": "yarn build:pkg",
     "test": "jest",
+    "watch": "jest --watch",
     "test:debug": "yarn build:pkg && node --inspect node_modules/.bin/jest --runInBand",
     "test-electron": "yarn build:pkg && jest --testMatch=\"**/**.electron\\.(js|jsx|ts|tsx)\" --testEnvironment=@jest-runner/electron/environment --runner=@jest-runner/electron",
     "test-with-device": "yarn build:pkg && USE_ELECTRON_STUBS=1 jest --testMatch=\"**/**.device\\.(js|jsx|ts|tsx)\" --detectOpenHandles",
