@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#if DEBUG
 #import <FlipperKit/FlipperConnection.h>
 #import <FlipperKit/FlipperPlugin.h>
 
@@ -28,3 +29,5 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 NS_ASSUME_NONNULL_END
+
+#endif

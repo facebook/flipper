@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#ifdef DEBUG
 #import "FlipperModule.h"
 
 #import "FlipperReactNativeJavaScriptPluginManager.h"
@@ -93,3 +94,5 @@ RCT_EXPORT_METHOD(respondError
 }
 
 @end
+
+#endif
