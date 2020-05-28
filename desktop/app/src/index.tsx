@@ -34,7 +34,7 @@ export {PluginClient, Props} from './plugin';
 export {default as Client} from './Client';
 export {MetricType} from './utils/exportMetrics';
 export {default as promiseTimeout} from './utils/promiseTimeout';
-export {clipboard} from 'electron';
+export {clipboard, remote, OpenDialogOptions} from 'electron';
 export {default as SupportRequestFormV2} from './fb-stubs/SupportRequestFormV2';
 export {default as constants} from './fb-stubs/constants';
 export {connect} from 'react-redux';
