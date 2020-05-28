@@ -41,12 +41,14 @@ const objectRestSpreadPlugin = require('@babel/plugin-proposal-object-rest-sprea
 const flowStripTypesPlugin = require('@babel/plugin-transform-flow-strip-types');
 const dynamicRequiresPlugin = require('./dynamic-requires');
 const typeScriptPlugin = require('@babel/plugin-transform-typescript');
+const emotionPlugin = require('babel-plugin-emotion');
 const tsTransformPlugins = [
   typeScriptPlugin,
   classPropertiesPlugin,
   commonJsPlugin,
   optionalChainingPlugin,
   coalescingOperatorPlugin,
+  [emotionPlugin, {autoLabel: true}],
 ];
 const jsTransformPlugins = [
   commonJsPlugin,
@@ -56,6 +58,7 @@ const jsTransformPlugins = [
   optionalChainingPlugin,
   coalescingOperatorPlugin,
   dynamicRequiresPlugin,
+  [emotionPlugin, {autoLabel: true}],
 ];
 
 export default function transform({
