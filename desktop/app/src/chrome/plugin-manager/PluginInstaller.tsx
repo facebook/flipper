@@ -142,7 +142,7 @@ export function annotatePluginsWithUpdates(
   return new Map(annotated);
 }
 
-const PluginInstaller = function props(props: Props) {
+const PluginInstaller = function (props: Props) {
   const [restartRequired, setRestartRequired] = useState(false);
   const [query, setQuery] = useState('');
 

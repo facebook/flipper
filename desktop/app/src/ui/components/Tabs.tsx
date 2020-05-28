@@ -165,8 +165,10 @@ export default function Tabs(props: {
    */
   classic?: boolean;
 }) {
-  const tabsContainer =
-    props.classic === true ? false : useContext(TabsContext);
+  let tabsContainer = useContext(TabsContext);
+  if (props.classic === true) {
+    tabsContainer = false;
+  }
 
   const {onActive} = props;
   const active: string | undefined =
