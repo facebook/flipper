@@ -17,7 +17,7 @@ import {
 } from './openssl-wrapper-with-promises';
 import path from 'path';
 import tmp, {DirOptions, FileOptions} from 'tmp';
-import iosUtil from '../fb-stubs/iOSContainerUtility';
+import iosUtil from './iOSContainerUtility';
 import {reportPlatformFailures} from './metrics';
 import {getAdbClient} from './adbClient';
 import * as androidUtil from './androidContainerUtility';

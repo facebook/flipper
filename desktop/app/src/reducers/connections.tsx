@@ -14,7 +14,7 @@ import MacDevice from '../devices/MacDevice';
 import Client from '../Client';
 import {UninitializedClient} from '../UninitializedClient';
 import {isEqual} from 'lodash';
-import iosUtil from '../fb-stubs/iOSContainerUtility';
+import iosUtil from '../utils/iOSContainerUtility';
 import {performance} from 'perf_hooks';
 import isHeadless from '../utils/isHeadless';
 import {Actions} from '.';
