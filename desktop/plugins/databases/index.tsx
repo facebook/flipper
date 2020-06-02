@@ -37,6 +37,7 @@ import {DatabaseClient} from './ClientProtocol';
 import ButtonNavigation from './ButtonNavigation';
 import DatabaseDetailSidebar from './DatabaseDetailSidebar';
 import DatabaseStructure from './DatabaseStructure';
+import {convertStringToValue, constructUpdateQuery} from './UpdateQueryUtil';
 import sqlFormatter from 'sql-formatter';
 import dateFormat from 'dateformat';
 
@@ -976,6 +977,106 @@ export default class DatabasesPlugin extends FlipperPlugin<
       value: selected.target.value,
     });
   };
+
+  onRowEdited(change: {[key: string]: string | null}) {
+    const {
+      selectedDatabaseTable,
+      currentStructure,
+      viewMode,
+      currentPage,
+    } = this.state;
+    const highlightedRowIdx = currentPage?.highlightedRows[0] ?? -1;
+    const row =
+      highlightedRowIdx >= 0
+        ? currentPage?.rows[currentPage?.highlightedRows[0]]
+        : undefined;
+    const columns = currentPage?.columns;
+    // currently only allow to edit data shown in Data tab
+    if (
+      viewMode !== 'data' ||
+      selectedDatabaseTable === null ||
+      currentStructure === null ||
+      currentPage === null ||
+      row === undefined ||
+      columns === undefined ||
+      // only trigger when there is change
+      Object.keys(change).length <= 0
+    ) {
+      return;
+    }
+    // check if the table has primary key to use for query
+    // This is assumed data are in the same format as in SqliteDatabaseDriver.java
+    const primaryKeyIdx = currentStructure.columns.indexOf('primary_key');
+    const nameKeyIdx = currentStructure.columns.indexOf('column_name');
+    const typeIdx = currentStructure.columns.indexOf('data_type');
+    const nullableIdx = currentStructure.columns.indexOf('nullable');
+    if (primaryKeyIdx < 0 && nameKeyIdx < 0 && typeIdx < 0) {
+      console.error(
+        'primary_key, column_name, and/or data_type cannot be empty',
+      );
+      return;
+    }
+    const primaryColumnIndexes = currentStructure.rows
+      .reduce((acc, row) => {
+        const primary = row[primaryKeyIdx];
+        if (primary.type === 'boolean' && primary.value) {
+          const name = row[nameKeyIdx];
+          return name.type === 'string' ? acc.concat(name.value) : acc;
+        } else {
+          return acc;
+        }
+      }, [] as Array<string>)
+      .map((name) => columns.indexOf(name))
+      .filter((idx) => idx >= 0);
+    // stop if no primary key to distinguish unique query
+    if (primaryColumnIndexes.length <= 0) {
+      return;
+    }
+
+    const types = currentStructure.rows.reduce((acc, row) => {
+      const nameValue = row[nameKeyIdx];
+      const name = nameValue.type === 'string' ? nameValue.value : null;
+      const typeValue = row[typeIdx];
+      const type = typeValue.type === 'string' ? typeValue.value : null;
+      const nullableValue =
+        nullableIdx < 0 ? {type: 'null', value: null} : row[nullableIdx];
+      const nullable = nullableValue.value !== false;
+      if (name !== null && type !== null) {
+        acc[name] = {type, nullable};
+      }
+      return acc;
+    }, {} as {[key: string]: {type: string; nullable: boolean}});
+
+    const changeValue = Object.entries(change).reduce(
+      (acc, [key, value]: [string, string | null]) => {
+        acc[key] = convertStringToValue(types, key, value);
+        return acc;
+      },
+      {} as {[key: string]: Value},
+    );
+    this.dispatchAction({
+      type: 'Execute',
+      query: constructUpdateQuery(
+        selectedDatabaseTable,
+        primaryColumnIndexes.reduce((acc, idx) => {
+          acc[columns[idx]] = row[idx];
+          return acc;
+        }, {} as {[key: string]: Value}),
+        changeValue,
+      ),
+    });
+    this.dispatchAction({
+      type: 'UpdatePage',
+      ...produce(currentPage, (draft) =>
+        Object.entries(changeValue).forEach(([key, value]: [string, Value]) => {
+          const columnIdx = draft.columns.indexOf(key);
+          if (columnIdx >= 0) {
+            draft.rows[highlightedRowIdx][columnIdx] = value;
+          }
+        }),
+      ),
+    });
+  }
 
   renderTable(page: Page | null) {
     if (!page) {
