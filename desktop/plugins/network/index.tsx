@@ -230,7 +230,7 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
           produce((draftState: State) => {
             const nextRouteId = draftState.nextRouteId;
             draftState.routes[nextRouteId.toString()] = {
-              requestUrl: '/',
+              requestUrl: '',
               requestMethod: 'GET',
               responseData: '',
               responseHeaders: {},
