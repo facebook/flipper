@@ -90,7 +90,13 @@ function buildSidebarEditableRow(
     columns: {
       col: {value: <Text>{key}</Text>},
       val: {
-        value: <EditField initialValue={value} onUpdateValue={onUpdateValue} />,
+        value: (
+          <EditField
+            key={key}
+            initialValue={value}
+            onUpdateValue={onUpdateValue}
+          />
+        ),
       },
     },
     key: key,
@@ -113,6 +119,7 @@ const EditField = React.memo(
           onUpdateValue(e.target.value);
         }}
         placeholder={value === null ? 'NULL' : undefined}
+        data-testid={'update-query-input'}
       />
     );
   },
@@ -182,7 +189,6 @@ export default React.memo(function DatabaseDetailSidebar(
                   <Button
                     disabled={!rowState.updated}
                     onClick={() => {
-                      console.log(rowState);
                       onSave(rowState.changes);
                       setEditing(false);
                     }}>
