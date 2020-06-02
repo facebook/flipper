@@ -219,6 +219,7 @@ type PreviousPageEvent = {
 
 type ExecuteEvent = {
   type: 'Execute';
+  query: string;
 };
 
 type RefreshEvent = {
@@ -602,45 +603,38 @@ export default class DatabasesPlugin extends FlipperPlugin<
       'Execute',
       (
         state: DatabasesPluginState,
-        _results: ExecuteEvent,
+        event: ExecuteEvent,
       ): DatabasesPluginState => {
         const timeBefore = Date.now();
-        if (
-          this.state.query !== null &&
-          typeof this.state.query !== 'undefined'
-        ) {
-          this.databaseClient
-            .getExecution({
-              databaseId: state.selectedDatabase,
-              value: this.state.query.value,
-            })
-            .then((data) => {
-              this.setState({
-                error: null,
-                executionTime: Date.now() - timeBefore,
-              });
-              if (data.type === 'select') {
-                this.dispatchAction({
-                  type: 'DisplaySelect',
-                  columns: data.columns,
-                  values: data.values,
-                });
-              } else if (data.type === 'insert') {
-                this.dispatchAction({
-                  type: 'DisplayInsert',
-                  id: data.insertedId,
-                });
-              } else if (data.type === 'update_delete') {
-                this.dispatchAction({
-                  type: 'DisplayUpdateDelete',
-                  count: data.affectedCount,
-                });
-              }
-            })
-            .catch((e) => {
-              this.setState({error: e});
+        const {query} = event;
+        this.databaseClient
+          .getExecution({databaseId: state.selectedDatabase, value: query})
+          .then((data) => {
+            this.setState({
+              error: null,
+              executionTime: Date.now() - timeBefore,
             });
-        }
+            if (data.type === 'select') {
+              this.dispatchAction({
+                type: 'DisplaySelect',
+                columns: data.columns,
+                values: data.values,
+              });
+            } else if (data.type === 'insert') {
+              this.dispatchAction({
+                type: 'DisplayInsert',
+                id: data.insertedId,
+              });
+            } else if (data.type === 'update_delete') {
+              this.dispatchAction({
+                type: 'DisplayUpdateDelete',
+                count: data.affectedCount,
+              });
+            }
+          })
+          .catch((e) => {
+            this.setState({error: e});
+          });
         let newHistory = this.state.queryHistory;
         const newQuery = this.state.query;
         if (
@@ -964,7 +958,9 @@ export default class DatabasesPlugin extends FlipperPlugin<
   };
 
   onExecuteClicked = () => {
-    this.dispatchAction({type: 'Execute'});
+    if (this.state.query !== null) {
+      this.dispatchAction({type: 'Execute', query: this.state.query.value});
+    }
   };
 
   onQueryTextareaKeyPress = (event: KeyboardEvent) => {
