@@ -10,6 +10,7 @@
 jest.mock('../../defaultPlugins');
 
 import dispatcher, {
+  PluginDefinition,
   getDynamicPlugins,
   checkDisabled,
   checkGK,
@@ -24,7 +25,6 @@ import configureStore from 'redux-mock-store';
 import {TEST_PASSING_GK, TEST_FAILING_GK} from '../../fb-stubs/GK';
 import TestPlugin from './TestPlugin';
 import {resetConfigForTesting} from '../../utils/processConfig';
-import {PluginDefinition} from '../../reducers/pluginManager';
 
 const mockStore = configureStore<State, {}>([])(
   reducers(undefined, {type: 'INIT'}),
@@ -70,6 +70,7 @@ test('checkDisabled', () => {
     disabled({
       name: 'other Name',
       entry: './test/index.js',
+      version: '1.0.0',
     }),
   ).toBeTruthy();
 
@@ -77,6 +78,7 @@ test('checkDisabled', () => {
     disabled({
       name: disabledPlugin,
       entry: './test/index.js',
+      version: '1.0.0',
     }),
   ).toBeFalsy();
 });
@@ -86,6 +88,7 @@ test('checkGK for plugin without GK', () => {
     checkGK([])({
       name: 'pluginID',
       entry: './test/index.js',
+      version: '1.0.0',
     }),
   ).toBeTruthy();
 });
@@ -96,6 +99,7 @@ test('checkGK for passing plugin', () => {
       name: 'pluginID',
       gatekeeper: TEST_PASSING_GK,
       entry: './test/index.js',
+      version: '1.0.0',
     }),
   ).toBeTruthy();
 });
@@ -107,6 +111,7 @@ test('checkGK for failing plugin', () => {
     name,
     gatekeeper: TEST_FAILING_GK,
     entry: './test/index.js',
+    version: '1.0.0',
   });
 
   expect(plugins).toBeFalsy();
@@ -118,6 +123,7 @@ test('requirePlugin returns null for invalid requires', () => {
   const plugin = requireFn({
     name: 'pluginID',
     entry: 'this/path/does not/exist',
+    version: '1.0.0',
   });
 
   expect(plugin).toBeNull();
@@ -129,6 +135,7 @@ test('requirePlugin loads plugin', () => {
   const plugin = requireFn({
     name,
     entry: path.join(__dirname, 'TestPlugin'),
+    version: '1.0.0',
   });
   expect(plugin!.prototype).toBeInstanceOf(FlipperPlugin);
   expect(plugin!.id).toBe(TestPlugin.id);

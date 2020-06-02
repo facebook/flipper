@@ -66,6 +66,9 @@ const COLUMNS = {
   name: {
     value: 'Name',
   },
+  version: {
+    value: 'Version',
+  },
   status: {
     value: 'Status',
   },
@@ -83,6 +86,7 @@ const COLUMNS = {
 const COLUMNS_SIZES = {
   lamp: 20,
   name: 'flex',
+  version: 60,
   status: 110,
   gk: 120,
   clients: 90,
@@ -93,6 +97,7 @@ type Props = OwnProps & StateFromProps & DispatchFromProps;
 class PluginDebugger extends Component<Props> {
   buildRow(
     name: string,
+    version: string,
     loaded: boolean,
     status: string,
     GKname: string | null | undefined,
@@ -103,6 +108,7 @@ class PluginDebugger extends Component<Props> {
       columns: {
         lamp: {value: <Lamp on={loaded} />},
         name: {value: <Ellipsis>{name}</Ellipsis>},
+        version: {value: <Ellipsis>{version}</Ellipsis>},
         status: {
           value: status ? <Ellipsis title={status}>{status}</Ellipsis> : null,
         },
@@ -149,6 +155,7 @@ class PluginDebugger extends Component<Props> {
       rows.push(
         this.buildRow(
           plugin.name,
+          plugin.version,
           false,
           'GK disabled',
           plugin.gatekeeper,
@@ -161,6 +168,7 @@ class PluginDebugger extends Component<Props> {
       rows.push(
         this.buildRow(
           plugin.id,
+          plugin.version,
           true,
           '',
           plugin.gatekeeper,
@@ -173,6 +181,7 @@ class PluginDebugger extends Component<Props> {
       rows.push(
         this.buildRow(
           plugin.id,
+          plugin.version,
           true,
           '',
           plugin.gatekeeper,
@@ -185,6 +194,7 @@ class PluginDebugger extends Component<Props> {
       rows.push(
         this.buildRow(
           plugin.name,
+          plugin.version,
           false,
           'disabled',
           null,
@@ -197,6 +207,7 @@ class PluginDebugger extends Component<Props> {
       rows.push(
         this.buildRow(
           plugin.name,
+          plugin.version,
           false,
           status,
           null,

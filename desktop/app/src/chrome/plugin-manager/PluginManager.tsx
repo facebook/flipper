@@ -14,7 +14,7 @@ import PluginInstaller from './PluginInstaller';
 
 const Container = styled(FlexColumn)({
   padding: 15,
-  width: 700,
+  width: 760,
 });
 
 const Row = styled(FlexColumn)({

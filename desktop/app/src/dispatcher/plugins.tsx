@@ -39,6 +39,7 @@ export type PluginDefinition = {
   out?: string;
   gatekeeper?: string;
   entry?: string;
+  version: string;
 };
 
 export default (store: Store, logger: Logger) => {
