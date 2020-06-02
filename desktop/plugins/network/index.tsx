@@ -208,12 +208,15 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
   }
 
   init() {
-    this.client.supportsMethod('mockResponses').then((result) =>
+    this.client.supportsMethod('mockResponses').then((result) => {
+      const routes = JSON.parse(localStorage.getItem(LOCALSTORAGE_MOCK_ROUTE_LIST_KEY) || '{}')
       this.setState({
-        routes: JSON.parse(localStorage.getItem(LOCALSTORAGE_MOCK_ROUTE_LIST_KEY) || '{}'),
+        routes: routes,
         isMockResponseSupported: result,
         showMockResponseDialog: false,
-      }),
+        nextRouteId: routes.length,
+      });
+      }
     );
 
     this.setState(this.parseDeepLinkPayload(this.props.deepLinkPayload));
