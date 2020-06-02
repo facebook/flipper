@@ -1127,6 +1127,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
           <DatabaseDetailSidebar
             columnLabels={page.columns}
             columnValues={page.rows[page.highlightedRows[0]]}
+            onSave={this.onRowEdited.bind(this)}
           />
         )}
       </FlexRow>
