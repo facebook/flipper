@@ -169,14 +169,7 @@ type UpdateViewModeEvent = {
 
 type UpdatePageEvent = {
   type: 'UpdatePage';
-  databaseId: number;
-  table: string;
-  columns: Array<string>;
-  values: Array<Array<Value>>;
-  start: number;
-  count: number;
-  total: number;
-};
+} & Page;
 
 type UpdateStructureEvent = {
   type: 'UpdateStructure';
@@ -481,11 +474,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
       ): DatabasesPluginState => {
         return {
           ...state,
-          currentPage: {
-            rows: event.values,
-            highlightedRows: [],
-            ...event,
-          },
+          currentPage: event,
         };
       },
     ],
@@ -817,10 +806,11 @@ export default class DatabasesPlugin extends FlipperPlugin<
             databaseId: databaseId,
             table: table,
             columns: data.columns,
-            values: data.values,
+            rows: data.values,
             start: data.start,
             count: data.count,
             total: data.total,
+            highlightedRows: [],
           });
         })
         .catch((e) => {
