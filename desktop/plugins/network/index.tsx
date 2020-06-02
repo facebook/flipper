@@ -209,15 +209,16 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
 
   init() {
     this.client.supportsMethod('mockResponses').then((result) => {
-      const routes = JSON.parse(localStorage.getItem(LOCALSTORAGE_MOCK_ROUTE_LIST_KEY) || '{}')
+      const routes = JSON.parse(
+        localStorage.getItem(LOCALSTORAGE_MOCK_ROUTE_LIST_KEY) || '{}',
+      );
       this.setState({
         routes: routes,
         isMockResponseSupported: result,
         showMockResponseDialog: false,
         nextRouteId: routes.length,
       });
-      }
-    );
+    });
 
     this.setState(this.parseDeepLinkPayload(this.props.deepLinkPayload));
 
@@ -263,9 +264,7 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
     };
   }
 
-  teardown() {
-    
-  }
+  teardown() {}
 
   onKeyboardAction = (action: string) => {
     if (action === 'clear') {
@@ -345,7 +344,10 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
 
     if (this.state.isMockResponseSupported) {
       const routesValuesArray = Object.values(filteredRoutes);
-      localStorage.setItem(LOCALSTORAGE_MOCK_ROUTE_LIST_KEY, JSON.stringify(routesValuesArray));
+      localStorage.setItem(
+        LOCALSTORAGE_MOCK_ROUTE_LIST_KEY,
+        JSON.stringify(routesValuesArray),
+      );
       this.client.call('mockResponses', {
         routes: routesValuesArray.map((route: Route) => ({
           requestUrl: route.requestUrl,

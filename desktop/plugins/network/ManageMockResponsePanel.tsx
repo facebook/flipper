@@ -129,10 +129,13 @@ function RouteRow(props: {
         {props.showWarning && (
           <Icon name="caution-triangle" color={colors.yellow} />
         )}
-        {props.text.length === 0? 
-          <TextEllipsis style={{color: colors.blackAlpha50}}>untitled</TextEllipsis> : 
+        {props.text.length === 0 ? (
+          <TextEllipsis style={{color: colors.blackAlpha50}}>
+            untitled
+          </TextEllipsis>
+        ) : (
           <TextEllipsis>{props.text}</TextEllipsis>
-        }
+        )}
       </FlexRow>
       {showCloseButton && (
         <FlexRow onClick={props.handleRemoveId}>
