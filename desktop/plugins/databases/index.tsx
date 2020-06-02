@@ -833,12 +833,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
           this.setState({error: e});
         });
     }
-    if (
-      newState.viewMode === 'structure' &&
-      newState.currentStructure === null &&
-      databaseId &&
-      table
-    ) {
+    if (newState.currentStructure === null && databaseId && table) {
       this.databaseClient
         .getTableStructure({
           databaseId: databaseId,
