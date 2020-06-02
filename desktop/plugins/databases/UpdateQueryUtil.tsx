@@ -18,28 +18,34 @@ export function convertStringToValue(
   key: string,
   value: string | null,
 ): Value {
-  if (value !== null && types.hasOwnProperty(key)) {
+  if (types.hasOwnProperty(key)) {
     const {type, nullable} = types[key];
+    value = value === null ? '' : value;
     if (value.length <= 0 && nullable) {
       return {type: 'null', value: null};
     }
+
     if (INT_DATA_TYPE.indexOf(type) >= 0) {
-      return {type: 'integer', value: parseInt(value, 10)};
+      const converted = parseInt(value, 10);
+      return {type: 'integer', value: isNaN(converted) ? 0 : converted};
     } else if (FLOAT_DATA_TYPE.indexOf(type) >= 0) {
-      return {type: 'float', value: parseFloat(value)};
+      const converted = parseFloat(value);
+      return {type: 'float', value: isNaN(converted) ? 0 : converted};
     } else if (BLOB_DATA_TYPE.indexOf(type) >= 0) {
       return {type: 'blob', value};
+    } else {
+      return {type: 'string', value};
     }
   }
   // if no type found assume type is nullable string
-  if (value === null) {
+  if (value === null || value.length <= 0) {
     return {type: 'null', value: null};
   } else {
     return {type: 'string', value};
   }
 }
 
-function constructQueryClause(
+export function constructQueryClause(
   values: {[key: string]: Value},
   connector: string,
 ): string {
