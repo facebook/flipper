@@ -14,7 +14,6 @@ import {notNull} from './typeUtils';
 const unsafeExec = promisify(child_process.exec);
 import {killOrphanedInstrumentsProcesses} from './processCleanup';
 import {reportPlatformFailures} from './metrics';
-import config from '../fb-stubs/config';
 
 const idbPath = '/usr/local/bin/idb';
 // Use debug to get helpful logs when idb fails
@@ -30,7 +29,7 @@ export type DeviceTarget = {
 };
 
 function isAvailable(): boolean {
-  return config.isFBBuild;
+  return true;
 }
 
 function safeExec(command: string): Promise<{stdout: string; stderr: string}> {

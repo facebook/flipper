@@ -56,7 +56,7 @@ function forwardPort(port: number, multiplexChannelPort: number) {
   ]);
 }
 // start port forwarding server for real device connections
-const portForwarders: Array<ChildProcess> = GK.get('flipper_ios_device_support')
+const portForwarders: Array<ChildProcess> = true
   ? [forwardPort(8089, 8079), forwardPort(8088, 8078)]
   : [];
 
