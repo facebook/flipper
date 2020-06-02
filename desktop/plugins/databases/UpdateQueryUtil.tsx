@@ -71,3 +71,17 @@ export function constructUpdateQuery(
     SET ${constructQueryClause(change, ',')}
     WHERE ${constructQueryClause(where, 'AND')}`;
 }
+
+export function isUpdatable(
+  columnMeta: Array<string>,
+  columnData: Array<Array<Value>>,
+): boolean {
+  const primaryKeyIdx = columnMeta.indexOf('primary_key');
+  return (
+    primaryKeyIdx >= 0 &&
+    columnData.reduce((acc: boolean, column) => {
+      const primaryValue = column[primaryKeyIdx];
+      return acc || (primaryValue.type === 'boolean' && primaryValue.value);
+    }, false)
+  );
+}

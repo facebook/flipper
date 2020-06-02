@@ -37,7 +37,11 @@ import {DatabaseClient} from './ClientProtocol';
 import ButtonNavigation from './ButtonNavigation';
 import DatabaseDetailSidebar from './DatabaseDetailSidebar';
 import DatabaseStructure from './DatabaseStructure';
-import {convertStringToValue, constructUpdateQuery} from './UpdateQueryUtil';
+import {
+  convertStringToValue,
+  constructUpdateQuery,
+  isUpdatable,
+} from './UpdateQueryUtil';
 import sqlFormatter from 'sql-formatter';
 import dateFormat from 'dateformat';
 
@@ -94,6 +98,7 @@ type Page = {
   count: number;
   total: number;
   highlightedRows: Array<number>;
+  editable: boolean;
 };
 
 export type Structure = {
@@ -495,6 +500,10 @@ export default class DatabasesPlugin extends FlipperPlugin<
             indexesColumns: event.indexesColumns,
             indexesValues: event.indexesValues,
           },
+          currentPage: {
+            ...state.currentPage!,
+            editable: isUpdatable(event.columns, event.rows),
+          },
         };
       },
     ],
@@ -812,6 +821,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
             count: data.count,
             total: data.total,
             highlightedRows: [],
+            editable: false,
           });
         })
         .catch((e) => {
@@ -1127,7 +1137,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
           <DatabaseDetailSidebar
             columnLabels={page.columns}
             columnValues={page.rows[page.highlightedRows[0]]}
-            onSave={this.onRowEdited.bind(this)}
+            onSave={page.editable ? this.onRowEdited.bind(this) : undefined}
           />
         )}
       </FlexRow>
