@@ -27,6 +27,7 @@ jobs:
       with:
         name: 'Flipper-mac.dmg'
         path: 'dist/Flipper-mac.dmg'
+
   publish:
     runs-on: ubuntu-latest
     needs: build
@@ -46,7 +47,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         args: '*.dmg'
-  publish:
+
+  publish2:
     runs-on: ubuntu-latest
     needs: build
 
