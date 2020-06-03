@@ -1,6 +1,6 @@
 {
   "name": "flipper",
-  "version": "0.44.1",
+  "version": "0.45.0",
   "description": "Mobile development tool",
   "productName": "Flipper",
   "author": "Facebook Inc",
@@ -25,7 +25,7 @@
     "deep-equal": "^2.0.1",
     "emotion": "^10.0.23",
     "expand-tilde": "^2.0.2",
-    "flipper-doctor": "0.44.1",
+    "flipper-doctor": "0.45.0",
     "fs-extra": "^8.0.1",
     "immer": "^6.0.0",
     "immutable": "^4.0.0-rc.12",

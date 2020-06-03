@@ -1,3 +1,8 @@
+# 0.45.0 (3/6/2020)
+
+ * D21858849 -  Foreground plugins will burn less CPU when they're very chatty
+
+
 # 0.44.0 (21/5/2020)
 
  * D21283157 -  Fixed several minor layout issues in the Layout plugin
