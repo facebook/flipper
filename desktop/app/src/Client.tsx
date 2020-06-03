@@ -23,14 +23,15 @@ import {registerPlugins} from './reducers/plugins';
 import createTableNativePlugin from './plugins/TableNativePlugin';
 import {EventEmitter} from 'events';
 import invariant from 'invariant';
-import {flipperRecorderAddEvent} from './utils/pluginStateRecorder';
 import {
   getPluginKey,
   defaultEnabledBackgroundPlugins,
 } from './utils/pluginUtils';
-import {processMessageLater} from './utils/messageQueue';
+import {processMessagesLater} from './utils/messageQueue';
 import {sideEffect} from './utils/sideEffect';
 import {emitBytesReceived} from './dispatcher/tracking';
+import {debounce} from 'lodash';
+import {batch} from 'react-redux';
 
 type Plugins = Array<string>;
 
@@ -126,6 +127,13 @@ export default class Client extends EventEmitter {
   logger: Logger;
   lastSeenDeviceList: Array<BaseDevice>;
   broadcastCallbacks: Map<string, Map<string, Set<Function>>>;
+  messageBuffer: Record<
+    string /*pluginKey*/,
+    {
+      plugin: typeof FlipperPlugin | typeof FlipperDevicePlugin;
+      messages: Params[];
+    }
+  > = {};
 
   requestCallbacks: Map<
     number,
@@ -398,8 +406,15 @@ export default class Client extends EventEmitter {
             {serial: this.query.device_id},
             params.api,
           );
-          flipperRecorderAddEvent(pluginKey, params.method, params.params);
-          processMessageLater(this.store, pluginKey, persistingPlugin, params);
+          if (!this.messageBuffer[pluginKey]) {
+            this.messageBuffer[pluginKey] = {
+              plugin: persistingPlugin,
+              messages: [params],
+            };
+          } else {
+            this.messageBuffer[pluginKey].messages.push(params);
+          }
+          this.flushMessageBufferDebounced();
         }
         const apiCallbacks = this.broadcastCallbacks.get(params.api);
         if (!apiCallbacks) {
@@ -544,6 +559,26 @@ export default class Client extends EventEmitter {
       }
     });
   }
+
+  flushMessageBuffer = () => {
+    // batch to make sure that Redux collapsed the dispatches
+    batch(() => {
+      for (const pluginKey in this.messageBuffer) {
+        processMessagesLater(
+          this.store,
+          pluginKey,
+          this.messageBuffer[pluginKey].plugin,
+          this.messageBuffer[pluginKey].messages,
+        );
+      }
+      this.messageBuffer = {};
+    });
+  };
+
+  flushMessageBufferDebounced = debounce(this.flushMessageBuffer, 200, {
+    leading: true,
+    trailing: true,
+  });
 
   startTimingRequestResponse(data: RequestMetadata) {
     performance.mark(this.getPerformanceMark(data));

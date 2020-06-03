@@ -13,7 +13,7 @@ import {setPluginState} from '../reducers/pluginStates';
 import {flipperRecorderAddEvent} from './pluginStateRecorder';
 import {
   clearMessageQueue,
-  queueMessage,
+  queueMessages,
   Message,
 } from '../reducers/pluginMessageQueue';
 import {Idler, BaseIdler} from './Idler';
@@ -143,7 +143,7 @@ function processMessage(
     id: string;
     persistedStateReducer: PersistedStateReducer | null;
   },
-  message: {method: string; params?: any},
+  message: Message,
 ): State {
   const reducerStartTime = Date.now();
   flipperRecorderAddEvent(pluginKey, message.method, message.params);
@@ -161,7 +161,7 @@ function processMessage(
   }
 }
 
-export function processMessageImmediately(
+export function processMessagesImmediately(
   store: MiddlewareAPI,
   pluginKey: string,
   plugin: {
@@ -169,15 +169,13 @@ export function processMessageImmediately(
     id: string;
     persistedStateReducer: PersistedStateReducer | null;
   },
-  message: {method: string; params?: any},
+  messages: Message[],
 ) {
   const persistedState = getCurrentPluginState(store, plugin, pluginKey);
-  const newPluginState = processMessage(
-    persistedState,
-    pluginKey,
-    plugin,
-    message,
-  );
+  let newPluginState: any;
+  messages.forEach((message) => {
+    newPluginState = processMessage(persistedState, pluginKey, plugin, message);
+  });
   if (persistedState !== newPluginState) {
     store.dispatch(
       setPluginState({
@@ -188,7 +186,7 @@ export function processMessageImmediately(
   }
 }
 
-export function processMessageLater(
+export function processMessagesLater(
   store: MiddlewareAPI,
   pluginKey: string,
   plugin: {
@@ -197,30 +195,24 @@ export function processMessageLater(
     persistedStateReducer: PersistedStateReducer | null;
     maxQueueSize?: number;
   },
-  message: {method: string; params?: any},
+  messages: Message[],
 ) {
   const isSelected =
     pluginKey === getSelectedPluginKey(store.getState().connections);
   switch (true) {
     case plugin.id === 'Navigation': // Navigation events are always processed, to make sure the navbar stays up to date
     case isSelected && getPendingMessages(store, pluginKey).length === 0:
-      processMessageImmediately(store, pluginKey, plugin, message);
+      processMessagesImmediately(store, pluginKey, plugin, messages);
       break;
     case isSelected:
     case plugin instanceof FlipperDevicePlugin:
+    case (plugin as any).prototype instanceof FlipperDevicePlugin:
     case pluginIsStarred(
       store.getState().connections.userStarredPlugins,
       deconstructPluginKey(pluginKey).client,
       plugin.id,
     ):
-      store.dispatch(
-        queueMessage(
-          pluginKey,
-          message.method,
-          message.params,
-          plugin.maxQueueSize,
-        ),
-      );
+      store.dispatch(queueMessages(pluginKey, messages, plugin.maxQueueSize));
       break;
     default:
       // In all other cases, messages will be dropped...
