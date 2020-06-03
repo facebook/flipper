@@ -7,7 +7,7 @@
  * @format
  */
 
-import getPluginFolders from './getPluginFolders';
+import {getPluginSourceFolders} from './getPluginFolders';
 import fs from 'fs-extra';
 
 const watchmanconfigName = '.watchmanconfig';
@@ -15,7 +15,7 @@ const watchmanconfigName = '.watchmanconfig';
 import path from 'path';
 
 export default async function ensurePluginFoldersWatchable() {
-  const pluginFolders = await getPluginFolders();
+  const pluginFolders = await getPluginSourceFolders();
   for (const pluginFolder of pluginFolders) {
     if (!(await hasParentWithWatchmanConfig(pluginFolder))) {
       // If no watchman config found in the plugins folder or any its parent, we need to create it.

@@ -12,13 +12,12 @@ import fs from 'fs-extra';
 import expandTilde from 'expand-tilde';
 import {homedir} from 'os';
 
-export default async function getPluginFolders(
-  includeThirdparty: boolean = false,
-) {
+export function getPluginsInstallationFolder(): string {
+  return path.join(homedir(), '.flipper', 'thirdparty');
+}
+
+export async function getPluginSourceFolders(): Promise<string[]> {
   const pluginFolders: string[] = [];
-  if (includeThirdparty) {
-    pluginFolders.push(path.join(homedir(), '.flipper', 'thirdparty'));
-  }
   if (process.env.FLIPPER_NO_EMBEDDED_PLUGINS === 'true') {
     console.log(
       '🥫  Skipping embedded plugins because "--no-embedded-plugins" flag provided',

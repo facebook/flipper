@@ -29,6 +29,7 @@ import {default as config} from '../utils/processConfig';
 import isProduction from '../utils/isProduction';
 import {notNull} from '../utils/typeUtils';
 import {sideEffect} from '../utils/sideEffect';
+import semver from 'semver';
 
 // eslint-disable-next-line import/no-unresolved
 import getPluginIndex from '../utils/getDefaultPluginsIndex';
@@ -58,7 +59,10 @@ export default (store: Store, logger: Logger) => {
 
   const initialPlugins: Array<
     typeof FlipperPlugin | typeof FlipperDevicePlugin
-  > = [...getBundledPlugins(), ...getDynamicPlugins()]
+  > = filterNewestVersionOfEachPlugin([
+    ...getBundledPlugins(),
+    ...getDynamicPlugins(),
+  ])
     .filter(checkDisabled(disabledPlugins))
     .filter(checkGK(gatekeepedPlugins))
     .map(requirePlugin(failedPlugins, defaultPluginsIndex))
@@ -82,6 +86,21 @@ export default (store: Store, logger: Logger) => {
     },
   );
 };
+
+export function filterNewestVersionOfEachPlugin(
+  plugins: PluginDefinition[],
+): PluginDefinition[] {
+  const pluginByName: {[key: string]: PluginDefinition} = {};
+  for (const plugin of plugins) {
+    if (
+      !pluginByName[plugin.name] ||
+      semver.gt(plugin.version, pluginByName[plugin.name].version, true)
+    ) {
+      pluginByName[plugin.name] = plugin;
+    }
+  }
+  return Object.values(pluginByName);
+}
 
 function getBundledPlugins(): Array<PluginDefinition> {
   // DefaultPlugins that are included in the bundle.

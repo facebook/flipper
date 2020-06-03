@@ -14,7 +14,7 @@ import recursiveReaddir from 'recursive-readdir';
 import pMap from 'p-map';
 import {homedir} from 'os';
 import {runBuild, PluginDetails} from 'flipper-pkg-lib';
-import getPlugins from './getPlugins';
+import {getSourcePlugins, getInstalledPlugins} from './getPlugins';
 import startWatchPlugins from './startWatchPlugins';
 import ensurePluginFoldersWatchable from './ensurePluginFoldersWatchable';
 
@@ -41,7 +41,7 @@ export default async function (
 ): Promise<CompiledPluginDetails[]> {
   if (process.env.FLIPPER_FAST_REFRESH) {
     console.log(
-      '🥫  Skipping loading of third-party plugins because Fast Refresh is enabled',
+      '🥫  Skipping loading of installed plugins because Fast Refresh is enabled',
     );
     return [];
   }
@@ -50,9 +50,12 @@ export default async function (
   const defaultPlugins = (
     await fs.readJson(path.join(__dirname, 'defaultPlugins', 'index.json'))
   ).map((p: any) => p.name) as string[];
-  const dynamicPlugins = (await getPlugins(true)).filter(
-    (p) => !defaultPlugins.includes(p.name),
-  );
+  const dynamicPlugins = [
+    ...(await getInstalledPlugins()),
+    ...(await getSourcePlugins()).filter(
+      (p) => !defaultPlugins.includes(p.name),
+    ),
+  ];
   await fs.ensureDir(pluginCache);
   if (options.recompileOnChanges) {
     await startWatchChanges(

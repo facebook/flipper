@@ -15,6 +15,7 @@ import dispatcher, {
   checkDisabled,
   checkGK,
   requirePlugin,
+  filterNewestVersionOfEachPlugin,
 } from '../plugins';
 import path from 'path';
 import {ipcRenderer, remote} from 'electron';
@@ -139,4 +140,23 @@ test('requirePlugin loads plugin', () => {
   });
   expect(plugin!.prototype).toBeInstanceOf(FlipperPlugin);
   expect(plugin!.id).toBe(TestPlugin.id);
+});
+
+test('newest version of each plugin is taken', () => {
+  const plugins: PluginDefinition[] = [
+    {name: 'flipper-plugin-test1', version: '0.1.0'},
+    {name: 'flipper-plugin-test2', version: '0.1.0-alpha.201'},
+    {name: 'flipper-plugin-test2', version: '0.1.0-alpha.21'},
+    {name: 'flipper-plugin-test1', version: '0.10.0'},
+  ];
+  const filteredPlugins = filterNewestVersionOfEachPlugin(plugins);
+  expect(filteredPlugins).toHaveLength(2);
+  expect(filteredPlugins).toContainEqual({
+    name: 'flipper-plugin-test1',
+    version: '0.10.0',
+  });
+  expect(filteredPlugins).toContainEqual({
+    name: 'flipper-plugin-test2',
+    version: '0.1.0-alpha.201',
+  });
 });
