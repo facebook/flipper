@@ -70,6 +70,7 @@
   },
   "devDependencies": {
     "@testing-library/react": "^10.0.2",
+    "mac-ca": "^1.0.4",
     "metro": "^0.59.0",
     "pretty-format": "^25.4.0",
     "react-refresh": "^0.8.1",
