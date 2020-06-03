@@ -384,12 +384,6 @@ class PluginContainer extends PureComponent<Props, State> {
   }
 }
 
-// Let's make sure we reive new props in bursts of 200 ms, rather than continously
-const DebouncedPluginContainer = debounceRender(PluginContainer, 100, {
-  leading: true,
-  trailing: true,
-});
-
 export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
   ({
     connections: {
@@ -462,4 +456,4 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
     setStaticView,
     starPlugin,
   },
-)(DebouncedPluginContainer);
+)(PluginContainer);
