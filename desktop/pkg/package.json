@@ -19,7 +19,7 @@
     "@oclif/plugin-warn-if-update-available": "^1.7.0",
     "ajv": "^6.12.2",
     "ajv-errors": "^1.0.1",
-    "cli-ux": "^5.4.5",
+    "cli-ux": "^5.4.6",
     "flipper-pkg-lib": "0.45.0",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.1.0",

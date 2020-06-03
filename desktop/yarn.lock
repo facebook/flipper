@@ -1759,15 +1759,15 @@
     "@nodelib/fs.scandir" "2.1.3"
     fastq "^1.6.0"
 
-"@oclif/command@^1", "@oclif/command@^1.5.1", "@oclif/command@^1.5.10", "@oclif/command@^1.5.13", "@oclif/command@^1.5.20":
-  version "1.5.20"
-  resolved "https://registry.yarnpkg.com/@oclif/command/-/command-1.5.20.tgz#bb0693586d7d66a457c49b719e394c02ff0169a7"
-  integrity sha512-lzst5RU/STfoutJJv4TLE/cm1WtW3xy6Aqvqy3r1lPsGdNifgbEq4dCOYyc/ZEuhV/IStQLDFTnAlqTdolkz1Q==
+"@oclif/command@^1", "@oclif/command@^1.5.10", "@oclif/command@^1.5.13", "@oclif/command@^1.5.20", "@oclif/command@^1.6.0":
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/@oclif/command/-/command-1.6.1.tgz#774e860f283f32a728377da1c2a90beb8aadf9f5"
+  integrity sha512-pvmMmfGn+zm4e4RwVw63mg9sIaqKqmVsFbImQoUrCO/43UmWzoSHWNXKdgEGigOezWrkZfFucaeZcSbp149OWg==
   dependencies:
-    "@oclif/config" "^1"
+    "@oclif/config" "^1.15.1"
     "@oclif/errors" "^1.2.2"
     "@oclif/parser" "^3.8.3"
-    "@oclif/plugin-help" "^2"
+    "@oclif/plugin-help" "^3"
     debug "^4.1.1"
     semver "^5.6.0"
 
@@ -1824,12 +1824,27 @@
     chalk "^2.4.2"
     tslib "^1.9.3"
 
-"@oclif/plugin-help@^2", "@oclif/plugin-help@^2.1.6":
+"@oclif/plugin-help@^2.1.6":
   version "2.2.3"
   resolved "https://registry.yarnpkg.com/@oclif/plugin-help/-/plugin-help-2.2.3.tgz#b993041e92047f0e1762668aab04d6738ac06767"
   integrity sha512-bGHUdo5e7DjPJ0vTeRBMIrfqTRDBfyR5w0MP41u0n3r7YG5p14lvMmiCXxi6WDaP2Hw5nqx3PnkAIntCKZZN7g==
   dependencies:
     "@oclif/command" "^1.5.13"
+    chalk "^2.4.1"
+    indent-string "^4.0.0"
+    lodash.template "^4.4.0"
+    string-width "^3.0.0"
+    strip-ansi "^5.0.0"
+    widest-line "^2.0.1"
+    wrap-ansi "^4.0.0"
+
+"@oclif/plugin-help@^3":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/@oclif/plugin-help/-/plugin-help-3.0.1.tgz#21919bc6bef58eb045b80312dbb1d671ee7bba51"
+  integrity sha512-Q1OITeUBkkydPf6r5qX75KgE9capr1mNrfHtfD7gkVXmqoTndrbc++z4KfAYNf5nhTCY7N9l52sjbF6BrSGu9w==
+  dependencies:
+    "@oclif/command" "^1.5.20"
+    "@oclif/config" "^1.15.1"
     chalk "^2.4.1"
     indent-string "^4.0.0"
     lodash.template "^4.4.0"
@@ -2760,12 +2775,12 @@ ansi-escapes@^3.0.0, ansi-escapes@^3.1.0:
   resolved "https://registry.yarnpkg.com/ansi-escapes/-/ansi-escapes-3.2.0.tgz#8780b98ff9dbf5638152d1f1fe5c1d7b4442976b"
   integrity sha512-cBhpre4ma+U0T1oM5fXg7Dy1Jw7zzwv7lt/GoCpr+hDQJoYnKVPLL4dCvSEFMmQurOQvSrwT7SL/DAlhBI97RQ==
 
-ansi-escapes@^4.2.1:
-  version "4.2.1"
-  resolved "https://registry.yarnpkg.com/ansi-escapes/-/ansi-escapes-4.2.1.tgz#4dccdb846c3eee10f6d64dea66273eab90c37228"
-  integrity sha512-Cg3ymMAdN10wOk/VYfLV7KCQyv7EDirJ64500sU7n9UlmioEtDuU5Gd+hj73hXSU/ex7tHJSssmyftDdkMLO8Q==
+ansi-escapes@^4.2.1, ansi-escapes@^4.3.0:
+  version "4.3.1"
+  resolved "https://registry.yarnpkg.com/ansi-escapes/-/ansi-escapes-4.3.1.tgz#a5c47cc43181f1f38ffd7076837700d395522a61"
+  integrity sha512-JWF7ocqNrp8u9oqpgV+wH5ftbt+cfvv+PTjOvKLT3AdYly/LmORARfEVT1iyjwN+4MqE5UmVKoAdIBqeoCHgLA==
   dependencies:
-    type-fest "^0.5.2"
+    type-fest "^0.11.0"
 
 ansi-regex@^2.0.0:
   version "2.1.1"
@@ -2794,7 +2809,7 @@ ansi-styles@^3.2.0, ansi-styles@^3.2.1:
   dependencies:
     color-convert "^1.9.0"
 
-ansi-styles@^4.0.0, ansi-styles@^4.1.0:
+ansi-styles@^4.0.0, ansi-styles@^4.1.0, ansi-styles@^4.2.0:
   version "4.2.1"
   resolved "https://registry.yarnpkg.com/ansi-styles/-/ansi-styles-4.2.1.tgz#90ae75c424d008d2624c5bf29ead3177ebfcf359"
   integrity sha512-9VGjrMsG1vePxcSweQsN20KY/c4zN0h9fLjqAbwbPfahM3t+NL+M9HC8xeXG2I8pX5NoamTGNuomEUFI7fcUjA==
@@ -3893,17 +3908,17 @@ cli-progress@^3.4.0:
     colors "^1.1.2"
     string-width "^2.1.1"
 
-cli-ux@^5.2.1, cli-ux@^5.4.5:
-  version "5.4.5"
-  resolved "https://registry.yarnpkg.com/cli-ux/-/cli-ux-5.4.5.tgz#1b9e6648754307a1fa59a0c5a9c6be0ed899c2cd"
-  integrity sha512-5A6FuU0wPUlfCWUjtizUvNIbXElp6jN9QUJsDibs6F9cVX1kTgaMR3m6KT0R3iriEXpMrmPKV6yYS8XICNuQ6Q==
+cli-ux@^5.2.1, cli-ux@^5.4.6:
+  version "5.4.6"
+  resolved "https://registry.yarnpkg.com/cli-ux/-/cli-ux-5.4.6.tgz#26bbe7d1fb20402ce362240ea5dc434168ddbd46"
+  integrity sha512-EeiS2TzEndRVknCqE+8Ri8g0bsP617a1nq6n+3Trwft1JCDzyUNlX2J1fl7fwTgRPWtmBmiF6xIyueL5YGs65g==
   dependencies:
-    "@oclif/command" "^1.5.1"
+    "@oclif/command" "^1.6.0"
     "@oclif/errors" "^1.2.1"
     "@oclif/linewrap" "^1.0.0"
     "@oclif/screen" "^1.0.3"
-    ansi-escapes "^3.1.0"
-    ansi-styles "^3.2.1"
+    ansi-escapes "^4.3.0"
+    ansi-styles "^4.2.0"
     cardinal "^2.1.1"
     chalk "^2.4.1"
     clean-stack "^2.0.0"
@@ -3916,13 +3931,13 @@ cli-ux@^5.2.1, cli-ux@^5.4.5:
     js-yaml "^3.13.1"
     lodash "^4.17.11"
     natural-orderby "^2.0.1"
+    object-treeify "^1.1.4"
     password-prompt "^1.1.2"
     semver "^5.6.0"
     string-width "^3.1.0"
     strip-ansi "^5.1.0"
     supports-color "^5.5.0"
     supports-hyperlinks "^1.0.1"
-    treeify "^1.1.0"
     tslib "^1.9.3"
 
 cli-width@^2.0.0:
@@ -9686,6 +9701,11 @@ object-keys@~0.4.0:
   resolved "https://registry.yarnpkg.com/object-keys/-/object-keys-0.4.0.tgz#28a6aae7428dd2c3a92f3d95f21335dd204e0336"
   integrity sha1-KKaq50KN0sOpLz2V8hM13SBOAzY=
 
+object-treeify@^1.1.4:
+  version "1.1.25"
+  resolved "https://registry.yarnpkg.com/object-treeify/-/object-treeify-1.1.25.tgz#eb634c397bfc6512a28f569809079c93f41fe6d0"
+  integrity sha512-6Abx0xlXDnYd50JkQefvoIly3jWOu8/PqH4lh8p2/aMFEx5TjsUGHt0H9NHfzt+pCwOhpPgNYofD8e2YywIXig==
+
 object-visit@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/object-visit/-/object-visit-1.0.1.tgz#f79c4493af0c5377b59fe39d395e41042dd045bb"
@@ -12596,11 +12616,6 @@ traverse@0.4.x:
   resolved "https://registry.yarnpkg.com/traverse/-/traverse-0.4.6.tgz#d04b2280e4c792a5815429ef7b8b60c64c9ccc34"
   integrity sha1-0EsigOTHkqWBVCnve4tgxkyczDQ=
 
-treeify@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/treeify/-/treeify-1.1.0.tgz#4e31c6a463accd0943879f30667c4fdaff411bb8"
-  integrity sha512-1m4RA7xVAJrSGrrXGs0L3YTwyvBs2S8PbRHaLZAkFw7JR8oIFwYtysxlBZhYIa7xSyiYJKZ3iGrrk55cGA3i9A==
-
 trim-newlines@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/trim-newlines/-/trim-newlines-1.0.0.tgz#5887966bb582a4503a41eb524f7d35011815a613"
@@ -12711,10 +12726,10 @@ type-detect@4.0.8:
   resolved "https://registry.yarnpkg.com/type-detect/-/type-detect-4.0.8.tgz#7646fb5f18871cfbb7749e69bd39a6388eb7450c"
   integrity sha512-0fr/mIH1dlO+x7TlcMy+bIDqKPsw/70tVyeHW787goQjhmqaZe10uwLujubK9q9Lg6Fiho1KUKDYz0Z7k7g5/g==
 
-type-fest@^0.5.2:
-  version "0.5.2"
-  resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-0.5.2.tgz#d6ef42a0356c6cd45f49485c3b6281fc148e48a2"
-  integrity sha512-DWkS49EQKVX//Tbupb9TFa19c7+MK1XmzkrZUR8TAktmE/DizXoaoJV6TZ/tSIPXipqNiRI6CyAe7x69Jb6RSw==
+type-fest@^0.11.0:
+  version "0.11.0"
+  resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-0.11.0.tgz#97abf0872310fed88a5c466b25681576145e33f1"
+  integrity sha512-OdjXJxnCN1AvyLSzeKIgXTXxV+99ZuXl3Hpo9XpJAv9MBcHrrJOQ5kV7ypXOuQie+AmWG25hLbiKdwYTifzcfQ==
 
 type-fest@^0.6.0:
   version "0.6.0"
