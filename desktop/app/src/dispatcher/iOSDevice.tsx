@@ -31,6 +31,8 @@ type iOSSimulatorDevice = {
 
 type IOSDeviceParams = {udid: string; type: DeviceType; name: string};
 
+let portForwarders: Array<ChildProcess> = [];
+
 function isAvailable(simulator: iOSSimulatorDevice): boolean {
   // For some users "availability" is set, for others it's "isAvailable"
   // It's not clear which key is set, so we are checking both.
@@ -55,10 +57,15 @@ function forwardPort(port: number, multiplexChannelPort: number) {
     `-multiplexChannelPort=${multiplexChannelPort}`,
   ]);
 }
-// start port forwarding server for real device connections
-const portForwarders: Array<ChildProcess> = GK.get('flipper_ios_device_support')
-  ? [forwardPort(8089, 8079), forwardPort(8088, 8078)]
-  : [];
+
+function startDevicePortForwarders(): void {
+  if (portForwarders.length > 0) {
+    // Only ever start them once.
+    return;
+  }
+  // start port forwarding server for real device connections
+  portForwarders = [forwardPort(8089, 8079), forwardPort(8088, 8078)];
+}
 
 if (typeof window !== 'undefined') {
   window.addEventListener('beforeunload', () => {
@@ -264,7 +271,11 @@ export default (store: Store, logger: Logger) => {
       store.dispatch(setXcodeDetected(isDetected));
       return isDetected;
     })
-    .then((isDetected) =>
-      isDetected ? queryDevicesForever(store, logger) : Promise.resolve(),
-    );
+    .then((isDetected) => {
+      if (isDetected) {
+        startDevicePortForwarders();
+        return queryDevicesForever(store, logger);
+      }
+      return Promise.resolve();
+    });
 };
