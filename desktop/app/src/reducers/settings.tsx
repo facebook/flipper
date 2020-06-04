@@ -27,6 +27,7 @@ export type Settings = {
    * of Flipper.
    */
   enablePrefetching: Tristate;
+  idbPath: string;
   jsApps: {
     webAppLauncher: {
       url: string;
@@ -57,6 +58,7 @@ const initialState: Settings = {
   enableAndroid: true,
   enableIOS: os.platform() === 'darwin',
   enablePrefetching: Tristate.Unset,
+  idbPath: '/usr/local/bin/idb',
   jsApps: {
     webAppLauncher: {
       url: 'http://localhost:8888',

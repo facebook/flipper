@@ -55,11 +55,13 @@ export function FilePathConfigField(props: {
   defaultValue: string;
   onChange: (path: string) => void;
   frozen?: boolean;
+  // Defaults to allowing directories only, this changes to expect regular files.
+  isRegularFile?: boolean;
 }) {
   const [value, setValue] = useState(props.defaultValue);
   const [isValid, setIsValid] = useState(true);
   fs.stat(value)
-    .then((stat) => stat.isDirectory())
+    .then((stat) => props.isRegularFile !== stat.isDirectory())
     .then((valid) => {
       if (valid !== isValid) {
         setIsValid(valid);
