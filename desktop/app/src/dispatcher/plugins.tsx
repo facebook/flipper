@@ -190,6 +190,7 @@ export const requirePlugin = (
       }
 
       plugin.id = plugin.id || pluginDefinition.id;
+      plugin.packageName = pluginDefinition.name;
 
       // set values from package.json as static variables on class
       Object.keys(pluginDefinition).forEach((key) => {
