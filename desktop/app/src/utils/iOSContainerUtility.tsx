@@ -14,9 +14,8 @@ import {notNull} from './typeUtils';
 const unsafeExec = promisify(child_process.exec);
 import {killOrphanedInstrumentsProcesses} from './processCleanup';
 import {reportPlatformFailures} from './metrics';
-import config from '../fb-stubs/config';
+import {promises, constants} from 'fs';
 
-const idbPath = '/usr/local/bin/idb';
 // Use debug to get helpful logs when idb fails
 const idbLogLevel = 'DEBUG';
 const operationPrefix = 'iosContainerUtility';
@@ -29,8 +28,14 @@ export type DeviceTarget = {
   name: string;
 };
 
-function isAvailable(): boolean {
-  return config.isFBBuild;
+function isAvailable(idbPath: string): Promise<boolean> {
+  if (!idbPath) {
+    return Promise.resolve(false);
+  }
+  return promises
+    .access(idbPath, constants.X_OK)
+    .then((_) => true)
+    .catch((_) => false);
 }
 
 function safeExec(command: string): Promise<{stdout: string; stderr: string}> {
@@ -61,12 +66,14 @@ async function targets(): Promise<Array<DeviceTarget>> {
   );
 }
 
-function push(
+async function push(
   udid: string,
   src: string,
   bundleId: string,
   dst: string,
+  idbPath: string,
 ): Promise<void> {
+  await checkIdbIsInstalled(idbPath);
   return wrapWithErrorMessage(
     reportPlatformFailures(
       safeExec(
@@ -75,18 +82,20 @@ function push(
         .then(() => {
           return;
         })
-        .catch(handleMissingIdb),
+        .catch((e) => handleMissingIdb(e, idbPath)),
       `${operationPrefix}:push`,
     ),
   );
 }
 
-function pull(
+async function pull(
   udid: string,
   src: string,
   bundleId: string,
   dst: string,
+  idbPath: string,
 ): Promise<void> {
+  await checkIdbIsInstalled(idbPath);
   return wrapWithErrorMessage(
     reportPlatformFailures(
       safeExec(
@@ -95,15 +104,24 @@ function pull(
         .then(() => {
           return;
         })
-        .catch(handleMissingIdb),
+        .catch((e) => handleMissingIdb(e, idbPath)),
       `${operationPrefix}:pull`,
     ),
   );
 }
 
-// The idb binary is a shim that downloads the proper one on first run. It requires sudo to do so.
+async function checkIdbIsInstalled(idbPath: string): Promise<void> {
+  const isInstalled = await isAvailable(idbPath);
+  if (!isInstalled) {
+    throw new Error(
+      `idb is required to use iOS devices. Install it with instructions from https://github.com/facebook/idb and set the installation path in Flipper settings.`,
+    );
+  }
+}
+
+// The fb-internal idb binary is a shim that downloads the proper one on first run. It requires sudo to do so.
 // If we detect this, Tell the user how to fix it.
-function handleMissingIdb(e: Error): void {
+function handleMissingIdb(e: Error, idbPath: string): void {
   if (
     e.message &&
     e.message.includes('sudo: no tty present and no askpass program specified')

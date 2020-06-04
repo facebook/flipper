@@ -171,7 +171,7 @@ const INITAL_STATE: State = {
   staticView: WelcomeScreen,
 };
 
-const reducer = (state: State = INITAL_STATE, action: Actions): State => {
+export default (state: State = INITAL_STATE, action: Actions): State => {
   switch (action.type) {
     case 'SET_STATIC_VIEW': {
       const {payload} = action;
@@ -442,33 +442,6 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
     default:
       return state;
   }
-};
-
-export default (state: State = INITAL_STATE, action: Actions): State => {
-  const nextState = reducer(state, action);
-
-  if (nextState.selectedDevice) {
-    const {selectedDevice} = nextState;
-    const deviceNotSupportedErrorMessage = 'iOS Devices are not yet supported';
-    const error =
-      selectedDevice.os === 'iOS' &&
-      selectedDevice.deviceType === 'physical' &&
-      !iosUtil.isAvailable()
-        ? deviceNotSupportedErrorMessage
-        : null;
-
-    if (error) {
-      const deviceNotSupportedError = nextState.errors.find(
-        (error) => error.message === deviceNotSupportedErrorMessage,
-      );
-      if (deviceNotSupportedError) {
-        deviceNotSupportedError.message = error;
-      } else {
-        nextState.errors.push({message: error});
-      }
-    }
-  }
-  return nextState;
 };
 
 function mergeError(
