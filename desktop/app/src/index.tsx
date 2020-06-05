@@ -188,3 +188,4 @@ export {getFlipperMediaCDN} from './fb-stubs/user';
 export {Rect} from './utils/geometry';
 export {Logger} from './fb-interfaces/Logger';
 export {callVSCode, getVSCodeUrl} from './utils/vscodeUtils';
+export {useLocalStorage} from './utils/useLocalStorage';

@@ -35,6 +35,7 @@ import React, {
   useCallback,
   useState,
   useEffect,
+  useRef,
 } from 'react';
 import NotificationScreen from '../NotificationScreen';
 import {
@@ -60,6 +61,7 @@ import {
   getColorByApp,
   getFavoritePlugins,
 } from './sidebarUtils';
+import {useLocalStorage} from '../../utils/useLocalStorage';
 
 type FlipperPlugins = typeof FlipperPlugin[];
 type PluginsByCategory = [string, FlipperPlugins][];
@@ -122,15 +124,21 @@ const SidebarSection: React.FC<{
   title: string | React.ReactNode | ((collapsed: boolean) => React.ReactNode);
   level: SectionLevel;
   color?: string;
-}> = ({children, title, level, color, defaultCollapsed}) => {
-  const [collapsed, setCollapsed] = useState(!!defaultCollapsed);
+  storageKey: string;
+}> = ({children, title, level, color, defaultCollapsed, storageKey}) => {
+  const hasMounted = useRef(false);
+  const [collapsed, setCollapsed] = useLocalStorage(
+    storageKey,
+    !!defaultCollapsed,
+  );
   color = color || colors.macOSTitleBarIconActive;
 
   useEffect(() => {
-    // if default collapsed changed to false, propagate that
-    if (!defaultCollapsed && collapsed) {
+    // if default collapsed changed to false after mounting, propagate that
+    if (hasMounted.current && !defaultCollapsed && collapsed) {
       setCollapsed(!collapsed);
     }
+    hasMounted.current = true;
   }, [defaultCollapsed]);
 
   return (
@@ -259,6 +267,7 @@ class MainSidebar2 extends PureComponent<Props, State> {
       <SidebarSection
         title={device.displayTitle()}
         key={device.serial}
+        storageKey={device.serial}
         level={1}
         defaultCollapsed={!canBeDefaultDevice(device)}>
         {this.showArchivedDeviceDetails(device)}
@@ -266,6 +275,7 @@ class MainSidebar2 extends PureComponent<Props, State> {
           <SidebarSection
             level={2}
             title="Device Plugins"
+            storageKey={device.serial + ':device-plugins'}
             defaultCollapsed={false}>
             {devicePluginsItems}
           </SidebarSection>
@@ -292,10 +302,15 @@ class MainSidebar2 extends PureComponent<Props, State> {
   renderUnitializedClients() {
     const {uninitializedClients} = this.props;
     return uninitializedClients.length > 0 ? (
-      <SidebarSection title="Connecting..." key="unitializedClients" level={1}>
+      <SidebarSection
+        title="Connecting..."
+        key="unitializedClients"
+        level={1}
+        storageKey="unitializedClients">
         {uninitializedClients.map((entry) => (
           <SidebarSection
             color={getColorByApp(entry.client.appName)}
+            storageKey={'unitializedClients:' + JSON.stringify(entry.client)}
             key={JSON.stringify(entry.client)}
             title={
               <HBox grow="left">
@@ -502,6 +517,7 @@ const PluginList = memo(function PluginList({
       level={2}
       key={client.id}
       title={client.query.app}
+      storageKey={`${device.serial}:${client.query.app}`}
       color={getColorByApp(client.query.app)}>
       {favoritePlugins.length === 0 ? (
         <ListItem>
@@ -523,6 +539,7 @@ const PluginList = memo(function PluginList({
         <SidebarSection
           level={3}
           color={colors.macOSTitleBarIconBlur}
+          storageKey={`${device.serial}:${client.query.app}:disabled-plugins`}
           defaultCollapsed={
             favoritePlugins.length > 0 && !selectedNonFavoritePlugin
           }
