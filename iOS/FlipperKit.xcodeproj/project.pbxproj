@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		027369E09714D434B8C421F6 /* libPods-FlipperKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0D8E34F2706E57CC3C186A67 /* libPods-FlipperKit.a */; };
-		53915CB22152E3040090EEA6 /* SonarResponder.h in Headers */ = {isa = PBXBuildFile; fileRef = 53915C972152E3030090EEA6 /* SonarResponder.h */; };
+		53915CB22152E3040090EEA6 /* FlipperResponder.h in Headers */ = {isa = PBXBuildFile; fileRef = 53915C972152E3030090EEA6 /* FlipperResponder.h */; };
 		53915CB32152E3040090EEA6 /* SKStateUpdateCPPWrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = 53915C982152E3030090EEA6 /* SKStateUpdateCPPWrapper.mm */; };
 		53915CB42152E3040090EEA6 /* FlipperDiagnosticsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 53915C992152E3030090EEA6 /* FlipperDiagnosticsViewController.m */; };
 		53915CB52152E3040090EEA6 /* FlipperClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 53915C9A2152E3030090EEA6 /* FlipperClient.h */; };
@@ -16,31 +16,28 @@
 		53915CB72152E3040090EEA6 /* SKStateUpdateCPPWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 53915C9C2152E3030090EEA6 /* SKStateUpdateCPPWrapper.h */; };
 		53915CB82152E3040090EEA6 /* FlipperPlugin.h in Headers */ = {isa = PBXBuildFile; fileRef = 53915C9D2152E3030090EEA6 /* FlipperPlugin.h */; };
 		53915CB92152E3040090EEA6 /* FlipperUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 53915C9E2152E3030090EEA6 /* FlipperUtil.m */; };
-		53915CBA2152E3040090EEA6 /* SKPortForwardingServer.h in Headers */ = {isa = PBXBuildFile; fileRef = 53915CA12152E3040090EEA6 /* SKPortForwardingServer.h */; };
-		53915CBB2152E3040090EEA6 /* SKPortForwardingCommon.h in Headers */ = {isa = PBXBuildFile; fileRef = 53915CA22152E3040090EEA6 /* SKPortForwardingCommon.h */; };
-		53915CBC2152E3040090EEA6 /* SKPortForwardingServer.m in Sources */ = {isa = PBXBuildFile; fileRef = 53915CA32152E3040090EEA6 /* SKPortForwardingServer.m */; };
+		53915CBA2152E3040090EEA6 /* FKPortForwardingServer.h in Headers */ = {isa = PBXBuildFile; fileRef = 53915CA12152E3040090EEA6 /* FKPortForwardingServer.h */; };
+		53915CBB2152E3040090EEA6 /* FKPortForwardingCommon.h in Headers */ = {isa = PBXBuildFile; fileRef = 53915CA22152E3040090EEA6 /* FKPortForwardingCommon.h */; };
+		53915CBC2152E3040090EEA6 /* FKPortForwardingServer.m in Sources */ = {isa = PBXBuildFile; fileRef = 53915CA32152E3040090EEA6 /* FKPortForwardingServer.m */; };
 		53915CBD2152E3040090EEA6 /* FBCxxFollyDynamicConvert.mm in Sources */ = {isa = PBXBuildFile; fileRef = 53915CA52152E3040090EEA6 /* FBCxxFollyDynamicConvert.mm */; };
 		53915CBE2152E3040090EEA6 /* FBCxxFollyDynamicConvert.h in Headers */ = {isa = PBXBuildFile; fileRef = 53915CA62152E3040090EEA6 /* FBCxxFollyDynamicConvert.h */; };
 		53915CBF2152E3040090EEA6 /* FlipperStateUpdateListener.h in Headers */ = {isa = PBXBuildFile; fileRef = 53915CA72152E3040090EEA6 /* FlipperStateUpdateListener.h */; };
 		53915CC02152E3040090EEA6 /* FlipperCppBridgingConnection.mm in Sources */ = {isa = PBXBuildFile; fileRef = 53915CA92152E3040090EEA6 /* FlipperCppBridgingConnection.mm */; };
-		53915CC12152E3040090EEA6 /* SonarCppWrapperPlugin.h in Headers */ = {isa = PBXBuildFile; fileRef = 53915CAA2152E3040090EEA6 /* SonarCppWrapperPlugin.h */; };
+		53915CC12152E3040090EEA6 /* FlipperCppWrapperPlugin.h in Headers */ = {isa = PBXBuildFile; fileRef = 53915CAA2152E3040090EEA6 /* FlipperCppWrapperPlugin.h */; };
 		53915CC22152E3040090EEA6 /* FlipperCppBridgingConnection.h in Headers */ = {isa = PBXBuildFile; fileRef = 53915CAB2152E3040090EEA6 /* FlipperCppBridgingConnection.h */; };
-		53915CC32152E3040090EEA6 /* SonarCppBridgingResponder.mm in Sources */ = {isa = PBXBuildFile; fileRef = 53915CAC2152E3040090EEA6 /* SonarCppBridgingResponder.mm */; };
-		53915CC42152E3040090EEA6 /* SonarCppBridgingResponder.h in Headers */ = {isa = PBXBuildFile; fileRef = 53915CAD2152E3040090EEA6 /* SonarCppBridgingResponder.h */; };
+		53915CC32152E3040090EEA6 /* FlipperCppBridgingResponder.mm in Sources */ = {isa = PBXBuildFile; fileRef = 53915CAC2152E3040090EEA6 /* FlipperCppBridgingResponder.mm */; };
+		53915CC42152E3040090EEA6 /* FlipperCppBridgingResponder.h in Headers */ = {isa = PBXBuildFile; fileRef = 53915CAD2152E3040090EEA6 /* FlipperCppBridgingResponder.h */; };
 		53915CC52152E3040090EEA6 /* SKMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = 53915CAE2152E3040090EEA6 /* SKMacros.h */; };
 		53915CC62152E3040090EEA6 /* FlipperClient.mm in Sources */ = {isa = PBXBuildFile; fileRef = 53915CAF2152E3040090EEA6 /* FlipperClient.mm */; };
 		53915CC72152E3040090EEA6 /* FlipperDiagnosticsViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 53915CB02152E3040090EEA6 /* FlipperDiagnosticsViewController.h */; };
-		53915CC82152E3040090EEA6 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 53915CB12152E3040090EEA6 /* Info.plist */; };
 		53915CCA2152E31C0090EEA6 /* Plugins in Resources */ = {isa = PBXBuildFile; fileRef = 53915CC92152E31C0090EEA6 /* Plugins */; };
 		53D4C51220A5B89900613A96 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 53D4C51120A5B89900613A96 /* Foundation.framework */; };
-		6AE55F0A77A5644AADF2CEA6 /* libPods-SonarKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 104CB87D17FDFDC934630C14 /* libPods-SonarKit.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		0D8E34F2706E57CC3C186A67 /* libPods-FlipperKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-FlipperKit.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		104CB87D17FDFDC934630C14 /* libPods-SonarKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SonarKit.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		22B8670D786EA50E30082023 /* Pods-FlipperKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlipperKit.debug.xcconfig"; path = "Pods/Target Support Files/Pods-FlipperKit/Pods-FlipperKit.debug.xcconfig"; sourceTree = "<group>"; };
-		53915C972152E3030090EEA6 /* SonarResponder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SonarResponder.h; sourceTree = "<group>"; };
+		53915C972152E3030090EEA6 /* FlipperResponder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FlipperResponder.h; sourceTree = "<group>"; };
 		53915C982152E3030090EEA6 /* SKStateUpdateCPPWrapper.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SKStateUpdateCPPWrapper.mm; sourceTree = "<group>"; };
 		53915C992152E3030090EEA6 /* FlipperDiagnosticsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FlipperDiagnosticsViewController.m; sourceTree = "<group>"; };
 		53915C9A2152E3030090EEA6 /* FlipperClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FlipperClient.h; sourceTree = "<group>"; };
@@ -48,17 +45,17 @@
 		53915C9C2152E3030090EEA6 /* SKStateUpdateCPPWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKStateUpdateCPPWrapper.h; sourceTree = "<group>"; };
 		53915C9D2152E3030090EEA6 /* FlipperPlugin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FlipperPlugin.h; sourceTree = "<group>"; };
 		53915C9E2152E3030090EEA6 /* FlipperUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FlipperUtil.m; sourceTree = "<group>"; };
-		53915CA12152E3040090EEA6 /* SKPortForwardingServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKPortForwardingServer.h; sourceTree = "<group>"; };
-		53915CA22152E3040090EEA6 /* SKPortForwardingCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKPortForwardingCommon.h; sourceTree = "<group>"; };
-		53915CA32152E3040090EEA6 /* SKPortForwardingServer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKPortForwardingServer.m; sourceTree = "<group>"; };
+		53915CA12152E3040090EEA6 /* FKPortForwardingServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FKPortForwardingServer.h; path = FlipperKit/FKPortForwarding/FKPortForwardingServer.h; sourceTree = SOURCE_ROOT; };
+		53915CA22152E3040090EEA6 /* FKPortForwardingCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FKPortForwardingCommon.h; path = FlipperKit/FKPortForwarding/FKPortForwardingCommon.h; sourceTree = SOURCE_ROOT; };
+		53915CA32152E3040090EEA6 /* FKPortForwardingServer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FKPortForwardingServer.m; path = FlipperKit/FKPortForwarding/FKPortForwardingServer.m; sourceTree = SOURCE_ROOT; };
 		53915CA52152E3040090EEA6 /* FBCxxFollyDynamicConvert.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FBCxxFollyDynamicConvert.mm; sourceTree = "<group>"; };
 		53915CA62152E3040090EEA6 /* FBCxxFollyDynamicConvert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FBCxxFollyDynamicConvert.h; sourceTree = "<group>"; };
 		53915CA72152E3040090EEA6 /* FlipperStateUpdateListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FlipperStateUpdateListener.h; sourceTree = "<group>"; };
 		53915CA92152E3040090EEA6 /* FlipperCppBridgingConnection.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FlipperCppBridgingConnection.mm; sourceTree = "<group>"; };
-		53915CAA2152E3040090EEA6 /* SonarCppWrapperPlugin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SonarCppWrapperPlugin.h; sourceTree = "<group>"; };
+		53915CAA2152E3040090EEA6 /* FlipperCppWrapperPlugin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FlipperCppWrapperPlugin.h; sourceTree = "<group>"; };
 		53915CAB2152E3040090EEA6 /* FlipperCppBridgingConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FlipperCppBridgingConnection.h; sourceTree = "<group>"; };
-		53915CAC2152E3040090EEA6 /* SonarCppBridgingResponder.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SonarCppBridgingResponder.mm; sourceTree = "<group>"; };
-		53915CAD2152E3040090EEA6 /* SonarCppBridgingResponder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SonarCppBridgingResponder.h; sourceTree = "<group>"; };
+		53915CAC2152E3040090EEA6 /* FlipperCppBridgingResponder.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FlipperCppBridgingResponder.mm; sourceTree = "<group>"; };
+		53915CAD2152E3040090EEA6 /* FlipperCppBridgingResponder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FlipperCppBridgingResponder.h; sourceTree = "<group>"; };
 		53915CAE2152E3040090EEA6 /* SKMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKMacros.h; sourceTree = "<group>"; };
 		53915CAF2152E3040090EEA6 /* FlipperClient.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FlipperClient.mm; sourceTree = "<group>"; };
 		53915CB02152E3040090EEA6 /* FlipperDiagnosticsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FlipperDiagnosticsViewController.h; sourceTree = "<group>"; };
@@ -77,7 +74,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				53D4C51220A5B89900613A96 /* Foundation.framework in Frameworks */,
-				6AE55F0A77A5644AADF2CEA6 /* libPods-SonarKit.a in Frameworks */,
 				027369E09714D434B8C421F6 /* libPods-FlipperKit.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -100,7 +96,7 @@
 			isa = PBXGroup;
 			children = (
 				53915CC92152E31C0090EEA6 /* Plugins */,
-				53915C972152E3030090EEA6 /* SonarResponder.h */,
+				53915C972152E3030090EEA6 /* FlipperResponder.h */,
 				53915C982152E3030090EEA6 /* SKStateUpdateCPPWrapper.mm */,
 				53915C992152E3030090EEA6 /* FlipperDiagnosticsViewController.m */,
 				53915C9A2152E3030090EEA6 /* FlipperClient.h */,
@@ -131,9 +127,9 @@
 		53915CA02152E3040090EEA6 /* PortForwarding */ = {
 			isa = PBXGroup;
 			children = (
-				53915CA12152E3040090EEA6 /* SKPortForwardingServer.h */,
-				53915CA22152E3040090EEA6 /* SKPortForwardingCommon.h */,
-				53915CA32152E3040090EEA6 /* SKPortForwardingServer.m */,
+				53915CA12152E3040090EEA6 /* FKPortForwardingServer.h */,
+				53915CA22152E3040090EEA6 /* FKPortForwardingCommon.h */,
+				53915CA32152E3040090EEA6 /* FKPortForwardingServer.m */,
 			);
 			path = PortForwarding;
 			sourceTree = "<group>";
@@ -151,10 +147,10 @@
 			isa = PBXGroup;
 			children = (
 				53915CA92152E3040090EEA6 /* FlipperCppBridgingConnection.mm */,
-				53915CAA2152E3040090EEA6 /* SonarCppWrapperPlugin.h */,
+				53915CAA2152E3040090EEA6 /* FlipperCppWrapperPlugin.h */,
 				53915CAB2152E3040090EEA6 /* FlipperCppBridgingConnection.h */,
-				53915CAC2152E3040090EEA6 /* SonarCppBridgingResponder.mm */,
-				53915CAD2152E3040090EEA6 /* SonarCppBridgingResponder.h */,
+				53915CAC2152E3040090EEA6 /* FlipperCppBridgingResponder.mm */,
+				53915CAD2152E3040090EEA6 /* FlipperCppBridgingResponder.h */,
 			);
 			path = CppBridge;
 			sourceTree = "<group>";
@@ -181,7 +177,6 @@
 			isa = PBXGroup;
 			children = (
 				53D4C51120A5B89900613A96 /* Foundation.framework */,
-				104CB87D17FDFDC934630C14 /* libPods-SonarKit.a */,
 				0D8E34F2706E57CC3C186A67 /* libPods-FlipperKit.a */,
 			);
 			name = Frameworks;
@@ -195,17 +190,17 @@
 			buildActionMask = 2147483647;
 			files = (
 				53915CC22152E3040090EEA6 /* FlipperCppBridgingConnection.h in Headers */,
-				53915CB22152E3040090EEA6 /* SonarResponder.h in Headers */,
+				53915CB22152E3040090EEA6 /* FlipperResponder.h in Headers */,
 				53915CB72152E3040090EEA6 /* SKStateUpdateCPPWrapper.h in Headers */,
-				53915CBB2152E3040090EEA6 /* SKPortForwardingCommon.h in Headers */,
+				53915CBB2152E3040090EEA6 /* FKPortForwardingCommon.h in Headers */,
 				53915CB52152E3040090EEA6 /* FlipperClient.h in Headers */,
 				53915CB62152E3040090EEA6 /* FlipperConnection.h in Headers */,
 				53915CB82152E3040090EEA6 /* FlipperPlugin.h in Headers */,
 				53915CC72152E3040090EEA6 /* FlipperDiagnosticsViewController.h in Headers */,
-				53915CBA2152E3040090EEA6 /* SKPortForwardingServer.h in Headers */,
-				53915CC12152E3040090EEA6 /* SonarCppWrapperPlugin.h in Headers */,
+				53915CBA2152E3040090EEA6 /* FKPortForwardingServer.h in Headers */,
+				53915CC12152E3040090EEA6 /* FlipperCppWrapperPlugin.h in Headers */,
 				53915CBF2152E3040090EEA6 /* FlipperStateUpdateListener.h in Headers */,
-				53915CC42152E3040090EEA6 /* SonarCppBridgingResponder.h in Headers */,
+				53915CC42152E3040090EEA6 /* FlipperCppBridgingResponder.h in Headers */,
 				53915CC52152E3040090EEA6 /* SKMacros.h in Headers */,
 				53915CBE2152E3040090EEA6 /* FBCxxFollyDynamicConvert.h in Headers */,
 			);
@@ -271,7 +266,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				53915CC82152E3040090EEA6 /* Info.plist in Resources */,
 				53915CCA2152E31C0090EEA6 /* Plugins in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -304,10 +298,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				53915CC32152E3040090EEA6 /* SonarCppBridgingResponder.mm in Sources */,
+				53915CC32152E3040090EEA6 /* FlipperCppBridgingResponder.mm in Sources */,
 				53915CB42152E3040090EEA6 /* FlipperDiagnosticsViewController.m in Sources */,
 				53915CB92152E3040090EEA6 /* FlipperUtil.m in Sources */,
-				53915CBC2152E3040090EEA6 /* SKPortForwardingServer.m in Sources */,
+				53915CBC2152E3040090EEA6 /* FKPortForwardingServer.m in Sources */,
 				53915CB32152E3040090EEA6 /* SKStateUpdateCPPWrapper.mm in Sources */,
 				53915CBD2152E3040090EEA6 /* FBCxxFollyDynamicConvert.mm in Sources */,
 				53915CC62152E3040090EEA6 /* FlipperClient.mm in Sources */,
@@ -469,6 +463,7 @@
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/FlipperKit/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
@@ -487,7 +482,7 @@
 					"$(inherited)",
 					"-ObjC",
 					"-l\"DoubleConversion\"",
-					"-l\"Folly\"",
+					"-l\"Flipper-Folly\"",
 					"-l\"glog\"",
 					"-l\"stdc++\"",
 					"-DFOLLY_NO_CONFIG=1",
@@ -505,13 +500,14 @@
 				PRODUCT_BUNDLE_IDENTIFIER = FB.FlipperKit;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "";
 				"USER_HEADER_SEARCH_PATHS[arch=*]" = "${SRCROOT}/FlipperKit/** ${SRCROOT}/../xplat/**";
 				USE_HEADERMAP = YES;
-				VALID_ARCHS = "armv7s armv7 arm64";
+				VALID_ARCHS = "armv7s armv7 arm64 arm64e";
 			};
 			name = Debug;
 		};
@@ -546,6 +542,7 @@
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/FlipperKit/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
@@ -564,7 +561,7 @@
 					"$(inherited)",
 					"-ObjC",
 					"-l\"DoubleConversion\"",
-					"-l\"Folly\"",
+					"-l\"Flipper-Folly\"",
 					"-l\"glog\"",
 					"-l\"stdc++\"",
 					"-DFOLLY_NO_CONFIG=1",
@@ -582,11 +579,12 @@
 				PRODUCT_BUNDLE_IDENTIFIER = FB.FlipperKit;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "";
 				USE_HEADERMAP = YES;
-				VALID_ARCHS = "armv7s armv7 arm64";
+				VALID_ARCHS = "armv7s armv7 arm64 arm64e";
 			};
 			name = Release;
 		};

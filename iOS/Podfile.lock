@@ -1,0 +1,68 @@
+PODS:
+  - boost-for-react-native (1.63.0)
+  - CocoaAsyncSocket (7.6.4)
+  - CocoaLibEvent (1.0.0)
+  - DoubleConversion (1.1.5)
+  - Flipper (0.45.0):
+    - Flipper-Folly (~> 2.2)
+    - Flipper-RSocket (~> 1.1)
+  - Flipper-DoubleConversion (1.1.7)
+  - Flipper-Folly (2.2.0):
+    - boost-for-react-native
+    - CocoaLibEvent (~> 1.0)
+    - Flipper-DoubleConversion
+    - Flipper-Glog
+    - OpenSSL-Universal (= 1.0.2.19)
+  - Flipper-Glog (0.3.6)
+  - Flipper-PeerTalk (0.0.4)
+  - Flipper-RSocket (1.1.0):
+    - Flipper-Folly (~> 2.2)
+  - glog (0.3.4)
+  - OpenSSL-Universal (1.0.2.19):
+    - OpenSSL-Universal/Static (= 1.0.2.19)
+  - OpenSSL-Universal/Static (1.0.2.19)
+
+DEPENDENCIES:
+  - CocoaAsyncSocket (~> 7.6)
+  - DoubleConversion (~> 1.1)
+  - Flipper (from `../Flipper.podspec`)
+  - Flipper-Folly (~> 2.2)
+  - Flipper-PeerTalk (~> 0.0)
+  - Flipper-RSocket (~> 1.1)
+  - glog (~> 0.3)
+
+SPEC REPOS:
+  https://github.com/CocoaPods/Specs:
+    - boost-for-react-native
+    - CocoaAsyncSocket
+    - CocoaLibEvent
+    - DoubleConversion
+    - Flipper-DoubleConversion
+    - Flipper-Folly
+    - Flipper-Glog
+    - Flipper-PeerTalk
+    - Flipper-RSocket
+    - glog
+    - OpenSSL-Universal
+
+EXTERNAL SOURCES:
+  Flipper:
+    :path: "../Flipper.podspec"
+
+SPEC CHECKSUMS:
+  boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
+  CocoaAsyncSocket: 694058e7c0ed05a9e217d1b3c7ded962f4180845
+  CocoaLibEvent: 2fab71b8bd46dd33ddb959f7928ec5909f838e3f
+  DoubleConversion: e22e0762848812a87afd67ffda3998d9ef29170c
+  Flipper: 18ad3ac4a8e41db9db2ef72239b8ff4eab5b3522
+  Flipper-DoubleConversion: 38631e41ef4f9b12861c67d17cb5518d06badc41
+  Flipper-Folly: c12092ea368353b58e992843a990a3225d4533c3
+  Flipper-Glog: 1dfd6abf1e922806c52ceb8701a3599a79a200a6
+  Flipper-PeerTalk: 116d8f857dc6ef55c7a5a75ea3ceaafe878aadc9
+  Flipper-RSocket: 64e7431a55835eb953b0bf984ef3b90ae9fdddd7
+  glog: 1de0bb937dccdc981596d3b5825ebfb765017ded
+  OpenSSL-Universal: 8b48cc0d10c1b2923617dfe5c178aa9ed2689355
+
+PODFILE CHECKSUM: c0e22ce9737ae531ae7290d9e16882825f8ebed9
+
+COCOAPODS: 1.9.0
