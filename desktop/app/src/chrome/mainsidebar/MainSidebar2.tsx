@@ -266,7 +266,7 @@ class MainSidebar2 extends PureComponent<Props, State> {
           <SidebarSection
             level={2}
             title="Device Plugins"
-            defaultCollapsed={true}>
+            defaultCollapsed={false}>
             {devicePluginsItems}
           </SidebarSection>
         ) : (
