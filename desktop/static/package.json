@@ -5,6 +5,7 @@
   "private": true,
   "license": "MIT",
   "dependencies": {
+    "axios": "^0.19.2",
     "electron-devtools-installer": "^3.0.0",
     "expand-tilde": "^2.0.2",
     "fb-watchman": "^2.0.0",
