@@ -21,6 +21,7 @@
     "ajv-errors": "^1.0.1",
     "cli-ux": "^5.4.6",
     "flipper-pkg-lib": "0.45.0",
+    "flipper-plugin-lib": "0.45.0",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.1.0",
     "lodash": "^4.17.15",

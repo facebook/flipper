@@ -5,9 +5,9 @@
     "rootDir": "src",
     "allowJs": true,
     "esModuleInterop": true,
+    "composite": true,
     "incremental": true
   },
-  "references": [{"path": "../pkg-lib"}, {"path": "../plugin-lib"}],
   "include": ["src"],
   "exclude": ["node_modules", "**/__tests__/*"]
 }

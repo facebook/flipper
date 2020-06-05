@@ -10,7 +10,8 @@
       "flipper-pkg": ["./pkg/src"],
       "flipper-pkg-lib": ["./pkg-lib/src"],
       "live-plugin-manager": ["./types/live-plugin-manager.d.tsx"],
-      "flipper-babel-transformer": ["./babel-transformer/src"]
+      "flipper-babel-transformer": ["./babel-transformer/src"],
+      "flipper-plugin-lib": ["./plugin-lib/src"]
     }
   },
   "exclude": ["**/node_modules/", "**/*.spec.ts"]

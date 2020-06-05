@@ -11,7 +11,8 @@ import {Command, flags} from '@oclif/command';
 import {args} from '@oclif/parser';
 import fs from 'fs-extra';
 import path from 'path';
-import {runBuild, getPluginDetails} from 'flipper-pkg-lib';
+import {runBuild} from 'flipper-pkg-lib';
+import {getPluginDetails} from 'flipper-plugin-lib';
 
 export default class Bundle extends Command {
   public static description = 'transpiles and bundles plugin';

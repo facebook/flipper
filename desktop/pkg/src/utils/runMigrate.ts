@@ -9,7 +9,7 @@
 
 import path from 'path';
 import fs from 'fs-extra';
-import {getPluginDetails} from 'flipper-pkg-lib';
+import {getPluginDetails} from 'flipper-plugin-lib';
 import {kebabCase} from 'lodash';
 
 export default async function (

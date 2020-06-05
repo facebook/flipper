@@ -14,7 +14,7 @@ import {
   getPluginsInstallationFolder,
   getPluginSourceFolders,
 } from './getPluginFolders';
-import {PluginDetails, getPluginDetails} from 'flipper-pkg-lib';
+import {PluginDetails, getPluginDetails} from 'flipper-plugin-lib';
 import pmap from 'p-map';
 import pfilter from 'p-filter';
 
