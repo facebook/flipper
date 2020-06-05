@@ -12,24 +12,17 @@ import {
   Element,
   ElementSearchResultSet,
   PluginClient,
-  FlexRow,
   FlipperPlugin,
   Toolbar,
   DetailSidebar,
-  VerticalRule,
   Button,
   GK,
   Idler,
-  Text,
-  styled,
-  colors,
-  SupportRequestFormV2,
-  constants,
   ReduxState,
   ArchivedDevice,
   ToolbarIcon,
   Layout,
-  Scrollable,
+  Sidebar,
 } from 'flipper';
 import Inspector from './Inspector';
 import InspectorSidebar from './InspectorSidebar';
@@ -372,17 +365,14 @@ export default class LayoutPlugin extends FlipperPlugin<
     );
 
     const axInspector = this.state.inAXMode ? (
-      <FlexRow style={{height: '100%'}}>
-        <VerticalRule />
-        <Scrollable>
-          <Inspector
-            {...inspectorProps}
-            onSelect={(selectedAXElement) => this.setState({selectedAXElement})}
-            showsSidebar={true}
-            ax
-          />
-        </Scrollable>
-      </FlexRow>
+      <Sidebar width={400} backgroundColor="white" position="right">
+        <Inspector
+          {...inspectorProps}
+          onSelect={(selectedAXElement) => this.setState({selectedAXElement})}
+          showsSidebar={true}
+          ax
+        />
+      </Sidebar>
     ) : null;
 
     const showAnalyzeYogaPerformanceButton = GK.get('flipper_yogaperformance');
@@ -440,10 +430,10 @@ export default class LayoutPlugin extends FlipperPlugin<
               initialQuery={this.props.deepLinkPayload}
             />
           </Toolbar>
-          <Layout.Bottom>
+          <Layout.Right>
             {inspector}
             {axInspector}
-          </Layout.Bottom>
+          </Layout.Right>
         </Layout.Top>
 
         <DetailSidebar>
