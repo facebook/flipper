@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "firefox-client": "0.3.0",
-    "promisify-child-process": "^4.1.0"
+    "promisify-child-process": "^4.1.1"
   },
   "resolutions": {
     "minimist": "1.2.3"

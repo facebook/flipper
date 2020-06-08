@@ -10011,10 +10011,10 @@ promise@^7.1.1:
   dependencies:
     asap "~2.0.3"
 
-promisify-child-process@^4.1.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/promisify-child-process/-/promisify-child-process-4.1.0.tgz#b910c4592880c69254bae0ddd080b89a3d25182c"
-  integrity sha512-oj4hb3nOOYAP4g/n4ruq2ij1mgAHJjqBGYTUfpvUQmAVh+bRcBkk11C9A/do7Ebtm6qtLDOHekVvlxNn1bFPEA==
+promisify-child-process@^4.1.1:
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/promisify-child-process/-/promisify-child-process-4.1.1.tgz#290659e079f9c7bd46708404d4488a1a6b802686"
+  integrity sha512-/sRjHZwoXf1rJ+8s4oWjYjGRVKNK1DUnqfRC1Zek18pl0cN6k3yJ1cCbqd0tWNe4h0Gr+SY4vR42N33+T82WkA==
 
 prompts@^2.0.1:
   version "2.2.1"
