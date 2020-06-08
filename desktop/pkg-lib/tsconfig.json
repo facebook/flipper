@@ -2,11 +2,7 @@
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "lib",
-    "rootDir": "src",
-    "allowJs": true,
-    "esModuleInterop": true,
-    "composite": true,
-    "incremental": true
+    "rootDir": "src"
   },
   "references": [{"path": "../babel-transformer"}],
   "include": ["src"],
