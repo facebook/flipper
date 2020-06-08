@@ -8,14 +8,7 @@
  */
 
 import {Actions} from './';
-
-export type PluginDefinition = {
-  name: string;
-  version: string;
-  description: string;
-};
-
-export type PluginMap = Map<string, PluginDefinition>;
+import {PluginMap} from 'flipper-plugin-lib';
 
 export type State = {
   installedPlugins: PluginMap;

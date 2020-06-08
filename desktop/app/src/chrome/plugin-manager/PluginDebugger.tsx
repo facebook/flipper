@@ -7,7 +7,7 @@
  * @format
  */
 
-import {PluginDefinition} from '../../dispatcher/plugins';
+import {PluginDetails} from 'flipper-plugin-lib';
 import Client from '../../Client';
 import {TableBodyRow} from '../../ui/components/table/types';
 import React, {Component, Fragment} from 'react';
@@ -46,9 +46,9 @@ const Lamp = (props: {on: boolean}) => (
 );
 
 type StateFromProps = {
-  gatekeepedPlugins: Array<PluginDefinition>;
-  disabledPlugins: Array<PluginDefinition>;
-  failedPlugins: Array<[PluginDefinition, string]>;
+  gatekeepedPlugins: Array<PluginDetails>;
+  disabledPlugins: Array<PluginDetails>;
+  failedPlugins: Array<[PluginDetails, string]>;
   clients: Array<Client>;
   selectedDevice: string | null | undefined;
   devicePlugins: Array<typeof FlipperDevicePlugin>;
@@ -101,7 +101,7 @@ class PluginDebugger extends Component<Props> {
     loaded: boolean,
     status: string,
     GKname: string | null | undefined,
-    pluginPath: string | null | undefined,
+    pluginPath: string,
   ): TableBodyRow {
     return {
       key: name.toLowerCase(),
@@ -123,12 +123,10 @@ class PluginDebugger extends Component<Props> {
           value: this.getSupportedClients(name),
         },
         source: {
-          value: pluginPath ? (
+          value: (
             <Ellipsis code title={pluginPath}>
               {pluginPath}
             </Ellipsis>
-          ) : (
-            <i>bundled</i>
           ),
         },
       },
@@ -149,7 +147,7 @@ class PluginDebugger extends Component<Props> {
   getRows(): Array<TableBodyRow> {
     const rows: Array<TableBodyRow> = [];
 
-    const externalPluginPath = (p: any) => p.entry || 'Native Plugin';
+    const externalPluginPath = (p: any) => (p.isDefault ? 'bundled' : p.entry);
 
     this.props.gatekeepedPlugins.forEach((plugin) =>
       rows.push(

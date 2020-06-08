@@ -34,6 +34,9 @@ export function die(err: Error) {
 export async function generatePluginEntryPoints() {
   console.log('⚙️  Generating plugin entry points...');
   const plugins = await getSourcePlugins();
+  for (const plugin of plugins) {
+    plugin.isDefault = true;
+  }
   if (await fs.pathExists(defaultPluginsIndexDir)) {
     await fs.remove(defaultPluginsIndexDir);
   }

@@ -13,7 +13,7 @@ import {
 } from '../pluginUtils.tsx';
 import type {State as PluginsState} from '../../reducers/plugins.tsx';
 import type {State as PluginStatesState} from '../../reducers/pluginStates.tsx';
-import type {PluginDefinition} from '../../dispatcher/plugins.tsx';
+import type {PluginDetails} from 'flipper-plugin-lib';
 import type {State as PluginMessageQueueState} from '../../reducers/pluginStates.tsx';
 import {FlipperBasePlugin} from 'flipper';
 import type {ReduxState} from '../../reducers/index.tsx';
@@ -60,9 +60,9 @@ function createMockFlipperPluginWithNoPersistedState(id: string) {
 }
 
 function mockPluginState(
-  gatekeepedPlugins: Array<PluginDefinition>,
-  disabledPlugins: Array<PluginDefinition>,
-  failedPlugins: Array<[PluginDefinition, string]>,
+  gatekeepedPlugins: Array<PluginDetails>,
+  disabledPlugins: Array<PluginDetails>,
+  failedPlugins: Array<[PluginDetails, string]>,
 ): PluginsState {
   return {
     devicePlugins: new Map([
@@ -92,7 +92,7 @@ function mockPluginState(
   };
 }
 
-function mockPluginDefinition(name: string): PluginDefinition {
+function mockPluginDefinition(name: string): PluginDetails {
   return {
     name,
     out: 'out',
