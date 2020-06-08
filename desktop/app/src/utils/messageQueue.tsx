@@ -172,10 +172,10 @@ export function processMessagesImmediately(
   messages: Message[],
 ) {
   const persistedState = getCurrentPluginState(store, plugin, pluginKey);
-  let newPluginState: any;
-  messages.forEach((message) => {
-    newPluginState = processMessage(persistedState, pluginKey, plugin, message);
-  });
+  const newPluginState = messages.reduce(
+    (state, message) => processMessage(state, pluginKey, plugin, message),
+    persistedState,
+  );
   if (persistedState !== newPluginState) {
     store.dispatch(
       setPluginState({

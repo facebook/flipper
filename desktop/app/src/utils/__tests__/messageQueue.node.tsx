@@ -88,13 +88,18 @@ function selectTestPlugin(store: Store, client: Client) {
 test('queue - events are processed immediately if plugin is selected', async () => {
   await createMockFlipperWithPlugin(
     TestPlugin,
-    async ({store, sendMessage}) => {
+    async ({store, client, sendMessage}) => {
       expect(store.getState().connections.selectedPlugin).toBe('TestPlugin');
+      sendMessage('noop', {});
+      sendMessage('noop', {});
       sendMessage('inc', {});
+      sendMessage('inc', {delta: 4});
+      sendMessage('noop', {});
+      client.flushMessageBuffer();
       expect(store.getState().pluginStates).toMatchInlineSnapshot(`
           Object {
             "TestApp#Android#MockAndroidDevice#serial#TestPlugin": Object {
-              "count": 1,
+              "count": 5,
             },
           }
         `);
