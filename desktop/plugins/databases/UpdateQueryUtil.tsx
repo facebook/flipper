@@ -51,13 +51,12 @@ export function constructQueryClause(
 ): string {
   return Object.entries(values).reduce(
     (clauses, [key, val]: [string, Value], idx) => {
-      const {type, value} = val;
       const valueString =
-        type === 'null'
+        val.type === 'null'
           ? 'NULL'
-          : type === 'string' || type === 'blob'
-          ? `'${value}'`
-          : `${value}`;
+          : val.type === 'string' || val.type === 'blob'
+          ? `'${val.value.replace(/'/g, "''")}'`
+          : `${val.value}`;
       if (idx <= 0) {
         return `${key}=${valueString}`;
       } else {

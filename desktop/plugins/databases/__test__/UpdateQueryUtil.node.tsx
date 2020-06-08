@@ -248,6 +248,15 @@ test('constructQueryClause with exactly one null value', () => {
   ).toEqual(`key1=NULL`);
 });
 
+test("constructQueryClause with special character (single quote ('))", () => {
+  expect(
+    constructQueryClause(
+      {key1: {type: 'string', value: "this is a 'single quote'"}},
+      'connecter',
+    ),
+  ).toEqual(`key1='this is a ''single quote'''`);
+});
+
 test('constructQueryClause with multiple value', () => {
   const values: {[key: string]: Value} = {
     key1: {type: 'string', value: 'this is a string'},
@@ -257,6 +266,19 @@ test('constructQueryClause with multiple value', () => {
 
   expect(constructQueryClause(values, 'connector')).toEqual(
     `key1='this is a string' connector key2=NULL connector key3=13.37`,
+  );
+});
+
+test('constructQueryClause with multiple value with single quotes mixed in string', () => {
+  const values: {[key: string]: Value} = {
+    key1: {type: 'string', value: `this is 'a' string`},
+    key2: {type: 'null', value: null},
+    key3: {type: 'float', value: 13.37},
+    key4: {type: 'string', value: `there are single quotes 'here' and 'there'`},
+  };
+
+  expect(constructQueryClause(values, 'connector')).toEqual(
+    `key1='this is ''a'' string' connector key2=NULL connector key3=13.37 connector key4='there are single quotes ''here'' and ''there'''`,
   );
 });
 
