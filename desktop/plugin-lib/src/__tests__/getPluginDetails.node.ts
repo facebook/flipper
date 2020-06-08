@@ -31,6 +31,8 @@ test('getPluginDetailsV1', async () => {
   jest.mock('fs-extra', () => jest.fn());
   fs.readJson = jest.fn().mockImplementation(() => pluginV1);
   const details = await getPluginDetails(pluginPath);
+  details.dir = normalizeOnWindows(details.dir);
+  details.entry = normalizeOnWindows(details.entry);
   expect(details).toMatchInlineSnapshot(`
     Object {
       "bugs": undefined,
@@ -66,6 +68,8 @@ test('getPluginDetailsV2', async () => {
   jest.mock('fs-extra', () => jest.fn());
   fs.readJson = jest.fn().mockImplementation(() => pluginV2);
   const details = await getPluginDetails(pluginPath);
+  details.dir = normalizeOnWindows(details.dir);
+  details.entry = normalizeOnWindows(details.entry);
   expect(details).toMatchInlineSnapshot(`
     Object {
       "bugs": undefined,
@@ -101,6 +105,8 @@ test('id used as title if the latter omited', async () => {
   jest.mock('fs-extra', () => jest.fn());
   fs.readJson = jest.fn().mockImplementation(() => pluginV2);
   const details = await getPluginDetails(pluginPath);
+  details.dir = normalizeOnWindows(details.dir);
+  details.entry = normalizeOnWindows(details.entry);
   expect(details).toMatchInlineSnapshot(`
     Object {
       "bugs": undefined,
@@ -135,6 +141,8 @@ test('name without "flipper-plugin-" prefix is used as title if the latter omite
   jest.mock('fs-extra', () => jest.fn());
   fs.readJson = jest.fn().mockImplementation(() => pluginV2);
   const details = await getPluginDetails(pluginPath);
+  details.dir = normalizeOnWindows(details.dir);
+  details.entry = normalizeOnWindows(details.entry);
   expect(details).toMatchInlineSnapshot(`
     Object {
       "bugs": undefined,
@@ -155,3 +163,11 @@ test('name without "flipper-plugin-" prefix is used as title if the latter omite
     }
   `);
 });
+
+const normalizeOnWindows = (path: string): string => {
+  if (process.platform === 'win32') {
+    path = path.replace(/\\/g, '/');
+    path = path.substring(path.indexOf('/'));
+  }
+  return path;
+};
