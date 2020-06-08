@@ -1,18 +1,10 @@
 {
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "baseUrl": ".",
-    "skipLibCheck": true,
     "noEmit": true,
-    "paths": {
-      "flipper": ["./app/src"],
-      "flipper-doctor": ["./doctor/src"],
-      "flipper-pkg": ["./pkg/src"],
-      "flipper-pkg-lib": ["./pkg-lib/src"],
-      "live-plugin-manager": ["./types/live-plugin-manager.d.tsx"],
-      "flipper-babel-transformer": ["./babel-transformer/src"],
-      "flipper-plugin-lib": ["./plugin-lib/src"]
-    }
+    "incremental": false,
+    "composite": false,
+    "allowJs": false
   },
   "exclude": ["**/node_modules/", "**/*.spec.ts"]
 }

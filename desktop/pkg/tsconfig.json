@@ -2,10 +2,7 @@
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "lib",
-    "rootDir": "src",
-    "allowJs": true,
-    "esModuleInterop": true,
-    "incremental": true
+    "rootDir": "src"
   },
   "references": [{"path": "../pkg-lib"}, {"path": "../plugin-lib"}],
   "include": ["src"],

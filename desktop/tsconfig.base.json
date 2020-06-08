@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "lib": [
-      "es7",
-      "dom",
-      "es2017"
-    ],
+    "lib": ["es7", "dom", "es2017"],
     "esModuleInterop": true,
     "target": "ES2017",
     "removeComments": true,
@@ -16,5 +12,15 @@
     "moduleResolution": "node",
     "skipLibCheck": true,
     "strict": true,
+    "composite": true,
+    "incremental": true,
+    "baseUrl": ".",
+    "allowJs": true,
+    "rootDir": ".",
+    "paths": {
+      "flipper": ["./app/src"],
+      "flipper-*": ["./*/src"],
+      "*": ["./*", "./types/*"]
+    }
   }
 }
