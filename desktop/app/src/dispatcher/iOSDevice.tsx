@@ -19,8 +19,8 @@ const execFile = child_process.execFile;
 import iosUtil from '../utils/iOSContainerUtility';
 import IOSDevice from '../devices/IOSDevice';
 import isProduction from '../utils/isProduction';
-import GK from '../fb-stubs/GK';
 import {registerDeviceCallbackOnPlugins} from '../utils/onRegisterDevice';
+
 type iOSSimulatorDevice = {
   state: 'Booted' | 'Shutdown' | 'Shutting Down';
   availability?: string;
@@ -30,6 +30,8 @@ type iOSSimulatorDevice = {
 };
 
 type IOSDeviceParams = {udid: string; type: DeviceType; name: string};
+
+const exec = promisify(child_process.exec);
 
 let portForwarders: Array<ChildProcess> = [];
 
@@ -73,55 +75,70 @@ if (typeof window !== 'undefined') {
   });
 }
 
-async function queryDevices(store: Store, logger: Logger): Promise<void> {
-  if (!(await checkIfDevicesCanBeQueryied(store))) {
-    return;
-  }
-  await checkXcodeVersionMismatch(store);
+async function queryDevices(store: Store, logger: Logger): Promise<any> {
+  return Promise.all([
+    checkXcodeVersionMismatch(store),
+    getActiveSimulators().then((devices) => {
+      processDevices(store, logger, devices, 'emulator');
+    }),
+    getActiveDevices().then((devices) => {
+      processDevices(store, logger, devices, 'physical');
+    }),
+  ]);
+}
+
+function processDevices(
+  store: Store,
+  logger: Logger,
+  activeDevices: IOSDeviceParams[],
+  type: 'physical' | 'emulator',
+) {
   const {connections} = store.getState();
   const currentDeviceIDs: Set<string> = new Set(
     connections.devices
-      .filter((device) => device instanceof IOSDevice)
+      .filter(
+        (device) =>
+          device instanceof IOSDevice &&
+          device.deviceType === type &&
+          !device.isArchived,
+      )
       .map((device) => device.serial),
   );
-  return Promise.all([getActiveSimulators(), getActiveDevices()])
-    .then(([a, b]) => a.concat(b))
-    .then((activeDevices) => {
-      for (const {udid, type, name} of activeDevices) {
-        if (currentDeviceIDs.has(udid)) {
-          currentDeviceIDs.delete(udid);
-        } else {
-          logger.track('usage', 'register-device', {
-            os: 'iOS',
-            type: type,
-            name: name,
-            serial: udid,
-          });
-          const iOSDevice = new IOSDevice(udid, type, name);
-          iOSDevice.loadDevicePlugins(store.getState().plugins.devicePlugins);
-          store.dispatch({
-            type: 'REGISTER_DEVICE',
-            payload: iOSDevice,
-          });
-          registerDeviceCallbackOnPlugins(
-            store,
-            store.getState().plugins.devicePlugins,
-            store.getState().plugins.clientPlugins,
-            iOSDevice,
-          );
-        }
-      }
 
-      if (currentDeviceIDs.size > 0) {
-        currentDeviceIDs.forEach((id) =>
-          logger.track('usage', 'unregister-device', {os: 'iOS', serial: id}),
-        );
-        store.dispatch({
-          type: 'UNREGISTER_DEVICES',
-          payload: currentDeviceIDs,
-        });
-      }
+  for (const {udid, type, name} of activeDevices) {
+    if (currentDeviceIDs.has(udid)) {
+      currentDeviceIDs.delete(udid);
+    } else {
+      logger.track('usage', 'register-device', {
+        os: 'iOS',
+        type: type,
+        name: name,
+        serial: udid,
+      });
+      const iOSDevice = new IOSDevice(udid, type, name);
+      iOSDevice.loadDevicePlugins(store.getState().plugins.devicePlugins);
+      store.dispatch({
+        type: 'REGISTER_DEVICE',
+        payload: iOSDevice,
+      });
+      registerDeviceCallbackOnPlugins(
+        store,
+        store.getState().plugins.devicePlugins,
+        store.getState().plugins.clientPlugins,
+        iOSDevice,
+      );
+    }
+  }
+
+  if (currentDeviceIDs.size > 0) {
+    currentDeviceIDs.forEach((id) =>
+      logger.track('usage', 'unregister-device', {os: 'iOS', serial: id}),
+    );
+    store.dispatch({
+      type: 'UNREGISTER_DEVICES',
+      payload: currentDeviceIDs,
     });
+  }
 }
 
 function getActiveSimulators(): Promise<Array<IOSDeviceParams>> {
@@ -180,7 +197,6 @@ async function checkXcodeVersionMismatch(store: Store) {
   if (xcodeVersionMismatchFound) {
     return;
   }
-  const exec = promisify(child_process.exec);
   try {
     let {stdout: xcodeCLIVersion} = await exec('xcode-select -p');
     xcodeCLIVersion = xcodeCLIVersion.trim();
@@ -211,35 +227,8 @@ async function checkXcodeVersionMismatch(store: Store) {
     console.error(e);
   }
 }
-
-let canQueryDevices: boolean | undefined = undefined;
-
-async function checkIfDevicesCanBeQueryied(store: Store): Promise<boolean> {
-  if (canQueryDevices !== undefined) {
-    return canQueryDevices;
-  }
-  try {
-    const exec = promisify(child_process.exec);
-    // make sure we can use instruments (it will throw otherwise)
-    await exec('instruments -s devices');
-    return (canQueryDevices = true);
-  } catch (e) {
-    store.dispatch({
-      type: 'SERVER_ERROR',
-      payload: {
-        message:
-          'It looks like XCode was not installed properly. Further actions are required if you want to use an iOS emulator.',
-        details:
-          "You might want to run 'sudo xcode-select -s /Applications/Xcode.app/Contents/Developer'",
-        error: e,
-      },
-    });
-    return (canQueryDevices = false);
-  }
-}
-
 async function isXcodeDetected(): Promise<boolean> {
-  return promisify(child_process.exec)('xcode-select -p')
+  return exec('xcode-select -p')
     .then((_) => true)
     .catch((_) => false);
 }
@@ -266,16 +255,11 @@ export default (store: Store, logger: Logger) => {
   if (!store.getState().settingsState.enableIOS) {
     return;
   }
-  isXcodeDetected()
-    .then((isDetected) => {
-      store.dispatch(setXcodeDetected(isDetected));
-      return isDetected;
-    })
-    .then((isDetected) => {
-      if (isDetected) {
-        startDevicePortForwarders();
-        return queryDevicesForever(store, logger);
-      }
-      return Promise.resolve();
-    });
+  isXcodeDetected().then((isDetected) => {
+    store.dispatch(setXcodeDetected(isDetected));
+    if (isDetected) {
+      startDevicePortForwarders();
+      return queryDevicesForever(store, logger);
+    }
+  });
 };
