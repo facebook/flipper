@@ -8,16 +8,16 @@
  */
 
 import {FlipperPlugin, FlipperDevicePlugin} from '../plugin';
-import {PluginDefinition} from '../dispatcher/plugins';
+import {PluginDetails} from 'flipper-plugin-lib';
 import {Actions} from '.';
 import produce from 'immer';
 
 export type State = {
   devicePlugins: Map<string, typeof FlipperDevicePlugin>;
   clientPlugins: Map<string, typeof FlipperPlugin>;
-  gatekeepedPlugins: Array<PluginDefinition>;
-  disabledPlugins: Array<PluginDefinition>;
-  failedPlugins: Array<[PluginDefinition, string]>;
+  gatekeepedPlugins: Array<PluginDetails>;
+  disabledPlugins: Array<PluginDetails>;
+  failedPlugins: Array<[PluginDetails, string]>;
   selectedPlugins: Array<string>;
 };
 
@@ -32,15 +32,15 @@ export type Action =
   | RegisterPluginAction
   | {
       type: 'GATEKEEPED_PLUGINS';
-      payload: Array<PluginDefinition>;
+      payload: Array<PluginDetails>;
     }
   | {
       type: 'DISABLED_PLUGINS';
-      payload: Array<PluginDefinition>;
+      payload: Array<PluginDetails>;
     }
   | {
       type: 'FAILED_PLUGINS';
-      payload: Array<[PluginDefinition, string]>;
+      payload: Array<[PluginDetails, string]>;
     }
   | {
       type: 'SELECTED_PLUGINS';
@@ -113,21 +113,19 @@ export const registerPlugins = (payload: Array<PluginClass>): Action => ({
 });
 
 export const addGatekeepedPlugins = (
-  payload: Array<PluginDefinition>,
+  payload: Array<PluginDetails>,
 ): Action => ({
   type: 'GATEKEEPED_PLUGINS',
   payload,
 });
 
-export const addDisabledPlugins = (
-  payload: Array<PluginDefinition>,
-): Action => ({
+export const addDisabledPlugins = (payload: Array<PluginDetails>): Action => ({
   type: 'DISABLED_PLUGINS',
   payload,
 });
 
 export const addFailedPlugins = (
-  payload: Array<[PluginDefinition, string]>,
+  payload: Array<[PluginDetails, string]>,
 ): Action => ({
   type: 'FAILED_PLUGINS',
   payload,

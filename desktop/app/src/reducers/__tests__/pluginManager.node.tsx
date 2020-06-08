@@ -18,6 +18,14 @@ const EXAMPLE_PLUGIN = {
   name: 'test',
   version: '0.1',
   description: 'my test plugin',
+  dir: '/plugins/test',
+  specVersion: 2,
+  source: 'src/index.ts',
+  isDefault: false,
+  main: 'lib/index.js',
+  title: 'test',
+  id: 'test',
+  entry: '/plugins/test/lib/index.js',
 };
 
 test('reduce registerInstalledPlugins, clear again', () => {

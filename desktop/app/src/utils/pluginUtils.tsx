@@ -11,7 +11,7 @@ import {FlipperDevicePlugin, FlipperPlugin, FlipperBasePlugin} from '../plugin';
 import {State as PluginStatesState} from '../reducers/pluginStates';
 import {State as PluginsState} from '../reducers/plugins';
 import {State as PluginMessageQueueState} from '../reducers/pluginMessageQueue';
-import {PluginDefinition} from '../dispatcher/plugins';
+import {PluginDetails} from 'flipper-plugin-lib';
 import {deconstructPluginKey, deconstructClientId} from './clientUtils';
 
 type Client = import('../Client').default;
@@ -188,16 +188,16 @@ export function getPersistentPlugins(plugins: PluginsState): Array<string> {
     typeof FlipperDevicePlugin | typeof FlipperPlugin
   > = pluginsClassMap(plugins);
 
-  const arr: Array<PluginDefinition> = plugins.disabledPlugins.concat(
+  const arr: Array<PluginDetails> = plugins.disabledPlugins.concat(
     plugins.gatekeepedPlugins,
   );
-  arr.forEach((plugin: PluginDefinition) => {
+  arr.forEach((plugin: PluginDetails) => {
     if (pluginsMap.has(plugin.name)) {
       pluginsMap.delete(plugin.name);
     }
   });
 
-  plugins.failedPlugins.forEach((plugin: [PluginDefinition, string]) => {
+  plugins.failedPlugins.forEach((plugin: [PluginDetails, string]) => {
     if (plugin[0] && plugin[0].name && pluginsMap.has(plugin[0].name)) {
       pluginsMap.delete(plugin[0].name);
     }

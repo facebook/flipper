@@ -10,16 +10,18 @@
 import path from 'path';
 import fs from 'fs-extra';
 import {promisify} from 'util';
-import {homedir} from 'os';
 import {PluginManager as PM} from 'live-plugin-manager';
 import decompress from 'decompress';
 import decompressTargz from 'decompress-targz';
 import decompressUnzip from 'decompress-unzip';
 import tmp from 'tmp';
+import PluginDetails from './PluginDetails';
+import getPluginDetails from './getPluginDetails';
+import {pluginInstallationDir} from './pluginPaths';
+
+export type PluginMap = Map<string, PluginDetails>;
 
 const getTmpDir = promisify(tmp.dir) as () => Promise<string>;
-
-export const PLUGIN_DIR = path.join(homedir(), '.flipper', 'thirdparty');
 
 function providePluginManager(): PM {
   return new PM({
@@ -38,10 +40,10 @@ async function installPluginFromTempDir(pluginDir: string) {
   );
   const name = packageJSON.name;
 
-  await fs.ensureDir(PLUGIN_DIR);
+  await fs.ensureDir(pluginInstallationDir);
   // create empty watchman config (required by metro's file watcher)
-  await fs.writeFile(path.join(PLUGIN_DIR, '.watchmanconfig'), '{}');
-  const destinationDir = path.join(PLUGIN_DIR, name);
+  await fs.writeFile(path.join(pluginInstallationDir, '.watchmanconfig'), '{}');
+  const destinationDir = path.join(pluginInstallationDir, name);
   // Clean up existing destination files.
   await fs.remove(destinationDir);
   await fs.ensureDir(destinationDir);
@@ -117,4 +119,33 @@ export async function installPluginFromFile(packagePath: string) {
       await fs.remove(tmpDir);
     }
   }
+}
+
+export async function readInstalledPlugins(): Promise<PluginMap> {
+  const pluginDirExists = await fs.pathExists(pluginInstallationDir);
+  if (!pluginDirExists) {
+    return new Map();
+  }
+  const dirs = await fs.readdir(pluginInstallationDir);
+  const plugins = await Promise.all<[string, PluginDetails]>(
+    dirs.map(
+      (name) =>
+        new Promise(async (resolve, reject) => {
+          const pluginDir = path.join(pluginInstallationDir, name);
+          if (!(await fs.lstat(pluginDir)).isDirectory()) {
+            return resolve(undefined);
+          }
+          try {
+            resolve([name, await getPluginDetails(pluginDir)]);
+          } catch (e) {
+            reject(e);
+          }
+        }),
+    ),
+  );
+  return new Map(plugins.filter(Boolean));
+}
+
+export async function removePlugin(name: string): Promise<void> {
+  await fs.remove(path.join(pluginInstallationDir, name));
 }

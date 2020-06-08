@@ -72,7 +72,21 @@ test('do not add plugin twice', () => {
 });
 
 test('add gatekeeped plugin', () => {
-  const gatekeepedPlugins = [{name: 'plugin', out: 'out.js', version: '1.0.0'}];
+  const gatekeepedPlugins = [
+    {
+      name: 'plugin',
+      out: 'out.js',
+      version: '1.0.0',
+      dir: '/plugins/test',
+      specVersion: 2,
+      source: 'src/index.ts',
+      isDefault: false,
+      main: 'lib/index.js',
+      title: 'test',
+      id: 'test',
+      entry: '/plugins/test/lib/index.js',
+    },
+  ];
   const res = reducer(
     {
       devicePlugins: new Map(),

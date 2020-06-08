@@ -10,6 +10,7 @@
 import fs from 'fs-extra';
 import path from 'path';
 import PluginDetails from './PluginDetails';
+import {pluginCacheDir} from './pluginPaths';
 
 export default async function (
   pluginDir: string,
@@ -44,8 +45,13 @@ async function getPluginDetailsV1(
     name: packageJson.name,
     version: packageJson.version,
     main: 'dist/bundle.js',
+    entry: path.join(
+      pluginCacheDir,
+      `${packageJson.name}@${packageJson.version || '0.0.0'}.js`,
+    ),
     source: packageJson.main,
     id: packageJson.name,
+    isDefault: false,
     gatekeeper: packageJson.gatekeeper,
     icon: packageJson.icon,
     title: packageJson.title || packageJson.name,
@@ -66,7 +72,9 @@ async function getPluginDetailsV2(
     name: packageJson.name,
     version: packageJson.version,
     main: packageJson.main,
+    entry: path.resolve(pluginDir, packageJson.main),
     source: packageJson.flipperBundlerEntry,
+    isDefault: false,
     id: packageJson.id || packageJson.name,
     gatekeeper: packageJson.gatekeeper,
     icon: packageJson.icon,

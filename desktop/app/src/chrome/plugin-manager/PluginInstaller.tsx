@@ -29,18 +29,16 @@ import React, {useCallback, useState, useMemo, useEffect} from 'react';
 import {List} from 'immutable';
 import {SearchIndex} from 'algoliasearch';
 import {SearchResponse} from '@algolia/client-search';
-import path from 'path';
-import fs from 'fs-extra';
 import {reportPlatformFailures, reportUsage} from '../../utils/metrics';
 import restartFlipper from '../../utils/restartFlipper';
+import {registerInstalledPlugins} from '../../reducers/pluginManager';
 import {
-  PluginMap,
-  PluginDefinition,
-  registerInstalledPlugins,
-} from '../../reducers/pluginManager';
-import {
-  PLUGIN_DIR,
   readInstalledPlugins,
+  removePlugin,
+  PluginMap,
+  PluginDetails,
+} from 'flipper-plugin-lib';
+import {
   provideSearchIndex,
   findPluginUpdates as _findPluginUpdates,
   UpdateResult,
@@ -126,11 +124,11 @@ type UpdatablePlugin = {
   updateStatus: UpdateResult;
 };
 
-type UpdatablePluginDefinition = PluginDefinition & UpdatablePlugin;
+type UpdatablePluginDefinition = PluginDetails & UpdatablePlugin;
 
 // exported for testing
 export function annotatePluginsWithUpdates(
-  installedPlugins: Map<string, PluginDefinition>,
+  installedPlugins: PluginMap,
   updates: Map<string, UpdateResult>,
 ): Map<string, UpdatablePluginDefinition> {
   const annotated: Array<[string, UpdatablePluginDefinition]> = Array.from(
@@ -211,7 +209,7 @@ const AlignedGlyph = styled(Glyph)({
   marginTop: 6,
 });
 
-function liftUpdatable(val: PluginDefinition): UpdatablePluginDefinition {
+function liftUpdatable(val: PluginDetails): UpdatablePluginDefinition {
   return {
     ...val,
     updateStatus: {kind: 'up-to-date'},
@@ -272,7 +270,7 @@ function InstallButton(props: {
     catchError('Remove', async () => {
       reportUsage(`${TAG}:remove`, undefined, props.name);
       setAction({kind: 'Waiting'});
-      await fs.remove(path.join(PLUGIN_DIR, props.name));
+      await removePlugin(props.name);
       props.onInstall();
       setAction({kind: 'Install'});
     }),
@@ -336,7 +334,7 @@ function useNPMSearch(
   query: string,
   setQuery: (query: string) => void,
   searchClientFactory: () => SearchIndex,
-  installedPlugins: Map<string, PluginDefinition>,
+  installedPlugins: PluginMap,
   onInstall: () => Promise<void>,
   findPluginUpdates: (
     currentPlugins: PluginMap,
@@ -403,11 +401,11 @@ function useNPMSearch(
     (async () => {
       let cancelled = false;
       const {hits} = await reportPlatformFailures(
-        index.search<PluginDefinition>('', {
+        index.search<PluginDetails>('', {
           query,
           filters: 'keywords:flipper-plugin',
           hitsPerPage: 20,
-        }) as Promise<SearchResponse<PluginDefinition>>,
+        }) as Promise<SearchResponse<PluginDetails>>,
         `${TAG}:queryIndex`,
       );
       if (cancelled) {

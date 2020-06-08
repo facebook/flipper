@@ -8,9 +8,8 @@
  */
 
 import path from 'path';
-import fs from 'fs-extra';
 import {homedir} from 'os';
-import {PluginMap, PluginDefinition} from '../reducers/pluginManager';
+import {PluginMap, PluginDetails} from 'flipper-plugin-lib';
 import {default as algoliasearch, SearchIndex} from 'algoliasearch';
 import NpmApi, {Package} from 'npm-api';
 import semver from 'semver';
@@ -26,36 +25,6 @@ export function provideSearchIndex(): SearchIndex {
   return client.initIndex('npm-search');
 }
 
-export async function readInstalledPlugins(): Promise<PluginMap> {
-  const pluginDirExists = await fs.pathExists(PLUGIN_DIR);
-
-  if (!pluginDirExists) {
-    return new Map();
-  }
-  const dirs = await fs.readdir(PLUGIN_DIR);
-  const plugins = await Promise.all<[string, PluginDefinition]>(
-    dirs.map(
-      (name) =>
-        new Promise(async (resolve, reject) => {
-          if (!(await fs.lstat(path.join(PLUGIN_DIR, name))).isDirectory()) {
-            return resolve(undefined);
-          }
-
-          const packageJSON = await fs.readFile(
-            path.join(PLUGIN_DIR, name, 'package.json'),
-          );
-
-          try {
-            resolve([name, JSON.parse(packageJSON.toString())]);
-          } catch (e) {
-            reject(e);
-          }
-        }),
-    ),
-  );
-  return new Map(plugins.filter(Boolean));
-}
-
 export type UpdateResult =
   | {kind: 'up-to-date'}
   | {kind: 'error'; error: Error}
@@ -68,9 +37,7 @@ export async function findPluginUpdates(
 
   return Promise.all(
     Array.from(currentPlugins.values()).map(
-      async (
-        currentPlugin: PluginDefinition,
-      ): Promise<[string, UpdateResult]> =>
+      async (currentPlugin: PluginDetails): Promise<[string, UpdateResult]> =>
         npm
           .repo(currentPlugin.name)
           .package()

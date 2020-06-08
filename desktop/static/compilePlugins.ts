@@ -33,13 +33,11 @@ export type CompileOptions = {
   recompileOnChanges: boolean;
 };
 
-export type CompiledPluginDetails = PluginDetails & {entry: string};
-
 export default async function (
   reloadCallback: (() => void) | null,
   pluginCache: string,
   options: CompileOptions = DEFAULT_COMPILE_OPTIONS,
-): Promise<CompiledPluginDetails[]> {
+): Promise<PluginDetails[]> {
   if (process.env.FLIPPER_FAST_REFRESH) {
     console.log(
       '🥫  Skipping loading of installed plugins because Fast Refresh is enabled',
@@ -76,7 +74,7 @@ export default async function (
 
   const compiledDynamicPlugins = (await compilations).filter(
     (c) => c !== null,
-  ) as CompiledPluginDetails[];
+  ) as PluginDetails[];
   console.log('✅  Compiled all plugins.');
   return compiledDynamicPlugins;
 }
@@ -109,14 +107,13 @@ async function compilePlugin(
   pluginDetails: PluginDetails,
   pluginCache: string,
   {force, failSilently}: CompileOptions,
-): Promise<CompiledPluginDetails | null> {
-  const {dir, specVersion, version, main, source, name} = pluginDetails;
+): Promise<PluginDetails | null> {
+  const {dir, specVersion, version, entry, source, name} = pluginDetails;
   if (specVersion > 1) {
     // eslint-disable-next-line no-console
-    const entry = path.join(dir, main);
     if (await fs.pathExists(entry)) {
       console.log(`🥫  Using pre-built version of ${name}: ${entry}...`);
-      return Object.assign({}, pluginDetails, {entry});
+      return pluginDetails;
     } else {
       console.error(
         `❌  Plugin ${name} is ignored, because its entry point not found: ${entry}.`,
@@ -125,7 +122,6 @@ async function compilePlugin(
     }
   } else {
     const entry = path.join(pluginCache, `${name}@${version || '0.0.0'}.js`);
-    const result = Object.assign({}, pluginDetails, {entry});
     const rootDirCtime = await mostRecentlyChanged(dir);
     if (
       !force &&
@@ -134,7 +130,7 @@ async function compilePlugin(
     ) {
       // eslint-disable-next-line no-console
       console.log(`🥫  Using cached version of ${name}...`);
-      return result;
+      return pluginDetails;
     } else {
       // eslint-disable-line no-console
       console.log(`⚙️  Compiling ${name}...`);
@@ -151,7 +147,7 @@ async function compilePlugin(
           throw e;
         }
       }
-      return result;
+      return pluginDetails;
     }
   }
 }

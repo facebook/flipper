@@ -8,7 +8,16 @@
  */
 
 import fs from 'fs-extra';
+import path from 'path';
 import getPluginDetails from '../getPluginDetails';
+import {pluginInstallationDir} from '../pluginPaths';
+
+jest.mock('../pluginPaths', () => ({
+  pluginInstallationDir: '/Users/mock/.flipper/thirdparty',
+  pluginCacheDir: '/Users/mock/.flipper/plugins',
+}));
+
+const pluginPath = path.join(pluginInstallationDir, 'flipper-plugin-test');
 
 test('getPluginDetailsV1', async () => {
   const pluginV1 = {
@@ -21,16 +30,18 @@ test('getPluginDetailsV1', async () => {
   };
   jest.mock('fs-extra', () => jest.fn());
   fs.readJson = jest.fn().mockImplementation(() => pluginV1);
-  const details = await getPluginDetails('./plugins/flipper-plugin-test');
+  const details = await getPluginDetails(pluginPath);
   expect(details).toMatchInlineSnapshot(`
     Object {
       "bugs": undefined,
       "category": undefined,
       "description": "Description of Test Plugin",
-      "dir": "./plugins/flipper-plugin-test",
+      "dir": "/Users/mock/.flipper/thirdparty/flipper-plugin-test",
+      "entry": "/Users/mock/.flipper/plugins/flipper-plugin-test@2.0.0.js",
       "gatekeeper": "GK_flipper_plugin_test",
       "icon": undefined,
       "id": "flipper-plugin-test",
+      "isDefault": false,
       "main": "dist/bundle.js",
       "name": "flipper-plugin-test",
       "source": "src/index.tsx",
@@ -54,16 +65,18 @@ test('getPluginDetailsV2', async () => {
   };
   jest.mock('fs-extra', () => jest.fn());
   fs.readJson = jest.fn().mockImplementation(() => pluginV2);
-  const details = await getPluginDetails('./plugins/flipper-plugin-test');
+  const details = await getPluginDetails(pluginPath);
   expect(details).toMatchInlineSnapshot(`
     Object {
       "bugs": undefined,
       "category": undefined,
       "description": "Description of Test Plugin",
-      "dir": "./plugins/flipper-plugin-test",
+      "dir": "/Users/mock/.flipper/thirdparty/flipper-plugin-test",
+      "entry": "/Users/mock/.flipper/thirdparty/flipper-plugin-test/dist/bundle.js",
       "gatekeeper": "GK_flipper_plugin_test",
       "icon": undefined,
       "id": "flipper-plugin-test",
+      "isDefault": false,
       "main": "dist/bundle.js",
       "name": "flipper-plugin-test",
       "source": "src/index.tsx",
@@ -87,16 +100,18 @@ test('id used as title if the latter omited', async () => {
   };
   jest.mock('fs-extra', () => jest.fn());
   fs.readJson = jest.fn().mockImplementation(() => pluginV2);
-  const details = await getPluginDetails('./plugins/flipper-plugin-test');
+  const details = await getPluginDetails(pluginPath);
   expect(details).toMatchInlineSnapshot(`
     Object {
       "bugs": undefined,
       "category": undefined,
       "description": "Description of Test Plugin",
-      "dir": "./plugins/flipper-plugin-test",
+      "dir": "/Users/mock/.flipper/thirdparty/flipper-plugin-test",
+      "entry": "/Users/mock/.flipper/thirdparty/flipper-plugin-test/dist/bundle.js",
       "gatekeeper": "GK_flipper_plugin_test",
       "icon": undefined,
       "id": "test",
+      "isDefault": false,
       "main": "dist/bundle.js",
       "name": "flipper-plugin-test",
       "source": "src/index.tsx",
@@ -119,16 +134,18 @@ test('name without "flipper-plugin-" prefix is used as title if the latter omite
   };
   jest.mock('fs-extra', () => jest.fn());
   fs.readJson = jest.fn().mockImplementation(() => pluginV2);
-  const details = await getPluginDetails('./plugins/flipper-plugin-test');
+  const details = await getPluginDetails(pluginPath);
   expect(details).toMatchInlineSnapshot(`
     Object {
       "bugs": undefined,
       "category": undefined,
       "description": "Description of Test Plugin",
-      "dir": "./plugins/flipper-plugin-test",
+      "dir": "/Users/mock/.flipper/thirdparty/flipper-plugin-test",
+      "entry": "/Users/mock/.flipper/thirdparty/flipper-plugin-test/dist/bundle.js",
       "gatekeeper": "GK_flipper_plugin_test",
       "icon": undefined,
       "id": "flipper-plugin-test",
+      "isDefault": false,
       "main": "dist/bundle.js",
       "name": "flipper-plugin-test",
       "source": "src/index.tsx",
