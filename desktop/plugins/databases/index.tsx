@@ -98,7 +98,6 @@ type Page = {
   count: number;
   total: number;
   highlightedRows: Array<number>;
-  editable: boolean;
 };
 
 export type Structure = {
@@ -500,10 +499,6 @@ export default class DatabasesPlugin extends FlipperPlugin<
             indexesColumns: event.indexesColumns,
             indexesValues: event.indexesValues,
           },
-          currentPage: {
-            ...state.currentPage!,
-            editable: isUpdatable(event.columns, event.rows),
-          },
         };
       },
     ],
@@ -821,7 +816,6 @@ export default class DatabasesPlugin extends FlipperPlugin<
             count: data.count,
             total: data.total,
             highlightedRows: [],
-            editable: false,
           });
         })
         .catch((e) => {
@@ -1137,7 +1131,15 @@ export default class DatabasesPlugin extends FlipperPlugin<
           <DatabaseDetailSidebar
             columnLabels={page.columns}
             columnValues={page.rows[page.highlightedRows[0]]}
-            onSave={page.editable ? this.onRowEdited.bind(this) : undefined}
+            onSave={
+              this.state.currentStructure &&
+              isUpdatable(
+                this.state.currentStructure.columns,
+                this.state.currentStructure.rows,
+              )
+                ? this.onRowEdited.bind(this)
+                : undefined
+            }
           />
         )}
       </FlexRow>
