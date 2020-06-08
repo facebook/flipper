@@ -17,7 +17,8 @@ export default interface PluginDetails {
   id: string;
   gatekeeper?: string;
   icon?: string;
-  title?: string;
+  title: string;
+  description?: string;
   category?: string;
   bugs?: {
     email?: string;

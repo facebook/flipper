@@ -16,6 +16,7 @@ test('getPluginDetailsV1', async () => {
     version: '2.0.0',
     title: 'Test Plugin',
     main: 'src/index.tsx',
+    description: 'Description of Test Plugin',
     gatekeeper: 'GK_flipper_plugin_test',
   };
   jest.mock('fs-extra', () => jest.fn());
@@ -25,6 +26,7 @@ test('getPluginDetailsV1', async () => {
     Object {
       "bugs": undefined,
       "category": undefined,
+      "description": "Description of Test Plugin",
       "dir": "./plugins/flipper-plugin-test",
       "gatekeeper": "GK_flipper_plugin_test",
       "icon": undefined,
@@ -47,6 +49,7 @@ test('getPluginDetailsV2', async () => {
     version: '3.0.1',
     main: 'dist/bundle.js',
     flipperBundlerEntry: 'src/index.tsx',
+    description: 'Description of Test Plugin',
     gatekeeper: 'GK_flipper_plugin_test',
   };
   jest.mock('fs-extra', () => jest.fn());
@@ -56,6 +59,7 @@ test('getPluginDetailsV2', async () => {
     Object {
       "bugs": undefined,
       "category": undefined,
+      "description": "Description of Test Plugin",
       "dir": "./plugins/flipper-plugin-test",
       "gatekeeper": "GK_flipper_plugin_test",
       "icon": undefined,
@@ -78,6 +82,7 @@ test('id used as title if the latter omited', async () => {
     version: '3.0.1',
     main: 'dist/bundle.js',
     flipperBundlerEntry: 'src/index.tsx',
+    description: 'Description of Test Plugin',
     gatekeeper: 'GK_flipper_plugin_test',
   };
   jest.mock('fs-extra', () => jest.fn());
@@ -87,6 +92,7 @@ test('id used as title if the latter omited', async () => {
     Object {
       "bugs": undefined,
       "category": undefined,
+      "description": "Description of Test Plugin",
       "dir": "./plugins/flipper-plugin-test",
       "gatekeeper": "GK_flipper_plugin_test",
       "icon": undefined,
@@ -108,6 +114,7 @@ test('name without "flipper-plugin-" prefix is used as title if the latter omite
     version: '3.0.1',
     main: 'dist/bundle.js',
     flipperBundlerEntry: 'src/index.tsx',
+    description: 'Description of Test Plugin',
     gatekeeper: 'GK_flipper_plugin_test',
   };
   jest.mock('fs-extra', () => jest.fn());
@@ -117,6 +124,7 @@ test('name without "flipper-plugin-" prefix is used as title if the latter omite
     Object {
       "bugs": undefined,
       "category": undefined,
+      "description": "Description of Test Plugin",
       "dir": "./plugins/flipper-plugin-test",
       "gatekeeper": "GK_flipper_plugin_test",
       "icon": undefined,

@@ -49,6 +49,7 @@ async function getPluginDetailsV1(
     gatekeeper: packageJson.gatekeeper,
     icon: packageJson.icon,
     title: packageJson.title || packageJson.name,
+    description: packageJson.description,
     category: packageJson.category,
     bugs: packageJson.bugs,
   };
@@ -71,6 +72,7 @@ async function getPluginDetailsV2(
     icon: packageJson.icon,
     title:
       packageJson.title || packageJson.id || getTitleFromName(packageJson.name),
+    description: packageJson.description,
     category: packageJson.category,
     bugs: packageJson.bugs,
   };
