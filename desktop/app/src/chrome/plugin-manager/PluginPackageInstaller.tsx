@@ -19,7 +19,7 @@ import {
 import styled from '@emotion/styled';
 import {default as FileSelector} from '../../ui/components/FileSelector';
 import React, {useState} from 'react';
-import {installPluginFromFile} from '../../utils/pluginManager';
+import {installPluginFromFile} from 'flipper-plugin-lib';
 
 const CenteredGlyph = styled(Glyph)({
   margin: 'auto',

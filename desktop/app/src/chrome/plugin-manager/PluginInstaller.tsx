@@ -44,8 +44,8 @@ import {
   provideSearchIndex,
   findPluginUpdates as _findPluginUpdates,
   UpdateResult,
-  installPluginFromNpm,
 } from '../../utils/pluginManager';
+import {installPluginFromNpm} from 'flipper-plugin-lib';
 import {State as AppState} from '../../reducers';
 import {connect} from 'react-redux';
 import {Dispatch, Action} from 'redux';

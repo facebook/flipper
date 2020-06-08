@@ -9,3 +9,4 @@
 
 export {default as PluginDetails} from './PluginDetails';
 export {default as getPluginDetails} from './getPluginDetails';
+export * from './pluginInstaller';
