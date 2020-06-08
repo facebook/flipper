@@ -2,7 +2,7 @@
 
 exports[`ShareSheetPendingDialog is rendered with status update 1`] = `
 <div
-  className="css-4jq4zm-View-FlexBox-FlexColumn"
+  className="css-75dkqw-View-FlexBox-FlexColumn"
   style={
     Object {
       "width": undefined,
@@ -10,7 +10,7 @@ exports[`ShareSheetPendingDialog is rendered with status update 1`] = `
   }
 >
   <div
-    className="css-augv40-View-FlexBox-FlexColumn"
+    className="css-t9ud5p-View-FlexBox-FlexColumn"
   >
     <div
       className="css-hs91vy-LoadingIndicator eq9prj20"
@@ -24,10 +24,10 @@ exports[`ShareSheetPendingDialog is rendered with status update 1`] = `
     </span>
   </div>
   <div
-    className="css-1qo4xci-View-FlexBox-FlexRow epz0qe20"
+    className="css-17wo7w2-View-FlexBox-FlexRow epz0qe20"
   >
     <div
-      className="css-1xx6adg-View-FlexBox-Spacer e13mj6h81"
+      className="css-te359u-View-FlexBox-Spacer e13mj6h81"
     />
     <div
       className="css-dltu4w-StyledButton enfqd40"
@@ -52,7 +52,7 @@ exports[`ShareSheetPendingDialog is rendered with status update 1`] = `
 
 exports[`ShareSheetPendingDialog is rendered without status update 1`] = `
 <div
-  className="css-4jq4zm-View-FlexBox-FlexColumn"
+  className="css-75dkqw-View-FlexBox-FlexColumn"
   style={
     Object {
       "width": undefined,
@@ -60,7 +60,7 @@ exports[`ShareSheetPendingDialog is rendered without status update 1`] = `
   }
 >
   <div
-    className="css-augv40-View-FlexBox-FlexColumn"
+    className="css-t9ud5p-View-FlexBox-FlexColumn"
   >
     <div
       className="css-hs91vy-LoadingIndicator eq9prj20"
@@ -74,10 +74,10 @@ exports[`ShareSheetPendingDialog is rendered without status update 1`] = `
     </span>
   </div>
   <div
-    className="css-1qo4xci-View-FlexBox-FlexRow epz0qe20"
+    className="css-17wo7w2-View-FlexBox-FlexRow epz0qe20"
   >
     <div
-      className="css-1xx6adg-View-FlexBox-Spacer e13mj6h81"
+      className="css-te359u-View-FlexBox-Spacer e13mj6h81"
     />
     <div
       className="css-dltu4w-StyledButton enfqd40"

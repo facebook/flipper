@@ -48,7 +48,10 @@ const tsTransformPlugins = [
   commonJsPlugin,
   optionalChainingPlugin,
   coalescingOperatorPlugin,
-  [emotionPlugin, {autoLabel: true}],
+  // Sourcemap disabled because
+  // https://github.com/electron/electron/issues/17772#issuecomment-570795784
+  // https://github.com/emotion-js/emotion/issues/1838
+  [emotionPlugin, {autoLabel: true, sourceMap: false}],
 ];
 const jsTransformPlugins = [
   commonJsPlugin,
@@ -58,7 +61,7 @@ const jsTransformPlugins = [
   optionalChainingPlugin,
   coalescingOperatorPlugin,
   dynamicRequiresPlugin,
-  [emotionPlugin, {autoLabel: true}],
+  [emotionPlugin, {autoLabel: true, sourceMap: false}],
 ];
 
 export default function transform({

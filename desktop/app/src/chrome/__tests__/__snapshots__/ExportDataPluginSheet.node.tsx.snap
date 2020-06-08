@@ -2,13 +2,13 @@
 
 exports[`SettingsSheet snapshot with nothing enabled 1`] = `
 <div
-  className="css-1xa1n93-View-FlexBox-FlexColumn"
+  className="css-12h374y-View-FlexBox-FlexColumn"
 >
   <div
-    className="css-n1ycch-View-FlexBox-FlexColumn"
+    className="css-8h6kz5-View-FlexBox-FlexColumn"
   >
     <div
-      className="css-6ueghe-View-FlexBox-FlexColumn ecr18to0"
+      className="css-k28k5g-View-FlexBox-FlexColumn ecr18to0"
     >
       <span
         className="css-1qd3nqz-Text"
@@ -16,10 +16,10 @@ exports[`SettingsSheet snapshot with nothing enabled 1`] = `
         Select the plugins for which you want to export the data
       </span>
       <div
-        className="css-1tewvx4-View-FlexBox-FlexColumn"
+        className="css-1k23ouh-View-FlexBox-FlexColumn"
       >
         <div
-          className="css-6ueghe-View-FlexBox-FlexColumn ecr18to0"
+          className="css-k28k5g-View-FlexBox-FlexColumn ecr18to0"
         >
           <div
             className="css-yzqaun-TooltipContainer e1abcqbd0"
@@ -30,7 +30,7 @@ exports[`SettingsSheet snapshot with nothing enabled 1`] = `
               className="css-1jrm6r3"
             >
               <div
-                className="css-1qo4xci-View-FlexBox-FlexRow epz0qe20"
+                className="css-17wo7w2-View-FlexBox-FlexRow epz0qe20"
                 style={
                   Object {
                     "alignItems": "center",
@@ -43,7 +43,7 @@ exports[`SettingsSheet snapshot with nothing enabled 1`] = `
                   TestDevicePlugin
                 </span>
                 <div
-                  className="css-1xx6adg-View-FlexBox-Spacer e13mj6h81"
+                  className="css-te359u-View-FlexBox-Spacer e13mj6h81"
                 />
                 <input
                   checked={false}
@@ -60,7 +60,7 @@ exports[`SettingsSheet snapshot with nothing enabled 1`] = `
           </div>
         </div>
         <div
-          className="css-6ueghe-View-FlexBox-FlexColumn ecr18to0"
+          className="css-k28k5g-View-FlexBox-FlexColumn ecr18to0"
         >
           <div
             className="css-yzqaun-TooltipContainer e1abcqbd0"
@@ -71,7 +71,7 @@ exports[`SettingsSheet snapshot with nothing enabled 1`] = `
               className="css-1jrm6r3"
             >
               <div
-                className="css-1qo4xci-View-FlexBox-FlexRow epz0qe20"
+                className="css-17wo7w2-View-FlexBox-FlexRow epz0qe20"
                 style={
                   Object {
                     "alignItems": "center",
@@ -84,7 +84,7 @@ exports[`SettingsSheet snapshot with nothing enabled 1`] = `
                   TestPlugin
                 </span>
                 <div
-                  className="css-1xx6adg-View-FlexBox-Spacer e13mj6h81"
+                  className="css-te359u-View-FlexBox-Spacer e13mj6h81"
                 />
                 <input
                   checked={false}
@@ -106,10 +106,10 @@ exports[`SettingsSheet snapshot with nothing enabled 1`] = `
       className="css-1yqvjo0"
     >
       <div
-        className="css-1qo4xci-View-FlexBox-FlexRow epz0qe20"
+        className="css-17wo7w2-View-FlexBox-FlexRow epz0qe20"
       >
         <div
-          className="css-1xx6adg-View-FlexBox-Spacer e13mj6h81"
+          className="css-te359u-View-FlexBox-Spacer e13mj6h81"
         />
         <div
           className="css-12n892b"
@@ -147,13 +147,13 @@ exports[`SettingsSheet snapshot with nothing enabled 1`] = `
 
 exports[`SettingsSheet snapshot with one plugin enabled 1`] = `
 <div
-  className="css-1xa1n93-View-FlexBox-FlexColumn"
+  className="css-12h374y-View-FlexBox-FlexColumn"
 >
   <div
-    className="css-n1ycch-View-FlexBox-FlexColumn"
+    className="css-8h6kz5-View-FlexBox-FlexColumn"
   >
     <div
-      className="css-6ueghe-View-FlexBox-FlexColumn ecr18to0"
+      className="css-k28k5g-View-FlexBox-FlexColumn ecr18to0"
     >
       <span
         className="css-1qd3nqz-Text"
@@ -161,10 +161,10 @@ exports[`SettingsSheet snapshot with one plugin enabled 1`] = `
         Select the plugins for which you want to export the data
       </span>
       <div
-        className="css-1tewvx4-View-FlexBox-FlexColumn"
+        className="css-1k23ouh-View-FlexBox-FlexColumn"
       >
         <div
-          className="css-6ueghe-View-FlexBox-FlexColumn ecr18to0"
+          className="css-k28k5g-View-FlexBox-FlexColumn ecr18to0"
         >
           <div
             className="css-yzqaun-TooltipContainer e1abcqbd0"
@@ -175,7 +175,7 @@ exports[`SettingsSheet snapshot with one plugin enabled 1`] = `
               className="css-1jrm6r3"
             >
               <div
-                className="css-1qo4xci-View-FlexBox-FlexRow epz0qe20"
+                className="css-17wo7w2-View-FlexBox-FlexRow epz0qe20"
                 style={
                   Object {
                     "alignItems": "center",
@@ -188,7 +188,7 @@ exports[`SettingsSheet snapshot with one plugin enabled 1`] = `
                   TestDevicePlugin
                 </span>
                 <div
-                  className="css-1xx6adg-View-FlexBox-Spacer e13mj6h81"
+                  className="css-te359u-View-FlexBox-Spacer e13mj6h81"
                 />
                 <input
                   checked={false}
@@ -205,7 +205,7 @@ exports[`SettingsSheet snapshot with one plugin enabled 1`] = `
           </div>
         </div>
         <div
-          className="css-6ueghe-View-FlexBox-FlexColumn ecr18to0"
+          className="css-k28k5g-View-FlexBox-FlexColumn ecr18to0"
         >
           <div
             className="css-yzqaun-TooltipContainer e1abcqbd0"
@@ -216,7 +216,7 @@ exports[`SettingsSheet snapshot with one plugin enabled 1`] = `
               className="css-1jrm6r3"
             >
               <div
-                className="css-1qo4xci-View-FlexBox-FlexRow epz0qe20"
+                className="css-17wo7w2-View-FlexBox-FlexRow epz0qe20"
                 style={
                   Object {
                     "alignItems": "center",
@@ -229,7 +229,7 @@ exports[`SettingsSheet snapshot with one plugin enabled 1`] = `
                   TestPlugin
                 </span>
                 <div
-                  className="css-1xx6adg-View-FlexBox-Spacer e13mj6h81"
+                  className="css-te359u-View-FlexBox-Spacer e13mj6h81"
                 />
                 <input
                   checked={true}
@@ -251,10 +251,10 @@ exports[`SettingsSheet snapshot with one plugin enabled 1`] = `
       className="css-1yqvjo0"
     >
       <div
-        className="css-1qo4xci-View-FlexBox-FlexRow epz0qe20"
+        className="css-17wo7w2-View-FlexBox-FlexRow epz0qe20"
       >
         <div
-          className="css-1xx6adg-View-FlexBox-Spacer e13mj6h81"
+          className="css-te359u-View-FlexBox-Spacer e13mj6h81"
         />
         <div
           className="css-12n892b"
