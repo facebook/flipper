@@ -258,7 +258,9 @@ export default (store: Store, logger: Logger) => {
   isXcodeDetected().then((isDetected) => {
     store.dispatch(setXcodeDetected(isDetected));
     if (isDetected) {
-      startDevicePortForwarders();
+      if (store.getState().settingsState.enablePhysicalIOS) {
+        startDevicePortForwarders();
+      }
       return queryDevicesForever(store, logger);
     }
   });

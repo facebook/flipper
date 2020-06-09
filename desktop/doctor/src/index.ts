@@ -34,11 +34,19 @@ export type Healthchecks = {
   ios: HealthcheckCategory | SkippedHealthcheckCategory;
 };
 
+export type Settings = {
+  idbPath: string;
+  enablePhysicalIOS: boolean;
+};
+
 export type Healthcheck = {
   key: string;
   label: string;
   isRequired?: boolean;
-  run: (env: EnvironmentInfo) => Promise<HealthchecRunResult>;
+  run: (
+    env: EnvironmentInfo,
+    settings?: Settings,
+  ) => Promise<HealthchecRunResult>;
 };
 
 export type HealthchecRunResult = {
@@ -198,6 +206,41 @@ export function getHealthchecks(): Healthchecks {
                   const message = hasProblem
                     ? `Instruments not found. Please try to re-install Xcode (https://developer.apple.com/xcode/). ${result.message}.`
                     : `Instruments are installed. ${result.message}.`;
+                  return {
+                    hasProblem,
+                    message,
+                  };
+                },
+              },
+              {
+                key: 'ios.idb',
+                label: 'IDB installed',
+                isRequired: false,
+                run: async (
+                  _: EnvironmentInfo,
+                  settings?: {enablePhysicalIOS: boolean; idbPath: string},
+                ) => {
+                  if (!settings) {
+                    return {
+                      hasProblem: false,
+                      message:
+                        'Not enough context to check IDB installation. Needs to be run through Flipper UI.',
+                    };
+                  }
+                  if (!settings.enablePhysicalIOS) {
+                    return {
+                      hasProblem: false,
+                      message:
+                        'Using physical iOS devices is disabled in settings. So IDB is not required.',
+                    };
+                  }
+                  const result = await tryExecuteCommand(
+                    `${settings?.idbPath} --help`,
+                  );
+                  const hasProblem = result.hasProblem;
+                  const message = hasProblem
+                    ? `IDB is required to use Flipper with iOS devices. It can be installed from https://github.com/facebook/idb and configured in Flipper settings. You can also disable physical iOS device support in settings. Current setting: ${settings.idbPath} isn't a valid IDB installation.`
+                    : 'Flipper is configured to use your IDB installation.';
                   return {
                     hasProblem,
                     message,

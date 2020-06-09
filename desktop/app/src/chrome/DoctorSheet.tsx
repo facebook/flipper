@@ -406,13 +406,9 @@ class DoctorSheet extends Component<Props, State> {
 }
 
 export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
-  ({
-    healthchecks: {healthcheckReport},
-    settingsState: {enableAndroid, enableIOS},
-  }) => ({
+  ({healthchecks: {healthcheckReport}, settingsState}) => ({
     healthcheckReport,
-    enableAndroid,
-    enableIOS,
+    settings: settingsState,
   }),
   {
     startHealthchecks,

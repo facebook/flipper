@@ -17,6 +17,8 @@ import path from 'path';
 const ConfigFieldContainer = styled(FlexRow)({
   paddingLeft: 10,
   paddingRight: 10,
+  marginBottom: 5,
+  paddingTop: 5,
 });
 
 const InfoText = styled(Text)({

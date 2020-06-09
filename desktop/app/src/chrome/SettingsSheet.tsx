@@ -85,6 +85,7 @@ class SettingsSheet extends Component<Props, State> {
       enableAndroid,
       androidHome,
       enableIOS,
+      enablePhysicalIOS,
       enablePrefetching,
       idbPath,
       reactNative,
@@ -138,16 +139,29 @@ class SettingsSheet extends Component<Props, State> {
               content={'iOS development is only supported on MacOS'}
             />
           )}
-          <FilePathConfigField
-            label="IDB binary location"
-            defaultValue={idbPath}
-            isRegularFile={true}
+          <ToggledSection
+            label="Enable physical iOS devices"
+            toggled={enablePhysicalIOS}
+            frozen={false}
             onChange={(v) => {
               this.setState({
-                updatedSettings: {...this.state.updatedSettings, idbPath: v},
+                updatedSettings: {
+                  ...this.state.updatedSettings,
+                  enablePhysicalIOS: v,
+                },
               });
-            }}
-          />
+            }}>
+            <FilePathConfigField
+              label="IDB binary location"
+              defaultValue={idbPath}
+              isRegularFile={true}
+              onChange={(v) => {
+                this.setState({
+                  updatedSettings: {...this.state.updatedSettings, idbPath: v},
+                });
+              }}
+            />
+          </ToggledSection>
         </ToggledSection>
         <LauncherSettingsPanel
           isPrefetchingEnabled={enablePrefetching}
