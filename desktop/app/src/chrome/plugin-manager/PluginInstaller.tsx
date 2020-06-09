@@ -33,7 +33,7 @@ import {reportPlatformFailures, reportUsage} from '../../utils/metrics';
 import restartFlipper from '../../utils/restartFlipper';
 import {registerInstalledPlugins} from '../../reducers/pluginManager';
 import {
-  readInstalledPlugins,
+  getPendingAndInstalledPlugins,
   removePlugin,
   PluginMap,
   PluginDetails,
@@ -445,7 +445,7 @@ export default connect<PropsFromState, DispatchFromProps, OwnProps, AppState>(
   }),
   (dispatch: Dispatch<Action<any>>) => ({
     refreshInstalledPlugins: () => {
-      readInstalledPlugins().then((plugins) =>
+      getPendingAndInstalledPlugins().then((plugins) =>
         dispatch(registerInstalledPlugins(plugins)),
       );
     },

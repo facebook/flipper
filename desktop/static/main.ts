@@ -28,6 +28,7 @@ import setup from './setup';
 import isFB from './fb-stubs/isFB';
 import delegateToLauncher from './launcher';
 import yargs from 'yargs';
+import {finishPendingPluginInstallations} from 'flipper-plugin-lib';
 
 const VERSION: string = (global as any).__VERSION__;
 
@@ -110,17 +111,21 @@ setInterval(() => {
   }
 }, 60 * 1000);
 
-compilePlugins(() => {
-  if (win) {
-    win.reload();
-  }
-}, path.join(flipperDir, 'plugins')).then((dynamicPlugins) => {
-  ipcMain.on('get-dynamic-plugins', (event) => {
-    event.returnValue = dynamicPlugins;
+finishPendingPluginInstallations()
+  .then(() =>
+    compilePlugins(() => {
+      if (win) {
+        win.reload();
+      }
+    }, path.join(flipperDir, 'plugins')),
+  )
+  .then((dynamicPlugins) => {
+    ipcMain.on('get-dynamic-plugins', (event) => {
+      event.returnValue = dynamicPlugins;
+    });
+    pluginsCompiled = true;
+    tryCreateWindow();
   });
-  pluginsCompiled = true;
-  tryCreateWindow();
-});
 
 // check if we already have an instance of this app open
 const gotTheLock = app.requestSingleInstanceLock();

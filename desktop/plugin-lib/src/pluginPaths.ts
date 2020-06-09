@@ -14,4 +14,9 @@ export const flipperDataDir = path.join(homedir(), '.flipper');
 
 export const pluginInstallationDir = path.join(flipperDataDir, 'thirdparty');
 
+export const pluginPendingInstallationDir = path.join(
+  flipperDataDir,
+  'pending',
+);
+
 export const pluginCacheDir = path.join(flipperDataDir, 'plugins');

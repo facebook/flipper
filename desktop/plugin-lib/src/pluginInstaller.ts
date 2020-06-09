@@ -17,7 +17,11 @@ import decompressUnzip from 'decompress-unzip';
 import tmp from 'tmp';
 import PluginDetails from './PluginDetails';
 import getPluginDetails from './getPluginDetails';
-import {pluginInstallationDir} from './pluginPaths';
+import {
+  pluginInstallationDir,
+  pluginPendingInstallationDir,
+} from './pluginPaths';
+import semver from 'semver';
 
 export type PluginMap = Map<string, PluginDetails>;
 
@@ -33,40 +37,67 @@ function providePluginManagerNoDependencies(): PM {
   return new PM({ignoredDependencies: [/.*/]});
 }
 
-async function installPluginFromTempDir(pluginDir: string) {
-  const packageJSONPath = path.join(pluginDir, 'package.json');
-  const packageJSON = JSON.parse(
-    (await fs.readFile(packageJSONPath)).toString(),
-  );
-  const name = packageJSON.name;
+function getPluginPendingInstallationDir(
+  name: string,
+  version: string,
+): string {
+  return path.join(getPluginPendingInstallationsDir(name), version);
+}
 
-  await fs.ensureDir(pluginInstallationDir);
-  // create empty watchman config (required by metro's file watcher)
-  await fs.writeFile(path.join(pluginInstallationDir, '.watchmanconfig'), '{}');
-  const destinationDir = path.join(pluginInstallationDir, name);
-  // Clean up existing destination files.
-  await fs.remove(destinationDir);
-  await fs.ensureDir(destinationDir);
+function getPluginPendingInstallationsDir(name: string): string {
+  return path.join(pluginPendingInstallationDir, name);
+}
 
-  const isPreBundled = await fs.pathExists(path.join(pluginDir, 'dist'));
-  if (!isPreBundled) {
+function getPluginInstallationDir(name: string): string {
+  return path.join(pluginInstallationDir, name);
+}
+
+async function installPluginFromTempDir(sourceDir: string) {
+  const pluginDetails = await getPluginDetails(sourceDir);
+  const {name, version} = pluginDetails;
+  const backupDir = path.join(await getTmpDir(), `${name}-${version}`);
+  const installationsDir = getPluginPendingInstallationsDir(name);
+  const destinationDir = getPluginPendingInstallationDir(name, version);
+
+  if (pluginDetails.specVersion == 1) {
+    // For first version of spec we need to install dependencies
     const pluginManager = providePluginManager();
     // install the plugin dependencies into node_modules
-    const nodeModulesDir = path.join(destinationDir, 'node_modules');
+    const nodeModulesDir = path.join(
+      await getTmpDir(),
+      `${name}-${version}-modules`,
+    );
     pluginManager.options.pluginsPath = nodeModulesDir;
-    await pluginManager.installFromPath(pluginDir);
+    await pluginManager.installFromPath(sourceDir);
     // live-plugin-manager also installs plugin itself into the target dir, it's better remove it
     await fs.remove(path.join(nodeModulesDir, name));
+    await fs.move(nodeModulesDir, path.join(sourceDir, 'node_modules'));
   }
-  // copying plugin files into the destination folder
-  const pluginFiles = await fs.readdir(pluginDir);
-  await Promise.all(
-    pluginFiles
-      .filter((f) => f !== 'node_modules')
-      .map((f) =>
-        fs.move(path.join(pluginDir, f), path.join(destinationDir, f)),
-      ),
-  );
+
+  try {
+    // Moving the existing destination dir to backup
+    if (await fs.pathExists(destinationDir)) {
+      await fs.move(destinationDir, backupDir, {overwrite: true});
+    }
+
+    await fs.move(sourceDir, destinationDir);
+
+    // Cleaning up all the previously downloaded packages, because we've got the newest one.
+    const otherPackages = await fs.readdir(installationsDir);
+    for (const otherPackage of otherPackages) {
+      const otherPackageDir = path.join(installationsDir, otherPackage);
+      if (otherPackageDir !== destinationDir) {
+        await fs.remove(otherPackageDir);
+      }
+    }
+  } catch (err) {
+    // Restore previous version from backup if installation failed
+    await fs.remove(destinationDir);
+    if (await fs.pathExists(backupDir)) {
+      await fs.move(backupDir, destinationDir, {overwrite: true});
+    }
+    throw err;
+  }
 }
 
 async function getPluginRootDir(dir: string) {
@@ -87,6 +118,23 @@ async function getPluginRootDir(dir: string) {
   return isNpmPackage ? packageDir : extensionDir;
 }
 
+export async function getInstalledPlugin(
+  name: string,
+): Promise<PluginDetails | null> {
+  const dir = getPluginInstallationDir(name);
+  if (!(await fs.pathExists(dir))) {
+    return null;
+  }
+  return await getPluginDetails(dir);
+}
+
+export async function isPluginPendingInstallation(
+  name: string,
+  version: string,
+) {
+  return await fs.pathExists(getPluginPendingInstallationDir(name, version));
+}
+
 export async function installPluginFromNpm(name: string) {
   const tmpDir = await getTmpDir();
   try {
@@ -97,9 +145,7 @@ export async function installPluginFromNpm(name: string) {
     const pluginTempDir = path.join(tmpDir, name);
     await installPluginFromTempDir(pluginTempDir);
   } finally {
-    if (await fs.pathExists(tmpDir)) {
-      await fs.remove(tmpDir);
-    }
+    await fs.remove(tmpDir);
   }
 }
 
@@ -115,13 +161,11 @@ export async function installPluginFromFile(packagePath: string) {
     const pluginDir = await getPluginRootDir(tmpDir);
     await installPluginFromTempDir(pluginDir);
   } finally {
-    if (await fs.pathExists(tmpDir)) {
-      await fs.remove(tmpDir);
-    }
+    await fs.remove(tmpDir);
   }
 }
 
-export async function readInstalledPlugins(): Promise<PluginMap> {
+export async function getInstalledPlugins(): Promise<PluginMap> {
   const pluginDirExists = await fs.pathExists(pluginInstallationDir);
   if (!pluginDirExists) {
     return new Map();
@@ -146,6 +190,109 @@ export async function readInstalledPlugins(): Promise<PluginMap> {
   return new Map(plugins.filter(Boolean));
 }
 
+export async function getPendingInstallationPlugins(): Promise<PluginMap> {
+  const pluginDirExists = await fs.pathExists(pluginPendingInstallationDir);
+  if (!pluginDirExists) {
+    return new Map();
+  }
+  const dirs = await fs.readdir(pluginPendingInstallationDir);
+  const plugins = await Promise.all<[string, PluginDetails]>(
+    dirs.map(
+      (name) =>
+        new Promise(async (resolve, reject) => {
+          const versions = (
+            await fs.readdir(path.join(pluginPendingInstallationDir, name))
+          ).sort((v1, v2) => semver.compare(v2, v1, true));
+          if (versions.length === 0) {
+            return resolve(undefined);
+          }
+          const pluginDir = path.join(
+            pluginPendingInstallationDir,
+            name,
+            versions[0],
+          );
+          if (!(await fs.lstat(pluginDir)).isDirectory()) {
+            return resolve(undefined);
+          }
+          try {
+            resolve([name, await getPluginDetails(pluginDir)]);
+          } catch (e) {
+            reject(e);
+          }
+        }),
+    ),
+  );
+  return new Map(plugins.filter(Boolean));
+}
+
+export async function getPendingAndInstalledPlugins(): Promise<PluginMap> {
+  const plugins = await getInstalledPlugins();
+  for (const [name, details] of await getPendingInstallationPlugins()) {
+    if (
+      !plugins.get(name) ||
+      semver.gt(details.version, plugins.get(name)!.version)
+    ) {
+      plugins.set(name, details);
+    }
+  }
+  return plugins;
+}
+
 export async function removePlugin(name: string): Promise<void> {
   await fs.remove(path.join(pluginInstallationDir, name));
+}
+
+export async function finishPendingPluginInstallations() {
+  if (!(await fs.pathExists(pluginPendingInstallationDir))) {
+    return;
+  }
+  try {
+    await fs.ensureDir(pluginInstallationDir);
+    // create empty watchman config (required by metro's file watcher)
+    const watchmanConfigPath = path.join(
+      pluginInstallationDir,
+      '.watchmanconfig',
+    );
+    if (await fs.pathExists(watchmanConfigPath)) {
+      await fs.writeFile(watchmanConfigPath, '{}');
+    }
+    const pendingPlugins = await fs.readdir(pluginPendingInstallationDir);
+    for (const pendingPlugin of pendingPlugins) {
+      const pendingInstallationsDir = getPluginPendingInstallationsDir(
+        pendingPlugin,
+      );
+      const pendingVersions = (
+        await fs.readdir(pendingInstallationsDir)
+      ).sort((v1, v2) => semver.compare(v2, v1, true)); // sort versions in descending order
+      if (pendingVersions.length === 0) {
+        await fs.remove(pendingInstallationsDir);
+        continue;
+      }
+      const version = pendingVersions[0];
+      const pendingInstallation = path.join(pendingInstallationsDir, version);
+      const installationDir = getPluginInstallationDir(pendingPlugin);
+      const backupDir = path.join(await getTmpDir(), pendingPlugin);
+      try {
+        if (await fs.pathExists(installationDir)) {
+          await fs.move(installationDir, backupDir, {overwrite: true});
+        }
+        await fs.move(pendingInstallation, installationDir, {overwrite: true});
+        await fs.remove(pendingInstallationsDir);
+      } catch (err) {
+        console.error(
+          `Error while finishing pending installation for ${pendingPlugin}`,
+          err,
+        );
+        // in case of error, keep the previously installed version
+        await fs.remove(installationDir);
+        if (await fs.pathExists(backupDir)) {
+          await fs.move(backupDir, installationDir, {overwrite: true});
+        }
+      } finally {
+        await fs.remove(backupDir);
+      }
+    }
+  } catch (err) {
+    console.error('Error while finishing plugin pending installations', err);
+  }
 }
