@@ -26,7 +26,8 @@
       "static",
       "plugins/*",
       "e2e",
-      "plugin-lib"
+      "plugin-lib",
+      "test-utils"
     ],
     "nohoist": [
       "flipper-plugin-kaios-big-allocations/firefox-client"

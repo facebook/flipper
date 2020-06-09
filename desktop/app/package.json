@@ -68,6 +68,7 @@
   },
   "devDependencies": {
     "@testing-library/react": "^10.0.2",
+    "flipper-test-utils": "0.45.0",
     "mac-ca": "^1.0.4",
     "metro": "^0.59.0",
     "mock-fs": "^4.12.0",

@@ -4,7 +4,11 @@
     "outDir": "lib",
     "rootDir": "src"
   },
-  "references": [{"path": "../pkg-lib"}, {"path": "../plugin-lib"}],
+  "references": [
+    {"path": "../pkg-lib"},
+    {"path": "../plugin-lib"},
+    {"path": "../test-utils"}
+  ],
   "include": ["src"],
   "exclude": ["node_modules", "**/__tests__/*"]
 }
