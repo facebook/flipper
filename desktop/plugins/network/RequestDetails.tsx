@@ -780,7 +780,7 @@ class InsightsInspector extends Component<{insights: Insights}> {
               value: <WrappingText>{formatter(value)}</WrappingText>,
             },
           },
-          copyText: `${name}: ${formatter(value)}`,
+          copyText: () => `${name}: ${formatter(value)}`,
           key: name,
         }
       : null;

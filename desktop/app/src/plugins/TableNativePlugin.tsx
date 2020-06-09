@@ -173,7 +173,7 @@ function buildRow(
   return {
     columns,
     key: rowData.id,
-    copyText: JSON.stringify(rowData),
+    copyText: () => JSON.stringify(rowData),
     filterValue: rowData.id,
   };
 }
