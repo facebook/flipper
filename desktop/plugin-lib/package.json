@@ -24,6 +24,7 @@
     "flipper-test-utils": "0.45.0",
     "globby": "^10",
     "jest": "^25.1.0",
+    "mock-fs": "^4.12.0",
     "rimraf": "^3.0.2",
     "ts-jest": "^26.0.0",
     "ts-node": "^8",

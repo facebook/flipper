@@ -253,7 +253,7 @@ export async function finishPendingPluginInstallations() {
       pluginInstallationDir,
       '.watchmanconfig',
     );
-    if (await fs.pathExists(watchmanConfigPath)) {
+    if (!(await fs.pathExists(watchmanConfigPath))) {
       await fs.writeFile(watchmanConfigPath, '{}');
     }
     const pendingPlugins = await fs.readdir(pluginPendingInstallationDir);
