@@ -1,3 +1,12 @@
+# 0.46.0 (9/6/2020)
+
+ * D21903394 -  Device plugins are now expanded by default, and the expand / collapse state will now be remembered across restarts
+ * D21903760 -  Fix regression in the layout plugin where accessibility info was rendered in the wrong place
+ * D21907597 -  Improved the startup sequence for emulated iOS devices, so that devices and apps connect a lot faster after starting Flipper
+ * D21929679 -  Fixed regression where analytics messages where lost
+ * D21883086 -  The open source version now works with physical iOS devices.
+
+
 # 0.45.0 (3/6/2020)
 
  * D21858849 -  Foreground plugins will burn less CPU when they're very chatty
