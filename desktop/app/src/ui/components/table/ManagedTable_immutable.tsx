@@ -551,9 +551,10 @@ class ManagedTable extends React.Component<
     }
     return this.props.rows
       .filter((row) => highlightedRows.has(row.key))
-      .map(
-        (row: TableBodyRow) =>
-          row.copyText || this.getTextContentOfRow(row.key).join('\t'),
+      .map((row: TableBodyRow) =>
+        typeof row.copyText === 'function'
+          ? row.copyText()
+          : row.copyText || this.getTextContentOfRow(row.key).join('\t'),
       )
       .join('\n');
   };
