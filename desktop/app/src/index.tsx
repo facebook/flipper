@@ -187,5 +187,6 @@ export {KeyboardActions} from './MenuBar';
 export {getFlipperMediaCDN} from './fb-stubs/user';
 export {Rect} from './utils/geometry';
 export {Logger} from './fb-interfaces/Logger';
+export {getInstance as getLogger} from './fb-stubs/Logger';
 export {callVSCode, getVSCodeUrl} from './utils/vscodeUtils';
 export {useLocalStorage} from './utils/useLocalStorage';
