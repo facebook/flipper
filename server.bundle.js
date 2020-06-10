@@ -82,7 +82,7 @@ module.exports =
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 447);
+/******/ 	return __webpack_require__(__webpack_require__.s = 449);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -329,7 +329,7 @@ function _extends() {
 
 
 if (true) {
-  module.exports = __webpack_require__(250);
+  module.exports = __webpack_require__(249);
 } else {}
 
 
@@ -513,7 +513,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 if (false) { var throwOnDirectAccess, ReactIs; } else {
   // By explicitly using `prop-types` you are opting into new production behavior.
   // http://fb.me/prop-types-in-prod
-  module.exports = __webpack_require__(253)();
+  module.exports = __webpack_require__(252)();
 }
 
 
@@ -739,17 +739,17 @@ var tiny_invariant_esm = __webpack_require__(20);
 var esm_extends = __webpack_require__(1);
 
 // EXTERNAL MODULE: ./node_modules/react-router/node_modules/path-to-regexp/index.js
-var path_to_regexp = __webpack_require__(114);
+var path_to_regexp = __webpack_require__(113);
 var path_to_regexp_default = /*#__PURE__*/__webpack_require__.n(path_to_regexp);
 
 // EXTERNAL MODULE: ./node_modules/react-is/index.js
-var react_is = __webpack_require__(149);
+var react_is = __webpack_require__(148);
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/objectWithoutPropertiesLoose.js
 var objectWithoutPropertiesLoose = __webpack_require__(37);
 
 // EXTERNAL MODULE: ./node_modules/hoist-non-react-statics/dist/hoist-non-react-statics.cjs.js
-var hoist_non_react_statics_cjs = __webpack_require__(240);
+var hoist_non_react_statics_cjs = __webpack_require__(239);
 var hoist_non_react_statics_cjs_default = /*#__PURE__*/__webpack_require__.n(hoist_non_react_statics_cjs);
 
 // CONCATENATED MODULE: ./node_modules/react-router/esm/react-router.js
@@ -1499,9 +1499,9 @@ module.exports = {
 /***/ (function(module, exports, __webpack_require__) {
 
 var fs = __webpack_require__(24)
-var polyfills = __webpack_require__(343)
-var legacy = __webpack_require__(345)
-var clone = __webpack_require__(346)
+var polyfills = __webpack_require__(342)
+var legacy = __webpack_require__(344)
+var clone = __webpack_require__(345)
 
 var util = __webpack_require__(42)
 
@@ -2029,8 +2029,8 @@ function invariant(condition, message) {
 "use strict";
 
 const u = __webpack_require__(16).fromCallback
-const mkdirs = u(__webpack_require__(348))
-const mkdirsSync = __webpack_require__(349)
+const mkdirs = u(__webpack_require__(347))
+const mkdirsSync = __webpack_require__(348)
 
 module.exports = {
   mkdirs,
@@ -3134,7 +3134,7 @@ module.exports = require("url");
 "use strict";
 
 const u = __webpack_require__(16).fromPromise
-const fs = __webpack_require__(138)
+const fs = __webpack_require__(137)
 
 function pathExists (path) {
   return fs.access(path).then(() => true).catch(() => false)
@@ -3323,7 +3323,7 @@ module.exports = {
 /* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var roundingPrecisionFrom = __webpack_require__(121).roundingPrecisionFrom;
+var roundingPrecisionFrom = __webpack_require__(120).roundingPrecisionFrom;
 
 var override = __webpack_require__(39);
 
@@ -3682,9 +3682,9 @@ handleSelected:(_input,_event,suggestion)=>{_event.stopPropagation();// Use an a
 const a=document.createElement('a');a.href=suggestion.url;// Algolia use closest parent element id #__docusaurus when a h1 page title does
 // not have an id, so we can safely remove it.
 // See https://github.com/facebook/docusaurus/issues/1828 for more details.
-const routePath=`#__docusaurus`===a.hash?`${a.pathname}`:`${a.pathname}${a.hash}`;history.push(routePath);}});if(focus){searchBarRef.current.focus();}}const loadAlgolia=(focus=true)=>{if(algoliaLoaded){return;}Promise.all([Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(371))),Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(424)))]).then(([{default:docsearch}])=>{setAlgoliaLoaded(true);window.docsearch=docsearch;initAlgolia(focus);});};const toggleSearchInput=Object(react["useCallback"])(()=>{loadAlgolia();if(algoliaLoaded){searchBarRef.current.focus();}handleSearchBarToggle(!isSearchBarExpanded);},[isSearchBarExpanded]);const handleSearchInputBlur=Object(react["useCallback"])(()=>{handleSearchBarToggle(!isSearchBarExpanded);},[isSearchBarExpanded]);const handleSearchInput=Object(react["useCallback"])(e=>{const needFocus=e.type!=='mouseover';loadAlgolia(needFocus);});const handleSearchInputPressEnter=Object(react["useCallback"])(e=>{if(!e.defaultPrevented&&e.key==='Enter'){navigateToSearchPage(e.target.value);}});return/*#__PURE__*/react_default.a.createElement("div",{className:"navbar__search",key:"search-box"},/*#__PURE__*/react_default.a.createElement("div",{className:SearchBar_styles_module_default.a.searchWrapper},/*#__PURE__*/react_default.a.createElement("span",{"aria-label":"expand searchbar",role:"button",className:classnames_default()(SearchBar_styles_module_default.a.searchIconButton,{[SearchBar_styles_module_default.a.searchIconButtonHidden]:isSearchBarExpanded}),onClick:toggleSearchInput,onKeyDown:toggleSearchInput,tabIndex:0}),/*#__PURE__*/react_default.a.createElement("input",{id:"search_input_react",type:"search",placeholder:"Search","aria-label":"Search",className:classnames_default()('navbar__search-input',SearchBar_styles_module_default.a.searchInput,{[SearchBar_styles_module_default.a.searchInputExpanded]:isSearchBarExpanded}),onMouseOver:handleSearchInput,onFocus:handleSearchInput,onBlur:handleSearchInputBlur,onKeyDown:handleSearchInputPressEnter,ref:searchBarRef})));};/* harmony default export */ var SearchBar = (Search);
+const routePath=`#__docusaurus`===a.hash?`${a.pathname}`:`${a.pathname}${a.hash}`;history.push(routePath);}});if(focus){searchBarRef.current.focus();}}const loadAlgolia=(focus=true)=>{if(algoliaLoaded){return;}Promise.all([Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(370))),Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(423)))]).then(([{default:docsearch}])=>{setAlgoliaLoaded(true);window.docsearch=docsearch;initAlgolia(focus);});};const toggleSearchInput=Object(react["useCallback"])(()=>{loadAlgolia();if(algoliaLoaded){searchBarRef.current.focus();}handleSearchBarToggle(!isSearchBarExpanded);},[isSearchBarExpanded]);const handleSearchInputBlur=Object(react["useCallback"])(()=>{handleSearchBarToggle(!isSearchBarExpanded);},[isSearchBarExpanded]);const handleSearchInput=Object(react["useCallback"])(e=>{const needFocus=e.type!=='mouseover';loadAlgolia(needFocus);});const handleSearchInputPressEnter=Object(react["useCallback"])(e=>{if(!e.defaultPrevented&&e.key==='Enter'){navigateToSearchPage(e.target.value);}});return/*#__PURE__*/react_default.a.createElement("div",{className:"navbar__search",key:"search-box"},/*#__PURE__*/react_default.a.createElement("div",{className:SearchBar_styles_module_default.a.searchWrapper},/*#__PURE__*/react_default.a.createElement("span",{"aria-label":"expand searchbar",role:"button",className:classnames_default()(SearchBar_styles_module_default.a.searchIconButton,{[SearchBar_styles_module_default.a.searchIconButtonHidden]:isSearchBarExpanded}),onClick:toggleSearchInput,onKeyDown:toggleSearchInput,tabIndex:0}),/*#__PURE__*/react_default.a.createElement("input",{id:"search_input_react",type:"search",placeholder:"Search","aria-label":"Search",className:classnames_default()('navbar__search-input',SearchBar_styles_module_default.a.searchInput,{[SearchBar_styles_module_default.a.searchInputExpanded]:isSearchBarExpanded}),onMouseOver:handleSearchInput,onFocus:handleSearchInput,onBlur:handleSearchInputBlur,onKeyDown:handleSearchInputPressEnter,ref:searchBarRef})));};/* harmony default export */ var SearchBar = (Search);
 // EXTERNAL MODULE: ./node_modules/react-toggle/dist/component/index.js
-var component = __webpack_require__(241);
+var component = __webpack_require__(240);
 var component_default = /*#__PURE__*/__webpack_require__.n(component);
 
 // EXTERNAL MODULE: ./node_modules/@docusaurus/theme-classic/src/theme/Toggle/styles.module.css
@@ -3737,7 +3737,7 @@ var Navbar_styles_module_default = /*#__PURE__*/__webpack_require__.n(Navbar_sty
  */function NavLink({activeBasePath,activeBaseRegex,to,href,label,activeClassName='navbar__link--active',prependBaseUrlToHref,...props}){const toUrl=Object(useBaseUrl["a" /* default */])(to);const activeBaseUrl=Object(useBaseUrl["a" /* default */])(activeBasePath);const normalizedHref=Object(useBaseUrl["a" /* default */])(href,true);return/*#__PURE__*/react_default.a.createElement(Link["a" /* default */],Object(esm_extends["a" /* default */])({},href?{target:'_blank',rel:'noopener noreferrer',href:prependBaseUrlToHref?normalizedHref:href}:{isNavLink:true,activeClassName,to:toUrl,...(activeBasePath||activeBaseRegex?{isActive:(_match,location)=>activeBaseRegex?new RegExp(activeBaseRegex).test(location.pathname):location.pathname.startsWith(activeBaseUrl)}:null)},props),label);}function NavItem({items,position,className,...props}){const navLinkClassNames=(extraClassName,isDropdownItem=false)=>classnames_default()({'navbar__item navbar__link':!isDropdownItem,dropdown__link:isDropdownItem},extraClassName);if(!items){return/*#__PURE__*/react_default.a.createElement(NavLink,Object(esm_extends["a" /* default */])({className:navLinkClassNames(className)},props));}return/*#__PURE__*/react_default.a.createElement("div",{className:classnames_default()('navbar__item','dropdown','dropdown--hoverable',{'dropdown--left':position==='left','dropdown--right':position==='right'})},/*#__PURE__*/react_default.a.createElement(NavLink,Object(esm_extends["a" /* default */])({className:navLinkClassNames(className)},props,{onClick:e=>e.preventDefault(),onKeyDown:e=>{if(e.key==='Enter'){e.target.parentNode.classList.toggle('dropdown--show');}}}),props.label),/*#__PURE__*/react_default.a.createElement("ul",{className:"dropdown__menu"},items.map(({className:childItemClassName,...childItemProps},i)=>/*#__PURE__*/react_default.a.createElement("li",{key:i},/*#__PURE__*/react_default.a.createElement(NavLink,Object(esm_extends["a" /* default */])({activeClassName:"dropdown__link--active",className:navLinkClassNames(childItemClassName,true)},childItemProps))))));}function MobileNavItem({items,position,className,...props}){// Need to destructure position from props so that it doesn't get passed on.
 const navLinkClassNames=(extraClassName,isSubList=false)=>classnames_default()('menu__link',{'menu__link--sublist':isSubList},extraClassName);if(!items){return/*#__PURE__*/react_default.a.createElement("li",{className:"menu__list-item"},/*#__PURE__*/react_default.a.createElement(NavLink,Object(esm_extends["a" /* default */])({className:navLinkClassNames(className)},props)));}return/*#__PURE__*/react_default.a.createElement("li",{className:"menu__list-item"},/*#__PURE__*/react_default.a.createElement(NavLink,Object(esm_extends["a" /* default */])({className:navLinkClassNames(className,true)},props),props.label),/*#__PURE__*/react_default.a.createElement("ul",{className:"menu__list"},items.map(({className:childItemClassName,...childItemProps},i)=>/*#__PURE__*/react_default.a.createElement("li",{className:"menu__list-item",key:i},/*#__PURE__*/react_default.a.createElement(NavLink,Object(esm_extends["a" /* default */])({activeClassName:"menu__link--active",className:navLinkClassNames(childItemClassName)},childItemProps,{onClick:props.onClick}))))));}function Navbar(){const{siteConfig:{themeConfig:{navbar:{title,links=[],hideOnScroll=false}={},disableDarkMode=false}},isClient}=Object(useDocusaurusContext["a" /* default */])();const[sidebarShown,setSidebarShown]=Object(react["useState"])(false);const[isSearchBarExpanded,setIsSearchBarExpanded]=Object(react["useState"])(false);const{isDarkTheme,setLightTheme,setDarkTheme}=Object(useThemeContext["a" /* default */])();const{navbarRef,isNavbarVisible}=hooks_useHideableNavbar(hideOnScroll);const{logoLink,logoLinkProps,logoImageUrl,logoAlt}=Object(useLogo["a" /* default */])();Object(useLockBodyScroll["a" /* default */])(sidebarShown);const showSidebar=Object(react["useCallback"])(()=>{setSidebarShown(true);},[setSidebarShown]);const hideSidebar=Object(react["useCallback"])(()=>{setSidebarShown(false);},[setSidebarShown]);const onToggleChange=Object(react["useCallback"])(e=>e.target.checked?setDarkTheme():setLightTheme(),[setLightTheme,setDarkTheme]);return/*#__PURE__*/react_default.a.createElement("nav",{ref:navbarRef,className:classnames_default()('navbar','navbar--light','navbar--fixed-top',{'navbar-sidebar--show':sidebarShown,[Navbar_styles_module_default.a.navbarHideable]:hideOnScroll,[Navbar_styles_module_default.a.navbarHidden]:!isNavbarVisible})},/*#__PURE__*/react_default.a.createElement("div",{className:"navbar__inner"},/*#__PURE__*/react_default.a.createElement("div",{className:"navbar__items"},links!=null&&links.length!==0&&/*#__PURE__*/react_default.a.createElement("div",{"aria-label":"Navigation bar toggle",className:"navbar__toggle",role:"button",tabIndex:0,onClick:showSidebar,onKeyDown:showSidebar},/*#__PURE__*/react_default.a.createElement("svg",{xmlns:"http://www.w3.org/2000/svg",width:"30",height:"30",viewBox:"0 0 30 30",role:"img",focusable:"false"},/*#__PURE__*/react_default.a.createElement("title",null,"Menu"),/*#__PURE__*/react_default.a.createElement("path",{stroke:"currentColor",strokeLinecap:"round",strokeMiterlimit:"10",strokeWidth:"2",d:"M4 7h22M4 15h22M4 23h22"}))),/*#__PURE__*/react_default.a.createElement(Link["a" /* default */],Object(esm_extends["a" /* default */])({className:"navbar__brand",to:logoLink},logoLinkProps),logoImageUrl!=null&&/*#__PURE__*/react_default.a.createElement("img",{key:isClient,className:"navbar__logo",src:logoImageUrl,alt:logoAlt}),title!=null&&/*#__PURE__*/react_default.a.createElement("strong",{className:classnames_default()('navbar__title',{[Navbar_styles_module_default.a.hideLogoText]:isSearchBarExpanded})},title)),links.filter(linkItem=>linkItem.position==='left').map((linkItem,i)=>/*#__PURE__*/react_default.a.createElement(NavItem,Object(esm_extends["a" /* default */])({},linkItem,{key:i})))),/*#__PURE__*/react_default.a.createElement("div",{className:"navbar__items navbar__items--right"},links.filter(linkItem=>linkItem.position==='right').map((linkItem,i)=>/*#__PURE__*/react_default.a.createElement(NavItem,Object(esm_extends["a" /* default */])({},linkItem,{key:i}))),!disableDarkMode&&/*#__PURE__*/react_default.a.createElement(Toggle,{className:Navbar_styles_module_default.a.displayOnlyInLargeViewport,"aria-label":"Dark mode toggle",checked:isDarkTheme,onChange:onToggleChange}),/*#__PURE__*/react_default.a.createElement(SearchBar,{handleSearchBarToggle:setIsSearchBarExpanded,isSearchBarExpanded:isSearchBarExpanded}))),/*#__PURE__*/react_default.a.createElement("div",{role:"presentation",className:"navbar-sidebar__backdrop",onClick:hideSidebar}),/*#__PURE__*/react_default.a.createElement("div",{className:"navbar-sidebar"},/*#__PURE__*/react_default.a.createElement("div",{className:"navbar-sidebar__brand"},/*#__PURE__*/react_default.a.createElement(Link["a" /* default */],Object(esm_extends["a" /* default */])({className:"navbar__brand",onClick:hideSidebar,to:logoLink},logoLinkProps),logoImageUrl!=null&&/*#__PURE__*/react_default.a.createElement("img",{key:isClient,className:"navbar__logo",src:logoImageUrl,alt:logoAlt}),title!=null&&/*#__PURE__*/react_default.a.createElement("strong",{className:"navbar__title"},title)),!disableDarkMode&&sidebarShown&&/*#__PURE__*/react_default.a.createElement(Toggle,{"aria-label":"Dark mode toggle in sidebar",checked:isDarkTheme,onChange:onToggleChange})),/*#__PURE__*/react_default.a.createElement("div",{className:"navbar-sidebar__items"},/*#__PURE__*/react_default.a.createElement("div",{className:"menu"},/*#__PURE__*/react_default.a.createElement("ul",{className:"menu__list"},links.map((linkItem,i)=>/*#__PURE__*/react_default.a.createElement(MobileNavItem,Object(esm_extends["a" /* default */])({},linkItem,{onClick:hideSidebar,key:i}))))))));}/* harmony default export */ var theme_Navbar = (Navbar);
 // EXTERNAL MODULE: ./node_modules/@docusaurus/theme-classic/src/theme/Footer/styles.module.css
-var Footer_styles_module = __webpack_require__(242);
+var Footer_styles_module = __webpack_require__(241);
 var Footer_styles_module_default = /*#__PURE__*/__webpack_require__.n(Footer_styles_module);
 
 // CONCATENATED MODULE: ./node_modules/@docusaurus/theme-classic/src/theme/Footer/index.js
@@ -3748,7 +3748,7 @@ var Footer_styles_module_default = /*#__PURE__*/__webpack_require__.n(Footer_sty
  * LICENSE file in the root directory of this source tree.
  */function FooterLink({to,href,label,prependBaseUrlToHref,...props}){const toUrl=Object(useBaseUrl["a" /* default */])(to);const normalizedHref=Object(useBaseUrl["a" /* default */])(href,true);return/*#__PURE__*/react_default.a.createElement(Link["a" /* default */],Object(esm_extends["a" /* default */])({className:"footer__link-item"},href?{target:'_blank',rel:'noopener noreferrer',href:prependBaseUrlToHref?normalizedHref:href}:{to:toUrl},props),label);}const FooterLogo=({url,alt})=>/*#__PURE__*/react_default.a.createElement("img",{className:"footer__logo",alt:alt,src:url});function Footer(){const context=Object(useDocusaurusContext["a" /* default */])();const{siteConfig={}}=context;const{themeConfig={}}=siteConfig;const{footer}=themeConfig;const{copyright,links=[],logo={}}=footer||{};const logoUrl=Object(useBaseUrl["a" /* default */])(logo.src);if(!footer){return null;}return/*#__PURE__*/react_default.a.createElement("footer",{className:classnames_default()('footer',{'footer--dark':footer.style==='dark'})},/*#__PURE__*/react_default.a.createElement("div",{className:"container"},links&&links.length>0&&/*#__PURE__*/react_default.a.createElement("div",{className:"row footer__links"},links.map((linkItem,i)=>/*#__PURE__*/react_default.a.createElement("div",{key:i,className:"col footer__col"},linkItem.title!=null?/*#__PURE__*/react_default.a.createElement("h4",{className:"footer__title"},linkItem.title):null,linkItem.items!=null&&Array.isArray(linkItem.items)&&linkItem.items.length>0?/*#__PURE__*/react_default.a.createElement("ul",{className:"footer__items"},linkItem.items.map((item,key)=>item.html?/*#__PURE__*/react_default.a.createElement("li",{key:key,className:"footer__item",dangerouslySetInnerHTML:{__html:item.html}}):/*#__PURE__*/react_default.a.createElement("li",{key:item.href||item.to,className:"footer__item"},/*#__PURE__*/react_default.a.createElement(FooterLink,item)))):null))),(logo||copyright)&&/*#__PURE__*/react_default.a.createElement("div",{className:"text--center"},logo&&logo.src&&/*#__PURE__*/react_default.a.createElement("div",{className:"margin-bottom--sm"},logo.href?/*#__PURE__*/react_default.a.createElement("a",{href:logo.href,target:"_blank",rel:"noopener noreferrer",className:Footer_styles_module_default.a.footerLogoLink},/*#__PURE__*/react_default.a.createElement(FooterLogo,{alt:logo.alt,url:logoUrl})):/*#__PURE__*/react_default.a.createElement(FooterLogo,{alt:logo.alt,url:logoUrl})),/*#__PURE__*/react_default.a.createElement("div",{dangerouslySetInnerHTML:{__html:copyright}}))));}/* harmony default export */ var theme_Footer = (Footer);
 // EXTERNAL MODULE: ./node_modules/@docusaurus/theme-classic/src/theme/Layout/styles.css
-var styles = __webpack_require__(428);
+var styles = __webpack_require__(427);
 
 // CONCATENATED MODULE: ./node_modules/@docusaurus/theme-classic/src/theme/Layout/index.js
 /**
@@ -3779,9 +3779,9 @@ module.exports = {
 
 // Contains the interpretation of CSS properties, as used by the property optimizer
 
-var breakUp = __webpack_require__(274);
-var canOverride = __webpack_require__(275);
-var restore = __webpack_require__(277);
+var breakUp = __webpack_require__(273);
+var canOverride = __webpack_require__(274);
+var restore = __webpack_require__(276);
 
 var override = __webpack_require__(39);
 
@@ -5441,7 +5441,7 @@ try {
   module.exports = util.inherits;
 } catch (e) {
   /* istanbul ignore next */
-  module.exports = __webpack_require__(384);
+  module.exports = __webpack_require__(383);
 }
 
 
@@ -9102,7 +9102,7 @@ module.exports = {
 /* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var systemLineBreak = __webpack_require__(119).EOL;
+var systemLineBreak = __webpack_require__(118).EOL;
 
 var override = __webpack_require__(39);
 
@@ -9606,14 +9606,14 @@ module.exports = isMergeable;
 /* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var mergeIntoShorthands = __webpack_require__(273);
-var overrideProperties = __webpack_require__(278);
+var mergeIntoShorthands = __webpack_require__(272);
+var overrideProperties = __webpack_require__(277);
 var populateComponents = __webpack_require__(93);
 
 var restoreWithComponents = __webpack_require__(94);
 
 var wrapForOptimizing = __webpack_require__(40).all;
-var removeUnused = __webpack_require__(120);
+var removeUnused = __webpack_require__(119);
 var restoreFromOptimizing = __webpack_require__(49);
 
 var OptimizationLevel = __webpack_require__(30).OptimizationLevel;
@@ -9693,8 +9693,8 @@ module.exports = {
 
 // TODO: it'd be great to merge it with the other canReorder functionality
 
-var rulesOverlap = __webpack_require__(126);
-var specificitiesOverlap = __webpack_require__(284);
+var rulesOverlap = __webpack_require__(125);
+var specificitiesOverlap = __webpack_require__(283);
 
 var FLEX_PROPERTIES = /align\-items|box\-align|box\-pack|flex|justify/;
 var BORDER_PROPERTIES = /^border\-(top|right|bottom|left|color|style|width|radius)/;
@@ -9992,7 +9992,7 @@ module.exports = {
 
 
 const u = __webpack_require__(16).fromCallback
-const rimraf = __webpack_require__(353)
+const rimraf = __webpack_require__(352)
 
 module.exports = {
   remove: u(rimraf),
@@ -10010,9 +10010,9 @@ module.exports = {
  */
 
 if (typeof process !== 'undefined' && process.type === 'renderer') {
-  module.exports = __webpack_require__(379);
+  module.exports = __webpack_require__(378);
 } else {
-  module.exports = __webpack_require__(381);
+  module.exports = __webpack_require__(380);
 }
 
 
@@ -10199,9 +10199,9 @@ var styles_module_default = /*#__PURE__*/__webpack_require__.n(styles_module);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return HelmetExport; });
 /* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7);
 /* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var react_side_effect__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(234);
+/* harmony import */ var react_side_effect__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(233);
 /* harmony import */ var react_side_effect__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_side_effect__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var react_fast_compare__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(235);
+/* harmony import */ var react_fast_compare__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(234);
 /* harmony import */ var react_fast_compare__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(react_fast_compare__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(2);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_3__);
@@ -11328,7 +11328,7 @@ function renderRoutes(routes, extraProps, switchProps) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony default export */ __webpack_exports__["a"] = ({"plugins":["/home/travis/build/facebook/flipper/website/node_modules/docusaurus-plugin-internaldocs-fb/index.js"],"themes":[],"customFields":{},"themeConfig":{"navbar":{"title":"Flipper","logo":{"alt":"Flipper Logo","src":"img/icon.png"},"links":[{"to":"docs/features/index","label":"Features","position":"right"},{"to":"docs/getting-started/index","label":"Setup","position":"right"},{"to":"docs/extending/index","label":"Extending","position":"right"},{"href":"https://github.com/facebook/flipper","label":"GitHub","position":"right"}]},"disableDarkMode":true,"footer":{"style":"dark","links":[{"title":"Learn","items":[{"label":"Getting Started","to":"docs/getting-started/index"},{"label":"Plugin Creation Tutorial","to":"docs/tutorial/intro"}]},{"title":"Plugins","items":[{"label":"Core Plugins","to":"docs/features/index"},{"label":"Community Plugins","href":"https://www.npmjs.com/search?q=keywords:flipper-plugin"}]},{"title":"More","items":[{"label":"Twitter","href":"https://twitter.com/flipper_fb"},{"label":"GitHub","href":"https://github.com/facebook/flipper"}]}],"copyright":"Copyright © 2020 Facebook","logo":{"alt":"Flipper Mascot","src":"img/mascot.png","title":"I'm a dolphin not a whale!"}},"algolia":{"apiKey":"2df980e7ffc95c19552790f7cad32666","indexName":"fbflipper","algoliaOptions":{"hitsPerPage":5}}},"title":"Flipper","tagline":"Extensible mobile app debugging","url":"https://fbflipper.com/","baseUrl":"/","projectName":"flipper","favicon":"img/icon.png","scripts":["https://buttons.github.io/buttons.js","https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js","/js/code-blocks-buttons.js","/js/google-analytics.js"],"stylesheets":[],"presets":[["@docusaurus/preset-classic",{"docs":{"path":"../docs","sidebarPath":"/home/travis/build/facebook/flipper/website/sidebars.json","editUrl":"https://github.com/facebook/flipper/blob/master/website"},"theme":{"customCss":"/home/travis/build/facebook/flipper/website/static/css/custom.css"}}]]});
+/* harmony default export */ __webpack_exports__["a"] = ({"plugins":["/home/travis/build/facebook/flipper/website/node_modules/docusaurus-plugin-internaldocs-fb/index.js"],"themes":[],"customFields":{},"themeConfig":{"navbar":{"title":"Flipper","logo":{"alt":"Flipper Logo","src":"img/icon.png"},"links":[{"to":"docs/features/index","label":"Features","position":"right"},{"to":"docs/getting-started/index","label":"Setup","position":"right"},{"to":"docs/extending/index","label":"Extending","position":"right"},{"href":"https://github.com/facebook/flipper","label":"GitHub","position":"right"}]},"disableDarkMode":true,"footer":{"style":"dark","links":[{"title":"Learn","items":[{"label":"Getting Started","to":"docs/getting-started/index"},{"label":"Plugin Creation Tutorial","to":"docs/tutorial/intro"}]},{"title":"Plugins","items":[{"label":"Core Plugins","to":"docs/features/index"},{"label":"Community Plugins","href":"https://www.npmjs.com/search?q=keywords:flipper-plugin"}]},{"title":"More","items":[{"label":"Twitter","href":"https://twitter.com/flipper_fb"},{"label":"GitHub","href":"https://github.com/facebook/flipper"}]}],"copyright":"Copyright © 2020 Facebook","logo":{"alt":"Flipper Mascot","src":"img/mascot.png","title":"I'm a dolphin not a whale!"}},"algolia":{"apiKey":"2df980e7ffc95c19552790f7cad32666","indexName":"fbflipper","algoliaOptions":{"hitsPerPage":5}},"prism":{"additionalLanguages":["groovy","java","kotlin","ruby","swift"]}},"title":"Flipper","tagline":"Extensible mobile app debugging","url":"https://fbflipper.com/","baseUrl":"/","projectName":"flipper","favicon":"img/icon.png","scripts":["https://buttons.github.io/buttons.js","https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js","/js/code-blocks-buttons.js","/js/google-analytics.js"],"stylesheets":[],"presets":[["@docusaurus/preset-classic",{"docs":{"path":"../docs","sidebarPath":"/home/travis/build/facebook/flipper/website/sidebars.json","editUrl":"https://github.com/facebook/flipper/blob/master/website"},"theme":{"customCss":"/home/travis/build/facebook/flipper/website/static/css/custom.css"}}]]});
 
 /***/ }),
 /* 84 */
@@ -11841,7 +11841,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/* NProgress, 
 /* 88 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var naturalCompare = __webpack_require__(268);
+var naturalCompare = __webpack_require__(267);
 
 function naturalSorter(scope1, scope2) {
   return naturalCompare(scope1[1], scope2[1]);
@@ -12413,7 +12413,7 @@ module.exports = {
 /***/ (function(module, exports, __webpack_require__) {
 
 var compactable = __webpack_require__(34);
-var InvalidPropertyError = __webpack_require__(124);
+var InvalidPropertyError = __webpack_require__(123);
 
 function populateComponents(properties, validator, warnings) {
   var component;
@@ -12563,9 +12563,9 @@ module.exports = extractProperties;
  * Licensed under the New BSD license. See LICENSE.txt or:
  * http://opensource.org/licenses/BSD-3-Clause
  */
-exports.SourceMapGenerator = __webpack_require__(128).SourceMapGenerator;
-exports.SourceMapConsumer = __webpack_require__(309).SourceMapConsumer;
-exports.SourceNode = __webpack_require__(312).SourceNode;
+exports.SourceMapGenerator = __webpack_require__(127).SourceMapGenerator;
+exports.SourceMapConsumer = __webpack_require__(308).SourceMapConsumer;
+exports.SourceNode = __webpack_require__(311).SourceNode;
 
 
 /***/ }),
@@ -12792,7 +12792,7 @@ module.exports = require("assert");
 
 
 const u = __webpack_require__(16).fromCallback
-const jsonFile = __webpack_require__(361)
+const jsonFile = __webpack_require__(360)
 
 module.exports = {
   // jsonfile exports
@@ -12888,7 +12888,7 @@ exports.inherits = util.inherits;
 "use strict";
 
 
-var immediate = __webpack_require__(411);
+var immediate = __webpack_require__(410);
 var splitter = /\s+/;
 
 module.exports = {
@@ -13215,34 +13215,6 @@ module.exports = objectHasKeys;
 /* 111 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var map = {
-	"./": 441
-};
-
-
-function webpackContext(req) {
-	var id = webpackContextResolve(req);
-	return __webpack_require__(id);
-}
-function webpackContextResolve(req) {
-	if(!__webpack_require__.o(map, req)) {
-		var e = new Error("Cannot find module '" + req + "'");
-		e.code = 'MODULE_NOT_FOUND';
-		throw e;
-	}
-	return map[req];
-}
-webpackContext.keys = function webpackContextKeys() {
-	return Object.keys(map);
-};
-webpackContext.resolve = webpackContextResolve;
-module.exports = webpackContext;
-webpackContext.id = 111;
-
-/***/ }),
-/* 112 */
-/***/ (function(module, exports, __webpack_require__) {
-
 "use strict";
 
 
@@ -13250,11 +13222,11 @@ webpackContext.id = 111;
 // For browser users, this will be mapped to src/browser/builds/algoliasearchLite.js
 // when used through browserify or webpack (see package.json browser field)
 // This is done to ease universal applications (https://github.com/algolia/algoliasearch-client-js/issues/283)
-module.exports = __webpack_require__(150);
+module.exports = __webpack_require__(149);
 
 
 /***/ }),
-/* 113 */
+/* 112 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -13270,10 +13242,10 @@ __webpack_require__.r(__webpack_exports__);
  */function NotFound(){return/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_theme_Layout__WEBPACK_IMPORTED_MODULE_1__[/* default */ "a"],{title:"Page Not Found"},/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div",{className:"container margin-vert--xl"},/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div",{className:"row"},/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div",{className:"col col--6 col--offset-3"},/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h1",{className:"hero__title"},"Page Not Found"),/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p",null,"We could not find what you were looking for."),/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p",null,"Please contact the owner of the site that linked you to the original URL and let them know their link is broken.")))));}/* harmony default export */ __webpack_exports__["default"] = (NotFound);
 
 /***/ }),
-/* 114 */
+/* 113 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isarray = __webpack_require__(369)
+var isarray = __webpack_require__(368)
 
 /**
  * Expose `pathToRegexp`.
@@ -13702,7 +13674,7 @@ function pathToRegexp (path, keys, options) {
 
 
 /***/ }),
-/* 115 */
+/* 114 */
 /***/ (function(module, exports) {
 
 function parsePart(str) {
@@ -13758,13 +13730,13 @@ module.exports.parse = function(str) {
 
 
 /***/ }),
-/* 116 */
+/* 115 */
 /***/ (function(module, exports) {
 
 module.exports = require("stream");
 
 /***/ }),
-/* 117 */
+/* 116 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13773,38 +13745,38 @@ module.exports = require("stream");
 exports.__esModule = true;
 exports.hasEntry = exports.unique = exports.getFileExtension = exports.computeIntegrity = void 0;
 
-var _computeIntegrity = _interopRequireDefault(__webpack_require__(256));
+var _computeIntegrity = _interopRequireDefault(__webpack_require__(255));
 
 exports.computeIntegrity = _computeIntegrity["default"];
 
-var _getFileExtension = _interopRequireDefault(__webpack_require__(257));
+var _getFileExtension = _interopRequireDefault(__webpack_require__(256));
 
 exports.getFileExtension = _getFileExtension["default"];
 
-var _unique = _interopRequireDefault(__webpack_require__(258));
+var _unique = _interopRequireDefault(__webpack_require__(257));
 
 exports.unique = _unique["default"];
 
-var _hasEntry = _interopRequireDefault(__webpack_require__(259));
+var _hasEntry = _interopRequireDefault(__webpack_require__(258));
 
 exports.hasEntry = _hasEntry["default"];
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 /***/ }),
-/* 118 */
+/* 117 */
 /***/ (function(module, exports) {
 
 module.exports = require("crypto");
 
 /***/ }),
-/* 119 */
+/* 118 */
 /***/ (function(module, exports) {
 
 module.exports = require("os");
 
 /***/ }),
-/* 120 */
+/* 119 */
 /***/ (function(module, exports) {
 
 function removeUnused(properties) {
@@ -13821,7 +13793,7 @@ module.exports = removeUnused;
 
 
 /***/ }),
-/* 121 */
+/* 120 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var override = __webpack_require__(39);
@@ -13915,7 +13887,7 @@ module.exports = {
 
 
 /***/ }),
-/* 122 */
+/* 121 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Marker = __webpack_require__(14);
@@ -13949,7 +13921,7 @@ module.exports = everyValuesPair;
 
 
 /***/ }),
-/* 123 */
+/* 122 */
 /***/ (function(module, exports) {
 
 function hasInherit(property) {
@@ -13965,7 +13937,7 @@ module.exports = hasInherit;
 
 
 /***/ }),
-/* 124 */
+/* 123 */
 /***/ (function(module, exports) {
 
 function InvalidPropertyError(message) {
@@ -13981,7 +13953,7 @@ module.exports = InvalidPropertyError;
 
 
 /***/ }),
-/* 125 */
+/* 124 */
 /***/ (function(module, exports) {
 
 var VENDOR_PREFIX_PATTERN = /(?:^|\W)(\-\w+\-)/g;
@@ -14010,7 +13982,7 @@ module.exports = {
 
 
 /***/ }),
-/* 126 */
+/* 125 */
 /***/ (function(module, exports) {
 
 var MODIFIER_PATTERN = /\-\-.+$/;
@@ -14048,7 +14020,7 @@ module.exports = rulesOverlap;
 
 
 /***/ }),
-/* 127 */
+/* 126 */
 /***/ (function(module, exports) {
 
 function cloneArray(array) {
@@ -14066,7 +14038,7 @@ module.exports = cloneArray;
 
 
 /***/ }),
-/* 128 */
+/* 127 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* -*- Mode: js; js-indent-level: 2; -*- */
@@ -14076,10 +14048,10 @@ module.exports = cloneArray;
  * http://opensource.org/licenses/BSD-3-Clause
  */
 
-var base64VLQ = __webpack_require__(129);
+var base64VLQ = __webpack_require__(128);
 var util = __webpack_require__(50);
-var ArraySet = __webpack_require__(130).ArraySet;
-var MappingList = __webpack_require__(308).MappingList;
+var ArraySet = __webpack_require__(129).ArraySet;
+var MappingList = __webpack_require__(307).MappingList;
 
 /**
  * An instance of the SourceMapGenerator represents a source map which is
@@ -14497,7 +14469,7 @@ exports.SourceMapGenerator = SourceMapGenerator;
 
 
 /***/ }),
-/* 129 */
+/* 128 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* -*- Mode: js; js-indent-level: 2; -*- */
@@ -14537,7 +14509,7 @@ exports.SourceMapGenerator = SourceMapGenerator;
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-var base64 = __webpack_require__(307);
+var base64 = __webpack_require__(306);
 
 // A single base 64 digit can contain 6 bits of data. For the base 64 variable
 // length quantities we use in the source map spec, the first bit is the sign,
@@ -14643,7 +14615,7 @@ exports.decode = function base64VLQ_decode(aStr, aIndex, aOutParam) {
 
 
 /***/ }),
-/* 130 */
+/* 129 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* -*- Mode: js; js-indent-level: 2; -*- */
@@ -14770,7 +14742,7 @@ exports.ArraySet = ArraySet;
 
 
 /***/ }),
-/* 131 */
+/* 130 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var path = __webpack_require__(8);
@@ -14791,7 +14763,7 @@ module.exports = rebaseLocalMap;
 
 
 /***/ }),
-/* 132 */
+/* 131 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var path = __webpack_require__(8);
@@ -14811,7 +14783,7 @@ module.exports = rebaseRemoteMap;
 
 
 /***/ }),
-/* 133 */
+/* 132 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var split = __webpack_require__(91);
@@ -14852,7 +14824,7 @@ module.exports = extractImportUrlAndMedia;
 
 
 /***/ }),
-/* 134 */
+/* 133 */
 /***/ (function(module, exports) {
 
 function restoreImport(uri, mediaQuery) {
@@ -14863,7 +14835,7 @@ module.exports = restoreImport;
 
 
 /***/ }),
-/* 135 */
+/* 134 */
 /***/ (function(module, exports) {
 
 var IMPORT_PREFIX_PATTERN = /^@import/i;
@@ -14876,7 +14848,7 @@ module.exports = isImport;
 
 
 /***/ }),
-/* 136 */
+/* 135 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14901,7 +14873,7 @@ exports.createMapFromString = function(values, ignoreCase) {
 
 
 /***/ }),
-/* 137 */
+/* 136 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14918,7 +14890,7 @@ module.exports =
 
 
 /***/ }),
-/* 138 */
+/* 137 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15034,19 +15006,19 @@ if (typeof fs.realpath.native === 'function') {
 
 
 /***/ }),
-/* 139 */
+/* 138 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 module.exports = {
-  copySync: __webpack_require__(347)
+  copySync: __webpack_require__(346)
 }
 
 
 /***/ }),
-/* 140 */
+/* 139 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15078,14 +15050,14 @@ module.exports = {
 
 
 /***/ }),
-/* 141 */
+/* 140 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 const fs = __webpack_require__(12)
-const os = __webpack_require__(119)
+const os = __webpack_require__(118)
 const path = __webpack_require__(8)
 
 // HFS, ext{2,3}, FAT do not, Node.js v0.10 does not
@@ -15164,7 +15136,7 @@ module.exports = {
 
 
 /***/ }),
-/* 142 */
+/* 141 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15172,12 +15144,12 @@ module.exports = {
 
 const u = __webpack_require__(16).fromCallback
 module.exports = {
-  copy: u(__webpack_require__(351))
+  copy: u(__webpack_require__(350))
 }
 
 
 /***/ }),
-/* 143 */
+/* 142 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -15251,7 +15223,7 @@ about the plugin it supports, including "sea-mammals" and will look for a
 corresponding JavaScript plugin by that name. Let's build that next.`));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 144 */
+/* 143 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -15268,7 +15240,7 @@ const frontMatter={id:'leak-canary-plugin',title:'LeakCanary'};const metadata={"
 Selecting any object in this list will display contents of the object's various fields.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Note: this plugin is only available for Android.`));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 145 */
+/* 144 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -15294,7 +15266,7 @@ Fresco on Android that weren't properly closed, which can help you improve
 the performance of your app.`));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 146 */
+/* 145 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -15431,7 +15403,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 `)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Lastly, open the Flipper desktop app, and run `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`yarn ios`),` in your terminal.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"troubleshooting"},`Troubleshooting`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`See the `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"../troubleshooting"}),`troubleshooting page`),` for help with known problems.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"further-steps"},`Further Steps`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`To create your own plugins and integrate with Flipper using JavaScript, check out our `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"../tutorial/react-native"}),`writing plugins for React Native`),` tutorial!`));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 147 */
+/* 146 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -15467,7 +15439,7 @@ addPlugin({
 `)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`You might want to store the connection somewhere to be able to send more events as long as `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`onDisconnect`),` event hasn't been fired.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`connection`),` object can also be used to listen to messages coming from the Desktop plugin. See `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"../extending/create-plugin"}),`Client Plugin API`),` for details.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`An example plugin to play a little Tic-Tac-Toe between the Flipper Desktop and a React Native app can be found inside this repository as well (run `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`yarn && yarn android`),` in `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`react-native/ReactNativeFlipperExample`),` to start the test project):`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("ul",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`The React Native JavaScript based plugin implementation: `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"li"},{"href":"https://github.com/facebook/flipper/tree/master/react-native/ReactNativeFlipperExample/FlipperTicTacToe.js"}),`FlipperTicTacToe.js`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`The Flipper Desktop plugin implementation: `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"li"},{"href":"https://github.com/facebook/flipper/blob/master/desktop/plugins/rn-tic-tac-toe/index.tsx"}),`rn-tic-tac-toe/index.tsx`))));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 148 */
+/* 147 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -15528,19 +15500,19 @@ about the plugin it supports, including "sea-mammals" and will look for a
 corresponding JavaScript plugin by that name. Before building it's JavaScript counterpart, first lets build a Flipper Plugin in Android.`));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 149 */
+/* 148 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 if (true) {
-  module.exports = __webpack_require__(370);
+  module.exports = __webpack_require__(369);
 } else {}
 
 
 /***/ }),
-/* 150 */
+/* 149 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15549,11 +15521,11 @@ if (true) {
 // default entrypoint is the node module
 // this is overridden by the `browser` field in package.json
 // https://github.com/substack/node-browserify#browser-field
-module.exports = __webpack_require__(378);
+module.exports = __webpack_require__(377);
 
 
 /***/ }),
-/* 151 */
+/* 150 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
@@ -15569,7 +15541,7 @@ exports.coerce = coerce;
 exports.disable = disable;
 exports.enable = enable;
 exports.enabled = enabled;
-exports.humanize = __webpack_require__(380);
+exports.humanize = __webpack_require__(379);
 
 /**
  * The currently active debug mode names, and names to skip.
@@ -15761,7 +15733,7 @@ function coerce(val) {
 
 
 /***/ }),
-/* 152 */
+/* 151 */
 /***/ (function(module, exports) {
 
 exports = module.exports = SemVer
@@ -17363,7 +17335,7 @@ function coerce (version, options) {
 
 
 /***/ }),
-/* 153 */
+/* 152 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = buildSearchMethod;
@@ -17436,10 +17408,10 @@ function buildSearchMethod(queryParam, url) {
 
 
 /***/ }),
-/* 154 */
+/* 153 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var buildSearchMethod = __webpack_require__(153);
+var buildSearchMethod = __webpack_require__(152);
 var deprecate = __webpack_require__(103);
 var deprecatedMessage = __webpack_require__(104);
 
@@ -17599,7 +17571,7 @@ IndexCore.prototype.similarSearch = deprecate(
 * @see {@link https://www.algolia.com/doc/rest_api#Browse|Algolia REST API Documentation}
 */
 IndexCore.prototype.browse = function(query, queryParameters, callback) {
-  var merge = __webpack_require__(155);
+  var merge = __webpack_require__(154);
 
   var indexObj = this;
 
@@ -17695,7 +17667,7 @@ IndexCore.prototype.browseFrom = function(cursor, callback) {
 */
 IndexCore.prototype.searchForFacetValues = function(params, callback) {
   var clone = __webpack_require__(31);
-  var omit = __webpack_require__(156);
+  var omit = __webpack_require__(155);
   var usage = 'Usage: index.searchForFacetValues({facetName, facetQuery, ...params}[, callback])';
 
   if (params.facetName === undefined || params.facetQuery === undefined) {
@@ -17831,7 +17803,7 @@ IndexCore.prototype.typeAheadValueOption = null;
 
 
 /***/ }),
-/* 155 */
+/* 154 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var foreach = __webpack_require__(44);
@@ -17856,11 +17828,11 @@ module.exports = function merge(destination/* , sources */) {
 
 
 /***/ }),
-/* 156 */
+/* 155 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = function omit(obj, test) {
-  var keys = __webpack_require__(157);
+  var keys = __webpack_require__(156);
   var foreach = __webpack_require__(44);
 
   var filtered = {};
@@ -17876,17 +17848,17 @@ module.exports = function omit(obj, test) {
 
 
 /***/ }),
-/* 157 */
+/* 156 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var slice = Array.prototype.slice;
-var isArgs = __webpack_require__(158);
+var isArgs = __webpack_require__(157);
 
 var origKeys = Object.keys;
-var keysShim = origKeys ? function keys(o) { return origKeys(o); } : __webpack_require__(393);
+var keysShim = origKeys ? function keys(o) { return origKeys(o); } : __webpack_require__(392);
 
 var originalKeys = Object.keys;
 
@@ -17915,7 +17887,7 @@ module.exports = keysShim;
 
 
 /***/ }),
-/* 158 */
+/* 157 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17939,7 +17911,7 @@ module.exports = function isArguments(value) {
 
 
 /***/ }),
-/* 159 */
+/* 158 */
 /***/ (function(module, exports) {
 
 // Parse cloud does not supports setTimeout
@@ -17952,15 +17924,15 @@ module.exports = function exitPromise(fn, _setTimeout) {
 
 
 /***/ }),
-/* 160 */
+/* 159 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(161);
-module.exports.HttpsAgent = __webpack_require__(402);
+module.exports = __webpack_require__(160);
+module.exports.HttpsAgent = __webpack_require__(401);
 
 
 /***/ }),
-/* 161 */
+/* 160 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17984,7 +17956,7 @@ module.exports.HttpsAgent = __webpack_require__(402);
 
 var https = __webpack_require__(41);
 var utils = __webpack_require__(105);
-var OriginalAgent = __webpack_require__(401).Agent;
+var OriginalAgent = __webpack_require__(400).Agent;
 var OriginalHttpsAgent = https.Agent;
 
 module.exports = Agent;
@@ -18064,7 +18036,7 @@ function inspect(obj) {
 
 
 /***/ }),
-/* 162 */
+/* 161 */
 /***/ (function(module, exports) {
 
 /* istanbul ignore next */
@@ -19387,7 +19359,7 @@ function inspect(obj) {
 
 
 /***/ }),
-/* 163 */
+/* 162 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19427,7 +19399,7 @@ module.exports = EventBus;
 
 
 /***/ }),
-/* 164 */
+/* 163 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19443,14 +19415,14 @@ module.exports = {
 
 
 /***/ }),
-/* 165 */
+/* 164 */
 /***/ (function(module, exports) {
 
 module.exports = "0.36.0";
 
 
 /***/ }),
-/* 166 */
+/* 165 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19463,7 +19435,7 @@ module.exports = function parseAlgoliaClientVersion(agent) {
 
 
 /***/ }),
-/* 167 */
+/* 166 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19473,7 +19445,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _zepto = __webpack_require__(162);
+var _zepto = __webpack_require__(161);
 
 var _zepto2 = _interopRequireDefault(_zepto);
 
@@ -19482,7 +19454,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 exports.default = _zepto2.default;
 
 /***/ }),
-/* 168 */
+/* 167 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19494,7 +19466,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = '2.6.3';
 
 /***/ }),
-/* 169 */
+/* 168 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -19510,13 +19482,13 @@ __webpack_require__.r(__webpack_exports__);
 const frontMatter={id:'sandbox-plugin',title:'Sandbox'};const metadata={"id":"features/sandbox-plugin","title":"Sandbox","description":"→ See setup instructions for the Sandbox plugin","source":"@site/../docs/features/sandbox-plugin.mdx","permalink":"/docs/features/sandbox-plugin","editUrl":"https://github.com/facebook/flipper/blob/master/website/../docs/features/sandbox-plugin.mdx","sidebar":"features","previous":{"title":"Images","permalink":"/docs/features/images-plugin"},"next":{"title":"Shared Preferences","permalink":"/docs/features/shared-preferences-plugin"}};/* @jsx mdx */const rightToc=[];const makeShortcode=name=>function MDXDefaultShortcode(props){console.warn("Component "+name+" was not imported, exported, or provided by MDXProvider as global scope");return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",props);};const layoutProps={rightToc};const MDXLayout="wrapper";function MDXContent({components,...props}){return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(MDXLayout,Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({},layoutProps,props,{components:components,mdxType:"MDXLayout"}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`→ `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"../setup/sandbox-plugin"}),`See setup instructions for the Sandbox plugin`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The sandbox plugin allows developers to test changes in their apps by pointing them to a sandbox environment. It provides a simple UI to set and modify the URL to a development host that acts as a sandbox directly on the desktop, which prevents you from entering potentially long and complicated URL inside your app. `));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 170 */
+/* 169 */
 /***/ (function(module) {
 
 module.exports = JSON.parse("{\"docsSidebars\":{\"features\":[{\"type\":\"category\",\"label\":\"Features\",\"items\":[{\"type\":\"link\",\"label\":\"Features\",\"href\":\"/docs/features/index\"},{\"type\":\"link\",\"label\":\"Logs\",\"href\":\"/docs/features/logs-plugin\"},{\"type\":\"link\",\"label\":\"Layout Inspector\",\"href\":\"/docs/features/layout-plugin\"},{\"type\":\"link\",\"label\":\"Navigation\",\"href\":\"/docs/features/navigation-plugin\"},{\"type\":\"link\",\"label\":\"Network\",\"href\":\"/docs/features/network-plugin\"},{\"type\":\"link\",\"label\":\"Databases\",\"href\":\"/docs/features/databases-plugin\"},{\"type\":\"link\",\"label\":\"Images\",\"href\":\"/docs/features/images-plugin\"},{\"type\":\"link\",\"label\":\"Sandbox\",\"href\":\"/docs/features/sandbox-plugin\"},{\"type\":\"link\",\"label\":\"Shared Preferences\",\"href\":\"/docs/features/shared-preferences-plugin\"},{\"type\":\"link\",\"label\":\"LeakCanary\",\"href\":\"/docs/features/leak-canary-plugin\"},{\"type\":\"link\",\"label\":\"Crash Reporter\",\"href\":\"/docs/features/crash-reporter-plugin\"},{\"type\":\"link\",\"label\":\"Share Flipper Data\",\"href\":\"/docs/features/share-flipper-data\"},{\"type\":\"link\",\"label\":\"React Native Support\",\"href\":\"/docs/features/react-native\"}]}],\"setup\":[{\"type\":\"category\",\"label\":\"Getting Started\",\"items\":[{\"type\":\"link\",\"label\":\"Desktop App\",\"href\":\"/docs/getting-started/index\"},{\"type\":\"link\",\"label\":\"Android\",\"href\":\"/docs/getting-started/android-native\"},{\"type\":\"link\",\"label\":\"iOS\",\"href\":\"/docs/getting-started/ios-native\"},{\"type\":\"link\",\"label\":\"React Native\",\"href\":\"/docs/getting-started/react-native\"},{\"type\":\"link\",\"label\":\"React Native for Android\",\"href\":\"/docs/getting-started/react-native-android\"},{\"type\":\"link\",\"label\":\"React Native for iOS\",\"href\":\"/docs/getting-started/react-native-ios\"}]},{\"type\":\"category\",\"label\":\"Plugin Setup\",\"items\":[{\"type\":\"link\",\"label\":\"Layout Inspector\",\"href\":\"/docs/setup/layout-plugin\"},{\"type\":\"link\",\"label\":\"Navigation\",\"href\":\"/docs/setup/navigation-plugin\"},{\"type\":\"link\",\"label\":\"Network\",\"href\":\"/docs/setup/network-plugin\"},{\"type\":\"link\",\"label\":\"Databases\",\"href\":\"/docs/setup/databases-plugin\"},{\"type\":\"link\",\"label\":\"Images\",\"href\":\"/docs/setup/images-plugin\"},{\"type\":\"link\",\"label\":\"Sandbox\",\"href\":\"/docs/setup/sandbox-plugin\"},{\"type\":\"link\",\"label\":\"Shared Preferences\",\"href\":\"/docs/setup/shared-preferences-plugin\"},{\"type\":\"link\",\"label\":\"LeakCanary\",\"href\":\"/docs/setup/leak-canary-plugin\"},{\"type\":\"link\",\"label\":\"Crash Reporter\",\"href\":\"/docs/setup/crash-reporter-plugin\"}]},{\"type\":\"category\",\"label\":\"Advanced\",\"items\":[{\"type\":\"link\",\"label\":\"Using different ports\",\"href\":\"/docs/custom-ports\"},{\"type\":\"link\",\"label\":\"Stetho Guidance\",\"href\":\"/docs/stetho\"},{\"type\":\"link\",\"label\":\"Troubleshooting Issues\",\"href\":\"/docs/troubleshooting\"}]}],\"extending\":[{\"type\":\"category\",\"label\":\"Extending Flipper\",\"items\":[{\"type\":\"link\",\"label\":\"Clients and Plugins\",\"href\":\"/docs/extending/index\"}]},{\"type\":\"category\",\"label\":\"Tutorial\",\"items\":[{\"type\":\"link\",\"label\":\"Intro\",\"href\":\"/docs/tutorial/intro\"},{\"type\":\"link\",\"label\":\"Building an iOS Plugin\",\"href\":\"/docs/tutorial/ios\"},{\"type\":\"link\",\"label\":\"Building an Android Plugin\",\"href\":\"/docs/tutorial/android\"},{\"type\":\"link\",\"label\":\"Building a React Native Plugin\",\"href\":\"/docs/tutorial/react-native\"},{\"type\":\"link\",\"label\":\"Building a Desktop Plugin\",\"href\":\"/docs/tutorial/js-setup\"},{\"type\":\"link\",\"label\":\"Showing a table\",\"href\":\"/docs/tutorial/js-table\"},{\"type\":\"link\",\"label\":\"Custom UI\",\"href\":\"/docs/tutorial/js-custom\"},{\"type\":\"link\",\"label\":\"Publishing\",\"href\":\"/docs/tutorial/js-publishing\"}]},{\"type\":\"category\",\"label\":\"Plugin Development\",\"items\":[{\"type\":\"link\",\"label\":\"Desktop Plugin Development\",\"href\":\"/docs/extending/js-setup\"},{\"type\":\"link\",\"label\":\"Desktop Plugin API\",\"href\":\"/docs/extending/js-plugin-api\"},{\"type\":\"link\",\"label\":\"Create Table Plugin\",\"href\":\"/docs/extending/create-table-plugin\"},{\"type\":\"link\",\"label\":\"UI Components\",\"href\":\"/docs/extending/ui-components\"},{\"type\":\"link\",\"label\":\"Styling Components\",\"href\":\"/docs/extending/styling-components\"},{\"type\":\"link\",\"label\":\"Searching and Filtering\",\"href\":\"/docs/extending/search-and-filter\"},{\"type\":\"link\",\"label\":\"Client Plugin API\",\"href\":\"/docs/extending/create-plugin\"},{\"type\":\"link\",\"label\":\"Client Plugin Lifecycle\",\"href\":\"/docs/extending/client-plugin-lifecycle\"},{\"type\":\"link\",\"label\":\"Providing Data to Plugins\",\"href\":\"/docs/extending/send-data\"},{\"type\":\"link\",\"label\":\"Error Handling\",\"href\":\"/docs/extending/error-handling\"},{\"type\":\"link\",\"label\":\"Testing\",\"href\":\"/docs/extending/testing\"},{\"type\":\"link\",\"label\":\"Debugging\",\"href\":\"/docs/extending/debugging\"}]},{\"type\":\"category\",\"label\":\"Other Platforms\",\"items\":[{\"type\":\"link\",\"label\":\"Implementing a Flipper Client\",\"href\":\"/docs/extending/new-clients\"},{\"type\":\"link\",\"label\":\"Secure Communication\",\"href\":\"/docs/extending/establishing-a-connection\"},{\"type\":\"link\",\"label\":\"Implementing Layout Inspection\",\"href\":\"/docs/extending/supporting-layout\"}]},{\"type\":\"category\",\"label\":\"Internals\",\"items\":[{\"type\":\"link\",\"label\":\"Architecture\",\"href\":\"/docs/extending/arch\"},{\"type\":\"link\",\"label\":\"Extending Layout Inspector\",\"href\":\"/docs/extending/layout-inspector\"},{\"type\":\"link\",\"label\":\"Testing RN Changes\",\"href\":\"/docs/extending/testing-rn\"}]}]},\"permalinkToSidebar\":{\"/docs/custom-ports\":\"setup\",\"/docs/extending/arch\":\"extending\",\"/docs/extending/client-plugin-lifecycle\":\"extending\",\"/docs/extending/create-plugin\":\"extending\",\"/docs/extending/create-table-plugin\":\"extending\",\"/docs/extending/debugging\":\"extending\",\"/docs/extending/error-handling\":\"extending\",\"/docs/extending/establishing-a-connection\":\"extending\",\"/docs/extending/index\":\"extending\",\"/docs/extending/js-plugin-api\":\"extending\",\"/docs/extending/js-setup\":\"extending\",\"/docs/extending/layout-inspector\":\"extending\",\"/docs/extending/new-clients\":\"extending\",\"/docs/extending/search-and-filter\":\"extending\",\"/docs/extending/send-data\":\"extending\",\"/docs/extending/styling-components\":\"extending\",\"/docs/extending/supporting-layout\":\"extending\",\"/docs/extending/testing\":\"extending\",\"/docs/extending/testing-rn\":\"extending\",\"/docs/extending/ui-components\":\"extending\",\"/docs/features/crash-reporter-plugin\":\"features\",\"/docs/features/databases-plugin\":\"features\",\"/docs/features/images-plugin\":\"features\",\"/docs/features/index\":\"features\",\"/docs/features/layout-plugin\":\"features\",\"/docs/features/leak-canary-plugin\":\"features\",\"/docs/features/logs-plugin\":\"features\",\"/docs/features/navigation-plugin\":\"features\",\"/docs/features/network-plugin\":\"features\",\"/docs/features/react-native\":\"features\",\"/docs/features/sandbox-plugin\":\"features\",\"/docs/features/share-flipper-data\":\"features\",\"/docs/features/shared-preferences-plugin\":\"features\",\"/docs/getting-started/android-native\":\"setup\",\"/docs/getting-started/index\":\"setup\",\"/docs/getting-started/ios-native\":\"setup\",\"/docs/getting-started/react-native\":\"setup\",\"/docs/getting-started/react-native-android\":\"setup\",\"/docs/getting-started/react-native-ios\":\"setup\",\"/docs/setup/crash-reporter-plugin\":\"setup\",\"/docs/setup/databases-plugin\":\"setup\",\"/docs/setup/images-plugin\":\"setup\",\"/docs/setup/layout-plugin\":\"setup\",\"/docs/setup/leak-canary-plugin\":\"setup\",\"/docs/setup/navigation-plugin\":\"setup\",\"/docs/setup/network-plugin\":\"setup\",\"/docs/setup/sandbox-plugin\":\"setup\",\"/docs/setup/shared-preferences-plugin\":\"setup\",\"/docs/stetho\":\"setup\",\"/docs/troubleshooting\":\"setup\",\"/docs/tutorial/android\":\"extending\",\"/docs/tutorial/intro\":\"extending\",\"/docs/tutorial/ios\":\"extending\",\"/docs/tutorial/js-custom\":\"extending\",\"/docs/tutorial/js-publishing\":\"extending\",\"/docs/tutorial/js-setup\":\"extending\",\"/docs/tutorial/js-table\":\"extending\",\"/docs/tutorial/react-native\":\"extending\"}}");
 
 /***/ }),
-/* 171 */
+/* 170 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -19532,7 +19504,7 @@ __webpack_require__.r(__webpack_exports__);
 const frontMatter={id:'index',title:'Clients and Plugins'};const metadata={"id":"extending/index","title":"Clients and Plugins","description":"Flipper was designed with extensibility in mind from the start, to enable engineers to quickly build quality, easy-to-use tools for their own needs and applications.","source":"@site/../docs/extending/index.mdx","permalink":"/docs/extending/index","editUrl":"https://github.com/facebook/flipper/blob/master/website/../docs/extending/index.mdx","sidebar":"extending","next":{"title":"Intro","permalink":"/docs/tutorial/intro"}};/* @jsx mdx */const rightToc=[];const makeShortcode=name=>function MDXDefaultShortcode(props){console.warn("Component "+name+" was not imported, exported, or provided by MDXProvider as global scope");return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",props);};const layoutProps={rightToc};const MDXLayout="wrapper";function MDXContent({components,...props}){return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(MDXLayout,Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({},layoutProps,props,{components:components,mdxType:"MDXLayout"}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Flipper was designed with extensibility in mind from the start, to enable engineers to quickly build quality, easy-to-use tools for their own needs and applications.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`In addition to building plugins for the existing platforms, you can also extend the capabilities of Flipper to other platforms by conforming to the `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`FlipperClient`),` API. After this, you can make use of the existing desktop plugins by writing client plugins that conform to the same API.`));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 172 */
+/* 171 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -19598,7 +19570,7 @@ type NodeId = string;
 `)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("strong",{parentName:"p"},`getRoot`),`: Return the root node of your hierarchy. This is the entry point of Flipper's traversal of your layout.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("strong",{parentName:"p"},`getNodes`),`: Map a set of NodeIds to their corresponding nodes. This call is used to among other things query the children of a node.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("strong",{parentName:"p"},`getAllNodes`),`: Similar to getNodes, this should return all nodes in the current layout tree. Ordinarily, nodes are requested lazily, however this exists for taking snapshots of the current state.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("strong",{parentName:"p"},`setData`),`: Set the data of an mutable data object returned as part of the data field of a node. The id parameter identifies the node, the path parameter is a index path into an object, e.g. `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`['bounds', 'left']`),` and the value parameter is a value of appropriate type to be used as an override.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("strong",{parentName:"p"},`setHighlighted`),`: Mark a node as highlighted. It is expected that implementations adds a colored overlay to the node identified by id on screen, so that as the user browses the layout tree in flipper, they can easily see on the the client display the nodes they are interacting with. Passing a null id parameter removes the current highlight without highlighting a new node.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("strong",{parentName:"p"},`setSearchActive`),`: The user has clicked on the crosshair button in Sonar. This feature allows the user to click on an element in the client UI to cause flipper to highlight the corresponding node in the layout tree. A colored overlay should be shown over the whole screen until `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`setSearchActive`),` is called with `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`active: false`),`. While `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`setSearchActive`),` is true, clicking an element in the client UI should trigger a `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`select`),` call to the flipper desktop, with the path of ids from root to selected node e.g `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`select(['node1', 'node6', 'node65'])`),` to select a grandchild of `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`node1`),`.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("strong",{parentName:"p"},`getSearchResults`),`: Execute a query on all nodes in the tree, and return a subtree of the layout tree that contains all matching nodes and those on the path to the from the root. A parent that does not itself match the query but exists on the path to a node that does, should have attribute `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`isMatch: false`),` and only the matching nodes should have `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`isMatch: true`),`. Nodes not on the path from root to a match need not be included in the returned tree. Be careful not to confuse this method with the unrelated `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`setSearchActive`),`, which unfortunately shares a similar name.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Whenever a node or subtree changes it is expected that the client sends a `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`invalidate`),` command to the desktop app over the active connection. This will invalidate the cache of the subtree anchored by the node with the given id.`));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 173 */
+/* 172 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -19615,7 +19587,7 @@ __webpack_require__.r(__webpack_exports__);
 const frontMatter={id:'navigation-plugin',title:'Navigation'};const metadata={"id":"features/navigation-plugin","title":"Navigation","description":"→ See setup instructions for the Navigation Plugin","source":"@site/../docs/features/navigation-plugin.mdx","permalink":"/docs/features/navigation-plugin","editUrl":"https://github.com/facebook/flipper/blob/master/website/../docs/features/navigation-plugin.mdx","sidebar":"features","previous":{"title":"Layout Inspector","permalink":"/docs/features/layout-plugin"},"next":{"title":"Network","permalink":"/docs/features/network-plugin"}};/* @jsx mdx */const rightToc=[];const makeShortcode=name=>function MDXDefaultShortcode(props){console.warn("Component "+name+" was not imported, exported, or provided by MDXProvider as global scope");return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",props);};const layoutProps={rightToc};const MDXLayout="wrapper";function MDXContent({components,...props}){return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(MDXLayout,Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({},layoutProps,props,{components:components,mdxType:"MDXLayout"}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`→ `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"../setup/navigation-plugin"}),`See setup instructions for the Navigation Plugin`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The Navigation Plugin allows users to quickly navigate to deep links within their mobile applications to help speed up the development cycle. The plugin is designed to integrate easily within your existing navigation framework or as a stand alone tool. Users can bookmark deep links and jump to them via the button in the tool bar.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("img",{alt:"Navigation Plugin Button",src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("img/navigation-plugin-1.png")}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Navigation events within the app can also be logged to Flipper. This allows the user to view past navigation events and jump straight to them, or export the navigation events for reporting.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("img",{alt:"Navigation Plugin UI",src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("img/navigation-plugin-2.png")}));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 174 */
+/* 173 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -19667,7 +19639,7 @@ Make sure to leave setup instructions in the README of your
 npm package.`));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 175 */
+/* 174 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -19705,7 +19677,7 @@ Supported types: info | spinning | warning | error`),Object(_mdx_js_react__WEBPA
 `)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("table",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("thead",{parentName:"table"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("tr",{parentName:"thead"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("th",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),`Property`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("th",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),`Type`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("th",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),`Description`))),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("tbody",{parentName:"table"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("tr",{parentName:"tbody"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"td"},`onClick`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"td"},`(event: React.MouseEvent) => void`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),`onClick handler.`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("tr",{parentName:"tbody"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"td"},`toggled`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"td"},`boolean`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),`whether the button is toggled`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("tr",{parentName:"tbody"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"td"},`className`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"td"},`string`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}))),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("tr",{parentName:"tbody"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"td"},`label`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"td"},`string`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}))),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("tr",{parentName:"tbody"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"td"},`tooltip`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"td"},`string`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}))),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("tr",{parentName:"tbody"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"td"},`large`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"td"},`boolean`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}))))),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"toolbaricon"},`ToolbarIcon`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("table",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("thead",{parentName:"table"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("tr",{parentName:"thead"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("th",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),`Property`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("th",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),`Type`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("th",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),`Description`))),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("tbody",{parentName:"table"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("tr",{parentName:"tbody"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"td"},`active`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"td"},`boolean`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}))),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("tr",{parentName:"tbody"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"td"},`icon`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"td"},`string`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}))),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("tr",{parentName:"tbody"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"td"},`title`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"td"},`string`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}))),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("tr",{parentName:"tbody"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"td"},`onClick`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"td"},`() => void`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}))))),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"tooltip"},`Tooltip`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("table",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("thead",{parentName:"table"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("tr",{parentName:"thead"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("th",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),`Property`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("th",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),`Type`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("th",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),`Description`))),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("tbody",{parentName:"table"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("tr",{parentName:"tbody"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"td"},`title`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"td"},`ReactReactNode`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),`Content shown in the tooltip`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("tr",{parentName:"tbody"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"td"},`children`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"td"},`ReactReactNode`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),`Component that will show the tooltip`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("tr",{parentName:"tbody"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"td"},`options`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"td"},`TooltipOptions`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}))))),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"tooltipprovider"},`TooltipProvider`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"viewwithsize"},`ViewWithSize`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("table",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("thead",{parentName:"table"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("tr",{parentName:"thead"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("th",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),`Property`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("th",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),`Type`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("th",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),`Description`))),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("tbody",{parentName:"table"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("tr",{parentName:"tbody"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"td"},`onSize`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"td"},`(width: number, height: number) => any`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}))))),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"virtuallist"},`VirtualList`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("table",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("thead",{parentName:"table"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("tr",{parentName:"thead"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("th",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),`Property`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("th",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),`Type`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("th",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),`Description`))),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("tbody",{parentName:"table"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("tr",{parentName:"tbody"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"td"},`data`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"td"},`Array<any>`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}))),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("tr",{parentName:"tbody"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"td"},`renderRow`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"td"},`(data: any, i: number) => any`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}))),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("tr",{parentName:"tbody"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"td"},`rowHeight`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"td"},`number`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}))),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("tr",{parentName:"tbody"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"td"},`overscanCount`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"td"},`number`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}))),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("tr",{parentName:"tbody"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"td"},`sync`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"td"},`boolean`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}))),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("tr",{parentName:"tbody"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"td"},`wrapInner`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"td"},`(data: any) => any`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("td",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"tr"},{"align":null}))))));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 176 */
+/* 175 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -19722,7 +19694,7 @@ __webpack_require__.r(__webpack_exports__);
 const frontMatter={id:'index',title:'Desktop App'};const metadata={"id":"getting-started/index","title":"Desktop App","description":"Flipper helps you debug Android and iOS apps running in an emulator/simulator or connected physical development devices. Flipper consists of two parts:","source":"@site/../docs/getting-started/index.mdx","permalink":"/docs/getting-started/index","editUrl":"https://github.com/facebook/flipper/blob/master/website/../docs/getting-started/index.mdx","sidebar":"setup","next":{"title":"Set up your Android app","permalink":"/docs/getting-started/android-native"}};/* @jsx mdx */const rightToc=[];const makeShortcode=name=>function MDXDefaultShortcode(props){console.warn("Component "+name+" was not imported, exported, or provided by MDXProvider as global scope");return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",props);};const layoutProps={rightToc};const MDXLayout="wrapper";function MDXContent({components,...props}){return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(MDXLayout,Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({},layoutProps,props,{components:components,mdxType:"MDXLayout"}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Flipper helps you debug Android and iOS apps running in an emulator/simulator or connected physical development devices. Flipper consists of two parts:`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("ul",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`The desktop app`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`The native mobile SDKs for Android and iOS`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`To use Flipper, you need to add the mobile SDK to your app. If you are using React Native 0.62 or higher, this is largely done automatically for you.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("hr",null),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The desktop part of Flipper doesn't need any particular setup. Simply download the latest build for `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"https://www.facebook.com/fbflipper/public/mac"}),`Mac`),`, `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"https://www.facebook.com/fbflipper/public/linux"}),`Linux`),` or `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"https://www.facebook.com/fbflipper/public/windows"}),`Windows`),` and launch it. In order to work properly, Flipper requires a working installation of the Android and (if where applicable) iOS development tools on your system, as well as the `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"https://www.openssl.org"}),`OpenSSL`),` binary on your `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`$PATH`),`.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Once you start Flipper and launch an emulator/simulator or connect a device, you will already be able to see the device logs in Flipper. To see app specific data, you need to integrate our native SDKs with your app.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("img",{alt:"Logs plugin",src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("img/initial.png")}));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 177 */
+/* 176 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -19739,7 +19711,7 @@ __webpack_require__.r(__webpack_exports__);
 const frontMatter={id:'shared-preferences-plugin',title:'Shared Preferences'};const metadata={"id":"features/shared-preferences-plugin","title":"Shared Preferences","description":"→ See setup instructions for the Shared Preferences plugin","source":"@site/../docs/features/shared-preferences-plugin.mdx","permalink":"/docs/features/shared-preferences-plugin","editUrl":"https://github.com/facebook/flipper/blob/master/website/../docs/features/shared-preferences-plugin.mdx","sidebar":"features","previous":{"title":"Sandbox","permalink":"/docs/features/sandbox-plugin"},"next":{"title":"LeakCanary","permalink":"/docs/features/leak-canary-plugin"}};/* @jsx mdx */const rightToc=[];const makeShortcode=name=>function MDXDefaultShortcode(props){console.warn("Component "+name+" was not imported, exported, or provided by MDXProvider as global scope");return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",props);};const layoutProps={rightToc};const MDXLayout="wrapper";function MDXContent({components,...props}){return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(MDXLayout,Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({},layoutProps,props,{components:components,mdxType:"MDXLayout"}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`→ `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"../setup/shared-preferences-plugin"}),`See setup instructions for the Shared Preferences plugin`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Easily inspect and modify the data contained within your app's shared preferences.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("img",{alt:"Shared Preferences Plugin",src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("img/shared-preferences.png")}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`All changes to the given shared preference file will automatically appear in Flipper. You may also edit the values in Flipper and have them synced to your device. This can be done by clicking on the value of the specific key you wish to edit, editing the value and then pressing enter.`));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 178 */
+/* 177 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -19822,7 +19794,7 @@ An example test suite can be found `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODU
 To generate a unit test:`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("ol",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ol"},`Start flipper.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ol"},`Open your plugin.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ol"},`Open the Developer Tools (`,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"li"},`View > Open Developer Tools`),`).`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ol"},`In the console, call the function `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"li"},`flipperStartPluginRecording()`),`.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ol"},`Interact with your application, in such a way that new events are created for your plugin.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ol"},`Once you generated an interesting amount and diversity of events, call `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"li"},`flipperStopPluginRecording()`),` from the Flipper console.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ol"},`This process will have generated a unit test and a snapshot file with the data (the console will report where). Move those files to your `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"li"},`__tests__`),` directory.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ol"},`The unit test should succeed if it is run using Jest. Feel free to modify the unit test to your needs. In the future you might want to record new snapshot data files if the plugin changes.`)));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 179 */
+/* 178 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -19880,7 +19852,7 @@ index 495c12e8..bc815d0e 100644
 `)));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 180 */
+/* 179 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -19897,7 +19869,7 @@ __webpack_require__.r(__webpack_exports__);
 const frontMatter={id:'index',title:'Features'};const metadata={"id":"features/index","title":"Features","description":"Flipper itself only provides the architectural platform. What makes it useful are the plugins built on top of it: Logs, Layout Inspector and Network Inspector are all plugins. Plugins can be built very specific to your business logic and the use-cases you have in your app. We are shipping Flipper with a couple of built-in all-purpose plugins, but we encourage you to build your own. Each plugin needs to be enabled individually.","source":"@site/../docs/features/index.mdx","permalink":"/docs/features/index","editUrl":"https://github.com/facebook/flipper/blob/master/website/../docs/features/index.mdx","sidebar":"features","next":{"title":"Logs","permalink":"/docs/features/logs-plugin"}};/* @jsx mdx */const rightToc=[{value:'Build your own plugin',id:'build-your-own-plugin',children:[]}];const makeShortcode=name=>function MDXDefaultShortcode(props){console.warn("Component "+name+" was not imported, exported, or provided by MDXProvider as global scope");return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",props);};const layoutProps={rightToc};const MDXLayout="wrapper";function MDXContent({components,...props}){return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(MDXLayout,Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({},layoutProps,props,{components:components,mdxType:"MDXLayout"}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Flipper itself only provides the architectural platform. What makes it useful are the plugins built on top of it: `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"logs-plugin"}),`Logs`),`, `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"layout-plugin"}),`Layout Inspector`),` and `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"network-plugin"}),`Network Inspector`),` are all plugins. Plugins can be built very specific to your business logic and the use-cases you have in your app. We are shipping Flipper with a couple of built-in all-purpose plugins, but we encourage you to build your own. Each plugin needs to be enabled individually.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("img",{alt:"Plugins",src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])('img/plugins.png')}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"build-your-own-plugin"},`Build your own plugin`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The Flipper desktop app and the mobile native SDK establish a connection which is used to send data to and from the device. Flipper does not make any restrictions on what kind of data is being sent. This enables a lot of different use-cases where you want to better understand what is going inside your app. For example you can visualize the state of local caches, events happening or trigger actions on your app from the desktop.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`If there is no plugin that does exactly what you want, you can build your own plugin, tailored to your needs. A plugin always consists of the native implementation sending and receiving data and the desktop plugin visualizing data. Learn more on how to `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"../extending/index"}),`extend Flipper`),` and build your own plugin. The native implementations are written in Java, Objective-C, or C++, the desktop UI is written in React.`));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 181 */
+/* 180 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -19915,7 +19887,7 @@ const frontMatter={id:'custom-ports',title:'Running Flipper with different ports
 `)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`To configure the iOS SDK for custom ports, set the FLIPPER_PORTS environment variable in your app launch script.`));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 182 */
+/* 181 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -19962,7 +19934,7 @@ const frontMatter={id:'create-plugin',title:'Client Plugin API'};const metadata=
 - (BOOL)runInBackground {}
 
 @end
-`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("pre",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("code",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"pre"},{"className":"language-c++"}),`class MyFlipperPlugin : public FlipperPlugin {
+`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("pre",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("code",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"pre"},{"className":"language-cpp"}),`class MyFlipperPlugin : public FlipperPlugin {
 public:
   std::string identifier() const override { return "MyFlipperPlugin"; }
   void didConnect(std::shared_ptr<FlipperConnection> conn) override;
@@ -20013,7 +19985,7 @@ addPlugin({
 - (void)didDisonnect {}
 
 @end
-`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("pre",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("code",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"pre"},{"className":"language-c++"}),`void MyFlipperPlugin::didConnect(std::shared_ptr<FlipperConnection> conn) {
+`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("pre",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("code",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"pre"},{"className":"language-cpp"}),`void MyFlipperPlugin::didConnect(std::shared_ptr<FlipperConnection> conn) {
   conn->receive("getData", [](const folly::dynamic &params,
                              std::unique_ptr<FlipperResponder> responder) {
     dynamic response = folly::dynamic::object("data", getMyData());
@@ -20041,7 +20013,7 @@ addPlugin({
         .put("message", "Hello")
         .build()
 `)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("pre",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("code",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"pre"},{"className":"language-objective-c"}),`[connection send:@"getData" withParams:@{@"message":@"hello"}];
-`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("pre",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("code",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"pre"},{"className":"language-c++"}),`void MyFlipperPlugin::didConnect(std::shared_ptr<FlipperConnection> conn) {
+`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("pre",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("code",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"pre"},{"className":"language-cpp"}),`void MyFlipperPlugin::didConnect(std::shared_ptr<FlipperConnection> conn) {
   dynamic message = folly::dynamic::object("message", "hello");
   conn->send("getData", message);
 }
@@ -20060,7 +20032,7 @@ However, a plugin shouldn't assume it will eventually get a connection, since th
 So make sure to not store unbounded amounts of data!`)));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 183 */
+/* 182 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -20081,7 +20053,7 @@ CrashReporterPlugin.getInstance().sendExceptionMessage(Thread.currentThread(), e
 `)));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 184 */
+/* 183 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -20098,7 +20070,7 @@ __webpack_require__.r(__webpack_exports__);
 const frontMatter={id:'debugging',title:'Debugging'};const metadata={"id":"extending/debugging","title":"Debugging","description":"Built-in Developer Tools","source":"@site/../docs/extending/debugging.mdx","permalink":"/docs/extending/debugging","editUrl":"https://github.com/facebook/flipper/blob/master/website/../docs/extending/debugging.mdx","sidebar":"extending","previous":{"title":"Testing","permalink":"/docs/extending/testing"},"next":{"title":"Implementing a Flipper Client","permalink":"/docs/extending/new-clients"}};/* @jsx mdx */const rightToc=[{value:'Built-in Developer Tools',id:'built-in-developer-tools',children:[]},{value:'Google Chrome Developer Tools',id:'google-chrome-developer-tools',children:[]},{value:'Visual Studio Code',id:'visual-studio-code',children:[]},{value:'Plugin missing',id:'plugin-missing',children:[]}];const makeShortcode=name=>function MDXDefaultShortcode(props){console.warn("Component "+name+" was not imported, exported, or provided by MDXProvider as global scope");return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",props);};const layoutProps={rightToc};const MDXLayout="wrapper";function MDXContent({components,...props}){return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(MDXLayout,Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({},layoutProps,props,{components:components,mdxType:"MDXLayout"}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"built-in-developer-tools"},`Built-in Developer Tools`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Flipper is built on Electron which itself is built on Chromium. This means we can debug Flipper using Chrome's developer tools. Flipper will also automatically install the React devtools extension allowing you to have better insight into what is going on in your plugin.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`You can open the dev tools from the menu with `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`View`),` > `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`Toggle Developer Tools`),` or pressing ⌥⌘I on a Mac.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`In addition to helping you with the JavaScript, the JS console will also display uncaught exceptions thrown from the client plugin in response to Flipper method calls.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"google-chrome-developer-tools"},`Google Chrome Developer Tools`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`As an alternative to using built-in Developer Tools you can also attach to the running Flipper instance from Google Chrome Developer Tools. Sometimes this is useful, because the version of Dev Tools in Google Chrome is more recent than the embedded one, and it is possible to easily install additional extensions if required.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`To attach the running Flipper instance open new tab in Google Chrome, navigate to "http://localhost:9222" and choose "Flipper" in the opened list.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("img",{alt:"Attach From Google Chrome",src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("img/debugging-from-google-chrome.png")}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"visual-studio-code"},`Visual Studio Code`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`If you prefer to use the same editor for both coding and debugging, you can attach to the running Flipper instance for debugging right from Visual Studio Code. First of all, you need to install extension "Debugger for Chrome". Then, to start debugging, open folder `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`desktop`),` of Flipper repository in VSCode, execute `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`yarn start`),` in terminal to launch Flipper in development mode, select tab `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`Debug and Run`),`, and run task `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`Attach to Running Renderer`),`. By default this task is set as the first one, so you can just press `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`F5`),` to run it.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("img",{alt:"Attach From Visual Studio Code",src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("img/debugging-from-vscode.png")}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"plugin-missing"},`Plugin missing`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`If a plugin you created is not showing up there might be two potential classes of problems: Either there is a problem on the mobile side or on the desktop side. Understanding where the problem is rooted helps debugging it.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Click on "Plugin now showing" in the sidebar and see if your plugin is listed here. If it is not listed, the desktop side of the plugin is not loaded. One of the main reasons for this is that the plugin could not be compiled, due to some errors. Try launching Flipper from the Terminal to see some additional logs: `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`/Applications/Flipper.app/Contents/MacOS/Flipper`),`.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`A common error here is `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`Error: fsevents unavailable (this watcher can only be used on Darwin)`),`. This can be fixed by installing watchman (`,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`brew install watchman`),`).`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`If the plugin is listed in the desktop app, but still is not showing up in the sidebar, the mobile app is not announcing the plugin. In this case, make sure, to instantiate your plugin and add it to your FlipperClient.`));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 185 */
+/* 184 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -20116,7 +20088,7 @@ const frontMatter={id:'shared-preferences-plugin',title:'Shared Preferences Setu
 client.addPlugin(
     new SharedPreferencesFlipperPlugin(context, "my_shared_preference_file"));
 `)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"ios"},`iOS`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`If you want to use the Shared Preferences plugin, you need to add `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`FlipperKit/FlipperKitUserDefaultsPlugin`),` to your Podfile.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("pre",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("code",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"pre"},{"className":"language-ruby"}),`pod 'FlipperKit/FlipperKitUserDefaultsPlugin', '~>' + flipperkit_version
-`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Initialize the plugin in the following way:`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("pre",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("code",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"pre"},{"className":"language-objc"}),`#import <FlipperKitUserDefaultsPlugin/FKUserDefaultsPlugin.h>
+`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Initialize the plugin in the following way:`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("pre",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("code",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"pre"},{"className":"language-objectivec"}),`#import <FlipperKitUserDefaultsPlugin/FKUserDefaultsPlugin.h>
 
 [client addPlugin:[[FKUserDefaultsPlugin alloc] initWithSuiteName:@"your_suitename"]];
 `)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("pre",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("code",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"pre"},{"className":"language-swift"}),`import FlipperKit
@@ -20125,7 +20097,7 @@ client?.add(FKUserDefaultsPlugin.init(suiteName: "your_suitename"))
 `)));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 186 */
+/* 185 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -20146,7 +20118,7 @@ a full plugin with custom UI components.`),Object(_mdx_js_react__WEBPACK_IMPORTE
 this tutorial:`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("ul",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("strong",{parentName:"li"},`Desktop app`),`: This is the Electron-based application you run on your desktop.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("strong",{parentName:"li"},`Mobile client`),`: This is the mobile app running most likely on a phone or other mobile device. It connects to the desktop app.`)));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 187 */
+/* 186 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -20204,7 +20176,7 @@ $ flipper-pkg init
 `)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("em",{parentName:"p"},`See `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"em"},{"href":"https://github.com/facebook/flipper/blob/master/desktop/plugins/seamammals/package.json"}),`package.json`))),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`To ensure there are no errors in the defined plugin, install packages (using `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`yarn install`),` or `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`npm install`),`) and execute script `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`lint`),` (`,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`yarn lint`),` or `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`npm run lint`),`) which shows all the mismatches that should be fixed to make the plugin definition valid.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Now that our package has been set up, we are ready to build a UI for our plugin. Either by using a standardized table-based plugin, or by creating a custom UI.`));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 188 */
+/* 187 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -20221,7 +20193,7 @@ __webpack_require__.r(__webpack_exports__);
 const frontMatter={id:'databases-plugin',title:'Databases'};const metadata={"id":"features/databases-plugin","title":"Databases","description":"→ See setup instructions for the Databases plugin","source":"@site/../docs/features/databases-plugin.mdx","permalink":"/docs/features/databases-plugin","editUrl":"https://github.com/facebook/flipper/blob/master/website/../docs/features/databases-plugin.mdx","sidebar":"features","previous":{"title":"Network","permalink":"/docs/features/network-plugin"},"next":{"title":"Images","permalink":"/docs/features/images-plugin"}};/* @jsx mdx */const rightToc=[];const makeShortcode=name=>function MDXDefaultShortcode(props){console.warn("Component "+name+" was not imported, exported, or provided by MDXProvider as global scope");return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",props);};const layoutProps={rightToc};const MDXLayout="wrapper";function MDXContent({components,...props}){return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(MDXLayout,Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({},layoutProps,props,{components:components,mdxType:"MDXLayout"}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`→ `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"../setup/databases-plugin"}),`See setup instructions for the Databases plugin`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The Databases plugin provides developers with read-write access to their databases:`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("ul",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`browse your tables' data`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`see your tables' structure`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`execute queries`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`mark queries as favorites`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`see logs of past executed queries`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("img",{alt:"Databases Plugin 1",src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("img/databases-plugin-1.png")}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("img",{alt:"Databases Plugin 2",src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("img/databases-plugin-2.png")}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Note: this plugin is only available for Android.`));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 189 */
+/* 188 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -20238,7 +20210,7 @@ __webpack_require__.r(__webpack_exports__);
 const frontMatter={id:'client-plugin-lifecycle',title:'Client Plugin Lifecycle'};const metadata={"id":"extending/client-plugin-lifecycle","title":"Client Plugin Lifecycle","description":"There are two types of client plugin: Regular and Background plugins. We recommend starting off as a regular plugin and switching it to a background plugin if necessary.","source":"@site/../docs/extending/client-plugin-lifecycle.mdx","permalink":"/docs/extending/client-plugin-lifecycle","editUrl":"https://github.com/facebook/flipper/blob/master/website/../docs/extending/client-plugin-lifecycle.mdx","sidebar":"extending","previous":{"title":"Client Plugin API","permalink":"/docs/extending/create-plugin"},"next":{"title":"Providing Data to Plugins","permalink":"/docs/extending/send-data"}};/* @jsx mdx */const rightToc=[{value:'Regular Plugin Lifecycle',id:'regular-plugin-lifecycle',children:[]},{value:'Background Plugin Lifecycle',id:'background-plugin-lifecycle',children:[]}];const makeShortcode=name=>function MDXDefaultShortcode(props){console.warn("Component "+name+" was not imported, exported, or provided by MDXProvider as global scope");return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",props);};const layoutProps={rightToc};const MDXLayout="wrapper";function MDXContent({components,...props}){return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(MDXLayout,Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({},layoutProps,props,{components:components,mdxType:"MDXLayout"}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`There are two types of client plugin: Regular and Background plugins. We recommend starting off as a regular plugin and switching it to a background plugin if necessary.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`For both types of plugin, we recommend starting work after `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`onConnect`),` is called, and terminating it after `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`onDisconnect`),`, when possible. This prevents wasted computation when Flipper isn't connected. If the plugin needs to keep track of events that occur before it gets connected (such as initial network requests on app startup), you should do so in the plugin constructor (or ideally in a separate class).`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"regular-plugin-lifecycle"},`Regular Plugin Lifecycle`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`For regular plugins, `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`onConnect`),` and `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`onDisconnect`),` are triggered when the user opens the plugin in the Flipper UI, and when they switch to another plugin, respectively.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("img",{alt:"Regular Plugin Lifecycle diagram",src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("img/regular-plugin-lifecycle.png")}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"background-plugin-lifecycle"},`Background Plugin Lifecycle`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`For background plugins, `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`onConnect`),` is called when Flipper first connects, and `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`onDisconnect`),` when it disconnects. The user does not need to be viewing the plugin for it to send messages; they will be queued up until the next time the user opens the plugin where they will be processed.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Even for background plugins, `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`onDisconnect`),` and `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`onConnect`),` may be called on a plugin (e.g. if the user restarts Flipper). Plugins should handle this accordingly by making sure to resend any important data to the reconnected instance.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",{class:"warning"},"Note that a plugin must be enabled by the user for its messages to be queued up."),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("img",{alt:"Background Plugin Lifecycle diagram",src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("img/bg-plugin-lifecycle.png")}));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 190 */
+/* 189 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -20289,7 +20261,7 @@ public class DeepLinkApplication extends Application {
 `)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"ios"},`iOS`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`iOS support is coming soon.`));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 191 */
+/* 190 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -20311,7 +20283,7 @@ const frontMatter={id:'error-handling',title:'Error Handling'};const metadata={"
 `)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Executing this block of code will always finish without error but may transfer any silent errors to the Flipper desktop app. During plugin development these java stack traces are surfaced in the chrome dev console.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Always use `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`ErrorReportingRunnable`),` for error handling instead of `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`try`),`/`,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`catch`),` or even worse letting errors crash the app. With ErrorReportingRunnable you won't block anyone and you won't hide any stack traces.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"c"},`C++`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`To gracefully handle errors in Flipper we perform all transactions inside of a try block which catches all exceptions, stopping them from crashing the application and reporting them to the plugin developer. This includes your own customs implementations of `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`FlipperPlugin::didConnect()`),` and `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`FlipperConnection::send()`),` and `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`::receive()`),`!`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`That means you can safely throw exceptions in your plugin code. The exception messages will be sent to the Flipper desktop app. During plugin development the exception messages are surfaced in the Chrome dev console.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`If your plugin performs asynchronous work in which exceptions are thrown, these exceptions will not be caught by the Flipper infrastructure. You should handle them appropriately.`));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 192 */
+/* 191 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -20328,7 +20300,7 @@ __webpack_require__.r(__webpack_exports__);
 const frontMatter={id:'share-flipper-data',title:'Share Flipper Data'};const metadata={"id":"features/share-flipper-data","title":"Share Flipper Data","description":"Flipper's diagnostic and profiling data is often used for debugging. But sometimes you can not solve the problem on your own and need some help from your colleagues. Rather than just sending screenshots, you can share the data you are seeing in Flipper with them. This includes all logs, the layout hierarchy, network requests, etc. and helps to get the bigger picture of why something didn't work as expected.","source":"@site/../docs/features/share-flipper-data.mdx","permalink":"/docs/features/share-flipper-data","editUrl":"https://github.com/facebook/flipper/blob/master/website/../docs/features/share-flipper-data.mdx","sidebar":"features","previous":{"title":"Crash Reporter","permalink":"/docs/features/crash-reporter-plugin"},"next":{"title":"React Native Support","permalink":"/docs/features/react-native"}};/* @jsx mdx */const rightToc=[{value:'Export Flipper Data',id:'export-flipper-data',children:[]},{value:'Import Flipper Data',id:'import-flipper-data',children:[]}];const makeShortcode=name=>function MDXDefaultShortcode(props){console.warn("Component "+name+" was not imported, exported, or provided by MDXProvider as global scope");return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",props);};const layoutProps={rightToc};const MDXLayout="wrapper";function MDXContent({components,...props}){return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(MDXLayout,Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({},layoutProps,props,{components:components,mdxType:"MDXLayout"}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Flipper's diagnostic and profiling data is often used for debugging. But sometimes you can not solve the problem on your own and need some help from your colleagues. Rather than just sending screenshots, you can share the data you are seeing in Flipper with them. This includes all logs, the layout hierarchy, network requests, etc. and helps to get the bigger picture of why something didn't work as expected.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"export-flipper-data"},`Export Flipper Data`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`You can export Flipper's data in a `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`.flipper`),` file. For the export to work, an active device needs to be connected to Flipper. Make sure you have selected the device you want to export in Flipper's device dropdown:`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("img",{alt:"selectedDevice",src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("img/shareFlipperData/selectedDevice.png")}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`To export Flipper's into a file, select "File" → "Export" from the menu bar and save it where ever you like. This file now can be shared with your colleagues.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("strong",{parentName:"p"},`Caution:`),` Bear in mind that the file will include all the data available to the plugins, including for example any access tokens in recorded network requests.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"import-flipper-data"},`Import Flipper Data`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Opening a `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`.flipper`),` file imports all the data and allows you to use Flipper as if the device was connected. However, note the device is marked as "offline". This means, while you are able to see all the date, you can not interact with it (e.g. change a view's background color), because the actual device is not present.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("img",{alt:"importedDevice",src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("img/shareFlipperData/importedDevice.png")}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`For advanced users, Flipper also provides a URL handler to import data. Linking to `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`flipper://import/?url={LINK_TO_FLIPPER_FILE}`),` will launch Flipper and display the downloaded data.`));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 193 */
+/* 192 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -20346,22 +20318,22 @@ const frontMatter={id:'arch',title:'Architecture'};const metadata={"id":"extendi
 There are two kinds of plugins in Flipper, client plugins and desktop plugins. Client plugins expose information as an API to desktop plugins whose responsibility it is to render this information in an easy-to-digest way. Client plugins are written once for each platform in the platform's native language. Desktop plugins are written only once in JavaScript using React and consume the APIs exposed by the client plugins.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h3",{"id":"architecture---react-native"},`Architecture - React Native`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Simplified visualization of Flipper architecture, when used with React Native.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("img",{alt:"Flipper communication diagram",src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("img/flipper-communication-diagram.png")}));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 194 */
+/* 193 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var algoliasearch_lite__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(112);
+/* harmony import */ var algoliasearch_lite__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(111);
 /* harmony import */ var algoliasearch_lite__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(algoliasearch_lite__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var algoliasearch_helper__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(246);
+/* harmony import */ var algoliasearch_helper__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(245);
 /* harmony import */ var algoliasearch_helper__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(algoliasearch_helper__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(5);
 /* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(classnames__WEBPACK_IMPORTED_MODULE_3__);
 /* harmony import */ var _docusaurus_ExecutionEnvironment__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(18);
 /* harmony import */ var _docusaurus_useDocusaurusContext__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(6);
-/* harmony import */ var _theme_hooks_useVersioning__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(247);
+/* harmony import */ var _theme_hooks_useVersioning__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(246);
 /* harmony import */ var _theme_hooks_useVersioning__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_theme_hooks_useVersioning__WEBPACK_IMPORTED_MODULE_6__);
 /* harmony import */ var _theme_hooks_useSearchQuery__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(79);
 /* harmony import */ var _docusaurus_Link__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(13);
@@ -20376,7 +20348,7 @@ __webpack_require__.r(__webpack_exports__);
  */ /* eslint-disable jsx-a11y/no-autofocus */function pluralize(count,word){return count>1?`${word}s`:word;}function Search(){const{siteConfig:{themeConfig:{algolia:{appId='BH4D9OD16A',apiKey,indexName}={}}}={}}=Object(_docusaurus_useDocusaurusContext__WEBPACK_IMPORTED_MODULE_5__[/* default */ "a"])();const{searchValue,updateSearchPath}=Object(_theme_hooks_useSearchQuery__WEBPACK_IMPORTED_MODULE_7__[/* default */ "a"])();const{versioningEnabled,versions,latestVersion}=_theme_hooks_useVersioning__WEBPACK_IMPORTED_MODULE_6___default()();const[searchVersion,setSearchVersion]=Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(latestVersion);const[searchQuery,setSearchQuery]=Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(searchValue);const initialSearchResultState={items:[],query:null,totalResults:null,totalPages:null,lastPage:null,hasMore:null,loading:null};const[searchResultState,searchResultStateDispatcher]=Object(react__WEBPACK_IMPORTED_MODULE_0__["useReducer"])((prevState,{type,value:state})=>{switch(type){case'reset':{return initialSearchResultState;}case'loading':{return{...prevState,loading:true};}case'update':{if(searchQuery!==state.query){return prevState;}return{...state,items:state.lastPage===0?state.items:prevState.items.concat(state.items)};}case'advance':{const hasMore=prevState.totalPages>prevState.lastPage+1;return{...prevState,lastPage:hasMore?prevState.lastPage+1:prevState.lastPage,hasMore};}default:return prevState;}},initialSearchResultState);const algoliaClient=algoliasearch_lite__WEBPACK_IMPORTED_MODULE_1___default()(appId,apiKey);const algoliaHelper=algoliasearch_helper__WEBPACK_IMPORTED_MODULE_2___default()(algoliaClient,indexName,{hitsPerPage:15,advancedSyntax:true,facets:searchVersion?['version']:[]});algoliaHelper.on('result',({results:{query,hits,page,nbHits,nbPages}})=>{if(query===''||!(hits instanceof Array)){searchResultStateDispatcher({type:'reset'});return;}const sanitizeValue=value=>{return value.replace(/algolia-docsearch-suggestion--highlight/g,'search-result-match');};const items=hits.map(({url,_highlightResult:{hierarchy},_snippetResult:snippet={}})=>{const{pathname,hash}=new URL(url);const titles=Object.keys(hierarchy).map(key=>{return sanitizeValue(hierarchy[key].value);});return{title:titles.pop(),url:pathname+hash,summary:snippet.content?`${sanitizeValue(snippet.content.value)}...`:'',breadcrumbs:titles};});searchResultStateDispatcher({type:'update',value:{items,query,totalResults:nbHits,totalPages:nbPages,lastPage:page,hasMore:nbPages>page+1,loading:false}});});const[loaderRef,setLoaderRef]=Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(null);const prevY=Object(react__WEBPACK_IMPORTED_MODULE_0__["useRef"])(0);const observer=Object(react__WEBPACK_IMPORTED_MODULE_0__["useRef"])(_docusaurus_ExecutionEnvironment__WEBPACK_IMPORTED_MODULE_4__[/* default */ "a"].canUseDOM&&new IntersectionObserver(entries=>{const{isIntersecting,boundingClientRect:{y:currentY}}=entries[0];if(isIntersecting&&prevY.current>currentY){searchResultStateDispatcher({type:'advance'});}prevY.current=currentY;},{threshold:1}));const getTitle=()=>searchQuery?`Search results for "${searchQuery}"`:'Search the documentation';const makeSearch=(page=0)=>{if(searchVersion){algoliaHelper.setQuery(searchQuery).addFacetRefinement('version',searchVersion).setPage(page).search();}else{algoliaHelper.setQuery(searchQuery).setPage(page).search();}};const handleSearchInputChange=e=>{const searchInputValue=e.target.value;if(e.target.tagName==='SELECT'){setSearchVersion(searchInputValue);}else{setSearchQuery(searchInputValue);}};Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(()=>{if(!loaderRef){return undefined;}observer.current.observe(loaderRef);return()=>{observer.current.unobserve(loaderRef);};},[loaderRef]);Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(()=>{updateSearchPath(searchQuery);searchResultStateDispatcher({type:'reset'});if(searchQuery){searchResultStateDispatcher({type:'loading'});setTimeout(()=>{makeSearch();},300);}},[searchQuery,searchVersion]);Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(()=>{if(!searchResultState.lastPage||searchResultState.lastPage===0){return;}makeSearch(searchResultState.lastPage);},[searchResultState.lastPage]);return/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_theme_Layout__WEBPACK_IMPORTED_MODULE_9__[/* default */ "a"],{title:getTitle()},/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div",{className:"container margin-vert--lg"},/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h1",null,getTitle()),/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("form",{className:"row",onSubmit:e=>e.preventDefault()},/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div",{className:classnames__WEBPACK_IMPORTED_MODULE_3___default()('col',_styles_module_css__WEBPACK_IMPORTED_MODULE_10___default.a.searchQueryColumn,{'col--9':versioningEnabled,'col--12':!versioningEnabled})},/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input",{type:"search",name:"q",className:_styles_module_css__WEBPACK_IMPORTED_MODULE_10___default.a.searchQueryInput,placeholder:"Type your search here","aria-label":"Search",onChange:handleSearchInputChange,value:searchQuery,autoComplete:"off",autoFocus:true})),versioningEnabled&&/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div",{className:classnames__WEBPACK_IMPORTED_MODULE_3___default()('col','col--3','padding-left--none',_styles_module_css__WEBPACK_IMPORTED_MODULE_10___default.a.searchVersionColumn)},/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("select",{onChange:handleSearchInputChange,defaultValue:searchVersion,className:_styles_module_css__WEBPACK_IMPORTED_MODULE_10___default.a.searchVersionInput},versions.map((version,i)=>/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("option",{key:i,value:version},version))))),/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div",{className:classnames__WEBPACK_IMPORTED_MODULE_3___default()('row','margin-vert--sm')},/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div",{className:classnames__WEBPACK_IMPORTED_MODULE_3___default()('col','col--8',_styles_module_css__WEBPACK_IMPORTED_MODULE_10___default.a.searchResultsColumn)},!!searchResultState.totalResults&&/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("strong",null,searchResultState.totalResults,' ',pluralize(searchResultState.totalResults,'document')," found")),/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div",{className:classnames__WEBPACK_IMPORTED_MODULE_3___default()('col','col--4',_styles_module_css__WEBPACK_IMPORTED_MODULE_10___default.a.searchLogoColumn)},/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("a",{target:"_blank",rel:"noopener noreferrer",href:"https://www.algolia.com/","aria-label":"Search"},/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("svg",{viewBox:"0 0 168 24",className:_styles_module_css__WEBPACK_IMPORTED_MODULE_10___default.a.algoliaLogo,xmlns:"http://www.w3.org/2000/svg","aria-label":"Search by Algolia"},/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("g",{fill:"none"},/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("path",{className:_styles_module_css__WEBPACK_IMPORTED_MODULE_10___default.a.algoliaLogoPathFill,d:"M120.925 18.804c-4.386.02-4.386-3.54-4.386-4.106l-.007-13.336 2.675-.424v13.254c0 .322 0 2.358 1.718 2.364v2.248zm-10.846-2.18c.821 0 1.43-.047 1.855-.129v-2.719a6.334 6.334 0 0 0-1.574-.199 5.7 5.7 0 0 0-.897.069 2.699 2.699 0 0 0-.814.24c-.24.116-.439.28-.582.491-.15.212-.219.335-.219.656 0 .628.219.991.616 1.23s.938.362 1.615.362zm-.233-9.7c.883 0 1.629.109 2.231.328.602.218 1.088.525 1.444.915.363.396.609.922.76 1.483.157.56.232 1.175.232 1.85v6.874a32.5 32.5 0 0 1-1.868.314c-.834.123-1.772.185-2.813.185-.69 0-1.327-.069-1.895-.198a4.001 4.001 0 0 1-1.471-.636 3.085 3.085 0 0 1-.951-1.134c-.226-.465-.343-1.12-.343-1.803 0-.656.13-1.073.384-1.525a3.24 3.24 0 0 1 1.047-1.106c.445-.287.95-.492 1.532-.615a8.8 8.8 0 0 1 1.82-.185 8.404 8.404 0 0 1 1.972.24v-.438c0-.307-.035-.6-.11-.874a1.88 1.88 0 0 0-.384-.73 1.784 1.784 0 0 0-.724-.493 3.164 3.164 0 0 0-1.143-.205c-.616 0-1.177.075-1.69.164a7.735 7.735 0 0 0-1.26.307l-.321-2.192c.335-.117.834-.233 1.478-.349a10.98 10.98 0 0 1 2.073-.178zm52.842 9.626c.822 0 1.43-.048 1.854-.13V13.7a6.347 6.347 0 0 0-1.574-.199c-.294 0-.595.021-.896.069a2.7 2.7 0 0 0-.814.24 1.46 1.46 0 0 0-.582.491c-.15.212-.218.335-.218.656 0 .628.218.991.615 1.23.404.245.938.362 1.615.362zm-.226-9.694c.883 0 1.629.108 2.231.327.602.219 1.088.526 1.444.915.355.39.609.923.759 1.483a6.8 6.8 0 0 1 .233 1.852v6.873c-.41.088-1.034.19-1.868.314-.834.123-1.772.184-2.813.184-.69 0-1.327-.068-1.895-.198a4.001 4.001 0 0 1-1.471-.635 3.085 3.085 0 0 1-.951-1.134c-.226-.465-.343-1.12-.343-1.804 0-.656.13-1.073.384-1.524.26-.45.608-.82 1.047-1.107.445-.286.95-.491 1.532-.614a8.803 8.803 0 0 1 2.751-.13c.329.034.671.096 1.04.185v-.437a3.3 3.3 0 0 0-.109-.875 1.873 1.873 0 0 0-.384-.731 1.784 1.784 0 0 0-.724-.492 3.165 3.165 0 0 0-1.143-.205c-.616 0-1.177.075-1.69.164a7.75 7.75 0 0 0-1.26.307l-.321-2.193c.335-.116.834-.232 1.478-.348a11.633 11.633 0 0 1 2.073-.177zm-8.034-1.271a1.626 1.626 0 0 1-1.628-1.62c0-.895.725-1.62 1.628-1.62.904 0 1.63.725 1.63 1.62 0 .895-.733 1.62-1.63 1.62zm1.348 13.22h-2.689V7.27l2.69-.423v11.956zm-4.714 0c-4.386.02-4.386-3.54-4.386-4.107l-.008-13.336 2.676-.424v13.254c0 .322 0 2.358 1.718 2.364v2.248zm-8.698-5.903c0-1.156-.253-2.119-.746-2.788-.493-.677-1.183-1.01-2.067-1.01-.882 0-1.574.333-2.065 1.01-.493.676-.733 1.632-.733 2.788 0 1.168.246 1.953.74 2.63.492.683 1.183 1.018 2.066 1.018.882 0 1.574-.342 2.067-1.019.492-.683.738-1.46.738-2.63zm2.737-.007c0 .902-.13 1.584-.397 2.33a5.52 5.52 0 0 1-1.128 1.906 4.986 4.986 0 0 1-1.752 1.223c-.685.286-1.739.45-2.265.45-.528-.006-1.574-.157-2.252-.45a5.096 5.096 0 0 1-1.744-1.223c-.487-.527-.863-1.162-1.137-1.906a6.345 6.345 0 0 1-.41-2.33c0-.902.123-1.77.397-2.508a5.554 5.554 0 0 1 1.15-1.892 5.133 5.133 0 0 1 1.75-1.216c.679-.287 1.425-.423 2.232-.423.808 0 1.553.142 2.237.423a4.88 4.88 0 0 1 1.753 1.216 5.644 5.644 0 0 1 1.135 1.892c.287.738.431 1.606.431 2.508zm-20.138 0c0 1.12.246 2.363.738 2.882.493.52 1.13.78 1.91.78.424 0 .828-.062 1.204-.178.377-.116.677-.253.917-.417V9.33a10.476 10.476 0 0 0-1.766-.226c-.971-.028-1.71.37-2.23 1.004-.513.636-.773 1.75-.773 2.788zm7.438 5.274c0 1.824-.466 3.156-1.404 4.004-.936.846-2.367 1.27-4.296 1.27-.705 0-2.17-.137-3.34-.396l.431-2.118c.98.205 2.272.26 2.95.26 1.074 0 1.84-.219 2.299-.656.459-.437.684-1.086.684-1.948v-.437a8.07 8.07 0 0 1-1.047.397c-.43.13-.93.198-1.492.198-.739 0-1.41-.116-2.018-.349a4.206 4.206 0 0 1-1.567-1.025c-.431-.45-.774-1.017-1.013-1.694-.24-.677-.363-1.885-.363-2.773 0-.834.13-1.88.384-2.577.26-.696.629-1.298 1.129-1.796.493-.498 1.095-.881 1.8-1.162a6.605 6.605 0 0 1 2.428-.457c.87 0 1.67.109 2.45.24.78.129 1.444.265 1.985.415V18.17zM6.972 6.677v1.627c-.712-.446-1.52-.67-2.425-.67-.585 0-1.045.13-1.38.391a1.24 1.24 0 0 0-.502 1.03c0 .425.164.765.494 1.02.33.256.835.532 1.516.83.447.192.795.356 1.045.495.25.138.537.332.862.582.324.25.563.548.718.894.154.345.23.741.23 1.188 0 .947-.334 1.691-1.004 2.234-.67.542-1.537.814-2.601.814-1.18 0-2.16-.229-2.936-.686v-1.708c.84.628 1.814.942 2.92.942.585 0 1.048-.136 1.388-.407.34-.271.51-.646.51-1.125 0-.287-.1-.55-.302-.79-.203-.24-.42-.42-.655-.542-.234-.123-.585-.29-1.053-.503a61.27 61.27 0 0 1-.582-.271 13.67 13.67 0 0 1-.55-.287 4.275 4.275 0 0 1-.567-.351 6.92 6.92 0 0 1-.455-.4c-.18-.17-.31-.34-.39-.51-.08-.17-.155-.37-.224-.598a2.553 2.553 0 0 1-.104-.742c0-.915.333-1.638.998-2.17.664-.532 1.523-.798 2.576-.798.968 0 1.793.17 2.473.51zm7.468 5.696v-.287c-.022-.607-.187-1.088-.495-1.444-.309-.357-.75-.535-1.324-.535-.532 0-.99.194-1.373.583-.382.388-.622.949-.717 1.683h3.909zm1.005 2.792v1.404c-.596.34-1.383.51-2.362.51-1.255 0-2.255-.377-3-1.132-.744-.755-1.116-1.744-1.116-2.968 0-1.297.34-2.316 1.021-3.055.68-.74 1.548-1.11 2.6-1.11 1.033 0 1.852.323 2.458.966.606.644.91 1.572.91 2.784 0 .33-.033.676-.096 1.038h-5.314c.107.702.405 1.239.894 1.611.49.372 1.106.558 1.85.558.862 0 1.58-.202 2.155-.606zm6.605-1.77h-1.212c-.596 0-1.045.116-1.349.35-.303.234-.454.532-.454.894 0 .372.117.664.35.877.235.213.575.32 1.022.32.51 0 .912-.142 1.204-.424.293-.281.44-.651.44-1.108v-.91zm-4.068-2.554V9.325c.627-.361 1.457-.542 2.489-.542 2.116 0 3.175 1.026 3.175 3.08V17h-1.548v-.957c-.415.68-1.143 1.02-2.186 1.02-.766 0-1.38-.22-1.843-.661-.462-.442-.694-1.003-.694-1.684 0-.776.293-1.38.878-1.81.585-.431 1.404-.647 2.457-.647h1.34V11.8c0-.554-.133-.971-.399-1.253-.266-.282-.707-.423-1.324-.423a4.07 4.07 0 0 0-2.345.718zm9.333-1.93v1.42c.394-1 1.101-1.5 2.123-1.5.148 0 .313.016.494.048v1.531a1.885 1.885 0 0 0-.75-.143c-.542 0-.989.24-1.34.718-.351.479-.527 1.048-.527 1.707V17h-1.563V8.91h1.563zm5.01 4.084c.022.82.272 1.492.75 2.019.479.526 1.15.79 2.01.79.639 0 1.235-.176 1.788-.527v1.404c-.521.319-1.186.479-1.995.479-1.265 0-2.276-.4-3.031-1.197-.755-.798-1.133-1.792-1.133-2.984 0-1.16.38-2.151 1.14-2.975.761-.825 1.79-1.237 3.088-1.237.702 0 1.346.149 1.93.447v1.436a3.242 3.242 0 0 0-1.77-.495c-.84 0-1.513.266-2.019.798-.505.532-.758 1.213-.758 2.042zM40.24 5.72v4.579c.458-1 1.293-1.5 2.505-1.5.787 0 1.42.245 1.899.734.479.49.718 1.17.718 2.042V17h-1.564v-5.106c0-.553-.14-.98-.422-1.284-.282-.303-.652-.455-1.11-.455-.531 0-1.002.202-1.411.606-.41.405-.615 1.022-.615 1.851V17h-1.563V5.72h1.563zm14.966 10.02c.596 0 1.096-.253 1.5-.758.404-.506.606-1.157.606-1.955 0-.915-.202-1.62-.606-2.114-.404-.495-.92-.742-1.548-.742-.553 0-1.05.224-1.491.67-.442.447-.662 1.133-.662 2.058 0 .958.212 1.67.638 2.138.425.469.946.703 1.563.703zM53.004 5.72v4.42c.574-.894 1.388-1.341 2.44-1.341 1.022 0 1.857.383 2.506 1.149.649.766.973 1.781.973 3.047 0 1.138-.309 2.109-.925 2.912-.617.803-1.463 1.205-2.537 1.205-1.075 0-1.894-.447-2.457-1.34V17h-1.58V5.72h1.58zm9.908 11.104l-3.223-7.913h1.739l1.005 2.632 1.26 3.415c.096-.32.48-1.458 1.15-3.415l.909-2.632h1.66l-2.92 7.866c-.777 2.074-1.963 3.11-3.559 3.11a2.92 2.92 0 0 1-.734-.079v-1.34c.17.042.351.064.543.064 1.032 0 1.755-.57 2.17-1.708z"}),/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("path",{fill:"#5468FF",d:"M78.988.938h16.594a2.968 2.968 0 0 1 2.966 2.966V20.5a2.967 2.967 0 0 1-2.966 2.964H78.988a2.967 2.967 0 0 1-2.966-2.964V3.897A2.961 2.961 0 0 1 78.988.938z"}),/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("path",{fill:"white",d:"M89.632 5.967v-.772a.978.978 0 0 0-.978-.977h-2.28a.978.978 0 0 0-.978.977v.793c0 .088.082.15.171.13a7.127 7.127 0 0 1 1.984-.28c.65 0 1.295.088 1.917.259.082.02.164-.04.164-.13m-6.248 1.01l-.39-.389a.977.977 0 0 0-1.382 0l-.465.465a.973.973 0 0 0 0 1.38l.383.383c.062.061.15.047.205-.014.226-.307.472-.601.746-.874.281-.28.568-.526.883-.751.068-.042.075-.137.02-.2m4.16 2.453v3.341c0 .096.104.165.192.117l2.97-1.537c.068-.034.089-.117.055-.184a3.695 3.695 0 0 0-3.08-1.866c-.068 0-.136.054-.136.13m0 8.048a4.489 4.489 0 0 1-4.49-4.482 4.488 4.488 0 0 1 4.49-4.482 4.488 4.488 0 0 1 4.489 4.482 4.484 4.484 0 0 1-4.49 4.482m0-10.85a6.363 6.363 0 1 0 0 12.729 6.37 6.37 0 0 0 6.372-6.368 6.358 6.358 0 0 0-6.371-6.36"})))))),searchResultState.items.length>0?/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("section",null,searchResultState.items.map(({title,url,summary,breadcrumbs},i)=>/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("article",{key:i,className:_styles_module_css__WEBPACK_IMPORTED_MODULE_10___default.a.searchResultItem},/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_docusaurus_Link__WEBPACK_IMPORTED_MODULE_8__[/* default */ "a"],{to:url,className:_styles_module_css__WEBPACK_IMPORTED_MODULE_10___default.a.searchResultItemHeading,dangerouslySetInnerHTML:{__html:title}}),breadcrumbs.length>0&&/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span",{className:_styles_module_css__WEBPACK_IMPORTED_MODULE_10___default.a.searchResultItemPath,dangerouslySetInnerHTML:{__html:breadcrumbs.join(' › ')}}),summary&&/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p",{className:_styles_module_css__WEBPACK_IMPORTED_MODULE_10___default.a.searchResultItemSummary,dangerouslySetInnerHTML:{__html:summary}})))):[searchQuery&&!searchResultState.loading&&/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p",{key:"no-results"},"No results were found"),!!searchResultState.loading&&/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div",{key:"spinner",className:_styles_module_css__WEBPACK_IMPORTED_MODULE_10___default.a.loadingSpinner})],searchResultState.hasMore&&/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div",{className:_styles_module_css__WEBPACK_IMPORTED_MODULE_10___default.a.loader,ref:setLoaderRef},/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span",null,"Fetching new results..."))));}/* harmony default export */ __webpack_exports__["default"] = (Search);
 
 /***/ }),
-/* 195 */
+/* 194 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20384,13 +20356,13 @@ __webpack_require__.r(__webpack_exports__);
 
 var merge = __webpack_require__(108);
 var defaultsPure = __webpack_require__(109);
-var intersection = __webpack_require__(431);
+var intersection = __webpack_require__(430);
 var find = __webpack_require__(68);
-var valToNumber = __webpack_require__(432);
-var omit = __webpack_require__(196);
+var valToNumber = __webpack_require__(431);
+var omit = __webpack_require__(195);
 var objectHasKeys = __webpack_require__(110);
 
-var RefinementList = __webpack_require__(433);
+var RefinementList = __webpack_require__(432);
 
 /**
  * isEqual, but only for numeric refinement values, possible values:
@@ -21881,7 +21853,7 @@ module.exports = SearchParameters;
 
 
 /***/ }),
-/* 196 */
+/* 195 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21906,7 +21878,7 @@ module.exports = _objectWithoutPropertiesLoose;
 
 
 /***/ }),
-/* 197 */
+/* 196 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21914,13 +21886,13 @@ module.exports = _objectWithoutPropertiesLoose;
 
 var merge = __webpack_require__(108);
 var defaultsPure = __webpack_require__(109);
-var orderBy = __webpack_require__(198);
-var compact = __webpack_require__(434);
+var orderBy = __webpack_require__(197);
+var compact = __webpack_require__(433);
 var find = __webpack_require__(68);
-var findIndex = __webpack_require__(435);
-var formatSort = __webpack_require__(199);
+var findIndex = __webpack_require__(434);
+var formatSort = __webpack_require__(198);
 
-var generateHierarchicalTree = __webpack_require__(436);
+var generateHierarchicalTree = __webpack_require__(435);
 
 /**
  * @typedef SearchResults.Facet
@@ -22800,7 +22772,7 @@ module.exports = SearchResults;
 
 
 /***/ }),
-/* 198 */
+/* 197 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22886,7 +22858,7 @@ module.exports = orderBy;
 
 
 /***/ }),
-/* 199 */
+/* 198 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22931,7 +22903,7 @@ module.exports = function formatSort(sortBy, defaults) {
 
 
 /***/ }),
-/* 200 */
+/* 199 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22952,7 +22924,7 @@ module.exports = inherits;
 
 
 /***/ }),
-/* 201 */
+/* 200 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22962,7 +22934,7 @@ module.exports = '3.1.1';
 
 
 /***/ }),
-/* 202 */
+/* 201 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -22979,7 +22951,7 @@ __webpack_require__.r(__webpack_exports__);
 const frontMatter={id:'network-plugin',title:'Network'};const metadata={"id":"features/network-plugin","title":"Network","description":"→ See setup instructions for the Network plugin","source":"@site/../docs/features/network-plugin.mdx","permalink":"/docs/features/network-plugin","editUrl":"https://github.com/facebook/flipper/blob/master/website/../docs/features/network-plugin.mdx","sidebar":"features","previous":{"title":"Navigation","permalink":"/docs/features/navigation-plugin"},"next":{"title":"Databases","permalink":"/docs/features/databases-plugin"}};/* @jsx mdx */const rightToc=[];const makeShortcode=name=>function MDXDefaultShortcode(props){console.warn("Component "+name+" was not imported, exported, or provided by MDXProvider as global scope");return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",props);};const layoutProps={rightToc};const MDXLayout="wrapper";function MDXContent({components,...props}){return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(MDXLayout,Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({},layoutProps,props,{components:components,mdxType:"MDXLayout"}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`→ `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"../setup/network-plugin"}),`See setup instructions for the Network plugin`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Use the Network inspector to inspect outgoing network traffic in your apps. You can easily browse all requests being made and their responses. The plugin also supports gzipped responses.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("img",{alt:"Network plugin",src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("img/network.png")}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`All request sent from the device will be listed in the plugin. Click on a request to see details like headers and body. You can filter the table for domain, method or status by clicking on the corresponding value in the table.`));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 203 */
+/* 202 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -22999,7 +22971,7 @@ Writing plugins for Flipper doesn't require any native code, as the Flipper SDK 
 → Create a Flipper Desktop Plugin `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"https://fbflipper.com/docs/tutorial/js-setup"}),`https://fbflipper.com/docs/tutorial/js-setup`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h3",{"id":"community-react-native-plugins-for-flipper"},`Community React Native plugins for Flipper`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The React Native community has also started to build plugins for Flipper.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("ul",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"li"},{"href":"https://infinite.red/reactotron"}),`Reactotron's`),` `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"li"},{"href":"https://github.com/infinitered/flipper-plugin-reactotron"}),`Flipper plugin`),` is an example of a standalone React Native desktop app, `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"li"},{"href":"https://shift.infinite.red/better-react-native-debugging-with-reactotron-in-flipper-6b823af29220"}),`ported to work as a Flipper plugin`),`.`)));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 204 */
+/* 203 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -23016,7 +22988,7 @@ __webpack_require__.r(__webpack_exports__);
 const frontMatter={id:'layout-plugin',title:'Layout Inspector'};const metadata={"id":"features/layout-plugin","title":"Layout Inspector","description":"→ See setup instructions for the Layout Inspector","source":"@site/../docs/features/layout-plugin.mdx","permalink":"/docs/features/layout-plugin","editUrl":"https://github.com/facebook/flipper/blob/master/website/../docs/features/layout-plugin.mdx","sidebar":"features","previous":{"title":"Logs","permalink":"/docs/features/logs-plugin"},"next":{"title":"Navigation","permalink":"/docs/features/navigation-plugin"}};/* @jsx mdx */const rightToc=[{value:'Quick edits',id:'quick-edits',children:[]},{value:'Target mode',id:'target-mode',children:[]},{value:'Accessibility mode (Android-only)',id:'accessibility-mode-android-only',children:[{value:'Talkback',id:'talkback',children:[]}]}];const makeShortcode=name=>function MDXDefaultShortcode(props){console.warn("Component "+name+" was not imported, exported, or provided by MDXProvider as global scope");return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",props);};const layoutProps={rightToc};const MDXLayout="wrapper";function MDXContent({components,...props}){return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(MDXLayout,Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({},layoutProps,props,{components:components,mdxType:"MDXLayout"}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`→ `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"../setup/layout-plugin"}),`See setup instructions for the Layout Inspector`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The Layout Inspector in Flipper is useful for a ton of different debugging scenarios. First of all, you can inspect what views the hierarchy is made up of as well as what properties each view has. This is incredibly useful when debugging issues with your product.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The Layout tab supports `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"https://fblitho.com"}),`Litho`),` and `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"https://componentkit.org"}),`ComponentKit`),` components as well. We integrate with these frameworks to present components in the hierarchy just as if they were native views. We show you all the layout properties, props, and state of the components. The layout inspector is further extensible to support other UI frameworks.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`If you hover over a view or component in Flipper we will highlight the corresponding item in your app. This is perfect for debugging the bounds of your views and making sure you have the correct visual padding.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("img",{alt:"Layout plugin",src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("img/layout.png")}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"quick-edits"},`Quick edits`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The Layout Inspector not only allows you to view the hierarchy and inspect each item's properties, but it also allows you to edit things such as layout attributes, background colors, props, and state. Most things actually. This allows you to quickly tweak paddings, margins, and colors until you are happy with them, all without re-compiling. This can save you many hours implementing a new design.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"target-mode"},`Target mode`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Enable target mode by clicking on the crosshairs icon. Now, you can touch any view on the device and Layout Inspector will jump to the correct position within your layout hierarchy.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Tip: Target mode also works with Talkback running.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"accessibility-mode-android-only"},`Accessibility mode (Android-only)`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Enable accessibility mode by clicking on the accessibility icon. This shows the accessibility view hierarchy next to the normal hierarchy. In the hierarchy, the currently accessibility-focused view is highlighted in green and any accessibility-focusable elements have a green icon next to their name. The hierarchy's context menu also allows you to focus accessibility services on certain elements. When selecting an element in one hierarchy, the corresponding element in the other will also be highlighted. The hierarchies expand and collapse in sync, and searching through the main hierarchy works in accessibility mode as well.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`When accessibility mode is enabled, the sidebar will show special properties that are used by accessibility services to determine their functionality. This includes things like content-description, clickable, focusable, and long-clickable among others.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h3",{"id":"talkback"},`Talkback`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The accessibility mode sidebar also includes a panel with properties derived specifically to show Talkback's interpretation of a view (with logic ported over from Google's Talkback source). While generally accurate, this is not guaranteed to be accurate for all situations. It is always better to turn Talkback on for verification.`));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 205 */
+/* 204 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -23094,7 +23066,7 @@ yarn start
 `)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h3",{"id":"installation-from-file"},`Installation from File`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`It is possible to install plugins into Flipper from tarballs. This is useful in cases when you need to try a plugin version which is not published to npm, or if you want to distribute plugin privately:`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("ol",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ol"},`Launch Flipper`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ol"},`Click the "Manage Plugins" button in the bottom-left corner`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ol"},`Select the "Install Plugins" tab in the opened sheet`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ol"},`Specify the path to the plugin package (or just drag and drop it) and click "Install"`)));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 206 */
+/* 205 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -23197,7 +23169,7 @@ to build something a bit more custom. That's what
 we're going to do in the next part of our tutorial.`));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 207 */
+/* 206 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -23311,7 +23283,7 @@ static persistedStateReducer<PersistedState>(
 `)));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 208 */
+/* 207 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -23341,7 +23313,7 @@ Depending on whether you want to expose new data on Android or iOS, there are di
 final DescriptorMapping descriptorMapping = DescriptorMapping.withDefaults();
 descriptorMapping.register(MyObject.class, new MyObjectDescriptor());
 client.addPlugin(new InspectorFlipperPlugin(mContext, descriptorMapping));
-`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h3",{"id":"extending-an-existing-descriptor"},`Extending an existing Descriptor`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`You may not need to create a whole new descriptor but instead you may just want to change extend an existing one to expose some new piece of data. In that case just locate the correct descriptor and edit its `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`getData`),`, `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`getAttributes`),` and perhaps `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`setData`),` methods.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"ios"},`iOS`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h3",{"id":"sknodedescriptor"},`SKNodeDescriptor`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`To expose an object to the layout inspector in Sonar you have to implement a `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`SKNodeDescriptor`),` which describes the object. For example `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`SKViewDescriptor`),` describes `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`UIView`),` objects, and the `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`SKComponentDescriptor`),` describes `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`CKComponent`),` objects. These descriptors have necessary callbacks which is used to expose its children and data associated with the object they describe. See `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"https://github.com/facebook/flipper/blob/b0d2983bd440dc41ec67089e11acd394e6566b8f/iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin/SKNodeDescriptor.h"}),`SKNodeDescriptor`),` for the full available API.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`SKNodeDescriptor`),` implementations should `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("strong",{parentName:"p"},`never`),` be subclass other `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`SKNodeDescriptor`),` implementations. Instead re-use existing behaviour by explicitly using other descriptors and delegate behaviour.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("strong",{parentName:"p"},`Don't`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("pre",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("code",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"pre"},{"className":"language-objc"}),`@interface SKArbitraryViewDescriptor : SKViewDescriptor<ArbitraryView *>
+`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h3",{"id":"extending-an-existing-descriptor"},`Extending an existing Descriptor`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`You may not need to create a whole new descriptor but instead you may just want to change extend an existing one to expose some new piece of data. In that case just locate the correct descriptor and edit its `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`getData`),`, `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`getAttributes`),` and perhaps `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`setData`),` methods.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"ios"},`iOS`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h3",{"id":"sknodedescriptor"},`SKNodeDescriptor`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`To expose an object to the layout inspector in Sonar you have to implement a `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`SKNodeDescriptor`),` which describes the object. For example `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`SKViewDescriptor`),` describes `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`UIView`),` objects, and the `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`SKComponentDescriptor`),` describes `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`CKComponent`),` objects. These descriptors have necessary callbacks which is used to expose its children and data associated with the object they describe. See `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"https://github.com/facebook/flipper/blob/b0d2983bd440dc41ec67089e11acd394e6566b8f/iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin/SKNodeDescriptor.h"}),`SKNodeDescriptor`),` for the full available API.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`SKNodeDescriptor`),` implementations should `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("strong",{parentName:"p"},`never`),` be subclass other `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`SKNodeDescriptor`),` implementations. Instead re-use existing behaviour by explicitly using other descriptors and delegate behaviour.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("strong",{parentName:"p"},`Don't`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("pre",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("code",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"pre"},{"className":"language-objectivec"}),`@interface SKArbitraryViewDescriptor : SKViewDescriptor<ArbitraryView *>
 
 @end
 
@@ -23353,7 +23325,7 @@ client.addPlugin(new InspectorFlipperPlugin(mContext, descriptorMapping));
 }
 
 @end
-`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("strong",{parentName:"p"},`Do`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("pre",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("code",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"pre"},{"className":"language-objc"}),`@interface SKArbitraryViewDescriptor : SKNodeDescriptor<ArbitraryView *>
+`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("strong",{parentName:"p"},`Do`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("pre",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("code",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"pre"},{"className":"language-objectivec"}),`@interface SKArbitraryViewDescriptor : SKNodeDescriptor<ArbitraryView *>
 @end
 
 @implementation SKArbitraryViewDescriptor
@@ -23365,12 +23337,12 @@ client.addPlugin(new InspectorFlipperPlugin(mContext, descriptorMapping));
 }
 
 @end
-`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h3",{"id":"register-a-descriptor-1"},`Register a Descriptor`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`In order to register your descriptor for an object, you use `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`SKDescriptorMapper`),`. After registering all descriptors you pass on the descriptor-mapper object to the plugin during initialisation.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("pre",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("code",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"pre"},{"className":"language-objc"}),`[descriptorMapper registerDescriptor:[SKArbitraryViewDescriptor new]
+`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h3",{"id":"register-a-descriptor-1"},`Register a Descriptor`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`In order to register your descriptor for an object, you use `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`SKDescriptorMapper`),`. After registering all descriptors you pass on the descriptor-mapper object to the plugin during initialisation.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("pre",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("code",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"pre"},{"className":"language-objectivec"}),`[descriptorMapper registerDescriptor:[SKArbitraryViewDescriptor new]
                             forClass:[AbritraryView class]];
 
 `)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`There's already a set of descriptors registered by default in
 `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`SKDescriptorMapper`),`, and if you want to add a descriptor to the default set
-you can do it in `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"https://github.com/facebook/flipper/blob/b0d2983bd440dc41ec67089e11acd394e6566b8f/iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin/SKDescriptorMapper.mm"}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"a"},`SKDescriptorMapper`)),`.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h3",{"id":"extending-an-existing-descriptor-1"},`Extending an existing Descriptor`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Sometimes all you need is to extend the functionality of an existing descriptor. In that case you just need to locate the correct descriptor and edit the methods `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`dataForNode`),`, `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`attributesForNode`),`, and possibly `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`dataMutationsForNode`),`.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h3",{"id":"subdescriptors"},`Subdescriptors`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`If you want to extend the `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`SKComponentKitLayoutDescriptor`),` and add an additional section based on the nodes of the `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`SKComponentLayoutDescriptor`),`, you can use `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`SKSubDescriptor`),`.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("pre",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("code",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"pre"},{"className":"language-objc"}),`#import <FlipperKitLayoutComponentKitSupport/SKComponentLayoutWrapper.h>
+you can do it in `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"https://github.com/facebook/flipper/blob/b0d2983bd440dc41ec67089e11acd394e6566b8f/iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin/SKDescriptorMapper.mm"}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"a"},`SKDescriptorMapper`)),`.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h3",{"id":"extending-an-existing-descriptor-1"},`Extending an existing Descriptor`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Sometimes all you need is to extend the functionality of an existing descriptor. In that case you just need to locate the correct descriptor and edit the methods `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`dataForNode`),`, `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`attributesForNode`),`, and possibly `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`dataMutationsForNode`),`.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h3",{"id":"subdescriptors"},`Subdescriptors`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`If you want to extend the `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`SKComponentKitLayoutDescriptor`),` and add an additional section based on the nodes of the `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`SKComponentLayoutDescriptor`),`, you can use `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`SKSubDescriptor`),`.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("pre",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("code",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"pre"},{"className":"language-objectivec"}),`#import <FlipperKitLayoutComponentKitSupport/SKComponentLayoutWrapper.h>
 
 NSString *YourSubDescriptor(SKComponentLayoutWrapper *)node {
     return @"Meta data";
@@ -23381,7 +23353,7 @@ NSString *YourSubDescriptor(SKComponentLayoutWrapper *)node {
 `)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Swift support is not yet available because you must access `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`SKComponentLayoutWrapper`),` to implement a subdescriptor.`));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 209 */
+/* 208 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -23437,7 +23409,7 @@ client.addPlugin(new DatabasesFlipperPlugin(context));
 `)));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 210 */
+/* 209 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -23624,7 +23596,7 @@ Response = {
 `)));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 211 */
+/* 210 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -23644,7 +23616,7 @@ __webpack_require__.r(__webpack_exports__);
  */function Index(){return/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_theme_Layout__WEBPACK_IMPORTED_MODULE_1__[/* default */ "a"],{title:"Extensible mobile app debugger"},/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div",null,/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div",{className:"splash"},/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div",{className:"content"},/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h1",null,"Extensible mobile app\xA0debugger"),/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h2",null,"Flipper is a platform for debugging iOS, Android and React Native apps. Visualize, inspect, and control your apps from a simple desktop interface. Use Flipper as is or extend it using the plugin API."),/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div",null,/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p",{className:"landing-btn landing-btn-left landing-btn-label",href:"https://www.facebook.com/fbflipper/public/mac"},"Download"),/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("a",{className:"landing-btn landing-btn-middle primary",href:"https://www.facebook.com/fbflipper/public/mac"},"Mac"),/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("a",{className:"landing-btn landing-btn-middle primary",href:"https://www.facebook.com/fbflipper/public/linux"},"Linux"),/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("a",{className:"landing-btn landing-btn-right primary",href:"https://www.facebook.com/fbflipper/public/windows"},"Windows"),/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("a",{className:"landing-btn",href:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_2__[/* default */ "a"])('docs/features/index')},"Learn more")),/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div",{className:"slideshow"},/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("img",{src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_2__[/* default */ "a"])('img/logs.png'),className:"splashScreen"}),/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("img",{src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_2__[/* default */ "a"])('img/layout.png'),className:"splashScreen"}),/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("img",{src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_2__[/* default */ "a"])('img/network.png'),className:"splashScreen"}),/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("img",{src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_2__[/* default */ "a"])('img/crashreporterplugin.png'),className:"splashScreen"})),/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div",{className:"shadow"}))),/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div",{className:"content row"},/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div",{className:"col"},/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("img",{src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_2__[/* default */ "a"])('img/inspector.png'),srcSet:`${Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_2__[/* default */ "a"])('img/inspector.png')} 1x, ${Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_2__[/* default */ "a"])('img/inspector@2x.png')} 2x`})),/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div",{className:"col"},/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h4",null,"Tools"),/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h3",null,"Mobile development"),/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p",null,"Flipper aims to be your number one companion for mobile app development on iOS and Android. Therefore, we provide a bunch of useful tools including a log viewer, interactive layout inspector, and network inspector."),/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("a",{className:"learnmore",href:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_2__[/* default */ "a"])('docs/features/index')},"Learn more"))),/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div",{className:"content row"},/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div",{className:"col"},/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h4",null,"Plugins"),/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h3",null,"Extending Flipper"),/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p",null,"Flipper is built as a platform. In addition to using the tools already included, you can create your own plugins to visualize and debug data from your mobile apps. Flipper takes care of sending data back and forth, calling functions, and listening for events on the mobile app."),/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("a",{className:"learnmore",href:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_2__[/* default */ "a"])('docs/extending/index')},"Learn more")),/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div",{className:"col center"},/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("img",{src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_2__[/* default */ "a"])('img/FlipperKit.png'),srcSet:`${Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_2__[/* default */ "a"])('img/FlipperKit.png')} 1x, ${Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_2__[/* default */ "a"])('img/FlipperKit@2x.png')} 2x`}))),/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div",{className:"content row"},/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div",{className:"col"},/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("img",{src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_2__[/* default */ "a"])('img/plugins.png'),srcSet:`${Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_2__[/* default */ "a"])('img/plugins.png')} 1x, ${Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_2__[/* default */ "a"])('img/plugins@2x.png')} 2x`})),/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div",{className:"col"},/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h4",null,"Open Source"),/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h3",null,"Contributing to Flipper"),/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p",null,"Both Flipper's desktop app and native mobile SDKs are open-source and MIT licensed. This enables you to see and understand how we are building plugins, and of course join the community and help improve Flipper. We are excited to see what you will build on this platform."),/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("a",{className:"learnmore",href:"https://github.com/facebook/flipper",target:"_blank"},"Learn more"))),/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div",{className:"wrapper landing-cta"},/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("a",{href:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_2__[/* default */ "a"])('docs/getting-started/index'),className:"landing-btn primary"},"Integrate Flipper In Your App"),/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("a",{href:"https://www.facebook.com/fbflipper/public/mac",target:"_blank",className:"landing-btn"},"Download Flipper"))));}
 
 /***/ }),
-/* 212 */
+/* 211 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -23661,7 +23633,7 @@ __webpack_require__.r(__webpack_exports__);
 const frontMatter={id:'crash-reporter-plugin',title:'Crash Reporter'};const metadata={"id":"features/crash-reporter-plugin","title":"Crash Reporter","description":"→ See setup instructions for the Crash Reporter","source":"@site/../docs/features/crash-reporter-plugin.mdx","permalink":"/docs/features/crash-reporter-plugin","editUrl":"https://github.com/facebook/flipper/blob/master/website/../docs/features/crash-reporter-plugin.mdx","sidebar":"features","previous":{"title":"LeakCanary","permalink":"/docs/features/leak-canary-plugin"},"next":{"title":"Share Flipper Data","permalink":"/docs/features/share-flipper-data"}};/* @jsx mdx */const rightToc=[];const makeShortcode=name=>function MDXDefaultShortcode(props){console.warn("Component "+name+" was not imported, exported, or provided by MDXProvider as global scope");return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",props);};const layoutProps={rightToc};const MDXLayout="wrapper";function MDXContent({components,...props}){return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(MDXLayout,Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({},layoutProps,props,{components:components,mdxType:"MDXLayout"}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`→ `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"../setup/crash-reporter-plugin"}),`See setup instructions for the Crash Reporter`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The Crash Reporter Plugin shows a notification in Flipper whenever an app crashes. You can click on the notification to see crash information like stacktrace and other metadata. For Android, you can click the "Open in Logs" button to jump to the row in the Logs plugin with the crash information.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("img",{alt:"UI",src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("img/crashreporterplugin.png")}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("img",{alt:"Notification",src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("img/crashreporterpluginnotification.png")}));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 213 */
+/* 212 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -23744,7 +23716,7 @@ export default createTablePlugin({
 `)));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 214 */
+/* 213 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -23775,7 +23747,7 @@ RefWatcher refWatcher = LeakCanary.refWatcher(this)
 `)));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 215 */
+/* 214 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -23796,7 +23768,7 @@ client.addPlugin(new SandboxFlipperPlugin(strategy));
 `)));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 216 */
+/* 215 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -23872,7 +23844,7 @@ dependencies {
 `)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"enabling-plugins"},`Enabling plugins`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Finally, you need to add plugins to your Flipper client. Above, we have only added the Layout Inspector plugin to get you started. See `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"../setup/network-plugin"}),`Network Plugin`),` and `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"../setup/layout-plugin"}),`Layout Inspector Plugin`),` for information on how to add them, and also enable Litho or ComponentKit support. You can check the sample apps in the `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"https://github.com/facebook/flipper"}),`GitHub repo`),` for examples of integrating other plugins.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"having-trouble"},`Having trouble?`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`See the `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"../troubleshooting"}),`troubleshooting page`),` for help with known problems.`));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 217 */
+/* 216 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -23910,7 +23882,7 @@ client?.add(FlipperKitNetworkPlugin(networkAdapter: SKIOSNetworkAdapter()))
 `)));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 218 */
+/* 217 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -23978,7 +23950,7 @@ client?.add(FlipperKitLayoutPlugin(rootNode: application, with: layoutDescriptor
 `)));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 219 */
+/* 218 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -24005,7 +23977,7 @@ In order for the mobile app to know which certificates it can trust, it conducts
 `)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Where `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`csr`),` is a Certificate Signing Request the client has generated, and `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`destination`),` identifies a location accessible to both the client and Flipper desktop, where the certificate should be placed.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The Subject Common Name (CN=...) must be included in the CSR, and your `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`CertificateProvider`),` implementation in Flipper may use this in combination with the `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`destination`),` to determine where to put the certificate.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`This will ask Flipper desktop to generate a client certificate, using the CSR provided, and put it into the specified `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`destination`),`.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Depending on the client, `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`destination`),` can have a different meaning. A basic example would be a file path, that both the desktop and the client have access to. With this Flipper desktop could write the certificate to that path. A more involved example is that of the Android Client, where destination specifies a relative path inside an app container. And the Subject Common Name determines which app container. Together these two pieces of information form an absolute file path inside an android device.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`For Flipper desktop to work with a given Client type, it needs to be modified to know how to correctly interpret the `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`destination`),` argument, and deploy certificates to it. You can see the current implementations in `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"https://github.com/facebook/flipper/blob/master/desktop/app/src/utils/CertificateProvider.tsx"}),`CertificateProvider.tsx`),`.`));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 220 */
+/* 219 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -24052,7 +24024,7 @@ class MyComponent extends Component {
 `)));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 221 */
+/* 220 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -24164,7 +24136,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 `)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"enabling-plugins"},`Enabling plugins`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Finally, you need to add plugins to your Flipper client. Above, we have only added the Layout Inspector plugin to get you started. See `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"../setup/network-plugin"}),`Network Plugin`),` and `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"../setup/layout-plugin"}),`Layout Inspector Plugin`),` for information on how to add them, and also enable Litho or ComponentKit support. You can check the sample apps in the `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"https://github.com/facebook/flipper"}),`GitHub repo`),` for examples of integrating other plugins.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"having-trouble"},`Having trouble?`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`See the `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"../troubleshooting"}),`troubleshooting page`),` for help with known problems.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",{class:"warning"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`On iOS, we currently do not support connecting to physical devices.`)));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 222 */
+/* 221 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -24185,7 +24157,7 @@ if (client != null) {
 `)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("pre",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("code",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"pre"},{"className":"language-objective-c"}),`FlipperClient *client = [FlipperClient sharedClient];
 MyFlipperPlugin *myPlugin = [client pluginWithIdentifier:@"MyFlipperPlugin"];
 [myPlugin sendData:myData];
-`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("pre",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("code",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"pre"},{"className":"language-c++"}),`auto& client = FlipperClient::instance();
+`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("pre",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("code",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"pre"},{"className":"language-cpp"}),`auto& client = FlipperClient::instance();
 auto myPlugin = client.getPlugin<MyFlipperPlugin>("MyFlipperPlugin");
 if (myPlugin) {
   myPlugin->sendData(myData);
@@ -24193,7 +24165,7 @@ if (myPlugin) {
 `)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Here, `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`sendData`),` is an example of a method that might be implemented by the Flipper plugin.`));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 223 */
+/* 222 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -24228,7 +24200,7 @@ Also it will guarantee that there are no accidental data manipulations by freezi
 `)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`When the user clicks on a notification, they will be sent back to your plugin with the `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"#deeplinkpayload"}),`deepLinkPayload`),` equal to the notification's action.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"type-parameters"},`Type Parameters`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`FlipperPlugin<S, A, P>`),` can optionally take the following type parameters. It is highly recommended you provide them to benefit from type safety, but you can pass `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`any`),` when not using these features.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("strong",{parentName:"p"},`State`),`: Specifies the type of the FlipperPlugin state. A `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`FlipperPlugin`),` is a React component, and this is equivalent to the React state type parameter.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("strong",{parentName:"p"},`Actions`),`: `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`FlipperPlugin`),` has an infrequently used dispatchAction mechanism allowing your plugin dispatch actions and reduce state in a redux-like manner. This specifies the type of actions that can be dispatched.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("strong",{parentName:"p"},`PersistedState`),`: This specifies the type of the persisted state of the plugin.`));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 224 */
+/* 223 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -24245,7 +24217,7 @@ __webpack_require__.r(__webpack_exports__);
 const frontMatter={id:'logs-plugin',title:'Logs'};const metadata={"id":"features/logs-plugin","title":"Logs","description":"The Logs plugin shows device logs without any additional setup. This is a device plugin, meaning that it is not tied to any specific app and there is no additional setup needed to see the logs.","source":"@site/../docs/features/logs-plugin.mdx","permalink":"/docs/features/logs-plugin","editUrl":"https://github.com/facebook/flipper/blob/master/website/../docs/features/logs-plugin.mdx","sidebar":"features","previous":{"title":"Features","permalink":"/docs/features/index"},"next":{"title":"Layout Inspector","permalink":"/docs/features/layout-plugin"}};/* @jsx mdx */const rightToc=[{value:'Filtering',id:'filtering',children:[]},{value:'Expression watcher',id:'expression-watcher',children:[]}];const makeShortcode=name=>function MDXDefaultShortcode(props){console.warn("Component "+name+" was not imported, exported, or provided by MDXProvider as global scope");return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",props);};const layoutProps={rightToc};const MDXLayout="wrapper";function MDXContent({components,...props}){return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(MDXLayout,Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({},layoutProps,props,{components:components,mdxType:"MDXLayout"}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The Logs plugin shows device logs without any additional setup. This is a device plugin, meaning that it is not tied to any specific app and there is no additional setup needed to see the logs.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("img",{alt:"Logs plugin",src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("img/logs.png")}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"filtering"},`Filtering`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The search bar can be used to search for logs and filter for certain types. From the context menu on the table headers you can show more infos like timestamp, PID or TID. Click on a tag, PID or TID in the table to filter only for logs with the same value.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"expression-watcher"},`Expression watcher`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The expression watcher in the sidebar can be used to watch for certain logs to happen and count how often they occur. An expression can be a simple string, or a regular expression which is matched against the logs.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`When the notify checkbox is enabled, Flipper will send notifications once the log is happening. This lets you know when the watcher triggered, even if Flipper is in the background.`));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 225 */
+/* 224 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -24261,7 +24233,7 @@ __webpack_require__.r(__webpack_exports__);
 const frontMatter={id:'stetho',title:'Stetho Guidance',sidebar_label:'Stetho Guidance'};const metadata={"id":"stetho","title":"Stetho Guidance","description":"In 2015, we introduced Stetho, an Android debugging bridge built on top of Chrome DevTools. While it was a valuable tool to us and many members of the community, we felt that it limited us in what we could do with it. Stetho is Android-only and while Chrome DevTools gave us a nice foundation to build upon, they also limited us in what we could build. Stetho is an Android tool and Chrome DevTools is built for web developers. This means we can only provide a good experience for the intersection of those two development environments, which was very limiting. With Flipper being built as a standalone app, we can do more things, like handling adb connections and supporting iOS, which wasn't easily achievable with Stetho.","source":"@site/../docs/stetho.mdx","permalink":"/docs/stetho","editUrl":"https://github.com/facebook/flipper/blob/master/website/../docs/stetho.mdx","sidebar_label":"Stetho Guidance","sidebar":"setup","previous":{"title":"Running Flipper with different ports","permalink":"/docs/custom-ports"},"next":{"title":"Troubleshooting Issues","permalink":"/docs/troubleshooting"}};/* @jsx mdx */const rightToc=[];const makeShortcode=name=>function MDXDefaultShortcode(props){console.warn("Component "+name+" was not imported, exported, or provided by MDXProvider as global scope");return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",props);};const layoutProps={rightToc};const MDXLayout="wrapper";function MDXContent({components,...props}){return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(MDXLayout,Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({},layoutProps,props,{components:components,mdxType:"MDXLayout"}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`In 2015, we introduced `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"http://facebook.github.io/stetho/"}),`Stetho`),`, an Android debugging bridge built on top of `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"https://developers.google.com/web/tools/chrome-devtools/"}),`Chrome DevTools`),`. While it was a valuable tool to us and many members of the community, we felt that it limited us in what we could do with it. Stetho is Android-only and while Chrome DevTools gave us a nice foundation to build upon, they also limited us in what we could build. Stetho is an Android tool and Chrome DevTools is built for web developers. This means we can only provide a good experience for the intersection of those two development environments, which was very limiting. With Flipper being built as a standalone app, we can do more things, like handling adb connections and supporting iOS, which wasn't easily achievable with Stetho.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`This is why we built Flipper. We wanted to create a platform that gives us all the flexibility we need to build more advanced features and support for iOS. One of Flipper's core concepts is its extensibility using `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"extending/index"}),`plugins`),`. Plugins are written in React and we provide a set of ready-to-use UI components that allow developers to build great plugin UIs with a few lines of code.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`While offering many new features, Flipper also already covers most of the features provided by Stetho. This includes network and layout inspection and an advanced log viewer. We are committed to continuously improving Flipper with new features and plugins, however, we are aware that not all Stetho features are currently supported by Flipper. If you are using a particular feature of Stetho which isn't supported by Flipper, we are more than happy to hear about your use-case. Stetho will continue to work and we are not abandoning it so you can choose the tool that fits your needs best. We are confident that Flipper will work well for most use-cases and are more than happy to accept contributions from the open-source community adding new features.`));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 226 */
+/* 225 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -24307,7 +24279,7 @@ export default SearchableTable = Searchable(MyPluginTable);
 `)));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 227 */
+/* 226 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -24406,7 +24378,7 @@ so you can call into the method directly.`),Object(_mdx_js_react__WEBPACK_IMPORT
 `)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"further-steps"},`Further Steps`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`To create your own plugins and integrate with Flipper using JavaScript, check out our `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"../tutorial/react-native"}),`writing plugins for React Native`),` tutorial!`));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 228 */
+/* 227 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -24424,7 +24396,7 @@ const frontMatter={id:'react-native',title:'Set up your React Native App',sideba
 you can find instructions for how to integate Flipper into your projects in these guides:`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("ul",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",{href:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("/docs/getting-started/react-native-android")},"React Native for Android")),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",{href:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("/docs/getting-started/react-native-ios")},"React Native for iOS"))));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 229 */
+/* 228 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -24496,7 +24468,7 @@ DataSource<CloseableReference<CloseableImage>>
 Flipper image plugin.`));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 230 */
+/* 229 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -24528,13 +24500,13 @@ On a terminal, run the following:`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODUL
 `)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",{parentName:"li"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("em",{parentName:"p"},`Note: all of them should be added as `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"em"},`non-recursive`),` (the default).`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",{parentName:"li"},`In the end it should look like this:`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("img",{alt:"Screenshot showing the places mentioned in the last steps",src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("img/troubleshooting-react-native-ios-swift-2.png")})),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ol"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",{parentName:"li"},`Now you can run your build normally.`))));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 231 */
+/* 230 */
 /***/ (function(module, exports) {
 
 
 
 /***/ }),
-/* 232 */
+/* 231 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -25004,11 +24976,11 @@ var Highlight = /*@__PURE__*/function (Component) {
 
 
 // EXTERNAL MODULE: ./node_modules/clipboard/dist/clipboard.js
-var dist_clipboard = __webpack_require__(243);
+var dist_clipboard = __webpack_require__(242);
 var clipboard_default = /*#__PURE__*/__webpack_require__.n(dist_clipboard);
 
 // EXTERNAL MODULE: ./node_modules/parse-numeric-range/index.js
-var parse_numeric_range = __webpack_require__(115);
+var parse_numeric_range = __webpack_require__(114);
 var parse_numeric_range_default = /*#__PURE__*/__webpack_require__.n(parse_numeric_range);
 
 // CONCATENATED MODULE: ./node_modules/prism-react-renderer/themes/palenight/index.js
@@ -25136,10 +25108,10 @@ const lineNumber=index+1;const match=line.match(directiveRegex);if(match!==null)
 index+=1;}}highlightLines=parse_numeric_range_default.a.parse(range);code=lines.join('\n');}const handleCopyCode=()=>{window.getSelection().empty();setShowCopied(true);setTimeout(()=>setShowCopied(false),2000);};return/*#__PURE__*/react_default.a.createElement(dist,Object(esm_extends["a" /* default */])({},defaultProps,{key:mounted,theme:prismTheme,code:code,language:language}),({className,style,tokens,getLineProps,getTokenProps})=>/*#__PURE__*/react_default.a.createElement(react_default.a.Fragment,null,codeBlockTitle&&/*#__PURE__*/react_default.a.createElement("div",{style:style,className:CodeBlock_styles_module_default.a.codeBlockTitle},codeBlockTitle),/*#__PURE__*/react_default.a.createElement("div",{className:CodeBlock_styles_module_default.a.codeBlockContent},/*#__PURE__*/react_default.a.createElement("button",{ref:button,type:"button","aria-label":"Copy code to clipboard",className:classnames_default()(CodeBlock_styles_module_default.a.copyButton,{[CodeBlock_styles_module_default.a.copyButtonWithTitle]:codeBlockTitle}),onClick:handleCopyCode},showCopied?'Copied':'Copy'),/*#__PURE__*/react_default.a.createElement("div",{tabIndex:"0",className:classnames_default()(className,CodeBlock_styles_module_default.a.codeBlock,{[CodeBlock_styles_module_default.a.codeBlockWithTitle]:codeBlockTitle})},/*#__PURE__*/react_default.a.createElement("div",{ref:target,className:CodeBlock_styles_module_default.a.codeBlockLines,style:style},tokens.map((line,i)=>{if(line.length===1&&line[0].content===''){line[0].content='\n';// eslint-disable-line no-param-reassign
 }const lineProps=getLineProps({line,key:i});if(highlightLines.includes(i+1)){lineProps.className=`${lineProps.className} docusaurus-highlight-code-line`;}return/*#__PURE__*/react_default.a.createElement("div",Object(esm_extends["a" /* default */])({key:i},lineProps),line.map((token,key)=>/*#__PURE__*/react_default.a.createElement("span",Object(esm_extends["a" /* default */])({key:key},getTokenProps({token,key})))));}))))));});
 // EXTERNAL MODULE: ./node_modules/@docusaurus/theme-classic/src/theme/Heading/styles.css
-var styles = __webpack_require__(429);
+var styles = __webpack_require__(428);
 
 // EXTERNAL MODULE: ./node_modules/@docusaurus/theme-classic/src/theme/Heading/styles.module.css
-var Heading_styles_module = __webpack_require__(244);
+var Heading_styles_module = __webpack_require__(243);
 var Heading_styles_module_default = /*#__PURE__*/__webpack_require__.n(Heading_styles_module);
 
 // CONCATENATED MODULE: ./node_modules/@docusaurus/theme-classic/src/theme/Heading/index.js
@@ -25150,7 +25122,7 @@ var Heading_styles_module_default = /*#__PURE__*/__webpack_require__.n(Heading_s
  * LICENSE file in the root directory of this source tree.
  */ /* eslint-disable jsx-a11y/anchor-has-content, jsx-a11y/anchor-is-valid */const Heading=Tag=>function TargetComponent({id,...props}){const{siteConfig:{themeConfig:{navbar:{hideOnScroll=false}={}}={}}={}}=Object(useDocusaurusContext["a" /* default */])();if(!id){return/*#__PURE__*/react_default.a.createElement(Tag,props);}return/*#__PURE__*/react_default.a.createElement(Tag,props,/*#__PURE__*/react_default.a.createElement("a",{"aria-hidden":"true",tabIndex:"-1",className:classnames_default()('anchor',{[Heading_styles_module_default.a.enhancedAnchor]:!hideOnScroll}),id:id}),props.children,/*#__PURE__*/react_default.a.createElement("a",{"aria-hidden":"true",tabIndex:"-1",className:"hash-link",href:`#${id}`,title:"Direct link to heading"},"#"));};/* harmony default export */ var theme_Heading = (Heading);
 // EXTERNAL MODULE: ./node_modules/@docusaurus/theme-classic/src/theme/MDXComponents/styles.module.css
-var MDXComponents_styles_module = __webpack_require__(245);
+var MDXComponents_styles_module = __webpack_require__(244);
 var MDXComponents_styles_module_default = /*#__PURE__*/__webpack_require__.n(MDXComponents_styles_module);
 
 // CONCATENATED MODULE: ./node_modules/@docusaurus/theme-classic/src/theme/MDXComponents/index.js
@@ -25162,7 +25134,7 @@ var MDXComponents_styles_module_default = /*#__PURE__*/__webpack_require__.n(MDX
  *//* harmony default export */ var MDXComponents = ({code:props=>{const{children}=props;if(typeof children==='string'){return/*#__PURE__*/react_default.a.createElement(CodeBlock,props);}return children;},a:props=>{if(/\.[^./]+$/.test(props.href)){// eslint-disable-next-line jsx-a11y/anchor-has-content
 return/*#__PURE__*/react_default.a.createElement("a",props);}return/*#__PURE__*/react_default.a.createElement(Link["a" /* default */],props);},pre:props=>/*#__PURE__*/react_default.a.createElement("div",Object(esm_extends["a" /* default */])({className:MDXComponents_styles_module_default.a.mdxCodeBlock},props)),h1:theme_Heading('h1'),h2:theme_Heading('h2'),h3:theme_Heading('h3'),h4:theme_Heading('h4'),h5:theme_Heading('h5'),h6:theme_Heading('h6')});
 // EXTERNAL MODULE: ./node_modules/@docusaurus/theme-classic/src/theme/NotFound.js
-var NotFound = __webpack_require__(113);
+var NotFound = __webpack_require__(112);
 
 // EXTERNAL MODULE: ./node_modules/@docusaurus/core/lib/client/exports/router.js
 var router = __webpack_require__(28);
@@ -25181,17 +25153,17 @@ var DocPage_styles_module_default = /*#__PURE__*/__webpack_require__.n(DocPage_s
 const currentRoute=!isHomePage?baseRoute.routes.find(route=>{return Object(router["a" /* matchPath */])(location.pathname,route);})||{}:{};const sidebar=isHomePage?content.metadata.sidebar:permalinkToSidebar[currentRoute.path];const{siteConfig:{themeConfig:{sidebarCollapsible=true}={}}={},isClient}=Object(useDocusaurusContext["a" /* default */])();if(!isHomePage&&Object.keys(currentRoute).length===0){return/*#__PURE__*/react_default.a.createElement(NotFound["default"],props);}return/*#__PURE__*/react_default.a.createElement(Layout["a" /* default */],{version:version,key:isClient},/*#__PURE__*/react_default.a.createElement("div",{className:DocPage_styles_module_default.a.docPage},sidebar&&/*#__PURE__*/react_default.a.createElement("div",{className:DocPage_styles_module_default.a.docSidebarContainer},/*#__PURE__*/react_default.a.createElement(theme_DocSidebar,{docsSidebars:docsSidebars,path:isHomePage?homePagePath:currentRoute.path,sidebar:sidebar,sidebarCollapsible:sidebarCollapsible})),/*#__PURE__*/react_default.a.createElement("main",{className:DocPage_styles_module_default.a.docMainContainer},/*#__PURE__*/react_default.a.createElement(esm["a" /* MDXProvider */],{components:MDXComponents},isHomePage?/*#__PURE__*/react_default.a.createElement(DocItem["default"],{content:content}):Object(renderRoutes["a" /* default */])(baseRoute.routes)))));}/* harmony default export */ var theme_DocPage = __webpack_exports__["default"] = (DocPage);
 
 /***/ }),
-/* 233 */
+/* 232 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-module.exports = __webpack_require__(251);
+module.exports = __webpack_require__(250);
 
 
 /***/ }),
-/* 234 */
+/* 233 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -25323,7 +25295,7 @@ module.exports = withSideEffect;
 
 
 /***/ }),
-/* 235 */
+/* 234 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -25424,15 +25396,15 @@ module.exports = function exportedEqual(a, b) {
 
 
 /***/ }),
-/* 236 */
+/* 235 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _ReactLoadableSSRAddon = _interopRequireDefault(__webpack_require__(255));
+var _ReactLoadableSSRAddon = _interopRequireDefault(__webpack_require__(254));
 
-var _getBundles = _interopRequireDefault(__webpack_require__(260));
+var _getBundles = _interopRequireDefault(__webpack_require__(259));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
@@ -25440,19 +25412,19 @@ module.exports = _ReactLoadableSSRAddon["default"];
 module.exports.getBundles = _getBundles["default"];
 
 /***/ }),
-/* 237 */
+/* 236 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var CleanCSS = __webpack_require__(261);
-var decode = __webpack_require__(324).decode;
-var HTMLParser = __webpack_require__(326).HTMLParser;
-var RelateUrl = __webpack_require__(327);
-var TokenChain = __webpack_require__(341);
-var Terser = __webpack_require__(342);
-var utils = __webpack_require__(136);
+var CleanCSS = __webpack_require__(260);
+var decode = __webpack_require__(323).decode;
+var HTMLParser = __webpack_require__(325).HTMLParser;
+var RelateUrl = __webpack_require__(326);
+var TokenChain = __webpack_require__(340);
+var Terser = __webpack_require__(341);
+var utils = __webpack_require__(135);
 
 function trimWhitespace(str) {
   return str && str.replace(/^[ \n\r\t\f]+/, '').replace(/[ \n\r\t\f]+$/, '');
@@ -26804,7 +26776,7 @@ exports.minify = function(value, options) {
 
 
 /***/ }),
-/* 238 */
+/* 237 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -26813,17 +26785,17 @@ exports.minify = function(value, options) {
 module.exports = Object.assign(
   {},
   // Export promiseified graceful-fs:
-  __webpack_require__(138),
+  __webpack_require__(137),
   // Export extra methods:
-  __webpack_require__(139),
-  __webpack_require__(142),
-  __webpack_require__(352),
-  __webpack_require__(354),
-  __webpack_require__(360),
+  __webpack_require__(138),
+  __webpack_require__(141),
+  __webpack_require__(351),
+  __webpack_require__(353),
+  __webpack_require__(359),
   __webpack_require__(21),
-  __webpack_require__(364),
-  __webpack_require__(366),
-  __webpack_require__(368),
+  __webpack_require__(363),
+  __webpack_require__(365),
+  __webpack_require__(367),
   __webpack_require__(26),
   __webpack_require__(66)
 )
@@ -26839,19 +26811,19 @@ if (Object.getOwnPropertyDescriptor(fs, 'promises')) {
 
 
 /***/ }),
-/* 239 */
+/* 238 */
 /***/ (function(module) {
 
 module.exports = JSON.parse("{\"/\":{\"component\":\"c4f5d8e4\"},\"/search\":{\"component\":\"99923c26\"},\"/docs/:route\":{\"component\":\"1be78505\",\"docsMetadata\":\"20ac7829\"},\"/docs/custom-ports\":{\"component\":\"17896441\",\"content\":\"5927b9bc\"},\"/docs/extending/arch\":{\"component\":\"17896441\",\"content\":\"99681e84\"},\"/docs/extending/client-plugin-lifecycle\":{\"component\":\"17896441\",\"content\":\"8c637ae2\"},\"/docs/extending/create-plugin\":{\"component\":\"17896441\",\"content\":\"622de2b5\"},\"/docs/extending/create-table-plugin\":{\"component\":\"17896441\",\"content\":\"cc1a470c\"},\"/docs/extending/debugging\":{\"component\":\"17896441\",\"content\":\"6b8963f6\"},\"/docs/extending/error-handling\":{\"component\":\"17896441\",\"content\":\"935f56f3\"},\"/docs/extending/establishing-a-connection\":{\"component\":\"17896441\",\"content\":\"e1925c59\"},\"/docs/extending/index\":{\"component\":\"17896441\",\"content\":\"24f57445\"},\"/docs/extending/js-plugin-api\":{\"component\":\"17896441\",\"content\":\"ec8f03f2\"},\"/docs/extending/js-setup\":{\"component\":\"17896441\",\"content\":\"a806d1a2\"},\"/docs/extending/layout-inspector\":{\"component\":\"17896441\",\"content\":\"bd3bbb8c\"},\"/docs/extending/new-clients\":{\"component\":\"17896441\",\"content\":\"c2a203b4\"},\"/docs/extending/search-and-filter\":{\"component\":\"17896441\",\"content\":\"f38c2cc3\"},\"/docs/extending/send-data\":{\"component\":\"17896441\",\"content\":\"eb48a329\"},\"/docs/extending/styling-components\":{\"component\":\"17896441\",\"content\":\"e45a8087\"},\"/docs/extending/supporting-layout\":{\"component\":\"17896441\",\"content\":\"2527d735\"},\"/docs/extending/testing\":{\"component\":\"17896441\",\"content\":\"41b472df\"},\"/docs/extending/testing-rn\":{\"component\":\"17896441\",\"content\":\"4e3f310d\"},\"/docs/extending/ui-components\":{\"component\":\"17896441\",\"content\":\"2fd3c64b\"},\"/docs/features/crash-reporter-plugin\":{\"component\":\"17896441\",\"content\":\"cacf6f0b\"},\"/docs/features/databases-plugin\":{\"component\":\"17896441\",\"content\":\"8b754844\"},\"/docs/features/images-plugin\":{\"component\":\"17896441\",\"content\":\"0ecb0d56\"},\"/docs/features/index\":{\"component\":\"17896441\",\"content\":\"55cc260f\"},\"/docs/features/layout-plugin\":{\"component\":\"17896441\",\"content\":\"a7b23657\"},\"/docs/features/leak-canary-plugin\":{\"component\":\"17896441\",\"content\":\"09ff0d31\"},\"/docs/features/logs-plugin\":{\"component\":\"17896441\",\"content\":\"f0f6bd8d\"},\"/docs/features/navigation-plugin\":{\"component\":\"17896441\",\"content\":\"2899fb48\"},\"/docs/features/network-plugin\":{\"component\":\"17896441\",\"content\":\"9a761373\"},\"/docs/features/react-native\":{\"component\":\"17896441\",\"content\":\"9e36ac3e\"},\"/docs/features/sandbox-plugin\":{\"component\":\"17896441\",\"content\":\"1df478f1\"},\"/docs/features/share-flipper-data\":{\"component\":\"17896441\",\"content\":\"96415b95\"},\"/docs/features/shared-preferences-plugin\":{\"component\":\"17896441\",\"content\":\"3b599a6c\"},\"/docs/getting-started/android-native\":{\"component\":\"17896441\",\"content\":\"dc9e5b6f\"},\"/docs/getting-started/index\":{\"component\":\"17896441\",\"content\":\"3432b9e5\"},\"/docs/getting-started/ios-native\":{\"component\":\"17896441\",\"content\":\"e6910d4e\"},\"/docs/getting-started/react-native\":{\"component\":\"17896441\",\"content\":\"fa2418a3\"},\"/docs/getting-started/react-native-android\":{\"component\":\"17896441\",\"content\":\"f842f0be\"},\"/docs/getting-started/react-native-ios\":{\"component\":\"17896441\",\"content\":\"0fc226a0\"},\"/docs/setup/crash-reporter-plugin\":{\"component\":\"17896441\",\"content\":\"6794fae7\"},\"/docs/setup/databases-plugin\":{\"component\":\"17896441\",\"content\":\"c05dba25\"},\"/docs/setup/images-plugin\":{\"component\":\"17896441\",\"content\":\"fa7b9391\"},\"/docs/setup/layout-plugin\":{\"component\":\"17896441\",\"content\":\"de8c7ae4\"},\"/docs/setup/leak-canary-plugin\":{\"component\":\"17896441\",\"content\":\"d699c701\"},\"/docs/setup/navigation-plugin\":{\"component\":\"17896441\",\"content\":\"91bed8a2\"},\"/docs/setup/network-plugin\":{\"component\":\"17896441\",\"content\":\"dd17a612\"},\"/docs/setup/sandbox-plugin\":{\"component\":\"17896441\",\"content\":\"dabf138f\"},\"/docs/setup/shared-preferences-plugin\":{\"component\":\"17896441\",\"content\":\"71f63756\"},\"/docs/stetho\":{\"component\":\"17896441\",\"content\":\"f15cd604\"},\"/docs/troubleshooting\":{\"component\":\"17896441\",\"content\":\"fcd60faa\"},\"/docs/tutorial/android\":{\"component\":\"17896441\",\"content\":\"04f828f9\"},\"/docs/tutorial/intro\":{\"component\":\"17896441\",\"content\":\"8443a6ca\"},\"/docs/tutorial/ios\":{\"component\":\"17896441\",\"content\":\"165b6557\"},\"/docs/tutorial/js-custom\":{\"component\":\"17896441\",\"content\":\"b6054734\"},\"/docs/tutorial/js-publishing\":{\"component\":\"17896441\",\"content\":\"2c55addf\"},\"/docs/tutorial/js-setup\":{\"component\":\"17896441\",\"content\":\"8a00a8a6\"},\"/docs/tutorial/js-table\":{\"component\":\"17896441\",\"content\":\"ad3dad21\"},\"/docs/tutorial/react-native\":{\"component\":\"17896441\",\"content\":\"129b6cd0\"}}");
 
 /***/ }),
-/* 240 */
+/* 239 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var reactIs = __webpack_require__(149);
+var reactIs = __webpack_require__(148);
 
 /**
  * Copyright 2015, Yahoo! Inc.
@@ -26955,7 +26927,7 @@ module.exports = hoistNonReactStatics;
 
 
 /***/ }),
-/* 241 */
+/* 240 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -26981,15 +26953,15 @@ var _propTypes = __webpack_require__(7);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _check = __webpack_require__(425);
+var _check = __webpack_require__(424);
 
 var _check2 = _interopRequireDefault(_check);
 
-var _x = __webpack_require__(426);
+var _x = __webpack_require__(425);
 
 var _x2 = _interopRequireDefault(_x);
 
-var _util = __webpack_require__(427);
+var _util = __webpack_require__(426);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -27218,7 +27190,7 @@ Toggle.propTypes = {
 };
 
 /***/ }),
-/* 242 */
+/* 241 */
 /***/ (function(module, exports) {
 
 // Exports
@@ -27228,7 +27200,7 @@ module.exports = {
 
 
 /***/ }),
-/* 243 */
+/* 242 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*!
@@ -28201,7 +28173,7 @@ function getAttributeValue(suffix, element) {
 });
 
 /***/ }),
-/* 244 */
+/* 243 */
 /***/ (function(module, exports) {
 
 // Exports
@@ -28211,7 +28183,7 @@ module.exports = {
 
 
 /***/ }),
-/* 245 */
+/* 244 */
 /***/ (function(module, exports) {
 
 // Exports
@@ -28221,16 +28193,16 @@ module.exports = {
 
 
 /***/ }),
-/* 246 */
+/* 245 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var AlgoliaSearchHelper = __webpack_require__(430);
+var AlgoliaSearchHelper = __webpack_require__(429);
 
-var SearchParameters = __webpack_require__(195);
-var SearchResults = __webpack_require__(197);
+var SearchParameters = __webpack_require__(194);
+var SearchResults = __webpack_require__(196);
 
 /**
  * The algoliasearchHelper module is the function that will let its
@@ -28272,7 +28244,7 @@ function algoliasearchHelper(client, index, opts) {
  * @member module:algoliasearchHelper.version
  * @type {number}
  */
-algoliasearchHelper.version = __webpack_require__(201);
+algoliasearchHelper.version = __webpack_require__(200);
 
 /**
  * Constructor for the Helper.
@@ -28299,7 +28271,7 @@ module.exports = algoliasearchHelper;
 
 
 /***/ }),
-/* 247 */
+/* 246 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -28311,13 +28283,13 @@ module.exports = algoliasearchHelper;
  */Object.defineProperty(exports,"__esModule",{value:true});let versions=[];try{versions=__webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module '@site/versions.json'"); e.code = 'MODULE_NOT_FOUND'; throw e; }()));}catch(e){}function useVersioning(){return{versioningEnabled:versions.length>0,versions,latestVersion:versions[0]};}exports.default=useVersioning;
 
 /***/ }),
-/* 248 */
+/* 247 */
 /***/ (function(module) {
 
 module.exports = JSON.parse("{\"name\":\"@docusaurus/core\",\"description\":\"Easy to Maintain Open Source Documentation Websites\",\"version\":\"2.0.0-alpha.56\",\"license\":\"MIT\",\"publishConfig\":{\"access\":\"public\"},\"keywords\":[\"react\",\"static site generator\",\"webpack\",\"documentation\",\"websites\",\"open source\",\"docusaurus\"],\"repository\":{\"type\":\"git\",\"url\":\"https://github.com/facebook/docusaurus.git\"},\"bin\":{\"docusaurus\":\"bin/docusaurus.js\"},\"scripts\":{\"tsc\":\"tsc && tsc -p tsconfig.client.json && node copyUntypedFiles.js\"},\"bugs\":{\"url\":\"https://github.com/facebook/docusaurus/issues\"},\"devDependencies\":{\"@docusaurus/module-type-aliases\":\"^2.0.0-alpha.56\",\"@docusaurus/types\":\"^2.0.0-alpha.56\"},\"dependencies\":{\"@babel/core\":\"^7.9.0\",\"@babel/plugin-syntax-dynamic-import\":\"^7.8.3\",\"@babel/plugin-transform-runtime\":\"^7.9.0\",\"@babel/preset-env\":\"^7.9.0\",\"@babel/preset-react\":\"^7.9.4\",\"@babel/preset-typescript\":\"^7.9.0\",\"@babel/runtime\":\"^7.9.2\",\"@docusaurus/utils\":\"^2.0.0-alpha.56\",\"@endiliey/static-site-generator-webpack-plugin\":\"^4.0.0\",\"@svgr/webpack\":\"^5.4.0\",\"babel-loader\":\"^8.1.0\",\"babel-plugin-dynamic-import-node\":\"^2.3.0\",\"cache-loader\":\"^4.1.0\",\"chalk\":\"^3.0.0\",\"chokidar\":\"^3.3.0\",\"classnames\":\"^2.2.6\",\"commander\":\"^4.0.1\",\"copy-webpack-plugin\":\"^5.0.5\",\"core-js\":\"^2.6.5\",\"css-loader\":\"^3.4.2\",\"del\":\"^5.1.0\",\"eta\":\"^1.1.1\",\"express\":\"^4.17.1\",\"fs-extra\":\"^8.1.0\",\"globby\":\"^10.0.1\",\"html-minifier-terser\":\"^5.0.5\",\"html-tags\":\"^3.1.0\",\"html-webpack-plugin\":\"^4.0.4\",\"import-fresh\":\"^3.2.1\",\"lodash.has\":\"^4.5.2\",\"lodash.isplainobject\":\"^4.0.6\",\"lodash.isstring\":\"^4.0.1\",\"mini-css-extract-plugin\":\"^0.8.0\",\"nprogress\":\"^0.2.0\",\"null-loader\":\"^3.0.0\",\"optimize-css-assets-webpack-plugin\":\"^5.0.3\",\"pnp-webpack-plugin\":\"^1.6.4\",\"portfinder\":\"^1.0.25\",\"postcss-loader\":\"^3.0.0\",\"postcss-preset-env\":\"^6.7.0\",\"react-dev-utils\":\"^10.2.1\",\"react-helmet\":\"^6.0.0-beta\",\"react-loadable\":\"^5.5.0\",\"react-loadable-ssr-addon\":\"^0.2.0\",\"react-router\":\"^5.1.2\",\"react-router-config\":\"^5.1.1\",\"react-router-dom\":\"^5.1.2\",\"semver\":\"^6.3.0\",\"shelljs\":\"^0.8.4\",\"std-env\":\"^2.2.1\",\"terser-webpack-plugin\":\"^2.3.5\",\"wait-file\":\"^1.0.5\",\"webpack\":\"^4.41.2\",\"webpack-bundle-analyzer\":\"^3.6.1\",\"webpack-dev-server\":\"^3.11.0\",\"webpack-merge\":\"^4.2.2\",\"webpackbar\":\"^4.0.0\"},\"peerDependencies\":{\"react\":\"^16.8.4\",\"react-dom\":\"^16.8.4\"},\"engines\":{\"node\":\">=10.15.1\"},\"gitHead\":\"d8ebe8b2e4072376f7d02b6c61f4b9f72be4d800\"}");
 
 /***/ }),
-/* 249 */
+/* 248 */
 /***/ (function(module, exports) {
 
 /**
@@ -28357,7 +28329,7 @@ module.exports = JSON.parse("{\"name\":\"@docusaurus/core\",\"description\":\"Ea
 `;
 
 /***/ }),
-/* 250 */
+/* 249 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -28389,19 +28361,19 @@ exports.useLayoutEffect=function(a,b){return Z().useLayoutEffect(a,b)};exports.u
 
 
 /***/ }),
-/* 251 */
+/* 250 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 if (true) {
-  module.exports = __webpack_require__(252);
+  module.exports = __webpack_require__(251);
 } else {}
 
 
 /***/ }),
-/* 252 */
+/* 251 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -28414,7 +28386,7 @@ if (true) {
  * LICENSE file in the root directory of this source tree.
  */
 
-var k=__webpack_require__(69),m=__webpack_require__(2),aa=__webpack_require__(116);function r(a){for(var b="https://reactjs.org/docs/error-decoder.html?invariant="+a,c=1;c<arguments.length;c++)b+="&args[]="+encodeURIComponent(arguments[c]);return"Minified React error #"+a+"; visit "+b+" for the full message or use the non-minified dev environment for full errors and additional helpful warnings."}
+var k=__webpack_require__(69),m=__webpack_require__(2),aa=__webpack_require__(115);function r(a){for(var b="https://reactjs.org/docs/error-decoder.html?invariant="+a,c=1;c<arguments.length;c++)b+="&args[]="+encodeURIComponent(arguments[c]);return"Minified React error #"+a+"; visit "+b+" for the full message or use the non-minified dev environment for full errors and additional helpful warnings."}
 var u="function"===typeof Symbol&&Symbol.for,ba=u?Symbol.for("react.portal"):60106,v=u?Symbol.for("react.fragment"):60107,ca=u?Symbol.for("react.strict_mode"):60108,da=u?Symbol.for("react.profiler"):60114,w=u?Symbol.for("react.provider"):60109,ea=u?Symbol.for("react.context"):60110,fa=u?Symbol.for("react.concurrent_mode"):60111,ha=u?Symbol.for("react.forward_ref"):60112,B=u?Symbol.for("react.suspense"):60113,ia=u?Symbol.for("react.suspense_list"):60120,ja=u?Symbol.for("react.memo"):60115,ka=u?Symbol.for("react.lazy"):
 60116,la=u?Symbol.for("react.block"):60121,ma=u?Symbol.for("react.fundamental"):60117,na=u?Symbol.for("react.scope"):60119;function oa(a){if(-1===a._status){a._status=0;var b=a._ctor;b=b();a._result=b;b.then(function(c){0===a._status&&(c=c.default,a._status=1,a._result=c)},function(c){0===a._status&&(a._status=2,a._result=c)})}}
 function C(a){if(null==a)return null;if("function"===typeof a)return a.displayName||a.name||null;if("string"===typeof a)return a;switch(a){case v:return"Fragment";case ba:return"Portal";case da:return"Profiler";case ca:return"StrictMode";case B:return"Suspense";case ia:return"SuspenseList"}if("object"===typeof a)switch(a.$$typeof){case ea:return"Context.Consumer";case w:return"Context.Provider";case ha:var b=a.render;b=b.displayName||b.name||"";return a.displayName||(""!==b?"ForwardRef("+b+")":"ForwardRef");
@@ -28463,7 +28435,7 @@ var cb=function(a){function b(b,c){var d=a.call(this,{})||this;d.partialRenderer
 
 
 /***/ }),
-/* 253 */
+/* 252 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -28476,7 +28448,7 @@ var cb=function(a){function b(b,c){var d=a.call(this,{})||this;d.partialRenderer
 
 
 
-var ReactPropTypesSecret = __webpack_require__(254);
+var ReactPropTypesSecret = __webpack_require__(253);
 
 function emptyFunction() {}
 function emptyFunctionWithReset() {}
@@ -28534,7 +28506,7 @@ module.exports = function() {
 
 
 /***/ }),
-/* 254 */
+/* 253 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -28553,7 +28525,7 @@ module.exports = ReactPropTypesSecret;
 
 
 /***/ }),
-/* 255 */
+/* 254 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -28568,7 +28540,7 @@ var _path = _interopRequireDefault(__webpack_require__(8));
 
 var _url = _interopRequireDefault(__webpack_require__(25));
 
-var _utils = __webpack_require__(117);
+var _utils = __webpack_require__(116);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
@@ -28859,7 +28831,7 @@ var _default = ReactLoadableSSRAddon;
 exports["default"] = _default;
 
 /***/ }),
-/* 256 */
+/* 255 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -28868,7 +28840,7 @@ exports["default"] = _default;
 exports.__esModule = true;
 exports["default"] = void 0;
 
-var _crypto = _interopRequireDefault(__webpack_require__(118));
+var _crypto = _interopRequireDefault(__webpack_require__(117));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
@@ -28884,7 +28856,7 @@ var _default = computeIntegrity;
 exports["default"] = _default;
 
 /***/ }),
-/* 257 */
+/* 256 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -28908,7 +28880,7 @@ var _default = getFileExtension;
 exports["default"] = _default;
 
 /***/ }),
-/* 258 */
+/* 257 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -28924,7 +28896,7 @@ function unique(array) {
 }
 
 /***/ }),
-/* 259 */
+/* 258 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -28950,7 +28922,7 @@ function hasEntry(target, targetKey, searchFor) {
 }
 
 /***/ }),
-/* 260 */
+/* 259 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -28959,7 +28931,7 @@ function hasEntry(target, targetKey, searchFor) {
 exports.__esModule = true;
 exports["default"] = void 0;
 
-var _utils = __webpack_require__(117);
+var _utils = __webpack_require__(116);
 
 function getBundles(manifest, chunks) {
   if (!manifest || !chunks) {
@@ -28991,14 +28963,14 @@ var _default = getBundles;
 exports["default"] = _default;
 
 /***/ }),
-/* 261 */
+/* 260 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(262);
+module.exports = __webpack_require__(261);
 
 
 /***/ }),
-/* 262 */
+/* 261 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -29008,27 +28980,27 @@ module.exports = __webpack_require__(262);
  * Copyright (C) 2017 JakubPawlowicz.com
  */
 
-var level0Optimize = __webpack_require__(263);
-var level1Optimize = __webpack_require__(264);
-var level2Optimize = __webpack_require__(271);
-var validator = __webpack_require__(295);
+var level0Optimize = __webpack_require__(262);
+var level1Optimize = __webpack_require__(263);
+var level2Optimize = __webpack_require__(270);
+var validator = __webpack_require__(294);
 
-var compatibilityFrom = __webpack_require__(296);
-var fetchFrom = __webpack_require__(297);
+var compatibilityFrom = __webpack_require__(295);
+var fetchFrom = __webpack_require__(296);
 var formatFrom = __webpack_require__(57).formatFrom;
-var inlineFrom = __webpack_require__(301);
-var inlineRequestFrom = __webpack_require__(302);
-var inlineTimeoutFrom = __webpack_require__(303);
+var inlineFrom = __webpack_require__(300);
+var inlineRequestFrom = __webpack_require__(301);
+var inlineTimeoutFrom = __webpack_require__(302);
 var OptimizationLevel = __webpack_require__(30).OptimizationLevel;
 var optimizationLevelFrom = __webpack_require__(30).optimizationLevelFrom;
-var rebaseFrom = __webpack_require__(304);
-var rebaseToFrom = __webpack_require__(305);
+var rebaseFrom = __webpack_require__(303);
+var rebaseToFrom = __webpack_require__(304);
 
-var inputSourceMapTracker = __webpack_require__(306);
-var readSources = __webpack_require__(313);
+var inputSourceMapTracker = __webpack_require__(305);
+var readSources = __webpack_require__(312);
 
-var serializeStyles = __webpack_require__(322);
-var serializeStylesAndSourceMap = __webpack_require__(323);
+var serializeStyles = __webpack_require__(321);
+var serializeStylesAndSourceMap = __webpack_require__(322);
 
 var CleanCSS = module.exports = function CleanCSS(options) {
   options = options || {};
@@ -29176,7 +29148,7 @@ function calculateStatsFrom(styles, context) {
 
 
 /***/ }),
-/* 263 */
+/* 262 */
 /***/ (function(module, exports) {
 
 function level0Optimize(tokens) {
@@ -29188,19 +29160,19 @@ module.exports = level0Optimize;
 
 
 /***/ }),
-/* 264 */
+/* 263 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var shortenHex = __webpack_require__(265);
-var shortenHsl = __webpack_require__(266);
-var shortenRgb = __webpack_require__(267);
+var shortenHex = __webpack_require__(264);
+var shortenHsl = __webpack_require__(265);
+var shortenRgb = __webpack_require__(266);
 var sortSelectors = __webpack_require__(88);
 var tidyRules = __webpack_require__(89);
-var tidyBlock = __webpack_require__(269);
-var tidyAtRule = __webpack_require__(270);
+var tidyBlock = __webpack_require__(268);
+var tidyAtRule = __webpack_require__(269);
 
 var Hack = __webpack_require__(90);
-var removeUnused = __webpack_require__(120);
+var removeUnused = __webpack_require__(119);
 var restoreFromOptimizing = __webpack_require__(49);
 var wrapForOptimizing = __webpack_require__(40).all;
 
@@ -29219,7 +29191,7 @@ var IgnoreProperty = 'ignore-property';
 var CHARSET_TOKEN = '@charset';
 var CHARSET_REGEXP = new RegExp('^' + CHARSET_TOKEN, 'i');
 
-var DEFAULT_ROUNDING_PRECISION = __webpack_require__(121).DEFAULT;
+var DEFAULT_ROUNDING_PRECISION = __webpack_require__(120).DEFAULT;
 
 var WHOLE_PIXEL_VALUE = /(?:^|\s|\()(-?\d+)px/;
 var TIME_VALUE = /^(\-?[\d\.]+)(m?s)$/;
@@ -29885,7 +29857,7 @@ module.exports = level1Optimize;
 
 
 /***/ }),
-/* 265 */
+/* 264 */
 /***/ (function(module, exports) {
 
 var COLORS = {
@@ -30080,7 +30052,7 @@ module.exports = shortenHex;
 
 
 /***/ }),
-/* 266 */
+/* 265 */
 /***/ (function(module, exports) {
 
 // HSL to RGB converter. Both methods adapted from:
@@ -30147,7 +30119,7 @@ module.exports = shortenHsl;
 
 
 /***/ }),
-/* 267 */
+/* 266 */
 /***/ (function(module, exports) {
 
 function shortenRgb(red, green, blue) {
@@ -30163,7 +30135,7 @@ module.exports = shortenRgb;
 
 
 /***/ }),
-/* 268 */
+/* 267 */
 /***/ (function(module, exports) {
 
 // adapted from http://nedbatchelder.com/blog/200712.html#e20071211T054956
@@ -30200,7 +30172,7 @@ module.exports = naturalCompare;
 
 
 /***/ }),
-/* 269 */
+/* 268 */
 /***/ (function(module, exports) {
 
 var SUPPORTED_COMPACT_BLOCK_MATCHER = /^@media\W/;
@@ -30229,7 +30201,7 @@ module.exports = tidyBlock;
 
 
 /***/ }),
-/* 270 */
+/* 269 */
 /***/ (function(module, exports) {
 
 function tidyAtRule(value) {
@@ -30244,19 +30216,19 @@ module.exports = tidyAtRule;
 
 
 /***/ }),
-/* 271 */
+/* 270 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var mergeAdjacent = __webpack_require__(272);
-var mergeMediaQueries = __webpack_require__(283);
-var mergeNonAdjacentByBody = __webpack_require__(286);
-var mergeNonAdjacentBySelector = __webpack_require__(287);
-var reduceNonAdjacent = __webpack_require__(288);
-var removeDuplicateFontAtRules = __webpack_require__(289);
-var removeDuplicateMediaQueries = __webpack_require__(290);
-var removeDuplicates = __webpack_require__(291);
-var removeUnusedAtRules = __webpack_require__(292);
-var restructure = __webpack_require__(293);
+var mergeAdjacent = __webpack_require__(271);
+var mergeMediaQueries = __webpack_require__(282);
+var mergeNonAdjacentByBody = __webpack_require__(285);
+var mergeNonAdjacentBySelector = __webpack_require__(286);
+var reduceNonAdjacent = __webpack_require__(287);
+var removeDuplicateFontAtRules = __webpack_require__(288);
+var removeDuplicateMediaQueries = __webpack_require__(289);
+var removeDuplicates = __webpack_require__(290);
+var removeUnusedAtRules = __webpack_require__(291);
+var restructure = __webpack_require__(292);
 
 var optimizeProperties = __webpack_require__(60);
 
@@ -30384,7 +30356,7 @@ module.exports = level2Optimize;
 
 
 /***/ }),
-/* 272 */
+/* 271 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var isMergeable = __webpack_require__(59);
@@ -30440,11 +30412,11 @@ module.exports = mergeAdjacent;
 
 
 /***/ }),
-/* 273 */
+/* 272 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var everyValuesPair = __webpack_require__(122);
-var hasInherit = __webpack_require__(123);
+var everyValuesPair = __webpack_require__(121);
+var hasInherit = __webpack_require__(122);
 var populateComponents = __webpack_require__(93);
 
 var compactable = __webpack_require__(34);
@@ -30891,10 +30863,10 @@ module.exports = mergeIntoShorthands;
 
 
 /***/ }),
-/* 274 */
+/* 273 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var InvalidPropertyError = __webpack_require__(124);
+var InvalidPropertyError = __webpack_require__(123);
 
 var wrapSingle = __webpack_require__(40).single;
 
@@ -31541,10 +31513,10 @@ module.exports = {
 
 
 /***/ }),
-/* 275 */
+/* 274 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var understandable = __webpack_require__(276);
+var understandable = __webpack_require__(275);
 
 function animationIterationCount(validator, value1, value2) {
   if (!understandable(validator, value1, value2, 0, true) && !(validator.isAnimationIterationCountKeyword(value2) || validator.isPositiveNumber(value2))) {
@@ -31830,10 +31802,10 @@ module.exports = {
 
 
 /***/ }),
-/* 276 */
+/* 275 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var sameVendorPrefixes = __webpack_require__(125).same;
+var sameVendorPrefixes = __webpack_require__(124).same;
 
 function understandable(validator, value1, value2, _position, isPaired) {
   if (!sameVendorPrefixes(value1, value2)) {
@@ -31851,7 +31823,7 @@ module.exports = understandable;
 
 
 /***/ }),
-/* 277 */
+/* 276 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var shallowClone = __webpack_require__(61).shallow;
@@ -32160,16 +32132,16 @@ module.exports = {
 
 
 /***/ }),
-/* 278 */
+/* 277 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var hasInherit = __webpack_require__(123);
-var everyValuesPair = __webpack_require__(122);
-var findComponentIn = __webpack_require__(279);
-var isComponentOf = __webpack_require__(280);
-var isMergeableShorthand = __webpack_require__(281);
-var overridesNonComponentShorthand = __webpack_require__(282);
-var sameVendorPrefixesIn = __webpack_require__(125).same;
+var hasInherit = __webpack_require__(122);
+var everyValuesPair = __webpack_require__(121);
+var findComponentIn = __webpack_require__(278);
+var isComponentOf = __webpack_require__(279);
+var isMergeableShorthand = __webpack_require__(280);
+var overridesNonComponentShorthand = __webpack_require__(281);
+var sameVendorPrefixesIn = __webpack_require__(124).same;
 
 var compactable = __webpack_require__(34);
 var deepClone = __webpack_require__(61).deep;
@@ -32650,7 +32622,7 @@ module.exports = overrideProperties;
 
 
 /***/ }),
-/* 279 */
+/* 278 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var compactable = __webpack_require__(34);
@@ -32696,7 +32668,7 @@ module.exports = findComponentIn;
 
 
 /***/ }),
-/* 280 */
+/* 279 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var compactable = __webpack_require__(34);
@@ -32724,7 +32696,7 @@ module.exports = isComponentOf;
 
 
 /***/ }),
-/* 281 */
+/* 280 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Marker = __webpack_require__(14);
@@ -32741,7 +32713,7 @@ module.exports = isMergeableShorthand;
 
 
 /***/ }),
-/* 282 */
+/* 281 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var compactable = __webpack_require__(34);
@@ -32756,13 +32728,13 @@ module.exports = overridesNonComponentShorthand;
 
 
 /***/ }),
-/* 283 */
+/* 282 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var canReorder = __webpack_require__(62).canReorder;
 var canReorderSingle = __webpack_require__(62).canReorderSingle;
 var extractProperties = __webpack_require__(95);
-var rulesOverlap = __webpack_require__(126);
+var rulesOverlap = __webpack_require__(125);
 
 var serializeRules = __webpack_require__(11).rules;
 var OptimizationLevel = __webpack_require__(30).OptimizationLevel;
@@ -32865,10 +32837,10 @@ module.exports = mergeMediaQueries;
 
 
 /***/ }),
-/* 284 */
+/* 283 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var specificity = __webpack_require__(285);
+var specificity = __webpack_require__(284);
 
 function specificitiesOverlap(selector1, selector2, cache) {
   var specificity1;
@@ -32905,7 +32877,7 @@ module.exports = specificitiesOverlap;
 
 
 /***/ }),
-/* 285 */
+/* 284 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Marker = __webpack_require__(14);
@@ -32988,7 +32960,7 @@ module.exports = specificity;
 
 
 /***/ }),
-/* 286 */
+/* 285 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var isMergeable = __webpack_require__(59);
@@ -33074,7 +33046,7 @@ module.exports = mergeNonAdjacentByBody;
 
 
 /***/ }),
-/* 287 */
+/* 286 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var canReorder = __webpack_require__(62).canReorder;
@@ -33158,14 +33130,14 @@ module.exports = mergeNonAdjacentBySelector;
 
 
 /***/ }),
-/* 288 */
+/* 287 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var isMergeable = __webpack_require__(59);
 
 var optimizeProperties = __webpack_require__(60);
 
-var cloneArray = __webpack_require__(127);
+var cloneArray = __webpack_require__(126);
 
 var Token = __webpack_require__(10);
 
@@ -33344,7 +33316,7 @@ module.exports = reduceNonAdjacent;
 
 
 /***/ }),
-/* 289 */
+/* 288 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Token = __webpack_require__(10);
@@ -33380,7 +33352,7 @@ module.exports = removeDuplicateFontAtRules;
 
 
 /***/ }),
-/* 290 */
+/* 289 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Token = __webpack_require__(10);
@@ -33416,7 +33388,7 @@ module.exports = removeDuplicateMediaQueries;
 
 
 /***/ }),
-/* 291 */
+/* 290 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Token = __webpack_require__(10);
@@ -33465,7 +33437,7 @@ module.exports = removeDuplicates;
 
 
 /***/ }),
-/* 292 */
+/* 291 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var populateComponents = __webpack_require__(93);
@@ -33720,17 +33692,17 @@ module.exports = removeUnusedAtRules;
 
 
 /***/ }),
-/* 293 */
+/* 292 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var canReorderSingle = __webpack_require__(62).canReorderSingle;
 var extractProperties = __webpack_require__(95);
 var isMergeable = __webpack_require__(59);
-var tidyRuleDuplicates = __webpack_require__(294);
+var tidyRuleDuplicates = __webpack_require__(293);
 
 var Token = __webpack_require__(10);
 
-var cloneArray = __webpack_require__(127);
+var cloneArray = __webpack_require__(126);
 
 var serializeBody = __webpack_require__(11).body;
 var serializeRules = __webpack_require__(11).rules;
@@ -34115,7 +34087,7 @@ module.exports = restructure;
 
 
 /***/ }),
-/* 294 */
+/* 293 */
 /***/ (function(module, exports) {
 
 function ruleSorter(s1, s2) {
@@ -34142,7 +34114,7 @@ module.exports = tidyRuleDuplicates;
 
 
 /***/ }),
-/* 295 */
+/* 294 */
 /***/ (function(module, exports) {
 
 var functionNoVendorRegexStr = '[A-Z]+(\\-|[A-Z]|[0-9])+\\(.*?\\)';
@@ -34677,7 +34649,7 @@ module.exports = validator;
 
 
 /***/ }),
-/* 296 */
+/* 295 */
 /***/ (function(module, exports) {
 
 var DEFAULTS = {
@@ -34866,10 +34838,10 @@ module.exports = compatibilityFrom;
 
 
 /***/ }),
-/* 297 */
+/* 296 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var loadRemoteResource = __webpack_require__(298);
+var loadRemoteResource = __webpack_require__(297);
 
 function fetchFrom(callback) {
   return callback || loadRemoteResource;
@@ -34879,15 +34851,15 @@ module.exports = fetchFrom;
 
 
 /***/ }),
-/* 298 */
+/* 297 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var http = __webpack_require__(63);
 var https = __webpack_require__(41);
 var url = __webpack_require__(25);
 
-var isHttpResource = __webpack_require__(299);
-var isHttpsResource = __webpack_require__(300);
+var isHttpResource = __webpack_require__(298);
+var isHttpsResource = __webpack_require__(299);
 var override = __webpack_require__(39);
 
 var HTTP_PROTOCOL = 'http:';
@@ -34959,7 +34931,7 @@ module.exports = loadRemoteResource;
 
 
 /***/ }),
-/* 299 */
+/* 298 */
 /***/ (function(module, exports) {
 
 var HTTP_RESOURCE_PATTERN = /^http:\/\//;
@@ -34972,7 +34944,7 @@ module.exports = isHttpResource;
 
 
 /***/ }),
-/* 300 */
+/* 299 */
 /***/ (function(module, exports) {
 
 var HTTPS_RESOURCE_PATTERN = /^https:\/\//;
@@ -34985,7 +34957,7 @@ module.exports = isHttpsResource;
 
 
 /***/ }),
-/* 301 */
+/* 300 */
 /***/ (function(module, exports) {
 
 function inlineOptionsFrom(rules) {
@@ -35006,7 +34978,7 @@ module.exports = inlineOptionsFrom;
 
 
 /***/ }),
-/* 302 */
+/* 301 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var url = __webpack_require__(25);
@@ -35034,7 +35006,7 @@ module.exports = inlineRequestFrom;
 
 
 /***/ }),
-/* 303 */
+/* 302 */
 /***/ (function(module, exports) {
 
 var DEFAULT_TIMEOUT = 5000;
@@ -35047,7 +35019,7 @@ module.exports = inlineTimeoutFrom;
 
 
 /***/ }),
-/* 304 */
+/* 303 */
 /***/ (function(module, exports) {
 
 function rebaseFrom(rebaseOption) {
@@ -35058,7 +35030,7 @@ module.exports = rebaseFrom;
 
 
 /***/ }),
-/* 305 */
+/* 304 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var path = __webpack_require__(8);
@@ -35071,7 +35043,7 @@ module.exports = rebaseToFrom;
 
 
 /***/ }),
-/* 306 */
+/* 305 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var SourceMapConsumer = __webpack_require__(96).SourceMapConsumer;
@@ -35135,7 +35107,7 @@ module.exports = inputSourceMapTracker;
 
 
 /***/ }),
-/* 307 */
+/* 306 */
 /***/ (function(module, exports) {
 
 /* -*- Mode: js; js-indent-level: 2; -*- */
@@ -35208,7 +35180,7 @@ exports.decode = function (charCode) {
 
 
 /***/ }),
-/* 308 */
+/* 307 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* -*- Mode: js; js-indent-level: 2; -*- */
@@ -35293,7 +35265,7 @@ exports.MappingList = MappingList;
 
 
 /***/ }),
-/* 309 */
+/* 308 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* -*- Mode: js; js-indent-level: 2; -*- */
@@ -35304,10 +35276,10 @@ exports.MappingList = MappingList;
  */
 
 var util = __webpack_require__(50);
-var binarySearch = __webpack_require__(310);
-var ArraySet = __webpack_require__(130).ArraySet;
-var base64VLQ = __webpack_require__(129);
-var quickSort = __webpack_require__(311).quickSort;
+var binarySearch = __webpack_require__(309);
+var ArraySet = __webpack_require__(129).ArraySet;
+var base64VLQ = __webpack_require__(128);
+var quickSort = __webpack_require__(310).quickSort;
 
 function SourceMapConsumer(aSourceMap, aSourceMapURL) {
   var sourceMap = aSourceMap;
@@ -36444,7 +36416,7 @@ exports.IndexedSourceMapConsumer = IndexedSourceMapConsumer;
 
 
 /***/ }),
-/* 310 */
+/* 309 */
 /***/ (function(module, exports) {
 
 /* -*- Mode: js; js-indent-level: 2; -*- */
@@ -36561,7 +36533,7 @@ exports.search = function search(aNeedle, aHaystack, aCompare, aBias) {
 
 
 /***/ }),
-/* 311 */
+/* 310 */
 /***/ (function(module, exports) {
 
 /* -*- Mode: js; js-indent-level: 2; -*- */
@@ -36681,7 +36653,7 @@ exports.quickSort = function (ary, comparator) {
 
 
 /***/ }),
-/* 312 */
+/* 311 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* -*- Mode: js; js-indent-level: 2; -*- */
@@ -36691,7 +36663,7 @@ exports.quickSort = function (ary, comparator) {
  * http://opensource.org/licenses/BSD-3-Clause
  */
 
-var SourceMapGenerator = __webpack_require__(128).SourceMapGenerator;
+var SourceMapGenerator = __webpack_require__(127).SourceMapGenerator;
 var util = __webpack_require__(50);
 
 // Matches a Windows-style `\r\n` newline or a `\n` newline used by all other
@@ -37100,27 +37072,27 @@ exports.SourceNode = SourceNode;
 
 
 /***/ }),
-/* 313 */
+/* 312 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var fs = __webpack_require__(24);
 var path = __webpack_require__(8);
 
-var applySourceMaps = __webpack_require__(314);
-var extractImportUrlAndMedia = __webpack_require__(133);
+var applySourceMaps = __webpack_require__(313);
+var extractImportUrlAndMedia = __webpack_require__(132);
 var isAllowedResource = __webpack_require__(97);
-var loadOriginalSources = __webpack_require__(317);
-var normalizePath = __webpack_require__(318);
-var rebase = __webpack_require__(319);
-var rebaseLocalMap = __webpack_require__(131);
-var rebaseRemoteMap = __webpack_require__(132);
-var restoreImport = __webpack_require__(134);
+var loadOriginalSources = __webpack_require__(316);
+var normalizePath = __webpack_require__(317);
+var rebase = __webpack_require__(318);
+var rebaseLocalMap = __webpack_require__(130);
+var rebaseRemoteMap = __webpack_require__(131);
+var restoreImport = __webpack_require__(133);
 
-var tokenize = __webpack_require__(321);
+var tokenize = __webpack_require__(320);
 var Token = __webpack_require__(10);
 var Marker = __webpack_require__(14);
 var hasProtocol = __webpack_require__(64);
-var isImport = __webpack_require__(135);
+var isImport = __webpack_require__(134);
 var isRemoteResource = __webpack_require__(51);
 
 var UNKNOWN_URI = 'uri:unknown';
@@ -37447,20 +37419,20 @@ module.exports = readSources;
 
 
 /***/ }),
-/* 314 */
+/* 313 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var fs = __webpack_require__(24);
 var path = __webpack_require__(8);
 
 var isAllowedResource = __webpack_require__(97);
-var matchDataUri = __webpack_require__(315);
-var rebaseLocalMap = __webpack_require__(131);
-var rebaseRemoteMap = __webpack_require__(132);
+var matchDataUri = __webpack_require__(314);
+var rebaseLocalMap = __webpack_require__(130);
+var rebaseRemoteMap = __webpack_require__(131);
 
 var Token = __webpack_require__(10);
 var hasProtocol = __webpack_require__(64);
-var isDataUriResource = __webpack_require__(316);
+var isDataUriResource = __webpack_require__(315);
 var isRemoteResource = __webpack_require__(51);
 
 var MAP_MARKER_PATTERN = /^\/\*# sourceMappingURL=(\S+) \*\/$/;
@@ -37698,7 +37670,7 @@ module.exports = applySourceMaps;
 
 
 /***/ }),
-/* 315 */
+/* 314 */
 /***/ (function(module, exports) {
 
 var DATA_URI_PATTERN = /^data:(\S*?)?(;charset=[^;]+)?(;[^,]+?)?,(.+)/;
@@ -37711,7 +37683,7 @@ module.exports = matchDataUri;
 
 
 /***/ }),
-/* 316 */
+/* 315 */
 /***/ (function(module, exports) {
 
 var DATA_URI_PATTERN = /^data:(\S*?)?(;charset=[^;]+)?(;[^,]+?)?,(.+)/;
@@ -37724,7 +37696,7 @@ module.exports = isDataUriResource;
 
 
 /***/ }),
-/* 317 */
+/* 316 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var fs = __webpack_require__(24);
@@ -37856,7 +37828,7 @@ module.exports = loadOriginalSources;
 
 
 /***/ }),
-/* 318 */
+/* 317 */
 /***/ (function(module, exports) {
 
 var UNIX_SEPARATOR = '/';
@@ -37870,15 +37842,15 @@ module.exports = normalizePath;
 
 
 /***/ }),
-/* 319 */
+/* 318 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var extractImportUrlAndMedia = __webpack_require__(133);
-var restoreImport = __webpack_require__(134);
-var rewriteUrl = __webpack_require__(320);
+var extractImportUrlAndMedia = __webpack_require__(132);
+var restoreImport = __webpack_require__(133);
+var rewriteUrl = __webpack_require__(319);
 
 var Token = __webpack_require__(10);
-var isImport = __webpack_require__(135);
+var isImport = __webpack_require__(134);
 
 var SOURCE_MAP_COMMENT_PATTERN = /^\/\*# sourceMappingURL=(\S+) \*\/$/;
 
@@ -37977,7 +37949,7 @@ module.exports = rebase;
 
 
 /***/ }),
-/* 320 */
+/* 319 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var path = __webpack_require__(8);
@@ -38101,7 +38073,7 @@ module.exports = rewriteUrl;
 
 
 /***/ }),
-/* 321 */
+/* 320 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Marker = __webpack_require__(14);
@@ -38678,7 +38650,7 @@ module.exports = tokenize;
 
 
 /***/ }),
-/* 322 */
+/* 321 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var all = __webpack_require__(92).all;
@@ -38734,7 +38706,7 @@ module.exports = serializeStyles;
 
 
 /***/ }),
-/* 323 */
+/* 322 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var SourceMapGenerator = __webpack_require__(96).SourceMapGenerator;
@@ -38841,7 +38813,7 @@ module.exports = serializeStylesAndSourceMap;
 
 
 /***/ }),
-/* 324 */
+/* 323 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(module) {var __WEBPACK_AMD_DEFINE_RESULT__;/*! https://mths.be/he v1.2.0 by @mathias | MIT license */
@@ -39179,10 +39151,10 @@ module.exports = serializeStylesAndSourceMap;
 
 }(this));
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(325)(module)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(324)(module)))
 
 /***/ }),
-/* 325 */
+/* 324 */
 /***/ (function(module, exports) {
 
 module.exports = function(module) {
@@ -39210,7 +39182,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 326 */
+/* 325 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -39246,7 +39218,7 @@ module.exports = function(module) {
 
 
 
-var createMapFromString = __webpack_require__(136).createMapFromString;
+var createMapFromString = __webpack_require__(135).createMapFromString;
 
 function makeMap(values) {
   return createMapFromString(values, true);
@@ -39784,18 +39756,18 @@ exports.HTMLtoDOM = function(html, doc) {
 
 
 /***/ }),
-/* 327 */
+/* 326 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var constants  = __webpack_require__(137);
-var formatUrl  = __webpack_require__(328);
-var getOptions = __webpack_require__(329);
+var constants  = __webpack_require__(136);
+var formatUrl  = __webpack_require__(327);
+var getOptions = __webpack_require__(328);
 var objUtils   = __webpack_require__(98);
-var parseUrl   = __webpack_require__(330);
-var relateUrl  = __webpack_require__(337);
+var parseUrl   = __webpack_require__(329);
+var relateUrl  = __webpack_require__(336);
 
 
 
@@ -39885,13 +39857,13 @@ module.exports = RelateUrl;
 
 
 /***/ }),
-/* 328 */
+/* 327 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var constants = __webpack_require__(137);
+var constants = __webpack_require__(136);
 
 
 
@@ -40066,7 +40038,7 @@ module.exports = formatUrl;
 
 
 /***/ }),
-/* 329 */
+/* 328 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40130,18 +40102,18 @@ module.exports = getOptions;
 
 
 /***/ }),
-/* 330 */
+/* 329 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var hrefInfo   = __webpack_require__(331);
-var parseHost  = __webpack_require__(332);
-var parsePath  = __webpack_require__(333);
-var parsePort  = __webpack_require__(334);
-var parseQuery = __webpack_require__(335);
-var parseUrlString = __webpack_require__(336);
+var hrefInfo   = __webpack_require__(330);
+var parseHost  = __webpack_require__(331);
+var parsePath  = __webpack_require__(332);
+var parsePort  = __webpack_require__(333);
+var parseQuery = __webpack_require__(334);
+var parseUrlString = __webpack_require__(335);
 var pathUtils      = __webpack_require__(99);
 
 
@@ -40195,7 +40167,7 @@ module.exports =
 
 
 /***/ }),
-/* 331 */
+/* 330 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40222,7 +40194,7 @@ module.exports = hrefInfo;
 
 
 /***/ }),
-/* 332 */
+/* 331 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40255,7 +40227,7 @@ module.exports = parseHost;
 
 
 /***/ }),
-/* 333 */
+/* 332 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40362,7 +40334,7 @@ module.exports = parsePath;
 
 
 /***/ }),
-/* 334 */
+/* 333 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40401,7 +40373,7 @@ module.exports = parsePort;
 
 
 /***/ }),
-/* 335 */
+/* 334 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40461,7 +40433,7 @@ module.exports = parseQuery;
 
 
 /***/ }),
-/* 336 */
+/* 335 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40614,14 +40586,14 @@ module.exports = parseUrlString;
 
 
 /***/ }),
-/* 337 */
+/* 336 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var absolutize = __webpack_require__(338);
-var relativize = __webpack_require__(340);
+var absolutize = __webpack_require__(337);
+var relativize = __webpack_require__(339);
 
 
 
@@ -40639,13 +40611,13 @@ module.exports = relateUrl;
 
 
 /***/ }),
-/* 338 */
+/* 337 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var findRelation = __webpack_require__(339);
+var findRelation = __webpack_require__(338);
 var objUtils     = __webpack_require__(98);
 var pathUtils    = __webpack_require__(99);
 
@@ -40735,7 +40707,7 @@ module.exports = absolutize;
 
 
 /***/ }),
-/* 339 */
+/* 338 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40821,7 +40793,7 @@ module.exports =
 
 
 /***/ }),
-/* 340 */
+/* 339 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40895,7 +40867,7 @@ module.exports = relativize;
 
 
 /***/ }),
-/* 341 */
+/* 340 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40973,7 +40945,7 @@ module.exports = TokenChain;
 
 
 /***/ }),
-/* 342 */
+/* 341 */
 /***/ (function(module, exports, __webpack_require__) {
 
 !function(e,t){ true?t(exports,__webpack_require__(96)):undefined}(this,(function(e,t){"use strict";function n(e){return e.split("")}function i(e,t){return t.includes(e)}t=t&&Object.prototype.hasOwnProperty.call(t,"default")?t.default:t;class r extends Error{constructor(e,t){super(),this.name="DefaultsError",this.message=e,this.defs=t}}function o(e,t,n){!0===e&&(e={});const i=e||{};if(n)for(const e in i)if(D(i,e)&&!D(t,e))throw new r("`"+e+"` is not a supported option",t);for(const n in t)if(D(t,n))if(e&&D(e,n))if("ecma"===n){let t=0|e[n];t>5&&t<2015&&(t+=2009),i[n]=t}else i[n]=e&&D(e,n)?e[n]:t[n];else i[n]=t[n];return i}function a(){}function s(){return!1}function u(){return!0}function c(){return this}function l(){return null}var f=function(){function e(e,o,a){var s,u=[],c=[];function l(){var l=o(e[s],s),f=l instanceof r;return f&&(l=l.v),l instanceof n?(l=l.v)instanceof i?c.push.apply(c,a?l.v.slice().reverse():l.v):c.push(l):l!==t&&(l instanceof i?u.push.apply(u,a?l.v.slice().reverse():l.v):u.push(l)),f}if(Array.isArray(e))if(a){for(s=e.length;--s>=0&&!l(););u.reverse(),c.reverse()}else for(s=0;s<e.length&&!l();++s);else for(s in e)if(D(e,s)&&l())break;return c.concat(u)}e.at_top=function(e){return new n(e)},e.splice=function(e){return new i(e)},e.last=function(e){return new r(e)};var t=e.skip={};function n(e){this.v=e}function i(e){this.v=e}function r(e){this.v=e}return e}();function p(e,t,n){return n||(n={}),t&&(n.start||(n.start=t.start),n.end||(n.end=t.end)),new e(n)}function _(e,t){e.includes(t)||e.push(t)}function d(e,t){return e.replace(/{(.+?)}/g,(function(e,n){return t&&t[n]}))}function m(e,t){for(var n=e.length;--n>=0;)e[n]===t&&e.splice(n,1)}function h(e,t){if(e.length<2)return e.slice();return function e(n){if(n.length<=1)return n;var i=Math.floor(n.length/2),r=n.slice(0,i),o=n.slice(i);return function(e,n){for(var i=[],r=0,o=0,a=0;r<e.length&&o<n.length;)t(e[r],n[o])<=0?i[a++]=e[r++]:i[a++]=n[o++];return r<e.length&&i.push.apply(i,e.slice(r)),o<n.length&&i.push.apply(i,n.slice(o)),i}(r=e(r),o=e(o))}(e)}function E(e){return Array.isArray(e)||(e=e.split(" ")),new Set(e)}function g(e,t,n){e.has(t)?e.get(t).push(n):e.set(t,[n])}function D(e,t){return Object.prototype.hasOwnProperty.call(e,t)}function S(e,t){return!0===e||e instanceof RegExp&&e.test(t)}var v={"\n":"n","\r":"r","\u2028":"u2028","\u2029":"u2029"};function A(e){return e.replace(/[\n\r\u2028\u2029]/g,(function(t,n){return("\\"==e[n-1]&&("\\"!=e[n-2]||/(?:^|[^\\])(?:\\{2})*$/.test(e.slice(0,n-1)))?"":"\\")+v[t]}))}function T(e,t){return e._annotations&t}function y(e,t){e._annotations|=t}var b="break case catch class const continue debugger default delete do else export extends finally for function if in instanceof let new return switch throw try typeof var void while with",C="false null true",O="enum implements import interface package private protected public static super this "+C+" "+b,F="return new delete throw else case yield await";b=E(b),O=E(O),F=E(F),C=E(C);var M=E(n("+-*&%=<>!?|~^")),R=/[0-9a-f]/i,w=/^0x[0-9a-f]+$/i,x=/^0[0-7]+$/,N=/^0o[0-7]+$/i,k=/^0b[01]+$/i,I=/^\d*\.?\d*(?:e[+-]?\d*(?:\d\.?|\.?\d)\d*)?$/i,L=/^(0[xob])?[0-9a-f]+n$/i,P=E(["in","instanceof","typeof","new","void","delete","++","--","+","-","!","~","&","|","^","*","**","/","%",">>","<<",">>>","<",">","<=",">=","==","===","!=","!==","?","=","+=","-=","/=","*=","**=","%=",">>=","<<=",">>>=","|=","^=","&=","&&","??","||"]),V=E(n("  \n\r\t\f\v​           \u2028\u2029  　\ufeff")),B=E(n("\n\r\u2028\u2029")),K=E(n(";]),:")),U=E(n("[{(,;:")),G=E(n("[]{}(),;:")),H={ID_Start:/[$A-Z_a-z\xAA\xB5\xBA\xC0-\xD6\xD8-\xF6\xF8-\u02C1\u02C6-\u02D1\u02E0-\u02E4\u02EC\u02EE\u0370-\u0374\u0376\u0377\u037A-\u037D\u037F\u0386\u0388-\u038A\u038C\u038E-\u03A1\u03A3-\u03F5\u03F7-\u0481\u048A-\u052F\u0531-\u0556\u0559\u0561-\u0587\u05D0-\u05EA\u05F0-\u05F2\u0620-\u064A\u066E\u066F\u0671-\u06D3\u06D5\u06E5\u06E6\u06EE\u06EF\u06FA-\u06FC\u06FF\u0710\u0712-\u072F\u074D-\u07A5\u07B1\u07CA-\u07EA\u07F4\u07F5\u07FA\u0800-\u0815\u081A\u0824\u0828\u0840-\u0858\u08A0-\u08B4\u0904-\u0939\u093D\u0950\u0958-\u0961\u0971-\u0980\u0985-\u098C\u098F\u0990\u0993-\u09A8\u09AA-\u09B0\u09B2\u09B6-\u09B9\u09BD\u09CE\u09DC\u09DD\u09DF-\u09E1\u09F0\u09F1\u0A05-\u0A0A\u0A0F\u0A10\u0A13-\u0A28\u0A2A-\u0A30\u0A32\u0A33\u0A35\u0A36\u0A38\u0A39\u0A59-\u0A5C\u0A5E\u0A72-\u0A74\u0A85-\u0A8D\u0A8F-\u0A91\u0A93-\u0AA8\u0AAA-\u0AB0\u0AB2\u0AB3\u0AB5-\u0AB9\u0ABD\u0AD0\u0AE0\u0AE1\u0AF9\u0B05-\u0B0C\u0B0F\u0B10\u0B13-\u0B28\u0B2A-\u0B30\u0B32\u0B33\u0B35-\u0B39\u0B3D\u0B5C\u0B5D\u0B5F-\u0B61\u0B71\u0B83\u0B85-\u0B8A\u0B8E-\u0B90\u0B92-\u0B95\u0B99\u0B9A\u0B9C\u0B9E\u0B9F\u0BA3\u0BA4\u0BA8-\u0BAA\u0BAE-\u0BB9\u0BD0\u0C05-\u0C0C\u0C0E-\u0C10\u0C12-\u0C28\u0C2A-\u0C39\u0C3D\u0C58-\u0C5A\u0C60\u0C61\u0C85-\u0C8C\u0C8E-\u0C90\u0C92-\u0CA8\u0CAA-\u0CB3\u0CB5-\u0CB9\u0CBD\u0CDE\u0CE0\u0CE1\u0CF1\u0CF2\u0D05-\u0D0C\u0D0E-\u0D10\u0D12-\u0D3A\u0D3D\u0D4E\u0D5F-\u0D61\u0D7A-\u0D7F\u0D85-\u0D96\u0D9A-\u0DB1\u0DB3-\u0DBB\u0DBD\u0DC0-\u0DC6\u0E01-\u0E30\u0E32\u0E33\u0E40-\u0E46\u0E81\u0E82\u0E84\u0E87\u0E88\u0E8A\u0E8D\u0E94-\u0E97\u0E99-\u0E9F\u0EA1-\u0EA3\u0EA5\u0EA7\u0EAA\u0EAB\u0EAD-\u0EB0\u0EB2\u0EB3\u0EBD\u0EC0-\u0EC4\u0EC6\u0EDC-\u0EDF\u0F00\u0F40-\u0F47\u0F49-\u0F6C\u0F88-\u0F8C\u1000-\u102A\u103F\u1050-\u1055\u105A-\u105D\u1061\u1065\u1066\u106E-\u1070\u1075-\u1081\u108E\u10A0-\u10C5\u10C7\u10CD\u10D0-\u10FA\u10FC-\u1248\u124A-\u124D\u1250-\u1256\u1258\u125A-\u125D\u1260-\u1288\u128A-\u128D\u1290-\u12B0\u12B2-\u12B5\u12B8-\u12BE\u12C0\u12C2-\u12C5\u12C8-\u12D6\u12D8-\u1310\u1312-\u1315\u1318-\u135A\u1380-\u138F\u13A0-\u13F5\u13F8-\u13FD\u1401-\u166C\u166F-\u167F\u1681-\u169A\u16A0-\u16EA\u16EE-\u16F8\u1700-\u170C\u170E-\u1711\u1720-\u1731\u1740-\u1751\u1760-\u176C\u176E-\u1770\u1780-\u17B3\u17D7\u17DC\u1820-\u1877\u1880-\u18A8\u18AA\u18B0-\u18F5\u1900-\u191E\u1950-\u196D\u1970-\u1974\u1980-\u19AB\u19B0-\u19C9\u1A00-\u1A16\u1A20-\u1A54\u1AA7\u1B05-\u1B33\u1B45-\u1B4B\u1B83-\u1BA0\u1BAE\u1BAF\u1BBA-\u1BE5\u1C00-\u1C23\u1C4D-\u1C4F\u1C5A-\u1C7D\u1CE9-\u1CEC\u1CEE-\u1CF1\u1CF5\u1CF6\u1D00-\u1DBF\u1E00-\u1F15\u1F18-\u1F1D\u1F20-\u1F45\u1F48-\u1F4D\u1F50-\u1F57\u1F59\u1F5B\u1F5D\u1F5F-\u1F7D\u1F80-\u1FB4\u1FB6-\u1FBC\u1FBE\u1FC2-\u1FC4\u1FC6-\u1FCC\u1FD0-\u1FD3\u1FD6-\u1FDB\u1FE0-\u1FEC\u1FF2-\u1FF4\u1FF6-\u1FFC\u2071\u207F\u2090-\u209C\u2102\u2107\u210A-\u2113\u2115\u2118-\u211D\u2124\u2126\u2128\u212A-\u2139\u213C-\u213F\u2145-\u2149\u214E\u2160-\u2188\u2C00-\u2C2E\u2C30-\u2C5E\u2C60-\u2CE4\u2CEB-\u2CEE\u2CF2\u2CF3\u2D00-\u2D25\u2D27\u2D2D\u2D30-\u2D67\u2D6F\u2D80-\u2D96\u2DA0-\u2DA6\u2DA8-\u2DAE\u2DB0-\u2DB6\u2DB8-\u2DBE\u2DC0-\u2DC6\u2DC8-\u2DCE\u2DD0-\u2DD6\u2DD8-\u2DDE\u3005-\u3007\u3021-\u3029\u3031-\u3035\u3038-\u303C\u3041-\u3096\u309B-\u309F\u30A1-\u30FA\u30FC-\u30FF\u3105-\u312D\u3131-\u318E\u31A0-\u31BA\u31F0-\u31FF\u3400-\u4DB5\u4E00-\u9FD5\uA000-\uA48C\uA4D0-\uA4FD\uA500-\uA60C\uA610-\uA61F\uA62A\uA62B\uA640-\uA66E\uA67F-\uA69D\uA6A0-\uA6EF\uA717-\uA71F\uA722-\uA788\uA78B-\uA7AD\uA7B0-\uA7B7\uA7F7-\uA801\uA803-\uA805\uA807-\uA80A\uA80C-\uA822\uA840-\uA873\uA882-\uA8B3\uA8F2-\uA8F7\uA8FB\uA8FD\uA90A-\uA925\uA930-\uA946\uA960-\uA97C\uA984-\uA9B2\uA9CF\uA9E0-\uA9E4\uA9E6-\uA9EF\uA9FA-\uA9FE\uAA00-\uAA28\uAA40-\uAA42\uAA44-\uAA4B\uAA60-\uAA76\uAA7A\uAA7E-\uAAAF\uAAB1\uAAB5\uAAB6\uAAB9-\uAABD\uAAC0\uAAC2\uAADB-\uAADD\uAAE0-\uAAEA\uAAF2-\uAAF4\uAB01-\uAB06\uAB09-\uAB0E\uAB11-\uAB16\uAB20-\uAB26\uAB28-\uAB2E\uAB30-\uAB5A\uAB5C-\uAB65\uAB70-\uABE2\uAC00-\uD7A3\uD7B0-\uD7C6\uD7CB-\uD7FB\uF900-\uFA6D\uFA70-\uFAD9\uFB00-\uFB06\uFB13-\uFB17\uFB1D\uFB1F-\uFB28\uFB2A-\uFB36\uFB38-\uFB3C\uFB3E\uFB40\uFB41\uFB43\uFB44\uFB46-\uFBB1\uFBD3-\uFD3D\uFD50-\uFD8F\uFD92-\uFDC7\uFDF0-\uFDFB\uFE70-\uFE74\uFE76-\uFEFC\uFF21-\uFF3A\uFF41-\uFF5A\uFF66-\uFFBE\uFFC2-\uFFC7\uFFCA-\uFFCF\uFFD2-\uFFD7\uFFDA-\uFFDC]|\uD800[\uDC00-\uDC0B\uDC0D-\uDC26\uDC28-\uDC3A\uDC3C\uDC3D\uDC3F-\uDC4D\uDC50-\uDC5D\uDC80-\uDCFA\uDD40-\uDD74\uDE80-\uDE9C\uDEA0-\uDED0\uDF00-\uDF1F\uDF30-\uDF4A\uDF50-\uDF75\uDF80-\uDF9D\uDFA0-\uDFC3\uDFC8-\uDFCF\uDFD1-\uDFD5]|\uD801[\uDC00-\uDC9D\uDD00-\uDD27\uDD30-\uDD63\uDE00-\uDF36\uDF40-\uDF55\uDF60-\uDF67]|\uD802[\uDC00-\uDC05\uDC08\uDC0A-\uDC35\uDC37\uDC38\uDC3C\uDC3F-\uDC55\uDC60-\uDC76\uDC80-\uDC9E\uDCE0-\uDCF2\uDCF4\uDCF5\uDD00-\uDD15\uDD20-\uDD39\uDD80-\uDDB7\uDDBE\uDDBF\uDE00\uDE10-\uDE13\uDE15-\uDE17\uDE19-\uDE33\uDE60-\uDE7C\uDE80-\uDE9C\uDEC0-\uDEC7\uDEC9-\uDEE4\uDF00-\uDF35\uDF40-\uDF55\uDF60-\uDF72\uDF80-\uDF91]|\uD803[\uDC00-\uDC48\uDC80-\uDCB2\uDCC0-\uDCF2]|\uD804[\uDC03-\uDC37\uDC83-\uDCAF\uDCD0-\uDCE8\uDD03-\uDD26\uDD50-\uDD72\uDD76\uDD83-\uDDB2\uDDC1-\uDDC4\uDDDA\uDDDC\uDE00-\uDE11\uDE13-\uDE2B\uDE80-\uDE86\uDE88\uDE8A-\uDE8D\uDE8F-\uDE9D\uDE9F-\uDEA8\uDEB0-\uDEDE\uDF05-\uDF0C\uDF0F\uDF10\uDF13-\uDF28\uDF2A-\uDF30\uDF32\uDF33\uDF35-\uDF39\uDF3D\uDF50\uDF5D-\uDF61]|\uD805[\uDC80-\uDCAF\uDCC4\uDCC5\uDCC7\uDD80-\uDDAE\uDDD8-\uDDDB\uDE00-\uDE2F\uDE44\uDE80-\uDEAA\uDF00-\uDF19]|\uD806[\uDCA0-\uDCDF\uDCFF\uDEC0-\uDEF8]|\uD808[\uDC00-\uDF99]|\uD809[\uDC00-\uDC6E\uDC80-\uDD43]|[\uD80C\uD840-\uD868\uD86A-\uD86C\uD86F-\uD872][\uDC00-\uDFFF]|\uD80D[\uDC00-\uDC2E]|\uD811[\uDC00-\uDE46]|\uD81A[\uDC00-\uDE38\uDE40-\uDE5E\uDED0-\uDEED\uDF00-\uDF2F\uDF40-\uDF43\uDF63-\uDF77\uDF7D-\uDF8F]|\uD81B[\uDF00-\uDF44\uDF50\uDF93-\uDF9F]|\uD82C[\uDC00\uDC01]|\uD82F[\uDC00-\uDC6A\uDC70-\uDC7C\uDC80-\uDC88\uDC90-\uDC99]|\uD835[\uDC00-\uDC54\uDC56-\uDC9C\uDC9E\uDC9F\uDCA2\uDCA5\uDCA6\uDCA9-\uDCAC\uDCAE-\uDCB9\uDCBB\uDCBD-\uDCC3\uDCC5-\uDD05\uDD07-\uDD0A\uDD0D-\uDD14\uDD16-\uDD1C\uDD1E-\uDD39\uDD3B-\uDD3E\uDD40-\uDD44\uDD46\uDD4A-\uDD50\uDD52-\uDEA5\uDEA8-\uDEC0\uDEC2-\uDEDA\uDEDC-\uDEFA\uDEFC-\uDF14\uDF16-\uDF34\uDF36-\uDF4E\uDF50-\uDF6E\uDF70-\uDF88\uDF8A-\uDFA8\uDFAA-\uDFC2\uDFC4-\uDFCB]|\uD83A[\uDC00-\uDCC4]|\uD83B[\uDE00-\uDE03\uDE05-\uDE1F\uDE21\uDE22\uDE24\uDE27\uDE29-\uDE32\uDE34-\uDE37\uDE39\uDE3B\uDE42\uDE47\uDE49\uDE4B\uDE4D-\uDE4F\uDE51\uDE52\uDE54\uDE57\uDE59\uDE5B\uDE5D\uDE5F\uDE61\uDE62\uDE64\uDE67-\uDE6A\uDE6C-\uDE72\uDE74-\uDE77\uDE79-\uDE7C\uDE7E\uDE80-\uDE89\uDE8B-\uDE9B\uDEA1-\uDEA3\uDEA5-\uDEA9\uDEAB-\uDEBB]|\uD869[\uDC00-\uDED6\uDF00-\uDFFF]|\uD86D[\uDC00-\uDF34\uDF40-\uDFFF]|\uD86E[\uDC00-\uDC1D\uDC20-\uDFFF]|\uD873[\uDC00-\uDEA1]|\uD87E[\uDC00-\uDE1D]/,ID_Continue:/(?:[$0-9A-Z_a-z\xAA\xB5\xB7\xBA\xC0-\xD6\xD8-\xF6\xF8-\u02C1\u02C6-\u02D1\u02E0-\u02E4\u02EC\u02EE\u0300-\u0374\u0376\u0377\u037A-\u037D\u037F\u0386-\u038A\u038C\u038E-\u03A1\u03A3-\u03F5\u03F7-\u0481\u0483-\u0487\u048A-\u052F\u0531-\u0556\u0559\u0561-\u0587\u0591-\u05BD\u05BF\u05C1\u05C2\u05C4\u05C5\u05C7\u05D0-\u05EA\u05F0-\u05F2\u0610-\u061A\u0620-\u0669\u066E-\u06D3\u06D5-\u06DC\u06DF-\u06E8\u06EA-\u06FC\u06FF\u0710-\u074A\u074D-\u07B1\u07C0-\u07F5\u07FA\u0800-\u082D\u0840-\u085B\u08A0-\u08B4\u08E3-\u0963\u0966-\u096F\u0971-\u0983\u0985-\u098C\u098F\u0990\u0993-\u09A8\u09AA-\u09B0\u09B2\u09B6-\u09B9\u09BC-\u09C4\u09C7\u09C8\u09CB-\u09CE\u09D7\u09DC\u09DD\u09DF-\u09E3\u09E6-\u09F1\u0A01-\u0A03\u0A05-\u0A0A\u0A0F\u0A10\u0A13-\u0A28\u0A2A-\u0A30\u0A32\u0A33\u0A35\u0A36\u0A38\u0A39\u0A3C\u0A3E-\u0A42\u0A47\u0A48\u0A4B-\u0A4D\u0A51\u0A59-\u0A5C\u0A5E\u0A66-\u0A75\u0A81-\u0A83\u0A85-\u0A8D\u0A8F-\u0A91\u0A93-\u0AA8\u0AAA-\u0AB0\u0AB2\u0AB3\u0AB5-\u0AB9\u0ABC-\u0AC5\u0AC7-\u0AC9\u0ACB-\u0ACD\u0AD0\u0AE0-\u0AE3\u0AE6-\u0AEF\u0AF9\u0B01-\u0B03\u0B05-\u0B0C\u0B0F\u0B10\u0B13-\u0B28\u0B2A-\u0B30\u0B32\u0B33\u0B35-\u0B39\u0B3C-\u0B44\u0B47\u0B48\u0B4B-\u0B4D\u0B56\u0B57\u0B5C\u0B5D\u0B5F-\u0B63\u0B66-\u0B6F\u0B71\u0B82\u0B83\u0B85-\u0B8A\u0B8E-\u0B90\u0B92-\u0B95\u0B99\u0B9A\u0B9C\u0B9E\u0B9F\u0BA3\u0BA4\u0BA8-\u0BAA\u0BAE-\u0BB9\u0BBE-\u0BC2\u0BC6-\u0BC8\u0BCA-\u0BCD\u0BD0\u0BD7\u0BE6-\u0BEF\u0C00-\u0C03\u0C05-\u0C0C\u0C0E-\u0C10\u0C12-\u0C28\u0C2A-\u0C39\u0C3D-\u0C44\u0C46-\u0C48\u0C4A-\u0C4D\u0C55\u0C56\u0C58-\u0C5A\u0C60-\u0C63\u0C66-\u0C6F\u0C81-\u0C83\u0C85-\u0C8C\u0C8E-\u0C90\u0C92-\u0CA8\u0CAA-\u0CB3\u0CB5-\u0CB9\u0CBC-\u0CC4\u0CC6-\u0CC8\u0CCA-\u0CCD\u0CD5\u0CD6\u0CDE\u0CE0-\u0CE3\u0CE6-\u0CEF\u0CF1\u0CF2\u0D01-\u0D03\u0D05-\u0D0C\u0D0E-\u0D10\u0D12-\u0D3A\u0D3D-\u0D44\u0D46-\u0D48\u0D4A-\u0D4E\u0D57\u0D5F-\u0D63\u0D66-\u0D6F\u0D7A-\u0D7F\u0D82\u0D83\u0D85-\u0D96\u0D9A-\u0DB1\u0DB3-\u0DBB\u0DBD\u0DC0-\u0DC6\u0DCA\u0DCF-\u0DD4\u0DD6\u0DD8-\u0DDF\u0DE6-\u0DEF\u0DF2\u0DF3\u0E01-\u0E3A\u0E40-\u0E4E\u0E50-\u0E59\u0E81\u0E82\u0E84\u0E87\u0E88\u0E8A\u0E8D\u0E94-\u0E97\u0E99-\u0E9F\u0EA1-\u0EA3\u0EA5\u0EA7\u0EAA\u0EAB\u0EAD-\u0EB9\u0EBB-\u0EBD\u0EC0-\u0EC4\u0EC6\u0EC8-\u0ECD\u0ED0-\u0ED9\u0EDC-\u0EDF\u0F00\u0F18\u0F19\u0F20-\u0F29\u0F35\u0F37\u0F39\u0F3E-\u0F47\u0F49-\u0F6C\u0F71-\u0F84\u0F86-\u0F97\u0F99-\u0FBC\u0FC6\u1000-\u1049\u1050-\u109D\u10A0-\u10C5\u10C7\u10CD\u10D0-\u10FA\u10FC-\u1248\u124A-\u124D\u1250-\u1256\u1258\u125A-\u125D\u1260-\u1288\u128A-\u128D\u1290-\u12B0\u12B2-\u12B5\u12B8-\u12BE\u12C0\u12C2-\u12C5\u12C8-\u12D6\u12D8-\u1310\u1312-\u1315\u1318-\u135A\u135D-\u135F\u1369-\u1371\u1380-\u138F\u13A0-\u13F5\u13F8-\u13FD\u1401-\u166C\u166F-\u167F\u1681-\u169A\u16A0-\u16EA\u16EE-\u16F8\u1700-\u170C\u170E-\u1714\u1720-\u1734\u1740-\u1753\u1760-\u176C\u176E-\u1770\u1772\u1773\u1780-\u17D3\u17D7\u17DC\u17DD\u17E0-\u17E9\u180B-\u180D\u1810-\u1819\u1820-\u1877\u1880-\u18AA\u18B0-\u18F5\u1900-\u191E\u1920-\u192B\u1930-\u193B\u1946-\u196D\u1970-\u1974\u1980-\u19AB\u19B0-\u19C9\u19D0-\u19DA\u1A00-\u1A1B\u1A20-\u1A5E\u1A60-\u1A7C\u1A7F-\u1A89\u1A90-\u1A99\u1AA7\u1AB0-\u1ABD\u1B00-\u1B4B\u1B50-\u1B59\u1B6B-\u1B73\u1B80-\u1BF3\u1C00-\u1C37\u1C40-\u1C49\u1C4D-\u1C7D\u1CD0-\u1CD2\u1CD4-\u1CF6\u1CF8\u1CF9\u1D00-\u1DF5\u1DFC-\u1F15\u1F18-\u1F1D\u1F20-\u1F45\u1F48-\u1F4D\u1F50-\u1F57\u1F59\u1F5B\u1F5D\u1F5F-\u1F7D\u1F80-\u1FB4\u1FB6-\u1FBC\u1FBE\u1FC2-\u1FC4\u1FC6-\u1FCC\u1FD0-\u1FD3\u1FD6-\u1FDB\u1FE0-\u1FEC\u1FF2-\u1FF4\u1FF6-\u1FFC\u200C\u200D\u203F\u2040\u2054\u2071\u207F\u2090-\u209C\u20D0-\u20DC\u20E1\u20E5-\u20F0\u2102\u2107\u210A-\u2113\u2115\u2118-\u211D\u2124\u2126\u2128\u212A-\u2139\u213C-\u213F\u2145-\u2149\u214E\u2160-\u2188\u2C00-\u2C2E\u2C30-\u2C5E\u2C60-\u2CE4\u2CEB-\u2CF3\u2D00-\u2D25\u2D27\u2D2D\u2D30-\u2D67\u2D6F\u2D7F-\u2D96\u2DA0-\u2DA6\u2DA8-\u2DAE\u2DB0-\u2DB6\u2DB8-\u2DBE\u2DC0-\u2DC6\u2DC8-\u2DCE\u2DD0-\u2DD6\u2DD8-\u2DDE\u2DE0-\u2DFF\u3005-\u3007\u3021-\u302F\u3031-\u3035\u3038-\u303C\u3041-\u3096\u3099-\u309F\u30A1-\u30FA\u30FC-\u30FF\u3105-\u312D\u3131-\u318E\u31A0-\u31BA\u31F0-\u31FF\u3400-\u4DB5\u4E00-\u9FD5\uA000-\uA48C\uA4D0-\uA4FD\uA500-\uA60C\uA610-\uA62B\uA640-\uA66F\uA674-\uA67D\uA67F-\uA6F1\uA717-\uA71F\uA722-\uA788\uA78B-\uA7AD\uA7B0-\uA7B7\uA7F7-\uA827\uA840-\uA873\uA880-\uA8C4\uA8D0-\uA8D9\uA8E0-\uA8F7\uA8FB\uA8FD\uA900-\uA92D\uA930-\uA953\uA960-\uA97C\uA980-\uA9C0\uA9CF-\uA9D9\uA9E0-\uA9FE\uAA00-\uAA36\uAA40-\uAA4D\uAA50-\uAA59\uAA60-\uAA76\uAA7A-\uAAC2\uAADB-\uAADD\uAAE0-\uAAEF\uAAF2-\uAAF6\uAB01-\uAB06\uAB09-\uAB0E\uAB11-\uAB16\uAB20-\uAB26\uAB28-\uAB2E\uAB30-\uAB5A\uAB5C-\uAB65\uAB70-\uABEA\uABEC\uABED\uABF0-\uABF9\uAC00-\uD7A3\uD7B0-\uD7C6\uD7CB-\uD7FB\uF900-\uFA6D\uFA70-\uFAD9\uFB00-\uFB06\uFB13-\uFB17\uFB1D-\uFB28\uFB2A-\uFB36\uFB38-\uFB3C\uFB3E\uFB40\uFB41\uFB43\uFB44\uFB46-\uFBB1\uFBD3-\uFD3D\uFD50-\uFD8F\uFD92-\uFDC7\uFDF0-\uFDFB\uFE00-\uFE0F\uFE20-\uFE2F\uFE33\uFE34\uFE4D-\uFE4F\uFE70-\uFE74\uFE76-\uFEFC\uFF10-\uFF19\uFF21-\uFF3A\uFF3F\uFF41-\uFF5A\uFF66-\uFFBE\uFFC2-\uFFC7\uFFCA-\uFFCF\uFFD2-\uFFD7\uFFDA-\uFFDC]|\uD800[\uDC00-\uDC0B\uDC0D-\uDC26\uDC28-\uDC3A\uDC3C\uDC3D\uDC3F-\uDC4D\uDC50-\uDC5D\uDC80-\uDCFA\uDD40-\uDD74\uDDFD\uDE80-\uDE9C\uDEA0-\uDED0\uDEE0\uDF00-\uDF1F\uDF30-\uDF4A\uDF50-\uDF7A\uDF80-\uDF9D\uDFA0-\uDFC3\uDFC8-\uDFCF\uDFD1-\uDFD5]|\uD801[\uDC00-\uDC9D\uDCA0-\uDCA9\uDD00-\uDD27\uDD30-\uDD63\uDE00-\uDF36\uDF40-\uDF55\uDF60-\uDF67]|\uD802[\uDC00-\uDC05\uDC08\uDC0A-\uDC35\uDC37\uDC38\uDC3C\uDC3F-\uDC55\uDC60-\uDC76\uDC80-\uDC9E\uDCE0-\uDCF2\uDCF4\uDCF5\uDD00-\uDD15\uDD20-\uDD39\uDD80-\uDDB7\uDDBE\uDDBF\uDE00-\uDE03\uDE05\uDE06\uDE0C-\uDE13\uDE15-\uDE17\uDE19-\uDE33\uDE38-\uDE3A\uDE3F\uDE60-\uDE7C\uDE80-\uDE9C\uDEC0-\uDEC7\uDEC9-\uDEE6\uDF00-\uDF35\uDF40-\uDF55\uDF60-\uDF72\uDF80-\uDF91]|\uD803[\uDC00-\uDC48\uDC80-\uDCB2\uDCC0-\uDCF2]|\uD804[\uDC00-\uDC46\uDC66-\uDC6F\uDC7F-\uDCBA\uDCD0-\uDCE8\uDCF0-\uDCF9\uDD00-\uDD34\uDD36-\uDD3F\uDD50-\uDD73\uDD76\uDD80-\uDDC4\uDDCA-\uDDCC\uDDD0-\uDDDA\uDDDC\uDE00-\uDE11\uDE13-\uDE37\uDE80-\uDE86\uDE88\uDE8A-\uDE8D\uDE8F-\uDE9D\uDE9F-\uDEA8\uDEB0-\uDEEA\uDEF0-\uDEF9\uDF00-\uDF03\uDF05-\uDF0C\uDF0F\uDF10\uDF13-\uDF28\uDF2A-\uDF30\uDF32\uDF33\uDF35-\uDF39\uDF3C-\uDF44\uDF47\uDF48\uDF4B-\uDF4D\uDF50\uDF57\uDF5D-\uDF63\uDF66-\uDF6C\uDF70-\uDF74]|\uD805[\uDC80-\uDCC5\uDCC7\uDCD0-\uDCD9\uDD80-\uDDB5\uDDB8-\uDDC0\uDDD8-\uDDDD\uDE00-\uDE40\uDE44\uDE50-\uDE59\uDE80-\uDEB7\uDEC0-\uDEC9\uDF00-\uDF19\uDF1D-\uDF2B\uDF30-\uDF39]|\uD806[\uDCA0-\uDCE9\uDCFF\uDEC0-\uDEF8]|\uD808[\uDC00-\uDF99]|\uD809[\uDC00-\uDC6E\uDC80-\uDD43]|[\uD80C\uD840-\uD868\uD86A-\uD86C\uD86F-\uD872][\uDC00-\uDFFF]|\uD80D[\uDC00-\uDC2E]|\uD811[\uDC00-\uDE46]|\uD81A[\uDC00-\uDE38\uDE40-\uDE5E\uDE60-\uDE69\uDED0-\uDEED\uDEF0-\uDEF4\uDF00-\uDF36\uDF40-\uDF43\uDF50-\uDF59\uDF63-\uDF77\uDF7D-\uDF8F]|\uD81B[\uDF00-\uDF44\uDF50-\uDF7E\uDF8F-\uDF9F]|\uD82C[\uDC00\uDC01]|\uD82F[\uDC00-\uDC6A\uDC70-\uDC7C\uDC80-\uDC88\uDC90-\uDC99\uDC9D\uDC9E]|\uD834[\uDD65-\uDD69\uDD6D-\uDD72\uDD7B-\uDD82\uDD85-\uDD8B\uDDAA-\uDDAD\uDE42-\uDE44]|\uD835[\uDC00-\uDC54\uDC56-\uDC9C\uDC9E\uDC9F\uDCA2\uDCA5\uDCA6\uDCA9-\uDCAC\uDCAE-\uDCB9\uDCBB\uDCBD-\uDCC3\uDCC5-\uDD05\uDD07-\uDD0A\uDD0D-\uDD14\uDD16-\uDD1C\uDD1E-\uDD39\uDD3B-\uDD3E\uDD40-\uDD44\uDD46\uDD4A-\uDD50\uDD52-\uDEA5\uDEA8-\uDEC0\uDEC2-\uDEDA\uDEDC-\uDEFA\uDEFC-\uDF14\uDF16-\uDF34\uDF36-\uDF4E\uDF50-\uDF6E\uDF70-\uDF88\uDF8A-\uDFA8\uDFAA-\uDFC2\uDFC4-\uDFCB\uDFCE-\uDFFF]|\uD836[\uDE00-\uDE36\uDE3B-\uDE6C\uDE75\uDE84\uDE9B-\uDE9F\uDEA1-\uDEAF]|\uD83A[\uDC00-\uDCC4\uDCD0-\uDCD6]|\uD83B[\uDE00-\uDE03\uDE05-\uDE1F\uDE21\uDE22\uDE24\uDE27\uDE29-\uDE32\uDE34-\uDE37\uDE39\uDE3B\uDE42\uDE47\uDE49\uDE4B\uDE4D-\uDE4F\uDE51\uDE52\uDE54\uDE57\uDE59\uDE5B\uDE5D\uDE5F\uDE61\uDE62\uDE64\uDE67-\uDE6A\uDE6C-\uDE72\uDE74-\uDE77\uDE79-\uDE7C\uDE7E\uDE80-\uDE89\uDE8B-\uDE9B\uDEA1-\uDEA3\uDEA5-\uDEA9\uDEAB-\uDEBB]|\uD869[\uDC00-\uDED6\uDF00-\uDFFF]|\uD86D[\uDC00-\uDF34\uDF40-\uDFFF]|\uD86E[\uDC00-\uDC1D\uDC20-\uDFFF]|\uD873[\uDC00-\uDEA1]|\uD87E[\uDC00-\uDE1D]|\uDB40[\uDD00-\uDDEF])+/};function X(e,t){if(z(e.charCodeAt(t))){if(W(e.charCodeAt(t+1)))return e.charAt(t)+e.charAt(t+1)}else if(W(e.charCodeAt(t))&&z(e.charCodeAt(t-1)))return e.charAt(t-1)+e.charAt(t);return e.charAt(t)}function z(e){return e>=55296&&e<=56319}function W(e){return e>=56320&&e<=57343}function Y(e){return e>=48&&e<=57}function q(e){return H.ID_Start.test(e)}function $(e){return H.ID_Continue.test(e)}function j(e){return/^[a-z_$][a-z0-9_$]*$/i.test(e)}function Z(e,t){if(/^[a-z_$][a-z0-9_$]*$/i.test(e))return!0;if(!t&&/[\ud800-\udfff]/.test(e))return!1;var n=H.ID_Start.exec(e);return!(!n||0!==n.index)&&(!(e=e.slice(n[0].length))||!!(n=H.ID_Continue.exec(e))&&n[0].length===e.length)}function J(e,t=!0){if(!t&&e.includes("e"))return NaN;if(w.test(e))return parseInt(e.substr(2),16);if(x.test(e))return parseInt(e.substr(1),8);if(N.test(e))return parseInt(e.substr(2),8);if(k.test(e))return parseInt(e.substr(2),2);if(I.test(e))return parseFloat(e);var n=parseFloat(e);return n==e?n:void 0}class Q extends Error{constructor(e,t,n,i,r){super(),this.name="SyntaxError",this.message=e,this.filename=t,this.line=n,this.col=i,this.pos=r}}function ee(e,t,n,i,r){throw new Q(e,t,n,i,r)}function te(e,t,n){return e.type==t&&(null==n||e.value==n)}var ne={};function ie(e,t,n,i){var r={text:e,filename:t,pos:0,tokpos:0,line:1,tokline:0,col:0,tokcol:0,newline_before:!1,regex_allowed:!1,brace_counter:0,template_braces:[],comments_before:[],directives:{},directive_stack:[]};function o(){return X(r.text,r.pos)}function a(e,t){var n=X(r.text,r.pos++);if(e&&!n)throw ne;return B.has(n)?(r.newline_before=r.newline_before||!t,++r.line,r.col=0,"\r"==n&&"\n"==o()&&(++r.pos,n="\n")):(n.length>1&&(++r.pos,++r.col),++r.col),n}function s(e){for(;e--;)a()}function u(e){return r.text.substr(r.pos,e.length)==e}function c(e,t){var n=r.text.indexOf(e,r.pos);if(t&&-1==n)throw ne;return n}function l(){r.tokline=r.line,r.tokcol=r.col,r.tokpos=r.pos}var f=!1,p=null;function _(n,i,o){r.regex_allowed="operator"==n&&!oe.has(i)||"keyword"==n&&F.has(i)||"punc"==n&&U.has(i)||"arrow"==n,"punc"==n&&"."==i?f=!0:o||(f=!1);var a={type:n,value:i,line:r.tokline,col:r.tokcol,pos:r.tokpos,endline:r.line,endcol:r.col,endpos:r.pos,nlb:r.newline_before,file:t};return/^(?:num|string|regexp)$/i.test(n)&&(a.raw=e.substring(a.pos,a.endpos)),o||(a.comments_before=r.comments_before,a.comments_after=r.comments_before=[]),r.newline_before=!1,a=new fe(a),o||(p=a),a}function d(){for(;V.has(o());)a()}function m(e){ee(e,t,r.tokline,r.tokcol,r.tokpos)}function h(e){var t=!1,n=!1,i=!1,r="."==e,s=!1,u=function(e){for(var t,n="",i=0;(t=o())&&e(t,i++);)n+=a();return n}((function(o,a){if(s)return!1;switch(o.charCodeAt(0)){case 98:case 66:return i=!0;case 111:case 79:case 120:case 88:return!i&&(i=!0);case 101:case 69:return!!i||!t&&(t=n=!0);case 45:return n||0==a&&!e;case 43:return n;case n=!1,46:return!(r||i||t)&&(r=!0)}return"n"===o?(s=!0,!0):R.test(o)}));if(e&&(u=e+u),x.test(u)&&H.has_directive("use strict")&&m("Legacy octal literals are not allowed in strict mode"),u.endsWith("n")){const e=u.slice(0,-1),t=J(e,w.test(e));if(!r&&L.test(u)&&!isNaN(t))return _("big_int",e);m("Invalid or unexpected token")}var c=J(u);if(!isNaN(c))return _("num",c);m("Invalid syntax: "+u)}function E(e){return e>="0"&&e<="7"}function g(e,t,n){var i,s=a(!0,e);switch(s.charCodeAt(0)){case 110:return"\n";case 114:return"\r";case 116:return"\t";case 98:return"\b";case 118:return"\v";case 102:return"\f";case 120:return String.fromCharCode(D(2,t));case 117:if("{"==o()){for(a(!0),"}"===o()&&m("Expecting hex-character between {}");"0"==o();)a(!0);var u,l=c("}",!0)-r.pos;return(l>6||(u=D(l,t))>1114111)&&m("Unicode reference out of bounds"),a(!0),(i=u)>65535?(i-=65536,String.fromCharCode(55296+(i>>10))+String.fromCharCode(i%1024+56320)):String.fromCharCode(i)}return String.fromCharCode(D(4,t));case 10:return"";case 13:if("\n"==o())return a(!0,e),""}if(E(s)){if(n&&t){"0"===s&&!E(o())||m("Octal escape sequences are not allowed in template strings")}return function(e,t){var n=o();n>="0"&&n<="7"&&(e+=a(!0))[0]<="3"&&(n=o())>="0"&&n<="7"&&(e+=a(!0));if("0"===e)return"\0";e.length>0&&H.has_directive("use strict")&&t&&m("Legacy octal escape sequences are not allowed in strict mode");return String.fromCharCode(parseInt(e,8))}(s,t)}return s}function D(e,t){for(var n=0;e>0;--e){if(!t&&isNaN(parseInt(o(),16)))return parseInt(n,16)||"";var i=a(!0);isNaN(parseInt(i,16))&&m("Invalid hex-character pattern in string"),n+=i}return parseInt(n,16)}var S=K("Unterminated string constant",(function(){for(var e=a(),t="";;){var n=a(!0,!0);if("\\"==n)n=g(!0,!0);else if("\r"==n||"\n"==n)m("Unterminated string constant");else if(n==e)break;t+=n}var i=_("string",t);return i.quote=e,i})),v=K("Unterminated template",(function(e){e&&r.template_braces.push(r.brace_counter);var t,n,i="",s="";for(a(!0,!0);"`"!=(t=a(!0,!0));){if("\r"==t)"\n"==o()&&++r.pos,t="\n";else if("$"==t&&"{"==o())return a(!0,!0),r.brace_counter++,(n=_(e?"template_head":"template_substitution",i)).raw=s,n;if(s+=t,"\\"==t){var u=r.pos;t=g(!0,!(p&&("name"===p.type||"punc"===p.type&&(")"===p.value||"]"===p.value))),!0),s+=r.text.substr(u,r.pos-u)}i+=t}return r.template_braces.pop(),(n=_(e?"template_head":"template_substitution",i)).raw=s,n.end=!0,n}));function A(e){var t,n=r.regex_allowed,i=function(){for(var e=r.text,t=r.pos,n=r.text.length;t<n;++t){var i=e[t];if(B.has(i))return t}return-1}();return-1==i?(t=r.text.substr(r.pos),r.pos=r.text.length):(t=r.text.substring(r.pos,i),r.pos=i),r.col=r.tokcol+(r.pos-r.tokpos),r.comments_before.push(_(e,t,!0)),r.regex_allowed=n,H}var T=K("Unterminated multiline comment",(function(){var e=r.regex_allowed,t=c("*/",!0),n=r.text.substring(r.pos,t).replace(/\r\n|\r|\u2028|\u2029/g,"\n");return s(function(e){for(var t=0,n=0;n<e.length;n++)z(e.charCodeAt(n))&&W(e.charCodeAt(n+1))&&(t++,n++);return e.length-t}(n)+2),r.comments_before.push(_("comment2",n,!0)),r.newline_before=r.newline_before||n.includes("\n"),r.regex_allowed=e,H})),y=K("Unterminated identifier name",(function(){var e,t,n=!1,i=function(){return n=!0,a(),"u"!==o()&&m("Expecting UnicodeEscapeSequence -- uXXXX or u{XXXX}"),g(!1,!0)};if("\\"===(e=o()))q(e=i())||m("First identifier char is an invalid identifier char");else{if(!q(e))return"";a()}for(;null!=(t=o());){if("\\"===(t=o()))$(t=i())||m("Invalid escaped identifier char");else{if(!$(t))break;a()}e+=t}return O.has(e)&&n&&m("Escaped characters are not allowed in keywords"),e})),N=K("Unterminated regular expression",(function(e){for(var t,n=!1,i=!1;t=a(!0);)if(B.has(t))m("Unexpected line terminator");else if(n)e+="\\"+t,n=!1;else if("["==t)i=!0,e+=t;else if("]"==t&&i)i=!1,e+=t;else{if("/"==t&&!i)break;"\\"==t?n=!0:e+=t}return _("regexp",{source:e,flags:y()})}));function k(e){return _("operator",function e(t){if(!o())return t;var n=t+o();return P.has(n)?(a(),e(n)):t}(e||a()))}function I(){switch(a(),o()){case"/":return a(),A("comment1");case"*":return a(),T()}return r.regex_allowed?N(""):k("/")}function K(e,t){return function(n){try{return t(n)}catch(t){if(t!==ne)throw t;m(e)}}}function H(e){if(null!=e)return N(e);for(i&&0==r.pos&&u("#!")&&(l(),s(2),A("comment5"));;){if(d(),l(),n){if(u("\x3c!--")){s(4),A("comment3");continue}if(u("--\x3e")&&r.newline_before){s(3),A("comment4");continue}}var t=o();if(!t)return _("eof");var c=t.charCodeAt(0);switch(c){case 34:case 39:return S();case 46:return a(),Y(o().charCodeAt(0))?h("."):"."===o()?(a(),a(),_("expand","...")):_("punc",".");case 47:var p=I();if(p===H)continue;return p;case 61:return a(),">"===o()?(a(),_("arrow","=>")):k("=");case 96:return v(!0);case 123:r.brace_counter++;break;case 125:if(r.brace_counter--,r.template_braces.length>0&&r.template_braces[r.template_braces.length-1]===r.brace_counter)return v(!1)}if(Y(c))return h();if(G.has(t))return _("punc",a());if(M.has(t))return k();if(92==c||q(t))return E=void 0,E=y(),f?_("name",E):C.has(E)?_("atom",E):b.has(E)?P.has(E)?_("operator",E):_("keyword",E):_("name",E);break}var E;m("Unexpected character '"+t+"'")}return H.next=a,H.peek=o,H.context=function(e){return e&&(r=e),r},H.add_directive=function(e){r.directive_stack[r.directive_stack.length-1].push(e),void 0===r.directives[e]?r.directives[e]=1:r.directives[e]++},H.push_directives_stack=function(){r.directive_stack.push([])},H.pop_directives_stack=function(){for(var e=r.directive_stack[r.directive_stack.length-1],t=0;t<e.length;t++)r.directives[e[t]]--;r.directive_stack.pop()},H.has_directive=function(e){return r.directives[e]>0},H}var re=E(["typeof","void","delete","--","++","!","~","-","+"]),oe=E(["--","++"]),ae=E(["=","+=","-=","/=","*=","**=","%=",">>=","<<=",">>>=","|=","^=","&="]),se=function(e,t){for(var n=0;n<e.length;++n)for(var i=e[n],r=0;r<i.length;++r)t[i[r]]=n+1;return t}([["||"],["??"],["&&"],["|"],["^"],["&"],["==","===","!=","!=="],["<",">","<=",">=","in","instanceof"],[">>","<<",">>>"],["+","-"],["*","/","%"],["**"]],{}),ue=E(["atom","num","big_int","string","regexp","name"]);function ce(e,t){const n=new Map;t=o(t,{bare_returns:!1,ecma:2017,expression:!1,filename:null,html5_comments:!0,module:!1,shebang:!0,strict:!1,toplevel:null},!0);var i={input:"string"==typeof e?ie(e,t.filename,t.html5_comments,t.shebang):e,token:null,prev:null,peeked:null,in_function:0,in_async:-1,in_generator:-1,in_directives:!0,in_loop:0,labels:[]};function r(e,t){return te(i.token,e,t)}function a(){return i.peeked||(i.peeked=i.input())}function s(){return i.prev=i.token,i.peeked||a(),i.token=i.peeked,i.peeked=null,i.in_directives=i.in_directives&&("string"==i.token.type||r("punc",";")),i.token}function u(){return i.prev}function c(e,t,n,r){var o=i.input.context();ee(e,o.filename,null!=t?t:o.tokline,null!=n?n:o.tokcol,null!=r?r:o.tokpos)}function l(e,t){c(t,e.line,e.col)}function f(e){null==e&&(e=i.token),l(e,"Unexpected token: "+e.type+" ("+e.value+")")}function p(e,t){if(r(e,t))return s();l(i.token,"Unexpected token "+i.token.type+" «"+i.token.value+"», expected "+e+" «"+t+"»")}function _(e){return p("punc",e)}function d(e){return e.nlb||!e.comments_before.every(e=>!e.nlb)}function m(){return!t.strict&&(r("eof")||r("punc","}")||d(i.token))}function h(){return i.in_generator===i.in_function}function E(){return i.in_async===i.in_function}function g(e){r("punc",";")?s():e||m()||f()}function D(){_("(");var e=qe(!0);return _(")"),e}function S(e){return function(...t){const n=i.token,r=e(...t);return r.start=n,r.end=u(),r}}function v(){(r("operator","/")||r("operator","/="))&&(i.peeked=null,i.token=i.input(i.token.value.substr(1)))}i.token=s();var A=S((function(e,n,o){switch(v(),i.token.type){case"string":if(i.in_directives){var h=a();!i.token.raw.includes("\\")&&(te(h,"punc",";")||te(h,"punc","}")||d(h)||te(h,"eof"))?i.input.add_directive(i.token.value):i.in_directives=!1}var S=i.in_directives,y=T();return S&&y.body instanceof fn?new me(y.body):y;case"template_head":case"num":case"big_int":case"regexp":case"operator":case"atom":return T();case"name":if("async"==i.token.value&&te(a(),"keyword","function"))return s(),s(),n&&c("functions are not allowed as the body of a loop"),F(Be,!1,!0,e);if("import"==i.token.value&&!te(a(),"punc","(")){s();var C=function(){var e,t,n=u();r("name")&&(e=le(en));r("punc",",")&&s();((t=J(!0))||e)&&p("name","from");var o=i.token;"string"!==o.type&&f();return s(),new _t({start:n,imported_name:e,imported_names:t,module_name:new fn({start:o,value:o.value,quote:o.quote,end:o}),end:i.token})}();return g(),C}return te(a(),"punc",":")?function(){var e=le(nn);"await"===e.name&&E()&&l(i.prev,"await cannot be used as label inside async function");i.labels.some(t=>t.name===e.name)&&c("Label "+e.name+" defined twice");_(":"),i.labels.push(e);var t=A();i.labels.pop(),t instanceof ye||e.references.forEach((function(t){t instanceof je&&(t=t.label.start,c("Continue label `"+e.name+"` refers to non-IterationStatement.",t.line,t.col,t.pos))}));return new Te({body:t,label:e})}():T();case"punc":switch(i.token.value){case"{":return new Se({start:i.token,body:N(),end:u()});case"[":case"(":return T();case";":return i.in_directives=!1,s(),new ve;default:f()}case"keyword":switch(i.token.value){case"break":return s(),b($e);case"continue":return s(),b(je);case"debugger":return s(),g(),new de;case"do":s();var O=tt(A);p("keyword","while");var M=D();return g(!0),new Ce({body:O,condition:M});case"while":return s(),new Oe({condition:D(),body:tt((function(){return A(!1,!0)}))});case"for":return s(),function(){var e="`for await` invalid in this context",t=i.token;"name"==t.type&&"await"==t.value?(E()||l(t,e),s()):t=!1;_("(");var n=null;if(r("punc",";"))t&&l(t,e);else{n=r("keyword","var")?(s(),L(!0)):r("keyword","let")?(s(),P(!0)):r("keyword","const")?(s(),V(!0)):qe(!0,!0);var o=r("operator","in"),a=r("name","of");if(t&&!a&&l(t,e),o||a)return n instanceof st?n.definitions.length>1&&l(n.start,"Only one variable declaration allowed in for..in loop"):xe(n)||(n=Xe(n))instanceof Ke||l(n.start,"Invalid left-hand side in for..in loop"),s(),o?function(e){var t=qe(!0);return _(")"),new Me({init:e,object:t,body:tt((function(){return A(!1,!0)}))})}(n):function(e,t){var n=e instanceof st?e.definitions[0].name:null,i=qe(!0);return _(")"),new Re({await:t,init:e,name:n,object:i,body:tt((function(){return A(!1,!0)}))})}(n,!!t)}return function(e){_(";");var t=r("punc",";")?null:qe(!0);_(";");var n=r("punc",")")?null:qe(!0);return _(")"),new Fe({init:e,condition:t,step:n,body:tt((function(){return A(!1,!0)}))})}(n)}();case"class":return s(),n&&c("classes are not allowed as the body of a loop"),o&&c("classes are not allowed as the body of an if"),q(Pt);case"function":return s(),n&&c("functions are not allowed as the body of a loop"),F(Be,!1,!1,e);case"if":return s(),function(){var e=D(),t=A(!1,!1,!0),n=null;r("keyword","else")&&(s(),n=A(!1,!1,!0));return new Qe({condition:e,body:t,alternative:n})}();case"return":0!=i.in_function||t.bare_returns||c("'return' outside of function"),s();var w=null;return r("punc",";")?s():m()||(w=qe(!0),g()),new We({value:w});case"switch":return s(),new et({expression:D(),body:tt(k)});case"throw":s(),d(i.token)&&c("Illegal newline after 'throw'");w=qe(!0);return g(),new Ye({value:w});case"try":return s(),function(){var e=N(),t=null,n=null;if(r("keyword","catch")){var o=i.token;if(s(),r("punc","{"))var a=null;else{_("(");a=R(void 0,Qt);_(")")}t=new ot({start:o,argname:a,body:N(),end:u()})}if(r("keyword","finally")){o=i.token;s(),n=new at({start:o,body:N(),end:u()})}t||n||c("Missing catch/finally blocks");return new rt({body:e,bcatch:t,bfinally:n})}();case"var":s();C=L();return g(),C;case"let":s();C=P();return g(),C;case"const":s();C=V();return g(),C;case"with":return i.input.has_directive("use strict")&&c("Strict mode may not include a with statement"),s(),new we({expression:D(),body:A()});case"export":if(!te(a(),"punc","(")){s();C=function(){var e,t,n,o,c,l=i.token;if(r("keyword","default"))e=!0,s();else if(t=J(!1)){if(r("name","from")){s();var p=i.token;return"string"!==p.type&&f(),s(),new dt({start:l,is_default:e,exported_names:t,module_name:new fn({start:p,value:p.value,quote:p.quote,end:p}),end:u()})}return new dt({start:l,is_default:e,exported_names:t,end:u()})}r("punc","{")||e&&(r("keyword","class")||r("keyword","function"))&&te(a(),"punc")?(o=qe(!1),g()):(n=A(e))instanceof st&&e?f(n.start):n instanceof st||n instanceof Ie||n instanceof Pt?c=n:n instanceof he?o=n.body:f(n.start);return new dt({start:l,is_default:e,exported_value:o,exported_definition:c,end:u()})}();return r("punc",";")&&g(),C}}}f()}));function T(e){return new he({body:(e=qe(!0),g(),e)})}function b(e){var t,n=null;m()||(n=le(sn,!0)),null!=n?((t=i.labels.find(e=>e.name===n.name))||c("Undefined label "+n.name),n.thedef=t):0==i.in_loop&&c(e.TYPE+" not inside a loop or switch"),g();var r=new e({label:n});return t&&t.references.push(r),r}var C=function(e,t,n){d(i.token)&&c("Unexpected newline before arrow (=>)"),p("arrow","=>");var o=x(r("punc","{"),!1,n),a=o instanceof Array&&o.length?o[o.length-1].end:o instanceof Array?e:o.end;return new Ve({start:e,end:a,async:n,argnames:t,body:o})},F=function(e,t,n,i){var o=e===Be,a=r("operator","*");a&&s();var c=r("name")?le(o?Yt:jt):null;o&&!c&&(i?e=Pe:f()),!c||e===Le||c instanceof Ut||f(u());var l=[],p=x(!0,a||t,n,c,l);return new e({start:l.start,end:p.end,is_generator:a,async:n,name:c,argnames:l,body:p})};function M(e,t){var n=new Set,i=!1,r=!1,o=!1,a=!!t,s={add_parameter:function(t){if(n.has(t.value))!1===i&&(i=t),s.check_strict();else if(n.add(t.value),e)switch(t.value){case"arguments":case"eval":case"yield":a&&l(t,"Unexpected "+t.value+" identifier as parameter inside strict mode");break;default:O.has(t.value)&&f()}},mark_default_assignment:function(e){!1===r&&(r=e)},mark_spread:function(e){!1===o&&(o=e)},mark_strict_mode:function(){a=!0},is_strict:function(){return!1!==r||!1!==o||a},check_strict:function(){s.is_strict()&&!1!==i&&l(i,"Parameter "+i.value+" was used already")}};return s}function R(e,t){var n,o=!1;return void 0===e&&(e=M(!0,i.input.has_directive("use strict"))),r("expand","...")&&(o=i.token,e.mark_spread(i.token),s()),n=w(e,t),r("operator","=")&&!1===o&&(e.mark_default_assignment(i.token),s(),n=new Ot({start:n.start,left:n,operator:"=",right:qe(!1),end:i.token})),!1!==o&&(r("punc",")")||f(),n=new ke({start:o,expression:n,end:o})),e.check_strict(),n}function w(e,t){var n,o=[],l=!0,p=!1,d=i.token;if(void 0===e&&(e=M(!1,i.input.has_directive("use strict"))),t=void 0===t?Wt:t,r("punc","[")){for(s();!r("punc","]");){if(l?l=!1:_(","),r("expand","...")&&(p=!0,n=i.token,e.mark_spread(i.token),s()),r("punc"))switch(i.token.value){case",":o.push(new Dn({start:i.token,end:i.token}));continue;case"]":break;case"[":case"{":o.push(w(e,t));break;default:f()}else r("name")?(e.add_parameter(i.token),o.push(le(t))):c("Invalid function parameter");r("operator","=")&&!1===p&&(e.mark_default_assignment(i.token),s(),o[o.length-1]=new Ot({start:o[o.length-1].start,left:o[o.length-1],operator:"=",right:qe(!1),end:i.token})),p&&(r("punc","]")||c("Rest element must be last element"),o[o.length-1]=new ke({start:n,expression:o[o.length-1],end:n}))}return _("]"),e.check_strict(),new Ke({start:d,names:o,is_array:!0,end:u()})}if(r("punc","{")){for(s();!r("punc","}");){if(l?l=!1:_(","),r("expand","...")&&(p=!0,n=i.token,e.mark_spread(i.token),s()),r("name")&&(te(a(),"punc")||te(a(),"operator"))&&[",","}","="].includes(a().value)){e.add_parameter(i.token);var m=u(),h=le(t);p?o.push(new ke({start:n,expression:h,end:h.end})):o.push(new wt({start:m,key:h.name,value:h,end:h.end}))}else{if(r("punc","}"))continue;var E=i.token,g=Q();null===g?f(u()):"name"!==u().type||r("punc",":")?(_(":"),o.push(new wt({start:E,quote:E.quote,key:g,value:w(e,t),end:u()}))):o.push(new wt({start:u(),key:g,value:new t({start:u(),name:g,end:u()}),end:u()}))}p?r("punc","}")||c("Rest element must be last element"):r("operator","=")&&(e.mark_default_assignment(i.token),s(),o[o.length-1].value=new Ot({start:o[o.length-1].value.start,left:o[o.length-1].value,operator:"=",right:qe(!1),end:i.token}))}return _("}"),e.check_strict(),new Ke({start:d,names:o,is_array:!1,end:u()})}if(r("name"))return e.add_parameter(i.token),le(t);c("Invalid function parameter")}function x(e,n,o,a,u){var c=i.in_loop,l=i.labels,p=i.in_generator,d=i.in_async;if(++i.in_function,n&&(i.in_generator=i.in_function),o&&(i.in_async=i.in_function),u&&function(e){var n=M(!0,i.input.has_directive("use strict"));for(_("(");!r("punc",")");){var o=R(n);if(e.push(o),r("punc",")")||(_(","),r("punc",")")&&t.ecma<2017&&f()),o instanceof ke)break}s()}(u),e&&(i.in_directives=!0),i.in_loop=0,i.labels=[],e){i.input.push_directives_stack();var m=N();a&&ce(a),u&&u.forEach(ce),i.input.pop_directives_stack()}else m=[new We({start:i.token,value:qe(!1),end:i.token})];return--i.in_function,i.in_loop=c,i.labels=l,i.in_generator=p,i.in_async=d,m}function N(){_("{");for(var e=[];!r("punc","}");)r("eof")&&f(),e.push(A());return s(),e}function k(){_("{");for(var e,t=[],n=null,o=null;!r("punc","}");)r("eof")&&f(),r("keyword","case")?(o&&(o.end=u()),n=[],o=new it({start:(e=i.token,s(),e),expression:qe(!0),body:n}),t.push(o),_(":")):r("keyword","default")?(o&&(o.end=u()),n=[],o=new nt({start:(e=i.token,s(),_(":"),e),body:n}),t.push(o)):(n||f(),n.push(A()));return o&&(o.end=u()),s(),t}function I(e,t){for(var n,o=[];;){var a="var"===t?Gt:"const"===t?Xt:"let"===t?zt:null;if(r("punc","{")||r("punc","[")?n=new ft({start:i.token,name:w(void 0,a),value:r("operator","=")?(p("operator","="),qe(!1,e)):null,end:u()}):"import"==(n=new ft({start:i.token,name:le(a),value:r("operator","=")?(s(),qe(!1,e)):e||"const"!==t?null:c("Missing initializer in const declaration"),end:u()})).name.name&&c("Unexpected token: import"),o.push(n),!r("punc",","))break;s()}return o}var L=function(e){return new ut({start:u(),definitions:I(e,"var"),end:u()})},P=function(e){return new ct({start:u(),definitions:I(e,"let"),end:u()})},V=function(e){return new lt({start:u(),definitions:I(e,"const"),end:u()})};function B(){var e,t=i.token;switch(t.type){case"name":e=ne(rn);break;case"num":e=new pn({start:t,end:t,value:t.value});break;case"big_int":e=new _n({start:t,end:t,value:t.value});break;case"string":e=new fn({start:t,end:t,value:t.value,quote:t.quote});break;case"regexp":e=new dn({start:t,end:t,value:t.value});break;case"atom":switch(t.value){case"false":e=new An({start:t,end:t});break;case"true":e=new Tn({start:t,end:t});break;case"null":e=new hn({start:t,end:t})}}return s(),e}function U(e,t,n,i){var r=function(e,t){return t?new Ot({start:e.start,left:e,operator:"=",right:t,end:t.end}):e};return e instanceof Mt?r(new Ke({start:e.start,end:e.end,is_array:!1,names:e.properties.map(U)}),i):e instanceof wt?(e.value=U(e.value,0,[e.key]),r(e,i)):e instanceof Dn?e:e instanceof Ke?(e.names=e.names.map(U),r(e,i)):e instanceof rn?r(new Wt({name:e.name,start:e.start,end:e.end}),i):e instanceof ke?(e.expression=U(e.expression),r(e,i)):e instanceof Ft?r(new Ke({start:e.start,end:e.end,is_array:!0,names:e.elements.map(U)}),i):e instanceof Ct?r(U(e.left,void 0,void 0,e.right),i):e instanceof Ot?(e.left=U(e.left,0,[e.left]),e):void c("Invalid function parameter",e.start.line,e.start.col)}var G=function(e,o){if(r("operator","new"))return function(e){var n=i.token;if(p("operator","new"),r("punc","."))return s(),p("name","target"),_e(new Kt({start:n,end:u()}),e);var o,a=G(!1);r("punc","(")?(s(),o=X(")",t.ecma>=2017)):o=[];var c=new ht({start:n,expression:a,args:o,end:u()});return fe(c),_e(c,e)}(e);var c,l=i.token,d=r("name","async")&&"["!=(c=a()).value&&"arrow"!=c.type&&B();if(r("punc")){switch(i.token.value){case"(":if(d&&!e)break;var m=function(e,n){var o,a,c,l=[];for(_("(");!r("punc",")");)o&&f(o),r("expand","...")?(o=i.token,n&&(a=i.token),s(),l.push(new ke({start:u(),expression:qe(),end:i.token}))):l.push(qe()),r("punc",")")||(_(","),r("punc",")")&&(t.ecma<2017&&f(),c=u(),n&&(a=c)));return _(")"),e&&r("arrow","=>")?o&&c&&f(c):a&&f(a),l}(o,!d);if(o&&r("arrow","=>"))return C(l,m.map(U),!!d);var h=d?new mt({expression:d,args:m}):1==m.length?m[0]:new Et({expressions:m});if(h.start){const e=l.comments_before.length;if(n.set(l,e),h.start.comments_before.unshift(...l.comments_before),l.comments_before=h.start.comments_before,0==e&&l.comments_before.length>0){var E=l.comments_before[0];E.nlb||(E.nlb=l.nlb,l.nlb=!1)}l.comments_after=h.start.comments_after}h.start=l;var g=u();return h.end&&(g.comments_before=h.end.comments_before,h.end.comments_after.push(...g.comments_after),g.comments_after=h.end.comments_after),h.end=g,h instanceof mt&&fe(h),_e(h,e);case"[":return _e(z(),e);case"{":return _e(Y(),e)}d||f()}if(o&&r("name")&&te(a(),"arrow")){var D=new Wt({name:i.token.value,start:l,end:l});return s(),C(l,[D],!!d)}if(r("keyword","function")){s();var S=F(Pe,!1,!!d);return S.start=l,S.end=u(),_e(S,e)}if(d)return _e(d,e);if(r("keyword","class")){s();var v=q(Vt);return v.start=l,v.end=u(),_e(v,e)}return r("template_head")?_e(H(),e):ue.has(i.token.type)?_e(B(),e):void f()};function H(){var e=[],t=i.token;for(e.push(new He({start:i.token,raw:i.token.raw,value:i.token.value,end:i.token}));!i.token.end;)s(),v(),e.push(qe(!0)),te("template_substitution")||f(),e.push(new He({start:i.token,raw:i.token.raw,value:i.token.value,end:i.token}));return s(),new Ge({start:t,segments:e,end:i.token})}function X(e,t,n){for(var o=!0,a=[];!r("punc",e)&&(o?o=!1:_(","),!t||!r("punc",e));)r("punc",",")&&n?a.push(new Dn({start:i.token,end:i.token})):r("expand","...")?(s(),a.push(new ke({start:u(),expression:qe(),end:i.token}))):a.push(qe(!1));return s(),a}var z=S((function(){return _("["),new Ft({elements:X("]",!t.strict,!0)})})),W=S((e,t)=>F(Le,e,t)),Y=S((function(){var e=i.token,n=!0,o=[];for(_("{");!r("punc","}")&&(n?n=!1:_(","),t.strict||!r("punc","}"));)if("expand"!=(e=i.token).type){var a,c=Q();if(r("punc",":"))null===c?f(u()):(s(),a=qe(!1));else{var l=$(c,e);if(l){o.push(l);continue}a=new rn({start:u(),name:c,end:u()})}r("operator","=")&&(s(),a=new Ct({start:e,left:a,operator:"=",right:qe(!1),end:u()})),o.push(new wt({start:e,quote:e.quote,key:c instanceof pe?c:""+c,value:a,end:u()}))}else s(),o.push(new ke({start:e,expression:qe(!1),end:u()}));return s(),new Mt({properties:o})}));function q(e){var t,n,o,a,c=[];for(i.input.push_directives_stack(),i.input.add_directive("use strict"),"name"==i.token.type&&"extends"!=i.token.value&&(o=le(e===Pt?Zt:Jt)),e!==Pt||o||f(),"extends"==i.token.value&&(s(),a=qe(!0)),_("{");r("punc",";");)s();for(;!r("punc","}");)for(t=i.token,(n=$(Q(),t,!0))||f(),c.push(n);r("punc",";");)s();return i.input.pop_directives_stack(),s(),new e({start:t,name:o,extends:a,properties:c,end:u()})}function $(e,t,n){var o=function(e,t){return"string"==typeof e||"number"==typeof e?new qt({start:t,name:""+e,end:u()}):(null===e&&f(),e)};var a=!1,c=!1,l=!1,p=t;if(n&&"static"===e&&!r("punc","(")&&(c=!0,p=i.token,e=Q()),"async"!==e||r("punc","(")||r("punc",",")||r("punc","}")||r("operator","=")||(a=!0,p=i.token,e=Q()),null===e&&(l=!0,p=i.token,null===(e=Q())&&f()),r("punc","("))return e=o(e,t),new kt({start:t,static:c,is_generator:l,async:a,key:e,quote:e instanceof qt?p.quote:void 0,value:W(l,a),end:u()});const _=i.token;if("get"==e){if(!r("punc")||r("punc","["))return e=o(Q(),t),new Nt({start:t,static:c,key:e,quote:e instanceof qt?_.quote:void 0,value:W(),end:u()})}else if("set"==e&&(!r("punc")||r("punc","[")))return e=o(Q(),t),new xt({start:t,static:c,key:e,quote:e instanceof qt?_.quote:void 0,value:W(),end:u()});if(n){const n=(e=>"string"==typeof e||"number"==typeof e?new $t({start:p,end:p,name:""+e}):(null===e&&f(),e))(e),i=n instanceof $t?p.quote:void 0;if(r("operator","="))return s(),new Lt({start:t,static:c,quote:i,key:n,value:qe(!1),end:u()});if(r("name")||r("punc",";")||r("punc","}"))return new Lt({start:t,static:c,quote:i,key:n,end:u()})}}function j(e){function t(e){return new e({name:Q(),start:u(),end:u()})}var n,o,a=e?tn:an,c=e?en:on,l=i.token;return e?n=t(a):o=t(c),r("name","as")?(s(),e?o=t(c):n=t(a)):e?o=new c(n):n=new a(o),new pt({start:l,foreign_name:n,name:o,end:u()})}function Z(e,t){var n,r=e?tn:an,o=e?en:on,a=i.token,s=u();return t=t||new o({name:"*",start:a,end:s}),n=new r({name:"*",start:a,end:s}),new pt({start:a,foreign_name:n,name:t,end:s})}function J(e){var t;if(r("punc","{")){for(s(),t=[];!r("punc","}");)t.push(j(e)),r("punc",",")&&s();s()}else if(r("operator","*")){var n;s(),e&&r("name","as")&&(s(),n=le(e?en:an)),t=[Z(e,n)]}return t}function Q(){var e=i.token;switch(e.type){case"punc":if("["===e.value){s();var t=qe(!1);return _("]"),t}f(e);case"operator":if("*"===e.value)return s(),null;["delete","in","instanceof","new","typeof","void"].includes(e.value)||f(e);case"name":"yield"==e.value&&(h()?l(e,"Yield cannot be used as identifier inside generators"):te(a(),"punc",":")||te(a(),"punc","(")||!i.input.has_directive("use strict")||l(e,"Unexpected yield identifier inside strict mode"));case"string":case"num":case"big_int":case"keyword":case"atom":return s(),e.value;default:f(e)}}function ne(e){var t=i.token.value;return new("this"==t?un:"super"==t?cn:e)({name:String(t),start:i.token,end:i.token})}function ce(e){var t=e.name;h()&&"yield"==t&&l(e.start,"Yield cannot be used as identifier inside generators"),i.input.has_directive("use strict")&&("yield"==t&&l(e.start,"Unexpected yield identifier inside strict mode"),e instanceof Ut&&("arguments"==t||"eval"==t)&&l(e.start,"Unexpected "+t+" in strict mode"))}function le(e,t){if(!r("name"))return t||c("Name expected"),null;var n=ne(e);return ce(n),s(),n}function fe(e){var t=e.start,i=t.comments_before;const r=n.get(t);for(var o=null!=r?r:i.length;--o>=0;){var a=i[o];if(/[@#]__/.test(a.value)){if(/[@#]__PURE__/.test(a.value)){y(e,Mn);break}if(/[@#]__INLINE__/.test(a.value)){y(e,Rn);break}if(/[@#]__NOINLINE__/.test(a.value)){y(e,wn);break}}}}var _e=function(e,t){var n,o=e.start;if(r("punc","."))return s(),_e(new Dt({start:o,expression:e,property:(n=i.token,"name"!=n.type&&f(),s(),n.value),end:u()}),t);if(r("punc","[")){s();var a=qe(!0);return _("]"),_e(new St({start:o,expression:e,property:a,end:u()}),t)}if(t&&r("punc","(")){s();var c=new mt({start:o,expression:e,args:Ee(),end:u()});return fe(c),_e(c,!0)}return r("template_head")?_e(new Ue({start:o,prefix:e,template_string:H(),end:u()}),t):e};function Ee(){for(var e=[];!r("punc",")");)r("expand","...")?(s(),e.push(new ke({start:u(),expression:qe(!1),end:u()}))):e.push(qe(!1)),r("punc",")")||(_(","),r("punc",")")&&t.ecma<2017&&f());return s(),e}var ge=function(e,t){var n=i.token;if("name"==n.type&&"await"==n.value){if(E())return s(),E()||c("Unexpected await expression outside async function",i.prev.line,i.prev.col,i.prev.pos),new Ze({start:u(),end:i.token,expression:ge(!0)});i.input.has_directive("use strict")&&l(i.token,"Unexpected await identifier inside strict mode")}if(r("operator")&&re.has(n.value)){s(),v();var o=De(At,n,ge(e));return o.start=n,o.end=u(),o}for(var a=G(e,t);r("operator")&&oe.has(i.token.value)&&!d(i.token);)a instanceof Ve&&f(),(a=De(Tt,i.token,a)).start=n,a.end=i.token,s();return a};function De(e,t,n){var r=t.value;switch(r){case"++":case"--":xe(n)||c("Invalid use of "+r+" operator",t.line,t.col,t.pos);break;case"delete":n instanceof rn&&i.input.has_directive("use strict")&&c("Calling delete on expression not allowed in strict mode",n.start.line,n.start.col,n.start.pos)}return new e({operator:r,expression:n})}var Ae=function(e,t,n){var o=r("operator")?i.token.value:null;"in"==o&&n&&(o=null),"**"==o&&e instanceof At&&!te(e.start,"punc","(")&&"--"!==e.operator&&"++"!==e.operator&&f(e.start);var a=null!=o?se[o]:null;if(null!=a&&(a>t||"**"===o&&t===a)){s();var u=Ae(ge(!0),a,n);return Ae(new yt({start:e.start,left:e,operator:o,right:u,end:u.end}),t,n)}return e};var be=function(e){var t=i.token,n=function(e){return Ae(ge(!0,!0),0,e)}(e);if(r("operator","?")){s();var o=qe(!1);return _(":"),new bt({start:t,condition:n,consequent:o,alternative:qe(!1,e),end:u()})}return n};function xe(e){return e instanceof gt||e instanceof rn}function Xe(e){if(e instanceof Mt)e=new Ke({start:e.start,names:e.properties.map(Xe),is_array:!1,end:e.end});else if(e instanceof Ft){for(var t=[],n=0;n<e.elements.length;n++)e.elements[n]instanceof ke&&(n+1!==e.elements.length&&l(e.elements[n].start,"Spread must the be last element in destructuring array"),e.elements[n].expression=Xe(e.elements[n].expression)),t.push(Xe(e.elements[n]));e=new Ke({start:e.start,names:t,is_array:!0,end:e.end})}else e instanceof Rt?e.value=Xe(e.value):e instanceof Ct&&(e=new Ot({start:e.start,left:e.left,operator:"=",right:e.right,end:e.end}));return e}var ze=function(e){v();var t=i.token;if("name"==t.type&&"yield"==t.value){if(h())return s(),function(){h()||c("Unexpected yield expression outside generator function",i.prev.line,i.prev.col,i.prev.pos);var e=i.token,t=!1,n=!0;return m()||r("punc")&&K.has(i.token.value)?n=!1:r("operator","*")&&(t=!0,s()),new Je({start:e,is_star:t,expression:n?qe():null,end:u()})}();i.input.has_directive("use strict")&&l(i.token,"Unexpected yield identifier inside strict mode")}var n=be(e),o=i.token.value;if(r("operator")&&ae.has(o)){if(xe(n)||(n=Xe(n))instanceof Ke)return s(),new Ct({start:t,left:n,operator:o,right:ze(e),end:u()});c("Invalid assignment")}return n},qe=function(e,t){for(var n=i.token,o=[];o.push(ze(t)),e&&r("punc",",");)s(),e=!0;return 1==o.length?o[0]:new Et({start:n,expressions:o,end:a()})};function tt(e){++i.in_loop;var t=e();return--i.in_loop,t}return t.expression?qe(!0):function(){var e=i.token,n=[];for(i.input.push_directives_stack(),t.module&&i.input.add_directive("use strict");!r("eof");)n.push(A());i.input.pop_directives_stack();var o=u(),a=t.toplevel;return a?(a.body=a.body.concat(n),a.end=o):a=new Ne({start:e,body:n,end:o}),a}()}function le(e,t,n,i=pe){var r=t=t?t.split(/\s+/):[];i&&i.PROPS&&(t=t.concat(i.PROPS));for(var o="return function AST_"+e+"(props){ if (props) { ",a=t.length;--a>=0;)o+="this."+t[a]+" = props."+t[a]+";";const s=i&&Object.create(i.prototype);(s&&s.initialize||n&&n.initialize)&&(o+="this.initialize();"),o+="}",o+="this.flags = 0;",o+="}";var u=new Function(o)();if(s&&(u.prototype=s,u.BASE=i),i&&i.SUBCLASSES.push(u),u.prototype.CTOR=u,u.prototype.constructor=u,u.PROPS=t||null,u.SELF_PROPS=r,u.SUBCLASSES=[],e&&(u.prototype.TYPE=u.TYPE=e),n)for(a in n)D(n,a)&&("$"===a[0]?u[a.substr(1)]=n[a]:u.prototype[a]=n[a]);return u.DEFMETHOD=function(e,t){this.prototype[e]=t},u}var fe=le("Token","type value line col pos endline endcol endpos nlb comments_before comments_after file raw quote end",{},null),pe=le("Node","start end",{_clone:function(e){if(e){var t=this.clone();return t.transform(new Fn((function(e){if(e!==t)return e.clone(!0)})))}return new this.CTOR(this)},clone:function(e){return this._clone(e)},$documentation:"Base class of all AST nodes",$propdoc:{start:"[AST_Token] The first token of this node",end:"[AST_Token] The last token of this node"},_walk:function(e){return e._visit(this)},walk:function(e){return this._walk(e)},_children_backwards:()=>{}},null);pe.warn_function=null,pe.warn=function(e,t){pe.warn_function&&pe.warn_function(d(e,t))};var _e=le("Statement",null,{$documentation:"Base class of all statements"}),de=le("Debugger",null,{$documentation:"Represents a debugger statement"},_e),me=le("Directive","value quote",{$documentation:'Represents a directive, like "use strict";',$propdoc:{value:"[string] The value of this directive as a plain string (it's not an AST_String!)",quote:"[string] the original quote character"}},_e),he=le("SimpleStatement","body",{$documentation:"A statement consisting of an expression, i.e. a = 1 + 2",$propdoc:{body:"[AST_Node] an expression node (should not be instanceof AST_Statement)"},_walk:function(e){return e._visit(this,(function(){this.body._walk(e)}))},_children_backwards(e){e(this.body)}},_e);function Ee(e,t){const n=e.body;for(var i=0,r=n.length;i<r;i++)n[i]._walk(t)}function ge(e){var t=this._clone(e);return this.block_scope&&(t.block_scope=this.block_scope.clone()),t}var De=le("Block","body block_scope",{$documentation:"A body of statements (usually braced)",$propdoc:{body:"[AST_Statement*] an array of statements",block_scope:"[AST_Scope] the block scope"},_walk:function(e){return e._visit(this,(function(){Ee(this,e)}))},_children_backwards(e){let t=this.body.length;for(;t--;)e(this.body[t])},clone:ge},_e),Se=le("BlockStatement",null,{$documentation:"A block statement"},De),ve=le("EmptyStatement",null,{$documentation:"The empty statement (empty block or simply a semicolon)"},_e),Ae=le("StatementWithBody","body",{$documentation:"Base class for all statements that contain one nested body: `For`, `ForIn`, `Do`, `While`, `With`",$propdoc:{body:"[AST_Statement] the body; this should always be present, even if it's an AST_EmptyStatement"}},_e),Te=le("LabeledStatement","label",{$documentation:"Statement with a label",$propdoc:{label:"[AST_Label] a label definition"},_walk:function(e){return e._visit(this,(function(){this.label._walk(e),this.body._walk(e)}))},_children_backwards(e){e(this.body),e(this.label)},clone:function(e){var t=this._clone(e);if(e){var n=t.label,i=this.label;t.walk(new On((function(e){e instanceof qe&&e.label&&e.label.thedef===i&&(e.label.thedef=n,n.references.push(e))})))}return t}},Ae),ye=le("IterationStatement","block_scope",{$documentation:"Internal class.  All loops inherit from it.",$propdoc:{block_scope:"[AST_Scope] the block scope for this iteration statement."},clone:ge},Ae),be=le("DWLoop","condition",{$documentation:"Base class for do/while statements",$propdoc:{condition:"[AST_Node] the loop condition.  Should not be instanceof AST_Statement"}},ye),Ce=le("Do",null,{$documentation:"A `do` statement",_walk:function(e){return e._visit(this,(function(){this.body._walk(e),this.condition._walk(e)}))},_children_backwards(e){e(this.condition),e(this.body)}},be),Oe=le("While",null,{$documentation:"A `while` statement",_walk:function(e){return e._visit(this,(function(){this.condition._walk(e),this.body._walk(e)}))},_children_backwards(e){e(this.body),e(this.condition)}},be),Fe=le("For","init condition step",{$documentation:"A `for` statement",$propdoc:{init:"[AST_Node?] the `for` initialization code, or null if empty",condition:"[AST_Node?] the `for` termination clause, or null if empty",step:"[AST_Node?] the `for` update clause, or null if empty"},_walk:function(e){return e._visit(this,(function(){this.init&&this.init._walk(e),this.condition&&this.condition._walk(e),this.step&&this.step._walk(e),this.body._walk(e)}))},_children_backwards(e){e(this.body),this.step&&e(this.step),this.condition&&e(this.condition),this.init&&e(this.init)}},ye),Me=le("ForIn","init object",{$documentation:"A `for ... in` statement",$propdoc:{init:"[AST_Node] the `for/in` initialization code",object:"[AST_Node] the object that we're looping through"},_walk:function(e){return e._visit(this,(function(){this.init._walk(e),this.object._walk(e),this.body._walk(e)}))},_children_backwards(e){e(this.body),this.object&&e(this.object),this.init&&e(this.init)}},ye),Re=le("ForOf","await",{$documentation:"A `for ... of` statement"},Me),we=le("With","expression",{$documentation:"A `with` statement",$propdoc:{expression:"[AST_Node] the `with` expression"},_walk:function(e){return e._visit(this,(function(){this.expression._walk(e),this.body._walk(e)}))},_children_backwards(e){e(this.body),e(this.expression)}},Ae),xe=le("Scope","variables functions uses_with uses_eval parent_scope enclosed cname _var_name_cache",{$documentation:"Base class for all statements introducing a lexical scope",$propdoc:{variables:"[Map/S] a map of name -> SymbolDef for all variables/functions defined in this scope",functions:"[Map/S] like `variables`, but only lists function declarations",uses_with:"[boolean/S] tells whether this scope uses the `with` statement",uses_eval:"[boolean/S] tells whether this scope contains a direct call to the global `eval`",parent_scope:"[AST_Scope?/S] link to the parent scope",enclosed:"[SymbolDef*/S] a list of all symbol definitions that are accessed from this scope or any subscopes",cname:"[integer/S] current index for mangling variables (used internally by the mangler)"},get_defun_scope:function(){for(var e=this;e.is_block_scope();)e=e.parent_scope;return e},clone:function(e){var t=this._clone(e);return this.variables&&(t.variables=new Map(this.variables)),this.functions&&(t.functions=new Map(this.functions)),this.enclosed&&(t.enclosed=this.enclosed.slice()),this._block_scope&&(t._block_scope=this._block_scope),t},pinned:function(){return this.uses_eval||this.uses_with}},De),Ne=le("Toplevel","globals",{$documentation:"The toplevel scope",$propdoc:{globals:"[Map/S] a map of name -> SymbolDef for all undeclared names"},wrap_commonjs:function(e){var t=this.body,n="(function(exports){'$ORIG';})(typeof "+e+"=='undefined'?("+e+"={}):"+e+");";return n=(n=ce(n)).transform(new Fn((function(e){if(e instanceof me&&"$ORIG"==e.value)return f.splice(t)})))},wrap_enclose:function(e){"string"!=typeof e&&(e="");var t=e.indexOf(":");t<0&&(t=e.length);var n=this.body;return ce(["(function(",e.slice(0,t),'){"$ORIG"})(',e.slice(t+1),")"].join("")).transform(new Fn((function(e){if(e instanceof me&&"$ORIG"==e.value)return f.splice(n)})))}},xe),ke=le("Expansion","expression",{$documentation:"An expandible argument, such as ...rest, a splat, such as [1,2,...all], or an expansion in a variable declaration, such as var [first, ...rest] = list",$propdoc:{expression:"[AST_Node] the thing to be expanded"},_walk:function(e){return e._visit(this,(function(){this.expression.walk(e)}))},_children_backwards(e){e(this.expression)}}),Ie=le("Lambda","name argnames uses_arguments is_generator async",{$documentation:"Base class for functions",$propdoc:{name:"[AST_SymbolDeclaration?] the name of this function",argnames:"[AST_SymbolFunarg|AST_Destructuring|AST_Expansion|AST_DefaultAssign*] array of function arguments, destructurings, or expanding arguments",uses_arguments:"[boolean/S] tells whether this function accesses the arguments array",is_generator:"[boolean] is this a generator method",async:"[boolean] is this method async"},args_as_names:function(){for(var e=[],t=0;t<this.argnames.length;t++)this.argnames[t]instanceof Ke?e.push(...this.argnames[t].all_symbols()):e.push(this.argnames[t]);return e},_walk:function(e){return e._visit(this,(function(){this.name&&this.name._walk(e);for(var t=this.argnames,n=0,i=t.length;n<i;n++)t[n]._walk(e);Ee(this,e)}))},_children_backwards(e){let t=this.body.length;for(;t--;)e(this.body[t]);for(t=this.argnames.length;t--;)e(this.argnames[t]);this.name&&e(this.name)}},xe),Le=le("Accessor",null,{$documentation:"A setter/getter function.  The `name` property is always null."},Ie),Pe=le("Function",null,{$documentation:"A function expression"},Ie),Ve=le("Arrow",null,{$documentation:"An ES6 Arrow function ((a) => b)"},Ie),Be=le("Defun",null,{$documentation:"A function definition"},Ie),Ke=le("Destructuring","names is_array",{$documentation:"A destructuring of several names. Used in destructuring assignment and with destructuring function argument names",$propdoc:{names:"[AST_Node*] Array of properties or elements",is_array:"[Boolean] Whether the destructuring represents an object or array"},_walk:function(e){return e._visit(this,(function(){this.names.forEach((function(t){t._walk(e)}))}))},_children_backwards(e){let t=this.names.length;for(;t--;)e(this.names[t])},all_symbols:function(){var e=[];return this.walk(new On((function(t){t instanceof Bt&&e.push(t)}))),e}}),Ue=le("PrefixedTemplateString","template_string prefix",{$documentation:"A templatestring with a prefix, such as String.raw`foobarbaz`",$propdoc:{template_string:"[AST_TemplateString] The template string",prefix:"[AST_SymbolRef|AST_PropAccess] The prefix, which can be a symbol such as `foo` or a dotted expression such as `String.raw`."},_walk:function(e){return e._visit(this,(function(){this.prefix._walk(e),this.template_string._walk(e)}))},_children_backwards(e){e(this.template_string),e(this.prefix)}}),Ge=le("TemplateString","segments",{$documentation:"A template string literal",$propdoc:{segments:"[AST_Node*] One or more segments, starting with AST_TemplateSegment. AST_Node may follow AST_TemplateSegment, but each AST_Node must be followed by AST_TemplateSegment."},_walk:function(e){return e._visit(this,(function(){this.segments.forEach((function(t){t._walk(e)}))}))},_children_backwards(e){let t=this.segments.length;for(;t--;)e(this.segments[t])}}),He=le("TemplateSegment","value raw",{$documentation:"A segment of a template string literal",$propdoc:{value:"Content of the segment",raw:"Raw content of the segment"}}),Xe=le("Jump",null,{$documentation:"Base class for “jumps” (for now that's `return`, `throw`, `break` and `continue`)"},_e),ze=le("Exit","value",{$documentation:"Base class for “exits” (`return` and `throw`)",$propdoc:{value:"[AST_Node?] the value returned or thrown by this statement; could be null for AST_Return"},_walk:function(e){return e._visit(this,this.value&&function(){this.value._walk(e)})},_children_backwards(e){this.value&&e(this.value)}},Xe),We=le("Return",null,{$documentation:"A `return` statement"},ze),Ye=le("Throw",null,{$documentation:"A `throw` statement"},ze),qe=le("LoopControl","label",{$documentation:"Base class for loop control statements (`break` and `continue`)",$propdoc:{label:"[AST_LabelRef?] the label, or null if none"},_walk:function(e){return e._visit(this,this.label&&function(){this.label._walk(e)})},_children_backwards(e){this.label&&e(this.label)}},Xe),$e=le("Break",null,{$documentation:"A `break` statement"},qe),je=le("Continue",null,{$documentation:"A `continue` statement"},qe),Ze=le("Await","expression",{$documentation:"An `await` statement",$propdoc:{expression:"[AST_Node] the mandatory expression being awaited"},_walk:function(e){return e._visit(this,(function(){this.expression._walk(e)}))},_children_backwards(e){e(this.expression)}}),Je=le("Yield","expression is_star",{$documentation:"A `yield` statement",$propdoc:{expression:"[AST_Node?] the value returned or thrown by this statement; could be null (representing undefined) but only when is_star is set to false",is_star:"[Boolean] Whether this is a yield or yield* statement"},_walk:function(e){return e._visit(this,this.expression&&function(){this.expression._walk(e)})},_children_backwards(e){this.expression&&e(this.expression)}}),Qe=le("If","condition alternative",{$documentation:"A `if` statement",$propdoc:{condition:"[AST_Node] the `if` condition",alternative:"[AST_Statement?] the `else` part, or null if not present"},_walk:function(e){return e._visit(this,(function(){this.condition._walk(e),this.body._walk(e),this.alternative&&this.alternative._walk(e)}))},_children_backwards(e){this.alternative&&e(this.alternative),e(this.body),e(this.condition)}},Ae),et=le("Switch","expression",{$documentation:"A `switch` statement",$propdoc:{expression:"[AST_Node] the `switch` “discriminant”"},_walk:function(e){return e._visit(this,(function(){this.expression._walk(e),Ee(this,e)}))},_children_backwards(e){let t=this.body.length;for(;t--;)e(this.body[t]);e(this.expression)}},De),tt=le("SwitchBranch",null,{$documentation:"Base class for `switch` branches"},De),nt=le("Default",null,{$documentation:"A `default` switch branch"},tt),it=le("Case","expression",{$documentation:"A `case` switch branch",$propdoc:{expression:"[AST_Node] the `case` expression"},_walk:function(e){return e._visit(this,(function(){this.expression._walk(e),Ee(this,e)}))},_children_backwards(e){let t=this.body.length;for(;t--;)e(this.body[t]);e(this.expression)}},tt),rt=le("Try","bcatch bfinally",{$documentation:"A `try` statement",$propdoc:{bcatch:"[AST_Catch?] the catch block, or null if not present",bfinally:"[AST_Finally?] the finally block, or null if not present"},_walk:function(e){return e._visit(this,(function(){Ee(this,e),this.bcatch&&this.bcatch._walk(e),this.bfinally&&this.bfinally._walk(e)}))},_children_backwards(e){this.bfinally&&e(this.bfinally),this.bcatch&&e(this.bcatch);let t=this.body.length;for(;t--;)e(this.body[t])}},De),ot=le("Catch","argname",{$documentation:"A `catch` node; only makes sense as part of a `try` statement",$propdoc:{argname:"[AST_SymbolCatch|AST_Destructuring|AST_Expansion|AST_DefaultAssign] symbol for the exception"},_walk:function(e){return e._visit(this,(function(){this.argname&&this.argname._walk(e),Ee(this,e)}))},_children_backwards(e){let t=this.body.length;for(;t--;)e(this.body[t]);this.argname&&e(this.argname)}},De),at=le("Finally",null,{$documentation:"A `finally` node; only makes sense as part of a `try` statement"},De),st=le("Definitions","definitions",{$documentation:"Base class for `var` or `const` nodes (variable declarations/initializations)",$propdoc:{definitions:"[AST_VarDef*] array of variable definitions"},_walk:function(e){return e._visit(this,(function(){for(var t=this.definitions,n=0,i=t.length;n<i;n++)t[n]._walk(e)}))},_children_backwards(e){let t=this.definitions.length;for(;t--;)e(this.definitions[t])}},_e),ut=le("Var",null,{$documentation:"A `var` statement"},st),ct=le("Let",null,{$documentation:"A `let` statement"},st),lt=le("Const",null,{$documentation:"A `const` statement"},st),ft=le("VarDef","name value",{$documentation:"A variable declaration; only appears in a AST_Definitions node",$propdoc:{name:"[AST_Destructuring|AST_SymbolConst|AST_SymbolLet|AST_SymbolVar] name of the variable",value:"[AST_Node?] initializer, or null of there's no initializer"},_walk:function(e){return e._visit(this,(function(){this.name._walk(e),this.value&&this.value._walk(e)}))},_children_backwards(e){this.value&&e(this.value),e(this.name)}}),pt=le("NameMapping","foreign_name name",{$documentation:"The part of the export/import statement that declare names from a module.",$propdoc:{foreign_name:"[AST_SymbolExportForeign|AST_SymbolImportForeign] The name being exported/imported (as specified in the module)",name:"[AST_SymbolExport|AST_SymbolImport] The name as it is visible to this module."},_walk:function(e){return e._visit(this,(function(){this.foreign_name._walk(e),this.name._walk(e)}))},_children_backwards(e){e(this.name),e(this.foreign_name)}}),_t=le("Import","imported_name imported_names module_name",{$documentation:"An `import` statement",$propdoc:{imported_name:"[AST_SymbolImport] The name of the variable holding the module's default export.",imported_names:"[AST_NameMapping*] The names of non-default imported variables",module_name:"[AST_String] String literal describing where this module came from"},_walk:function(e){return e._visit(this,(function(){this.imported_name&&this.imported_name._walk(e),this.imported_names&&this.imported_names.forEach((function(t){t._walk(e)})),this.module_name._walk(e)}))},_children_backwards(e){if(e(this.module_name),this.imported_names){let t=this.imported_names.length;for(;t--;)e(this.imported_names[t])}this.imported_name&&e(this.imported_name)}}),dt=le("Export","exported_definition exported_value is_default exported_names module_name",{$documentation:"An `export` statement",$propdoc:{exported_definition:"[AST_Defun|AST_Definitions|AST_DefClass?] An exported definition",exported_value:"[AST_Node?] An exported value",exported_names:"[AST_NameMapping*?] List of exported names",module_name:"[AST_String?] Name of the file to load exports from",is_default:"[Boolean] Whether this is the default exported value of this module"},_walk:function(e){return e._visit(this,(function(){this.exported_definition&&this.exported_definition._walk(e),this.exported_value&&this.exported_value._walk(e),this.exported_names&&this.exported_names.forEach((function(t){t._walk(e)})),this.module_name&&this.module_name._walk(e)}))},_children_backwards(e){if(this.module_name&&e(this.module_name),this.exported_names){let t=this.exported_names.length;for(;t--;)e(this.exported_names[t])}this.exported_value&&e(this.exported_value),this.exported_definition&&e(this.exported_definition)}},_e),mt=le("Call","expression args _annotations",{$documentation:"A function call expression",$propdoc:{expression:"[AST_Node] expression to invoke as function",args:"[AST_Node*] array of arguments",_annotations:"[number] bitfield containing information about the call"},initialize(){null==this._annotations&&(this._annotations=0)},_walk(e){return e._visit(this,(function(){for(var t=this.args,n=0,i=t.length;n<i;n++)t[n]._walk(e);this.expression._walk(e)}))},_children_backwards(e){let t=this.args.length;for(;t--;)e(this.args[t]);e(this.expression)}}),ht=le("New",null,{$documentation:"An object instantiation.  Derives from a function call since it has exactly the same properties"},mt),Et=le("Sequence","expressions",{$documentation:"A sequence expression (comma-separated expressions)",$propdoc:{expressions:"[AST_Node*] array of expressions (at least two)"},_walk:function(e){return e._visit(this,(function(){this.expressions.forEach((function(t){t._walk(e)}))}))},_children_backwards(e){let t=this.expressions.length;for(;t--;)e(this.expressions[t])}}),gt=le("PropAccess","expression property",{$documentation:'Base class for property access expressions, i.e. `a.foo` or `a["foo"]`',$propdoc:{expression:"[AST_Node] the “container” expression",property:"[AST_Node|string] the property to access.  For AST_Dot this is always a plain string, while for AST_Sub it's an arbitrary AST_Node"}}),Dt=le("Dot","quote",{$documentation:"A dotted property access expression",$propdoc:{quote:"[string] the original quote character when transformed from AST_Sub"},_walk:function(e){return e._visit(this,(function(){this.expression._walk(e)}))},_children_backwards(e){e(this.expression)}},gt),St=le("Sub",null,{$documentation:'Index-style property access, i.e. `a["foo"]`',_walk:function(e){return e._visit(this,(function(){this.expression._walk(e),this.property._walk(e)}))},_children_backwards(e){e(this.property),e(this.expression)}},gt),vt=le("Unary","operator expression",{$documentation:"Base class for unary expressions",$propdoc:{operator:"[string] the operator",expression:"[AST_Node] expression that this unary operator applies to"},_walk:function(e){return e._visit(this,(function(){this.expression._walk(e)}))},_children_backwards(e){e(this.expression)}}),At=le("UnaryPrefix",null,{$documentation:"Unary prefix expression, i.e. `typeof i` or `++i`"},vt),Tt=le("UnaryPostfix",null,{$documentation:"Unary postfix expression, i.e. `i++`"},vt),yt=le("Binary","operator left right",{$documentation:"Binary expression, i.e. `a + b`",$propdoc:{left:"[AST_Node] left-hand side expression",operator:"[string] the operator",right:"[AST_Node] right-hand side expression"},_walk:function(e){return e._visit(this,(function(){this.left._walk(e),this.right._walk(e)}))},_children_backwards(e){e(this.right),e(this.left)}}),bt=le("Conditional","condition consequent alternative",{$documentation:"Conditional expression using the ternary operator, i.e. `a ? b : c`",$propdoc:{condition:"[AST_Node]",consequent:"[AST_Node]",alternative:"[AST_Node]"},_walk:function(e){return e._visit(this,(function(){this.condition._walk(e),this.consequent._walk(e),this.alternative._walk(e)}))},_children_backwards(e){e(this.alternative),e(this.consequent),e(this.condition)}}),Ct=le("Assign",null,{$documentation:"An assignment expression — `a = b + 5`"},yt),Ot=le("DefaultAssign",null,{$documentation:"A default assignment expression like in `(a = 3) => a`"},yt),Ft=le("Array","elements",{$documentation:"An array literal",$propdoc:{elements:"[AST_Node*] array of elements"},_walk:function(e){return e._visit(this,(function(){for(var t=this.elements,n=0,i=t.length;n<i;n++)t[n]._walk(e)}))},_children_backwards(e){let t=this.elements.length;for(;t--;)e(this.elements[t])}}),Mt=le("Object","properties",{$documentation:"An object literal",$propdoc:{properties:"[AST_ObjectProperty*] array of properties"},_walk:function(e){return e._visit(this,(function(){for(var t=this.properties,n=0,i=t.length;n<i;n++)t[n]._walk(e)}))},_children_backwards(e){let t=this.properties.length;for(;t--;)e(this.properties[t])}}),Rt=le("ObjectProperty","key value",{$documentation:"Base class for literal object properties",$propdoc:{key:"[string|AST_Node] property name. For ObjectKeyVal this is a string. For getters, setters and computed property this is an AST_Node.",value:"[AST_Node] property value.  For getters and setters this is an AST_Accessor."},_walk:function(e){return e._visit(this,(function(){this.key instanceof pe&&this.key._walk(e),this.value._walk(e)}))},_children_backwards(e){e(this.value),this.key instanceof pe&&e(this.key)}}),wt=le("ObjectKeyVal","quote",{$documentation:"A key: value object property",$propdoc:{quote:"[string] the original quote character"},computed_key(){return this.key instanceof pe}},Rt),xt=le("ObjectSetter","quote static",{$propdoc:{quote:"[string|undefined] the original quote character, if any",static:"[boolean] whether this is a static setter (classes only)"},$documentation:"An object setter property",computed_key(){return!(this.key instanceof qt)}},Rt),Nt=le("ObjectGetter","quote static",{$propdoc:{quote:"[string|undefined] the original quote character, if any",static:"[boolean] whether this is a static getter (classes only)"},$documentation:"An object getter property",computed_key(){return!(this.key instanceof qt)}},Rt),kt=le("ConciseMethod","quote static is_generator async",{$propdoc:{quote:"[string|undefined] the original quote character, if any",static:"[boolean] is this method static (classes only)",is_generator:"[boolean] is this a generator method",async:"[boolean] is this method async"},$documentation:"An ES6 concise method inside an object or class",computed_key(){return!(this.key instanceof qt)}},Rt),It=le("Class","name extends properties",{$propdoc:{name:"[AST_SymbolClass|AST_SymbolDefClass?] optional class name.",extends:"[AST_Node]? optional parent class",properties:"[AST_ObjectProperty*] array of properties"},$documentation:"An ES6 class",_walk:function(e){return e._visit(this,(function(){this.name&&this.name._walk(e),this.extends&&this.extends._walk(e),this.properties.forEach(t=>t._walk(e))}))},_children_backwards(e){let t=this.properties.length;for(;t--;)e(this.properties[t]);this.extends&&e(this.extends),this.name&&e(this.name)}},xe),Lt=le("ClassProperty","static quote",{$documentation:"A class property",$propdoc:{static:"[boolean] whether this is a static key",quote:"[string] which quote is being used"},_walk:function(e){return e._visit(this,(function(){this.key instanceof pe&&this.key._walk(e),this.value instanceof pe&&this.value._walk(e)}))},_children_backwards(e){this.value instanceof pe&&e(this.value),this.key instanceof pe&&e(this.key)},computed_key(){return!(this.key instanceof $t)}},Rt),Pt=le("DefClass",null,{$documentation:"A class definition"},It),Vt=le("ClassExpression",null,{$documentation:"A class expression."},It),Bt=le("Symbol","scope name thedef",{$propdoc:{name:"[string] name of this symbol",scope:"[AST_Scope/S] the current scope (not necessarily the definition scope)",thedef:"[SymbolDef/S] the definition of this symbol"},$documentation:"Base class for all symbols"}),Kt=le("NewTarget",null,{$documentation:"A reference to new.target"}),Ut=le("SymbolDeclaration","init",{$documentation:"A declaration symbol (symbol in var/const, function name or argument, symbol in catch)"},Bt),Gt=le("SymbolVar",null,{$documentation:"Symbol defining a variable"},Ut),Ht=le("SymbolBlockDeclaration",null,{$documentation:"Base class for block-scoped declaration symbols"},Ut),Xt=le("SymbolConst",null,{$documentation:"A constant declaration"},Ht),zt=le("SymbolLet",null,{$documentation:"A block-scoped `let` declaration"},Ht),Wt=le("SymbolFunarg",null,{$documentation:"Symbol naming a function argument"},Gt),Yt=le("SymbolDefun",null,{$documentation:"Symbol defining a function"},Ut),qt=le("SymbolMethod",null,{$documentation:"Symbol in an object defining a method"},Bt),$t=le("SymbolClassProperty",null,{$documentation:"Symbol for a class property"},Bt),jt=le("SymbolLambda",null,{$documentation:"Symbol naming a function expression"},Ut),Zt=le("SymbolDefClass",null,{$documentation:"Symbol naming a class's name in a class declaration. Lexically scoped to its containing scope, and accessible within the class."},Ht),Jt=le("SymbolClass",null,{$documentation:"Symbol naming a class's name. Lexically scoped to the class."},Ut),Qt=le("SymbolCatch",null,{$documentation:"Symbol naming the exception in catch"},Ht),en=le("SymbolImport",null,{$documentation:"Symbol referring to an imported name"},Ht),tn=le("SymbolImportForeign",null,{$documentation:"A symbol imported from a module, but it is defined in the other module, and its real name is irrelevant for this module's purposes"},Bt),nn=le("Label","references",{$documentation:"Symbol naming a label (declaration)",$propdoc:{references:"[AST_LoopControl*] a list of nodes referring to this label"},initialize:function(){this.references=[],this.thedef=this}},Bt),rn=le("SymbolRef",null,{$documentation:"Reference to some symbol (not definition/declaration)"},Bt),on=le("SymbolExport",null,{$documentation:"Symbol referring to a name to export"},rn),an=le("SymbolExportForeign",null,{$documentation:"A symbol exported from this module, but it is used in the other module, and its real name is irrelevant for this module's purposes"},Bt),sn=le("LabelRef",null,{$documentation:"Reference to a label symbol"},Bt),un=le("This",null,{$documentation:"The `this` symbol"},Bt),cn=le("Super",null,{$documentation:"The `super` symbol"},un),ln=le("Constant",null,{$documentation:"Base class for all constants",getValue:function(){return this.value}}),fn=le("String","value quote",{$documentation:"A string literal",$propdoc:{value:"[string] the contents of this string",quote:"[string] the original quote character"}},ln),pn=le("Number","value literal",{$documentation:"A number literal",$propdoc:{value:"[number] the numeric value",literal:"[string] numeric value as string (optional)"}},ln),_n=le("BigInt","value",{$documentation:"A big int literal",$propdoc:{value:"[string] big int value"}},ln),dn=le("RegExp","value",{$documentation:"A regexp literal",$propdoc:{value:"[RegExp] the actual regexp"}},ln),mn=le("Atom",null,{$documentation:"Base class for atoms"},ln),hn=le("Null",null,{$documentation:"The `null` atom",value:null},mn),En=le("NaN",null,{$documentation:"The impossible value",value:NaN},mn),gn=le("Undefined",null,{$documentation:"The `undefined` value",value:void 0},mn),Dn=le("Hole",null,{$documentation:"A hole in an array",value:void 0},mn),Sn=le("Infinity",null,{$documentation:"The `Infinity` value",value:1/0},mn),vn=le("Boolean",null,{$documentation:"Base class for booleans"},mn),An=le("False",null,{$documentation:"The `false` atom",value:!1},vn),Tn=le("True",null,{$documentation:"The `true` atom",value:!0},vn);function yn(e,t,n=[e]){const i=n.push.bind(n);for(;n.length;){const e=n.pop(),r=t(e,n);if(r){if(r===Cn)return!0}else e._children_backwards(i)}return!1}function bn(e,t,n){const i=[e],r=i.push.bind(i),o=n?n.slice():[],a=[];let s;const u={parent:(e=0)=>-1===e?s:n&&e>=o.length?(e-=o.length,n[n.length-(e+1)]):o[o.length-(1+e)]};for(;i.length;){for(s=i.pop();a.length&&i.length==a[a.length-1];)o.pop(),a.pop();const e=t(s,u);if(e){if(e===Cn)return!0;continue}const n=i.length;s._children_backwards(r),i.length>n&&(o.push(s),a.push(n-1))}return!1}const Cn=Symbol("abort walk");class On{constructor(e){this.visit=e,this.stack=[],this.directives=Object.create(null)}_visit(e,t){this.push(e);var n=this.visit(e,t?function(){t.call(e)}:a);return!n&&t&&t.call(e),this.pop(),n}parent(e){return this.stack[this.stack.length-2-(e||0)]}push(e){e instanceof Ie?this.directives=Object.create(this.directives):e instanceof me&&!this.directives[e.value]?this.directives[e.value]=e:e instanceof It&&(this.directives=Object.create(this.directives),this.directives["use strict"]||(this.directives["use strict"]=e)),this.stack.push(e)}pop(){var e=this.stack.pop();(e instanceof Ie||e instanceof It)&&(this.directives=Object.getPrototypeOf(this.directives))}self(){return this.stack[this.stack.length-1]}find_parent(e){for(var t=this.stack,n=t.length;--n>=0;){var i=t[n];if(i instanceof e)return i}}has_directive(e){var t=this.directives[e];if(t)return t;var n=this.stack[this.stack.length-1];if(n instanceof xe&&n.body)for(var i=0;i<n.body.length;++i){var r=n.body[i];if(!(r instanceof me))break;if(r.value==e)return r}}loopcontrol_target(e){var t=this.stack;if(e.label)for(var n=t.length;--n>=0;){if((i=t[n])instanceof Te&&i.label.name==e.label.name)return i.body}else for(n=t.length;--n>=0;){var i;if((i=t[n])instanceof ye||e instanceof $e&&i instanceof et)return i}}}class Fn extends On{constructor(e,t){super(),this.before=e,this.after=t}}const Mn=1,Rn=2,wn=4;var xn=Object.freeze({__proto__:null,AST_Accessor:Le,AST_Array:Ft,AST_Arrow:Ve,AST_Assign:Ct,AST_Atom:mn,AST_Await:Ze,AST_BigInt:_n,AST_Binary:yt,AST_Block:De,AST_BlockStatement:Se,AST_Boolean:vn,AST_Break:$e,AST_Call:mt,AST_Case:it,AST_Catch:ot,AST_Class:It,AST_ClassExpression:Vt,AST_ClassProperty:Lt,AST_ConciseMethod:kt,AST_Conditional:bt,AST_Const:lt,AST_Constant:ln,AST_Continue:je,AST_Debugger:de,AST_Default:nt,AST_DefaultAssign:Ot,AST_DefClass:Pt,AST_Definitions:st,AST_Defun:Be,AST_Destructuring:Ke,AST_Directive:me,AST_Do:Ce,AST_Dot:Dt,AST_DWLoop:be,AST_EmptyStatement:ve,AST_Exit:ze,AST_Expansion:ke,AST_Export:dt,AST_False:An,AST_Finally:at,AST_For:Fe,AST_ForIn:Me,AST_ForOf:Re,AST_Function:Pe,AST_Hole:Dn,AST_If:Qe,AST_Import:_t,AST_Infinity:Sn,AST_IterationStatement:ye,AST_Jump:Xe,AST_Label:nn,AST_LabeledStatement:Te,AST_LabelRef:sn,AST_Lambda:Ie,AST_Let:ct,AST_LoopControl:qe,AST_NameMapping:pt,AST_NaN:En,AST_New:ht,AST_NewTarget:Kt,AST_Node:pe,AST_Null:hn,AST_Number:pn,AST_Object:Mt,AST_ObjectGetter:Nt,AST_ObjectKeyVal:wt,AST_ObjectProperty:Rt,AST_ObjectSetter:xt,AST_PrefixedTemplateString:Ue,AST_PropAccess:gt,AST_RegExp:dn,AST_Return:We,AST_Scope:xe,AST_Sequence:Et,AST_SimpleStatement:he,AST_Statement:_e,AST_StatementWithBody:Ae,AST_String:fn,AST_Sub:St,AST_Super:cn,AST_Switch:et,AST_SwitchBranch:tt,AST_Symbol:Bt,AST_SymbolBlockDeclaration:Ht,AST_SymbolCatch:Qt,AST_SymbolClass:Jt,AST_SymbolClassProperty:$t,AST_SymbolConst:Xt,AST_SymbolDeclaration:Ut,AST_SymbolDefClass:Zt,AST_SymbolDefun:Yt,AST_SymbolExport:on,AST_SymbolExportForeign:an,AST_SymbolFunarg:Wt,AST_SymbolImport:en,AST_SymbolImportForeign:tn,AST_SymbolLambda:jt,AST_SymbolLet:zt,AST_SymbolMethod:qt,AST_SymbolRef:rn,AST_SymbolVar:Gt,AST_TemplateSegment:He,AST_TemplateString:Ge,AST_This:un,AST_Throw:Ye,AST_Token:fe,AST_Toplevel:Ne,AST_True:Tn,AST_Try:rt,AST_Unary:vt,AST_UnaryPostfix:Tt,AST_UnaryPrefix:At,AST_Undefined:gn,AST_Var:ut,AST_VarDef:ft,AST_While:Oe,AST_With:we,AST_Yield:Je,TreeTransformer:Fn,TreeWalker:On,walk:yn,walk_abort:Cn,walk_body:Ee,walk_parent:bn,_INLINE:Rn,_NOINLINE:wn,_PURE:Mn});function Nn(e,t){e.DEFMETHOD("transform",(function(e,n){let i=void 0;if(e.push(this),e.before&&(i=e.before(this,t,n)),void 0===i&&(i=this,t(i,e),e.after)){const t=e.after(i,n);void 0!==t&&(i=t)}return e.pop(),i}))}function kn(e,t){return f(e,(function(e){return e.transform(t,!0)}))}function In(e){let t=e.parent(-1);for(let n,i=0;n=e.parent(i);i++){if(n instanceof _e&&n.body===t)return!0;if(!(n instanceof Et&&n.expressions[0]===t||"Call"===n.TYPE&&n.expression===t||n instanceof Ue&&n.prefix===t||n instanceof Dt&&n.expression===t||n instanceof St&&n.expression===t||n instanceof bt&&n.condition===t||n instanceof yt&&n.left===t||n instanceof Tt&&n.expression===t))return!1;t=n}}Nn(pe,a),Nn(Te,(function(e,t){e.label=e.label.transform(t),e.body=e.body.transform(t)})),Nn(he,(function(e,t){e.body=e.body.transform(t)})),Nn(De,(function(e,t){e.body=kn(e.body,t)})),Nn(Ce,(function(e,t){e.body=e.body.transform(t),e.condition=e.condition.transform(t)})),Nn(Oe,(function(e,t){e.condition=e.condition.transform(t),e.body=e.body.transform(t)})),Nn(Fe,(function(e,t){e.init&&(e.init=e.init.transform(t)),e.condition&&(e.condition=e.condition.transform(t)),e.step&&(e.step=e.step.transform(t)),e.body=e.body.transform(t)})),Nn(Me,(function(e,t){e.init=e.init.transform(t),e.object=e.object.transform(t),e.body=e.body.transform(t)})),Nn(we,(function(e,t){e.expression=e.expression.transform(t),e.body=e.body.transform(t)})),Nn(ze,(function(e,t){e.value&&(e.value=e.value.transform(t))})),Nn(qe,(function(e,t){e.label&&(e.label=e.label.transform(t))})),Nn(Qe,(function(e,t){e.condition=e.condition.transform(t),e.body=e.body.transform(t),e.alternative&&(e.alternative=e.alternative.transform(t))})),Nn(et,(function(e,t){e.expression=e.expression.transform(t),e.body=kn(e.body,t)})),Nn(it,(function(e,t){e.expression=e.expression.transform(t),e.body=kn(e.body,t)})),Nn(rt,(function(e,t){e.body=kn(e.body,t),e.bcatch&&(e.bcatch=e.bcatch.transform(t)),e.bfinally&&(e.bfinally=e.bfinally.transform(t))})),Nn(ot,(function(e,t){e.argname&&(e.argname=e.argname.transform(t)),e.body=kn(e.body,t)})),Nn(st,(function(e,t){e.definitions=kn(e.definitions,t)})),Nn(ft,(function(e,t){e.name=e.name.transform(t),e.value&&(e.value=e.value.transform(t))})),Nn(Ke,(function(e,t){e.names=kn(e.names,t)})),Nn(Ie,(function(e,t){e.name&&(e.name=e.name.transform(t)),e.argnames=kn(e.argnames,t),e.body instanceof pe?e.body=e.body.transform(t):e.body=kn(e.body,t)})),Nn(mt,(function(e,t){e.expression=e.expression.transform(t),e.args=kn(e.args,t)})),Nn(Et,(function(e,t){const n=kn(e.expressions,t);e.expressions=n.length?n:[new pn({value:0})]})),Nn(Dt,(function(e,t){e.expression=e.expression.transform(t)})),Nn(St,(function(e,t){e.expression=e.expression.transform(t),e.property=e.property.transform(t)})),Nn(Je,(function(e,t){e.expression&&(e.expression=e.expression.transform(t))})),Nn(Ze,(function(e,t){e.expression=e.expression.transform(t)})),Nn(vt,(function(e,t){e.expression=e.expression.transform(t)})),Nn(yt,(function(e,t){e.left=e.left.transform(t),e.right=e.right.transform(t)})),Nn(bt,(function(e,t){e.condition=e.condition.transform(t),e.consequent=e.consequent.transform(t),e.alternative=e.alternative.transform(t)})),Nn(Ft,(function(e,t){e.elements=kn(e.elements,t)})),Nn(Mt,(function(e,t){e.properties=kn(e.properties,t)})),Nn(Rt,(function(e,t){e.key instanceof pe&&(e.key=e.key.transform(t)),e.value&&(e.value=e.value.transform(t))})),Nn(It,(function(e,t){e.name&&(e.name=e.name.transform(t)),e.extends&&(e.extends=e.extends.transform(t)),e.properties=kn(e.properties,t)})),Nn(ke,(function(e,t){e.expression=e.expression.transform(t)})),Nn(pt,(function(e,t){e.foreign_name=e.foreign_name.transform(t),e.name=e.name.transform(t)})),Nn(_t,(function(e,t){e.imported_name&&(e.imported_name=e.imported_name.transform(t)),e.imported_names&&kn(e.imported_names,t),e.module_name=e.module_name.transform(t)})),Nn(dt,(function(e,t){e.exported_definition&&(e.exported_definition=e.exported_definition.transform(t)),e.exported_value&&(e.exported_value=e.exported_value.transform(t)),e.exported_names&&kn(e.exported_names,t),e.module_name&&(e.module_name=e.module_name.transform(t))})),Nn(Ge,(function(e,t){e.segments=kn(e.segments,t)})),Nn(Ue,(function(e,t){e.prefix=e.prefix.transform(t),e.template_string=e.template_string.transform(t)}));const Ln=/^$|[;{][\s\n]*$/,Pn=/[@#]__(PURE|INLINE|NOINLINE)__/g;function Vn(e){return("comment2"===e.type||"comment1"===e.type)&&/@preserve|@lic|@cc_on|^\**!/i.test(e.value)}function Bn(e){var t=!e;void 0===(e=o(e,{ascii_only:!1,beautify:!1,braces:!1,comments:"some",ecma:5,ie8:!1,indent_level:4,indent_start:0,inline_script:!0,keep_numbers:!1,keep_quoted_props:!1,max_line_len:!1,preamble:null,preserve_annotations:!1,quote_keys:!1,quote_style:0,safari10:!1,semicolons:!0,shebang:!0,shorthand:void 0,source_map:null,webkit:!1,width:80,wrap_iife:!1,wrap_func_args:!0},!0)).shorthand&&(e.shorthand=e.ecma>5);var n=s;if(e.comments){let t=e.comments;if("string"==typeof e.comments&&/^\/.*\/[a-zA-Z]*$/.test(e.comments)){var i=e.comments.lastIndexOf("/");t=new RegExp(e.comments.substr(1,i-1),e.comments.substr(i+1))}n=t instanceof RegExp?function(e){return"comment5"!=e.type&&t.test(e.value)}:"function"==typeof t?function(e){return"comment5"!=e.type&&t(this,e)}:"some"===t?Vn:u}var r=0,c=0,l=1,f=0,p="";let _=new Set;var d=e.ascii_only?function(t,n){return e.ecma>=2015&&(t=t.replace(/[\ud800-\udbff][\udc00-\udfff]/g,(function(e){return"\\u{"+function(e,t){return z(e.charCodeAt(t))?65536+(e.charCodeAt(t)-55296<<10)+e.charCodeAt(t+1)-56320:e.charCodeAt(t)}(e,0).toString(16)+"}"}))),t.replace(/[\u0000-\u001f\u007f-\uffff]/g,(function(e){var t=e.charCodeAt(0).toString(16);if(t.length<=2&&!n){for(;t.length<2;)t="0"+t;return"\\x"+t}for(;t.length<4;)t="0"+t;return"\\u"+t}))}:function(e){return e.replace(/[\ud800-\udbff][\udc00-\udfff]|([\ud800-\udbff]|[\udc00-\udfff])/g,(function(e,t){return t?"\\u"+t.charCodeAt(0).toString(16):e}))};function m(t,n){var i=function(t,n){var i=0,r=0;function o(){return"'"+t.replace(/\x27/g,"\\'")+"'"}function a(){return'"'+t.replace(/\x22/g,'\\"')+'"'}if(t=t.replace(/[\\\b\f\n\r\v\t\x22\x27\u2028\u2029\0\ufeff]/g,(function(n,o){switch(n){case'"':return++i,'"';case"'":return++r,"'";case"\\":return"\\\\";case"\n":return"\\n";case"\r":return"\\r";case"\t":return"\\t";case"\b":return"\\b";case"\f":return"\\f";case"\v":return e.ie8?"\\x0B":"\\v";case"\u2028":return"\\u2028";case"\u2029":return"\\u2029";case"\ufeff":return"\\ufeff";case"\0":return/[0-9]/.test(X(t,o+1))?"\\x00":"\\0"}return n})),t=d(t),"`"===n)return"`"+t.replace(/`/g,"\\`")+"`";switch(e.quote_style){case 1:return o();case 2:return a();case 3:return"'"==n?o():a();default:return i>r?o():a()}}(t,n);return e.inline_script&&(i=(i=(i=i.replace(/<\x2f(script)([>\/\t\n\f\r ])/gi,"<\\/$1$2")).replace(/\x3c!--/g,"\\x3c!--")).replace(/--\x3e/g,"--\\x3e")),i}var h,g,D=!1,S=!1,v=!1,A=0,T=!1,y=!1,b=-1,C="",O=e.source_map&&[],F=O?function(){O.forEach((function(t){try{e.source_map.add(t.token.file,t.line,t.col,t.token.line,t.token.col,t.name||"name"!=t.token.type?t.name:t.token.value)}catch(e){null!=t.token.file&&pe.warn("Couldn't figure out mapping for {file}:{line},{col} → {cline},{ccol} [{name}]",{file:t.token.file,line:t.token.line,col:t.token.col,cline:t.line,ccol:t.col,name:t.name||""})}})),O=[]}:a,M=e.max_line_len?function(){if(c>e.max_line_len){if(A){var t=p.slice(0,A),n=p.slice(A);if(O){var i=n.length-c;O.forEach((function(e){e.line++,e.col+=i}))}p=t+"\n"+n,l++,f++,c=n.length}c>e.max_line_len&&pe.warn("Output exceeds {max_line_len} characters",e)}A&&(A=0,F())}:a,R=E("( [ + * / - , . `");function w(t){var n=X(t=String(t),0);T&&n&&(T=!1,"\n"!==n&&(w("\n"),N())),y&&n&&(y=!1,/[\s;})]/.test(n)||x()),b=-1;var i=C.charAt(C.length-1);v&&(v=!1,(":"!==i||"}"!==n)&&(n&&";}".includes(n)||";"===i)||(e.semicolons||R.has(n)?(p+=";",c++,f++):(M(),c>0&&(p+="\n",f++,l++,c=0),/^\s+$/.test(t)&&(v=!0)),e.beautify||(S=!1))),S&&(($(i)&&($(n)||"\\"==n)||"/"==n&&n==i||("+"==n||"-"==n)&&n==C)&&(p+=" ",c++,f++),S=!1),h&&(O.push({token:h,name:g,line:l,col:c}),h=!1,A||F()),p+=t,D="("==t[t.length-1],f+=t.length;var r=t.split(/\r?\n/),o=r.length-1;l+=o,c+=r[0].length,o>0&&(M(),c=r[o].length),C=t}var x=e.beautify?function(){w(" ")}:function(){S=!0},N=e.beautify?function(t){var n;e.beautify&&w((n=t?.5:0," ".repeat(e.indent_start+r-n*e.indent_level)))}:a,k=e.beautify?function(e,t){!0===e&&(e=V());var n=r;r=e;var i=t();return r=n,i}:function(e,t){return t()},I=e.beautify?function(){if(b<0)return w("\n");"\n"!=p[b]&&(p=p.slice(0,b)+"\n"+p.slice(b),f++,l++),b++}:e.max_line_len?function(){M(),A=p.length}:a,L=e.beautify?function(){w(";")}:function(){v=!0};function P(){v=!1,w(";")}function V(){return r+e.indent_level}function B(){return A&&M(),p}function K(){let e=p.length-1;for(;e>=0;){const t=p.charCodeAt(e);if(10===t)return!0;if(32!==t)return!1;e--}return!0}function U(t){return e.preserve_annotations||(t=t.replace(Pn," ")),/^\s*$/.test(t)?"":t.replace(/(<\s*\/\s*)(script)/i,"<\\/$2")}var G=[];return{get:B,toString:B,indent:N,in_directive:!1,use_asm:null,active_scope:null,indentation:function(){return r},current_width:function(){return c-r},should_break:function(){return e.width&&this.current_width()>=e.width},has_parens:function(){return D},newline:I,print:w,star:function(){w("*")},space:x,comma:function(){w(","),x()},colon:function(){w(":"),x()},last:function(){return C},semicolon:L,force_semicolon:P,to_utf8:d,print_name:function(e){w(function(e){return e=e.toString(),e=d(e,!0)}(e))},print_string:function(e,t,n){var i=m(e,t);!0!==n||i.includes("\\")||(Ln.test(p)||P(),P()),w(i)},print_template_string_chars:function(e){var t=m(e,"`").replace(/\${/g,"\\${");return w(t.substr(1,t.length-2))},encode_string:m,next_indent:V,with_indent:k,with_block:function(e){var t;return w("{"),I(),k(V(),(function(){t=e()})),N(),w("}"),t},with_parens:function(e){w("(");var t=e();return w(")"),t},with_square:function(e){w("[");var t=e();return w("]"),t},add_mapping:O?function(e,t){h=e,g=t}:a,option:function(t){return e[t]},printed_comments:_,prepend_comments:t?a:function(t){var i=t.start;if(!i)return;var r=this.printed_comments;const o=t instanceof ze&&t.value;if(i.comments_before&&r.has(i.comments_before)){if(!o)return;i.comments_before=[]}var a=i.comments_before;if(a||(a=i.comments_before=[]),r.add(a),o){var s=new On((function(e){var t=s.parent();if(!(t instanceof ze||t instanceof yt&&t.left===e||"Call"==t.TYPE&&t.expression===e||t instanceof bt&&t.condition===e||t instanceof Dt&&t.expression===e||t instanceof Et&&t.expressions[0]===e||t instanceof St&&t.expression===e||t instanceof Tt))return!0;if(e.start){var n=e.start.comments_before;n&&!r.has(n)&&(r.add(n),a=a.concat(n))}}));s.push(t),t.value.walk(s)}if(0==f){a.length>0&&e.shebang&&"comment5"===a[0].type&&!r.has(a[0])&&(w("#!"+a.shift().value+"\n"),N());var u=e.preamble;u&&w(u.replace(/\r\n?|[\n\u2028\u2029]|\s*$/g,"\n"))}if(0!=(a=a.filter(n,t).filter(e=>!r.has(e))).length){var c=K();a.forEach((function(e,t){if(r.add(e),c||(e.nlb?(w("\n"),N(),c=!0):t>0&&x()),/comment[134]/.test(e.type))(n=U(e.value))&&(w("//"+n+"\n"),N()),c=!0;else if("comment2"==e.type){var n;(n=U(e.value))&&w("/*"+n+"*/"),c=!1}})),c||(i.nlb?(w("\n"),N()):x())}},append_comments:t||n===s?a:function(e,t){var i=e.end;if(i){var r=this.printed_comments,o=i[t?"comments_before":"comments_after"];if(o&&!r.has(o)&&(e instanceof _e||o.every(e=>!/comment[134]/.test(e.type)))){r.add(o);var a=p.length;o.filter(n,e).forEach((function(e,n){if(!r.has(e))if(r.add(e),y=!1,T?(w("\n"),N(),T=!1):e.nlb&&(n>0||!K())?(w("\n"),N()):(n>0||!t)&&x(),/comment[134]/.test(e.type)){const t=U(e.value);t&&w("//"+t),T=!0}else if("comment2"==e.type){const t=U(e.value);t&&w("/*"+t+"*/"),y=!0}})),p.length>a&&(b=a)}}},line:function(){return l},col:function(){return c},pos:function(){return f},push_node:function(e){G.push(e)},pop_node:function(){return G.pop()},parent:function(e){return G[G.length-2-(e||0)]}}}!function(){function e(e,t){e.DEFMETHOD("_codegen",t)}function t(e,n){Array.isArray(e)?e.forEach((function(e){t(e,n)})):e.DEFMETHOD("needs_parens",n)}function n(e,t,n,i){var r=e.length-1;n.in_directive=i,e.forEach((function(e,i){!0!==n.in_directive||e instanceof me||e instanceof ve||e instanceof he&&e.body instanceof fn||(n.in_directive=!1),e instanceof ve||(n.indent(),e.print(n),i==r&&t||(n.newline(),t&&n.newline())),!0===n.in_directive&&e instanceof he&&e.body instanceof fn&&(n.in_directive=!1)})),n.in_directive=!1}function i(e,t){t.print("{"),t.with_indent(t.next_indent(),(function(){t.append_comments(e,!0)})),t.print("}")}function r(e,t,r){e.body.length>0?t.with_block((function(){n(e.body,!1,t,r)})):i(e,t)}function o(e,t,n){var i=!1;n&&(i=yn(e,e=>e instanceof xe||(e instanceof yt&&"in"==e.operator?Cn:void 0))),e.print(t,i)}function u(e,t,n){return n.option("quote_keys")?n.print_string(e):""+ +e==e&&e>=0?n.option("keep_numbers")?n.print(e):n.print(p(e)):(O.has(e)?n.option("ie8"):n.option("ecma")<2015?!j(e):!Z(e,!0))||t&&n.option("keep_quoted_props")?n.print_string(e,t):n.print_name(e)}pe.DEFMETHOD("print",(function(e,t){var n=this,i=n._codegen;function r(){e.prepend_comments(n),n.add_source_map(e),i(n,e),e.append_comments(n)}n instanceof xe?e.active_scope=n:!e.use_asm&&n instanceof me&&"use asm"==n.value&&(e.use_asm=e.active_scope),e.push_node(n),t||n.needs_parens(e)?e.with_parens(r):r(),e.pop_node(),n===e.use_asm&&(e.use_asm=null)})),pe.DEFMETHOD("_print",pe.prototype.print),pe.DEFMETHOD("print_to_string",(function(e){var t=Bn(e);return this.print(t),t.get()})),t(pe,s),t(Pe,(function(e){if(!e.has_parens()&&In(e))return!0;var t;if(e.option("webkit")&&((t=e.parent())instanceof gt&&t.expression===this))return!0;if(e.option("wrap_iife")&&((t=e.parent())instanceof mt&&t.expression===this))return!0;if(e.option("wrap_func_args")&&((t=e.parent())instanceof mt&&t.args.includes(this)))return!0;return!1})),t(Ve,(function(e){var t=e.parent();return t instanceof gt&&t.expression===this})),t(Mt,(function(e){return!e.has_parens()&&In(e)})),t(Vt,In),t(vt,(function(e){var t=e.parent();return t instanceof gt&&t.expression===this||t instanceof mt&&t.expression===this||t instanceof yt&&"**"===t.operator&&this instanceof At&&t.left===this&&"++"!==this.operator&&"--"!==this.operator})),t(Ze,(function(e){var t=e.parent();return t instanceof gt&&t.expression===this||t instanceof mt&&t.expression===this||e.option("safari10")&&t instanceof At})),t(Et,(function(e){var t=e.parent();return t instanceof mt||t instanceof vt||t instanceof yt||t instanceof ft||t instanceof gt||t instanceof Ft||t instanceof Rt||t instanceof bt||t instanceof Ve||t instanceof Ot||t instanceof ke||t instanceof Re&&this===t.object||t instanceof Je||t instanceof dt})),t(yt,(function(e){var t=e.parent();if(t instanceof mt&&t.expression===this)return!0;if(t instanceof vt)return!0;if(t instanceof gt&&t.expression===this)return!0;if(t instanceof yt){const e=t.operator,n=this.operator;if("??"===n&&("||"===e||"&&"===e))return!0;const i=se[e],r=se[n];if(i>r||i==r&&(this===t.right||"**"==e))return!0}})),t(Je,(function(e){var t=e.parent();return t instanceof yt&&"="!==t.operator||(t instanceof mt&&t.expression===this||(t instanceof bt&&t.condition===this||(t instanceof vt||(t instanceof gt&&t.expression===this||void 0))))})),t(gt,(function(e){var t=e.parent();if(t instanceof ht&&t.expression===this)return yn(this,e=>e instanceof xe||(e instanceof mt?Cn:void 0))})),t(mt,(function(e){var t,n=e.parent();return!!(n instanceof ht&&n.expression===this||n instanceof dt&&n.is_default&&this.expression instanceof Pe)||this.expression instanceof Pe&&n instanceof gt&&n.expression===this&&(t=e.parent(1))instanceof Ct&&t.left===n})),t(ht,(function(e){var t=e.parent();if(0===this.args.length&&(t instanceof gt||t instanceof mt&&t.expression===this))return!0})),t(pn,(function(e){var t=e.parent();if(t instanceof gt&&t.expression===this){var n=this.getValue();if(n<0||/^0/.test(p(n)))return!0}})),t(_n,(function(e){var t=e.parent();if(t instanceof gt&&t.expression===this&&this.getValue().startsWith("-"))return!0})),t([Ct,bt],(function(e){var t=e.parent();return t instanceof vt||(t instanceof yt&&!(t instanceof Ct)||(t instanceof mt&&t.expression===this||(t instanceof bt&&t.condition===this||(t instanceof gt&&t.expression===this||(this instanceof Ct&&this.left instanceof Ke&&!1===this.left.is_array||void 0)))))})),e(me,(function(e,t){t.print_string(e.value,e.quote),t.semicolon()})),e(ke,(function(e,t){t.print("..."),e.expression.print(t)})),e(Ke,(function(e,t){t.print(e.is_array?"[":"{");var n=e.names.length;e.names.forEach((function(e,i){i>0&&t.comma(),e.print(t),i==n-1&&e instanceof Dn&&t.comma()})),t.print(e.is_array?"]":"}")})),e(de,(function(e,t){t.print("debugger"),t.semicolon()})),Ae.DEFMETHOD("_do_print_body",(function(e){f(this.body,e)})),e(_e,(function(e,t){e.body.print(t),t.semicolon()})),e(Ne,(function(e,t){n(e.body,!0,t,!0),t.print("")})),e(Te,(function(e,t){e.label.print(t),t.colon(),e.body.print(t)})),e(he,(function(e,t){e.body.print(t),t.semicolon()})),e(Se,(function(e,t){r(e,t)})),e(ve,(function(e,t){t.semicolon()})),e(Ce,(function(e,t){t.print("do"),t.space(),_(e.body,t),t.space(),t.print("while"),t.space(),t.with_parens((function(){e.condition.print(t)})),t.semicolon()})),e(Oe,(function(e,t){t.print("while"),t.space(),t.with_parens((function(){e.condition.print(t)})),t.space(),e._do_print_body(t)})),e(Fe,(function(e,t){t.print("for"),t.space(),t.with_parens((function(){e.init?(e.init instanceof st?e.init.print(t):o(e.init,t,!0),t.print(";"),t.space()):t.print(";"),e.condition?(e.condition.print(t),t.print(";"),t.space()):t.print(";"),e.step&&e.step.print(t)})),t.space(),e._do_print_body(t)})),e(Me,(function(e,t){t.print("for"),e.await&&(t.space(),t.print("await")),t.space(),t.with_parens((function(){e.init.print(t),t.space(),t.print(e instanceof Re?"of":"in"),t.space(),e.object.print(t)})),t.space(),e._do_print_body(t)})),e(we,(function(e,t){t.print("with"),t.space(),t.with_parens((function(){e.expression.print(t)})),t.space(),e._do_print_body(t)})),Ie.DEFMETHOD("_do_print",(function(e,t){var n=this;t||(n.async&&(e.print("async"),e.space()),e.print("function"),n.is_generator&&e.star(),n.name&&e.space()),n.name instanceof Bt?n.name.print(e):t&&n.name instanceof pe&&e.with_square((function(){n.name.print(e)})),e.with_parens((function(){n.argnames.forEach((function(t,n){n&&e.comma(),t.print(e)}))})),e.space(),r(n,e,!0)})),e(Ie,(function(e,t){e._do_print(t)})),e(Ue,(function(e,t){var n=e.prefix,i=n instanceof Ie||n instanceof yt||n instanceof bt||n instanceof Et||n instanceof vt||n instanceof Dt&&n.expression instanceof Mt;i&&t.print("("),e.prefix.print(t),i&&t.print(")"),e.template_string.print(t)})),e(Ge,(function(e,t){var n=t.parent()instanceof Ue;t.print("`");for(var i=0;i<e.segments.length;i++)e.segments[i]instanceof He?n?t.print(e.segments[i].raw):t.print_template_string_chars(e.segments[i].value):(t.print("${"),e.segments[i].print(t),t.print("}"));t.print("`")})),Ve.DEFMETHOD("_do_print",(function(e){var t=this,n=e.parent(),i=n instanceof yt&&!(n instanceof Ct)||n instanceof vt||n instanceof mt&&t===n.expression;i&&e.print("("),t.async&&(e.print("async"),e.space()),1===t.argnames.length&&t.argnames[0]instanceof Bt?t.argnames[0].print(e):e.with_parens((function(){t.argnames.forEach((function(t,n){n&&e.comma(),t.print(e)}))})),e.space(),e.print("=>"),e.space();const o=t.body[0];if(1===t.body.length&&o instanceof We){const t=o.value;t?!function e(t){return t instanceof Mt||(t instanceof Et?e(t.expressions[0]):"Call"===t.TYPE?e(t.expression):t instanceof Ue?e(t.prefix):t instanceof Dt||t instanceof St?e(t.expression):t instanceof bt?e(t.condition):t instanceof yt?e(t.left):t instanceof Tt&&e(t.expression))}(t)?t.print(e):(e.print("("),t.print(e),e.print(")")):e.print("{}")}else r(t,e);i&&e.print(")")})),ze.DEFMETHOD("_do_print",(function(e,t){if(e.print(t),this.value){e.space();const t=this.value.start.comments_before;t&&t.length&&!e.printed_comments.has(t)?(e.print("("),this.value.print(e),e.print(")")):this.value.print(e)}e.semicolon()})),e(We,(function(e,t){e._do_print(t,"return")})),e(Ye,(function(e,t){e._do_print(t,"throw")})),e(Je,(function(e,t){var n=e.is_star?"*":"";t.print("yield"+n),e.expression&&(t.space(),e.expression.print(t))})),e(Ze,(function(e,t){t.print("await"),t.space();var n=e.expression,i=!(n instanceof mt||n instanceof rn||n instanceof gt||n instanceof vt||n instanceof ln);i&&t.print("("),e.expression.print(t),i&&t.print(")")})),qe.DEFMETHOD("_do_print",(function(e,t){e.print(t),this.label&&(e.space(),this.label.print(e)),e.semicolon()})),e($e,(function(e,t){e._do_print(t,"break")})),e(je,(function(e,t){e._do_print(t,"continue")})),e(Qe,(function(e,t){t.print("if"),t.space(),t.with_parens((function(){e.condition.print(t)})),t.space(),e.alternative?(!function(e,t){var n=e.body;if(t.option("braces")||t.option("ie8")&&n instanceof Ce)return _(n,t);if(!n)return t.force_semicolon();for(;;)if(n instanceof Qe){if(!n.alternative)return void _(e.body,t);n=n.alternative}else{if(!(n instanceof Ae))break;n=n.body}f(e.body,t)}(e,t),t.space(),t.print("else"),t.space(),e.alternative instanceof Qe?e.alternative.print(t):f(e.alternative,t)):e._do_print_body(t)})),e(et,(function(e,t){t.print("switch"),t.space(),t.with_parens((function(){e.expression.print(t)})),t.space();var n=e.body.length-1;n<0?i(e,t):t.with_block((function(){e.body.forEach((function(e,i){t.indent(!0),e.print(t),i<n&&e.body.length>0&&t.newline()}))}))})),tt.DEFMETHOD("_do_print_body",(function(e){e.newline(),this.body.forEach((function(t){e.indent(),t.print(e),e.newline()}))})),e(nt,(function(e,t){t.print("default:"),e._do_print_body(t)})),e(it,(function(e,t){t.print("case"),t.space(),e.expression.print(t),t.print(":"),e._do_print_body(t)})),e(rt,(function(e,t){t.print("try"),t.space(),r(e,t),e.bcatch&&(t.space(),e.bcatch.print(t)),e.bfinally&&(t.space(),e.bfinally.print(t))})),e(ot,(function(e,t){t.print("catch"),e.argname&&(t.space(),t.with_parens((function(){e.argname.print(t)}))),t.space(),r(e,t)})),e(at,(function(e,t){t.print("finally"),t.space(),r(e,t)})),st.DEFMETHOD("_do_print",(function(e,t){e.print(t),e.space(),this.definitions.forEach((function(t,n){n&&e.comma(),t.print(e)}));var n=e.parent();(!(n instanceof Fe||n instanceof Me)||n&&n.init!==this)&&e.semicolon()})),e(ct,(function(e,t){e._do_print(t,"let")})),e(ut,(function(e,t){e._do_print(t,"var")})),e(lt,(function(e,t){e._do_print(t,"const")})),e(_t,(function(e,t){t.print("import"),t.space(),e.imported_name&&e.imported_name.print(t),e.imported_name&&e.imported_names&&(t.print(","),t.space()),e.imported_names&&(1===e.imported_names.length&&"*"===e.imported_names[0].foreign_name.name?e.imported_names[0].print(t):(t.print("{"),e.imported_names.forEach((function(n,i){t.space(),n.print(t),i<e.imported_names.length-1&&t.print(",")})),t.space(),t.print("}"))),(e.imported_name||e.imported_names)&&(t.space(),t.print("from"),t.space()),e.module_name.print(t),t.semicolon()})),e(pt,(function(e,t){var n=t.parent()instanceof _t,i=e.name.definition();(i&&i.mangled_name||e.name.name)!==e.foreign_name.name?(n?t.print(e.foreign_name.name):e.name.print(t),t.space(),t.print("as"),t.space(),n?e.name.print(t):t.print(e.foreign_name.name)):e.name.print(t)})),e(dt,(function(e,t){if(t.print("export"),t.space(),e.is_default&&(t.print("default"),t.space()),e.exported_names)1===e.exported_names.length&&"*"===e.exported_names[0].name.name?e.exported_names[0].print(t):(t.print("{"),e.exported_names.forEach((function(n,i){t.space(),n.print(t),i<e.exported_names.length-1&&t.print(",")})),t.space(),t.print("}"));else if(e.exported_value)e.exported_value.print(t);else if(e.exported_definition&&(e.exported_definition.print(t),e.exported_definition instanceof st))return;e.module_name&&(t.space(),t.print("from"),t.space(),e.module_name.print(t)),(e.exported_value&&!(e.exported_value instanceof Be||e.exported_value instanceof Pe||e.exported_value instanceof It)||e.module_name||e.exported_names)&&t.semicolon()})),e(ft,(function(e,t){if(e.name.print(t),e.value){t.space(),t.print("="),t.space();var n=t.parent(1),i=n instanceof Fe||n instanceof Me;o(e.value,t,i)}})),e(mt,(function(e,t){e.expression.print(t),e instanceof ht&&0===e.args.length||((e.expression instanceof mt||e.expression instanceof Ie)&&t.add_mapping(e.start),t.with_parens((function(){e.args.forEach((function(e,n){n&&t.comma(),e.print(t)}))})))})),e(ht,(function(e,t){t.print("new"),t.space(),mt.prototype._codegen(e,t)})),Et.DEFMETHOD("_do_print",(function(e){this.expressions.forEach((function(t,n){n>0&&(e.comma(),e.should_break()&&(e.newline(),e.indent())),t.print(e)}))})),e(Et,(function(e,t){e._do_print(t)})),e(Dt,(function(e,t){var n=e.expression;n.print(t);var i=e.property;(O.has(i)?t.option("ie8"):!Z(i,t.option("ecma")>=2015))?(t.print("["),t.add_mapping(e.end),t.print_string(i),t.print("]")):(n instanceof pn&&n.getValue()>=0&&(/[xa-f.)]/i.test(t.last())||t.print(".")),t.print("."),t.add_mapping(e.end),t.print_name(i))})),e(St,(function(e,t){e.expression.print(t),t.print("["),e.property.print(t),t.print("]")})),e(At,(function(e,t){var n=e.operator;t.print(n),(/^[a-z]/i.test(n)||/[+-]$/.test(n)&&e.expression instanceof At&&/^[+-]/.test(e.expression.operator))&&t.space(),e.expression.print(t)})),e(Tt,(function(e,t){e.expression.print(t),t.print(e.operator)})),e(yt,(function(e,t){var n=e.operator;e.left.print(t),">"==n[0]&&e.left instanceof Tt&&"--"==e.left.operator?t.print(" "):t.space(),t.print(n),("<"==n||"<<"==n)&&e.right instanceof At&&"!"==e.right.operator&&e.right.expression instanceof At&&"--"==e.right.expression.operator?t.print(" "):t.space(),e.right.print(t)})),e(bt,(function(e,t){e.condition.print(t),t.space(),t.print("?"),t.space(),e.consequent.print(t),t.space(),t.colon(),e.alternative.print(t)})),e(Ft,(function(e,t){t.with_square((function(){var n=e.elements,i=n.length;i>0&&t.space(),n.forEach((function(e,n){n&&t.comma(),e.print(t),n===i-1&&e instanceof Dn&&t.comma()})),i>0&&t.space()}))})),e(Mt,(function(e,t){e.properties.length>0?t.with_block((function(){e.properties.forEach((function(e,n){n&&(t.print(","),t.newline()),t.indent(),e.print(t)})),t.newline()})):i(e,t)})),e(It,(function(e,t){if(t.print("class"),t.space(),e.name&&(e.name.print(t),t.space()),e.extends){var n=!(e.extends instanceof rn||e.extends instanceof gt||e.extends instanceof Vt||e.extends instanceof Pe);t.print("extends"),n?t.print("("):t.space(),e.extends.print(t),n?t.print(")"):t.space()}e.properties.length>0?t.with_block((function(){e.properties.forEach((function(e,n){n&&t.newline(),t.indent(),e.print(t)})),t.newline()})):t.print("{}")})),e(Kt,(function(e,t){t.print("new.target")})),e(wt,(function(e,t){function n(e){var t=e.definition();return t?t.mangled_name||t.name:e.name}var i=t.option("shorthand");i&&e.value instanceof Bt&&Z(e.key,t.option("ecma")>=2015)&&n(e.value)===e.key&&!O.has(e.key)?u(e.key,e.quote,t):i&&e.value instanceof Ot&&e.value.left instanceof Bt&&Z(e.key,t.option("ecma")>=2015)&&n(e.value.left)===e.key?(u(e.key,e.quote,t),t.space(),t.print("="),t.space(),e.value.right.print(t)):(e.key instanceof pe?t.with_square((function(){e.key.print(t)})):u(e.key,e.quote,t),t.colon(),e.value.print(t))})),e(Lt,(e,t)=>{e.static&&(t.print("static"),t.space()),e.key instanceof $t?u(e.key.name,e.quote,t):(t.print("["),e.key.print(t),t.print("]")),e.value&&(t.print("="),e.value.print(t)),t.semicolon()}),Rt.DEFMETHOD("_print_getter_setter",(function(e,t){var n=this;n.static&&(t.print("static"),t.space()),e&&(t.print(e),t.space()),n.key instanceof qt?u(n.key.name,n.quote,t):t.with_square((function(){n.key.print(t)})),n.value._do_print(t,!0)})),e(xt,(function(e,t){e._print_getter_setter("set",t)})),e(Nt,(function(e,t){e._print_getter_setter("get",t)})),e(kt,(function(e,t){var n;e.is_generator&&e.async?n="async*":e.is_generator?n="*":e.async&&(n="async"),e._print_getter_setter(n,t)})),Bt.DEFMETHOD("_do_print",(function(e){var t=this.definition();e.print_name(t?t.mangled_name||t.name:this.name)})),e(Bt,(function(e,t){e._do_print(t)})),e(Dn,a),e(un,(function(e,t){t.print("this")})),e(cn,(function(e,t){t.print("super")})),e(ln,(function(e,t){t.print(e.getValue())})),e(fn,(function(e,t){t.print_string(e.getValue(),e.quote,t.in_directive)})),e(pn,(function(e,t){(t.option("keep_numbers")||t.use_asm)&&e.start&&null!=e.start.raw?t.print(e.start.raw):t.print(p(e.getValue()))})),e(_n,(function(e,t){t.print(e.getValue()+"n")}));const c=/(<\s*\/\s*script)/i,l=(e,t)=>t.replace("/","\\/");function f(e,t){t.option("braces")?_(e,t):!e||e instanceof ve?t.force_semicolon():e.print(t)}function p(e){var t,n,i,r=e.toString(10).replace(/^0\./,".").replace("e+","e"),o=[r];return Math.floor(e)===e&&(e<0?o.push("-0x"+(-e).toString(16).toLowerCase()):o.push("0x"+e.toString(16).toLowerCase())),(t=/^\.0+/.exec(r))?(n=t[0].length,i=r.slice(n),o.push(i+"e-"+(i.length+n-1))):(t=/0+$/.exec(r))?(n=t[0].length,o.push(r.slice(0,-n)+"e"+n)):(t=/^(\d)\.(\d+)e(-?\d+)$/.exec(r))&&o.push(t[1]+t[2]+"e"+(t[3]-t[2].length)),function(e){for(var t=e[0],n=t.length,i=1;i<e.length;++i)e[i].length<n&&(n=(t=e[i]).length);return t}(o)}function _(e,t){!e||e instanceof ve?t.print("{}"):e instanceof Se?e.print(t):t.with_block((function(){t.indent(),e.print(t),t.newline()}))}function d(e,t){e.forEach((function(e){e.DEFMETHOD("add_source_map",t)}))}e(dn,(function(e,t){let{source:n,flags:i}=e.getValue();n=A(n),i=i?function(e){const t=new Set(e.split(""));let n="";for(const e of"gimuy")t.has(e)&&(n+=e,t.delete(e));return t.size&&t.forEach(e=>{n+=e}),n}(i):"",n=n.replace(c,l),t.print(t.to_utf8(`/${n}/${i}`));const r=t.parent();r instanceof yt&&/^\w/.test(r.operator)&&r.left===e&&t.print(" ")})),d([pe,Te,Ne],a),d([Ft,Se,ot,It,ln,de,st,me,at,Xe,Ie,ht,Mt,Ae,Bt,et,tt,Ge,He,rt],(function(e){e.add_mapping(this.start)})),d([Nt,xt],(function(e){e.add_mapping(this.start,this.key.name)})),d([Rt],(function(e){e.add_mapping(this.start,this.key)}))}();const Kn=(e,t)=>null===e&&null===t||e.TYPE===t.TYPE&&e.shallow_cmp(t),Un=e=>{const t=Object.keys(e).map(t=>{if("eq"===e[t])return`this.${t} === other.${t}`;if("exist"===e[t])return`(this.${t} == null ? other.${t} == null : this.${t} === other.${t})`;throw new Error(`mkshallow: Unexpected instruction: ${e[t]}`)}).join(" && ");return new Function("other","return "+t)},Gn=()=>!0;pe.prototype.shallow_cmp=function(){throw new Error("did not find a shallow_cmp function for "+this.constructor.name)},de.prototype.shallow_cmp=Gn,me.prototype.shallow_cmp=Un({value:"eq"}),he.prototype.shallow_cmp=Gn,De.prototype.shallow_cmp=Gn,ve.prototype.shallow_cmp=Gn,Te.prototype.shallow_cmp=Un({"label.name":"eq"}),Ce.prototype.shallow_cmp=Gn,Oe.prototype.shallow_cmp=Gn,Fe.prototype.shallow_cmp=Un({init:"exist",condition:"exist",step:"exist"}),Me.prototype.shallow_cmp=Gn,Re.prototype.shallow_cmp=Gn,we.prototype.shallow_cmp=Gn,Ne.prototype.shallow_cmp=Gn,ke.prototype.shallow_cmp=Gn,Ie.prototype.shallow_cmp=Un({is_generator:"eq",async:"eq"}),Ke.prototype.shallow_cmp=Un({is_array:"eq"}),Ue.prototype.shallow_cmp=Gn,Ge.prototype.shallow_cmp=Gn,He.prototype.shallow_cmp=Un({value:"eq"}),Xe.prototype.shallow_cmp=Gn,qe.prototype.shallow_cmp=Gn,Ze.prototype.shallow_cmp=Gn,Je.prototype.shallow_cmp=Un({is_star:"eq"}),Qe.prototype.shallow_cmp=Un({alternative:"exist"}),et.prototype.shallow_cmp=Gn,tt.prototype.shallow_cmp=Gn,rt.prototype.shallow_cmp=Un({bcatch:"exist",bfinally:"exist"}),ot.prototype.shallow_cmp=Un({argname:"exist"}),at.prototype.shallow_cmp=Gn,st.prototype.shallow_cmp=Gn,ft.prototype.shallow_cmp=Un({value:"exist"}),pt.prototype.shallow_cmp=Gn,_t.prototype.shallow_cmp=Un({imported_name:"exist",imported_names:"exist"}),dt.prototype.shallow_cmp=Un({exported_definition:"exist",exported_value:"exist",exported_names:"exist",module_name:"eq",is_default:"eq"}),mt.prototype.shallow_cmp=Gn,Et.prototype.shallow_cmp=Gn,gt.prototype.shallow_cmp=Gn,Dt.prototype.shallow_cmp=Un({property:"eq"}),vt.prototype.shallow_cmp=Un({operator:"eq"}),yt.prototype.shallow_cmp=Un({operator:"eq"}),bt.prototype.shallow_cmp=Gn,Ft.prototype.shallow_cmp=Gn,Mt.prototype.shallow_cmp=Gn,Rt.prototype.shallow_cmp=Gn,wt.prototype.shallow_cmp=Un({key:"eq"}),xt.prototype.shallow_cmp=Un({static:"eq"}),Nt.prototype.shallow_cmp=Un({static:"eq"}),kt.prototype.shallow_cmp=Un({static:"eq",is_generator:"eq",async:"eq"}),It.prototype.shallow_cmp=Un({name:"exist",extends:"exist"}),Lt.prototype.shallow_cmp=Un({static:"eq"}),Bt.prototype.shallow_cmp=Un({name:"eq"}),Kt.prototype.shallow_cmp=Gn,un.prototype.shallow_cmp=Gn,cn.prototype.shallow_cmp=Gn,fn.prototype.shallow_cmp=Un({value:"eq"}),pn.prototype.shallow_cmp=Un({value:"eq"}),_n.prototype.shallow_cmp=Un({value:"eq"}),dn.prototype.shallow_cmp=function(e){return this.value.flags===e.value.flags&&this.value.source===e.value.source},mn.prototype.shallow_cmp=Gn;let Hn=null,Xn=null;class zn{constructor(e,t,n){this.name=t.name,this.orig=[t],this.init=n,this.eliminated=0,this.assignments=0,this.scope=e,this.replaced=0,this.global=!1,this.export=0,this.mangled_name=null,this.undeclared=!1,this.id=zn.next_id++,this.chained=!1,this.direct_access=!1,this.escaped=0,this.recursive_refs=0,this.references=[],this.should_replace=void 0,this.single_use=!1,this.fixed=!1,Object.seal(this)}fixed_value(){return!this.fixed||this.fixed instanceof pe?this.fixed:this.fixed()}unmangleable(e){return e||(e={}),!!(Hn&&Hn.has(this.id)&&S(e.keep_fnames,this.orig[0].name))||(this.global&&!e.toplevel||1&this.export||this.undeclared||!e.eval&&this.scope.pinned()||(this.orig[0]instanceof jt||this.orig[0]instanceof Yt)&&S(e.keep_fnames,this.orig[0].name)||this.orig[0]instanceof qt||(this.orig[0]instanceof Jt||this.orig[0]instanceof Zt)&&S(e.keep_classnames,this.orig[0].name))}mangle(e){const t=e.cache&&e.cache.props;if(this.global&&t&&t.has(this.name))this.mangled_name=t.get(this.name);else if(!this.mangled_name&&!this.unmangleable(e)){var n=this.scope,i=this.orig[0];e.ie8&&i instanceof jt&&(n=n.parent_scope);const r=Wn(this);this.mangled_name=r?r.mangled_name||r.name:n.next_mangled(e,this),this.global&&t&&t.set(this.name,this.mangled_name)}}}function Wn(e){if(e.orig[0]instanceof Qt&&e.scope.is_block_scope())return e.scope.get_defun_scope().variables.get(e.name)}function Yn(e,t){var n=e.enclosed;e:for(;;){var i=qn(++e.cname);if(!O.has(i)&&!(t.reserved.has(i)||Xn&&Xn.has(i))){for(let e=n.length;--e>=0;){const r=n[e];if(i==(r.mangled_name||r.unmangleable(t)&&r.name))continue e}return i}}}zn.next_id=1,xe.DEFMETHOD("figure_out_scope",(function(e,{parent_scope:t=null,toplevel:n=this}={}){if(e=o(e,{cache:null,ie8:!1,safari10:!1}),!(n instanceof Ne))throw new Error("Invalid toplevel scope");var i=this.parent_scope=t,r=new Map,a=null,s=null,u=[],c=new On((t,n)=>{if(t.is_block_scope()){const r=i;t.block_scope=i=new xe(t),i._block_scope=!0;const o=t instanceof ot?r.parent_scope:r;if(i.init_scope_vars(o),i.uses_with=r.uses_with,i.uses_eval=r.uses_eval,e.safari10&&(t instanceof Fe||t instanceof Me)&&u.push(i),t instanceof et){const e=i;i=r,t.expression.walk(c),i=e;for(let e=0;e<t.body.length;e++)t.body[e].walk(c)}else n();return i=r,!0}if(t instanceof Ke){const e=s;return s=t,n(),s=e,!0}if(t instanceof xe){t.init_scope_vars(i);var o=i,f=a,p=r;return a=i=t,r=new Map,n(),i=o,a=f,r=p,!0}if(t instanceof Te){var _=t.label;if(r.has(_.name))throw new Error(d("Label {name} defined twice",_));return r.set(_.name,_),n(),r.delete(_.name),!0}if(t instanceof we)for(var m=i;m;m=m.parent_scope)m.uses_with=!0;else{if(t instanceof Bt&&(t.scope=i),t instanceof nn&&(t.thedef=t,t.references=[]),t instanceof jt)a.def_function(t,"arguments"==t.name?void 0:a);else if(t instanceof Yt)l((t.scope=a.parent_scope.get_defun_scope()).def_function(t,a),1);else if(t instanceof Jt)l(a.def_variable(t,a),1);else if(t instanceof en)i.def_variable(t);else if(t instanceof Zt)l((t.scope=a.parent_scope).def_function(t,a),1);else if(t instanceof Gt||t instanceof zt||t instanceof Xt||t instanceof Qt){if((h=t instanceof Ht?i.def_variable(t,null):a.def_variable(t,"SymbolVar"==t.TYPE?null:void 0)).orig.every(e=>e===t||(t instanceof Ht?e instanceof jt:!(e instanceof zt||e instanceof Xt)))||ee(`"${t.name}" is redeclared`,t.start.file,t.start.line,t.start.col,t.start.pos),t instanceof Wt||l(h,2),a!==i){t.mark_enclosed();var h=i.find_variable(t);t.thedef!==h&&(t.thedef=h,t.reference())}}else if(t instanceof sn){var E=r.get(t.name);if(!E)throw new Error(d("Undefined label {name} [{line},{col}]",{name:t.name,line:t.start.line,col:t.start.col}));t.thedef=E}i instanceof Ne||!(t instanceof dt||t instanceof _t)||ee(`"${t.TYPE}" statement may only appear at the top level`,t.start.file,t.start.line,t.start.col,t.start.pos)}});function l(e,t){if(s){var n=0;do{t++}while(c.parent(n++)!==s)}var i=c.parent(t);if(e.export=i instanceof dt?1:0){var r=i.exported_definition;(r instanceof Be||r instanceof Pt)&&i.is_default&&(e.export=2)}}this.walk(c),this instanceof Ne&&(this.globals=new Map);c=new On(e=>{if(e instanceof qe&&e.label)return e.label.thedef.references.push(e),!0;if(e instanceof rn){var t,i=e.name;if("eval"==i&&c.parent()instanceof mt)for(var r=e.scope;r&&!r.uses_eval;r=r.parent_scope)r.uses_eval=!0;return c.parent()instanceof pt&&c.parent(1).module_name||!(t=e.scope.find_variable(i))?(t=n.def_global(e),e instanceof on&&(t.export=1)):t.scope instanceof Ie&&"arguments"==i&&(t.scope.uses_arguments=!0),e.thedef=t,e.reference(),!e.scope.is_block_scope()||t.orig[0]instanceof Ht||(e.scope=e.scope.get_defun_scope()),!0}var o;if(e instanceof Qt&&(o=Wn(e.definition())))for(r=e.scope;r&&(_(r.enclosed,o),r!==o.scope);)r=r.parent_scope});if(this.walk(c),(e.ie8||e.safari10)&&yn(this,e=>{if(e instanceof Qt){var t=e.name,i=e.thedef.references,r=e.scope.get_defun_scope(),o=r.find_variable(t)||n.globals.get(t)||r.def_variable(e);return i.forEach((function(e){e.thedef=o,e.reference()})),e.thedef=o,e.reference(),!0}}),e.safari10)for(const e of u)e.parent_scope.variables.forEach((function(t){_(e.enclosed,t)}))})),Ne.DEFMETHOD("def_global",(function(e){var t=this.globals,n=e.name;if(t.has(n))return t.get(n);var i=new zn(this,e);return i.undeclared=!0,i.global=!0,t.set(n,i),i})),xe.DEFMETHOD("init_scope_vars",(function(e){this.variables=new Map,this.functions=new Map,this.uses_with=!1,this.uses_eval=!1,this.parent_scope=e,this.enclosed=[],this.cname=-1,this._var_name_cache=null})),xe.DEFMETHOD("var_names",(function e(){var t=this._var_name_cache;return t||(this._var_name_cache=t=new Set(this.parent_scope?e.call(this.parent_scope):null),this._added_var_names&&this._added_var_names.forEach(e=>{t.add(e)}),this.enclosed.forEach((function(e){t.add(e.name)})),this.variables.forEach((function(e,n){t.add(n)}))),t})),xe.DEFMETHOD("add_var_name",(function(e){this._added_var_names||(this._added_var_names=new Set),this._added_var_names.add(e),this._var_name_cache||this.var_names(),this._var_name_cache.add(e)})),xe.DEFMETHOD("add_child_scope",(function(e){if(e.parent_scope===this)return;e.parent_scope=this,e._var_name_cache=null,e._added_var_names&&e._added_var_names.forEach(t=>e.add_var_name(t));const t=new Set(e.enclosed),n=(()=>{const e=[];let t=this;do{e.push(t)}while(t=t.parent_scope);return e.reverse(),e})(),i=[];for(const e of n){i.forEach(t=>_(e.enclosed,t));for(const n of e.variables.values())t.has(n)&&(_(i,n),_(e.enclosed,n))}})),pe.DEFMETHOD("is_block_scope",s),It.DEFMETHOD("is_block_scope",s),Ie.DEFMETHOD("is_block_scope",s),Ne.DEFMETHOD("is_block_scope",s),tt.DEFMETHOD("is_block_scope",s),De.DEFMETHOD("is_block_scope",u),xe.DEFMETHOD("is_block_scope",(function(){return this._block_scope||!1})),ye.DEFMETHOD("is_block_scope",u),Ie.DEFMETHOD("init_scope_vars",(function(){xe.prototype.init_scope_vars.apply(this,arguments),this.uses_arguments=!1,this.def_variable(new Wt({name:"arguments",start:this.start,end:this.end}))})),Ve.DEFMETHOD("init_scope_vars",(function(){xe.prototype.init_scope_vars.apply(this,arguments),this.uses_arguments=!1})),Bt.DEFMETHOD("mark_enclosed",(function(){for(var e=this.definition(),t=this.scope;t&&(_(t.enclosed,e),t!==e.scope);)t=t.parent_scope})),Bt.DEFMETHOD("reference",(function(){this.definition().references.push(this),this.mark_enclosed()})),xe.DEFMETHOD("find_variable",(function(e){return e instanceof Bt&&(e=e.name),this.variables.get(e)||this.parent_scope&&this.parent_scope.find_variable(e)})),xe.DEFMETHOD("def_function",(function(e,t){var n=this.def_variable(e,t);return(!n.init||n.init instanceof Be)&&(n.init=t),this.functions.set(e.name,n),n})),xe.DEFMETHOD("def_variable",(function(e,t){var n=this.variables.get(e.name);return n?(n.orig.push(e),n.init&&(n.scope!==e.scope||n.init instanceof Pe)&&(n.init=t)):(n=new zn(this,e,t),this.variables.set(e.name,n),n.global=!this.parent_scope),e.thedef=n})),xe.DEFMETHOD("next_mangled",(function(e){return Yn(this,e)})),Ne.DEFMETHOD("next_mangled",(function(e){let t;const n=this.mangled_names;do{t=Yn(this,e)}while(n.has(t));return t})),Pe.DEFMETHOD("next_mangled",(function(e,t){for(var n=t.orig[0]instanceof Wt&&this.name&&this.name.definition(),i=n?n.mangled_name||n.name:null;;){var r=Yn(this,e);if(!i||i!=r)return r}})),Bt.DEFMETHOD("unmangleable",(function(e){var t=this.definition();return!t||t.unmangleable(e)})),nn.DEFMETHOD("unmangleable",s),Bt.DEFMETHOD("unreferenced",(function(){return!this.definition().references.length&&!this.scope.pinned()})),Bt.DEFMETHOD("definition",(function(){return this.thedef})),Bt.DEFMETHOD("global",(function(){return this.thedef.global})),Ne.DEFMETHOD("_default_mangler_options",(function(e){return(e=o(e,{eval:!1,ie8:!1,keep_classnames:!1,keep_fnames:!1,module:!1,reserved:[],toplevel:!1})).module&&(e.toplevel=!0),Array.isArray(e.reserved)||e.reserved instanceof Set||(e.reserved=[]),e.reserved=new Set(e.reserved),e.reserved.add("arguments"),e})),Ne.DEFMETHOD("mangle_names",(function(e){e=this._default_mangler_options(e);var t=-1,n=[];e.keep_fnames&&(Hn=new Set);const i=this.mangled_names=new Set;e.cache&&(this.globals.forEach(o),e.cache.props&&e.cache.props.forEach((function(e){i.add(e)})));var r=new On((function(i,r){if(i instanceof Te){var a=t;return r(),t=a,!0}if(i instanceof xe)i.variables.forEach(o);else if(i.is_block_scope())i.block_scope.variables.forEach(o);else if(Hn&&i instanceof ft&&i.value instanceof Ie&&!i.value.name&&S(e.keep_fnames,i.name.name))Hn.add(i.name.definition().id);else{if(i instanceof nn){let e;do{e=qn(++t)}while(O.has(e));return i.mangled_name=e,!0}!e.ie8&&!e.safari10&&i instanceof Qt&&n.push(i.definition())}}));function o(t){!(e.reserved.has(t.name)||1&t.export)&&n.push(t)}this.walk(r),(e.keep_fnames||e.keep_classnames)&&(Xn=new Set,n.forEach(t=>{t.name.length<6&&t.unmangleable(e)&&Xn.add(t.name)})),n.forEach(t=>{t.mangle(e)}),Hn=null,Xn=null})),Ne.DEFMETHOD("find_colliding_names",(function(e){const t=e.cache&&e.cache.props,n=new Set;return e.reserved.forEach(i),this.globals.forEach(r),this.walk(new On((function(e){e instanceof xe&&e.variables.forEach(r),e instanceof Qt&&r(e.definition())}))),n;function i(e){n.add(e)}function r(n){var r=n.name;if(n.global&&t&&t.has(r))r=t.get(r);else if(!n.unmangleable(e))return;i(r)}})),Ne.DEFMETHOD("expand_names",(function(e){qn.reset(),qn.sort(),e=this._default_mangler_options(e);var t=this.find_colliding_names(e),n=0;function i(i){if(i.global&&e.cache)return;if(i.unmangleable(e))return;if(e.reserved.has(i.name))return;const r=Wn(i),o=i.name=r?r.name:function(){var e;do{e=qn(n++)}while(t.has(e)||O.has(e));return e}();i.orig.forEach((function(e){e.name=o})),i.references.forEach((function(e){e.name=o}))}this.globals.forEach(i),this.walk(new On((function(e){e instanceof xe&&e.variables.forEach(i),e instanceof Qt&&i(e.definition())})))})),pe.DEFMETHOD("tail_node",c),Et.DEFMETHOD("tail_node",(function(){return this.expressions[this.expressions.length-1]})),Ne.DEFMETHOD("compute_char_frequency",(function(e){e=this._default_mangler_options(e);try{pe.prototype.print=function(t,n){this._print(t,n),this instanceof Bt&&!this.unmangleable(e)?qn.consider(this.name,-1):e.properties&&(this instanceof Dt?qn.consider(this.property,-1):this instanceof St&&function e(t){t instanceof fn?qn.consider(t.value,-1):t instanceof bt?(e(t.consequent),e(t.alternative)):t instanceof Et&&e(t.tail_node())}(this.property))},qn.consider(this.print_to_string(),1)}finally{pe.prototype.print=pe.prototype._print}qn.sort()}));const qn=(()=>{const e="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ$_".split(""),t="0123456789".split("");let n,i;function r(){i=new Map,e.forEach((function(e){i.set(e,0)})),t.forEach((function(e){i.set(e,0)}))}function o(e,t){return i.get(t)-i.get(e)}function a(e){var t="",i=54;e++;do{e--,t+=n[e%i],e=Math.floor(e/i),i=64}while(e>0);return t}return a.consider=function(e,t){for(var n=e.length;--n>=0;)i.set(e[n],i.get(e[n])+t)},a.sort=function(){n=h(e,o).concat(h(t,o))},a.reset=r,r(),a})();function $n(){const e={};return Object.keys(jn({0:0})).forEach(t=>{const n=jn({[t]:{0:0}});n&&(e[t]=n)}),e}function jn(e){var t=gr("",e);return t.error&&t.error.defs}let Zn=void 0;pe.prototype.size=function(e,t){Zn=$n.mangle;let n=0;return bn(this,(e,t)=>{n+=e._size(t)},t||e&&e.stack),Zn=void 0,n},pe.prototype._size=()=>0,de.prototype._size=()=>8,me.prototype._size=function(){return 2+this.value.length};const Jn=e=>e.length&&e.length-1;De.prototype._size=function(){return 2+Jn(this.body)},Ne.prototype._size=function(){return Jn(this.body)},ve.prototype._size=()=>1,Te.prototype._size=()=>2,Ce.prototype._size=()=>9,Oe.prototype._size=()=>7,Fe.prototype._size=()=>8,Me.prototype._size=()=>8,we.prototype._size=()=>6,ke.prototype._size=()=>3;const Qn=e=>(e.is_generator?1:0)+(e.async?6:0);Le.prototype._size=function(){return Qn(this)+4+Jn(this.argnames)+Jn(this.body)},Pe.prototype._size=function(e){return 2*!!In(e)+Qn(this)+12+Jn(this.argnames)+Jn(this.body)},Be.prototype._size=function(){return Qn(this)+13+Jn(this.argnames)+Jn(this.body)},Ve.prototype._size=function(){let e=2+Jn(this.argnames);return 1===this.argnames.length&&this.argnames[0]instanceof Bt||(e+=2),Qn(this)+e+Array.isArray(this.body)?Jn(this.body):this.body._size()},Ke.prototype._size=()=>2,Ge.prototype._size=function(){return 2+3*Math.floor(this.segments.length/2)},He.prototype._size=function(){return this.value.length},We.prototype._size=function(){return this.value?7:6},Ye.prototype._size=()=>6,$e.prototype._size=function(){return this.label?6:5},je.prototype._size=function(){return this.label?9:8},Qe.prototype._size=()=>4,et.prototype._size=function(){return 8+Jn(this.body)},it.prototype._size=function(){return 5+Jn(this.body)},nt.prototype._size=function(){return 8+Jn(this.body)},rt.prototype._size=function(){return 3+Jn(this.body)},ot.prototype._size=function(){let e=7+Jn(this.body);return this.argname&&(e+=2),e},at.prototype._size=function(){return 7+Jn(this.body)};const ei=(e,t)=>e+Jn(t.definitions);ut.prototype._size=function(){return ei(4,this)},ct.prototype._size=function(){return ei(4,this)},lt.prototype._size=function(){return ei(6,this)},ft.prototype._size=function(){return this.value?1:0},pt.prototype._size=function(){return this.name?4:0},_t.prototype._size=function(){let e=6;return this.imported_name&&(e+=1),(this.imported_name||this.imported_names)&&(e+=5),this.imported_names&&(e+=2+Jn(this.imported_names)),e},dt.prototype._size=function(){let e=7+(this.is_default?8:0);return this.exported_value&&(e+=this.exported_value._size()),this.exported_names&&(e+=2+Jn(this.exported_names)),this.module_name&&(e+=5),e},mt.prototype._size=function(){return 2+Jn(this.args)},ht.prototype._size=function(){return 6+Jn(this.args)},Et.prototype._size=function(){return Jn(this.expressions)},Dt.prototype._size=function(){return this.property.length+1},St.prototype._size=()=>2,vt.prototype._size=function(){return"typeof"===this.operator?7:"void"===this.operator?5:this.operator.length},yt.prototype._size=function(e){if("in"===this.operator)return 4;let t=this.operator.length;return("+"===this.operator||"-"===this.operator)&&this.right instanceof vt&&this.right.operator===this.operator&&(t+=1),this.needs_parens(e)&&(t+=2),t},bt.prototype._size=()=>3,Ft.prototype._size=function(){return 2+Jn(this.elements)},Mt.prototype._size=function(e){let t=2;return In(e)&&(t+=2),t+Jn(this.properties)};const ti=e=>"string"==typeof e?e.length:0;wt.prototype._size=function(){return ti(this.key)+1};const ni=e=>e?7:0;Nt.prototype._size=function(){return 5+ni(this.static)+ti(this.key)},xt.prototype._size=function(){return 5+ni(this.static)+ti(this.key)},kt.prototype._size=function(){return ni(this.static)+ti(this.key)+Qn(this)},It.prototype._size=function(){return(this.name?8:7)+(this.extends?8:0)},Lt.prototype._size=function(){return ni(this.static)+("string"==typeof this.key?this.key.length+2:0)+(this.value?1:0)},Bt.prototype._size=function(){return!Zn||this.definition().unmangleable(Zn)?this.name.length:2},$t.prototype._size=function(){return this.name.length},rn.prototype._size=function(){const{name:e,thedef:t}=this;return t&&t.global?e.length:"arguments"===e?9:2},Kt.prototype._size=()=>10,tn.prototype._size=function(){return this.name.length},an.prototype._size=function(){return this.name.length},un.prototype._size=()=>4,cn.prototype._size=()=>5,fn.prototype._size=function(){return this.value.length+2},pn.prototype._size=function(){const{value:e}=this;return 0===e?1:e>0&&Math.floor(e)===e?Math.floor(Math.log10(e)+1):e.toString().length},_n.prototype._size=function(){return this.value.length},dn.prototype._size=function(){return this.value.toString().length},hn.prototype._size=()=>4,En.prototype._size=()=>3,gn.prototype._size=()=>6,Dn.prototype._size=()=>0,Sn.prototype._size=()=>8,Tn.prototype._size=()=>4,An.prototype._size=()=>5,Ze.prototype._size=()=>6,Je.prototype._size=()=>6;const ii=(e,t)=>e.flags&t,ri=(e,t)=>{e.flags|=t},oi=(e,t)=>{e.flags&=~t};class ai extends On{constructor(e,t){super(),void 0===e.defaults||e.defaults||(t=!0),this.options=o(e,{arguments:!1,arrows:!t,booleans:!t,booleans_as_integers:!1,collapse_vars:!t,comparisons:!t,computed_props:!t,conditionals:!t,dead_code:!t,defaults:!0,directives:!t,drop_console:!1,drop_debugger:!t,ecma:5,evaluate:!t,expression:!1,global_defs:!1,hoist_funs:!1,hoist_props:!t,hoist_vars:!1,ie8:!1,if_return:!t,inline:!t,join_vars:!t,keep_classnames:!1,keep_fargs:!0,keep_fnames:!1,keep_infinity:!1,loops:!t,module:!1,negate_iife:!t,passes:1,properties:!t,pure_getters:!t&&"strict",pure_funcs:null,reduce_funcs:null,reduce_vars:!t,sequences:!t,side_effects:!t,switches:!t,top_retain:null,toplevel:!(!e||!e.top_retain),typeofs:!t,unsafe:!1,unsafe_arrows:!1,unsafe_comps:!1,unsafe_Function:!1,unsafe_math:!1,unsafe_symbols:!1,unsafe_methods:!1,unsafe_proto:!1,unsafe_regexp:!1,unsafe_undefined:!1,unused:!t,warnings:!1},!0);var n=this.options.global_defs;if("object"==typeof n)for(var i in n)"@"===i[0]&&D(n,i)&&(n[i.slice(1)]=ce(n[i],{expression:!0}));!0===this.options.inline&&(this.options.inline=3);var r=this.options.pure_funcs;this.pure_funcs="function"==typeof r?r:r?function(e){return!r.includes(e.expression.print_to_string())}:u;var a=this.options.top_retain;a instanceof RegExp?this.top_retain=function(e){return a.test(e.name)}:"function"==typeof a?this.top_retain=a:a&&("string"==typeof a&&(a=a.split(/,/)),this.top_retain=function(e){return a.includes(e.name)}),this.options.module&&(this.directives["use strict"]=!0,this.options.toplevel=!0);var s=this.options.toplevel;this.toplevel="string"==typeof s?{funcs:/funcs/.test(s),vars:/vars/.test(s)}:{funcs:s,vars:s};var c=this.options.sequences;this.sequences_limit=1==c?800:0|c,this.warnings_produced={},this.evaluated_regexps=new Map}option(e){return this.options[e]}exposed(e){if(e.export)return!0;if(e.global)for(var t=0,n=e.orig.length;t<n;t++)if(!this.toplevel[e.orig[t]instanceof Yt?"funcs":"vars"])return!0;return!1}in_boolean_context(){if(!this.option("booleans"))return!1;for(var e,t=this.self(),n=0;e=this.parent(n);n++){if(e instanceof he||e instanceof bt&&e.condition===t||e instanceof be&&e.condition===t||e instanceof Fe&&e.condition===t||e instanceof Qe&&e.condition===t||e instanceof At&&"!"==e.operator&&e.expression===t)return!0;if(!(e instanceof yt&&("&&"==e.operator||"||"==e.operator||"??"==e.operator)||e instanceof bt||e.tail_node()===t))return!1;t=e}}compress(e){e=e.resolve_defines(this),this.option("expression")&&e.process_expression(!0);for(var t=+this.options.passes||1,n=1/0,i=!1,r={ie8:this.option("ie8")},o=0;o<t;o++)if(e.figure_out_scope(r),0===o&&this.option("drop_console")&&(e=e.drop_console()),(o>0||this.option("reduce_vars"))&&e.reset_opt_flags(this),e=e.transform(this),t>1){let t=0;if(yn(e,()=>{t++}),this.info("pass "+o+": last_count: "+n+", count: "+t),t<n)n=t,i=!1;else{if(i)break;i=!0}}return this.option("expression")&&e.process_expression(!1),e}info(...e){"verbose"==this.options.warnings&&pe.warn(...e)}warn(e,t){if(this.options.warnings){var n=d(e,t);n in this.warnings_produced||(this.warnings_produced[n]=!0,pe.warn.apply(pe,arguments))}}clear_warnings(){this.warnings_produced={}}before(e,t){if(ii(e,256))return e;var n=!1;e instanceof xe&&(e=(e=e.hoist_properties(this)).hoist_declarations(this),n=!0),t(e,this),t(e,this);var i=e.optimize(this);return n&&i instanceof xe&&(i.drop_unused(this),t(i,this)),i===e&&ri(i,256),i}}function si(e,t){e.DEFMETHOD("optimize",(function(e){if(ii(this,512))return this;if(e.has_directive("use asm"))return this;var n=t(this,e);return ri(n,512),n}))}function ui(e,t){if(!((t=wi(t))instanceof pe)){var n;if(e instanceof Ft){var i=e.elements;if("length"==t)return hi(i.length,e);"number"==typeof t&&t in i&&(n=i[t])}else if(e instanceof Mt){t=""+t;for(var r=e.properties,o=r.length;--o>=0;){if(!(r[o]instanceof wt))return;n||r[o].key!==t||(n=r[o].value)}}return n instanceof rn&&n.fixed_value()||n}}function ci(e,t,n,i,r,o){var a=t.parent(r),s=Ii(n,a);if(s)return s;if(!o&&a instanceof mt&&a.expression===n&&!(i instanceof Ve)&&!(i instanceof It)&&!a.is_expr_pure(e)&&(!(i instanceof Pe)||!(a instanceof ht)&&i.contains_this()))return!0;if(a instanceof Ft)return ci(e,t,a,a,r+1);if(a instanceof wt&&n===a.value){var u=t.parent(r+1);return ci(e,t,u,u,r+2)}if(a instanceof gt&&a.expression===n){var c=ui(i,a.property);return!o&&ci(e,t,a,c,r+1)}}function li(e){return e instanceof Ve||e instanceof Pe}function fi(e){if(e instanceof un)return!0;if(e instanceof rn)return e.definition().orig[0]instanceof jt;if(e instanceof gt){if((e=e.expression)instanceof rn){if(e.is_immutable())return!1;e=e.fixed_value()}return!e||!(e instanceof dn)&&(e instanceof ln||fi(e))}return!1}function pi(e,t){if(!(e instanceof rn))return!1;for(var n=e.definition().orig,i=n.length;--i>=0;)if(n[i]instanceof t)return!0}function _i(e){for(let t=0;;t++){const n=e.parent(t);if(n instanceof Ne)return n;if(n instanceof Ie)return n;if(n.block_scope)return n.block_scope}}function di(e,t){for(var n,i=0;(n=e.parent(i++))&&!(n instanceof xe);)if(n instanceof ot&&n.argname){n=n.argname.definition().scope;break}return n.find_variable(t)}function mi(e,t){if(1==t.length)return t[0];if(0==t.length)throw new Error("trying to create a sequence with length zero!");return p(Et,e,{expressions:t.reduce(gi,[])})}function hi(e,t){switch(typeof e){case"string":return p(fn,t,{value:e});case"number":return isNaN(e)?p(En,t):isFinite(e)?1/e<0?p(At,t,{operator:"-",expression:p(pn,t,{value:-e})}):p(pn,t,{value:e}):e<0?p(At,t,{operator:"-",expression:p(Sn,t)}):p(Sn,t);case"boolean":return p(e?Tn:An,t);case"undefined":return p(gn,t);default:if(null===e)return p(hn,t,{value:null});if(e instanceof RegExp)return p(dn,t,{value:{source:A(e.source),flags:e.flags}});throw new Error(d("Can't handle constant of type: {type}",{type:typeof e}))}}function Ei(e,t,n){return e instanceof At&&"delete"==e.operator||e instanceof mt&&e.expression===t&&(n instanceof gt||n instanceof rn&&"eval"==n.name)?mi(t,[p(pn,t,{value:0}),n]):n}function gi(e,t){return t instanceof Et?e.push(...t.expressions):e.push(t),e}function Di(e){if(null===e)return[];if(e instanceof Se)return e.body;if(e instanceof ve)return[];if(e instanceof _e)return[e];throw new Error("Can't convert thing to statement array")}function Si(e){return null===e||(e instanceof ve||e instanceof Se&&0==e.body.length)}function vi(e){return!(e instanceof Pt||e instanceof Be||e instanceof ct||e instanceof lt||e instanceof dt||e instanceof _t)}function Ai(e){return e instanceof ye&&e.body instanceof Se?e.body:e}function Ti(e){return"Call"==e.TYPE&&(e.expression instanceof Pe||Ti(e.expression))}function yi(e){return e instanceof rn&&e.definition().undeclared}si(pe,(function(e){return e})),Ne.DEFMETHOD("drop_console",(function(){return this.transform(new Fn((function(e){if("Call"==e.TYPE){var t=e.expression;if(t instanceof gt){for(var n=t.expression;n.expression;)n=n.expression;if(yi(n)&&"console"==n.name)return p(gn,e)}}})))})),pe.DEFMETHOD("equivalent_to",(function(e){return((e,t)=>{if(!Kn(e,t))return!1;const n=[e],i=[t],r=n.push.bind(n),o=i.push.bind(i);for(;n.length&&i.length;){const e=n.pop(),t=i.pop();if(!Kn(e,t))return!1;if(e._children_backwards(r),t._children_backwards(o),n.length!==i.length)return!1}return 0==n.length&&0==i.length})(this,e)})),xe.DEFMETHOD("process_expression",(function(e,t){var n=this,i=new Fn((function(r){if(e&&r instanceof he)return p(We,r,{value:r.body});if(!e&&r instanceof We){if(t){var o=r.value&&r.value.drop_side_effect_free(t,!0);return o?p(he,r,{body:o}):p(ve,r)}return p(he,r,{body:r.value||p(At,r,{operator:"void",expression:p(pn,r,{value:0})})})}if(r instanceof It||r instanceof Ie&&r!==n)return r;if(r instanceof De){var a=r.body.length-1;a>=0&&(r.body[a]=r.body[a].transform(i))}else r instanceof Qe?(r.body=r.body.transform(i),r.alternative&&(r.alternative=r.alternative.transform(i))):r instanceof we&&(r.body=r.body.transform(i));return r}));n.transform(i)})),function(e){function t(e,t){t.assignments=0,t.chained=!1,t.direct_access=!1,t.escaped=0,t.recursive_refs=0,t.references=[],t.should_replace=void 0,t.single_use=void 0,t.scope.pinned()?t.fixed=!1:t.orig[0]instanceof Xt||!e.exposed(t)?t.fixed=t.init:t.fixed=!1}function n(e,n,i){i.variables.forEach((function(i){t(n,i),null===i.fixed?(e.defs_to_safe_ids.set(i.id,e.safe_ids),s(e,i,!0)):i.fixed&&(e.loop_ids.set(i.id,e.in_loop),s(e,i,!0))}))}function i(e,n){n.block_scope&&n.block_scope.variables.forEach(n=>{t(e,n)})}function r(e){e.safe_ids=Object.create(e.safe_ids)}function o(e){e.safe_ids=Object.getPrototypeOf(e.safe_ids)}function s(e,t,n){e.safe_ids[t.id]=n}function u(e,t){if("m"==t.single_use)return!1;if(e.safe_ids[t.id]){if(null==t.fixed){var n=t.orig[0];if(n instanceof Wt||"arguments"==n.name)return!1;t.fixed=p(gn,n)}return!0}return t.fixed instanceof Be}function c(e,t,n,i){if(void 0===t.fixed)return!0;let r;return null===t.fixed&&(r=e.defs_to_safe_ids.get(t.id))?(r[t.id]=!1,e.defs_to_safe_ids.delete(t.id),!0):!!D(e.safe_ids,t.id)&&(!!u(e,t)&&(!1!==t.fixed&&(!(null!=t.fixed&&(!i||t.references.length>t.assignments))&&(t.fixed instanceof Be?i instanceof pe&&t.fixed.parent_scope===n:t.orig.every(e=>!(e instanceof Xt||e instanceof Yt||e instanceof jt))))))}function l(e,t,n,i,r,o,a){var s=e.parent(o);if(r){if(r.is_constant())return;if(r instanceof Vt)return}if(s instanceof Ct&&"="==s.operator&&i===s.right||s instanceof mt&&(i!==s.expression||s instanceof ht)||s instanceof ze&&i===s.value&&i.scope!==t.scope||s instanceof ft&&i===s.value||s instanceof Je&&i===s.value&&i.scope!==t.scope)return!(a>1)||r&&r.is_constant_expression(n)||(a=1),void((!t.escaped||t.escaped>a)&&(t.escaped=a));if(s instanceof Ft||s instanceof Ze||s instanceof yt&&Ni.has(s.operator)||s instanceof bt&&i!==s.condition||s instanceof ke||s instanceof Et&&i===s.tail_node())l(e,t,n,s,s,o+1,a);else if(s instanceof wt&&i===s.value){var u=e.parent(o+1);l(e,t,n,u,u,o+2,a)}else if(s instanceof gt&&i===s.expression&&(l(e,t,n,s,r=ui(r,s.property),o+1,a+1),r))return;o>0||s instanceof Et&&i!==s.tail_node()||s instanceof he||(t.direct_access=!0)}e(pe,a);const f=e=>yn(e,e=>{if(e instanceof Bt){var t=e.definition();t&&(e instanceof rn&&t.references.push(e),t.fixed=!1)}});e(Le,(function(e,t,i){return r(e),n(e,i,this),t(),o(e),!0})),e(Ct,(function(e,t,n){var i=this;if(i.left instanceof Ke)f(i.left);else{var r=i.left;if(r instanceof rn){var o=r.definition(),a=c(e,o,r.scope,i.right);if(o.assignments++,a){var u=o.fixed;if(u||"="==i.operator){var _="="==i.operator,d=_?i.right:i;if(!ci(n,e,i,d,0))return o.references.push(r),_||(o.chained=!0),o.fixed=_?function(){return i.right}:function(){return p(yt,i,{operator:i.operator.slice(0,-1),left:u instanceof pe?u:u(),right:i.right})},s(e,o,!1),i.right.walk(e),s(e,o,!0),l(e,o,r.scope,i,d,0,1),!0}}}}})),e(yt,(function(e){if(Ni.has(this.operator))return this.left.walk(e),r(e),this.right.walk(e),o(e),!0})),e(De,(function(e,t,n){i(n,this)})),e(it,(function(e){return r(e),this.expression.walk(e),o(e),r(e),Ee(this,e),o(e),!0})),e(It,(function(e,t){return oi(this,16),r(e),t(),o(e),!0})),e(bt,(function(e){return this.condition.walk(e),r(e),this.consequent.walk(e),o(e),r(e),this.alternative.walk(e),o(e),!0})),e(nt,(function(e,t){return r(e),t(),o(e),!0})),e(Ie,(function(e,t,i){return oi(this,16),r(e),n(e,i,this),this.uses_arguments?(t(),void o(e)):(!this.name&&(a=e.parent())instanceof mt&&a.expression===this&&!a.args.some(e=>e instanceof ke)&&this.argnames.every(e=>e instanceof Bt)&&this.argnames.forEach((t,n)=>{if(t.definition){var i=t.definition();i.orig.length>1||(void 0!==i.fixed||this.uses_arguments&&!e.has_directive("use strict")?i.fixed=!1:(i.fixed=function(){return a.args[n]||p(gn,a)},e.loop_ids.set(i.id,e.in_loop),s(e,i,!0)))}}),t(),o(e),!0);var a})),e(Ce,(function(e,t,n){i(n,this);const a=e.in_loop;return e.in_loop=this,r(e),this.body.walk(e),$i(this)&&(o(e),r(e)),this.condition.walk(e),o(e),e.in_loop=a,!0})),e(Fe,(function(e,t,n){i(n,this),this.init&&this.init.walk(e);const a=e.in_loop;return e.in_loop=this,r(e),this.condition&&this.condition.walk(e),this.body.walk(e),this.step&&($i(this)&&(o(e),r(e)),this.step.walk(e)),o(e),e.in_loop=a,!0})),e(Me,(function(e,t,n){i(n,this),f(this.init),this.object.walk(e);const a=e.in_loop;return e.in_loop=this,r(e),this.body.walk(e),o(e),e.in_loop=a,!0})),e(Qe,(function(e){return this.condition.walk(e),r(e),this.body.walk(e),o(e),this.alternative&&(r(e),this.alternative.walk(e),o(e)),!0})),e(Te,(function(e){return r(e),this.body.walk(e),o(e),!0})),e(Qt,(function(){this.definition().fixed=!1})),e(rn,(function(e,t,n){var i,r,o=this.definition();o.references.push(this),1==o.references.length&&!o.fixed&&o.orig[0]instanceof Yt&&e.loop_ids.set(o.id,e.in_loop),void 0!==o.fixed&&u(e,o)?o.fixed&&((i=this.fixed_value())instanceof Ie&&Ji(e,o)?o.recursive_refs++:i&&!n.exposed(o)&&function(e,t,n){return t.option("unused")&&!n.scope.pinned()&&n.references.length-n.recursive_refs==1&&e.loop_ids.get(n.id)===e.in_loop}(e,n,o)?o.single_use=i instanceof Ie&&!i.pinned()||i instanceof It||o.scope===this.scope&&i.is_constant_expression():o.single_use=!1,ci(n,e,this,i,0,!!(r=i)&&(r.is_constant()||r instanceof Ie||r instanceof un))&&(o.single_use?o.single_use="m":o.fixed=!1)):o.fixed=!1,l(e,o,this.scope,this,i,0,1)})),e(Ne,(function(e,i,r){this.globals.forEach((function(e){t(r,e)})),n(e,r,this)})),e(rt,(function(e,t,n){return i(n,this),r(e),Ee(this,e),o(e),this.bcatch&&(r(e),this.bcatch.walk(e),o(e)),this.bfinally&&this.bfinally.walk(e),!0})),e(vt,(function(e){var t=this;if("++"===t.operator||"--"===t.operator){var n=t.expression;if(n instanceof rn){var i=n.definition(),r=c(e,i,n.scope,!0);if(i.assignments++,r){var o=i.fixed;if(o)return i.references.push(n),i.chained=!0,i.fixed=function(){return p(yt,t,{operator:t.operator.slice(0,-1),left:p(At,t,{operator:"+",expression:o instanceof pe?o:o()}),right:p(pn,t,{value:1})})},s(e,i,!0),!0}}}})),e(ft,(function(e,t){var n=this;if(n.name instanceof Ke)f(n.name);else{var i=n.name.definition();if(n.value){if(c(e,i,n.name.scope,n.value))return i.fixed=function(){return n.value},e.loop_ids.set(i.id,e.in_loop),s(e,i,!1),t(),s(e,i,!0),!0;i.fixed=!1}}})),e(Oe,(function(e,t,n){i(n,this);const a=e.in_loop;return e.in_loop=this,r(e),t(),o(e),e.in_loop=a,!0}))}((function(e,t){e.DEFMETHOD("reduce_vars",t)})),Ne.DEFMETHOD("reset_opt_flags",(function(e){const t=this,n=e.option("reduce_vars"),i=new On((function(r,o){if(oi(r,1792),n)return e.top_retain&&r instanceof Be&&i.parent()===t&&ri(r,1024),r.reduce_vars(i,o,e)}));i.safe_ids=Object.create(null),i.in_loop=null,i.loop_ids=new Map,i.defs_to_safe_ids=new Map,t.walk(i)})),Bt.DEFMETHOD("fixed_value",(function(){var e=this.thedef.fixed;return!e||e instanceof pe?e:e()})),rn.DEFMETHOD("is_immutable",(function(){var e=this.definition().orig;return 1==e.length&&e[0]instanceof jt}));var bi=E("Array Boolean clearInterval clearTimeout console Date decodeURI decodeURIComponent encodeURI encodeURIComponent Error escape eval EvalError Function isFinite isNaN JSON Math Number parseFloat parseInt RangeError ReferenceError RegExp Object setInterval setTimeout String SyntaxError TypeError unescape URIError");rn.DEFMETHOD("is_declared",(function(e){return!this.definition().undeclared||e.option("unsafe")&&bi.has(this.name)}));var Ci,Oi=E("Infinity NaN undefined");function Fi(e){return e instanceof Sn||e instanceof En||e instanceof gn}function Mi(e,t){var n,r,o=t.find_parent(xe).get_defun_scope();!function(){var e=t.self(),i=0;do{if(e instanceof ot||e instanceof at)i++;else if(e instanceof ye)n=!0;else{if(e instanceof xe){o=e;break}e instanceof rt&&(r=!0)}}while(e=t.parent(i++))}();var a,s=10;do{a=!1,c(e),t.option("dead_code")&&_(e,t),t.option("if_return")&&l(e,t),t.sequences_limit>0&&(h(e,t),g(e,t)),t.option("join_vars")&&S(e),t.option("collapse_vars")&&u(e,t)}while(a&&s-- >0);function u(e,t){if(o.pinned())return e;for(var s,u=[],c=e.length,l=new Fn((function(e){if(M)return e;if(!F)return e!==d[m]?e:++m<d.length?I(e):(F=!0,(g=function e(t,n,i){var r=l.parent(n);if(r instanceof Ct)return i&&!(r.left instanceof gt||v.has(r.left.name))?e(r,n+1,i):t;if(r instanceof yt)return!i||Ni.has(r.operator)&&r.left!==t?t:e(r,n+1,i);if(r instanceof mt)return t;if(r instanceof it)return t;if(r instanceof bt)return i&&r.condition===t?e(r,n+1,i):t;if(r instanceof st)return e(r,n+1,!0);if(r instanceof ze)return i?e(r,n+1,i):t;if(r instanceof Qe)return i&&r.condition===t?e(r,n+1,i):t;if(r instanceof ye)return t;if(r instanceof Et)return e(r,n+1,r.tail_node()!==t);if(r instanceof he)return e(r,n+1,!0);return r instanceof et||r instanceof ft?t:null}(e,0))===e&&(M=!0),e);var n,i=l.parent();if(e instanceof Ct&&"="!=e.operator&&S.equivalent_to(e.left)||e instanceof Ze||e instanceof mt&&S instanceof gt&&S.equivalent_to(e.expression)||e instanceof de||e instanceof Ke||e instanceof ke&&e.expression instanceof Bt&&e.expression.definition().references.length>1||e instanceof ye&&!(e instanceof Fe)||e instanceof qe||e instanceof rt||e instanceof we||e instanceof Je||e instanceof dt||e instanceof It||i instanceof Fe&&e!==i.init||!b&&e instanceof rn&&!e.is_declared(t)&&!Xi.has(e)||e instanceof rn&&i instanceof mt&&T(i,wn))return M=!0,e;if(D||A&&b||!(i instanceof yt&&Ni.has(i.operator)&&i.left!==e||i instanceof bt&&i.condition!==e||i instanceof Qe&&i.condition!==e)||(D=i),w&&!(e instanceof Ut)&&S.equivalent_to(e)){if(D)return M=!0,e;if(Ii(e,i))return E&&R++,e;if(R++,E&&h instanceof ft)return e;if(a=M=!0,t.info("Collapsing {name} [{file}:{line},{col}]",{name:e.print_to_string(),file:e.start.file,line:e.start.line,col:e.start.col}),h instanceof Tt)return p(At,h,h);if(h instanceof ft){var s=h.name.definition(),u=h.value;return s.references.length-s.replaced!=1||t.exposed(s)?p(Ct,h,{operator:"=",left:p(rn,h.name,h.name),right:u}):(s.replaced++,O&&Fi(u)?u.transform(t):Ei(i,e,u))}return oi(h,32),h}return(e instanceof mt||e instanceof ze&&(y||S instanceof gt||W(S))||e instanceof gt&&(y||e.expression.may_throw_on_access(t))||e instanceof rn&&(v.get(e.name)||y&&W(e))||e instanceof ft&&e.value&&(v.has(e.name.name)||y&&W(e.name))||(n=Ii(e.left,e))&&(n instanceof gt||v.has(n.name))||C&&(r?e.has_side_effects(t):function e(t,n){if(t instanceof Ct)return e(t.left,!0);if(t instanceof vt)return e(t.expression,!0);if(t instanceof ft)return t.value&&e(t.value);if(n){if(t instanceof Dt)return e(t.expression,!0);if(t instanceof St)return e(t.expression,!0);if(t instanceof rn)return t.definition().scope!==o}return!1}(e)))&&(g=e,e instanceof xe&&(M=!0)),I(e)}),(function(e){M||(g===e&&(M=!0),D===e&&(D=null))})),_=new Fn((function(e){if(M)return e;if(!F){if(e!==d[m])return e;if(++m<d.length)return;return F=!0,e}return e instanceof rn&&e.name==k.name?(--R||(M=!0),Ii(e,_.parent())?e:(k.replaced++,E.replaced--,h.value)):e instanceof nt||e instanceof xe?e:void 0}));--c>=0;){0==c&&t.option("unused")&&P();var d=[];for(V(e[c]);u.length>0;){d=u.pop();var m=0,h=d[d.length-1],E=null,g=null,D=null,S=B(h);if(S&&!fi(S)&&!S.has_side_effects(t)){var v=U(h),A=H(S);S instanceof rn&&v.set(S.name,!1);var y=X(h),b=z(),C=h.may_throw(t),O=h.name instanceof Wt,F=O,M=!1,R=0,w=!s||!F;if(!w){for(var x=t.self().argnames.lastIndexOf(h.name)+1;!M&&x<s.length;x++)s[x].transform(l);w=!0}for(var N=c;!M&&N<e.length;N++)e[N].transform(l);if(E){var k=h.name.definition();if(M&&k.references.length-k.replaced>R)R=!1;else{M=!1,m=0,F=O;for(N=c;!M&&N<e.length;N++)e[N].transform(_);E.single_use=!1}}R&&!G(h)&&e.splice(c,1)}}}function I(e){if(e instanceof xe)return e;if(e instanceof et){e.expression=e.expression.transform(l);for(var t=0,n=e.body.length;!M&&t<n;t++){var i=e.body[t];if(i instanceof it){if(!F){if(i!==d[m])continue;m++}if(i.expression=i.expression.transform(l),!b)break}}return M=!0,e}}function L(e,t,n){var i=!1,r=!(e instanceof Ve);return t.walk(new On((function(t,a){if(i)return!0;if(t instanceof rn&&(e.variables.has(t.name)||function(e,t){if(e.global)return!1;let n=e.scope;for(;n&&n!==t;){if(n.variables.has(e.name))return!0;n=n.parent_scope}return!1}(t.definition(),e))){var s=t.definition().scope;if(s!==o)for(;s=s.parent_scope;)if(s===o)return!0;return i=!0}if((n||r)&&t instanceof un)return i=!0;if(t instanceof xe&&!(t instanceof Ve)){var u=r;return r=!1,a(),r=u,!0}}))),i}function P(){var e,n=t.self();if(li(n)&&!n.name&&!n.uses_arguments&&!n.pinned()&&(e=t.parent())instanceof mt&&e.expression===n&&e.args.every(e=>!(e instanceof ke))){var r=t.has_directive("use strict");r&&!i(r,n.body)&&(r=!1);var o=n.argnames.length;s=e.args.slice(o);for(var a=new Set,c=o;--c>=0;){var l=n.argnames[c],f=e.args[c];const i=l.definition&&l.definition();if(!(i&&i.orig.length>1)&&(s.unshift(p(ft,l,{name:l,value:f})),!a.has(l.name)))if(a.add(l.name),l instanceof ke){var _=e.args.slice(c);_.every(e=>!L(n,e,r))&&u.unshift([p(ft,l,{name:l.expression,value:p(Ft,e,{elements:_})})])}else f?(f instanceof Ie&&f.pinned()||L(n,f,r))&&(f=null):f=p(gn,l).transform(t),f&&u.unshift([p(ft,l,{name:l,value:f})])}}}function V(e){if(d.push(e),e instanceof Ct)e.left.has_side_effects(t)||u.push(d.slice()),V(e.right);else if(e instanceof yt)V(e.left),V(e.right);else if(e instanceof mt&&!T(e,wn))V(e.expression),e.args.forEach(V);else if(e instanceof it)V(e.expression);else if(e instanceof bt)V(e.condition),V(e.consequent),V(e.alternative);else if(!(e instanceof st)||!t.option("unused")&&e instanceof lt)e instanceof be?(V(e.condition),e.body instanceof De||V(e.body)):e instanceof ze?e.value&&V(e.value):e instanceof Fe?(e.init&&V(e.init),e.condition&&V(e.condition),e.step&&V(e.step),e.body instanceof De||V(e.body)):e instanceof Me?(V(e.object),e.body instanceof De||V(e.body)):e instanceof Qe?(V(e.condition),e.body instanceof De||V(e.body),!e.alternative||e.alternative instanceof De||V(e.alternative)):e instanceof Et?e.expressions.forEach(V):e instanceof he?V(e.body):e instanceof et?(V(e.expression),e.body.forEach(V)):e instanceof vt?"++"!=e.operator&&"--"!=e.operator||u.push(d.slice()):e instanceof ft&&e.value&&(u.push(d.slice()),V(e.value));else{var n=e.definitions.length,i=n-200;for(i<0&&(i=0);i<n;i++)V(e.definitions[i])}d.pop()}function B(e){if(!(e instanceof ft&&e.name instanceof Ut)){const t=e[e instanceof Ct?"left":"expression"];return!pi(t,Xt)&&!pi(t,zt)&&t}var n=e.name.definition();if(i(e.name,n.orig)){var r=n.references.length-n.replaced;if(r)return n.orig.length-n.eliminated>1&&!(e.name instanceof Wt)||(r>1?function(e){var t=e.value;if(t instanceof rn&&"arguments"!=t.name){var n=t.definition();if(!n.undeclared)return E=n}}(e):!t.exposed(n))?p(rn,e.name,e.name):void 0}}function K(e){return e[e instanceof Ct?"right":"value"]}function U(e){var n=new Map;if(e instanceof vt)return n;var i=new On((function(e){for(var r=e;r instanceof gt;)r=r.expression;(r instanceof rn||r instanceof un)&&n.set(r.name,n.get(r.name)||ci(t,i,e,e,0))}));return K(e).walk(i),n}function G(n){if(n.name instanceof Wt){var i=t.parent(),r=t.self().argnames,o=r.indexOf(n.name);if(o<0)i.args.length=Math.min(i.args.length,r.length-1);else{var a=i.args;a[o]&&(a[o]=p(pn,a[o],{value:0}))}return!0}var s=!1;return e[c].transform(new Fn((function(e,t,i){return s?e:e===n||e.body===n?(s=!0,e instanceof ft?(e.value=null,e):i?f.skip:null):void 0}),(function(e){if(e instanceof Et)switch(e.expressions.length){case 0:return null;case 1:return e.expressions[0]}})))}function H(e){for(;e instanceof gt;)e=e.expression;return e instanceof rn&&e.definition().scope===o&&!(n&&(v.has(e.name)||h instanceof vt||h instanceof Ct&&"="!=h.operator))}function X(e){return e instanceof vt?ki.has(e.operator):K(e).has_side_effects(t)}function z(){if(y)return!1;if(E)return!0;if(S instanceof rn){var e=S.definition();if(e.references.length-e.replaced==(h instanceof ft?1:2))return!0}return!1}function W(e){if(!e.definition)return!0;var t=e.definition();return!(1==t.orig.length&&t.orig[0]instanceof Yt)&&(t.scope.get_defun_scope()!==o||!t.references.every(e=>{var t=e.scope.get_defun_scope();return"Scope"==t.TYPE&&(t=t.parent_scope),t===o}))}}function c(e){for(var t=[],n=0;n<e.length;){var i=e[n];i instanceof Se&&i.body.every(vi)?(a=!0,c(i.body),e.splice(n,1,...i.body),n+=i.body.length):i instanceof ve?(a=!0,e.splice(n,1)):i instanceof me?t.indexOf(i.value)<0?(n++,t.push(i.value)):(a=!0,e.splice(n,1)):n++}}function l(e,t){for(var n=t.self(),i=function(e){for(var t=0,n=e.length;--n>=0;){var i=e[n];if(i instanceof Qe&&i.body instanceof We&&++t>1)return!0}return!1}(e),r=n instanceof Ie,o=e.length;--o>=0;){var s=e[o],u=S(o),c=e[u];if(r&&!c&&s instanceof We){if(!s.value){a=!0,e.splice(o,1);continue}if(s.value instanceof At&&"void"==s.value.operator){a=!0,e[o]=p(he,s,{body:s.value.expression});continue}}if(s instanceof Qe){var l;if(E(l=zi(s.body))){l.label&&m(l.label.thedef.references,l),a=!0,(s=s.clone()).condition=s.condition.negate(t);var f=D(s.body,l);s.body=p(Se,s,{body:Di(s.alternative).concat(g())}),s.alternative=p(Se,s,{body:f}),e[o]=s.transform(t);continue}if(E(l=zi(s.alternative))){l.label&&m(l.label.thedef.references,l),a=!0,(s=s.clone()).body=p(Se,s.body,{body:Di(s.body).concat(g())});f=D(s.alternative,l);s.alternative=p(Se,s.alternative,{body:f}),e[o]=s.transform(t);continue}}if(s instanceof Qe&&s.body instanceof We){var _=s.body.value;if(!_&&!s.alternative&&(r&&!c||c instanceof We&&!c.value)){a=!0,e[o]=p(he,s.condition,{body:s.condition});continue}if(_&&!s.alternative&&c instanceof We&&c.value){a=!0,(s=s.clone()).alternative=c,e[o]=s.transform(t),e.splice(u,1);continue}if(_&&!s.alternative&&(!c&&r&&i||c instanceof We)){a=!0,(s=s.clone()).alternative=c||p(We,s,{value:null}),e[o]=s.transform(t),c&&e.splice(u,1);continue}var h=e[v(o)];if(t.option("sequences")&&r&&!s.alternative&&h instanceof Qe&&h.body instanceof We&&S(u)==e.length&&c instanceof he){a=!0,(s=s.clone()).alternative=p(Se,c,{body:[c,p(We,c,{value:null})]}),e[o]=s.transform(t),e.splice(u,1);continue}}}function E(i){if(!i)return!1;for(var a=o+1,s=e.length;a<s;a++){var u=e[a];if(u instanceof lt||u instanceof ct)return!1}var c=i instanceof qe?t.loopcontrol_target(i):null;return i instanceof We&&r&&function(e){return!e||e instanceof At&&"void"==e.operator}(i.value)||i instanceof je&&n===Ai(c)||i instanceof $e&&c instanceof Se&&n===c}function g(){var t=e.slice(o+1);return e.length=o+1,t.filter((function(t){return!(t instanceof Be)||(e.push(t),!1)}))}function D(e,t){var n=Di(e).slice(0,-1);return t.value&&n.push(p(he,t.value,{body:t.value.expression})),n}function S(t){for(var n=t+1,i=e.length;n<i;n++){var r=e[n];if(!(r instanceof ut&&d(r)))break}return n}function v(t){for(var n=t;--n>=0;){var i=e[n];if(!(i instanceof ut&&d(i)))break}return n}}function _(e,t){for(var n,i=t.self(),r=0,o=0,s=e.length;r<s;r++){var u=e[r];if(u instanceof qe){var c=t.loopcontrol_target(u);u instanceof $e&&!(c instanceof ye)&&Ai(c)===i||u instanceof je&&Ai(c)===i?u.label&&m(u.label.thedef.references,u):e[o++]=u}else e[o++]=u;if(zi(u)){n=e.slice(r+1);break}}e.length=o,a=o!=s,n&&n.forEach((function(n){Ri(t,n,e)}))}function d(e){return e.definitions.every(e=>!e.value)}function h(e,t){if(!(e.length<2)){for(var n=[],i=0,r=0,o=e.length;r<o;r++){var s=e[r];if(s instanceof he){n.length>=t.sequences_limit&&c();var u=s.body;n.length>0&&(u=u.drop_side_effect_free(t)),u&&gi(n,u)}else s instanceof st&&d(s)||s instanceof Be||c(),e[i++]=s}c(),e.length=i,i!=o&&(a=!0)}function c(){if(n.length){var t=mi(n[0],n);e[i++]=p(he,t,{body:t}),n=[]}}}function E(e,t){if(!(e instanceof Se))return e;for(var n=null,i=0,r=e.body.length;i<r;i++){var o=e.body[i];if(o instanceof ut&&d(o))t.push(o);else{if(n)return!1;n=o}}return n}function g(e,t){function n(e){r--,a=!0;var n=i.body;return mi(n,[n,e]).transform(t)}for(var i,r=0,o=0;o<e.length;o++){var s=e[o];if(i)if(s instanceof ze)s.value=n(s.value||p(gn,s).transform(t));else if(s instanceof Fe){if(!(s.init instanceof st)){yn(i.body,e=>e instanceof xe||(e instanceof yt&&"in"===e.operator?Cn:void 0))||(s.init?s.init=n(s.init):(s.init=i.body,r--,a=!0))}}else s instanceof Me?s.init instanceof lt||s.init instanceof ct||(s.object=n(s.object)):s instanceof Qe?s.condition=n(s.condition):(s instanceof et||s instanceof we)&&(s.expression=n(s.expression));if(t.option("conditionals")&&s instanceof Qe){var u=[],c=E(s.body,u),l=E(s.alternative,u);if(!1!==c&&!1!==l&&u.length>0){var f=u.length;u.push(p(Qe,s,{condition:s.condition,body:c||p(ve,s.body),alternative:l})),u.unshift(r,1),[].splice.apply(e,u),o+=f,r+=f+1,i=null,a=!0;continue}}e[r++]=s,i=s instanceof he?s:null}e.length=r}function D(e,n){if(e instanceof st){var i,r=e.definitions[e.definitions.length-1];if(r.value instanceof Mt)if(n instanceof Ct?i=[n]:n instanceof Et&&(i=n.expressions.slice()),i){var a=!1;do{var s=i[0];if(!(s instanceof Ct))break;if("="!=s.operator)break;if(!(s.left instanceof gt))break;var u=s.left.expression;if(!(u instanceof rn))break;if(r.name.name!=u.name)break;if(!s.right.is_constant_expression(o))break;var c=s.left.property;if(c instanceof pe&&(c=c.evaluate(t)),c instanceof pe)break;c=""+c;var l=t.option("ecma")<2015&&t.has_directive("use strict")?function(e){return e.key!=c&&e.key&&e.key.name!=c}:function(e){return e.key&&e.key.name!=c};if(!r.value.properties.every(l))break;var f=r.value.properties.filter((function(e){return e.key===c}))[0];f?f.value=new Et({start:f.start,expressions:[f.value.clone(),s.right.clone()],end:f.end}):r.value.properties.push(p(wt,s,{key:c,value:s.right})),i.shift(),a=!0}while(i.length);return a&&i}}}function S(e){for(var t,n=0,i=-1,r=e.length;n<r;n++){var o=e[n],s=e[i];if(o instanceof st)s&&s.TYPE==o.TYPE?(s.definitions=s.definitions.concat(o.definitions),a=!0):t&&t.TYPE==o.TYPE&&d(o)?(t.definitions=t.definitions.concat(o.definitions),a=!0):(e[++i]=o,t=o);else if(o instanceof ze)o.value=c(o.value);else if(o instanceof Fe){(u=D(s,o.init))?(a=!0,o.init=u.length?mi(o.init,u):null,e[++i]=o):s instanceof ut&&(!o.init||o.init.TYPE==s.TYPE)?(o.init&&(s.definitions=s.definitions.concat(o.init.definitions)),o.init=s,e[i]=o,a=!0):t&&o.init&&t.TYPE==o.init.TYPE&&d(o.init)?(t.definitions=t.definitions.concat(o.init.definitions),o.init=null,e[++i]=o,a=!0):e[++i]=o}else if(o instanceof Me)o.object=c(o.object);else if(o instanceof Qe)o.condition=c(o.condition);else if(o instanceof he){var u;if(u=D(s,o.body)){if(a=!0,!u.length)continue;o.body=mi(o.body,u)}e[++i]=o}else o instanceof et||o instanceof we?o.expression=c(o.expression):e[++i]=o}function c(t){e[++i]=o;var n=D(s,t);return n?(a=!0,n.length?mi(t,n):t instanceof Et?t.tail_node().left:t.left):t}e.length=i+1}}function Ri(e,t,n){t instanceof Be||e.warn("Dropping unreachable code [{file}:{line},{col}]",t.start),yn(t,i=>i instanceof ut?(e.warn("Declarations in unreachable code! [{file}:{line},{col}]",i.start),i.remove_initializers(),n.push(i),!0):i instanceof Be&&(i===t||!e.has_directive("use strict"))?(n.push(i===t?i:p(ut,i,{definitions:[p(ft,i,{name:p(Gt,i.name,i.name),value:null})]})),!0):i instanceof xe||void 0)}function wi(e){return e instanceof ln?e.getValue():e instanceof At&&"void"==e.operator&&e.expression instanceof ln?void 0:e}function xi(e,t){return ii(e,8)||e instanceof gn||e instanceof At&&"void"==e.operator&&!e.expression.has_side_effects(t)}!function(e){function t(e){return/strict/.test(e.option("pure_getters"))}pe.DEFMETHOD("may_throw_on_access",(function(e){return!e.option("pure_getters")||this._dot_throw(e)})),e(pe,t),e(hn,u),e(gn,u),e(ln,s),e(Ft,s),e(Mt,(function(e){if(!t(e))return!1;for(var n=this.properties.length;--n>=0;)if(this.properties[n]._dot_throw(e))return!0;return!1})),e(Rt,s),e(Nt,u),e(ke,(function(e){return this.expression._dot_throw(e)})),e(Pe,s),e(Ve,s),e(Tt,s),e(At,(function(){return"void"==this.operator})),e(yt,(function(e){return("&&"==this.operator||"||"==this.operator||"??"==this.operator)&&(this.left._dot_throw(e)||this.right._dot_throw(e))})),e(Ct,(function(e){return"="==this.operator&&this.right._dot_throw(e)})),e(bt,(function(e){return this.consequent._dot_throw(e)||this.alternative._dot_throw(e)})),e(Dt,(function(e){return!!t(e)&&!(this.expression instanceof Pe&&"prototype"==this.property)})),e(Et,(function(e){return this.tail_node()._dot_throw(e)})),e(rn,(function(e){if(ii(this,8))return!0;if(!t(e))return!1;if(yi(this)&&this.is_declared(e))return!1;if(this.is_immutable())return!1;var n=this.fixed_value();return!n||n._dot_throw(e)}))}((function(e,t){e.DEFMETHOD("_dot_throw",t)})),function(e){const t=E("! delete"),n=E("in instanceof == != === !== < <= >= >");e(pe,s),e(At,(function(){return t.has(this.operator)})),e(yt,(function(){return n.has(this.operator)||Ni.has(this.operator)&&this.left.is_boolean()&&this.right.is_boolean()})),e(bt,(function(){return this.consequent.is_boolean()&&this.alternative.is_boolean()})),e(Ct,(function(){return"="==this.operator&&this.right.is_boolean()})),e(Et,(function(){return this.tail_node().is_boolean()})),e(Tn,u),e(An,u)}((function(e,t){e.DEFMETHOD("is_boolean",t)})),function(e){e(pe,s),e(pn,u);var t=E("+ - ~ ++ --");e(vt,(function(){return t.has(this.operator)}));var n=E("- * / % & | ^ << >> >>>");e(yt,(function(e){return n.has(this.operator)||"+"==this.operator&&this.left.is_number(e)&&this.right.is_number(e)})),e(Ct,(function(e){return n.has(this.operator.slice(0,-1))||"="==this.operator&&this.right.is_number(e)})),e(Et,(function(e){return this.tail_node().is_number(e)})),e(bt,(function(e){return this.consequent.is_number(e)&&this.alternative.is_number(e)}))}((function(e,t){e.DEFMETHOD("is_number",t)})),(Ci=function(e,t){e.DEFMETHOD("is_string",t)})(pe,s),Ci(fn,u),Ci(Ge,u),Ci(At,(function(){return"typeof"==this.operator})),Ci(yt,(function(e){return"+"==this.operator&&(this.left.is_string(e)||this.right.is_string(e))})),Ci(Ct,(function(e){return("="==this.operator||"+="==this.operator)&&this.right.is_string(e)})),Ci(Et,(function(e){return this.tail_node().is_string(e)})),Ci(bt,(function(e){return this.consequent.is_string(e)&&this.alternative.is_string(e)}));var Ni=E("&& || ??"),ki=E("delete ++ --");function Ii(e,t){return t instanceof vt&&ki.has(t.operator)?t.expression:t instanceof Ct&&t.left===e?e:void 0}function Li(e,t){return e.size()>t.size()?t:e}function Pi(e,t){return Li(p(he,e,{body:e}),p(he,t,{body:t})).body}function Vi(e,t,n){return(In(e)?Pi:Li)(t,n)}function Bi(e){const t=new Map;for(var n of Object.keys(e))t.set(n,E(e[n]));return t}!function(e){function t(e,t){e.warn("global_defs "+t.print_to_string()+" redefined [{file}:{line},{col}]",t.start)}Ne.DEFMETHOD("resolve_defines",(function(e){return e.option("global_defs")?(this.figure_out_scope({ie8:e.option("ie8")}),this.transform(new Fn((function(n){var i=n._find_defs(e,"");if(i){for(var r,o=0,a=n;(r=this.parent(o++))&&r instanceof gt&&r.expression===a;)a=r;if(!Ii(a,r))return i;t(e,n)}})))):this})),e(pe,a),e(Dt,(function(e,t){return this.expression._find_defs(e,"."+this.property+t)})),e(Ut,(function(e){this.global()&&D(e.option("global_defs"),this.name)&&t(e,this)})),e(rn,(function(e,t){if(this.global()){var n=e.option("global_defs"),i=this.name+t;return D(n,i)?function e(t,n){if(t instanceof pe)return p(t.CTOR,n,t);if(Array.isArray(t))return p(Ft,n,{elements:t.map((function(t){return e(t,n)}))});if(t&&"object"==typeof t){var i=[];for(var r in t)D(t,r)&&i.push(p(wt,n,{key:r,value:e(t[r],n)}));return p(Mt,n,{properties:i})}return hi(t,n)}(n[i],this):void 0}}))}((function(e,t){e.DEFMETHOD("_find_defs",t)}));var Ki=["constructor","toString","valueOf"],Ui=Bi({Array:["indexOf","join","lastIndexOf","slice"].concat(Ki),Boolean:Ki,Function:Ki,Number:["toExponential","toFixed","toPrecision"].concat(Ki),Object:Ki,RegExp:["test"].concat(Ki),String:["charAt","charCodeAt","concat","indexOf","italics","lastIndexOf","match","replace","search","slice","split","substr","substring","toLowerCase","toUpperCase","trim"].concat(Ki)}),Gi=Bi({Array:["isArray"],Math:["abs","acos","asin","atan","ceil","cos","exp","floor","log","round","sin","sqrt","tan","atan2","pow","max","min"],Number:["isFinite","isNaN"],Object:["create","getOwnPropertyDescriptor","getOwnPropertyNames","getPrototypeOf","isExtensible","isFrozen","isSealed","keys"],String:["fromCharCode"]});!function(e){pe.DEFMETHOD("evaluate",(function(e){if(!e.option("evaluate"))return this;var t=this._eval(e,1);return!t||t instanceof RegExp?t:"function"==typeof t||"object"==typeof t?this:t}));var t=E("! ~ - + void");pe.DEFMETHOD("is_constant",(function(){return this instanceof ln?!(this instanceof dn):this instanceof At&&this.expression instanceof ln&&t.has(this.operator)})),e(_e,(function(){throw new Error(d("Cannot evaluate a statement [{file}:{line},{col}]",this.start))})),e(Ie,c),e(It,c),e(pe,c),e(ln,(function(){return this.getValue()})),e(_n,c),e(dn,(function(e){let t=e.evaluated_regexps.get(this);if(void 0===t){try{t=(0,eval)(this.print_to_string())}catch(e){t=null}e.evaluated_regexps.set(this,t)}return t||this})),e(Ge,(function(){return 1!==this.segments.length?this:this.segments[0].value})),e(Pe,(function(e){if(e.option("unsafe")){var t=function(){};return t.node=this,t.toString=function(){return this.node.print_to_string()},t}return this})),e(Ft,(function(e,t){if(e.option("unsafe")){for(var n=[],i=0,r=this.elements.length;i<r;i++){var o=this.elements[i],a=o._eval(e,t);if(o===a)return this;n.push(a)}return n}return this})),e(Mt,(function(e,t){if(e.option("unsafe")){for(var n={},i=0,r=this.properties.length;i<r;i++){var o=this.properties[i];if(o instanceof ke)return this;var a=o.key;if(a instanceof Bt)a=a.name;else if(a instanceof pe&&(a=a._eval(e,t))===o.key)return this;if("function"==typeof Object.prototype[a])return this;if(!(o.value instanceof Pe)&&(n[a]=o.value._eval(e,t),n[a]===o.value))return this}return n}return this}));var n=E("! typeof void");e(At,(function(e,t){var i=this.expression;if(e.option("typeofs")&&"typeof"==this.operator&&(i instanceof Ie||i instanceof rn&&i.fixed_value()instanceof Ie))return"function";if(n.has(this.operator)||t++,(i=i._eval(e,t))===this.expression)return this;switch(this.operator){case"!":return!i;case"typeof":return i instanceof RegExp?this:typeof i;case"void":return;case"~":return~i;case"-":return-i;case"+":return+i}return this}));var i=E("&& || ?? === !==");e(yt,(function(e,t){i.has(this.operator)||t++;var n=this.left._eval(e,t);if(n===this.left)return this;var r,o=this.right._eval(e,t);if(o===this.right)return this;switch(this.operator){case"&&":r=n&&o;break;case"||":r=n||o;break;case"??":r=null!=n?n:o;break;case"|":r=n|o;break;case"&":r=n&o;break;case"^":r=n^o;break;case"+":r=n+o;break;case"*":r=n*o;break;case"**":r=Math.pow(n,o);break;case"/":r=n/o;break;case"%":r=n%o;break;case"-":r=n-o;break;case"<<":r=n<<o;break;case">>":r=n>>o;break;case">>>":r=n>>>o;break;case"==":r=n==o;break;case"===":r=n===o;break;case"!=":r=n!=o;break;case"!==":r=n!==o;break;case"<":r=n<o;break;case"<=":r=n<=o;break;case">":r=n>o;break;case">=":r=n>=o;break;default:return this}return isNaN(r)&&e.find_parent(we)?this:r})),e(bt,(function(e,t){var n=this.condition._eval(e,t);if(n===this.condition)return this;var i=n?this.consequent:this.alternative,r=i._eval(e,t);return r===i?this:r})),e(rn,(function(e,t){var n,i=this.fixed_value();if(!i)return this;if(D(i,"_eval"))n=i._eval();else{if(this._eval=c,n=i._eval(e,t),delete this._eval,n===i)return this;i._eval=function(){return n}}if(n&&"object"==typeof n){var r=this.definition().escaped;if(r&&t>r)return this}return n}));var r={Array:Array,Math:Math,Number:Number,Object:Object,String:String},o=Bi({Math:["E","LN10","LN2","LOG2E","LOG10E","PI","SQRT1_2","SQRT2"],Number:["MAX_VALUE","MIN_VALUE","NaN","NEGATIVE_INFINITY","POSITIVE_INFINITY"]});e(gt,(function(e,t){if(e.option("unsafe")){var n=this.property;if(n instanceof pe&&(n=n._eval(e,t))===this.property)return this;var i,a=this.expression;if(yi(a)){var s,u="hasOwnProperty"===a.name&&"call"===n&&(s=e.parent()&&e.parent().args)&&s&&s[0]&&s[0].evaluate(e);if(null==(u=u instanceof Dt?u.expression:u)||u.thedef&&u.thedef.undeclared)return this.clone();var c=o.get(a.name);if(!c||!c.has(n))return this;i=r[a.name]}else{if(!(i=a._eval(e,t+1))||i===a||!D(i,n))return this;if("function"==typeof i)switch(n){case"name":return i.node.name?i.node.name.name:"";case"length":return i.node.argnames.length;default:return this}}return i[n]}return this})),e(mt,(function(e,t){var n=this.expression;if(e.option("unsafe")&&n instanceof gt){var i,o=n.property;if(o instanceof pe&&(o=o._eval(e,t))===n.property)return this;var a=n.expression;if(yi(a)){var s="hasOwnProperty"===a.name&&"call"===o&&this.args[0]&&this.args[0].evaluate(e);if(null==(s=s instanceof Dt?s.expression:s)||s.thedef&&s.thedef.undeclared)return this.clone();var u=Gi.get(a.name);if(!u||!u.has(o))return this;i=r[a.name]}else{if((i=a._eval(e,t+1))===a||!i)return this;var c=Ui.get(i.constructor.name);if(!c||!c.has(o))return this}for(var l=[],f=0,p=this.args.length;f<p;f++){var _=this.args[f],d=_._eval(e,t);if(_===d)return this;l.push(d)}try{return i[o].apply(i,l)}catch(t){e.warn("Error evaluating {code} [{file}:{line},{col}]",{code:this.print_to_string(),file:this.start.file,line:this.start.line,col:this.start.col})}}return this})),e(ht,c)}((function(e,t){e.DEFMETHOD("_eval",t)})),function(e){function t(e){return p(At,e,{operator:"!",expression:e})}function n(e,n,i){var r=t(e);if(i){var o=p(he,n,{body:n});return Li(r,o)===o?n:r}return Li(r,n)}e(pe,(function(){return t(this)})),e(_e,(function(){throw new Error("Cannot negate a statement")})),e(Pe,(function(){return t(this)})),e(Ve,(function(){return t(this)})),e(At,(function(){return"!"==this.operator?this.expression:t(this)})),e(Et,(function(e){var t=this.expressions.slice();return t.push(t.pop().negate(e)),mi(this,t)})),e(bt,(function(e,t){var i=this.clone();return i.consequent=i.consequent.negate(e),i.alternative=i.alternative.negate(e),n(this,i,t)})),e(yt,(function(e,i){var r=this.clone(),o=this.operator;if(e.option("unsafe_comps"))switch(o){case"<=":return r.operator=">",r;case"<":return r.operator=">=",r;case">=":return r.operator="<",r;case">":return r.operator="<=",r}switch(o){case"==":return r.operator="!=",r;case"!=":return r.operator="==",r;case"===":return r.operator="!==",r;case"!==":return r.operator="===",r;case"&&":return r.operator="||",r.left=r.left.negate(e,i),r.right=r.right.negate(e),n(this,r,i);case"||":return r.operator="&&",r.left=r.left.negate(e,i),r.right=r.right.negate(e),n(this,r,i);case"??":return r.right=r.right.negate(e),n(this,r,i)}return t(this)}))}((function(e,t){e.DEFMETHOD("negate",(function(e,n){return t.call(this,e,n)}))}));var Hi=E("Boolean decodeURI decodeURIComponent Date encodeURI encodeURIComponent Error escape EvalError isFinite isNaN Number Object parseFloat parseInt RangeError ReferenceError String SyntaxError TypeError unescape URIError");mt.DEFMETHOD("is_expr_pure",(function(e){if(e.option("unsafe")){var t=this.expression,n=this.args&&this.args[0]&&this.args[0].evaluate(e);if(t.expression&&"hasOwnProperty"===t.expression.name&&(null==n||n.thedef&&n.thedef.undeclared))return!1;if(yi(t)&&Hi.has(t.name))return!0;let i;if(t instanceof Dt&&yi(t.expression)&&(i=Gi.get(t.expression.name))&&i.has(t.property))return!0}return!!T(this,Mn)||!e.pure_funcs(this)})),pe.DEFMETHOD("is_call_pure",s),Dt.DEFMETHOD("is_call_pure",(function(e){if(!e.option("unsafe"))return;const t=this.expression;let n;return t instanceof Ft?n=Ui.get("Array"):t.is_boolean()?n=Ui.get("Boolean"):t.is_number(e)?n=Ui.get("Number"):t instanceof dn?n=Ui.get("RegExp"):t.is_string(e)?n=Ui.get("String"):this.may_throw_on_access(e)||(n=Ui.get("Object")),n&&n.has(this.property)}));const Xi=new Set(["Number","String","Array","Object","Function","Promise"]);function zi(e){return e&&e.aborts()}!function(e){function t(e,t){for(var n=e.length;--n>=0;)if(e[n].has_side_effects(t))return!0;return!1}e(pe,u),e(ve,s),e(ln,s),e(un,s),e(De,(function(e){return t(this.body,e)})),e(mt,(function(e){return!(this.is_expr_pure(e)||this.expression.is_call_pure(e)&&!this.expression.has_side_effects(e))||t(this.args,e)})),e(et,(function(e){return this.expression.has_side_effects(e)||t(this.body,e)})),e(it,(function(e){return this.expression.has_side_effects(e)||t(this.body,e)})),e(rt,(function(e){return t(this.body,e)||this.bcatch&&this.bcatch.has_side_effects(e)||this.bfinally&&this.bfinally.has_side_effects(e)})),e(Qe,(function(e){return this.condition.has_side_effects(e)||this.body&&this.body.has_side_effects(e)||this.alternative&&this.alternative.has_side_effects(e)})),e(Te,(function(e){return this.body.has_side_effects(e)})),e(he,(function(e){return this.body.has_side_effects(e)})),e(Ie,s),e(It,(function(e){return!(!this.extends||!this.extends.has_side_effects(e))||t(this.properties,e)})),e(yt,(function(e){return this.left.has_side_effects(e)||this.right.has_side_effects(e)})),e(Ct,u),e(bt,(function(e){return this.condition.has_side_effects(e)||this.consequent.has_side_effects(e)||this.alternative.has_side_effects(e)})),e(vt,(function(e){return ki.has(this.operator)||this.expression.has_side_effects(e)})),e(rn,(function(e){return!this.is_declared(e)&&!Xi.has(this.name)})),e($t,s),e(Ut,s),e(Mt,(function(e){return t(this.properties,e)})),e(Rt,(function(e){return this.computed_key()&&this.key.has_side_effects(e)||this.value.has_side_effects(e)})),e(Lt,(function(e){return this.computed_key()&&this.key.has_side_effects(e)||this.static&&this.value&&this.value.has_side_effects(e)})),e(kt,(function(e){return this.computed_key()&&this.key.has_side_effects(e)})),e(Nt,(function(e){return this.computed_key()&&this.key.has_side_effects(e)})),e(xt,(function(e){return this.computed_key()&&this.key.has_side_effects(e)})),e(Ft,(function(e){return t(this.elements,e)})),e(Dt,(function(e){return this.expression.may_throw_on_access(e)||this.expression.has_side_effects(e)})),e(St,(function(e){return this.expression.may_throw_on_access(e)||this.expression.has_side_effects(e)||this.property.has_side_effects(e)})),e(Et,(function(e){return t(this.expressions,e)})),e(st,(function(e){return t(this.definitions,e)})),e(ft,(function(){return this.value})),e(He,s),e(Ge,(function(e){return t(this.segments,e)}))}((function(e,t){e.DEFMETHOD("has_side_effects",t)})),function(e){function t(e,t){for(var n=e.length;--n>=0;)if(e[n].may_throw(t))return!0;return!1}e(pe,u),e(ln,s),e(ve,s),e(Ie,s),e(Ut,s),e(un,s),e(It,(function(e){return!(!this.extends||!this.extends.may_throw(e))||t(this.properties,e)})),e(Ft,(function(e){return t(this.elements,e)})),e(Ct,(function(e){return!!this.right.may_throw(e)||!(!e.has_directive("use strict")&&"="==this.operator&&this.left instanceof rn)&&this.left.may_throw(e)})),e(yt,(function(e){return this.left.may_throw(e)||this.right.may_throw(e)})),e(De,(function(e){return t(this.body,e)})),e(mt,(function(e){return!!t(this.args,e)||!this.is_expr_pure(e)&&(!!this.expression.may_throw(e)||(!(this.expression instanceof Ie)||t(this.expression.body,e)))})),e(it,(function(e){return this.expression.may_throw(e)||t(this.body,e)})),e(bt,(function(e){return this.condition.may_throw(e)||this.consequent.may_throw(e)||this.alternative.may_throw(e)})),e(st,(function(e){return t(this.definitions,e)})),e(Dt,(function(e){return this.expression.may_throw_on_access(e)||this.expression.may_throw(e)})),e(Qe,(function(e){return this.condition.may_throw(e)||this.body&&this.body.may_throw(e)||this.alternative&&this.alternative.may_throw(e)})),e(Te,(function(e){return this.body.may_throw(e)})),e(Mt,(function(e){return t(this.properties,e)})),e(Rt,(function(e){return this.value.may_throw(e)})),e(Lt,(function(e){return this.computed_key()&&this.key.may_throw(e)||this.static&&this.value&&this.value.may_throw(e)})),e(kt,(function(e){return this.computed_key()&&this.key.may_throw(e)})),e(Nt,(function(e){return this.computed_key()&&this.key.may_throw(e)})),e(xt,(function(e){return this.computed_key()&&this.key.may_throw(e)})),e(We,(function(e){return this.value&&this.value.may_throw(e)})),e(Et,(function(e){return t(this.expressions,e)})),e(he,(function(e){return this.body.may_throw(e)})),e(St,(function(e){return this.expression.may_throw_on_access(e)||this.expression.may_throw(e)||this.property.may_throw(e)})),e(et,(function(e){return this.expression.may_throw(e)||t(this.body,e)})),e(rn,(function(e){return!this.is_declared(e)&&!Xi.has(this.name)})),e($t,s),e(rt,(function(e){return this.bcatch?this.bcatch.may_throw(e):t(this.body,e)||this.bfinally&&this.bfinally.may_throw(e)})),e(vt,(function(e){return!("typeof"==this.operator&&this.expression instanceof rn)&&this.expression.may_throw(e)})),e(ft,(function(e){return!!this.value&&this.value.may_throw(e)}))}((function(e,t){e.DEFMETHOD("may_throw",t)})),function(e){function t(e){let t=!0;return yn(this,n=>{if(n instanceof rn){if(ii(this,16))return t=!1,Cn;var r=n.definition();if(i(r,this.enclosed)&&!this.variables.has(r.name)){if(e){var o=e.find_variable(n);if(r.undeclared?!o:o===r)return t="f",!0}return t=!1,Cn}return!0}if(n instanceof un&&this instanceof Ve)return t=!1,Cn}),t}e(pe,s),e(ln,u),e(It,(function(e){if(this.extends&&!this.extends.is_constant_expression(e))return!1;for(const t of this.properties){if(t.computed_key()&&!t.key.is_constant_expression(e))return!1;if(t.static&&t.value&&!t.value.is_constant_expression(e))return!1}return t.call(this,e)})),e(Ie,t),e(vt,(function(){return this.expression.is_constant_expression()})),e(yt,(function(){return this.left.is_constant_expression()&&this.right.is_constant_expression()})),e(Ft,(function(){return this.elements.every(e=>e.is_constant_expression())})),e(Mt,(function(){return this.properties.every(e=>e.is_constant_expression())})),e(Rt,(function(){return!(this.key instanceof pe)&&this.value.is_constant_expression()}))}((function(e,t){e.DEFMETHOD("is_constant_expression",t)})),function(e){function t(){for(var e=0;e<this.body.length;e++)if(zi(this.body[e]))return this.body[e];return null}e(_e,l),e(Xe,c),e(_t,(function(){return null})),e(Se,t),e(tt,t),e(Qe,(function(){return this.alternative&&zi(this.body)&&zi(this.alternative)&&this}))}((function(e,t){e.DEFMETHOD("aborts",t)}));var Wi=new Set(["use asm","use strict"]);function Yi(e,t){return Mi(e.body,t),t.option("side_effects")&&1==e.body.length&&e.body[0]===t.has_directive("use strict")&&(e.body.length=0),e}si(me,(function(e,t){return!t.option("directives")||Wi.has(e.value)&&t.has_directive(e.value)===e?e:p(ve,e)})),si(de,(function(e,t){return t.option("drop_debugger")?p(ve,e):e})),si(Te,(function(e,t){return e.body instanceof $e&&t.loopcontrol_target(e.body)===e.body?p(ve,e):0==e.label.references.length?e.body:e})),si(De,(function(e,t){return Mi(e.body,t),e})),si(Se,(function(e,t){switch(Mi(e.body,t),e.body.length){case 1:if(!t.has_directive("use strict")&&t.parent()instanceof Qe&&!((n=e.body[0])instanceof lt||n instanceof ct||n instanceof It)||vi(e.body[0]))return e.body[0];break;case 0:return p(ve,e)}var n;return e})),si(Ie,Yi);const qi=/keep_assign/;function $i(e,t){var n=!1,i=new On((function(t){return!!(n||t instanceof xe)||(t instanceof qe&&i.loopcontrol_target(t)===e?n=!0:void 0)}));return t instanceof Te&&i.push(t),i.push(e),e.body.walk(i),n}function ji(e,t){return t.top_retain&&e instanceof Be&&ii(e,1024)&&e.name&&t.top_retain(e.name)}xe.DEFMETHOD("drop_unused",(function(e){if(!e.option("unused"))return;if(e.has_directive("use asm"))return;var t=this;if(t.pinned())return;var n=!(t instanceof Ne)||e.toplevel.funcs,i=!(t instanceof Ne)||e.toplevel.vars;const r=qi.test(e.option("unused"))?s:function(e){return e instanceof Ct&&(ii(e,32)||"="==e.operator)?e.left:e instanceof vt&&ii(e,32)?e.expression:void 0};var o=new Map,a=new Map;t instanceof Ne&&e.top_retain&&t.variables.forEach((function(t){e.top_retain(t)&&!o.has(t.id)&&o.set(t.id,t)}));var u=new Map,c=new Map,l=this,_=new On((function(r,s){if(r instanceof Ie&&r.uses_arguments&&!_.has_directive("use strict")&&r.argnames.forEach((function(e){if(e instanceof Ut){var t=e.definition();o.has(t.id)||o.set(t.id,t)}})),r!==t){if(r instanceof Be||r instanceof Pt){var f=r.name.definition();if((_.parent()instanceof dt||!n&&l===t)&&f.global&&!o.has(f.id)&&o.set(f.id,f),r instanceof Pt){r.extends&&(r.extends.has_side_effects(e)||r.extends.may_throw(e))&&r.extends.walk(_);for(const t of r.properties)(t.has_side_effects(e)||t.may_throw(e))&&t.walk(_)}return g(c,f.id,r),!0}if(r instanceof Wt&&l===t&&g(u,r.definition().id,r),r instanceof st&&l===t){const t=_.parent()instanceof dt;return r.definitions.forEach((function(n){if(n.name instanceof Gt&&g(u,n.name.definition().id,n),!t&&i||yn(n.name,e=>{if(e instanceof Ut){const n=e.definition();!t&&!n.global||o.has(n.id)||o.set(n.id,n)}}),n.value){if(n.name instanceof Ke)n.walk(_);else{var r=n.name.definition();g(c,r.id,n.value),r.chained||n.name.fixed_value()!==n.value||a.set(r.id,n)}n.value.has_side_effects(e)&&n.value.walk(_)}})),!0}return h(r,s)}}));t.walk(_),_=new On(h),o.forEach((function(e){var t=c.get(e.id);t&&t.forEach((function(e){e.walk(_)}))}));var d=new Fn((function(s,c,_){var h=d.parent();if(i){const e=r(s);if(e instanceof rn){var E=e.definition(),g=o.has(E.id);if(s instanceof Ct){if(!g||a.has(E.id)&&a.get(E.id)!==s)return Ei(h,s,s.right.transform(d))}else if(!g)return _?f.skip:p(pn,s,{value:0})}}if(l===t){if(s.name&&(s instanceof Vt&&!S(e.option("keep_classnames"),(E=s.name.definition()).name)||s instanceof Pe&&!S(e.option("keep_fnames"),(E=s.name.definition()).name))&&(!o.has(E.id)||E.orig.length>1)&&(s.name=null),s instanceof Ie&&!(s instanceof Le))for(var D=!e.option("keep_fargs"),v=s.argnames,A=v.length;--A>=0;){var T=v[A];T instanceof ke&&(T=T.expression),T instanceof Ot&&(T=T.left),T instanceof Ke||o.has(T.definition().id)?D=!1:(ri(T,1),D&&(v.pop(),e[T.unreferenced()?"warn":"info"]("Dropping unused function argument {name} [{file}:{line},{col}]",R(T))))}if((s instanceof Be||s instanceof Pt)&&s!==t){const t=s.name.definition();if(!(t.global&&!n||o.has(t.id))){if(e[s.name.unreferenced()?"warn":"info"]("Dropping unused function {name} [{file}:{line},{col}]",R(s.name)),t.eliminated++,s instanceof Pt){const t=s.drop_side_effect_free(e);if(t)return p(he,s,{body:t})}return _?f.skip:p(ve,s)}}if(s instanceof st&&!(h instanceof Me&&h.init===s)){var y=!(h instanceof Ne||s instanceof ut),b=[],C=[],O=[],F=[];switch(s.definitions.forEach((function(t){t.value&&(t.value=t.value.transform(d));var n=t.name instanceof Ke,r=n?new zn(null,{name:"<destructure>"}):t.name.definition();if(y&&r.global)return O.push(t);if(!i&&!y||n&&(t.name.names.length||t.name.is_array||1!=e.option("pure_getters"))||o.has(r.id)){if(t.value&&a.has(r.id)&&a.get(r.id)!==t&&(t.value=t.value.drop_side_effect_free(e)),t.name instanceof Gt){var c=u.get(r.id);if(c.length>1&&(!t.value||r.orig.indexOf(t.name)>r.eliminated)){if(e.warn("Dropping duplicated definition of variable {name} [{file}:{line},{col}]",R(t.name)),t.value){var l=p(rn,t.name,t.name);r.references.push(l);var f=p(Ct,t,{operator:"=",left:l,right:t.value});a.get(r.id)===t&&a.set(r.id,f),F.push(f.transform(d))}return m(c,t),void r.eliminated++}}t.value?(F.length>0&&(O.length>0?(F.push(t.value),t.value=mi(t.value,F)):b.push(p(he,s,{body:mi(s,F)})),F=[]),O.push(t)):C.push(t)}else if(r.orig[0]instanceof Qt){(_=t.value&&t.value.drop_side_effect_free(e))&&F.push(_),t.value=null,C.push(t)}else{var _;(_=t.value&&t.value.drop_side_effect_free(e))?(n||e.warn("Side effects in initialization of unused variable {name} [{file}:{line},{col}]",R(t.name)),F.push(_)):n||e[t.name.unreferenced()?"warn":"info"]("Dropping unused variable {name} [{file}:{line},{col}]",R(t.name)),r.eliminated++}})),(C.length>0||O.length>0)&&(s.definitions=C.concat(O),b.push(s)),F.length>0&&b.push(p(he,s,{body:mi(s,F)})),b.length){case 0:return _?f.skip:p(ve,s);case 1:return b[0];default:return _?f.splice(b):p(Se,s,{body:b})}}if(s instanceof Fe)return c(s,this),s.init instanceof Se&&(M=s.init,s.init=M.body.pop(),M.body.push(s)),s.init instanceof he?s.init=s.init.body:Si(s.init)&&(s.init=null),M?_?f.splice(M.body):M:s;if(s instanceof Te&&s.body instanceof Fe){if(c(s,this),s.body instanceof Se){var M=s.body;return s.body=M.body.pop(),M.body.push(s),_?f.splice(M.body):M}return s}if(s instanceof Se)return c(s,this),_&&s.body.every(vi)?f.splice(s.body):s;if(s instanceof xe){const e=l;return l=s,c(s,this),l=e,s}}function R(e){return{name:e.name,file:e.start.file,line:e.start.line,col:e.start.col}}}));function h(e,n){var i;const s=r(e);if(s instanceof rn&&!pi(e.left,Ht)&&t.variables.get(s.name)===(i=s.definition()))return e instanceof Ct&&(e.right.walk(_),i.chained||e.left.fixed_value()!==e.right||a.set(i.id,e)),!0;if(e instanceof rn){if(i=e.definition(),!o.has(i.id)&&(o.set(i.id,i),i.orig[0]instanceof Qt)){const e=i.scope.is_block_scope()&&i.scope.get_defun_scope().variables.get(i.name);e&&o.set(e.id,e)}return!0}if(e instanceof xe){var u=l;return l=e,n(),l=u,!0}}t.transform(d)})),xe.DEFMETHOD("hoist_declarations",(function(e){var t=this;if(e.has_directive("use asm"))return t;if(!Array.isArray(t.body))return t;var n=e.option("hoist_funs"),i=e.option("hoist_vars");if(n||i){var r=[],o=[],a=new Map,s=0,u=0;yn(t,e=>e instanceof xe&&e!==t||(e instanceof ut?(++u,!0):void 0)),i=i&&u>1;var c=new Fn((function(u){if(u!==t){if(u instanceof me)return r.push(u),p(ve,u);if(n&&u instanceof Be&&!(c.parent()instanceof dt)&&c.parent()===t)return o.push(u),p(ve,u);if(i&&u instanceof ut){u.definitions.forEach((function(e){e.name instanceof Ke||(a.set(e.name.name,e),++s)}));var l=u.to_assignments(e),f=c.parent();if(f instanceof Me&&f.init===u){if(null==l){var _=u.definitions[0].name;return p(rn,_,_)}return l}return f instanceof Fe&&f.init===u?l:l?p(he,u,{body:l}):p(ve,u)}if(u instanceof xe)return u}}));if(t=t.transform(c),s>0){var l=[];const e=t instanceof Ie,n=e?t.args_as_names():null;if(a.forEach((t,i)=>{e&&n.some(e=>e.name===t.name.name)?a.delete(i):((t=t.clone()).value=null,l.push(t),a.set(i,t))}),l.length>0){for(var f=0;f<t.body.length;){if(t.body[f]instanceof he){var _,d,h=t.body[f].body;if(h instanceof Ct&&"="==h.operator&&(_=h.left)instanceof Bt&&a.has(_.name)){if((E=a.get(_.name)).value)break;E.value=h.right,m(l,E),l.push(E),t.body.splice(f,1);continue}if(h instanceof Et&&(d=h.expressions[0])instanceof Ct&&"="==d.operator&&(_=d.left)instanceof Bt&&a.has(_.name)){var E;if((E=a.get(_.name)).value)break;E.value=d.right,m(l,E),l.push(E),t.body[f].body=mi(h,h.expressions.slice(1));continue}}if(t.body[f]instanceof ve)t.body.splice(f,1);else{if(!(t.body[f]instanceof Se))break;var g=[f,1].concat(t.body[f].body);t.body.splice.apply(t.body,g)}}l=p(ut,t,{definitions:l}),o.push(l)}}t.body=r.concat(o,t.body)}return t})),xe.DEFMETHOD("make_var_name",(function(e){for(var t=this.var_names(),n=e=e.replace(/(?:^[^a-z_$]|[^a-z0-9_$])/gi,"_"),i=0;t.has(n);i++)n=e+"$"+i;return this.add_var_name(n),n})),xe.DEFMETHOD("hoist_properties",(function(e){var t=this;if(!e.option("hoist_props")||e.has_directive("use asm"))return t;var n=t instanceof Ne&&e.top_retain||s,i=new Map,r=new Fn((function(o,a){if(o instanceof st&&r.parent()instanceof dt)return o;if(o instanceof ft){const r=o.name;let u,c;if(r.scope===t&&1!=(u=r.definition()).escaped&&!u.assignments&&!u.direct_access&&!u.single_use&&!e.exposed(u)&&!n(u)&&(c=r.fixed_value())===o.value&&c instanceof Mt&&c.properties.every(e=>"string"==typeof e.key)){a(o,this);const e=new Map,t=[];return c.properties.forEach((function(n){t.push(p(ft,o,{name:s(r,n.key,e),value:n.value}))})),i.set(u.id,e),f.splice(t)}}else if(o instanceof gt&&o.expression instanceof rn){const e=i.get(o.expression.definition().id);if(e){const t=e.get(String(wi(o.property))),n=p(rn,o,{name:t.name,scope:o.expression.scope,thedef:t});return n.reference({}),n}}function s(e,n,i){const r=p(e.CTOR,e,{name:t.make_var_name(e.name+"_"+n),scope:t}),o=t.def_variable(r);return i.set(String(n),o),t.enclosed.push(o),r}}));return t.transform(r)})),function(e){function t(e,t,n){var i=e.length;if(!i)return null;for(var r=[],o=!1,a=0;a<i;a++){var s=e[a].drop_side_effect_free(t,n);o|=s!==e[a],s&&(r.push(s),n=!1)}return o?r.length?r:null:e}e(pe,c),e(ln,l),e(un,l),e(mt,(function(e,n){if(!this.is_expr_pure(e)){if(this.expression.is_call_pure(e)){var i=this.args.slice();return i.unshift(this.expression.expression),(i=t(i,e,n))&&mi(this,i)}if(li(this.expression)&&(!this.expression.name||!this.expression.name.definition().references.length)){var r=this.clone();return r.expression.process_expression(!1,e),r}return this}T(this,Mn)&&e.warn("Dropping __PURE__ call [{file}:{line},{col}]",this.start);var o=t(this.args,e,n);return o&&mi(this,o)})),e(Le,l),e(Pe,l),e(Ve,l),e(It,(function(e){const t=[],n=this.extends&&this.extends.drop_side_effect_free(e);n&&t.push(n);for(const n of this.properties){const i=n.drop_side_effect_free(e);i&&t.push(i)}return t.length?mi(this,t):null})),e(yt,(function(e,t){var n=this.right.drop_side_effect_free(e);if(!n)return this.left.drop_side_effect_free(e,t);if(Ni.has(this.operator)){if(n===this.right)return this;var i=this.clone();return i.right=n,i}var r=this.left.drop_side_effect_free(e,t);return r?mi(this,[r,n]):this.right.drop_side_effect_free(e,t)})),e(Ct,(function(e){var t=this.left;if(t.has_side_effects(e)||e.has_directive("use strict")&&t instanceof gt&&t.expression.is_constant())return this;for(ri(this,32);t instanceof gt;)t=t.expression;return t.is_constant_expression(e.find_parent(xe))?this.right.drop_side_effect_free(e):this})),e(bt,(function(e){var t=this.consequent.drop_side_effect_free(e),n=this.alternative.drop_side_effect_free(e);if(t===this.consequent&&n===this.alternative)return this;if(!t)return n?p(yt,this,{operator:"||",left:this.condition,right:n}):this.condition.drop_side_effect_free(e);if(!n)return p(yt,this,{operator:"&&",left:this.condition,right:t});var i=this.clone();return i.consequent=t,i.alternative=n,i})),e(vt,(function(e,t){if(ki.has(this.operator))return this.expression.has_side_effects(e)?oi(this,32):ri(this,32),this;if("typeof"==this.operator&&this.expression instanceof rn)return null;var n=this.expression.drop_side_effect_free(e,t);return t&&n&&Ti(n)?n===this.expression&&"!"==this.operator?this:n.negate(e,t):n})),e(rn,(function(e){return this.is_declared(e)||Xi.has(this.name)?null:this})),e(Mt,(function(e,n){var i=t(this.properties,e,n);return i&&mi(this,i)})),e(Rt,(function(e,t){const n=this instanceof wt&&this.key instanceof pe&&this.key.drop_side_effect_free(e,t),i=this.value.drop_side_effect_free(e,t);return n&&i?mi(this,[n,i]):n||i})),e(Lt,(function(e){const t=this.computed_key()&&this.key.drop_side_effect_free(e),n=this.static&&this.value&&this.value.drop_side_effect_free(e);return t&&n?mi(this,[t,n]):t||n||null})),e(kt,(function(){return this.computed_key()?this.key:null})),e(Nt,(function(){return this.computed_key()?this.key:null})),e(xt,(function(){return this.computed_key()?this.key:null})),e(Ft,(function(e,n){var i=t(this.elements,e,n);return i&&mi(this,i)})),e(Dt,(function(e,t){return this.expression.may_throw_on_access(e)?this:this.expression.drop_side_effect_free(e,t)})),e(St,(function(e,t){if(this.expression.may_throw_on_access(e))return this;var n=this.expression.drop_side_effect_free(e,t);if(!n)return this.property.drop_side_effect_free(e,t);var i=this.property.drop_side_effect_free(e);return i?mi(this,[n,i]):n})),e(Et,(function(e){var t=this.tail_node(),n=t.drop_side_effect_free(e);if(n===t)return this;var i=this.expressions.slice(0,-1);return n&&i.push(n),i.length?mi(this,i):p(pn,this,{value:0})})),e(ke,(function(e,t){return this.expression.drop_side_effect_free(e,t)})),e(He,l),e(Ge,(function(e){var n=t(this.segments,e,In);return n&&mi(this,n)}))}((function(e,t){e.DEFMETHOD("drop_side_effect_free",t)})),si(he,(function(e,t){if(t.option("side_effects")){var n=e.body,i=n.drop_side_effect_free(t,!0);if(!i)return t.warn("Dropping side-effect-free statement [{file}:{line},{col}]",e.start),p(ve,e);if(i!==n)return p(he,e,{body:i})}return e})),si(Oe,(function(e,t){return t.option("loops")?p(Fe,e,e).optimize(t):e})),si(Ce,(function(e,t){if(!t.option("loops"))return e;var n=e.condition.tail_node().evaluate(t);if(!(n instanceof pe)){if(n)return p(Fe,e,{body:p(Se,e.body,{body:[e.body,p(he,e.condition,{body:e.condition})]})}).optimize(t);if(!$i(e,t.parent()))return p(Se,e.body,{body:[e.body,p(he,e.condition,{body:e.condition})]}).optimize(t)}return e})),si(Fe,(function(e,t){if(!t.option("loops"))return e;if(t.option("side_effects")&&e.init&&(e.init=e.init.drop_side_effect_free(t)),e.condition){var n=e.condition.evaluate(t);if(!(n instanceof pe))if(n)e.condition=null;else if(!t.option("dead_code")){var i=e.condition;e.condition=hi(n,e.condition),e.condition=Li(e.condition.transform(t),i)}if(t.option("dead_code")&&(n instanceof pe&&(n=e.condition.tail_node().evaluate(t)),!n)){var r=[];return Ri(t,e.body,r),e.init instanceof _e?r.push(e.init):e.init&&r.push(p(he,e.init,{body:e.init})),r.push(p(he,e.condition,{body:e.condition})),p(Se,e,{body:r}).optimize(t)}}return function e(t,n){var i=t.body instanceof Se?t.body.body[0]:t.body;if(n.option("dead_code")&&o(i)){var r=[];return t.init instanceof _e?r.push(t.init):t.init&&r.push(p(he,t.init,{body:t.init})),t.condition&&r.push(p(he,t.condition,{body:t.condition})),Ri(n,t.body,r),p(Se,t,{body:r})}return i instanceof Qe&&(o(i.body)?(t.condition?t.condition=p(yt,t.condition,{left:t.condition,operator:"&&",right:i.condition.negate(n)}):t.condition=i.condition.negate(n),a(i.alternative)):o(i.alternative)&&(t.condition?t.condition=p(yt,t.condition,{left:t.condition,operator:"&&",right:i.condition}):t.condition=i.condition,a(i.body))),t;function o(e){return e instanceof $e&&n.loopcontrol_target(e)===n.self()}function a(i){i=Di(i),t.body instanceof Se?(t.body=t.body.clone(),t.body.body=i.concat(t.body.body.slice(1)),t.body=t.body.transform(n)):t.body=p(Se,t.body,{body:i}).transform(n),t=e(t,n)}}(e,t)})),si(Qe,(function(e,t){if(Si(e.alternative)&&(e.alternative=null),!t.option("conditionals"))return e;var n=e.condition.evaluate(t);if(!(t.option("dead_code")||n instanceof pe)){var i=e.condition;e.condition=hi(n,i),e.condition=Li(e.condition.transform(t),i)}if(t.option("dead_code")){if(n instanceof pe&&(n=e.condition.tail_node().evaluate(t)),!n){t.warn("Condition always false [{file}:{line},{col}]",e.condition.start);var r=[];return Ri(t,e.body,r),r.push(p(he,e.condition,{body:e.condition})),e.alternative&&r.push(e.alternative),p(Se,e,{body:r}).optimize(t)}if(!(n instanceof pe))return t.warn("Condition always true [{file}:{line},{col}]",e.condition.start),(r=[]).push(p(he,e.condition,{body:e.condition})),r.push(e.body),e.alternative&&Ri(t,e.alternative,r),p(Se,e,{body:r}).optimize(t)}var o=e.condition.negate(t),a=e.condition.size(),s=o.size(),u=s<a;if(e.alternative&&u){u=!1,e.condition=o;var c=e.body;e.body=e.alternative||p(ve,e),e.alternative=c}if(Si(e.body)&&Si(e.alternative))return p(he,e.condition,{body:e.condition.clone()}).optimize(t);if(e.body instanceof he&&e.alternative instanceof he)return p(he,e,{body:p(bt,e,{condition:e.condition,consequent:e.body.body,alternative:e.alternative.body})}).optimize(t);if(Si(e.alternative)&&e.body instanceof he)return a===s&&!u&&e.condition instanceof yt&&"||"==e.condition.operator&&(u=!0),u?p(he,e,{body:p(yt,e,{operator:"||",left:o,right:e.body.body})}).optimize(t):p(he,e,{body:p(yt,e,{operator:"&&",left:e.condition,right:e.body.body})}).optimize(t);if(e.body instanceof ve&&e.alternative instanceof he)return p(he,e,{body:p(yt,e,{operator:"||",left:e.condition,right:e.alternative.body})}).optimize(t);if(e.body instanceof ze&&e.alternative instanceof ze&&e.body.TYPE==e.alternative.TYPE)return p(e.body.CTOR,e,{value:p(bt,e,{condition:e.condition,consequent:e.body.value||p(gn,e.body),alternative:e.alternative.value||p(gn,e.alternative)}).transform(t)}).optimize(t);if(e.body instanceof Qe&&!e.body.alternative&&!e.alternative&&(e=p(Qe,e,{condition:p(yt,e.condition,{operator:"&&",left:e.condition,right:e.body.condition}),body:e.body.body,alternative:null})),zi(e.body)&&e.alternative){var l=e.alternative;return e.alternative=null,p(Se,e,{body:[e,l]}).optimize(t)}if(zi(e.alternative)){r=e.body;return e.body=e.alternative,e.condition=u?o:e.condition.negate(t),e.alternative=null,p(Se,e,{body:[e,r]}).optimize(t)}return e})),si(et,(function(e,t){if(!t.option("switches"))return e;var n,i=e.expression.evaluate(t);if(!(i instanceof pe)){var r=e.expression;e.expression=hi(i,r),e.expression=Li(e.expression.transform(t),r)}if(!t.option("dead_code"))return e;i instanceof pe&&(i=e.expression.tail_node().evaluate(t));for(var o,a,s=[],u=[],c=0,l=e.body.length;c<l&&!a;c++){if((n=e.body[c])instanceof nt)o?D(n,u[u.length-1]):o=n;else if(!(i instanceof pe)){if(!((E=n.expression.evaluate(t))instanceof pe)&&E!==i){D(n,u[u.length-1]);continue}if(E instanceof pe&&(E=n.expression.tail_node().evaluate(t)),E===i&&(a=n,o)){var f=u.indexOf(o);u.splice(f,1),D(o,u[f-1]),o=null}}if(zi(n)){var _=u[u.length-1];zi(_)&&_.body.length==n.body.length&&p(Se,_,_).equivalent_to(p(Se,n,n))&&(_.body=[])}u.push(n)}for(;c<l;)D(e.body[c++],u[u.length-1]);for(u.length>0&&(u[0].body=s.concat(u[0].body)),e.body=u;n=u[u.length-1];){var d=n.body[n.body.length-1];if(d instanceof $e&&t.loopcontrol_target(d)===e&&n.body.pop(),n.body.length||n instanceof it&&(o||n.expression.has_side_effects(t)))break;u.pop()===o&&(o=null)}if(0==u.length)return p(Se,e,{body:s.concat(p(he,e.expression,{body:e.expression}))}).optimize(t);if(1==u.length&&(u[0]===a||u[0]===o)){var m=!1,h=new On((function(t){if(m||t instanceof Ie||t instanceof he)return!0;t instanceof $e&&h.loopcontrol_target(t)===e&&(m=!0)}));if(e.walk(h),!m){var E,g=u[0].body.slice();return(E=u[0].expression)&&g.unshift(p(he,E,{body:E})),g.unshift(p(he,e.expression,{body:e.expression})),p(Se,e,{body:g}).optimize(t)}}return e;function D(e,n){n&&!zi(n)?n.body=n.body.concat(e.body):Ri(t,e,s)}})),si(rt,(function(e,t){if(Mi(e.body,t),e.bcatch&&e.bfinally&&e.bfinally.body.every(Si)&&(e.bfinally=null),t.option("dead_code")&&e.body.every(Si)){var n=[];return e.bcatch&&Ri(t,e.bcatch,n),e.bfinally&&n.push(...e.bfinally.body),p(Se,e,{body:n}).optimize(t)}return e})),st.DEFMETHOD("remove_initializers",(function(){var e=[];this.definitions.forEach((function(t){t.name instanceof Ut?(t.value=null,e.push(t)):yn(t.name,n=>{n instanceof Ut&&e.push(p(ft,t,{name:n,value:null}))})})),this.definitions=e})),st.DEFMETHOD("to_assignments",(function(e){var t=e.option("reduce_vars"),n=this.definitions.reduce((function(e,n){if(!n.value||n.name instanceof Ke){if(n.value){var i=p(ft,n,{name:n.name,value:n.value}),r=p(ut,n,{definitions:[i]});e.push(r)}}else{var o=p(rn,n.name,n.name);e.push(p(Ct,n,{operator:"=",left:o,right:n.value})),t&&(o.definition().fixed=!1)}return(n=n.name.definition()).eliminated++,n.replaced--,e}),[]);return 0==n.length?null:mi(this,n)})),si(st,(function(e){return 0==e.definitions.length?p(ve,e):e})),si(_t,(function(e){return e})),si(mt,(function(e,t){var n=e.expression,i=n;sr(e,t,e.args);var r=e.args.every(e=>!(e instanceof ke));if(t.option("reduce_vars")&&i instanceof rn&&!T(e,wn)){const e=i.fixed_value();ji(e,t)||(i=e)}var o=i instanceof Ie;if(t.option("unused")&&r&&o&&!i.uses_arguments&&!i.pinned()){for(var a=0,s=0,u=0,c=e.args.length;u<c;u++){if(i.argnames[u]instanceof ke){if(ii(i.argnames[u].expression,1))for(;u<c;){(D=e.args[u++].drop_side_effect_free(t))&&(e.args[a++]=D)}else for(;u<c;)e.args[a++]=e.args[u++];s=a;break}var l=u>=i.argnames.length;if(l||ii(i.argnames[u],1)){if(D=e.args[u].drop_side_effect_free(t))e.args[a++]=D;else if(!l){e.args[a++]=p(pn,e.args[u],{value:0});continue}}else e.args[a++]=e.args[u];s=a}e.args.length=s}if(t.option("unsafe"))if(yi(n))switch(n.name){case"Array":if(1!=e.args.length)return p(Ft,e,{elements:e.args}).optimize(t);if(e.args[0]instanceof pn&&e.args[0].value<=11){const t=[];for(let n=0;n<e.args[0].value;n++)t.push(new Dn);return new Ft({elements:t})}break;case"Object":if(0==e.args.length)return p(Mt,e,{properties:[]});break;case"String":if(0==e.args.length)return p(fn,e,{value:""});if(e.args.length<=1)return p(yt,e,{left:e.args[0],operator:"+",right:p(fn,e,{value:""})}).optimize(t);break;case"Number":if(0==e.args.length)return p(pn,e,{value:0});if(1==e.args.length&&t.option("unsafe_math"))return p(At,e,{expression:e.args[0],operator:"+"}).optimize(t);break;case"Symbol":1==e.args.length&&e.args[0]instanceof fn&&t.option("unsafe_symbols")&&(e.args.length=0);break;case"Boolean":if(0==e.args.length)return p(An,e);if(1==e.args.length)return p(At,e,{expression:p(At,e,{expression:e.args[0],operator:"!"}),operator:"!"}).optimize(t);break;case"RegExp":var f=[];if(e.args.length>=1&&e.args.length<=2&&e.args.every(e=>{var n=e.evaluate(t);return f.push(n),e!==n})){let[n,i]=f;n=A(new RegExp(n).source);const r=p(dn,e,{value:{source:n,flags:i}});if(r._eval(t)!==r)return r;t.warn("Error converting {expr} [{file}:{line},{col}]",{expr:e.print_to_string(),file:e.start.file,line:e.start.line,col:e.start.col})}}else if(n instanceof Dt)switch(n.property){case"toString":if(0==e.args.length&&!n.expression.may_throw_on_access(t))return p(yt,e,{left:p(fn,e,{value:""}),operator:"+",right:n.expression}).optimize(t);break;case"join":if(n.expression instanceof Ft)e:{var _;if(!(e.args.length>0&&(_=e.args[0].evaluate(t))===e.args[0])){var d,m=[],h=[];for(u=0,c=n.expression.elements.length;u<c;u++){var E=n.expression.elements[u];if(E instanceof ke)break e;var g=E.evaluate(t);g!==E?h.push(g):(h.length>0&&(m.push(p(fn,e,{value:h.join(_)})),h.length=0),m.push(E))}return h.length>0&&m.push(p(fn,e,{value:h.join(_)})),0==m.length?p(fn,e,{value:""}):1==m.length?m[0].is_string(t)?m[0]:p(yt,m[0],{operator:"+",left:p(fn,e,{value:""}),right:m[0]}):""==_?(d=m[0].is_string(t)||m[1].is_string(t)?m.shift():p(fn,e,{value:""}),m.reduce((function(e,t){return p(yt,t,{operator:"+",left:e,right:t})}),d).optimize(t)):((D=e.clone()).expression=D.expression.clone(),D.expression.expression=D.expression.expression.clone(),D.expression.expression.elements=m,Vi(t,e,D));var D}}break;case"charAt":if(n.expression.is_string(t)){var S=e.args[0],v=S?S.evaluate(t):0;if(v!==S)return p(St,n,{expression:n.expression,property:hi(0|v,S||n)}).optimize(t)}break;case"apply":if(2==e.args.length&&e.args[1]instanceof Ft)return(L=e.args[1].elements.slice()).unshift(e.args[0]),p(mt,e,{expression:p(Dt,n,{expression:n.expression,property:"call"}),args:L}).optimize(t);break;case"call":var y=n.expression;if(y instanceof rn&&(y=y.fixed_value()),y instanceof Ie&&!y.contains_this())return(e.args.length?mi(this,[e.args[0],p(mt,e,{expression:n.expression,args:e.args.slice(1)})]):p(mt,e,{expression:n.expression,args:[]})).optimize(t)}if(t.option("unsafe_Function")&&yi(n)&&"Function"==n.name){if(0==e.args.length)return p(Pe,e,{argnames:[],body:[]}).optimize(t);if(e.args.every(e=>e instanceof fn))try{var b=ce(M="n(function("+e.args.slice(0,-1).map((function(e){return e.value})).join(",")+"){"+e.args[e.args.length-1].value+"})"),C={ie8:t.option("ie8")};b.figure_out_scope(C);var O,F=new ai(t.options);(b=b.transform(F)).figure_out_scope(C),qn.reset(),b.compute_char_frequency(C),b.mangle_names(C),yn(b,e=>{if(li(e))return O=e,Cn});var M=Bn();return Se.prototype._codegen.call(O,O,M),e.args=[p(fn,e,{value:O.argnames.map((function(e){return e.print_to_string()})).join(",")}),p(fn,e.args[e.args.length-1],{value:M.get().replace(/^{|}$/g,"")})],e}catch(n){if(!(n instanceof Q))throw n;t.warn("Error parsing code passed to new Function [{file}:{line},{col}]",e.args[e.args.length-1].start),t.warn(n.toString())}}var R=o&&i.body[0],w=o&&!i.is_generator&&!i.async,x=w&&t.option("inline")&&!e.is_expr_pure(t);if(x&&R instanceof We){let n=R.value;if(!n||n.is_constant_expression()){n=n?n.clone(!0):p(gn,e);const i=e.args.concat(n);return mi(e,i).optimize(t)}if(1===i.argnames.length&&i.argnames[0]instanceof Wt&&e.args.length<2&&n instanceof rn&&n.name===i.argnames[0].name){let n;return e.args[0]instanceof gt&&(n=t.parent())instanceof mt&&n.expression===e?mi(e,[p(pn,e,{value:0}),e.args[0].optimize(t)]):(e.args[0]||p(gn)).optimize(t)}}if(x){var N,k,I=-1;let o,a,s;if(r&&!i.uses_arguments&&!i.pinned()&&!(t.parent()instanceof It)&&!(i.name&&i instanceof Pe)&&(a=function(e){var n=i.body,r=n.length;if(t.option("inline")<3)return 1==r&&V(e);e=null;for(var o=0;o<r;o++){var a=n[o];if(a instanceof ut){if(e&&!a.definitions.every(e=>!e.value))return!1}else{if(e)return!1;a instanceof ve||(e=a)}}return V(e)}(R))&&(n===i||T(e,Rn)||t.option("unused")&&1==(o=n.definition()).references.length&&!Ji(t,o)&&i.is_constant_expression(n.scope))&&!T(e,Mn|wn)&&!i.contains_this()&&function(){var n=new Set;do{if((N=t.parent(++I)).is_block_scope()&&N.block_scope&&N.block_scope.variables.forEach((function(e){n.add(e.name)})),N instanceof ot)N.argname&&n.add(N.argname.name);else if(N instanceof ye)k=[];else if(N instanceof rn&&N.fixed_value()instanceof xe)return!1}while(!(N instanceof xe));var r=!(N instanceof Ne)||t.toplevel.vars,o=t.option("inline");return!!function(e,t){for(var n=i.body.length,r=0;r<n;r++){var o=i.body[r];if(o instanceof ut){if(!t)return!1;for(var a=o.definitions.length;--a>=0;){var s=o.definitions[a].name;if(s instanceof Ke||e.has(s.name)||Oi.has(s.name)||N.var_names().has(s.name))return!1;k&&k.push(s.definition())}}}return!0}(n,o>=3&&r)&&(!!function(e,t){for(var n=0,r=i.argnames.length;n<r;n++){var o=i.argnames[n];if(o instanceof Ot){if(ii(o.left,1))continue;return!1}if(o instanceof Ke)return!1;if(o instanceof ke){if(ii(o.expression,1))continue;return!1}if(!ii(o,1)){if(!t||e.has(o.name)||Oi.has(o.name)||N.var_names().has(o.name))return!1;k&&k.push(o.definition())}}return!0}(n,o>=2&&r)&&(!!function(){var t=new Set;const n=e=>{if(e instanceof xe){var n=new Set;return e.enclosed.forEach((function(e){n.add(e.name)})),e.variables.forEach((function(e){n.delete(e)})),n.forEach((function(e){t.add(e)})),!0}};for(let t=0;t<e.args.length;t++)yn(e.args[t],n);if(0==t.size)return!0;for(let e=0,n=i.argnames.length;e<n;e++){var r=i.argnames[e];if(!(r instanceof Ot&&ii(r.left,1))&&(!(r instanceof ke&&ii(r.expression,1))&&!ii(r,1)&&t.has(r.name)))return!1}for(let e=0,n=i.body.length;e<n;e++){var o=i.body[e];if(o instanceof ut)for(var a=o.definitions.length;--a>=0;){var s=o.definitions[a].name;if(s instanceof Ke||t.has(s.name))return!1}}return!0}()&&(!k||0==k.length||!tr(i,k))))}()&&(s=_i(t))&&!Qi(s,i)&&!function(){let e,n=0;for(;e=t.parent(n++);){if(e instanceof Ot)return!0;if(e instanceof De)break}return!1}()&&!(N instanceof It))return ri(i,256),s.add_child_scope(i),mi(e,function(n){var r=[],o=[];if(function(t,n){for(var r=i.argnames.length,o=e.args.length;--o>=r;)n.push(e.args[o]);for(o=r;--o>=0;){var a=i.argnames[o],s=e.args[o];if(ii(a,1)||!a.name||N.var_names().has(a.name))s&&n.push(s);else{var u=p(Gt,a,a);a.definition().orig.push(u),!s&&k&&(s=p(gn,e)),B(t,n,u,s)}}t.reverse(),n.reverse()}(r,o),function(e,t){for(var n=t.length,r=0,o=i.body.length;r<o;r++){var a=i.body[r];if(a instanceof ut)for(var s=0,u=a.definitions.length;s<u;s++){var c=a.definitions[s],l=c.name;if(B(e,t,l,c.value),k&&i.argnames.every(e=>e.name!=l.name)){var f=i.variables.get(l.name),_=p(rn,l,l);f.references.push(_),t.splice(n++,0,p(Ct,c,{operator:"=",left:_,right:p(gn,l)}))}}}}(r,o),o.push(n),r.length){const e=N.body.indexOf(t.parent(I-1))+1;N.body.splice(e,0,p(ut,i,{definitions:r}))}return o.map(e=>e.clone(!0))}(a)).optimize(t)}if(w&&t.option("side_effects")&&i.body.every(Si)){var L=e.args.concat(p(gn,e));return mi(e,L).optimize(t)}if(t.option("negate_iife")&&t.parent()instanceof he&&Ti(e))return e.negate(t,!0);var P=e.evaluate(t);return P!==e?(P=hi(P,e).optimize(t),Vi(t,P,e)):e;function V(t){return t?t instanceof We?t.value?t.value.clone(!0):p(gn,e):t instanceof he?p(At,t,{operator:"void",expression:t.body.clone(!0)}):void 0:p(gn,e)}function B(t,n,i,r){var o=i.definition();N.variables.set(i.name,o),N.enclosed.push(o),N.var_names().has(i.name)||(N.add_var_name(i.name),t.push(p(ft,i,{name:i,value:null})));var a=p(rn,i,i);o.references.push(a),r&&n.push(p(Ct,e,{operator:"=",left:a,right:r.clone()}))}})),si(ht,(function(e,t){return t.option("unsafe")&&yi(e.expression)&&["Object","RegExp","Function","Error","Array"].includes(e.expression.name)?p(mt,e,e).transform(t):e})),si(Et,(function(e,t){if(!t.option("side_effects"))return e;var n,i,r=[];n=In(t),i=e.expressions.length-1,e.expressions.forEach((function(e,o){o<i&&(e=e.drop_side_effect_free(t,n)),e&&(gi(r,e),n=!1)}));var o=r.length-1;return function(){for(;o>0&&xi(r[o],t);)o--;o<r.length-1&&(r[o]=p(At,e,{operator:"void",expression:r[o]}),r.length=o+1)}(),0==o?((e=Ei(t.parent(),t.self(),r[0]))instanceof Et||(e=e.optimize(t)),e):(e.expressions=r,e)})),vt.DEFMETHOD("lift_sequences",(function(e){if(e.option("sequences")&&this.expression instanceof Et){var t=this.expression.expressions.slice(),n=this.clone();return n.expression=t.pop(),t.push(n),mi(this,t).optimize(e)}return this})),si(Tt,(function(e,t){return e.lift_sequences(t)})),si(At,(function(e,t){var n=e.expression;if("delete"==e.operator&&!(n instanceof rn||n instanceof gt||Fi(n))){if(n instanceof Et){const i=n.expressions.slice();return i.push(p(Tn,e)),mi(e,i).optimize(t)}return mi(e,[n,p(Tn,e)]).optimize(t)}var i=e.lift_sequences(t);if(i!==e)return i;if(t.option("side_effects")&&"void"==e.operator)return(n=n.drop_side_effect_free(t))?(e.expression=n,e):p(gn,e).optimize(t);if(t.in_boolean_context())switch(e.operator){case"!":if(n instanceof At&&"!"==n.operator)return n.expression;n instanceof yt&&(e=Vi(t,e,n.negate(t,In(t))));break;case"typeof":return t.warn("Boolean expression always true [{file}:{line},{col}]",e.start),(n instanceof rn?p(Tn,e):mi(e,[n,p(Tn,e)])).optimize(t)}if("-"==e.operator&&n instanceof Sn&&(n=n.transform(t)),n instanceof yt&&("+"==e.operator||"-"==e.operator)&&("*"==n.operator||"/"==n.operator||"%"==n.operator))return p(yt,e,{operator:n.operator,left:p(At,n.left,{operator:e.operator,expression:n.left}),right:n.right});if("-"!=e.operator||!(n instanceof pn||n instanceof Sn||n instanceof _n)){var r=e.evaluate(t);if(r!==e)return Vi(t,r=hi(r,e).optimize(t),e)}return e})),yt.DEFMETHOD("lift_sequences",(function(e){if(e.option("sequences")){if(this.left instanceof Et){var t=this.left.expressions.slice();return(n=this.clone()).left=t.pop(),t.push(n),mi(this,t).optimize(e)}if(this.right instanceof Et&&!this.left.has_side_effects(e)){for(var n,i="="==this.operator&&this.left instanceof rn,r=(t=this.right.expressions).length-1,o=0;o<r&&(i||!t[o].has_side_effects(e));o++);if(o==r)return t=t.slice(),(n=this.clone()).right=t.pop(),t.push(n),mi(this,t).optimize(e);if(o>0)return(n=this.clone()).right=mi(this.right,t.slice(o)),(t=t.slice(0,o)).push(n),mi(this,t).optimize(e)}}return this}));var Zi=E("== === != !== * & | ^");function Ji(e,t){for(var n,i=0;n=e.parent(i);i++)if(n instanceof Ie||n instanceof It){var r=n.name;if(r&&r.definition()===t)break}return n}function Qi(e,t){for(const n of t.enclosed){if(t.variables.has(n.name))continue;const i=e.find_variable(n.name);if(i){if(i===n)continue;return!0}}return!1}function er(e,t){return e instanceof rn||e.TYPE===t.TYPE}function tr(e,t){const n=e=>{if(e instanceof rn&&i(e.definition(),t))return Cn};return bn(e,(t,i)=>{if(t instanceof xe&&t!==e){var r=i.parent();if(r instanceof mt&&r.expression===t)return;return!yn(t,n)||Cn}})}si(yt,(function(e,t){function n(){return e.left.is_constant()||e.right.is_constant()||!e.left.has_side_effects(t)&&!e.right.has_side_effects(t)}function i(t){if(n()){t&&(e.operator=t);var i=e.left;e.left=e.right,e.right=i}}if(Zi.has(e.operator)&&e.right.is_constant()&&!e.left.is_constant()&&(e.left instanceof yt&&se[e.left.operator]>=se[e.operator]||i()),e=e.lift_sequences(t),t.option("comparisons"))switch(e.operator){case"===":case"!==":var r=!0;(e.left.is_string(t)&&e.right.is_string(t)||e.left.is_number(t)&&e.right.is_number(t)||e.left.is_boolean()&&e.right.is_boolean()||e.left.equivalent_to(e.right))&&(e.operator=e.operator.substr(0,2));case"==":case"!=":if(!r&&xi(e.left,t))e.left=p(hn,e.left);else if(t.option("typeofs")&&e.left instanceof fn&&"undefined"==e.left.value&&e.right instanceof At&&"typeof"==e.right.operator){var o=e.right.expression;(o instanceof rn?!o.is_declared(t):o instanceof gt&&t.option("ie8"))||(e.right=o,e.left=p(gn,e.left).optimize(t),2==e.operator.length&&(e.operator+="="))}else if(e.left instanceof rn&&e.right instanceof rn&&e.left.definition()===e.right.definition()&&((u=e.left.fixed_value())instanceof Ft||u instanceof Ie||u instanceof Mt||u instanceof It))return p("="==e.operator[0]?Tn:An,e);break;case"&&":case"||":var a=e.left;if(a.operator==e.operator&&(a=a.right),a instanceof yt&&a.operator==("&&"==e.operator?"!==":"===")&&e.right instanceof yt&&a.operator==e.right.operator&&(xi(a.left,t)&&e.right.left instanceof hn||a.left instanceof hn&&xi(e.right.left,t))&&!a.right.has_side_effects(t)&&a.right.equivalent_to(e.right.right)){var s=p(yt,e,{operator:a.operator.slice(0,-1),left:p(hn,e),right:a.right});return a!==e.left&&(s=p(yt,e,{operator:e.operator,left:e.left.left,right:s})),s}}var u;if("+"==e.operator&&t.in_boolean_context()){var c=e.left.evaluate(t),l=e.right.evaluate(t);if(c&&"string"==typeof c)return t.warn("+ in boolean context always true [{file}:{line},{col}]",e.start),mi(e,[e.right,p(Tn,e)]).optimize(t);if(l&&"string"==typeof l)return t.warn("+ in boolean context always true [{file}:{line},{col}]",e.start),mi(e,[e.left,p(Tn,e)]).optimize(t)}if(t.option("comparisons")&&e.is_boolean()){if(!(t.parent()instanceof yt)||t.parent()instanceof Ct){var f=p(At,e,{operator:"!",expression:e.negate(t,In(t))});e=Vi(t,e,f)}if(t.option("unsafe_comps"))switch(e.operator){case"<":i(">");break;case"<=":i(">=")}}if("+"==e.operator){if(e.right instanceof fn&&""==e.right.getValue()&&e.left.is_string(t))return e.left;if(e.left instanceof fn&&""==e.left.getValue()&&e.right.is_string(t))return e.right;if(e.left instanceof yt&&"+"==e.left.operator&&e.left.left instanceof fn&&""==e.left.left.getValue()&&e.right.is_string(t))return e.left=e.left.right,e.transform(t)}if(t.option("evaluate")){switch(e.operator){case"&&":if(!(c=!!ii(e.left,2)||!ii(e.left,4)&&e.left.evaluate(t)))return t.warn("Condition left of && always false [{file}:{line},{col}]",e.start),Ei(t.parent(),t.self(),e.left).optimize(t);if(!(c instanceof pe))return t.warn("Condition left of && always true [{file}:{line},{col}]",e.start),mi(e,[e.left,e.right]).optimize(t);if(l=e.right.evaluate(t)){if(!(l instanceof pe)){if("&&"==(_=t.parent()).operator&&_.left===t.self()||t.in_boolean_context())return t.warn("Dropping side-effect-free && [{file}:{line},{col}]",e.start),e.left.optimize(t)}}else{if(t.in_boolean_context())return t.warn("Boolean && always false [{file}:{line},{col}]",e.start),mi(e,[e.left,p(An,e)]).optimize(t);ri(e,4)}if("||"==e.left.operator)if(!(d=e.left.right.evaluate(t)))return p(bt,e,{condition:e.left.left,consequent:e.right,alternative:e.left.right}).optimize(t);break;case"||":var _,d;if(!(c=!!ii(e.left,2)||!ii(e.left,4)&&e.left.evaluate(t)))return t.warn("Condition left of || always false [{file}:{line},{col}]",e.start),mi(e,[e.left,e.right]).optimize(t);if(!(c instanceof pe))return t.warn("Condition left of || always true [{file}:{line},{col}]",e.start),Ei(t.parent(),t.self(),e.left).optimize(t);if(l=e.right.evaluate(t)){if(!(l instanceof pe)){if(t.in_boolean_context())return t.warn("Boolean || always true [{file}:{line},{col}]",e.start),mi(e,[e.left,p(Tn,e)]).optimize(t);ri(e,2)}}else if("||"==(_=t.parent()).operator&&_.left===t.self()||t.in_boolean_context())return t.warn("Dropping side-effect-free || [{file}:{line},{col}]",e.start),e.left.optimize(t);if("&&"==e.left.operator)if((d=e.left.right.evaluate(t))&&!(d instanceof pe))return p(bt,e,{condition:e.left.left,consequent:e.left.right,alternative:e.right}).optimize(t);break;case"??":if(rr(e.left))return e.right;if(!((c=e.left.evaluate(t))instanceof pe))return null==c?e.right:e.left;if(t.in_boolean_context()){const n=e.right.evaluate(t);if(!(n instanceof pe||n))return e.left}}var m=!0;switch(e.operator){case"+":if(e.left instanceof ln&&e.right instanceof yt&&"+"==e.right.operator&&e.right.is_string(t)){var h=(g=p(yt,e,{operator:"+",left:e.left,right:e.right.left})).optimize(t);g!==h&&(e=p(yt,e,{operator:"+",left:h,right:e.right.right}))}if(e.right instanceof ln&&e.left instanceof yt&&"+"==e.left.operator&&e.left.is_string(t)){var E=(g=p(yt,e,{operator:"+",left:e.left.right,right:e.right})).optimize(t);g!==E&&(e=p(yt,e,{operator:"+",left:e.left.left,right:E}))}if(e.left instanceof yt&&"+"==e.left.operator&&e.left.is_string(t)&&e.right instanceof yt&&"+"==e.right.operator&&e.right.is_string(t)){var g,D=(g=p(yt,e,{operator:"+",left:e.left.right,right:e.right.left})).optimize(t);g!==D&&(e=p(yt,e,{operator:"+",left:p(yt,e.left,{operator:"+",left:e.left.left,right:D}),right:e.right.right}))}if(e.right instanceof At&&"-"==e.right.operator&&e.left.is_number(t)){e=p(yt,e,{operator:"-",left:e.left,right:e.right.expression});break}if(e.left instanceof At&&"-"==e.left.operator&&n()&&e.right.is_number(t)){e=p(yt,e,{operator:"-",left:e.right,right:e.left.expression});break}if(e.left instanceof Ge){h=e.left;if((E=e.right.evaluate(t))!=e.right)return h.segments[h.segments.length-1].value+=E.toString(),h}if(e.right instanceof Ge){E=e.right;if((h=e.left.evaluate(t))!=e.left)return E.segments[0].value=h.toString()+E.segments[0].value,E}if(e.left instanceof Ge&&e.right instanceof Ge){var S=(h=e.left).segments;E=e.right;S[S.length-1].value+=E.segments[0].value;for(var v=1;v<E.segments.length;v++)S.push(E.segments[v]);return h}case"*":m=t.option("unsafe_math");case"&":case"|":case"^":if(e.left.is_number(t)&&e.right.is_number(t)&&n()&&!(e.left instanceof yt&&e.left.operator!=e.operator&&se[e.left.operator]>=se[e.operator])){var A=p(yt,e,{operator:e.operator,left:e.right,right:e.left});e=e.right instanceof ln&&!(e.left instanceof ln)?Vi(t,A,e):Vi(t,e,A)}m&&e.is_number(t)&&(e.right instanceof yt&&e.right.operator==e.operator&&(e=p(yt,e,{operator:e.operator,left:p(yt,e.left,{operator:e.operator,left:e.left,right:e.right.left,start:e.left.start,end:e.right.left.end}),right:e.right.right})),e.right instanceof ln&&e.left instanceof yt&&e.left.operator==e.operator&&(e.left.left instanceof ln?e=p(yt,e,{operator:e.operator,left:p(yt,e.left,{operator:e.operator,left:e.left.left,right:e.right,start:e.left.left.start,end:e.right.end}),right:e.left.right}):e.left.right instanceof ln&&(e=p(yt,e,{operator:e.operator,left:p(yt,e.left,{operator:e.operator,left:e.left.right,right:e.right,start:e.left.right.start,end:e.right.end}),right:e.left.left}))),e.left instanceof yt&&e.left.operator==e.operator&&e.left.right instanceof ln&&e.right instanceof yt&&e.right.operator==e.operator&&e.right.left instanceof ln&&(e=p(yt,e,{operator:e.operator,left:p(yt,e.left,{operator:e.operator,left:p(yt,e.left.left,{operator:e.operator,left:e.left.right,right:e.right.left,start:e.left.right.start,end:e.right.left.end}),right:e.left.left}),right:e.right.right})))}}if(e.right instanceof yt&&e.right.operator==e.operator&&(Ni.has(e.operator)||"+"==e.operator&&(e.right.left.is_string(t)||e.left.is_string(t)&&e.right.right.is_string(t))))return e.left=p(yt,e.left,{operator:e.operator,left:e.left,right:e.right.left}),e.right=e.right.right,e.transform(t);var T=e.evaluate(t);return T!==e?(T=hi(T,e).optimize(t),Vi(t,T,e)):e})),si(on,(function(e){return e})),si(rn,(function(e,t){if(!t.option("ie8")&&yi(e)&&(!e.scope.uses_with||!t.find_parent(we)))switch(e.name){case"undefined":return p(gn,e).optimize(t);case"NaN":return p(En,e).optimize(t);case"Infinity":return p(Sn,e).optimize(t)}var n=t.parent();if(t.option("reduce_vars")&&Ii(e,n)!==e){const f=e.definition();if(t.top_retain&&f.global&&t.top_retain(f))return f.fixed=!1,f.should_replace=!1,f.single_use=!1,e;var i=e.fixed_value(),r=f.single_use&&!(n instanceof mt&&n.is_expr_pure(t)||T(n,wn));if(r&&(i instanceof Ie||i instanceof It))if(ji(i,t))r=!1;else if(f.scope!==e.scope&&(1==f.escaped||ii(i,16)||function(e){for(var t,n=0;t=e.parent(n++);){if(t instanceof _e)return!1;if(t instanceof Ft||t instanceof wt||t instanceof Mt)return!0}return!1}(t)))r=!1;else if(Ji(t,f))r=!1;else if((f.scope!==e.scope||f.orig[0]instanceof Wt)&&"f"==(r=i.is_constant_expression(e.scope))){var o=e.scope;do{(o instanceof Be||li(o))&&ri(o,16)}while(o=o.parent_scope)}if(r&&i instanceof Ie){const o=_i(t);r=f.scope===e.scope&&!Qi(o,i)||n instanceof mt&&n.expression===e&&!Qi(o,i)}if(r&&i instanceof It){r=(!i.extends||!i.extends.may_throw(t)&&!i.extends.has_side_effects(t))&&!i.properties.some(e=>e.may_throw(t)||e.has_side_effects(t))}if(r&&i){if(i instanceof Pt&&(ri(i,256),i=p(Vt,i,i)),i instanceof Be&&(ri(i,256),i=p(Pe,i,i)),f.recursive_refs>0&&i.name instanceof Yt){const e=i.name.definition();let t=i.variables.get(i.name.name),n=t&&t.orig[0];n instanceof jt||(n=p(jt,i.name,i.name),n.scope=i,i.name=n,t=i.def_function(n)),yn(i,n=>{n instanceof rn&&n.definition()===e&&(n.thedef=t,t.references.push(n))})}return(i instanceof Ie||i instanceof It)&&_i(t).add_child_scope(i),i.optimize(t)}if(i&&void 0===f.should_replace){let e;if(i instanceof un)f.orig[0]instanceof Wt||!f.references.every(e=>f.scope===e.scope)||(e=i);else{var a=i.evaluate(t);a===i||!t.option("unsafe_regexp")&&a instanceof RegExp||(e=hi(a,i))}if(e){var s,u=e.optimize(t).size();yn(i,e=>{if(e instanceof rn)return Cn})?s=function(){var n=e.optimize(t);return n===e?n.clone(!0):n}:(u=Math.min(u,i.size()),s=function(){var n=Li(e.optimize(t),i);return n===e||n===i?n.clone(!0):n});var c=f.name.length,l=0;t.option("unused")&&!t.exposed(f)&&(l=(c+2+u)/(f.references.length-f.assignments)),f.should_replace=u<=c+l&&s}else f.should_replace=!1}if(f.should_replace)return f.should_replace()}return e})),si(gn,(function(e,t){if(t.option("unsafe_undefined")){var n=di(t,"undefined");if(n){var i=p(rn,e,{name:"undefined",scope:n.scope,thedef:n});return ri(i,8),i}}var r=Ii(t.self(),t.parent());return r&&er(r,e)?e:p(At,e,{operator:"void",expression:p(pn,e,{value:0})})})),si(Sn,(function(e,t){var n=Ii(t.self(),t.parent());return n&&er(n,e)?e:!t.option("keep_infinity")||n&&!er(n,e)||di(t,"Infinity")?p(yt,e,{operator:"/",left:p(pn,e,{value:1}),right:p(pn,e,{value:0})}):e})),si(En,(function(e,t){var n=Ii(t.self(),t.parent());return n&&!er(n,e)||di(t,"NaN")?p(yt,e,{operator:"/",left:p(pn,e,{value:0}),right:p(pn,e,{value:0})}):e}));const nr=E("+ - / * % >> << >>> | ^ &"),ir=E("* | ^ &");function rr(e){let t;return e instanceof hn||xi(e)||e instanceof rn&&(t=e.definition().fixed)instanceof pe&&rr(t)}function or(e,t){return e instanceof rn&&(e=e.fixed_value()),!!e&&(!(e instanceof Ie||e instanceof It)||(!(e instanceof Ie&&e.contains_this())||t.parent()instanceof ht))}function ar(e,t){return t.in_boolean_context()?Vi(t,e,mi(e,[e,p(Tn,e)]).optimize(t)):e}function sr(e,t,n){for(var i=0;i<n.length;i++){var r=n[i];if(r instanceof ke){var o=r.expression;o instanceof Ft&&(n.splice(i,1,...o.elements),i--)}}return e}function ur(e,t){if(!t.option("computed_props"))return e;if(!(e.key instanceof ln))return e;if(e.key instanceof fn||e.key instanceof pn){if("__proto__"===e.key.value)return e;if("constructor"==e.key.value&&t.parent()instanceof It)return e;e.key=e instanceof wt?e.key.value:p(e instanceof Lt?$t:qt,e.key,{name:e.key.value})}return e}si(Ct,(function(e,t){var n;if(t.option("dead_code")&&e.left instanceof rn&&(n=e.left.definition()).scope===t.find_parent(Ie)){var i,r=0,o=e;do{if(i=o,(o=t.parent(r++))instanceof ze){if(a(r,o))break;if(tr(n.scope,[n]))break;return"="==e.operator?e.right:(n.fixed=!1,p(yt,e,{operator:e.operator.slice(0,-1),left:e.left,right:e.right}).optimize(t))}}while(o instanceof yt&&o.right===i||o instanceof Et&&o.tail_node()===i)}return"="==(e=e.lift_sequences(t)).operator&&e.left instanceof rn&&e.right instanceof yt&&(e.right.left instanceof rn&&e.right.left.name==e.left.name&&nr.has(e.right.operator)?(e.operator=e.right.operator+"=",e.right=e.right.right):e.right.right instanceof rn&&e.right.right.name==e.left.name&&ir.has(e.right.operator)&&!e.right.left.has_side_effects(t)&&(e.operator=e.right.operator+"=",e.right=e.right.left)),e;function a(n,i){var r=e.right;e.right=p(hn,r);var o=i.may_throw(t);e.right=r;for(var a,s=e.left.definition().scope;(a=t.parent(n++))!==s;)if(a instanceof rt){if(a.bfinally)return!0;if(o&&a.bcatch)return!0}}})),si(Ot,(function(e,t){if(!t.option("evaluate"))return e;var n=e.right.evaluate(t);return void 0===n?e=e.left:n!==e.right&&(n=hi(n,e.right),e.right=Li(n,e.right)),e})),si(bt,(function(e,t){if(!t.option("conditionals"))return e;if(e.condition instanceof Et){var n=e.condition.expressions.slice();return e.condition=n.pop(),n.push(e),mi(e,n)}var i=e.condition.evaluate(t);if(i!==e.condition)return i?(t.warn("Condition always true [{file}:{line},{col}]",e.start),Ei(t.parent(),t.self(),e.consequent)):(t.warn("Condition always false [{file}:{line},{col}]",e.start),Ei(t.parent(),t.self(),e.alternative));var r=i.negate(t,In(t));Vi(t,i,r)===r&&(e=p(bt,e,{condition:r,consequent:e.alternative,alternative:e.consequent}));var o,a=e.condition,s=e.consequent,u=e.alternative;if(a instanceof rn&&s instanceof rn&&a.definition()===s.definition())return p(yt,e,{operator:"||",left:a,right:u});if(s instanceof Ct&&u instanceof Ct&&s.operator==u.operator&&s.left.equivalent_to(u.left)&&(!e.condition.has_side_effects(t)||"="==s.operator&&!s.left.has_side_effects(t)))return p(Ct,e,{operator:s.operator,left:s.left,right:p(bt,e,{condition:e.condition,consequent:s.right,alternative:u.right})});if(s instanceof mt&&u.TYPE===s.TYPE&&s.args.length>0&&s.args.length==u.args.length&&s.expression.equivalent_to(u.expression)&&!e.condition.has_side_effects(t)&&!s.expression.has_side_effects(t)&&"number"==typeof(o=function(){for(var e=s.args,t=u.args,n=0,i=e.length;n<i;n++){if(e[n]instanceof ke)return;if(!e[n].equivalent_to(t[n])){if(t[n]instanceof ke)return;for(var r=n+1;r<i;r++){if(e[r]instanceof ke)return;if(!e[r].equivalent_to(t[r]))return}return n}}}())){var c=s.clone();return c.args[o]=p(bt,e,{condition:e.condition,consequent:s.args[o],alternative:u.args[o]}),c}if(u instanceof bt&&s.equivalent_to(u.consequent))return p(bt,e,{condition:p(yt,e,{operator:"||",left:a,right:u.condition}),consequent:s,alternative:u.alternative}).optimize(t);if(t.option("ecma")>=2020&&function(e,t,n){if(t.may_throw(n))return!1;let i;if(e instanceof yt&&"=="===e.operator&&((i=rr(e.left)&&e.left)||(i=rr(e.right)&&e.right))&&(i===e.left?e.right:e.left).equivalent_to(t))return!0;if(e instanceof yt&&"||"===e.operator){let n,i;const r=e=>{if(!(e instanceof yt)||"==="!==e.operator&&"=="!==e.operator)return!1;let r,o=0;return e.left instanceof hn&&(o++,n=e,r=e.right),e.right instanceof hn&&(o++,n=e,r=e.left),xi(e.left)&&(o++,i=e,r=e.right),xi(e.right)&&(o++,i=e,r=e.left),1===o&&!!r.equivalent_to(t)};if(!r(e.left))return!1;if(!r(e.right))return!1;if(n&&i&&n!==i)return!0}return!1}(a,u,t))return p(yt,e,{operator:"??",left:u,right:s}).optimize(t);if(u instanceof Et&&s.equivalent_to(u.expressions[u.expressions.length-1]))return mi(e,[p(yt,e,{operator:"||",left:a,right:mi(e,u.expressions.slice(0,-1))}),s]).optimize(t);if(u instanceof yt&&"&&"==u.operator&&s.equivalent_to(u.right))return p(yt,e,{operator:"&&",left:p(yt,e,{operator:"||",left:a,right:u.left}),right:s}).optimize(t);if(s instanceof bt&&s.alternative.equivalent_to(u))return p(bt,e,{condition:p(yt,e,{left:e.condition,operator:"&&",right:s.condition}),consequent:s.consequent,alternative:u});if(s.equivalent_to(u))return mi(e,[e.condition,s]).optimize(t);if(s instanceof yt&&"||"==s.operator&&s.right.equivalent_to(u))return p(yt,e,{operator:"||",left:p(yt,e,{operator:"&&",left:e.condition,right:s.left}),right:u}).optimize(t);var l=t.in_boolean_context();return _(e.consequent)?d(e.alternative)?f(e.condition):p(yt,e,{operator:"||",left:f(e.condition),right:e.alternative}):d(e.consequent)?_(e.alternative)?f(e.condition.negate(t)):p(yt,e,{operator:"&&",left:f(e.condition.negate(t)),right:e.alternative}):_(e.alternative)?p(yt,e,{operator:"||",left:f(e.condition.negate(t)),right:e.consequent}):d(e.alternative)?p(yt,e,{operator:"&&",left:f(e.condition),right:e.consequent}):e;function f(e){return e.is_boolean()?e:p(At,e,{operator:"!",expression:e.negate(t)})}function _(e){return e instanceof Tn||l&&e instanceof ln&&e.getValue()||e instanceof At&&"!"==e.operator&&e.expression instanceof ln&&!e.expression.getValue()}function d(e){return e instanceof An||l&&e instanceof ln&&!e.getValue()||e instanceof At&&"!"==e.operator&&e.expression instanceof ln&&e.expression.getValue()}})),si(vn,(function(e,t){if(t.in_boolean_context())return p(pn,e,{value:+e.value});var n=t.parent();return t.option("booleans_as_integers")?(n instanceof yt&&("==="==n.operator||"!=="==n.operator)&&(n.operator=n.operator.replace(/=$/,"")),p(pn,e,{value:+e.value})):t.option("booleans")?n instanceof yt&&("=="==n.operator||"!="==n.operator)?(t.warn("Non-strict equality against boolean: {operator} {value} [{file}:{line},{col}]",{operator:n.operator,value:e.value,file:n.start.file,line:n.start.line,col:n.start.col}),p(pn,e,{value:+e.value})):p(At,e,{operator:"!",expression:p(pn,e,{value:1-e.value})}):e})),si(St,(function(e,t){var n,i=e.expression,r=e.property;if(t.option("properties")){var o=r.evaluate(t);if(o!==r){if("string"==typeof o)if("undefined"==o)o=void 0;else(A=parseFloat(o)).toString()==o&&(o=A);r=e.property=Li(r,hi(o,r).transform(t));var a=""+o;if(j(a)&&a.length<=r.size()+1)return p(Dt,e,{expression:i,property:a,quote:r.quote}).optimize(t)}}e:if(t.option("arguments")&&i instanceof rn&&"arguments"==i.name&&1==i.definition().orig.length&&(n=i.scope)instanceof Ie&&n.uses_arguments&&!(n instanceof Ve)&&r instanceof pn){for(var s=r.getValue(),u=new Set,c=n.argnames,l=0;l<c.length;l++){if(!(c[l]instanceof Wt))break e;var f=c[l].name;if(u.has(f))break e;u.add(f)}var _=n.argnames[s];if(_&&t.has_directive("use strict")){var d=_.definition();(!t.option("reduce_vars")||d.assignments||d.orig.length>1)&&(_=null)}else if(!_&&!t.option("keep_fargs")&&s<n.argnames.length+5)for(;s>=n.argnames.length;)_=p(Wt,n,{name:n.make_var_name("argument_"+n.argnames.length),scope:n}),n.argnames.push(_),n.enclosed.push(n.def_variable(_));if(_){var m=p(rn,e,_);return m.reference({}),oi(_,1),m}}if(Ii(e,t.parent()))return e;if(o!==r){var h=e.flatten_object(a,t);h&&(i=e.expression=h.expression,r=e.property=h.property)}if(t.option("properties")&&t.option("side_effects")&&r instanceof pn&&i instanceof Ft){s=r.getValue();var E=i.elements,g=E[s];e:if(or(g,t)){for(var D=!0,S=[],v=E.length;--v>s;){(A=E[v].drop_side_effect_free(t))&&(S.unshift(A),D&&A.has_side_effects(t)&&(D=!1))}if(g instanceof ke)break e;for(g=g instanceof Dn?p(gn,g):g,D||S.unshift(g);--v>=0;){var A;if((A=E[v])instanceof ke)break e;(A=A.drop_side_effect_free(t))?S.unshift(A):s--}return D?(S.push(g),mi(e,S).optimize(t)):p(St,e,{expression:p(Ft,i,{elements:S}),property:p(pn,r,{value:s})})}}var T=e.evaluate(t);return T!==e?Vi(t,T=hi(T,e).optimize(t),e):e})),Ie.DEFMETHOD("contains_this",(function(){return yn(this,e=>e instanceof un?Cn:e!==this&&e instanceof xe&&!(e instanceof Ve)||void 0)})),gt.DEFMETHOD("flatten_object",(function(e,t){if(t.option("properties")){var n=t.option("unsafe_arrows")&&t.option("ecma")>=2015,i=this.expression;if(i instanceof Mt)for(var r=i.properties,o=r.length;--o>=0;){var a=r[o];if(""+(a instanceof kt?a.key.name:a.key)==e){if(!r.every(e=>e instanceof wt||n&&e instanceof kt&&!e.is_generator))break;if(!or(a.value,t))break;return p(St,this,{expression:p(Ft,i,{elements:r.map((function(e){var t=e.value;t instanceof Le&&(t=p(Pe,t,t));var n=e.key;return n instanceof pe&&!(n instanceof qt)?mi(e,[n,t]):t}))}),property:p(pn,this,{value:o})})}}}})),si(Dt,(function(e,t){"arguments"!=e.property&&"caller"!=e.property||t.warn("Function.prototype.{prop} not supported [{file}:{line},{col}]",{prop:e.property,file:e.start.file,line:e.start.line,col:e.start.col});const n=t.parent();if(Ii(e,n))return e;if(t.option("unsafe_proto")&&e.expression instanceof Dt&&"prototype"==e.expression.property){var i=e.expression.expression;if(yi(i))switch(i.name){case"Array":e.expression=p(Ft,e.expression,{elements:[]});break;case"Function":e.expression=p(Pe,e.expression,{argnames:[],body:[]});break;case"Number":e.expression=p(pn,e.expression,{value:0});break;case"Object":e.expression=p(Mt,e.expression,{properties:[]});break;case"RegExp":e.expression=p(dn,e.expression,{value:{source:"t",flags:""}});break;case"String":e.expression=p(fn,e.expression,{value:""})}}if(!(n instanceof mt&&T(n,wn))){const n=e.flatten_object(e.property,t);if(n)return n.optimize(t)}let r=e.evaluate(t);return r!==e?(r=hi(r,e).optimize(t),Vi(t,r,e)):e})),si(Ft,(function(e,t){var n=ar(e,t);return n!==e?n:sr(e,0,e.elements)})),si(Mt,(function(e,t){var n=ar(e,t);if(n!==e)return n;for(var i=e.properties,r=0;r<i.length;r++){var o=i[r];if(o instanceof ke){var a=o.expression;a instanceof Mt?(i.splice.apply(i,[r,1].concat(o.expression.properties)),r--):a instanceof ln&&!(a instanceof fn)&&i.splice(r,1)}}return e})),si(dn,ar),si(We,(function(e,t){return e.value&&xi(e.value,t)&&(e.value=null),e})),si(Ve,Yi),si(Pe,(function(e,t){if(e=Yi(e,t),t.option("unsafe_arrows")&&t.option("ecma")>=2015&&!e.name&&!e.is_generator&&!e.uses_arguments&&!e.pinned()){if(!yn(e,e=>{if(e instanceof un)return Cn}))return p(Ve,e,e).optimize(t)}return e})),si(It,(function(e){return e})),si(Je,(function(e,t){return e.expression&&!e.is_star&&xi(e.expression,t)&&(e.expression=null),e})),si(Ge,(function(e,t){if(!t.option("evaluate")||t.parent()instanceof Ue)return e;for(var n=[],i=0;i<e.segments.length;i++){var r=e.segments[i];if(r instanceof pe){var o=r.evaluate(t);if(o!==r&&(o+"").length<=r.size()+"${}".length){n[n.length-1].value=n[n.length-1].value+o+e.segments[++i].value;continue}if(r instanceof Ge){var a=r.segments;n[n.length-1].value+=a[0].value;for(var s=1;s<a.length;s++)r=a[s],n.push(r);continue}}n.push(r)}if(e.segments=n,1==n.length)return p(fn,e,n[0]);if(3===n.length&&n[1]instanceof pe){if(""===n[2].value)return p(yt,e,{operator:"+",left:p(fn,e,{value:n[0].value}),right:n[1]});if(""===n[0].value)return p(yt,e,{operator:"+",left:n[1],right:p(fn,e,{value:n[2].value})})}return e})),si(Ue,(function(e){return e})),si(Rt,ur),si(kt,(function(e,t){if(ur(e,t),t.option("arrows")&&t.parent()instanceof Mt&&!e.is_generator&&!e.value.uses_arguments&&!e.value.pinned()&&1==e.value.body.length&&e.value.body[0]instanceof We&&e.value.body[0].value&&!e.value.contains_this()){var n=p(Ve,e.value,e.value);return n.async=e.async,n.is_generator=e.is_generator,p(wt,e,{key:e.key instanceof qt?e.key.name:e.key,value:n,quote:e.quote})}return e})),si(wt,(function(e,t){ur(e,t);var n=t.option("unsafe_methods");if(n&&t.option("ecma")>=2015&&(!(n instanceof RegExp)||n.test(e.key+""))){var i=e.key,r=e.value;if((r instanceof Ve&&Array.isArray(r.body)&&!r.contains_this()||r instanceof Pe)&&!r.name)return p(kt,e,{async:r.async,is_generator:r.is_generator,key:i instanceof pe?i:p(qt,e,{name:i}),value:p(Le,r,r),quote:e.quote})}return e})),si(Ke,(function(e,t){if(1==t.option("pure_getters")&&t.option("unused")&&!e.is_array&&Array.isArray(e.names)&&!function(e){for(var t=[/^VarDef$/,/^(Const|Let|Var)$/,/^Export$/],n=0,i=0,r=t.length;n<r;i++){var o=e.parent(i);if(!o)return!1;if(0!==n||"Destructuring"!=o.TYPE){if(!t[n].test(o.TYPE))return!1;n++}}return!0}(t)){for(var n=[],i=0;i<e.names.length;i++){var r=e.names[i];r instanceof wt&&"string"==typeof r.key&&r.value instanceof Ut&&!o(t,r.value.definition())||n.push(r)}n.length!=e.names.length&&(e.names=n)}return e;function o(e,t){return!!t.references.length||!!t.global&&(!e.toplevel.vars||!!e.top_retain&&e.top_retain(t))}}));var cr=["$&","$'","$*","$+","$1","$2","$3","$4","$5","$6","$7","$8","$9","$_","$`","$input","@@iterator","ABORT_ERR","ACTIVE","ACTIVE_ATTRIBUTES","ACTIVE_TEXTURE","ACTIVE_UNIFORMS","ADDITION","ALIASED_LINE_WIDTH_RANGE","ALIASED_POINT_SIZE_RANGE","ALLOW_KEYBOARD_INPUT","ALLPASS","ALPHA","ALPHA_BITS","ALT_MASK","ALWAYS","ANY_TYPE","ANY_UNORDERED_NODE_TYPE","ARRAY_BUFFER","ARRAY_BUFFER_BINDING","ATTACHED_SHADERS","ATTRIBUTE_NODE","AT_TARGET","AddSearchProvider","AnalyserNode","AnimationEvent","AnonXMLHttpRequest","ApplicationCache","ApplicationCacheErrorEvent","Array","ArrayBuffer","Attr","Audio","AudioBuffer","AudioBufferSourceNode","AudioContext","AudioDestinationNode","AudioListener","AudioNode","AudioParam","AudioProcessingEvent","AudioStreamTrack","AutocompleteErrorEvent","BACK","BAD_BOUNDARYPOINTS_ERR","BANDPASS","BLEND","BLEND_COLOR","BLEND_DST_ALPHA","BLEND_DST_RGB","BLEND_EQUATION","BLEND_EQUATION_ALPHA","BLEND_EQUATION_RGB","BLEND_SRC_ALPHA","BLEND_SRC_RGB","BLUE_BITS","BLUR","BOOL","BOOLEAN_TYPE","BOOL_VEC2","BOOL_VEC3","BOOL_VEC4","BOTH","BROWSER_DEFAULT_WEBGL","BUBBLING_PHASE","BUFFER_SIZE","BUFFER_USAGE","BYTE","BYTES_PER_ELEMENT","BarProp","BaseHref","BatteryManager","BeforeLoadEvent","BeforeUnloadEvent","BiquadFilterNode","Blob","BlobEvent","Boolean","CAPTURING_PHASE","CCW","CDATASection","CDATA_SECTION_NODE","CHANGE","CHARSET_RULE","CHECKING","CLAMP_TO_EDGE","CLICK","CLOSED","CLOSING","COLOR_ATTACHMENT0","COLOR_BUFFER_BIT","COLOR_CLEAR_VALUE","COLOR_WRITEMASK","COMMENT_NODE","COMPILE_STATUS","COMPRESSED_RGBA_S3TC_DXT1_EXT","COMPRESSED_RGBA_S3TC_DXT3_EXT","COMPRESSED_RGBA_S3TC_DXT5_EXT","COMPRESSED_RGB_S3TC_DXT1_EXT","COMPRESSED_TEXTURE_FORMATS","CONNECTING","CONSTANT_ALPHA","CONSTANT_COLOR","CONSTRAINT_ERR","CONTEXT_LOST_WEBGL","CONTROL_MASK","COUNTER_STYLE_RULE","CSS","CSS2Properties","CSSCharsetRule","CSSConditionRule","CSSCounterStyleRule","CSSFontFaceRule","CSSFontFeatureValuesRule","CSSGroupingRule","CSSImportRule","CSSKeyframeRule","CSSKeyframesRule","CSSMediaRule","CSSMozDocumentRule","CSSNameSpaceRule","CSSPageRule","CSSPrimitiveValue","CSSRule","CSSRuleList","CSSStyleDeclaration","CSSStyleRule","CSSStyleSheet","CSSSupportsRule","CSSUnknownRule","CSSValue","CSSValueList","CSSVariablesDeclaration","CSSVariablesRule","CSSViewportRule","CSS_ATTR","CSS_CM","CSS_COUNTER","CSS_CUSTOM","CSS_DEG","CSS_DIMENSION","CSS_EMS","CSS_EXS","CSS_FILTER_BLUR","CSS_FILTER_BRIGHTNESS","CSS_FILTER_CONTRAST","CSS_FILTER_CUSTOM","CSS_FILTER_DROP_SHADOW","CSS_FILTER_GRAYSCALE","CSS_FILTER_HUE_ROTATE","CSS_FILTER_INVERT","CSS_FILTER_OPACITY","CSS_FILTER_REFERENCE","CSS_FILTER_SATURATE","CSS_FILTER_SEPIA","CSS_GRAD","CSS_HZ","CSS_IDENT","CSS_IN","CSS_INHERIT","CSS_KHZ","CSS_MATRIX","CSS_MATRIX3D","CSS_MM","CSS_MS","CSS_NUMBER","CSS_PC","CSS_PERCENTAGE","CSS_PERSPECTIVE","CSS_PRIMITIVE_VALUE","CSS_PT","CSS_PX","CSS_RAD","CSS_RECT","CSS_RGBCOLOR","CSS_ROTATE","CSS_ROTATE3D","CSS_ROTATEX","CSS_ROTATEY","CSS_ROTATEZ","CSS_S","CSS_SCALE","CSS_SCALE3D","CSS_SCALEX","CSS_SCALEY","CSS_SCALEZ","CSS_SKEW","CSS_SKEWX","CSS_SKEWY","CSS_STRING","CSS_TRANSLATE","CSS_TRANSLATE3D","CSS_TRANSLATEX","CSS_TRANSLATEY","CSS_TRANSLATEZ","CSS_UNKNOWN","CSS_URI","CSS_VALUE_LIST","CSS_VH","CSS_VMAX","CSS_VMIN","CSS_VW","CULL_FACE","CULL_FACE_MODE","CURRENT_PROGRAM","CURRENT_VERTEX_ATTRIB","CUSTOM","CW","CanvasGradient","CanvasPattern","CanvasRenderingContext2D","CaretPosition","ChannelMergerNode","ChannelSplitterNode","CharacterData","ClientRect","ClientRectList","Clipboard","ClipboardEvent","CloseEvent","Collator","CommandEvent","Comment","CompositionEvent","Console","Controllers","ConvolverNode","Counter","Crypto","CryptoKey","CustomEvent","DATABASE_ERR","DATA_CLONE_ERR","DATA_ERR","DBLCLICK","DECR","DECR_WRAP","DELETE_STATUS","DEPTH_ATTACHMENT","DEPTH_BITS","DEPTH_BUFFER_BIT","DEPTH_CLEAR_VALUE","DEPTH_COMPONENT","DEPTH_COMPONENT16","DEPTH_FUNC","DEPTH_RANGE","DEPTH_STENCIL","DEPTH_STENCIL_ATTACHMENT","DEPTH_TEST","DEPTH_WRITEMASK","DIRECTION_DOWN","DIRECTION_LEFT","DIRECTION_RIGHT","DIRECTION_UP","DISABLED","DISPATCH_REQUEST_ERR","DITHER","DOCUMENT_FRAGMENT_NODE","DOCUMENT_NODE","DOCUMENT_POSITION_CONTAINED_BY","DOCUMENT_POSITION_CONTAINS","DOCUMENT_POSITION_DISCONNECTED","DOCUMENT_POSITION_FOLLOWING","DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC","DOCUMENT_POSITION_PRECEDING","DOCUMENT_TYPE_NODE","DOMCursor","DOMError","DOMException","DOMImplementation","DOMImplementationLS","DOMMatrix","DOMMatrixReadOnly","DOMParser","DOMPoint","DOMPointReadOnly","DOMQuad","DOMRect","DOMRectList","DOMRectReadOnly","DOMRequest","DOMSTRING_SIZE_ERR","DOMSettableTokenList","DOMStringList","DOMStringMap","DOMTokenList","DOMTransactionEvent","DOM_DELTA_LINE","DOM_DELTA_PAGE","DOM_DELTA_PIXEL","DOM_INPUT_METHOD_DROP","DOM_INPUT_METHOD_HANDWRITING","DOM_INPUT_METHOD_IME","DOM_INPUT_METHOD_KEYBOARD","DOM_INPUT_METHOD_MULTIMODAL","DOM_INPUT_METHOD_OPTION","DOM_INPUT_METHOD_PASTE","DOM_INPUT_METHOD_SCRIPT","DOM_INPUT_METHOD_UNKNOWN","DOM_INPUT_METHOD_VOICE","DOM_KEY_LOCATION_JOYSTICK","DOM_KEY_LOCATION_LEFT","DOM_KEY_LOCATION_MOBILE","DOM_KEY_LOCATION_NUMPAD","DOM_KEY_LOCATION_RIGHT","DOM_KEY_LOCATION_STANDARD","DOM_VK_0","DOM_VK_1","DOM_VK_2","DOM_VK_3","DOM_VK_4","DOM_VK_5","DOM_VK_6","DOM_VK_7","DOM_VK_8","DOM_VK_9","DOM_VK_A","DOM_VK_ACCEPT","DOM_VK_ADD","DOM_VK_ALT","DOM_VK_ALTGR","DOM_VK_AMPERSAND","DOM_VK_ASTERISK","DOM_VK_AT","DOM_VK_ATTN","DOM_VK_B","DOM_VK_BACKSPACE","DOM_VK_BACK_QUOTE","DOM_VK_BACK_SLASH","DOM_VK_BACK_SPACE","DOM_VK_C","DOM_VK_CANCEL","DOM_VK_CAPS_LOCK","DOM_VK_CIRCUMFLEX","DOM_VK_CLEAR","DOM_VK_CLOSE_BRACKET","DOM_VK_CLOSE_CURLY_BRACKET","DOM_VK_CLOSE_PAREN","DOM_VK_COLON","DOM_VK_COMMA","DOM_VK_CONTEXT_MENU","DOM_VK_CONTROL","DOM_VK_CONVERT","DOM_VK_CRSEL","DOM_VK_CTRL","DOM_VK_D","DOM_VK_DECIMAL","DOM_VK_DELETE","DOM_VK_DIVIDE","DOM_VK_DOLLAR","DOM_VK_DOUBLE_QUOTE","DOM_VK_DOWN","DOM_VK_E","DOM_VK_EISU","DOM_VK_END","DOM_VK_ENTER","DOM_VK_EQUALS","DOM_VK_EREOF","DOM_VK_ESCAPE","DOM_VK_EXCLAMATION","DOM_VK_EXECUTE","DOM_VK_EXSEL","DOM_VK_F","DOM_VK_F1","DOM_VK_F10","DOM_VK_F11","DOM_VK_F12","DOM_VK_F13","DOM_VK_F14","DOM_VK_F15","DOM_VK_F16","DOM_VK_F17","DOM_VK_F18","DOM_VK_F19","DOM_VK_F2","DOM_VK_F20","DOM_VK_F21","DOM_VK_F22","DOM_VK_F23","DOM_VK_F24","DOM_VK_F25","DOM_VK_F26","DOM_VK_F27","DOM_VK_F28","DOM_VK_F29","DOM_VK_F3","DOM_VK_F30","DOM_VK_F31","DOM_VK_F32","DOM_VK_F33","DOM_VK_F34","DOM_VK_F35","DOM_VK_F36","DOM_VK_F4","DOM_VK_F5","DOM_VK_F6","DOM_VK_F7","DOM_VK_F8","DOM_VK_F9","DOM_VK_FINAL","DOM_VK_FRONT","DOM_VK_G","DOM_VK_GREATER_THAN","DOM_VK_H","DOM_VK_HANGUL","DOM_VK_HANJA","DOM_VK_HASH","DOM_VK_HELP","DOM_VK_HK_TOGGLE","DOM_VK_HOME","DOM_VK_HYPHEN_MINUS","DOM_VK_I","DOM_VK_INSERT","DOM_VK_J","DOM_VK_JUNJA","DOM_VK_K","DOM_VK_KANA","DOM_VK_KANJI","DOM_VK_L","DOM_VK_LEFT","DOM_VK_LEFT_TAB","DOM_VK_LESS_THAN","DOM_VK_M","DOM_VK_META","DOM_VK_MODECHANGE","DOM_VK_MULTIPLY","DOM_VK_N","DOM_VK_NONCONVERT","DOM_VK_NUMPAD0","DOM_VK_NUMPAD1","DOM_VK_NUMPAD2","DOM_VK_NUMPAD3","DOM_VK_NUMPAD4","DOM_VK_NUMPAD5","DOM_VK_NUMPAD6","DOM_VK_NUMPAD7","DOM_VK_NUMPAD8","DOM_VK_NUMPAD9","DOM_VK_NUM_LOCK","DOM_VK_O","DOM_VK_OEM_1","DOM_VK_OEM_102","DOM_VK_OEM_2","DOM_VK_OEM_3","DOM_VK_OEM_4","DOM_VK_OEM_5","DOM_VK_OEM_6","DOM_VK_OEM_7","DOM_VK_OEM_8","DOM_VK_OEM_COMMA","DOM_VK_OEM_MINUS","DOM_VK_OEM_PERIOD","DOM_VK_OEM_PLUS","DOM_VK_OPEN_BRACKET","DOM_VK_OPEN_CURLY_BRACKET","DOM_VK_OPEN_PAREN","DOM_VK_P","DOM_VK_PA1","DOM_VK_PAGEDOWN","DOM_VK_PAGEUP","DOM_VK_PAGE_DOWN","DOM_VK_PAGE_UP","DOM_VK_PAUSE","DOM_VK_PERCENT","DOM_VK_PERIOD","DOM_VK_PIPE","DOM_VK_PLAY","DOM_VK_PLUS","DOM_VK_PRINT","DOM_VK_PRINTSCREEN","DOM_VK_PROCESSKEY","DOM_VK_PROPERITES","DOM_VK_Q","DOM_VK_QUESTION_MARK","DOM_VK_QUOTE","DOM_VK_R","DOM_VK_REDO","DOM_VK_RETURN","DOM_VK_RIGHT","DOM_VK_S","DOM_VK_SCROLL_LOCK","DOM_VK_SELECT","DOM_VK_SEMICOLON","DOM_VK_SEPARATOR","DOM_VK_SHIFT","DOM_VK_SLASH","DOM_VK_SLEEP","DOM_VK_SPACE","DOM_VK_SUBTRACT","DOM_VK_T","DOM_VK_TAB","DOM_VK_TILDE","DOM_VK_U","DOM_VK_UNDERSCORE","DOM_VK_UNDO","DOM_VK_UNICODE","DOM_VK_UP","DOM_VK_V","DOM_VK_VOLUME_DOWN","DOM_VK_VOLUME_MUTE","DOM_VK_VOLUME_UP","DOM_VK_W","DOM_VK_WIN","DOM_VK_WINDOW","DOM_VK_WIN_ICO_00","DOM_VK_WIN_ICO_CLEAR","DOM_VK_WIN_ICO_HELP","DOM_VK_WIN_OEM_ATTN","DOM_VK_WIN_OEM_AUTO","DOM_VK_WIN_OEM_BACKTAB","DOM_VK_WIN_OEM_CLEAR","DOM_VK_WIN_OEM_COPY","DOM_VK_WIN_OEM_CUSEL","DOM_VK_WIN_OEM_ENLW","DOM_VK_WIN_OEM_FINISH","DOM_VK_WIN_OEM_FJ_JISHO","DOM_VK_WIN_OEM_FJ_LOYA","DOM_VK_WIN_OEM_FJ_MASSHOU","DOM_VK_WIN_OEM_FJ_ROYA","DOM_VK_WIN_OEM_FJ_TOUROKU","DOM_VK_WIN_OEM_JUMP","DOM_VK_WIN_OEM_PA1","DOM_VK_WIN_OEM_PA2","DOM_VK_WIN_OEM_PA3","DOM_VK_WIN_OEM_RESET","DOM_VK_WIN_OEM_WSCTRL","DOM_VK_X","DOM_VK_XF86XK_ADD_FAVORITE","DOM_VK_XF86XK_APPLICATION_LEFT","DOM_VK_XF86XK_APPLICATION_RIGHT","DOM_VK_XF86XK_AUDIO_CYCLE_TRACK","DOM_VK_XF86XK_AUDIO_FORWARD","DOM_VK_XF86XK_AUDIO_LOWER_VOLUME","DOM_VK_XF86XK_AUDIO_MEDIA","DOM_VK_XF86XK_AUDIO_MUTE","DOM_VK_XF86XK_AUDIO_NEXT","DOM_VK_XF86XK_AUDIO_PAUSE","DOM_VK_XF86XK_AUDIO_PLAY","DOM_VK_XF86XK_AUDIO_PREV","DOM_VK_XF86XK_AUDIO_RAISE_VOLUME","DOM_VK_XF86XK_AUDIO_RANDOM_PLAY","DOM_VK_XF86XK_AUDIO_RECORD","DOM_VK_XF86XK_AUDIO_REPEAT","DOM_VK_XF86XK_AUDIO_REWIND","DOM_VK_XF86XK_AUDIO_STOP","DOM_VK_XF86XK_AWAY","DOM_VK_XF86XK_BACK","DOM_VK_XF86XK_BACK_FORWARD","DOM_VK_XF86XK_BATTERY","DOM_VK_XF86XK_BLUE","DOM_VK_XF86XK_BLUETOOTH","DOM_VK_XF86XK_BOOK","DOM_VK_XF86XK_BRIGHTNESS_ADJUST","DOM_VK_XF86XK_CALCULATOR","DOM_VK_XF86XK_CALENDAR","DOM_VK_XF86XK_CD","DOM_VK_XF86XK_CLOSE","DOM_VK_XF86XK_COMMUNITY","DOM_VK_XF86XK_CONTRAST_ADJUST","DOM_VK_XF86XK_COPY","DOM_VK_XF86XK_CUT","DOM_VK_XF86XK_CYCLE_ANGLE","DOM_VK_XF86XK_DISPLAY","DOM_VK_XF86XK_DOCUMENTS","DOM_VK_XF86XK_DOS","DOM_VK_XF86XK_EJECT","DOM_VK_XF86XK_EXCEL","DOM_VK_XF86XK_EXPLORER","DOM_VK_XF86XK_FAVORITES","DOM_VK_XF86XK_FINANCE","DOM_VK_XF86XK_FORWARD","DOM_VK_XF86XK_FRAME_BACK","DOM_VK_XF86XK_FRAME_FORWARD","DOM_VK_XF86XK_GAME","DOM_VK_XF86XK_GO","DOM_VK_XF86XK_GREEN","DOM_VK_XF86XK_HIBERNATE","DOM_VK_XF86XK_HISTORY","DOM_VK_XF86XK_HOME_PAGE","DOM_VK_XF86XK_HOT_LINKS","DOM_VK_XF86XK_I_TOUCH","DOM_VK_XF86XK_KBD_BRIGHTNESS_DOWN","DOM_VK_XF86XK_KBD_BRIGHTNESS_UP","DOM_VK_XF86XK_KBD_LIGHT_ON_OFF","DOM_VK_XF86XK_LAUNCH0","DOM_VK_XF86XK_LAUNCH1","DOM_VK_XF86XK_LAUNCH2","DOM_VK_XF86XK_LAUNCH3","DOM_VK_XF86XK_LAUNCH4","DOM_VK_XF86XK_LAUNCH5","DOM_VK_XF86XK_LAUNCH6","DOM_VK_XF86XK_LAUNCH7","DOM_VK_XF86XK_LAUNCH8","DOM_VK_XF86XK_LAUNCH9","DOM_VK_XF86XK_LAUNCH_A","DOM_VK_XF86XK_LAUNCH_B","DOM_VK_XF86XK_LAUNCH_C","DOM_VK_XF86XK_LAUNCH_D","DOM_VK_XF86XK_LAUNCH_E","DOM_VK_XF86XK_LAUNCH_F","DOM_VK_XF86XK_LIGHT_BULB","DOM_VK_XF86XK_LOG_OFF","DOM_VK_XF86XK_MAIL","DOM_VK_XF86XK_MAIL_FORWARD","DOM_VK_XF86XK_MARKET","DOM_VK_XF86XK_MEETING","DOM_VK_XF86XK_MEMO","DOM_VK_XF86XK_MENU_KB","DOM_VK_XF86XK_MENU_PB","DOM_VK_XF86XK_MESSENGER","DOM_VK_XF86XK_MON_BRIGHTNESS_DOWN","DOM_VK_XF86XK_MON_BRIGHTNESS_UP","DOM_VK_XF86XK_MUSIC","DOM_VK_XF86XK_MY_COMPUTER","DOM_VK_XF86XK_MY_SITES","DOM_VK_XF86XK_NEW","DOM_VK_XF86XK_NEWS","DOM_VK_XF86XK_OFFICE_HOME","DOM_VK_XF86XK_OPEN","DOM_VK_XF86XK_OPEN_URL","DOM_VK_XF86XK_OPTION","DOM_VK_XF86XK_PASTE","DOM_VK_XF86XK_PHONE","DOM_VK_XF86XK_PICTURES","DOM_VK_XF86XK_POWER_DOWN","DOM_VK_XF86XK_POWER_OFF","DOM_VK_XF86XK_RED","DOM_VK_XF86XK_REFRESH","DOM_VK_XF86XK_RELOAD","DOM_VK_XF86XK_REPLY","DOM_VK_XF86XK_ROCKER_DOWN","DOM_VK_XF86XK_ROCKER_ENTER","DOM_VK_XF86XK_ROCKER_UP","DOM_VK_XF86XK_ROTATE_WINDOWS","DOM_VK_XF86XK_ROTATION_KB","DOM_VK_XF86XK_ROTATION_PB","DOM_VK_XF86XK_SAVE","DOM_VK_XF86XK_SCREEN_SAVER","DOM_VK_XF86XK_SCROLL_CLICK","DOM_VK_XF86XK_SCROLL_DOWN","DOM_VK_XF86XK_SCROLL_UP","DOM_VK_XF86XK_SEARCH","DOM_VK_XF86XK_SEND","DOM_VK_XF86XK_SHOP","DOM_VK_XF86XK_SPELL","DOM_VK_XF86XK_SPLIT_SCREEN","DOM_VK_XF86XK_STANDBY","DOM_VK_XF86XK_START","DOM_VK_XF86XK_STOP","DOM_VK_XF86XK_SUBTITLE","DOM_VK_XF86XK_SUPPORT","DOM_VK_XF86XK_SUSPEND","DOM_VK_XF86XK_TASK_PANE","DOM_VK_XF86XK_TERMINAL","DOM_VK_XF86XK_TIME","DOM_VK_XF86XK_TOOLS","DOM_VK_XF86XK_TOP_MENU","DOM_VK_XF86XK_TO_DO_LIST","DOM_VK_XF86XK_TRAVEL","DOM_VK_XF86XK_USER1KB","DOM_VK_XF86XK_USER2KB","DOM_VK_XF86XK_USER_PB","DOM_VK_XF86XK_UWB","DOM_VK_XF86XK_VENDOR_HOME","DOM_VK_XF86XK_VIDEO","DOM_VK_XF86XK_VIEW","DOM_VK_XF86XK_WAKE_UP","DOM_VK_XF86XK_WEB_CAM","DOM_VK_XF86XK_WHEEL_BUTTON","DOM_VK_XF86XK_WLAN","DOM_VK_XF86XK_WORD","DOM_VK_XF86XK_WWW","DOM_VK_XF86XK_XFER","DOM_VK_XF86XK_YELLOW","DOM_VK_XF86XK_ZOOM_IN","DOM_VK_XF86XK_ZOOM_OUT","DOM_VK_Y","DOM_VK_Z","DOM_VK_ZOOM","DONE","DONT_CARE","DOWNLOADING","DRAGDROP","DST_ALPHA","DST_COLOR","DYNAMIC_DRAW","DataChannel","DataTransfer","DataTransferItem","DataTransferItemList","DataView","Date","DateTimeFormat","DelayNode","DesktopNotification","DesktopNotificationCenter","DeviceLightEvent","DeviceMotionEvent","DeviceOrientationEvent","DeviceProximityEvent","DeviceStorage","DeviceStorageChangeEvent","Document","DocumentFragment","DocumentType","DragEvent","DynamicsCompressorNode","E","ELEMENT_ARRAY_BUFFER","ELEMENT_ARRAY_BUFFER_BINDING","ELEMENT_NODE","EMPTY","ENCODING_ERR","ENDED","END_TO_END","END_TO_START","ENTITY_NODE","ENTITY_REFERENCE_NODE","EPSILON","EQUAL","EQUALPOWER","ERROR","EXPONENTIAL_DISTANCE","Element","ElementQuery","Entity","EntityReference","Error","ErrorEvent","EvalError","Event","EventException","EventSource","EventTarget","External","FASTEST","FIDOSDK","FILTER_ACCEPT","FILTER_INTERRUPT","FILTER_REJECT","FILTER_SKIP","FINISHED_STATE","FIRST_ORDERED_NODE_TYPE","FLOAT","FLOAT_MAT2","FLOAT_MAT3","FLOAT_MAT4","FLOAT_VEC2","FLOAT_VEC3","FLOAT_VEC4","FOCUS","FONT_FACE_RULE","FONT_FEATURE_VALUES_RULE","FRAGMENT_SHADER","FRAGMENT_SHADER_DERIVATIVE_HINT_OES","FRAMEBUFFER","FRAMEBUFFER_ATTACHMENT_OBJECT_NAME","FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE","FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE","FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL","FRAMEBUFFER_BINDING","FRAMEBUFFER_COMPLETE","FRAMEBUFFER_INCOMPLETE_ATTACHMENT","FRAMEBUFFER_INCOMPLETE_DIMENSIONS","FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT","FRAMEBUFFER_UNSUPPORTED","FRONT","FRONT_AND_BACK","FRONT_FACE","FUNC_ADD","FUNC_REVERSE_SUBTRACT","FUNC_SUBTRACT","Feed","FeedEntry","File","FileError","FileList","FileReader","FindInPage","Float32Array","Float64Array","FocusEvent","FontFace","FormData","Function","GENERATE_MIPMAP_HINT","GEQUAL","GREATER","GREEN_BITS","GainNode","Gamepad","GamepadButton","GamepadEvent","GestureEvent","HAVE_CURRENT_DATA","HAVE_ENOUGH_DATA","HAVE_FUTURE_DATA","HAVE_METADATA","HAVE_NOTHING","HEADERS_RECEIVED","HIDDEN","HIERARCHY_REQUEST_ERR","HIGHPASS","HIGHSHELF","HIGH_FLOAT","HIGH_INT","HORIZONTAL","HORIZONTAL_AXIS","HRTF","HTMLAllCollection","HTMLAnchorElement","HTMLAppletElement","HTMLAreaElement","HTMLAudioElement","HTMLBRElement","HTMLBaseElement","HTMLBaseFontElement","HTMLBlockquoteElement","HTMLBodyElement","HTMLButtonElement","HTMLCanvasElement","HTMLCollection","HTMLCommandElement","HTMLContentElement","HTMLDListElement","HTMLDataElement","HTMLDataListElement","HTMLDetailsElement","HTMLDialogElement","HTMLDirectoryElement","HTMLDivElement","HTMLDocument","HTMLElement","HTMLEmbedElement","HTMLFieldSetElement","HTMLFontElement","HTMLFormControlsCollection","HTMLFormElement","HTMLFrameElement","HTMLFrameSetElement","HTMLHRElement","HTMLHeadElement","HTMLHeadingElement","HTMLHtmlElement","HTMLIFrameElement","HTMLImageElement","HTMLInputElement","HTMLIsIndexElement","HTMLKeygenElement","HTMLLIElement","HTMLLabelElement","HTMLLegendElement","HTMLLinkElement","HTMLMapElement","HTMLMarqueeElement","HTMLMediaElement","HTMLMenuElement","HTMLMenuItemElement","HTMLMetaElement","HTMLMeterElement","HTMLModElement","HTMLOListElement","HTMLObjectElement","HTMLOptGroupElement","HTMLOptionElement","HTMLOptionsCollection","HTMLOutputElement","HTMLParagraphElement","HTMLParamElement","HTMLPictureElement","HTMLPreElement","HTMLProgressElement","HTMLPropertiesCollection","HTMLQuoteElement","HTMLScriptElement","HTMLSelectElement","HTMLShadowElement","HTMLSourceElement","HTMLSpanElement","HTMLStyleElement","HTMLTableCaptionElement","HTMLTableCellElement","HTMLTableColElement","HTMLTableElement","HTMLTableRowElement","HTMLTableSectionElement","HTMLTemplateElement","HTMLTextAreaElement","HTMLTimeElement","HTMLTitleElement","HTMLTrackElement","HTMLUListElement","HTMLUnknownElement","HTMLVideoElement","HashChangeEvent","Headers","History","ICE_CHECKING","ICE_CLOSED","ICE_COMPLETED","ICE_CONNECTED","ICE_FAILED","ICE_GATHERING","ICE_WAITING","IDBCursor","IDBCursorWithValue","IDBDatabase","IDBDatabaseException","IDBFactory","IDBFileHandle","IDBFileRequest","IDBIndex","IDBKeyRange","IDBMutableFile","IDBObjectStore","IDBOpenDBRequest","IDBRequest","IDBTransaction","IDBVersionChangeEvent","IDLE","IMPLEMENTATION_COLOR_READ_FORMAT","IMPLEMENTATION_COLOR_READ_TYPE","IMPORT_RULE","INCR","INCR_WRAP","INDEX_SIZE_ERR","INT","INT_VEC2","INT_VEC3","INT_VEC4","INUSE_ATTRIBUTE_ERR","INVALID_ACCESS_ERR","INVALID_CHARACTER_ERR","INVALID_ENUM","INVALID_EXPRESSION_ERR","INVALID_FRAMEBUFFER_OPERATION","INVALID_MODIFICATION_ERR","INVALID_NODE_TYPE_ERR","INVALID_OPERATION","INVALID_STATE_ERR","INVALID_VALUE","INVERSE_DISTANCE","INVERT","IceCandidate","Image","ImageBitmap","ImageData","Infinity","InputEvent","InputMethodContext","InstallTrigger","Int16Array","Int32Array","Int8Array","Intent","InternalError","Intl","IsSearchProviderInstalled","Iterator","JSON","KEEP","KEYDOWN","KEYFRAMES_RULE","KEYFRAME_RULE","KEYPRESS","KEYUP","KeyEvent","KeyboardEvent","LENGTHADJUST_SPACING","LENGTHADJUST_SPACINGANDGLYPHS","LENGTHADJUST_UNKNOWN","LEQUAL","LESS","LINEAR","LINEAR_DISTANCE","LINEAR_MIPMAP_LINEAR","LINEAR_MIPMAP_NEAREST","LINES","LINE_LOOP","LINE_STRIP","LINE_WIDTH","LINK_STATUS","LIVE","LN10","LN2","LOADED","LOADING","LOG10E","LOG2E","LOWPASS","LOWSHELF","LOW_FLOAT","LOW_INT","LSException","LSParserFilter","LUMINANCE","LUMINANCE_ALPHA","LocalMediaStream","Location","MAX_COMBINED_TEXTURE_IMAGE_UNITS","MAX_CUBE_MAP_TEXTURE_SIZE","MAX_FRAGMENT_UNIFORM_VECTORS","MAX_RENDERBUFFER_SIZE","MAX_SAFE_INTEGER","MAX_TEXTURE_IMAGE_UNITS","MAX_TEXTURE_MAX_ANISOTROPY_EXT","MAX_TEXTURE_SIZE","MAX_VALUE","MAX_VARYING_VECTORS","MAX_VERTEX_ATTRIBS","MAX_VERTEX_TEXTURE_IMAGE_UNITS","MAX_VERTEX_UNIFORM_VECTORS","MAX_VIEWPORT_DIMS","MEDIA_ERR_ABORTED","MEDIA_ERR_DECODE","MEDIA_ERR_ENCRYPTED","MEDIA_ERR_NETWORK","MEDIA_ERR_SRC_NOT_SUPPORTED","MEDIA_KEYERR_CLIENT","MEDIA_KEYERR_DOMAIN","MEDIA_KEYERR_HARDWARECHANGE","MEDIA_KEYERR_OUTPUT","MEDIA_KEYERR_SERVICE","MEDIA_KEYERR_UNKNOWN","MEDIA_RULE","MEDIUM_FLOAT","MEDIUM_INT","META_MASK","MIN_SAFE_INTEGER","MIN_VALUE","MIRRORED_REPEAT","MODE_ASYNCHRONOUS","MODE_SYNCHRONOUS","MODIFICATION","MOUSEDOWN","MOUSEDRAG","MOUSEMOVE","MOUSEOUT","MOUSEOVER","MOUSEUP","MOZ_KEYFRAMES_RULE","MOZ_KEYFRAME_RULE","MOZ_SOURCE_CURSOR","MOZ_SOURCE_ERASER","MOZ_SOURCE_KEYBOARD","MOZ_SOURCE_MOUSE","MOZ_SOURCE_PEN","MOZ_SOURCE_TOUCH","MOZ_SOURCE_UNKNOWN","MSGESTURE_FLAG_BEGIN","MSGESTURE_FLAG_CANCEL","MSGESTURE_FLAG_END","MSGESTURE_FLAG_INERTIA","MSGESTURE_FLAG_NONE","MSPOINTER_TYPE_MOUSE","MSPOINTER_TYPE_PEN","MSPOINTER_TYPE_TOUCH","MS_ASYNC_CALLBACK_STATUS_ASSIGN_DELEGATE","MS_ASYNC_CALLBACK_STATUS_CANCEL","MS_ASYNC_CALLBACK_STATUS_CHOOSEANY","MS_ASYNC_CALLBACK_STATUS_ERROR","MS_ASYNC_CALLBACK_STATUS_JOIN","MS_ASYNC_OP_STATUS_CANCELED","MS_ASYNC_OP_STATUS_ERROR","MS_ASYNC_OP_STATUS_SUCCESS","MS_MANIPULATION_STATE_ACTIVE","MS_MANIPULATION_STATE_CANCELLED","MS_MANIPULATION_STATE_COMMITTED","MS_MANIPULATION_STATE_DRAGGING","MS_MANIPULATION_STATE_INERTIA","MS_MANIPULATION_STATE_PRESELECT","MS_MANIPULATION_STATE_SELECTING","MS_MANIPULATION_STATE_STOPPED","MS_MEDIA_ERR_ENCRYPTED","MS_MEDIA_KEYERR_CLIENT","MS_MEDIA_KEYERR_DOMAIN","MS_MEDIA_KEYERR_HARDWARECHANGE","MS_MEDIA_KEYERR_OUTPUT","MS_MEDIA_KEYERR_SERVICE","MS_MEDIA_KEYERR_UNKNOWN","Map","Math","MediaController","MediaDevices","MediaElementAudioSourceNode","MediaEncryptedEvent","MediaError","MediaKeyError","MediaKeyEvent","MediaKeyMessageEvent","MediaKeyNeededEvent","MediaKeySession","MediaKeyStatusMap","MediaKeySystemAccess","MediaKeys","MediaList","MediaQueryList","MediaQueryListEvent","MediaRecorder","MediaSource","MediaStream","MediaStreamAudioDestinationNode","MediaStreamAudioSourceNode","MediaStreamEvent","MediaStreamTrack","MediaStreamTrackEvent","MessageChannel","MessageEvent","MessagePort","Methods","MimeType","MimeTypeArray","MouseEvent","MouseScrollEvent","MozAnimation","MozAnimationDelay","MozAnimationDirection","MozAnimationDuration","MozAnimationFillMode","MozAnimationIterationCount","MozAnimationName","MozAnimationPlayState","MozAnimationTimingFunction","MozAppearance","MozBackfaceVisibility","MozBinding","MozBorderBottomColors","MozBorderEnd","MozBorderEndColor","MozBorderEndStyle","MozBorderEndWidth","MozBorderImage","MozBorderLeftColors","MozBorderRightColors","MozBorderStart","MozBorderStartColor","MozBorderStartStyle","MozBorderStartWidth","MozBorderTopColors","MozBoxAlign","MozBoxDirection","MozBoxFlex","MozBoxOrdinalGroup","MozBoxOrient","MozBoxPack","MozBoxSizing","MozCSSKeyframeRule","MozCSSKeyframesRule","MozColumnCount","MozColumnFill","MozColumnGap","MozColumnRule","MozColumnRuleColor","MozColumnRuleStyle","MozColumnRuleWidth","MozColumnWidth","MozColumns","MozContactChangeEvent","MozFloatEdge","MozFontFeatureSettings","MozFontLanguageOverride","MozForceBrokenImageIcon","MozHyphens","MozImageRegion","MozMarginEnd","MozMarginStart","MozMmsEvent","MozMmsMessage","MozMobileMessageThread","MozOSXFontSmoothing","MozOrient","MozOutlineRadius","MozOutlineRadiusBottomleft","MozOutlineRadiusBottomright","MozOutlineRadiusTopleft","MozOutlineRadiusTopright","MozPaddingEnd","MozPaddingStart","MozPerspective","MozPerspectiveOrigin","MozPowerManager","MozSettingsEvent","MozSmsEvent","MozSmsMessage","MozStackSizing","MozTabSize","MozTextAlignLast","MozTextDecorationColor","MozTextDecorationLine","MozTextDecorationStyle","MozTextSizeAdjust","MozTransform","MozTransformOrigin","MozTransformStyle","MozTransition","MozTransitionDelay","MozTransitionDuration","MozTransitionProperty","MozTransitionTimingFunction","MozUserFocus","MozUserInput","MozUserModify","MozUserSelect","MozWindowDragging","MozWindowShadow","MutationEvent","MutationObserver","MutationRecord","NAMESPACE_ERR","NAMESPACE_RULE","NEAREST","NEAREST_MIPMAP_LINEAR","NEAREST_MIPMAP_NEAREST","NEGATIVE_INFINITY","NETWORK_EMPTY","NETWORK_ERR","NETWORK_IDLE","NETWORK_LOADED","NETWORK_LOADING","NETWORK_NO_SOURCE","NEVER","NEW","NEXT","NEXT_NO_DUPLICATE","NICEST","NODE_AFTER","NODE_BEFORE","NODE_BEFORE_AND_AFTER","NODE_INSIDE","NONE","NON_TRANSIENT_ERR","NOTATION_NODE","NOTCH","NOTEQUAL","NOT_ALLOWED_ERR","NOT_FOUND_ERR","NOT_READABLE_ERR","NOT_SUPPORTED_ERR","NO_DATA_ALLOWED_ERR","NO_ERR","NO_ERROR","NO_MODIFICATION_ALLOWED_ERR","NUMBER_TYPE","NUM_COMPRESSED_TEXTURE_FORMATS","NaN","NamedNodeMap","Navigator","NearbyLinks","NetworkInformation","Node","NodeFilter","NodeIterator","NodeList","Notation","Notification","NotifyPaintEvent","Number","NumberFormat","OBSOLETE","ONE","ONE_MINUS_CONSTANT_ALPHA","ONE_MINUS_CONSTANT_COLOR","ONE_MINUS_DST_ALPHA","ONE_MINUS_DST_COLOR","ONE_MINUS_SRC_ALPHA","ONE_MINUS_SRC_COLOR","OPEN","OPENED","OPENING","ORDERED_NODE_ITERATOR_TYPE","ORDERED_NODE_SNAPSHOT_TYPE","OUT_OF_MEMORY","Object","OfflineAudioCompletionEvent","OfflineAudioContext","OfflineResourceList","Option","OscillatorNode","OverflowEvent","PACK_ALIGNMENT","PAGE_RULE","PARSE_ERR","PATHSEG_ARC_ABS","PATHSEG_ARC_REL","PATHSEG_CLOSEPATH","PATHSEG_CURVETO_CUBIC_ABS","PATHSEG_CURVETO_CUBIC_REL","PATHSEG_CURVETO_CUBIC_SMOOTH_ABS","PATHSEG_CURVETO_CUBIC_SMOOTH_REL","PATHSEG_CURVETO_QUADRATIC_ABS","PATHSEG_CURVETO_QUADRATIC_REL","PATHSEG_CURVETO_QUADRATIC_SMOOTH_ABS","PATHSEG_CURVETO_QUADRATIC_SMOOTH_REL","PATHSEG_LINETO_ABS","PATHSEG_LINETO_HORIZONTAL_ABS","PATHSEG_LINETO_HORIZONTAL_REL","PATHSEG_LINETO_REL","PATHSEG_LINETO_VERTICAL_ABS","PATHSEG_LINETO_VERTICAL_REL","PATHSEG_MOVETO_ABS","PATHSEG_MOVETO_REL","PATHSEG_UNKNOWN","PATH_EXISTS_ERR","PEAKING","PERMISSION_DENIED","PERSISTENT","PI","PLAYING_STATE","POINTS","POLYGON_OFFSET_FACTOR","POLYGON_OFFSET_FILL","POLYGON_OFFSET_UNITS","POSITION_UNAVAILABLE","POSITIVE_INFINITY","PREV","PREV_NO_DUPLICATE","PROCESSING_INSTRUCTION_NODE","PageChangeEvent","PageTransitionEvent","PaintRequest","PaintRequestList","PannerNode","Path2D","Performance","PerformanceEntry","PerformanceMark","PerformanceMeasure","PerformanceNavigation","PerformanceResourceTiming","PerformanceTiming","PeriodicWave","Plugin","PluginArray","PopStateEvent","PopupBlockedEvent","ProcessingInstruction","ProgressEvent","Promise","PropertyNodeList","Proxy","PushManager","PushSubscription","Q","QUOTA_ERR","QUOTA_EXCEEDED_ERR","QueryInterface","READ_ONLY","READ_ONLY_ERR","READ_WRITE","RED_BITS","REMOVAL","RENDERBUFFER","RENDERBUFFER_ALPHA_SIZE","RENDERBUFFER_BINDING","RENDERBUFFER_BLUE_SIZE","RENDERBUFFER_DEPTH_SIZE","RENDERBUFFER_GREEN_SIZE","RENDERBUFFER_HEIGHT","RENDERBUFFER_INTERNAL_FORMAT","RENDERBUFFER_RED_SIZE","RENDERBUFFER_STENCIL_SIZE","RENDERBUFFER_WIDTH","RENDERER","RENDERING_INTENT_ABSOLUTE_COLORIMETRIC","RENDERING_INTENT_AUTO","RENDERING_INTENT_PERCEPTUAL","RENDERING_INTENT_RELATIVE_COLORIMETRIC","RENDERING_INTENT_SATURATION","RENDERING_INTENT_UNKNOWN","REPEAT","REPLACE","RGB","RGB565","RGB5_A1","RGBA","RGBA4","RGBColor","ROTATION_CLOCKWISE","ROTATION_COUNTERCLOCKWISE","RTCDataChannelEvent","RTCIceCandidate","RTCPeerConnectionIceEvent","RTCRtpReceiver","RTCRtpSender","RTCSessionDescription","RTCStatsReport","RadioNodeList","Range","RangeError","RangeException","RecordErrorEvent","Rect","ReferenceError","RegExp","Request","Response","SAMPLER_2D","SAMPLER_CUBE","SAMPLES","SAMPLE_ALPHA_TO_COVERAGE","SAMPLE_BUFFERS","SAMPLE_COVERAGE","SAMPLE_COVERAGE_INVERT","SAMPLE_COVERAGE_VALUE","SAWTOOTH","SCHEDULED_STATE","SCISSOR_BOX","SCISSOR_TEST","SCROLL_PAGE_DOWN","SCROLL_PAGE_UP","SDP_ANSWER","SDP_OFFER","SDP_PRANSWER","SECURITY_ERR","SELECT","SERIALIZE_ERR","SEVERITY_ERROR","SEVERITY_FATAL_ERROR","SEVERITY_WARNING","SHADER_COMPILER","SHADER_TYPE","SHADING_LANGUAGE_VERSION","SHIFT_MASK","SHORT","SHOWING","SHOW_ALL","SHOW_ATTRIBUTE","SHOW_CDATA_SECTION","SHOW_COMMENT","SHOW_DOCUMENT","SHOW_DOCUMENT_FRAGMENT","SHOW_DOCUMENT_TYPE","SHOW_ELEMENT","SHOW_ENTITY","SHOW_ENTITY_REFERENCE","SHOW_NOTATION","SHOW_PROCESSING_INSTRUCTION","SHOW_TEXT","SINE","SOUNDFIELD","SQLException","SQRT1_2","SQRT2","SQUARE","SRC_ALPHA","SRC_ALPHA_SATURATE","SRC_COLOR","START_TO_END","START_TO_START","STATIC_DRAW","STENCIL_ATTACHMENT","STENCIL_BACK_FAIL","STENCIL_BACK_FUNC","STENCIL_BACK_PASS_DEPTH_FAIL","STENCIL_BACK_PASS_DEPTH_PASS","STENCIL_BACK_REF","STENCIL_BACK_VALUE_MASK","STENCIL_BACK_WRITEMASK","STENCIL_BITS","STENCIL_BUFFER_BIT","STENCIL_CLEAR_VALUE","STENCIL_FAIL","STENCIL_FUNC","STENCIL_INDEX","STENCIL_INDEX8","STENCIL_PASS_DEPTH_FAIL","STENCIL_PASS_DEPTH_PASS","STENCIL_REF","STENCIL_TEST","STENCIL_VALUE_MASK","STENCIL_WRITEMASK","STREAM_DRAW","STRING_TYPE","STYLE_RULE","SUBPIXEL_BITS","SUPPORTS_RULE","SVGAElement","SVGAltGlyphDefElement","SVGAltGlyphElement","SVGAltGlyphItemElement","SVGAngle","SVGAnimateColorElement","SVGAnimateElement","SVGAnimateMotionElement","SVGAnimateTransformElement","SVGAnimatedAngle","SVGAnimatedBoolean","SVGAnimatedEnumeration","SVGAnimatedInteger","SVGAnimatedLength","SVGAnimatedLengthList","SVGAnimatedNumber","SVGAnimatedNumberList","SVGAnimatedPreserveAspectRatio","SVGAnimatedRect","SVGAnimatedString","SVGAnimatedTransformList","SVGAnimationElement","SVGCircleElement","SVGClipPathElement","SVGColor","SVGComponentTransferFunctionElement","SVGCursorElement","SVGDefsElement","SVGDescElement","SVGDiscardElement","SVGDocument","SVGElement","SVGElementInstance","SVGElementInstanceList","SVGEllipseElement","SVGException","SVGFEBlendElement","SVGFEColorMatrixElement","SVGFEComponentTransferElement","SVGFECompositeElement","SVGFEConvolveMatrixElement","SVGFEDiffuseLightingElement","SVGFEDisplacementMapElement","SVGFEDistantLightElement","SVGFEDropShadowElement","SVGFEFloodElement","SVGFEFuncAElement","SVGFEFuncBElement","SVGFEFuncGElement","SVGFEFuncRElement","SVGFEGaussianBlurElement","SVGFEImageElement","SVGFEMergeElement","SVGFEMergeNodeElement","SVGFEMorphologyElement","SVGFEOffsetElement","SVGFEPointLightElement","SVGFESpecularLightingElement","SVGFESpotLightElement","SVGFETileElement","SVGFETurbulenceElement","SVGFilterElement","SVGFontElement","SVGFontFaceElement","SVGFontFaceFormatElement","SVGFontFaceNameElement","SVGFontFaceSrcElement","SVGFontFaceUriElement","SVGForeignObjectElement","SVGGElement","SVGGeometryElement","SVGGlyphElement","SVGGlyphRefElement","SVGGradientElement","SVGGraphicsElement","SVGHKernElement","SVGImageElement","SVGLength","SVGLengthList","SVGLineElement","SVGLinearGradientElement","SVGMPathElement","SVGMarkerElement","SVGMaskElement","SVGMatrix","SVGMetadataElement","SVGMissingGlyphElement","SVGNumber","SVGNumberList","SVGPaint","SVGPathElement","SVGPathSeg","SVGPathSegArcAbs","SVGPathSegArcRel","SVGPathSegClosePath","SVGPathSegCurvetoCubicAbs","SVGPathSegCurvetoCubicRel","SVGPathSegCurvetoCubicSmoothAbs","SVGPathSegCurvetoCubicSmoothRel","SVGPathSegCurvetoQuadraticAbs","SVGPathSegCurvetoQuadraticRel","SVGPathSegCurvetoQuadraticSmoothAbs","SVGPathSegCurvetoQuadraticSmoothRel","SVGPathSegLinetoAbs","SVGPathSegLinetoHorizontalAbs","SVGPathSegLinetoHorizontalRel","SVGPathSegLinetoRel","SVGPathSegLinetoVerticalAbs","SVGPathSegLinetoVerticalRel","SVGPathSegList","SVGPathSegMovetoAbs","SVGPathSegMovetoRel","SVGPatternElement","SVGPoint","SVGPointList","SVGPolygonElement","SVGPolylineElement","SVGPreserveAspectRatio","SVGRadialGradientElement","SVGRect","SVGRectElement","SVGRenderingIntent","SVGSVGElement","SVGScriptElement","SVGSetElement","SVGStopElement","SVGStringList","SVGStyleElement","SVGSwitchElement","SVGSymbolElement","SVGTRefElement","SVGTSpanElement","SVGTextContentElement","SVGTextElement","SVGTextPathElement","SVGTextPositioningElement","SVGTitleElement","SVGTransform","SVGTransformList","SVGUnitTypes","SVGUseElement","SVGVKernElement","SVGViewElement","SVGViewSpec","SVGZoomAndPan","SVGZoomEvent","SVG_ANGLETYPE_DEG","SVG_ANGLETYPE_GRAD","SVG_ANGLETYPE_RAD","SVG_ANGLETYPE_UNKNOWN","SVG_ANGLETYPE_UNSPECIFIED","SVG_CHANNEL_A","SVG_CHANNEL_B","SVG_CHANNEL_G","SVG_CHANNEL_R","SVG_CHANNEL_UNKNOWN","SVG_COLORTYPE_CURRENTCOLOR","SVG_COLORTYPE_RGBCOLOR","SVG_COLORTYPE_RGBCOLOR_ICCCOLOR","SVG_COLORTYPE_UNKNOWN","SVG_EDGEMODE_DUPLICATE","SVG_EDGEMODE_NONE","SVG_EDGEMODE_UNKNOWN","SVG_EDGEMODE_WRAP","SVG_FEBLEND_MODE_COLOR","SVG_FEBLEND_MODE_COLOR_BURN","SVG_FEBLEND_MODE_COLOR_DODGE","SVG_FEBLEND_MODE_DARKEN","SVG_FEBLEND_MODE_DIFFERENCE","SVG_FEBLEND_MODE_EXCLUSION","SVG_FEBLEND_MODE_HARD_LIGHT","SVG_FEBLEND_MODE_HUE","SVG_FEBLEND_MODE_LIGHTEN","SVG_FEBLEND_MODE_LUMINOSITY","SVG_FEBLEND_MODE_MULTIPLY","SVG_FEBLEND_MODE_NORMAL","SVG_FEBLEND_MODE_OVERLAY","SVG_FEBLEND_MODE_SATURATION","SVG_FEBLEND_MODE_SCREEN","SVG_FEBLEND_MODE_SOFT_LIGHT","SVG_FEBLEND_MODE_UNKNOWN","SVG_FECOLORMATRIX_TYPE_HUEROTATE","SVG_FECOLORMATRIX_TYPE_LUMINANCETOALPHA","SVG_FECOLORMATRIX_TYPE_MATRIX","SVG_FECOLORMATRIX_TYPE_SATURATE","SVG_FECOLORMATRIX_TYPE_UNKNOWN","SVG_FECOMPONENTTRANSFER_TYPE_DISCRETE","SVG_FECOMPONENTTRANSFER_TYPE_GAMMA","SVG_FECOMPONENTTRANSFER_TYPE_IDENTITY","SVG_FECOMPONENTTRANSFER_TYPE_LINEAR","SVG_FECOMPONENTTRANSFER_TYPE_TABLE","SVG_FECOMPONENTTRANSFER_TYPE_UNKNOWN","SVG_FECOMPOSITE_OPERATOR_ARITHMETIC","SVG_FECOMPOSITE_OPERATOR_ATOP","SVG_FECOMPOSITE_OPERATOR_IN","SVG_FECOMPOSITE_OPERATOR_OUT","SVG_FECOMPOSITE_OPERATOR_OVER","SVG_FECOMPOSITE_OPERATOR_UNKNOWN","SVG_FECOMPOSITE_OPERATOR_XOR","SVG_INVALID_VALUE_ERR","SVG_LENGTHTYPE_CM","SVG_LENGTHTYPE_EMS","SVG_LENGTHTYPE_EXS","SVG_LENGTHTYPE_IN","SVG_LENGTHTYPE_MM","SVG_LENGTHTYPE_NUMBER","SVG_LENGTHTYPE_PC","SVG_LENGTHTYPE_PERCENTAGE","SVG_LENGTHTYPE_PT","SVG_LENGTHTYPE_PX","SVG_LENGTHTYPE_UNKNOWN","SVG_MARKERUNITS_STROKEWIDTH","SVG_MARKERUNITS_UNKNOWN","SVG_MARKERUNITS_USERSPACEONUSE","SVG_MARKER_ORIENT_ANGLE","SVG_MARKER_ORIENT_AUTO","SVG_MARKER_ORIENT_UNKNOWN","SVG_MASKTYPE_ALPHA","SVG_MASKTYPE_LUMINANCE","SVG_MATRIX_NOT_INVERTABLE","SVG_MEETORSLICE_MEET","SVG_MEETORSLICE_SLICE","SVG_MEETORSLICE_UNKNOWN","SVG_MORPHOLOGY_OPERATOR_DILATE","SVG_MORPHOLOGY_OPERATOR_ERODE","SVG_MORPHOLOGY_OPERATOR_UNKNOWN","SVG_PAINTTYPE_CURRENTCOLOR","SVG_PAINTTYPE_NONE","SVG_PAINTTYPE_RGBCOLOR","SVG_PAINTTYPE_RGBCOLOR_ICCCOLOR","SVG_PAINTTYPE_UNKNOWN","SVG_PAINTTYPE_URI","SVG_PAINTTYPE_URI_CURRENTCOLOR","SVG_PAINTTYPE_URI_NONE","SVG_PAINTTYPE_URI_RGBCOLOR","SVG_PAINTTYPE_URI_RGBCOLOR_ICCCOLOR","SVG_PRESERVEASPECTRATIO_NONE","SVG_PRESERVEASPECTRATIO_UNKNOWN","SVG_PRESERVEASPECTRATIO_XMAXYMAX","SVG_PRESERVEASPECTRATIO_XMAXYMID","SVG_PRESERVEASPECTRATIO_XMAXYMIN","SVG_PRESERVEASPECTRATIO_XMIDYMAX","SVG_PRESERVEASPECTRATIO_XMIDYMID","SVG_PRESERVEASPECTRATIO_XMIDYMIN","SVG_PRESERVEASPECTRATIO_XMINYMAX","SVG_PRESERVEASPECTRATIO_XMINYMID","SVG_PRESERVEASPECTRATIO_XMINYMIN","SVG_SPREADMETHOD_PAD","SVG_SPREADMETHOD_REFLECT","SVG_SPREADMETHOD_REPEAT","SVG_SPREADMETHOD_UNKNOWN","SVG_STITCHTYPE_NOSTITCH","SVG_STITCHTYPE_STITCH","SVG_STITCHTYPE_UNKNOWN","SVG_TRANSFORM_MATRIX","SVG_TRANSFORM_ROTATE","SVG_TRANSFORM_SCALE","SVG_TRANSFORM_SKEWX","SVG_TRANSFORM_SKEWY","SVG_TRANSFORM_TRANSLATE","SVG_TRANSFORM_UNKNOWN","SVG_TURBULENCE_TYPE_FRACTALNOISE","SVG_TURBULENCE_TYPE_TURBULENCE","SVG_TURBULENCE_TYPE_UNKNOWN","SVG_UNIT_TYPE_OBJECTBOUNDINGBOX","SVG_UNIT_TYPE_UNKNOWN","SVG_UNIT_TYPE_USERSPACEONUSE","SVG_WRONG_TYPE_ERR","SVG_ZOOMANDPAN_DISABLE","SVG_ZOOMANDPAN_MAGNIFY","SVG_ZOOMANDPAN_UNKNOWN","SYNTAX_ERR","SavedPages","Screen","ScreenOrientation","Script","ScriptProcessorNode","ScrollAreaEvent","SecurityPolicyViolationEvent","Selection","ServiceWorker","ServiceWorkerContainer","ServiceWorkerRegistration","SessionDescription","Set","ShadowRoot","SharedWorker","SimpleGestureEvent","SpeechSynthesisEvent","SpeechSynthesisUtterance","StopIteration","Storage","StorageEvent","String","StyleSheet","StyleSheetList","SubtleCrypto","Symbol","SyntaxError","TEMPORARY","TEXTPATH_METHODTYPE_ALIGN","TEXTPATH_METHODTYPE_STRETCH","TEXTPATH_METHODTYPE_UNKNOWN","TEXTPATH_SPACINGTYPE_AUTO","TEXTPATH_SPACINGTYPE_EXACT","TEXTPATH_SPACINGTYPE_UNKNOWN","TEXTURE","TEXTURE0","TEXTURE1","TEXTURE10","TEXTURE11","TEXTURE12","TEXTURE13","TEXTURE14","TEXTURE15","TEXTURE16","TEXTURE17","TEXTURE18","TEXTURE19","TEXTURE2","TEXTURE20","TEXTURE21","TEXTURE22","TEXTURE23","TEXTURE24","TEXTURE25","TEXTURE26","TEXTURE27","TEXTURE28","TEXTURE29","TEXTURE3","TEXTURE30","TEXTURE31","TEXTURE4","TEXTURE5","TEXTURE6","TEXTURE7","TEXTURE8","TEXTURE9","TEXTURE_2D","TEXTURE_BINDING_2D","TEXTURE_BINDING_CUBE_MAP","TEXTURE_CUBE_MAP","TEXTURE_CUBE_MAP_NEGATIVE_X","TEXTURE_CUBE_MAP_NEGATIVE_Y","TEXTURE_CUBE_MAP_NEGATIVE_Z","TEXTURE_CUBE_MAP_POSITIVE_X","TEXTURE_CUBE_MAP_POSITIVE_Y","TEXTURE_CUBE_MAP_POSITIVE_Z","TEXTURE_MAG_FILTER","TEXTURE_MAX_ANISOTROPY_EXT","TEXTURE_MIN_FILTER","TEXTURE_WRAP_S","TEXTURE_WRAP_T","TEXT_NODE","TIMEOUT","TIMEOUT_ERR","TOO_LARGE_ERR","TRANSACTION_INACTIVE_ERR","TRIANGLE","TRIANGLES","TRIANGLE_FAN","TRIANGLE_STRIP","TYPE_BACK_FORWARD","TYPE_ERR","TYPE_MISMATCH_ERR","TYPE_NAVIGATE","TYPE_RELOAD","TYPE_RESERVED","Text","TextDecoder","TextEncoder","TextEvent","TextMetrics","TextTrack","TextTrackCue","TextTrackCueList","TextTrackList","TimeEvent","TimeRanges","Touch","TouchEvent","TouchList","TrackEvent","TransitionEvent","TreeWalker","TypeError","UIEvent","UNCACHED","UNKNOWN_ERR","UNKNOWN_RULE","UNMASKED_RENDERER_WEBGL","UNMASKED_VENDOR_WEBGL","UNORDERED_NODE_ITERATOR_TYPE","UNORDERED_NODE_SNAPSHOT_TYPE","UNPACK_ALIGNMENT","UNPACK_COLORSPACE_CONVERSION_WEBGL","UNPACK_FLIP_Y_WEBGL","UNPACK_PREMULTIPLY_ALPHA_WEBGL","UNSCHEDULED_STATE","UNSENT","UNSIGNED_BYTE","UNSIGNED_INT","UNSIGNED_SHORT","UNSIGNED_SHORT_4_4_4_4","UNSIGNED_SHORT_5_5_5_1","UNSIGNED_SHORT_5_6_5","UNSPECIFIED_EVENT_TYPE_ERR","UPDATEREADY","URIError","URL","URLSearchParams","URLUnencoded","URL_MISMATCH_ERR","UTC","Uint16Array","Uint32Array","Uint8Array","Uint8ClampedArray","UserMessageHandler","UserMessageHandlersNamespace","UserProximityEvent","VALIDATE_STATUS","VALIDATION_ERR","VARIABLES_RULE","VENDOR","VERSION","VERSION_CHANGE","VERSION_ERR","VERTEX_ATTRIB_ARRAY_BUFFER_BINDING","VERTEX_ATTRIB_ARRAY_DIVISOR_ANGLE","VERTEX_ATTRIB_ARRAY_ENABLED","VERTEX_ATTRIB_ARRAY_NORMALIZED","VERTEX_ATTRIB_ARRAY_POINTER","VERTEX_ATTRIB_ARRAY_SIZE","VERTEX_ATTRIB_ARRAY_STRIDE","VERTEX_ATTRIB_ARRAY_TYPE","VERTEX_SHADER","VERTICAL","VERTICAL_AXIS","VER_ERR","VIEWPORT","VIEWPORT_RULE","VTTCue","VTTRegion","ValidityState","VideoStreamTrack","WEBKIT_FILTER_RULE","WEBKIT_KEYFRAMES_RULE","WEBKIT_KEYFRAME_RULE","WEBKIT_REGION_RULE","WRONG_DOCUMENT_ERR","WaveShaperNode","WeakMap","WeakSet","WebGLActiveInfo","WebGLBuffer","WebGLContextEvent","WebGLFramebuffer","WebGLProgram","WebGLRenderbuffer","WebGLRenderingContext","WebGLShader","WebGLShaderPrecisionFormat","WebGLTexture","WebGLUniformLocation","WebGLVertexArray","WebKitAnimationEvent","WebKitBlobBuilder","WebKitCSSFilterRule","WebKitCSSFilterValue","WebKitCSSKeyframeRule","WebKitCSSKeyframesRule","WebKitCSSMatrix","WebKitCSSRegionRule","WebKitCSSTransformValue","WebKitDataCue","WebKitGamepad","WebKitMediaKeyError","WebKitMediaKeyMessageEvent","WebKitMediaKeySession","WebKitMediaKeys","WebKitMediaSource","WebKitMutationObserver","WebKitNamespace","WebKitPlaybackTargetAvailabilityEvent","WebKitPoint","WebKitShadowRoot","WebKitSourceBuffer","WebKitSourceBufferList","WebKitTransitionEvent","WebSocket","WheelEvent","Window","Worker","XMLDocument","XMLHttpRequest","XMLHttpRequestEventTarget","XMLHttpRequestException","XMLHttpRequestProgressEvent","XMLHttpRequestUpload","XMLSerializer","XMLStylesheetProcessingInstruction","XPathEvaluator","XPathException","XPathExpression","XPathNSResolver","XPathResult","XSLTProcessor","ZERO","_XD0M_","_YD0M_","__defineGetter__","__defineSetter__","__lookupGetter__","__lookupSetter__","__opera","__proto__","_browserjsran","a","aLink","abbr","abort","abs","absolute","acceleration","accelerationIncludingGravity","accelerator","accept","acceptCharset","acceptNode","accessKey","accessKeyLabel","accuracy","acos","acosh","action","actionURL","active","activeCues","activeElement","activeSourceBuffers","activeSourceCount","activeTexture","add","addBehavior","addCandidate","addColorStop","addCue","addElement","addEventListener","addFilter","addFromString","addFromUri","addIceCandidate","addImport","addListener","addNamed","addPageRule","addPath","addPointer","addRange","addRegion","addRule","addSearchEngine","addSourceBuffer","addStream","addTextTrack","addTrack","addWakeLockListener","addedNodes","additionalName","additiveSymbols","addons","adoptNode","adr","advance","alert","algorithm","align","align-content","align-items","align-self","alignContent","alignItems","alignSelf","alignmentBaseline","alinkColor","all","allSettled","allowFullscreen","allowedDirections","alpha","alt","altGraphKey","altHtml","altKey","altLeft","altitude","altitudeAccuracy","amplitude","ancestorOrigins","anchor","anchorNode","anchorOffset","anchors","angle","animVal","animate","animatedInstanceRoot","animatedNormalizedPathSegList","animatedPathSegList","animatedPoints","animation","animation-delay","animation-direction","animation-duration","animation-fill-mode","animation-iteration-count","animation-name","animation-play-state","animation-timing-function","animationDelay","animationDirection","animationDuration","animationFillMode","animationIterationCount","animationName","animationPlayState","animationStartTime","animationTimingFunction","animationsPaused","anniversary","any","app","appCodeName","appMinorVersion","appName","appNotifications","appVersion","append","appendBuffer","appendChild","appendData","appendItem","appendMedium","appendNamed","appendRule","appendStream","appendWindowEnd","appendWindowStart","applets","applicationCache","apply","applyElement","arc","arcTo","archive","areas","arguments","arrayBuffer","asin","asinh","assert","assign","async","atEnd","atan","atan2","atanh","atob","attachEvent","attachShader","attachShadow","attachments","attack","attrChange","attrName","attributeFilter","attributeName","attributeNamespace","attributeOldValue","attributes","audioTracks","autoIncrement","autobuffer","autocapitalize","autocomplete","autocorrect","autofocus","autoplay","availHeight","availLeft","availTop","availWidth","availability","available","aversion","axes","axis","azimuth","b","back","backface-visibility","backfaceVisibility","background","background-attachment","background-blend-mode","background-clip","background-color","background-image","background-origin","background-position","background-repeat","background-size","backgroundAttachment","backgroundBlendMode","backgroundClip","backgroundColor","backgroundImage","backgroundOrigin","backgroundPosition","backgroundPositionX","backgroundPositionY","backgroundRepeat","backgroundSize","badInput","balance","baseFrequencyX","baseFrequencyY","baseNode","baseOffset","baseURI","baseVal","baselineShift","battery","bday","beginElement","beginElementAt","beginPath","behavior","behaviorCookie","behaviorPart","behaviorUrns","beta","bezierCurveTo","bgColor","bgProperties","bias","big","binaryType","bind","bindAttribLocation","bindBuffer","bindFramebuffer","bindRenderbuffer","bindTexture","blendColor","blendEquation","blendEquationSeparate","blendFunc","blendFuncSeparate","blink","blob","blockDirection","blue","blur","body","bodyUsed","bold","bookmarks","booleanValue","border","border-bottom","border-bottom-color","border-bottom-left-radius","border-bottom-right-radius","border-bottom-style","border-bottom-width","border-collapse","border-color","border-image","border-image-outset","border-image-repeat","border-image-slice","border-image-source","border-image-width","border-left","border-left-color","border-left-style","border-left-width","border-radius","border-right","border-right-color","border-right-style","border-right-width","border-spacing","border-style","border-top","border-top-color","border-top-left-radius","border-top-right-radius","border-top-style","border-top-width","border-width","borderBottom","borderBottomColor","borderBottomLeftRadius","borderBottomRightRadius","borderBottomStyle","borderBottomWidth","borderCollapse","borderColor","borderColorDark","borderColorLight","borderImage","borderImageOutset","borderImageRepeat","borderImageSlice","borderImageSource","borderImageWidth","borderLeft","borderLeftColor","borderLeftStyle","borderLeftWidth","borderRadius","borderRight","borderRightColor","borderRightStyle","borderRightWidth","borderSpacing","borderStyle","borderTop","borderTopColor","borderTopLeftRadius","borderTopRightRadius","borderTopStyle","borderTopWidth","borderWidth","bottom","bottomMargin","bound","boundElements","boundingClientRect","boundingHeight","boundingLeft","boundingTop","boundingWidth","bounds","box-decoration-break","box-shadow","box-sizing","boxDecorationBreak","boxShadow","boxSizing","breakAfter","breakBefore","breakInside","browserLanguage","btoa","bubbles","buffer","bufferData","bufferDepth","bufferSize","bufferSubData","buffered","bufferedAmount","buildID","buildNumber","button","buttonID","buttons","byteLength","byteOffset","c","call","caller","canBeFormatted","canBeMounted","canBeShared","canHaveChildren","canHaveHTML","canPlayType","cancel","cancelAnimationFrame","cancelBubble","cancelScheduledValues","cancelable","candidate","canvas","caption","caption-side","captionSide","capture","captureEvents","captureStackTrace","caretPositionFromPoint","caretRangeFromPoint","cast","catch","category","cbrt","cd","ceil","cellIndex","cellPadding","cellSpacing","cells","ch","chOff","chain","challenge","changedTouches","channel","channelCount","channelCountMode","channelInterpretation","char","charAt","charCode","charCodeAt","charIndex","characterData","characterDataOldValue","characterSet","charging","chargingTime","charset","checkEnclosure","checkFramebufferStatus","checkIntersection","checkValidity","checked","childElementCount","childList","childNodes","children","chrome","ciphertext","cite","classList","className","classid","clear","clearAttributes","clearColor","clearData","clearDepth","clearImmediate","clearInterval","clearMarks","clearMeasures","clearParameters","clearRect","clearResourceTimings","clearShadow","clearStencil","clearTimeout","clearWatch","click","clickCount","clientHeight","clientInformation","clientLeft","clientRect","clientRects","clientTop","clientWidth","clientX","clientY","clip","clip-path","clip-rule","clipBottom","clipLeft","clipPath","clipPathUnits","clipRight","clipRule","clipTop","clipboardData","clone","cloneContents","cloneNode","cloneRange","close","closePath","closed","closest","clz","clz32","cmp","code","codeBase","codePointAt","codeType","colSpan","collapse","collapseToEnd","collapseToStart","collapsed","collect","colno","color","color-interpolation","color-interpolation-filters","colorDepth","colorInterpolation","colorInterpolationFilters","colorMask","colorType","cols","columnCount","columnFill","columnGap","columnNumber","columnRule","columnRuleColor","columnRuleStyle","columnRuleWidth","columnSpan","columnWidth","columns","command","commitPreferences","commonAncestorContainer","compact","compareBoundaryPoints","compareDocumentPosition","compareEndPoints","compareNode","comparePoint","compatMode","compatible","compile","compileShader","complete","componentFromPoint","compositionEndOffset","compositionStartOffset","compressedTexImage2D","compressedTexSubImage2D","concat","conditionText","coneInnerAngle","coneOuterAngle","coneOuterGain","confirm","confirmComposition","confirmSiteSpecificTrackingException","confirmWebWideTrackingException","connect","connectEnd","connectStart","connected","connection","connectionSpeed","console","consolidate","constrictionActive","constructor","contactID","contains","containsNode","content","contentDocument","contentEditable","contentOverflow","contentScriptType","contentStyleType","contentType","contentWindow","context","contextMenu","contextmenu","continue","continuous","control","controller","controls","convertToSpecifiedUnits","cookie","cookieEnabled","coords","copyFromChannel","copyTexImage2D","copyTexSubImage2D","copyToChannel","copyWithin","correspondingElement","correspondingUseElement","cos","cosh","count","counter-increment","counter-reset","counterIncrement","counterReset","cpuClass","cpuSleepAllowed","create","createAnalyser","createAnswer","createAttribute","createAttributeNS","createBiquadFilter","createBuffer","createBufferSource","createCDATASection","createCSSStyleSheet","createCaption","createChannelMerger","createChannelSplitter","createComment","createContextualFragment","createControlRange","createConvolver","createDTMFSender","createDataChannel","createDelay","createDelayNode","createDocument","createDocumentFragment","createDocumentType","createDynamicsCompressor","createElement","createElementNS","createEntityReference","createEvent","createEventObject","createExpression","createFramebuffer","createFunction","createGain","createGainNode","createHTMLDocument","createImageBitmap","createImageData","createIndex","createJavaScriptNode","createLinearGradient","createMediaElementSource","createMediaKeys","createMediaStreamDestination","createMediaStreamSource","createMutableFile","createNSResolver","createNodeIterator","createNotification","createObjectStore","createObjectURL","createOffer","createOscillator","createPanner","createPattern","createPeriodicWave","createPopup","createProcessingInstruction","createProgram","createRadialGradient","createRange","createRangeCollection","createRenderbuffer","createSVGAngle","createSVGLength","createSVGMatrix","createSVGNumber","createSVGPathSegArcAbs","createSVGPathSegArcRel","createSVGPathSegClosePath","createSVGPathSegCurvetoCubicAbs","createSVGPathSegCurvetoCubicRel","createSVGPathSegCurvetoCubicSmoothAbs","createSVGPathSegCurvetoCubicSmoothRel","createSVGPathSegCurvetoQuadraticAbs","createSVGPathSegCurvetoQuadraticRel","createSVGPathSegCurvetoQuadraticSmoothAbs","createSVGPathSegCurvetoQuadraticSmoothRel","createSVGPathSegLinetoAbs","createSVGPathSegLinetoHorizontalAbs","createSVGPathSegLinetoHorizontalRel","createSVGPathSegLinetoRel","createSVGPathSegLinetoVerticalAbs","createSVGPathSegLinetoVerticalRel","createSVGPathSegMovetoAbs","createSVGPathSegMovetoRel","createSVGPoint","createSVGRect","createSVGTransform","createSVGTransformFromMatrix","createScriptProcessor","createSession","createShader","createShadowRoot","createStereoPanner","createStyleSheet","createTBody","createTFoot","createTHead","createTextNode","createTextRange","createTexture","createTouch","createTouchList","createTreeWalker","createWaveShaper","creationTime","crossOrigin","crypto","csi","cssFloat","cssRules","cssText","cssValueType","ctrlKey","ctrlLeft","cues","cullFace","currentNode","currentPage","currentScale","currentScript","currentSrc","currentState","currentStyle","currentTarget","currentTime","currentTranslate","currentView","cursor","curve","customError","cx","cy","d","data","dataFld","dataFormatAs","dataPageSize","dataSrc","dataTransfer","database","dataset","dateTime","db","debug","debuggerEnabled","declare","decode","decodeAudioData","decodeURI","decodeURIComponent","decodingInfo","decrypt","default","defaultCharset","defaultChecked","defaultMuted","defaultPlaybackRate","defaultPrevented","defaultSelected","defaultStatus","defaultURL","defaultValue","defaultView","defaultstatus","defer","defineMagicFunction","defineMagicVariable","defineProperties","defineProperty","delayTime","delete","deleteBuffer","deleteCaption","deleteCell","deleteContents","deleteData","deleteDatabase","deleteFramebuffer","deleteFromDocument","deleteIndex","deleteMedium","deleteObjectStore","deleteProgram","deleteRenderbuffer","deleteRow","deleteRule","deleteShader","deleteTFoot","deleteTHead","deleteTexture","deliverChangeRecords","delivery","deliveryInfo","deliveryStatus","deliveryTimestamp","delta","deltaMode","deltaX","deltaY","deltaZ","depthFunc","depthMask","depthRange","deriveBits","deriveKey","description","deselectAll","designMode","destination","destinationURL","detach","detachEvent","detachShader","detail","detune","devicePixelRatio","deviceXDPI","deviceYDPI","diffuseConstant","digest","dimensions","dir","dirName","direction","dirxml","disable","disableVertexAttribArray","disabled","dischargingTime","disconnect","dispatchEvent","display","distanceModel","divisor","djsapi","djsproxy","doImport","doNotTrack","doScroll","doctype","document","documentElement","documentMode","documentURI","dolphin","dolphinGameCenter","dolphininfo","dolphinmeta","domComplete","domContentLoadedEventEnd","domContentLoadedEventStart","domInteractive","domLoading","domain","domainLookupEnd","domainLookupStart","dominant-baseline","dominantBaseline","done","dopplerFactor","download","dragDrop","draggable","drawArrays","drawArraysInstancedANGLE","drawCustomFocusRing","drawElements","drawElementsInstancedANGLE","drawFocusIfNeeded","drawImage","drawImageFromRect","drawSystemFocusRing","drawingBufferHeight","drawingBufferWidth","dropEffect","droppedVideoFrames","dropzone","dump","duplicate","duration","dvname","dvnum","dx","dy","dynsrc","e","edgeMode","effectAllowed","elapsedTime","elementFromPoint","elements","elevation","ellipse","email","embeds","empty","empty-cells","emptyCells","enable","enableBackground","enableStyleSheetsForSet","enableVertexAttribArray","enabled","enabledPlugin","encode","encodeURI","encodeURIComponent","encoding","encrypt","enctype","end","endContainer","endElement","endElementAt","endOfStream","endOffset","endTime","ended","endsWith","entities","entries","entryType","enumerate","enumerateEditable","error","errorCode","escape","eval","evaluate","event","eventPhase","every","exception","exec","execCommand","execCommandShowHelp","execScript","exitFullscreen","exitPointerLock","exp","expand","expandEntityReferences","expando","expansion","expiryDate","explicitOriginalTarget","expm1","exponent","exponentialRampToValueAtTime","exportKey","extend","extensions","extentNode","extentOffset","external","externalResourcesRequired","extractContents","extractable","f","face","factoryReset","fallback","familyName","farthestViewportElement","fastSeek","fatal","fetch","fetchStart","fftSize","fgColor","fileCreatedDate","fileHandle","fileModifiedDate","fileName","fileSize","fileUpdatedDate","filename","files","fill","fill-opacity","fill-rule","fillOpacity","fillRect","fillRule","fillStyle","fillText","filter","filterResX","filterResY","filterUnits","filters","finally","find","findIndex","findRule","findText","finish","fireEvent","firstChild","firstElementChild","firstPage","fixed","flex","flex-basis","flex-direction","flex-flow","flex-grow","flex-shrink","flex-wrap","flexBasis","flexDirection","flexFlow","flexGrow","flexShrink","flexWrap","flipX","flipY","float","flood-color","flood-opacity","floodColor","floodOpacity","floor","flush","focus","focusNode","focusOffset","font","font-family","font-feature-settings","font-kerning","font-language-override","font-size","font-size-adjust","font-stretch","font-style","font-synthesis","font-variant","font-variant-alternates","font-variant-caps","font-variant-east-asian","font-variant-ligatures","font-variant-numeric","font-variant-position","font-weight","fontFamily","fontFeatureSettings","fontKerning","fontLanguageOverride","fontSize","fontSizeAdjust","fontSmoothingEnabled","fontStretch","fontStyle","fontSynthesis","fontVariant","fontVariantAlternates","fontVariantCaps","fontVariantEastAsian","fontVariantLigatures","fontVariantNumeric","fontVariantPosition","fontWeight","fontcolor","fonts","fontsize","for","forEach","forceRedraw","form","formAction","formEnctype","formMethod","formNoValidate","formTarget","format","formatToParts","forms","forward","fr","frame","frameBorder","frameElement","frameSpacing","framebufferRenderbuffer","framebufferTexture2D","frames","freeSpace","freeze","frequency","frequencyBinCount","from","fromCharCode","fromCodePoint","fromElement","frontFace","fround","fullScreen","fullscreenElement","fullscreenEnabled","fx","fy","gain","gamepad","gamma","genderIdentity","generateKey","generateMipmap","generateRequest","geolocation","gestureObject","get","getActiveAttrib","getActiveUniform","getAdjacentText","getAll","getAllResponseHeaders","getAsFile","getAsString","getAttachedShaders","getAttribLocation","getAttribute","getAttributeNS","getAttributeNode","getAttributeNodeNS","getAudioTracks","getBBox","getBattery","getBlob","getBookmark","getBoundingClientRect","getBufferParameter","getByteFrequencyData","getByteTimeDomainData","getCSSCanvasContext","getCTM","getCandidateWindowClientRect","getChannelData","getCharNumAtPosition","getClientRect","getClientRects","getCompositionAlternatives","getComputedStyle","getComputedTextLength","getConfiguration","getContext","getContextAttributes","getCounterValue","getCueAsHTML","getCueById","getCurrentPosition","getCurrentTime","getData","getDatabaseNames","getDate","getDay","getDefaultComputedStyle","getDestinationInsertionPoints","getDistributedNodes","getEditable","getElementById","getElementsByClassName","getElementsByName","getElementsByTagName","getElementsByTagNameNS","getEnclosureList","getEndPositionOfChar","getEntries","getEntriesByName","getEntriesByType","getError","getExtension","getExtentOfChar","getFeature","getFile","getFloat32","getFloat64","getFloatFrequencyData","getFloatTimeDomainData","getFloatValue","getFramebufferAttachmentParameter","getFrequencyResponse","getFullYear","getGamepads","getHours","getImageData","getInt16","getInt32","getInt8","getIntersectionList","getItem","getItems","getKey","getLineDash","getLocalStreams","getMarks","getMatchedCSSRules","getMeasures","getMetadata","getMilliseconds","getMinutes","getModifierState","getMonth","getNamedItem","getNamedItemNS","getNotifier","getNumberOfChars","getOverrideHistoryNavigationMode","getOverrideStyle","getOwnPropertyDescriptor","getOwnPropertyNames","getOwnPropertySymbols","getParameter","getPathSegAtLength","getPointAtLength","getPreference","getPreferenceDefault","getPresentationAttribute","getPreventDefault","getProgramInfoLog","getProgramParameter","getPropertyCSSValue","getPropertyPriority","getPropertyShorthand","getPropertyValue","getPrototypeOf","getRGBColorValue","getRandomValues","getRangeAt","getReceivers","getRectValue","getRegistration","getRemoteStreams","getRenderbufferParameter","getResponseHeader","getRoot","getRotationOfChar","getSVGDocument","getScreenCTM","getSeconds","getSelection","getSenders","getShaderInfoLog","getShaderParameter","getShaderPrecisionFormat","getShaderSource","getSimpleDuration","getSiteIcons","getSources","getSpeculativeParserUrls","getStartPositionOfChar","getStartTime","getStats","getStorageUpdates","getStreamById","getStringValue","getSubStringLength","getSubscription","getSupportedExtensions","getTexParameter","getTime","getTimezoneOffset","getTotalLength","getTrackById","getTracks","getTransformToElement","getUTCDate","getUTCDay","getUTCFullYear","getUTCHours","getUTCMilliseconds","getUTCMinutes","getUTCMonth","getUTCSeconds","getUint16","getUint32","getUint8","getUniform","getUniformLocation","getUserMedia","getValues","getVarDate","getVariableValue","getVertexAttrib","getVertexAttribOffset","getVideoPlaybackQuality","getVideoTracks","getWakeLockState","getYear","givenName","global","globalAlpha","globalCompositeOperation","glyphOrientationHorizontal","glyphOrientationVertical","glyphRef","go","gradientTransform","gradientUnits","grammars","green","group","groupCollapsed","groupEnd","hardwareConcurrency","has","hasAttribute","hasAttributeNS","hasAttributes","hasChildNodes","hasComposition","hasExtension","hasFeature","hasFocus","hasLayout","hasOwnProperty","hash","head","headers","heading","height","hidden","hide","hideFocus","high","hint","history","honorificPrefix","honorificSuffix","horizontalOverflow","host","hostname","href","hreflang","hspace","html5TagCheckInerface","htmlFor","htmlText","httpEquiv","hwTimestamp","hypot","iccId","iceConnectionState","iceGatheringState","icon","id","identifier","identity","ignoreBOM","ignoreCase","image-orientation","image-rendering","imageOrientation","imageRendering","images","ime-mode","imeMode","implementation","importKey","importNode","importStylesheet","imports","impp","imul","in1","in2","inBandMetadataTrackDispatchType","inRange","includes","incremental","indeterminate","index","indexNames","indexOf","indexedDB","inertiaDestinationX","inertiaDestinationY","info","init","initAnimationEvent","initBeforeLoadEvent","initClipboardEvent","initCloseEvent","initCommandEvent","initCompositionEvent","initCustomEvent","initData","initDeviceMotionEvent","initDeviceOrientationEvent","initDragEvent","initErrorEvent","initEvent","initFocusEvent","initGestureEvent","initHashChangeEvent","initKeyEvent","initKeyboardEvent","initMSManipulationEvent","initMessageEvent","initMouseEvent","initMouseScrollEvent","initMouseWheelEvent","initMutationEvent","initNSMouseEvent","initOverflowEvent","initPageEvent","initPageTransitionEvent","initPointerEvent","initPopStateEvent","initProgressEvent","initScrollAreaEvent","initSimpleGestureEvent","initStorageEvent","initTextEvent","initTimeEvent","initTouchEvent","initTransitionEvent","initUIEvent","initWebKitAnimationEvent","initWebKitTransitionEvent","initWebKitWheelEvent","initWheelEvent","initialTime","initialize","initiatorType","inner","innerHTML","innerHeight","innerText","innerWidth","input","inputBuffer","inputEncoding","inputMethod","insertAdjacentElement","insertAdjacentHTML","insertAdjacentText","insertBefore","insertCell","insertData","insertItemBefore","insertNode","insertRow","insertRule","instanceRoot","intercept","interimResults","internalSubset","intersectsNode","interval","invalidIteratorState","inverse","invertSelf","is","is2D","isAlternate","isArray","isBingCurrentSearchDefault","isBuffer","isCandidateWindowVisible","isChar","isCollapsed","isComposing","isContentEditable","isContentHandlerRegistered","isContextLost","isDefaultNamespace","isDisabled","isEnabled","isEqual","isEqualNode","isExtensible","isFinite","isFramebuffer","isFrozen","isGenerator","isId","isInjected","isInteger","isMap","isMultiLine","isNaN","isOpen","isPointInFill","isPointInPath","isPointInRange","isPointInStroke","isPrefAlternate","isPrimary","isProgram","isPropertyImplicit","isProtocolHandlerRegistered","isPrototypeOf","isRenderbuffer","isSafeInteger","isSameNode","isSealed","isShader","isSupported","isTextEdit","isTexture","isTrusted","isTypeSupported","isView","isolation","italics","item","itemId","itemProp","itemRef","itemScope","itemType","itemValue","iterateNext","iterator","javaEnabled","jobTitle","join","json","justify-content","justifyContent","k1","k2","k3","k4","kernelMatrix","kernelUnitLengthX","kernelUnitLengthY","kerning","key","keyCode","keyFor","keyIdentifier","keyLightEnabled","keyLocation","keyPath","keySystem","keyText","keyUsage","keys","keytype","kind","knee","label","labels","lang","language","languages","largeArcFlag","lastChild","lastElementChild","lastEventId","lastIndex","lastIndexOf","lastMatch","lastMessageSubject","lastMessageType","lastModified","lastModifiedDate","lastPage","lastParen","lastState","lastStyleSheetSet","latitude","layerX","layerY","layoutFlow","layoutGrid","layoutGridChar","layoutGridLine","layoutGridMode","layoutGridType","lbound","left","leftContext","leftMargin","length","lengthAdjust","lengthComputable","letter-spacing","letterSpacing","level","lighting-color","lightingColor","limitingConeAngle","line","line-height","lineAlign","lineBreak","lineCap","lineDashOffset","lineHeight","lineJoin","lineNumber","lineTo","lineWidth","linearRampToValueAtTime","lineno","link","linkColor","linkProgram","links","list","list-style","list-style-image","list-style-position","list-style-type","listStyle","listStyleImage","listStylePosition","listStyleType","listener","load","loadEventEnd","loadEventStart","loadTimes","loaded","localDescription","localName","localStorage","locale","localeCompare","location","locationbar","lock","lockedFile","log","log10","log1p","log2","logicalXDPI","logicalYDPI","longDesc","longitude","lookupNamespaceURI","lookupPrefix","loop","loopEnd","loopStart","looping","low","lower","lowerBound","lowerOpen","lowsrc","m11","m12","m13","m14","m21","m22","m23","m24","m31","m32","m33","m34","m41","m42","m43","m44","manifest","map","mapping","margin","margin-bottom","margin-left","margin-right","margin-top","marginBottom","marginHeight","marginLeft","marginRight","marginTop","marginWidth","mark","marker","marker-end","marker-mid","marker-offset","marker-start","markerEnd","markerHeight","markerMid","markerOffset","markerStart","markerUnits","markerWidth","marks","mask","mask-type","maskContentUnits","maskType","maskUnits","match","matchMedia","matchMedium","matches","matrix","matrixTransform","max","max-height","max-width","maxAlternatives","maxChannelCount","maxConnectionsPerServer","maxDecibels","maxDistance","maxHeight","maxLength","maxTouchPoints","maxValue","maxWidth","measure","measureText","media","mediaCapabilities","mediaDevices","mediaElement","mediaGroup","mediaKeys","mediaText","meetOrSlice","memory","menubar","mergeAttributes","message","messageClass","messageHandlers","metaKey","method","mimeType","mimeTypes","min","min-height","min-width","minDecibels","minHeight","minValue","minWidth","miterLimit","mix-blend-mode","mixBlendMode","mode","modify","mount","move","moveBy","moveEnd","moveFirst","moveFocusDown","moveFocusLeft","moveFocusRight","moveFocusUp","moveNext","moveRow","moveStart","moveTo","moveToBookmark","moveToElementText","moveToPoint","mozAdd","mozAnimationStartTime","mozAnon","mozApps","mozAudioCaptured","mozAudioChannelType","mozAutoplayEnabled","mozCancelAnimationFrame","mozCancelFullScreen","mozCancelRequestAnimationFrame","mozCaptureStream","mozCaptureStreamUntilEnded","mozClearDataAt","mozContact","mozContacts","mozCreateFileHandle","mozCurrentTransform","mozCurrentTransformInverse","mozCursor","mozDash","mozDashOffset","mozDecodedFrames","mozExitPointerLock","mozFillRule","mozFragmentEnd","mozFrameDelay","mozFullScreen","mozFullScreenElement","mozFullScreenEnabled","mozGetAll","mozGetAllKeys","mozGetAsFile","mozGetDataAt","mozGetMetadata","mozGetUserMedia","mozHasAudio","mozHasItem","mozHidden","mozImageSmoothingEnabled","mozIndexedDB","mozInnerScreenX","mozInnerScreenY","mozInputSource","mozIsTextField","mozItem","mozItemCount","mozItems","mozLength","mozLockOrientation","mozMatchesSelector","mozMovementX","mozMovementY","mozOpaque","mozOrientation","mozPaintCount","mozPaintedFrames","mozParsedFrames","mozPay","mozPointerLockElement","mozPresentedFrames","mozPreservesPitch","mozPressure","mozPrintCallback","mozRTCIceCandidate","mozRTCPeerConnection","mozRTCSessionDescription","mozRemove","mozRequestAnimationFrame","mozRequestFullScreen","mozRequestPointerLock","mozSetDataAt","mozSetImageElement","mozSourceNode","mozSrcObject","mozSystem","mozTCPSocket","mozTextStyle","mozTypesAt","mozUnlockOrientation","mozUserCancelled","mozVisibilityState","msAnimation","msAnimationDelay","msAnimationDirection","msAnimationDuration","msAnimationFillMode","msAnimationIterationCount","msAnimationName","msAnimationPlayState","msAnimationStartTime","msAnimationTimingFunction","msBackfaceVisibility","msBlockProgression","msCSSOMElementFloatMetrics","msCaching","msCachingEnabled","msCancelRequestAnimationFrame","msCapsLockWarningOff","msClearImmediate","msClose","msContentZoomChaining","msContentZoomFactor","msContentZoomLimit","msContentZoomLimitMax","msContentZoomLimitMin","msContentZoomSnap","msContentZoomSnapPoints","msContentZoomSnapType","msContentZooming","msConvertURL","msCrypto","msDoNotTrack","msElementsFromPoint","msElementsFromRect","msExitFullscreen","msExtendedCode","msFillRule","msFirstPaint","msFlex","msFlexAlign","msFlexDirection","msFlexFlow","msFlexItemAlign","msFlexLinePack","msFlexNegative","msFlexOrder","msFlexPack","msFlexPositive","msFlexPreferredSize","msFlexWrap","msFlowFrom","msFlowInto","msFontFeatureSettings","msFullscreenElement","msFullscreenEnabled","msGetInputContext","msGetRegionContent","msGetUntransformedBounds","msGraphicsTrustStatus","msGridColumn","msGridColumnAlign","msGridColumnSpan","msGridColumns","msGridRow","msGridRowAlign","msGridRowSpan","msGridRows","msHidden","msHighContrastAdjust","msHyphenateLimitChars","msHyphenateLimitLines","msHyphenateLimitZone","msHyphens","msImageSmoothingEnabled","msImeAlign","msIndexedDB","msInterpolationMode","msIsStaticHTML","msKeySystem","msKeys","msLaunchUri","msLockOrientation","msManipulationViewsEnabled","msMatchMedia","msMatchesSelector","msMaxTouchPoints","msOrientation","msOverflowStyle","msPerspective","msPerspectiveOrigin","msPlayToDisabled","msPlayToPreferredSourceUri","msPlayToPrimary","msPointerEnabled","msRegionOverflow","msReleasePointerCapture","msRequestAnimationFrame","msRequestFullscreen","msSaveBlob","msSaveOrOpenBlob","msScrollChaining","msScrollLimit","msScrollLimitXMax","msScrollLimitXMin","msScrollLimitYMax","msScrollLimitYMin","msScrollRails","msScrollSnapPointsX","msScrollSnapPointsY","msScrollSnapType","msScrollSnapX","msScrollSnapY","msScrollTranslation","msSetImmediate","msSetMediaKeys","msSetPointerCapture","msTextCombineHorizontal","msTextSizeAdjust","msToBlob","msTouchAction","msTouchSelect","msTraceAsyncCallbackCompleted","msTraceAsyncCallbackStarting","msTraceAsyncOperationCompleted","msTraceAsyncOperationStarting","msTransform","msTransformOrigin","msTransformStyle","msTransition","msTransitionDelay","msTransitionDuration","msTransitionProperty","msTransitionTimingFunction","msUnlockOrientation","msUpdateAsyncCallbackRelation","msUserSelect","msVisibilityState","msWrapFlow","msWrapMargin","msWrapThrough","msWriteProfilerMark","msZoom","msZoomTo","mt","multiEntry","multiSelectionObj","multiline","multiple","multiply","multiplySelf","mutableFile","muted","n","name","nameProp","namedItem","namedRecordset","names","namespaceURI","namespaces","naturalHeight","naturalWidth","navigate","navigation","navigationMode","navigationStart","navigator","near","nearestViewportElement","negative","netscape","networkState","newScale","newTranslate","newURL","newValue","newValueSpecifiedUnits","newVersion","newhome","next","nextElementSibling","nextNode","nextPage","nextSibling","nickname","noHref","noResize","noShade","noValidate","noWrap","nodeName","nodeType","nodeValue","normalize","normalizedPathSegList","notationName","notations","note","noteGrainOn","noteOff","noteOn","now","numOctaves","number","numberOfChannels","numberOfInputs","numberOfItems","numberOfOutputs","numberValue","oMatchesSelector","object","object-fit","object-position","objectFit","objectPosition","objectStore","objectStoreNames","observe","of","offscreenBuffering","offset","offsetHeight","offsetLeft","offsetNode","offsetParent","offsetTop","offsetWidth","offsetX","offsetY","ok","oldURL","oldValue","oldVersion","olderShadowRoot","onLine","onabort","onactivate","onactive","onaddstream","onaddtrack","onafterprint","onafterscriptexecute","onafterupdate","onaudioend","onaudioprocess","onaudiostart","onautocomplete","onautocompleteerror","onbeforeactivate","onbeforecopy","onbeforecut","onbeforedeactivate","onbeforeeditfocus","onbeforepaste","onbeforeprint","onbeforescriptexecute","onbeforeunload","onbeforeupdate","onblocked","onblur","onbounce","onboundary","oncached","oncancel","oncandidatewindowhide","oncandidatewindowshow","oncandidatewindowupdate","oncanplay","oncanplaythrough","once","oncellchange","onchange","onchargingchange","onchargingtimechange","onchecking","onclick","onclose","oncompassneedscalibration","oncomplete","oncontextmenu","oncontrolselect","oncopy","oncuechange","oncut","ondataavailable","ondatachannel","ondatasetchanged","ondatasetcomplete","ondblclick","ondeactivate","ondevicelight","ondevicemotion","ondeviceorientation","ondeviceproximity","ondischargingtimechange","ondisplay","ondownloading","ondrag","ondragend","ondragenter","ondragleave","ondragover","ondragstart","ondrop","ondurationchange","onemptied","onencrypted","onend","onended","onenter","onerror","onerrorupdate","onexit","onfilterchange","onfinish","onfocus","onfocusin","onfocusout","onfullscreenchange","onfullscreenerror","ongesturechange","ongestureend","ongesturestart","ongotpointercapture","onhashchange","onhelp","onicecandidate","oniceconnectionstatechange","oninactive","oninput","oninvalid","onkeydown","onkeypress","onkeyup","onlanguagechange","onlayoutcomplete","onlevelchange","onload","onloadeddata","onloadedmetadata","onloadend","onloadstart","onlosecapture","onlostpointercapture","only","onmark","onmessage","onmousedown","onmouseenter","onmouseleave","onmousemove","onmouseout","onmouseover","onmouseup","onmousewheel","onmove","onmoveend","onmovestart","onmozfullscreenchange","onmozfullscreenerror","onmozorientationchange","onmozpointerlockchange","onmozpointerlockerror","onmscontentzoom","onmsfullscreenchange","onmsfullscreenerror","onmsgesturechange","onmsgesturedoubletap","onmsgestureend","onmsgesturehold","onmsgesturestart","onmsgesturetap","onmsgotpointercapture","onmsinertiastart","onmslostpointercapture","onmsmanipulationstatechanged","onmsneedkey","onmsorientationchange","onmspointercancel","onmspointerdown","onmspointerenter","onmspointerhover","onmspointerleave","onmspointermove","onmspointerout","onmspointerover","onmspointerup","onmssitemodejumplistitemremoved","onmsthumbnailclick","onnegotiationneeded","onnomatch","onnoupdate","onobsolete","onoffline","ononline","onopen","onorientationchange","onpagechange","onpagehide","onpageshow","onpaste","onpause","onplay","onplaying","onpluginstreamstart","onpointercancel","onpointerdown","onpointerenter","onpointerleave","onpointerlockchange","onpointerlockerror","onpointermove","onpointerout","onpointerover","onpointerup","onpopstate","onprogress","onpropertychange","onratechange","onreadystatechange","onremovestream","onremovetrack","onreset","onresize","onresizeend","onresizestart","onresourcetimingbufferfull","onresult","onresume","onrowenter","onrowexit","onrowsdelete","onrowsinserted","onscroll","onsearch","onseeked","onseeking","onselect","onselectionchange","onselectstart","onshow","onsignalingstatechange","onsoundend","onsoundstart","onspeechend","onspeechstart","onstalled","onstart","onstatechange","onstop","onstorage","onstoragecommit","onsubmit","onsuccess","onsuspend","ontextinput","ontimeout","ontimeupdate","ontoggle","ontouchcancel","ontouchend","ontouchmove","ontouchstart","ontransitionend","onunload","onupdateready","onupgradeneeded","onuserproximity","onversionchange","onvoiceschanged","onvolumechange","onwaiting","onwarning","onwebkitanimationend","onwebkitanimationiteration","onwebkitanimationstart","onwebkitcurrentplaybacktargetiswirelesschanged","onwebkitfullscreenchange","onwebkitfullscreenerror","onwebkitkeyadded","onwebkitkeyerror","onwebkitkeymessage","onwebkitneedkey","onwebkitorientationchange","onwebkitplaybacktargetavailabilitychanged","onwebkitpointerlockchange","onwebkitpointerlockerror","onwebkitresourcetimingbufferfull","onwebkittransitionend","onwheel","onzoom","opacity","open","openCursor","openDatabase","openKeyCursor","opener","opera","operationType","operator","opr","optimum","options","order","orderX","orderY","ordered","org","orient","orientAngle","orientType","orientation","origin","originalTarget","orphans","oscpu","outerHTML","outerHeight","outerText","outerWidth","outline","outline-color","outline-offset","outline-style","outline-width","outlineColor","outlineOffset","outlineStyle","outlineWidth","outputBuffer","overflow","overflow-x","overflow-y","overflowX","overflowY","overrideMimeType","oversample","ownerDocument","ownerElement","ownerNode","ownerRule","ownerSVGElement","owningElement","p1","p2","p3","p4","pad","padding","padding-bottom","padding-left","padding-right","padding-top","paddingBottom","paddingLeft","paddingRight","paddingTop","page","page-break-after","page-break-before","page-break-inside","pageBreakAfter","pageBreakBefore","pageBreakInside","pageCount","pageX","pageXOffset","pageY","pageYOffset","pages","paint-order","paintOrder","paintRequests","paintType","palette","panningModel","parent","parentElement","parentNode","parentRule","parentStyleSheet","parentTextEdit","parentWindow","parse","parseFloat","parseFromString","parseInt","participants","passive","password","pasteHTML","path","pathLength","pathSegList","pathSegType","pathSegTypeAsLetter","pathname","pattern","patternContentUnits","patternMismatch","patternTransform","patternUnits","pause","pauseAnimations","pauseOnExit","paused","pending","performance","permission","persisted","personalbar","perspective","perspective-origin","perspectiveOrigin","phoneticFamilyName","phoneticGivenName","photo","ping","pitch","pixelBottom","pixelDepth","pixelHeight","pixelLeft","pixelRight","pixelStorei","pixelTop","pixelUnitToMillimeterX","pixelUnitToMillimeterY","pixelWidth","placeholder","platform","play","playbackRate","playbackState","playbackTime","played","plugins","pluginspage","pname","pointer-events","pointerBeforeReferenceNode","pointerEnabled","pointerEvents","pointerId","pointerLockElement","pointerType","points","pointsAtX","pointsAtY","pointsAtZ","polygonOffset","pop","popupWindowFeatures","popupWindowName","popupWindowURI","port","port1","port2","ports","posBottom","posHeight","posLeft","posRight","posTop","posWidth","position","positionAlign","postError","postMessage","poster","pow","powerOff","preMultiplySelf","precision","preferredStyleSheetSet","preferredStylesheetSet","prefix","preload","prepend","preserveAlpha","preserveAspectRatio","preserveAspectRatioString","pressed","pressure","prevValue","preventDefault","preventExtensions","previousElementSibling","previousNode","previousPage","previousScale","previousSibling","previousTranslate","primaryKey","primitiveType","primitiveUnits","principals","print","privateKey","probablySupportsContext","process","processIceMessage","product","productSub","profile","profileEnd","profiles","prompt","properties","propertyIsEnumerable","propertyName","protocol","protocolLong","prototype","pseudoClass","pseudoElement","publicId","publicKey","published","push","pushNotification","pushState","put","putImageData","quadraticCurveTo","qualifier","queryCommandEnabled","queryCommandIndeterm","queryCommandState","queryCommandSupported","queryCommandText","queryCommandValue","querySelector","querySelectorAll","quote","quotes","r","r1","r2","race","radiogroup","radiusX","radiusY","random","range","rangeCount","rangeMax","rangeMin","rangeOffset","rangeOverflow","rangeParent","rangeUnderflow","rate","ratio","raw","read","readAsArrayBuffer","readAsBinaryString","readAsBlob","readAsDataURL","readAsText","readOnly","readPixels","readReportRequested","readyState","reason","reboot","receiver","receivers","recordNumber","recordset","rect","red","redirectCount","redirectEnd","redirectStart","reduce","reduceRight","reduction","refDistance","refX","refY","referenceNode","referrer","refresh","region","regionAnchorX","regionAnchorY","regionId","regions","register","registerContentHandler","registerElement","registerProtocolHandler","reject","rel","relList","relatedNode","relatedTarget","release","releaseCapture","releaseEvents","releasePointerCapture","releaseShaderCompiler","reliable","reload","remainingSpace","remoteDescription","remove","removeAllRanges","removeAttribute","removeAttributeNS","removeAttributeNode","removeBehavior","removeChild","removeCue","removeEventListener","removeFilter","removeImport","removeItem","removeListener","removeNamedItem","removeNamedItemNS","removeNode","removeParameter","removeProperty","removeRange","removeRegion","removeRule","removeSiteSpecificTrackingException","removeSourceBuffer","removeStream","removeTrack","removeVariable","removeWakeLockListener","removeWebWideTrackingException","removedNodes","renderbufferStorage","renderedBuffer","renderingMode","repeat","replace","replaceAdjacentText","replaceChild","replaceData","replaceId","replaceItem","replaceNode","replaceState","replaceTrack","replaceWholeText","reportValidity","requestAnimationFrame","requestAutocomplete","requestData","requestFullscreen","requestMediaKeySystemAccess","requestPermission","requestPointerLock","requestStart","requestingWindow","required","requiredExtensions","requiredFeatures","reset","resetTransform","resize","resizeBy","resizeTo","resolve","response","responseBody","responseEnd","responseStart","responseText","responseType","responseURL","responseXML","restore","result","resultType","resume","returnValue","rev","reverse","reversed","revocable","revokeObjectURL","rgbColor","right","rightContext","rightMargin","rolloffFactor","root","rootElement","rotate","rotateAxisAngle","rotateAxisAngleSelf","rotateFromVector","rotateFromVectorSelf","rotateSelf","rotation","rotationRate","round","rowIndex","rowSpan","rows","rubyAlign","rubyOverhang","rubyPosition","rules","runtime","runtimeStyle","rx","ry","safari","sampleCoverage","sampleRate","sandbox","save","scale","scale3d","scale3dSelf","scaleNonUniform","scaleNonUniformSelf","scaleSelf","scheme","scissor","scope","scopeName","scoped","screen","screenBrightness","screenEnabled","screenLeft","screenPixelToMillimeterX","screenPixelToMillimeterY","screenTop","screenX","screenY","scripts","scroll","scroll-behavior","scrollAmount","scrollBehavior","scrollBy","scrollByLines","scrollByPages","scrollDelay","scrollHeight","scrollIntoView","scrollIntoViewIfNeeded","scrollLeft","scrollLeftMax","scrollMaxX","scrollMaxY","scrollTo","scrollTop","scrollTopMax","scrollWidth","scrollX","scrollY","scrollbar3dLightColor","scrollbarArrowColor","scrollbarBaseColor","scrollbarDarkShadowColor","scrollbarFaceColor","scrollbarHighlightColor","scrollbarShadowColor","scrollbarTrackColor","scrollbars","scrolling","sdp","sdpMLineIndex","sdpMid","seal","search","searchBox","searchBoxJavaBridge_","searchParams","sectionRowIndex","secureConnectionStart","security","seed","seekable","seeking","select","selectAllChildren","selectNode","selectNodeContents","selectNodes","selectSingleNode","selectSubString","selected","selectedIndex","selectedOptions","selectedStyleSheetSet","selectedStylesheetSet","selection","selectionDirection","selectionEnd","selectionStart","selector","selectorText","self","send","sendAsBinary","sendBeacon","sender","sentTimestamp","separator","serializeToString","serviceWorker","sessionId","sessionStorage","set","setActive","setAlpha","setAttribute","setAttributeNS","setAttributeNode","setAttributeNodeNS","setBaseAndExtent","setBingCurrentSearchDefault","setCapture","setColor","setCompositeOperation","setCurrentTime","setCustomValidity","setData","setDate","setDragImage","setEnd","setEndAfter","setEndBefore","setEndPoint","setFillColor","setFilterRes","setFloat32","setFloat64","setFloatValue","setFullYear","setHours","setImmediate","setInt16","setInt32","setInt8","setInterval","setItem","setLineCap","setLineDash","setLineJoin","setLineWidth","setLocalDescription","setMatrix","setMatrixValue","setMediaKeys","setMilliseconds","setMinutes","setMiterLimit","setMonth","setNamedItem","setNamedItemNS","setNonUserCodeExceptions","setOrientToAngle","setOrientToAuto","setOrientation","setOverrideHistoryNavigationMode","setPaint","setParameter","setPeriodicWave","setPointerCapture","setPosition","setPreference","setProperty","setPrototypeOf","setRGBColor","setRGBColorICCColor","setRadius","setRangeText","setRemoteDescription","setRequestHeader","setResizable","setResourceTimingBufferSize","setRotate","setScale","setSeconds","setSelectionRange","setServerCertificate","setShadow","setSkewX","setSkewY","setStart","setStartAfter","setStartBefore","setStdDeviation","setStringValue","setStrokeColor","setSuggestResult","setTargetAtTime","setTargetValueAtTime","setTime","setTimeout","setTransform","setTranslate","setUTCDate","setUTCFullYear","setUTCHours","setUTCMilliseconds","setUTCMinutes","setUTCMonth","setUTCSeconds","setUint16","setUint32","setUint8","setUri","setValueAtTime","setValueCurveAtTime","setVariable","setVelocity","setVersion","setYear","settingName","settingValue","sex","shaderSource","shadowBlur","shadowColor","shadowOffsetX","shadowOffsetY","shadowRoot","shape","shape-rendering","shapeRendering","sheet","shift","shiftKey","shiftLeft","show","showHelp","showModal","showModalDialog","showModelessDialog","showNotification","sidebar","sign","signalingState","sin","singleNodeValue","sinh","size","sizeToContent","sizes","skewX","skewXSelf","skewY","skewYSelf","slice","slope","small","smil","smooth","smoothingTimeConstant","snapToLines","snapshotItem","snapshotLength","some","sort","source","sourceBuffer","sourceBuffers","sourceIndex","spacing","span","speakAs","speaking","specified","specularConstant","specularExponent","speechSynthesis","speed","speedOfSound","spellcheck","splice","split","splitText","spreadMethod","sqrt","src","srcElement","srcFilter","srcUrn","srcdoc","srclang","srcset","stack","stackTraceLimit","stacktrace","standalone","standby","start","startContainer","startIce","startOffset","startRendering","startTime","startsWith","state","status","statusMessage","statusText","statusbar","stdDeviationX","stdDeviationY","stencilFunc","stencilFuncSeparate","stencilMask","stencilMaskSeparate","stencilOp","stencilOpSeparate","step","stepDown","stepMismatch","stepUp","sticky","stitchTiles","stop","stop-color","stop-opacity","stopColor","stopImmediatePropagation","stopOpacity","stopPropagation","storageArea","storageName","storageStatus","storeSiteSpecificTrackingException","storeWebWideTrackingException","stpVersion","stream","strike","stringValue","stringify","stroke","stroke-dasharray","stroke-dashoffset","stroke-linecap","stroke-linejoin","stroke-miterlimit","stroke-opacity","stroke-width","strokeDasharray","strokeDashoffset","strokeLinecap","strokeLinejoin","strokeMiterlimit","strokeOpacity","strokeRect","strokeStyle","strokeText","strokeWidth","style","styleFloat","styleMedia","styleSheet","styleSheetSets","styleSheets","sub","subarray","subject","submit","subscribe","substr","substring","substringData","subtle","subtree","suffix","suffixes","summary","sup","supports","surfaceScale","surroundContents","suspend","suspendRedraw","swapCache","swapNode","sweepFlag","symbols","system","systemCode","systemId","systemLanguage","systemXDPI","systemYDPI","tBodies","tFoot","tHead","tabIndex","table","table-layout","tableLayout","tableValues","tag","tagName","tagUrn","tags","taintEnabled","takeRecords","tan","tanh","target","targetElement","targetTouches","targetX","targetY","tel","terminate","test","texImage2D","texParameterf","texParameteri","texSubImage2D","text","text-align","text-anchor","text-decoration","text-decoration-color","text-decoration-line","text-decoration-style","text-indent","text-overflow","text-rendering","text-shadow","text-transform","textAlign","textAlignLast","textAnchor","textAutospace","textBaseline","textContent","textDecoration","textDecorationBlink","textDecorationColor","textDecorationLine","textDecorationLineThrough","textDecorationNone","textDecorationOverline","textDecorationStyle","textDecorationUnderline","textIndent","textJustify","textJustifyTrim","textKashida","textKashidaSpace","textLength","textOverflow","textRendering","textShadow","textTracks","textTransform","textUnderlinePosition","then","threadId","threshold","tiltX","tiltY","time","timeEnd","timeStamp","timeout","timestamp","timestampOffset","timing","title","toArray","toBlob","toDataURL","toDateString","toElement","toExponential","toFixed","toFloat32Array","toFloat64Array","toGMTString","toISOString","toJSON","toLocaleDateString","toLocaleFormat","toLocaleLowerCase","toLocaleString","toLocaleTimeString","toLocaleUpperCase","toLowerCase","toMethod","toPrecision","toSdp","toSource","toStaticHTML","toString","toStringTag","toTimeString","toUTCString","toUpperCase","toggle","toggleLongPressEnabled","tooLong","toolbar","top","topMargin","total","totalFrameDelay","totalVideoFrames","touchAction","touches","trace","track","transaction","transactions","transform","transform-origin","transform-style","transformOrigin","transformPoint","transformString","transformStyle","transformToDocument","transformToFragment","transition","transition-delay","transition-duration","transition-property","transition-timing-function","transitionDelay","transitionDuration","transitionProperty","transitionTimingFunction","translate","translateSelf","translationX","translationY","trim","trimLeft","trimRight","trueSpeed","trunc","truncate","type","typeDetail","typeMismatch","typeMustMatch","types","ubound","undefined","unescape","uneval","unicode-bidi","unicodeBidi","uniform1f","uniform1fv","uniform1i","uniform1iv","uniform2f","uniform2fv","uniform2i","uniform2iv","uniform3f","uniform3fv","uniform3i","uniform3iv","uniform4f","uniform4fv","uniform4i","uniform4iv","uniformMatrix2fv","uniformMatrix3fv","uniformMatrix4fv","unique","uniqueID","uniqueNumber","unitType","units","unloadEventEnd","unloadEventStart","unlock","unmount","unobserve","unpause","unpauseAnimations","unreadCount","unregister","unregisterContentHandler","unregisterProtocolHandler","unscopables","unselectable","unshift","unsubscribe","unsuspendRedraw","unsuspendRedrawAll","unwatch","unwrapKey","update","updateCommands","updateIce","updateInterval","updateSettings","updated","updating","upload","upper","upperBound","upperOpen","uri","url","urn","urns","usages","useCurrentView","useMap","useProgram","usedSpace","userAgent","userLanguage","username","v8BreakIterator","vAlign","vLink","valid","validateProgram","validationMessage","validity","value","valueAsDate","valueAsNumber","valueAsString","valueInSpecifiedUnits","valueMissing","valueOf","valueText","valueType","values","vector-effect","vectorEffect","velocityAngular","velocityExpansion","velocityX","velocityY","vendor","vendorSub","verify","version","vertexAttrib1f","vertexAttrib1fv","vertexAttrib2f","vertexAttrib2fv","vertexAttrib3f","vertexAttrib3fv","vertexAttrib4f","vertexAttrib4fv","vertexAttribDivisorANGLE","vertexAttribPointer","vertical","vertical-align","verticalAlign","verticalOverflow","vibrate","videoHeight","videoTracks","videoWidth","view","viewBox","viewBoxString","viewTarget","viewTargetString","viewport","viewportAnchorX","viewportAnchorY","viewportElement","visibility","visibilityState","visible","vlinkColor","voice","volume","vrml","vspace","w","wand","warn","wasClean","watch","watchPosition","webdriver","webkitAddKey","webkitAnimation","webkitAnimationDelay","webkitAnimationDirection","webkitAnimationDuration","webkitAnimationFillMode","webkitAnimationIterationCount","webkitAnimationName","webkitAnimationPlayState","webkitAnimationTimingFunction","webkitAppearance","webkitAudioContext","webkitAudioDecodedByteCount","webkitAudioPannerNode","webkitBackfaceVisibility","webkitBackground","webkitBackgroundAttachment","webkitBackgroundClip","webkitBackgroundColor","webkitBackgroundImage","webkitBackgroundOrigin","webkitBackgroundPosition","webkitBackgroundPositionX","webkitBackgroundPositionY","webkitBackgroundRepeat","webkitBackgroundSize","webkitBackingStorePixelRatio","webkitBorderImage","webkitBorderImageOutset","webkitBorderImageRepeat","webkitBorderImageSlice","webkitBorderImageSource","webkitBorderImageWidth","webkitBoxAlign","webkitBoxDirection","webkitBoxFlex","webkitBoxOrdinalGroup","webkitBoxOrient","webkitBoxPack","webkitBoxSizing","webkitCancelAnimationFrame","webkitCancelFullScreen","webkitCancelKeyRequest","webkitCancelRequestAnimationFrame","webkitClearResourceTimings","webkitClosedCaptionsVisible","webkitConvertPointFromNodeToPage","webkitConvertPointFromPageToNode","webkitCreateShadowRoot","webkitCurrentFullScreenElement","webkitCurrentPlaybackTargetIsWireless","webkitDirectionInvertedFromDevice","webkitDisplayingFullscreen","webkitEnterFullScreen","webkitEnterFullscreen","webkitExitFullScreen","webkitExitFullscreen","webkitExitPointerLock","webkitFullScreenKeyboardInputAllowed","webkitFullscreenElement","webkitFullscreenEnabled","webkitGenerateKeyRequest","webkitGetAsEntry","webkitGetDatabaseNames","webkitGetEntries","webkitGetEntriesByName","webkitGetEntriesByType","webkitGetFlowByName","webkitGetGamepads","webkitGetImageDataHD","webkitGetNamedFlows","webkitGetRegionFlowRanges","webkitGetUserMedia","webkitHasClosedCaptions","webkitHidden","webkitIDBCursor","webkitIDBDatabase","webkitIDBDatabaseError","webkitIDBDatabaseException","webkitIDBFactory","webkitIDBIndex","webkitIDBKeyRange","webkitIDBObjectStore","webkitIDBRequest","webkitIDBTransaction","webkitImageSmoothingEnabled","webkitIndexedDB","webkitInitMessageEvent","webkitIsFullScreen","webkitKeys","webkitLineDashOffset","webkitLockOrientation","webkitMatchesSelector","webkitMediaStream","webkitNotifications","webkitOfflineAudioContext","webkitOrientation","webkitPeerConnection00","webkitPersistentStorage","webkitPointerLockElement","webkitPostMessage","webkitPreservesPitch","webkitPutImageDataHD","webkitRTCPeerConnection","webkitRegionOverset","webkitRequestAnimationFrame","webkitRequestFileSystem","webkitRequestFullScreen","webkitRequestFullscreen","webkitRequestPointerLock","webkitResolveLocalFileSystemURL","webkitSetMediaKeys","webkitSetResourceTimingBufferSize","webkitShadowRoot","webkitShowPlaybackTargetPicker","webkitSlice","webkitSpeechGrammar","webkitSpeechGrammarList","webkitSpeechRecognition","webkitSpeechRecognitionError","webkitSpeechRecognitionEvent","webkitStorageInfo","webkitSupportsFullscreen","webkitTemporaryStorage","webkitTextSizeAdjust","webkitTransform","webkitTransformOrigin","webkitTransition","webkitTransitionDelay","webkitTransitionDuration","webkitTransitionProperty","webkitTransitionTimingFunction","webkitURL","webkitUnlockOrientation","webkitUserSelect","webkitVideoDecodedByteCount","webkitVisibilityState","webkitWirelessVideoPlaybackDisabled","webkitdropzone","webstore","weight","whatToShow","wheelDelta","wheelDeltaX","wheelDeltaY","which","white-space","whiteSpace","wholeText","widows","width","will-change","willChange","willValidate","window","withCredentials","word-break","word-spacing","word-wrap","wordBreak","wordSpacing","wordWrap","wrap","wrapKey","write","writeln","writingMode","x","x1","x2","xChannelSelector","xmlEncoding","xmlStandalone","xmlVersion","xmlbase","xmllang","xmlspace","y","y1","y2","yChannelSelector","yandex","z","z-index","zIndex","zoom","zoomAndPan","zoomRectScreen"];function lr(e,t){function n(e){_(t,e)}e.walk(new On((function(e){e instanceof wt&&e.quote?n(e.key):e instanceof Rt&&e.quote?n(e.key.name):e instanceof St&&fr(e.property,n)})))}function fr(e,t){e.walk(new On((function(e){return e instanceof Et?fr(e.tail_node(),t):e instanceof fn?t(e.value):e instanceof bt&&(fr(e.consequent,t),fr(e.alternative,t)),!0})))}function pr(e,t){var n=(t=o(t,{builtins:!1,cache:null,debug:!1,keep_quoted:!1,only_cache:!1,regex:null,reserved:null,undeclared:!1},!0)).reserved;Array.isArray(n)||(n=[n]);var i=new Set(n);t.builtins||function(e){cr.forEach(i);var t={},n="object"==typeof global?global:self;function i(t){e.add(t)}["Symbol","Map","Promise","Proxy","Reflect","Set","WeakMap","WeakSet"].forEach((function(e){t[e]=n[e]||new Function})),["null","true","false","NaN","Infinity","-Infinity","undefined"].forEach(i),[Object,Array,Function,Number,String,Boolean,Error,Math,Date,RegExp,t.Symbol,ArrayBuffer,DataView,decodeURI,decodeURIComponent,encodeURI,encodeURIComponent,eval,EvalError,Float32Array,Float64Array,Int8Array,Int16Array,Int32Array,isFinite,isNaN,JSON,t.Map,parseFloat,parseInt,t.Promise,t.Proxy,RangeError,ReferenceError,t.Reflect,t.Set,SyntaxError,TypeError,Uint8Array,Uint8ClampedArray,Uint16Array,Uint32Array,URIError,t.WeakMap,t.WeakSet].forEach((function(e){Object.getOwnPropertyNames(e).map(i),e.prototype&&Object.getOwnPropertyNames(e.prototype).map(i)}))}(i);var r,a=-1;t.cache?(r=t.cache.props).forEach((function(e){i.add(e)})):r=new Map;var s,u=t.regex&&new RegExp(t.regex),c=!1!==t.debug;c&&(s=!0===t.debug?"":t.debug);var l=new Set,f=new Set,p="strict"===t.keep_quoted;return e.walk(new On((function(e){if(e instanceof wt)"string"!=typeof e.key||p&&e.quote||m(e.key);else if(e instanceof Rt)p&&e.key.end.quote||m(e.key.name);else if(e instanceof Dt){var n=!!t.undeclared;if(!n){for(var i=e;i.expression;)i=i.expression;n=!(i.thedef&&i.thedef.undeclared)}!n||p&&e.quote||m(e.property)}else e instanceof St?p||fr(e.property,m):e instanceof mt&&"Object.defineProperty"==e.expression.print_to_string()&&fr(e.args[1],m)}))),e.transform(new Fn((function(e){e instanceof wt?"string"!=typeof e.key||p&&e.quote||(e.key=h(e.key)):e instanceof Rt?p&&e.key.end.quote||(e.key.name=h(e.key.name)):e instanceof Dt?p&&e.quote||(e.property=h(e.property)):!t.keep_quoted&&e instanceof St?e.property=E(e.property):e instanceof mt&&"Object.defineProperty"==e.expression.print_to_string()&&(e.args[1]=E(e.args[1]))})));function _(e){return!f.has(e)&&(!i.has(e)&&(t.only_cache?r.has(e):!/^-?[0-9]+(\.[0-9]+)?(e[+-][0-9]+)?$/.test(e)))}function d(e){return!(u&&!u.test(e))&&(!i.has(e)&&(r.has(e)||l.has(e)))}function m(e){_(e)&&l.add(e),d(e)||f.add(e)}function h(e){if(!d(e))return e;var t=r.get(e);if(!t){if(c){var n="_$"+e+"$"+s+"_";_(n)&&(t=n)}if(!t)do{t=qn(++a)}while(!_(t));r.set(e,t)}return t}function E(e){return e.transform(new Fn((function(e){if(e instanceof Et){var t=e.expressions.length-1;e.expressions[t]=E(e.expressions[t])}else e instanceof fn?e.value=h(e.value):e instanceof bt&&(e.consequent=E(e.consequent),e.alternative=E(e.alternative));return e})))}}var _r="undefined"==typeof atob?function(e){return Buffer.from(e,"base64").toString()}:atob,dr="undefined"==typeof btoa?function(e){return Buffer.from(e).toString("base64")}:btoa;function mr(e,t,n){t[e]&&n.forEach((function(n){t[n]&&("object"!=typeof t[n]&&(t[n]={}),e in t[n]||(t[n][e]=t[e]))}))}function hr(e){e&&("props"in e?e.props instanceof Map||(e.props=function(e){var t=new Map;for(var n in e)D(e,n)&&"$"===n.charAt(0)&&t.set(n.substr(1),e[n]);return t}(e.props)):e.props=new Map)}function Er(e){return{props:(t=e.props,n=Object.create(null),t.forEach((function(e,t){n["$"+t]=e})),n)};var t,n}function gr(e,n){var i,r,a=pe.warn_function;try{var s,u=(n=o(n,{compress:{},ecma:void 0,enclose:!1,ie8:!1,keep_classnames:void 0,keep_fnames:!1,mangle:{},module:!1,nameCache:null,output:{},parse:{},rename:void 0,safari10:!1,sourceMap:!1,timings:!1,toplevel:!1,warnings:!1,wrap:!1},!0)).timings&&{start:Date.now()};void 0===n.keep_classnames&&(n.keep_classnames=n.keep_fnames),void 0===n.rename&&(n.rename=n.compress&&n.mangle),mr("ecma",n,["parse","compress","output"]),mr("ie8",n,["compress","mangle","output"]),mr("keep_classnames",n,["compress","mangle"]),mr("keep_fnames",n,["compress","mangle"]),mr("module",n,["parse","compress","mangle"]),mr("safari10",n,["mangle","output"]),mr("toplevel",n,["compress","mangle"]),mr("warnings",n,["compress"]),n.mangle&&(n.mangle=o(n.mangle,{cache:n.nameCache&&(n.nameCache.vars||{}),eval:!1,ie8:!1,keep_classnames:!1,keep_fnames:!1,module:!1,properties:!1,reserved:[],safari10:!1,toplevel:!1},!0),n.mangle.properties&&("object"!=typeof n.mangle.properties&&(n.mangle.properties={}),n.mangle.properties.keep_quoted&&(s=n.mangle.properties.reserved,Array.isArray(s)||(s=[]),n.mangle.properties.reserved=s),!n.nameCache||"cache"in n.mangle.properties||(n.mangle.properties.cache=n.nameCache.props||{})),hr(n.mangle.cache),hr(n.mangle.properties.cache)),n.sourceMap&&(n.sourceMap=o(n.sourceMap,{asObject:!1,content:null,filename:null,includeSources:!1,root:null,url:null},!0));var c,l=[];if(n.warnings&&!pe.warn_function&&(pe.warn_function=function(e){l.push(e)}),u&&(u.parse=Date.now()),e instanceof Ne)c=e;else{for(var f in"string"==typeof e&&(e=[e]),n.parse=n.parse||{},n.parse.toplevel=null,e)if(D(e,f)&&(n.parse.filename=f,n.parse.toplevel=ce(e[f],n.parse),n.sourceMap&&"inline"==n.sourceMap.content)){if(Object.keys(e).length>1)throw new Error("inline source map only works with singular input");n.sourceMap.content=(i=e[f],r=void 0,(r=/(?:^|[^.])\/\/# sourceMappingURL=data:application\/json(;[\w=-]*)?;base64,([+/0-9A-Za-z]*=*)\s*$/.exec(i))?_r(r[2]):(pe.warn("inline source map not found"),null))}c=n.parse.toplevel}s&&"strict"!==n.mangle.properties.keep_quoted&&lr(c,s),n.wrap&&(c=c.wrap_commonjs(n.wrap)),n.enclose&&(c=c.wrap_enclose(n.enclose)),u&&(u.rename=Date.now()),u&&(u.compress=Date.now()),n.compress&&(c=new ai(n.compress).compress(c)),u&&(u.scope=Date.now()),n.mangle&&c.figure_out_scope(n.mangle),u&&(u.mangle=Date.now()),n.mangle&&(qn.reset(),c.compute_char_frequency(n.mangle),c.mangle_names(n.mangle)),u&&(u.properties=Date.now()),n.mangle&&n.mangle.properties&&(c=pr(c,n.mangle.properties)),u&&(u.output=Date.now());var p={};if(n.output.ast&&(p.ast=c),!D(n.output,"code")||n.output.code){if(n.sourceMap&&("string"==typeof n.sourceMap.content&&(n.sourceMap.content=JSON.parse(n.sourceMap.content)),n.output.source_map=function(e){e=o(e,{file:null,root:null,orig:null,orig_line_diff:0,dest_line_diff:0});var n=new t.SourceMapGenerator({file:e.file,sourceRoot:e.root}),i=e.orig&&new t.SourceMapConsumer(e.orig);return i&&i.sources.forEach((function(e){var t=i.sourceContentFor(e,!0);t&&n.setSourceContent(e,t)})),{add:function(t,r,o,a,s,u){if(i){var c=i.originalPositionFor({line:a,column:s});if(null===c.source)return;t=c.source,a=c.line,s=c.column,u=c.name||u}n.addMapping({generated:{line:r+e.dest_line_diff,column:o},original:{line:a+e.orig_line_diff,column:s},source:t,name:u})},get:function(){return n},toString:function(){return JSON.stringify(n.toJSON())}}}({file:n.sourceMap.filename,orig:n.sourceMap.content,root:n.sourceMap.root}),n.sourceMap.includeSources)){if(e instanceof Ne)throw new Error("original source content unavailable");for(var f in e)D(e,f)&&n.output.source_map.get().setSourceContent(f,e[f])}delete n.output.ast,delete n.output.code;var _=Bn(n.output);if(c.print(_),p.code=_.get(),n.sourceMap)if(n.sourceMap.asObject?p.map=n.output.source_map.get().toJSON():p.map=n.output.source_map.toString(),"inline"==n.sourceMap.url){var d="object"==typeof p.map?JSON.stringify(p.map):p.map;p.code+="\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,"+dr(d)}else n.sourceMap.url&&(p.code+="\n//# sourceMappingURL="+n.sourceMap.url)}return n.nameCache&&n.mangle&&(n.mangle.cache&&(n.nameCache.vars=Er(n.mangle.cache)),n.mangle.properties&&n.mangle.properties.cache&&(n.nameCache.props=Er(n.mangle.properties.cache))),u&&(u.end=Date.now(),p.timings={parse:.001*(u.rename-u.parse),rename:.001*(u.compress-u.rename),compress:.001*(u.scope-u.compress),scope:.001*(u.mangle-u.scope),mangle:.001*(u.properties-u.mangle),properties:.001*(u.output-u.properties),output:.001*(u.end-u.output),total:.001*(u.end-u.start)}),l.length&&(p.warnings=l),p}catch(e){return{error:e}}finally{pe.warn_function=a}}!function(){var e=function(e){for(var t=!0,n=0;n<e.length;n++)t&&e[n]instanceof _e&&e[n].body instanceof fn?e[n]=new me({start:e[n].start,end:e[n].end,value:e[n].body.value}):!t||e[n]instanceof _e&&e[n].body instanceof fn||(t=!1);return e},t={Program:function(t){return new Ne({start:i(t),end:r(t),body:e(t.body.map(s))})},ArrayPattern:function(e){return new Ke({start:i(e),end:r(e),names:e.elements.map((function(e){return null===e?new Dn:s(e)})),is_array:!0})},ObjectPattern:function(e){return new Ke({start:i(e),end:r(e),names:e.properties.map(s),is_array:!1})},AssignmentPattern:function(e){return new Ot({start:i(e),end:r(e),left:s(e.left),operator:"=",right:s(e.right)})},SpreadElement:function(e){return new ke({start:i(e),end:r(e),expression:s(e.argument)})},RestElement:function(e){return new ke({start:i(e),end:r(e),expression:s(e.argument)})},TemplateElement:function(e){return new He({start:i(e),end:r(e),value:e.value.cooked,raw:e.value.raw})},TemplateLiteral:function(e){for(var t=[],n=0;n<e.quasis.length;n++)t.push(s(e.quasis[n])),e.expressions[n]&&t.push(s(e.expressions[n]));return new Ge({start:i(e),end:r(e),segments:t})},TaggedTemplateExpression:function(e){return new Ue({start:i(e),end:r(e),template_string:s(e.quasi),prefix:s(e.tag)})},FunctionDeclaration:function(t){return new Be({start:i(t),end:r(t),name:s(t.id),argnames:t.params.map(s),is_generator:t.generator,async:t.async,body:e(s(t.body).body)})},FunctionExpression:function(t){return new Pe({start:i(t),end:r(t),name:s(t.id),argnames:t.params.map(s),is_generator:t.generator,async:t.async,body:e(s(t.body).body)})},ArrowFunctionExpression:function(e){const t="BlockStatement"===e.body.type?s(e.body).body:[p(We,{},{value:s(e.body)})];return new Ve({start:i(e),end:r(e),argnames:e.params.map(s),body:t,async:e.async})},ExpressionStatement:function(e){return new he({start:i(e),end:r(e),body:s(e.expression)})},TryStatement:function(e){var t=e.handlers||[e.handler];if(t.length>1||e.guardedHandlers&&e.guardedHandlers.length)throw new Error("Multiple catch clauses are not supported.");return new rt({start:i(e),end:r(e),body:s(e.block).body,bcatch:s(t[0]),bfinally:e.finalizer?new at(s(e.finalizer)):null})},Property:function(e){var t=e.key,n={start:i(t||e.value),end:r(e.value),key:"Identifier"==t.type?t.name:t.value,value:s(e.value)};return e.computed&&(n.key=s(e.key)),e.method?(n.is_generator=e.value.generator,n.async=e.value.async,e.computed?n.key=s(e.key):n.key=new qt({name:n.key}),new kt(n)):"init"==e.kind?("Identifier"!=t.type&&"Literal"!=t.type&&(n.key=s(t)),new wt(n)):("string"!=typeof n.key&&"number"!=typeof n.key||(n.key=new qt({name:n.key})),n.value=new Le(n.value),"get"==e.kind?new Nt(n):"set"==e.kind?new xt(n):"method"==e.kind?(n.async=e.value.async,n.is_generator=e.value.generator,n.quote=e.computed?'"':null,new kt(n)):void 0)},MethodDefinition:function(e){var t={start:i(e),end:r(e),key:e.computed?s(e.key):new qt({name:e.key.name||e.key.value}),value:s(e.value),static:e.static};return"get"==e.kind?new Nt(t):"set"==e.kind?new xt(t):(t.is_generator=e.value.generator,t.async=e.value.async,new kt(t))},FieldDefinition:function(e){let t;if(e.computed)t=s(e.key);else{if("Identifier"!==e.key.type)throw new Error("Non-Identifier key in FieldDefinition");t=s(e.key)}return new Lt({start:i(e),end:r(e),key:t,value:s(e.value),static:e.static})},ArrayExpression:function(e){return new Ft({start:i(e),end:r(e),elements:e.elements.map((function(e){return null===e?new Dn:s(e)}))})},ObjectExpression:function(e){return new Mt({start:i(e),end:r(e),properties:e.properties.map((function(e){return"SpreadElement"===e.type||(e.type="Property"),s(e)}))})},SequenceExpression:function(e){return new Et({start:i(e),end:r(e),expressions:e.expressions.map(s)})},MemberExpression:function(e){return new(e.computed?St:Dt)({start:i(e),end:r(e),property:e.computed?s(e.property):e.property.name,expression:s(e.object)})},SwitchCase:function(e){return new(e.test?it:nt)({start:i(e),end:r(e),expression:s(e.test),body:e.consequent.map(s)})},VariableDeclaration:function(e){return new("const"===e.kind?lt:"let"===e.kind?ct:ut)({start:i(e),end:r(e),definitions:e.declarations.map(s)})},ImportDeclaration:function(e){var t=null,n=null;return e.specifiers.forEach((function(e){"ImportSpecifier"===e.type?(n||(n=[]),n.push(new pt({start:i(e),end:r(e),foreign_name:s(e.imported),name:s(e.local)}))):"ImportDefaultSpecifier"===e.type?t=s(e.local):"ImportNamespaceSpecifier"===e.type&&(n||(n=[]),n.push(new pt({start:i(e),end:r(e),foreign_name:new tn({name:"*"}),name:s(e.local)})))})),new _t({start:i(e),end:r(e),imported_name:t,imported_names:n,module_name:s(e.source)})},ExportAllDeclaration:function(e){return new dt({start:i(e),end:r(e),exported_names:[new pt({name:new an({name:"*"}),foreign_name:new an({name:"*"})})],module_name:s(e.source)})},ExportNamedDeclaration:function(e){return new dt({start:i(e),end:r(e),exported_definition:s(e.declaration),exported_names:e.specifiers&&e.specifiers.length?e.specifiers.map((function(e){return new pt({foreign_name:s(e.exported),name:s(e.local)})})):null,module_name:s(e.source)})},ExportDefaultDeclaration:function(e){return new dt({start:i(e),end:r(e),exported_value:s(e.declaration),is_default:!0})},Literal:function(e){var t=e.value,n={start:i(e),end:r(e)},o=e.regex;if(o&&o.pattern)return n.value={source:o.pattern,flags:o.flags},new dn(n);if(o){const i=e.raw||t,r=i.match(/^\/(.*)\/(\w*)$/);if(!r)throw new Error("Invalid regex source "+i);const[o,a,s]=r;return n.value={source:a,flags:s},new dn(n)}if(null===t)return new hn(n);switch(typeof t){case"string":return n.value=t,new fn(n);case"number":return n.value=t,new pn(n);case"boolean":return new(t?Tn:An)(n)}},MetaProperty:function(e){if("new"===e.meta.name&&"target"===e.property.name)return new Kt({start:i(e),end:r(e)})},Identifier:function(e){var t=a[a.length-2];return new("LabeledStatement"==t.type?nn:"VariableDeclarator"==t.type&&t.id===e?"const"==t.kind?Xt:"let"==t.kind?zt:Gt:/Import.*Specifier/.test(t.type)?t.local===e?en:tn:"ExportSpecifier"==t.type?t.local===e?on:an:"FunctionExpression"==t.type?t.id===e?jt:Wt:"FunctionDeclaration"==t.type?t.id===e?Yt:Wt:"ArrowFunctionExpression"==t.type?t.params.includes(e)?Wt:rn:"ClassExpression"==t.type?t.id===e?Jt:rn:"Property"==t.type?t.key===e&&t.computed||t.value===e?rn:qt:"FieldDefinition"==t.type?t.key===e&&t.computed||t.value===e?rn:$t:"ClassDeclaration"==t.type?t.id===e?Zt:rn:"MethodDefinition"==t.type?t.computed?rn:qt:"CatchClause"==t.type?Qt:"BreakStatement"==t.type||"ContinueStatement"==t.type?sn:rn)({start:i(e),end:r(e),name:e.name})},BigIntLiteral:e=>new _n({start:i(e),end:r(e),value:e.value})};function n(e){if("Literal"==e.type)return null!=e.raw?e.raw:e.value+""}function i(e){var t=e.loc,i=t&&t.start,r=e.range;return new fe({file:t&&t.source,line:i&&i.line,col:i&&i.column,pos:r?r[0]:e.start,endline:i&&i.line,endcol:i&&i.column,endpos:r?r[0]:e.start,raw:n(e)})}function r(e){var t=e.loc,i=t&&t.end,r=e.range;return new fe({file:t&&t.source,line:i&&i.line,col:i&&i.column,pos:r?r[1]:e.end,endline:i&&i.line,endcol:i&&i.column,endpos:r?r[1]:e.end,raw:n(e)})}function o(e,n,o){var a="function From_Moz_"+e+"(M){\n";a+="return new U2."+n.name+"({\nstart: my_start_token(M),\nend: my_end_token(M)";var c="function To_Moz_"+e+"(M){\n";c+="return {\ntype: "+JSON.stringify(e),o&&o.split(/\s*,\s*/).forEach((function(e){var t=/([a-z0-9$_]+)([=@>%])([a-z0-9$_]+)/i.exec(e);if(!t)throw new Error("Can't understand property map: "+e);var n=t[1],i=t[2],r=t[3];switch(a+=",\n"+r+": ",c+=",\n"+n+": ",i){case"@":a+="M."+n+".map(from_moz)",c+="M."+r+".map(to_moz)";break;case">":a+="from_moz(M."+n+")",c+="to_moz(M."+r+")";break;case"=":a+="M."+n,c+="M."+r;break;case"%":a+="from_moz(M."+n+").body",c+="to_moz_block(M)";break;default:throw new Error("Can't understand operator in propmap: "+e)}})),a+="\n})\n}",c+="\n}\n}",a=new Function("U2","my_start_token","my_end_token","from_moz","return("+a+")")(xn,i,r,s),c=new Function("to_moz","to_moz_block","to_moz_scope","return("+c+")")(l,_,d),t[e]=a,u(n,c)}t.UpdateExpression=t.UnaryExpression=function(e){return new(("prefix"in e?e.prefix:"UnaryExpression"==e.type)?At:Tt)({start:i(e),end:r(e),operator:e.operator,expression:s(e.argument)})},t.ClassDeclaration=t.ClassExpression=function(e){return new("ClassDeclaration"===e.type?Pt:Vt)({start:i(e),end:r(e),name:s(e.id),extends:s(e.superClass),properties:e.body.body.map(s)})},o("EmptyStatement",ve),o("BlockStatement",Se,"body@body"),o("IfStatement",Qe,"test>condition, consequent>body, alternate>alternative"),o("LabeledStatement",Te,"label>label, body>body"),o("BreakStatement",$e,"label>label"),o("ContinueStatement",je,"label>label"),o("WithStatement",we,"object>expression, body>body"),o("SwitchStatement",et,"discriminant>expression, cases@body"),o("ReturnStatement",We,"argument>value"),o("ThrowStatement",Ye,"argument>value"),o("WhileStatement",Oe,"test>condition, body>body"),o("DoWhileStatement",Ce,"test>condition, body>body"),o("ForStatement",Fe,"init>init, test>condition, update>step, body>body"),o("ForInStatement",Me,"left>init, right>object, body>body"),o("ForOfStatement",Re,"left>init, right>object, body>body, await=await"),o("AwaitExpression",Ze,"argument>expression"),o("YieldExpression",Je,"argument>expression, delegate=is_star"),o("DebuggerStatement",de),o("VariableDeclarator",ft,"id>name, init>value"),o("CatchClause",ot,"param>argname, body%body"),o("ThisExpression",un),o("Super",cn),o("BinaryExpression",yt,"operator=operator, left>left, right>right"),o("LogicalExpression",yt,"operator=operator, left>left, right>right"),o("AssignmentExpression",Ct,"operator=operator, left>left, right>right"),o("ConditionalExpression",bt,"test>condition, consequent>consequent, alternate>alternative"),o("NewExpression",ht,"callee>expression, arguments@args"),o("CallExpression",mt,"callee>expression, arguments@args"),u(Ne,(function(e){return d("Program",e)})),u(ke,(function(e){return{type:f()?"RestElement":"SpreadElement",argument:l(e.expression)}})),u(Ue,(function(e){return{type:"TaggedTemplateExpression",tag:l(e.prefix),quasi:l(e.template_string)}})),u(Ge,(function(e){for(var t=[],n=[],i=0;i<e.segments.length;i++)i%2!=0?n.push(l(e.segments[i])):t.push({type:"TemplateElement",value:{raw:e.segments[i].raw,cooked:e.segments[i].value},tail:i===e.segments.length-1});return{type:"TemplateLiteral",quasis:t,expressions:n}})),u(Be,(function(e){return{type:"FunctionDeclaration",id:l(e.name),params:e.argnames.map(l),generator:e.is_generator,async:e.async,body:d("BlockStatement",e)}})),u(Pe,(function(e,t){var n=void 0!==t.is_generator?t.is_generator:e.is_generator;return{type:"FunctionExpression",id:l(e.name),params:e.argnames.map(l),generator:n,async:e.async,body:d("BlockStatement",e)}})),u(Ve,(function(e){var t={type:"BlockStatement",body:e.body.map(l)};return{type:"ArrowFunctionExpression",params:e.argnames.map(l),async:e.async,body:t}})),u(Ke,(function(e){return e.is_array?{type:"ArrayPattern",elements:e.names.map(l)}:{type:"ObjectPattern",properties:e.names.map(l)}})),u(me,(function(e){return{type:"ExpressionStatement",expression:{type:"Literal",value:e.value,raw:e.print_to_string()},directive:e.value}})),u(he,(function(e){return{type:"ExpressionStatement",expression:l(e.body)}})),u(tt,(function(e){return{type:"SwitchCase",test:l(e.expression),consequent:e.body.map(l)}})),u(rt,(function(e){return{type:"TryStatement",block:_(e),handler:l(e.bcatch),guardedHandlers:[],finalizer:l(e.bfinally)}})),u(ot,(function(e){return{type:"CatchClause",param:l(e.argname),guard:null,body:_(e)}})),u(st,(function(e){return{type:"VariableDeclaration",kind:e instanceof lt?"const":e instanceof ct?"let":"var",declarations:e.definitions.map(l)}})),u(dt,(function(e){return e.exported_names?"*"===e.exported_names[0].name.name?{type:"ExportAllDeclaration",source:l(e.module_name)}:{type:"ExportNamedDeclaration",specifiers:e.exported_names.map((function(e){return{type:"ExportSpecifier",exported:l(e.foreign_name),local:l(e.name)}})),declaration:l(e.exported_definition),source:l(e.module_name)}:{type:e.is_default?"ExportDefaultDeclaration":"ExportNamedDeclaration",declaration:l(e.exported_value||e.exported_definition)}})),u(_t,(function(e){var t=[];return e.imported_name&&t.push({type:"ImportDefaultSpecifier",local:l(e.imported_name)}),e.imported_names&&"*"===e.imported_names[0].foreign_name.name?t.push({type:"ImportNamespaceSpecifier",local:l(e.imported_names[0].name)}):e.imported_names&&e.imported_names.forEach((function(e){t.push({type:"ImportSpecifier",local:l(e.name),imported:l(e.foreign_name)})})),{type:"ImportDeclaration",specifiers:t,source:l(e.module_name)}})),u(Et,(function(e){return{type:"SequenceExpression",expressions:e.expressions.map(l)}})),u(gt,(function(e){var t=e instanceof St;return{type:"MemberExpression",object:l(e.expression),computed:t,property:t?l(e.property):{type:"Identifier",name:e.property}}})),u(vt,(function(e){return{type:"++"==e.operator||"--"==e.operator?"UpdateExpression":"UnaryExpression",operator:e.operator,prefix:e instanceof At,argument:l(e.expression)}})),u(yt,(function(e){if("="==e.operator&&f())return{type:"AssignmentPattern",left:l(e.left),right:l(e.right)};return{type:"&&"==e.operator||"||"==e.operator||"??"===e.operator?"LogicalExpression":"BinaryExpression",left:l(e.left),operator:e.operator,right:l(e.right)}})),u(Ft,(function(e){return{type:"ArrayExpression",elements:e.elements.map(l)}})),u(Mt,(function(e){return{type:"ObjectExpression",properties:e.properties.map(l)}})),u(Rt,(function(e,t){var n,i=e.key instanceof pe?l(e.key):{type:"Identifier",value:e.key};"number"==typeof e.key&&(i={type:"Literal",value:Number(e.key)}),"string"==typeof e.key&&(i={type:"Identifier",name:e.key});var r="string"==typeof e.key||"number"==typeof e.key,o=!r&&(!(e.key instanceof Bt)||e.key instanceof rn);return e instanceof wt?(n="init",o=!r):e instanceof Nt?n="get":e instanceof xt&&(n="set"),e instanceof Lt?{type:"FieldDefinition",computed:o,key:i,value:l(e.value),static:e.static}:t instanceof It?{type:"MethodDefinition",computed:o,kind:n,static:e.static,key:l(e.key),value:l(e.value)}:{type:"Property",computed:o,kind:n,key:i,value:l(e.value)}})),u(kt,(function(e,t){return t instanceof Mt?{type:"Property",computed:!(e.key instanceof Bt)||e.key instanceof rn,kind:"init",method:!0,shorthand:!1,key:l(e.key),value:l(e.value)}:{type:"MethodDefinition",computed:!(e.key instanceof Bt)||e.key instanceof rn,kind:"constructor"===e.key?"constructor":"method",static:e.static,key:l(e.key),value:l(e.value)}})),u(It,(function(e){return{type:e instanceof Vt?"ClassExpression":"ClassDeclaration",superClass:l(e.extends),id:e.name?l(e.name):null,body:{type:"ClassBody",body:e.properties.map(l)}}})),u(Kt,(function(){return{type:"MetaProperty",meta:{type:"Identifier",name:"new"},property:{type:"Identifier",name:"target"}}})),u(Bt,(function(e,t){if(e instanceof qt&&t.quote)return{type:"Literal",value:e.name};var n=e.definition();return{type:"Identifier",name:n?n.mangled_name||n.name:e.name}})),u(dn,(function(e){const t=e.value.source,n=e.value.flags;return{type:"Literal",value:null,raw:e.print_to_string(),regex:{pattern:t,flags:n}}})),u(ln,(function(e){var t=e.value;return"number"==typeof t&&(t<0||0===t&&1/t<0)?{type:"UnaryExpression",operator:"-",prefix:!0,argument:{type:"Literal",value:-t,raw:e.start.raw}}:{type:"Literal",value:t,raw:e.start.raw}})),u(mn,(function(e){return{type:"Identifier",name:String(e.value)}})),u(_n,e=>({type:"BigIntLiteral",value:e.value})),vn.DEFMETHOD("to_mozilla_ast",ln.prototype.to_mozilla_ast),hn.DEFMETHOD("to_mozilla_ast",ln.prototype.to_mozilla_ast),Dn.DEFMETHOD("to_mozilla_ast",(function(){return null})),De.DEFMETHOD("to_mozilla_ast",Se.prototype.to_mozilla_ast),Ie.DEFMETHOD("to_mozilla_ast",Pe.prototype.to_mozilla_ast);var a=null;function s(e){a.push(e);var n=null!=e?t[e.type](e):null;return a.pop(),n}function u(e,t){e.DEFMETHOD("to_mozilla_ast",(function(e){return n=this,i=t(this,e),r=n.start,o=n.end,r&&o?(null!=r.pos&&null!=o.endpos&&(i.range=[r.pos,o.endpos]),r.line&&(i.loc={start:{line:r.line,column:r.col},end:o.endline?{line:o.endline,column:o.endcol}:null},r.file&&(i.loc.source=r.file)),i):i;var n,i,r,o}))}pe.from_mozilla_ast=function(e){var t=a;a=[];var n=s(e);return a=t,n};var c=null;function l(e){null===c&&(c=[]),c.push(e);var t=null!=e?e.to_mozilla_ast(c[c.length-2]):null;return c.pop(),0===c.length&&(c=null),t}function f(){for(var e=c.length;e--;)if(c[e]instanceof Ke)return!0;return!1}function _(e){return{type:"BlockStatement",body:e.body.map(l)}}function d(e,t){var n=t.body.map(l);return t.body[0]instanceof he&&t.body[0].body instanceof fn&&n.unshift(l(new ve(t.body[0]))),{type:e,body:n}}}(),e.AST_Accessor=Le,e.AST_Array=Ft,e.AST_Arrow=Ve,e.AST_Assign=Ct,e.AST_Atom=mn,e.AST_Await=Ze,e.AST_Binary=yt,e.AST_Block=De,e.AST_BlockStatement=Se,e.AST_Boolean=vn,e.AST_Break=$e,e.AST_Call=mt,e.AST_Case=it,e.AST_Catch=ot,e.AST_Class=It,e.AST_ClassExpression=Vt,e.AST_ConciseMethod=kt,e.AST_Conditional=bt,e.AST_Const=lt,e.AST_Constant=ln,e.AST_Continue=je,e.AST_DWLoop=be,e.AST_Debugger=de,e.AST_DefClass=Pt,e.AST_Default=nt,e.AST_DefaultAssign=Ot,e.AST_Definitions=st,e.AST_Defun=Be,e.AST_Destructuring=Ke,e.AST_Directive=me,e.AST_Do=Ce,e.AST_Dot=Dt,e.AST_EmptyStatement=ve,e.AST_Exit=ze,e.AST_Expansion=ke,e.AST_Export=dt,e.AST_False=An,e.AST_Finally=at,e.AST_For=Fe,e.AST_ForIn=Me,e.AST_ForOf=Re,e.AST_Function=Pe,e.AST_Hole=Dn,e.AST_If=Qe,e.AST_Import=_t,e.AST_Infinity=Sn,e.AST_IterationStatement=ye,e.AST_Jump=Xe,e.AST_Label=nn,e.AST_LabelRef=sn,e.AST_LabeledStatement=Te,e.AST_Lambda=Ie,e.AST_Let=ct,e.AST_LoopControl=qe,e.AST_NaN=En,e.AST_NameMapping=pt,e.AST_New=ht,e.AST_NewTarget=Kt,e.AST_Node=pe,e.AST_Null=hn,e.AST_Number=pn,e.AST_Object=Mt,e.AST_ObjectGetter=Nt,e.AST_ObjectKeyVal=wt,e.AST_ObjectProperty=Rt,e.AST_ObjectSetter=xt,e.AST_PrefixedTemplateString=Ue,e.AST_PropAccess=gt,e.AST_RegExp=dn,e.AST_Return=We,e.AST_Scope=xe,e.AST_Sequence=Et,e.AST_SimpleStatement=he,e.AST_Statement=_e,e.AST_StatementWithBody=Ae,e.AST_String=fn,e.AST_Sub=St,e.AST_Super=cn,e.AST_Switch=et,e.AST_SwitchBranch=tt,e.AST_Symbol=Bt,e.AST_SymbolBlockDeclaration=Ht,e.AST_SymbolCatch=Qt,e.AST_SymbolClass=Jt,e.AST_SymbolConst=Xt,e.AST_SymbolDeclaration=Ut,e.AST_SymbolDefClass=Zt,e.AST_SymbolDefun=Yt,e.AST_SymbolExport=on,e.AST_SymbolExportForeign=an,e.AST_SymbolFunarg=Wt,e.AST_SymbolImport=en,e.AST_SymbolImportForeign=tn,e.AST_SymbolLambda=jt,e.AST_SymbolLet=zt,e.AST_SymbolMethod=qt,e.AST_SymbolRef=rn,e.AST_SymbolVar=Gt,e.AST_TemplateSegment=He,e.AST_TemplateString=Ge,e.AST_This=un,e.AST_Throw=Ye,e.AST_Token=fe,e.AST_Toplevel=Ne,e.AST_True=Tn,e.AST_Try=rt,e.AST_Unary=vt,e.AST_UnaryPostfix=Tt,e.AST_UnaryPrefix=At,e.AST_Undefined=gn,e.AST_Var=ut,e.AST_VarDef=ft,e.AST_While=Oe,e.AST_With=we,e.AST_Yield=Je,e.Compressor=ai,e.OutputStream=Bn,e.TreeTransformer=Fn,e.TreeWalker=On,e._INLINE=Rn,e._JS_Parse_Error=Q,e._NOINLINE=wn,e._PURE=Mn,e._has_annotation=T,e._tokenizer=ie,e.base54=qn,e.default_options=$n,e.defaults=o,e.mangle_properties=pr,e.minify=gr,e.parse=ce,e.push_uniq=_,e.reserve_quoted_keys=lr,e.string_template=d,e.to_ascii=_r}));
@@ -40981,10 +40953,10 @@ module.exports = TokenChain;
 
 
 /***/ }),
-/* 343 */
+/* 342 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var constants = __webpack_require__(344)
+var constants = __webpack_require__(343)
 
 var origCwd = process.cwd
 var cwd = null
@@ -41329,16 +41301,16 @@ function patch (fs) {
 
 
 /***/ }),
-/* 344 */
+/* 343 */
 /***/ (function(module, exports) {
 
 module.exports = require("constants");
 
 /***/ }),
-/* 345 */
+/* 344 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Stream = __webpack_require__(116).Stream
+var Stream = __webpack_require__(115).Stream
 
 module.exports = legacy
 
@@ -41459,7 +41431,7 @@ function legacy (fs) {
 
 
 /***/ }),
-/* 346 */
+/* 345 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41485,7 +41457,7 @@ function clone (obj) {
 
 
 /***/ }),
-/* 347 */
+/* 346 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41494,7 +41466,7 @@ function clone (obj) {
 const fs = __webpack_require__(12)
 const path = __webpack_require__(8)
 const mkdirpSync = __webpack_require__(21).mkdirsSync
-const utimesSync = __webpack_require__(141).utimesMillisSync
+const utimesSync = __webpack_require__(140).utimesMillisSync
 const stat = __webpack_require__(65)
 
 function copySync (src, dest, opts) {
@@ -41568,7 +41540,7 @@ function copyFile (srcStat, src, dest, opts) {
 
 function copyFileFallback (srcStat, src, dest, opts) {
   const BUF_LENGTH = 64 * 1024
-  const _buff = __webpack_require__(350)(BUF_LENGTH)
+  const _buff = __webpack_require__(349)(BUF_LENGTH)
 
   const fdr = fs.openSync(src, 'r')
   const fdw = fs.openSync(dest, 'w', srcStat.mode)
@@ -41656,7 +41628,7 @@ module.exports = copySync
 
 
 /***/ }),
-/* 348 */
+/* 347 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41664,7 +41636,7 @@ module.exports = copySync
 
 const fs = __webpack_require__(12)
 const path = __webpack_require__(8)
-const invalidWin32Path = __webpack_require__(140).invalidWin32Path
+const invalidWin32Path = __webpack_require__(139).invalidWin32Path
 
 const o777 = parseInt('0777', 8)
 
@@ -41726,7 +41698,7 @@ module.exports = mkdirs
 
 
 /***/ }),
-/* 349 */
+/* 348 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41734,7 +41706,7 @@ module.exports = mkdirs
 
 const fs = __webpack_require__(12)
 const path = __webpack_require__(8)
-const invalidWin32Path = __webpack_require__(140).invalidWin32Path
+const invalidWin32Path = __webpack_require__(139).invalidWin32Path
 
 const o777 = parseInt('0777', 8)
 
@@ -41787,7 +41759,7 @@ module.exports = mkdirsSync
 
 
 /***/ }),
-/* 350 */
+/* 349 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41806,7 +41778,7 @@ module.exports = function (size) {
 
 
 /***/ }),
-/* 351 */
+/* 350 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41816,7 +41788,7 @@ const fs = __webpack_require__(12)
 const path = __webpack_require__(8)
 const mkdirp = __webpack_require__(21).mkdirs
 const pathExists = __webpack_require__(26).pathExists
-const utimes = __webpack_require__(141).utimesMillis
+const utimes = __webpack_require__(140).utimesMillis
 const stat = __webpack_require__(65)
 
 function copy (src, dest, opts, cb) {
@@ -42025,7 +41997,7 @@ module.exports = copy
 
 
 /***/ }),
-/* 352 */
+/* 351 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42080,7 +42052,7 @@ module.exports = {
 
 
 /***/ }),
-/* 353 */
+/* 352 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42401,15 +42373,15 @@ rimraf.sync = rimrafSync
 
 
 /***/ }),
-/* 354 */
+/* 353 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-const file = __webpack_require__(355)
-const link = __webpack_require__(356)
-const symlink = __webpack_require__(357)
+const file = __webpack_require__(354)
+const link = __webpack_require__(355)
+const symlink = __webpack_require__(356)
 
 module.exports = {
   // file
@@ -42431,7 +42403,7 @@ module.exports = {
 
 
 /***/ }),
-/* 355 */
+/* 354 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42487,7 +42459,7 @@ module.exports = {
 
 
 /***/ }),
-/* 356 */
+/* 355 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42555,7 +42527,7 @@ module.exports = {
 
 
 /***/ }),
-/* 357 */
+/* 356 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42568,11 +42540,11 @@ const _mkdirs = __webpack_require__(21)
 const mkdirs = _mkdirs.mkdirs
 const mkdirsSync = _mkdirs.mkdirsSync
 
-const _symlinkPaths = __webpack_require__(358)
+const _symlinkPaths = __webpack_require__(357)
 const symlinkPaths = _symlinkPaths.symlinkPaths
 const symlinkPathsSync = _symlinkPaths.symlinkPathsSync
 
-const _symlinkType = __webpack_require__(359)
+const _symlinkType = __webpack_require__(358)
 const symlinkType = _symlinkType.symlinkType
 const symlinkTypeSync = _symlinkType.symlinkTypeSync
 
@@ -42625,7 +42597,7 @@ module.exports = {
 
 
 /***/ }),
-/* 358 */
+/* 357 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42731,7 +42703,7 @@ module.exports = {
 
 
 /***/ }),
-/* 359 */
+/* 358 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42769,7 +42741,7 @@ module.exports = {
 
 
 /***/ }),
-/* 360 */
+/* 359 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42778,8 +42750,8 @@ module.exports = {
 const u = __webpack_require__(16).fromCallback
 const jsonFile = __webpack_require__(101)
 
-jsonFile.outputJson = u(__webpack_require__(362))
-jsonFile.outputJsonSync = __webpack_require__(363)
+jsonFile.outputJson = u(__webpack_require__(361))
+jsonFile.outputJsonSync = __webpack_require__(362)
 // aliases
 jsonFile.outputJSON = jsonFile.outputJson
 jsonFile.outputJSONSync = jsonFile.outputJsonSync
@@ -42792,7 +42764,7 @@ module.exports = jsonFile
 
 
 /***/ }),
-/* 361 */
+/* 360 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _fs
@@ -42932,7 +42904,7 @@ module.exports = jsonfile
 
 
 /***/ }),
-/* 362 */
+/* 361 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42966,7 +42938,7 @@ module.exports = outputJson
 
 
 /***/ }),
-/* 363 */
+/* 362 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42991,19 +42963,19 @@ module.exports = outputJsonSync
 
 
 /***/ }),
-/* 364 */
+/* 363 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 module.exports = {
-  moveSync: __webpack_require__(365)
+  moveSync: __webpack_require__(364)
 }
 
 
 /***/ }),
-/* 365 */
+/* 364 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -43011,7 +42983,7 @@ module.exports = {
 
 const fs = __webpack_require__(12)
 const path = __webpack_require__(8)
-const copySync = __webpack_require__(139).copySync
+const copySync = __webpack_require__(138).copySync
 const removeSync = __webpack_require__(66).removeSync
 const mkdirpSync = __webpack_require__(21).mkdirpSync
 const stat = __webpack_require__(65)
@@ -43057,7 +43029,7 @@ module.exports = moveSync
 
 
 /***/ }),
-/* 366 */
+/* 365 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -43065,12 +43037,12 @@ module.exports = moveSync
 
 const u = __webpack_require__(16).fromCallback
 module.exports = {
-  move: u(__webpack_require__(367))
+  move: u(__webpack_require__(366))
 }
 
 
 /***/ }),
-/* 367 */
+/* 366 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -43078,7 +43050,7 @@ module.exports = {
 
 const fs = __webpack_require__(12)
 const path = __webpack_require__(8)
-const copy = __webpack_require__(142).copy
+const copy = __webpack_require__(141).copy
 const remove = __webpack_require__(66).remove
 const mkdirp = __webpack_require__(21).mkdirp
 const pathExists = __webpack_require__(26).pathExists
@@ -43142,7 +43114,7 @@ module.exports = move
 
 
 /***/ }),
-/* 368 */
+/* 367 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -43189,7 +43161,7 @@ module.exports = {
 
 
 /***/ }),
-/* 369 */
+/* 368 */
 /***/ (function(module, exports) {
 
 module.exports = Array.isArray || function (arr) {
@@ -43198,7 +43170,7 @@ module.exports = Array.isArray || function (arr) {
 
 
 /***/ }),
-/* 370 */
+/* 369 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -43220,13 +43192,13 @@ exports.isValidElementType=function(a){return"string"===typeof a||"function"===t
 
 
 /***/ }),
-/* 371 */
+/* 370 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _main = __webpack_require__(372);
+var _main = __webpack_require__(371);
 
 var _main2 = _interopRequireDefault(_main);
 
@@ -43236,7 +43208,7 @@ module.exports = _main2.default; /* eslint-disable import/no-commonjs */
 
 
 /***/ }),
-/* 372 */
+/* 371 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -43246,15 +43218,15 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _toFactory = __webpack_require__(373);
+var _toFactory = __webpack_require__(372);
 
 var _toFactory2 = _interopRequireDefault(_toFactory);
 
-var _DocSearch = __webpack_require__(374);
+var _DocSearch = __webpack_require__(373);
 
 var _DocSearch2 = _interopRequireDefault(_DocSearch);
 
-var _version = __webpack_require__(168);
+var _version = __webpack_require__(167);
 
 var _version2 = _interopRequireDefault(_version);
 
@@ -43266,7 +43238,7 @@ docsearch.version = _version2.default;
 exports.default = docsearch;
 
 /***/ }),
-/* 373 */
+/* 372 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -43291,7 +43263,7 @@ module.exports = toFactory;
 
 
 /***/ }),
-/* 374 */
+/* 373 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -43305,31 +43277,31 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _hogan = __webpack_require__(375);
+var _hogan = __webpack_require__(374);
 
 var _hogan2 = _interopRequireDefault(_hogan);
 
-var _lite = __webpack_require__(112);
+var _lite = __webpack_require__(111);
 
 var _lite2 = _interopRequireDefault(_lite);
 
-var _autocomplete = __webpack_require__(407);
+var _autocomplete = __webpack_require__(406);
 
 var _autocomplete2 = _interopRequireDefault(_autocomplete);
 
-var _templates = __webpack_require__(422);
+var _templates = __webpack_require__(421);
 
 var _templates2 = _interopRequireDefault(_templates);
 
-var _utils = __webpack_require__(423);
+var _utils = __webpack_require__(422);
 
 var _utils2 = _interopRequireDefault(_utils);
 
-var _version = __webpack_require__(168);
+var _version = __webpack_require__(167);
 
 var _version2 = _interopRequireDefault(_version);
 
-var _zepto = __webpack_require__(167);
+var _zepto = __webpack_require__(166);
 
 var _zepto2 = _interopRequireDefault(_zepto);
 
@@ -43683,7 +43655,7 @@ var DocSearch = function () {
 exports.default = DocSearch;
 
 /***/ }),
-/* 375 */
+/* 374 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -43703,14 +43675,14 @@ exports.default = DocSearch;
 
 // This file is for use with Node.js. See dist/ for browser files.
 
-var Hogan = __webpack_require__(376);
-Hogan.Template = __webpack_require__(377).Template;
+var Hogan = __webpack_require__(375);
+Hogan.Template = __webpack_require__(376).Template;
 Hogan.template = Hogan.Template;
 module.exports = Hogan;
 
 
 /***/ }),
-/* 376 */
+/* 375 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -44139,7 +44111,7 @@ module.exports = Hogan;
 
 
 /***/ }),
-/* 377 */
+/* 376 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -44486,7 +44458,7 @@ var Hogan = {};
 
 
 /***/ }),
-/* 378 */
+/* 377 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -44496,17 +44468,17 @@ var Hogan = {};
 module.exports = algoliasearch;
 
 var debug = __webpack_require__(67)('algoliasearch:nodejs');
-var crypto = __webpack_require__(118);
-var zlib = __webpack_require__(383);
+var crypto = __webpack_require__(117);
+var zlib = __webpack_require__(382);
 
 var inherits = __webpack_require__(43);
-var Promise = global.Promise || __webpack_require__(385).Promise;
-var semver = __webpack_require__(152);
+var Promise = global.Promise || __webpack_require__(384).Promise;
+var semver = __webpack_require__(151);
 var isNotSupported = semver.satisfies(process.version, '<0.10');
 var isNode010 = semver.satisfies(process.version, '=0.10');
-var places = __webpack_require__(386);
+var places = __webpack_require__(385);
 
-var AlgoliaSearchServer = __webpack_require__(390);
+var AlgoliaSearchServer = __webpack_require__(389);
 var errors = __webpack_require__(52);
 
 // does not work on node <= 0.8
@@ -44520,7 +44492,7 @@ debug('loaded the Node.js client');
 
 function algoliasearch(applicationID, apiKey, opts) {
   var cloneDeep = __webpack_require__(31);
-  var reduce = __webpack_require__(398);
+  var reduce = __webpack_require__(397);
 
   if (!opts) {
     opts = {};
@@ -44558,7 +44530,7 @@ function algoliasearch(applicationID, apiKey, opts) {
   return new AlgoliaSearchNodeJS(applicationID, apiKey, opts);
 }
 
-algoliasearch.version = __webpack_require__(399);
+algoliasearch.version = __webpack_require__(398);
 
 algoliasearch.ua =
   'Algolia for JavaScript (' + algoliasearch.version + '); ' +
@@ -44567,7 +44539,7 @@ algoliasearch.ua =
 algoliasearch.initPlaces = places(algoliasearch);
 
 function AlgoliaSearchNodeJS(applicationID, apiKey, opts) {
-  var getAgent = __webpack_require__(400);
+  var getAgent = __webpack_require__(399);
 
   // call AlgoliaSearchServer constructor
   AlgoliaSearchServer.apply(this, arguments);
@@ -44829,7 +44801,7 @@ AlgoliaSearchNodeJS.prototype.getSecuredApiKeyRemainingValidity = function getSe
 
 
 /***/ }),
-/* 379 */
+/* 378 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -44838,7 +44810,7 @@ AlgoliaSearchNodeJS.prototype.getSecuredApiKeyRemainingValidity = function getSe
  * Expose `debug()` as the module.
  */
 
-exports = module.exports = __webpack_require__(151);
+exports = module.exports = __webpack_require__(150);
 exports.log = log;
 exports.formatArgs = formatArgs;
 exports.save = save;
@@ -45020,7 +44992,7 @@ function localstorage() {
 
 
 /***/ }),
-/* 380 */
+/* 379 */
 /***/ (function(module, exports) {
 
 /**
@@ -45178,14 +45150,14 @@ function plural(ms, n, name) {
 
 
 /***/ }),
-/* 381 */
+/* 380 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
  * Module dependencies.
  */
 
-var tty = __webpack_require__(382);
+var tty = __webpack_require__(381);
 var util = __webpack_require__(42);
 
 /**
@@ -45194,7 +45166,7 @@ var util = __webpack_require__(42);
  * Expose `debug()` as the module.
  */
 
-exports = module.exports = __webpack_require__(151);
+exports = module.exports = __webpack_require__(150);
 exports.init = init;
 exports.log = log;
 exports.formatArgs = formatArgs;
@@ -45432,19 +45404,19 @@ exports.enable(load());
 
 
 /***/ }),
-/* 382 */
+/* 381 */
 /***/ (function(module, exports) {
 
 module.exports = require("tty");
 
 /***/ }),
-/* 383 */
+/* 382 */
 /***/ (function(module, exports) {
 
 module.exports = require("zlib");
 
 /***/ }),
-/* 384 */
+/* 383 */
 /***/ (function(module, exports) {
 
 if (typeof Object.create === 'function') {
@@ -45477,7 +45449,7 @@ if (typeof Object.create === 'function') {
 
 
 /***/ }),
-/* 385 */
+/* 384 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*!
@@ -46656,13 +46628,13 @@ return Promise$1;
 
 
 /***/ }),
-/* 386 */
+/* 385 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = createPlacesClient;
 
-var qs3 = __webpack_require__(387);
-var buildSearchMethod = __webpack_require__(153);
+var qs3 = __webpack_require__(386);
+var buildSearchMethod = __webpack_require__(152);
 
 function createPlacesClient(algoliasearch) {
   return function places(appID, apiKey, opts) {
@@ -46711,18 +46683,18 @@ function createPlacesClient(algoliasearch) {
 
 
 /***/ }),
-/* 387 */
+/* 386 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-exports.decode = exports.parse = __webpack_require__(388);
-exports.encode = exports.stringify = __webpack_require__(389);
+exports.decode = exports.parse = __webpack_require__(387);
+exports.encode = exports.stringify = __webpack_require__(388);
 
 
 /***/ }),
-/* 388 */
+/* 387 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46813,7 +46785,7 @@ var isArray = Array.isArray || function (xs) {
 
 
 /***/ }),
-/* 389 */
+/* 388 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46905,7 +46877,7 @@ var objectKeys = Object.keys || function (obj) {
 
 
 /***/ }),
-/* 390 */
+/* 389 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46917,7 +46889,7 @@ module.exports = AlgoliaSearchServer;
 
 var inherits = __webpack_require__(43);
 
-var AlgoliaSearch = __webpack_require__(391);
+var AlgoliaSearch = __webpack_require__(390);
 
 function AlgoliaSearchServer(applicationID, apiKey, opts) {
   // Default protocol is https: on the server, to avoid leaking admin keys
@@ -46990,15 +46962,15 @@ AlgoliaSearchServer.prototype._computeRequestHeaders = function(additionalUA) {
 
 
 /***/ }),
-/* 391 */
+/* 390 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = AlgoliaSearch;
 
-var Index = __webpack_require__(392);
+var Index = __webpack_require__(391);
 var deprecate = __webpack_require__(103);
 var deprecatedMessage = __webpack_require__(104);
-var AlgoliaSearchCore = __webpack_require__(395);
+var AlgoliaSearchCore = __webpack_require__(394);
 var inherits = __webpack_require__(43);
 var errors = __webpack_require__(52);
 
@@ -47166,7 +47138,7 @@ AlgoliaSearch.prototype.initAnalytics = function(opts) {
   // - move initAnalytics to a property on the main module (algoliasearch.initAnalytics),
   // same as places.
   // The current API was made mostly to mimic the one made in PHP
-  var createAnalyticsClient = __webpack_require__(397);
+  var createAnalyticsClient = __webpack_require__(396);
   return createAnalyticsClient(this.applicationID, this.apiKey, opts);
 };
 
@@ -47763,14 +47735,14 @@ function notImplemented() {
 
 
 /***/ }),
-/* 392 */
+/* 391 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var inherits = __webpack_require__(43);
-var IndexCore = __webpack_require__(154);
+var IndexCore = __webpack_require__(153);
 var deprecate = __webpack_require__(103);
 var deprecatedMessage = __webpack_require__(104);
-var exitPromise = __webpack_require__(159);
+var exitPromise = __webpack_require__(158);
 var errors = __webpack_require__(52);
 
 var deprecateForwardToSlaves = deprecate(
@@ -48198,9 +48170,9 @@ Index.prototype.browseAll = function(query, queryParameters) {
     query = undefined;
   }
 
-  var merge = __webpack_require__(155);
+  var merge = __webpack_require__(154);
 
-  var IndexBrowser = __webpack_require__(394);
+  var IndexBrowser = __webpack_require__(393);
 
   var browser = new IndexBrowser();
   var client = this.as;
@@ -49103,7 +49075,7 @@ Index.prototype.updateApiKey = deprecate(function(key, acls, params, callback) {
 
 
 /***/ }),
-/* 393 */
+/* 392 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -49114,7 +49086,7 @@ if (!Object.keys) {
 	// modified from https://github.com/es-shims/es5-shim
 	var has = Object.prototype.hasOwnProperty;
 	var toStr = Object.prototype.toString;
-	var isArgs = __webpack_require__(158); // eslint-disable-line global-require
+	var isArgs = __webpack_require__(157); // eslint-disable-line global-require
 	var isEnumerable = Object.prototype.propertyIsEnumerable;
 	var hasDontEnumBug = !isEnumerable.call({ toString: null }, 'toString');
 	var hasProtoEnumBug = isEnumerable.call(function () {}, 'prototype');
@@ -49232,7 +49204,7 @@ module.exports = keysShim;
 
 
 /***/ }),
-/* 394 */
+/* 393 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -49278,15 +49250,15 @@ IndexBrowser.prototype._clean = function() {
 
 
 /***/ }),
-/* 395 */
+/* 394 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = AlgoliaSearchCore;
 
 var errors = __webpack_require__(52);
-var exitPromise = __webpack_require__(159);
-var IndexCore = __webpack_require__(154);
-var store = __webpack_require__(396);
+var exitPromise = __webpack_require__(158);
+var IndexCore = __webpack_require__(153);
+var store = __webpack_require__(395);
 
 // We will always put the API KEY in the JSON body in case of too long API KEY,
 // to avoid query string being too long and failing in various conditions (our server limit, browser limit,
@@ -50005,7 +49977,7 @@ AlgoliaSearchCore.prototype.searchForFacetValues = function(queries) {
     }
 
     var clone = __webpack_require__(31);
-    var omit = __webpack_require__(156);
+    var omit = __webpack_require__(155);
 
     var indexName = query.indexName;
     var params = query.params;
@@ -50252,7 +50224,7 @@ function removeCredentials(headers) {
 
 
 /***/ }),
-/* 396 */
+/* 395 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var debug = __webpack_require__(67)('algoliasearch:src/hostIndexState.js');
@@ -50344,12 +50316,12 @@ function cleanup() {
 
 
 /***/ }),
-/* 397 */
+/* 396 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = createAnalyticsClient;
 
-var algoliasearch = __webpack_require__(150);
+var algoliasearch = __webpack_require__(149);
 
 function createAnalyticsClient(appId, apiKey, opts) {
   var analytics = {};
@@ -50435,13 +50407,13 @@ function createAnalyticsClient(appId, apiKey, opts) {
 
 
 /***/ }),
-/* 398 */
+/* 397 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var objectKeys = __webpack_require__(157);
+var objectKeys = __webpack_require__(156);
 
 module.exports = function reduce(list, iterator) {
     var keys = objectKeys(list);
@@ -50470,7 +50442,7 @@ module.exports = function reduce(list, iterator) {
 
 
 /***/ }),
-/* 399 */
+/* 398 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -50480,7 +50452,7 @@ module.exports = '3.35.1';
 
 
 /***/ }),
-/* 400 */
+/* 399 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -50526,9 +50498,9 @@ function getKeepaliveAgent(protocol) {
   var http = __webpack_require__(63);
   var https = __webpack_require__(41);
 
-  var HttpsAgent = __webpack_require__(160).HttpsAgent;
-  var HttpAgent = __webpack_require__(160);
-  var semver = __webpack_require__(152);
+  var HttpsAgent = __webpack_require__(159).HttpsAgent;
+  var HttpAgent = __webpack_require__(159);
+  var semver = __webpack_require__(151);
 
   var keepAliveAgent;
 
@@ -50562,7 +50534,7 @@ function getKeepaliveAgent(protocol) {
 }
 
 function getProxyingAgent(protocol, parsedProxy) {
-  var tunnel = __webpack_require__(403);
+  var tunnel = __webpack_require__(402);
 
   var agentSettings = {
     maxSockets: Infinity,
@@ -50594,7 +50566,7 @@ function getProxyingAgent(protocol, parsedProxy) {
 
 
 /***/ }),
-/* 401 */
+/* 400 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -50935,7 +50907,7 @@ exports.globalAgent = new Agent();
 
 
 /***/ }),
-/* 402 */
+/* 401 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -50957,7 +50929,7 @@ exports.globalAgent = new Agent();
 
 var https = __webpack_require__(41);
 var utils = __webpack_require__(105);
-var HttpAgent = __webpack_require__(161);
+var HttpAgent = __webpack_require__(160);
 var OriginalHttpsAgent = https.Agent;
 
 var HttpsAgent;
@@ -51037,20 +51009,20 @@ module.exports = HttpsAgent;
 
 
 /***/ }),
-/* 403 */
+/* 402 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var net = __webpack_require__(102)
-  , tls = __webpack_require__(404)
+  , tls = __webpack_require__(403)
   , http = __webpack_require__(63)
   , https = __webpack_require__(41)
   , events = __webpack_require__(53)
   , assert = __webpack_require__(100)
   , util = __webpack_require__(42)
-  , Buffer = __webpack_require__(405).Buffer
+  , Buffer = __webpack_require__(404).Buffer
   ;
 
 exports.httpOverHttp = httpOverHttp
@@ -51288,18 +51260,18 @@ exports.debug = debug // for test
 
 
 /***/ }),
-/* 404 */
+/* 403 */
 /***/ (function(module, exports) {
 
 module.exports = require("tls");
 
 /***/ }),
-/* 405 */
+/* 404 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*! safe-buffer. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
 /* eslint-disable node/no-deprecated-api */
-var buffer = __webpack_require__(406)
+var buffer = __webpack_require__(405)
 var Buffer = buffer.Buffer
 
 // alternative to using Object.keys for old browsers
@@ -51365,10 +51337,20 @@ SafeBuffer.allocUnsafeSlow = function (size) {
 
 
 /***/ }),
-/* 406 */
+/* 405 */
 /***/ (function(module, exports) {
 
 module.exports = require("buffer");
+
+/***/ }),
+/* 406 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = __webpack_require__(407);
+
 
 /***/ }),
 /* 407 */
@@ -51377,18 +51359,8 @@ module.exports = require("buffer");
 "use strict";
 
 
-module.exports = __webpack_require__(408);
-
-
-/***/ }),
-/* 408 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
 // this will inject Zepto in window, unfortunately no easy commonJS zepto build
-var zepto = __webpack_require__(162);
+var zepto = __webpack_require__(161);
 
 // setup DOM element
 var DOM = __webpack_require__(35);
@@ -51412,8 +51384,8 @@ _.mixin = zepto.extend;
 _.Event = zepto.Event;
 
 var typeaheadKey = 'aaAutocomplete';
-var Typeahead = __webpack_require__(409);
-var EventBus = __webpack_require__(163);
+var Typeahead = __webpack_require__(408);
+var EventBus = __webpack_require__(162);
 
 function autocomplete(selector, options, datasets, typeaheadObject) {
   datasets = _.isArray(datasets) ? datasets : [].slice.call(arguments, 2);
@@ -51479,7 +51451,7 @@ module.exports = autocomplete;
 
 
 /***/ }),
-/* 409 */
+/* 408 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -51489,10 +51461,10 @@ var attrsKey = 'aaAttrs';
 
 var _ = __webpack_require__(27);
 var DOM = __webpack_require__(35);
-var EventBus = __webpack_require__(163);
-var Input = __webpack_require__(410);
-var Dropdown = __webpack_require__(417);
-var html = __webpack_require__(164);
+var EventBus = __webpack_require__(162);
+var Input = __webpack_require__(409);
+var Dropdown = __webpack_require__(416);
+var html = __webpack_require__(163);
 var css = __webpack_require__(107);
 
 // constructor
@@ -52134,13 +52106,13 @@ function destroyDomStructure($node, cssClasses) {
 
 Typeahead.Dropdown = Dropdown;
 Typeahead.Input = Input;
-Typeahead.sources = __webpack_require__(419);
+Typeahead.sources = __webpack_require__(418);
 
 module.exports = Typeahead;
 
 
 /***/ }),
-/* 410 */
+/* 409 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -52488,17 +52460,17 @@ module.exports = Input;
 
 
 /***/ }),
-/* 411 */
+/* 410 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 var types = [
+  __webpack_require__(411),
   __webpack_require__(412),
   __webpack_require__(413),
   __webpack_require__(414),
-  __webpack_require__(415),
-  __webpack_require__(416)
+  __webpack_require__(415)
 ];
 var draining;
 var currentQueue;
@@ -52591,7 +52563,7 @@ function immediate(task) {
 
 
 /***/ }),
-/* 412 */
+/* 411 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -52609,7 +52581,7 @@ exports.install = function (func) {
 
 
 /***/ }),
-/* 413 */
+/* 412 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -52637,7 +52609,7 @@ exports.install = function (handle) {
 };
 
 /***/ }),
-/* 414 */
+/* 413 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -52661,7 +52633,7 @@ exports.install = function (func) {
 };
 
 /***/ }),
-/* 415 */
+/* 414 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -52691,7 +52663,7 @@ exports.install = function (handle) {
 };
 
 /***/ }),
-/* 416 */
+/* 415 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -52707,7 +52679,7 @@ exports.install = function (t) {
 };
 
 /***/ }),
-/* 417 */
+/* 416 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -52716,7 +52688,7 @@ exports.install = function (t) {
 var _ = __webpack_require__(27);
 var DOM = __webpack_require__(35);
 var EventEmitter = __webpack_require__(106);
-var Dataset = __webpack_require__(418);
+var Dataset = __webpack_require__(417);
 var css = __webpack_require__(107);
 
 // constructor
@@ -53108,7 +53080,7 @@ module.exports = Dropdown;
 
 
 /***/ }),
-/* 418 */
+/* 417 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -53120,7 +53092,7 @@ var datumKey = 'aaDatum';
 
 var _ = __webpack_require__(27);
 var DOM = __webpack_require__(35);
-var html = __webpack_require__(164);
+var html = __webpack_require__(163);
 var css = __webpack_require__(107);
 var EventEmitter = __webpack_require__(106);
 
@@ -53420,28 +53392,28 @@ module.exports = Dataset;
 
 
 /***/ }),
-/* 419 */
+/* 418 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 module.exports = {
-  hits: __webpack_require__(420),
-  popularIn: __webpack_require__(421)
+  hits: __webpack_require__(419),
+  popularIn: __webpack_require__(420)
 };
 
 
 /***/ }),
-/* 420 */
+/* 419 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var _ = __webpack_require__(27);
-var version = __webpack_require__(165);
-var parseAlgoliaClientVersion = __webpack_require__(166);
+var version = __webpack_require__(164);
+var parseAlgoliaClientVersion = __webpack_require__(165);
 
 module.exports = function search(index, params) {
   var algoliaVersion = parseAlgoliaClientVersion(index.as._ua);
@@ -53464,15 +53436,15 @@ module.exports = function search(index, params) {
 
 
 /***/ }),
-/* 421 */
+/* 420 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var _ = __webpack_require__(27);
-var version = __webpack_require__(165);
-var parseAlgoliaClientVersion = __webpack_require__(166);
+var version = __webpack_require__(164);
+var parseAlgoliaClientVersion = __webpack_require__(165);
 
 module.exports = function popularIn(index, params, details, options) {
   var algoliaVersion = parseAlgoliaClientVersion(index.as._ua);
@@ -53556,7 +53528,7 @@ module.exports = function popularIn(index, params, details, options) {
 
 
 /***/ }),
-/* 422 */
+/* 421 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -53582,7 +53554,7 @@ var templates = {
 exports.default = templates;
 
 /***/ }),
-/* 423 */
+/* 422 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -53594,7 +53566,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var _zepto = __webpack_require__(167);
+var _zepto = __webpack_require__(166);
 
 var _zepto2 = _interopRequireDefault(_zepto);
 
@@ -53864,8 +53836,8 @@ var utils = {
 exports.default = utils;
 
 /***/ }),
-/* 424 */,
-/* 425 */
+/* 423 */,
+/* 424 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -53895,7 +53867,7 @@ exports.default = function () {
 };
 
 /***/ }),
-/* 426 */
+/* 425 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -53925,7 +53897,7 @@ exports.default = function () {
 };
 
 /***/ }),
-/* 427 */
+/* 426 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -53957,6 +53929,12 @@ function pointerCoord(event) {
 }
 
 /***/ }),
+/* 427 */
+/***/ (function(module, exports) {
+
+
+
+/***/ }),
 /* 428 */
 /***/ (function(module, exports) {
 
@@ -53964,27 +53942,21 @@ function pointerCoord(event) {
 
 /***/ }),
 /* 429 */
-/***/ (function(module, exports) {
-
-
-
-/***/ }),
-/* 430 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var SearchParameters = __webpack_require__(195);
-var SearchResults = __webpack_require__(197);
-var DerivedHelper = __webpack_require__(437);
-var requestBuilder = __webpack_require__(438);
+var SearchParameters = __webpack_require__(194);
+var SearchResults = __webpack_require__(196);
+var DerivedHelper = __webpack_require__(436);
+var requestBuilder = __webpack_require__(437);
 
 var events = __webpack_require__(53);
-var inherits = __webpack_require__(200);
+var inherits = __webpack_require__(199);
 var objectHasKeys = __webpack_require__(110);
 
-var version = __webpack_require__(201);
+var version = __webpack_require__(200);
 
 /**
  * Event triggered when a parameter is set or updated
@@ -55398,7 +55370,7 @@ module.exports = AlgoliaSearchHelper;
 
 
 /***/ }),
-/* 431 */
+/* 430 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -55417,7 +55389,7 @@ module.exports = intersection;
 
 
 /***/ }),
-/* 432 */
+/* 431 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -55439,7 +55411,7 @@ module.exports = valToNumber;
 
 
 /***/ }),
-/* 433 */
+/* 432 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -55458,7 +55430,7 @@ module.exports = valToNumber;
  */
 
 var defaultsPure = __webpack_require__(109);
-var omit = __webpack_require__(196);
+var omit = __webpack_require__(195);
 var objectHasKeys = __webpack_require__(110);
 
 var lib = {
@@ -55593,7 +55565,7 @@ module.exports = lib;
 
 
 /***/ }),
-/* 434 */
+/* 433 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -55609,7 +55581,7 @@ module.exports = function compact(array) {
 
 
 /***/ }),
-/* 435 */
+/* 434 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -55631,7 +55603,7 @@ module.exports = function find(array, comparator) {
 
 
 /***/ }),
-/* 436 */
+/* 435 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -55639,9 +55611,9 @@ module.exports = function find(array, comparator) {
 
 module.exports = generateTrees;
 
-var orderBy = __webpack_require__(198);
+var orderBy = __webpack_require__(197);
 var find = __webpack_require__(68);
-var prepareHierarchicalFacetSortBy = __webpack_require__(199);
+var prepareHierarchicalFacetSortBy = __webpack_require__(198);
 
 function generateTrees(state) {
   return function generate(hierarchicalFacetResult, hierarchicalFacetIndex) {
@@ -55837,14 +55809,14 @@ function format(
 
 
 /***/ }),
-/* 437 */
+/* 436 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var events = __webpack_require__(53);
-var inherits = __webpack_require__(200);
+var inherits = __webpack_require__(199);
 
 /**
  * A DerivedHelper is a way to create sub requests to
@@ -55882,7 +55854,7 @@ module.exports = DerivedHelper;
 
 
 /***/ }),
-/* 438 */
+/* 437 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -56210,13 +56182,13 @@ module.exports = requestBuilder;
 
 
 /***/ }),
-/* 439 */
+/* 438 */
 /***/ (function(module, exports) {
 
 
 
 /***/ }),
-/* 440 */
+/* 439 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -56229,543 +56201,446 @@ __webpack_require__.r(__webpack_exports__);
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
- */(()=>{if(_docusaurus_ExecutionEnvironment__WEBPACK_IMPORTED_MODULE_1__[/* default */ "a"].canUseDOM){const{themeConfig:{prism:{additionalLanguages=[]}={}}}=_generated_docusaurus_config__WEBPACK_IMPORTED_MODULE_2__[/* default */ "a"];window.Prism=prism_react_renderer_prism__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"];additionalLanguages.forEach(lang=>{__webpack_require__(111)(`./prism-${lang}`);// eslint-disable-line
+ */(()=>{if(_docusaurus_ExecutionEnvironment__WEBPACK_IMPORTED_MODULE_1__[/* default */ "a"].canUseDOM){const{themeConfig:{prism:{additionalLanguages=[]}={}}}=_generated_docusaurus_config__WEBPACK_IMPORTED_MODULE_2__[/* default */ "a"];window.Prism=prism_react_renderer_prism__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"];additionalLanguages.forEach(lang=>{__webpack_require__(440)(`./prism-${lang}`);// eslint-disable-line
 });delete window.Prism;}})();
 
 /***/ }),
-/* 441 */
+/* 440 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const components = __webpack_require__(442);
-const getLoader = __webpack_require__(443);
+var map = {
+	"./prism-groovy": 441,
+	"./prism-java": 442,
+	"./prism-kotlin": 443,
+	"./prism-ruby": 444,
+	"./prism-swift": 445
+};
 
 
-/**
- * The set of all languages which have been loaded using the below function.
- *
- * @type {Set<string>}
- */
-const loadedLanguages = new Set();
-
-/**
- * Loads the given languages and adds them to the current Prism instance.
- *
- * If no languages are provided, __all__ Prism languages will be loaded.
- *
- * @param {string|string[]} [languages]
- * @returns {void}
- */
-function loadLanguages(languages) {
-	if (languages === undefined) {
-		languages = Object.keys(components.languages).filter(l => l != 'meta');
-	} else if (!Array.isArray(languages)) {
-		languages = [languages];
-	}
-
-	// the user might have loaded languages via some other way or used `prism.js` which already includes some
-	// we don't need to validate the ids because `getLoader` will ignore invalid ones
-	const loaded = [...loadedLanguages, ...Object.keys(Prism.languages)];
-
-	getLoader(components, languages, loaded).load(lang => {
-		if (!(lang in components.languages)) {
-			if (!loadLanguages.silent) {
-				console.warn('Language does not exist: ' + lang);
-			}
-			return;
-		}
-
-		const pathToLanguage = './prism-' + lang;
-
-		// remove from require cache and from Prism
-		delete __webpack_require__.c[/*require.resolve*/(__webpack_require__(111).resolve(pathToLanguage))];
-		delete Prism.languages[lang];
-
-		__webpack_require__(111)(pathToLanguage);
-
-		loadedLanguages.add(lang);
-	});
+function webpackContext(req) {
+	var id = webpackContextResolve(req);
+	return __webpack_require__(id);
 }
+function webpackContextResolve(req) {
+	if(!__webpack_require__.o(map, req)) {
+		var e = new Error("Cannot find module '" + req + "'");
+		e.code = 'MODULE_NOT_FOUND';
+		throw e;
+	}
+	return map[req];
+}
+webpackContext.keys = function webpackContextKeys() {
+	return Object.keys(map);
+};
+webpackContext.resolve = webpackContextResolve;
+module.exports = webpackContext;
+webpackContext.id = 440;
 
-/**
- * Set this to `true` to prevent all warning messages `loadLanguages` logs.
- */
-loadLanguages.silent = false;
+/***/ }),
+/* 441 */
+/***/ (function(module, exports) {
 
-module.exports = loadLanguages;
+Prism.languages.groovy = Prism.languages.extend('clike', {
+	'string': [
+		{
+			pattern: /("""|''')(?:[^\\]|\\[\s\S])*?\1|\$\/(?:\$\/\$|[\s\S])*?\/\$/,
+			greedy: true
+		},
+		{
+			// TODO: Slash strings (e.g. /foo/) can contain line breaks but this will cause a lot of trouble with
+			// simple division (see JS regex), so find a fix maybe?
+			pattern: /(["'/])(?:\\.|(?!\1)[^\\\r\n])*\1/,
+			greedy: true
+		}
+	],
+	'keyword': /\b(?:as|def|in|abstract|assert|boolean|break|byte|case|catch|char|class|const|continue|default|do|double|else|enum|extends|final|finally|float|for|goto|if|implements|import|instanceof|int|interface|long|native|new|package|private|protected|public|return|short|static|strictfp|super|switch|synchronized|this|throw|throws|trait|transient|try|void|volatile|while)\b/,
+	'number': /\b(?:0b[01_]+|0x[\da-f_]+(?:\.[\da-f_p\-]+)?|[\d_]+(?:\.[\d_]+)?(?:e[+-]?[\d]+)?)[glidf]?\b/i,
+	'operator': {
+		pattern: /(^|[^.])(?:~|==?~?|\?[.:]?|\*(?:[.=]|\*=?)?|\.[@&]|\.\.<|\.\.(?!\.)|-[-=>]?|\+[+=]?|!=?|<(?:<=?|=>?)?|>(?:>>?=?|=)?|&[&=]?|\|[|=]?|\/=?|\^=?|%=?)/,
+		lookbehind: true
+	},
+	'punctuation': /\.+|[{}[\];(),.:$]/
+});
+
+Prism.languages.insertBefore('groovy', 'string', {
+	'shebang': {
+		pattern: /#!.+/,
+		alias: 'comment'
+	}
+});
+
+Prism.languages.insertBefore('groovy', 'punctuation', {
+	'spock-block': /\b(?:setup|given|when|then|and|cleanup|expect|where):/
+});
+
+Prism.languages.insertBefore('groovy', 'function', {
+	'annotation': {
+		pattern: /(^|[^.])@\w+/,
+		lookbehind: true,
+		alias: 'punctuation'
+	}
+});
+
+// Handle string interpolation
+Prism.hooks.add('wrap', function(env) {
+	if (env.language === 'groovy' && env.type === 'string') {
+		var delimiter = env.content[0];
+
+		if (delimiter != "'") {
+			var pattern = /([^\\])(?:\$(?:\{.*?\}|[\w.]+))/;
+			if (delimiter === '$') {
+				pattern = /([^\$])(?:\$(?:\{.*?\}|[\w.]+))/;
+			}
+
+			// To prevent double HTML-encoding we have to decode env.content first
+			env.content = env.content.replace(/&lt;/g, '<').replace(/&amp;/g, '&');
+
+			env.content = Prism.highlight(env.content, {
+				'expression': {
+					pattern: pattern,
+					lookbehind: true,
+					inside: Prism.languages.groovy
+				}
+			});
+
+			env.classes.push(delimiter === '/' ? 'regex' : 'gstring');
+		}
+	}
+});
 
 
 /***/ }),
 /* 442 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-var components = {"core":{"meta":{"path":"components/prism-core.js","option":"mandatory"},"core":"Core"},"themes":{"meta":{"path":"themes/{id}.css","link":"index.html?theme={id}","exclusive":true},"prism":{"title":"Default","option":"default"},"prism-dark":"Dark","prism-funky":"Funky","prism-okaidia":{"title":"Okaidia","owner":"ocodia"},"prism-twilight":{"title":"Twilight","owner":"remybach"},"prism-coy":{"title":"Coy","owner":"tshedor"},"prism-solarizedlight":{"title":"Solarized Light","owner":"hectormatos2011 "},"prism-tomorrow":{"title":"Tomorrow Night","owner":"Rosey"}},"languages":{"meta":{"path":"components/prism-{id}","noCSS":true,"examplesPath":"examples/prism-{id}","addCheckAll":true},"markup":{"title":"Markup","alias":["html","xml","svg","mathml"],"aliasTitles":{"html":"HTML","xml":"XML","svg":"SVG","mathml":"MathML"},"option":"default"},"css":{"title":"CSS","option":"default","modify":"markup"},"clike":{"title":"C-like","option":"default"},"javascript":{"title":"JavaScript","require":"clike","modify":"markup","alias":"js","option":"default"},"abap":{"title":"ABAP","owner":"dellagustin"},"abnf":{"title":"Augmented Backus–Naur form","owner":"RunDevelopment"},"actionscript":{"title":"ActionScript","require":"javascript","modify":"markup","owner":"Golmote"},"ada":{"title":"Ada","owner":"Lucretia"},"antlr4":{"title":"ANTLR4","alias":"g4","owner":"RunDevelopment"},"apacheconf":{"title":"Apache Configuration","owner":"GuiTeK"},"apl":{"title":"APL","owner":"ngn"},"applescript":{"title":"AppleScript","owner":"Golmote"},"aql":{"title":"AQL","owner":"RunDevelopment"},"arduino":{"title":"Arduino","require":"cpp","owner":"eisbehr-"},"arff":{"title":"ARFF","owner":"Golmote"},"asciidoc":{"alias":"adoc","title":"AsciiDoc","owner":"Golmote"},"asm6502":{"title":"6502 Assembly","owner":"kzurawel"},"aspnet":{"title":"ASP.NET (C#)","require":["markup","csharp"],"owner":"nauzilus"},"autohotkey":{"title":"AutoHotkey","owner":"aviaryan"},"autoit":{"title":"AutoIt","owner":"Golmote"},"bash":{"title":"Bash","alias":"shell","aliasTitles":{"shell":"Shell"},"owner":"zeitgeist87"},"basic":{"title":"BASIC","owner":"Golmote"},"batch":{"title":"Batch","owner":"Golmote"},"bbcode":{"title":"BBcode","alias":"shortcode","aliasTitles":{"shortcode":"Shortcode"},"owner":"RunDevelopment"},"bison":{"title":"Bison","require":"c","owner":"Golmote"},"bnf":{"title":"Backus–Naur form","alias":"rbnf","aliasTitles":{"rbnf":"Routing Backus–Naur form"},"owner":"RunDevelopment"},"brainfuck":{"title":"Brainfuck","owner":"Golmote"},"brightscript":{"title":"BrightScript","owner":"RunDevelopment"},"bro":{"title":"Bro","owner":"wayward710"},"c":{"title":"C","require":"clike","owner":"zeitgeist87"},"concurnas":{"title":"Concurnas","alias":"conc","owner":"jasontatton"},"csharp":{"title":"C#","require":"clike","alias":["cs","dotnet"],"owner":"mvalipour"},"cpp":{"title":"C++","require":"c","owner":"zeitgeist87"},"cil":{"title":"CIL","owner":"sbrl"},"coffeescript":{"title":"CoffeeScript","require":"javascript","alias":"coffee","owner":"R-osey"},"cmake":{"title":"CMake","owner":"mjrogozinski"},"clojure":{"title":"Clojure","owner":"troglotit"},"crystal":{"title":"Crystal","require":"ruby","owner":"MakeNowJust"},"csp":{"title":"Content-Security-Policy","owner":"ScottHelme"},"css-extras":{"title":"CSS Extras","require":"css","modify":"css","owner":"milesj"},"d":{"title":"D","require":"clike","owner":"Golmote"},"dart":{"title":"Dart","require":"clike","owner":"Golmote"},"dax":{"title":"DAX","owner":"peterbud"},"diff":{"title":"Diff","owner":"uranusjr"},"django":{"title":"Django/Jinja2","require":"markup-templating","alias":"jinja2","owner":"romanvm"},"dns-zone-file":{"title":"DNS zone file","owner":"RunDevelopment","alias":"dns-zone"},"docker":{"title":"Docker","alias":"dockerfile","owner":"JustinBeckwith"},"ebnf":{"title":"Extended Backus–Naur form","owner":"RunDevelopment"},"eiffel":{"title":"Eiffel","owner":"Conaclos"},"ejs":{"title":"EJS","require":["javascript","markup-templating"],"owner":"RunDevelopment"},"elixir":{"title":"Elixir","owner":"Golmote"},"elm":{"title":"Elm","owner":"zwilias"},"etlua":{"title":"Embedded Lua templating","require":["lua","markup-templating"],"owner":"RunDevelopment"},"erb":{"title":"ERB","require":["ruby","markup-templating"],"owner":"Golmote"},"erlang":{"title":"Erlang","owner":"Golmote"},"excel-formula":{"title":"Excel Formula","alias":["xlsx","xls"],"owner":"RunDevelopment"},"fsharp":{"title":"F#","require":"clike","owner":"simonreynolds7"},"factor":{"title":"Factor","owner":"catb0t"},"firestore-security-rules":{"title":"Firestore security rules","require":"clike","owner":"RunDevelopment"},"flow":{"title":"Flow","require":"javascript","owner":"Golmote"},"fortran":{"title":"Fortran","owner":"Golmote"},"ftl":{"title":"FreeMarker Template Language","require":"markup-templating","owner":"RunDevelopment"},"gcode":{"title":"G-code","owner":"RunDevelopment"},"gdscript":{"title":"GDScript","owner":"RunDevelopment"},"gedcom":{"title":"GEDCOM","owner":"Golmote"},"gherkin":{"title":"Gherkin","owner":"hason"},"git":{"title":"Git","owner":"lgiraudel"},"glsl":{"title":"GLSL","require":"clike","owner":"Golmote"},"gml":{"title":"GameMaker Language","alias":"gamemakerlanguage","require":"clike","owner":"LiarOnce"},"go":{"title":"Go","require":"clike","owner":"arnehormann"},"graphql":{"title":"GraphQL","owner":"Golmote"},"groovy":{"title":"Groovy","require":"clike","owner":"robfletcher"},"haml":{"title":"Haml","require":"ruby","optional":["css","css-extras","coffeescript","erb","javascript","less","markdown","scss","textile"],"owner":"Golmote"},"handlebars":{"title":"Handlebars","require":"markup-templating","owner":"Golmote"},"haskell":{"title":"Haskell","alias":"hs","owner":"bholst"},"haxe":{"title":"Haxe","require":"clike","owner":"Golmote"},"hcl":{"title":"HCL","owner":"outsideris"},"http":{"title":"HTTP","optional":["css","javascript","json","markup"],"owner":"danielgtaylor"},"hpkp":{"title":"HTTP Public-Key-Pins","owner":"ScottHelme"},"hsts":{"title":"HTTP Strict-Transport-Security","owner":"ScottHelme"},"ichigojam":{"title":"IchigoJam","owner":"BlueCocoa"},"icon":{"title":"Icon","owner":"Golmote"},"inform7":{"title":"Inform 7","owner":"Golmote"},"ini":{"title":"Ini","owner":"aviaryan"},"io":{"title":"Io","owner":"AlesTsurko"},"j":{"title":"J","owner":"Golmote"},"java":{"title":"Java","require":"clike","owner":"sherblot"},"javadoc":{"title":"JavaDoc","require":["markup","java","javadoclike"],"modify":"java","optional":"scala","owner":"RunDevelopment"},"javadoclike":{"title":"JavaDoc-like","modify":["java","javascript","php"],"owner":"RunDevelopment"},"javastacktrace":{"title":"Java stack trace","owner":"RunDevelopment"},"jolie":{"title":"Jolie","require":"clike","owner":"thesave"},"jq":{"title":"JQ","owner":"RunDevelopment"},"jsdoc":{"title":"JSDoc","require":["javascript","javadoclike"],"modify":"javascript","optional":["actionscript","coffeescript"],"owner":"RunDevelopment"},"js-extras":{"title":"JS Extras","require":"javascript","modify":"javascript","optional":["actionscript","coffeescript","flow","n4js","typescript"],"owner":"RunDevelopment"},"js-templates":{"title":"JS Templates","require":"javascript","modify":"javascript","optional":["css","css-extras","graphql","markdown","markup"],"owner":"RunDevelopment"},"json":{"title":"JSON","owner":"CupOfTea696"},"jsonp":{"title":"JSONP","require":"json","owner":"RunDevelopment"},"json5":{"title":"JSON5","require":"json","owner":"RunDevelopment"},"julia":{"title":"Julia","owner":"cdagnino"},"keyman":{"title":"Keyman","owner":"mcdurdin"},"kotlin":{"title":"Kotlin","require":"clike","owner":"Golmote"},"latex":{"title":"LaTeX","alias":["tex","context"],"aliasTitles":{"tex":"TeX","context":"ConTeXt"},"owner":"japborst"},"latte":{"title":"Latte","require":["clike","markup-templating","php"],"owner":"nette"},"less":{"title":"Less","require":"css","optional":"css-extras","owner":"Golmote"},"lilypond":{"title":"LilyPond","require":"scheme","alias":"ly","owner":"RunDevelopment"},"liquid":{"title":"Liquid","owner":"cinhtau"},"lisp":{"title":"Lisp","alias":["emacs","elisp","emacs-lisp"],"owner":"JuanCaicedo"},"livescript":{"title":"LiveScript","owner":"Golmote"},"llvm":{"title":"LLVM IR","owner":"porglezomp"},"lolcode":{"title":"LOLCODE","owner":"Golmote"},"lua":{"title":"Lua","owner":"Golmote"},"makefile":{"title":"Makefile","owner":"Golmote"},"markdown":{"title":"Markdown","require":"markup","alias":"md","owner":"Golmote"},"markup-templating":{"title":"Markup templating","require":"markup","owner":"Golmote"},"matlab":{"title":"MATLAB","owner":"Golmote"},"mel":{"title":"MEL","owner":"Golmote"},"mizar":{"title":"Mizar","owner":"Golmote"},"monkey":{"title":"Monkey","owner":"Golmote"},"moonscript":{"title":"MoonScript","alias":"moon","owner":"RunDevelopment"},"n1ql":{"title":"N1QL","owner":"TMWilds"},"n4js":{"title":"N4JS","require":"javascript","optional":"jsdoc","alias":"n4jsd","owner":"bsmith-n4"},"nand2tetris-hdl":{"title":"Nand To Tetris HDL","owner":"stephanmax"},"nasm":{"title":"NASM","owner":"rbmj"},"neon":{"title":"NEON","owner":"nette"},"nginx":{"title":"nginx","owner":"westonganger","require":"clike"},"nim":{"title":"Nim","owner":"Golmote"},"nix":{"title":"Nix","owner":"Golmote"},"nsis":{"title":"NSIS","owner":"idleberg"},"objectivec":{"title":"Objective-C","require":"c","owner":"uranusjr"},"ocaml":{"title":"OCaml","owner":"Golmote"},"opencl":{"title":"OpenCL","require":"c","modify":["c","cpp"],"owner":"Milania1"},"oz":{"title":"Oz","owner":"Golmote"},"parigp":{"title":"PARI/GP","owner":"Golmote"},"parser":{"title":"Parser","require":"markup","owner":"Golmote"},"pascal":{"title":"Pascal","alias":"objectpascal","aliasTitles":{"objectpascal":"Object Pascal"},"owner":"Golmote"},"pascaligo":{"title":"Pascaligo","owner":"DefinitelyNotAGoat"},"pcaxis":{"title":"PC-Axis","alias":"px","owner":"RunDevelopment"},"perl":{"title":"Perl","owner":"Golmote"},"php":{"title":"PHP","require":["clike","markup-templating"],"owner":"milesj"},"phpdoc":{"title":"PHPDoc","require":["php","javadoclike"],"modify":"php","owner":"RunDevelopment"},"php-extras":{"title":"PHP Extras","require":"php","modify":"php","owner":"milesj"},"plsql":{"title":"PL/SQL","require":"sql","owner":"Golmote"},"powerquery":{"title":"PowerQuery","alias":["pq","mscript"],"owner":"peterbud"},"powershell":{"title":"PowerShell","owner":"nauzilus"},"processing":{"title":"Processing","require":"clike","owner":"Golmote"},"prolog":{"title":"Prolog","owner":"Golmote"},"properties":{"title":".properties","owner":"Golmote"},"protobuf":{"title":"Protocol Buffers","require":"clike","owner":"just-boris"},"pug":{"title":"Pug","require":["markup","javascript"],"optional":["coffeescript","ejs","handlebars","less","livescript","markdown","scss","stylus","twig"],"owner":"Golmote"},"puppet":{"title":"Puppet","owner":"Golmote"},"pure":{"title":"Pure","optional":["c","cpp","fortran"],"owner":"Golmote"},"python":{"title":"Python","alias":"py","owner":"multipetros"},"q":{"title":"Q (kdb+ database)","owner":"Golmote"},"qml":{"title":"QML","require":"javascript","owner":"RunDevelopment"},"qore":{"title":"Qore","require":"clike","owner":"temnroegg"},"r":{"title":"R","owner":"Golmote"},"jsx":{"title":"React JSX","require":["markup","javascript"],"optional":["jsdoc","js-extras","js-templates"],"owner":"vkbansal"},"tsx":{"title":"React TSX","require":["jsx","typescript"]},"renpy":{"title":"Ren'py","owner":"HyuchiaDiego"},"reason":{"title":"Reason","require":"clike","owner":"Golmote"},"regex":{"title":"Regex","modify":["actionscript","coffeescript","flow","javascript","typescript","vala"],"owner":"RunDevelopment"},"rest":{"title":"reST (reStructuredText)","owner":"Golmote"},"rip":{"title":"Rip","owner":"ravinggenius"},"roboconf":{"title":"Roboconf","owner":"Golmote"},"robotframework":{"title":"Robot Framework","alias":"robot","owner":"RunDevelopment"},"ruby":{"title":"Ruby","require":"clike","alias":"rb","owner":"samflores"},"rust":{"title":"Rust","owner":"Golmote"},"sas":{"title":"SAS","optional":["groovy","lua","sql"],"owner":"Golmote"},"sass":{"title":"Sass (Sass)","require":"css","owner":"Golmote"},"scss":{"title":"Sass (Scss)","require":"css","optional":"css-extras","owner":"MoOx"},"scala":{"title":"Scala","require":"java","owner":"jozic"},"scheme":{"title":"Scheme","owner":"bacchus123"},"shell-session":{"title":"Shell session","require":"bash","owner":"RunDevelopment"},"smalltalk":{"title":"Smalltalk","owner":"Golmote"},"smarty":{"title":"Smarty","require":"markup-templating","owner":"Golmote"},"solidity":{"title":"Solidity (Ethereum)","require":"clike","owner":"glachaud"},"solution-file":{"title":"Solution file","alias":"sln","owner":"RunDevelopment"},"soy":{"title":"Soy (Closure Template)","require":"markup-templating","owner":"Golmote"},"sparql":{"title":"SPARQL","require":"turtle","owner":"Triply-Dev","alias":"rq"},"splunk-spl":{"title":"Splunk SPL","owner":"RunDevelopment"},"sqf":{"title":"SQF: Status Quo Function (Arma 3)","require":"clike","owner":"RunDevelopment"},"sql":{"title":"SQL","owner":"multipetros"},"stylus":{"title":"Stylus","owner":"vkbansal"},"swift":{"title":"Swift","require":"clike","owner":"chrischares"},"tap":{"title":"TAP","owner":"isaacs","require":"yaml"},"tcl":{"title":"Tcl","owner":"PeterChaplin"},"textile":{"title":"Textile","require":"markup","optional":"css","owner":"Golmote"},"toml":{"title":"TOML","owner":"RunDevelopment"},"tt2":{"title":"Template Toolkit 2","require":["clike","markup-templating"],"owner":"gflohr"},"turtle":{"title":"Turtle","alias":"trig","aliasTitles":{"trig":"TriG"},"owner":"jakubklimek"},"twig":{"title":"Twig","require":"markup","owner":"brandonkelly"},"typescript":{"title":"TypeScript","require":"javascript","optional":"js-templates","alias":"ts","owner":"vkbansal"},"t4-cs":{"title":"T4 Text Templates (C#)","require":["t4-templating","csharp"],"alias":"t4","owner":"RunDevelopment"},"t4-vb":{"title":"T4 Text Templates (VB)","require":["t4-templating","visual-basic"],"owner":"RunDevelopment"},"t4-templating":{"title":"T4 templating","owner":"RunDevelopment"},"vala":{"title":"Vala","require":"clike","owner":"TemplarVolk"},"vbnet":{"title":"VB.Net","require":"basic","owner":"Bigsby"},"velocity":{"title":"Velocity","require":"markup","owner":"Golmote"},"verilog":{"title":"Verilog","owner":"a-rey"},"vhdl":{"title":"VHDL","owner":"a-rey"},"vim":{"title":"vim","owner":"westonganger"},"visual-basic":{"title":"Visual Basic","alias":"vb","owner":"Golmote"},"wasm":{"title":"WebAssembly","owner":"Golmote"},"wiki":{"title":"Wiki markup","require":"markup","owner":"Golmote"},"xeora":{"title":"Xeora","require":"markup","alias":"xeoracube","aliasTitles":{"xeoracube":"XeoraCube"},"owner":"freakmaxi"},"xojo":{"title":"Xojo (REALbasic)","owner":"Golmote"},"xquery":{"title":"XQuery","require":"markup","owner":"Golmote"},"yaml":{"title":"YAML","alias":"yml","owner":"hason"},"zig":{"title":"Zig","owner":"RunDevelopment"}},"plugins":{"meta":{"path":"plugins/{id}/prism-{id}","link":"plugins/{id}/"},"line-highlight":{"title":"Line Highlight","description":"Highlights specific lines and/or line ranges."},"line-numbers":{"title":"Line Numbers","description":"Line number at the beginning of code lines.","owner":"kuba-kubula"},"show-invisibles":{"title":"Show Invisibles","description":"Show hidden characters such as tabs and line breaks.","optional":["autolinker","data-uri-highlight"]},"autolinker":{"title":"Autolinker","description":"Converts URLs and emails in code to clickable links. Parses Markdown links in comments."},"wpd":{"title":"WebPlatform Docs","description":"Makes tokens link to <a href=\"https://webplatform.github.io/docs/\">WebPlatform.org documentation</a>. The links open in a new tab."},"custom-class":{"title":"Custom Class","description":"This plugin allows you to prefix Prism's default classes (<code>.comment</code> can become <code>.namespace--comment</code>) or replace them with your defined ones (like <code>.editor__comment</code>). You can even add new classes.","owner":"dvkndn","noCSS":true},"file-highlight":{"title":"File Highlight","description":"Fetch external files and highlight them with Prism. Used on the Prism website itself.","noCSS":true},"show-language":{"title":"Show Language","description":"Display the highlighted language in code blocks (inline code does not show the label).","owner":"nauzilus","noCSS":true,"require":"toolbar"},"jsonp-highlight":{"title":"JSONP Highlight","description":"Fetch content with JSONP and highlight some interesting content (e.g. GitHub/Gists or Bitbucket API).","noCSS":true,"owner":"nauzilus"},"highlight-keywords":{"title":"Highlight Keywords","description":"Adds special CSS classes for each keyword matched in the code. For example, the keyword <code>if</code> will have the class <code>keyword-if</code> as well. You can have fine grained control over the appearance of each keyword by providing your own CSS rules.","owner":"vkbansal","noCSS":true},"remove-initial-line-feed":{"title":"Remove initial line feed","description":"Removes the initial line feed in code blocks.","owner":"Golmote","noCSS":true},"inline-color":{"title":"Inline color","description":"Adds a small inline preview for colors in style sheets.","require":"css-extras","owner":"RunDevelopment"},"previewers":{"title":"Previewers","description":"Previewers for angles, colors, gradients, easing and time.","require":"css-extras","owner":"Golmote"},"autoloader":{"title":"Autoloader","description":"Automatically loads the needed languages to highlight the code blocks.","owner":"Golmote","noCSS":true},"keep-markup":{"title":"Keep Markup","description":"Prevents custom markup from being dropped out during highlighting.","owner":"Golmote","optional":"normalize-whitespace","noCSS":true},"command-line":{"title":"Command Line","description":"Display a command line with a prompt and, optionally, the output/response from the commands.","owner":"chriswells0"},"unescaped-markup":{"title":"Unescaped Markup","description":"Write markup without having to escape anything."},"normalize-whitespace":{"title":"Normalize Whitespace","description":"Supports multiple operations to normalize whitespace in code blocks.","owner":"zeitgeist87","optional":"unescaped-markup","noCSS":true},"data-uri-highlight":{"title":"Data-URI Highlight","description":"Highlights data-URI contents.","owner":"Golmote","noCSS":true},"toolbar":{"title":"Toolbar","description":"Attach a toolbar for plugins to easily register buttons on the top of a code block.","owner":"mAAdhaTTah"},"copy-to-clipboard":{"title":"Copy to Clipboard Button","description":"Add a button that copies the code block to the clipboard when clicked.","owner":"mAAdhaTTah","require":"toolbar","noCSS":true},"download-button":{"title":"Download Button","description":"A button in the toolbar of a code block adding a convenient way to download a code file.","owner":"Golmote","require":"toolbar","noCSS":true},"match-braces":{"title":"Match braces","description":"Highlights matching braces.","owner":"RunDevelopment"},"diff-highlight":{"title":"Diff Highlight","description":"Highlights the code inside diff blocks.","owner":"RunDevelopment","require":"diff"},"filter-highlight-all":{"title":"Filter highlightAll","description":"Filters the elements the <code>highlightAll</code> and <code>highlightAllUnder</code> methods actually highlight.","owner":"RunDevelopment","noCSS":true},"treeview":{"title":"Treeview","description":"A language with special styles to highlight file system tree structures.","owner":"Golmote"}}};
-if ( true && module.exports) { module.exports = components; }
+(function (Prism) {
+
+	var keywords = /\b(?:abstract|assert|boolean|break|byte|case|catch|char|class|const|continue|default|do|double|else|enum|exports|extends|final|finally|float|for|goto|if|implements|import|instanceof|int|interface|long|module|native|new|null|open|opens|package|private|protected|provides|public|record|requires|return|short|static|strictfp|super|switch|synchronized|this|throw|throws|to|transient|transitive|try|uses|var|void|volatile|while|with|yield)\b/;
+
+	// based on the java naming conventions
+	var className = /\b[A-Z](?:\w*[a-z]\w*)?\b/;
+
+	Prism.languages.java = Prism.languages.extend('clike', {
+		'class-name': [
+			className,
+
+			// variables and parameters
+			// this to support class names (or generic parameters) which do not contain a lower case letter (also works for methods)
+			/\b[A-Z]\w*(?=\s+\w+\s*[;,=())])/
+		],
+		'keyword': keywords,
+		'function': [
+			Prism.languages.clike.function,
+			{
+				pattern: /(\:\:)[a-z_]\w*/,
+				lookbehind: true
+			}
+		],
+		'number': /\b0b[01][01_]*L?\b|\b0x[\da-f_]*\.?[\da-f_p+-]+\b|(?:\b\d[\d_]*\.?[\d_]*|\B\.\d[\d_]*)(?:e[+-]?\d[\d_]*)?[dfl]?/i,
+		'operator': {
+			pattern: /(^|[^.])(?:<<=?|>>>?=?|->|--|\+\+|&&|\|\||::|[?:~]|[-+*/%&|^!=<>]=?)/m,
+			lookbehind: true
+		}
+	});
+
+	Prism.languages.insertBefore('java', 'string', {
+		'triple-quoted-string': {
+			// http://openjdk.java.net/jeps/355#Description
+			pattern: /"""[ \t]*[\r\n](?:(?:"|"")?(?:\\.|[^"\\]))*"""/,
+			greedy: true,
+			alias: 'string'
+		}
+	});
+
+	Prism.languages.insertBefore('java', 'class-name', {
+		'annotation': {
+			alias: 'punctuation',
+			pattern: /(^|[^.])@\w+/,
+			lookbehind: true
+		},
+		'namespace': {
+			pattern: /(\b(?:exports|import(?:\s+static)?|module|open|opens|package|provides|requires|to|transitive|uses|with)\s+)[a-z]\w*(?:\.[a-z]\w*)+/,
+			lookbehind: true,
+			inside: {
+				'punctuation': /\./,
+			}
+		},
+		'generics': {
+			pattern: /<(?:[\w\s,.&?]|<(?:[\w\s,.&?]|<(?:[\w\s,.&?]|<[\w\s,.&?]*>)*>)*>)*>/,
+			inside: {
+				'class-name': className,
+				'keyword': keywords,
+				'punctuation': /[<>(),.:]/,
+				'operator': /[?&|]/
+			}
+		}
+	});
+}(Prism));
+
 
 /***/ }),
 /* 443 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-"use strict";
+(function (Prism) {
+	Prism.languages.kotlin = Prism.languages.extend('clike', {
+		'keyword': {
+			// The lookbehind prevents wrong highlighting of e.g. kotlin.properties.get
+			pattern: /(^|[^.])\b(?:abstract|actual|annotation|as|break|by|catch|class|companion|const|constructor|continue|crossinline|data|do|dynamic|else|enum|expect|external|final|finally|for|fun|get|if|import|in|infix|init|inline|inner|interface|internal|is|lateinit|noinline|null|object|open|operator|out|override|package|private|protected|public|reified|return|sealed|set|super|suspend|tailrec|this|throw|to|try|typealias|val|var|vararg|when|where|while)\b/,
+			lookbehind: true
+		},
+		'function': [
+			/\w+(?=\s*\()/,
+			{
+				pattern: /(\.)\w+(?=\s*\{)/,
+				lookbehind: true
+			}
+		],
+		'number': /\b(?:0[xX][\da-fA-F]+(?:_[\da-fA-F]+)*|0[bB][01]+(?:_[01]+)*|\d+(?:_\d+)*(?:\.\d+(?:_\d+)*)?(?:[eE][+-]?\d+(?:_\d+)*)?[fFL]?)\b/,
+		'operator': /\+[+=]?|-[-=>]?|==?=?|!(?:!|==?)?|[\/*%<>]=?|[?:]:?|\.\.|&&|\|\||\b(?:and|inv|or|shl|shr|ushr|xor)\b/
+	});
 
+	delete Prism.languages.kotlin["class-name"];
 
-/**
- * @typedef {Object<string, ComponentCategory>} Components
- * @typedef {Object<string, ComponentEntry | string>} ComponentCategory
- *
- * @typedef ComponentEntry
- * @property {string} [title] The title of the component.
- * @property {string} [owner] The GitHub user name of the owner.
- * @property {boolean} [noCSS=false] Whether the component doesn't have style sheets which should also be loaded.
- * @property {string | string[]} [alias] An optional list of aliases for the id of the component.
- * @property {Object<string, string>} [aliasTitles] An optional map from an alias to its title.
- *
- * Aliases which are not in this map will the get title of the component.
- * @property {string | string[]} [optional]
- * @property {string | string[]} [require]
- * @property {string | string[]} [modify]
- */
-
-var getLoader = (function () {
-
-	/**
-	 * A function which does absolutely nothing.
-	 *
-	 * @type {any}
-	 */
-	var noop = function () { };
-
-	/**
-	 * Invokes the given callback for all elements of the given value.
-	 *
-	 * If the given value is an array, the callback will be invokes for all elements. If the given value is `null` or
-	 * `undefined`, the callback will not be invoked. In all other cases, the callback will be invoked with the given
-	 * value as parameter.
-	 *
-	 * @param {null | undefined | T | T[]} value
-	 * @param {(value: T, index: number) => void} callbackFn
-	 * @returns {void}
-	 * @template T
-	 */
-	function forEach(value, callbackFn) {
-		if (Array.isArray(value)) {
-			value.forEach(callbackFn);
-		} else if (value != null) {
-			callbackFn(value, 0);
+	Prism.languages.insertBefore('kotlin', 'string', {
+		'raw-string': {
+			pattern: /("""|''')[\s\S]*?\1/,
+			alias: 'string'
+			// See interpolation below
 		}
-	}
-
-	/**
-	 * Returns a new set for the given string array.
-	 *
-	 * @param {string[]} array
-	 * @returns {StringSet}
-	 *
-	 * @typedef {Object<string, true>} StringSet
-	 */
-	function toSet(array) {
-		/** @type {StringSet} */
-		var set = {};
-		for (var i = 0, l = array.length; i < l; i++) {
-			set[array[i]] = true;
+	});
+	Prism.languages.insertBefore('kotlin', 'keyword', {
+		'annotation': {
+			pattern: /\B@(?:\w+:)?(?:[A-Z]\w*|\[[^\]]+\])/,
+			alias: 'builtin'
 		}
-		return set;
-	}
-
-	/**
-	 * Creates a map of every components id to its entry.
-	 *
-	 * @param {Components} components
-	 * @returns {EntryMap}
-	 *
-	 * @typedef {{ readonly [id: string]: Readonly<ComponentEntry> | undefined }} EntryMap
-	 */
-	function createEntryMap(components) {
-		/** @type {Object<string, Readonly<ComponentEntry>>} */
-		var map = {};
-
-		for (var categoryName in components) {
-			var category = components[categoryName];
-			for (var id in category) {
-				if (id != 'meta') {
-					/** @type {ComponentEntry | string} */
-					var entry = category[id];
-					map[id] = typeof entry == 'string' ? { title: entry } : entry;
-				}
-			}
+	});
+	Prism.languages.insertBefore('kotlin', 'function', {
+		'label': {
+			pattern: /\w+@|@\w+/,
+			alias: 'symbol'
 		}
+	});
 
-		return map;
-	}
-
-	/**
-	 * Creates a full dependencies map which includes all types of dependencies and their transitive dependencies.
-	 *
-	 * @param {EntryMap} entryMap
-	 * @returns {DependencyResolver}
-	 *
-	 * @typedef {(id: string) => StringSet} DependencyResolver
-	 */
-	function createDependencyResolver(entryMap) {
-		/** @type {Object<string, StringSet>} */
-		var map = {};
-		var _stackArray = [];
-
-		/**
-		 * Adds the dependencies of the given component to the dependency map.
-		 *
-		 * @param {string} id
-		 * @param {string[]} stack
-		 */
-		function addToMap(id, stack) {
-			if (id in map) {
-				return;
+	var interpolation = [
+		{
+			pattern: /\$\{[^}]+\}/,
+			inside: {
+				'delimiter': {
+					pattern: /^\$\{|\}$/,
+					alias: 'variable'
+				},
+				rest: Prism.languages.kotlin
 			}
-
-			stack.push(id);
-
-			// check for circular dependencies
-			var firstIndex = stack.indexOf(id);
-			if (firstIndex < stack.length - 1) {
-				throw new Error('Circular dependency: ' + stack.slice(firstIndex).join(' -> '));
-			}
-
-			/** @type {StringSet} */
-			var dependencies = {};
-
-			var entry = entryMap[id];
-			if (entry) {
-				/**
-				 * This will add the direct dependency and all of its transitive dependencies to the set of
-				 * dependencies of `entry`.
-				 *
-				 * @param {string} depId
-				 * @returns {void}
-				 */
-				function handleDirectDependency(depId) {
-					if (!(depId in entryMap)) {
-						throw new Error(id + ' depends on an unknown component ' + depId);
-					}
-					if (depId in dependencies) {
-						// if the given dependency is already in the set of deps, then so are its transitive deps
-						return;
-					}
-
-					addToMap(depId, stack);
-					dependencies[depId] = true;
-					for (var transitiveDepId in map[depId]) {
-						dependencies[transitiveDepId] = true;
-					}
-				}
-
-				forEach(entry.require, handleDirectDependency);
-				forEach(entry.optional, handleDirectDependency);
-				forEach(entry.modify, handleDirectDependency);
-			}
-
-			map[id] = dependencies;
-
-			stack.pop();
+		},
+		{
+			pattern: /\$\w+/,
+			alias: 'variable'
 		}
+	];
 
-		return function (id) {
-			var deps = map[id];
-			if (!deps) {
-				addToMap(id, _stackArray);
-				deps = map[id];
-			}
-			return deps;
-		};
-	}
+	Prism.languages.kotlin['string'].inside = Prism.languages.kotlin['raw-string'].inside = {
+		interpolation: interpolation
+	};
 
-	/**
-	 * Returns a function which resolves the aliases of its given id of alias.
-	 *
-	 * @param {EntryMap} entryMap
-	 * @returns {(idOrAlias: string) => string}
-	 */
-	function createAliasResolver(entryMap) {
-		/** @type {Object<string, string> | undefined} */
-		var map;
-
-		return function (idOrAlias) {
-			if (idOrAlias in entryMap) {
-				return idOrAlias;
-			} else {
-				// only create the alias map if necessary
-				if (!map) {
-					map = {};
-
-					for (var id in entryMap) {
-						var entry = entryMap[id];
-						forEach(entry && entry.alias, function (alias) {
-							if (alias in map) {
-								throw new Error(alias + ' cannot be alias for both ' + id + ' and ' + map[alias]);
-							}
-							if (alias in entryMap) {
-								throw new Error(alias + ' cannot be alias of ' + id + ' because it is a component.');
-							}
-							map[alias] = id;
-						});
-					}
-				}
-				return map[idOrAlias] || idOrAlias;
-			}
-		};
-	}
-
-	/**
-	 * @typedef LoadChainer
-	 * @property {(before: T, after: () => T) => T} series
-	 * @property {(values: T[]) => T} parallel
-	 * @template T
-	 */
-
-	/**
-	 * Creates an implicit DAG from the given components and dependencies and call the given `loadComponent` for each
-	 * component in topological order.
-	 *
-	 * @param {DependencyResolver} dependencyResolver
-	 * @param {StringSet} ids
-	 * @param {(id: string) => T} loadComponent
-	 * @param {LoadChainer<T>} [chainer]
-	 * @returns {T}
-	 * @template T
-	 */
-	function loadComponentsInOrder(dependencyResolver, ids, loadComponent, chainer) {
-		const series = chainer ? chainer.series : undefined;
-		const parallel = chainer ? chainer.parallel : noop;
-
-		/** @type {Object<string, T>} */
-		var cache = {};
-
-		/**
-		 * A set of ids of nodes which are not depended upon by any other node in the graph.
-		 * @type {StringSet}
-		 */
-		var ends = {};
-
-		/**
-		 * Loads the given component and its dependencies or returns the cached value.
-		 *
-		 * @param {string} id
-		 * @returns {T}
-		 */
-		function handleId(id) {
-			if (id in cache) {
-				return cache[id];
-			}
-
-			// assume that it's an end
-			// if it isn't, it will be removed later
-			ends[id] = true;
-
-			// all dependencies of the component in the given ids
-			var dependsOn = [];
-			for (var depId in dependencyResolver(id)) {
-				if (depId in ids) {
-					dependsOn.push(depId);
-				}
-			}
-
-			/**
-			 * The value to be returned.
-			 * @type {T}
-			 */
-			var value;
-
-			if (dependsOn.length === 0) {
-				value = loadComponent(id);
-			} else {
-				var depsValue = parallel(dependsOn.map(function (depId) {
-					var value = handleId(depId);
-					// none of the dependencies can be ends
-					delete ends[depId];
-					return value;
-				}));
-				if (series) {
-					// the chainer will be responsibly for calling the function calling loadComponent
-					value = series(depsValue, function () { return loadComponent(id); });
-				} else {
-					// we don't have a chainer, so we call loadComponent ourselves
-					loadComponent(id);
-				}
-			}
-
-			// cache and return
-			return cache[id] = value;
-		}
-
-		for (var id in ids) {
-			handleId(id);
-		}
-
-		/** @type {T[]} */
-		var endValues = [];
-		for (var endId in ends) {
-			endValues.push(cache[endId]);
-		}
-		return parallel(endValues);
-	}
-
-	/**
-	 * Returns whether the given object has any keys.
-	 *
-	 * @param {object} obj
-	 */
-	function hasKeys(obj) {
-		for (var key in obj) {
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * Returns an object which provides methods to get the ids of the components which have to be loaded (`getIds`) and
-	 * a way to efficiently load them in synchronously and asynchronous contexts (`load`).
-	 *
-	 * The set of ids to be loaded is a superset of `load`. If some of these ids are in `loaded`, the corresponding
-	 * components will have to reloaded.
-	 *
-	 * The ids in `load` and `loaded` may be in any order and can contain duplicates.
-	 *
-	 * @param {Components} components
-	 * @param {string[]} load
-	 * @param {string[]} [loaded=[]] A list of already loaded components.
-	 *
-	 * If a component is in this list, then all of its requirements will also be assumed to be in the list.
-	 * @returns {Loader}
-	 *
-	 * @typedef Loader
-	 * @property {() => string[]} getIds A function to get all ids of the components to load.
-	 *
-	 * The returned ids will be duplicate-free, alias-free and in load order.
-	 * @property {LoadFunction} load A functional interface to load components.
-	 *
-	 * @typedef {<T> (loadComponent: (id: string) => T, chainer?: LoadChainer<T>) => T} LoadFunction
-	 * A functional interface to load components.
-	 *
-	 * The `loadComponent` function will be called for every component in the order in which they have to be loaded.
-	 *
-	 * The `chainer` is useful for asynchronous loading and its `series` and `parallel` functions can be thought of as
-	 * `Promise#then` and `Promise.all`.
-	 *
-	 * @example
-	 * load(id => { loadComponent(id); }); // returns undefined
-	 *
-	 * await load(
-	 *     id => loadComponentAsync(id), // returns a Promise for each id
-	 *     {
-	 *         series: async (before, after) => {
-	 *             await before;
-	 *             await after();
-	 *         },
-	 *         parallel: async (values) => {
-	 *             await Promise.all(values);
-	 *         }
-	 *     }
-	 * );
-	 */
-	function getLoader(components, load, loaded) {
-		var entryMap = createEntryMap(components);
-		var resolveAlias = createAliasResolver(entryMap);
-
-		load = load.map(resolveAlias);
-		loaded = (loaded || []).map(resolveAlias);
-
-		var loadSet = toSet(load);
-		var loadedSet = toSet(loaded);
-
-		// add requirements
-
-		load.forEach(addRequirements);
-		function addRequirements(id) {
-			var entry = entryMap[id];
-			forEach(entry && entry.require, function (reqId) {
-				if (!(reqId in loadedSet)) {
-					loadSet[reqId] = true;
-					addRequirements(reqId);
-				}
-			});
-		}
-
-		// add components to reload
-
-		// A component x in `loaded` has to be reloaded if
-		//  1) a component in `load` modifies x.
-		//  2) x depends on a component in `load`.
-		// The above two condition have to be applied until nothing changes anymore.
-
-		var dependencyResolver = createDependencyResolver(entryMap);
-
-		/** @type {StringSet} */
-		var loadAdditions = loadSet;
-		/** @type {StringSet} */
-		var newIds;
-		while (hasKeys(loadAdditions)) {
-			newIds = {};
-
-			// condition 1)
-			for (var loadId in loadAdditions) {
-				var entry = entryMap[loadId];
-				forEach(entry && entry.modify, function (modId) {
-					if (modId in loadedSet) {
-						newIds[modId] = true;
-					}
-				});
-			}
-
-			// condition 2)
-			for (var loadedId in loadedSet) {
-				if (!(loadedId in loadSet)) {
-					for (var depId in dependencyResolver(loadedId)) {
-						if (depId in loadSet) {
-							newIds[loadedId] = true;
-							break;
-						}
-					}
-				}
-			}
-
-			loadAdditions = newIds;
-			for (var newId in loadAdditions) {
-				loadSet[newId] = true;
-			}
-		}
-
-		/** @type {Loader} */
-		var loader = {
-			getIds: function () {
-				var ids = [];
-				loader.load(function (id) {
-					ids.push(id);
-				});
-				return ids;
-			},
-			load: function (loadComponent, chainer) {
-				return loadComponentsInOrder(dependencyResolver, loadSet, loadComponent, chainer);
-			}
-		};
-
-		return loader;
-	}
-
-	return getLoader;
-
-}());
-
-if (true) {
-	module.exports = getLoader;
-}
+}(Prism));
 
 
 /***/ }),
 /* 444 */
 /***/ (function(module, exports) {
 
+/**
+ * Original by Samuel Flores
+ *
+ * Adds the following new token classes:
+ *     constant, builtin, variable, symbol, regex
+ */
+(function (Prism) {
+	Prism.languages.ruby = Prism.languages.extend('clike', {
+		'comment': [
+			/#.*/,
+			{
+				pattern: /^=begin\s[\s\S]*?^=end/m,
+				greedy: true
+			}
+		],
+		'class-name': {
+			pattern: /(\b(?:class)\s+|\bcatch\s+\()[\w.\\]+/i,
+			lookbehind: true,
+			inside: {
+				'punctuation': /[.\\]/
+			}
+		},
+		'keyword': /\b(?:alias|and|BEGIN|begin|break|case|class|def|define_method|defined|do|each|else|elsif|END|end|ensure|extend|for|if|in|include|module|new|next|nil|not|or|prepend|protected|private|public|raise|redo|require|rescue|retry|return|self|super|then|throw|undef|unless|until|when|while|yield)\b/
+	});
+
+	var interpolation = {
+		pattern: /#\{[^}]+\}/,
+		inside: {
+			'delimiter': {
+				pattern: /^#\{|\}$/,
+				alias: 'tag'
+			},
+			rest: Prism.languages.ruby
+		}
+	};
+
+	delete Prism.languages.ruby.function;
+
+	Prism.languages.insertBefore('ruby', 'keyword', {
+		'regex': [
+			{
+				pattern: /%r([^a-zA-Z0-9\s{(\[<])(?:(?!\1)[^\\]|\\[\s\S])*\1[gim]{0,3}/,
+				greedy: true,
+				inside: {
+					'interpolation': interpolation
+				}
+			},
+			{
+				pattern: /%r\((?:[^()\\]|\\[\s\S])*\)[gim]{0,3}/,
+				greedy: true,
+				inside: {
+					'interpolation': interpolation
+				}
+			},
+			{
+				// Here we need to specifically allow interpolation
+				pattern: /%r\{(?:[^#{}\\]|#(?:\{[^}]+\})?|\\[\s\S])*\}[gim]{0,3}/,
+				greedy: true,
+				inside: {
+					'interpolation': interpolation
+				}
+			},
+			{
+				pattern: /%r\[(?:[^\[\]\\]|\\[\s\S])*\][gim]{0,3}/,
+				greedy: true,
+				inside: {
+					'interpolation': interpolation
+				}
+			},
+			{
+				pattern: /%r<(?:[^<>\\]|\\[\s\S])*>[gim]{0,3}/,
+				greedy: true,
+				inside: {
+					'interpolation': interpolation
+				}
+			},
+			{
+				pattern: /(^|[^/])\/(?!\/)(?:\[[^\r\n\]]+\]|\\.|[^[/\\\r\n])+\/[gim]{0,3}(?=\s*(?:$|[\r\n,.;})]))/,
+				lookbehind: true,
+				greedy: true
+			}
+		],
+		'variable': /[@$]+[a-zA-Z_]\w*(?:[?!]|\b)/,
+		'symbol': {
+			pattern: /(^|[^:]):[a-zA-Z_]\w*(?:[?!]|\b)/,
+			lookbehind: true
+		},
+		'method-definition': {
+			pattern: /(\bdef\s+)[\w.]+/,
+			lookbehind: true,
+			inside: {
+				'function': /\w+$/,
+				rest: Prism.languages.ruby
+			}
+		}
+	});
+
+	Prism.languages.insertBefore('ruby', 'number', {
+		'builtin': /\b(?:Array|Bignum|Binding|Class|Continuation|Dir|Exception|FalseClass|File|Stat|Fixnum|Float|Hash|Integer|IO|MatchData|Method|Module|NilClass|Numeric|Object|Proc|Range|Regexp|String|Struct|TMS|Symbol|ThreadGroup|Thread|Time|TrueClass)\b/,
+		'constant': /\b[A-Z]\w*(?:[?!]|\b)/
+	});
+
+	Prism.languages.ruby.string = [
+		{
+			pattern: /%[qQiIwWxs]?([^a-zA-Z0-9\s{(\[<])(?:(?!\1)[^\\]|\\[\s\S])*\1/,
+			greedy: true,
+			inside: {
+				'interpolation': interpolation
+			}
+		},
+		{
+			pattern: /%[qQiIwWxs]?\((?:[^()\\]|\\[\s\S])*\)/,
+			greedy: true,
+			inside: {
+				'interpolation': interpolation
+			}
+		},
+		{
+			// Here we need to specifically allow interpolation
+			pattern: /%[qQiIwWxs]?\{(?:[^#{}\\]|#(?:\{[^}]+\})?|\\[\s\S])*\}/,
+			greedy: true,
+			inside: {
+				'interpolation': interpolation
+			}
+		},
+		{
+			pattern: /%[qQiIwWxs]?\[(?:[^\[\]\\]|\\[\s\S])*\]/,
+			greedy: true,
+			inside: {
+				'interpolation': interpolation
+			}
+		},
+		{
+			pattern: /%[qQiIwWxs]?<(?:[^<>\\]|\\[\s\S])*>/,
+			greedy: true,
+			inside: {
+				'interpolation': interpolation
+			}
+		},
+		{
+			pattern: /("|')(?:#\{[^}]+\}|\\(?:\r\n|[\s\S])|(?!\1)[^\\\r\n])*\1/,
+			greedy: true,
+			inside: {
+				'interpolation': interpolation
+			}
+		}
+	];
+
+	Prism.languages.rb = Prism.languages.ruby;
+}(Prism));
 
 
 /***/ }),
 /* 445 */
+/***/ (function(module, exports) {
+
+// issues: nested multiline comments
+Prism.languages.swift = Prism.languages.extend('clike', {
+	'string': {
+		pattern: /("|')(?:\\(?:\((?:[^()]|\([^)]+\))+\)|\r\n|[\s\S])|(?!\1)[^\\\r\n])*\1/,
+		greedy: true,
+		inside: {
+			'interpolation': {
+				pattern: /\\\((?:[^()]|\([^)]+\))+\)/,
+				inside: {
+					delimiter: {
+						pattern: /^\\\(|\)$/,
+						alias: 'variable'
+					}
+					// See rest below
+				}
+			}
+		}
+	},
+	'keyword': /\b(?:as|associativity|break|case|catch|class|continue|convenience|default|defer|deinit|didSet|do|dynamic(?:Type)?|else|enum|extension|fallthrough|final|for|func|get|guard|if|import|in|infix|init|inout|internal|is|lazy|left|let|mutating|new|none|nonmutating|operator|optional|override|postfix|precedence|prefix|private|protocol|public|repeat|required|rethrows|return|right|safe|self|Self|set|static|struct|subscript|super|switch|throws?|try|Type|typealias|unowned|unsafe|var|weak|where|while|willSet|__(?:COLUMN__|FILE__|FUNCTION__|LINE__))\b/,
+	'number': /\b(?:[\d_]+(?:\.[\de_]+)?|0x[a-f0-9_]+(?:\.[a-f0-9p_]+)?|0b[01_]+|0o[0-7_]+)\b/i,
+	'constant': /\b(?:nil|[A-Z_]{2,}|k[A-Z][A-Za-z_]+)\b/,
+	'atrule': /@\b(?:IB(?:Outlet|Designable|Action|Inspectable)|class_protocol|exported|noreturn|NS(?:Copying|Managed)|objc|UIApplicationMain|auto_closure)\b/,
+	'builtin': /\b(?:[A-Z]\S+|abs|advance|alignof(?:Value)?|assert|contains|count(?:Elements)?|debugPrint(?:ln)?|distance|drop(?:First|Last)|dump|enumerate|equal|filter|find|first|getVaList|indices|isEmpty|join|last|lexicographicalCompare|map|max(?:Element)?|min(?:Element)?|numericCast|overlaps|partition|print(?:ln)?|reduce|reflect|reverse|sizeof(?:Value)?|sort(?:ed)?|split|startsWith|stride(?:of(?:Value)?)?|suffix|swap|toDebugString|toString|transcode|underestimateCount|unsafeBitCast|with(?:ExtendedLifetime|Unsafe(?:MutablePointers?|Pointers?)|VaList))\b/
+});
+Prism.languages.swift['string'].inside['interpolation'].inside.rest = Prism.languages.swift;
+
+
+/***/ }),
+/* 446 */
+/***/ (function(module, exports) {
+
+
+
+/***/ }),
+/* 447 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -56780,13 +56655,13 @@ __webpack_require__.r(__webpack_exports__);
 const matches=template.match(/(.*)\{\{([^}]+)\}\}(.*)/);if(!matches){return'';}const before=matches[1]||'';const linkText=matches[2]||'';const after=matches[3]||'';Array.from(bannerElement.childNodes).map(node=>bannerElement.removeChild(node));bannerElement.appendChild(document.createTextNode(before));const linkElement=document.createElement('a');linkElement.href=redirectDestination;linkElement.style.color='#3578e5';linkElement.appendChild(document.createTextNode(linkText));bannerElement.appendChild(linkElement);bannerElement.appendChild(document.createTextNode(after));bannerElement.style.display='block';}function sendPageUpdate(){window.top.postMessage({event:'page-update',title:document.title,location:window.location.href,version:1},'*');}if(_docusaurus_ExecutionEnvironment__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"].canUseDOM){__internaldocs_set_redirect(window.location);sendPageUpdate();}return{onRouteUpdate:({location})=>{__internaldocs_set_redirect(location);sendPageUpdate();}};})());
 
 /***/ }),
-/* 446 */
+/* 448 */
 /***/ (function(module, exports) {
 
 
 
 /***/ }),
-/* 447 */
+/* 449 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -57498,28 +57373,28 @@ var react_default = /*#__PURE__*/__webpack_require__.n(react);
 var react_router = __webpack_require__(9);
 
 // EXTERNAL MODULE: ./node_modules/react-dom/server.js
-var server = __webpack_require__(233);
+var server = __webpack_require__(232);
 var server_default = /*#__PURE__*/__webpack_require__.n(server);
 
 // EXTERNAL MODULE: ./node_modules/react-helmet/es/Helmet.js
 var Helmet = __webpack_require__(71);
 
 // EXTERNAL MODULE: ./node_modules/react-loadable-ssr-addon/lib/index.js
-var lib = __webpack_require__(236);
+var lib = __webpack_require__(235);
 
 // EXTERNAL MODULE: ./node_modules/react-loadable/lib/index.js
 var react_loadable_lib = __webpack_require__(54);
 var react_loadable_lib_default = /*#__PURE__*/__webpack_require__.n(react_loadable_lib);
 
 // EXTERNAL MODULE: ./node_modules/html-minifier-terser/src/htmlminifier.js
-var htmlminifier = __webpack_require__(237);
+var htmlminifier = __webpack_require__(236);
 
 // EXTERNAL MODULE: external "path"
 var external_path_ = __webpack_require__(8);
 var external_path_default = /*#__PURE__*/__webpack_require__.n(external_path_);
 
 // EXTERNAL MODULE: ./node_modules/fs-extra/lib/index.js
-var fs_extra_lib = __webpack_require__(238);
+var fs_extra_lib = __webpack_require__(237);
 var fs_extra_lib_default = /*#__PURE__*/__webpack_require__.n(fs_extra_lib);
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/extends.js
@@ -57536,10 +57411,10 @@ var interopRequireWildcard = __webpack_require__(4);
  * LICENSE file in the root directory of this source tree.
  *//* harmony default export */ var Loading = (({error,retry,pastDelay})=>{if(error){return/*#__PURE__*/react_default.a.createElement("div",{style:{align:'center',color:'#fff',backgroundColor:'#fa383e',borderColor:'#fa383e',borderStyle:'solid',borderRadius:'0.25rem',borderWidth:'1px',boxSizing:'border-box',display:'block',padding:'1rem',flex:'0 0 50%',marginLeft:'25%',marginRight:'25%',marginTop:'5rem',maxWidth:'50%',width:'100%'}},/*#__PURE__*/react_default.a.createElement("p",null,error.message),/*#__PURE__*/react_default.a.createElement("div",null,/*#__PURE__*/react_default.a.createElement("button",{type:"button",onClick:retry},"Retry")));}if(pastDelay){return/*#__PURE__*/react_default.a.createElement("div",{style:{display:'flex',justifyContent:'center',alignItems:'center',height:'100vh'}},/*#__PURE__*/react_default.a.createElement("svg",{id:"loader",style:{width:128,height:110,position:'absolute',top:'calc(100vh - 64%)'},viewBox:"0 0 45 45",xmlns:"http://www.w3.org/2000/svg",stroke:"#61dafb"},/*#__PURE__*/react_default.a.createElement("g",{fill:"none",fillRule:"evenodd",transform:"translate(1 1)",strokeWidth:"2"},/*#__PURE__*/react_default.a.createElement("circle",{cx:"22",cy:"22",r:"6",strokeOpacity:"0"},/*#__PURE__*/react_default.a.createElement("animate",{attributeName:"r",begin:"1.5s",dur:"3s",values:"6;22",calcMode:"linear",repeatCount:"indefinite"}),/*#__PURE__*/react_default.a.createElement("animate",{attributeName:"stroke-opacity",begin:"1.5s",dur:"3s",values:"1;0",calcMode:"linear",repeatCount:"indefinite"}),/*#__PURE__*/react_default.a.createElement("animate",{attributeName:"stroke-width",begin:"1.5s",dur:"3s",values:"2;0",calcMode:"linear",repeatCount:"indefinite"})),/*#__PURE__*/react_default.a.createElement("circle",{cx:"22",cy:"22",r:"6",strokeOpacity:"0"},/*#__PURE__*/react_default.a.createElement("animate",{attributeName:"r",begin:"3s",dur:"3s",values:"6;22",calcMode:"linear",repeatCount:"indefinite"}),/*#__PURE__*/react_default.a.createElement("animate",{attributeName:"stroke-opacity",begin:"3s",dur:"3s",values:"1;0",calcMode:"linear",repeatCount:"indefinite"}),/*#__PURE__*/react_default.a.createElement("animate",{attributeName:"stroke-width",begin:"3s",dur:"3s",values:"2;0",calcMode:"linear",repeatCount:"indefinite"})),/*#__PURE__*/react_default.a.createElement("circle",{cx:"22",cy:"22",r:"8"},/*#__PURE__*/react_default.a.createElement("animate",{attributeName:"r",begin:"0s",dur:"1.5s",values:"6;1;2;3;4;5;6",calcMode:"linear",repeatCount:"indefinite"})))));}return null;});
 // EXTERNAL MODULE: ./.docusaurus/routesChunkNames.json
-var routesChunkNames = __webpack_require__(239);
+var routesChunkNames = __webpack_require__(238);
 
 // CONCATENATED MODULE: ./.docusaurus/registry.js
-/* harmony default export */ var registry = ({'04f828f9':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(143))),"@site/../docs/tutorial/android.mdx",/*require.resolve*/(143)],'09ff0d31':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(144))),"@site/../docs/features/leak-canary-plugin.mdx",/*require.resolve*/(144)],'0ecb0d56':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(145))),"@site/../docs/features/images-plugin.mdx",/*require.resolve*/(145)],'0fc226a0':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(146))),"@site/../docs/getting-started/react-native-ios.mdx",/*require.resolve*/(146)],'129b6cd0':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(147))),"@site/../docs/tutorial/react-native.mdx",/*require.resolve*/(147)],'165b6557':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(148))),"@site/../docs/tutorial/ios.mdx",/*require.resolve*/(148)],'17896441':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(70))),"@theme/DocItem",/*require.resolve*/(70)],'1be78505':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(232))),"@theme/DocPage",/*require.resolve*/(232)],'1df478f1':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(169))),"@site/../docs/features/sandbox-plugin.mdx",/*require.resolve*/(169)],'20ac7829':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(170))),"~docs/docs-route-ff2.json",/*require.resolve*/(170)],'24f57445':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(171))),"@site/../docs/extending/index.mdx",/*require.resolve*/(171)],'2527d735':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(172))),"@site/../docs/extending/supporting-layout.mdx",/*require.resolve*/(172)],'2899fb48':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(173))),"@site/../docs/features/navigation-plugin.mdx",/*require.resolve*/(173)],'2c55addf':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(174))),"@site/../docs/tutorial/js-publishing.mdx",/*require.resolve*/(174)],'2fd3c64b':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(175))),"@site/../docs/extending/ui-components.mdx",/*require.resolve*/(175)],'3432b9e5':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(176))),"@site/../docs/getting-started/index.mdx",/*require.resolve*/(176)],'3b599a6c':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(177))),"@site/../docs/features/shared-preferences-plugin.mdx",/*require.resolve*/(177)],'41b472df':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(178))),"@site/../docs/extending/testing.mdx",/*require.resolve*/(178)],'4e3f310d':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(179))),"@site/../docs/extending/testing-rn.mdx",/*require.resolve*/(179)],'55cc260f':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(180))),"@site/../docs/features/index.mdx",/*require.resolve*/(180)],'5927b9bc':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(181))),"@site/../docs/custom-ports.mdx",/*require.resolve*/(181)],'622de2b5':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(182))),"@site/../docs/extending/create-plugin.mdx",/*require.resolve*/(182)],'6794fae7':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(183))),"@site/../docs/setup/crash-reporter-plugin.mdx",/*require.resolve*/(183)],'6b8963f6':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(184))),"@site/../docs/extending/debugging.mdx",/*require.resolve*/(184)],'71f63756':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(185))),"@site/../docs/setup/shared-preferences-plugin.mdx",/*require.resolve*/(185)],'8443a6ca':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(186))),"@site/../docs/tutorial/intro.mdx",/*require.resolve*/(186)],'8a00a8a6':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(187))),"@site/../docs/tutorial/js-setup.mdx",/*require.resolve*/(187)],'8b754844':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(188))),"@site/../docs/features/databases-plugin.mdx",/*require.resolve*/(188)],'8c637ae2':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(189))),"@site/../docs/extending/client-plugin-lifecycle.mdx",/*require.resolve*/(189)],'91bed8a2':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(190))),"@site/../docs/setup/navigation-plugin.mdx",/*require.resolve*/(190)],'935f56f3':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(191))),"@site/../docs/extending/error-handling.mdx",/*require.resolve*/(191)],'96415b95':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(192))),"@site/../docs/features/share-flipper-data.mdx",/*require.resolve*/(192)],'99681e84':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(193))),"@site/../docs/extending/architecture.mdx",/*require.resolve*/(193)],'99923c26':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(194))),"/home/travis/build/facebook/flipper/website/node_modules/@docusaurus/theme-search-algolia/src/pages/search/index.js",/*require.resolve*/(194)],'9a761373':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(202))),"@site/../docs/features/network-plugin.mdx",/*require.resolve*/(202)],'9e36ac3e':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(203))),"@site/../docs/features/react-native.mdx",/*require.resolve*/(203)],'a7b23657':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(204))),"@site/../docs/features/layout-plugin.mdx",/*require.resolve*/(204)],'a806d1a2':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(205))),"@site/../docs/extending/jssetup.mdx",/*require.resolve*/(205)],'ad3dad21':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(206))),"@site/../docs/tutorial/js-table.mdx",/*require.resolve*/(206)],'b6054734':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(207))),"@site/../docs/tutorial/js-custom.mdx",/*require.resolve*/(207)],'bd3bbb8c':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(208))),"@site/../docs/extending/layout-inspector.mdx",/*require.resolve*/(208)],'c05dba25':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(209))),"@site/../docs/setup/databases-plugin.mdx",/*require.resolve*/(209)],'c2a203b4':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(210))),"@site/../docs/extending/new-clients.mdx",/*require.resolve*/(210)],'c4f5d8e4':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(211))),"@site/src/pages/index.js",/*require.resolve*/(211)],'cacf6f0b':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(212))),"@site/../docs/features/crash-reporter-plugin.mdx",/*require.resolve*/(212)],'cc1a470c':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(213))),"@site/../docs/extending/create-table-plugin.mdx",/*require.resolve*/(213)],'d699c701':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(214))),"@site/../docs/setup/leak-canary-plugin.mdx",/*require.resolve*/(214)],'dabf138f':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(215))),"@site/../docs/setup/sandbox-plugin.mdx",/*require.resolve*/(215)],'dc9e5b6f':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(216))),"@site/../docs/getting-started/android-native.mdx",/*require.resolve*/(216)],'dd17a612':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(217))),"@site/../docs/setup/network-plugin.mdx",/*require.resolve*/(217)],'de8c7ae4':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(218))),"@site/../docs/setup/layout-plugin.mdx",/*require.resolve*/(218)],'e1925c59':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(219))),"@site/../docs/extending/establishing-a-connection.mdx",/*require.resolve*/(219)],'e45a8087':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(220))),"@site/../docs/extending/styling-components.mdx",/*require.resolve*/(220)],'e6910d4e':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(221))),"@site/../docs/getting-started/ios-native.mdx",/*require.resolve*/(221)],'eb48a329':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(222))),"@site/../docs/extending/send-data.mdx",/*require.resolve*/(222)],'ec8f03f2':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(223))),"@site/../docs/extending/js-plugin-api.mdx",/*require.resolve*/(223)],'f0f6bd8d':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(224))),"@site/../docs/features/logs-plugin.mdx",/*require.resolve*/(224)],'f15cd604':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(225))),"@site/../docs/stetho.mdx",/*require.resolve*/(225)],'f38c2cc3':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(226))),"@site/../docs/extending/search-and-filter.mdx",/*require.resolve*/(226)],'f842f0be':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(227))),"@site/../docs/getting-started/react-native-android.mdx",/*require.resolve*/(227)],'fa2418a3':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(228))),"@site/../docs/getting-started/react-native.mdx",/*require.resolve*/(228)],'fa7b9391':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(229))),"@site/../docs/setup/images-plugin.mdx",/*require.resolve*/(229)],'fcd60faa':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(230))),"@site/../docs/troubleshooting.mdx",/*require.resolve*/(230)]});
+/* harmony default export */ var registry = ({'04f828f9':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(142))),"@site/../docs/tutorial/android.mdx",/*require.resolve*/(142)],'09ff0d31':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(143))),"@site/../docs/features/leak-canary-plugin.mdx",/*require.resolve*/(143)],'0ecb0d56':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(144))),"@site/../docs/features/images-plugin.mdx",/*require.resolve*/(144)],'0fc226a0':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(145))),"@site/../docs/getting-started/react-native-ios.mdx",/*require.resolve*/(145)],'129b6cd0':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(146))),"@site/../docs/tutorial/react-native.mdx",/*require.resolve*/(146)],'165b6557':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(147))),"@site/../docs/tutorial/ios.mdx",/*require.resolve*/(147)],'17896441':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(70))),"@theme/DocItem",/*require.resolve*/(70)],'1be78505':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(231))),"@theme/DocPage",/*require.resolve*/(231)],'1df478f1':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(168))),"@site/../docs/features/sandbox-plugin.mdx",/*require.resolve*/(168)],'20ac7829':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(169))),"~docs/docs-route-ff2.json",/*require.resolve*/(169)],'24f57445':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(170))),"@site/../docs/extending/index.mdx",/*require.resolve*/(170)],'2527d735':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(171))),"@site/../docs/extending/supporting-layout.mdx",/*require.resolve*/(171)],'2899fb48':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(172))),"@site/../docs/features/navigation-plugin.mdx",/*require.resolve*/(172)],'2c55addf':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(173))),"@site/../docs/tutorial/js-publishing.mdx",/*require.resolve*/(173)],'2fd3c64b':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(174))),"@site/../docs/extending/ui-components.mdx",/*require.resolve*/(174)],'3432b9e5':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(175))),"@site/../docs/getting-started/index.mdx",/*require.resolve*/(175)],'3b599a6c':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(176))),"@site/../docs/features/shared-preferences-plugin.mdx",/*require.resolve*/(176)],'41b472df':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(177))),"@site/../docs/extending/testing.mdx",/*require.resolve*/(177)],'4e3f310d':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(178))),"@site/../docs/extending/testing-rn.mdx",/*require.resolve*/(178)],'55cc260f':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(179))),"@site/../docs/features/index.mdx",/*require.resolve*/(179)],'5927b9bc':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(180))),"@site/../docs/custom-ports.mdx",/*require.resolve*/(180)],'622de2b5':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(181))),"@site/../docs/extending/create-plugin.mdx",/*require.resolve*/(181)],'6794fae7':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(182))),"@site/../docs/setup/crash-reporter-plugin.mdx",/*require.resolve*/(182)],'6b8963f6':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(183))),"@site/../docs/extending/debugging.mdx",/*require.resolve*/(183)],'71f63756':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(184))),"@site/../docs/setup/shared-preferences-plugin.mdx",/*require.resolve*/(184)],'8443a6ca':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(185))),"@site/../docs/tutorial/intro.mdx",/*require.resolve*/(185)],'8a00a8a6':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(186))),"@site/../docs/tutorial/js-setup.mdx",/*require.resolve*/(186)],'8b754844':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(187))),"@site/../docs/features/databases-plugin.mdx",/*require.resolve*/(187)],'8c637ae2':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(188))),"@site/../docs/extending/client-plugin-lifecycle.mdx",/*require.resolve*/(188)],'91bed8a2':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(189))),"@site/../docs/setup/navigation-plugin.mdx",/*require.resolve*/(189)],'935f56f3':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(190))),"@site/../docs/extending/error-handling.mdx",/*require.resolve*/(190)],'96415b95':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(191))),"@site/../docs/features/share-flipper-data.mdx",/*require.resolve*/(191)],'99681e84':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(192))),"@site/../docs/extending/architecture.mdx",/*require.resolve*/(192)],'99923c26':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(193))),"/home/travis/build/facebook/flipper/website/node_modules/@docusaurus/theme-search-algolia/src/pages/search/index.js",/*require.resolve*/(193)],'9a761373':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(201))),"@site/../docs/features/network-plugin.mdx",/*require.resolve*/(201)],'9e36ac3e':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(202))),"@site/../docs/features/react-native.mdx",/*require.resolve*/(202)],'a7b23657':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(203))),"@site/../docs/features/layout-plugin.mdx",/*require.resolve*/(203)],'a806d1a2':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(204))),"@site/../docs/extending/jssetup.mdx",/*require.resolve*/(204)],'ad3dad21':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(205))),"@site/../docs/tutorial/js-table.mdx",/*require.resolve*/(205)],'b6054734':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(206))),"@site/../docs/tutorial/js-custom.mdx",/*require.resolve*/(206)],'bd3bbb8c':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(207))),"@site/../docs/extending/layout-inspector.mdx",/*require.resolve*/(207)],'c05dba25':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(208))),"@site/../docs/setup/databases-plugin.mdx",/*require.resolve*/(208)],'c2a203b4':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(209))),"@site/../docs/extending/new-clients.mdx",/*require.resolve*/(209)],'c4f5d8e4':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(210))),"@site/src/pages/index.js",/*require.resolve*/(210)],'cacf6f0b':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(211))),"@site/../docs/features/crash-reporter-plugin.mdx",/*require.resolve*/(211)],'cc1a470c':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(212))),"@site/../docs/extending/create-table-plugin.mdx",/*require.resolve*/(212)],'d699c701':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(213))),"@site/../docs/setup/leak-canary-plugin.mdx",/*require.resolve*/(213)],'dabf138f':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(214))),"@site/../docs/setup/sandbox-plugin.mdx",/*require.resolve*/(214)],'dc9e5b6f':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(215))),"@site/../docs/getting-started/android-native.mdx",/*require.resolve*/(215)],'dd17a612':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(216))),"@site/../docs/setup/network-plugin.mdx",/*require.resolve*/(216)],'de8c7ae4':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(217))),"@site/../docs/setup/layout-plugin.mdx",/*require.resolve*/(217)],'e1925c59':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(218))),"@site/../docs/extending/establishing-a-connection.mdx",/*require.resolve*/(218)],'e45a8087':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(219))),"@site/../docs/extending/styling-components.mdx",/*require.resolve*/(219)],'e6910d4e':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(220))),"@site/../docs/getting-started/ios-native.mdx",/*require.resolve*/(220)],'eb48a329':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(221))),"@site/../docs/extending/send-data.mdx",/*require.resolve*/(221)],'ec8f03f2':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(222))),"@site/../docs/extending/js-plugin-api.mdx",/*require.resolve*/(222)],'f0f6bd8d':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(223))),"@site/../docs/features/logs-plugin.mdx",/*require.resolve*/(223)],'f15cd604':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(224))),"@site/../docs/stetho.mdx",/*require.resolve*/(224)],'f38c2cc3':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(225))),"@site/../docs/extending/search-and-filter.mdx",/*require.resolve*/(225)],'f842f0be':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(226))),"@site/../docs/getting-started/react-native-android.mdx",/*require.resolve*/(226)],'fa2418a3':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(227))),"@site/../docs/getting-started/react-native.mdx",/*require.resolve*/(227)],'fa7b9391':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(228))),"@site/../docs/setup/images-plugin.mdx",/*require.resolve*/(228)],'fcd60faa':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(229))),"@site/../docs/troubleshooting.mdx",/*require.resolve*/(229)]});
 // CONCATENATED MODULE: ./node_modules/@docusaurus/core/lib/client/flat.js
 /**
  * Copyright (c) 2017-present, Facebook, Inc.
@@ -57554,7 +57429,7 @@ var routesChunkNames = __webpack_require__(239);
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */function ComponentCreator(path){// 404 page
-if(path==='*'){return react_loadable_lib_default()({loading:Loading,loader:()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(113)))});}const chunkNames=routesChunkNames[path];const optsModules=[];const optsWebpack=[];const optsLoader={};/* Prepare opts data that react-loadable needs
+if(path==='*'){return react_loadable_lib_default()({loading:Loading,loader:()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(112)))});}const chunkNames=routesChunkNames[path];const optsModules=[];const optsWebpack=[];const optsLoader={};/* Prepare opts data that react-loadable needs
   https://github.com/jamiebuilds/react-loadable#declaring-which-modules-are-being-loaded
   Example:
   - optsLoader:
@@ -57569,7 +57444,7 @@ const loadedModules=JSON.parse(JSON.stringify(chunkNames));Object.keys(loaded).f
 // CONCATENATED MODULE: ./.docusaurus/routes.js
 /* harmony default export */ var _docusaurus_routes = ([{path:'/',component:exports_ComponentCreator('/'),exact:true},{path:'/search',component:exports_ComponentCreator('/search'),exact:true},{path:'/docs/:route',component:exports_ComponentCreator('/docs/:route'),routes:[{path:'/docs/custom-ports',component:exports_ComponentCreator('/docs/custom-ports'),exact:true},{path:'/docs/extending/arch',component:exports_ComponentCreator('/docs/extending/arch'),exact:true},{path:'/docs/extending/client-plugin-lifecycle',component:exports_ComponentCreator('/docs/extending/client-plugin-lifecycle'),exact:true},{path:'/docs/extending/create-plugin',component:exports_ComponentCreator('/docs/extending/create-plugin'),exact:true},{path:'/docs/extending/create-table-plugin',component:exports_ComponentCreator('/docs/extending/create-table-plugin'),exact:true},{path:'/docs/extending/debugging',component:exports_ComponentCreator('/docs/extending/debugging'),exact:true},{path:'/docs/extending/error-handling',component:exports_ComponentCreator('/docs/extending/error-handling'),exact:true},{path:'/docs/extending/establishing-a-connection',component:exports_ComponentCreator('/docs/extending/establishing-a-connection'),exact:true},{path:'/docs/extending/index',component:exports_ComponentCreator('/docs/extending/index'),exact:true},{path:'/docs/extending/js-plugin-api',component:exports_ComponentCreator('/docs/extending/js-plugin-api'),exact:true},{path:'/docs/extending/js-setup',component:exports_ComponentCreator('/docs/extending/js-setup'),exact:true},{path:'/docs/extending/layout-inspector',component:exports_ComponentCreator('/docs/extending/layout-inspector'),exact:true},{path:'/docs/extending/new-clients',component:exports_ComponentCreator('/docs/extending/new-clients'),exact:true},{path:'/docs/extending/search-and-filter',component:exports_ComponentCreator('/docs/extending/search-and-filter'),exact:true},{path:'/docs/extending/send-data',component:exports_ComponentCreator('/docs/extending/send-data'),exact:true},{path:'/docs/extending/styling-components',component:exports_ComponentCreator('/docs/extending/styling-components'),exact:true},{path:'/docs/extending/supporting-layout',component:exports_ComponentCreator('/docs/extending/supporting-layout'),exact:true},{path:'/docs/extending/testing',component:exports_ComponentCreator('/docs/extending/testing'),exact:true},{path:'/docs/extending/testing-rn',component:exports_ComponentCreator('/docs/extending/testing-rn'),exact:true},{path:'/docs/extending/ui-components',component:exports_ComponentCreator('/docs/extending/ui-components'),exact:true},{path:'/docs/features/crash-reporter-plugin',component:exports_ComponentCreator('/docs/features/crash-reporter-plugin'),exact:true},{path:'/docs/features/databases-plugin',component:exports_ComponentCreator('/docs/features/databases-plugin'),exact:true},{path:'/docs/features/images-plugin',component:exports_ComponentCreator('/docs/features/images-plugin'),exact:true},{path:'/docs/features/index',component:exports_ComponentCreator('/docs/features/index'),exact:true},{path:'/docs/features/layout-plugin',component:exports_ComponentCreator('/docs/features/layout-plugin'),exact:true},{path:'/docs/features/leak-canary-plugin',component:exports_ComponentCreator('/docs/features/leak-canary-plugin'),exact:true},{path:'/docs/features/logs-plugin',component:exports_ComponentCreator('/docs/features/logs-plugin'),exact:true},{path:'/docs/features/navigation-plugin',component:exports_ComponentCreator('/docs/features/navigation-plugin'),exact:true},{path:'/docs/features/network-plugin',component:exports_ComponentCreator('/docs/features/network-plugin'),exact:true},{path:'/docs/features/react-native',component:exports_ComponentCreator('/docs/features/react-native'),exact:true},{path:'/docs/features/sandbox-plugin',component:exports_ComponentCreator('/docs/features/sandbox-plugin'),exact:true},{path:'/docs/features/share-flipper-data',component:exports_ComponentCreator('/docs/features/share-flipper-data'),exact:true},{path:'/docs/features/shared-preferences-plugin',component:exports_ComponentCreator('/docs/features/shared-preferences-plugin'),exact:true},{path:'/docs/getting-started/android-native',component:exports_ComponentCreator('/docs/getting-started/android-native'),exact:true},{path:'/docs/getting-started/index',component:exports_ComponentCreator('/docs/getting-started/index'),exact:true},{path:'/docs/getting-started/ios-native',component:exports_ComponentCreator('/docs/getting-started/ios-native'),exact:true},{path:'/docs/getting-started/react-native',component:exports_ComponentCreator('/docs/getting-started/react-native'),exact:true},{path:'/docs/getting-started/react-native-android',component:exports_ComponentCreator('/docs/getting-started/react-native-android'),exact:true},{path:'/docs/getting-started/react-native-ios',component:exports_ComponentCreator('/docs/getting-started/react-native-ios'),exact:true},{path:'/docs/setup/crash-reporter-plugin',component:exports_ComponentCreator('/docs/setup/crash-reporter-plugin'),exact:true},{path:'/docs/setup/databases-plugin',component:exports_ComponentCreator('/docs/setup/databases-plugin'),exact:true},{path:'/docs/setup/images-plugin',component:exports_ComponentCreator('/docs/setup/images-plugin'),exact:true},{path:'/docs/setup/layout-plugin',component:exports_ComponentCreator('/docs/setup/layout-plugin'),exact:true},{path:'/docs/setup/leak-canary-plugin',component:exports_ComponentCreator('/docs/setup/leak-canary-plugin'),exact:true},{path:'/docs/setup/navigation-plugin',component:exports_ComponentCreator('/docs/setup/navigation-plugin'),exact:true},{path:'/docs/setup/network-plugin',component:exports_ComponentCreator('/docs/setup/network-plugin'),exact:true},{path:'/docs/setup/sandbox-plugin',component:exports_ComponentCreator('/docs/setup/sandbox-plugin'),exact:true},{path:'/docs/setup/shared-preferences-plugin',component:exports_ComponentCreator('/docs/setup/shared-preferences-plugin'),exact:true},{path:'/docs/stetho',component:exports_ComponentCreator('/docs/stetho'),exact:true},{path:'/docs/troubleshooting',component:exports_ComponentCreator('/docs/troubleshooting'),exact:true},{path:'/docs/tutorial/android',component:exports_ComponentCreator('/docs/tutorial/android'),exact:true},{path:'/docs/tutorial/intro',component:exports_ComponentCreator('/docs/tutorial/intro'),exact:true},{path:'/docs/tutorial/ios',component:exports_ComponentCreator('/docs/tutorial/ios'),exact:true},{path:'/docs/tutorial/js-custom',component:exports_ComponentCreator('/docs/tutorial/js-custom'),exact:true},{path:'/docs/tutorial/js-publishing',component:exports_ComponentCreator('/docs/tutorial/js-publishing'),exact:true},{path:'/docs/tutorial/js-setup',component:exports_ComponentCreator('/docs/tutorial/js-setup'),exact:true},{path:'/docs/tutorial/js-table',component:exports_ComponentCreator('/docs/tutorial/js-table'),exact:true},{path:'/docs/tutorial/react-native',component:exports_ComponentCreator('/docs/tutorial/react-native'),exact:true}]},{path:'*',component:exports_ComponentCreator('*')}]);
 // EXTERNAL MODULE: ./node_modules/@docusaurus/core/package.json
-var core_package = __webpack_require__(248);
+var core_package = __webpack_require__(247);
 
 // EXTERNAL MODULE: ./node_modules/react-router-config/esm/react-router-config.js
 var react_router_config = __webpack_require__(75);
@@ -57602,7 +57477,7 @@ var nprogress = __webpack_require__(86);
 var nprogress_default = /*#__PURE__*/__webpack_require__.n(nprogress);
 
 // CONCATENATED MODULE: ./.docusaurus/client-modules.js
-/* harmony default export */ var client_modules = ([__webpack_require__(231),__webpack_require__(231),__webpack_require__(439),__webpack_require__(440),__webpack_require__(444),__webpack_require__(445)]);
+/* harmony default export */ var client_modules = ([__webpack_require__(230),__webpack_require__(230),__webpack_require__(438),__webpack_require__(439),__webpack_require__(446),__webpack_require__(447)]);
 // CONCATENATED MODULE: ./node_modules/@docusaurus/core/lib/client/client-lifecycles-dispatcher.js
 /**
  * Copyright (c) 2017-present, Facebook, Inc.
@@ -57616,7 +57491,7 @@ var nprogress_default = /*#__PURE__*/__webpack_require__.n(nprogress);
 return['onRouteUpdate','onRouteUpdateDelayed'].reduce((lifecycles,lifecycleAction)=>{// eslint-disable-next-line no-param-reassign
 lifecycles[lifecycleAction]=function(...args){dispatchLifecycleAction(lifecycleAction,...args);};return lifecycles;},{});}/* harmony default export */ var client_lifecycles_dispatcher = (createLifecyclesDispatcher());
 // EXTERNAL MODULE: ./node_modules/nprogress/nprogress.css
-var nprogress_nprogress = __webpack_require__(446);
+var nprogress_nprogress = __webpack_require__(448);
 
 // CONCATENATED MODULE: ./node_modules/@docusaurus/core/lib/client/PendingNavigation.js
 /**
@@ -57643,7 +57518,7 @@ return true;}clearProgressBarTimeout(){if(this.progressBarTimeout){clearTimeout(
  * LICENSE file in the root directory of this source tree.
  */function App(){const[isClient,setIsClient]=Object(react["useState"])(false);Object(react["useEffect"])(()=>{setIsClient(true);},[]);return/*#__PURE__*/react_default.a.createElement(exports_context["a" /* default */].Provider,{value:{siteConfig: docusaurus_config["a" /* default */],isClient}},/*#__PURE__*/react_default.a.createElement(client_PendingNavigation,{routes:_docusaurus_routes},Object(renderRoutes["a" /* default */])(_docusaurus_routes)));}/* harmony default export */ var client_App = (App);
 // EXTERNAL MODULE: ./node_modules/@docusaurus/core/lib/client/templates/ssr.html.template.js
-var ssr_html_template = __webpack_require__(249);
+var ssr_html_template = __webpack_require__(248);
 var ssr_html_template_default = /*#__PURE__*/__webpack_require__.n(ssr_html_template);
 
 // CONCATENATED MODULE: ./node_modules/@docusaurus/core/lib/client/serverEntry.js
