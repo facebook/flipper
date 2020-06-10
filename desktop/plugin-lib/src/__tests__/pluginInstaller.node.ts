@@ -7,34 +7,15 @@
  * @format
  */
 
+import mockfs from 'mock-fs';
 import fs from 'fs-extra';
 import path from 'path';
-import mockfs from 'mock-fs';
 import {consoleMock} from 'flipper-test-utils';
 import {finishPendingPluginInstallations} from '../pluginInstaller';
 import {
   pluginPendingInstallationDir,
   pluginInstallationDir,
 } from '../pluginPaths';
-
-jest.mock('../pluginPaths', () => {
-  return {
-    pluginInstallationDir: path.join(
-      '',
-      'Users',
-      'mock',
-      '.flipper',
-      'thirdparty',
-    ),
-    pluginPendingInstallationDir: path.join(
-      '',
-      'Users',
-      'mock',
-      '.flipper',
-      'pending',
-    ),
-  };
-});
 
 describe('pluginInstaller', () => {
   const realConsole = global.console;
@@ -44,9 +25,7 @@ describe('pluginInstaller', () => {
     global.console = realConsole;
   });
 
-  beforeEach(() => {
-    mockfs({});
-  });
+  beforeEach(() => {});
 
   afterEach(() => {
     mockfs.restore();
@@ -63,11 +42,13 @@ describe('pluginInstaller', () => {
         },
         'flipper-plugin-test2': {
           '0.3.0': {
-            'index.js': '<0.3.0>',
+            'index.js': '',
+            '0.3.0.js': '',
             'package.json': '',
           },
           '0.2.0': {
-            'index.js': '<0.2.0>',
+            'index.js': '',
+            '0.2.0.js': '',
             'package.json': '',
           },
         },
@@ -83,6 +64,7 @@ describe('pluginInstaller', () => {
         "flipper-plugin-test2",
       ]
     `);
+
     expect(
       await fs.readdir(
         path.join(pluginInstallationDir, 'flipper-plugin-test1'),
@@ -93,23 +75,19 @@ describe('pluginInstaller', () => {
         "package.json",
       ]
     `);
+
     expect(
       await fs.readdir(
         path.join(pluginInstallationDir, 'flipper-plugin-test2'),
       ),
     ).toMatchInlineSnapshot(`
       Array [
+        "0.3.0.js",
         "index.js",
         "package.json",
       ]
     `);
-    expect(
-      (
-        await fs.readFile(
-          path.join(pluginInstallationDir, 'flipper-plugin-test2', 'index.js'),
-        )
-      ).toString(),
-    ).toBe('<0.3.0>');
+
     expect(
       await fs.readdir(pluginPendingInstallationDir),
     ).toMatchInlineSnapshot(`Array []`);
