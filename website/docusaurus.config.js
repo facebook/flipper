@@ -72,6 +72,9 @@ const siteConfig = {
         hitsPerPage: 5,
       },
     },
+    prism: {
+      additionalLanguages: ['groovy', 'java', 'kotlin', 'ruby', 'swift'],
+    },
   },
   favicon: 'img/icon.png',
   scripts: [

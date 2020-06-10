@@ -52,7 +52,7 @@ public class MyFlipperPlugin implements FlipperPlugin {
 @end
 ```
 <!--C++-->
-```c++
+```cpp
 class MyFlipperPlugin : public FlipperPlugin {
 public:
   std::string identifier() const override { return "MyFlipperPlugin"; }
@@ -130,7 +130,7 @@ connection.receive("getData", new FlipperReceiver() {
 @end
 ```
 <!--C++-->
-```c++
+```cpp
 void MyFlipperPlugin::didConnect(std::shared_ptr<FlipperConnection> conn) {
   conn->receive("getData", [](const folly::dynamic &params,
                              std::unique_ptr<FlipperResponder> responder) {
@@ -177,7 +177,7 @@ connection.send("MyMessage",
 [connection send:@"getData" withParams:@{@"message":@"hello"}];
 ```
 <!--C++-->
-```c++
+```cpp
 void MyFlipperPlugin::didConnect(std::shared_ptr<FlipperConnection> conn) {
   dynamic message = folly::dynamic::object("message", "hello");
   conn->send("getData", message);
