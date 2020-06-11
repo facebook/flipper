@@ -24,12 +24,12 @@ import tls from 'tls';
 import net, {Socket} from 'net';
 import {Responder, Payload, ReactiveSocket} from 'rsocket-types';
 import GK from './fb-stubs/GK';
-import {initJsEmulatorIPC} from './utils/js-client/serverUtils';
+import {initJsEmulatorIPC} from './utils/js-client-server-utils/serverUtils';
 import {buildClientId} from './utils/clientUtils';
 import {Single} from 'rsocket-flowable';
 import WebSocket from 'ws';
 import JSDevice from './devices/JSDevice';
-import {WebsocketClientFlipperConnection} from './utils/js-client/websocketClientFlipperConnection';
+import {WebsocketClientFlipperConnection} from './utils/js-client-server-utils/websocketClientFlipperConnection';
 import querystring from 'querystring';
 import {IncomingMessage} from 'http';
 import ws from 'ws';
@@ -161,7 +161,8 @@ class Server extends EventEmitter {
       }) => {
         return (
           info.origin.startsWith('chrome-extension://') ||
-          info.origin.startsWith('localhost:')
+          info.origin.startsWith('localhost:') ||
+          info.origin.startsWith('http://localhost:')
         );
       },
     });
@@ -240,8 +241,8 @@ class Server extends EventEmitter {
         cleanup();
       });
     });
-    wss.on('error', (_ws: WebSocket) => {
-      console.error('error from wss');
+    wss.on('error', (_ws: WebSocket, e: any) => {
+      console.error('error from wss' + e);
     });
   }
 

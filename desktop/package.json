@@ -16,7 +16,6 @@
   "workspaces": {
     "packages": [
       "app",
-      "app/src/utils/js-client",
       "babel-transformer",
       "doctor",
       "headless",

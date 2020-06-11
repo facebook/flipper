@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "outDir": "lib",
+    "rootDir": "src",
+    "esModuleInterop": true,
+    "target": "ES2017",
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "sourceMap": true,
+    "declaration": true,
+    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "strict": true,
+    "downlevelIteration": true,
+    "module": "commonjs",
+    "lib": [
+      "es7",
+      "dom",
+      "es2017"
+    ],
+    "composite": true,
+    "baseUrl": ".",
+    "allowJs": true
+  },
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/__tests__/*"
+  ]
+}
