@@ -702,11 +702,8 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
 
   render() {
     return (
-      <Scrollable>
-        <ElementsContainer
-          onKeyDown={this.onKeyDown}
-          tabIndex={0}
-          ref={this._outerRef}>
+      <Scrollable ref={this._outerRef}>
+        <ElementsContainer onKeyDown={this.onKeyDown} tabIndex={0}>
           {this.state.flatElements.map(this.buildRow)}
         </ElementsContainer>
       </Scrollable>
