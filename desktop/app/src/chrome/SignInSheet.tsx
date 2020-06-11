@@ -23,6 +23,8 @@ import {writeKeychain, getUser} from '../fb-stubs/user';
 import {login} from '../reducers/user';
 import {connect} from 'react-redux';
 import {State as Store} from '../reducers';
+import ContextMenu from '../ui/components/ContextMenu';
+import {clipboard} from 'electron';
 
 const Container = styled(FlexColumn)({
   padding: 20,
@@ -67,22 +69,58 @@ class SignInSheet extends Component<Props, State> {
     error: null,
   };
 
-  saveToken = async () => {
-    this.setState({loading: true});
-    const {token} = this.state;
-    if (token) {
+  saveToken = async (token: string) => {
+    this.setState({token, loading: true});
+    try {
       await writeKeychain(token);
-      try {
-        const user = await getUser();
-        if (user) {
-          this.props.login(user);
-        }
-        this.props.onHide();
-      } catch (error) {
-        console.error(error);
-        this.setState({token: '', loading: false, error: `${error}`});
+      const user = await getUser();
+      if (user) {
+        this.props.login(user);
+      } else {
+        throw new Error('Failed to login using the provided token');
+      }
+      this.setState({loading: false});
+      this.props.onHide();
+    } catch (error) {
+      console.error(error);
+      this.setState({
+        loading: false,
+        error: `${error}`,
+      });
+    }
+  };
+
+  onPaste = () => {
+    if (!this.state.token || this.state.token === '') {
+      const token = clipboard.readText();
+      // If pasted content looks like a token, we could try to login using it straight away!
+      if (token && token.length >= 100 && token.indexOf(' ') < 0) {
+        this.saveToken(token);
       }
     }
+  };
+
+  signIn = () => {
+    this.saveToken(this.state.token);
+  };
+
+  getContextMenu = () => {
+    const menu: Array<Electron.MenuItemConstructorOptions> = [
+      {
+        label: 'Paste',
+        role: 'paste',
+        click: this.onPaste,
+      },
+      {
+        label: 'Reset',
+        click: this.reset,
+      },
+    ];
+    return menu;
+  };
+
+  reset = () => {
+    this.setState({token: '', error: ''});
   };
 
   render() {
@@ -94,15 +132,19 @@ class SignInSheet extends Component<Props, State> {
           <Link href="https://our.internmc.facebook.com/intern/oauth/nuclide/">
             open this page
           </Link>
-          , copy the Nuclide access token you find on that page, and paste it
-          into the text input below.
+          , copy the Nuclide access token you find on that page to clipboard,
+          and click the text input below to paste it.
         </InfoText>
-        <TokenInput
-          disabled={this.state.loading}
-          placeholder="Nuclide Access Token"
-          value={this.state.token}
-          onChange={(e) => this.setState({token: e.target.value})}
-        />
+        <ContextMenu items={this.getContextMenu()}>
+          <TokenInput
+            disabled={this.state.loading}
+            placeholder="Click to paste Nuclide Access Token from clipboard"
+            onClick={this.onPaste}
+            value={this.state.token}
+            onPaste={this.onPaste}
+            onChange={(e) => this.setState({token: e.target.value})}
+          />
+        </ContextMenu>
         <br />
         {this.state.error && (
           <InfoText color={colors.red}>
@@ -115,7 +157,10 @@ class SignInSheet extends Component<Props, State> {
           <Button compact padded onClick={this.props.onHide}>
             Cancel
           </Button>
-          <Button type="primary" compact padded onClick={this.saveToken}>
+          <Button compact padded onClick={this.reset}>
+            Reset
+          </Button>
+          <Button type="primary" compact padded onClick={this.signIn}>
             Sign In
           </Button>
         </FlexRow>
