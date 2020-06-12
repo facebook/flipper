@@ -45,6 +45,11 @@ if (process.argv.includes('--no-embedded-plugins')) {
 if (process.argv.includes('--fast-refresh')) {
   process.env.FLIPPER_FAST_REFRESH = 'true';
 }
+// By default plugin auto-update is disabled in dev mode,
+// but it is possible to enable it using this command line argument.
+if (!process.argv.includes('--plugin-auto-update')) {
+  process.env.FLIPPER_DISABLE_PLUGIN_AUTO_UPDATE = 'true';
+}
 
 function launchElectron(port: number) {
   const entry = process.env.FLIPPER_FAST_REFRESH ? 'init-fast-refresh' : 'init';

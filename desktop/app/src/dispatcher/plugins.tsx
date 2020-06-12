@@ -51,10 +51,7 @@ export default (store: Store, logger: Logger) => {
 
   const initialPlugins: Array<
     typeof FlipperPlugin | typeof FlipperDevicePlugin
-  > = filterNewestVersionOfEachPlugin([
-    ...getBundledPlugins(),
-    ...getDynamicPlugins(),
-  ])
+  > = filterNewestVersionOfEachPlugin(getBundledPlugins(), getDynamicPlugins())
     .filter(checkDisabled(disabledPlugins))
     .filter(checkGK(gatekeepedPlugins))
     .map(requirePlugin(failedPlugins, defaultPluginsIndex))
@@ -80,13 +77,18 @@ export default (store: Store, logger: Logger) => {
 };
 
 export function filterNewestVersionOfEachPlugin(
-  plugins: PluginDetails[],
+  bundledPlugins: PluginDetails[],
+  dynamicPlugins: PluginDetails[],
 ): PluginDetails[] {
   const pluginByName: {[key: string]: PluginDetails} = {};
-  for (const plugin of plugins) {
+  for (const plugin of bundledPlugins) {
+    pluginByName[plugin.name] = plugin;
+  }
+  for (const plugin of dynamicPlugins) {
     if (
       !pluginByName[plugin.name] ||
-      semver.gt(plugin.version, pluginByName[plugin.name].version, true)
+      (!process.env.FLIPPER_DISABLE_PLUGIN_AUTO_UPDATE &&
+        semver.gt(plugin.version, pluginByName[plugin.name].version, true))
     ) {
       pluginByName[plugin.name] = plugin;
     }

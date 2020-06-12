@@ -162,14 +162,16 @@ test('requirePlugin loads plugin', () => {
   expect(plugin!.id).toBe(TestPlugin.id);
 });
 
-test('newest version of each plugin is taken', () => {
-  const plugins: PluginDetails[] = [
+test('newest version of each plugin is used', () => {
+  const bundledPlugins: PluginDetails[] = [
     {...samplePluginDetails, name: 'flipper-plugin-test1', version: '0.1.0'},
     {
       ...samplePluginDetails,
       name: 'flipper-plugin-test2',
       version: '0.1.0-alpha.201',
     },
+  ];
+  const installedPlugins: PluginDetails[] = [
     {
       ...samplePluginDetails,
       name: 'flipper-plugin-test2',
@@ -177,7 +179,10 @@ test('newest version of each plugin is taken', () => {
     },
     {...samplePluginDetails, name: 'flipper-plugin-test1', version: '0.10.0'},
   ];
-  const filteredPlugins = filterNewestVersionOfEachPlugin(plugins);
+  const filteredPlugins = filterNewestVersionOfEachPlugin(
+    bundledPlugins,
+    installedPlugins,
+  );
   expect(filteredPlugins).toHaveLength(2);
   expect(filteredPlugins).toContainEqual({
     ...samplePluginDetails,
@@ -189,4 +194,43 @@ test('newest version of each plugin is taken', () => {
     name: 'flipper-plugin-test2',
     version: '0.1.0-alpha.201',
   });
+});
+
+test('bundled versions are used when env var FLIPPER_DISABLE_PLUGIN_AUTO_UPDATE is set even if newer versions are installed', () => {
+  process.env.FLIPPER_DISABLE_PLUGIN_AUTO_UPDATE = 'true';
+  try {
+    const bundledPlugins: PluginDetails[] = [
+      {...samplePluginDetails, name: 'flipper-plugin-test1', version: '0.1.0'},
+      {
+        ...samplePluginDetails,
+        name: 'flipper-plugin-test2',
+        version: '0.1.0-alpha.21',
+      },
+    ];
+    const installedPlugins: PluginDetails[] = [
+      {
+        ...samplePluginDetails,
+        name: 'flipper-plugin-test2',
+        version: '0.1.0-alpha.201',
+      },
+      {...samplePluginDetails, name: 'flipper-plugin-test1', version: '0.10.0'},
+    ];
+    const filteredPlugins = filterNewestVersionOfEachPlugin(
+      bundledPlugins,
+      installedPlugins,
+    );
+    expect(filteredPlugins).toHaveLength(2);
+    expect(filteredPlugins).toContainEqual({
+      ...samplePluginDetails,
+      name: 'flipper-plugin-test1',
+      version: '0.1.0',
+    });
+    expect(filteredPlugins).toContainEqual({
+      ...samplePluginDetails,
+      name: 'flipper-plugin-test2',
+      version: '0.1.0-alpha.21',
+    });
+  } finally {
+    delete process.env.FLIPPER_DISABLE_PLUGIN_AUTO_UPDATE;
+  }
 });
