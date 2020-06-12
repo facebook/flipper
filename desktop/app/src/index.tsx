@@ -44,7 +44,6 @@ export {getPluginKey, getPersistedState} from './utils/pluginUtils';
 export {Idler} from './utils/Idler';
 export {Store, MiddlewareAPI, State as ReduxState} from './reducers/index';
 export {default as BaseDevice} from './devices/BaseDevice';
-export {default as SidebarExtensions} from './fb-stubs/LayoutInspectorSidebarExtensions';
 export {
   DeviceLogListener,
   DeviceLogEntry,
@@ -190,3 +189,6 @@ export {Logger} from './fb-interfaces/Logger';
 export {getInstance as getLogger} from './fb-stubs/Logger';
 export {callVSCode, getVSCodeUrl} from './utils/vscodeUtils';
 export {useLocalStorage} from './utils/useLocalStorage';
+
+// Sidebar extensions should be last so they can import anything from here.
+export {default as SidebarExtensions} from './fb-stubs/LayoutInspectorSidebarExtensions';
