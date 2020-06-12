@@ -51,6 +51,10 @@ export type Action =
   | {
       type: 'UPDATE_CATEGORY_BLACKLIST';
       payload: Array<string>;
+    }
+  | {
+      type: 'ADD_NOTIFICATION';
+      payload: PluginNotification;
     };
 
 const INITIAL_STATE: State = {
@@ -93,6 +97,11 @@ export default function reducer(
       return {
         ...state,
         blacklistedCategories: action.payload,
+      };
+    case 'ADD_NOTIFICATION':
+      return {
+        ...state,
+        activeNotifications: [...state.activeNotifications, action.payload],
       };
     default:
       return state;
@@ -137,6 +146,13 @@ function activeNotificationsReducer(
     ...state,
     activeNotifications: newActiveNotifications,
     invalidatedNotifications: newInactivatedNotifications,
+  };
+}
+
+export function addNotification(payload: PluginNotification): Action {
+  return {
+    type: 'ADD_NOTIFICATION',
+    payload,
   };
 }
 
