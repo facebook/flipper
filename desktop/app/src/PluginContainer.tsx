@@ -44,6 +44,7 @@ import {Message} from './reducers/pluginMessageQueue';
 import {Idler} from './utils/Idler';
 import {processMessageQueue} from './utils/messageQueue';
 import {ToggleButton, SmallText} from './ui';
+import debounceRender from 'react-debounce-render';
 
 const Container = styled(FlexColumn)({
   width: 0,

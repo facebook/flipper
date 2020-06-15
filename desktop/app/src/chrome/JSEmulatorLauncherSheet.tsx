@@ -20,7 +20,7 @@ import {
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {State as Store} from '../reducers';
-import {launchJsEmulator} from '../utils/js-client/serverUtils';
+import {launchJsEmulator} from '../utils/js-client-server-utils/serverUtils';
 import {updateSettings, Action} from '../reducers/settings';
 import {Settings} from '../reducers/settings';
 

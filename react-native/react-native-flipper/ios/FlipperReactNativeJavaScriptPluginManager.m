@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#ifdef DEBUG
+
 #import "FlipperReactNativeJavaScriptPluginManager.h"
 #import <FlipperKit/FlipperClient.h>
 #import <FlipperKit/FlipperPlugin.h>
@@ -147,3 +149,5 @@ static uint32_t FlipperResponderKeyGenerator = 0;
 }
 
 @end
+
+#endif

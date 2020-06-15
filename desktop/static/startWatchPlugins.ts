@@ -9,7 +9,7 @@
 
 import path from 'path';
 import Watchman from './watchman';
-import {PluginDetails} from 'flipper-pkg-lib';
+import {PluginDetails} from 'flipper-plugin-lib';
 
 export default async function startWatchPlugins(
   plugins: PluginDetails[],

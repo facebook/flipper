@@ -41,12 +41,17 @@ const objectRestSpreadPlugin = require('@babel/plugin-proposal-object-rest-sprea
 const flowStripTypesPlugin = require('@babel/plugin-transform-flow-strip-types');
 const dynamicRequiresPlugin = require('./dynamic-requires');
 const typeScriptPlugin = require('@babel/plugin-transform-typescript');
+const emotionPlugin = require('babel-plugin-emotion');
 const tsTransformPlugins = [
   typeScriptPlugin,
   classPropertiesPlugin,
   commonJsPlugin,
   optionalChainingPlugin,
   coalescingOperatorPlugin,
+  // Sourcemap disabled because
+  // https://github.com/electron/electron/issues/17772#issuecomment-570795784
+  // https://github.com/emotion-js/emotion/issues/1838
+  [emotionPlugin, {autoLabel: true, sourceMap: false}],
 ];
 const jsTransformPlugins = [
   commonJsPlugin,
@@ -56,6 +61,7 @@ const jsTransformPlugins = [
   optionalChainingPlugin,
   coalescingOperatorPlugin,
   dynamicRequiresPlugin,
+  [emotionPlugin, {autoLabel: true, sourceMap: false}],
 ];
 
 export default function transform({

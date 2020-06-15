@@ -173,21 +173,24 @@ export default class LogWatcher extends PureComponent<Props, State> {
   };
 
   onKeyDown = (e: React.KeyboardEvent) => {
-    if (
-      (e.key === 'Delete' || e.key === 'Backspace') &&
-      this.state.highlightedRow != null
-    ) {
-      this.props.onChange(
-        this.props.counters.filter(
-          ({label}) => label !== this.state.highlightedRow,
-        ),
-      );
+    if (e.key === 'Delete' || e.key === 'Backspace') {
+      this.handleDelete();
     }
   };
 
   onSubmit = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       this.onAdd();
+    }
+  };
+
+  handleDelete = () => {
+    if (this.state.highlightedRow != null) {
+      this.props.onChange(
+        this.props.counters.filter(
+          ({label}) => label !== this.state.highlightedRow,
+        ),
+      );
     }
   };
 
@@ -220,6 +223,9 @@ export default class LogWatcher extends PureComponent<Props, State> {
             autoHeight={true}
             floating={false}
             zebra={false}
+            buildContextMenuItems={() => {
+              return [{label: 'Delete', click: this.handleDelete}];
+            }}
           />
         </WatcherPanel>
       </FlexColumn>

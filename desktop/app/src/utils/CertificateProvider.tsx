@@ -17,7 +17,7 @@ import {
 } from './openssl-wrapper-with-promises';
 import path from 'path';
 import tmp, {DirOptions, FileOptions} from 'tmp';
-import iosUtil from '../fb-stubs/iOSContainerUtility';
+import iosUtil from './iOSContainerUtility';
 import {reportPlatformFailures} from './metrics';
 import {getAdbClient} from './adbClient';
 import * as androidUtil from './androidContainerUtility';
@@ -78,6 +78,7 @@ export default class CertificateProvider {
   logger: Logger;
   adb: Promise<ADBClient>;
   certificateSetup: Promise<void>;
+  store: Store;
   server: Server;
 
   constructor(server: Server, logger: Logger, store: Store) {
@@ -87,6 +88,7 @@ export default class CertificateProvider {
       this.ensureServerCertExists(),
       'ensureServerCertExists',
     );
+    this.store = store;
     this.server = server;
   }
 
@@ -261,7 +263,13 @@ export default class CertificateProvider {
     return tmpDir({unsafeCleanup: true}).then((dir) => {
       const filePath = path.resolve(dir, filename);
       promisify(fs.writeFile)(filePath, contents).then(() =>
-        iosUtil.push(udid, filePath, bundleId, destination),
+        iosUtil.push(
+          udid,
+          filePath,
+          bundleId,
+          destination,
+          this.store.getState().settingsState.idbPath,
+        ),
       );
     });
   }
@@ -386,7 +394,13 @@ export default class CertificateProvider {
     return tmpDir({unsafeCleanup: true})
       .then((dir) => {
         return iosUtil
-          .pull(deviceId, originalFile, bundleId, path.join(dir, csrFileName))
+          .pull(
+            deviceId,
+            originalFile,
+            bundleId,
+            path.join(dir, csrFileName),
+            this.store.getState().settingsState.idbPath,
+          )
           .then(() => dir);
       })
       .then((dir) => {

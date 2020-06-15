@@ -130,7 +130,7 @@ test('can filter for data', async () => {
     <span>
       "j
       <span
-        class="css-1tdfls1"
+        class="css-i709sw-Highlighted ep1h60f0"
       >
         son
       </span>

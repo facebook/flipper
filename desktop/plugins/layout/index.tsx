@@ -12,24 +12,17 @@ import {
   Element,
   ElementSearchResultSet,
   PluginClient,
-  FlexRow,
   FlipperPlugin,
   Toolbar,
   DetailSidebar,
-  VerticalRule,
   Button,
   GK,
   Idler,
-  Text,
-  styled,
-  colors,
-  SupportRequestFormV2,
-  constants,
   ReduxState,
   ArchivedDevice,
   ToolbarIcon,
   Layout,
-  Scrollable,
+  Sidebar,
 } from 'flipper';
 import Inspector from './Inspector';
 import InspectorSidebar from './InspectorSidebar';
@@ -61,23 +54,6 @@ export type PersistedState = {
   elements: ElementMap;
   AXelements: ElementMap;
 };
-
-const FlipperADBarContainer = styled(FlexRow)({
-  backgroundColor: colors.warningTint,
-  flexGrow: 1,
-  justifyContent: 'center',
-  alignItems: 'center',
-  borderWidth: 2,
-});
-
-const FlipperADText = styled(Text)({
-  padding: 10,
-});
-
-const FlipperADButton = styled(Button)({
-  margin: 10,
-});
-
 type ClientGetNodesCalls = 'getNodes' | 'getAXNodes';
 type ClientMethodCalls = 'getRoot' | 'getAXRoot' | ClientGetNodesCalls;
 
@@ -86,25 +62,6 @@ export default class LayoutPlugin extends FlipperPlugin<
   any,
   PersistedState
 > {
-  FlipperADBar() {
-    return (
-      <FlipperADBarContainer>
-        <FlipperADText>
-          You can now submit support requests to Litho Group from Flipper. This
-          automatically attaches critical information for reproducing your issue
-          with just a single click.
-        </FlipperADText>
-        <FlipperADButton
-          type="primary"
-          onClick={() => {
-            this.props.setStaticView(SupportRequestFormV2);
-          }}>
-          Try it out
-        </FlipperADButton>
-      </FlipperADBarContainer>
-    );
-  }
-
   static exportPersistedState = async (
     callClient: (method: ClientMethodCalls, params?: any) => Promise<any>,
     persistedState: PersistedState | undefined,
@@ -338,7 +295,6 @@ export default class LayoutPlugin extends FlipperPlugin<
       ax: this.state.inAXMode,
     });
   };
-  showFlipperADBar: boolean = true;
 
   getScreenDimensions(): {width: number; height: number} | null {
     if (this.state.screenDimensions) {
@@ -399,9 +355,7 @@ export default class LayoutPlugin extends FlipperPlugin<
     } else if (selectedElement) {
       element = this.props.persistedState.elements[selectedElement];
     }
-    if (!constants.IS_PUBLIC_BUILD && !this.showFlipperADBar) {
-      this.showFlipperADBar = element != null && element.decoration === 'litho';
-    }
+
     const inspector = (
       <Inspector
         {...inspectorProps}
@@ -411,17 +365,14 @@ export default class LayoutPlugin extends FlipperPlugin<
     );
 
     const axInspector = this.state.inAXMode ? (
-      <FlexRow style={{height: '100%'}}>
-        <VerticalRule />
-        <Scrollable>
-          <Inspector
-            {...inspectorProps}
-            onSelect={(selectedAXElement) => this.setState({selectedAXElement})}
-            showsSidebar={true}
-            ax
-          />
-        </Scrollable>
-      </FlexRow>
+      <Sidebar width={400} backgroundColor="white" position="right">
+        <Inspector
+          {...inspectorProps}
+          onSelect={(selectedAXElement) => this.setState({selectedAXElement})}
+          showsSidebar={true}
+          ax
+        />
+      </Sidebar>
     ) : null;
 
     const showAnalyzeYogaPerformanceButton = GK.get('flipper_yogaperformance');
@@ -479,13 +430,10 @@ export default class LayoutPlugin extends FlipperPlugin<
               initialQuery={this.props.deepLinkPayload}
             />
           </Toolbar>
-          <Layout.Bottom>
-            <Layout.Right>
-              {inspector}
-              {axInspector}
-            </Layout.Right>
-            {this.showFlipperADBar ? this.FlipperADBar() : null}
-          </Layout.Bottom>
+          <Layout.Right>
+            {inspector}
+            {axInspector}
+          </Layout.Right>
         </Layout.Top>
 
         <DetailSidebar>

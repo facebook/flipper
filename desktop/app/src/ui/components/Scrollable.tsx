@@ -13,7 +13,7 @@ import {BackgroundProperty} from 'csstype';
 
 type Props = {children: React.ReactNode; background?: BackgroundProperty<any>};
 
-const Scrollable: React.FC<Props> = styled('div')<Props>(({background}) => ({
+const Scrollable = styled.div<Props>(({background}) => ({
   width: '100%',
   height: '100%',
   overflow: 'auto',

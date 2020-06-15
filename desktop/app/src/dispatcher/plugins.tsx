@@ -29,17 +29,11 @@ import {default as config} from '../utils/processConfig';
 import isProduction from '../utils/isProduction';
 import {notNull} from '../utils/typeUtils';
 import {sideEffect} from '../utils/sideEffect';
+import semver from 'semver';
+import {PluginDetails} from 'flipper-plugin-lib';
 
 // eslint-disable-next-line import/no-unresolved
 import getPluginIndex from '../utils/getDefaultPluginsIndex';
-
-export type PluginDefinition = {
-  id?: string;
-  name: string;
-  out?: string;
-  gatekeeper?: string;
-  entry?: string;
-};
 
 export default (store: Store, logger: Logger) => {
   // expose Flipper and exact globally for dynamically loaded plugins
@@ -49,15 +43,15 @@ export default (store: Store, logger: Logger) => {
   globalObject.Flipper = Flipper;
   globalObject.adbkit = adbkit;
 
-  const gatekeepedPlugins: Array<PluginDefinition> = [];
-  const disabledPlugins: Array<PluginDefinition> = [];
-  const failedPlugins: Array<[PluginDefinition, string]> = [];
+  const gatekeepedPlugins: Array<PluginDetails> = [];
+  const disabledPlugins: Array<PluginDetails> = [];
+  const failedPlugins: Array<[PluginDetails, string]> = [];
 
   const defaultPluginsIndex = getPluginIndex();
 
   const initialPlugins: Array<
     typeof FlipperPlugin | typeof FlipperDevicePlugin
-  > = [...getBundledPlugins(), ...getDynamicPlugins()]
+  > = filterNewestVersionOfEachPlugin(getBundledPlugins(), getDynamicPlugins())
     .filter(checkDisabled(disabledPlugins))
     .filter(checkGK(gatekeepedPlugins))
     .map(requirePlugin(failedPlugins, defaultPluginsIndex))
@@ -82,7 +76,27 @@ export default (store: Store, logger: Logger) => {
   );
 };
 
-function getBundledPlugins(): Array<PluginDefinition> {
+export function filterNewestVersionOfEachPlugin(
+  bundledPlugins: PluginDetails[],
+  dynamicPlugins: PluginDetails[],
+): PluginDetails[] {
+  const pluginByName: {[key: string]: PluginDetails} = {};
+  for (const plugin of bundledPlugins) {
+    pluginByName[plugin.name] = plugin;
+  }
+  for (const plugin of dynamicPlugins) {
+    if (
+      !pluginByName[plugin.name] ||
+      (!process.env.FLIPPER_DISABLE_PLUGIN_AUTO_UPDATE &&
+        semver.gt(plugin.version, pluginByName[plugin.name].version, true))
+    ) {
+      pluginByName[plugin.name] = plugin;
+    }
+  }
+  return Object.values(pluginByName);
+}
+
+function getBundledPlugins(): Array<PluginDetails> {
   // DefaultPlugins that are included in the bundle.
   // List of defaultPlugins is written at build time
   const pluginPath =
@@ -91,27 +105,18 @@ function getBundledPlugins(): Array<PluginDefinition> {
       ? path.join(__dirname, 'defaultPlugins')
       : './defaultPlugins/index.json');
 
-  let bundledPlugins: Array<PluginDefinition> = [];
+  let bundledPlugins: Array<PluginDetails> = [];
   try {
     bundledPlugins = global.electronRequire(pluginPath);
   } catch (e) {
     console.error(e);
   }
 
-  return bundledPlugins
-    .filter((plugin) => notNull(plugin.entry))
-    .map(
-      (plugin) =>
-        ({
-          ...plugin,
-          entry: path.resolve(pluginPath, plugin.entry!),
-        } as PluginDefinition),
-    )
-    .concat(bundledPlugins.filter((plugin) => !plugin.entry));
+  return bundledPlugins;
 }
 
 export function getDynamicPlugins() {
-  let dynamicPlugins: Array<PluginDefinition> = [];
+  let dynamicPlugins: Array<PluginDetails> = [];
   try {
     dynamicPlugins = ipcRenderer.sendSync('get-dynamic-plugins');
   } catch (e) {
@@ -120,8 +125,8 @@ export function getDynamicPlugins() {
   return dynamicPlugins;
 }
 
-export const checkGK = (gatekeepedPlugins: Array<PluginDefinition>) => (
-  plugin: PluginDefinition,
+export const checkGK = (gatekeepedPlugins: Array<PluginDetails>) => (
+  plugin: PluginDetails,
 ): boolean => {
   if (!plugin.gatekeeper) {
     return true;
@@ -133,8 +138,8 @@ export const checkGK = (gatekeepedPlugins: Array<PluginDefinition>) => (
   return result;
 };
 
-export const checkDisabled = (disabledPlugins: Array<PluginDefinition>) => (
-  plugin: PluginDefinition,
+export const checkDisabled = (disabledPlugins: Array<PluginDetails>) => (
+  plugin: PluginDetails,
 ): boolean => {
   let disabledList: Set<string> = new Set();
   try {
@@ -151,17 +156,17 @@ export const checkDisabled = (disabledPlugins: Array<PluginDefinition>) => (
 };
 
 export const requirePlugin = (
-  failedPlugins: Array<[PluginDefinition, string]>,
+  failedPlugins: Array<[PluginDetails, string]>,
   defaultPluginsIndex: any,
   reqFn: Function = global.electronRequire,
 ) => {
   return (
-    pluginDefinition: PluginDefinition,
+    pluginDetails: PluginDetails,
   ): typeof FlipperPlugin | typeof FlipperDevicePlugin | null => {
     try {
-      let plugin = pluginDefinition.entry
-        ? reqFn(pluginDefinition.entry)
-        : defaultPluginsIndex[pluginDefinition.name];
+      let plugin = pluginDetails.isDefault
+        ? defaultPluginsIndex[pluginDetails.name]
+        : reqFn(pluginDetails.entry);
       if (plugin.default) {
         plugin = plugin.default;
       }
@@ -169,20 +174,21 @@ export const requirePlugin = (
         throw new Error(`Plugin ${plugin.name} is not a FlipperBasePlugin`);
       }
 
-      plugin.id = plugin.id || pluginDefinition.id;
+      plugin.id = plugin.id || pluginDetails.id;
+      plugin.packageName = pluginDetails.name;
 
       // set values from package.json as static variables on class
-      Object.keys(pluginDefinition).forEach((key) => {
+      Object.keys(pluginDetails).forEach((key) => {
         if (key !== 'name' && key !== 'id') {
           plugin[key] =
-            plugin[key] || pluginDefinition[key as keyof PluginDefinition];
+            plugin[key] || pluginDetails[key as keyof PluginDetails];
         }
       });
 
       return plugin;
     } catch (e) {
-      failedPlugins.push([pluginDefinition, e.message]);
-      console.error(pluginDefinition, e);
+      failedPlugins.push([pluginDetails, e.message]);
+      console.error(pluginDetails, e);
       return null;
     }
   };

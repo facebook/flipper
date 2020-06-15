@@ -25,15 +25,19 @@ export type HealthcheckEventsHandler = {
 };
 
 export type HealthcheckSettings = {
-  enableAndroid: boolean;
-  enableIOS: boolean;
+  settings: {
+    enableAndroid: boolean;
+    enableIOS: boolean;
+    enablePhysicalIOS: boolean;
+    idbPath: string;
+  };
 };
 
 export type HealthcheckOptions = HealthcheckEventsHandler & HealthcheckSettings;
 
 async function launchHealthchecks(options: HealthcheckOptions): Promise<void> {
   const healthchecks = getHealthchecks();
-  if (!options.enableAndroid) {
+  if (!options.settings.enableAndroid) {
     healthchecks.android = {
       label: healthchecks.android.label,
       isSkipped: true,
@@ -41,7 +45,7 @@ async function launchHealthchecks(options: HealthcheckOptions): Promise<void> {
         'Healthcheck is skipped, because "Android Development" option is disabled in the Flipper settings',
     };
   }
-  if (!options.enableIOS) {
+  if (!options.settings.enableIOS) {
     healthchecks.ios = {
       label: healthchecks.ios.label,
       isSkipped: true,
@@ -57,7 +61,7 @@ async function launchHealthchecks(options: HealthcheckOptions): Promise<void> {
       continue;
     }
     for (const h of category.healthchecks) {
-      const checkResult = await h.run(environmentInfo);
+      const checkResult = await h.run(environmentInfo, options.settings);
       const metricName = `doctor:${h.key.replace('.', ':')}.healthcheck`; // e.g. "doctor:ios:xcode-select.healthcheck"
       if (checkResult.hasProblem) {
         hasProblems = true;

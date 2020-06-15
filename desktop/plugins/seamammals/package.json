@@ -21,10 +21,10 @@
     "prepack": "flipper-pkg lint && flipper-pkg bundle"
   },
   "peerDependencies": {
-    "flipper": "0.44.0"
+    "flipper": "0.46.0"
   },
   "devDependencies": {
-    "flipper": "0.44.0",
-    "flipper-pkg": "0.44.0"
+    "flipper": "0.46.0",
+    "flipper-pkg": "0.46.0"
   }
 }

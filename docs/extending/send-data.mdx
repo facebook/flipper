@@ -26,7 +26,7 @@ MyFlipperPlugin *myPlugin = [client pluginWithIdentifier:@"MyFlipperPlugin"];
 [myPlugin sendData:myData];
 ```
 <!--C++-->
-```c++
+```cpp
 auto& client = FlipperClient::instance();
 auto myPlugin = client.getPlugin<MyFlipperPlugin>("MyFlipperPlugin");
 if (myPlugin) {

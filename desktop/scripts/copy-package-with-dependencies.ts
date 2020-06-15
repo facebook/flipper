@@ -17,6 +17,9 @@ const DEFAULT_BUILD_IGNORES = [
   'LICENSE*',
   '*.ts',
   '*.ls',
+  '*.flow',
+  '*.tsbuildinfo',
+  '*.map',
   'Gruntfile*',
 ];
 

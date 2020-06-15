@@ -98,56 +98,55 @@ type Props = {
 
 const Sidebar: React.FC<Props> = (props: Props) => {
   const {element} = props;
-  if (!element || !element.data) {
-    return <NoData grow>No data</NoData>;
-  }
 
   const [sectionDefs, sectionKeys] = useMemo(() => {
     const sectionKeys = [];
     const sectionDefs = [];
 
-    for (const key in element.data) {
-      if (key === 'Extra Sections') {
-        for (const extraSection in element.data[key]) {
-          const section = element.data[key][extraSection];
-          let data = {};
+    if (element && element.data)
+      for (const key in element.data) {
+        if (key === 'Extra Sections') {
+          for (const extraSection in element.data[key]) {
+            const section = element.data[key][extraSection];
+            let data = {};
 
-          // data might be sent as stringified JSON, we want to parse it for a nicer persentation.
-          if (typeof section === 'string') {
-            try {
-              data = JSON.parse(section);
-            } catch (e) {
-              // data was not a valid JSON, type is required to be an object
-              console.error(
-                `ElementsInspector unable to parse extra section: ${extraSection}`,
-              );
-              data = {};
+            // data might be sent as stringified JSON, we want to parse it for a nicer persentation.
+            if (typeof section === 'string') {
+              try {
+                data = JSON.parse(section);
+              } catch (e) {
+                // data was not a valid JSON, type is required to be an object
+                console.error(
+                  `ElementsInspector unable to parse extra section: ${extraSection}`,
+                );
+                data = {};
+              }
+            } else {
+              data = section;
             }
-          } else {
-            data = section;
+            sectionKeys.push(kebabCase(extraSection));
+            sectionDefs.push({
+              key: extraSection,
+              id: extraSection,
+              data: data,
+            });
           }
-          sectionKeys.push(kebabCase(extraSection));
+        } else {
+          sectionKeys.push(kebabCase(key));
           sectionDefs.push({
-            key: extraSection,
-            id: extraSection,
-            data: data,
+            key,
+            id: key,
+            data: element.data[key],
           });
         }
-      } else {
-        sectionKeys.push(kebabCase(key));
-        sectionDefs.push({
-          key,
-          id: key,
-          data: element.data[key],
-        });
       }
-    }
 
     return [sectionDefs, sectionKeys];
   }, [props.element]);
 
   const sections: Array<React.ReactNode> = (
     (SidebarExtensions &&
+      element?.data &&
       SidebarExtensions.map((ext) =>
         ext(props.client, props.realClient, element, props.logger),
       )) ||
@@ -169,6 +168,10 @@ const Sidebar: React.FC<Props> = (props: Props) => {
       props.logger.track('usage', `layout-sidebar-extension:${key}:loaded`),
     );
   }, [props.element?.data]);
+
+  if (!element || !element.data) {
+    return <NoData grow>No data</NoData>;
+  }
   return <>{sections}</>;
 };
 

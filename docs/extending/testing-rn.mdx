@@ -1,0 +1,79 @@
+---
+id: testing-rn
+title: Testing React Native Changes in the Sample App
+sidebar_label: Testing RN Changes
+---
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+When making changes to the React Native integration, it can be helpful to
+test them directly in the [sample
+app](https://github.com/facebook/flipper/tree/master/react-native/ReactNativeFlipperExample)
+we provide in the repository. However, the app is building against a production release
+of Flipper and not the version checked in in the repository.
+
+In order to test against the changes you have made, you need to publish a Flipper
+release locally.
+
+## Publishing a Local Release
+
+First, create a unique version number. This step is optional but is helpful
+to prevent accidentally testing against the wrong version.
+
+In the top-level `gradle.properties`, change the version:
+```
+...
+# POM publishing constants
+VERSION_NAME=0.44.99-SNAPSHOT # Change this one.
+GROUP=com.facebook.flipper
+...
+```
+
+Now, run `./gradlew install` in the root of the repository. This will
+place the artifact files in your local `~/.m2/repository` folder.
+
+## Using the new Release
+
+Usually, you need to change your project to also pick up files in `mavenLocal()`.
+As this is already done, you can directly change the `FLIPPER_VERSION` to the previously used identifier
+in `react-native/ReactNativeFlipperExample/android/gradle.properties`:
+
+```
+# Version of flipper SDK to use with React Native
+FLIPPER_VERSION=0.30.2
+FLIPPER_VERSION=0.44.99-SNAPSHOT
+```
+
+Now run `yarn android` to rebuild, install and launch the RN sample app.
+
+To test further changes, rerun the `./gradlew install` and `yarn android` steps.
+
+## Full Diff
+
+For a quick overview, here are the two changes you need to make:
+
+```diff
+diff --git a/gradle.properties b/gradle.properties
+index 1ccd002a..100a7169 100644
+--- a/gradle.properties
++++ b/gradle.properties
+@@ -4,7 +4,7 @@
+ # LICENSE file in the root directory of this source tree.
+ 
+ # POM publishing constants
+-VERSION_NAME=0.44.1-SNAPSHOT
++VERSION_NAME=0.44.99-SNAPSHOT
+ GROUP=com.facebook.flipper
+ POM_URL=https://github.com/facebook/flipper
+ POM_SCM_URL=https://github.com/facebook/flipper.git
+diff --git a/react-native/ReactNativeFlipperExample/android/gradle.properties b/react-native/ReactNativeFlipperExample/android/gradle.properties
+index 495c12e8..bc815d0e 100644
+--- a/react-native/ReactNativeFlipperExample/android/gradle.properties
++++ b/react-native/ReactNativeFlipperExample/android/gradle.properties
+@@ -30,4 +30,4 @@ android.useAndroidX=true
+ android.enableJetifier=true
+ 
+ # Version of flipper SDK to use with React Native
+-FLIPPER_VERSION=0.30.2
++FLIPPER_VERSION=0.44.99-SNAPSHOT
+
+```

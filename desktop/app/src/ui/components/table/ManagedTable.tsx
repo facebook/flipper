@@ -402,6 +402,10 @@ export class ManagedTable extends React.Component<
   }
 
   onHighlight = (e: React.MouseEvent, row: TableBodyRow, index: number) => {
+    if (!this.props.highlightableRows) {
+      return;
+    }
+
     if (e.shiftKey) {
       // prevents text selection
       e.preventDefault();
@@ -571,9 +575,10 @@ export class ManagedTable extends React.Component<
     }
     return this.props.rows
       .filter((row) => highlightedRows.has(row.key))
-      .map(
-        (row: TableBodyRow) =>
-          row.copyText || this.getTextContentOfRow(row.key).join('\t'),
+      .map((row: TableBodyRow) =>
+        typeof row.copyText === 'function'
+          ? row.copyText()
+          : row.copyText || this.getTextContentOfRow(row.key).join('\t'),
       )
       .join('\n');
   };

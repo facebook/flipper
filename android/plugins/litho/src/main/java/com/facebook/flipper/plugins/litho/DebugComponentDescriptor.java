@@ -7,6 +7,7 @@
 
 package com.facebook.flipper.plugins.litho;
 
+import static com.facebook.flipper.plugins.inspector.InspectorValue.Type.Boolean;
 import static com.facebook.flipper.plugins.inspector.InspectorValue.Type.Enum;
 import static com.facebook.flipper.plugins.inspector.InspectorValue.Type.Number;
 
@@ -256,6 +257,13 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
             .put("vertical", fromYogaValue(layout.getPosition(YogaEdge.VERTICAL)))
             .put("all", fromYogaValue(layout.getPosition(YogaEdge.ALL))));
 
+    data.put("hasViewOutput", InspectorValue.immutable(Boolean, layout.hasViewOutput()));
+    if (layout.hasViewOutput()) {
+      data.put("alpha", fromFloat(layout.getAlpha()));
+      data.put("scale", fromFloat(layout.getScale()));
+      data.put("rotation", fromFloat(layout.getRotation()));
+    }
+
     return data.build();
   }
 
@@ -477,6 +485,15 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
         break;
       case "position":
         node.setPosition(edgeFromString(path[1]), YogaValue.parse(value.asString()));
+        break;
+      case "alpha":
+        node.setAlpha(value.asFloat());
+        break;
+      case "scale":
+        node.setScale(value.asFloat());
+        break;
+      case "rotation":
+        node.setRotation(value.asFloat());
         break;
     }
   }

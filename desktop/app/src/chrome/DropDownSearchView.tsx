@@ -71,6 +71,7 @@ function RowComponent(props: {
 }) {
   return (
     <RowComponentContainer
+      data-testid={'row-component'}
       onClick={() => {
         props.onClick(props.elem.id);
       }}>
@@ -85,15 +86,11 @@ function RowComponent(props: {
 
 export default function (props: Props) {
   const {list, handleNoResults, onSelect, selectedElementID} = props;
-  const initialElement = list.find((e) => {
-    return e.id === selectedElementID;
-  });
+
   const [filteredElements, setFilteredElements] = useState<Array<Element>>([]);
-  const [searchedValue, setSearchedValue] = useState<string>(
-    initialElement ? initialElement.label : '',
-  );
+  const [searchedValue, setSearchedValue] = useState<string>('');
   const [selectedElement, setSelectedElement] = useState<Element | undefined>(
-    initialElement,
+    undefined,
   );
   const [focussed, setFocus] = useState<boolean>(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -128,6 +125,16 @@ export default function (props: Props) {
     },
     [setFocus],
   );
+
+  // Set the searched value and selectedElement when the selectedElementID changes.
+  useEffect(() => {
+    const initialElement = list.find((e) => e.id === selectedElementID);
+    if (initialElement) {
+      setSearchedValue(initialElement.label);
+    }
+    setSelectedElement(initialElement);
+    setFocus(false);
+  }, [selectedElementID, list]);
 
   // Effect to filter items
   useEffect(() => {
@@ -195,6 +202,7 @@ export default function (props: Props) {
             onFocus={onFocusCallBack}
             value={searchedValue}
             isValidInput={false}
+            data-testid={'search-input'}
           />
         </SearchBox>
       </Tooltip>
@@ -203,14 +211,14 @@ export default function (props: Props) {
           <ListViewContainer scrollable={true}>
             {filteredElements.map((e, idx) => {
               return (
-                <>
+                <FlexColumn key={idx}>
                   <RowComponent
                     elem={e}
                     onClick={onSelectCallBack}
                     selected={selectedElement && e.id == selectedElement.id}
                   />
                   {idx < filteredElements.length - 1 && <Separator />}
-                </>
+                </FlexColumn>
               );
             })}
           </ListViewContainer>

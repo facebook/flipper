@@ -1,6 +1,6 @@
 {
   "name": "flipper-project",
-  "version": "0.44.0",
+  "version": "0.46.0",
   "description": "Mobile development tool",
   "productName": "Flipper",
   "author": {
@@ -16,7 +16,6 @@
   "workspaces": {
     "packages": [
       "app",
-      "app/src/utils/js-client",
       "babel-transformer",
       "doctor",
       "headless",
@@ -25,7 +24,9 @@
       "pkg-lib",
       "static",
       "plugins/*",
-      "e2e"
+      "e2e",
+      "plugin-lib",
+      "test-utils"
     ],
     "nohoist": [
       "flipper-plugin-kaios-big-allocations/firefox-client"
@@ -125,6 +126,7 @@
     "@types/jest": "^25.1.0",
     "@types/lodash": "^4.14.150",
     "@types/mkdirp": "^1.0.0",
+    "@types/mock-fs": "^4.10.0",
     "@types/node": "^13.13.0",
     "@types/promise-retry": "^1.1.3",
     "@types/react": "^16.9.17",
@@ -165,17 +167,18 @@
     "eslint-config-prettier": "^6.10.1",
     "eslint-import-resolver-typescript": "^2.0.0",
     "eslint-plugin-babel": "^5.3.0",
-    "eslint-plugin-flowtype": "^4.3.0",
+    "eslint-plugin-flowtype": "^4.7.0",
     "eslint-plugin-header": "^3.0.0",
     "eslint-plugin-import": "^2.19.1",
     "eslint-plugin-jsx-a11y": "^6.0.3",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^3.1.2",
     "eslint-plugin-react": "^7.20.0",
-    "eslint-plugin-relay": "^1.4.1",
+    "eslint-plugin-react-hooks": "^4.0.4",
     "express": "^4.15.2",
-    "flipper-babel-transformer": "0.44.0",
-    "flipper-pkg-lib": "0.44.0",
+    "flipper-babel-transformer": "0.46.0",
+    "flipper-pkg-lib": "0.46.0",
+    "flipper-plugin-lib": "0.46.0",
     "flow-bin": "0.124.0",
     "fs-extra": "^9.0.0",
     "glob": "^7.1.2",
@@ -234,6 +237,7 @@
     "fix": "eslint . --fix --ext .js,.ts,.tsx",
     "pretest": "yarn build:pkg",
     "test": "jest",
+    "watch": "jest --watch",
     "test:debug": "yarn build:pkg && node --inspect node_modules/.bin/jest --runInBand",
     "test-electron": "yarn build:pkg && jest --testMatch=\"**/**.electron\\.(js|jsx|ts|tsx)\" --testEnvironment=@jest-runner/electron/environment --runner=@jest-runner/electron",
     "test-with-device": "yarn build:pkg && USE_ELECTRON_STUBS=1 jest --testMatch=\"**/**.device\\.(js|jsx|ts|tsx)\" --detectOpenHandles",
@@ -248,5 +252,6 @@
   },
   "optionalDependencies": {
     "7zip-bin-mac": "^1.0.1"
-  }
+  },
+  "dependencies": {}
 }

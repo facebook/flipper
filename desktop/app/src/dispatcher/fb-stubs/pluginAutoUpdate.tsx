@@ -7,4 +7,6 @@
  * @format
  */
 
-declare module 'metro';
+export default () => {
+  // Auto-updates of plugins not implemented in public version of Flipper
+};

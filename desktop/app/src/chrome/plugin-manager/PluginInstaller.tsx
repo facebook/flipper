@@ -29,23 +29,21 @@ import React, {useCallback, useState, useMemo, useEffect} from 'react';
 import {List} from 'immutable';
 import {SearchIndex} from 'algoliasearch';
 import {SearchResponse} from '@algolia/client-search';
-import path from 'path';
-import fs from 'fs-extra';
 import {reportPlatformFailures, reportUsage} from '../../utils/metrics';
 import restartFlipper from '../../utils/restartFlipper';
+import {registerInstalledPlugins} from '../../reducers/pluginManager';
 import {
+  getPendingAndInstalledPlugins,
+  removePlugin,
   PluginMap,
-  PluginDefinition,
-  registerInstalledPlugins,
-} from '../../reducers/pluginManager';
+  PluginDetails,
+} from 'flipper-plugin-lib';
 import {
-  PLUGIN_DIR,
-  readInstalledPlugins,
   provideSearchIndex,
   findPluginUpdates as _findPluginUpdates,
   UpdateResult,
-  installPluginFromNpm,
 } from '../../utils/pluginManager';
+import {installPluginFromNpm} from 'flipper-plugin-lib';
 import {State as AppState} from '../../reducers';
 import {connect} from 'react-redux';
 import {Dispatch, Action} from 'redux';
@@ -126,11 +124,11 @@ type UpdatablePlugin = {
   updateStatus: UpdateResult;
 };
 
-type UpdatablePluginDefinition = PluginDefinition & UpdatablePlugin;
+type UpdatablePluginDefinition = PluginDetails & UpdatablePlugin;
 
 // exported for testing
 export function annotatePluginsWithUpdates(
-  installedPlugins: Map<string, PluginDefinition>,
+  installedPlugins: PluginMap,
   updates: Map<string, UpdateResult>,
 ): Map<string, UpdatablePluginDefinition> {
   const annotated: Array<[string, UpdatablePluginDefinition]> = Array.from(
@@ -142,7 +140,7 @@ export function annotatePluginsWithUpdates(
   return new Map(annotated);
 }
 
-const PluginInstaller = function props(props: Props) {
+const PluginInstaller = function (props: Props) {
   const [restartRequired, setRestartRequired] = useState(false);
   const [query, setQuery] = useState('');
 
@@ -211,7 +209,7 @@ const AlignedGlyph = styled(Glyph)({
   marginTop: 6,
 });
 
-function liftUpdatable(val: PluginDefinition): UpdatablePluginDefinition {
+function liftUpdatable(val: PluginDetails): UpdatablePluginDefinition {
   return {
     ...val,
     updateStatus: {kind: 'up-to-date'},
@@ -272,7 +270,7 @@ function InstallButton(props: {
     catchError('Remove', async () => {
       reportUsage(`${TAG}:remove`, undefined, props.name);
       setAction({kind: 'Waiting'});
-      await fs.remove(path.join(PLUGIN_DIR, props.name));
+      await removePlugin(props.name);
       props.onInstall();
       setAction({kind: 'Install'});
     }),
@@ -336,7 +334,7 @@ function useNPMSearch(
   query: string,
   setQuery: (query: string) => void,
   searchClientFactory: () => SearchIndex,
-  installedPlugins: Map<string, PluginDefinition>,
+  installedPlugins: PluginMap,
   onInstall: () => Promise<void>,
   findPluginUpdates: (
     currentPlugins: PluginMap,
@@ -403,11 +401,11 @@ function useNPMSearch(
     (async () => {
       let cancelled = false;
       const {hits} = await reportPlatformFailures(
-        index.search<PluginDefinition>('', {
+        index.search<PluginDetails>('', {
           query,
           filters: 'keywords:flipper-plugin',
           hitsPerPage: 20,
-        }) as Promise<SearchResponse<PluginDefinition>>,
+        }) as Promise<SearchResponse<PluginDetails>>,
         `${TAG}:queryIndex`,
       );
       if (cancelled) {
@@ -447,7 +445,7 @@ export default connect<PropsFromState, DispatchFromProps, OwnProps, AppState>(
   }),
   (dispatch: Dispatch<Action<any>>) => ({
     refreshInstalledPlugins: () => {
-      readInstalledPlugins().then((plugins) =>
+      getPendingAndInstalledPlugins().then((plugins) =>
         dispatch(registerInstalledPlugins(plugins)),
       );
     },

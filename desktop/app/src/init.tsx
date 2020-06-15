@@ -33,6 +33,16 @@ import {registerRecordingHooks} from './utils/pluginStateRecorder';
 import {cache} from 'emotion';
 import {CacheProvider} from '@emotion/core';
 import {enableMapSet} from 'immer';
+import os from 'os';
+
+if (process.env.NODE_ENV === 'development' && os.platform() === 'darwin') {
+  // By default Node.JS has its internal certificate storage and doesn't use
+  // the system store. Because of this, it's impossible to access ondemand / devserver
+  // which are signed using some internal self-issued FB certificates. These certificates
+  // are automatically installed to MacOS system store on FB machines, so here we're using
+  // this "mac-ca" library to load them into Node.JS.
+  global.electronRequire('mac-ca');
+}
 
 const logger = initLogger(store);
 

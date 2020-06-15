@@ -25,8 +25,8 @@ import MetroResolver from 'metro-resolver';
 import {staticDir, appDir, babelTransformationsDir} from './paths';
 import isFB from './isFB';
 import getAppWatchFolders from './get-app-watch-folders';
-import getPlugins from '../static/getPlugins';
-import getPluginFolders from '../static/getPluginFolders';
+import {getSourcePlugins} from '../static/getPlugins';
+import {getPluginSourceFolders} from '../static/getPluginFolders';
 import startWatchPlugins from '../static/startWatchPlugins';
 import ensurePluginFoldersWatchable from '../static/ensurePluginFoldersWatchable';
 
@@ -44,6 +44,11 @@ if (process.argv.includes('--no-embedded-plugins')) {
 }
 if (process.argv.includes('--fast-refresh')) {
   process.env.FLIPPER_FAST_REFRESH = 'true';
+}
+// By default plugin auto-update is disabled in dev mode,
+// but it is possible to enable it using this command line argument.
+if (!process.argv.includes('--plugin-auto-update')) {
+  process.env.FLIPPER_DISABLE_PLUGIN_AUTO_UPDATE = 'true';
 }
 
 function launchElectron(port: number) {
@@ -88,7 +93,7 @@ function launchElectron(port: number) {
 
 async function startMetroServer(app: Express, server: http.Server) {
   const watchFolders = (await getAppWatchFolders()).concat(
-    await getPluginFolders(),
+    await getPluginSourceFolders(),
   );
   const baseConfig = await Metro.loadConfig();
   const config = Object.assign({}, baseConfig, {
@@ -206,7 +211,7 @@ async function startWatchChanges(io: socketIo.Server) {
         ),
       ),
     );
-    const plugins = await getPlugins();
+    const plugins = await getSourcePlugins();
     await startWatchPlugins(plugins, () => {
       io.emit('refresh');
     });

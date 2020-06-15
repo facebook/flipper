@@ -72,6 +72,9 @@ const siteConfig = {
         hitsPerPage: 5,
       },
     },
+    prism: {
+      additionalLanguages: ['groovy', 'java', 'kotlin', 'ruby', 'swift'],
+    },
   },
   favicon: 'img/icon.png',
   scripts: [
@@ -81,7 +84,9 @@ const siteConfig = {
     '/js/google-analytics.js',
   ],
   stylesheets: [],
-  plugins: ['docusaurus-plugin-internaldocs-fb'],
+  // start_config_example
+  plugins: [require.resolve('docusaurus-plugin-internaldocs-fb')],
+  // end_config_example
   presets: [
     [
       '@docusaurus/preset-classic',

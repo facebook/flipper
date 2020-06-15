@@ -46,10 +46,13 @@ module.exports = {
     '@typescript-eslint',
     'import',
     'node',
+    'react-hooks',
   ],
   rules: {
     // disable rules from eslint-config-fbjs
     'react/react-in-jsx-scope': 0, // not needed with our metro implementation
+    'react-hooks/rules-of-hooks': 'error',
+    'react-hooks/exhaustive-deps': 'warn',
     'no-new': 0, // new keyword needed e.g. new Notification
     'no-catch-shadow': 0, // only relevant for IE8 and below
     'no-bitwise': 0, // bitwise operations needed in some places

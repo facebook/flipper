@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#ifdef DEBUG
+
 #import <React/RCTBridgeModule.h>
 
 #import <FlipperKit/FlipperClient.h>
@@ -44,3 +46,5 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 NS_ASSUME_NONNULL_END
+
+#endif

@@ -7,7 +7,7 @@
  * @format
  */
 
-import {PluginDefinition} from '../../dispatcher/plugins';
+import {PluginDetails} from 'flipper-plugin-lib';
 import Client from '../../Client';
 import {TableBodyRow} from '../../ui/components/table/types';
 import React, {Component, Fragment} from 'react';
@@ -46,9 +46,9 @@ const Lamp = (props: {on: boolean}) => (
 );
 
 type StateFromProps = {
-  gatekeepedPlugins: Array<PluginDefinition>;
-  disabledPlugins: Array<PluginDefinition>;
-  failedPlugins: Array<[PluginDefinition, string]>;
+  gatekeepedPlugins: Array<PluginDetails>;
+  disabledPlugins: Array<PluginDetails>;
+  failedPlugins: Array<[PluginDetails, string]>;
   clients: Array<Client>;
   selectedDevice: string | null | undefined;
   devicePlugins: Array<typeof FlipperDevicePlugin>;
@@ -65,6 +65,9 @@ const COLUMNS = {
   },
   name: {
     value: 'Name',
+  },
+  version: {
+    value: 'Version',
   },
   status: {
     value: 'Status',
@@ -83,6 +86,7 @@ const COLUMNS = {
 const COLUMNS_SIZES = {
   lamp: 20,
   name: 'flex',
+  version: 60,
   status: 110,
   gk: 120,
   clients: 90,
@@ -93,16 +97,18 @@ type Props = OwnProps & StateFromProps & DispatchFromProps;
 class PluginDebugger extends Component<Props> {
   buildRow(
     name: string,
+    version: string,
     loaded: boolean,
     status: string,
     GKname: string | null | undefined,
-    pluginPath: string | null | undefined,
+    pluginPath: string,
   ): TableBodyRow {
     return {
       key: name.toLowerCase(),
       columns: {
         lamp: {value: <Lamp on={loaded} />},
         name: {value: <Ellipsis>{name}</Ellipsis>},
+        version: {value: <Ellipsis>{version}</Ellipsis>},
         status: {
           value: status ? <Ellipsis title={status}>{status}</Ellipsis> : null,
         },
@@ -117,12 +123,10 @@ class PluginDebugger extends Component<Props> {
           value: this.getSupportedClients(name),
         },
         source: {
-          value: pluginPath ? (
+          value: (
             <Ellipsis code title={pluginPath}>
               {pluginPath}
             </Ellipsis>
-          ) : (
-            <i>bundled</i>
           ),
         },
       },
@@ -143,12 +147,13 @@ class PluginDebugger extends Component<Props> {
   getRows(): Array<TableBodyRow> {
     const rows: Array<TableBodyRow> = [];
 
-    const externalPluginPath = (p: any) => p.entry || 'Native Plugin';
+    const externalPluginPath = (p: any) => (p.isDefault ? 'bundled' : p.entry);
 
     this.props.gatekeepedPlugins.forEach((plugin) =>
       rows.push(
         this.buildRow(
           plugin.name,
+          plugin.version,
           false,
           'GK disabled',
           plugin.gatekeeper,
@@ -161,6 +166,7 @@ class PluginDebugger extends Component<Props> {
       rows.push(
         this.buildRow(
           plugin.id,
+          plugin.version,
           true,
           '',
           plugin.gatekeeper,
@@ -173,6 +179,7 @@ class PluginDebugger extends Component<Props> {
       rows.push(
         this.buildRow(
           plugin.id,
+          plugin.version,
           true,
           '',
           plugin.gatekeeper,
@@ -185,6 +192,7 @@ class PluginDebugger extends Component<Props> {
       rows.push(
         this.buildRow(
           plugin.name,
+          plugin.version,
           false,
           'disabled',
           null,
@@ -197,6 +205,7 @@ class PluginDebugger extends Component<Props> {
       rows.push(
         this.buildRow(
           plugin.name,
+          plugin.version,
           false,
           status,
           null,

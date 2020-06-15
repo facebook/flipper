@@ -141,13 +141,9 @@ class DoctorBar extends Component<Props, State> {
 }
 
 export default connect<StateFromProps, DispatchFromProps, {}, Store>(
-  ({
-    settingsState: {enableAndroid, enableIOS},
-    healthchecks: {healthcheckReport},
-  }) => ({
-    enableAndroid,
-    enableIOS,
+  ({settingsState, healthchecks: {healthcheckReport}}) => ({
     healthcheckReport,
+    settings: settingsState,
   }),
   {
     setActiveSheet,

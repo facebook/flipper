@@ -14,6 +14,7 @@ const argv = yargs
   .usage('$0 [args]')
   .options({
     newVersion: {key: 'new-version', alias: 'v', type: 'string'},
+    dryRun: {key: 'dry-run', alias: 'd', type: 'boolean'},
   })
   .help().argv;
 

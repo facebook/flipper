@@ -15,9 +15,12 @@ export default interface PluginDetails {
   source: string;
   main: string;
   id: string;
+  isDefault: boolean;
+  entry: string;
   gatekeeper?: string;
+  title: string;
   icon?: string;
-  title?: string;
+  description?: string;
   category?: string;
   bugs?: {
     email?: string;

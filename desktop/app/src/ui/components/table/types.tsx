@@ -54,7 +54,7 @@ export type TableBodyRow = {
   type?: string | undefined;
   highlightedBackgroundColor?: BackgroundColorProperty | undefined;
   onDoubleClick?: (e: React.MouseEvent) => void;
-  copyText?: string;
+  copyText?: string | (() => string);
   requestBody?: string | null | undefined;
   responseBody?: string | null | undefined;
   highlightOnHover?: boolean;

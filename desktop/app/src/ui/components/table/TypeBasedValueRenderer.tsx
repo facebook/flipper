@@ -27,6 +27,7 @@ export type Value =
     }
   | {
       type: 'null';
+      value: null;
     };
 
 const WrappingText = styled(Text)({
@@ -58,6 +59,10 @@ const BooleanValue = styled(NonWrappingText)<{active?: boolean}>((props) => ({
   },
 }));
 BooleanValue.displayName = 'TypeBasedValueRenderer:BooleanValue';
+
+export function valueToNullableString(val: Value): string | null {
+  return val.value?.toString() ?? null;
+}
 
 export function renderValue(val: Value, wordWrap?: boolean) {
   const TextComponent = wordWrap ? WrappingText : NonWrappingText;

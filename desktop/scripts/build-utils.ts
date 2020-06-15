@@ -14,7 +14,7 @@ import fs from 'fs-extra';
 import {spawn} from 'promisify-child-process';
 import {getWatchFolders} from 'flipper-pkg-lib';
 import getAppWatchFolders from './get-app-watch-folders';
-import getPlugins from '../static/getPlugins';
+import {getSourcePlugins} from '../static/getPlugins';
 import {
   appDir,
   staticDir,
@@ -22,7 +22,7 @@ import {
   headlessDir,
   babelTransformationsDir,
 } from './paths';
-import getPluginFolders from '../static/getPluginFolders';
+import {getPluginSourceFolders} from '../static/getPluginFolders';
 
 const dev = process.env.NODE_ENV !== 'production';
 
@@ -33,7 +33,10 @@ export function die(err: Error) {
 
 export async function generatePluginEntryPoints() {
   console.log('⚙️  Generating plugin entry points...');
-  const plugins = await getPlugins();
+  const plugins = await getSourcePlugins();
+  for (const plugin of plugins) {
+    plugin.isDefault = true;
+  }
   if (await fs.pathExists(defaultPluginsIndexDir)) {
     await fs.remove(defaultPluginsIndexDir);
   }
@@ -107,7 +110,7 @@ export async function compileHeadless(buildFolder: string) {
     headlessDir,
     ...(await getWatchFolders(staticDir)),
     ...(await getAppWatchFolders()),
-    ...(await getPluginFolders()),
+    ...(await getPluginSourceFolders()),
   ]
     .filter((value, index, self) => self.indexOf(value) === index)
     .filter(fs.pathExistsSync);
@@ -128,7 +131,7 @@ export async function compileRenderer(buildFolder: string) {
   console.log(`⚙️  Compiling renderer bundle...`);
   const watchFolders = [
     ...(await getAppWatchFolders()),
-    ...(await getPluginFolders()),
+    ...(await getPluginSourceFolders()),
   ];
   try {
     await compile(

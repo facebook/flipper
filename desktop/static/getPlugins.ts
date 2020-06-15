@@ -10,15 +10,23 @@
 import path from 'path';
 import fs from 'fs-extra';
 import expandTilde from 'expand-tilde';
-import getPluginFolders from './getPluginFolders';
-import {PluginDetails, getPluginDetails} from 'flipper-pkg-lib';
+import {
+  getPluginsInstallationFolder,
+  getPluginSourceFolders,
+} from './getPluginFolders';
+import {PluginDetails, getPluginDetails} from 'flipper-plugin-lib';
 import pmap from 'p-map';
 import pfilter from 'p-filter';
 
-export default async function getPlugins(
-  includeThirdparty: boolean = false,
+export async function getSourcePlugins(): Promise<PluginDetails[]> {
+  return await getPluginsFromFolders(await getPluginSourceFolders());
+}
+export async function getInstalledPlugins(): Promise<PluginDetails[]> {
+  return await getPluginsFromFolders([getPluginsInstallationFolder()]);
+}
+async function getPluginsFromFolders(
+  pluginFolders: string[],
 ): Promise<PluginDetails[]> {
-  const pluginFolders = await getPluginFolders(includeThirdparty);
   const entryPoints: {[key: string]: PluginDetails} = {};
   const additionalPlugins = await pmap(pluginFolders, (path) =>
     entryPointForPluginFolder(path),

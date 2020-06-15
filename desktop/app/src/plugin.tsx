@@ -96,9 +96,12 @@ export abstract class FlipperBasePlugin<
   static title: string | null = null;
   static category: string | null = null;
   static id: string = '';
+  static packageName: string = '';
+  static version: string = '';
   static icon: string | null = null;
   static gatekeeper: string | null = null;
   static entry: string | null = null;
+  static isDefault: boolean;
   static bugs: {
     email?: string;
     url?: string;

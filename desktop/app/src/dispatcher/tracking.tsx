@@ -26,6 +26,7 @@ import {
 import produce from 'immer';
 import {BaseDevice} from 'flipper';
 import {deconstructClientId} from '../utils/clientUtils';
+import {getCPUUsage} from 'process';
 
 const TIME_SPENT_EVENT = 'time-spent';
 
@@ -196,6 +197,7 @@ export default (store: Store, logger: Logger) => {
       sdkVersion,
       isForeground: state.application.windowIsFocused,
       usedJSHeapSize: (window.performance as any).memory.usedJSHeapSize,
+      cpuLoad: getCPUUsage().percentCPUUsage,
     };
 
     // reset dropped frames counter

@@ -7,4 +7,10 @@
  * @format
  */
 
-declare module 'metro';
+export function normalizePath(path: string): string {
+  if (process.platform === 'win32') {
+    path = path.replace(/\\/g, '/');
+    path = path.substring(path.indexOf('/'));
+  }
+  return path;
+}

@@ -217,11 +217,18 @@ static CK::StaticMutex _mutex = CK_MUTEX_INITIALIZER;
     }
   }
 
+  auto const identitySection = [NSMutableDictionary<NSString*, id> dictionary];
   if (auto const i = self.uniqueIdentifier) {
+    identitySection[@"uniqueIdentifier"] = SKObject{i};
+  }
+  if (auto const node = self.treeNode) {
+    if (auto const scopeIdentifier = std::get<2>(node.componentKey)) {
+      identitySection[@"scopeIdentifier"] = scopeIdentifier;
+    }
+  }
+  if (identitySection.count > 0) {
     [data addObject:[SKNamed newWithName:@"Identity"
-                               withValue:@{
-                                 @"uniqueIdentifier" : SKObject{i},
-                               }]];
+                               withValue:identitySection]];
   }
 
   // Only add accessibility panel if accessibilityContext is not default

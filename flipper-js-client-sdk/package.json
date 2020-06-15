@@ -1,0 +1,28 @@
+{
+  "name": "flipper-client-sdk",
+  "version": "0.0.1",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "title": "Flipper SDK API",
+  "scripts": {
+    "reset": "rimraf lib *.tsbuildinfo",
+    "build": "tsc -b"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/facebook/flipper.git",
+    "baseUrl": "https://github.com/facebook/flipper/tree/master/flipper-js-client-sdk"
+  },
+  "keywords": [
+    "flipper"
+  ],
+  "author": {
+    "name": "Facebook Inc"
+  },
+  "license": "MIT",
+  "licenseFilename": "LICENSE",
+  "readmeFilename": "README.md",
+  "devDependencies": {
+    "typescript": "^3.9.2"
+  }
+}

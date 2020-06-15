@@ -14,7 +14,7 @@ export const DEFAULT_MAX_QUEUE_SIZE = 10000;
 
 export type Message = {
   method: string;
-  params: any;
+  params?: any;
 };
 
 export type State = {
@@ -23,11 +23,12 @@ export type State = {
 
 export type Action =
   | {
-      type: 'QUEUE_MESSAGE';
+      type: 'QUEUE_MESSAGES';
       payload: {
         pluginKey: string; // client + plugin
         maxQueueSize: number;
-      } & Message;
+        messages: Message[];
+      };
     }
   | {
       type: 'CLEAR_MESSAGE_QUEUE';
@@ -48,17 +49,17 @@ export default function reducer(
   action: Action,
 ): State {
   switch (action.type) {
-    case 'QUEUE_MESSAGE': {
-      const {pluginKey, method, params, maxQueueSize} = action.payload;
+    case 'QUEUE_MESSAGES': {
+      const {pluginKey, messages, maxQueueSize} = action.payload;
       // this is hit very often, so try to do it a bit optimal
       const currentMessages = state[pluginKey] || [];
-      const newMessages =
-        currentMessages.length < maxQueueSize
-          ? currentMessages.slice()
-          : // throw away first 10% of the queue if it gets too full
-            (console.log(`Dropping events for plugin ${pluginKey}`),
-            currentMessages.slice(Math.floor(maxQueueSize / 10)));
-      newMessages.push({method, params});
+      let newMessages = currentMessages.concat(messages);
+      if (newMessages.length > maxQueueSize) {
+        // only keep last 90% of max queue size
+        newMessages = newMessages.slice(
+          newMessages.length - 1 - Math.ceil(maxQueueSize * 0.9),
+        );
+      }
       return {
         ...state,
         [pluginKey]: newMessages,
@@ -97,17 +98,15 @@ export default function reducer(
   }
 }
 
-export const queueMessage = (
+export const queueMessages = (
   pluginKey: string,
-  method: string,
-  params: any,
+  messages: Message[],
   maxQueueSize: number | undefined,
 ): Action => ({
-  type: 'QUEUE_MESSAGE',
+  type: 'QUEUE_MESSAGES',
   payload: {
     pluginKey,
-    method,
-    params,
+    messages,
     maxQueueSize: maxQueueSize || DEFAULT_MAX_QUEUE_SIZE,
   },
 });

@@ -1,0 +1,46 @@
+{
+  "name": "flipper-plugin-lib",
+  "version": "0.46.0",
+  "description": "Library containing common Flipper plugin installation utilities",
+  "repository": "facebook/flipper",
+  "main": "lib/index.js",
+  "flipperBundlerEntry": "src",
+  "types": "lib/index.d.ts",
+  "license": "MIT",
+  "bugs": "https://github.com/facebook/flipper/issues",
+  "dependencies": {
+    "decompress": "^4.2.1",
+    "decompress-targz": "^4.1.1",
+    "decompress-unzip": "^4.0.1",
+    "fs-extra": "^8.1.0",
+    "live-plugin-manager": "^0.14.1",
+    "semver": "^7.3.2",
+    "tmp": "^0.2.1"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^8.1.0",
+    "@types/jest": "^25.1.0",
+    "@types/node": "^13.7.5",
+    "flipper-test-utils": "0.46.0",
+    "globby": "^10",
+    "jest": "^25.1.0",
+    "mock-fs": "^4.12.0",
+    "rimraf": "^3.0.2",
+    "ts-jest": "^26.0.0",
+    "ts-node": "^8",
+    "typescript": "^3.9.2"
+  },
+  "scripts": {
+    "reset": "rimraf lib *.tsbuildinfo",
+    "build": "tsc -b",
+    "prepack": "yarn reset && yarn build"
+  },
+  "files": [
+    "lib/**/*"
+  ],
+  "homepage": "https://github.com/facebook/flipper",
+  "keywords": [
+    "Flipper"
+  ],
+  "author": "Facebook, Inc"
+}

@@ -3,11 +3,13 @@
   "compilerOptions": {
     "outDir": "lib",
     "rootDir": "src",
-    "allowJs": true,
-    "esModuleInterop": true,
-    "incremental": true
+    "esModuleInterop": true
   },
-  "references": [{"path": "../pkg-lib"}],
+  "references": [
+    {"path": "../pkg-lib"},
+    {"path": "../plugin-lib"},
+    {"path": "../test-utils"}
+  ],
   "include": ["src"],
   "exclude": ["node_modules", "**/__tests__/*"]
 }

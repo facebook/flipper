@@ -1,6 +1,6 @@
 project 'Tutorial.xcodeproj'
 swift_version = "4.1"
-flipperkit_version = '0.44.0'
+flipperkit_version = '0.46.0'
 use_frameworks!
 
 target 'Tutorial' do

@@ -31,6 +31,7 @@ export const colors = {
   highlightTint70: '#c6d9ff', // Highlight - Tint 70 (illustrations only)
   highlightTint90: '#ecf2ff', // Highlight - Tint 90 (illustrations only)
   highlightBackground: '#edf2fa', // Highlight Background - Background fill for unread or highlighted states. Not intended for hover / pressed states
+  highlighButtonPrimaryColor: '#237FF1', // Blue color which is used in the button when its type is primary
   green: '#42b72a', // Green - Confirmation, success, commerce and status
   red: '#FC3A4B', // Red - Badges, error states
   redTint: '#FEF2F1',

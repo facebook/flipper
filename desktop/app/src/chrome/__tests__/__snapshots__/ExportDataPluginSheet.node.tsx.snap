@@ -2,27 +2,27 @@
 
 exports[`SettingsSheet snapshot with nothing enabled 1`] = `
 <div
-  className="css-1alsdwv"
+  className="css-12h374y-View-FlexBox-FlexColumn"
 >
   <div
-    className="css-14m1iua"
+    className="css-8h6kz5-View-FlexBox-FlexColumn"
   >
     <div
-      className="css-1k4677w"
+      className="css-k28k5g-View-FlexBox-FlexColumn ecr18to0"
     >
       <span
-        className="css-15682x"
+        className="css-1qd3nqz-Text"
       >
         Select the plugins for which you want to export the data
       </span>
       <div
-        className="css-9dmkpi"
+        className="css-1k23ouh-View-FlexBox-FlexColumn"
       >
         <div
-          className="css-1k4677w"
+          className="css-k28k5g-View-FlexBox-FlexColumn ecr18to0"
         >
           <div
-            className="css-1obf64m"
+            className="css-yzqaun-TooltipContainer e1abcqbd0"
             onMouseEnter={[Function]}
             onMouseLeave={[Function]}
           >
@@ -30,7 +30,7 @@ exports[`SettingsSheet snapshot with nothing enabled 1`] = `
               className="css-1jrm6r3"
             >
               <div
-                className="css-a1glw"
+                className="css-17wo7w2-View-FlexBox-FlexRow epz0qe20"
                 style={
                   Object {
                     "alignItems": "center",
@@ -38,16 +38,16 @@ exports[`SettingsSheet snapshot with nothing enabled 1`] = `
                 }
               >
                 <span
-                  className="css-1cegttb"
+                  className="css-1186rtw-Text e19o3fcp0"
                 >
                   TestDevicePlugin
                 </span>
                 <div
-                  className="css-12zzrdt"
+                  className="css-te359u-View-FlexBox-Spacer e13mj6h81"
                 />
                 <input
                   checked={false}
-                  className="css-1y77uts"
+                  className="css-yvyra-CheckboxContainer e28aqfo0"
                   disabled={false}
                   onChange={[Function]}
                   type="checkbox"
@@ -55,15 +55,15 @@ exports[`SettingsSheet snapshot with nothing enabled 1`] = `
               </div>
             </div>
             <div
-              className="css-1nj3es"
+              className="css-1p0wwd3-View"
             />
           </div>
         </div>
         <div
-          className="css-1k4677w"
+          className="css-k28k5g-View-FlexBox-FlexColumn ecr18to0"
         >
           <div
-            className="css-1obf64m"
+            className="css-yzqaun-TooltipContainer e1abcqbd0"
             onMouseEnter={[Function]}
             onMouseLeave={[Function]}
           >
@@ -71,7 +71,7 @@ exports[`SettingsSheet snapshot with nothing enabled 1`] = `
               className="css-1jrm6r3"
             >
               <div
-                className="css-a1glw"
+                className="css-17wo7w2-View-FlexBox-FlexRow epz0qe20"
                 style={
                   Object {
                     "alignItems": "center",
@@ -79,16 +79,16 @@ exports[`SettingsSheet snapshot with nothing enabled 1`] = `
                 }
               >
                 <span
-                  className="css-1cegttb"
+                  className="css-1186rtw-Text e19o3fcp0"
                 >
                   TestPlugin
                 </span>
                 <div
-                  className="css-12zzrdt"
+                  className="css-te359u-View-FlexBox-Spacer e13mj6h81"
                 />
                 <input
                   checked={false}
-                  className="css-1y77uts"
+                  className="css-yvyra-CheckboxContainer e28aqfo0"
                   disabled={false}
                   onChange={[Function]}
                   type="checkbox"
@@ -96,7 +96,7 @@ exports[`SettingsSheet snapshot with nothing enabled 1`] = `
               </div>
             </div>
             <div
-              className="css-1nj3es"
+              className="css-1p0wwd3-View"
             />
           </div>
         </div>
@@ -106,16 +106,16 @@ exports[`SettingsSheet snapshot with nothing enabled 1`] = `
       className="css-1yqvjo0"
     >
       <div
-        className="css-a1glw"
+        className="css-17wo7w2-View-FlexBox-FlexRow epz0qe20"
       >
         <div
-          className="css-12zzrdt"
+          className="css-te359u-View-FlexBox-Spacer e13mj6h81"
         />
         <div
           className="css-12n892b"
         >
           <div
-            className="css-1ee9nwd"
+            className="css-dltu4w-StyledButton enfqd40"
             onClick={[Function]}
             onMouseDown={[Function]}
             onMouseUp={[Function]}
@@ -124,12 +124,12 @@ exports[`SettingsSheet snapshot with nothing enabled 1`] = `
           </div>
         </div>
         <div
-          className="css-1obf64m"
+          className="css-yzqaun-TooltipContainer e1abcqbd0"
           onMouseEnter={[Function]}
           onMouseLeave={[Function]}
         >
           <div
-            className="css-6lxjsf"
+            className="css-3z5lpm-StyledButton enfqd40"
             disabled={true}
             onClick={[Function]}
             onMouseDown={[Function]}
@@ -147,27 +147,27 @@ exports[`SettingsSheet snapshot with nothing enabled 1`] = `
 
 exports[`SettingsSheet snapshot with one plugin enabled 1`] = `
 <div
-  className="css-1alsdwv"
+  className="css-12h374y-View-FlexBox-FlexColumn"
 >
   <div
-    className="css-14m1iua"
+    className="css-8h6kz5-View-FlexBox-FlexColumn"
   >
     <div
-      className="css-1k4677w"
+      className="css-k28k5g-View-FlexBox-FlexColumn ecr18to0"
     >
       <span
-        className="css-15682x"
+        className="css-1qd3nqz-Text"
       >
         Select the plugins for which you want to export the data
       </span>
       <div
-        className="css-9dmkpi"
+        className="css-1k23ouh-View-FlexBox-FlexColumn"
       >
         <div
-          className="css-1k4677w"
+          className="css-k28k5g-View-FlexBox-FlexColumn ecr18to0"
         >
           <div
-            className="css-1obf64m"
+            className="css-yzqaun-TooltipContainer e1abcqbd0"
             onMouseEnter={[Function]}
             onMouseLeave={[Function]}
           >
@@ -175,7 +175,7 @@ exports[`SettingsSheet snapshot with one plugin enabled 1`] = `
               className="css-1jrm6r3"
             >
               <div
-                className="css-a1glw"
+                className="css-17wo7w2-View-FlexBox-FlexRow epz0qe20"
                 style={
                   Object {
                     "alignItems": "center",
@@ -183,16 +183,16 @@ exports[`SettingsSheet snapshot with one plugin enabled 1`] = `
                 }
               >
                 <span
-                  className="css-1cegttb"
+                  className="css-1186rtw-Text e19o3fcp0"
                 >
                   TestDevicePlugin
                 </span>
                 <div
-                  className="css-12zzrdt"
+                  className="css-te359u-View-FlexBox-Spacer e13mj6h81"
                 />
                 <input
                   checked={false}
-                  className="css-1y77uts"
+                  className="css-yvyra-CheckboxContainer e28aqfo0"
                   disabled={false}
                   onChange={[Function]}
                   type="checkbox"
@@ -200,15 +200,15 @@ exports[`SettingsSheet snapshot with one plugin enabled 1`] = `
               </div>
             </div>
             <div
-              className="css-1nj3es"
+              className="css-1p0wwd3-View"
             />
           </div>
         </div>
         <div
-          className="css-1k4677w"
+          className="css-k28k5g-View-FlexBox-FlexColumn ecr18to0"
         >
           <div
-            className="css-1obf64m"
+            className="css-yzqaun-TooltipContainer e1abcqbd0"
             onMouseEnter={[Function]}
             onMouseLeave={[Function]}
           >
@@ -216,7 +216,7 @@ exports[`SettingsSheet snapshot with one plugin enabled 1`] = `
               className="css-1jrm6r3"
             >
               <div
-                className="css-a1glw"
+                className="css-17wo7w2-View-FlexBox-FlexRow epz0qe20"
                 style={
                   Object {
                     "alignItems": "center",
@@ -224,16 +224,16 @@ exports[`SettingsSheet snapshot with one plugin enabled 1`] = `
                 }
               >
                 <span
-                  className="css-1cegttb"
+                  className="css-1186rtw-Text e19o3fcp0"
                 >
                   TestPlugin
                 </span>
                 <div
-                  className="css-12zzrdt"
+                  className="css-te359u-View-FlexBox-Spacer e13mj6h81"
                 />
                 <input
                   checked={true}
-                  className="css-1y77uts"
+                  className="css-yvyra-CheckboxContainer e28aqfo0"
                   disabled={false}
                   onChange={[Function]}
                   type="checkbox"
@@ -241,7 +241,7 @@ exports[`SettingsSheet snapshot with one plugin enabled 1`] = `
               </div>
             </div>
             <div
-              className="css-1nj3es"
+              className="css-1p0wwd3-View"
             />
           </div>
         </div>
@@ -251,16 +251,16 @@ exports[`SettingsSheet snapshot with one plugin enabled 1`] = `
       className="css-1yqvjo0"
     >
       <div
-        className="css-a1glw"
+        className="css-17wo7w2-View-FlexBox-FlexRow epz0qe20"
       >
         <div
-          className="css-12zzrdt"
+          className="css-te359u-View-FlexBox-Spacer e13mj6h81"
         />
         <div
           className="css-12n892b"
         >
           <div
-            className="css-1ee9nwd"
+            className="css-dltu4w-StyledButton enfqd40"
             onClick={[Function]}
             onMouseDown={[Function]}
             onMouseUp={[Function]}
@@ -269,12 +269,12 @@ exports[`SettingsSheet snapshot with one plugin enabled 1`] = `
           </div>
         </div>
         <div
-          className="css-1obf64m"
+          className="css-yzqaun-TooltipContainer e1abcqbd0"
           onMouseEnter={[Function]}
           onMouseLeave={[Function]}
         >
           <div
-            className="css-1ee9nwd"
+            className="css-dltu4w-StyledButton enfqd40"
             disabled={false}
             onClick={[Function]}
             onMouseDown={[Function]}

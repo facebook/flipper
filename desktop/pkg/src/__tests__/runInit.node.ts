@@ -10,6 +10,7 @@
 import fse from 'fs-extra';
 
 import {initTemplate} from '../commands/init';
+import {normalizePath} from 'flipper-test-utils';
 
 let files: Record<string, string> = {};
 
@@ -18,7 +19,7 @@ beforeEach(() => {
     // no implementation
   }
   function writeFile(name: string, contents: string) {
-    files[name] = contents;
+    files[normalizePath(name)] = contents;
   }
 
   files = {};

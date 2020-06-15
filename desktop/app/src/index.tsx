@@ -34,7 +34,7 @@ export {PluginClient, Props} from './plugin';
 export {default as Client} from './Client';
 export {MetricType} from './utils/exportMetrics';
 export {default as promiseTimeout} from './utils/promiseTimeout';
-export {clipboard} from 'electron';
+export {clipboard, remote, OpenDialogOptions} from 'electron';
 export {default as SupportRequestFormV2} from './fb-stubs/SupportRequestFormV2';
 export {default as constants} from './fb-stubs/constants';
 export {connect} from 'react-redux';
@@ -44,7 +44,6 @@ export {getPluginKey, getPersistedState} from './utils/pluginUtils';
 export {Idler} from './utils/Idler';
 export {Store, MiddlewareAPI, State as ReduxState} from './reducers/index';
 export {default as BaseDevice} from './devices/BaseDevice';
-export {default as SidebarExtensions} from './fb-stubs/LayoutInspectorSidebarExtensions';
 export {
   DeviceLogListener,
   DeviceLogEntry,
@@ -91,7 +90,11 @@ export {
   default as ManagedTable_immutable,
   ManagedTableProps_immutable,
 } from './ui/components/table/ManagedTable_immutable';
-export {Value, renderValue} from './ui/components/table/TypeBasedValueRenderer';
+export {
+  Value,
+  renderValue,
+  valueToNullableString,
+} from './ui/components/table/TypeBasedValueRenderer';
 export {
   DataValueExtractor,
   DataInspectorExpanded,
@@ -183,3 +186,9 @@ export {KeyboardActions} from './MenuBar';
 export {getFlipperMediaCDN} from './fb-stubs/user';
 export {Rect} from './utils/geometry';
 export {Logger} from './fb-interfaces/Logger';
+export {getInstance as getLogger} from './fb-stubs/Logger';
+export {callVSCode, getVSCodeUrl} from './utils/vscodeUtils';
+export {useLocalStorage} from './utils/useLocalStorage';
+
+// Sidebar extensions should be last so they can import anything from here.
+export {default as SidebarExtensions} from './fb-stubs/LayoutInspectorSidebarExtensions';

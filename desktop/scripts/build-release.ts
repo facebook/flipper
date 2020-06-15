@@ -87,6 +87,9 @@ async function buildDist(buildFolder: string) {
       // AppImage, snap, deb, rpm, freebsd, pacman, p5p, apk, 7z, zip, tar.xz, tar.lz, tar.gz, tar.bz2, dir
       targetsRaw.push(Platform.LINUX.createTarget(['deb']));
     }
+    if (argv.indexOf('--linux-snap') > -1) {
+      targetsRaw.push(Platform.LINUX.createTarget(['snap']));
+    }
   }
   if (process.argv.indexOf('--win') > -1) {
     targetsRaw.push(Platform.WINDOWS.createTarget(['zip']));

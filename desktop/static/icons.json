@@ -87,7 +87,8 @@
     8
   ],
   "compose": [
-    12
+    12,
+    16
   ],
   "copy": [
     12
@@ -259,7 +260,8 @@
   ],
   "triangle-down": [
     12,
-    16
+    16,
+    20
   ],
   "triangle-right": [
     12
@@ -405,12 +407,28 @@
     12
   ],
   "triangle-up": [
-    16
+    16,
+    20
   ],
   "checkmark-circle": [
     12
   ],
   "circle": [
+    12
+  ],
+  "comment-swish": [
+    16
+  ],
+  "direct": [
+    16
+  ],
+  "plus": [
+    16
+  ],
+  "scuba": [
+    12
+  ],
+  "line-chart": [
     12
   ]
 }

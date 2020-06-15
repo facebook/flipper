@@ -62,7 +62,7 @@ To expose an object to the layout inspector in Sonar you have to implement a `SK
 
 **Don't**
 
-```objc
+```objectivec
 @interface SKArbitraryViewDescriptor : SKViewDescriptor<ArbitraryView *>
 
 @end
@@ -80,7 +80,7 @@ To expose an object to the layout inspector in Sonar you have to implement a `SK
 
 **Do**
 
-```objc
+```objectivec
 @interface SKArbitraryViewDescriptor : SKNodeDescriptor<ArbitraryView *>
 @end
 
@@ -99,7 +99,7 @@ To expose an object to the layout inspector in Sonar you have to implement a `SK
 
 In order to register your descriptor for an object, you use `SKDescriptorMapper`. After registering all descriptors you pass on the descriptor-mapper object to the plugin during initialisation.
 
-```objc
+```objectivec
 [descriptorMapper registerDescriptor:[SKArbitraryViewDescriptor new]
                             forClass:[AbritraryView class]];
 
@@ -118,7 +118,7 @@ Sometimes all you need is to extend the functionality of an existing descriptor.
 
 If you want to extend the `SKComponentKitLayoutDescriptor` and add an additional section based on the nodes of the `SKComponentLayoutDescriptor`, you can use `SKSubDescriptor`.
 
-```objc
+```objectivec
 #import <FlipperKitLayoutComponentKitSupport/SKComponentLayoutWrapper.h>
 
 NSString *YourSubDescriptor(SKComponentLayoutWrapper *)node {
