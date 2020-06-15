@@ -88,9 +88,57 @@ debugImplementation('com.facebook.flipper:flipper:*') {
 }
 ```
 
-## iOS
+## React Native
 
-### Build errors in React Native
+When using Flipper with React Native, two devices should show up:
+
+1. The 'React Native' device. This is the "device" that talks to the Metro server and shows plugins that connect to or through Metro, such as the React DevTools, the Hermes Debugger and Metro logs.
+1. The device on which your app is running (like `SM760FS`, `Pixel 3`, `android_emulator`, `iPhone 11`). This is the device that Flipper connects to ADB / IDB. We primarily support emulators and USB connected devices.
+
+#### Q: I don't see the 'React Native' device
+
+1. Make sure that the Metro server is running.
+1. Make sure you are on React Native 0.62 or higher.
+1. Verify that the `@react-native-community/cli` version is `0.47.0` or higher (using `yarn why @react-native-community/cli`).
+
+#### Q: I see my device / emulator, but I can't see the app
+
+1. Make sure you are running a debug build. Flipper _only_ supports debug builds.
+1. If you are upgraded from RN < 0.62.2, make sure you've updated all the dependencies and build related files according to the upgrade helper. For example: https://react-native-community.github.io/upgrade-helper/?from=0.61.4&to=0.62.2
+1. If you upgraded, make sure you made a clean build: `cd android && ./gradlew clean`, `cd iOS && pod install --repo-update`
+1. For iOS, make sure it works on a simulator first
+1. (Unconfirmed) check the deployment info target in the XCode project settings. Target should be `iOS 9.0`.
+
+#### Q: I see my app, but I don't see the external plugins I've installed
+
+1. Make sure you've installed the desktop part of the plugin (usually through "Manage plugins" in Flipper). If no plugins show up under "Manage plugins" > "Status", make sure you've selected your running device in the Flipper toolbar (and _not_ "React Native").
+1. Make sure you've installed the app part of the plugin. Typically the installation instructions of the plugin itself need to be followed here.
+1. Make sure you've installed the latest version of `react-native-flipper` in your app, and run `pod install` in the `iOS` dir afterwards.
+1. Make sure you've restarted both Flipper and your app.
+
+#### Q: On iOS it seems that the Flipper dependencies are compiled when making a release build
+
+That is correct, the dependencies won't be actually included in the release (when using `react-native-flipper` > 0.45), but sadly we can't exclude those dependencies from the build process.
+
+#### Q: The React DevTools don't seem to connect
+
+1. Make sure there are no other instances of the React DevTools are running (For example a stand-alone version). Restart Flipper if needed after closing other tools.
+1. Make sure you have only one device running to connect to. If there are multiple devices, close them and try again (restart Flipper if needed).
+1. Make sure there is only one RN app running on the device
+
+#### Q: How to select a specific element in the React DevTools?
+
+1. Trigger the debug menu on your RN app (you can use the button in the Flipper toolbar for that)
+1. Use `Show Inspector`. Flipper will now follow the selection on your device.
+
+#### Q: The Hermes Debugger does not connect
+
+1. Make sure the Hermes engine is [enabled](https://reactnative.dev/docs/hermes)
+1. Make sure only one device with React Native is running
+1. Make sure there is only one RN app running on the device
+1. Make sure the React Native app is _not_ in debug mode already (trigger dev menu, and make sure that `Remote JS Debugging` is _not_ enabled).
+
+#### iOS Build errors in React Native
 
 If you experience errors such as `Undefined symbol: associated type descriptor for FloatLiteralType` or `Undefined symbol: __swift_FORCE_LOAD_$_swiftCompatibility50` after going through the [Getting Started](getting-started/index) tutorial you must do as follows:
 
