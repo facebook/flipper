@@ -46,20 +46,21 @@ module.exports = () => ({
           // require a file not a pacakge
           args[0].value.indexOf('/') > -1 &&
           // in the plugin itself and not inside one of its dependencies
-          state.file.opts.filename.indexOf('node_modules') === -1 &&
+          state.file.opts.filename.startsWith(state.file.opts.root) &&
           // the resolved path for this file is outside the plugins root
-          !resolve(
+          !resolve(dirname(state.file.opts.filename), args[0].value).startsWith(
             state.file.opts.root,
-            dirname(state.file.opts.filename),
-            args[0].value,
-          ).startsWith(state.file.opts.root)
+          )
         ) {
           throw new Error(
-            `Plugins cannot require files from outside their folder. Attempted to require ${resolve(
-              state.file.opts.root,
-              dirname(state.file.opts.filename),
-              args[0].value,
-            )} which isn't inside ${state.file.opts.root}`,
+            `Plugins cannot require files from outside their folder. ` +
+              `Attempted to require "${args[0].value}" ` +
+              `from file "${state.file.opts.filename}" resolved to ` +
+              `"${resolve(
+                dirname(state.file.opts.filename),
+                args[0].value,
+              )}" ` +
+              `which isn't inside plugin dir "${state.file.opts.root}".`,
           );
         }
       }
