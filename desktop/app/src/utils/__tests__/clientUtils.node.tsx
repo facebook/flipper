@@ -48,3 +48,21 @@ test('client id deconstruction error logged', () => {
   });
   expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
 });
+
+test('special characters in app name handled correctly', () => {
+  const consoleErrorSpy = jest.spyOn(global.console, 'error');
+
+  const testClient = {
+    app: '#myGreat#App&',
+    os: 'iOS',
+    device: 'iPhone Simulator',
+    device_id: 'EC431B79-69F1-4705-9FE5-9AE5D96378E1',
+  };
+  const clientId = buildClientId(testClient);
+
+  const deconstructedClientId = deconstructClientId(clientId);
+
+  expect(deconstructedClientId).toStrictEqual(testClient);
+
+  expect(consoleErrorSpy).toHaveBeenCalledTimes(0);
+});
