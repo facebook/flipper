@@ -3,7 +3,7 @@
   "name": "flipper-plugin-sea-mammals",
   "id": "sea-mammals",
   "private": true,
-  "version": "2.0.0",
+  "version": "0.46.0",
   "main": "dist/bundle.js",
   "flipperBundlerEntry": "src/index.tsx",
   "license": "MIT",
