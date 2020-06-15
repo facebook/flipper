@@ -7,7 +7,7 @@
  * @format
  */
 
-import {rootDir, pluginsDir} from './paths';
+import {rootDir, pluginsDir, fbPluginsDir} from './paths';
 import fs from 'fs-extra';
 import path from 'path';
 import {promisify} from 'util';
@@ -28,7 +28,12 @@ export interface Workspaces {
   packages: Package[];
 }
 
-export async function getWorkspaces(): Promise<Workspaces> {
+async function getWorkspacesByRoot(
+  rootDir: string,
+): Promise<Workspaces | null> {
+  if (!(await fs.pathExists(path.join(rootDir, 'package.json')))) {
+    return null;
+  }
   const rootPackageJson = await fs.readJson(path.join(rootDir, 'package.json'));
   const packageGlobs = rootPackageJson.workspaces.packages as string[];
   const packages = await pmap(
@@ -57,6 +62,19 @@ export async function getWorkspaces(): Promise<Workspaces> {
     },
     packages,
   };
+}
+
+export async function getWorkspaces(): Promise<Workspaces> {
+  const rootWorkspaces = await getWorkspacesByRoot(rootDir);
+  const fbWorkspaces = await getWorkspacesByRoot(fbPluginsDir);
+  if (!fbWorkspaces) {
+    return rootWorkspaces!;
+  }
+  const mergedWorkspaces: Workspaces = {
+    rootPackage: rootWorkspaces!.rootPackage,
+    packages: [...rootWorkspaces!.packages, ...fbWorkspaces.packages],
+  };
+  return mergedWorkspaces;
 }
 
 export async function bumpVersions({
@@ -107,13 +125,11 @@ async function bumpWorkspaceVersions(
 ): Promise<string> {
   newVersion = newVersion || (rootPackage.json.version as string);
   const allPackages = [rootPackage, ...packages];
-  const localPackageNames = packages
-    .filter((pkg) => !pkg.isPlugin)
-    .map(({json}) => json.name as string);
+  const localPackageNames = packages.map(({json}) => json.name as string);
   for (const pkg of allPackages) {
     const {json} = pkg;
     let changed = false;
-    if (json.version !== newVersion && !pkg.isPlugin) {
+    if (json.version && json.version !== newVersion) {
       console.log(
         `Bumping version of ${json.name} from ${json.version} to ${newVersion}`,
       );
