@@ -1,12 +1,20 @@
 {
+  "$schema": "https://fbflipper.com/schemas/plugin-package/v2.json",
   "name": "flipper-plugin-hermesdebuggerrn",
+  "id": "flipper-plugin-hermesdebuggerrn",
   "version": "1.0.0",
-  "main": "index.tsx",
+  "main": "dist/bundle.js",
+  "flipperBundlerEntry": "index.tsx",
   "license": "MIT",
   "title": "Hermes Debugger (RN)",
   "icon": "apps",
-  "keywords": ["flipper-plugin"],
+  "keywords": [
+    "flipper-plugin"
+  ],
   "bugs": {
     "email": "rickhanlonii@fb.com"
+  },
+  "scripts": {
+    "prepack": "../../pkg/bin/run bundle"
   }
 }

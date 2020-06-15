@@ -1,13 +1,29 @@
 {
+  "$schema": "https://fbflipper.com/schemas/plugin-package/v2.json",
   "name": "flipper-plugin-example",
+  "id": "flipper-plugin-example",
   "version": "1.0.0",
   "description": "An example for a Flipper plugin",
-  "main": "index.tsx",
+  "main": "dist/bundle.js",
+  "flipperBundlerEntry": "index.tsx",
   "license": "MIT",
-  "keywords": ["flipper-plugin"],
+  "keywords": [
+    "flipper-plugin"
+  ],
   "title": "Example Plugin",
   "icon": "apps",
   "bugs": {
     "url": "https://fbflipper.com/"
+  },
+  "scripts": {
+    "lint": "flipper-pkg lint",
+    "prepack": "flipper-pkg lint && flipper-pkg bundle"
+  },
+  "peerDependencies": {
+    "flipper": "0.46.0"
+  },
+  "devDependencies": {
+    "flipper": "0.46.0",
+    "flipper-pkg": "0.46.0"
   }
 }

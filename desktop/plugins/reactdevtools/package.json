@@ -1,7 +1,10 @@
 {
+  "$schema": "https://fbflipper.com/schemas/plugin-package/v2.json",
   "name": "flipper-plugin-react-devtools",
+  "id": "flipper-plugin-react-devtools",
   "version": "1.0.1",
-  "main": "index.tsx",
+  "main": "dist/bundle.js",
+  "flipperBundlerEntry": "index.tsx",
   "license": "MIT",
   "keywords": [
     "flipper-plugin"
@@ -16,5 +19,8 @@
   "bugs": {
     "email": "danielbuechele@fb.com"
   },
-  "devDependencies": {}
+  "devDependencies": {},
+  "scripts": {
+    "prepack": "../../pkg/bin/run bundle"
+  }
 }

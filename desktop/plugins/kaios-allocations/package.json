@@ -1,7 +1,10 @@
 {
+  "$schema": "https://fbflipper.com/schemas/plugin-package/v2.json",
   "name": "flipper-plugin-kaios-big-allocations",
+  "id": "flipper-plugin-kaios-big-allocations",
   "version": "1.0.0",
-  "main": "index.tsx",
+  "main": "dist/bundle.js",
+  "flipperBundlerEntry": "index.tsx",
   "license": "MIT",
   "title": "KaiOS: big allocations",
   "icon": "apps",
@@ -13,7 +16,8 @@
     "url": "https://fb.workplace.com/groups/wa.kaios/"
   },
   "scripts": {
-    "postinstall": "patch-package"
+    "postinstall": "patch-package",
+    "prepack": "../../pkg/bin/run bundle"
   },
   "devDependencies": {
     "patch-package": "^6.2.0"

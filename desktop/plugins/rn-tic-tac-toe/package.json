@@ -1,13 +1,21 @@
 {
-  "name": "ReactNativeTicTacToe",
+  "$schema": "https://fbflipper.com/schemas/plugin-package/v2.json",
+  "name": "flipper-plugin-react-native-tic-tac-toe",
+  "id": "ReactNativeTicTacToe",
   "version": "1.0.0",
-  "main": "index.tsx",
+  "main": "dist/bundle.js",
+  "flipperBundlerEntry": "index.tsx",
   "license": "MIT",
-  "keywords": ["flipper-plugin"],
+  "keywords": [
+    "flipper-plugin"
+  ],
   "icon": "apps",
   "title": "React Native Tic Tac Toe",
   "category": "Examples",
   "bugs": {
     "email": "mweststrate@fb.com"
+  },
+  "scripts": {
+    "prepack": "../../pkg/bin/run bundle"
   }
 }

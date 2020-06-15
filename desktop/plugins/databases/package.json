@@ -1,9 +1,12 @@
 {
-  "name": "Databases",
+  "$schema": "https://fbflipper.com/schemas/plugin-package/v2.json",
+  "name": "flipper-plugin-databases",
+  "id": "Databases",
   "version": "1.0.0",
   "title": "Databases",
   "icon": "internet",
-  "main": "index.tsx",
+  "main": "dist/bundle.js",
+  "flipperBundlerEntry": "index.tsx",
   "license": "MIT",
   "keywords": [
     "flipper-plugin"
@@ -22,5 +25,8 @@
   "bugs": {
     "email": "oncall+flipper@xmail.facebook.com",
     "url": "https://fb.workplace.com/groups/flippersupport/"
+  },
+  "scripts": {
+    "prepack": "../../pkg/bin/run bundle"
   }
 }

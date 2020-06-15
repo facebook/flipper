@@ -1,7 +1,10 @@
 {
-  "name": "LeakCanary",
+  "$schema": "https://fbflipper.com/schemas/plugin-package/v2.json",
+  "name": "flipper-plugin-leak-canary",
+  "id": "LeakCanary",
   "version": "1.0.0",
-  "main": "index.tsx",
+  "main": "dist/bundle.js",
+  "flipperBundlerEntry": "index.tsx",
   "license": "MIT",
   "keywords": [
     "flipper-plugin"
@@ -12,5 +15,8 @@
   "title": "LeakCanary",
   "bugs": {
     "email": "jhli@fb.com"
+  },
+  "scripts": {
+    "prepack": "../../pkg/bin/run bundle"
   }
 }

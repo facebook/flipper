@@ -1,14 +1,22 @@
 {
-  "name": "DeviceLogs",
+  "$schema": "https://fbflipper.com/schemas/plugin-package/v2.json",
+  "name": "flipper-plugin-device-logs",
+  "id": "DeviceLogs",
   "version": "1.0.0",
-  "main": "index.tsx",
+  "main": "dist/bundle.js",
+  "flipperBundlerEntry": "index.tsx",
   "license": "MIT",
-  "keywords": ["flipper-plugin"],
+  "keywords": [
+    "flipper-plugin"
+  ],
   "dependencies": {},
   "title": "Logs",
   "icon": "arrow-right",
   "bugs": {
     "email": "oncall+flipper@xmail.facebook.com",
     "url": "https://fb.workplace.com/groups/flippersupport/"
+  },
+  "scripts": {
+    "prepack": "../../pkg/bin/run bundle"
   }
 }
