@@ -8,6 +8,9 @@
  */
 
 jest.mock('../../defaultPlugins');
+try {
+  jest.mock('../../fb/Logger', () => require('../../fb-stubs/Logger'));
+} catch {}
 
 import dispatcher, {
   getDynamicPlugins,
@@ -158,6 +161,7 @@ test('requirePlugin loads plugin', () => {
     entry: path.join(__dirname, 'TestPlugin'),
     version: '1.0.0',
   });
+  expect(plugin).not.toBeNull();
   expect(plugin!.prototype).toBeInstanceOf(FlipperPlugin);
   expect(plugin!.id).toBe(TestPlugin.id);
 });
