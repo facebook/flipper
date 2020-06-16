@@ -20,7 +20,7 @@ import {
   addDisabledPlugins,
   addFailedPlugins,
 } from '../reducers/plugins';
-import {ipcRenderer} from 'electron';
+import {ipcRenderer, shell} from 'electron';
 import GK from '../fb-stubs/GK';
 import {FlipperBasePlugin} from '../plugin';
 import {setupMenuBar} from '../MenuBar';
@@ -31,9 +31,15 @@ import {notNull} from '../utils/typeUtils';
 import {sideEffect} from '../utils/sideEffect';
 import semver from 'semver';
 import {PluginDetails} from 'flipper-plugin-lib';
+import {addNotification} from '../reducers/notifications';
+import styled from '@emotion/styled';
 
 // eslint-disable-next-line import/no-unresolved
 import getPluginIndex from '../utils/getDefaultPluginsIndex';
+
+const Paragraph = styled.p({
+  marginBottom: '0.1em',
+});
 
 export default (store: Store, logger: Logger) => {
   // expose Flipper and exact globally for dynamically loaded plugins
@@ -61,6 +67,73 @@ export default (store: Store, logger: Logger) => {
   store.dispatch(addDisabledPlugins(disabledPlugins));
   store.dispatch(addFailedPlugins(failedPlugins));
   store.dispatch(registerPlugins(initialPlugins));
+  const deprecatedSpecPlugins = initialPlugins.filter(
+    (p) => !p.isDefault && p.details.specVersion === 1,
+  );
+
+  for (const plugin of deprecatedSpecPlugins) {
+    store.dispatch(
+      addNotification({
+        pluginId: plugin.id,
+        client: null,
+        notification: {
+          id: `plugin-spec-v1-deprecation-${plugin.packageName}`,
+          title: `Plugin "${plugin.title}" will stop working after version 0.48 of Flipper released, because it is packaged using the deprecated format.`,
+          message: (
+            <>
+              <Paragraph>
+                Please try to install a newer version of this plugin packaged
+                using "Install Plugins" tab on "Manage Plugins" form.
+              </Paragraph>
+              <Paragraph>
+                If the latest version of the plugin is still packaged in the old
+                format, please contact the author and consider raising a pull
+                request for upgrading the plugin. You can find contact details
+                on the package page&nbsp;
+                <a
+                  href={`#`}
+                  onClick={() =>
+                    shell.openExternal(
+                      `https://www.npmjs.com/package/${plugin.packageName}`,
+                    )
+                  }>
+                  https://www.npmjs.com/package/{plugin.packageName}
+                </a>
+                .
+              </Paragraph>
+              <Paragraph>
+                If you are the author of this plugin, please migrate your plugin
+                to the new format, and publish new version of it. See&nbsp;
+                <a
+                  href={`#`}
+                  onClick={() =>
+                    shell.openExternal(
+                      'https://fbflipper.com/docs/extending/js-setup#migration-to-the-new-plugin-specification',
+                    )
+                  }>
+                  https://fbflipper.com/docs/extending/js-setup#migration-to-the-new-plugin-specification
+                </a>
+                &nbsp;on how to migrate the plugin. See&nbsp;
+                <a
+                  href={`#`}
+                  onClick={() =>
+                    shell.openExternal(
+                      'https://fbflipper.com/docs/extending/js-setup#package-format',
+                    )
+                  }>
+                  https://fbflipper.com/docs/extending/js-setup#package-format
+                </a>
+                &nbsp;for details on plugin package format.
+              </Paragraph>
+            </>
+          ),
+          severity: 'error',
+          timestamp: Date.now(),
+          category: `Plugin Spec V1 Deprecation`,
+        },
+      }),
+    );
+  }
 
   sideEffect(
     store,
@@ -176,6 +249,7 @@ export const requirePlugin = (
 
       plugin.id = plugin.id || pluginDetails.id;
       plugin.packageName = pluginDetails.name;
+      plugin.details = pluginDetails;
 
       // set values from package.json as static variables on class
       Object.keys(pluginDetails).forEach((key) => {

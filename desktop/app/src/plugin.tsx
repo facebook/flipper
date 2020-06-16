@@ -20,6 +20,7 @@ import {Idler} from './utils/Idler';
 import {StaticView} from './reducers/connections';
 import {State as ReduxState} from './reducers';
 import {DEFAULT_MAX_QUEUE_SIZE} from './reducers/pluginMessageQueue';
+import {PluginDetails} from 'flipper-plugin-lib';
 type Parameters = {[key: string]: any};
 
 // This function is intended to be called from outside of the plugin.
@@ -102,10 +103,7 @@ export abstract class FlipperBasePlugin<
   static gatekeeper: string | null = null;
   static entry: string | null = null;
   static isDefault: boolean;
-  static bugs: {
-    email?: string;
-    url?: string;
-  } | null = null;
+  static details: PluginDetails;
   static keyboardActions: KeyboardActions | null;
   static screenshot: string | null;
   static defaultPersistedState: any;
