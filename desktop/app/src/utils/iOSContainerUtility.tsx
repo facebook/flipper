@@ -56,10 +56,7 @@ async function targets(): Promise<Array<DeviceTarget>> {
       .map((line) => line.trim())
       .map((line) => /(.+) \([^(]+\) \[(.*)\]( \(Simulator\))?/.exec(line))
       .filter(notNull)
-      .filter(
-        ([_match, name, _udid, isSim]) =>
-          !isSim && (name.includes('iPhone') || name.includes('iPad')),
-      )
+      .filter(([_match, _name, _udid, isSim]) => !isSim)
       .map(([_match, name, udid]) => {
         return {udid: udid, type: 'physical', name: name};
       }),
