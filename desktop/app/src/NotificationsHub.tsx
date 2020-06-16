@@ -370,6 +370,7 @@ const NotificationContent = styled(FlexColumn)<{isSelected?: boolean}>(
     maxHeight: props.isSelected ? 'none' : 56,
     lineHeight: 1.4,
     color: props.isSelected ? colors.light50 : colors.light30,
+    userSelect: 'text',
   }),
 );
 
@@ -429,7 +430,7 @@ class NotificationItem extends Component<
 > {
   constructor(props: ItemProps & PluginNotification) {
     super(props);
-    const items = [];
+    const items: Array<Electron.MenuItemConstructorOptions> = [];
     if (props.onHidePlugin && props.plugin) {
       items.push({
         label: `Hide ${getPluginTitle(props.plugin)} plugin`,
@@ -443,7 +444,8 @@ class NotificationItem extends Component<
       });
     }
     items.push(
-      {label: 'Copy', click: this.copy},
+      {label: 'Copy', role: 'copy'},
+      {label: 'Copy All', click: this.copy},
       {label: 'Create Paste', click: this.createPaste},
     );
 
@@ -451,7 +453,7 @@ class NotificationItem extends Component<
   }
 
   state = {reportedNotHelpful: false};
-  contextMenuItems: Array<{label: string; click: (() => any) | undefined}>;
+  contextMenuItems: Array<Electron.MenuItemConstructorOptions>;
   deepLinkButton = React.createRef();
 
   createPaste = () => {
