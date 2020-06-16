@@ -1,7 +1,7 @@
 # Uncomment the next line to define a global platform for your project
 source 'https://github.com/facebook/Sonar.git'
 source 'https://github.com/CocoaPods/Specs'
-platform :ios, '9.0'
+platform :ios, '10.0'
 swift_version = "4.1"
 target 'FlipperKit' do
   # Uncomment the next line if you're using Swift or would like to use dynamic frameworks
@@ -11,10 +11,10 @@ target 'FlipperKit' do
   pod 'Flipper', :path => '../Flipper.podspec'
   # Pods for SonarKit
   pod 'Flipper-PeerTalk', '~>0.0'
-  pod 'Flipper-RSocket', '~>0.10'
+  pod 'Flipper-RSocket', '~>1.1'
   pod 'DoubleConversion', '~>1.1'
   pod 'glog', '~>0.3'
-  pod 'Flipper-Folly', '~>1.2'
+  pod 'Flipper-Folly', '~>2.2'
   pod 'CocoaAsyncSocket', '~>7.6'
 
 end
