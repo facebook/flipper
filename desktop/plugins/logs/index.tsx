@@ -12,9 +12,11 @@ import {
   TableColumnOrder,
   TableColumnSizes,
   TableColumns,
+  TableRowSortOrder,
   Props as PluginProps,
   BaseAction,
   DeviceLogEntry,
+  produce,
 } from 'flipper';
 import {Counter} from './LogWatcher';
 
@@ -55,6 +57,7 @@ type BaseState = {
 type AdditionalState = {
   readonly highlightedRows: ReadonlySet<string>;
   readonly counters: ReadonlyArray<Counter>;
+  readonly timeDirection: 'up' | 'down';
 };
 
 type State = BaseState & AdditionalState;
@@ -104,6 +107,7 @@ const COLUMNS = {
   },
   time: {
     value: 'Time',
+    sortable: true,
   },
   pid: {
     value: 'PID',
@@ -262,6 +266,7 @@ export function addEntriesToState(
     entries: [],
     key2entry: {},
   } as const,
+  addDirection: 'up' | 'down' = 'up',
 ): BaseState {
   const rows = [...state.rows];
   const entries = [...state.entries];
@@ -280,7 +285,7 @@ export function addEntriesToState(
       previousEntry = state.entries[state.entries.length - 1].entry;
     }
 
-    addRowIfNeeded(rows, row, entry, previousEntry);
+    addRowIfNeeded(rows, row, entry, previousEntry, addDirection);
   }
 
   return {
@@ -295,8 +300,14 @@ export function addRowIfNeeded(
   row: TableBodyRow,
   entry: DeviceLogEntry,
   previousEntry: DeviceLogEntry | null,
+  addDirection: 'up' | 'down' = 'up',
 ) {
-  const previousRow = rows.length > 0 ? rows[rows.length - 1] : null;
+  const previousRow =
+    rows.length > 0
+      ? addDirection === 'up'
+        ? rows[rows.length - 1]
+        : rows[0]
+      : null;
   if (
     previousRow &&
     previousEntry &&
@@ -316,7 +327,11 @@ export function addRowIfNeeded(
       <LogCount backgroundColor={type.color}>{count}</LogCount>
     );
   } else {
-    rows.push(row);
+    if (addDirection === 'up') {
+      rows.push(row);
+    } else {
+      rows.unshift(row);
+    }
   }
 }
 
@@ -491,6 +506,7 @@ export default class LogTable extends FlipperDevicePlugin<
         initialState.rows,
       ),
       counters: this.restoreSavedCounters(),
+      timeDirection: 'up',
     };
 
     this.logListener = this.device.addLogListener((entry: DeviceLogEntry) => {
@@ -539,7 +555,9 @@ export default class LogTable extends FlipperDevicePlugin<
         const thisBatch = this.batch;
         this.batch = [];
         this.queued = false;
-        this.setState((state) => addEntriesToState(thisBatch, state));
+        this.setState((state) =>
+          addEntriesToState(thisBatch, state, state.timeDirection),
+        );
       }, 100);
     }
   };
@@ -660,6 +678,15 @@ export default class LogTable extends FlipperDevicePlugin<
           // If the logs is opened through deeplink, then don't scroll as the row is highlighted
           stickyBottom={
             !(this.props.deepLinkPayload && this.state.highlightedRows.size > 0)
+          }
+          initialSortOrder={{key: 'time', direction: 'up'}}
+          onSort={(order: TableRowSortOrder) =>
+            this.setState(
+              produce((prevState) => {
+                prevState.rows.reverse();
+                prevState.timeDirection = order.direction;
+              }),
+            )
           }
         />
         <DetailSidebar>{this.renderSidebar()}</DetailSidebar>
