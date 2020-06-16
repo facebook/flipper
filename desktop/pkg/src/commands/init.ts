@@ -130,9 +130,14 @@ async function verifyFlipperSearchPath(pluginDirectory: string) {
   } else {
     const config = JSON.parse(fs.readFileSync(flipperConfigPath, 'utf8'));
     const pluginPaths: string[] = config.pluginPaths ?? [];
-    const isInSearchPath = pluginPaths.some(
-      (p) => pluginDirectory === path.resolve(p.replace(/^~/, homedir())),
-    );
+    const isInSearchPath = pluginPaths.some((p) => {
+      // Match: exact path and first level subdirectory
+      const relativePath = path.relative(
+        path.resolve(p.replace(/^~/, homedir())),
+        pluginDirectory,
+      );
+      return relativePath.split('/').length === 1;
+    });
     if (!isInSearchPath) {
       if (
         (
