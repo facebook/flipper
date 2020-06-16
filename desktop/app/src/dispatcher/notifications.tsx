@@ -190,7 +190,13 @@ export default (store: Store, logger: Logger) => {
             closeAfter: 10000,
             pluginNotification: n,
           });
-          logger.track('usage', 'native-notification', n.notification);
+          logger.track('usage', 'native-notification', {
+            ...n.notification,
+            message:
+              typeof n.notification.message === 'string'
+                ? n.notification.message
+                : '<ReactNode>',
+          });
         }
       });
     },
