@@ -33,6 +33,7 @@ import semver from 'semver';
 import {PluginDetails} from 'flipper-plugin-lib';
 import {addNotification} from '../reducers/notifications';
 import styled from '@emotion/styled';
+import {tryCatchReportPluginFailures, reportUsage} from '../utils/metrics';
 
 // eslint-disable-next-line import/no-unresolved
 import getPluginIndex from '../utils/getDefaultPluginsIndex';
@@ -58,6 +59,7 @@ export default (store: Store, logger: Logger) => {
   const initialPlugins: Array<
     typeof FlipperPlugin | typeof FlipperDevicePlugin
   > = filterNewestVersionOfEachPlugin(getBundledPlugins(), getDynamicPlugins())
+    .map(reportVersion)
     .filter(checkDisabled(disabledPlugins))
     .filter(checkGK(gatekeepedPlugins))
     .map(requirePlugin(failedPlugins, defaultPluginsIndex))
@@ -70,7 +72,6 @@ export default (store: Store, logger: Logger) => {
   const deprecatedSpecPlugins = initialPlugins.filter(
     (p) => !p.isDefault && p.details.specVersion === 1,
   );
-
   for (const plugin of deprecatedSpecPlugins) {
     store.dispatch(
       addNotification({
@@ -148,6 +149,17 @@ export default (store: Store, logger: Logger) => {
     },
   );
 };
+
+function reportVersion(pluginDetails: PluginDetails) {
+  reportUsage(
+    'plugin:version',
+    {
+      version: pluginDetails.version,
+    },
+    pluginDetails.id,
+  );
+  return pluginDetails;
+}
 
 export function filterNewestVersionOfEachPlugin(
   bundledPlugins: PluginDetails[],
@@ -237,33 +249,43 @@ export const requirePlugin = (
     pluginDetails: PluginDetails,
   ): typeof FlipperPlugin | typeof FlipperDevicePlugin | null => {
     try {
-      let plugin = pluginDetails.isDefault
-        ? defaultPluginsIndex[pluginDetails.name]
-        : reqFn(pluginDetails.entry);
-      if (plugin.default) {
-        plugin = plugin.default;
-      }
-      if (!(plugin.prototype instanceof FlipperBasePlugin)) {
-        throw new Error(`Plugin ${plugin.name} is not a FlipperBasePlugin`);
-      }
-
-      plugin.id = plugin.id || pluginDetails.id;
-      plugin.packageName = pluginDetails.name;
-      plugin.details = pluginDetails;
-
-      // set values from package.json as static variables on class
-      Object.keys(pluginDetails).forEach((key) => {
-        if (key !== 'name' && key !== 'id') {
-          plugin[key] =
-            plugin[key] || pluginDetails[key as keyof PluginDetails];
-        }
-      });
-
-      return plugin;
+      return tryCatchReportPluginFailures(
+        () => requirePluginInternal(pluginDetails, defaultPluginsIndex, reqFn),
+        'plugin:load',
+        pluginDetails.id,
+      );
     } catch (e) {
       failedPlugins.push([pluginDetails, e.message]);
-      console.error(pluginDetails, e);
+      console.error(`Plugin ${pluginDetails.id} failed to load`, e);
       return null;
     }
   };
+};
+
+const requirePluginInternal = (
+  pluginDetails: PluginDetails,
+  defaultPluginsIndex: any,
+  reqFn: Function = global.electronRequire,
+) => {
+  let plugin = pluginDetails.isDefault
+    ? defaultPluginsIndex[pluginDetails.name]
+    : reqFn(pluginDetails.entry);
+  if (plugin.default) {
+    plugin = plugin.default;
+  }
+  if (!(plugin.prototype instanceof FlipperBasePlugin)) {
+    throw new Error(`Plugin ${plugin.name} is not a FlipperBasePlugin`);
+  }
+
+  plugin.id = plugin.id || pluginDetails.id;
+  plugin.packageName = pluginDetails.name;
+  plugin.details = pluginDetails;
+
+  // set values from package.json as static variables on class
+  Object.keys(pluginDetails).forEach((key) => {
+    if (key !== 'name' && key !== 'id') {
+      plugin[key] = plugin[key] || pluginDetails[key as keyof PluginDetails];
+    }
+  });
+  return plugin;
 };
