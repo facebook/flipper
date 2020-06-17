@@ -12,7 +12,7 @@
     "flipper-pkg-lib": "0.47.0",
     "flipper-plugin-lib": "0.47.0",
     "fs-extra": "^8.1.0",
-    "ignore": "^5.1.4",
+    "ignore": "^5.1.8",
     "mem": "^6.0.0",
     "mkdirp": "^1.0.4",
     "p-filter": "^2.1.0",
