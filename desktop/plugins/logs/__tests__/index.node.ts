@@ -7,12 +7,12 @@
  * @format
  */
 
-import {addEntriesToState, processEntry} from '../index.tsx';
+import {addEntriesToState, processEntry} from '../index';
+import {DeviceLogEntry} from 'flipper';
 
-const entry = {
+const entry: DeviceLogEntry = {
   tag: 'OpenGLRenderer',
   pid: 18384,
-
   tid: 18409,
   message: 'Swap behavior 1',
   date: new Date('Feb 28 2013 19:00:00 EST'),
@@ -37,17 +37,20 @@ test('addEntriesToState without current state', () => {
 });
 
 test('addEntriesToState with current state', () => {
-  const currentState = addEntriesToState([processEntry(entry, 'key1')]);
-  const processedEntry = processEntry(
+  const firstProcessedEntry = processEntry(entry, 'key1');
+  const currentState = addEntriesToState([firstProcessedEntry]);
+  const secondProcessedEntry = processEntry(
     {
       ...entry,
       message: 'new message',
     },
     'key2',
   );
-  const newState = addEntriesToState([processedEntry], currentState);
-  expect(newState.rows.length).toBe(2);
+  const newState = addEntriesToState([secondProcessedEntry], currentState);
   expect(newState.entries.length).toBe(2);
+  expect(newState.rows.length).toBe(2);
+  expect(newState.rows[0]).toEqual(firstProcessedEntry.row);
+  expect(newState.rows[1]).toEqual(secondProcessedEntry.row);
 });
 
 test('addEntriesToState increase counter on duplicate message', () => {
@@ -57,4 +60,26 @@ test('addEntriesToState increase counter on duplicate message', () => {
   expect(newState.rows.length).toBe(1);
   expect(newState.entries.length).toBe(2);
   expect(newState.rows[0].columns.type.value.props.children).toBe(2);
+});
+
+test('addEntriesToState with reversed direction (add to front)', () => {
+  const firstProcessedEntry = processEntry(entry, 'key1');
+  const currentState = addEntriesToState([firstProcessedEntry]);
+  expect(currentState.rows.length).toBe(1);
+  expect(currentState.entries.length).toBe(1);
+  const secondProcessedEntry = processEntry(
+    {
+      ...entry,
+      message: 'second message',
+      date: new Date('Feb 28 2013 19:01:00 EST'),
+    },
+    'key2',
+  );
+  const newState = addEntriesToState(
+    [secondProcessedEntry],
+    currentState,
+    'down',
+  );
+  expect(newState.entries.length).toBe(2);
+  expect(newState.rows.length).toBe(2);
 });
