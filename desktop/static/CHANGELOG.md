@@ -1,3 +1,10 @@
+# 0.47.0 (17/6/2020)
+
+ * D21979475 -  Fix scrolling to inspected element in Layout plugin
+ * D22042960 -  Versions of bundled plugins will be matching Flipper core version.
+ * D22047276 -  Add ability to reverse log by time
+
+
 # 0.46.0 (9/6/2020)
 
  * D21903394 -  Device plugins are now expanded by default, and the expand / collapse state will now be remembered across restarts
