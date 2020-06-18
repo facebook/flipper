@@ -6,77 +6,11 @@ updates:
     interval: weekly
     time: '13:00'
   open-pull-requests-limit: 10
-  ignore:
-  - dependency-name: async-mutex
-    versions:
-    - ">= 0.2.a, < 0.3"
-  - dependency-name: babel-eslint
-    versions:
-    - ">= 10.1.a, < 10.2"
-  - dependency-name: "@babel/plugin-proposal-nullish-coalescing-operator"
-    versions:
-    - "> 7.8.3, < 8"
-  - dependency-name: "@babel/plugin-transform-typescript"
-    versions:
-    - "> 7.9.0, < 8"
-  - dependency-name: "@oclif/parser"
-    versions:
-    - "> 3.8.4, < 4"
-  - dependency-name: promisify-child-process
-    versions:
-    - "> 4.1.0, < 5"
-  - dependency-name: query-string
-    versions:
-    - "> 6.12.0, < 7"
-  - dependency-name: react-transition-group
-    versions:
-    - "> 4.3.0, < 5"
-  - dependency-name: recharts
-    versions:
-    - "> 1.7.1, < 2"
-  - dependency-name: "@types/algoliasearch"
-    versions:
-    - "> 3.34.5, < 4"
-  - dependency-name: "@typescript-eslint/parser"
-    versions:
-    - "> 2.19.2, < 3"
-  - dependency-name: "@types/invariant"
-    versions:
-    - "> 2.2.31, < 2.3"
-  - dependency-name: "@types/react"
-    versions:
-    - "> 16.9.17, < 17"
-  - dependency-name: "@types/react-dom"
-    versions:
-    - "> 16.9.4, < 17"
-  - dependency-name: "@types/react-test-renderer"
-    versions:
-    - "> 16.9.1, < 17"
-  - dependency-name: "@types/react-virtualized"
-    versions:
-    - "> 9.21.9, < 10"
-  - dependency-name: "@types/testing-library__react"
-    versions:
-    - "> 10.0.0, < 11"
+  versioning-strategy: increase-if-necessary
 - package-ecosystem: cargo
   directory: "/packer"
   schedule:
     interval: weekly
     time: '13:00'
   open-pull-requests-limit: 10
-  ignore:
-  - dependency-name: data-encoding
-    versions:
-    - "> 2.2.0, < 3"
-  - dependency-name: serde
-    versions:
-    - "> 1.0.106, < 1.1"
-  - dependency-name: serde_yaml
-    versions:
-    - ">= 0.8.12.a, < 0.8.13"
-  - dependency-name: sha2
-    versions:
-    - "> 0.8.1, < 0.9"
-  - dependency-name: tar
-    versions:
-    - "> 0.4.26, < 0.5"
+  versioning-strategy: increase-if-necessary
