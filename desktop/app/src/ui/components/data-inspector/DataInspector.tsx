@@ -346,28 +346,30 @@ const DataInspector: React.FC<DataInspectorProps> = memo(
     );
 
     const extractValue = useCallback(
-      (data: any, depth: number) => {
+      (data: any, depth: number, path: string[]) => {
         let res;
         if (extractValueProp) {
-          res = extractValueProp(data, depth);
+          res = extractValueProp(data, depth, path);
         }
         if (!res) {
-          res = defaultValueExtractor(data, depth);
+          res = defaultValueExtractor(data, depth, path);
         }
         return res;
       },
       [extractValueProp],
     );
 
-    const res = useMemo(() => extractValue(data, depth), [
+    const res = useMemo(() => extractValue(data, depth, path), [
       extractValue,
       data,
       depth,
+      path,
     ]);
-    const resDiff = useMemo(() => extractValue(diff, depth), [
+    const resDiff = useMemo(() => extractValue(diff, depth, path), [
       extractValue,
-      data,
+      diff,
       depth,
+      path,
     ]);
     const ancestry = useMemo(
       () => (res ? parentAncestry!.concat([res.value]) : []),
@@ -554,6 +556,7 @@ const DataInspector: React.FC<DataInspectorProps> = memo(
     } else {
       descriptionOrPreview = (
         <DataPreview
+          path={path}
           type={type}
           value={value}
           extractValue={extractValue}

@@ -17,6 +17,7 @@ import {colors} from '../colors';
 export type DataValueExtractor = (
   value: any,
   depth: number,
+  path: string[],
 ) =>
   | {
       mutable: boolean;
@@ -51,6 +52,7 @@ function intersperse(arr: Array<any>, sep: string) {
 }
 
 export default class DataPreview extends PureComponent<{
+  path: string[];
   type: string;
   value: any;
   depth: number;
@@ -62,7 +64,7 @@ export default class DataPreview extends PureComponent<{
   };
 
   render() {
-    const {depth, extractValue, type, value} = this.props;
+    const {depth, extractValue, path, type, value} = this.props;
 
     if (type === 'array') {
       return (
@@ -70,7 +72,7 @@ export default class DataPreview extends PureComponent<{
           {'['}
           {intersperse(
             value.map((element: any, index: number) => {
-              const res = extractValue(element, depth + 1);
+              const res = extractValue(element, depth + 1, path);
               if (!res) {
                 return null;
               }
