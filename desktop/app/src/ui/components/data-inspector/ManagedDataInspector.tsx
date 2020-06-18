@@ -75,15 +75,12 @@ export default class ManagedDataInspector extends PureComponent<
   ManagedDataInspectorProps,
   ManagedDataInspectorState
 > {
-  constructor(props: ManagedDataInspectorProps, context: Object) {
-    super(props, context);
-    this.state = {
-      expanded: {},
-      userExpanded: {},
-      filterExpanded: {},
-      filter: '',
-    };
-  }
+  state = {
+    expanded: {},
+    userExpanded: {},
+    filterExpanded: {},
+    filter: '',
+  };
 
   static getDerivedStateFromProps(
     nextProps: ManagedDataInspectorProps,
