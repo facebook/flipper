@@ -38,6 +38,8 @@ import {URL} from 'url';
 import {DefaultKeyboardAction} from 'app/src/MenuBar';
 import {MockResponseDialog} from './MockResponseDialog';
 
+const LOCALSTORAGE_MOCK_ROUTE_LIST_KEY = '__NETWORK_CACHED_MOCK_ROUTE_LIST';
+
 type PersistedState = {
   requests: {[id: string]: Request};
   responses: {[id: string]: Response};
@@ -206,14 +208,18 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
   }
 
   init() {
-    this.client.supportsMethod('mockResponses').then((result) =>
+    this.client.supportsMethod('mockResponses').then((result) => {
+      const routes = JSON.parse(
+        localStorage.getItem(LOCALSTORAGE_MOCK_ROUTE_LIST_KEY) || '{}',
+      );
       this.setState({
-        routes: {},
+        routes: routes,
         isMockResponseSupported: result,
         showMockResponseDialog: false,
-      }),
-    );
-    this.informClientMockChange({});
+        nextRouteId: routes.length,
+      });
+    });
+
     this.setState(this.parseDeepLinkPayload(this.props.deepLinkPayload));
 
     // declare new variable to be called inside the interface
@@ -225,7 +231,7 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
           produce((draftState: State) => {
             const nextRouteId = draftState.nextRouteId;
             draftState.routes[nextRouteId.toString()] = {
-              requestUrl: '/',
+              requestUrl: '',
               requestMethod: 'GET',
               responseData: '',
               responseHeaders: {},
@@ -258,10 +264,7 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
     };
   }
 
-  teardown() {
-    // Remove mock response inside client
-    this.informClientMockChange({});
-  }
+  teardown() {}
 
   onKeyboardAction = (action: string) => {
     if (action === 'clear') {
@@ -341,6 +344,10 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
 
     if (this.state.isMockResponseSupported) {
       const routesValuesArray = Object.values(filteredRoutes);
+      localStorage.setItem(
+        LOCALSTORAGE_MOCK_ROUTE_LIST_KEY,
+        JSON.stringify(routesValuesArray),
+      );
       this.client.call('mockResponses', {
         routes: routesValuesArray.map((route: Route) => ({
           requestUrl: route.requestUrl,
