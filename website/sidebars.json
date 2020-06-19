@@ -23,7 +23,8 @@
       "getting-started/ios-native",
       "getting-started/react-native",
       "getting-started/react-native-android",
-      "getting-started/react-native-ios"
+      "getting-started/react-native-ios",
+      "troubleshooting"
     ],
     "Plugin Setup": [
       "setup/layout-plugin",
@@ -38,8 +39,7 @@
     ],
     "Advanced": [
       "custom-ports",
-      "stetho",
-      "troubleshooting"
+      "stetho"
     ]
   },
   "extending": {
