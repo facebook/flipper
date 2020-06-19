@@ -4,6 +4,7 @@ title: Troubleshooting Issues
 sidebar_label: Troubleshooting Issues
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
+import Link from '@docusaurus/Link';
 
 We hope that flipper works well out of the box, but the software is a work in progress and problems will occur. Below are some known issues and steps you can take to try to resolve them.
 
@@ -41,7 +42,7 @@ On a terminal, run the following:
 ```bash
 adb shell am start -n <APP_PACKAGE>/com.facebook.flipper.android.diagnostics.FlipperDiagnosticActivity
 ```
-This will only work if you added `FlipperDiagnosticActivity` to your `AndroidManifest.xml`. See [getting started](getting-started/index) for help.
+This will only work if you added `FlipperDiagnosticActivity` to your `AndroidManifest.xml`. See <Link to={useBaseUrl('/docs/getting-started/android-native#diagnostics')}>getting started</Link> for help.
 
 #### iOS
 You'll need to manually add this [ViewController](https://github.com/facebook/flipper/blob/master/iOS/FlipperKit/FlipperDiagnosticsViewController.m) to your app to see the in-app diagnostics.
