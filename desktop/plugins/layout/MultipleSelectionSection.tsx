@@ -11,6 +11,7 @@ import {
   FlexColumn,
   FlexBox,
   Element,
+  ElementsConstants,
   ElementID,
   ElementsInspector,
   Glyph,
@@ -18,10 +19,9 @@ import {
   styled,
 } from 'flipper';
 import React, {memo, useState} from 'react';
-import {ROW_HEIGHT} from '../../app/src/ui/components/elements-inspector/elements';
 
 const MultipleSelectorSectionContainer = styled(FlexColumn)({
-  maxHeight: 3 * ROW_HEIGHT + 24,
+  maxHeight: 3 * ElementsConstants.rowHeight + 24,
 });
 
 const MultipleSelectorSectionTitle = styled(FlexBox)({

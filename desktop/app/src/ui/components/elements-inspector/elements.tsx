@@ -20,7 +20,9 @@ import {clipboard, MenuItemConstructorOptions} from 'electron';
 import React, {MouseEvent, KeyboardEvent} from 'react';
 import {Scrollable} from '../..';
 
-export const ROW_HEIGHT = 23;
+export const ElementsConstants = {
+  rowHeight: 23,
+};
 
 const backgroundColor = (props: {
   selected: boolean;
@@ -58,7 +60,7 @@ const ElementsRowContainer = styled(ContextMenu)<any>((props) => ({
   color: props.selected || props.focused ? colors.white : colors.grapeDark3,
   flexShrink: 0,
   flexWrap: 'nowrap',
-  height: ROW_HEIGHT,
+  height: ElementsConstants.rowHeight,
   paddingLeft: (props.level - 1) * 12,
   paddingRight: 20,
   position: 'relative',
@@ -86,10 +88,10 @@ ElementsRowDecoration.displayName = 'Elements:ElementsRowDecoration';
 
 const ElementsLine = styled.div<{childrenCount: number}>((props) => ({
   backgroundColor: colors.light20,
-  height: props.childrenCount * ROW_HEIGHT - 4,
+  height: props.childrenCount * ElementsConstants.rowHeight - 4,
   position: 'absolute',
   right: 3,
-  top: ROW_HEIGHT - 3,
+  top: ElementsConstants.rowHeight - 3,
   zIndex: 2,
   width: 2,
   borderRadius: '999em',

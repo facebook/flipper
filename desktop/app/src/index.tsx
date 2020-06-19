@@ -175,7 +175,10 @@ export {
   ElementSearchResultSet,
   ElementsInspectorProps,
 } from './ui/components/elements-inspector/ElementsInspector';
-export {Elements} from './ui/components/elements-inspector/elements';
+export {
+  Elements,
+  ElementsConstants,
+} from './ui/components/elements-inspector/elements';
 export {ContextMenuExtension} from './ui/components/elements-inspector/elements';
 export {default as ElementsInspector} from './ui/components/elements-inspector/ElementsInspector';
 export {InspectorSidebar} from './ui/components/elements-inspector/sidebar';
