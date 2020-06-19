@@ -27,7 +27,7 @@
     "@types/node": "^13.7.5",
     "babel-plugin-emotion": "^10.0.33",
     "fs-extra": "^8.1.0",
-    "tslib": "^1"
+    "tslib": "^2"
   },
   "devDependencies": {
     "@types/jest": "25.1.4",
