@@ -93,7 +93,7 @@
     ]
   },
   "resolutions": {
-    "@jest-runner/electron/electron": "8.0.1",
+    "@jest-runner/electron/electron": "9.0.2",
     "adbkit-logcat": "2.0.1",
     "@types/react": "16.9.17",
     "@types/react-dom": "16.9.4",
@@ -160,8 +160,8 @@
     "chalk": "^4.0.0",
     "cross-env": "^7.0.2",
     "detect-port": "^1.1.1",
-    "electron": "8.0.1",
-    "electron-builder": "^22.3.2",
+    "electron": "9.0.2",
+    "electron-builder": "^22.7.0",
     "eslint": "^6.7.0",
     "eslint-config-fbjs": "^3.1.1",
     "eslint-config-prettier": "^6.10.1",
