@@ -5,6 +5,7 @@
   "eslint.packageManager": "yarn",
   "eslint.codeActionsOnSave.mode": "all",
   "editor.formatOnSave": true,
+  "files.trimTrailingWhitespace": false, // This one is broken as it cleans string literals as well, killing Jest snapshots: https://github.com/Microsoft/vscode/issues/52711
   "prettier.formatAlreadyFormattedFilesOnSave": false,
   "files.eol": "\n",
   "editor.codeActionsOnSave": {

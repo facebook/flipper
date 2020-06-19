@@ -22,18 +22,7 @@ const builtInModules = [
   '@emotion/styled',
 ];
 
-const prettierConfig = {
-  // arrowParens=always is the default for Prettier 2.0, but other configs
-  // at Facebook appear to be leaking into this file, which is still on
-  // Prettier 1.x at the moment, so it is best to be explicit.
-  arrowParens: 'always',
-  requirePragma: true,
-  singleQuote: true,
-  trailingComma: 'all',
-  bracketSpacing: false,
-  jsxBracketSameLine: true,
-  parser: 'flow',
-};
+const prettierConfig = require('./.prettierrc');
 
 module.exports = {
   parser: 'babel-eslint',
