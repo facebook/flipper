@@ -216,7 +216,7 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
         routes: routes,
         isMockResponseSupported: result,
         showMockResponseDialog: false,
-        nextRouteId: Object.keys(routes).length
+        nextRouteId: Object.keys(routes).length,
       });
     });
 
