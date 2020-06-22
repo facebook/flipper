@@ -101,7 +101,7 @@
     "minimist": "1.2.3",
     "**/metro/**/temp": "0.9.0",
     "**/metro/**/ws": "1.1.5",
-    "ws": "7.2.3",
+    "ws": "7.3.0",
     "kind-of": "6.0.3"
   },
   "devDependencies": {
