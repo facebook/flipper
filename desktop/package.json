@@ -233,6 +233,8 @@
     "build:dev": "cross-env NODE_ENV=development ./ts-node scripts/build-release.ts $@",
     "prebuild-headless": "yarn build:pkg",
     "build-headless": "cross-env NODE_ENV=production ./ts-node scripts/build-headless.ts $@",
+    "prebuild-plugin": "yarn build:pkg",
+    "build-plugin": "./ts-node scripts/build-plugin.ts",
     "open-dist": "open ../dist/mac/Flipper.app --args --launcher=false --inspect=9229",
     "fix": "eslint . --fix --ext .js,.ts,.tsx",
     "pretest": "yarn build:pkg",
