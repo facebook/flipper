@@ -21,6 +21,7 @@ import {StaticView} from './reducers/connections';
 import {State as ReduxState} from './reducers';
 import {DEFAULT_MAX_QUEUE_SIZE} from './reducers/pluginMessageQueue';
 import {PluginDetails} from 'flipper-plugin-lib';
+import {Settings} from './reducers/settings';
 type Parameters = {[key: string]: any};
 
 // This function is intended to be called from outside of the plugin.
@@ -74,6 +75,7 @@ export type Props<T> = {
   isArchivedDevice: boolean;
   selectedApp: string | null;
   setStaticView: (payload: StaticView) => void;
+  settingsState: Settings;
 };
 
 export type BaseAction = {

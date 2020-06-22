@@ -192,6 +192,6 @@ export {Logger} from './fb-interfaces/Logger';
 export {getInstance as getLogger} from './fb-stubs/Logger';
 export {callVSCode, getVSCodeUrl} from './utils/vscodeUtils';
 export {useLocalStorage} from './utils/useLocalStorage';
-
+export {checkIdbIsInstalled} from './utils/iOSContainerUtility';
 // Sidebar extensions should be last so they can import anything from here.
 export {default as SidebarExtensions} from './fb-stubs/LayoutInspectorSidebarExtensions';

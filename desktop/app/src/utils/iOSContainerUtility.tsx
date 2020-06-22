@@ -107,7 +107,7 @@ async function pull(
   );
 }
 
-async function checkIdbIsInstalled(idbPath: string): Promise<void> {
+export async function checkIdbIsInstalled(idbPath: string): Promise<void> {
   const isInstalled = await isAvailable(idbPath);
   if (!isInstalled) {
     throw new Error(

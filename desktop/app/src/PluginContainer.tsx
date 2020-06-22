@@ -37,6 +37,7 @@ import {
 import React, {PureComponent} from 'react';
 import {connect, ReactReduxContext} from 'react-redux';
 import {setPluginState} from './reducers/pluginStates';
+import {Settings} from './reducers/settings';
 import {selectPlugin} from './reducers/connections';
 import {State as Store, MiddlewareAPI} from './reducers/index';
 import {activateMenuItems} from './MenuBar';
@@ -44,7 +45,6 @@ import {Message} from './reducers/pluginMessageQueue';
 import {Idler} from './utils/Idler';
 import {processMessageQueue} from './utils/messageQueue';
 import {ToggleButton, SmallText} from './ui';
-import debounceRender from 'react-debounce-render';
 
 const Container = styled(FlexColumn)({
   width: 0,
@@ -103,6 +103,7 @@ type StateFromProps = {
   isArchivedDevice: boolean;
   pendingMessages: Message[] | undefined;
   pluginIsEnabled: boolean;
+  settingsState: Settings;
 };
 
 type DispatchFromProps = {
@@ -321,6 +322,7 @@ class PluginContainer extends PureComponent<Props, State> {
       target,
       isArchivedDevice,
       selectedApp,
+      settingsState,
     } = this.props;
     if (!activePlugin || !target || !pluginKey) {
       console.warn(`No selected plugin. Rendering empty!`);
@@ -339,6 +341,7 @@ class PluginContainer extends PureComponent<Props, State> {
       key: pluginKey,
       logger: this.props.logger,
       selectedApp,
+      settingsState,
       persistedState: activePlugin.defaultPersistedState
         ? {
             ...activePlugin.defaultPersistedState,
@@ -397,6 +400,7 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
     pluginStates,
     plugins: {devicePlugins, clientPlugins},
     pluginMessageQueue,
+    settingsState,
   }) => {
     let pluginKey = null;
     let target = null;
@@ -447,6 +451,7 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
       selectedApp: selectedApp || null,
       pendingMessages,
       pluginIsEnabled,
+      settingsState,
     };
     return s;
   },
