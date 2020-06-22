@@ -35,6 +35,9 @@ export default async function runBuild(
   out: string,
   dev: boolean,
 ) {
+  const sourceMapUrl = path.basename(
+    out.substring(0, out.lastIndexOf('.')) + '.map',
+  );
   const baseConfig = await Metro.loadConfig();
   const config = Object.assign({}, baseConfig, {
     reporter: {update: () => {}},
@@ -70,6 +73,7 @@ export default async function runBuild(
     minify: !dev,
     resetCache: !dev,
     sourceMap: dev,
+    sourceMapUrl,
     entry,
     out,
   });

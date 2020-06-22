@@ -74,6 +74,8 @@ async function compile(
   watchFolders: string[],
   entry: string,
 ) {
+  const out = path.join(buildFolder, 'bundle.js');
+  const sourceMapUrl = dev ? 'bundle.map' : undefined;
   await Metro.runBuild(
     {
       reporter: {update: () => {}},
@@ -98,8 +100,9 @@ async function compile(
       minify: !dev,
       resetCache: !dev,
       sourceMap: dev,
+      sourceMapUrl,
       entry,
-      out: path.join(buildFolder, 'bundle.js'),
+      out,
     },
   );
 }
