@@ -178,7 +178,7 @@ export function activateMenuItems(
   }
 
   // set the application menu again to make sure it updates
-  electron.remote.Menu.setApplicationMenu(
+  electron.remote.Menu?.setApplicationMenu(
     electron.remote.Menu.getApplicationMenu(),
   );
 }
