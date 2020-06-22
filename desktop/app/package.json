@@ -37,7 +37,7 @@
     "promisify-child-process": "^4.1.0",
     "prop-types": "^15.6.0",
     "query-string": "^6.10.1",
-    "react": "16.13.0",
+    "react": "16.13.1",
     "react-async": "^10.0.0",
     "react-color": "^2.18.1",
     "react-debounce-render": "^6.0.0",
