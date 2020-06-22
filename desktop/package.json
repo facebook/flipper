@@ -179,7 +179,7 @@
     "flipper-babel-transformer": "0.47.0",
     "flipper-pkg-lib": "0.47.0",
     "flipper-plugin-lib": "0.47.0",
-    "flow-bin": "0.124.0",
+    "flow-bin": "0.127.0",
     "fs-extra": "^9.0.0",
     "glob": "^7.1.2",
     "ignore": "^5.1.4",
