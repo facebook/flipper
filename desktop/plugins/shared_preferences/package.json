@@ -15,8 +15,5 @@
   "title": "Shared Preferences Viewer",
   "bugs": {
     "email": "halsibai@fb.com"
-  },
-  "scripts": {
-    "prepack": "../../pkg/bin/run bundle"
   }
 }

@@ -17,7 +17,9 @@
   },
   "scripts": {
     "lint": "flipper-pkg lint",
-    "prepack": "flipper-pkg lint && flipper-pkg bundle"
+    "build": "flipper-pkg bundle",
+    "watch": "flipper-pkg bundle --watch",
+    "prepack": "flipper-pkg lint && flipper-pkg bundle --production"
   },
   "peerDependencies": {
     "flipper": "0.47.0"

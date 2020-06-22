@@ -13,8 +13,5 @@
   "icon": "directions",
   "bugs": {
     "email": "beneloca@fb.com"
-  },
-  "scripts": {
-    "prepack": "../../pkg/bin/run bundle"
   }
 }

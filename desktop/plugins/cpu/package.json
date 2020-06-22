@@ -13,8 +13,5 @@
   "icon": "underline",
   "bugs": {
     "email": "barney@fb.com"
-  },
-  "scripts": {
-    "prepack": "../../pkg/bin/run bundle"
   }
 }

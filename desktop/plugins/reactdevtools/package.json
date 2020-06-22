@@ -19,8 +19,5 @@
   "bugs": {
     "email": "danielbuechele@fb.com"
   },
-  "devDependencies": {},
-  "scripts": {
-    "prepack": "../../pkg/bin/run bundle"
-  }
+  "devDependencies": {}
 }

@@ -15,8 +15,5 @@
   "bugs": {
     "email": "oncall+flipper@xmail.facebook.com",
     "url": "https://fb.workplace.com/groups/flippersupport/"
-  },
-  "scripts": {
-    "prepack": "../../pkg/bin/run bundle"
   }
 }

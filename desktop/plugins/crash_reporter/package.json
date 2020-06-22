@@ -18,8 +18,5 @@
   },
   "dependencies": {
     "unicode-substring": "^1.0.0"
-  },
-  "scripts": {
-    "prepack": "../../pkg/bin/run bundle"
   }
 }

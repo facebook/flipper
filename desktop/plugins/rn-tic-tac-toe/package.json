@@ -14,8 +14,5 @@
   "category": "Examples",
   "bugs": {
     "email": "mweststrate@fb.com"
-  },
-  "scripts": {
-    "prepack": "../../pkg/bin/run bundle"
   }
 }

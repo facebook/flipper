@@ -23,8 +23,5 @@
   },
   "devDependencies": {
     "@types/pako": "^1.0.1"
-  },
-  "scripts": {
-    "prepack": "../../pkg/bin/run bundle"
   }
 }

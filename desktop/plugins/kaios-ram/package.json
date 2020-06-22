@@ -24,8 +24,5 @@
   },
   "resolutions": {
     "@types/react": "16.9.17"
-  },
-  "scripts": {
-    "prepack": "../../pkg/bin/run bundle"
   }
 }

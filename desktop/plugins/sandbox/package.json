@@ -13,8 +13,5 @@
   "icon": "translate",
   "bugs": {
     "email": "edoardo@fb.com"
-  },
-  "scripts": {
-    "prepack": "../../pkg/bin/run bundle"
   }
 }

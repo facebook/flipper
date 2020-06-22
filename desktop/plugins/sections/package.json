@@ -20,8 +20,5 @@
   },
   "resolutions": {
     "react-d3-tree/d3": "file:./d3"
-  },
-  "scripts": {
-    "prepack": "../../pkg/bin/run bundle"
   }
 }

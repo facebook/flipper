@@ -16,8 +16,7 @@
     "url": "https://fb.workplace.com/groups/wa.kaios/"
   },
   "scripts": {
-    "postinstall": "patch-package",
-    "prepack": "../../pkg/bin/run bundle"
+    "postinstall": "patch-package"
   },
   "devDependencies": {
     "patch-package": "^6.2.0"
