@@ -36,6 +36,11 @@ export default class Pack extends Command {
       description:
         'Where to output the package, file or directory. Defaults to the current working directory.',
     }),
+    production: flags.boolean({
+      description:
+        'Force env.NODE_ENV=production, enable minification and disable producing source maps.',
+      default: false,
+    }),
   };
 
   public static args: args.IArg[] = [
@@ -117,7 +122,7 @@ export default class Pack extends Command {
 
     cli.action.start(`Compiling`);
     await ensureDir(path.dirname(out));
-    await runBuild(inputDirectory, plugin.source, out);
+    await runBuild(inputDirectory, plugin.source, out, parsedFlags.production);
     cli.action.stop();
 
     cli.action.start(`Packing to ${outputFile}`);

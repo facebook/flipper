@@ -135,7 +135,7 @@ async function compilePlugin(
       // eslint-disable-line no-console
       console.log(`⚙️  Compiling ${name}...`);
       try {
-        await runBuild(dir, source, entry);
+        await runBuild(dir, source, entry, false);
       } catch (e) {
         if (failSilently) {
           console.error(

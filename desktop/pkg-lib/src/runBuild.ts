@@ -59,8 +59,8 @@ export default async function runBuild(
   inputDirectory: string,
   entry: string,
   out: string,
+  dev: boolean,
 ) {
-  const dev = process.env.NODE_ENV !== 'production';
   const baseConfig = await Metro.loadConfig();
   const config = Object.assign({}, baseConfig, {
     reporter: {update: () => {}},
@@ -96,7 +96,7 @@ export default async function runBuild(
     dev,
     minify: !dev,
     resetCache: !dev,
-    sourceMap: true,
+    sourceMap: dev,
     entry,
     out,
   });
