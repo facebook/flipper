@@ -97,7 +97,7 @@ async function compile(
       dev,
       minify: !dev,
       resetCache: !dev,
-      sourceMap: true,
+      sourceMap: dev,
       entry,
       out: path.join(buildFolder, 'bundle.js'),
     },
@@ -174,7 +174,7 @@ export async function compileMain() {
       out,
       dev,
       minify: !dev,
-      sourceMap: true,
+      sourceMap: dev,
       resetCache: !dev,
     });
     console.log('✅  Compiled main bundle.');
