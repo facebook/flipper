@@ -35,9 +35,7 @@ export default async function runBuild(
   out: string,
   dev: boolean,
 ) {
-  const sourceMapUrl = path.basename(
-    out.substring(0, out.lastIndexOf('.')) + '.map',
-  );
+  const sourceMapUrl = null; // inline source map
   const baseConfig = await Metro.loadConfig();
   const config = Object.assign({}, baseConfig, {
     reporter: {update: () => {}},
