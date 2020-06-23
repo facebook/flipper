@@ -9,8 +9,8 @@
   "license": "MIT",
   "bugs": "https://github.com/facebook/flipper/issues",
   "dependencies": {
-    "fs-extra": "^8.1.0",
     "flipper-babel-transformer": "0.47.0",
+    "fs-extra": "^8.1.0",
     "metro": "^0.59.0",
     "metro-minify-terser": "^0.59.0"
   },
@@ -18,8 +18,10 @@
     "@types/fs-extra": "^8.1.0",
     "@types/jest": "^25.1.0",
     "@types/node": "^13.7.5",
+    "flipper-test-utils": "0.47.0",
     "globby": "^10",
     "jest": "^25.1.0",
+    "mock-fs": "^4.12.0",
     "prettier": "^2.0.0",
     "rimraf": "^3.0.2",
     "ts-jest": "^26.0.0",
