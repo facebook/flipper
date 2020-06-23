@@ -10,9 +10,9 @@
     "test": "jest"
   },
   "dependencies": {
-    "react": "16.11.0",
-    "react-native": "0.62.0-rc.5",
-    "react-native-flipper": "^0.33.1"
+    "react": "^16.13",
+    "react-native": "^0.62.2",
+    "react-native-flipper": "^0.47.0"
   },
   "devDependencies": {
     "@babel/core": "^7.6.2",
