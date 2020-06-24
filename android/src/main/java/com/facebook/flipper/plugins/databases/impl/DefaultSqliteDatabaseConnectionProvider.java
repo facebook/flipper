@@ -10,7 +10,6 @@ package com.facebook.flipper.plugins.databases.impl;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import androidx.sqlite.db.SupportSQLiteDatabase;
-import androidx.sqlite.db.framework.FrameworkSQLiteDatabaseWrapping;
 import java.io.File;
 
 public class DefaultSqliteDatabaseConnectionProvider implements SqliteDatabaseConnectionProvider {
