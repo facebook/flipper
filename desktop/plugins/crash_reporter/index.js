@@ -346,7 +346,11 @@ function truncate(baseString: string, numOfChars: number): string {
 export function parsePath(content) {
   const regex = /(?<=.*Path: *)[^\n]*/;
   const arr = regex.exec(content);
-  return arr[0].trim();
+  if (!arr || arr.length <= 0) {
+    return null;
+  }
+  const path = arr[0];
+  return path.trim();
 }
 
 function addFileWatcherForiOSCrashLogs(
