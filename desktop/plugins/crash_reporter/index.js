@@ -343,20 +343,10 @@ function truncate(baseString: string, numOfChars: number): string {
   return truncated_string + '\u2026';
 }
 
-export function parsePath(content: string): ?string {
-  const regex = /Path: *[\w\/\.\t\s%-]*\n/;
+export function parsePath(content) {
+  const regex = /(?<=.*Path: *)([^\n]*)(?:\n)/;
   const arr = regex.exec(content);
-  if (!arr || arr.length <= 0) {
-    return null;
-  }
-  const pathString = arr[0];
-  const pathRegex = /[\w\/\.\t\s%-]*\n/;
-  const tmp = pathRegex.exec(pathString);
-  if (!tmp || tmp.length == 0) {
-    return null;
-  }
-  const path = tmp[0];
-  return path.trim();
+  return arr[0].trim();
 }
 
 function addFileWatcherForiOSCrashLogs(
