@@ -8,7 +8,7 @@
   "license": "MIT",
   "devDependencies": {
     "@types/fb-watchman": "2.0.0",
-    "@types/jest": "^25.1.5",
+    "@types/jest": "^26",
     "@typescript-eslint/eslint-plugin": "^2.8.0",
     "eslint": "^6.6.0",
     "eslint-plugin-babel": "^5.3.0",
@@ -17,7 +17,7 @@
     "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-prettier": "^3.1.1",
     "eslint-plugin-react": "^7.20.0",
-    "jest": "^25.1.5",
+    "jest": "^26",
     "prettier": "^2.0.0",
     "ts-jest": "^26.0.0",
     "tslint-config-prettier": "^1.18.0",

@@ -19,11 +19,11 @@
   },
   "devDependencies": {
     "@types/fs-extra": "^8.1.0",
-    "@types/jest": "^25.1.0",
+    "@types/jest": "^26",
     "@types/node": "^13.7.5",
     "flipper-test-utils": "0.47.0",
     "globby": "^10",
-    "jest": "^25.1.0",
+    "jest": "^26",
     "mock-fs": "^4.12.0",
     "rimraf": "^3.0.2",
     "ts-jest": "^26.0.0",

@@ -30,8 +30,8 @@
     "tslib": "^2"
   },
   "devDependencies": {
-    "@types/jest": "25.1.4",
-    "jest": "^25.1.0",
+    "@types/jest": "26",
+    "jest": "^26",
     "prettier": "^2.0.0",
     "rimraf": "^3.0.2",
     "ts-jest": "^26.0.0",
