@@ -344,7 +344,7 @@ function truncate(baseString: string, numOfChars: number): string {
 }
 
 export function parsePath(content) {
-  const regex = /(?<=.*Path: *)([^\n]*)(?:\n)/;
+  const regex = /(?<=.*Path: *)[^\n]*(?:\n)/;
   const arr = regex.exec(content);
   return arr[0].trim();
 }
