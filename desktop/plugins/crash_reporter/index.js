@@ -306,7 +306,7 @@ export function parseCrashLog(
       const regForName = /.*\n/;
       const nameRegArr = regForName.exec(content);
       let name = nameRegArr ? nameRegArr[0] : fallbackReason;
-      const regForCallStack = /\tat[\w\s\n.$&+,:;=?@#|'<>.^*()%!-]*$/;
+      const regForCallStack = /\tat[\w\s\n\.$&+,:;=?@#|'<>.^*()%!-]*$/;
       const callStackArray = regForCallStack.exec(content);
       const callStack = callStackArray ? callStackArray[0] : '';
       let remainingString =
@@ -344,7 +344,7 @@ function truncate(baseString: string, numOfChars: number): string {
 }
 
 export function parsePath(content: string): ?string {
-  const regex = /Path: *[\w\/.\t\s%-]*\n/;
+  const regex = /Path: *[\w\/\.\t\s%-]*\n/;
   const arr = regex.exec(content);
   if (!arr || arr.length <= 0) {
     return null;
