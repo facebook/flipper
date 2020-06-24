@@ -343,7 +343,7 @@ function truncate(baseString: string, numOfChars: number): string {
   return truncated_string + '\u2026';
 }
 
-export function parsePath(content) {
+export function parsePath(content: string): ?string {
   const regex = /(?<=.*Path: *)[^\n]*/;
   const arr = regex.exec(content);
   if (!arr || arr.length <= 0) {
