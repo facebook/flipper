@@ -1,6 +1,6 @@
 {
   "name": "flipper",
-  "version": "0.47.0",
+  "version": "0.48.0",
   "description": "Mobile development tool",
   "productName": "Flipper",
   "author": "Facebook Inc",
@@ -23,8 +23,8 @@
     "deep-equal": "^2.0.1",
     "emotion": "^10.0.23",
     "expand-tilde": "^2.0.2",
-    "flipper-doctor": "0.47.0",
-    "flipper-plugin-lib": "0.47.0",
+    "flipper-doctor": "0.48.0",
+    "flipper-plugin-lib": "0.48.0",
     "fs-extra": "^8.0.1",
     "immer": "^6.0.0",
     "immutable": "^4.0.0-rc.12",
@@ -68,7 +68,7 @@
   },
   "devDependencies": {
     "@testing-library/react": "^10.0.2",
-    "flipper-test-utils": "0.47.0",
+    "flipper-test-utils": "0.48.0",
     "metro": "^0.59.0",
     "mock-fs": "^4.12.0",
     "pretty-format": "^25.4.0",

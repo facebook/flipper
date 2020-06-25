@@ -1,6 +1,6 @@
 {
   "name": "flipper-pkg-lib",
-  "version": "0.47.0",
+  "version": "0.48.0",
   "description": "Library for building and publishing Flipper plugins",
   "repository": "facebook/flipper",
   "main": "lib/index.js",
@@ -9,7 +9,7 @@
   "license": "MIT",
   "bugs": "https://github.com/facebook/flipper/issues",
   "dependencies": {
-    "flipper-babel-transformer": "0.47.0",
+    "flipper-babel-transformer": "0.48.0",
     "fs-extra": "^8.1.0",
     "metro": "^0.59.0",
     "metro-minify-terser": "^0.59.0"
@@ -18,7 +18,7 @@
     "@types/fs-extra": "^8.1.0",
     "@types/jest": "^26",
     "@types/node": "^13.7.5",
-    "flipper-test-utils": "0.47.0",
+    "flipper-test-utils": "0.48.0",
     "globby": "^10",
     "mock-fs": "^4.12.0",
     "jest": "^26",

@@ -1,3 +1,12 @@
+# 0.48.0 (24/6/2020)
+
+ * D22151908 - Fix Network Mock Dialog crashes when 'Add Route' button is pressed  https://github.com/facebook/flipper/issues/1280
+ * D22158791 - Added "--production" option for "flipper-pkg bundle" command to produce minified plugin packages without source maps.
+ * D22158898 - Disabled source maps in Flipper release builds thus reducing size by ~20%.
+ * D22160443 - Upgrade Flow to 0.127.
+ * D22160304 - Fix react-native-flipper dependency pulling in debug-only artifacts into release builds.
+
+
 # 0.47.0 (17/6/2020)
 
  * D21979475 -  Fix scrolling to inspected element in Layout plugin
