@@ -30,5 +30,10 @@
   "devDependencies": {
     "react": "^16.13.1",
     "react-native": "^0.62.2"
+  },
+  "resolutions": {
+    "logkitty": "0.7.1",
+    "minimist": "1.2.3",
+    "kind-of": "6.0.3"
   }
 }

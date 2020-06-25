@@ -28,5 +28,8 @@
   },
   "relativeDependencies": {
     "react-native-flipper": "../react-native-flipper"
+  },
+  "resolutions": {
+    "minimist": "1.2.3"
   }
 }
