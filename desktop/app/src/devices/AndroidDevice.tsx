@@ -21,10 +21,14 @@ export default class AndroidDevice extends BaseDevice {
     deviceType: DeviceType,
     title: string,
     adb: ADBClient,
+    abiList: Array<string>,
+    sdkVersion: string,
   ) {
     super(serial, deviceType, title, 'Android');
     this.adb = adb;
     this.icon = 'icons/android.svg';
+    this.abiList = abiList;
+    this.sdkVersion = sdkVersion;
     this.adb.openLogcat(this.serial).then((reader) => {
       reader.on('entry', (entry) => {
         let type: LogLevel = 'unknown';
@@ -60,6 +64,8 @@ export default class AndroidDevice extends BaseDevice {
   }
 
   adb: ADBClient;
+  abiList: Array<string> = [];
+  sdkVersion: string | undefined = undefined;
   pidAppMapping: {[key: number]: string} = {};
   private recordingProcess?: Promise<string>;
 

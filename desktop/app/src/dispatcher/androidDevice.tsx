@@ -36,6 +36,9 @@ function createDevice(
       .then(async (props) => {
         try {
           let name = props['ro.product.model'];
+          const abiString = props['ro.product.cpu.abilist'];
+          const sdkVersion = props['ro.build.version.sdk'];
+          const abiList = abiString.length > 0 ? abiString.split(',') : [];
           if (type === 'emulator') {
             name = (await getRunningEmulatorName(device.id)) || name;
           }
@@ -44,7 +47,14 @@ function createDevice(
           );
           const androidLikeDevice = new (isKaiOSDevice
             ? KaiOSDevice
-            : AndroidDevice)(device.id, type, name, adbClient);
+            : AndroidDevice)(
+            device.id,
+            type,
+            name,
+            adbClient,
+            abiList,
+            sdkVersion,
+          );
           if (ports) {
             await androidLikeDevice
               .reverse([ports.secure, ports.insecure])
