@@ -339,7 +339,7 @@ if (true) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return useBaseUrl; });
-/* harmony import */ var _useDocusaurusContext__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(6);
+/* harmony import */ var _useDocusaurusContext__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7);
 /**
  * Copyright (c) 2017-present, Facebook, Inc.
  *
@@ -429,6 +429,30 @@ function _interopRequireWildcard(obj) {
 
 /***/ }),
 /* 5 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(36);
+/* harmony import */ var _isInternalUrl__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(23);
+/* harmony import */ var _ExecutionEnvironment__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(18);
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */var __rest=undefined&&undefined.__rest||function(s,e){var t={};for(var p in s)if(Object.prototype.hasOwnProperty.call(s,p)&&e.indexOf(p)<0)t[p]=s[p];if(s!=null&&typeof Object.getOwnPropertySymbols==="function")for(var i=0,p=Object.getOwnPropertySymbols(s);i<p.length;i++){if(e.indexOf(p[i])<0&&Object.prototype.propertyIsEnumerable.call(s,p[i]))t[p[i]]=s[p[i]];}return t;};function Link(_a){var{isNavLink}=_a,props=__rest(_a,["isNavLink"]);const{to,href}=props;const targetLink=to||href;const isInternal=Object(_isInternalUrl__WEBPACK_IMPORTED_MODULE_2__[/* default */ "a"])(targetLink);const preloaded=Object(react__WEBPACK_IMPORTED_MODULE_0__["useRef"])(false);const LinkComponent=isNavLink?react_router_dom__WEBPACK_IMPORTED_MODULE_1__[/* NavLink */ "b"]:react_router_dom__WEBPACK_IMPORTED_MODULE_1__[/* Link */ "a"];const IOSupported=_ExecutionEnvironment__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"].canUseIntersectionObserver;let io;const handleIntersection=(el,cb)=>{io=new window.IntersectionObserver(entries=>{entries.forEach(entry=>{if(el===entry.target){// If element is in viewport, stop listening/observing and run callback.
+// https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
+if(entry.isIntersecting||entry.intersectionRatio>0){io.unobserve(el);io.disconnect();cb();}}});});// Add element to the observer.
+io.observe(el);};const handleRef=ref=>{if(IOSupported&&ref&&isInternal){// If IO supported and element reference found, setup Observer functionality.
+handleIntersection(ref,()=>{window.docusaurus.prefetch(targetLink);});}};const onMouseEnter=()=>{if(!preloaded.current){window.docusaurus.preload(targetLink);preloaded.current=true;}};Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(()=>{// If IO is not supported. We prefetch by default (only once).
+if(!IOSupported&&isInternal){window.docusaurus.prefetch(targetLink);}// When unmounting, stop intersection observer from watching.
+return()=>{if(IOSupported&&io){io.disconnect();}};},[targetLink,IOSupported,isInternal]);return!targetLink||!isInternal||targetLink.startsWith('#')?// eslint-disable-next-line jsx-a11y/anchor-has-content
+react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("a",Object.assign({href:targetLink},!isInternal&&{target:'_blank',rel:'noopener noreferrer'},props)):react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(LinkComponent,Object.assign({},props,{onMouseEnter:onMouseEnter,innerRef:handleRef,to:targetLink}));}/* harmony default export */ __webpack_exports__["a"] = (Link);
+
+/***/ }),
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -485,7 +509,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -500,7 +524,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
  */function useDocusaurusContext(){return Object(react__WEBPACK_IMPORTED_MODULE_0__["useContext"])(_context__WEBPACK_IMPORTED_MODULE_1__[/* default */ "a"]);}/* harmony default export */ __webpack_exports__["a"] = (useDocusaurusContext);
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -518,13 +542,13 @@ if (false) { var throwOnDirectAccess, ReactIs; } else {
 
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports) {
 
 module.exports = require("path");
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -550,7 +574,7 @@ var react = __webpack_require__(2);
 var react_default = /*#__PURE__*/__webpack_require__.n(react);
 
 // EXTERNAL MODULE: ./node_modules/prop-types/index.js
-var prop_types = __webpack_require__(7);
+var prop_types = __webpack_require__(8);
 var prop_types_default = /*#__PURE__*/__webpack_require__.n(prop_types);
 
 // EXTERNAL MODULE: ./node_modules/history/esm/history.js + 2 modules
@@ -743,7 +767,7 @@ var path_to_regexp = __webpack_require__(113);
 var path_to_regexp_default = /*#__PURE__*/__webpack_require__.n(path_to_regexp);
 
 // EXTERNAL MODULE: ./node_modules/react-is/index.js
-var react_is = __webpack_require__(148);
+var react_is = __webpack_require__(144);
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/objectWithoutPropertiesLoose.js
 var objectWithoutPropertiesLoose = __webpack_require__(37);
@@ -1414,7 +1438,7 @@ if (false) { var secondaryBuildName, initialBuildName, buildNames, key, react_ro
 
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports) {
 
 var Token = {
@@ -1437,7 +1461,7 @@ module.exports = Token;
 
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var helpers = __webpack_require__(92);
@@ -1495,7 +1519,7 @@ module.exports = {
 
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var fs = __webpack_require__(24)
@@ -1853,30 +1877,6 @@ function retry () {
   }
 }
 
-
-/***/ }),
-/* 13 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(36);
-/* harmony import */ var _isInternalUrl__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(23);
-/* harmony import */ var _ExecutionEnvironment__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(18);
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */var __rest=undefined&&undefined.__rest||function(s,e){var t={};for(var p in s)if(Object.prototype.hasOwnProperty.call(s,p)&&e.indexOf(p)<0)t[p]=s[p];if(s!=null&&typeof Object.getOwnPropertySymbols==="function")for(var i=0,p=Object.getOwnPropertySymbols(s);i<p.length;i++){if(e.indexOf(p[i])<0&&Object.prototype.propertyIsEnumerable.call(s,p[i]))t[p[i]]=s[p[i]];}return t;};function Link(_a){var{isNavLink}=_a,props=__rest(_a,["isNavLink"]);const{to,href}=props;const targetLink=to||href;const isInternal=Object(_isInternalUrl__WEBPACK_IMPORTED_MODULE_2__[/* default */ "a"])(targetLink);const preloaded=Object(react__WEBPACK_IMPORTED_MODULE_0__["useRef"])(false);const LinkComponent=isNavLink?react_router_dom__WEBPACK_IMPORTED_MODULE_1__[/* NavLink */ "b"]:react_router_dom__WEBPACK_IMPORTED_MODULE_1__[/* Link */ "a"];const IOSupported=_ExecutionEnvironment__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"].canUseIntersectionObserver;let io;const handleIntersection=(el,cb)=>{io=new window.IntersectionObserver(entries=>{entries.forEach(entry=>{if(el===entry.target){// If element is in viewport, stop listening/observing and run callback.
-// https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
-if(entry.isIntersecting||entry.intersectionRatio>0){io.unobserve(el);io.disconnect();cb();}}});});// Add element to the observer.
-io.observe(el);};const handleRef=ref=>{if(IOSupported&&ref&&isInternal){// If IO supported and element reference found, setup Observer functionality.
-handleIntersection(ref,()=>{window.docusaurus.prefetch(targetLink);});}};const onMouseEnter=()=>{if(!preloaded.current){window.docusaurus.preload(targetLink);preloaded.current=true;}};Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(()=>{// If IO is not supported. We prefetch by default (only once).
-if(!IOSupported&&isInternal){window.docusaurus.prefetch(targetLink);}// When unmounting, stop intersection observer from watching.
-return()=>{if(IOSupported&&io){io.disconnect();}};},[targetLink,IOSupported,isInternal]);return!targetLink||!isInternal||targetLink.startsWith('#')?// eslint-disable-next-line jsx-a11y/anchor-has-content
-react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("a",Object.assign({href:targetLink},!isInternal&&{target:'_blank',rel:'noopener noreferrer'},props)):react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(LinkComponent,Object.assign({},props,{onMouseEnter:onMouseEnter,innerRef:handleRef,to:targetLink}));}/* harmony default export */ __webpack_exports__["a"] = (Link);
 
 /***/ }),
 /* 14 */
@@ -3572,7 +3572,7 @@ var Head = __webpack_require__(73);
 var isInternalUrl = __webpack_require__(23);
 
 // EXTERNAL MODULE: ./node_modules/@docusaurus/core/lib/client/exports/useDocusaurusContext.js
-var useDocusaurusContext = __webpack_require__(6);
+var useDocusaurusContext = __webpack_require__(7);
 
 // EXTERNAL MODULE: ./node_modules/@docusaurus/core/lib/client/exports/useBaseUrl.js
 var useBaseUrl = __webpack_require__(3);
@@ -3650,11 +3650,11 @@ var styles_module_default = /*#__PURE__*/__webpack_require__.n(styles_module);
 var esm_extends = __webpack_require__(1);
 
 // EXTERNAL MODULE: ./node_modules/classnames/index.js
-var classnames = __webpack_require__(5);
+var classnames = __webpack_require__(6);
 var classnames_default = /*#__PURE__*/__webpack_require__.n(classnames);
 
 // EXTERNAL MODULE: ./node_modules/@docusaurus/core/lib/client/exports/Link.js
-var Link = __webpack_require__(13);
+var Link = __webpack_require__(5);
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/interopRequireWildcard.js + 1 modules
 var interopRequireWildcard = __webpack_require__(4);
@@ -4863,7 +4863,7 @@ module.exports = {
 /* unused harmony export HashRouter */
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Link; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return NavLink; });
-/* harmony import */ var react_router__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9);
+/* harmony import */ var react_router__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(10);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "c", function() { return react_router__WEBPACK_IMPORTED_MODULE_0__["f"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "d", function() { return react_router__WEBPACK_IMPORTED_MODULE_0__["g"]; });
@@ -4874,7 +4874,7 @@ module.exports = {
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(2);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var history__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(22);
-/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(7);
+/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(8);
 /* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_4__);
 /* harmony import */ var _babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(1);
 /* harmony import */ var _babel_runtime_helpers_esm_objectWithoutPropertiesLoose__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(37);
@@ -5228,7 +5228,7 @@ module.exports = override;
 var Hack = __webpack_require__(90);
 
 var Marker = __webpack_require__(14);
-var Token = __webpack_require__(10);
+var Token = __webpack_require__(11);
 
 var Match = {
   ASTERISK: '*',
@@ -8750,7 +8750,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var React = __webpack_require__(2);
-var PropTypes = __webpack_require__(7);
+var PropTypes = __webpack_require__(8);
 
 var ALL_INITIALIZERS = [];
 var READY_INITIALIZERS = [];
@@ -9654,7 +9654,7 @@ module.exports = optimizeProperties;
 
 var wrapSingle = __webpack_require__(40).single;
 
-var Token = __webpack_require__(10);
+var Token = __webpack_require__(11);
 
 function deep(property) {
   var cloned = shallow(property);
@@ -9812,8 +9812,8 @@ module.exports = hasProtocol;
 "use strict";
 
 
-const fs = __webpack_require__(12)
-const path = __webpack_require__(8)
+const fs = __webpack_require__(13)
+const path = __webpack_require__(9)
 
 const NODE_VERSION_MAJOR_WITH_BIGINT = 10
 const NODE_VERSION_MINOR_WITH_BIGINT = 5
@@ -10153,13 +10153,13 @@ var Head = __webpack_require__(73);
 var isInternalUrl = __webpack_require__(23);
 
 // EXTERNAL MODULE: ./node_modules/@docusaurus/core/lib/client/exports/useDocusaurusContext.js
-var useDocusaurusContext = __webpack_require__(6);
+var useDocusaurusContext = __webpack_require__(7);
 
 // EXTERNAL MODULE: ./node_modules/@docusaurus/core/lib/client/exports/useBaseUrl.js
 var useBaseUrl = __webpack_require__(3);
 
 // EXTERNAL MODULE: ./node_modules/@docusaurus/core/lib/client/exports/Link.js
-var Link = __webpack_require__(13);
+var Link = __webpack_require__(5);
 
 // CONCATENATED MODULE: ./node_modules/@docusaurus/theme-classic/src/theme/DocPaginator/index.js
 /**
@@ -10176,7 +10176,7 @@ var Link = __webpack_require__(13);
  * LICENSE file in the root directory of this source tree.
  */function useTOCHighlight(linkClassName,linkActiveClassName,topOffset){const[lastActiveLink,setLastActiveLink]=Object(react["useState"])(undefined);Object(react["useEffect"])(()=>{let headersAnchors=[];let links=[];function setActiveLink(){function getActiveHeaderAnchor(){let index=0;let activeHeaderAnchor=null;headersAnchors=document.getElementsByClassName('anchor');while(index<headersAnchors.length&&!activeHeaderAnchor){const headerAnchor=headersAnchors[index];const{top}=headerAnchor.getBoundingClientRect();if(top>=0&&top<=topOffset){activeHeaderAnchor=headerAnchor;}index+=1;}return activeHeaderAnchor;}const activeHeaderAnchor=getActiveHeaderAnchor();if(activeHeaderAnchor){let index=0;let itemHighlighted=false;links=document.getElementsByClassName(linkClassName);while(index<links.length&&!itemHighlighted){const link=links[index];const{href}=link;const anchorValue=decodeURIComponent(href.substring(href.indexOf('#')+1));if(activeHeaderAnchor.id===anchorValue){if(lastActiveLink){lastActiveLink.classList.remove(linkActiveClassName);}link.classList.add(linkActiveClassName);setLastActiveLink(link);itemHighlighted=true;}index+=1;}}}document.addEventListener('scroll',setActiveLink);document.addEventListener('resize',setActiveLink);setActiveLink();return()=>{document.removeEventListener('scroll',setActiveLink);document.removeEventListener('resize',setActiveLink);};});}/* harmony default export */ var hooks_useTOCHighlight = (useTOCHighlight);
 // EXTERNAL MODULE: ./node_modules/classnames/index.js
-var classnames = __webpack_require__(5);
+var classnames = __webpack_require__(6);
 var classnames_default = /*#__PURE__*/__webpack_require__.n(classnames);
 
 // EXTERNAL MODULE: ./node_modules/@docusaurus/theme-classic/src/theme/DocItem/styles.module.css
@@ -10197,7 +10197,7 @@ var styles_module_default = /*#__PURE__*/__webpack_require__.n(styles_module);
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return HelmetExport; });
-/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7);
+/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(8);
 /* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var react_side_effect__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(233);
 /* harmony import */ var react_side_effect__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_side_effect__WEBPACK_IMPORTED_MODULE_1__);
@@ -11156,7 +11156,7 @@ HelmetExport.renderStatic = HelmetExport.rewind;
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return matchRoutes; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return renderRoutes; });
-/* harmony import */ var react_router__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9);
+/* harmony import */ var react_router__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(10);
 /* harmony import */ var _babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(2);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_2__);
@@ -11312,7 +11312,7 @@ function renderRoutes(routes, extraProps, switchProps) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var _docusaurus_useDocusaurusContext__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(6);
+/* harmony import */ var _docusaurus_useDocusaurusContext__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7);
 /* harmony import */ var _theme_hooks_useThemeContext__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(47);
 /* harmony import */ var _docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(3);
 /* harmony import */ var _docusaurus_isInternalUrl__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(23);
@@ -12165,7 +12165,7 @@ var Breaks = __webpack_require__(57).Breaks;
 var Spaces = __webpack_require__(57).Spaces;
 
 var Marker = __webpack_require__(14);
-var Token = __webpack_require__(10);
+var Token = __webpack_require__(11);
 
 function supportsAfterClosingBrace(token) {
   return token[1][1] == 'background' || token[1][1] == 'transform' || token[1][1] == 'src';
@@ -12483,9 +12483,9 @@ module.exports = restoreWithComponents;
 // IMPORTANT: Mind Token class and this code is not related!
 // Properties will be tokenized in one step, see #429
 
-var Token = __webpack_require__(10);
-var serializeRules = __webpack_require__(11).rules;
-var serializeValue = __webpack_require__(11).value;
+var Token = __webpack_require__(11);
+var serializeRules = __webpack_require__(12).rules;
+var serializeValue = __webpack_require__(12).value;
 
 function extractProperties(token) {
   var properties = [];
@@ -12572,7 +12572,7 @@ exports.SourceNode = __webpack_require__(311).SourceNode;
 /* 97 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var path = __webpack_require__(8);
+var path = __webpack_require__(9);
 var url = __webpack_require__(25);
 
 var isRemoteResource = __webpack_require__(51);
@@ -14745,7 +14745,7 @@ exports.ArraySet = ArraySet;
 /* 130 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var path = __webpack_require__(8);
+var path = __webpack_require__(9);
 
 function rebaseLocalMap(sourceMap, sourceUri, rebaseTo) {
   var currentPath = path.resolve('');
@@ -14766,7 +14766,7 @@ module.exports = rebaseLocalMap;
 /* 131 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var path = __webpack_require__(8);
+var path = __webpack_require__(9);
 var url = __webpack_require__(25);
 
 function rebaseRemoteMap(sourceMap, sourceUri) {
@@ -14898,7 +14898,7 @@ module.exports =
 // This is adapted from https://github.com/normalize/mz
 // Copyright (c) 2014-2016 Jonathan Ong me@jongleberry.com and Contributors
 const u = __webpack_require__(16).fromCallback
-const fs = __webpack_require__(12)
+const fs = __webpack_require__(13)
 
 const api = [
   'access',
@@ -15024,7 +15024,7 @@ module.exports = {
 "use strict";
 
 
-const path = __webpack_require__(8)
+const path = __webpack_require__(9)
 
 // get drive on windows
 function getRootPath (p) {
@@ -15056,9 +15056,9 @@ module.exports = {
 "use strict";
 
 
-const fs = __webpack_require__(12)
+const fs = __webpack_require__(13)
 const os = __webpack_require__(118)
-const path = __webpack_require__(8)
+const path = __webpack_require__(9)
 
 // HFS, ext{2,3}, FAT do not, Node.js v0.10 does not
 function hasMillisResSync () {
@@ -15236,34 +15236,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _mdx_js_react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(0);
-const frontMatter={id:'leak-canary-plugin',title:'LeakCanary'};const metadata={"id":"features/leak-canary-plugin","title":"LeakCanary","description":"→ See setup instructions for the LeakCanary","source":"@site/../docs/features/leak-canary-plugin.mdx","permalink":"/docs/features/leak-canary-plugin","editUrl":"https://github.com/facebook/flipper/blob/master/website/../docs/features/leak-canary-plugin.mdx","sidebar":"features","previous":{"title":"Shared Preferences","permalink":"/docs/features/shared-preferences-plugin"},"next":{"title":"Crash Reporter","permalink":"/docs/features/crash-reporter-plugin"}};/* @jsx mdx */const rightToc=[];const makeShortcode=name=>function MDXDefaultShortcode(props){console.warn("Component "+name+" was not imported, exported, or provided by MDXProvider as global scope");return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",props);};const layoutProps={rightToc};const MDXLayout="wrapper";function MDXContent({components,...props}){return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(MDXLayout,Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({},layoutProps,props,{components:components,mdxType:"MDXLayout"}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`→ `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"../setup/leak-canary-plugin"}),`See setup instructions for the LeakCanary`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The LeakCanary plugin provides developers with Flipper support for `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"https://github.com/square/leakcanary"}),`LeakCanary`),`, an open source memory leak detection library.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Leaks detected by LeakCanary will appear automatically in Flipper. Each leak will display a hierarchy of objects, beginning from the garbage collector root and ending at the leaked class.
+/* harmony import */ var _docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(3);
+/* harmony import */ var _docusaurus_Link__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(5);
+const frontMatter={id:'leak-canary-plugin',title:'LeakCanary'};const metadata={"id":"features/leak-canary-plugin","title":"LeakCanary","description":"→ See setup instructions for the LeakCanary","source":"@site/../docs/features/leak-canary-plugin.mdx","permalink":"/docs/features/leak-canary-plugin","editUrl":"https://github.com/facebook/flipper/blob/master/website/../docs/features/leak-canary-plugin.mdx","sidebar":"features","previous":{"title":"Shared Preferences","permalink":"/docs/features/shared-preferences-plugin"},"next":{"title":"Crash Reporter","permalink":"/docs/features/crash-reporter-plugin"}};/* @jsx mdx */const rightToc=[];const makeShortcode=name=>function MDXDefaultShortcode(props){console.warn("Component "+name+" was not imported, exported, or provided by MDXProvider as global scope");return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",props);};const layoutProps={rightToc};const MDXLayout="wrapper";function MDXContent({components,...props}){return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(MDXLayout,Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({},layoutProps,props,{components:components,mdxType:"MDXLayout"}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`→ `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(_docusaurus_Link__WEBPACK_IMPORTED_MODULE_4__[/* default */ "a"],{to:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("/docs/setup/leak-canary-plugin"),mdxType:"Link"},`See setup instructions for the LeakCanary`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The LeakCanary plugin provides developers with Flipper support for `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"https://github.com/square/leakcanary"}),`LeakCanary`),`, an open source memory leak detection library.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Leaks detected by LeakCanary will appear automatically in Flipper. Each leak will display a hierarchy of objects, beginning from the garbage collector root and ending at the leaked class.
 Selecting any object in this list will display contents of the object's various fields.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Note: this plugin is only available for Android.`));};MDXContent.isMDXComponent=true;
 
 /***/ }),
 /* 144 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "frontMatter", function() { return frontMatter; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "metadata", function() { return metadata; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "rightToc", function() { return rightToc; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return MDXContent; });
-/* harmony import */ var _home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1);
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _mdx_js_react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(0);
-/* harmony import */ var _docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(3);
-const frontMatter={id:'images-plugin',title:'Images'};const metadata={"id":"features/images-plugin","title":"Images","description":"→ See setup instructions for the images plugin","source":"@site/../docs/features/images-plugin.mdx","permalink":"/docs/features/images-plugin","editUrl":"https://github.com/facebook/flipper/blob/master/website/../docs/features/images-plugin.mdx","sidebar":"features","previous":{"title":"Databases","permalink":"/docs/features/databases-plugin"},"next":{"title":"Sandbox","permalink":"/docs/features/sandbox-plugin"}};/* @jsx mdx */const rightToc=[{value:'Cache Inspector',id:'cache-inspector',children:[]},{value:'Attribution',id:'attribution',children:[]},{value:'Leak Tracking',id:'leak-tracking',children:[]}];const makeShortcode=name=>function MDXDefaultShortcode(props){console.warn("Component "+name+" was not imported, exported, or provided by MDXProvider as global scope");return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",props);};const layoutProps={rightToc};const MDXLayout="wrapper";function MDXContent({components,...props}){return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(MDXLayout,Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({},layoutProps,props,{components:components,mdxType:"MDXLayout"}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`→ `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"../setup/images-plugin"}),`See setup instructions for the images plugin`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The images plugin allows you to inspect what images were fetched, where they are
-coming from and selectively clear caches. Currently, the plugin supports
-`,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"https://github.com/facebook/fresco/"}),`Fresco`),` as backend.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("img",{alt:"Images plugin",src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("img/images-plugin.png")}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"cache-inspector"},`Cache Inspector`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Images are grouped by the different caching layers they are stored in. The current
-fill rate of the cache is shown and you can choose to selectively clear caches.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"attribution"},`Attribution`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Images can be annotated with attributes that can help to determine the context in
-which an image was loaded and displayed. You can use that information to filter
-by a particular surface or only inspect images that are in the critical path
-of your application, for instance during cold start.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"leak-tracking"},`Leak Tracking`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Dealing with large resources can require special APIs to be used that circumvent
-usual garbage collection. The plugin allows tracking `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`CloseableReference`),`s for
-Fresco on Android that weren't properly closed, which can help you improve
-the performance of your app.`));};MDXContent.isMDXComponent=true;
+
+
+if (true) {
+  module.exports = __webpack_require__(369);
+} else {}
+
 
 /***/ }),
 /* 145 */
@@ -15279,6 +15267,35 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _mdx_js_react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(0);
+/* harmony import */ var _docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(3);
+/* harmony import */ var _docusaurus_Link__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(5);
+const frontMatter={id:'images-plugin',title:'Images'};const metadata={"id":"features/images-plugin","title":"Images","description":"→ See setup instructions for the images plugin","source":"@site/../docs/features/images-plugin.mdx","permalink":"/docs/features/images-plugin","editUrl":"https://github.com/facebook/flipper/blob/master/website/../docs/features/images-plugin.mdx","sidebar":"features","previous":{"title":"Databases","permalink":"/docs/features/databases-plugin"},"next":{"title":"Sandbox","permalink":"/docs/features/sandbox-plugin"}};/* @jsx mdx */const rightToc=[{value:'Cache Inspector',id:'cache-inspector',children:[]},{value:'Attribution',id:'attribution',children:[]},{value:'Leak Tracking',id:'leak-tracking',children:[]}];const makeShortcode=name=>function MDXDefaultShortcode(props){console.warn("Component "+name+" was not imported, exported, or provided by MDXProvider as global scope");return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",props);};const layoutProps={rightToc};const MDXLayout="wrapper";function MDXContent({components,...props}){return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(MDXLayout,Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({},layoutProps,props,{components:components,mdxType:"MDXLayout"}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`→ `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(_docusaurus_Link__WEBPACK_IMPORTED_MODULE_4__[/* default */ "a"],{to:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("/docs/setup/images-plugin"),mdxType:"Link"},`See setup instructions for the images plugin`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The images plugin allows you to inspect what images were fetched, where they are
+coming from and selectively clear caches. Currently, the plugin supports
+`,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"https://github.com/facebook/fresco/"}),`Fresco`),` as backend.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("img",{alt:"Images plugin",src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("img/images-plugin.png")}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"cache-inspector"},`Cache Inspector`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Images are grouped by the different caching layers they are stored in. The current
+fill rate of the cache is shown and you can choose to selectively clear caches.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"attribution"},`Attribution`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Images can be annotated with attributes that can help to determine the context in
+which an image was loaded and displayed. You can use that information to filter
+by a particular surface or only inspect images that are in the critical path
+of your application, for instance during cold start.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"leak-tracking"},`Leak Tracking`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Dealing with large resources can require special APIs to be used that circumvent
+usual garbage collection. The plugin allows tracking `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`CloseableReference`),`s for
+Fresco on Android that weren't properly closed, which can help you improve
+the performance of your app.`));};MDXContent.isMDXComponent=true;
+
+/***/ }),
+/* 146 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "frontMatter", function() { return frontMatter; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "metadata", function() { return metadata; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "rightToc", function() { return rightToc; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return MDXContent; });
+/* harmony import */ var _home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _mdx_js_react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(0);
+/* harmony import */ var _docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(3);
+/* harmony import */ var _docusaurus_Link__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(5);
 const frontMatter={id:'react-native-ios',title:'Manually set up your React Native iOS App',sidebar_label:'React Native for iOS'};const metadata={"id":"getting-started/react-native-ios","title":"Manually set up your React Native iOS App","description":"These instructions are aimed at people manually adding Flipper to a React Native 0.62+ app.","source":"@site/../docs/getting-started/react-native-ios.mdx","permalink":"/docs/getting-started/react-native-ios","editUrl":"https://github.com/facebook/flipper/blob/master/website/../docs/getting-started/react-native-ios.mdx","sidebar_label":"React Native for iOS","sidebar":"setup","previous":{"title":"Manually set up your React Native Android App","permalink":"/docs/getting-started/react-native-android"},"next":{"title":"Troubleshooting Issues","permalink":"/docs/troubleshooting"}};/* @jsx mdx */const rightToc=[{value:'Dependencies',id:'dependencies',children:[]},{value:'Initialization',id:'initialization',children:[]},{value:'Troubleshooting',id:'troubleshooting',children:[]},{value:'Further Steps',id:'further-steps',children:[]}];const makeShortcode=name=>function MDXDefaultShortcode(props){console.warn("Component "+name+" was not imported, exported, or provided by MDXProvider as global scope");return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",props);};const layoutProps={rightToc};const MDXLayout="wrapper";function MDXContent({components,...props}){return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(MDXLayout,Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({},layoutProps,props,{components:components,mdxType:"MDXLayout"}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`These instructions are aimed at people manually adding Flipper to a React Native 0.62+ app.
 This should only be necessary if you have an existing app that cannot be upgraded with the
 `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"https://reactnative.dev/docs/upgrading"}),`React Native Upgrade tool`),`.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"dependencies"},`Dependencies`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Add this code to your `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`ios/Podfile`),`:`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("pre",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("code",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"pre"},{"className":"language-ruby"}),`platform :ios, '9.0'
@@ -15400,10 +15417,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     #endif
   }
 }
-`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Lastly, open the Flipper desktop app, and run `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`yarn ios`),` in your terminal.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"troubleshooting"},`Troubleshooting`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`See the `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"../troubleshooting"}),`troubleshooting page`),` for help with known problems.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"further-steps"},`Further Steps`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`To create your own plugins and integrate with Flipper using JavaScript, check out our `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"../tutorial/react-native"}),`writing plugins for React Native`),` tutorial!`));};MDXContent.isMDXComponent=true;
+`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Lastly, open the Flipper desktop app, and run `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`yarn ios`),` in your terminal.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"troubleshooting"},`Troubleshooting`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`See the `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(_docusaurus_Link__WEBPACK_IMPORTED_MODULE_4__[/* default */ "a"],{to:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("/docs/troubleshooting"),mdxType:"Link"},`troubleshooting page`),` for help with known problems.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"further-steps"},`Further Steps`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`To create your own plugins and integrate with Flipper using JavaScript, check out our `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(_docusaurus_Link__WEBPACK_IMPORTED_MODULE_4__[/* default */ "a"],{to:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("/docs/tutorial/react-native"),mdxType:"Link"},`writing plugins for React Native`),` tutorial!`));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 146 */
+/* 147 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -15416,9 +15433,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _mdx_js_react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(0);
+/* harmony import */ var _docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(3);
+/* harmony import */ var _docusaurus_Link__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(5);
 const frontMatter={id:'react-native',title:'Building a React Native Plugin'};const metadata={"id":"tutorial/react-native","title":"Building a React Native Plugin","description":"This tutorial requires React Native 0.62 or higher.","source":"@site/../docs/tutorial/react-native.mdx","permalink":"/docs/tutorial/react-native","editUrl":"https://github.com/facebook/flipper/blob/master/website/../docs/tutorial/react-native.mdx","sidebar":"extending","previous":{"title":"Building an Android Plugin","permalink":"/docs/tutorial/android"},"next":{"title":"Building a Desktop Plugin","permalink":"/docs/tutorial/js-setup"}};/* @jsx mdx */const rightToc=[];const makeShortcode=name=>function MDXDefaultShortcode(props){console.warn("Component "+name+" was not imported, exported, or provided by MDXProvider as global scope");return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",props);};const layoutProps={rightToc};const MDXLayout="wrapper";function MDXContent({components,...props}){return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(MDXLayout,Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({},layoutProps,props,{components:components,mdxType:"MDXLayout"}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",{class:"warning"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`This tutorial requires React Native 0.62 or higher.`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Once you have connected Flipper to a React Native application,
 writing your own Flipper plugin can be done without reaching into the native world.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`To expose Flipper to the JavaScript world, the React Native Native Module `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`react-native-flipper`),` needs to be installed in the hosting application by running `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`yarn add react-native-flipper`),` and `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`cd ios && pod install`),`. If you are developing a plugin that is distributed as NPM package, make sure to add this to the installation instruction of your package as well!`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Registering a new plugin is done by importing `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`addPlugin`),` from `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`"react-native-flipper"`),` and providing it an object that at least implements the method  `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`getId`),` (the plugin id that should be used in the desktop plugin as well to make the connection) and two event handlers for the `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`onConnect`),` and `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`onDisconnect`),` events.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`These `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`onConnect`),` and `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`onDisconnect`),` events are triggered every time the plugin becomes (in)active in the Flipper desktop application.
-If the plugin is a `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"../extending/create-plugin#background-plugins"}),`background plugin`),`, these events are triggered typically only once (they might be triggered never, if the Desktop user didn't enable the plugin, or multiple times if they enabled or disabled the plugin a few times).`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`onConnect`),` callback receive a `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`connection`),` which can be used to communicate with the backend:`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("pre",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("code",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"pre"},{"className":"language-javascript"}),`import {addPlugin} from "react-native-flipper"
+If the plugin is a `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(_docusaurus_Link__WEBPACK_IMPORTED_MODULE_4__[/* default */ "a"],{to:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("/docs/extending/create-plugin#background-plugins"),mdxType:"Link"},`background plugin`),`, these events are triggered typically only once (they might be triggered never, if the Desktop user didn't enable the plugin, or multiple times if they enabled or disabled the plugin a few times).`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`onConnect`),` callback receive a `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`connection`),` which can be used to communicate with the backend:`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("pre",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("code",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"pre"},{"className":"language-javascript"}),`import {addPlugin} from "react-native-flipper"
 
 addPlugin({
   getId() {
@@ -15436,10 +15455,10 @@ addPlugin({
   onDisconnect() {
   }
 })
-`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`You might want to store the connection somewhere to be able to send more events as long as `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`onDisconnect`),` event hasn't been fired.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`connection`),` object can also be used to listen to messages coming from the Desktop plugin. See `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"../extending/create-plugin"}),`Client Plugin API`),` for details.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`An example plugin to play a little Tic-Tac-Toe between the Flipper Desktop and a React Native app can be found inside this repository as well (run `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`yarn && yarn android`),` in `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`react-native/ReactNativeFlipperExample`),` to start the test project):`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("ul",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`The React Native JavaScript based plugin implementation: `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"li"},{"href":"https://github.com/facebook/flipper/tree/master/react-native/ReactNativeFlipperExample/FlipperTicTacToe.js"}),`FlipperTicTacToe.js`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`The Flipper Desktop plugin implementation: `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"li"},{"href":"https://github.com/facebook/flipper/blob/master/desktop/plugins/rn-tic-tac-toe/index.tsx"}),`rn-tic-tac-toe/index.tsx`))));};MDXContent.isMDXComponent=true;
+`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`You might want to store the connection somewhere to be able to send more events as long as `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`onDisconnect`),` event hasn't been fired.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`connection`),` object can also be used to listen to messages coming from the Desktop plugin. See `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(_docusaurus_Link__WEBPACK_IMPORTED_MODULE_4__[/* default */ "a"],{to:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("/docs/extending/create-plugin"),mdxType:"Link"},`Client Plugin API`),` for details.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`An example plugin to play a little Tic-Tac-Toe between the Flipper Desktop and a React Native app can be found inside this repository as well (run `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`yarn && yarn android`),` in `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`react-native/ReactNativeFlipperExample`),` to start the test project):`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("ul",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`The React Native JavaScript based plugin implementation: `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"li"},{"href":"https://github.com/facebook/flipper/tree/master/react-native/ReactNativeFlipperExample/FlipperTicTacToe.js"}),`FlipperTicTacToe.js`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`The Flipper Desktop plugin implementation: `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"li"},{"href":"https://github.com/facebook/flipper/blob/master/desktop/plugins/rn-tic-tac-toe/index.tsx"}),`rn-tic-tac-toe/index.tsx`))));};MDXContent.isMDXComponent=true;
 
 /***/ }),
-/* 147 */
+/* 148 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -15498,18 +15517,6 @@ client?.start()
 `)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"what-next"},`What next`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`When starting your application now, Flipper will tell the desktop application
 about the plugin it supports, including "sea-mammals" and will look for a
 corresponding JavaScript plugin by that name. Before building it's JavaScript counterpart, first lets build a Flipper Plugin in Android.`));};MDXContent.isMDXComponent=true;
-
-/***/ }),
-/* 148 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-if (true) {
-  module.exports = __webpack_require__(369);
-} else {}
-
 
 /***/ }),
 /* 149 */
@@ -19479,7 +19486,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _mdx_js_react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(0);
-const frontMatter={id:'sandbox-plugin',title:'Sandbox'};const metadata={"id":"features/sandbox-plugin","title":"Sandbox","description":"→ See setup instructions for the Sandbox plugin","source":"@site/../docs/features/sandbox-plugin.mdx","permalink":"/docs/features/sandbox-plugin","editUrl":"https://github.com/facebook/flipper/blob/master/website/../docs/features/sandbox-plugin.mdx","sidebar":"features","previous":{"title":"Images","permalink":"/docs/features/images-plugin"},"next":{"title":"Shared Preferences","permalink":"/docs/features/shared-preferences-plugin"}};/* @jsx mdx */const rightToc=[];const makeShortcode=name=>function MDXDefaultShortcode(props){console.warn("Component "+name+" was not imported, exported, or provided by MDXProvider as global scope");return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",props);};const layoutProps={rightToc};const MDXLayout="wrapper";function MDXContent({components,...props}){return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(MDXLayout,Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({},layoutProps,props,{components:components,mdxType:"MDXLayout"}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`→ `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"../setup/sandbox-plugin"}),`See setup instructions for the Sandbox plugin`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The sandbox plugin allows developers to test changes in their apps by pointing them to a sandbox environment. It provides a simple UI to set and modify the URL to a development host that acts as a sandbox directly on the desktop, which prevents you from entering potentially long and complicated URL inside your app. `));};MDXContent.isMDXComponent=true;
+/* harmony import */ var _docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(3);
+/* harmony import */ var _docusaurus_Link__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(5);
+const frontMatter={id:'sandbox-plugin',title:'Sandbox'};const metadata={"id":"features/sandbox-plugin","title":"Sandbox","description":"→ See setup instructions for the Sandbox plugin","source":"@site/../docs/features/sandbox-plugin.mdx","permalink":"/docs/features/sandbox-plugin","editUrl":"https://github.com/facebook/flipper/blob/master/website/../docs/features/sandbox-plugin.mdx","sidebar":"features","previous":{"title":"Images","permalink":"/docs/features/images-plugin"},"next":{"title":"Shared Preferences","permalink":"/docs/features/shared-preferences-plugin"}};/* @jsx mdx */const rightToc=[];const makeShortcode=name=>function MDXDefaultShortcode(props){console.warn("Component "+name+" was not imported, exported, or provided by MDXProvider as global scope");return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",props);};const layoutProps={rightToc};const MDXLayout="wrapper";function MDXContent({components,...props}){return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(MDXLayout,Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({},layoutProps,props,{components:components,mdxType:"MDXLayout"}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`→ `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(_docusaurus_Link__WEBPACK_IMPORTED_MODULE_4__[/* default */ "a"],{to:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("/docs/setup/sandbox-plugin"),mdxType:"Link"},`See setup instructions for the Sandbox plugin`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The sandbox plugin allows developers to test changes in their apps by pointing them to a sandbox environment. It provides a simple UI to set and modify the URL to a development host that acts as a sandbox directly on the desktop, which prevents you from entering potentially long and complicated URL inside your app. `));};MDXContent.isMDXComponent=true;
 
 /***/ }),
 /* 169 */
@@ -19584,7 +19593,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _mdx_js_react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(0);
 /* harmony import */ var _docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(3);
-const frontMatter={id:'navigation-plugin',title:'Navigation'};const metadata={"id":"features/navigation-plugin","title":"Navigation","description":"→ See setup instructions for the Navigation Plugin","source":"@site/../docs/features/navigation-plugin.mdx","permalink":"/docs/features/navigation-plugin","editUrl":"https://github.com/facebook/flipper/blob/master/website/../docs/features/navigation-plugin.mdx","sidebar":"features","previous":{"title":"Layout Inspector","permalink":"/docs/features/layout-plugin"},"next":{"title":"Network","permalink":"/docs/features/network-plugin"}};/* @jsx mdx */const rightToc=[];const makeShortcode=name=>function MDXDefaultShortcode(props){console.warn("Component "+name+" was not imported, exported, or provided by MDXProvider as global scope");return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",props);};const layoutProps={rightToc};const MDXLayout="wrapper";function MDXContent({components,...props}){return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(MDXLayout,Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({},layoutProps,props,{components:components,mdxType:"MDXLayout"}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`→ `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"../setup/navigation-plugin"}),`See setup instructions for the Navigation Plugin`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The Navigation Plugin allows users to quickly navigate to deep links within their mobile applications to help speed up the development cycle. The plugin is designed to integrate easily within your existing navigation framework or as a stand alone tool. Users can bookmark deep links and jump to them via the button in the tool bar.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("img",{alt:"Navigation Plugin Button",src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("img/navigation-plugin-1.png")}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Navigation events within the app can also be logged to Flipper. This allows the user to view past navigation events and jump straight to them, or export the navigation events for reporting.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("img",{alt:"Navigation Plugin UI",src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("img/navigation-plugin-2.png")}));};MDXContent.isMDXComponent=true;
+/* harmony import */ var _docusaurus_Link__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(5);
+const frontMatter={id:'navigation-plugin',title:'Navigation'};const metadata={"id":"features/navigation-plugin","title":"Navigation","description":"→ See setup instructions for the Navigation Plugin","source":"@site/../docs/features/navigation-plugin.mdx","permalink":"/docs/features/navigation-plugin","editUrl":"https://github.com/facebook/flipper/blob/master/website/../docs/features/navigation-plugin.mdx","sidebar":"features","previous":{"title":"Layout Inspector","permalink":"/docs/features/layout-plugin"},"next":{"title":"Network","permalink":"/docs/features/network-plugin"}};/* @jsx mdx */const rightToc=[];const makeShortcode=name=>function MDXDefaultShortcode(props){console.warn("Component "+name+" was not imported, exported, or provided by MDXProvider as global scope");return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",props);};const layoutProps={rightToc};const MDXLayout="wrapper";function MDXContent({components,...props}){return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(MDXLayout,Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({},layoutProps,props,{components:components,mdxType:"MDXLayout"}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`→ `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(_docusaurus_Link__WEBPACK_IMPORTED_MODULE_4__[/* default */ "a"],{to:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("/docs/setup/navigation-plugin"),mdxType:"Link"},`See setup instructions for the Navigation Plugin`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The Navigation Plugin allows users to quickly navigate to deep links within their mobile applications to help speed up the development cycle. The plugin is designed to integrate easily within your existing navigation framework or as a stand alone tool. Users can bookmark deep links and jump to them via the button in the tool bar.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("img",{alt:"Navigation Plugin Button",src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("img/navigation-plugin-1.png")}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Navigation events within the app can also be logged to Flipper. This allows the user to view past navigation events and jump straight to them, or export the navigation events for reporting.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("img",{alt:"Navigation Plugin UI",src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("img/navigation-plugin-2.png")}));};MDXContent.isMDXComponent=true;
 
 /***/ }),
 /* 173 */
@@ -19708,7 +19718,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _mdx_js_react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(0);
 /* harmony import */ var _docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(3);
-const frontMatter={id:'shared-preferences-plugin',title:'Shared Preferences'};const metadata={"id":"features/shared-preferences-plugin","title":"Shared Preferences","description":"→ See setup instructions for the Shared Preferences plugin","source":"@site/../docs/features/shared-preferences-plugin.mdx","permalink":"/docs/features/shared-preferences-plugin","editUrl":"https://github.com/facebook/flipper/blob/master/website/../docs/features/shared-preferences-plugin.mdx","sidebar":"features","previous":{"title":"Sandbox","permalink":"/docs/features/sandbox-plugin"},"next":{"title":"LeakCanary","permalink":"/docs/features/leak-canary-plugin"}};/* @jsx mdx */const rightToc=[];const makeShortcode=name=>function MDXDefaultShortcode(props){console.warn("Component "+name+" was not imported, exported, or provided by MDXProvider as global scope");return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",props);};const layoutProps={rightToc};const MDXLayout="wrapper";function MDXContent({components,...props}){return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(MDXLayout,Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({},layoutProps,props,{components:components,mdxType:"MDXLayout"}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`→ `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"../setup/shared-preferences-plugin"}),`See setup instructions for the Shared Preferences plugin`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Easily inspect and modify the data contained within your app's shared preferences.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("img",{alt:"Shared Preferences Plugin",src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("img/shared-preferences.png")}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`All changes to the given shared preference file will automatically appear in Flipper. You may also edit the values in Flipper and have them synced to your device. This can be done by clicking on the value of the specific key you wish to edit, editing the value and then pressing enter.`));};MDXContent.isMDXComponent=true;
+/* harmony import */ var _docusaurus_Link__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(5);
+const frontMatter={id:'shared-preferences-plugin',title:'Shared Preferences'};const metadata={"id":"features/shared-preferences-plugin","title":"Shared Preferences","description":"→ See setup instructions for the Shared Preferences plugin","source":"@site/../docs/features/shared-preferences-plugin.mdx","permalink":"/docs/features/shared-preferences-plugin","editUrl":"https://github.com/facebook/flipper/blob/master/website/../docs/features/shared-preferences-plugin.mdx","sidebar":"features","previous":{"title":"Sandbox","permalink":"/docs/features/sandbox-plugin"},"next":{"title":"LeakCanary","permalink":"/docs/features/leak-canary-plugin"}};/* @jsx mdx */const rightToc=[];const makeShortcode=name=>function MDXDefaultShortcode(props){console.warn("Component "+name+" was not imported, exported, or provided by MDXProvider as global scope");return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",props);};const layoutProps={rightToc};const MDXLayout="wrapper";function MDXContent({components,...props}){return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(MDXLayout,Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({},layoutProps,props,{components:components,mdxType:"MDXLayout"}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`→ `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(_docusaurus_Link__WEBPACK_IMPORTED_MODULE_4__[/* default */ "a"],{to:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("/docs/setup/shared-preferences-plugin"),mdxType:"Link"},`See setup instructions for the Shared Preferences plugin`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Easily inspect and modify the data contained within your app's shared preferences.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("img",{alt:"Shared Preferences Plugin",src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("img/shared-preferences.png")}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`All changes to the given shared preference file will automatically appear in Flipper. You may also edit the values in Flipper and have them synced to your device. This can be done by clicking on the value of the specific key you wish to edit, editing the value and then pressing enter.`));};MDXContent.isMDXComponent=true;
 
 /***/ }),
 /* 177 */
@@ -19866,7 +19877,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _mdx_js_react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(0);
 /* harmony import */ var _docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(3);
-const frontMatter={id:'index',title:'Features'};const metadata={"id":"features/index","title":"Features","description":"Flipper itself only provides the architectural platform. What makes it useful are the plugins built on top of it: Logs, Layout Inspector and Network Inspector are all plugins. Plugins can be built very specific to your business logic and the use-cases you have in your app. We are shipping Flipper with a couple of built-in all-purpose plugins, but we encourage you to build your own. Each plugin needs to be enabled individually.","source":"@site/../docs/features/index.mdx","permalink":"/docs/features/index","editUrl":"https://github.com/facebook/flipper/blob/master/website/../docs/features/index.mdx","sidebar":"features","next":{"title":"Logs","permalink":"/docs/features/logs-plugin"}};/* @jsx mdx */const rightToc=[{value:'Build your own plugin',id:'build-your-own-plugin',children:[]}];const makeShortcode=name=>function MDXDefaultShortcode(props){console.warn("Component "+name+" was not imported, exported, or provided by MDXProvider as global scope");return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",props);};const layoutProps={rightToc};const MDXLayout="wrapper";function MDXContent({components,...props}){return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(MDXLayout,Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({},layoutProps,props,{components:components,mdxType:"MDXLayout"}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Flipper itself only provides the architectural platform. What makes it useful are the plugins built on top of it: `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"logs-plugin"}),`Logs`),`, `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"layout-plugin"}),`Layout Inspector`),` and `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"network-plugin"}),`Network Inspector`),` are all plugins. Plugins can be built very specific to your business logic and the use-cases you have in your app. We are shipping Flipper with a couple of built-in all-purpose plugins, but we encourage you to build your own. Each plugin needs to be enabled individually.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("img",{alt:"Plugins",src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])('img/plugins.png')}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"build-your-own-plugin"},`Build your own plugin`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The Flipper desktop app and the mobile native SDK establish a connection which is used to send data to and from the device. Flipper does not make any restrictions on what kind of data is being sent. This enables a lot of different use-cases where you want to better understand what is going inside your app. For example you can visualize the state of local caches, events happening or trigger actions on your app from the desktop.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`If there is no plugin that does exactly what you want, you can build your own plugin, tailored to your needs. A plugin always consists of the native implementation sending and receiving data and the desktop plugin visualizing data. Learn more on how to `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"../extending/index"}),`extend Flipper`),` and build your own plugin. The native implementations are written in Java, Objective-C, or C++, the desktop UI is written in React.`));};MDXContent.isMDXComponent=true;
+/* harmony import */ var _docusaurus_Link__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(5);
+const frontMatter={id:'index',title:'Features'};const metadata={"id":"features/index","title":"Features","description":"Flipper itself only provides the architectural platform. What makes it useful are the plugins built on top of it: Logs, Layout Inspector and Network Inspector are all plugins. Plugins can be built very specific to your business logic and the use-cases you have in your app. We are shipping Flipper with a couple of built-in all-purpose plugins, but we encourage you to build your own. Each plugin needs to be enabled individually.","source":"@site/../docs/features/index.mdx","permalink":"/docs/features/index","editUrl":"https://github.com/facebook/flipper/blob/master/website/../docs/features/index.mdx","sidebar":"features","next":{"title":"Logs","permalink":"/docs/features/logs-plugin"}};/* @jsx mdx */const rightToc=[{value:'Build your own plugin',id:'build-your-own-plugin',children:[]}];const makeShortcode=name=>function MDXDefaultShortcode(props){console.warn("Component "+name+" was not imported, exported, or provided by MDXProvider as global scope");return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",props);};const layoutProps={rightToc};const MDXLayout="wrapper";function MDXContent({components,...props}){return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(MDXLayout,Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({},layoutProps,props,{components:components,mdxType:"MDXLayout"}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Flipper itself only provides the architectural platform. What makes it useful are the plugins built on top of it: `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"logs-plugin"}),`Logs`),`, `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"layout-plugin"}),`Layout Inspector`),` and `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"network-plugin"}),`Network Inspector`),` are all plugins. Plugins can be built very specific to your business logic and the use-cases you have in your app. We are shipping Flipper with a couple of built-in all-purpose plugins, but we encourage you to build your own. Each plugin needs to be enabled individually.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("img",{alt:"Plugins",src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])('img/plugins.png')}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"build-your-own-plugin"},`Build your own plugin`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The Flipper desktop app and the mobile native SDK establish a connection which is used to send data to and from the device. Flipper does not make any restrictions on what kind of data is being sent. This enables a lot of different use-cases where you want to better understand what is going inside your app. For example you can visualize the state of local caches, events happening or trigger actions on your app from the desktop.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`If there is no plugin that does exactly what you want, you can build your own plugin, tailored to your needs. A plugin always consists of the native implementation sending and receiving data and the desktop plugin visualizing data. Learn more on how to `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(_docusaurus_Link__WEBPACK_IMPORTED_MODULE_4__[/* default */ "a"],{to:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("/docs/extending/index"),mdxType:"Link"},`extend Flipper`),` and build your own plugin. The native implementations are written in Java, Objective-C, or C++, the desktop UI is written in React.`));};MDXContent.isMDXComponent=true;
 
 /***/ }),
 /* 180 */
@@ -20045,7 +20057,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _mdx_js_react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(0);
-const frontMatter={id:'crash-reporter-plugin',title:'Crash Reporter Setup',sidebar_label:'Crash Reporter'};const metadata={"id":"setup/crash-reporter-plugin","title":"Crash Reporter Setup","description":"You do not have to instantiate it in your app in order to use its basic functionality mentioned here. You can also use crash reporter plugin to send the notifications for the exception which you suppress in your Android application. You could even use it to send the notifications when the Litho Error Boundary is triggered. In order to send your custom notification you will have to follow the following steps.","source":"@site/../docs/setup/crash-reporter-plugin.mdx","permalink":"/docs/setup/crash-reporter-plugin","editUrl":"https://github.com/facebook/flipper/blob/master/website/../docs/setup/crash-reporter-plugin.mdx","sidebar_label":"Crash Reporter","sidebar":"setup","previous":{"title":"LeakCanary Setup","permalink":"/docs/setup/leak-canary-plugin"},"next":{"title":"Running Flipper with different ports","permalink":"/docs/custom-ports"}};/* @jsx mdx */const rightToc=[{value:'Android',id:'android',children:[]}];const makeShortcode=name=>function MDXDefaultShortcode(props){console.warn("Component "+name+" was not imported, exported, or provided by MDXProvider as global scope");return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",props);};const layoutProps={rightToc};const MDXLayout="wrapper";function MDXContent({components,...props}){return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(MDXLayout,Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({},layoutProps,props,{components:components,mdxType:"MDXLayout"}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`You do not have to instantiate it in your app in order to use its basic functionality mentioned `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"../features/crash-reporter-plugin"}),`here`),`. You can also use crash reporter plugin to send the notifications for the exception which you suppress in your Android application. You could even use it to send the notifications when the `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"https://fblitho.com/docs/error-boundaries"}),`Litho Error Boundary`),` is triggered. In order to send your custom notification you will have to follow the following steps.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"android"},`Android`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Instantiate and add the plugin in `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`FlipperClient`),`.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("pre",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("code",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"pre"},{"className":"language-java"}),`import com.facebook.flipper.plugins.crashreporter.CrashReporterPlugin;
+/* harmony import */ var _docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(3);
+/* harmony import */ var _docusaurus_Link__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(5);
+const frontMatter={id:'crash-reporter-plugin',title:'Crash Reporter Setup',sidebar_label:'Crash Reporter'};const metadata={"id":"setup/crash-reporter-plugin","title":"Crash Reporter Setup","description":"You do not have to instantiate it in your app in order to use its basic functionality mentioned here. You can also use crash reporter plugin to send the notifications for the exception which you suppress in your Android application. You could even use it to send the notifications when the Litho Error Boundary is triggered. In order to send your custom notification you will have to follow the following steps.","source":"@site/../docs/setup/crash-reporter-plugin.mdx","permalink":"/docs/setup/crash-reporter-plugin","editUrl":"https://github.com/facebook/flipper/blob/master/website/../docs/setup/crash-reporter-plugin.mdx","sidebar_label":"Crash Reporter","sidebar":"setup","previous":{"title":"LeakCanary Setup","permalink":"/docs/setup/leak-canary-plugin"},"next":{"title":"Running Flipper with different ports","permalink":"/docs/custom-ports"}};/* @jsx mdx */const rightToc=[{value:'Android',id:'android',children:[]}];const makeShortcode=name=>function MDXDefaultShortcode(props){console.warn("Component "+name+" was not imported, exported, or provided by MDXProvider as global scope");return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",props);};const layoutProps={rightToc};const MDXLayout="wrapper";function MDXContent({components,...props}){return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(MDXLayout,Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({},layoutProps,props,{components:components,mdxType:"MDXLayout"}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`You do not have to instantiate it in your app in order to use its basic functionality mentioned `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(_docusaurus_Link__WEBPACK_IMPORTED_MODULE_4__[/* default */ "a"],{to:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("/docs/features/crash-reporter-plugin"),mdxType:"Link"},`here`),`. You can also use crash reporter plugin to send the notifications for the exception which you suppress in your Android application. You could even use it to send the notifications when the `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"https://fblitho.com/docs/error-boundaries"}),`Litho Error Boundary`),` is triggered. In order to send your custom notification you will have to follow the following steps.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"android"},`Android`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Instantiate and add the plugin in `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`FlipperClient`),`.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("pre",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("code",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"pre"},{"className":"language-java"}),`import com.facebook.flipper.plugins.crashreporter.CrashReporterPlugin;
 
 client.addPlugin(CrashReporterPlugin.getInstance());
 `)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Use the following API to trigger your custom crash notification.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("pre",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("code",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"pre"},{"className":"language-java"}),`import com.facebook.flipper.plugins.crashreporter.CrashReporterPlugin;
@@ -20190,7 +20204,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _mdx_js_react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(0);
 /* harmony import */ var _docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(3);
-const frontMatter={id:'databases-plugin',title:'Databases'};const metadata={"id":"features/databases-plugin","title":"Databases","description":"→ See setup instructions for the Databases plugin","source":"@site/../docs/features/databases-plugin.mdx","permalink":"/docs/features/databases-plugin","editUrl":"https://github.com/facebook/flipper/blob/master/website/../docs/features/databases-plugin.mdx","sidebar":"features","previous":{"title":"Network","permalink":"/docs/features/network-plugin"},"next":{"title":"Images","permalink":"/docs/features/images-plugin"}};/* @jsx mdx */const rightToc=[];const makeShortcode=name=>function MDXDefaultShortcode(props){console.warn("Component "+name+" was not imported, exported, or provided by MDXProvider as global scope");return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",props);};const layoutProps={rightToc};const MDXLayout="wrapper";function MDXContent({components,...props}){return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(MDXLayout,Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({},layoutProps,props,{components:components,mdxType:"MDXLayout"}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`→ `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"../setup/databases-plugin"}),`See setup instructions for the Databases plugin`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The Databases plugin provides developers with read-write access to their databases:`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("ul",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`browse your tables' data`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`see your tables' structure`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`execute queries`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`mark queries as favorites`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`see logs of past executed queries`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("img",{alt:"Databases Plugin 1",src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("img/databases-plugin-1.png")}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("img",{alt:"Databases Plugin 2",src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("img/databases-plugin-2.png")}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Note: this plugin is only available for Android.`));};MDXContent.isMDXComponent=true;
+/* harmony import */ var _docusaurus_Link__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(5);
+const frontMatter={id:'databases-plugin',title:'Databases'};const metadata={"id":"features/databases-plugin","title":"Databases","description":"→ See setup instructions for the Databases plugin","source":"@site/../docs/features/databases-plugin.mdx","permalink":"/docs/features/databases-plugin","editUrl":"https://github.com/facebook/flipper/blob/master/website/../docs/features/databases-plugin.mdx","sidebar":"features","previous":{"title":"Network","permalink":"/docs/features/network-plugin"},"next":{"title":"Images","permalink":"/docs/features/images-plugin"}};/* @jsx mdx */const rightToc=[];const makeShortcode=name=>function MDXDefaultShortcode(props){console.warn("Component "+name+" was not imported, exported, or provided by MDXProvider as global scope");return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",props);};const layoutProps={rightToc};const MDXLayout="wrapper";function MDXContent({components,...props}){return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(MDXLayout,Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({},layoutProps,props,{components:components,mdxType:"MDXLayout"}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`→ `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(_docusaurus_Link__WEBPACK_IMPORTED_MODULE_4__[/* default */ "a"],{to:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("/docs/setup/databases-plugin"),mdxType:"Link"},`See setup instructions for the Databases plugin`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The Databases plugin provides developers with read-write access to their databases:`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("ul",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`browse your tables' data`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`see your tables' structure`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`execute queries`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`mark queries as favorites`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`see logs of past executed queries`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("img",{alt:"Databases Plugin 1",src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("img/databases-plugin-1.png")}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("img",{alt:"Databases Plugin 2",src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("img/databases-plugin-2.png")}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Note: this plugin is only available for Android.`));};MDXContent.isMDXComponent=true;
 
 /***/ }),
 /* 188 */
@@ -20329,14 +20344,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var algoliasearch_lite__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(algoliasearch_lite__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var algoliasearch_helper__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(245);
 /* harmony import */ var algoliasearch_helper__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(algoliasearch_helper__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(5);
+/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(6);
 /* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(classnames__WEBPACK_IMPORTED_MODULE_3__);
 /* harmony import */ var _docusaurus_ExecutionEnvironment__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(18);
-/* harmony import */ var _docusaurus_useDocusaurusContext__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(6);
+/* harmony import */ var _docusaurus_useDocusaurusContext__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(7);
 /* harmony import */ var _theme_hooks_useVersioning__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(246);
 /* harmony import */ var _theme_hooks_useVersioning__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_theme_hooks_useVersioning__WEBPACK_IMPORTED_MODULE_6__);
 /* harmony import */ var _theme_hooks_useSearchQuery__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(79);
-/* harmony import */ var _docusaurus_Link__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(13);
+/* harmony import */ var _docusaurus_Link__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(5);
 /* harmony import */ var _theme_Layout__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(32);
 /* harmony import */ var _styles_module_css__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(15);
 /* harmony import */ var _styles_module_css__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(_styles_module_css__WEBPACK_IMPORTED_MODULE_10__);
@@ -22948,7 +22963,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _mdx_js_react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(0);
 /* harmony import */ var _docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(3);
-const frontMatter={id:'network-plugin',title:'Network'};const metadata={"id":"features/network-plugin","title":"Network","description":"→ See setup instructions for the Network plugin","source":"@site/../docs/features/network-plugin.mdx","permalink":"/docs/features/network-plugin","editUrl":"https://github.com/facebook/flipper/blob/master/website/../docs/features/network-plugin.mdx","sidebar":"features","previous":{"title":"Navigation","permalink":"/docs/features/navigation-plugin"},"next":{"title":"Databases","permalink":"/docs/features/databases-plugin"}};/* @jsx mdx */const rightToc=[];const makeShortcode=name=>function MDXDefaultShortcode(props){console.warn("Component "+name+" was not imported, exported, or provided by MDXProvider as global scope");return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",props);};const layoutProps={rightToc};const MDXLayout="wrapper";function MDXContent({components,...props}){return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(MDXLayout,Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({},layoutProps,props,{components:components,mdxType:"MDXLayout"}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`→ `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"../setup/network-plugin"}),`See setup instructions for the Network plugin`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Use the Network inspector to inspect outgoing network traffic in your apps. You can easily browse all requests being made and their responses. The plugin also supports gzipped responses.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("img",{alt:"Network plugin",src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("img/network.png")}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`All request sent from the device will be listed in the plugin. Click on a request to see details like headers and body. You can filter the table for domain, method or status by clicking on the corresponding value in the table.`));};MDXContent.isMDXComponent=true;
+/* harmony import */ var _docusaurus_Link__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(5);
+const frontMatter={id:'network-plugin',title:'Network'};const metadata={"id":"features/network-plugin","title":"Network","description":"→ See setup instructions for the Network plugin","source":"@site/../docs/features/network-plugin.mdx","permalink":"/docs/features/network-plugin","editUrl":"https://github.com/facebook/flipper/blob/master/website/../docs/features/network-plugin.mdx","sidebar":"features","previous":{"title":"Navigation","permalink":"/docs/features/navigation-plugin"},"next":{"title":"Databases","permalink":"/docs/features/databases-plugin"}};/* @jsx mdx */const rightToc=[];const makeShortcode=name=>function MDXDefaultShortcode(props){console.warn("Component "+name+" was not imported, exported, or provided by MDXProvider as global scope");return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",props);};const layoutProps={rightToc};const MDXLayout="wrapper";function MDXContent({components,...props}){return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(MDXLayout,Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({},layoutProps,props,{components:components,mdxType:"MDXLayout"}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`→ `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(_docusaurus_Link__WEBPACK_IMPORTED_MODULE_4__[/* default */ "a"],{to:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("/docs/setup/network-plugin"),mdxType:"Link"},`See setup instructions for the Network plugin`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Use the Network inspector to inspect outgoing network traffic in your apps. You can easily browse all requests being made and their responses. The plugin also supports gzipped responses.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("img",{alt:"Network plugin",src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("img/network.png")}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`All request sent from the device will be listed in the plugin. Click on a request to see details like headers and body. You can filter the table for domain, method or status by clicking on the corresponding value in the table.`));};MDXContent.isMDXComponent=true;
 
 /***/ }),
 /* 202 */
@@ -22965,8 +22981,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _mdx_js_react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(0);
 /* harmony import */ var _docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(3);
+/* harmony import */ var _docusaurus_Link__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(5);
 const frontMatter={id:'react-native',title:'React Native Support'};const metadata={"id":"features/react-native","title":"React Native Support","description":"The React Native and Developer tooling teams at Facebook work in close collaboration to make sure Flipper offers top-notch value out of the box for React Native development.","source":"@site/../docs/features/react-native.mdx","permalink":"/docs/features/react-native","editUrl":"https://github.com/facebook/flipper/blob/master/website/../docs/features/react-native.mdx","sidebar":"features","previous":{"title":"Share Flipper Data","permalink":"/docs/features/share-flipper-data"}};/* @jsx mdx */const rightToc=[{value:'Device type: React Native',id:'device-type-react-native',children:[]},{value:'Native plugins for React Native',id:'native-plugins-for-react-native',children:[]},{value:'Writing JavaScript plugins for React Native + Flipper',id:'writing-javascript-plugins-for-react-native--flipper',children:[{value:'Community React Native plugins for Flipper',id:'community-react-native-plugins-for-flipper',children:[]}]}];const makeShortcode=name=>function MDXDefaultShortcode(props){console.warn("Component "+name+" was not imported, exported, or provided by MDXProvider as global scope");return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",props);};const layoutProps={rightToc};const MDXLayout="wrapper";function MDXContent({components,...props}){return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(MDXLayout,Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({},layoutProps,props,{components:components,mdxType:"MDXLayout"}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("img",{alt:"React Native + React DevTools",src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("img/react-native-react.png")}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The React Native and Developer tooling teams at Facebook work in close collaboration to make sure Flipper offers top-notch value out of the box for React Native development.
-Integration between React Native and Flipper is enabled out of the box in React Native version 0.62 and higher.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`→ `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"../getting-started/index#setup-your-react-native-app"}),`See setup instructions for React Native`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("center",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("iframe",{width:"560",height:"315",src:"https://www.youtube.com/embed/WltZTn3ODW4",frameborder:"0",allow:"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture",allowfullscreen:true}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("br",null),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("em",null,"Flipper: The Extensible DevTool Platform for React Native")),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"device-type-react-native"},`Device type: React Native`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`In Flipper there is a dedicated device type, “React Native”, that connects to a locally running Metro instance to interact with your React Native app. This device will be detected as soon as you fire up a Metro instance by running `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`yarn run ios`),` or `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`yarn run android`),` in your project.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`If Metro is connected, two new buttons will appear in Flipper’s main toolbar: “Reload” and “Open Dev Menu”. Both do exactly what their name suggests, without needing the agility of a pianist to get to the right keyboard combo inside your emulator. The “React Native” device will feature two plugins out of the box: “Logs” and “React DevTools”.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("img",{alt:"React Native Action Buttons and Logs",src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("img/react-native-logs.png")}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The React DevTools allows you to inspect the component tree and tune the props and state of your React components.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The Logs plugins will allow you to search, filter and even put watch expressions on your logging output. This offers a much richer way to interact with your logs compared to the terminal output of Metro.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"native-plugins-for-react-native"},`Native plugins for React Native`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Beyond the React Native specific Flipper plugins described above, with Flipper you will also inherit the plugin eco-system that exists for native Android and iOS apps. This means that you will be able to use plugins that are aimed at native apps for your React Native app as well. Example plugins include:`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("ul",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`Device logs`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`Device crash reporter`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`Inspecting network requests`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`Inspecting app local databases`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`Inspecting device preferences`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`Inspecting cached images`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`Inspecting native layout elements`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"writing-javascript-plugins-for-react-native--flipper"},`Writing JavaScript plugins for React Native + Flipper`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`One of the greatest values of Flipper is its extensibility. Many teams across Facebook already have written their own one-off plugins that help with analysing very specific use cases.
+Integration between React Native and Flipper is enabled out of the box in React Native version 0.62 and higher.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`→ `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(_docusaurus_Link__WEBPACK_IMPORTED_MODULE_4__[/* default */ "a"],{to:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("/docs/getting-started/index#setup-your-react-native-app"),mdxType:"Link"},`See setup instructions for React Native`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("center",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("iframe",{width:"560",height:"315",src:"https://www.youtube.com/embed/WltZTn3ODW4",frameborder:"0",allow:"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture",allowfullscreen:true}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("br",null),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("em",null,"Flipper: The Extensible DevTool Platform for React Native")),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"device-type-react-native"},`Device type: React Native`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`In Flipper there is a dedicated device type, “React Native”, that connects to a locally running Metro instance to interact with your React Native app. This device will be detected as soon as you fire up a Metro instance by running `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`yarn run ios`),` or `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`yarn run android`),` in your project.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`If Metro is connected, two new buttons will appear in Flipper’s main toolbar: “Reload” and “Open Dev Menu”. Both do exactly what their name suggests, without needing the agility of a pianist to get to the right keyboard combo inside your emulator. The “React Native” device will feature two plugins out of the box: “Logs” and “React DevTools”.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("img",{alt:"React Native Action Buttons and Logs",src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("img/react-native-logs.png")}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The React DevTools allows you to inspect the component tree and tune the props and state of your React components.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The Logs plugins will allow you to search, filter and even put watch expressions on your logging output. This offers a much richer way to interact with your logs compared to the terminal output of Metro.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"native-plugins-for-react-native"},`Native plugins for React Native`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Beyond the React Native specific Flipper plugins described above, with Flipper you will also inherit the plugin eco-system that exists for native Android and iOS apps. This means that you will be able to use plugins that are aimed at native apps for your React Native app as well. Example plugins include:`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("ul",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`Device logs`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`Device crash reporter`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`Inspecting network requests`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`Inspecting app local databases`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`Inspecting device preferences`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`Inspecting cached images`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`Inspecting native layout elements`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"writing-javascript-plugins-for-react-native--flipper"},`Writing JavaScript plugins for React Native + Flipper`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`One of the greatest values of Flipper is its extensibility. Many teams across Facebook already have written their own one-off plugins that help with analysing very specific use cases.
 Writing plugins for Flipper doesn't require any native code, as the Flipper SDK is exposed directly to JavaScript through the `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"https://www.npmjs.com/package/react-native-flipper"}),`react-native-flipper`),` package.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("img",{alt:"Tic Tac Toe example plugin",src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("img/react-native-tictactoe.png")}),"_Example Flipper plugin: playing a game of Tic Tac Toe using Flipper and some emulators_",Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`If you would love to build a specific (or generic) extension for Flipper check out the following pointers! Plugins for Flipper can be distributed through NPM so sharing them is trivial.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`→ Creating a React Native Flipper Plugin `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"https://fbflipper.com/docs/tutorial/react-native"}),`https://fbflipper.com/docs/tutorial/react-native`),`
 → Create a Flipper Desktop Plugin `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"https://fbflipper.com/docs/tutorial/js-setup"}),`https://fbflipper.com/docs/tutorial/js-setup`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h3",{"id":"community-react-native-plugins-for-flipper"},`Community React Native plugins for Flipper`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The React Native community has also started to build plugins for Flipper.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("ul",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"li"},{"href":"https://infinite.red/reactotron"}),`Reactotron's`),` `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"li"},{"href":"https://github.com/infinitered/flipper-plugin-reactotron"}),`Flipper plugin`),` is an example of a standalone React Native desktop app, `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"li"},{"href":"https://shift.infinite.red/better-react-native-debugging-with-reactotron-in-flipper-6b823af29220"}),`ported to work as a Flipper plugin`),`.`)));};MDXContent.isMDXComponent=true;
 
@@ -22985,7 +23002,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _mdx_js_react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(0);
 /* harmony import */ var _docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(3);
-const frontMatter={id:'layout-plugin',title:'Layout Inspector'};const metadata={"id":"features/layout-plugin","title":"Layout Inspector","description":"→ See setup instructions for the Layout Inspector","source":"@site/../docs/features/layout-plugin.mdx","permalink":"/docs/features/layout-plugin","editUrl":"https://github.com/facebook/flipper/blob/master/website/../docs/features/layout-plugin.mdx","sidebar":"features","previous":{"title":"Logs","permalink":"/docs/features/logs-plugin"},"next":{"title":"Navigation","permalink":"/docs/features/navigation-plugin"}};/* @jsx mdx */const rightToc=[{value:'Quick edits',id:'quick-edits',children:[]},{value:'Target mode',id:'target-mode',children:[]},{value:'Accessibility mode (Android-only)',id:'accessibility-mode-android-only',children:[{value:'Talkback',id:'talkback',children:[]}]}];const makeShortcode=name=>function MDXDefaultShortcode(props){console.warn("Component "+name+" was not imported, exported, or provided by MDXProvider as global scope");return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",props);};const layoutProps={rightToc};const MDXLayout="wrapper";function MDXContent({components,...props}){return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(MDXLayout,Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({},layoutProps,props,{components:components,mdxType:"MDXLayout"}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`→ `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"../setup/layout-plugin"}),`See setup instructions for the Layout Inspector`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The Layout Inspector in Flipper is useful for a ton of different debugging scenarios. First of all, you can inspect what views the hierarchy is made up of as well as what properties each view has. This is incredibly useful when debugging issues with your product.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The Layout tab supports `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"https://fblitho.com"}),`Litho`),` and `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"https://componentkit.org"}),`ComponentKit`),` components as well. We integrate with these frameworks to present components in the hierarchy just as if they were native views. We show you all the layout properties, props, and state of the components. The layout inspector is further extensible to support other UI frameworks.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`If you hover over a view or component in Flipper we will highlight the corresponding item in your app. This is perfect for debugging the bounds of your views and making sure you have the correct visual padding.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("img",{alt:"Layout plugin",src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("img/layout.png")}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"quick-edits"},`Quick edits`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The Layout Inspector not only allows you to view the hierarchy and inspect each item's properties, but it also allows you to edit things such as layout attributes, background colors, props, and state. Most things actually. This allows you to quickly tweak paddings, margins, and colors until you are happy with them, all without re-compiling. This can save you many hours implementing a new design.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"target-mode"},`Target mode`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Enable target mode by clicking on the crosshairs icon. Now, you can touch any view on the device and Layout Inspector will jump to the correct position within your layout hierarchy.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Tip: Target mode also works with Talkback running.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"accessibility-mode-android-only"},`Accessibility mode (Android-only)`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Enable accessibility mode by clicking on the accessibility icon. This shows the accessibility view hierarchy next to the normal hierarchy. In the hierarchy, the currently accessibility-focused view is highlighted in green and any accessibility-focusable elements have a green icon next to their name. The hierarchy's context menu also allows you to focus accessibility services on certain elements. When selecting an element in one hierarchy, the corresponding element in the other will also be highlighted. The hierarchies expand and collapse in sync, and searching through the main hierarchy works in accessibility mode as well.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`When accessibility mode is enabled, the sidebar will show special properties that are used by accessibility services to determine their functionality. This includes things like content-description, clickable, focusable, and long-clickable among others.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h3",{"id":"talkback"},`Talkback`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The accessibility mode sidebar also includes a panel with properties derived specifically to show Talkback's interpretation of a view (with logic ported over from Google's Talkback source). While generally accurate, this is not guaranteed to be accurate for all situations. It is always better to turn Talkback on for verification.`));};MDXContent.isMDXComponent=true;
+/* harmony import */ var _docusaurus_Link__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(5);
+const frontMatter={id:'layout-plugin',title:'Layout Inspector'};const metadata={"id":"features/layout-plugin","title":"Layout Inspector","description":"→ See setup instructions for the Layout Inspector","source":"@site/../docs/features/layout-plugin.mdx","permalink":"/docs/features/layout-plugin","editUrl":"https://github.com/facebook/flipper/blob/master/website/../docs/features/layout-plugin.mdx","sidebar":"features","previous":{"title":"Logs","permalink":"/docs/features/logs-plugin"},"next":{"title":"Navigation","permalink":"/docs/features/navigation-plugin"}};/* @jsx mdx */const rightToc=[{value:'Quick edits',id:'quick-edits',children:[]},{value:'Target mode',id:'target-mode',children:[]},{value:'Accessibility mode (Android-only)',id:'accessibility-mode-android-only',children:[{value:'Talkback',id:'talkback',children:[]}]}];const makeShortcode=name=>function MDXDefaultShortcode(props){console.warn("Component "+name+" was not imported, exported, or provided by MDXProvider as global scope");return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",props);};const layoutProps={rightToc};const MDXLayout="wrapper";function MDXContent({components,...props}){return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(MDXLayout,Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({},layoutProps,props,{components:components,mdxType:"MDXLayout"}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`→ `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(_docusaurus_Link__WEBPACK_IMPORTED_MODULE_4__[/* default */ "a"],{to:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("/docs/setup/layout-plugin"),mdxType:"Link"},`See setup instructions for the Layout Inspector`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The Layout Inspector in Flipper is useful for a ton of different debugging scenarios. First of all, you can inspect what views the hierarchy is made up of as well as what properties each view has. This is incredibly useful when debugging issues with your product.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The Layout tab supports `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"https://fblitho.com"}),`Litho`),` and `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"https://componentkit.org"}),`ComponentKit`),` components as well. We integrate with these frameworks to present components in the hierarchy just as if they were native views. We show you all the layout properties, props, and state of the components. The layout inspector is further extensible to support other UI frameworks.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`If you hover over a view or component in Flipper we will highlight the corresponding item in your app. This is perfect for debugging the bounds of your views and making sure you have the correct visual padding.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("img",{alt:"Layout plugin",src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("img/layout.png")}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"quick-edits"},`Quick edits`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The Layout Inspector not only allows you to view the hierarchy and inspect each item's properties, but it also allows you to edit things such as layout attributes, background colors, props, and state. Most things actually. This allows you to quickly tweak paddings, margins, and colors until you are happy with them, all without re-compiling. This can save you many hours implementing a new design.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"target-mode"},`Target mode`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Enable target mode by clicking on the crosshairs icon. Now, you can touch any view on the device and Layout Inspector will jump to the correct position within your layout hierarchy.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Tip: Target mode also works with Talkback running.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"accessibility-mode-android-only"},`Accessibility mode (Android-only)`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Enable accessibility mode by clicking on the accessibility icon. This shows the accessibility view hierarchy next to the normal hierarchy. In the hierarchy, the currently accessibility-focused view is highlighted in green and any accessibility-focusable elements have a green icon next to their name. The hierarchy's context menu also allows you to focus accessibility services on certain elements. When selecting an element in one hierarchy, the corresponding element in the other will also be highlighted. The hierarchies expand and collapse in sync, and searching through the main hierarchy works in accessibility mode as well.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`When accessibility mode is enabled, the sidebar will show special properties that are used by accessibility services to determine their functionality. This includes things like content-description, clickable, focusable, and long-clickable among others.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h3",{"id":"talkback"},`Talkback`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The accessibility mode sidebar also includes a panel with properties derived specifically to show Talkback's interpretation of a view (with logic ported over from Google's Talkback source). While generally accurate, this is not guaranteed to be accurate for all situations. It is always better to turn Talkback on for verification.`));};MDXContent.isMDXComponent=true;
 
 /***/ }),
 /* 204 */
@@ -23183,6 +23201,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _mdx_js_react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(0);
 /* harmony import */ var _docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(3);
+/* harmony import */ var _docusaurus_Link__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(5);
 const frontMatter={id:'js-custom',title:'Building Custom UI',sidebar_label:'Custom UI'};const metadata={"id":"tutorial/js-custom","title":"Building Custom UI","description":"Displaying your data in a table might work for many use-cases. However, depending on your plugin and data it might make sense to customize the way your data is visualized. Flipper uses React to render the plugins and provides a variety of ready-to-use UI components that can be used to build custom plugin UIs.","source":"@site/../docs/tutorial/js-custom.mdx","permalink":"/docs/tutorial/js-custom","editUrl":"https://github.com/facebook/flipper/blob/master/website/../docs/tutorial/js-custom.mdx","sidebar_label":"Custom UI","sidebar":"extending","previous":{"title":"Showing a table","permalink":"/docs/tutorial/js-table"},"next":{"title":"Publishing your Plugin","permalink":"/docs/tutorial/js-publishing"}};/* @jsx mdx */const rightToc=[{value:'Replacing the table',id:'replacing-the-table',children:[]},{value:'Adding data handling',id:'adding-data-handling',children:[]},{value:'Rendering the data',id:'rendering-the-data',children:[]},{value:'Adding the sidebar',id:'adding-the-sidebar',children:[]},{value:'Creating a custom component',id:'creating-a-custom-component',children:[]}];const makeShortcode=name=>function MDXDefaultShortcode(props){console.warn("Component "+name+" was not imported, exported, or provided by MDXProvider as global scope");return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",props);};const layoutProps={rightToc};const MDXLayout="wrapper";function MDXContent({components,...props}){return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(MDXLayout,Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({},layoutProps,props,{components:components,mdxType:"MDXLayout"}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Displaying your data in a table might work for many use-cases. However, depending on your plugin and data it might make sense to customize the way your data is visualized. Flipper uses React to render the plugins and provides a variety of ready-to-use UI components that can be used to build custom plugin UIs.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"replacing-the-table"},`Replacing the table`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`For our sea mammals app, we might not only want to see them listed as image URLs in a table but render the actual images in nice little cards. When selecting one of the cards we still want to display all details in the sidebar.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("img",{alt:"Custom cards UI for our sea mammals plugin",src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("img/js-custom.png")}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Currently, the default export in our `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`index.tsx`),` is from `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`createTablePlugin`),`. Now we are going to replace this with a custom React component extending `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`FlipperPlugin`),`.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("pre",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("code",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"pre"},{"className":"language-js"}),`export default class SeaMammals extends FlipperPlugin<State, any, PersistedState> {
   static Container = styled(FlexRow)({
     backgroundColor: colors.macOSTitleBarBackgroundBlur,
@@ -23201,7 +23220,7 @@ const frontMatter={id:'js-custom',title:'Building Custom UI',sidebar_label:'Cust
     );
   }
 }
-`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`You can see how we are styling our components using `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"https://emotion.sh/"}),`emotion`),`. To learn more about this, make sure to read our guide on `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"../extending/styling-components"}),`styling components`),`.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"adding-data-handling"},`Adding data handling`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The plugin is quite useless when we don't display any actual data. We are adding two static properties to our plugin class for data handling. `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`defaultPersistedState`),` defines the default state before we received any data. In `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`persistedStateReducer`),` we define how new data is merged with the existing data.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`For the default state we define an empty object because we don't have any data, yet. When receiving data, we simply add it to the existing object, using the ID as a key. Learn more about `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"../extending/js-plugin-api#persistedstate"}),`persistedState`),` in our guide.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("pre",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("code",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"pre"},{"className":"language-js"}),`static defaultPersistedState: PersistedState = {
+`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`You can see how we are styling our components using `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"https://emotion.sh/"}),`emotion`),`. To learn more about this, make sure to read our guide on `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(_docusaurus_Link__WEBPACK_IMPORTED_MODULE_4__[/* default */ "a"],{to:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("/docs/extending/styling-components"),mdxType:"Link"},`styling components`),`.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"adding-data-handling"},`Adding data handling`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The plugin is quite useless when we don't display any actual data. We are adding two static properties to our plugin class for data handling. `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`defaultPersistedState`),` defines the default state before we received any data. In `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`persistedStateReducer`),` we define how new data is merged with the existing data.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`For the default state we define an empty object because we don't have any data, yet. When receiving data, we simply add it to the existing object, using the ID as a key. Learn more about `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(_docusaurus_Link__WEBPACK_IMPORTED_MODULE_4__[/* default */ "a"],{to:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("/docs/extending/js-plugin-api#persistedstate"),mdxType:"Link"},`persistedState`),` in our guide.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("pre",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("code",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"pre"},{"className":"language-js"}),`static defaultPersistedState: PersistedState = {
   data: [],
 };
 
@@ -23630,7 +23649,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _mdx_js_react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(0);
 /* harmony import */ var _docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(3);
-const frontMatter={id:'crash-reporter-plugin',title:'Crash Reporter'};const metadata={"id":"features/crash-reporter-plugin","title":"Crash Reporter","description":"→ See setup instructions for the Crash Reporter","source":"@site/../docs/features/crash-reporter-plugin.mdx","permalink":"/docs/features/crash-reporter-plugin","editUrl":"https://github.com/facebook/flipper/blob/master/website/../docs/features/crash-reporter-plugin.mdx","sidebar":"features","previous":{"title":"LeakCanary","permalink":"/docs/features/leak-canary-plugin"},"next":{"title":"Share Flipper Data","permalink":"/docs/features/share-flipper-data"}};/* @jsx mdx */const rightToc=[];const makeShortcode=name=>function MDXDefaultShortcode(props){console.warn("Component "+name+" was not imported, exported, or provided by MDXProvider as global scope");return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",props);};const layoutProps={rightToc};const MDXLayout="wrapper";function MDXContent({components,...props}){return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(MDXLayout,Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({},layoutProps,props,{components:components,mdxType:"MDXLayout"}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`→ `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"../setup/crash-reporter-plugin"}),`See setup instructions for the Crash Reporter`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The Crash Reporter Plugin shows a notification in Flipper whenever an app crashes. You can click on the notification to see crash information like stacktrace and other metadata. For Android, you can click the "Open in Logs" button to jump to the row in the Logs plugin with the crash information.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("img",{alt:"UI",src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("img/crashreporterplugin.png")}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("img",{alt:"Notification",src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("img/crashreporterpluginnotification.png")}));};MDXContent.isMDXComponent=true;
+/* harmony import */ var _docusaurus_Link__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(5);
+const frontMatter={id:'crash-reporter-plugin',title:'Crash Reporter'};const metadata={"id":"features/crash-reporter-plugin","title":"Crash Reporter","description":"→ See setup instructions for the Crash Reporter","source":"@site/../docs/features/crash-reporter-plugin.mdx","permalink":"/docs/features/crash-reporter-plugin","editUrl":"https://github.com/facebook/flipper/blob/master/website/../docs/features/crash-reporter-plugin.mdx","sidebar":"features","previous":{"title":"LeakCanary","permalink":"/docs/features/leak-canary-plugin"},"next":{"title":"Share Flipper Data","permalink":"/docs/features/share-flipper-data"}};/* @jsx mdx */const rightToc=[];const makeShortcode=name=>function MDXDefaultShortcode(props){console.warn("Component "+name+" was not imported, exported, or provided by MDXProvider as global scope");return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",props);};const layoutProps={rightToc};const MDXLayout="wrapper";function MDXContent({components,...props}){return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(MDXLayout,Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({},layoutProps,props,{components:components,mdxType:"MDXLayout"}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`→ `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(_docusaurus_Link__WEBPACK_IMPORTED_MODULE_4__[/* default */ "a"],{to:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("/docs/setup/crash-reporter-plugin"),mdxType:"Link"},`See setup instructions for the Crash Reporter`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The Crash Reporter Plugin shows a notification in Flipper whenever an app crashes. You can click on the notification to see crash information like stacktrace and other metadata. For Android, you can click the "Open in Logs" button to jump to the row in the Logs plugin with the crash information.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("img",{alt:"UI",src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("img/crashreporterplugin.png")}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("img",{alt:"Notification",src:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("img/crashreporterpluginnotification.png")}));};MDXContent.isMDXComponent=true;
 
 /***/ }),
 /* 212 */
@@ -23781,6 +23801,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _mdx_js_react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(0);
+/* harmony import */ var _docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(3);
+/* harmony import */ var _docusaurus_Link__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(5);
 const frontMatter={id:'android-native',title:'Set up your Android app',sidebar_label:'Android'};const metadata={"id":"getting-started/android-native","title":"Set up your Android app","description":"To set up Flipper for Android, you need to add the neccessary dependencies to your","source":"@site/../docs/getting-started/android-native.mdx","permalink":"/docs/getting-started/android-native","editUrl":"https://github.com/facebook/flipper/blob/master/website/../docs/getting-started/android-native.mdx","sidebar_label":"Android","sidebar":"setup","previous":{"title":"Desktop App","permalink":"/docs/getting-started/index"},"next":{"title":"Set up your iOS app","permalink":"/docs/getting-started/ios-native"}};/* @jsx mdx */const rightToc=[{value:'Dependencies',id:'dependencies',children:[]},{value:'Application Setup',id:'application-setup',children:[]},{value:'Diagnostics',id:'diagnostics',children:[]},{value:'Android Snapshots',id:'android-snapshots',children:[]},{value:'Enabling plugins',id:'enabling-plugins',children:[]},{value:'Having trouble?',id:'having-trouble',children:[]}];const makeShortcode=name=>function MDXDefaultShortcode(props){console.warn("Component "+name+" was not imported, exported, or provided by MDXProvider as global scope");return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",props);};const layoutProps={rightToc};const MDXLayout="wrapper";function MDXContent({components,...props}){return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(MDXLayout,Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({},layoutProps,props,{components:components,mdxType:"MDXLayout"}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`To set up Flipper for Android, you need to add the neccessary dependencies to your
 app, initialize the Flipper client and enable the plugins you want to use. Optionally,
 you can hook up the diagnostics Activity to help you troubleshoot connection issues.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"dependencies"},`Dependencies`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Flipper is distributed via JCenter. Add the dependencies to your `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`build.gradle`),` file.
@@ -23841,7 +23863,7 @@ dependencies {
 
   releaseImplementation 'com.facebook.flipper:flipper-noop:0.48.1-SNAPSHOT'
 }
-`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"enabling-plugins"},`Enabling plugins`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Finally, you need to add plugins to your Flipper client. Above, we have only added the Layout Inspector plugin to get you started. See `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"../setup/network-plugin"}),`Network Plugin`),` and `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"../setup/layout-plugin"}),`Layout Inspector Plugin`),` for information on how to add them, and also enable Litho or ComponentKit support. You can check the sample apps in the `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"https://github.com/facebook/flipper"}),`GitHub repo`),` for examples of integrating other plugins.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"having-trouble"},`Having trouble?`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`See the `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"../troubleshooting"}),`troubleshooting page`),` for help with known problems.`));};MDXContent.isMDXComponent=true;
+`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"enabling-plugins"},`Enabling plugins`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Finally, you need to add plugins to your Flipper client. Above, we have only added the Layout Inspector plugin to get you started. See `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(_docusaurus_Link__WEBPACK_IMPORTED_MODULE_4__[/* default */ "a"],{to:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("/docs/setup/network-plugin"),mdxType:"Link"},"Network Plugin")," and ",Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(_docusaurus_Link__WEBPACK_IMPORTED_MODULE_4__[/* default */ "a"],{to:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("/docs/setup/layout-plugin"),mdxType:"Link"},`Layout Inspector Plugin`),` for information on how to add them, and also enable Litho or ComponentKit support. You can check the sample apps in the `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"https://github.com/facebook/flipper"}),`GitHub repo`),` for examples of integrating other plugins.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"having-trouble"},`Having trouble?`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`See the `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(_docusaurus_Link__WEBPACK_IMPORTED_MODULE_4__[/* default */ "a"],{to:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("/docs/troubleshooting"),mdxType:"Link"},`troubleshooting page`),` for help with known problems.`));};MDXContent.isMDXComponent=true;
 
 /***/ }),
 /* 216 */
@@ -24037,6 +24059,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _mdx_js_react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(0);
+/* harmony import */ var _docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(3);
+/* harmony import */ var _docusaurus_Link__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(5);
 const frontMatter={id:'ios-native',title:'Set up your iOS app',sidebar_label:'iOS'};const metadata={"id":"getting-started/ios-native","title":"Set up your iOS app","description":"We support both Swift and Objective-C for Flipper with CocoaPods as build and distribution mechanism.","source":"@site/../docs/getting-started/ios-native.mdx","permalink":"/docs/getting-started/ios-native","editUrl":"https://github.com/facebook/flipper/blob/master/website/../docs/getting-started/ios-native.mdx","sidebar_label":"iOS","sidebar":"setup","previous":{"title":"Set up your Android app","permalink":"/docs/getting-started/android-native"},"next":{"title":"Set up your React Native App","permalink":"/docs/getting-started/react-native"}};/* @jsx mdx */const rightToc=[{value:'CocoaPods',id:'cocoapods',children:[]},{value:'For pure Objective-C projects',id:'for-pure-objective-c-projects',children:[]},{value:'Enabling plugins',id:'enabling-plugins',children:[]},{value:'Having trouble?',id:'having-trouble',children:[]}];const makeShortcode=name=>function MDXDefaultShortcode(props){console.warn("Component "+name+" was not imported, exported, or provided by MDXProvider as global scope");return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",props);};const layoutProps={rightToc};const MDXLayout="wrapper";function MDXContent({components,...props}){return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(MDXLayout,Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({},layoutProps,props,{components:components,mdxType:"MDXLayout"}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`We support both Swift and Objective-C for Flipper with CocoaPods as build and distribution mechanism.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"cocoapods"},`CocoaPods`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The following configuration assumed CocoaPods 1.9+.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("pre",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("code",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"pre"},{"className":"language-ruby"}),`project 'MyApp.xcodeproj'
 flipperkit_version = '0.48.0'
 
@@ -24133,7 +24157,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     return true
   }
 }
-`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"enabling-plugins"},`Enabling plugins`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Finally, you need to add plugins to your Flipper client. Above, we have only added the Layout Inspector plugin to get you started. See `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"../setup/network-plugin"}),`Network Plugin`),` and `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"../setup/layout-plugin"}),`Layout Inspector Plugin`),` for information on how to add them, and also enable Litho or ComponentKit support. You can check the sample apps in the `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"https://github.com/facebook/flipper"}),`GitHub repo`),` for examples of integrating other plugins.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"having-trouble"},`Having trouble?`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`See the `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"../troubleshooting"}),`troubleshooting page`),` for help with known problems.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",{class:"warning"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`On iOS, we currently do not support connecting to physical devices.`)));};MDXContent.isMDXComponent=true;
+`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"enabling-plugins"},`Enabling plugins`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Finally, you need to add plugins to your Flipper client. Above, we have only added the Layout Inspector plugin to get you started. See `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(_docusaurus_Link__WEBPACK_IMPORTED_MODULE_4__[/* default */ "a"],{to:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("/docs/setup/network-plugin"),mdxType:"Link"},"Network Plugin")," and ",Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(_docusaurus_Link__WEBPACK_IMPORTED_MODULE_4__[/* default */ "a"],{to:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("/docs/setup/layout-plugin"),mdxType:"Link"},`Layout Inspector Plugin`),` for information on how to add them, and also enable Litho or ComponentKit support. You can check the sample apps in the `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"https://github.com/facebook/flipper"}),`GitHub repo`),` for examples of integrating other plugins.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"having-trouble"},`Having trouble?`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`See the `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(_docusaurus_Link__WEBPACK_IMPORTED_MODULE_4__[/* default */ "a"],{to:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("/docs/troubleshooting"),mdxType:"Link"},`troubleshooting page`),` for help with known problems.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",{class:"warning"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`On iOS, we currently do not support connecting to physical devices.`)));};MDXContent.isMDXComponent=true;
 
 /***/ }),
 /* 221 */
@@ -24292,6 +24316,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _mdx_js_react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(0);
+/* harmony import */ var _docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(3);
+/* harmony import */ var _docusaurus_Link__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(5);
 const frontMatter={id:'react-native-android',title:'Manually set up your React Native Android App',sidebar_label:'React Native for Android'};const metadata={"id":"getting-started/react-native-android","title":"Manually set up your React Native Android App","description":"These instructions are aimed at people manually adding Flipper to a React Native 0.62+ app.","source":"@site/../docs/getting-started/react-native-android.mdx","permalink":"/docs/getting-started/react-native-android","editUrl":"https://github.com/facebook/flipper/blob/master/website/../docs/getting-started/react-native-android.mdx","sidebar_label":"React Native for Android","sidebar":"setup","previous":{"title":"Set up your React Native App","permalink":"/docs/getting-started/react-native"},"next":{"title":"Manually set up your React Native iOS App","permalink":"/docs/getting-started/react-native-ios"}};/* @jsx mdx */const rightToc=[{value:'Dependencies',id:'dependencies',children:[]},{value:'Application Setup',id:'application-setup',children:[]},{value:'Further Steps',id:'further-steps',children:[]}];const makeShortcode=name=>function MDXDefaultShortcode(props){console.warn("Component "+name+" was not imported, exported, or provided by MDXProvider as global scope");return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",props);};const layoutProps={rightToc};const MDXLayout="wrapper";function MDXContent({components,...props}){return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(MDXLayout,Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({},layoutProps,props,{components:components,mdxType:"MDXLayout"}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`These instructions are aimed at people manually adding Flipper to a React Native 0.62+ app.
 This should only be necessary if you have an existing app that cannot be upgraded with the
 `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"https://reactnative.dev/docs/upgrading"}),`React Native Upgrade tool`),`.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"dependencies"},`Dependencies`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Flipper is distributed via JCenter. Add the dependencies to your `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`build.gradle`),` file.
@@ -24375,7 +24401,7 @@ so you can call into the method directly.`),Object(_mdx_js_react__WEBPACK_IMPORT
     }
   }
 }
-`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"further-steps"},`Further Steps`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`To create your own plugins and integrate with Flipper using JavaScript, check out our `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"../tutorial/react-native"}),`writing plugins for React Native`),` tutorial!`));};MDXContent.isMDXComponent=true;
+`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"further-steps"},`Further Steps`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`To create your own plugins and integrate with Flipper using JavaScript, check out our `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(_docusaurus_Link__WEBPACK_IMPORTED_MODULE_4__[/* default */ "a"],{to:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("/docs/tutorial/react-native"),mdxType:"Link"},`writing plugins for React Native`),` tutorial!`));};MDXContent.isMDXComponent=true;
 
 /***/ }),
 /* 227 */
@@ -24392,7 +24418,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _mdx_js_react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(0);
 /* harmony import */ var _docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(3);
-const frontMatter={id:'react-native',title:'Set up your React Native App',sidebar_label:'React Native'};const metadata={"id":"getting-started/react-native","title":"Set up your React Native App","description":"Starting with React Native 0.62, after generating your project with react-native init, the Flipper integration is ready out of the box for debug builds:","source":"@site/../docs/getting-started/react-native.mdx","permalink":"/docs/getting-started/react-native","editUrl":"https://github.com/facebook/flipper/blob/master/website/../docs/getting-started/react-native.mdx","sidebar_label":"React Native","sidebar":"setup","previous":{"title":"Set up your iOS app","permalink":"/docs/getting-started/ios-native"},"next":{"title":"Manually set up your React Native Android App","permalink":"/docs/getting-started/react-native-android"}};/* @jsx mdx */const rightToc=[{value:'Manual Setup',id:'manual-setup',children:[]}];const makeShortcode=name=>function MDXDefaultShortcode(props){console.warn("Component "+name+" was not imported, exported, or provided by MDXProvider as global scope");return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",props);};const layoutProps={rightToc};const MDXLayout="wrapper";function MDXContent({components,...props}){return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(MDXLayout,Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({},layoutProps,props,{components:components,mdxType:"MDXLayout"}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Starting with React Native 0.62, after generating your project with `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`react-native init`),`, the Flipper integration is ready out of the box for debug builds:`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("ul",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`For Android, start the Flipper Desktop application, and start your project using `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"li"},`yarn android`),`. Your application will appear in Flipper.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`For iOS, run `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"li"},`pod install`),` once in the `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"li"},`ios`),` directory of your project. After that, run `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"li"},`yarn ios`),` and start Flipper. Your application will show up in Flipper.`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`By default, the following plugins will be available:`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("ul",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`Layout Inspector`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`Network`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`Databases`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`Images`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`Shared Preferences`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`Crash Reporter`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`React DevTools`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`Metro Logs`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Additional plugins can be installed through the plugin manager.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`To create your own plugins and integrate with Flipper using JavaScript, check out our `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"../tutorial/react-native"}),`writing plugins for React Native`),` tutorial!`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`To update the Flipper SDK in your project, you bump the version in the `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`ios/Podfile`),` and `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`android/gradle.properties`),` files of your project.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"manual-setup"},`Manual Setup`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`If you are not using a default React Native template or cannot use the upgrade tool,
+/* harmony import */ var _docusaurus_Link__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(5);
+const frontMatter={id:'react-native',title:'Set up your React Native App',sidebar_label:'React Native'};const metadata={"id":"getting-started/react-native","title":"Set up your React Native App","description":"Starting with React Native 0.62, after generating your project with react-native init, the Flipper integration is ready out of the box for debug builds:","source":"@site/../docs/getting-started/react-native.mdx","permalink":"/docs/getting-started/react-native","editUrl":"https://github.com/facebook/flipper/blob/master/website/../docs/getting-started/react-native.mdx","sidebar_label":"React Native","sidebar":"setup","previous":{"title":"Set up your iOS app","permalink":"/docs/getting-started/ios-native"},"next":{"title":"Manually set up your React Native Android App","permalink":"/docs/getting-started/react-native-android"}};/* @jsx mdx */const rightToc=[{value:'Manual Setup',id:'manual-setup',children:[]}];const makeShortcode=name=>function MDXDefaultShortcode(props){console.warn("Component "+name+" was not imported, exported, or provided by MDXProvider as global scope");return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",props);};const layoutProps={rightToc};const MDXLayout="wrapper";function MDXContent({components,...props}){return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(MDXLayout,Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({},layoutProps,props,{components:components,mdxType:"MDXLayout"}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Starting with React Native 0.62, after generating your project with `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`react-native init`),`, the Flipper integration is ready out of the box for debug builds:`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("ul",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`For Android, start the Flipper Desktop application, and start your project using `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"li"},`yarn android`),`. Your application will appear in Flipper.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`For iOS, run `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"li"},`pod install`),` once in the `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"li"},`ios`),` directory of your project. After that, run `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"li"},`yarn ios`),` and start Flipper. Your application will show up in Flipper.`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`By default, the following plugins will be available:`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("ul",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`Layout Inspector`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`Network`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`Databases`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`Images`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`Shared Preferences`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`Crash Reporter`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`React DevTools`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`Metro Logs`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Additional plugins can be installed through the plugin manager.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`To create your own plugins and integrate with Flipper using JavaScript, check out our `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(_docusaurus_Link__WEBPACK_IMPORTED_MODULE_4__[/* default */ "a"],{to:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("/docs/tutorial/react-native"),mdxType:"Link"},`writing plugins for React Native`),` tutorial!`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`To update the Flipper SDK in your project, you bump the version in the `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`ios/Podfile`),` and `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`android/gradle.properties`),` files of your project.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"manual-setup"},`Manual Setup`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`If you are not using a default React Native template or cannot use the upgrade tool,
 you can find instructions for how to integate Flipper into your projects in these guides:`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("ul",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",{href:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("/docs/getting-started/react-native-android")},"React Native for Android")),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",{href:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])("/docs/getting-started/react-native-ios")},"React Native for iOS"))));};MDXContent.isMDXComponent=true;
 
 /***/ }),
@@ -24482,7 +24509,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _mdx_js_react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(0);
 /* harmony import */ var _docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(3);
-/* harmony import */ var _docusaurus_Link__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(13);
+/* harmony import */ var _docusaurus_Link__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(5);
 const frontMatter={id:'troubleshooting',title:'Troubleshooting Issues',sidebar_label:'Troubleshooting Issues'};const metadata={"id":"troubleshooting","title":"Troubleshooting Issues","description":"We hope that flipper works well out of the box, but the software is a work in progress and problems will occur. Below are some known issues and steps you can take to try to resolve them.","source":"@site/../docs/troubleshooting.mdx","permalink":"/docs/troubleshooting","editUrl":"https://github.com/facebook/flipper/blob/master/website/../docs/troubleshooting.mdx","sidebar_label":"Troubleshooting Issues","sidebar":"setup","previous":{"title":"Manually set up your React Native iOS App","permalink":"/docs/getting-started/react-native-ios"},"next":{"title":"Layout Inspector Setup","permalink":"/docs/setup/layout-plugin"}};/* @jsx mdx */const rightToc=[{value:'Mac Desktop app',id:'mac-desktop-app',children:[{value:'Flipper won&#39;t launch on Mac',id:'flipper-wont-launch-on-mac',children:[]},{value:'iOS Simulator missing from devices dropdown',id:'ios-simulator-missing-from-devices-dropdown',children:[]},{value:'No plugins showing up for your device',id:'no-plugins-showing-up-for-your-device',children:[]},{value:'Connection Issues',id:'connection-issues',children:[]},{value:'Known Incompatibilities',id:'known-incompatibilities',children:[]},{value:'File an Issue',id:'file-an-issue',children:[]}]},{value:'Android',id:'android-1',children:[]},{value:'React Native',id:'react-native',children:[]}];const makeShortcode=name=>function MDXDefaultShortcode(props){console.warn("Component "+name+" was not imported, exported, or provided by MDXProvider as global scope");return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("div",props);};const layoutProps={rightToc};const MDXLayout="wrapper";function MDXContent({components,...props}){return Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(MDXLayout,Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({},layoutProps,props,{components:components,mdxType:"MDXLayout"}),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`We hope that flipper works well out of the box, but the software is a work in progress and problems will occur. Below are some known issues and steps you can take to try to resolve them.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"mac-desktop-app"},`Mac Desktop app`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h3",{"id":"flipper-wont-launch-on-mac"},`Flipper won't launch on Mac`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("ul",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`If the window is appearing, try opening the Chrome DevTools within Flipper. To do so, from the View menu select Toggle Developer Tools or press CMD+Option+I and check if there are any errors on the console.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`Launch Flipper from the command line using `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"li"},`/Applications/Flipper.app/Contents/MacOS/Flipper`),`. This should give you some logs, that might be helpful when debugging.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`Delete `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"li"},`~/.flipper`),` and try relaunching Flipper.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`Delete Flipper from your applications folder and redownload `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"li"},{"href":"https://www.facebook.com/fbflipper/public/mac"}),`Flipper`),`.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`If you're using `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"li"},`yarn start`),` to run from source, make sure all dependencies are installed correctly by running yarn install.`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h3",{"id":"ios-simulator-missing-from-devices-dropdown"},`iOS Simulator missing from devices dropdown`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("ul",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`Check that `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"li"},`xcode-select -p`),` shows the same XCode version that you're using. If not, see xcode-select for how to select the correct version.`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h3",{"id":"no-plugins-showing-up-for-your-device"},`No plugins showing up for your device`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("ul",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`Check your device isn't on the list of `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"li"},{"href":"#known-incompatibilities"}),`known incompatibilities`),`.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`Make sure your version of Flipper is up to date.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`Make sure the mobile SDK you are using is relatively recent (<1 month old).`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`Open Chrome dev tools within Flipper. To do so, from the View menu select Toggle Developer Tools or press CMD+Option+I and check if there are any errors on the console.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`Delete `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"li"},`~/.flipper`),`.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("strong",{parentName:"li"},`Uninstall`),` and reinstall the mobile app.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`Make sure the time and date are set correctly on your mobile device and desktop computer.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`If no app plugins are showing up, there may be a connectivity issue between Flipper and your app. Check `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"li"},{"href":"#connection-issues"}),`connection issues`),` to see if anything is failing.`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h3",{"id":"connection-issues"},`Connection Issues`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The Flipper SDK includes an in-app connection diagnostics screen to help you diagnose problems.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h4",{"id":"android"},`Android`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Replace `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`<APP_PACKAGE>`),` below with the package name of your app, e.g. `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`com.facebook.flipper.sample`),`.
 On a terminal, run the following:`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("pre",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("code",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"pre"},{"className":"language-bash"}),`adb shell am start -n <APP_PACKAGE>/com.facebook.flipper.android.diagnostics.FlipperDiagnosticActivity
 `)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`This will only work if you added `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`FlipperDiagnosticActivity`),` to your `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("inlineCode",{parentName:"p"},`AndroidManifest.xml`),`. See `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])(_docusaurus_Link__WEBPACK_IMPORTED_MODULE_4__[/* default */ "a"],{to:Object(_docusaurus_useBaseUrl__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"])('/docs/getting-started/android-native#diagnostics'),mdxType:"Link"},`getting started`),` for help.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h4",{"id":"ios"},`iOS`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`You'll need to manually add this `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"https://github.com/facebook/flipper/blob/master/iOS/FlipperKit/FlipperDiagnosticsViewController.m"}),`ViewController`),` to your app to see the in-app diagnostics.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h3",{"id":"known-incompatibilities"},`Known Incompatibilities`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`The following devices are known to be incompatible or face issues with flipper:`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("ul",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`Physical iOS devices. Currently on iOS, only simulators are supported (`,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"li"},{"href":"https://github.com/facebook/flipper/issues/262"}),`Tracking Issue`),`).`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`Some Samsung devices (`,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"li"},{"href":"https://github.com/facebook/flipper/issues/92"}),`Tracking Issue`),`).`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("li",{parentName:"ul"},`Genymotion emulators on Android 8+ are reported to have issues.`)),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h3",{"id":"file-an-issue"},`File an Issue`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Still not working? File an issue on `,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("a",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"p"},{"href":"https://github.com/facebook/flipper/issues"}),`GitHub`),` with the chrome DevTools logs and the output from the diagnostics screen, if relevant.`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("h2",{"id":"android-1"},`Android`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("p",null,`Build error after including the Flipper dependency:`),Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("pre",null,Object(_mdx_js_react__WEBPACK_IMPORTED_MODULE_2__[/* mdx */ "b"])("code",Object(_home_travis_build_facebook_flipper_website_node_modules_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])({parentName:"pre"},{}),`Exception from call site #4 bootstrap method
@@ -24522,7 +24549,7 @@ var react_default = /*#__PURE__*/__webpack_require__.n(react);
 var esm = __webpack_require__(0);
 
 // EXTERNAL MODULE: ./node_modules/@docusaurus/core/lib/client/exports/useDocusaurusContext.js
-var useDocusaurusContext = __webpack_require__(6);
+var useDocusaurusContext = __webpack_require__(7);
 
 // EXTERNAL MODULE: ./node_modules/@docusaurus/core/lib/client/exports/renderRoutes.js
 var renderRoutes = __webpack_require__(74);
@@ -24537,7 +24564,7 @@ var DocItem = __webpack_require__(70);
 var esm_extends = __webpack_require__(1);
 
 // EXTERNAL MODULE: ./node_modules/classnames/index.js
-var classnames = __webpack_require__(5);
+var classnames = __webpack_require__(6);
 var classnames_default = /*#__PURE__*/__webpack_require__.n(classnames);
 
 // EXTERNAL MODULE: ./node_modules/@docusaurus/theme-classic/src/theme/hooks/useAnnouncementBarContext.js
@@ -24553,7 +24580,7 @@ var useLogo = __webpack_require__(82);
 var useScrollPosition = __webpack_require__(80);
 
 // EXTERNAL MODULE: ./node_modules/@docusaurus/core/lib/client/exports/Link.js
-var Link = __webpack_require__(13);
+var Link = __webpack_require__(5);
 
 // EXTERNAL MODULE: ./node_modules/@docusaurus/core/lib/client/exports/isInternalUrl.js
 var isInternalUrl = __webpack_require__(23);
@@ -26824,7 +26851,7 @@ module.exports = JSON.parse("{\"/\":{\"component\":\"c4f5d8e4\"},\"/search\":{\"
 "use strict";
 
 
-var reactIs = __webpack_require__(148);
+var reactIs = __webpack_require__(144);
 
 /**
  * Copyright 2015, Yahoo! Inc.
@@ -26946,11 +26973,11 @@ var _react = __webpack_require__(2);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _classnames = __webpack_require__(5);
+var _classnames = __webpack_require__(6);
 
 var _classnames2 = _interopRequireDefault(_classnames);
 
-var _propTypes = __webpack_require__(7);
+var _propTypes = __webpack_require__(8);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
@@ -28537,7 +28564,7 @@ exports["default"] = exports.defaultOptions = void 0;
 
 var _fs = _interopRequireDefault(__webpack_require__(24));
 
-var _path = _interopRequireDefault(__webpack_require__(8));
+var _path = _interopRequireDefault(__webpack_require__(9));
 
 var _url = _interopRequireDefault(__webpack_require__(25));
 
@@ -29179,13 +29206,13 @@ var wrapForOptimizing = __webpack_require__(40).all;
 
 var OptimizationLevel = __webpack_require__(30).OptimizationLevel;
 
-var Token = __webpack_require__(10);
+var Token = __webpack_require__(11);
 var Marker = __webpack_require__(14);
 
 var formatPosition = __webpack_require__(58);
 var split = __webpack_require__(91);
 
-var serializeRules = __webpack_require__(11).rules;
+var serializeRules = __webpack_require__(12).rules;
 
 var IgnoreProperty = 'ignore-property';
 
@@ -30235,7 +30262,7 @@ var optimizeProperties = __webpack_require__(60);
 
 var OptimizationLevel = __webpack_require__(30).OptimizationLevel;
 
-var Token = __webpack_require__(10);
+var Token = __webpack_require__(11);
 
 function removeEmpty(tokens) {
   for (var i = 0, l = tokens.length; i < l; i++) {
@@ -30369,10 +30396,10 @@ var tidyRules = __webpack_require__(89);
 
 var OptimizationLevel = __webpack_require__(30).OptimizationLevel;
 
-var serializeBody = __webpack_require__(11).body;
-var serializeRules = __webpack_require__(11).rules;
+var serializeBody = __webpack_require__(12).body;
+var serializeRules = __webpack_require__(12).rules;
 
-var Token = __webpack_require__(10);
+var Token = __webpack_require__(11);
 
 function mergeAdjacent(tokens, context) {
   var lastToken = [null, [], []];
@@ -30427,8 +30454,8 @@ var restoreWithComponents = __webpack_require__(94);
 var restoreFromOptimizing = __webpack_require__(49);
 var wrapSingle = __webpack_require__(40).single;
 
-var serializeBody = __webpack_require__(11).body;
-var Token = __webpack_require__(10);
+var serializeBody = __webpack_require__(12).body;
+var Token = __webpack_require__(11);
 
 function mergeIntoShorthands(properties, validator) {
   var candidates = {};
@@ -30871,7 +30898,7 @@ var InvalidPropertyError = __webpack_require__(123);
 
 var wrapSingle = __webpack_require__(40).single;
 
-var Token = __webpack_require__(10);
+var Token = __webpack_require__(11);
 var Marker = __webpack_require__(14);
 
 var formatPosition = __webpack_require__(58);
@@ -31829,7 +31856,7 @@ module.exports = understandable;
 
 var shallowClone = __webpack_require__(61).shallow;
 
-var Token = __webpack_require__(10);
+var Token = __webpack_require__(11);
 var Marker = __webpack_require__(14);
 
 function isInheritOnly(values) {
@@ -32151,10 +32178,10 @@ var shallowClone = __webpack_require__(61).shallow;
 
 var restoreFromOptimizing = __webpack_require__(49);
 
-var Token = __webpack_require__(10);
+var Token = __webpack_require__(11);
 var Marker = __webpack_require__(14);
 
-var serializeProperty = __webpack_require__(11).property;
+var serializeProperty = __webpack_require__(12).property;
 
 function wouldBreakCompatibility(property, validator) {
   for (var i = 0; i < property.components.length; i++) {
@@ -32737,9 +32764,9 @@ var canReorderSingle = __webpack_require__(62).canReorderSingle;
 var extractProperties = __webpack_require__(95);
 var rulesOverlap = __webpack_require__(125);
 
-var serializeRules = __webpack_require__(11).rules;
+var serializeRules = __webpack_require__(12).rules;
 var OptimizationLevel = __webpack_require__(30).OptimizationLevel;
-var Token = __webpack_require__(10);
+var Token = __webpack_require__(11);
 
 function mergeMediaQueries(tokens, context) {
   var mergeSemantically = context.options.level[OptimizationLevel.Two].mergeSemantically;
@@ -32971,10 +32998,10 @@ var tidyRules = __webpack_require__(89);
 
 var OptimizationLevel = __webpack_require__(30).OptimizationLevel;
 
-var serializeBody = __webpack_require__(11).body;
-var serializeRules = __webpack_require__(11).rules;
+var serializeBody = __webpack_require__(12).body;
+var serializeRules = __webpack_require__(12).rules;
 
-var Token = __webpack_require__(10);
+var Token = __webpack_require__(11);
 
 function unsafeSelector(value) {
   return /\.|\*| :/.test(value);
@@ -33055,9 +33082,9 @@ var extractProperties = __webpack_require__(95);
 
 var optimizeProperties = __webpack_require__(60);
 
-var serializeRules = __webpack_require__(11).rules;
+var serializeRules = __webpack_require__(12).rules;
 
-var Token = __webpack_require__(10);
+var Token = __webpack_require__(11);
 
 function mergeNonAdjacentBySelector(tokens, context) {
   var specificityCache = context.cache.specificity;
@@ -33140,10 +33167,10 @@ var optimizeProperties = __webpack_require__(60);
 
 var cloneArray = __webpack_require__(126);
 
-var Token = __webpack_require__(10);
+var Token = __webpack_require__(11);
 
-var serializeBody = __webpack_require__(11).body;
-var serializeRules = __webpack_require__(11).rules;
+var serializeBody = __webpack_require__(12).body;
+var serializeRules = __webpack_require__(12).rules;
 
 function reduceNonAdjacent(tokens, context) {
   var options = context.options;
@@ -33320,9 +33347,9 @@ module.exports = reduceNonAdjacent;
 /* 288 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Token = __webpack_require__(10);
+var Token = __webpack_require__(11);
 
-var serializeAll = __webpack_require__(11).all;
+var serializeAll = __webpack_require__(12).all;
 
 var FONT_FACE_SCOPE = '@font-face';
 
@@ -33356,10 +33383,10 @@ module.exports = removeDuplicateFontAtRules;
 /* 289 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Token = __webpack_require__(10);
+var Token = __webpack_require__(11);
 
-var serializeAll = __webpack_require__(11).all;
-var serializeRules = __webpack_require__(11).rules;
+var serializeAll = __webpack_require__(12).all;
+var serializeRules = __webpack_require__(12).rules;
 
 function removeDuplicateMediaQueries(tokens) {
   var candidates = {};
@@ -33392,10 +33419,10 @@ module.exports = removeDuplicateMediaQueries;
 /* 290 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Token = __webpack_require__(10);
+var Token = __webpack_require__(11);
 
-var serializeBody = __webpack_require__(11).body;
-var serializeRules = __webpack_require__(11).rules;
+var serializeBody = __webpack_require__(12).body;
+var serializeRules = __webpack_require__(12).rules;
 
 function removeDuplicates(tokens) {
   var matched = {};
@@ -33446,7 +33473,7 @@ var populateComponents = __webpack_require__(93);
 var wrapForOptimizing = __webpack_require__(40).single;
 var restoreFromOptimizing = __webpack_require__(49);
 
-var Token = __webpack_require__(10);
+var Token = __webpack_require__(11);
 
 var animationNameRegex = /^(\-moz\-|\-o\-|\-webkit\-)?animation-name$/;
 var animationRegex = /^(\-moz\-|\-o\-|\-webkit\-)?animation$/;
@@ -33701,12 +33728,12 @@ var extractProperties = __webpack_require__(95);
 var isMergeable = __webpack_require__(59);
 var tidyRuleDuplicates = __webpack_require__(293);
 
-var Token = __webpack_require__(10);
+var Token = __webpack_require__(11);
 
 var cloneArray = __webpack_require__(126);
 
-var serializeBody = __webpack_require__(11).body;
-var serializeRules = __webpack_require__(11).rules;
+var serializeBody = __webpack_require__(12).body;
+var serializeRules = __webpack_require__(12).rules;
 
 function naturalSorter(a, b) {
   return a > b ? 1 : -1;
@@ -35034,7 +35061,7 @@ module.exports = rebaseFrom;
 /* 304 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var path = __webpack_require__(8);
+var path = __webpack_require__(9);
 
 function rebaseToFrom(option) {
   return option ? path.resolve(option) : process.cwd();
@@ -37077,7 +37104,7 @@ exports.SourceNode = SourceNode;
 /***/ (function(module, exports, __webpack_require__) {
 
 var fs = __webpack_require__(24);
-var path = __webpack_require__(8);
+var path = __webpack_require__(9);
 
 var applySourceMaps = __webpack_require__(313);
 var extractImportUrlAndMedia = __webpack_require__(132);
@@ -37090,7 +37117,7 @@ var rebaseRemoteMap = __webpack_require__(131);
 var restoreImport = __webpack_require__(133);
 
 var tokenize = __webpack_require__(320);
-var Token = __webpack_require__(10);
+var Token = __webpack_require__(11);
 var Marker = __webpack_require__(14);
 var hasProtocol = __webpack_require__(64);
 var isImport = __webpack_require__(134);
@@ -37424,14 +37451,14 @@ module.exports = readSources;
 /***/ (function(module, exports, __webpack_require__) {
 
 var fs = __webpack_require__(24);
-var path = __webpack_require__(8);
+var path = __webpack_require__(9);
 
 var isAllowedResource = __webpack_require__(97);
 var matchDataUri = __webpack_require__(314);
 var rebaseLocalMap = __webpack_require__(130);
 var rebaseRemoteMap = __webpack_require__(131);
 
-var Token = __webpack_require__(10);
+var Token = __webpack_require__(11);
 var hasProtocol = __webpack_require__(64);
 var isDataUriResource = __webpack_require__(315);
 var isRemoteResource = __webpack_require__(51);
@@ -37701,7 +37728,7 @@ module.exports = isDataUriResource;
 /***/ (function(module, exports, __webpack_require__) {
 
 var fs = __webpack_require__(24);
-var path = __webpack_require__(8);
+var path = __webpack_require__(9);
 
 var isAllowedResource = __webpack_require__(97);
 
@@ -37850,7 +37877,7 @@ var extractImportUrlAndMedia = __webpack_require__(132);
 var restoreImport = __webpack_require__(133);
 var rewriteUrl = __webpack_require__(319);
 
-var Token = __webpack_require__(10);
+var Token = __webpack_require__(11);
 var isImport = __webpack_require__(134);
 
 var SOURCE_MAP_COMMENT_PATTERN = /^\/\*# sourceMappingURL=(\S+) \*\/$/;
@@ -37953,7 +37980,7 @@ module.exports = rebase;
 /* 319 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var path = __webpack_require__(8);
+var path = __webpack_require__(9);
 var url = __webpack_require__(25);
 
 var DOUBLE_QUOTE = '"';
@@ -38078,7 +38105,7 @@ module.exports = rewriteUrl;
 /***/ (function(module, exports, __webpack_require__) {
 
 var Marker = __webpack_require__(14);
-var Token = __webpack_require__(10);
+var Token = __webpack_require__(11);
 
 var formatPosition = __webpack_require__(58);
 
@@ -41464,8 +41491,8 @@ function clone (obj) {
 "use strict";
 
 
-const fs = __webpack_require__(12)
-const path = __webpack_require__(8)
+const fs = __webpack_require__(13)
+const path = __webpack_require__(9)
 const mkdirpSync = __webpack_require__(21).mkdirsSync
 const utimesSync = __webpack_require__(140).utimesMillisSync
 const stat = __webpack_require__(65)
@@ -41635,8 +41662,8 @@ module.exports = copySync
 "use strict";
 
 
-const fs = __webpack_require__(12)
-const path = __webpack_require__(8)
+const fs = __webpack_require__(13)
+const path = __webpack_require__(9)
 const invalidWin32Path = __webpack_require__(139).invalidWin32Path
 
 const o777 = parseInt('0777', 8)
@@ -41705,8 +41732,8 @@ module.exports = mkdirs
 "use strict";
 
 
-const fs = __webpack_require__(12)
-const path = __webpack_require__(8)
+const fs = __webpack_require__(13)
+const path = __webpack_require__(9)
 const invalidWin32Path = __webpack_require__(139).invalidWin32Path
 
 const o777 = parseInt('0777', 8)
@@ -41785,8 +41812,8 @@ module.exports = function (size) {
 "use strict";
 
 
-const fs = __webpack_require__(12)
-const path = __webpack_require__(8)
+const fs = __webpack_require__(13)
+const path = __webpack_require__(9)
 const mkdirp = __webpack_require__(21).mkdirs
 const pathExists = __webpack_require__(26).pathExists
 const utimes = __webpack_require__(140).utimesMillis
@@ -42005,8 +42032,8 @@ module.exports = copy
 
 
 const u = __webpack_require__(16).fromCallback
-const fs = __webpack_require__(12)
-const path = __webpack_require__(8)
+const fs = __webpack_require__(13)
+const path = __webpack_require__(9)
 const mkdir = __webpack_require__(21)
 const remove = __webpack_require__(66)
 
@@ -42059,8 +42086,8 @@ module.exports = {
 "use strict";
 
 
-const fs = __webpack_require__(12)
-const path = __webpack_require__(8)
+const fs = __webpack_require__(13)
+const path = __webpack_require__(9)
 const assert = __webpack_require__(100)
 
 const isWindows = (process.platform === 'win32')
@@ -42411,8 +42438,8 @@ module.exports = {
 
 
 const u = __webpack_require__(16).fromCallback
-const path = __webpack_require__(8)
-const fs = __webpack_require__(12)
+const path = __webpack_require__(9)
+const fs = __webpack_require__(13)
 const mkdir = __webpack_require__(21)
 const pathExists = __webpack_require__(26).pathExists
 
@@ -42467,8 +42494,8 @@ module.exports = {
 
 
 const u = __webpack_require__(16).fromCallback
-const path = __webpack_require__(8)
-const fs = __webpack_require__(12)
+const path = __webpack_require__(9)
+const fs = __webpack_require__(13)
 const mkdir = __webpack_require__(21)
 const pathExists = __webpack_require__(26).pathExists
 
@@ -42535,8 +42562,8 @@ module.exports = {
 
 
 const u = __webpack_require__(16).fromCallback
-const path = __webpack_require__(8)
-const fs = __webpack_require__(12)
+const path = __webpack_require__(9)
+const fs = __webpack_require__(13)
 const _mkdirs = __webpack_require__(21)
 const mkdirs = _mkdirs.mkdirs
 const mkdirsSync = _mkdirs.mkdirsSync
@@ -42604,8 +42631,8 @@ module.exports = {
 "use strict";
 
 
-const path = __webpack_require__(8)
-const fs = __webpack_require__(12)
+const path = __webpack_require__(9)
+const fs = __webpack_require__(13)
 const pathExists = __webpack_require__(26).pathExists
 
 /**
@@ -42710,7 +42737,7 @@ module.exports = {
 "use strict";
 
 
-const fs = __webpack_require__(12)
+const fs = __webpack_require__(13)
 
 function symlinkType (srcpath, type, callback) {
   callback = (typeof type === 'function') ? type : callback
@@ -42770,7 +42797,7 @@ module.exports = jsonFile
 
 var _fs
 try {
-  _fs = __webpack_require__(12)
+  _fs = __webpack_require__(13)
 } catch (_) {
   _fs = __webpack_require__(24)
 }
@@ -42911,7 +42938,7 @@ module.exports = jsonfile
 "use strict";
 
 
-const path = __webpack_require__(8)
+const path = __webpack_require__(9)
 const mkdir = __webpack_require__(21)
 const pathExists = __webpack_require__(26).pathExists
 const jsonFile = __webpack_require__(101)
@@ -42945,8 +42972,8 @@ module.exports = outputJson
 "use strict";
 
 
-const fs = __webpack_require__(12)
-const path = __webpack_require__(8)
+const fs = __webpack_require__(13)
+const path = __webpack_require__(9)
 const mkdir = __webpack_require__(21)
 const jsonFile = __webpack_require__(101)
 
@@ -42982,8 +43009,8 @@ module.exports = {
 "use strict";
 
 
-const fs = __webpack_require__(12)
-const path = __webpack_require__(8)
+const fs = __webpack_require__(13)
+const path = __webpack_require__(9)
 const copySync = __webpack_require__(138).copySync
 const removeSync = __webpack_require__(66).removeSync
 const mkdirpSync = __webpack_require__(21).mkdirpSync
@@ -43049,8 +43076,8 @@ module.exports = {
 "use strict";
 
 
-const fs = __webpack_require__(12)
-const path = __webpack_require__(8)
+const fs = __webpack_require__(13)
+const path = __webpack_require__(9)
 const copy = __webpack_require__(141).copy
 const remove = __webpack_require__(66).remove
 const mkdirp = __webpack_require__(21).mkdirp
@@ -43122,8 +43149,8 @@ module.exports = move
 
 
 const u = __webpack_require__(16).fromCallback
-const fs = __webpack_require__(12)
-const path = __webpack_require__(8)
+const fs = __webpack_require__(13)
+const path = __webpack_require__(9)
 const mkdir = __webpack_require__(21)
 const pathExists = __webpack_require__(26).pathExists
 
@@ -57104,7 +57131,7 @@ function compile(str, env) {
 }
 
 var fs = __webpack_require__(24);
-var eta_es_path = __webpack_require__(8);
+var eta_es_path = __webpack_require__(9);
 var _BOM = /^\uFEFF/;
 /* END TYPES */
 /**
@@ -57371,7 +57398,7 @@ var react = __webpack_require__(2);
 var react_default = /*#__PURE__*/__webpack_require__.n(react);
 
 // EXTERNAL MODULE: ./node_modules/react-router/esm/react-router.js + 1 modules
-var react_router = __webpack_require__(9);
+var react_router = __webpack_require__(10);
 
 // EXTERNAL MODULE: ./node_modules/react-dom/server.js
 var server = __webpack_require__(232);
@@ -57391,7 +57418,7 @@ var react_loadable_lib_default = /*#__PURE__*/__webpack_require__.n(react_loadab
 var htmlminifier = __webpack_require__(236);
 
 // EXTERNAL MODULE: external "path"
-var external_path_ = __webpack_require__(8);
+var external_path_ = __webpack_require__(9);
 var external_path_default = /*#__PURE__*/__webpack_require__.n(external_path_);
 
 // EXTERNAL MODULE: ./node_modules/fs-extra/lib/index.js
@@ -57415,7 +57442,7 @@ var interopRequireWildcard = __webpack_require__(4);
 var routesChunkNames = __webpack_require__(238);
 
 // CONCATENATED MODULE: ./.docusaurus/registry.js
-/* harmony default export */ var registry = ({'04f828f9':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(142))),"@site/../docs/tutorial/android.mdx",/*require.resolve*/(142)],'09ff0d31':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(143))),"@site/../docs/features/leak-canary-plugin.mdx",/*require.resolve*/(143)],'0ecb0d56':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(144))),"@site/../docs/features/images-plugin.mdx",/*require.resolve*/(144)],'0fc226a0':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(145))),"@site/../docs/getting-started/react-native-ios.mdx",/*require.resolve*/(145)],'129b6cd0':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(146))),"@site/../docs/tutorial/react-native.mdx",/*require.resolve*/(146)],'165b6557':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(147))),"@site/../docs/tutorial/ios.mdx",/*require.resolve*/(147)],'17896441':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(70))),"@theme/DocItem",/*require.resolve*/(70)],'1be78505':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(231))),"@theme/DocPage",/*require.resolve*/(231)],'1df478f1':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(168))),"@site/../docs/features/sandbox-plugin.mdx",/*require.resolve*/(168)],'20ac7829':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(169))),"~docs/docs-route-ff2.json",/*require.resolve*/(169)],'24f57445':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(170))),"@site/../docs/extending/index.mdx",/*require.resolve*/(170)],'2527d735':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(171))),"@site/../docs/extending/supporting-layout.mdx",/*require.resolve*/(171)],'2899fb48':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(172))),"@site/../docs/features/navigation-plugin.mdx",/*require.resolve*/(172)],'2c55addf':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(173))),"@site/../docs/tutorial/js-publishing.mdx",/*require.resolve*/(173)],'2fd3c64b':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(174))),"@site/../docs/extending/ui-components.mdx",/*require.resolve*/(174)],'3432b9e5':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(175))),"@site/../docs/getting-started/index.mdx",/*require.resolve*/(175)],'3b599a6c':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(176))),"@site/../docs/features/shared-preferences-plugin.mdx",/*require.resolve*/(176)],'41b472df':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(177))),"@site/../docs/extending/testing.mdx",/*require.resolve*/(177)],'4e3f310d':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(178))),"@site/../docs/extending/testing-rn.mdx",/*require.resolve*/(178)],'55cc260f':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(179))),"@site/../docs/features/index.mdx",/*require.resolve*/(179)],'5927b9bc':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(180))),"@site/../docs/custom-ports.mdx",/*require.resolve*/(180)],'622de2b5':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(181))),"@site/../docs/extending/create-plugin.mdx",/*require.resolve*/(181)],'6794fae7':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(182))),"@site/../docs/setup/crash-reporter-plugin.mdx",/*require.resolve*/(182)],'6b8963f6':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(183))),"@site/../docs/extending/debugging.mdx",/*require.resolve*/(183)],'71f63756':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(184))),"@site/../docs/setup/shared-preferences-plugin.mdx",/*require.resolve*/(184)],'8443a6ca':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(185))),"@site/../docs/tutorial/intro.mdx",/*require.resolve*/(185)],'8a00a8a6':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(186))),"@site/../docs/tutorial/js-setup.mdx",/*require.resolve*/(186)],'8b754844':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(187))),"@site/../docs/features/databases-plugin.mdx",/*require.resolve*/(187)],'8c637ae2':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(188))),"@site/../docs/extending/client-plugin-lifecycle.mdx",/*require.resolve*/(188)],'91bed8a2':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(189))),"@site/../docs/setup/navigation-plugin.mdx",/*require.resolve*/(189)],'935f56f3':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(190))),"@site/../docs/extending/error-handling.mdx",/*require.resolve*/(190)],'96415b95':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(191))),"@site/../docs/features/share-flipper-data.mdx",/*require.resolve*/(191)],'99681e84':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(192))),"@site/../docs/extending/architecture.mdx",/*require.resolve*/(192)],'99923c26':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(193))),"/home/travis/build/facebook/flipper/website/node_modules/@docusaurus/theme-search-algolia/src/pages/search/index.js",/*require.resolve*/(193)],'9a761373':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(201))),"@site/../docs/features/network-plugin.mdx",/*require.resolve*/(201)],'9e36ac3e':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(202))),"@site/../docs/features/react-native.mdx",/*require.resolve*/(202)],'a7b23657':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(203))),"@site/../docs/features/layout-plugin.mdx",/*require.resolve*/(203)],'a806d1a2':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(204))),"@site/../docs/extending/jssetup.mdx",/*require.resolve*/(204)],'ad3dad21':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(205))),"@site/../docs/tutorial/js-table.mdx",/*require.resolve*/(205)],'b6054734':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(206))),"@site/../docs/tutorial/js-custom.mdx",/*require.resolve*/(206)],'bd3bbb8c':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(207))),"@site/../docs/extending/layout-inspector.mdx",/*require.resolve*/(207)],'c05dba25':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(208))),"@site/../docs/setup/databases-plugin.mdx",/*require.resolve*/(208)],'c2a203b4':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(209))),"@site/../docs/extending/new-clients.mdx",/*require.resolve*/(209)],'c4f5d8e4':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(210))),"@site/src/pages/index.js",/*require.resolve*/(210)],'cacf6f0b':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(211))),"@site/../docs/features/crash-reporter-plugin.mdx",/*require.resolve*/(211)],'cc1a470c':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(212))),"@site/../docs/extending/create-table-plugin.mdx",/*require.resolve*/(212)],'d699c701':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(213))),"@site/../docs/setup/leak-canary-plugin.mdx",/*require.resolve*/(213)],'dabf138f':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(214))),"@site/../docs/setup/sandbox-plugin.mdx",/*require.resolve*/(214)],'dc9e5b6f':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(215))),"@site/../docs/getting-started/android-native.mdx",/*require.resolve*/(215)],'dd17a612':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(216))),"@site/../docs/setup/network-plugin.mdx",/*require.resolve*/(216)],'de8c7ae4':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(217))),"@site/../docs/setup/layout-plugin.mdx",/*require.resolve*/(217)],'e1925c59':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(218))),"@site/../docs/extending/establishing-a-connection.mdx",/*require.resolve*/(218)],'e45a8087':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(219))),"@site/../docs/extending/styling-components.mdx",/*require.resolve*/(219)],'e6910d4e':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(220))),"@site/../docs/getting-started/ios-native.mdx",/*require.resolve*/(220)],'eb48a329':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(221))),"@site/../docs/extending/send-data.mdx",/*require.resolve*/(221)],'ec8f03f2':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(222))),"@site/../docs/extending/js-plugin-api.mdx",/*require.resolve*/(222)],'f0f6bd8d':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(223))),"@site/../docs/features/logs-plugin.mdx",/*require.resolve*/(223)],'f15cd604':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(224))),"@site/../docs/stetho.mdx",/*require.resolve*/(224)],'f38c2cc3':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(225))),"@site/../docs/extending/search-and-filter.mdx",/*require.resolve*/(225)],'f842f0be':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(226))),"@site/../docs/getting-started/react-native-android.mdx",/*require.resolve*/(226)],'fa2418a3':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(227))),"@site/../docs/getting-started/react-native.mdx",/*require.resolve*/(227)],'fa7b9391':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(228))),"@site/../docs/setup/images-plugin.mdx",/*require.resolve*/(228)],'fcd60faa':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(229))),"@site/../docs/troubleshooting.mdx",/*require.resolve*/(229)]});
+/* harmony default export */ var registry = ({'04f828f9':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(142))),"@site/../docs/tutorial/android.mdx",/*require.resolve*/(142)],'09ff0d31':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(143))),"@site/../docs/features/leak-canary-plugin.mdx",/*require.resolve*/(143)],'0ecb0d56':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(145))),"@site/../docs/features/images-plugin.mdx",/*require.resolve*/(145)],'0fc226a0':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(146))),"@site/../docs/getting-started/react-native-ios.mdx",/*require.resolve*/(146)],'129b6cd0':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(147))),"@site/../docs/tutorial/react-native.mdx",/*require.resolve*/(147)],'165b6557':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(148))),"@site/../docs/tutorial/ios.mdx",/*require.resolve*/(148)],'17896441':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(70))),"@theme/DocItem",/*require.resolve*/(70)],'1be78505':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(231))),"@theme/DocPage",/*require.resolve*/(231)],'1df478f1':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(168))),"@site/../docs/features/sandbox-plugin.mdx",/*require.resolve*/(168)],'20ac7829':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(169))),"~docs/docs-route-ff2.json",/*require.resolve*/(169)],'24f57445':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(170))),"@site/../docs/extending/index.mdx",/*require.resolve*/(170)],'2527d735':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(171))),"@site/../docs/extending/supporting-layout.mdx",/*require.resolve*/(171)],'2899fb48':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(172))),"@site/../docs/features/navigation-plugin.mdx",/*require.resolve*/(172)],'2c55addf':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(173))),"@site/../docs/tutorial/js-publishing.mdx",/*require.resolve*/(173)],'2fd3c64b':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(174))),"@site/../docs/extending/ui-components.mdx",/*require.resolve*/(174)],'3432b9e5':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(175))),"@site/../docs/getting-started/index.mdx",/*require.resolve*/(175)],'3b599a6c':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(176))),"@site/../docs/features/shared-preferences-plugin.mdx",/*require.resolve*/(176)],'41b472df':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(177))),"@site/../docs/extending/testing.mdx",/*require.resolve*/(177)],'4e3f310d':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(178))),"@site/../docs/extending/testing-rn.mdx",/*require.resolve*/(178)],'55cc260f':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(179))),"@site/../docs/features/index.mdx",/*require.resolve*/(179)],'5927b9bc':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(180))),"@site/../docs/custom-ports.mdx",/*require.resolve*/(180)],'622de2b5':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(181))),"@site/../docs/extending/create-plugin.mdx",/*require.resolve*/(181)],'6794fae7':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(182))),"@site/../docs/setup/crash-reporter-plugin.mdx",/*require.resolve*/(182)],'6b8963f6':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(183))),"@site/../docs/extending/debugging.mdx",/*require.resolve*/(183)],'71f63756':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(184))),"@site/../docs/setup/shared-preferences-plugin.mdx",/*require.resolve*/(184)],'8443a6ca':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(185))),"@site/../docs/tutorial/intro.mdx",/*require.resolve*/(185)],'8a00a8a6':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(186))),"@site/../docs/tutorial/js-setup.mdx",/*require.resolve*/(186)],'8b754844':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(187))),"@site/../docs/features/databases-plugin.mdx",/*require.resolve*/(187)],'8c637ae2':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(188))),"@site/../docs/extending/client-plugin-lifecycle.mdx",/*require.resolve*/(188)],'91bed8a2':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(189))),"@site/../docs/setup/navigation-plugin.mdx",/*require.resolve*/(189)],'935f56f3':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(190))),"@site/../docs/extending/error-handling.mdx",/*require.resolve*/(190)],'96415b95':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(191))),"@site/../docs/features/share-flipper-data.mdx",/*require.resolve*/(191)],'99681e84':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(192))),"@site/../docs/extending/architecture.mdx",/*require.resolve*/(192)],'99923c26':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(193))),"/home/travis/build/facebook/flipper/website/node_modules/@docusaurus/theme-search-algolia/src/pages/search/index.js",/*require.resolve*/(193)],'9a761373':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(201))),"@site/../docs/features/network-plugin.mdx",/*require.resolve*/(201)],'9e36ac3e':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(202))),"@site/../docs/features/react-native.mdx",/*require.resolve*/(202)],'a7b23657':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(203))),"@site/../docs/features/layout-plugin.mdx",/*require.resolve*/(203)],'a806d1a2':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(204))),"@site/../docs/extending/jssetup.mdx",/*require.resolve*/(204)],'ad3dad21':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(205))),"@site/../docs/tutorial/js-table.mdx",/*require.resolve*/(205)],'b6054734':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(206))),"@site/../docs/tutorial/js-custom.mdx",/*require.resolve*/(206)],'bd3bbb8c':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(207))),"@site/../docs/extending/layout-inspector.mdx",/*require.resolve*/(207)],'c05dba25':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(208))),"@site/../docs/setup/databases-plugin.mdx",/*require.resolve*/(208)],'c2a203b4':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(209))),"@site/../docs/extending/new-clients.mdx",/*require.resolve*/(209)],'c4f5d8e4':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(210))),"@site/src/pages/index.js",/*require.resolve*/(210)],'cacf6f0b':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(211))),"@site/../docs/features/crash-reporter-plugin.mdx",/*require.resolve*/(211)],'cc1a470c':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(212))),"@site/../docs/extending/create-table-plugin.mdx",/*require.resolve*/(212)],'d699c701':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(213))),"@site/../docs/setup/leak-canary-plugin.mdx",/*require.resolve*/(213)],'dabf138f':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(214))),"@site/../docs/setup/sandbox-plugin.mdx",/*require.resolve*/(214)],'dc9e5b6f':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(215))),"@site/../docs/getting-started/android-native.mdx",/*require.resolve*/(215)],'dd17a612':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(216))),"@site/../docs/setup/network-plugin.mdx",/*require.resolve*/(216)],'de8c7ae4':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(217))),"@site/../docs/setup/layout-plugin.mdx",/*require.resolve*/(217)],'e1925c59':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(218))),"@site/../docs/extending/establishing-a-connection.mdx",/*require.resolve*/(218)],'e45a8087':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(219))),"@site/../docs/extending/styling-components.mdx",/*require.resolve*/(219)],'e6910d4e':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(220))),"@site/../docs/getting-started/ios-native.mdx",/*require.resolve*/(220)],'eb48a329':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(221))),"@site/../docs/extending/send-data.mdx",/*require.resolve*/(221)],'ec8f03f2':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(222))),"@site/../docs/extending/js-plugin-api.mdx",/*require.resolve*/(222)],'f0f6bd8d':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(223))),"@site/../docs/features/logs-plugin.mdx",/*require.resolve*/(223)],'f15cd604':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(224))),"@site/../docs/stetho.mdx",/*require.resolve*/(224)],'f38c2cc3':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(225))),"@site/../docs/extending/search-and-filter.mdx",/*require.resolve*/(225)],'f842f0be':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(226))),"@site/../docs/getting-started/react-native-android.mdx",/*require.resolve*/(226)],'fa2418a3':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(227))),"@site/../docs/getting-started/react-native.mdx",/*require.resolve*/(227)],'fa7b9391':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(228))),"@site/../docs/setup/images-plugin.mdx",/*require.resolve*/(228)],'fcd60faa':[()=>Promise.resolve().then(()=>Object(interopRequireWildcard["a" /* default */])(__webpack_require__(229))),"@site/../docs/troubleshooting.mdx",/*require.resolve*/(229)]});
 // CONCATENATED MODULE: ./node_modules/@docusaurus/core/lib/client/flat.js
 /**
  * Copyright (c) 2017-present, Facebook, Inc.
