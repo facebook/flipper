@@ -452,6 +452,7 @@ type ElementsState = {
   flatKeys: Array<ElementID>;
   flatElements: FlatElements;
   maxDepth: number;
+  scrolledElement: string | null | undefined;
 };
 
 export type ContextMenuExtension = {
@@ -470,6 +471,7 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
       flatElements: [],
       flatKeys: [],
       maxDepth: 0,
+      scrolledElement: null,
     };
   }
 
@@ -678,11 +680,12 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
         contextMenuExtensions={contextMenuExtensions || []}
         decorateRow={decorateRow}
         forwardedRef={
-          selected == row.key
+          selected == row.key && this.state.scrolledElement !== selected
             ? (selectedRow) => {
                 if (!selectedRow || !this._outerRef.current) {
                   return;
                 }
+                this.setState({scrolledElement: selected});
                 const outer = this._outerRef.current;
                 if (outer.scrollTo) {
                   outer.scrollTo(
