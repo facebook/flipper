@@ -38,26 +38,6 @@ jobs:
       with:
         name: 'Flipper-mac.dmg'
         path: 'Flipper-mac.dmg'
-    - run: dd if=/dev/zero bs=1024k count=1024 of=1g.dmg
-    - run: dd if=/dev/zero bs=1024k count=10240 of=10g.dmg
-    - run: ls -la Flipper-mac.dmg
-    - name: Publish
-      uses: skx/github-action-publish-binaries@master
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        args: '*.dmg'
-
-  publish2:
-    runs-on: ubuntu-latest
-    needs: build
-
-    steps:
-    - name: Download
-      uses: actions/download-artifact@v1
-      with:
-        name: 'Flipper-mac.dmg'
-        path: 'Flipper-mac.dmg'
     - name: GitHub Upload Release Artifacts
       uses: Roang-zero1/github-upload-release-artifacts-action@v2.1.0
       env:
