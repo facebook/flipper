@@ -4,6 +4,7 @@ title: Set up your React Native App
 sidebar_label: React Native
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
+import Link from '@docusaurus/Link';
 
 Starting with React Native 0.62, after generating your project with `react-native init`, the Flipper integration is ready out of the box for debug builds:
 
@@ -23,7 +24,7 @@ By default, the following plugins will be available:
 
 Additional plugins can be installed through the plugin manager.
 
-To create your own plugins and integrate with Flipper using JavaScript, check out our [writing plugins for React Native](../tutorial/react-native) tutorial!
+To create your own plugins and integrate with Flipper using JavaScript, check out our <Link to={useBaseUrl("/docs/tutorial/react-native")}>writing plugins for React Native</Link> tutorial!
 
 To update the Flipper SDK in your project, you bump the version in the `ios/Podfile` and `android/gradle.properties` files of your project.
 

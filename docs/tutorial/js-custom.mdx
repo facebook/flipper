@@ -4,6 +4,7 @@ title: Building Custom UI
 sidebar_label: Custom UI
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
+import Link from '@docusaurus/Link';
 
 Displaying your data in a table might work for many use-cases. However, depending on your plugin and data it might make sense to customize the way your data is visualized. Flipper uses React to render the plugins and provides a variety of ready-to-use UI components that can be used to build custom plugin UIs.
 
@@ -35,13 +36,13 @@ export default class SeaMammals extends FlipperPlugin<State, any, PersistedState
 }
 ```
 
-You can see how we are styling our components using [emotion](https://emotion.sh/). To learn more about this, make sure to read our guide on [styling components](../extending/styling-components).
+You can see how we are styling our components using [emotion](https://emotion.sh/). To learn more about this, make sure to read our guide on <Link to={useBaseUrl("/docs/extending/styling-components")}>styling components</Link>.
 
 ## Adding data handling
 
 The plugin is quite useless when we don't display any actual data. We are adding two static properties to our plugin class for data handling. `defaultPersistedState` defines the default state before we received any data. In `persistedStateReducer` we define how new data is merged with the existing data.
 
-For the default state we define an empty object because we don't have any data, yet. When receiving data, we simply add it to the existing object, using the ID as a key. Learn more about [persistedState](../extending/js-plugin-api#persistedstate) in our guide.
+For the default state we define an empty object because we don't have any data, yet. When receiving data, we simply add it to the existing object, using the ID as a key. Learn more about <Link to={useBaseUrl("/docs/extending/js-plugin-api#persistedstate")}>persistedState</Link> in our guide.
 
 ```js
 static defaultPersistedState: PersistedState = {

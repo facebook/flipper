@@ -3,6 +3,8 @@ id: ios-native
 title: Set up your iOS app
 sidebar_label: iOS
 ---
+import useBaseUrl from '@docusaurus/useBaseUrl';
+import Link from '@docusaurus/Link';
 
 We support both Swift and Objective-C for Flipper with CocoaPods as build and distribution mechanism.
 
@@ -141,11 +143,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 ## Enabling plugins
 
-Finally, you need to add plugins to your Flipper client. Above, we have only added the Layout Inspector plugin to get you started. See [Network Plugin](../setup/network-plugin) and [Layout Inspector Plugin](../setup/layout-plugin) for information on how to add them, and also enable Litho or ComponentKit support. You can check the sample apps in the [GitHub repo](https://github.com/facebook/flipper) for examples of integrating other plugins.
+Finally, you need to add plugins to your Flipper client. Above, we have only added the Layout Inspector plugin to get you started. See <Link to={useBaseUrl("/docs/setup/network-plugin")}>Network Plugin</Link> and <Link to={useBaseUrl("/docs/setup/layout-plugin")}>Layout Inspector Plugin</Link> for information on how to add them, and also enable Litho or ComponentKit support. You can check the sample apps in the [GitHub repo](https://github.com/facebook/flipper) for examples of integrating other plugins.
 
 ## Having trouble?
 
-See the [troubleshooting page](../troubleshooting) for help with known problems.
+See the <Link to={useBaseUrl("/docs/troubleshooting")}>troubleshooting page</Link> for help with known problems.
 
 <div class="warning">
 
