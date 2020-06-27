@@ -52,7 +52,7 @@
 }
 
 - (NSString*)identifier {
-  return @"Example";
+  return @"flipper-plugin-example";
 }
 
 - (BOOL)runInBackground {
