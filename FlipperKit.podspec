@@ -193,12 +193,12 @@ Pod::Spec.new do |spec|
     ss.pod_target_xcconfig = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)\"/Headers/Private/FlipperKit/**" }
   end
 
-	spec.subspec "FlipperKitSandboxPlugin" do |ss|
-		ss.header_dir = "FlipperKitSandboxPlugin"
-		ss.dependency 'FlipperKit/Core'
-		ss.compiler_flags       = folly_compiler_flags
-		ss.public_header_files = 'iOS/Plugins/FlipperKitSandboxPlugin/FlipperKitSandboxPlugin.h'
-		ss.source_files         = "iOS/Plugins/FlipperKitSandboxPlugin/**/FlipperKitSandboxPlugin.{h,m}"
-		ss.pod_target_xcconfig = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)\"/Headers/Private/FlipperKit/**" }
-	end
+  spec.subspec "FlipperKitSandboxPlugin" do |ss|
+    ss.header_dir = "FlipperKitSandboxPlugin"
+    ss.dependency 'FlipperKit/Core'
+    ss.compiler_flags       = folly_compiler_flags
+    ss.public_header_files = 'iOS/Plugins/FlipperKitSandboxPlugin/FlipperKitSandboxPlugin.h'
+    ss.source_files         = "iOS/Plugins/FlipperKitSandboxPlugin/**/FlipperKitSandboxPlugin.{h,m}"
+    ss.pod_target_xcconfig = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)\"/Headers/Private/FlipperKit/**" }
+  end
 end
