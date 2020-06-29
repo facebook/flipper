@@ -141,14 +141,12 @@ export default class AndroidDevice extends BaseDevice {
 
   private async isValidFile(filePath: string): Promise<boolean> {
     const fileSize = await this.adb
-      .shell(this.serial, `du "${filePath}"`)
+      .shell(this.serial, `ls -l "${filePath}"`)
       .then(adb.util.readAll)
-      .then((output: Buffer) => output.toString().trim().split('\t'))
-      .then((x) => Number(x[0]));
+      .then((output: Buffer) => output.toString().trim().split(' '))
+      .then((x) => Number(x[4]));
 
-    // 4 is what an empty file (touch file) already takes up, so it's
-    // definitely not a valid video file.
-    return fileSize > 4;
+    return fileSize > 0;
   }
 
   async startScreenCapture(destination: string) {
