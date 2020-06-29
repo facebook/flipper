@@ -20,7 +20,7 @@
     "@babel/plugin-transform-modules-commonjs": "^7.9.0",
     "@babel/plugin-transform-typescript": "^7.9.0",
     "@babel/preset-env": "^7.9.0",
-    "@babel/preset-react": "^7.9.1",
+    "@babel/preset-react": "^7.10.1",
     "@babel/traverse": "^7.9.0",
     "@babel/types": "^7.9.0",
     "@types/fs-extra": "^8.1.0",
