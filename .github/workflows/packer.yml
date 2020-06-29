@@ -8,6 +8,17 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
-      - uses: icepuma/rust-action@1.44.0
+      - name: Test
+        uses: icepuma/rust-action@1.44.0
         with:
-          args: cd packer && cargo fmt -- --check && cargo clippy -- -Dwarnings && cargo test
+          args: cd packer && cargo test
+      - name: Format
+        uses: icepuma/rust-action@1.44.0
+        continue-on-error: true
+        with:
+          args: cd packer && cargo fmt -- --check
+      - name: Lint
+        uses: icepuma/rust-action@1.44.0
+        continue-on-error: true
+        with:
+          args: cd packer && cargo clippy -- -Dwarnings
