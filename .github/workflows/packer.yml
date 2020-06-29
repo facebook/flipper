@@ -9,6 +9,5 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - uses: icepuma/rust-action@1.44.0
-        working-directory: packer
         with:
-          args: cargo fmt -- --check && cargo clippy -- -Dwarnings && cargo test
+          args: cd packer && cargo fmt -- --check && cargo clippy -- -Dwarnings && cargo test
