@@ -1,6 +1,6 @@
 {
   "name": "flipper-e2e",
-  "version": "0.48.0",
+  "version": "0.49.0",
   "private": true,
   "description": "E2E test suite for Flipper",
   "repository": "facebook/flipper",

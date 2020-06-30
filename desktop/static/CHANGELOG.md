@@ -1,3 +1,9 @@
+# 0.49.0 (30/6/2020)
+
+ * D22255125 -  Added command `flipper-pkg checksum` for computing the total checksum of all the files included into plugin package.
+ * D22283092 -  Fix screen recording for Android 11 beta
+
+
 # 0.48.0 (24/6/2020)
 
  * D22151908 - Fix Network Mock Dialog crashes when 'Add Route' button is pressed  https://github.com/facebook/flipper/issues/1280
