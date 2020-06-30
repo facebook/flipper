@@ -273,6 +273,11 @@ ipcMain.on(
 // Define custom protocol handler. Deep linking works on packaged versions of the application!
 app.setAsDefaultProtocolClient('flipper');
 
+// webSecurity is already disabled in BrowserWindow. However, it seems there is
+// a bug in Electron 9 https://github.com/electron/electron/issues/23664. There
+// is workaround suggested in the issue
+app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
+
 function tryCreateWindow() {
   if (appReady && pluginsCompiled) {
     win = new BrowserWindow({
