@@ -31,7 +31,7 @@
     "invariant": "^2.2.2",
     "lodash": "^4.17.15",
     "npm-api": "^1.0.0",
-    "open": "^7.0.0",
+    "open": "^7.0.4",
     "openssl-wrapper": "^0.3.4",
     "promise-retry": "^1.1.1",
     "promisify-child-process": "^4.1.0",
