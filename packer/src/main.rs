@@ -59,7 +59,7 @@ fn pack(
     let packtype_paths = pack_list
         .0
         .get(platform)
-        .ok_or_else(|| error::Error::MissingPlatformDefinition(platform.clone()))?;
+        .ok_or_else(|| error::Error::MissingPlatformDefinition(*platform))?;
     let res = packtype_paths
         .into_par_iter()
         .map(|(pack_type, pack_files)| {
@@ -89,7 +89,7 @@ fn pack(
 fn pack_platform(
     platform: &Platform,
     dist_dir: &std::path::PathBuf,
-    pack_files: &Vec<path::PathBuf>,
+    pack_files: &[path::PathBuf],
     pack_type: &PackType,
     tar_builder: &mut tar::Builder<File>,
 ) -> Result<()> {
@@ -104,9 +104,7 @@ fn pack_platform(
         let full_path = path::Path::new(&base_dir).join(f);
         if !full_path.exists() {
             bail!(error::Error::MissingPackFile(
-                platform.clone(),
-                pack_type.clone(),
-                full_path,
+                *platform, *pack_type, full_path,
             ));
         }
         if full_path.is_file() {
@@ -164,8 +162,11 @@ fn main() -> Result<(), anyhow::Error> {
     let compress = !args.is_present("no-compression");
     let pack_list_str = args
         .value_of("packlist")
-        .map(|f| std::fs::read_to_string(f).expect(&format!("Failed to open packfile {}.", f)))
-        .unwrap_or(DEFAULT_PACKLIST.to_string());
+        .map(|f| {
+            std::fs::read_to_string(f)
+                .unwrap_or_else(|e| panic!("Failed to open packfile {}: {}", f, e))
+        })
+        .unwrap_or_else(|| DEFAULT_PACKLIST.to_string());
     let pack_list: PackList =
         serde_yaml::from_str(&pack_list_str).expect("Failed to deserialize YAML packlist.");
     let output_directory =

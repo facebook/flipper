@@ -9,7 +9,7 @@ use clap::arg_enum;
 use std::fmt::{self, Display};
 
 arg_enum! {
-    #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, serde::Deserialize)]
+    #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, serde::Deserialize)]
     #[serde(rename_all = "lowercase")]
     pub enum Platform {
         Mac,
