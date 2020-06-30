@@ -8,7 +8,7 @@ edition = "2018"
 clap = "^2.33.1"
 shellexpand = "^2.0.0"
 tar = "^0.4.26"
-serde = { version = "^1.0.106", features = ["derive"] }
+serde = { version = "^1.0.114", features = ["derive"] }
 serde_yaml = "^0.8.11"
 anyhow = "^1.0.31"
 sha2 = "^0.8.1"
