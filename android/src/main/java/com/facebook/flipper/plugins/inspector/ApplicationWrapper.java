@@ -54,19 +54,7 @@ public class ApplicationWrapper implements Application.ActivityLifecycleCallback
   public void onActivityResumed(Activity activity) {}
 
   @Override
-  public void onActivityPaused(Activity activity) {
-    if (activity.isFinishing()) {
-      final Iterator<WeakReference<Activity>> activityIterator = mActivities.iterator();
-
-      while (activityIterator.hasNext()) {
-        if (activityIterator.next().get() == activity) {
-          activityIterator.remove();
-        }
-      }
-
-      notifyListener();
-    }
-  }
+  public void onActivityPaused(Activity activity) {}
 
   @Override
   public void onActivityStopped(Activity activity) {}
@@ -75,7 +63,16 @@ public class ApplicationWrapper implements Application.ActivityLifecycleCallback
   public void onActivitySaveInstanceState(Activity activity, Bundle outState) {}
 
   @Override
-  public void onActivityDestroyed(Activity activity) {}
+  public void onActivityDestroyed(Activity activity) {
+    final Iterator<WeakReference<Activity>> activityIterator = mActivities.iterator();
+
+    while (activityIterator.hasNext()) {
+      if (activityIterator.next().get() == activity) {
+        activityIterator.remove();
+      }
+    }
+    notifyListener();
+  }
 
   private void notifyListener() {
     if (mListener != null) {

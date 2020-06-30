@@ -85,6 +85,21 @@ public class ApplicationWrapperTest {
     Mockito.when(activity2.isFinishing()).thenReturn(true);
     mCallbacks.onActivityPaused(activity2);
 
+    assertThat(mWrapper.getActivityStack().size(), equalTo(2));
+    assertThat(mWrapper.getActivityStack().get(0), equalTo(activity1));
+  }
+
+  @Test
+  public void testActivityDestroyed() {
+    final Activity activity1 = Mockito.mock(Activity.class);
+    mCallbacks.onActivityCreated(activity1, Mockito.mock(Bundle.class));
+
+    final Activity activity2 = Mockito.mock(Activity.class);
+    mCallbacks.onActivityCreated(activity2, Mockito.mock(Bundle.class));
+
+    Mockito.when(activity2.isFinishing()).thenReturn(true);
+    mCallbacks.onActivityDestroyed(activity2);
+
     assertThat(mWrapper.getActivityStack().size(), equalTo(1));
     assertThat(mWrapper.getActivityStack().get(0), equalTo(activity1));
   }
