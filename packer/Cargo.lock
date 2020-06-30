@@ -641,9 +641,9 @@ dependencies = [
 
 [[package]]
 name = "tar"
-version = "0.4.26"
+version = "0.4.29"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b3196bfbffbba3e57481b6ea32249fbaf590396a52505a2615adbb79d9d826d3"
+checksum = "c8a4c1d0bee3230179544336c15eefb563cf0302955d962e456542323e8c2e8a"
 dependencies = [
  "filetime",
  "libc",
