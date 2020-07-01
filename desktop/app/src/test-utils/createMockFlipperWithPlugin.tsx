@@ -51,7 +51,7 @@ type MockOptions = Partial<{
    * can be used to intercept outgoing calls. If it returns undefined
    * the base implementation will be used
    */
-  onSend(method: string, params?: object): object | undefined;
+  onSend(pluginId: string, method: string, params?: object): any;
 }>;
 
 export async function createMockFlipperWithPlugin(
@@ -110,7 +110,11 @@ export async function createMockFlipperWithPlugin(
         return device;
       },
     } as any;
-    client.rawCall = async (method, _fromPlugin, params): Promise<any> => {
+    client.rawCall = async (
+      method: string,
+      _fromPlugin: boolean,
+      params: any,
+    ): Promise<any> => {
       const intercepted = options?.onSend?.(method, params);
       if (intercepted !== undefined) {
         return intercepted;
@@ -127,7 +131,9 @@ export async function createMockFlipperWithPlugin(
         case 'getBackgroundPlugins':
           return {plugins: []};
         default:
-          throw new Error(`Test client doesn't support rawCall to ${method}`);
+          throw new Error(
+            `Test client doesn't support rawCall method '${method}'`,
+          );
       }
     };
 

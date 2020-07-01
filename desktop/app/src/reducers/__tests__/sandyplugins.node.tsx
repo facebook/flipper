@@ -30,7 +30,7 @@ beforeEach(() => {
   initialized = false;
 });
 
-function plugin(client: FlipperClient) {
+function plugin(client: FlipperClient<any, any>) {
   const connectStub = jest.fn();
   const disconnectStub = jest.fn();
   const destroyStub = jest.fn();
@@ -45,6 +45,7 @@ function plugin(client: FlipperClient) {
     connectStub,
     disconnectStub,
     destroyStub,
+    send: client.send,
   };
 }
 const TestPlugin = new SandyPluginDefinition(pluginDetails, {
@@ -205,6 +206,32 @@ test('it trigger hooks for background plugins', async () => {
   expect(pluginInstance.destroyStub).toHaveBeenCalledTimes(1);
   expect(pluginInstance.connectStub).toHaveBeenCalledTimes(1);
   expect(pluginInstance.disconnectStub).toHaveBeenCalledTimes(1);
+});
+
+test('it can send messages from sandy clients', async () => {
+  let testMethodCalledWith: any = undefined;
+  const {client} = await createMockFlipperWithPlugin(TestPlugin, {
+    onSend(method, params) {
+      if (method === 'execute') {
+        testMethodCalledWith = params;
+        return {};
+      }
+    },
+  });
+  const pluginInstance: PluginApi = client.sandyPluginStates.get(TestPlugin.id)!
+    .instanceApi;
+  // without rendering, non-bg plugins won't connect automatically,
+  client.initPlugin(TestPlugin.id);
+  await pluginInstance.send('test', {test: 3});
+  expect(testMethodCalledWith).toMatchInlineSnapshot(`
+    Object {
+      "api": "TestPlugin",
+      "method": "test",
+      "params": Object {
+        "test": 3,
+      },
+    }
+  `);
 });
 
 // TODO: T68683449 state is persisted if a plugin connects and reconnects

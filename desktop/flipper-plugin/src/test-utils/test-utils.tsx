@@ -15,7 +15,11 @@ import {
 } from '@testing-library/react';
 import {PluginDetails} from 'flipper-plugin-lib';
 
-import {RealFlipperClient, SandyPluginInstance} from '../plugin/Plugin';
+import {
+  RealFlipperClient,
+  SandyPluginInstance,
+  FlipperClient,
+} from '../plugin/Plugin';
 import {
   SandyPluginDefinition,
   FlipperPluginModule,
@@ -28,6 +32,15 @@ interface StartPluginOptions {
   // TODO: support initial events T68683442 (and type correctly)
   // TODO: support initial state T68683449 (and type correctly)
 }
+
+type ExtractClientType<Module extends FlipperPluginModule<any>> = Parameters<
+  Module['plugin']
+>[0];
+type ExtractMethodsType<
+  Module extends FlipperPluginModule<any>
+> = ExtractClientType<Module> extends FlipperClient<any, infer Methods>
+  ? Methods
+  : never;
 
 interface StartPluginResult<Module extends FlipperPluginModule<any>> {
   /**
@@ -50,6 +63,16 @@ interface StartPluginResult<Module extends FlipperPluginModule<any>> {
    * Emulates the 'destroy' event. After calling destroy this plugin instance won't be usable anymore
    */
   destroy(): void;
+  /**
+   * Jest Stub that is called whenever client.send() is called by the plugin.
+   * Use send.mockImplementation(function) to intercept the calls.
+   */
+  onSend: jest.MockedFunction<
+    <Method extends keyof ExtractMethodsType<Module>>(
+      method: Method,
+      params: Parameters<ExtractMethodsType<Module>[Method]>[0],
+    ) => ReturnType<ExtractMethodsType<Module>[Method]>
+  >;
 }
 
 export function startPlugin<Module extends FlipperPluginModule<any>>(
@@ -61,6 +84,7 @@ export function startPlugin<Module extends FlipperPluginModule<any>>(
     module,
   );
 
+  const sendStub = jest.fn();
   const fakeFlipper: RealFlipperClient = {
     isBackgroundPlugin(_pluginId: string) {
       // we only reason about non-background plugins,
@@ -69,6 +93,14 @@ export function startPlugin<Module extends FlipperPluginModule<any>>(
     },
     initPlugin(_pluginId: string) {},
     deinitPlugin(_pluginId: string) {},
+    call(
+      api: string,
+      method: string,
+      fromPlugin: boolean,
+      params?: Object,
+    ): Promise<Object> {
+      return sendStub(method, params);
+    },
   };
 
   const pluginInstance = new SandyPluginInstance(fakeFlipper, definition);
@@ -81,6 +113,7 @@ export function startPlugin<Module extends FlipperPluginModule<any>>(
     connect: () => pluginInstance.connect(),
     disconnect: () => pluginInstance.disconnect(),
     destroy: () => pluginInstance.destroy(),
+    onSend: sendStub,
     // @ts-ignore
     _backingInstance: pluginInstance,
   };

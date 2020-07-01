@@ -17,7 +17,7 @@ type Events = {
 };
 
 type Methods = {
-  currentState(): Promise<number>;
+  currentState(params: {since: number}): Promise<number>;
 };
 
 export function plugin(client: FlipperClient<Events, Methods>) {
@@ -32,10 +32,22 @@ export function plugin(client: FlipperClient<Events, Methods>) {
   client.onDisconnect(disconnectStub);
   client.onDestroy(destroyStub);
 
+  function _unused_JustTypeChecks() {
+    // @ts-expect-error Argument of type '"bla"' is not assignable
+    client.send('bla', {});
+    // @ts-expect-error Argument of type '{ stuff: string; }' is not assignable to parameter of type
+    client.send('currentState', {stuff: 'nope'});
+  }
+
+  async function getCurrentState() {
+    return client.send('currentState', {since: 0});
+  }
+
   return {
     connectStub,
     destroyStub,
     disconnectStub,
+    getCurrentState,
   };
 }
 

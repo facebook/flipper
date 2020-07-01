@@ -39,6 +39,14 @@ export interface FlipperClient<
    * - when the plugin is disabled
    */
   onDisconnect(cb: () => void): void;
+
+  /**
+   * Send a message to the connected client
+   */
+  send<Method extends keyof Methods>(
+    method: Method,
+    params: Parameters<Methods[Method]>[0],
+  ): ReturnType<Methods[Method]>;
 }
 
 /**
@@ -49,6 +57,12 @@ export interface RealFlipperClient {
   isBackgroundPlugin(pluginId: string): boolean;
   initPlugin(pluginId: string): void;
   deinitPlugin(pluginId: string): void;
+  call(
+    api: string,
+    method: string,
+    fromPlugin: boolean,
+    params?: Object,
+  ): Promise<Object>;
 }
 
 export type FlipperPluginFactory<
@@ -87,6 +101,15 @@ export class SandyPluginInstance {
       },
       onDisconnect: (cb) => {
         this.events.on('disconnect', cb);
+      },
+      send: async (method, params) => {
+        this.assertConnected();
+        return await realClient.call(
+          this.definition.id,
+          method as any,
+          true,
+          params as any,
+        );
       },
     };
     this.instanceApi = definition.module.plugin(this.client);
@@ -141,6 +164,13 @@ export class SandyPluginInstance {
   private assertNotDestroyed() {
     if (this.destroyed) {
       throw new Error('Plugin has been destroyed already');
+    }
+  }
+
+  private assertConnected() {
+    this.assertNotDestroyed();
+    if (!this.connected) {
+      throw new Error('Plugin is not connected');
     }
   }
 }
