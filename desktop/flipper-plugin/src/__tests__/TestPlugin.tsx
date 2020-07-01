@@ -24,6 +24,9 @@ export function plugin(client: FlipperClient<Events, Methods>) {
   const connectStub = jest.fn();
   const disconnectStub = jest.fn();
   const destroyStub = jest.fn();
+  const state = {
+    count: 0,
+  };
 
   // TODO: add tests for sending and receiving data T68683442
   // including typescript assertions
@@ -31,12 +34,23 @@ export function plugin(client: FlipperClient<Events, Methods>) {
   client.onConnect(connectStub);
   client.onDisconnect(disconnectStub);
   client.onDestroy(destroyStub);
+  client.onMessage('inc', ({delta}) => {
+    state.count += delta;
+  });
 
   function _unused_JustTypeChecks() {
     // @ts-expect-error Argument of type '"bla"' is not assignable
     client.send('bla', {});
     // @ts-expect-error Argument of type '{ stuff: string; }' is not assignable to parameter of type
     client.send('currentState', {stuff: 'nope'});
+    // @ts-expect-error
+    client.onMessage('stuff', (_params) => {
+      // noop
+    });
+    client.onMessage('inc', (params) => {
+      // @ts-expect-error
+      params.bla;
+    });
   }
 
   async function getCurrentState() {
@@ -48,6 +62,7 @@ export function plugin(client: FlipperClient<Events, Methods>) {
     destroyStub,
     disconnectStub,
     getCurrentState,
+    state,
   };
 }
 

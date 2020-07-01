@@ -13,6 +13,11 @@ import {EventEmitter} from 'events';
 type EventsContract = Record<string, any>;
 type MethodsContract = Record<string, (params: any) => Promise<any>>;
 
+type Message = {
+  method: string;
+  params?: any;
+};
+
 /**
  * API available to a plugin factory
  */
@@ -47,6 +52,17 @@ export interface FlipperClient<
     method: Method,
     params: Parameters<Methods[Method]>[0],
   ): ReturnType<Methods[Method]>;
+
+  /**
+   * Subscribe to a specific event arriving from the device.
+   *
+   * Messages can only arrive if the plugin is enabled and connected.
+   * For background plugins messages will be batched and arrive the next time the plugin is connected.
+   */
+  onMessage<Event extends keyof Events>(
+    event: Event,
+    callback: (params: Events[Event]) => void,
+  ): void;
 }
 
 /**
@@ -73,6 +89,10 @@ export type FlipperPluginFactory<
 export type FlipperPluginComponent = React.FC<{}>;
 
 export class SandyPluginInstance {
+  static is(thing: any): thing is SandyPluginInstance {
+    return thing instanceof SandyPluginInstance;
+  }
+
   /** base client provided by Flipper */
   realClient: RealFlipperClient;
   /** client that is bound to this instance */
@@ -110,6 +130,9 @@ export class SandyPluginInstance {
           true,
           params as any,
         );
+      },
+      onMessage: (event, callback) => {
+        this.events.on('event-' + event, callback);
       },
     };
     this.instanceApi = definition.module.plugin(this.client);
@@ -154,6 +177,12 @@ export class SandyPluginInstance {
     this.disconnect();
     this.events.emit('destroy');
     this.destroyed = true;
+  }
+
+  receiveMessages(messages: Message[]) {
+    messages.forEach((message) => {
+      this.events.emit('event-' + message.method, message.params);
+    });
   }
 
   toJSON() {

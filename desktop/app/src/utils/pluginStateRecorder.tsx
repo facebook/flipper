@@ -32,6 +32,10 @@ function initialRecordingState(): typeof pluginRecordingState {
   };
 }
 
+export function isRecordingEvents(pluginKey: string) {
+  return pluginRecordingState.recording === pluginKey;
+}
+
 export function flipperRecorderAddEvent(
   pluginKey: string,
   method: string,

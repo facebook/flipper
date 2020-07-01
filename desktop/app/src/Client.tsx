@@ -11,6 +11,8 @@ import {
   PluginDefinition,
   ClientPluginDefinition,
   isSandyPlugin,
+  FlipperPlugin,
+  FlipperDevicePlugin,
 } from './plugin';
 import BaseDevice, {OS} from './devices/BaseDevice';
 import {App} from './App';
@@ -135,7 +137,10 @@ export default class Client extends EventEmitter {
   messageBuffer: Record<
     string /*pluginKey*/,
     {
-      plugin: PluginDefinition;
+      plugin:
+        | typeof FlipperPlugin
+        | typeof FlipperDevicePlugin
+        | SandyPluginInstance;
       messages: Params[];
     }
   > = {};
@@ -456,11 +461,11 @@ export default class Client extends EventEmitter {
           this.store.getState().plugins.devicePlugins.get(params.api);
 
         let handled = false; // This is just for analysis
-        // TODO: support Sandy plugins T68683442
         if (
           persistingPlugin &&
-          !isSandyPlugin(persistingPlugin) &&
-          persistingPlugin.persistedStateReducer
+          ((persistingPlugin as any).persistedStateReducer ||
+            // only send messages to enabled sandy plugins
+            this.sandyPluginStates.has(params.api))
         ) {
           handled = true;
           const pluginKey = getPluginKey(
@@ -470,7 +475,8 @@ export default class Client extends EventEmitter {
           );
           if (!this.messageBuffer[pluginKey]) {
             this.messageBuffer[pluginKey] = {
-              plugin: persistingPlugin,
+              plugin: (this.sandyPluginStates.get(params.api) ??
+                persistingPlugin) as any,
               messages: [params],
             };
           } else {

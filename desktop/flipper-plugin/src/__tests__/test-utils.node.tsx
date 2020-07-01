@@ -93,3 +93,11 @@ test('a plugin cannot send messages after being disconnected', async () => {
   }
   expect(threw).toBeTruthy();
 });
+
+test('a plugin can receive messages', async () => {
+  const {instance, sendEvent} = TestUtils.startPlugin(testPlugin);
+  expect(instance.state.count).toBe(0);
+
+  sendEvent('inc', {delta: 2});
+  expect(instance.state.count).toBe(2);
+});

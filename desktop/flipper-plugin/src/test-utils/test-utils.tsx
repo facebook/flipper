@@ -36,10 +36,17 @@ interface StartPluginOptions {
 type ExtractClientType<Module extends FlipperPluginModule<any>> = Parameters<
   Module['plugin']
 >[0];
+
 type ExtractMethodsType<
   Module extends FlipperPluginModule<any>
 > = ExtractClientType<Module> extends FlipperClient<any, infer Methods>
   ? Methods
+  : never;
+
+type ExtractEventsType<
+  Module extends FlipperPluginModule<any>
+> = ExtractClientType<Module> extends FlipperClient<infer Events, any>
+  ? Events
   : never;
 
 interface StartPluginResult<Module extends FlipperPluginModule<any>> {
@@ -73,6 +80,24 @@ interface StartPluginResult<Module extends FlipperPluginModule<any>> {
       params: Parameters<ExtractMethodsType<Module>[Method]>[0],
     ) => ReturnType<ExtractMethodsType<Module>[Method]>
   >;
+  /**
+   * Send event to the plugin
+   */
+  sendEvent<Event extends keyof ExtractEventsType<Module>>(
+    event: Event,
+    params: ExtractEventsType<Module>[Event],
+  ): void;
+  /**
+   * Send events to the plugin
+   * The structure used here reflects events that can be recorded
+   * with the pluginRecorder
+   */
+  sendEvents(
+    events: {
+      method: keyof ExtractEventsType<Module>;
+      params: any; // afaik we can't type this :-(
+    }[],
+  ): void;
 }
 
 export function startPlugin<Module extends FlipperPluginModule<any>>(
@@ -107,16 +132,28 @@ export function startPlugin<Module extends FlipperPluginModule<any>>(
   // we start connected
   pluginInstance.connect();
 
-  return {
+  const res: StartPluginResult<Module> = {
     module,
     instance: pluginInstance.instanceApi,
     connect: () => pluginInstance.connect(),
     disconnect: () => pluginInstance.disconnect(),
     destroy: () => pluginInstance.destroy(),
     onSend: sendStub,
-    // @ts-ignore
-    _backingInstance: pluginInstance,
+    sendEvent: (event, params) => {
+      res.sendEvents([
+        {
+          method: event,
+          params,
+        },
+      ]);
+    },
+    sendEvents: (messages) => {
+      pluginInstance.receiveMessages(messages as any);
+    },
   };
+  // @ts-ignore
+  res._backingInstance = pluginInstance;
+  return res;
 }
 
 export function renderPlugin<Module extends FlipperPluginModule<any>>(
