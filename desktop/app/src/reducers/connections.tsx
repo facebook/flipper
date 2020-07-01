@@ -135,6 +135,7 @@ export type Action =
       payload: number;
     }
   | {
+      // Implemented by rootReducer in `store.tsx`
       type: 'STAR_PLUGIN';
       payload: {
         selectedApp: string;
@@ -274,51 +275,6 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
           ? selectedDevice.title
           : state.userPreferredDevice,
         deepLinkPayload: deepLinkPayload,
-      });
-    }
-
-    case 'STAR_PLUGIN': {
-      const {plugin, selectedApp} = action.payload;
-      const selectedPlugin = plugin.id;
-      const clients = state.clients.filter(
-        (client) => client.query.app === selectedApp,
-      );
-      return produce(state, (draft) => {
-        if (!draft.userStarredPlugins[selectedApp]) {
-          draft.userStarredPlugins[selectedApp] = [];
-        }
-        const plugins = draft.userStarredPlugins[selectedApp];
-        const idx = plugins.indexOf(selectedPlugin);
-        if (idx === -1) {
-          plugins.push(selectedPlugin);
-          // enabling a plugin on one device enables it on all...
-          clients.forEach((client) => {
-            // sandy plugin? initialize it
-            client.startPluginIfNeeded(plugin, true);
-            // background plugin? connect it needed
-            if (
-              !defaultEnabledBackgroundPlugins.includes(selectedPlugin) &&
-              client?.isBackgroundPlugin(selectedPlugin)
-            ) {
-              client.initPlugin(selectedPlugin);
-            }
-          });
-        } else {
-          plugins.splice(idx, 1);
-          // enabling a plugin on one device disables it on all...
-          clients.forEach((client) => {
-            // disconnect background plugins
-            if (
-              !defaultEnabledBackgroundPlugins.includes(selectedPlugin) &&
-              client?.isBackgroundPlugin(selectedPlugin)
-            ) {
-              client.deinitPlugin(selectedPlugin);
-            }
-            // stop sandy plugins
-            // TODO: forget any persisted state as well T68683449
-            client.stopPluginIfNeeded(plugin.id);
-          });
-        }
       });
     }
 

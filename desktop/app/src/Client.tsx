@@ -336,6 +336,12 @@ export default class Client extends EventEmitter {
   }
 
   stopPluginIfNeeded(pluginId: string) {
+    const pluginKey = getPluginKey(
+      this.id,
+      {serial: this.query.device_id},
+      pluginId,
+    );
+    delete this.messageBuffer[pluginKey];
     const instance = this.sandyPluginStates.get(pluginId);
     if (instance) {
       instance.destroy();

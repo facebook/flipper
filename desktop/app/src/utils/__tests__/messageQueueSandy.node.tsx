@@ -197,9 +197,8 @@ test('queue - events are NOT processed immediately if plugin is NOT selected (bu
   selectDeviceLogs(store);
   sendMessage('inc', {delta: 4});
   client.flushMessageBuffer();
-  expect(store.getState().pluginMessageQueue).toEqual({
-    [pluginKey]: [],
-  });
+  expect(client.messageBuffer).toMatchInlineSnapshot(`Object {}`);
+  expect(store.getState().pluginMessageQueue).toEqual({});
 
   // star again, plugin still not selected, message is queued
   starTestPlugin(store, client);
@@ -636,4 +635,62 @@ test('client - incoming messages are buffered and flushed together', async () =>
           ],
         }
       `);
+});
+
+test('queue - messages that have not yet flushed be lost when disabling the plugin', async () => {
+  const {
+    client,
+    store,
+    sendMessage,
+    pluginKey,
+  } = await createMockFlipperWithPlugin(TestPlugin);
+  selectDeviceLogs(store);
+
+  sendMessage('inc', {});
+  sendMessage('inc', {delta: 2});
+
+  expect(client.messageBuffer).toMatchInlineSnapshot(`
+    Object {
+      "TestApp#Android#MockAndroidDevice#serial#TestPlugin": Object {
+        "messages": Array [
+          Object {
+            "api": "TestPlugin",
+            "method": "inc",
+            "params": Object {
+              "delta": 2,
+            },
+          },
+        ],
+        "plugin": undefined,
+      },
+    }
+  `);
+  expect(store.getState().pluginMessageQueue).toMatchInlineSnapshot(`
+    Object {
+      "TestApp#Android#MockAndroidDevice#serial#TestPlugin": Array [
+        Object {
+          "api": "TestPlugin",
+          "method": "inc",
+          "params": Object {},
+        },
+      ],
+    }
+  `);
+
+  // disable
+  starTestPlugin(store, client);
+  expect(client.messageBuffer).toMatchInlineSnapshot(`Object {}`);
+  expect(store.getState().pluginMessageQueue).toMatchInlineSnapshot(
+    `Object {}`,
+  );
+
+  // re-enable, no messages arrive
+  starTestPlugin(store, client);
+  client.flushMessageBuffer();
+  processMessageQueue(
+    client.sandyPluginStates.get(TestPlugin.id)!,
+    pluginKey,
+    store,
+  );
+  expect(getTestPluginState(client)).toEqual({count: 0});
 });

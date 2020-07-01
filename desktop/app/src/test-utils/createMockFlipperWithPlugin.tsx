@@ -24,7 +24,8 @@ import {
 } from '../reducers/connections';
 import BaseDevice from '../devices/BaseDevice';
 
-import reducers, {Store} from '../reducers/index';
+import {rootReducer} from '../store';
+import {Store} from '../reducers/index';
 import Client, {ClientQuery} from '../Client';
 
 import {buildClientId} from '../utils/clientUtils';
@@ -58,7 +59,7 @@ export async function createMockFlipperWithPlugin(
   pluginClazz: PluginDefinition,
   options?: MockOptions,
 ): Promise<MockFlipperResult> {
-  const store = createStore(reducers);
+  const store = createStore(rootReducer);
   const logger = getInstance();
   store.dispatch(registerPlugins([pluginClazz]));
 
