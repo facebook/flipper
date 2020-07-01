@@ -62,11 +62,6 @@ static NSDictionary<NSString*, NSObject*>* AccessibilityContextDict(
     accessibilityDict[@"accessibilityTraits"] =
         SKObject(@([accessibilityContext.accessibilityTraits integerValue]));
   }
-  if (accessibilityContext.accessibilityComponentAction) {
-    accessibilityDict[@"accessibilityComponentAction.identifier"] = SKObject(
-        @(accessibilityContext.accessibilityComponentAction.identifier()
-              .c_str()));
-  }
   return accessibilityDict;
 }
 
