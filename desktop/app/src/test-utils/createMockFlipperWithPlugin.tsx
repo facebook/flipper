@@ -29,33 +29,28 @@ import Client, {ClientQuery} from '../Client';
 
 import {buildClientId} from '../utils/clientUtils';
 import {Logger} from '../fb-interfaces/Logger';
-import {FlipperPlugin} from '../plugin';
+import {FlipperPlugin, PluginDefinition} from '../plugin';
 import {registerPlugins} from '../reducers/plugins';
 import PluginContainer from '../PluginContainer';
-
-export function createStubLogger(): Logger {
-  return {
-    ...console,
-    track: console.info,
-    trackTimeSince: console.info,
-  };
-}
+import {getPluginKey} from '../utils/pluginUtils';
+import {getInstance} from '../fb-stubs/Logger';
 
 type MockFlipperResult = {
   client: Client;
   device: BaseDevice;
   store: Store;
-  sendMessage(method: string, params: any): void;
+  pluginKey: string;
+  sendMessage(method: string, params: any, client?: Client): void;
   createDevice(serial: string): BaseDevice;
-  createClient(device: BaseDevice, name: string): Client;
+  createClient(device: BaseDevice, name: string): Promise<Client>;
   logger: Logger;
 };
 
 export async function createMockFlipperWithPlugin(
-  pluginClazz: typeof FlipperPlugin,
+  pluginClazz: PluginDefinition,
 ): Promise<MockFlipperResult> {
   const store = createStore(reducers);
-  const logger = createStubLogger();
+  const logger = getInstance();
   store.dispatch(registerPlugins([pluginClazz]));
 
   function createDevice(serial: string): BaseDevice {
@@ -72,7 +67,10 @@ export async function createMockFlipperWithPlugin(
     return device;
   }
 
-  function createClient(device: BaseDevice, name: string): Client {
+  async function createClient(
+    device: BaseDevice,
+    name: string,
+  ): Promise<Client> {
     const query: ClientQuery = {
       app: name,
       os: 'Android',
@@ -102,6 +100,38 @@ export async function createMockFlipperWithPlugin(
         return device;
       },
     } as any;
+    client.rawCall = async (method, _fromPlugin, _params): Promise<any> => {
+      // TODO: could use an interceptor here
+      switch (method) {
+        case 'getPlugins':
+          // assuming this plugin supports all plugins for now
+          return {
+            plugins: [
+              ...store.getState().plugins.clientPlugins.keys(),
+              ...store.getState().plugins.devicePlugins.keys(),
+            ],
+          };
+        default:
+          throw new Error(`Test client doesn't supoprt rawCall to ${method}`);
+      }
+    };
+
+    // enable the plugin
+    if (
+      !store
+        .getState()
+        .connections.userStarredPlugins[client.query.app]?.includes(
+          pluginClazz.id,
+        )
+    ) {
+      store.dispatch(
+        starPlugin({
+          plugin: pluginClazz,
+          selectedApp: client.query.app,
+        }),
+      );
+    }
+    await client.init();
 
     // As convenience, by default we select the new client, star the plugin, and select it
     store.dispatch({
@@ -112,17 +142,10 @@ export async function createMockFlipperWithPlugin(
   }
 
   const device = createDevice('serial');
-  const client = createClient(device, 'TestApp');
+  const client = await createClient(device, 'TestApp');
 
   store.dispatch(selectDevice(device));
   store.dispatch(selectClient(client.id));
-
-  store.dispatch(
-    starPlugin({
-      selectedPlugin: pluginClazz.id,
-      selectedApp: client.query.app,
-    }),
-  );
 
   store.dispatch(
     selectPlugin({
@@ -137,8 +160,8 @@ export async function createMockFlipperWithPlugin(
     client,
     device: device as any,
     store,
-    sendMessage(method, params) {
-      client.onMessage(
+    sendMessage(method, params, actualClient = client) {
+      actualClient.onMessage(
         JSON.stringify({
           method: 'execute',
           params: {
@@ -152,6 +175,7 @@ export async function createMockFlipperWithPlugin(
     createDevice,
     createClient,
     logger,
+    pluginKey: getPluginKey(client.id, device, pluginClazz.id),
   };
 }
 

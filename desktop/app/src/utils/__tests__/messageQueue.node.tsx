@@ -57,7 +57,7 @@ class TestPlugin extends FlipperPlugin<any, any, any> {
 function starTestPlugin(store: Store, client: Client) {
   store.dispatch(
     starPlugin({
-      selectedPlugin: TestPlugin.id,
+      plugin: TestPlugin,
       selectedApp: client.query.app,
     }),
   );
@@ -214,7 +214,7 @@ test('queue - events are queued for plugins that are favorite when app is not se
   selectDeviceLogs(store);
   expect(store.getState().connections.selectedPlugin).not.toBe('TestPlugin');
 
-  const client2 = createClient(device, 'TestApp2');
+  const client2 = await createClient(device, 'TestApp2');
   store.dispatch(selectClient(client2.id));
 
   // Now we send a message to the second client, it should arrive,
@@ -248,27 +248,39 @@ test('queue - events are queued for plugins that are favorite when app is select
   expect(store.getState().connections.selectedPlugin).not.toBe('TestPlugin');
 
   const device2 = createDevice('serial2');
-  const client2 = createClient(device2, client.query.app); // same app id
+  const client2 = await createClient(device2, client.query.app); // same app id
   store.dispatch(selectDevice(device2));
   store.dispatch(selectClient(client2.id));
 
-  // Now we send a message to the second client, it should arrive,
+  // Now we send a message to the first and second client, it should arrive,
   // as the plugin was enabled already on the first client as well
   sendMessage('inc', {delta: 2});
+  sendMessage('inc', {delta: 3}, client2);
+  client.flushMessageBuffer();
+  client2.flushMessageBuffer();
   expect(store.getState().pluginStates).toMatchInlineSnapshot(`Object {}`);
   expect(store.getState().pluginMessageQueue).toMatchInlineSnapshot(`
-          Object {
-            "TestApp#Android#MockAndroidDevice#serial#TestPlugin": Array [
-              Object {
-                "api": "TestPlugin",
-                "method": "inc",
-                "params": Object {
-                  "delta": 2,
-                },
-              },
-            ],
-          }
-        `);
+    Object {
+      "TestApp#Android#MockAndroidDevice#serial#TestPlugin": Array [
+        Object {
+          "api": "TestPlugin",
+          "method": "inc",
+          "params": Object {
+            "delta": 2,
+          },
+        },
+      ],
+      "TestApp#Android#MockAndroidDevice#serial2#TestPlugin": Array [
+        Object {
+          "api": "TestPlugin",
+          "method": "inc",
+          "params": Object {
+            "delta": 3,
+          },
+        },
+      ],
+    }
+  `);
 });
 
 test('queue - events processing will be paused', async () => {

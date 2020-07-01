@@ -32,7 +32,7 @@ import {sideEffect} from './utils/sideEffect';
 import {emitBytesReceived} from './dispatcher/tracking';
 import {debounce} from 'lodash';
 import {batch} from 'react-redux';
-import {SandyPluginDefinition} from 'flipper-plugin';
+import {SandyPluginDefinition, SandyPluginInstance} from 'flipper-plugin';
 
 type Plugins = Array<string>;
 
@@ -135,6 +135,7 @@ export default class Client extends EventEmitter {
       messages: Params[];
     }
   > = {};
+  sandyPluginStates = new Map<string /*pluginID*/, SandyPluginInstance>();
 
   requestCallbacks: Map<
     number,
@@ -253,18 +254,26 @@ export default class Client extends EventEmitter {
     return this.backgroundPlugins.includes(pluginId);
   }
 
+  isEnabledPlugin(pluginId: string) {
+    return this.store
+      .getState()
+      .connections.userStarredPlugins[this.query.app]?.includes(pluginId);
+  }
+
   shouldConnectAsBackgroundPlugin(pluginId: string) {
     return (
       defaultEnabledBackgroundPlugins.includes(pluginId) ||
-      this.store
-        .getState()
-        .connections.userStarredPlugins[this.query.app]?.includes(pluginId)
+      this.isEnabledPlugin(pluginId)
     );
   }
 
   async init() {
     this.setMatchingDevice();
     await this.loadPlugins();
+    // this starts all sandy enabled plugin
+    this.plugins.forEach((pluginId) =>
+      this.startPluginIfNeeded(this.getPlugin(pluginId)),
+    );
     this.backgroundPlugins = await this.getBackgroundPlugins();
     this.backgroundPlugins.forEach((plugin) => {
       if (this.shouldConnectAsBackgroundPlugin(plugin)) {
@@ -298,6 +307,47 @@ export default class Client extends EventEmitter {
     return plugins;
   }
 
+  startPluginIfNeeded(
+    plugin: PluginDefinition | undefined,
+    isEnabled = plugin ? this.isEnabledPlugin(plugin.id) : false,
+  ) {
+    // start a plugin on start if it is a SandyPlugin, which is starred, and doesn't have persisted state yet
+    if (
+      plugin instanceof SandyPluginDefinition &&
+      isEnabled &&
+      !this.sandyPluginStates.has(plugin.id)
+    ) {
+      // TODO: needs to be wrapped in error tracking T68955280
+      // TODO: pick up any existing persisted state T68683449
+      this.sandyPluginStates.set(
+        plugin.id,
+        new SandyPluginInstance(this, plugin),
+      );
+    }
+  }
+
+  stopPluginIfNeeded(pluginId: string) {
+    const instance = this.sandyPluginStates.get(pluginId);
+    if (instance) {
+      instance.destroy();
+      // TODO: make sure persisted state is writtenT68683449
+      this.sandyPluginStates.delete(pluginId);
+    }
+  }
+
+  close() {
+    this.emit('close');
+    this.plugins.forEach((pluginId) => this.stopPluginIfNeeded(pluginId));
+  }
+
+  // gets a plugin by pluginId
+  getPlugin(pluginId: string): PluginDefinition | undefined {
+    const plugins = this.store.getState().plugins;
+    return (
+      plugins.clientPlugins.get(pluginId) || plugins.devicePlugins.get(pluginId)
+    );
+  }
+
   // get the supported background plugins
   async getBackgroundPlugins(): Promise<Plugins> {
     if (this.sdkVersion < 4) {
@@ -313,6 +363,9 @@ export default class Client extends EventEmitter {
   async refreshPlugins() {
     const oldBackgroundPlugins = this.backgroundPlugins;
     await this.loadPlugins();
+    this.plugins.forEach((pluginId) =>
+      this.startPluginIfNeeded(this.getPlugin(pluginId)),
+    );
     const newBackgroundPlugins = await this.getBackgroundPlugins();
     this.backgroundPlugins = newBackgroundPlugins;
     // diff the background plugin list, disconnect old, connect new ones
@@ -616,9 +669,11 @@ export default class Client extends EventEmitter {
   initPlugin(pluginId: string) {
     this.activePlugins.add(pluginId);
     this.rawSend('init', {plugin: pluginId});
+    // TODO: call sandyOnConnect
   }
 
   deinitPlugin(pluginId: string) {
+    // TODO: call sandyOnDisconnect
     this.activePlugins.delete(pluginId);
     this.rawSend('deinit', {plugin: pluginId});
   }

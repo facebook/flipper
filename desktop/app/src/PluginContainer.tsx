@@ -274,7 +274,7 @@ class PluginContainer extends PureComponent<Props, State> {
               toggled={false}
               onClick={() => {
                 this.props.starPlugin({
-                  selectedPlugin: activePlugin.id,
+                  plugin: activePlugin,
                   selectedApp: (this.props.target as Client).query.app,
                 });
               }}

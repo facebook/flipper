@@ -134,10 +134,13 @@ export class Group {
           selectedClient.plugins.includes(requiredPlugin) &&
           !requiredPluginEnabled
         ) {
+          const plugin =
+            store.getState().plugins.clientPlugins.get(requiredPlugin) ||
+            store.getState().plugins.devicePlugins.get(requiredPlugin)!;
           store.dispatch(
             setStarPlugin({
               selectedApp: app,
-              selectedPlugin: requiredPlugin,
+              plugin,
             }),
           );
         } else if (

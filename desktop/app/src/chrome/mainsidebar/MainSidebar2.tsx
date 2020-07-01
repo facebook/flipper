@@ -486,10 +486,10 @@ const PluginList = memo(function PluginList({
   }, [client]);
 
   const onFavorite = useCallback(
-    (plugin: string) => {
+    (plugin: PluginDefinition) => {
       starPlugin({
         selectedApp: client.query.app,
-        selectedPlugin: plugin,
+        plugin,
       });
     },
     [client],
@@ -589,7 +589,7 @@ const PluginsByCategory = memo(function PluginsByCategory({
   starred: boolean;
   selectedPlugin?: null | string;
   selectedApp?: null | string;
-  onFavorite: (pluginId: string) => void;
+  onFavorite: (plugin: PluginDefinition) => void;
   selectPlugin: SelectPlugin;
 }) {
   return (
@@ -617,7 +617,7 @@ const PluginsByCategory = memo(function PluginsByCategory({
               }
               plugin={plugin}
               app={client.query.app}
-              onFavorite={() => onFavorite(plugin.id)}
+              onFavorite={() => onFavorite(plugin)}
               starred={device.isArchived ? undefined : starred}
             />
           ))}

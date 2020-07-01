@@ -28,7 +28,7 @@ import {
   defaultEnabledBackgroundPlugins,
 } from '../utils/pluginUtils';
 import {deconstructClientId} from '../utils/clientUtils';
-import {FlipperDevicePlugin} from '../plugin';
+import {FlipperDevicePlugin, PluginDefinition} from '../plugin';
 import {RegisterPluginAction} from './plugins';
 import {SandyPluginDefinition} from 'flipper-plugin';
 
@@ -138,8 +138,8 @@ export type Action =
   | {
       type: 'STAR_PLUGIN';
       payload: {
-        selectedPlugin: string;
         selectedApp: string;
+        plugin: PluginDefinition;
       };
     }
   | {
@@ -279,33 +279,46 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
     }
 
     case 'STAR_PLUGIN': {
-      const {selectedPlugin, selectedApp} = action.payload;
-      const client = state.clients.find(
+      const {plugin, selectedApp} = action.payload;
+      const selectedPlugin = plugin.id;
+      const clients = state.clients.filter(
         (client) => client.query.app === selectedApp,
       );
       return produce(state, (draft) => {
         if (!draft.userStarredPlugins[selectedApp]) {
-          draft.userStarredPlugins[selectedApp] = [selectedPlugin];
-        } else {
-          const plugins = draft.userStarredPlugins[selectedApp];
-          const idx = plugins.indexOf(selectedPlugin);
-          if (idx === -1) {
-            plugins.push(selectedPlugin);
+          draft.userStarredPlugins[selectedApp] = [];
+        }
+        const plugins = draft.userStarredPlugins[selectedApp];
+        const idx = plugins.indexOf(selectedPlugin);
+        if (idx === -1) {
+          plugins.push(selectedPlugin);
+          // enabling a plugin on one device enables it on all...
+          clients.forEach((client) => {
+            // sandy plugin? initialize it
+            client.startPluginIfNeeded(plugin, true);
+            // background plugin? connect it needed
             if (
               !defaultEnabledBackgroundPlugins.includes(selectedPlugin) &&
               client?.isBackgroundPlugin(selectedPlugin)
             ) {
               client.initPlugin(selectedPlugin);
             }
-          } else {
-            plugins.splice(idx, 1);
+          });
+        } else {
+          plugins.splice(idx, 1);
+          // enabling a plugin on one device disables it on all...
+          clients.forEach((client) => {
+            // disconnect background plugins
             if (
               !defaultEnabledBackgroundPlugins.includes(selectedPlugin) &&
               client?.isBackgroundPlugin(selectedPlugin)
             ) {
               client.deinitPlugin(selectedPlugin);
             }
-          }
+            // stop sandy plugins
+            // TODO: forget any persisted state as well T68683449
+            client.stopPluginIfNeeded(plugin.id);
+          });
         }
       });
     }
@@ -500,7 +513,7 @@ export const selectPlugin = (payload: {
 });
 
 export const starPlugin = (payload: {
-  selectedPlugin: string;
+  plugin: PluginDefinition;
   selectedApp: string;
 }): Action => ({
   type: 'STAR_PLUGIN',

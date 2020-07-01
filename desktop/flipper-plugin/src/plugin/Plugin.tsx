@@ -42,25 +42,40 @@ export type FlipperPluginModule = {
   // devicePlugin: FlipperPluginFactory
 };
 
-export class FlipperPluginInstance {
+export class SandyPluginInstance {
   /** base client provided by Flipper */
   realClient: RealFlipperClient;
   /** client that is bound to this instance */
   client: FlipperClient<any, any>;
   /** the original plugin definition */
-  definition: FlipperPluginModule;
+  definition: SandyPluginDefinition;
   /** the plugin instance api as used inside components and such  */
   instanceApi: object;
 
-  constructor(realClient: RealFlipperClient, definition: FlipperPluginModule) {
+  constructor(
+    realClient: RealFlipperClient,
+    definition: SandyPluginDefinition,
+  ) {
     this.realClient = realClient;
     this.definition = definition;
     this.client = {};
-    this.instanceApi = definition.plugin(this.client);
+    this.instanceApi = definition.module.plugin(this.client);
+  }
+
+  activate() {
+    // TODO: T68683507
   }
 
   deactivate() {
-    // TODO:
+    // TODO: T68683507
+  }
+
+  destroy() {
+    // TODO: T68683507
+  }
+
+  toJSON() {
+    // TODO: T68683449
   }
 }
 
