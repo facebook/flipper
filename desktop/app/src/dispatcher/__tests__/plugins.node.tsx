@@ -8,10 +8,6 @@
  */
 
 jest.mock('../../defaultPlugins');
-try {
-  jest.mock('../../fb/Logger', () => require('../../fb-stubs/Logger'));
-} catch {}
-
 import dispatcher, {
   getDynamicPlugins,
   checkDisabled,
@@ -24,7 +20,7 @@ import path from 'path';
 import {ipcRenderer, remote} from 'electron';
 import {FlipperPlugin} from 'flipper';
 import reducers, {State} from '../../reducers/index';
-import {init as initLogger} from '../../fb-stubs/Logger';
+import {getInstance} from '../../fb-stubs/Logger';
 import configureStore from 'redux-mock-store';
 import {TEST_PASSING_GK, TEST_FAILING_GK} from '../../fb-stubs/GK';
 import TestPlugin from './TestPlugin';
@@ -34,7 +30,7 @@ import {SandyPluginDefinition} from 'flipper-plugin';
 const mockStore = configureStore<State, {}>([])(
   reducers(undefined, {type: 'INIT'}),
 );
-const logger = initLogger(mockStore);
+const logger = getInstance();
 
 const samplePluginDetails: PluginDetails = {
   name: 'other Name',

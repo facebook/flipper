@@ -10,12 +10,6 @@
 import React from 'react';
 import {render, fireEvent} from '@testing-library/react';
 
-try {
-  jest.mock('../../../app/src/fb/Logger');
-} catch {
-  jest.mock('../../../app/src/fb-stubs/Logger');
-}
-
 import {Element} from 'flipper';
 import MultipleSelectorSection from '../MultipleSelectionSection';
 

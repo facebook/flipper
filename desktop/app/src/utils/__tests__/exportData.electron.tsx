@@ -7,11 +7,6 @@
  * @format
  */
 
-try {
-  jest.mock('../../fb/Logger');
-} catch (e) {
-  jest.mock('../../fb-stubs/Logger');
-}
 import {State} from '../../reducers/index';
 import configureStore from 'redux-mock-store';
 import {default as BaseDevice} from '../../devices/BaseDevice';

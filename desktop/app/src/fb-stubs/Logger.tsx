@@ -23,9 +23,7 @@ export function init(store: Store, _args?: Args): Logger {
 
 export function getInstance(): Logger {
   if (!instance) {
-    throw new Error(
-      'Requested Logger instance without initializing it. Make sure init() is called at app start',
-    );
+    return init(undefined as any /* store is not actually used */);
   }
   return instance;
 }
