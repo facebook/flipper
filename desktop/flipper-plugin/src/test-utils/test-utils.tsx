@@ -25,6 +25,7 @@ import {
   FlipperPluginModule,
 } from '../plugin/SandyPluginDefinition';
 import {SandyPluginRenderer} from '../plugin/PluginRenderer';
+import {act} from '@testing-library/react';
 
 type Renderer = RenderResult<typeof import('testing-library__dom/queries')>;
 
@@ -148,7 +149,9 @@ export function startPlugin<Module extends FlipperPluginModule<any>>(
       ]);
     },
     sendEvents: (messages) => {
-      pluginInstance.receiveMessages(messages as any);
+      act(() => {
+        pluginInstance.receiveMessages(messages as any);
+      });
     },
   };
   // @ts-ignore

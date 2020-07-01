@@ -47,7 +47,7 @@ test('it can start a plugin and lifecycle events', () => {
 });
 
 test('it can render a plugin', () => {
-  const {renderer} = TestUtils.renderPlugin(testPlugin);
+  const {renderer, sendEvent, instance} = TestUtils.renderPlugin(testPlugin);
 
   expect(renderer.baseElement).toMatchInlineSnapshot(`
     <body>
@@ -59,7 +59,25 @@ test('it can render a plugin', () => {
       </div>
     </body>
   `);
-  // TODO: test sending updates T68683442
+
+  sendEvent('inc', {delta: 3});
+
+  expect(renderer.baseElement).toMatchInlineSnapshot(`
+    <body>
+      <div>
+        <h1>
+          Hi from test plugin 
+          3
+        </h1>
+      </div>
+    </body>
+  `);
+
+  // @ts-ignore
+  expect(instance.state.listeners.length).toBe(1);
+  renderer.unmount();
+  // @ts-ignore
+  expect(instance.state.listeners.length).toBe(0);
 });
 
 test('a plugin can send messages', async () => {
@@ -97,8 +115,8 @@ test('a plugin cannot send messages after being disconnected', async () => {
 
 test('a plugin can receive messages', async () => {
   const {instance, sendEvent} = TestUtils.startPlugin(testPlugin);
-  expect(instance.state.count).toBe(0);
+  expect(instance.state.get().count).toBe(0);
 
   sendEvent('inc', {delta: 2});
-  expect(instance.state.count).toBe(2);
+  expect(instance.state.get().count).toBe(2);
 });

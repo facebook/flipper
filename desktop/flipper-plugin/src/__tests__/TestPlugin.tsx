@@ -10,6 +10,7 @@
 import * as React from 'react';
 import {FlipperClient} from '../plugin/Plugin';
 import {usePlugin} from '../plugin/PluginContext';
+import {createState, useValue} from '../state/atom';
 
 type Events = {
   inc: {
@@ -25,9 +26,9 @@ export function plugin(client: FlipperClient<Events, Methods>) {
   const connectStub = jest.fn();
   const disconnectStub = jest.fn();
   const destroyStub = jest.fn();
-  const state = {
+  const state = createState({
     count: 0,
-  };
+  });
 
   // TODO: add tests for sending and receiving data T68683442
   // including typescript assertions
@@ -36,7 +37,9 @@ export function plugin(client: FlipperClient<Events, Methods>) {
   client.onDisconnect(disconnectStub);
   client.onDestroy(destroyStub);
   client.onMessage('inc', ({delta}) => {
-    state.count += delta;
+    state.update((draft) => {
+      draft.count += delta;
+    });
   });
 
   function _unused_JustTypeChecks() {
@@ -69,10 +72,11 @@ export function plugin(client: FlipperClient<Events, Methods>) {
 
 export function Component() {
   const api = usePlugin(plugin);
+  const count = useValue(api.state).count;
 
   // @ts-expect-error
   api.bla;
 
   // TODO N.b.: state updates won't be visible
-  return <h1>Hi from test plugin {api.state.count}</h1>;
+  return <h1>Hi from test plugin {count}</h1>;
 }

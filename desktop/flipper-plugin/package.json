@@ -9,7 +9,8 @@
   "license": "MIT",
   "bugs": "https://github.com/facebook/flipper/issues",
   "dependencies": {
-    "@testing-library/react": "^10.4.3"
+    "@testing-library/react": "^10.4.3",
+    "immer": "^7.0.5"
   },
   "devDependencies": {
     "@types/jest": "^26.0.3",
