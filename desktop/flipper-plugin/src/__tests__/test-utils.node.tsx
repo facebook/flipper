@@ -53,7 +53,8 @@ test('it can render a plugin', () => {
     <body>
       <div>
         <h1>
-          Hi from test plugin
+          Hi from test plugin 
+          0
         </h1>
       </div>
     </body>

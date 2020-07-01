@@ -12,7 +12,7 @@ import * as TestUtilites from './test-utils/test-utils';
 export {SandyPluginInstance, FlipperClient} from './plugin/Plugin';
 export {SandyPluginDefinition} from './plugin/SandyPluginDefinition';
 export {SandyPluginRenderer} from './plugin/PluginRenderer';
-export {SandyPluginContext} from './plugin/PluginContext';
+export {SandyPluginContext, usePlugin} from './plugin/PluginContext';
 
 // It's not ideal that this exists in flipper-plugin sources directly,
 // but is the least pain for plugin authors.

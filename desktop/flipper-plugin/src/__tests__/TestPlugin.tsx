@@ -9,6 +9,7 @@
 
 import * as React from 'react';
 import {FlipperClient} from '../plugin/Plugin';
+import {usePlugin} from '../plugin/PluginContext';
 
 type Events = {
   inc: {
@@ -67,6 +68,11 @@ export function plugin(client: FlipperClient<Events, Methods>) {
 }
 
 export function Component() {
-  // TODO T69105011 add test for usePlugin including type assertions
-  return <h1>Hi from test plugin</h1>;
+  const api = usePlugin(plugin);
+
+  // @ts-expect-error
+  api.bla;
+
+  // TODO N.b.: state updates won't be visible
+  return <h1>Hi from test plugin {api.state.count}</h1>;
 }

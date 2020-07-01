@@ -16,6 +16,7 @@ import {
   SandyPluginDefinition,
   FlipperClient,
   TestUtils,
+  usePlugin,
 } from 'flipper-plugin';
 import {selectPlugin} from '../reducers/connections';
 
@@ -92,8 +93,17 @@ test('PluginContainer can render Sandy plugins', async () => {
 
   function MySandyPlugin() {
     renders++;
-    const sandyContext = useContext(SandyPluginContext);
-    expect(sandyContext).not.toBe(null);
+    const sandyApi = usePlugin(plugin);
+    expect(Object.keys(sandyApi)).toEqual([
+      'connectedStub',
+      'disconnectedStub',
+    ]);
+    expect(() => {
+      // eslint-disable-next-line
+      usePlugin(function bla() {
+        return {};
+      });
+    }).toThrowError(/didn't match the type of the requested plugin/);
     return <div>Hello from Sandy</div>;
   }
 
