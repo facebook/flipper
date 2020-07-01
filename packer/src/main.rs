@@ -5,6 +5,14 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#![warn(
+    clippy::all,
+    clippy::restriction,
+    clippy::pedantic,
+    clippy::nursery,
+    clippy::cargo
+)]
+
 mod error;
 mod types;
 
