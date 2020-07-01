@@ -50,7 +50,7 @@ static CK::Optional<CKFlexboxComponentChild> findFlexboxLayoutParams(
 
 + (instancetype)newFromRoot:(id<CKInspectableView>)root
                   parentKey:(NSString*)parentKey {
-  const CKComponentLayout layout = [root mountedLayout];
+  const auto layout = [root mountedLayout];
   // Check if there is a cached wrapper.
   if (layout.component) {
     SKComponentLayoutWrapper* cachedWrapper =
