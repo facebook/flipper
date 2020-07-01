@@ -9,8 +9,6 @@ package com.facebook.flipper.plugins.inspector;
 
 import android.app.Application;
 import android.content.Context;
-import android.util.Pair;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
@@ -24,11 +22,8 @@ import com.facebook.flipper.core.FlipperReceiver;
 import com.facebook.flipper.core.FlipperResponder;
 import com.facebook.flipper.plugins.common.MainThreadFlipperReceiver;
 import com.facebook.flipper.plugins.inspector.descriptors.ApplicationDescriptor;
-import com.facebook.flipper.plugins.inspector.descriptors.utils.AccessibilityUtil;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Stack;
 import javax.annotation.Nullable;
 
 public class InspectorFlipperPlugin implements FlipperPlugin {
@@ -37,7 +32,7 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
   private DescriptorMapping mDescriptorMapping;
   private ObjectTracker mObjectTracker;
   private String mHighlightedId;
-  private TouchOverlayView mTouchOverlay;
+  TouchOverlayView mTouchOverlay;
   private FlipperConnection mConnection;
   private @Nullable List<ExtensionCommand> mExtensionCommands;
   private boolean mShowLithoAccessibilitySettings;
@@ -373,7 +368,18 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
 
           if (root != null) {
             if (active) {
-              mTouchOverlay = new TouchOverlayView(root.getContext());
+              mTouchOverlay =
+                  new TouchOverlayView(root.getContext(), mConnection, mApplication) {
+                    @Override
+                    protected String trackObject(Object obj) throws Exception {
+                      return InspectorFlipperPlugin.this.trackObject(obj);
+                    }
+
+                    @Override
+                    protected NodeDescriptor<Object> descriptorForObject(Object obj) {
+                      return InspectorFlipperPlugin.this.descriptorForObject(obj);
+                    }
+                  };
               root.addView(mTouchOverlay);
               root.bringChildToFront(mTouchOverlay);
             } else {
@@ -412,175 +418,6 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
           responder.success(response);
         }
       };
-
-  class TouchOverlayView extends View implements HiddenNode {
-    public TouchOverlayView(Context context) {
-      super(context);
-      setBackgroundColor(BoundsDrawable.COLOR_HIGHLIGHT_CONTENT);
-    }
-
-    @Override
-    public boolean onHoverEvent(MotionEvent event) {
-
-      // if in layout inspector and talkback is running, override the first click to locate the
-      // clicked view
-      if (mConnection != null
-          && AccessibilityUtil.isTalkbackEnabled(getContext())
-          && event.getPointerCount() == 1) {
-        FlipperObject params =
-            new FlipperObject.Builder()
-                .put("type", "usage")
-                .put("eventName", "accessibility:clickToInspectTalkbackRunning")
-                .build();
-        mConnection.send("track", params);
-
-        final int action = event.getAction();
-        switch (action) {
-          case MotionEvent.ACTION_HOVER_ENTER:
-            {
-              event.setAction(MotionEvent.ACTION_DOWN);
-            }
-            break;
-          case MotionEvent.ACTION_HOVER_MOVE:
-            {
-              event.setAction(MotionEvent.ACTION_MOVE);
-            }
-            break;
-          case MotionEvent.ACTION_HOVER_EXIT:
-            {
-              event.setAction(MotionEvent.ACTION_UP);
-            }
-            break;
-        }
-        return onTouchEvent(event);
-      }
-
-      // otherwise use the default
-      return super.onHoverEvent(event);
-    }
-
-    @Override
-    public boolean onTouchEvent(final MotionEvent event) {
-      if (event.getAction() != MotionEvent.ACTION_UP) {
-        return true;
-      }
-
-      new ErrorReportingRunnable(mConnection) {
-        @Override
-        public void runOrThrow() throws Exception {
-          hitTest((int) event.getX(), (int) event.getY());
-        }
-      }.run();
-
-      return true;
-    }
-  }
-
-  private Pair<Touch, Stack<FlipperObject.Builder>> createTouch(
-      final int touchX, final int touchY, final boolean ax) throws Exception {
-    final Stack<FlipperObject.Builder> objStack = new Stack<>();
-    objStack.push(new FlipperObject.Builder());
-
-    final Stack<Object> nodes = new Stack<>();
-    nodes.push(mApplication);
-
-    final Touch touch =
-        new Touch() {
-          int x = touchX;
-          int y = touchY;
-
-          @Override
-          public void finish() {}
-
-          @Override
-          public void continueWithOffset(
-              final int childIndex, final int offsetX, final int offsetY) {
-            final Touch touch = this;
-
-            new ErrorReportingRunnable(mConnection) {
-              @Override
-              protected void runOrThrow() throws Exception {
-                Object nextNode;
-                final Object currNode = nodes.peek();
-                x -= offsetX;
-                y -= offsetY;
-
-                if (ax) {
-                  nextNode =
-                      assertNotNull(
-                          descriptorForObject(currNode).getAXChildAt(currNode, childIndex));
-                } else {
-                  nextNode =
-                      assertNotNull(descriptorForObject(currNode).getChildAt(currNode, childIndex));
-                }
-
-                nodes.push(nextNode);
-                final String nodeID = trackObject(nextNode);
-                final NodeDescriptor<Object> descriptor = descriptorForObject(nextNode);
-                objStack.push(new FlipperObject.Builder());
-
-                if (ax) {
-                  descriptor.axHitTest(nextNode, touch);
-                } else {
-                  descriptor.hitTest(nextNode, touch);
-                }
-
-                x += offsetX;
-                y += offsetY;
-                nodes.pop();
-                final FlipperObject objTree = objStack.pop().build();
-                objStack.peek().put(nodeID, objTree);
-              }
-            }.run();
-          }
-
-          @Override
-          public boolean containedIn(int l, int t, int r, int b) {
-            return x >= l && x <= r && y >= t && y <= b;
-          }
-        };
-
-    return new Pair<>(touch, objStack);
-  }
-
-  // This is mainly for backward compatibility
-  private FlipperArray getPathFromTree(FlipperObject tree) {
-    final FlipperArray.Builder pathBuilder = new FlipperArray.Builder();
-    FlipperObject subtree = tree;
-    Iterator<String> it = subtree.keys();
-    while (it.hasNext()) {
-      final String key = it.next();
-      pathBuilder.put(key);
-      subtree = subtree.getObject(key);
-      it = subtree.keys();
-    }
-    return pathBuilder.build();
-  }
-
-  void hitTest(final int touchX, final int touchY) throws Exception {
-    final NodeDescriptor<Object> descriptor = descriptorForObject(mApplication);
-    FlipperObject treeObj;
-
-    Pair<Touch, Stack<FlipperObject.Builder>> pair = createTouch(touchX, touchY, false);
-    descriptor.hitTest(mApplication, pair.first);
-    treeObj = new FlipperObject.Builder().put(trackObject(mApplication), pair.second.pop()).build();
-    mConnection.send(
-        "select",
-        new FlipperObject.Builder()
-            .put("tree", treeObj)
-            .put("path", getPathFromTree(treeObj))
-            .build());
-
-    pair = createTouch(touchX, touchY, true);
-    descriptor.axHitTest(mApplication, pair.first);
-    treeObj = new FlipperObject.Builder().put(trackObject(mApplication), pair.second.pop()).build();
-    mConnection.send(
-        "selectAX",
-        new FlipperObject.Builder()
-            .put("tree", treeObj)
-            .put("path", getPathFromTree(treeObj))
-            .build());
-  }
 
   private void setHighlighted(
       final String id, final boolean highlighted, final boolean isAlignmentMode) throws Exception {
@@ -745,7 +582,7 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
         .build();
   }
 
-  private String trackObject(Object obj) throws Exception {
+  String trackObject(Object obj) throws Exception {
     final NodeDescriptor<Object> descriptor = descriptorForObject(obj);
     final String id = descriptor.getId(obj);
     final Object curr = mObjectTracker.get(id);
@@ -756,12 +593,12 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
     return id;
   }
 
-  private NodeDescriptor<Object> descriptorForObject(Object obj) {
+  NodeDescriptor<Object> descriptorForObject(Object obj) {
     final Class c = assertNotNull(obj).getClass();
     return (NodeDescriptor<Object>) mDescriptorMapping.descriptorForClass(c);
   }
 
-  private static Object assertNotNull(@Nullable Object o) {
+  static Object assertNotNull(@Nullable Object o) {
     if (o == null) {
       throw new RuntimeException("Unexpected null value");
     }

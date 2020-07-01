@@ -22,7 +22,6 @@ import com.facebook.flipper.core.FlipperArray;
 import com.facebook.flipper.core.FlipperConnection;
 import com.facebook.flipper.core.FlipperDynamic;
 import com.facebook.flipper.core.FlipperObject;
-import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin.TouchOverlayView;
 import com.facebook.flipper.plugins.inspector.descriptors.ApplicationDescriptor;
 import com.facebook.flipper.testing.FlipperConnectionMock;
 import com.facebook.flipper.testing.FlipperResponderMock;
@@ -242,7 +241,6 @@ public class InspectorFlipperPluginTest {
     final InspectorFlipperPlugin plugin =
         new InspectorFlipperPlugin(mApp, mDescriptorMapping, null);
     final FlipperConnectionMock connection = new FlipperConnectionMock();
-    plugin.onConnect(connection);
 
     final TestNode one = new TestNode();
     one.id = "1";
@@ -263,7 +261,20 @@ public class InspectorFlipperPluginTest {
     root.children.add(three);
     mApplicationDescriptor.root = root;
 
-    plugin.hitTest(10, 10);
+    TouchOverlayView view =
+        new TouchOverlayView(mApp.getApplication(), connection, mApp) {
+          @Override
+          protected String trackObject(Object obj) throws Exception {
+            return plugin.trackObject(obj);
+          }
+
+          @Override
+          protected NodeDescriptor<Object> descriptorForObject(Object obj) {
+            return plugin.descriptorForObject(obj);
+          }
+        };
+
+    view.hitTest(10, 10);
 
     assertThat(
         connection.sent.get("select"),
