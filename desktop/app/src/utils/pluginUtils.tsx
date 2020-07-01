@@ -12,13 +12,13 @@ import {
   FlipperBasePlugin,
   PluginDefinition,
   DevicePluginDefinition,
+  isSandyPlugin,
 } from '../plugin';
 import {State as PluginStatesState} from '../reducers/pluginStates';
 import {State as PluginsState} from '../reducers/plugins';
 import {State as PluginMessageQueueState} from '../reducers/pluginMessageQueue';
 import {PluginDetails} from 'flipper-plugin-lib';
 import {deconstructPluginKey, deconstructClientId} from './clientUtils';
-import {SandyPluginDefinition} from 'flipper-plugin';
 
 type Client = import('../Client').default;
 
@@ -205,7 +205,7 @@ export function getPersistentPlugins(plugins: PluginsState): Array<string> {
       plugin == 'DeviceLogs' ||
       (pluginClass &&
         // TODO: support Sandy plugin T68683449
-        !(pluginClass instanceof SandyPluginDefinition) &&
+        !isSandyPlugin(pluginClass) &&
         (pluginClass.defaultPersistedState != undefined ||
           pluginClass.exportPersistedState != undefined))
     );

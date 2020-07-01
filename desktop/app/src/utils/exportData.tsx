@@ -26,6 +26,7 @@ import {
   PluginDefinition,
   DevicePluginMap,
   ClientPluginMap,
+  isSandyPlugin,
 } from '../plugin';
 import {default as BaseDevice} from '../devices/BaseDevice';
 import {default as ArchivedDevice} from '../devices/ArchivedDevice';
@@ -49,7 +50,6 @@ import {processMessageQueue} from './messageQueue';
 import {getPluginTitle} from './pluginUtils';
 import {capture} from './screenshot';
 import {uploadFlipperMedia} from '../fb-stubs/user';
-import {SandyPluginDefinition} from 'flipper-plugin';
 
 export const IMPORT_FLIPPER_TRACE_EVENT = 'import-flipper-trace';
 export const EXPORT_FLIPPER_TRACE_EVENT = 'export-flipper-trace';
@@ -223,7 +223,7 @@ const serializePluginStates = async (
   const pluginsMap: Map<string, typeof FlipperBasePlugin> = new Map([]);
   clientPlugins.forEach((val, key) => {
     // TODO: Support Sandy T68683449 and use ClientPluginsMap
-    if (!(val instanceof SandyPluginDefinition)) {
+    if (!isSandyPlugin(val)) {
       pluginsMap.set(key, val);
     }
   });
@@ -260,7 +260,7 @@ const deserializePluginStates = (
   const pluginsMap: Map<string, typeof FlipperBasePlugin> = new Map([]);
   clientPlugins.forEach((val, key) => {
     // TODO: Support Sandy T68683449
-    if (!(val instanceof SandyPluginDefinition)) pluginsMap.set(key, val);
+    if (!isSandyPlugin(val)) pluginsMap.set(key, val);
   });
   devicePlugins.forEach((val, key) => {
     pluginsMap.set(key, val);
@@ -522,10 +522,7 @@ async function processQueues(
     pluginClass,
   } of pluginsToProcess) {
     // TODO: Support Sandy T68683449
-    if (
-      !(pluginClass instanceof SandyPluginDefinition) &&
-      pluginClass.persistedStateReducer
-    ) {
+    if (!isSandyPlugin(pluginClass) && pluginClass.persistedStateReducer) {
       const processQueueMarker = `${EXPORT_FLIPPER_TRACE_EVENT}:process-queue-per-plugin`;
       performance.mark(processQueueMarker);
 

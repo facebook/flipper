@@ -10,7 +10,7 @@
 import {Store} from '../reducers/index';
 import {Logger} from '../fb-interfaces/Logger';
 import {PluginNotification} from '../reducers/notifications';
-import {PluginDefinition} from '../plugin';
+import {PluginDefinition, isSandyPlugin} from '../plugin';
 import isHeadless from '../utils/isHeadless';
 import {setStaticView, setDeeplinkPayload} from '../reducers/connections';
 import {ipcRenderer, IpcRendererEvent} from 'electron';
@@ -25,7 +25,6 @@ import {deconstructPluginKey} from '../utils/clientUtils';
 import NotificationScreen from '../chrome/NotificationScreen';
 import {getPluginTitle} from '../utils/pluginUtils';
 import {sideEffect} from '../utils/sideEffect';
-import {SandyPluginDefinition} from 'flipper-plugin';
 
 type NotificationEvents = 'show' | 'click' | 'close' | 'reply' | 'action';
 const NOTIFICATION_THROTTLE = 5 * 1000; // in milliseconds
@@ -117,7 +116,7 @@ export default (store: Store, logger: Logger) => {
           // TODO: add support for Sandy plugins T68683442
           if (
             persistingPlugin &&
-            !(persistingPlugin instanceof SandyPluginDefinition) &&
+            !isSandyPlugin(persistingPlugin) &&
             persistingPlugin.getActiveNotifications
           ) {
             try {

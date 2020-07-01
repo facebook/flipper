@@ -12,7 +12,7 @@ import fs from 'fs';
 import {Store, State} from '../reducers';
 import {getPluginKey} from './pluginUtils';
 import {serialize} from './serialization';
-import {SandyPluginDefinition} from 'flipper-plugin';
+import {isSandyPlugin} from '../plugin';
 
 let pluginRecordingState: {
   recording: string;
@@ -69,9 +69,7 @@ async function flipperStartPluginRecording(state: State) {
   // device state, and is used for creating Flipper Exports.
   pluginRecordingState.startState = await serialize(
     state.pluginStates[pluginKey] ||
-      (plugin instanceof SandyPluginDefinition
-        ? {}
-        : plugin.defaultPersistedState),
+      (isSandyPlugin(plugin) ? {} : plugin.defaultPersistedState),
   );
 
   console.log(

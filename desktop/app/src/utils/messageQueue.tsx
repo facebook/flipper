@@ -7,7 +7,11 @@
  * @format
  */
 
-import {PersistedStateReducer, FlipperDevicePlugin} from '../plugin';
+import {
+  PersistedStateReducer,
+  FlipperDevicePlugin,
+  isSandyPlugin,
+} from '../plugin';
 import {State, MiddlewareAPI} from '../reducers/index';
 import {setPluginState} from '../reducers/pluginStates';
 import {flipperRecorderAddEvent} from './pluginStateRecorder';
@@ -200,7 +204,8 @@ export function processMessagesLater(
     | SandyPluginDefinition,
   messages: Message[],
 ) {
-  if (plugin instanceof SandyPluginDefinition) {
+  // @ts-ignore
+  if (isSandyPlugin(plugin)) {
     // TODO:
     throw new Error(
       'Receiving messages is not yet supported for Sandy plugins',

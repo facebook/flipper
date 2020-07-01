@@ -12,6 +12,7 @@ import {
   FlipperDevicePlugin,
   Props as PluginProps,
   PluginDefinition,
+  isSandyPlugin,
 } from './plugin';
 import {Logger} from './fb-interfaces/Logger';
 import BaseDevice from './devices/BaseDevice';
@@ -46,7 +47,6 @@ import {Message} from './reducers/pluginMessageQueue';
 import {Idler} from './utils/Idler';
 import {processMessageQueue} from './utils/messageQueue';
 import {ToggleButton, SmallText} from './ui';
-import {SandyPluginDefinition} from 'flipper-plugin';
 
 const Container = styled(FlexColumn)({
   width: 0,
@@ -193,7 +193,7 @@ class PluginContainer extends PureComponent<Props, State> {
         pluginIsEnabled &&
         activePlugin &&
         // TODO: support sandy: T68683442
-        !(activePlugin instanceof SandyPluginDefinition) &&
+        !isSandyPlugin(activePlugin) &&
         activePlugin.persistedStateReducer &&
         pluginKey &&
         pendingMessages?.length
@@ -332,7 +332,7 @@ class PluginContainer extends PureComponent<Props, State> {
       console.warn(`No selected plugin. Rendering empty!`);
       return null;
     }
-    if (activePlugin instanceof SandyPluginDefinition) {
+    if (isSandyPlugin(activePlugin)) {
       // TODO:
       return null;
     }

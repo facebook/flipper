@@ -7,7 +7,11 @@
  * @format
  */
 
-import {PluginDefinition, ClientPluginDefinition} from './plugin';
+import {
+  PluginDefinition,
+  ClientPluginDefinition,
+  isSandyPlugin,
+} from './plugin';
 import BaseDevice, {OS} from './devices/BaseDevice';
 import {App} from './App';
 import {Logger} from './fb-interfaces/Logger';
@@ -32,7 +36,7 @@ import {sideEffect} from './utils/sideEffect';
 import {emitBytesReceived} from './dispatcher/tracking';
 import {debounce} from 'lodash';
 import {batch} from 'react-redux';
-import {SandyPluginDefinition, SandyPluginInstance} from 'flipper-plugin';
+import {SandyPluginInstance} from 'flipper-plugin';
 
 type Plugins = Array<string>;
 
@@ -313,7 +317,7 @@ export default class Client extends EventEmitter {
   ) {
     // start a plugin on start if it is a SandyPlugin, which is starred, and doesn't have persisted state yet
     if (
-      plugin instanceof SandyPluginDefinition &&
+      isSandyPlugin(plugin) &&
       isEnabled &&
       !this.sandyPluginStates.has(plugin.id)
     ) {
@@ -455,7 +459,7 @@ export default class Client extends EventEmitter {
         // TODO: support Sandy plugins T68683442
         if (
           persistingPlugin &&
-          !(persistingPlugin instanceof SandyPluginDefinition) &&
+          !isSandyPlugin(persistingPlugin) &&
           persistingPlugin.persistedStateReducer
         ) {
           handled = true;

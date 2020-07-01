@@ -28,9 +28,8 @@ import {
   defaultEnabledBackgroundPlugins,
 } from '../utils/pluginUtils';
 import {deconstructClientId} from '../utils/clientUtils';
-import {FlipperDevicePlugin, PluginDefinition} from '../plugin';
+import {FlipperDevicePlugin, PluginDefinition, isSandyPlugin} from '../plugin';
 import {RegisterPluginAction} from './plugins';
-import {SandyPluginDefinition} from 'flipper-plugin';
 
 export type StaticView =
   | null
@@ -438,7 +437,7 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
       plugins.forEach((plugin) => {
         // TODO: T68738317 support sandy device plugin
         if (
-          !(plugin instanceof SandyPluginDefinition) &&
+          !isSandyPlugin(plugin) &&
           plugin.prototype instanceof FlipperDevicePlugin
         ) {
           // smell: devices are mutable

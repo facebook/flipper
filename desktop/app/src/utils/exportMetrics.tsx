@@ -19,8 +19,7 @@ import {
 import {deserializeObject} from './serialization';
 import {deconstructPluginKey} from './clientUtils';
 import {pluginsClassMap} from './pluginUtils';
-import {PluginDefinition} from '../plugin';
-import {SandyPluginDefinition} from 'flipper-plugin';
+import {PluginDefinition, isSandyPlugin} from '../plugin';
 
 export type MetricType = {[metricName: string]: number};
 type MetricPluginType = {[pluginID: string]: MetricType};
@@ -48,7 +47,7 @@ async function exportMetrics(
     const metricsReducer:
       | (<U>(persistedState: U) => Promise<MetricType>)
       | undefined =
-      pluginClass && !(pluginClass instanceof SandyPluginDefinition)
+      pluginClass && !isSandyPlugin(pluginClass)
         ? pluginClass.metricsReducer
         : undefined;
     if (pluginsMap.has(pluginName) && metricsReducer) {

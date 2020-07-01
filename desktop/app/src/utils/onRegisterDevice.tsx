@@ -8,11 +8,15 @@
  */
 
 import {Store} from '../reducers/index';
-import {ClientPluginMap, DevicePluginMap, PluginDefinition} from '../plugin';
+import {
+  ClientPluginMap,
+  DevicePluginMap,
+  PluginDefinition,
+  isSandyPlugin,
+} from '../plugin';
 import {setPluginState} from '../reducers/pluginStates';
 import BaseDevice from '../devices/BaseDevice';
 import {getPersistedState} from '../utils/pluginUtils';
-import {SandyPluginDefinition} from 'flipper-plugin';
 
 export function registerDeviceCallbackOnPlugins(
   store: Store,
@@ -22,7 +26,7 @@ export function registerDeviceCallbackOnPlugins(
 ) {
   const callRegisterDeviceHook = (plugin: PluginDefinition) => {
     // This hook is not registered for Sandy plugins, let's see in the future if it is needed
-    if (!(plugin instanceof SandyPluginDefinition) && plugin.onRegisterDevice) {
+    if (!isSandyPlugin(plugin) && plugin.onRegisterDevice) {
       plugin.onRegisterDevice(
         store,
         device,
