@@ -10,7 +10,7 @@
 import {getPreferredEditorUriScheme} from '../fb-stubs/user';
 import {shell} from 'electron';
 
-const preferredEditorUriScheme: Promise<string> = getPreferredEditorUriScheme();
+let preferredEditorUriScheme: string | undefined = undefined;
 
 export function callVSCode(plugin: string, command: string, params?: string) {
   getVSCodeUrl(plugin, command, params).then((url) => shell.openExternal(url));
@@ -21,7 +21,10 @@ export async function getVSCodeUrl(
   command: string,
   params?: string,
 ): Promise<string> {
-  return `${await preferredEditorUriScheme}://${plugin}/${command}${
+  if (preferredEditorUriScheme === undefined) {
+    preferredEditorUriScheme = await getPreferredEditorUriScheme();
+  }
+  return `${preferredEditorUriScheme}://${plugin}/${command}${
     params == null ? '' : `?${params}`
   }`;
 }
