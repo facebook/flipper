@@ -11,7 +11,11 @@ import {createMockFlipperWithPlugin} from '../../test-utils/createMockFlipperWit
 import {Store, Client} from '../../';
 import {selectPlugin, starPlugin} from '../../reducers/connections';
 import {registerPlugins} from '../../reducers/plugins';
-import {SandyPluginDefinition, SandyPluginInstance} from 'flipper-plugin';
+import {
+  SandyPluginDefinition,
+  SandyPluginInstance,
+  FlipperClient,
+} from 'flipper-plugin';
 
 interface PersistedState {
   count: 1;
@@ -33,8 +37,17 @@ const pluginDetails = {
 let TestPlugin: SandyPluginDefinition;
 
 beforeEach(() => {
+  function plugin(client: FlipperClient) {
+    const destroyStub = jest.fn();
+
+    client.onDestroy(destroyStub);
+
+    return {
+      destroyStub,
+    };
+  }
   TestPlugin = new SandyPluginDefinition(pluginDetails, {
-    plugin: jest.fn().mockImplementation(() => ({})),
+    plugin: jest.fn().mockImplementation(plugin) as typeof plugin,
     Component: jest.fn().mockImplementation(() => null),
   });
 });
@@ -76,14 +89,25 @@ test('it should cleanup a plugin if disabled', async () => {
   const {client, store} = await createMockFlipperWithPlugin(TestPlugin);
 
   expect(TestPlugin.module.plugin).toBeCalledTimes(1);
-  expect(client.sandyPluginStates.get(TestPlugin.id)).toBeInstanceOf(
-    SandyPluginInstance,
-  );
+  const pluginInstance = client.sandyPluginStates.get(TestPlugin.id)!;
+  expect(pluginInstance).toBeInstanceOf(SandyPluginInstance);
+  expect(pluginInstance.instanceApi.destroyStub).toHaveBeenCalledTimes(0);
 
   // unstar
   starTestPlugin(store, client);
-  expect(client.sandyPluginStates.get(TestPlugin.id)).toBeUndefined();
-  // TODO: make sure onDestroy is  called T68683507
+  expect(client.sandyPluginStates.has(TestPlugin.id)).toBeFalsy();
+  expect(pluginInstance.instanceApi.destroyStub).toHaveBeenCalledTimes(1);
+});
+
+test('it should cleanup if client is removed', async () => {
+  const {client} = await createMockFlipperWithPlugin(TestPlugin);
+  const pluginInstance = client.sandyPluginStates.get(TestPlugin.id)!;
+  expect(pluginInstance.instanceApi.destroyStub).toHaveBeenCalledTimes(0);
+
+  // close client
+  client.close();
+  expect(client.sandyPluginStates.has(TestPlugin.id)).toBeFalsy();
+  expect(pluginInstance.instanceApi.destroyStub).toHaveBeenCalledTimes(1);
 });
 
 test('it should not initialize a sandy plugin if not enabled', async () => {
@@ -96,7 +120,11 @@ test('it should not initialize a sandy plugin if not enabled', async () => {
       id: 'Plugin2',
     },
     {
-      plugin: jest.fn().mockImplementation(() => ({})),
+      plugin: jest.fn().mockImplementation((client) => {
+        const destroyStub = jest.fn();
+        client.onDestroy(destroyStub);
+        return {destroyStub};
+      }),
       Component() {
         return null;
       },
@@ -121,10 +149,13 @@ test('it should not initialize a sandy plugin if not enabled', async () => {
   expect(client.sandyPluginStates.get(Plugin2.id)).toBeInstanceOf(
     SandyPluginInstance,
   );
+  const destroyStub = client.sandyPluginStates.get(Plugin2.id)!.instanceApi
+    .destroyStub;
   expect(client.sandyPluginStates.get(TestPlugin.id)).toBe(pluginState1); // not reinitialized
 
   expect(TestPlugin.module.plugin).toBeCalledTimes(1);
   expect(Plugin2.module.plugin).toBeCalledTimes(1);
+  expect(destroyStub).toHaveBeenCalledTimes(0);
 
   // disable plugin again
   store.dispatch(
@@ -135,7 +166,7 @@ test('it should not initialize a sandy plugin if not enabled', async () => {
   );
 
   expect(client.sandyPluginStates.get(Plugin2.id)).toBeUndefined();
-  // TODO: test destroy hook is called T68683507
+  expect(destroyStub).toHaveBeenCalledTimes(1);
 });
 
 // TODO: T68683449 state is persisted if a plugin connects and reconnects

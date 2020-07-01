@@ -8,3 +8,4 @@
  */
 
 export * from './plugin/Plugin';
+export * from './plugin/SandyPluginDefinition';
