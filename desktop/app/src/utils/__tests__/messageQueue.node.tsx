@@ -86,45 +86,44 @@ function selectTestPlugin(store: Store, client: Client) {
 }
 
 test('queue - events are processed immediately if plugin is selected', async () => {
-  await createMockFlipperWithPlugin(
+  const {store, client, sendMessage} = await createMockFlipperWithPlugin(
     TestPlugin,
-    async ({store, client, sendMessage}) => {
-      expect(store.getState().connections.selectedPlugin).toBe('TestPlugin');
-      sendMessage('noop', {});
-      sendMessage('noop', {});
-      sendMessage('inc', {});
-      sendMessage('inc', {delta: 4});
-      sendMessage('noop', {});
-      client.flushMessageBuffer();
-      expect(store.getState().pluginStates).toMatchInlineSnapshot(`
+  );
+  expect(store.getState().connections.selectedPlugin).toBe('TestPlugin');
+  sendMessage('noop', {});
+  sendMessage('noop', {});
+  sendMessage('inc', {});
+  sendMessage('inc', {delta: 4});
+  sendMessage('noop', {});
+  client.flushMessageBuffer();
+  expect(store.getState().pluginStates).toMatchInlineSnapshot(`
           Object {
             "TestApp#Android#MockAndroidDevice#serial#TestPlugin": Object {
               "count": 5,
             },
           }
         `);
-      expect(store.getState().pluginMessageQueue).toMatchInlineSnapshot(
-        `Object {}`,
-      );
-    },
+  expect(store.getState().pluginMessageQueue).toMatchInlineSnapshot(
+    `Object {}`,
   );
 });
 
 test('queue - events are NOT processed immediately if plugin is NOT selected (but enabled)', async () => {
-  await createMockFlipperWithPlugin(
-    TestPlugin,
-    async ({client, device, store, sendMessage}) => {
-      selectDeviceLogs(store);
-      expect(store.getState().connections.selectedPlugin).not.toBe(
-        'TestPlugin',
-      );
+  const {
+    store,
+    client,
+    sendMessage,
+    device,
+  } = await createMockFlipperWithPlugin(TestPlugin);
+  selectDeviceLogs(store);
+  expect(store.getState().connections.selectedPlugin).not.toBe('TestPlugin');
 
-      sendMessage('inc', {});
-      sendMessage('inc', {delta: 2});
-      sendMessage('inc', {delta: 3});
-      expect(store.getState().pluginStates).toMatchInlineSnapshot(`Object {}`);
-      // the first message is already visible cause of the leading debounce
-      expect(store.getState().pluginMessageQueue).toMatchInlineSnapshot(`
+  sendMessage('inc', {});
+  sendMessage('inc', {delta: 2});
+  sendMessage('inc', {delta: 3});
+  expect(store.getState().pluginStates).toMatchInlineSnapshot(`Object {}`);
+  // the first message is already visible cause of the leading debounce
+  expect(store.getState().pluginMessageQueue).toMatchInlineSnapshot(`
         Object {
           "TestApp#Android#MockAndroidDevice#serial#TestPlugin": Array [
             Object {
@@ -135,8 +134,8 @@ test('queue - events are NOT processed immediately if plugin is NOT selected (bu
           ],
         }
       `);
-      client.flushMessageBuffer();
-      expect(store.getState().pluginMessageQueue).toMatchInlineSnapshot(`
+  client.flushMessageBuffer();
+  expect(store.getState().pluginMessageQueue).toMatchInlineSnapshot(`
         Object {
           "TestApp#Android#MockAndroidDevice#serial#TestPlugin": Array [
             Object {
@@ -162,68 +161,67 @@ test('queue - events are NOT processed immediately if plugin is NOT selected (bu
         }
       `);
 
-      // process the message
-      const pluginKey = getPluginKey(client.id, device, TestPlugin.id);
-      await processMessageQueue(TestPlugin, pluginKey, store);
-      expect(store.getState().pluginStates).toEqual({
-        [pluginKey]: {
-          count: 6,
-        },
-      });
-
-      expect(store.getState().pluginMessageQueue).toEqual({
-        [pluginKey]: [],
-      });
-
-      // unstar, but, messages still arrives because selected
-      starTestPlugin(store, client);
-      selectTestPlugin(store, client);
-      sendMessage('inc', {delta: 3});
-      client.flushMessageBuffer();
-      // active, immediately processed
-      expect(store.getState().pluginStates).toEqual({
-        [pluginKey]: {
-          count: 9,
-        },
-      });
-
-      // different plugin, and not starred, message will never arrive
-      selectDeviceLogs(store);
-      sendMessage('inc', {delta: 4});
-      client.flushMessageBuffer();
-      expect(store.getState().pluginMessageQueue).toEqual({
-        [pluginKey]: [],
-      });
-
-      // star again, plugin still not selected, message is queued
-      starTestPlugin(store, client);
-      sendMessage('inc', {delta: 5});
-      client.flushMessageBuffer();
-
-      expect(store.getState().pluginMessageQueue).toEqual({
-        [pluginKey]: [{api: 'TestPlugin', method: 'inc', params: {delta: 5}}],
-      });
+  // process the message
+  const pluginKey = getPluginKey(client.id, device, TestPlugin.id);
+  await processMessageQueue(TestPlugin, pluginKey, store);
+  expect(store.getState().pluginStates).toEqual({
+    [pluginKey]: {
+      count: 6,
     },
-  );
+  });
+
+  expect(store.getState().pluginMessageQueue).toEqual({
+    [pluginKey]: [],
+  });
+
+  // unstar, but, messages still arrives because selected
+  starTestPlugin(store, client);
+  selectTestPlugin(store, client);
+  sendMessage('inc', {delta: 3});
+  client.flushMessageBuffer();
+  // active, immediately processed
+  expect(store.getState().pluginStates).toEqual({
+    [pluginKey]: {
+      count: 9,
+    },
+  });
+
+  // different plugin, and not starred, message will never arrive
+  selectDeviceLogs(store);
+  sendMessage('inc', {delta: 4});
+  client.flushMessageBuffer();
+  expect(store.getState().pluginMessageQueue).toEqual({
+    [pluginKey]: [],
+  });
+
+  // star again, plugin still not selected, message is queued
+  starTestPlugin(store, client);
+  sendMessage('inc', {delta: 5});
+  client.flushMessageBuffer();
+
+  expect(store.getState().pluginMessageQueue).toEqual({
+    [pluginKey]: [{api: 'TestPlugin', method: 'inc', params: {delta: 5}}],
+  });
 });
 
 test('queue - events are queued for plugins that are favorite when app is not selected', async () => {
-  await createMockFlipperWithPlugin(
-    TestPlugin,
-    async ({device, store, sendMessage, createClient}) => {
-      selectDeviceLogs(store);
-      expect(store.getState().connections.selectedPlugin).not.toBe(
-        'TestPlugin',
-      );
+  const {
+    device,
+    store,
+    sendMessage,
+    createClient,
+  } = await createMockFlipperWithPlugin(TestPlugin);
+  selectDeviceLogs(store);
+  expect(store.getState().connections.selectedPlugin).not.toBe('TestPlugin');
 
-      const client2 = createClient(device, 'TestApp2');
-      store.dispatch(selectClient(client2.id));
+  const client2 = createClient(device, 'TestApp2');
+  store.dispatch(selectClient(client2.id));
 
-      // Now we send a message to the second client, it should arrive,
-      // as the plugin was enabled already on the first client as well
-      sendMessage('inc', {delta: 2});
-      expect(store.getState().pluginStates).toMatchInlineSnapshot(`Object {}`);
-      expect(store.getState().pluginMessageQueue).toMatchInlineSnapshot(`
+  // Now we send a message to the second client, it should arrive,
+  // as the plugin was enabled already on the first client as well
+  sendMessage('inc', {delta: 2});
+  expect(store.getState().pluginStates).toMatchInlineSnapshot(`Object {}`);
+  expect(store.getState().pluginMessageQueue).toMatchInlineSnapshot(`
           Object {
             "TestApp#Android#MockAndroidDevice#serial#TestPlugin": Array [
               Object {
@@ -236,29 +234,29 @@ test('queue - events are queued for plugins that are favorite when app is not se
             ],
           }
         `);
-    },
-  );
 });
 
 test('queue - events are queued for plugins that are favorite when app is selected on different device', async () => {
-  await createMockFlipperWithPlugin(
-    TestPlugin,
-    async ({client, store, sendMessage, createDevice, createClient}) => {
-      selectDeviceLogs(store);
-      expect(store.getState().connections.selectedPlugin).not.toBe(
-        'TestPlugin',
-      );
+  const {
+    client,
+    store,
+    sendMessage,
+    createDevice,
+    createClient,
+  } = await createMockFlipperWithPlugin(TestPlugin);
+  selectDeviceLogs(store);
+  expect(store.getState().connections.selectedPlugin).not.toBe('TestPlugin');
 
-      const device2 = createDevice('serial2');
-      const client2 = createClient(device2, client.query.app); // same app id
-      store.dispatch(selectDevice(device2));
-      store.dispatch(selectClient(client2.id));
+  const device2 = createDevice('serial2');
+  const client2 = createClient(device2, client.query.app); // same app id
+  store.dispatch(selectDevice(device2));
+  store.dispatch(selectClient(client2.id));
 
-      // Now we send a message to the second client, it should arrive,
-      // as the plugin was enabled already on the first client as well
-      sendMessage('inc', {delta: 2});
-      expect(store.getState().pluginStates).toMatchInlineSnapshot(`Object {}`);
-      expect(store.getState().pluginMessageQueue).toMatchInlineSnapshot(`
+  // Now we send a message to the second client, it should arrive,
+  // as the plugin was enabled already on the first client as well
+  sendMessage('inc', {delta: 2});
+  expect(store.getState().pluginStates).toMatchInlineSnapshot(`Object {}`);
+  expect(store.getState().pluginMessageQueue).toMatchInlineSnapshot(`
           Object {
             "TestApp#Android#MockAndroidDevice#serial#TestPlugin": Array [
               Object {
@@ -271,180 +269,164 @@ test('queue - events are queued for plugins that are favorite when app is select
             ],
           }
         `);
-    },
-  );
 });
 
 test('queue - events processing will be paused', async () => {
-  await createMockFlipperWithPlugin(
-    TestPlugin,
-    async ({client, device, store, sendMessage}) => {
-      selectDeviceLogs(store);
+  const {
+    client,
+    device,
+    store,
+    sendMessage,
+  } = await createMockFlipperWithPlugin(TestPlugin);
+  selectDeviceLogs(store);
 
-      sendMessage('inc', {});
-      sendMessage('inc', {delta: 3});
-      sendMessage('inc', {delta: 5});
-      client.flushMessageBuffer();
+  sendMessage('inc', {});
+  sendMessage('inc', {delta: 3});
+  sendMessage('inc', {delta: 5});
+  client.flushMessageBuffer();
 
-      // process the message
-      const pluginKey = getPluginKey(client.id, device, TestPlugin.id);
+  // process the message
+  const pluginKey = getPluginKey(client.id, device, TestPlugin.id);
 
-      // controlled idler will signal and and off that idling is needed
-      const idler = new TestIdler();
+  // controlled idler will signal and and off that idling is needed
+  const idler = new TestIdler();
 
-      const p = processMessageQueue(
-        TestPlugin,
-        pluginKey,
-        store,
-        undefined,
-        idler,
-      );
+  const p = processMessageQueue(TestPlugin, pluginKey, store, undefined, idler);
 
-      expect(store.getState().pluginStates).toEqual({
-        [pluginKey]: {
-          count: 4,
-        },
-      });
-
-      expect(store.getState().pluginMessageQueue).toEqual({
-        [pluginKey]: [{api: 'TestPlugin', method: 'inc', params: {delta: 5}}],
-      });
-
-      await idler.next();
-      expect(store.getState().pluginStates).toEqual({
-        [pluginKey]: {
-          count: 9,
-        },
-      });
-
-      expect(store.getState().pluginMessageQueue).toEqual({
-        [pluginKey]: [],
-      });
-
-      // don't idle anymore
-      idler.run();
-      await p;
+  expect(store.getState().pluginStates).toEqual({
+    [pluginKey]: {
+      count: 4,
     },
-  );
+  });
+
+  expect(store.getState().pluginMessageQueue).toEqual({
+    [pluginKey]: [{api: 'TestPlugin', method: 'inc', params: {delta: 5}}],
+  });
+
+  await idler.next();
+  expect(store.getState().pluginStates).toEqual({
+    [pluginKey]: {
+      count: 9,
+    },
+  });
+
+  expect(store.getState().pluginMessageQueue).toEqual({
+    [pluginKey]: [],
+  });
+
+  // don't idle anymore
+  idler.run();
+  await p;
 });
 
 test('queue - messages that arrive during processing will be queued', async () => {
-  await createMockFlipperWithPlugin(
-    TestPlugin,
-    async ({client, device, store, sendMessage}) => {
-      selectDeviceLogs(store);
+  const {
+    client,
+    device,
+    store,
+    sendMessage,
+  } = await createMockFlipperWithPlugin(TestPlugin);
+  selectDeviceLogs(store);
 
-      sendMessage('inc', {});
-      sendMessage('inc', {delta: 2});
-      sendMessage('inc', {delta: 3});
-      client.flushMessageBuffer();
+  sendMessage('inc', {});
+  sendMessage('inc', {delta: 2});
+  sendMessage('inc', {delta: 3});
+  client.flushMessageBuffer();
 
-      // process the message
-      const pluginKey = getPluginKey(client.id, device, TestPlugin.id);
+  // process the message
+  const pluginKey = getPluginKey(client.id, device, TestPlugin.id);
 
-      const idler = new TestIdler();
+  const idler = new TestIdler();
 
-      const p = processMessageQueue(
-        TestPlugin,
-        pluginKey,
-        store,
-        undefined,
-        idler,
-      );
+  const p = processMessageQueue(TestPlugin, pluginKey, store, undefined, idler);
 
-      // first message is consumed
-      expect(store.getState().pluginMessageQueue[pluginKey].length).toBe(1);
-      expect(store.getState().pluginStates[pluginKey].count).toBe(3);
+  // first message is consumed
+  expect(store.getState().pluginMessageQueue[pluginKey].length).toBe(1);
+  expect(store.getState().pluginStates[pluginKey].count).toBe(3);
 
-      // Select the current plugin as active, still, messages should end up in the queue
-      store.dispatch(
-        selectPlugin({
-          selectedPlugin: TestPlugin.id,
-          selectedApp: client.id,
-          deepLinkPayload: null,
-          selectedDevice: device,
-        }),
-      );
-      expect(store.getState().connections.selectedPlugin).toBe('TestPlugin');
-
-      sendMessage('inc', {delta: 4});
-      client.flushMessageBuffer();
-      // should not be processed yet
-      expect(store.getState().pluginMessageQueue[pluginKey].length).toBe(2);
-      expect(store.getState().pluginStates[pluginKey].count).toBe(3);
-
-      await idler.next();
-      expect(store.getState().pluginMessageQueue[pluginKey].length).toBe(0);
-      expect(store.getState().pluginStates[pluginKey].count).toBe(10);
-
-      idler.run();
-      await p;
-    },
+  // Select the current plugin as active, still, messages should end up in the queue
+  store.dispatch(
+    selectPlugin({
+      selectedPlugin: TestPlugin.id,
+      selectedApp: client.id,
+      deepLinkPayload: null,
+      selectedDevice: device,
+    }),
   );
+  expect(store.getState().connections.selectedPlugin).toBe('TestPlugin');
+
+  sendMessage('inc', {delta: 4});
+  client.flushMessageBuffer();
+  // should not be processed yet
+  expect(store.getState().pluginMessageQueue[pluginKey].length).toBe(2);
+  expect(store.getState().pluginStates[pluginKey].count).toBe(3);
+
+  await idler.next();
+  expect(store.getState().pluginMessageQueue[pluginKey].length).toBe(0);
+  expect(store.getState().pluginStates[pluginKey].count).toBe(10);
+
+  idler.run();
+  await p;
 });
 
 test('queue - processing can be cancelled', async () => {
-  await createMockFlipperWithPlugin(
-    TestPlugin,
-    async ({client, device, store, sendMessage}) => {
-      selectDeviceLogs(store);
+  const {
+    client,
+    device,
+    store,
+    sendMessage,
+  } = await createMockFlipperWithPlugin(TestPlugin);
+  selectDeviceLogs(store);
 
-      sendMessage('inc', {});
-      sendMessage('inc', {delta: 2});
-      sendMessage('inc', {delta: 3});
-      sendMessage('inc', {delta: 4});
-      sendMessage('inc', {delta: 5});
-      client.flushMessageBuffer();
+  sendMessage('inc', {});
+  sendMessage('inc', {delta: 2});
+  sendMessage('inc', {delta: 3});
+  sendMessage('inc', {delta: 4});
+  sendMessage('inc', {delta: 5});
+  client.flushMessageBuffer();
 
-      // process the message
-      const pluginKey = getPluginKey(client.id, device, TestPlugin.id);
+  // process the message
+  const pluginKey = getPluginKey(client.id, device, TestPlugin.id);
 
-      const idler = new TestIdler();
+  const idler = new TestIdler();
 
-      const p = processMessageQueue(
-        TestPlugin,
-        pluginKey,
-        store,
-        undefined,
-        idler,
-      );
+  const p = processMessageQueue(TestPlugin, pluginKey, store, undefined, idler);
 
-      // first message is consumed
-      await idler.next();
-      expect(store.getState().pluginMessageQueue[pluginKey].length).toBe(1);
-      expect(store.getState().pluginStates[pluginKey].count).toBe(10);
+  // first message is consumed
+  await idler.next();
+  expect(store.getState().pluginMessageQueue[pluginKey].length).toBe(1);
+  expect(store.getState().pluginStates[pluginKey].count).toBe(10);
 
-      idler.cancel();
+  idler.cancel();
 
-      expect(store.getState().pluginMessageQueue[pluginKey].length).toBe(1);
-      expect(store.getState().pluginStates[pluginKey].count).toBe(10);
-      await p;
-    },
-  );
+  expect(store.getState().pluginMessageQueue[pluginKey].length).toBe(1);
+  expect(store.getState().pluginStates[pluginKey].count).toBe(10);
+  await p;
 });
 
 test('queue - make sure resetting plugin state clears the message queue', async () => {
-  await createMockFlipperWithPlugin(
-    TestPlugin,
-    async ({client, device, store, sendMessage}) => {
-      selectDeviceLogs(store);
+  const {
+    client,
+    device,
+    store,
+    sendMessage,
+  } = await createMockFlipperWithPlugin(TestPlugin);
+  selectDeviceLogs(store);
 
-      sendMessage('inc', {});
-      sendMessage('inc', {delta: 2});
-      client.flushMessageBuffer();
+  sendMessage('inc', {});
+  sendMessage('inc', {delta: 2});
+  client.flushMessageBuffer();
 
-      const pluginKey = getPluginKey(client.id, device, TestPlugin.id);
+  const pluginKey = getPluginKey(client.id, device, TestPlugin.id);
 
-      expect(store.getState().pluginMessageQueue[pluginKey].length).toBe(2);
+  expect(store.getState().pluginMessageQueue[pluginKey].length).toBe(2);
 
-      store.dispatch({
-        type: 'CLEAR_PLUGIN_STATE',
-        payload: {clientId: client.id, devicePlugins: new Set()},
-      });
+  store.dispatch({
+    type: 'CLEAR_PLUGIN_STATE',
+    payload: {clientId: client.id, devicePlugins: new Set()},
+  });
 
-      expect(store.getState().pluginMessageQueue[pluginKey]).toBe(undefined);
-    },
-  );
+  expect(store.getState().pluginMessageQueue[pluginKey]).toBe(undefined);
 });
 
 test('queue will be cleaned up when it exceeds maximum size', () => {
@@ -494,31 +476,34 @@ test('client - incoming messages are buffered and flushed together', async () =>
     static persistedStateReducer = jest.fn();
   }
 
-  await createMockFlipperWithPlugin(
-    TestPlugin,
-    async ({client, store, device, sendMessage}) => {
-      selectDeviceLogs(store);
+  const {
+    client,
+    store,
+    device,
+    sendMessage,
+  } = await createMockFlipperWithPlugin(TestPlugin);
+  selectDeviceLogs(store);
 
-      store.dispatch(registerPlugins([StubDeviceLogs]));
-      sendMessage('inc', {});
-      sendMessage('inc', {delta: 2});
-      sendMessage('inc', {delta: 3});
+  store.dispatch(registerPlugins([StubDeviceLogs]));
+  sendMessage('inc', {});
+  sendMessage('inc', {delta: 2});
+  sendMessage('inc', {delta: 3});
 
-      // send a message to device logs
-      client.onMessage(
-        JSON.stringify({
-          method: 'execute',
-          params: {
-            api: 'DevicePlugin',
-            method: 'log',
-            params: {line: 'suff'},
-          },
-        }),
-      );
+  // send a message to device logs
+  client.onMessage(
+    JSON.stringify({
+      method: 'execute',
+      params: {
+        api: 'DevicePlugin',
+        method: 'log',
+        params: {line: 'suff'},
+      },
+    }),
+  );
 
-      expect(store.getState().pluginStates).toMatchInlineSnapshot(`Object {}`);
-      // the first message is already visible cause of the leading debounce
-      expect(store.getState().pluginMessageQueue).toMatchInlineSnapshot(`
+  expect(store.getState().pluginStates).toMatchInlineSnapshot(`Object {}`);
+  // the first message is already visible cause of the leading debounce
+  expect(store.getState().pluginMessageQueue).toMatchInlineSnapshot(`
         Object {
           "TestApp#Android#MockAndroidDevice#serial#TestPlugin": Array [
             Object {
@@ -529,7 +514,7 @@ test('client - incoming messages are buffered and flushed together', async () =>
           ],
         }
       `);
-      expect(client.messageBuffer).toMatchInlineSnapshot(`
+  expect(client.messageBuffer).toMatchInlineSnapshot(`
         Object {
           "TestApp#Android#MockAndroidDevice#serial#DevicePlugin": Object {
             "messages": Array [
@@ -565,8 +550,8 @@ test('client - incoming messages are buffered and flushed together', async () =>
         }
       `);
 
-      await sleep(500);
-      expect(store.getState().pluginMessageQueue).toMatchInlineSnapshot(`
+  await sleep(500);
+  expect(store.getState().pluginMessageQueue).toMatchInlineSnapshot(`
         Object {
           "TestApp#Android#MockAndroidDevice#serial#DevicePlugin": Array [
             Object {
@@ -600,17 +585,17 @@ test('client - incoming messages are buffered and flushed together', async () =>
           ],
         }
       `);
-      expect(client.messageBuffer).toMatchInlineSnapshot(`Object {}`);
-      expect(
-        StubDeviceLogs.persistedStateReducer.mock.calls,
-      ).toMatchInlineSnapshot(`Array []`);
+  expect(client.messageBuffer).toMatchInlineSnapshot(`Object {}`);
+  expect(StubDeviceLogs.persistedStateReducer.mock.calls).toMatchInlineSnapshot(
+    `Array []`,
+  );
 
-      // tigger processing the queue
-      const pluginKey = getPluginKey(client.id, device, StubDeviceLogs.id);
-      await processMessageQueue(StubDeviceLogs, pluginKey, store);
+  // tigger processing the queue
+  const pluginKey = getPluginKey(client.id, device, StubDeviceLogs.id);
+  await processMessageQueue(StubDeviceLogs, pluginKey, store);
 
-      expect(StubDeviceLogs.persistedStateReducer.mock.calls)
-        .toMatchInlineSnapshot(`
+  expect(StubDeviceLogs.persistedStateReducer.mock.calls)
+    .toMatchInlineSnapshot(`
         Array [
           Array [
             Object {},
@@ -622,7 +607,7 @@ test('client - incoming messages are buffered and flushed together', async () =>
         ]
       `);
 
-      expect(store.getState().pluginMessageQueue).toMatchInlineSnapshot(`
+  expect(store.getState().pluginMessageQueue).toMatchInlineSnapshot(`
         Object {
           "TestApp#Android#MockAndroidDevice#serial#DevicePlugin": Array [],
           "TestApp#Android#MockAndroidDevice#serial#TestPlugin": Array [
@@ -648,6 +633,4 @@ test('client - incoming messages are buffered and flushed together', async () =>
           ],
         }
       `);
-    },
-  );
 });

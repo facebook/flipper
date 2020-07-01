@@ -40,24 +40,25 @@ class TestPlugin extends FlipperPlugin<any, any, any> {
 }
 
 test('can create a Fake flipper', async () => {
-  await createMockFlipperWithPlugin(
-    TestPlugin,
-    async ({client, device, store, sendMessage}) => {
-      expect(client).toBeTruthy();
-      expect(device).toBeTruthy();
-      expect(store).toBeTruthy();
-      expect(sendMessage).toBeTruthy();
-      expect(client.plugins.includes(TestPlugin.id)).toBe(true);
-      expect(store.getState().connections).toMatchSnapshot();
-      expect(store.getState().plugins).toMatchSnapshot();
-      sendMessage('inc', {});
-      expect(store.getState().pluginStates).toMatchInlineSnapshot(`
+  const {
+    client,
+    device,
+    store,
+    sendMessage,
+  } = await createMockFlipperWithPlugin(TestPlugin);
+  expect(client).toBeTruthy();
+  expect(device).toBeTruthy();
+  expect(store).toBeTruthy();
+  expect(sendMessage).toBeTruthy();
+  expect(client.plugins.includes(TestPlugin.id)).toBe(true);
+  expect(store.getState().connections).toMatchSnapshot();
+  expect(store.getState().plugins).toMatchSnapshot();
+  sendMessage('inc', {});
+  expect(store.getState().pluginStates).toMatchInlineSnapshot(`
         Object {
           "TestApp#Android#MockAndroidDevice#serial#TestPlugin": Object {
             "count": 1,
           },
         }
       `);
-    },
-  );
 });

@@ -46,10 +46,10 @@ class TestPlugin extends FlipperPlugin<any, any, any> {
 }
 
 test('Plugin container can render plugin and receive updates', async () => {
-  await renderMockFlipperWithPlugin(
+  const {renderer, sendMessage, act} = await renderMockFlipperWithPlugin(
     TestPlugin,
-    async ({renderer, sendMessage, act}) => {
-      expect(renderer.baseElement).toMatchInlineSnapshot(`
+  );
+  expect(renderer.baseElement).toMatchInlineSnapshot(`
         <body>
           <div>
             <div
@@ -73,11 +73,9 @@ test('Plugin container can render plugin and receive updates', async () => {
         </body>
       `);
 
-      act(() => {
-        sendMessage('inc', {delta: 2});
-      });
+  act(() => {
+    sendMessage('inc', {delta: 2});
+  });
 
-      expect((await renderer.findByTestId('counter')).textContent).toBe('2');
-    },
-  );
+  expect((await renderer.findByTestId('counter')).textContent).toBe('2');
 });

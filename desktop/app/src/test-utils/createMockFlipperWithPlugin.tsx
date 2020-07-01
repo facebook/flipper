@@ -41,7 +41,7 @@ export function createStubLogger(): Logger {
   };
 }
 
-type MockFlipperCallbackArgs = {
+type MockFlipperResult = {
   client: Client;
   device: BaseDevice;
   store: Store;
@@ -53,8 +53,7 @@ type MockFlipperCallbackArgs = {
 
 export async function createMockFlipperWithPlugin(
   pluginClazz: typeof FlipperPlugin,
-  callback: (args: MockFlipperCallbackArgs) => Promise<void>,
-) {
+): Promise<MockFlipperResult> {
   const store = createStore(reducers);
   const logger = createStubLogger();
   store.dispatch(registerPlugins([pluginClazz]));
@@ -134,7 +133,7 @@ export async function createMockFlipperWithPlugin(
     }),
   );
 
-  await callback({
+  return {
     client,
     device: device as any,
     store,
@@ -153,49 +152,46 @@ export async function createMockFlipperWithPlugin(
     createDevice,
     createClient,
     logger,
-  });
+  };
 }
 
 type Renderer = RenderResult<typeof import('testing-library__dom/queries')>;
 
 export async function renderMockFlipperWithPlugin(
   pluginClazz: typeof FlipperPlugin,
-  callback: (
-    args: MockFlipperCallbackArgs & {
-      renderer: Renderer;
-      act: (cb: () => void) => void;
-    },
-  ) => Promise<void>,
-) {
-  return createMockFlipperWithPlugin(pluginClazz, async (args) => {
-    function selectTestPlugin(store: Store, client: Client) {
-      store.dispatch(
-        selectPlugin({
-          selectedPlugin: pluginClazz.id,
-          selectedApp: client.query.app,
-          deepLinkPayload: null,
-          selectedDevice: store.getState().connections.selectedDevice!,
-        }),
-      );
-    }
+): Promise<
+  MockFlipperResult & {
+    renderer: Renderer;
+    act: (cb: () => void) => void;
+  }
+> {
+  const args = await createMockFlipperWithPlugin(pluginClazz);
 
-    selectTestPlugin(args.store, args.client);
-
-    const renderer = render(
-      <Provider store={args.store}>
-        <PluginContainer logger={args.logger} />
-      </Provider>,
+  function selectTestPlugin(store: Store, client: Client) {
+    store.dispatch(
+      selectPlugin({
+        selectedPlugin: pluginClazz.id,
+        selectedApp: client.query.app,
+        deepLinkPayload: null,
+        selectedDevice: store.getState().connections.selectedDevice!,
+      }),
     );
+  }
 
-    await callback({
-      ...args,
-      renderer: renderer as any,
-      act(cb) {
-        testingLibAct(cb);
-        args.client.flushMessageBuffer();
-      },
-    });
+  selectTestPlugin(args.store, args.client);
 
-    renderer.unmount();
-  });
+  const renderer = render(
+    <Provider store={args.store}>
+      <PluginContainer logger={args.logger} />
+    </Provider>,
+  );
+
+  return {
+    ...args,
+    renderer: renderer as any,
+    act(cb) {
+      testingLibAct(cb);
+      args.client.flushMessageBuffer();
+    },
+  };
 }
