@@ -77,6 +77,5 @@ export function Component() {
   // @ts-expect-error
   api.bla;
 
-  // TODO N.b.: state updates won't be visible
   return <h1>Hi from test plugin {count}</h1>;
 }
