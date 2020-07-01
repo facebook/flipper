@@ -1,0 +1,28 @@
+{
+  "name": "flipper-plugin",
+  "version": "0.49.0",
+  "description": "Flipper Desktop plugin SDK and components",
+  "repository": "facebook/flipper",
+  "main": "lib/index.js",
+  "flipperBundlerEntry": "src",
+  "types": "lib/index.d.ts",
+  "license": "MIT",
+  "bugs": "https://github.com/facebook/flipper/issues",
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^3.9.2"
+  },
+  "scripts": {
+    "reset": "rimraf lib *.tsbuildinfo",
+    "build": "tsc -b",
+    "prepack": "yarn reset && yarn build"
+  },
+  "files": [
+    "lib/**/*"
+  ],
+  "homepage": "https://github.com/facebook/flipper",
+  "keywords": [
+    "Flipper"
+  ],
+  "author": "Facebook, Inc"
+}

@@ -18,6 +18,7 @@ module.exports = {
     '^flipper-doctor$': '<rootDir>/doctor/src',
     '^flipper-pkg$': '<rootDir>/pkg/src',
     '^flipper-pkg-lib$': '<rootDir>/pkg-lib/src',
+    '^flipper-plugin$': '<rootDir>/flipper-plugin/src',
   },
   clearMocks: true,
   coverageReporters: ['json-summary', 'lcov', 'html'],

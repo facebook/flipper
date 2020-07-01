@@ -23,6 +23,7 @@
     "deep-equal": "^2.0.1",
     "emotion": "^10.0.23",
     "expand-tilde": "^2.0.2",
+    "flipper-plugin": "0.49.0",
     "flipper-doctor": "0.49.0",
     "flipper-plugin-lib": "0.49.0",
     "fs-extra": "^8.0.1",

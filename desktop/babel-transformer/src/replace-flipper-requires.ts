@@ -17,6 +17,7 @@ import {NodePath} from '@babel/traverse';
 
 const requireReplacements: any = {
   flipper: 'global.Flipper',
+  'flipper-plugin': 'global.FlipperPlugin',
   react: 'global.React',
   'react-dom': 'global.ReactDOM',
   adbkit: 'global.adbkit',

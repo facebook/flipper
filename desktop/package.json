@@ -22,6 +22,7 @@
       "headless-tests",
       "pkg",
       "pkg-lib",
+      "flipper-plugin",
       "static",
       "plugins/*",
       "e2e",

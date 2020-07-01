@@ -199,7 +199,7 @@ async function startWatchChanges(io: socketIo.Server) {
     const watchman = new Watchman(path.resolve(__dirname, '..'));
     await watchman.initialize();
     await Promise.all(
-      ['app', 'pkg', 'doctor'].map((dir) =>
+      ['app', 'pkg', 'doctor', 'flipper-plugin'].map((dir) =>
         watchman.startWatchFiles(
           dir,
           () => {

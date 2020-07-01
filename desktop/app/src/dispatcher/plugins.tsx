@@ -34,6 +34,7 @@ import {PluginDetails} from 'flipper-plugin-lib';
 import {addNotification} from '../reducers/notifications';
 import styled from '@emotion/styled';
 import {tryCatchReportPluginFailures, reportUsage} from '../utils/metrics';
+import * as FlipperPluginSDK from 'flipper-plugin';
 
 // eslint-disable-next-line import/no-unresolved
 import getPluginIndex from '../utils/getDefaultPluginsIndex';
@@ -49,6 +50,7 @@ export default (store: Store, logger: Logger) => {
   globalObject.ReactDOM = ReactDOM;
   globalObject.Flipper = Flipper;
   globalObject.adbkit = adbkit;
+  globalObject.FlipperPlugin = FlipperPluginSDK;
 
   const gatekeepedPlugins: Array<PluginDetails> = [];
   const disabledPlugins: Array<PluginDetails> = [];

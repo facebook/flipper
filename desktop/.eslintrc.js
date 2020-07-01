@@ -14,6 +14,7 @@ const pattern = /^\*\r?\n[\S\s]*Facebook[\S\s]* \* @format\r?\n/;
 
 const builtInModules = [
   'flipper',
+  'flipper-plugin',
   'react',
   'react-dom',
   'electron',
