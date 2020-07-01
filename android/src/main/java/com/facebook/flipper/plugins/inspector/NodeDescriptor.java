@@ -17,13 +17,15 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * A NodeDescriptor is an object which known how to expose an Object of type T to the ew Inspector.
+ * A NodeDescriptor is an object which known how to expose an Object of type T to the new Inspector.
  * This class is the extension point for the Flipper inspector plugin and is how custom classes and
  * data can be exposed to the inspector.
  */
 public abstract class NodeDescriptor<T> {
   @Nullable protected FlipperConnection mConnection;
-  private DescriptorMapping mDescriptorMapping;
+
+  // This field is not initialized until setDescriptorMapping is called
+  @Nullable private DescriptorMapping mDescriptorMapping;
 
   void setConnection(FlipperConnection connection) {
     mConnection = connection;
@@ -39,8 +41,11 @@ public abstract class NodeDescriptor<T> {
    *     object it describes. This is highly encouraged instead of subclassing another descriptor
    *     class.
    */
-  protected final NodeDescriptor<?> descriptorForClass(Class<?> clazz) {
-    return mDescriptorMapping.descriptorForClass(clazz);
+  protected final @Nullable NodeDescriptor<?> descriptorForClass(Class<?> clazz) {
+    if (mDescriptorMapping != null) {
+      return mDescriptorMapping.descriptorForClass(clazz);
+    }
+    return null;
   }
 
   /**

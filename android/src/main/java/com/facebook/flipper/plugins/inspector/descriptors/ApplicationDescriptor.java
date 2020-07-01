@@ -230,7 +230,9 @@ public class ApplicationDescriptor extends NodeDescriptor<ApplicationWrapper> {
     if (childCount > 0) {
       final Object topChild = getChildAt(node, childCount - 1);
       final NodeDescriptor descriptor = descriptorForClass(topChild.getClass());
-      descriptor.setHighlighted(topChild, selected, isAlignmentMode);
+      if (descriptor != null) {
+        descriptor.setHighlighted(topChild, selected, isAlignmentMode);
+      }
     }
   }
 

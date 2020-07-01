@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.TextView;
+import androidx.annotation.Nullable;
 import com.facebook.flipper.core.FlipperConnection;
 import com.facebook.flipper.plugins.inspector.descriptors.ActivityDescriptor;
 import com.facebook.flipper.plugins.inspector.descriptors.ApplicationDescriptor;
@@ -66,7 +67,7 @@ public class DescriptorMapping {
     mMapping.put(clazz, descriptor);
   }
 
-  public NodeDescriptor<?> descriptorForClass(Class<?> clazz) {
+  public @Nullable NodeDescriptor<?> descriptorForClass(Class<?> clazz) {
     while (!mMapping.containsKey(clazz)) {
       clazz = clazz.getSuperclass();
     }
