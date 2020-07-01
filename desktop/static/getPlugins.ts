@@ -17,6 +17,9 @@ import {
 import {PluginDetails, getPluginDetails} from 'flipper-plugin-lib';
 import pmap from 'p-map';
 import pfilter from 'p-filter';
+import {satisfies} from 'semver';
+
+const flipperVersion = require('./package.json').version;
 
 export async function getSourcePlugins(): Promise<PluginDetails[]> {
   return await getPluginsFromFolders(await getPluginSourceFolders());
@@ -89,7 +92,16 @@ async function entryPointForPluginFolder(
     .then((packages) =>
       pmap(packages, async ({manifest, dir}) => {
         try {
-          return await getPluginDetails(dir, manifest);
+          const details = await getPluginDetails(dir, manifest);
+          if (
+            details.flipperSDKVersion &&
+            !satisfies(flipperVersion, details.flipperSDKVersion)
+          ) {
+            console.warn(
+              `⚠️ The current Flipper version (${flipperVersion}) doesn't look compatible with the plugin '${manifest.name}', which expects 'flipper-plugin: ${details.flipperSDKVersion}'`,
+            );
+          }
+          return details;
         } catch (e) {
           console.error(
             `Could not load plugin from "${dir}", because package.json is invalid.`,

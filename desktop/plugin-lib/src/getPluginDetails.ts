@@ -58,6 +58,7 @@ async function getPluginDetailsV1(
     description: packageJson.description,
     category: packageJson.category,
     bugs: packageJson.bugs,
+    flipperSDKVersion: packageJson?.peerDependencies?.['flipper-plugin'],
   };
 }
 
@@ -83,6 +84,7 @@ async function getPluginDetailsV2(
     description: packageJson.description,
     category: packageJson.category,
     bugs: packageJson.bugs,
+    flipperSDKVersion: packageJson?.peerDependencies?.['flipper-plugin'],
   };
 }
 

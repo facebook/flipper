@@ -19,6 +19,7 @@
     "p-filter": "^2.1.0",
     "p-map": "^4.0.0",
     "recursive-readdir": "^2.2.2",
+    "semver": "^7.3.2",
     "uuid": "^8.1.0",
     "ws": "^7.3.0",
     "xdg-basedir": "^4.0.0",

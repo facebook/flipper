@@ -26,4 +26,5 @@ export default interface PluginDetails {
     email?: string;
     url?: string;
   };
+  flipperSDKVersion?: string;
 }
