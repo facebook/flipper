@@ -7,17 +7,22 @@
  * @format
  */
 
+function FBInternalWithOssFallback(elements, fallback) {
+  return process.env.FB_INTERNAL ? elements : fallback;
+}
+
 const repoUrl = 'https://github.com/facebook/flipper';
 
 const siteConfig = {
-  title: 'Flipper',
+  title: FBInternalWithOssFallback('Flipper @FB', 'Flipper'),
   tagline: 'Extensible mobile app debugging',
-  url: 'https://fbflipper.com/',
+  url: FBInternalWithOssFallback('https://flipper.thefacebook.com/', 'https://fbflipper.com/'),
   baseUrl: '/',
   projectName: 'flipper',
+  // TODO: T69061026 enable once sandy docs are complete: external_domain: 'fbflipper.com',
   themeConfig: {
     navbar: {
-      title: 'Flipper',
+      title: FBInternalWithOssFallback('Flipper @FB', 'Flipper'),
       logo: {
         alt: 'Flipper Logo',
         src: 'img/icon.png',
@@ -65,13 +70,13 @@ const siteConfig = {
         title: "I'm a dolphin not a whale!",
       },
     },
-    algolia: {
+    algolia: FBInternalWithOssFallback(undefined, {
       apiKey: '2df980e7ffc95c19552790f7cad32666',
       indexName: 'fbflipper',
       algoliaOptions: {
         hitsPerPage: 5,
       },
-    },
+    }),
     prism: {
       additionalLanguages: ['groovy', 'java', 'kotlin', 'ruby', 'swift'],
     },
@@ -93,7 +98,7 @@ const siteConfig = {
       {
         docs: {
           path: '../docs',
-          sidebarPath: require.resolve('./sidebars.json'),
+          sidebarPath: require.resolve('./sidebars.js'),
           editUrl: 'https://github.com/facebook/flipper/blob/master/website',
         },
         theme: {

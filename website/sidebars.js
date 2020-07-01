@@ -1,4 +1,25 @@
-{
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ */
+
+ /**
+  Adds content only if building internal FB version of documentations
+  e.g. ...FBInternalOnly({'sected-id'})
+*/
+function FBInternalOnly(elements) {
+  return process.env.FB_INTERNAL ? elements : [];
+}
+
+function NotInFBInternal(elements) {
+  return process.env.FB_INTERNAL ? [] : elements;
+}
+
+module.exports = {
   "features": {
     "Features": [
       "features/index",
@@ -68,7 +89,10 @@
       "extending/send-data",
       "extending/error-handling",
       "extending/testing",
-      "extending/debugging"
+      "extending/debugging",
+      ...FBInternalOnly([ // TODO: Remove once sandy is public T69061061
+        "extending/fb/sandy/sandy-plugins"
+      ])
     ],
     "Other Platforms": [
       "extending/new-clients",
