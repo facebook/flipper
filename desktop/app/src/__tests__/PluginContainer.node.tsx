@@ -7,18 +7,17 @@
  * @format
  */
 
-import React, {useContext} from 'react';
+import React from 'react';
 import produce from 'immer';
 import {FlipperPlugin} from '../plugin';
 import {renderMockFlipperWithPlugin} from '../test-utils/createMockFlipperWithPlugin';
 import {
-  SandyPluginContext,
   SandyPluginDefinition,
   FlipperClient,
   TestUtils,
   usePlugin,
 } from 'flipper-plugin';
-import {selectPlugin} from '../reducers/connections';
+import {selectPlugin, starPlugin} from '../reducers/connections';
 
 interface PersistedState {
   count: 1;
@@ -132,6 +131,9 @@ test('PluginContainer can render Sandy plugins', async () => {
     client,
     store,
   } = await renderMockFlipperWithPlugin(definition);
+
+  expect(client.rawSend).toBeCalledWith('init', {plugin: 'TestPlugin'});
+
   expect(renderer.baseElement).toMatchInlineSnapshot(`
         <body>
           <div>
@@ -164,8 +166,6 @@ test('PluginContainer can render Sandy plugins', async () => {
   expect(pluginInstance.connectedStub).toBeCalledTimes(1);
   expect(pluginInstance.disconnectedStub).toBeCalledTimes(0);
 
-  // TODO: check that messages have arrived T68683442
-
   // select non existing plugin
   act(() => {
     store.dispatch(
@@ -175,6 +175,8 @@ test('PluginContainer can render Sandy plugins', async () => {
       }),
     );
   });
+
+  expect(client.rawSend).toBeCalledWith('deinit', {plugin: 'TestPlugin'});
 
   expect(renderer.baseElement).toMatchInlineSnapshot(`
     <body>
@@ -195,4 +197,36 @@ test('PluginContainer can render Sandy plugins', async () => {
   });
   expect(pluginInstance.connectedStub).toBeCalledTimes(2);
   expect(pluginInstance.disconnectedStub).toBeCalledTimes(1);
+  expect(client.rawSend).toBeCalledWith('init', {plugin: 'TestPlugin'});
+
+  // disable
+  act(() => {
+    store.dispatch(
+      starPlugin({
+        plugin: definition,
+        selectedApp: client.query.app,
+      }),
+    );
+  });
+  expect(pluginInstance.connectedStub).toBeCalledTimes(2);
+  expect(pluginInstance.disconnectedStub).toBeCalledTimes(2);
+  expect(client.rawSend).toBeCalledWith('deinit', {plugin: 'TestPlugin'});
+
+  // re-enable
+  act(() => {
+    store.dispatch(
+      starPlugin({
+        plugin: definition,
+        selectedApp: client.query.app,
+      }),
+    );
+  });
+  // note: this is the old pluginInstance, so that one is not reconnected!
+  expect(pluginInstance.connectedStub).toBeCalledTimes(2);
+  expect(pluginInstance.disconnectedStub).toBeCalledTimes(2);
+
+  expect(
+    client.sandyPluginStates.get('TestPlugin')!.instanceApi.connectedStub,
+  ).toBeCalledTimes(1);
+  expect(client.rawSend).toBeCalledWith('init', {plugin: 'TestPlugin'});
 });

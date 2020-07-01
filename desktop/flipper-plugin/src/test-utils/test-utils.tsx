@@ -117,8 +117,12 @@ export function startPlugin<Module extends FlipperPluginModule<any>>(
       // as from testing perspective the difference shouldn't matter
       return false;
     },
-    initPlugin(_pluginId: string) {},
-    deinitPlugin(_pluginId: string) {},
+    initPlugin(_pluginId: string) {
+      pluginInstance.connect();
+    },
+    deinitPlugin(_pluginId: string) {
+      pluginInstance.disconnect();
+    },
     call(
       api: string,
       method: string,
@@ -131,7 +135,7 @@ export function startPlugin<Module extends FlipperPluginModule<any>>(
 
   const pluginInstance = new SandyPluginInstance(fakeFlipper, definition);
   // we start connected
-  pluginInstance.connect();
+  pluginInstance.activate();
 
   const res: StartPluginResult<Module> = {
     module,

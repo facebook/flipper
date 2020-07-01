@@ -137,6 +137,7 @@ export async function createMockFlipperWithPlugin(
           );
       }
     };
+    client.rawSend = jest.fn();
 
     // enable the plugin
     if (

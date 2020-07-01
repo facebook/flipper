@@ -149,7 +149,11 @@ export class SandyPluginInstance {
 
   // the plugin is deselected in the UI
   deactivate() {
-    this.assertNotDestroyed();
+    if (this.destroyed) {
+      // this can happen if the plugin is disabled while active in the UI.
+      // In that case deinit & destroy is already triggered from the STAR_PLUGIN action
+      return;
+    }
     const pluginId = this.definition.id;
     if (!this.realClient.isBackgroundPlugin(pluginId)) {
       this.realClient.deinitPlugin(pluginId);
@@ -174,7 +178,9 @@ export class SandyPluginInstance {
 
   destroy() {
     this.assertNotDestroyed();
-    this.disconnect();
+    if (this.connected) {
+      this.realClient.deinitPlugin(this.definition.id);
+    }
     this.events.emit('destroy');
     this.destroyed = true;
   }

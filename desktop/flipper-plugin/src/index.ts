@@ -13,7 +13,7 @@ export {SandyPluginInstance, FlipperClient} from './plugin/Plugin';
 export {SandyPluginDefinition} from './plugin/SandyPluginDefinition';
 export {SandyPluginRenderer} from './plugin/PluginRenderer';
 export {SandyPluginContext, usePlugin} from './plugin/PluginContext';
-export {createState as createValue, useValue, Atom} from './state/atom';
+export {createState, useValue, Atom} from './state/atom';
 
 // It's not ideal that this exists in flipper-plugin sources directly,
 // but is the least pain for plugin authors.
