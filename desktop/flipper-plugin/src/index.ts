@@ -9,3 +9,5 @@
 
 export * from './plugin/Plugin';
 export * from './plugin/SandyPluginDefinition';
+export * from './plugin/PluginRenderer';
+export * from './plugin/PluginContext';

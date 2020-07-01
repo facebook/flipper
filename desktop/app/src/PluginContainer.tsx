@@ -47,6 +47,7 @@ import {Message} from './reducers/pluginMessageQueue';
 import {Idler} from './utils/Idler';
 import {processMessageQueue} from './utils/messageQueue';
 import {ToggleButton, SmallText} from './ui';
+import {SandyPluginRenderer} from 'flipper-plugin';
 
 const Container = styled(FlexColumn)({
   width: 0,
@@ -332,53 +333,73 @@ class PluginContainer extends PureComponent<Props, State> {
       console.warn(`No selected plugin. Rendering empty!`);
       return null;
     }
+    let pluginElement: null | React.ReactElement<any>;
     if (isSandyPlugin(activePlugin)) {
-      // TODO:
-      return null;
-    }
-    const props: PluginProps<Object> & {
-      key: string;
-      ref: (
-        ref:
-          | FlipperPlugin<any, any, any>
-          | FlipperDevicePlugin<any, any, any>
-          | null
-          | undefined,
-      ) => void;
-    } = {
-      key: pluginKey,
-      logger: this.props.logger,
-      selectedApp,
-      settingsState,
-      persistedState: activePlugin.defaultPersistedState
-        ? {
-            ...activePlugin.defaultPersistedState,
-            ...pluginState,
+      if (target instanceof Client) {
+        // Make sure we throw away the container for different pluginKey!
+        pluginElement = (
+          <SandyPluginRenderer
+            key={pluginKey}
+            plugin={target.sandyPluginStates.get(activePlugin.id)!}
+          />
+        );
+      } else {
+        // TODO: target might be a device as well, support that T68738317
+        pluginElement = null;
+      }
+    } else {
+      const props: PluginProps<Object> & {
+        key: string;
+        ref: (
+          ref:
+            | FlipperPlugin<any, any, any>
+            | FlipperDevicePlugin<any, any, any>
+            | null
+            | undefined,
+        ) => void;
+      } = {
+        key: pluginKey,
+        logger: this.props.logger,
+        selectedApp,
+        persistedState: activePlugin.defaultPersistedState
+          ? {
+              ...activePlugin.defaultPersistedState,
+              ...pluginState,
+            }
+          : pluginState,
+        setStaticView: (payload: StaticView) =>
+          this.props.setStaticView(payload),
+        setPersistedState: (state) => setPluginState({pluginKey, state}),
+        target,
+        deepLinkPayload: this.props.deepLinkPayload,
+        selectPlugin: (pluginID: string, deepLinkPayload: string | null) => {
+          const {target} = this.props;
+          // check if plugin will be available
+          if (
+            target instanceof Client &&
+            target.plugins.some((p) => p === pluginID)
+          ) {
+            this.props.selectPlugin({
+              selectedPlugin: pluginID,
+              deepLinkPayload,
+            });
+            return true;
+          } else if (target instanceof BaseDevice) {
+            this.props.selectPlugin({
+              selectedPlugin: pluginID,
+              deepLinkPayload,
+            });
+            return true;
+          } else {
+            return false;
           }
-        : pluginState,
-      setStaticView: (payload: StaticView) => this.props.setStaticView(payload),
-      setPersistedState: (state) => setPluginState({pluginKey, state}),
-      target,
-      deepLinkPayload: this.props.deepLinkPayload,
-      selectPlugin: (pluginID: string, deepLinkPayload: string | null) => {
-        const {target} = this.props;
-        // check if plugin will be available
-        if (
-          target instanceof Client &&
-          target.plugins.some((p) => p === pluginID)
-        ) {
-          this.props.selectPlugin({selectedPlugin: pluginID, deepLinkPayload});
-          return true;
-        } else if (target instanceof BaseDevice) {
-          this.props.selectPlugin({selectedPlugin: pluginID, deepLinkPayload});
-          return true;
-        } else {
-          return false;
-        }
-      },
-      ref: this.refChanged,
-      isArchivedDevice,
-    };
+        },
+        ref: this.refChanged,
+        isArchivedDevice,
+        settingsState,
+      };
+      pluginElement = React.createElement(activePlugin, props);
+    }
     return (
       <React.Fragment>
         <Container key="plugin">
@@ -386,7 +407,7 @@ class PluginContainer extends PureComponent<Props, State> {
             heading={`Plugin "${
               activePlugin.title || 'Unknown'
             }" encountered an error during render`}>
-            {React.createElement(activePlugin, props)}
+            {pluginElement}
           </ErrorBoundary>
         </Container>
         <SidebarContainer id="detailsSidebar" />

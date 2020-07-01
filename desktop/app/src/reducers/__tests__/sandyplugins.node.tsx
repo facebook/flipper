@@ -7,7 +7,10 @@
  * @format
  */
 
-import {createMockFlipperWithPlugin} from '../../test-utils/createMockFlipperWithPlugin';
+import {
+  createMockFlipperWithPlugin,
+  createMockPluginDetails,
+} from '../../test-utils/createMockFlipperWithPlugin';
 import {Store, Client} from '../../';
 import {selectPlugin, starPlugin} from '../../reducers/connections';
 import {registerPlugins} from '../../reducers/plugins';
@@ -21,18 +24,7 @@ interface PersistedState {
   count: 1;
 }
 
-const pluginDetails = {
-  id: 'TestPlugin',
-  dir: '',
-  name: 'TestPlugin',
-  specVersion: 0,
-  entry: '',
-  isDefault: false,
-  main: '',
-  source: '',
-  title: 'Testing Plugin',
-  version: '',
-} as const;
+const pluginDetails = createMockPluginDetails();
 
 let TestPlugin: SandyPluginDefinition;
 
@@ -114,11 +106,10 @@ test('it should not initialize a sandy plugin if not enabled', async () => {
   const {client, store} = await createMockFlipperWithPlugin(TestPlugin);
 
   const Plugin2 = new SandyPluginDefinition(
-    {
-      ...pluginDetails,
+    createMockPluginDetails({
       name: 'Plugin2',
       id: 'Plugin2',
-    },
+    }),
     {
       plugin: jest.fn().mockImplementation((client) => {
         const destroyStub = jest.fn();
