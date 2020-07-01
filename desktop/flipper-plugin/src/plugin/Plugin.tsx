@@ -64,6 +64,12 @@ export class FlipperPluginInstance {
   }
 }
 
+/**
+ * A sandy plugin definitions represents a loaded plugin definition, storing two things:
+ * the loaded JS module, and the meta data (typically coming from package.json).
+ *
+ * Also delegates some of the standard plugin functionality to have a similar public static api as FlipperPlugin
+ */
 export class SandyPluginDefinition {
   id: string;
   module: FlipperPluginModule;
@@ -86,12 +92,12 @@ export class SandyPluginDefinition {
     this.details = details;
     if (!module.plugin || typeof module.plugin !== 'function') {
       throw new Error(
-        `Sandy plugin ${this.id} doesn't export a named function called 'plugin'`,
+        `Flipper plugin '${this.id}' should export named function called 'plugin'`,
       );
     }
     if (!module.Component || typeof module.Component !== 'function') {
       throw new Error(
-        `Sandy plugin ${this.id} doesn't export a named function called 'Component'`,
+        `Flipper plugin '${this.id}' should export named function called 'Component'`,
       );
     }
     this.module = module;

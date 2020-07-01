@@ -113,7 +113,6 @@ export abstract class FlipperBasePlugin<
   static category: string | null = null;
   static id: string = '';
   static packageName: string = '';
-  static flipperSDKVersion: string | undefined = undefined;
   static version: string = '';
   static icon: string | null = null;
   static gatekeeper: string | null = null;

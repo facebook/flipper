@@ -29,6 +29,7 @@ import configureStore from 'redux-mock-store';
 import {TEST_PASSING_GK, TEST_FAILING_GK} from '../../fb-stubs/GK';
 import TestPlugin from './TestPlugin';
 import {resetConfigForTesting} from '../../utils/processConfig';
+import {SandyPluginDefinition} from 'flipper-plugin';
 
 const mockStore = configureStore<State, {}>([])(
   reducers(undefined, {type: 'INIT'}),
@@ -238,4 +239,51 @@ test('bundled versions are used when env var FLIPPER_DISABLE_PLUGIN_AUTO_UPDATE 
   } finally {
     delete process.env.FLIPPER_DISABLE_PLUGIN_AUTO_UPDATE;
   }
+});
+
+test('requirePlugin loads valid Sandy plugin', () => {
+  const name = 'pluginID';
+  const requireFn = requirePlugin([], {}, require);
+  const plugin = requireFn({
+    ...samplePluginDetails,
+    name,
+    entry: path.join(__dirname, 'SandyTestPlugin'),
+    version: '1.0.0',
+    flipperSDKVersion: '0.0.0',
+  }) as SandyPluginDefinition;
+  expect(plugin).not.toBeNull();
+  // @ts-ignore
+  expect(plugin).toBeInstanceOf(SandyPluginDefinition);
+  expect(plugin.id).toBe('Sample');
+  expect(plugin.details).toMatchObject({
+    flipperSDKVersion: '0.0.0',
+    id: 'Sample',
+    isDefault: false,
+    main: 'dist/bundle.js',
+    name: 'pluginID',
+    source: 'src/index.js',
+    specVersion: 2,
+    title: 'Sample',
+    version: '1.0.0',
+  });
+  expect(typeof plugin.module.Component).toBe('function');
+  expect(plugin.module.Component.displayName).toBe('FlipperPlugin(Sample)');
+  expect(typeof plugin.module.plugin).toBe('function');
+});
+
+test('requirePlugin errors on invalid Sandy plugin', () => {
+  const name = 'pluginID';
+  const failedPlugins: any[] = [];
+  const requireFn = requirePlugin(failedPlugins, {}, require);
+  requireFn({
+    ...samplePluginDetails,
+    name,
+    // Intentionally the wrong file:
+    entry: path.join(__dirname, 'TestPlugin'),
+    version: '1.0.0',
+    flipperSDKVersion: '0.0.0',
+  });
+  expect(failedPlugins[0][1]).toMatchInlineSnapshot(
+    `"Flipper plugin 'Sample' should export named function called 'plugin'"`,
+  );
 });

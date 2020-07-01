@@ -38,6 +38,7 @@ import * as FlipperPluginSDK from 'flipper-plugin';
 
 // eslint-disable-next-line import/no-unresolved
 import getPluginIndex from '../utils/getDefaultPluginsIndex';
+import {SandyPluginDefinition} from 'flipper-plugin';
 
 const Paragraph = styled.p({
   marginBottom: '0.1em',
@@ -271,23 +272,30 @@ const requirePluginInternal = (
   let plugin = pluginDetails.isDefault
     ? defaultPluginsIndex[pluginDetails.name]
     : reqFn(pluginDetails.entry);
-  if (plugin.default) {
-    plugin = plugin.default;
-  }
-  if (!(plugin.prototype instanceof FlipperBasePlugin)) {
-    throw new Error(`Plugin ${plugin.name} is not a FlipperBasePlugin`);
-  }
 
-  plugin.id = plugin.id || pluginDetails.id;
-  plugin.packageName = pluginDetails.name;
-  plugin.flipperSDKVersion = pluginDetails.flipperSDKVersion;
-  plugin.details = pluginDetails;
-
-  // set values from package.json as static variables on class
-  Object.keys(pluginDetails).forEach((key) => {
-    if (key !== 'name' && key !== 'id') {
-      plugin[key] = plugin[key] || pluginDetails[key as keyof PluginDetails];
+  if (pluginDetails.flipperSDKVersion) {
+    // Sandy plugin
+    // TODO: suppor device Plugins T68738317
+    return new SandyPluginDefinition(pluginDetails, plugin);
+  } else {
+    // classic plugin
+    if (plugin.default) {
+      plugin = plugin.default;
     }
-  });
+    if (!(plugin.prototype instanceof FlipperBasePlugin)) {
+      throw new Error(`Plugin ${plugin.name} is not a FlipperBasePlugin`);
+    }
+
+    plugin.id = plugin.id || pluginDetails.id;
+    plugin.packageName = pluginDetails.name;
+    plugin.details = pluginDetails;
+
+    // set values from package.json as static variables on class
+    Object.keys(pluginDetails).forEach((key) => {
+      if (key !== 'name' && key !== 'id') {
+        plugin[key] = plugin[key] || pluginDetails[key as keyof PluginDetails];
+      }
+    });
+  }
   return plugin;
 };
