@@ -13,9 +13,11 @@ import {FlipperPluginFactory, FlipperPluginComponent} from './Plugin';
 /**
  * FlipperPluginModule describe the exports that are provided by a typical Flipper Desktop plugin
  */
-export type FlipperPluginModule = {
+export type FlipperPluginModule<
+  Factory extends FlipperPluginFactory<any, any>
+> = {
   /** the factory function that initializes a plugin instance */
-  plugin: FlipperPluginFactory<any, any>;
+  plugin: Factory;
   /** the component type that can render this plugin */
   Component: FlipperPluginComponent;
   // TODO: support device plugins T68738317
@@ -23,14 +25,14 @@ export type FlipperPluginModule = {
 };
 
 /**
- * A sandy plugin definitions represents a loaded plugin definition, storing two things:
+ * A sandy plugin definition represents a loaded plugin definition, storing two things:
  * the loaded JS module, and the meta data (typically coming from package.json).
  *
  * Also delegates some of the standard plugin functionality to have a similar public static api as FlipperPlugin
  */
 export class SandyPluginDefinition {
   id: string;
-  module: FlipperPluginModule;
+  module: FlipperPluginModule<any>;
   details: PluginDetails;
 
   // TODO: Implement T68683449
@@ -45,7 +47,7 @@ export class SandyPluginDefinition {
       ) => Promise<any /* TODO: StaticPersistedState | undefined */>)
     | undefined = undefined;
 
-  constructor(details: PluginDetails, module: FlipperPluginModule) {
+  constructor(details: PluginDetails, module: FlipperPluginModule<any>) {
     this.id = details.id;
     this.details = details;
     if (!module.plugin || typeof module.plugin !== 'function') {

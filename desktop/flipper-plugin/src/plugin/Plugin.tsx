@@ -45,7 +45,7 @@ export interface FlipperClient<
  * Internal API exposed by Flipper, and wrapped by FlipperPluginInstance to be passed to the
  * Plugin Factory. For internal purposes only
  */
-interface RealFlipperClient {
+export interface RealFlipperClient {
   isBackgroundPlugin(pluginId: string): boolean;
   initPlugin(pluginId: string): void;
   deinitPlugin(pluginId: string): void;
@@ -69,6 +69,7 @@ export class SandyPluginInstance {
   instanceApi: any;
 
   connected = false;
+  destroyed = false;
   events = new EventEmitter();
 
   constructor(
@@ -93,6 +94,7 @@ export class SandyPluginInstance {
 
   // the plugin is selected in the UI
   activate() {
+    this.assertNotDestroyed();
     const pluginId = this.definition.id;
     if (!this.realClient.isBackgroundPlugin(pluginId)) {
       this.realClient.initPlugin(pluginId); // will call connect() if needed
@@ -101,6 +103,7 @@ export class SandyPluginInstance {
 
   // the plugin is deselected in the UI
   deactivate() {
+    this.assertNotDestroyed();
     const pluginId = this.definition.id;
     if (!this.realClient.isBackgroundPlugin(pluginId)) {
       this.realClient.deinitPlugin(pluginId);
@@ -108,6 +111,7 @@ export class SandyPluginInstance {
   }
 
   connect() {
+    this.assertNotDestroyed();
     if (!this.connected) {
       this.connected = true;
       this.events.emit('connect');
@@ -115,6 +119,7 @@ export class SandyPluginInstance {
   }
 
   disconnect() {
+    this.assertNotDestroyed();
     if (this.connected) {
       this.connected = false;
       this.events.emit('disconnect');
@@ -122,11 +127,20 @@ export class SandyPluginInstance {
   }
 
   destroy() {
+    this.assertNotDestroyed();
     this.disconnect();
     this.events.emit('destroy');
+    this.destroyed = true;
   }
 
   toJSON() {
+    this.assertNotDestroyed();
     // TODO: T68683449
+  }
+
+  private assertNotDestroyed() {
+    if (this.destroyed) {
+      throw new Error('Plugin has been destroyed already');
+    }
   }
 }

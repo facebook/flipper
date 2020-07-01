@@ -274,7 +274,7 @@ export default class Client extends EventEmitter {
   async init() {
     this.setMatchingDevice();
     await this.loadPlugins();
-    // this starts all sandy enabled plugin
+    // this starts all sandy enabled plugins
     this.plugins.forEach((pluginId) =>
       this.startPluginIfNeeded(this.getPlugin(pluginId)),
     );

@@ -243,7 +243,10 @@ test('requirePlugin loads valid Sandy plugin', () => {
   const plugin = requireFn({
     ...samplePluginDetails,
     name,
-    entry: path.join(__dirname, 'SandyTestPlugin'),
+    entry: path.join(
+      __dirname,
+      '../../../../flipper-plugin/src/__tests__/TestPlugin',
+    ),
     version: '1.0.0',
     flipperSDKVersion: '0.0.0',
   }) as SandyPluginDefinition;

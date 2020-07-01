@@ -34,7 +34,6 @@ import {registerPlugins} from '../reducers/plugins';
 import PluginContainer from '../PluginContainer';
 import {getPluginKey} from '../utils/pluginUtils';
 import {getInstance} from '../fb-stubs/Logger';
-import {PluginDetails} from 'flipper-plugin-lib';
 
 type MockFlipperResult = {
   client: Client;
@@ -233,23 +232,5 @@ export async function renderMockFlipperWithPlugin(
       testingLibAct(cb);
       args.client.flushMessageBuffer();
     },
-  };
-}
-
-export function createMockPluginDetails(
-  details?: Partial<PluginDetails>,
-): PluginDetails {
-  return {
-    id: 'TestPlugin',
-    dir: '',
-    name: 'TestPlugin',
-    specVersion: 0,
-    entry: '',
-    isDefault: false,
-    main: '',
-    source: '',
-    title: 'Testing Plugin',
-    version: '',
-    ...details,
   };
 }

@@ -8,7 +8,9 @@
   "types": "lib/index.d.ts",
   "license": "MIT",
   "bugs": "https://github.com/facebook/flipper/issues",
-  "dependencies": {},
+  "dependencies": {
+    "@testing-library/react": "^10.4.3"
+  },
   "devDependencies": {
     "typescript": "^3.9.2"
   },

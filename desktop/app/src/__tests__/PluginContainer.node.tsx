@@ -10,14 +10,12 @@
 import React, {useContext} from 'react';
 import produce from 'immer';
 import {FlipperPlugin} from '../plugin';
-import {
-  renderMockFlipperWithPlugin,
-  createMockPluginDetails,
-} from '../test-utils/createMockFlipperWithPlugin';
+import {renderMockFlipperWithPlugin} from '../test-utils/createMockFlipperWithPlugin';
 import {
   SandyPluginContext,
   SandyPluginDefinition,
   FlipperClient,
+  TestUtils,
 } from 'flipper-plugin';
 import {selectPlugin} from '../reducers/connections';
 
@@ -107,10 +105,13 @@ test('PluginContainer can render Sandy plugins', async () => {
     return {connectedStub, disconnectedStub};
   };
 
-  const definition = new SandyPluginDefinition(createMockPluginDetails(), {
-    plugin,
-    Component: MySandyPlugin,
-  });
+  const definition = new SandyPluginDefinition(
+    TestUtils.createMockPluginDetails(),
+    {
+      plugin,
+      Component: MySandyPlugin,
+    },
+  );
   // any cast because this plugin is not enriched with the meta data that the plugin loader
   // normally adds. Our further sandy plugin test infra won't need this, but
   // for this test we do need to act a s a loaded plugin, to make sure PluginContainer itself can handle it

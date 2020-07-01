@@ -7,10 +7,7 @@
  * @format
  */
 
-import {
-  createMockFlipperWithPlugin,
-  createMockPluginDetails,
-} from '../../test-utils/createMockFlipperWithPlugin';
+import {createMockFlipperWithPlugin} from '../../test-utils/createMockFlipperWithPlugin';
 import {Store, Client} from '../../';
 import {selectPlugin, starPlugin} from '../../reducers/connections';
 import {registerPlugins} from '../../reducers/plugins';
@@ -18,13 +15,14 @@ import {
   SandyPluginDefinition,
   SandyPluginInstance,
   FlipperClient,
+  TestUtils,
 } from 'flipper-plugin';
 
 interface PersistedState {
   count: 1;
 }
 
-const pluginDetails = createMockPluginDetails();
+const pluginDetails = TestUtils.createMockPluginDetails();
 
 let initialized = false;
 
@@ -133,7 +131,7 @@ test('it should not initialize a sandy plugin if not enabled', async () => {
   const {client, store} = await createMockFlipperWithPlugin(TestPlugin);
 
   const Plugin2 = new SandyPluginDefinition(
-    createMockPluginDetails({
+    TestUtils.createMockPluginDetails({
       name: 'Plugin2',
       id: 'Plugin2',
     }),
