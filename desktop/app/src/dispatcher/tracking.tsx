@@ -17,7 +17,7 @@ import Client from '../Client';
 import {
   getPluginBackgroundStats,
   resetPluginBackgroundStatsDelta,
-} from '../utils/messageQueue';
+} from '../utils/pluginStats';
 import {
   clearTimeline,
   TrackingEvent,
