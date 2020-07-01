@@ -11,6 +11,7 @@ Object {
         "device": "MockAndroidDevice",
         "device_id": "serial",
         "os": "Android",
+        "sdk_version": 4,
       },
     },
   ],

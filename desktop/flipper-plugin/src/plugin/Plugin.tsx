@@ -24,13 +24,32 @@ export interface FlipperClient<
    * the onDestroy event is fired whenever a client is unloaded from Flipper, or a plugin is disabled.
    */
   onDestroy(cb: () => void): void;
+
+  /**
+   * the onConnect event is fired whenever the plugin is connected to it's counter part on the device.
+   * For most plugins this event is fired if the user selects the plugin,
+   * for background plugins when the initial connection is made.
+   */
+  onConnect(cb: () => void): void;
+
+  /**
+   * The counterpart of the `onConnect` handler.
+   * Will also be fired before the plugin is cleaned up if the connection is currently active:
+   * - when the client disconnects
+   * - when the plugin is disabled
+   */
+  onDisconnect(cb: () => void): void;
 }
 
 /**
  * Internal API exposed by Flipper, and wrapped by FlipperPluginInstance to be passed to the
  * Plugin Factory. For internal purposes only
  */
-interface RealFlipperClient {}
+interface RealFlipperClient {
+  isBackgroundPlugin(pluginId: string): boolean;
+  initPlugin(pluginId: string): void;
+  deinitPlugin(pluginId: string): void;
+}
 
 export type FlipperPluginFactory<
   Events extends EventsContract,
@@ -49,6 +68,7 @@ export class SandyPluginInstance {
   /** the plugin instance api as used inside components and such  */
   instanceApi: any;
 
+  connected = false;
   events = new EventEmitter();
 
   constructor(
@@ -61,19 +81,48 @@ export class SandyPluginInstance {
       onDestroy: (cb) => {
         this.events.on('destroy', cb);
       },
+      onConnect: (cb) => {
+        this.events.on('connect', cb);
+      },
+      onDisconnect: (cb) => {
+        this.events.on('disconnect', cb);
+      },
     };
     this.instanceApi = definition.module.plugin(this.client);
   }
 
+  // the plugin is selected in the UI
   activate() {
-    // TODO: T68683507
+    const pluginId = this.definition.id;
+    if (!this.realClient.isBackgroundPlugin(pluginId)) {
+      this.realClient.initPlugin(pluginId); // will call connect() if needed
+    }
   }
 
+  // the plugin is deselected in the UI
   deactivate() {
-    // TODO: T68683507
+    const pluginId = this.definition.id;
+    if (!this.realClient.isBackgroundPlugin(pluginId)) {
+      this.realClient.deinitPlugin(pluginId);
+    }
+  }
+
+  connect() {
+    if (!this.connected) {
+      this.connected = true;
+      this.events.emit('connect');
+    }
+  }
+
+  disconnect() {
+    if (this.connected) {
+      this.connected = false;
+      this.events.emit('disconnect');
+    }
   }
 
   destroy() {
+    this.disconnect();
     this.events.emit('destroy');
   }
 

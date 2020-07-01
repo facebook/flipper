@@ -47,8 +47,17 @@ type MockFlipperResult = {
   logger: Logger;
 };
 
+type MockOptions = Partial<{
+  /**
+   * can be used to intercept outgoing calls. If it returns undefined
+   * the base implementation will be used
+   */
+  onSend(method: string, params?: object): object | undefined;
+}>;
+
 export async function createMockFlipperWithPlugin(
   pluginClazz: PluginDefinition,
+  options?: MockOptions,
 ): Promise<MockFlipperResult> {
   const store = createStore(reducers);
   const logger = getInstance();
@@ -77,6 +86,7 @@ export async function createMockFlipperWithPlugin(
       os: 'Android',
       device: device.title,
       device_id: device.serial,
+      sdk_version: 4,
     };
     const id = buildClientId({
       app: query.app,
@@ -101,8 +111,11 @@ export async function createMockFlipperWithPlugin(
         return device;
       },
     } as any;
-    client.rawCall = async (method, _fromPlugin, _params): Promise<any> => {
-      // TODO: could use an interceptor here
+    client.rawCall = async (method, _fromPlugin, params): Promise<any> => {
+      const intercepted = options?.onSend?.(method, params);
+      if (intercepted !== undefined) {
+        return intercepted;
+      }
       switch (method) {
         case 'getPlugins':
           // assuming this plugin supports all plugins for now
@@ -112,8 +125,10 @@ export async function createMockFlipperWithPlugin(
               ...store.getState().plugins.devicePlugins.keys(),
             ],
           };
+        case 'getBackgroundPlugins':
+          return {plugins: []};
         default:
-          throw new Error(`Test client doesn't supoprt rawCall to ${method}`);
+          throw new Error(`Test client doesn't support rawCall to ${method}`);
       }
     };
 

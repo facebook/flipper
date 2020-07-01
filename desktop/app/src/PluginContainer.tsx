@@ -142,6 +142,7 @@ class PluginContainer extends PureComponent<Props, State> {
       | null
       | undefined,
   ) => {
+    // N.B. for Sandy plugins this lifecycle is managed by PluginRenderer
     if (this.plugin) {
       this.plugin._teardown();
       this.plugin = null;

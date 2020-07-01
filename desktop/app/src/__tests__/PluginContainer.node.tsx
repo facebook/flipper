@@ -14,7 +14,12 @@ import {
   renderMockFlipperWithPlugin,
   createMockPluginDetails,
 } from '../test-utils/createMockFlipperWithPlugin';
-import {SandyPluginContext, SandyPluginDefinition} from 'flipper-plugin';
+import {
+  SandyPluginContext,
+  SandyPluginDefinition,
+  FlipperClient,
+} from 'flipper-plugin';
+import {selectPlugin} from '../reducers/connections';
 
 interface PersistedState {
   count: 1;
@@ -94,7 +99,13 @@ test('PluginContainer can render Sandy plugins', async () => {
     return <div>Hello from Sandy</div>;
   }
 
-  const plugin = () => ({});
+  const plugin = (client: FlipperClient) => {
+    const connectedStub = jest.fn();
+    const disconnectedStub = jest.fn();
+    client.onConnect(connectedStub);
+    client.onDisconnect(disconnectedStub);
+    return {connectedStub, disconnectedStub};
+  };
 
   const definition = new SandyPluginDefinition(createMockPluginDetails(), {
     plugin,
@@ -103,9 +114,13 @@ test('PluginContainer can render Sandy plugins', async () => {
   // any cast because this plugin is not enriched with the meta data that the plugin loader
   // normally adds. Our further sandy plugin test infra won't need this, but
   // for this test we do need to act a s a loaded plugin, to make sure PluginContainer itself can handle it
-  const {renderer, act, sendMessage} = await renderMockFlipperWithPlugin(
-    definition,
-  );
+  const {
+    renderer,
+    act,
+    sendMessage,
+    client,
+    store,
+  } = await renderMockFlipperWithPlugin(definition);
   expect(renderer.baseElement).toMatchInlineSnapshot(`
         <body>
           <div>
@@ -129,9 +144,44 @@ test('PluginContainer can render Sandy plugins', async () => {
   act(() => {
     sendMessage('inc', {delta: 2});
   });
+  expect(renders).toBe(1);
 
-  // TODO: check that onConnect is called T68683507
+  // make sure the plugin gets connected
+  const pluginInstance: ReturnType<typeof plugin> = client.sandyPluginStates.get(
+    definition.id,
+  )!.instanceApi;
+  expect(pluginInstance.connectedStub).toBeCalledTimes(1);
+  expect(pluginInstance.disconnectedStub).toBeCalledTimes(0);
+
   // TODO: check that messages have arrived T68683442
 
-  expect(renders).toBe(1);
+  // select non existing plugin
+  act(() => {
+    store.dispatch(
+      selectPlugin({
+        selectedPlugin: 'Logs',
+        deepLinkPayload: null,
+      }),
+    );
+  });
+
+  expect(renderer.baseElement).toMatchInlineSnapshot(`
+    <body>
+      <div />
+    </body>
+  `);
+  expect(pluginInstance.connectedStub).toBeCalledTimes(1);
+  expect(pluginInstance.disconnectedStub).toBeCalledTimes(1);
+
+  // go back
+  act(() => {
+    store.dispatch(
+      selectPlugin({
+        selectedPlugin: definition.id,
+        deepLinkPayload: null,
+      }),
+    );
+  });
+  expect(pluginInstance.connectedStub).toBeCalledTimes(2);
+  expect(pluginInstance.disconnectedStub).toBeCalledTimes(1);
 });

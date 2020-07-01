@@ -26,23 +26,35 @@ interface PersistedState {
 
 const pluginDetails = createMockPluginDetails();
 
-let TestPlugin: SandyPluginDefinition;
+let initialized = false;
 
 beforeEach(() => {
-  function plugin(client: FlipperClient) {
-    const destroyStub = jest.fn();
-
-    client.onDestroy(destroyStub);
-
-    return {
-      destroyStub,
-    };
-  }
-  TestPlugin = new SandyPluginDefinition(pluginDetails, {
-    plugin: jest.fn().mockImplementation(plugin) as typeof plugin,
-    Component: jest.fn().mockImplementation(() => null),
-  });
+  initialized = false;
 });
+
+function plugin(client: FlipperClient) {
+  const connectStub = jest.fn();
+  const disconnectStub = jest.fn();
+  const destroyStub = jest.fn();
+
+  client.onConnect(connectStub);
+  client.onDisconnect(disconnectStub);
+  client.onDestroy(destroyStub);
+
+  initialized = true;
+
+  return {
+    connectStub,
+    disconnectStub,
+    destroyStub,
+  };
+}
+const TestPlugin = new SandyPluginDefinition(pluginDetails, {
+  plugin: jest.fn().mockImplementation(plugin) as typeof plugin,
+  Component: jest.fn().mockImplementation(() => null),
+});
+
+type PluginApi = ReturnType<typeof plugin>;
 
 function starTestPlugin(store: Store, client: Client) {
   store.dispatch(
@@ -68,27 +80,40 @@ test('it should initialize starred sandy plugins', async () => {
   const {client, store} = await createMockFlipperWithPlugin(TestPlugin);
 
   // already started, so initialized immediately
-  expect(TestPlugin.module.plugin).toBeCalledTimes(1);
+  expect(initialized).toBe(true);
   expect(client.sandyPluginStates.get(TestPlugin.id)).toBeInstanceOf(
     SandyPluginInstance,
   );
+  const instanceApi: PluginApi = client.sandyPluginStates.get(TestPlugin.id)!
+    .instanceApi;
 
+  expect(instanceApi.connectStub).toBeCalledTimes(0);
   selectTestPlugin(store, client);
-  // TODO: make sure lifecycle 'activated' or something is triggered T68683507
+
+  // without rendering, non-bg plugins won't connect automatically,
+  // so this isn't the best test, but PluginContainer tests do test that part of the lifecycle
+  client.initPlugin(TestPlugin.id);
+  expect(instanceApi.connectStub).toBeCalledTimes(1);
+  client.deinitPlugin(TestPlugin.id);
+  expect(instanceApi.disconnectStub).toBeCalledTimes(1);
+  expect(instanceApi.destroyStub).toBeCalledTimes(0);
 });
 
 test('it should cleanup a plugin if disabled', async () => {
   const {client, store} = await createMockFlipperWithPlugin(TestPlugin);
 
   expect(TestPlugin.module.plugin).toBeCalledTimes(1);
-  const pluginInstance = client.sandyPluginStates.get(TestPlugin.id)!;
-  expect(pluginInstance).toBeInstanceOf(SandyPluginInstance);
-  expect(pluginInstance.instanceApi.destroyStub).toHaveBeenCalledTimes(0);
+  const pluginInstance: PluginApi = client.sandyPluginStates.get(TestPlugin.id)!
+    .instanceApi;
+  expect(pluginInstance.destroyStub).toHaveBeenCalledTimes(0);
+  client.initPlugin(TestPlugin.id);
+  expect(pluginInstance.connectStub).toHaveBeenCalledTimes(1);
 
   // unstar
   starTestPlugin(store, client);
   expect(client.sandyPluginStates.has(TestPlugin.id)).toBeFalsy();
-  expect(pluginInstance.instanceApi.destroyStub).toHaveBeenCalledTimes(1);
+  expect(pluginInstance.disconnectStub).toHaveBeenCalledTimes(1);
+  expect(pluginInstance.destroyStub).toHaveBeenCalledTimes(1);
 });
 
 test('it should cleanup if client is removed', async () => {
@@ -99,7 +124,9 @@ test('it should cleanup if client is removed', async () => {
   // close client
   client.close();
   expect(client.sandyPluginStates.has(TestPlugin.id)).toBeFalsy();
-  expect(pluginInstance.instanceApi.destroyStub).toHaveBeenCalledTimes(1);
+  expect(
+    (pluginInstance.instanceApi as PluginApi).destroyStub,
+  ).toHaveBeenCalledTimes(1);
 });
 
 test('it should not initialize a sandy plugin if not enabled', async () => {
@@ -111,11 +138,7 @@ test('it should not initialize a sandy plugin if not enabled', async () => {
       id: 'Plugin2',
     }),
     {
-      plugin: jest.fn().mockImplementation((client) => {
-        const destroyStub = jest.fn();
-        client.onDestroy(destroyStub);
-        return {destroyStub};
-      }),
+      plugin: jest.fn().mockImplementation(plugin),
       Component() {
         return null;
       },
@@ -140,13 +163,13 @@ test('it should not initialize a sandy plugin if not enabled', async () => {
   expect(client.sandyPluginStates.get(Plugin2.id)).toBeInstanceOf(
     SandyPluginInstance,
   );
-  const destroyStub = client.sandyPluginStates.get(Plugin2.id)!.instanceApi
-    .destroyStub;
+  const instance = client.sandyPluginStates.get(Plugin2.id)!
+    .instanceApi as PluginApi;
   expect(client.sandyPluginStates.get(TestPlugin.id)).toBe(pluginState1); // not reinitialized
 
   expect(TestPlugin.module.plugin).toBeCalledTimes(1);
   expect(Plugin2.module.plugin).toBeCalledTimes(1);
-  expect(destroyStub).toHaveBeenCalledTimes(0);
+  expect(instance.destroyStub).toHaveBeenCalledTimes(0);
 
   // disable plugin again
   store.dispatch(
@@ -157,7 +180,33 @@ test('it should not initialize a sandy plugin if not enabled', async () => {
   );
 
   expect(client.sandyPluginStates.get(Plugin2.id)).toBeUndefined();
-  expect(destroyStub).toHaveBeenCalledTimes(1);
+  expect(instance.connectStub).toHaveBeenCalledTimes(0);
+  // disconnect wasn't called because connect was never called
+  expect(instance.disconnectStub).toHaveBeenCalledTimes(0);
+  expect(instance.destroyStub).toHaveBeenCalledTimes(1);
+});
+
+test('it trigger hooks for background plugins', async () => {
+  const {client} = await createMockFlipperWithPlugin(TestPlugin, {
+    onSend(method) {
+      if (method === 'getBackgroundPlugins') {
+        return {plugins: [TestPlugin.id]};
+      }
+    },
+  });
+  const pluginInstance: PluginApi = client.sandyPluginStates.get(TestPlugin.id)!
+    .instanceApi;
+  expect(client.isBackgroundPlugin(TestPlugin.id)).toBeTruthy();
+  expect(pluginInstance.destroyStub).toHaveBeenCalledTimes(0);
+  expect(pluginInstance.connectStub).toHaveBeenCalledTimes(1);
+  expect(pluginInstance.disconnectStub).toHaveBeenCalledTimes(0);
+
+  // close client
+  client.close();
+  expect(client.sandyPluginStates.has(TestPlugin.id)).toBeFalsy();
+  expect(pluginInstance.destroyStub).toHaveBeenCalledTimes(1);
+  expect(pluginInstance.connectStub).toHaveBeenCalledTimes(1);
+  expect(pluginInstance.disconnectStub).toHaveBeenCalledTimes(1);
 });
 
 // TODO: T68683449 state is persisted if a plugin connects and reconnects

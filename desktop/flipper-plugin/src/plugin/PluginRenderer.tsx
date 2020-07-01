@@ -21,7 +21,10 @@ type Props = {
 export const SandyPluginRenderer = memo(
   ({plugin}: Props) => {
     useEffect(() => {
-      plugin.deactivate();
+      plugin.activate();
+      return () => {
+        plugin.deactivate();
+      };
     }, [plugin]);
 
     return (

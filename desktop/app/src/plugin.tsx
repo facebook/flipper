@@ -297,10 +297,7 @@ export class FlipperPlugin<
     }
     // run plugin teardown
     this.teardown();
-    if (
-      this.realClient.connected &&
-      !this.realClient.isBackgroundPlugin(pluginId)
-    ) {
+    if (!this.realClient.isBackgroundPlugin(pluginId)) {
       this.realClient.deinitPlugin(pluginId);
     }
   }

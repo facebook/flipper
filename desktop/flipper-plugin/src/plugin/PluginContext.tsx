@@ -8,16 +8,8 @@
  */
 
 import {createContext} from 'react';
+import {SandyPluginInstance} from './Plugin';
 
-export type SandyPluginContext = {
-  deactivate(): void;
-};
-
-// TODO: to be filled in later with testing and such
-const stubPluginContext: SandyPluginContext = {
-  deactivate() {},
-};
-
-export const SandyPluginContext = createContext<SandyPluginContext>(
-  stubPluginContext,
-);
+export const SandyPluginContext = createContext<
+  SandyPluginInstance | undefined
+>(undefined);
