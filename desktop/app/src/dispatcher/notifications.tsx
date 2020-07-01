@@ -10,7 +10,7 @@
 import {Store} from '../reducers/index';
 import {Logger} from '../fb-interfaces/Logger';
 import {PluginNotification} from '../reducers/notifications';
-import {FlipperPlugin, FlipperDevicePlugin} from '../plugin';
+import {PluginDefinition} from '../plugin';
 import isHeadless from '../utils/isHeadless';
 import {setStaticView, setDeeplinkPayload} from '../reducers/connections';
 import {ipcRenderer, IpcRendererEvent} from 'electron';
@@ -25,6 +25,7 @@ import {deconstructPluginKey} from '../utils/clientUtils';
 import NotificationScreen from '../chrome/NotificationScreen';
 import {getPluginTitle} from '../utils/pluginUtils';
 import {sideEffect} from '../utils/sideEffect';
+import {SandyPluginDefinition} from 'flipper-plugin';
 
 type NotificationEvents = 'show' | 'click' | 'close' | 'reply' | 'action';
 const NOTIFICATION_THROTTLE = 5 * 1000; // in milliseconds
@@ -110,11 +111,15 @@ export default (store: Store, logger: Logger) => {
             return;
           }
 
-          const persistingPlugin:
-            | undefined
-            | typeof FlipperPlugin
-            | typeof FlipperDevicePlugin = getPlugin(pluginName);
-          if (persistingPlugin && persistingPlugin.getActiveNotifications) {
+          const persistingPlugin: undefined | PluginDefinition = getPlugin(
+            pluginName,
+          );
+          // TODO: add support for Sandy plugins T68683442
+          if (
+            persistingPlugin &&
+            !(persistingPlugin instanceof SandyPluginDefinition) &&
+            persistingPlugin.getActiveNotifications
+          ) {
             try {
               const notifications = persistingPlugin.getActiveNotifications(
                 pluginStates[key],

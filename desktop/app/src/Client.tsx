@@ -7,7 +7,7 @@
  * @format
  */
 
-import {FlipperPlugin, FlipperDevicePlugin} from './plugin';
+import {PluginDefinition, ClientPluginDefinition} from './plugin';
 import BaseDevice, {OS} from './devices/BaseDevice';
 import {App} from './App';
 import {Logger} from './fb-interfaces/Logger';
@@ -32,6 +32,7 @@ import {sideEffect} from './utils/sideEffect';
 import {emitBytesReceived} from './dispatcher/tracking';
 import {debounce} from 'lodash';
 import {batch} from 'react-redux';
+import {SandyPluginDefinition} from 'flipper-plugin';
 
 type Plugins = Array<string>;
 
@@ -130,7 +131,7 @@ export default class Client extends EventEmitter {
   messageBuffer: Record<
     string /*pluginKey*/,
     {
-      plugin: typeof FlipperPlugin | typeof FlipperDevicePlugin;
+      plugin: PluginDefinition;
       messages: Params[];
     }
   > = {};
@@ -244,7 +245,7 @@ export default class Client extends EventEmitter {
     });
   }
 
-  supportsPlugin(Plugin: typeof FlipperPlugin): boolean {
+  supportsPlugin(Plugin: ClientPluginDefinition): boolean {
     return this.plugins.includes(Plugin.id);
   }
 
@@ -393,14 +394,18 @@ export default class Client extends EventEmitter {
         const bytes = msg.length * 2; // string lengths are measured in UTF-16 units (not characters), so 2 bytes per char
         emitBytesReceived(params.api, bytes);
 
-        const persistingPlugin:
-          | typeof FlipperPlugin
-          | typeof FlipperDevicePlugin
-          | undefined =
+        const persistingPlugin: PluginDefinition | undefined =
           this.store.getState().plugins.clientPlugins.get(params.api) ||
           this.store.getState().plugins.devicePlugins.get(params.api);
 
-        if (persistingPlugin && persistingPlugin.persistedStateReducer) {
+        let handled = false; // This is just for analysis
+        // TODO: support Sandy plugins T68683442
+        if (
+          persistingPlugin &&
+          !(persistingPlugin instanceof SandyPluginDefinition) &&
+          persistingPlugin.persistedStateReducer
+        ) {
+          handled = true;
           const pluginKey = getPluginKey(
             this.id,
             {serial: this.query.device_id},
@@ -417,15 +422,17 @@ export default class Client extends EventEmitter {
           this.flushMessageBufferDebounced();
         }
         const apiCallbacks = this.broadcastCallbacks.get(params.api);
-        if (!apiCallbacks) {
-          return;
-        }
-
-        const methodCallbacks = apiCallbacks.get(params.method);
-        if (methodCallbacks) {
-          for (const callback of methodCallbacks) {
-            callback(params.params);
+        if (apiCallbacks) {
+          const methodCallbacks = apiCallbacks.get(params.method);
+          if (methodCallbacks) {
+            for (const callback of methodCallbacks) {
+              handled = true;
+              callback(params.params);
+            }
           }
+        }
+        if (!handled) {
+          console.warn(`Unhandled message ${params.api}.${params.method}`);
         }
       }
       return; // method === 'execute'

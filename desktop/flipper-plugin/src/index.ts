@@ -7,6 +7,4 @@
  * @format
  */
 
-export function hello() {
-  return 'universe  ';
-}
+export * from './plugin/Plugin';

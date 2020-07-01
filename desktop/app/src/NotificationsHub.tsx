@@ -7,7 +7,7 @@
  * @format
  */
 
-import {SearchableProps, FlipperBasePlugin, FlipperPlugin} from 'flipper';
+import {SearchableProps} from 'flipper';
 import {Logger} from './fb-interfaces/Logger';
 import {
   Searchable,
@@ -21,7 +21,7 @@ import {
   styled,
   colors,
 } from 'flipper';
-import {FlipperDevicePlugin} from './plugin';
+import {PluginDefinition, DevicePluginMap, ClientPluginMap} from './plugin';
 import {connect} from 'react-redux';
 import React, {Component, Fragment} from 'react';
 import {clipboard} from 'electron';
@@ -47,8 +47,8 @@ type StateFromProps = {
   invalidatedNotifications: Array<PluginNotification>;
   blacklistedPlugins: Array<string>;
   blacklistedCategories: Array<string>;
-  devicePlugins: Map<string, typeof FlipperDevicePlugin>;
-  clientPlugins: Map<string, typeof FlipperPlugin>;
+  devicePlugins: DevicePluginMap;
+  clientPlugins: ClientPluginMap;
 };
 
 type DispatchFromProps = {
@@ -417,7 +417,7 @@ type ItemProps = {
     deepLinkPayload: string | null;
   }) => any;
   logger?: Logger;
-  plugin: typeof FlipperBasePlugin | null | undefined;
+  plugin: PluginDefinition | null | undefined;
 };
 
 type ItemState = {

@@ -7,25 +7,24 @@
  * @format
  */
 
-import {FlipperPlugin, FlipperDevicePlugin} from '../plugin';
+import {DevicePluginMap, ClientPluginMap, PluginDefinition} from '../plugin';
 import {PluginDetails} from 'flipper-plugin-lib';
 import {Actions} from '.';
 import produce from 'immer';
+import {isDevicePluginDefinition} from '../utils/pluginUtils';
 
 export type State = {
-  devicePlugins: Map<string, typeof FlipperDevicePlugin>;
-  clientPlugins: Map<string, typeof FlipperPlugin>;
+  devicePlugins: DevicePluginMap;
+  clientPlugins: ClientPluginMap;
   gatekeepedPlugins: Array<PluginDetails>;
   disabledPlugins: Array<PluginDetails>;
   failedPlugins: Array<[PluginDetails, string]>;
   selectedPlugins: Array<string>;
 };
 
-type PluginClass = typeof FlipperPlugin | typeof FlipperDevicePlugin;
-
 export type RegisterPluginAction = {
   type: 'REGISTER_PLUGINS';
-  payload: Array<PluginClass>;
+  payload: PluginDefinition[];
 };
 
 export type Action =
@@ -63,16 +62,14 @@ export default function reducer(
   if (action.type === 'REGISTER_PLUGINS') {
     return produce(state, (draft) => {
       const {devicePlugins, clientPlugins} = draft;
-      action.payload.forEach((p: PluginClass) => {
+      action.payload.forEach((p) => {
         if (devicePlugins.has(p.id) || clientPlugins.has(p.id)) {
           return;
         }
 
-        if (p.prototype instanceof FlipperDevicePlugin) {
-          // @ts-ignore doesn't know p must be typeof FlipperDevicePlugin here
+        if (isDevicePluginDefinition(p)) {
           devicePlugins.set(p.id, p);
-        } else if (p.prototype instanceof FlipperPlugin) {
-          // @ts-ignore doesn't know p must be typeof FlipperPlugin here
+        } else {
           clientPlugins.set(p.id, p);
         }
       });
@@ -107,7 +104,7 @@ export const selectedPlugins = (payload: Array<string>): Action => ({
   payload,
 });
 
-export const registerPlugins = (payload: Array<PluginClass>): Action => ({
+export const registerPlugins = (payload: PluginDefinition[]): Action => ({
   type: 'REGISTER_PLUGINS',
   payload,
 });

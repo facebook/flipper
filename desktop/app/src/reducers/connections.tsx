@@ -14,7 +14,6 @@ import MacDevice from '../devices/MacDevice';
 import Client from '../Client';
 import {UninitializedClient} from '../UninitializedClient';
 import {isEqual} from 'lodash';
-import iosUtil from '../utils/iOSContainerUtility';
 import {performance} from 'perf_hooks';
 import isHeadless from '../utils/isHeadless';
 import {Actions} from '.';
@@ -31,6 +30,7 @@ import {
 import {deconstructClientId} from '../utils/clientUtils';
 import {FlipperDevicePlugin} from '../plugin';
 import {RegisterPluginAction} from './plugins';
+import {SandyPluginDefinition} from 'flipper-plugin';
 
 export type StaticView =
   | null
@@ -423,7 +423,11 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
       // plugins are registered after creating the base devices, so update them
       const plugins = action.payload;
       plugins.forEach((plugin) => {
-        if (plugin.prototype instanceof FlipperDevicePlugin) {
+        // TODO: T68738317 support sandy device plugin
+        if (
+          !(plugin instanceof SandyPluginDefinition) &&
+          plugin.prototype instanceof FlipperDevicePlugin
+        ) {
           // smell: devices are mutable
           state.devices.forEach((device) => {
             // @ts-ignore

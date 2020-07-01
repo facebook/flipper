@@ -7,7 +7,6 @@
  * @format
  */
 
-import {FlipperPlugin, FlipperDevicePlugin} from 'flipper';
 import {serialize} from './serialization';
 import {State as PluginStatesState} from '../reducers/pluginStates';
 import {Store} from '../reducers';
@@ -20,6 +19,8 @@ import {
 import {deserializeObject} from './serialization';
 import {deconstructPluginKey} from './clientUtils';
 import {pluginsClassMap} from './pluginUtils';
+import {PluginDefinition} from '../plugin';
+import {SandyPluginDefinition} from 'flipper-plugin';
 
 export type MetricType = {[metricName: string]: number};
 type MetricPluginType = {[pluginID: string]: MetricType};
@@ -27,7 +28,7 @@ export type ExportMetricType = {[clientID: string]: MetricPluginType};
 
 async function exportMetrics(
   pluginStates: PluginStatesState,
-  pluginsMap: Map<string, typeof FlipperDevicePlugin | typeof FlipperPlugin>,
+  pluginsMap: Map<string, PluginDefinition>,
   selectedPlugins: Array<string>,
 ): Promise<string> {
   const metrics: ExportMetricType = {};
@@ -46,8 +47,10 @@ async function exportMetrics(
     const pluginClass = pluginsMap.get(pluginName);
     const metricsReducer:
       | (<U>(persistedState: U) => Promise<MetricType>)
-      | null
-      | undefined = pluginClass && pluginClass.metricsReducer;
+      | undefined =
+      pluginClass && !(pluginClass instanceof SandyPluginDefinition)
+        ? pluginClass.metricsReducer
+        : undefined;
     if (pluginsMap.has(pluginName) && metricsReducer) {
       const metricsObject = await metricsReducer(pluginStateData);
       const pluginObject: MetricPluginType = {};
@@ -67,10 +70,7 @@ export async function exportMetricsWithoutTrace(
   store: Store,
   pluginStates: PluginStatesState,
 ): Promise<string | null> {
-  const pluginsMap: Map<
-    string,
-    typeof FlipperDevicePlugin | typeof FlipperPlugin
-  > = pluginsClassMap(store.getState().plugins);
+  const pluginsMap = pluginsClassMap(store.getState().plugins);
   const {clients, selectedDevice} = store.getState().connections;
   const pluginsToProcess = determinePluginsToProcess(
     clients,
@@ -107,7 +107,7 @@ function parseJSON(str: string): any {
 
 export async function exportMetricsFromTrace(
   trace: string,
-  pluginsMap: Map<string, typeof FlipperDevicePlugin | typeof FlipperPlugin>,
+  pluginsMap: Map<string, PluginDefinition>,
   selectedPlugins: Array<string>,
 ): Promise<string> {
   const data = fs.readFileSync(trace, 'utf8');
@@ -136,5 +136,6 @@ export async function exportMetricsFromTrace(
       ),
     );
   }
+  // TODO: Support Sandy T68683449 and use ClientPluginsMap, or kill feature
   return await exportMetrics(pluginStates, pluginsMap, selectedPlugins);
 }

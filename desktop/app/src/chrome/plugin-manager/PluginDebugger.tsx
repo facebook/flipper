@@ -12,18 +12,10 @@ import Client from '../../Client';
 import {TableBodyRow} from '../../ui/components/table/types';
 import React, {Component, Fragment} from 'react';
 import {connect} from 'react-redux';
-import {
-  Text,
-  ManagedTable,
-  styled,
-  colors,
-  Link,
-  FlipperPlugin,
-  FlipperDevicePlugin,
-  Bordered,
-} from 'flipper';
+import {Text, ManagedTable, styled, colors, Link, Bordered} from 'flipper';
 import StatusIndicator from '../../ui/components/StatusIndicator';
 import {State as Store} from '../../reducers';
+import {DevicePluginDefinition, ClientPluginDefinition} from '../../plugin';
 
 const InfoText = styled(Text)({
   lineHeight: '130%',
@@ -51,8 +43,8 @@ type StateFromProps = {
   failedPlugins: Array<[PluginDetails, string]>;
   clients: Array<Client>;
   selectedDevice: string | null | undefined;
-  devicePlugins: Array<typeof FlipperDevicePlugin>;
-  clientPlugins: Array<typeof FlipperPlugin>;
+  devicePlugins: DevicePluginDefinition[];
+  clientPlugins: ClientPluginDefinition[];
 };
 
 type DispatchFromProps = {};
@@ -299,10 +291,8 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
     },
     connections: {clients, selectedDevice},
   }) => ({
-    devicePlugins: Array.from<typeof FlipperDevicePlugin>(
-      devicePlugins.values(),
-    ),
-    clientPlugins: Array.from<typeof FlipperPlugin>(clientPlugins.values()),
+    devicePlugins: Array.from(devicePlugins.values()),
+    clientPlugins: Array.from(clientPlugins.values()),
     gatekeepedPlugins,
     clients,
     disabledPlugins,

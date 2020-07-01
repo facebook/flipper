@@ -21,6 +21,7 @@ import {pluginIsStarred, getSelectedPluginKey} from '../reducers/connections';
 import {deconstructPluginKey} from './clientUtils';
 import {onBytesReceived} from '../dispatcher/tracking';
 import {defaultEnabledBackgroundPlugins} from './pluginUtils';
+import {SandyPluginDefinition} from 'flipper-plugin';
 
 const MAX_BACKGROUND_TASK_TIME = 25;
 
@@ -189,14 +190,22 @@ export function processMessagesImmediately(
 export function processMessagesLater(
   store: MiddlewareAPI,
   pluginKey: string,
-  plugin: {
-    defaultPersistedState: any;
-    id: string;
-    persistedStateReducer: PersistedStateReducer | null;
-    maxQueueSize?: number;
-  },
+  plugin:
+    | {
+        defaultPersistedState: any;
+        id: string;
+        persistedStateReducer: PersistedStateReducer | null;
+        maxQueueSize?: number;
+      }
+    | SandyPluginDefinition,
   messages: Message[],
 ) {
+  if (plugin instanceof SandyPluginDefinition) {
+    // TODO:
+    throw new Error(
+      'Receiving messages is not yet supported for Sandy plugins',
+    );
+  }
   const isSelected =
     pluginKey === getSelectedPluginKey(store.getState().connections);
   switch (true) {

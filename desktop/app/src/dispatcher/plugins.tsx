@@ -9,7 +9,7 @@
 
 import {Store} from '../reducers/index';
 import {Logger} from '../fb-interfaces/Logger';
-import {FlipperPlugin, FlipperDevicePlugin} from '../plugin';
+import {PluginDefinition} from '../plugin';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import adbkit from 'adbkit';
@@ -58,9 +58,10 @@ export default (store: Store, logger: Logger) => {
 
   const defaultPluginsIndex = getPluginIndex();
 
-  const initialPlugins: Array<
-    typeof FlipperPlugin | typeof FlipperDevicePlugin
-  > = filterNewestVersionOfEachPlugin(getBundledPlugins(), getDynamicPlugins())
+  const initialPlugins: PluginDefinition[] = filterNewestVersionOfEachPlugin(
+    getBundledPlugins(),
+    getDynamicPlugins(),
+  )
     .map(reportVersion)
     .filter(checkDisabled(disabledPlugins))
     .filter(checkGK(gatekeepedPlugins))
@@ -247,9 +248,7 @@ export const requirePlugin = (
   defaultPluginsIndex: any,
   reqFn: Function = global.electronRequire,
 ) => {
-  return (
-    pluginDetails: PluginDetails,
-  ): typeof FlipperPlugin | typeof FlipperDevicePlugin | null => {
+  return (pluginDetails: PluginDetails): PluginDefinition | null => {
     try {
       return tryCatchReportPluginFailures(
         () => requirePluginInternal(pluginDetails, defaultPluginsIndex, reqFn),
@@ -281,6 +280,7 @@ const requirePluginInternal = (
 
   plugin.id = plugin.id || pluginDetails.id;
   plugin.packageName = pluginDetails.name;
+  plugin.flipperSDKVersion = pluginDetails.flipperSDKVersion;
   plugin.details = pluginDetails;
 
   // set values from package.json as static variables on class

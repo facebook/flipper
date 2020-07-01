@@ -20,10 +20,12 @@ import Client, {ClientExport, ClientQuery} from '../Client';
 import {pluginKey} from '../reducers/pluginStates';
 import {
   FlipperDevicePlugin,
-  FlipperPlugin,
   callClient,
   supportsMethod,
   FlipperBasePlugin,
+  PluginDefinition,
+  DevicePluginMap,
+  ClientPluginMap,
 } from '../plugin';
 import {default as BaseDevice} from '../devices/BaseDevice';
 import {default as ArchivedDevice} from '../devices/ArchivedDevice';
@@ -47,6 +49,7 @@ import {processMessageQueue} from './messageQueue';
 import {getPluginTitle} from './pluginUtils';
 import {capture} from './screenshot';
 import {uploadFlipperMedia} from '../fb-stubs/user';
+import {SandyPluginDefinition} from 'flipper-plugin';
 
 export const IMPORT_FLIPPER_TRACE_EVENT = 'import-flipper-trace';
 export const EXPORT_FLIPPER_TRACE_EVENT = 'export-flipper-trace';
@@ -93,7 +96,7 @@ type PluginsToProcess = {
   pluginKey: string;
   pluginId: string;
   pluginName: string;
-  pluginClass: typeof FlipperPlugin | typeof FlipperDevicePlugin;
+  pluginClass: PluginDefinition;
   client: Client;
 }[];
 
@@ -212,14 +215,17 @@ export function processNotificationStates(
 
 const serializePluginStates = async (
   pluginStates: PluginStatesState,
-  clientPlugins: Map<string, typeof FlipperPlugin>,
-  devicePlugins: Map<string, typeof FlipperDevicePlugin>,
+  clientPlugins: ClientPluginMap,
+  devicePlugins: DevicePluginMap,
   statusUpdate?: (msg: string) => void,
   idler?: Idler,
 ): Promise<PluginStatesExportState> => {
   const pluginsMap: Map<string, typeof FlipperBasePlugin> = new Map([]);
   clientPlugins.forEach((val, key) => {
-    pluginsMap.set(key, val);
+    // TODO: Support Sandy T68683449 and use ClientPluginsMap
+    if (!(val instanceof SandyPluginDefinition)) {
+      pluginsMap.set(key, val);
+    }
   });
   devicePlugins.forEach((val, key) => {
     pluginsMap.set(key, val);
@@ -248,12 +254,13 @@ const serializePluginStates = async (
 
 const deserializePluginStates = (
   pluginStatesExportState: PluginStatesExportState,
-  clientPlugins: Map<string, typeof FlipperPlugin>,
-  devicePlugins: Map<string, typeof FlipperDevicePlugin>,
+  clientPlugins: ClientPluginMap,
+  devicePlugins: DevicePluginMap,
 ): PluginStatesState => {
   const pluginsMap: Map<string, typeof FlipperBasePlugin> = new Map([]);
   clientPlugins.forEach((val, key) => {
-    pluginsMap.set(key, val);
+    // TODO: Support Sandy T68683449
+    if (!(val instanceof SandyPluginDefinition)) pluginsMap.set(key, val);
   });
   devicePlugins.forEach((val, key) => {
     pluginsMap.set(key, val);
@@ -358,8 +365,8 @@ type ProcessStoreOptions = {
   device: BaseDevice | null;
   pluginStates: PluginStatesState;
   clients: Array<ClientExport>;
-  devicePlugins: Map<string, typeof FlipperDevicePlugin>;
-  clientPlugins: Map<string, typeof FlipperPlugin>;
+  devicePlugins: DevicePluginMap;
+  clientPlugins: ClientPluginMap;
   salt: string;
   selectedPlugins: Array<string>;
   statusUpdate?: (msg: string) => void;
@@ -514,7 +521,11 @@ async function processQueues(
     pluginKey,
     pluginClass,
   } of pluginsToProcess) {
-    if (pluginClass.persistedStateReducer) {
+    // TODO: Support Sandy T68683449
+    if (
+      !(pluginClass instanceof SandyPluginDefinition) &&
+      pluginClass.persistedStateReducer
+    ) {
       const processQueueMarker = `${EXPORT_FLIPPER_TRACE_EVENT}:process-queue-per-plugin`;
       performance.mark(processQueueMarker);
 

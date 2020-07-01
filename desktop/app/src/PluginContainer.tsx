@@ -11,6 +11,7 @@ import {
   FlipperPlugin,
   FlipperDevicePlugin,
   Props as PluginProps,
+  PluginDefinition,
 } from './plugin';
 import {Logger} from './fb-interfaces/Logger';
 import BaseDevice from './devices/BaseDevice';
@@ -45,6 +46,7 @@ import {Message} from './reducers/pluginMessageQueue';
 import {Idler} from './utils/Idler';
 import {processMessageQueue} from './utils/messageQueue';
 import {ToggleButton, SmallText} from './ui';
+import {SandyPluginDefinition} from 'flipper-plugin';
 
 const Container = styled(FlexColumn)({
   width: 0,
@@ -95,7 +97,7 @@ type OwnProps = {
 
 type StateFromProps = {
   pluginState: Object;
-  activePlugin: typeof FlipperPlugin | typeof FlipperDevicePlugin | null;
+  activePlugin: PluginDefinition | undefined;
   target: Client | BaseDevice | null;
   pluginKey: string | null;
   deepLinkPayload: string | null;
@@ -190,6 +192,8 @@ class PluginContainer extends PureComponent<Props, State> {
       if (
         pluginIsEnabled &&
         activePlugin &&
+        // TODO: support sandy: T68683442
+        !(activePlugin instanceof SandyPluginDefinition) &&
         activePlugin.persistedStateReducer &&
         pluginKey &&
         pendingMessages?.length
@@ -328,6 +332,10 @@ class PluginContainer extends PureComponent<Props, State> {
       console.warn(`No selected plugin. Rendering empty!`);
       return null;
     }
+    if (activePlugin instanceof SandyPluginDefinition) {
+      // TODO:
+      return null;
+    }
     const props: PluginProps<Object> & {
       key: string;
       ref: (
@@ -404,14 +412,11 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
   }) => {
     let pluginKey = null;
     let target = null;
-    let activePlugin:
-      | typeof FlipperDevicePlugin
-      | typeof FlipperPlugin
-      | null = null;
+    let activePlugin: PluginDefinition | undefined;
     let pluginIsEnabled = false;
 
     if (selectedPlugin) {
-      activePlugin = devicePlugins.get(selectedPlugin) || null;
+      activePlugin = devicePlugins.get(selectedPlugin);
       target = selectedDevice;
       if (selectedDevice && activePlugin) {
         pluginKey = getPluginKey(selectedDevice.serial, activePlugin.id);
@@ -419,7 +424,7 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
       } else {
         target =
           clients.find((client: Client) => client.id === selectedApp) || null;
-        activePlugin = clientPlugins.get(selectedPlugin) || null;
+        activePlugin = clientPlugins.get(selectedPlugin);
         if (activePlugin && target) {
           pluginKey = getPluginKey(target.id, activePlugin.id);
           pluginIsEnabled = pluginIsStarred(

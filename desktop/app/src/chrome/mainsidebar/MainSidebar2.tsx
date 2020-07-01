@@ -20,8 +20,6 @@ import {
   Glyph,
   styled,
   GK,
-  FlipperPlugin,
-  FlipperDevicePlugin,
   ArchivedDevice,
   SmallText,
   Info,
@@ -62,8 +60,9 @@ import {
   getFavoritePlugins,
 } from './sidebarUtils';
 import {useLocalStorage} from '../../utils/useLocalStorage';
+import {PluginDefinition, ClientPluginMap, DevicePluginMap} from '../../plugin';
 
-type FlipperPlugins = typeof FlipperPlugin[];
+type FlipperPlugins = PluginDefinition[];
 type PluginsByCategory = [string, FlipperPlugins][];
 
 type SectionLevel = 1 | 2 | 3;
@@ -184,8 +183,8 @@ type StateFromProps = {
     deviceId?: string;
     errorMessage?: string;
   }>;
-  devicePlugins: Map<string, typeof FlipperDevicePlugin>;
-  clientPlugins: Map<string, typeof FlipperPlugin>;
+  devicePlugins: DevicePluginMap;
+  clientPlugins: ClientPluginMap;
 };
 
 type SelectPlugin = (payload: {
@@ -469,7 +468,7 @@ const PluginList = memo(function PluginList({
 }: {
   client: Client;
   device: BaseDevice;
-  clientPlugins: Map<string, typeof FlipperPlugin>;
+  clientPlugins: ClientPluginMap;
   starPlugin: typeof starPluginAction;
   userStarredPlugins: Store['connections']['userStarredPlugins'];
   selectedPlugin?: null | string;
@@ -497,7 +496,7 @@ const PluginList = memo(function PluginList({
   );
 
   const allPlugins = Array.from(clientPlugins.values()).filter(
-    (p: typeof FlipperPlugin) => client.plugins.indexOf(p.id) > -1,
+    (p) => client.plugins.indexOf(p.id) > -1,
   );
   const favoritePlugins: FlipperPlugins = getFavoritePlugins(
     device,

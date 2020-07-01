@@ -7,12 +7,18 @@
  * @format
  */
 
-import {FlipperDevicePlugin, FlipperPlugin, FlipperBasePlugin} from '../plugin';
+import {
+  FlipperDevicePlugin,
+  FlipperBasePlugin,
+  PluginDefinition,
+  DevicePluginDefinition,
+} from '../plugin';
 import {State as PluginStatesState} from '../reducers/pluginStates';
 import {State as PluginsState} from '../reducers/plugins';
 import {State as PluginMessageQueueState} from '../reducers/pluginMessageQueue';
 import {PluginDetails} from 'flipper-plugin-lib';
 import {deconstructPluginKey, deconstructClientId} from './clientUtils';
+import {SandyPluginDefinition} from 'flipper-plugin';
 
 type Client = import('../Client').default;
 
@@ -20,11 +26,8 @@ export const defaultEnabledBackgroundPlugins = ['Navigation']; // The navigation
 
 export function pluginsClassMap(
   plugins: PluginsState,
-): Map<string, typeof FlipperDevicePlugin | typeof FlipperPlugin> {
-  const pluginsMap: Map<
-    string,
-    typeof FlipperDevicePlugin | typeof FlipperPlugin
-  > = new Map([]);
+): Map<string, PluginDefinition> {
+  const pluginsMap: Map<string, PluginDefinition> = new Map([]);
   plugins.clientPlugins.forEach((val, key) => {
     pluginsMap.set(key, val);
   });
@@ -83,10 +86,7 @@ export function getEnabledOrExportPersistedStatePlugins(
   plugins: PluginsState,
 ): Array<{id: string; label: string}> {
   const appName = deconstructClientId(client.id).app;
-  const pluginsMap: Map<
-    string,
-    typeof FlipperDevicePlugin | typeof FlipperPlugin
-  > = pluginsClassMap(plugins);
+  const pluginsMap: Map<string, PluginDefinition> = pluginsClassMap(plugins);
   // Enabled Plugins with no exportPersistedState function defined
   const enabledPlugins = starredPlugin[appName]
     ? starredPlugin[appName]
@@ -141,10 +141,7 @@ export function getActivePersistentPlugins(
   plugins: PluginsState,
   selectedClient?: Client,
 ): {id: string; label: string}[] {
-  const pluginsMap: Map<
-    string,
-    typeof FlipperDevicePlugin | typeof FlipperPlugin
-  > = pluginsClassMap(plugins);
+  const pluginsMap: Map<string, PluginDefinition> = pluginsClassMap(plugins);
   return getPersistentPlugins(plugins)
     .map((pluginName) => pluginsMap.get(pluginName)!)
     .sort(sortPluginsByName)
@@ -183,10 +180,7 @@ export function getActivePersistentPlugins(
 }
 
 export function getPersistentPlugins(plugins: PluginsState): Array<string> {
-  const pluginsMap: Map<
-    string,
-    typeof FlipperDevicePlugin | typeof FlipperPlugin
-  > = pluginsClassMap(plugins);
+  const pluginsMap: Map<string, PluginDefinition> = pluginsClassMap(plugins);
 
   const arr: Array<PluginDetails> = plugins.disabledPlugins.concat(
     plugins.gatekeepedPlugins,
@@ -210,32 +204,36 @@ export function getPersistentPlugins(plugins: PluginsState): Array<string> {
     return (
       plugin == 'DeviceLogs' ||
       (pluginClass &&
+        // TODO: support Sandy plugin T68683449
+        !(pluginClass instanceof SandyPluginDefinition) &&
         (pluginClass.defaultPersistedState != undefined ||
           pluginClass.exportPersistedState != undefined))
     );
   });
 }
 
-export function getPluginTitle(pluginClass: typeof FlipperBasePlugin) {
+export function getPluginTitle(pluginClass: PluginDefinition) {
   return pluginClass.title || pluginClass.id;
 }
 
 export function sortPluginsByName(
-  a: typeof FlipperBasePlugin,
-  b: typeof FlipperBasePlugin,
+  a: PluginDefinition,
+  b: PluginDefinition,
 ): number {
   // make sure Device plugins are sorted before normal plugins
-  if (
-    a.prototype instanceof FlipperDevicePlugin &&
-    !(b.prototype instanceof FlipperDevicePlugin)
-  ) {
+  if (isDevicePluginDefinition(a) && !isDevicePluginDefinition(b)) {
     return -1;
   }
-  if (
-    b.prototype instanceof FlipperDevicePlugin &&
-    !(a.prototype instanceof FlipperDevicePlugin)
-  ) {
+  if (isDevicePluginDefinition(b) && !isDevicePluginDefinition(a)) {
     return 1;
   }
   return getPluginTitle(a) > getPluginTitle(b) ? 1 : -1;
+}
+
+export function isDevicePluginDefinition(
+  definition: PluginDefinition,
+): definition is DevicePluginDefinition {
+  // TODO: support Sandy device plugins T68738317
+  // @ts-ignore
+  return definition.prototype instanceof FlipperDevicePlugin;
 }

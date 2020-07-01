@@ -7,7 +7,7 @@
  * @format
  */
 
-import {FlipperPlugin, FlipperDevicePlugin} from './plugin';
+import {FlipperPlugin, FlipperDevicePlugin, PluginDefinition} from './plugin';
 import {
   showOpenDialog,
   startFileExport,
@@ -71,7 +71,7 @@ function actionHandler(action: string) {
 }
 
 export function setupMenuBar(
-  plugins: Array<typeof FlipperPlugin | typeof FlipperDevicePlugin>,
+  plugins: PluginDefinition[],
   store: Store,
   logger: Logger,
 ) {

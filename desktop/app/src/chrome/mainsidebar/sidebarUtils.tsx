@@ -14,9 +14,7 @@ import {
   Text,
   Glyph,
   styled,
-  FlipperPlugin,
   FlexColumn,
-  FlipperBasePlugin,
   ToggleButton,
   brandColors,
   Spacer,
@@ -27,8 +25,9 @@ import {
 } from 'flipper';
 import {BackgroundColorProperty} from 'csstype';
 import {getPluginTitle} from '../../utils/pluginUtils';
+import {PluginDefinition} from '../../plugin';
 
-export type FlipperPlugins = typeof FlipperPlugin[];
+export type FlipperPlugins = PluginDefinition[];
 export type PluginsByCategory = [string, FlipperPlugins][];
 
 export const ListItem = styled.div<{active?: boolean; disabled?: boolean}>(
@@ -133,7 +132,7 @@ export const Plugins = styled(FlexColumn)({
 export const PluginSidebarListItem: React.FC<{
   onClick: () => void;
   isActive: boolean;
-  plugin: typeof FlipperBasePlugin;
+  plugin: PluginDefinition;
   app?: string | null | undefined;
   helpRef?: any;
   provided?: any;

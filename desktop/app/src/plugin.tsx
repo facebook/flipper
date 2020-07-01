@@ -22,7 +22,20 @@ import {State as ReduxState} from './reducers';
 import {DEFAULT_MAX_QUEUE_SIZE} from './reducers/pluginMessageQueue';
 import {PluginDetails} from 'flipper-plugin-lib';
 import {Settings} from './reducers/settings';
+import {SandyPluginDefinition} from 'flipper-plugin';
 type Parameters = {[key: string]: any};
+
+export type PluginDefinition = ClientPluginDefinition | DevicePluginDefinition;
+
+// TODO: T68738317 add SandyPluginDefinition
+export type DevicePluginDefinition = typeof FlipperDevicePlugin;
+
+export type ClientPluginDefinition =
+  | typeof FlipperPlugin
+  | SandyPluginDefinition;
+
+export type ClientPluginMap = Map<string, ClientPluginDefinition>;
+export type DevicePluginMap = Map<string, DevicePluginDefinition>;
 
 // This function is intended to be called from outside of the plugin.
 // If you want to `call` from the plugin use, this.client.call
@@ -100,6 +113,7 @@ export abstract class FlipperBasePlugin<
   static category: string | null = null;
   static id: string = '';
   static packageName: string = '';
+  static flipperSDKVersion: string | undefined = undefined;
   static version: string = '';
   static icon: string | null = null;
   static gatekeeper: string | null = null;
@@ -113,7 +127,7 @@ export abstract class FlipperBasePlugin<
   static maxQueueSize: number = DEFAULT_MAX_QUEUE_SIZE;
   static metricsReducer:
     | ((persistedState: StaticPersistedState) => Promise<MetricType>)
-    | null;
+    | undefined;
   static exportPersistedState:
     | ((
         callClient: (method: string, params?: any) => Promise<any>,
@@ -123,10 +137,10 @@ export abstract class FlipperBasePlugin<
         statusUpdate?: (msg: string) => void,
         supportsMethod?: (method: string) => Promise<boolean>,
       ) => Promise<StaticPersistedState | undefined>)
-    | null;
+    | undefined;
   static getActiveNotifications:
     | ((persistedState: StaticPersistedState) => Array<Notification>)
-    | null;
+    | undefined;
   static onRegisterDevice:
     | ((
         store: Store,
