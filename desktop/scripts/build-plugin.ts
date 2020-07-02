@@ -13,10 +13,10 @@ import fs from 'fs-extra';
 import {execSync} from 'child_process';
 import {resolvePluginDir} from './workspaces';
 
-(async function buildPlugin() {
-  const pluginName = process.argv[2];
+async function buildPlugin(argv: string[]) {
+  const pluginName = argv[2];
   const pluginDir = await resolvePluginDir(pluginName);
-  const outputFileArg = process.argv.length > 3 ? process.argv[3] : null;
+  const outputFileArg = argv.length > 3 ? argv[3] : null;
   const outputFile = outputFileArg
     ? path.resolve(outputFileArg)
     : path.join(
@@ -30,4 +30,13 @@ import {resolvePluginDir} from './workspaces';
   const packCmd = `yarn pack --cwd "${pluginDir}" --filename ${outputFile}`;
   execSync(bundleCmd, {cwd: rootDir, stdio: 'inherit'});
   execSync(packCmd, {cwd: rootDir, stdio: 'inherit'});
-})();
+}
+
+buildPlugin(process.argv)
+  .then(() => {
+    process.exit(0);
+  })
+  .catch((err: any) => {
+    console.error(err);
+    process.exit(1);
+  });

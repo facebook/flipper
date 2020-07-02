@@ -9,8 +9,11 @@
 
 import {resolvePluginDir} from './workspaces';
 
-(async function () {
-  const pluginName = process.argv[2];
-  const pluginDir = await resolvePluginDir(pluginName);
-  console.log(pluginDir);
-})();
+resolvePluginDir(process.argv[2])
+  .then((dir) => {
+    console.log(dir);
+  })
+  .catch((err: any) => {
+    console.error(err);
+    process.exit(1);
+  });
