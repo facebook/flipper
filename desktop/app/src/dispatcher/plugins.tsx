@@ -35,6 +35,7 @@ import {addNotification} from '../reducers/notifications';
 import styled from '@emotion/styled';
 import {tryCatchReportPluginFailures, reportUsage} from '../utils/metrics';
 import * as FlipperPluginSDK from 'flipper-plugin';
+import Immer from 'immer';
 
 // eslint-disable-next-line import/no-unresolved
 import getPluginIndex from '../utils/getDefaultPluginsIndex';
@@ -52,6 +53,7 @@ export default (store: Store, logger: Logger) => {
   globalObject.Flipper = Flipper;
   globalObject.adbkit = adbkit;
   globalObject.FlipperPlugin = FlipperPluginSDK;
+  globalObject.Immer = Immer;
 
   const gatekeepedPlugins: Array<PluginDetails> = [];
   const disabledPlugins: Array<PluginDetails> = [];

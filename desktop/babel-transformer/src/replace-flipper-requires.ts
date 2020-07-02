@@ -21,6 +21,7 @@ const requireReplacements: any = {
   react: 'global.React',
   'react-dom': 'global.ReactDOM',
   adbkit: 'global.adbkit',
+  immer: 'global.Immer',
 };
 
 export function tryReplaceFlipperRequire(path: NodePath<CallExpression>) {
