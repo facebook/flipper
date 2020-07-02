@@ -211,3 +211,47 @@ export async function publishPackages({
     }
   }
 }
+
+export async function resolvePluginDir(name: string): Promise<string> {
+  const pluginDir =
+    (await resolvePluginByNameOrId(name)) ?? (await resolvePluginByPath(name));
+  if (!pluginDir) {
+    throw new Error(`Cannot find plugin by name or dir ${name}`);
+  } else {
+    return pluginDir;
+  }
+}
+
+async function resolvePluginByNameOrId(
+  pluginName: string,
+): Promise<string | undefined> {
+  const workspaces = await getWorkspaces();
+  const pluginDir = workspaces.packages
+    .filter((p) => p.isPlugin)
+    .find(
+      (p) =>
+        p.json.name === pluginName ||
+        p.json.id === pluginName ||
+        p.json.name === `flipper-plugin-${pluginName}`,
+    )?.dir;
+  return pluginDir;
+}
+
+async function resolvePluginByPath(dir: string): Promise<string | undefined> {
+  if (path.isAbsolute(dir)) {
+    if (await fs.pathExists(dir)) {
+      return dir;
+    } else {
+      return undefined;
+    }
+  }
+  const resolvedFromPluginDir = path.resolve(pluginsDir, dir);
+  if (await fs.pathExists(resolvedFromPluginDir)) {
+    return resolvedFromPluginDir;
+  }
+  const resolvedFromCwd = path.resolve(process.cwd(), dir);
+  if (await fs.pathExists(resolvedFromCwd)) {
+    return resolvedFromCwd;
+  }
+  return undefined;
+}
