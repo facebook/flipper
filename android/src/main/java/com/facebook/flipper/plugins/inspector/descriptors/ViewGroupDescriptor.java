@@ -294,12 +294,31 @@ public class ViewGroupDescriptor extends NodeDescriptor<ViewGroup> {
   }
 
   private static boolean shouldSkip(View view) {
-    Object tag = view.getTag(R.id.flipper_skip_view_traversal);
-    if (!(tag instanceof Boolean)) {
-      return false;
+    if (hasTag(view, R.id.flipper_skip_view_traversal)) {
+      return true;
     }
 
-    return (Boolean) tag;
+    if (view instanceof ViewGroup
+        && hasTag(view, R.id.flipper_skip_empty_view_group_traversal)
+        && !hasVisibleChildren((ViewGroup) view)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  private static boolean hasTag(View view, int id) {
+    Object tag = view.getTag(id);
+    return tag instanceof Boolean && (Boolean) tag;
+  }
+
+  private static boolean hasVisibleChildren(ViewGroup viewGroup) {
+    for (int i = 0; i < viewGroup.getChildCount(); i++) {
+      if (viewGroup.getChildAt(i).getVisibility() == View.VISIBLE) {
+        return true;
+      }
+    }
+    return false;
   }
 
   @Override

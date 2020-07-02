@@ -8,4 +8,5 @@
 
 <resources>
   <item type="id" name="flipper_skip_view_traversal"/>
+  <item type="id" name="flipper_skip_empty_view_group_traversal"/>
 </resources>

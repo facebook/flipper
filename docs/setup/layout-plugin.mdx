@@ -66,6 +66,15 @@ Add the following tag to your view to skip it from Flipper's view picker. The vi
 view.setTag(R.id.flipper_skip_view_traversal, true);
 ```
 
+### Blocking empty view groups (Android only)
+
+If you have a ViewGroup that only occasionally has visible children, you may find it helpful to block its traversal when it is empty or has no visible children. For example, you might have a FragmentContainerView that currently has no visible fragment.
+
+Add the following tag to your view group to skip it from Flipper's view picker only when it has zero children, or none of its children are currently visible. The views will still be shown in the layout hierarchy, but they will not be selected while using the view picker.
+
+```java
+viewGroup.setTag(R.id.flipper_skip_empty_view_group_traversal, true);
+```
 
 ## iOS
 
