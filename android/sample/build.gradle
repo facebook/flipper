@@ -50,6 +50,7 @@ dependencies {
     implementation deps.lithoWidget
     implementation deps.lithoAnnotations
     implementation deps.lithoFresco
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     annotationProcessor deps.lithoProcessor
 
     // Third-party

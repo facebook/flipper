@@ -85,8 +85,15 @@ public class RootComponentSpec {
                 .clickHandler(RootComponent.openAlternateLayoutTestActivity(c)))
         .child(
             Text.create(c)
-                .text("Crash this app")
+                .text("Navigate to fragment test page")
                 .key("8")
+                .marginDip(YogaEdge.ALL, 10)
+                .textSizeSp(20)
+                .clickHandler(RootComponent.openFragmentTestActivity(c)))
+        .child(
+            Text.create(c)
+                .text("Crash this app")
+                .key("9")
                 .marginDip(YogaEdge.ALL, 10)
                 .textSizeSp(20)
                 .clickHandler(RootComponent.triggerCrash(c)))
@@ -131,6 +138,12 @@ public class RootComponentSpec {
   @OnEvent(ClickEvent.class)
   static void openAlternateLayoutTestActivity(final ComponentContext c) {
     final Intent intent = new Intent(c.getAndroidContext(), LayoutTestActivity.class);
+    c.getAndroidContext().startActivity(intent);
+  }
+
+  @OnEvent(ClickEvent.class)
+  static void openFragmentTestActivity(final ComponentContext c) {
+    final Intent intent = new Intent(c.getAndroidContext(), FragmentTestActivity.class);
     c.getAndroidContext().startActivity(intent);
   }
 
