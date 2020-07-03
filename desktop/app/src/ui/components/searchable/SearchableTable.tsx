@@ -157,7 +157,7 @@ class SearchableManagedTable extends PureComponent<Props, State> {
         filter={this.state.filterRows}
         rows={rows.filter(this.state.filterRows)}
         onAddFilter={addFilter}
-        ref={innerRef}
+        innerRef={innerRef}
       />
     );
   }

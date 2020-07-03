@@ -137,6 +137,12 @@ export type ManagedTableProps = {
    * Whether to allow navigation via arrow keys. Default: true
    */
   enableKeyboardNavigation?: boolean;
+  /**
+   * Reference to the managed table.
+   */
+  innerRef?:
+    | React.MutableRefObject<ManagedTable | undefined>
+    | ((ref: ManagedTable | undefined) => void);
 };
 
 type ManagedTableState = {
@@ -209,10 +215,21 @@ export class ManagedTable extends React.Component<
 
   componentDidMount() {
     document.addEventListener('keydown', this.onKeyDown);
+
+    if (typeof this.props.innerRef === 'function') {
+      this.props.innerRef(this);
+    } else if (this.props.innerRef) {
+      this.props.innerRef.current = this;
+    }
   }
 
   componentWillUnmount() {
     document.removeEventListener('keydown', this.onKeyDown);
+    if (typeof this.props.innerRef === 'function') {
+      this.props.innerRef(undefined);
+    } else if (this.props.innerRef) {
+      this.props.innerRef.current = undefined;
+    }
   }
 
   UNSAFE_componentWillReceiveProps(nextProps: ManagedTableProps) {
