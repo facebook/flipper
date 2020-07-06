@@ -1,3 +1,16 @@
+diff --git a/node_modules/metro/src/lib/getPreludeCode.js b/node_modules/metro/src/lib/getPreludeCode.js
+index 57e008e..b645266 100644
+--- a/node_modules/metro/src/lib/getPreludeCode.js
++++ b/node_modules/metro/src/lib/getPreludeCode.js
+@@ -42,7 +42,7 @@ function getPreludeCode(_ref) {
+     "__BUNDLE_START_TIME__=this.nativePerformanceNow?nativePerformanceNow():Date.now()",
+     `__DEV__=${String(isDev)}`
+   ].concat(_toConsumableArray(formatExtraVars(extraVars)), [
+-    "process=this.process||{}"
++    "process=process||this.process||global.process||{}"
+   ]);
+   return `var ${vars.join(",")};${processEnv(
+     isDev ? "development" : "production"
 diff --git a/node_modules/metro/src/lib/polyfills/require.js b/node_modules/metro/src/lib/polyfills/require.js
 index 8c04756..d773811 100644
 --- a/node_modules/metro/src/lib/polyfills/require.js
