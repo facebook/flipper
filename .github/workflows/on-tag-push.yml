@@ -1,0 +1,27 @@
+name: On Tag Push
+on:
+  push:
+    tags:
+      - v*
+    branches:
+      - update-version-after-release
+
+jobs:
+  update_podfile:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Branch name
+              id: branch_name
+              run: |
+                echo ::set-output name=SOURCE_NAME::${GITHUB_REF#refs/*/}
+                echo ::set-output name=SOURCE_BRANCH::${GITHUB_REF#refs/heads/}
+                echo ::set-output name=SOURCE_TAG::${GITHUB_REF#refs/tags/}
+              env:
+                SOURCE_NAME: ${{ steps.branch_name.outputs.SOURCE_NAME }}
+                SOURCE_BRANCH: ${{ steps.branch_name.outputs.SOURCE_BRANCH }}
+                SOURCE_TAG: ${{ steps.branch_name.outputs.SOURCE_TAG }}
+
+      - name: Echo
+            run: echo $SOURCE_TAG
