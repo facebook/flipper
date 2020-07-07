@@ -90,6 +90,9 @@ module.exports = {
       "extending/error-handling",
       "extending/testing",
       "extending/debugging",
+      ...FBInternalOnly([
+        "extending/fb/desktop-plugin-releases"
+      ]),
       ...FBInternalOnly([ // TODO: Remove once sandy is public T69061061
         "extending/fb/sandy/sandy-plugins"
       ])
