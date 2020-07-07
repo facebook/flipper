@@ -65,7 +65,7 @@ type DispatchProps = {
   setActiveSheet: typeof setActiveSheet;
 };
 
-const MainContent = styled(FlexRow)({
+const MainContent = styled(FlexColumn)({
   height: 'calc(100vh - 38px)',
 });
 
@@ -154,31 +154,33 @@ export class App extends React.Component<Props> {
     return (
       <FlexColumn grow={true}>
         <TitleBar version={version} />
-        <DoctorBar />
-        <ErrorBar />
         <Sheet>{this.getSheet}</Sheet>
         <MainContent>
-          {this.props.leftSidebarVisible && <MainSidebar2 />}
-          <PluginContent>
-            {this.props.staticView != null ? (
-              React.createElement(this.props.staticView, {
-                logger: this.props.logger,
-              })
-            ) : (
-              <PluginContainer logger={this.props.logger} />
-            )}
-            <div
-              id="flipper-out-of-contents-container"
-              style={{
-                display: 'none',
-                position: 'absolute',
-                right: 0,
-                bottom: 0,
-                left: 0,
-                top: 0,
-              }}
-            />
-          </PluginContent>
+          <DoctorBar />
+          <ErrorBar />
+          <FlexRow grow scrollable>
+            {this.props.leftSidebarVisible && <MainSidebar2 />}
+            <PluginContent>
+              {this.props.staticView != null ? (
+                React.createElement(this.props.staticView, {
+                  logger: this.props.logger,
+                })
+              ) : (
+                <PluginContainer logger={this.props.logger} />
+              )}
+              <div
+                id="flipper-out-of-contents-container"
+                style={{
+                  display: 'none',
+                  position: 'absolute',
+                  right: 0,
+                  bottom: 0,
+                  left: 0,
+                  top: 0,
+                }}
+              />
+            </PluginContent>
+          </FlexRow>
         </MainContent>
         <StatusBar />
       </FlexColumn>
