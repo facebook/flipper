@@ -99,14 +99,10 @@ enum ConnectionStatus {
 }
 
 export default class ReactDevTools extends FlipperDevicePlugin<
-  {
-    status: string;
-  },
+  {status: string},
   any,
   {}
 > {
-  static id = 'React';
-
   static supportsDevice(device: Device) {
     return !device.isArchived && device.os === 'Metro';
   }
