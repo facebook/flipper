@@ -6,6 +6,30 @@ updates:
     interval: weekly
     time: '13:00'
   open-pull-requests-limit: 10
+- package-ecosystem: npm
+  directory: "/flipper-js-client-sdk"
+  schedule:
+    interval: weekly
+    time: '13:00'
+  open-pull-requests-limit: 10
+- package-ecosystem: npm
+  directory: "/react-native/ReactNativeFlipperExample"
+  schedule:
+    interval: weekly
+    time: '13:00'
+  open-pull-requests-limit: 10
+- package-ecosystem: npm
+  directory: "/react-native/react-native-flipper"
+  schedule:
+    interval: weekly
+    time: '13:00'
+  open-pull-requests-limit: 10
+- package-ecosystem: gradle
+  directory: "/android"
+  schedule:
+    interval: weekly
+    time: '13:00'
+  open-pull-requests-limit: 10
 - package-ecosystem: cargo
   directory: "/packer"
   schedule:
