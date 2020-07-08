@@ -1,8 +1,6 @@
 name: On Tag Push
 on:
   push:
-    tags:
-      - v*
     branches:
       - update-version-after-release
 
