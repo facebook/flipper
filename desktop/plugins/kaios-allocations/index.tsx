@@ -184,8 +184,6 @@ export default class AllocationsPlugin extends FlipperDevicePlugin<
     minAllocationSizeInTable: getMinAllocationSizeFromLocalStorage(),
   };
 
-  static id = 'kaios-big-allocations';
-
   static supportsDevice(device: Device) {
     return device instanceof KaiOSDevice;
   }
