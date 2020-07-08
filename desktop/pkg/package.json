@@ -30,7 +30,7 @@
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1",
-    "@types/fs-extra": "^8.1.0",
+    "@types/fs-extra": "^9.0.1",
     "@types/inquirer": "^6.5.0",
     "@types/jest": "^26",
     "@types/node": "^13.7.5",
