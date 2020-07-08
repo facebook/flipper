@@ -13,6 +13,7 @@ jobs:
       - name: Install jq and get version number
         run: |
           sudo apt-get install jq
-          echo $PACKAGE_VERSION
-        env: 
-          PACKAGE_VERSION: $(jq -r .version desktop/package.json)
+          PACKAGE_VERSION=$(jq -r .version desktop/package.json)
+          OLD_VERSION_POD_ARG=$(< "FlipperKit.podspec" grep "flipperkit_version =" )
+          OLD_VERSION="${OLD_VERSION_POD_ARG##* }"
+          echo $OLD_VERSION
