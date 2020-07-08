@@ -38,10 +38,6 @@ import {
 import React from 'react';
 
 export default class extends FlipperPlugin<State, any, PersistedState> {
-  static title = 'Navigation';
-  static id = 'Navigation';
-  static icon = 'directions';
-
   static defaultPersistedState = {
     navigationEvents: [],
     bookmarks: new Map<string, Bookmark>(),
