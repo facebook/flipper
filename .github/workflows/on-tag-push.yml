@@ -16,4 +16,5 @@ jobs:
           PACKAGE_VERSION=$(jq -r .version desktop/package.json)
           OLD_VERSION_POD_ARG=$(< "FlipperKit.podspec" grep "flipperkit_version =" )
           OLD_VERSION="${OLD_VERSION_POD_ARG##* }"
+          echo $PACKAGE_VERSION
           echo $OLD_VERSION
