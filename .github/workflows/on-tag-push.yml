@@ -13,4 +13,8 @@ jobs:
       - name: Install jq and get version number
         run: |
           sudo apt-get install jq
-          jq -r .version desktop/package.json
+          PACKAGE_VERSION=$(jq -r .version desktop/package.json)
+          echo $PACKAGE_VERSION
+
+      - name: Echo package info
+        run: echo $PACKAGE_VERSION
