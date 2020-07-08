@@ -84,7 +84,6 @@ const MultipleSelectorSection: React.FC<MultipleSelectorSectionProps> = memo(
             }}
             onElementHovered={onElementHovered}
             onElementExpanded={() => {}}
-            onValueChanged={null}
             root={null}
             selected={selectedId}
             elements={elements}

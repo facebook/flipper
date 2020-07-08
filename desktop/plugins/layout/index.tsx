@@ -344,7 +344,6 @@ export default class LayoutPlugin extends FlipperPlugin<
       selectedAXElement: this.state.selectedAXElement,
       setPersistedState: this.props.setPersistedState,
       persistedState: this.props.persistedState,
-      onDataValueChanged: this.onDataValueChanged,
       searchResults: this.state.searchResults,
     };
 

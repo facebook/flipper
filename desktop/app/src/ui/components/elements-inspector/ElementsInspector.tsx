@@ -61,7 +61,6 @@ export type ElementsInspectorProps = {
     | ((key: ElementID | undefined | null) => any)
     | undefined
     | null;
-  onValueChanged: ((path: Array<string>, val: any) => any) | undefined | null;
   selected: ElementID | undefined | null;
   focused?: ElementID | undefined | null;
   searchResults?: ElementSearchResultSet | undefined | null;

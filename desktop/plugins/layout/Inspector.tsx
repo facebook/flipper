@@ -48,7 +48,6 @@ type Props = {
   selectedElement: ElementID | null | undefined;
   selectedAXElement: ElementID | null | undefined;
   onSelect: (ids: ElementID | null | undefined) => void;
-  onDataValueChanged: (path: Array<string>, value: any) => void;
   setPersistedState: (state: Partial<PersistedState>) => void;
   persistedState: PersistedState;
   searchResults: ElementSearchResultSet | null;
@@ -443,7 +442,6 @@ export default class Inspector extends Component<Props, State> {
           onElementSelected={this.onElementSelectedAtMainSection}
           onElementHovered={this.onElementHovered}
           onElementExpanded={this.onElementExpanded}
-          onValueChanged={this.props.onDataValueChanged}
           searchResults={this.props.searchResults}
           selected={this.selected()}
           root={this.root()}

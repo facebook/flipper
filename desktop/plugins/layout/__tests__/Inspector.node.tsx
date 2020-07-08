@@ -37,7 +37,6 @@ beforeEach(() => {
       selectedElement={null}
       selectedAXElement={null}
       onSelect={() => {}}
-      onDataValueChanged={() => {}}
       setPersistedState={() => {}}
       persistedState={{
         rootElement: null,

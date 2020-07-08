@@ -200,7 +200,6 @@ export default class LeakCanary<PersistedState> extends FlipperPlugin<
                     onElementExpanded={(eid /*, deep*/) => {
                       this._toggleElement(idx, eid);
                     }}
-                    onValueChanged={() => {}}
                     selected={selected}
                     searchResults={null}
                     root={leak.root}
