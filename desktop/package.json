@@ -192,7 +192,7 @@
     "line-replace": "^2.0.1",
     "metro": "^0.59.0",
     "metro-minify-terser": "^0.59.0",
-    "metro-resolver": "^0.59.0",
+    "metro-resolver": "^0.60.0",
     "node-fetch": "^2.6.0",
     "p-filter": "^2.1.0",
     "p-map": "^4.0.0",

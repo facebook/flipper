@@ -8594,10 +8594,17 @@ metro-react-native-babel-preset@0.59.0:
     "@babel/template" "^7.0.0"
     react-refresh "^0.4.0"
 
-metro-resolver@0.59.0, metro-resolver@^0.59.0:
+metro-resolver@0.59.0:
   version "0.59.0"
   resolved "https://registry.yarnpkg.com/metro-resolver/-/metro-resolver-0.59.0.tgz#fbc9d7c95f094c52807877d0011feffb9e896fad"
   integrity sha512-lbgiumnwoVosffEI96z0FGuq1ejTorHAj3QYUPmp5dFMfitRxLP7Wm/WP9l4ZZjIptxTExsJwuEff1SLRCPD9w==
+  dependencies:
+    absolute-path "^0.0.0"
+
+metro-resolver@^0.60.0:
+  version "0.60.0"
+  resolved "https://registry.yarnpkg.com/metro-resolver/-/metro-resolver-0.60.0.tgz#21c0e4e14b3eb3f88056c924629c89aff948634a"
+  integrity sha512-xemtydxR7y75zswKv04qrOKB7VQYaDUorItyfc9IDFgUS3ayC1+814I7VOLeVWk53fWm+BbmaUTfPuwi/yBxzw==
   dependencies:
     absolute-path "^0.0.0"
 
