@@ -21,7 +21,7 @@
     "@babel/plugin-transform-typescript": "^7.9.0",
     "@babel/preset-env": "^7.9.0",
     "@babel/preset-react": "^7.9.1",
-    "@babel/traverse": "^7.9.0",
+    "@babel/traverse": "^7.10.4",
     "@babel/types": "^7.9.0",
     "@types/fs-extra": "^8.1.0",
     "@types/node": "^13.7.5",
