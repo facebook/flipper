@@ -1,13 +1,13 @@
 {
   "$schema": "https://fbflipper.com/schemas/plugin-package/v2.json",
   "name": "flipper-plugin-hermesdebuggerrn",
-  "id": "flipper-plugin-hermesdebuggerrn",
+  "id": "Hermesdebuggerrn",
   "version": "0.49.0",
   "main": "dist/bundle.js",
   "flipperBundlerEntry": "index.tsx",
   "license": "MIT",
   "title": "Hermes Debugger (RN)",
-  "icon": "apps",
+  "icon": "code",
   "keywords": [
     "flipper-plugin"
   ],

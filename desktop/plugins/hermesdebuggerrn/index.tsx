@@ -61,10 +61,6 @@ const Container = styled(FlexColumn)({
 });
 
 export default class extends FlipperDevicePlugin<State, any, any> {
-  static title = 'Hermes Debugger';
-  static id = 'Hermesdebuggerrn';
-  static icon = 'code';
-
   static supportsDevice(device: Device) {
     return !device.isArchived && device.os === 'Metro';
   }
