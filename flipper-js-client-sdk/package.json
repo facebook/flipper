@@ -23,6 +23,6 @@
   "licenseFilename": "LICENSE",
   "readmeFilename": "README.md",
   "devDependencies": {
-    "typescript": "^3.9.2"
+    "typescript": "^3.9.6"
   }
 }
