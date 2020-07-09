@@ -52,6 +52,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Update Flipper's Podspec
+        run: ./scripts/update-pod-versions.sh ./ ./Flipper.podspec
+
+      - name: Update FlipperKit's Podspec
+        run: ./scripts/update-pod-versions.sh ./ ./FlipperKit.podspec
+
       - name: Update Tutorial's Podfile
         run: ./scripts/update-pod-versions.sh ./ ./iOS/Tutorial/Podfile
 

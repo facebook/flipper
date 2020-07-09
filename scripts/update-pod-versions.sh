@@ -36,11 +36,6 @@ FLIPPER_DIR=$1
 PACKAGE_VERSION=$(jq -r .version "$FLIPPER_DIR/desktop/package.json")
 OLD_VERSION_POD_ARG=$(< "FlipperKit.podspec" grep "flipperkit_version =" )
 OLD_VERSION="${OLD_VERSION_POD_ARG##* }"
-# FLIPPERKIT_PODSPEC_PATH="$FLIPPER_DIR/FlipperKit.podspec"
-# FLIPPER_PODSPEC_PATH="$FLIPPER_DIR/Flipper.podspec"
-# TUTORIAL_PODFILE_PATH="$FLIPPER_DIR/iOS/Tutorial/Podfile"
-# IOS_GETTING_STARTED_DOC="$FLIPPER_DIR/docs/getting-started/ios-native.mdx"
-# RN_IOS_GETTING_STARTED_DOC="$FLIPPER_DIR/docs/getting-started/react-native-ios.mdx"
 FLIPPERKIT_VERSION_TAG='flipperkit_version'
 
 echo "Updating $2"
