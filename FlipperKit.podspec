@@ -15,7 +15,7 @@ Pod::Spec.new do |spec|
   spec.authors = 'Facebook'
   spec.static_framework = true
   spec.source = { :git => 'https://github.com/facebook/Sonar.git',
-                  :tag=> "v0.49.0" }
+                  :tag=> "v"+flipperkit_version }
   spec.module_name = 'FlipperKit'
   spec.platforms = { :ios => "9.0" }
   spec.default_subspecs = "Core"

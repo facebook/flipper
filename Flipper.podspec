@@ -12,7 +12,7 @@ Pod::Spec.new do |spec|
   spec.summary = 'SonarKit core cpp code with network implementation'
   spec.authors = 'Facebook'
   spec.source = { :git => 'https://github.com/facebook/Sonar.git',
-                  :tag => 'v0.40.0' }
+                  :tag => 'v'+flipperkit_version }
   spec.module_name = 'Flipper'
   spec.public_header_files = 'xplat/Flipper/*.h','xplat/utils/*.h'
   spec.source_files = 'xplat/Flipper/*.{h,cpp,m,mm}','xplat/Flipper/utils/*.{h,cpp,m,mm}'
