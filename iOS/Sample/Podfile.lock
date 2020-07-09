@@ -113,7 +113,7 @@ SPEC CHECKSUMS:
   CocoaAsyncSocket: 694058e7c0ed05a9e217d1b3c7ded962f4180845
   CocoaLibEvent: 2fab71b8bd46dd33ddb959f7928ec5909f838e3f
   ComponentKit: c34da1ab3515cf18db68a4ba22c6599568d1de74
-  Flipper: 78dc06980f2a5f7dbf28371a2800955430a95302
+  Flipper: 9e2dbe863d2e4306a32d69d419409eed0bca63fd
   Flipper-DoubleConversion: 38631e41ef4f9b12861c67d17cb5518d06badc41
   Flipper-Folly: c12092ea368353b58e992843a990a3225d4533c3
   Flipper-Glog: 1dfd6abf1e922806c52ceb8701a3599a79a200a6
