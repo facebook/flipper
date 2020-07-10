@@ -106,7 +106,7 @@
     "kind-of": "6.0.3"
   },
   "devDependencies": {
-    "@babel/code-frame": "^7.8.3",
+    "@babel/code-frame": "^7.10.4",
     "@jest-runner/electron": "^3.0.0",
     "@testing-library/react": "^10.0.2",
     "@types/algoliasearch": "^3.30.19",
