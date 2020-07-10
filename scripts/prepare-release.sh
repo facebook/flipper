@@ -45,12 +45,7 @@ VERSION_PART="${2:-minor}"
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 SONAR_DIR="$DIR/../"
 DESKTOP_DIR="$SONAR_DIR/desktop"
-FLIPPERKIT_PODSPEC_PATH="$SONAR_DIR/FlipperKit.podspec"
 FLIPPER_PODSPEC_PATH="$SONAR_DIR/Flipper.podspec"
-TUTORIAL_PODFILE_PATH="$SONAR_DIR/iOS/Tutorial/Podfile"
-IOS_GETTING_STARTED_DOC="$SONAR_DIR/docs/getting-started/ios-native.mdx"
-RN_IOS_GETTING_STARTED_DOC="$SONAR_DIR/docs/getting-started/react-native-ios.mdx"
-SPECS_DIR="$SONAR_DIR/Specs/"
 FLIPPERKIT_VERSION_TAG='flipperkit_version'
 OLD_VERSION_POD_ARG=$(< "$FLIPPER_PODSPEC_PATH" grep "$FLIPPERKIT_VERSION_TAG =" )
 OLD_VERSION="${OLD_VERSION_POD_ARG##* }"
@@ -83,32 +78,6 @@ yarn --cwd "$SONAR_DIR"/react-native/react-native-flipper version --new-version 
 # This could be one expression with GNU sed, but I guess we want to support the BSD crap, too.
 SNAPSHOT_MINOR_VERSION=$(echo "$VERSION" | sed -Ee 's/([0-9]+)\.([0-9]+)\.([0-9]+)/\3 + 1/' | bc)
 SNAPSHOT_VERSION="$(echo "$VERSION" | sed -Ee 's/([0-9]+)\.([0-9]+)\.([0-9]+)/\1.\2./')""$SNAPSHOT_MINOR_VERSION""-SNAPSHOT"
-
-echo "Updating version $VERSION in podspecs, podfiles and in getting started docs..."
-
-# Update Podspec files and podfiles with correct version
-echo "Updating $FLIPPERKIT_PODSPEC_PATH"
-if $darwin; then
-sed -i '' "s/${FLIPPERKIT_VERSION_TAG} = ${OLD_VERSION}/${FLIPPERKIT_VERSION_TAG} = '${VERSION}'/" "$FLIPPERKIT_PODSPEC_PATH"
-echo "Updating $FLIPPER_PODSPEC_PATH"
-sed -i '' "s/${FLIPPERKIT_VERSION_TAG} = ${OLD_VERSION}/${FLIPPERKIT_VERSION_TAG} = '${VERSION}'/" "$FLIPPER_PODSPEC_PATH"
-echo "Updating $IOS_GETTING_STARTED_DOC"
-sed -i '' "s/${FLIPPERKIT_VERSION_TAG} = ${OLD_VERSION}/${FLIPPERKIT_VERSION_TAG} = '${VERSION}'/" "$IOS_GETTING_STARTED_DOC"
-echo "Updating $RN_IOS_GETTING_STARTED_DOC"
-sed -i '' "s/${FLIPPERKIT_VERSION_TAG} = ${OLD_VERSION}/${FLIPPERKIT_VERSION_TAG} = '${VERSION}'/" "$RN_IOS_GETTING_STARTED_DOC"
-echo "Updating $TUTORIAL_PODFILE_PATH"
-sed -i '' "s/${FLIPPERKIT_VERSION_TAG} = ${OLD_VERSION}/${FLIPPERKIT_VERSION_TAG} = '${VERSION}'/" "$TUTORIAL_PODFILE_PATH"
-else
-  sed -i "s/${FLIPPERKIT_VERSION_TAG} = ${OLD_VERSION}/${FLIPPERKIT_VERSION_TAG} = '${VERSION}'/" "$FLIPPERKIT_PODSPEC_PATH"
-  echo "Updating $FLIPPER_PODSPEC_PATH"
-  sed -i "s/${FLIPPERKIT_VERSION_TAG} = ${OLD_VERSION}/${FLIPPERKIT_VERSION_TAG} = '${VERSION}'/" "$FLIPPER_PODSPEC_PATH"
-  echo "Updating $IOS_GETTING_STARTED_DOC"
-  sed -i "s/${FLIPPERKIT_VERSION_TAG} = ${OLD_VERSION}/${FLIPPERKIT_VERSION_TAG} = '${VERSION}'/" "$IOS_GETTING_STARTED_DOC"
-  echo "Updating $RN_IOS_GETTING_STARTED_DOC"
-  sed -i "s/${FLIPPERKIT_VERSION_TAG} = ${OLD_VERSION}/${FLIPPERKIT_VERSION_TAG} = '${VERSION}'/" "$RN_IOS_GETTING_STARTED_DOC"
-  echo "Updating $TUTORIAL_PODFILE_PATH"
-  sed -i "s/${FLIPPERKIT_VERSION_TAG} = ${OLD_VERSION}/${FLIPPERKIT_VERSION_TAG} = '${VERSION}'/" "$TUTORIAL_PODFILE_PATH"
-fi
 
 echo "Bumping version number for android related files..."
 # Update Android related files
