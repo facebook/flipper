@@ -181,7 +181,9 @@ test('test processStore function for empty state', () => {
     salt: 'salt',
     selectedPlugins: [],
   });
-  expect(json).resolves.toBeNull();
+  expect(json).rejects.toMatchInlineSnapshot(
+    `[Error: Selected device is null, please select a device]`,
+  );
 });
 
 test('test processStore function for an iOS device connected', async () => {
@@ -204,14 +206,12 @@ test('test processStore function for an iOS device connected', async () => {
   });
   if (!json) {
     fail('json is undefined');
-    return;
   }
   const {device, clients} = json;
   expect(json.device).toBeDefined();
   expect(clients).toEqual([]);
   if (!device) {
     fail('device is undefined');
-    return;
   }
   const {serial, deviceType, title, os} = device;
   expect(serial).toEqual('salt-serial');
@@ -247,7 +247,6 @@ test('test processStore function for an iOS device connected with client plugin 
   });
   if (!json) {
     fail('json is undefined');
-    return;
   }
   const {pluginStates} = json.store;
   const expectedPluginState = {
@@ -314,7 +313,6 @@ test('test processStore function to have only the client for the selected device
 
   if (!json) {
     fail('json is undefined');
-    return;
   }
   const {clients} = json;
   const {pluginStates} = json.store;
@@ -375,7 +373,6 @@ test('test processStore function to have multiple clients for the selected devic
 
   if (!json) {
     fail('json is undefined');
-    return;
   }
   const {clients} = json;
   const {pluginStates} = json.store;
@@ -423,7 +420,6 @@ test('test processStore function for device plugin state and no clients', async 
 
   if (!json) {
     fail('json is undefined');
-    return;
   }
   const {pluginStates} = json.store;
   const {clients} = json;
@@ -460,7 +456,6 @@ test('test processStore function for unselected device plugin state and no clien
   });
   if (!json) {
     fail('json is undefined');
-    return;
   }
   const {pluginStates} = json.store;
   const {clients} = json;
@@ -503,7 +498,6 @@ test('test processStore function for notifications for selected device', async (
 
   if (!json) {
     fail('json is undefined');
-    return;
   }
   const {pluginStates} = json.store;
   const {clients} = json;
@@ -565,7 +559,6 @@ test('test processStore function for notifications for unselected device', async
   });
   if (!json) {
     fail('json is undefined');
-    return;
   }
   const {pluginStates} = json.store;
   const {clients} = json;
@@ -609,7 +602,6 @@ test('test processStore function for selected plugins', async () => {
   });
   if (!json) {
     fail('json is undefined');
-    return;
   }
   const {pluginStates} = json.store;
   const {clients} = json;
@@ -660,7 +652,6 @@ test('test processStore function for no selected plugins', async () => {
 
   if (!json) {
     fail('json is undefined');
-    return;
   }
   const {pluginStates} = json.store;
   const {clients} = json;
