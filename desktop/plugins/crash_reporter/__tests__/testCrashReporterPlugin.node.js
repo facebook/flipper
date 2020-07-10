@@ -8,14 +8,14 @@
  */
 
 import {BaseDevice} from 'flipper';
-import CrashReporterPlugin from '../../crash_reporter';
-import type {PersistedState, Crash} from '../../crash_reporter';
+import CrashReporterPlugin from '..';
+import type {PersistedState, Crash} from '..';
 import {
   parseCrashLog,
   getNewPersisitedStateFromCrashLog,
   parsePath,
   shouldShowCrashNotification,
-} from '../../crash_reporter';
+} from '..';
 import {getPluginKey, getPersistedState} from 'flipper';
 
 function setDefaultPersistedState(defaultState: PersistedState) {
