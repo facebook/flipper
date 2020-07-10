@@ -15,7 +15,7 @@
     "metro-minify-terser": "^0.59.0"
   },
   "devDependencies": {
-    "@types/fs-extra": "^8.1.0",
+    "@types/fs-extra": "^9.0.1",
     "@types/jest": "^26",
     "@types/node": "^13.7.5",
     "flipper-test-utils": "0.49.0",
