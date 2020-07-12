@@ -23,12 +23,20 @@ ipcRenderer.on('parent-window-id', (event, message) => {
   flipperState.mainWindowId = message;
 });
 
+function cleanUpGWTArray(arr) {
+  const res = [];
+  for (let i = 0; i < arr.length; i++) {
+    res.push(arr[i]);
+  }
+  return res;
+}
+
 function initClient(plugins, appName) {
   if (flipperState.isClientInit) {
     return;
   }
   if (plugins) {
-    flipperState.plugins = plugins;
+    flipperState.plugins = cleanUpGWTArray(plugins);
   }
   if (appName) {
     flipperState.appName = appName;
