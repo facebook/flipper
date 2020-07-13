@@ -198,7 +198,7 @@
     "p-map": "^4.0.0",
     "pkg": "^4.4.1",
     "prettier": "^2.0.0",
-    "pretty-format": "^26.0.0",
+    "pretty-format": "^26.1.0",
     "promisify-child-process": "^4.1.0",
     "react-async": "^10.0.0",
     "react-refresh": "^0.8.1",
