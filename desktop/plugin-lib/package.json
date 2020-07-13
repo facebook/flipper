@@ -22,7 +22,7 @@
     "@types/jest": "^26",
     "@types/node": "^13.7.5",
     "flipper-test-utils": "0.50.0",
-    "globby": "^10",
+    "globby": "^11",
     "jest": "^26",
     "mock-fs": "^4.12.0",
     "rimraf": "^3.0.2",
