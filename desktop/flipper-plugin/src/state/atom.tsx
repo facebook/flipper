@@ -9,6 +9,7 @@
 
 import {produce} from 'immer';
 import {useState, useEffect} from 'react';
+import {currentPluginInstance} from '../plugin/Plugin';
 
 export type Atom<T> = {
   get(): T;
@@ -56,8 +57,38 @@ class AtomValue<T> implements Atom<T> {
   }
 }
 
-export function createState<T>(initialValue: T): Atom<T> {
-  return new AtomValue<T>(initialValue);
+type StateOptions = {
+  /**
+   * Should this state persist when exporting a plugin?
+   * If set, the atom will be saved / loaded under the key provided
+   */
+  persist?: string;
+};
+
+export function createState<T>(
+  initialValue: T,
+  options: StateOptions = {},
+): Atom<T> {
+  const atom = new AtomValue<T>(initialValue);
+  if (currentPluginInstance && options.persist) {
+    const {initialStates, rootStates} = currentPluginInstance;
+    if (initialStates) {
+      if (options.persist in initialStates) {
+        atom.set(initialStates[options.persist]);
+      } else {
+        console.warn(
+          `Tried to initialize plugin with existing data, however data for "${options.persist}" is missing. Was the export created with a different Flipper version?`,
+        );
+      }
+    }
+    if (rootStates[options.persist]) {
+      throw new Error(
+        `Some other state is already persisting with key "${options.persist}"`,
+      );
+    }
+    rootStates[options.persist] = atom;
+  }
+  return atom;
 }
 
 export function useValue<T>(atom: Atom<T>): T {
@@ -72,4 +103,8 @@ export function useValue<T>(atom: Atom<T>): T {
     };
   }, [atom]);
   return localValue;
+}
+
+export function isAtom(value: any): value is Atom<any> {
+  return value instanceof AtomValue;
 }

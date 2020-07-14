@@ -26,9 +26,14 @@ export function plugin(client: FlipperClient<Events, Methods>) {
   const connectStub = jest.fn();
   const disconnectStub = jest.fn();
   const destroyStub = jest.fn();
-  const state = createState({
-    count: 0,
-  });
+  const state = createState(
+    {
+      count: 0,
+    },
+    {
+      persist: 'counter',
+    },
+  );
 
   // TODO: add tests for sending and receiving data T68683442
   // including typescript assertions

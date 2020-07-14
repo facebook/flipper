@@ -9,6 +9,7 @@
 
 import * as TestUtils from '../test-utils/test-utils';
 import * as testPlugin from './TestPlugin';
+import {createState} from '../state/atom';
 
 test('it can start a plugin and lifecycle events', () => {
   const {instance, ...p} = TestUtils.startPlugin(testPlugin);
@@ -114,9 +115,81 @@ test('a plugin cannot send messages after being disconnected', async () => {
 });
 
 test('a plugin can receive messages', async () => {
-  const {instance, sendEvent} = TestUtils.startPlugin(testPlugin);
+  const {instance, sendEvent, exportState} = TestUtils.startPlugin(testPlugin);
   expect(instance.state.get().count).toBe(0);
 
   sendEvent('inc', {delta: 2});
   expect(instance.state.get().count).toBe(2);
+  expect(exportState()).toMatchInlineSnapshot(`
+    Object {
+      "counter": Object {
+        "count": 2,
+      },
+    }
+  `);
+});
+
+test('plugins support non-serializable state', async () => {
+  const {exportState} = TestUtils.startPlugin({
+    plugin() {
+      const field1 = createState(true);
+      const field2 = createState(
+        {
+          test: 3,
+        },
+        {
+          persist: 'field2',
+        },
+      );
+      return {
+        field1,
+        field2,
+      };
+    },
+    Component() {
+      return null;
+    },
+  });
+  // states are serialized in creation order
+  expect(exportState()).toEqual({field2: {test: 3}});
+});
+
+test('plugins support restoring state', async () => {
+  const {exportState} = TestUtils.startPlugin(
+    {
+      plugin() {
+        const field1 = createState(1, {persist: 'field1'});
+        const field2 = createState(2);
+        const field3 = createState(3, {persist: 'field3'});
+        expect(field1.get()).toBe('a');
+        expect(field2.get()).toBe(2);
+        expect(field3.get()).toBe('b');
+        return {};
+      },
+      Component() {
+        return null;
+      },
+    },
+    {
+      initialState: {field1: 'a', field3: 'b'},
+    },
+  );
+  expect(exportState()).toEqual({field1: 'a', field3: 'b'});
+});
+
+test('plugins cannot use a persist key twice', async () => {
+  expect(() => {
+    TestUtils.startPlugin({
+      plugin() {
+        const field1 = createState(1, {persist: 'test'});
+        const field2 = createState(2, {persist: 'test'});
+        return {field1, field2};
+      },
+      Component() {
+        return null;
+      },
+    });
+  }).toThrowErrorMatchingInlineSnapshot(
+    `"Some other state is already persisting with key \\"test\\""`,
+  );
 });

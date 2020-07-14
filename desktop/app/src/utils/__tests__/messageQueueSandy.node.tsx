@@ -514,40 +514,40 @@ test('client - incoming messages are buffered and flushed together', async () =>
         }
       `);
   expect(client.messageBuffer).toMatchInlineSnapshot(`
-        Object {
-          "TestApp#Android#MockAndroidDevice#serial#DevicePlugin": Object {
-            "messages": Array [
-              Object {
-                "api": "DevicePlugin",
-                "method": "log",
-                "params": Object {
-                  "line": "suff",
-                },
-              },
-            ],
-            "plugin": [Function],
+    Object {
+      "TestApp#Android#MockAndroidDevice#serial#DevicePlugin": Object {
+        "messages": Array [
+          Object {
+            "api": "DevicePlugin",
+            "method": "log",
+            "params": Object {
+              "line": "suff",
+            },
           },
-          "TestApp#Android#MockAndroidDevice#serial#TestPlugin": Object {
-            "messages": Array [
-              Object {
-                "api": "TestPlugin",
-                "method": "inc",
-                "params": Object {
-                  "delta": 2,
-                },
-              },
-              Object {
-                "api": "TestPlugin",
-                "method": "inc",
-                "params": Object {
-                  "delta": 3,
-                },
-              },
-            ],
-            "plugin": undefined,
+        ],
+        "plugin": [Function],
+      },
+      "TestApp#Android#MockAndroidDevice#serial#TestPlugin": Object {
+        "messages": Array [
+          Object {
+            "api": "TestPlugin",
+            "method": "inc",
+            "params": Object {
+              "delta": 2,
+            },
           },
-        }
-      `);
+          Object {
+            "api": "TestPlugin",
+            "method": "inc",
+            "params": Object {
+              "delta": 3,
+            },
+          },
+        ],
+        "plugin": "[SandyPluginInstance]",
+      },
+    }
+  `);
   expect(client.messageBuffer[pluginKey].plugin).toBeInstanceOf(
     SandyPluginInstance,
   );
@@ -661,7 +661,7 @@ test('queue - messages that have not yet flushed be lost when disabling the plug
             },
           },
         ],
-        "plugin": undefined,
+        "plugin": "[SandyPluginInstance]",
       },
     }
   `);

@@ -31,8 +31,7 @@ import {act} from '@testing-library/react';
 type Renderer = RenderResult<typeof queries>;
 
 interface StartPluginOptions {
-  // TODO: support initial events T68683442 (and type correctly)
-  // TODO: support initial state T68683449 (and type correctly)
+  initialState?: Record<string, any>;
 }
 
 type ExtractClientType<Module extends FlipperPluginModule<any>> = Parameters<
@@ -100,11 +99,13 @@ interface StartPluginResult<Module extends FlipperPluginModule<any>> {
       params: any; // afaik we can't type this :-(
     }[],
   ): void;
+
+  exportState(): any;
 }
 
 export function startPlugin<Module extends FlipperPluginModule<any>>(
   module: Module,
-  _options?: StartPluginOptions,
+  options?: StartPluginOptions,
 ): StartPluginResult<Module> {
   const definition = new SandyPluginDefinition(
     createMockPluginDetails(),
@@ -134,7 +135,11 @@ export function startPlugin<Module extends FlipperPluginModule<any>>(
     },
   };
 
-  const pluginInstance = new SandyPluginInstance(fakeFlipper, definition);
+  const pluginInstance = new SandyPluginInstance(
+    fakeFlipper,
+    definition,
+    options?.initialState,
+  );
   // we start connected
   pluginInstance.activate();
 
@@ -158,6 +163,7 @@ export function startPlugin<Module extends FlipperPluginModule<any>>(
         pluginInstance.receiveMessages(messages as any);
       });
     },
+    exportState: () => pluginInstance.exportState(),
   };
   // @ts-ignore
   res._backingInstance = pluginInstance;

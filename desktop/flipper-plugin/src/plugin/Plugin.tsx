@@ -9,6 +9,7 @@
 
 import {SandyPluginDefinition} from './SandyPluginDefinition';
 import {EventEmitter} from 'events';
+import {Atom} from '../state/atom';
 
 type EventsContract = Record<string, any>;
 type MethodsContract = Record<string, (params: any) => Promise<any>>;
@@ -88,6 +89,8 @@ export type FlipperPluginFactory<
 
 export type FlipperPluginComponent = React.FC<{}>;
 
+export let currentPluginInstance: SandyPluginInstance | undefined = undefined;
+
 export class SandyPluginInstance {
   static is(thing: any): thing is SandyPluginInstance {
     return thing instanceof SandyPluginInstance;
@@ -106,9 +109,15 @@ export class SandyPluginInstance {
   destroyed = false;
   events = new EventEmitter();
 
+  // temporarily field that is used during deserialization
+  initialStates?: Record<string, any>;
+  // all the atoms that should be serialized when making an export / import
+  rootStates: Record<string, Atom<any>> = {};
+
   constructor(
     realClient: RealFlipperClient,
     definition: SandyPluginDefinition,
+    initialStates?: Record<string, any>,
   ) {
     this.realClient = realClient;
     this.definition = definition;
@@ -135,7 +144,14 @@ export class SandyPluginInstance {
         this.events.on('event-' + event, callback);
       },
     };
-    this.instanceApi = definition.module.plugin(this.client);
+    currentPluginInstance = this;
+    this.initialStates = initialStates;
+    try {
+      this.instanceApi = definition.module.plugin(this.client);
+    } finally {
+      this.initialStates = undefined;
+      currentPluginInstance = undefined;
+    }
   }
 
   // the plugin is selected in the UI
@@ -192,8 +208,13 @@ export class SandyPluginInstance {
   }
 
   toJSON() {
-    this.assertNotDestroyed();
-    // TODO: T68683449
+    return '[SandyPluginInstance]';
+  }
+
+  exportState() {
+    return Object.fromEntries(
+      Object.entries(this.rootStates).map(([key, atom]) => [key, atom.get()]),
+    );
   }
 
   private assertNotDestroyed() {
