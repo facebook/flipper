@@ -203,11 +203,9 @@ export function getPersistentPlugins(plugins: PluginsState): Array<string> {
     const pluginClass = pluginsMap.get(plugin);
     return (
       plugin == 'DeviceLogs' ||
-      (pluginClass &&
-        // TODO: support Sandy plugin T68683449
-        !isSandyPlugin(pluginClass) &&
-        (pluginClass.defaultPersistedState != undefined ||
-          pluginClass.exportPersistedState != undefined))
+      isSandyPlugin(pluginClass) ||
+      pluginClass?.defaultPersistedState ||
+      pluginClass?.exportPersistedState
     );
   });
 }

@@ -291,6 +291,20 @@ export default class Client extends EventEmitter {
     });
   }
 
+  initFromImport(initialStates: Record<string, Record<string, any>>): this {
+    this.plugins.forEach((pluginId) => {
+      const plugin = this.getPlugin(pluginId);
+      if (isSandyPlugin(plugin)) {
+        // TODO: needs to be wrapped in error tracking T68955280
+        this.sandyPluginStates.set(
+          plugin.id,
+          new SandyPluginInstance(this, plugin, initialStates[pluginId]),
+        );
+      }
+    });
+    return this;
+  }
+
   // get the supported plugins
   async loadPlugins(): Promise<Plugins> {
     const plugins = await this.rawCall<{plugins: Plugins}>(
@@ -327,7 +341,6 @@ export default class Client extends EventEmitter {
       !this.sandyPluginStates.has(plugin.id)
     ) {
       // TODO: needs to be wrapped in error tracking T68955280
-      // TODO: pick up any existing persisted state T68683449
       this.sandyPluginStates.set(
         plugin.id,
         new SandyPluginInstance(this, plugin),
@@ -345,7 +358,6 @@ export default class Client extends EventEmitter {
     const instance = this.sandyPluginStates.get(pluginId);
     if (instance) {
       instance.destroy();
-      // TODO: make sure persisted state is writtenT68683449
       this.sandyPluginStates.delete(pluginId);
     }
   }

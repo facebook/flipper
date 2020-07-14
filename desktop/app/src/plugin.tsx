@@ -38,7 +38,7 @@ export type ClientPluginMap = Map<string, ClientPluginDefinition>;
 export type DevicePluginMap = Map<string, DevicePluginDefinition>;
 
 export function isSandyPlugin(
-  plugin?: PluginDefinition,
+  plugin?: PluginDefinition | null,
 ): plugin is SandyPluginDefinition {
   return plugin instanceof SandyPluginDefinition;
 }

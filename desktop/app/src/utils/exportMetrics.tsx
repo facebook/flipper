@@ -47,7 +47,7 @@ async function exportMetrics(
     const metricsReducer:
       | (<U>(persistedState: U) => Promise<MetricType>)
       | undefined =
-      pluginClass && !isSandyPlugin(pluginClass)
+      pluginClass && !isSandyPlugin(pluginClass) // This feature doesn't seem to be used at all, so let's add it when needed for Sandy
         ? pluginClass.metricsReducer
         : undefined;
     if (pluginsMap.has(pluginName) && metricsReducer) {
@@ -135,6 +135,5 @@ export async function exportMetricsFromTrace(
       ),
     );
   }
-  // TODO: Support Sandy T68683449 and use ClientPluginsMap, or kill feature
   return await exportMetrics(pluginStates, pluginsMap, selectedPlugins);
 }

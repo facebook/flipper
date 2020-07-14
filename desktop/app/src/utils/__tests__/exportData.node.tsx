@@ -11,11 +11,24 @@ import {State} from '../../reducers/index';
 import configureStore from 'redux-mock-store';
 import {default as BaseDevice} from '../../devices/BaseDevice';
 import {default as ArchivedDevice} from '../../devices/ArchivedDevice';
-import {processStore, determinePluginsToProcess} from '../exportData';
+import {
+  processStore,
+  determinePluginsToProcess,
+  exportStore,
+  importDataToStore,
+} from '../exportData';
 import {FlipperPlugin, FlipperDevicePlugin} from '../../plugin';
 import {Notification} from '../../plugin';
 import {default as Client, ClientExport} from '../../Client';
 import {State as PluginsState} from '../../reducers/plugins';
+import {renderMockFlipperWithPlugin} from '../../test-utils/createMockFlipperWithPlugin';
+import {
+  TestUtils,
+  SandyPluginDefinition,
+  createState,
+  FlipperClient,
+} from 'flipper-plugin';
+import {selectPlugin} from '../../reducers/connections';
 
 class TestPlugin extends FlipperPlugin<any, any, any> {}
 TestPlugin.title = 'TestPlugin';
@@ -170,18 +183,20 @@ test('test generateNotifications helper function', () => {
   });
 });
 
-test('test processStore function for empty state', () => {
-  const json = processStore({
-    activeNotifications: [],
-    device: null,
-    pluginStates: {},
-    clients: [],
-    devicePlugins: new Map(),
-    clientPlugins: new Map(),
-    salt: 'salt',
-    selectedPlugins: [],
-  });
-  expect(json).rejects.toMatchInlineSnapshot(
+test('test processStore function for empty state', async () => {
+  expect(
+    processStore({
+      activeNotifications: [],
+      device: null,
+      pluginStates: {},
+      clients: [],
+      devicePlugins: new Map(),
+      clientPlugins: new Map(),
+      salt: 'salt',
+      selectedPlugins: [],
+      pluginStates2: {},
+    }),
+  ).rejects.toMatchInlineSnapshot(
     `[Error: Selected device is null, please select a device]`,
   );
 });
@@ -198,6 +213,7 @@ test('test processStore function for an iOS device connected', async () => {
       screenshotHandle: null,
     }),
     pluginStates: {},
+    pluginStates2: {},
     clients: [],
     devicePlugins: new Map(),
     clientPlugins: new Map(),
@@ -232,6 +248,7 @@ test('test processStore function for an iOS device connected with client plugin 
     logEntries: [],
     screenshotHandle: null,
   });
+  const client = generateClientFromDevice(device, 'testapp');
   const clientIdentifier = generateClientIdentifier(device, 'testapp');
   const json = await processStore({
     activeNotifications: [],
@@ -239,7 +256,10 @@ test('test processStore function for an iOS device connected with client plugin 
     pluginStates: {
       [`${clientIdentifier}#TestPlugin`]: {msg: 'Test plugin'},
     },
-    clients: [generateClientFromDevice(device, 'testapp')],
+    pluginStates2: {
+      [`${clientIdentifier}`]: {TestPlugin2: [{msg: 'Test plugin2'}]},
+    },
+    clients: [client],
     devicePlugins: new Map(),
     clientPlugins: new Map([['TestPlugin', TestPlugin]]),
     salt: 'salt',
@@ -257,7 +277,17 @@ test('test processStore function for an iOS device connected with client plugin 
       msg: 'Test plugin',
     }),
   };
+  const expectedPluginState2 = {
+    [`${generateClientIdentifierWithSalt(clientIdentifier, 'salt')}`]: {
+      TestPlugin2: [
+        {
+          msg: 'Test plugin2',
+        },
+      ],
+    },
+  };
   expect(pluginStates).toEqual(expectedPluginState);
+  expect(json.pluginStates2).toEqual(expectedPluginState2);
 });
 
 test('test processStore function to have only the client for the selected device', async () => {
@@ -301,6 +331,7 @@ test('test processStore function to have only the client for the selected device
         msg: 'Test plugin selected device',
       },
     },
+    pluginStates2: {},
     clients: [
       selectedDeviceClient,
       generateClientFromDevice(unselectedDevice, 'testapp'),
@@ -361,6 +392,7 @@ test('test processStore function to have multiple clients for the selected devic
         msg: 'Test plugin App2',
       },
     },
+    pluginStates2: {},
     clients: [
       generateClientFromDevice(selectedDevice, 'testapp1'),
       generateClientFromDevice(selectedDevice, 'testapp2'),
@@ -411,6 +443,7 @@ test('test processStore function for device plugin state and no clients', async 
         msg: 'Test Device plugin',
       },
     },
+    pluginStates2: {},
     clients: [],
     devicePlugins: new Map([['TestDevicePlugin', TestDevicePlugin]]),
     clientPlugins: new Map(),
@@ -448,6 +481,7 @@ test('test processStore function for unselected device plugin state and no clien
         msg: 'Test Device plugin',
       },
     },
+    pluginStates2: {},
     clients: [],
     devicePlugins: new Map([['TestDevicePlugin', TestDevicePlugin]]),
     clientPlugins: new Map(),
@@ -489,6 +523,7 @@ test('test processStore function for notifications for selected device', async (
     activeNotifications: [activeNotification],
     device: selectedDevice,
     pluginStates: {},
+    pluginStates2: {},
     clients: [client],
     devicePlugins: new Map([['TestDevicePlugin', TestDevicePlugin]]),
     clientPlugins: new Map(),
@@ -551,6 +586,7 @@ test('test processStore function for notifications for unselected device', async
     activeNotifications: [activeNotification],
     device: selectedDevice,
     pluginStates: {},
+    pluginStates2: {},
     clients: [client, unselectedclient],
     devicePlugins: new Map(),
     clientPlugins: new Map(),
@@ -591,6 +627,7 @@ test('test processStore function for selected plugins', async () => {
     activeNotifications: [],
     device: selectedDevice,
     pluginStates: pluginstates,
+    pluginStates2: {},
     clients: [client],
     devicePlugins: new Map([
       ['TestDevicePlugin1', TestDevicePlugin],
@@ -640,6 +677,7 @@ test('test processStore function for no selected plugins', async () => {
     activeNotifications: [],
     device: selectedDevice,
     pluginStates: pluginstates,
+    pluginStates2: {},
     clients: [client],
     devicePlugins: new Map([
       ['TestDevicePlugin1', TestDevicePlugin],
@@ -934,4 +972,129 @@ test('test determinePluginsToProcess to ignore archived clients', async () => {
       client: client,
     },
   ]);
+});
+
+const sandyTestPlugin = new SandyPluginDefinition(
+  TestUtils.createMockPluginDetails(),
+  {
+    plugin(
+      client: FlipperClient<{
+        inc: {};
+      }>,
+    ) {
+      const counter = createState(0, {persist: 'counter'});
+      const _somethingElse = createState(0);
+      const anotherState = createState({testCount: 0}, {persist: 'otherState'});
+
+      client.onMessage('inc', () => {
+        counter.set(counter.get() + 1);
+        anotherState.update((draft) => {
+          draft.testCount -= 1;
+        });
+      });
+      return {};
+    },
+    Component() {
+      return null;
+    },
+  },
+);
+
+test('Sandy plugins are exported properly', async () => {
+  const {client, sendMessage, store} = await renderMockFlipperWithPlugin(
+    sandyTestPlugin,
+  );
+
+  // We do select another plugin, to verify that pending message queues are indeed processed before exporting
+  store.dispatch(
+    selectPlugin({
+      selectedPlugin: 'DeviceLogs',
+      selectedApp: client.id,
+      deepLinkPayload: null,
+    }),
+  );
+
+  // Deliberately not using 'act' here, to verify that exportStore itself makes sure buffers are flushed first
+  sendMessage('inc', {});
+  sendMessage('inc', {});
+  sendMessage('inc', {});
+
+  const storeExport = await exportStore(store);
+  const serial = storeExport.exportStoreData.device!.serial;
+  expect(serial).not.toBeFalsy();
+  expect(storeExport.exportStoreData.pluginStates2).toEqual({
+    [`TestApp#Android#MockAndroidDevice#${serial}`]: {
+      TestPlugin: {counter: 3, otherState: {testCount: -3}},
+    },
+  });
+});
+
+test('Sandy plugins are imported properly', async () => {
+  const data = {
+    clients: [
+      {
+        id:
+          'TestApp#Android#MockAndroidDevice#2e52cea6-94b0-4ea1-b9a8-c9135ede14ca-serial',
+        query: {
+          app: 'TestApp',
+          device: 'MockAndroidDevice',
+          device_id: '2e52cea6-94b0-4ea1-b9a8-c9135ede14ca-serial',
+          os: 'Android',
+          sdk_version: 4,
+        },
+      },
+    ],
+    device: {
+      deviceType: 'archivedPhysical',
+      logs: [],
+      os: 'Android',
+      serial: '2e52cea6-94b0-4ea1-b9a8-c9135ede14ca-serial',
+      title: 'MockAndroidDevice',
+    },
+    deviceScreenshot: null,
+    fileVersion: '0.9.99',
+    flipperReleaseRevision: undefined,
+    pluginStates2: {
+      'TestApp#Android#MockAndroidDevice#2e52cea6-94b0-4ea1-b9a8-c9135ede14ca-serial': {
+        TestPlugin: {
+          otherState: {
+            testCount: -3,
+          },
+          counter: 3,
+        },
+      },
+    },
+    store: {
+      activeNotifications: [],
+      pluginStates: {},
+    },
+  };
+
+  const {client, store} = await renderMockFlipperWithPlugin(sandyTestPlugin);
+
+  await importDataToStore('unittest.json', JSON.stringify(data), store);
+
+  const client2 = store.getState().connections.clients[1];
+  expect(client2).not.toBeFalsy();
+  expect(client2).not.toBe(client);
+  expect(client2.plugins).toEqual([TestPlugin.id]);
+
+  expect(client.sandyPluginStates.get(TestPlugin.id)!.exportState())
+    .toMatchInlineSnapshot(`
+    Object {
+      "counter": 0,
+      "otherState": Object {
+        "testCount": 0,
+      },
+    }
+  `);
+  expect(client2.sandyPluginStates.get(TestPlugin.id)!.exportState())
+    .toMatchInlineSnapshot(`
+    Object {
+      "counter": 3,
+      "otherState": Object {
+        "testCount": -3,
+      },
+    }
+  `);
 });

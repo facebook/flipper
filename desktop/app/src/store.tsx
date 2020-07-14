@@ -70,7 +70,6 @@ export function rootReducer(
             client.deinitPlugin(selectedPlugin);
           }
           // stop sandy plugins
-          // TODO: forget any persisted state as well T68683449
           client.stopPluginIfNeeded(plugin.id);
           delete draft.pluginMessageQueue[
             getPluginKey(client.id, {serial: client.query.device_id}, plugin.id)
