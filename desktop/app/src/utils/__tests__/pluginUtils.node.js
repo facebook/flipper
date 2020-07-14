@@ -95,6 +95,7 @@ function mockPluginState(
 function mockPluginDefinition(name: string): PluginDetails {
   return {
     name,
+    id: name,
     out: 'out',
   };
 }

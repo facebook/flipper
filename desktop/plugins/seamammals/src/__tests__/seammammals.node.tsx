@@ -119,4 +119,23 @@ test('It can have selection and render details', async () => {
 
   // Sidebar should be visible now
   expect(await renderer.findByText('Extras')).not.toBeNull();
+
+  // Verify export
+  expect(plugin.exportState()).toMatchInlineSnapshot(`
+    Object {
+      "rows": Object {
+        "1": Object {
+          "id": 1,
+          "title": "Dolphin",
+          "url": "http://dolphin.png",
+        },
+        "2": Object {
+          "id": 2,
+          "title": "Turtle",
+          "url": "http://turtle.png",
+        },
+      },
+      "selection": "2",
+    }
+  `);
 });

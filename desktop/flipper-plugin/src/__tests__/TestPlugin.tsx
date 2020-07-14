@@ -35,9 +35,6 @@ export function plugin(client: FlipperClient<Events, Methods>) {
     },
   );
 
-  // TODO: add tests for sending and receiving data T68683442
-  // including typescript assertions
-
   client.onConnect(connectStub);
   client.onDisconnect(disconnectStub);
   client.onDestroy(destroyStub);

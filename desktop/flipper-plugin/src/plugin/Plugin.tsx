@@ -217,6 +217,10 @@ export class SandyPluginInstance {
     );
   }
 
+  isPersistable(): boolean {
+    return Object.keys(this.rootStates).length > 0;
+  }
+
   private assertNotDestroyed() {
     if (this.destroyed) {
       throw new Error('Plugin has been destroyed already');

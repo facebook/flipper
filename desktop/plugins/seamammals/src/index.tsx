@@ -50,8 +50,8 @@ type PersistedState = {
 };
 
 export function plugin(client: FlipperClient<Events, {}>) {
-  const rows = createState<PersistedState>({});
-  const selectedID = createState<string | null>(null);
+  const rows = createState<PersistedState>({}, {persist: 'rows'});
+  const selectedID = createState<string | null>(null, {persist: 'selection'});
 
   client.onMessage('newRow', (row) => {
     rows.update((draft) => {

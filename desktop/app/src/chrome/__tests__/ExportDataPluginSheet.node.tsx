@@ -40,31 +40,22 @@ function getStore(selectedPlugins: Array<string>) {
     debug: () => {},
     trackTimeSince: () => {},
   };
-  let mockStore = configureStore([])();
   const selectedDevice = new BaseDevice(
     'serial',
     'emulator',
     'TestiPhone',
     'iOS',
   );
-  const client = new Client(
-    generateClientIdentifier(selectedDevice, 'app'),
-    {app: 'app', os: 'iOS', device: 'TestiPhone', device_id: 'serial'},
-    null,
-    logger,
-    // @ts-ignore
-    mockStore,
-    ['TestPlugin', 'TestDevicePlugin'],
-  );
 
+  const clientId = generateClientIdentifier(selectedDevice, 'app');
   const pluginStates: {[key: string]: any} = {};
-  pluginStates[`${client.id}#TestDevicePlugin`] = {
+  pluginStates[`${clientId}#TestDevicePlugin`] = {
     msg: 'Test Device plugin',
   };
-  pluginStates[`${client.id}#TestPlugin`] = {
+  pluginStates[`${clientId}#TestPlugin`] = {
     msg: 'Test plugin',
   };
-  mockStore = configureStore([])({
+  const mockStore = configureStore([])({
     application: {share: {closeOnFinish: false, type: 'link'}},
     plugins: {
       clientPlugins: new Map([['TestPlugin', TestPlugin]]),
@@ -76,8 +67,23 @@ function getStore(selectedPlugins: Array<string>) {
     },
     pluginStates,
     pluginMessageQueue: [],
-    connections: {selectedApp: client.id, clients: [client]},
+    connections: {selectedApp: clientId, clients: []},
   });
+
+  const client = new Client(
+    clientId,
+    {app: 'app', os: 'iOS', device: 'TestiPhone', device_id: 'serial'},
+    null,
+    logger,
+    // @ts-ignore
+    mockStore,
+    ['TestPlugin', 'TestDevicePlugin'],
+  );
+  mockStore.dispatch({
+    type: 'NEW_CLIENT',
+    payload: client,
+  });
+
   return mockStore;
 }
 
