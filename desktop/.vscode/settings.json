@@ -31,5 +31,6 @@
   "jest.enableInlineErrorMessages": true,
   "jest.runAllTestsFirst": false,
   "jest.pathToConfig": "jest.config.js",
-  "jest.pathToJest": "node_modules/.bin/jest"
+  "jest.pathToJest": "node_modules/.bin/jest",
+  "typescript.tsdk": "node_modules/typescript/lib"
 }
