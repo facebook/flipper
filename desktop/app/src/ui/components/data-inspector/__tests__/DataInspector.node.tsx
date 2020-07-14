@@ -67,7 +67,7 @@ test('changing collapsed property works', async () => {
   res.rerender(
     <ManagedDataInspector data={json} collapsed={false} expandRoot />,
   );
-  await waitForElement(() => res.findByText(/cool/));
+  await res.findByText(/cool/);
 
   res.rerender(
     <ManagedDataInspector data={json} collapsed={true} expandRoot />,

@@ -13,6 +13,7 @@ import {
   RenderResult,
   act as testingLibAct,
 } from '@testing-library/react';
+import {queries} from '@testing-library/dom';
 import {PluginDetails} from 'flipper-plugin-lib';
 
 import {
@@ -27,7 +28,7 @@ import {
 import {SandyPluginRenderer} from '../plugin/PluginRenderer';
 import {act} from '@testing-library/react';
 
-type Renderer = RenderResult<typeof import('testing-library__dom/queries')>;
+type Renderer = RenderResult<typeof queries>;
 
 interface StartPluginOptions {
   // TODO: support initial events T68683442 (and type correctly)

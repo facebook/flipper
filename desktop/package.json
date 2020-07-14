@@ -108,7 +108,8 @@
   "devDependencies": {
     "@babel/code-frame": "^7.10.4",
     "@jest-runner/electron": "^3.0.0",
-    "@testing-library/react": "^10.0.2",
+    "@testing-library/react": "^10.4.3",
+    "@testing-library/dom": "^7.20.2",
     "@types/algoliasearch": "^3.30.19",
     "@types/babel__code-frame": "^7.0.0",
     "@types/babel__core": "^7.1.6",
@@ -148,7 +149,7 @@
     "@types/rsocket-core": "^0.0.5",
     "@types/rsocket-tcp-server": "^0.0.2",
     "@types/socket.io": "^2.1.4",
-    "@types/testing-library__react": "^10.0.0",
+    "@types/testing-library__react": "^10.2.0",
     "@types/tmp": "^0.2.0",
     "@types/uuid": "^8.0.0",
     "@types/which": "^1.3.2",
@@ -257,6 +258,5 @@
   },
   "optionalDependencies": {
     "7zip-bin-mac": "^1.0.1"
-  },
-  "dependencies": {}
+  }
 }

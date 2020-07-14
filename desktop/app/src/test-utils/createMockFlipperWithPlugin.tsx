@@ -15,6 +15,7 @@ import {
   RenderResult,
   act as testingLibAct,
 } from '@testing-library/react';
+import {queries} from '@testing-library/dom';
 
 import {
   selectPlugin,
@@ -202,7 +203,7 @@ export async function createMockFlipperWithPlugin(
   };
 }
 
-type Renderer = RenderResult<typeof import('testing-library__dom/queries')>;
+type Renderer = RenderResult<typeof queries>;
 
 export async function renderMockFlipperWithPlugin(
   pluginClazz: PluginDefinition,
