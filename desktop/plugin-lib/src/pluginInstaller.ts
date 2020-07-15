@@ -52,7 +52,9 @@ function getPluginInstallationDir(name: string): string {
   return path.join(pluginInstallationDir, name);
 }
 
-async function installPluginFromTempDir(sourceDir: string) {
+async function installPluginFromTempDir(
+  sourceDir: string,
+): Promise<PluginDetails> {
   const pluginDetails = await getPluginDetails(sourceDir);
   const {name, version} = pluginDetails;
   const backupDir = path.join(await getTmpDir(), `${name}-${version}`);
@@ -98,6 +100,7 @@ async function installPluginFromTempDir(sourceDir: string) {
     }
     throw err;
   }
+  return pluginDetails;
 }
 
 async function getPluginRootDir(dir: string) {
@@ -149,7 +152,9 @@ export async function installPluginFromNpm(name: string) {
   }
 }
 
-export async function installPluginFromFile(packagePath: string) {
+export async function installPluginFromFile(
+  packagePath: string,
+): Promise<PluginDetails> {
   const tmpDir = await getTmpDir();
   try {
     const files = await decompress(packagePath, tmpDir, {
@@ -159,7 +164,7 @@ export async function installPluginFromFile(packagePath: string) {
       throw new Error('The package is not in tar.gz format or is empty');
     }
     const pluginDir = await getPluginRootDir(tmpDir);
-    await installPluginFromTempDir(pluginDir);
+    return await installPluginFromTempDir(pluginDir);
   } finally {
     await fs.remove(tmpDir);
   }
