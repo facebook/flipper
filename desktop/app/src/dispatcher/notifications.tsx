@@ -146,63 +146,71 @@ export default (store: Store, logger: Logger) => {
         blacklistedCategories,
       } = notifications;
 
-      activeNotifications.forEach((n: PluginNotification) => {
-        if (
-          !isHeadless() &&
-          store.getState().connections.selectedPlugin !== 'notifications' &&
-          !knownNotifications.has(n.notification.id) &&
-          blacklistedPlugins.indexOf(n.pluginId) === -1 &&
-          (!n.notification.category ||
-            blacklistedCategories.indexOf(n.notification.category) === -1)
-        ) {
-          const prevNotificationTime: number =
-            lastNotificationTime.get(n.pluginId) || 0;
-          lastNotificationTime.set(n.pluginId, new Date().getTime());
-          knownNotifications.add(n.notification.id);
-
-          if (
-            new Date().getTime() - prevNotificationTime <
-            NOTIFICATION_THROTTLE
-          ) {
-            // Don't send a notification if the plugin has sent a notification
-            // within the NOTIFICATION_THROTTLE.
-            return;
-          }
-          const plugin = getPlugin(n.pluginId);
-          ipcRenderer.send('sendNotification', {
-            payload: {
-              title: n.notification.title,
-              body: textContent(n.notification.message),
-              actions: [
-                {
-                  type: 'button',
-                  text: 'Show',
-                },
-                {
-                  type: 'button',
-                  text: 'Hide similar',
-                },
-                {
-                  type: 'button',
-                  text: `Hide all ${
-                    plugin != null ? getPluginTitle(plugin) : ''
-                  }`,
-                },
-              ],
-              closeButtonText: 'Hide',
-            },
-            closeAfter: 10000,
-            pluginNotification: n,
-          });
-          logger.track('usage', 'native-notification', {
+      activeNotifications
+        .map((n) => ({
+          ...n,
+          notification: {
             ...n.notification,
-            message:
-              typeof n.notification.message === 'string'
-                ? n.notification.message
-                : '<ReactNode>',
-          });
-        }
-      });
+            message: textContent(n.notification.message),
+          },
+        }))
+        .forEach((n: PluginNotification) => {
+          if (
+            !isHeadless() &&
+            store.getState().connections.selectedPlugin !== 'notifications' &&
+            !knownNotifications.has(n.notification.id) &&
+            blacklistedPlugins.indexOf(n.pluginId) === -1 &&
+            (!n.notification.category ||
+              blacklistedCategories.indexOf(n.notification.category) === -1)
+          ) {
+            const prevNotificationTime: number =
+              lastNotificationTime.get(n.pluginId) || 0;
+            lastNotificationTime.set(n.pluginId, new Date().getTime());
+            knownNotifications.add(n.notification.id);
+
+            if (
+              new Date().getTime() - prevNotificationTime <
+              NOTIFICATION_THROTTLE
+            ) {
+              // Don't send a notification if the plugin has sent a notification
+              // within the NOTIFICATION_THROTTLE.
+              return;
+            }
+            const plugin = getPlugin(n.pluginId);
+            ipcRenderer.send('sendNotification', {
+              payload: {
+                title: n.notification.title,
+                body: n.notification.message,
+                actions: [
+                  {
+                    type: 'button',
+                    text: 'Show',
+                  },
+                  {
+                    type: 'button',
+                    text: 'Hide similar',
+                  },
+                  {
+                    type: 'button',
+                    text: `Hide all ${
+                      plugin != null ? getPluginTitle(plugin) : ''
+                    }`,
+                  },
+                ],
+                closeButtonText: 'Hide',
+              },
+              closeAfter: 10000,
+              pluginNotification: n,
+            });
+            logger.track('usage', 'native-notification', {
+              ...n.notification,
+              message:
+                typeof n.notification.message === 'string'
+                  ? n.notification.message
+                  : '<ReactNode>',
+            });
+          }
+        });
     },
   );
 };
