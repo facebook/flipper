@@ -50,7 +50,7 @@
     "react-transition-group": "^4.4.1",
     "react-virtualized-auto-sizer": "^1.0.2",
     "react-window": "^1.3.1",
-    "redux": "^4.0.0",
+    "redux": "^4.0.5",
     "redux-persist": "^6.0.0",
     "rsocket-core": "^0.0.19",
     "rsocket-flowable": "^0.0.14",

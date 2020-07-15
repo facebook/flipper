@@ -204,7 +204,7 @@
     "react-async": "^10.0.0",
     "react-refresh": "^0.8.1",
     "recursive-readdir": "^2.2.2",
-    "redux": "^4.0.0",
+    "redux": "^4.0.5",
     "rimraf": "^3.0.2",
     "socket.io": "^2.0.4",
     "tmp": "^0.2.1",
