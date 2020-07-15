@@ -35,7 +35,7 @@
     "open": "^7.0.0",
     "openssl-wrapper": "^0.3.4",
     "promise-retry": "^1.1.1",
-    "promisify-child-process": "^4.1.0",
+    "promisify-child-process": "^4.1.1",
     "prop-types": "^15.6.0",
     "query-string": "^6.13.1",
     "react": "16.13.0",
