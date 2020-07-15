@@ -19,6 +19,7 @@ export function VisualizerPortal(props: {
   screenshotURL: string;
   screenDimensions: {width: number; height: number};
 }) {
+  props.container.style.margin = '0';
   const element: Element | null | '' =
     props.highlightedElement && props.elements[props.highlightedElement];
 
