@@ -16,6 +16,7 @@
   "workspaces": {
     "packages": [
       "app",
+      "app/src/fb/*",
       "babel-transformer",
       "doctor",
       "headless",
