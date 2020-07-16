@@ -56,12 +56,26 @@ const siteConfig = {
           ],
         },
         {
+          title: 'Legal',
+          // Please do not remove the privacy and terms, it's a legal requirement.
+          items: [
+            {
+              label: 'Privacy',
+              href: 'https://opensource.facebook.com/legal/privacy/',
+            },
+            {
+              label: 'Terms',
+              href: 'https://opensource.facebook.com/legal/terms/',
+            },
+          ],
+        },
+        {
           title: 'More',
           items: [
             {label: 'Twitter', href: 'https://twitter.com/flipper_fb'},
             {label: 'GitHub', href: repoUrl},
           ],
-        },
+        }
       ],
       copyright: 'Copyright © ' + new Date().getFullYear() + ' Facebook',
       logo: {
