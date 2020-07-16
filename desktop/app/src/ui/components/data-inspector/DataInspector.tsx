@@ -21,7 +21,7 @@ import {colors} from '../colors';
 import {clipboard} from 'electron';
 import React from 'react';
 import {TooltipOptions} from '../TooltipProvider';
-import {useHighlighter} from '../Highlight';
+import {useHighlighter, HighlightManager} from '../Highlight';
 
 export {DataValueExtractor} from './DataPreview';
 
@@ -136,6 +136,14 @@ type DataInspectorProps = {
    * Callback whenever delete action is invoked on current path.
    */
   onDelete?: DataInspectorDeleteValue | undefined | null;
+  /**
+   * Render callback that can be used to customize the rendering of object keys.
+   */
+  onRenderName?: (
+    path: Array<string>,
+    name: string,
+    highlighter: HighlightManager,
+  ) => React.ReactElement;
   /**
    * Callback when a value is edited.
    */
@@ -327,6 +335,7 @@ const DataInspector: React.FC<DataInspectorProps> = memo(
     parentPath,
     onExpanded,
     onDelete,
+    onRenderName,
     extractValue: extractValueProp,
     expanded: expandedPaths,
     name,
@@ -491,6 +500,7 @@ const DataInspector: React.FC<DataInspectorProps> = memo(
               collapsed={collapsed}
               onExpanded={onExpanded}
               onDelete={onDelete}
+              onRenderName={onRenderName}
               parentPath={path}
               depth={depth + 1}
               key={key}
@@ -530,12 +540,15 @@ const DataInspector: React.FC<DataInspectorProps> = memo(
     // create name components
     const nameElems = [];
     if (typeof name !== 'undefined') {
+      const text = onRenderName
+        ? onRenderName(path, name, highlighter)
+        : highlighter.render(name);
       nameElems.push(
         <Tooltip
           title={tooltips != null && tooltips[name]}
           key="name"
           options={nameTooltipOptions}>
-          <InspectorName>{highlighter.render(name)}</InspectorName>
+          <InspectorName>{text}</InspectorName>
         </Tooltip>,
       );
       nameElems.push(<span key="sep">: </span>);

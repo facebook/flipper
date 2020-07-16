@@ -12,7 +12,7 @@ import {PureComponent} from 'react';
 import DataInspector from './DataInspector';
 import React from 'react';
 import {DataValueExtractor} from './DataPreview';
-import {HighlightProvider} from '../Highlight';
+import {HighlightProvider, HighlightManager} from '../Highlight';
 
 export type ManagedDataInspectorProps = {
   /**
@@ -41,6 +41,14 @@ export type ManagedDataInspectorProps = {
    * Callback when a delete action is invoked.
    */
   onDelete?: (path: Array<string>) => void;
+  /**
+   * Render callback that can be used to customize the rendering of object keys.
+   */
+  onRenderName?: (
+    path: Array<string>,
+    name: string,
+    highlighter: HighlightManager,
+  ) => React.ReactElement;
   /**
    * Whether all objects and arrays should be collapsed by default.
    */
@@ -170,6 +178,7 @@ export default class ManagedDataInspector extends PureComponent<
           expanded={this.state.expanded}
           onExpanded={this.onExpanded}
           onDelete={this.props.onDelete}
+          onRenderName={this.props.onRenderName}
           expandRoot={this.props.expandRoot}
           collapsed={this.props.filter ? true : this.props.collapsed}
           tooltips={this.props.tooltips}
