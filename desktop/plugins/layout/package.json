@@ -11,7 +11,7 @@
   ],
   "dependencies": {
     "deep-equal": "^2.0.1",
-    "lodash": "^4.17.15"
+    "lodash": "^4.17.19"
   },
   "devDependencies": {
     "@testing-library/react": "^10.4.3"

@@ -10,7 +10,7 @@
     "flipper-plugin"
   ],
   "dependencies": {
-    "lodash": "^4.17.13"
+    "lodash": "^4.17.19"
   },
   "title": "Shared Preferences Viewer",
   "bugs": {
