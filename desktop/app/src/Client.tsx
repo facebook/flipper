@@ -39,6 +39,7 @@ import {emitBytesReceived} from './dispatcher/tracking';
 import {debounce} from 'lodash';
 import {batch} from 'react-redux';
 import {SandyPluginInstance} from 'flipper-plugin';
+import {flipperMessagesClientPlugin} from './utils/self-inspection/plugins/FlipperMessagesClientPlugin';
 
 type Plugins = Array<string>;
 
@@ -131,6 +132,7 @@ export default class Client extends EventEmitter {
   activePlugins: Set<string>;
   device: Promise<BaseDevice>;
   _deviceResolve: (device: BaseDevice) => void = (_) => {};
+  _deviceResolved: BaseDevice | undefined;
   logger: Logger;
   lastSeenDeviceList: Array<BaseDevice>;
   broadcastCallbacks: Map<string, Map<string, Set<Function>>>;
@@ -187,6 +189,10 @@ export default class Client extends EventEmitter {
           this._deviceResolve = resolve;
         });
 
+    if (device != null) {
+      this._deviceResolved = device;
+    }
+
     const client = this;
     if (conn) {
       conn.connectionStatus().subscribe({
@@ -219,6 +225,7 @@ export default class Client extends EventEmitter {
             (device) => device.serial === this.query.device_id,
           );
         if (device) {
+          this._deviceResolved = device;
           resolve(device);
           return;
         }
@@ -251,6 +258,7 @@ export default class Client extends EventEmitter {
       }),
       'client-setMatchingDevice',
     ).then((device) => {
+      this._deviceResolved = device;
       this._deviceResolve(device);
     });
   }
@@ -456,6 +464,21 @@ export default class Client extends EventEmitter {
 
     const {id, method} = data;
 
+    if (
+      data.params?.api != 'flipper-messages' &&
+      flipperMessagesClientPlugin.isConnected()
+    ) {
+      flipperMessagesClientPlugin.newMessage({
+        device: this._deviceResolved?.displayTitle(),
+        app: this.query.app,
+        flipperInternalMethod: method,
+        plugin: data.params?.api,
+        pluginMethod: data.params?.method,
+        payload: data.params?.params,
+        direction: 'toFlipper:message',
+      });
+    }
+
     if (id == null) {
       const {error} = data;
       if (error != null) {
@@ -635,6 +658,18 @@ export default class Client extends EventEmitter {
                   } = JSON.parse(payload.data);
 
                   this.onResponse(response, resolve, reject);
+
+                  if (flipperMessagesClientPlugin.isConnected()) {
+                    flipperMessagesClientPlugin.newMessage({
+                      device: this._deviceResolved?.displayTitle(),
+                      app: this.query.app,
+                      flipperInternalMethod: method,
+                      payload: response,
+                      plugin,
+                      pluginMethod: params?.method,
+                      direction: 'toFlipper:response',
+                    });
+                  }
                 }
               },
               // Open fresco then layout and you get errors because responses come back after deinit.
@@ -644,6 +679,18 @@ export default class Client extends EventEmitter {
                 }
               },
             });
+      }
+
+      if (flipperMessagesClientPlugin.isConnected()) {
+        flipperMessagesClientPlugin.newMessage({
+          device: this._deviceResolved?.displayTitle(),
+          app: this.query.app,
+          flipperInternalMethod: method,
+          plugin: params?.api,
+          pluginMethod: params?.method,
+          payload: params?.params,
+          direction: 'toClient:call',
+        });
       }
     });
   }
@@ -716,6 +763,16 @@ export default class Client extends EventEmitter {
     console.debug(data, 'message:send');
     if (this.connection) {
       this.connection.fireAndForget({data: JSON.stringify(data)});
+    }
+
+    if (flipperMessagesClientPlugin.isConnected()) {
+      flipperMessagesClientPlugin.newMessage({
+        device: this._deviceResolved?.displayTitle(),
+        app: this.query.app,
+        flipperInternalMethod: method,
+        payload: params,
+        direction: 'toClient:send',
+      });
     }
   }
 

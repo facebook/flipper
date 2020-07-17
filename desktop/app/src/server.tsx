@@ -33,6 +33,7 @@ import {WebsocketClientFlipperConnection} from './utils/js-client-server-utils/w
 import querystring from 'querystring';
 import {IncomingMessage} from 'http';
 import ws from 'ws';
+import {initSelfInpector} from './utils/self-inspection/selfInspectionUtils';
 
 type ClientInfo = {
   connection: FlipperClientConnection<any, any> | null | undefined;
@@ -84,6 +85,13 @@ class Server extends EventEmitter {
   }
 
   init() {
+    if (
+      process.env.NODE_ENV === 'development' &&
+      GK.get('flipper_self_inspection')
+    ) {
+      initSelfInpector(this.store, this.logger, this, this.connections);
+    }
+
     const {insecure, secure} = this.store.getState().application.serverPorts;
     this.initialisePromise = this.certificateProvider
       .loadSecureServerConfig()
