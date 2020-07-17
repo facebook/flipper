@@ -31,7 +31,7 @@
     "immer": "^6.0.0",
     "immutable": "^4.0.0-rc.12",
     "invariant": "^2.2.2",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "npm-api": "^1.0.0",
     "open": "^7.0.0",
     "openssl-wrapper": "^0.3.4",
