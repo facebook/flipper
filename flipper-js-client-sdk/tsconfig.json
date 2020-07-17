@@ -18,7 +18,6 @@
       "dom",
       "es2017"
     ],
-    "composite": true,
     "baseUrl": ".",
     "allowJs": true
   },

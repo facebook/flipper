@@ -7,10 +7,19 @@
  * @format
  */
 
-import {FlipperClient, AbstractFlipperPlugin} from './api';
+import {FlipperClient, FlipperConnection, FlipperPlugin} from './api';
 import {newWebviewClient} from './webviewImpl';
 
-class SeaMammalPlugin extends AbstractFlipperPlugin {
+export class SeaMammalPlugin implements FlipperPlugin {
+  protected connection: FlipperConnection | null | undefined;
+
+  onConnect(connection: FlipperConnection): void {
+    this.connection = connection;
+  }
+  onDisconnect(): void {
+    this.connection = null;
+  }
+
   getId(): string {
     return 'sea-mammals';
   }
@@ -19,10 +28,9 @@ class SeaMammalPlugin extends AbstractFlipperPlugin {
     return true;
   }
 
-  newRow(row: {id: string, url: string, title: string}) {
-    this.connection?.send("newRow", row)
-}
-
+  newRow(row: {id: string; url: string; title: string}) {
+    this.connection?.send('newRow', row);
+  }
 }
 
 class FlipperManager {

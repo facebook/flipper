@@ -9,8 +9,6 @@
 
 import {FlipperClient} from './api';
 
-import type {FlipperPluginID, FlipperMethodID} from './api';
-
 class FlipperWebviewClient extends FlipperClient {
   _subscriptions: Map<string, (message: any) => void> = new Map();
   _client: FlipperClient | null = null;
@@ -26,31 +24,14 @@ class FlipperWebviewClient extends FlipperClient {
     bridge?.FlipperWebviewBridge.stop();
   };
 
-  sendData = (plugin: FlipperPluginID, method: FlipperMethodID, data: any) => {
+  sendData = (data: any) => {
     const bridge = (window as any).FlipperWebviewBridge;
-    bridge && bridge.sendFlipperObject(plugin, method, JSON.stringify(data));
-  };
-
-  subscribe = (
-    plugin: FlipperPluginID,
-    method: FlipperMethodID,
-    handler: (msg: any) => void,
-  ) => {
-    this._subscriptions.set(plugin + method, handler);
+    bridge && bridge.sendFlipperObject(data);
   };
 
   isAvailable = () => {
     return (window as any).FlipperWebviewBridge != null;
   };
-
-  receive(plugin: FlipperPluginID, method: FlipperMethodID, data: string) {
-    const handler = this._subscriptions.get(plugin + method);
-    handler && handler(JSON.parse(data));
-  }
-
-  setClient(client: FlipperClient) {
-    this._client = client;
-  }
 }
 
 export function newWebviewClient(): FlipperClient {

@@ -1,0 +1,4 @@
+*.bundle.js
+node_modules
+lib
+!.eslintrc.js

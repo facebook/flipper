@@ -12,47 +12,65 @@ export type FlipperPluginID = string;
 export type FlipperMethodID = string;
 
 export class FlipperResponder {
-  pluginId: FlipperPluginID;
-  methodId: FlipperMethodID;
-  private _client: FlipperClient;
+  messageID?: number;
+  private client: FlipperClient;
 
-  constructor(
-    pluginId: FlipperPluginID,
-    methodId: FlipperMethodID,
-    client: FlipperClient
-  ) {
-    this.pluginId = pluginId;
-    this.methodId = methodId;
-    this._client = client;
+  constructor(messageID: number, client: FlipperClient) {
+    this.messageID = messageID;
+    this.client = client;
   }
 
-  success(_response: any) {}
+  success(response?: any) {
+    this.client.sendData({id: this.messageID, success: response});
+  }
 
-  error(_response: any) {}
+  error(response?: any) {
+    this.client.sendData({id: this.messageID, error: response});
+  }
 }
 
-export type FlipperReceiver<T> = (
-  params: T,
+export type FlipperReceiver = (
+  params: any,
   responder: FlipperResponder,
 ) => void;
 
 export class FlipperConnection {
   pluginId: FlipperPluginID;
   private client: FlipperClient;
+  private subscriptions: Map<FlipperMethodID, FlipperReceiver> = new Map();
 
   constructor(pluginId: FlipperPluginID, client: FlipperClient) {
     this.pluginId = pluginId;
     this.client = client;
   }
 
-  send(method: FlipperMethodID, data: any) {
-    this.client.sendData(this.pluginId, method, data);
+  send(method: FlipperMethodID, params: any) {
+    this.client.sendData({
+      method: 'execute',
+      params: {
+        api: this.pluginId,
+        method,
+        params,
+      },
+    });
   }
 
-  receive<T>(method: FlipperMethodID, receiver: FlipperReceiver<T>) {
-    this.client.subscribe(this.pluginId, method, (data: T) => {
-      receiver(data, new FlipperResponder(this.pluginId, method, this.client));
-    });
+  receive(method: FlipperMethodID, receiver: FlipperReceiver) {
+    this.subscriptions.set(method, receiver);
+  }
+
+  call(method: FlipperMethodID, params: any, responder: FlipperResponder) {
+    const receiver = this.subscriptions.get(method);
+    if (receiver == null) {
+      const errorMessage = `Receiver ${method} not found.`;
+      responder.error({message: errorMessage});
+      return;
+    }
+    receiver.call(receiver, params, responder);
+  }
+
+  hasReceiver(method: FlipperMethodID): boolean {
+    return this.subscriptions.has(method);
   }
 }
 
@@ -82,28 +100,14 @@ export interface FlipperPlugin {
   runInBackground(): boolean;
 }
 
-export abstract class AbstractFlipperPlugin implements FlipperPlugin{
-  protected connection: FlipperConnection | null | undefined;
-
-  onConnect(connection: FlipperConnection): void {
-    this.connection = connection;
-  }
-  onDisconnect(): void {
-    this.connection = null;
-  }
-
-  abstract getId(): string;
-  abstract runInBackground(): boolean;
-
-}
-
 export abstract class FlipperClient {
-  _isConnected: boolean = false;
-  plugins: Map<FlipperPluginID, FlipperPlugin> = new Map();
+  private _isConnected: boolean = false;
+  protected plugins: Map<FlipperPluginID, FlipperPlugin> = new Map();
+  protected connections: Map<FlipperPluginID, FlipperConnection> = new Map();
 
   addPlugin(plugin: FlipperPlugin) {
     if (this._isConnected) {
-      plugin.onConnect(new FlipperConnection(plugin.getId(), this));
+      this.connectPlugin(plugin);
     }
     this.plugins.set(plugin.getId(), plugin);
   }
@@ -117,31 +121,130 @@ export abstract class FlipperClient {
       return;
     }
     this._isConnected = true;
-    Array.from(this.plugins.values()).map((plugin) =>
-      plugin.onConnect(new FlipperConnection(plugin.getId(), this)),
-    );
+    Array.from(this.plugins.values())
+      .filter((plugin) => plugin.runInBackground())
+      .map(this.connectPlugin);
   }
 
   onDisconnect() {
     this._isConnected = false;
-    Array.from(this.plugins.values()).map((plugin) => plugin.onDisconnect());
+    Array.from(this.plugins.values()).map(this.disconnectPlugin);
   }
 
-  abstract start: (appName: string) => void;
+  abstract start(appName: string): void;
 
-  abstract stop: () => void;
+  abstract stop(): void;
 
-  abstract sendData: (
-    plugin: FlipperPluginID,
-    method: FlipperMethodID,
-    data: any,
-  ) => void;
+  abstract sendData(payload: any): void;
 
-  abstract subscribe: <T>(
-    plugin: FlipperPluginID,
-    method: FlipperMethodID,
-    handler: (message: T) => void,
-  ) => void;
+  abstract isAvailable(): boolean;
 
-  abstract isAvailable: () => boolean;
+  protected onMessageReceived(message: {
+    method: string;
+    id: number;
+    params: any;
+  }) {
+    let responder: FlipperResponder | undefined;
+    try {
+      const {method, params, id} = message;
+      responder = new FlipperResponder(id, this);
+
+      if (method === 'getPlugins') {
+        responder.success({plugins: [...this.plugins.keys()]});
+        return;
+      }
+
+      if (method === 'getBackgroundPlugins') {
+        responder.success({
+          plugins: [...this.plugins.keys()].filter((key) =>
+            this.plugins.get(key)?.runInBackground(),
+          ),
+        });
+        return;
+      }
+
+      if (method === 'init') {
+        const identifier = params['plugin'] as string;
+        const plugin = this.plugins.get(identifier);
+        if (plugin == null) {
+          const errorMessage = `Plugin ${identifier} not found for method ${method}`;
+          responder.error({message: errorMessage, name: 'PluginNotFound'});
+          return;
+        }
+
+        this.connectPlugin(plugin);
+        return;
+      }
+
+      if (method === 'deinit') {
+        const identifier = params['plugin'] as string;
+        const plugin = this.plugins.get(identifier);
+        if (plugin == null) {
+          const errorMessage = `Plugin ${identifier} not found for method ${method}`;
+          responder.error({message: errorMessage, name: 'PluginNotFound'});
+          return;
+        }
+
+        this.disconnectPlugin(plugin);
+        return;
+      }
+
+      if (method === 'execute') {
+        const identifier = params['api'] as string;
+        const connection = this.connections.get(identifier);
+        if (connection == null) {
+          const errorMessage = `Connection ${identifier} not found for plugin identifier`;
+
+          responder.error({message: errorMessage, name: 'ConnectionNotFound'});
+          return;
+        }
+
+        connection.call(
+          params['method'] as string,
+          params['params'],
+          responder,
+        );
+        return;
+      }
+
+      if (method === 'isMethodSupported') {
+        const identifier = params['api'].getString();
+        const connection = this.connections.get(identifier);
+        if (connection == null) {
+          const errorMessage = `Connection ${identifier} not found for plugin identifier`;
+
+          responder.error({message: errorMessage, name: 'ConnectionNotFound'});
+          return;
+        }
+        const isSupported = connection.hasReceiver(
+          params['method'].getString(),
+        );
+        responder.success({isSupported: isSupported});
+        return;
+      }
+
+      const response = {message: 'Received unknown method: ' + method};
+      responder.error(response);
+    } catch (e) {
+      if (responder) {
+        responder.error({
+          message: 'Unknown error during ' + JSON.stringify(message),
+          name: 'Unknown',
+        });
+      }
+    }
+  }
+
+  private connectPlugin(plugin: FlipperPlugin): void {
+    const id = plugin.getId();
+    const connection = new FlipperConnection(id, this);
+    plugin.onConnect(connection);
+    this.connections.set(id, connection);
+  }
+
+  private disconnectPlugin(plugin: FlipperPlugin): void {
+    const id = plugin.getId();
+    plugin.onDisconnect();
+    this.connections.delete(id);
+  }
 }
