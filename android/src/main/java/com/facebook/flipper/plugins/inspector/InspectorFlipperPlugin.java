@@ -37,6 +37,12 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
   private @Nullable List<ExtensionCommand> mExtensionCommands;
   private boolean mShowLithoAccessibilitySettings;
 
+  public enum IDE {
+    diffusion,
+    AS,
+    VSCode
+  }
+
   /** An interface for extensions to the Inspector Flipper plugin */
   public interface ExtensionCommand {
     /** The command to respond to */
@@ -418,6 +424,23 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
           responder.success(response);
         }
       };
+
+  public boolean openInIDE(
+      String fileName, String className, String dirRoot, String repo, int lineNumber, IDE ide) {
+    if (mConnection == null) return false;
+
+    mConnection.send(
+        "openInIDE",
+        new FlipperObject.Builder()
+            .put("fileName", fileName)
+            .put("className", className)
+            .put("dirRoot", dirRoot)
+            .put("repo", repo)
+            .put("lineNumber", lineNumber)
+            .put("ide", ide)
+            .build());
+    return true;
+  }
 
   private void setHighlighted(
       final String id, final boolean highlighted, final boolean isAlignmentMode) throws Exception {
