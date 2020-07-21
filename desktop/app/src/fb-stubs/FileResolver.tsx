@@ -15,16 +15,20 @@ export enum IDE {
 
 export async function resolveFullPathsFromMyles(
   _fileName: string,
-  _dirRoot?: string,
-) {
+  _dirRoot: string,
+): Promise<string[]> {
   throw new Error('Method not implemented.');
 }
 
 export function openInIDE(
-  _filepath: string,
+  _filePath: string,
   _ide: IDE,
+  _repo: string,
   _lineNumber = 0,
-  _repo?: string,
 ) {
+  throw new Error('Method not implemented.');
+}
+
+export function getBestPath(_paths: string[], _className: string): string {
   throw new Error('Method not implemented.');
 }
