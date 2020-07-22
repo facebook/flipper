@@ -1,6 +1,24 @@
-# Flipper [![Build Status](https://travis-ci.org/facebook/flipper.svg?branch=master)](https://travis-ci.org/facebook/flipper) [![Android Maven Badge](https://img.shields.io/maven-metadata/v/https/jcenter.bintray.com/com/facebook/flipper/flipper/maven-metadata.xml.svg?color=green&label=android)](https://bintray.com/facebook/maven/com.facebook.flipper%3Aflipper) [![iOS](https://img.shields.io/cocoapods/v/FlipperKit.svg?label=iOS&color=blue)](https://cocoapods.org/pods/Flipper)
+<p align="center">
+  <img src="https://fbflipper.com/img/icon.png" alt="logo" width="20%"/>
+</p>
+<h1 align="center">
+  Flipper 
+</h1>
+<p align="center">
+  <a href="https://travis-ci.org/facebook/flipper">
+    <img src="https://travis-ci.org/facebook/flipper.svg?branch=master" alt="Build Status" />
+  </a>
+  <a href="https://bintray.com/facebook/maven/com.facebook.flipper%3Aflipper">
+    <img src="https://img.shields.io/maven-metadata/v/https/jcenter.bintray.com/com/facebook/flipper/flipper/maven-metadata.xml.svg?color=green&label=android" alt="Android Maven Badge" />
+  </a>
+  <a href="https://cocoapods.org/pods/Flipper">
+    <img src="https://img.shields.io/cocoapods/v/FlipperKit.svg?label=iOS&color=blue" alt="iOS" />
+  </a>
+</p>
 
-Flipper (formerly Sonar) is a platform for debugging mobile apps on iOS and Android. Visualize, inspect, and control your apps from a simple desktop interface. Use Flipper as is or extend it using the plugin API.
+<p align="center">
+  Flipper (formerly Sonar) is a platform for debugging mobile apps on iOS and Android. Visualize, inspect, and control your apps from a simple desktop interface. Use Flipper as   is or extend it using the plugin API.
+</p>
 
 ![Flipper](/website/static/img/layout.png)
 
