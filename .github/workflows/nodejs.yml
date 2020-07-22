@@ -29,8 +29,14 @@ jobs:
       run: yarn lint
       working-directory: ${{env.desktop-directory}}
     - name: test
-      run: yarn test
+      run: yarn test --coverage
       working-directory: ${{env.desktop-directory}}
+    - name: coveralls
+      uses: coverallsapp/github-action@v1.1.0
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        base-path: ${{env.desktop-directory}}
+        path-to-lcov: ${{env.desktop-directory}}/coverage/lcov.info
     - name: build linux
       if: matrix.os == 'ubuntu-latest'
       run: yarn build --linux
