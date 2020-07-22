@@ -36,7 +36,7 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         base-path: ${{env.desktop-directory}}
-        path-to-lcov: ${{env.desktop-directory}}/lcov.info
+        path-to-lcov: ${{env.desktop-directory}}/coverage/lcov.info
     - name: build linux
       if: matrix.os == 'ubuntu-latest'
       run: yarn build --linux
