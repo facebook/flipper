@@ -55,7 +55,7 @@ type DispatchFromProps = {
   selectPlugin: (payload: {
     selectedPlugin: string | null;
     selectedApp: string | null;
-    deepLinkPayload: string | null;
+    deepLinkPayload: unknown;
   }) => any;
   updatePluginBlacklist: (blacklist: Array<string>) => any;
   updateCategoryBlacklist: (blacklist: Array<string>) => any;
@@ -414,7 +414,7 @@ type ItemProps = {
   selectPlugin?: (payload: {
     selectedPlugin: string | null;
     selectedApp: string | null;
-    deepLinkPayload: string | null;
+    deepLinkPayload: unknown;
   }) => any;
   logger?: Logger;
   plugin: PluginDefinition | null | undefined;

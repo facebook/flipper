@@ -16,8 +16,11 @@ import {
   FlipperClient,
   TestUtils,
   usePlugin,
+  createState,
+  useValue,
 } from 'flipper-plugin';
 import {selectPlugin, starPlugin} from '../reducers/connections';
+import {updateSettings} from '../reducers/settings';
 
 interface PersistedState {
   count: 1;
@@ -121,9 +124,6 @@ test('PluginContainer can render Sandy plugins', async () => {
       Component: MySandyPlugin,
     },
   );
-  // any cast because this plugin is not enriched with the meta data that the plugin loader
-  // normally adds. Our further sandy plugin test infra won't need this, but
-  // for this test we do need to act a s a loaded plugin, to make sure PluginContainer itself can handle it
   const {
     renderer,
     act,
@@ -229,4 +229,141 @@ test('PluginContainer can render Sandy plugins', async () => {
     client.sandyPluginStates.get('TestPlugin')!.instanceApi.connectedStub,
   ).toBeCalledTimes(1);
   expect(client.rawSend).toBeCalledWith('init', {plugin: 'TestPlugin'});
+});
+
+test('PluginContainer + Sandy plugin supports deeplink', async () => {
+  const linksSeen: any[] = [];
+
+  const plugin = (client: FlipperClient) => {
+    const linkState = createState('');
+    client.onDeepLink((link) => {
+      linksSeen.push(link);
+      linkState.set(String(link));
+    });
+    return {
+      linkState,
+    };
+  };
+
+  const definition = new SandyPluginDefinition(
+    TestUtils.createMockPluginDetails(),
+    {
+      plugin,
+      Component() {
+        const instance = usePlugin(plugin);
+        const linkState = useValue(instance.linkState);
+        return <h1>hello {linkState || 'world'}</h1>;
+      },
+    },
+  );
+  const {renderer, act, client, store} = await renderMockFlipperWithPlugin(
+    definition,
+  );
+
+  expect(client.rawSend).toBeCalledWith('init', {plugin: 'TestPlugin'});
+
+  expect(linksSeen).toEqual([]);
+  expect(renderer.baseElement).toMatchInlineSnapshot(`
+    <body>
+      <div>
+        <div
+          class="css-1orvm1g-View-FlexBox-FlexColumn"
+        >
+          <h1>
+            hello 
+            world
+          </h1>
+        </div>
+        <div
+          class="css-bxcvv9-View-FlexBox-FlexRow"
+          id="detailsSidebar"
+        />
+      </div>
+    </body>
+  `);
+
+  act(() => {
+    store.dispatch(
+      selectPlugin({
+        selectedPlugin: definition.id,
+        deepLinkPayload: 'universe!',
+        selectedApp: client.query.app,
+      }),
+    );
+  });
+
+  expect(linksSeen).toEqual(['universe!']);
+  expect(renderer.baseElement).toMatchInlineSnapshot(`
+    <body>
+      <div>
+        <div
+          class="css-1orvm1g-View-FlexBox-FlexColumn"
+        >
+          <h1>
+            hello 
+            universe!
+          </h1>
+        </div>
+        <div
+          class="css-bxcvv9-View-FlexBox-FlexRow"
+          id="detailsSidebar"
+        />
+      </div>
+    </body>
+  `);
+
+  // Sending same link doesn't trigger again
+  act(() => {
+    store.dispatch(
+      selectPlugin({
+        selectedPlugin: definition.id,
+        deepLinkPayload: 'universe!',
+        selectedApp: client.query.app,
+      }),
+    );
+  });
+  expect(linksSeen).toEqual(['universe!']);
+
+  // ...nor does a random other store update that does trigger a plugin container render
+  act(() => {
+    store.dispatch(
+      updateSettings({
+        ...store.getState().settingsState,
+      }),
+    );
+  });
+  expect(linksSeen).toEqual(['universe!']);
+
+  // Different link does trigger again
+  act(() => {
+    store.dispatch(
+      selectPlugin({
+        selectedPlugin: definition.id,
+        deepLinkPayload: 'london!',
+        selectedApp: client.query.app,
+      }),
+    );
+  });
+  expect(linksSeen).toEqual(['universe!', 'london!']);
+
+  // and same link does trigger if something else was selected in the mean time
+  act(() => {
+    store.dispatch(
+      selectPlugin({
+        selectedPlugin: 'Logs',
+        deepLinkPayload: 'london!',
+        selectedApp: client.query.app,
+      }),
+    );
+  });
+  act(() => {
+    store.dispatch(
+      selectPlugin({
+        selectedPlugin: definition.id,
+        deepLinkPayload: 'london!',
+        selectedApp: client.query.app,
+      }),
+    );
+  });
+  expect(linksSeen).toEqual(['universe!', 'london!', 'london!']);
 });

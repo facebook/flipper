@@ -47,6 +47,11 @@ export interface FlipperClient<
   onDisconnect(cb: () => void): void;
 
   /**
+   * Triggered when this plugin is opened through a deeplink
+   */
+  onDeepLink(cb: (deepLink: unknown) => void): void;
+
+  /**
    * Send a message to the connected client
    */
   send<Method extends keyof Methods>(
@@ -113,6 +118,8 @@ export class SandyPluginInstance {
   initialStates?: Record<string, any>;
   // all the atoms that should be serialized when making an export / import
   rootStates: Record<string, Atom<any>> = {};
+  // last seen deeplink
+  lastDeeplink?: any;
 
   constructor(
     realClient: RealFlipperClient,
@@ -143,6 +150,9 @@ export class SandyPluginInstance {
       onMessage: (event, callback) => {
         this.events.on('event-' + event, callback);
       },
+      onDeepLink: (callback) => {
+        this.events.on('deeplink', callback);
+      },
     };
     currentPluginInstance = this;
     this.initialStates = initialStates;
@@ -165,6 +175,7 @@ export class SandyPluginInstance {
 
   // the plugin is deselected in the UI
   deactivate() {
+    this.lastDeeplink = undefined;
     if (this.destroyed) {
       // this can happen if the plugin is disabled while active in the UI.
       // In that case deinit & destroy is already triggered from the STAR_PLUGIN action
@@ -209,6 +220,14 @@ export class SandyPluginInstance {
 
   toJSON() {
     return '[SandyPluginInstance]';
+  }
+
+  triggerDeepLink(deepLink: unknown) {
+    this.assertNotDestroyed();
+    if (deepLink !== this.lastDeeplink) {
+      this.lastDeeplink = deepLink;
+      this.events.emit('deeplink', deepLink);
+    }
   }
 
   exportState() {

@@ -190,7 +190,7 @@ type StateFromProps = {
 type SelectPlugin = (payload: {
   selectedPlugin: string | null;
   selectedApp?: string | null;
-  deepLinkPayload: string | null;
+  deepLinkPayload: unknown;
   selectedDevice: BaseDevice;
 }) => void;
 

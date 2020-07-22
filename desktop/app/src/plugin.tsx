@@ -89,8 +89,8 @@ export type Props<T> = {
   persistedState: T;
   setPersistedState: (state: Partial<T>) => void;
   target: PluginTarget;
-  deepLinkPayload: string | null;
-  selectPlugin: (pluginID: string, deepLinkPayload: string | null) => boolean;
+  deepLinkPayload: unknown;
+  selectPlugin: (pluginID: string, deepLinkPayload: unknown) => boolean;
   isArchivedDevice: boolean;
   selectedApp: string | null;
   setStaticView: (payload: StaticView) => void;

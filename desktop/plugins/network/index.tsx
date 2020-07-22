@@ -273,10 +273,10 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
   };
 
   parseDeepLinkPayload = (
-    deepLinkPayload: string | null,
+    deepLinkPayload: unknown,
   ): Pick<State, 'selectedIds' | 'searchTerm'> => {
     const searchTermDelim = 'searchTerm=';
-    if (deepLinkPayload === null) {
+    if (typeof deepLinkPayload !== 'string') {
       return {
         selectedIds: [],
         searchTerm: '',

@@ -23,10 +23,7 @@ const WelcomeScreen = isHeadless()
 import NotificationScreen from '../chrome/NotificationScreen';
 import SupportRequestFormV2 from '../fb-stubs/SupportRequestFormV2';
 import SupportRequestDetails from '../fb-stubs/SupportRequestDetails';
-import {
-  getPluginKey,
-  defaultEnabledBackgroundPlugins,
-} from '../utils/pluginUtils';
+import {getPluginKey} from '../utils/pluginUtils';
 import {deconstructClientId} from '../utils/clientUtils';
 import {FlipperDevicePlugin, PluginDefinition, isSandyPlugin} from '../plugin';
 import {RegisterPluginAction} from './plugins';
@@ -63,7 +60,7 @@ export type State = {
     deviceId?: string;
     errorMessage?: string;
   }>;
-  deepLinkPayload: string | null;
+  deepLinkPayload: unknown;
   staticView: StaticView;
 };
 
@@ -89,7 +86,7 @@ export type Action =
       payload: {
         selectedPlugin: null | string;
         selectedApp?: null | string;
-        deepLinkPayload: null | string;
+        deepLinkPayload: unknown;
         selectedDevice?: null | BaseDevice;
         time: number;
       };
@@ -245,8 +242,8 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
       const {payload} = action;
       const {selectedPlugin, selectedApp, deepLinkPayload} = payload;
       let selectedDevice = payload.selectedDevice;
-      if (deepLinkPayload) {
-        const deepLinkParams = new URLSearchParams(deepLinkPayload || '');
+      if (typeof deepLinkPayload === 'string') {
+        const deepLinkParams = new URLSearchParams(deepLinkPayload);
         const deviceParam = deepLinkParams.get('device');
         const deviceMatch = state.devices.find((v) => v.title === deviceParam);
         if (deviceMatch) {
@@ -460,7 +457,7 @@ export const selectPlugin = (payload: {
   selectedPlugin: null | string;
   selectedApp?: null | string;
   selectedDevice?: BaseDevice | null;
-  deepLinkPayload: null | string;
+  deepLinkPayload: unknown;
   time?: number;
 }): Action => ({
   type: 'SELECT_PLUGIN',

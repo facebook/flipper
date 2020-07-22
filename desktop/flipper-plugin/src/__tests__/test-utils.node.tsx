@@ -10,6 +10,7 @@
 import * as TestUtils from '../test-utils/test-utils';
 import * as testPlugin from './TestPlugin';
 import {createState} from '../state/atom';
+import {FlipperClient} from '../plugin/Plugin';
 
 test('it can start a plugin and lifecycle events', () => {
   const {instance, ...p} = TestUtils.startPlugin(testPlugin);
@@ -192,4 +193,25 @@ test('plugins cannot use a persist key twice', async () => {
   }).toThrowErrorMatchingInlineSnapshot(
     `"Some other state is already persisting with key \\"test\\""`,
   );
+});
+
+test('plugins can receive deeplinks', async () => {
+  const plugin = TestUtils.startPlugin({
+    plugin(client: FlipperClient) {
+      client.onDeepLink((deepLink) => {
+        if (typeof deepLink === 'string') {
+          field1.set(deepLink);
+        }
+      });
+      const field1 = createState('', {persist: 'test'});
+      return {field1};
+    },
+    Component() {
+      return null;
+    },
+  });
+
+  expect(plugin.instance.field1.get()).toBe('');
+  plugin.triggerDeepLink('test');
+  expect(plugin.instance.field1.get()).toBe('test');
 });

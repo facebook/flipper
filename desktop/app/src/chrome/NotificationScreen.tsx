@@ -18,7 +18,7 @@ import {selectPlugin} from '../reducers/connections';
 import React from 'react';
 
 type StateFromProps = {
-  deepLinkPayload: string | null;
+  deepLinkPayload: unknown;
   blacklistedPlugins: Array<string>;
   blacklistedCategories: Array<string>;
 };
@@ -28,7 +28,7 @@ type DispatchFromProps = {
   selectPlugin: (payload: {
     selectedPlugin: string | null;
     selectedApp: string | null | undefined;
-    deepLinkPayload: string | null;
+    deepLinkPayload: unknown;
   }) => any;
 };
 
@@ -62,7 +62,9 @@ class Notifications extends PureComponent<Props, State> {
         <Container>
           <ConnectedNotificationsTable
             onClear={clearAllNotifications}
-            selectedID={deepLinkPayload}
+            selectedID={
+              typeof deepLinkPayload === 'string' ? deepLinkPayload : null
+            }
             onSelectPlugin={selectPlugin}
             logger={logger}
             defaultFilters={[

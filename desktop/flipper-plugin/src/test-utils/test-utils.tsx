@@ -100,6 +100,8 @@ interface StartPluginResult<Module extends FlipperPluginModule<any>> {
     }[],
   ): void;
 
+  triggerDeepLink(deeplink: unknown): void;
+
   exportState(): any;
 }
 
@@ -164,6 +166,9 @@ export function startPlugin<Module extends FlipperPluginModule<any>>(
       });
     },
     exportState: () => pluginInstance.exportState(),
+    triggerDeepLink: (deepLink: unknown) => {
+      pluginInstance.triggerDeepLink(deepLink);
+    },
   };
   // @ts-ignore
   res._backingInstance = pluginInstance;

@@ -438,11 +438,11 @@ export default class LogTable extends FlipperDevicePlugin<
   };
 
   calculateHighlightedRows = (
-    deepLinkPayload: string | null,
+    deepLinkPayload: unknown,
     rows: ReadonlyArray<TableBodyRow>,
   ): Set<string> => {
     const highlightedRows = new Set<string>();
-    if (!deepLinkPayload) {
+    if (typeof deepLinkPayload !== 'string') {
       return highlightedRows;
     }
 

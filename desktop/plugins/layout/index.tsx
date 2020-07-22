@@ -242,9 +242,10 @@ export default class LayoutPlugin extends FlipperPlugin<
 
     this.setState({
       init: true,
-      selectedElement: this.props.deepLinkPayload
-        ? this.props.deepLinkPayload
-        : null,
+      selectedElement:
+        typeof this.props.deepLinkPayload === 'string'
+          ? this.props.deepLinkPayload
+          : null,
     });
   }
 
@@ -458,7 +459,11 @@ export default class LayoutPlugin extends FlipperPlugin<
                 this.setState({searchResults})
               }
               inAXMode={this.state.inAXMode}
-              initialQuery={this.props.deepLinkPayload}
+              initialQuery={
+                typeof this.props.deepLinkPayload === 'string'
+                  ? this.props.deepLinkPayload
+                  : null
+              }
             />
           </Toolbar>
           <Layout.Right>
