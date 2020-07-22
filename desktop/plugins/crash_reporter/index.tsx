@@ -9,6 +9,7 @@
  */
 
 import {
+  FlipperBasePlugin,
   FlipperDevicePlugin,
   Device,
   View,
@@ -37,57 +38,63 @@ import path from 'path';
 import {promisify} from 'util';
 import type {Notification} from 'flipper';
 import type {Store, DeviceLogEntry, OS, Props} from 'flipper';
+import React from 'react';
 import {Component} from 'react';
 
+type Maybe<T> = T | null | undefined;
+
 type HeaderRowProps = {
-  title: string,
-  value: string,
+  title: string;
+  value: string;
 };
 type openLogsCallbackType = () => void;
 
-type CrashReporterBarProps = {|
-  openLogsCallback?: openLogsCallbackType,
-  crashSelector: CrashSelectorProps,
-|};
+type CrashReporterBarProps = {
+  openLogsCallback?: openLogsCallbackType;
+  crashSelector: CrashSelectorProps;
+};
 
-type CrashSelectorProps = {|
-  crashes: ?{[key: string]: string},
-  orderedIDs: ?Array<string>,
-  selectedCrashID: ?string,
-  onCrashChange: ?(string) => void,
-|};
+type CrashSelectorProps = {
+  crashes?: {[key: string]: string};
+  orderedIDs?: Array<string>;
+  selectedCrashID?: string;
+  onCrashChange: (name: Maybe<string>) => void;
+};
 
-export type Crash = {|
-  notificationID: string,
-  callstack: ?string,
-  reason: string,
-  name: string,
-  date: Date,
-|};
+export type Crash = {
+  notificationID: string;
+  callstack?: string;
+  reason: string;
+  name: string;
+  date: Date;
+};
 
-export type CrashLog = {|
-  callstack: string,
-  reason: string,
-  name: string,
-  date: ?Date,
-|};
+export type CrashLog = {
+  callstack: string;
+  reason: string;
+  name: string;
+  date: Maybe<Date>;
+};
 
 export type PersistedState = {
-  crashes: Array<Crash>,
+  crashes: Array<Crash>;
 };
 
 type State = {
-  crash: ?Crash,
+  crash?: Crash;
 };
 
-const Padder = styled.div(
-  ({paddingLeft, paddingRight, paddingBottom, paddingTop}) => ({
-    paddingLeft: paddingLeft || 0,
-    paddingRight: paddingRight || 0,
-    paddingBottom: paddingBottom || 0,
-    paddingTop: paddingTop || 0,
-  }),
-);
+const Padder = styled.div<{
+  paddingLeft?: number;
+  paddingRight?: number;
+  paddingBottom?: number;
+  paddingTop?: number;
+}>(({paddingLeft, paddingRight, paddingBottom, paddingTop}) => ({
+  paddingLeft: paddingLeft || 0,
+  paddingRight: paddingRight || 0,
+  paddingBottom: paddingBottom || 0,
+  paddingTop: paddingTop || 0,
+}));
 
 const Title = styled(Text)({
   fontWeight: 'bold',
@@ -183,13 +190,13 @@ const StackTraceContainer = styled(FlexColumn)({
 
 const UNKNOWN_CRASH_REASON = 'Cannot figure out the cause';
 
-export function getNewPersisitedStateFromCrashLog(
-  persistedState: ?PersistedState,
-  persistingPlugin: Class<FlipperDevicePlugin<> | FlipperPlugin<>>,
+export function getNewPersistedStateFromCrashLog(
+  persistedState: Maybe<PersistedState>,
+  persistingPlugin: typeof FlipperBasePlugin,
   content: string,
-  os: ?OS,
-  logDate: ?Date,
-): ?PersistedState {
+  os: Maybe<OS>,
+  logDate: Maybe<Date>,
+): Maybe<PersistedState> {
   const persistedStateReducer = persistingPlugin.persistedStateReducer;
   if (!os || !persistedStateReducer) {
     return null;
@@ -208,9 +215,9 @@ export function parseCrashLogAndUpdateState(
   content: string,
   setPersistedState: (
     pluginKey: string,
-    newPluginState: ?PersistedState,
+    newPluginState: Maybe<PersistedState>,
   ) => void,
-  logDate: ?Date,
+  logDate: Maybe<Date>,
 ) {
   const os = store.getState().connections.selectedDevice?.os;
   if (
@@ -228,9 +235,11 @@ export function parseCrashLogAndUpdateState(
     store.getState().connections.selectedDevice,
     pluginID,
   );
-  const persistingPlugin: ?Class<
-    FlipperDevicePlugin<> | FlipperPlugin<>,
-  > = store.getState().plugins.devicePlugins.get(CrashReporterPlugin.id);
+  const persistingPlugin:
+    | typeof FlipperBasePlugin
+    | undefined = store
+    .getState()
+    .plugins.devicePlugins.get(CrashReporterPlugin.id);
   if (!persistingPlugin) {
     return;
   }
@@ -240,8 +249,11 @@ export function parseCrashLogAndUpdateState(
     persistingPlugin,
     pluginStates,
   );
-  const newPluginState = getNewPersisitedStateFromCrashLog(
-    persistedState,
+  if (!persistedState) {
+    return;
+  }
+  const newPluginState = getNewPersistedStateFromCrashLog(
+    persistedState as PersistedState,
     persistingPlugin,
     content,
     os,
@@ -251,9 +263,9 @@ export function parseCrashLogAndUpdateState(
 }
 
 export function shouldShowCrashNotification(
-  baseDevice: ?BaseDevice,
+  baseDevice: Maybe<BaseDevice>,
   content: string,
-  os: ?OS,
+  os: Maybe<OS>,
 ): boolean {
   if (os && os === 'Android') {
     return true;
@@ -270,7 +282,7 @@ export function shouldShowCrashNotification(
 export function parseCrashLog(
   content: string,
   os: OS,
-  logDate: ?Date,
+  logDate: Maybe<Date>,
 ): CrashLog {
   const fallbackReason = UNKNOWN_CRASH_REASON;
   switch (os) {
@@ -289,12 +301,12 @@ export function parseCrashLog(
         const dateString = dateArr ? dateArr[0] : '';
         const dateRegex2 = /[\w\s\.:-]*$/;
         const tmp1 = dateRegex2.exec(dateString);
-        const extractedDateString: ?string =
+        const extractedDateString: Maybe<string> =
           tmp1 && tmp1[0].length ? tmp1[0] : null;
         date = extractedDateString ? new Date(extractedDateString) : logDate;
       }
 
-      const crash = {
+      const crash: CrashLog = {
         callstack: content,
         name: exception,
         reason: exception,
@@ -314,14 +326,15 @@ export function parseCrashLog(
       if (remainingString[remainingString.length - 1] === '\n') {
         remainingString = remainingString.slice(0, -1);
       }
-      const reason =
+      const reasonText =
         remainingString.length > 0
           ? remainingString.split('\n').pop()
           : fallbackReason;
+      const reason = reasonText ? reasonText : fallbackReason;
       if (name[name.length - 1] === '\n') {
         name = name.slice(0, -1);
       }
-      const crash = {
+      const crash: CrashLog = {
         callstack: content,
         name: name,
         reason: reason,
@@ -343,7 +356,7 @@ function truncate(baseString: string, numOfChars: number): string {
   return truncated_string + '\u2026';
 }
 
-export function parsePath(content: string): ?string {
+export function parsePath(content: string): Maybe<string> {
   const regex = /Path: *[\w\-\/\.\t\ \_\%]*\n/;
   const arr = regex.exec(content);
   if (!arr || arr.length <= 0) {
@@ -363,7 +376,7 @@ function addFileWatcherForiOSCrashLogs(
   store: Store,
   setPersistedState: (
     pluginKey: string,
-    newPluginState: ?PersistedState,
+    newPluginState: Maybe<PersistedState>,
   ) => void,
 ) {
   const dir = path.join(os.homedir(), 'Library', 'Logs', 'DiagnosticReports');
@@ -395,6 +408,7 @@ function addFileWatcherForiOSCrashLogs(
           store,
           util.format(data),
           setPersistedState,
+          null,
         );
       });
     });
@@ -412,8 +426,8 @@ class CrashSelector extends Component<CrashSelectorProps> {
               disabled={Boolean(!orderedIDs || orderedIDs.length <= 1)}
               compact={true}
               onClick={() => {
-                if (onCrashChange && orderedIDs) {
-                  const index = orderedIDs.indexOf(selectedCrashID);
+                if (onCrashChange && orderedIDs && selectedCrashID) {
+                  const index = orderedIDs.indexOf(selectedCrashID as string);
                   const nextIndex =
                     index < 1 ? orderedIDs.length - 1 : index - 1;
                   const nextID = orderedIDs[nextIndex];
@@ -430,8 +444,8 @@ class CrashSelector extends Component<CrashSelectorProps> {
               disabled={Boolean(!orderedIDs || orderedIDs.length <= 1)}
               compact={true}
               onClick={() => {
-                if (onCrashChange && orderedIDs) {
-                  const index = orderedIDs.indexOf(selectedCrashID);
+                if (onCrashChange && orderedIDs && selectedCrashID) {
+                  const index = orderedIDs.indexOf(selectedCrashID as string);
                   const nextIndex =
                     index >= orderedIDs.length - 1 ? 0 : index + 1;
                   const nextID = orderedIDs[nextIndex];
@@ -506,7 +520,7 @@ class HeaderRow extends Component<HeaderRowProps> {
 }
 
 type StackTraceComponentProps = {
-  stacktrace: string,
+  stacktrace: string;
 };
 
 class StackTraceComponent extends Component<StackTraceComponentProps> {
@@ -525,10 +539,12 @@ class StackTraceComponent extends Component<StackTraceComponentProps> {
 
 export default class CrashReporterPlugin extends FlipperDevicePlugin<
   State,
-  void,
-  PersistedState,
+  any,
+  PersistedState
 > {
-  static defaultPersistedState = {crashes: []};
+  static defaultPersistedState: PersistedState = {
+    crashes: [],
+  };
 
   static supportsDevice(device: Device) {
     return (
@@ -544,7 +560,7 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
   static persistedStateReducer = (
     persistedState: PersistedState,
     method: string,
-    payload: Object,
+    payload: CrashLog | Crash,
   ): PersistedState => {
     if (method === 'crash-report' || method === 'flipper-crash-report') {
       CrashReporterPlugin.notificationID++;
@@ -615,7 +631,7 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
     baseDevice: BaseDevice,
     setPersistedState: (
       pluginKey: string,
-      newPluginState: ?PersistedState,
+      newPluginState: Maybe<PersistedState>,
     ) => void,
   ): void => {
     if (baseDevice.os.includes('iOS')) {
@@ -627,12 +643,12 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
         date: Date,
         setPersistedState: (
           pluginKey: string,
-          newPluginState: ?PersistedState,
+          newPluginState: Maybe<PersistedState>,
         ) => void,
       ) {
         let androidLog: string = '';
         let androidLogUnderProcess = false;
-        let timer = null;
+        let timer: Maybe<NodeJS.Timeout> = null;
         baseDevice.addLogListener((entry: DeviceLogEntry) => {
           if (shouldParseAndroidLog(entry, referenceDate)) {
             if (androidLogUnderProcess) {
@@ -669,7 +685,7 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
   constructor(props: Props<PersistedState>) {
     // Required step: always call the parent class' constructor
     super(props);
-    let crash: ?Crash = null;
+    let crash: Crash | undefined = undefined;
     if (
       this.props.persistedState.crashes &&
       this.props.persistedState.crashes.length > 0
@@ -679,7 +695,7 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
       ];
     }
 
-    let deeplinkedCrash = null;
+    let deeplinkedCrash: Crash | undefined = undefined;
     if (this.props.deepLinkPayload) {
       const id = this.props.deepLinkPayload;
       const index = this.props.persistedState.crashes.findIndex((elem) => {
@@ -720,7 +736,7 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
         (persistedCrash) => persistedCrash.notificationID,
       );
       const selectedCrashID = crash.notificationID;
-      const onCrashChange = (id) => {
+      const onCrashChange = (id: Maybe<string>) => {
         const newSelectedCrash = crashes.find(
           (element) => element.notificationID === id,
         );
@@ -784,10 +800,10 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
       );
     }
     const crashSelector = {
-      crashes: null,
-      orderedIDs: null,
-      selectedCrashID: null,
-      onCrashChange: null,
+      crashes: undefined,
+      orderedIDs: undefined,
+      selectedCrashID: undefined,
+      onCrashChange: () => void {},
     };
     return (
       <StyledFlexGrowColumn>
