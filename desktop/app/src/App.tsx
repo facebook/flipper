@@ -46,6 +46,10 @@ import StatusBar from './chrome/StatusBar';
 import SettingsSheet from './chrome/SettingsSheet';
 import DoctorSheet from './chrome/DoctorSheet';
 import ChangelogSheet, {hasNewChangesToShow} from './chrome/ChangelogSheet';
+import QuickPerformanceLogger, {
+  QuickLogActionType,
+  FLIPPER_QPL_EVENTS,
+} from './fb-stubs/QPL';
 
 const version = remote.app.getVersion();
 
@@ -88,7 +92,21 @@ export class App extends React.Component<Props> {
         'launchTime',
         launchEndTime - launchStartTime,
       );
+
+      QuickPerformanceLogger.markerPoint(
+        FLIPPER_QPL_EVENTS.STARTUP,
+        'launchStartTime',
+        launchStartTime.toString(),
+      );
+
+      QuickPerformanceLogger.markerEnd(
+        FLIPPER_QPL_EVENTS.STARTUP,
+        QuickLogActionType.SUCCESS,
+        0,
+        launchEndTime,
+      );
     });
+
     ipcRenderer.send('getLaunchTime');
     ipcRenderer.send('componentDidMount');
 
