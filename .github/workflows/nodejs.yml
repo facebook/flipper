@@ -35,7 +35,7 @@ jobs:
       uses: coverallsapp/github-action@v1.1.1
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
-        base-path: ${{env.desktop-directory}}
+        path-to-lcov: ${{env.desktop-directory}}/lcov.info
     - name: build linux
       if: matrix.os == 'ubuntu-latest'
       run: yarn build --linux
