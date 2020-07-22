@@ -29,7 +29,7 @@ jobs:
       run: yarn lint
       working-directory: ${{env.desktop-directory}}
     - name: test
-      run: yarn test
+      run: yarn test --coverage
       working-directory: ${{env.desktop-directory}}
     - name: coveralls
       uses: coverallsapp/github-action@v1.1.1
