@@ -50,6 +50,10 @@ export type ManagedDataInspectorProps = {
     highlighter: HighlightManager,
   ) => React.ReactElement;
   /**
+   * Render callback that can be used to customize the rendering of object values.
+   */
+  onRenderDescription?: (description: React.ReactElement) => React.ReactElement;
+  /**
    * Whether all objects and arrays should be collapsed by default.
    */
   collapsed?: boolean;
@@ -179,6 +183,7 @@ export default class ManagedDataInspector extends PureComponent<
           onExpanded={this.onExpanded}
           onDelete={this.props.onDelete}
           onRenderName={this.props.onRenderName}
+          onRenderDescription={this.props.onRenderDescription}
           expandRoot={this.props.expandRoot}
           collapsed={this.props.filter ? true : this.props.collapsed}
           tooltips={this.props.tooltips}

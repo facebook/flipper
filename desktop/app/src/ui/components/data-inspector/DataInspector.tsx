@@ -145,6 +145,10 @@ type DataInspectorProps = {
     highlighter: HighlightManager,
   ) => React.ReactElement;
   /**
+   * Render callback that can be used to customize the rendering of object values.
+   */
+  onRenderDescription?: (description: React.ReactElement) => React.ReactElement;
+  /**
    * Callback when a value is edited.
    */
   setValue?: DataInspectorSetValue | undefined | null;
@@ -336,6 +340,7 @@ const DataInspector: React.FC<DataInspectorProps> = memo(
     onExpanded,
     onDelete,
     onRenderName,
+    onRenderDescription,
     extractValue: extractValueProp,
     expanded: expandedPaths,
     name,
@@ -501,6 +506,7 @@ const DataInspector: React.FC<DataInspectorProps> = memo(
               onExpanded={onExpanded}
               onDelete={onDelete}
               onRenderName={onRenderName}
+              onRenderDescription={onRenderDescription}
               parentPath={path}
               depth={depth + 1}
               key={key}
@@ -566,6 +572,10 @@ const DataInspector: React.FC<DataInspectorProps> = memo(
           extra={extra}
         />
       );
+
+      descriptionOrPreview = onRenderDescription
+        ? onRenderDescription(descriptionOrPreview)
+        : descriptionOrPreview;
     } else {
       descriptionOrPreview = (
         <DataPreview
