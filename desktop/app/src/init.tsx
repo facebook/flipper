@@ -34,6 +34,7 @@ import {cache} from 'emotion';
 import {CacheProvider} from '@emotion/core';
 import {enableMapSet} from 'immer';
 import os from 'os';
+import QuickPerformanceLogger, {FLIPPER_QPL_EVENTS} from './fb-stubs/QPL';
 
 if (process.env.NODE_ENV === 'development' && os.platform() === 'darwin') {
   // By default Node.JS has its internal certificate storage and doesn't use
@@ -45,6 +46,8 @@ if (process.env.NODE_ENV === 'development' && os.platform() === 'darwin') {
 }
 
 const logger = initLogger(store);
+
+QuickPerformanceLogger.markerStart(FLIPPER_QPL_EVENTS.STARTUP);
 
 enableMapSet();
 
