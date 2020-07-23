@@ -38,9 +38,17 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
   private boolean mShowLithoAccessibilitySettings;
 
   public enum IDE {
-    diffusion,
+    DIFFUSION,
     AS,
-    VSCode
+    VSCODE;
+
+    public static IDE fromString(final String ide) {
+      try {
+        return IDE.valueOf(ide);
+      } catch (IllegalArgumentException e) {
+        return IDE.AS; // default value
+      }
+    }
   }
 
   /** An interface for extensions to the Inspector Flipper plugin */

@@ -9,8 +9,8 @@
 
 export enum IDE {
   'AS',
-  'VSCode',
-  'XCode',
+  'VSCODE',
+  'XCODE',
 }
 
 export async function resolveFullPathsFromMyles(
