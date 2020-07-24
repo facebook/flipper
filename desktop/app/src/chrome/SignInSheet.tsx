@@ -25,6 +25,7 @@ import {connect} from 'react-redux';
 import {State as Store} from '../reducers';
 import ContextMenu from '../ui/components/ContextMenu';
 import {clipboard} from 'electron';
+import {reportPlatformFailures} from '../utils/metrics';
 
 const Container = styled(FlexColumn)({
   padding: 20,
@@ -69,16 +70,20 @@ class SignInSheet extends Component<Props, State> {
     error: null,
   };
 
+  login = async (token: string) => {
+    await writeKeychain(token);
+    const user = await getUser();
+    if (user) {
+      this.props.login(user);
+    } else {
+      throw new Error('Failed to login using the provided token');
+    }
+  };
+
   saveToken = async (token: string) => {
     this.setState({token, loading: true});
     try {
-      await writeKeychain(token);
-      const user = await getUser();
-      if (user) {
-        this.props.login(user);
-      } else {
-        throw new Error('Failed to login using the provided token');
-      }
+      await reportPlatformFailures(this.login(token), 'auth:login');
       this.setState({loading: false});
       this.props.onHide();
     } catch (error) {
