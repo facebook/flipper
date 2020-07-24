@@ -29,6 +29,8 @@ We actively welcome your pull requests.
 
 ### Verifying changes to Flipper
 
+![GitHub Actions artifact downloads](website/static/img/actions-artifacts.png)
+
 After opening a pull request or pushing to a branch, the CI will generate
 build artifacts for you for Linux, MacOS and Windows. You can download them
 from the GitHub Actions checks on your Pull Request.
