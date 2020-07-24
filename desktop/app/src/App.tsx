@@ -171,11 +171,13 @@ export class App extends React.Component<Props> {
     return (
       <Layout.Top>
         <Layout.Top>
-          <TitleBar version={version} />
           <>
-            <Sheet>{this.getSheet}</Sheet>
+            <TitleBar version={version} />
             <DoctorBar />
             <ErrorBar />
+          </>
+          <>
+            <Sheet>{this.getSheet}</Sheet>
           </>
         </Layout.Top>
         <Layout.Bottom>
