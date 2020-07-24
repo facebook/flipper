@@ -7,10 +7,9 @@
  * @format
  */
 
-import React, {Component, ReactElement} from 'react';
+import React, {Component, ReactElement, RefObject} from 'react';
 import {
   Glyph,
-  Popover,
   FlexColumn,
   FlexRow,
   Button,
@@ -18,6 +17,7 @@ import {
   styled,
   Input,
 } from 'flipper';
+import Popover from '../ui/components/Popover2';
 import GK from '../fb-stubs/GK';
 import * as UserFeedback from '../fb-stubs/UserFeedback';
 import {FeedbackPrompt} from '../fb-stubs/UserFeedback';
@@ -295,6 +295,8 @@ class RatingButton extends Component<PropsFromState, State> {
     hasTriggered: false,
   };
 
+  glyphRef: RefObject<HTMLDivElement> = React.createRef();
+
   constructor(props: PropsFromState) {
     super(props);
     if (GK.get('flipper_rating')) {
@@ -351,7 +353,11 @@ class RatingButton extends Component<PropsFromState, State> {
     }
     return (
       <div style={{position: 'relative'}}>
-        <div onClick={this.onClick.bind(this)}>
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={this.onClick.bind(this)}
+          ref={this.glyphRef}>
           <Glyph
             name="star"
             color="grey"
@@ -359,20 +365,17 @@ class RatingButton extends Component<PropsFromState, State> {
           />
         </div>
         {this.state.isShown ? (
-          <Popover
-            onDismiss={() => {}}
-            children={
-              <FeedbackComponent
-                submitRating={this.submitRating.bind(this)}
-                submitComment={this.submitComment.bind(this)}
-                close={() => {
-                  this.setState({isShown: false});
-                }}
-                dismiss={this.onClick.bind(this)}
-                promptData={promptData}
-              />
-            }
-          />
+          <Popover id="rating-button" targetRef={this.glyphRef}>
+            <FeedbackComponent
+              submitRating={this.submitRating.bind(this)}
+              submitComment={this.submitComment.bind(this)}
+              close={() => {
+                this.setState({isShown: false});
+              }}
+              dismiss={this.onClick.bind(this)}
+              promptData={promptData}
+            />
+          </Popover>
         ) : null}
       </div>
     );
