@@ -2,7 +2,7 @@
   "$schema": "https://fbflipper.com/schemas/plugin-package/v2.json",
   "name": "flipper-plugin-navigation",
   "id": "Navigation",
-  "version": "0.50.0",
+  "version": "0.51.0",
   "main": "dist/bundle.js",
   "flipperBundlerEntry": "index.tsx",
   "license": "MIT",

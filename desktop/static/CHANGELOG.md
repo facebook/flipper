@@ -1,3 +1,9 @@
+# 0.51.0 (24/7/2020)
+
+ * D22528729 -  Added button "Restart Flipper" to plugin auto-update notifications.
+ * D22548586 -  Visual Android View inspection available in layout plugin export files.
+
+
 # 0.49.0 (30/6/2020)
 
  * D22255125 -  Added command `flipper-pkg checksum` for computing the total checksum of all the files included into plugin package.
