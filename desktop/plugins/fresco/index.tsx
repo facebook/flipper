@@ -45,6 +45,7 @@ export type PersistedState = {
   imagesMap: ImagesMap;
   closeableReferenceLeaks: Array<AndroidCloseableReferenceLeakEvent>;
   isLeakTrackingEnabled: boolean;
+  showDiskImages: boolean;
   nextEventId: number;
 };
 
@@ -96,6 +97,7 @@ export default class FlipperImagesPlugin extends FlipperPlugin<
     surfaceList: new Set(),
     closeableReferenceLeaks: [],
     isLeakTrackingEnabled: false,
+    showDiskImages: false,
     nextEventId: 0,
   };
 
@@ -112,7 +114,7 @@ export default class FlipperImagesPlugin extends FlipperPlugin<
       return defaultPromise;
     }
     return Promise.all([
-      callClient('listImages'),
+      callClient('listImages', {showDiskImages: persistedState.showDiskImages}),
       callClient('getAllImageEventsInfo'),
     ]).then(async ([responseImages, responseEvents]) => {
       const levels: ImagesList = responseImages.levels;
@@ -360,17 +362,23 @@ export default class FlipperImagesPlugin extends FlipperPlugin<
   };
   updateCaches = (reason: string) => {
     debugLog('Requesting images list (reason=' + reason + ')');
-    this.client.call('listImages').then((response: ImagesListResponse) => {
-      response.levels.forEach((data) =>
-        this.imagePool ? this.imagePool.fetchImages(data.imageIds) : undefined,
-      );
-      this.props.setPersistedState({images: response.levels});
-      this.updateImagesOnUI(
-        this.props.persistedState.images,
-        this.state.selectedSurfaces,
-        this.state.coldStartFilter,
-      );
-    });
+    this.client
+      .call('listImages', {
+        showDiskImages: this.props.persistedState.showDiskImages,
+      })
+      .then((response: ImagesListResponse) => {
+        response.levels.forEach((data) =>
+          this.imagePool
+            ? this.imagePool.fetchImages(data.imageIds)
+            : undefined,
+        );
+        this.props.setPersistedState({images: response.levels});
+        this.updateImagesOnUI(
+          this.props.persistedState.images,
+          this.state.selectedSurfaces,
+          this.state.coldStartFilter,
+        );
+      });
   };
 
   onClear = (type: string) => {
@@ -455,6 +463,16 @@ export default class FlipperImagesPlugin extends FlipperPlugin<
     });
   };
 
+  onShowDiskImages = (checked: boolean) => {
+    this.props.logger.track('usage', 'fresco:onShowDiskImages', {
+      enabled: checked,
+    });
+    this.props.setPersistedState({
+      showDiskImages: checked,
+    });
+    this.updateCaches('refresh');
+  };
+
   render() {
     const options = [...this.props.persistedState.surfaceList].reduce(
       (acc, item) => {
@@ -492,6 +510,8 @@ export default class FlipperImagesPlugin extends FlipperPlugin<
             this.props.persistedState.isLeakTrackingEnabled
           }
           onTrackLeaks={this.onTrackLeaks}
+          showDiskImages={this.props.persistedState.showDiskImages}
+          onShowDiskImages={this.onShowDiskImages}
         />
         <DetailSidebar>{this.renderSidebar()}</DetailSidebar>
       </React.Fragment>

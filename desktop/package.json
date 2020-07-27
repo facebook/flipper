@@ -109,8 +109,8 @@
   "devDependencies": {
     "@babel/code-frame": "^7.10.4",
     "@jest-runner/electron": "^3.0.0",
-    "@testing-library/react": "^10.4.3",
     "@testing-library/dom": "^7.20.2",
+    "@testing-library/react": "^10.4.3",
     "@types/algoliasearch": "^3.30.19",
     "@types/babel__code-frame": "^7.0.0",
     "@types/babel__core": "^7.1.6",

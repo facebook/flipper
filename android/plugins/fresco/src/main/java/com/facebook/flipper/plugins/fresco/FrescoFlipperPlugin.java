@@ -169,6 +169,7 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin
             }
 
             mPerfLogger.startMarker("Sonar.Fresco.listImages");
+            final boolean showDiskImages = params.getBoolean("showDiskImages");
             final ImagePipelineFactory imagePipelineFactory = Fresco.getImagePipelineFactory();
 
             final CountingMemoryCacheInspector.DumpInfo bitmapMemoryCache =
@@ -182,10 +183,7 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin
 
             try {
               responder.success(
-                  getImageList(
-                      bitmapMemoryCache,
-                      encodedMemoryCache,
-                      imagePipelineFactory.getMainFileCache().getDumpInfo().entries));
+                  getImageList(bitmapMemoryCache, encodedMemoryCache, showDiskImages));
               mPerfLogger.endMarker("Sonar.Fresco.listImages");
             } finally {
               bitmapMemoryCache.release();
@@ -406,21 +404,24 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin
   private FlipperObject getImageList(
       final CountingMemoryCacheInspector.DumpInfo bitmapMemoryCache,
       final CountingMemoryCacheInspector.DumpInfo encodedMemoryCache,
-      final List<DiskStorage.DiskDumpInfoEntry> diskEntries) {
-    return new FlipperObject.Builder()
-        .put(
-            "levels",
-            new FlipperArray.Builder()
-                // bitmap
-                .put(getUsedStats("On screen bitmaps", bitmapMemoryCache))
-                .put(getCachedStats("Bitmap memory cache", bitmapMemoryCache))
-                // encoded
-                .put(getUsedStats("Used encoded images", encodedMemoryCache))
-                .put(getCachedStats("Cached encoded images", encodedMemoryCache))
-                // disk
-                .put(getDiskStats("Disk images", diskEntries))
-                .build())
-        .build();
+      final boolean showDiskImages)
+      throws IOException {
+    FlipperArray.Builder levelsBuilder =
+        new FlipperArray.Builder()
+            // bitmap
+            .put(getUsedStats("On screen bitmaps", bitmapMemoryCache))
+            .put(getCachedStats("Bitmap memory cache", bitmapMemoryCache))
+            // encoded
+            .put(getUsedStats("Used encoded images", encodedMemoryCache))
+            .put(getCachedStats("Cached encoded images", encodedMemoryCache));
+    if (showDiskImages) {
+      levelsBuilder.put(
+          getDiskStats(
+              "Disk images",
+              Fresco.getImagePipelineFactory().getMainFileCache().getDumpInfo().entries));
+    }
+
+    return new FlipperObject.Builder().put("levels", levelsBuilder.build()).build();
   }
 
   private FlipperObject getUsedStats(

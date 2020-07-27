@@ -59,6 +59,7 @@ function mockPersistedState(
     closeableReferenceLeaks: [],
     isLeakTrackingEnabled: false,
     nextEventId: 0,
+    showDiskImages: false,
   };
 }
 
@@ -247,6 +248,7 @@ test('the metric reducer with the multiple events', () => {
     imagesMap,
     closeableReferenceLeaks: [],
     isLeakTrackingEnabled: true,
+    showDiskImages: false,
   };
   const metricsReducer = FrescoPlugin.metricsReducer;
   expect(metricsReducer).toBeDefined();

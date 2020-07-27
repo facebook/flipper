@@ -87,6 +87,8 @@ type ImagesCacheOverviewProps = {
   events: Array<ImageEventWithId>;
   onTrackLeaks: (enabled: boolean) => void;
   isLeakTrackingEnabled: boolean;
+  onShowDiskImages: (enabled: boolean) => void;
+  showDiskImages: boolean;
 };
 
 type ImagesCacheOverviewState = {
@@ -230,6 +232,11 @@ export default class ImagesCacheOverview extends PureComponent<
             toggled={this.props.isLeakTrackingEnabled}
             onClick={this.props.onTrackLeaks}
             label="Track Leaks"
+          />
+          <Toggle
+            toggled={this.props.showDiskImages}
+            onClick={this.props.onShowDiskImages}
+            label="Show Disk Images"
           />
           <Spacer />
           <input
