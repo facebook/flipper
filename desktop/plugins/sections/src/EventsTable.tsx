@@ -7,7 +7,7 @@
  * @format
  */
 
-import type {TreeGeneration} from './Models.js';
+import type {TreeGeneration} from './Models';
 
 import {
   FlexColumn,
@@ -29,7 +29,7 @@ const Container = styled(FlexRow)({
   flexGrow: 1,
 });
 
-const SurfaceContainer = styled(FlexColumn)((props) => ({
+const SurfaceContainer = styled(FlexColumn)((props: {scrolled: boolean}) => ({
   position: 'relative',
   '::after': {
     display: props.scrolled ? 'block' : 'none',
@@ -50,7 +50,7 @@ const TimeContainer = styled(FlexColumn)({
   flexShrink: 1,
 });
 
-const Row = styled(FlexRow)((props) => ({
+const Row = styled(FlexRow)((props: {showTimeline?: boolean}) => ({
   alignItems: 'center',
   paddingBottom: 3,
   marginTop: 3,
@@ -94,13 +94,13 @@ const Content = styled.div({
   fontSize: 11,
   textAlign: 'center',
   textTransform: 'uppercase',
-  fontWeight: '500',
+  fontWeight: 500,
   color: colors.light50,
 });
 
-const Record = styled.div(({highlighted}) => ({
+const Record = styled.div((props: {highlighted: boolean}) => ({
   border: `1px solid ${colors.light15}`,
-  boxShadow: highlighted
+  boxShadow: props.highlighted
     ? `inset 0 0 0 2px ${colors.macOSTitleBarIconSelected}`
     : 'none',
   borderRadius: 5,
@@ -130,14 +130,14 @@ const Icon = styled(Glyph)({
   top: 5,
 });
 
-type Props = {|
-  generations: Array<TreeGeneration>,
-  focusedGenerationId: ?string,
-  onClick: (id: string) => mixed,
-|};
+type Props = {
+  generations: Array<TreeGeneration>;
+  focusedGenerationId: string | null | undefined;
+  onClick: (id: string) => any;
+};
 
 type State = {
-  scrolled: boolean,
+  scrolled: boolean;
 };
 
 export default class extends Component<Props, State> {
@@ -161,7 +161,7 @@ export default class extends Component<Props, State> {
     ) {
       const node = document.querySelector(`[data-id="${focusedGenerationId}"]`);
       if (node) {
-        node.scrollIntoViewIfNeeded();
+        node.scrollIntoView();
       }
     }
   }
@@ -195,13 +195,13 @@ export default class extends Component<Props, State> {
     }
   };
 
-  onScroll = (e: SyntheticUIEvent<HTMLElement>) =>
+  onScroll = (e: React.UIEvent<HTMLDivElement>) =>
     this.setState({scrolled: e.currentTarget.scrollLeft > 0});
 
   render() {
-    const surfaces = this.props.generations.reduce(
+    const surfaces: Set<string> = this.props.generations.reduce(
       (acc, cv) => acc.add(cv.surface_key),
-      new Set(),
+      new Set<string>(),
     );
     return (
       <Container>

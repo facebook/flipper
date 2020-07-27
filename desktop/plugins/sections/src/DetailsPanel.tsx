@@ -7,7 +7,7 @@
  * @format
  */
 
-import type {UpdateTreeGenerationChangesetApplicationPayload} from './Models.js';
+import type {UpdateTreeGenerationChangesetApplicationPayload} from './Models';
 
 import React from 'react';
 import {
@@ -24,19 +24,28 @@ const NoContent = styled(FlexBox)({
   alignItems: 'center',
   justifyContent: 'center',
   flexGrow: 1,
-  fontWeight: '500',
+  fontWeight: 500,
   color: colors.light30,
 });
 
-type Props = {|
-  changeSets: ?Array<UpdateTreeGenerationChangesetApplicationPayload>,
-  eventUserInfo: ?Object,
-  focusedChangeSet: ?UpdateTreeGenerationChangesetApplicationPayload,
+type Props = {
+  changeSets:
+    | Array<UpdateTreeGenerationChangesetApplicationPayload>
+    | null
+    | undefined;
+  eventUserInfo: any;
+  focusedChangeSet:
+    | UpdateTreeGenerationChangesetApplicationPayload
+    | null
+    | undefined;
   onFocusChangeSet: (
-    focusedChangeSet: ?UpdateTreeGenerationChangesetApplicationPayload,
-  ) => void,
-  selectedNodeInfo: ?Object,
-|};
+    focusedChangeSet:
+      | UpdateTreeGenerationChangesetApplicationPayload
+      | null
+      | undefined,
+  ) => void;
+  selectedNodeInfo: any;
+};
 
 export default class DetailsPanel extends Component<Props> {
   render() {

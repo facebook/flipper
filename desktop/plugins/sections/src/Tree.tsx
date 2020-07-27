@@ -11,7 +11,7 @@ import type {SectionComponentHierarchy} from './Models';
 
 import {Glyph, PureComponent, styled, Toolbar, Spacer, colors} from 'flipper';
 import {Tree} from 'react-d3-tree';
-import {Fragment} from 'react';
+import React, {Fragment} from 'react';
 
 const Legend = styled.div((props) => ({
   color: colors.dark50,
@@ -35,7 +35,7 @@ const Label = styled.div({
   left: 7,
   maxWidth: 270,
   overflow: 'hidden',
-  fontWeight: '500',
+  fontWeight: 500,
   textOverflow: 'ellipsis',
   paddingLeft: 5,
   paddingRight: 5,
@@ -65,40 +65,43 @@ const IconButton = styled.div({
 });
 
 type TreeData = Array<{
-  identifier: string,
-  name: string,
-  parent: string | '',
-  didTriggerStateUpdate?: boolean,
-  isReused?: boolean,
-  isDirty?: boolean,
-  inserted?: boolean,
-  removed?: boolean,
-  updated?: boolean,
-  unchanged?: boolean,
-  isSection?: boolean,
-  isDataModel?: boolean,
+  identifier: string;
+  name: string;
+  parent: string | '';
+  didTriggerStateUpdate?: boolean;
+  isReused?: boolean;
+  isDirty?: boolean;
+  inserted?: boolean;
+  removed?: boolean;
+  updated?: boolean;
+  unchanged?: boolean;
+  isSection?: boolean;
+  isDataModel?: boolean;
 }>;
 
 type Props = {
-  data: TreeData | SectionComponentHierarchy,
-  nodeClickHandler?: (node: any, evt: InputEvent) => void,
+  data: TreeData | SectionComponentHierarchy;
+  nodeClickHandler: (node: any) => void;
 };
 
 type State = {
   translate: {
-    x: number,
-    y: number,
-  },
-  tree: ?Object,
-  zoom: number,
+    x: number;
+    y: number;
+  };
+  tree: Object | null | undefined;
+  zoom: number;
 };
 
-class NodeLabel extends PureComponent<Props, State> {
+class NodeLabel extends PureComponent<
+  {onLabelClicked: (node: any) => void; nodeData?: any},
+  {collapsed: boolean}
+> {
   state = {
     collapsed: false,
   };
 
-  showNodeData = (e) => {
+  showNodeData = (e: React.MouseEvent) => {
     e.stopPropagation();
     this.props.onLabelClicked(this.props?.nodeData);
   };
@@ -158,7 +161,7 @@ export default class extends PureComponent<Props, State> {
 
       return {
         name: n.name,
-        children: [],
+        children: [] as Array<any>,
         attributes: {...n},
         nodeSvgShape: {
           shapeProps: {
@@ -171,7 +174,7 @@ export default class extends PureComponent<Props, State> {
       };
     });
 
-    const parentMap: Map<string, Array<Object>> = tree.reduce((acc, cv) => {
+    const parentMap: Map<string, Array<any>> = tree.reduce((acc, cv) => {
       const {parent} = cv.attributes;
       if (typeof parent !== 'string') {
         return acc;
@@ -236,7 +239,7 @@ export default class extends PureComponent<Props, State> {
     }
   }
 
-  onZoom = (e: SyntheticInputEvent<HTMLInputElement>) => {
+  onZoom = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({zoom: e.target.valueAsNumber});
   };
 
@@ -244,7 +247,7 @@ export default class extends PureComponent<Props, State> {
     return (
       <Fragment>
         <Container
-          innerRef={(ref) => {
+          ref={(ref) => {
             this.treeContainer = ref;
           }}>
           <style>

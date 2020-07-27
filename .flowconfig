@@ -16,7 +16,7 @@
 <PROJECT_ROOT>/desktop/babel-transformer/.*
 <PROJECT_ROOT>/desktop/plugins/fb/relaydevtools/relay-devtools/DevtoolsUI.js$
 <PROJECT_ROOT>/website/.*
-<PROJECT_ROOT>/desktop/plugins/sections/d3/d3.js$
+<PROJECT_ROOT>/desktop/plugins/sections/src/d3/d3.js$
 <PROJECT_ROOT>/react-native/ReactNativeFlipperExample/.*
 
 [libs]
