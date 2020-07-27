@@ -38,9 +38,19 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
   private boolean mShowLithoAccessibilitySettings;
 
   public enum IDE {
-    DIFFUSION,
-    AS,
-    VSCODE;
+    DIFFUSION("Diffusion"),
+    AS("Android Studio"),
+    VSCODE("Visual Studio Code");
+
+    private String ideName;
+
+    IDE(String ideName) {
+      this.ideName = ideName;
+    }
+
+    public String getFullIdeName() {
+      return ideName;
+    }
 
     public static IDE fromString(final String ide) {
       try {
@@ -432,6 +442,10 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
           responder.success(response);
         }
       };
+
+  public boolean isConnectionEstablished() {
+    return mConnection != null;
+  }
 
   public boolean openInIDE(
       String fileName, String className, String dirRoot, String repo, int lineNumber, IDE ide) {
