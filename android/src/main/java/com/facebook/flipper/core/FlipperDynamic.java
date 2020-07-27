@@ -18,6 +18,10 @@ public class FlipperDynamic {
     mObject = object;
   }
 
+  public Object raw() {
+    return mObject;
+  }
+
   public @Nullable String asString() {
     if (mObject == null) {
       return null;

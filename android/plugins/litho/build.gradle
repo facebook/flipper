@@ -21,6 +21,7 @@ android {
         compileOnly deps.lithoAnnotations
         implementation project(':android')
         implementation deps.lithoCore
+        implementation deps.lithoEditorCore
         implementation deps.lithoSectionsDebug
         implementation deps.lithoSectionsCore
         implementation deps.lithoWidget

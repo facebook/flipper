@@ -72,6 +72,7 @@ ext.deps = [
         // Litho
         lithoAnnotations   : "com.facebook.litho:litho-annotations:$LITHO_VERSION",
         lithoCore          : "com.facebook.litho:litho-core:$LITHO_VERSION",
+        lithoEditorCore    : "com.facebook.litho:litho-editor-core:$LITHO_VERSION",
         lithoSectionsAnnotations: "com.facebook.litho:litho-sections-annotations:$LITHO_VERSION",
         lithoSectionsDebug : "com.facebook.litho:litho-sections-debug:$LITHO_VERSION",
         lithoSectionsCore  : "com.facebook.litho:litho-sections-core:$LITHO_VERSION",

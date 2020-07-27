@@ -58,7 +58,7 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
 
           for (Pair<String[], FlipperDynamic> override : overrides) {
             if (override.first[0].equals("Props")) {
-              applyReflectiveOverride(component, override.first[1], override.second);
+              applyReflectiveOverride(component, override.first, override.second);
             }
           }
         }
@@ -72,7 +72,7 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
 
           for (Pair<String[], FlipperDynamic> override : overrides) {
             if (override.first[0].equals("State")) {
-              applyReflectiveOverride(stateContainer, override.first[1], override.second);
+              applyReflectiveOverride(stateContainer, override.first, override.second);
             }
           }
         }
@@ -278,8 +278,8 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
   }
 
   @Nullable
-  private static FlipperObject getStateData(DebugComponent node) throws Exception {
-    return DataUtils.getStateData(node, node.getStateContainer());
+  private static FlipperObject getStateData(DebugComponent node) {
+    return DataUtils.getStateData(node.getStateContainer());
   }
 
   @Override
@@ -502,31 +502,13 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
     return YogaEdge.valueOf(s.toUpperCase());
   }
 
-  private static void applyReflectiveOverride(Object o, String key, FlipperDynamic dynamic) {
+  // The path follows the pattern (Props|State)/field/(field|index)*
+  private static void applyReflectiveOverride(
+      Object o, final String[] path, final FlipperDynamic dynamic) {
     try {
-      final Field field = o.getClass().getDeclaredField(key);
-      field.setAccessible(true);
+      final Field field = o.getClass().getDeclaredField(path[1]);
+      FlipperEditor.updateComponent(path, field, o, dynamic);
 
-      final Class type = field.getType();
-
-      Object value = null;
-      if (type == int.class || type == Integer.class) {
-        value = dynamic.asInt();
-      } else if (type == long.class || type == Long.class) {
-        value = dynamic.asLong();
-      } else if (type == float.class || type == Float.class) {
-        value = dynamic.asFloat();
-      } else if (type == double.class || type == Double.class) {
-        value = dynamic.asDouble();
-      } else if (type == boolean.class || type == Boolean.class) {
-        value = dynamic.asBoolean();
-      } else if (type.isAssignableFrom(String.class)) {
-        value = dynamic.asString();
-      }
-
-      if (value != null) {
-        field.set(o, value);
-      }
     } catch (Exception ignored) {
     }
   }

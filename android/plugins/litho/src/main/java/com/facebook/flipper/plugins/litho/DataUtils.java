@@ -73,11 +73,7 @@ public class DataUtils {
                 props.put(f.getName(), InspectorValue.immutable(description));
               }
             } else {
-              if (isTypeMutable(f.getType())) {
-                props.put(f.getName(), InspectorValue.mutable(f.get(node)));
-              } else {
-                props.put(f.getName(), InspectorValue.immutable(f.get(node)));
-              }
+              props.put(f.getName(), FlipperEditor.makeFlipperField(node, f));
             }
             break;
         }
@@ -93,7 +89,7 @@ public class DataUtils {
   }
 
   @Nullable
-  static FlipperObject getStateData(Object node, StateContainer stateContainer) throws Exception {
+  static FlipperObject getStateData(StateContainer stateContainer) {
     if (stateContainer == null) {
       return null;
     }
@@ -106,33 +102,12 @@ public class DataUtils {
 
       final State annotation = f.getAnnotation(State.class);
       if (annotation != null) {
-        if (DataUtils.isTypeMutable(f.getType())) {
-          state.put(f.getName(), InspectorValue.mutable(f.get(stateContainer)));
-        } else {
-          state.put(f.getName(), InspectorValue.immutable(f.get(stateContainer)));
-        }
+        state.put(f.getName(), FlipperEditor.makeFlipperField(stateContainer, f));
         hasState = true;
       }
     }
 
     return hasState ? state.build() : null;
-  }
-
-  static boolean isTypeMutable(Class<?> type) {
-    if (type == int.class || type == Integer.class) {
-      return true;
-    } else if (type == long.class || type == Long.class) {
-      return true;
-    } else if (type == float.class || type == Float.class) {
-      return true;
-    } else if (type == double.class || type == Double.class) {
-      return true;
-    } else if (type == boolean.class || type == Boolean.class) {
-      return true;
-    } else if (type.isAssignableFrom(String.class)) {
-      return true;
-    }
-    return false;
   }
 
   static com.facebook.flipper.plugins.inspector.InspectorValue fromDrawable(Drawable d) {
