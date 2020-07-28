@@ -46,9 +46,12 @@ if (process.env.NODE_ENV === 'development' && os.platform() === 'darwin') {
   global.electronRequire('mac-ca');
 }
 
+const [s, ns] = process.hrtime();
+const launchTime = s * 1e3 + ns / 1e6;
+
 const logger = initLogger(store);
 
-QuickPerformanceLogger.markerStart(FLIPPER_QPL_EVENTS.STARTUP);
+QuickPerformanceLogger.markerStart(FLIPPER_QPL_EVENTS.STARTUP, 0, launchTime);
 
 enableMapSet();
 
