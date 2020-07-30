@@ -447,9 +447,9 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
     return mConnection != null;
   }
 
-  public boolean openInIDE(
+  public void openInIDE(
       String fileName, String className, String dirRoot, String repo, int lineNumber, IDE ide) {
-    if (mConnection == null) return false;
+    if (mConnection == null) return;
 
     mConnection.send(
         "openInIDE",
@@ -461,7 +461,6 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
             .put("lineNumber", lineNumber)
             .put("ide", ide)
             .build());
-    return true;
   }
 
   private void setHighlighted(
