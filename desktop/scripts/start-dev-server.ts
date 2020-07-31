@@ -18,6 +18,7 @@ import chalk from 'chalk';
 import http from 'http';
 import path from 'path';
 import fs from 'fs-extra';
+import {hostname} from 'os';
 import {compileMain, generatePluginEntryPoints} from './build-utils';
 import Watchman from '../static/watchman';
 import Metro from 'metro';
@@ -49,6 +50,17 @@ if (process.argv.includes('--fast-refresh')) {
 // but it is possible to enable it using this command line argument.
 if (!process.argv.includes('--plugin-auto-update')) {
   process.env.FLIPPER_DISABLE_PLUGIN_AUTO_UPDATE = 'true';
+}
+
+function looksLikeDevServer(): boolean {
+  const hn = hostname();
+  if (/^devvm.*\.facebook\.com$/.test(hn)) {
+    return true;
+  }
+  if (hn.endsWith('.od.fbinfra.net')) {
+    return true;
+  }
+  return false;
 }
 
 function launchElectron(port: number) {
@@ -273,7 +285,18 @@ function outputScreen(socket?: socketIo.Server) {
   }
 }
 
+function checkDevServer() {
+  if (looksLikeDevServer()) {
+    console.log(
+      chalk.red(
+        `✖ It looks like you're trying to start Flipper on your OnDemand or DevServer, which is not supported. Please run this in a local checkout on your laptop or desktop instead.`,
+      ),
+    );
+  }
+}
+
 (async () => {
+  checkDevServer();
   await generatePluginEntryPoints();
   await ensurePluginFoldersWatchable();
   const port = await detect(DEFAULT_PORT);
