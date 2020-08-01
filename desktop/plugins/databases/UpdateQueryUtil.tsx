@@ -58,9 +58,9 @@ export function constructQueryClause(
           ? `'${val.value.replace(/'/g, "''")}'`
           : `${val.value}`;
       if (idx <= 0) {
-        return `${key}=${valueString}`;
+        return `\`${key}\`=${valueString}`;
       } else {
-        return `${clauses} ${connector} ${key}=${valueString}`;
+        return `${clauses} ${connector} \`${key}\`=${valueString}`;
       }
     },
     '',
@@ -72,7 +72,7 @@ export function constructUpdateQuery(
   where: {[key: string]: Value},
   change: {[key: string]: Value},
 ): string {
-  return `UPDATE ${table}
+  return `UPDATE \`${table}\`
     SET ${constructQueryClause(change, ',')}
     WHERE ${constructQueryClause(where, 'AND')}`;
 }
