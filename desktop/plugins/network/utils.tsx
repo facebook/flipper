@@ -31,9 +31,7 @@ export function decodeBody(container: Request | Response): string {
       return decompress(b64Decoded);
     }
 
-    // Data is transferred as base64 encoded bytes to support unicode characters,
-    // we need to decode the bytes here to display the correct unicode characters.
-    return decodeURIComponent(escape(b64Decoded));
+    return b64Decoded;
   } catch (e) {
     console.warn('Discarding malformed body, size: ' + b64Decoded.length);
     return '';
