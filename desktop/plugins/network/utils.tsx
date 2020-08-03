@@ -33,7 +33,9 @@ export function decodeBody(container: Request | Response): string {
 
     return b64Decoded;
   } catch (e) {
-    console.warn('Discarding malformed body, size: ' + b64Decoded.length);
+    console.warn(
+      `Flipper failed to decode request/response body (size: ${b64Decoded.length}): ${e}`,
+    );
     return '';
   }
 }
@@ -52,6 +54,9 @@ function decompress(body: string): string {
   } catch (e) {
     // Sometimes Content-Encoding is 'gzip' but the body is already decompressed.
     // Assume this is the case when decompression fails.
+    if (!('' + e).includes('incorrect header check')) {
+      console.warn('decompression failed: ' + e);
+    }
   }
 
   return body;

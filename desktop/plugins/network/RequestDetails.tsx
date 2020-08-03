@@ -19,6 +19,7 @@ import {
   Select,
   styled,
   colors,
+  SmallText,
 } from 'flipper';
 import {decodeBody, getHeaderValue} from './utils';
 import {formatBytes} from './index';
@@ -332,14 +333,23 @@ class RequestBodyInspector extends Component<{
 }> {
   render() {
     const {request, formattedText} = this.props;
+    if (request.data == null || request.data.trim() === '') {
+      return <Empty />;
+    }
     const bodyFormatters = formattedText ? TextBodyFormatters : BodyFormatters;
-    let component;
     for (const formatter of bodyFormatters) {
       if (formatter.formatRequest) {
         try {
-          component = formatter.formatRequest(request);
+          const component = formatter.formatRequest(request);
           if (component) {
-            break;
+            return (
+              <BodyContainer>
+                {component}
+                <FormattedBy>
+                  Formatted by {formatter.constructor.name}
+                </FormattedBy>
+              </BodyContainer>
+            );
           }
         } catch (e) {
           console.warn(
@@ -349,10 +359,7 @@ class RequestBodyInspector extends Component<{
         }
       }
     }
-
-    component = component || <Text>{decodeBody(request)}</Text>;
-
-    return <BodyContainer>{component}</BodyContainer>;
+    return renderRawBody(request);
   }
 }
 
@@ -363,14 +370,23 @@ class ResponseBodyInspector extends Component<{
 }> {
   render() {
     const {request, response, formattedText} = this.props;
+    if (response.data == null || response.data.trim() === '') {
+      return <Empty />;
+    }
     const bodyFormatters = formattedText ? TextBodyFormatters : BodyFormatters;
-    let component;
     for (const formatter of bodyFormatters) {
       if (formatter.formatResponse) {
         try {
-          component = formatter.formatResponse(request, response);
+          const component = formatter.formatResponse(request, response);
           if (component) {
-            break;
+            return (
+              <BodyContainer>
+                {component}
+                <FormattedBy>
+                  Formatted by {formatter.constructor.name}
+                </FormattedBy>
+              </BodyContainer>
+            );
           }
         } catch (e) {
           console.warn(
@@ -380,11 +396,41 @@ class ResponseBodyInspector extends Component<{
         }
       }
     }
-
-    component = component || <Text>{decodeBody(response)}</Text>;
-
-    return <BodyContainer>{component}</BodyContainer>;
+    return renderRawBody(response);
   }
+}
+
+const FormattedBy = styled(SmallText)({
+  marginTop: 8,
+  fontSize: '0.7em',
+  textAlign: 'center',
+  display: 'block',
+});
+
+const Empty = () => (
+  <BodyContainer>
+    <Text>(empty)</Text>
+  </BodyContainer>
+);
+
+function renderRawBody(container: Request | Response) {
+  const decoded = decodeBody(container);
+  return (
+    <BodyContainer>
+      {decoded ? (
+        <Text selectable wordWrap="break-word">
+          {decoded}
+        </Text>
+      ) : (
+        <>
+          <FormattedBy>(Failed to decode)</FormattedBy>
+          <Text selectable wordWrap="break-word">
+            {container.data}
+          </Text>
+        </>
+      )}
+    </BodyContainer>
+  );
 }
 
 const MediaContainer = styled(FlexColumn)({
@@ -662,7 +708,11 @@ class GraphQLFormatter {
   };
   formatRequest = (request: Request) => {
     if (request.url.indexOf('graphql') > 0) {
-      const data = querystring.parse(decodeBody(request));
+      const decoded = decodeBody(request);
+      if (!decoded) {
+        return undefined;
+      }
+      const data = querystring.parse(decoded);
       if (typeof data.variables === 'string') {
         data.variables = JSON.parse(data.variables);
       }
@@ -725,14 +775,38 @@ class FormUrlencodedFormatter {
   formatRequest = (request: Request) => {
     const contentType = getHeaderValue(request.headers, 'content-type');
     if (contentType.startsWith('application/x-www-form-urlencoded')) {
+      const decoded = decodeBody(request);
+      if (!decoded) {
+        return undefined;
+      }
       return (
         <ManagedDataInspector
           expandRoot={true}
-          data={querystring.parse(decodeBody(request))}
+          data={querystring.parse(decoded)}
         />
       );
     }
   };
+}
+
+class BinaryFormatter {
+  formatRequest(request: Request) {
+    return this.format(request);
+  }
+
+  formatResponse(_request: Request, response: Response) {
+    return this.format(response);
+  }
+
+  format(container: Request | Response) {
+    if (
+      getHeaderValue(container.headers, 'content-type') ===
+      'application/octet-stream'
+    ) {
+      return '(binary data)'; // we could offer a download button here?
+    }
+    return undefined;
+  }
 }
 
 const BodyFormatters: Array<BodyFormatter> = [
@@ -744,6 +818,7 @@ const BodyFormatters: Array<BodyFormatter> = [
   new JSONFormatter(),
   new FormUrlencodedFormatter(),
   new XMLTextFormatter(),
+  new BinaryFormatter(),
 ];
 
 const TextBodyFormatters: Array<BodyFormatter> = [new JSONTextFormatter()];
