@@ -51,7 +51,6 @@ type Entries = ReadonlyArray<{
 type BaseState = {
   readonly rows: ReadonlyArray<TableBodyRow>;
   readonly entries: Entries;
-  readonly key2entry: {readonly [key: string]: DeviceLogEntry};
 };
 
 type AdditionalState = {
@@ -263,18 +262,15 @@ export function addEntriesToState(
   state: BaseState = {
     rows: [],
     entries: [],
-    key2entry: {},
   } as const,
   addDirection: 'up' | 'down' = 'up',
 ): BaseState {
   const rows = [...state.rows];
   const entries = [...state.entries];
-  const key2entry = {...state.key2entry};
 
   for (let i = 0; i < items.length; i++) {
     const {entry, row} = items[i];
     entries.push({row, entry});
-    key2entry[row.key] = entry;
 
     let previousEntry: DeviceLogEntry | null = null;
 
@@ -290,7 +286,6 @@ export function addEntriesToState(
   return {
     entries,
     rows,
-    key2entry,
   };
 }
 
@@ -579,7 +574,6 @@ export default class LogTable extends FlipperDevicePlugin<
       entries: [],
       rows: [],
       highlightedRows: new Set(),
-      key2entry: {},
       counters: this.state.counters.map((counter) => ({
         ...counter,
         count: 0,
