@@ -45,11 +45,21 @@ function getPluginPendingInstallationDir(
 }
 
 function getPluginPendingInstallationsDir(name: string): string {
-  return path.join(pluginPendingInstallationDir, name);
+  return path.join(
+    pluginPendingInstallationDir,
+    replaceInvalidPathSegmentCharacters(name),
+  );
 }
 
 function getPluginInstallationDir(name: string): string {
-  return path.join(pluginInstallationDir, name);
+  return path.join(
+    pluginInstallationDir,
+    replaceInvalidPathSegmentCharacters(name),
+  );
+}
+
+function replaceInvalidPathSegmentCharacters(name: string) {
+  return name.replace('/', '__');
 }
 
 async function installPluginFromTempDir(
@@ -145,7 +155,10 @@ export async function installPluginFromNpm(name: string) {
     const plugManNoDep = providePluginManagerNoDependencies();
     plugManNoDep.options.pluginsPath = tmpDir;
     await plugManNoDep.install(name);
-    const pluginTempDir = path.join(tmpDir, name);
+    const pluginTempDir = path.join(
+      tmpDir,
+      replaceInvalidPathSegmentCharacters(name),
+    );
     await installPluginFromTempDir(pluginTempDir);
   } finally {
     await fs.remove(tmpDir);
@@ -178,14 +191,15 @@ export async function getInstalledPlugins(): Promise<PluginMap> {
   const dirs = await fs.readdir(pluginInstallationDir);
   const plugins = await Promise.all<[string, PluginDetails]>(
     dirs.map(
-      (name) =>
+      (dirName) =>
         new Promise(async (resolve, reject) => {
-          const pluginDir = path.join(pluginInstallationDir, name);
+          const pluginDir = path.join(pluginInstallationDir, dirName);
           if (!(await fs.lstat(pluginDir)).isDirectory()) {
             return resolve(undefined);
           }
           try {
-            resolve([name, await getPluginDetails(pluginDir)]);
+            const details = await getPluginDetails(pluginDir);
+            resolve([details.name, details]);
           } catch (e) {
             reject(e);
           }
@@ -203,24 +217,25 @@ export async function getPendingInstallationPlugins(): Promise<PluginMap> {
   const dirs = await fs.readdir(pluginPendingInstallationDir);
   const plugins = await Promise.all<[string, PluginDetails]>(
     dirs.map(
-      (name) =>
+      (dirName) =>
         new Promise(async (resolve, reject) => {
           const versions = (
-            await fs.readdir(path.join(pluginPendingInstallationDir, name))
+            await fs.readdir(path.join(pluginPendingInstallationDir, dirName))
           ).sort((v1, v2) => semver.compare(v2, v1, true));
           if (versions.length === 0) {
             return resolve(undefined);
           }
           const pluginDir = path.join(
             pluginPendingInstallationDir,
-            name,
+            dirName,
             versions[0],
           );
           if (!(await fs.lstat(pluginDir)).isDirectory()) {
             return resolve(undefined);
           }
           try {
-            resolve([name, await getPluginDetails(pluginDir)]);
+            const details = await getPluginDetails(pluginDir);
+            resolve([details.name, details]);
           } catch (e) {
             reject(e);
           }
@@ -244,7 +259,7 @@ export async function getPendingAndInstalledPlugins(): Promise<PluginMap> {
 }
 
 export async function removePlugin(name: string): Promise<void> {
-  await fs.remove(path.join(pluginInstallationDir, name));
+  await fs.remove(getPluginInstallationDir(name));
 }
 
 export async function finishPendingPluginInstallations() {
