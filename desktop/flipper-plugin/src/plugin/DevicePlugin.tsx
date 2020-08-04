@@ -8,9 +8,7 @@
  */
 
 import {SandyPluginDefinition} from './SandyPluginDefinition';
-import {EventEmitter} from 'events';
-import {Atom} from '../state/atom';
-import {setCurrentPluginInstance} from './Plugin';
+import {BasePluginInstance, BasePluginClient} from './PluginBase';
 
 export type DeviceLogListener = (entry: DeviceLogEntry) => void;
 
@@ -42,31 +40,13 @@ export type DevicePluginPredicate = (device: Device) => boolean;
 
 export type DevicePluginFactory = (client: DevicePluginClient) => object;
 
-// TODO: better name?
-export interface DevicePluginClient {
+export interface DevicePluginClient extends BasePluginClient {
   readonly device: Device;
-
-  /**
-   * the onDestroy event is fired whenever a device is unloaded from Flipper, or a plugin is disabled.
-   */
-  onDestroy(cb: () => void): void;
-
-  /**
-   * the onActivate event is fired whenever the plugin is actived in the UI
-   */
-  onActivate(cb: () => void): void;
-
-  /**
-   * The counterpart of the `onActivate` handler.
-   */
-  onDeactivate(cb: () => void): void;
-
-  /**
-   * Triggered when this plugin is opened through a deeplink
-   */
-  onDeepLink(cb: (deepLink: unknown) => void): void;
 }
 
+/**
+ * Wrapper interface around BaseDevice in Flipper
+ */
 export interface RealFlipperDevice {
   isArchived: boolean;
   addLogListener(callback: DeviceLogListener): Symbol;
@@ -74,35 +54,20 @@ export interface RealFlipperDevice {
   addLogEntry(entry: DeviceLogEntry): void;
 }
 
-export class SandyDevicePluginInstance {
+export class SandyDevicePluginInstance extends BasePluginInstance {
   static is(thing: any): thing is SandyDevicePluginInstance {
     return thing instanceof SandyDevicePluginInstance;
   }
 
   /** client that is bound to this instance */
   client: DevicePluginClient;
-  /** the original plugin definition */
-  definition: SandyPluginDefinition;
-  /** the plugin instance api as used inside components and such  */
-  instanceApi: any;
-
-  activated = false;
-  destroyed = false;
-  events = new EventEmitter();
-
-  // temporarily field that is used during deserialization
-  initialStates?: Record<string, any>;
-  // all the atoms that should be serialized when making an export / import
-  rootStates: Record<string, Atom<any>> = {};
-  // last seen deeplink
-  lastDeeplink?: any;
 
   constructor(
     realDevice: RealFlipperDevice,
     definition: SandyPluginDefinition,
     initialStates?: Record<string, any>,
   ) {
-    this.definition = definition;
+    super(definition, initialStates);
     const device: Device = {
       get isArchived() {
         return realDevice.isArchived;
@@ -115,84 +80,15 @@ export class SandyDevicePluginInstance {
       },
     };
     this.client = {
+      ...this.createBasePluginClient(),
       device,
-      onDestroy: (cb) => {
-        this.events.on('destroy', cb);
-      },
-      onActivate: (cb) => {
-        this.events.on('activate', cb);
-      },
-      onDeactivate: (cb) => {
-        this.events.on('deactivate', cb);
-      },
-      onDeepLink: (callback) => {
-        this.events.on('deeplink', callback);
-      },
     };
-    setCurrentPluginInstance(this);
-    this.initialStates = initialStates;
-    try {
-      this.instanceApi = definition
-        .asDevicePluginModule()
-        .devicePlugin(this.client);
-    } finally {
-      this.initialStates = undefined;
-      setCurrentPluginInstance(undefined);
-    }
-  }
-
-  // the plugin is selected in the UI
-  activate() {
-    this.assertNotDestroyed();
-    if (!this.activated) {
-      this.activated = true;
-      this.events.emit('activate');
-    }
-  }
-
-  deactivate() {
-    if (this.destroyed) {
-      return;
-    }
-    if (this.activated) {
-      this.lastDeeplink = undefined;
-      this.activated = false;
-      this.events.emit('deactivate');
-    }
-  }
-
-  destroy() {
-    this.assertNotDestroyed();
-    this.deactivate();
-    this.events.emit('destroy');
-    this.destroyed = true;
+    this.initializePlugin(() =>
+      definition.asDevicePluginModule().devicePlugin(this.client),
+    );
   }
 
   toJSON() {
     return '[SandyDevicePluginInstance]';
-  }
-
-  triggerDeepLink(deepLink: unknown) {
-    this.assertNotDestroyed();
-    if (deepLink !== this.lastDeeplink) {
-      this.lastDeeplink = deepLink;
-      this.events.emit('deeplink', deepLink);
-    }
-  }
-
-  exportState() {
-    return Object.fromEntries(
-      Object.entries(this.rootStates).map(([key, atom]) => [key, atom.get()]),
-    );
-  }
-
-  isPersistable(): boolean {
-    return Object.keys(this.rootStates).length > 0;
-  }
-
-  private assertNotDestroyed() {
-    if (this.destroyed) {
-      throw new Error('Plugin has been destroyed already');
-    }
   }
 }

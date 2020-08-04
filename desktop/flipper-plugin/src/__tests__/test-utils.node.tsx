@@ -10,7 +10,7 @@
 import * as TestUtils from '../test-utils/test-utils';
 import * as testPlugin from './TestPlugin';
 import {createState} from '../state/atom';
-import {FlipperClient} from '../plugin/Plugin';
+import {PluginClient} from '../plugin/Plugin';
 import {DevicePluginClient} from '../plugin/DevicePlugin';
 
 test('it can start a plugin and lifecycle events', () => {
@@ -246,7 +246,7 @@ test('plugins cannot use a persist key twice', async () => {
 
 test('plugins can receive deeplinks', async () => {
   const plugin = TestUtils.startPlugin({
-    plugin(client: FlipperClient) {
+    plugin(client: PluginClient) {
       client.onDeepLink((deepLink) => {
         if (typeof deepLink === 'string') {
           field1.set(deepLink);

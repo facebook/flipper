@@ -23,7 +23,7 @@ const WelcomeScreen = isHeadless()
 import NotificationScreen from '../chrome/NotificationScreen';
 import SupportRequestFormV2 from '../fb-stubs/SupportRequestFormV2';
 import SupportRequestDetails from '../fb-stubs/SupportRequestDetails';
-import {getPluginKey} from '../utils/pluginUtils';
+import {getPluginKey, isDevicePluginDefinition} from '../utils/pluginUtils';
 import {deconstructClientId} from '../utils/clientUtils';
 import {FlipperDevicePlugin, PluginDefinition, isSandyPlugin} from '../plugin';
 import {RegisterPluginAction} from './plugins';
@@ -393,20 +393,10 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
       // plugins are registered after creating the base devices, so update them
       const plugins = action.payload;
       plugins.forEach((plugin) => {
-        // TODO: T68738317 support sandy device plugin
-        if (
-          !isSandyPlugin(plugin) &&
-          plugin.prototype instanceof FlipperDevicePlugin
-        ) {
+        if (isDevicePluginDefinition(plugin)) {
           // smell: devices are mutable
           state.devices.forEach((device) => {
-            // @ts-ignore
-            if (plugin.supportsDevice(device)) {
-              device.devicePlugins = [
-                ...(device.devicePlugins || []),
-                plugin.id,
-              ];
-            }
+            device.loadDevicePlugin(plugin);
           });
         }
       });

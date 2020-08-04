@@ -19,7 +19,7 @@ import {PluginDetails} from 'flipper-plugin-lib';
 import {
   RealFlipperClient,
   SandyPluginInstance,
-  FlipperClient,
+  PluginClient,
 } from '../plugin/Plugin';
 import {
   SandyPluginDefinition,
@@ -34,6 +34,7 @@ import {
   RealFlipperDevice,
   DeviceLogListener,
 } from '../plugin/DevicePlugin';
+import {BasePluginInstance} from '../plugin/PluginBase';
 
 type Renderer = RenderResult<typeof queries>;
 
@@ -49,17 +50,44 @@ type ExtractClientType<Module extends FlipperPluginModule<any>> = Parameters<
 
 type ExtractMethodsType<
   Module extends FlipperPluginModule<any>
-> = ExtractClientType<Module> extends FlipperClient<any, infer Methods>
+> = ExtractClientType<Module> extends PluginClient<any, infer Methods>
   ? Methods
   : never;
 
 type ExtractEventsType<
   Module extends FlipperPluginModule<any>
-> = ExtractClientType<Module> extends FlipperClient<infer Events, any>
+> = ExtractClientType<Module> extends PluginClient<infer Events, any>
   ? Events
   : never;
 
-interface StartPluginResult<Module extends FlipperPluginModule<any>> {
+interface BasePluginResult {
+  /**
+   * Emulates the 'onActivate' event
+   */
+  activate(): void;
+  /**
+   * Emulates the 'onActivate' event (when the user opens the plugin in the UI).
+   * Will also trigger the `onConnect` event for non-background plugins
+   */
+  deactivate(): void;
+  /**
+   * Emulates the 'destroy' event. After calling destroy this plugin instance won't be usable anymore
+   */
+  destroy(): void;
+
+  /**
+   * Emulate triggering a deeplink
+   */
+  triggerDeepLink(deeplink: unknown): void;
+
+  /**
+   * Grab all the persistable state
+   */
+  exportState(): any;
+}
+
+interface StartPluginResult<Module extends FlipperPluginModule<any>>
+  extends BasePluginResult {
   /**
    * the instantiated plugin for this test
    */
@@ -69,15 +97,6 @@ interface StartPluginResult<Module extends FlipperPluginModule<any>> {
    */
   module: Module;
   /**
-   * Emulates the 'onActivate' event (when the user opens the plugin in the UI).
-   * Will also trigger the `onConnect` event for non-background plugins
-   */
-  activate(): void;
-  /**
-   * Emulatese the 'onDeactivate' event
-   */
-  deactivate(): void;
-  /**
    * Emulates the 'onConnect' event
    */
   connect(): void;
@@ -85,10 +104,6 @@ interface StartPluginResult<Module extends FlipperPluginModule<any>> {
    * Emulatese the 'onDisconnect' event
    */
   disconnect(): void;
-  /**
-   * Emulates the 'destroy' event. After calling destroy this plugin instance won't be usable anymore
-   */
-  destroy(): void;
   /**
    * Jest Stub that is called whenever client.send() is called by the plugin.
    * Use send.mockImplementation(function) to intercept the calls.
@@ -117,13 +132,10 @@ interface StartPluginResult<Module extends FlipperPluginModule<any>> {
       params: any; // afaik we can't type this :-(
     }[],
   ): void;
-
-  triggerDeepLink(deeplink: unknown): void;
-
-  exportState(): any;
 }
 
-interface StartDevicePluginResult<Module extends FlipperDevicePluginModule> {
+interface StartDevicePluginResult<Module extends FlipperDevicePluginModule>
+  extends BasePluginResult {
   /**
    * the instantiated plugin for this test
    */
@@ -133,29 +145,9 @@ interface StartDevicePluginResult<Module extends FlipperDevicePluginModule> {
    */
   module: Module;
   /**
-   * Emulates the 'onActivate' event
-   */
-  activate(): void;
-  /**
-   * Emulates the 'onDeactivate' event
-   */
-  deactivate(): void;
-  /**
-   * Emulates the 'destroy' event. After calling destroy this plugin instance won't be usable anymore
-   */
-  destroy(): void;
-  /**
    * Emulates sending a log message arriving from the device
    */
   sendLogEntry(logEntry: DeviceLogEntry): void;
-  /**
-   * Emulates triggering a deeplik
-   */
-  triggerDeepLink(deeplink: unknown): void;
-  /**
-   * Grabs the current (exportable) state
-   */
-  exportState(): any;
 }
 
 export function startPlugin<Module extends FlipperPluginModule<any>>(
@@ -198,28 +190,13 @@ export function startPlugin<Module extends FlipperPluginModule<any>>(
     definition,
     options?.initialState,
   );
-  if (options?.isBackgroundPlugin) {
-    pluginInstance.connect(); // otherwise part of activate
-  }
-  // we start activated
-  pluginInstance.activate();
 
   const res: StartPluginResult<Module> = {
-    module,
+    ...createBasePluginResult(pluginInstance),
     instance: pluginInstance.instanceApi,
-    activate() {
-      pluginInstance.activate();
-      pluginInstance.connect();
-    },
-    deactivate() {
-      pluginInstance.deactivate();
-      if (!fakeFlipper.isBackgroundPlugin) {
-        pluginInstance.disconnect();
-      }
-    },
+    module,
     connect: () => pluginInstance.connect(),
     disconnect: () => pluginInstance.disconnect(),
-    destroy: () => pluginInstance.destroy(),
     onSend: sendStub,
     sendEvent: (event, params) => {
       res.sendEvents([
@@ -234,13 +211,13 @@ export function startPlugin<Module extends FlipperPluginModule<any>>(
         pluginInstance.receiveMessages(messages as any);
       });
     },
-    exportState: () => pluginInstance.exportState(),
-    triggerDeepLink: (deepLink: unknown) => {
-      pluginInstance.triggerDeepLink(deepLink);
-    },
   };
-  // @ts-ignore
-  res._backingInstance = pluginInstance;
+  (res as any)._backingInstance = pluginInstance;
+  // we start activated
+  if (options?.isBackgroundPlugin) {
+    pluginInstance.connect(); // otherwise part of activate
+  }
+  pluginInstance.activate();
   return res;
 }
 
@@ -252,8 +229,7 @@ export function renderPlugin<Module extends FlipperPluginModule<any>>(
   act: (cb: () => void) => void;
 } {
   const res = startPlugin(module, options);
-  // @ts-ignore hidden api
-  const pluginInstance: SandyPluginInstance = res._backingInstance;
+  const pluginInstance: SandyPluginInstance = (res as any)._backingInstance;
 
   const renderer = render(<SandyPluginRenderer plugin={pluginInstance} />);
 
@@ -288,27 +264,20 @@ export function startDevicePlugin<Module extends FlipperDevicePluginModule>(
     definition,
     options?.initialState,
   );
-  // we start connected
-  pluginInstance.activate();
 
   const res: StartDevicePluginResult<Module> = {
+    ...createBasePluginResult(pluginInstance),
     module,
     instance: pluginInstance.instanceApi,
-    activate: () => pluginInstance.activate(),
-    deactivate: () => pluginInstance.deactivate(),
-    destroy: () => pluginInstance.destroy(),
     sendLogEntry: (entry) => {
       act(() => {
         testDevice.addLogEntry(entry);
       });
     },
-    exportState: () => pluginInstance.exportState(),
-    triggerDeepLink: (deepLink: unknown) => {
-      pluginInstance.triggerDeepLink(deepLink);
-    },
   };
-  // @ts-ignore
-  res._backingInstance = pluginInstance;
+  (res as any)._backingInstance = pluginInstance;
+  // we start connected
+  pluginInstance.activate();
   return res;
 }
 
@@ -321,7 +290,8 @@ export function renderDevicePlugin<Module extends FlipperDevicePluginModule>(
 } {
   const res = startDevicePlugin(module, options);
   // @ts-ignore hidden api
-  const pluginInstance: SandyDevicePluginInstance = res._backingInstance;
+  const pluginInstance: SandyDevicePluginInstance = (res as any)
+    ._backingInstance;
 
   const renderer = render(<SandyPluginRenderer plugin={pluginInstance} />);
 
@@ -333,6 +303,20 @@ export function renderDevicePlugin<Module extends FlipperDevicePluginModule>(
       renderer.unmount();
       pluginInstance.destroy();
     },
+  };
+}
+
+function createBasePluginResult(
+  pluginInstance: BasePluginInstance,
+): BasePluginResult {
+  return {
+    activate: () => pluginInstance.activate(),
+    deactivate: () => pluginInstance.deactivate(),
+    exportState: () => pluginInstance.exportState(),
+    triggerDeepLink: (deepLink: unknown) => {
+      pluginInstance.triggerDeepLink(deepLink);
+    },
+    destroy: () => pluginInstance.destroy(),
   };
 }
 

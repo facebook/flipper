@@ -662,7 +662,7 @@ async function getStoreExport(
   const newPluginState = metadata.pluginStates;
 
   // TODO: support async export like fetchMetaData T68683476
-  // TODO: support device plugins T68738317
+  // TODO: support device plugins T70582933
   const pluginStates2 = pluginsToProcess
     ? exportSandyPluginStates(pluginsToProcess)
     : {};

@@ -128,7 +128,6 @@ export function processMessagesLater(
     case isSelected && getPendingMessages(store, pluginKey).length === 0:
       processMessagesImmediately(store, pluginKey, plugin, messages);
       break;
-    // TODO: support SandyDevicePlugin T68738317
     case isSelected:
     case plugin instanceof SandyPluginInstance:
     case plugin instanceof FlipperDevicePlugin:

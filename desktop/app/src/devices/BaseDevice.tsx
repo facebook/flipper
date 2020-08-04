@@ -15,7 +15,7 @@ import {
   SandyDevicePluginInstance,
   SandyPluginDefinition,
 } from 'flipper-plugin';
-import {DevicePluginMap} from '../plugin';
+import {DevicePluginMap, FlipperDevicePlugin} from '../plugin';
 
 export type DeviceShell = {
   stdout: stream.Readable;
@@ -179,18 +179,22 @@ export default class BaseDevice {
     const plugins = Array.from(devicePlugins.values());
     plugins.sort(sortPluginsByName);
     for (const plugin of plugins) {
-      if (plugin instanceof SandyPluginDefinition) {
-        if (plugin.asDevicePluginModule().supportsDevice(this as any)) {
-          this.devicePlugins.push(plugin.id);
-          this.sandyPluginStates.set(
-            plugin.id,
-            new SandyDevicePluginInstance(this, plugin),
-          ); // TODO: pass initial state if applicable
-        }
-      } else {
-        if (plugin.supportsDevice(this)) {
-          this.devicePlugins.push(plugin.id);
-        }
+      this.loadDevicePlugin(plugin);
+    }
+  }
+
+  loadDevicePlugin(plugin: typeof FlipperDevicePlugin | SandyPluginDefinition) {
+    if (plugin instanceof SandyPluginDefinition) {
+      if (plugin.asDevicePluginModule().supportsDevice(this as any)) {
+        this.devicePlugins.push(plugin.id);
+        this.sandyPluginStates.set(
+          plugin.id,
+          new SandyDevicePluginInstance(this, plugin),
+        ); // TODO T70582933: pass initial state if applicable
+      }
+    } else {
+      if (plugin.supportsDevice(this)) {
+        this.devicePlugins.push(plugin.id);
       }
     }
   }

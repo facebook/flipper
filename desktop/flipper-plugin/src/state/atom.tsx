@@ -9,7 +9,7 @@
 
 import {produce} from 'immer';
 import {useState, useEffect} from 'react';
-import {getCurrentPluginInstance} from '../plugin/Plugin';
+import {getCurrentPluginInstance} from '../plugin/PluginBase';
 
 export type Atom<T> = {
   get(): T;

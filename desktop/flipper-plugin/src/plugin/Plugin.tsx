@@ -8,9 +8,7 @@
  */
 
 import {SandyPluginDefinition} from './SandyPluginDefinition';
-import {EventEmitter} from 'events';
-import {Atom} from '../state/atom';
-import {SandyDevicePluginInstance} from './DevicePlugin';
+import {BasePluginInstance, BasePluginClient} from './PluginBase';
 
 type EventsContract = Record<string, any>;
 type MethodsContract = Record<string, (params: any) => Promise<any>>;
@@ -23,25 +21,10 @@ type Message = {
 /**
  * API available to a plugin factory
  */
-export interface FlipperClient<
+export interface PluginClient<
   Events extends EventsContract = {},
   Methods extends MethodsContract = {}
-> {
-  /**
-   * the onDestroy event is fired whenever a client is unloaded from Flipper, or a plugin is disabled.
-   */
-  onDestroy(cb: () => void): void;
-
-  /**
-   * the onActivate event is fired whenever the plugin is actived in the UI
-   */
-  onActivate(cb: () => void): void;
-
-  /**
-   * The counterpart of the `onActivate` handler.
-   */
-  onDeactivate(cb: () => void): void;
-
+> extends BasePluginClient {
   /**
    * the onConnect event is fired whenever the plugin is connected to it's counter part on the device.
    * For most plugins this event is fired if the user selects the plugin,
@@ -56,11 +39,6 @@ export interface FlipperClient<
    * - when the plugin is disabled
    */
   onDisconnect(cb: () => void): void;
-
-  /**
-   * Triggered when this plugin is opened through a deeplink
-   */
-  onDeepLink(cb: (deepLink: unknown) => void): void;
 
   /**
    * Send a message to the connected client
@@ -101,26 +79,11 @@ export interface RealFlipperClient {
 export type PluginFactory<
   Events extends EventsContract,
   Methods extends MethodsContract
-> = (client: FlipperClient<Events, Methods>) => object;
+> = (client: PluginClient<Events, Methods>) => object;
 
 export type FlipperPluginComponent = React.FC<{}>;
 
-let currentPluginInstance:
-  | SandyPluginInstance
-  | SandyDevicePluginInstance
-  | undefined = undefined;
-
-export function setCurrentPluginInstance(
-  instance: typeof currentPluginInstance,
-) {
-  currentPluginInstance = instance;
-}
-
-export function getCurrentPluginInstance(): typeof currentPluginInstance {
-  return currentPluginInstance;
-}
-
-export class SandyPluginInstance {
+export class SandyPluginInstance extends BasePluginInstance {
   static is(thing: any): thing is SandyPluginInstance {
     return thing instanceof SandyPluginInstance;
   }
@@ -128,41 +91,20 @@ export class SandyPluginInstance {
   /** base client provided by Flipper */
   realClient: RealFlipperClient;
   /** client that is bound to this instance */
-  client: FlipperClient<any, any>;
-  /** the original plugin definition */
-  definition: SandyPluginDefinition;
-  /** the plugin instance api as used inside components and such  */
-  instanceApi: any;
-
-  activated = false;
+  client: PluginClient<any, any>;
+  /** connection alive? */
   connected = false;
-  destroyed = false;
-  events = new EventEmitter();
-
-  // temporarily field that is used during deserialization
-  initialStates?: Record<string, any>;
-  // all the atoms that should be serialized when making an export / import
-  rootStates: Record<string, Atom<any>> = {};
-  // last seen deeplink
-  lastDeeplink?: any;
 
   constructor(
     realClient: RealFlipperClient,
     definition: SandyPluginDefinition,
     initialStates?: Record<string, any>,
   ) {
+    super(definition, initialStates);
     this.realClient = realClient;
     this.definition = definition;
     this.client = {
-      onDestroy: (cb) => {
-        this.events.on('destroy', cb);
-      },
-      onActivate: (cb) => {
-        this.events.on('activate', cb);
-      },
-      onDeactivate: (cb) => {
-        this.events.on('deactivate', cb);
-      },
+      ...this.createBasePluginClient(),
       onConnect: (cb) => {
         this.events.on('connect', cb);
       },
@@ -181,45 +123,24 @@ export class SandyPluginInstance {
       onMessage: (event, callback) => {
         this.events.on('event-' + event, callback);
       },
-      onDeepLink: (callback) => {
-        this.events.on('deeplink', callback);
-      },
     };
-    setCurrentPluginInstance(this);
-    this.initialStates = initialStates;
-    try {
-      this.instanceApi = definition.asPluginModule().plugin(this.client);
-    } finally {
-      this.initialStates = undefined;
-      setCurrentPluginInstance(undefined);
-    }
+    this.initializePlugin(() =>
+      definition.asPluginModule().plugin(this.client),
+    );
   }
 
   // the plugin is selected in the UI
   activate() {
-    this.assertNotDestroyed();
-    if (!this.activated) {
-      this.activated = true;
-      this.events.emit('activate');
-      const pluginId = this.definition.id;
-      if (!this.realClient.isBackgroundPlugin(pluginId)) {
-        this.realClient.initPlugin(pluginId); // will call connect() if needed
-      }
+    super.activate();
+    const pluginId = this.definition.id;
+    if (!this.connected && !this.realClient.isBackgroundPlugin(pluginId)) {
+      this.realClient.initPlugin(pluginId); // will call connect() if needed
     }
   }
 
   // the plugin is deselected in the UI
   deactivate() {
-    if (this.destroyed) {
-      // this can happen if the plugin is disabled while active in the UI.
-      // In that case deinit & destroy is already triggered from the STAR_PLUGIN action
-      return;
-    }
-    if (this.activated) {
-      this.lastDeeplink = undefined;
-      this.activated = false;
-      this.events.emit('deactivate');
-    }
+    super.deactivate();
     const pluginId = this.definition.id;
     if (this.connected && !this.realClient.isBackgroundPlugin(pluginId)) {
       this.realClient.deinitPlugin(pluginId);
@@ -243,13 +164,10 @@ export class SandyPluginInstance {
   }
 
   destroy() {
-    this.assertNotDestroyed();
-    this.deactivate();
     if (this.connected) {
       this.realClient.deinitPlugin(this.definition.id);
     }
-    this.events.emit('destroy');
-    this.destroyed = true;
+    super.destroy();
   }
 
   receiveMessages(messages: Message[]) {
@@ -260,30 +178,6 @@ export class SandyPluginInstance {
 
   toJSON() {
     return '[SandyPluginInstance]';
-  }
-
-  triggerDeepLink(deepLink: unknown) {
-    this.assertNotDestroyed();
-    if (deepLink !== this.lastDeeplink) {
-      this.lastDeeplink = deepLink;
-      this.events.emit('deeplink', deepLink);
-    }
-  }
-
-  exportState() {
-    return Object.fromEntries(
-      Object.entries(this.rootStates).map(([key, atom]) => [key, atom.get()]),
-    );
-  }
-
-  isPersistable(): boolean {
-    return Object.keys(this.rootStates).length > 0;
-  }
-
-  private assertNotDestroyed() {
-    if (this.destroyed) {
-      throw new Error('Plugin has been destroyed already');
-    }
   }
 
   private assertConnected() {

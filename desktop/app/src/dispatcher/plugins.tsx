@@ -277,7 +277,6 @@ const requirePluginInternal = (
 
   if (pluginDetails.flipperSDKVersion) {
     // Sandy plugin
-    // TODO: suppor device Plugins T68738317
     return new SandyPluginDefinition(pluginDetails, plugin);
   } else {
     // classic plugin
