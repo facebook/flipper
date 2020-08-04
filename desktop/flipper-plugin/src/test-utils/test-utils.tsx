@@ -324,6 +324,7 @@ export function renderDevicePlugin<Module extends FlipperDevicePluginModule>(
 export function createMockFlipperLib(): FlipperLib {
   return {
     enableMenuEntries: jest.fn(),
+    createPaste: jest.fn(),
   };
 }
 

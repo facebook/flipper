@@ -38,6 +38,12 @@ export interface BasePluginClient {
    * Register menu entries in the Flipper toolbar
    */
   addMenuEntry(...entry: MenuEntry[]): void;
+
+  /**
+   * Creates a Paste (similar to a Github Gist).
+   * Facebook only function. Resolves to undefined if creating a paste failed.
+   */
+  createPaste(input: string): Promise<string | undefined>;
 }
 
 let currentPluginInstance: BasePluginInstance | undefined = undefined;
@@ -123,6 +129,7 @@ export abstract class BasePluginInstance {
           this.menuEntries.push(normalizeMenuEntry(entry));
         }
       },
+      createPaste: this.flipperLib.createPaste,
     };
   }
 

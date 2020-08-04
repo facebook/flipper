@@ -10,6 +10,7 @@
 import type {FlipperLib} from 'flipper-plugin';
 import type {Logger} from '../fb-interfaces/Logger';
 import type {Store} from '../reducers';
+import createPaste from '../fb-stubs/createPaste';
 
 let flipperLibInstance: FlipperLib | undefined;
 
@@ -23,6 +24,7 @@ export function initializeFlipperLibImplementation(
     enableMenuEntries(entries) {
       addSandyPluginEntries(entries);
     },
+    createPaste,
   };
 }
 

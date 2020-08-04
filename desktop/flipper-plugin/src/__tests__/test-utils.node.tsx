@@ -328,3 +328,21 @@ test('plugins can register menu entries', async () => {
     `"No menu entry found with action: Non Existing"`,
   );
 });
+
+test('plugins can create pastes', async () => {
+  const plugin = TestUtils.startPlugin({
+    plugin(client: PluginClient) {
+      return {
+        doIt() {
+          client.createPaste('test');
+        },
+      };
+    },
+    Component() {
+      return null;
+    },
+  });
+
+  plugin.instance.doIt();
+  expect(plugin.flipperLib.createPaste).toBeCalledWith('test');
+});

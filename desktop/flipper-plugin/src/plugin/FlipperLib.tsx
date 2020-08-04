@@ -14,4 +14,5 @@ import {NormalizedMenuEntry} from './MenuEntry';
  */
 export interface FlipperLib {
   enableMenuEntries(menuEntries: NormalizedMenuEntry[]): void;
+  createPaste(input: string): Promise<string | undefined>;
 }

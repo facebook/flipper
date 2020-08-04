@@ -59,8 +59,14 @@ export function plugin(client: FlipperClient<Events, {}>) {
     },
     {
       action: 'createPaste',
-      handler: () => {
-        console.log('creating paste');
+      handler: async () => {
+        const selection = selectedID.get();
+        if (selection) {
+          const url = await client.createPaste(
+            JSON.stringify(rows.get()[selection], null, 2),
+          );
+          alert(url); // TODO: use notifications T69990351
+        }
       },
     },
   );
