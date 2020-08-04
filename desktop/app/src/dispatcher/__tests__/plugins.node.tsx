@@ -159,8 +159,7 @@ test('requirePlugin loads plugin', () => {
     version: '1.0.0',
   });
   expect(plugin).not.toBeNull();
-  // @ts-ignore
-  expect(plugin!.prototype).toBeInstanceOf(FlipperPlugin);
+  expect((plugin as any).prototype).toBeInstanceOf(FlipperPlugin);
   expect(plugin!.id).toBe(TestPlugin.id);
 });
 
@@ -251,7 +250,6 @@ test('requirePlugin loads valid Sandy plugin', () => {
     flipperSDKVersion: '0.0.0',
   }) as SandyPluginDefinition;
   expect(plugin).not.toBeNull();
-  // @ts-ignore
   expect(plugin).toBeInstanceOf(SandyPluginDefinition);
   expect(plugin.id).toBe('Sample');
   expect(plugin.details).toMatchObject({
@@ -302,7 +300,6 @@ test('requirePlugin loads valid Sandy Device plugin', () => {
     flipperSDKVersion: '0.0.0',
   }) as SandyPluginDefinition;
   expect(plugin).not.toBeNull();
-  // @ts-ignore
   expect(plugin).toBeInstanceOf(SandyPluginDefinition);
   expect(plugin.id).toBe('Sample');
   expect(plugin.details).toMatchObject({

@@ -571,9 +571,6 @@ test('PluginContainer can render Sandy device plugins', async () => {
       Component: MySandyPlugin,
     },
   );
-  // any cast because this plugin is not enriched with the meta data that the plugin loader
-  // normally adds. Our further sandy plugin test infra won't need this, but
-  // for this test we do need to act a s a loaded plugin, to make sure PluginContainer itself can handle it
   const {renderer, act, store, device} = await renderMockFlipperWithPlugin(
     definition,
   );
