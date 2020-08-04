@@ -505,3 +505,144 @@ test('PluginContainer can render Sandy device plugins', async () => {
   expect(pluginInstance.activatedStub).toBeCalledTimes(2);
   expect(pluginInstance.deactivatedStub).toBeCalledTimes(1);
 });
+
+test('PluginContainer + Sandy device plugin supports deeplink', async () => {
+  const linksSeen: any[] = [];
+
+  const devicePlugin = (client: DevicePluginClient) => {
+    const linkState = createState('');
+    client.onDeepLink((link) => {
+      linksSeen.push(link);
+      linkState.set(String(link));
+    });
+    return {
+      linkState,
+    };
+  };
+
+  const definition = new SandyPluginDefinition(
+    TestUtils.createMockPluginDetails(),
+    {
+      devicePlugin,
+      supportsDevice: () => true,
+      Component() {
+        const instance = usePlugin(devicePlugin);
+        const linkState = useValue(instance.linkState);
+        return <h1>hello {linkState || 'world'}</h1>;
+      },
+    },
+  );
+  const {renderer, act, store} = await renderMockFlipperWithPlugin(definition);
+
+  const theUniverse = {
+    thisIs: 'theUniverse',
+    toString() {
+      return JSON.stringify({...this});
+    },
+  };
+
+  expect(linksSeen).toEqual([]);
+  expect(renderer.baseElement).toMatchInlineSnapshot(`
+    <body>
+      <div>
+        <div
+          class="css-1orvm1g-View-FlexBox-FlexColumn"
+        >
+          <h1>
+            hello 
+            world
+          </h1>
+        </div>
+        <div
+          class="css-bxcvv9-View-FlexBox-FlexRow"
+          id="detailsSidebar"
+        />
+      </div>
+    </body>
+  `);
+
+  act(() => {
+    store.dispatch(
+      selectPlugin({
+        selectedPlugin: definition.id,
+        deepLinkPayload: theUniverse,
+        selectedApp: null,
+      }),
+    );
+  });
+
+  expect(linksSeen).toEqual([theUniverse]);
+  expect(renderer.baseElement).toMatchInlineSnapshot(`
+    <body>
+      <div>
+        <div
+          class="css-1orvm1g-View-FlexBox-FlexColumn"
+        >
+          <h1>
+            hello 
+            {"thisIs":"theUniverse"}
+          </h1>
+        </div>
+        <div
+          class="css-bxcvv9-View-FlexBox-FlexRow"
+          id="detailsSidebar"
+        />
+      </div>
+    </body>
+  `);
+
+  // Sending same link doesn't trigger again
+  act(() => {
+    store.dispatch(
+      selectPlugin({
+        selectedPlugin: definition.id,
+        deepLinkPayload: theUniverse,
+        selectedApp: null,
+      }),
+    );
+  });
+  expect(linksSeen).toEqual([theUniverse]);
+
+  // ...nor does a random other store update that does trigger a plugin container render
+  act(() => {
+    store.dispatch(
+      updateSettings({
+        ...store.getState().settingsState,
+      }),
+    );
+  });
+  expect(linksSeen).toEqual([theUniverse]);
+
+  // Different link does trigger again
+  act(() => {
+    store.dispatch(
+      selectPlugin({
+        selectedPlugin: definition.id,
+        deepLinkPayload: 'london!',
+        selectedApp: null,
+      }),
+    );
+  });
+  expect(linksSeen).toEqual([theUniverse, 'london!']);
+
+  // and same link does trigger if something else was selected in the mean time
+  act(() => {
+    store.dispatch(
+      selectPlugin({
+        selectedPlugin: 'Logs',
+        deepLinkPayload: 'london!',
+        selectedApp: null,
+      }),
+    );
+  });
+  act(() => {
+    store.dispatch(
+      selectPlugin({
+        selectedPlugin: definition.id,
+        deepLinkPayload: 'london!',
+        selectedApp: null,
+      }),
+    );
+  });
+  expect(linksSeen).toEqual([theUniverse, 'london!', 'london!']);
+});

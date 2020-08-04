@@ -71,7 +71,10 @@ export default class BaseDevice {
   // sorted list of supported device plugins
   devicePlugins: string[] = [];
 
-  sandyPluginStates = new Map<string, SandyDevicePluginInstance>();
+  sandyPluginStates: Map<string, SandyDevicePluginInstance> = new Map<
+    string,
+    SandyDevicePluginInstance
+  >();
 
   supportsOS(os: OS) {
     return os.toLowerCase() === this.os.toLowerCase();

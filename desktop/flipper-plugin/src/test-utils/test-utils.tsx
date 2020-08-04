@@ -139,6 +139,10 @@ interface StartDevicePluginResult<Module extends FlipperDevicePluginModule> {
    */
   sendLogEntry(logEntry: DeviceLogEntry): void;
   /**
+   * Emulates triggering a deeplik
+   */
+  triggerDeepLink(deeplink: unknown): void;
+  /**
    * Grabs the current (exportable) state
    */
   exportState(): any;
@@ -278,6 +282,9 @@ export function startDevicePlugin<Module extends FlipperDevicePluginModule>(
       });
     },
     exportState: () => pluginInstance.exportState(),
+    triggerDeepLink: (deepLink: unknown) => {
+      pluginInstance.triggerDeepLink(deepLink);
+    },
   };
   // @ts-ignore
   res._backingInstance = pluginInstance;

@@ -61,7 +61,10 @@ export interface DevicePluginClient {
    */
   onDeactivate(cb: () => void): void;
 
-  // TODO: support onDeeplink!
+  /**
+   * Triggered when this plugin is opened through a deeplink
+   */
+  onDeepLink(cb: (deepLink: unknown) => void): void;
 }
 
 export interface RealFlipperDevice {
@@ -91,6 +94,8 @@ export class SandyDevicePluginInstance {
   initialStates?: Record<string, any>;
   // all the atoms that should be serialized when making an export / import
   rootStates: Record<string, Atom<any>> = {};
+  // last seen deeplink
+  lastDeeplink?: any;
 
   constructor(
     realDevice: RealFlipperDevice,
@@ -120,6 +125,9 @@ export class SandyDevicePluginInstance {
       onDeactivate: (cb) => {
         this.events.on('deactivate', cb);
       },
+      onDeepLink: (callback) => {
+        this.events.on('deeplink', callback);
+      },
     };
     setCurrentPluginInstance(this);
     this.initialStates = initialStates;
@@ -143,8 +151,8 @@ export class SandyDevicePluginInstance {
   }
 
   deactivate() {
-    this.assertNotDestroyed();
-    if (this.activated) {
+    if (!this.destroyed && this.activated) {
+      this.lastDeeplink = undefined;
       this.activated = false;
       this.events.emit('deactivate');
     }
@@ -159,6 +167,14 @@ export class SandyDevicePluginInstance {
 
   toJSON() {
     return '[SandyDevicePluginInstance]';
+  }
+
+  triggerDeepLink(deepLink: unknown) {
+    this.assertNotDestroyed();
+    if (deepLink !== this.lastDeeplink) {
+      this.lastDeeplink = deepLink;
+      this.events.emit('deeplink', deepLink);
+    }
   }
 
   exportState() {

@@ -180,7 +180,7 @@ class PluginContainer extends PureComponent<Props, State> {
     this.processMessageQueue();
     // make sure deeplinks are propagated
     const {deepLinkPayload, target, activePlugin} = this.props;
-    if (deepLinkPayload && target instanceof Client && activePlugin) {
+    if (deepLinkPayload && activePlugin && target) {
       target.sandyPluginStates
         .get(activePlugin.id)
         ?.triggerDeepLink(deepLinkPayload);
