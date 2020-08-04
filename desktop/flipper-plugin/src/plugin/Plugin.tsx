@@ -33,6 +33,16 @@ export interface FlipperClient<
   onDestroy(cb: () => void): void;
 
   /**
+   * the onActivate event is fired whenever the plugin is actived in the UI
+   */
+  onActivate(cb: () => void): void;
+
+  /**
+   * The counterpart of the `onActivate` handler.
+   */
+  onDeactivate(cb: () => void): void;
+
+  /**
    * the onConnect event is fired whenever the plugin is connected to it's counter part on the device.
    * For most plugins this event is fired if the user selects the plugin,
    * for background plugins when the initial connection is made.
@@ -124,6 +134,7 @@ export class SandyPluginInstance {
   /** the plugin instance api as used inside components and such  */
   instanceApi: any;
 
+  activated = false;
   connected = false;
   destroyed = false;
   events = new EventEmitter();
@@ -145,6 +156,12 @@ export class SandyPluginInstance {
     this.client = {
       onDestroy: (cb) => {
         this.events.on('destroy', cb);
+      },
+      onActivate: (cb) => {
+        this.events.on('activate', cb);
+      },
+      onDeactivate: (cb) => {
+        this.events.on('deactivate', cb);
       },
       onConnect: (cb) => {
         this.events.on('connect', cb);
@@ -181,22 +198,30 @@ export class SandyPluginInstance {
   // the plugin is selected in the UI
   activate() {
     this.assertNotDestroyed();
-    const pluginId = this.definition.id;
-    if (!this.realClient.isBackgroundPlugin(pluginId)) {
-      this.realClient.initPlugin(pluginId); // will call connect() if needed
+    if (!this.activated) {
+      this.activated = true;
+      this.events.emit('activate');
+      const pluginId = this.definition.id;
+      if (!this.realClient.isBackgroundPlugin(pluginId)) {
+        this.realClient.initPlugin(pluginId); // will call connect() if needed
+      }
     }
   }
 
   // the plugin is deselected in the UI
   deactivate() {
-    this.lastDeeplink = undefined;
     if (this.destroyed) {
       // this can happen if the plugin is disabled while active in the UI.
       // In that case deinit & destroy is already triggered from the STAR_PLUGIN action
       return;
     }
+    if (this.activated) {
+      this.lastDeeplink = undefined;
+      this.activated = false;
+      this.events.emit('deactivate');
+    }
     const pluginId = this.definition.id;
-    if (!this.realClient.isBackgroundPlugin(pluginId)) {
+    if (this.connected && !this.realClient.isBackgroundPlugin(pluginId)) {
       this.realClient.deinitPlugin(pluginId);
     }
   }
@@ -219,6 +244,7 @@ export class SandyPluginInstance {
 
   destroy() {
     this.assertNotDestroyed();
+    this.deactivate();
     if (this.connected) {
       this.realClient.deinitPlugin(this.definition.id);
     }

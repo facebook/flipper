@@ -24,11 +24,15 @@ test('it can start a plugin and lifecycle events', () => {
   // startPlugin starts connected
   expect(instance.connectStub).toBeCalledTimes(1);
   expect(instance.disconnectStub).toBeCalledTimes(0);
+  expect(instance.activateStub).toBeCalledTimes(1);
+  expect(instance.deactivateStub).toBeCalledTimes(0);
   expect(instance.destroyStub).toBeCalledTimes(0);
 
   p.connect(); // noop
   expect(instance.connectStub).toBeCalledTimes(1);
   expect(instance.disconnectStub).toBeCalledTimes(0);
+  expect(instance.activateStub).toBeCalledTimes(1);
+  expect(instance.deactivateStub).toBeCalledTimes(0);
   expect(instance.destroyStub).toBeCalledTimes(0);
 
   p.disconnect();
@@ -38,15 +42,59 @@ test('it can start a plugin and lifecycle events', () => {
   expect(instance.disconnectStub).toBeCalledTimes(1);
   expect(instance.destroyStub).toBeCalledTimes(0);
 
-  p.destroy();
-  expect(instance.connectStub).toBeCalledTimes(2);
+  p.deactivate(); // also disconnects
+  p.activate();
+  expect(instance.connectStub).toBeCalledTimes(3);
   expect(instance.disconnectStub).toBeCalledTimes(2);
+  expect(instance.activateStub).toBeCalledTimes(2);
+  expect(instance.deactivateStub).toBeCalledTimes(1);
+
+  p.destroy();
+  expect(instance.connectStub).toBeCalledTimes(3);
+  expect(instance.disconnectStub).toBeCalledTimes(3);
+  expect(instance.activateStub).toBeCalledTimes(2);
+  expect(instance.deactivateStub).toBeCalledTimes(2);
   expect(instance.destroyStub).toBeCalledTimes(1);
 
   // cannot interact with destroyed plugin
   expect(() => {
     p.connect();
   }).toThrowErrorMatchingInlineSnapshot(`"Plugin has been destroyed already"`);
+  expect(() => {
+    p.activate();
+  }).toThrowErrorMatchingInlineSnapshot(`"Plugin has been destroyed already"`);
+});
+
+test('it can start a plugin and lifecycle events for background plugins', () => {
+  const {instance, ...p} = TestUtils.startPlugin(testPlugin, {
+    isBackgroundPlugin: true,
+  });
+
+  // @ts-expect-error
+  p.bla;
+  // @ts-expect-error
+  instance.bla;
+
+  // startPlugin starts connected
+  expect(instance.connectStub).toBeCalledTimes(1);
+  expect(instance.disconnectStub).toBeCalledTimes(0);
+  expect(instance.activateStub).toBeCalledTimes(1);
+  expect(instance.deactivateStub).toBeCalledTimes(0);
+  expect(instance.destroyStub).toBeCalledTimes(0);
+
+  p.deactivate(); // bg, no disconnection
+  p.activate();
+  expect(instance.connectStub).toBeCalledTimes(1);
+  expect(instance.disconnectStub).toBeCalledTimes(0);
+  expect(instance.activateStub).toBeCalledTimes(2);
+  expect(instance.deactivateStub).toBeCalledTimes(1);
+
+  p.destroy();
+  expect(instance.connectStub).toBeCalledTimes(1);
+  expect(instance.disconnectStub).toBeCalledTimes(1);
+  expect(instance.activateStub).toBeCalledTimes(2);
+  expect(instance.deactivateStub).toBeCalledTimes(2);
+  expect(instance.destroyStub).toBeCalledTimes(1);
 });
 
 test('it can render a plugin', () => {

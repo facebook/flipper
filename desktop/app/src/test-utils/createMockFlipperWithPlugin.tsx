@@ -206,13 +206,14 @@ type Renderer = RenderResult<typeof queries>;
 
 export async function renderMockFlipperWithPlugin(
   pluginClazz: PluginDefinition,
+  options?: MockOptions,
 ): Promise<
   MockFlipperResult & {
     renderer: Renderer;
     act: (cb: () => void) => void;
   }
 > {
-  const args = await createMockFlipperWithPlugin(pluginClazz);
+  const args = await createMockFlipperWithPlugin(pluginClazz, options);
 
   function selectTestPlugin(store: Store, client: Client) {
     store.dispatch(

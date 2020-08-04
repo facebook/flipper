@@ -36,10 +36,10 @@ import {
   createPaste,
   textContent,
   KeyboardActions,
+  MenuTemplate,
 } from 'flipper';
 import LogWatcher from './LogWatcher';
 import React from 'react';
-import {MenuTemplate} from 'app/src/ui/components/ContextMenu';
 
 const LOG_WATCHER_LOCAL_STORAGE_KEY = 'LOG_WATCHER_LOCAL_STORAGE_KEY';
 

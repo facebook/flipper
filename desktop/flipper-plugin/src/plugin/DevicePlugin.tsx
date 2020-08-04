@@ -151,7 +151,10 @@ export class SandyDevicePluginInstance {
   }
 
   deactivate() {
-    if (!this.destroyed && this.activated) {
+    if (this.destroyed) {
+      return;
+    }
+    if (this.activated) {
       this.lastDeeplink = undefined;
       this.activated = false;
       this.events.emit('deactivate');

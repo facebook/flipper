@@ -248,7 +248,6 @@ class PluginContainer extends PureComponent<Props, State> {
       pluginIsEnabled,
     } = this.props;
     if (!activePlugin || !target || !pluginKey) {
-      console.warn(`No selected plugin. Rendering empty!`);
       return null;
     }
 

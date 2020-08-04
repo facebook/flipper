@@ -25,6 +25,8 @@ type Methods = {
 export function plugin(client: FlipperClient<Events, Methods>) {
   const connectStub = jest.fn();
   const disconnectStub = jest.fn();
+  const activateStub = jest.fn();
+  const deactivateStub = jest.fn();
   const destroyStub = jest.fn();
   const state = createState(
     {
@@ -37,6 +39,8 @@ export function plugin(client: FlipperClient<Events, Methods>) {
 
   client.onConnect(connectStub);
   client.onDisconnect(disconnectStub);
+  client.onActivate(activateStub);
+  client.onDeactivate(deactivateStub);
   client.onDestroy(destroyStub);
   client.onMessage('inc', ({delta}) => {
     state.update((draft) => {
@@ -64,6 +68,8 @@ export function plugin(client: FlipperClient<Events, Methods>) {
   }
 
   return {
+    activateStub,
+    deactivateStub,
     connectStub,
     destroyStub,
     disconnectStub,

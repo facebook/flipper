@@ -101,6 +101,8 @@ test('PluginContainer can render Sandy plugins', async () => {
     expect(Object.keys(sandyApi)).toEqual([
       'connectedStub',
       'disconnectedStub',
+      'activatedStub',
+      'deactivatedStub',
     ]);
     expect(() => {
       // eslint-disable-next-line
@@ -114,9 +116,13 @@ test('PluginContainer can render Sandy plugins', async () => {
   const plugin = (client: FlipperClient) => {
     const connectedStub = jest.fn();
     const disconnectedStub = jest.fn();
+    const activatedStub = jest.fn();
+    const deactivatedStub = jest.fn();
     client.onConnect(connectedStub);
     client.onDisconnect(disconnectedStub);
-    return {connectedStub, disconnectedStub};
+    client.onActivate(activatedStub);
+    client.onDeactivate(deactivatedStub);
+    return {connectedStub, disconnectedStub, activatedStub, deactivatedStub};
   };
 
   const definition = new SandyPluginDefinition(
@@ -167,6 +173,8 @@ test('PluginContainer can render Sandy plugins', async () => {
   )!.instanceApi;
   expect(pluginInstance.connectedStub).toBeCalledTimes(1);
   expect(pluginInstance.disconnectedStub).toBeCalledTimes(0);
+  expect(pluginInstance.activatedStub).toBeCalledTimes(1);
+  expect(pluginInstance.deactivatedStub).toBeCalledTimes(0);
 
   // select non existing plugin
   act(() => {
@@ -187,6 +195,8 @@ test('PluginContainer can render Sandy plugins', async () => {
   `);
   expect(pluginInstance.connectedStub).toBeCalledTimes(1);
   expect(pluginInstance.disconnectedStub).toBeCalledTimes(1);
+  expect(pluginInstance.activatedStub).toBeCalledTimes(1);
+  expect(pluginInstance.deactivatedStub).toBeCalledTimes(1);
 
   // go back
   act(() => {
@@ -199,6 +209,8 @@ test('PluginContainer can render Sandy plugins', async () => {
   });
   expect(pluginInstance.connectedStub).toBeCalledTimes(2);
   expect(pluginInstance.disconnectedStub).toBeCalledTimes(1);
+  expect(pluginInstance.activatedStub).toBeCalledTimes(2);
+  expect(pluginInstance.deactivatedStub).toBeCalledTimes(1);
   expect(client.rawSend).toBeCalledWith('init', {plugin: 'TestPlugin'});
 
   // disable
@@ -212,6 +224,8 @@ test('PluginContainer can render Sandy plugins', async () => {
   });
   expect(pluginInstance.connectedStub).toBeCalledTimes(2);
   expect(pluginInstance.disconnectedStub).toBeCalledTimes(2);
+  expect(pluginInstance.activatedStub).toBeCalledTimes(2);
+  expect(pluginInstance.deactivatedStub).toBeCalledTimes(2);
   expect(client.rawSend).toBeCalledWith('deinit', {plugin: 'TestPlugin'});
 
   // re-enable
@@ -226,11 +240,157 @@ test('PluginContainer can render Sandy plugins', async () => {
   // note: this is the old pluginInstance, so that one is not reconnected!
   expect(pluginInstance.connectedStub).toBeCalledTimes(2);
   expect(pluginInstance.disconnectedStub).toBeCalledTimes(2);
+  expect(pluginInstance.activatedStub).toBeCalledTimes(2);
+  expect(pluginInstance.deactivatedStub).toBeCalledTimes(2);
 
   expect(
     client.sandyPluginStates.get('TestPlugin')!.instanceApi.connectedStub,
   ).toBeCalledTimes(1);
   expect(client.rawSend).toBeCalledWith('init', {plugin: 'TestPlugin'});
+});
+
+test('PluginContainer triggers correct lifecycles for background plugin', async () => {
+  function MySandyPlugin() {
+    return <div>Hello from Sandy</div>;
+  }
+
+  const plugin = (client: FlipperClient) => {
+    const connectedStub = jest.fn();
+    const disconnectedStub = jest.fn();
+    const activatedStub = jest.fn();
+    const deactivatedStub = jest.fn();
+    client.onConnect(connectedStub);
+    client.onDisconnect(disconnectedStub);
+    client.onActivate(activatedStub);
+    client.onDeactivate(deactivatedStub);
+    return {connectedStub, disconnectedStub, activatedStub, deactivatedStub};
+  };
+
+  const definition = new SandyPluginDefinition(
+    TestUtils.createMockPluginDetails(),
+    {
+      plugin,
+      Component: MySandyPlugin,
+    },
+  );
+  const {act, client, store} = await renderMockFlipperWithPlugin(definition, {
+    onSend(method) {
+      if (method === 'getBackgroundPlugins') {
+        return {plugins: [definition.id]};
+      }
+    },
+  });
+
+  expect(client.rawSend).toBeCalledWith('init', {plugin: 'TestPlugin'});
+  (client.rawSend as jest.Mock).mockClear();
+  // make sure the plugin gets connected
+  const pluginInstance: ReturnType<typeof plugin> = client.sandyPluginStates.get(
+    definition.id,
+  )!.instanceApi;
+  expect(pluginInstance.connectedStub).toBeCalledTimes(1);
+  expect(pluginInstance.disconnectedStub).toBeCalledTimes(0);
+  expect(pluginInstance.activatedStub).toBeCalledTimes(1);
+  expect(pluginInstance.deactivatedStub).toBeCalledTimes(0);
+
+  // select non existing plugin
+  act(() => {
+    store.dispatch(
+      selectPlugin({
+        selectedPlugin: 'Logs',
+        deepLinkPayload: null,
+      }),
+    );
+  });
+  // bg plugin!
+  expect(client.rawSend).not.toBeCalled();
+  (client.rawSend as jest.Mock).mockClear();
+  expect(pluginInstance.connectedStub).toBeCalledTimes(1);
+  expect(pluginInstance.disconnectedStub).toBeCalledTimes(0);
+  expect(pluginInstance.activatedStub).toBeCalledTimes(1);
+  expect(pluginInstance.deactivatedStub).toBeCalledTimes(1);
+
+  // go back
+  act(() => {
+    store.dispatch(
+      selectPlugin({
+        selectedPlugin: definition.id,
+        deepLinkPayload: null,
+      }),
+    );
+  });
+  expect(pluginInstance.connectedStub).toBeCalledTimes(1);
+  expect(pluginInstance.disconnectedStub).toBeCalledTimes(0);
+  expect(pluginInstance.activatedStub).toBeCalledTimes(2);
+  expect(pluginInstance.deactivatedStub).toBeCalledTimes(1);
+  expect(client.rawSend).not.toBeCalled();
+  (client.rawSend as jest.Mock).mockClear();
+
+  // disable
+  act(() => {
+    store.dispatch(
+      starPlugin({
+        plugin: definition,
+        selectedApp: client.query.app,
+      }),
+    );
+  });
+  expect(pluginInstance.connectedStub).toBeCalledTimes(1);
+  expect(pluginInstance.disconnectedStub).toBeCalledTimes(1);
+  expect(pluginInstance.activatedStub).toBeCalledTimes(2);
+  expect(pluginInstance.deactivatedStub).toBeCalledTimes(2);
+  expect(client.rawSend).toBeCalledWith('deinit', {plugin: 'TestPlugin'});
+  (client.rawSend as jest.Mock).mockClear();
+
+  // select something else
+  act(() => {
+    store.dispatch(
+      selectPlugin({
+        selectedPlugin: 'Logs',
+        deepLinkPayload: null,
+      }),
+    );
+  });
+  // re-enable
+  act(() => {
+    store.dispatch(
+      starPlugin({
+        plugin: definition,
+        selectedApp: client.query.app,
+      }),
+    );
+  });
+  // note: this is the old pluginInstance, so that one is not reconnected!
+  expect(pluginInstance.connectedStub).toBeCalledTimes(1);
+  expect(pluginInstance.disconnectedStub).toBeCalledTimes(1);
+  expect(pluginInstance.activatedStub).toBeCalledTimes(2);
+  expect(pluginInstance.deactivatedStub).toBeCalledTimes(2);
+
+  const newPluginInstance: ReturnType<typeof plugin> = client.sandyPluginStates.get(
+    'TestPlugin',
+  )!.instanceApi;
+  expect(newPluginInstance.connectedStub).toBeCalledTimes(1);
+  expect(newPluginInstance.disconnectedStub).toBeCalledTimes(0);
+  expect(newPluginInstance.activatedStub).toBeCalledTimes(0);
+  expect(newPluginInstance.deactivatedStub).toBeCalledTimes(0);
+  expect(client.rawSend).toBeCalledWith('init', {plugin: 'TestPlugin'});
+  (client.rawSend as jest.Mock).mockClear();
+
+  // select new plugin
+  act(() => {
+    store.dispatch(
+      selectPlugin({
+        selectedPlugin: definition.id,
+        deepLinkPayload: null,
+      }),
+    );
+  });
+
+  expect(newPluginInstance.connectedStub).toBeCalledTimes(1);
+  expect(newPluginInstance.disconnectedStub).toBeCalledTimes(0);
+  expect(newPluginInstance.activatedStub).toBeCalledTimes(1);
+  expect(newPluginInstance.deactivatedStub).toBeCalledTimes(0);
+  expect(client.rawSend).not.toBeCalled();
+  (client.rawSend as jest.Mock).mockClear();
 });
 
 test('PluginContainer + Sandy plugin supports deeplink', async () => {

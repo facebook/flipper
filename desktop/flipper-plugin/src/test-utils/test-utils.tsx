@@ -40,6 +40,7 @@ type Renderer = RenderResult<typeof queries>;
 interface StartPluginOptions {
   initialState?: Record<string, any>;
   isArchived?: boolean;
+  isBackgroundPlugin?: boolean;
 }
 
 type ExtractClientType<Module extends FlipperPluginModule<any>> = Parameters<
@@ -67,6 +68,15 @@ interface StartPluginResult<Module extends FlipperPluginModule<any>> {
    * module, from which any other exposed methods can be accessed during testing
    */
   module: Module;
+  /**
+   * Emulates the 'onActivate' event (when the user opens the plugin in the UI).
+   * Will also trigger the `onConnect` event for non-background plugins
+   */
+  activate(): void;
+  /**
+   * Emulatese the 'onDeactivate' event
+   */
+  deactivate(): void;
   /**
    * Emulates the 'onConnect' event
    */
@@ -127,7 +137,7 @@ interface StartDevicePluginResult<Module extends FlipperDevicePluginModule> {
    */
   activate(): void;
   /**
-   * Emulatese the 'onDeactivate' event
+   * Emulates the 'onDeactivate' event
    */
   deactivate(): void;
   /**
@@ -164,15 +174,13 @@ export function startPlugin<Module extends FlipperPluginModule<any>>(
 
   const sendStub = jest.fn();
   const fakeFlipper: RealFlipperClient = {
-    isBackgroundPlugin(_pluginId: string) {
-      // we only reason about non-background plugins,
-      // as from testing perspective the difference shouldn't matter
-      return false;
+    isBackgroundPlugin() {
+      return !!options?.isBackgroundPlugin;
     },
-    initPlugin(_pluginId: string) {
+    initPlugin() {
       pluginInstance.connect();
     },
-    deinitPlugin(_pluginId: string) {
+    deinitPlugin() {
       pluginInstance.disconnect();
     },
     call(
@@ -190,12 +198,25 @@ export function startPlugin<Module extends FlipperPluginModule<any>>(
     definition,
     options?.initialState,
   );
-  // we start connected
+  if (options?.isBackgroundPlugin) {
+    pluginInstance.connect(); // otherwise part of activate
+  }
+  // we start activated
   pluginInstance.activate();
 
   const res: StartPluginResult<Module> = {
     module,
     instance: pluginInstance.instanceApi,
+    activate() {
+      pluginInstance.activate();
+      pluginInstance.connect();
+    },
+    deactivate() {
+      pluginInstance.deactivate();
+      if (!fakeFlipper.isBackgroundPlugin) {
+        pluginInstance.disconnect();
+      }
+    },
     connect: () => pluginInstance.connect(),
     disconnect: () => pluginInstance.disconnect(),
     destroy: () => pluginInstance.destroy(),

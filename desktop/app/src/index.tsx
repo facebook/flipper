@@ -116,7 +116,10 @@ export {default as Orderable} from './ui/components/Orderable';
 export {default as VirtualList} from './ui/components/VirtualList';
 export {Component, PureComponent} from 'react';
 export {default as ContextMenuProvider} from './ui/components/ContextMenuProvider';
-export {default as ContextMenu} from './ui/components/ContextMenu';
+export {
+  default as ContextMenu,
+  MenuTemplate,
+} from './ui/components/ContextMenu';
 export {FileListFile, FileListFiles} from './ui/components/FileList';
 export {default as FileList} from './ui/components/FileList';
 export {default as File} from './ui/components/File';
