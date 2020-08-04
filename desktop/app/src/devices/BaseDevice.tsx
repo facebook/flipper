@@ -8,9 +8,14 @@
  */
 
 import stream from 'stream';
-import {FlipperDevicePlugin, DeviceLogListener} from 'flipper';
+import {DeviceLogListener} from 'flipper';
 import {sortPluginsByName} from '../utils/pluginUtils';
-import {DeviceLogEntry} from 'flipper-plugin';
+import {
+  DeviceLogEntry,
+  SandyDevicePluginInstance,
+  SandyPluginDefinition,
+} from 'flipper-plugin';
+import {DevicePluginMap} from '../plugin';
 
 export type DeviceShell = {
   stdout: stream.Readable;
@@ -64,7 +69,9 @@ export default class BaseDevice {
   source = '';
 
   // sorted list of supported device plugins
-  devicePlugins!: string[];
+  devicePlugins: string[] = [];
+
+  sandyPluginStates = new Map<string, SandyDevicePluginInstance>();
 
   supportsOS(os: OS) {
     return os.toLowerCase() === this.os.toLowerCase();
@@ -84,7 +91,11 @@ export default class BaseDevice {
     };
   }
 
-  teardown() {}
+  teardown() {
+    for (const instance of this.sandyPluginStates.values()) {
+      instance.destroy();
+    }
+  }
 
   supportedColumns(): Array<string> {
     return ['date', 'pid', 'tid', 'tag', 'message', 'type', 'time'];
@@ -158,10 +169,26 @@ export default class BaseDevice {
     return null;
   }
 
-  loadDevicePlugins(devicePlugins?: Map<string, typeof FlipperDevicePlugin>) {
-    this.devicePlugins = Array.from(devicePlugins ? devicePlugins.values() : [])
-      .filter((plugin) => plugin.supportsDevice(this))
-      .sort(sortPluginsByName)
-      .map((plugin) => plugin.id);
+  loadDevicePlugins(devicePlugins?: DevicePluginMap) {
+    if (!devicePlugins) {
+      return;
+    }
+    const plugins = Array.from(devicePlugins.values());
+    plugins.sort(sortPluginsByName);
+    for (const plugin of plugins) {
+      if (plugin instanceof SandyPluginDefinition) {
+        if (plugin.asDevicePluginModule().supportsDevice(this as any)) {
+          this.devicePlugins.push(plugin.id);
+          this.sandyPluginStates.set(
+            plugin.id,
+            new SandyDevicePluginInstance(this, plugin),
+          ); // TODO: pass initial state if applicable
+        }
+      } else {
+        if (plugin.supportsDevice(this)) {
+          this.devicePlugins.push(plugin.id);
+        }
+      }
+    }
   }
 }

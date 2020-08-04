@@ -18,6 +18,7 @@ import {State as PluginStatesState} from '../reducers/pluginStates';
 import {State as PluginsState} from '../reducers/plugins';
 import {State as PluginMessageQueueState} from '../reducers/pluginMessageQueue';
 import {deconstructPluginKey, deconstructClientId} from './clientUtils';
+import {SandyPluginDefinition} from 'flipper-plugin';
 
 type Client = import('../Client').default;
 
@@ -231,7 +232,8 @@ export function sortPluginsByName(
 export function isDevicePluginDefinition(
   definition: PluginDefinition,
 ): definition is DevicePluginDefinition {
-  // TODO: support Sandy device plugins T68738317
-  // @ts-ignore
-  return definition.prototype instanceof FlipperDevicePlugin;
+  return (
+    (definition as any).prototype instanceof FlipperDevicePlugin ||
+    (definition instanceof SandyPluginDefinition && definition.isDevicePlugin)
+  );
 }

@@ -19,7 +19,6 @@ import {
   ContextMenu,
   clipboard,
   Button,
-  FlipperPlugin,
   getPluginKey,
   getPersistedState,
   BaseDevice,
@@ -239,8 +238,12 @@ export function parseCrashLogAndUpdateState(
     | typeof FlipperBasePlugin
     | undefined = store
     .getState()
-    .plugins.devicePlugins.get(CrashReporterPlugin.id);
+    .plugins.devicePlugins.get(CrashReporterPlugin.id) as any;
   if (!persistingPlugin) {
+    return;
+  }
+  if (!persistingPlugin.persistedStateReducer) {
+    console.error('CrashReporterPlugin is incompatible');
     return;
   }
   const pluginStates = store.getState().pluginStates;

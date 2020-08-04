@@ -16,6 +16,7 @@ export {
   DeviceLogListener,
   DevicePluginClient,
   LogLevel,
+  SandyDevicePluginInstance,
 } from './plugin/DevicePlugin';
 export {SandyPluginDefinition} from './plugin/SandyPluginDefinition';
 export {SandyPluginRenderer} from './plugin/PluginRenderer';

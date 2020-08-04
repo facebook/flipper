@@ -232,9 +232,14 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
 
       return updateSelection(
         produce(state, (draft) => {
-          draft.devices = draft.devices.filter(
-            (device) => !deviceSerials.has(device.serial),
-          );
+          draft.devices = draft.devices.filter((device) => {
+            if (!deviceSerials.has(device.serial)) {
+              return true;
+            } else {
+              device.teardown();
+              return false;
+            }
+          });
         }),
       );
     }

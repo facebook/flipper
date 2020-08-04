@@ -23,12 +23,14 @@ import {DEFAULT_MAX_QUEUE_SIZE} from './reducers/pluginMessageQueue';
 import {PluginDetails} from 'flipper-plugin-lib';
 import {Settings} from './reducers/settings';
 import {SandyPluginDefinition} from 'flipper-plugin';
+
 type Parameters = {[key: string]: any};
 
 export type PluginDefinition = ClientPluginDefinition | DevicePluginDefinition;
 
-// TODO: T68738317 add SandyPluginDefinition
-export type DevicePluginDefinition = typeof FlipperDevicePlugin;
+export type DevicePluginDefinition =
+  | typeof FlipperDevicePlugin
+  | SandyPluginDefinition;
 
 export type ClientPluginDefinition =
   | typeof FlipperPlugin
@@ -244,7 +246,7 @@ export class FlipperDevicePlugin<
     this.teardown();
   }
 
-  static supportsDevice(_device: BaseDevice) {
+  static supportsDevice(_device: BaseDevice): boolean {
     throw new Error(
       'supportsDevice is unimplemented in FlipperDevicePlugin class',
     );

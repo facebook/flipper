@@ -34,7 +34,7 @@ import {Logger} from '../fb-interfaces/Logger';
 import {PluginDefinition} from '../plugin';
 import {registerPlugins} from '../reducers/plugins';
 import PluginContainer from '../PluginContainer';
-import {getPluginKey} from '../utils/pluginUtils';
+import {getPluginKey, isDevicePluginDefinition} from '../utils/pluginUtils';
 import {getInstance} from '../fb-stubs/Logger';
 
 type MockFlipperResult = {
@@ -75,6 +75,7 @@ export async function createMockFlipperWithPlugin(
       type: 'REGISTER_DEVICE',
       payload: device,
     });
+    device.loadDevicePlugins(store.getState().plugins.devicePlugins);
     return device;
   }
 
@@ -102,7 +103,7 @@ export async function createMockFlipperWithPlugin(
       null, // create a stub connection to avoid this plugin to be archived?
       logger,
       store,
-      [pluginClazz.id],
+      isDevicePluginDefinition(pluginClazz) ? [] : [pluginClazz.id],
       device,
     );
 
@@ -125,10 +126,7 @@ export async function createMockFlipperWithPlugin(
         case 'getPlugins':
           // assuming this plugin supports all plugins for now
           return {
-            plugins: [
-              ...store.getState().plugins.clientPlugins.keys(),
-              ...store.getState().plugins.devicePlugins.keys(),
-            ],
+            plugins: [...store.getState().plugins.clientPlugins.keys()],
           };
         case 'getBackgroundPlugins':
           return {plugins: []};
@@ -142,6 +140,7 @@ export async function createMockFlipperWithPlugin(
 
     // enable the plugin
     if (
+      !isDevicePluginDefinition(pluginClazz) &&
       !store
         .getState()
         .connections.userStarredPlugins[client.query.app]?.includes(

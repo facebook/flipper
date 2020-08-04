@@ -68,10 +68,14 @@ const handleError = (store: Store, device: BaseDevice, error: ErrorType) => {
   if (isProduction()) {
     return;
   }
-  const crashReporterPlugin = store
+  const crashReporterPlugin: typeof FlipperDevicePlugin = store
     .getState()
-    .plugins.devicePlugins.get('CrashReporter');
+    .plugins.devicePlugins.get('CrashReporter') as any;
   if (!crashReporterPlugin) {
+    return;
+  }
+  if (!crashReporterPlugin.persistedStateReducer) {
+    console.error('CrashReporterPlugin persistedStateReducer broken'); // Make sure we update this code if we ever convert it to Sandy
     return;
   }
 

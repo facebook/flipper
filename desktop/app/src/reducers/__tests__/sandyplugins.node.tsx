@@ -233,5 +233,3 @@ test('it can send messages from sandy clients', async () => {
     }
   `);
 });
-
-// TODO: T68683449 state is persisted if a plugin connects and reconnects
