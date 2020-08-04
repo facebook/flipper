@@ -265,6 +265,7 @@ test('requirePlugin loads valid Sandy plugin', () => {
     title: 'Sample',
     version: '1.0.0',
   });
+  expect(plugin.isDevicePlugin).toBe(false);
   expect(typeof plugin.module.Component).toBe('function');
   expect(plugin.module.Component.displayName).toBe('FlipperPlugin(Sample)');
   expect(typeof plugin.asPluginModule().plugin).toBe('function');
@@ -285,4 +286,39 @@ test('requirePlugin errors on invalid Sandy plugin', () => {
   expect(failedPlugins[0][1]).toMatchInlineSnapshot(
     `"Flipper plugin 'Sample' should export named function called 'plugin'"`,
   );
+});
+
+test('requirePlugin loads valid Sandy Device plugin', () => {
+  const name = 'pluginID';
+  const requireFn = requirePlugin([], {}, require);
+  const plugin = requireFn({
+    ...samplePluginDetails,
+    name,
+    entry: path.join(
+      __dirname,
+      '../../../../flipper-plugin/src/__tests__/DeviceTestPlugin',
+    ),
+    version: '1.0.0',
+    flipperSDKVersion: '0.0.0',
+  }) as SandyPluginDefinition;
+  expect(plugin).not.toBeNull();
+  // @ts-ignore
+  expect(plugin).toBeInstanceOf(SandyPluginDefinition);
+  expect(plugin.id).toBe('Sample');
+  expect(plugin.details).toMatchObject({
+    flipperSDKVersion: '0.0.0',
+    id: 'Sample',
+    isDefault: false,
+    main: 'dist/bundle.js',
+    name: 'pluginID',
+    source: 'src/index.js',
+    specVersion: 2,
+    title: 'Sample',
+    version: '1.0.0',
+  });
+  expect(plugin.isDevicePlugin).toBe(true);
+  expect(typeof plugin.module.Component).toBe('function');
+  expect(plugin.module.Component.displayName).toBe('FlipperPlugin(Sample)');
+  expect(typeof plugin.asDevicePluginModule().devicePlugin).toBe('function');
+  expect(typeof plugin.asDevicePluginModule().supportsDevice).toBe('function');
 });

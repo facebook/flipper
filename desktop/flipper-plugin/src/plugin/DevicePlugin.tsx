@@ -137,28 +137,9 @@ export class SandyDevicePluginInstance {
       this.activated = true;
       this.events.emit('activate');
     }
-    // TODO:
-    // const pluginId = this.definition.id;
-    // if (!this.realClient.isBackgroundPlugin(pluginId)) {
-    //   this.realClient.initPlugin(pluginId); // will call connect() if needed
-    // }
   }
 
-  // the plugin is deselected in the UI
   deactivate() {
-    // TODO:
-    // if (this.destroyed) {
-    //   // this can happen if the plugin is disabled while active in the UI.
-    //   // In that case deinit & destroy is already triggered from the STAR_PLUGIN action
-    //   return;
-    // }
-    // const pluginId = this.definition.id;
-    // if (!this.realClient.isBackgroundPlugin(pluginId)) {
-    //   this.realClient.deinitPlugin(pluginId);
-    // }
-  }
-
-  disconnect() {
     this.assertNotDestroyed();
     if (this.activated) {
       this.activated = false;
@@ -168,10 +149,7 @@ export class SandyDevicePluginInstance {
 
   destroy() {
     this.assertNotDestroyed();
-    // TODO:
-    // if (this.activated) {
-    //   this.realClient.deinitPlugin(this.definition.id);
-    // }
+    this.deactivate();
     this.events.emit('destroy');
     this.destroyed = true;
   }

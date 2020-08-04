@@ -251,7 +251,7 @@ export function startDevicePlugin<Module extends FlipperDevicePluginModule>(
     createMockPluginDetails(),
     module,
   );
-  if (definition.isDevicePlugin) {
+  if (!definition.isDevicePlugin) {
     throw new Error(
       'Use `startPlugin` or `renderPlugin` to test non-device plugins',
     );
