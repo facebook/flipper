@@ -41,10 +41,6 @@ function renderSidebar(row: Row) {
   );
 }
 
-type State = {
-  selectedID: string | null;
-};
-
 type PersistedState = {
   [key: string]: Row;
 };
