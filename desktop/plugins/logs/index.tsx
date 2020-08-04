@@ -21,13 +21,11 @@ import {
 import {Counter} from './LogWatcher';
 
 import {
-  Text,
   ManagedTableClass,
   Button,
   colors,
   ContextMenu,
   FlexColumn,
-  Glyph,
   DetailSidebar,
   FlipperDevicePlugin,
   SearchableTable,
@@ -40,6 +38,8 @@ import {
 } from 'flipper';
 import LogWatcher from './LogWatcher';
 import React from 'react';
+import {Icon, LogCount, HiddenScrollText} from './logComponents';
+import {pad, getLineCount, keepKeys} from './logUtils';
 
 const LOG_WATCHER_LOCAL_STORAGE_KEY = 'LOG_WATCHER_LOCAL_STORAGE_KEY';
 
@@ -62,33 +62,6 @@ type AdditionalState = {
 type State = BaseState & AdditionalState;
 
 type PersistedState = {};
-
-const Icon = styled(Glyph)({
-  marginTop: 5,
-});
-
-function getLineCount(str: string): number {
-  let count = 1;
-  if (!(typeof str === 'string')) {
-    return 0;
-  }
-  for (let i = 0; i < str.length; i++) {
-    if (str[i] === '\n') {
-      count++;
-    }
-  }
-  return count;
-}
-
-function keepKeys<A>(obj: A, keys: Array<string>): A {
-  const result: A = {} as A;
-  for (const key in obj) {
-    if (keys.includes(key)) {
-      result[key] = obj[key];
-    }
-  }
-  return result;
-}
 
 const COLUMN_SIZE = {
   type: 40,
@@ -221,41 +194,6 @@ const DEFAULT_FILTERS = [
     persistent: true,
   },
 ];
-
-const HiddenScrollText = styled(Text)({
-  alignSelf: 'baseline',
-  lineHeight: '130%',
-  marginTop: 5,
-  paddingBottom: 3,
-  '&::-webkit-scrollbar': {
-    display: 'none',
-  },
-});
-
-const LogCount = styled.div<{backgroundColor: string}>(({backgroundColor}) => ({
-  backgroundColor,
-  borderRadius: '999em',
-  fontSize: 11,
-  marginTop: 4,
-  minWidth: 16,
-  height: 16,
-  color: colors.white,
-  textAlign: 'center',
-  lineHeight: '16px',
-  paddingLeft: 4,
-  paddingRight: 4,
-  textOverflow: 'ellipsis',
-  overflow: 'hidden',
-  whiteSpace: 'nowrap',
-}));
-
-function pad(chunk: any, len: number): string {
-  let str = String(chunk);
-  while (str.length < len) {
-    str = `0${str}`;
-  }
-  return str;
-}
 
 export function addEntriesToState(
   items: Entries,
