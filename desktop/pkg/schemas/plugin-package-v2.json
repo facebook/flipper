@@ -8,7 +8,7 @@
       "description": "The name of the package. Must start with \"flipper-plugin-\" prefix.",
       "type": "string",
       "maxLength": 214,
-      "pattern": "^flipper-plugin-[a-z0-9-._~]*$",
+      "pattern": "^(?:@[a-z0-9-*~][a-z0-9-*._~]*/)?flipper-plugin-[a-z0-9-._~]*$",
       "errorMessage": "should start with \"flipper-plugin-\", e.g. \"flipper-plugin-example\""
     },
     "id": {

@@ -48,6 +48,15 @@ test('valid package json', async () => {
   expect(result).toBe(null);
 });
 
+test('valid scoped package json', async () => {
+  const testPackageJson = Object.assign({}, validPackageJson);
+  testPackageJson.name = '@test/flipper-plugin-package';
+  const json = JSON.stringify(testPackageJson);
+  fs.readFile = jest.fn().mockResolvedValue(new Buffer(json));
+  const result = await runLint('dir');
+  expect(result).toBe(null);
+});
+
 test('$schema field is required', async () => {
   const testPackageJson = Object.assign({}, validPackageJson);
   delete testPackageJson.$schema;
