@@ -1,3 +1,9 @@
+# 0.52.0 (4/8/2020)
+
+ * D22865373 -  [Network plugin] Improved presentation of request / response bodies and fixed issues where they would sometimes not be displayed.
+ * D22897793 -  All text is now selectable by default in Flipper.
+
+
 # 0.51.0 (24/7/2020)
 
  * D22528729 -  Added button "Restart Flipper" to plugin auto-update notifications.

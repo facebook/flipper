@@ -1,7 +1,7 @@
 {
   "name": "flipper-headless",
   "private": true,
-  "version": "0.51.0",
+  "version": "0.52.0",
   "description": "Headless version of Flipper - Mobile development tool",
   "productName": "Flipper Headless",
   "author": "Facebook Inc",
