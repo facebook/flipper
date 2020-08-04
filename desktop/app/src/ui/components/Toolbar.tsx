@@ -19,6 +19,7 @@ const Toolbar = styled(FlexRow)<{
   position?: 'bottom' | 'top';
   compact?: boolean;
 }>((props) => ({
+  userSelect: 'none',
   backgroundColor: colors.light02,
   borderBottom:
     props.position === 'bottom'

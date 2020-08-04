@@ -42,7 +42,6 @@ const NonWrappingText = styled(Text)({
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',
-  userSelect: 'none',
 });
 NonWrappingText.displayName = 'TypeBasedValueRenderer:NonWrappingText';
 

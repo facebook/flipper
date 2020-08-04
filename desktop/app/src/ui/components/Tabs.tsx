@@ -28,6 +28,7 @@ const TabListItem = styled.div<{
   width?: WidthProperty<number>;
   container?: boolean;
 }>((props) => ({
+  userSelect: 'none',
   background: props.container
     ? props.active
       ? 'linear-gradient(to bottom, #67a6f7 0%, #0072FA 100%)'

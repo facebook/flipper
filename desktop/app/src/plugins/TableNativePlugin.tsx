@@ -95,7 +95,6 @@ const NonWrappingText = styled(Text)({
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',
-  userSelect: 'none',
 });
 
 const BooleanValue = styled(NonWrappingText)<{active?: boolean}>((props) => ({

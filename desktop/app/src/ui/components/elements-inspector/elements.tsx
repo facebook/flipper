@@ -109,7 +109,6 @@ const NoShrinkText = styled(Text)({
   flexShrink: 0,
   flexWrap: 'nowrap',
   overflow: 'hidden',
-  userSelect: 'none',
   fontWeight: 400,
 });
 NoShrinkText.displayName = 'Elements:NoShrinkText';

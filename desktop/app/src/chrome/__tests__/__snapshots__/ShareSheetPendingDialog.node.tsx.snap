@@ -17,7 +17,7 @@ exports[`ShareSheetPendingDialog is rendered with status update 1`] = `
       size={30}
     />
     <span
-      className="css-1bcpoxy-Text"
+      className="css-137ad86-Text"
       color="#6f6f6f"
     >
       Update
@@ -30,7 +30,7 @@ exports[`ShareSheetPendingDialog is rendered with status update 1`] = `
       className="css-te359u-View-FlexBox-Spacer e13mj6h81"
     />
     <div
-      className="css-dltu4w-StyledButton enfqd40"
+      className="css-xing9h-StyledButton enfqd40"
       onClick={[Function]}
       onMouseDown={[Function]}
       onMouseUp={[Function]}
@@ -38,7 +38,7 @@ exports[`ShareSheetPendingDialog is rendered with status update 1`] = `
       Cancel
     </div>
     <div
-      className="css-dltu4w-StyledButton enfqd40"
+      className="css-xing9h-StyledButton enfqd40"
       onClick={[Function]}
       onMouseDown={[Function]}
       onMouseUp={[Function]}
@@ -67,7 +67,7 @@ exports[`ShareSheetPendingDialog is rendered without status update 1`] = `
       size={30}
     />
     <span
-      className="css-1bcpoxy-Text"
+      className="css-137ad86-Text"
       color="#6f6f6f"
     >
       wubba lubba dub dub
@@ -80,7 +80,7 @@ exports[`ShareSheetPendingDialog is rendered without status update 1`] = `
       className="css-te359u-View-FlexBox-Spacer e13mj6h81"
     />
     <div
-      className="css-dltu4w-StyledButton enfqd40"
+      className="css-xing9h-StyledButton enfqd40"
       onClick={[Function]}
       onMouseDown={[Function]}
       onMouseUp={[Function]}
@@ -88,7 +88,7 @@ exports[`ShareSheetPendingDialog is rendered without status update 1`] = `
       Cancel
     </div>
     <div
-      className="css-dltu4w-StyledButton enfqd40"
+      className="css-xing9h-StyledButton enfqd40"
       onClick={[Function]}
       onMouseDown={[Function]}
       onMouseUp={[Function]}

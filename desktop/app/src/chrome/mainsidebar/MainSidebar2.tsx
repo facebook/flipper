@@ -101,6 +101,7 @@ const SidebarSectionBody = styled('div')<{
   level: SectionLevel;
   collapsed: boolean;
 }>(({collapsed, level}) => ({
+  userSelect: 'none',
   flexShrink: 0,
   overflow: 'hidden',
   maxHeight: collapsed ? 0 : 2000, // might need increase if too many plugins...

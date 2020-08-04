@@ -225,7 +225,6 @@ const DEFAULT_FILTERS = [
 
 const HiddenScrollText = styled(Text)({
   alignSelf: 'baseline',
-  userSelect: 'none',
   lineHeight: '130%',
   marginTop: 5,
   paddingBottom: 3,

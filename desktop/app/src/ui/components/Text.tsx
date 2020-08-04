@@ -48,9 +48,11 @@ const Text = styled.span<{
     : props.family,
   overflow: props.code ? 'auto' : 'visible',
   userSelect:
-    props.selectable || (props.code && typeof props.selectable === 'undefined')
+    props.selectable === false
+      ? 'none'
+      : props.selectable === true
       ? 'text'
-      : 'none',
+      : undefined,
   wordWrap: props.code ? 'break-word' : props.wordWrap,
   whiteSpace:
     props.code && typeof props.whiteSpace === 'undefined'

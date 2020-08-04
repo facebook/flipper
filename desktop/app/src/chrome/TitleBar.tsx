@@ -48,6 +48,7 @@ import NetworkGraph from './NetworkGraph';
 import MetroButton from './MetroButton';
 
 const AppTitleBar = styled(FlexRow)<{focused?: boolean}>(({focused}) => ({
+  userSelect: 'none',
   background: focused
     ? `linear-gradient(to bottom, ${colors.macOSTitleBarBackgroundTop} 0%, ${colors.macOSTitleBarBackgroundBottom} 100%)`
     : colors.macOSTitleBarBackgroundBlur,

@@ -76,7 +76,6 @@ const TableBodyRowContainer = styled(FlexRow)<TableBodyRowContainerProps>(
     fontWeight: props.fontWeight,
     overflow: 'hidden',
     width: '100%',
-    userSelect: 'none',
     flexShrink: 0,
     '&:hover': {
       backgroundColor:
@@ -100,7 +99,6 @@ const TableBodyColumnContainer = styled.div<{
     flexShrink: props.width === 'flex' ? 1 : 0,
     overflow: 'hidden',
     padding: '0 8px',
-    userSelect: 'none',
     textOverflow: 'ellipsis',
     verticalAlign: 'top',
     whiteSpace: props.multiline ? 'normal' : 'nowrap',

@@ -104,7 +104,7 @@ test('It can have selection and render details', async () => {
         style="background-image: url(http://turtle.png);"
       />
       <span
-        class="css-b2jb3d-Text"
+        class="css-8j2gzl-Text"
       >
         Turtle
       </span>

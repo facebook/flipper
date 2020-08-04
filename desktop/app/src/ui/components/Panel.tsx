@@ -96,6 +96,7 @@ export default class Panel extends React.Component<
 
   static PanelHeader = styled(FlexBox)<{floating?: boolean; padded?: boolean}>(
     (props) => ({
+      userSelect: 'none',
       backgroundColor: '#f6f7f9',
       border: props.floating ? BORDER : 'none',
       borderBottom: BORDER,

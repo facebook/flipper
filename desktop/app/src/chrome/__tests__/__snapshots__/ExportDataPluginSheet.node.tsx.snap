@@ -11,7 +11,7 @@ exports[`SettingsSheet snapshot with nothing enabled 1`] = `
       className="css-k28k5g-View-FlexBox-FlexColumn ecr18to0"
     >
       <span
-        className="css-1qd3nqz-Text"
+        className="css-meh2qi-Text"
       >
         Select the plugins for which you want to export the data
       </span>
@@ -38,7 +38,7 @@ exports[`SettingsSheet snapshot with nothing enabled 1`] = `
                 }
               >
                 <span
-                  className="css-1186rtw-Text e19o3fcp0"
+                  className="css-xsnw23-Text e19o3fcp0"
                 >
                   TestDevicePlugin
                 </span>
@@ -79,7 +79,7 @@ exports[`SettingsSheet snapshot with nothing enabled 1`] = `
                 }
               >
                 <span
-                  className="css-1186rtw-Text e19o3fcp0"
+                  className="css-xsnw23-Text e19o3fcp0"
                 >
                   TestPlugin
                 </span>
@@ -115,7 +115,7 @@ exports[`SettingsSheet snapshot with nothing enabled 1`] = `
           className="css-12n892b"
         >
           <div
-            className="css-dltu4w-StyledButton enfqd40"
+            className="css-xing9h-StyledButton enfqd40"
             onClick={[Function]}
             onMouseDown={[Function]}
             onMouseUp={[Function]}
@@ -129,7 +129,7 @@ exports[`SettingsSheet snapshot with nothing enabled 1`] = `
           onMouseLeave={[Function]}
         >
           <div
-            className="css-3z5lpm-StyledButton enfqd40"
+            className="css-ia8nd7-StyledButton enfqd40"
             disabled={true}
             onClick={[Function]}
             onMouseDown={[Function]}
@@ -156,7 +156,7 @@ exports[`SettingsSheet snapshot with one plugin enabled 1`] = `
       className="css-k28k5g-View-FlexBox-FlexColumn ecr18to0"
     >
       <span
-        className="css-1qd3nqz-Text"
+        className="css-meh2qi-Text"
       >
         Select the plugins for which you want to export the data
       </span>
@@ -183,7 +183,7 @@ exports[`SettingsSheet snapshot with one plugin enabled 1`] = `
                 }
               >
                 <span
-                  className="css-1186rtw-Text e19o3fcp0"
+                  className="css-xsnw23-Text e19o3fcp0"
                 >
                   TestDevicePlugin
                 </span>
@@ -224,7 +224,7 @@ exports[`SettingsSheet snapshot with one plugin enabled 1`] = `
                 }
               >
                 <span
-                  className="css-1186rtw-Text e19o3fcp0"
+                  className="css-xsnw23-Text e19o3fcp0"
                 >
                   TestPlugin
                 </span>
@@ -260,7 +260,7 @@ exports[`SettingsSheet snapshot with one plugin enabled 1`] = `
           className="css-12n892b"
         >
           <div
-            className="css-dltu4w-StyledButton enfqd40"
+            className="css-xing9h-StyledButton enfqd40"
             onClick={[Function]}
             onMouseDown={[Function]}
             onMouseUp={[Function]}
@@ -274,7 +274,7 @@ exports[`SettingsSheet snapshot with one plugin enabled 1`] = `
           onMouseLeave={[Function]}
         >
           <div
-            className="css-dltu4w-StyledButton enfqd40"
+            className="css-xing9h-StyledButton enfqd40"
             disabled={false}
             onClick={[Function]}
             onMouseDown={[Function]}

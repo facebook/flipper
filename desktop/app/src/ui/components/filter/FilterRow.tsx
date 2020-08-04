@@ -17,7 +17,6 @@ import {colors} from '../colors';
 const FilterText = styled.div({
   display: 'flex',
   alignSelf: 'baseline',
-  userSelect: 'none',
   cursor: 'pointer',
   position: 'relative',
   maxWidth: '100%',
