@@ -95,10 +95,6 @@ export default class BaseDevice {
     }
   }
 
-  supportedColumns(): Array<string> {
-    return ['date', 'pid', 'tid', 'tag', 'message', 'type', 'time'];
-  }
-
   addLogListener(callback: DeviceLogListener): Symbol {
     const id = Symbol();
     this.logListeners.set(id, callback);

@@ -9,9 +9,6 @@
 
 import {
   TableBodyRow,
-  TableColumnOrder,
-  TableColumnSizes,
-  TableColumns,
   TableRowSortOrder,
   Props as PluginProps,
   BaseAction,
@@ -39,7 +36,7 @@ import {
 import LogWatcher from './LogWatcher';
 import React from 'react';
 import {Icon, LogCount, HiddenScrollText} from './logComponents';
-import {pad, getLineCount, keepKeys} from './logUtils';
+import {pad, getLineCount} from './logUtils';
 
 const LOG_WATCHER_LOCAL_STORAGE_KEY = 'LOG_WATCHER_LOCAL_STORAGE_KEY';
 
@@ -404,9 +401,6 @@ export default class LogTable extends FlipperDevicePlugin<
   };
 
   tableRef: ManagedTableClass | undefined;
-  columns: TableColumns;
-  columnSizes: TableColumnSizes;
-  columnOrder: TableColumnOrder;
   logListener: Symbol | undefined;
 
   batch: Array<{
@@ -418,12 +412,6 @@ export default class LogTable extends FlipperDevicePlugin<
 
   constructor(props: PluginProps<PersistedState>) {
     super(props);
-    const supportedColumns = this.device.supportedColumns();
-    this.columns = keepKeys(COLUMNS, supportedColumns);
-    this.columnSizes = keepKeys(COLUMN_SIZE, supportedColumns);
-    this.columnOrder = INITIAL_COLUMN_ORDER.filter((obj) =>
-      supportedColumns.includes(obj.key),
-    );
 
     const initialState = addEntriesToState(
       this.device
@@ -595,9 +583,9 @@ export default class LogTable extends FlipperDevicePlugin<
           innerRef={this.setTableRef}
           floating={false}
           multiline={true}
-          columnSizes={this.columnSizes}
-          columnOrder={this.columnOrder}
-          columns={this.columns}
+          columnSizes={COLUMN_SIZE}
+          columnOrder={INITIAL_COLUMN_ORDER}
+          columns={COLUMNS}
           rows={this.state.rows}
           highlightedRows={this.state.highlightedRows}
           onRowHighlighted={this.onRowHighlighted}

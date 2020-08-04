@@ -15,8 +15,4 @@ export default class MacDevice extends BaseDevice {
   }
 
   teardown() {}
-
-  supportedColumns(): Array<string> {
-    return [];
-  }
 }

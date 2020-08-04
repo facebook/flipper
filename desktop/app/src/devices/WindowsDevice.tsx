@@ -15,8 +15,4 @@ export default class WindowsDevice extends BaseDevice {
   }
 
   teardown() {}
-
-  supportedColumns(): Array<string> {
-    return [];
-  }
 }

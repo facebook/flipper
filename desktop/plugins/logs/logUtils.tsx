@@ -20,16 +20,6 @@ export function getLineCount(str: string): number {
   return count;
 }
 
-export function keepKeys<A>(obj: A, keys: Array<string>): A {
-  const result: A = {} as A;
-  for (const key in obj) {
-    if (keys.includes(key)) {
-      result[key] = obj[key];
-    }
-  }
-  return result;
-}
-
 export function pad(chunk: any, len: number): string {
   let str = String(chunk);
   while (str.length < len) {

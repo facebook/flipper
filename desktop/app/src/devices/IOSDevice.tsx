@@ -75,10 +75,6 @@ export default class IOSDevice extends BaseDevice {
     }
   }
 
-  supportedColumns(): Array<string> {
-    return ['date', 'pid', 'tid', 'tag', 'message', 'type', 'time'];
-  }
-
   startLogListener(retries: number = 3) {
     if (this.deviceType === 'physical') {
       return;

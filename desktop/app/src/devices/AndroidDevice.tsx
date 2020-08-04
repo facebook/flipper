@@ -70,10 +70,6 @@ export default class AndroidDevice extends BaseDevice {
   pidAppMapping: {[key: number]: string} = {};
   private recordingProcess?: Promise<string>;
 
-  supportedColumns(): Array<string> {
-    return ['date', 'pid', 'tid', 'tag', 'message', 'type', 'time'];
-  }
-
   reverse(ports: [number, number]): Promise<void> {
     return Promise.all(
       ports.map((port) =>
