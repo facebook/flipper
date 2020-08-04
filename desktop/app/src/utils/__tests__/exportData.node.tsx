@@ -104,8 +104,8 @@ test('test generateClientIndentifierWithSalt helper function', () => {
   });
   const identifier = generateClientIdentifier(device, 'app');
   const saltIdentifier = generateClientIdentifierWithSalt(identifier, 'salt');
-  expect(saltIdentifier).toEqual('app#iOS#archivedEmulator#salt-serial');
-  expect(identifier).toEqual('app#iOS#archivedEmulator#serial');
+  expect(saltIdentifier).toEqual('app#iOS#emulator#salt-serial');
+  expect(identifier).toEqual('app#iOS#emulator#serial');
 });
 
 test('test generateClientFromClientWithSalt helper function', () => {
@@ -120,20 +120,20 @@ test('test generateClientFromClientWithSalt helper function', () => {
   const client = generateClientFromDevice(device, 'app');
   const saltedClient = generateClientFromClientWithSalt(client, 'salt');
   expect(saltedClient).toEqual({
-    id: 'app#iOS#archivedEmulator#salt-serial',
+    id: 'app#iOS#emulator#salt-serial',
     query: {
       app: 'app',
       os: 'iOS',
-      device: 'archivedEmulator',
+      device: 'emulator',
       device_id: 'salt-serial',
     },
   });
   expect(client).toEqual({
-    id: 'app#iOS#archivedEmulator#serial',
+    id: 'app#iOS#emulator#serial',
     query: {
       app: 'app',
       os: 'iOS',
-      device: 'archivedEmulator',
+      device: 'emulator',
       device_id: 'serial',
     },
   });
@@ -150,11 +150,11 @@ test('test generateClientFromDevice helper function', () => {
   });
   const client = generateClientFromDevice(device, 'app');
   expect(client).toEqual({
-    id: 'app#iOS#archivedEmulator#serial',
+    id: 'app#iOS#emulator#serial',
     query: {
       app: 'app',
       os: 'iOS',
-      device: 'archivedEmulator',
+      device: 'emulator',
       device_id: 'serial',
     },
   });
@@ -170,7 +170,7 @@ test('test generateClientIdentifier helper function', () => {
     screenshotHandle: null,
   });
   const identifier = generateClientIdentifier(device, 'app');
-  expect(identifier).toEqual('app#iOS#archivedEmulator#serial');
+  expect(identifier).toEqual('app#iOS#emulator#serial');
 });
 
 test('test generateNotifications helper function', () => {
@@ -231,7 +231,7 @@ test('test processStore function for an iOS device connected', async () => {
   }
   const {serial, deviceType, title, os} = device;
   expect(serial).toEqual('salt-serial');
-  expect(deviceType).toEqual('archivedEmulator');
+  expect(deviceType).toEqual('emulator');
   expect(title).toEqual('TestiPhone');
   expect(os).toEqual('iOS');
   const {pluginStates, activeNotifications} = json.store;
@@ -1045,7 +1045,7 @@ test('Sandy plugins are imported properly', async () => {
       },
     ],
     device: {
-      deviceType: 'archivedPhysical',
+      deviceType: 'physical',
       logs: [],
       os: 'Android',
       serial: '2e52cea6-94b0-4ea1-b9a8-c9135ede14ca-serial',

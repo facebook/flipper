@@ -7,12 +7,12 @@
  * @format
  */
 
-import BaseDevice, {DeviceType} from './BaseDevice';
+import BaseDevice from './BaseDevice';
 import adb, {Client as ADBClient} from 'adbkit';
 import {Priority} from 'adbkit-logcat';
 import ArchivedDevice from './ArchivedDevice';
 import {createWriteStream} from 'fs';
-import {LogLevel} from 'flipper-plugin';
+import {LogLevel, DeviceType} from 'flipper-plugin';
 
 const DEVICE_RECORDING_DIR = '/sdcard/flipper_recorder';
 

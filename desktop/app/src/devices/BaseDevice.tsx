@@ -14,6 +14,7 @@ import {
   DeviceLogEntry,
   SandyDevicePluginInstance,
   SandyPluginDefinition,
+  DeviceType,
 } from 'flipper-plugin';
 import {DevicePluginMap, FlipperDevicePlugin} from '../plugin';
 
@@ -22,12 +23,6 @@ export type DeviceShell = {
   stderr: stream.Readable;
   stdin: stream.Writable;
 };
-
-export type DeviceType =
-  | 'emulator'
-  | 'physical'
-  | 'archivedEmulator'
-  | 'archivedPhysical';
 
 export type DeviceExport = {
   os: OS;

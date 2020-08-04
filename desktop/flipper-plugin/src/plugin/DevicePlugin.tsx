@@ -32,9 +32,13 @@ export type LogLevel =
   | 'fatal';
 
 export interface Device {
-  isArchived: boolean;
+  readonly isArchived: boolean;
+  readonly os: string;
+  readonly deviceType: DeviceType;
   onLogEntry(cb: DeviceLogListener): () => void;
 }
+
+export type DeviceType = 'emulator' | 'physical';
 
 export type DevicePluginPredicate = (device: Device) => boolean;
 
@@ -48,7 +52,9 @@ export interface DevicePluginClient extends BasePluginClient {
  * Wrapper interface around BaseDevice in Flipper
  */
 export interface RealFlipperDevice {
+  os: string;
   isArchived: boolean;
+  deviceType: DeviceType;
   addLogListener(callback: DeviceLogListener): Symbol;
   removeLogListener(id: Symbol): void;
   addLogEntry(entry: DeviceLogEntry): void;
@@ -69,9 +75,11 @@ export class SandyDevicePluginInstance extends BasePluginInstance {
   ) {
     super(definition, initialStates);
     const device: Device = {
-      get isArchived() {
-        return realDevice.isArchived;
-      },
+      // N.B. we model OS as string, not as enum, to make custom device types possible in the future
+      os: realDevice.os,
+      isArchived: realDevice.isArchived,
+      deviceType: realDevice.deviceType,
+
       onLogEntry(cb) {
         const handle = realDevice.addLogListener(cb);
         return () => {

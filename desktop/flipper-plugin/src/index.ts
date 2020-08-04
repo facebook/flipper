@@ -20,6 +20,7 @@ export {
   DevicePluginClient,
   LogLevel,
   SandyDevicePluginInstance,
+  DeviceType,
 } from './plugin/DevicePlugin';
 export {SandyPluginDefinition} from './plugin/SandyPluginDefinition';
 export {SandyPluginRenderer} from './plugin/PluginRenderer';

@@ -341,6 +341,8 @@ export function createMockPluginDetails(
 function createMockDevice(options?: StartPluginOptions): RealFlipperDevice {
   const logListeners: (undefined | DeviceLogListener)[] = [];
   return {
+    os: 'Android',
+    deviceType: 'emulator',
     isArchived: !!options?.isArchived,
     addLogListener(cb) {
       logListeners.push(cb);
