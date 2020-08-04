@@ -17,6 +17,8 @@ import {
   TestUtils,
   usePlugin,
   createState,
+  DevicePluginClient,
+  DeviceLogEntry,
   useValue,
 } from 'flipper-plugin';
 import {selectPlugin, starPlugin} from '../reducers/connections';
@@ -366,4 +368,140 @@ test('PluginContainer + Sandy plugin supports deeplink', async () => {
     );
   });
   expect(linksSeen).toEqual(['universe!', 'london!', 'london!']);
+});
+
+test('PluginContainer can render Sandy device plugins', async () => {
+  let renders = 0;
+
+  function MySandyPlugin() {
+    renders++;
+    const sandyApi = usePlugin(devicePlugin);
+    expect(Object.keys(sandyApi)).toEqual([
+      'activatedStub',
+      'deactivatedStub',
+      'lastLogMessage',
+    ]);
+    expect(() => {
+      // eslint-disable-next-line
+      usePlugin(function bla() {
+        return {};
+      });
+    }).toThrowError(/didn't match the type of the requested plugin/);
+    const lastLogMessage = useValue(sandyApi.lastLogMessage);
+    return <div>Hello from Sandy: {lastLogMessage?.message}</div>;
+  }
+
+  const devicePlugin = (client: DevicePluginClient) => {
+    const lastLogMessage = createState<undefined | DeviceLogEntry>(undefined);
+    const activatedStub = jest.fn();
+    const deactivatedStub = jest.fn();
+    client.onActivate(activatedStub);
+    client.onDeactivate(deactivatedStub);
+    client.device.onLogEntry((e) => {
+      lastLogMessage.set(e);
+    });
+    return {activatedStub, deactivatedStub, lastLogMessage};
+  };
+
+  const definition = new SandyPluginDefinition(
+    TestUtils.createMockPluginDetails(),
+    {
+      supportsDevice: () => true,
+      devicePlugin,
+      Component: MySandyPlugin,
+    },
+  );
+  // any cast because this plugin is not enriched with the meta data that the plugin loader
+  // normally adds. Our further sandy plugin test infra won't need this, but
+  // for this test we do need to act a s a loaded plugin, to make sure PluginContainer itself can handle it
+  const {renderer, act, store, device} = await renderMockFlipperWithPlugin(
+    definition,
+  );
+
+  expect(renderer.baseElement).toMatchInlineSnapshot(`
+    <body>
+      <div>
+        <div
+          class="css-1orvm1g-View-FlexBox-FlexColumn"
+        >
+          <div>
+            Hello from Sandy: 
+          </div>
+        </div>
+        <div
+          class="css-bxcvv9-View-FlexBox-FlexRow"
+          id="detailsSidebar"
+        />
+      </div>
+    </body>
+  `);
+  expect(renders).toBe(1);
+
+  act(() => {
+    device.addLogEntry({
+      date: new Date(),
+      message: 'helleuh',
+      pid: 0,
+      tid: 0,
+      type: 'info',
+      tag: 'test',
+    });
+  });
+  expect(renders).toBe(2);
+
+  expect(renderer.baseElement).toMatchInlineSnapshot(`
+    <body>
+      <div>
+        <div
+          class="css-1orvm1g-View-FlexBox-FlexColumn"
+        >
+          <div>
+            Hello from Sandy: 
+            helleuh
+          </div>
+        </div>
+        <div
+          class="css-bxcvv9-View-FlexBox-FlexRow"
+          id="detailsSidebar"
+        />
+      </div>
+    </body>
+  `);
+
+  // make sure the plugin gets connected
+  const pluginInstance: ReturnType<typeof devicePlugin> = device.sandyPluginStates.get(
+    definition.id,
+  )!.instanceApi;
+  expect(pluginInstance.activatedStub).toBeCalledTimes(1);
+  expect(pluginInstance.deactivatedStub).toBeCalledTimes(0);
+
+  // select non existing plugin
+  act(() => {
+    store.dispatch(
+      selectPlugin({
+        selectedPlugin: 'Logs',
+        deepLinkPayload: null,
+      }),
+    );
+  });
+
+  expect(renderer.baseElement).toMatchInlineSnapshot(`
+    <body>
+      <div />
+    </body>
+  `);
+  expect(pluginInstance.activatedStub).toBeCalledTimes(1);
+  expect(pluginInstance.deactivatedStub).toBeCalledTimes(1);
+
+  // go back
+  act(() => {
+    store.dispatch(
+      selectPlugin({
+        selectedPlugin: definition.id,
+        deepLinkPayload: null,
+      }),
+    );
+  });
+  expect(pluginInstance.activatedStub).toBeCalledTimes(2);
+  expect(pluginInstance.deactivatedStub).toBeCalledTimes(1);
 });

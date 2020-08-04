@@ -216,12 +216,21 @@ export async function renderMockFlipperWithPlugin(
 
   function selectTestPlugin(store: Store, client: Client) {
     store.dispatch(
-      selectPlugin({
-        selectedPlugin: pluginClazz.id,
-        selectedApp: client.query.app,
-        deepLinkPayload: null,
-        selectedDevice: store.getState().connections.selectedDevice!,
-      }),
+      selectPlugin(
+        isDevicePluginDefinition(pluginClazz)
+          ? {
+              selectedPlugin: pluginClazz.id,
+              selectedApp: null,
+              deepLinkPayload: null,
+              selectedDevice: store.getState().connections.selectedDevice!,
+            }
+          : {
+              selectedPlugin: pluginClazz.id,
+              selectedApp: client.query.app,
+              deepLinkPayload: null,
+              selectedDevice: store.getState().connections.selectedDevice!,
+            },
+      ),
     );
   }
 

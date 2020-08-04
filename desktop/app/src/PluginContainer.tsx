@@ -343,18 +343,13 @@ class PluginContainer extends PureComponent<Props, State> {
     }
     let pluginElement: null | React.ReactElement<any>;
     if (isSandyPlugin(activePlugin)) {
-      if (target instanceof Client) {
-        // Make sure we throw away the container for different pluginKey!
-        pluginElement = (
-          <SandyPluginRenderer
-            key={pluginKey}
-            plugin={target.sandyPluginStates.get(activePlugin.id)!}
-          />
-        );
-      } else {
-        // TODO: target might be a device as well, support that T68738317
-        pluginElement = null;
-      }
+      // Make sure we throw away the container for different pluginKey!
+      pluginElement = (
+        <SandyPluginRenderer
+          key={pluginKey}
+          plugin={target.sandyPluginStates.get(activePlugin.id)!}
+        />
+      );
     } else {
       const props: PluginProps<Object> & {
         key: string;

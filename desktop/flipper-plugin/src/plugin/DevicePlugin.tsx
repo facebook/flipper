@@ -42,6 +42,7 @@ export type DevicePluginPredicate = (device: Device) => boolean;
 
 export type DevicePluginFactory = (client: DevicePluginClient) => object;
 
+// TODO: better name?
 export interface DevicePluginClient {
   readonly device: Device;
 
@@ -59,6 +60,8 @@ export interface DevicePluginClient {
    * The counterpart of the `onActivate` handler.
    */
   onDeactivate(cb: () => void): void;
+
+  // TODO: support onDeeplink!
 }
 
 export interface RealFlipperDevice {
