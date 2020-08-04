@@ -8,7 +8,7 @@
  */
 
 import stream from 'stream';
-import {DeviceLogListener} from 'flipper';
+import type {DeviceLogListener} from 'flipper';
 import {sortPluginsByName} from '../utils/pluginUtils';
 import {
   DeviceLogEntry,
@@ -16,7 +16,8 @@ import {
   SandyPluginDefinition,
   DeviceType,
 } from 'flipper-plugin';
-import {DevicePluginMap, FlipperDevicePlugin} from '../plugin';
+import type {DevicePluginMap, FlipperDevicePlugin} from '../plugin';
+import {getFlipperLibImplementation} from '../utils/flipperLibImplementation';
 
 export type DeviceShell = {
   stdout: stream.Readable;
@@ -180,7 +181,11 @@ export default class BaseDevice {
         this.devicePlugins.push(plugin.id);
         this.sandyPluginStates.set(
           plugin.id,
-          new SandyDevicePluginInstance(this, plugin),
+          new SandyDevicePluginInstance(
+            getFlipperLibImplementation(),
+            plugin,
+            this,
+          ),
         ); // TODO T70582933: pass initial state if applicable
       }
     } else {

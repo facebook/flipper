@@ -49,6 +49,22 @@ export function plugin(client: FlipperClient<Events, {}>) {
   const rows = createState<PersistedState>({}, {persist: 'rows'});
   const selectedID = createState<string | null>(null, {persist: 'selection'});
 
+  client.addMenuEntry(
+    {
+      label: 'Reset Selection',
+      topLevelMenu: 'Edit',
+      handler: () => {
+        selectedID.set(null);
+      },
+    },
+    {
+      action: 'createPaste',
+      handler: () => {
+        console.log('creating paste');
+      },
+    },
+  );
+
   client.onMessage('newRow', (row) => {
     rows.update((draft) => {
       draft[row.id] = row;

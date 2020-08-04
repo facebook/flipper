@@ -26,8 +26,9 @@ import electron, {MenuItemConstructorOptions} from 'electron';
 import {notNull} from './utils/typeUtils';
 import constants from './fb-stubs/constants';
 import {Logger} from './fb-interfaces/Logger';
+import {NormalizedMenuEntry, buildInMenuEntries} from 'flipper-plugin';
 
-export type DefaultKeyboardAction = 'clear' | 'goToBottom' | 'createPaste';
+export type DefaultKeyboardAction = keyof typeof buildInMenuEntries;
 export type TopLevelMenu = 'Edit' | 'View' | 'Window' | 'Help';
 
 export type KeyboardAction = {
@@ -36,26 +37,6 @@ export type KeyboardAction = {
   accelerator?: string;
   topLevelMenu: TopLevelMenu;
 };
-
-const defaultKeyboardActions: Array<KeyboardAction> = [
-  {
-    label: 'Clear',
-    accelerator: 'CmdOrCtrl+K',
-    topLevelMenu: 'View',
-    action: 'clear',
-  },
-  {
-    label: 'Go To Bottom',
-    accelerator: 'CmdOrCtrl+B',
-    topLevelMenu: 'View',
-    action: 'goToBottom',
-  },
-  {
-    label: 'Create Paste',
-    topLevelMenu: 'Edit',
-    action: 'createPaste',
-  },
-];
 
 export type KeyboardActions = Array<DefaultKeyboardAction | KeyboardAction>;
 
@@ -82,14 +63,12 @@ export function setupMenuBar(
     logger,
   );
   // collect all keyboard actions from all plugins
-  const registeredActions: Set<KeyboardAction> = new Set(
+  const registeredActions = new Set(
     plugins
       .map((plugin) => plugin.keyboardActions || [])
-      .reduce((acc: KeyboardActions, cv) => acc.concat(cv), [])
+      .flat()
       .map((action: DefaultKeyboardAction | KeyboardAction) =>
-        typeof action === 'string'
-          ? defaultKeyboardActions.find((a) => a.action === action)
-          : action,
+        typeof action === 'string' ? buildInMenuEntries[action] : action,
       )
       .filter(notNull),
   );
@@ -97,7 +76,7 @@ export function setupMenuBar(
   // add keyboard actions to
   registeredActions.forEach((keyboardAction) => {
     if (keyboardAction != null) {
-      appendMenuItem(template, actionHandler, keyboardAction);
+      appendMenuItem(template, keyboardAction);
     }
   });
 
@@ -126,7 +105,6 @@ export function setupMenuBar(
 
 function appendMenuItem(
   template: Array<MenuItemConstructorOptions>,
-  actionHandler: (action: string) => void,
   item: KeyboardAction,
 ) {
   const keyboardAction = item;
@@ -181,6 +159,49 @@ export function activateMenuItems(
   electron.remote.Menu?.setApplicationMenu(
     electron.remote.Menu.getApplicationMenu(),
   );
+}
+
+export function addSandyPluginEntries(entries: NormalizedMenuEntry[]) {
+  if (!electron.remote.Menu) {
+    return;
+  }
+
+  // disable all keyboard actions
+  for (const item of menuItems) {
+    item[1].enabled = false;
+  }
+
+  pluginActionHandler = (action: string) => {
+    entries.find((e) => e.action === action)?.handler();
+  };
+
+  let changedItems = false;
+  const currentMenu = electron.remote.Menu.getApplicationMenu();
+  for (const entry of entries) {
+    const item = menuItems.get(entry.action!);
+    if (item) {
+      item.enabled = true;
+      item.accelerator = entry.accelerator;
+    } else {
+      const parent = currentMenu?.items.find(
+        (i) => i.label === entry.topLevelMenu,
+      );
+      if (parent) {
+        const item = new electron.remote.MenuItem({
+          enabled: true,
+          click: () => pluginActionHandler?.(entry.action!),
+          label: entry.label,
+          accelerator: entry.accelerator,
+        });
+        parent.submenu!.append(item);
+        menuItems.set(entry.action!, item);
+        changedItems = true;
+      }
+    }
+  }
+  if (changedItems) {
+    electron.remote.Menu.setApplicationMenu(currentMenu);
+  }
 }
 
 function getTemplate(

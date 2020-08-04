@@ -40,6 +40,7 @@ import {debounce} from 'lodash';
 import {batch} from 'react-redux';
 import {SandyPluginInstance} from 'flipper-plugin';
 import {flipperMessagesClientPlugin} from './utils/self-inspection/plugins/FlipperMessagesClientPlugin';
+import {getFlipperLibImplementation} from './utils/flipperLibImplementation';
 
 type Plugins = Array<string>;
 
@@ -310,7 +311,12 @@ export default class Client extends EventEmitter {
         // TODO: needs to be wrapped in error tracking T68955280
         this.sandyPluginStates.set(
           plugin.id,
-          new SandyPluginInstance(this, plugin, initialStates[pluginId]),
+          new SandyPluginInstance(
+            getFlipperLibImplementation(),
+            plugin,
+            this,
+            initialStates[pluginId],
+          ),
         );
       }
     });
@@ -355,7 +361,7 @@ export default class Client extends EventEmitter {
       // TODO: needs to be wrapped in error tracking T68955280
       this.sandyPluginStates.set(
         plugin.id,
-        new SandyPluginInstance(this, plugin),
+        new SandyPluginInstance(getFlipperLibImplementation(), plugin, this),
       );
     }
   }

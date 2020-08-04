@@ -35,6 +35,7 @@ import {
   DeviceLogListener,
 } from '../plugin/DevicePlugin';
 import {BasePluginInstance} from '../plugin/PluginBase';
+import {FlipperLib} from '../plugin/FlipperLib';
 
 type Renderer = RenderResult<typeof queries>;
 
@@ -62,6 +63,11 @@ type ExtractEventsType<
 
 interface BasePluginResult {
   /**
+   * Mock for Flipper utilities
+   */
+  flipperLib: FlipperLib;
+
+  /**
    * Emulates the 'onActivate' event
    */
   activate(): void;
@@ -84,6 +90,11 @@ interface BasePluginResult {
    * Grab all the persistable state
    */
   exportState(): any;
+
+  /**
+   * Trigger menu entry by label
+   */
+  triggerMenuEntry(label: string): void;
 }
 
 interface StartPluginResult<Module extends FlipperPluginModule<any>>
@@ -165,8 +176,9 @@ export function startPlugin<Module extends FlipperPluginModule<any>>(
   }
 
   const sendStub = jest.fn();
-  const fakeFlipper: RealFlipperClient = {
-    isBackgroundPlugin() {
+  const flipperUtils = createMockFlipperLib();
+  const fakeFlipperClient: RealFlipperClient = {
+    isBackgroundPlugin(_pluginId: string) {
       return !!options?.isBackgroundPlugin;
     },
     initPlugin() {
@@ -186,8 +198,9 @@ export function startPlugin<Module extends FlipperPluginModule<any>>(
   };
 
   const pluginInstance = new SandyPluginInstance(
-    fakeFlipper,
+    flipperUtils,
     definition,
+    fakeFlipperClient,
     options?.initialState,
   );
 
@@ -258,10 +271,12 @@ export function startDevicePlugin<Module extends FlipperDevicePluginModule>(
     );
   }
 
+  const flipperLib = createMockFlipperLib();
   const testDevice = createMockDevice(options);
   const pluginInstance = new SandyDevicePluginInstance(
-    testDevice,
+    flipperLib,
     definition,
+    testDevice,
     options?.initialState,
   );
 
@@ -306,10 +321,17 @@ export function renderDevicePlugin<Module extends FlipperDevicePluginModule>(
   };
 }
 
+export function createMockFlipperLib(): FlipperLib {
+  return {
+    enableMenuEntries: jest.fn(),
+  };
+}
+
 function createBasePluginResult(
   pluginInstance: BasePluginInstance,
 ): BasePluginResult {
   return {
+    flipperLib: pluginInstance.flipperLib,
     activate: () => pluginInstance.activate(),
     deactivate: () => pluginInstance.deactivate(),
     exportState: () => pluginInstance.exportState(),
@@ -317,6 +339,13 @@ function createBasePluginResult(
       pluginInstance.triggerDeepLink(deepLink);
     },
     destroy: () => pluginInstance.destroy(),
+    triggerMenuEntry: (action: string) => {
+      const entry = pluginInstance.menuEntries.find((e) => e.action === action);
+      if (!entry) {
+        throw new Error('No menu entry found with action: ' + action);
+      }
+      entry.handler();
+    },
   };
 }
 

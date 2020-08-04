@@ -16,6 +16,7 @@ import {
   act as testingLibAct,
 } from '@testing-library/react';
 import {queries} from '@testing-library/dom';
+import {TestUtils} from 'flipper-plugin';
 
 import {
   selectPlugin,
@@ -36,6 +37,7 @@ import {registerPlugins} from '../reducers/plugins';
 import PluginContainer from '../PluginContainer';
 import {getPluginKey, isDevicePluginDefinition} from '../utils/pluginUtils';
 import {getInstance} from '../fb-stubs/Logger';
+import {setFlipperLibImplementation} from '../utils/flipperLibImplementation';
 
 type MockFlipperResult = {
   client: Client;
@@ -62,6 +64,8 @@ export async function createMockFlipperWithPlugin(
 ): Promise<MockFlipperResult> {
   const store = createStore(rootReducer);
   const logger = getInstance();
+  setFlipperLibImplementation(TestUtils.createMockFlipperLib());
+
   store.dispatch(registerPlugins([pluginClazz]));
 
   function createDevice(serial: string): BaseDevice {

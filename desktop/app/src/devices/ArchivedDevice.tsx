@@ -7,8 +7,8 @@
  * @format
  */
 
-import {DeviceLogEntry, DeviceType} from 'flipper-plugin';
 import BaseDevice from './BaseDevice';
+import type {DeviceLogEntry, DeviceType} from 'flipper-plugin';
 import {OS, DeviceShell} from './BaseDevice';
 import {SupportFormRequestDetailsState} from '../reducers/supportForm';
 

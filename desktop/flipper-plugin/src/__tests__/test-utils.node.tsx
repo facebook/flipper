@@ -286,3 +286,45 @@ test('device plugins can receive deeplinks', async () => {
   plugin.triggerDeepLink('test');
   expect(plugin.instance.field1.get()).toBe('test');
 });
+
+test('plugins can register menu entries', async () => {
+  const plugin = TestUtils.startPlugin({
+    plugin(client: PluginClient) {
+      const counter = createState(0);
+      client.addMenuEntry(
+        {
+          action: 'createPaste',
+          handler() {
+            counter.set(counter.get() + 1);
+          },
+        },
+        {
+          label: 'Custom Action',
+          topLevelMenu: 'Edit',
+          handler() {
+            counter.set(counter.get() + 3);
+          },
+        },
+      );
+      return {counter};
+    },
+    Component() {
+      return null;
+    },
+  });
+
+  expect(plugin.instance.counter.get()).toBe(0);
+  plugin.triggerDeepLink('test');
+  plugin.triggerMenuEntry('createPaste');
+  plugin.triggerMenuEntry('Custom Action');
+  expect(plugin.instance.counter.get()).toBe(4);
+  expect(plugin.flipperLib.enableMenuEntries).toBeCalledTimes(1);
+
+  plugin.deactivate();
+
+  expect(() => {
+    plugin.triggerMenuEntry('Non Existing');
+  }).toThrowErrorMatchingInlineSnapshot(
+    `"No menu entry found with action: Non Existing"`,
+  );
+});

@@ -9,6 +9,7 @@
 
 import {SandyPluginDefinition} from './SandyPluginDefinition';
 import {BasePluginInstance, BasePluginClient} from './PluginBase';
+import {FlipperLib} from './FlipperLib';
 
 type EventsContract = Record<string, any>;
 type MethodsContract = Record<string, (params: any) => Promise<any>>;
@@ -96,11 +97,12 @@ export class SandyPluginInstance extends BasePluginInstance {
   connected = false;
 
   constructor(
-    realClient: RealFlipperClient,
+    flipperLib: FlipperLib,
     definition: SandyPluginDefinition,
+    realClient: RealFlipperClient,
     initialStates?: Record<string, any>,
   ) {
-    super(definition, initialStates);
+    super(flipperLib, definition, initialStates);
     this.realClient = realClient;
     this.definition = definition;
     this.client = {

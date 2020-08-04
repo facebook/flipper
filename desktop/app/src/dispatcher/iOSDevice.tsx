@@ -11,7 +11,7 @@ import {ChildProcess} from 'child_process';
 import {Store} from '../reducers/index';
 import {setXcodeDetected} from '../reducers/application';
 import {Logger} from '../fb-interfaces/Logger';
-import {DeviceType} from 'flipper-plugin';
+import type {DeviceType} from 'flipper-plugin';
 import {promisify} from 'util';
 import path from 'path';
 import child_process from 'child_process';

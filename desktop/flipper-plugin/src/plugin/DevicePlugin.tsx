@@ -9,6 +9,7 @@
 
 import {SandyPluginDefinition} from './SandyPluginDefinition';
 import {BasePluginInstance, BasePluginClient} from './PluginBase';
+import {FlipperLib} from './FlipperLib';
 
 export type DeviceLogListener = (entry: DeviceLogEntry) => void;
 
@@ -69,11 +70,12 @@ export class SandyDevicePluginInstance extends BasePluginInstance {
   client: DevicePluginClient;
 
   constructor(
-    realDevice: RealFlipperDevice,
+    flipperLib: FlipperLib,
     definition: SandyPluginDefinition,
+    realDevice: RealFlipperDevice,
     initialStates?: Record<string, any>,
   ) {
-    super(definition, initialStates);
+    super(flipperLib, definition, initialStates);
     const device: Device = {
       // N.B. we model OS as string, not as enum, to make custom device types possible in the future
       os: realDevice.os,

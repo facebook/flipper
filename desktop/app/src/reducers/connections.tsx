@@ -25,7 +25,7 @@ import SupportRequestFormV2 from '../fb-stubs/SupportRequestFormV2';
 import SupportRequestDetails from '../fb-stubs/SupportRequestDetails';
 import {getPluginKey, isDevicePluginDefinition} from '../utils/pluginUtils';
 import {deconstructClientId} from '../utils/clientUtils';
-import {FlipperDevicePlugin, PluginDefinition, isSandyPlugin} from '../plugin';
+import {PluginDefinition} from '../plugin';
 import {RegisterPluginAction} from './plugins';
 
 export type StaticView =

@@ -7,6 +7,7 @@
  * @format
  */
 
+import './plugin/PluginBase';
 import * as TestUtilites from './test-utils/test-utils';
 
 export {
@@ -26,6 +27,12 @@ export {SandyPluginDefinition} from './plugin/SandyPluginDefinition';
 export {SandyPluginRenderer} from './plugin/PluginRenderer';
 export {SandyPluginContext, usePlugin} from './plugin/PluginContext';
 export {createState, useValue, Atom} from './state/atom';
+export {FlipperLib} from './plugin/FlipperLib';
+export {
+  MenuEntry,
+  NormalizedMenuEntry,
+  buildInMenuEntries,
+} from './plugin/MenuEntry';
 
 // It's not ideal that this exists in flipper-plugin sources directly,
 // but is the least pain for plugin authors.

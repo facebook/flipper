@@ -8,7 +8,7 @@
  */
 
 import BaseDevice, {OS} from './BaseDevice';
-import {DeviceType} from 'flipper-plugin';
+import type {DeviceType} from 'flipper-plugin';
 
 export default class FlipperSelfInspectionDevice extends BaseDevice {
   constructor(serial: string, deviceType: DeviceType, title: string, os: OS) {

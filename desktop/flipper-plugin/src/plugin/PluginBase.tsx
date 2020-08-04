@@ -10,6 +10,8 @@
 import {SandyPluginDefinition} from './SandyPluginDefinition';
 import {EventEmitter} from 'events';
 import {Atom} from '../state/atom';
+import {MenuEntry, NormalizedMenuEntry, normalizeMenuEntry} from './MenuEntry';
+import {FlipperLib} from './FlipperLib';
 
 export interface BasePluginClient {
   /**
@@ -31,6 +33,11 @@ export interface BasePluginClient {
    * Triggered when this plugin is opened through a deeplink
    */
   onDeepLink(cb: (deepLink: unknown) => void): void;
+
+  /**
+   * Register menu entries in the Flipper toolbar
+   */
+  addMenuEntry(...entry: MenuEntry[]): void;
 }
 
 let currentPluginInstance: BasePluginInstance | undefined = undefined;
@@ -46,6 +53,8 @@ export function getCurrentPluginInstance(): typeof currentPluginInstance {
 }
 
 export abstract class BasePluginInstance {
+  /** generally available Flipper APIs */
+  flipperLib: FlipperLib;
   /** the original plugin definition */
   definition: SandyPluginDefinition;
   /** the plugin instance api as used inside components and such  */
@@ -62,10 +71,14 @@ export abstract class BasePluginInstance {
   // last seen deeplink
   lastDeeplink?: any;
 
+  menuEntries: NormalizedMenuEntry[] = [];
+
   constructor(
+    flipperLib: FlipperLib,
     definition: SandyPluginDefinition,
     initialStates?: Record<string, any>,
   ) {
+    this.flipperLib = flipperLib;
     this.definition = definition;
     this.initialStates = initialStates;
   }
@@ -95,6 +108,21 @@ export abstract class BasePluginInstance {
       onDestroy: (cb) => {
         this.events.on('destroy', cb);
       },
+      addMenuEntry: (...entries) => {
+        for (const entry of entries) {
+          const normalized = normalizeMenuEntry(entry);
+          if (
+            this.menuEntries.find(
+              (existing) =>
+                existing.label === normalized.label ||
+                existing.action === normalized.action,
+            )
+          ) {
+            throw new Error(`Duplicate menu entry: '${normalized.label}'`);
+          }
+          this.menuEntries.push(normalizeMenuEntry(entry));
+        }
+      },
     };
   }
 
@@ -103,6 +131,7 @@ export abstract class BasePluginInstance {
     this.assertNotDestroyed();
     if (!this.activated) {
       this.activated = true;
+      this.flipperLib.enableMenuEntries(this.menuEntries);
       this.events.emit('activate');
     }
   }
@@ -112,8 +141,8 @@ export abstract class BasePluginInstance {
       return;
     }
     if (this.activated) {
-      this.lastDeeplink = undefined;
       this.activated = false;
+      this.lastDeeplink = undefined;
       this.events.emit('deactivate');
     }
   }
