@@ -24,14 +24,22 @@ import {
 import {
   SandyPluginDefinition,
   FlipperPluginModule,
+  FlipperDevicePluginModule,
 } from '../plugin/SandyPluginDefinition';
 import {SandyPluginRenderer} from '../plugin/PluginRenderer';
 import {act} from '@testing-library/react';
+import {
+  DeviceLogEntry,
+  SandyDevicePluginInstance,
+  RealFlipperDevice,
+  DeviceLogListener,
+} from '../plugin/DevicePlugin';
 
 type Renderer = RenderResult<typeof queries>;
 
 interface StartPluginOptions {
   initialState?: Record<string, any>;
+  isArchived?: boolean;
 }
 
 type ExtractClientType<Module extends FlipperPluginModule<any>> = Parameters<
@@ -105,6 +113,37 @@ interface StartPluginResult<Module extends FlipperPluginModule<any>> {
   exportState(): any;
 }
 
+interface StartDevicePluginResult<Module extends FlipperDevicePluginModule> {
+  /**
+   * the instantiated plugin for this test
+   */
+  instance: ReturnType<Module['devicePlugin']>;
+  /**
+   * module, from which any other exposed methods can be accessed during testing
+   */
+  module: Module;
+  /**
+   * Emulates the 'onActivate' event
+   */
+  activate(): void;
+  /**
+   * Emulatese the 'onDeactivate' event
+   */
+  deactivate(): void;
+  /**
+   * Emulates the 'destroy' event. After calling destroy this plugin instance won't be usable anymore
+   */
+  destroy(): void;
+  /**
+   * Emulates sending a log message arriving from the device
+   */
+  sendLogEntry(logEntry: DeviceLogEntry): void;
+  /**
+   * Grabs the current (exportable) state
+   */
+  exportState(): any;
+}
+
 export function startPlugin<Module extends FlipperPluginModule<any>>(
   module: Module,
   options?: StartPluginOptions,
@@ -113,6 +152,11 @@ export function startPlugin<Module extends FlipperPluginModule<any>>(
     createMockPluginDetails(),
     module,
   );
+  if (definition.isDevicePlugin) {
+    throw new Error(
+      'Use `startDevicePlugin` or `renderDevicePlugin` to test device plugins',
+    );
+  }
 
   const sendStub = jest.fn();
   const fakeFlipper: RealFlipperClient = {
@@ -199,6 +243,71 @@ export function renderPlugin<Module extends FlipperPluginModule<any>>(
   };
 }
 
+export function startDevicePlugin<Module extends FlipperDevicePluginModule>(
+  module: Module,
+  options?: StartPluginOptions,
+): StartDevicePluginResult<Module> {
+  const definition = new SandyPluginDefinition(
+    createMockPluginDetails(),
+    module,
+  );
+  if (definition.isDevicePlugin) {
+    throw new Error(
+      'Use `startPlugin` or `renderPlugin` to test non-device plugins',
+    );
+  }
+
+  const testDevice = createMockDevice(options);
+  const pluginInstance = new SandyDevicePluginInstance(
+    testDevice,
+    definition,
+    options?.initialState,
+  );
+  // we start connected
+  pluginInstance.activate();
+
+  const res: StartDevicePluginResult<Module> = {
+    module,
+    instance: pluginInstance.instanceApi,
+    activate: () => pluginInstance.activate(),
+    deactivate: () => pluginInstance.deactivate(),
+    destroy: () => pluginInstance.destroy(),
+    sendLogEntry: (entry) => {
+      act(() => {
+        testDevice.addLogEntry(entry);
+      });
+    },
+    exportState: () => pluginInstance.exportState(),
+  };
+  // @ts-ignore
+  res._backingInstance = pluginInstance;
+  return res;
+}
+
+export function renderDevicePlugin<Module extends FlipperDevicePluginModule>(
+  module: Module,
+  options?: StartPluginOptions,
+): StartDevicePluginResult<Module> & {
+  renderer: Renderer;
+  act: (cb: () => void) => void;
+} {
+  const res = startDevicePlugin(module, options);
+  // @ts-ignore hidden api
+  const pluginInstance: SandyDevicePluginInstance = res._backingInstance;
+
+  const renderer = render(<SandyPluginRenderer plugin={pluginInstance} />);
+
+  return {
+    ...res,
+    renderer,
+    act: testingLibAct,
+    destroy: () => {
+      renderer.unmount();
+      pluginInstance.destroy();
+    },
+  };
+}
+
 export function createMockPluginDetails(
   details?: Partial<PluginDetails>,
 ): PluginDetails {
@@ -214,5 +323,22 @@ export function createMockPluginDetails(
     title: 'Testing Plugin',
     version: '',
     ...details,
+  };
+}
+
+function createMockDevice(options?: StartPluginOptions): RealFlipperDevice {
+  const logListeners: (undefined | DeviceLogListener)[] = [];
+  return {
+    isArchived: !!options?.isArchived,
+    addLogListener(cb) {
+      logListeners.push(cb);
+      return (logListeners.length - 1) as any;
+    },
+    removeLogListener(idx) {
+      logListeners[idx as any] = undefined;
+    },
+    addLogEntry(entry: DeviceLogEntry) {
+      logListeners.forEach((f) => f?.(entry));
+    },
   };
 }

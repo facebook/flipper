@@ -101,7 +101,7 @@ test('it should initialize starred sandy plugins', async () => {
 test('it should cleanup a plugin if disabled', async () => {
   const {client, store} = await createMockFlipperWithPlugin(TestPlugin);
 
-  expect(TestPlugin.module.plugin).toBeCalledTimes(1);
+  expect(TestPlugin.asPluginModule().plugin).toBeCalledTimes(1);
   const pluginInstance: PluginApi = client.sandyPluginStates.get(TestPlugin.id)!
     .instanceApi;
   expect(pluginInstance.destroyStub).toHaveBeenCalledTimes(0);
@@ -150,7 +150,7 @@ test('it should not initialize a sandy plugin if not enabled', async () => {
   await client.refreshPlugins();
   // not yet enabled, so not yet started
   expect(client.sandyPluginStates.get(Plugin2.id)).toBeUndefined();
-  expect(Plugin2.module.plugin).toBeCalledTimes(0);
+  expect(Plugin2.asPluginModule().plugin).toBeCalledTimes(0);
 
   store.dispatch(
     starPlugin({
@@ -166,8 +166,8 @@ test('it should not initialize a sandy plugin if not enabled', async () => {
     .instanceApi as PluginApi;
   expect(client.sandyPluginStates.get(TestPlugin.id)).toBe(pluginState1); // not reinitialized
 
-  expect(TestPlugin.module.plugin).toBeCalledTimes(1);
-  expect(Plugin2.module.plugin).toBeCalledTimes(1);
+  expect(TestPlugin.asPluginModule().plugin).toBeCalledTimes(1);
+  expect(Plugin2.asPluginModule().plugin).toBeCalledTimes(1);
   expect(instance.destroyStub).toHaveBeenCalledTimes(0);
 
   // disable plugin again

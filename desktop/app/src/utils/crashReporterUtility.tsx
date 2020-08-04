@@ -8,7 +8,7 @@
  * @flow
  */
 
-import {DeviceLogEntry} from '../devices/BaseDevice';
+import {DeviceLogEntry} from 'flipper-plugin';
 
 export function shouldParseAndroidLog(
   entry: DeviceLogEntry,

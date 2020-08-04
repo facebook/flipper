@@ -10,9 +10,10 @@
 import React, {memo, useEffect, createElement} from 'react';
 import {SandyPluginContext} from './PluginContext';
 import {SandyPluginInstance} from './Plugin';
+import {SandyDevicePluginInstance} from './DevicePlugin';
 
 type Props = {
-  plugin: SandyPluginInstance;
+  plugin: SandyPluginInstance | SandyDevicePluginInstance;
 };
 
 /**

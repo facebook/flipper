@@ -9,7 +9,7 @@
 
 import {produce} from 'immer';
 import {useState, useEffect} from 'react';
-import {currentPluginInstance} from '../plugin/Plugin';
+import {getCurrentPluginInstance} from '../plugin/Plugin';
 
 export type Atom<T> = {
   get(): T;
@@ -70,8 +70,8 @@ export function createState<T>(
   options: StateOptions = {},
 ): Atom<T> {
   const atom = new AtomValue<T>(initialValue);
-  if (currentPluginInstance && options.persist) {
-    const {initialStates, rootStates} = currentPluginInstance;
+  if (getCurrentPluginInstance() && options.persist) {
+    const {initialStates, rootStates} = getCurrentPluginInstance()!;
     if (initialStates) {
       if (options.persist in initialStates) {
         atom.set(initialStates[options.persist]);

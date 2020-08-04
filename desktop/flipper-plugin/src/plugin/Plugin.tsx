@@ -10,6 +10,7 @@
 import {SandyPluginDefinition} from './SandyPluginDefinition';
 import {EventEmitter} from 'events';
 import {Atom} from '../state/atom';
+import {SandyDevicePluginInstance} from './DevicePlugin';
 
 type EventsContract = Record<string, any>;
 type MethodsContract = Record<string, (params: any) => Promise<any>>;
@@ -87,14 +88,27 @@ export interface RealFlipperClient {
   ): Promise<Object>;
 }
 
-export type FlipperPluginFactory<
+export type PluginFactory<
   Events extends EventsContract,
   Methods extends MethodsContract
 > = (client: FlipperClient<Events, Methods>) => object;
 
 export type FlipperPluginComponent = React.FC<{}>;
 
-export let currentPluginInstance: SandyPluginInstance | undefined = undefined;
+let currentPluginInstance:
+  | SandyPluginInstance
+  | SandyDevicePluginInstance
+  | undefined = undefined;
+
+export function setCurrentPluginInstance(
+  instance: typeof currentPluginInstance,
+) {
+  currentPluginInstance = instance;
+}
+
+export function getCurrentPluginInstance(): typeof currentPluginInstance {
+  return currentPluginInstance;
+}
 
 export class SandyPluginInstance {
   static is(thing: any): thing is SandyPluginInstance {
@@ -154,13 +168,13 @@ export class SandyPluginInstance {
         this.events.on('deeplink', callback);
       },
     };
-    currentPluginInstance = this;
+    setCurrentPluginInstance(this);
     this.initialStates = initialStates;
     try {
-      this.instanceApi = definition.module.plugin(this.client);
+      this.instanceApi = definition.asPluginModule().plugin(this.client);
     } finally {
       this.initialStates = undefined;
-      currentPluginInstance = undefined;
+      setCurrentPluginInstance(undefined);
     }
   }
 

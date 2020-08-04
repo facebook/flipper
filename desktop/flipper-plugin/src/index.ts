@@ -10,6 +10,13 @@
 import * as TestUtilites from './test-utils/test-utils';
 
 export {SandyPluginInstance, FlipperClient} from './plugin/Plugin';
+export {
+  Device,
+  DeviceLogEntry,
+  DeviceLogListener,
+  DevicePluginClient,
+  LogLevel,
+} from './plugin/DevicePlugin';
 export {SandyPluginDefinition} from './plugin/SandyPluginDefinition';
 export {SandyPluginRenderer} from './plugin/PluginRenderer';
 export {SandyPluginContext, usePlugin} from './plugin/PluginContext';

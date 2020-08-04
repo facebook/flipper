@@ -8,20 +8,29 @@
  */
 
 import {PluginDetails} from 'flipper-plugin-lib';
-import {FlipperPluginFactory, FlipperPluginComponent} from './Plugin';
+import {PluginFactory, FlipperPluginComponent} from './Plugin';
+import {DevicePluginPredicate, DevicePluginFactory} from './DevicePlugin';
 
 /**
  * FlipperPluginModule describe the exports that are provided by a typical Flipper Desktop plugin
  */
-export type FlipperPluginModule<
-  Factory extends FlipperPluginFactory<any, any>
-> = {
+export type FlipperDevicePluginModule = {
+  /** predicate that determines if this plugin applies to the currently selcted device */
+  supportsDevice: DevicePluginPredicate;
+  /** the factory function that initializes a plugin instance */
+  devicePlugin: DevicePluginFactory;
+  /** the component type that can render this plugin */
+  Component: FlipperPluginComponent;
+};
+
+/**
+ * FlipperPluginModule describe the exports that are provided by a typical Flipper Desktop plugin
+ */
+export type FlipperPluginModule<Factory extends PluginFactory<any, any>> = {
   /** the factory function that initializes a plugin instance */
   plugin: Factory;
   /** the component type that can render this plugin */
   Component: FlipperPluginComponent;
-  // TODO: support device plugins T68738317
-  // devicePlugin: FlipperPluginFactory
 };
 
 /**
@@ -32,8 +41,9 @@ export type FlipperPluginModule<
  */
 export class SandyPluginDefinition {
   id: string;
-  module: FlipperPluginModule<any>;
+  module: FlipperPluginModule<any> | FlipperDevicePluginModule;
   details: PluginDetails;
+  isDevicePlugin: boolean;
 
   // TODO: Implement T68683476
   exportPersistedState:
@@ -47,13 +57,28 @@ export class SandyPluginDefinition {
       ) => Promise<any /* TODO: StaticPersistedState | undefined */>)
     | undefined = undefined;
 
-  constructor(details: PluginDetails, module: FlipperPluginModule<any>) {
+  constructor(
+    details: PluginDetails,
+    module: FlipperPluginModule<any> | FlipperDevicePluginModule,
+  );
+  constructor(details: PluginDetails, module: any) {
     this.id = details.id;
     this.details = details;
-    if (!module.plugin || typeof module.plugin !== 'function') {
-      throw new Error(
-        `Flipper plugin '${this.id}' should export named function called 'plugin'`,
-      );
+    if (module.supportsDevice) {
+      // device plugin
+      this.isDevicePlugin = true;
+      if (!module.devicePlugin || typeof module.devicePlugin !== 'function') {
+        throw new Error(
+          `Flipper device plugin '${this.id}' should export named function called 'devicePlugin'`,
+        );
+      }
+    } else {
+      this.isDevicePlugin = false;
+      if (!module.plugin || typeof module.plugin !== 'function') {
+        throw new Error(
+          `Flipper plugin '${this.id}' should export named function called 'plugin'`,
+        );
+      }
     }
     if (!module.Component || typeof module.Component !== 'function') {
       throw new Error(
@@ -62,6 +87,16 @@ export class SandyPluginDefinition {
     }
     this.module = module;
     this.module.Component.displayName = `FlipperPlugin(${this.id})`;
+  }
+
+  asDevicePluginModule(): FlipperDevicePluginModule {
+    if (!this.isDevicePlugin) throw new Error('Not a device plugin');
+    return this.module as FlipperDevicePluginModule;
+  }
+
+  asPluginModule(): FlipperPluginModule<any> {
+    if (this.isDevicePlugin) throw new Error('Not an application plugin');
+    return this.module as FlipperPluginModule<any>;
   }
 
   get packageName() {

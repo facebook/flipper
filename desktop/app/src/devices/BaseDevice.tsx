@@ -8,35 +8,15 @@
  */
 
 import stream from 'stream';
-import {FlipperDevicePlugin} from 'flipper';
+import {FlipperDevicePlugin, DeviceLogListener} from 'flipper';
 import {sortPluginsByName} from '../utils/pluginUtils';
-
-export type LogLevel =
-  | 'unknown'
-  | 'verbose'
-  | 'debug'
-  | 'info'
-  | 'warn'
-  | 'error'
-  | 'fatal';
-
-export type DeviceLogEntry = {
-  readonly date: Date;
-  readonly pid: number;
-  readonly tid: number;
-  readonly app?: string;
-  readonly type: LogLevel;
-  readonly tag: string;
-  readonly message: string;
-};
+import {DeviceLogEntry} from 'flipper-plugin';
 
 export type DeviceShell = {
   stdout: stream.Readable;
   stderr: stream.Readable;
   stdin: stream.Writable;
 };
-
-export type DeviceLogListener = (entry: DeviceLogEntry) => void;
 
 export type DeviceType =
   | 'emulator'

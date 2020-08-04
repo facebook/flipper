@@ -7,7 +7,8 @@
  * @format
  */
 
-import {DeviceType, LogLevel, DeviceLogEntry} from './BaseDevice';
+import {LogLevel, DeviceLogEntry} from 'flipper-plugin';
+import {DeviceType} from './BaseDevice';
 import child_process, {ChildProcess} from 'child_process';
 import BaseDevice from './BaseDevice';
 import JSONStream from 'JSONStream';

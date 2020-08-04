@@ -267,7 +267,7 @@ test('requirePlugin loads valid Sandy plugin', () => {
   });
   expect(typeof plugin.module.Component).toBe('function');
   expect(plugin.module.Component.displayName).toBe('FlipperPlugin(Sample)');
-  expect(typeof plugin.module.plugin).toBe('function');
+  expect(typeof plugin.asPluginModule().plugin).toBe('function');
 });
 
 test('requirePlugin errors on invalid Sandy plugin', () => {

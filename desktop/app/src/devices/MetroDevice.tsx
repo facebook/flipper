@@ -7,7 +7,8 @@
  * @format
  */
 
-import BaseDevice, {LogLevel} from './BaseDevice';
+import {LogLevel} from 'flipper-plugin';
+import BaseDevice from './BaseDevice';
 import ArchivedDevice from './ArchivedDevice';
 import {EventEmitter} from 'events';
 

@@ -7,8 +7,9 @@
  * @format
  */
 
+import {DeviceLogEntry} from 'flipper-plugin';
 import BaseDevice from './BaseDevice';
-import {DeviceType, OS, DeviceShell, DeviceLogEntry} from './BaseDevice';
+import {DeviceType, OS, DeviceShell} from './BaseDevice';
 import {SupportFormRequestDetailsState} from '../reducers/supportForm';
 
 function normalizeArchivedDeviceType(deviceType: DeviceType): DeviceType {

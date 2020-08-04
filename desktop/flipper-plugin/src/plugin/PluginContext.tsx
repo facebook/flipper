@@ -8,15 +8,16 @@
  */
 
 import {createContext, useContext} from 'react';
-import {SandyPluginInstance, FlipperPluginFactory} from './Plugin';
+import {SandyPluginInstance, PluginFactory} from './Plugin';
+import {SandyDevicePluginInstance, DevicePluginFactory} from './DevicePlugin';
 
 export const SandyPluginContext = createContext<
-  SandyPluginInstance | undefined
+  SandyPluginInstance | SandyDevicePluginInstance | undefined
 >(undefined);
 
-export function usePlugin<PluginFactory extends FlipperPluginFactory<any, any>>(
-  plugin: PluginFactory,
-): ReturnType<PluginFactory> {
+export function usePlugin<
+  Factory extends PluginFactory<any, any> | DevicePluginFactory
+>(plugin: Factory): ReturnType<Factory> {
   const pluginInstance = useContext(SandyPluginContext);
   if (!pluginInstance) {
     throw new Error('Plugin context not available');
@@ -25,9 +26,12 @@ export function usePlugin<PluginFactory extends FlipperPluginFactory<any, any>>(
   // return of this function is strongly typed, without the user needing to create it's own
   // context.
   // But since we pass it, let's make sure the user did request the proper context
-  if (pluginInstance.definition.module.plugin !== plugin) {
+  const pluginFromDefinition = pluginInstance.definition.isDevicePlugin
+    ? pluginInstance.definition.asDevicePluginModule().devicePlugin
+    : pluginInstance.definition.asPluginModule().plugin;
+  if (pluginFromDefinition !== plugin) {
     throw new Error(
-      `Plugin context (${pluginInstance.definition.module.plugin}) didn't match the type of the requested plugin (${plugin})`,
+      `Plugin in context (${pluginFromDefinition}) didn't match the type of the requested plugin (${plugin})`,
     );
   }
   return pluginInstance.instanceApi;
