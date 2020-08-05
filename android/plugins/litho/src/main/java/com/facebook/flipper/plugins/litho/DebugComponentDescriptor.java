@@ -332,6 +332,7 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
         // doesn't add linked node descriptor
       }
     }
+    extraInfo.put("className", node.getComponent().getClass().getName());
     return extraInfo.build();
   }
 

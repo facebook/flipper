@@ -41,6 +41,7 @@ export type ElementExtraInfo = {
   linkedNode?: string; // id of linked node in opposite tree
   expandWithParent?: boolean;
   linkedTree?: string;
+  className?: string;
 };
 
 export type Element = {
