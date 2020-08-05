@@ -8,6 +8,7 @@
  */
 
 export enum IDE {
+  'DIFFUSION',
   'AS',
   'VSCODE',
   'XCODE',
