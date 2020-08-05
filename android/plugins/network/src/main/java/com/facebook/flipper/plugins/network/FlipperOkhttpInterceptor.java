@@ -228,10 +228,12 @@ public class FlipperOkhttpInterceptor
     if (TextUtils.isEmpty(requestUrl) || TextUtils.isEmpty(method)) {
       return null;
     }
+    final int statusCode = route.getInt("status");
 
     final ResponseInfo mockResponse = new ResponseInfo();
     mockResponse.body = data.getBytes();
     mockResponse.statusCode = HttpURLConnection.HTTP_OK;
+    mockResponse.statusCode = statusCode;
     mockResponse.statusReason = "OK";
     if (headersArray != null) {
       final List<NetworkReporter.Header> headers = new ArrayList<>();

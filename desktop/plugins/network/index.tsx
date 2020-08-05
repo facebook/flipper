@@ -235,6 +235,7 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
               requestMethod: 'GET',
               responseData: '',
               responseHeaders: {},
+              responseStatus: "200",
             };
             draftState.nextRouteId = nextRouteId + 1;
           }),
@@ -354,6 +355,7 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
           method: route.requestMethod,
           data: route.responseData,
           headers: [...Object.values(route.responseHeaders)],
+          status: route.responseStatus,
         })),
       });
     }
