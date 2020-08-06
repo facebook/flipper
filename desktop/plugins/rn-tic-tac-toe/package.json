@@ -2,7 +2,7 @@
   "$schema": "https://fbflipper.com/schemas/plugin-package/v2.json",
   "name": "flipper-plugin-react-native-tic-tac-toe",
   "id": "ReactNativeTicTacToe",
-  "version": "0.52.0",
+  "version": "0.52.1",
   "main": "dist/bundle.js",
   "flipperBundlerEntry": "index.tsx",
   "license": "MIT",

@@ -1,3 +1,8 @@
+# 0.52.1 (6/8/2020)
+
+ * D22922126 -  It is now possible to directly open source files from the Layout inspector
+
+
 # 0.52.0 (4/8/2020)
 
  * D22865373 -  [Network plugin] Improved presentation of request / response bodies and fixed issues where they would sometimes not be displayed.

@@ -1,6 +1,6 @@
 {
   "name": "flipper-doctor",
-  "version": "0.52.0",
+  "version": "0.52.1",
   "description": "Utility for checking for issues with a flipper installation",
   "main": "lib/index.js",
   "flipperBundlerEntry": "src",
