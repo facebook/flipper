@@ -108,6 +108,13 @@ public class DebugSectionDescriptor extends NodeDescriptor<DebugSection> {
   }
 
   @Override
+  public FlipperObject getExtraInfo(DebugSection node) {
+    FlipperObject.Builder extraInfo = new FlipperObject.Builder();
+    extraInfo.put("className", node.getSection().getClass().getName());
+    return extraInfo.build();
+  }
+
+  @Override
   public void setHighlighted(DebugSection node, boolean selected, boolean isAlignmentMode)
       throws Exception {
     final int childCount = getChildCount(node);
