@@ -29,14 +29,12 @@ import InspectorSidebar from './InspectorSidebar';
 import Search from './Search';
 import ProxyArchiveClient from './ProxyArchiveClient';
 import React from 'react';
-import {VisualizerPortal} from 'flipper';
-import {getFlipperMediaCDN} from 'flipper';
 import {
-  resolveFullPathsFromMyles,
-  getBestPath,
-  IDE,
-  openInIDE,
-} from '../../app/src/fb-stubs/FileResolver';
+  VisualizerPortal,
+  getFlipperMediaCDN,
+  IDEFileResolver,
+  IDEType,
+} from 'flipper';
 
 type State = {
   init: boolean;
@@ -69,7 +67,7 @@ type ClassFileParams = {
   dirRoot: string;
   repo: string;
   lineNumber: number;
-  ide: IDE;
+  ide: IDEType;
 };
 
 export default class LayoutPlugin extends FlipperPlugin<
@@ -250,16 +248,21 @@ export default class LayoutPlugin extends FlipperPlugin<
   }
 
   openInIDE = async (params: ClassFileParams) => {
-    const paths = await resolveFullPathsFromMyles(
+    const paths = await IDEFileResolver.resolveFullPathsFromMyles(
       params.fileName,
       params.dirRoot,
     );
-    const selectedPath = getBestPath(paths, params.className);
-    let ide: IDE = Number(IDE[params.ide]);
+    const selectedPath = IDEFileResolver.getBestPath(paths, params.className);
+    let ide: IDEType = Number(IDEType[params.ide]);
     if (Number.isNaN(ide)) {
-      ide = IDE.AS; // default value
+      ide = IDEType.AS; // default value
     }
-    openInIDE(selectedPath, ide, params.repo, params.lineNumber);
+    IDEFileResolver.openInIDE(
+      selectedPath,
+      ide,
+      params.repo,
+      params.lineNumber,
+    );
   };
 
   onToggleTargetMode = () => {
