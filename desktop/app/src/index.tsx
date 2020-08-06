@@ -195,3 +195,4 @@ export {useLocalStorage} from './utils/useLocalStorage';
 export {checkIdbIsInstalled} from './utils/iOSContainerUtility';
 // Sidebar extensions should be last so they can import anything from here.
 export {default as SidebarExtensions} from './fb-stubs/LayoutInspectorSidebarExtensions';
+export {IDEFileResolver, IDEType} from './fb-stubs/IDEFileResolver';
