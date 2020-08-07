@@ -66,7 +66,7 @@ hgLog
       const match = diffline.match(changeLogLineRe);
       if (match) {
         changes++;
-        contents += ` * ${diff} - ${match[2]}\n`;
+        contents += ` * [${diff}](https://github.com/facebook/flipper/search?q=${diff}&type=Commits) - ${match[2]}\n`;
       }
     });
   });
