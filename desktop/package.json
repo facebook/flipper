@@ -28,7 +28,8 @@
       "plugins/*",
       "e2e",
       "plugin-lib",
-      "test-utils"
+      "test-utils",
+      "eslint-plugin-flipper"
     ],
     "nohoist": [
       "flipper-plugin-kaios-big-allocations/firefox-client"
@@ -108,6 +109,7 @@
   },
   "devDependencies": {
     "@babel/code-frame": "^7.10.4",
+    "@babel/eslint-parser": "^7.11.0",
     "@jest-runner/electron": "^3.0.0",
     "@testing-library/dom": "^7.20.2",
     "@testing-library/react": "^10.4.3",
@@ -173,6 +175,7 @@
     "eslint-config-prettier": "^6.10.1",
     "eslint-import-resolver-typescript": "^2.0.0",
     "eslint-plugin-babel": "^5.3.0",
+    "eslint-plugin-flipper": "0.52.1",
     "eslint-plugin-flowtype": "^4.7.0",
     "eslint-plugin-header": "^3.0.0",
     "eslint-plugin-import": "^2.22.0",
@@ -219,7 +222,7 @@
   },
   "scripts": {
     "preinstall": "node scripts/prepare-watchman-config.js && yarn config set ignore-engines",
-    "postinstall": "patch-package && ./ts-node scripts/yarn-install-fb-plugins.ts && yarn build:pkg && ./ts-node scripts/generate-plugin-entry-points.ts",
+    "postinstall": "patch-package && ./ts-node scripts/yarn-install-fb-plugins.ts && yarn build:pkg && yarn build:eslint && ./ts-node scripts/generate-plugin-entry-points.ts",
     "rm-dist": "rimraf ../dist",
     "rm-modules": "rimraf **/*/node_modules node_modules",
     "rm-temp": "rimraf $TMPDIR/jest* $TMPDIR/react-native-packager*",
@@ -234,6 +237,7 @@
     "start:no-embedded-plugins": "yarn start --no-embedded-plugins",
     "build:babel-transformer": "cd babel-transformer && yarn build",
     "build:pkg": "cd pkg && yarn build",
+    "build:eslint": "cd eslint-plugin-flipper && yarn build",
     "prebuild": "yarn build:pkg && yarn rm-dist",
     "build": "cross-env NODE_ENV=production ./ts-node scripts/build-release.ts $@",
     "build:dev": "cross-env NODE_ENV=development ./ts-node scripts/build-release.ts $@",
@@ -252,6 +256,7 @@
     "test-with-device": "yarn build:pkg && USE_ELECTRON_STUBS=1 jest --testMatch=\"**/**.device\\.(js|jsx|ts|tsx)\" --detectOpenHandles",
     "test-e2e": "cd e2e && yarn test",
     "lint:tsc": "tsc --noemit",
+    "prelint:eslint": "yarn build:eslint",
     "lint:eslint": "eslint . --ext .js,.ts,.tsx",
     "lint:flow": "flow check",
     "lint": "yarn lint:eslint && yarn lint:flow && yarn lint:tsc",

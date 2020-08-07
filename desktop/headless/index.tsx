@@ -7,6 +7,8 @@
  * @format
  */
 
+/* eslint-disable flipper/no-relative-imports-across-packages */ // TODO T71355623
+
 import path from 'path';
 import {createStore, Dispatch, Middleware, MiddlewareAPI} from 'redux';
 import {applyMiddleware} from 'redux';

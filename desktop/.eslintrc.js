@@ -38,6 +38,7 @@ module.exports = {
     'import',
     'node',
     'react-hooks',
+    'flipper',
   ],
   rules: {
     // disable rules from eslint-config-fbjs
@@ -69,6 +70,7 @@ module.exports = {
     'import/no-unresolved': [2, {commonjs: true, amd: true}],
     'node/no-extraneous-import': [2, {allowModules: builtInModules}],
     'node/no-extraneous-require': [2, {allowModules: builtInModules}],
+    'flipper/no-relative-imports-across-packages': [2],
   },
   settings: {
     'import/resolver': {

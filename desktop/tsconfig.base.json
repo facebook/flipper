@@ -20,6 +20,7 @@
     "paths": {
       "flipper": ["./app/src"],
       "flipper-plugin": ["./flipper-plugin/src"],
+      "eslint-plugin-flipper": ["./eslint-plugin-flipper/src"],
       "flipper-*": ["./*/src"],
       "*": ["./*", "./types/*"]
     }

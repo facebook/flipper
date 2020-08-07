@@ -11,10 +11,14 @@ import {Button, styled} from 'flipper';
 import {connect} from 'react-redux';
 import React, {Component} from 'react';
 import {State as Store} from '../reducers';
+// TODO T71355623
+// eslint-disable-next-line flipper/no-relative-imports-across-packages
 import {
   readBookmarksFromDB,
   writeBookmarkToDB,
 } from '../../../plugins/navigation/util/indexedDB';
+// TODO T71355623
+// eslint-disable-next-line flipper/no-relative-imports-across-packages
 import {PersistedState as NavPluginState} from '../../../plugins/navigation/types';
 import BaseDevice from '../devices/BaseDevice';
 import {State as PluginState} from 'app/src/reducers/pluginStates';
