@@ -17,10 +17,10 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@babel/core": "^7.9.0",
-    "@babel/preset-env": "^7.9.0",
-    "@babel/preset-flow": "^7.9.0",
-    "babel-jest": "^26",
+    "@babel/core": "^7.11.1",
+    "@babel/preset-env": "^7.11.0",
+    "@babel/preset-flow": "^7.10.4",
+    "babel-jest": "^26.2.2",
     "canonical-json": "^0.0.4",
     "lodash.memoize": "^4.1.2"
   }
