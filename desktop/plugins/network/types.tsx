@@ -60,4 +60,5 @@ export type Route = {
   requestMethod: string;
   responseData: string;
   responseHeaders: {[id: string]: Header};
+  responseStatus: string;
 };

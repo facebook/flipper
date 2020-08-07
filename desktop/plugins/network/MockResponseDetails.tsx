@@ -239,7 +239,7 @@ export function MockResponseDetails({id, route, isDuplicated}: Props) {
   );
   const [nextHeaderId, setNextHeaderId] = useState(0);
 
-  const {requestUrl, requestMethod, responseData} = route;
+  const {requestUrl, requestMethod, responseData, responseStatus} = route;
   return (
     <Container>
       <FlexRow style={{width: '100%'}}>
@@ -260,6 +260,18 @@ export function MockResponseDetails({id, route, isDuplicated}: Props) {
           onChange={(event) =>
             networkRouteManager.modifyRoute(id, {
               requestUrl: event.target.value,
+            })
+          }
+        />
+      </FlexRow>
+      <FlexRow style={{width: '20%'}}>
+        <StyledInput
+          type="text"
+          placeholder="STATUS"
+          value={responseStatus}
+          onChange={(event) =>
+            networkRouteManager.modifyRoute(id, {
+              responseStatus: event.target.value,
             })
           }
         />
