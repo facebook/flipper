@@ -37,6 +37,7 @@ import {
   Route,
   ResponseFollowupChunk,
   PersistedState,
+  Header,
 } from './types';
 import {convertRequestToCurlCommand, getHeaderValue, decodeBody} from './utils';
 import RequestDetails from './RequestDetails';
@@ -61,6 +62,9 @@ type State = {
   isMockResponseSupported: boolean;
   showMockResponseDialog: boolean;
   detailBodyFormat: string;
+  highlightedRows: Set<string> | null | undefined;
+  requests: {[id: string]: Request};
+  responses: {[id: string]: Response};
 };
 
 const COLUMN_SIZE = {
@@ -122,11 +126,21 @@ export interface NetworkRouteManager {
   addRoute(): void;
   modifyRoute(id: string, routeChange: Partial<Route>): void;
   removeRoute(id: string): void;
+  copyHighlightedCalls(
+    highlightedRows: Set<string>,
+    requests: {[id: string]: Request},
+    responses: {[id: string]: Response},
+  ): void;
 }
 const nullNetworkRouteManager: NetworkRouteManager = {
   addRoute() {},
   modifyRoute(_id: string, _routeChange: Partial<Route>) {},
   removeRoute(_id: string) {},
+  copyHighlightedCalls(
+    highlightedRows: Set<string>,
+    requests: {[id: string]: Request},
+    responses: {[id: string]: Response},
+  ) {},
 };
 export const NetworkRouteContext = createContext<NetworkRouteManager>(
   nullNetworkRouteManager,
@@ -328,6 +342,9 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
       isMockResponseSupported: false,
       showMockResponseDialog: false,
       detailBodyFormat: BodyOptions.parsed,
+      highlightedRows: new Set(),
+      requests: {},
+      responses: {},
     };
   }
 
@@ -384,6 +401,40 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
               delete draftState.routes[id];
             }
             informClientMockChange(draftState.routes);
+          }),
+        );
+      },
+      copyHighlightedCalls(
+        highlightedRows: Set<string> | null | undefined,
+        requests: {[id: string]: Request},
+        responses: {[id: string]: Response},
+      ) {
+        setState(
+          produce((draftState: State) => {
+            // iterate through highlighted rows
+            highlightedRows?.forEach((row) => {
+              const response = responses[row];
+              // convert headers
+              const headers: {[id: string]: Header} = {};
+              response.headers.forEach((e) => {
+                headers[e.key] = e;
+              });
+
+              // convert data
+              const responseData =
+                response && response.data ? decodeBody(response) : null;
+
+              const nextRouteId = draftState.nextRouteId;
+              draftState.routes[nextRouteId.toString()] = {
+                requestUrl: requests[row].url,
+                requestMethod: requests[row].method,
+                responseData: responseData as string,
+                responseHeaders: headers,
+                responseStatus: responses[row].status.toString(),
+              };
+              draftState.nextRouteId = nextRouteId + 1;
+              informClientMockChange(draftState.routes);
+            });
           }),
         );
       },
@@ -573,6 +624,9 @@ type NetworkTableProps = {
 type NetworkTableState = {
   sortedRows: TableRows;
   routes: {[id: string]: Route};
+  highlightedRows: Set<string> | null | undefined;
+  requests: {[id: string]: Request};
+  responses: {[id: string]: Response};
 };
 
 function formatTimestamp(timestamp: number): string {
@@ -745,6 +799,9 @@ function calculateState(
   return {
     sortedRows: rows,
     routes: nextProps.routes,
+    highlightedRows: nextProps.highlightedRows,
+    requests: props.requests,
+    responses: props.responses,
   };
 }
 
@@ -838,6 +895,9 @@ class NetworkTable extends PureComponent<NetworkTableProps, NetworkTableState> {
                   onHide();
                   this.props.onCloseButtonPressed();
                 }}
+                highlightedRows={this.state.highlightedRows}
+                requests={this.state.requests}
+                responses={this.state.responses}
               />
             )}
           </Sheet>
