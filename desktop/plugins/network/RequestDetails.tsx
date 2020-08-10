@@ -57,9 +57,7 @@ type RequestDetailsProps = {
   bodyFormat: string;
   onSelectFormat: (bodyFormat: string) => void;
 };
-export default class RequestDetails extends Component<
-  RequestDetailsProps
-> {
+export default class RequestDetails extends Component<RequestDetailsProps> {
   static Container = styled(FlexColumn)({
     height: '100%',
     overflow: 'auto',

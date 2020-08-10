@@ -210,7 +210,7 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
       nextRouteId: 0,
       isMockResponseSupported: false,
       showMockResponseDialog: false,
-      detailBodyFormat: BodyOptions.parsed
+      detailBodyFormat: BodyOptions.parsed,
     };
   }
 
@@ -381,8 +381,6 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
   };
 
   renderSidebar = () => {
-    console.log('Render sidebar!')
-
     const {requests, responses} = this.props.persistedState;
     const {selectedIds, detailBodyFormat} = this.state;
     const selectedId = selectedIds.length === 1 ? selectedIds[0] : null;
