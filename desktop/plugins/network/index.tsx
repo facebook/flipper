@@ -30,20 +30,23 @@ import {
   TableBodyRow,
   produce,
 } from 'flipper';
-import {Request, RequestId, Response, Route} from './types';
+import {
+  Request,
+  RequestId,
+  Response,
+  Route,
+  ResponseFollowupChunk,
+  PersistedState,
+} from './types';
 import {convertRequestToCurlCommand, getHeaderValue, decodeBody} from './utils';
 import RequestDetails from './RequestDetails';
 import {clipboard} from 'electron';
 import {URL} from 'url';
 import {DefaultKeyboardAction} from 'app/src/MenuBar';
 import {MockResponseDialog} from './MockResponseDialog';
+import {combineBase64Chunks} from './chunks';
 
 const LOCALSTORAGE_MOCK_ROUTE_LIST_KEY = '__NETWORK_CACHED_MOCK_ROUTE_LIST';
-
-type PersistedState = {
-  requests: {[id: string]: Request};
-  responses: {[id: string]: Response};
-};
 
 type State = {
   selectedIds: Array<RequestId>;
@@ -126,9 +129,10 @@ export const NetworkRouteContext = createContext<NetworkRouteManager>(
 export default class extends FlipperPlugin<State, any, PersistedState> {
   static keyboardActions: Array<DefaultKeyboardAction> = ['clear'];
   static subscribed = [];
-  static defaultPersistedState = {
+  static defaultPersistedState: PersistedState = {
     requests: {},
     responses: {},
+    partialResponses: {},
   };
   networkRouteManager: NetworkRouteManager = nullNetworkRouteManager;
 
@@ -146,7 +150,7 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
   static persistedStateReducer(
     persistedState: PersistedState,
     method: string,
-    data: Request | Response,
+    data: Request | Response | ResponseFollowupChunk,
   ) {
     switch (method) {
       case 'newRequest':
@@ -154,17 +158,130 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
           requests: {...persistedState.requests, [data.id]: data as Request},
         });
       case 'newResponse':
+        const response: Response = data as Response;
         return Object.assign({}, persistedState, {
-          responses: {...persistedState.responses, [data.id]: data as Response},
+          responses: {
+            ...persistedState.responses,
+            [response.id]: response,
+          },
         });
+      case 'partialResponse':
+        /* Some clients (such as low end Android devices) struggle to serialise large payloads in one go, so partial responses allow them
+           to split payloads into chunks and serialise each individually.
+
+           Such responses will be distinguished between normal responses by both:
+             * Being sent to the partialResponse method.
+             * Having a totalChunks value > 1.
+
+           The first chunk will always be included in the initial response. This response must have index 0.
+           The remaining chunks will be sent in ResponseFollowupChunks, which each contain another piece of the payload, along with their index from 1 onwards.
+           The payload of each chunk is individually encoded in the same way that full responses are.
+
+           The order that initialResponse, and followup chunks are recieved is not guaranteed to be in index order.
+        */
+        const message: Response | ResponseFollowupChunk = data as
+          | Response
+          | ResponseFollowupChunk;
+        if (message.index !== undefined && message.index > 0) {
+          // It's a follow up chunk
+          const followupChunk: ResponseFollowupChunk = message as ResponseFollowupChunk;
+          const partialResponseEntry = persistedState.partialResponses[
+            followupChunk.id
+          ] ?? {followupChunks: []};
+          const newPartialResponseEntry = {
+            ...partialResponseEntry,
+            followupChunks: {
+              ...partialResponseEntry.followupChunks,
+              [followupChunk.index]: followupChunk.data,
+            },
+          };
+          const newPersistedState = {
+            ...persistedState,
+            partialResponses: {
+              ...persistedState.partialResponses,
+              [followupChunk.id]: newPartialResponseEntry,
+            },
+          };
+          return this.assembleChunksIfResponseIsComplete(
+            newPersistedState,
+            followupChunk.id,
+          );
+        }
+        // It's an initial chunk
+        const partialResponse: Response = message as Response;
+        const partialResponseEntry = persistedState.partialResponses[
+          partialResponse.id
+        ] ?? {
+          followupChunks: {},
+        };
+        const newPartialResponseEntry = {
+          ...partialResponseEntry,
+          initialResponse: partialResponse,
+        };
+        const newPersistedState = {
+          ...persistedState,
+          partialResponses: {
+            ...persistedState.partialResponses,
+            [partialResponse.id]: newPartialResponseEntry,
+          },
+        };
+        return this.assembleChunksIfResponseIsComplete(
+          newPersistedState,
+          partialResponse.id,
+        );
       default:
         return persistedState;
     }
   }
 
-  static serializePersistedState = (persistedState: PersistedState) => {
-    return Promise.resolve(JSON.stringify(persistedState));
-  };
+  static assembleChunksIfResponseIsComplete(
+    persistedState: PersistedState,
+    responseId: string,
+  ): PersistedState {
+    const partialResponseEntry = persistedState.partialResponses[responseId];
+    const numChunks = partialResponseEntry.initialResponse?.totalChunks;
+    if (
+      !partialResponseEntry.initialResponse ||
+      !numChunks ||
+      Object.keys(partialResponseEntry.followupChunks).length + 1 < numChunks
+    ) {
+      // Partial response not yet complete, do nothing.
+      return persistedState;
+    }
+    // Partial response has all required chunks, convert it to a full Response.
+
+    const response: Response = partialResponseEntry.initialResponse;
+    const allChunks: string[] =
+      response.data != null
+        ? [
+            response.data,
+            ...Object.entries(partialResponseEntry.followupChunks)
+              // It's important to parseInt here or it sorts lexicographically
+              .sort((a, b) => parseInt(a[0], 10) - parseInt(b[0], 10))
+              .map(([_k, v]: [string, string]) => v),
+          ]
+        : [];
+    const data = combineBase64Chunks(allChunks);
+
+    const newResponse = {
+      ...response,
+      // Currently data is always decoded at render time, so re-encode it to match the single response format.
+      data: btoa(data),
+    };
+
+    return {
+      ...persistedState,
+      responses: {
+        ...persistedState.responses,
+        [newResponse.id]: newResponse,
+      },
+      partialResponses: Object.fromEntries(
+        Object.entries(persistedState.partialResponses).filter(
+          ([k, _v]: [string, unknown]) => k !== newResponse.id,
+        ),
+      ),
+    };
+  }
 
   static deserializePersistedState = (serializedString: string) => {
     return JSON.parse(serializedString);
