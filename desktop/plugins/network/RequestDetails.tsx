@@ -22,7 +22,7 @@ import {
   SmallText,
 } from 'flipper';
 import {decodeBody, getHeaderValue} from './utils';
-import {formatBytes} from './index';
+import {formatBytes, BodyOptions} from './index';
 import React from 'react';
 
 import querystring from 'querystring';
@@ -54,26 +54,16 @@ const KeyValueColumns = {
 type RequestDetailsProps = {
   request: Request;
   response: Response | null | undefined;
-};
-
-type RequestDetailsState = {
   bodyFormat: string;
+  onSelectFormat: (bodyFormat: string) => void;
 };
-
 export default class RequestDetails extends Component<
-  RequestDetailsProps,
-  RequestDetailsState
+  RequestDetailsProps
 > {
   static Container = styled(FlexColumn)({
     height: '100%',
     overflow: 'auto',
   });
-  static BodyOptions = {
-    formatted: 'formatted',
-    parsed: 'parsed',
-  };
-
-  state: RequestDetailsState = {bodyFormat: RequestDetails.BodyOptions.parsed};
 
   urlColumns = (url: URL) => {
     return [
@@ -120,16 +110,11 @@ export default class RequestDetails extends Component<
     ];
   };
 
-  onSelectFormat = (bodyFormat: string) => {
-    this.setState(() => ({bodyFormat}));
-  };
-
   render() {
-    const {request, response} = this.props;
+    const {request, response, bodyFormat, onSelectFormat} = this.props;
     const url = new URL(request.url);
 
-    const {bodyFormat} = this.state;
-    const formattedText = bodyFormat == RequestDetails.BodyOptions.formatted;
+    const formattedText = bodyFormat == BodyOptions.formatted;
 
     return (
       <RequestDetails.Container>
@@ -215,8 +200,8 @@ export default class RequestDetails extends Component<
             grow
             label="Body"
             selected={bodyFormat}
-            onChange={this.onSelectFormat}
-            options={RequestDetails.BodyOptions}
+            onChange={onSelectFormat}
+            options={BodyOptions}
           />
         </Panel>
         {response && response.insights ? (

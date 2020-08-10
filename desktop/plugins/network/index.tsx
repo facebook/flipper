@@ -40,6 +40,11 @@ import {MockResponseDialog} from './MockResponseDialog';
 
 const LOCALSTORAGE_MOCK_ROUTE_LIST_KEY = '__NETWORK_CACHED_MOCK_ROUTE_LIST';
 
+export const BodyOptions = {
+  formatted: 'formatted',
+  parsed: 'parsed',
+};
+
 type PersistedState = {
   requests: {[id: string]: Request};
   responses: {[id: string]: Response};
@@ -52,6 +57,7 @@ type State = {
   nextRouteId: number;
   isMockResponseSupported: boolean;
   showMockResponseDialog: boolean;
+  detailBodyFormat: string;
 };
 
 const COLUMN_SIZE = {
@@ -204,6 +210,7 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
       nextRouteId: 0,
       isMockResponseSupported: false,
       showMockResponseDialog: false,
+      detailBodyFormat: BodyOptions.parsed
     };
   }
 
@@ -369,9 +376,15 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
     this.setState({showMockResponseDialog: false});
   };
 
+  onSelectFormat = (bodyFormat: string) => {
+    this.setState({detailBodyFormat: bodyFormat});
+  };
+
   renderSidebar = () => {
+    console.log('Render sidebar!')
+
     const {requests, responses} = this.props.persistedState;
-    const {selectedIds} = this.state;
+    const {selectedIds, detailBodyFormat} = this.state;
     const selectedId = selectedIds.length === 1 ? selectedIds[0] : null;
 
     if (!selectedId) {
@@ -386,6 +399,8 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
         key={selectedId}
         request={requestWithId}
         response={responses[selectedId]}
+        bodyFormat={detailBodyFormat}
+        onSelectFormat={this.onSelectFormat}
       />
     );
   };
@@ -417,6 +432,7 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
             searchTerm={searchTerm}
             isMockResponseSupported={isMockResponseSupported}
           />
+          {console.log('render Detail Sidebar!')}
           <DetailSidebar width={500}>{this.renderSidebar()}</DetailSidebar>
         </NetworkRouteContext.Provider>
       </FlexColumn>
