@@ -432,7 +432,6 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
             searchTerm={searchTerm}
             isMockResponseSupported={isMockResponseSupported}
           />
-          {console.log('render Detail Sidebar!')}
           <DetailSidebar width={500}>{this.renderSidebar()}</DetailSidebar>
         </NetworkRouteContext.Provider>
       </FlexColumn>
