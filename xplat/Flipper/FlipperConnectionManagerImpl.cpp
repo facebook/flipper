@@ -198,6 +198,7 @@ bool FlipperConnectionManagerImpl::doCertificateExchange() {
           .get();
 
   if (newClient.get() == nullptr) {
+    connectingInsecurely->fail("Failed to connect");
     return false;
   }
 
@@ -257,6 +258,7 @@ bool FlipperConnectionManagerImpl::connectSecurely() {
           })
           .get();
   if (newClient.get() == nullptr) {
+    connectingSecurely->fail("Failed to connect");
     return false;
   }
 
