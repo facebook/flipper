@@ -9,6 +9,7 @@ package com.facebook.flipper.plugins.network;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nullable;
 
 public interface NetworkReporter {
   void reportRequest(RequestInfo requestInfo);
@@ -54,7 +55,7 @@ public interface NetworkReporter {
     public int statusCode;
     public String statusReason;
     public List<Header> headers = new ArrayList<>();
-    public byte[] body;
+    public @Nullable byte[] body;
     public boolean isMock = false;
 
     public Header getFirstHeader(final String name) {

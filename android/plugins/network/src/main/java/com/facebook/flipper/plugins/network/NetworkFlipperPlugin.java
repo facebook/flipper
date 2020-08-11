@@ -12,7 +12,9 @@ import com.facebook.flipper.core.ErrorReportingRunnable;
 import com.facebook.flipper.core.FlipperArray;
 import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.plugins.common.BufferingFlipperPlugin;
+import java.util.Arrays;
 import java.util.List;
+import javax.annotation.Nullable;
 
 public class NetworkFlipperPlugin extends BufferingFlipperPlugin implements NetworkReporter {
   public static final String ID = "Network";
@@ -64,18 +66,42 @@ public class NetworkFlipperPlugin extends BufferingFlipperPlugin implements Netw
               responseInfo.body = null;
             }
 
-            final FlipperObject response =
-                new FlipperObject.Builder()
-                    .put("id", responseInfo.requestId)
-                    .put("timestamp", responseInfo.timeStamp)
-                    .put("status", responseInfo.statusCode)
-                    .put("reason", responseInfo.statusReason)
-                    .put("headers", toFlipperObject(responseInfo.headers))
-                    .put("isMock", responseInfo.isMock)
-                    .put("data", toBase64(responseInfo.body))
-                    .build();
+            int numChunks =
+                responseInfo.body == null
+                    ? 1
+                    : (int) Math.ceil((double) responseInfo.body.length / MAX_BODY_SIZE_IN_BYTES);
 
-            send("newResponse", response);
+            for (int i = 0; i < numChunks; i++) {
+              byte[] chunk =
+                  responseInfo.body == null
+                      ? null
+                      : Arrays.copyOfRange(
+                          responseInfo.body,
+                          i * MAX_BODY_SIZE_IN_BYTES,
+                          Math.min((i + 1) * MAX_BODY_SIZE_IN_BYTES, responseInfo.body.length));
+              final FlipperObject response =
+                  i == 0
+                      ? new FlipperObject.Builder()
+                          .put("id", responseInfo.requestId)
+                          .put("timestamp", responseInfo.timeStamp)
+                          .put("status", responseInfo.statusCode)
+                          .put("reason", responseInfo.statusReason)
+                          .put("headers", toFlipperObject(responseInfo.headers))
+                          .put("isMock", responseInfo.isMock)
+                          .put("data", toBase64(chunk))
+                          .put("totalChunks", numChunks)
+                          .put("index", i)
+                          .build()
+                      : new FlipperObject.Builder()
+                          .put("id", responseInfo.requestId)
+                          .put("timestamp", responseInfo.timeStamp)
+                          .put("totalChunks", numChunks)
+                          .put("index", i)
+                          .put("data", toBase64(chunk))
+                          .build();
+
+              send(numChunks == 1 ? "newResponse" : "partialResponse", response);
+            }
           }
         };
 
@@ -99,7 +125,7 @@ public class NetworkFlipperPlugin extends BufferingFlipperPlugin implements Netw
     job.run();
   }
 
-  private String toBase64(byte[] bytes) {
+  private String toBase64(@Nullable byte[] bytes) {
     if (bytes == null) {
       return null;
     }
@@ -120,10 +146,6 @@ public class NetworkFlipperPlugin extends BufferingFlipperPlugin implements Netw
     final Header contentType = responseInfo.getFirstHeader("content-type");
     if (contentType == null) {
       return false;
-    }
-
-    if (responseInfo.body != null && responseInfo.body.length > MAX_BODY_SIZE_IN_BYTES) {
-      return true;
     }
 
     return contentType.value.contains("image/")

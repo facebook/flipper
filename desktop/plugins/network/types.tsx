@@ -27,6 +27,15 @@ export type Response = {
   data: string | null | undefined;
   isMock: boolean;
   insights: Insights | null | undefined;
+  totalChunks?: number;
+  index?: number;
+};
+
+export type ResponseFollowupChunk = {
+  id: string;
+  totalChunks: number;
+  index: number;
+  data: string;
 };
 
 export type Header = {
@@ -61,4 +70,15 @@ export type Route = {
   responseData: string;
   responseHeaders: {[id: string]: Header};
   responseStatus: string;
+};
+
+export type PersistedState = {
+  requests: {[id: string]: Request};
+  responses: {[id: string]: Response};
+  partialResponses: {
+    [id: string]: {
+      initialResponse?: Response;
+      followupChunks: {[id: number]: string};
+    };
+  };
 };
