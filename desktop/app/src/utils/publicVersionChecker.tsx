@@ -70,6 +70,13 @@ export async function checkForUpdate(
         case 204:
           return {kind: 'up-to-date'};
         case 200:
+          if (res.url.startsWith('https://www.facebook.com/login/')) {
+            // We're being redirected because we're not on an authenticated network.
+            // Treat that as being up-to-date as there's special-casing the UI for
+            // this is not worth it.
+            console.log('Skipping version check on non-authenticated network.');
+            return {kind: 'up-to-date'};
+          }
           return res.json().then(parseResponse);
         default:
           return {
