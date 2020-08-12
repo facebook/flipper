@@ -198,7 +198,7 @@ export function ManageMockResponsePanel(props: Props) {
     }
     setCurrentRouteSize(routeSize);
   }, [routes]);
-  const duplicatedIds = useMemo(() => _duplicateIds(props.routes), [props.routes]);
+  const duplicatedIds = useMemo(() => _duplicateIds(props.routes), [routes]);
   return (
     <Container>
       <LeftPanel>
