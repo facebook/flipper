@@ -18,24 +18,24 @@ import {
   colors,
   Panel,
 } from 'flipper';
-import React, {useContext, useState, useMemo, useEffect} from 'react';
+import React, { useContext, useState, useMemo, useEffect } from 'react';
 
-import {Route, Request, Response} from './types';
+import { Route, Request, Response } from './types';
 
-import {MockResponseDetails} from './MockResponseDetails';
-import {NetworkRouteContext} from './index';
-import {RequestId} from './types';
+import { MockResponseDetails } from './MockResponseDetails';
+import { NetworkRouteContext } from './index';
+import { RequestId } from './types';
 
 type Props = {
-  routes: {[id: string]: Route};
+  routes: { [id: string]: Route };
   highlightedRows: Set<string> | null | undefined;
-  requests: {[id: string]: Request};
-  responses: {[id: string]: Response};
+  requests: { [id: string]: Request };
+  responses: { [id: string]: Response };
 };
 
-const ColumnSizes = {route: 'flex'};
+const ColumnSizes = { route: 'flex' };
 
-const Columns = {route: {value: 'Route', resizable: false}};
+const Columns = { route: { value: 'Route', resizable: false } };
 
 const AddRouteButton = styled(FlexBox)({
   color: colors.blackAlpha50,
@@ -88,8 +88,8 @@ const Icon = styled(Glyph)({
 });
 
 // return ids that have the same pair of requestUrl and method; this will return only the duplicate
-function _duplicateIds(routes: {[id: string]: Route}): Array<RequestId> {
-  const idSet: {[id: string]: {[method: string]: boolean}} = {};
+function _duplicateIds(routes: { [id: string]: Route }): Array<RequestId> {
+  const idSet: { [id: string]: { [method: string]: boolean } } = {};
   return Object.entries(routes).reduce((acc: Array<RequestId>, [id, route]) => {
     if (idSet.hasOwnProperty(route.requestUrl)) {
       if (idSet[route.requestUrl].hasOwnProperty(route.requestMethod)) {
@@ -101,14 +101,14 @@ function _duplicateIds(routes: {[id: string]: Route}): Array<RequestId> {
       };
       return acc;
     } else {
-      idSet[route.requestUrl] = {[route.requestMethod]: true};
+      idSet[route.requestUrl] = { [route.requestMethod]: true };
       return acc;
     }
   }, []);
 }
 
 function _buildRows(
-  routes: {[id: string]: Route},
+  routes: { [id: string]: Route },
   duplicatedIds: Array<string>,
   handleRemoveId: (id: string) => void,
 ) {
@@ -148,12 +148,12 @@ function RouteRow(props: {
           <Icon name="caution-triangle" color={colors.yellow} />
         )}
         {props.text.length === 0 ? (
-          <TextEllipsis style={{color: colors.blackAlpha50}}>
+          <TextEllipsis style={{ color: colors.blackAlpha50 }}>
             untitled
           </TextEllipsis>
         ) : (
-          <TextEllipsis>{props.text}</TextEllipsis>
-        )}
+            <TextEllipsis>{props.text}</TextEllipsis>
+          )}
       </FlexRow>
     </FlexRow>
   );
@@ -164,7 +164,7 @@ function ManagedMockResponseRightPanel(props: {
   route: Route;
   isDuplicated: boolean;
 }) {
-  const {id, route, isDuplicated} = props;
+  const { id, route, isDuplicated } = props;
   return (
     <Panel
       grow={true}
@@ -186,7 +186,7 @@ export function ManageMockResponsePanel(props: Props) {
   const [selectedId, setSelectedId] = useState<RequestId | null>(null);
   const [currentRouteSize, setCurrentRouteSize] = useState(0);
 
-  const {routes} = props.routes;
+  const { routes } = props.routes;
   useEffect(() => {
     const keys = Object.keys(props.routes);
     const routeSize = keys.length;
@@ -198,7 +198,7 @@ export function ManageMockResponsePanel(props: Props) {
     }
     setCurrentRouteSize(routeSize);
   }, [routes]);
-  const duplicatedIds = useMemo(() => _duplicateIds(props.routes), [routes]);
+  const duplicatedIds = useMemo(() => _duplicateIds(props.routes), [props.routes]);
   return (
     <Container>
       <LeftPanel>
