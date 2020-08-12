@@ -73,6 +73,17 @@ void FlipperClient::addPlugin(std::shared_ptr<FlipperPlugin> plugin) {
   });
 }
 
+void FlipperClient::setCertificateProvider(
+    const std::shared_ptr<FlipperCertificateProvider> provider) {
+  socket_->setCertificateProvider(provider);
+  log("cpp setCertificateProvider called");
+}
+
+std::shared_ptr<FlipperCertificateProvider>
+FlipperClient::getCertificateProvider() {
+  return socket_->getCertificateProvider();
+}
+
 void FlipperClient::removePlugin(std::shared_ptr<FlipperPlugin> plugin) {
   performAndReportError([this, plugin]() {
     log("FlipperClient::removePlugin " + plugin->identifier());

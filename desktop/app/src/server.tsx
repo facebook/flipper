@@ -7,7 +7,10 @@
  * @format
  */
 
-import {SecureServerConfig} from './utils/CertificateProvider';
+import {
+  SecureServerConfig,
+  CertificateExchangeMedium,
+} from './utils/CertificateProvider';
 import {Logger} from './fb-interfaces/Logger';
 import {ClientQuery} from './Client';
 import {Store} from './reducers/index';
@@ -44,6 +47,18 @@ type ClientCsrQuery = {
   csr?: string | undefined;
   csr_path?: string | undefined;
 };
+
+function transformCertificateExchangeMediumToType(
+  medium: number | undefined,
+): CertificateExchangeMedium {
+  if (medium === 1) {
+    return 'FS_ACCESS';
+  } else if (medium === 2) {
+    return 'WWW';
+  } else {
+    return 'FS_ACCESS';
+  }
+}
 
 declare interface Server {
   on(event: 'new-client', callback: (client: Client) => void): this;
@@ -347,11 +362,12 @@ class Server extends EventEmitter {
           method: 'signCertificate';
           csr: string;
           destination: string;
+          medium: number | undefined; // OSS's older Client SDK might not send medium information. This is not an issue for internal FB users, as Flipper release is insync with client SDK through launcher.
         } = rawData;
         if (json.method === 'signCertificate') {
           console.debug('CSR received from device', 'server');
 
-          const {csr, destination} = json;
+          const {csr, destination, medium} = json;
           return new Single((subscriber) => {
             subscriber.onSubscribe(undefined);
             reportPlatformFailures(
@@ -359,6 +375,7 @@ class Server extends EventEmitter {
                 csr,
                 clientData.os,
                 destination,
+                transformCertificateExchangeMediumToType(medium),
               ),
               'processCertificateSigningRequest',
             )
@@ -396,6 +413,7 @@ class Server extends EventEmitter {
               method: 'signCertificate';
               csr: string;
               destination: string;
+              medium: number | undefined;
             }
           | undefined;
         try {
@@ -407,9 +425,14 @@ class Server extends EventEmitter {
 
         if (json && json.method === 'signCertificate') {
           console.debug('CSR received from device', 'server');
-          const {csr, destination} = json;
+          const {csr, destination, medium} = json;
           this.certificateProvider
-            .processCertificateSigningRequest(csr, clientData.os, destination)
+            .processCertificateSigningRequest(
+              csr,
+              clientData.os,
+              destination,
+              transformCertificateExchangeMediumToType(medium),
+            )
             .catch((e) => {
               console.error(e);
             });

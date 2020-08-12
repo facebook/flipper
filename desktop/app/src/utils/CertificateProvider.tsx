@@ -25,6 +25,8 @@ import os from 'os';
 import {Client as ADBClient} from 'adbkit';
 import {Store} from '../reducers/index';
 
+export type CertificateExchangeMedium = 'FS_ACCESS' | 'WWW';
+
 const tmpFile = promisify(tmp.file) as (
   options?: FileOptions,
 ) => Promise<string>;
@@ -96,7 +98,14 @@ export default class CertificateProvider {
     unsanitizedCsr: string,
     os: string,
     appDirectory: string,
+    medium: CertificateExchangeMedium,
   ): Promise<{deviceId: string}> {
+    // TODO: Add implementations for each of these conditions
+    if (medium === 'FS_ACCESS') {
+      // Use IDB for cert exchange
+    } else if (medium === 'WWW') {
+      // Use WWWW
+    }
     const csr = this.santitizeString(unsanitizedCsr);
     if (csr === '') {
       return Promise.reject(new Error(`Received empty CSR from ${os} device`));

@@ -40,6 +40,14 @@ class FlipperConnectionManagerMock : public FlipperConnectionManager {
     messages.push_back(message);
   }
 
+  void setCertificateProvider(
+      const std::shared_ptr<FlipperCertificateProvider> provider) override{};
+
+  std::shared_ptr<FlipperCertificateProvider> getCertificateProvider()
+      override {
+    return nullptr;
+  };
+
   void onMessageReceived(
       const folly::dynamic& message,
       std::unique_ptr<FlipperResponder> responder) override {

@@ -8,12 +8,10 @@
 #include "ConnectionContextStore.h"
 #include <folly/json.h>
 #include <folly/portability/SysStat.h>
-#include <stdio.h>
 #include <fstream>
 #include <iostream>
 #include "CertificateUtils.h"
 #include "Log.h"
-
 using namespace facebook::flipper;
 
 static constexpr auto CSR_FILE_NAME = "app.csr";

@@ -8,6 +8,7 @@
 #pragma once
 
 #include <folly/json.h>
+#include "FlipperCertificateProvider.h"
 #include "FlipperResponder.h"
 
 namespace facebook {
@@ -29,6 +30,18 @@ class FlipperConnectionManager {
    Closes an open connection to the ws server.
    */
   virtual void stop() = 0;
+
+  /**
+   Sets the Auth token to be used for hitting an Intern end point
+   */
+  virtual void setCertificateProvider(
+      const std::shared_ptr<FlipperCertificateProvider> provider) = 0;
+
+  /**
+   Gets the certificate provider
+   */
+  virtual std::shared_ptr<FlipperCertificateProvider>
+  getCertificateProvider() = 0;
 
   /**
    True if there's an open connection.

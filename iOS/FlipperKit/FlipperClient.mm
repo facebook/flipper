@@ -8,15 +8,17 @@
 #if FB_SONARKIT_ENABLED
 
 #import "FlipperClient.h"
+#import <Flipper/FlipperCertificateProvider.h>
 #import <Flipper/FlipperClient.h>
 #import <UIKit/UIKit.h>
 #include <folly/io/async/EventBase.h>
 #include <folly/io/async/ScopedEventBaseThread.h>
+#include <memory>
 #import "FlipperClient+Testing.h"
 #import "FlipperCppWrapperPlugin.h"
+#import "FlipperKitCertificateProvider.h"
 #import "SKEnvironmentVariables.h"
 #include "SKStateUpdateCPPWrapper.h"
-
 #if !TARGET_OS_SIMULATOR
 #import <FKPortForwarding/FKPortForwardingServer.h>
 #endif
@@ -27,6 +29,7 @@ using WrapperPlugin = facebook::flipper::FlipperCppWrapperPlugin;
   facebook::flipper::FlipperClient* _cppClient;
   folly::ScopedEventBaseThread sonarThread;
   folly::ScopedEventBaseThread connectionThread;
+  id<FlipperKitCertificateProvider> _certProvider;
 #if !TARGET_OS_SIMULATOR
   FKPortForwardingServer* _secureServer;
   FKPortForwardingServer* _insecureServer;
@@ -46,7 +49,6 @@ using WrapperPlugin = facebook::flipper::FlipperCppWrapperPlugin;
   });
   return sharedClient;
 }
-
 - (instancetype)init {
   if (self = [super init]) {
     UIDevice* device = [UIDevice currentDevice];
@@ -57,9 +59,7 @@ using WrapperPlugin = facebook::flipper::FlipperCppWrapperPlugin;
     NSString* appId = [bundle bundleIdentifier];
     NSString* privateAppDirectory = NSSearchPathForDirectoriesInDomains(
         NSApplicationSupportDirectory, NSUserDomainMask, YES)[0];
-
     NSFileManager* manager = [NSFileManager defaultManager];
-
     if ([manager fileExistsAtPath:privateAppDirectory isDirectory:NULL] == NO &&
         ![manager createDirectoryAtPath:privateAppDirectory
             withIntermediateDirectories:YES
@@ -97,6 +97,19 @@ using WrapperPlugin = facebook::flipper::FlipperCppWrapperPlugin;
     }
   }
   return self;
+}
+
+- (void)setCertificateProvider:(id<FlipperKitCertificateProvider>)provider {
+  _certProvider = provider;
+  std::shared_ptr<facebook::flipper::FlipperCertificateProvider>* prov =
+      static_cast<
+          std::shared_ptr<facebook::flipper::FlipperCertificateProvider>*>(
+          [provider getCPPCertificateProvider]);
+  _cppClient->setCertificateProvider(*prov);
+}
+
+- (id<FlipperKitCertificateProvider>)getCertificateProvider {
+  return _certProvider;
 }
 
 - (void)refreshPlugins {

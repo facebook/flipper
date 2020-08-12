@@ -8,6 +8,7 @@
 #ifdef FB_SONARKIT_ENABLED
 
 #import <Foundation/Foundation.h>
+#import "FlipperKitCertificateProvider.h"
 #import "FlipperPlugin.h"
 #import "FlipperStateUpdateListener.h"
 
@@ -63,6 +64,16 @@ Get the log of state changes from the sonar client
 Subscribe a ViewController to state update change notifications
 */
 - (void)subscribeForUpdates:(id<FlipperStateUpdateListener>)controller;
+
+/**
+Sets the certificate provider responsible for obtaining certificates
+*/
+- (void)setCertificateProvider:(id<FlipperKitCertificateProvider>)provider;
+
+/**
+ Get the certificate provider of Flipper Client
+*/
+- (id<FlipperKitCertificateProvider>)getCertificateProvider;
 
 // initializers are disabled. You must use `+[FlipperClient sharedClient]`
 // instance.

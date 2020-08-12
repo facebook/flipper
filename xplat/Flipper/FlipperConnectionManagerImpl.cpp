@@ -90,6 +90,16 @@ FlipperConnectionManagerImpl::~FlipperConnectionManagerImpl() {
   stop();
 }
 
+void FlipperConnectionManagerImpl::setCertificateProvider(
+    const std::shared_ptr<FlipperCertificateProvider> provider) {
+  certProvider_ = provider;
+};
+
+std::shared_ptr<FlipperCertificateProvider>
+FlipperConnectionManagerImpl::getCertificateProvider() {
+  return certProvider_;
+};
+
 void FlipperConnectionManagerImpl::start() {
   if (isStarted_) {
     log("Already started");
@@ -169,10 +179,13 @@ void FlipperConnectionManagerImpl::startSync() {
 bool FlipperConnectionManagerImpl::doCertificateExchange() {
   rsocket::SetupParameters parameters;
   folly::SocketAddress address;
+  int medium = certProvider_ != nullptr
+      ? certProvider_->getCertificateExchangeMedium()
+      : FlipperCertificateExchangeMedium::FS_ACCESS;
 
   parameters.payload = rsocket::Payload(folly::toJson(folly::dynamic::object(
       "os", deviceData_.os)("device", deviceData_.device)(
-      "app", deviceData_.app)("sdk_version", sdkVersion)));
+      "app", deviceData_.app)("sdk_version", sdkVersion)("medium", medium)));
   address.setFromHostPort(deviceData_.host, insecurePort);
 
   auto connectingInsecurely = flipperState_->start("Connect insecurely");
@@ -358,6 +371,9 @@ void FlipperConnectionManagerImpl::requestSignedCertFromFlipper() {
               }
               gettingCert->complete();
               log("Certificate exchange complete.");
+              // TODO: Use Certificate provider get Certificates
+              // `certProvider_->getCertificates("path", "device");`
+
               // Disconnect after message sending is complete.
               // This will trigger a reconnect which should use the secure
               // channel.
