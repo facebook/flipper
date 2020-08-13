@@ -5,6 +5,7 @@
 .*\.tsx
 .*\.ts
 .*/node_modules/.*
+<PROJECT_ROOT>/facebook/.*
 <PROJECT_ROOT>/scripts/.*
 <PROJECT_ROOT>/desktop/.*/lib/.*
 <PROJECT_ROOT>/desktop/scripts/.*
