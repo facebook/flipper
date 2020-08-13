@@ -694,20 +694,25 @@ function calculateState(
         }
       }
     }
-  } else if (props.responses !== nextProps.responses) {
+  }
+  if (props.responses !== nextProps.responses) {
     // new or updated response
-    const resId = Object.keys(nextProps.responses).find(
+    const resIds = Object.keys(nextProps.responses).filter(
       (responseId: RequestId) =>
         props.responses[responseId] !== nextProps.responses[responseId],
     );
-    if (resId) {
-      const request = nextProps.requests[resId];
-      // sanity check; to pass null check
-      if (request) {
-        const newRow = buildRow(request, nextProps.responses[resId]);
-        const index = rows.findIndex((r: TableBodyRow) => r.key === request.id);
-        if (index > -1 && newRow) {
-          rows[index] = newRow;
+    for (const resId of resIds) {
+      if (resId) {
+        const request = nextProps.requests[resId];
+        // sanity check; to pass null check
+        if (request) {
+          const newRow = buildRow(request, nextProps.responses[resId]);
+          const index = rows.findIndex(
+            (r: TableBodyRow) => r.key === request.id,
+          );
+          if (index > -1 && newRow) {
+            rows[index] = newRow;
+          }
         }
       }
     }
