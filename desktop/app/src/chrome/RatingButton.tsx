@@ -16,6 +16,7 @@ import {
   Checkbox,
   styled,
   Input,
+  Link,
 } from 'flipper';
 import Popover from '../ui/components/Popover2';
 import GK from '../fb-stubs/GK';
@@ -143,7 +144,7 @@ class FeedbackComponent extends Component<
     this.setState({rating: newRating, nextAction: nextAction});
     this.props.submitRating(newRating);
     if (nextAction === 'finished') {
-      setTimeout(this.props.close, 1500);
+      setTimeout(this.props.close, 5000);
     }
   }
   onCommentSubmitted(comment: string) {
@@ -261,7 +262,15 @@ class FeedbackComponent extends Component<
         ];
         break;
       case 'finished':
-        body = [<Row key="thanks">Thanks!</Row>];
+        body = [
+          <Row key="thanks">
+            Thanks for the feedback! You can now help
+            <Link href="https://www.internalfb.com/intern/papercuts/?application=flipper">
+              prioritize bugs and features for Flipper in Papercuts
+            </Link>
+          </Row>,
+          dismissRow(this.props.dismiss),
+        ];
         break;
       default: {
         console.error('Illegal state: nextAction: ' + this.state.nextAction);
