@@ -27,14 +27,16 @@ const siteConfig = {
         alt: 'Flipper Logo',
         src: 'img/icon.png',
       },
-      links: [
+      items: [
         {to: 'docs/features/index', label: 'Features', position: 'right'},
         {to: 'docs/getting-started/index', label: 'Setup', position: 'right'},
         {to: 'docs/extending/index', label: 'Extending', position: 'right'},
         {href: repoUrl, label: 'GitHub', position: 'right'},
       ],
     },
-    disableDarkMode: true,
+    colorMode: {
+      disableSwitch: true,
+    },
     footer: {
       style: 'dark',
       links: [
@@ -81,7 +83,6 @@ const siteConfig = {
       logo: {
         alt: 'Flipper Mascot',
         src: 'img/mascot.png',
-        title: "I'm a dolphin not a whale!",
       },
     },
     algolia: FBInternalWithOssFallback(undefined, {
