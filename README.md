@@ -14,6 +14,9 @@
   <a href="https://cocoapods.org/pods/Flipper">
     <img src="https://img.shields.io/cocoapods/v/FlipperKit.svg?label=iOS&color=blue" alt="iOS" />
   </a>
+  <a href="https://github.com/facebook/flipper/blob/master/LICENSE">
+    <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="Flipper is released under the MIT license." />
+  </a>
 </p>
 
 <p align="center">
