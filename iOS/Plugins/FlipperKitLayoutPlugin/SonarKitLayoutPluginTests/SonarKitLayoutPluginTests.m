@@ -54,6 +54,7 @@
     @"children" : @[],
     @"attributes" : @[],
     @"data" : @{},
+    @"extraInfo" : @{},
     @"decoration" : @"",
   }]));
 }
@@ -114,6 +115,7 @@
         @"children" : @[],
         @"attributes" : @[],
         @"data" : @{},
+        @"extraInfo" : @{},
         @"decoration" : @"",
       },
       @{
@@ -122,6 +124,7 @@
         @"children" : @[],
         @"attributes" : @[],
         @"data" : @{},
+        @"extraInfo" : @{},
         @"decoration" : @"",
       },
       @{
@@ -130,6 +133,7 @@
         @"children" : @[],
         @"attributes" : @[],
         @"data" : @{},
+        @"extraInfo" : @{},
         @"decoration" : @"",
       },
     ]

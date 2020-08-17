@@ -116,6 +116,20 @@ static std::vector<std::pair<NSString*, SKSubDescriptor>>& subDescriptors() {
   return data;
 }
 
+- (NSArray<SKNamed<NSDictionary<NSString*, NSObject*>*>*>*)extraInfoForNode:
+    (SKComponentLayoutWrapper*)node {
+  NSMutableArray<SKNamed<NSDictionary<NSString*, NSObject*>*>*>* data =
+      [NSMutableArray new];
+  NSMutableDictionary<NSString*, NSObject*>* metaData =
+      [[NSMutableDictionary alloc] init];
+
+  [metaData setObject:node.component.className forKey:@"className"];
+  [metaData setObject:@"CK" forKey:@"framework"];
+
+  [data addObject:[SKNamed newWithName:@"metaData" withValue:metaData]];
+  return data;
+}
+
 - (NSDictionary<NSString*, NSObject*>*)propsForFlexboxChild:
     (CKFlexboxComponentChild)child {
   return @{

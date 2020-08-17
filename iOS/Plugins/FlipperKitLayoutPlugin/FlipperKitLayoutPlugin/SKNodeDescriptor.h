@@ -78,6 +78,12 @@ typedef void (^SKNodeUpdateData)(id value);
 - (NSArray<SKNamed<NSDictionary*>*>*)dataForNode:(T)node;
 
 /**
+ Get the extra info to pass it back to Sonar application without showing them in
+ the sidebar.
+ */
+- (NSArray<SKNamed<NSDictionary*>*>*)extraInfoForNode:(T)node;
+
+/**
  Get the attributes for this node. Attributes will be showed in the Sonar
  application right next to the name of the node.
  */

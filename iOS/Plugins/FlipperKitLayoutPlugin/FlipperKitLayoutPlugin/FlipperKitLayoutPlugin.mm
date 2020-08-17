@@ -484,6 +484,7 @@
 
   NSMutableArray* attributes = [NSMutableArray new];
   NSMutableDictionary* data = [NSMutableDictionary new];
+  NSMutableDictionary* extraInfo = [NSMutableDictionary new];
 
   const auto* nodeAttributes = [nodeDescriptor attributesForNode:node];
   for (const SKNamed<NSString*>* namedPair in nodeAttributes) {
@@ -502,6 +503,11 @@
     data[namedPair.name] = namedPair.value;
   }
 
+  const auto* nodeExtraInfo = [nodeDescriptor extraInfoForNode:node];
+  for (const SKNamed<NSDictionary*>* namedPair in nodeExtraInfo) {
+    extraInfo[namedPair.name] = namedPair.value;
+  }
+
   NSMutableArray* children = [self getChildrenForNode:node
                                        withDescriptor:nodeDescriptor];
 
@@ -514,6 +520,7 @@
     @"attributes" : attributes,
     @"data" : data,
     @"decoration" : [nodeDescriptor decorationForNode:node] ?: @"(unknown)",
+    @"extraInfo" : extraInfo,
   };
 
   return nodeDic;
