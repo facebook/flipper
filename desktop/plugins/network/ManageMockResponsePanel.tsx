@@ -186,7 +186,6 @@ export function ManageMockResponsePanel(props: Props) {
   const [selectedId, setSelectedId] = useState<RequestId | null>(null);
   const [currentRouteSize, setCurrentRouteSize] = useState(0);
 
-  const { routes } = props.routes;
   useEffect(() => {
     const keys = Object.keys(props.routes);
     const routeSize = keys.length;
@@ -197,8 +196,8 @@ export function ManageMockResponsePanel(props: Props) {
       setSelectedId(keys[routeSize - 1]);
     }
     setCurrentRouteSize(routeSize);
-  }, [routes]);
-  const duplicatedIds = useMemo(() => _duplicateIds(props.routes), [routes]);
+  }, [props.routes]);
+  const duplicatedIds = useMemo(() => _duplicateIds(props.routes), [props.routes]);
   return (
     <Container>
       <LeftPanel>
