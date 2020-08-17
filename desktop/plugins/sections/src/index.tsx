@@ -71,6 +71,7 @@ type Events = {
 
 type FocusInfo = {
   generationId: string;
+  treeNodeIndexPath?: number[];
 };
 
 export function plugin(client: FlipperClient<Events, {}>) {
@@ -90,6 +91,7 @@ export function plugin(client: FlipperClient<Events, {}>) {
     });
     focusInfo.set({
       generationId: focusInfo.get()?.generationId || data.id,
+      treeNodeIndexPath: undefined,
     });
   });
   client.onMessage('updateTreeGenerationHierarchyGeneration', (data) => {
@@ -114,6 +116,40 @@ export function plugin(client: FlipperClient<Events, {}>) {
     'updateTreeGenerationChangesetGeneration',
     updateTreeGenerationChangeset,
   );
+  client.onDeepLink((payload) => {
+    if (typeof payload === 'string') {
+      handleDeepLinkPayload(payload);
+    }
+  });
+
+  function handleDeepLinkPayload(payload: string) {
+    // Payload expected to be something like
+    // 1.1.FBAnimatingComponent[0].CKFlexboxComponent[2].CKComponent where path components are separated by '.'
+    // - The first '1' is the scope root ID.
+    // - The numbers in square brackets are the indexes of the following component in the children array
+    // of the preceding component. In this example, the last CKComponent is the 2nd child of CKFlexboxComponent.
+    const pathComponents = payload.split('.');
+    const rootId = pathComponents[0];
+
+    const generationValues = Object.values(generations.get());
+    const mostRecentTreeBuild = generationValues.reverse().find((g) => {
+      return g.surface_key == rootId && g.reason == 'Tree Build';
+    });
+    if (mostRecentTreeBuild) {
+      const regex = /\w+\[(\d+)\]/;
+      const indexPath = pathComponents.reduce((acc, component) => {
+        const match = regex.exec(component);
+        if (match) {
+          acc.push(+match[1]);
+        }
+        return acc;
+      }, [] as number[]);
+      focusInfo.set({
+        generationId: mostRecentTreeBuild.id,
+        treeNodeIndexPath: indexPath,
+      });
+    }
+  }
 
   function setRecording(value: boolean) {
     recording.set(value);
