@@ -35,6 +35,10 @@ export abstract class IDEFileResolver {
     throw new Error('Method not implemented.');
   }
 
+  static async getCKComponentPath(_className: string): Promise<string> {
+    throw new Error('Method not implemented.');
+  }
+
   static getBestPath(
     _paths: string[],
     _className: string,
