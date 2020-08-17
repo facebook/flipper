@@ -31,7 +31,11 @@ export abstract class IDEFileResolver {
     throw new Error('Method not implemented.');
   }
 
-  static getBestPath(_paths: string[], _className: string): string {
+  static getBestPath(
+    _paths: string[],
+    _className: string,
+    _extension?: string,
+  ): string {
     throw new Error('Method not implemented.');
   }
 }
