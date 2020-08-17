@@ -716,7 +716,12 @@ test('test determinePluginsToProcess for mutilple clients having plugins present
   const device1 = new BaseDevice('serial1', 'emulator', 'TestiPhone', 'iOS');
   const client1 = new Client(
     generateClientIdentifier(device1, 'app'),
-    {app: 'app', os: 'iOS', device: 'TestiPhone', device_id: 'serial1'},
+    {
+      app: 'app',
+      os: 'iOS',
+      device: 'TestiPhone',
+      device_id: 'serial1',
+    },
     null,
     logger,
     mockStore,
@@ -724,7 +729,12 @@ test('test determinePluginsToProcess for mutilple clients having plugins present
   );
   const client2 = new Client(
     generateClientIdentifier(device1, 'app2'),
-    {app: 'app2', os: 'iOS', device: 'TestiPhone', device_id: 'serial1'},
+    {
+      app: 'app2',
+      os: 'iOS',
+      device: 'TestiPhone',
+      device_id: 'serial1',
+    },
     null,
     logger,
     mockStore,
@@ -732,7 +742,12 @@ test('test determinePluginsToProcess for mutilple clients having plugins present
   );
   const client3 = new Client(
     generateClientIdentifier(device1, 'app3'),
-    {app: 'app3', os: 'iOS', device: 'TestiPhone', device_id: 'serial1'},
+    {
+      app: 'app3',
+      os: 'iOS',
+      device: 'TestiPhone',
+      device_id: 'serial1',
+    },
     null,
     logger,
     mockStore,
@@ -777,7 +792,12 @@ test('test determinePluginsToProcess for no selected plugin present in any clien
   const device1 = new BaseDevice('serial1', 'emulator', 'TestiPhone', 'iOS');
   const client1 = new Client(
     generateClientIdentifier(device1, 'app'),
-    {app: 'app', os: 'iOS', device: 'TestiPhone', device_id: 'serial1'},
+    {
+      app: 'app',
+      os: 'iOS',
+      device: 'TestiPhone',
+      device_id: 'serial1',
+    },
     null,
     logger,
     mockStore,
@@ -785,7 +805,12 @@ test('test determinePluginsToProcess for no selected plugin present in any clien
   );
   const client2 = new Client(
     generateClientIdentifier(device1, 'app2'),
-    {app: 'app2', os: 'iOS', device: 'TestiPhone', device_id: 'serial1'},
+    {
+      app: 'app2',
+      os: 'iOS',
+      device: 'TestiPhone',
+      device_id: 'serial1',
+    },
     null,
     logger,
     mockStore,
@@ -811,7 +836,12 @@ test('test determinePluginsToProcess for multiple clients on same device', async
   const device1 = new BaseDevice('serial1', 'emulator', 'TestiPhone', 'iOS');
   const client1 = new Client(
     generateClientIdentifier(device1, 'app'),
-    {app: 'app', os: 'iOS', device: 'TestiPhone', device_id: 'serial1'},
+    {
+      app: 'app',
+      os: 'iOS',
+      device: 'TestiPhone',
+      device_id: 'serial1',
+    },
     null,
     logger,
     mockStore,
@@ -819,7 +849,12 @@ test('test determinePluginsToProcess for multiple clients on same device', async
   );
   const client2 = new Client(
     generateClientIdentifier(device1, 'app2'),
-    {app: 'app2', os: 'iOS', device: 'TestiPhone', device_id: 'serial1'},
+    {
+      app: 'app2',
+      os: 'iOS',
+      device: 'TestiPhone',
+      device_id: 'serial1',
+    },
     null,
     logger,
     mockStore,
@@ -852,7 +887,12 @@ test('test determinePluginsToProcess for multiple clients on different device', 
   const device2 = new BaseDevice('serial2', 'emulator', 'TestiPhone', 'iOS');
   const client1Device1 = new Client(
     generateClientIdentifier(device1, 'app'),
-    {app: 'app', os: 'iOS', device: 'TestiPhone', device_id: 'serial1'},
+    {
+      app: 'app',
+      os: 'iOS',
+      device: 'TestiPhone',
+      device_id: 'serial1',
+    },
     null,
     logger,
     mockStore,
@@ -860,7 +900,12 @@ test('test determinePluginsToProcess for multiple clients on different device', 
   );
   const client2Device1 = new Client(
     generateClientIdentifier(device1, 'app2'),
-    {app: 'app1', os: 'iOS', device: 'TestiPhone', device_id: 'serial1'},
+    {
+      app: 'app1',
+      os: 'iOS',
+      device: 'TestiPhone',
+      device_id: 'serial1',
+    },
     null,
     logger,
     mockStore,
@@ -868,7 +913,12 @@ test('test determinePluginsToProcess for multiple clients on different device', 
   );
   const client1Device2 = new Client(
     generateClientIdentifier(device2, 'app'),
-    {app: 'app', os: 'iOS', device: 'TestiPhone', device_id: 'serial2'},
+    {
+      app: 'app',
+      os: 'iOS',
+      device: 'TestiPhone',
+      device_id: 'serial2',
+    },
     null,
     logger,
     mockStore,
@@ -876,7 +926,12 @@ test('test determinePluginsToProcess for multiple clients on different device', 
   );
   const client2Device2 = new Client(
     generateClientIdentifier(device2, 'app2'),
-    {app: 'app1', os: 'iOS', device: 'TestiPhone', device_id: 'serial2'},
+    {
+      app: 'app1',
+      os: 'iOS',
+      device: 'TestiPhone',
+      device_id: 'serial2',
+    },
     null,
     logger,
     mockStore,
@@ -934,7 +989,12 @@ test('test determinePluginsToProcess to ignore archived clients', async () => {
   const mockStore = configureStore<State, {}>([])();
   const client = new Client(
     generateClientIdentifier(selectedDevice, 'app'),
-    {app: 'app', os: 'iOS', device: 'TestiPhone', device_id: 'serial'},
+    {
+      app: 'app',
+      os: 'iOS',
+      device: 'TestiPhone',
+      device_id: 'serial',
+    },
     null,
     logger,
     mockStore,
@@ -942,7 +1002,12 @@ test('test determinePluginsToProcess to ignore archived clients', async () => {
   );
   const archivedClient = new Client(
     generateClientIdentifier(archivedDevice, 'app'),
-    {app: 'app', os: 'iOS', device: 'TestiPhone', device_id: 'serial-archived'},
+    {
+      app: 'app',
+      os: 'iOS',
+      device: 'TestiPhone',
+      device_id: 'serial-archived',
+    },
     null,
     logger,
     mockStore,

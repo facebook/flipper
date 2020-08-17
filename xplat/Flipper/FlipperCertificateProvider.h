@@ -28,10 +28,22 @@ class FlipperCertificateProvider {
       const std::string& path,
       const std::string& deviceID) = 0;
 
+  /**
+   * Sets certificate exchange medium
+   */
   virtual void setCertificateExchangeMedium(
       const FlipperCertificateExchangeMedium medium) = 0;
 
+  /**
+   * Gets certificate exchange medium
+   */
   virtual FlipperCertificateExchangeMedium getCertificateExchangeMedium() = 0;
+
+  /**
+   * This lets the Client know if it should reset the connection folder when
+   * `stop` is called.
+   */
+  virtual bool shouldResetCertificateFolder() = 0;
 };
 
 } // namespace flipper

@@ -8,9 +8,12 @@
  */
 
 import {Logger} from '../fb-interfaces/Logger';
+import {internGraphPOSTAPIRequest} from '../fb-stubs/user';
 import Server from '../server';
 import {promisify} from 'util';
 import fs from 'fs';
+import fsExtra from 'fs-extra';
+
 import {
   openssl,
   isInstalled as opensslInstalled,
@@ -24,6 +27,9 @@ import * as androidUtil from './androidContainerUtility';
 import os from 'os';
 import {Client as ADBClient} from 'adbkit';
 import {Store} from '../reducers/index';
+import archiver from 'archiver';
+import promiseTimeout from '../utils/promiseTimeout';
+import {v4 as uuid} from 'uuid';
 
 export type CertificateExchangeMedium = 'FS_ACCESS' | 'WWW';
 
@@ -94,47 +100,90 @@ export default class CertificateProvider {
     this.server = server;
   }
 
-  processCertificateSigningRequest(
+  uploadFiles = async (zipPath: string, deviceID: string): Promise<void> => {
+    const buff = await fsExtra.readFile(zipPath);
+    const file = new File([buff], 'certs.zip');
+    return reportPlatformFailures(
+      promiseTimeout(
+        5 * 60 * 1000,
+        internGraphPOSTAPIRequest('flipper/certificates', {
+          certificate_zip: file,
+          device_id: deviceID,
+        }),
+        'Timed out uploading Flipper export.',
+      ),
+      'uploadCertificates',
+    ).catch((e) => console.error(`Failed to upload certificates due to ${e}`));
+  };
+
+  async processCertificateSigningRequest(
     unsanitizedCsr: string,
     os: string,
     appDirectory: string,
     medium: CertificateExchangeMedium,
   ): Promise<{deviceId: string}> {
-    // TODO: Add implementations for each of these conditions
-    if (medium === 'FS_ACCESS') {
-      // Use IDB for cert exchange
-    } else if (medium === 'WWW') {
-      // Use WWWW
-    }
     const csr = this.santitizeString(unsanitizedCsr);
     if (csr === '') {
       return Promise.reject(new Error(`Received empty CSR from ${os} device`));
     }
     this.ensureOpenSSLIsAvailable();
+    const rootFolder = await promisify(tmp.dir)();
+    const certFolder = rootFolder + '/FlipperCerts/';
+    const certsZipPath = rootFolder + '/certs.zip';
     return this.certificateSetup
       .then((_) => this.getCACertificate())
       .then((caCert) =>
-        this.deployFileToMobileApp(
+        this.deployOrStageFileForMobileApp(
           appDirectory,
           deviceCAcertFile,
           caCert,
           csr,
           os,
+          medium,
+          certFolder,
         ),
       )
       .then((_) => this.generateClientCertificate(csr))
       .then((clientCert) =>
-        this.deployFileToMobileApp(
+        this.deployOrStageFileForMobileApp(
           appDirectory,
           deviceClientCertFile,
           clientCert,
           csr,
           os,
+          medium,
+          certFolder,
         ),
       )
-      .then((_) => this.extractAppNameFromCSR(csr))
-      .then((appName) => this.getTargetDeviceId(os, appName, appDirectory, csr))
-      .then((deviceId) => {
+      .then((_) => {
+        return this.extractAppNameFromCSR(csr);
+      })
+      .then((appName) => {
+        if (medium === 'FS_ACCESS') {
+          return this.getTargetDeviceId(os, appName, appDirectory, csr);
+        } else {
+          return uuid();
+        }
+      })
+      .then(async (deviceId) => {
+        if (medium === 'WWW') {
+          const zipPromise = new Promise((resolve, reject) => {
+            const output = fs.createWriteStream(certsZipPath);
+            const archive = archiver('zip', {
+              zlib: {level: 9}, // Sets the compression level.
+            });
+            archive.directory(certFolder, false);
+            output.on('close', function () {
+              resolve(certsZipPath);
+            });
+            archive.on('warning', reject);
+            archive.on('error', reject);
+            archive.pipe(output);
+            archive.finalize();
+          });
+          await zipPromise;
+          await this.uploadFiles(certsZipPath, deviceId);
+        }
         return {
           deviceId,
         };
@@ -201,14 +250,30 @@ export default class CertificateProvider {
     throw new Error("Path didn't match expected pattern: " + absolutePath);
   }
 
-  deployFileToMobileApp(
+  async deployOrStageFileForMobileApp(
     destination: string,
     filename: string,
     contents: string,
     csr: string,
     os: string,
+    medium: CertificateExchangeMedium,
+    certFolder: string,
   ): Promise<void> {
     const appNamePromise = this.extractAppNameFromCSR(csr);
+
+    if (medium === 'WWW') {
+      const certPathExists = await fsExtra.pathExists(certFolder);
+      if (!certPathExists) {
+        await fsExtra.mkdir(certFolder);
+      }
+      return promisify(fs.writeFile)(certFolder + filename, contents).catch(
+        (e) => {
+          throw new Error(
+            `Failed to write ${filename} to temporary folder. Error: ${e}`,
+          );
+        },
+      );
+    }
 
     if (os === 'Android') {
       const deviceIdPromise = appNamePromise.then((app) =>
@@ -237,9 +302,9 @@ export default class CertificateProvider {
               destination,
             );
             return appNamePromise
-              .then((appName) =>
-                this.getTargetiOSDeviceId(appName, destination, csr),
-              )
+              .then((appName) => {
+                return this.getTargetiOSDeviceId(appName, destination, csr);
+              })
               .then((udid) => {
                 return appNamePromise.then((appName) =>
                   this.pushFileToiOSDevice(

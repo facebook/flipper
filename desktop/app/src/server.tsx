@@ -37,6 +37,7 @@ import querystring from 'querystring';
 import {IncomingMessage} from 'http';
 import ws from 'ws';
 import {initSelfInpector} from './utils/self-inspection/selfInspectionUtils';
+import ClientDevice from './devices/ClientDevice';
 
 type ClientInfo = {
   connection: FlipperClientConnection<any, any> | null | undefined;
@@ -51,9 +52,9 @@ type ClientCsrQuery = {
 function transformCertificateExchangeMediumToType(
   medium: number | undefined,
 ): CertificateExchangeMedium {
-  if (medium === 1) {
+  if (medium == 1) {
     return 'FS_ACCESS';
-  } else if (medium === 2) {
+  } else if (medium == 2) {
     return 'WWW';
   } else {
     return 'FS_ACCESS';
@@ -226,6 +227,7 @@ class Server extends EventEmitter {
                 device: 'device',
                 device_id: deviceId,
                 sdk_version: 1,
+                medium: 'FS_ACCESS',
               },
               {},
             ).then((c) => (resolvedClient = c));
@@ -277,14 +279,43 @@ class Server extends EventEmitter {
     if (!payload.data) {
       return {};
     }
-    const clientData: ClientQuery & ClientCsrQuery = JSON.parse(payload.data);
+    const clientData: ClientQuery &
+      ClientCsrQuery & {medium: number | undefined} = JSON.parse(payload.data);
     this.connectionTracker.logConnectionAttempt(clientData);
 
-    const {app, os, device, device_id, sdk_version, csr, csr_path} = clientData;
+    const {
+      app,
+      os,
+      device,
+      device_id,
+      sdk_version,
+      csr,
+      csr_path,
+      medium,
+    } = clientData;
+    const transformedMedium = transformCertificateExchangeMediumToType(medium);
+    const duplicateDevices = this.store
+      .getState()
+      .connections.devices.filter((device) => device.serial === device_id);
+    // When user switches from WWW to FS_ACCESS, we reset the certs folder, but we don't do it other way around. Thus when user switches to WWW from FS_ACCESS and if certs arepresent then the device id sent by Flipper SDK is the original one and in that case we need not create a device.
+    if (transformedMedium === 'WWW' && duplicateDevices.length == 0) {
+      // TODO unregister previous ClientDevice's for a particular device
+      this.store.dispatch({
+        type: 'REGISTER_DEVICE',
+        payload: new ClientDevice(device_id, app, os),
+      });
+    }
 
     const client: Promise<Client> = this.addConnection(
       socket,
-      {app, os, device, device_id, sdk_version},
+      {
+        app,
+        os,
+        device,
+        device_id,
+        sdk_version,
+        medium: transformedMedium,
+      },
       {csr, csr_path},
     ).then((client) => {
       return (resolvedClient = client);
@@ -364,6 +395,7 @@ class Server extends EventEmitter {
           destination: string;
           medium: number | undefined; // OSS's older Client SDK might not send medium information. This is not an issue for internal FB users, as Flipper release is insync with client SDK through launcher.
         } = rawData;
+
         if (json.method === 'signCertificate') {
           console.debug('CSR received from device', 'server');
 
@@ -461,7 +493,7 @@ class Server extends EventEmitter {
 
   async addConnection(
     conn: FlipperClientConnection<any, any>,
-    query: ClientQuery,
+    query: ClientQuery & {medium: CertificateExchangeMedium},
     csrQuery: ClientCsrQuery,
   ): Promise<Client> {
     invariant(query, 'expected query');
@@ -469,7 +501,7 @@ class Server extends EventEmitter {
     // try to get id by comparing giving `csr` to file from `csr_path`
     // otherwise, use given device_id
     const {csr_path, csr} = csrQuery;
-    return (csr_path && csr
+    return (csr_path && csr && query.medium === 'FS_ACCESS'
       ? this.certificateProvider.extractAppNameFromCSR(csr).then((appName) => {
           return this.certificateProvider.getTargetDeviceId(
             query.os,

@@ -72,7 +72,12 @@ function getStore(selectedPlugins: Array<string>) {
 
   const client = new Client(
     clientId,
-    {app: 'app', os: 'iOS', device: 'TestiPhone', device_id: 'serial'},
+    {
+      app: 'app',
+      os: 'iOS',
+      device: 'TestiPhone',
+      device_id: 'serial',
+    },
     null,
     logger,
     // @ts-ignore
