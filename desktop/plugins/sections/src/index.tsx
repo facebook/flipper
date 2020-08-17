@@ -270,6 +270,7 @@ export function Component() {
                 generation={focusedTreeGeneration}
                 focusedChangeSet={focusedChangeSet}
                 setSelectedTreeNode={setSelectedTreeNode}
+                selectedNodeIndexPath={focusInfo?.treeNodeIndexPath}
               />
             </Sidebar>
             {focusedTreeGeneration && (
@@ -308,6 +309,7 @@ function TreeHierarchy({
   generation,
   focusedChangeSet,
   setSelectedTreeNode,
+  selectedNodeIndexPath,
 }: {
   generation: TreeGeneration | null;
   focusedChangeSet:
@@ -315,6 +317,7 @@ function TreeHierarchy({
     | null
     | undefined;
   setSelectedTreeNode: (node: any) => void;
+  selectedNodeIndexPath?: number[];
 }) {
   const onNodeClicked = useMemo(
     () => (targetNode: any) => {
@@ -342,13 +345,20 @@ function TreeHierarchy({
 
   if (generation && generation.tree && generation.tree.length > 0) {
     // Display component tree hierarchy, if any
-    return <Tree data={generation.tree} nodeClickHandler={onNodeClicked} />;
+    return (
+      <Tree
+        data={generation.tree}
+        nodeClickHandler={onNodeClicked}
+        selectedNodeIndexPath={selectedNodeIndexPath}
+      />
+    );
   } else if (focusedChangeSet && focusedChangeSet.section_component_hierarchy) {
     // Display section component hierarchy for specific changeset
     return (
       <Tree
         data={focusedChangeSet.section_component_hierarchy}
         nodeClickHandler={onNodeClicked}
+        selectedNodeIndexPath={selectedNodeIndexPath}
       />
     );
   } else {

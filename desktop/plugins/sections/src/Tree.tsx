@@ -82,6 +82,7 @@ type TreeData = Array<{
 type Props = {
   data: TreeData | SectionComponentHierarchy;
   nodeClickHandler: (node: any) => void;
+  selectedNodeIndexPath?: number[];
 };
 
 type State = {
@@ -192,7 +193,20 @@ export default class extends PureComponent<Props, State> {
     });
 
     // find the root node
-    return tree.find((node) => !node.attributes.parent);
+    const root = tree.find((node) => !node.attributes.parent);
+
+    // Highlight the selected node
+    if (this.props.selectedNodeIndexPath && root) {
+      let cursor = root;
+      this.props.selectedNodeIndexPath.forEach((idx) => {
+        cursor = cursor.children[idx];
+      });
+      cursor.nodeSvgShape.shapeProps.strokeWidth = 2;
+      cursor.nodeSvgShape.shapeProps.stroke = colors.red;
+      cursor.nodeSvgShape.shapeProps.fill = colors.redTint;
+    }
+
+    return root;
   };
 
   treeFromHierarchy = (data: SectionComponentHierarchy): Object => {
