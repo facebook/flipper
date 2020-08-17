@@ -35,6 +35,9 @@ const siteConfig = {
       ],
     },
     colorMode: {
+      // Nothing against dark mode, but our current CSS doesn't have high contrast
+      // so it needs some work before being enabled.
+      defaultMode: 'light',
       disableSwitch: true,
     },
     footer: {
