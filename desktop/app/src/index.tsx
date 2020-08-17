@@ -171,6 +171,7 @@ export {default as SearchableTable_immutable} from './ui/components/searchable/S
 export {
   ElementID,
   ElementData,
+  ElementFramework,
   ElementAttribute,
   Element,
   ElementSearchResultSet,

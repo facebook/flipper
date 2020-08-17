@@ -32,6 +32,11 @@ export type ElementData = {
   };
 };
 
+export enum ElementFramework {
+  'LITHO',
+  'CK',
+}
+
 export type ElementAttribute = {
   name: string;
   value: string;
@@ -41,7 +46,9 @@ export type ElementExtraInfo = {
   linkedNode?: string; // id of linked node in opposite tree
   expandWithParent?: boolean;
   linkedTree?: string;
-  className?: string;
+  metaData?: {
+    [key: string]: any;
+  };
 };
 
 export type Element = {

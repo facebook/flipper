@@ -332,7 +332,12 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
         // doesn't add linked node descriptor
       }
     }
-    extraInfo.put("className", node.getComponent().getClass().getName());
+    final FlipperObject.Builder metaData = new FlipperObject.Builder();
+    metaData.put("className", node.getComponent().getClass().getName());
+    metaData.put("framework", "LITHO");
+
+    extraInfo.put("metaData", metaData);
+
     return extraInfo.build();
   }
 
