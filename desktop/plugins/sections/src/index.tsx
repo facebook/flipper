@@ -69,12 +69,16 @@ type Events = {
   updateTreeGenerationChangesetGeneration: UpdateTreeGenerationChangesetGenerationPayload;
 };
 
+type FocusInfo = {
+  generationId: string;
+};
+
 export function plugin(client: FlipperClient<Events, {}>) {
   const generations = createState<{[id: string]: TreeGeneration}>(
     {},
     {persist: 'generations'},
   );
-  const focusedGenerationId = createState<string | null>(null);
+  const focusInfo = createState<FocusInfo | undefined>(undefined);
   const recording = createState<boolean>(true);
 
   client.onMessage('addEvent', (data) => {
@@ -84,7 +88,9 @@ export function plugin(client: FlipperClient<Events, {}>) {
     generations.update((draft) => {
       draft[data.id] = {...data, changeSets: []};
     });
-    focusedGenerationId.set(focusedGenerationId.get() || data.id);
+    focusInfo.set({
+      generationId: focusInfo.get()?.generationId || data.id,
+    });
   });
   client.onMessage('updateTreeGenerationHierarchyGeneration', (data) => {
     generations.update((draft) => {
@@ -114,22 +120,28 @@ export function plugin(client: FlipperClient<Events, {}>) {
   }
   function clear() {
     generations.set({});
-    focusedGenerationId.set(null);
+    focusInfo.set(undefined);
     recording.set(true);
   }
 
-  return {generations, focusedGenerationId, recording, setRecording, clear};
+  return {
+    generations,
+    focusInfo,
+    recording,
+    setRecording,
+    clear,
+  };
 }
 
 export function Component() {
   const instance = usePlugin(plugin);
   const generations = useValue(instance.generations);
-  const focusedGenerationId = useValue(instance.focusedGenerationId);
+  const focusInfo = useValue(instance.focusInfo);
   const recording = useValue(instance.recording);
 
   const [userSelectedGenerationId, setUserSelectedGenerationId] = useState<
-    string | null
-  >(null);
+    string | undefined
+  >();
   const [searchString, setSearchString] = useState<string>('');
   const [focusedChangeSet, setFocusedChangeSet] = useState<
     UpdateTreeGenerationChangesetApplicationPayload | null | undefined
@@ -137,12 +149,12 @@ export function Component() {
   const [selectedTreeNode, setSelectedTreeNode] = useState<any>();
 
   const focusedTreeGeneration: TreeGeneration | null = useMemo(() => {
-    const id = userSelectedGenerationId || focusedGenerationId;
-    if (id === null) {
+    const id = userSelectedGenerationId || focusInfo?.generationId;
+    if (id === undefined) {
       return null;
     }
     return generations[id];
-  }, [userSelectedGenerationId, focusedGenerationId, generations]);
+  }, [userSelectedGenerationId, focusInfo, generations]);
   const filteredGenerations: Array<TreeGeneration> = useMemo(() => {
     const generationValues = Object.values(generations);
     if (searchString.length <= 0) {
@@ -207,9 +219,9 @@ export function Component() {
             <EventTable
               generations={filteredGenerations}
               focusedGenerationId={
-                userSelectedGenerationId || focusedGenerationId
+                userSelectedGenerationId || focusInfo?.generationId
               }
-              onClick={(id: string | null) => {
+              onClick={(id?: string) => {
                 setFocusedChangeSet(null);
                 setUserSelectedGenerationId(id);
                 setSelectedTreeNode(null);
@@ -217,7 +229,7 @@ export function Component() {
             />
           </Sidebar>
           <Layout.Top>
-            <Sidebar position="top" minHeight={80} height={80}>
+            <Sidebar position="top" minHeight={400} height={400}>
               <TreeHierarchy
                 generation={focusedTreeGeneration}
                 focusedChangeSet={focusedChangeSet}
