@@ -13,7 +13,11 @@ import {colors, GK} from 'flipper';
 
 import config from '../../fb-stubs/config';
 import {PluginNotification} from '../../reducers/notifications';
-import {ActiveSheet, ACTIVE_SHEET_PLUGINS} from '../../reducers/application';
+import {
+  ActiveSheet,
+  ACTIVE_SHEET_PLUGINS,
+  ACTIVE_SHEET_CONSOLE_LOGS,
+} from '../../reducers/application';
 import {State as Store} from '../../reducers';
 import NotificationScreen from '../NotificationScreen';
 import {StaticView, setStaticView} from '../../reducers/connections';
@@ -29,6 +33,7 @@ import {
 } from './sidebarUtils';
 import {Group} from '../../reducers/supportForm';
 import {getInstance} from '../../fb-stubs/Logger';
+import {ConsoleLogs} from '../ConsoleLogs';
 
 type OwnProps = {};
 
@@ -102,6 +107,16 @@ function MainSidebarUtilsSection({
           isActive={false}
         />
         Manage Plugins
+      </ListItem>
+      <ListItem
+        onClick={() => setStaticView(ConsoleLogs)}
+        active={isStaticViewActive(staticView, ConsoleLogs)}>
+        <PluginIcon
+          name="caution-octagon"
+          color={colors.light50}
+          isActive={isStaticViewActive(staticView, ConsoleLogs)}
+        />
+        Debug Logs
       </ListItem>
       {config.showLogin && <UserAccount />}
     </div>
