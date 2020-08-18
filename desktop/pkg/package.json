@@ -22,7 +22,7 @@
     "cli-ux": "^5.4.6",
     "flipper-pkg-lib": "0.52.1",
     "flipper-plugin-lib": "0.52.1",
-    "fs-extra": "^8.1.0",
+    "fs-extra": "^9.0.1",
     "inquirer": "^7.1.0",
     "lodash": "^4.17.19",
     "npm-packlist": "^2.1.2",

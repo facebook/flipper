@@ -10,7 +10,7 @@
   "bugs": "https://github.com/facebook/flipper/issues",
   "dependencies": {
     "flipper-babel-transformer": "0.52.1",
-    "fs-extra": "^8.1.0",
+    "fs-extra": "^9.0.1",
     "metro": "^0.60.0",
     "metro-minify-terser": "^0.60.0"
   },
@@ -20,8 +20,8 @@
     "@types/node": "^13.7.5",
     "flipper-test-utils": "0.52.1",
     "globby": "^11",
-    "mock-fs": "^4.12.0",
     "jest": "^26",
+    "mock-fs": "^4.12.0",
     "prettier": "^2.0.0",
     "rimraf": "^3.0.2",
     "ts-jest": "^26.0.0",

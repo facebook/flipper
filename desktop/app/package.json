@@ -30,7 +30,7 @@
     "flipper-doctor": "0.52.1",
     "flipper-plugin": "0.52.1",
     "flipper-plugin-lib": "0.52.1",
-    "fs-extra": "^8.0.1",
+    "fs-extra": "^9.0.1",
     "immer": "^6.0.0",
     "immutable": "^4.0.0-rc.12",
     "invariant": "^2.2.2",
