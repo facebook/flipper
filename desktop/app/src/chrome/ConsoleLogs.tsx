@@ -16,14 +16,17 @@ import {createState, useValue} from 'flipper-plugin';
 import {useLocalStorage} from '../utils/useLocalStorage';
 
 const logsAtom = createState<any[]>([]);
+export const errorCounterAtom = createState(0);
 
 export function enableConsoleHook() {
   console.log('enabling hooks');
   Hook(
     window.console,
     (log) => {
-      // console.log('new logs');
       logsAtom.set([...logsAtom.get(), log]);
+      if (log.method === 'error' || log.method === 'assert') {
+        errorCounterAtom.set(errorCounterAtom.get() + 1);
+      }
     },
     false,
   );
@@ -31,6 +34,7 @@ export function enableConsoleHook() {
 
 function clearLogs() {
   logsAtom.set([]);
+  errorCounterAtom.set(0);
 }
 
 const allLogLevels: Methods[] = [

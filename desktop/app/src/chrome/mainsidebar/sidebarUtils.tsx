@@ -85,6 +85,7 @@ const PluginShape = styled(FlexBox)<{
 
 export const PluginName = styled(Text)<{isActive?: boolean; count?: number}>(
   (props) => ({
+    cursor: 'default',
     minWidth: 0,
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',

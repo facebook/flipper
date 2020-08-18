@@ -33,7 +33,8 @@ import {
 } from './sidebarUtils';
 import {Group} from '../../reducers/supportForm';
 import {getInstance} from '../../fb-stubs/Logger';
-import {ConsoleLogs} from '../ConsoleLogs';
+import {ConsoleLogs, errorCounterAtom} from '../ConsoleLogs';
+import {useValue} from 'flipper-plugin';
 
 type OwnProps = {};
 
@@ -108,16 +109,7 @@ function MainSidebarUtilsSection({
         />
         Manage Plugins
       </ListItem>
-      <ListItem
-        onClick={() => setStaticView(ConsoleLogs)}
-        active={isStaticViewActive(staticView, ConsoleLogs)}>
-        <PluginIcon
-          name="caution-octagon"
-          color={colors.light50}
-          isActive={isStaticViewActive(staticView, ConsoleLogs)}
-        />
-        Debug Logs
-      </ListItem>
+      <DebugLogsEntry staticView={staticView} setStaticView={setStaticView} />
       {config.showLogin && <UserAccount />}
     </div>
   );
@@ -186,3 +178,26 @@ const RenderNotificationsEntry = connect<
     </ListItem>
   );
 });
+
+function DebugLogsEntry({
+  staticView,
+  setStaticView,
+}: {
+  staticView: StaticView;
+  setStaticView: (payload: StaticView) => void;
+}) {
+  const active = isStaticViewActive(staticView, ConsoleLogs);
+  const errorCount = useValue(errorCounterAtom);
+  return (
+    <ListItem onClick={() => setStaticView(ConsoleLogs)} active={active}>
+      <PluginIcon
+        name="caution-octagon"
+        color={colors.light50}
+        isActive={active}
+      />
+      <PluginName count={errorCount} isActive={active}>
+        Debug Logs
+      </PluginName>
+    </ListItem>
+  );
+}
