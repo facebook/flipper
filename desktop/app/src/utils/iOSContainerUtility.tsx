@@ -64,6 +64,7 @@ async function targets(idbPath: string): Promise<Array<DeviceTarget>> {
     return safeExec(`${idbPath} list-targets --json`).then(({stdout}) =>
       stdout
         .toString()
+        .trim()
         .split('\n')
         .map((line) => line.trim())
         .map((line) => JSON.parse(line))
