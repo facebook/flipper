@@ -19,10 +19,12 @@ import which from 'which';
 import {promisify} from 'util';
 import {ServerPorts} from '../reducers/application';
 import {Client as ADBClient} from 'adbkit';
+import {addNotification} from '../reducers/notifications';
 
 function createDevice(
   adbClient: ADBClient,
   device: any,
+  store: Store,
   ports?: ServerPorts,
 ): Promise<AndroidDevice | undefined> {
   return new Promise((resolve, reject) => {
@@ -79,7 +81,26 @@ function createDevice(
         ) {
           console.debug('Device still connecting: ' + device.id);
         } else {
+          const isAuthorizationError = (e?.message as string)?.includes(
+            'device unauthorized',
+          );
           console.error('Failed to initialize device: ' + device.id, e);
+          store.dispatch(
+            addNotification({
+              client: null,
+              notification: {
+                id: 'androidDeviceConnectionError' + device.id,
+                title: 'Could not connect to ' + device.id,
+                severity: 'error',
+                message: `Failed to connect to '${device.id}': ${
+                  isAuthorizationError
+                    ? 'make sure to authorize debugging on the phone'
+                    : JSON.stringify(e, null, 2)
+                }`,
+              },
+              pluginId: 'androidDevice',
+            }),
+          );
         }
         resolve(undefined); // not ready yet, we will find it in the next tick
       });
@@ -92,7 +113,7 @@ export async function getActiveAndroidDevices(
   const client = await getAdbClient(store);
   const androidDevices = await client.listDevices();
   const devices = await Promise.all(
-    androidDevices.map((device) => createDevice(client, device)),
+    androidDevices.map((device) => createDevice(client, device, store)),
   );
   return devices.filter(Boolean) as any;
 }
@@ -201,6 +222,7 @@ export default (store: Store, logger: Logger) => {
     const androidDevice = await createDevice(
       adbClient,
       deviceData,
+      store,
       store.getState().application.serverPorts,
     );
     if (!androidDevice) {
