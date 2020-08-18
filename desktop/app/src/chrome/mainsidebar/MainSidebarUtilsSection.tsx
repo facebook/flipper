@@ -13,11 +13,7 @@ import {colors, GK} from 'flipper';
 
 import config from '../../fb-stubs/config';
 import {PluginNotification} from '../../reducers/notifications';
-import {
-  ActiveSheet,
-  ACTIVE_SHEET_PLUGINS,
-  ACTIVE_SHEET_CONSOLE_LOGS,
-} from '../../reducers/application';
+import {ActiveSheet, ACTIVE_SHEET_PLUGINS} from '../../reducers/application';
 import {State as Store} from '../../reducers';
 import NotificationScreen from '../NotificationScreen';
 import {StaticView, setStaticView} from '../../reducers/connections';

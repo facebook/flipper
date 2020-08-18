@@ -27,7 +27,7 @@ import {getPluginKey, isDevicePluginDefinition} from '../utils/pluginUtils';
 import {deconstructClientId} from '../utils/clientUtils';
 import {PluginDefinition} from '../plugin';
 import {RegisterPluginAction} from './plugins';
-import { ConsoleLogs } from '../chrome/ConsoleLogs';
+import {ConsoleLogs} from '../chrome/ConsoleLogs';
 
 export type StaticView =
   | null

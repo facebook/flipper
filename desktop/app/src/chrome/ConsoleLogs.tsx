@@ -75,7 +75,7 @@ export function ConsoleLogs() {
         },
       }),
     );
-  }, [logLevels]);
+  }, [logLevels, setLogLevels]);
 
   return (
     <Layout.Top scrollable>
