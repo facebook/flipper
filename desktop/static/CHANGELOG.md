@@ -1,3 +1,12 @@
+# 0.53.0 (19/8/2020)
+
+ * [D22999105](https://github.com/facebook/flipper/search?q=D22999105&type=Commits) -  Changelog entries now link to their GitHub commits
+ * [D22977811](https://github.com/facebook/flipper/search?q=D22977811&type=Commits) -  Allow user to change response code for a mock request
+ * [D22999905](https://github.com/facebook/flipper/search?q=D22999905&type=Commits) -  Android network inspector can now handle responses large than 1MB.
+ * [D22983828](https://github.com/facebook/flipper/search?q=D22983828&type=Commits) -  [Internal]
+ * [D23158628](https://github.com/facebook/flipper/search?q=D23158628&type=Commits) -  It is now possible to directly open CKComponents from the Layout inspect
+
+
 # 0.52.1 (6/8/2020)
 
  * D22922126 -  It is now possible to directly open source files from the Layout inspector
