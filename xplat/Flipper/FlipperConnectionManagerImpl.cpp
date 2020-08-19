@@ -379,6 +379,7 @@ void FlipperConnectionManagerImpl::requestSignedCertFromFlipper() {
                 contextStore_->storeConnectionConfig(config);
               }
               if (certProvider_) {
+                certProvider_->setFlipperState(flipperState_);
                 auto gettingCertFromProvider =
                     flipperState_->start("Getting cert from Cert Provider");
 

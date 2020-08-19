@@ -10,6 +10,8 @@
 #include <functional>
 #include <string>
 #include "FlipperCertificateExchangeMedium.h"
+#include "FlipperState.h"
+#include "FlipperStep.h"
 namespace facebook {
 namespace flipper {
 
@@ -44,6 +46,12 @@ class FlipperCertificateProvider {
    * `stop` is called.
    */
   virtual bool shouldResetCertificateFolder() = 0;
+
+  /**
+   * Sets the FlipperState, so that Cert Provider can send debuggin information
+   * to troubleshoot screen.
+   */
+  virtual void setFlipperState(std::shared_ptr<FlipperState> state) = 0;
 };
 
 } // namespace flipper
