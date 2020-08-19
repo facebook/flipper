@@ -38,8 +38,10 @@ async function isMetroRunning(): Promise<boolean> {
             resolve(isMetro);
           });
       })
-      .on('error', (err) => {
-        console.debug('Could not connect to METRO ' + err);
+      .on('error', (err: any) => {
+        if (err.code !== 'ECONNREFUSED') {
+          console.error('Could not connect to METRO ' + err);
+        }
         resolve(false);
       });
   });
