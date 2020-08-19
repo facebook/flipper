@@ -13,6 +13,7 @@ import {registerDeviceCallbackOnPlugins} from '../utils/onRegisterDevice';
 import MetroDevice from '../devices/MetroDevice';
 import {ArchivedDevice} from 'flipper';
 import http from 'http';
+import {addErrorNotification} from '../reducers/notifications';
 
 const METRO_PORT = 8081;
 const METRO_HOST = 'localhost';
@@ -129,15 +130,12 @@ export default (store: Store, logger: Logger) => {
 
       const guard = setTimeout(() => {
         // Metro is running, but didn't respond to /events endpoint
-        store.dispatch({
-          type: 'SERVER_ERROR',
-          payload: {
-            message:
-              "Found a running Metro instance, but couldn't connect to the logs. Probably your React Native version is too old to support Flipper.",
-            details: `Failed to get a connection to ${METRO_LOGS_ENDPOINT} in a timely fashion`,
-            urgent: true,
-          },
-        });
+        store.dispatch(
+          addErrorNotification(
+            'Failed to connect to Metro',
+            `Flipper did find a running Metro instance, but couldn't connect to the logs. Probably your React Native version is too old to support Flipper. Cause: Failed to get a connection to ${METRO_LOGS_ENDPOINT} in a timely fashion`,
+          ),
+        );
         registerDevice(undefined, store, logger);
         // Note: no scheduleNext, we won't retry until restart
       }, 5000);

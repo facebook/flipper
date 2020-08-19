@@ -20,6 +20,7 @@ import iosUtil from '../utils/iOSContainerUtility';
 import IOSDevice from '../devices/IOSDevice';
 import isProduction from '../utils/isProduction';
 import {registerDeviceCallbackOnPlugins} from '../utils/onRegisterDevice';
+import {addErrorNotification} from '../reducers/notifications';
 
 type iOSSimulatorDevice = {
   state: 'Booted' | 'Shutdown' | 'Shutting Down';
@@ -209,18 +210,10 @@ async function checkXcodeVersionMismatch(store: Store) {
       );
       const runningVersion = match && match.length > 0 ? match[0].trim() : null;
       if (runningVersion && runningVersion !== xcodeCLIVersion) {
-        const errorMessage = `Xcode version mismatch: Simulator is running from "${runningVersion}" while Xcode CLI is "${xcodeCLIVersion}". Running "xcode-select --switch ${runningVersion}" can fix this.`;
-        store.dispatch({
-          type: 'SERVER_ERROR',
-          payload: {
-            message: errorMessage,
-            details:
-              "You might want to run 'sudo xcode-select -s /Applications/Xcode.app/Contents/Developer'",
-            urgent: true,
-          },
-        });
-        // Fire a console.error as well, so that it gets reported to the backend.
-        console.error(errorMessage);
+        const errorMessage = `Xcode version mismatch: Simulator is running from "${runningVersion}" while Xcode CLI is "${xcodeCLIVersion}". Running "xcode-select --switch ${runningVersion}" can fix this. For example: "sudo xcode-select -s /Applications/Xcode.app/Contents/Developer"`;
+        store.dispatch(
+          addErrorNotification('Xcode version mismatch', errorMessage),
+        );
         xcodeVersionMismatchFound = true;
         break;
       }

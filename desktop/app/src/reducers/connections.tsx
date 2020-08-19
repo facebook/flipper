@@ -37,14 +37,6 @@ export type StaticView =
   | typeof SupportRequestDetails
   | typeof ConsoleLogs;
 
-export type FlipperError = {
-  occurrences?: number;
-  message: string;
-  details?: string;
-  error?: Error | string;
-  urgent?: boolean; // if true this error should always popup up
-};
-
 export type State = {
   devices: Array<BaseDevice>;
   androidEmulators: Array<string>;
@@ -55,7 +47,6 @@ export type State = {
   userPreferredPlugin: null | string;
   userPreferredApp: null | string;
   userStarredPlugins: {[client: string]: string[]};
-  errors: FlipperError[];
   clients: Array<Client>;
   uninitializedClients: Array<{
     client: UninitializedClient;
@@ -98,10 +89,6 @@ export type Action =
       payload: string;
     }
   | {
-      type: 'SERVER_ERROR';
-      payload: null | FlipperError;
-    }
-  | {
       type: 'NEW_CLIENT';
       payload: Client;
     }
@@ -122,16 +109,8 @@ export type Action =
       payload: {client: UninitializedClient; deviceId: string};
     }
   | {
-      type: 'CLIENT_SETUP_ERROR';
-      payload: {client: UninitializedClient; error: FlipperError};
-    }
-  | {
       type: 'SET_STATIC_VIEW';
       payload: StaticView;
-    }
-  | {
-      type: 'DISMISS_ERROR';
-      payload: number;
     }
   | {
       // Implemented by rootReducer in `store.tsx`
@@ -163,7 +142,6 @@ const INITAL_STATE: State = {
   userPreferredPlugin: null,
   userPreferredApp: null,
   userStarredPlugins: {},
-  errors: [],
   clients: [],
   uninitializedClients: [],
   deepLinkPayload: null,
@@ -325,13 +303,6 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
       const {payload: userPreferredDevice} = action;
       return {...state, userPreferredDevice};
     }
-    case 'SERVER_ERROR': {
-      const {payload} = action;
-      if (!payload) {
-        return state;
-      }
-      return {...state, errors: mergeError(state.errors, payload)};
-    }
     case 'START_CLIENT_SETUP': {
       const {payload} = action;
       return {
@@ -355,39 +326,6 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
           .sort((a, b) => a.client.appName.localeCompare(b.client.appName)),
       };
     }
-    case 'CLIENT_SETUP_ERROR': {
-      const {payload} = action;
-
-      const errorMessage =
-        payload.error instanceof Error
-          ? payload.error.message
-          : '' + payload.error;
-      const details = `Client setup error: ${errorMessage} while setting up client: ${payload.client.os}:${payload.client.deviceName}:${payload.client.appName}`;
-      console.error(details);
-      return {
-        ...state,
-        uninitializedClients: state.uninitializedClients
-          .map((c) =>
-            isEqual(c.client, payload.client)
-              ? {...c, errorMessage: errorMessage}
-              : c,
-          )
-          .sort((a, b) => a.client.appName.localeCompare(b.client.appName)),
-        errors: mergeError(state.errors, {
-          message: `Client setup error: ${errorMessage}`,
-          details,
-          error: payload.error instanceof Error ? payload.error : undefined,
-        }),
-      };
-    }
-    case 'DISMISS_ERROR': {
-      const errors = state.errors.slice();
-      errors.splice(action.payload, 1);
-      return {
-        ...state,
-        errors,
-      };
-    }
     case 'SET_DEEPLINK_PAYLOAD': {
       return {...state, deepLinkPayload: action.payload};
     }
@@ -409,26 +347,6 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
       return state;
   }
 };
-
-function mergeError(
-  errors: FlipperError[],
-  newError: FlipperError,
-): FlipperError[] {
-  const idx = errors.findIndex((error) => error.message === newError.message);
-  const results = errors.slice();
-  if (idx !== -1) {
-    results[idx] = {
-      ...newError,
-      occurrences: (errors[idx].occurrences || 0) + 1,
-    };
-  } else {
-    results.push({
-      ...newError,
-      occurrences: 1,
-    });
-  }
-  return results;
-}
 
 export const selectDevice = (payload: BaseDevice): Action => ({
   type: 'SELECT_DEVICE',
@@ -467,11 +385,6 @@ export const starPlugin = (payload: {
 }): Action => ({
   type: 'STAR_PLUGIN',
   payload,
-});
-
-export const dismissError = (index: number): Action => ({
-  type: 'DISMISS_ERROR',
-  payload: index,
 });
 
 export const selectClient = (clientId: string): Action => ({
