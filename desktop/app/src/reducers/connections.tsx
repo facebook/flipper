@@ -27,13 +27,15 @@ import {getPluginKey, isDevicePluginDefinition} from '../utils/pluginUtils';
 import {deconstructClientId} from '../utils/clientUtils';
 import {PluginDefinition} from '../plugin';
 import {RegisterPluginAction} from './plugins';
+import {ConsoleLogs} from '../chrome/ConsoleLogs';
 
 export type StaticView =
   | null
   | typeof WelcomeScreen
   | typeof NotificationScreen
   | typeof SupportRequestFormV2
-  | typeof SupportRequestDetails;
+  | typeof SupportRequestDetails
+  | typeof ConsoleLogs;
 
 export type FlipperError = {
   occurrences?: number;

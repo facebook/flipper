@@ -38,6 +38,7 @@ import os from 'os';
 import QuickPerformanceLogger, {FLIPPER_QPL_EVENTS} from './fb-stubs/QPL';
 import {PopoverProvider} from './ui/components/PopoverProvider';
 import {initializeFlipperLibImplementation} from './utils/flipperLibImplementation';
+import {enableConsoleHook} from './chrome/ConsoleLogs';
 
 if (process.env.NODE_ENV === 'development' && os.platform() === 'darwin') {
   // By default Node.JS has its internal certificate storage and doesn't use
@@ -119,6 +120,7 @@ function init() {
   const sessionId = store.getState().application.sessionId;
   initCrashReporter(sessionId || '');
   registerRecordingHooks(store);
+  enableConsoleHook();
   window.flipperGlobalStoreDispatch = store.dispatch;
 }
 
