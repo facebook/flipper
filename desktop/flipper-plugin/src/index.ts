@@ -10,10 +10,7 @@
 import './plugin/PluginBase';
 import * as TestUtilites from './test-utils/test-utils';
 
-export {
-  SandyPluginInstance,
-  PluginClient as FlipperClient,
-} from './plugin/Plugin';
+export {SandyPluginInstance, PluginClient} from './plugin/Plugin';
 export {
   Device,
   DeviceLogEntry,

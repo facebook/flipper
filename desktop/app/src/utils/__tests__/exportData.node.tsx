@@ -26,7 +26,7 @@ import {
   TestUtils,
   SandyPluginDefinition,
   createState,
-  FlipperClient,
+  PluginClient,
 } from 'flipper-plugin';
 import {selectPlugin} from '../../reducers/connections';
 
@@ -1043,7 +1043,7 @@ const sandyTestPlugin = new SandyPluginDefinition(
   TestUtils.createMockPluginDetails(),
   {
     plugin(
-      client: FlipperClient<{
+      client: PluginClient<{
         inc: {};
       }>,
     ) {

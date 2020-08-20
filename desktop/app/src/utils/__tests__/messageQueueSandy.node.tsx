@@ -23,7 +23,7 @@ import {registerPlugins} from '../../reducers/plugins';
 import {
   SandyPluginDefinition,
   TestUtils,
-  FlipperClient,
+  PluginClient,
   SandyPluginInstance,
 } from 'flipper-plugin';
 
@@ -33,7 +33,7 @@ type Events = {
   };
 };
 
-function plugin(client: FlipperClient<Events, {}>) {
+function plugin(client: PluginClient<Events, {}>) {
   const state = {
     count: 0,
   };

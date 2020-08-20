@@ -14,7 +14,7 @@ import {registerPlugins} from '../../reducers/plugins';
 import {
   SandyPluginDefinition,
   SandyPluginInstance,
-  FlipperClient,
+  PluginClient,
   TestUtils,
 } from 'flipper-plugin';
 
@@ -30,7 +30,7 @@ beforeEach(() => {
   initialized = false;
 });
 
-function plugin(client: FlipperClient<any, any>) {
+function plugin(client: PluginClient<any, any>) {
   const connectStub = jest.fn();
   const disconnectStub = jest.fn();
   const destroyStub = jest.fn();

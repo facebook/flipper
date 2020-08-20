@@ -22,6 +22,6 @@ module.exports = {
   },
   clearMocks: true,
   coverageReporters: ['json-summary', 'lcov', 'html'],
-  testMatch: ['**/**.node.(js|jsx|ts|tsx)'],
+  testMatch: ['**/**.(node|spec).(js|jsx|ts|tsx)'],
   testEnvironment: 'jest-environment-jsdom-sixteen',
 };

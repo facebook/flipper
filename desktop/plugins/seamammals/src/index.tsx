@@ -19,12 +19,10 @@ import {
 } from 'flipper';
 import React, {memo} from 'react';
 
-import {FlipperClient, usePlugin, createState, useValue} from 'flipper-plugin';
-
-type Id = number;
+import {PluginClient, usePlugin, createState, useValue} from 'flipper-plugin';
 
 type Row = {
-  id: Id;
+  id: number;
   title: string;
   url: string;
 };
@@ -33,20 +31,8 @@ type Events = {
   newRow: Row;
 };
 
-function renderSidebar(row: Row) {
-  return (
-    <Panel floating={false} heading={'Extras'}>
-      <ManagedDataInspector data={row} expandRoot={true} />
-    </Panel>
-  );
-}
-
-type PersistedState = {
-  [key: string]: Row;
-};
-
-export function plugin(client: FlipperClient<Events, {}>) {
-  const rows = createState<PersistedState>({}, {persist: 'rows'});
+export function plugin(client: PluginClient<Events, {}>) {
+  const rows = createState<Record<string, Row>>({}, {persist: 'rows'});
   const selectedID = createState<string | null>(null, {persist: 'selection'});
 
   client.addMenuEntry(
@@ -90,8 +76,8 @@ export function plugin(client: FlipperClient<Events, {}>) {
 
 export function Component() {
   const instance = usePlugin(plugin);
-  const selectedID = useValue(instance.selectedID);
   const rows = useValue(instance.rows);
+  const selectedID = useValue(instance.selectedID);
 
   return (
     <Container>
@@ -107,6 +93,14 @@ export function Component() {
         {selectedID && renderSidebar(rows[selectedID])}
       </DetailSidebar>
     </Container>
+  );
+}
+
+function renderSidebar(row: Row) {
+  return (
+    <Panel floating={false} heading={'Extras'}>
+      <ManagedDataInspector data={row} expandRoot={true} />
+    </Panel>
   );
 }
 

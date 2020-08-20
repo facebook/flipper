@@ -37,7 +37,7 @@ import {
   Layout,
 } from 'flipper';
 
-import {FlipperClient, createState, usePlugin, useValue} from 'flipper-plugin';
+import {PluginClient, createState, usePlugin, useValue} from 'flipper-plugin';
 
 const Waiting = styled(FlexBox)({
   width: '100%',
@@ -74,7 +74,7 @@ type FocusInfo = {
   treeNodeIndexPath?: number[];
 };
 
-export function plugin(client: FlipperClient<Events, {}>) {
+export function plugin(client: PluginClient<Events, {}>) {
   const generations = createState<{[id: string]: TreeGeneration}>(
     {},
     {persist: 'generations'},

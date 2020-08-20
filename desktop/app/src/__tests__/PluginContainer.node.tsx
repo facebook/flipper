@@ -13,7 +13,7 @@ import {FlipperPlugin} from '../plugin';
 import {renderMockFlipperWithPlugin} from '../test-utils/createMockFlipperWithPlugin';
 import {
   SandyPluginDefinition,
-  FlipperClient,
+  PluginClient,
   TestUtils,
   usePlugin,
   createState,
@@ -113,7 +113,7 @@ test('PluginContainer can render Sandy plugins', async () => {
     return <div>Hello from Sandy</div>;
   }
 
-  const plugin = (client: FlipperClient) => {
+  const plugin = (client: PluginClient) => {
     const connectedStub = jest.fn();
     const disconnectedStub = jest.fn();
     const activatedStub = jest.fn();
@@ -254,7 +254,7 @@ test('PluginContainer triggers correct lifecycles for background plugin', async 
     return <div>Hello from Sandy</div>;
   }
 
-  const plugin = (client: FlipperClient) => {
+  const plugin = (client: PluginClient) => {
     const connectedStub = jest.fn();
     const disconnectedStub = jest.fn();
     const activatedStub = jest.fn();
@@ -396,7 +396,7 @@ test('PluginContainer triggers correct lifecycles for background plugin', async 
 test('PluginContainer + Sandy plugin supports deeplink', async () => {
   const linksSeen: any[] = [];
 
-  const plugin = (client: FlipperClient) => {
+  const plugin = (client: PluginClient) => {
     const linkState = createState('');
     client.onDeepLink((link) => {
       linksSeen.push(link);

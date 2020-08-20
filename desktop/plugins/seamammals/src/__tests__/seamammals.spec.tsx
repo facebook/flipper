@@ -37,20 +37,20 @@ import {act} from '@testing-library/react';
 }
 
 import {TestUtils} from 'flipper-plugin';
-import * as MammalsPlugin from '../';
+import * as MammalsPlugin from '..';
 
 test('It can store rows', () => {
-  const {instance, ...plugin} = TestUtils.startPlugin(MammalsPlugin);
+  const {instance, sendEvent} = TestUtils.startPlugin(MammalsPlugin);
 
   expect(instance.rows.get()).toEqual({});
   expect(instance.selectedID.get()).toBeNull();
 
-  plugin.sendEvent('newRow', {
+  sendEvent('newRow', {
     id: 1,
     title: 'Dolphin',
     url: 'http://dolphin.png',
   });
-  plugin.sendEvent('newRow', {
+  sendEvent('newRow', {
     id: 2,
     title: 'Turtle',
     url: 'http://turtle.png',
@@ -73,19 +73,23 @@ test('It can store rows', () => {
 });
 
 test('It can have selection and render details', async () => {
-  const {instance, renderer, act, ...plugin} = TestUtils.renderPlugin(
-    MammalsPlugin,
-  );
+  const {
+    instance,
+    renderer,
+    act,
+    sendEvent,
+    exportState,
+  } = TestUtils.renderPlugin(MammalsPlugin);
 
   expect(instance.rows.get()).toEqual({});
   expect(instance.selectedID.get()).toBeNull();
 
-  plugin.sendEvent('newRow', {
+  sendEvent('newRow', {
     id: 1,
     title: 'Dolphin',
     url: 'http://dolphin.png',
   });
-  plugin.sendEvent('newRow', {
+  sendEvent('newRow', {
     id: 2,
     title: 'Turtle',
     url: 'http://turtle.png',
@@ -121,21 +125,19 @@ test('It can have selection and render details', async () => {
   expect(await renderer.findByText('Extras')).not.toBeNull();
 
   // Verify export
-  expect(plugin.exportState()).toMatchInlineSnapshot(`
-    Object {
-      "rows": Object {
-        "1": Object {
-          "id": 1,
-          "title": "Dolphin",
-          "url": "http://dolphin.png",
-        },
-        "2": Object {
-          "id": 2,
-          "title": "Turtle",
-          "url": "http://turtle.png",
-        },
+  expect(exportState()).toEqual({
+    rows: {
+      '1': {
+        id: 1,
+        title: 'Dolphin',
+        url: 'http://dolphin.png',
       },
-      "selection": "2",
-    }
-  `);
+      '2': {
+        id: 2,
+        title: 'Turtle',
+        url: 'http://turtle.png',
+      },
+    },
+    selection: '2',
+  });
 });
