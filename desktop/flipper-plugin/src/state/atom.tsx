@@ -7,14 +7,14 @@
  * @format
  */
 
-import {produce} from 'immer';
+import {produce, Draft} from 'immer';
 import {useState, useEffect} from 'react';
 import {getCurrentPluginInstance} from '../plugin/PluginBase';
 
 export type Atom<T> = {
   get(): T;
   set(newValue: T): void;
-  update(recipe: (draft: T) => void): void;
+  update(recipe: (draft: Draft<T>) => void): void;
 };
 
 class AtomValue<T> implements Atom<T> {
@@ -36,7 +36,7 @@ class AtomValue<T> implements Atom<T> {
     }
   }
 
-  update(recipe: (draft: T) => void) {
+  update(recipe: (draft: Draft<T>) => void) {
     this.set(produce(this.value, recipe));
   }
 

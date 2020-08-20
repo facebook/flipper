@@ -128,6 +128,7 @@ export type Action =
   | {
       type: 'SET_STATIC_VIEW';
       payload: StaticView;
+      deepLinkPayload: unknown;
     }
   | {
       type: 'DISMISS_ERROR';
@@ -144,10 +145,6 @@ export type Action =
   | {
       type: 'SELECT_CLIENT';
       payload: string;
-    }
-  | {
-      type: 'SET_DEEPLINK_PAYLOAD';
-      payload: null | string;
     }
   | RegisterPluginAction;
 
@@ -173,12 +170,13 @@ const INITAL_STATE: State = {
 export default (state: State = INITAL_STATE, action: Actions): State => {
   switch (action.type) {
     case 'SET_STATIC_VIEW': {
-      const {payload} = action;
+      const {payload, deepLinkPayload} = action;
       const {selectedPlugin} = state;
       return {
         ...state,
         staticView: payload,
         selectedPlugin: payload != null ? null : selectedPlugin,
+        deepLinkPayload: deepLinkPayload ?? null,
       };
     }
 
@@ -252,13 +250,17 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
       if (typeof deepLinkPayload === 'string') {
         const deepLinkParams = new URLSearchParams(deepLinkPayload);
         const deviceParam = deepLinkParams.get('device');
-        const deviceMatch = state.devices.find((v) => v.title === deviceParam);
-        if (deviceMatch) {
-          selectedDevice = deviceMatch;
-        } else {
-          console.warn(
-            `Could not find matching device "${deviceParam}" requested through deep-link.`,
+        if (deviceParam) {
+          const deviceMatch = state.devices.find(
+            (v) => v.title === deviceParam,
           );
+          if (deviceMatch) {
+            selectedDevice = deviceMatch;
+          } else {
+            console.warn(
+              `Could not find matching device "${deviceParam}" requested through deep-link.`,
+            );
+          }
         }
       }
       if (!selectDevice) {
@@ -388,9 +390,6 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
         errors,
       };
     }
-    case 'SET_DEEPLINK_PAYLOAD': {
-      return {...state, deepLinkPayload: action.payload};
-    }
     case 'REGISTER_PLUGINS': {
       // plugins are registered after creating the base devices, so update them
       const plugins = action.payload;
@@ -435,13 +434,17 @@ export const selectDevice = (payload: BaseDevice): Action => ({
   payload,
 });
 
-export const setStaticView = (payload: StaticView): Action => {
+export const setStaticView = (
+  payload: StaticView,
+  deepLinkPayload?: unknown,
+): Action => {
   if (!payload) {
     throw new Error('Cannot set empty static view');
   }
   return {
     type: 'SET_STATIC_VIEW',
     payload,
+    deepLinkPayload,
   };
 };
 
@@ -477,11 +480,6 @@ export const dismissError = (index: number): Action => ({
 export const selectClient = (clientId: string): Action => ({
   type: 'SELECT_CLIENT',
   payload: clientId,
-});
-
-export const setDeeplinkPayload = (payload: string | null): Action => ({
-  type: 'SET_DEEPLINK_PAYLOAD',
-  payload,
 });
 
 export function getAvailableClients(

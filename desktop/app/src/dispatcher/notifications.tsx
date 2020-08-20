@@ -12,7 +12,7 @@ import {Logger} from '../fb-interfaces/Logger';
 import {PluginNotification} from '../reducers/notifications';
 import {PluginDefinition, isSandyPlugin} from '../plugin';
 import isHeadless from '../utils/isHeadless';
-import {setStaticView, setDeeplinkPayload} from '../reducers/connections';
+import {setStaticView} from '../reducers/connections';
 import {ipcRenderer, IpcRendererEvent} from 'electron';
 import {
   setActiveNotifications,
@@ -48,9 +48,11 @@ export default (store: Store, logger: Logger) => {
     ) => {
       if (eventName === 'click' || (eventName === 'action' && arg === 0)) {
         store.dispatch(
-          setDeeplinkPayload(pluginNotification.notification.action ?? null),
+          setStaticView(
+            NotificationScreen,
+            pluginNotification.notification.action ?? null,
+          ),
         );
-        store.dispatch(setStaticView(NotificationScreen));
       } else if (eventName === 'action') {
         if (arg === 1 && pluginNotification.notification.category) {
           // Hide similar (category)

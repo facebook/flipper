@@ -10,6 +10,9 @@
     "flipper-plugin"
   ],
   "dependencies": {},
+  "peerDependencies": {
+    "flipper-plugin": "0.51.0"
+  },
   "title": "Logs",
   "icon": "arrow-right",
   "bugs": {

@@ -276,6 +276,7 @@ export class ManagedTable extends React.Component<
     prevState: ManagedTableState,
   ) {
     if (
+      this.props.stickyBottom !== false &&
       this.props.rows.length !== prevProps.rows.length &&
       this.state.shouldScrollToBottom &&
       this.state.highlightedRows.size < 2

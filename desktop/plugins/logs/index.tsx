@@ -7,14 +7,15 @@
  * @format
  */
 
+import {TableBodyRow, TableRowSortOrder} from 'flipper';
 import {
-  TableBodyRow,
-  TableRowSortOrder,
-  Props as PluginProps,
-  BaseAction,
+  Device,
+  DevicePluginClient,
   DeviceLogEntry,
-  produce,
-} from 'flipper';
+  createState,
+  usePlugin,
+  useValue,
+} from 'flipper-plugin';
 import {Counter} from './LogWatcher';
 
 import {
@@ -24,17 +25,13 @@ import {
   ContextMenu,
   FlexColumn,
   DetailSidebar,
-  FlipperDevicePlugin,
   SearchableTable,
   styled,
-  Device,
-  createPaste,
   textContent,
-  KeyboardActions,
   MenuTemplate,
 } from 'flipper';
 import LogWatcher from './LogWatcher';
-import React from 'react';
+import React, {useCallback, createRef, MutableRefObject} from 'react';
 import {Icon, LogCount, HiddenScrollText} from './logComponents';
 import {pad, getLineCount} from './logUtils';
 
@@ -49,16 +46,6 @@ type BaseState = {
   readonly rows: ReadonlyArray<TableBodyRow>;
   readonly entries: Entries;
 };
-
-type AdditionalState = {
-  readonly highlightedRows: ReadonlySet<string>;
-  readonly counters: ReadonlyArray<Counter>;
-  readonly timeDirection: 'up' | 'down';
-};
-
-type State = BaseState & AdditionalState;
-
-type PersistedState = {};
 
 const COLUMN_SIZE = {
   type: 40,
@@ -95,7 +82,7 @@ const COLUMNS = {
   },
 } as const;
 
-const INITIAL_COLUMN_ORDER = [
+const COLUMN_ORDER = [
   {
     key: 'type',
     visible: true,
@@ -325,38 +312,81 @@ export function processEntry(
   };
 }
 
-export default class LogTable extends FlipperDevicePlugin<
-  State,
-  BaseAction,
-  PersistedState
-> {
-  static keyboardActions: KeyboardActions = [
-    'clear',
-    'goToBottom',
-    'createPaste',
-  ];
+export function supportsDevice(device: Device) {
+  return (
+    device.os === 'Android' ||
+    device.os === 'Metro' ||
+    (device.os === 'iOS' && device.deviceType !== 'physical')
+  );
+}
 
-  batchTimer: NodeJS.Timeout | undefined;
+export function devicePlugin(client: DevicePluginClient) {
+  let counter = 0;
+  let batch: Array<{
+    readonly row: TableBodyRow;
+    readonly entry: DeviceLogEntry;
+  }> = [];
+  let queued: boolean = false;
+  let batchTimer: NodeJS.Timeout | undefined;
+  const tableRef: MutableRefObject<ManagedTableClass | null> = createRef();
 
-  static supportsDevice(device: Device) {
-    return (
-      device.os === 'Android' ||
-      device.os === 'Metro' ||
-      (device.os === 'iOS' && device.deviceType !== 'physical')
-    );
-  }
+  // TODO T70688226: this can be removed once plugin stores logs,
+  // rather than the device.
 
-  onKeyboardAction = (action: string) => {
-    if (action === 'clear') {
-      this.clearLogs();
-    } else if (action === 'goToBottom') {
-      this.goToBottom();
-    } else if (action === 'createPaste') {
-      this.createPaste();
+  const initialState = addEntriesToState(
+    client.device.realDevice
+      .getLogs()
+      .map((log: DeviceLogEntry) => processEntry(log, '' + counter++)),
+  );
+
+  const rows = createState<ReadonlyArray<TableBodyRow>>(initialState.rows);
+  const entries = createState<Entries>([]);
+  const highlightedRows = createState<ReadonlySet<string>>(new Set());
+  const counters = createState<ReadonlyArray<Counter>>(restoreSavedCounters());
+  const timeDirection = createState<'up' | 'down'>('up');
+  const isDeeplinked = createState(false);
+
+  client.onDeepLink((payload: unknown) => {
+    if (typeof payload === 'string') {
+      highlightedRows.set(calculateHighlightedRows(payload, rows.get()));
+      isDeeplinked.set(true);
     }
-  };
+  });
 
-  restoreSavedCounters = (): Array<Counter> => {
+  client.onDeactivate(() => {
+    isDeeplinked.set(false);
+    tableRef.current = null;
+  });
+
+  client.onDestroy(() => {
+    if (batchTimer) {
+      clearTimeout(batchTimer);
+    }
+  });
+
+  client.addMenuEntry(
+    {
+      action: 'clear',
+      handler: clearLogs,
+    },
+    {
+      action: 'createPaste',
+      handler: createPaste,
+    },
+    {
+      action: 'goToBottom',
+      handler: goToBottom,
+    },
+  );
+
+  client.device.onLogEntry((entry: DeviceLogEntry) => {
+    const processedEntry = processEntry(entry, '' + counter++);
+    incrementCounterIfNeeded(processedEntry.entry);
+    scheduleEntryForBatch(processedEntry);
+  });
+
+  // TODO: make local storage abstraction T69990351
+  function restoreSavedCounters(): Counter[] {
     const savedCounters =
       window.localStorage.getItem(LOG_WATCHER_LOCAL_STORAGE_KEY) || '[]';
     return JSON.parse(savedCounters).map((counter: Counter) => ({
@@ -364,12 +394,12 @@ export default class LogTable extends FlipperDevicePlugin<
       expression: new RegExp(counter.label, 'gi'),
       count: 0,
     }));
-  };
+  }
 
-  calculateHighlightedRows = (
+  function calculateHighlightedRows(
     deepLinkPayload: unknown,
     rows: ReadonlyArray<TableBodyRow>,
-  ): Set<string> => {
+  ): Set<string> {
     const highlightedRows = new Set<string>();
     if (typeof deepLinkPayload !== 'string') {
       return highlightedRows;
@@ -398,50 +428,15 @@ export default class LogTable extends FlipperDevicePlugin<
       }
     }
     return highlightedRows;
-  };
-
-  tableRef: ManagedTableClass | undefined;
-  logListener: Symbol | undefined;
-
-  batch: Array<{
-    readonly row: TableBodyRow;
-    readonly entry: DeviceLogEntry;
-  }> = [];
-  queued: boolean = false;
-  counter: number = 0;
-
-  constructor(props: PluginProps<PersistedState>) {
-    super(props);
-
-    const initialState = addEntriesToState(
-      this.device
-        .getLogs()
-        .map((log) => processEntry(log, String(this.counter++))),
-      this.state,
-    );
-    this.state = {
-      ...initialState,
-      highlightedRows: this.calculateHighlightedRows(
-        props.deepLinkPayload,
-        initialState.rows,
-      ),
-      counters: this.restoreSavedCounters(),
-      timeDirection: 'up',
-    };
-
-    this.logListener = this.device.addLogListener((entry: DeviceLogEntry) => {
-      const processedEntry = processEntry(entry, String(this.counter++));
-      this.incrementCounterIfNeeded(processedEntry.entry);
-      this.scheduleEntryForBatch(processedEntry);
-    });
   }
 
-  incrementCounterIfNeeded = (entry: DeviceLogEntry) => {
+  function incrementCounterIfNeeded(entry: DeviceLogEntry) {
     let counterUpdated = false;
-    const counters = this.state.counters.map((counter) => {
+    const newCounters = counters.get().map((counter) => {
       if (entry.message.match(counter.expression)) {
         counterUpdated = true;
         if (counter.notify) {
+          // TODO: use new notifications system T69990351
           new Notification(`${counter.label}`, {
             body: 'The watched log message appeared',
           });
@@ -455,161 +450,168 @@ export default class LogTable extends FlipperDevicePlugin<
       }
     });
     if (counterUpdated) {
-      this.setState({counters});
-    }
-  };
-
-  scheduleEntryForBatch = (item: {
-    row: TableBodyRow;
-    entry: DeviceLogEntry;
-  }) => {
-    // batch up logs to be processed every 250ms, if we have lots of log
-    // messages coming in, then calling an setState 200+ times is actually
-    // pretty expensive
-    this.batch.push(item);
-
-    if (!this.queued) {
-      this.queued = true;
-
-      this.batchTimer = setTimeout(() => {
-        const thisBatch = this.batch;
-        this.batch = [];
-        this.queued = false;
-        this.setState((state) =>
-          addEntriesToState(thisBatch, state, state.timeDirection),
-        );
-      }, 100);
-    }
-  };
-
-  componentWillUnmount() {
-    if (this.batchTimer) {
-      clearTimeout(this.batchTimer);
-    }
-
-    if (this.logListener) {
-      this.device.removeLogListener(this.logListener);
+      counters.set(newCounters);
     }
   }
 
-  clearLogs = () => {
-    this.device.clearLogs().catch((e) => {
+  function scheduleEntryForBatch(item: {
+    row: TableBodyRow;
+    entry: DeviceLogEntry;
+  }) {
+    // batch up logs to be processed every 250ms, if we have lots of log
+    // messages coming in, then calling an setState 200+ times is actually
+    // pretty expensive
+    batch.push(item);
+
+    if (!queued) {
+      queued = true;
+
+      batchTimer = setTimeout(() => {
+        const thisBatch = batch;
+        batch = [];
+        queued = false;
+        const newState = addEntriesToState(
+          thisBatch,
+          {
+            rows: rows.get(),
+            entries: entries.get(),
+          },
+          timeDirection.get(),
+        );
+        rows.set(newState.rows);
+        entries.set(newState.entries);
+      }, 100);
+    }
+  }
+
+  function clearLogs() {
+    // TODO T70688226: implement this when the store is local
+    client.device.realDevice.clearLogs().catch((e: any) => {
       console.error('Failed to clear logs: ', e);
     });
-    this.setState({
-      entries: [],
-      rows: [],
-      highlightedRows: new Set(),
-      counters: this.state.counters.map((counter) => ({
-        ...counter,
-        count: 0,
-      })),
+    entries.set([]);
+    rows.set([]);
+    highlightedRows.set(new Set());
+    counters.update((counters) => {
+      for (const counter of counters) {
+        counter.count = 0;
+      }
     });
-  };
+  }
 
-  createPaste = () => {
+  function createPaste() {
     let paste = '';
     const mapFn = (row: TableBodyRow) =>
       Object.keys(COLUMNS)
         .map((key) => textContent(row.columns[key].value))
         .join('\t');
 
-    if (this.state.highlightedRows.size > 0) {
+    if (highlightedRows.get().size > 0) {
       // create paste from selection
-      paste = this.state.rows
-        .filter((row) => this.state.highlightedRows.has(row.key))
+      paste = rows
+        .get()
+        .filter((row) => highlightedRows.get().has(row.key))
         .map(mapFn)
         .join('\n');
     } else {
       // create paste with all rows
-      paste = this.state.rows.map(mapFn).join('\n');
+      paste = rows.get().map(mapFn).join('\n');
     }
-    createPaste(paste);
-  };
-
-  setTableRef = (ref: ManagedTableClass) => {
-    this.tableRef = ref;
-  };
-
-  goToBottom = () => {
-    if (this.tableRef != null) {
-      this.tableRef.scrollToBottom();
-    }
-  };
-
-  onRowHighlighted = (highlightedRows: Array<string>) => {
-    this.setState({
-      ...this.state,
-      highlightedRows: new Set(highlightedRows),
-    });
-  };
-
-  renderSidebar = () => {
-    return (
-      <LogWatcher
-        counters={this.state.counters}
-        onChange={(counters) =>
-          this.setState({counters}, () =>
-            window.localStorage.setItem(
-              LOG_WATCHER_LOCAL_STORAGE_KEY,
-              JSON.stringify(this.state.counters),
-            ),
-          )
-        }
-      />
-    );
-  };
-
-  static ContextMenu = styled(ContextMenu)({
-    flex: 1,
-  });
-
-  buildContextMenuItems: () => MenuTemplate = () => [
-    {
-      type: 'separator',
-    },
-    {
-      label: 'Clear all',
-      click: this.clearLogs,
-    },
-  ];
-
-  render() {
-    return (
-      <LogTable.ContextMenu
-        buildItems={this.buildContextMenuItems}
-        component={FlexColumn}>
-        <SearchableTable
-          innerRef={this.setTableRef}
-          floating={false}
-          multiline={true}
-          columnSizes={COLUMN_SIZE}
-          columnOrder={INITIAL_COLUMN_ORDER}
-          columns={COLUMNS}
-          rows={this.state.rows}
-          highlightedRows={this.state.highlightedRows}
-          onRowHighlighted={this.onRowHighlighted}
-          multiHighlight={true}
-          defaultFilters={DEFAULT_FILTERS}
-          zebra={false}
-          actions={<Button onClick={this.clearLogs}>Clear Logs</Button>}
-          allowRegexSearch={true}
-          // If the logs is opened through deeplink, then don't scroll as the row is highlighted
-          stickyBottom={
-            !(this.props.deepLinkPayload && this.state.highlightedRows.size > 0)
-          }
-          initialSortOrder={{key: 'time', direction: 'up'}}
-          onSort={(order: TableRowSortOrder) =>
-            this.setState(
-              produce((prevState) => {
-                prevState.rows.reverse();
-                prevState.timeDirection = order.direction;
-              }),
-            )
-          }
-        />
-        <DetailSidebar>{this.renderSidebar()}</DetailSidebar>
-      </LogTable.ContextMenu>
-    );
+    client.createPaste(paste);
   }
+
+  function goToBottom() {
+    tableRef.current?.scrollToBottom();
+  }
+
+  return {
+    rows,
+    highlightedRows,
+    counters,
+    isDeeplinked,
+    tableRef,
+    onRowHighlighted(selectedRows: Array<string>) {
+      highlightedRows.set(new Set(selectedRows));
+    },
+    clearLogs,
+    onSort(order: TableRowSortOrder) {
+      rows.set(rows.get().slice().reverse());
+      timeDirection.set(order.direction);
+    },
+    updateCounters(newCounters: readonly Counter[]) {
+      counters.set(newCounters);
+      // TODO: make local storage abstraction T69989583
+      window.localStorage.setItem(
+        LOG_WATCHER_LOCAL_STORAGE_KEY,
+        JSON.stringify(newCounters),
+      );
+    },
+  };
+}
+
+const DeviceLogsContextMenu = styled(ContextMenu)({
+  flex: 1,
+});
+
+export function Component() {
+  const plugin = usePlugin(devicePlugin);
+  const rows = useValue(plugin.rows);
+  const highlightedRows = useValue(plugin.highlightedRows);
+  const isDeeplinked = useValue(plugin.isDeeplinked);
+
+  const buildContextMenuItems = useCallback(
+    (): MenuTemplate => [
+      {
+        type: 'separator',
+      },
+      {
+        label: 'Clear all',
+        click: plugin.clearLogs,
+      },
+    ],
+    [plugin.clearLogs],
+  );
+
+  return (
+    <DeviceLogsContextMenu
+      buildItems={buildContextMenuItems}
+      component={FlexColumn}>
+      <SearchableTable
+        innerRef={plugin.tableRef}
+        floating={false}
+        multiline={true}
+        columnSizes={COLUMN_SIZE}
+        columnOrder={COLUMN_ORDER}
+        columns={COLUMNS}
+        rows={rows}
+        highlightedRows={highlightedRows}
+        onRowHighlighted={plugin.onRowHighlighted}
+        multiHighlight={true}
+        defaultFilters={DEFAULT_FILTERS}
+        zebra={false}
+        actions={<Button onClick={plugin.clearLogs}>Clear Logs</Button>}
+        allowRegexSearch={true}
+        // If the logs is opened through deeplink, then don't scroll as the row is highlighted
+        stickyBottom={!(isDeeplinked && highlightedRows.size > 0)}
+        initialSortOrder={{key: 'time', direction: 'up'}}
+        onSort={plugin.onSort}
+      />
+      <DetailSidebar>
+        <Sidebar />
+      </DetailSidebar>
+    </DeviceLogsContextMenu>
+  );
+}
+
+function Sidebar() {
+  const plugin = usePlugin(devicePlugin);
+  const counters = useValue(plugin.counters);
+  return (
+    <LogWatcher
+      counters={counters}
+      onChange={(counters) => {
+        plugin.updateCounters(counters);
+      }}
+    />
+  );
 }

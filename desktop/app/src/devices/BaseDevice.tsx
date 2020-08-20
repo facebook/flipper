@@ -120,6 +120,7 @@ export default class BaseDevice {
     this._notifyLogListeners(entry);
   }
 
+  // TODO: remove getLogs T70688226
   getLogs(startDate: Date | null = null) {
     return startDate != null
       ? this.logEntries.filter((log) => {

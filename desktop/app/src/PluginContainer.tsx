@@ -343,12 +343,11 @@ class PluginContainer extends PureComponent<Props, State> {
     let pluginElement: null | React.ReactElement<any>;
     if (isSandyPlugin(activePlugin)) {
       // Make sure we throw away the container for different pluginKey!
-      pluginElement = (
-        <SandyPluginRenderer
-          key={pluginKey}
-          plugin={target.sandyPluginStates.get(activePlugin.id)!}
-        />
-      );
+      const instance = target.sandyPluginStates.get(activePlugin.id);
+      if (!instance) {
+        return null;
+      }
+      pluginElement = <SandyPluginRenderer key={pluginKey} plugin={instance} />;
     } else {
       const props: PluginProps<Object> & {
         key: string;
