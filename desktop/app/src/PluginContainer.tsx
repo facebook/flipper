@@ -325,6 +325,26 @@ class PluginContainer extends PureComponent<Props, State> {
     );
   }
 
+  renderNoPluginActive() {
+    return (
+      <View grow>
+        <Waiting>
+          <VBox>
+            <Glyph
+              name="cup"
+              variant="outline"
+              size={24}
+              color={colors.light30}
+            />
+          </VBox>
+          <VBox>
+            <Label>No plugin selected</Label>
+          </VBox>
+        </Waiting>
+      </View>
+    );
+  }
+
   renderPlugin() {
     const {
       pluginState,
@@ -338,14 +358,15 @@ class PluginContainer extends PureComponent<Props, State> {
     } = this.props;
     if (!activePlugin || !target || !pluginKey) {
       console.warn(`No selected plugin. Rendering empty!`);
-      return null;
+      return this.renderNoPluginActive();
     }
     let pluginElement: null | React.ReactElement<any>;
     if (isSandyPlugin(activePlugin)) {
       // Make sure we throw away the container for different pluginKey!
       const instance = target.sandyPluginStates.get(activePlugin.id);
       if (!instance) {
-        return null;
+        // happens if we selected a plugin that is not enabled on a specific app or not supported on a specific device.
+        return this.renderNoPluginActive();
       }
       pluginElement = <SandyPluginRenderer key={pluginKey} plugin={instance} />;
     } else {

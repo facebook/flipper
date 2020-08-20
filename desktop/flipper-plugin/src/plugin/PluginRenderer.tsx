@@ -11,6 +11,7 @@ import React, {memo, useEffect, createElement} from 'react';
 import {SandyPluginContext} from './PluginContext';
 import {SandyPluginInstance} from './Plugin';
 import {SandyDevicePluginInstance} from './DevicePlugin';
+import {BasePluginInstance} from './PluginBase';
 
 type Props = {
   plugin: SandyPluginInstance | SandyDevicePluginInstance;
@@ -20,6 +21,9 @@ type Props = {
  * Component to render a Sandy plugin container
  */
 export const SandyPluginRenderer = memo(({plugin}: Props) => {
+  if (!plugin || !(plugin instanceof BasePluginInstance)) {
+    throw new Error('Expected plugin, got ' + plugin);
+  }
   useEffect(() => {
     plugin.activate();
     return () => {
