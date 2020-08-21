@@ -12,8 +12,8 @@ import {Element, ElementFramework} from 'flipper';
 export enum IDEType {
   'DIFFUSION',
   'AS',
-  'VSCODE',
   'XCODE',
+  'VSCODE',
 }
 
 export abstract class IDEFileResolver {
