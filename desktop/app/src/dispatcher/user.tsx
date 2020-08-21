@@ -12,8 +12,13 @@ import {Logger} from '../fb-interfaces/Logger';
 import {login, logout} from '../reducers/user';
 import {getUser, logoutUser} from '../fb-stubs/user';
 import {sideEffect} from '../utils/sideEffect';
+import config from '../fb-stubs/config';
 
 export default (store: Store, _logger: Logger) => {
+  if (!config.isFBBuild) {
+    return;
+  }
+
   getUser()
     .then((user) => {
       store.dispatch(login(user));
