@@ -48,6 +48,7 @@ import {Idler} from './utils/Idler';
 import {processMessageQueue} from './utils/messageQueue';
 import {ToggleButton, SmallText} from './ui';
 import {SandyPluginRenderer} from 'flipper-plugin';
+import {isDevicePluginDefinition} from './utils/pluginUtils';
 
 const Container = styled(FlexColumn)({
   width: 0,
@@ -193,24 +194,30 @@ class PluginContainer extends PureComponent<Props, State> {
       pendingMessages,
       activePlugin,
       pluginIsEnabled,
+      target,
     } = this.props;
     if (pluginKey !== this.pluginBeingProcessed) {
       this.pluginBeingProcessed = pluginKey;
       this.cancelCurrentQueue();
       this.setState({progress: {current: 0, total: 0}});
+      // device plugins don't have connections so no message queues
+      if (!activePlugin || isDevicePluginDefinition(activePlugin)) {
+        return;
+      }
       if (
         pluginIsEnabled &&
+        target instanceof Client &&
         activePlugin &&
-        // TODO: support sandy: T68683442
-        !isSandyPlugin(activePlugin) &&
-        activePlugin.persistedStateReducer &&
+        (isSandyPlugin(activePlugin) || activePlugin.persistedStateReducer) &&
         pluginKey &&
         pendingMessages?.length
       ) {
         const start = Date.now();
         this.idler = new Idler();
         processMessageQueue(
-          activePlugin,
+          isSandyPlugin(activePlugin)
+            ? target.sandyPluginStates.get(activePlugin.id)!
+            : activePlugin,
           pluginKey,
           this.store,
           (progress) => {

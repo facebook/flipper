@@ -98,11 +98,13 @@ test('PluginContainer can render Sandy plugins', async () => {
   function MySandyPlugin() {
     renders++;
     const sandyApi = usePlugin(plugin);
+    const count = useValue(sandyApi.count);
     expect(Object.keys(sandyApi)).toEqual([
       'connectedStub',
       'disconnectedStub',
       'activatedStub',
       'deactivatedStub',
+      'count',
     ]);
     expect(() => {
       // eslint-disable-next-line
@@ -110,10 +112,15 @@ test('PluginContainer can render Sandy plugins', async () => {
         return {};
       });
     }).toThrowError(/didn't match the type of the requested plugin/);
-    return <div>Hello from Sandy</div>;
+    return <div>Hello from Sandy{count}</div>;
   }
 
-  const plugin = (client: PluginClient) => {
+  type Events = {
+    inc: {delta: number};
+  };
+
+  const plugin = (client: PluginClient<Events>) => {
+    const count = createState(0);
     const connectedStub = jest.fn();
     const disconnectedStub = jest.fn();
     const activatedStub = jest.fn();
@@ -122,7 +129,16 @@ test('PluginContainer can render Sandy plugins', async () => {
     client.onDisconnect(disconnectedStub);
     client.onActivate(activatedStub);
     client.onDeactivate(deactivatedStub);
-    return {connectedStub, disconnectedStub, activatedStub, deactivatedStub};
+    client.onMessage('inc', ({delta}) => {
+      count.set(count.get() + delta);
+    });
+    return {
+      connectedStub,
+      disconnectedStub,
+      activatedStub,
+      deactivatedStub,
+      count,
+    };
   };
 
   const definition = new SandyPluginDefinition(
@@ -143,29 +159,54 @@ test('PluginContainer can render Sandy plugins', async () => {
   expect(client.rawSend).toBeCalledWith('init', {plugin: 'TestPlugin'});
 
   expect(renderer.baseElement).toMatchInlineSnapshot(`
-        <body>
+    <body>
+      <div>
+        <div
+          class="css-1orvm1g-View-FlexBox-FlexColumn"
+        >
           <div>
-            <div
-              class="css-1orvm1g-View-FlexBox-FlexColumn"
-            >
-              <div>
-                Hello from Sandy
-              </div>
-            </div>
-            <div
-              class="css-bxcvv9-View-FlexBox-FlexRow"
-              id="detailsSidebar"
-            />
+            Hello from Sandy
+            0
           </div>
-        </body>
-      `);
+        </div>
+        <div
+          class="css-bxcvv9-View-FlexBox-FlexRow"
+          id="detailsSidebar"
+        />
+      </div>
+    </body>
+  `);
   expect(renders).toBe(1);
 
-  // sending a new message doesn't cause a re-render
+  // sending irrelevant message does not cause a re-render
+  act(() => {
+    sendMessage('oops', {delta: 2});
+  });
+  expect(renders).toBe(1);
+
+  // sending a new message  cause a re-render
   act(() => {
     sendMessage('inc', {delta: 2});
   });
-  expect(renders).toBe(1);
+  expect(renders).toBe(2);
+  expect(renderer.baseElement).toMatchInlineSnapshot(`
+    <body>
+      <div>
+        <div
+          class="css-1orvm1g-View-FlexBox-FlexColumn"
+        >
+          <div>
+            Hello from Sandy
+            2
+          </div>
+        </div>
+        <div
+          class="css-bxcvv9-View-FlexBox-FlexRow"
+          id="detailsSidebar"
+        />
+      </div>
+    </body>
+  `);
 
   // make sure the plugin gets connected
   const pluginInstance: ReturnType<typeof plugin> = client.sandyPluginStates.get(
@@ -198,6 +239,14 @@ test('PluginContainer can render Sandy plugins', async () => {
   expect(pluginInstance.activatedStub).toBeCalledTimes(1);
   expect(pluginInstance.deactivatedStub).toBeCalledTimes(1);
 
+  // send some messages while in BG
+  act(() => {
+    sendMessage('inc', {delta: 3});
+    sendMessage('inc', {delta: 4});
+  });
+  expect(renders).toBe(2);
+  expect(pluginInstance.count.get()).toBe(2);
+
   // go back
   act(() => {
     store.dispatch(
@@ -207,6 +256,27 @@ test('PluginContainer can render Sandy plugins', async () => {
       }),
     );
   });
+  // Might be needed, but seems to work reliable without: await sleep(1000);
+  expect(renderer.baseElement).toMatchInlineSnapshot(`
+  <body>
+    <div>
+      <div
+        class="css-1orvm1g-View-FlexBox-FlexColumn"
+      >
+        <div>
+          Hello from Sandy
+          9
+        </div>
+      </div>
+      <div
+        class="css-bxcvv9-View-FlexBox-FlexRow"
+        id="detailsSidebar"
+      />
+    </div>
+  </body>
+`);
+
+  expect(pluginInstance.count.get()).toBe(9);
   expect(pluginInstance.connectedStub).toBeCalledTimes(2);
   expect(pluginInstance.disconnectedStub).toBeCalledTimes(1);
   expect(pluginInstance.activatedStub).toBeCalledTimes(2);
@@ -247,6 +317,9 @@ test('PluginContainer can render Sandy plugins', async () => {
     client.sandyPluginStates.get('TestPlugin')!.instanceApi.connectedStub,
   ).toBeCalledTimes(1);
   expect(client.rawSend).toBeCalledWith('init', {plugin: 'TestPlugin'});
+  expect(
+    client.sandyPluginStates.get('TestPlugin')!.instanceApi.count.get(),
+  ).toBe(0);
 });
 
 test('PluginContainer triggers correct lifecycles for background plugin', async () => {
