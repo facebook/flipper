@@ -7,7 +7,7 @@
  * @format
  */
 
-import {State} from '../notifications';
+import {State, addNotification} from '../notifications';
 
 import {
   default as reducer,
@@ -105,4 +105,67 @@ test('reduce setActiveNotifications', () => {
       },
     ],
   });
+});
+
+test('addNotification removes duplicates', () => {
+  let res = reducer(
+    getInitialState(),
+    addNotification({
+      pluginId: 'test',
+      client: null,
+      notification,
+    }),
+  );
+  res = reducer(
+    res,
+    addNotification({
+      pluginId: 'test',
+      client: null,
+      notification: {
+        ...notification,
+        id: 'otherId',
+      },
+    }),
+  );
+  res = reducer(
+    res,
+    addNotification({
+      pluginId: 'test',
+      client: null,
+      notification: {
+        ...notification,
+        message: 'slightly different message',
+      },
+    }),
+  );
+  expect(res).toMatchInlineSnapshot(`
+    Object {
+      "activeNotifications": Array [
+        Object {
+          "client": null,
+          "notification": Object {
+            "id": "otherId",
+            "message": "message",
+            "severity": "warning",
+            "title": "title",
+          },
+          "pluginId": "test",
+        },
+        Object {
+          "client": null,
+          "notification": Object {
+            "id": "id",
+            "message": "slightly different message",
+            "severity": "warning",
+            "title": "title",
+          },
+          "pluginId": "test",
+        },
+      ],
+      "blacklistedCategories": Array [],
+      "blacklistedPlugins": Array [],
+      "clearedNotifications": Set {},
+      "invalidatedNotifications": Array [],
+    }
+  `);
 });

@@ -13,6 +13,7 @@ import {Store} from '../reducers/index';
 import {Logger} from '../fb-interfaces/Logger';
 import Client from '../Client';
 import {UninitializedClient} from '../UninitializedClient';
+import {addErrorNotification} from '../reducers/notifications';
 
 export default (store: Store, logger: Logger) => {
   const server = new Server(logger, store);
@@ -42,17 +43,14 @@ export default (store: Store, logger: Logger) => {
   });
 
   server.addListener('error', (err) => {
-    const message: string =
-      err.code === 'EADDRINUSE'
-        ? "Couldn't start websocket server. Looks like you have multiple copies of Flipper running."
-        : err.message || 'Unknown error';
-    const urgent = err.code === 'EADDRINUSE';
-
-    store.dispatch({
-      type: 'SERVER_ERROR',
-      payload: {message},
-      urgent,
-    });
+    store.dispatch(
+      addErrorNotification(
+        'Failed to start websocket server',
+        err.code === 'EADDRINUSE'
+          ? "Couldn't start websocket server. Looks like you have multiple copies of Flipper running."
+          : err.message || 'Unknown error',
+      ),
+    );
   });
 
   server.addListener('start-client-setup', (client: UninitializedClient) => {
@@ -74,11 +72,14 @@ export default (store: Store, logger: Logger) => {
 
   server.addListener(
     'client-setup-error',
-    (payload: {client: UninitializedClient; error: Error}) => {
-      store.dispatch({
-        type: 'CLIENT_SETUP_ERROR',
-        payload: payload,
-      });
+    ({client, error}: {client: UninitializedClient; error: Error}) => {
+      store.dispatch(
+        addErrorNotification(
+          `Connection to '${client.appName}' on '${client.deviceName}' failed`,
+          'Failed to start client connection',
+          error,
+        ),
+      );
     },
   );
 

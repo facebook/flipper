@@ -12,7 +12,6 @@ import {FlexRow, styled, Layout} from 'flipper';
 import {connect} from 'react-redux';
 import TitleBar from './chrome/TitleBar';
 import MainSidebar2 from './chrome/mainsidebar/MainSidebar2';
-import ErrorBar from './chrome/ErrorBar';
 import DoctorBar from './chrome/DoctorBar';
 import ShareSheetExportUrl from './chrome/ShareSheetExportUrl';
 import SignInSheet from './chrome/SignInSheet';
@@ -40,7 +39,7 @@ import {
 } from './reducers/application';
 import {Logger} from './fb-interfaces/Logger';
 import {State as Store} from './reducers/index';
-import {StaticView, FlipperError} from './reducers/connections';
+import {StaticView} from './reducers/connections';
 import PluginManager from './chrome/plugin-manager/PluginManager';
 import StatusBar from './chrome/StatusBar';
 import SettingsSheet from './chrome/SettingsSheet';
@@ -59,7 +58,6 @@ type OwnProps = {
 
 type StateFromProps = {
   leftSidebarVisible: boolean;
-  errors: FlipperError[];
   activeSheet: ActiveSheet;
   share: ShareType | null;
   staticView: StaticView;
@@ -174,7 +172,6 @@ export class App extends React.Component<Props> {
           <>
             <TitleBar version={version} />
             <DoctorBar />
-            <ErrorBar />
           </>
           <>
             <Sheet>{this.getSheet}</Sheet>
@@ -214,12 +211,11 @@ export class App extends React.Component<Props> {
 export default connect<StateFromProps, DispatchProps, OwnProps, Store>(
   ({
     application: {leftSidebarVisible, activeSheet, share},
-    connections: {errors, staticView},
+    connections: {staticView},
   }) => ({
     leftSidebarVisible,
     activeSheet,
     share: share,
-    errors,
     staticView,
   }),
   {

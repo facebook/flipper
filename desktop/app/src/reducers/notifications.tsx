@@ -9,6 +9,7 @@
 
 import {Notification} from '../plugin';
 import {Actions} from './';
+import {getStringFromErrorLike} from '../utils';
 export type PluginNotification = {
   notification: Notification;
   pluginId: string;
@@ -101,7 +102,16 @@ export default function reducer(
     case 'ADD_NOTIFICATION':
       return {
         ...state,
-        activeNotifications: [...state.activeNotifications, action.payload],
+        // while adding notifications, remove old duplicates
+        activeNotifications: [
+          ...state.activeNotifications.filter(
+            (notif) =>
+              notif.client !== action.payload.client ||
+              notif.pluginId !== action.payload.pluginId ||
+              notif.notification.id !== action.payload.notification.id,
+          ),
+          action.payload,
+        ],
       };
     default:
       return state;
@@ -154,6 +164,25 @@ export function addNotification(payload: PluginNotification): Action {
     type: 'ADD_NOTIFICATION',
     payload,
   };
+}
+
+export function addErrorNotification(
+  title: string,
+  message: string,
+  error?: any,
+): Action {
+  // TODO: use this method for https://github.com/facebook/flipper/pull/1478/files as well
+  console.error(title, message, error);
+  return addNotification({
+    client: null,
+    pluginId: 'globalError',
+    notification: {
+      id: title,
+      title,
+      message: error ? message + ' ' + getStringFromErrorLike(error) : message,
+      severity: 'error',
+    },
+  });
 }
 
 export function setActiveNotifications(payload: {

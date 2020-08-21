@@ -19,7 +19,7 @@ import which from 'which';
 import {promisify} from 'util';
 import {ServerPorts} from '../reducers/application';
 import {Client as ADBClient} from 'adbkit';
-import {addNotification} from '../reducers/notifications';
+import {addErrorNotification} from '../reducers/notifications';
 
 function createDevice(
   adbClient: ADBClient,
@@ -84,22 +84,14 @@ function createDevice(
           const isAuthorizationError = (e?.message as string)?.includes(
             'device unauthorized',
           );
-          console.error('Failed to initialize device: ' + device.id, e);
           store.dispatch(
-            addNotification({
-              client: null,
-              notification: {
-                id: 'androidDeviceConnectionError' + device.id,
-                title: 'Could not connect to ' + device.id,
-                severity: 'error',
-                message: `Failed to connect to '${device.id}': ${
-                  isAuthorizationError
-                    ? 'make sure to authorize debugging on the phone'
-                    : JSON.stringify(e, null, 2)
-                }`,
-              },
-              pluginId: 'androidDevice',
-            }),
+            addErrorNotification(
+              'Could not connect to ' + device.id,
+              isAuthorizationError
+                ? 'Make sure to authorize debugging on the phone'
+                : 'Failed to setup connection',
+              e,
+            ),
           );
         }
         resolve(undefined); // not ready yet, we will find it in the next tick

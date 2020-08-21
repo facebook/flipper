@@ -25,7 +25,6 @@ Object {
       "title": "MockAndroidDevice",
     },
   ],
-  "errors": Array [],
   "selectedApp": "TestApp#Android#MockAndroidDevice#serial",
   "selectedDevice": Object {
     "deviceType": "physical",
