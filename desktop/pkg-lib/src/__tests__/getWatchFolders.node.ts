@@ -44,6 +44,11 @@ describe('getWatchFolders', () => {
           fb_plugin_module_2: mockfs.symlink({
             path: '../plugins/fb/fb_plugin_module_2',
           }),
+          '@scoped': {
+            local_module_3: mockfs.symlink({
+              path: '../../local_module_3',
+            }),
+          },
         },
         local_module_1: {
           'package.json': '{"dependencies": {"installed_module_1": "1.0.0"}}',
@@ -52,9 +57,13 @@ describe('getWatchFolders', () => {
           'package.json':
             '{"dependencies": {"fb_plugin_module_1": "1.0.0", "plugin_module_1": "1.0.0"}}',
         },
+        local_module_3: {
+          'package.json': '{"dependencies": {"installed_module_1": "1.0.0"}}',
+        },
         plugins: {
           plugin_module_1: {
-            'package.json': '{"dependencies": {"local_module_2": "1.0.0"}}',
+            'package.json':
+              '{"dependencies": {"local_module_2": "1.0.0", "@scoped/local_module_3": "1.0.0"}}',
           },
           plugin_module_2: {
             'package.json': '{"dependencies": {"fb_plugin_module_1": "1.0.0"}}',
@@ -102,6 +111,7 @@ describe('getWatchFolders', () => {
           "/test/root/plugins/fb/node_modules",
           "/test/root/plugins/plugin_module_1",
           "/test/root/plugins/plugin_module_2",
+          "/test/root/local_module_3",
         ]
       `);
     } finally {

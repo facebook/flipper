@@ -36,15 +36,23 @@ export default async (packageDir: string): Promise<string[]> => {
       if (await fs.pathExists(nodeModulesDir)) {
         watchDirs.add(nodeModulesDir);
         for (const moduleName of dependenciesSet) {
+          const isModuleNameScoped = moduleName.includes('/');
           const fullModulePath = path.join(nodeModulesDir, moduleName);
           if (await fs.pathExists(fullModulePath)) {
             dependenciesSet.delete(moduleName);
             const stat = await fs.lstat(fullModulePath);
             if (stat.isSymbolicLink()) {
               const targetDir = await fs.readlink(fullModulePath);
-              const absoluteTargetDir = path.isAbsolute(targetDir)
-                ? targetDir
-                : path.resolve(nodeModulesDir, targetDir);
+              let absoluteTargetDir;
+              if (path.isAbsolute(targetDir)) {
+                absoluteTargetDir = targetDir;
+              } else if (isModuleNameScoped) {
+                const scope = moduleName.split('/')[0];
+                const scopeDir = path.join(nodeModulesDir, scope);
+                absoluteTargetDir = path.resolve(scopeDir, targetDir);
+              } else {
+                absoluteTargetDir = path.resolve(nodeModulesDir, targetDir);
+              }
               if (!processedPackages.has(absoluteTargetDir)) {
                 packagesToProcess.push(absoluteTargetDir);
                 processedPackages.add(absoluteTargetDir);
