@@ -59,7 +59,7 @@ android {
 
     dependencies {
         compileOnly deps.proguardAnnotations
-        implementation 'com.facebook.fbjni:fbjni:0.0.2'
+        implementation 'com.facebook.fbjni:fbjni:0.0.4'
         extractHeaders 'com.facebook.fbjni:fbjni:0.0.2:headers'
         extractJNI 'com.facebook.fbjni:fbjni:0.0.2'
         implementation deps.soloader
