@@ -233,19 +233,19 @@ test('constructQueryClause with exactly one string value', () => {
       {key1: {type: 'string', value: 'this is a string'}},
       'connecter',
     ),
-  ).toEqual(`key1='this is a string'`);
+  ).toEqual(`\`key1\`='this is a string'`);
 });
 
 test('constructQueryClause with exactly one integer value', () => {
   expect(
     constructQueryClause({key1: {type: 'integer', value: 1337}}, 'connecter'),
-  ).toEqual(`key1=1337`);
+  ).toEqual(`\`key1\`=1337`);
 });
 
 test('constructQueryClause with exactly one null value', () => {
   expect(
     constructQueryClause({key1: {type: 'null', value: null}}, 'connecter'),
-  ).toEqual(`key1=NULL`);
+  ).toEqual(`\`key1\`=NULL`);
 });
 
 test("constructQueryClause with special character (single quote ('))", () => {
@@ -254,7 +254,7 @@ test("constructQueryClause with special character (single quote ('))", () => {
       {key1: {type: 'string', value: "this is a 'single quote'"}},
       'connecter',
     ),
-  ).toEqual(`key1='this is a ''single quote'''`);
+  ).toEqual(`\`key1\`='this is a ''single quote'''`);
 });
 
 test('constructQueryClause with multiple value', () => {
@@ -265,7 +265,7 @@ test('constructQueryClause with multiple value', () => {
   };
 
   expect(constructQueryClause(values, 'connector')).toEqual(
-    `key1='this is a string' connector key2=NULL connector key3=13.37`,
+    `\`key1\`='this is a string' connector \`key2\`=NULL connector \`key3\`=13.37`,
   );
 });
 
@@ -278,7 +278,7 @@ test('constructQueryClause with multiple value with single quotes mixed in strin
   };
 
   expect(constructQueryClause(values, 'connector')).toEqual(
-    `key1='this is ''a'' string' connector key2=NULL connector key3=13.37 connector key4='there are single quotes ''here'' and ''there'''`,
+    `\`key1\`='this is ''a'' string' connector \`key2\`=NULL connector \`key3\`=13.37 connector \`key4\`='there are single quotes ''here'' and ''there'''`,
   );
 });
 
@@ -292,9 +292,9 @@ test('constructUpdateQuery', () => {
     key4: {type: 'number', value: 13371337},
   };
   expect(constructUpdateQuery('table_name', whereClause, setClause)).toEqual(
-    `UPDATE table_name
-    SET key1='this is a string' , key2=NULL , key3=13.37
-    WHERE key4=13371337`,
+    `UPDATE \`table_name\`
+    SET \`key1\`='this is a string' , \`key2\`=NULL , \`key3\`=13.37
+    WHERE \`key4\`=13371337`,
   );
 });
 
