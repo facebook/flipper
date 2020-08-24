@@ -59,8 +59,12 @@ async function targets(idbPath: string): Promise<Array<DeviceTarget>> {
   if (process.platform !== 'darwin') {
     return [];
   }
-  if (GK.get('flipper_use_idb_to_list_devices')) {
-    await memoize(checkIdbIsInstalled)(idbPath);
+
+  // Not all users have idb installed because you can still use
+  // Flipper with Simulators without it.
+  // But idb is MUCH more CPU efficient than instruments, so
+  // when installed, use it.
+  if (await memoize(isAvailable)(idbPath)) {
     return safeExec(`${idbPath} list-targets --json`).then(({stdout}) =>
       stdout
         .toString()
