@@ -342,6 +342,7 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
         showMockResponseDialog: false,
         nextRouteId: Object.keys(routes).length,
       });
+      informClientMockChange(routes);
     });
 
     this.setState(this.parseDeepLinkPayload(this.props.deepLinkPayload));
