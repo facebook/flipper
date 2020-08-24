@@ -48,6 +48,11 @@ import {combineBase64Chunks} from './chunks';
 
 const LOCALSTORAGE_MOCK_ROUTE_LIST_KEY = '__NETWORK_CACHED_MOCK_ROUTE_LIST';
 
+export const BodyOptions = {
+  formatted: 'formatted',
+  parsed: 'parsed',
+};
+
 type State = {
   selectedIds: Array<RequestId>;
   searchTerm: string;
@@ -55,6 +60,7 @@ type State = {
   nextRouteId: number;
   isMockResponseSupported: boolean;
   showMockResponseDialog: boolean;
+  detailBodyFormat: string;
 };
 
 const COLUMN_SIZE = {
@@ -321,6 +327,7 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
       nextRouteId: 0,
       isMockResponseSupported: false,
       showMockResponseDialog: false,
+      detailBodyFormat: BodyOptions.parsed,
     };
   }
 
@@ -486,9 +493,13 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
     this.setState({showMockResponseDialog: false});
   };
 
+  onSelectFormat = (bodyFormat: string) => {
+    this.setState({detailBodyFormat: bodyFormat});
+  };
+
   renderSidebar = () => {
     const {requests, responses} = this.props.persistedState;
-    const {selectedIds} = this.state;
+    const {selectedIds, detailBodyFormat} = this.state;
     const selectedId = selectedIds.length === 1 ? selectedIds[0] : null;
 
     if (!selectedId) {
@@ -503,6 +514,8 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
         key={selectedId}
         request={requestWithId}
         response={responses[selectedId]}
+        bodyFormat={detailBodyFormat}
+        onSelectFormat={this.onSelectFormat}
       />
     );
   };
