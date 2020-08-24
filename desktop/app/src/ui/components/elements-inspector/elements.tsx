@@ -687,15 +687,14 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
                 this.setState({scrolledElement: selected});
                 const outer = this._outerRef.current;
                 if (outer.scrollTo) {
-                  outer.scrollTo(
-                    0,
-                    this._calculateScrollTop(
+                  outer.scrollTo({
+                    top: this._calculateScrollTop(
                       outer.offsetHeight,
                       outer.scrollTop,
                       selectedRow.offsetHeight,
                       selectedRow.offsetTop,
                     ),
-                  );
+                  });
                 }
               }
             : null
