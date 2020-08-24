@@ -42,14 +42,6 @@ export interface PluginClient<
   onDisconnect(cb: () => void): void;
 
   /**
-   * Send a message to the connected client
-   */
-  send<Method extends keyof Methods>(
-    method: Method,
-    params: Parameters<Methods[Method]>[0],
-  ): ReturnType<Methods[Method]>;
-
-  /**
    * Subscribe to a specific event arriving from the device.
    *
    * Messages can only arrive if the plugin is enabled and connected.
@@ -59,6 +51,14 @@ export interface PluginClient<
     event: Event,
     callback: (params: Events[Event]) => void,
   ): void;
+
+  /**
+   * Send a message to the connected client
+   */
+  send<Method extends keyof Methods>(
+    method: Method,
+    params: Parameters<Methods[Method]>[0],
+  ): ReturnType<Methods[Method]>;
 }
 
 /**

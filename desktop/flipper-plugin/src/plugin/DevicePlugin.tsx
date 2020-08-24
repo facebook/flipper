@@ -15,12 +15,12 @@ export type DeviceLogListener = (entry: DeviceLogEntry) => void;
 
 export type DeviceLogEntry = {
   readonly date: Date;
+  readonly type: LogLevel;
+  readonly message: string;
   readonly pid: number;
   readonly tid: number;
   readonly app?: string;
-  readonly type: LogLevel;
   readonly tag: string;
-  readonly message: string;
 };
 
 export type LogLevel =
