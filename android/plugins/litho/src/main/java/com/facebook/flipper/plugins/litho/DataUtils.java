@@ -27,8 +27,7 @@ import javax.annotation.Nullable;
 
 public class DataUtils {
 
-  static List<com.facebook.flipper.plugins.inspector.Named<com.facebook.flipper.core.FlipperObject>>
-      getPropData(Object node) throws Exception {
+  static List<Named<FlipperObject>> getPropData(Object node) throws Exception {
     final FlipperObject.Builder props = new FlipperObject.Builder();
     List<Named<FlipperObject>> data = new ArrayList<>();
 
@@ -110,17 +109,17 @@ public class DataUtils {
     return hasState ? state.build() : null;
   }
 
-  static com.facebook.flipper.plugins.inspector.InspectorValue fromDrawable(Drawable d) {
+  static InspectorValue fromDrawable(Drawable d) {
     int color = 0;
     if (d instanceof ColorDrawable) {
       color = ((ColorDrawable) d).getColor();
     } else if (d instanceof ComparableColorDrawable) {
       color = ((ComparableColorDrawable) d).getColor();
     }
-    return com.facebook.flipper.plugins.inspector.InspectorValue.mutable(Color, color);
+    return InspectorValue.mutable(Color, color);
   }
 
-  static com.facebook.flipper.plugins.inspector.InspectorValue fromColor(int color) {
-    return com.facebook.flipper.plugins.inspector.InspectorValue.mutable(Color, color);
+  static InspectorValue fromColor(int color) {
+    return InspectorValue.mutable(Color, color);
   }
 }
