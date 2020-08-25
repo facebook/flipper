@@ -1,6 +1,6 @@
 {
   "name": "eslint-plugin-flipper",
-  "version": "0.53.0",
+  "version": "0.54.0",
   "private": true,
   "description": "Custom ESLint rules for Flipper",
   "repository": "facebook/flipper",
@@ -16,7 +16,7 @@
   "devDependencies": {
     "@types/jest": "26",
     "@typescript-eslint/parser": "^3.8.0",
-    "flipper-test-utils": "0.53.0",
+    "flipper-test-utils": "0.54.0",
     "jest": "^26",
     "metro-memory-fs": "^0.61.0",
     "prettier": "^2.0.0",

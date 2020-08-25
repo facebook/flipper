@@ -1,3 +1,11 @@
+# 0.54.0 (25/8/2020)
+
+ * [D23198103](https://github.com/facebook/flipper/search?q=D23198103&type=Commits) -  Introduce 'Debug Logs' section to help users to troubleshoot issues or to provide more accurate reports.
+ * [D23220937](https://github.com/facebook/flipper/search?q=D23220937&type=Commits) -  Removed some irrelevant errors from startup flow
+ * [D23293248](https://github.com/facebook/flipper/search?q=D23293248&type=Commits) -  [Databases] Fixed escaping of column names, see #1426
+ * [D23292543](https://github.com/facebook/flipper/search?q=D23292543&type=Commits) -  Fixed react-native-flipper causing Android release builds to fail
+
+
 # 0.53.0 (19/8/2020)
 
  * [D22999105](https://github.com/facebook/flipper/search?q=D22999105&type=Commits) -  Changelog entries now link to their GitHub commits
