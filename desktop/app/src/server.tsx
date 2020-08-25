@@ -294,12 +294,7 @@ class Server extends EventEmitter {
       medium,
     } = clientData;
     const transformedMedium = transformCertificateExchangeMediumToType(medium);
-    const duplicateDevices = this.store
-      .getState()
-      .connections.devices.filter((device) => device.serial === device_id);
-    // When user switches from WWW to FS_ACCESS, we reset the certs folder, but we don't do it other way around. Thus when user switches to WWW from FS_ACCESS and if certs arepresent then the device id sent by Flipper SDK is the original one and in that case we need not create a device.
-    if (transformedMedium === 'WWW' && duplicateDevices.length == 0) {
-      // TODO unregister previous ClientDevice's for a particular device
+    if (transformedMedium === 'WWW') {
       this.store.dispatch({
         type: 'REGISTER_DEVICE',
         payload: new ClientDevice(device_id, app, os),
@@ -501,7 +496,8 @@ class Server extends EventEmitter {
     // try to get id by comparing giving `csr` to file from `csr_path`
     // otherwise, use given device_id
     const {csr_path, csr} = csrQuery;
-    return (csr_path && csr && query.medium === 'FS_ACCESS'
+    // For iOS we do not need to confirm the device id, as it never changes unlike android.
+    return (csr_path && csr && query.os != 'iOS'
       ? this.certificateProvider.extractAppNameFromCSR(csr).then((appName) => {
           return this.certificateProvider.getTargetDeviceId(
             query.os,
