@@ -28,7 +28,7 @@ import java.util.Locale;
 
 public class ObjectMapper {
 
-  private static final int MAX_BLOB_LENGTH = 5120;
+  private static final int MAX_BLOB_LENGTH = 100 * 1024;
   private static final String UNKNOWN_BLOB_LABEL_FORMAT = "{%d-byte %s blob}";
 
   public static FlipperArray databaseListToFlipperArray(
