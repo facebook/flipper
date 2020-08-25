@@ -9,22 +9,24 @@
 
 import React, {useMemo, useState, useEffect, useReducer} from 'react';
 import {
-  Text,
   Input,
   DetailSidebar,
   Panel,
-  ManagedTable,
-  TableRows,
-  TableBodyRow,
   ManagedDataInspector,
   Value,
   valueToNullableString,
   renderValue,
-  Layout,
   Button,
   styled,
   produce,
+  colors,
 } from 'flipper';
+
+type TableRow = {
+  col: string;
+  type: Value['type'];
+  value: React.ReactElement;
+};
 
 type DatabaseDetailSidebarProps = {
   columnLabels: Array<string>;
@@ -41,29 +43,48 @@ const EditTriggerSection = styled.div({
   paddingRight: '10px',
 });
 
-function sidebarRows(labels: Array<string>, values: Array<Value>): TableRows {
+const TableDetailRow = styled.div({
+  borderBottom: `1px solid ${colors.blackAlpha10}`,
+  padding: 8,
+});
+
+const TableDetailRowTitle = styled.div({
+  fontWeight: 'bold',
+  marginBottom: 8,
+});
+
+const TableDetailRowType = styled.span({
+  color: colors.light20,
+  marginLeft: 8,
+  fontWeight: 'normal',
+});
+
+const TableDetailRowValue = styled.div({});
+
+function sidebarRows(labels: Array<string>, values: Array<Value>): TableRow[] {
   return labels.map((label, idx) => buildSidebarRow(label, values[idx]));
 }
 
-function buildSidebarRow(key: string, val: Value): TableBodyRow {
+function buildSidebarRow(key: string, val: Value): TableRow {
   let output = renderValue(val, true);
-  // TODO(T60896483): Narrow the scope of this try/catch block.
-  if (val.type === 'string') {
+  if (
+    (val.type === 'string' || val.type === 'blob') &&
+    (val.value[0] === '[' || val.value[0] === '{')
+  ) {
     try {
-      const parsed = JSON.parse(val.value);
-      output = (
-        <ManagedDataInspector data={parsed} expandRoot={false} collapsed />
-      );
+      // eslint-disable-next-line
+      var parsed = JSON.parse(val.value);
     } catch (_error) {}
+    if (parsed) {
+      output = (
+        <ManagedDataInspector data={parsed} expandRoot={true} collapsed />
+      );
+    }
   }
   return {
-    columns: {
-      col: {value: <Text>{key}</Text>},
-      val: {
-        value: output,
-      },
-    },
-    key: key,
+    col: key,
+    type: val.type,
+    value: output,
   };
 }
 
@@ -71,35 +92,32 @@ function sidebarEditableRows(
   labels: Array<string>,
   values: Array<Value>,
   rowDispatch: (action: RowAction) => void,
-): TableRows {
+): TableRow[] {
   return labels.map((label, idx) =>
-    buildSidebarEditableRow(
-      label,
-      valueToNullableString(values[idx]),
-      (value: string | null) => rowDispatch({type: 'set', key: label, value}),
+    buildSidebarEditableRow(label, values[idx], (value: string | null) =>
+      rowDispatch({type: 'set', key: label, value}),
     ),
   );
 }
 
 function buildSidebarEditableRow(
   key: string,
-  value: string | null,
+  val: Value,
   onUpdateValue: (value: string | null) => void,
-): TableBodyRow {
+): TableRow {
+  if (val.type === 'blob' || !val.type) {
+    return buildSidebarRow(key, val);
+  }
   return {
-    columns: {
-      col: {value: <Text>{key}</Text>},
-      val: {
-        value: (
-          <EditField
-            key={key}
-            initialValue={value}
-            onUpdateValue={onUpdateValue}
-          />
-        ),
-      },
-    },
-    key: key,
+    col: key,
+    type: val.type,
+    value: (
+      <EditField
+        key={key}
+        initialValue={valueToNullableString(val)}
+        onUpdateValue={onUpdateValue}
+      />
+    ),
   };
 }
 
@@ -120,24 +138,11 @@ const EditField = React.memo(
         }}
         placeholder={value === null ? 'NULL' : undefined}
         data-testid={'update-query-input'}
+        style={{width: '100%'}}
       />
     );
   },
 );
-const cols = {
-  col: {
-    value: 'Column',
-    resizable: true,
-  },
-  val: {
-    value: 'Value',
-    resizable: true,
-  },
-};
-const colSizes = {
-  col: '35%',
-  val: 'flex',
-};
 
 type RowState = {changes: {[key: string]: string | null}; updated: boolean};
 type RowAction =
@@ -181,37 +186,36 @@ export default React.memo(function DatabaseDetailSidebar(
         floating={false}
         collapsable={true}
         padded={false}>
-        <Layout.Top>
-          {onSave && (
-            <EditTriggerSection>
-              {editing ? (
-                <>
-                  <Button
-                    disabled={!rowState.updated}
-                    onClick={() => {
-                      onSave(rowState.changes);
-                      setEditing(false);
-                    }}>
-                    Save
-                  </Button>
-                  <Button onClick={() => setEditing(false)}>Close</Button>
-                </>
-              ) : (
-                <Button onClick={() => setEditing(true)}>Edit</Button>
-              )}
-            </EditTriggerSection>
-          )}
-          <ManagedTable
-            highlightableRows={false}
-            columnSizes={colSizes}
-            multiline={true}
-            columns={cols}
-            autoHeight={true}
-            floating={false}
-            zebra={false}
-            rows={rows}
-          />
-        </Layout.Top>
+        {onSave ? (
+          <EditTriggerSection>
+            {editing ? (
+              <>
+                <Button
+                  disabled={!rowState.updated}
+                  onClick={() => {
+                    onSave(rowState.changes);
+                    setEditing(false);
+                  }}>
+                  Save
+                </Button>
+                <Button onClick={() => setEditing(false)}>Close</Button>
+              </>
+            ) : (
+              <Button onClick={() => setEditing(true)}>Edit</Button>
+            )}
+          </EditTriggerSection>
+        ) : null}
+        <div>
+          {rows.map((row) => (
+            <TableDetailRow key={row.col}>
+              <TableDetailRowTitle>
+                {row.col}
+                <TableDetailRowType>({row.type})</TableDetailRowType>
+              </TableDetailRowTitle>
+              <TableDetailRowValue>{row.value}</TableDetailRowValue>
+            </TableDetailRow>
+          ))}
+        </div>
       </Panel>
     </DetailSidebar>
   );
