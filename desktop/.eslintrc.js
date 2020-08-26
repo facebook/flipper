@@ -13,6 +13,7 @@ const fbjs = require('eslint-config-fbjs');
 const pattern = /^\*\r?\n[\S\s]*Facebook[\S\s]* \* @format\r?\n/;
 
 const builtInModules = [
+  'fb-qpl-xplat',
   'flipper',
   'flipper-plugin',
   'flipper-plugin-lib',
