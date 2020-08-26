@@ -87,7 +87,7 @@ class Server extends EventEmitter {
   logger: Logger;
   store: Store;
   initialisePromise: Promise<void> | null;
-
+  timeHandler: NodeJS.Timeout | undefined;
   constructor(logger: Logger, store: Store) {
     super();
     this.logger = logger;
@@ -98,6 +98,7 @@ class Server extends EventEmitter {
     this.insecureServer = null;
     this.initialisePromise = null;
     this.store = store;
+    this.timeHandler = undefined;
   }
 
   init() {
@@ -276,6 +277,9 @@ class Server extends EventEmitter {
     if (!payload.data) {
       return {};
     }
+    if (this.timeHandler) {
+      clearTimeout(this.timeHandler);
+    }
     const clientData: ClientQuery &
       ClientCsrQuery & {medium: number | undefined} = JSON.parse(payload.data);
     this.connectionTracker.logConnectionAttempt(clientData);
@@ -410,6 +414,16 @@ class Server extends EventEmitter {
                   }),
                   metadata: '',
                 });
+
+                this.timeHandler = setTimeout(() => {
+                  // Fire notification
+                  this.emit('client-unresponsive-error', {
+                    client,
+                    medium: transformCertificateExchangeMediumToType(medium),
+                    deviceID: result.deviceId,
+                  });
+                }, 30 * 1000);
+
                 this.emit('finish-client-setup', {
                   client,
                   deviceId: result.deviceId,

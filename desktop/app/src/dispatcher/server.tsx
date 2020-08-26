@@ -14,7 +14,7 @@ import {Logger} from '../fb-interfaces/Logger';
 import Client from '../Client';
 import {UninitializedClient} from '../UninitializedClient';
 import {addErrorNotification} from '../reducers/notifications';
-
+import {CertificateExchangeMedium} from '../utils/CertificateProvider';
 export default (store: Store, logger: Logger) => {
   const server = new Server(logger, store);
   server.init();
@@ -78,6 +78,28 @@ export default (store: Store, logger: Logger) => {
           `Connection to '${client.appName}' on '${client.deviceName}' failed`,
           'Failed to start client connection',
           error,
+        ),
+      );
+    },
+  );
+
+  server.addListener(
+    'client-unresponsive-error',
+    ({
+      client,
+      medium,
+      deviceID,
+    }: {
+      client: UninitializedClient;
+      medium: CertificateExchangeMedium;
+      deviceID: string;
+    }) => {
+      store.dispatch(
+        addErrorNotification(
+          `Client ${client.appName} with device ${deviceID} took long time to connect back on the trusted channel.`,
+          medium === 'WWW'
+            ? 'Verify that you are on lighthouse on your client and have a working internet connection. To connect to lighthouse on your client, use VPN. Follow this link: https://www.internalfb.com/intern/wiki/Ops/Network/Enterprise_Network_Engineering/ene_wlra/VPN_Help/Vpn/mobile/'
+            : 'Verify if your client is connected to Flipper and verify if there is no error related to idb.',
         ),
       );
     },
