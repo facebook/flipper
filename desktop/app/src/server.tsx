@@ -101,10 +101,7 @@ class Server extends EventEmitter {
   }
 
   init() {
-    if (
-      process.env.NODE_ENV === 'development' &&
-      GK.get('flipper_self_inspection')
-    ) {
+    if (process.env.NODE_ENV === 'development') {
       initSelfInpector(this.store, this.logger, this, this.connections);
     }
 
