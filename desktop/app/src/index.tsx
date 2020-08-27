@@ -188,7 +188,7 @@ export {Console} from './ui/components/console';
 export {default as Sheet} from './ui/components/Sheet';
 export {default as FileSelector} from './ui/components/FileSelector';
 export {KeyboardActions} from './MenuBar';
-export {getFlipperMediaCDN} from './fb-stubs/user';
+export {getFlipperMediaCDN, appendAccessTokenToUrl} from './fb-stubs/user';
 export {Rect} from './utils/geometry';
 export {Logger} from './fb-interfaces/Logger';
 export {getInstance as getLogger} from './fb-stubs/Logger';

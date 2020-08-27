@@ -83,3 +83,9 @@ export async function getFlipperMediaCDN(
 export async function getPreferredEditorUriScheme(): Promise<string> {
   return 'vscode';
 }
+
+export const appendAccessTokenToUrl: (
+  url: URL,
+) => Promise<string> = async () => {
+  return Promise.reject(new Error('Implement appendAccessTokenToUrl'));
+};
