@@ -181,8 +181,15 @@ export default class CertificateProvider {
             archive.pipe(output);
             archive.finalize();
           });
-          await zipPromise;
-          await this.uploadFiles(certsZipPath, deviceId);
+
+          await reportPlatformFailures(
+            zipPromise,
+            'www-certs-exchange-zipping-certs',
+          );
+          await reportPlatformFailures(
+            this.uploadFiles(certsZipPath, deviceId),
+            'www-certs-exchange-uploading-certs',
+          );
         }
         return {
           deviceId,

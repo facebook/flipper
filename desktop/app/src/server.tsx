@@ -282,6 +282,13 @@ class Server extends EventEmitter {
     }
     const clientData: ClientQuery &
       ClientCsrQuery & {medium: number | undefined} = JSON.parse(payload.data);
+    this.logger.track('usage', 'trusted-request-handler-called', {
+      app: clientData.app,
+      os: clientData.os,
+      device: clientData.device,
+      device_id: clientData.device_id,
+      medium: clientData.medium,
+    });
     this.connectionTracker.logConnectionAttempt(clientData);
 
     const {
@@ -356,6 +363,8 @@ class Server extends EventEmitter {
       return {};
     }
     const clientData: ClientQuery = JSON.parse(payload.data);
+    this.logger.track('usage', 'untrusted-request-handler-called', clientData);
+
     this.connectionTracker.logConnectionAttempt(clientData);
 
     const client: UninitializedClient = {
