@@ -200,6 +200,8 @@ export default class LayoutPlugin extends FlipperPlugin<
     screenDimensions: null,
   };
 
+  private static isMylesInvoked = false;
+
   init() {
     if (!this.props.persistedState) {
       // If the selected plugin from the previous session was layout, then while importing the flipper export, the redux store doesn't get updated in the first render, due to which the plugin crashes, as it has no persisted state
@@ -221,6 +223,13 @@ export default class LayoutPlugin extends FlipperPlugin<
     this.client.subscribe('openInIDE', (params: ClassFileParams) => {
       this.openInIDE(params);
     });
+
+    // since the first launch of Myles might produce a lag (Myles daemon needs to start)
+    // try to invoke Myles during the first launch of the Layout Plugin
+    if (!LayoutPlugin.isMylesInvoked) {
+      this.invokeMyles();
+      LayoutPlugin.isMylesInvoked = true;
+    }
 
     if (this.props.isArchivedDevice) {
       this.getDevice()
@@ -263,6 +272,10 @@ export default class LayoutPlugin extends FlipperPlugin<
       params.repo,
       params.lineNumber,
     );
+  };
+
+  invokeMyles = async () => {
+    await IDEFileResolver.resolveFullPathsFromMyles('.config', 'fbsource');
   };
 
   onToggleTargetMode = () => {
