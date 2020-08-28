@@ -18,6 +18,7 @@ import Input from '../Input';
 import React, {KeyboardEvent} from 'react';
 import Glyph from '../Glyph';
 import {HighlightContext} from '../Highlight';
+import Select from '../Select';
 
 const NullValue = styled.span({
   color: 'rgb(128, 128, 128)',
@@ -540,6 +541,11 @@ function parseColor(
 
 const pencilStyle = {cursor: 'pointer', marginLeft: 8};
 
+type Picker = {
+  values: Set<string>;
+  selected: string;
+};
+
 class DataDescriptionContainer extends PureComponent<{
   type: string;
   value: any;
@@ -608,6 +614,27 @@ class DataDescriptionContainer extends PureComponent<{
         } else {
           return <span>Malformed color</span>;
         }
+      }
+
+      case 'picker': {
+        const picker: Picker = JSON.parse(val);
+        const options = [...picker.values].reduce((obj, value) => {
+          return {...obj, [value]: value};
+        }, {});
+        return (
+          <Select
+            options={options}
+            selected={picker.selected}
+            onChangeWithKey={(value: string) =>
+              this.props.commit({
+                value,
+                keep: true,
+                clear: false,
+                set: true,
+              })
+            }
+          />
+        );
       }
 
       case 'text':
