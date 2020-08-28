@@ -23,8 +23,8 @@ The `addPlugin` accepts a `plugin` parameter, that registers a client plugin and
 
 ## Example
 
-An example plugin can be found in [examples/FlipperTicTacToe.js](../sample/FlipperTicTacToe.js).
+An example plugin can be found in [FlipperTicTacToe.js](https://github.com/facebook/flipper/blob/master/react-native/ReactNativeFlipperExample/FlipperTicTacToe.js).
 
 The corresponding Desktop plugin ships by default in Flipper, so importing the above file and dropping the `<FlipperTicTacToe />` component somewhere in your application should work out of the box.
 
-The sources of the corresponding Desktop plugin can be found [here](../../desktop/plugins/rn-tic-tac-toe).
+The sources of the corresponding Desktop plugin can be found [here](https://github.com/facebook/flipper/tree/master/desktop/plugins/rn-tic-tac-toe).
