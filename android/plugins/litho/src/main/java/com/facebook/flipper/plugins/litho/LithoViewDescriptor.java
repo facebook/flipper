@@ -13,6 +13,7 @@ import com.facebook.flipper.core.FlipperDynamic;
 import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.plugins.inspector.Named;
 import com.facebook.flipper.plugins.inspector.NodeDescriptor;
+import com.facebook.flipper.plugins.inspector.SetDataOperations;
 import com.facebook.flipper.plugins.inspector.Touch;
 import com.facebook.litho.DebugComponent;
 import com.facebook.litho.LithoView;
@@ -108,9 +109,14 @@ public class LithoViewDescriptor extends NodeDescriptor<LithoView> {
   }
 
   @Override
-  public void setValue(LithoView node, String[] path, FlipperDynamic value) throws Exception {
+  public void setValue(
+      LithoView node,
+      String[] path,
+      @Nullable SetDataOperations.FlipperValueHint kind,
+      FlipperDynamic value)
+      throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
-    descriptor.setValue(node, path, value);
+    descriptor.setValue(node, path, kind, value);
   }
 
   @Override

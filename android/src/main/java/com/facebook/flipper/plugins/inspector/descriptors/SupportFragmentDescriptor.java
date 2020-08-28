@@ -14,6 +14,7 @@ import com.facebook.flipper.core.FlipperDynamic;
 import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.plugins.inspector.Named;
 import com.facebook.flipper.plugins.inspector.NodeDescriptor;
+import com.facebook.flipper.plugins.inspector.SetDataOperations;
 import com.facebook.flipper.plugins.inspector.Touch;
 import com.facebook.flipper.plugins.inspector.descriptors.utils.stethocopies.ResourcesUtil;
 import java.util.Arrays;
@@ -63,7 +64,11 @@ public class SupportFragmentDescriptor extends NodeDescriptor<Fragment> {
   }
 
   @Override
-  public void setValue(Fragment node, String[] path, FlipperDynamic value) {}
+  public void setValue(
+      Fragment node,
+      String[] path,
+      @Nullable SetDataOperations.FlipperValueHint kind,
+      FlipperDynamic value) {}
 
   @Override
   public List<Named<String>> getAttributes(Fragment node) {

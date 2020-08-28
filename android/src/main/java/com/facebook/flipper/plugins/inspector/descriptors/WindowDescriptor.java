@@ -16,6 +16,7 @@ import com.facebook.flipper.core.FlipperDynamic;
 import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.plugins.inspector.Named;
 import com.facebook.flipper.plugins.inspector.NodeDescriptor;
+import com.facebook.flipper.plugins.inspector.SetDataOperations;
 import com.facebook.flipper.plugins.inspector.Touch;
 import java.lang.reflect.Field;
 import java.util.Collections;
@@ -111,7 +112,11 @@ public class WindowDescriptor extends NodeDescriptor<Window> {
   }
 
   @Override
-  public void setValue(Window node, String[] path, FlipperDynamic value) {}
+  public void setValue(
+      Window node,
+      String[] path,
+      @Nullable SetDataOperations.FlipperValueHint kind,
+      FlipperDynamic value) {}
 
   @Override
   public List<Named<String>> getAttributes(Window node) {

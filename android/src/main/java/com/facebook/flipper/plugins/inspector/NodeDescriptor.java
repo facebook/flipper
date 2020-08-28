@@ -149,7 +149,12 @@ public abstract class NodeDescriptor<T> {
    * provided by {@link this#getData(Object)} and the value will be of the same type as the value
    * mathcing that path in the returned object.
    */
-  public abstract void setValue(T node, String[] path, FlipperDynamic value) throws Exception;
+  public abstract void setValue(
+      T node,
+      String[] path,
+      @Nullable SetDataOperations.FlipperValueHint kind,
+      FlipperDynamic value)
+      throws Exception;
 
   /**
    * Get the attributes for this node. This is a list of read-only string:string mapping which show

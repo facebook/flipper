@@ -394,7 +394,12 @@ public class InspectorFlipperPluginTest {
     }
 
     @Override
-    public void setValue(TestNode node, String[] path, FlipperDynamic value) throws Exception {
+    public void setValue(
+        TestNode node,
+        String[] path,
+        @Nullable SetDataOperations.FlipperValueHint kind,
+        FlipperDynamic value)
+        throws Exception {
       if (path[0].equals("data")) {
         node.data = value.asObject();
       }

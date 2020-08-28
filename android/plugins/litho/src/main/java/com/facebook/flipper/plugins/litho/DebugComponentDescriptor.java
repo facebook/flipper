@@ -22,6 +22,7 @@ import com.facebook.flipper.plugins.inspector.HighlightedOverlay;
 import com.facebook.flipper.plugins.inspector.InspectorValue;
 import com.facebook.flipper.plugins.inspector.Named;
 import com.facebook.flipper.plugins.inspector.NodeDescriptor;
+import com.facebook.flipper.plugins.inspector.SetDataOperations;
 import com.facebook.flipper.plugins.inspector.Touch;
 import com.facebook.flipper.plugins.inspector.descriptors.ObjectDescriptor;
 import com.facebook.flipper.plugins.inspector.descriptors.utils.ContextDescriptorUtils;
@@ -48,51 +49,61 @@ import javax.annotation.Nullable;
 
 public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
 
-  private Map<String, List<Pair<String[], FlipperDynamic>>> mOverrides = new HashMap<>();
+  private Map<
+          String, List<Pair<String[], Pair<SetDataOperations.FlipperValueHint, FlipperDynamic>>>>
+      mOverrides = new HashMap<>();
   private DebugComponent.Overrider mOverrider =
       new DebugComponent.Overrider() {
         @Override
         public void applyComponentOverrides(String key, Component component) {
-          final List<Pair<String[], FlipperDynamic>> overrides = mOverrides.get(key);
+          final List<Pair<String[], Pair<SetDataOperations.FlipperValueHint, FlipperDynamic>>>
+              overrides = mOverrides.get(key);
           if (overrides == null) {
             return;
           }
 
-          for (Pair<String[], FlipperDynamic> override : overrides) {
+          for (Pair<String[], Pair<SetDataOperations.FlipperValueHint, FlipperDynamic>> override :
+              overrides) {
             if (override.first[0].equals("Props")) {
-              applyReflectiveOverride(component, override.first, override.second);
+              applyReflectiveOverride(
+                  component, override.first, override.second.first, override.second.second);
             }
           }
         }
 
         @Override
         public void applyStateOverrides(String key, StateContainer stateContainer) {
-          final List<Pair<String[], FlipperDynamic>> overrides = mOverrides.get(key);
+          final List<Pair<String[], Pair<SetDataOperations.FlipperValueHint, FlipperDynamic>>>
+              overrides = mOverrides.get(key);
           if (overrides == null) {
             return;
           }
 
-          for (Pair<String[], FlipperDynamic> override : overrides) {
+          for (Pair<String[], Pair<SetDataOperations.FlipperValueHint, FlipperDynamic>> override :
+              overrides) {
             if (override.first[0].equals("State")) {
-              applyReflectiveOverride(stateContainer, override.first, override.second);
+              applyReflectiveOverride(
+                  stateContainer, override.first, override.second.first, override.second.second);
             }
           }
         }
 
         @Override
         public void applyLayoutOverrides(String key, DebugLayoutNode node) {
-          final List<Pair<String[], FlipperDynamic>> overrides = mOverrides.get(key);
+          final List<Pair<String[], Pair<SetDataOperations.FlipperValueHint, FlipperDynamic>>>
+              overrides = mOverrides.get(key);
           if (overrides == null) {
             return;
           }
 
-          for (Pair<String[], FlipperDynamic> override : overrides) {
+          for (Pair<String[], Pair<SetDataOperations.FlipperValueHint, FlipperDynamic>> override :
+              overrides) {
             if (override.first[0].equals("Layout")) {
               try {
                 applyLayoutOverride(
                     node,
                     Arrays.copyOfRange(override.first, 1, override.first.length),
-                    override.second);
+                    override.second.second);
               } catch (Exception ignored) {
               }
             }
@@ -327,13 +338,18 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
   }
 
   @Override
-  public void setValue(DebugComponent node, String[] path, FlipperDynamic value) {
-    List<Pair<String[], FlipperDynamic>> overrides = mOverrides.get(node.getGlobalKey());
+  public void setValue(
+      DebugComponent node,
+      String[] path,
+      @Nullable SetDataOperations.FlipperValueHint kind,
+      FlipperDynamic value) {
+    List<Pair<String[], Pair<SetDataOperations.FlipperValueHint, FlipperDynamic>>> overrides =
+        mOverrides.get(node.getGlobalKey());
     if (overrides == null) {
       overrides = new ArrayList<>();
       mOverrides.put(node.getGlobalKey(), overrides);
     }
-    overrides.add(new Pair<>(path, value));
+    overrides.add(new Pair<>(path, new Pair<>(kind, value)));
 
     node.setOverrider(mOverrider);
     node.rerender();
@@ -554,11 +570,13 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
 
   // The path follows the pattern (Props|State)/field/(field|index)*
   private static void applyReflectiveOverride(
-      Object o, final String[] path, final FlipperDynamic dynamic) {
+      Object o,
+      final String[] path,
+      @Nullable SetDataOperations.FlipperValueHint hint,
+      final FlipperDynamic dynamic) {
     try {
       final Field field = o.getClass().getDeclaredField(path[1]);
-      FlipperEditor.updateComponent(path, field, o, dynamic);
-
+      FlipperEditor.updateComponent(path, field, o, hint, dynamic);
     } catch (Exception ignored) {
     }
   }

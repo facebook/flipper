@@ -14,6 +14,7 @@ import com.facebook.flipper.core.FlipperDynamic;
 import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.plugins.inspector.Named;
 import com.facebook.flipper.plugins.inspector.NodeDescriptor;
+import com.facebook.flipper.plugins.inspector.SetDataOperations;
 import com.facebook.flipper.plugins.inspector.Touch;
 import com.facebook.flipper.plugins.inspector.descriptors.utils.ContextDescriptorUtils;
 import com.facebook.flipper.plugins.inspector.descriptors.utils.stethocopies.FragmentActivityAccessor;
@@ -73,7 +74,12 @@ public class ActivityDescriptor extends NodeDescriptor<Activity> {
   }
 
   @Override
-  public void setValue(Activity node, String[] path, FlipperDynamic value) throws Exception {}
+  public void setValue(
+      Activity node,
+      String[] path,
+      @Nullable SetDataOperations.FlipperValueHint kind,
+      FlipperDynamic value)
+      throws Exception {}
 
   @Override
   public List<Named<String>> getAttributes(Activity node) {

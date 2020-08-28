@@ -12,6 +12,7 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
+import androidx.core.util.Pair;
 import com.facebook.flipper.core.ErrorReportingRunnable;
 import com.facebook.flipper.core.FlipperArray;
 import com.facebook.flipper.core.FlipperConnection;
@@ -331,7 +332,23 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
           final String nodeId = params.getString("id");
           final boolean ax = params.getBoolean("ax");
           final FlipperArray keyPath = params.getArray("path");
-          final FlipperDynamic value = params.getDynamic("value");
+
+          SetDataOperations.FlipperValueHint hint;
+          FlipperDynamic value;
+          final Object wrapper = params.get("value");
+          if (wrapper instanceof FlipperObject && ((FlipperObject) wrapper).contains("kind")) {
+
+            // New message with tagged types
+            final Pair<SetDataOperations.FlipperValueHint, FlipperDynamic> message =
+                SetDataOperations.parseLayoutEditorMessage((FlipperObject) wrapper);
+            hint = message.first;
+            value = message.second;
+
+          } else {
+            // Old message with untagged types
+            hint = null;
+            value = params.getDynamic("value");
+          }
 
           final Object obj = mObjectTracker.get(nodeId);
           if (obj == null) {
@@ -349,7 +366,7 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
             path[i] = keyPath.getString(i);
           }
 
-          descriptor.setValue(obj, path, value);
+          descriptor.setValue(obj, path, hint, value);
           responder.success(ax ? getAXNode(nodeId) : null);
         }
       };

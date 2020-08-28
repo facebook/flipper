@@ -17,6 +17,7 @@ import com.facebook.flipper.plugins.inspector.HighlightedOverlay;
 import com.facebook.flipper.plugins.inspector.InspectorValue;
 import com.facebook.flipper.plugins.inspector.Named;
 import com.facebook.flipper.plugins.inspector.NodeDescriptor;
+import com.facebook.flipper.plugins.inspector.SetDataOperations;
 import com.facebook.flipper.plugins.inspector.Touch;
 import java.util.Arrays;
 import java.util.Collections;
@@ -66,7 +67,11 @@ public class DrawableDescriptor extends NodeDescriptor<Drawable> {
   }
 
   @Override
-  public void setValue(Drawable node, String[] path, FlipperDynamic value) {
+  public void setValue(
+      Drawable node,
+      String[] path,
+      @Nullable SetDataOperations.FlipperValueHint kind,
+      FlipperDynamic value) {
     final Rect bounds = node.getBounds();
 
     switch (path[0]) {

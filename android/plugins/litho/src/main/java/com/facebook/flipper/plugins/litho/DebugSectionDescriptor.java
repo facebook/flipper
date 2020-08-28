@@ -18,6 +18,7 @@ import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.plugins.inspector.HighlightedOverlay;
 import com.facebook.flipper.plugins.inspector.Named;
 import com.facebook.flipper.plugins.inspector.NodeDescriptor;
+import com.facebook.flipper.plugins.inspector.SetDataOperations;
 import com.facebook.flipper.plugins.inspector.Touch;
 import com.facebook.litho.sections.Section;
 import com.facebook.litho.sections.debug.DebugSection;
@@ -96,7 +97,12 @@ public class DebugSectionDescriptor extends NodeDescriptor<DebugSection> {
   }
 
   @Override
-  public void setValue(DebugSection node, String[] path, FlipperDynamic value) throws Exception {
+  public void setValue(
+      DebugSection node,
+      String[] path,
+      @Nullable SetDataOperations.FlipperValueHint kind,
+      FlipperDynamic value)
+      throws Exception {
     // TODO T39526148
   }
 

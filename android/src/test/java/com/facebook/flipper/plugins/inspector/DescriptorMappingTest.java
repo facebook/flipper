@@ -15,6 +15,7 @@ import com.facebook.flipper.core.FlipperDynamic;
 import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.testing.FlipperConnectionMock;
 import java.util.List;
+import javax.annotation.Nullable;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
@@ -56,7 +57,12 @@ public class DescriptorMappingTest {
     }
 
     @Override
-    public void setValue(T node, String[] path, FlipperDynamic value) throws Exception {}
+    public void setValue(
+        T node,
+        String[] path,
+        @Nullable SetDataOperations.FlipperValueHint kind,
+        FlipperDynamic value)
+        throws Exception {}
 
     @Override
     public List<Named<String>> getAttributes(T node) {

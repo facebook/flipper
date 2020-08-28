@@ -7,11 +7,13 @@
 
 package com.facebook.flipper.plugins.litho;
 
+import androidx.core.util.Pair;
 import com.facebook.flipper.core.FlipperArray;
 import com.facebook.flipper.core.FlipperDynamic;
 import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.core.FlipperValue;
 import com.facebook.flipper.plugins.inspector.InspectorValue;
+import com.facebook.flipper.plugins.inspector.SetDataOperations;
 import com.facebook.litho.editor.EditorRegistry;
 import com.facebook.litho.editor.model.EditorArray;
 import com.facebook.litho.editor.model.EditorBool;
@@ -20,7 +22,10 @@ import com.facebook.litho.editor.model.EditorShape;
 import com.facebook.litho.editor.model.EditorString;
 import com.facebook.litho.editor.model.EditorValue;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
 
@@ -53,7 +58,36 @@ public class FlipperEditor {
    * chain into the object. Fields retain their name, positions in an array use their index.
    */
   public static @Nullable Boolean updateComponent(
-      String[] path, Field field, Object o, FlipperDynamic dynamic) {
+      String[] path,
+      Field field,
+      Object o,
+      final @Nullable SetDataOperations.FlipperValueHint hint,
+      FlipperDynamic dynamic) {
+    EditorValue edit = parseEditorValue(hint, dynamic);
+    for (int i = path.length - 1; i > 0; i--) {
+      HashMap<String, EditorValue> content = new HashMap<>();
+      content.put(path[i], edit);
+      edit = EditorValue.shape(content);
+    }
+    return EditorRegistry.write(field.getType(), field, o, edit);
+  }
+
+  /**
+   * Layout Plugin supports a protocol that tags the type of all messages. This enables support for
+   * heterogeneous Maps and Arrays.
+   *
+   * @param hint type hint for the FlipperDynamic parameter
+   * @param dynamic The value produced by the Flipper user
+   * @return an EditorValue extracted from dynamic
+   */
+  private static EditorValue parseEditorValue(
+      @Nullable SetDataOperations.FlipperValueHint hint, FlipperDynamic dynamic) {
+    // TODO(festevezga) - Remove educated guess when the Layout Plugin is updated to produce tagged
+    // messages
+    return hint == null ? guessEditorValue(dynamic) : extractEditorValue(hint, dynamic);
+  }
+
+  private static EditorValue guessEditorValue(FlipperDynamic dynamic) {
     Object raw = dynamic.raw();
     EditorValue edit;
     if (raw instanceof String) {
@@ -65,12 +99,59 @@ public class FlipperEditor {
     } else {
       edit = EditorValue.string(raw.toString());
     }
-    for (int i = path.length - 1; i > 0; i--) {
-      HashMap<String, EditorValue> content = new HashMap<>();
-      content.put(path[i], edit);
-      edit = EditorValue.shape(content);
+    return edit;
+  }
+
+  /**
+   * This method flattens the Layout Editor messages using the type hints, recursively.
+   *
+   * @param hint type hint for the FlipperDynamic parameter
+   * @param dynamic The value produced by the Flipper user
+   * @return an EditorValue extracted from dynamic
+   */
+  private static EditorValue extractEditorValue(
+      SetDataOperations.FlipperValueHint hint, FlipperDynamic dynamic) {
+    switch (hint) {
+      case STRING:
+        return EditorValue.string(dynamic.asString());
+      case NUMBER:
+        return EditorValue.number(dynamic.asDouble());
+      case OBJECT:
+        return EditorValue.shape(parseObject(dynamic.asObject()));
+      case ARRAY:
+        return EditorValue.array(parseArray(dynamic.asArray()));
+      case NULL:
+        // TODO(festevezga) - add support for null
+        return EditorValue.string("null");
+      default:
+        // Java switch isn't exhaustive before Java 13
+        return EditorValue.string("If you see this, report an error to the Flipper repository");
     }
-    return EditorRegistry.write(field.getType(), field, o, edit);
+  }
+
+  private static Map<String, EditorValue> parseObject(FlipperObject flipperObject) {
+    final Iterator<String> keys = flipperObject.keys();
+    final Map<String, EditorValue> values = new HashMap<>();
+    while (keys.hasNext()) {
+      final String field = keys.next();
+      final FlipperObject object = flipperObject.getObject(field);
+      final Pair<SetDataOperations.FlipperValueHint, FlipperDynamic> value =
+          SetDataOperations.parseLayoutEditorMessage(object);
+      values.put(field, parseEditorValue(value.first, value.second));
+    }
+    return values;
+  }
+
+  private static List<EditorValue> parseArray(FlipperArray flipperArray) {
+    ArrayList<EditorValue> values = new ArrayList<>();
+    for (int i = 0; i < flipperArray.length(); i++) {
+      final FlipperObject object = flipperArray.getObject(i);
+      final Pair<SetDataOperations.FlipperValueHint, FlipperDynamic> value =
+          SetDataOperations.parseLayoutEditorMessage(object);
+      values.add(parseEditorValue(value.first, value.second));
+    }
+
+    return values;
   }
 
   /** Converts into one of FlipperValue, FlipperObject, or FlipperArray */

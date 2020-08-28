@@ -14,6 +14,7 @@ import com.facebook.flipper.core.FlipperDynamic;
 import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.plugins.inspector.Named;
 import com.facebook.flipper.plugins.inspector.NodeDescriptor;
+import com.facebook.flipper.plugins.inspector.SetDataOperations;
 import com.facebook.flipper.plugins.inspector.Touch;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -52,9 +53,14 @@ public class SupportDialogFragmentDescriptor extends NodeDescriptor<DialogFragme
   }
 
   @Override
-  public void setValue(DialogFragment node, String[] path, FlipperDynamic value) throws Exception {
+  public void setValue(
+      DialogFragment node,
+      String[] path,
+      @Nullable SetDataOperations.FlipperValueHint kind,
+      FlipperDynamic value)
+      throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(Fragment.class);
-    descriptor.setValue(node, path, value);
+    descriptor.setValue(node, path, kind, value);
   }
 
   @Override

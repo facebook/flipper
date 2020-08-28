@@ -34,6 +34,7 @@ import com.facebook.flipper.plugins.inspector.HighlightedOverlay;
 import com.facebook.flipper.plugins.inspector.InspectorValue;
 import com.facebook.flipper.plugins.inspector.Named;
 import com.facebook.flipper.plugins.inspector.NodeDescriptor;
+import com.facebook.flipper.plugins.inspector.SetDataOperations;
 import com.facebook.flipper.plugins.inspector.Touch;
 import com.facebook.flipper.plugins.inspector.descriptors.utils.AccessibilityEvaluationUtil;
 import com.facebook.flipper.plugins.inspector.descriptors.utils.AccessibilityRoleUtil;
@@ -202,7 +203,11 @@ public class ViewDescriptor extends NodeDescriptor<View> {
 
   @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
   @Override
-  public void setValue(View node, String[] path, FlipperDynamic value) {
+  public void setValue(
+      View node,
+      String[] path,
+      @Nullable SetDataOperations.FlipperValueHint kind,
+      FlipperDynamic value) {
     if (path[0].equals(axViewPropsTitle)
         || path[0].equals(axNodeInfoPropsTitle)
         || path[0].equals(axTalkbackPropsTitle)) {

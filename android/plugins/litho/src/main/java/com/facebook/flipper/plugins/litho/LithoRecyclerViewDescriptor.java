@@ -13,11 +13,13 @@ import com.facebook.flipper.core.FlipperDynamic;
 import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.plugins.inspector.Named;
 import com.facebook.flipper.plugins.inspector.NodeDescriptor;
+import com.facebook.flipper.plugins.inspector.SetDataOperations;
 import com.facebook.flipper.plugins.inspector.Touch;
 import com.facebook.litho.sections.debug.DebugSection;
 import com.facebook.litho.widget.LithoRecylerView;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nullable;
 
 public class LithoRecyclerViewDescriptor extends NodeDescriptor<LithoRecylerView> {
 
@@ -105,10 +107,14 @@ public class LithoRecyclerViewDescriptor extends NodeDescriptor<LithoRecylerView
   }
 
   @Override
-  public void setValue(LithoRecylerView node, String[] path, FlipperDynamic value)
+  public void setValue(
+      LithoRecylerView node,
+      String[] path,
+      @Nullable SetDataOperations.FlipperValueHint kind,
+      FlipperDynamic value)
       throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
-    descriptor.setValue(node, path, value);
+    descriptor.setValue(node, path, kind, value);
   }
 
   @Override

@@ -23,6 +23,7 @@ import com.facebook.flipper.plugins.inspector.HiddenNode;
 import com.facebook.flipper.plugins.inspector.InspectorValue;
 import com.facebook.flipper.plugins.inspector.Named;
 import com.facebook.flipper.plugins.inspector.NodeDescriptor;
+import com.facebook.flipper.plugins.inspector.SetDataOperations;
 import com.facebook.flipper.plugins.inspector.Touch;
 import com.facebook.flipper.plugins.inspector.descriptors.utils.stethocopies.FragmentCompatUtil;
 import java.util.ArrayList;
@@ -196,7 +197,12 @@ public class ViewGroupDescriptor extends NodeDescriptor<ViewGroup> {
   }
 
   @Override
-  public void setValue(ViewGroup node, String[] path, FlipperDynamic value) throws Exception {
+  public void setValue(
+      ViewGroup node,
+      String[] path,
+      @Nullable SetDataOperations.FlipperValueHint kind,
+      FlipperDynamic value)
+      throws Exception {
     switch (path[0]) {
       case "ViewGroup":
         switch (path[1]) {
@@ -223,7 +229,7 @@ public class ViewGroupDescriptor extends NodeDescriptor<ViewGroup> {
         break;
       default:
         final NodeDescriptor descriptor = descriptorForClass(View.class);
-        descriptor.setValue(node, path, value);
+        descriptor.setValue(node, path, kind, value);
         break;
     }
     invalidate(node);
