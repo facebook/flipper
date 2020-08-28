@@ -9,6 +9,7 @@ package com.facebook.flipper.plugins.inspector;
 
 import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.core.FlipperValue;
+import java.util.Set;
 
 public class InspectorValue<T> implements FlipperValue {
 
@@ -28,6 +29,7 @@ public class InspectorValue<T> implements FlipperValue {
     public static final Type<Boolean> Boolean = new Type<>("boolean");
     public static final Type<String> Enum = new Type<>("enum");
     public static final Type<Integer> Color = new Type<>("color");
+    public static final Type<Picker> Picker = new Type<>("picker");
 
     private final String mName;
 
@@ -74,5 +76,36 @@ public class InspectorValue<T> implements FlipperValue {
         .put("__mutable__", mMutable)
         .put("value", mValue)
         .build();
+  }
+
+  public static final class Picker {
+    public final Set<String> values;
+    public final String selected;
+
+    public Picker(Set<String> values, String selected) {
+      this.values = values;
+      this.selected = selected;
+    }
+
+    @Override
+    public String toString() {
+      // FIXME(festevezga) - Manually rolled json, #noragrets
+      StringBuilder b = new StringBuilder();
+      b.append("{ \"values\": ");
+      b.append("[");
+      int i = values.size();
+      for (String value : values) {
+        b.append('"').append(value).append('"');
+        i--;
+        if (i != 0) {
+          b.append(",");
+        }
+      }
+      b.append("]");
+      b.append(", \"selected\": \"");
+      b.append(selected);
+      b.append("\"}");
+      return b.toString();
+    }
   }
 }
