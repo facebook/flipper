@@ -10,6 +10,7 @@ package com.facebook.flipper.plugins.litho;
 import static com.facebook.flipper.plugins.inspector.InspectorValue.Type.Boolean;
 import static com.facebook.flipper.plugins.inspector.InspectorValue.Type.Enum;
 import static com.facebook.flipper.plugins.inspector.InspectorValue.Type.Number;
+import static com.facebook.flipper.plugins.inspector.InspectorValue.Type.Picker;
 
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
@@ -40,6 +41,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
@@ -182,14 +184,48 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
     data.put("background", DataUtils.fromDrawable(layout.getBackground()));
     data.put("foreground", DataUtils.fromDrawable(layout.getForeground()));
 
-    data.put("direction", InspectorValue.mutable(Enum, layout.getLayoutDirection().toString()));
-    data.put("flex-direction", InspectorValue.mutable(Enum, layout.getFlexDirection().toString()));
     data.put(
-        "justify-content", InspectorValue.mutable(Enum, layout.getJustifyContent().toString()));
-    data.put("align-items", InspectorValue.mutable(Enum, layout.getAlignItems().toString()));
-    data.put("align-self", InspectorValue.mutable(Enum, layout.getAlignSelf().toString()));
-    data.put("align-content", InspectorValue.mutable(Enum, layout.getAlignContent().toString()));
-    data.put("position-type", InspectorValue.mutable(Enum, layout.getPositionType().toString()));
+        "direction",
+        InspectorValue.mutable(
+            Picker,
+            new InspectorValue.Picker(
+                enumToSet(YogaDirection.values()), layout.getLayoutDirection().name())));
+    data.put(
+        "flex-direction",
+        InspectorValue.mutable(
+            Picker,
+            new InspectorValue.Picker(
+                enumToSet(YogaFlexDirection.values()), layout.getFlexDirection().name())));
+    data.put(
+        "justify-content",
+        InspectorValue.mutable(
+            Picker,
+            new InspectorValue.Picker(
+                enumToSet(YogaJustify.values()), layout.getJustifyContent().name())));
+    data.put(
+        "align-items",
+        InspectorValue.mutable(
+            Picker,
+            new InspectorValue.Picker(
+                enumToSet(YogaAlign.values()), layout.getAlignItems().name())));
+    data.put(
+        "align-self",
+        InspectorValue.mutable(
+            Picker,
+            new InspectorValue.Picker(
+                enumToSet(YogaAlign.values()), layout.getAlignSelf().name())));
+    data.put(
+        "align-content",
+        InspectorValue.mutable(
+            Picker,
+            new InspectorValue.Picker(
+                enumToSet(YogaAlign.values()), layout.getAlignContent().name())));
+    data.put(
+        "position-type",
+        InspectorValue.mutable(
+            Picker,
+            new InspectorValue.Picker(
+                enumToSet(YogaPositionType.values()), layout.getPositionType().name())));
 
     data.put("flex-grow", fromFloat(layout.getFlexGrow()));
     data.put("flex-shrink", fromFloat(layout.getFlexShrink()));
@@ -265,6 +301,14 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
     }
 
     return data.build();
+  }
+
+  private static <E extends Enum<E>> HashSet<String> enumToSet(Enum<E>[] enums) {
+    final HashSet<String> names = new HashSet<>();
+    for (Enum<E> aEnum : enums) {
+      names.add(aEnum.name());
+    }
+    return names;
   }
 
   @Nullable
