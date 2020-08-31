@@ -123,12 +123,12 @@ export abstract class FlipperClient {
     this._isConnected = true;
     Array.from(this.plugins.values())
       .filter((plugin) => plugin.runInBackground())
-      .map(this.connectPlugin);
+      .map(this.connectPlugin, this);
   }
 
   onDisconnect() {
     this._isConnected = false;
-    Array.from(this.plugins.values()).map(this.disconnectPlugin);
+    Array.from(this.plugins.values()).map(this.disconnectPlugin, this);
   }
 
   abstract start(appName: string): void;
