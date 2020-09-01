@@ -2,7 +2,7 @@
   "$schema": "https://fbflipper.com/schemas/plugin-package/v2.json",
   "name": "flipper-plugin-preferences",
   "id": "Preferences",
-  "version": "0.54.0",
+  "version": "0.55.0",
   "main": "dist/bundle.js",
   "flipperBundlerEntry": "index.js",
   "license": "MIT",

@@ -1,3 +1,9 @@
+# 0.55.0 (1/9/2020)
+
+ * [D23345560](https://github.com/facebook/flipper/search?q=D23345560&type=Commits) -  Flipper Self inspection - Flipper Messages plugin added to dev builds to show messages sent/received from clients
+ * [D23369774](https://github.com/facebook/flipper/search?q=D23369774&type=Commits) -  React DevTools plugin: fixed issue when sometimes multiple copies of dev tools were opened.
+
+
 # 0.54.0 (25/8/2020)
 
  * [D23198103](https://github.com/facebook/flipper/search?q=D23198103&type=Commits) -  Introduce 'Debug Logs' section to help users to troubleshoot issues or to provide more accurate reports.
