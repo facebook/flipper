@@ -29,6 +29,7 @@ export {
   MenuEntry,
   NormalizedMenuEntry,
   buildInMenuEntries,
+  DefaultKeyboardAction,
 } from './plugin/MenuEntry';
 
 // It's not ideal that this exists in flipper-plugin sources directly,

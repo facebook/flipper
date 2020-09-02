@@ -42,9 +42,9 @@ import {convertRequestToCurlCommand, getHeaderValue, decodeBody} from './utils';
 import RequestDetails from './RequestDetails';
 import {clipboard} from 'electron';
 import {URL} from 'url';
-import {DefaultKeyboardAction} from 'app/src/MenuBar';
 import {MockResponseDialog} from './MockResponseDialog';
 import {combineBase64Chunks} from './chunks';
+import {DefaultKeyboardAction} from 'flipper-plugin';
 
 const LOCALSTORAGE_MOCK_ROUTE_LIST_KEY = '__NETWORK_CACHED_MOCK_ROUTE_LIST';
 
@@ -599,8 +599,13 @@ function buildRow(
   if (request.url == null) {
     return null;
   }
-  const url = new URL(request.url);
-  const domain = url.host + url.pathname;
+  let url: URL | undefined = undefined;
+  try {
+    url = new URL(request.url);
+  } catch (e) {
+    console.warn(`Failed to parse url: '${request.url}'`, e);
+  }
+  const domain = url ? url.host + url.pathname : '<unknown>';
   const friendlyName = getHeaderValue(request.headers, 'X-FB-Friendly-Name');
   const style = response && response.isMock ? mockingStyle : undefined;
 

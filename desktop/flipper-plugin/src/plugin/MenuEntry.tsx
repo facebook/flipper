@@ -7,10 +7,10 @@
  * @format
  */
 
-export type DefaultKeyboardAction = 'clear' | 'goToBottom' | 'createPaste';
 export type TopLevelMenu = 'Edit' | 'View' | 'Window' | 'Help';
 
 export type MenuEntry = BuiltInMenuEntry | CustomMenuEntry;
+export type DefaultKeyboardAction = keyof typeof buildInMenuEntries;
 
 export type NormalizedMenuEntry = {
   label: string;
