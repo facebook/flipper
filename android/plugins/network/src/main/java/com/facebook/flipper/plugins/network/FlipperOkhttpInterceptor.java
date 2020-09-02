@@ -40,8 +40,8 @@ import okio.BufferedSource;
 public class FlipperOkhttpInterceptor
     implements Interceptor, BufferingFlipperPlugin.MockResponseConnectionListener {
 
-  // By default, limit body size (request or response) reporting to 100KB to avoid OOM
-  private static final long DEFAULT_MAX_BODY_BYTES = 100 * 1024;
+  // By default, limit body size (request or response) reporting to 1MB to avoid OOM
+  private static final long DEFAULT_MAX_BODY_BYTES = 1024 * 1024;
 
   private final long mMaxBodyBytes;
 
