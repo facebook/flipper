@@ -409,8 +409,8 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
         requests: {[id: string]: Request},
         responses: {[id: string]: Response},
       ) {
-        setState(
-          produce((draftState: State) => {
+        setState((state) => {
+          const nextState = produce(state, (state: State) => {
             // iterate through highlighted rows
             highlightedRows?.forEach((row) => {
               const response = responses[row];
@@ -424,19 +424,20 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
               const responseData =
                 response && response.data ? decodeBody(response) : null;
 
-              const nextRouteId = draftState.nextRouteId;
-              draftState.routes[nextRouteId.toString()] = {
+              const nextRouteId = state.nextRouteId;
+              state.routes[nextRouteId.toString()] = {
                 requestUrl: requests[row].url,
                 requestMethod: requests[row].method,
                 responseData: responseData as string,
                 responseHeaders: headers,
                 responseStatus: responses[row].status.toString(),
               };
-              draftState.nextRouteId = nextRouteId + 1;
-              informClientMockChange(draftState.routes);
+              state.nextRouteId = nextRouteId + 1;
             });
-          }),
-        );
+          });
+          informClientMockChange(nextState.routes);
+          return nextState;
+        });
       },
     };
   }
@@ -550,18 +551,8 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
   };
 
   renderSidebar = () => {
-<<<<<<< HEAD
-<<<<<<< HEAD
     const {requests, responses} = this.props.persistedState;
     const {selectedIds, detailBodyFormat} = this.state;
-=======
-    const { requests, responses } = this.props.persistedState;
-    const { selectedIds } = this.state;
->>>>>>> more fixes
-=======
-    const {requests, responses} = this.props.persistedState;
-    const {selectedIds} = this.state;
->>>>>>> fix lint errors
     const selectedId = selectedIds.length === 1 ? selectedIds[0] : null;
 
     if (!selectedId) {
