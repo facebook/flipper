@@ -22,7 +22,6 @@ import dispatcher from './dispatcher/index';
 import TooltipProvider from './ui/components/TooltipProvider';
 import config from './utils/processConfig';
 import {initLauncherHooks} from './utils/launcher';
-import initCrashReporter from './utils/electronCrashReporter';
 import fbConfig from './fb-stubs/config';
 import {isFBEmployee} from './utils/fbEmployee';
 import WarningEmployee from './chrome/WarningEmployee';
@@ -118,7 +117,6 @@ function init() {
   ReactDOM.render(<AppFrame />, document.getElementById('root'));
   initLauncherHooks(config(), store);
   const sessionId = store.getState().application.sessionId;
-  initCrashReporter(sessionId || '');
   registerRecordingHooks(store);
   enableConsoleHook();
   window.flipperGlobalStoreDispatch = store.dispatch;
