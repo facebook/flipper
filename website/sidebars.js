@@ -102,6 +102,9 @@ module.exports = {
       'extending/arch',
       'extending/layout-inspector',
       'extending/testing-rn',
+      ...FBInternalOnly([
+        'extending/fb/launcher',
+      ]),
     ],
   },
   'fb-internal': {
