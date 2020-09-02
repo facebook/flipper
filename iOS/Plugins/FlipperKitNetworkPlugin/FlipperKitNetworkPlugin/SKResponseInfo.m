@@ -40,8 +40,7 @@
     return NO;
   }
 
-  return [contentType containsString:@"image/"] ||
-      [contentType containsString:@"video/"] ||
+  return [contentType containsString:@"video/"] ||
       [contentType containsString:@"application/zip"];
 }
 
