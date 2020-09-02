@@ -478,8 +478,17 @@ class ImageWithSize extends Component<ImageWithSizeProps, ImageWithSizeState> {
 
 class ImageFormatter {
   formatResponse = (request: Request, response: Response) => {
-    if (getHeaderValue(response.headers, 'content-type').startsWith('image')) {
-      return <ImageWithSize src={request.url} />;
+    if (getHeaderValue(response.headers, 'content-type').startsWith('image/')) {
+      if (response.data) {
+        const src = `data:${getHeaderValue(
+          response.headers,
+          'content-type',
+        )};base64,${response.data}`;
+        return <ImageWithSize src={src} />;
+      } else {
+        // fallback to using the request url
+        return <ImageWithSize src={request.url} />;
+      }
     }
   };
 }
@@ -492,7 +501,7 @@ class VideoFormatter {
 
   formatResponse = (request: Request, response: Response) => {
     const contentType = getHeaderValue(response.headers, 'content-type');
-    if (contentType.startsWith('video')) {
+    if (contentType.startsWith('video/')) {
       return (
         <MediaContainer>
           <VideoFormatter.Video controls={true}>

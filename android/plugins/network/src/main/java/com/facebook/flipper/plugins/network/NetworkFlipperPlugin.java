@@ -148,8 +148,6 @@ public class NetworkFlipperPlugin extends BufferingFlipperPlugin implements Netw
       return false;
     }
 
-    return contentType.value.contains("image/")
-        || contentType.value.contains("video/")
-        || contentType.value.contains("application/zip");
+    return contentType.value.contains("video/") || contentType.value.contains("application/zip");
   }
 }
