@@ -7,7 +7,6 @@
 
 package com.facebook.flipper.plugins.inspector;
 
-import androidx.core.util.Pair;
 import com.facebook.flipper.core.FlipperDynamic;
 import com.facebook.flipper.core.FlipperObject;
 import javax.annotation.Nullable;
@@ -21,11 +20,20 @@ public final class SetDataOperations {
    * @param wrapper the object containing the elements
    * @return a pair of a nullable hint and the uncasted value as a FlipperDynamic
    */
-  public static Pair<FlipperValueHint, FlipperDynamic> parseLayoutEditorMessage(
-      FlipperObject wrapper) {
+  public static HintedFlipperDynamic parseLayoutEditorMessage(FlipperObject wrapper) {
     final FlipperValueHint kind = FlipperValueHint.fromString(wrapper.getString("kind"));
     final FlipperDynamic value = wrapper.getDynamic("data");
-    return new Pair<>(kind, value);
+    return new HintedFlipperDynamic(kind, value);
+  }
+
+  public static final class HintedFlipperDynamic {
+    public final @Nullable FlipperValueHint kind;
+    public final FlipperDynamic value;
+
+    public HintedFlipperDynamic(@Nullable FlipperValueHint kind, FlipperDynamic value) {
+      this.kind = kind;
+      this.value = value;
+    }
   }
 
   /** Each supported type of the Layout Editor protocol for values */

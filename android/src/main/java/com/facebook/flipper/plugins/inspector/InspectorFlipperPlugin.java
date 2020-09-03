@@ -12,7 +12,6 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
-import androidx.core.util.Pair;
 import com.facebook.flipper.core.ErrorReportingRunnable;
 import com.facebook.flipper.core.FlipperArray;
 import com.facebook.flipper.core.FlipperConnection;
@@ -339,10 +338,10 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
           if (wrapper instanceof FlipperObject && ((FlipperObject) wrapper).contains("kind")) {
 
             // New message with tagged types
-            final Pair<SetDataOperations.FlipperValueHint, FlipperDynamic> message =
+            final SetDataOperations.HintedFlipperDynamic message =
                 SetDataOperations.parseLayoutEditorMessage((FlipperObject) wrapper);
-            hint = message.first;
-            value = message.second;
+            hint = message.kind;
+            value = message.value;
 
           } else {
             // Old message with untagged types

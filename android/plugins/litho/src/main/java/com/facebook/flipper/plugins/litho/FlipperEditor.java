@@ -7,7 +7,6 @@
 
 package com.facebook.flipper.plugins.litho;
 
-import androidx.core.util.Pair;
 import com.facebook.flipper.core.FlipperArray;
 import com.facebook.flipper.core.FlipperDynamic;
 import com.facebook.flipper.core.FlipperObject;
@@ -135,9 +134,9 @@ public class FlipperEditor {
     while (keys.hasNext()) {
       final String field = keys.next();
       final FlipperObject object = flipperObject.getObject(field);
-      final Pair<SetDataOperations.FlipperValueHint, FlipperDynamic> value =
+      final SetDataOperations.HintedFlipperDynamic value =
           SetDataOperations.parseLayoutEditorMessage(object);
-      values.put(field, parseEditorValue(value.first, value.second));
+      values.put(field, parseEditorValue(value.kind, value.value));
     }
     return values;
   }
@@ -146,9 +145,9 @@ public class FlipperEditor {
     ArrayList<EditorValue> values = new ArrayList<>();
     for (int i = 0; i < flipperArray.length(); i++) {
       final FlipperObject object = flipperArray.getObject(i);
-      final Pair<SetDataOperations.FlipperValueHint, FlipperDynamic> value =
+      final SetDataOperations.HintedFlipperDynamic value =
           SetDataOperations.parseLayoutEditorMessage(object);
-      values.add(parseEditorValue(value.first, value.second));
+      values.add(parseEditorValue(value.kind, value.value));
     }
 
     return values;
