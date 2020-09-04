@@ -23,7 +23,9 @@ import com.facebook.flipper.core.FlipperResponder;
 import com.facebook.flipper.plugins.common.MainThreadFlipperReceiver;
 import com.facebook.flipper.plugins.inspector.descriptors.ApplicationDescriptor;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.Nullable;
 
 public class InspectorFlipperPlugin implements FlipperPlugin {
@@ -36,6 +38,7 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
   private FlipperConnection mConnection;
   private @Nullable List<ExtensionCommand> mExtensionCommands;
   private boolean mShowLithoAccessibilitySettings;
+  private Map<String, String> resolvedPaths = new HashMap<>();
 
   public enum IDE {
     DIFFUSION("Diffusion"),
@@ -123,6 +126,7 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
     connection.receive("onRequestAXFocus", mOnRequestAXFocus);
     connection.receive(
         "shouldShowLithoAccessibilitySettings", mShouldShowLithoAccessibilitySettings);
+    connection.receive("setResolvedPath", mSetResolvedPath);
 
     if (mExtensionCommands != null) {
       for (ExtensionCommand extensionCommand : mExtensionCommands) {
@@ -463,16 +467,40 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
     return mConnection != null;
   }
 
-  public void openInIDE(
-      String fileName, String className, String dirRoot, String repo, int lineNumber, IDE ide) {
+  final FlipperReceiver mSetResolvedPath =
+      new MainThreadFlipperReceiver() {
+        @Override
+        public void onReceiveOnMainThread(
+            final FlipperObject params, final FlipperResponder responder) throws Exception {
+          resolvedPaths.put(params.getString("className"), params.getString("resolvedPath"));
+        }
+      };
+
+  public String getResolvedPath(String className) {
+    return resolvedPaths.get(className);
+  }
+
+  public void resolvePath(String fileName, String className, String dirRoot) {
+    if (mConnection == null || resolvedPaths.get(className) != null) {
+      return;
+    }
+
+    mConnection.send(
+        "resolvePath",
+        new FlipperObject.Builder()
+            .put("fileName", fileName)
+            .put("className", className)
+            .put("dirRoot", dirRoot)
+            .build());
+  }
+
+  public void openInIDE(String resolvedPath, String repo, int lineNumber, IDE ide) {
     if (mConnection == null) return;
 
     mConnection.send(
         "openInIDE",
         new FlipperObject.Builder()
-            .put("fileName", fileName)
-            .put("className", className)
-            .put("dirRoot", dirRoot)
+            .put("resolvedPath", resolvedPath)
             .put("repo", repo)
             .put("lineNumber", lineNumber)
             .put("ide", ide)

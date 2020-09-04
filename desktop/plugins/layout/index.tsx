@@ -65,9 +65,13 @@ type ClassFileParams = {
   fileName: string;
   className: string;
   dirRoot: string;
+};
+
+type OpenFileParams = {
+  resolvedPath: string;
+  ide: IDEType;
   repo: string;
   lineNumber: number;
-  ide: IDEType;
 };
 
 export default class LayoutPlugin extends FlipperPlugin<
@@ -220,7 +224,11 @@ export default class LayoutPlugin extends FlipperPlugin<
       }
     });
 
-    this.client.subscribe('openInIDE', (params: ClassFileParams) => {
+    this.client.subscribe('resolvePath', (params: ClassFileParams) => {
+      this.resolvePath(params);
+    });
+
+    this.client.subscribe('openInIDE', (params: OpenFileParams) => {
       this.openInIDE(params);
     });
 
@@ -256,18 +264,25 @@ export default class LayoutPlugin extends FlipperPlugin<
     });
   }
 
-  openInIDE = async (params: ClassFileParams) => {
+  resolvePath = async (params: ClassFileParams) => {
     const paths = await IDEFileResolver.resolveFullPathsFromMyles(
       params.fileName,
       params.dirRoot,
     );
-    const selectedPath = IDEFileResolver.getBestPath(paths, params.className);
+    const resolvedPath = IDEFileResolver.getBestPath(paths, params.className);
+    this.client.send('setResolvedPath', {
+      className: params.className,
+      resolvedPath: resolvedPath,
+    });
+  };
+
+  openInIDE = async (params: OpenFileParams) => {
     let ide: IDEType = Number(IDEType[params.ide]);
     if (Number.isNaN(ide)) {
       ide = IDEType.AS; // default value
     }
     IDEFileResolver.openInIDE(
-      selectedPath,
+      params.resolvedPath,
       ide,
       params.repo,
       params.lineNumber,
