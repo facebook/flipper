@@ -61,8 +61,20 @@ export class WebsocketClientFlipperConnection<M>
 
   requestResponse(payload: Payload<string, M>): Single<Payload<string, M>> {
     return new Single((subscriber) => {
-      const callId =
-        payload.data != null ? JSON.parse(payload.data).id : undefined;
+      const {id: callId = undefined, method = undefined} =
+        payload.data != null ? JSON.parse(payload.data) : {};
+
+      subscriber.onSubscribe(() => {});
+
+      if (method === 'getPlugins') {
+        subscriber.onComplete({
+          data: JSON.stringify({
+            success: {plugins: this.plugins},
+          }),
+        });
+        return;
+      }
+
       this.websocket.send(
         JSON.stringify({
           type: 'call',
@@ -71,7 +83,6 @@ export class WebsocketClientFlipperConnection<M>
         }),
       );
 
-      subscriber.onSubscribe(() => {});
       this.websocket.on('message', (message: string) => {
         const {app, payload} = JSON.parse(message);
 
