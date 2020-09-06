@@ -578,7 +578,7 @@ public final class AccessibilityUtil {
           actionsArrayBuilder.put(actionLabel);
         } else {
           actionsArrayBuilder.put(
-              AccessibilityUtil.sAccessibilityActionMapping.get(action.getId(), false));
+              AccessibilityUtil.sAccessibilityActionMapping.toPicker(action.getId(), false));
         }
       }
       nodeInfoProps.put("actions", actionsArrayBuilder.build());
@@ -693,7 +693,7 @@ public final class AccessibilityUtil {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
       props.put(
           "important-for-accessibility",
-          AccessibilityUtil.sImportantForAccessibilityMapping.get(
+          AccessibilityUtil.sImportantForAccessibilityMapping.toPicker(
               view.getImportantForAccessibility()));
     }
 

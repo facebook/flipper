@@ -110,7 +110,7 @@ public class ViewDescriptor extends NodeDescriptor<View> {
             .put("height", InspectorValue.mutable(node.getHeight()))
             .put("width", InspectorValue.mutable(node.getWidth()))
             .put("alpha", InspectorValue.mutable(node.getAlpha()))
-            .put("visibility", sVisibilityMapping.get(node.getVisibility()))
+            .put("visibility", sVisibilityMapping.toPicker(node.getVisibility()))
             .put("background", fromDrawable(node.getBackground()))
             .put("tag", InspectorValue.mutable(node.getTag()))
             .put("keyedTags", getTags(node))
@@ -157,9 +157,9 @@ public class ViewDescriptor extends NodeDescriptor<View> {
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
       viewProps
-          .put("layoutDirection", sLayoutDirectionMapping.get(node.getLayoutDirection()))
-          .put("textDirection", sTextDirectionMapping.get(node.getTextDirection()))
-          .put("textAlignment", sTextAlignmentMapping.get(node.getTextAlignment()));
+          .put("layoutDirection", sLayoutDirectionMapping.toPicker(node.getLayoutDirection()))
+          .put("textDirection", sTextDirectionMapping.toPicker(node.getTextDirection()))
+          .put("textAlignment", sTextAlignmentMapping.toPicker(node.getTextAlignment()));
     }
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -595,14 +595,14 @@ public class ViewDescriptor extends NodeDescriptor<View> {
 
     if (layoutParams instanceof FrameLayout.LayoutParams) {
       final FrameLayout.LayoutParams frameLayoutParams = (FrameLayout.LayoutParams) layoutParams;
-      params.put("gravity", sGravityMapping.get(frameLayoutParams.gravity));
+      params.put("gravity", sGravityMapping.toPicker(frameLayoutParams.gravity));
     }
 
     if (layoutParams instanceof LinearLayout.LayoutParams) {
       final LinearLayout.LayoutParams linearLayoutParams = (LinearLayout.LayoutParams) layoutParams;
       params
           .put("weight", InspectorValue.mutable(linearLayoutParams.weight))
-          .put("gravity", sGravityMapping.get(linearLayoutParams.gravity));
+          .put("gravity", sGravityMapping.toPicker(linearLayoutParams.gravity));
     }
 
     return params.build();
