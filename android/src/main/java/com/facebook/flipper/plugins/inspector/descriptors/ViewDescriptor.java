@@ -230,7 +230,10 @@ public class ViewDescriptor extends NodeDescriptor<View> {
         node.setVisibility(sVisibilityMapping.get(value.asString()));
         break;
       case "layoutParams":
-        setLayoutParams(node, Arrays.copyOfRange(path, 1, path.length), value);
+        // path is [view, layoutParams, value] and we only want the values
+        if (path.length > 2) {
+          setLayoutParams(node, Arrays.copyOfRange(path, 2, path.length), value);
+        }
         break;
       case "layoutDirection":
         node.setLayoutDirection(sLayoutDirectionMapping.get(value.asString()));
