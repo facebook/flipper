@@ -63,6 +63,7 @@ module.exports = {
       'tutorial/js-custom',
       'tutorial/js-publishing',
     ],
+    // start-internal-sidebars-example
     'Plugin Development': [
       'extending/js-setup',
       'extending/js-plugin-api',
@@ -83,6 +84,7 @@ module.exports = {
         'extending/fb/sandy/flipper-plugin',
       ]),
     ],
+    // end-internal-sidebars-example
     'Other Platforms': [
       'extending/new-clients',
       'extending/establishing-a-connection',

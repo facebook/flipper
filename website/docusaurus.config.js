@@ -7,7 +7,9 @@
  * @format
  */
 
+// start-import-example
 const {fbContent, fbInternalOnly} = require('internaldocs-fb-helpers');
+// end-import-example
 
 const repoUrl = 'https://github.com/facebook/flipper';
 const siteConfig = {
@@ -48,6 +50,7 @@ const siteConfig = {
           label: 'GitHub',
           position: 'right',
         },
+        // start-internal-navbar-example
         ...fbInternalOnly([
           {
             to: 'docs/fb/index',
@@ -55,6 +58,7 @@ const siteConfig = {
             position: 'right',
           },
         ]),
+        // end-internal-navbar-example
       ],
     },
     colorMode: {
