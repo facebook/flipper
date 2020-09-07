@@ -6,24 +6,23 @@
  *
  * @format
  */
-function FBInternalWithOssFallback(elements, fallback) {
-  return process.env.FB_INTERNAL ? elements : fallback;
-}
+
+const {fbContent, fbInternalOnly} = require('internaldocs-fb-helpers');
 
 const repoUrl = 'https://github.com/facebook/flipper';
 const siteConfig = {
-  title: FBInternalWithOssFallback('Flipper @FB', 'Flipper'),
+  title: fbContent({internal: 'Flipper @FB', external: 'Flipper'}),
   tagline: 'Extensible mobile app debugging',
-  url: FBInternalWithOssFallback(
-    'https://flipper.thefacebook.com/',
-    'https://fbflipper.com/',
-  ),
+  url: fbContent({
+    internal: 'https://flipper.thefacebook.com/',
+    external: 'https://fbflipper.com/',
+  }),
   baseUrl: '/',
   projectName: 'flipper',
   // TODO: T69061026 enable once sandy docs are complete: external_domain: 'fbflipper.com',
   themeConfig: {
     navbar: {
-      title: FBInternalWithOssFallback('Flipper @FB', 'Flipper'),
+      title: fbContent({internal: 'Flipper @FB', external: 'Flipper'}),
       logo: {
         alt: 'Flipper Logo',
         src: 'img/icon.png',
@@ -49,7 +48,7 @@ const siteConfig = {
           label: 'GitHub',
           position: 'right',
         },
-        ...FBInternalOnly([
+        ...fbInternalOnly([
           {
             to: 'docs/fb/index',
             label: 'FB Internal',
@@ -127,11 +126,14 @@ const siteConfig = {
         src: 'img/mascot.png',
       },
     },
-    algolia: FBInternalWithOssFallback(undefined, {
-      apiKey: '2df980e7ffc95c19552790f7cad32666',
-      indexName: 'fbflipper',
-      algoliaOptions: {
-        hitsPerPage: 5,
+    algolia: fbContent({
+      internal: undefined,
+      external: {
+        apiKey: '2df980e7ffc95c19552790f7cad32666',
+        indexName: 'fbflipper',
+        algoliaOptions: {
+          hitsPerPage: 5,
+        },
       },
     }),
     prism: {
@@ -165,9 +167,5 @@ const siteConfig = {
     ],
   ],
 };
-
-function FBInternalOnly(elements, fallback) {
-  return process.env.FB_INTERNAL == 1 ? elements : fallback || [];
-}
 
 module.exports = siteConfig;

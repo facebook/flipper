@@ -5879,6 +5879,11 @@ internal-ip@^4.3.0:
     default-gateway "^4.2.0"
     ipaddr.js "^1.9.0"
 
+internaldocs-fb-helpers@1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/internaldocs-fb-helpers/-/internaldocs-fb-helpers-1.0.0.tgz#143d65a55a9c957539c47112b06f252556c11651"
+  integrity sha512-8Z7R1D+HUR7GnF/ykgrx+TRZ5rsJlHP9dZBntxYntOiUrAmnea5IVQ9BMR+6OzcPNhdcnm5KoTpFlPDLAu7OQg==
+
 interpret@^1.0.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/interpret/-/interpret-1.2.0.tgz#d5061a6224be58e8083985f5014d844359576296"

@@ -7,17 +7,7 @@
  * @format
  */
 
-/**
- Adds content only if building internal FB version of documentations
- e.g. ...FBInternalOnly({'sected-id'})
-*/
-function NotInFBInternal(elements) {
-  return process.env.FB_INTERNAL ? [] : elements;
-}
-
-function FBInternalOnly(elements, fallback) {
-  return process.env.FB_INTERNAL == 1 ? elements : fallback || [];
-}
+const {fbContent, fbInternalOnly} = require('internaldocs-fb-helpers');
 
 module.exports = {
   features: {
@@ -39,7 +29,7 @@ module.exports = {
   },
   setup: {
     'Getting Started': [
-      ...FBInternalOnly(['getting-started/fb/using-flipper-at-facebook']),
+      ...fbInternalOnly(['getting-started/fb/using-flipper-at-facebook']),
       'getting-started/index',
       'getting-started/android-native',
       'getting-started/ios-native',
@@ -86,7 +76,7 @@ module.exports = {
       'extending/error-handling',
       'extending/testing',
       'extending/debugging',
-      ...FBInternalOnly([
+      ...fbInternalOnly([
         'extending/fb/desktop-plugin-releases',
         // TODO: Remove once sandy is public T69061061
         'extending/fb/sandy/sandy-plugins',
@@ -102,13 +92,11 @@ module.exports = {
       'extending/arch',
       'extending/layout-inspector',
       'extending/testing-rn',
-      ...FBInternalOnly([
-        'extending/fb/launcher',
-      ]),
+      ...fbInternalOnly(['extending/fb/launcher']),
     ],
   },
   'fb-internal': {
-    'FB Internal': FBInternalOnly([
+    'FB Internal': fbInternalOnly([
       'fb/troubleshooting',
       'fb/Add-flipper-to-android-app',
       'fb/Adding-flipper-to-ios-app',

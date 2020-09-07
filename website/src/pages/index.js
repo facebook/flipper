@@ -11,9 +11,10 @@ import React from 'react';
 import Layout from '@theme/Layout';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import {usePluginData} from '@docusaurus/useGlobalData';
+import {isInternal} from 'internaldocs-fb-helpers';
 
 export default function Index() {
-  const {FB_INTERNAL} = usePluginData('internaldocs-fb');
+  const FB_INTERNAL = isInternal();
 
   return (
     <Layout title="Extensible mobile app debugger">
