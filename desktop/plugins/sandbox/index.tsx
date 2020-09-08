@@ -73,7 +73,7 @@ export default class SandboxView extends FlipperPlugin<
 
   init() {
     this.client.call('getSandbox', {}).then((results: Array<Sandbox>) => {
-      this.dispatchAction({results, type: 'UpdateSandboxes'});
+      this.setState({sandboxes: results});
     });
   }
 
