@@ -313,7 +313,10 @@ mod test {
 
         let manifest_content = std::fs::read_to_string(&path)?;
 
-        assert_eq!(manifest_content, "{\n  \"files\": {\n    \"core\": \"f4bb1975bf1f81f76ce824f7536c1e101a8060a632a52289d530a6f600d52c92\"\n  }\n}");
+        assert_eq!(
+            manifest_content,
+            "{\n  \"files\": {\n    \"core\": \"f4bb1975bf1f81f76ce824f7536c1e101a8060a632a52289d530a6f600d52c92\"\n  }\n}"
+        );
 
         Ok(())
     }
