@@ -1,6 +1,6 @@
 {
   "name": "flipper-static",
-  "version": "0.55.0",
+  "version": "0.56.0",
   "main": "index.js",
   "private": true,
   "license": "MIT",
@@ -9,8 +9,8 @@
     "expand-tilde": "^2.0.2",
     "fb-watchman": "^2.0.0",
     "fix-path": "^3.0.0",
-    "flipper-pkg-lib": "0.55.0",
-    "flipper-plugin-lib": "0.55.0",
+    "flipper-pkg-lib": "0.56.0",
+    "flipper-plugin-lib": "0.56.0",
     "fs-extra": "^9.0.1",
     "ignore": "^5.1.4",
     "mac-ca": "^1.0.4",

@@ -2,7 +2,7 @@
   "$schema": "https://fbflipper.com/schemas/plugin-package/v2.json",
   "name": "flipper-plugin-crash-reporter",
   "id": "CrashReporter",
-  "version": "0.55.0",
+  "version": "0.56.0",
   "description": "A plugin which will display a crash",
   "main": "dist/bundle.js",
   "flipperBundlerEntry": "index.tsx",
