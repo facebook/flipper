@@ -25,6 +25,7 @@ import KeyboardShortcutInput from './settings/KeyboardShortcutInput';
 import {isEqual} from 'lodash';
 import restartFlipper from '../utils/restartFlipper';
 import LauncherSettingsPanel from '../fb-stubs/LauncherSettingsPanel';
+import SandySettingsPanel from '../fb-stubs/SandySettingsPanel';
 import {reportUsage} from '../utils/metrics';
 
 const Container = styled(FlexColumn)({
@@ -179,6 +180,17 @@ class SettingsSheet extends Component<Props, State> {
               updatedLauncherSettings: {
                 ...this.state.updatedLauncherSettings,
                 ignoreLocalPin: v,
+              },
+            });
+          }}
+        />
+        <SandySettingsPanel
+          toggled={this.state.updatedSettings.enableSandy}
+          onChange={(v) => {
+            this.setState({
+              updatedSettings: {
+                ...this.state.updatedSettings,
+                enableSandy: v,
               },
             });
           }}

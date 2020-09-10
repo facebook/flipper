@@ -43,6 +43,7 @@ export type Settings = {
       openDevMenu: string;
     };
   };
+  enableSandy: boolean;
 };
 
 export type Action =
@@ -75,6 +76,7 @@ const initialState: Settings = {
       openDevMenu: 'Alt+Shift+D',
     },
   },
+  enableSandy: false,
 };
 
 export default function reducer(
