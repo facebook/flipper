@@ -1,6 +1,6 @@
 {
   "name": "flipper-client-sdk",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "title": "Flipper SDK API",

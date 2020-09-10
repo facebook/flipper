@@ -21,11 +21,11 @@ export class FlipperResponder {
   }
 
   success(response?: any) {
-    this.client.sendData({id: this.messageID, success: response});
+    this.client.sendData({ id: this.messageID, success: response });
   }
 
   error(response?: any) {
-    this.client.sendData({id: this.messageID, error: response});
+    this.client.sendData({ id: this.messageID, error: response });
   }
 }
 
@@ -63,7 +63,7 @@ export class FlipperConnection {
     const receiver = this.subscriptions.get(method);
     if (receiver == null) {
       const errorMessage = `Receiver ${method} not found.`;
-      responder.error({message: errorMessage});
+      responder.error({ message: errorMessage });
       return;
     }
     receiver.call(receiver, params, responder);
@@ -121,14 +121,13 @@ export abstract class FlipperClient {
       return;
     }
     this._isConnected = true;
-    Array.from(this.plugins.values())
-      .filter((plugin) => plugin.runInBackground())
-      .map(this.connectPlugin, this);
   }
 
   onDisconnect() {
     this._isConnected = false;
-    Array.from(this.plugins.values()).map(this.disconnectPlugin, this);
+    for (const plugin of this.plugins.values()) {
+      this.disconnectPlugin(plugin);
+    }
   }
 
   abstract start(appName: string): void;
@@ -146,11 +145,11 @@ export abstract class FlipperClient {
   }) {
     let responder: FlipperResponder | undefined;
     try {
-      const {method, params, id} = message;
+      const { method, params, id } = message;
       responder = new FlipperResponder(id, this);
 
       if (method === 'getPlugins') {
-        responder.success({plugins: [...this.plugins.keys()]});
+        responder.success({ plugins: [...this.plugins.keys()] });
         return;
       }
 
@@ -168,7 +167,7 @@ export abstract class FlipperClient {
         const plugin = this.plugins.get(identifier);
         if (plugin == null) {
           const errorMessage = `Plugin ${identifier} not found for method ${method}`;
-          responder.error({message: errorMessage, name: 'PluginNotFound'});
+          responder.error({ message: errorMessage, name: 'PluginNotFound' });
           return;
         }
 
@@ -181,7 +180,7 @@ export abstract class FlipperClient {
         const plugin = this.plugins.get(identifier);
         if (plugin == null) {
           const errorMessage = `Plugin ${identifier} not found for method ${method}`;
-          responder.error({message: errorMessage, name: 'PluginNotFound'});
+          responder.error({ message: errorMessage, name: 'PluginNotFound' });
           return;
         }
 
@@ -195,7 +194,7 @@ export abstract class FlipperClient {
         if (connection == null) {
           const errorMessage = `Connection ${identifier} not found for plugin identifier`;
 
-          responder.error({message: errorMessage, name: 'ConnectionNotFound'});
+          responder.error({ message: errorMessage, name: 'ConnectionNotFound' });
           return;
         }
 
@@ -213,17 +212,17 @@ export abstract class FlipperClient {
         if (connection == null) {
           const errorMessage = `Connection ${identifier} not found for plugin identifier`;
 
-          responder.error({message: errorMessage, name: 'ConnectionNotFound'});
+          responder.error({ message: errorMessage, name: 'ConnectionNotFound' });
           return;
         }
         const isSupported = connection.hasReceiver(
           params['method'].getString(),
         );
-        responder.success({isSupported: isSupported});
+        responder.success({ isSupported: isSupported });
         return;
       }
 
-      const response = {message: 'Received unknown method: ' + method};
+      const response = { message: 'Received unknown method: ' + method };
       responder.error(response);
     } catch (e) {
       if (responder) {
