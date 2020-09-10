@@ -224,7 +224,8 @@ class Server extends EventEmitter {
                 os: 'JSWebApp',
                 device: 'device',
                 device_id: deviceId,
-                sdk_version: 1,
+                // if plugins != null -> we are using old api, where we send the list of plugins with connect message
+                sdk_version: plugins == null ? 4 : 1,
                 medium: 'FS_ACCESS',
               },
               {},
@@ -233,7 +234,8 @@ class Server extends EventEmitter {
 
             ws.on('message', (m: any) => {
               const parsed = JSON.parse(m.toString());
-              if (parsed.app === app) {
+              // non-null payload id means response to prev request, it's handled in connection
+              if (parsed.app === app && parsed.payload?.id == null) {
                 const message = JSON.stringify(parsed.payload);
                 if (resolvedClient) {
                   resolvedClient.onMessage(message);
