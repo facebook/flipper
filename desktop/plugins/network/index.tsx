@@ -609,39 +609,43 @@ function buildRow(
   const friendlyName = getHeaderValue(request.headers, 'X-FB-Friendly-Name');
   const style = response && response.isMock ? mockingStyle : undefined;
 
-  let copyText = `# HTTP request for ${domain} (ID: ${request.id})
-## Request
-HTTP ${request.method} ${request.url}
-${request.headers
-  .map(
-    ({key, value}: {key: string; value: string}): string =>
-      `${key}: ${String(value)}`,
-  )
-  .join('\n')}`;
+  const copyText = () => {
+    let copyText = `# HTTP request for ${domain} (ID: ${request.id})
+  ## Request
+  HTTP ${request.method} ${request.url}
+  ${request.headers
+    .map(
+      ({key, value}: {key: string; value: string}): string =>
+        `${key}: ${String(value)}`,
+    )
+    .join('\n')}`;
 
-  const requestData = request.data ? decodeBody(request) : null;
-  const responseData = response && response.data ? decodeBody(response) : null;
+    const requestData = request.data ? decodeBody(request) : null;
+    const responseData =
+      response && response.data ? decodeBody(response) : null;
 
-  if (requestData) {
-    copyText += `\n\n${requestData}`;
-  }
+    if (requestData) {
+      copyText += `\n\n${requestData}`;
+    }
 
-  if (response) {
-    copyText += `
+    if (response) {
+      copyText += `
 
-## Response
-HTTP ${response.status} ${response.reason}
-${response.headers
-  .map(
-    ({key, value}: {key: string; value: string}): string =>
-      `${key}: ${String(value)}`,
-  )
-  .join('\n')}`;
-  }
+  ## Response
+  HTTP ${response.status} ${response.reason}
+  ${response.headers
+    .map(
+      ({key, value}: {key: string; value: string}): string =>
+        `${key}: ${String(value)}`,
+    )
+    .join('\n')}`;
+    }
 
-  if (responseData) {
-    copyText += `\n\n${responseData}`;
-  }
+    if (responseData) {
+      copyText += `\n\n${responseData}`;
+    }
+    return copyText;
+  };
 
   return {
     columns: {
@@ -684,10 +688,9 @@ ${response.headers
     filterValue: `${request.method} ${request.url}`,
     sortKey: request.timestamp,
     copyText,
+    getSearchContent: copyText,
     highlightOnHover: true,
     style: style,
-    requestBody: requestData,
-    responseBody: responseData,
   };
 }
 
@@ -815,7 +818,7 @@ class NetworkTable extends PureComponent<NetworkTableProps, NetworkTableState> {
             highlightedRows={this.props.highlightedRows}
             rowLineHeight={26}
             allowRegexSearch={true}
-            allowBodySearch={true}
+            allowContentSearch={true}
             zebra={false}
             clearSearchTerm={this.props.searchTerm !== ''}
             defaultSearchTerm={this.props.searchTerm}
