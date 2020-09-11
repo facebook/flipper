@@ -29,7 +29,6 @@ module.exports = {
   },
   setup: {
     'Getting Started': [
-      ...fbInternalOnly(['getting-started/fb/using-flipper-at-facebook']),
       'getting-started/index',
       'getting-started/android-native',
       'getting-started/ios-native',
