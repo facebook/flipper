@@ -97,8 +97,7 @@ module.exports = {
     ],
   },
   'fb-internal': {
-    'FB Internal': fbInternalOnly([
-      'fb/troubleshooting',
+    'FB Internal': fbInternalOnly([      
       'fb/Add-flipper-to-android-app',
       'fb/Adding-flipper-to-ios-app',
       'fb/LauncherConfig',

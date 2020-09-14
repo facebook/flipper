@@ -17,6 +17,9 @@ function createElement(createElement) {
   if (React.isValidElement(createElement)) {
     return createElement;
   }
+  if (typeof createElement === 'string') {
+    return createElement;
+  }
   const element = createElement();
   if (React.isValidElement(element)) {
     return element;
