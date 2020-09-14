@@ -38,6 +38,7 @@ type TableBodyRowContainerProps = {
   highlightOnHover?: boolean;
   backgroundColor?: BackgroundColorProperty;
   highlightedBackgroundColor?: BackgroundColorProperty;
+  zebraBackgroundColor?: BackgroundColorProperty;
 };
 
 const backgroundColor = (props: TableBodyRowContainerProps) => {
@@ -48,7 +49,9 @@ const backgroundColor = (props: TableBodyRowContainerProps) => {
       return colors.macOSTitleBarIconSelected;
     }
   } else {
-    if (props.backgroundColor) {
+    if (props.zebra && props.zebraBackgroundColor && props.backgroundColor) {
+      return props.even ? props.zebraBackgroundColor : props.backgroundColor;
+    } else if (props.backgroundColor) {
       return props.backgroundColor;
     } else if (props.even && props.zebra) {
       return colors.light02;
@@ -161,6 +164,7 @@ export default class TableRow extends React.PureComponent<Props> {
         rowLineHeight={rowLineHeight}
         highlightedBackgroundColor={row.highlightedBackgroundColor}
         backgroundColor={row.backgroundColor}
+        zebraBackgroundColor={row.zebraBackgroundColor}
         highlighted={highlighted}
         multiline={multiline}
         even={index % 2 === 0}

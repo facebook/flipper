@@ -18,7 +18,7 @@ export class WebsocketClientFlipperConnection<M>
   connStatusSubscribers: Set<ISubscriber<ConnectionStatus>> = new Set();
   connStatus: ConnectionStatus;
   app: string;
-  plugins: string[] = [];
+  plugins: string[] | undefined = undefined;
 
   constructor(ws: WebSocket, app: string, plugins: string[]) {
     this.websocket = ws;
@@ -66,7 +66,7 @@ export class WebsocketClientFlipperConnection<M>
 
       subscriber.onSubscribe(() => {});
 
-      if (method === 'getPlugins') {
+      if (method === 'getPlugins' && this.plugins != null) {
         subscriber.onComplete({
           data: JSON.stringify({
             success: {plugins: this.plugins},

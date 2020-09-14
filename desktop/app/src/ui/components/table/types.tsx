@@ -53,10 +53,10 @@ export type TableBodyRow = {
   style?: Object;
   type?: string | undefined;
   highlightedBackgroundColor?: BackgroundColorProperty | undefined;
+  zebraBackgroundColor?: BackgroundColorProperty | undefined;
   onDoubleClick?: (e: React.MouseEvent) => void;
   copyText?: string | (() => string);
-  requestBody?: string | null | undefined;
-  responseBody?: string | null | undefined;
+  getSearchContent?: () => string;
   highlightOnHover?: boolean;
   columns: {
     [key: string]: TableBodyColumn;
