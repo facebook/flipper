@@ -8,10 +8,10 @@ Pod::Spec.new do |spec|
   spec.name = 'Flipper'
   spec.version = flipperkit_version
   spec.license = { :type => 'MIT' }
-  spec.homepage = 'https://github.com/facebook/sonar'
+  spec.homepage = 'https://github.com/facebook/flipper'
   spec.summary = 'SonarKit core cpp code with network implementation'
   spec.authors = 'Facebook'
-  spec.source = { :git => 'https://github.com/facebook/Sonar.git',
+  spec.source = { :git => 'https://github.com/facebook/flipper.git',
                   :tag => 'v'+flipperkit_version }
   spec.module_name = 'Flipper'
   spec.public_header_files = 'xplat/Flipper/*.h','xplat/utils/*.h'

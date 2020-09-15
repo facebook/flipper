@@ -1,5 +1,5 @@
 project 'SampleSwift.xcodeproj'
-source 'https://github.com/facebook/Sonar.git'
+source 'https://github.com/facebook/flipper.git'
 source 'https://github.com/CocoaPods/Specs'
 
 target 'SampleSwift' do
