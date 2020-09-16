@@ -2,7 +2,7 @@
   "$schema": "https://fbflipper.com/schemas/plugin-package/v2.json",
   "name": "flipper-plugin-kaios-big-allocations",
   "id": "kaios-big-allocations",
-  "version": "0.56.0",
+  "version": "0.57.0",
   "main": "dist/bundle.js",
   "flipperBundlerEntry": "index.tsx",
   "license": "MIT",

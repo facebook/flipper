@@ -1,6 +1,6 @@
 {
   "name": "flipper-plugin",
-  "version": "0.56.0",
+  "version": "0.57.0",
   "description": "Flipper Desktop plugin SDK and components",
   "repository": "facebook/flipper",
   "main": "lib/index.js",
