@@ -91,6 +91,9 @@ export async function getUpdatablePlugins(): Promise<UpdatablePluginDetails[]> {
           getPluginInstallationDir(notInstalledPlugin.name),
           pkg,
         );
+        if (npmPluginDetails.specVersion === 1) {
+          return null;
+        }
         return {
           ...npmPluginDetails,
           updateStatus: {

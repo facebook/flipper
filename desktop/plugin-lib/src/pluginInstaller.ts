@@ -25,12 +25,6 @@ import semver from 'semver';
 
 const getTmpDir = promisify(tmp.dir) as () => Promise<string>;
 
-function providePluginManager(): PM {
-  return new PM({
-    ignoredDependencies: [/^flipper$/, /^react$/, /^react-dom$/, /^@types\//],
-  });
-}
-
 function providePluginManagerNoDependencies(): PM {
   return new PM({ignoredDependencies: [/.*/]});
 }
@@ -70,18 +64,9 @@ async function installPluginFromTempDir(
   const destinationDir = getPluginPendingInstallationDir(name, version);
 
   if (pluginDetails.specVersion == 1) {
-    // For first version of spec we need to install dependencies
-    const pluginManager = providePluginManager();
-    // install the plugin dependencies into node_modules
-    const nodeModulesDir = path.join(
-      await getTmpDir(),
-      `${name}-${version}-modules`,
+    throw new Error(
+      `Cannot install plugin ${pluginDetails.name} because it is packaged using the unsupported format v1. Please encourage the plugin author to update to v2, following the instructions on https://fbflipper.com/docs/extending/js-setup#migration-to-the-new-plugin-specification`,
     );
-    pluginManager.options.pluginsPath = nodeModulesDir;
-    await pluginManager.installFromPath(sourceDir);
-    // live-plugin-manager also installs plugin itself into the target dir, it's better remove it
-    await fs.remove(path.join(nodeModulesDir, name));
-    await fs.move(nodeModulesDir, path.join(sourceDir, 'node_modules'));
   }
 
   try {
