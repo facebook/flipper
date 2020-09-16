@@ -1,5 +1,5 @@
 # Uncomment the next line to define a global platform for your project
-source 'https://github.com/facebook/Sonar.git'
+source 'https://github.com/facebook/flipper.git'
 source 'https://github.com/CocoaPods/Specs'
 platform :ios, '10.0'
 swift_version = "4.1"
