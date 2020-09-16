@@ -25,24 +25,19 @@ import {
   LoadingIndicator,
   Tooltip,
 } from 'flipper';
-import React, {useCallback, useState, useMemo, useEffect} from 'react';
+import React, {useCallback, useState, useEffect} from 'react';
 import {List} from 'immutable';
-import {SearchIndex} from 'algoliasearch';
-import {SearchResponse} from '@algolia/client-search';
 import {reportPlatformFailures, reportUsage} from '../../utils/metrics';
 import restartFlipper from '../../utils/restartFlipper';
 import {registerInstalledPlugins} from '../../reducers/pluginManager';
 import {
-  getPendingAndInstalledPlugins,
-  removePlugin,
-  PluginMap,
-  PluginDetails,
-} from 'flipper-plugin-lib';
-import {
-  provideSearchIndex,
-  findPluginUpdates as _findPluginUpdates,
   UpdateResult,
-} from '../../utils/pluginManager';
+  getInstalledPlugins,
+  getUpdatablePlugins,
+  removePlugin,
+  UpdatablePluginDetails,
+  InstalledPluginDetails,
+} from 'flipper-plugin-lib';
 import {installPluginFromNpm} from 'flipper-plugin-lib';
 import {State as AppState} from '../../reducers';
 import {connect} from 'react-redux';
@@ -97,7 +92,7 @@ const RestartBar = styled(FlexColumn)({
 });
 
 type PropsFromState = {
-  installedPlugins: PluginMap;
+  installedPlugins: InstalledPluginDetails[];
 };
 
 type DispatchFromProps = {
@@ -105,58 +100,29 @@ type DispatchFromProps = {
 };
 
 type OwnProps = {
-  searchIndexFactory: () => SearchIndex;
   autoHeight: boolean;
-  findPluginUpdates: (
-    currentPlugins: PluginMap,
-  ) => Promise<[string, UpdateResult][]>;
 };
 
 type Props = OwnProps & PropsFromState & DispatchFromProps;
 
 const defaultProps: OwnProps = {
-  searchIndexFactory: provideSearchIndex,
   autoHeight: false,
-  findPluginUpdates: _findPluginUpdates,
 };
 
-type UpdatablePlugin = {
-  updateStatus: UpdateResult;
-};
-
-type UpdatablePluginDefinition = PluginDetails & UpdatablePlugin;
-
-// exported for testing
-export function annotatePluginsWithUpdates(
-  installedPlugins: PluginMap,
-  updates: Map<string, UpdateResult>,
-): Map<string, UpdatablePluginDefinition> {
-  const annotated: Array<[string, UpdatablePluginDefinition]> = Array.from(
-    installedPlugins.entries(),
-  ).map(([key, value]) => {
-    const updateStatus = updates.get(key) || {kind: 'up-to-date'};
-    return [key, {...value, updateStatus: updateStatus}];
-  });
-  return new Map(annotated);
-}
-
-const PluginInstaller = function (props: Props) {
+const PluginInstaller = function ({
+  refreshInstalledPlugins,
+  installedPlugins,
+  autoHeight,
+}: Props) {
   const [restartRequired, setRestartRequired] = useState(false);
   const [query, setQuery] = useState('');
 
   const onInstall = useCallback(async () => {
-    props.refreshInstalledPlugins();
+    refreshInstalledPlugins();
     setRestartRequired(true);
-  }, []);
+  }, [refreshInstalledPlugins]);
 
-  const rows = useNPMSearch(
-    query,
-    setQuery,
-    props.searchIndexFactory,
-    props.installedPlugins,
-    onInstall,
-    props.findPluginUpdates,
-  );
+  const rows = useNPMSearch(query, onInstall, installedPlugins);
   const restartApp = useCallback(() => {
     restartFlipper();
   }, []);
@@ -187,7 +153,7 @@ const PluginInstaller = function (props: Props) {
           columns={columns}
           highlightableRows={false}
           highlightedRows={new Set()}
-          autoHeight={props.autoHeight}
+          autoHeight={autoHeight}
           rows={rows}
         />
       </Container>
@@ -195,7 +161,6 @@ const PluginInstaller = function (props: Props) {
     </>
   );
 };
-PluginInstaller.defaultProps = defaultProps;
 
 const TableButton = styled(Button)({
   marginTop: 2,
@@ -209,18 +174,10 @@ const AlignedGlyph = styled(Glyph)({
   marginTop: 6,
 });
 
-function liftUpdatable(val: PluginDetails): UpdatablePluginDefinition {
-  return {
-    ...val,
-    updateStatus: {kind: 'up-to-date'},
-  };
-}
-
 function InstallButton(props: {
   name: string;
   version: string;
   onInstall: () => void;
-  installed: boolean;
   updateStatus: UpdateResult;
 }) {
   type InstallAction =
@@ -280,9 +237,9 @@ function InstallButton(props: {
   const [action, setAction] = useState<InstallAction>(
     props.updateStatus.kind === 'update-available'
       ? {kind: 'Update'}
-      : props.installed
-      ? {kind: 'Remove'}
-      : {kind: 'Install'},
+      : props.updateStatus.kind === 'not-installed'
+      ? {kind: 'Install'}
+      : {kind: 'Remove'},
   );
 
   if (action.kind === 'Waiting') {
@@ -332,22 +289,19 @@ function InstallButton(props: {
 
 function useNPMSearch(
   query: string,
-  setQuery: (query: string) => void,
-  searchClientFactory: () => SearchIndex,
-  installedPlugins: PluginMap,
-  onInstall: () => Promise<void>,
-  findPluginUpdates: (
-    currentPlugins: PluginMap,
-  ) => Promise<[string, UpdateResult][]>,
+  onInstall: () => void,
+  installedPlugins: InstalledPluginDetails[],
 ): TableRows_immutable {
-  const index = useMemo(searchClientFactory, []);
-
   useEffect(() => {
     reportUsage(`${TAG}:open`);
   }, []);
 
+  const [searchResults, setSearchResults] = useState<UpdatablePluginDetails[]>(
+    [],
+  );
+
   const createRow = useCallback(
-    (h: UpdatablePluginDefinition) => ({
+    (h: UpdatablePluginDetails) => ({
       key: h.name,
       columns: {
         name: {
@@ -378,7 +332,6 @@ function useNPMSearch(
               name={h.name}
               version={h.version}
               onInstall={onInstall}
-              installed={installedPlugins.has(h.name)}
               updateStatus={h.updateStatus}
             />
           ),
@@ -386,37 +339,20 @@ function useNPMSearch(
         },
       },
     }),
-    [installedPlugins],
+    [onInstall],
   );
-
-  const [searchResults, setSearchResults] = useState<
-    UpdatablePluginDefinition[]
-  >([]);
-  const [
-    updateAnnotatedInstalledPlugins,
-    setUpdateAnnotatedInstalledPlugins,
-  ] = useState<Map<string, UpdatablePluginDefinition>>(new Map());
 
   useEffect(() => {
     (async () => {
       let cancelled = false;
-      const {hits} = await reportPlatformFailures(
-        index.search<PluginDetails>('', {
-          query,
-          filters: 'keywords:flipper-plugin',
-          hitsPerPage: 20,
-        }) as Promise<SearchResponse<PluginDetails>>,
+      const updatablePlugins = await reportPlatformFailures(
+        getUpdatablePlugins(),
         `${TAG}:queryIndex`,
       );
       if (cancelled) {
         return;
       }
-      setSearchResults(
-        hits
-          .filter((hit) => !installedPlugins.has(hit.name))
-          .map(liftUpdatable),
-      );
-
+      setSearchResults(updatablePlugins);
       // Clean up: if query changes while we're searching, abandon results.
       return () => {
         cancelled = true;
@@ -424,20 +360,11 @@ function useNPMSearch(
     })();
   }, [query, installedPlugins]);
 
-  useEffect(() => {
-    (async () => {
-      const updates = new Map(await findPluginUpdates(installedPlugins));
-      setUpdateAnnotatedInstalledPlugins(
-        annotatePluginsWithUpdates(installedPlugins, updates),
-      );
-    })();
-  }, [installedPlugins]);
-
-  const results = Array.from(updateAnnotatedInstalledPlugins.values()).concat(
-    searchResults,
-  );
-  return List(results.map(createRow));
+  const rows: TableRows_immutable = List(searchResults.map(createRow));
+  return rows;
 }
+
+PluginInstaller.defaultProps = defaultProps;
 
 export default connect<PropsFromState, DispatchFromProps, OwnProps, AppState>(
   ({pluginManager: {installedPlugins}}) => ({
@@ -445,7 +372,7 @@ export default connect<PropsFromState, DispatchFromProps, OwnProps, AppState>(
   }),
   (dispatch: Dispatch<Action<any>>) => ({
     refreshInstalledPlugins: () => {
-      getPendingAndInstalledPlugins().then((plugins) =>
+      getInstalledPlugins().then((plugins) =>
         dispatch(registerInstalledPlugins(plugins)),
       );
     },

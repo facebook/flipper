@@ -10,10 +10,10 @@
 import {Store} from '../reducers/index';
 import {Logger} from '../fb-interfaces/Logger';
 import {registerInstalledPlugins} from '../reducers/pluginManager';
-import {getPendingAndInstalledPlugins} from 'flipper-plugin-lib';
+import {getInstalledPlugins} from 'flipper-plugin-lib';
 
 function refreshInstalledPlugins(store: Store) {
-  getPendingAndInstalledPlugins().then((plugins) =>
+  getInstalledPlugins().then((plugins) =>
     store.dispatch(registerInstalledPlugins(plugins)),
   );
 }

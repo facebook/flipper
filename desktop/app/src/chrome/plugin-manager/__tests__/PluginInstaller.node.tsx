@@ -7,84 +7,109 @@
  * @format
  */
 
-import {annotatePluginsWithUpdates} from '../PluginInstaller';
-import {UpdateResult} from '../../../utils/pluginManager';
-import {PluginDetails} from 'flipper-plugin-lib';
+jest.mock('flipper-plugin-lib');
 
-test('annotatePluginsWithUpdates', async () => {
-  const installedPlugins = new Map<string, PluginDetails>([
-    [
-      'example',
-      {
-        name: 'example',
-        version: '0.1.0',
-        description: 'Gaze into the death crystal',
-        dir: '/plugins/example',
-        specVersion: 2,
-        source: 'src/index.ts',
-        isDefault: false,
-        main: 'lib/index.js',
-        title: 'Example',
-        id: 'Example',
-        entry: '/plugins/example/lib/index.js',
-      },
-    ],
-    [
-      'ricksybusiness',
-      {
-        name: 'ricksybusiness',
-        version: '1.0.0',
-        description: 'Rick Die Rickpeat',
-        dir: '/plugins/example',
-        specVersion: 2,
-        source: 'src/index.ts',
-        isDefault: false,
-        main: 'lib/index.js',
-        title: 'ricksybusiness',
-        id: 'ricksybusiness',
-        entry: '/plugins/ricksybusiness/lib/index.js',
-      },
-    ],
+import {default as PluginInstaller} from '../PluginInstaller';
+import React from 'react';
+import {render, waitForElement} from '@testing-library/react';
+import configureStore from 'redux-mock-store';
+import {Provider} from 'react-redux';
+import type {InstalledPluginDetails} from 'flipper-plugin-lib';
+import {getUpdatablePlugins, UpdatablePluginDetails} from 'flipper-plugin-lib';
+import {Store} from '../../../reducers';
+import {mocked} from 'ts-jest/utils';
+
+const getUpdatablePluginsMock = mocked(getUpdatablePlugins);
+
+function getStore(installedPlugins: InstalledPluginDetails[] = []): Store {
+  return configureStore([])({
+    application: {sessionId: 'mysession'},
+    pluginManager: {installedPlugins},
+  }) as Store;
+}
+
+const samplePluginDetails1: UpdatablePluginDetails = {
+  name: 'flipper-plugin-hello',
+  entry: './test/index.js',
+  version: '0.1.0',
+  specVersion: 2,
+  main: 'dist/bundle.js',
+  dir: '/Users/mock/.flipper/thirdparty/flipper-plugin-sample1',
+  source: 'src/index.js',
+  id: 'Hello',
+  title: 'Hello',
+  description: 'World?',
+  isDefault: false,
+  updateStatus: {
+    kind: 'not-installed',
+    version: '0.1.0',
+  },
+};
+
+const samplePluginDetails2: UpdatablePluginDetails = {
+  name: 'flipper-plugin-world',
+  entry: './test/index.js',
+  version: '0.2.0',
+  specVersion: 2,
+  main: 'dist/bundle.js',
+  dir: '/Users/mock/.flipper/thirdparty/flipper-plugin-sample2',
+  source: 'src/index.js',
+  id: 'World',
+  title: 'World',
+  description: 'Hello?',
+  isDefault: false,
+  updateStatus: {
+    kind: 'not-installed',
+    version: '0.2.0',
+  },
+};
+
+const SEARCH_RESULTS = [samplePluginDetails1, samplePluginDetails2];
+
+afterEach(() => {
+  getUpdatablePluginsMock.mockClear();
+});
+
+test('load PluginInstaller list', async () => {
+  getUpdatablePluginsMock.mockReturnValue(Promise.resolve(SEARCH_RESULTS));
+  const component = (
+    <Provider store={getStore()}>
+      <PluginInstaller
+        // Bit ugly to have this as an effectively test-only option, but
+        // without, we rely on height information from Electron which we don't
+        // have, causing no items to be rendered.
+        autoHeight={true}
+      />
+    </Provider>
+  );
+  const {container, getByText} = render(component);
+  await waitForElement(() => getByText('hello'));
+  expect(getUpdatablePluginsMock.mock.calls.length).toBe(1);
+  expect(container).toMatchSnapshot();
+});
+
+test('load PluginInstaller list with one plugin installed', async () => {
+  getUpdatablePluginsMock.mockReturnValue(
+    Promise.resolve([
+      {...samplePluginDetails1, updateStatus: {kind: 'up-to-date'}},
+      samplePluginDetails2,
+    ]),
+  );
+  const store = getStore([
+    {...samplePluginDetails1, installationStatus: 'installed'},
   ]);
-  const updates = new Map<string, UpdateResult>([
-    ['example', {kind: 'update-available', version: '1.1.0'}],
-  ]);
-  const res = annotatePluginsWithUpdates(installedPlugins, updates);
-  expect(res).toMatchInlineSnapshot(`
-    Map {
-      "example" => Object {
-        "description": "Gaze into the death crystal",
-        "dir": "/plugins/example",
-        "entry": "/plugins/example/lib/index.js",
-        "id": "Example",
-        "isDefault": false,
-        "main": "lib/index.js",
-        "name": "example",
-        "source": "src/index.ts",
-        "specVersion": 2,
-        "title": "Example",
-        "updateStatus": Object {
-          "kind": "update-available",
-          "version": "1.1.0",
-        },
-        "version": "0.1.0",
-      },
-      "ricksybusiness" => Object {
-        "description": "Rick Die Rickpeat",
-        "dir": "/plugins/example",
-        "entry": "/plugins/ricksybusiness/lib/index.js",
-        "id": "ricksybusiness",
-        "isDefault": false,
-        "main": "lib/index.js",
-        "name": "ricksybusiness",
-        "source": "src/index.ts",
-        "specVersion": 2,
-        "title": "ricksybusiness",
-        "updateStatus": Object {
-          "kind": "up-to-date",
-        },
-        "version": "1.0.0",
-      },
-    }
-  `);
+  const component = (
+    <Provider store={store}>
+      <PluginInstaller
+        // Bit ugly to have this as an effectively test-only option, but
+        // without, we rely on height information from Electron which we don't
+        // have, causing no items to be rendered.
+        autoHeight={true}
+      />
+    </Provider>
+  );
+  const {container, getByText} = render(component);
+  await waitForElement(() => getByText('hello'));
+  expect(getUpdatablePluginsMock.mock.calls.length).toBe(1);
+  expect(container).toMatchSnapshot();
 });

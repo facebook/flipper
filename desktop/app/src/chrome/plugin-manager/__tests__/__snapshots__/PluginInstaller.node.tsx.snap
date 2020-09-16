@@ -1,0 +1,590 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`load PluginInstaller list 1`] = `
+<div>
+  <div
+    class="css-13jp8bd-View-FlexBox-FlexColumn"
+  >
+    <div
+      class="css-mx54fh-View-FlexBox-FlexRow-Toolbar e13mj6h80"
+    >
+      <div
+        class="css-awcbnc-View-FlexBox-SearchBox e271nro1"
+      >
+        <input
+          class="css-mquw9q-Input-SearchInput e271nro2"
+          placeholder="Search Flipper plugins..."
+          type="text"
+          value=""
+        />
+      </div>
+    </div>
+    <div
+      class="css-1s2tz3g-View-FlexBox-FlexColumn-Container e11hk09w0"
+    >
+      <div
+        class="css-k28k5g-View-FlexBox-FlexColumn ecr18to0"
+      >
+        <div
+          class="css-guwxm6-View-FlexBox-FlexRow-TableHeadContainer ejga3103"
+        >
+          <div
+            class="css-zk363n-TableHeadColumnContainer ejga3104"
+            title="name"
+            width="25%"
+          >
+            <div
+              class="ejga3101 css-1859yug-InteractiveContainer-TableHeaderColumnInteractive etmd34w0"
+              style="z-index: auto; right: 0px; bottom: 0px; width: 100%; height: 100%;"
+            >
+              <div
+                class="css-1yopr4n-TableHeaderColumnContainer ejga3102"
+              >
+                Name
+              </div>
+            </div>
+          </div>
+          <div
+            class="css-1243222-TableHeadColumnContainer ejga3104"
+            title="version"
+            width="10%"
+          >
+            <div
+              class="ejga3101 css-1859yug-InteractiveContainer-TableHeaderColumnInteractive etmd34w0"
+              style="z-index: auto; right: 0px; bottom: 0px; width: 100%; height: 100%;"
+            >
+              <div
+                class="css-1yopr4n-TableHeaderColumnContainer ejga3102"
+              >
+                Version
+              </div>
+            </div>
+          </div>
+          <div
+            class="css-nyra6d-TableHeadColumnContainer ejga3104"
+            title="description"
+            width="flex"
+          >
+            <div
+              class="ejga3101 css-1859yug-InteractiveContainer-TableHeaderColumnInteractive etmd34w0"
+              style="z-index: auto; right: 0px; bottom: 0px; width: 100%; height: 100%;"
+            >
+              <div
+                class="css-1yopr4n-TableHeaderColumnContainer ejga3102"
+              >
+                Description
+              </div>
+            </div>
+          </div>
+          <div
+            class="css-hyjqmu-TableHeadColumnContainer ejga3104"
+            title="install"
+            width="15%"
+          >
+            <div
+              class="ejga3101 css-1859yug-InteractiveContainer-TableHeaderColumnInteractive etmd34w0"
+              style="z-index: auto; right: 0px; bottom: 0px; width: 100%; height: 100%;"
+            >
+              <div
+                class="css-1yopr4n-TableHeaderColumnContainer ejga3102"
+              >
+                
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="css-1s2tz3g-View-FlexBox-FlexColumn-Container e11hk09w0"
+      >
+        <div
+          class="css-1gi2nc1-View-FlexBox-FlexRow-TableBodyRowContainer ehuguum0"
+          data-key="flipper-plugin-hello"
+        >
+          <div
+            class="css-hdg6vt-TableBodyColumnContainer ehuguum1"
+            title=""
+            width="25%"
+          >
+            <span
+              class="css-fyize4-Text"
+            >
+              hello
+            </span>
+          </div>
+          <div
+            class="css-1rdsust-TableBodyColumnContainer ehuguum1"
+            title=""
+            width="10%"
+          >
+            <span
+              class="css-fyize4-Text"
+            >
+              0.1.0
+            </span>
+          </div>
+          <div
+            class="css-1bw2bjn-TableBodyColumnContainer ehuguum1"
+            title=""
+            width="flex"
+          >
+            <div
+              class="css-wxxfdj-View-FlexBox-FlexRow epz0qe20"
+            >
+              <span
+                class="css-fyize4-Text"
+              >
+                World?
+              </span>
+              <div
+                class="css-te359u-View-FlexBox-Spacer e13mj6h81"
+              />
+              <span
+                class="css-ad6n9d-StyledLink e1mzoj7l0"
+              >
+                <div
+                  class="css-1tfjvvq-ColoredIconCustom e528dze1"
+                  color="#bec2c9"
+                  size="16"
+                  src="https://external.xx.fbcdn.net/assets/?name=info-circle&variant=filled&size=16&set=facebook_icons&density=1x"
+                />
+              </span>
+            </div>
+          </div>
+          <div
+            class="css-4dx1ef-TableBodyColumnContainer ehuguum1"
+            title=""
+            width="15%"
+          >
+            <div
+              class="css-1pccuw6-StyledButton enfqd40"
+              type="primary"
+            >
+              Install
+            </div>
+          </div>
+        </div>
+        <div
+          class="css-14d4692-View-FlexBox-FlexRow-TableBodyRowContainer ehuguum0"
+          data-key="flipper-plugin-world"
+        >
+          <div
+            class="css-hdg6vt-TableBodyColumnContainer ehuguum1"
+            title=""
+            width="25%"
+          >
+            <span
+              class="css-fyize4-Text"
+            >
+              world
+            </span>
+          </div>
+          <div
+            class="css-1rdsust-TableBodyColumnContainer ehuguum1"
+            title=""
+            width="10%"
+          >
+            <span
+              class="css-fyize4-Text"
+            >
+              0.2.0
+            </span>
+          </div>
+          <div
+            class="css-1bw2bjn-TableBodyColumnContainer ehuguum1"
+            title=""
+            width="flex"
+          >
+            <div
+              class="css-wxxfdj-View-FlexBox-FlexRow epz0qe20"
+            >
+              <span
+                class="css-fyize4-Text"
+              >
+                Hello?
+              </span>
+              <div
+                class="css-te359u-View-FlexBox-Spacer e13mj6h81"
+              />
+              <span
+                class="css-ad6n9d-StyledLink e1mzoj7l0"
+              >
+                <div
+                  class="css-1tfjvvq-ColoredIconCustom e528dze1"
+                  color="#bec2c9"
+                  size="16"
+                  src="https://external.xx.fbcdn.net/assets/?name=info-circle&variant=filled&size=16&set=facebook_icons&density=1x"
+                />
+              </span>
+            </div>
+          </div>
+          <div
+            class="css-4dx1ef-TableBodyColumnContainer ehuguum1"
+            title=""
+            width="15%"
+          >
+            <div
+              class="css-1pccuw6-StyledButton enfqd40"
+              type="primary"
+            >
+              Install
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="css-mx54fh-View-FlexBox-FlexRow-Toolbar e13mj6h80"
+  >
+    <div
+      class="css-1stmykz-View-FlexBox-FlexRow-Container ersmi541"
+    >
+      <input
+        class="css-phqpi-Input-FileInputBox ersmi543"
+        placeholder="Specify path to a Flipper package or just drag and drop it here..."
+        type="text"
+        value=""
+      />
+      <div
+        class="css-1juns87-View-FlexBox-FlexRow-GlyphContainer ersmi542"
+      >
+        <img
+          alt="dots-3-circle"
+          class="ersmi540 css-6iptsk-ColoredIconBlack-CenteredGlyph e528dze0"
+          size="16"
+          src="https://external.xx.fbcdn.net/assets/?name=dots-3-circle&variant=outline&size=16&set=facebook_icons&density=1x"
+          title="Open file selection dialog"
+        />
+      </div>
+      <div
+        class="css-1juns87-View-FlexBox-FlexRow-GlyphContainer ersmi542"
+      >
+        <div
+          class="css-yzqaun-TooltipContainer e1abcqbd0"
+        >
+          <div
+            class="ersmi540 css-1vos16e-ColoredIconCustom-CenteredGlyph e528dze1"
+            color="#D79651"
+            size="16"
+            src="https://external.xx.fbcdn.net/assets/?name=caution-triangle&variant=filled&size=16&set=facebook_icons&density=1x"
+          />
+        </div>
+      </div>
+    </div>
+    <div
+      class="css-16kzr4q-View-FlexBox-FlexRow-ButtonContainer evd5j492"
+    >
+      <div
+        class="css-17wo7w2-View-FlexBox-FlexRow epz0qe20"
+      >
+        <div
+          class="css-1rxpsn8-StyledButton enfqd40"
+          disabled=""
+          title="Cannot install plugin package by the specified path"
+          type="primary"
+        >
+          Install
+        </div>
+        <div
+          class="css-ywl8lj-View-FlexBox-FlexRow-ErrorGlyphContainer evd5j493"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`load PluginInstaller list with one plugin installed 1`] = `
+<div>
+  <div
+    class="css-13jp8bd-View-FlexBox-FlexColumn"
+  >
+    <div
+      class="css-mx54fh-View-FlexBox-FlexRow-Toolbar e13mj6h80"
+    >
+      <div
+        class="css-awcbnc-View-FlexBox-SearchBox e271nro1"
+      >
+        <input
+          class="css-mquw9q-Input-SearchInput e271nro2"
+          placeholder="Search Flipper plugins..."
+          type="text"
+          value=""
+        />
+      </div>
+    </div>
+    <div
+      class="css-1s2tz3g-View-FlexBox-FlexColumn-Container e11hk09w0"
+    >
+      <div
+        class="css-k28k5g-View-FlexBox-FlexColumn ecr18to0"
+      >
+        <div
+          class="css-guwxm6-View-FlexBox-FlexRow-TableHeadContainer ejga3103"
+        >
+          <div
+            class="css-zk363n-TableHeadColumnContainer ejga3104"
+            title="name"
+            width="25%"
+          >
+            <div
+              class="ejga3101 css-1859yug-InteractiveContainer-TableHeaderColumnInteractive etmd34w0"
+              style="z-index: auto; right: 0px; bottom: 0px; width: 100%; height: 100%;"
+            >
+              <div
+                class="css-1yopr4n-TableHeaderColumnContainer ejga3102"
+              >
+                Name
+              </div>
+            </div>
+          </div>
+          <div
+            class="css-1243222-TableHeadColumnContainer ejga3104"
+            title="version"
+            width="10%"
+          >
+            <div
+              class="ejga3101 css-1859yug-InteractiveContainer-TableHeaderColumnInteractive etmd34w0"
+              style="z-index: auto; right: 0px; bottom: 0px; width: 100%; height: 100%;"
+            >
+              <div
+                class="css-1yopr4n-TableHeaderColumnContainer ejga3102"
+              >
+                Version
+              </div>
+            </div>
+          </div>
+          <div
+            class="css-nyra6d-TableHeadColumnContainer ejga3104"
+            title="description"
+            width="flex"
+          >
+            <div
+              class="ejga3101 css-1859yug-InteractiveContainer-TableHeaderColumnInteractive etmd34w0"
+              style="z-index: auto; right: 0px; bottom: 0px; width: 100%; height: 100%;"
+            >
+              <div
+                class="css-1yopr4n-TableHeaderColumnContainer ejga3102"
+              >
+                Description
+              </div>
+            </div>
+          </div>
+          <div
+            class="css-hyjqmu-TableHeadColumnContainer ejga3104"
+            title="install"
+            width="15%"
+          >
+            <div
+              class="ejga3101 css-1859yug-InteractiveContainer-TableHeaderColumnInteractive etmd34w0"
+              style="z-index: auto; right: 0px; bottom: 0px; width: 100%; height: 100%;"
+            >
+              <div
+                class="css-1yopr4n-TableHeaderColumnContainer ejga3102"
+              >
+                
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="css-1s2tz3g-View-FlexBox-FlexColumn-Container e11hk09w0"
+      >
+        <div
+          class="css-1gi2nc1-View-FlexBox-FlexRow-TableBodyRowContainer ehuguum0"
+          data-key="flipper-plugin-hello"
+        >
+          <div
+            class="css-hdg6vt-TableBodyColumnContainer ehuguum1"
+            title=""
+            width="25%"
+          >
+            <span
+              class="css-fyize4-Text"
+            >
+              hello
+            </span>
+          </div>
+          <div
+            class="css-1rdsust-TableBodyColumnContainer ehuguum1"
+            title=""
+            width="10%"
+          >
+            <span
+              class="css-fyize4-Text"
+            >
+              0.1.0
+            </span>
+          </div>
+          <div
+            class="css-1bw2bjn-TableBodyColumnContainer ehuguum1"
+            title=""
+            width="flex"
+          >
+            <div
+              class="css-wxxfdj-View-FlexBox-FlexRow epz0qe20"
+            >
+              <span
+                class="css-fyize4-Text"
+              >
+                World?
+              </span>
+              <div
+                class="css-te359u-View-FlexBox-Spacer e13mj6h81"
+              />
+              <span
+                class="css-ad6n9d-StyledLink e1mzoj7l0"
+              >
+                <div
+                  class="css-1tfjvvq-ColoredIconCustom e528dze1"
+                  color="#bec2c9"
+                  size="16"
+                  src="https://external.xx.fbcdn.net/assets/?name=info-circle&variant=filled&size=16&set=facebook_icons&density=1x"
+                />
+              </span>
+            </div>
+          </div>
+          <div
+            class="css-4dx1ef-TableBodyColumnContainer ehuguum1"
+            title=""
+            width="15%"
+          >
+            <div
+              class="css-1pccuw6-StyledButton enfqd40"
+            >
+              Remove
+            </div>
+          </div>
+        </div>
+        <div
+          class="css-14d4692-View-FlexBox-FlexRow-TableBodyRowContainer ehuguum0"
+          data-key="flipper-plugin-world"
+        >
+          <div
+            class="css-hdg6vt-TableBodyColumnContainer ehuguum1"
+            title=""
+            width="25%"
+          >
+            <span
+              class="css-fyize4-Text"
+            >
+              world
+            </span>
+          </div>
+          <div
+            class="css-1rdsust-TableBodyColumnContainer ehuguum1"
+            title=""
+            width="10%"
+          >
+            <span
+              class="css-fyize4-Text"
+            >
+              0.2.0
+            </span>
+          </div>
+          <div
+            class="css-1bw2bjn-TableBodyColumnContainer ehuguum1"
+            title=""
+            width="flex"
+          >
+            <div
+              class="css-wxxfdj-View-FlexBox-FlexRow epz0qe20"
+            >
+              <span
+                class="css-fyize4-Text"
+              >
+                Hello?
+              </span>
+              <div
+                class="css-te359u-View-FlexBox-Spacer e13mj6h81"
+              />
+              <span
+                class="css-ad6n9d-StyledLink e1mzoj7l0"
+              >
+                <div
+                  class="css-1tfjvvq-ColoredIconCustom e528dze1"
+                  color="#bec2c9"
+                  size="16"
+                  src="https://external.xx.fbcdn.net/assets/?name=info-circle&variant=filled&size=16&set=facebook_icons&density=1x"
+                />
+              </span>
+            </div>
+          </div>
+          <div
+            class="css-4dx1ef-TableBodyColumnContainer ehuguum1"
+            title=""
+            width="15%"
+          >
+            <div
+              class="css-1pccuw6-StyledButton enfqd40"
+              type="primary"
+            >
+              Install
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="css-mx54fh-View-FlexBox-FlexRow-Toolbar e13mj6h80"
+  >
+    <div
+      class="css-1stmykz-View-FlexBox-FlexRow-Container ersmi541"
+    >
+      <input
+        class="css-phqpi-Input-FileInputBox ersmi543"
+        placeholder="Specify path to a Flipper package or just drag and drop it here..."
+        type="text"
+        value=""
+      />
+      <div
+        class="css-1juns87-View-FlexBox-FlexRow-GlyphContainer ersmi542"
+      >
+        <img
+          alt="dots-3-circle"
+          class="ersmi540 css-6iptsk-ColoredIconBlack-CenteredGlyph e528dze0"
+          size="16"
+          src="https://external.xx.fbcdn.net/assets/?name=dots-3-circle&variant=outline&size=16&set=facebook_icons&density=1x"
+          title="Open file selection dialog"
+        />
+      </div>
+      <div
+        class="css-1juns87-View-FlexBox-FlexRow-GlyphContainer ersmi542"
+      >
+        <div
+          class="css-yzqaun-TooltipContainer e1abcqbd0"
+        >
+          <div
+            class="ersmi540 css-1vos16e-ColoredIconCustom-CenteredGlyph e528dze1"
+            color="#D79651"
+            size="16"
+            src="https://external.xx.fbcdn.net/assets/?name=caution-triangle&variant=filled&size=16&set=facebook_icons&density=1x"
+          />
+        </div>
+      </div>
+    </div>
+    <div
+      class="css-16kzr4q-View-FlexBox-FlexRow-ButtonContainer evd5j492"
+    >
+      <div
+        class="css-17wo7w2-View-FlexBox-FlexRow epz0qe20"
+      >
+        <div
+          class="css-1rxpsn8-StyledButton enfqd40"
+          disabled=""
+          title="Cannot install plugin package by the specified path"
+          type="primary"
+        >
+          Install
+        </div>
+        <div
+          class="css-ywl8lj-View-FlexBox-FlexRow-ErrorGlyphContainer evd5j493"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;

@@ -8,19 +8,19 @@
  */
 
 import {Actions} from './';
-import {PluginMap} from 'flipper-plugin-lib';
+import {InstalledPluginDetails} from 'flipper-plugin-lib';
 
 export type State = {
-  installedPlugins: PluginMap;
+  installedPlugins: InstalledPluginDetails[];
 };
 
 export type Action = {
   type: 'REGISTER_INSTALLED_PLUGINS';
-  payload: PluginMap;
+  payload: InstalledPluginDetails[];
 };
 
 const INITIAL_STATE: State = {
-  installedPlugins: new Map(),
+  installedPlugins: [],
 };
 
 export default function reducer(
@@ -37,7 +37,9 @@ export default function reducer(
   }
 }
 
-export const registerInstalledPlugins = (payload: PluginMap): Action => ({
+export const registerInstalledPlugins = (
+  payload: InstalledPluginDetails[],
+): Action => ({
   type: 'REGISTER_INSTALLED_PLUGINS',
   payload,
 });

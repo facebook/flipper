@@ -32,5 +32,6 @@ declare module 'npm-api' {
   export interface Package {
     name: string;
     version: string;
+    [name: string]: string;
   }
 }
