@@ -14,7 +14,7 @@ import fs from 'fs-extra';
 import {spawn} from 'promisify-child-process';
 import {getWatchFolders} from 'flipper-pkg-lib';
 import getAppWatchFolders from './get-app-watch-folders';
-import {getSourcePlugins} from '../static/getPlugins';
+import {getSourcePlugins, getPluginSourceFolders} from 'flipper-plugin-lib';
 import {
   appDir,
   staticDir,
@@ -22,7 +22,6 @@ import {
   headlessDir,
   babelTransformationsDir,
 } from './paths';
-import {getPluginSourceFolders} from '../static/getPluginFolders';
 
 const dev = process.env.NODE_ENV !== 'production';
 

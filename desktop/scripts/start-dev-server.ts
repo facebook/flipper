@@ -20,16 +20,15 @@ import path from 'path';
 import fs from 'fs-extra';
 import {hostname} from 'os';
 import {compileMain, generatePluginEntryPoints} from './build-utils';
-import Watchman from '../static/watchman';
+import Watchman from './watchman';
 import Metro from 'metro';
 import MetroResolver from 'metro-resolver';
 import {staticDir, appDir, babelTransformationsDir} from './paths';
 import isFB from './isFB';
 import getAppWatchFolders from './get-app-watch-folders';
-import {getSourcePlugins} from '../static/getPlugins';
-import {getPluginSourceFolders} from '../static/getPluginFolders';
-import startWatchPlugins from '../static/startWatchPlugins';
-import ensurePluginFoldersWatchable from '../static/ensurePluginFoldersWatchable';
+import {getPluginSourceFolders} from 'flipper-plugin-lib';
+import ensurePluginFoldersWatchable from './ensurePluginFoldersWatchable';
+import startWatchPlugins from './startWatchPlugins';
 
 const ansiToHtmlConverter = new AnsiToHtmlConverter();
 
@@ -211,7 +210,7 @@ async function startWatchChanges(io: socketIo.Server) {
     const watchman = new Watchman(path.resolve(__dirname, '..'));
     await watchman.initialize();
     await Promise.all(
-      ['app', 'pkg', 'doctor', 'flipper-plugin'].map((dir) =>
+      ['app', 'pkg', 'doctor', 'plugin-lib', 'flipper-plugin'].map((dir) =>
         watchman.startWatchFiles(
           dir,
           () => {
@@ -223,8 +222,7 @@ async function startWatchChanges(io: socketIo.Server) {
         ),
       ),
     );
-    const plugins = await getSourcePlugins();
-    await startWatchPlugins(plugins, () => {
+    await startWatchPlugins(() => {
       io.emit('refresh');
     });
   } catch (err) {

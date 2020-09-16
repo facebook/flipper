@@ -7,7 +7,7 @@
  * @format
  */
 
-import {getPluginSourceFolders} from './getPluginFolders';
+import {getPluginSourceFolders} from 'flipper-plugin-lib';
 import fs from 'fs-extra';
 
 const watchmanconfigName = '.watchmanconfig';

@@ -20,7 +20,6 @@ import {
   addDisabledPlugins,
   addFailedPlugins,
 } from '../reducers/plugins';
-import {ipcRenderer} from 'electron';
 import GK from '../fb-stubs/GK';
 import {FlipperBasePlugin} from '../plugin';
 import {setupMenuBar} from '../MenuBar';
@@ -33,13 +32,14 @@ import semver from 'semver';
 import {PluginDetails} from 'flipper-plugin-lib';
 import {tryCatchReportPluginFailures, reportUsage} from '../utils/metrics';
 import * as FlipperPluginSDK from 'flipper-plugin';
+import {SandyPluginDefinition} from 'flipper-plugin';
+import loadDynamicPlugins from '../utils/loadDynamicPlugins';
 import Immer from 'immer';
 
 // eslint-disable-next-line import/no-unresolved
 import getPluginIndex from '../utils/getDefaultPluginsIndex';
-import {SandyPluginDefinition} from 'flipper-plugin';
 
-export default (store: Store, logger: Logger) => {
+export default async (store: Store, logger: Logger) => {
   // expose Flipper and exact globally for dynamically loaded plugins
   const globalObject: any = typeof window === 'undefined' ? global : window;
   globalObject.React = React;
@@ -57,7 +57,7 @@ export default (store: Store, logger: Logger) => {
 
   const initialPlugins: PluginDefinition[] = filterNewestVersionOfEachPlugin(
     getBundledPlugins(),
-    getDynamicPlugins(),
+    await getDynamicPlugins(),
   )
     .map(reportVersion)
     .filter(checkDisabled(disabledPlugins))
@@ -134,14 +134,13 @@ function getBundledPlugins(): Array<PluginDetails> {
   return bundledPlugins;
 }
 
-export function getDynamicPlugins() {
-  let dynamicPlugins: Array<PluginDetails> = [];
+export async function getDynamicPlugins() {
   try {
-    dynamicPlugins = ipcRenderer.sendSync('get-dynamic-plugins');
+    return await loadDynamicPlugins();
   } catch (e) {
-    console.error(e);
+    console.error('Failed to load dynamic plugins', e);
+    return [];
   }
-  return dynamicPlugins;
 }
 
 export const checkGK = (gatekeepedPlugins: Array<PluginDetails>) => (

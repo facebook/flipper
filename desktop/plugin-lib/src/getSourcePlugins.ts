@@ -10,26 +10,16 @@
 import path from 'path';
 import fs from 'fs-extra';
 import expandTilde from 'expand-tilde';
-import {
-  getPluginsInstallationFolder,
-  getPluginSourceFolders,
-} from './getPluginFolders';
+import {getPluginSourceFolders} from './pluginPaths';
 import {PluginDetails, getPluginDetails} from 'flipper-plugin-lib';
 import pmap from 'p-map';
 import pfilter from 'p-filter';
 import {satisfies} from 'semver';
 
-const flipperVersion = require('./package.json').version;
+const flipperVersion = require('../package.json').version;
 
 export async function getSourcePlugins(): Promise<PluginDetails[]> {
-  return await getPluginsFromFolders(await getPluginSourceFolders());
-}
-export async function getInstalledPlugins(): Promise<PluginDetails[]> {
-  return await getPluginsFromFolders([getPluginsInstallationFolder()]);
-}
-async function getPluginsFromFolders(
-  pluginFolders: string[],
-): Promise<PluginDetails[]> {
+  const pluginFolders = await getPluginSourceFolders();
   const entryPoints: {[key: string]: PluginDetails} = {};
   const additionalPlugins = await pmap(pluginFolders, (path) =>
     entryPointForPluginFolder(path),

@@ -59,5 +59,5 @@ export default function setup(argv: any) {
     launcherMsg: argv.launcherMsg,
   };
 
-  return {config, configPath, flipperDir};
+  return {config, configPath};
 }

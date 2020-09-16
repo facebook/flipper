@@ -12,3 +12,5 @@ export {default as getPluginDetails} from './getPluginDetails';
 export * from './pluginInstaller';
 export * from './getInstalledPlugins';
 export * from './getUpdatablePlugins';
+export * from './getSourcePlugins';
+export {getPluginSourceFolders} from './pluginPaths';

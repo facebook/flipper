@@ -23,12 +23,10 @@ import url from 'url';
 import fs from 'fs';
 import fixPath from 'fix-path';
 import {exec} from 'child_process';
-import compilePlugins from './compilePlugins';
 import setup from './setup';
 import isFB from './fb-stubs/isFB';
 import delegateToLauncher from './launcher';
 import yargs from 'yargs';
-import {finishPendingPluginInstallations} from 'flipper-plugin-lib';
 
 const VERSION: string = (global as any).__VERSION__;
 
@@ -89,7 +87,7 @@ const argv = yargs
   .help()
   .parse(process.argv.slice(1));
 
-const {config, configPath, flipperDir} = setup(argv);
+const {config, configPath} = setup(argv);
 
 if (isFB && process.env.FLIPPER_FB === undefined) {
   process.env.FLIPPER_FB = 'true';
@@ -100,7 +98,6 @@ process.env.CONFIG = JSON.stringify(config);
 // possible reference to main app window
 let win: BrowserWindow;
 let appReady = false;
-let pluginsCompiled = false;
 let deeplinkURL: string | undefined = argv.url;
 let filePath: string | undefined = argv.file;
 
@@ -110,22 +107,6 @@ setInterval(() => {
     win.webContents.send('trackUsage');
   }
 }, 60 * 1000);
-
-finishPendingPluginInstallations()
-  .then(() =>
-    compilePlugins(() => {
-      if (win) {
-        win.reload();
-      }
-    }, path.join(flipperDir, 'plugins')),
-  )
-  .then((dynamicPlugins) => {
-    ipcMain.on('get-dynamic-plugins', (event) => {
-      event.returnValue = dynamicPlugins;
-    });
-    pluginsCompiled = true;
-    tryCreateWindow();
-  });
 
 // check if we already have an instance of this app open
 const gotTheLock = app.requestSingleInstanceLock();
@@ -185,7 +166,7 @@ app.on('ready', () => {
     appReady = true;
     app.commandLine.appendSwitch('scroll-bounce');
     configureSession();
-    tryCreateWindow();
+    createWindow();
     // if in development install the react devtools extension
     if (process.env.NODE_ENV === 'development') {
       const {
@@ -278,72 +259,70 @@ app.setAsDefaultProtocolClient('flipper');
 // is workaround suggested in the issue
 app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
 
-function tryCreateWindow() {
-  if (appReady && pluginsCompiled) {
-    win = new BrowserWindow({
-      show: false,
-      title: 'Flipper',
-      width: config.lastWindowPosition?.width || 1400,
-      height: config.lastWindowPosition?.height || 1000,
-      minWidth: 800,
-      minHeight: 600,
-      center: true,
-      titleBarStyle: 'hiddenInset',
-      vibrancy: 'sidebar',
-      webPreferences: {
-        backgroundThrottling: false,
-        webSecurity: false,
-        scrollBounce: true,
-        experimentalFeatures: true,
-        nodeIntegration: true,
-        webviewTag: true,
-        nativeWindowOpen: true,
-      },
-    });
-    win.once('ready-to-show', () => {
-      win.show();
-      if (argv['open-dev-tools']) {
-        win.webContents.openDevTools();
-      }
-    });
-    win.once('close', () => {
-      win.webContents.send('trackUsage', 'exit');
-      if (process.env.NODE_ENV === 'development') {
-        // Removes as a default protocol for debug builds. Because even when the
-        // production application is installed, and one tries to deeplink through
-        // browser, it still looks for the debug one and tries to open electron
-        app.removeAsDefaultProtocolClient('flipper');
-      }
-      const [x, y] = win.getPosition();
-      const [width, height] = win.getSize();
-      // save window position and size
-      fs.writeFileSync(
-        configPath,
-        JSON.stringify({
-          ...config,
-          lastWindowPosition: {
-            x,
-            y,
-            width,
-            height,
-          },
-        }),
-      );
-    });
-    if (
-      config.lastWindowPosition &&
-      config.lastWindowPosition.x &&
-      config.lastWindowPosition.y
-    ) {
-      win.setPosition(config.lastWindowPosition.x, config.lastWindowPosition.y);
+function createWindow() {
+  win = new BrowserWindow({
+    show: false,
+    title: 'Flipper',
+    width: config.lastWindowPosition?.width || 1400,
+    height: config.lastWindowPosition?.height || 1000,
+    minWidth: 800,
+    minHeight: 600,
+    center: true,
+    titleBarStyle: 'hiddenInset',
+    vibrancy: 'sidebar',
+    webPreferences: {
+      backgroundThrottling: false,
+      webSecurity: false,
+      scrollBounce: true,
+      experimentalFeatures: true,
+      nodeIntegration: true,
+      webviewTag: true,
+      nativeWindowOpen: true,
+    },
+  });
+  win.once('ready-to-show', () => {
+    win.show();
+    if (argv['open-dev-tools']) {
+      win.webContents.openDevTools();
     }
-    const entryUrl =
-      process.env.ELECTRON_URL ||
-      url.format({
-        pathname: path.join(__dirname, 'index.html'),
-        protocol: 'file:',
-        slashes: true,
-      });
-    win.loadURL(entryUrl);
+  });
+  win.once('close', () => {
+    win.webContents.send('trackUsage', 'exit');
+    if (process.env.NODE_ENV === 'development') {
+      // Removes as a default protocol for debug builds. Because even when the
+      // production application is installed, and one tries to deeplink through
+      // browser, it still looks for the debug one and tries to open electron
+      app.removeAsDefaultProtocolClient('flipper');
+    }
+    const [x, y] = win.getPosition();
+    const [width, height] = win.getSize();
+    // save window position and size
+    fs.writeFileSync(
+      configPath,
+      JSON.stringify({
+        ...config,
+        lastWindowPosition: {
+          x,
+          y,
+          width,
+          height,
+        },
+      }),
+    );
+  });
+  if (
+    config.lastWindowPosition &&
+    config.lastWindowPosition.x &&
+    config.lastWindowPosition.y
+  ) {
+    win.setPosition(config.lastWindowPosition.x, config.lastWindowPosition.y);
   }
+  const entryUrl =
+    process.env.ELECTRON_URL ||
+    url.format({
+      pathname: path.join(__dirname, 'index.html'),
+      protocol: 'file:',
+      slashes: true,
+    });
+  win.loadURL(entryUrl);
 }

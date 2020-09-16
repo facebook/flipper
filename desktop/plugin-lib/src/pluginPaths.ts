@@ -9,6 +9,8 @@
 
 import path from 'path';
 import {homedir} from 'os';
+import fs from 'fs-extra';
+import expandTilde from 'expand-tilde';
 
 export const flipperDataDir = path.join(homedir(), '.flipper');
 
@@ -20,3 +22,23 @@ export const pluginPendingInstallationDir = path.join(
 );
 
 export const pluginCacheDir = path.join(flipperDataDir, 'plugins');
+
+export async function getPluginSourceFolders(): Promise<string[]> {
+  const pluginFolders: string[] = [];
+  if (process.env.FLIPPER_NO_EMBEDDED_PLUGINS === 'true') {
+    console.log(
+      '🥫  Skipping embedded plugins because "--no-embedded-plugins" flag provided',
+    );
+    return pluginFolders;
+  }
+  const flipperConfigPath = path.join(homedir(), '.flipper', 'config.json');
+  if (await fs.pathExists(flipperConfigPath)) {
+    const config = await fs.readJson(flipperConfigPath);
+    if (config.pluginPaths) {
+      pluginFolders.push(...config.pluginPaths);
+    }
+  }
+  pluginFolders.push(path.resolve(__dirname, '..', '..', 'plugins'));
+  pluginFolders.push(path.resolve(__dirname, '..', '..', 'plugins', 'fb'));
+  return pluginFolders.map(expandTilde).filter(fs.existsSync);
+}
