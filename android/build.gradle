@@ -65,7 +65,6 @@ android {
         implementation deps.soloader
         implementation deps.jsr305
         implementation deps.supportAppCompat
-        implementation deps.supportSqlite
 
         testImplementation deps.mockito
         testImplementation deps.robolectric

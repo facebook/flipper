@@ -56,7 +56,6 @@ ext.deps = [
         supportCoreUi      : "androidx.legacy:legacy-support-core-ui:$ANDROIDX_VERSION",
         supportRecyclerView: "androidx.recyclerview:recyclerview:$ANDROIDX_VERSION",
         supportConstraintLayout: "androidx.constraintlayout:constraintlayout:1.1.2",
-        supportSqlite      : "androidx.sqlite:sqlite-framework:2.1.0",
         supportEspresso    : 'androidx.test.espresso:espresso-core:3.1.0',
         supportDesign      : "com.google.android.material:material:1.0.0-rc01",
         supportEspressoIntents : 'androidx.test.espresso:espresso-intents:3.1.0',
