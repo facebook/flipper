@@ -28,7 +28,7 @@ import {
 import React, {useCallback, useState, useEffect} from 'react';
 import {List} from 'immutable';
 import {reportPlatformFailures, reportUsage} from '../../utils/metrics';
-import restartFlipper from '../../utils/restartFlipper';
+import reloadFlipper from '../../utils/reloadFlipper';
 import {registerInstalledPlugins} from '../../reducers/pluginManager';
 import {
   UpdateResult,
@@ -124,7 +124,7 @@ const PluginInstaller = function ({
 
   const rows = useNPMSearch(query, onInstall, installedPlugins);
   const restartApp = useCallback(() => {
-    restartFlipper();
+    reloadFlipper();
   }, []);
 
   return (
@@ -132,8 +132,7 @@ const PluginInstaller = function ({
       <Container>
         {restartRequired && (
           <RestartBar onClick={restartApp}>
-            To activate this plugin, Flipper needs to restart. Click here to
-            restart!
+            To apply the changes, Flipper needs to reload. Click here to reload!
           </RestartBar>
         )}
         <Toolbar>
