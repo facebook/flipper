@@ -34,6 +34,7 @@
   "resolutions": {
     "logkitty": "0.7.1",
     "minimist": "1.2.3",
-    "kind-of": "6.0.3"
+    "kind-of": "6.0.3",
+    "node-fetch": "^2.6.1"
   }
 }
