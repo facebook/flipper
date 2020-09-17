@@ -192,6 +192,8 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
     }
 
     final FlipperObject.Builder data = new FlipperObject.Builder();
+    data.put("<PLAYGROUND>", InspectorValue.immutable("https://yogalayout.com/playground/"));
+
     data.put("background", DataUtils.fromDrawable(layout.getBackground()));
     data.put("foreground", DataUtils.fromDrawable(layout.getForeground()));
 
