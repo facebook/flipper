@@ -221,6 +221,7 @@ type ElementsRowProps = {
     | ((key: ElementID | undefined | null) => void)
     | undefined
     | null;
+  onCopyExpandedTree: (key: Element, maxDepth: number) => string;
   style?: Object;
   contextMenuExtensions: Array<ContextMenuExtension>;
   decorateRow?: DecorateRow;
@@ -249,12 +250,13 @@ class ElementsRow extends PureComponent<ElementsRowProps, ElementsRowState> {
       {
         label: 'Copy',
         click: () => {
-          const attrs = props.element.attributes.reduce(
-            (acc, val) => acc + ` ${val.name}=${val.value}`,
-            '',
-          );
-          clipboard.writeText(`${props.element.name}${attrs}`);
+          clipboard.writeText(props.onCopyExpandedTree(props.element, 0));
         },
+      },
+      {
+        label: 'Copy expanded child elements',
+        click: () =>
+          clipboard.writeText(props.onCopyExpandedTree(props.element, 255)),
       },
       {
         label: props.element.expanded ? 'Collapse' : 'Expand',
@@ -637,6 +639,7 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
       searchResults,
       contextMenuExtensions,
       decorateRow,
+      elements,
     } = this.props;
     const {flatElements} = this.state;
 
@@ -654,6 +657,30 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
     if (this.props.alternateRowColor) {
       isEven = index % 2 === 0;
     }
+    const onCopyExpandedTree = (
+      maxDepth: number,
+      element: Element,
+      depth: number,
+    ): string => {
+      const shouldIncludeChildren = element.expanded && depth < maxDepth;
+      const children = shouldIncludeChildren
+        ? element.children.map((childId) => {
+            const childElement = elements[childId];
+            return childElement == null
+              ? ''
+              : onCopyExpandedTree(maxDepth, childElement, depth + 1);
+          })
+        : [];
+
+      const childrenValue = children.toString().replace(',', '');
+      const indentation = depth === 0 ? '' : '\n'.padEnd(depth * 2 + 1, ' ');
+      const attrs = element.attributes.reduce(
+        (acc, val) => acc + ` ${val.name}=${val.value}`,
+        '',
+      );
+
+      return `${indentation}${element.name}${attrs}${childrenValue}`;
+    };
 
     return (
       <ElementsRow
@@ -666,6 +693,9 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
           onElementHovered && onElementHovered(key);
         }}
         onElementSelected={onElementSelected}
+        onCopyExpandedTree={(element, maxDepth) =>
+          onCopyExpandedTree(maxDepth, element, 0)
+        }
         selected={selected === row.key}
         focused={focused === row.key}
         matchingSearchQuery={
