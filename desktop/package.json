@@ -83,7 +83,7 @@
       "publisherName": "Facebook, Inc.",
       "sign": null
     },
-    "asar": false,
+    "asar": true,
     "fileAssociations": [
       {
         "ext": [
