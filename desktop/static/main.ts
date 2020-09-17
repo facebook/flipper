@@ -271,6 +271,7 @@ function createWindow() {
     titleBarStyle: 'hiddenInset',
     vibrancy: 'sidebar',
     webPreferences: {
+      enableRemoteModule: true,
       backgroundThrottling: false,
       webSecurity: false,
       scrollBounce: true,

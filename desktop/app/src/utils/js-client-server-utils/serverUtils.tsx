@@ -131,6 +131,7 @@ export function launchJsEmulator(url: string, height: number, width: number) {
     height: height,
     width: width,
     webPreferences: {
+      enableRemoteModule: true,
       preload: require('path').join(
         remote.app.getAppPath(),
         'SupportJSClientPreload.js',

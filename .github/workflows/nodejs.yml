@@ -32,7 +32,8 @@ jobs:
       run: yarn test --coverage
       working-directory: ${{env.desktop-directory}}
     - name: coveralls
-      uses: coverallsapp/github-action@v1.1.0
+      uses: coverallsapp/github-action@v1.1.2
+      continue-on-error: true
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         base-path: ${{env.desktop-directory}}
