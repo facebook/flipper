@@ -1,4 +1,63 @@
 @import '../node_modules/antd/lib/style/themes/default.less';
-@import '../node_modules/antd/dist/antd.less'; 
+@import '../node_modules/antd/dist/antd.less';
 
-@primary-color: red;
+/* Based on: https://www.figma.com/file/4e6BMdm2SuZ1L7FSuOPQVC/Flipper?node-id=620%3A84636 */
+@border-radius-base: 6px;
+
+@font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+  'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji',
+  'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+@code-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier,
+  monospace;
+
+// Link Text & Icon
+@primary-color: @purple-7;
+// Success
+@success-color: @green-7;
+// Negative
+@error-color: @red-6;
+@highlight-color: @red-6;
+// Warning
+@warning-color: @gold-6;
+
+// Primary Text & Icon
+@text-color: @black;
+// Secondary Text & Icon
+@text-color-secondary: fade(@black, 60%);
+// Placeholder Text & Icon
+@input-placeholder-color: fade(@black, 45%);
+// Disabled & Icon
+@disabled-color: fade(@black, 25%);
+// Background - default
+@body-background: @white; // Background color for `<body>`
+// @component-background: @white; // Base background color for most components
+// Background - Wash
+@normal-color:fade(
+    @black,
+    5%
+  );
+// @background-color-light: fade(
+//   @black,
+//   5%
+// ); // background of header and selected item
+// Background - Wash
+// @background-color-base: fade(@black, 10%); // Default grey background color
+// Background - Primary Button
+// @btn-primary-bg: @primary-color;
+// Background - Primary Hoever
+//  ??? : @purple-7
+// Background - Default Button
+// @btn-default-bg: fade(@black, 10%);
+// Background - Default Hover
+// @btn-text-hover-bg: fade(@black, 15%);
+// Background - Button Disabled
+// @btn-disable-bg: fade(@black, 10%);
+// Background - Transparent Hover
+// @btn-link-hover-bg: fade(@black, 10%);
+// Background - Navigation Active
+// ???: fade(@black, 8%)
+// Dividers and Borders
+@divider-color: fade(@black, 10%);
+
+@tooltip-color: @white;
+@tooltip-bg: @black;
