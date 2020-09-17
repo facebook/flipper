@@ -1,6 +1,7 @@
 lib/
 node_modules/
 *.tsbuildinfo
+/static/themes/
 /static/defaultPlugins/index.json
 /app/src/defaultPlugins/index.tsx
 /coverage
