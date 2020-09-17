@@ -14,6 +14,7 @@ import {Settings, updateSettings} from '../reducers/settings';
 import {styled, FlexColumn, colors, Text} from 'flipper';
 import {DatePicker, Button} from 'antd';
 import {Layout, FlexBox} from '../ui';
+import {theme} from './theme';
 
 import {LeftRail} from './LeftRail';
 import {CloseCircleOutlined} from '@ant-design/icons';
@@ -46,6 +47,8 @@ const AnnoucementText = styled(Text)({
   fontWeight: 300,
   textAlign: 'center',
   margin: 16,
+  color: theme.primaryColor,
+  background: theme.backgroundWash,
 });
 
 const LeftContainer = styled(FlexBox)({
@@ -87,7 +90,7 @@ function SandyApp(props: Props) {
         </LeftContainer>
         <Layout.Right>
           <MainContainer>
-            <TemporarilyContent {...props} />
+            <TemporarilyContent />
           </MainContainer>
           <RightMenu />
         </Layout.Right>
@@ -114,7 +117,7 @@ function MainContainer({children}: any) {
   );
 }
 
-function TemporarilyContent(props: Props) {
+function TemporarilyContent() {
   return (
     <Container>
       <Box>

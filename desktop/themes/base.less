@@ -1,0 +1,42 @@
+@import '../node_modules/antd/dist/antd.less';
+/* Based on: https://www.figma.com/file/4e6BMdm2SuZ1L7FSuOPQVC/Flipper?node-id=620%3A84636 */
+@border-radius-base: 6px;
+
+@font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+  'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji',
+  'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+@code-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier,
+  monospace;
+
+/**
+ This section maps theme base colors as defined in light/dark.less to ANT variables
+ (as far as they aren't already)
+*/
+@highlight-color: @error-color;
+@badge-color: @error-color;
+@text-color: @text-color-primary;
+@input-placeholder-color: @text-color-placeholder;
+@body-background: @background-default; // Background color for `<body>`
+@normal-color: @background-wash;
+@tooltip-color: @background-default;
+@tooltip-bg: @text-color-primary;
+
+/**
+ This section maps theme colors to CSS variables so that thye can be
+ used in styled components, see sandyColors.tsx
+*/
+
+:root {
+    --flipper-primary-color: @primary-color;
+    --flipper-success-color: @success-color;
+    --flipper-error-color: @error-color;
+    --flipper-warning-color: @warning-color;
+    --flipper-text-color-primary: @text-color-primary;
+    --flipper-text-color-secondary: @text-color-secondary;
+    --flipper-text-color-placeholder: @text-color-placeholder;
+    --flipper-disabled-color: @disabled-color;
+    --flipper-background-default: @background-default;
+    --flipper-background-wash: @background-wash;
+    --flipper-divider-color: @divider-color;
+    --flipper-border-radius: 6px;
+}
