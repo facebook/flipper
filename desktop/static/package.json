@@ -7,10 +7,6 @@
   "dependencies": {
     "electron-devtools-installer": "^3.1.1",
     "fix-path": "^3.0.0",
-    "flipper-pkg-lib": "0.57.0",
-    "flipper-plugin-lib": "0.57.0",
-    "fs-extra": "^9.0.1",
-    "ignore": "^5.1.4",
     "mac-ca": "^1.0.4",
     "mkdirp": "^1.0.4",
     "node-fetch": "^2.6.1",
