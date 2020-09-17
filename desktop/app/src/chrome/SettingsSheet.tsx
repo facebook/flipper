@@ -81,6 +81,13 @@ class SettingsSheet extends Component<Props, State> {
     });
   };
 
+  applyChangesWithoutRestart = async () => {
+    this.props.updateSettings(this.state.updatedSettings);
+    this.props.updateLauncherSettings(this.state.updatedLauncherSettings);
+    await flush();
+    this.props.onHide();
+  };
+
   render() {
     const {
       enableAndroid,
@@ -90,7 +97,13 @@ class SettingsSheet extends Component<Props, State> {
       enablePrefetching,
       idbPath,
       reactNative,
+      enableSandy,
+      darkMode,
     } = this.state.updatedSettings;
+
+    const settingsPristine =
+      isEqual(this.props.settings, this.state.updatedSettings) &&
+      isEqual(this.props.launcherSettings, this.state.updatedLauncherSettings);
 
     return (
       <Container>
@@ -195,6 +208,20 @@ class SettingsSheet extends Component<Props, State> {
             });
           }}
         />
+        {enableSandy && (
+          <ToggledSection
+            label="Enable dark theme"
+            toggled={darkMode}
+            onChange={(enabled) => {
+              this.setState((prevState) => ({
+                updatedSettings: {
+                  ...prevState.updatedSettings,
+                  darkMode: enabled,
+                },
+              }));
+            }}
+          />
+        )}
         <ToggledSection
           label="React Native keyboard shortcuts"
           toggled={reactNative.shortcuts.enabled}
@@ -256,13 +283,14 @@ class SettingsSheet extends Component<Props, State> {
             Cancel
           </Button>
           <Button
-            disabled={
-              isEqual(this.props.settings, this.state.updatedSettings) &&
-              isEqual(
-                this.props.launcherSettings,
-                this.state.updatedLauncherSettings,
-              )
-            }
+            disabled={settingsPristine}
+            compact
+            padded
+            onClick={this.applyChangesWithoutRestart}>
+            Apply
+          </Button>
+          <Button
+            disabled={settingsPristine}
             type="primary"
             compact
             padded

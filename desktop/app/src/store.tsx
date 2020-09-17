@@ -8,7 +8,7 @@
  */
 
 import {createStore} from 'redux';
-import reducers, {Actions, State as StoreState} from './reducers/index';
+import reducers, {Actions, State as StoreState, Store} from './reducers/index';
 import {stateSanitizer} from './utils/reduxDevToolsConfig';
 import isProduction from './utils/isProduction';
 import produce from 'immer';
@@ -17,7 +17,7 @@ import {
   getPluginKey,
 } from './utils/pluginUtils';
 
-export const store = createStore<StoreState, Actions, any, any>(
+export const store: Store = createStore<StoreState, Actions, any, any>(
   rootReducer,
   // @ts-ignore Type definition mismatch
   window.__REDUX_DEVTOOLS_EXTENSION__

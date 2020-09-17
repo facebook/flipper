@@ -34,6 +34,7 @@ import QuickPerformanceLogger, {FLIPPER_QPL_EVENTS} from './fb-stubs/QPL';
 import {PopoverProvider} from './ui/components/PopoverProvider';
 import {initializeFlipperLibImplementation} from './utils/flipperLibImplementation';
 import {enableConsoleHook} from './chrome/ConsoleLogs';
+import {sideEffect} from './utils/sideEffect';
 
 if (process.env.NODE_ENV === 'development' && os.platform() === 'darwin') {
   // By default Node.JS has its internal certificate storage and doesn't use
@@ -96,6 +97,23 @@ function init() {
   registerRecordingHooks(store);
   enableConsoleHook();
   window.flipperGlobalStoreDispatch = store.dispatch;
+
+  // listen to settings and load the right theme
+  sideEffect(
+    store,
+    {name: 'loadTheme', fireImmediately: true, throttleMs: 500},
+    (state) =>
+      state.settingsState.enableSandy
+        ? state.settingsState.darkMode
+          ? 'themes/dark'
+          : 'themes/light'
+        : 'none',
+    (theme) => {
+      (document.getElementById(
+        'flipper-theme-import',
+      ) as HTMLLinkElement).href = `${theme}.css`;
+    },
+  );
 }
 
 // rehydrate app state before exposing init
