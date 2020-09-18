@@ -10,12 +10,15 @@
 import {FlexColumn, Button, styled} from 'flipper';
 
 import {ManageMockResponsePanel} from './ManageMockResponsePanel';
-import {Route} from './types';
+import {Route, Request, Response} from './types';
 import React from 'react';
 
 type Props = {
   routes: {[id: string]: Route};
   onHide: () => void;
+  highlightedRows: Set<string> | null | undefined;
+  requests: {[id: string]: Request};
+  responses: {[id: string]: Response};
 };
 
 const Title = styled('div')({
@@ -39,7 +42,12 @@ export function MockResponseDialog(props: Props) {
   return (
     <Container>
       <Title>Mock Network Responses</Title>
-      <ManageMockResponsePanel routes={props.routes} />
+      <ManageMockResponsePanel
+        routes={props.routes}
+        highlightedRows={props.highlightedRows}
+        requests={props.requests}
+        responses={props.responses}
+      />
       <Row>
         <Button compact padded onClick={props.onHide}>
           Close

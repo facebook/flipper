@@ -20,13 +20,18 @@ import {
 } from 'flipper';
 import React, {useContext, useState, useMemo, useEffect} from 'react';
 
-import {Route} from './types';
+import {Route, Request, Response} from './types';
 
 import {MockResponseDetails} from './MockResponseDetails';
 import {NetworkRouteContext} from './index';
 import {RequestId} from './types';
 
-type Props = {routes: {[id: string]: Route}};
+type Props = {
+  routes: {[id: string]: Route};
+  highlightedRows: Set<string> | null | undefined;
+  requests: {[id: string]: Request};
+  responses: {[id: string]: Response};
+};
 
 const ColumnSizes = {route: 'flex'};
 
@@ -35,7 +40,17 @@ const Columns = {route: {value: 'Route', resizable: false}};
 const AddRouteButton = styled(FlexBox)({
   color: colors.blackAlpha50,
   alignItems: 'center',
-  padding: 10,
+  padding: 5,
+  flexShrink: 0,
+  whiteSpace: 'nowrap',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+});
+
+const CopyHighlightedCallsButton = styled(FlexBox)({
+  color: colors.blueDark,
+  alignItems: 'center',
+  padding: 5,
   flexShrink: 0,
   whiteSpace: 'nowrap',
   overflow: 'hidden',
@@ -119,12 +134,11 @@ function RouteRow(props: {
   showWarning: boolean;
   handleRemoveId: () => void;
 }) {
-  const [showCloseButton, setShowCloseButton] = useState(false);
   return (
-    <FlexRow
-      grow={true}
-      onMouseEnter={() => setShowCloseButton(true)}
-      onMouseLeave={() => setShowCloseButton(false)}>
+    <FlexRow grow={true}>
+      <FlexRow onClick={props.handleRemoveId}>
+        <Icon name="cross-circle" color={colors.red} />
+      </FlexRow>
       <FlexRow grow={true}>
         {props.showWarning && (
           <Icon name="caution-triangle" color={colors.yellow} />
@@ -137,11 +151,6 @@ function RouteRow(props: {
           <TextEllipsis>{props.text}</TextEllipsis>
         )}
       </FlexRow>
-      {showCloseButton && (
-        <FlexRow onClick={props.handleRemoveId}>
-          <Icon name="cross-circle" color={colors.red} />
-        </FlexRow>
-      )}
     </FlexRow>
   );
 }
@@ -171,21 +180,20 @@ function ManagedMockResponseRightPanel(props: {
 export function ManageMockResponsePanel(props: Props) {
   const networkRouteManager = useContext(NetworkRouteContext);
   const [selectedId, setSelectedId] = useState<RequestId | null>(null);
-  const [currentRouteSize, setCurrentRouteSize] = useState(0);
 
-  const {routes} = props;
   useEffect(() => {
-    const keys = Object.keys(routes);
-    const routeSize = keys.length;
-    if (currentRouteSize === routeSize) {
-      return;
-    }
-    if (routeSize > 0 && routeSize > currentRouteSize) {
-      setSelectedId(keys[routeSize - 1]);
-    }
-    setCurrentRouteSize(routeSize);
-  }, [routes]);
-  const duplicatedIds = useMemo(() => _duplicateIds(routes), [routes]);
+    setSelectedId((selectedId) => {
+      const keys = Object.keys(props.routes);
+      return keys.length === 0
+        ? null
+        : selectedId === null || !keys.includes(selectedId)
+        ? keys[keys.length - 1]
+        : selectedId;
+    });
+  }, [props.routes]);
+  const duplicatedIds = useMemo(() => _duplicateIds(props.routes), [
+    props.routes,
+  ]);
   return (
     <Container>
       <LeftPanel>
@@ -201,12 +209,28 @@ export function ManageMockResponsePanel(props: Props) {
           />
           &nbsp;Add Route
         </AddRouteButton>
+        <CopyHighlightedCallsButton
+          onClick={() => {
+            networkRouteManager.copyHighlightedCalls(
+              props.highlightedRows as Set<string>,
+              props.requests,
+              props.responses,
+            );
+          }}>
+          <Glyph
+            name="plus-circle"
+            size={16}
+            variant="outline"
+            color={colors.blackAlpha30}
+          />
+          &nbsp;Copy Highlighted Calls
+        </CopyHighlightedCallsButton>
         <ManagedTable
           hideHeader={true}
           multiline={true}
           columnSizes={ColumnSizes}
           columns={Columns}
-          rows={_buildRows(routes, duplicatedIds, (id) => {
+          rows={_buildRows(props.routes, duplicatedIds, (id) => {
             networkRouteManager.removeRoute(id);
             setSelectedId(null);
           })}
@@ -223,10 +247,10 @@ export function ManageMockResponsePanel(props: Props) {
         />
       </LeftPanel>
       <RightPanel>
-        {selectedId && routes.hasOwnProperty(selectedId) && (
+        {selectedId && props.routes.hasOwnProperty(selectedId) && (
           <ManagedMockResponseRightPanel
             id={selectedId}
-            route={routes[selectedId]}
+            route={props.routes[selectedId]}
             isDuplicated={duplicatedIds.includes(selectedId)}
           />
         )}
