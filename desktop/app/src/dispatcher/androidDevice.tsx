@@ -38,8 +38,8 @@ function createDevice(
       .then(async (props) => {
         try {
           let name = props['ro.product.model'];
-          const abiString = props['ro.product.cpu.abilist'];
-          const sdkVersion = props['ro.build.version.sdk'];
+          const abiString = props['ro.product.cpu.abilist'] || '';
+          const sdkVersion = props['ro.build.version.sdk'] || '';
           const abiList = abiString.length > 0 ? abiString.split(',') : [];
           if (type === 'emulator') {
             name = (await getRunningEmulatorName(device.id)) || name;
