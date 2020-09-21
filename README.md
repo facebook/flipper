@@ -82,7 +82,7 @@ Please refer to our [Getting Started guide](https://fbflipper.com/docs/getting-s
 ## Desktop
 ### Running from source
 
-```
+```bash
 git clone https://github.com/facebook/flipper.git
 cd flipper/desktop
 yarn
@@ -96,7 +96,7 @@ NOTE: If you're on Windows, you need to use Yarn 1.5.1 until [this issue](https:
 Provide either `--mac`, `--win`, `--linux` or any combination of them
 to `yarn build` to build a release zip file for the given platform(s). E.g.
 
-```
+```bash
 yarn build --mac --version $buildNumber
 ```
 
@@ -104,7 +104,7 @@ You can find the resulting artifact in the `dist/` folder.
 
 ## iOS SDK + Sample App
 
-```
+```bash
 cd iOS/Sample
 rm -f Podfile.lock
 pod install --repo-update
@@ -117,13 +117,13 @@ You can omit `--repo-update` to speed up the installation, but watch out as you 
 ## Android SDK + Sample app
 
 Start up an android emulator and run the following in the project root:
-```
+```bash
 ./gradlew :sample:installDebug
 ```
 
 ## React Native SDK + Sample app
 
-```
+```bash
 cd react-native/ReactNativeFlipperExample
 yarn
 yarn android
