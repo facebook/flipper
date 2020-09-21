@@ -10,7 +10,7 @@
 import Interactive from './Interactive';
 import FlexColumn from './FlexColumn';
 import {colors} from './colors';
-import {Component} from 'react';
+import {Component, ReactNode} from 'react';
 import styled from '@emotion/styled';
 import {
   BackgroundClipProperty,
@@ -19,6 +19,9 @@ import {
   BackgroundColorProperty,
 } from 'csstype';
 import React from 'react';
+import FlexRow from './FlexRow';
+import {MoreOutlined} from '@ant-design/icons';
+import {theme} from '../../sandy-chrome/theme';
 
 const SidebarInteractiveContainer = styled(Interactive)({
   flex: 'none',
@@ -31,12 +34,18 @@ const SidebarContainer = styled(FlexColumn)<{
   position: 'right' | 'top' | 'left' | 'bottom';
   backgroundColor?: BackgroundClipProperty;
   overflow?: boolean;
+  unstyled?: boolean;
 }>((props) => ({
-  backgroundColor: props.backgroundColor || colors.macOSTitleBarBackgroundBlur,
-  borderLeft: props.position === 'right' ? '1px solid #b3b3b3' : 'none',
-  borderTop: props.position === 'bottom' ? '1px solid #b3b3b3' : 'none',
-  borderRight: props.position === 'left' ? '1px solid #b3b3b3' : 'none',
-  borderBottom: props.position === 'top' ? '1px solid #b3b3b3' : 'none',
+  ...(props.unstyled
+    ? undefined
+    : {
+        backgroundColor:
+          props.backgroundColor || colors.macOSTitleBarBackgroundBlur,
+        borderLeft: props.position === 'right' ? '1px solid #b3b3b3' : 'none',
+        borderTop: props.position === 'bottom' ? '1px solid #b3b3b3' : 'none',
+        borderRight: props.position === 'left' ? '1px solid #b3b3b3' : 'none',
+        borderBottom: props.position === 'top' ? '1px solid #b3b3b3' : 'none',
+      }),
   height: '100%',
   overflowX: 'hidden',
   overflowY: 'auto',
@@ -93,6 +102,10 @@ type SidebarProps = {
    * Class name to customise styling.
    */
   className?: string;
+  /**
+   * use a Sandy themed large gutter
+   */
+  gutter?: boolean;
 };
 
 type SidebarState = {
@@ -138,7 +151,7 @@ export default class Sidebar extends Component<SidebarProps, SidebarState> {
   };
 
   render() {
-    const {backgroundColor, onResize, position, children} = this.props;
+    const {backgroundColor, onResize, position, children, gutter} = this.props;
     let height: number | undefined;
     let minHeight: number | undefined;
     let maxHeight: number | undefined;
@@ -183,11 +196,58 @@ export default class Sidebar extends Component<SidebarProps, SidebarState> {
         maxHeight={maxHeight}
         height={!horizontal ? (onResize ? height : this.state.height) : '100%'}
         resizable={resizable}
-        onResize={this.onResize}>
-        <SidebarContainer position={position} backgroundColor={backgroundColor}>
-          {children}
+        onResize={this.onResize}
+        gutterWidth={gutter ? theme.space.middle : undefined}>
+        <SidebarContainer
+          position={position}
+          backgroundColor={backgroundColor}
+          unstyled={gutter}>
+          {gutter ? (
+            <GutterWrapper position={position}>{children}</GutterWrapper>
+          ) : (
+            children
+          )}
         </SidebarContainer>
       </SidebarInteractiveContainer>
     );
   }
 }
+
+const GutterWrapper = ({
+  position,
+  children,
+}: {
+  position: SidebarPosition;
+  children: ReactNode;
+}) => {
+  return position === 'right' ? (
+    <FlexRow grow>
+      <VerticalGutter />
+      {children}
+    </FlexRow>
+  ) : (
+    <FlexRow grow>
+      {children}
+      <VerticalGutter />
+    </FlexRow>
+  ); // TODO: support top / bottom
+};
+
+const VerticalGutterContainer = styled('div')({
+  width: theme.space.middle,
+  height: '100%',
+  color: theme.textColorPlaceholder,
+  fontSize: '16px',
+  display: 'flex',
+  flexDirection: 'row',
+  alignItems: 'center',
+  background: theme.backgroundWash,
+  ':hover': {
+    background: theme.dividerColor,
+  },
+});
+const VerticalGutter = () => (
+  <VerticalGutterContainer>
+    <MoreOutlined />
+  </VerticalGutterContainer>
+);

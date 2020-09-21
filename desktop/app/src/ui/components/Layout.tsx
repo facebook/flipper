@@ -9,9 +9,20 @@
 
 import React from 'react';
 import styled from '@emotion/styled';
+import {Sidebar} from '..';
 
 type Props = {
+  /**
+   * If set, the dynamically sized pane will get scrollbars when needed
+   */
   scrollable?: boolean;
+  /**
+   * If set, the 'fixed' child will no longer be sized based on it's own dimensions,
+   * but rather it will be possible to resize it
+   */
+  initialSize?: number;
+  minSize?: number;
+
   children: [React.ReactNode, React.ReactNode];
 };
 
@@ -42,16 +53,35 @@ const Container = styled('div')<{horizontal: boolean}>(({horizontal}) => ({
 Container.displayName = 'Layout:Container';
 
 function renderLayout(
-  {children, scrollable}: Props,
+  {children, scrollable, initialSize, minSize}: Props,
   horizontal: boolean,
   reverse: boolean,
 ) {
   if (children.length !== 2) {
     throw new Error('Layout expects exactly 2 children');
   }
-  const fixedElement = (
-    <FixedContainer>{reverse ? children[1] : children[0]}</FixedContainer>
-  );
+  const fixedChild = reverse ? children[1] : children[0];
+
+  const fixedElement =
+    initialSize === undefined ? (
+      <FixedContainer>{fixedChild}</FixedContainer>
+    ) : horizontal ? (
+      <Sidebar
+        position={reverse ? 'right' : 'left'}
+        width={initialSize}
+        minWidth={minSize}
+        gutter>
+        {fixedChild}
+      </Sidebar>
+    ) : (
+      <Sidebar
+        position={reverse ? 'bottom' : 'top'}
+        height={initialSize}
+        minHeight={minSize}
+        gutter>
+        {fixedChild}
+      </Sidebar>
+    );
   const dynamicElement = (
     <ScrollContainer scrollable={!!scrollable}>
       {reverse ? children[0] : children[1]}
@@ -76,6 +106,8 @@ function renderLayout(
  *
  * The main area will be scrollable by default, but if multiple containers are nested,
  * scrolling can be disabled by using `scrollable={false}`
+ *
+ * If initialSize is set, the fixed container will be made resizable
  *
  * Use Layout.Top / Right / Bottom / Left to indicate where the fixed element should live.
  */

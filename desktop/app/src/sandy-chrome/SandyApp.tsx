@@ -8,135 +8,84 @@
  */
 
 import React from 'react';
-import {connect} from 'react-redux';
-import {State as Store} from '../reducers';
-import {Settings, updateSettings} from '../reducers/settings';
-import {styled, FlexColumn, colors, Text} from 'flipper';
-import {DatePicker, Button} from 'antd';
-import {Layout, FlexBox} from '../ui';
+import {styled} from 'flipper';
+import {DatePicker} from 'antd';
+import {Layout, FlexRow} from '../ui';
 import {theme} from './theme';
 
 import {LeftRail} from './LeftRail';
-import {CloseCircleOutlined} from '@ant-design/icons';
+import {TemporarilyTitlebar} from './TemporarilyTitlebar';
 
-type StateFromProps = {settings: Settings};
-type DispatchFromProps = {disableSandy: (settings: Settings) => void};
-type OwnProps = {};
-
-type Props = StateFromProps & DispatchFromProps & OwnProps;
-
-const Container = styled(FlexColumn)({
-  height: '100%',
-  width: '100%',
-  justifyContent: 'center',
-  alignItems: 'center',
-  backgroundColor: colors.light02,
-});
-
-const Box = styled(FlexColumn)({
-  justifyContent: 'center',
-  alignItems: 'center',
-  background: colors.white,
-  borderRadius: 10,
-  boxShadow: '0 1px 3px rgba(0,0,0,0.25)',
-  paddingBottom: 16,
-});
-
-const AnnoucementText = styled(Text)({
-  fontSize: 24,
-  fontWeight: 300,
-  textAlign: 'center',
-  margin: 16,
-  color: theme.primaryColor,
-  background: theme.backgroundWash,
-});
-
-const LeftContainer = styled(FlexBox)({
-  height: '100% ',
-});
-
-// This component should be dropped, and insetTitlebar should be removed from Electron startup once Sandy is the default
-const TemporarilyTitlebar = styled('div')<{focused?: boolean}>(({focused}) => ({
-  textAlign: 'center',
-  userSelect: 'none',
-  height: '38px',
-  lineHeight: '38px',
-  fontSize: '10pt',
-  color: colors.macOSTitleBarIcon,
-  background: true
-    ? `linear-gradient(to bottom, ${colors.macOSTitleBarBackgroundTop} 0%, ${colors.macOSTitleBarBackgroundBottom} 100%)`
-    : colors.macOSTitleBarBackgroundBlur,
-  borderBottom: `1px solid ${
-    focused ? colors.macOSTitleBarBorder : colors.macOSTitleBarBorderBlur
-  }`,
-  WebkitAppRegion: 'drag',
-}));
-
-function SandyApp(props: Props) {
+export function SandyApp() {
   return (
     <Layout.Top>
-      <TemporarilyTitlebar focused /*TODO: make dynamic */>
-        [Sandy] Flipper{' '}
-        <Button
-          size="small"
-          type="link"
-          icon={<CloseCircleOutlined />}
-          onClick={() => props.disableSandy(props.settings)}></Button>
-      </TemporarilyTitlebar>
-      <Layout.Left>
-        <LeftContainer>
+      <TemporarilyTitlebar />
+      <Layout.Left initialSize={348} minSize={200}>
+        <LeftMenu>
           <LeftRail />
-          <LeftMenu />
-        </LeftContainer>
-        <Layout.Right>
-          <MainContainer>
-            <TemporarilyContent />
-          </MainContainer>
-          <RightMenu />
-        </Layout.Right>
+          <div>LeftMenu</div>
+        </LeftMenu>
+        <MainContainer>
+          <Layout.Right initialSize={300} minSize={200}>
+            <MainContentWrapper>
+              <ContentContainer>
+                <TemporarilyContent />
+              </ContentContainer>
+            </MainContentWrapper>
+            <MainContentWrapper>
+              <ContentContainer>
+                <RightMenu />
+              </ContentContainer>
+            </MainContentWrapper>
+          </Layout.Right>
+        </MainContainer>
       </Layout.Left>
     </Layout.Top>
   );
 }
 
-function LeftMenu() {
-  return <div>LeftMenu</div>;
-}
+const LeftMenu = styled(FlexRow)({
+  boxShadow: `inset -1px 0px 0px ${theme.dividerColor}`,
+  height: '100%',
+  width: '100%',
+});
+
+const MainContainer = styled('div')({
+  display: 'flex',
+  width: '100%',
+  height: '100%',
+  background: theme.backgroundWash,
+  paddingRight: theme.space.middle,
+});
+
+export const ContentContainer = styled('div')({
+  width: '100%',
+  margin: 0,
+  padding: 0,
+  background: theme.backgroundDefault,
+  border: `1px solid ${theme.dividerColor}`,
+  borderRadius: theme.space.small,
+  boxShadow: `0px 0px 5px rgba(0, 0, 0, 0.05), 0px 0px 1px rgba(0, 0, 0, 0.05)`,
+});
+
+const MainContentWrapper = styled('div')({
+  height: '100%',
+  width: '100%',
+  display: 'flex',
+  alignItems: 'stretch',
+  padding: `${theme.space.middle}px 0`,
+});
 
 function RightMenu() {
   return <div>RightMenu</div>;
 }
 
-function MainContainer({children}: any) {
-  return (
-    <div>
-      MainContainer
-      <br />
-      {children}
-    </div>
-  );
-}
-
 function TemporarilyContent() {
   return (
-    <Container>
-      <Box>
-        <AnnoucementText>
-          New UI for Flipper, Sandy Project! Nothing to see now. Go back to
-          current Flipper
-        </AnnoucementText>
-        <DatePicker />
-      </Box>
-    </Container>
+    <>
+      New UI for Flipper, Sandy Project! Nothing to see now. Go back to current
+      Flipper
+      <DatePicker />
+    </>
   );
 }
-
-export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
-  ({settingsState}) => ({settings: settingsState}),
-  (dispatch) => ({
-    disableSandy: (settings: Settings) => {
-      console.log(settings);
-      dispatch(updateSettings({...settings, enableSandy: false}));
-    },
-  }),
-)(SandyApp);

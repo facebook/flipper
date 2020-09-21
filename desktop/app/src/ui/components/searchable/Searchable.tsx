@@ -144,10 +144,14 @@ function compileRegex(s: string): RegExp | null {
   }
 }
 
-const Searchable = (
+/**
+ * Higher-order-component that allows adding a searchbar on top of the wrapped
+ * component. See SearchableManagedTable for usage with a table.
+ */
+export default function Searchable(
   Component: React.ComponentType<any>,
-): React.ComponentType<any> =>
-  class extends PureComponent<Props, State> {
+): React.ComponentType<any> {
+  return class extends PureComponent<Props, State> {
     static displayName = `Searchable(${Component.displayName})`;
 
     static defaultProps = {
@@ -544,9 +548,4 @@ const Searchable = (
       );
     }
   };
-
-/**
- * Higher-order-component that allows adding a searchbar on top of the wrapped
- * component. See SearchableManagedTable for usage with a table.
- */
-export default Searchable;
+}

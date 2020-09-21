@@ -76,6 +76,7 @@ type InteractiveProps = {
   style?: Object;
   className?: string;
   children?: React.ReactNode;
+  gutterWidth?: number;
 };
 
 type InteractiveState = {
@@ -549,11 +550,12 @@ export default class Interactive extends React.Component<
     const x = event.clientX - offsetLeft;
     const y = event.clientY - offsetTop;
 
-    const atTop: boolean = y <= WINDOW_CURSOR_BOUNDARY;
-    const atBottom: boolean = y >= height - WINDOW_CURSOR_BOUNDARY;
+    const gutterWidth = this.props.gutterWidth || WINDOW_CURSOR_BOUNDARY;
+    const atTop: boolean = y <= gutterWidth;
+    const atBottom: boolean = y >= height - gutterWidth;
 
-    const atLeft: boolean = x <= WINDOW_CURSOR_BOUNDARY;
-    const atRight: boolean = x >= width - WINDOW_CURSOR_BOUNDARY;
+    const atLeft: boolean = x <= gutterWidth;
+    const atRight: boolean = x >= width - gutterWidth;
 
     return {
       bottom: canResize.bottom === true && atBottom,

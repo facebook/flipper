@@ -22,4 +22,10 @@ export const theme = {
   backgroundWash: 'var(--flipper-background-wash)',
   dividerColor: 'var(--flipper-divider-color)',
   borderRadius: 'var(--flipper-border-radius)',
+  space: {
+    // from Space component in Ant
+    small: 8,
+    middle: 16,
+    large: 24,
+  } as const,
 };

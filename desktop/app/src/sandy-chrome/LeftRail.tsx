@@ -36,12 +36,13 @@ const LeftRailSection = styled(FlexColumn)({
 });
 LeftRailSection.displayName = 'LeftRailSection';
 
-const LeftRailButtonElem = styled(Button)<{small?: boolean}>(({small}) => ({
+const LeftRailButtonElem = styled(Button)<{margin: number}>(({margin}) => ({
   width: 36,
   height: 36,
-  margin: small ? 2 : 6,
+  margin,
   padding: '5px 0',
   border: 'none',
+  boxShadow: 'none',
 }));
 LeftRailButtonElem.displayName = 'LeftRailButtonElem';
 
@@ -66,7 +67,7 @@ function LeftRailButton({
   return (
     <Tooltip title={title} placement="right">
       <LeftRailButtonElem
-        small={small}
+        margin={small ? 2 : 6}
         type={active ? 'primary' : 'ghost'}
         icon={iconElement}
       />
