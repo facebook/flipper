@@ -9,7 +9,7 @@
 
 import React from 'react';
 
-export const SidebarLeft = (props: React.SVGProps<SVGSVGElement>) => (
+export const SidebarRight = (props: React.SVGProps<SVGSVGElement>) => (
   <svg width={16} height={16} viewBox="0 0 16 16" fill="none" {...props}>
     <path
       fillRule="evenodd"
@@ -24,7 +24,7 @@ export const SidebarLeft = (props: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
-export const SidebarRight = (props: React.SVGProps<SVGSVGElement>) => (
+export const SidebarLeft = (props: React.SVGProps<SVGSVGElement>) => (
   <svg width={16} height={16} viewBox="0 0 16 16" fill="none" {...props}>
     <path
       fillRule="evenodd"

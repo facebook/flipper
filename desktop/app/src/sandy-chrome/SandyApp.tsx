@@ -7,23 +7,40 @@
  * @format
  */
 
-import React from 'react';
+import React, {useEffect} from 'react';
 import {styled} from 'flipper';
 import {DatePicker} from 'antd';
 import {Layout, FlexRow} from '../ui';
 import {theme} from './theme';
+import {Logger} from '../fb-interfaces/Logger';
 
 import {LeftRail} from './LeftRail';
 import {TemporarilyTitlebar} from './TemporarilyTitlebar';
+import {registerStartupTime} from '../App';
+import {useStore} from '../utils/useStore';
 
-export function SandyApp() {
+export function SandyApp({logger}: {logger: Logger}) {
+  useEffect(() => {
+    registerStartupTime(logger);
+    // don't warn about logger, even with a new logger we don't want to re-register
+    // eslint-disable-next-line
+  }, []);
+
+  const mainMenuVisible = useStore(
+    (state) => state.application.leftSidebarVisible,
+  );
+
   return (
     <Layout.Top>
       <TemporarilyTitlebar />
-      <Layout.Left initialSize={348} minSize={200}>
-        <LeftMenu>
+      <Layout.Left
+        initialSize={mainMenuVisible ? 348 : undefined}
+        minSize={200}>
+        <LeftMenu collapsed={!mainMenuVisible}>
           <LeftRail />
-          <div>LeftMenu</div>
+          {mainMenuVisible && (
+            <div style={{background: 'white', width: '100%'}}>LeftMenu</div>
+          )}
         </LeftMenu>
         <MainContainer>
           <Layout.Right initialSize={300} minSize={200}>
@@ -44,11 +61,13 @@ export function SandyApp() {
   );
 }
 
-const LeftMenu = styled(FlexRow)({
-  boxShadow: `inset -1px 0px 0px ${theme.dividerColor}`,
+const LeftMenu = styled(FlexRow)<{collapsed: boolean}>(({collapsed}) => ({
+  background: theme.backgroundWash,
+  boxShadow: collapsed ? undefined : `1px 0px 0px ${theme.dividerColor}`,
+  paddingRight: collapsed ? theme.space.middle : 0,
   height: '100%',
   width: '100%',
-});
+}));
 
 const MainContainer = styled('div')({
   display: 'flex',

@@ -22,8 +22,12 @@ import {
   MedicineBoxOutlined,
 } from '@ant-design/icons';
 import {SidebarLeft, SidebarRight} from './SandyIcons';
+import {useDispatch, useStore} from '../utils/useStore';
+import {toggleLeftSidebarVisible} from '../reducers/application';
+import {theme} from './theme';
 
 const LeftRailContainer = styled(FlexColumn)({
+  background: theme.backgroundDefault,
   width: 48,
   boxShadow: 'inset -1px 0px 0px rgba(0, 0, 0, 0.1)',
   justifyContent: 'space-between',
@@ -36,10 +40,10 @@ const LeftRailSection = styled(FlexColumn)({
 });
 LeftRailSection.displayName = 'LeftRailSection';
 
-const LeftRailButtonElem = styled(Button)<{margin: number}>(({margin}) => ({
-  width: 36,
-  height: 36,
-  margin,
+const LeftRailButtonElem = styled(Button)<{kind?: 'small'}>(({kind}) => ({
+  width: kind === 'small' ? 32 : 36,
+  height: kind === 'small' ? 32 : 36,
+  margin: 6,
   padding: '5px 0',
   border: 'none',
   boxShadow: 'none',
@@ -49,15 +53,19 @@ LeftRailButtonElem.displayName = 'LeftRailButtonElem';
 function LeftRailButton({
   icon,
   small,
-  active,
+  selected,
+  toggled,
   count,
   title,
+  onClick,
 }: {
   icon?: React.ReactElement;
   small?: boolean;
-  active?: boolean;
+  toggled?: boolean;
+  selected?: boolean;
   count?: number;
   title: string;
+  onClick?: React.MouseEventHandler<HTMLElement>;
 }) {
   let iconElement =
     icon && cloneElement(icon, {style: {fontSize: small ? 16 : 24}});
@@ -67,9 +75,14 @@ function LeftRailButton({
   return (
     <Tooltip title={title} placement="right">
       <LeftRailButtonElem
-        margin={small ? 2 : 6}
-        type={active ? 'primary' : 'ghost'}
+        kind={small ? 'small' : undefined}
+        type={selected ? 'primary' : 'ghost'}
         icon={iconElement}
+        onClick={onClick}
+        style={{
+          color: toggled ? theme.primaryColor : undefined,
+          background: toggled ? theme.backgroundWash : undefined,
+        }}
       />
     </Tooltip>
   );
@@ -86,7 +99,7 @@ export function LeftRail() {
   return (
     <LeftRailContainer>
       <LeftRailSection>
-        <LeftRailButton icon={<MobileFilled />} active title="App Inspect" />
+        <LeftRailButton icon={<MobileFilled />} title="App Inspect" />
         <LeftRailButton icon={<AppstoreOutlined />} title="Plugin Manager" />
         <LeftRailButton
           count={8}
@@ -117,17 +130,33 @@ export function LeftRail() {
           title="Feedback / Bug Reporter"
         />
         <LeftRailButton
-          icon={<SidebarLeft />}
+          icon={<SidebarRight />}
           small
           title="Right Sidebar Toggle"
         />
-        <LeftRailButton
-          icon={<SidebarRight />}
-          small
-          title="Left Sidebar Toggle"
-        />
+        <LeftSidebarToggleButton />
         <LeftRailButton icon={<LoginOutlined />} title="Log In" />
       </LeftRailSection>
     </LeftRailContainer>
+  );
+}
+
+function LeftSidebarToggleButton() {
+  const mainMenuVisible = useStore(
+    (state) => state.application.leftSidebarVisible,
+  );
+
+  const dispatch = useDispatch();
+
+  return (
+    <LeftRailButton
+      icon={<SidebarLeft />}
+      small
+      title="Left Sidebar Toggle"
+      toggled={mainMenuVisible}
+      onClick={() => {
+        dispatch(toggleLeftSidebarVisible());
+      }}
+    />
   );
 }

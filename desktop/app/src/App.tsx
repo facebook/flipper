@@ -79,37 +79,36 @@ const PluginContent = styled(FlexRow)({
 PluginContent.displayName = 'App:PluginContent';
 type Props = StateFromProps & OwnProps & DispatchProps;
 
+export function registerStartupTime(logger: Logger) {
+  // track time since launch
+  const [s, ns] = process.hrtime();
+  const launchEndTime = s * 1e3 + ns / 1e6;
+  ipcRenderer.on('getLaunchTime', (_: any, launchStartTime: number) => {
+    logger.track('performance', 'launchTime', launchEndTime - launchStartTime);
+
+    QuickPerformanceLogger.markerPoint(
+      FLIPPER_QPL_EVENTS.STARTUP,
+      'launchStartTime',
+      undefined,
+      0,
+      launchStartTime,
+    );
+
+    QuickPerformanceLogger.markerEnd(
+      FLIPPER_QPL_EVENTS.STARTUP,
+      QuickLogActionType.SUCCESS,
+      0,
+      launchEndTime,
+    );
+  });
+
+  ipcRenderer.send('getLaunchTime');
+  ipcRenderer.send('componentDidMount');
+}
+
 export class App extends React.Component<Props> {
   componentDidMount() {
-    // track time since launch
-    const [s, ns] = process.hrtime();
-    const launchEndTime = s * 1e3 + ns / 1e6;
-    ipcRenderer.on('getLaunchTime', (_: any, launchStartTime: number) => {
-      this.props.logger.track(
-        'performance',
-        'launchTime',
-        launchEndTime - launchStartTime,
-      );
-
-      QuickPerformanceLogger.markerPoint(
-        FLIPPER_QPL_EVENTS.STARTUP,
-        'launchStartTime',
-        undefined,
-        0,
-        launchStartTime,
-      );
-
-      QuickPerformanceLogger.markerEnd(
-        FLIPPER_QPL_EVENTS.STARTUP,
-        QuickLogActionType.SUCCESS,
-        0,
-        launchEndTime,
-      );
-    });
-
-    ipcRenderer.send('getLaunchTime');
-    ipcRenderer.send('componentDidMount');
-
+    registerStartupTime(this.props.logger);
     if (hasNewChangesToShow(window.localStorage)) {
       this.props.setActiveSheet(ACTIVE_SHEET_CHANGELOG_RECENT_ONLY);
     }
