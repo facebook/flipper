@@ -46,7 +46,7 @@ export default async function runBuild(
     serializer: {
       ...baseConfig.serializer,
       getRunModuleStatement: (moduleID: string) =>
-        `module.exports = global.__r(${moduleID}).default;`,
+        `module.exports = global.__r(${moduleID});`,
     },
     transformer: {
       ...baseConfig.transformer,
