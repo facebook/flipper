@@ -10,12 +10,16 @@
 import React, {useContext, useState, useRef, useCallback} from 'react';
 import electron, {MenuItemConstructorOptions} from 'electron';
 import styled from '@emotion/styled';
-import {colors} from './colors';
 import {findDOMNode} from 'react-dom';
 import {keyframes} from 'emotion';
+import {Button as AntdButton} from 'antd';
+
+import {colors} from './colors';
 import Glyph, {IconSize} from './Glyph';
 import {ButtonGroupContext} from './ButtonGroup';
 import {useStore} from '../../utils/useStore';
+import {useIsSandy} from '../../sandy-chrome/SandyContext';
+import type {ButtonProps} from 'antd/lib/button';
 
 type ButtonType = 'primary' | 'success' | 'warning' | 'danger';
 
@@ -254,7 +258,7 @@ type Props = {
    * Whether the button should have additional padding left and right.
    */
   padded?: boolean;
-} & React.HTMLProps<HTMLDivElement>;
+} & Omit<ButtonProps, 'type'>;
 
 /**
  * A simple button, used in many parts of the application.
@@ -264,10 +268,11 @@ export default function Button(props: Props) {
     (state) => state.application.windowIsFocused,
   );
   const inButtonGroup = useContext(ButtonGroupContext);
+  const isSandy = useIsSandy();
   const [active, setActive] = useState(false);
   const [wasClosed, setWasClosed] = useState(false);
 
-  const _ref = useRef<React.Component<typeof StyledButton>>();
+  const _ref = useRef<any>();
 
   const onMouseDown = useCallback(
     (e: React.MouseEvent) => {
@@ -354,7 +359,19 @@ export default function Button(props: Props) {
     );
   }
 
-  return (
+  return isSandy ? (
+    <AntdButton
+      {...restProps}
+      type={props.type === 'primary' ? 'primary' : 'default'}
+      danger={props.type === 'danger'}
+      ref={_ref}
+      onClick={onClick}
+      onMouseDown={onMouseDown}
+      onMouseUp={onMouseUp}
+      icon={iconComponent}>
+      {children}
+    </AntdButton>
+  ) : (
     <StyledButton
       {...restProps}
       ref={_ref as any}

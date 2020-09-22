@@ -18,6 +18,7 @@ import {LeftRail} from './LeftRail';
 import {TemporarilyTitlebar} from './TemporarilyTitlebar';
 import {registerStartupTime} from '../App';
 import {useStore} from '../utils/useStore';
+import {SandyContext} from './SandyContext';
 
 export function SandyApp({logger}: {logger: Logger}) {
   useEffect(() => {
@@ -31,35 +32,37 @@ export function SandyApp({logger}: {logger: Logger}) {
   );
 
   return (
-    <Layout.Top>
-      <TemporarilyTitlebar />
-      <Layout.Left
-        initialSize={mainMenuVisible ? 348 : undefined}
-        minSize={200}>
-        <LeftMenu collapsed={!mainMenuVisible}>
-          <LeftRail />
-          {mainMenuVisible && (
-            <div style={{background: theme.backgroundDefault, width: '100%'}}>
-              LeftMenu
-            </div>
-          )}
-        </LeftMenu>
-        <MainContainer>
-          <Layout.Right initialSize={300} minSize={200}>
-            <MainContentWrapper>
-              <ContentContainer>
-                <TemporarilyContent />
-              </ContentContainer>
-            </MainContentWrapper>
-            <MainContentWrapper>
-              <ContentContainer>
-                <RightMenu />
-              </ContentContainer>
-            </MainContentWrapper>
-          </Layout.Right>
-        </MainContainer>
-      </Layout.Left>
-    </Layout.Top>
+    <SandyContext.Provider value={true}>
+      <Layout.Top>
+        <TemporarilyTitlebar />
+        <Layout.Left
+          initialSize={mainMenuVisible ? 348 : undefined}
+          minSize={200}>
+          <LeftMenu collapsed={!mainMenuVisible}>
+            <LeftRail />
+            {mainMenuVisible && (
+              <div style={{background: theme.backgroundDefault, width: '100%'}}>
+                LeftMenu
+              </div>
+            )}
+          </LeftMenu>
+          <MainContainer>
+            <Layout.Right initialSize={300} minSize={200}>
+              <MainContentWrapper>
+                <ContentContainer>
+                  <TemporarilyContent />
+                </ContentContainer>
+              </MainContentWrapper>
+              <MainContentWrapper>
+                <ContentContainer>
+                  <RightMenu />
+                </ContentContainer>
+              </MainContentWrapper>
+            </Layout.Right>
+          </MainContainer>
+        </Layout.Left>
+      </Layout.Top>
+    </SandyContext.Provider>
   );
 }
 
