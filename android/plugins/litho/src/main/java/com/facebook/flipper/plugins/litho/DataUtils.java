@@ -18,6 +18,7 @@ import com.facebook.litho.StateContainer;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.drawable.ComparableColorDrawable;
+import com.facebook.litho.editor.flipper.FlipperEditor;
 import java.lang.reflect.Field;
 import java.util.AbstractMap;
 import java.util.ArrayList;
