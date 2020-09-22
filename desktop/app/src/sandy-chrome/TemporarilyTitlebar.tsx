@@ -8,20 +8,24 @@
  */
 
 import React from 'react';
-import {connect} from 'react-redux';
-import {State as Store} from '../reducers';
-import {Settings, updateSettings} from '../reducers/settings';
+import {updateSettings} from '../reducers/settings';
 import {styled, colors} from 'flipper';
-import {Button} from 'antd';
+import {Button, Space} from 'antd';
 import {CloseCircleOutlined} from '@ant-design/icons';
+import FpsGraph from '../chrome/FpsGraph';
+import NetworkGraph from '../chrome/NetworkGraph';
+import isProduction from '../utils/isProduction';
+import {isAutoUpdaterEnabled} from '../utils/argvUtils';
+import AutoUpdateVersion from '../chrome/AutoUpdateVersion';
+import UpdateIndicator from '../chrome/UpdateIndicator';
+import RatingButton from '../chrome/RatingButton';
+import {Version} from '../chrome/TitleBar';
+import {useDispatch, useStore} from '../utils/useStore';
+import config from '../fb-stubs/config';
+import {remote} from 'electron';
 
-type StateFromProps = {settings: Settings};
-type DispatchFromProps = {disableSandy: (settings: Settings) => void};
-type OwnProps = {};
+const version = remote.app.getVersion();
 
-type Props = StateFromProps & DispatchFromProps & OwnProps;
-
-// This component should be dropped, and insetTitlebar should be removed from Electron startup once Sandy is the default
 const TemporarilyTitlebarContainer = styled('div')<{focused?: boolean}>(
   ({focused}) => ({
     textAlign: 'center',
@@ -37,29 +41,40 @@ const TemporarilyTitlebarContainer = styled('div')<{focused?: boolean}>(
       focused ? colors.macOSTitleBarBorder : colors.macOSTitleBarBorderBlur
     }`,
     WebkitAppRegion: 'drag',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
   }),
 );
 
-export const TemporarilyTitlebar = connect<
-  StateFromProps,
-  DispatchFromProps,
-  OwnProps,
-  Store
->(
-  ({settingsState}) => ({settings: settingsState}),
-  (dispatch) => ({
-    disableSandy: (settings: Settings) => {
-      console.log(settings);
-      dispatch(updateSettings({...settings, enableSandy: false}));
-    },
-  }),
-)((props: Props) => (
-  <TemporarilyTitlebarContainer focused /*TODO: make dynamic */>
-    [Sandy] Flipper{' '}
-    <Button
-      size="small"
-      type="link"
-      icon={<CloseCircleOutlined />}
-      onClick={() => props.disableSandy(props.settings)}></Button>
-  </TemporarilyTitlebarContainer>
-));
+// This component should be dropped, and insetTitlebar should be removed from Electron startup once Sandy is the default
+// But: figure out where to put the graphs, version numbers, flipper rating ets :)
+export function TemporarilyTitlebar() {
+  const dispatch = useDispatch();
+  const settings = useStore((state) => state.settingsState);
+  const launcherMsg = useStore((state) => state.application.launcherMsg);
+  const isFocused = useStore((state) => state.application.windowIsFocused);
+
+  return (
+    <TemporarilyTitlebarContainer focused={isFocused}>
+      [Sandy] Flipper{' '}
+      <Button
+        size="small"
+        type="link"
+        icon={<CloseCircleOutlined />}
+        onClick={() =>
+          dispatch(updateSettings({...settings, enableSandy: false}))
+        }></Button>
+      {!isProduction() && <NetworkGraph height={20} width={60} />}
+      {!isProduction() && <FpsGraph height={20} width={60} />}
+      {config.showFlipperRating ? <RatingButton /> : null}
+      <Version>{version + (isProduction() ? '' : '-dev')}</Version>
+      {isAutoUpdaterEnabled() ? (
+        <AutoUpdateVersion version={version} />
+      ) : (
+        <UpdateIndicator launcherMsg={launcherMsg} version={version} />
+      )}
+    </TemporarilyTitlebarContainer>
+  );
+}

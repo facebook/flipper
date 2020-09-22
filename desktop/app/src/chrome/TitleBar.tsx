@@ -101,7 +101,10 @@ const VersionText = styled(Text)({
   },
 });
 
-class Version extends React.Component<{children: string}, {copied: boolean}> {
+export class Version extends React.Component<
+  {children: string},
+  {copied: boolean}
+> {
   state = {
     copied: false,
   };

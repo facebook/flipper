@@ -65,7 +65,7 @@ export default function NetworkGraph({
   }, []);
 
   return (
-    <div>
+    <div style={{width, height}}>
       <canvas ref={canvasRef} width={width} height={height} title={hoverText} />
     </div>
   );

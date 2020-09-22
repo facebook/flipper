@@ -83,7 +83,7 @@ export default function FpsGraph({
   }, []);
 
   return (
-    <div>
+    <div style={{width, height}}>
       <canvas
         ref={canvasRef}
         width={width}
