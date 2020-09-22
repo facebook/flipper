@@ -16,6 +16,7 @@ import getPluginDetails from './getPluginDetails';
 import {getPluginInstallationDir} from './pluginInstaller';
 import pmap from 'p-map';
 import {notNull} from './typeUtils';
+const npmApi = new NpmApi();
 
 export type UpdateResult =
   | {kind: 'not-installed'; version: string}
@@ -30,8 +31,9 @@ export type UpdatablePlugin = {
 
 export type UpdatablePluginDetails = PluginDetails & UpdatablePlugin;
 
-export async function getUpdatablePlugins(): Promise<UpdatablePluginDetails[]> {
-  const npmApi = new NpmApi();
+export async function getUpdatablePlugins(
+  query?: string,
+): Promise<UpdatablePluginDetails[]> {
   const installedPlugins = await getInstalledPlugins();
   const npmHostedPlugins = new Map<string, NpmPackageDescriptor>(
     (await getNpmHostedPlugins()).map((p) => [p.name, p]),
@@ -119,5 +121,12 @@ export async function getUpdatablePlugins(): Promise<UpdatablePluginDetails[]> {
     ...annotatedNotInstalledPlugins
       .filter(notNull)
       .sort((p1, p2) => p1.name.localeCompare(p2.name)),
-  ];
+  ].filter(
+    (p) =>
+      !query ||
+      p.name.includes(query) ||
+      p.id.includes(query) ||
+      p.description?.includes(query) ||
+      p.title?.includes(query),
+  );
 }

@@ -345,7 +345,7 @@ function useNPMSearch(
     (async () => {
       let cancelled = false;
       const updatablePlugins = await reportPlatformFailures(
-        getUpdatablePlugins(),
+        getUpdatablePlugins(query),
         `${TAG}:queryIndex`,
       );
       if (cancelled) {
