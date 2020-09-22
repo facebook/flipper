@@ -24,14 +24,14 @@ export function decodeBody(container: Request | Response): string {
     return '';
   }
 
-  const b64Decoded = base64DecodeToUnicode(container.data);
+  const b64Decoded = atob(container.data);
   try {
     if (getHeaderValue(container.headers, 'Content-Encoding') === 'gzip') {
       // for gzip, use pako to decompress directly to unicode string
       return decompress(b64Decoded);
     }
 
-    return b64Decoded;
+    return decodeToUnicode(b64Decoded);
   } catch (e) {
     console.warn(
       `Flipper failed to decode request/response body (size: ${b64Decoded.length}): ${e}`,
@@ -105,9 +105,9 @@ function escapedString(str: string) {
   return "'" + str + "'";
 }
 
-function base64DecodeToUnicode(str: string) {
+function decodeToUnicode(str: string) {
   return decodeURIComponent(
-    atob(str)
+    str
       .split('')
       .map((c) => `%${`00${c.charCodeAt(0).toString(16)}`.slice(-2)}`)
       .join(''),
