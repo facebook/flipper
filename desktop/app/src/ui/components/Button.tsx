@@ -7,16 +7,15 @@
  * @format
  */
 
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, {useContext, useState, useRef, useCallback} from 'react';
 import electron, {MenuItemConstructorOptions} from 'electron';
 import styled from '@emotion/styled';
 import {colors} from './colors';
-import {connect} from 'react-redux';
 import {findDOMNode} from 'react-dom';
 import {keyframes} from 'emotion';
-import {State as Store} from '../../reducers/index';
 import Glyph, {IconSize} from './Glyph';
+import {ButtonGroupContext} from './ButtonGroup';
+import {useStore} from '../../utils/useStore';
 
 type ButtonType = 'primary' | 'success' | 'warning' | 'danger';
 
@@ -190,7 +189,7 @@ const Icon = styled(Glyph)<{hasText: boolean}>(({hasText}) => ({
 }));
 Icon.displayName = 'Button:Icon';
 
-type OwnProps = {
+type Props = {
   /**
    * onMouseUp handler.
    */
@@ -257,46 +256,39 @@ type OwnProps = {
   padded?: boolean;
 } & React.HTMLProps<HTMLDivElement>;
 
-type State = {
-  active: boolean;
-  wasClosed: boolean;
-};
-
-type StateFromProps = {windowIsFocused: boolean};
-type Props = OwnProps & StateFromProps;
-
 /**
  * A simple button, used in many parts of the application.
  */
-class Button extends React.Component<Props, State> {
-  static contextTypes = {
-    inButtonGroup: PropTypes.bool,
-  };
+export default function Button(props: Props) {
+  const windowIsFocused = useStore(
+    (state) => state.application.windowIsFocused,
+  );
+  const inButtonGroup = useContext(ButtonGroupContext);
+  const [active, setActive] = useState(false);
+  const [wasClosed, setWasClosed] = useState(false);
 
-  state = {
-    active: false,
-    wasClosed: false,
-  };
+  const _ref = useRef<React.Component<typeof StyledButton>>();
 
-  _ref = React.createRef<React.Component<typeof StyledButton>>();
+  const onMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      setActive(true);
+      setWasClosed(false);
+      props.onMouseDown?.(e);
+    },
+    [props.onMouseDown],
+  );
 
-  onMouseDown = (e: React.MouseEvent) => {
-    this.setState({active: true, wasClosed: false});
-    if (this.props.onMouseDown != null) {
-      this.props.onMouseDown(e);
-    }
-  };
-  onMouseUp = () => {
-    if (this.props.disabled === true) {
+  const onMouseUp = useCallback(() => {
+    if (props.disabled === true) {
       return;
     }
-    if (this.props.dropdown && !this.state.wasClosed) {
-      const menu = electron.remote.Menu.buildFromTemplate(this.props.dropdown);
+    if (props.dropdown && !wasClosed) {
+      const menu = electron.remote.Menu.buildFromTemplate(props.dropdown);
       const position: {
         x?: number;
         y?: number;
       } = {};
-      const {current} = this._ref;
+      const {current} = _ref;
       if (current) {
         const node = findDOMNode(current);
         if (node instanceof Element) {
@@ -311,83 +303,68 @@ class Button extends React.Component<Props, State> {
         async: true,
         ...position,
         callback: () => {
-          this.setState({wasClosed: true});
+          setWasClosed(true);
         },
       });
     }
-    this.setState({active: false, wasClosed: false});
-  };
+    setActive(false);
+    setWasClosed(false);
+  }, [props.disabled, props.dropdown, wasClosed]);
 
-  onClick = (e: React.MouseEvent) => {
-    if (this.props.disabled === true) {
-      return;
-    }
-    if (this.props.onClick) {
-      this.props.onClick(e);
-    }
-    if (this.props.href != null) {
-      electron.shell.openExternal(this.props.href);
-    }
-  };
+  const onClick = useCallback(
+    (e: React.MouseEvent) => {
+      if (props.disabled === true) {
+        return;
+      }
+      props.onClick?.(e);
+      if (props.href != null) {
+        electron.shell.openExternal(props.href);
+      }
+    },
+    [props.disabled, props.onClick, props.href],
+  );
 
-  render() {
-    const {
-      icon,
-      children,
-      selected,
-      iconSize,
-      windowIsFocused,
-      iconVariant,
-      ...props
-    } = this.props;
-    const {active} = this.state;
+  const {icon, children, selected, iconSize, iconVariant, ...restProps} = props;
 
-    let color = colors.macOSTitleBarIcon;
-    if (props.disabled === true) {
-      color = colors.macOSTitleBarIconBlur;
-    } else if (windowIsFocused && selected === true) {
-      color = colors.macOSTitleBarIconSelected;
-    } else if (!windowIsFocused && (selected == null || selected === false)) {
-      color = colors.macOSTitleBarIconBlur;
-    } else if (!windowIsFocused && selected === true) {
-      color = colors.macOSTitleBarIconSelectedBlur;
-    } else if (selected == null && active) {
-      color = colors.macOSTitleBarIconActive;
-    } else if (props.type === 'danger') {
-      color = colors.red;
-    }
+  let color = colors.macOSTitleBarIcon;
+  if (props.disabled === true) {
+    color = colors.macOSTitleBarIconBlur;
+  } else if (windowIsFocused && selected === true) {
+    color = colors.macOSTitleBarIconSelected;
+  } else if (!windowIsFocused && (selected == null || selected === false)) {
+    color = colors.macOSTitleBarIconBlur;
+  } else if (!windowIsFocused && selected === true) {
+    color = colors.macOSTitleBarIconSelectedBlur;
+  } else if (selected == null && active) {
+    color = colors.macOSTitleBarIconActive;
+  } else if (props.type === 'danger') {
+    color = colors.red;
+  }
 
-    let iconComponent;
-    if (icon != null) {
-      iconComponent = (
-        <Icon
-          name={icon}
-          size={iconSize || (this.props.compact === true ? 12 : 16)}
-          color={color}
-          variant={iconVariant || 'filled'}
-          hasText={Boolean(children)}
-        />
-      );
-    }
-
-    return (
-      <StyledButton
-        {...props}
-        ref={this._ref as any}
-        windowIsFocused={windowIsFocused}
-        onClick={this.onClick}
-        onMouseDown={this.onMouseDown}
-        onMouseUp={this.onMouseUp}
-        inButtonGroup={this.context.inButtonGroup}>
-        {iconComponent}
-        {children}
-      </StyledButton>
+  let iconComponent;
+  if (icon != null) {
+    iconComponent = (
+      <Icon
+        name={icon}
+        size={iconSize || (props.compact === true ? 12 : 16)}
+        color={color}
+        variant={iconVariant || 'filled'}
+        hasText={Boolean(children)}
+      />
     );
   }
-}
 
-export default connect<StateFromProps, {}, OwnProps, Store>(
-  ({application: {windowIsFocused}}) => ({
-    windowIsFocused,
-  }),
-)(Button);
+  return (
+    <StyledButton
+      {...restProps}
+      ref={_ref as any}
+      windowIsFocused={windowIsFocused}
+      onClick={onClick}
+      onMouseDown={onMouseDown}
+      onMouseUp={onMouseUp}
+      inButtonGroup={inButtonGroup}>
+      {iconComponent}
+      {children}
+    </StyledButton>
+  );
+}

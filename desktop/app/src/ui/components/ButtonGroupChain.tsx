@@ -7,10 +7,10 @@
  * @format
  */
 
-import React, {Component} from 'react';
-import PropTypes from 'prop-types';
+import React from 'react';
 import styled from '@emotion/styled';
 import Glyph from './Glyph';
+import {ButtonGroupContext} from './ButtonGroup';
 
 const IconContainer = styled.div({
   width: 0,
@@ -68,19 +68,9 @@ type Props = {
  *   </ButtonGroupChain>
  * ```
  */
-export default class ButtonGroupChain extends Component<Props> {
-  static childContextTypes = {
-    inButtonGroup: PropTypes.bool,
-  };
-
-  getChildContext() {
-    return {inButtonGroup: true};
-  }
-
-  render() {
-    const {children, iconSize, icon} = this.props;
-
-    return (
+export default function ButtonGroupChain({children, iconSize, icon}: Props) {
+  return (
+    <ButtonGroupContext.Provider value={true}>
       <ButtonGroupChainContainer iconSize={iconSize}>
         {React.Children.map(children, (child, idx) => {
           if (idx === 0) {
@@ -96,6 +86,6 @@ export default class ButtonGroupChain extends Component<Props> {
           );
         })}
       </ButtonGroupChainContainer>
-    );
-  }
+    </ButtonGroupContext.Provider>
+  );
 }

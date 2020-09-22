@@ -8,8 +8,7 @@
  */
 
 import styled from '@emotion/styled';
-import React, {Component} from 'react';
-import PropTypes from 'prop-types';
+import React, {createContext} from 'react';
 
 const ButtonGroupContainer = styled.div({
   display: 'inline-flex',
@@ -19,6 +18,8 @@ const ButtonGroupContainer = styled.div({
   },
 });
 ButtonGroupContainer.displayName = 'ButtonGroup:ButtonGroupContainer';
+
+export const ButtonGroupContext = createContext(false);
 
 /**
  * Group a series of buttons together.
@@ -31,18 +32,10 @@ ButtonGroupContainer.displayName = 'ButtonGroup:ButtonGroupContainer';
  *   </ButtonGroup>
  * ```
  */
-export default class ButtonGroup extends Component<{
-  children: React.ReactNode;
-}> {
-  static childContextTypes = {
-    inButtonGroup: PropTypes.bool,
-  };
-
-  getChildContext() {
-    return {inButtonGroup: true};
-  }
-
-  render() {
-    return <ButtonGroupContainer>{this.props.children}</ButtonGroupContainer>;
-  }
+export default function ButtonGroup({children}: {children: React.ReactNode}) {
+  return (
+    <ButtonGroupContext.Provider value={true}>
+      <ButtonGroupContainer>{children}</ButtonGroupContainer>
+    </ButtonGroupContext.Provider>
+  );
 }
