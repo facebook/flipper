@@ -9,13 +9,14 @@
 
 import {FlexColumn, styled, FlexRow, ToggleButton} from 'flipper';
 import React from 'react';
+import {theme} from '../../sandy-chrome/theme';
 
 const IndentedSection = styled(FlexColumn)({
   paddingLeft: 50,
   paddingBottom: 10,
 });
 const GreyedOutOverlay = styled.div({
-  backgroundColor: '#EFEEEF',
+  background: theme.backgroundDefault,
   borderRadius: 4,
   opacity: 0.6,
   height: '100%',

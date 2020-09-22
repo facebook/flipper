@@ -7,7 +7,7 @@
  * @format
  */
 
-import React, {cloneElement} from 'react';
+import React, {cloneElement, useState, useCallback} from 'react';
 import {styled, FlexColumn} from 'flipper';
 import {Button, Divider, Badge, Tooltip} from 'antd';
 import {
@@ -25,6 +25,7 @@ import {SidebarLeft, SidebarRight} from './SandyIcons';
 import {useDispatch, useStore} from '../utils/useStore';
 import {toggleLeftSidebarVisible} from '../reducers/application';
 import {theme} from './theme';
+import SettingsSheet from '../chrome/SettingsSheet';
 
 const LeftRailContainer = styled(FlexColumn)({
   background: theme.backgroundDefault,
@@ -62,7 +63,7 @@ function LeftRailButton({
   icon?: React.ReactElement;
   small?: boolean;
   toggled?: boolean;
-  selected?: boolean;
+  selected?: boolean; // TODO: make sure only one element can be selected
   count?: number;
   title: string;
   onClick?: React.MouseEventHandler<HTMLElement>;
@@ -123,7 +124,7 @@ export function LeftRail() {
           small
           title="Help / Start Screen"
         />
-        <LeftRailButton icon={<SettingOutlined />} small title="Settings" />
+        <ShowSettingsButton />
         <LeftRailButton
           icon={<BugOutlined />}
           small
@@ -158,5 +159,24 @@ function LeftSidebarToggleButton() {
         dispatch(toggleLeftSidebarVisible());
       }}
     />
+  );
+}
+
+function ShowSettingsButton() {
+  const [showSettings, setShowSettings] = useState(false);
+  const onClose = useCallback(() => setShowSettings(false), []);
+  return (
+    <>
+      <LeftRailButton
+        icon={<SettingOutlined />}
+        small
+        title="Settings"
+        onClick={() => setShowSettings(true)}
+        selected={showSettings}
+      />
+      {showSettings && (
+        <SettingsSheet platform={process.platform} onHide={onClose} useSandy />
+      )}
+    </>
   );
 }

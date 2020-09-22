@@ -39,7 +39,9 @@ export function SandyApp({logger}: {logger: Logger}) {
         <LeftMenu collapsed={!mainMenuVisible}>
           <LeftRail />
           {mainMenuVisible && (
-            <div style={{background: 'white', width: '100%'}}>LeftMenu</div>
+            <div style={{background: theme.backgroundDefault, width: '100%'}}>
+              LeftMenu
+            </div>
           )}
         </LeftMenu>
         <MainContainer>
