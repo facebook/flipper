@@ -3,7 +3,7 @@
   "name": "flipper-plugin-sandbox",
   "id": "Sandbox",
   "title": "Sandbox",
-  "version": "0.57.0",
+  "version": "0.58.0",
   "main": "dist/bundle.js",
   "flipperBundlerEntry": "index.tsx",
   "license": "MIT",

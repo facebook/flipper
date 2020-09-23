@@ -1,3 +1,12 @@
+# 0.58.0 (23/9/2020)
+
+ * [D23681402](https://github.com/facebook/flipper/search?q=D23681402&type=Commits) -  removed support for plugins packaged using legacy format (v1), so they won't appear in Plugin Manager anymore.
+ * [D23682756](https://github.com/facebook/flipper/search?q=D23682756&type=Commits) -  changed the way of plugin loading, and removed obsolete dependencies, which should reduce bundle size and startup time.
+ * [D23706701](https://github.com/facebook/flipper/search?q=D23706701&type=Commits) -  faster reload after plugin install/uninstall/update.
+ * [D23565000](https://github.com/facebook/flipper/search?q=D23565000&type=Commits) -  Flipper now uses Electron 10
+ * [D23027793](https://github.com/facebook/flipper/search?q=D23027793&type=Commits) -  [network] Allow user to create new mock routes by highlighting existing network requests in the Network plugin
+
+
 # 0.55.0 (1/9/2020)
 
  * [D23345560](https://github.com/facebook/flipper/search?q=D23345560&type=Commits) -  Flipper Self inspection - Flipper Messages plugin added to dev builds to show messages sent/received from clients
