@@ -373,15 +373,15 @@ export default class CertificateProvider {
             appName,
             csr,
           )
-            .then((isMatch) => {
-              return {id: device.id, isMatch, error: null};
+            .then((result) => {
+              return {id: device.id, ...result, error: null};
             })
             .catch((e) => {
               console.error(
                 `Unable to check for matching CSR in ${device.id}:${appName}`,
                 logTag,
               );
-              return {id: device.id, isMatch: false, error: e};
+              return {id: device.id, isMatch: false, foundCsr: null, error: e};
             }),
         );
         return Promise.all(deviceMatchList).then((devices) => {
@@ -391,6 +391,16 @@ export default class CertificateProvider {
             if (erroredDevice) {
               throw erroredDevice.error;
             }
+            const foundCsrs = devices
+              .filter((d) => d.foundCsr !== null)
+              .map((d) => (d.foundCsr ? encodeURI(d.foundCsr) : 'null'));
+            console.error(`Looking for CSR (url encoded):
+            
+            ${encodeURI(this.santitizeString(csr))}
+            
+            Found these:
+            
+            ${foundCsrs.join('\n\n')}`);
             throw new Error(`No matching device found for app: ${appName}`);
           }
           if (matchingIds.length > 1) {
@@ -445,7 +455,7 @@ export default class CertificateProvider {
     deviceId: string,
     processName: string,
     csr: string,
-  ): Promise<boolean> {
+  ): Promise<{isMatch: boolean; foundCsr: string}> {
     return this.adb
       .then((adbClient) =>
         androidUtil.pull(
@@ -458,10 +468,12 @@ export default class CertificateProvider {
       .then((deviceCsr) => {
         // Santitize both of the string before comparation
         // The csr string extraction on client side return string in both way
-        return (
-          this.santitizeString(deviceCsr.toString()) ===
-          this.santitizeString(csr)
-        );
+        const [sanitizedDeviceCsr, sanitizedClientCsr] = [
+          deviceCsr.toString(),
+          csr,
+        ].map((s) => this.santitizeString(s));
+        const isMatch = sanitizedDeviceCsr === sanitizedClientCsr;
+        return {isMatch: isMatch, foundCsr: sanitizedDeviceCsr};
       });
   }
 
