@@ -1,0 +1,74 @@
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ */
+
+@import '../node_modules/antd/lib/style/mixins/typography.less';
+// Based on https://www.figma.com/file/4e6BMdm2SuZ1L7FSuOPQVC/Flipper?node-id=238%3A172
+// The Typography.Title doesn't have configerable line height
+// Headline 1 -> Title level 1
+@heading-1-size: 24px;
+@heading-1-line-height: 32px;
+.typography-title-1() {
+  .typography-title(
+    @heading-1-size,
+    @typography-title-font-weight,
+    @heading-1-line-height,
+    @heading-color,
+    @typography-title-margin-bottom
+  );
+  margin-top: 0; // <style> takes priority over @typography-title-margin-top
+}
+// Headline 2 -> Title level 2
+@heading-2-size: 20px;
+@heading-2-line-height: 28px;
+.typography-title-2() {
+  .typography-title(
+    @heading-2-size,
+    @typography-title-font-weight,
+    @heading-2-line-height,
+    @heading-color,
+    @typography-title-margin-bottom
+  );
+}
+// Headline 3 -> Title level 3
+@heading-3-size: 16px;
+@heading-3-line-height: 24px;
+.typography-title-3() {
+  .typography-title(
+    @heading-3-size,
+    @typography-title-font-weight,
+    @heading-3-line-height,
+    @heading-color,
+    @typography-title-margin-bottom
+  );
+  letter-spacing: -0.24px;
+}
+// Headline 4 -> Title level 4
+@heading-4-size: 14px;
+@heading-4-line-height: 20px;
+.typography-title-4() {
+  .typography-title(
+    @heading-4-size,
+    @typography-title-font-weight,
+    @heading-4-line-height,
+    @heading-color,
+    @typography-title-margin-bottom
+  );
+  letter-spacing: -0.24px;
+}
+
+@typography-title-margin-top: 0;
+@typography-title-margin-bottom: 0;
+
+// Button
+@btn-font-size-sm: @font-size-sm;
+@btn-font-weight: 700;
+
+// Link
+@link-color: @primary-color;
+@link-hover: @primary-color;
+@link-hover-decoration: underline;

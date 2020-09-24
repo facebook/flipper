@@ -9,13 +9,14 @@
 
 import React, {useEffect} from 'react';
 import {styled} from 'flipper';
-import {DatePicker} from 'antd';
+import {DatePicker, Space} from 'antd';
 import {Layout, FlexRow} from '../ui';
 import {theme} from './theme';
 import {Logger} from '../fb-interfaces/Logger';
 
 import {LeftRail} from './LeftRail';
 import {TemporarilyTitlebar} from './TemporarilyTitlebar';
+import TypographyExample from './TypographyExample';
 import {registerStartupTime} from '../App';
 import {useStore} from '../utils/useStore';
 import {SandyContext} from './SandyContext';
@@ -106,10 +107,11 @@ function RightMenu() {
 
 function TemporarilyContent() {
   return (
-    <>
+    <Space direction="vertical">
       New UI for Flipper, Sandy Project! Nothing to see now. Go back to current
       Flipper
       <DatePicker />
-    </>
+      <TypographyExample />
+    </Space>
   );
 }

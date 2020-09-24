@@ -6,7 +6,10 @@
  *
  */
 @import '../node_modules/antd/dist/antd.less';
+@import './typography.less';
 /* Based on: https://www.figma.com/file/4e6BMdm2SuZ1L7FSuOPQVC/Flipper?node-id=620%3A84636 */
+@background-transparent-hover: rgba(0, 0, 0, 0.1);
+
 @border-radius-base: 6px;
 
 @font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
@@ -29,21 +32,22 @@
 @tooltip-bg: @text-color-primary;
 
 /**
- This section maps theme colors to CSS variables so that thye can be
+ This section maps theme colors to CSS variables so that they can be
  used in styled components, see theme.tsx
 */
 
 :root {
-    --flipper-primary-color: @primary-color;
-    --flipper-success-color: @success-color;
-    --flipper-error-color: @error-color;
-    --flipper-warning-color: @warning-color;
-    --flipper-text-color-primary: @text-color-primary;
-    --flipper-text-color-secondary: @text-color-secondary;
-    --flipper-text-color-placeholder: @text-color-placeholder;
-    --flipper-disabled-color: @disabled-color;
-    --flipper-background-default: @background-default;
-    --flipper-background-wash: @background-wash;
-    --flipper-divider-color: @divider-color;
-    --flipper-border-radius: 6px;
+  --flipper-primary-color: @primary-color;
+  --flipper-success-color: @success-color;
+  --flipper-error-color: @error-color;
+  --flipper-warning-color: @warning-color;
+  --flipper-text-color-primary: @text-color-primary;
+  --flipper-text-color-secondary: @text-color-secondary;
+  --flipper-text-color-placeholder: @text-color-placeholder;
+  --flipper-disabled-color: @disabled-color;
+  --flipper-background-default: @background-default;
+  --flipper-background-wash: @background-wash;
+  --flipper-background-transparent-hover: @background-transparent-hover;
+  --flipper-divider-color: @divider-color;
+  --flipper-border-radius: @border-radius-base;
 }
