@@ -27,6 +27,10 @@ import {toggleLeftSidebarVisible} from '../reducers/application';
 import {theme} from './theme';
 import SettingsSheet from '../chrome/SettingsSheet';
 import WelcomeScreen from './WelcomeScreen';
+import {isStaticViewActive} from '../chrome/mainsidebar/sidebarUtils';
+import {ConsoleLogs, errorCounterAtom} from '../chrome/ConsoleLogs';
+import {setStaticView} from '../reducers/connections';
+import {useValue} from 'flipper-plugin';
 
 const LeftRailContainer = styled(FlexColumn)({
   background: theme.backgroundDefault,
@@ -109,10 +113,7 @@ export function LeftRail() {
           title="Notifications"
         />
         <LeftRailDivider />
-        <LeftRailButton
-          icon={<FileExclamationOutlined />}
-          title="Flipper Logs"
-        />
+        <DebugLogsButton />
       </LeftRailSection>
       <LeftRailSection>
         <LeftRailButton
@@ -154,6 +155,25 @@ function LeftSidebarToggleButton() {
       toggled={mainMenuVisible}
       onClick={() => {
         dispatch(toggleLeftSidebarVisible());
+      }}
+    />
+  );
+}
+
+function DebugLogsButton() {
+  const staticView = useStore((state) => state.connections.staticView);
+  const active = isStaticViewActive(staticView, ConsoleLogs);
+  const errorCount = useValue(errorCounterAtom);
+  const dispatch = useDispatch();
+
+  return (
+    <LeftRailButton
+      icon={<FileExclamationOutlined />}
+      title="Flipper Logs"
+      selected={active}
+      count={errorCount}
+      onClick={() => {
+        dispatch(setStaticView(ConsoleLogs));
       }}
     />
   );

@@ -29,8 +29,10 @@ export function SandyApp({logger}: {logger: Logger}) {
   }, []);
 
   const mainMenuVisible = useStore(
-    (state) => state.application.leftSidebarVisible,
+    (state) =>
+      state.application.leftSidebarVisible && !state.connections.staticView,
   );
+  const staticView = useStore((state) => state.connections.staticView);
 
   return (
     <SandyContext.Provider value={true}>
@@ -51,7 +53,13 @@ export function SandyApp({logger}: {logger: Logger}) {
             <Layout.Right initialSize={300} minSize={200}>
               <MainContentWrapper>
                 <ContentContainer>
-                  <TemporarilyContent />
+                  {staticView ? (
+                    React.createElement(staticView, {
+                      logger: logger,
+                    })
+                  ) : (
+                    <TemporarilyContent />
+                  )}
                 </ContentContainer>
               </MainContentWrapper>
               <MainContentWrapper>

@@ -6,7 +6,7 @@ exports[`load PluginInstaller list 1`] = `
     class="css-13jp8bd-View-FlexBox-FlexColumn"
   >
     <div
-      class="css-mx54fh-View-FlexBox-FlexRow-Toolbar e13mj6h80"
+      class="css-1qqef1i-View-FlexBox-FlexRow-ToolbarContainer e13mj6h80"
     >
       <div
         class="css-awcbnc-View-FlexBox-SearchBox e271nro1"
@@ -137,7 +137,7 @@ exports[`load PluginInstaller list 1`] = `
                 World?
               </span>
               <div
-                class="css-te359u-View-FlexBox-Spacer e13mj6h81"
+                class="css-te359u-View-FlexBox-Spacer e13mj6h82"
               />
               <span
                 class="css-ad6n9d-StyledLink e1mzoj7l0"
@@ -204,7 +204,7 @@ exports[`load PluginInstaller list 1`] = `
                 Hello?
               </span>
               <div
-                class="css-te359u-View-FlexBox-Spacer e13mj6h81"
+                class="css-te359u-View-FlexBox-Spacer e13mj6h82"
               />
               <span
                 class="css-ad6n9d-StyledLink e1mzoj7l0"
@@ -235,7 +235,7 @@ exports[`load PluginInstaller list 1`] = `
     </div>
   </div>
   <div
-    class="css-mx54fh-View-FlexBox-FlexRow-Toolbar e13mj6h80"
+    class="css-1qqef1i-View-FlexBox-FlexRow-ToolbarContainer e13mj6h80"
   >
     <div
       class="css-1stmykz-View-FlexBox-FlexRow-Container ersmi541"
@@ -301,7 +301,7 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
     class="css-13jp8bd-View-FlexBox-FlexColumn"
   >
     <div
-      class="css-mx54fh-View-FlexBox-FlexRow-Toolbar e13mj6h80"
+      class="css-1qqef1i-View-FlexBox-FlexRow-ToolbarContainer e13mj6h80"
     >
       <div
         class="css-awcbnc-View-FlexBox-SearchBox e271nro1"
@@ -432,7 +432,7 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
                 World?
               </span>
               <div
-                class="css-te359u-View-FlexBox-Spacer e13mj6h81"
+                class="css-te359u-View-FlexBox-Spacer e13mj6h82"
               />
               <span
                 class="css-ad6n9d-StyledLink e1mzoj7l0"
@@ -498,7 +498,7 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
                 Hello?
               </span>
               <div
-                class="css-te359u-View-FlexBox-Spacer e13mj6h81"
+                class="css-te359u-View-FlexBox-Spacer e13mj6h82"
               />
               <span
                 class="css-ad6n9d-StyledLink e1mzoj7l0"
@@ -529,7 +529,7 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
     </div>
   </div>
   <div
-    class="css-mx54fh-View-FlexBox-FlexRow-Toolbar e13mj6h80"
+    class="css-1qqef1i-View-FlexBox-FlexRow-ToolbarContainer e13mj6h80"
   >
     <div
       class="css-1stmykz-View-FlexBox-FlexRow-Container ersmi541"

@@ -7,12 +7,12 @@
  * @format
  */
 
-import React, {useContext, useState, useRef, useCallback} from 'react';
+import React, {useContext, useState, useRef, useCallback, useMemo} from 'react';
 import electron, {MenuItemConstructorOptions} from 'electron';
 import styled from '@emotion/styled';
 import {findDOMNode} from 'react-dom';
 import {keyframes} from 'emotion';
-import {Button as AntdButton} from 'antd';
+import {Button as AntdButton, Dropdown, Menu} from 'antd';
 
 import {colors} from './colors';
 import Glyph, {IconSize} from './Glyph';
@@ -20,6 +20,8 @@ import {ButtonGroupContext} from './ButtonGroup';
 import {useStore} from '../../utils/useStore';
 import {useIsSandy} from '../../sandy-chrome/SandyContext';
 import type {ButtonProps} from 'antd/lib/button';
+import {DownOutlined, CheckOutlined} from '@ant-design/icons';
+import {theme} from '../../sandy-chrome/theme';
 
 type ButtonType = 'primary' | 'success' | 'warning' | 'danger';
 
@@ -217,7 +219,7 @@ type Props = {
   /**
    * Type of button.
    */
-  type?: ButtonType;
+  type?: ButtonType; // TODO: normalize to Sandy
   /**
    * Children.
    */
@@ -264,11 +266,15 @@ type Props = {
  * A simple button, used in many parts of the application.
  */
 export default function Button(props: Props) {
+  const isSandy = useIsSandy();
+  return isSandy ? <SandyButton {...props} /> : <ClassicButton {...props} />;
+}
+
+function ClassicButton(props: Props) {
   const windowIsFocused = useStore(
     (state) => state.application.windowIsFocused,
   );
   const inButtonGroup = useContext(ButtonGroupContext);
-  const isSandy = useIsSandy();
   const [active, setActive] = useState(false);
   const [wasClosed, setWasClosed] = useState(false);
 
@@ -359,19 +365,7 @@ export default function Button(props: Props) {
     );
   }
 
-  return isSandy ? (
-    <AntdButton
-      {...restProps}
-      type={props.type === 'primary' ? 'primary' : 'default'}
-      danger={props.type === 'danger'}
-      ref={_ref}
-      onClick={onClick}
-      onMouseDown={onMouseDown}
-      onMouseUp={onMouseUp}
-      icon={iconComponent}>
-      {children}
-    </AntdButton>
-  ) : (
+  return (
     <StyledButton
       {...restProps}
       ref={_ref as any}
@@ -384,4 +378,109 @@ export default function Button(props: Props) {
       {children}
     </StyledButton>
   );
+}
+
+/**
+ * A simple button, used in many parts of the application.
+ */
+export function SandyButton({
+  compact,
+  disabled,
+  icon,
+  children,
+  iconSize,
+  iconVariant,
+  dropdown,
+  type,
+  onClick,
+  href,
+  ...restProps
+}: Props) {
+  const [dropdownVisible, setDropdownVible] = useState(false);
+
+  const handleClick = useCallback(
+    (e: React.MouseEvent) => {
+      if (disabled === true) {
+        return;
+      }
+      onClick?.(e);
+      if (href != null) {
+        electron.shell.openExternal(href); // TODO: decouple from Electron
+      }
+    },
+    [disabled, onClick, href],
+  );
+  const handleVisibleChange = useCallback((flag: boolean) => {
+    setDropdownVible(flag);
+  }, []);
+  let iconComponent;
+  if (icon != null) {
+    iconComponent = (
+      <Icon
+        name={icon}
+        size={iconSize || (compact === true ? 12 : 16)}
+        color={theme.textColorPrimary}
+        variant={iconVariant || 'filled'}
+        hasText={Boolean(children)}
+      />
+    );
+  }
+
+  const dropdownItems = useMemo(
+    () =>
+      dropdown && (
+        <Menu>
+          {dropdown!.map((item, idx) => (
+            <Menu.Item
+              onClick={(e) => {
+                // @ts-ignore this event args are bound to electron, remove in the future
+                item.click();
+                if (item.checked !== undefined) {
+                  // keep the menu item for check lists
+                  e.domEvent.stopPropagation();
+                  e.domEvent.preventDefault();
+                }
+              }}
+              disabled={item.enabled === false}
+              icon={
+                item.checked !== undefined && (
+                  <CheckOutlined
+                    style={{visibility: item.checked ? 'visible' : 'hidden'}}
+                  />
+                )
+              }
+              key={idx}>
+              {item.label}
+            </Menu.Item>
+          ))}
+        </Menu>
+      ),
+    [dropdown],
+  );
+
+  const button = (
+    <AntdButton
+      /* Probably more properties need passing on, but lets be explicit about it */
+      style={restProps.style}
+      disabled={disabled}
+      type={type === 'primary' ? 'primary' : 'default'}
+      danger={type === 'danger'}
+      onClick={handleClick}
+      icon={iconComponent}>
+      {children}
+      {dropdown ? <DownOutlined /> : null}
+    </AntdButton>
+  );
+  if (dropdown) {
+    return (
+      <Dropdown
+        overlay={dropdownItems!}
+        visible={dropdownVisible}
+        onVisibleChange={handleVisibleChange}>
+        {button}
+      </Dropdown>
+    );
+  } else {
+    return button;
+  }
 }

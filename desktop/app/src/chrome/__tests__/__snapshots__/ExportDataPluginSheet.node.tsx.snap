@@ -43,7 +43,7 @@ exports[`SettingsSheet snapshot with nothing enabled 1`] = `
                   TestDevicePlugin
                 </span>
                 <div
-                  className="css-te359u-View-FlexBox-Spacer e13mj6h81"
+                  className="css-te359u-View-FlexBox-Spacer e13mj6h82"
                 />
                 <input
                   checked={false}
@@ -84,7 +84,7 @@ exports[`SettingsSheet snapshot with nothing enabled 1`] = `
                   TestPlugin
                 </span>
                 <div
-                  className="css-te359u-View-FlexBox-Spacer e13mj6h81"
+                  className="css-te359u-View-FlexBox-Spacer e13mj6h82"
                 />
                 <input
                   checked={false}
@@ -109,7 +109,7 @@ exports[`SettingsSheet snapshot with nothing enabled 1`] = `
         className="css-17wo7w2-View-FlexBox-FlexRow epz0qe20"
       >
         <div
-          className="css-te359u-View-FlexBox-Spacer e13mj6h81"
+          className="css-te359u-View-FlexBox-Spacer e13mj6h82"
         />
         <div
           className="css-12n892b"
@@ -188,7 +188,7 @@ exports[`SettingsSheet snapshot with one plugin enabled 1`] = `
                   TestDevicePlugin
                 </span>
                 <div
-                  className="css-te359u-View-FlexBox-Spacer e13mj6h81"
+                  className="css-te359u-View-FlexBox-Spacer e13mj6h82"
                 />
                 <input
                   checked={false}
@@ -229,7 +229,7 @@ exports[`SettingsSheet snapshot with one plugin enabled 1`] = `
                   TestPlugin
                 </span>
                 <div
-                  className="css-te359u-View-FlexBox-Spacer e13mj6h81"
+                  className="css-te359u-View-FlexBox-Spacer e13mj6h82"
                 />
                 <input
                   checked={true}
@@ -254,7 +254,7 @@ exports[`SettingsSheet snapshot with one plugin enabled 1`] = `
         className="css-17wo7w2-View-FlexBox-FlexRow epz0qe20"
       >
         <div
-          className="css-te359u-View-FlexBox-Spacer e13mj6h81"
+          className="css-te359u-View-FlexBox-Spacer e13mj6h82"
         />
         <div
           className="css-12n892b"
