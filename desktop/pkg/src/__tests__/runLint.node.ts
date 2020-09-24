@@ -59,6 +59,7 @@ test('valid scoped package json', async () => {
 
 test('$schema field is required', async () => {
   const testPackageJson = Object.assign({}, validPackageJson);
+  // @ts-ignore cannot delete non-optional fields
   delete testPackageJson.$schema;
   const json = JSON.stringify(testPackageJson);
   fs.readFile = jest.fn().mockResolvedValue(new Buffer(json));
@@ -92,6 +93,7 @@ test('supported schema is required', async () => {
 
 test('name is required', async () => {
   const testPackageJson = Object.assign({}, validPackageJson);
+  // @ts-ignore cannot delete non-optional fields
   delete testPackageJson.name;
   const json = JSON.stringify(testPackageJson);
   fs.readFile = jest.fn().mockResolvedValue(new Buffer(json));
@@ -150,6 +152,7 @@ test('flippeBundlerEntry must point to an existing file', async () => {
 test('multiple validation errors reported', async () => {
   const testPackageJson = Object.assign({}, validPackageJson);
   testPackageJson.keywords = ['flipper'];
+  // @ts-ignore cannot delete non-optional fields
   delete testPackageJson.flipperBundlerEntry;
   const json = JSON.stringify(testPackageJson);
   fs.readFile = jest.fn().mockResolvedValue(new Buffer(json));

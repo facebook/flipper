@@ -9,7 +9,7 @@
 
 const fbjs = require('eslint-config-fbjs');
 
-// enforces copyright header and @format directive to be present in every file
+// enforces copy-right header and @format directive to be present in every file
 const pattern = /^\*\r?\n[\S\s]*Facebook[\S\s]* \* @format\r?\n/;
 
 const builtInModules = [
@@ -25,7 +25,7 @@ const builtInModules = [
   '@emotion/styled',
 ];
 
-const prettierConfig = require('./.prettierrc');
+const prettierConfig = require('./.prettierrc.json');
 
 module.exports = {
   parser: 'babel-eslint',
@@ -76,7 +76,9 @@ module.exports = {
   settings: {
     'import/resolver': {
       typescript: {
+        alwaysTryTypes: true,
         extensions: ['.js', '.jsx', '.ts', '.tsx'],
+        project: '.',
       },
     },
   },
@@ -85,6 +87,8 @@ module.exports = {
       files: ['*.tsx', '*.ts'],
       parser: '@typescript-eslint/parser',
       rules: {
+        'no-undef': 0, // taken care of by TypeScript already
+        'import/no-unresolved': 0, // taken care of by TypeScript already
         'prettier/prettier': [2, {...prettierConfig, parser: 'typescript'}],
         '@typescript-eslint/no-unused-vars': [
           1,

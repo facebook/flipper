@@ -10,12 +10,12 @@
   "license": "MIT",
   "bugs": "https://github.com/facebook/flipper/issues",
   "dependencies": {
-    "@typescript-eslint/experimental-utils": "^3.8.0",
+    "@typescript-eslint/experimental-utils": "^4.2.0",
     "fs-extra": "^9.0.1"
   },
   "devDependencies": {
     "@types/jest": "26",
-    "@typescript-eslint/parser": "^3.8.0",
+    "@typescript-eslint/parser": "^4.2.0",
     "flipper-test-utils": "0.58.0",
     "jest": "^26",
     "metro-memory-fs": "^0.61.0",
@@ -23,7 +23,7 @@
     "rimraf": "^3.0.2",
     "ts-jest": "^26.0.0",
     "ts-node": "^8",
-    "typescript": "^3.9.5"
+    "typescript": "^4.0.3"
   },
   "scripts": {
     "reset": "rimraf lib *.tsbuildinfo",
