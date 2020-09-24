@@ -26,6 +26,7 @@ import {useDispatch, useStore} from '../utils/useStore';
 import {toggleLeftSidebarVisible} from '../reducers/application';
 import {theme} from './theme';
 import SettingsSheet from '../chrome/SettingsSheet';
+import WelcomeScreen from './WelcomeScreen';
 
 const LeftRailContainer = styled(FlexColumn)({
   background: theme.backgroundDefault,
@@ -119,11 +120,7 @@ export function LeftRail() {
           small
           title="Setup Doctor"
         />
-        <LeftRailButton
-          icon={<QuestionCircleOutlined />}
-          small
-          title="Help / Start Screen"
-        />
+        <WelcomeScreenButton />
         <ShowSettingsButton />
         <LeftRailButton
           icon={<BugOutlined />}
@@ -177,6 +174,35 @@ function ShowSettingsButton() {
       {showSettings && (
         <SettingsSheet platform={process.platform} onHide={onClose} useSandy />
       )}
+    </>
+  );
+}
+
+function WelcomeScreenButton() {
+  const settings = useStore((state) => state.settingsState);
+  const showWelcomeScreenAtStartup = settings.showWelcomeAtStartup;
+  const dispatch = useDispatch();
+  const [visible, setVisible] = useState(showWelcomeScreenAtStartup);
+
+  return (
+    <>
+      <LeftRailButton
+        icon={<QuestionCircleOutlined />}
+        small
+        title="Help / Start Screen"
+        onClick={() => setVisible(true)}
+      />
+      <WelcomeScreen
+        visible={visible}
+        onClose={() => setVisible(false)}
+        showAtStartup={showWelcomeScreenAtStartup}
+        onCheck={(value) =>
+          dispatch({
+            type: 'UPDATE_SETTINGS',
+            payload: {...settings, showWelcomeAtStartup: value},
+          })
+        }
+      />
     </>
   );
 }

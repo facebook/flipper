@@ -45,6 +45,7 @@ export type Settings = {
   };
   enableSandy: boolean;
   darkMode: boolean;
+  showWelcomeAtStartup: boolean;
 };
 
 export type Action =
@@ -79,6 +80,7 @@ const initialState: Settings = {
   },
   enableSandy: false,
   darkMode: false,
+  showWelcomeAtStartup: true,
 };
 
 export default function reducer(

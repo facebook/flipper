@@ -29,4 +29,7 @@ export const theme = {
     middle: 16,
     large: 24,
   } as const,
+  fontSize: {
+    smallBody: '12px',
+  },
 };
