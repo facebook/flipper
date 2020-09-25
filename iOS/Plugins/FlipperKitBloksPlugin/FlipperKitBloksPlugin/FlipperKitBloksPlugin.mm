@@ -25,7 +25,7 @@
 }
 
 - (NSString*)identifier {
-  return @"flipper-plugin-bloks";
+  return @"flipper-plugin-ntstate";
 }
 
 - (BOOL)runInBackground {
