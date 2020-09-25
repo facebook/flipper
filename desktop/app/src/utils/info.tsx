@@ -30,6 +30,7 @@ export function getInfo(): Info {
     versions: {
       electron: process.versions.electron,
       node: process.versions.node,
+      platform: os.release(),
     },
   };
 }
