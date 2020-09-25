@@ -7,9 +7,18 @@
 set -e
 
 darwin=false
+facebook=false
 case "$(uname)" in
   Darwin*) darwin=true ;;
 esac
+case "$(hostname -f)" in
+  *.facebook.com) facebook=true
+esac
+
+nodejs="/usr/bin/env node"
+if [[ $facebook == true ]]; then
+  nodejs="$(hg root)/xplat/third-party/node/bin/node"
+fi
 
 if ! jq --version > /dev/null; then
   if $darwin; then
@@ -84,7 +93,7 @@ echo "Bumping version number for android related files..."
 "$SONAR_DIR"/scripts/bump.sh "$VERSION"
 
 # Generate changelog
-"$DESKTOP_DIR"/scripts/generate-changelog.js
+$nodejs "$DESKTOP_DIR"/scripts/generate-changelog.js
 
 # Create commit
 echo "Committing the files..."
