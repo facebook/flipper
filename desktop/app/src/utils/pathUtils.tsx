@@ -10,6 +10,7 @@
 import path from 'path';
 import fs from 'fs';
 import {remote} from 'electron';
+import config from '../fb-stubs/config';
 
 let _staticPath = '';
 
@@ -28,4 +29,24 @@ export function getStaticPath() {
     throw new Error('Static path does not exist: ' + _staticPath);
   }
   return _staticPath;
+}
+
+export function getChangelogPath() {
+  const staticPath = getStaticPath();
+  let changelogPath = '';
+
+  if (config.isFBBuild) {
+    changelogPath = path.resolve(staticPath, 'facebook');
+  } else {
+    changelogPath = staticPath;
+  }
+
+  if (fs.existsSync(changelogPath)) {
+    return changelogPath;
+  }
+
+  if (!fs.existsSync(changelogPath)) {
+    throw new Error('Changelog path path does not exist: ' + changelogPath);
+  }
+  return changelogPath;
 }

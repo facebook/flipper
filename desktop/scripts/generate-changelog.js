@@ -20,6 +20,7 @@ const cp = require('child_process');
 const desktopRoot = path.resolve(__dirname, '..');
 const root = path.resolve(desktopRoot, '..');
 const staticDir = path.join(desktopRoot, 'static');
+const staticFacebookDir = path.join(staticDir, 'facebook');
 
 const version = JSON.parse(
   fs.readFileSync(path.join(desktopRoot, 'package.json'), 'utf8'),
@@ -29,6 +30,7 @@ const now = new Date();
 const date = `${now.getDate()}/${now.getMonth() + 1}/${now.getFullYear()}`;
 const newlineMarker = '__NEWLINE_MARKER__';
 const fChangelog = path.resolve(staticDir, 'CHANGELOG.md');
+const fChangelogFacebook = path.resolve(staticFacebookDir, 'CHANGELOG.md');
 
 const lastCommit = cp
   .execSync(`hg log --limit 1 --template '{node}'`, {cwd: root})
@@ -50,8 +52,10 @@ const hgLog = cp.execSync(hgLogCommand, {cwd: __dirname}).toString();
 
 const diffRe = /^D\d+/;
 const changeLogLineRe = /(^changelog:\s*?)(.*?)$/i;
+const changeLogFacebookLineRe = /(^Facebook changelog:\s*?)(.*?)$/i;
 
 let contents = `# ${version} (${date})\n\n`;
+let contentsFacebook = `# ${version} (${date})\n\n`;
 let changes = 0;
 
 hgLog
@@ -64,9 +68,14 @@ hgLog
     line.split(newlineMarker).forEach(diffline => {
       // if a line starts with changelog:, grab the rest of the text and add it to the changelog
       const match = diffline.match(changeLogLineRe);
-      if (match) {
+      const matchFacebook = diffline.match(changeLogFacebookLineRe);
+      if (matchFacebook) {
+        changes++;
+        contentsFacebook += ` * [${diff}](https://github.com/facebook/flipper/search?q=${diff}&type=Commits) - ${matchFacebook[2]}\n`;
+      } else if (match) {
         changes++;
         contents += ` * [${diff}](https://github.com/facebook/flipper/search?q=${diff}&type=Commits) - ${match[2]}\n`;
+        contentsFacebook += ` * [${diff}](https://github.com/facebook/flipper/search?q=${diff}&type=Commits) - ${match[2]}\n`;
       }
     });
   });
@@ -75,5 +84,7 @@ if (!changes) {
   console.log('No diffs with changelog items found in this release');
 } else {
   contents += '\n\n' + fs.readFileSync(fChangelog, 'utf8');
+  contentsFacebook += '\n\n' + fs.readFileSync(fChangelogFacebook, 'utf8');
   fs.writeFileSync(fChangelog, contents);
+  fs.writeFileSync(fChangelogFacebook, contentsFacebook);
 }
