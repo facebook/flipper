@@ -12,13 +12,42 @@ This should only be necessary if you have an existing app that cannot be upgrade
 
 ## Dependencies
 
-Add this code to your `ios/Podfile`:
+### React Native 0.63+
+
+If using React Native 0.63 or later, your `ios/Podfile` should look like this:
+
+```ruby
+platform :ios, '10.0'
+
+require_relative '../node_modules/react-native/scripts/react_native_pods'
+require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+
+target 'your-app-name' do
+  config = use_native_modules!
+  use_react_native!(path: config['reactNativePath'])
+
+  # Enables Flipper.
+  #
+  # Note that if you have use_frameworks! enabled, Flipper will not work and
+  # you should disable these next few lines.
+  use_flipper!('Flipper' => '0.58.0') # should match the version of your Flipper client app
+  post_install do |installer|
+    flipper_post_install(installer)
+  end
+end
+```
+
+Install the dependencies by running `cd ios && pod install`. Then continue to [Initialization](#initialization).
+
+### React Native 0.62
+
+In 0.62, the setup includes a bit more code (which was moved to a helper in 0.63). Add all of the code below to your `ios/Podfile`:
 
 ```ruby
 platform :ios, '9.0'
 
 def flipper_pods()
-  flipperkit_version = '0.49.0'
+  flipperkit_version = '0.58.0' # should match the version of your Flipper client app
   pod 'FlipperKit', '~>' + flipperkit_version, :configuration => 'Debug'
   pod 'FlipperKit/FlipperKitLayoutPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
   pod 'FlipperKit/SKIOSNetworkPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
@@ -46,11 +75,8 @@ end
 
 target 'your-app-name' do
   ...
-
-
   # Replace the existing yoga import with the following (adding modular_headers):
   pod 'Yoga', :path => '../node_modules/react-native/ReactCommon/yoga', :modular_headers => true
-
   ...
   use_native_modules!
 
