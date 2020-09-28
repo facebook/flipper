@@ -25,8 +25,10 @@ export const theme = {
   backgroundTransparentHover: 'var(--flipper-background-transparent-hover)',
   dividerColor: 'var(--flipper-divider-color)',
   borderRadius: 'var(--flipper-border-radius)',
+  containerBorderRadius: 8,
   space: {
     // from Space component in Ant
+    tiny: 4,
     small: 8,
     middle: 16,
     large: 24,

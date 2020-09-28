@@ -9,20 +9,16 @@
 
 import React from 'react';
 import styled from '@emotion/styled';
-import {Sidebar} from '..';
 
-type Props = {
+type SplitLayoutProps = {
   /**
    * If set, the dynamically sized pane will get scrollbars when needed
    */
   scrollable?: boolean;
   /**
-   * If set, the 'fixed' child will no longer be sized based on it's own dimensions,
-   * but rather it will be possible to resize it
+   * If set, items will be centered over the orthogonal direction, if false (the default) items will be stretched.
    */
-  initialSize?: number;
-  minSize?: number;
-
+  center?: boolean;
   children: [React.ReactNode, React.ReactNode];
 };
 
@@ -42,18 +38,21 @@ const ScrollContainer = styled('div')<{scrollable: boolean}>(
 );
 ScrollContainer.displayName = 'Layout:ScrollContainer';
 
-const Container = styled('div')<{horizontal: boolean}>(({horizontal}) => ({
-  display: 'flex',
-  flex: 'auto',
-  flexDirection: horizontal ? 'row' : 'column',
-  height: '100%',
-  width: '100%',
-  overflow: 'hidden',
-}));
+const Container = styled('div')<{horizontal: boolean; center?: boolean}>(
+  ({horizontal, center}) => ({
+    display: 'flex',
+    flex: 'auto',
+    flexDirection: horizontal ? 'row' : 'column',
+    height: '100%',
+    width: '100%',
+    overflow: 'hidden',
+    alignItems: center ? 'center' : undefined,
+  }),
+);
 Container.displayName = 'Layout:Container';
 
 function renderLayout(
-  {children, scrollable, initialSize, minSize}: Props,
+  {children, scrollable, center}: SplitLayoutProps,
   horizontal: boolean,
   reverse: boolean,
 ) {
@@ -62,43 +61,44 @@ function renderLayout(
   }
   const fixedChild = reverse ? children[1] : children[0];
 
-  const fixedElement =
-    initialSize === undefined ? (
-      <FixedContainer>{fixedChild}</FixedContainer>
-    ) : horizontal ? (
-      <Sidebar
-        position={reverse ? 'right' : 'left'}
-        width={initialSize}
-        minWidth={minSize}
-        gutter>
-        {fixedChild}
-      </Sidebar>
-    ) : (
-      <Sidebar
-        position={reverse ? 'bottom' : 'top'}
-        height={initialSize}
-        minHeight={minSize}
-        gutter>
-        {fixedChild}
-      </Sidebar>
-    );
+  const fixedElement = <FixedContainer>{fixedChild}</FixedContainer>;
+
   const dynamicElement = (
     <ScrollContainer scrollable={!!scrollable}>
       {reverse ? children[0] : children[1]}
     </ScrollContainer>
   );
   return reverse ? (
-    <Container horizontal={horizontal}>
+    <Container horizontal={horizontal} center={center}>
       {dynamicElement}
       {fixedElement}
     </Container>
   ) : (
-    <Container horizontal={horizontal}>
+    <Container horizontal={horizontal} center={center}>
       {fixedElement}
       {dynamicElement}
     </Container>
   );
 }
+
+type DistributionProps = {
+  /**
+   * Gab between individual items
+   */
+  gap?: number;
+  /**
+   * If set, items will be aligned in the center, if false (the default) items will be stretched.
+   */
+  center?: boolean;
+  /**
+   * If set, the layout will fill out to maximum width
+   */
+  fillx?: boolean;
+  /**
+   * If set, the layout will fill out to maximum height
+   */
+  filly?: boolean;
+};
 
 /**
  * The Layout component divides all available screenspace over two components:
@@ -111,7 +111,11 @@ function renderLayout(
  *
  * Use Layout.Top / Right / Bottom / Left to indicate where the fixed element should live.
  */
-const Layout: Record<'Left' | 'Right' | 'Top' | 'Bottom', React.FC<Props>> = {
+const Layout: Record<
+  'Left' | 'Right' | 'Top' | 'Bottom',
+  React.FC<SplitLayoutProps>
+> &
+  Record<'Horizontal' | 'Vertical', React.FC<DistributionProps>> = {
   Top(props) {
     return renderLayout(props, false, false);
   },
@@ -124,11 +128,26 @@ const Layout: Record<'Left' | 'Right' | 'Top' | 'Bottom', React.FC<Props>> = {
   Right(props) {
     return renderLayout(props, true, true);
   },
+  Horizontal: styled.div<DistributionProps>(({gap, center, fillx, filly}) => ({
+    display: 'flex',
+    flexDirection: 'row',
+    gap,
+    alignItems: center ? 'center' : 'stretch',
+    width: fillx ? '100%' : undefined,
+    height: filly ? '100%' : undefined,
+  })),
+  Vertical: styled.div<DistributionProps>(({gap, center, fillx, filly}) => ({
+    display: 'flex',
+    flexDirection: 'column',
+    gap,
+    alignItems: center ? 'center' : 'stretch',
+    width: fillx ? '100%' : undefined,
+    height: filly ? '100%' : undefined,
+  })),
 };
 
-Layout.Top.displayName = 'Layout.Top';
-Layout.Left.displayName = 'Layout.Left';
-Layout.Bottom.displayName = 'Layout.Bottom';
-Layout.Right.displayName = 'Layout.Right';
+Object.keys(Layout).forEach((key) => {
+  (Layout as any)[key].displayName = `Layout.${key}`;
+});
 
 export default Layout;

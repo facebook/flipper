@@ -27,9 +27,8 @@ import {toggleLeftSidebarVisible} from '../reducers/application';
 import {theme} from './theme';
 import SettingsSheet from '../chrome/SettingsSheet';
 import WelcomeScreen from './WelcomeScreen';
-import {isStaticViewActive} from '../chrome/mainsidebar/sidebarUtils';
-import {ConsoleLogs, errorCounterAtom} from '../chrome/ConsoleLogs';
-import {setStaticView} from '../reducers/connections';
+import {errorCounterAtom} from '../chrome/ConsoleLogs';
+import {ToplevelProps} from './SandyApp';
 import {useValue} from 'flipper-plugin';
 
 const LeftRailContainer = styled(FlexColumn)({
@@ -101,11 +100,21 @@ const LeftRailDivider = styled(Divider)({
 });
 LeftRailDivider.displayName = 'LeftRailDividier';
 
-export function LeftRail() {
+export function LeftRail({
+  toplevelSelection,
+  setToplevelSelection,
+}: ToplevelProps) {
   return (
     <LeftRailContainer>
       <LeftRailSection>
-        <LeftRailButton icon={<MobileFilled />} title="App Inspect" />
+        <LeftRailButton
+          icon={<MobileFilled />}
+          title="App Inspect"
+          selected={toplevelSelection === 'appinspect'}
+          onClick={() => {
+            setToplevelSelection('appinspect');
+          }}
+        />
         <LeftRailButton icon={<AppstoreOutlined />} title="Plugin Manager" />
         <LeftRailButton
           count={8}
@@ -113,7 +122,10 @@ export function LeftRail() {
           title="Notifications"
         />
         <LeftRailDivider />
-        <DebugLogsButton />
+        <DebugLogsButton
+          toplevelSelection={toplevelSelection}
+          setToplevelSelection={setToplevelSelection}
+        />
       </LeftRailSection>
       <LeftRailSection>
         <LeftRailButton
@@ -160,20 +172,19 @@ function LeftSidebarToggleButton() {
   );
 }
 
-function DebugLogsButton() {
-  const staticView = useStore((state) => state.connections.staticView);
-  const active = isStaticViewActive(staticView, ConsoleLogs);
+function DebugLogsButton({
+  toplevelSelection,
+  setToplevelSelection,
+}: ToplevelProps) {
   const errorCount = useValue(errorCounterAtom);
-  const dispatch = useDispatch();
-
   return (
     <LeftRailButton
       icon={<FileExclamationOutlined />}
       title="Flipper Logs"
-      selected={active}
+      selected={toplevelSelection === 'flipperlogs'}
       count={errorCount}
       onClick={() => {
-        dispatch(setStaticView(ConsoleLogs));
+        setToplevelSelection('flipperlogs');
       }}
     />
   );
@@ -200,9 +211,9 @@ function ShowSettingsButton() {
 
 function WelcomeScreenButton() {
   const settings = useStore((state) => state.settingsState);
-  const showWelcomeScreenAtStartup = settings.showWelcomeAtStartup;
+  const {showWelcomeAtStartup} = settings;
   const dispatch = useDispatch();
-  const [visible, setVisible] = useState(showWelcomeScreenAtStartup);
+  const [visible, setVisible] = useState(showWelcomeAtStartup);
 
   return (
     <>
@@ -215,7 +226,7 @@ function WelcomeScreenButton() {
       <WelcomeScreen
         visible={visible}
         onClose={() => setVisible(false)}
-        showAtStartup={showWelcomeScreenAtStartup}
+        showAtStartup={showWelcomeAtStartup}
         onCheck={(value) =>
           dispatch({
             type: 'UPDATE_SETTINGS',
