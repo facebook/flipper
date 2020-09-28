@@ -37,7 +37,9 @@ import loadDynamicPlugins from '../utils/loadDynamicPlugins';
 import Immer from 'immer';
 
 // eslint-disable-next-line import/no-unresolved
-import getPluginIndex from '../utils/getDefaultPluginsIndex';
+import getDefaultPluginsIndex from '../utils/getDefaultPluginsIndex';
+
+let defaultPluginsIndex: any = null;
 
 export default async (store: Store, logger: Logger) => {
   // expose Flipper and exact globally for dynamically loaded plugins
@@ -53,7 +55,7 @@ export default async (store: Store, logger: Logger) => {
   const disabledPlugins: Array<PluginDetails> = [];
   const failedPlugins: Array<[PluginDetails, string]> = [];
 
-  const defaultPluginsIndex = getPluginIndex();
+  defaultPluginsIndex = getDefaultPluginsIndex();
 
   const initialPlugins: PluginDefinition[] = filterNewestVersionOfEachPlugin(
     getBundledPlugins(),
@@ -62,7 +64,7 @@ export default async (store: Store, logger: Logger) => {
     .map(reportVersion)
     .filter(checkDisabled(disabledPlugins))
     .filter(checkGK(gatekeepedPlugins))
-    .map(requirePlugin(failedPlugins, defaultPluginsIndex))
+    .map(createRequirePluginFunction(failedPlugins))
     .filter(notNull);
 
   store.dispatch(addGatekeepedPlugins(gatekeepedPlugins));
@@ -173,18 +175,13 @@ export const checkDisabled = (disabledPlugins: Array<PluginDetails>) => (
   return !disabledList.has(plugin.name);
 };
 
-export const requirePlugin = (
+export const createRequirePluginFunction = (
   failedPlugins: Array<[PluginDetails, string]>,
-  defaultPluginsIndex: any,
   reqFn: Function = global.electronRequire,
 ) => {
   return (pluginDetails: PluginDetails): PluginDefinition | null => {
     try {
-      return tryCatchReportPluginFailures(
-        () => requirePluginInternal(pluginDetails, defaultPluginsIndex, reqFn),
-        'plugin:load',
-        pluginDetails.id,
-      );
+      return requirePlugin(pluginDetails, reqFn);
     } catch (e) {
       failedPlugins.push([pluginDetails, e.message]);
       console.error(`Plugin ${pluginDetails.id} failed to load`, e);
@@ -193,15 +190,24 @@ export const requirePlugin = (
   };
 };
 
+export const requirePlugin = (
+  pluginDetails: PluginDetails,
+  reqFn: Function = global.electronRequire,
+): PluginDefinition => {
+  return tryCatchReportPluginFailures(
+    () => requirePluginInternal(pluginDetails, reqFn),
+    'plugin:load',
+    pluginDetails.id,
+  );
+};
+
 const requirePluginInternal = (
   pluginDetails: PluginDetails,
-  defaultPluginsIndex: any,
   reqFn: Function = global.electronRequire,
-) => {
+): PluginDefinition => {
   let plugin = pluginDetails.isDefault
     ? defaultPluginsIndex[pluginDetails.name]
     : reqFn(pluginDetails.entry);
-
   if (pluginDetails.flipperSDKVersion) {
     // Sandy plugin
     return new SandyPluginDefinition(pluginDetails, plugin);

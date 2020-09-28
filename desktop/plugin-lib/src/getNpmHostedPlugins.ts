@@ -28,7 +28,7 @@ export type NpmHostedPluginsSearchArgs = {
 
 export async function getNpmHostedPlugins(
   args: NpmHostedPluginsSearchArgs = {},
-): Promise<NpmPackageDescriptor[]> {
+): Promise<readonly NpmPackageDescriptor[]> {
   const index = provideSearchIndex();
   args = Object.assign(
     {

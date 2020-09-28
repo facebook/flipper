@@ -93,7 +93,7 @@ async function installPluginFromTempDir(
     }
     throw err;
   }
-  return pluginDetails;
+  return await getPluginDetails(destinationDir);
 }
 
 async function getPluginRootDir(dir: string) {

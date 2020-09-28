@@ -268,8 +268,8 @@ export default class Client extends EventEmitter {
     });
   }
 
-  supportsPlugin(Plugin: ClientPluginDefinition): boolean {
-    return this.plugins.includes(Plugin.id);
+  supportsPlugin(pluginId: string): boolean {
+    return this.plugins.includes(pluginId);
   }
 
   isBackgroundPlugin(pluginId: string) {

@@ -125,7 +125,12 @@ export type Action =
       type: 'SELECT_CLIENT';
       payload: string;
     }
-  | RegisterPluginAction;
+  | RegisterPluginAction
+  | {
+      // Implemented by rootReducer in `store.tsx`
+      type: 'UPDATE_PLUGIN';
+      payload: PluginDefinition;
+    };
 
 const DEFAULT_PLUGIN = 'DeviceLogs';
 const DEFAULT_DEVICE_BLACKLIST = [MacDevice];
@@ -341,7 +346,6 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
       });
       return state;
     }
-
     default:
       return state;
   }
@@ -393,6 +397,11 @@ export const starPlugin = (payload: {
 export const selectClient = (clientId: string): Action => ({
   type: 'SELECT_CLIENT',
   payload: clientId,
+});
+
+export const registerPluginUpdate = (payload: PluginDefinition): Action => ({
+  type: 'UPDATE_PLUGIN',
+  payload,
 });
 
 export function getAvailableClients(

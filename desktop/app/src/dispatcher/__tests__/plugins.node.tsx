@@ -13,7 +13,7 @@ import dispatcher, {
   getDynamicPlugins,
   checkDisabled,
   checkGK,
-  requirePlugin,
+  createRequirePluginFunction,
   filterNewestVersionOfEachPlugin,
 } from '../plugins';
 import {PluginDetails} from 'flipper-plugin-lib';
@@ -136,7 +136,7 @@ test('checkGK for failing plugin', () => {
 });
 
 test('requirePlugin returns null for invalid requires', () => {
-  const requireFn = requirePlugin([], {}, require);
+  const requireFn = createRequirePluginFunction([], require);
   const plugin = requireFn({
     ...samplePluginDetails,
     name: 'pluginID',
@@ -149,7 +149,7 @@ test('requirePlugin returns null for invalid requires', () => {
 
 test('requirePlugin loads plugin', () => {
   const name = 'pluginID';
-  const requireFn = requirePlugin([], {}, require);
+  const requireFn = createRequirePluginFunction([], require);
   const plugin = requireFn({
     ...samplePluginDetails,
     name,
@@ -236,7 +236,7 @@ test('bundled versions are used when env var FLIPPER_DISABLE_PLUGIN_AUTO_UPDATE 
 
 test('requirePlugin loads valid Sandy plugin', () => {
   const name = 'pluginID';
-  const requireFn = requirePlugin([], {}, require);
+  const requireFn = createRequirePluginFunction([], require);
   const plugin = requireFn({
     ...samplePluginDetails,
     name,
@@ -270,7 +270,7 @@ test('requirePlugin loads valid Sandy plugin', () => {
 test('requirePlugin errors on invalid Sandy plugin', () => {
   const name = 'pluginID';
   const failedPlugins: any[] = [];
-  const requireFn = requirePlugin(failedPlugins, {}, require);
+  const requireFn = createRequirePluginFunction(failedPlugins, require);
   requireFn({
     ...samplePluginDetails,
     name,
@@ -286,7 +286,7 @@ test('requirePlugin errors on invalid Sandy plugin', () => {
 
 test('requirePlugin loads valid Sandy Device plugin', () => {
   const name = 'pluginID';
-  const requireFn = requirePlugin([], {}, require);
+  const requireFn = createRequirePluginFunction([], require);
   const plugin = requireFn({
     ...samplePluginDetails,
     name,
