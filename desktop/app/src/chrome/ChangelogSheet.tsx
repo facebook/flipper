@@ -12,7 +12,7 @@ import {readFileSync} from 'fs';
 import React, {Component} from 'react';
 import path from 'path';
 import {reportUsage} from '../utils/metrics';
-import {getStaticPath} from '../utils/pathUtils';
+import {getChangelogPath} from '../utils/pathUtils';
 
 const changelogKey = 'FlipperChangelogStatus';
 
@@ -22,7 +22,7 @@ type ChangelogStatus = {
 
 let getChangelogFromDisk = (): string => {
   const changelogFromDisk: string = readFileSync(
-    path.join(getStaticPath(), 'CHANGELOG.md'),
+    path.join(getChangelogPath(), 'CHANGELOG.md'),
     'utf8',
   ).trim();
 
