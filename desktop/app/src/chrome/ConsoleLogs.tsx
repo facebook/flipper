@@ -24,7 +24,6 @@ const logsAtom = createState<any[]>([]);
 export const errorCounterAtom = createState(0);
 
 export function enableConsoleHook() {
-  console.log('enabling hooks');
   Hook(
     window.console,
     (log) => {
