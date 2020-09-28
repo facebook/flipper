@@ -227,7 +227,7 @@ class StripLogPrefix extends Transform {
 
   _transform(
     data: any,
-    encoding: string,
+    _encoding: string,
     callback: (err?: Error, data?: any) => void,
   ) {
     if (this.passedPrefix) {

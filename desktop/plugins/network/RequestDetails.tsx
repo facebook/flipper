@@ -553,7 +553,7 @@ class JSONTextFormatter {
     );
   };
 
-  formatResponse = (request: Request, response: Response) => {
+  formatResponse = (_request: Request, response: Response) => {
     return this.format(
       decodeBody(response),
       getHeaderValue(response.headers, 'content-type'),
@@ -589,7 +589,7 @@ class XMLTextFormatter {
     );
   };
 
-  formatResponse = (request: Request, response: Response) => {
+  formatResponse = (_request: Request, response: Response) => {
     return this.format(
       decodeBody(response),
       getHeaderValue(response.headers, 'content-type'),
@@ -611,7 +611,7 @@ class JSONFormatter {
     );
   };
 
-  formatResponse = (request: Request, response: Response) => {
+  formatResponse = (_request: Request, response: Response) => {
     return this.format(
       decodeBody(response),
       getHeaderValue(response.headers, 'content-type'),
@@ -715,7 +715,7 @@ class GraphQLFormatter {
     }
   };
 
-  formatResponse = (request: Request, response: Response) => {
+  formatResponse = (_request: Request, response: Response) => {
     return this.format(
       decodeBody(response),
       getHeaderValue(response.headers, 'content-type'),

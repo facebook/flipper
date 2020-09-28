@@ -12,7 +12,6 @@ import {ResizeObserver} from './ResizeObserver.d';
 import {Store} from '../app/src/reducers';
 
 export {};
-type RequestIdleHandle = number;
 
 declare global {
   interface StoreEnhancerStateSanitizer {

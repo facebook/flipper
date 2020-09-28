@@ -120,19 +120,10 @@ const TooltipTail = styled.div<{
 }));
 TooltipTail.displayName = 'TooltipProvider:TooltipTail';
 
-type TooltipProps = {
-  children: React.ReactNode;
-};
-
 type TooltipObject = {
   rect: ClientRect;
   title: React.ReactNode;
   options: TooltipOptions;
-};
-
-type TooltipState = {
-  tooltip: TooltipObject | null | undefined;
-  timeoutID: ReturnType<typeof setTimeout> | null | undefined;
 };
 
 interface TooltipManager {

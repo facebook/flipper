@@ -387,7 +387,7 @@ function addFileWatcherForiOSCrashLogs(
     // Directory doesn't exist
     return;
   }
-  fs.watch(dir, (eventType, filename) => {
+  fs.watch(dir, (_eventType, filename) => {
     // We just parse the crash logs with extension `.crash`
     const checkFileExtension = /.crash$/.exec(filename);
     if (!filename || !checkFileExtension) {
@@ -643,7 +643,7 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
       const referenceDate = new Date();
       (function (
         store: Store,
-        date: Date,
+        _date: Date,
         setPersistedState: (
           pluginKey: string,
           newPluginState: Maybe<PersistedState>,

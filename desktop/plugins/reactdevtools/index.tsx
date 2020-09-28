@@ -85,7 +85,7 @@ const GrabMetroDevice = connect<
 }: GrabMetroDeviceStoreProps & GrabMetroDeviceOwnProps) {
   useEffect(() => {
     onHasDevice(metroDevice);
-  }, [metroDevice]);
+  }, [metroDevice, onHasDevice]);
   return null;
 });
 

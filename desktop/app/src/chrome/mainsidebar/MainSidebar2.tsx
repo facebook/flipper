@@ -63,7 +63,7 @@ import {useLocalStorage} from '../../utils/useLocalStorage';
 import {PluginDefinition, ClientPluginMap, DevicePluginMap} from '../../plugin';
 
 type FlipperPlugins = PluginDefinition[];
-type PluginsByCategory = [string, FlipperPlugins][];
+type PluginsByCategoryType = [string, FlipperPlugins][];
 
 type SectionLevel = 1 | 2 | 3;
 
@@ -398,10 +398,12 @@ function isStaticViewActive(
   return current && selected && current === selected;
 }
 
-function groupPluginsByCategory(plugins: FlipperPlugins): PluginsByCategory {
+function groupPluginsByCategory(
+  plugins: FlipperPlugins,
+): PluginsByCategoryType {
   const sortedPlugins = plugins.slice().sort(sortPluginsByName);
   const byCategory: {[cat: string]: FlipperPlugins} = {};
-  const res: PluginsByCategory = [];
+  const res: PluginsByCategoryType = [];
   sortedPlugins.forEach((plugin) => {
     const category = plugin.category || '';
     (byCategory[category] || (byCategory[category] = [])).push(plugin);
@@ -477,7 +479,7 @@ const PluginList = memo(function PluginList({
   selectedApp?: null | string;
 }) {
   // client is a mutable structure, so we need the event emitter to detect the addition of plugins....
-  const [_, setPluginsChanged] = useState(0);
+  const [, setPluginsChanged] = useState(0);
   useEffect(() => {
     const listener = () => setPluginsChanged((v) => v + 1);
     client.on('plugins-change', listener);
@@ -493,7 +495,7 @@ const PluginList = memo(function PluginList({
         plugin,
       });
     },
-    [client],
+    [client, starPlugin],
   );
 
   const allPlugins = Array.from(clientPlugins.values()).filter(

@@ -15,7 +15,6 @@ import {killOrphanedInstrumentsProcesses} from './processCleanup';
 import {reportPlatformFailures} from './metrics';
 import {promises, constants} from 'fs';
 import memoize from 'lodash.memoize';
-import GK from '../fb-stubs/GK';
 import {notNull} from './typeUtils';
 
 // Use debug to get helpful logs when idb fails

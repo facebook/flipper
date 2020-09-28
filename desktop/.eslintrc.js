@@ -87,9 +87,16 @@ module.exports = {
       files: ['*.tsx', '*.ts'],
       parser: '@typescript-eslint/parser',
       rules: {
-        'no-undef': 0, // taken care of by TypeScript already
-        'import/no-unresolved': 0, // taken care of by TypeScript already
         'prettier/prettier': [2, {...prettierConfig, parser: 'typescript'}],
+        // following rules are disabled because TS already handles it
+        'no-undef': 0,
+        'import/no-unresolved': 0,
+        // following rules are disabled because they don't handle TS correctly,
+        // while their @typescript-eslint counterpart does
+        // for reference: https://github.com/typescript-eslint/typescript-eslint/blob/master/packages/eslint-plugin/README.md#extension-rules
+        'no-unused-vars': 0,
+        'no-redeclare': 0,
+        '@typescript-eslint/no-redeclare': 1,
         '@typescript-eslint/no-unused-vars': [
           1,
           {

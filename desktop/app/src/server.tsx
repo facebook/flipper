@@ -358,7 +358,7 @@ class Server extends EventEmitter {
   };
 
   _untrustedRequestHandler = (
-    socket: ReactiveSocket<string, any>,
+    _socket: ReactiveSocket<string, any>,
     payload: Payload<string, any>,
   ): Partial<Responder<string, any>> => {
     if (!payload.data) {

@@ -35,7 +35,7 @@ function createHighlightManager(initialText: string = ''): HighlightManager {
   let currentFilter = initialText;
 
   const Highlight: React.FC<{text: string}> = memo(({text}) => {
-    const [_update, setUpdate] = useState(0);
+    const [, setUpdate] = useState(0);
     const elem = useRef<HTMLSpanElement | null>(null);
     useEffect(() => {
       function onChange(prevHighlight: string, newHighlight: string) {

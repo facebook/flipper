@@ -142,7 +142,7 @@ function startAssetServer(
 ): Promise<{app: Express; server: http.Server}> {
   const app = express();
 
-  app.use((req, res, next) => {
+  app.use((req, _res, next) => {
     if (knownErrors[req.url] != null) {
       delete knownErrors[req.url];
       outputScreen();
@@ -150,14 +150,14 @@ function startAssetServer(
     next();
   });
 
-  app.use((req, res, next) => {
+  app.use((_req, res, next) => {
     res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
     res.header('Expires', '-1');
     res.header('Pragma', 'no-cache');
     next();
   });
 
-  app.post('/_restartElectron', (req, res) => {
+  app.post('/_restartElectron', (_req, res) => {
     if (shutdownElectron) {
       shutdownElectron();
     }
@@ -165,8 +165,8 @@ function startAssetServer(
     res.end();
   });
 
-  app.get('/', (req, res) => {
-    fs.readFile(path.join(staticDir, 'index.dev.html'), (err, content) => {
+  app.get('/', (_req, res) => {
+    fs.readFile(path.join(staticDir, 'index.dev.html'), (_err, content) => {
       res.end(content);
     });
   });

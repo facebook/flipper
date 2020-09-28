@@ -79,12 +79,6 @@ const debugLog = (...args: any[]) => {
   }
 };
 
-type ImagesMetaData = {
-  levels: ImagesListResponse;
-  events: Array<ImageEventWithId>;
-  imageDataList: Array<ImageData>;
-};
-
 export default class FlipperImagesPlugin extends FlipperPlugin<
   PluginState,
   BaseAction,

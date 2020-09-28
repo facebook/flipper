@@ -112,7 +112,7 @@ export function maybeSnapLeft(
 }
 
 export function maybeSnapTop(
-  props: Rect,
+  _props: Rect,
   windows: Array<Rect>,
   top: number,
 ): number {

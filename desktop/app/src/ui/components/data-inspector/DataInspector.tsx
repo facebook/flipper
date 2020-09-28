@@ -314,14 +314,6 @@ function isComponentExpanded(data: any, diffType: string, diffValue: any) {
   return false;
 }
 
-type DataInspectorState = {
-  shouldExpand: boolean;
-  isExpanded: boolean;
-  isExpandable: boolean;
-  res: any;
-  resDiff: any;
-};
-
 const recursiveMarker = <RecursiveBaseWrapper>Recursive</RecursiveBaseWrapper>;
 
 /**

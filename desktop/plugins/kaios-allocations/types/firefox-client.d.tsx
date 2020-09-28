@@ -43,7 +43,5 @@ declare module 'firefox-client/lib/client-methods' {
 }
 
 declare module 'firefox-client/lib/extend' {
-  import FirefoxClient from 'firefox-client';
-
   export default function extend(prototype: any, o: any): any;
 }

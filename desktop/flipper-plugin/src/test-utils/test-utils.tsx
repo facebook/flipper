@@ -188,9 +188,9 @@ export function startPlugin<Module extends FlipperPluginModule<any>>(
       pluginInstance.disconnect();
     },
     call(
-      api: string,
+      _api: string,
       method: string,
-      fromPlugin: boolean,
+      _fromPlugin: boolean,
       params?: Object,
     ): Promise<Object> {
       return sendStub(method, params);

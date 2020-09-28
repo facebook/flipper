@@ -18,10 +18,6 @@ import {
   TestUtils,
 } from 'flipper-plugin';
 
-interface PersistedState {
-  count: 1;
-}
-
 const pluginDetails = TestUtils.createMockPluginDetails();
 
 let initialized = false;

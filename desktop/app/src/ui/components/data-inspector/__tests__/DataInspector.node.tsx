@@ -8,13 +8,7 @@
  */
 
 import * as React from 'react';
-import {
-  render,
-  fireEvent,
-  waitFor,
-  act,
-  waitForElement,
-} from '@testing-library/react';
+import {render, fireEvent, waitFor, act} from '@testing-library/react';
 
 import ManagedDataInspector from '../ManagedDataInspector';
 import {sleep} from '../../../../utils';

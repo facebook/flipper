@@ -539,8 +539,6 @@ function parseColor(
   return {a, b, g, r};
 }
 
-const pencilStyle = {cursor: 'pointer', marginLeft: 8};
-
 type Picker = {
   values: Set<string>;
   selected: string;

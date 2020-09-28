@@ -94,10 +94,6 @@ type ProcessNotificationStatesOptions = {
   statusUpdate?: (msg: string) => void;
 };
 
-type SerializePluginStatesOptions = {
-  pluginStates: PluginStatesState;
-};
-
 type PluginsToProcess = {
   pluginKey: string;
   pluginId: string;

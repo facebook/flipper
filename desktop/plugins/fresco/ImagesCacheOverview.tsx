@@ -20,7 +20,6 @@ import {
   FlexColumn,
   LoadingIndicator,
   styled,
-  Select,
   ToggleButton,
   Text,
 } from 'flipper';
@@ -95,13 +94,6 @@ type ImagesCacheOverviewState = {
   selectedImage: ImageId | null;
   size: number;
 };
-
-const _StyledSelect = styled(Select)({
-  marginLeft: 6,
-  marginRight: 6,
-  height: '100%',
-  maxWidth: 164,
-});
 
 export default class ImagesCacheOverview extends PureComponent<
   ImagesCacheOverviewProps,

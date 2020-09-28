@@ -27,7 +27,7 @@ export function deserialize(str: string): any {
 }
 
 function processArray(
-  element: any,
+  _element: any,
   array: Array<any>,
   stack: Array<any>,
   dict: Map<any, any>,
@@ -50,7 +50,7 @@ function processArray(
 }
 
 function processKeyValuePair(
-  element: any,
+  _element: any,
   key: any,
   value: any,
   stack: Array<any>,
