@@ -17,13 +17,10 @@
   ],
   "gatekeeper": "flipper_sections_plugin",
   "dependencies": {
-    "react-d3-tree": "^1.12.1"
+    "react-d3-tree": "^1.16.1"
   },
   "peerDependencies": {
     "flipper": "0.58.0",
     "flipper-plugin": "0.58.0"
-  },
-  "resolutions": {
-    "react-d3-tree/d3": "file:./d3"
   }
 }

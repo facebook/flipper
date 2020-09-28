@@ -62,6 +62,12 @@ const InfoBox = styled.div({
   textAlign: 'center',
 });
 
+const TreeContainer = styled.div({
+  width: '100%',
+  height: '100%',
+  overflow: 'hidden',
+});
+
 type Events = {
   addEvent: AddEventPayload;
   updateTreeGenerationHierarchyGeneration: UpdateTreeGenerationHierarchyGenerationPayload;
@@ -264,14 +270,16 @@ export function Component() {
               }}
             />
           </Sidebar>
-          <Layout.Top>
+          <Layout.Top scrollable={false}>
             <Sidebar position="top" minHeight={400} height={400}>
-              <TreeHierarchy
-                generation={focusedTreeGeneration}
-                focusedChangeSet={focusedChangeSet}
-                setSelectedTreeNode={setSelectedTreeNode}
-                selectedNodeIndexPath={focusInfo?.treeNodeIndexPath}
-              />
+              <TreeContainer>
+                <TreeHierarchy
+                  generation={focusedTreeGeneration}
+                  focusedChangeSet={focusedChangeSet}
+                  setSelectedTreeNode={setSelectedTreeNode}
+                  selectedNodeIndexPath={focusInfo?.treeNodeIndexPath}
+                />
+              </TreeContainer>
             </Sidebar>
             {focusedTreeGeneration && (
               <StackTrace
