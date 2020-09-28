@@ -18,8 +18,15 @@ import {
   isDevicePluginDefinition,
 } from './utils/pluginUtils';
 import Client from './Client';
-import {PluginDefinition} from './plugin';
+import {
+  DevicePluginDefinition,
+  FlipperPlugin,
+  PluginDefinition,
+} from './plugin';
 import {deconstructPluginKey} from './utils/clientUtils';
+import {SandyPluginDefinition} from 'flipper-plugin';
+import BaseDevice from './devices/BaseDevice';
+import {State as PluginStates} from './reducers/pluginStates';
 
 export const store: Store = createStore<StoreState, Actions, any, any>(
   rootReducer,
@@ -69,42 +76,12 @@ export function rootReducer(
       }
     });
   } else if (action.type === 'UPDATE_PLUGIN' && state) {
-    const plugin: PluginDefinition = action.payload;
-    const clients = state.connections.clients;
-    return produce(state, (draft) => {
-      const clientsWithEnabledPlugin = clients.filter((c) => {
-        return (
-          c.supportsPlugin(plugin.id) &&
-          state.connections.userStarredPlugins[c.query.app]?.includes(plugin.id)
-        );
-      });
-      // stop plugin for each client where it is enabled
-      clientsWithEnabledPlugin.forEach((client) => {
-        stopPlugin(client, plugin.id, true);
-        delete draft.pluginMessageQueue[
-          getPluginKey(client.id, {serial: client.query.device_id}, plugin.id)
-        ];
-      });
-      // cleanup classic plugin state
-      Object.keys(draft.pluginStates).forEach((pluginKey) => {
-        const pluginKeyParts = deconstructPluginKey(pluginKey);
-        if (pluginKeyParts.pluginName === plugin.id) {
-          delete draft.pluginStates[pluginKey];
-        }
-      });
-      // update plugin definition
-      const {devicePlugins, clientPlugins} = draft.plugins;
-      const p = action.payload;
-      if (isDevicePluginDefinition(p)) {
-        devicePlugins.set(p.id, p);
-      } else {
-        clientPlugins.set(p.id, p);
-      }
-      // start plugin for each client
-      clientsWithEnabledPlugin.forEach((client) => {
-        startPlugin(client, plugin, true);
-      });
-    });
+    const plugin = action.payload;
+    if (isDevicePluginDefinition(plugin)) {
+      return updateDevicePlugin(state, plugin);
+    } else {
+      return updateClientPlugin(state, plugin);
+    }
   }
 
   // otherwise
@@ -148,4 +125,67 @@ function startPlugin(
   ) {
     client.initPlugin(plugin.id);
   }
+}
+
+function updateClientPlugin(state: StoreState, plugin: typeof FlipperPlugin) {
+  const clients = state.connections.clients;
+  return produce(state, (draft) => {
+    const clientsWithEnabledPlugin = clients.filter((c) => {
+      return (
+        c.supportsPlugin(plugin.id) &&
+        state.connections.userStarredPlugins[c.query.app]?.includes(plugin.id)
+      );
+    });
+    // stop plugin for each client where it is enabled
+    clientsWithEnabledPlugin.forEach((client) => {
+      stopPlugin(client, plugin.id, true);
+      delete draft.pluginMessageQueue[
+        getPluginKey(client.id, {serial: client.query.device_id}, plugin.id)
+      ];
+    });
+    cleanupPluginStates(draft.pluginStates, plugin.id);
+    // update plugin definition
+    draft.plugins.clientPlugins.set(plugin.id, plugin);
+    // start plugin for each client
+    clientsWithEnabledPlugin.forEach((client) => {
+      startPlugin(client, plugin, true);
+    });
+  });
+}
+
+function updateDevicePlugin(state: StoreState, plugin: DevicePluginDefinition) {
+  const devices = state.connections.devices;
+  return produce(state, (draft) => {
+    const devicesWithEnabledPlugin = devices.filter((d) =>
+      supportsDevice(plugin, d),
+    );
+    devicesWithEnabledPlugin.forEach((d) => {
+      d.unloadDevicePlugin(plugin.id);
+    });
+    cleanupPluginStates(draft.pluginStates, plugin.id);
+    draft.plugins.devicePlugins.set(plugin.id, plugin);
+    devicesWithEnabledPlugin.forEach((d) => {
+      d.loadDevicePlugin(plugin);
+    });
+  });
+}
+
+function supportsDevice(plugin: DevicePluginDefinition, device: BaseDevice) {
+  if (plugin instanceof SandyPluginDefinition) {
+    return (
+      plugin.isDevicePlugin &&
+      plugin.asDevicePluginModule().supportsDevice(device as any)
+    );
+  } else {
+    return plugin.supportsDevice(device);
+  }
+}
+
+function cleanupPluginStates(pluginStates: PluginStates, pluginId: string) {
+  Object.keys(pluginStates).forEach((pluginKey) => {
+    const pluginKeyParts = deconstructPluginKey(pluginKey);
+    if (pluginKeyParts.pluginName === pluginId) {
+      delete pluginStates[pluginKey];
+    }
+  });
 }

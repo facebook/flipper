@@ -242,9 +242,10 @@ class MainSidebar2 extends PureComponent<Props, State> {
       selectedDevice,
     } = this.props;
     const clients = getAvailableClients(device, this.props.clients);
-    const devicePluginsItems = device.devicePlugins.map((pluginName) => {
-      const plugin = this.props.devicePlugins.get(pluginName)!;
-      return (
+    const devicePluginsItems = device.devicePlugins
+      .map((pluginName) => this.props.devicePlugins.get(pluginName)!)
+      .sort(sortPluginsByName)
+      .map((plugin) => (
         <PluginSidebarListItem
           key={plugin.id}
           isActive={plugin.id === selectedPlugin && selectedDevice === device}
@@ -258,8 +259,7 @@ class MainSidebar2 extends PureComponent<Props, State> {
           }
           plugin={plugin}
         />
-      );
-    });
+      ));
     const wrapDevicePlugins =
       clients.length > 0 && device.devicePlugins.length > 1 && !device.source;
 
