@@ -246,7 +246,15 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
           }
         }
       }
-      if (!selectDevice) {
+      if (!selectedDevice && selectedPlugin) {
+        const selectedClient = state.clients.find((c) =>
+          c.supportsPlugin(selectedPlugin),
+        );
+        selectedDevice = state.devices.find(
+          (v) => v.serial === selectedClient?.query.device_id,
+        );
+      }
+      if (!selectedDevice) {
         console.warn('Trying to select a plugin before a device was selected!');
       }
       if (selectedPlugin) {

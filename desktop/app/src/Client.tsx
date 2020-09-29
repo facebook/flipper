@@ -9,7 +9,6 @@
 
 import {
   PluginDefinition,
-  ClientPluginDefinition,
   isSandyPlugin,
   FlipperPlugin,
   FlipperDevicePlugin,
