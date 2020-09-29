@@ -1,3 +1,9 @@
+# 0.59.0 (29/9/2020)
+
+ * [D23908151](https://github.com/facebook/flipper/search?q=D23908151&type=Commits) - 
+ * [D23729972](https://github.com/facebook/flipper/search?q=D23729972&type=Commits) -  Ability to reload single auto-updated plugin without full Flipper restart.
+
+
 # 0.58.0 (23/9/2020)
 
  * [D23681402](https://github.com/facebook/flipper/search?q=D23681402&type=Commits) -  removed support for plugins packaged using legacy format (v1), so they won't appear in Plugin Manager anymore.
