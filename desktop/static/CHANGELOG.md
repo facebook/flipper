@@ -1,3 +1,8 @@
+# 0.60.0 (30/9/2020)
+
+ * [D23718455](https://github.com/facebook/flipper/search?q=D23718455&type=Commits) -  [Internal]
+
+
 # 0.59.0 (29/9/2020)
 
  * [D23908151](https://github.com/facebook/flipper/search?q=D23908151&type=Commits) - 
