@@ -168,7 +168,7 @@ export const PluginSidebarListItem: React.FC<{
       />
       <PluginName
         title={`${getPluginTitle(plugin)} ${plugin.version} ${
-          plugin.details.description ? '- ' + plugin.details.description : ''
+          plugin.details?.description ? '- ' + plugin.details?.description : ''
         }`}>
         {getPluginTitle(plugin)}
       </PluginName>
