@@ -7,6 +7,8 @@
 
 package com.facebook.flipper.plugins.common;
 
+import static org.robolectric.annotation.LooperMode.Mode.LEGACY;
+
 import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.core.FlipperResponder;
 import com.facebook.flipper.testing.FlipperResponderMock;
@@ -15,7 +17,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.LooperMode;
 
+@LooperMode(LEGACY)
 @RunWith(RobolectricTestRunner.class)
 public class MainThreadFlipperReceiverTest {
 
