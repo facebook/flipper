@@ -73,6 +73,7 @@ const AppFrame = () => (
 function setProcessState(store: Store) {
   const settings = store.getState().settingsState;
   const androidHome = settings.androidHome;
+  const idbPath = settings.idbPath;
 
   if (!process.env.ANDROID_HOME) {
     process.env.ANDROID_HOME = androidHome;
@@ -83,7 +84,9 @@ function setProcessState(store: Store) {
   process.env.PATH =
     ['emulator', 'tools', 'platform-tools']
       .map((directory) => path.resolve(androidHome, directory))
-      .join(':') + `:${process.env.PATH}`;
+      .join(':') +
+    `:${idbPath}` +
+    `:${process.env.PATH}`;
 
   window.requestIdleCallback(() => {
     setupPrefetcher(settings);
