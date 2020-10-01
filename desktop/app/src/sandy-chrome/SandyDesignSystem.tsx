@@ -18,9 +18,9 @@ const {Title, Text, Link} = Typography;
 
 export default function SandyDesignSystem() {
   return (
-    <Layout.ScrollContainer className={resetLists}>
-      <Layout.Vertical gap={theme.space.large}>
-        <Card title="Flipper Design System">
+    <Layout.ScrollContainer className={reset}>
+      <Layout.Vertical gap="large">
+        <Card title="Flipper Design System" bordered={false}>
           <p>
             Welcome to the Flipper Design System. The Flipper design system is
             based on{' '}
@@ -57,7 +57,7 @@ export default function SandyDesignSystem() {
             </li>
           </ul>
         </Card>
-        <Card title="Colors">
+        <Card title="Colors" bordered={false}>
           <Alert message="The following colors are available on the <code>theme</code> object. Please stick to this color palette, as these colors will be translated to dark mode correctly." />
           <ColorPreview name="primaryColor" />
           <ColorPreview name="successColor" />
@@ -72,7 +72,7 @@ export default function SandyDesignSystem() {
           <ColorPreview name="backgroundTransparentHover" />
           <ColorPreview name="dividerColor" />
         </Card>
-        <Card title="Typography">
+        <Card title="Typography" bordered={false}>
           <Space direction="vertical">
             <Alert
               message={
@@ -106,7 +106,7 @@ export default function SandyDesignSystem() {
             <Input placeholder="Input" />
           </Space>
         </Card>
-        <Card title="Theme variables">
+        <Card title="Theme variables" bordered={false}>
           <Alert
             message={
               <>
@@ -118,7 +118,7 @@ export default function SandyDesignSystem() {
           />
           <pre>{JSON.stringify(theme, null, 2)}</pre>
         </Card>
-        <Card title="Layout components">
+        <Card title="Layout components" bordered={false}>
           <DesignComponentDemos />
         </Card>
       </Layout.Vertical>
@@ -146,7 +146,7 @@ function ColorPreview({name}: {name: keyof typeof theme}) {
   );
 }
 
-const resetLists = css`
+const reset = css`
   ol,
   ul {
     list-style: revert;
@@ -154,5 +154,8 @@ const resetLists = css`
   }
   .ant-alert {
     margin-bottom: ${theme.space.huge}px;
+  }
+  .ant-card {
+    background: transparent;
   }
 `;

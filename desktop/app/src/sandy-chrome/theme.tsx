@@ -26,8 +26,8 @@ export const theme = {
   dividerColor: 'var(--flipper-divider-color)',
   borderRadius: 'var(--flipper-border-radius)',
   containerBorderRadius: 8,
-  paddingSmall: 6, // vertical padding on inline elements like buttons
-  paddingLarge: 12, // horizontal  ,,,
+  inlinePaddingV: 6, // vertical padding on inline elements like buttons
+  inlinePaddingH: 12, // horizontal  ,,,
   space: {
     // from Space component in Ant
     tiny: 4,
@@ -50,4 +50,36 @@ export function useIsDarkMode(): boolean {
   return useStore(
     (state) => state.settingsState.enableSandy && state.settingsState.darkMode,
   );
+}
+
+export type Spacing = keyof typeof theme['space'] | number | undefined | true;
+
+export type PaddingProps = {
+  padv?: Spacing;
+  padh?: Spacing;
+  pad?: Spacing;
+};
+
+export function normalizePadding({
+  padv,
+  padh,
+  pad,
+}: PaddingProps): string | undefined {
+  if (padv === undefined && padh === undefined && pad === undefined) {
+    return undefined;
+  }
+  return `${normalizeSpace(
+    padv ?? pad ?? 0,
+    theme.inlinePaddingV,
+  )}px ${normalizeSpace(padh ?? pad ?? 0, theme.inlinePaddingH)}px`;
+}
+
+export function normalizeSpace(spacing: Spacing, defaultSpace: number): number {
+  return spacing === true
+    ? defaultSpace
+    : spacing === undefined
+    ? 0
+    : typeof spacing === 'string'
+    ? theme.space[spacing]
+    : spacing;
 }

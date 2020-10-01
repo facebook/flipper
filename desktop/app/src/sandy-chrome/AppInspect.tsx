@@ -37,12 +37,10 @@ export function AppInspect() {
           <SidebarTitle actions={<InfoIcon>{appTooltip}</InfoIcon>}>
             App Inspect
           </SidebarTitle>
-          <Layout.Vertical
-            padding={`${theme.space.small}px ${theme.space.medium}px`}
-            gap={theme.space.large}>
+          <Layout.Vertical padv="small" padh="medium" gap={theme.space.large}>
             <DeviceDropdown />
             <Input addonAfter={<SettingOutlined />} defaultValue="mysite" />
-            <Layout.Horizontal gap={theme.space.small}>
+            <Layout.Horizontal gap>
               <Button icon={<SettingOutlined />} type="link" />
               <Button icon={<SettingOutlined />} type="link" />
               <Button icon={<SettingOutlined />} type="link" />

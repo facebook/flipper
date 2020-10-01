@@ -31,13 +31,6 @@ import {errorCounterAtom} from '../chrome/ConsoleLogs';
 import {ToplevelProps} from './SandyApp';
 import {useValue} from 'flipper-plugin';
 
-const LeftRailContainer = styled(Layout.Bottom)({
-  width: 48,
-  borderRight: `1px solid ${theme.dividerColor}`,
-  padding: `${theme.paddingLarge}px ${theme.paddingSmall}px`,
-});
-LeftRailContainer.displayName = 'LeftRailContainer';
-
 const LeftRailButtonElem = styled(Button)<{kind?: 'small'}>(({kind}) => ({
   width: kind === 'small' ? 32 : 36,
   height: kind === 'small' ? 32 : 36,
@@ -97,46 +90,48 @@ export function LeftRail({
   setToplevelSelection,
 }: ToplevelProps) {
   return (
-    <LeftRailContainer>
-      <Layout.Vertical center gap={10}>
-        <LeftRailButton
-          icon={<MobileFilled />}
-          title="App Inspect"
-          selected={toplevelSelection === 'appinspect'}
-          onClick={() => {
-            setToplevelSelection('appinspect');
-          }}
-        />
-        <LeftRailButton icon={<AppstoreOutlined />} title="Plugin Manager" />
-        <LeftRailButton icon={<BellOutlined />} title="Notifications" />
-        <LeftRailDivider />
-        <DebugLogsButton
-          toplevelSelection={toplevelSelection}
-          setToplevelSelection={setToplevelSelection}
-        />
-      </Layout.Vertical>
-      <Layout.Vertical center gap={10}>
-        <LeftRailButton
-          icon={<MedicineBoxOutlined />}
-          small
-          title="Setup Doctor"
-        />
-        <WelcomeScreenButton />
-        <ShowSettingsButton />
-        <LeftRailButton
-          icon={<BugOutlined />}
-          small
-          title="Feedback / Bug Reporter"
-        />
-        <LeftRailButton
-          icon={<SidebarRight />}
-          small
-          title="Right Sidebar Toggle"
-        />
-        <LeftSidebarToggleButton />
-        <LeftRailButton icon={<LoginOutlined />} title="Log In" />
-      </Layout.Vertical>
-    </LeftRailContainer>
+    <Layout.Container borderRight padv={12} padh={6} width={48}>
+      <Layout.Bottom>
+        <Layout.Vertical center gap={10}>
+          <LeftRailButton
+            icon={<MobileFilled />}
+            title="App Inspect"
+            selected={toplevelSelection === 'appinspect'}
+            onClick={() => {
+              setToplevelSelection('appinspect');
+            }}
+          />
+          <LeftRailButton icon={<AppstoreOutlined />} title="Plugin Manager" />
+          <LeftRailButton icon={<BellOutlined />} title="Notifications" />
+          <LeftRailDivider />
+          <DebugLogsButton
+            toplevelSelection={toplevelSelection}
+            setToplevelSelection={setToplevelSelection}
+          />
+        </Layout.Vertical>
+        <Layout.Vertical center gap={10}>
+          <LeftRailButton
+            icon={<MedicineBoxOutlined />}
+            small
+            title="Setup Doctor"
+          />
+          <WelcomeScreenButton />
+          <ShowSettingsButton />
+          <LeftRailButton
+            icon={<BugOutlined />}
+            small
+            title="Feedback / Bug Reporter"
+          />
+          <LeftRailButton
+            icon={<SidebarRight />}
+            small
+            title="Right Sidebar Toggle"
+          />
+          <LeftSidebarToggleButton />
+          <LeftRailButton icon={<LoginOutlined />} title="Log In" />
+        </Layout.Vertical>
+      </Layout.Bottom>
+    </Layout.Container>
   );
 }
 

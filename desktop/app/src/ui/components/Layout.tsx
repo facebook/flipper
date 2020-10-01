@@ -9,7 +9,13 @@
 
 import React, {CSSProperties} from 'react';
 import styled from '@emotion/styled';
-import {theme} from '../../sandy-chrome/theme';
+import {
+  normalizePadding,
+  normalizeSpace,
+  PaddingProps,
+  Spacing,
+  theme,
+} from '../../sandy-chrome/theme';
 import {useIsSandy} from '../../sandy-chrome/SandyContext';
 import {renderLayout} from './LegacyLayout';
 
@@ -17,7 +23,6 @@ type ContainerProps = {
   children?: React.ReactNode;
   className?: string;
   style?: React.CSSProperties;
-  padding?: CSSProperties['padding'];
   borderBottom?: boolean;
   borderTop?: boolean;
   borderRight?: boolean;
@@ -25,7 +30,9 @@ type ContainerProps = {
   bordered?: boolean;
   rounded?: boolean;
   padded?: boolean;
-};
+  width?: number;
+  height?: number;
+} & PaddingProps;
 
 const Container = styled.div<ContainerProps>(
   ({
@@ -34,13 +41,16 @@ const Container = styled.div<ContainerProps>(
     borderLeft,
     borderRight,
     borderTop,
-    padding,
     rounded,
-    padded,
+    width,
+    height,
+    ...rest
   }) => ({
+    width,
+    height,
     display: 'flex',
     flexDirection: 'column',
-    padding: padded ? theme.space.small : padding,
+    padding: normalizePadding(rest),
     borderRadius: rounded ? theme.containerBorderRadius : undefined,
     flex: 1,
     borderStyle: 'solid',
@@ -79,7 +89,7 @@ type DistributionProps = ContainerProps & {
   /**
    * Gab between individual items
    */
-  gap?: CSSProperties['gap'];
+  gap?: Spacing;
   /**
    * If set, items will be aligned in the center, if false (the default) items will be stretched.
    */
@@ -89,14 +99,14 @@ type DistributionProps = ContainerProps & {
 const Horizontal = styled(Container)<DistributionProps>(({gap, center}) => ({
   display: 'flex',
   flexDirection: 'row',
-  gap,
+  gap: normalizeSpace(gap, theme.space.small),
   alignItems: center ? 'center' : 'stretch',
 }));
 
 const Vertical = styled(Container)<DistributionProps>(({gap, center}) => ({
   display: 'flex',
   flexDirection: 'column',
-  gap,
+  gap: normalizeSpace(gap, theme.space.small),
   alignItems: center ? 'center' : 'stretch',
 }));
 

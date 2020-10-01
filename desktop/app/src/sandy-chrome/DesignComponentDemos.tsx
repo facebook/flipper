@@ -72,14 +72,14 @@ const demos: PreviewProps[] = [
     props: [
       ['rounded', 'boolean (false)', 'Make the corners rounded'],
       [
-        'padded',
-        'boolean (false)',
-        'Use a standard small padding for this container (use `padding` for non-default padding)',
+        'padv / padh / pad',
+        Object.keys(theme.space).join(' | ') + ' | number | true',
+        'Short-hand to set the horizontal, vertical or both paddings. The keys correspond to the theme space settings. Using `true` picks the default horizontal / vertical padding for inline elements.',
       ],
       [
-        'padding',
-        'CSS Padding',
-        'Short-hand to set the style.padding property',
+        'width / height',
+        'number',
+        'Set the width / height of this container in pixels. Use sparingly.',
       ],
       [
         'bordered',
@@ -87,24 +87,9 @@ const demos: PreviewProps[] = [
         'This container will use a default border on all sides',
       ],
       [
-        'borderTop',
+        'borderTop / borderRight / borderBottom / borderLeft',
         'boolean (false)',
         'Use a standard padding on the top side',
-      ],
-      [
-        'borderRight',
-        'boolean (false)',
-        'Use a standard padding on the right side',
-      ],
-      [
-        'borderBottom',
-        'boolean (false)',
-        'Use a standard padding on the bottom side',
-      ],
-      [
-        'borderLeft',
-        'boolean (false)',
-        'Use a standard padding on the left side',
       ],
     ],
     demos: {
@@ -149,8 +134,8 @@ const demos: PreviewProps[] = [
     props: [
       [
         'gap',
-        'number (0)',
-        'Set the spacing between children. Typically theme.space.small should be used.',
+        Object.keys(theme.space).join(' | ') + ' | number | true',
+        'Set the spacing between children. For `true` theme.space.small should be used. Defaults to 0.',
       ],
       [
         'center',
@@ -159,8 +144,8 @@ const demos: PreviewProps[] = [
       ],
     ],
     demos: {
-      'Basic usage, gap={24}': (
-        <Layout.Horizontal gap={24}>
+      'Basic usage, gap="large"': (
+        <Layout.Horizontal gap="large">
           {aButton}
           {someText}
           {aBox}
@@ -287,11 +272,11 @@ const demos: PreviewProps[] = [
 function ComponentPreview({title, demos, description, props}: PreviewProps) {
   return (
     <Card title={title} size="small" type="inner">
-      <Layout.Vertical gap={theme.space.small}>
+      <Layout.Vertical gap="small">
         <Text type="secondary">{description}</Text>
         <Collapse ghost>
           <Collapse.Panel header="Examples" key="demos">
-            <Layout.Vertical gap={theme.space.large}>
+            <Layout.Vertical gap="large">
               {Object.entries(demos).map(([name, children]) => (
                 <div key={name}>
                   <Tabs type="line">

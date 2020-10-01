@@ -27,6 +27,7 @@ import {notNull} from './utils/typeUtils';
 import constants from './fb-stubs/constants';
 import {Logger} from './fb-interfaces/Logger';
 import {NormalizedMenuEntry, buildInMenuEntries} from 'flipper-plugin';
+import {StyleGuide} from './sandy-chrome/StyleGuide';
 
 export type DefaultKeyboardAction = keyof typeof buildInMenuEntries;
 export type TopLevelMenu = 'Edit' | 'View' | 'Window' | 'Help';
@@ -337,6 +338,12 @@ function getTemplate(
           label: 'Manage Plugins...',
           click: function () {
             store.dispatch(setActiveSheet(ACTIVE_SHEET_PLUGINS));
+          },
+        },
+        {
+          label: 'Flipper style guide',
+          click() {
+            store.dispatch(setStaticView(StyleGuide));
           },
         },
         {

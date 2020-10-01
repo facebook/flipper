@@ -91,11 +91,7 @@ export function SandyApp({logger}: {logger: Logger}) {
               setToplevelSelection={setToplevelSelection}
             />
             <Sidebar width={250} minWidth={220} maxWidth={800} gutter>
-              {leftMenuContent && (
-                <Layout.Container borderRight>
-                  {leftMenuContent}
-                </Layout.Container>
-              )}
+              {leftMenuContent && leftMenuContent}
             </Sidebar>
           </Layout.Horizontal>
           <MainContainer>

@@ -15,9 +15,9 @@ import {Button, Tooltip, Typography} from 'antd';
 import {InfoCircleOutlined} from '@ant-design/icons';
 
 export const LeftSidebar: React.FC = ({children}) => (
-  <Layout.Vertical borderRight padding={`${theme.space.small}px 0`}>
-    {children}
-  </Layout.Vertical>
+  <Layout.Container borderRight padv="small">
+    <Layout.Vertical>{children}</Layout.Vertical>
+  </Layout.Container>
 );
 
 export function SidebarTitle({
@@ -36,7 +36,7 @@ export function SidebarTitle({
 }
 
 const LeftMenuTitle = styled(Layout.Horizontal)({
-  padding: `0px ${theme.paddingLarge}px`,
+  padding: `0px ${theme.inlinePaddingH}px`,
   lineHeight: `${theme.space.large}px`,
   fontSize: theme.fontSize.smallBody,
   textTransform: 'uppercase',
