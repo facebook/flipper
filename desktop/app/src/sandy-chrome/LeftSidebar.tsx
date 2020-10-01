@@ -10,15 +10,15 @@
 import React from 'react';
 import {theme} from './theme';
 import styled from '@emotion/styled';
-import {Layout, FlexColumn} from '../ui';
-import {Button, Tooltip} from 'antd';
+import {Layout} from '../ui';
+import {Button, Tooltip, Typography} from 'antd';
 import {InfoCircleOutlined} from '@ant-design/icons';
 
-export const LeftSidebar = styled(FlexColumn)({
-  background: theme.backgroundDefault,
-  flex: 1,
-  padding: `10px 0`,
-});
+export const LeftSidebar: React.FC = ({children}) => (
+  <Layout.Vertical borderRight padding={`${theme.space.small}px 0`}>
+    {children}
+  </Layout.Vertical>
+);
 
 export function SidebarTitle({
   children,
@@ -28,22 +28,21 @@ export function SidebarTitle({
   actions?: React.ReactNode;
 }) {
   return (
-    <LeftMenuTitle>
-      <Layout.Right center>
-        {children}
-        <>{actions}</>
-      </Layout.Right>
+    <LeftMenuTitle center>
+      <Typography.Text>{children}</Typography.Text>
+      <>{actions}</>
     </LeftMenuTitle>
   );
 }
 
-const LeftMenuTitle = styled.div({
-  width: '100%',
-  fontFamily: 'SF Pro Text',
-  padding: `0px 12px`,
-  lineHeight: '16px',
-  fontSize: '12px',
+const LeftMenuTitle = styled(Layout.Horizontal)({
+  padding: `0px ${theme.paddingLarge}px`,
+  lineHeight: `${theme.space.large}px`,
+  fontSize: theme.fontSize.smallBody,
   textTransform: 'uppercase',
+  '> :first-child': {
+    flex: 1,
+  },
 });
 
 export const InfoIcon: React.FC<{}> = ({children}) => (

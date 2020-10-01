@@ -8,7 +8,7 @@
  */
 
 import React, {cloneElement, useState, useCallback} from 'react';
-import {styled, FlexColumn} from 'flipper';
+import {styled, Layout} from 'flipper';
 import {Button, Divider, Badge, Tooltip} from 'antd';
 import {
   MobileFilled,
@@ -31,24 +31,16 @@ import {errorCounterAtom} from '../chrome/ConsoleLogs';
 import {ToplevelProps} from './SandyApp';
 import {useValue} from 'flipper-plugin';
 
-const LeftRailContainer = styled(FlexColumn)({
-  background: theme.backgroundDefault,
+const LeftRailContainer = styled(Layout.Bottom)({
   width: 48,
-  boxShadow: 'inset -1px 0px 0px rgba(0, 0, 0, 0.1)',
-  justifyContent: 'space-between',
+  borderRight: `1px solid ${theme.dividerColor}`,
+  padding: `${theme.paddingLarge}px ${theme.paddingSmall}px`,
 });
 LeftRailContainer.displayName = 'LeftRailContainer';
-
-const LeftRailSection = styled(FlexColumn)({
-  padding: '8px 0px',
-  alignItems: 'center',
-});
-LeftRailSection.displayName = 'LeftRailSection';
 
 const LeftRailButtonElem = styled(Button)<{kind?: 'small'}>(({kind}) => ({
   width: kind === 'small' ? 32 : 36,
   height: kind === 'small' ? 32 : 36,
-  margin: 6,
   padding: '5px 0',
   border: 'none',
   boxShadow: 'none',
@@ -94,9 +86,9 @@ function LeftRailButton({
 }
 
 const LeftRailDivider = styled(Divider)({
-  margin: 10,
-  width: 36,
-  minWidth: 36,
+  margin: `10px 0`,
+  width: 32,
+  minWidth: 32,
 });
 LeftRailDivider.displayName = 'LeftRailDividier';
 
@@ -106,7 +98,7 @@ export function LeftRail({
 }: ToplevelProps) {
   return (
     <LeftRailContainer>
-      <LeftRailSection>
+      <Layout.Vertical center gap={10}>
         <LeftRailButton
           icon={<MobileFilled />}
           title="App Inspect"
@@ -116,18 +108,14 @@ export function LeftRail({
           }}
         />
         <LeftRailButton icon={<AppstoreOutlined />} title="Plugin Manager" />
-        <LeftRailButton
-          count={8}
-          icon={<BellOutlined />}
-          title="Notifications"
-        />
+        <LeftRailButton icon={<BellOutlined />} title="Notifications" />
         <LeftRailDivider />
         <DebugLogsButton
           toplevelSelection={toplevelSelection}
           setToplevelSelection={setToplevelSelection}
         />
-      </LeftRailSection>
-      <LeftRailSection>
+      </Layout.Vertical>
+      <Layout.Vertical center gap={10}>
         <LeftRailButton
           icon={<MedicineBoxOutlined />}
           small
@@ -147,7 +135,7 @@ export function LeftRail({
         />
         <LeftSidebarToggleButton />
         <LeftRailButton icon={<LoginOutlined />} title="Log In" />
-      </LeftRailSection>
+      </Layout.Vertical>
     </LeftRailContainer>
   );
 }

@@ -9,14 +9,13 @@
 
 import React, {useEffect, useState, useCallback} from 'react';
 import {styled} from 'flipper';
-import {DatePicker, Space} from 'antd';
-import {Layout, FlexRow, Sidebar} from '../ui';
+import {Layout, Sidebar} from '../ui';
 import {theme} from './theme';
 import {Logger} from '../fb-interfaces/Logger';
 
 import {LeftRail} from './LeftRail';
 import {TemporarilyTitlebar} from './TemporarilyTitlebar';
-import TypographyExample from './TypographyExample';
+import SandyDesignSystem from './SandyDesignSystem';
 import {registerStartupTime} from '../App';
 import {useStore, useDispatch} from '../utils/useStore';
 import {SandyContext} from './SandyContext';
@@ -86,43 +85,39 @@ export function SandyApp({logger}: {logger: Logger}) {
       <Layout.Top>
         <TemporarilyTitlebar />
         <Layout.Left>
-          <LeftSidebarContainer>
+          <Layout.Horizontal>
             <LeftRail
               toplevelSelection={toplevelSelection}
               setToplevelSelection={setToplevelSelection}
             />
-            <Sidebar width={348} minWidth={220} maxWidth={800} gutter>
+            <Sidebar width={250} minWidth={220} maxWidth={800} gutter>
               {leftMenuContent && (
-                <LeftMenuContainer>{leftMenuContent}</LeftMenuContainer>
+                <Layout.Container borderRight>
+                  {leftMenuContent}
+                </Layout.Container>
               )}
             </Sidebar>
-          </LeftSidebarContainer>
+          </Layout.Horizontal>
           <MainContainer>
-            <Layout.Right>
-              <MainContentWrapper>
-                <ContentContainer>
-                  {staticView ? (
-                    React.createElement(staticView, {
-                      logger: logger,
-                    })
-                  ) : (
-                    <TemporarilyContent />
-                  )}
-                </ContentContainer>
-              </MainContentWrapper>
-              <Sidebar
-                width={300}
-                minWidth={220}
-                maxWidth={800}
-                gutter
-                position="right">
-                <MainContentWrapper>
-                  <ContentContainer>
-                    <RightMenu />
-                  </ContentContainer>
-                </MainContentWrapper>
-              </Sidebar>
-            </Layout.Right>
+            <ContentContainer>
+              {staticView ? (
+                React.createElement(staticView, {
+                  logger: logger,
+                })
+              ) : (
+                <SandyDesignSystem />
+              )}
+            </ContentContainer>
+            <Sidebar
+              width={300}
+              minWidth={220}
+              maxWidth={800}
+              gutter
+              position="right">
+              <ContentContainer style={{marginRight: theme.space.large}}>
+                <RightMenu />
+              </ContentContainer>
+            </Sidebar>
           </MainContainer>
         </Layout.Left>
       </Layout.Top>
@@ -130,57 +125,19 @@ export function SandyApp({logger}: {logger: Logger}) {
   );
 }
 
-const LeftMenuContainer = styled.div({
-  background: theme.backgroundDefault,
-  paddingRight: 1, // to see the boxShadow
-  boxShadow: 'inset -1px 0px 0px rgba(0, 0, 0, 0.1)',
-  height: '100%',
-  width: '100%',
-});
-
-const LeftSidebarContainer = styled(FlexRow)({
+const MainContainer = styled(Layout.Right)({
   background: theme.backgroundWash,
-  height: '100%',
-  width: '100%',
 });
 
-const MainContainer = styled('div')({
-  display: 'flex',
-  width: '100%',
-  height: '100%',
-  background: theme.backgroundWash,
-  paddingRight: theme.space.middle,
-});
-
-export const ContentContainer = styled('div')({
-  width: '100%',
-  margin: 0,
-  padding: 0,
+export const ContentContainer = styled(Layout.Container)({
   background: theme.backgroundDefault,
   border: `1px solid ${theme.dividerColor}`,
   borderRadius: theme.containerBorderRadius,
   boxShadow: `0px 0px 5px rgba(0, 0, 0, 0.05), 0px 0px 1px rgba(0, 0, 0, 0.05)`,
-});
-
-const MainContentWrapper = styled('div')({
-  height: '100%',
-  width: '100%',
-  display: 'flex',
-  alignItems: 'stretch',
-  padding: `${theme.space.middle}px 0`,
+  marginTop: theme.space.large,
+  marginBottom: theme.space.large,
 });
 
 function RightMenu() {
   return <div>RightMenu</div>;
-}
-
-function TemporarilyContent() {
-  return (
-    <Space direction="vertical">
-      New UI for Flipper, Sandy Project! Nothing to see now. Go back to current
-      Flipper
-      <DatePicker />
-      <TypographyExample />
-    </Space>
-  );
 }

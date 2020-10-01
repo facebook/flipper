@@ -17,7 +17,8 @@ interface ContextMenuManager {
 }
 
 const Container = styled.div({
-  display: 'contents',
+  display: 'flex',
+  height: '100%',
 });
 Container.displayName = 'ContextMenuProvider:Container';
 

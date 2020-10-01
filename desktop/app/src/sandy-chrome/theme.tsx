@@ -26,17 +26,20 @@ export const theme = {
   dividerColor: 'var(--flipper-divider-color)',
   borderRadius: 'var(--flipper-border-radius)',
   containerBorderRadius: 8,
+  paddingSmall: 6, // vertical padding on inline elements like buttons
+  paddingLarge: 12, // horizontal  ,,,
   space: {
     // from Space component in Ant
     tiny: 4,
     small: 8,
-    middle: 16,
-    large: 24,
+    medium: 12,
+    large: 16,
+    huge: 24,
   } as const,
   fontSize: {
     smallBody: '12px',
-  },
-};
+  } as const,
+} as const;
 
 /**
  * This hook returns whether dark mode is currently being used.

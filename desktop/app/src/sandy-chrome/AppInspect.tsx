@@ -9,33 +9,23 @@
 
 import React from 'react';
 import {Button, Dropdown, Menu, Radio, Input} from 'antd';
-import {shell} from 'electron';
 import {LeftSidebar, SidebarTitle, InfoIcon} from './LeftSidebar';
 import {
   AppleOutlined,
   AndroidOutlined,
   SettingOutlined,
 } from '@ant-design/icons';
-import {Layout, styled} from '../ui';
+import {Layout, Link} from '../ui';
 import {theme} from './theme';
 
 const appTooltip = (
   <>
     Inspect apps by selecting connected devices and emulators. Navigate and
     bookmark frequent destinations in the app. Refresh, screenshot and
-    screenrecord is also available.
-    {
-      <Button
-        size="small"
-        type="link"
-        onClick={() => {
-          shell.openExternal(
-            'https://fbflipper.com/docs/getting-started/index',
-          );
-        }}>
-        Learn More
-      </Button>
-    }
+    screenrecord is also available.{' '}
+    <Link href="https://fbflipper.com/docs/getting-started/index">
+      Learn More
+    </Link>
   </>
 );
 
@@ -43,11 +33,13 @@ export function AppInspect() {
   return (
     <LeftSidebar>
       <Layout.Top scrollable>
-        <>
+        <Layout.Container borderBottom>
           <SidebarTitle actions={<InfoIcon>{appTooltip}</InfoIcon>}>
             App Inspect
           </SidebarTitle>
-          <TopSection fillx>
+          <Layout.Vertical
+            padding={`${theme.space.small}px ${theme.space.medium}px`}
+            gap={theme.space.large}>
             <DeviceDropdown />
             <Input addonAfter={<SettingOutlined />} defaultValue="mysite" />
             <Layout.Horizontal gap={theme.space.small}>
@@ -55,19 +47,13 @@ export function AppInspect() {
               <Button icon={<SettingOutlined />} type="link" />
               <Button icon={<SettingOutlined />} type="link" />
             </Layout.Horizontal>
-          </TopSection>
-        </>
-        <div>Dynamic section</div>
+          </Layout.Vertical>
+        </Layout.Container>
+        <Layout.Container>Dynamic section</Layout.Container>
       </Layout.Top>
     </LeftSidebar>
   );
 }
-
-const TopSection = styled(Layout.Vertical)({
-  boxShadow: `inset 0px -1px 0px ${theme.dividerColor}`,
-  padding: `8px 12px`,
-  gap: theme.space.middle,
-});
 
 function DeviceDropdown() {
   return (

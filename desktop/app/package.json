@@ -49,6 +49,7 @@
     "react-color": "^2.18.1",
     "react-debounce-render": "^6.0.0",
     "react-dom": "^16.13.0",
+    "react-element-to-jsx-string": "^14.3.1",
     "react-markdown": "^4.2.2",
     "react-player": "^1.15.2",
     "react-redux": "^7.1.1",

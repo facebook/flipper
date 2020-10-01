@@ -175,7 +175,7 @@ export default class Sidebar extends Component<SidebarProps, SidebarState> {
     }
 
     const horizontal = position === 'left' || position === 'right';
-    const gutterWidth = gutter ? theme.space.middle : 0;
+    const gutterWidth = gutter ? theme.space.large : 0;
 
     if (horizontal) {
       width = width == null ? 200 : width;
@@ -202,10 +202,18 @@ export default class Sidebar extends Component<SidebarProps, SidebarState> {
         }
         minHeight={minHeight}
         maxHeight={maxHeight}
-        height={!horizontal ? (onResize ? height : this.state.height) : '100%'}
+        height={
+          !horizontal
+            ? onResize
+              ? height
+              : this.state.height
+            : gutter /*TODO: should use isSandy check*/
+            ? undefined
+            : '100%'
+        }
         resizable={resizable}
         onResize={this.onResize}
-        gutterWidth={gutter ? theme.space.middle : undefined}>
+        gutterWidth={gutter ? theme.space.large : undefined}>
         <SidebarContainer
           position={position}
           backgroundColor={backgroundColor}
@@ -243,8 +251,8 @@ const GutterWrapper = ({
 
 const VerticalGutterContainer = styled('div')<{enabled: boolean}>(
   ({enabled}) => ({
-    width: theme.space.middle,
-    minWidth: theme.space.middle,
+    width: theme.space.large,
+    minWidth: theme.space.large,
     height: '100%',
     cursor: enabled ? undefined : 'default', // hide cursor from interactive container
     color: enabled ? theme.textColorPlaceholder : theme.backgroundWash,
