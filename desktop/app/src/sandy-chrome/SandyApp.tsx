@@ -22,7 +22,7 @@ import {SandyContext} from './SandyContext';
 import {ConsoleLogs} from '../chrome/ConsoleLogs';
 import {setStaticView} from '../reducers/connections';
 import {toggleLeftSidebarVisible} from '../reducers/application';
-import {AppInspect} from './AppInspect';
+import {AppInspect} from './appinspect/AppInspect';
 
 export type ToplevelNavItem = 'appinspect' | 'flipperlogs' | undefined;
 export type ToplevelProps = {

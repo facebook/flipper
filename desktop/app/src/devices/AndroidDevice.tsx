@@ -13,6 +13,9 @@ import {Priority} from 'adbkit-logcat';
 import ArchivedDevice from './ArchivedDevice';
 import {createWriteStream} from 'fs';
 import type {LogLevel, DeviceType} from 'flipper-plugin';
+import which from 'which';
+import {spawn} from 'child_process';
+import {dirname} from 'path';
 
 const DEVICE_RECORDING_DIR = '/sdcard/flipper_recorder';
 
@@ -188,4 +191,25 @@ export default class AndroidDevice extends BaseDevice {
     this.recordingProcess = undefined;
     return destination;
   }
+}
+
+export async function launchEmulator(name: string) {
+  // On Linux, you must run the emulator from the directory it's in because
+  // reasons ...
+  return which('emulator')
+    .then((emulatorPath) => {
+      if (emulatorPath) {
+        const child = spawn(emulatorPath, [`@${name}`], {
+          detached: true,
+          cwd: dirname(emulatorPath),
+        });
+        child.stderr.on('data', (data) => {
+          console.error(`Android emulator error: ${data}`);
+        });
+        child.on('error', (e) => console.error(e));
+      } else {
+        throw new Error('Could not get emulator path');
+      }
+    })
+    .catch((e) => console.error(e));
 }

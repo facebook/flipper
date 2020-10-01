@@ -7,7 +7,10 @@
  * @format
  */
 
+import React from 'react';
 import {render, unmountComponentAtNode} from 'react-dom';
+import {Provider} from 'react-redux';
+import {Store} from '../reducers/';
 
 /**
  * This utility creates a fresh react render hook, which is great to render elements imperatively, like opening dialogs.
@@ -15,13 +18,16 @@ import {render, unmountComponentAtNode} from 'react-dom';
  */
 export function renderReactRoot(
   handler: (unmount: () => void) => React.ReactElement,
+  store: Store,
 ): void {
   const div = document.body.appendChild(document.createElement('div'));
   render(
-    handler(() => {
-      unmountComponentAtNode(div);
-      div.remove();
-    }),
+    <Provider store={store}>
+      {handler(() => {
+        unmountComponentAtNode(div);
+        div.remove();
+      })}
+    </Provider>,
     div,
   );
 }

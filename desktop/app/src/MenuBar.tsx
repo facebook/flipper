@@ -28,6 +28,7 @@ import constants from './fb-stubs/constants';
 import {Logger} from './fb-interfaces/Logger';
 import {NormalizedMenuEntry, buildInMenuEntries} from 'flipper-plugin';
 import {StyleGuide} from './sandy-chrome/StyleGuide';
+import {showEmulatorLauncher} from './sandy-chrome/appinspect/LaunchEmulator';
 
 export type DefaultKeyboardAction = keyof typeof buildInMenuEntries;
 export type TopLevelMenu = 'Edit' | 'View' | 'Window' | 'Help';
@@ -226,6 +227,12 @@ function getTemplate(
     });
   }
   const fileSubmenu: MenuItemConstructorOptions[] = [
+    {
+      label: 'Launch Emulator...',
+      click() {
+        showEmulatorLauncher(store);
+      },
+    },
     {
       label: 'Preferences',
       accelerator: 'Cmd+,',

@@ -30,7 +30,13 @@ type iOSSimulatorDevice = {
   udid: string;
 };
 
-type IOSDeviceParams = {udid: string; type: DeviceType; name: string};
+export type IOSDeviceParams = {
+  udid: string;
+  type: DeviceType;
+  name: string;
+  deviceTypeIdentifier?: string;
+  state?: string;
+};
 
 const exec = promisify(child_process.exec);
 
@@ -79,7 +85,7 @@ if (typeof window !== 'undefined') {
 async function queryDevices(store: Store, logger: Logger): Promise<any> {
   return Promise.all([
     checkXcodeVersionMismatch(store),
-    getActiveSimulators().then((devices) => {
+    getSimulators(true).then((devices) => {
       processDevices(store, logger, devices, 'emulator');
     }),
     getActiveDevices(store.getState().settingsState.idbPath).then(
@@ -144,36 +150,50 @@ function processDevices(
   }
 }
 
-function getActiveSimulators(): Promise<Array<IOSDeviceParams>> {
-  const deviceSetPath = process.env.DEVICE_SET_PATH
+function getDeviceSetPath() {
+  return process.env.DEVICE_SET_PATH
     ? ['--set', process.env.DEVICE_SET_PATH]
     : [];
+}
+
+export function getSimulators(
+  bootedOnly: boolean,
+): Promise<Array<IOSDeviceParams>> {
   return promisify(execFile)(
     'xcrun',
-    ['simctl', ...deviceSetPath, 'list', 'devices', '--json'],
+    ['simctl', ...getDeviceSetPath(), 'list', 'devices', '--json'],
     {
       encoding: 'utf8',
     },
   )
     .then(({stdout}) => JSON.parse(stdout).devices)
     .then((simulatorDevices: Array<iOSSimulatorDevice>) => {
-      const simulators: Array<iOSSimulatorDevice> = Object.values(
-        simulatorDevices,
-      ).reduce((acc: Array<iOSSimulatorDevice>, cv) => acc.concat(cv), []);
-
+      const simulators = Object.values(simulatorDevices).flat();
       return simulators
         .filter(
-          (simulator) => simulator.state === 'Booted' && isAvailable(simulator),
+          (simulator) =>
+            (!bootedOnly || simulator.state === 'Booted') &&
+            isAvailable(simulator),
         )
         .map((simulator) => {
           return {
-            udid: simulator.udid,
+            ...simulator,
             type: 'emulator',
-            name: simulator.name,
           } as IOSDeviceParams;
         });
     })
-    .catch((_) => []);
+    .catch((e) => {
+      console.error(e);
+      return Promise.resolve([]);
+    });
+}
+
+export function launchSimulator(udid: string): Promise<any> {
+  return promisify(execFile)(
+    'xcrun',
+    ['simctl', ...getDeviceSetPath(), 'boot', udid],
+    {encoding: 'utf8'},
+  );
 }
 
 function getActiveDevices(idbPath: string): Promise<Array<IOSDeviceParams>> {
@@ -232,7 +252,7 @@ export async function getActiveDevicesAndSimulators(
   store: Store,
 ): Promise<Array<IOSDevice>> {
   const activeDevices: Array<Array<IOSDeviceParams>> = await Promise.all([
-    getActiveSimulators(),
+    getSimulators(true),
     getActiveDevices(store.getState().settingsState.idbPath),
   ]);
   const allDevices = activeDevices[0].concat(activeDevices[1]);

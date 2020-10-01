@@ -9,20 +9,19 @@
 
 import {Button, styled} from 'flipper';
 import {connect, ReactReduxContext} from 'react-redux';
-import {spawn} from 'child_process';
-import {dirname} from 'path';
+
 import {selectDevice, preferDevice} from '../reducers/connections';
 import {
   setActiveSheet,
   ActiveSheet,
   ACTIVE_SHEET_JS_EMULATOR_LAUNCHER,
 } from '../reducers/application';
-import which from 'which';
 import {showOpenDialog} from '../utils/exportData';
 import BaseDevice from '../devices/BaseDevice';
 import React, {Component} from 'react';
 import {State} from '../reducers';
 import GK from '../fb-stubs/GK';
+import {launchEmulator} from '../devices/AndroidDevice';
 
 type StateFromProps = {
   selectedDevice: BaseDevice | null | undefined;
@@ -44,25 +43,8 @@ const DropdownButton = styled(Button)({
 });
 
 class DevicesButton extends Component<Props> {
-  launchEmulator = (name: string) => {
-    // On Linux, you must run the emulator from the directory it's in because
-    // reasons ...
-    which('emulator')
-      .then((emulatorPath) => {
-        if (emulatorPath) {
-          const child = spawn(emulatorPath, [`@${name}`], {
-            detached: true,
-            cwd: dirname(emulatorPath),
-          });
-          child.stderr.on('data', (data) => {
-            console.error(`Android emulator error: ${data}`);
-          });
-          child.on('error', console.error);
-        } else {
-          throw new Error('Could not get emulator path');
-        }
-      })
-      .catch(console.error);
+  launchEmulator = async (name: string) => {
+    await launchEmulator(name);
     this.props.preferDevice(name);
   };
 

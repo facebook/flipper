@@ -9,14 +9,17 @@
 
 import React from 'react';
 import {Button, Dropdown, Menu, Radio, Input} from 'antd';
-import {LeftSidebar, SidebarTitle, InfoIcon} from './LeftSidebar';
+import {LeftSidebar, SidebarTitle, InfoIcon} from '../LeftSidebar';
 import {
   AppleOutlined,
   AndroidOutlined,
   SettingOutlined,
+  RocketOutlined,
 } from '@ant-design/icons';
-import {Layout, Link} from '../ui';
-import {theme} from './theme';
+import {Layout, Link} from '../../ui';
+import {theme} from '../theme';
+import {useStore as useReduxStore} from 'react-redux';
+import {showEmulatorLauncher} from './LaunchEmulator';
 
 const appTooltip = (
   <>
@@ -30,6 +33,7 @@ const appTooltip = (
 );
 
 export function AppInspect() {
+  const store = useReduxStore();
   return (
     <LeftSidebar>
       <Layout.Top scrollable>
@@ -43,7 +47,14 @@ export function AppInspect() {
             <Layout.Horizontal gap>
               <Button icon={<SettingOutlined />} type="link" />
               <Button icon={<SettingOutlined />} type="link" />
-              <Button icon={<SettingOutlined />} type="link" />
+              <Button
+                icon={<RocketOutlined />}
+                type="link"
+                title="Start Emulator / Simulator..."
+                onClick={() => {
+                  showEmulatorLauncher(store);
+                }}
+              />
             </Layout.Horizontal>
           </Layout.Vertical>
         </Layout.Container>
