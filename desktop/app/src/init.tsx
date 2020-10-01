@@ -106,11 +106,9 @@ function init() {
     store,
     {name: 'loadTheme', fireImmediately: true, throttleMs: 500},
     (state) =>
-      state.settingsState.enableSandy
-        ? state.settingsState.darkMode
-          ? 'themes/dark'
-          : 'themes/light'
-        : 'none',
+      state.settingsState.enableSandy && state.settingsState.darkMode
+        ? 'themes/dark'
+        : 'themes/light',
     (theme) => {
       (document.getElementById(
         'flipper-theme-import',
