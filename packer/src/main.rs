@@ -14,6 +14,7 @@
 )]
 
 mod error;
+mod tarsum;
 mod types;
 
 use anyhow::{bail, Context, Result};
