@@ -44,3 +44,6 @@ impl Display for PackType {
         }
     }
 }
+
+#[derive(Eq, PartialEq, Debug, serde::Serialize)]
+pub struct HashSum(pub String);

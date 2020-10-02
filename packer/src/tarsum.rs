@@ -7,15 +7,13 @@
 
 //! Intrinsic hash for a tarball.
 
+use crate::types;
 use anyhow::Result;
 use std::collections;
 use std::io;
 
-#[derive(Eq, PartialEq, Debug, serde::Serialize)]
-pub struct HashSum(String);
-
 /// Computes the intrinsic SHA256 checksum of a tar archive.
-pub fn tarsum<R: io::Read>(reader: R) -> Result<HashSum> {
+pub fn tarsum<R: io::Read>(reader: R) -> Result<types::HashSum> {
     use sha2::Digest;
 
     let mut archive = tar::Archive::new(reader);
@@ -35,15 +33,15 @@ pub fn tarsum<R: io::Read>(reader: R) -> Result<HashSum> {
         digest.input(file_hash.0);
     }
     let hash = digest.result();
-    Ok(HashSum(data_encoding::HEXLOWER.encode(&hash)))
+    Ok(types::HashSum(data_encoding::HEXLOWER.encode(&hash)))
 }
 
-fn digest_file<R: io::Read>(reader: &mut R) -> io::Result<HashSum> {
+fn digest_file<R: io::Read>(reader: &mut R) -> io::Result<types::HashSum> {
     use sha2::Digest;
     let mut digest = sha2::Sha256::new();
     io::copy(reader, &mut digest)?;
     let hash = digest.result();
-    Ok(HashSum(data_encoding::HEXLOWER.encode(&hash)))
+    Ok(types::HashSum(data_encoding::HEXLOWER.encode(&hash)))
 }
 
 #[cfg(test)]
@@ -64,7 +62,9 @@ mod test {
 
         assert_eq!(
             res,
-            HashSum("6f92565bb50b9469494b3e1ad668f5d809caa3ffb534c3e56dec75f7ea7912df".to_string())
+            types::HashSum(
+                "6f92565bb50b9469494b3e1ad668f5d809caa3ffb534c3e56dec75f7ea7912df".to_string()
+            )
         );
     }
 
