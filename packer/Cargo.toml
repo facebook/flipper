@@ -5,7 +5,7 @@ license = "MIT"
 repository = "https://github.com/facebook/flipper.git"
 keywords = ["flipper", "cli"]
 categories = ["development-tools"]
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Facebook, Inc."]
 edition = "2018"
 
