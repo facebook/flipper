@@ -37,10 +37,9 @@ pub enum PackType {
 
 impl Display for PackType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        use PackType::*;
         match *self {
-            Frameworks => write!(f, "frameworks"),
-            Core => write!(f, "core"),
+            Self::Frameworks => write!(f, "frameworks"),
+            Self::Core => write!(f, "core"),
         }
     }
 }

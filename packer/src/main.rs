@@ -6,6 +6,8 @@
  */
 
 #![warn(clippy::all, clippy::pedantic, clippy::nursery, clippy::cargo)]
+// This doesn't seem to cause any issues and nobody I know can read \u{1234} by heart.
+#![allow(clippy::non_ascii_literal)]
 
 mod error;
 mod tarsum;
@@ -53,7 +55,7 @@ fn default_progress_bar(len: u64) -> indicatif::ProgressBar {
 }
 
 fn pack(
-    platform: &Platform,
+    platform: Platform,
     dist_dir: &std::path::PathBuf,
     pack_list: &PackList,
     output_directory: &std::path::PathBuf,
@@ -66,11 +68,11 @@ fn pack(
     ));
     let packtype_paths = pack_list
         .0
-        .get(platform)
-        .ok_or_else(|| error::Error::MissingPlatformDefinition(*platform))?;
+        .get(&platform)
+        .ok_or_else(|| error::Error::MissingPlatformDefinition(platform))?;
     let res = packtype_paths
         .into_par_iter()
-        .map(|(pack_type, pack_files)| {
+        .map(|(&pack_type, pack_files)| {
             let output_path = path::Path::new(output_directory).join(format!("{}.tar", pack_type));
             let mut tar = tar::Builder::new(File::create(&output_path).with_context(|| {
                 format!(
@@ -86,7 +88,7 @@ fn pack(
             tar.finish()?;
             pb.inc(1);
 
-            Ok((*pack_type, output_path))
+            Ok((pack_type, output_path))
         })
         .collect();
 
@@ -95,10 +97,10 @@ fn pack(
 }
 
 fn pack_platform(
-    platform: &Platform,
+    platform: Platform,
     dist_dir: &std::path::PathBuf,
     pack_files: &[path::PathBuf],
-    pack_type: &PackType,
+    pack_type: PackType,
     tar_builder: &mut tar::Builder<File>,
 ) -> Result<()> {
     let base_dir = match platform {
@@ -112,7 +114,7 @@ fn pack_platform(
         let full_path = path::Path::new(&base_dir).join(f);
         if !full_path.exists() {
             bail!(error::Error::MissingPackFile(
-                *platform, *pack_type, full_path,
+                platform, pack_type, full_path,
             ));
         }
         if full_path.is_file() {
@@ -169,13 +171,13 @@ fn main() -> Result<(), anyhow::Error> {
         shellexpand::tilde(args.value_of("dist").expect("argument has default")).to_string(),
     );
     let compress = !args.is_present("no-compression");
-    let pack_list_str = args
-        .value_of("packlist")
-        .map(|f| {
+    let pack_list_str = args.value_of("packlist").map_or_else(
+        || DEFAULT_PACKLIST.to_string(),
+        |f| {
             std::fs::read_to_string(f)
                 .unwrap_or_else(|e| panic!("Failed to open packfile {}: {}", f, e))
-        })
-        .unwrap_or_else(|| DEFAULT_PACKLIST.to_string());
+        },
+    );
     let pack_list: PackList =
         serde_yaml::from_str(&pack_list_str).expect("Failed to deserialize YAML packlist.");
     let output_directory =
@@ -186,13 +188,13 @@ fn main() -> Result<(), anyhow::Error> {
             output_directory.to_string_lossy()
         )
     })?;
-    let archive_paths = pack(&platform, &dist_dir, &pack_list, output_directory)?;
+    let archive_paths = pack(platform, &dist_dir, &pack_list, output_directory)?;
     let compressed_archive_paths = if compress {
         Some(compress_paths(&archive_paths)?)
     } else {
         None
     };
-    manifest(&archive_paths, &compressed_archive_paths, &output_directory)?;
+    manifest(&archive_paths, &compressed_archive_paths, output_directory)?;
 
     Ok(())
 }
@@ -252,7 +254,7 @@ fn write_manifest(
     let path = path::PathBuf::from(output_directory).join("manifest.json");
     let mut file = File::create(&path)
         .with_context(|| format!("Failed to write manifest to {}", &path.to_string_lossy()))?;
-    file.write_all(&serde_json::to_string_pretty(archive_manifest)?.as_bytes())?;
+    file.write_all(serde_json::to_string_pretty(archive_manifest)?.as_bytes())?;
     Ok(path)
 }
 
