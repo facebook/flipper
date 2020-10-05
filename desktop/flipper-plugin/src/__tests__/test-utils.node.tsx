@@ -346,3 +346,46 @@ test('plugins can create pastes', async () => {
   plugin.instance.doIt();
   expect(plugin.flipperLib.createPaste).toBeCalledWith('test');
 });
+
+test('plugins support all methods by default', async () => {
+  type Methods = {
+    doit(): Promise<boolean>;
+  };
+  const plugin = TestUtils.startPlugin({
+    plugin(client: PluginClient<{}, Methods>) {
+      return {
+        async checkEnabled() {
+          return client.supportsMethod('doit');
+        },
+      };
+    },
+    Component() {
+      return null;
+    },
+  });
+  expect(await plugin.instance.checkEnabled()).toBeTruthy();
+});
+
+test('available methods can be overridden', async () => {
+  type Methods = {
+    doit(): Promise<boolean>;
+  };
+  const plugin = TestUtils.startPlugin(
+    {
+      plugin(client: PluginClient<{}, Methods>) {
+        return {
+          async checkEnabled() {
+            return client.supportsMethod('doit');
+          },
+        };
+      },
+      Component() {
+        return null;
+      },
+    },
+    {
+      unsupportedMethods: ['doit'],
+    },
+  );
+  expect(await plugin.instance.checkEnabled()).toBeFalsy();
+});

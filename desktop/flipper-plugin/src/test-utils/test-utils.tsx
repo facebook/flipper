@@ -43,6 +43,8 @@ interface StartPluginOptions {
   initialState?: Record<string, any>;
   isArchived?: boolean;
   isBackgroundPlugin?: boolean;
+  /** Provide a set of unsupported methods to simulate older clients that don't support certain methods yet */
+  unsupportedMethods?: string[];
 }
 
 type ExtractClientType<Module extends FlipperPluginModule<any>> = Parameters<
@@ -194,6 +196,9 @@ export function startPlugin<Module extends FlipperPluginModule<any>>(
       params?: Object,
     ): Promise<Object> {
       return sendStub(method, params);
+    },
+    async supportsMethod(_api: string, method: string) {
+      return !options?.unsupportedMethods?.includes(method);
     },
   };
 

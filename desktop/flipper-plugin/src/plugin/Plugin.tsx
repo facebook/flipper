@@ -59,6 +59,11 @@ export interface PluginClient<
     method: Method,
     params: Parameters<Methods[Method]>[0],
   ): ReturnType<Methods[Method]>;
+
+  /**
+   * Checks if a method is available on the client implementation
+   */
+  supportsMethod(method: keyof Methods): Promise<boolean>;
 }
 
 /**
@@ -75,6 +80,7 @@ export interface RealFlipperClient {
     fromPlugin: boolean,
     params?: Object,
   ): Promise<Object>;
+  supportsMethod(api: string, method: string): Promise<boolean>;
 }
 
 export type PluginFactory<
@@ -124,6 +130,13 @@ export class SandyPluginInstance extends BasePluginInstance {
       },
       onMessage: (event, callback) => {
         this.events.on('event-' + event, callback);
+      },
+      supportsMethod: async (method) => {
+        this.assertConnected();
+        return await realClient.supportsMethod(
+          this.definition.id,
+          method as any,
+        );
       },
     };
     this.initializePlugin(() =>
