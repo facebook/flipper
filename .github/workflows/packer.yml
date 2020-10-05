@@ -8,20 +8,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - name: Setup toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
       - name: Test
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          args: cd packer && cargo test
+        run: cd packer && cargo test
       - name: Format
-        uses: actions-rs/toolchain@v1
-        continue-on-error: true
-        with:
-          toolchain: stable
-          args: cd packer && cargo fmt -- --check
+        run: cd packer && cargo fmt -- --check
       - name: Lint
-        uses: actions-rs/toolchain@v1
-        continue-on-error: true
-        with:
-          toolchain: stable
-          args: cd packer && cargo clippy -- -Dwarnings
+        run: cd packer && cargo clippy -- -Dwarnings
