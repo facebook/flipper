@@ -7,18 +7,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - name: Test
-        uses: icepuma/rust-action@1.44.0
+        uses: actions-rs/toolchain@v1
         with:
+          toolchain: stable
           args: cd packer && cargo test
       - name: Format
-        uses: icepuma/rust-action@1.44.0
+        uses: actions-rs/toolchain@v1
         continue-on-error: true
         with:
+          toolchain: stable
           args: cd packer && cargo fmt -- --check
       - name: Lint
-        uses: icepuma/rust-action@1.44.0
+        uses: actions-rs/toolchain@v1
         continue-on-error: true
         with:
+          toolchain: stable
           args: cd packer && cargo clippy -- -Dwarnings
