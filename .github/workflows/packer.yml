@@ -16,5 +16,7 @@ jobs:
         run: cd packer && cargo test
       - name: Format
         run: cd packer && cargo fmt -- --check
+        continue-on-error: true
       - name: Lint
         run: cd packer && cargo clippy -- -Dwarnings
+        continue-on-error: true
