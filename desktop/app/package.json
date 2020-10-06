@@ -43,7 +43,7 @@
     "promise-retry": "^1.1.1",
     "promisify-child-process": "^4.1.0",
     "prop-types": "^15.6.0",
-    "query-string": "^6.13.1",
+    "query-string": "^6.13.3",
     "react": "16.13.0",
     "react-async": "^10.0.0",
     "react-color": "^2.18.1",
