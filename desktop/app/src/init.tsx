@@ -105,14 +105,19 @@ function init() {
   sideEffect(
     store,
     {name: 'loadTheme', fireImmediately: true, throttleMs: 500},
-    (state) =>
-      state.settingsState.enableSandy && state.settingsState.darkMode
-        ? 'themes/dark'
-        : 'themes/light',
+    (state) => ({
+      sandy: state.settingsState.enableSandy,
+      dark: state.settingsState.darkMode,
+    }),
     (theme) => {
       (document.getElementById(
         'flipper-theme-import',
-      ) as HTMLLinkElement).href = `${theme}.css`;
+      ) as HTMLLinkElement).href = `themes/${
+        theme.sandy && theme.dark ? 'dark' : 'light'
+      }.css`;
+      document
+        .getElementById('root')
+        ?.classList.toggle('flipperlegacy_design', !theme.sandy);
     },
   );
 }
