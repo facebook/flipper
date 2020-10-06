@@ -111,7 +111,7 @@
   },
   "devDependencies": {
     "@babel/code-frame": "^7.10.4",
-    "@babel/eslint-parser": "^7.11.0",
+    "@babel/eslint-parser": "^7.11.5",
     "@jest-runner/electron": "^3.0.0",
     "@testing-library/dom": "^7.20.2",
     "@testing-library/react": "^10.4.3",
