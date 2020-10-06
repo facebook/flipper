@@ -1,6 +1,6 @@
 {
   "name": "flipper-test-utils",
-  "version": "0.60.0",
+  "version": "0.61.0",
   "description": "Library containing common Flipper test utilities",
   "repository": "facebook/flipper",
   "main": "lib/index.js",
