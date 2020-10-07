@@ -13,5 +13,8 @@
  A SKSubDescriptor is a function which knows how to expose additional data
  to SKLayoutDescriptor. This class is for frameworks wanting to pass data
  along through the Layout Descriptor.
+
+ The infra expects that the string returned is a JSON string.
+ For example: @"{\'key\': 5}"
  */
 typedef NSString* (*SKSubDescriptor)(SKComponentLayoutWrapper* node);
