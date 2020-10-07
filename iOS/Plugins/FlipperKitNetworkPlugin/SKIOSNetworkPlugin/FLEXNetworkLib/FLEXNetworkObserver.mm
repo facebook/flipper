@@ -327,7 +327,8 @@ typedef void (^NSURLSessionAsyncCompletion)(
               componentsJoinedByString:@""]);
     } else if (
         [[NSProcessInfo processInfo] operatingSystemVersion].majorVersion < 9 ||
-        [[NSProcessInfo processInfo] operatingSystemVersion].majorVersion >= 14) {
+        [[NSProcessInfo processInfo] operatingSystemVersion].majorVersion >=
+            14) {
       className = [NSURLSessionTask class];
     } else {
       className =
