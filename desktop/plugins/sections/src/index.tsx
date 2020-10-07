@@ -270,7 +270,7 @@ export function Component() {
               }}
             />
           </Sidebar>
-          <Layout.Top scrollable={false}>
+          <Layout.Top scrollable={true}>
             <Sidebar position="top" minHeight={400} height={400}>
               <TreeContainer>
                 <TreeHierarchy
