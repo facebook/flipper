@@ -12,7 +12,9 @@
 #include <iostream>
 #include "CertificateUtils.h"
 #include "Log.h"
-using namespace facebook::flipper;
+
+namespace facebook {
+namespace flipper {
 
 static constexpr auto CSR_FILE_NAME = "app.csr";
 static constexpr auto FLIPPER_CA_FILE_NAME = "sonarCA.crt";
@@ -162,3 +164,6 @@ bool fileExists(std::string fileName) {
   struct stat buffer;
   return stat(fileName.c_str(), &buffer) == 0;
 }
+
+} // namespace flipper
+} // namespace facebook
