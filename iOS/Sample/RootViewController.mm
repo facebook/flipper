@@ -83,10 +83,9 @@ static CKComponent* componentForModel(
                                                      UIColor.cyanColor,
                                              }]},
                        }]
-            background:[CKImageComponent
-                           newWithImage:[UIImage imageNamed:@"sonarpattern"]
-                             attributes:{}
-                                   size:{}]];
+            background:CK::ImageComponentBuilder()
+                           .image([UIImage imageNamed:@"sonarpattern"])
+                           .build()];
 }
 
 @end
