@@ -41,6 +41,18 @@ static std::vector<std::pair<NSString*, SKSubDescriptor>>& subDescriptors() {
   return d;
 }
 
+static std::vector<SKAttributeGenerator>& attributeGenerators() {
+  // Avoid a global constructor; we want to lazily initialize this when needed.
+  static std::vector<SKAttributeGenerator> d;
+  return d;
+}
+
++ (void)registerAttributeGenerator:(SKAttributeGenerator)generator {
+  if (generator) {
+    attributeGenerators().push_back(generator);
+  }
+}
+
 + (void)registerSubDescriptor:(SKSubDescriptor)descriptor
                       forName:(NSString*)name {
   if (name && descriptor) {
@@ -170,6 +182,17 @@ static std::vector<std::pair<NSString*, SKSubDescriptor>>& subDescriptors() {
                     newWithName:@"responder"
                       withValue:SKObject(NSStringFromClass(
                                     [node.component.nextResponder class]))]];
+  for (SKAttributeGenerator generator : attributeGenerators()) {
+    if (!generator) {
+      // technically, this could be nullptr, so lets be careful.
+      continue;
+    }
+
+    SKNamed* const attribute = generator(node);
+    if (attribute) {
+      [attributes addObject:attribute];
+    }
+  }
   return attributes;
 }
 
