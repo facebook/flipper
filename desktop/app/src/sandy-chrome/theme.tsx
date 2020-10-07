@@ -22,6 +22,7 @@ export const theme = {
   disabledColor: 'var(--flipper-disabled-color)',
   backgroundDefault: 'var(--flipper-background-default)',
   backgroundWash: 'var(--flipper-background-wash)',
+  buttonDefaultBackground: 'var(--flipper-button-default-background)',
   backgroundTransparentHover: 'var(--flipper-background-transparent-hover)',
   dividerColor: 'var(--flipper-divider-color)',
   borderRadius: 'var(--flipper-border-radius)',

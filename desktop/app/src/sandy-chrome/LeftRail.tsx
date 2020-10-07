@@ -9,7 +9,7 @@
 
 import React, {cloneElement, useState, useCallback} from 'react';
 import {styled, Layout} from 'flipper';
-import {Button, Divider, Badge, Tooltip} from 'antd';
+import {Button, Divider, Badge, Tooltip, Avatar, Popover} from 'antd';
 import {
   MobileFilled,
   AppstoreOutlined,
@@ -27,9 +27,12 @@ import {toggleLeftSidebarVisible} from '../reducers/application';
 import {theme} from './theme';
 import SettingsSheet from '../chrome/SettingsSheet';
 import WelcomeScreen from './WelcomeScreen';
+import SignInSheet from '../chrome/SignInSheet';
 import {errorCounterAtom} from '../chrome/ConsoleLogs';
 import {ToplevelProps} from './SandyApp';
 import {useValue} from 'flipper-plugin';
+import {logout} from '../reducers/user';
+import config from '../fb-stubs/config';
 
 const LeftRailButtonElem = styled(Button)<{kind?: 'small'}>(({kind}) => ({
   width: kind === 'small' ? 32 : 36,
@@ -128,7 +131,7 @@ export function LeftRail({
             title="Right Sidebar Toggle"
           />
           <LeftSidebarToggleButton />
-          <LeftRailButton icon={<LoginOutlined />} title="Log In" />
+          {config.showLogin && <LoginButton />}
         </Layout.Vertical>
       </Layout.Bottom>
     </Layout.Container>
@@ -217,6 +220,52 @@ function WelcomeScreenButton() {
           })
         }
       />
+    </>
+  );
+}
+
+function LoginButton() {
+  const dispatch = useDispatch();
+  const user = useStore((state) => state.user);
+  const login = (user?.id ?? null) !== null;
+  const profileUrl = user?.profile_picture?.uri;
+  const [showLogin, setShowLogin] = useState(false);
+  const [showLogout, setShowLogout] = useState(false);
+  const onClose = useCallback(() => setShowLogin(false), []);
+  const onHandleVisibleChange = useCallback(
+    (visible) => setShowLogout(visible),
+    [],
+  );
+  return login ? (
+    <Popover
+      content={
+        <Button
+          block
+          style={{backgroundColor: theme.backgroundDefault}}
+          onClick={() => {
+            onHandleVisibleChange(false);
+            dispatch(logout());
+          }}>
+          Log Out
+        </Button>
+      }
+      trigger="click"
+      placement="right"
+      visible={showLogout}
+      overlayStyle={{padding: 0}}
+      onVisibleChange={onHandleVisibleChange}>
+      <Layout.Container padv={theme.inlinePaddingV}>
+        <Avatar size="small" src={profileUrl} />
+      </Layout.Container>
+    </Popover>
+  ) : (
+    <>
+      <LeftRailButton
+        icon={<LoginOutlined />}
+        title="Log In"
+        onClick={() => setShowLogin(true)}
+      />
+      {showLogin && <SignInSheet onHide={onClose} useSandy />}
     </>
   );
 }

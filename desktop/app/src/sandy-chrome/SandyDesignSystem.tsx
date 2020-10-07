@@ -69,6 +69,7 @@ export default function SandyDesignSystem() {
           <ColorPreview name="disabledColor" />
           <ColorPreview name="backgroundDefault" />
           <ColorPreview name="backgroundWash" />
+          <ColorPreview name="buttonDefaultBackground" />
           <ColorPreview name="backgroundTransparentHover" />
           <ColorPreview name="dividerColor" />
         </Card>
