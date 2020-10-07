@@ -1,6 +1,7 @@
 {
   "accessibility": [
-    16
+    16,
+    20
   ],
   "app-dailies": [
     12
@@ -413,7 +414,8 @@
     20
   ],
   "checkmark-circle": [
-    12
+    12,
+    20
   ],
   "circle": [
     12
@@ -444,5 +446,11 @@
   ],
   "cup-outline": [
     24
+  ],
+  "unicorn": [
+    20
+  ],
+  "turtle": [
+    20
   ]
 }
