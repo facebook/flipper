@@ -7,7 +7,7 @@
  * @format
  */
 
-import React, {cloneElement, useState, useCallback} from 'react';
+import React, {cloneElement, useState, useCallback, useMemo} from 'react';
 import {styled, Layout} from 'flipper';
 import {Button, Divider, Badge, Tooltip, Avatar, Popover} from 'antd';
 import {
@@ -25,6 +25,7 @@ import {SidebarLeft, SidebarRight} from './SandyIcons';
 import {useDispatch, useStore} from '../utils/useStore';
 import {toggleLeftSidebarVisible} from '../reducers/application';
 import {theme} from './theme';
+import SetupDoctorScreen, {checkHasNewProblem} from './SetupDoctorScreen';
 import SettingsSheet from '../chrome/SettingsSheet';
 import WelcomeScreen from './WelcomeScreen';
 import SignInSheet from '../chrome/SignInSheet';
@@ -56,14 +57,19 @@ function LeftRailButton({
   small?: boolean;
   toggled?: boolean;
   selected?: boolean; // TODO: make sure only one element can be selected
-  count?: number;
+  count?: number | true;
   title: string;
   onClick?: React.MouseEventHandler<HTMLElement>;
 }) {
   let iconElement =
     icon && cloneElement(icon, {style: {fontSize: small ? 16 : 24}});
   if (count !== undefined) {
-    iconElement = <Badge count={count}>{iconElement}</Badge>;
+    iconElement =
+      count === true ? (
+        <Badge dot>{iconElement}</Badge>
+      ) : (
+        <Badge count={count}>{iconElement}</Badge>
+      );
   }
   return (
     <Tooltip title={title} placement="right">
@@ -113,11 +119,7 @@ export function LeftRail({
           />
         </Layout.Vertical>
         <Layout.Vertical center gap={10}>
-          <LeftRailButton
-            icon={<MedicineBoxOutlined />}
-            small
-            title="Setup Doctor"
-          />
+          <SetupDoctorButton />
           <WelcomeScreenButton />
           <ShowSettingsButton />
           <LeftRailButton
@@ -173,6 +175,27 @@ function DebugLogsButton({
         setToplevelSelection('flipperlogs');
       }}
     />
+  );
+}
+
+function SetupDoctorButton() {
+  const [visible, setVisible] = useState(false);
+  const result = useStore(
+    (state) => state.healthchecks.healthcheckReport.result,
+  );
+  const hasNewProblem = useMemo(() => checkHasNewProblem(result), [result]);
+  const onClose = useCallback(() => setVisible(false), []);
+  return (
+    <>
+      <LeftRailButton
+        icon={<MedicineBoxOutlined />}
+        small
+        title="Setup Doctor"
+        count={hasNewProblem ? true : undefined}
+        onClick={() => setVisible(true)}
+      />
+      <SetupDoctorScreen visible={visible} onClose={onClose} />
+    </>
   );
 }
 
