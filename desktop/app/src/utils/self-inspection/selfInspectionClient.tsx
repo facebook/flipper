@@ -24,7 +24,8 @@ interface IFutureSubject<T> {
   onSubscribe: (cancel: CancelCallback | null | undefined) => void;
 }
 
-export class SelfInspectionFlipperClient<M> extends FlipperClient
+export class SelfInspectionFlipperClient<M>
+  extends FlipperClient
   implements FlipperClientConnection<string, M> {
   connStatusSubscribers: Set<ISubscriber<ConnectionStatus>> = new Set();
   connStatus: ConnectionStatus = {kind: 'CONNECTED'};

@@ -16,11 +16,11 @@
     "sql-formatter": "^2.3.3"
   },
   "devDependencies": {
+    "@testing-library/react": "^10.4.3",
     "@types/dateformat": "^3.0.1",
     "@types/sql-formatter": "^2.3.0",
-    "@testing-library/react": "^10.4.3",
-    "redux-mock-store": "^1.0.1",
-    "react-redux": "^7.1.1"
+    "react-redux": "^7.1.1",
+    "redux-mock-store": "^1.0.1"
   },
   "bugs": {
     "email": "oncall+flipper@xmail.facebook.com",
