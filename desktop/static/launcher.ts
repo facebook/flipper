@@ -64,7 +64,7 @@ const checkIsCycle = async () => {
 
   const delta = rightNow - backThen;
   await mkdirp(dir);
-  await promisify(fs.writeFile)(filePath, rightNow);
+  await promisify(fs.writeFile)(filePath, '' + rightNow);
 
   // If the last startup was less than 5s ago, something's not okay.
   return Math.abs(delta) < 5000;
