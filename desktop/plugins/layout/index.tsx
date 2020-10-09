@@ -352,6 +352,11 @@ export default class LayoutPlugin extends FlipperPlugin<
     const id = this.state.inAXMode
       ? this.state.selectedAXElement
       : this.state.selectedElement;
+    this.props.logger.track('usage', 'layoutInspector:setData', {
+      category: path[0],
+      path: Array.from(path).splice(1).join(),
+      ...this.realClient.query,
+    });
     this.client.call('setData', {
       id,
       path,
