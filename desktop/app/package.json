@@ -20,7 +20,7 @@
     "adbkit": "^2.11.1",
     "adbkit-logcat": "^2.0.1",
     "antd": "^4.6.6",
-    "archiver": "^5.0.0",
+    "archiver": "^5.0.2",
     "async-mutex": "^0.1.3",
     "axios": "^0.20.0",
     "console-feed": "^3.0.1",
