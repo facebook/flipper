@@ -72,6 +72,14 @@ export type Route = {
   responseStatus: string;
 };
 
+export type MockRoute = {
+  requestUrl: string;
+  method: string;
+  data: string;
+  headers: Header[];
+  status: string;
+};
+
 export type PersistedState = {
   requests: {[id: string]: Request};
   responses: {[id: string]: Response};

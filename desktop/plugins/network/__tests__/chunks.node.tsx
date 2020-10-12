@@ -8,8 +8,8 @@
  */
 
 import {combineBase64Chunks} from '../chunks';
-import network from '../index';
-import {PersistedState} from '../types';
+import {TestUtils} from 'flipper-plugin';
+import * as NetworkPlugin from '..';
 
 test('Test assembling base64 chunks', () => {
   const message = 'wassup john?';
@@ -24,12 +24,10 @@ test('Test assembling base64 chunks', () => {
 });
 
 test('Reducer correctly adds initial chunk', () => {
-  const state: PersistedState = {
-    requests: {},
-    responses: {},
-    partialResponses: {},
-  };
-  const result = network.persistedStateReducer(state, 'partialResponse', {
+  const {instance, sendEvent} = TestUtils.startPlugin(NetworkPlugin);
+  expect(instance.partialResponses.get()).toEqual({});
+
+  sendEvent('partialResponse', {
     id: '1',
     timestamp: 123,
     status: 200,
@@ -41,7 +39,8 @@ test('Reducer correctly adds initial chunk', () => {
     index: 0,
     totalChunks: 2,
   });
-  expect(result.partialResponses['1']).toMatchInlineSnapshot(`
+
+  expect(instance.partialResponses.get()['1']).toMatchInlineSnapshot(`
     Object {
       "followupChunks": Object {},
       "initialResponse": Object {
@@ -61,18 +60,16 @@ test('Reducer correctly adds initial chunk', () => {
 });
 
 test('Reducer correctly adds followup chunk', () => {
-  const state: PersistedState = {
-    requests: {},
-    responses: {},
-    partialResponses: {},
-  };
-  const result = network.persistedStateReducer(state, 'partialResponse', {
+  const {instance, sendEvent} = TestUtils.startPlugin(NetworkPlugin);
+  expect(instance.partialResponses.get()).toEqual({});
+
+  sendEvent('partialResponse', {
     id: '1',
     totalChunks: 2,
     index: 1,
     data: 'hello',
   });
-  expect(result.partialResponses['1']).toMatchInlineSnapshot(`
+  expect(instance.partialResponses.get()['1']).toMatchInlineSnapshot(`
     Object {
       "followupChunks": Object {
         "1": "hello",
@@ -82,35 +79,34 @@ test('Reducer correctly adds followup chunk', () => {
 });
 
 test('Reducer correctly combines initial response and followup chunk', () => {
-  const state: PersistedState = {
-    requests: {},
-    responses: {},
-    partialResponses: {
-      '1': {
-        followupChunks: {},
-        initialResponse: {
-          data: 'aGVs',
-          headers: [],
-          id: '1',
-          insights: null,
-          isMock: false,
-          reason: 'nothing',
-          status: 200,
-          timestamp: 123,
-          index: 0,
-          totalChunks: 2,
-        },
+  const {instance, sendEvent} = TestUtils.startPlugin(NetworkPlugin);
+  instance.partialResponses.set({
+    '1': {
+      followupChunks: {},
+      initialResponse: {
+        data: 'aGVs',
+        headers: [],
+        id: '1',
+        insights: null,
+        isMock: false,
+        reason: 'nothing',
+        status: 200,
+        timestamp: 123,
+        index: 0,
+        totalChunks: 2,
       },
     },
-  };
-  const result = network.persistedStateReducer(state, 'partialResponse', {
+  });
+  expect(instance.responses.get()).toEqual({});
+  sendEvent('partialResponse', {
     id: '1',
     totalChunks: 2,
     index: 1,
     data: 'bG8=',
   });
-  expect(result.partialResponses).toEqual({});
-  expect(result.responses['1']).toMatchInlineSnapshot(`
+
+  expect(instance.partialResponses.get()).toEqual({});
+  expect(instance.responses.get()['1']).toMatchInlineSnapshot(`
     Object {
       "data": "aGVsbG8=",
       "headers": Array [],
