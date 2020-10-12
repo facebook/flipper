@@ -1,3 +1,8 @@
+# 0.62.0 (12/10/2020)
+
+ * [D24136401](https://github.com/facebook/flipper/search?q=D24136401&type=Commits) -  [iOS][Network] Network plugin now supports iOS 14
+
+
 # 0.60.0 (30/9/2020)
 
  * [D23718455](https://github.com/facebook/flipper/search?q=D23718455&type=Commits) -  [Internal]
