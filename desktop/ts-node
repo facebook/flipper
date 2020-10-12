@@ -4,4 +4,4 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-env TS_NODE_TRANSPILE_ONLY=true node --require ts-node/register "$@"
+env TS_NODE_TRANSPILE_ONLY=true node --max_old_space_size=4096 --require ts-node/register "$@"
