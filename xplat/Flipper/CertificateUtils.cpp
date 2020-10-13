@@ -14,6 +14,9 @@
 #include <openssl/rsa.h>
 #include <cstring>
 
+namespace facebook {
+namespace flipper {
+
 void free(
     EVP_PKEY* pKey,
     X509_REQ* x509_req,
@@ -222,3 +225,6 @@ void free(
   BIO_free_all(privateKey);
   BIO_free_all(csrBio);
 }
+
+} // namespace flipper
+} // namespace facebook

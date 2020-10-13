@@ -57,7 +57,7 @@ std::string ConnectionContextStore::getCertificateSigningRequest() {
 
   // Clean all state and generate a new one
   resetState();
-  bool success = generateCertSigningRequest(
+  bool success = facebook::flipper::generateCertSigningRequest(
       deviceData_.appId.c_str(),
       absoluteFilePath(CSR_FILE_NAME).c_str(),
       absoluteFilePath(PRIVATE_KEY_FILE).c_str());

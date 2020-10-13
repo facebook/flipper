@@ -12,9 +12,15 @@
 #include <openssl/rsa.h>
 #include <stdio.h>
 
+namespace facebook {
+namespace flipper {
+
 bool generateCertSigningRequest(
     const char* appId,
     const char* csrFile,
     const char* privateKeyFile);
+
+} // namespace flipper
+} // namespace facebook
 
 #endif /* CertificateUtils_hpp */
