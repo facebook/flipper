@@ -4431,10 +4431,10 @@ connect@^3.6.5:
     parseurl "~1.3.3"
     utils-merge "1.0.1"
 
-console-feed@^3.1.7:
-  version "3.1.7"
-  resolved "https://registry.yarnpkg.com/console-feed/-/console-feed-3.1.7.tgz#0a6baed931e0faf497791dd7536f43fe68320d9c"
-  integrity sha512-a/lWpS9PBDEejClDqM8iOi+UCP/uC5Ki4ptP6uv3WYI4ZONB1M+u3ruBuDVEb9DDyARcQPtI6wUDwSxfaoWzpw==
+console-feed@^3.1.8:
+  version "3.1.8"
+  resolved "https://registry.yarnpkg.com/console-feed/-/console-feed-3.1.8.tgz#774e5f208c447df0544f104a3e9dd2766b784811"
+  integrity sha512-v+jXEtH5JKcqXxT4C0dIoNv5mEO6qWISFwjsQjdpTgTtEuKbgww4ggJaq1W62U/AAY18CPpt9Kqprz52wnARVw==
   dependencies:
     "@emotion/core" "^10.0.10"
     "@emotion/styled" "^10.0.12"
