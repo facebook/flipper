@@ -4384,10 +4384,10 @@ doctrine@^3.0.0:
   dependencies:
     esutils "^2.0.2"
 
-docusaurus-plugin-internaldocs-fb@^0.5.1:
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/docusaurus-plugin-internaldocs-fb/-/docusaurus-plugin-internaldocs-fb-0.5.1.tgz#12373b39aedab11c80d41e119a26ac38d6d5b67d"
-  integrity sha512-h5Vt6MibdXZP4UPp00DAMaa3bu43jq2MjpzDj3swPTVsYw1jxmmNMWZlTLmoX9JTJM0jCFpd9BpfRSIWyNMTew==
+docusaurus-plugin-internaldocs-fb@^0.5.2:
+  version "0.5.2"
+  resolved "https://registry.yarnpkg.com/docusaurus-plugin-internaldocs-fb/-/docusaurus-plugin-internaldocs-fb-0.5.2.tgz#635a8a7958aa64b71a92b1424a6f2a1f3d8f75a5"
+  integrity sha512-BW/Qv3P3Ztil0W3SQExL/Yq2wLEJ+IfsoGZo+3v5Gfd/fV/Oqe1EfnrW40fqhfKJFNnTKuSdP77dL8UGV0ejHA==
 
 dom-converter@^0.2:
   version "0.2.0"
