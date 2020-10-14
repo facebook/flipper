@@ -23,7 +23,6 @@ import {
   DetailSidebar,
   styled,
   SearchableTable,
-  FlipperPlugin,
   Sheet,
   TableHighlightedRows,
   TableRows,
@@ -36,8 +35,8 @@ import {
   Response,
   Route,
   ResponseFollowupChunk,
-  PersistedState,
   Header,
+  MockRoute,
 } from './types';
 import {convertRequestToCurlCommand, getHeaderValue, decodeBody} from './utils';
 import RequestDetails from './RequestDetails';
@@ -45,7 +44,7 @@ import {clipboard} from 'electron';
 import {URL} from 'url';
 import {MockResponseDialog} from './MockResponseDialog';
 import {combineBase64Chunks} from './chunks';
-import {DefaultKeyboardAction} from 'flipper-plugin';
+import {PluginClient, createState, usePlugin, useValue} from 'flipper-plugin';
 
 const LOCALSTORAGE_MOCK_ROUTE_LIST_KEY = '__NETWORK_CACHED_MOCK_ROUTE_LIST';
 
@@ -54,17 +53,14 @@ export const BodyOptions = {
   parsed: 'parsed',
 };
 
-type State = {
-  selectedIds: Array<RequestId>;
-  searchTerm: string;
-  routes: {[id: string]: Route};
-  nextRouteId: number;
-  isMockResponseSupported: boolean;
-  showMockResponseDialog: boolean;
-  detailBodyFormat: string;
-  highlightedRows: Set<string> | null | undefined;
-  requests: {[id: string]: Request};
-  responses: {[id: string]: Response};
+type Events = {
+  newRequest: Request;
+  newResponse: Response;
+  partialResponse: Response | ResponseFollowupChunk;
+};
+
+type Methods = {
+  mockResponses(params: {routes: MockRoute[]}): Promise<void>;
 };
 
 const COLUMN_SIZE = {
@@ -146,119 +142,131 @@ export const NetworkRouteContext = createContext<NetworkRouteManager>(
   nullNetworkRouteManager,
 );
 
-export default class extends FlipperPlugin<State, any, PersistedState> {
-  static keyboardActions: Array<DefaultKeyboardAction> = ['clear'];
-  static subscribed = [];
-  static defaultPersistedState: PersistedState = {
-    requests: {},
-    responses: {},
-    partialResponses: {},
-  };
-  networkRouteManager: NetworkRouteManager = nullNetworkRouteManager;
+export function plugin(client: PluginClient<Events, Methods>) {
+  const networkRouteManager = createState<NetworkRouteManager>(
+    nullNetworkRouteManager,
+  );
 
-  static metricsReducer(persistedState: PersistedState) {
-    const failures = Object.values(persistedState.responses).reduce(function (
-      previous,
-      values,
-    ) {
-      return previous + (values.status >= 400 ? 1 : 0);
-    },
-    0);
-    return Promise.resolve({NUMBER_NETWORK_FAILURES: failures});
-  }
+  const selectedIds = createState<Array<RequestId>>([]);
+  const searchTerm = createState<string>('');
+  const routes = createState<{[id: string]: Route}>({});
+  const nextRouteId = createState<number>(0);
+  const isMockResponseSupported = createState<boolean>(false);
+  const showMockResponseDialog = createState<boolean>(false);
+  const detailBodyFormat = createState<string>(BodyOptions.parsed);
+  const highlightedRows = createState<Set<string> | null | undefined>(
+    new Set(),
+  );
+  const isDeeplinked = createState<boolean>(false);
+  const requests = createState<{[id: string]: Request}>(
+    {},
+    {persist: 'requests'},
+  );
+  const responses = createState<{[id: string]: Response}>(
+    {},
+    {persist: 'responses'},
+  );
 
-  static persistedStateReducer(
-    persistedState: PersistedState,
-    method: string,
-    data: Request | Response | ResponseFollowupChunk,
-  ) {
-    switch (method) {
-      case 'newRequest':
-        return Object.assign({}, persistedState, {
-          requests: {...persistedState.requests, [data.id]: data as Request},
-        });
-      case 'newResponse':
-        const response: Response = data as Response;
-        return Object.assign({}, persistedState, {
-          responses: {
-            ...persistedState.responses,
-            [response.id]: response,
-          },
-        });
-      case 'partialResponse':
-        /* Some clients (such as low end Android devices) struggle to serialise large payloads in one go, so partial responses allow them
-           to split payloads into chunks and serialise each individually.
+  const partialResponses = createState<{
+    [id: string]: {
+      initialResponse?: Response;
+      followupChunks: {[id: number]: string};
+    };
+  }>({}, {persist: 'partialResponses'});
 
-           Such responses will be distinguished between normal responses by both:
-             * Being sent to the partialResponse method.
-             * Having a totalChunks value > 1.
-
-           The first chunk will always be included in the initial response. This response must have index 0.
-           The remaining chunks will be sent in ResponseFollowupChunks, which each contain another piece of the payload, along with their index from 1 onwards.
-           The payload of each chunk is individually encoded in the same way that full responses are.
-
-           The order that initialResponse, and followup chunks are recieved is not guaranteed to be in index order.
-        */
-        const message: Response | ResponseFollowupChunk = data as
-          | Response
-          | ResponseFollowupChunk;
-        if (message.index !== undefined && message.index > 0) {
-          // It's a follow up chunk
-          const followupChunk: ResponseFollowupChunk = message as ResponseFollowupChunk;
-          const partialResponseEntry = persistedState.partialResponses[
-            followupChunk.id
-          ] ?? {followupChunks: []};
-          const newPartialResponseEntry = {
-            ...partialResponseEntry,
-            followupChunks: {
-              ...partialResponseEntry.followupChunks,
-              [followupChunk.index]: followupChunk.data,
-            },
-          };
-          const newPersistedState = {
-            ...persistedState,
-            partialResponses: {
-              ...persistedState.partialResponses,
-              [followupChunk.id]: newPartialResponseEntry,
-            },
-          };
-          return this.assembleChunksIfResponseIsComplete(
-            newPersistedState,
-            followupChunk.id,
-          );
-        }
-        // It's an initial chunk
-        const partialResponse: Response = message as Response;
-        const partialResponseEntry = persistedState.partialResponses[
-          partialResponse.id
-        ] ?? {
-          followupChunks: {},
-        };
-        const newPartialResponseEntry = {
-          ...partialResponseEntry,
-          initialResponse: partialResponse,
-        };
-        const newPersistedState = {
-          ...persistedState,
-          partialResponses: {
-            ...persistedState.partialResponses,
-            [partialResponse.id]: newPartialResponseEntry,
-          },
-        };
-        return this.assembleChunksIfResponseIsComplete(
-          newPersistedState,
-          partialResponse.id,
-        );
-      default:
-        return persistedState;
+  client.onDeepLink((payload: unknown) => {
+    if (typeof payload === 'string') {
+      parseDeepLinkPayload(payload);
+      isDeeplinked.set(true);
     }
-  }
+  });
 
-  static assembleChunksIfResponseIsComplete(
-    persistedState: PersistedState,
+  client.addMenuEntry({
+    action: 'clear',
+    handler: clearLogs,
+  });
+
+  client.onConnect(() => {
+    init();
+  });
+
+  client.onDeactivate(() => {
+    isDeeplinked.set(false);
+  });
+
+  client.onMessage('newRequest', (data) => {
+    requests.update((draft) => {
+      draft[data.id] = data;
+    });
+  });
+
+  client.onMessage('newResponse', (data) => {
+    responses.update((draft) => {
+      draft[data.id] = data;
+    });
+  });
+
+  client.onMessage('partialResponse', (data) => {
+    /* Some clients (such as low end Android devices) struggle to serialise large payloads in one go, so partial responses allow them
+        to split payloads into chunks and serialise each individually.
+
+        Such responses will be distinguished between normal responses by both:
+          * Being sent to the partialResponse method.
+          * Having a totalChunks value > 1.
+
+        The first chunk will always be included in the initial response. This response must have index 0.
+        The remaining chunks will be sent in ResponseFollowupChunks, which each contain another piece of the payload, along with their index from 1 onwards.
+        The payload of each chunk is individually encoded in the same way that full responses are.
+
+        The order that initialResponse, and followup chunks are recieved is not guaranteed to be in index order.
+    */
+    const message: Response | ResponseFollowupChunk = data as
+      | Response
+      | ResponseFollowupChunk;
+    if (message.index !== undefined && message.index > 0) {
+      // It's a follow up chunk
+      const followupChunk: ResponseFollowupChunk = message as ResponseFollowupChunk;
+      const partialResponseEntry = partialResponses.get()[followupChunk.id] ?? {
+        followupChunks: {},
+      };
+
+      const newPartialResponseEntry = produce(partialResponseEntry, (draft) => {
+        draft.followupChunks[followupChunk.index] = followupChunk.data;
+      });
+      const newPartialResponse = {
+        ...partialResponses.get(),
+        [followupChunk.id]: newPartialResponseEntry,
+      };
+
+      assembleChunksIfResponseIsComplete(newPartialResponse, followupChunk.id);
+      return;
+    }
+    // It's an initial chunk
+    const partialResponse: Response = message as Response;
+    const partialResponseEntry = partialResponses.get()[partialResponse.id] ?? {
+      followupChunks: {},
+    };
+    const newPartialResponseEntry = {
+      ...partialResponseEntry,
+      initialResponse: partialResponse,
+    };
+    const newPartialResponse = {
+      ...partialResponses.get(),
+      [partialResponse.id]: newPartialResponseEntry,
+    };
+    assembleChunksIfResponseIsComplete(newPartialResponse, partialResponse.id);
+  });
+
+  function assembleChunksIfResponseIsComplete(
+    partialResp: {
+      [id: string]: {
+        initialResponse?: Response;
+        followupChunks: {[id: number]: string};
+      };
+    },
     responseId: string,
-  ): PersistedState {
-    const partialResponseEntry = persistedState.partialResponses[responseId];
+  ) {
+    const partialResponseEntry = partialResp[responseId];
     const numChunks = partialResponseEntry.initialResponse?.totalChunks;
     if (
       !partialResponseEntry.initialResponse ||
@@ -266,7 +274,8 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
       Object.keys(partialResponseEntry.followupChunks).length + 1 < numChunks
     ) {
       // Partial response not yet complete, do nothing.
-      return persistedState;
+      partialResponses.set(partialResp);
+      return;
     }
     // Partial response has all required chunks, convert it to a full Response.
 
@@ -289,213 +298,131 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
       data: btoa(data),
     };
 
-    return {
-      ...persistedState,
-      responses: {
-        ...persistedState.responses,
-        [newResponse.id]: newResponse,
-      },
-      partialResponses: Object.fromEntries(
-        Object.entries(persistedState.partialResponses).filter(
-          ([k, _v]: [string, unknown]) => k !== newResponse.id,
-        ),
-      ),
-    };
-  }
-
-  static deserializePersistedState = (serializedString: string) => {
-    return JSON.parse(serializedString);
-  };
-
-  static getActiveNotifications(persistedState: PersistedState) {
-    const responses = persistedState
-      ? persistedState.responses || new Map()
-      : new Map();
-    const r: Array<Response> = Object.values(responses);
-    return (
-      r
-        // Show error messages for all status codes indicating a client or server error
-        .filter((response: Response) => response.status >= 400)
-        .map((response: Response) => {
-          const request = persistedState.requests[response.id];
-          const url: string = (request && request.url) || '(URL missing)';
-          return {
-            id: response.id,
-            title: `HTTP ${response.status}: Network request failed`,
-            message: `Request to ${url} failed. ${response.reason}`,
-            severity: 'error' as 'error',
-            timestamp: response.timestamp,
-            category: `HTTP${response.status}`,
-            action: response.id,
-          };
-        })
-    );
-  }
-
-  constructor(props: any) {
-    super(props);
-    this.state = {
-      selectedIds: [],
-      searchTerm: '',
-      routes: {},
-      nextRouteId: 0,
-      isMockResponseSupported: false,
-      showMockResponseDialog: false,
-      detailBodyFormat: BodyOptions.parsed,
-      highlightedRows: new Set(),
-      requests: {},
-      responses: {},
-    };
-  }
-
-  init() {
-    this.client.supportsMethod('mockResponses').then((result) => {
-      const routes = JSON.parse(
-        localStorage.getItem(LOCALSTORAGE_MOCK_ROUTE_LIST_KEY) || '{}',
-      );
-      this.setState({
-        routes: routes,
-        isMockResponseSupported: result,
-        showMockResponseDialog: false,
-        nextRouteId: Object.keys(routes).length,
-      });
-      informClientMockChange(routes);
+    responses.update((draft) => {
+      draft[newResponse.id] = newResponse;
     });
 
-    this.setState(this.parseDeepLinkPayload(this.props.deepLinkPayload));
+    partialResponses.update((draft) => {
+      delete draft[newResponse.id];
+    });
+  }
+
+  function init() {
+    client.supportsMethod('mockResponses').then((result) => {
+      const newRoutes = JSON.parse(
+        localStorage.getItem(LOCALSTORAGE_MOCK_ROUTE_LIST_KEY) || '{}',
+      );
+      routes.set(newRoutes);
+      isMockResponseSupported.set(result);
+      showMockResponseDialog.set(false);
+      nextRouteId.set(Object.keys(routes).length);
+
+      informClientMockChange(routes.get());
+    });
 
     // declare new variable to be called inside the interface
-    const setState = this.setState.bind(this);
-    const informClientMockChange = this.informClientMockChange.bind(this);
-    this.networkRouteManager = {
+    networkRouteManager.set({
       addRoute() {
-        setState(
-          produce((draftState: State) => {
-            const nextRouteId = draftState.nextRouteId;
-            draftState.routes[nextRouteId.toString()] = {
-              requestUrl: '',
-              requestMethod: 'GET',
-              responseData: '',
-              responseHeaders: {},
-              responseStatus: '200',
-            };
-            draftState.nextRouteId = nextRouteId + 1;
-          }),
-        );
+        const newNextRouteId = nextRouteId.get();
+        routes.update((draft) => {
+          draft[newNextRouteId.toString()] = {
+            requestUrl: '',
+            requestMethod: 'GET',
+            responseData: '',
+            responseHeaders: {},
+            responseStatus: '200',
+          };
+        });
+        nextRouteId.set(newNextRouteId + 1);
       },
       modifyRoute(id: string, routeChange: Partial<Route>) {
-        setState(
-          produce((draftState: State) => {
-            if (!draftState.routes.hasOwnProperty(id)) {
-              return;
-            }
-            draftState.routes[id] = {...draftState.routes[id], ...routeChange};
-            informClientMockChange(draftState.routes);
-          }),
-        );
+        if (!routes.get().hasOwnProperty(id)) {
+          return;
+        }
+        routes.update((draft) => {
+          Object.assign(draft[id], routeChange);
+        });
+        informClientMockChange(routes.get());
       },
       removeRoute(id: string) {
-        setState(
-          produce((draftState: State) => {
-            if (draftState.routes.hasOwnProperty(id)) {
-              delete draftState.routes[id];
-            }
-            informClientMockChange(draftState.routes);
-          }),
-        );
+        if (routes.get().hasOwnProperty(id)) {
+          routes.update((draft) => {
+            delete draft[id];
+          });
+        }
+        informClientMockChange(routes.get());
       },
       copyHighlightedCalls(
         highlightedRows: Set<string> | null | undefined,
         requests: {[id: string]: Request},
         responses: {[id: string]: Response},
       ) {
-        setState((state) => {
-          const nextState = produce(state, (state: State) => {
-            // iterate through highlighted rows
-            highlightedRows?.forEach((row) => {
-              const response = responses[row];
-              // convert headers
-              const headers: {[id: string]: Header} = {};
-              response.headers.forEach((e) => {
-                headers[e.key] = e;
-              });
-
-              // convert data
-              const responseData =
-                response && response.data ? decodeBody(response) : null;
-
-              const nextRouteId = state.nextRouteId;
-              state.routes[nextRouteId.toString()] = {
-                requestUrl: requests[row].url,
-                requestMethod: requests[row].method,
-                responseData: responseData as string,
-                responseHeaders: headers,
-                responseStatus: responses[row].status.toString(),
-              };
-              state.nextRouteId = nextRouteId + 1;
-            });
+        // iterate through highlighted rows
+        highlightedRows?.forEach((row) => {
+          const response = responses[row];
+          // convert headers
+          const headers: {[id: string]: Header} = {};
+          response.headers.forEach((e) => {
+            headers[e.key] = e;
           });
-          informClientMockChange(nextState.routes);
-          return nextState;
+
+          // convert data
+          const responseData =
+            response && response.data ? decodeBody(response) : null;
+
+          const newNextRouteId = nextRouteId.get();
+          routes.update((draft) => {
+            draft[newNextRouteId.toString()] = {
+              requestUrl: requests[row].url,
+              requestMethod: requests[row].method,
+              responseData: responseData as string,
+              responseHeaders: headers,
+              responseStatus: responses[row].status.toString(),
+            };
+          });
+          nextRouteId.set(newNextRouteId + 1);
         });
+
+        informClientMockChange(routes.get());
       },
-    };
+    });
   }
 
-  teardown() {}
-
-  onKeyboardAction = (action: string) => {
-    if (action === 'clear') {
-      this.clearLogs();
-    }
-  };
-
-  parseDeepLinkPayload = (
-    deepLinkPayload: unknown,
-  ): Pick<State, 'selectedIds' | 'searchTerm'> => {
+  function parseDeepLinkPayload(deepLinkPayload: unknown) {
     const searchTermDelim = 'searchTerm=';
     if (typeof deepLinkPayload !== 'string') {
-      return {
-        selectedIds: [],
-        searchTerm: '',
-      };
+      selectedIds.set([]);
+      searchTerm.set('');
     } else if (deepLinkPayload.startsWith(searchTermDelim)) {
-      return {
-        selectedIds: [],
-        searchTerm: deepLinkPayload.slice(searchTermDelim.length),
-      };
+      selectedIds.set([]);
+      searchTerm.set(deepLinkPayload.slice(searchTermDelim.length));
+    } else {
+      selectedIds.set([deepLinkPayload]);
+      searchTerm.set('');
     }
-    return {
-      selectedIds: [deepLinkPayload],
-      searchTerm: '',
-    };
-  };
+  }
 
-  onRowHighlighted = (selectedIds: Array<RequestId>) =>
-    this.setState({selectedIds});
+  function clearLogs() {
+    selectedIds.set([]);
+    responses.set({});
+    requests.set({});
+  }
 
-  copyRequestCurlCommand = () => {
-    const {requests} = this.props.persistedState;
-    const {selectedIds} = this.state;
+  function copyRequestCurlCommand() {
     // Ensure there is only one row highlighted.
-    if (selectedIds.length !== 1) {
+    if (selectedIds.get().length !== 1) {
       return;
     }
 
-    const request = requests[selectedIds[0]];
+    const request = requests.get()[selectedIds.get()[0]];
     if (!request) {
       return;
     }
     const command = convertRequestToCurlCommand(request);
     clipboard.writeText(command);
-  };
+  }
 
-  clearLogs = () => {
-    this.setState({selectedIds: []});
-    this.props.setPersistedState({responses: {}, requests: {}});
-  };
-
-  informClientMockChange = (routes: {[id: string]: Route}) => {
+  async function informClientMockChange(routes: {[id: string]: Route}) {
     const existedIdSet: {[id: string]: {[method: string]: boolean}} = {};
     const filteredRoutes: {[id: string]: Route} = Object.entries(routes).reduce(
       (accRoutes, [id, route]) => {
@@ -520,91 +447,96 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
       {},
     );
 
-    if (this.state.isMockResponseSupported) {
+    if (isMockResponseSupported.get()) {
       const routesValuesArray = Object.values(filteredRoutes);
       localStorage.setItem(
         LOCALSTORAGE_MOCK_ROUTE_LIST_KEY,
         JSON.stringify(routesValuesArray),
       );
-      this.client.call('mockResponses', {
-        routes: routesValuesArray.map((route: Route) => ({
-          requestUrl: route.requestUrl,
-          method: route.requestMethod,
-          data: route.responseData,
-          headers: [...Object.values(route.responseHeaders)],
-          status: route.responseStatus,
-        })),
-      });
+
+      try {
+        await client.send('mockResponses', {
+          routes: routesValuesArray.map((route: Route) => ({
+            requestUrl: route.requestUrl,
+            method: route.requestMethod,
+            data: route.responseData,
+            headers: [...Object.values(route.responseHeaders)],
+            status: route.responseStatus,
+          })),
+        });
+      } catch (e) {
+        console.error('Failed to mock responses.', e);
+      }
     }
-  };
-
-  onMockButtonPressed = () => {
-    this.setState({showMockResponseDialog: true});
-  };
-
-  onCloseButtonPressed = () => {
-    this.setState({showMockResponseDialog: false});
-  };
-
-  onSelectFormat = (bodyFormat: string) => {
-    this.setState({detailBodyFormat: bodyFormat});
-  };
-
-  renderSidebar = () => {
-    const {requests, responses} = this.props.persistedState;
-    const {selectedIds, detailBodyFormat} = this.state;
-    const selectedId = selectedIds.length === 1 ? selectedIds[0] : null;
-
-    if (!selectedId) {
-      return null;
-    }
-    const requestWithId = requests[selectedId];
-    if (!requestWithId) {
-      return null;
-    }
-    return (
-      <RequestDetails
-        key={selectedId}
-        request={requestWithId}
-        response={responses[selectedId]}
-        bodyFormat={detailBodyFormat}
-        onSelectFormat={this.onSelectFormat}
-      />
-    );
-  };
-
-  render() {
-    const {requests, responses} = this.props.persistedState;
-    const {
-      selectedIds,
-      searchTerm,
-      routes,
-      isMockResponseSupported,
-      showMockResponseDialog,
-    } = this.state;
-
-    return (
-      <FlexColumn grow={true}>
-        <NetworkRouteContext.Provider value={this.networkRouteManager}>
-          <NetworkTable
-            requests={requests || {}}
-            responses={responses || {}}
-            routes={routes}
-            onMockButtonPressed={this.onMockButtonPressed}
-            onCloseButtonPressed={this.onCloseButtonPressed}
-            showMockResponseDialog={showMockResponseDialog}
-            clear={this.clearLogs}
-            copyRequestCurlCommand={this.copyRequestCurlCommand}
-            onRowHighlighted={this.onRowHighlighted}
-            highlightedRows={selectedIds ? new Set(selectedIds) : null}
-            searchTerm={searchTerm}
-            isMockResponseSupported={isMockResponseSupported}
-          />
-          <DetailSidebar width={500}>{this.renderSidebar()}</DetailSidebar>
-        </NetworkRouteContext.Provider>
-      </FlexColumn>
-    );
   }
+
+  return {
+    selectedIds,
+    searchTerm,
+    routes,
+    nextRouteId,
+    isMockResponseSupported,
+    showMockResponseDialog,
+    detailBodyFormat,
+    highlightedRows,
+    isDeeplinked,
+    requests,
+    responses,
+    partialResponses,
+    networkRouteManager,
+    clearLogs,
+    onRowHighlighted(selectedIdsArr: Array<RequestId>) {
+      selectedIds.set(selectedIdsArr);
+    },
+    onMockButtonPressed() {
+      showMockResponseDialog.set(true);
+    },
+    onCloseButtonPressed() {
+      showMockResponseDialog.set(false);
+    },
+    onSelectFormat(bodyFormat: string) {
+      detailBodyFormat.set(bodyFormat);
+    },
+    copyRequestCurlCommand,
+    init,
+  };
+}
+
+export function Component() {
+  const instance = usePlugin(plugin);
+
+  const requests = useValue(instance.requests);
+  const responses = useValue(instance.responses);
+  const selectedIds = useValue(instance.selectedIds);
+  const searchTerm = useValue(instance.searchTerm);
+  const routes = useValue(instance.routes);
+  const isMockResponseSupported = useValue(instance.isMockResponseSupported);
+  const showMockResponseDialog = useValue(instance.showMockResponseDialog);
+  const networkRouteManager = useValue(instance.networkRouteManager);
+
+  return (
+    <FlexColumn grow={true}>
+      <NetworkRouteContext.Provider value={networkRouteManager}>
+        <NetworkTable
+          requests={requests || {}}
+          responses={responses || {}}
+          routes={routes}
+          onMockButtonPressed={instance.onMockButtonPressed}
+          onCloseButtonPressed={instance.onCloseButtonPressed}
+          showMockResponseDialog={showMockResponseDialog}
+          clear={instance.clearLogs}
+          copyRequestCurlCommand={instance.copyRequestCurlCommand}
+          onRowHighlighted={instance.onRowHighlighted}
+          highlightedRows={selectedIds ? new Set(selectedIds) : null}
+          searchTerm={searchTerm}
+          isMockResponseSupported={isMockResponseSupported}
+        />
+        <DetailSidebar width={500}>
+          <Sidebar />
+        </DetailSidebar>
+      </NetworkRouteContext.Provider>
+    </FlexColumn>
+  );
 }
 
 type NetworkTableProps = {
@@ -807,6 +739,33 @@ function calculateState(
     requests: props.requests,
     responses: props.responses,
   };
+}
+
+function Sidebar() {
+  const instance = usePlugin(plugin);
+  const requests = useValue(instance.requests);
+  const responses = useValue(instance.responses);
+  const selectedIds = useValue(instance.selectedIds);
+  const detailBodyFormat = useValue(instance.detailBodyFormat);
+  const selectedId = selectedIds.length === 1 ? selectedIds[0] : null;
+
+  if (!selectedId) {
+    return null;
+  }
+  const requestWithId = requests[selectedId];
+  if (!requestWithId) {
+    return null;
+  }
+
+  return (
+    <RequestDetails
+      key={selectedId}
+      request={requestWithId}
+      response={responses[selectedId]}
+      bodyFormat={detailBodyFormat}
+      onSelectFormat={instance.onSelectFormat}
+    />
+  );
 }
 
 class NetworkTable extends PureComponent<NetworkTableProps, NetworkTableState> {
