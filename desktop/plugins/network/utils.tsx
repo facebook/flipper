@@ -9,6 +9,7 @@
 
 import pako from 'pako';
 import {Request, Response, Header} from './types';
+import {Base64} from 'js-base64';
 
 export function getHeaderValue(headers: Array<Header>, key: string): string {
   for (const header of headers) {
@@ -24,42 +25,33 @@ export function decodeBody(container: Request | Response): string {
     return '';
   }
 
-  const b64Decoded = atob(container.data);
   try {
-    if (getHeaderValue(container.headers, 'Content-Encoding') === 'gzip') {
-      // for gzip, use pako to decompress directly to unicode string
-      return decompress(b64Decoded);
+    const isGzip =
+      getHeaderValue(container.headers, 'Content-Encoding') === 'gzip';
+    if (isGzip) {
+      try {
+        // The request is gzipped, so convert the base64 back to the raw bytes first,
+        // then inflate. pako will detect the BOM headers and return a proper utf-8 string right away
+        return pako.inflate(Base64.atob(container.data), {to: 'string'});
+      } catch (e) {
+        // on iOS, the stream send to flipper is already inflated, so the content-encoding will not
+        // match the actual data anymore, and we should skip inflating.
+        // In that case, we intentionally fall-through
+        if (!('' + e).includes('incorrect header check')) {
+          throw e;
+        }
+      }
     }
-
-    return b64Decoded;
+    // If this is not a gzipped request, assume we are interested in a proper utf-8 string.
+    //  - If the raw binary data in is needed, in base64 form, use container.data directly
+    //  - either directly use container.data (for example)
+    return Base64.decode(container.data);
   } catch (e) {
     console.warn(
-      `Flipper failed to decode request/response body (size: ${b64Decoded.length}): ${e}`,
+      `Flipper failed to decode request/response body (size: ${container.data.length}): ${e}`,
     );
     return '';
   }
-}
-
-function decompress(body: string): string {
-  const charArray = body.split('').map((x) => x.charCodeAt(0));
-
-  const byteArray = new Uint8Array(charArray);
-
-  try {
-    if (body) {
-      return pako.inflate(byteArray, {to: 'string'});
-    } else {
-      return body;
-    }
-  } catch (e) {
-    // Sometimes Content-Encoding is 'gzip' but the body is already decompressed.
-    // Assume this is the case when decompression fails.
-    if (!('' + e).includes('incorrect header check')) {
-      console.warn('decompression failed: ' + e);
-    }
-  }
-
-  return body;
 }
 
 export function convertRequestToCurlCommand(request: Request): string {
@@ -70,7 +62,7 @@ export function convertRequestToCurlCommand(request: Request): string {
     const headerStr = `${header.key}: ${header.value}`;
     command += ` -H ${escapedString(headerStr)}`;
   });
-  // Add body
+  // Add body. TODO: we only want this for non-binary data! See D23403095
   const body = decodeBody(request);
   if (body) {
     command += ` -d ${escapedString(body)}`;

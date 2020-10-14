@@ -366,7 +366,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
             headers[e.key] = e;
           });
 
-          // convert data
+          // convert data TODO: we only want this for non-binary data! See D23403095
           const responseData =
             response && response.data ? decodeBody(response) : null;
 
@@ -607,6 +607,7 @@ function buildRow(
     )
     .join('\n')}`;
 
+    // TODO: we want decoding only for non-binary data! See D23403095
     const requestData = request.data ? decodeBody(request) : null;
     const responseData =
       response && response.data ? decodeBody(response) : null;

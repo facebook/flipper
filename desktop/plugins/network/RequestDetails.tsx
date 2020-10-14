@@ -397,6 +397,7 @@ const Empty = () => (
 );
 
 function renderRawBody(container: Request | Response) {
+  // TODO: we want decoding only for non-binary data! See D23403095
   const decoded = decodeBody(container);
   return (
     <BodyContainer>

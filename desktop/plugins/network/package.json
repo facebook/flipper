@@ -26,6 +26,7 @@
     "flipper-plugin": "0.59.0"
   },
   "devDependencies": {
-    "@types/pako": "^1.0.1"
+    "@types/pako": "^1.0.1",
+    "js-base64": "^3.5.2"
   }
 }
