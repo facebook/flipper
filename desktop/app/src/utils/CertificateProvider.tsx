@@ -54,7 +54,7 @@ const deviceClientCertFile = 'device.crt';
 const caSubject = '/C=US/ST=CA/L=Menlo Park/O=Sonar/CN=SonarCA';
 const serverSubject = '/C=US/ST=CA/L=Menlo Park/O=Sonar/CN=localhost';
 const minCertExpiryWindowSeconds = 24 * 60 * 60;
-const allowedAppNameRegex = /^[\w._-]+$/;
+const allowedAppNameRegex = /^[\w.-]+$/;
 const logTag = 'CertificateProvider';
 /*
  * RFC2253 specifies the unamiguous x509 subject format.
@@ -395,11 +395,11 @@ export default class CertificateProvider {
               .filter((d) => d.foundCsr !== null)
               .map((d) => (d.foundCsr ? encodeURI(d.foundCsr) : 'null'));
             console.error(`Looking for CSR (url encoded):
-            
+
             ${encodeURI(this.santitizeString(csr))}
-            
+
             Found these:
-            
+
             ${foundCsrs.join('\n\n')}`);
             throw new Error(`No matching device found for app: ${appName}`);
           }

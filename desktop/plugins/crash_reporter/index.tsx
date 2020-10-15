@@ -321,7 +321,7 @@ export function parseCrashLog(
       const regForName = /.*\n/;
       const nameRegArr = regForName.exec(content);
       let name = nameRegArr ? nameRegArr[0] : fallbackReason;
-      const regForCallStack = /\tat[\w\s\n.$&+,:;=?@#|'<>.^*()%!-]*$/;
+      const regForCallStack = /\tat[\w\s\n\.$&+,:;=?@#|'<>.^*()%!-]*$/;
       const callStackArray = regForCallStack.exec(content);
       const callStack = callStackArray ? callStackArray[0] : '';
       let remainingString =
@@ -360,18 +360,12 @@ function truncate(baseString: string, numOfChars: number): string {
 }
 
 export function parsePath(content: string): Maybe<string> {
-  const regex = /Path: *[\w\-\/\.\t\ \_\%]*\n/;
+  const regex = /(?<=.*Path: *)[^\n]*/;
   const arr = regex.exec(content);
   if (!arr || arr.length <= 0) {
     return null;
   }
-  const pathString = arr[0];
-  const pathRegex = /[\w\-\/\.\t\ \_\%]*\n/;
-  const tmp = pathRegex.exec(pathString);
-  if (!tmp || tmp.length == 0) {
-    return null;
-  }
-  const path = tmp[0];
+  const path = arr[0];
   return path.trim();
 }
 
