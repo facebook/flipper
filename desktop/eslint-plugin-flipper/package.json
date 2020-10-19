@@ -15,7 +15,7 @@
   },
   "devDependencies": {
     "@types/jest": "26",
-    "@typescript-eslint/parser": "^4.2.0",
+    "@typescript-eslint/parser": "^4.4.1",
     "flipper-test-utils": "0.62.0",
     "jest": "^26",
     "metro-memory-fs": "^0.61.0",
