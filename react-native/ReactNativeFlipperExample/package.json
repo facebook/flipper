@@ -10,7 +10,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "react": "^16.13",
+    "react": "^16.14",
     "react-native": "^0.62.2",
     "react-native-flipper": "^0.62.0"
   },
