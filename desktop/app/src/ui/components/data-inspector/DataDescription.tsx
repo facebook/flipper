@@ -19,6 +19,7 @@ import React, {KeyboardEvent} from 'react';
 import Glyph from '../Glyph';
 import {HighlightContext} from '../Highlight';
 import Select from '../Select';
+import TimelineDataDescription from './TimelineDataDescription';
 
 const NullValue = styled.span({
   color: 'rgb(128, 128, 128)',
@@ -567,6 +568,24 @@ class DataDescriptionContainer extends PureComponent<{
     const highlighter = this.context;
 
     switch (type) {
+      case 'timeline': {
+        return (
+          <>
+            <TimelineDataDescription
+              timeline={JSON.parse(val)}
+              onClick={(id) => {
+                this.props.commit({
+                  value: id,
+                  keep: true,
+                  clear: false,
+                  set: true,
+                });
+              }}
+            />
+          </>
+        );
+      }
+
       case 'number':
         return <NumberValue>{+val}</NumberValue>;
 
