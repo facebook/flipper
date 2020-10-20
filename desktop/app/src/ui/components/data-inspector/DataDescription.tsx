@@ -641,6 +641,7 @@ class DataDescriptionContainer extends PureComponent<{
         }, {});
         return (
           <Select
+            disabled={!this.props.editable}
             options={options}
             selected={picker.selected}
             onChangeWithKey={(value: string) =>
