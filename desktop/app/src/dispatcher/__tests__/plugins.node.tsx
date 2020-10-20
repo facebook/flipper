@@ -19,7 +19,7 @@ import dispatcher, {
 import {PluginDetails} from 'flipper-plugin-lib';
 import path from 'path';
 import {remote} from 'electron';
-import {FlipperPlugin} from 'flipper';
+import {FlipperPlugin} from '../../plugin';
 import reducers, {State} from '../../reducers/index';
 import {getInstance} from '../../fb-stubs/Logger';
 import configureStore from 'redux-mock-store';

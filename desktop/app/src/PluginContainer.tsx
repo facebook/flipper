@@ -24,12 +24,11 @@ import {
   FlexRow,
   colors,
   styled,
-  ArchivedDevice,
   Glyph,
   Label,
   VBox,
   View,
-} from 'flipper';
+} from './ui';
 import {
   StaticView,
   setStaticView,
@@ -49,6 +48,7 @@ import {processMessageQueue} from './utils/messageQueue';
 import {ToggleButton, SmallText} from './ui';
 import {SandyPluginRenderer} from 'flipper-plugin';
 import {isDevicePluginDefinition} from './utils/pluginUtils';
+import ArchivedDevice from './devices/ArchivedDevice';
 
 const Container = styled(FlexColumn)({
   width: 0,

@@ -7,7 +7,7 @@
  * @format
  */
 
-import {FlexColumn, Button, styled, Text, FlexRow, Spacer} from 'flipper';
+import {FlexColumn, Button, styled, Text, FlexRow, Spacer} from '../ui';
 import React, {Component} from 'react';
 import {updateSettings, Action} from '../reducers/settings';
 import {

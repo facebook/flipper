@@ -9,7 +9,6 @@
 
 import React from 'react';
 import {connect} from 'react-redux';
-import {colors, GK} from 'flipper';
 
 import config from '../../fb-stubs/config';
 import {PluginNotification} from '../../reducers/notifications';
@@ -31,6 +30,8 @@ import {Group} from '../../reducers/supportForm';
 import {getInstance} from '../../fb-stubs/Logger';
 import {ConsoleLogs, errorCounterAtom} from '../ConsoleLogs';
 import {useValue} from 'flipper-plugin';
+import {colors} from '../../ui';
+import GK from '../../fb-stubs/GK';
 
 type OwnProps = {};
 

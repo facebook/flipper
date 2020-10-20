@@ -72,7 +72,7 @@ type Props = {
  * **Usage**
  *
  * ```jsx
- * import {ToggleButton} from 'flipper';
+ * import {ToggleButton} from '../ui';
  * <ToggleButton onClick={handler} toggled={boolean}/>
  * ```
  */

@@ -8,7 +8,15 @@
  */
 
 import electron from 'electron';
-import {FlexColumn, styled, Text, FlexRow, Input, colors, Glyph} from 'flipper';
+import {
+  FlexColumn,
+  styled,
+  Text,
+  FlexRow,
+  Input,
+  colors,
+  Glyph,
+} from '../../ui';
 import React, {useState} from 'react';
 import {promises as fs} from 'fs';
 import {remote} from 'electron';

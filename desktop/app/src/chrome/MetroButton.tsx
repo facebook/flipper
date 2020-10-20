@@ -8,16 +8,11 @@
  */
 
 import React, {useCallback, useEffect, useState} from 'react';
-import {
-  Button,
-  ButtonGroup,
-  MetroDevice,
-  connect,
-  colors,
-  styled,
-} from 'flipper';
+import {Button, ButtonGroup, colors} from '../ui';
 import {State} from '../reducers';
-import {MetroReportableEvent} from '../devices/MetroDevice';
+import MetroDevice, {MetroReportableEvent} from '../devices/MetroDevice';
+import styled from '@emotion/styled';
+import {connect} from 'react-redux';
 
 type LogEntry = {};
 

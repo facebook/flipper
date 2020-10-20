@@ -8,7 +8,7 @@
  */
 
 import React, {cloneElement, useState, useCallback, useMemo} from 'react';
-import {styled, Layout} from 'flipper';
+import {styled, Layout} from '../ui';
 import {Button, Divider, Badge, Tooltip, Avatar, Popover} from 'antd';
 import {
   MobileFilled,

@@ -12,7 +12,7 @@ import {Transition} from 'react-transition-group';
 import {TransitionStatus} from 'react-transition-group/Transition';
 import {setActiveSheet} from '../reducers/application';
 import {connect} from 'react-redux';
-import {styled} from 'flipper';
+import {styled} from '../ui';
 import {PLUGIN_SHEET_ELEMENT_ID} from '../ui/components/Sheet';
 import {ACTIVE_SHEET_PLUGIN_SHEET} from '../reducers/application';
 import {State as Store} from '../reducers';

@@ -175,7 +175,7 @@ function generateTestSuite(pluginName: string, snapShotFileName: string) {
 
 import fs from 'fs';
 import path from 'path';
-import {deserialize} from 'flipper';
+import {deserialize} from '../ui';
 import Plugin from '../';
 
 test('Verify events produce a consistent end state for plugin ${pluginName}', async () => {

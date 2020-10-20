@@ -8,7 +8,7 @@
  */
 
 import React, {cloneElement} from 'react';
-import {styled, FlexRow, FlexColumn} from 'flipper';
+import {styled, FlexRow, FlexColumn} from '../ui';
 import {Modal, Button, Image, Checkbox, Space, Typography} from 'antd';
 import {
   RocketOutlined,

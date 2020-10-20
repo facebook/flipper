@@ -24,7 +24,7 @@ import {
   Text,
   LoadingIndicator,
   Tooltip,
-} from 'flipper';
+} from '../../ui';
 import React, {useCallback, useState, useEffect} from 'react';
 import {List} from 'immutable';
 import {reportPlatformFailures, reportUsage} from '../../utils/metrics';

@@ -7,7 +7,7 @@
  * @format
  */
 
-import {Button, styled} from 'flipper';
+import {Button, styled} from '../ui';
 import {connect, ReactReduxContext} from 'react-redux';
 
 import {selectDevice, preferDevice} from '../reducers/connections';

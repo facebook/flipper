@@ -8,7 +8,7 @@
  */
 
 import React from 'react';
-import {FlexRow, styled, Layout} from 'flipper';
+import {FlexRow, styled, Layout} from './ui';
 import {connect} from 'react-redux';
 import TitleBar from './chrome/TitleBar';
 import MainSidebar2 from './chrome/mainsidebar/MainSidebar2';

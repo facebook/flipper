@@ -8,7 +8,7 @@
  */
 
 import React, {useEffect, useState, useCallback} from 'react';
-import {styled} from 'flipper';
+import {styled} from '../ui';
 import {Layout, Sidebar} from '../ui';
 import {theme} from './theme';
 import {Logger} from '../fb-interfaces/Logger';

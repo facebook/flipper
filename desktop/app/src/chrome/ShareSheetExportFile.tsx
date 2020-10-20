@@ -7,7 +7,7 @@
  * @format
  */
 
-import {FlexColumn, Button, styled, Text, FlexRow, Spacer} from 'flipper';
+import {FlexColumn, Button, styled, Text, FlexRow, Spacer} from '../ui';
 import React, {Component} from 'react';
 import {setExportStatusComponent, unsetShare} from '../reducers/application';
 import {reportPlatformFailures} from '../utils/metrics';

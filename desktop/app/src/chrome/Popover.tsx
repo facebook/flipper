@@ -15,7 +15,7 @@ import {
   Button,
   styled,
   colors,
-} from 'flipper';
+} from '../ui';
 import React, {PureComponent} from 'react';
 
 const Anchor = styled.img({

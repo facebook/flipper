@@ -27,8 +27,7 @@ import {
   styled,
   Text,
   LoadingIndicator,
-  getPluginKey,
-} from 'flipper';
+} from '../ui';
 import {connect} from 'react-redux';
 import RatingButton from './RatingButton';
 import DevicesButton from './DevicesButton';
@@ -46,6 +45,7 @@ import {reportUsage} from '../utils/metrics';
 import FpsGraph from './FpsGraph';
 import NetworkGraph from './NetworkGraph';
 import MetroButton from './MetroButton';
+import {getPluginKey} from '../utils/pluginUtils';
 
 const AppTitleBar = styled(FlexRow)<{focused?: boolean}>(({focused}) => ({
   userSelect: 'none',

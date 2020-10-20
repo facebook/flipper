@@ -17,13 +17,13 @@ import {
   styled,
   Input,
   Link,
-} from 'flipper';
+} from '../ui';
 import Popover from '../ui/components/Popover2';
 import GK from '../fb-stubs/GK';
 import * as UserFeedback from '../fb-stubs/UserFeedback';
 import {FeedbackPrompt} from '../fb-stubs/UserFeedback';
 import {connect} from 'react-redux';
-import {State as Store} from 'app/src/reducers';
+import {State as Store} from '../reducers';
 
 type PropsFromState = {
   sessionId: string | null;

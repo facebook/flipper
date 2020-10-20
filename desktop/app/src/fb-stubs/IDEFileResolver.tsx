@@ -7,7 +7,10 @@
  * @format
  */
 
-import {Element, ElementFramework} from 'flipper';
+import {
+  ElementFramework,
+  Element,
+} from '../ui/components/elements-inspector/ElementsInspector';
 
 export enum IDEType {
   'DIFFUSION',

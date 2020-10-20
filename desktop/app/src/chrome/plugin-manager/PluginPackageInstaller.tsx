@@ -15,7 +15,7 @@ import {
   Glyph,
   colors,
   LoadingIndicator,
-} from 'flipper';
+} from '../../ui';
 import styled from '@emotion/styled';
 import {default as FileSelector} from '../../ui/components/FileSelector';
 import React, {useState} from 'react';

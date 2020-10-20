@@ -7,8 +7,10 @@
  * @format
  */
 
-import {PluginClient, Client, Element} from 'flipper';
-import {Logger} from 'app/src/fb-interfaces/Logger';
+import Client from '../Client';
+import {Logger} from '../fb-interfaces/Logger';
+import {PluginClient} from '../plugin';
+import {Element} from '../ui';
 
 export default [] as Array<
   (

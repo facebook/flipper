@@ -7,7 +7,7 @@
  * @format
  */
 
-import {Button, ButtonGroup} from 'flipper';
+import {Button, ButtonGroup} from '../ui';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import path from 'path';

@@ -8,7 +8,7 @@
  */
 
 import {FlexRow, Button} from '../ui/index';
-import {styled, LoadingIndicator, Text} from 'flipper';
+import {styled, LoadingIndicator, Text} from '../ui';
 import React, {Component} from 'react';
 import {colors} from '../ui/components/colors';
 

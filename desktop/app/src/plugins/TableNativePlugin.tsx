@@ -33,7 +33,7 @@ import textContent from '../utils/textContent';
 import createPaste from '../fb-stubs/createPaste';
 import {ReactNode} from 'react';
 import React from 'react';
-import {KeyboardActions} from 'app/src/MenuBar';
+import {KeyboardActions} from '../MenuBar';
 
 type ID = string;
 
