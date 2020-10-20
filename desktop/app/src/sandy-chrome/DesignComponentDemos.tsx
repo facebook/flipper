@@ -118,11 +118,34 @@ const demos: PreviewProps[] = [
     title: 'Layout.ScrollContainer',
     description:
       'Use this component to create an area that can be scrolled. The scrollable area will automatically consume all available space. ScrollContainer accepts all properties that Container accepts as well. Padding will be applied to the child rather than the parent.',
-    props: [],
+    props: [
+      [
+        'horizontal / vertical',
+        'boolean',
+        'specifies in which directions the container should scroll. If none is specified the container will scroll in both directions',
+      ],
+    ],
     demos: {
       'Basic usage': (
         <Layout.ScrollContainer style={{height: 100}}>
           {largeChild}
+        </Layout.ScrollContainer>
+      ),
+      'ScrollContainer + Vertical for vertical scroll only': (
+        <Layout.ScrollContainer
+          vertical
+          style={{
+            height: 100,
+            width: 100,
+            border: `2px solid ${theme.primaryColor}`,
+          }}>
+          <Layout.Vertical>
+            <Text ellipsis>
+              This text is truncated because it is too long and scroll is
+              vertical only...
+            </Text>
+            {largeChild}
+          </Layout.Vertical>
         </Layout.ScrollContainer>
       ),
     },

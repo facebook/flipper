@@ -64,28 +64,41 @@ const Container = styled.div<ContainerProps>(
   }),
 );
 
-const ScrollParent = styled.div({
-  boxSizing: 'border-box',
+const ScrollParent = styled.div<{axis?: ScrollAxis}>(({axis}) => ({
   flex: 1,
+  boxSizing: 'border-box',
   position: 'relative',
-  overflow: 'auto',
-});
+  overflowX: axis === 'y' ? 'hidden' : 'auto',
+  overflowY: axis === 'x' ? 'hidden' : 'auto',
+}));
 
-const ScrollChild = styled.div({
+const ScrollChild = styled.div<{axis?: ScrollAxis}>(({axis}) => ({
   position: 'absolute',
   minHeight: '100%',
   minWidth: '100%',
-});
+  maxWidth: axis === 'y' ? '100%' : undefined,
+  maxHeight: axis === 'x' ? '100%' : undefined,
+}));
+
+type ScrollAxis = 'x' | 'y' | 'both';
 
 const ScrollContainer = ({
   children,
+  horizontal,
+  vertical,
   ...rest
-}: React.HTMLAttributes<HTMLDivElement>) =>
-  (
-    <ScrollParent {...rest}>
-      <ScrollChild>{children}</ScrollChild>
+}: React.HTMLAttributes<HTMLDivElement> & {
+  horizontal?: boolean;
+  vertical?: boolean;
+}) => {
+  const axis =
+    horizontal && !vertical ? 'x' : !horizontal && vertical ? 'y' : 'both';
+  return (
+    <ScrollParent axis={axis} {...rest}>
+      <ScrollChild axis={axis}>{children}</ScrollChild>
     </ScrollParent>
   ) as any;
+};
 
 type DistributionProps = ContainerProps & {
   /**
