@@ -103,10 +103,10 @@ const demos: PreviewProps[] = [
             background: theme.successColor,
           }}></Layout.Container>
       ),
-      'bordered padded rounded': (
+      'bordered pad rounded': (
         <Layout.Container
           bordered
-          padded
+          pad
           rounded
           style={{background: theme.backgroundDefault, width: 200}}>
           <div style={demoStyle.square}>child</div>
@@ -152,8 +152,8 @@ const demos: PreviewProps[] = [
           {aDynamicBox}
         </Layout.Horizontal>
       ),
-      'Using flags: padded center gap={8} (great for toolbars and such)': (
-        <Layout.Horizontal padded center gap={8}>
+      'Using flags: pad center gap={8} (great for toolbars and such)': (
+        <Layout.Horizontal pad center gap={8}>
           {aButton}
           {someText}
           {aBox}
@@ -187,8 +187,8 @@ const demos: PreviewProps[] = [
           {aDynamicBox}
         </Layout.Vertical>
       ),
-      'Using flags: padded center gap={8} (great for toolbars and such)': (
-        <Layout.Vertical padded center gap={8}>
+      'Using flags: pad center gap (great for toolbars and such)': (
+        <Layout.Vertical pad center gap>
           {aButton}
           {someText}
           {aBox}
@@ -206,6 +206,11 @@ const demos: PreviewProps[] = [
         'scrollable',
         'boolean (false)',
         'If set, the area of the second child will automatically be made scrollable.',
+      ],
+      [
+        'center',
+        'boolean (false)',
+        'If set, all children will use their own height, and they will be centered vertically in the layout. If not set, all children will be stretched to the height of the layout.',
       ],
     ],
     demos: {

@@ -29,7 +29,6 @@ type ContainerProps = {
   borderLeft?: boolean;
   bordered?: boolean;
   rounded?: boolean;
-  padded?: boolean;
   width?: number;
   height?: number;
 } & PaddingProps;
@@ -46,6 +45,7 @@ const Container = styled.div<ContainerProps>(
     height,
     ...rest
   }) => ({
+    minWidth: `0`, // ensures the Container can shrink smaller than it's largest
     width,
     height,
     display: 'flex',
@@ -101,6 +101,7 @@ const Horizontal = styled(Container)<DistributionProps>(({gap, center}) => ({
   flexDirection: 'row',
   gap: normalizeSpace(gap, theme.space.small),
   alignItems: center ? 'center' : 'stretch',
+  minWidth: 'auto', // corrects 0 on Container
 }));
 
 const Vertical = styled(Container)<DistributionProps>(({gap, center}) => ({
@@ -118,6 +119,7 @@ type SplitLayoutProps = {
   /**
    * If set, items will be centered over the orthogonal direction, if false (the default) items will be stretched.
    */
+  center?: boolean;
   children: [React.ReactNode, React.ReactNode];
 };
 

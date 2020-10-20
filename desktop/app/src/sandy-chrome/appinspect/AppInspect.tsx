@@ -8,18 +8,15 @@
  */
 
 import React from 'react';
-import {Button, Dropdown, Menu, Radio, Input} from 'antd';
+import {Alert, Button, Input} from 'antd';
 import {LeftSidebar, SidebarTitle, InfoIcon} from '../LeftSidebar';
-import {
-  AppleOutlined,
-  AndroidOutlined,
-  SettingOutlined,
-  RocketOutlined,
-} from '@ant-design/icons';
+import {SettingOutlined, RocketOutlined} from '@ant-design/icons';
 import {Layout, Link} from '../../ui';
 import {theme} from '../theme';
 import {useStore as useReduxStore} from 'react-redux';
 import {showEmulatorLauncher} from './LaunchEmulator';
+import {AppSelector} from './AppSelector';
+import {useStore} from '../../utils/useStore';
 
 const appTooltip = (
   <>
@@ -34,6 +31,7 @@ const appTooltip = (
 
 export function AppInspect() {
   const store = useReduxStore();
+  const selectedDevice = useStore((state) => state.connections.selectedDevice);
   return (
     <LeftSidebar>
       <Layout.Top scrollable>
@@ -42,7 +40,7 @@ export function AppInspect() {
             App Inspect
           </SidebarTitle>
           <Layout.Vertical padv="small" padh="medium" gap={theme.space.large}>
-            <DeviceDropdown />
+            <AppSelector />
             <Input addonAfter={<SettingOutlined />} defaultValue="mysite" />
             <Layout.Horizontal gap>
               <Button icon={<SettingOutlined />} type="link" />
@@ -58,36 +56,22 @@ export function AppInspect() {
             </Layout.Horizontal>
           </Layout.Vertical>
         </Layout.Container>
-        <Layout.Container>Dynamic section</Layout.Container>
+        <Layout.Container padv={theme.space.small}>
+          {selectedDevice ? (
+            <PluginList />
+          ) : (
+            <Alert message="No device or app selected" type="info" />
+          )}
+        </Layout.Container>
       </Layout.Top>
     </LeftSidebar>
   );
 }
 
-function DeviceDropdown() {
+function PluginList() {
   return (
-    <Radio.Group value={1} size="small">
-      <Dropdown
-        overlay={
-          <Menu>
-            <Menu.Item icon={<AppleOutlined />} style={{fontWeight: 'bold'}}>
-              IPhone 11
-            </Menu.Item>
-            <Menu.Item>
-              <Radio value={1}>Facebook</Radio>
-            </Menu.Item>
-            <Menu.Item>
-              <Radio value={3}>Instagram</Radio>
-            </Menu.Item>
-            <Menu.Item icon={<AndroidOutlined />} style={{fontWeight: 'bold'}}>
-              Android
-            </Menu.Item>
-          </Menu>
-        }>
-        <Button icon={<AppleOutlined />} style={{width: '100%'}}>
-          Facebook Iphone11
-        </Button>
-      </Dropdown>
-    </Radio.Group>
+    <Layout.Container>
+      <SidebarTitle>Plugins</SidebarTitle>
+    </Layout.Container>
   );
 }
