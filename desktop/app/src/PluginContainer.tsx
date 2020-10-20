@@ -45,7 +45,7 @@ import {activateMenuItems} from './MenuBar';
 import {Message} from './reducers/pluginMessageQueue';
 import {Idler} from './utils/Idler';
 import {processMessageQueue} from './utils/messageQueue';
-import {ToggleButton, SmallText} from './ui';
+import {ToggleButton, SmallText, Layout} from './ui';
 import {SandyPluginRenderer} from 'flipper-plugin';
 import {isDevicePluginDefinition} from './utils/pluginUtils';
 import ArchivedDevice from './devices/ArchivedDevice';
@@ -67,7 +67,6 @@ const Waiting = styled(FlexColumn)({
   width: '100%',
   height: '100%',
   flexGrow: 1,
-  background: colors.light02,
   alignItems: 'center',
   justifyContent: 'center',
   textAlign: 'center',
@@ -95,6 +94,7 @@ const ProgressBarBar = styled.div<{progress: number}>(({progress}) => ({
 
 type OwnProps = {
   logger: Logger;
+  isSandy?: boolean;
 };
 
 type StateFromProps = {
@@ -362,6 +362,7 @@ class PluginContainer extends PureComponent<Props, State> {
       isArchivedDevice,
       selectedApp,
       settingsState,
+      isSandy,
     } = this.props;
     if (!activePlugin || !target || !pluginKey) {
       console.warn(`No selected plugin. Rendering empty!`);
@@ -429,7 +430,17 @@ class PluginContainer extends PureComponent<Props, State> {
       };
       pluginElement = React.createElement(activePlugin, props);
     }
-    return (
+    return isSandy ? (
+      <Layout.Right>
+        <ErrorBoundary
+          heading={`Plugin "${
+            activePlugin.title || 'Unknown'
+          }" encountered an error during render`}>
+          {pluginElement}
+        </ErrorBoundary>
+        <SidebarContainer id="detailsSidebar" />
+      </Layout.Right>
+    ) : (
       <React.Fragment>
         <Container key="plugin">
           <ErrorBoundary

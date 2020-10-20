@@ -7,20 +7,12 @@
  * @format
  */
 
-import * as React from 'react';
-import * as Flipper from 'flipper';
 // eslint-disable-next-line
 import {act} from '@testing-library/react';
 
 {
   // These mocks are needed because seammammals still uses Flipper in its UI implementation,
   // so we need to mock some things
-
-  // @ts-ignore
-  jest.spyOn(Flipper.DetailSidebar, 'type').mockImplementation((props) => {
-    return <div className="DetailsSidebar">{props.children}</div>;
-  });
-
   const origRequestIdleCallback = window.requestIdleCallback;
   const origCancelIdleCallback = window.cancelIdleCallback;
   // @ts-ignore

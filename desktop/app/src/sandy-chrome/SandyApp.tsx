@@ -23,6 +23,7 @@ import {setStaticView} from '../reducers/connections';
 import {toggleLeftSidebarVisible} from '../reducers/application';
 import {AppInspect} from './appinspect/AppInspect';
 import PluginContainer from '../PluginContainer';
+import {ContentContainer} from './ContentContainer';
 
 export type ToplevelNavItem = 'appinspect' | 'flipperlogs' | undefined;
 export type ToplevelProps = {
@@ -95,25 +96,15 @@ export function SandyApp({logger}: {logger: Logger}) {
             </Sidebar>
           </Layout.Horizontal>
           <MainContainer>
-            <ContentContainer>
-              {staticView ? (
-                React.createElement(staticView, {
+            {staticView ? (
+              <ContentContainer>
+                {React.createElement(staticView, {
                   logger: logger,
-                })
-              ) : (
-                <PluginContainer logger={logger} />
-              )}
-            </ContentContainer>
-            <Sidebar
-              width={300}
-              minWidth={220}
-              maxWidth={800}
-              gutter
-              position="right">
-              <ContentContainer style={{marginRight: theme.space.large}}>
-                <RightMenu />
+                })}
               </ContentContainer>
-            </Sidebar>
+            ) : (
+              <PluginContainer logger={logger} isSandy />
+            )}
           </MainContainer>
         </Layout.Left>
       </Layout.Top>
@@ -121,19 +112,7 @@ export function SandyApp({logger}: {logger: Logger}) {
   );
 }
 
-const MainContainer = styled(Layout.Right)({
+const MainContainer = styled(Layout.Container)({
   background: theme.backgroundWash,
+  padding: `${theme.space.large}px ${theme.space.large}px ${theme.space.large}px 0`,
 });
-
-export const ContentContainer = styled(Layout.Container)({
-  background: theme.backgroundDefault,
-  border: `1px solid ${theme.dividerColor}`,
-  borderRadius: theme.containerBorderRadius,
-  boxShadow: `0px 0px 5px rgba(0, 0, 0, 0.05), 0px 0px 1px rgba(0, 0, 0, 0.05)`,
-  marginTop: theme.space.large,
-  marginBottom: theme.space.large,
-});
-
-function RightMenu() {
-  return <div>RightMenu</div>;
-}

@@ -19,7 +19,6 @@ import {StaticView, setStaticView} from '../../reducers/connections';
 import {setActiveSheet} from '../../reducers/application';
 import UserAccount from '../UserAccount';
 import SupportRequestFormV2 from '../../fb-stubs/SupportRequestFormV2';
-import WatchTools from '../../fb-stubs/WatchTools';
 import {
   isStaticViewActive,
   PluginIcon,
@@ -32,6 +31,7 @@ import {ConsoleLogs, errorCounterAtom} from '../ConsoleLogs';
 import {useValue} from 'flipper-plugin';
 import {colors} from '../../ui';
 import GK from '../../fb-stubs/GK';
+import WatchTools from '../../fb-stubs/WatchTools';
 
 type OwnProps = {};
 

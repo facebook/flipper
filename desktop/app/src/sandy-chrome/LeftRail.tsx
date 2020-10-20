@@ -8,7 +8,6 @@
  */
 
 import React, {cloneElement, useState, useCallback, useMemo} from 'react';
-import {styled, Layout} from '../ui';
 import {Button, Divider, Badge, Tooltip, Avatar, Popover} from 'antd';
 import {
   MobileFilled,
@@ -23,7 +22,10 @@ import {
 } from '@ant-design/icons';
 import {SidebarLeft, SidebarRight} from './SandyIcons';
 import {useDispatch, useStore} from '../utils/useStore';
-import {toggleLeftSidebarVisible} from '../reducers/application';
+import {
+  toggleLeftSidebarVisible,
+  toggleRightSidebarVisible,
+} from '../reducers/application';
 import {theme} from './theme';
 import SetupDoctorScreen, {checkHasNewProblem} from './SetupDoctorScreen';
 import SettingsSheet from '../chrome/SettingsSheet';
@@ -34,6 +36,8 @@ import {ToplevelProps} from './SandyApp';
 import {useValue} from 'flipper-plugin';
 import {logout} from '../reducers/user';
 import config from '../fb-stubs/config';
+import Layout from '../ui/components/Layout';
+import styled from '@emotion/styled';
 
 const LeftRailButtonElem = styled(Button)<{kind?: 'small'}>(({kind}) => ({
   width: kind === 'small' ? 32 : 36,
@@ -52,11 +56,13 @@ function LeftRailButton({
   count,
   title,
   onClick,
+  disabled,
 }: {
   icon?: React.ReactElement;
   small?: boolean;
   toggled?: boolean;
-  selected?: boolean; // TODO: make sure only one element can be selected
+  selected?: boolean;
+  disabled?: boolean;
   count?: number | true;
   title: string;
   onClick?: React.MouseEventHandler<HTMLElement>;
@@ -78,6 +84,7 @@ function LeftRailButton({
         type={selected ? 'primary' : 'ghost'}
         icon={iconElement}
         onClick={onClick}
+        disabled={disabled}
         style={{
           color: toggled ? theme.primaryColor : undefined,
           background: toggled ? theme.backgroundWash : undefined,
@@ -99,9 +106,9 @@ export function LeftRail({
   setToplevelSelection,
 }: ToplevelProps) {
   return (
-    <Layout.Container borderRight padv={12} padh={6} width={48}>
+    <Layout.Container borderRight padv={12} width={48}>
       <Layout.Bottom>
-        <Layout.Vertical center gap={10}>
+        <Layout.Vertical center gap={10} padh={6}>
           <LeftRailButton
             icon={<MobileFilled />}
             title="App Inspect"
@@ -118,7 +125,7 @@ export function LeftRail({
             setToplevelSelection={setToplevelSelection}
           />
         </Layout.Vertical>
-        <Layout.Vertical center gap={10}>
+        <Layout.Vertical center gap={10} padh={6}>
           <SetupDoctorButton />
           <WelcomeScreenButton />
           <ShowSettingsButton />
@@ -127,11 +134,7 @@ export function LeftRail({
             small
             title="Feedback / Bug Reporter"
           />
-          <LeftRailButton
-            icon={<SidebarRight />}
-            small
-            title="Right Sidebar Toggle"
-          />
+          <RightSidebarToggleButton />
           <LeftSidebarToggleButton />
           {config.showLogin && <LoginButton />}
         </Layout.Vertical>
@@ -141,11 +144,10 @@ export function LeftRail({
 }
 
 function LeftSidebarToggleButton() {
+  const dispatch = useDispatch();
   const mainMenuVisible = useStore(
     (state) => state.application.leftSidebarVisible,
   );
-
-  const dispatch = useDispatch();
 
   return (
     <LeftRailButton
@@ -155,6 +157,29 @@ function LeftSidebarToggleButton() {
       toggled={mainMenuVisible}
       onClick={() => {
         dispatch(toggleLeftSidebarVisible());
+      }}
+    />
+  );
+}
+
+function RightSidebarToggleButton() {
+  const dispatch = useDispatch();
+  const rightSidebarAvailable = useStore(
+    (state) => state.application.rightSidebarAvailable,
+  );
+  const rightSidebarVisible = useStore(
+    (state) => state.application.rightSidebarVisible,
+  );
+
+  return (
+    <LeftRailButton
+      icon={<SidebarRight />}
+      small
+      title="Right Sidebar Toggle"
+      toggled={rightSidebarVisible}
+      disabled={!rightSidebarAvailable}
+      onClick={() => {
+        dispatch(toggleRightSidebarVisible());
       }}
     />
   );

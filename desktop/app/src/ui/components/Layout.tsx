@@ -45,6 +45,7 @@ const Container = styled.div<ContainerProps>(
     height,
     ...rest
   }) => ({
+    boxSizing: 'border-box',
     minWidth: `0`, // ensures the Container can shrink smaller than it's largest
     width,
     height,
@@ -64,6 +65,7 @@ const Container = styled.div<ContainerProps>(
 );
 
 const ScrollParent = styled.div({
+  boxSizing: 'border-box',
   flex: 1,
   position: 'relative',
   overflow: 'auto',
@@ -141,11 +143,7 @@ const Layout = {
     let [child1, child2] = props.children;
     if (props.scrollable) child2 = <ScrollContainer>{child2}</ScrollContainer>;
     return (
-      <SandySplitContainer
-        {...props}
-        flexDirection="column"
-        flex1={0}
-        flex2={1}>
+      <SandySplitContainer {...props} flexDirection="column" grow={2}>
         {child1}
         {child2}
       </SandySplitContainer>
@@ -157,11 +155,7 @@ const Layout = {
     let [child1, child2] = props.children;
     if (props.scrollable) child1 = <ScrollContainer>{child1}</ScrollContainer>;
     return (
-      <SandySplitContainer
-        {...props}
-        flexDirection="column"
-        flex1={1}
-        flex2={0}>
+      <SandySplitContainer {...props} flexDirection="column" grow={1}>
         {child1}
         {child2}
       </SandySplitContainer>
@@ -173,7 +167,7 @@ const Layout = {
     let [child1, child2] = props.children;
     if (props.scrollable) child2 = <ScrollContainer>{child2}</ScrollContainer>;
     return (
-      <SandySplitContainer {...props} flexDirection="row" flex1={0} flex2={1}>
+      <SandySplitContainer {...props} flexDirection="row" grow={2}>
         {child1}
         {child2}
       </SandySplitContainer>
@@ -185,7 +179,7 @@ const Layout = {
     let [child1, child2] = props.children;
     if (props.scrollable) child1 = <ScrollContainer>{child1}</ScrollContainer>;
     return (
-      <SandySplitContainer {...props} flexDirection="row" flex1={1} flex2={0}>
+      <SandySplitContainer {...props} flexDirection="row" grow={1}>
         {child1}
         {child2}
       </SandySplitContainer>
@@ -202,23 +196,25 @@ Object.keys(Layout).forEach((key) => {
 });
 
 const SandySplitContainer = styled.div<{
-  flex1: number;
-  flex2: number;
+  grow: 1 | 2;
   center?: boolean;
   flexDirection: CSSProperties['flexDirection'];
 }>((props) => ({
+  boxSizing: 'border-box',
   display: 'flex',
   flex: 1,
   flexDirection: props.flexDirection,
   alignItems: props.center ? 'center' : 'stretch',
+  overflow: 'hidden',
   '> :first-child': {
-    flexGrow: props.flex1,
-    flexShrink: props.flex1,
+    flex: props.grow === 1 ? growStyle : fixedStyle,
   },
   '> :last-child': {
-    flexGrow: props.flex2,
-    flexShrink: props.flex2,
+    flex: props.grow === 2 ? growStyle : fixedStyle,
   },
 }));
+
+const fixedStyle = `0 0 auto`;
+const growStyle = `1 0 0`;
 
 export default Layout;
