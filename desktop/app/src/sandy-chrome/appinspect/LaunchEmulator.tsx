@@ -69,7 +69,7 @@ export function LaunchEmulatorDialog({
           launchEmulator(name)
             .catch((e) => {
               console.error(e);
-              message.error('Failed to start emulator:' + e);
+              message.error('Failed to start emulator: ' + e);
             })
             .finally(onClose);
         }}>
@@ -84,7 +84,7 @@ export function LaunchEmulatorDialog({
           launchSimulator(device.udid)
             .catch((e) => {
               console.error(e);
-              message.error('Failed to start simulator:' + e);
+              message.error('Failed to start simulator: ' + e);
             })
             .finally(onClose);
         }}>

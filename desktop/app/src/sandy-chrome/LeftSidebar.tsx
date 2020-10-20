@@ -16,7 +16,7 @@ import {InfoCircleOutlined} from '@ant-design/icons';
 
 export const LeftSidebar: React.FC = ({children}) => (
   <Layout.Container borderRight padv="small">
-    <Layout.Vertical>{children}</Layout.Vertical>
+    {children}
   </Layout.Container>
 );
 

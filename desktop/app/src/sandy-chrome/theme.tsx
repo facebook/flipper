@@ -12,6 +12,7 @@ import {useStore} from '../utils/useStore';
 // Exposes all the variables defined in themes/base.less:
 
 export const theme = {
+  white: 'white', // use as counter color for primary
   primaryColor: 'var(--flipper-primary-color)',
   successColor: 'var(--flipper-success-color)',
   errorColor: 'var(--flipper-error-color)',

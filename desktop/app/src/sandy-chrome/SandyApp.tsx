@@ -15,7 +15,6 @@ import {Logger} from '../fb-interfaces/Logger';
 
 import {LeftRail} from './LeftRail';
 import {TemporarilyTitlebar} from './TemporarilyTitlebar';
-import SandyDesignSystem from './SandyDesignSystem';
 import {registerStartupTime} from '../App';
 import {useStore, useDispatch} from '../utils/useStore';
 import {SandyContext} from './SandyContext';
@@ -23,6 +22,7 @@ import {ConsoleLogs} from '../chrome/ConsoleLogs';
 import {setStaticView} from '../reducers/connections';
 import {toggleLeftSidebarVisible} from '../reducers/application';
 import {AppInspect} from './appinspect/AppInspect';
+import PluginContainer from '../PluginContainer';
 
 export type ToplevelNavItem = 'appinspect' | 'flipperlogs' | undefined;
 export type ToplevelProps = {
@@ -101,7 +101,7 @@ export function SandyApp({logger}: {logger: Logger}) {
                   logger: logger,
                 })
               ) : (
-                <SandyDesignSystem />
+                <PluginContainer logger={logger} />
               )}
             </ContentContainer>
             <Sidebar

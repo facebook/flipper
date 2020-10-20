@@ -107,6 +107,7 @@ const AppInspectButton = styled(Button)({
 });
 
 const AppIcon = styled.div<{appname?: string}>(({appname}) => ({
+  borderRadius: 4,
   width: 36,
   height: 36,
   background: appname

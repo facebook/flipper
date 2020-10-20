@@ -7,6 +7,8 @@
  * @format
  */
 
+import {theme} from '../../sandy-chrome/theme';
+
 // Last updated: Jan 30 2016
 
 export const colors = {
@@ -278,5 +280,5 @@ export const brandColors = {
   Facebook: '#0D7BED',
   Messenger: '#0088FA',
   Instagram: '#E61E68',
-  Flipper: '#8155cb',
+  Flipper: theme.primaryColor,
 };

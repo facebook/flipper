@@ -204,12 +204,13 @@ Object.keys(Layout).forEach((key) => {
 const SandySplitContainer = styled.div<{
   flex1: number;
   flex2: number;
+  center?: boolean;
   flexDirection: CSSProperties['flexDirection'];
 }>((props) => ({
   display: 'flex',
   flex: 1,
   flexDirection: props.flexDirection,
-  alignItems: 'stretch',
+  alignItems: props.center ? 'center' : 'stretch',
   '> :first-child': {
     flexGrow: props.flex1,
     flexShrink: props.flex1,
