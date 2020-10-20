@@ -572,6 +572,7 @@ class DataDescriptionContainer extends PureComponent<{
         return (
           <>
             <TimelineDataDescription
+              canSetCurrent={editable}
               timeline={JSON.parse(val)}
               onClick={(id) => {
                 this.props.commit({

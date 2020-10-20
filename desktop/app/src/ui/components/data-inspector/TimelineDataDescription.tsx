@@ -28,6 +28,7 @@ type Timeline = {
 };
 
 type Props = {
+  canSetCurrent?: boolean;
   timeline: Timeline;
   onClick: (selected: string) => void;
 };
@@ -55,13 +56,15 @@ export default class TimelineDataDescription extends Component<Props, State> {
     }));
     return (
       <>
-        <div>
-          <Button
-            onClick={() => this.props.onClick(this.state.selected)}
-            disabled={this.state.selected === this.props.timeline.current}>
-            Set as current
-          </Button>
-        </div>
+        {this.props.canSetCurrent && (
+          <div>
+            <Button
+              onClick={() => this.props.onClick(this.state.selected)}
+              disabled={this.state.selected === this.props.timeline.current}>
+              Set as current
+            </Button>
+          </div>
+        )}
         <div>
           <MarkerTimeline
             points={points}
