@@ -16,7 +16,7 @@
 
 // // const DevSettings = require('./DevSettings');
 import invariant from 'invariant';
-import {default as MetroHMRClient} from 'metro/src/lib/bundle-modules/HMRClient';
+import {default as MetroHMRClient} from 'metro-runtime/src/modules/HMRClient';
 // // const Platform = require('./Platform');
 import prettyFormat from 'pretty-format';
 
