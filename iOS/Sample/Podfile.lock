@@ -6,15 +6,15 @@ PODS:
     - RenderCore (= 0.30)
     - Yoga (~> 1.14)
   - Flipper (0.62.0):
-    - Flipper-Folly (~> 2.2)
+    - Flipper-Folly (~> 2.3)
     - Flipper-RSocket (~> 1.1)
   - Flipper-DoubleConversion (1.1.7)
-  - Flipper-Folly (2.2.0):
+  - Flipper-Folly (2.3.0):
     - boost-for-react-native
     - CocoaLibEvent (~> 1.0)
     - Flipper-DoubleConversion
     - Flipper-Glog
-    - OpenSSL-Universal (= 1.0.2.19)
+    - OpenSSL-Universal (= 1.0.2.20)
   - Flipper-Glog (0.3.6)
   - Flipper-PeerTalk (0.0.4)
   - Flipper-RSocket (1.1.0):
@@ -30,7 +30,7 @@ PODS:
   - FlipperKit/CppBridge (0.62.0):
     - Flipper (~> 0.62.0)
   - FlipperKit/FBCxxFollyDynamicConvert (0.62.0):
-    - Flipper-Folly (~> 2.2)
+    - Flipper-Folly (~> 2.3)
   - FlipperKit/FBDefines (0.62.0)
   - FlipperKit/FKPortForwarding (0.62.0):
     - CocoaAsyncSocket (~> 7.6)
@@ -60,9 +60,9 @@ PODS:
   - FlipperKit/SKIOSNetworkPlugin (0.62.0):
     - FlipperKit/Core
     - FlipperKit/FlipperKitNetworkPlugin
-  - OpenSSL-Universal (1.0.2.19):
-    - OpenSSL-Universal/Static (= 1.0.2.19)
-  - OpenSSL-Universal/Static (1.0.2.19)
+  - OpenSSL-Universal (1.0.2.20):
+    - OpenSSL-Universal/Static (= 1.0.2.20)
+  - OpenSSL-Universal/Static (1.0.2.20)
   - RenderCore (0.30)
   - Yoga (1.14.0)
   - YogaKit (1.18.1):
@@ -87,7 +87,7 @@ DEPENDENCIES:
   - OpenSSL-Universal
 
 SPEC REPOS:
-  https://github.com/CocoaPods/Specs:
+  https://github.com/CocoaPods/Specs.git:
     - boost-for-react-native
     - CocoaAsyncSocket
     - CocoaLibEvent
@@ -115,12 +115,12 @@ SPEC CHECKSUMS:
   ComponentKit: c34da1ab3515cf18db68a4ba22c6599568d1de74
   Flipper: 8c34da52a467af6171044444c314dbeb8d5a6d35
   Flipper-DoubleConversion: 38631e41ef4f9b12861c67d17cb5518d06badc41
-  Flipper-Folly: c12092ea368353b58e992843a990a3225d4533c3
+  Flipper-Folly: e4493b013c02d9347d5e0cb4d128680239f6c78a
   Flipper-Glog: 1dfd6abf1e922806c52ceb8701a3599a79a200a6
   Flipper-PeerTalk: 116d8f857dc6ef55c7a5a75ea3ceaafe878aadc9
   Flipper-RSocket: 64e7431a55835eb953b0bf984ef3b90ae9fdddd7
   FlipperKit: 59d616c8b88912d02114f0320fb4824fed54ab35
-  OpenSSL-Universal: 8b48cc0d10c1b2923617dfe5c178aa9ed2689355
+  OpenSSL-Universal: ff34003318d5e1163e9529b08470708e389ffcdd
   RenderCore: d779c47622b313ce2d51bb36d084517af38b0dc1
   Yoga: cff67a400f6b74dc38eb0bad4f156673d9aa980c
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
