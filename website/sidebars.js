@@ -94,12 +94,12 @@ module.exports = {
       'extending/arch',
       'extending/layout-inspector',
       'extending/testing-rn',
-      ...fbInternalOnly(['extending/fb/launcher']),
     ],
   },
   'fb-internal': {
     'FB Internal': fbInternalOnly([
       'fb/troubleshooting',
+      'fb/release-infra',
       'fb/Add-flipper-to-android-app',
       'fb/Adding-flipper-to-ios-app',
       'fb/LauncherConfig',
