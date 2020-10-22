@@ -142,7 +142,10 @@ export {
   SearchIcon,
   default as Searchable,
 } from './components/searchable/Searchable';
-export {default as SearchableTable} from './components/searchable/SearchableTable';
+export {
+  default as SearchableTable,
+  filterRowsFactory,
+} from './components/searchable/SearchableTable';
 export {default as SearchableTable_immutable} from './components/searchable/SearchableTable_immutable';
 export {SearchableProps} from './components/searchable/Searchable';
 

@@ -166,7 +166,10 @@ export {
   SearchableProps,
   default as Searchable,
 } from './ui/components/searchable/Searchable';
-export {default as SearchableTable} from './ui/components/searchable/SearchableTable';
+export {
+  default as SearchableTable,
+  filterRowsFactory,
+} from './ui/components/searchable/SearchableTable';
 export {default as SearchableTable_immutable} from './ui/components/searchable/SearchableTable_immutable';
 export {
   ElementID,
