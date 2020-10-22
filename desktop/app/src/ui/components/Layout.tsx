@@ -31,6 +31,10 @@ type ContainerProps = {
   rounded?: boolean;
   width?: number;
   height?: number;
+  // grow to available space?
+  grow?: boolean;
+  // allow shrinking beyond minally needed size? Makes using ellipsis on children possible
+  shrink?: boolean;
 } & PaddingProps;
 
 const Container = styled.div<ContainerProps>(
@@ -43,17 +47,19 @@ const Container = styled.div<ContainerProps>(
     rounded,
     width,
     height,
+    grow,
+    shrink,
     ...rest
   }) => ({
-    boxSizing: 'border-box',
-    minWidth: `0`, // ensures the Container can shrink smaller than it's largest
-    width,
-    height,
     display: 'flex',
     flexDirection: 'column',
+    flex: grow && shrink ? `1 1 0` : grow ? `1 0 auto` : shrink ? `0 1 0` : 0,
+    minWidth: shrink ? 0 : undefined,
+    boxSizing: 'border-box',
+    width,
+    height,
     padding: normalizePadding(rest),
     borderRadius: rounded ? theme.containerBorderRadius : undefined,
-    flex: 1,
     borderStyle: 'solid',
     borderColor: theme.dividerColor,
     borderWidth: bordered
@@ -64,6 +70,34 @@ const Container = styled.div<ContainerProps>(
   }),
 );
 
+type DistributionProps = ContainerProps & {
+  /**
+   * Gab between individual items
+   */
+  gap?: Spacing;
+  /**
+   * If set, items will be aligned in the center, if false (the default) items will be stretched.
+   */
+  center?: boolean;
+};
+
+function distributionStyle({gap, center}: DistributionProps) {
+  return {
+    gap: normalizeSpace(gap, theme.space.small),
+    alignItems: center ? 'center' : 'stretch',
+  };
+}
+
+const Horizontal = styled(Container)<DistributionProps>((props) => ({
+  ...distributionStyle(props),
+  flexDirection: 'row',
+}));
+
+const Vertical = styled(Container)<DistributionProps>((props) => ({
+  ...distributionStyle(props),
+  flexDirection: 'column',
+}));
+
 const ScrollParent = styled.div<{axis?: ScrollAxis}>(({axis}) => ({
   flex: 1,
   boxSizing: 'border-box',
@@ -72,7 +106,7 @@ const ScrollParent = styled.div<{axis?: ScrollAxis}>(({axis}) => ({
   overflowY: axis === 'x' ? 'hidden' : 'auto',
 }));
 
-const ScrollChild = styled.div<{axis?: ScrollAxis}>(({axis}) => ({
+const ScrollChild = styled(Vertical)<{axis?: ScrollAxis}>(({axis}) => ({
   position: 'absolute',
   minHeight: '100%',
   minWidth: '100%',
@@ -99,32 +133,6 @@ const ScrollContainer = ({
     </ScrollParent>
   ) as any;
 };
-
-type DistributionProps = ContainerProps & {
-  /**
-   * Gab between individual items
-   */
-  gap?: Spacing;
-  /**
-   * If set, items will be aligned in the center, if false (the default) items will be stretched.
-   */
-  center?: boolean;
-};
-
-const Horizontal = styled(Container)<DistributionProps>(({gap, center}) => ({
-  display: 'flex',
-  flexDirection: 'row',
-  gap: normalizeSpace(gap, theme.space.small),
-  alignItems: center ? 'center' : 'stretch',
-  minWidth: 'auto', // corrects 0 on Container
-}));
-
-const Vertical = styled(Container)<DistributionProps>(({gap, center}) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: normalizeSpace(gap, theme.space.small),
-  alignItems: center ? 'center' : 'stretch',
-}));
 
 type SplitLayoutProps = {
   /**
@@ -219,10 +227,10 @@ const SandySplitContainer = styled.div<{
   flexDirection: props.flexDirection,
   alignItems: props.center ? 'center' : 'stretch',
   overflow: 'hidden',
-  '> :first-child': {
+  '> :nth-child(1)': {
     flex: props.grow === 1 ? growStyle : fixedStyle,
   },
-  '> :last-child': {
+  '> :nth-child(2)': {
     flex: props.grow === 2 ? growStyle : fixedStyle,
   },
 }));

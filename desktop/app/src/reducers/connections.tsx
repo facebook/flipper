@@ -124,7 +124,7 @@ export type Action =
     }
   | {
       type: 'SELECT_CLIENT';
-      payload: string;
+      payload: string | null;
     }
   | RegisterPluginAction
   | {
@@ -404,7 +404,7 @@ export const starPlugin = (payload: {
   payload,
 });
 
-export const selectClient = (clientId: string): Action => ({
+export const selectClient = (clientId: string | null): Action => ({
   type: 'SELECT_CLIENT',
   payload: clientId,
 });

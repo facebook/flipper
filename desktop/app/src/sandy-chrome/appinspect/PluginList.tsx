@@ -454,6 +454,10 @@ export function computePluginLists(
 const PluginMenu = styled(Menu)({
   userSelect: 'none',
   border: 'none',
+  '.ant-typography': {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
   '.ant-menu-inline .ant-menu-item, .ant-menu-inline .ant-menu-submenu-title ': {
     width: '100%', // reset to remove weird bonus pixel from ANT
   },

@@ -7,14 +7,14 @@
  * @format
  */
 
-import React, {useEffect, useMemo, useContext} from 'react';
+import React, {useEffect, useState} from 'react';
 import ReactDOM from 'react-dom';
-import {ReactReduxContext} from 'react-redux';
 import Sidebar from '../ui/components/Sidebar';
 import {toggleRightSidebarAvailable} from '../reducers/application';
 import {useDispatch, useStore} from '../utils/useStore';
 import {useIsSandy} from '../sandy-chrome/SandyContext';
 import {ContentContainer} from '../sandy-chrome/ContentContainer';
+import {Layout} from '../ui';
 
 type OwnProps = {
   children: any;
@@ -24,12 +24,13 @@ type OwnProps = {
 
 /* eslint-disable react-hooks/rules-of-hooks */
 export default function DetailSidebar({children, width, minWidth}: OwnProps) {
-  const reduxContext = useContext(ReactReduxContext);
-  const domNode = useMemo(() => document.getElementById('detailsSidebar'), []);
+  const [domNode, setDomNode] = useState(
+    document.getElementById('detailsSidebar'),
+  );
 
-  if (!reduxContext || !domNode) {
+  if (typeof jest !== 'undefined') {
     // For unit tests, make sure to render elements inline
-    return <div id="detailsSidebar">{children}</div>;
+    return <div>{children}</div>;
   }
 
   const isSandy = useIsSandy();
@@ -49,6 +50,19 @@ export default function DetailSidebar({children, width, minWidth}: OwnProps) {
     [children, rightSidebarAvailable, dispatch],
   );
 
+  // If the plugin container is mounting and rendering a sidbar immediately, the domNode might not yet be available
+  useEffect(() => {
+    if (!domNode) {
+      const newDomNode = document.getElementById('detailsSidebar');
+      if (!newDomNode) {
+        // if after layouting domNode is still not available, something is wrong...
+        console.error('Failed to obtain detailsSidebar node');
+      } else {
+        setDomNode(newDomNode);
+      }
+    }
+  }, [domNode]);
+
   return (
     (children &&
       rightSidebarVisible &&
@@ -59,7 +73,15 @@ export default function DetailSidebar({children, width, minWidth}: OwnProps) {
           width={width || 300}
           position="right"
           gutter={isSandy}>
-          {isSandy ? <ContentContainer>{children}</ContentContainer> : children}
+          {isSandy ? (
+            <ContentContainer>
+              <Layout.ScrollContainer vertical>
+                {children}
+              </Layout.ScrollContainer>
+            </ContentContainer>
+          ) : (
+            children
+          )}
         </Sidebar>,
         domNode,
       )) ||

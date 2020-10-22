@@ -9,10 +9,10 @@ exports[`load PluginInstaller list 1`] = `
       class="css-1qqef1i-View-FlexBox-FlexRow-ToolbarContainer e13mj6h80"
     >
       <div
-        class="css-awcbnc-View-FlexBox-SearchBox e271nro1"
+        class="css-1dulget-View-FlexBox-SearchBox e271nro1"
       >
         <input
-          class="css-mquw9q-Input-SearchInput e271nro2"
+          class="css-184o3nx-Input-SearchInput e271nro2"
           placeholder="Search Flipper plugins..."
           type="text"
           value=""
@@ -304,10 +304,10 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
       class="css-1qqef1i-View-FlexBox-FlexRow-ToolbarContainer e13mj6h80"
     >
       <div
-        class="css-awcbnc-View-FlexBox-SearchBox e271nro1"
+        class="css-1dulget-View-FlexBox-SearchBox e271nro1"
       >
         <input
-          class="css-mquw9q-Input-SearchInput e271nro2"
+          class="css-184o3nx-Input-SearchInput e271nro2"
           placeholder="Search Flipper plugins..."
           type="text"
           value=""

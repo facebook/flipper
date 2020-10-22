@@ -49,6 +49,7 @@ import {ToggleButton, SmallText, Layout} from './ui';
 import {SandyPluginRenderer} from 'flipper-plugin';
 import {isDevicePluginDefinition} from './utils/pluginUtils';
 import ArchivedDevice from './devices/ArchivedDevice';
+import {ContentContainer} from './sandy-chrome/ContentContainer';
 
 const Container = styled(FlexColumn)({
   width: 0,
@@ -436,7 +437,7 @@ class PluginContainer extends PureComponent<Props, State> {
           heading={`Plugin "${
             activePlugin.title || 'Unknown'
           }" encountered an error during render`}>
-          {pluginElement}
+          <ContentContainer>{pluginElement}</ContentContainer>
         </ErrorBoundary>
         <SidebarContainer id="detailsSidebar" />
       </Layout.Right>

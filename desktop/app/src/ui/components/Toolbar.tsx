@@ -12,9 +12,9 @@ import {colors} from './colors';
 import FlexRow from './FlexRow';
 import FlexBox from './FlexBox';
 import styled from '@emotion/styled';
-import {Space} from 'antd';
 import {useIsSandy} from '../../sandy-chrome/SandyContext';
 import {theme} from '../../sandy-chrome/theme';
+import Layout from './Layout';
 
 /**
  * A toolbar.
@@ -42,8 +42,8 @@ const ToolbarContainer = styled(FlexRow)<{
 }));
 ToolbarContainer.displayName = 'ToolbarContainer';
 
-const SandyToolbarContainer = styled(Space)({
-  width: '100%',
+const SandyToolbarContainer = styled(Layout.Horizontal)({
+  flexWrap: 'wrap',
   padding: theme.space.small,
   boxShadow: `inset 0px -1px 0px ${theme.dividerColor}`,
 });
@@ -65,7 +65,9 @@ export default function Toolbar({
 }) {
   const isSandy = useIsSandy();
   return isSandy ? (
-    <SandyToolbarContainer style={style}>{children}</SandyToolbarContainer>
+    <SandyToolbarContainer style={style} gap={theme.space.small} center>
+      {children}
+    </SandyToolbarContainer>
   ) : (
     <ToolbarContainer style={style} {...rest}>
       {children}

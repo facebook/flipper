@@ -15,9 +15,9 @@ import {Button, Tooltip, Typography} from 'antd';
 import {InfoCircleOutlined} from '@ant-design/icons';
 
 export const LeftSidebar: React.FC = ({children}) => (
-  <Layout.Container borderRight padv="small">
+  <Layout.Vertical borderRight padv="small" grow shrink>
     {children}
-  </Layout.Container>
+  </Layout.Vertical>
 );
 
 export function SidebarTitle({

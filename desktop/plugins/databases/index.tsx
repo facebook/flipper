@@ -1283,12 +1283,14 @@ export default class DatabasesPlugin extends FlipperPlugin<
                 this.state.databases[this.state.selectedDatabase - 1]?.name
               }
               onChange={this.onDatabaseSelected}
+              style={{maxWidth: 300}}
             />
             <BoldSpan style={{marginLeft: 16, marginRight: 16}}>Table</BoldSpan>
             <Select
               options={tableOptions}
               selected={this.state.selectedDatabaseTable}
               onChange={this.onDatabaseTableSelected}
+              style={{maxWidth: 300}}
             />
             <div />
             <Button onClick={this.onRefreshClicked}>Refresh</Button>

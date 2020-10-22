@@ -7,7 +7,7 @@
  * @format
  */
 
-import React from 'react';
+import React, {CSSProperties} from 'react';
 import styled from '@emotion/styled';
 import FlexColumn from './FlexColumn';
 import FlexBox from './FlexBox';
@@ -70,6 +70,7 @@ export default class Panel extends React.Component<
      * padding is applied to the heading.
      */
     accessory?: React.ReactNode;
+    style?: CSSProperties;
   },
   {
     collapsed: boolean;
@@ -88,8 +89,10 @@ export default class Panel extends React.Component<
   static PanelContainer = styled(FlexColumn)<{
     floating?: boolean;
     collapsed?: boolean;
+    grow?: boolean;
   }>((props) => ({
     flexShrink: 0,
+    flexGrow: props.grow ? 1 : undefined,
     padding: props.floating ? 10 : 0,
     borderBottom: props.collapsed ? 'none' : BORDER,
   }));
@@ -141,6 +144,7 @@ export default class Panel extends React.Component<
       heading,
       collapsable,
       accessory,
+      style,
     } = this.props;
     const {collapsed} = this.state;
     return (
@@ -148,7 +152,8 @@ export default class Panel extends React.Component<
         className={className}
         floating={floating}
         grow={grow}
-        collapsed={collapsed}>
+        collapsed={collapsed}
+        style={style}>
         <Panel.PanelHeader
           floating={floating}
           padded={padded || typeof heading === 'string'}

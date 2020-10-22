@@ -11,7 +11,6 @@ import {Filter} from '../filter/types';
 import {TableColumns} from '../table/types';
 import {PureComponent} from 'react';
 import Toolbar from '../Toolbar';
-import FlexRow from '../FlexRow';
 import Input from '../Input';
 import {colors} from '../colors';
 import Text from '../Text';
@@ -23,6 +22,7 @@ import {debounce} from 'lodash';
 import ToggleButton from '../ToggleSwitch';
 import React from 'react';
 import Layout from '../Layout';
+import {theme} from '../../../sandy-chrome/theme';
 
 const SearchBar = styled(Toolbar)({
   height: 42,
@@ -33,13 +33,14 @@ SearchBar.displayName = 'Searchable:SearchBar';
 export const SearchBox = styled(FlexBox)<{isInvalidInput?: boolean}>(
   (props) => {
     return {
+      flex: `1 0 0`,
+      minWidth: 150,
+      height: 30,
       backgroundColor: colors.white,
       borderRadius: '999em',
       border: `1px solid ${
         !props.isInvalidInput ? colors.light15 : colors.red
       }`,
-      height: '100%',
-      width: '100%',
       alignItems: 'center',
       paddingLeft: 4,
     };
@@ -60,6 +61,7 @@ export const SearchInput = styled(Input)<{
   height: 'auto',
   lineHeight: '100%',
   marginLeft: 2,
+  marginRight: 8,
   width: '100%',
   color: props.regex && !props.isValidInput ? colors.red : colors.black,
   '&::-webkit-input-placeholder': {
@@ -97,9 +99,8 @@ export const SearchIcon = styled(Glyph)({
 });
 SearchIcon.displayName = 'Searchable:SearchIcon';
 
-const Actions = styled(FlexRow)({
+const Actions = styled(Layout.Horizontal)({
   marginLeft: 8,
-  flexShrink: 0,
 });
 Actions.displayName = 'Searchable:Actions';
 
@@ -533,7 +534,9 @@ export default function Searchable(
                 }
               />
             ) : null}
-            {actions != null && <Actions>{actions}</Actions>}
+            {actions != null && (
+              <Actions gap={theme.space.small}>{actions}</Actions>
+            )}
           </SearchBar>
           <Component
             {...props}

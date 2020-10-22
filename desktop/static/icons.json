@@ -64,6 +64,7 @@
   "caution-triangle": [
     12,
     16,
+    20,
     24
   ],
   "caution": [
@@ -512,5 +513,11 @@
   ],
   "app-flash": [
     16
+  ],
+  "sample-lo": [
+    20
+  ],
+  "point": [
+    20
   ]
 }

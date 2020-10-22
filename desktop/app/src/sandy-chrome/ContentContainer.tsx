@@ -11,6 +11,7 @@ import {Layout, styled} from '../ui';
 import {theme} from './theme';
 
 export const ContentContainer = styled(Layout.Container)({
+  flex: 1,
   overflow: 'hidden',
   background: theme.backgroundDefault,
   border: `1px solid ${theme.dividerColor}`,

@@ -531,9 +531,7 @@ export function Component() {
           searchTerm={searchTerm}
           isMockResponseSupported={isMockResponseSupported}
         />
-        <DetailSidebar width={500}>
-          <Sidebar />
-        </DetailSidebar>
+        <Sidebar />
       </NetworkRouteContext.Provider>
     </FlexColumn>
   );
@@ -759,13 +757,15 @@ function Sidebar() {
   }
 
   return (
-    <RequestDetails
-      key={selectedId}
-      request={requestWithId}
-      response={responses[selectedId]}
-      bodyFormat={detailBodyFormat}
-      onSelectFormat={instance.onSelectFormat}
-    />
+    <DetailSidebar width={500}>
+      <RequestDetails
+        key={selectedId}
+        request={requestWithId}
+        response={responses[selectedId]}
+        bodyFormat={detailBodyFormat}
+        onSelectFormat={instance.onSelectFormat}
+      />
+    </DetailSidebar>
   );
 }
 

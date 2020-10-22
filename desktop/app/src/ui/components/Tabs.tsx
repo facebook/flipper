@@ -104,6 +104,7 @@ const TabContent = styled.div({
   height: '100%',
   overflow: 'auto',
   width: '100%',
+  display: 'flex',
 });
 TabContent.displayName = 'Tabs:TabContent';
 

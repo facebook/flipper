@@ -63,7 +63,13 @@ export function AppSelector() {
   const client = clients.find((client) => client.id === selectedApp);
 
   return (
-    <Radio.Group value={selectedApp} size="small">
+    <Radio.Group
+      value={selectedApp}
+      size="small"
+      style={{
+        display: 'flex',
+        flex: 1,
+      }}>
       <Dropdown
         overlay={
           <Menu selectedKeys={selectedApp ? [selectedApp] : []}>
@@ -73,7 +79,7 @@ export function AppSelector() {
         <AppInspectButton title="Select the device / app to inspect">
           <Layout.Horizontal gap center>
             <AppIcon appname={client?.query.app} />
-            <Layout.Vertical>
+            <Layout.Vertical grow shrink>
               <Text strong>{client?.query.app ?? ''}</Text>
               <Text>
                 {selectedDevice?.displayTitle() || 'Available devices'}
@@ -91,8 +97,9 @@ const AppInspectButton = styled(Button)({
   background: theme.backgroundTransparentHover,
   height: 52,
   border: 'none',
-  width: '100%',
   fontWeight: 'normal',
+  flex: `1 1 0`,
+  overflow: 'hidden', // required for ellipsis
   paddingLeft: theme.space.small,
   paddingRight: theme.space.small,
   textAlign: 'left',
@@ -128,7 +135,10 @@ function computeEntries(
         key={device.serial}
         style={{fontWeight: 'bold'}}
         onClick={() => {
-          dispatch(selectDevice(device));
+          batch(() => {
+            dispatch(selectDevice(device));
+            dispatch(selectClient(null));
+          });
         }}>
         {device.displayTitle()}
       </Menu.Item>

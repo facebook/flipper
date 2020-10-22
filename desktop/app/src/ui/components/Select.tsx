@@ -7,7 +7,7 @@
  * @format
  */
 
-import {Component} from 'react';
+import {Component, CSSProperties} from 'react';
 import Text from './Text';
 import styled from '@emotion/styled';
 import React from 'react';
@@ -54,6 +54,7 @@ export default class Select extends Component<{
 
   /** Whether the user can interact with the select and change the selcted option */
   disabled?: boolean;
+  style?: CSSProperties;
 }> {
   selectID: string = Math.random().toString(36);
 
@@ -67,7 +68,15 @@ export default class Select extends Component<{
   };
 
   render() {
-    const {className, options, selected, label, grow, disabled} = this.props;
+    const {
+      className,
+      options,
+      selected,
+      label,
+      grow,
+      disabled,
+      style,
+    } = this.props;
 
     let select = (
       <SelectMenu
@@ -76,7 +85,8 @@ export default class Select extends Component<{
         onChange={this.onChange}
         className={className}
         disabled={disabled}
-        value={selected || ''}>
+        value={selected || ''}
+        style={style}>
         {Object.keys(options).map((key, index) => (
           <option value={key} key={index}>
             {options[key]}
