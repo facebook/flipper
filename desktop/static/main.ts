@@ -283,7 +283,7 @@ function createWindow() {
   });
   win.once('ready-to-show', () => {
     win.show();
-    if (argv['open-dev-tools']) {
+    if (argv['open-dev-tools'] || process.env.FLIPPER_OPEN_DEV_TOOLS) {
       win.webContents.openDevTools();
     }
   });

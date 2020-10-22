@@ -6,6 +6,7 @@ bundle.js
 bundle.map
 *.bundle.js
 *.bundle.map
+.env
 
 # conflicts with FB internal infra
 .watchmanconfig

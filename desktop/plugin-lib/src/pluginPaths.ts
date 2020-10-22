@@ -25,7 +25,7 @@ export const pluginCacheDir = path.join(flipperDataDir, 'plugins');
 
 export async function getPluginSourceFolders(): Promise<string[]> {
   const pluginFolders: string[] = [];
-  if (process.env.FLIPPER_NO_EMBEDDED_PLUGINS === 'true') {
+  if (process.env.FLIPPER_NO_EMBEDDED_PLUGINS) {
     console.log(
       '🥫  Skipping embedded plugins because "--no-embedded-plugins" flag provided',
     );

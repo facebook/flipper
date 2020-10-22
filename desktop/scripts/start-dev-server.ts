@@ -7,6 +7,7 @@
  * @format
  */
 
+const dotenv = require('dotenv').config();
 const electronBinary: string = require('electron') as any;
 import codeFrame from '@babel/code-frame';
 import socketIo from 'socket.io';
@@ -356,5 +357,8 @@ function checkDevServer() {
   await startMetroServer(app, server);
   outputScreen(socket);
   await compileMain();
+  if (dotenv && dotenv.parsed) {
+    console.log('✅  Loaded env vars from .env file: ', dotenv.parsed);
+  }
   shutdownElectron = launchElectron(port);
 })();
