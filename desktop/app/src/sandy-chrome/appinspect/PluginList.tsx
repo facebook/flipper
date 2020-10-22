@@ -46,9 +46,46 @@ export const PluginList = memo(function PluginList() {
     [connections.devices],
   );
   const client = useMemo(
-    () => connections.clients.find((c) => c.id === connections.selectedApp),
-    [connections.clients, connections.selectedApp],
+    () =>
+      connections.clients.find(
+        (c) =>
+          c.id === connections.selectedApp ||
+          c.id === connections.userPreferredApp,
+      ),
+    [
+      connections.clients,
+      connections.selectedApp,
+      connections.userPreferredApp,
+    ],
   );
+
+  // // if the selected device is Metro, we want to keep the owner of the selected App as active device if possible
+  const activeDevice = useMemo<BaseDevice | undefined | null>(() => {
+    // if not Metro device, use the selected device as metro device
+    const selected = connections.selectedDevice;
+    if (selected !== metroDevice) {
+      return selected;
+    }
+    // if there is an active app, use device owning the app
+    if (client && client._deviceResolved) {
+      return client._deviceResolved;
+    }
+    // if no active app, use the preferred device
+    if (connections.userPreferredDevice) {
+      return (
+        connections.devices.find(
+          (device) => device.title === connections.userPreferredDevice,
+        ) ?? selected
+      );
+    }
+    return selected;
+  }, [
+    client,
+    connections.devices,
+    connections.selectedDevice,
+    metroDevice,
+    connections.userPreferredDevice,
+  ]);
 
   const {
     devicePlugins,
@@ -59,14 +96,14 @@ export const PluginList = memo(function PluginList() {
   } = useMemo(
     () =>
       computePluginLists(
-        connections.selectedDevice!,
+        activeDevice!,
         metroDevice,
         client,
         plugins,
         connections.userStarredPlugins,
       ),
     [
-      connections.selectedDevice,
+      activeDevice,
       metroDevice,
       plugins,
       client,
@@ -81,11 +118,11 @@ export const PluginList = memo(function PluginList() {
           selectedPlugin: pluginId,
           selectedApp: connections.selectedApp,
           deepLinkPayload: null,
-          selectedDevice: connections.selectedDevice,
+          selectedDevice: activeDevice,
         }),
       );
     },
-    [dispatch, connections.selectedDevice, connections.selectedApp],
+    [dispatch, activeDevice, connections.selectedApp],
   );
 
   const handleMetroPluginClick = useCallback(
@@ -128,7 +165,10 @@ export const PluginList = memo(function PluginList() {
               <PluginEntry
                 key={plugin.id}
                 plugin={plugin.details}
-                active={plugin.id === connections.selectedPlugin}
+                active={
+                  plugin.id === connections.selectedPlugin &&
+                  connections.selectedDevice === activeDevice
+                }
                 onClick={handleAppPluginClick}
                 tooltip={getPluginTooltip(plugin.details)}
               />
@@ -138,9 +178,12 @@ export const PluginList = memo(function PluginList() {
           <PluginGroup key="metro" title="React Native">
             {metroPlugins.map((plugin) => (
               <PluginEntry
-                key={plugin.id}
+                key={'metro' + plugin.id}
                 plugin={plugin.details}
-                active={plugin.id === connections.selectedPlugin}
+                active={
+                  plugin.id === connections.selectedPlugin &&
+                  connections.selectedDevice === metroDevice
+                }
                 onClick={handleMetroPluginClick}
                 tooltip={getPluginTooltip(plugin.details)}
               />
@@ -159,6 +202,7 @@ export const PluginList = memo(function PluginList() {
                   <ActionButton
                     id={plugin.id}
                     onClick={handleStarPlugin}
+                    title="Disable plugin"
                     icon={<MinusOutlined size={16} style={{marginRight: 0}} />}
                   />
                 }
@@ -175,6 +219,7 @@ export const PluginList = memo(function PluginList() {
                 actions={
                   <ActionButton
                     id={plugin.id}
+                    title="Enable plugin"
                     onClick={handleStarPlugin}
                     icon={<PlusOutlined size={16} style={{marginRight: 0}} />}
                   />
@@ -212,8 +257,10 @@ function ActionButton({
   icon,
   onClick,
   id,
+  title,
 }: {
   id: string;
+  title: string;
   icon: React.ReactElement;
   onClick: (id: string) => void;
 }) {
@@ -221,6 +268,7 @@ function ActionButton({
     <Button
       size="small"
       icon={icon}
+      title={title}
       style={{border: 'none', color: theme.textColorPrimary}}
       onClick={() => {
         onClick(id);
