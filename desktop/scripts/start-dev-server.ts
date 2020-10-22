@@ -29,6 +29,46 @@ import getAppWatchFolders from './get-app-watch-folders';
 import {getPluginSourceFolders} from 'flipper-plugin-lib';
 import ensurePluginFoldersWatchable from './ensurePluginFoldersWatchable';
 import startWatchPlugins from './startWatchPlugins';
+import yargs from 'yargs';
+
+const argv = yargs
+  .usage('yarn start [args]')
+  .options({
+    'embedded-plugins': {
+      describe:
+        'Enables embedding of plugins into Flipper bundle. If it disabled then only installed plugins are loaded. The flag is enabled by default. Env var FLIPPER_NO_EMBEDDED_PLUGINS is equivalent to the command-line option "--no-embedded-plugins".',
+      type: 'boolean',
+    },
+    'fast-refresh': {
+      describe:
+        'Enable Fast Refresh - quick reload of UI component changes without restarting Flipper. The flag is disabled by default. Env var FLIPPER_FAST_REFRESH is equivalent to the command-line option "--fast-refresh".',
+      type: 'boolean',
+    },
+    'plugin-auto-update': {
+      describe:
+        '[FB-internal only] Enable plugin auto-updates. The flag is disabled by default in dev mode. Env var FLIPPER_NO_PLUGIN_AUTO_UPDATE is equivalent to the command-line option "--no-plugin-auto-update"',
+      type: 'boolean',
+    },
+    'enabled-plugins': {
+      describe:
+        'Load only specified plugins and skip loading rest. This is useful when you are developing only one or few plugins. Plugins to load can be specified as a comma-separated list with either plugin id or name used as identifier, e.g. "--enabled-plugins network,inspector". The flag is not provided by default which means that all plugins loaded.',
+      type: 'array',
+    },
+    'open-dev-tools': {
+      describe:
+        'Open Dev Tools window on startup. The flag is disabled by default. Env var FLIPPER_OPEN_DEV_TOOLS is equivalent to the command-line option "--open-dev-tools".',
+      type: 'boolean',
+    },
+    'dev-server-port': {
+      describe:
+        'Dev server port. 3000 by default. Env var "PORT=3001" is equivalent to the command-line option "--dev-server-port 3001".',
+      default: 3000,
+      type: 'number',
+    },
+  })
+  .version('DEV')
+  .help()
+  .parse(process.argv.slice(1));
 
 const ansiToHtmlConverter = new AnsiToHtmlConverter();
 
@@ -36,19 +76,32 @@ const DEFAULT_PORT = (process.env.PORT || 3000) as number;
 
 let shutdownElectron: (() => void) | undefined = undefined;
 
-if (isFB && process.env.FLIPPER_FB === undefined) {
+if (isFB) {
   process.env.FLIPPER_FB = 'true';
 }
-if (process.argv.includes('--no-embedded-plugins')) {
+
+if (argv['embedded-plugins'] === true) {
+  delete process.env.FLIPPER_NO_EMBEDDED_PLUGINS;
+} else if (argv['embedded-plugins'] === false) {
   process.env.FLIPPER_NO_EMBEDDED_PLUGINS = 'true';
 }
-if (process.argv.includes('--fast-refresh')) {
+
+if (argv['fast-refresh'] === true) {
   process.env.FLIPPER_FAST_REFRESH = 'true';
+} else if (argv['fast-refresh'] === false) {
+  delete process.env.FLIPPER_FAST_REFRESH;
 }
+
 // By default plugin auto-update is disabled in dev mode,
 // but it is possible to enable it using this command line argument.
-if (!process.argv.includes('--plugin-auto-update')) {
+if (argv['plugin-auto-update'] === true) {
+  delete process.env.FLIPPER_DISABLE_PLUGIN_AUTO_UPDATE;
+} else {
   process.env.FLIPPER_DISABLE_PLUGIN_AUTO_UPDATE = 'true';
+}
+
+if (argv['enabled-plugins'] !== undefined) {
+  process.env.FLIPPER_ENABLED_PLUGINS = argv['enabled-plugins'].join(',');
 }
 
 function looksLikeDevServer(): boolean {

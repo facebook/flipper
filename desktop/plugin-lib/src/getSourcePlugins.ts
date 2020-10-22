@@ -29,7 +29,21 @@ export async function getSourcePlugins(): Promise<PluginDetails[]> {
       entryPoints[key] = p[key];
     });
   }
-  return Object.values(entryPoints);
+  const allPlugins = Object.values(entryPoints);
+  if (process.env.FLIPPER_ENABLED_PLUGINS) {
+    const pluginNames = new Set<string>(
+      process.env.FLIPPER_ENABLED_PLUGINS.split(',').map((x) =>
+        x.toLowerCase(),
+      ),
+    );
+    return allPlugins.filter(
+      (x) =>
+        pluginNames.has(x.name) ||
+        pluginNames.has(x.id) ||
+        pluginNames.has(x.name.replace('flipper-plugin-', '')),
+    );
+  }
+  return allPlugins;
 }
 async function entryPointForPluginFolder(
   pluginsDir: string,

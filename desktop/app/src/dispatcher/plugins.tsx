@@ -158,21 +158,34 @@ export const checkGK = (gatekeepedPlugins: Array<PluginDetails>) => (
   return result;
 };
 
-export const checkDisabled = (disabledPlugins: Array<PluginDetails>) => (
-  plugin: PluginDetails,
-): boolean => {
+export const checkDisabled = (disabledPlugins: Array<PluginDetails>) => {
+  const enabledList = process.env.FLIPPER_ENABLED_PLUGINS
+    ? new Set<string>(process.env.FLIPPER_ENABLED_PLUGINS.split(','))
+    : null;
   let disabledList: Set<string> = new Set();
   try {
     disabledList = config().disabledPlugins;
   } catch (e) {
     console.error(e);
   }
-
-  if (disabledList.has(plugin.name)) {
-    disabledPlugins.push(plugin);
-  }
-
-  return !disabledList.has(plugin.name);
+  return (plugin: PluginDetails): boolean => {
+    if (disabledList.has(plugin.name)) {
+      disabledPlugins.push(plugin);
+      return false;
+    }
+    if (
+      enabledList &&
+      !(
+        enabledList.has(plugin.name) ||
+        enabledList.has(plugin.id) ||
+        enabledList.has(plugin.name.replace('flipper-plugin-', ''))
+      )
+    ) {
+      disabledPlugins.push(plugin);
+      return false;
+    }
+    return true;
+  };
 };
 
 export const createRequirePluginFunction = (
