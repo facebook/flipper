@@ -211,7 +211,10 @@ export function getPersistentPlugins(plugins: PluginsState): Array<string> {
   });
 }
 
-export function getPluginTitle(pluginClass: PluginDefinition) {
+export function getPluginTitle(pluginClass: {
+  title?: string | null;
+  id: string;
+}) {
   return pluginClass.title || pluginClass.id;
 }
 

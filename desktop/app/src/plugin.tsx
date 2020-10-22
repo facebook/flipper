@@ -126,7 +126,7 @@ export abstract class FlipperBasePlugin<
   static gatekeeper: string | null = null;
   static entry: string | null = null;
   static isDefault: boolean;
-  static details: PluginDetails | undefined;
+  static details: PluginDetails;
   static keyboardActions: KeyboardActions | null;
   static screenshot: string | null;
   static defaultPersistedState: any;
