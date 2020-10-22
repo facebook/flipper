@@ -47,7 +47,7 @@ async function isMetroRunning(): Promise<boolean> {
   });
 }
 
-async function registerDevice(
+export async function registerMetroDevice(
   ws: WebSocket | undefined,
   store: Store,
   logger: Logger,
@@ -117,7 +117,7 @@ export default (store: Store, logger: Logger) => {
       _ws.onopen = () => {
         clearTimeout(guard);
         ws = _ws;
-        registerDevice(ws, store, logger);
+        registerMetroDevice(ws, store, logger);
       };
 
       _ws.onclose = _ws.onerror = () => {
@@ -138,7 +138,7 @@ export default (store: Store, logger: Logger) => {
             `Flipper did find a running Metro instance, but couldn't connect to the logs. Probably your React Native version is too old to support Flipper. Cause: Failed to get a connection to ${METRO_LOGS_ENDPOINT} in a timely fashion`,
           ),
         );
-        registerDevice(undefined, store, logger);
+        registerMetroDevice(undefined, store, logger);
         // Note: no scheduleNext, we won't retry until restart
       }, 5000);
     } else {

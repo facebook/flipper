@@ -39,7 +39,7 @@ import {getPluginKey, isDevicePluginDefinition} from '../utils/pluginUtils';
 import {getInstance} from '../fb-stubs/Logger';
 import {setFlipperLibImplementation} from '../utils/flipperLibImplementation';
 
-type MockFlipperResult = {
+export type MockFlipperResult = {
   client: Client;
   device: BaseDevice;
   store: Store;

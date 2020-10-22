@@ -314,7 +314,7 @@ function getPluginTooltip(details: PluginDetails): string {
   }`;
 }
 
-function findBestClient(
+export function findBestClient(
   clients: Client[],
   selectedApp: string | null,
   userPreferredApp: string | null,
@@ -322,13 +322,13 @@ function findBestClient(
   return clients.find((c) => c.id === (selectedApp || userPreferredApp));
 }
 
-function findMetroDevice(
+export function findMetroDevice(
   devices: State['connections']['devices'],
 ): BaseDevice | undefined {
   return devices?.find((device) => device.os === 'Metro' && !device.isArchived);
 }
 
-function findBestDevice(
+export function findBestDevice(
   client: Client | undefined,
   devices: State['connections']['devices'],
   selectedDevice: BaseDevice | null,
@@ -353,7 +353,7 @@ function findBestDevice(
   return selected;
 }
 
-function computePluginLists(
+export function computePluginLists(
   device: BaseDevice | undefined,
   metroDevice: BaseDevice | undefined,
   client: Client | undefined,
