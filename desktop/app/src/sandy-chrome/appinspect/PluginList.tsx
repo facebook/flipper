@@ -7,14 +7,7 @@
  * @format
  */
 
-import React, {
-  memo,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, {memo, useCallback, useEffect, useRef, useState} from 'react';
 import {Badge, Button, Menu, Tooltip, Typography} from 'antd';
 import {InfoIcon, SidebarTitle} from '../LeftSidebar';
 import {PlusOutlined, MinusOutlined} from '@ant-design/icons';
@@ -29,6 +22,7 @@ import {State} from '../../reducers';
 import BaseDevice from '../../devices/BaseDevice';
 import {getFavoritePlugins} from '../../chrome/mainsidebar/sidebarUtils';
 import {PluginDetails} from 'flipper-plugin-lib';
+import {useMemoize} from '../../utils/useMemoize';
 
 const {SubMenu} = Menu;
 const {Text} = Typography;
@@ -38,78 +32,33 @@ export const PluginList = memo(function PluginList() {
   const connections = useStore((state) => state.connections);
   const plugins = useStore((state) => state.plugins);
 
-  const metroDevice = useMemo<BaseDevice | undefined>(
-    () =>
-      connections?.devices?.find(
-        (device) => device.os === 'Metro' && !device.isArchived,
-      ),
-    [connections.devices],
-  );
-  const client = useMemo(
-    () =>
-      connections.clients.find(
-        (c) =>
-          c.id === connections.selectedApp ||
-          c.id === connections.userPreferredApp,
-      ),
-    [
-      connections.clients,
-      connections.selectedApp,
-      connections.userPreferredApp,
-    ],
-  );
-
+  const metroDevice = useMemoize(findMetroDevice, [connections.devices]);
+  const client = useMemoize(findBestClient, [
+    connections.clients,
+    connections.selectedApp,
+    connections.userPreferredApp,
+  ]);
   // // if the selected device is Metro, we want to keep the owner of the selected App as active device if possible
-  const activeDevice = useMemo<BaseDevice | undefined | null>(() => {
-    // if not Metro device, use the selected device as metro device
-    const selected = connections.selectedDevice;
-    if (selected !== metroDevice) {
-      return selected;
-    }
-    // if there is an active app, use device owning the app
-    if (client && client._deviceResolved) {
-      return client._deviceResolved;
-    }
-    // if no active app, use the preferred device
-    if (connections.userPreferredDevice) {
-      return (
-        connections.devices.find(
-          (device) => device.title === connections.userPreferredDevice,
-        ) ?? selected
-      );
-    }
-    return selected;
-  }, [
+  const activeDevice = useMemoize(findBestDevice, [
     client,
     connections.devices,
     connections.selectedDevice,
     metroDevice,
     connections.userPreferredDevice,
   ]);
-
   const {
     devicePlugins,
     metroPlugins,
     enabledPlugins,
     disabledPlugins,
     unavailablePlugins,
-  } = useMemo(
-    () =>
-      computePluginLists(
-        activeDevice!,
-        metroDevice,
-        client,
-        plugins,
-        connections.userStarredPlugins,
-      ),
-    [
-      activeDevice,
-      metroDevice,
-      plugins,
-      client,
-      connections.userStarredPlugins,
-    ],
-  );
+  } = useMemoize(computePluginLists, [
+    activeDevice,
+    metroDevice,
+    client,
+    plugins,
+    connections.userStarredPlugins,
+  ]);
 
   const handleAppPluginClick = useCallback(
     (pluginId) => {
@@ -124,7 +73,6 @@ export const PluginList = memo(function PluginList() {
     },
     [dispatch, activeDevice, connections.selectedApp],
   );
-
   const handleMetroPluginClick = useCallback(
     (pluginId) => {
       dispatch(
@@ -138,7 +86,6 @@ export const PluginList = memo(function PluginList() {
     },
     [dispatch, metroDevice, connections.selectedApp],
   );
-
   const handleStarPlugin = useCallback(
     (id: string) => {
       dispatch(
@@ -189,7 +136,6 @@ export const PluginList = memo(function PluginList() {
               />
             ))}
           </PluginGroup>
-
           <PluginGroup key="enabled" title="Enabled">
             {enabledPlugins.map((plugin) => (
               <PluginEntry
@@ -246,12 +192,6 @@ export const PluginList = memo(function PluginList() {
     </Layout.Container>
   );
 });
-
-function getPluginTooltip(details: PluginDetails): string {
-  return `${getPluginTitle(details)} (${details.id}@${details.version}) ${
-    details.description ?? ''
-  }`;
-}
 
 function ActionButton({
   icon,
@@ -368,16 +308,60 @@ const PluginGroup = memo(function PluginGroup({
   );
 });
 
+function getPluginTooltip(details: PluginDetails): string {
+  return `${getPluginTitle(details)} (${details.id}@${details.version}) ${
+    details.description ?? ''
+  }`;
+}
+
+function findBestClient(
+  clients: Client[],
+  selectedApp: string | null,
+  userPreferredApp: string | null,
+): Client | undefined {
+  return clients.find((c) => c.id === (selectedApp || userPreferredApp));
+}
+
+function findMetroDevice(
+  devices: State['connections']['devices'],
+): BaseDevice | undefined {
+  return devices?.find((device) => device.os === 'Metro' && !device.isArchived);
+}
+
+function findBestDevice(
+  client: Client | undefined,
+  devices: State['connections']['devices'],
+  selectedDevice: BaseDevice | null,
+  metroDevice: BaseDevice | undefined,
+  userPreferredDevice: string | null,
+): BaseDevice | undefined {
+  // if not Metro device, use the selected device as metro device
+  const selected = selectedDevice ?? undefined;
+  if (selected !== metroDevice) {
+    return selected;
+  }
+  // if there is an active app, use device owning the app
+  if (client && client._deviceResolved) {
+    return client._deviceResolved;
+  }
+  // if no active app, use the preferred device
+  if (userPreferredDevice) {
+    return (
+      devices.find((device) => device.title === userPreferredDevice) ?? selected
+    );
+  }
+  return selected;
+}
+
 function computePluginLists(
-  device: BaseDevice,
+  device: BaseDevice | undefined,
   metroDevice: BaseDevice | undefined,
   client: Client | undefined,
   plugins: State['plugins'],
   userStarredPlugins: State['connections']['userStarredPlugins'],
 ) {
-  const devicePlugins: DevicePluginDefinition[] = device.devicePlugins.map(
-    (name) => plugins.devicePlugins.get(name)!,
-  );
+  const devicePlugins: DevicePluginDefinition[] =
+    device?.devicePlugins.map((name) => plugins.devicePlugins.get(name)!) ?? [];
   const metroPlugins: DevicePluginDefinition[] =
     metroDevice?.devicePlugins.map(
       (name) => plugins.devicePlugins.get(name)!,
@@ -386,7 +370,7 @@ function computePluginLists(
   const disabledPlugins: ClientPluginDefinition[] = [];
   const unavailablePlugins: [plugin: PluginDetails, reason: string][] = [];
 
-  {
+  if (device) {
     // find all device plugins that aren't part of the current device / metro
     const detectedDevicePlugins = new Set([
       ...device.devicePlugins,
@@ -405,7 +389,7 @@ function computePluginLists(
   }
 
   // process all client plugins
-  if (client) {
+  if (device && client) {
     const clientPlugins = Array.from(plugins.clientPlugins.values()).sort(
       sortPluginsByName,
     );
