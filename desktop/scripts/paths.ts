@@ -8,6 +8,7 @@
  */
 
 import path from 'path';
+import isFB from './isFB';
 
 export const rootDir = path.resolve(__dirname, '..');
 export const appDir = path.join(rootDir, 'app');
@@ -22,3 +23,4 @@ export const babelTransformationsDir = path.resolve(
   'babel-transformer',
   'src',
 );
+export const jsSharedDir = isFB ? path.resolve(rootDir, '../../js-shared') : '';
