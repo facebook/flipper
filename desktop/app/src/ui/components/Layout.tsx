@@ -116,25 +116,26 @@ const ScrollContainer = ({
   children,
   horizontal,
   vertical,
+  padv,
+  padh,
+  pad,
   ...rest
 }: React.HTMLAttributes<HTMLDivElement> & {
   horizontal?: boolean;
   vertical?: boolean;
-}) => {
+} & PaddingProps) => {
   const axis =
     horizontal && !vertical ? 'x' : !horizontal && vertical ? 'y' : 'both';
   return (
     <ScrollParent axis={axis} {...rest}>
-      <ScrollChild axis={axis}>{children}</ScrollChild>
+      <ScrollChild axis={axis} padv={padv} padh={padh} pad={pad}>
+        {children}
+      </ScrollChild>
     </ScrollParent>
   ) as any;
 };
 
 type SplitLayoutProps = {
-  /**
-   * If set, the dynamically sized pane will get scrollbars when needed
-   */
-  scrollable?: boolean;
   /**
    * If set, items will be centered over the orthogonal direction, if false (the default) items will be stretched.
    */
@@ -150,8 +151,7 @@ function renderSplitLayout(
   // eslint-disable-next-line
   const isSandy = useIsSandy();
   if (!isSandy) return renderLayout(props, direction === 'row', grow === 1);
-  let [child1, child2] = props.children;
-  if (props.scrollable) child2 = <ScrollContainer>{child2}</ScrollContainer>;
+  const [child1, child2] = props.children;
   return (
     <SandySplitContainer {...props} flexDirection={direction} grow={grow}>
       {child1}

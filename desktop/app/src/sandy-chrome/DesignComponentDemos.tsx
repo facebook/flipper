@@ -179,6 +179,11 @@ const demos: PreviewProps[] = [
         'boolean',
         'specifies in which directions the container should scroll. If none is specified the container will scroll in both directions',
       ],
+      [
+        'padv / padh / pad',
+        'see Container',
+        'Padding will be applied to the child',
+      ],
     ],
     demos: {
       'Basic usage': (
@@ -246,34 +251,34 @@ const demos: PreviewProps[] = [
           {aFixedHeightBox}
         </Layout.Bottom>
       ),
-      'Layout.Top + scrollable': (
+      'Layout.Top + Layout.ScrollContainer': (
         <Layout.Container style={{height: 150}}>
-          <Layout.Top scrollable>
+          <Layout.Top>
             {aFixedHeightBox}
-            {largeChild}
+            <Layout.ScrollContainer>{largeChild}</Layout.ScrollContainer>
           </Layout.Top>
         </Layout.Container>
       ),
-      'Layout.Left + scrollable': (
+      'Layout.Left + Layout.ScrollContainer': (
         <Layout.Container style={{height: 150}}>
-          <Layout.Left scrollable>
+          <Layout.Left>
             {aFixedWidthBox}
-            {largeChild}
+            <Layout.ScrollContainer>{largeChild}</Layout.ScrollContainer>
           </Layout.Left>
         </Layout.Container>
       ),
-      'Layout.Right + scrollable': (
+      'Layout.Right + Layout.ScrollContainer': (
         <Layout.Container style={{height: 150}}>
-          <Layout.Right scrollable>
-            {largeChild}
+          <Layout.Right>
+            <Layout.ScrollContainer>{largeChild}</Layout.ScrollContainer>
             {aFixedWidthBox}
           </Layout.Right>
         </Layout.Container>
       ),
-      'Layout.Bottom + scrollable': (
+      'Layout.Bottom + Layout.ScrollContainer': (
         <Layout.Container style={{height: 150}}>
-          <Layout.Bottom scrollable>
-            {largeChild}
+          <Layout.Bottom>
+            <Layout.ScrollContainer>{largeChild}</Layout.ScrollContainer>
             {aFixedHeightBox}
           </Layout.Bottom>
         </Layout.Container>

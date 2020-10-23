@@ -92,7 +92,7 @@ export function ConsoleLogs() {
   const styles = useMemo(() => buildTheme(isSandy), [isSandy]);
 
   return (
-    <Layout.Top scrollable>
+    <Layout.Top>
       <Toolbar>
         <ButtonGroup>
           <Button onClick={clearLogs} icon="trash">
@@ -101,12 +101,14 @@ export function ConsoleLogs() {
           <Button dropdown={dropdown}>Log Levels</Button>
         </ButtonGroup>
       </Toolbar>
-      <Console
-        logs={logs}
-        filter={logLevels}
-        variant={isDarkMode || !isSandy ? 'dark' : 'light'}
-        styles={styles}
-      />
+      <Layout.ScrollContainer vertical>
+        <Console
+          logs={logs}
+          filter={logLevels}
+          variant={isDarkMode || !isSandy ? 'dark' : 'light'}
+          styles={styles}
+        />
+      </Layout.ScrollContainer>
     </Layout.Top>
   );
 }

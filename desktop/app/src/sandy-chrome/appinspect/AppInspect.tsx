@@ -57,15 +57,13 @@ export function AppInspect() {
             </Layout.Horizontal>
           </Layout.Container>
         </Layout.Container>
-        <Layout.Container padv={theme.space.large}>
-          <Layout.ScrollContainer vertical>
-            {selectedDevice ? (
-              <PluginList />
-            ) : (
-              <Alert message="No device or app selected" type="info" />
-            )}
-          </Layout.ScrollContainer>
-        </Layout.Container>
+        <Layout.ScrollContainer vertical padv={theme.space.large}>
+          {selectedDevice ? (
+            <PluginList />
+          ) : (
+            <Alert message="No device or app selected" type="info" />
+          )}
+        </Layout.ScrollContainer>
       </Layout.Top>
     </LeftSidebar>
   );

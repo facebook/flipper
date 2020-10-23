@@ -15,7 +15,11 @@ import {Button, Tooltip, Typography} from 'antd';
 import {InfoCircleOutlined} from '@ant-design/icons';
 
 export const LeftSidebar: React.FC = ({children}) => (
-  <Layout.Container borderRight padv="small" grow shrink>
+  <Layout.Container
+    borderRight
+    style={{paddingTop: theme.space.small}}
+    grow
+    shrink>
     {children}
   </Layout.Container>
 );
