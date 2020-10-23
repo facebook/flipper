@@ -165,6 +165,49 @@ yarn
 yarn start
 ```
 
+You can use several options to customise development build instance. They can be provided as command-line args or environment variables.
+You can check all of them by executing `yarn start --help`:
+```
+yarn start [args]
+
+Options:
+  --embedded-plugins    Enables embedding of plugins into Flipper bundle. If it
+                        disabled then only installed plugins are loaded. The
+                        flag is enabled by default. Env var
+                        FLIPPER_NO_EMBEDDED_PLUGINS is equivalent to the
+                        command-line option "--no-embedded-plugins".   [boolean]
+  --fast-refresh        Enable Fast Refresh - quick reload of UI component
+                        changes without restarting Flipper. The flag is disabled
+                        by default. Env var FLIPPER_FAST_REFRESH is equivalent
+                        to the command-line option "--fast-refresh".   [boolean]
+  --plugin-auto-update  [FB-internal only] Enable plugin auto-updates. The flag
+                        is disabled by default in dev mode. Env var
+                        FLIPPER_NO_PLUGIN_AUTO_UPDATE is equivalent to the
+                        command-line option "--no-plugin-auto-update"  [boolean]
+  --enabled-plugins     Load only specified plugins and skip loading rest. This
+                        is useful when you are developing only one or few
+                        plugins. Plugins to load can be specified as a
+                        comma-separated list with either plugin id or name used
+                        as identifier, e.g. "--enabled-plugins
+                        network,inspector". The flag is not provided by default
+                        which means that all plugins loaded.             [array]
+  --open-dev-tools      Open Dev Tools window on startup. The flag is disabled
+                        by default. Env var FLIPPER_OPEN_DEV_TOOLS is equivalent
+                        to the command-line option "--open-dev-tools". [boolean]
+  --dev-server-port     Dev server port. 3000 by default. Env var "PORT=3001" is
+                        equivalent to the command-line option "--dev-server-port
+                        3001".                          [number] [default: 3000]
+  --version             Show version number                            [boolean]
+  --help                Show help                                      [boolean]
+```
+
+You can also create file `.env` in `desktop` subfolder and specify any environment variables to load them automatically on `yarn start` so you don't need to pass command-line args every time, e.g.:
+```
+FLIPPER_FAST_REFRESH=true
+FLIPPER_OPEN_DEV_TOOLS=true
+FLIPPER_ENABLED_PLUGINS=flipper-messages,network,inspector
+```
+
 ## Transpiling and Bundling
 
 As we already mentioned, the [Flipper development build](#development-build) automatically transpiles and bundles plugins on loading. It is capable of all the ES6 goodness, Flow annotations, TypeScript, as well as JSX and applies the required babel-transforms.
