@@ -24,8 +24,13 @@ import {toggleLeftSidebarVisible} from '../reducers/application';
 import {AppInspect} from './appinspect/AppInspect';
 import PluginContainer from '../PluginContainer';
 import {ContentContainer} from './ContentContainer';
+import {Notification} from './notification/Notification';
 
-export type ToplevelNavItem = 'appinspect' | 'flipperlogs' | undefined;
+export type ToplevelNavItem =
+  | 'appinspect'
+  | 'flipperlogs'
+  | 'notification'
+  | undefined;
 export type ToplevelProps = {
   toplevelSelection: ToplevelNavItem;
   setToplevelSelection: (_newSelection: ToplevelNavItem) => void;
@@ -51,7 +56,8 @@ export function SandyApp({logger}: {logger: Logger}) {
   const setToplevelSelection = useCallback(
     (newSelection: ToplevelNavItem) => {
       // toggle sidebar visibility if needed
-      const hasLeftSidebar = newSelection === 'appinspect';
+      const hasLeftSidebar =
+        newSelection === 'appinspect' || newSelection === 'notification';
       if (hasLeftSidebar) {
         if (newSelection === toplevelSelection) {
           dispatch(toggleLeftSidebarVisible());
@@ -76,10 +82,12 @@ export function SandyApp({logger}: {logger: Logger}) {
     // eslint-disable-next-line
   }, []);
 
-  const leftMenuContent =
-    leftSidebarVisible && toplevelSelection === 'appinspect' ? (
-      <AppInspect />
-    ) : null;
+  const leftMenuContent = !leftSidebarVisible ? null : toplevelSelection ===
+    'appinspect' ? (
+    <AppInspect />
+  ) : toplevelSelection === 'notification' ? (
+    <Notification />
+  ) : null;
 
   return (
     <SandyContext.Provider value={true}>

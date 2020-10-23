@@ -118,7 +118,10 @@ export function LeftRail({
             }}
           />
           <LeftRailButton icon={<AppstoreOutlined />} title="Plugin Manager" />
-          <LeftRailButton icon={<BellOutlined />} title="Notifications" />
+          <NotificationButton
+            toplevelSelection={toplevelSelection}
+            setToplevelSelection={setToplevelSelection}
+          />
           <LeftRailDivider />
           <DebugLogsButton
             toplevelSelection={toplevelSelection}
@@ -181,6 +184,24 @@ function RightSidebarToggleButton() {
       onClick={() => {
         dispatch(toggleRightSidebarVisible());
       }}
+    />
+  );
+}
+
+function NotificationButton({
+  toplevelSelection,
+  setToplevelSelection,
+}: ToplevelProps) {
+  const notificationCount = useStore(
+    (state) => state.notifications.activeNotifications.length,
+  );
+  return (
+    <LeftRailButton
+      icon={<BellOutlined />}
+      title="Notifications"
+      selected={toplevelSelection === 'notification'}
+      count={notificationCount}
+      onClick={() => setToplevelSelection('notification')}
     />
   );
 }
