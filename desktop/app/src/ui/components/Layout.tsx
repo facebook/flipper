@@ -53,7 +53,14 @@ const Container = styled.div<ContainerProps>(
   }) => ({
     display: 'flex',
     flexDirection: 'column',
-    flex: grow && shrink ? `1 1 0` : grow ? `1 0 auto` : shrink ? `0 1 0` : 0,
+    flex:
+      grow && shrink
+        ? `1 1 0` // allow growing, and shrinking smaller than actual size
+        : grow
+        ? `1 0 auto` // allow grow, start at natural size
+        : shrink
+        ? `0 1 0` // allow shrinking smaller than natural size
+        : `0 0 auto`, // (default) use natural size, don't grow or shrink (in parent flex direction)
     minWidth: shrink ? 0 : undefined,
     boxSizing: 'border-box',
     width,
