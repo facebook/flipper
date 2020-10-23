@@ -4,13 +4,16 @@
   "id": "Preferences",
   "version": "0.63.0",
   "main": "dist/bundle.js",
-  "flipperBundlerEntry": "index.js",
+  "flipperBundlerEntry": "src/index.tsx",
   "license": "MIT",
   "keywords": [
     "flipper-plugin"
   ],
   "dependencies": {
     "lodash": "^4.17.19"
+  },
+  "peerDependencies": {
+    "flipper-plugin": "0.63.0"
   },
   "title": "Shared Preferences Viewer",
   "bugs": {
