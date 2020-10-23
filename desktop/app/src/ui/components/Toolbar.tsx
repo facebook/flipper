@@ -14,7 +14,7 @@ import FlexBox from './FlexBox';
 import styled from '@emotion/styled';
 import {useIsSandy} from '../../sandy-chrome/SandyContext';
 import {theme} from '../../sandy-chrome/theme';
-import Layout from './Layout';
+import {Layout} from './Layout';
 
 /**
  * A toolbar.

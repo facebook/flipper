@@ -79,12 +79,12 @@ export function AppSelector() {
         <AppInspectButton title="Select the device / app to inspect">
           <Layout.Horizontal gap center>
             <AppIcon appname={client?.query.app} />
-            <Layout.Vertical grow shrink>
+            <Layout.Container grow shrink>
               <Text strong>{client?.query.app ?? ''}</Text>
               <Text>
                 {selectedDevice?.displayTitle() || 'Available devices'}
               </Text>
-            </Layout.Vertical>
+            </Layout.Container>
             <CaretDownOutlined />
           </Layout.Horizontal>
         </AppInspectButton>

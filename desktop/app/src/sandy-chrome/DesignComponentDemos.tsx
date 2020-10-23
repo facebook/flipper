@@ -67,8 +67,7 @@ const someText = <Text>Some text</Text>;
 const demos: PreviewProps[] = [
   {
     title: 'Layout.Container',
-    description:
-      'Layout.Container can be used to organize the UI in regions. It takes care of paddings and borders. To arrange multiple children use one of the other Layout components. If you need a margin on this component, try to wrap it in other Layout component instead.',
+    description: `Layout.Container can be used to organize the UI in regions. It takes care of paddings and borders. Children will be arranged vertically. Use Layout.Horizontal instead for arranging children horizontally. If you need a margin on this component, try to wrap it in other Layout component instead.`,
     props: [
       ['rounded', 'boolean (false)', 'Make the corners rounded'],
       [
@@ -91,6 +90,16 @@ const demos: PreviewProps[] = [
         'boolean (false)',
         'Use a standard padding on the top side',
       ],
+      [
+        'gap',
+        'true / number (0)',
+        'Set the spacing between children. If just set, theme.space.small will be used.',
+      ],
+      [
+        'center',
+        'boolean (false)',
+        'If set, all children will use their own naturally width, and they will be centered horizontally in the Container. If not set, all children will be stretched to the width of the Container.',
+      ],
     ],
     demos: {
       'Basic container with fixed dimensions': (
@@ -111,6 +120,52 @@ const demos: PreviewProps[] = [
           style={{background: theme.backgroundDefault, width: 200}}>
           <div style={demoStyle.square}>child</div>
         </Layout.Container>
+      ),
+      'Multiple children, gap={24}': (
+        <Layout.Container gap={24}>
+          {aButton}
+          {someText}
+          {aBox}
+          {aDynamicBox}
+        </Layout.Container>
+      ),
+      'Multiple children icmw. pad center gap': (
+        <Layout.Container pad center gap>
+          {aButton}
+          {someText}
+          {aBox}
+          {aDynamicBox}
+        </Layout.Container>
+      ),
+    },
+  },
+  {
+    title: 'Layout.Horizontal',
+    description:
+      'Use this component to arrange multiple items horizontally. All vanilla Container props can be used as well.',
+    props: [
+      [
+        'center',
+        'boolean (false)',
+        'If set, all children will use their own height, and they will be centered vertically in the layout. If not set, all children will be stretched to the height of the layout.',
+      ],
+    ],
+    demos: {
+      'Basic usage, gap="large"': (
+        <Layout.Horizontal gap="large">
+          {aButton}
+          {someText}
+          {aBox}
+          {aDynamicBox}
+        </Layout.Horizontal>
+      ),
+      'Using flags: pad center gap={8} (great for toolbars and such)': (
+        <Layout.Horizontal pad center gap={8}>
+          {aButton}
+          {someText}
+          {aBox}
+          {aDynamicBox}
+        </Layout.Horizontal>
       ),
     },
   },
@@ -139,84 +194,14 @@ const demos: PreviewProps[] = [
             width: 100,
             border: `2px solid ${theme.primaryColor}`,
           }}>
-          <Layout.Vertical>
+          <Layout.Container>
             <Text ellipsis>
               This text is truncated because it is too long and scroll is
               vertical only...
             </Text>
             {largeChild}
-          </Layout.Vertical>
+          </Layout.Container>
         </Layout.ScrollContainer>
-      ),
-    },
-  },
-  {
-    title: 'Layout.Horizontal',
-    description:
-      'Use this component to arrange multiple items horizontally. All vanilla Container props can be used as well.',
-    props: [
-      [
-        'gap',
-        Object.keys(theme.space).join(' | ') + ' | number | true',
-        'Set the spacing between children. For `true` theme.space.small should be used. Defaults to 0.',
-      ],
-      [
-        'center',
-        'boolean (false)',
-        'If set, all children will use their own height, and they will be centered vertically in the layout. If not set, all children will be stretched to the height of the layout.',
-      ],
-    ],
-    demos: {
-      'Basic usage, gap="large"': (
-        <Layout.Horizontal gap="large">
-          {aButton}
-          {someText}
-          {aBox}
-          {aDynamicBox}
-        </Layout.Horizontal>
-      ),
-      'Using flags: pad center gap={8} (great for toolbars and such)': (
-        <Layout.Horizontal pad center gap={8}>
-          {aButton}
-          {someText}
-          {aBox}
-          {aDynamicBox}
-        </Layout.Horizontal>
-      ),
-    },
-  },
-  {
-    title: 'Layout.Vertical',
-    description:
-      'Use this component to arrange multiple items vertically. All vanilla Container props can be used as well.',
-    props: [
-      [
-        'gap',
-        'number (0)',
-        'Set the spacing between children. Typically theme.space.small should be used.',
-      ],
-      [
-        'center',
-        'boolean (false)',
-        'If set, all children will use their own height, and they will be centered vertically in the layout. If not set, all children will be stretched to the height of the layout.',
-      ],
-    ],
-    demos: {
-      'Basic usage, gap={24}': (
-        <Layout.Vertical gap={24}>
-          {aButton}
-          {someText}
-          {aBox}
-          {aDynamicBox}
-        </Layout.Vertical>
-      ),
-      'Using flags: pad center gap (great for toolbars and such)': (
-        <Layout.Vertical pad center gap>
-          {aButton}
-          {someText}
-          {aBox}
-          {aDynamicBox}
-        </Layout.Vertical>
       ),
     },
   },
@@ -300,11 +285,11 @@ const demos: PreviewProps[] = [
 function ComponentPreview({title, demos, description, props}: PreviewProps) {
   return (
     <Card title={title} size="small" type="inner">
-      <Layout.Vertical gap="small">
+      <Layout.Container gap="small">
         <Text type="secondary">{description}</Text>
         <Collapse ghost>
           <Collapse.Panel header="Examples" key="demos">
-            <Layout.Vertical gap="large">
+            <Layout.Container gap="large">
               {Object.entries(demos).map(([name, children]) => (
                 <div key={name}>
                   <Tabs type="line">
@@ -330,7 +315,7 @@ function ComponentPreview({title, demos, description, props}: PreviewProps) {
                   </Tabs>
                 </div>
               ))}
-            </Layout.Vertical>
+            </Layout.Container>
           </Collapse.Panel>
           <Collapse.Panel header="Props" key="props">
             <Table
@@ -358,15 +343,15 @@ function ComponentPreview({title, demos, description, props}: PreviewProps) {
             />
           </Collapse.Panel>
         </Collapse>
-      </Layout.Vertical>
+      </Layout.Container>
     </Card>
   );
 }
 
 export const DesignComponentDemos = () => (
-  <Layout.Vertical gap={theme.space.large}>
+  <Layout.Container gap={theme.space.large}>
     {demos.map((demo) => (
       <ComponentPreview key={demo.title} {...demo} />
     ))}
-  </Layout.Vertical>
+  </Layout.Container>
 );

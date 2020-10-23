@@ -21,7 +21,7 @@ import styled from '@emotion/styled';
 import {debounce} from 'lodash';
 import ToggleButton from '../ToggleSwitch';
 import React from 'react';
-import Layout from '../Layout';
+import {Layout} from '../Layout';
 import {theme} from '../../../sandy-chrome/theme';
 
 const SearchBar = styled(Toolbar)({

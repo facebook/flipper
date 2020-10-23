@@ -160,7 +160,7 @@ function CollapsableCategory(props: {checks: Array<HealthcheckReportItem>}) {
 function HealthCheckList(props: {report: HealthcheckReport}) {
   useEffect(() => reportUsage('doctor:report:opened'), []);
   return (
-    <Layout.Vertical>
+    <Layout.Container>
       <ResultTopDialog status={props.report.result.status} />
       {Object.values(props.report.categories).map((category) => (
         <Layout.Container key={category.key}>
@@ -187,7 +187,7 @@ function HealthCheckList(props: {report: HealthcheckReport}) {
           />
         </Layout.Container>
       ))}
-    </Layout.Vertical>
+    </Layout.Container>
   );
 }
 

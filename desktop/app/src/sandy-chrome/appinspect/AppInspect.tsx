@@ -40,7 +40,7 @@ export function AppInspect() {
           <SidebarTitle actions={<InfoIcon>{appTooltip}</InfoIcon>}>
             App Inspect
           </SidebarTitle>
-          <Layout.Vertical padv="small" padh="medium" gap={theme.space.large}>
+          <Layout.Container padv="small" padh="medium" gap={theme.space.large}>
             <AppSelector />
             <Input addonAfter={<SettingOutlined />} defaultValue="mysite" />
             <Layout.Horizontal gap>
@@ -55,7 +55,7 @@ export function AppInspect() {
                 }}
               />
             </Layout.Horizontal>
-          </Layout.Vertical>
+          </Layout.Container>
         </Layout.Container>
         <Layout.Container padv={theme.space.large}>
           <Layout.ScrollContainer vertical>

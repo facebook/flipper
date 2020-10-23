@@ -125,7 +125,7 @@ function NotificationEntry({notification}: {notification: PluginNotification}) {
     style: {color: theme.primaryColor},
   });
   return (
-    <Layout.Vertical gap="small" pad="medium">
+    <Layout.Container gap="small" pad="medium">
       <Layout.Horizontal gap="tiny" center>
         {icon}
         <Text>{pluginId}</Text>
@@ -140,7 +140,7 @@ function NotificationEntry({notification}: {notification: PluginNotification}) {
         Open
       </Button>
       <DetailCollapse detail={content.message} />
-    </Layout.Vertical>
+    </Layout.Container>
   );
 }
 
@@ -151,14 +151,14 @@ function NotificationList({
 }) {
   return (
     <Layout.ScrollContainer vertical>
-      <Layout.Vertical>
+      <Layout.Container>
         {notifications.map((notification) => (
           <NotificationEntry
             key={notification.notification.id}
             notification={notification}
           />
         ))}
-      </Layout.Vertical>
+      </Layout.Container>
     </Layout.ScrollContainer>
   );
 }
@@ -175,12 +175,12 @@ export function Notification() {
   return (
     <LeftSidebar>
       <Layout.Top>
-        <Layout.Vertical gap="tiny" padv="tiny" borderBottom>
+        <Layout.Container gap="tiny" padv="tiny" borderBottom>
           <SidebarTitle actions={actions}>notifications</SidebarTitle>
           <Layout.Container padh="medium" padv="small">
             <Input placeholder="Search..." prefix={<SearchOutlined />} />
           </Layout.Container>
-        </Layout.Vertical>
+        </Layout.Container>
         <NotificationList notifications={notificationExample} />
       </Layout.Top>
     </LeftSidebar>

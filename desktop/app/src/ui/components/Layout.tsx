@@ -35,6 +35,14 @@ type ContainerProps = {
   grow?: boolean;
   // allow shrinking beyond minally needed size? Makes using ellipsis on children possible
   shrink?: boolean;
+  /**
+   * Gab between individual items
+   */
+  gap?: Spacing;
+  /**
+   * If set, items will be aligned in the center, if false (the default) items will be stretched.
+   */
+  center?: boolean;
 } & PaddingProps;
 
 const Container = styled.div<ContainerProps>(
@@ -49,6 +57,8 @@ const Container = styled.div<ContainerProps>(
     height,
     grow,
     shrink,
+    gap,
+    center,
     ...rest
   }) => ({
     display: 'flex',
@@ -61,6 +71,9 @@ const Container = styled.div<ContainerProps>(
         : shrink
         ? `0 1 0` // allow shrinking smaller than natural size
         : `0 0 auto`, // (default) use natural size, don't grow or shrink (in parent flex direction)
+    alignItems: center ? 'center' : 'stretch',
+    gap: normalizeSpace(gap, theme.space.small),
+
     minWidth: shrink ? 0 : undefined,
     boxSizing: 'border-box',
     width,
@@ -77,33 +90,9 @@ const Container = styled.div<ContainerProps>(
   }),
 );
 
-type DistributionProps = ContainerProps & {
-  /**
-   * Gab between individual items
-   */
-  gap?: Spacing;
-  /**
-   * If set, items will be aligned in the center, if false (the default) items will be stretched.
-   */
-  center?: boolean;
-};
-
-function distributionStyle({gap, center}: DistributionProps) {
-  return {
-    gap: normalizeSpace(gap, theme.space.small),
-    alignItems: center ? 'center' : 'stretch',
-  };
-}
-
-const Horizontal = styled(Container)<DistributionProps>((props) => ({
-  ...distributionStyle(props),
+const Horizontal = styled(Container)({
   flexDirection: 'row',
-}));
-
-const Vertical = styled(Container)<DistributionProps>((props) => ({
-  ...distributionStyle(props),
-  flexDirection: 'column',
-}));
+});
 
 const ScrollParent = styled.div<{axis?: ScrollAxis}>(({axis}) => ({
   flex: 1,
@@ -113,7 +102,7 @@ const ScrollParent = styled.div<{axis?: ScrollAxis}>(({axis}) => ({
   overflowY: axis === 'x' ? 'hidden' : 'auto',
 }));
 
-const ScrollChild = styled(Vertical)<{axis?: ScrollAxis}>(({axis}) => ({
+const ScrollChild = styled(Container)<{axis?: ScrollAxis}>(({axis}) => ({
   position: 'absolute',
   minHeight: '100%',
   minWidth: '100%',
@@ -153,6 +142,24 @@ type SplitLayoutProps = {
   children: [React.ReactNode, React.ReactNode];
 };
 
+function renderSplitLayout(
+  props: SplitLayoutProps,
+  direction: 'column' | 'row',
+  grow: 1 | 2,
+) {
+  // eslint-disable-next-line
+  const isSandy = useIsSandy();
+  if (!isSandy) return renderLayout(props, direction === 'row', grow === 1);
+  let [child1, child2] = props.children;
+  if (props.scrollable) child2 = <ScrollContainer>{child2}</ScrollContainer>;
+  return (
+    <SandySplitContainer {...props} flexDirection={direction} grow={grow}>
+      {child1}
+      {child2}
+    </SandySplitContainer>
+  );
+}
+
 /**
  * The Layout component divides all available screenspace over two components:
  * A fixed top (or left) component, and all remaining space to a bottom component.
@@ -164,59 +171,22 @@ type SplitLayoutProps = {
  *
  * Use Layout.Top / Right / Bottom / Left to indicate where the fixed element should live.
  */
-const Layout = {
+export const Layout = {
   Top(props: SplitLayoutProps) {
-    const isSandy = useIsSandy();
-    if (!isSandy) return renderLayout(props, false, false);
-    let [child1, child2] = props.children;
-    if (props.scrollable) child2 = <ScrollContainer>{child2}</ScrollContainer>;
-    return (
-      <SandySplitContainer {...props} flexDirection="column" grow={2}>
-        {child1}
-        {child2}
-      </SandySplitContainer>
-    );
+    return renderSplitLayout(props, 'column', 2);
   },
   Bottom(props: SplitLayoutProps) {
-    const isSandy = useIsSandy();
-    if (!isSandy) return renderLayout(props, false, true);
-    let [child1, child2] = props.children;
-    if (props.scrollable) child1 = <ScrollContainer>{child1}</ScrollContainer>;
-    return (
-      <SandySplitContainer {...props} flexDirection="column" grow={1}>
-        {child1}
-        {child2}
-      </SandySplitContainer>
-    );
+    return renderSplitLayout(props, 'column', 1);
   },
   Left(props: SplitLayoutProps) {
-    const isSandy = useIsSandy();
-    if (!isSandy) return renderLayout(props, true, false);
-    let [child1, child2] = props.children;
-    if (props.scrollable) child2 = <ScrollContainer>{child2}</ScrollContainer>;
-    return (
-      <SandySplitContainer {...props} flexDirection="row" grow={2}>
-        {child1}
-        {child2}
-      </SandySplitContainer>
-    );
+    return renderSplitLayout(props, 'row', 2);
   },
   Right(props: SplitLayoutProps) {
-    const isSandy = useIsSandy();
-    if (!isSandy) return renderLayout(props, true, true);
-    let [child1, child2] = props.children;
-    if (props.scrollable) child1 = <ScrollContainer>{child1}</ScrollContainer>;
-    return (
-      <SandySplitContainer {...props} flexDirection="row" grow={1}>
-        {child1}
-        {child2}
-      </SandySplitContainer>
-    );
+    return renderSplitLayout(props, 'row', 1);
   },
   Container,
   ScrollContainer,
   Horizontal,
-  Vertical,
 };
 
 Object.keys(Layout).forEach((key) => {
@@ -235,14 +205,14 @@ const SandySplitContainer = styled.div<{
   alignItems: props.center ? 'center' : 'stretch',
   overflow: 'hidden',
   '> :nth-child(1)': {
-    flex: props.grow === 1 ? growStyle : fixedStyle,
+    flex: props.grow === 1 ? splitGrowStyle : splitFixedStyle,
+    minWidth: props.grow === 1 ? 0 : undefined,
   },
   '> :nth-child(2)': {
-    flex: props.grow === 2 ? growStyle : fixedStyle,
+    flex: props.grow === 2 ? splitGrowStyle : splitFixedStyle,
+    minWidth: props.grow === 2 ? 0 : undefined,
   },
 }));
 
-const fixedStyle = `0 0 auto`;
-const growStyle = `1 0 0`;
-
-export default Layout;
+const splitFixedStyle = `0 0 auto`;
+const splitGrowStyle = `1 0 0`;

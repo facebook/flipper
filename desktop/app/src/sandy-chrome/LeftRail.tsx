@@ -36,7 +36,7 @@ import {ToplevelProps} from './SandyApp';
 import {useValue} from 'flipper-plugin';
 import {logout} from '../reducers/user';
 import config from '../fb-stubs/config';
-import Layout from '../ui/components/Layout';
+import {Layout} from '../ui/components/Layout';
 import styled from '@emotion/styled';
 
 const LeftRailButtonElem = styled(Button)<{kind?: 'small'}>(({kind}) => ({
@@ -108,7 +108,7 @@ export function LeftRail({
   return (
     <Layout.Container borderRight padv={12} width={48}>
       <Layout.Bottom>
-        <Layout.Vertical center gap={10} padh={6}>
+        <Layout.Container center gap={10} padh={6}>
           <LeftRailButton
             icon={<MobileFilled />}
             title="App Inspect"
@@ -127,8 +127,8 @@ export function LeftRail({
             toplevelSelection={toplevelSelection}
             setToplevelSelection={setToplevelSelection}
           />
-        </Layout.Vertical>
-        <Layout.Vertical center gap={10} padh={6}>
+        </Layout.Container>
+        <Layout.Container center gap={10} padh={6}>
           <SetupDoctorButton />
           <WelcomeScreenButton />
           <ShowSettingsButton />
@@ -140,7 +140,7 @@ export function LeftRail({
           <RightSidebarToggleButton />
           <LeftSidebarToggleButton />
           {config.showLogin && <LoginButton />}
-        </Layout.Vertical>
+        </Layout.Container>
       </Layout.Bottom>
     </Layout.Container>
   );
