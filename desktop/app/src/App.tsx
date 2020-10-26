@@ -45,10 +45,7 @@ import StatusBar from './chrome/StatusBar';
 import SettingsSheet from './chrome/SettingsSheet';
 import DoctorSheet from './chrome/DoctorSheet';
 import ChangelogSheet, {hasNewChangesToShow} from './chrome/ChangelogSheet';
-import QuickPerformanceLogger, {
-  QuickLogActionType,
-  FLIPPER_QPL_EVENTS,
-} from './fb-stubs/QPL';
+import QPL, {QuickLogActionType, FLIPPER_QPL_EVENTS} from './fb-stubs/QPL';
 
 const version = remote.app.getVersion();
 
@@ -86,15 +83,8 @@ export function registerStartupTime(logger: Logger) {
   ipcRenderer.on('getLaunchTime', (_: any, launchStartTime: number) => {
     logger.track('performance', 'launchTime', launchEndTime - launchStartTime);
 
-    QuickPerformanceLogger.markerPoint(
-      FLIPPER_QPL_EVENTS.STARTUP,
-      'launchStartTime',
-      undefined,
-      0,
-      launchStartTime,
-    );
-
-    QuickPerformanceLogger.markerEnd(
+    QPL.markerStart(FLIPPER_QPL_EVENTS.STARTUP, 0, launchStartTime);
+    QPL.markerEnd(
       FLIPPER_QPL_EVENTS.STARTUP,
       QuickLogActionType.SUCCESS,
       0,

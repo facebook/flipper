@@ -19,6 +19,18 @@ export enum QuickLogActionType {
 export enum FLIPPER_QPL_EVENTS {
   STARTUP = 52035585,
 }
+
+interface Annotations {
+  string: {[key: string]: string} | null | undefined;
+  int: {[key: string]: number} | null | undefined;
+  double: {[key: string]: number} | null | undefined;
+  bool: {[key: string]: boolean} | null | undefined;
+  string_array: {[key: string]: string[]} | null | undefined;
+  int_array: {[key: string]: number[]} | null | undefined;
+  double_array: {[key: string]: number[]} | null | undefined;
+  bool_array: {[key: string]: boolean[]} | null | undefined;
+}
+
 class QuickPerformanceLogger {
   markerStart(
     _markerId: number,
@@ -29,9 +41,11 @@ class QuickPerformanceLogger {
   markerPoint(
     _markerId: number,
     _name: string,
-    _data?: string,
-    _instanceKey?: number,
-    _timestamp?: DOMHighResTimeStamp,
+    _options?: {
+      instanceKey?: number;
+      data?: Annotations | null | undefined;
+      timestamp?: DOMHighResTimeStamp;
+    },
   ): void {}
 
   markerEnd(
