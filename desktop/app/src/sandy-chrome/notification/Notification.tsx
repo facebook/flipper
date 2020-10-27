@@ -8,7 +8,8 @@
  */
 
 import React from 'react';
-import {Layout, styled} from '../../ui';
+import {Layout, theme} from 'flipper-plugin';
+import {styled} from '../../ui';
 import {Input, Typography, Button, Collapse} from 'antd';
 import {
   DownOutlined,
@@ -20,7 +21,6 @@ import {
 } from '@ant-design/icons';
 import {LeftSidebar, SidebarTitle} from '../LeftSidebar';
 import {PluginNotification} from '../../reducers/notifications';
-import {theme} from '../theme';
 
 const {Title, Text, Paragraph} = Typography;
 

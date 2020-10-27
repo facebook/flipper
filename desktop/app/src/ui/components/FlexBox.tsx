@@ -16,6 +16,7 @@ type Props = {
 };
 
 /**
+ * @deprecated use `Layout.Container` from flipper-plugin instead
  * A container using flexbox to layout its children
  */
 const FlexBox = styled(View)<Props>(({shrink}) => ({

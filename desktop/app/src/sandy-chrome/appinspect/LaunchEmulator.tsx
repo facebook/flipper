@@ -14,7 +14,7 @@ import {renderReactRoot} from '../../utils/renderReactRoot';
 import {Store} from '../../reducers';
 import {useStore} from '../../utils/useStore';
 import {launchEmulator} from '../../devices/AndroidDevice';
-import {Layout} from '../../ui/components/Layout';
+import {Layout} from 'flipper-plugin';
 import {
   launchSimulator,
   getSimulators,

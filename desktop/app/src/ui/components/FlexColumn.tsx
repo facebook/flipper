@@ -11,6 +11,7 @@ import FlexBox from './FlexBox';
 import styled from '@emotion/styled';
 
 /**
+ * @deprecated use `Layout.Container` from flipper-plugin instead
  * A container displaying its children in a column
  */
 const FlexColumn = styled(FlexBox)({

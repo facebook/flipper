@@ -11,6 +11,7 @@ import styled from '@emotion/styled';
 import FlexColumn from './FlexColumn';
 
 /**
+ * @deprecated use `Layout.Container` from flipper-plugin instead
  * Container that applies a standardized bottom margin for vertical spacing
  */
 const VBox = styled(FlexColumn)({

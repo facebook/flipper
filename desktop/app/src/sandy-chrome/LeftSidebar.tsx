@@ -8,7 +8,7 @@
  */
 
 import React from 'react';
-import {theme} from './theme';
+import {theme} from 'flipper-plugin';
 import styled from '@emotion/styled';
 import {Layout} from '../ui';
 import {Button, Tooltip, Typography} from 'antd';

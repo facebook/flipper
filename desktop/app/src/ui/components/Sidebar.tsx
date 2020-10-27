@@ -21,7 +21,7 @@ import {
 import React from 'react';
 import FlexRow from './FlexRow';
 import {MoreOutlined} from '@ant-design/icons';
-import {theme} from '../../sandy-chrome/theme';
+import {theme} from 'flipper-plugin';
 
 const SidebarInteractiveContainer = styled(Interactive)({
   flex: 'none',

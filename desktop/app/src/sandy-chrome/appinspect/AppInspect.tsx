@@ -12,7 +12,7 @@ import {Alert, Button, Input} from 'antd';
 import {LeftSidebar, SidebarTitle, InfoIcon} from '../LeftSidebar';
 import {SettingOutlined, RocketOutlined} from '@ant-design/icons';
 import {Layout, Link} from '../../ui';
-import {theme} from '../theme';
+import {theme} from 'flipper-plugin';
 import {useStore as useReduxStore} from 'react-redux';
 import {showEmulatorLauncher} from './LaunchEmulator';
 import {AppSelector} from './AppSelector';

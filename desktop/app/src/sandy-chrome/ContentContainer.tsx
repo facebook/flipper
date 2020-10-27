@@ -8,7 +8,7 @@
  */
 
 import {Layout, styled} from '../ui';
-import {theme} from './theme';
+import {theme} from 'flipper-plugin';
 
 export const ContentContainer = styled(Layout.Container)({
   flex: 1,

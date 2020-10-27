@@ -12,7 +12,7 @@ import {Badge, Button, Menu, Tooltip, Typography} from 'antd';
 import {InfoIcon, SidebarTitle} from '../LeftSidebar';
 import {PlusOutlined, MinusOutlined} from '@ant-design/icons';
 import {Glyph, Layout, styled} from '../../ui';
-import {theme} from '../theme';
+import {theme} from 'flipper-plugin';
 import {useDispatch, useStore} from '../../utils/useStore';
 import {getPluginTitle, sortPluginsByName} from '../../utils/pluginUtils';
 import {ClientPluginDefinition, DevicePluginDefinition} from '../../plugin';

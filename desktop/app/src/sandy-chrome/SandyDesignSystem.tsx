@@ -10,7 +10,7 @@
 import React from 'react';
 import {Typography, Button, Space, Input, Card, Alert, List} from 'antd';
 import {Layout} from '../ui';
-import {theme} from './theme';
+import {theme} from 'flipper-plugin';
 import {css} from 'emotion';
 import {DesignComponentDemos} from './DesignComponentDemos';
 

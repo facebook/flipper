@@ -26,7 +26,7 @@ import {
   HealthcheckStatus,
   HealthcheckResult,
 } from '../reducers/healthchecks';
-import {theme} from './theme';
+import {theme} from 'flipper-plugin';
 import {
   startHealthchecks,
   updateHealthcheckResult,

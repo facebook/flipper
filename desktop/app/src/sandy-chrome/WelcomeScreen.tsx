@@ -16,7 +16,7 @@ import {
   CodeOutlined,
   BugOutlined,
 } from '@ant-design/icons';
-import {theme} from './theme';
+import {theme} from 'flipper-plugin';
 
 const {Text, Title} = Typography;
 

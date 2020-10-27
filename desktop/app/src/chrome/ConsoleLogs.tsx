@@ -15,8 +15,9 @@ import type {Methods} from 'console-feed/lib/definitions/Methods';
 import type {Styles} from 'console-feed/lib/definitions/Styles';
 import {createState, useValue} from 'flipper-plugin';
 import {useLocalStorage} from '../utils/useLocalStorage';
-import {theme, useIsDarkMode} from '../sandy-chrome/theme';
+import {theme} from 'flipper-plugin';
 import {useIsSandy} from '../sandy-chrome/SandyContext';
+import {useIsDarkMode} from '../utils/useIsDarkMode';
 
 const MAX_LOG_ITEMS = 1000;
 

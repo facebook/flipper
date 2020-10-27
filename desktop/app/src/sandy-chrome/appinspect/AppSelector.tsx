@@ -16,7 +16,7 @@ import {
   CaretDownOutlined,
 } from '@ant-design/icons';
 import {Layout, styled} from '../../ui';
-import {theme} from '../theme';
+import {theme} from 'flipper-plugin';
 import {batch} from 'react-redux';
 import {Dispatch, useDispatch, useStore} from '../../utils/useStore';
 import {

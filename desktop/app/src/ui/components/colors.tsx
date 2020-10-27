@@ -7,7 +7,7 @@
  * @format
  */
 
-import {theme} from '../../sandy-chrome/theme';
+import {theme} from 'flipper-plugin';
 
 // Last updated: Jan 30 2016
 

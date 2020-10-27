@@ -11,6 +11,7 @@ import View from './View';
 import styled from '@emotion/styled';
 
 /**
+ * @deprecated use `Layout.Container` from flipper-plugin instead
  * A container displaying its children horizontally and vertically centered.
  */
 const FlexCenter = styled(View)({

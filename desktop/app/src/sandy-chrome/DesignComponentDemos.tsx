@@ -10,7 +10,7 @@
 import React from 'react';
 import {Typography, Card, Table, Collapse, Button, Tabs} from 'antd';
 import {Layout} from '../ui';
-import {theme} from './theme';
+import {theme} from 'flipper-plugin';
 import reactElementToJSXString from 'react-element-to-jsx-string';
 import {CodeOutlined} from '@ant-design/icons';
 

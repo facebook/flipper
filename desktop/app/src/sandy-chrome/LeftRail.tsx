@@ -26,7 +26,7 @@ import {
   toggleLeftSidebarVisible,
   toggleRightSidebarVisible,
 } from '../reducers/application';
-import {theme} from './theme';
+import {theme, Layout} from 'flipper-plugin';
 import SetupDoctorScreen, {checkHasNewProblem} from './SetupDoctorScreen';
 import SettingsSheet from '../chrome/SettingsSheet';
 import WelcomeScreen from './WelcomeScreen';
@@ -36,7 +36,6 @@ import {ToplevelProps} from './SandyApp';
 import {useValue} from 'flipper-plugin';
 import {logout} from '../reducers/user';
 import config from '../fb-stubs/config';
-import {Layout} from '../ui/components/Layout';
 import styled from '@emotion/styled';
 
 const LeftRailButtonElem = styled(Button)<{kind?: 'small'}>(({kind}) => ({

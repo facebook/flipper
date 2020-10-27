@@ -7,8 +7,6 @@
  * @format
  */
 
-import {useStore} from '../utils/useStore';
-
 // Exposes all the variables defined in themes/base.less:
 
 export const theme = {
@@ -42,17 +40,6 @@ export const theme = {
     smallBody: '12px',
   } as const,
 } as const;
-
-/**
- * This hook returns whether dark mode is currently being used.
- * Generally should be avoided in favor of using the above theme object,
- * which will provide colors that reflect the theme
- */
-export function useIsDarkMode(): boolean {
-  return useStore(
-    (state) => state.settingsState.enableSandy && state.settingsState.darkMode,
-  );
-}
 
 export type Spacing = keyof typeof theme['space'] | number | undefined | true;
 

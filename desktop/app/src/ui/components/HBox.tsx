@@ -25,6 +25,9 @@ const HBoxContainer = styled(FlexRow)<{verticalAlign: string}>(
 
 HBoxContainer.displayName = 'HBoxContainer';
 
+/**
+ * @deprecated use Layout.Left / Layout.Right or Layout.Horizonta from flipper-plugin instead
+ */
 const HBox: React.FC<{
   children: [] | [React.ReactNode] | [React.ReactNode, React.ReactNode];
   grow?: 'left' | 'right' | 'auto';

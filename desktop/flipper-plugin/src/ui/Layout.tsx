@@ -15,9 +15,7 @@ import {
   PaddingProps,
   Spacing,
   theme,
-} from '../../sandy-chrome/theme';
-import {useIsSandy} from '../../sandy-chrome/SandyContext';
-import {renderLayout} from './LegacyLayout';
+} from './theme';
 
 type ContainerProps = {
   children?: React.ReactNode;
@@ -148,9 +146,6 @@ function renderSplitLayout(
   direction: 'column' | 'row',
   grow: 1 | 2,
 ) {
-  // eslint-disable-next-line
-  const isSandy = useIsSandy();
-  if (!isSandy) return renderLayout(props, direction === 'row', grow === 1);
   const [child1, child2] = props.children;
   return (
     <SandySplitContainer {...props} flexDirection={direction} grow={grow}>

@@ -10,7 +10,7 @@
 import React, {useEffect, useState, useCallback} from 'react';
 import {styled} from '../ui';
 import {Layout, Sidebar} from '../ui';
-import {theme} from './theme';
+import {theme} from 'flipper-plugin';
 import {Logger} from '../fb-interfaces/Logger';
 
 import {LeftRail} from './LeftRail';

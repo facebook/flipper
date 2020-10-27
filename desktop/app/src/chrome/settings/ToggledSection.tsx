@@ -9,7 +9,7 @@
 
 import {FlexColumn, styled, FlexRow, ToggleButton} from '../../ui';
 import React from 'react';
-import {theme} from '../../sandy-chrome/theme';
+import {theme} from 'flipper-plugin';
 
 const IndentedSection = styled(FlexColumn)({
   paddingLeft: 50,
