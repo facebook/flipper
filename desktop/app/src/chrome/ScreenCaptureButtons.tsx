@@ -7,28 +7,14 @@
  * @format
  */
 
+import {Button as AntButton, message} from 'antd';
 import {Button, ButtonGroup} from '../ui';
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
+import React, {useState, useEffect, useCallback} from 'react';
 import path from 'path';
-import BaseDevice from '../devices/BaseDevice';
-import {State as Store} from '../reducers';
 import open from 'open';
 import {capture, CAPTURE_LOCATION, getFileName} from '../utils/screenshot';
-
-type OwnProps = {};
-
-type StateFromProps = {
-  selectedDevice: BaseDevice | null | undefined;
-};
-
-type DispatchFromProps = {};
-
-type State = {
-  recording: boolean;
-  recordingEnabled: boolean;
-  capturingScreenshot: boolean;
-};
+import {CameraOutlined, VideoCameraOutlined} from '@ant-design/icons';
+import {useStore} from '../utils/useStore';
 
 export async function openFile(path: string | null) {
   if (!path) {
@@ -42,111 +28,101 @@ export async function openFile(path: string | null) {
   }
 }
 
-type Props = OwnProps & StateFromProps & DispatchFromProps;
-class ScreenCaptureButtons extends Component<Props, State> {
-  videoPath: string | null | undefined;
+export default function ScreenCaptureButtons({useSandy}: {useSandy?: boolean}) {
+  const selectedDevice = useStore((state) => state.connections.selectedDevice);
+  const [isTakingScreenshot, setIsTakingScreenshot] = useState(false);
+  const [isRecordingAvailable, setIsRecordingAvailable] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
 
-  state = {
-    recording: false,
-    recordingEnabled: false,
-    capturingScreenshot: false,
-  };
-
-  componentDidMount() {
-    this.checkIfRecordingIsAvailable();
-  }
-
-  UNSAFE_componentWillReceiveProps(nextProps: Props) {
-    if (nextProps.selectedDevice !== this.props.selectedDevice) {
-      this.checkIfRecordingIsAvailable(nextProps);
-    }
-  }
-
-  checkIfRecordingIsAvailable = async (props: Props = this.props) => {
-    const {selectedDevice} = props;
-    const recordingEnabled = selectedDevice
-      ? await selectedDevice.screenCaptureAvailable()
-      : false;
-    this.setState({recordingEnabled});
-  };
-
-  captureScreenshot: Promise<void> | any = async () => {
-    const {selectedDevice} = this.props;
-    if (selectedDevice != null) {
-      await capture(selectedDevice)
-        .then(openFile)
-        .catch((e) => console.error('Taking screenshot failed:', e));
-    }
-  };
-
-  startRecording = async () => {
-    const {selectedDevice} = this.props;
-    if (!selectedDevice) {
-      return;
-    }
-    const videoPath = path.join(CAPTURE_LOCATION, getFileName('mp4'));
-    return selectedDevice.startScreenCapture(videoPath);
-  };
-
-  stopRecording = async () => {
-    const {selectedDevice} = this.props;
-    if (!selectedDevice) {
-      return;
-    }
-    const path = await selectedDevice.stopScreenCapture().catch((e) => {
-      console.error(e);
+  useEffect(() => {
+    let cancelled = false;
+    selectedDevice?.screenCaptureAvailable().then((result) => {
+      if (!cancelled) {
+        setIsRecordingAvailable(result);
+      }
     });
-    path ? openFile(path) : 0;
-  };
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedDevice]);
 
-  onRecordingClicked = () => {
-    if (this.state.recording) {
-      this.stopRecording();
-      this.setState({
-        recording: false,
+  const handleScreenshot = useCallback(() => {
+    setIsTakingScreenshot(true);
+    capture(selectedDevice!)
+      .then(openFile)
+      .catch((e) => {
+        console.error('Taking screenshot failed:', e);
+        message.error('Taking screenshot failed:' + e);
+      })
+      .finally(() => {
+        setIsTakingScreenshot(false);
+      });
+  }, [selectedDevice]);
+  const handleRecording = useCallback(() => {
+    if (!selectedDevice) {
+      return;
+    }
+    if (!isRecording) {
+      setIsRecording(true);
+      const videoPath = path.join(CAPTURE_LOCATION, getFileName('mp4'));
+      selectedDevice.startScreenCapture(videoPath).catch((e) => {
+        console.error('Failed to start recording', e);
+        message.error('Failed to start recording' + e);
+        setIsRecording(false);
       });
     } else {
-      this.setState({
-        recording: true,
-      });
-      this.startRecording().catch((e) => {
-        this.setState({
-          recording: false,
+      selectedDevice
+        .stopScreenCapture()
+        .then((path) => {
+          path && openFile(path);
+        })
+        .catch((e) => {
+          console.error('Failed to start recording', e);
+          message.error('Failed to start recording' + e);
+        })
+        .finally(() => {
+          setIsRecording(false);
         });
-        console.error(e);
-      });
     }
-  };
+  }, [selectedDevice, isRecording]);
 
-  render() {
-    const {recordingEnabled} = this.state;
-    const {selectedDevice} = this.props;
-
-    return (
-      <ButtonGroup>
-        <Button
-          compact={true}
-          onClick={this.captureScreenshot}
-          icon="camera"
-          title="Take Screenshot"
-          disabled={!selectedDevice}
-        />
-        <Button
-          compact={true}
-          onClick={this.onRecordingClicked}
-          icon={this.state.recording ? 'stop-playback' : 'camcorder'}
-          pulse={this.state.recording}
-          selected={this.state.recording}
-          title="Make Screen Recording"
-          disabled={!selectedDevice || !recordingEnabled}
-        />
-      </ButtonGroup>
-    );
-  }
+  return useSandy ? (
+    <>
+      <AntButton
+        icon={<CameraOutlined />}
+        title="Take Screenshot"
+        type="ghost"
+        onClick={handleScreenshot}
+        disabled={!selectedDevice}
+        loading={isTakingScreenshot}
+      />
+      <AntButton
+        icon={<VideoCameraOutlined />}
+        title="Make Screen Recording"
+        type={isRecording ? 'primary' : 'ghost'}
+        onClick={handleRecording}
+        disabled={!selectedDevice || !isRecordingAvailable}
+        danger={isRecording}
+      />
+    </>
+  ) : (
+    <ButtonGroup>
+      <Button
+        compact={true}
+        onClick={handleScreenshot}
+        icon="camera"
+        title="Take Screenshot"
+        disabled={!selectedDevice}
+      />
+      <Button
+        compact={true}
+        onClick={handleRecording}
+        icon={isRecording ? 'stop-playback' : 'camcorder'}
+        pulse={isRecording}
+        selected={isRecording}
+        title="Make Screen Recording"
+        disabled={!selectedDevice || !isRecordingAvailable}
+      />
+    </ButtonGroup>
+  );
 }
-
-export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
-  ({connections: {selectedDevice}}) => ({
-    selectedDevice,
-  }),
-)(ScreenCaptureButtons);

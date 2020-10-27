@@ -11,13 +11,14 @@ import React from 'react';
 import {Alert, Button, Input} from 'antd';
 import {LeftSidebar, SidebarTitle, InfoIcon} from '../LeftSidebar';
 import {SettingOutlined, RocketOutlined} from '@ant-design/icons';
-import {Layout, Link} from '../../ui';
+import {Layout, Link, styled} from '../../ui';
 import {theme} from 'flipper-plugin';
 import {useStore as useReduxStore} from 'react-redux';
 import {showEmulatorLauncher} from './LaunchEmulator';
 import {AppSelector} from './AppSelector';
 import {useStore} from '../../utils/useStore';
 import {PluginList} from './PluginList';
+import ScreenCaptureButtons from '../../chrome/ScreenCaptureButtons';
 
 const appTooltip = (
   <>
@@ -33,6 +34,7 @@ const appTooltip = (
 export function AppInspect() {
   const store = useReduxStore();
   const selectedDevice = useStore((state) => state.connections.selectedDevice);
+
   return (
     <LeftSidebar>
       <Layout.Top>
@@ -43,18 +45,19 @@ export function AppInspect() {
           <Layout.Container padv="small" padh="medium" gap={theme.space.large}>
             <AppSelector />
             <Input addonAfter={<SettingOutlined />} defaultValue="mysite" />
-            <Layout.Horizontal gap>
-              <Button icon={<SettingOutlined />} type="link" />
-              <Button icon={<SettingOutlined />} type="link" />
+            <Toolbar gap>
+              <Button icon={<SettingOutlined />} type="ghost" />
+              <Button icon={<SettingOutlined />} type="ghost" />
               <Button
                 icon={<RocketOutlined />}
-                type="link"
+                type="ghost"
                 title="Start Emulator / Simulator..."
                 onClick={() => {
                   showEmulatorLauncher(store);
                 }}
               />
-            </Layout.Horizontal>
+              <ScreenCaptureButtons useSandy />
+            </Toolbar>
           </Layout.Container>
         </Layout.Container>
         <Layout.ScrollContainer vertical padv={theme.space.large}>
@@ -68,3 +71,9 @@ export function AppInspect() {
     </LeftSidebar>
   );
 }
+
+const Toolbar = styled(Layout.Horizontal)({
+  '.ant-btn': {
+    border: 'none',
+  },
+});
