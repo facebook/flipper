@@ -14,7 +14,7 @@
     "lodash": "^4.17.19"
   },
   "devDependencies": {
-    "@testing-library/react": "^10.4.3"
+    "@testing-library/react": "^11.1.0"
   },
   "title": "Layout",
   "icon": "target",
