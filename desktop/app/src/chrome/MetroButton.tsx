@@ -9,19 +9,16 @@
 
 import React, {useCallback, useEffect, useState} from 'react';
 import {Button, ButtonGroup, colors} from '../ui';
-import {State} from '../reducers';
 import MetroDevice, {MetroReportableEvent} from '../devices/MetroDevice';
 import styled from '@emotion/styled';
-import {connect} from 'react-redux';
+import {useStore} from '../utils/useStore';
+import {Button as AntButton} from 'antd';
+import {MenuOutlined, ReloadOutlined} from '@ant-design/icons';
 
 type LogEntry = {};
 
 export type PersistedState = {
   logs: LogEntry[];
-};
-
-type Props = {
-  device: MetroDevice;
 };
 
 function ProgressBar({
@@ -57,10 +54,16 @@ const ProgressBarBar = styled.div<{progress: number; color: string}>(
   }),
 );
 
-function MetroButton({device}: Props) {
+export default function MetroButton({useSandy}: {useSandy?: boolean}) {
+  const device = useStore((state) =>
+    state.connections.devices.find(
+      (device) => device.os === 'Metro' && !device.isArchived,
+    ),
+  ) as MetroDevice | undefined;
+
   const sendCommand = useCallback(
     (command: string) => {
-      device.sendCommand(command);
+      device?.sendCommand(command);
     },
     [device],
   );
@@ -68,6 +71,9 @@ function MetroButton({device}: Props) {
   const [hasBuildError, setHasBuildError] = useState(false);
 
   useEffect(() => {
+    if (!device) {
+      return;
+    }
     function metroEventListener(event: MetroReportableEvent) {
       if (event.type === 'bundle_build_started') {
         setHasBuildError(false);
@@ -88,7 +94,31 @@ function MetroButton({device}: Props) {
     };
   }, [device]);
 
-  return (
+  if (!device) {
+    return null;
+  }
+
+  return useSandy ? (
+    <>
+      <AntButton
+        icon={<ReloadOutlined />}
+        title="Reload React Native App"
+        type="ghost"
+        onClick={() => {
+          sendCommand('reload');
+        }}
+        loading={progress < 1}
+      />
+      <AntButton
+        icon={<MenuOutlined />}
+        title="Open the React Native Dev Menu on the device"
+        type="ghost"
+        onClick={() => {
+          sendCommand('devMenu');
+        }}
+      />
+    </>
+  ) : (
     <ButtonGroup>
       <Button
         title="Reload React Native App"
@@ -116,9 +146,3 @@ function MetroButton({device}: Props) {
     </ButtonGroup>
   );
 }
-
-export default connect<Props, {}, {}, State>(({connections: {devices}}) => ({
-  device: devices.find(
-    (device) => device.os === 'Metro' && !device.isArchived,
-  ) as MetroDevice,
-}))(MetroButton);

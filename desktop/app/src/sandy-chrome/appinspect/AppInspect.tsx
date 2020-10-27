@@ -19,6 +19,7 @@ import {AppSelector} from './AppSelector';
 import {useStore} from '../../utils/useStore';
 import {PluginList} from './PluginList';
 import ScreenCaptureButtons from '../../chrome/ScreenCaptureButtons';
+import MetroButton from '../../chrome/MetroButton';
 
 const appTooltip = (
   <>
@@ -46,8 +47,6 @@ export function AppInspect() {
             <AppSelector />
             <Input addonAfter={<SettingOutlined />} defaultValue="mysite" />
             <Toolbar gap>
-              <Button icon={<SettingOutlined />} type="ghost" />
-              <Button icon={<SettingOutlined />} type="ghost" />
               <Button
                 icon={<RocketOutlined />}
                 type="ghost"
@@ -56,6 +55,7 @@ export function AppInspect() {
                   showEmulatorLauncher(store);
                 }}
               />
+              <MetroButton useSandy />
               <ScreenCaptureButtons useSandy />
             </Toolbar>
           </Layout.Container>

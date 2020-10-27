@@ -85,7 +85,6 @@ type StateFromProps = {
   launcherMsg: LauncherMsg;
   share: ShareType | null | undefined;
   navPluginIsActive: boolean;
-  isMetroActive: boolean;
 };
 
 const VersionText = styled(Text)({
@@ -150,7 +149,7 @@ function statusMessageComponent(
 type Props = OwnProps & DispatchFromProps & StateFromProps;
 class TitleBar extends React.Component<Props, StateFromProps> {
   render() {
-    const {navPluginIsActive, share, isMetroActive} = this.props;
+    const {navPluginIsActive, share} = this.props;
     return (
       <AppTitleBar focused={this.props.windowIsFocused} className="toolbar">
         {navPluginIsActive ? (
@@ -162,7 +161,7 @@ class TitleBar extends React.Component<Props, StateFromProps> {
           <DevicesButton />
         )}
 
-        {isMetroActive ? <MetroButton /> : null}
+        <MetroButton />
 
         <ScreenCaptureButtons />
         {statusMessageComponent(
@@ -239,7 +238,7 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, State>(
       launcherMsg,
       share,
     },
-    connections: {selectedDevice, selectedApp, devices},
+    connections: {selectedDevice, selectedApp},
     pluginStates,
   }) => {
     const navigationPluginKey = getPluginKey(
@@ -248,9 +247,6 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, State>(
       'Navigation',
     );
     const navPluginIsActive = !!pluginStates[navigationPluginKey];
-    const isMetroActive = !!devices.find(
-      (device) => device.os === 'Metro' && !device.isArchived,
-    );
 
     return {
       windowIsFocused,
@@ -261,7 +257,6 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, State>(
       launcherMsg,
       share,
       navPluginIsActive,
-      isMetroActive,
     };
   },
   {

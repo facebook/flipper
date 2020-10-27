@@ -73,9 +73,7 @@ export default function ScreenCaptureButtons({useSandy}: {useSandy?: boolean}) {
     } else {
       selectedDevice
         .stopScreenCapture()
-        .then((path) => {
-          path && openFile(path);
-        })
+        .then(openFile)
         .catch((e) => {
           console.error('Failed to start recording', e);
           message.error('Failed to start recording' + e);
