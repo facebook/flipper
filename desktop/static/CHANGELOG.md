@@ -1,3 +1,8 @@
+# 0.64.0 (28/10/2020)
+
+ * [D24506315](https://github.com/facebook/flipper/search?q=D24506315&type=Commits) -  Upgrade internal React version to v17
+
+
 # 0.63.0 (20/10/2020)
 
  * [D23403095](https://github.com/facebook/flipper/search?q=D23403095&type=Commits) -  [Network] Non-binary request are not properly utf-8 decoded on both iOS and Android, both when gzipped and when not gzipped

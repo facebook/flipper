@@ -1,6 +1,6 @@
 {
   "name": "eslint-plugin-flipper",
-  "version": "0.63.0",
+  "version": "0.64.0",
   "private": true,
   "description": "Custom ESLint rules for Flipper",
   "repository": "facebook/flipper",
@@ -16,7 +16,7 @@
   "devDependencies": {
     "@types/jest": "26",
     "@typescript-eslint/parser": "^4.2.0",
-    "flipper-test-utils": "0.63.0",
+    "flipper-test-utils": "0.64.0",
     "jest": "^26",
     "prettier": "^2.0.0",
     "rimraf": "^3.0.2",
