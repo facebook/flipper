@@ -32,7 +32,7 @@ SearchBar.displayName = 'Searchable:SearchBar';
 export const SearchBox = styled(FlexBox)<{isInvalidInput?: boolean}>(
   (props) => {
     return {
-      flex: `1 0 0`,
+      flex: `1 0 auto`,
       minWidth: 150,
       height: 30,
       backgroundColor: colors.white,
