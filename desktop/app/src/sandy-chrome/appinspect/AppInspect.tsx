@@ -8,13 +8,11 @@
  */
 
 import React from 'react';
-import {Alert, Button, Input} from 'antd';
+import {Alert, Input} from 'antd';
 import {LeftSidebar, SidebarTitle, InfoIcon} from '../LeftSidebar';
-import {SettingOutlined, RocketOutlined} from '@ant-design/icons';
+import {SettingOutlined} from '@ant-design/icons';
 import {Layout, Link, styled} from '../../ui';
 import {theme} from 'flipper-plugin';
-import {useStore as useReduxStore} from 'react-redux';
-import {showEmulatorLauncher} from './LaunchEmulator';
 import {AppSelector} from './AppSelector';
 import {useStore} from '../../utils/useStore';
 import {PluginList} from './PluginList';
@@ -33,8 +31,8 @@ const appTooltip = (
 );
 
 export function AppInspect() {
-  const store = useReduxStore();
   const selectedDevice = useStore((state) => state.connections.selectedDevice);
+  const isArchived = !!selectedDevice?.isArchived;
 
   return (
     <LeftSidebar>
@@ -45,26 +43,27 @@ export function AppInspect() {
           </SidebarTitle>
           <Layout.Container padv="small" padh="medium" gap={theme.space.large}>
             <AppSelector />
-            <Input addonAfter={<SettingOutlined />} defaultValue="mysite" />
-            <Toolbar gap>
-              <Button
-                icon={<RocketOutlined />}
-                type="ghost"
-                title="Start Emulator / Simulator..."
-                onClick={() => {
-                  showEmulatorLauncher(store);
-                }}
+            {isArchived ? (
+              <Alert
+                message="This device is a snapshot and cannot be interacted with."
+                type="info"
               />
-              <MetroButton useSandy />
-              <ScreenCaptureButtons useSandy />
-            </Toolbar>
+            ) : (
+              <Input addonAfter={<SettingOutlined />} defaultValue="mysite" />
+            )}
+            {!isArchived && (
+              <Toolbar gap>
+                <MetroButton useSandy />
+                <ScreenCaptureButtons useSandy />
+              </Toolbar>
+            )}
           </Layout.Container>
         </Layout.Container>
         <Layout.ScrollContainer vertical padv={theme.space.large}>
           {selectedDevice ? (
             <PluginList />
           ) : (
-            <Alert message="No device or app selected" type="info" />
+            <Alert message="No device or app selected." type="info" />
           )}
         </Layout.ScrollContainer>
       </Layout.Top>

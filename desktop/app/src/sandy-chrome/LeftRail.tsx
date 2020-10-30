@@ -19,6 +19,7 @@ import {
   SettingOutlined,
   QuestionCircleOutlined,
   MedicineBoxOutlined,
+  RocketOutlined,
 } from '@ant-design/icons';
 import {SidebarLeft, SidebarRight} from './SandyIcons';
 import {useDispatch, useStore} from '../utils/useStore';
@@ -37,6 +38,8 @@ import {useValue} from 'flipper-plugin';
 import {logout} from '../reducers/user';
 import config from '../fb-stubs/config';
 import styled from '@emotion/styled';
+import {showEmulatorLauncher} from './appinspect/LaunchEmulator';
+import {useStore as useReduxStore} from 'react-redux';
 
 const LeftRailButtonElem = styled(Button)<{kind?: 'small'}>(({kind}) => ({
   width: kind === 'small' ? 32 : 36,
@@ -128,6 +131,7 @@ export function LeftRail({
           />
         </Layout.Container>
         <Layout.Container center gap={10} padh={6}>
+          <LaunchEmulatorButton />
           <SetupDoctorButton />
           <WelcomeScreenButton />
           <ShowSettingsButton />
@@ -219,6 +223,21 @@ function DebugLogsButton({
       onClick={() => {
         setToplevelSelection('flipperlogs');
       }}
+    />
+  );
+}
+
+function LaunchEmulatorButton() {
+  const store = useReduxStore();
+
+  return (
+    <LeftRailButton
+      icon={<RocketOutlined />}
+      title="Start Emulator / Simulator"
+      onClick={() => {
+        showEmulatorLauncher(store);
+      }}
+      small
     />
   );
 }

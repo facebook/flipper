@@ -59,6 +59,7 @@ export const PluginList = memo(function PluginList() {
     plugins,
     connections.userStarredPlugins,
   ]);
+  const isArchived = !!activeDevice?.isArchived;
 
   const handleAppPluginClick = useCallback(
     (pluginId) => {
@@ -122,20 +123,22 @@ export const PluginList = memo(function PluginList() {
             ))}
           </PluginGroup>
 
-          <PluginGroup key="metro" title="React Native">
-            {metroPlugins.map((plugin) => (
-              <PluginEntry
-                key={'metro' + plugin.id}
-                plugin={plugin.details}
-                active={
-                  plugin.id === connections.selectedPlugin &&
-                  connections.selectedDevice === metroDevice
-                }
-                onClick={handleMetroPluginClick}
-                tooltip={getPluginTooltip(plugin.details)}
-              />
-            ))}
-          </PluginGroup>
+          {!isArchived && (
+            <PluginGroup key="metro" title="React Native">
+              {metroPlugins.map((plugin) => (
+                <PluginEntry
+                  key={'metro' + plugin.id}
+                  plugin={plugin.details}
+                  active={
+                    plugin.id === connections.selectedPlugin &&
+                    connections.selectedDevice === metroDevice
+                  }
+                  onClick={handleMetroPluginClick}
+                  tooltip={getPluginTooltip(plugin.details)}
+                />
+              ))}
+            </PluginGroup>
+          )}
           <PluginGroup key="enabled" title="Enabled">
             {enabledPlugins.map((plugin) => (
               <PluginEntry
@@ -145,48 +148,56 @@ export const PluginList = memo(function PluginList() {
                 onClick={handleAppPluginClick}
                 tooltip={getPluginTooltip(plugin.details)}
                 actions={
-                  <ActionButton
-                    id={plugin.id}
-                    onClick={handleStarPlugin}
-                    title="Disable plugin"
-                    icon={<MinusOutlined size={16} style={{marginRight: 0}} />}
-                  />
+                  isArchived ? null : (
+                    <ActionButton
+                      id={plugin.id}
+                      onClick={handleStarPlugin}
+                      title="Disable plugin"
+                      icon={
+                        <MinusOutlined size={16} style={{marginRight: 0}} />
+                      }
+                    />
+                  )
                 }
               />
             ))}
           </PluginGroup>
-          <PluginGroup key="disabled" title="Disabled">
-            {disabledPlugins.map((plugin) => (
-              <PluginEntry
-                key={plugin.id}
-                plugin={plugin.details}
-                active={plugin.id === connections.selectedPlugin}
-                tooltip={getPluginTooltip(plugin.details)}
-                actions={
-                  <ActionButton
-                    id={plugin.id}
-                    title="Enable plugin"
-                    onClick={handleStarPlugin}
-                    icon={<PlusOutlined size={16} style={{marginRight: 0}} />}
-                  />
-                }
-                disabled
-              />
-            ))}
-          </PluginGroup>
-          <PluginGroup key="unavailable" title="Unavailable plugins">
-            {unavailablePlugins.map(([plugin, reason]) => (
-              <PluginEntry
-                key={plugin.id}
-                plugin={plugin}
-                tooltip={`${getPluginTitle(plugin)} (${plugin.id}@${
-                  plugin.version
-                }): ${reason}`}
-                disabled
-                actions={<InfoIcon>{reason}</InfoIcon>}
-              />
-            ))}
-          </PluginGroup>
+          {!isArchived && (
+            <PluginGroup key="disabled" title="Disabled">
+              {disabledPlugins.map((plugin) => (
+                <PluginEntry
+                  key={plugin.id}
+                  plugin={plugin.details}
+                  active={plugin.id === connections.selectedPlugin}
+                  tooltip={getPluginTooltip(plugin.details)}
+                  actions={
+                    <ActionButton
+                      id={plugin.id}
+                      title="Enable plugin"
+                      onClick={handleStarPlugin}
+                      icon={<PlusOutlined size={16} style={{marginRight: 0}} />}
+                    />
+                  }
+                  disabled
+                />
+              ))}
+            </PluginGroup>
+          )}
+          {!isArchived && (
+            <PluginGroup key="unavailable" title="Unavailable plugins">
+              {unavailablePlugins.map(([plugin, reason]) => (
+                <PluginEntry
+                  key={plugin.id}
+                  plugin={plugin}
+                  tooltip={`${getPluginTitle(plugin)} (${plugin.id}@${
+                    plugin.version
+                  }): ${reason}`}
+                  disabled
+                  actions={<InfoIcon>{reason}</InfoIcon>}
+                />
+              ))}
+            </PluginGroup>
+          )}
         </PluginMenu>
       </Layout.Container>
     </Layout.Container>
@@ -231,7 +242,7 @@ const PluginEntry = memo(function PluginEntry({
   active?: boolean;
   tooltip: string;
   onClick?: (id: string) => void;
-  actions?: React.ReactElement;
+  actions?: React.ReactElement | null;
 }) {
   const [hovering, setHovering] = useState(false);
 
