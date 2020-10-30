@@ -24,6 +24,8 @@ import {
 import {SidebarLeft, SidebarRight} from './SandyIcons';
 import {useDispatch, useStore} from '../utils/useStore';
 import {
+  ACTIVE_SHEET_PLUGINS,
+  setActiveSheet,
   toggleLeftSidebarVisible,
   toggleRightSidebarVisible,
 } from '../reducers/application';
@@ -40,6 +42,10 @@ import config from '../fb-stubs/config';
 import styled from '@emotion/styled';
 import {showEmulatorLauncher} from './appinspect/LaunchEmulator';
 import {useStore as useReduxStore} from 'react-redux';
+import SupportRequestFormV2 from '../fb-stubs/SupportRequestFormV2';
+import {setStaticView} from '../reducers/connections';
+import {getInstance} from '../fb-stubs/Logger';
+import {isStaticViewActive} from '../chrome/mainsidebar/sidebarUtils';
 
 const LeftRailButtonElem = styled(Button)<{kind?: 'small'}>(({kind}) => ({
   width: kind === 'small' ? 32 : 36,
@@ -107,6 +113,7 @@ export function LeftRail({
   toplevelSelection,
   setToplevelSelection,
 }: ToplevelProps) {
+  const dispatch = useDispatch();
   return (
     <Layout.Container borderRight padv={12} width={48}>
       <Layout.Bottom>
@@ -119,7 +126,13 @@ export function LeftRail({
               setToplevelSelection('appinspect');
             }}
           />
-          <LeftRailButton icon={<AppstoreOutlined />} title="Plugin Manager" />
+          <LeftRailButton
+            icon={<AppstoreOutlined />}
+            title="Plugin Manager"
+            onClick={() => {
+              dispatch(setActiveSheet(ACTIVE_SHEET_PLUGINS));
+            }}
+          />
           <NotificationButton
             toplevelSelection={toplevelSelection}
             setToplevelSelection={setToplevelSelection}
@@ -135,11 +148,7 @@ export function LeftRail({
           <SetupDoctorButton />
           <WelcomeScreenButton />
           <ShowSettingsButton />
-          <LeftRailButton
-            icon={<BugOutlined />}
-            small
-            title="Feedback / Bug Reporter"
-          />
+          <SupportFormButton />
           <RightSidebarToggleButton />
           <LeftSidebarToggleButton />
           {config.showLogin && <LoginButton />}
@@ -279,6 +288,27 @@ function ShowSettingsButton() {
         <SettingsSheet platform={process.platform} onHide={onClose} useSandy />
       )}
     </>
+  );
+}
+
+function SupportFormButton() {
+  const dispatch = useDispatch();
+  const staticView = useStore((state) => state.connections.staticView);
+  // const isVisible =
+  return (
+    <LeftRailButton
+      icon={<BugOutlined />}
+      small
+      title="Feedback / Bug Reporter"
+      selected={isStaticViewActive(staticView, SupportRequestFormV2)}
+      onClick={() => {
+        getInstance().track('usage', 'support-form-source', {
+          source: 'sidebar',
+          group: undefined,
+        });
+        dispatch(setStaticView(SupportRequestFormV2));
+      }}
+    />
   );
 }
 
