@@ -25,6 +25,7 @@ import {AppInspect} from './appinspect/AppInspect';
 import PluginContainer from '../PluginContainer';
 import {ContentContainer} from './ContentContainer';
 import {Notification} from './notification/Notification';
+import {SheetRenderer} from '../chrome/SheetRenderer';
 
 export type ToplevelNavItem =
   | 'appinspect'
@@ -92,7 +93,10 @@ export function SandyApp({logger}: {logger: Logger}) {
   return (
     <SandyContext.Provider value={true}>
       <Layout.Top>
-        <TemporarilyTitlebar />
+        <>
+          <TemporarilyTitlebar />
+          <SheetRenderer logger={logger} />
+        </>
         <Layout.Left>
           <Layout.Horizontal>
             <LeftRail
