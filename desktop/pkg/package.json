@@ -25,7 +25,7 @@
     "fs-extra": "^9.0.1",
     "inquirer": "^7.3.3",
     "lodash": "^4.17.19",
-    "npm-packlist": "^2.1.2",
+    "npm-packlist": "^2.1.4",
     "recursive-readdir": "^2.2.2"
   },
   "devDependencies": {
