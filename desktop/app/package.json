@@ -40,7 +40,7 @@
     "open": "^7.0.0",
     "openssl-wrapper": "^0.3.4",
     "p-map": "^4.0.0",
-    "promise-retry": "^1.1.1",
+    "promise-retry": "^2.0.1",
     "promisify-child-process": "^4.1.0",
     "prop-types": "^15.6.0",
     "query-string": "^6.13.3",
