@@ -9394,10 +9394,10 @@ npm-normalize-package-bin@^1.0.1:
   resolved "https://registry.yarnpkg.com/npm-normalize-package-bin/-/npm-normalize-package-bin-1.0.1.tgz#6e79a41f23fd235c0623218228da7d9c23b8f6e2"
   integrity sha512-EPfafl6JL5/rU+ot6P3gRSCpPDW5VmIzX959Ob1+ySFUuuYHWHekXpwdUZcKP5C+DS4GEtdJluwBjnsNDl+fSA==
 
-npm-packlist@^2.1.2:
-  version "2.1.2"
-  resolved "https://registry.yarnpkg.com/npm-packlist/-/npm-packlist-2.1.2.tgz#a3045b52aefc37e7a5e86a55e6ca8cb1e909e25a"
-  integrity sha512-eByPaP+wsKai0BJX5pmb58d3mfR0zUATcnyuvSxIudTEn+swCPFLxh7srCmqB4hr7i9V24/DPjjq5b2qUtbgXQ==
+npm-packlist@^2.1.4:
+  version "2.1.4"
+  resolved "https://registry.yarnpkg.com/npm-packlist/-/npm-packlist-2.1.4.tgz#40e96b2b43787d0546a574542d01e066640d09da"
+  integrity sha512-Qzg2pvXC9U4I4fLnUrBmcIT4x0woLtUgxUi9eC+Zrcv1Xx5eamytGAfbDWQ67j7xOcQ2VW1I3su9smVTIdu7Hw==
   dependencies:
     glob "^7.1.6"
     ignore-walk "^3.0.3"
