@@ -45,11 +45,17 @@ jobs:
       with:
         node-version: '12.x'
     - name: Install
-      run: yarn
-      working-directory: ${{env.desktop-directory}}
+      uses: nick-invision/retry@v2.0.0
+      with:
+        timeout_minutes: 10
+        max_attempts: 3
+        command: cd ${{env.desktop-directory}} && yarn
     - name: Build
-      run: yarn build --mac --mac-dmg
-      working-directory: ${{env.desktop-directory}}
+      uses: nick-invision/retry@v2.0.0
+      with:
+        timeout_minutes: 30
+        max_attempts: 3
+        command: cd ${{env.desktop-directory}} && yarn build --mac --mac-dmg
     - name: Upload
       uses: actions/upload-artifact@v1
       with:
@@ -67,11 +73,17 @@ jobs:
       with:
         node-version: '12.x'
     - name: Install
-      run: yarn
-      working-directory: ${{env.desktop-directory}}
+      uses: nick-invision/retry@v2.0.0
+      with:
+        timeout_minutes: 10
+        max_attempts: 3
+        command: cd ${{env.desktop-directory}} && yarn
     - name: Build
-      run: yarn build --linux
-      working-directory: ${{env.desktop-directory}}
+      uses: nick-invision/retry@v2.0.0
+      with:
+        timeout_minutes: 30
+        max_attempts: 3
+        command: cd ${{env.desktop-directory}} && yarn build --linux
     - name: Upload Linux
       uses: actions/upload-artifact@v1
       with:
@@ -89,11 +101,17 @@ jobs:
       with:
         node-version: '12.x'
     - name: Install
-      run: yarn
-      working-directory: ${{env.desktop-directory}}
+      uses: nick-invision/retry@v2.0.0
+      with:
+        timeout_minutes: 10
+        max_attempts: 3
+        command: cd ${{env.desktop-directory}} && yarn
     - name: Build
-      run: yarn build --win
-      working-directory: ${{env.desktop-directory}}
+      uses: nick-invision/retry@v2.0.0
+      with:
+        timeout_minutes: 30
+        max_attempts: 3
+        command: cd ${{env.desktop-directory}} && yarn build --win
     - name: Upload Windows
       uses: actions/upload-artifact@v1
       with:
