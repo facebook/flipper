@@ -80,6 +80,11 @@ const ColorPickerDescription = styled.div({
 });
 ColorPickerDescription.displayName = 'DataDescription:ColorPickerDescription';
 
+const EmptyObjectValue = styled.span({
+  fontStyle: 'italic',
+});
+EmptyObjectValue.displayName = 'DataDescription:EmptyObjectValue';
+
 type DataDescriptionProps = {
   path?: Array<string>;
   type: string;
@@ -708,11 +713,14 @@ class DataDescriptionContainer extends PureComponent<{
       case 'null':
         return <NullValue>null</NullValue>;
 
+      // no description necessary as we'll typically wrap it in [] or {} which
+      // already denotes the type
       case 'array':
+        return val.length <= 0 ? <EmptyObjectValue>[]</EmptyObjectValue> : null;
       case 'object':
-        // no description necessary as we'll typically wrap it in [] or {} which already denotes the
-        // type
-        return null;
+        return Object.keys(val).length <= 0 ? (
+          <EmptyObjectValue>{'{}'}</EmptyObjectValue>
+        ) : null;
 
       case 'function':
         return (
