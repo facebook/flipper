@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Tag version commit
         id: tag-version-commit
-        uses: passy/tag-version-commit@master
+        uses: passy/tag-version-commit@v1.1.1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           version_tag_prefix: 'v'
@@ -129,7 +129,7 @@ jobs:
         path: 'Flipper-win.zip'
     - name: GitHub Upload Release Artifacts
       if: ${{ needs.release.outputs.tag != '' }}
-      uses: passy/github-upload-release-artifacts-action@master
+      uses: passy/github-upload-release-artifacts-action@v2.1.1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
