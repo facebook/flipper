@@ -20,7 +20,7 @@ import {
   genMercurialRevision,
   generatePluginEntryPoints,
 } from './build-utils';
-import fetch from 'node-fetch';
+import fetch from '@adobe/node-fetch-retry';
 import {getIcons, buildLocalIconPath, getIconURL} from '../app/src/utils/icons';
 import isFB from './isFB';
 import copyPackageWithDependencies from './copy-package-with-dependencies';
@@ -163,7 +163,7 @@ function downloadIcons(buildFolder: string) {
   return Promise.all(
     iconURLs.map(({name, size, density}) => {
       const url = getIconURL(name, size, density);
-      return fetch(url)
+      return fetch(url, {})
         .then((res) => {
           if (res.status !== 200) {
             throw new Error(

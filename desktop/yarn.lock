@@ -12,6 +12,14 @@
   resolved "https://registry.yarnpkg.com/7zip-bin/-/7zip-bin-5.0.3.tgz#bc5b5532ecafd923a61f2fb097e3b108c0106a3f"
   integrity sha512-GLyWIFBbGvpKPGo55JyRZAo4lVbnBiD52cKlw/0Vt+wnmKvWJkpZvsjVoaIolyBXDeAQKSicRtqFNPem9w0WYA==
 
+"@adobe/node-fetch-retry@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@adobe/node-fetch-retry/-/node-fetch-retry-1.1.0.tgz#7a5161932f9d936458af28f62bc6c935d07152e9"
+  integrity sha512-KD6M2KNLQzuvEmG+f5SbVicLQb952sIsu94ZifFIrEGgAdpeke6RMWqKPg3a99FTF1Clcp80AWThxtrGQ9Yuwg==
+  dependencies:
+    abort-controller "^3.0.0"
+    node-fetch "^2.6.1"
+
 "@algolia/cache-browser-local-storage@4.4.0":
   version "4.4.0"
   resolved "https://registry.yarnpkg.com/@algolia/cache-browser-local-storage/-/cache-browser-local-storage-4.4.0.tgz#f58055bdf798d7b31b6d5f86e465cb0fc7dd6694"
@@ -1966,6 +1974,13 @@
     "@babel/runtime" "^7.11.2"
     "@testing-library/dom" "^7.26.0"
 
+"@types/adobe__node-fetch-retry@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@types/adobe__node-fetch-retry/-/adobe__node-fetch-retry-1.0.0.tgz#0c8b5710086ffa31e7d0820841eb860af051a0a7"
+  integrity sha512-e9bQInFEBLYRFhvYF6/jbELEXJcGCpvbX1jVlzrGvSia0hzfrlmt7mK++9G/EpMZ6TKOZStprcwlgSgT9yel1w==
+  dependencies:
+    "@types/node-fetch" "*"
+
 "@types/algoliasearch@^3.30.19":
   version "3.34.11"
   resolved "https://registry.yarnpkg.com/@types/algoliasearch/-/algoliasearch-3.34.11.tgz#a7f3b89a95578be3acd972167bdbadb5dcf71660"
@@ -2280,7 +2295,7 @@
   dependencies:
     "@types/node" "*"
 
-"@types/node-fetch@^2.5.6":
+"@types/node-fetch@*", "@types/node-fetch@^2.5.6":
   version "2.5.7"
   resolved "https://registry.yarnpkg.com/@types/node-fetch/-/node-fetch-2.5.7.tgz#20a2afffa882ab04d44ca786449a276f9f6bbf3c"
   integrity sha512-o2WVNf5UhWRkxlf6eq+jMZDu7kjgpgJfl4xVNlvryc95O/6F2ld8ztKX+qu+Rjyet93WAWm5LjeX9H5FGkODvw==
@@ -2764,6 +2779,13 @@ abab@^2.0.3:
   version "2.0.5"
   resolved "https://registry.yarnpkg.com/abab/-/abab-2.0.5.tgz#c0b678fb32d60fc1219c784d6a826fe385aeb79a"
   integrity sha512-9IK9EadsbHo6jLWIpxpR6pL0sazTXV6+SQv25ZB+F7Bj9mJNaOc4nCRabwd5M/JwmUa8idz6Eci6eKfJryPs6Q==
+
+abort-controller@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/abort-controller/-/abort-controller-3.0.0.tgz#eaf54d53b62bae4138e809ca225c8439a6efb392"
+  integrity sha512-h8lQ8tacZYnR3vNQTgibj+tODHI5/+l06Au2Pcriv/Gmet0eaj4TwWH41sO9wnHDiQsEj19q0drzdWdeAHtweg==
+  dependencies:
+    event-target-shim "^5.0.0"
 
 absolute-path@^0.0.0:
   version "0.0.0"
@@ -5654,6 +5676,11 @@ event-pubsub@4.3.0:
   version "4.3.0"
   resolved "https://registry.yarnpkg.com/event-pubsub/-/event-pubsub-4.3.0.tgz#f68d816bc29f1ec02c539dc58c8dd40ce72cb36e"
   integrity sha512-z7IyloorXvKbFx9Bpie2+vMJKKx1fH1EN5yiTfp8CiLOTptSYy1g8H4yDpGlEdshL1PBiFtBHepF2cNsqeEeFQ==
+
+event-target-shim@^5.0.0:
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/event-target-shim/-/event-target-shim-5.0.1.tgz#5d4d3ebdf9583d63a5333ce2deb7480ab2b05789"
+  integrity sha512-i/2XbnSz/uxRCU6+NdVJgKWDTM427+MqYbkQzD321DuCQJUqOuJKIA0IM2+W2xtYHdKOmZ4dR6fExsd4SXL+WQ==
 
 exec-sh@^0.3.2:
   version "0.3.4"
