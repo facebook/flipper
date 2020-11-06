@@ -6,6 +6,7 @@
  */
 
 #ifdef FB_SONARKIT_ENABLED
+#if !TARGET_OS_OSX
 
 #import "FlipperDiagnosticsViewController.h"
 #import "FlipperClient.h"
@@ -125,4 +126,5 @@ static NSString* const kSKCellIdentifier =
 
 @end
 
+#endif
 #endif
