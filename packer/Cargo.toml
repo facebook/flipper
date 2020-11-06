@@ -17,7 +17,7 @@ serde = { version = "1.0.117", features = ["derive"] }
 serde_yaml = "0.8.13"
 anyhow = "1.0.33"
 sha2 = "^0.8.1"
-data-encoding = "2.3.0"
+data-encoding = "2.3.1"
 serde_json = "1.0.59"
 rayon = "1.4.1"
 indicatif = "0.15.0"

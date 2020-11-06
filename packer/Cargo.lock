@@ -222,9 +222,9 @@ dependencies = [
 
 [[package]]
 name = "data-encoding"
-version = "2.3.0"
+version = "2.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d4d0e2d24e5ee3b23a01de38eefdcd978907890701f08ffffd4cb457ca4ee8d6"
+checksum = "993a608597367c6377b258c25d7120740f00ed23a2252b729b1932dd7866f908"
 
 [[package]]
 name = "digest"
