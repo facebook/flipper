@@ -9,8 +9,8 @@
 
 import React from 'react';
 import {Typography, Card, Table, Collapse, Button, Tabs} from 'antd';
-import {Layout} from '../ui';
-import {theme} from 'flipper-plugin';
+import {Layout, Link} from '../ui';
+import {NUX, theme} from 'flipper-plugin';
 import reactElementToJSXString from 'react-element-to-jsx-string';
 import {CodeOutlined} from '@ant-design/icons';
 
@@ -29,8 +29,8 @@ const demoStyle: Record<string, React.CSSProperties> = {
 
 type PreviewProps = {
   title: string;
-  description?: string;
-  props: [string, string, string][];
+  description?: React.ReactNode;
+  props: [string, React.ReactNode, React.ReactNode][];
   demos: Record<string, React.ReactNode>;
 };
 
@@ -282,6 +282,31 @@ const demos: PreviewProps[] = [
             {aFixedHeightBox}
           </Layout.Bottom>
         </Layout.Container>
+      ),
+    },
+  },
+  {
+    title: 'NUX',
+    description:
+      'A component to provide a New-User-eXperience: Highlight new features to first time users. For tooltips that should stay available, use ToolTip from ANT design',
+    props: [
+      ['title', 'string / React element', 'The tooltip contents'],
+      [
+        'placement',
+        <>
+          See{' '}
+          <Link href="https://ant.design/components/tooltip/#components-tooltip-demo-placement">
+            docs
+          </Link>
+        </>,
+        '(optional) on which side to place the tooltip',
+      ],
+    ],
+    demos: {
+      'NUX example': (
+        <NUX title="This button does something cool" placement="right">
+          <Button>Hello world</Button>
+        </NUX>
       ),
     },
   },

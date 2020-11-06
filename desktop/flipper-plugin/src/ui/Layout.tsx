@@ -198,7 +198,7 @@ const SandySplitContainer = styled.div<{
   flex: 1,
   flexDirection: props.flexDirection,
   alignItems: props.center ? 'center' : 'stretch',
-  overflow: 'hidden',
+  overflow: props.center ? undefined : 'hidden', // only use overflow hidden in container mode, to avoid weird resizing issues
   '> :nth-child(1)': {
     flex: props.grow === 1 ? splitGrowStyle : splitFixedStyle,
     minWidth: props.grow === 1 ? 0 : undefined,

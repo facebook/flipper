@@ -12,7 +12,7 @@ import {Badge, Button, Menu, Tooltip, Typography} from 'antd';
 import {InfoIcon, SidebarTitle} from '../LeftSidebar';
 import {PlusOutlined, MinusOutlined} from '@ant-design/icons';
 import {Glyph, Layout, styled} from '../../ui';
-import {theme} from 'flipper-plugin';
+import {theme, NUX} from 'flipper-plugin';
 import {useDispatch, useStore} from '../../utils/useStore';
 import {getPluginTitle, sortPluginsByName} from '../../utils/pluginUtils';
 import {ClientPluginDefinition, DevicePluginDefinition} from '../../plugin';
@@ -124,7 +124,10 @@ export const PluginList = memo(function PluginList() {
           </PluginGroup>
 
           {!isArchived && (
-            <PluginGroup key="metro" title="React Native">
+            <PluginGroup
+              key="metro"
+              title="React Native"
+              hint="The following plugins are exposed by the currently running Metro instance. Note that Metro might currently be connected to a different application or device than selected above.">
               {metroPlugins.map((plugin) => (
                 <PluginEntry
                   key={'metro' + plugin.id}
@@ -163,7 +166,10 @@ export const PluginList = memo(function PluginList() {
             ))}
           </PluginGroup>
           {!isArchived && (
-            <PluginGroup key="disabled" title="Disabled">
+            <PluginGroup
+              key="disabled"
+              title="Disabled"
+              hint="This section shows the plugins that are currently disabled. If a pluign is enabled, you will be able to interact with it. If a plugin is disabled it won't consume resources in Flipper or in the connected application.">
               {disabledPlugins.map((plugin) => (
                 <PluginEntry
                   key={plugin.id}
@@ -184,7 +190,10 @@ export const PluginList = memo(function PluginList() {
             </PluginGroup>
           )}
           {!isArchived && (
-            <PluginGroup key="unavailable" title="Unavailable plugins">
+            <PluginGroup
+              key="unavailable"
+              title="Unavailable plugins"
+              hint="The plugins below are installed in Flipper, but not available for the selected device / application. Hover the plugin info box to find out why.">
               {unavailablePlugins.map(([plugin, reason]) => (
                 <PluginEntry
                   key={plugin.id}
@@ -295,23 +304,40 @@ const PluginEntry = memo(function PluginEntry({
 const PluginGroup = memo(function PluginGroup({
   title,
   children,
+  hint,
   ...rest
-}: {title: string; children: React.ReactElement[]} & Record<string, any>) {
+}: {title: string; children: React.ReactElement[]; hint?: string} & Record<
+  string,
+  any
+>) {
   if (children.length === 0) {
     return null;
   }
+
+  let badge = (
+    <Badge
+      count={children.length}
+      style={{
+        marginRight: 20,
+      }}
+    />
+  );
+  if (hint) {
+    badge = (
+      <NUX title={hint} placement="right">
+        {badge}
+      </NUX>
+    );
+  }
+
   return (
     <SubMenu
       {...rest}
       title={
         <Layout.Right center>
           <Text strong>{title}</Text>
-          <Badge
-            count={children.length}
-            style={{
-              marginRight: 20,
-            }}
-          />
+
+          {badge}
         </Layout.Right>
       }>
       {children}

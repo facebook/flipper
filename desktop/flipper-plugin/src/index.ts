@@ -34,6 +34,7 @@ export {
 
 export {theme} from './ui/theme';
 export {Layout} from './ui/Layout';
+export {NUX, NuxManagerContext, createNuxManager} from './ui/NUX';
 
 // It's not ideal that this exists in flipper-plugin sources directly,
 // but is the least pain for plugin authors.

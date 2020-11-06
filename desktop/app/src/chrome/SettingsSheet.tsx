@@ -8,7 +8,7 @@
  */
 
 import {FlexColumn, Button, styled, Text, FlexRow, Spacer} from '../ui';
-import React, {Component} from 'react';
+import React, {Component, useContext} from 'react';
 import {updateSettings, Action} from '../reducers/settings';
 import {
   Action as LauncherAction,
@@ -28,6 +28,7 @@ import LauncherSettingsPanel from '../fb-stubs/LauncherSettingsPanel';
 import SandySettingsPanel from '../fb-stubs/SandySettingsPanel';
 import {reportUsage} from '../utils/metrics';
 import {Modal} from 'antd';
+import {Layout, NuxManagerContext} from 'flipper-plugin';
 
 const Container = styled(FlexColumn)({
   padding: 20,
@@ -311,6 +312,10 @@ class SettingsSheet extends Component<Props, State> {
             }}
           />
         </ToggledSection>
+        <Layout.Right center>
+          <span>Reset all new user tooltips</span>
+          <ResetTooltips />
+        </Layout.Right>
       </>
     );
 
@@ -351,3 +356,16 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
   }),
   {updateSettings, updateLauncherSettings},
 )(SettingsSheet);
+
+function ResetTooltips() {
+  const nuxManager = useContext(NuxManagerContext);
+
+  return (
+    <Button
+      onClick={() => {
+        nuxManager.resetHints();
+      }}>
+      Reset
+    </Button>
+  );
+}

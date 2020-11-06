@@ -11,6 +11,7 @@
 
 export const theme = {
   white: 'white', // use as counter color for primary
+  black: 'black',
   primaryColor: 'var(--flipper-primary-color)',
   successColor: 'var(--flipper-success-color)',
   errorColor: 'var(--flipper-error-color)',

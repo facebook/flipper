@@ -12,7 +12,7 @@ import {Alert, Input} from 'antd';
 import {LeftSidebar, SidebarTitle, InfoIcon} from '../LeftSidebar';
 import {SettingOutlined} from '@ant-design/icons';
 import {Layout, Link, styled} from '../../ui';
-import {theme} from 'flipper-plugin';
+import {NUX, theme} from 'flipper-plugin';
 import {AppSelector} from './AppSelector';
 import {useStore} from '../../utils/useStore';
 import {PluginList} from './PluginList';
@@ -49,7 +49,11 @@ export function AppInspect() {
                 type="info"
               />
             ) : (
-              <Input addonAfter={<SettingOutlined />} defaultValue="mysite" />
+              <NUX
+                title="Use bookmarks to directly navigate to a location in the app."
+                placement="right">
+                <Input addonAfter={<SettingOutlined />} defaultValue="mysite" />
+              </NUX>
             )}
             {!isArchived && (
               <Toolbar gap>
