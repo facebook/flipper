@@ -718,7 +718,7 @@ class DataDescriptionContainer extends PureComponent<{
       case 'array':
         return val.length <= 0 ? <EmptyObjectValue>[]</EmptyObjectValue> : null;
       case 'object':
-        return Object.keys(val).length <= 0 ? (
+        return Object.keys(val ?? {}).length <= 0 ? (
           <EmptyObjectValue>{'{}'}</EmptyObjectValue>
         ) : null;
 
