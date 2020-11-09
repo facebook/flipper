@@ -8,9 +8,8 @@
  */
 
 import React from 'react';
-import {Alert, Input} from 'antd';
+import {Alert} from 'antd';
 import {LeftSidebar, SidebarTitle, InfoIcon} from '../LeftSidebar';
-import {SettingOutlined} from '@ant-design/icons';
 import {Layout, Link, styled} from '../../ui';
 import {NUX, theme} from 'flipper-plugin';
 import {AppSelector} from './AppSelector';
@@ -43,18 +42,14 @@ export function AppInspect() {
           </SidebarTitle>
           <Layout.Container padv="small" padh="medium" gap={theme.space.large}>
             <AppSelector />
-            {isArchived ? (
-              <Alert
-                message="This device is a snapshot and cannot be interacted with."
-                type="info"
-              />
-            ) : (
-              <NUX
-                title="Use bookmarks to directly navigate to a location in the app."
-                placement="right">
-                <Input addonAfter={<SettingOutlined />} defaultValue="mysite" />
-              </NUX>
-            )}
+            {
+              isArchived ? (
+                <Alert
+                  message="This device is a snapshot and cannot be interacted with."
+                  type="info"
+                />
+              ) : null /* TODO: add bookmarks back T77016599 */
+            }
             {!isArchived && (
               <Toolbar gap>
                 <MetroButton useSandy />
