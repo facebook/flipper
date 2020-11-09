@@ -20,12 +20,17 @@ import {useStore, useDispatch} from '../utils/useStore';
 import {SandyContext} from './SandyContext';
 import {ConsoleLogs} from '../chrome/ConsoleLogs';
 import {setStaticView} from '../reducers/connections';
-import {toggleLeftSidebarVisible} from '../reducers/application';
+import {
+  ACTIVE_SHEET_CHANGELOG_RECENT_ONLY,
+  setActiveSheet,
+  toggleLeftSidebarVisible,
+} from '../reducers/application';
 import {AppInspect} from './appinspect/AppInspect';
 import PluginContainer from '../PluginContainer';
 import {ContentContainer} from './ContentContainer';
 import {Notification} from './notification/Notification';
 import {SheetRenderer} from '../chrome/SheetRenderer';
+import {hasNewChangesToShow} from '../chrome/ChangelogSheet';
 
 export type ToplevelNavItem =
   | 'appinspect'
@@ -79,6 +84,9 @@ export function SandyApp({logger}: {logger: Logger}) {
 
   useEffect(() => {
     registerStartupTime(logger);
+    if (hasNewChangesToShow(window.localStorage)) {
+      dispatch(setActiveSheet(ACTIVE_SHEET_CHANGELOG_RECENT_ONLY));
+    }
     // don't warn about logger, even with a new logger we don't want to re-register
     // eslint-disable-next-line
   }, []);
