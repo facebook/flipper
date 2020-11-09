@@ -397,10 +397,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
         const databases = updates.sort((db1, db2) => db1.id - db2.id);
         const selectedDatabase =
           state.selectedDatabase ||
-          (Object.values(databases)[0]
-            ? // $FlowFixMe
-              Object.values(databases)[0].id
-            : 0);
+          (Object.values(databases)[0] ? Object.values(databases)[0].id : 0);
         const selectedTable =
           state.selectedDatabaseTable &&
           databases[selectedDatabase - 1].tables.includes(

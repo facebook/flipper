@@ -22,7 +22,7 @@ const prettierConfig = {
   trailingComma: 'all',
   bracketSpacing: false,
   jsxBracketSameLine: true,
-  parser: 'flow',
+  parser: '',
 };
 
 module.exports = {
@@ -59,7 +59,6 @@ module.exports = {
     // additional rules for this project
     'header/header': [2, 'block', {pattern}],
     'prettier/prettier': [2, prettierConfig],
-    'flowtype/object-type-delimiter': [0],
     'import/no-unresolved': [2, {commonjs: true, amd: true}],
   },
   settings: {

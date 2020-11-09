@@ -9,7 +9,6 @@
 
 import {spawn} from 'child_process';
 import memoize from 'lodash.memoize';
-// $FlowFixMe
 import stringify from 'canonical-json';
 
 const TEST_TIMEOUT_MS = 30 * 1000;
@@ -50,10 +49,7 @@ const basicArgs = [
   params.insecurePort,
 ];
 
-const runHeadless = memoize((args: Array<string>): Promise<{
-  output: Object,
-  stderr: string,
-}> => {
+const runHeadless = memoize((args) => {
   return new Promise((resolve, reject) => {
     const stdoutChunks = [];
     const stderrChunks = [];
@@ -88,7 +84,7 @@ const runHeadless = memoize((args: Array<string>): Promise<{
   });
 });
 
-function getPluginState(app: string, plugin: string): Promise<string> {
+function getPluginState(app, plugin) {
   return runHeadless(basicArgs).then((result) => {
     const pluginStates = result.output.store.pluginStates;
     for (const pluginId of Object.keys(pluginStates)) {
@@ -159,7 +155,7 @@ test(
   TEST_TIMEOUT_MS,
 );
 
-function stripUnstableLayoutAttributes(node: Object): Object {
+function stripUnstableLayoutAttributes(node) {
   let newNode = node;
   for (const path of layoutPathsToExcludeFromSnapshots) {
     const parts = path.split('.');
@@ -168,7 +164,7 @@ function stripUnstableLayoutAttributes(node: Object): Object {
   return newNode;
 }
 
-function stripNode(node: any, path: Array<string>) {
+function stripNode(node, path) {
   if (path.length === 0) {
     return 'PLACEHOLDER';
   }

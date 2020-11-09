@@ -1141,7 +1141,7 @@
     core-js-compat "^3.6.2"
     semver "^5.5.0"
 
-"@babel/preset-flow@^7.0.0", "@babel/preset-flow@^7.10.4":
+"@babel/preset-flow@^7.0.0":
   version "7.12.1"
   resolved "https://registry.yarnpkg.com/@babel/preset-flow/-/preset-flow-7.12.1.tgz#1a81d376c5a9549e75352a3888f8c273455ae940"
   integrity sha512-UAoyMdioAhM6H99qPoKvpHMzxmNVXno8GYU/7vZmGaHk6/KqfDYL1W0NxszVbJ2EP271b7e6Ox+Vk2A9QsB3Sw==
@@ -6141,11 +6141,6 @@ flipper-client-sdk@^0.0.2:
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/flipper-client-sdk/-/flipper-client-sdk-0.0.2.tgz#cb970908b9a948d1671d39e2ca050191753c99f7"
   integrity sha512-7l0yM9uaUEfi179iq9TEvZ2fzDF3t0EymTpxkP/scQWVSjw+bgHYv5G66EbBbqWdJhlTA7zWki5gTV+OylzghQ==
-
-flow-bin@0.131.0:
-  version "0.131.0"
-  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.131.0.tgz#d4228b6070afdf3b2a76acdee77a7f3f8e8f5133"
-  integrity sha512-fZmoIBcDrtLhy/NNMxwJysSYzMr1ksRcAOMi3AHSoYXfcuQqTvhGJx+wqjlIOqIwz8RRYm8J4V4JrSJbIKP+Xg==
 
 flow-parser@0.*:
   version "0.110.0"
