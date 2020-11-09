@@ -133,7 +133,7 @@ class SettingsSheet extends Component<Props, State> {
       enablePrefetching,
       idbPath,
       reactNative,
-      enableSandy,
+      disableSandy,
       darkMode,
     } = this.state.updatedSettings;
     const {useSandy} = this.props;
@@ -234,17 +234,17 @@ class SettingsSheet extends Component<Props, State> {
           }}
         />
         <SandySettingsPanel
-          toggled={this.state.updatedSettings.enableSandy}
+          toggled={this.state.updatedSettings.disableSandy}
           onChange={(v) => {
             this.setState({
               updatedSettings: {
                 ...this.state.updatedSettings,
-                enableSandy: v,
+                disableSandy: v,
               },
             });
           }}
         />
-        {enableSandy && (
+        {!disableSandy && (
           <ToggledSection
             label="Enable dark theme"
             toggled={darkMode}

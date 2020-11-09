@@ -103,7 +103,7 @@ function init() {
     store,
     {name: 'loadTheme', fireImmediately: true, throttleMs: 500},
     (state) => ({
-      sandy: state.settingsState.enableSandy,
+      sandy: GK.get('flipper_sandy') && !state.settingsState.disableSandy,
       dark: state.settingsState.darkMode,
     }),
     (theme) => {

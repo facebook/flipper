@@ -8,6 +8,7 @@
  */
 
 import {useStore} from '../../../app/src/utils/useStore';
+import GK from '../fb-stubs/GK';
 /**
  * This hook returns whether dark mode is currently being used.
  * Generally should be avoided in favor of using the above theme object,
@@ -15,6 +16,9 @@ import {useStore} from '../../../app/src/utils/useStore';
  */
 export function useIsDarkMode(): boolean {
   return useStore(
-    (state) => state.settingsState.enableSandy && state.settingsState.darkMode,
+    (state) =>
+      GK.get('flipper_sandy') &&
+      !state.settingsState.disableSandy &&
+      state.settingsState.darkMode,
   );
 }
