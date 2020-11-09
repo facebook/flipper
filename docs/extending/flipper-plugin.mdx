@@ -1,0 +1,394 @@
+---
+id: flipper-plugin
+title: flipper-plugin API reference (Sandy)
+---
+
+## PluginClient
+
+`PluginClient` is the type of the `client` passed into a standard Sandy plugin.
+It takes two generic arguments `Event` and `Methods`.
+
+* The `Event` generic is a mapping of an event name to the data structure of the payload, as explained [here](./desktop-plugins#the-plugin-declaration).
+* The `Methods` generic is used to describe the methods that are offered by the plugin implementation on the device. `Methods` is a mapping of a method name to a function that describes the signature of a method. The first argument of that function describes the parameters that can be passed to the client. The return type of the function should describe what is returned from the client. Wrapped with a `Promise`.
+
+Quick example on how those generics should be used:
+
+```typescript
+type LogEntry = {
+  message: string
+}
+
+// Events that can be send by the client implementation:
+type Events = {
+  addLogEntry: LogEntry,
+  flushLogs: {},
+}
+
+// Methods we can invoken on the client:
+type Methods = {
+  retrieveLogsSince(params: { since: number }): Promise<{ message: string }>,
+}
+
+export function plugin(client: PluginClient<Events, Methods>) {
+  // etc
+}
+```
+
+The `PluginClient` received by the `plugin` exposes the following members:
+
+### Events listeners
+
+#### `onMessage`
+
+Usage: `client.onMessage(event: string, callback: (object) => void)`
+
+This subscribes the plugin to a specific event that is fired from the client plugin (using [`connection.send`](../extending/create-plugin#push-data-to-the-desktop)).
+Typically used to update some of the [state](#createstate).
+For background plugins that are currently not active in the UI, messages won't arrive immediately, but are queued until the user opens the plugin.
+
+Example:
+
+```typescript
+type Events = {
+  newRow: {
+    id: number;
+    title: string;
+    url: string;
+  };
+};
+
+export function plugin(client: PluginClient<Events, {}>) {
+  const rows = createState<Record<string, Row>>({}, {persist: 'rows'});
+
+  client.onMessage('newRow', (row /* type will be inferred correctly */) => {
+    rows.update((draft) => {
+      draft[row.id] = row;
+    });
+  });
+
+  // etc
+}
+```
+
+#### `onActivate`
+
+Usage: `client.onActivate(callback: () => void)`
+
+Called when the plugin is selected by the user and mounted into the Flipper Desktop UI. See also the closely related `onConnect` event.
+
+#### `onDeactivate`
+
+Usage: `client.onDeactivate(callback: () => void)`
+
+Triggered when the plugin is unmounted from the Flipper Desktop UI, because the user navigates to some other plugin.
+In the case the plugin is destroyed while being active, onDeactivate will still be called.
+
+#### `onConnect`
+
+Usage: `client.onConnect(callback: () => void)`
+
+Triggered once the connection with the plugin on the client is established, and for example [`send`](#send) can be called safely.
+Typically, this happens when the plugin is activated (opened) in the Flipper Desktop.
+However, for [background plugins](create-plugin#background-plugins), this happens immediately after the plugin has been instantiated.
+
+#### `onDisconnect`
+
+Usage: `client.onDisconnect(callback: () => void)`
+
+Triggered once the connection with the plugin on the client has been lost.
+Typically, this happens when the user leaves the plugin in the Flipper Desktop, when the plugin is disabled, or when the app or device has disconnected.
+However, for [background plugins](create-plugin#background-plugins), this event won't fire when the user merely navigates somewhere else.
+In that case, [`onDeactivate`](#ondeactivate) can be used instead.
+
+#### `onDestroy`
+
+Usage: `client.onDestroy(callback: () => void)`
+
+Called when the plugin is unloaded. This happens if the device or client has been disconnected, or when the user disables the plugin.
+Note that there is no corresponding `onCreate` event, since the function body of the plugin definition acts already as 'what needs to be done when the plugin is loaded/enabled'.
+
+#### `onDeepLink`
+
+Usage: `client.onDeepLink(callback: (payload: unknown) => void)`
+
+Trigger when the users navigates to this plugin using a deeplink, either from an external `flipper://` plugin URL, or because the user was linked here from another plugin.
+
+### Methods
+
+#### `send`
+
+Usage: `client.send(method: string, params: object): Promise<object>`
+
+If the plugin is connected, `send` can be used to invoke a [method](create-plugin#[background-plugins#using-flipperconnection) on the client implementation of the plugin.
+
+Example:
+
+```typescript
+type Methods = {
+  currentLogs(params: {since: number}): Promise<string[]>;
+};
+
+export function plugin(client: PluginClient<{}, Methods>) {
+  const logs = createState<string[]>([])
+
+  client.onConnect(async () => {
+    try {
+      const currentLogs = await client.send('currentLogs', {
+        since: Date.now()
+      })
+      logs.set(currentLogs)
+    } catch (e) {
+      console.error("Failed to retrieve current logs: ", e)
+    }
+  })
+
+  //etc
+}
+```
+
+#### `addMenuEntry`
+
+Usage: `client.addMenuEntry(...entry: MenuEntry[])`
+
+This method can be used to add menu entries to the Flipper main menu while this plugin is active.
+It supports registering global keyboard shortcuts as well.
+Example:
+
+```typescript
+client.addMenuEntry({
+    label: 'Reset Selection',
+    topLevelMenu: 'Edit',
+    accelerator: 'CmdOrCtrl+R'
+    handler: () => {
+      // Event handling
+    }
+}
+```
+
+The `accelerator` argument is optional, but describes the keyboard shortcut. See the [Electron docs](https://www.electronjs.org/docs/api/accelerator) for their format. The `topLevelMenu` must be one of `"Edit"`, `"View"`, `"Window"` or `"Help"`.
+
+It is possible to leave out the `label`, `topLevelMenu` and `accelerator` fields if a pre-defined `action` is set, which configures all three of them.
+The currently pre-defined actions are `"Clear"`, `"Go To Bottom"` and `"Create Paste"`.
+Example of using a pre-defined action:
+
+```typescript
+client.addMenuEntry({
+  action: 'createPaste',
+  handler: async () => {
+    // Event handling
+  }
+})
+```
+
+#### `supportsMethod`
+
+Usage; `client.supportsMethod(method: string): Promise<Boolean>`
+
+Resolves to true if the client supports the specified method. Useful when adding functionality to existing plugins, when connectivity to older clients is still required. Also useful when client plugins are implemented on multitple platforms and don't all have feature parity.
+
+#### `createPaste`
+
+Facebook only API.
+
+Usage: `client.createPaste(value: string): Promise<string|undefined>`
+
+Creates a Facebook Paste (similar to a GitHub Gist) for the given `value`.
+The returned promise either contains a string with the URL of the paste, or `undefined` if the process failed.
+Details of the failure will be communicated back directly to the user through Flipper notifications.
+For example if the user is currently not signed in.
+
+## DevicePluginClient
+
+### Properties
+
+#### `device`
+
+Returns the [`Device`](#device) this plugin is connected to.
+
+### Events
+
+#### `onDestroy`
+
+See the similarly named event under [`PluginClient`](#pluginclient).
+
+#### `onActivate`
+
+See the similarly named event under [`PluginClient`](#pluginclient).
+
+#### `onDeactivate`
+
+See the similarly named event under [`PluginClient`](#pluginclient).
+
+#### `onDeepLink`
+
+See the similarly named event under [`PluginClient`](#pluginclient).
+
+### Methods
+
+#### `addMenuEntry`
+
+See the similarly named method under [`PluginClient`](#pluginclient).
+
+#### `createPaste`
+
+See the similarly named method under [`PluginClient`](#pluginclient).
+
+## Device
+
+`Device` captures the metadata of the device the plugin is currently connected to.
+Device objects are passed into the [`supportsDevice` method](./desktop-plugins#creating-a-device-plugin) of a device plugin, and available as `device` field on a [`DevicePluginClient`](#devicepluginclient).
+
+### Properties
+
+#### os
+
+A `string` that describes the Operating System of the device. Typical values:
+`'iOS'` | `'Android'` | `'Windows'` | `'MacOS'` | `'Metro'`
+
+#### deviceType
+
+A `string` that describes whether the device is a physical device or an emulator. Possible values: `'emulator'` and `'physical'`.
+
+#### isArchived
+
+This `boolean` flag is `true` if the current device is coming from an import Flipper snapshot, and not an actually connected device.
+
+### Events
+
+#### `onLogEntry`
+
+Usage: `device.onLogEntry(callback: (logEntry: DeviceLogEntry) => void)`
+
+Use this event to subscribe to the log stream that is emitted by the device.
+For Android this is using `adb` behind the scenes, for iOS `idb`, for Metro it connects to the webserver for the Metro log output, etc.
+
+The `DeviceLogEntry` exposes the following fields:
+* `date: Date`
+* `type: string`
+* `message: string`
+* `pid: number`
+* `tid: number`
+* `app?: string`
+* `tag: string`
+
+For `type`, the possible values are `'unknown'`, `'verbose'`, `'debug'`, `'info'`, `'warn'`, `'error'` and `'fatal'`.
+
+## State Management
+
+State in Sandy plugins is stored in small containers that hold immutable values, and can be consumed in React components using the [`useValue`](#usevalue) hook.
+
+### createState
+
+Usage: `createState<T>(initialValue: T, options?): StateAtom<T>`
+
+The `createState` method can be used to create a small state container that lives inside a Sandy plugin.
+Its value should be treated as immutable and is initialized by default using the `initialValue` parameter.
+
+#### Options
+
+Optionally, `options` can be provided when creating state. Supported options:
+
+* `persist: string`. If the `persist` value is set, this state container will be serialized when n Flipper snapshot export is being made. When a snapshot is imported into Flipper, and plugins are initialized, this state container will load its initial value from the snapshot, rather than using the `initialValue` parameter. The `persist` key should be unique within the plugin and only be set if the state stored in this container is JSON serializable, and won't become unreasonably large. See also `exportState` and `initialState` in the [`TestUtils`](#testutils) section.
+
+#### The state atom object
+
+A state atom object is returned by `createState`, exposing the following methods:
+
+* `get(): T`: Returns the current value stored. If you want to use the atom object in a React component, consider using the `useValue` hook instead, to make sure the component is notified about future updates of this atom.
+* `set(newValue: T)`: Stores a new value into the atom. If the new value is not reference-equal to the previous one, all observing components will be notified.
+* `update(updater: (draft: Draft<T>) => void)`: Updates the current state using an [Immer](https://immerjs.github.io/immer/docs/introduction) recipe. In the `updater`, the `draft` object can be safely (deeply) mutated. Once the `updater` finishes, Immer will compute a new immutable object based on the changes, and store that. This is often simpler than using a combination of `get` and `set` if deep updates need to be made to the stored object.
+
+#### Example
+
+```typescript
+import {createState} from 'flipper-plugin'
+
+const rows = createState<string[]>([], {persist: 'rows'});
+const selectedID = createState<string | null>(null, {persist: 'selection'});
+
+rows.set(["hello"])
+console.log(rows.get().length) // 1
+rows.update(draft => {
+  draft.push("world")
+})
+console.log(rows.get().length) // 2
+```
+
+## React Hooks
+
+### usePlugin
+
+Usage: `const instance = usePlugin(plugin)`
+
+Can be used by any component in the plugin, and gives the current `instance` that corresponds with the currently loaded plugin.
+The `plugin` parameter isn't actually used, but used to verify that a component is used correctly inside a mounted component, and helps with type inference.
+The returned `instance` method corresponds to the object that is returned from the `plugin` / `devicePlugin` definition.
+See the [tutorial](./desktop-plugins#building-an-user-interface-for-the-plugin) for how this hook is used in practice.
+
+### useValue
+
+Usage: `const currentValue = useValue(stateAtom)`
+
+Returns the current value of a state atom, and also subscribes the current component to future changes of the atom (in contrast to using `stateAtom.get()` directly).
+See the [tutorial](./desktop-plugins#building-an-user-interface-for-the-plugin) for how this hook is used in practice.
+
+## TestUtils
+
+The object `TestUtils` as exposed from `flipper-plugin` exposes utilities to write unit tests for Sandy plugins.
+Different utilities are exposed depending on whether you want to test a client or device plugin, and whether or not the component should be rendered or only the logic itself is going to be tested.
+It is recommended to follow the [tutorial](./desktop-plugins) first, as it explains how unit tests should be setup.
+
+### Starting a plugin
+
+Usage:
+- `const runner = TestUtils.startPlugin(pluginModule, options?)`
+- `const runner = TestUtils.renderPlugin(pluginModule, options?)`
+- `const runner = TestUtils.startDevicePlugin(devicePluginModule, options?)`
+- `const runner = TestUtils.renderDevicePlugin(devicePluginModule, options?)`
+
+Starts a client plugin in a fully mocked environment, but without rendering support.
+The pluginModule is an object that has a `plugin` (or `devicePlugin` and `supportsDevice`) and `Component` property.
+Typically, it is invoked with `startPlugin(PluginUnderTest)`, where `PluginUnderTest` is loaded like `import * as PluginUnderTest from "../index.tsx"` (the path to the actual definition).
+However, it doesn't have to be loaded with an entire module, and a local object with the same signature can be constructed as well.
+
+#### startPlugin options
+
+The `options` argument is optional, but can specify the following fields:
+
+* `initialState`: Can be used to start the plugin in a certain state, rather than in the default state. `initialState` should be an object that specifies for all the state atoms that have the `persist` option set, their initial value. For example: `{ initialState: { rows: ["hello", "world"]}}`, where `rows` matches the `persist` key of an atom.
+* `isArchived: boolean`: Setting this flag, will set the `isArchived` on the mocked device as well. Set it if you want to test the behavior of your plugin for imported devices (see also [`Device.isArchived`](#isarchived)). Defaults to `false`.
+* `isBackgroundPlugin`: This makes sure the test runner emits life-cycle events in a way that is typical for background plugins. Defaults to `false`. The notable difference in behavior is that calling `.active()` on the test runner won't trigger the `connect` event to be fired, nor the `.deactivate()` the `disconnect` event.
+* `startUnactivated`: This does not activate the plugin; `connect` needs to be explicitly called. This can be used in case setting mock implementation for `onSend` is required to make sure Client plugin works as expected. Defaults to `false`.
+
+#### The test runner object
+
+`startPlugin` returns an object that can be used to inspect and interact with your plugin instance.
+Again, see the tutorial how to interact with this object in general.
+The test runner is a bag full of utilities, but typically it is fine to just destructure the utilities relevant for the test.
+Exposed members:
+
+* `instance`: The object (public API) returned from your plugin definition. You will typically use this in most tests, either to trigger updates or to inspect the current state of the plugin.
+* `exportState()`: Grabs the current state of all `persist` enabled state atoms. The object format returned here is the same as in the `initialState` option.
+* `activate()`: Emulate the `onActivate` event. By default, `startPlugin` already starts the plugin in activated state, and calling `activate` to test the `onActivate` event should be preceded by a `deactivate()` call first.
+* `deactivate()`: Emulates a user navigating away from the plugin.
+* `destroy()`: Emulates the plugin being cleaned up, for example because the plugin is disabled by the user, or because the device / client has disconnected. After calling `destroy` the current `runner` is unusable.
+* `triggerDeepLink(payload)`: Emulates a deepLink being triggered, and fires the `onDeepLink` event.
+* `triggerMenuEntry(label)`: Emulates the user clicking a menu entry in the Flipper main menu.
+* `flipperLib`: An object that exposed `jest.fn()` mocks for all built-in Flipper APIs that can be called by your plugin. So assertions can be made that the plugin did actually invoke those methods. For example: `expect(runner.flipperLib.createPaste).toBeCalledWith("test message")`. Currently supported mocks: `createPaste`, `enableMenuEntries`.
+
+The following members are available when using the `render...` variant rather than the `start...` variant:
+
+* `renderer`: This object can be used to query the DOM and further interact with it. It is provided by react-testing-library, and further documented [here](https://testing-library.com/docs/react-testing-library/api#render-result).
+* `act`: Use this function to wrap interactions with the plugin under test into a transaction, after which the DOM updates will be flushed by React. See also the [`act`](https://reactjs.org/docs/test-utils.html#act) documentation.
+
+The following members are only available for Client plugins:
+
+* `sendEvent(event, params)`: Emulates an event being sent by the client plugin. Will trigger the corresponding `onMessage` handler in the plugin.
+* `sendEvents({ method: string, params: object}[])`: Like `sendEvent`, but sends multiple events at once.
+* `onSend`: A `jest.fn()` that can be used to assert that `client.send()` was called by the plugin under test. For example `expect(runner.onSend).toBeCalledWith('currentLogs`, { since: 0})`.
+* `connect()`: Triggers the `onConnect()` event. (For non-background plugins `activate()` could as well be used for this).
+* `disconnect()`: Triggers the `onDisconnect()` event. (For non-background plugins `deactivate()` could as well be used for this).
+
+The following members are only available for Device plugins:
+
+* `sendLogEntry(logEntry)`: Emulates a log message arriving from the device. Triggers the `client.device.onLogEntry` listener.

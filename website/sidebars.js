@@ -77,11 +77,10 @@ module.exports = {
       'extending/error-handling',
       'extending/testing',
       'extending/debugging',
+      'extending/desktop-plugins',
+      'extending/flipper-plugin',
       ...fbInternalOnly([
         'extending/fb/desktop-plugin-releases',
-        // TODO: Remove once sandy is public T69061061
-        'extending/fb/sandy/sandy-plugins',
-        'extending/fb/sandy/flipper-plugin',
       ]),
     ],
     // end-internal-sidebars-example
