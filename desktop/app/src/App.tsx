@@ -105,17 +105,19 @@ export class App extends React.Component<Props> {
               ) : (
                 <PluginContainer logger={this.props.logger} />
               )}
-              <div
-                id="flipper-out-of-contents-container"
-                style={{
-                  display: 'none',
-                  position: 'absolute',
-                  right: 0,
-                  bottom: 0,
-                  left: 0,
-                  top: 0,
-                }}
-              />
+              <div>
+                <div
+                  id="flipper-out-of-contents-container"
+                  style={{
+                    display: 'none',
+                    position: 'absolute',
+                    right: 0,
+                    bottom: 0,
+                    left: 0,
+                    top: 0,
+                  }}
+                />
+              </div>
             </PluginContent>
           </Layout.Left>
           <StatusBar />
