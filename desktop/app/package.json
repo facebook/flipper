@@ -52,7 +52,7 @@
     "react-element-to-jsx-string": "^14.3.1",
     "react-markdown": "^4.2.2",
     "react-player": "^1.15.2",
-    "react-redux": "^7.1.1",
+    "react-redux": "^7.2.2",
     "react-test-renderer": "^17.0.1",
     "react-transition-group": "^4.4.1",
     "react-virtualized-auto-sizer": "^1.0.2",
