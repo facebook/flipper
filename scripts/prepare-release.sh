@@ -6,58 +6,14 @@
 
 set -e
 
-darwin=false
-facebook=false
-case "$(uname)" in
-  Darwin*) darwin=true ;;
-esac
-case "$(hostname -f)" in
-  *.facebook.com) facebook=true
-esac
-
-nodejs="/usr/bin/env node"
-if [[ $facebook == true ]]; then
-  nodejs="$(hg root)/xplat/third-party/node/bin/node"
-fi
-
-if ! jq --version > /dev/null; then
-  if $darwin; then
-    echo -e "jq is not installed! Should the script install it for you? (y/n) \\c"
-    read -r REPLY
-    if [ "$REPLY" = "y" ]; then
-      brew install jq
-    else
-      exit 1
-    fi
-  else
-    echo >&2 "jq is not installed. Please install it using your platform's package manager (apt-get, yum, pacman, etc.)."
-    exit 1
-  fi
-fi
-
-echo "Checking for any uncommitted changes..."
-CHANGES=$(hg st)
-echo "$CHANGES"
-
-if [ ! -z "$CHANGES" ];
-then
-    echo "There are uncommitted changes, either commit or revert them."
-    exit 1
-fi
-
 echo "✨ Making a new release..."
 
 # When starting this job from SandcastleFlipperAutoReleaseCommand, we pass in the revision to release
 SANDCASTLE_REVISION="$1"
-# Either 'patch', 'minor', or 'major'
-VERSION_PART="${2:-minor}"
+VERSION="$2"
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 SONAR_DIR="$DIR/../"
 DESKTOP_DIR="$SONAR_DIR/desktop"
-FLIPPER_PODSPEC_PATH="$SONAR_DIR/Flipper.podspec"
-FLIPPERKIT_VERSION_TAG='flipperkit_version'
-OLD_VERSION_POD_ARG=$(< "$FLIPPER_PODSPEC_PATH" grep "$FLIPPERKIT_VERSION_TAG =" )
-OLD_VERSION="${OLD_VERSION_POD_ARG##* }"
 
 source "$DIR"/setup-env.sh
 
@@ -66,14 +22,12 @@ if [[ ! -d "$DESKTOP_DIR/node_modules" ]]; then
 fi
 
 # if we got called with a rev argument, we got triggered from our automatic sandcastle job
-if [ "$SANDCASTLE_REVISION" != "" ]; 
+if [ "$SANDCASTLE_REVISION" == "" ];
 then
-  echo "Automatically bumping version to next $VERSION_PART version in package.json"
-  npm -C "$DESKTOP_DIR" version "$VERSION_PART"
-  VERSION=$(jq -r '.version' "$DESKTOP_DIR"/package.json)
-else
+  OLD_VERSION=$(jq -r '.version' "$DESKTOP_DIR"/package.json)
   echo "The currently released version is $OLD_VERSION. What should the version of the next release be?"
   read -r VERSION
+  yarn --cwd "$DESKTOP_DIR" version --new-version "$VERSION"
 fi
 
 echo "Preparing release $VERSION..."
@@ -123,7 +77,7 @@ Reviewers: flipper\n\n\
 Tags: accept2ship"
 )"
 
-if [ "$SANDCASTLE_REVISION" == "" ]; 
+if [ "$SANDCASTLE_REVISION" == "" ];
 then
   # Submit diffs, we only do this when running locally.
   # From SandcastleFlipperAutoReleaseCommand, the diffs are submitted 
