@@ -434,7 +434,7 @@ export function SandyButton({
             <Menu.Item
               onClick={(e) => {
                 // @ts-ignore this event args are bound to electron, remove in the future
-                item.click();
+                item.click(item);
                 if (item.checked !== undefined) {
                   // keep the menu item for check lists
                   e.domEvent.stopPropagation();
