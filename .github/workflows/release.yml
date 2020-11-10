@@ -153,3 +153,16 @@ jobs:
       with:
         created_tag: ${{ needs.release.outputs.tag }}
         args: Flipper-mac.dmg Flipper-linux.zip Flipper-win.zip
+
+  dispatch:
+    needs:
+      - release
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Workflow Dispatch
+      if: ${{ needs.release.outputs.tag != '' }}
+      uses: benc-uk/workflow-dispatch@v1.1
+      with:
+        workflow: Publish Pods
+        token: ${{ secrets.PERSONAL_TOKEN }}
