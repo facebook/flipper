@@ -18,5 +18,6 @@ Pod::Spec.new do |spec|
   spec.source_files = 'double-conversion/*.{h,cc}'
   spec.compiler_flags = '-Wno-unreachable-code'
   spec.platforms = { :ios => "8.0", :tvos => "8.0" }
+  spec.pod_target_xcconfig = { 'ONLY_ACTIVE_ARCH' => 'YES' }
 
 end
