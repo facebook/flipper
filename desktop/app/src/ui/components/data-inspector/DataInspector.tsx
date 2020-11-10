@@ -487,7 +487,8 @@ const DataInspector: React.FC<DataInspectorProps> = memo(
 
       for (const key of keys) {
         const diffMetadataArr = diffMetadataExtractor(value, key, diffValue);
-        for (const metadata of diffMetadataArr) {
+        for (const [index, metadata] of diffMetadataArr.entries()) {
+          const metaKey = key + index;
           const dataInspectorNode = (
             <DataInspector
               parentAncestry={ancestry}
@@ -501,7 +502,7 @@ const DataInspector: React.FC<DataInspectorProps> = memo(
               onRenderDescription={onRenderDescription}
               parentPath={path}
               depth={depth + 1}
-              key={key}
+              key={metaKey}
               name={key}
               data={metadata.data}
               diff={metadata.diff}
@@ -511,11 +512,13 @@ const DataInspector: React.FC<DataInspectorProps> = memo(
 
           switch (metadata.status) {
             case 'added':
-              propertyNodes.push(<Added key={key}>{dataInspectorNode}</Added>);
+              propertyNodes.push(
+                <Added key={metaKey}>{dataInspectorNode}</Added>,
+              );
               break;
             case 'removed':
               propertyNodes.push(
-                <Removed key={key}>{dataInspectorNode}</Removed>,
+                <Removed key={metaKey}>{dataInspectorNode}</Removed>,
               );
               break;
             default:

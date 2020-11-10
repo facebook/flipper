@@ -17,7 +17,7 @@ import {
   RefObject,
 } from 'react';
 import React from 'react';
-import {styled, colors} from 'flipper';
+import {colors, styled} from '../../ui';
 import {useWindowSize} from '../../utils/useWindowSize';
 
 type PopoverManager = {

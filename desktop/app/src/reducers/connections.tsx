@@ -28,6 +28,7 @@ import {deconstructClientId} from '../utils/clientUtils';
 import {PluginDefinition} from '../plugin';
 import {RegisterPluginAction} from './plugins';
 import {ConsoleLogs} from '../chrome/ConsoleLogs';
+import MetroDevice from '../devices/MetroDevice';
 
 export type StaticView =
   | null
@@ -123,7 +124,7 @@ export type Action =
     }
   | {
       type: 'SELECT_CLIENT';
-      payload: string;
+      payload: string | null;
     }
   | RegisterPluginAction
   | {
@@ -133,7 +134,7 @@ export type Action =
     };
 
 const DEFAULT_PLUGIN = 'DeviceLogs';
-const DEFAULT_DEVICE_BLACKLIST = [MacDevice];
+const DEFAULT_DEVICE_BLACKLIST = [MacDevice, MetroDevice];
 const INITAL_STATE: State = {
   devices: [],
   androidEmulators: [],
@@ -268,9 +269,10 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
         selectedPlugin,
         userPreferredPlugin: selectedPlugin || state.userPreferredPlugin,
         selectedDevice: selectedDevice!,
-        userPreferredDevice: selectedDevice
-          ? selectedDevice.title
-          : state.userPreferredDevice,
+        userPreferredDevice:
+          selectedDevice && canBeDefaultDevice(selectedDevice)
+            ? selectedDevice.title
+            : state.userPreferredDevice,
         deepLinkPayload: deepLinkPayload,
       });
     }
@@ -402,7 +404,7 @@ export const starPlugin = (payload: {
   payload,
 });
 
-export const selectClient = (clientId: string): Action => ({
+export const selectClient = (clientId: string | null): Action => ({
   type: 'SELECT_CLIENT',
   payload: clientId,
 });

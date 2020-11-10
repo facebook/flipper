@@ -8,7 +8,7 @@
  */
 
 import React from 'react';
-import {styled, colors} from 'flipper';
+import {styled, colors} from '../ui';
 import FpsGraph from '../chrome/FpsGraph';
 import NetworkGraph from '../chrome/NetworkGraph';
 import isProduction from '../utils/isProduction';

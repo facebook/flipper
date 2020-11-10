@@ -7,7 +7,7 @@
  * @format
  */
 
-import {SearchableProps} from 'flipper';
+import {SearchableProps} from './ui';
 import {Logger} from './fb-interfaces/Logger';
 import {
   Searchable,
@@ -20,7 +20,7 @@ import {
   ContextMenu,
   styled,
   colors,
-} from 'flipper';
+} from './ui';
 import {PluginDefinition, DevicePluginMap, ClientPluginMap} from './plugin';
 import {connect} from 'react-redux';
 import React, {Component, Fragment} from 'react';

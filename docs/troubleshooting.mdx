@@ -141,6 +141,18 @@ That is correct, the dependencies won't be actually included in the release (whe
 
 #### iOS Build errors in React Native
 
+#### `YogaKit.modulemap` not found
+
+1. Make sure you are opening the `.xcodeworkspace` dir when building from XCode, _not_ the project file. Pods based projects should always be opened this way.
+1. Make sure you did run `cd ios && pod install`.
+1. Restarting your machine seems to magically fix the issue for quite some people. This might especially be needed after doing an XCode upgrade.
+1. Make sure that the simulators are spawned by your current Xcode version. Force quite all simulators, run `sudo xcode-select --switch /Applications/Xcode.app` (update path were necessary), and start simulators & Flipper again.
+1. Make sure the iOS build target version aligns with the podfile and target iOS 11. [Example](https://github.com/facebook/react-native/issues/28503#issuecomment-696026013)
+1. [Verify](https://github.com/facebook/react-native/issues/28503#issuecomment-621662670) XCode has enough permissions.
+1. More solutions might be found in this [thread](https://github.com/facebook/react-native/issues/28503).
+
+####  Swift errors
+
 If you experience errors such as `Undefined symbol: associated type descriptor for FloatLiteralType` or `Undefined symbol: __swift_FORCE_LOAD_$_swiftCompatibility50` after going through the [Getting Started](getting-started/index) tutorial you must do as follows:
 
 1. Open your project in Xcode;

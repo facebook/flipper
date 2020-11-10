@@ -8,7 +8,7 @@
  */
 
 import {LauncherMsg} from '../reducers/application';
-import {colors, FlexRow, Glyph, styled} from 'flipper';
+import {colors, FlexRow, Glyph, styled} from '../ui';
 import Tooltip from '../ui/components/Tooltip';
 import isProduction from '../utils/isProduction';
 import {

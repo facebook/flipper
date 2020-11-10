@@ -397,10 +397,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
         const databases = updates.sort((db1, db2) => db1.id - db2.id);
         const selectedDatabase =
           state.selectedDatabase ||
-          (Object.values(databases)[0]
-            ? // $FlowFixMe
-              Object.values(databases)[0].id
-            : 0);
+          (Object.values(databases)[0] ? Object.values(databases)[0].id : 0);
         const selectedTable =
           state.selectedDatabaseTable &&
           databases[selectedDatabase - 1].tables.includes(
@@ -1283,12 +1280,14 @@ export default class DatabasesPlugin extends FlipperPlugin<
                 this.state.databases[this.state.selectedDatabase - 1]?.name
               }
               onChange={this.onDatabaseSelected}
+              style={{maxWidth: 300}}
             />
             <BoldSpan style={{marginLeft: 16, marginRight: 16}}>Table</BoldSpan>
             <Select
               options={tableOptions}
               selected={this.state.selectedDatabaseTable}
               onChange={this.onDatabaseTableSelected}
+              style={{maxWidth: 300}}
             />
             <div />
             <Button onClick={this.onRefreshClicked}>Refresh</Button>

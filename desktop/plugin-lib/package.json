@@ -1,6 +1,6 @@
 {
   "name": "flipper-plugin-lib",
-  "version": "0.62.0",
+  "version": "0.64.0",
   "description": "Library containing common Flipper plugin installation utilities",
   "repository": "facebook/flipper",
   "main": "lib/index.js",
@@ -27,8 +27,8 @@
   "devDependencies": {
     "@types/fs-extra": "^9.0.1",
     "@types/jest": "^26",
-    "@types/node": "^14.11.5",
-    "flipper-test-utils": "0.62.0",
+    "@types/node": "^14.14.6",
+    "flipper-test-utils": "0.64.0",
     "globby": "^11",
     "jest": "^26",
     "mock-fs": "^4.12.0",

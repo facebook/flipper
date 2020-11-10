@@ -87,6 +87,7 @@ export function getEnabledOrExportPersistedStatePlugins(
   const enabledPlugins = starredPlugin[appName]
     ? starredPlugin[appName]
         .map((pluginName) => pluginsMap.get(pluginName)!)
+        .filter(Boolean)
         .filter((plugin) => {
           return !plugin.exportPersistedState;
         })
@@ -105,7 +106,8 @@ export function getEnabledOrExportPersistedStatePlugins(
         id: plugin,
         label: getPluginTitle(plugins.devicePlugins.get(plugin)!),
       };
-    });
+    })
+    .filter(Boolean);
   // Plugins which have defined exportPersistedState.
   const exportPersistedStatePlugins = client.plugins
     .filter((name) => {
@@ -211,7 +213,10 @@ export function getPersistentPlugins(plugins: PluginsState): Array<string> {
   });
 }
 
-export function getPluginTitle(pluginClass: PluginDefinition) {
+export function getPluginTitle(pluginClass: {
+  title?: string | null;
+  id: string;
+}) {
   return pluginClass.title || pluginClass.id;
 }
 

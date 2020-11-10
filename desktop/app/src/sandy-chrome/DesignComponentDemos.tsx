@@ -9,8 +9,8 @@
 
 import React from 'react';
 import {Typography, Card, Table, Collapse, Button, Tabs} from 'antd';
-import {Layout} from '../ui';
-import {theme} from './theme';
+import {Layout, Link} from '../ui';
+import {NUX, theme} from 'flipper-plugin';
 import reactElementToJSXString from 'react-element-to-jsx-string';
 import {CodeOutlined} from '@ant-design/icons';
 
@@ -29,8 +29,8 @@ const demoStyle: Record<string, React.CSSProperties> = {
 
 type PreviewProps = {
   title: string;
-  description?: string;
-  props: [string, string, string][];
+  description?: React.ReactNode;
+  props: [string, React.ReactNode, React.ReactNode][];
   demos: Record<string, React.ReactNode>;
 };
 
@@ -67,8 +67,7 @@ const someText = <Text>Some text</Text>;
 const demos: PreviewProps[] = [
   {
     title: 'Layout.Container',
-    description:
-      'Layout.Container can be used to organize the UI in regions. It takes care of paddings and borders. To arrange multiple children use one of the other Layout components. If you need a margin on this component, try to wrap it in other Layout component instead.',
+    description: `Layout.Container can be used to organize the UI in regions. It takes care of paddings and borders. Children will be arranged vertically. Use Layout.Horizontal instead for arranging children horizontally. If you need a margin on this component, try to wrap it in other Layout component instead.`,
     props: [
       ['rounded', 'boolean (false)', 'Make the corners rounded'],
       [
@@ -91,6 +90,16 @@ const demos: PreviewProps[] = [
         'boolean (false)',
         'Use a standard padding on the top side',
       ],
+      [
+        'gap',
+        'true / number (0)',
+        'Set the spacing between children. If just set, theme.space.small will be used.',
+      ],
+      [
+        'center',
+        'boolean (false)',
+        'If set, all children will use their own naturally width, and they will be centered horizontally in the Container. If not set, all children will be stretched to the width of the Container.',
+      ],
     ],
     demos: {
       'Basic container with fixed dimensions': (
@@ -103,27 +112,30 @@ const demos: PreviewProps[] = [
             background: theme.successColor,
           }}></Layout.Container>
       ),
-      'bordered padded rounded': (
+      'bordered pad rounded': (
         <Layout.Container
           bordered
-          padded
+          pad
           rounded
           style={{background: theme.backgroundDefault, width: 200}}>
           <div style={demoStyle.square}>child</div>
         </Layout.Container>
       ),
-    },
-  },
-  {
-    title: 'Layout.ScrollContainer',
-    description:
-      'Use this component to create an area that can be scrolled. The scrollable area will automatically consume all available space. ScrollContainer accepts all properties that Container accepts as well. Padding will be applied to the child rather than the parent.',
-    props: [],
-    demos: {
-      'Basic usage': (
-        <Layout.ScrollContainer style={{height: 100}}>
-          {largeChild}
-        </Layout.ScrollContainer>
+      'Multiple children, gap={24}': (
+        <Layout.Container gap={24}>
+          {aButton}
+          {someText}
+          {aBox}
+          {aDynamicBox}
+        </Layout.Container>
+      ),
+      'Multiple children icmw. pad center gap': (
+        <Layout.Container pad center gap>
+          {aButton}
+          {someText}
+          {aBox}
+          {aDynamicBox}
+        </Layout.Container>
       ),
     },
   },
@@ -132,11 +144,6 @@ const demos: PreviewProps[] = [
     description:
       'Use this component to arrange multiple items horizontally. All vanilla Container props can be used as well.',
     props: [
-      [
-        'gap',
-        Object.keys(theme.space).join(' | ') + ' | number | true',
-        'Set the spacing between children. For `true` theme.space.small should be used. Defaults to 0.',
-      ],
       [
         'center',
         'boolean (false)',
@@ -152,8 +159,8 @@ const demos: PreviewProps[] = [
           {aDynamicBox}
         </Layout.Horizontal>
       ),
-      'Using flags: padded center gap={8} (great for toolbars and such)': (
-        <Layout.Horizontal padded center gap={8}>
+      'Using flags: pad center gap={8} (great for toolbars and such)': (
+        <Layout.Horizontal pad center gap={8}>
           {aButton}
           {someText}
           {aBox}
@@ -163,37 +170,43 @@ const demos: PreviewProps[] = [
     },
   },
   {
-    title: 'Layout.Vertical',
+    title: 'Layout.ScrollContainer',
     description:
-      'Use this component to arrange multiple items vertically. All vanilla Container props can be used as well.',
+      'Use this component to create an area that can be scrolled. The scrollable area will automatically consume all available space. ScrollContainer accepts all properties that Container accepts as well. Padding will be applied to the child rather than the parent.',
     props: [
       [
-        'gap',
-        'number (0)',
-        'Set the spacing between children. Typically theme.space.small should be used.',
+        'horizontal / vertical',
+        'boolean',
+        'specifies in which directions the container should scroll. If none is specified the container will scroll in both directions',
       ],
       [
-        'center',
-        'boolean (false)',
-        'If set, all children will use their own height, and they will be centered vertically in the layout. If not set, all children will be stretched to the height of the layout.',
+        'padv / padh / pad',
+        'see Container',
+        'Padding will be applied to the child',
       ],
     ],
     demos: {
-      'Basic usage, gap={24}': (
-        <Layout.Vertical gap={24}>
-          {aButton}
-          {someText}
-          {aBox}
-          {aDynamicBox}
-        </Layout.Vertical>
+      'Basic usage': (
+        <Layout.ScrollContainer style={{height: 100}}>
+          {largeChild}
+        </Layout.ScrollContainer>
       ),
-      'Using flags: padded center gap={8} (great for toolbars and such)': (
-        <Layout.Vertical padded center gap={8}>
-          {aButton}
-          {someText}
-          {aBox}
-          {aDynamicBox}
-        </Layout.Vertical>
+      'ScrollContainer + Vertical for vertical scroll only': (
+        <Layout.ScrollContainer
+          vertical
+          style={{
+            height: 100,
+            width: 100,
+            border: `2px solid ${theme.primaryColor}`,
+          }}>
+          <Layout.Container>
+            <Text ellipsis>
+              This text is truncated because it is too long and scroll is
+              vertical only...
+            </Text>
+            {largeChild}
+          </Layout.Container>
+        </Layout.ScrollContainer>
       ),
     },
   },
@@ -206,6 +219,11 @@ const demos: PreviewProps[] = [
         'scrollable',
         'boolean (false)',
         'If set, the area of the second child will automatically be made scrollable.',
+      ],
+      [
+        'center',
+        'boolean (false)',
+        'If set, all children will use their own height, and they will be centered vertically in the layout. If not set, all children will be stretched to the height of the layout.',
       ],
     ],
     demos: {
@@ -233,37 +251,62 @@ const demos: PreviewProps[] = [
           {aFixedHeightBox}
         </Layout.Bottom>
       ),
-      'Layout.Top + scrollable': (
+      'Layout.Top + Layout.ScrollContainer': (
         <Layout.Container style={{height: 150}}>
-          <Layout.Top scrollable>
+          <Layout.Top>
             {aFixedHeightBox}
-            {largeChild}
+            <Layout.ScrollContainer>{largeChild}</Layout.ScrollContainer>
           </Layout.Top>
         </Layout.Container>
       ),
-      'Layout.Left + scrollable': (
+      'Layout.Left + Layout.ScrollContainer': (
         <Layout.Container style={{height: 150}}>
-          <Layout.Left scrollable>
+          <Layout.Left>
             {aFixedWidthBox}
-            {largeChild}
+            <Layout.ScrollContainer>{largeChild}</Layout.ScrollContainer>
           </Layout.Left>
         </Layout.Container>
       ),
-      'Layout.Right + scrollable': (
+      'Layout.Right + Layout.ScrollContainer': (
         <Layout.Container style={{height: 150}}>
-          <Layout.Right scrollable>
-            {largeChild}
+          <Layout.Right>
+            <Layout.ScrollContainer>{largeChild}</Layout.ScrollContainer>
             {aFixedWidthBox}
           </Layout.Right>
         </Layout.Container>
       ),
-      'Layout.Bottom + scrollable': (
+      'Layout.Bottom + Layout.ScrollContainer': (
         <Layout.Container style={{height: 150}}>
-          <Layout.Bottom scrollable>
-            {largeChild}
+          <Layout.Bottom>
+            <Layout.ScrollContainer>{largeChild}</Layout.ScrollContainer>
             {aFixedHeightBox}
           </Layout.Bottom>
         </Layout.Container>
+      ),
+    },
+  },
+  {
+    title: 'NUX',
+    description:
+      'A component to provide a New-User-eXperience: Highlight new features to first time users. For tooltips that should stay available, use ToolTip from ANT design',
+    props: [
+      ['title', 'string / React element', 'The tooltip contents'],
+      [
+        'placement',
+        <>
+          See{' '}
+          <Link href="https://ant.design/components/tooltip/#components-tooltip-demo-placement">
+            docs
+          </Link>
+        </>,
+        '(optional) on which side to place the tooltip',
+      ],
+    ],
+    demos: {
+      'NUX example': (
+        <NUX title="This button does something cool" placement="right">
+          <Button>Hello world</Button>
+        </NUX>
       ),
     },
   },
@@ -272,11 +315,11 @@ const demos: PreviewProps[] = [
 function ComponentPreview({title, demos, description, props}: PreviewProps) {
   return (
     <Card title={title} size="small" type="inner">
-      <Layout.Vertical gap="small">
+      <Layout.Container gap="small">
         <Text type="secondary">{description}</Text>
         <Collapse ghost>
           <Collapse.Panel header="Examples" key="demos">
-            <Layout.Vertical gap="large">
+            <Layout.Container gap="large">
               {Object.entries(demos).map(([name, children]) => (
                 <div key={name}>
                   <Tabs type="line">
@@ -302,7 +345,7 @@ function ComponentPreview({title, demos, description, props}: PreviewProps) {
                   </Tabs>
                 </div>
               ))}
-            </Layout.Vertical>
+            </Layout.Container>
           </Collapse.Panel>
           <Collapse.Panel header="Props" key="props">
             <Table
@@ -330,15 +373,15 @@ function ComponentPreview({title, demos, description, props}: PreviewProps) {
             />
           </Collapse.Panel>
         </Collapse>
-      </Layout.Vertical>
+      </Layout.Container>
     </Card>
   );
 }
 
 export const DesignComponentDemos = () => (
-  <Layout.Vertical gap={theme.space.large}>
+  <Layout.Container gap={theme.space.large}>
     {demos.map((demo) => (
       <ComponentPreview key={demo.title} {...demo} />
     ))}
-  </Layout.Vertical>
+  </Layout.Container>
 );

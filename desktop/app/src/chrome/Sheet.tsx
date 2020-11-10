@@ -12,7 +12,7 @@ import {Transition} from 'react-transition-group';
 import {TransitionStatus} from 'react-transition-group/Transition';
 import {setActiveSheet} from '../reducers/application';
 import {connect} from 'react-redux';
-import {styled} from 'flipper';
+import {styled} from '../ui';
 import {PLUGIN_SHEET_ELEMENT_ID} from '../ui/components/Sheet';
 import {ACTIVE_SHEET_PLUGIN_SHEET} from '../reducers/application';
 import {State as Store} from '../reducers';
@@ -76,6 +76,8 @@ class Sheet extends Component<Props, State> {
   }
 
   componentWillUnmount() {
+    // When switching to Sandy, we need to short-circuit this as this component itself will be thrown away
+    this.props.onHideSheet();
     document.removeEventListener('keydown', this.onKeyDown);
   }
 

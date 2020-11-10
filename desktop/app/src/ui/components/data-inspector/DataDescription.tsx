@@ -19,6 +19,7 @@ import React, {KeyboardEvent} from 'react';
 import Glyph from '../Glyph';
 import {HighlightContext} from '../Highlight';
 import Select from '../Select';
+import TimelineDataDescription from './TimelineDataDescription';
 
 const NullValue = styled.span({
   color: 'rgb(128, 128, 128)',
@@ -78,6 +79,11 @@ const ColorPickerDescription = styled.div({
   position: 'relative',
 });
 ColorPickerDescription.displayName = 'DataDescription:ColorPickerDescription';
+
+const EmptyObjectValue = styled.span({
+  fontStyle: 'italic',
+});
+EmptyObjectValue.displayName = 'DataDescription:EmptyObjectValue';
 
 type DataDescriptionProps = {
   path?: Array<string>;
@@ -567,6 +573,25 @@ class DataDescriptionContainer extends PureComponent<{
     const highlighter = this.context;
 
     switch (type) {
+      case 'timeline': {
+        return (
+          <>
+            <TimelineDataDescription
+              canSetCurrent={editable}
+              timeline={JSON.parse(val)}
+              onClick={(id) => {
+                this.props.commit({
+                  value: id,
+                  keep: true,
+                  clear: false,
+                  set: true,
+                });
+              }}
+            />
+          </>
+        );
+      }
+
       case 'number':
         return <NumberValue>{+val}</NumberValue>;
 
@@ -621,6 +646,7 @@ class DataDescriptionContainer extends PureComponent<{
         }, {});
         return (
           <Select
+            disabled={!this.props.editable}
             options={options}
             selected={picker.selected}
             onChangeWithKey={(value: string) =>
@@ -687,11 +713,14 @@ class DataDescriptionContainer extends PureComponent<{
       case 'null':
         return <NullValue>null</NullValue>;
 
+      // no description necessary as we'll typically wrap it in [] or {} which
+      // already denotes the type
       case 'array':
+        return val.length <= 0 ? <EmptyObjectValue>[]</EmptyObjectValue> : null;
       case 'object':
-        // no description necessary as we'll typically wrap it in [] or {} which already denotes the
-        // type
-        return null;
+        return Object.keys(val ?? {}).length <= 0 ? (
+          <EmptyObjectValue>{'{}'}</EmptyObjectValue>
+        ) : null;
 
       case 'function':
         return (

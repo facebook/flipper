@@ -8,7 +8,6 @@
  */
 
 import React, {cloneElement, useState, useCallback, useMemo} from 'react';
-import {styled, Layout} from 'flipper';
 import {Button, Divider, Badge, Tooltip, Avatar, Popover} from 'antd';
 import {
   MobileFilled,
@@ -20,11 +19,17 @@ import {
   SettingOutlined,
   QuestionCircleOutlined,
   MedicineBoxOutlined,
+  RocketOutlined,
 } from '@ant-design/icons';
 import {SidebarLeft, SidebarRight} from './SandyIcons';
 import {useDispatch, useStore} from '../utils/useStore';
-import {toggleLeftSidebarVisible} from '../reducers/application';
-import {theme} from './theme';
+import {
+  ACTIVE_SHEET_PLUGINS,
+  setActiveSheet,
+  toggleLeftSidebarVisible,
+  toggleRightSidebarVisible,
+} from '../reducers/application';
+import {theme, Layout} from 'flipper-plugin';
 import SetupDoctorScreen, {checkHasNewProblem} from './SetupDoctorScreen';
 import SettingsSheet from '../chrome/SettingsSheet';
 import WelcomeScreen from './WelcomeScreen';
@@ -34,6 +39,13 @@ import {ToplevelProps} from './SandyApp';
 import {useValue} from 'flipper-plugin';
 import {logout} from '../reducers/user';
 import config from '../fb-stubs/config';
+import styled from '@emotion/styled';
+import {showEmulatorLauncher} from './appinspect/LaunchEmulator';
+import {useStore as useReduxStore} from 'react-redux';
+import SupportRequestFormV2 from '../fb-stubs/SupportRequestFormV2';
+import {setStaticView} from '../reducers/connections';
+import {getInstance} from '../fb-stubs/Logger';
+import {isStaticViewActive} from '../chrome/mainsidebar/sidebarUtils';
 
 const LeftRailButtonElem = styled(Button)<{kind?: 'small'}>(({kind}) => ({
   width: kind === 'small' ? 32 : 36,
@@ -52,11 +64,13 @@ function LeftRailButton({
   count,
   title,
   onClick,
+  disabled,
 }: {
   icon?: React.ReactElement;
   small?: boolean;
   toggled?: boolean;
-  selected?: boolean; // TODO: make sure only one element can be selected
+  selected?: boolean;
+  disabled?: boolean;
   count?: number | true;
   title: string;
   onClick?: React.MouseEventHandler<HTMLElement>;
@@ -78,6 +92,7 @@ function LeftRailButton({
         type={selected ? 'primary' : 'ghost'}
         icon={iconElement}
         onClick={onClick}
+        disabled={disabled}
         style={{
           color: toggled ? theme.primaryColor : undefined,
           background: toggled ? theme.backgroundWash : undefined,
@@ -98,10 +113,11 @@ export function LeftRail({
   toplevelSelection,
   setToplevelSelection,
 }: ToplevelProps) {
+  const dispatch = useDispatch();
   return (
-    <Layout.Container borderRight padv={12} padh={6} width={48}>
+    <Layout.Container borderRight padv={12} width={48}>
       <Layout.Bottom>
-        <Layout.Vertical center gap={10}>
+        <Layout.Container center gap={10} padh={6}>
           <LeftRailButton
             icon={<MobileFilled />}
             title="App Inspect"
@@ -110,42 +126,43 @@ export function LeftRail({
               setToplevelSelection('appinspect');
             }}
           />
-          <LeftRailButton icon={<AppstoreOutlined />} title="Plugin Manager" />
-          <LeftRailButton icon={<BellOutlined />} title="Notifications" />
+          <LeftRailButton
+            icon={<AppstoreOutlined />}
+            title="Plugin Manager"
+            onClick={() => {
+              dispatch(setActiveSheet(ACTIVE_SHEET_PLUGINS));
+            }}
+          />
+          <NotificationButton
+            toplevelSelection={toplevelSelection}
+            setToplevelSelection={setToplevelSelection}
+          />
           <LeftRailDivider />
           <DebugLogsButton
             toplevelSelection={toplevelSelection}
             setToplevelSelection={setToplevelSelection}
           />
-        </Layout.Vertical>
-        <Layout.Vertical center gap={10}>
+        </Layout.Container>
+        <Layout.Container center gap={10} padh={6}>
+          <LaunchEmulatorButton />
           <SetupDoctorButton />
           <WelcomeScreenButton />
           <ShowSettingsButton />
-          <LeftRailButton
-            icon={<BugOutlined />}
-            small
-            title="Feedback / Bug Reporter"
-          />
-          <LeftRailButton
-            icon={<SidebarRight />}
-            small
-            title="Right Sidebar Toggle"
-          />
+          <SupportFormButton />
+          <RightSidebarToggleButton />
           <LeftSidebarToggleButton />
           {config.showLogin && <LoginButton />}
-        </Layout.Vertical>
+        </Layout.Container>
       </Layout.Bottom>
     </Layout.Container>
   );
 }
 
 function LeftSidebarToggleButton() {
+  const dispatch = useDispatch();
   const mainMenuVisible = useStore(
     (state) => state.application.leftSidebarVisible,
   );
-
-  const dispatch = useDispatch();
 
   return (
     <LeftRailButton
@@ -156,6 +173,47 @@ function LeftSidebarToggleButton() {
       onClick={() => {
         dispatch(toggleLeftSidebarVisible());
       }}
+    />
+  );
+}
+
+function RightSidebarToggleButton() {
+  const dispatch = useDispatch();
+  const rightSidebarAvailable = useStore(
+    (state) => state.application.rightSidebarAvailable,
+  );
+  const rightSidebarVisible = useStore(
+    (state) => state.application.rightSidebarVisible,
+  );
+
+  return (
+    <LeftRailButton
+      icon={<SidebarRight />}
+      small
+      title="Right Sidebar Toggle"
+      toggled={rightSidebarVisible}
+      disabled={!rightSidebarAvailable}
+      onClick={() => {
+        dispatch(toggleRightSidebarVisible());
+      }}
+    />
+  );
+}
+
+function NotificationButton({
+  toplevelSelection,
+  setToplevelSelection,
+}: ToplevelProps) {
+  const notificationCount = useStore(
+    (state) => state.notifications.activeNotifications.length,
+  );
+  return (
+    <LeftRailButton
+      icon={<BellOutlined />}
+      title="Notifications"
+      selected={toplevelSelection === 'notification'}
+      count={notificationCount}
+      onClick={() => setToplevelSelection('notification')}
     />
   );
 }
@@ -174,6 +232,21 @@ function DebugLogsButton({
       onClick={() => {
         setToplevelSelection('flipperlogs');
       }}
+    />
+  );
+}
+
+function LaunchEmulatorButton() {
+  const store = useReduxStore();
+
+  return (
+    <LeftRailButton
+      icon={<RocketOutlined />}
+      title="Start Emulator / Simulator"
+      onClick={() => {
+        showEmulatorLauncher(store);
+      }}
+      small
     />
   );
 }
@@ -215,6 +288,27 @@ function ShowSettingsButton() {
         <SettingsSheet platform={process.platform} onHide={onClose} useSandy />
       )}
     </>
+  );
+}
+
+function SupportFormButton() {
+  const dispatch = useDispatch();
+  const staticView = useStore((state) => state.connections.staticView);
+  // const isVisible =
+  return (
+    <LeftRailButton
+      icon={<BugOutlined />}
+      small
+      title="Feedback / Bug Reporter"
+      selected={isStaticViewActive(staticView, SupportRequestFormV2)}
+      onClick={() => {
+        getInstance().track('usage', 'support-form-source', {
+          source: 'sidebar',
+          group: undefined,
+        });
+        dispatch(setStaticView(SupportRequestFormV2));
+      }}
+    />
   );
 }
 

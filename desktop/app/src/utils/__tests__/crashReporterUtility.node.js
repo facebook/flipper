@@ -8,7 +8,7 @@
  */
 
 import {shouldParseAndroidLog} from '../crashReporterUtility.tsx';
-import type {DeviceLogEntry, LogLevel} from 'flipper';
+import type {DeviceLogEntry, LogLevel} from '../../';
 
 function getAndroidLog(
   date: Date,

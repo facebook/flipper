@@ -8,7 +8,7 @@
  */
 
 import React, {cloneElement} from 'react';
-import {styled, FlexRow, FlexColumn} from 'flipper';
+import {styled, FlexRow, FlexColumn} from '../ui';
 import {Modal, Button, Image, Checkbox, Space, Typography} from 'antd';
 import {
   RocketOutlined,
@@ -16,7 +16,7 @@ import {
   CodeOutlined,
   BugOutlined,
 } from '@ant-design/icons';
-import {theme} from './theme';
+import {theme} from 'flipper-plugin';
 
 const {Text, Title} = Typography;
 

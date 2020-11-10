@@ -12,7 +12,7 @@ import {
   shallowEqual,
   useDispatch as useDispatchBase,
 } from 'react-redux';
-import {Dispatch} from 'redux';
+import {Dispatch as ReduxDispatch} from 'redux';
 import {State, Actions} from '../reducers/index';
 
 /**
@@ -27,9 +27,11 @@ export function useStore<Selected>(
   return useSelector(selector, equalityFn);
 }
 
+export type Dispatch = ReduxDispatch<Actions>;
+
 /**
  * Strongly typed useDispatch wrapper for the Flipper redux store.
  */
-export function useDispatch(): Dispatch<Actions> {
-  return useDispatchBase();
+export function useDispatch(): Dispatch {
+  return useDispatchBase() as any;
 }

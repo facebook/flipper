@@ -7,7 +7,7 @@
  * @format
  */
 
-import {styled, FlexColumn, Text, Button, colors} from 'flipper';
+import {styled, FlexColumn, Text, Button, colors} from '../ui';
 
 import React from 'react';
 

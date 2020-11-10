@@ -7,7 +7,7 @@
  * @format
  */
 
-import {FlipperPlugin} from 'flipper';
+import {FlipperPlugin} from '../../plugin';
 
 export default class extends FlipperPlugin<any, any, any> {
   static id = 'Static ID';

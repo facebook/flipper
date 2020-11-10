@@ -7,7 +7,7 @@
  * @format
  */
 
-import {styled, colors} from 'flipper';
+import {styled, colors} from '../ui';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {
@@ -17,8 +17,8 @@ import {
   ACTIVE_SHEET_SETTINGS,
 } from '../reducers/application';
 import {State as Store} from '../reducers/index';
-import {ButtonGroup, Button} from 'flipper';
-import {FlexColumn, FlexRow} from 'flipper';
+import {ButtonGroup, Button} from '../ui';
+import {FlexColumn, FlexRow} from '../ui';
 import runHealthchecks, {
   HealthcheckSettings,
   HealthcheckEventsHandler,

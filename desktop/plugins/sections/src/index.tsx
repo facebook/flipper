@@ -256,7 +256,7 @@ export function Component() {
             </Button>
           )}
         </Toolbar>
-        <Layout.Top scrollable={false}>
+        <Layout.Top>
           <Sidebar position="top" minHeight={80} height={80}>
             <EventTable
               generations={filteredGenerations}
@@ -270,7 +270,7 @@ export function Component() {
               }}
             />
           </Sidebar>
-          <Layout.Top scrollable={true}>
+          <Layout.Top>
             <Sidebar position="top" minHeight={400} height={400}>
               <TreeContainer>
                 <TreeHierarchy
@@ -282,12 +282,14 @@ export function Component() {
               </TreeContainer>
             </Sidebar>
             {focusedTreeGeneration && (
-              <StackTrace
-                data={focusedTreeGeneration.stack_trace}
-                skipStackTraceFormat={
-                  focusedTreeGeneration.skip_stack_trace_format
-                }
-              />
+              <Layout.ScrollContainer>
+                <StackTrace
+                  data={focusedTreeGeneration.stack_trace}
+                  skipStackTraceFormat={
+                    focusedTreeGeneration.skip_stack_trace_format
+                  }
+                />
+              </Layout.ScrollContainer>
             )}
           </Layout.Top>
         </Layout.Top>

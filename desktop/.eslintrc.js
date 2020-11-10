@@ -43,6 +43,8 @@ module.exports = {
   ],
   rules: {
     // disable rules from eslint-config-fbjs
+    'flowtype/define-flow-type': 0,
+    'flowtype/use-flow-type': 0,
     'react/react-in-jsx-scope': 0, // not needed with our metro implementation
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'warn',
@@ -67,7 +69,6 @@ module.exports = {
     // additional rules for this project
     'header/header': [2, 'block', {pattern}],
     'prettier/prettier': [2, prettierConfig],
-    'flowtype/object-type-delimiter': [0],
     'import/no-unresolved': [2, {commonjs: true, amd: true}],
     'node/no-extraneous-import': [2, {allowModules: builtInModules}],
     'node/no-extraneous-require': [2, {allowModules: builtInModules}],

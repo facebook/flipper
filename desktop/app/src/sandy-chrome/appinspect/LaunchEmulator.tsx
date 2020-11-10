@@ -14,7 +14,7 @@ import {renderReactRoot} from '../../utils/renderReactRoot';
 import {Store} from '../../reducers';
 import {useStore} from '../../utils/useStore';
 import {launchEmulator} from '../../devices/AndroidDevice';
-import Layout from '../../ui/components/Layout';
+import {Layout} from 'flipper-plugin';
 import {
   launchSimulator,
   getSimulators,
@@ -69,7 +69,7 @@ export function LaunchEmulatorDialog({
           launchEmulator(name)
             .catch((e) => {
               console.error(e);
-              message.error('Failed to start emulator:' + e);
+              message.error('Failed to start emulator: ' + e);
             })
             .finally(onClose);
         }}>
@@ -84,7 +84,7 @@ export function LaunchEmulatorDialog({
           launchSimulator(device.udid)
             .catch((e) => {
               console.error(e);
-              message.error('Failed to start simulator:' + e);
+              message.error('Failed to start simulator: ' + e);
             })
             .finally(onClose);
         }}>
@@ -100,9 +100,9 @@ export function LaunchEmulatorDialog({
       title="Launch Emulator"
       footer={null}
       bodyStyle={{maxHeight: 400, overflow: 'auto'}}>
-      <Layout.Vertical gap>
+      <Layout.Container gap>
         {items.length ? items : <Alert message="No emulators available" />}
-      </Layout.Vertical>
+      </Layout.Container>
     </Modal>
   );
 }

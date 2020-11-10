@@ -19,13 +19,13 @@ import {
   brandColors,
   Spacer,
   Heading,
-  Client,
-  BaseDevice,
-  StaticView,
-} from 'flipper';
+} from '../../ui';
 import {BackgroundColorProperty} from 'csstype';
 import {getPluginTitle} from '../../utils/pluginUtils';
 import {PluginDefinition} from '../../plugin';
+import {StaticView} from '../../reducers/connections';
+import BaseDevice from '../../devices/BaseDevice';
+import Client from '../../Client';
 
 export type FlipperPlugins = PluginDefinition[];
 export type PluginsByCategory = [string, FlipperPlugins][];

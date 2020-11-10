@@ -8,12 +8,12 @@
  */
 
 import stream from 'stream';
-import type {DeviceLogListener} from 'flipper';
 import {
   DeviceLogEntry,
   SandyDevicePluginInstance,
   SandyPluginDefinition,
   DeviceType,
+  DeviceLogListener,
 } from 'flipper-plugin';
 import type {DevicePluginDefinition, DevicePluginMap} from '../plugin';
 import {getFlipperLibImplementation} from '../utils/flipperLibImplementation';

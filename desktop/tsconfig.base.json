@@ -22,6 +22,7 @@
       "flipper-plugin": ["./flipper-plugin/src"],
       "eslint-plugin-flipper": ["./eslint-plugin-flipper/src"],
       "flipper-*": ["./*/src"],
+      "@js-shared/*": ["../../js-shared/*"],
       "*": ["./*", "./types/*"]
     }
   }

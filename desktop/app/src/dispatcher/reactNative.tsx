@@ -8,8 +8,8 @@
  */
 
 import {remote} from 'electron';
-import {MetroDevice} from 'flipper';
-import {Store} from 'app/src/reducers';
+import MetroDevice from '../devices/MetroDevice';
+import {Store} from '../reducers';
 
 type ShortcutEventCommand =
   | {

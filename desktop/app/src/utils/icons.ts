@@ -51,7 +51,6 @@ function getIconFileName(
   return `${icon.trimmedName}-${icon.variant}-${size}@${density}x.png`;
 }
 
-// $FlowFixMe not using flow in this file
 export function buildLocalIconPath(
   name: string,
   size: number,
@@ -66,7 +65,6 @@ export function buildLocalIconURL(name: string, size: number, density: number) {
   return `icons/${getIconFileName(icon, size, density)}`;
 }
 
-// $FlowFixMe not using flow in this file
 export function buildIconURL(name: string, size: number, density: number) {
   const icon = getIconPartsFromName(name);
   // eslint-disable-next-line prettier/prettier
@@ -81,7 +79,6 @@ export function buildIconURL(name: string, size: number, density: number) {
   ) {
     // From utils/isProduction
     const isProduction = !/node_modules[\\/]electron[\\/]/.test(
-      // $FlowFixMe
       process.execPath || remote.process.execPath,
     );
 
@@ -123,7 +120,6 @@ export function buildIconURL(name: string, size: number, density: number) {
   return url;
 }
 
-// $FlowFixMe: not using flow in this file
 export function getIconURL(name: string, size: number, density: number) {
   if (name.indexOf('/') > -1) {
     return name;

@@ -255,7 +255,6 @@ test('test getNewPersistedStateFromCrashLog for non-empty defaultPersistedState 
     null,
   );
   expect(newPersistedState).toBeDefined();
-  // $FlowFixMe: Checked if perisistedState is defined or not
   const {crashes} = newPersistedState as PersistedState;
   expect(crashes).toBeDefined();
   expect(crashes.length).toEqual(2);
@@ -284,7 +283,6 @@ test('test getNewPersistedStateFromCrashLog for non-empty defaultPersistedState 
     null,
   );
   expect(newPersistedState).toBeDefined();
-  // $FlowFixMe: Checked if perisistedState is defined or not
   const {crashes} = newPersistedState as PersistedState;
   expect(crashes).toBeDefined();
   expect(crashes.length).toEqual(2);

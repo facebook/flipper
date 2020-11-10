@@ -2,7 +2,7 @@
   "$schema": "https://fbflipper.com/schemas/plugin-package/v2.json",
   "name": "flipper-plugin-databases",
   "id": "Databases",
-  "version": "0.62.0",
+  "version": "0.64.0",
   "title": "Databases",
   "icon": "internet",
   "main": "dist/bundle.js",
@@ -16,7 +16,7 @@
     "sql-formatter": "^2.3.3"
   },
   "devDependencies": {
-    "@testing-library/react": "^10.4.3",
+    "@testing-library/react": "^11.1.0",
     "@types/dateformat": "^3.0.1",
     "@types/sql-formatter": "^2.3.0",
     "react-redux": "^7.1.1",

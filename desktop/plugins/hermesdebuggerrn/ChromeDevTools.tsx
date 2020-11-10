@@ -60,10 +60,14 @@ function findDevToolsNode(url: string): HTMLElement | null {
 function attachDevTools(devToolsNode: HTMLElement) {
   devToolsNode.style.display = 'block';
   document.getElementById(TARGET_CONTAINER_ID)!.style.display = 'block';
+  document.getElementById(TARGET_CONTAINER_ID)!.parentElement!.style.display =
+    'block';
 }
 
 function detachDevTools(devToolsNode: HTMLElement | null) {
   document.getElementById(TARGET_CONTAINER_ID)!.style.display = 'none';
+  document.getElementById(TARGET_CONTAINER_ID)!.parentElement!.style.display =
+    'none';
 
   if (devToolsNode) {
     devToolsNode.style.display = 'none';

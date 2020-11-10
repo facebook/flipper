@@ -2,19 +2,17 @@
 
 ## Desktop app and Flipper Plugins (Javascript)
 
-The flipper desktop source uses Flow, TypeScript, and ESLint. Feel free to use your preferred setup, but this is our recommended approach:
+The flipper desktop source uses TypeScript and ESLint. Feel free to use your preferred setup, but this is our recommended approach:
 
 **Editor**: Visual Studio Code
 
 **Installed Extensions**:
  * ESLint
- * Flow Language Support
  * TypeScript and JavaScript Language Features (enabled by default)
 
 **Settings**:
 ```json
 {
-    "flow.useNPMPackagedFlow": true,
     "javascript.validate.enable": false,
     "eslint.autoFixOnSave": true,
     "eslint.validate": [

@@ -142,7 +142,10 @@ export {
   SearchIcon,
   default as Searchable,
 } from './components/searchable/Searchable';
-export {default as SearchableTable} from './components/searchable/SearchableTable';
+export {
+  default as SearchableTable,
+  filterRowsFactory,
+} from './components/searchable/SearchableTable';
 export {default as SearchableTable_immutable} from './components/searchable/SearchableTable_immutable';
 export {SearchableProps} from './components/searchable/Searchable';
 
@@ -175,7 +178,7 @@ export {default as CenteredView} from './components/CenteredView';
 export {default as Info} from './components/Info';
 export {default as Bordered} from './components/Bordered';
 export {default as AlternatingRows} from './components/AlternatingRows';
-export {default as Layout} from './components/Layout';
+export {Layout} from 'flipper-plugin';
 
 export {default as Scrollable} from './components/Scrollable';
 export * from './components/Highlight';

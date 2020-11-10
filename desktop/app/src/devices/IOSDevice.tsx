@@ -58,7 +58,7 @@ export default class IOSDevice extends BaseDevice {
     const tmpFilePath = path.join(tmpDirectory, tmpImageName);
     const command =
       this.deviceType === 'emulator'
-        ? `xcrun simctl io booted screenshot ${tmpFilePath}`
+        ? `xcrun simctl io ${this.serial} screenshot ${tmpFilePath}`
         : `idb screenshot --udid ${this.serial} ${tmpFilePath}`;
     return promisify(exec)(command)
       .then(() => promisify(fs.readFile)(tmpFilePath))
@@ -68,7 +68,7 @@ export default class IOSDevice extends BaseDevice {
   }
 
   navigateToLocation(location: string) {
-    const command = `xcrun simctl openurl booted "${location}"`;
+    const command = `xcrun simctl openurl ${this.serial} "${location}"`;
     exec(command);
   }
 
@@ -97,7 +97,7 @@ export default class IOSDevice extends BaseDevice {
           'simctl',
           ...deviceSetPath,
           'spawn',
-          'booted',
+          this.serial,
           'log',
           'stream',
           '--style',
@@ -185,7 +185,7 @@ export default class IOSDevice extends BaseDevice {
 
   async startScreenCapture(destination: string) {
     this.recordingProcess = exec(
-      `xcrun simctl io booted recordVideo --codec=h264 --force ${destination}`,
+      `xcrun simctl io ${this.serial} recordVideo --codec=h264 --force ${destination}`,
     );
     this.recordingLocation = destination;
   }

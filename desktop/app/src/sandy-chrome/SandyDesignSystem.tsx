@@ -10,7 +10,7 @@
 import React from 'react';
 import {Typography, Button, Space, Input, Card, Alert, List} from 'antd';
 import {Layout} from '../ui';
-import {theme} from './theme';
+import {theme} from 'flipper-plugin';
 import {css} from 'emotion';
 import {DesignComponentDemos} from './DesignComponentDemos';
 
@@ -19,7 +19,7 @@ const {Title, Text, Link} = Typography;
 export default function SandyDesignSystem() {
   return (
     <Layout.ScrollContainer className={reset}>
-      <Layout.Vertical gap="large">
+      <Layout.Container gap="large">
         <Card title="Flipper Design System" bordered={false}>
           <p>
             Welcome to the Flipper Design System. The Flipper design system is
@@ -122,7 +122,7 @@ export default function SandyDesignSystem() {
         <Card title="Layout components" bordered={false}>
           <DesignComponentDemos />
         </Card>
-      </Layout.Vertical>
+      </Layout.Container>
     </Layout.ScrollContainer>
   );
 }

@@ -21,7 +21,7 @@ import {useStore} from '../../utils/useStore';
 import {useIsSandy} from '../../sandy-chrome/SandyContext';
 import type {ButtonProps} from 'antd/lib/button';
 import {DownOutlined, CheckOutlined} from '@ant-design/icons';
-import {theme} from '../../sandy-chrome/theme';
+import {theme} from 'flipper-plugin';
 
 type ButtonType = 'primary' | 'success' | 'warning' | 'danger';
 
@@ -434,7 +434,7 @@ export function SandyButton({
             <Menu.Item
               onClick={(e) => {
                 // @ts-ignore this event args are bound to electron, remove in the future
-                item.click();
+                item.click(item);
                 if (item.checked !== undefined) {
                   // keep the menu item for check lists
                   e.domEvent.stopPropagation();

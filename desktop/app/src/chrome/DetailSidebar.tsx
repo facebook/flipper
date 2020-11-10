@@ -7,12 +7,14 @@
  * @format
  */
 
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import ReactDOM from 'react-dom';
 import Sidebar from '../ui/components/Sidebar';
-import {connect} from 'react-redux';
 import {toggleRightSidebarAvailable} from '../reducers/application';
-import {State as Store} from '../reducers';
+import {useDispatch, useStore} from '../utils/useStore';
+import {useIsSandy} from '../sandy-chrome/SandyContext';
+import {ContentContainer} from '../sandy-chrome/ContentContainer';
+import {Layout} from '../ui';
 
 type OwnProps = {
   children: any;
@@ -20,57 +22,69 @@ type OwnProps = {
   minWidth?: number;
 };
 
-type StateFromProps = {
-  rightSidebarVisible: boolean;
-  rightSidebarAvailable: boolean;
-};
+/* eslint-disable react-hooks/rules-of-hooks */
+export default function DetailSidebar({children, width, minWidth}: OwnProps) {
+  const [domNode, setDomNode] = useState(
+    document.getElementById('detailsSidebar'),
+  );
 
-type DispatchFromProps = {
-  toggleRightSidebarAvailable: (visible?: boolean) => any;
-};
-
-type Props = OwnProps & StateFromProps & DispatchFromProps;
-class DetailSidebar extends React.Component<Props> {
-  componentDidMount() {
-    this.updateSidebarAvailablility();
+  if (typeof jest !== 'undefined') {
+    // For unit tests, make sure to render elements inline
+    return <div>{children}</div>;
   }
 
-  componentDidUpdate() {
-    this.updateSidebarAvailablility();
-  }
+  const isSandy = useIsSandy();
+  const dispatch = useDispatch();
+  const {rightSidebarAvailable, rightSidebarVisible} = useStore((state) => {
+    const {rightSidebarAvailable, rightSidebarVisible} = state.application;
+    return {rightSidebarAvailable, rightSidebarVisible};
+  });
 
-  updateSidebarAvailablility() {
-    const available = Boolean(this.props.children);
-    if (available !== this.props.rightSidebarAvailable) {
-      this.props.toggleRightSidebarAvailable(available);
+  useEffect(
+    function updateSidebarAvailablility() {
+      const available = Boolean(children);
+      if (available !== rightSidebarAvailable) {
+        dispatch(toggleRightSidebarAvailable(available));
+      }
+    },
+    [children, rightSidebarAvailable, dispatch],
+  );
+
+  // If the plugin container is mounting and rendering a sidbar immediately, the domNode might not yet be available
+  useEffect(() => {
+    if (!domNode) {
+      const newDomNode = document.getElementById('detailsSidebar');
+      if (!newDomNode) {
+        // if after layouting domNode is still not available, something is wrong...
+        console.error('Failed to obtain detailsSidebar node');
+      } else {
+        setDomNode(newDomNode);
+      }
     }
-  }
+  }, [domNode]);
 
-  render() {
-    const domNode = document.getElementById('detailsSidebar');
-    return (
-      this.props.children &&
-      this.props.rightSidebarVisible &&
+  return (
+    (children &&
+      rightSidebarVisible &&
       domNode &&
       ReactDOM.createPortal(
         <Sidebar
-          minWidth={this.props.minWidth}
-          width={this.props.width || 300}
-          position="right">
-          {this.props.children}
+          minWidth={minWidth}
+          width={width || 300}
+          position="right"
+          gutter={isSandy}>
+          {isSandy ? (
+            <ContentContainer>
+              <Layout.ScrollContainer vertical>
+                {children}
+              </Layout.ScrollContainer>
+            </ContentContainer>
+          ) : (
+            children
+          )}
         </Sidebar>,
         domNode,
-      )
-    );
-  }
+      )) ||
+    null
+  );
 }
-
-export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
-  ({application: {rightSidebarVisible, rightSidebarAvailable}}) => ({
-    rightSidebarVisible,
-    rightSidebarAvailable,
-  }),
-  {
-    toggleRightSidebarAvailable,
-  },
-)(DetailSidebar);

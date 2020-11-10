@@ -19,7 +19,7 @@ import {
   Button,
   FlexBox,
   Checkbox,
-} from 'flipper';
+} from '../ui';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {State as Store} from '../reducers';

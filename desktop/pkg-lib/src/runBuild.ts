@@ -15,10 +15,11 @@ import fs from 'fs-extra';
 let metroDir: string | undefined;
 const metroDirPromise = getMetroDir().then((dir) => (metroDir = dir));
 
+// We need to include metro-runtime to the watched folders list because it contains modules which are included into the final bundle.
 async function getMetroDir() {
   let dir = __dirname;
   while (true) {
-    const dirToCheck = path.join(dir, 'node_modules', 'metro');
+    const dirToCheck = path.join(dir, 'node_modules', 'metro-runtime');
     if (await fs.pathExists(dirToCheck)) return dirToCheck;
     const nextDir = path.dirname(dir);
     if (!nextDir || nextDir === '' || nextDir === dir) {

@@ -1,8 +1,8 @@
 {
   "$schema": "https://fbflipper.com/schemas/plugin-package/v2.json",
   "name": "flipper-plugin-example",
-  "id": "flipper-plugin-example",
-  "version": "0.62.0",
+  "id": "Example",
+  "version": "0.64.0",
   "description": "An example for a Flipper plugin",
   "main": "dist/bundle.js",
   "flipperBundlerEntry": "index.tsx",
@@ -22,10 +22,10 @@
     "prepack": "flipper-pkg lint && flipper-pkg bundle --production"
   },
   "peerDependencies": {
-    "flipper": "0.62.0"
+    "flipper": "0.64.0"
   },
   "devDependencies": {
-    "flipper": "0.62.0",
-    "flipper-pkg": "0.62.0"
+    "flipper": "0.64.0",
+    "flipper-pkg": "0.64.0"
   }
 }

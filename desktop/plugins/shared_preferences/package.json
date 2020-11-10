@@ -2,15 +2,18 @@
   "$schema": "https://fbflipper.com/schemas/plugin-package/v2.json",
   "name": "flipper-plugin-preferences",
   "id": "Preferences",
-  "version": "0.62.0",
+  "version": "0.64.0",
   "main": "dist/bundle.js",
-  "flipperBundlerEntry": "index.js",
+  "flipperBundlerEntry": "src/index.tsx",
   "license": "MIT",
   "keywords": [
     "flipper-plugin"
   ],
   "dependencies": {
     "lodash": "^4.17.19"
+  },
+  "peerDependencies": {
+    "flipper-plugin": "0.64.0"
   },
   "title": "Shared Preferences Viewer",
   "bugs": {

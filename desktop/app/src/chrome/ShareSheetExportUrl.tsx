@@ -7,15 +7,7 @@
  * @format
  */
 
-import {
-  FlexColumn,
-  Button,
-  styled,
-  Text,
-  FlexRow,
-  Spacer,
-  Input,
-} from 'flipper';
+import {FlexColumn, Button, styled, Text, FlexRow, Spacer, Input} from '../ui';
 import React, {Component} from 'react';
 import {ReactReduxContext} from 'react-redux';
 import {

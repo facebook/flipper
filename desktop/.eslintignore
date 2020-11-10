@@ -4,7 +4,6 @@ latest
 resources
 templates
 node_modules
-flow-typed
 lib
 !.eslintrc.js
 dist

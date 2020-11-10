@@ -8,7 +8,6 @@
  */
 
 import {KeyboardActions} from './MenuBar';
-import {App} from './App';
 import {Logger} from './fb-interfaces/Logger';
 import Client from './Client';
 import {Store} from './reducers/index';
@@ -126,7 +125,7 @@ export abstract class FlipperBasePlugin<
   static gatekeeper: string | null = null;
   static entry: string | null = null;
   static isDefault: boolean;
-  static details: PluginDetails | undefined;
+  static details: PluginDetails;
   static keyboardActions: KeyboardActions | null;
   static screenshot: string | null;
   static defaultPersistedState: any;
@@ -162,7 +161,6 @@ export abstract class FlipperBasePlugin<
   reducers: {
     [actionName: string]: (state: State, actionData: any) => Partial<State>;
   } = {};
-  app: App | null = null;
   onKeyboardAction: ((action: string) => void) | undefined;
 
   toJSON() {

@@ -7,7 +7,7 @@
  * @format
  */
 
-import {FlexColumn, styled, Text, FlexRow, Button, Markdown} from 'flipper';
+import {FlexColumn, styled, Text, FlexRow, Button, Markdown} from '../ui';
 import {readFileSync} from 'fs';
 import React, {Component} from 'react';
 import path from 'path';

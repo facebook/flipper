@@ -10,7 +10,7 @@
 import {User, USER_UNAUTHORIZED, USER_NOT_SIGNEDIN} from '../reducers/user';
 import {ActiveSheet} from '../reducers/application';
 
-import {styled, FlexRow, Glyph, Text, colors} from 'flipper';
+import {styled, FlexRow, Glyph, Text, colors} from '../ui';
 import {logout} from '../reducers/user';
 import {setActiveSheet, ACTIVE_SHEET_SIGN_IN} from '../reducers/application';
 import {connect} from 'react-redux';

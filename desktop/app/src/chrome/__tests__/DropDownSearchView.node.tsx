@@ -27,10 +27,7 @@ test('Test selected element id is shown as the selected one.', async () => {
   expect(searchInput).toBeTruthy();
   expect(searchInput.value).toEqual('label1');
 
-  act(() => {
-    searchInput.dispatchEvent(new FocusEvent('focus', {bubbles: true}));
-  });
-  expect(await res.queryByText('label1')).toBeTruthy();
+  searchInput.focus();
 });
 
 test('Test the change of the selectedElementID changes the the selected element in the UI.', async () => {
@@ -90,22 +87,20 @@ test('Test the entire flow and click on the available options.', async () => {
   expect(searchInput).toBeTruthy();
   expect(searchInput.value).toEqual('label1');
 
-  act(() => {
-    searchInput.dispatchEvent(new FocusEvent('focus', {bubbles: true}));
-  });
+  searchInput.focus();
   // Right now just the filtered elements will show up
-  expect(await res.queryByText('label1')).toBeTruthy();
-  expect(await res.queryByText('label2')).toBeFalsy();
-  expect(await res.queryByText('label3')).toBeFalsy();
-  expect(await res.queryByText('label4')).toBeFalsy();
+  expect(res.queryByText('label1')).toBeTruthy();
+  expect(res.queryByText('label2')).toBeFalsy();
+  expect(res.queryByText('label3')).toBeFalsy();
+  expect(res.queryByText('label4')).toBeFalsy();
   act(() => {
     fireEvent.change(searchInput, {target: {value: ''}});
   });
   // Once the input field is cleared all the available options will show up.
-  expect(await res.queryByText('label1')).toBeTruthy();
-  expect(await res.queryByText('label2')).toBeTruthy();
-  expect(await res.queryByText('label3')).toBeTruthy();
-  const text4 = await res.queryByText('label4');
+  expect(res.queryByText('label1')).toBeTruthy();
+  expect(res.queryByText('label2')).toBeTruthy();
+  expect(res.queryByText('label3')).toBeTruthy();
+  const text4 = res.queryByText('label4');
 
   expect(text4).toBeTruthy();
 
@@ -118,10 +113,10 @@ test('Test the entire flow and click on the available options.', async () => {
   expect(searchInput.value).toEqual('label4');
   expect(onSelect).toBeCalledTimes(1);
   // After onSelect the expanded menu gets closed.
-  expect(await res.queryByText('label1')).toBeFalsy();
-  expect(await res.queryByText('label2')).toBeFalsy();
-  expect(await res.queryByText('label3')).toBeFalsy();
-  expect(await res.queryByText('label4')).toBeFalsy();
+  expect(res.queryByText('label1')).toBeFalsy();
+  expect(res.queryByText('label2')).toBeFalsy();
+  expect(res.queryByText('label3')).toBeFalsy();
+  expect(res.queryByText('label4')).toBeFalsy();
 });
 
 test('Test the validation error.', async () => {
@@ -144,30 +139,28 @@ test('Test the validation error.', async () => {
   expect(searchInput).toBeTruthy();
   expect(searchInput.value).toEqual('');
 
-  act(() => {
-    searchInput.dispatchEvent(new FocusEvent('focus', {bubbles: true}));
-  });
+  searchInput.focus();
   // Right now just the filtered elements will show up
-  expect(await res.queryByText('label1 group')).toBeTruthy();
-  expect(await res.queryByText('label2 group')).toBeTruthy();
-  expect(await res.queryByText('label3 support')).toBeTruthy();
-  expect(await res.queryByText('label4 support')).toBeTruthy();
+  expect(await res.findByText('label1 group')).toBeTruthy();
+  expect(await res.findByText('label2 group')).toBeTruthy();
+  expect(await res.findByText('label3 support')).toBeTruthy();
+  expect(await res.findByText('label4 support')).toBeTruthy();
 
   act(() => {
     fireEvent.change(searchInput, {target: {value: 'support'}});
   });
   // Only the items which satisfy the search query should be shown
-  expect(await res.queryByText('label3 support')).toBeTruthy();
-  expect(await res.queryByText('label4 support')).toBeTruthy();
-  expect(await res.queryByText('label1 group')).toBeFalsy();
-  expect(await res.queryByText('label2 group')).toBeFalsy();
+  expect(res.queryByText('label3 support')).toBeTruthy();
+  expect(res.queryByText('label4 support')).toBeTruthy();
+  expect(res.queryByText('label1 group')).toBeFalsy();
+  expect(res.queryByText('label2 group')).toBeFalsy();
   act(() => {
     fireEvent.change(searchInput, {target: {value: 'gibberish'}});
   });
 
   expect(handleNoResults).toBeCalled();
-  expect(await res.queryByText('label3 support')).toBeFalsy();
-  expect(await res.queryByText('label4 support')).toBeFalsy();
-  expect(await res.queryByText('label1 group')).toBeFalsy();
-  expect(await res.queryByText('label2 group')).toBeFalsy();
+  expect(res.queryByText('label3 support')).toBeFalsy();
+  expect(res.queryByText('label4 support')).toBeFalsy();
+  expect(res.queryByText('label1 group')).toBeFalsy();
+  expect(res.queryByText('label2 group')).toBeFalsy();
 });

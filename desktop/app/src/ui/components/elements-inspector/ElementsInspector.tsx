@@ -9,7 +9,7 @@
 
 import {Component} from 'react';
 import {Elements, DecorateRow} from './elements';
-import {ContextMenuExtension} from 'flipper';
+import {ContextMenuExtension} from '../../../ui';
 import React from 'react';
 
 export type ElementID = string;

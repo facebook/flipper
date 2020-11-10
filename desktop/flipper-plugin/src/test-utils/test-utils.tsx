@@ -43,6 +43,7 @@ interface StartPluginOptions {
   initialState?: Record<string, any>;
   isArchived?: boolean;
   isBackgroundPlugin?: boolean;
+  startUnactivated?: boolean;
   /** Provide a set of unsupported methods to simulate older clients that don't support certain methods yet */
   unsupportedMethods?: string[];
 }
@@ -235,7 +236,9 @@ export function startPlugin<Module extends FlipperPluginModule<any>>(
   if (options?.isBackgroundPlugin) {
     pluginInstance.connect(); // otherwise part of activate
   }
-  pluginInstance.activate();
+  if (!options?.startUnactivated) {
+    pluginInstance.activate();
+  }
   return res;
 }
 

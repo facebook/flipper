@@ -7,7 +7,7 @@
  * @format
  */
 
-import {FlexColumn, styled, FlexRow, Text, Glyph, colors} from 'flipper';
+import {FlexColumn, styled, FlexRow, Text, Glyph, colors} from '../../ui';
 import React, {useRef, useState, useEffect} from 'react';
 
 type PressedKeys = {

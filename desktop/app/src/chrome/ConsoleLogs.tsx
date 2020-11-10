@@ -15,8 +15,9 @@ import type {Methods} from 'console-feed/lib/definitions/Methods';
 import type {Styles} from 'console-feed/lib/definitions/Styles';
 import {createState, useValue} from 'flipper-plugin';
 import {useLocalStorage} from '../utils/useLocalStorage';
-import {theme, useIsDarkMode} from '../sandy-chrome/theme';
+import {theme} from 'flipper-plugin';
 import {useIsSandy} from '../sandy-chrome/SandyContext';
+import {useIsDarkMode} from '../utils/useIsDarkMode';
 
 const MAX_LOG_ITEMS = 1000;
 
@@ -92,7 +93,7 @@ export function ConsoleLogs() {
   const styles = useMemo(() => buildTheme(isSandy), [isSandy]);
 
   return (
-    <Layout.Top scrollable>
+    <Layout.Top>
       <Toolbar>
         <ButtonGroup>
           <Button onClick={clearLogs} icon="trash">
@@ -101,12 +102,14 @@ export function ConsoleLogs() {
           <Button dropdown={dropdown}>Log Levels</Button>
         </ButtonGroup>
       </Toolbar>
-      <Console
-        logs={logs}
-        filter={logLevels}
-        variant={isDarkMode || !isSandy ? 'dark' : 'light'}
-        styles={styles}
-      />
+      <Layout.ScrollContainer vertical>
+        <Console
+          logs={logs}
+          filter={logLevels}
+          variant={isDarkMode || !isSandy ? 'dark' : 'light'}
+          styles={styles}
+        />
+      </Layout.ScrollContainer>
     </Layout.Top>
   );
 }

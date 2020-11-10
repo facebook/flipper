@@ -8,7 +8,7 @@
  */
 
 import React, {useState} from 'react';
-import {FlexColumn, Button, styled, Tab, Tabs, TabsContainer} from 'flipper';
+import {FlexColumn, Button, styled, Tab, Tabs, TabsContainer} from '../../ui';
 import PluginDebugger from './PluginDebugger';
 import PluginInstaller from './PluginInstaller';
 

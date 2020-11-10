@@ -8,23 +8,35 @@
  */
 
 import React, {useEffect, useState, useCallback} from 'react';
-import {styled} from 'flipper';
+import {styled} from '../ui';
 import {Layout, Sidebar} from '../ui';
-import {theme} from './theme';
+import {theme} from 'flipper-plugin';
 import {Logger} from '../fb-interfaces/Logger';
 
 import {LeftRail} from './LeftRail';
 import {TemporarilyTitlebar} from './TemporarilyTitlebar';
-import SandyDesignSystem from './SandyDesignSystem';
 import {registerStartupTime} from '../App';
 import {useStore, useDispatch} from '../utils/useStore';
 import {SandyContext} from './SandyContext';
 import {ConsoleLogs} from '../chrome/ConsoleLogs';
 import {setStaticView} from '../reducers/connections';
-import {toggleLeftSidebarVisible} from '../reducers/application';
+import {
+  ACTIVE_SHEET_CHANGELOG_RECENT_ONLY,
+  setActiveSheet,
+  toggleLeftSidebarVisible,
+} from '../reducers/application';
 import {AppInspect} from './appinspect/AppInspect';
+import PluginContainer from '../PluginContainer';
+import {ContentContainer} from './ContentContainer';
+import {Notification} from './notification/Notification';
+import {SheetRenderer} from '../chrome/SheetRenderer';
+import {hasNewChangesToShow} from '../chrome/ChangelogSheet';
 
-export type ToplevelNavItem = 'appinspect' | 'flipperlogs' | undefined;
+export type ToplevelNavItem =
+  | 'appinspect'
+  | 'flipperlogs'
+  | 'notification'
+  | undefined;
 export type ToplevelProps = {
   toplevelSelection: ToplevelNavItem;
   setToplevelSelection: (_newSelection: ToplevelNavItem) => void;
@@ -50,7 +62,8 @@ export function SandyApp({logger}: {logger: Logger}) {
   const setToplevelSelection = useCallback(
     (newSelection: ToplevelNavItem) => {
       // toggle sidebar visibility if needed
-      const hasLeftSidebar = newSelection === 'appinspect';
+      const hasLeftSidebar =
+        newSelection === 'appinspect' || newSelection === 'notification';
       if (hasLeftSidebar) {
         if (newSelection === toplevelSelection) {
           dispatch(toggleLeftSidebarVisible());
@@ -71,19 +84,27 @@ export function SandyApp({logger}: {logger: Logger}) {
 
   useEffect(() => {
     registerStartupTime(logger);
+    if (hasNewChangesToShow(window.localStorage)) {
+      dispatch(setActiveSheet(ACTIVE_SHEET_CHANGELOG_RECENT_ONLY));
+    }
     // don't warn about logger, even with a new logger we don't want to re-register
     // eslint-disable-next-line
   }, []);
 
-  const leftMenuContent =
-    leftSidebarVisible && toplevelSelection === 'appinspect' ? (
-      <AppInspect />
-    ) : null;
+  const leftMenuContent = !leftSidebarVisible ? null : toplevelSelection ===
+    'appinspect' ? (
+    <AppInspect />
+  ) : toplevelSelection === 'notification' ? (
+    <Notification />
+  ) : null;
 
   return (
     <SandyContext.Provider value={true}>
       <Layout.Top>
-        <TemporarilyTitlebar />
+        <>
+          <TemporarilyTitlebar />
+          <SheetRenderer logger={logger} />
+        </>
         <Layout.Left>
           <Layout.Horizontal>
             <LeftRail
@@ -95,25 +116,16 @@ export function SandyApp({logger}: {logger: Logger}) {
             </Sidebar>
           </Layout.Horizontal>
           <MainContainer>
-            <ContentContainer>
-              {staticView ? (
-                React.createElement(staticView, {
+            {outOfContentsContainer}
+            {staticView ? (
+              <ContentContainer>
+                {React.createElement(staticView, {
                   logger: logger,
-                })
-              ) : (
-                <SandyDesignSystem />
-              )}
-            </ContentContainer>
-            <Sidebar
-              width={300}
-              minWidth={220}
-              maxWidth={800}
-              gutter
-              position="right">
-              <ContentContainer style={{marginRight: theme.space.large}}>
-                <RightMenu />
+                })}
               </ContentContainer>
-            </Sidebar>
+            ) : (
+              <PluginContainer logger={logger} isSandy />
+            )}
           </MainContainer>
         </Layout.Left>
       </Layout.Top>
@@ -121,19 +133,29 @@ export function SandyApp({logger}: {logger: Logger}) {
   );
 }
 
-const MainContainer = styled(Layout.Right)({
+const outOfContentsContainer = (
+  <div
+    style={{
+      position: 'relative',
+      width: '100%',
+      height: '100%',
+      display: 'none',
+    }}>
+    <div
+      id="flipper-out-of-contents-container"
+      style={{
+        display: 'none',
+        position: 'absolute',
+        right: 0,
+        bottom: 0,
+        left: 0,
+        top: 0,
+      }}
+    />
+  </div>
+);
+
+const MainContainer = styled(Layout.Container)({
   background: theme.backgroundWash,
+  padding: `${theme.space.large}px ${theme.space.large}px ${theme.space.large}px 0`,
 });
-
-export const ContentContainer = styled(Layout.Container)({
-  background: theme.backgroundDefault,
-  border: `1px solid ${theme.dividerColor}`,
-  borderRadius: theme.containerBorderRadius,
-  boxShadow: `0px 0px 5px rgba(0, 0, 0, 0.05), 0px 0px 1px rgba(0, 0, 0, 0.05)`,
-  marginTop: theme.space.large,
-  marginBottom: theme.space.large,
-});
-
-function RightMenu() {
-  return <div>RightMenu</div>;
-}

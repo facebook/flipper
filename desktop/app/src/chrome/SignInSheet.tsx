@@ -17,7 +17,7 @@ import {
   Input,
   Link,
   colors,
-} from 'flipper';
+} from '../ui';
 import React, {Component} from 'react';
 import {writeKeychain, getUser} from '../fb-stubs/user';
 import {login} from '../reducers/user';

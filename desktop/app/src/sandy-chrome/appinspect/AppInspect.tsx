@@ -8,18 +8,15 @@
  */
 
 import React from 'react';
-import {Button, Dropdown, Menu, Radio, Input} from 'antd';
+import {Alert} from 'antd';
 import {LeftSidebar, SidebarTitle, InfoIcon} from '../LeftSidebar';
-import {
-  AppleOutlined,
-  AndroidOutlined,
-  SettingOutlined,
-  RocketOutlined,
-} from '@ant-design/icons';
-import {Layout, Link} from '../../ui';
-import {theme} from '../theme';
-import {useStore as useReduxStore} from 'react-redux';
-import {showEmulatorLauncher} from './LaunchEmulator';
+import {Layout, Link, styled} from '../../ui';
+import {NUX, theme} from 'flipper-plugin';
+import {AppSelector} from './AppSelector';
+import {useStore} from '../../utils/useStore';
+import {PluginList} from './PluginList';
+import ScreenCaptureButtons from '../../chrome/ScreenCaptureButtons';
+import MetroButton from '../../chrome/MetroButton';
 
 const appTooltip = (
   <>
@@ -33,61 +30,48 @@ const appTooltip = (
 );
 
 export function AppInspect() {
-  const store = useReduxStore();
+  const selectedDevice = useStore((state) => state.connections.selectedDevice);
+  const isArchived = !!selectedDevice?.isArchived;
+
   return (
     <LeftSidebar>
-      <Layout.Top scrollable>
+      <Layout.Top>
         <Layout.Container borderBottom>
           <SidebarTitle actions={<InfoIcon>{appTooltip}</InfoIcon>}>
             App Inspect
           </SidebarTitle>
-          <Layout.Vertical padv="small" padh="medium" gap={theme.space.large}>
-            <DeviceDropdown />
-            <Input addonAfter={<SettingOutlined />} defaultValue="mysite" />
-            <Layout.Horizontal gap>
-              <Button icon={<SettingOutlined />} type="link" />
-              <Button icon={<SettingOutlined />} type="link" />
-              <Button
-                icon={<RocketOutlined />}
-                type="link"
-                title="Start Emulator / Simulator..."
-                onClick={() => {
-                  showEmulatorLauncher(store);
-                }}
-              />
-            </Layout.Horizontal>
-          </Layout.Vertical>
+          <Layout.Container padv="small" padh="medium" gap={theme.space.large}>
+            <AppSelector />
+            {
+              isArchived ? (
+                <Alert
+                  message="This device is a snapshot and cannot be interacted with."
+                  type="info"
+                />
+              ) : null /* TODO: add bookmarks back T77016599 */
+            }
+            {!isArchived && (
+              <Toolbar gap>
+                <MetroButton useSandy />
+                <ScreenCaptureButtons useSandy />
+              </Toolbar>
+            )}
+          </Layout.Container>
         </Layout.Container>
-        <Layout.Container>Dynamic section</Layout.Container>
+        <Layout.ScrollContainer vertical padv={theme.space.large}>
+          {selectedDevice ? (
+            <PluginList />
+          ) : (
+            <Alert message="No device or app selected." type="info" />
+          )}
+        </Layout.ScrollContainer>
       </Layout.Top>
     </LeftSidebar>
   );
 }
 
-function DeviceDropdown() {
-  return (
-    <Radio.Group value={1} size="small">
-      <Dropdown
-        overlay={
-          <Menu>
-            <Menu.Item icon={<AppleOutlined />} style={{fontWeight: 'bold'}}>
-              IPhone 11
-            </Menu.Item>
-            <Menu.Item>
-              <Radio value={1}>Facebook</Radio>
-            </Menu.Item>
-            <Menu.Item>
-              <Radio value={3}>Instagram</Radio>
-            </Menu.Item>
-            <Menu.Item icon={<AndroidOutlined />} style={{fontWeight: 'bold'}}>
-              Android
-            </Menu.Item>
-          </Menu>
-        }>
-        <Button icon={<AppleOutlined />} style={{width: '100%'}}>
-          Facebook Iphone11
-        </Button>
-      </Dropdown>
-    </Radio.Group>
-  );
-}
+const Toolbar = styled(Layout.Horizontal)({
+  '.ant-btn': {
+    border: 'none',
+  },
+});

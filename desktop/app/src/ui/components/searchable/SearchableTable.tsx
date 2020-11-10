@@ -27,7 +27,7 @@ type State = {
   filterRows: (row: TableBodyRow) => boolean;
 };
 
-const rowMatchesFilters = (filters: Array<Filter>, row: TableBodyRow) =>
+export const rowMatchesFilters = (filters: Array<Filter>, row: TableBodyRow) =>
   filters
     .map((filter: Filter) => {
       if (filter.type === 'enum' && row.type != null) {
@@ -56,7 +56,7 @@ const rowMatchesFilters = (filters: Array<Filter>, row: TableBodyRow) =>
     })
     .every((x) => x === true);
 
-function rowMatchesRegex(values: Array<string>, regex: string): boolean {
+export function rowMatchesRegex(values: Array<string>, regex: string): boolean {
   try {
     const re = new RegExp(regex);
     return values.some((x) => re.test(x));
@@ -65,7 +65,7 @@ function rowMatchesRegex(values: Array<string>, regex: string): boolean {
   }
 }
 
-function rowMatchesSearchTerm(
+export function rowMatchesSearchTerm(
   searchTerm: string,
   isRegex: boolean,
   isContentSearchEnabled: boolean,
@@ -91,7 +91,7 @@ function rowMatchesSearchTerm(
   );
 }
 
-const filterRowsFactory = (
+export const filterRowsFactory = (
   filters: Array<Filter>,
   searchTerm: string,
   regexSearch: boolean,

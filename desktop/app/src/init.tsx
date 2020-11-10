@@ -30,11 +30,11 @@ import {cache} from 'emotion';
 import {CacheProvider} from '@emotion/core';
 import {enableMapSet} from 'immer';
 import os from 'os';
-import QuickPerformanceLogger, {FLIPPER_QPL_EVENTS} from './fb-stubs/QPL';
 import {PopoverProvider} from './ui/components/PopoverProvider';
 import {initializeFlipperLibImplementation} from './utils/flipperLibImplementation';
 import {enableConsoleHook} from './chrome/ConsoleLogs';
 import {sideEffect} from './utils/sideEffect';
+import {NuxManagerContext, createNuxManager} from 'flipper-plugin';
 
 if (process.env.NODE_ENV === 'development' && os.platform() === 'darwin') {
   // By default Node.JS has its internal certificate storage and doesn't use
@@ -45,12 +45,7 @@ if (process.env.NODE_ENV === 'development' && os.platform() === 'darwin') {
   global.electronRequire('mac-ca');
 }
 
-const [s, ns] = process.hrtime();
-const launchTime = s * 1e3 + ns / 1e6;
-
 const logger = initLogger(store);
-
-QuickPerformanceLogger.markerStart(FLIPPER_QPL_EVENTS.STARTUP, 0, launchTime);
 
 enableMapSet();
 
@@ -62,7 +57,9 @@ const AppFrame = () => (
       <ContextMenuProvider>
         <Provider store={store}>
           <CacheProvider value={cache}>
-            <App logger={logger} />
+            <NuxManagerContext.Provider value={createNuxManager()}>
+              <App logger={logger} />
+            </NuxManagerContext.Provider>
           </CacheProvider>
         </Provider>
       </ContextMenuProvider>
@@ -106,7 +103,7 @@ function init() {
     store,
     {name: 'loadTheme', fireImmediately: true, throttleMs: 500},
     (state) => ({
-      sandy: state.settingsState.enableSandy,
+      sandy: GK.get('flipper_sandy') && !state.settingsState.disableSandy,
       dark: state.settingsState.darkMode,
     }),
     (theme) => {

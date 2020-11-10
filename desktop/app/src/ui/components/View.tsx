@@ -15,6 +15,10 @@ type Props = {
   maxHeight?: number;
 };
 
+/**
+ *
+ * @deprecated use `Layout.Container` from flipper-plugin instead
+ */
 const View = styled.div<Props>((props) => ({
   height: props.grow ? '100%' : 'auto',
   overflow: props.scrollable ? 'auto' : 'visible',

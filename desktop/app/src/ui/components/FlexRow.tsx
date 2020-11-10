@@ -11,6 +11,7 @@ import FlexBox from './FlexBox';
 import styled from '@emotion/styled';
 
 /**
+ * @deprecated use `Layout.Horizontal` from flipper-plugin instead
  * A container displaying its children in a row
  */
 const FlexRow = styled(FlexBox)({

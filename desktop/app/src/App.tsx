@@ -8,47 +8,24 @@
  */
 
 import React from 'react';
-import {FlexRow, styled, Layout} from 'flipper';
+import {FlexRow, styled, Layout} from './ui';
 import {connect} from 'react-redux';
 import TitleBar from './chrome/TitleBar';
 import MainSidebar2 from './chrome/mainsidebar/MainSidebar2';
 import DoctorBar from './chrome/DoctorBar';
-import ShareSheetExportUrl from './chrome/ShareSheetExportUrl';
-import SignInSheet from './chrome/SignInSheet';
-import ExportDataPluginSheet from './chrome/ExportDataPluginSheet';
-import ShareSheetExportFile from './chrome/ShareSheetExportFile';
-import JSEmulatorLauncherSheet from './chrome/JSEmulatorLauncherSheet';
 import PluginContainer from './PluginContainer';
-import Sheet from './chrome/Sheet';
 import {ipcRenderer, remote} from 'electron';
 import {
-  ActiveSheet,
-  ShareType,
-  ACTIVE_SHEET_PLUGINS,
-  ACTIVE_SHEET_SHARE_DATA,
-  ACTIVE_SHEET_SIGN_IN,
-  ACTIVE_SHEET_SETTINGS,
-  ACTIVE_SHEET_DOCTOR,
-  ACTIVE_SHEET_SHARE_DATA_IN_FILE,
-  ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT,
-  ACTIVE_SHEET_PLUGIN_SHEET,
-  ACTIVE_SHEET_JS_EMULATOR_LAUNCHER,
-  ACTIVE_SHEET_CHANGELOG,
-  setActiveSheet,
   ACTIVE_SHEET_CHANGELOG_RECENT_ONLY,
+  setActiveSheet,
 } from './reducers/application';
 import {Logger} from './fb-interfaces/Logger';
 import {State as Store} from './reducers/index';
 import {StaticView} from './reducers/connections';
-import PluginManager from './chrome/plugin-manager/PluginManager';
 import StatusBar from './chrome/StatusBar';
-import SettingsSheet from './chrome/SettingsSheet';
-import DoctorSheet from './chrome/DoctorSheet';
-import ChangelogSheet, {hasNewChangesToShow} from './chrome/ChangelogSheet';
-import QuickPerformanceLogger, {
-  QuickLogActionType,
-  FLIPPER_QPL_EVENTS,
-} from './fb-stubs/QPL';
+import {hasNewChangesToShow} from './chrome/ChangelogSheet';
+import QPL, {QuickLogActionType, FLIPPER_QPL_EVENTS} from './fb-stubs/QPL';
+import {SheetRenderer} from './chrome/SheetRenderer';
 
 const version = remote.app.getVersion();
 
@@ -58,8 +35,6 @@ type OwnProps = {
 
 type StateFromProps = {
   leftSidebarVisible: boolean;
-  activeSheet: ActiveSheet;
-  share: ShareType | null;
   staticView: StaticView;
 };
 
@@ -86,15 +61,8 @@ export function registerStartupTime(logger: Logger) {
   ipcRenderer.on('getLaunchTime', (_: any, launchStartTime: number) => {
     logger.track('performance', 'launchTime', launchEndTime - launchStartTime);
 
-    QuickPerformanceLogger.markerPoint(
-      FLIPPER_QPL_EVENTS.STARTUP,
-      'launchStartTime',
-      undefined,
-      0,
-      launchStartTime,
-    );
-
-    QuickPerformanceLogger.markerEnd(
+    QPL.markerStart(FLIPPER_QPL_EVENTS.STARTUP, 0, launchStartTime);
+    QPL.markerEnd(
       FLIPPER_QPL_EVENTS.STARTUP,
       QuickLogActionType.SUCCESS,
       0,
@@ -114,56 +82,6 @@ export class App extends React.Component<Props> {
     }
   }
 
-  getSheet = (onHide: () => any) => {
-    const {activeSheet} = this.props;
-    switch (activeSheet) {
-      case ACTIVE_SHEET_PLUGINS:
-        return <PluginManager onHide={onHide} />;
-      case ACTIVE_SHEET_SIGN_IN:
-        return <SignInSheet onHide={onHide} />;
-      case ACTIVE_SHEET_SETTINGS:
-        return <SettingsSheet platform={process.platform} onHide={onHide} />;
-      case ACTIVE_SHEET_DOCTOR:
-        return <DoctorSheet onHide={onHide} />;
-      case ACTIVE_SHEET_CHANGELOG:
-        return <ChangelogSheet onHide={onHide} />;
-      case ACTIVE_SHEET_CHANGELOG_RECENT_ONLY:
-        return <ChangelogSheet onHide={onHide} recent />;
-      case ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT:
-        return <ExportDataPluginSheet onHide={onHide} />;
-      case ACTIVE_SHEET_SHARE_DATA:
-        return (
-          <ShareSheetExportUrl
-            onHide={onHide}
-            logger={this.props.logger}
-            closeOnFinish={
-              this.props.share != null && this.props.share.closeOnFinish
-            }
-          />
-        );
-      case ACTIVE_SHEET_SHARE_DATA_IN_FILE:
-        return this.props.share && this.props.share.type === 'file' ? (
-          <ShareSheetExportFile
-            onHide={onHide}
-            file={this.props.share.file}
-            logger={this.props.logger}
-          />
-        ) : (
-          (() => {
-            console.error('No file provided when calling share sheet.');
-            return null;
-          })()
-        );
-      case ACTIVE_SHEET_PLUGIN_SHEET:
-        // Currently unused.
-        return null;
-      case ACTIVE_SHEET_JS_EMULATOR_LAUNCHER:
-        return <JSEmulatorLauncherSheet onHide={onHide} />;
-      default:
-        return null;
-    }
-  };
-
   render() {
     return (
       <Layout.Top>
@@ -173,7 +91,7 @@ export class App extends React.Component<Props> {
             <DoctorBar />
           </>
           <>
-            <Sheet>{this.getSheet}</Sheet>
+            <SheetRenderer logger={this.props.logger} />
           </>
         </Layout.Top>
         <Layout.Bottom>
@@ -187,17 +105,19 @@ export class App extends React.Component<Props> {
               ) : (
                 <PluginContainer logger={this.props.logger} />
               )}
-              <div
-                id="flipper-out-of-contents-container"
-                style={{
-                  display: 'none',
-                  position: 'absolute',
-                  right: 0,
-                  bottom: 0,
-                  left: 0,
-                  top: 0,
-                }}
-              />
+              <div>
+                <div
+                  id="flipper-out-of-contents-container"
+                  style={{
+                    display: 'none',
+                    position: 'absolute',
+                    right: 0,
+                    bottom: 0,
+                    left: 0,
+                    top: 0,
+                  }}
+                />
+              </div>
             </PluginContent>
           </Layout.Left>
           <StatusBar />
@@ -208,13 +128,8 @@ export class App extends React.Component<Props> {
 }
 
 export default connect<StateFromProps, DispatchProps, OwnProps, Store>(
-  ({
-    application: {leftSidebarVisible, activeSheet, share},
-    connections: {staticView},
-  }) => ({
+  ({application: {leftSidebarVisible}, connections: {staticView}}) => ({
     leftSidebarVisible,
-    activeSheet,
-    share: share,
     staticView,
   }),
   {

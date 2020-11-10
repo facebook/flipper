@@ -19,13 +19,11 @@ import {
   colors,
   Glyph,
   styled,
-  GK,
-  ArchivedDevice,
   SmallText,
   Info,
   HBox,
   LoadingIndicator,
-} from 'flipper';
+} from '../../ui';
 import React, {
   PureComponent,
   Fragment,
@@ -61,6 +59,8 @@ import {
 } from './sidebarUtils';
 import {useLocalStorage} from '../../utils/useLocalStorage';
 import {PluginDefinition, ClientPluginMap, DevicePluginMap} from '../../plugin';
+import GK from '../../fb-stubs/GK';
+import ArchivedDevice from '../../devices/ArchivedDevice';
 
 type FlipperPlugins = PluginDefinition[];
 type PluginsByCategoryType = [string, FlipperPlugins][];
