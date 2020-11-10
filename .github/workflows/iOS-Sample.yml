@@ -14,7 +14,7 @@ jobs:
     - name: Build Sample app
       run: |
         IPHONESIMULATOR=$(xcodebuild -showsdks | grep -o "iphonesimulator[0-9]\\+\\.[0-9]\\+$") && echo $IPHONESIMULATOR
-        xcodebuild build -workspace Sample.xcworkspace -scheme Sample -sdk $IPHONESIMULATOR
+        xcodebuild build -workspace Sample.xcworkspace -scheme Sample -sdk $IPHONESIMULATOR -arch x86_64
         
   build-sample-swift:
     runs-on: macos-latest
@@ -29,7 +29,7 @@ jobs:
     - name: Build SampleSwift app
       run: |
         IPHONESIMULATOR=$(xcodebuild -showsdks | grep -o "iphonesimulator[0-9]\\+\\.[0-9]\\+$") && echo $IPHONESIMULATOR
-        xcodebuild build -workspace SampleSwift.xcworkspace -scheme SampleSwift -sdk $IPHONESIMULATOR
+        xcodebuild build -workspace SampleSwift.xcworkspace -scheme SampleSwift -sdk $IPHONESIMULATOR -arch x86_64
         
   build-tutorial:
     runs-on: macos-latest
@@ -44,5 +44,5 @@ jobs:
     - name: Build Tutorial app
       run: |
         IPHONESIMULATOR=$(xcodebuild -showsdks | grep -o "iphonesimulator[0-9]\\+\\.[0-9]\\+$") && echo $IPHONESIMULATOR
-        xcodebuild build -workspace Tutorial.xcworkspace -scheme Tutorial -sdk $IPHONESIMULATOR
+        xcodebuild build -workspace Tutorial.xcworkspace -scheme Tutorial -sdk $IPHONESIMULATOR -arch x86_64
 
