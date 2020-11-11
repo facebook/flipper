@@ -378,8 +378,8 @@ export function findBestDevice(
     return selected;
   }
   // if there is an active app, use device owning the app
-  if (client && client._deviceResolved) {
-    return client._deviceResolved;
+  if (client) {
+    return client.deviceSync;
   }
   // if no active app, use the preferred device
   if (userPreferredDevice) {

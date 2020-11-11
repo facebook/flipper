@@ -83,6 +83,7 @@ function getStore(selectedPlugins: Array<string>) {
     // @ts-ignore
     mockStore,
     ['TestPlugin', 'TestDevicePlugin'],
+    selectedDevice,
   );
   mockStore.dispatch({
     type: 'NEW_CLIENT',

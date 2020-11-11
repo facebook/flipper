@@ -32,14 +32,15 @@ export function initSelfInpector(
 ) {
   const appName = 'Flipper';
   const device_id = 'FlipperSelfInspectionDevice';
+  const device = new FlipperSelfInspectionDevice(
+    device_id,
+    'emulator',
+    appName,
+    'JSWebApp',
+  );
   store.dispatch({
     type: 'REGISTER_DEVICE',
-    payload: new FlipperSelfInspectionDevice(
-      device_id,
-      'emulator',
-      appName,
-      'JSWebApp',
-    ),
+    payload: device,
   });
 
   selfInspectionClient.addPlugin(flipperMessagesClientPlugin);
@@ -59,6 +60,8 @@ export function initSelfInpector(
     selfInspectionClient,
     logger,
     store,
+    undefined,
+    device,
   );
 
   flipperConnections.set(clientId, {

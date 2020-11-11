@@ -726,6 +726,7 @@ test('test determinePluginsToProcess for mutilple clients having plugins present
     logger,
     mockStore,
     ['TestPlugin', 'TestDevicePlugin'],
+    device1,
   );
   const client2 = new Client(
     generateClientIdentifier(device1, 'app2'),
@@ -739,6 +740,7 @@ test('test determinePluginsToProcess for mutilple clients having plugins present
     logger,
     mockStore,
     ['TestDevicePlugin'],
+    device1,
   );
   const client3 = new Client(
     generateClientIdentifier(device1, 'app3'),
@@ -752,6 +754,7 @@ test('test determinePluginsToProcess for mutilple clients having plugins present
     logger,
     mockStore,
     ['TestPlugin', 'TestDevicePlugin'],
+    device1,
   );
   const plugins: PluginsState = {
     clientPlugins: new Map([
@@ -802,6 +805,7 @@ test('test determinePluginsToProcess for no selected plugin present in any clien
     logger,
     mockStore,
     ['TestPlugin', 'TestDevicePlugin'],
+    device1,
   );
   const client2 = new Client(
     generateClientIdentifier(device1, 'app2'),
@@ -815,6 +819,7 @@ test('test determinePluginsToProcess for no selected plugin present in any clien
     logger,
     mockStore,
     ['TestDevicePlugin'],
+    device1,
   );
   const plugins: PluginsState = {
     clientPlugins: new Map([
@@ -846,6 +851,7 @@ test('test determinePluginsToProcess for multiple clients on same device', async
     logger,
     mockStore,
     ['TestPlugin', 'TestDevicePlugin'],
+    device1,
   );
   const client2 = new Client(
     generateClientIdentifier(device1, 'app2'),
@@ -859,6 +865,7 @@ test('test determinePluginsToProcess for multiple clients on same device', async
     logger,
     mockStore,
     ['TestDevicePlugin'],
+    device1,
   );
   const plugins: PluginsState = {
     clientPlugins: new Map([['TestPlugin', TestPlugin]]),
@@ -897,6 +904,7 @@ test('test determinePluginsToProcess for multiple clients on different device', 
     logger,
     mockStore,
     ['TestPlugin', 'TestDevicePlugin'],
+    device1,
   );
   const client2Device1 = new Client(
     generateClientIdentifier(device1, 'app2'),
@@ -910,6 +918,7 @@ test('test determinePluginsToProcess for multiple clients on different device', 
     logger,
     mockStore,
     ['TestDevicePlugin'],
+    device1,
   );
   const client1Device2 = new Client(
     generateClientIdentifier(device2, 'app'),
@@ -923,6 +932,7 @@ test('test determinePluginsToProcess for multiple clients on different device', 
     logger,
     mockStore,
     ['TestPlugin', 'TestDevicePlugin'],
+    device1,
   );
   const client2Device2 = new Client(
     generateClientIdentifier(device2, 'app2'),
@@ -936,6 +946,7 @@ test('test determinePluginsToProcess for multiple clients on different device', 
     logger,
     mockStore,
     ['TestDevicePlugin'],
+    device1,
   );
   const plugins: PluginsState = {
     clientPlugins: new Map([['TestPlugin', TestPlugin]]),
@@ -999,6 +1010,7 @@ test('test determinePluginsToProcess to ignore archived clients', async () => {
     logger,
     mockStore,
     ['TestPlugin', 'TestDevicePlugin'],
+    archivedDevice,
   );
   const archivedClient = new Client(
     generateClientIdentifier(archivedDevice, 'app'),
@@ -1012,6 +1024,7 @@ test('test determinePluginsToProcess to ignore archived clients', async () => {
     logger,
     mockStore,
     ['TestPlugin', 'TestDevicePlugin'],
+    archivedDevice,
   );
   const plugins: PluginsState = {
     clientPlugins: new Map([['TestPlugin', TestPlugin]]),
