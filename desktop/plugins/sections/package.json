@@ -8,7 +8,7 @@
     "email": "oncall+ios_componentkit@xmail.facebook.com",
     "url": "https://fb.workplace.com/groups/componentkit/"
   },
-  "version": "0.64.0",
+  "version": "0.65.0",
   "main": "dist/bundle.js",
   "flipperBundlerEntry": "src/index.tsx",
   "license": "MIT",
@@ -20,7 +20,7 @@
     "react-d3-tree": "^1.16.1"
   },
   "peerDependencies": {
-    "flipper": "0.64.0",
-    "flipper-plugin": "0.64.0"
+    "flipper": "0.65.0",
+    "flipper-plugin": "0.65.0"
   }
 }

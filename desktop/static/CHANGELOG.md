@@ -1,3 +1,8 @@
+# 0.65.0 (11/11/2020)
+
+ * [D24826802](https://github.com/facebook/flipper/search?q=D24826802&type=Commits) -  [Facebook] Add support form support for Flipper itself
+
+
 # 0.64.0 (28/10/2020)
 
  * [D24506315](https://github.com/facebook/flipper/search?q=D24506315&type=Commits) -  Upgrade internal React version to v17
