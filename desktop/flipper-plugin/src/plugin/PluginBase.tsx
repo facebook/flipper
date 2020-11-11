@@ -12,8 +12,11 @@ import {EventEmitter} from 'events';
 import {Atom} from '../state/atom';
 import {MenuEntry, NormalizedMenuEntry, normalizeMenuEntry} from './MenuEntry';
 import {FlipperLib} from './FlipperLib';
+import {Device, RealFlipperDevice} from './DevicePlugin';
 
 export interface BasePluginClient {
+  readonly device: Device;
+
   /**
    * the onDestroy event is fired whenever a device is unloaded from Flipper, or a plugin is disabled.
    */
@@ -65,6 +68,8 @@ export abstract class BasePluginInstance {
   definition: SandyPluginDefinition;
   /** the plugin instance api as used inside components and such  */
   instanceApi: any;
+  /** the device owning this plugin */
+  device: Device;
 
   activated = false;
   destroyed = false;
@@ -82,11 +87,29 @@ export abstract class BasePluginInstance {
   constructor(
     flipperLib: FlipperLib,
     definition: SandyPluginDefinition,
+    realDevice: RealFlipperDevice,
     initialStates?: Record<string, any>,
   ) {
     this.flipperLib = flipperLib;
     this.definition = definition;
     this.initialStates = initialStates;
+    if (!realDevice) {
+      throw new Error('Illegal State: Device has not yet been loaded');
+    }
+    this.device = {
+      realDevice, // TODO: temporarily, clean up T70688226
+      // N.B. we model OS as string, not as enum, to make custom device types possible in the future
+      os: realDevice.os,
+      isArchived: realDevice.isArchived,
+      deviceType: realDevice.deviceType,
+
+      onLogEntry(cb) {
+        const handle = realDevice.addLogListener(cb);
+        return () => {
+          realDevice.removeLogListener(handle);
+        };
+      },
+    };
   }
 
   protected initializePlugin(factory: () => any) {
@@ -102,6 +125,7 @@ export abstract class BasePluginInstance {
 
   protected createBasePluginClient(): BasePluginClient {
     return {
+      device: this.device,
       onActivate: (cb) => {
         this.events.on('activate', cb);
       },

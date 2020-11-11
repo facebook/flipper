@@ -10,6 +10,7 @@
 import {SandyPluginDefinition} from './SandyPluginDefinition';
 import {BasePluginInstance, BasePluginClient} from './PluginBase';
 import {FlipperLib} from './FlipperLib';
+import {RealFlipperDevice} from './DevicePlugin';
 
 type EventsContract = Record<string, any>;
 type MethodsContract = Record<string, (params: any) => Promise<any>>;
@@ -26,6 +27,16 @@ export interface PluginClient<
   Events extends EventsContract = {},
   Methods extends MethodsContract = {}
 > extends BasePluginClient {
+  /**
+   * Identifier that uniquely identifies the connected application
+   */
+  readonly appId: string;
+
+  /**
+   * Registered name for the connected application
+   */
+  readonly appName: string;
+
   /**
    * the onConnect event is fired whenever the plugin is connected to it's counter part on the device.
    * For most plugins this event is fired if the user selects the plugin,
@@ -71,6 +82,14 @@ export interface PluginClient<
  * Plugin Factory. For internal purposes only
  */
 export interface RealFlipperClient {
+  id: string;
+  query: {
+    app: string;
+    os: string;
+    device: string;
+    device_id: string;
+  };
+  deviceSync: RealFlipperDevice;
   isBackgroundPlugin(pluginId: string): boolean;
   initPlugin(pluginId: string): void;
   deinitPlugin(pluginId: string): void;
@@ -108,11 +127,17 @@ export class SandyPluginInstance extends BasePluginInstance {
     realClient: RealFlipperClient,
     initialStates?: Record<string, any>,
   ) {
-    super(flipperLib, definition, initialStates);
+    super(flipperLib, definition, realClient.deviceSync, initialStates);
     this.realClient = realClient;
     this.definition = definition;
     this.client = {
       ...this.createBasePluginClient(),
+      get appId() {
+        return realClient.id;
+      },
+      get appName() {
+        return realClient.query.app;
+      },
       onConnect: (cb) => {
         this.events.on('connect', cb);
       },

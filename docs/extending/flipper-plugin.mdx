@@ -36,6 +36,20 @@ export function plugin(client: PluginClient<Events, Methods>) {
 
 The `PluginClient` received by the `plugin` exposes the following members:
 
+### Properties
+
+#### `device`
+
+Returns the [`Device`](#device) this plugin is connected to.
+
+#### `appName`
+
+The name of the application, for example 'Facebook', 'Instagram' or 'Slack'.
+
+#### `appId`
+
+A string that uniquely identifies the current application, is based on a combination of the application name and device serial on which the application is running.
+
 ### Events listeners
 
 #### `onMessage`
