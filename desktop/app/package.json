@@ -27,7 +27,7 @@
     "deep-equal": "^2.0.1",
     "emotion": "^10.0.23",
     "expand-tilde": "^2.0.2",
-    "flipper-client-sdk": "^0.0.2",
+    "flipper-client-sdk": "^0.0.3",
     "flipper-doctor": "0.65.0",
     "flipper-plugin": "0.65.0",
     "flipper-plugin-lib": "0.65.0",
