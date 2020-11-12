@@ -15,7 +15,6 @@ import {useStore} from '../utils/useStore';
 import {useMemoize} from '../utils/useMemoize';
 import {State} from '../reducers';
 
-// TODO T71355623
 // eslint-disable-next-line flipper/no-relative-imports-across-packages
 import type {NavigationPlugin} from '../../../plugins/navigation/index';
 // eslint-disable-next-line flipper/no-relative-imports-across-packages

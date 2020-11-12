@@ -23,29 +23,24 @@ import BaseDevice from '../../devices/BaseDevice';
 import {getFavoritePlugins} from '../../chrome/mainsidebar/sidebarUtils';
 import {PluginDetails} from 'flipper-plugin-lib';
 import {useMemoize} from '../../utils/useMemoize';
+import MetroDevice from '../../devices/MetroDevice';
 
 const {SubMenu} = Menu;
 const {Text} = Typography;
 
-export const PluginList = memo(function PluginList() {
+export const PluginList = memo(function PluginList({
+  client,
+  activeDevice,
+  metroDevice,
+}: {
+  client: Client | undefined;
+  activeDevice: BaseDevice | undefined;
+  metroDevice: MetroDevice | undefined;
+}) {
   const dispatch = useDispatch();
   const connections = useStore((state) => state.connections);
   const plugins = useStore((state) => state.plugins);
 
-  const metroDevice = useMemoize(findMetroDevice, [connections.devices]);
-  const client = useMemoize(findBestClient, [
-    connections.clients,
-    connections.selectedApp,
-    connections.userPreferredApp,
-  ]);
-  // // if the selected device is Metro, we want to keep the owner of the selected App as active device if possible
-  const activeDevice = useMemoize(findBestDevice, [
-    client,
-    connections.devices,
-    connections.selectedDevice,
-    metroDevice,
-    connections.userPreferredDevice,
-  ]);
   const {
     devicePlugins,
     metroPlugins,
@@ -349,45 +344,6 @@ function getPluginTooltip(details: PluginDetails): string {
   return `${getPluginTitle(details)} (${details.id}@${details.version}) ${
     details.description ?? ''
   }`;
-}
-
-export function findBestClient(
-  clients: Client[],
-  selectedApp: string | null,
-  userPreferredApp: string | null,
-): Client | undefined {
-  return clients.find((c) => c.id === (selectedApp || userPreferredApp));
-}
-
-export function findMetroDevice(
-  devices: State['connections']['devices'],
-): BaseDevice | undefined {
-  return devices?.find((device) => device.os === 'Metro' && !device.isArchived);
-}
-
-export function findBestDevice(
-  client: Client | undefined,
-  devices: State['connections']['devices'],
-  selectedDevice: BaseDevice | null,
-  metroDevice: BaseDevice | undefined,
-  userPreferredDevice: string | null,
-): BaseDevice | undefined {
-  // if not Metro device, use the selected device as metro device
-  const selected = selectedDevice ?? undefined;
-  if (selected !== metroDevice) {
-    return selected;
-  }
-  // if there is an active app, use device owning the app
-  if (client) {
-    return client.deviceSync;
-  }
-  // if no active app, use the preferred device
-  if (userPreferredDevice) {
-    return (
-      devices.find((device) => device.title === userPreferredDevice) ?? selected
-    );
-  }
-  return selected;
 }
 
 export function computePluginLists(

@@ -11,12 +11,18 @@ import React from 'react';
 import {Alert} from 'antd';
 import {LeftSidebar, SidebarTitle, InfoIcon} from '../LeftSidebar';
 import {Layout, Link, styled} from '../../ui';
-import {NUX, theme} from 'flipper-plugin';
+import {theme} from 'flipper-plugin';
 import {AppSelector} from './AppSelector';
 import {useStore} from '../../utils/useStore';
 import {PluginList} from './PluginList';
 import ScreenCaptureButtons from '../../chrome/ScreenCaptureButtons';
 import MetroButton from '../../chrome/MetroButton';
+import {BookmarkSection} from './BookmarkSection';
+import {useMemoize} from '../../utils/useMemoize';
+import Client from '../../Client';
+import {State} from '../../reducers';
+import BaseDevice from '../../devices/BaseDevice';
+import MetroDevice from '../../devices/MetroDevice';
 
 const appTooltip = (
   <>
@@ -30,8 +36,23 @@ const appTooltip = (
 );
 
 export function AppInspect() {
-  const selectedDevice = useStore((state) => state.connections.selectedDevice);
-  const isArchived = !!selectedDevice?.isArchived;
+  const connections = useStore((state) => state.connections);
+
+  const metroDevice = useMemoize(findMetroDevice, [connections.devices]);
+  const client = useMemoize(findBestClient, [
+    connections.clients,
+    connections.selectedApp,
+    connections.userPreferredApp,
+  ]);
+  // // if the selected device is Metro, we want to keep the owner of the selected App as active device if possible
+  const activeDevice = useMemoize(findBestDevice, [
+    client,
+    connections.devices,
+    connections.selectedDevice,
+    metroDevice,
+    connections.userPreferredDevice,
+  ]);
+  const isArchived = !!activeDevice?.isArchived;
 
   return (
     <LeftSidebar>
@@ -42,14 +63,14 @@ export function AppInspect() {
           </SidebarTitle>
           <Layout.Container padv="small" padh="medium" gap={theme.space.large}>
             <AppSelector />
-            {
-              isArchived ? (
-                <Alert
-                  message="This device is a snapshot and cannot be interacted with."
-                  type="info"
-                />
-              ) : null /* TODO: add bookmarks back T77016599 */
-            }
+            {isArchived ? (
+              <Alert
+                message="This device is a snapshot and cannot be interacted with."
+                type="info"
+              />
+            ) : (
+              <BookmarkSection />
+            )}
             {!isArchived && (
               <Toolbar gap>
                 <MetroButton useSandy />
@@ -59,8 +80,12 @@ export function AppInspect() {
           </Layout.Container>
         </Layout.Container>
         <Layout.ScrollContainer vertical padv={theme.space.large}>
-          {selectedDevice ? (
-            <PluginList />
+          {activeDevice ? (
+            <PluginList
+              activeDevice={activeDevice}
+              metroDevice={metroDevice}
+              client={client}
+            />
           ) : (
             <Alert message="No device or app selected." type="info" />
           )}
@@ -75,3 +100,44 @@ const Toolbar = styled(Layout.Horizontal)({
     border: 'none',
   },
 });
+
+export function findBestClient(
+  clients: Client[],
+  selectedApp: string | null,
+  userPreferredApp: string | null,
+): Client | undefined {
+  return clients.find((c) => c.id === (selectedApp || userPreferredApp));
+}
+
+export function findMetroDevice(
+  devices: State['connections']['devices'],
+): MetroDevice | undefined {
+  return devices?.find(
+    (device) => device.os === 'Metro' && !device.isArchived,
+  ) as MetroDevice;
+}
+
+export function findBestDevice(
+  client: Client | undefined,
+  devices: State['connections']['devices'],
+  selectedDevice: BaseDevice | null,
+  metroDevice: BaseDevice | undefined,
+  userPreferredDevice: string | null,
+): BaseDevice | undefined {
+  // if not Metro device, use the selected device as metro device
+  const selected = selectedDevice ?? undefined;
+  if (selected !== metroDevice) {
+    return selected;
+  }
+  // if there is an active app, use device owning the app
+  if (client) {
+    return client.deviceSync;
+  }
+  // if no active app, use the preferred device
+  if (userPreferredDevice) {
+    return (
+      devices.find((device) => device.title === userPreferredDevice) ?? selected
+    );
+  }
+  return selected;
+}
