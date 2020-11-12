@@ -151,7 +151,10 @@ export default class Client extends EventEmitter {
     }
   > = {};
   sandyPluginStates = new Map<string /*pluginID*/, SandyPluginInstance>();
-  unsentMessages = new Map<string, Array>();
+  unsentMessages = new Map<
+    string /*pluginID*/,
+    Array<string> /*Array of messages*/
+  >();
 
   requestCallbacks: Map<
     number,
