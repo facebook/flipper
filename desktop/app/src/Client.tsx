@@ -295,7 +295,7 @@ export default class Client extends EventEmitter {
     // start a plugin on start if it is a SandyPlugin, which is starred, and doesn't have persisted state yet
     if (
       isSandyPlugin(plugin) &&
-      isEnabled &&
+      (isEnabled || defaultEnabledBackgroundPlugins.includes(plugin.id)) &&
       !this.sandyPluginStates.has(plugin.id)
     ) {
       // TODO: needs to be wrapped in error tracking T68955280
@@ -306,7 +306,10 @@ export default class Client extends EventEmitter {
     }
   }
 
-  stopPluginIfNeeded(pluginId: string) {
+  stopPluginIfNeeded(pluginId: string, force = false) {
+    if (defaultEnabledBackgroundPlugins.includes(pluginId) && !force) {
+      return;
+    }
     const pluginKey = getPluginKey(
       this.id,
       {serial: this.query.device_id},
@@ -322,7 +325,7 @@ export default class Client extends EventEmitter {
 
   close() {
     this.emit('close');
-    this.plugins.forEach((pluginId) => this.stopPluginIfNeeded(pluginId));
+    this.plugins.forEach((pluginId) => this.stopPluginIfNeeded(pluginId, true));
   }
 
   // gets a plugin by pluginId

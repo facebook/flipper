@@ -210,6 +210,56 @@ test('queue - events are NOT processed immediately if plugin is NOT selected (bu
   });
 });
 
+test('queue - events ARE processed immediately if plugin is NOT selected / enabled BUT NAVIGATION', async () => {
+  const NavigationPlugin = new SandyPluginDefinition(
+    TestUtils.createMockPluginDetails({
+      id: 'Navigation',
+    }),
+    {
+      plugin,
+      Component() {
+        return null;
+      },
+    },
+  );
+  const {store, client, sendMessage} = await createMockFlipperWithPlugin(
+    NavigationPlugin,
+  );
+
+  // Pre setup, deselect AND disable
+  selectDeviceLogs(store);
+  expect(store.getState().connections.selectedPlugin).toBe('DeviceLogs');
+  store.dispatch(
+    starPlugin({
+      plugin: NavigationPlugin,
+      selectedApp: client.query.app,
+    }),
+  );
+  expect(store.getState().connections.userStarredPlugins)
+    .toMatchInlineSnapshot(`
+    Object {
+      "TestApp": Array [],
+    }
+  `);
+
+  // ...mesages are still going to arrive
+  const pluginState = () =>
+    client.sandyPluginStates.get(NavigationPlugin.id)!.instanceApi.state;
+
+  sendMessage('inc', {});
+  sendMessage('inc', {delta: 2});
+  sendMessage('inc', {delta: 3});
+  // the first message is already visible cause of the leading debounce
+  expect(pluginState().count).toBe(1);
+  // message queue was never involved due to the bypass...
+  expect(store.getState().pluginMessageQueue).toMatchInlineSnapshot(
+    `Object {}`,
+  );
+  // flush will make the others visible
+  client.flushMessageBuffer();
+  expect(pluginState().count).toBe(6);
+});
+
 test('queue - events are queued for plugins that are favorite when app is not selected', async () => {
   const {
     client,
