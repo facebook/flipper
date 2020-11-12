@@ -151,6 +151,7 @@ export default class Client extends EventEmitter {
     }
   > = {};
   sandyPluginStates = new Map<string /*pluginID*/, SandyPluginInstance>();
+  unsentMessages = new Map<string, Array>();
 
   requestCallbacks: Map<
     number,
@@ -546,6 +547,9 @@ export default class Client extends EventEmitter {
         }
         if (!handled) {
           console.warn(`Unhandled message ${params.api}.${params.method}`);
+          let previousUnhandled = this.unsentMessages.get(params.api) || [];
+          previousUnhandled.push(msg);
+          this.unsentMessages.set(params.api, previousUnhandled);
         }
       }
       return; // method === 'execute'
@@ -754,6 +758,13 @@ export default class Client extends EventEmitter {
     this.activePlugins.add(pluginId);
     this.rawSend('init', {plugin: pluginId});
     this.sandyPluginStates.get(pluginId)?.connect();
+
+    if (this.unsentMessages.has(pluginId)) {
+      const messages = this.unsentMessages.get(pluginId);
+      for (let message in messages) {
+        this.onMessage(message);
+      }
+    }
   }
 
   deinitPlugin(pluginId: string) {
