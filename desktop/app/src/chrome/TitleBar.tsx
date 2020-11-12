@@ -31,7 +31,7 @@ import {
 import {connect} from 'react-redux';
 import RatingButton from './RatingButton';
 import DevicesButton from './DevicesButton';
-import LocationsButton from './LocationsButton';
+import {LocationsButton} from './LocationsButton';
 import ScreenCaptureButtons from './ScreenCaptureButtons';
 import AutoUpdateVersion from './AutoUpdateVersion';
 import UpdateIndicator from './UpdateIndicator';
@@ -45,7 +45,7 @@ import {reportUsage} from '../utils/metrics';
 import FpsGraph from './FpsGraph';
 import NetworkGraph from './NetworkGraph';
 import MetroButton from './MetroButton';
-import {getPluginKey} from '../utils/pluginUtils';
+import {navPluginStateSelector} from './LocationsButton';
 
 const AppTitleBar = styled(FlexRow)<{focused?: boolean}>(({focused}) => ({
   userSelect: 'none',
@@ -228,25 +228,19 @@ class TitleBar extends React.Component<Props, StateFromProps> {
 }
 
 export default connect<StateFromProps, DispatchFromProps, OwnProps, State>(
-  ({
-    application: {
-      windowIsFocused,
-      leftSidebarVisible,
-      rightSidebarVisible,
-      rightSidebarAvailable,
-      downloadingImportData,
-      launcherMsg,
-      share,
-    },
-    connections: {selectedDevice, selectedApp},
-    pluginStates,
-  }) => {
-    const navigationPluginKey = getPluginKey(
-      selectedApp,
-      selectedDevice,
-      'Navigation',
-    );
-    const navPluginIsActive = !!pluginStates[navigationPluginKey];
+  (state) => {
+    const {
+      application: {
+        windowIsFocused,
+        leftSidebarVisible,
+        rightSidebarVisible,
+        rightSidebarAvailable,
+        downloadingImportData,
+        launcherMsg,
+        share,
+      },
+    } = state;
+    const navPluginIsActive = !!navPluginStateSelector(state);
 
     return {
       windowIsFocused,

@@ -88,7 +88,7 @@ export const readBookmarksFromDB: () => Promise<Map<string, Bookmark>> = () => {
   });
 };
 
-export const removeBookmark: (uri: string) => Promise<void> = (uri) => {
+export const removeBookmarkFromDB: (uri: string) => Promise<void> = (uri) => {
   return new Promise<void>((resolve, reject) => {
     openNavigationPluginDB()
       .then((db: IDBDatabase) => {

@@ -9,20 +9,11 @@
 
 export type URI = string;
 
-export type State = {
-  shouldShowSaveBookmarkDialog: boolean;
-  shouldShowURIErrorDialog: boolean;
-  saveBookmarkURI: URI | null;
-  requiredParameters: Array<string>;
-};
-
-export type PersistedState = {
-  bookmarks: Map<URI, Bookmark>;
-  navigationEvents: Array<NavigationEvent>;
-  bookmarksProvider: AutoCompleteProvider;
-  appMatchPatterns: Array<AppMatchPattern>;
-  appMatchPatternsProvider: AutoCompleteProvider;
-  currentURI: string;
+export type RawNavigationEvent = {
+  date: string | undefined;
+  uri: URI | undefined;
+  class: string | undefined;
+  screenshot: string | undefined;
 };
 
 export type NavigationEvent = {

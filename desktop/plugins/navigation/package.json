@@ -13,5 +13,8 @@
   "icon": "directions",
   "bugs": {
     "email": "beneloca@fb.com"
+  },
+  "peerDependencies": {
+    "flipper-plugin": "0.64.0"
   }
 }
