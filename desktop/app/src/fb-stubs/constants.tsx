@@ -38,6 +38,7 @@ export default Object.freeze({
     defaultPlugins: ['DeviceLogs'],
     supportedOS: ['Android'] as Array<OS>,
     deeplinkSuffix: 'default',
+    papercuts: '',
   },
 
   SUPPORT_GROUPS: [],
