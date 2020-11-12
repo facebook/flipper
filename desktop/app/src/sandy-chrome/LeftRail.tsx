@@ -7,7 +7,13 @@
  * @format
  */
 
-import React, {cloneElement, useState, useCallback, useMemo} from 'react';
+import React, {
+  cloneElement,
+  useState,
+  useCallback,
+  useMemo,
+  useEffect,
+} from 'react';
 import {Button, Divider, Badge, Tooltip, Avatar, Popover} from 'antd';
 import {
   MobileFilled,
@@ -37,7 +43,7 @@ import SignInSheet from '../chrome/SignInSheet';
 import {errorCounterAtom} from '../chrome/ConsoleLogs';
 import {ToplevelProps} from './SandyApp';
 import {useValue} from 'flipper-plugin';
-import {logout} from '../reducers/user';
+import {logout, USER_NOT_SIGNEDIN, USER_UNAUTHORIZED} from '../reducers/user';
 import config from '../fb-stubs/config';
 import styled from '@emotion/styled';
 import {showEmulatorLauncher} from './appinspect/LaunchEmulator';
@@ -46,6 +52,7 @@ import SupportRequestFormV2 from '../fb-stubs/SupportRequestFormV2';
 import {setStaticView} from '../reducers/connections';
 import {getInstance} from '../fb-stubs/Logger';
 import {isStaticViewActive} from '../chrome/mainsidebar/sidebarUtils';
+import {getUser} from '../fb-stubs/user';
 
 const LeftRailButtonElem = styled(Button)<{kind?: 'small'}>(({kind}) => ({
   width: kind === 'small' ? 32 : 36,
@@ -353,6 +360,17 @@ function LoginButton() {
     (visible) => setShowLogout(visible),
     [],
   );
+
+  useEffect(() => {
+    if (config.showLogin) {
+      getUser().catch((error) => {
+        if (error === USER_UNAUTHORIZED || error === USER_NOT_SIGNEDIN) {
+          setShowLogin(true);
+        }
+      });
+    }
+  }, []);
+
   return login ? (
     <Popover
       content={
