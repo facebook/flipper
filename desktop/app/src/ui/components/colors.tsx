@@ -280,5 +280,18 @@ export const brandColors = {
   Facebook: '#0D7BED',
   Messenger: '#0088FA',
   Instagram: '#E61E68',
+  WhatsApp: '#25D366',
+  Workplace: '#20262c',
+  'Work Chat': '#20262c',
   Flipper: theme.primaryColor,
+};
+
+// https://www.internalfb.com/intern/assets/set/facebook_icons/
+export const brandIcons = {
+  Facebook: 'app-facebook-f',
+  Messenger: 'app-messenger',
+  Instagram: 'app-instagram',
+  WhatsApp: 'app-whatsapp',
+  Workplace: 'app-workplace',
+  'Work Chat': 'app-work-chat',
 };

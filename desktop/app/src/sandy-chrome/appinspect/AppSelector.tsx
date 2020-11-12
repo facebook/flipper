@@ -15,7 +15,7 @@ import {
   WindowsOutlined,
   CaretDownOutlined,
 } from '@ant-design/icons';
-import {Layout, styled} from '../../ui';
+import {Glyph, Layout, styled} from '../../ui';
 import {theme} from 'flipper-plugin';
 import {batch} from 'react-redux';
 import {Dispatch, useDispatch, useStore} from '../../utils/useStore';
@@ -29,6 +29,7 @@ import BaseDevice, {OS} from '../../devices/BaseDevice';
 import {getColorByApp} from '../../chrome/mainsidebar/sidebarUtils';
 import Client from '../../Client';
 import {State} from '../../reducers';
+import {brandIcons} from '../../ui/components/colors';
 
 const {Text} = Typography;
 
@@ -113,14 +114,33 @@ const AppInspectButton = styled(Button)({
   },
 });
 
-const AppIcon = styled.div<{appname?: string}>(({appname}) => ({
+function AppIcon({appname}: {appname?: string}) {
+  const brandName = appname?.replace(/ Lite$/, '');
+  const color = brandName
+    ? getColorByApp(brandName)
+    : theme.backgroundTransparentHover;
+  const icon = brandName && (brandIcons as any)[brandName];
+  return (
+    <AppIconContainer
+      style={{background: brandName != appname ? 'white' : color}}>
+      {icon && (
+        <Glyph
+          name={icon}
+          size={24}
+          variant="outline"
+          color={brandName != appname ? color : 'white'}
+        />
+      )}
+    </AppIconContainer>
+  );
+}
+
+const AppIconContainer = styled.div({
   borderRadius: 4,
   width: 36,
   height: 36,
-  background: appname
-    ? getColorByApp(appname)
-    : theme.backgroundTransparentHover,
-}));
+  padding: 6,
+});
 
 function computeEntries(
   devices: BaseDevice[],
