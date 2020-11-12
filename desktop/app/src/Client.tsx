@@ -21,7 +21,7 @@ import {setPluginState} from './reducers/pluginStates';
 import {Payload, ConnectionStatus} from 'rsocket-types';
 import {Flowable, Single} from 'rsocket-flowable';
 import {performance} from 'perf_hooks';
-import {reportPlatformFailures, reportPluginFailures} from './utils/metrics';
+import {reportPluginFailures} from './utils/metrics';
 import {notNull} from './utils/typeUtils';
 import {default as isProduction} from './utils/isProduction';
 import {registerPlugins} from './reducers/plugins';
@@ -33,7 +33,6 @@ import {
   defaultEnabledBackgroundPlugins,
 } from './utils/pluginUtils';
 import {processMessagesLater} from './utils/messageQueue';
-import {sideEffect} from './utils/sideEffect';
 import {emitBytesReceived} from './dispatcher/tracking';
 import {debounce} from 'lodash';
 import {batch} from 'react-redux';
@@ -134,11 +133,14 @@ export default class Client extends EventEmitter {
   connection: FlipperClientConnection<any, any> | null | undefined;
   store: Store;
   activePlugins: Set<string>;
+
+  /**
+   * @deprecated
+   * use plugin.deviceSync instead
+   */
   device: Promise<BaseDevice>;
-  _deviceResolve: (device: BaseDevice) => void = (_) => {};
-  _deviceResolved: BaseDevice | undefined;
+  deviceSync: BaseDevice;
   logger: Logger;
-  lastSeenDeviceList: Array<BaseDevice>;
   broadcastCallbacks: Map<string, Map<string, Set<Function>>>;
   messageBuffer: Record<
     string /*pluginKey*/,
@@ -172,8 +174,8 @@ export default class Client extends EventEmitter {
     conn: FlipperClientConnection<any, any> | null | undefined,
     logger: Logger,
     store: Store,
-    plugins?: Plugins | null | undefined,
-    device?: BaseDevice,
+    plugins: Plugins | null | undefined,
+    device: BaseDevice,
   ) {
     super();
     this.connected = true;
@@ -189,17 +191,9 @@ export default class Client extends EventEmitter {
     this.broadcastCallbacks = new Map();
     this.requestCallbacks = new Map();
     this.activePlugins = new Set();
-    this.lastSeenDeviceList = [];
 
-    this.device = device
-      ? Promise.resolve(device)
-      : new Promise((resolve, _reject) => {
-          this._deviceResolve = resolve;
-        });
-
-    if (device != null) {
-      this._deviceResolved = device;
-    }
+    this.device = Promise.resolve(device);
+    this.deviceSync = device;
 
     const client = this;
     if (conn) {
@@ -217,58 +211,6 @@ export default class Client extends EventEmitter {
         },
       });
     }
-  }
-
-  /* All clients should have a corresponding Device in the store.
-     However, clients can connect before a device is registered, so wait a
-     while for the device to be registered if it isn't already. */
-  async setMatchingDevice(): Promise<void> {
-    return reportPlatformFailures(
-      new Promise<BaseDevice>((resolve, reject) => {
-        let unsubscribe: () => void = () => {};
-
-        const device = this.store
-          .getState()
-          .connections.devices.find(
-            (device) => device.serial === this.query.device_id,
-          );
-        if (device) {
-          this._deviceResolved = device;
-          resolve(device);
-          return;
-        }
-
-        const timeout = setTimeout(() => {
-          unsubscribe();
-          const error = `Timed out waiting for device for client ${this.id}`;
-          console.error(error);
-          reject(error);
-        }, 5000);
-        unsubscribe = sideEffect(
-          this.store,
-          {name: 'waitForDevice', throttleMs: 100},
-          (state) => state.connections.devices,
-          (newDeviceList) => {
-            if (newDeviceList === this.lastSeenDeviceList) {
-              return;
-            }
-            this.lastSeenDeviceList = newDeviceList;
-            const matchingDevice = newDeviceList.find(
-              (device) => device.serial === this.query.device_id,
-            );
-            if (matchingDevice) {
-              clearTimeout(timeout);
-              resolve(matchingDevice);
-              unsubscribe();
-            }
-          },
-        );
-      }),
-      'client-setMatchingDevice',
-    ).then((device) => {
-      this._deviceResolved = device;
-      this._deviceResolve(device);
-    });
   }
 
   supportsPlugin(pluginId: string): boolean {
@@ -293,7 +235,6 @@ export default class Client extends EventEmitter {
   }
 
   async init() {
-    this.setMatchingDevice();
     await this.loadPlugins();
     // this starts all sandy enabled plugins
     this.plugins.forEach((pluginId) =>
@@ -358,7 +299,7 @@ export default class Client extends EventEmitter {
     // start a plugin on start if it is a SandyPlugin, which is starred, and doesn't have persisted state yet
     if (
       isSandyPlugin(plugin) &&
-      isEnabled &&
+      (isEnabled || defaultEnabledBackgroundPlugins.includes(plugin.id)) &&
       !this.sandyPluginStates.has(plugin.id)
     ) {
       // TODO: needs to be wrapped in error tracking T68955280
@@ -369,7 +310,10 @@ export default class Client extends EventEmitter {
     }
   }
 
-  stopPluginIfNeeded(pluginId: string) {
+  stopPluginIfNeeded(pluginId: string, force = false) {
+    if (defaultEnabledBackgroundPlugins.includes(pluginId) && !force) {
+      return;
+    }
     const pluginKey = getPluginKey(
       this.id,
       {serial: this.query.device_id},
@@ -385,7 +329,7 @@ export default class Client extends EventEmitter {
 
   close() {
     this.emit('close');
-    this.plugins.forEach((pluginId) => this.stopPluginIfNeeded(pluginId));
+    this.plugins.forEach((pluginId) => this.stopPluginIfNeeded(pluginId, true));
   }
 
   // gets a plugin by pluginId
@@ -438,20 +382,12 @@ export default class Client extends EventEmitter {
     this.emit('plugins-change');
   }
 
+  /**
+   * @deprecated
+   * use deviceSync.serial
+   */
   async deviceSerial(): Promise<string> {
-    try {
-      const device = await this.device;
-      if (!device) {
-        console.error('Using "" for deviceId device is not ready');
-        return '';
-      }
-      return device.serial;
-    } catch (e) {
-      console.error(
-        'Using "" for deviceId because client has no matching device',
-      );
-      return '';
-    }
+    return this.deviceSync.serial;
   }
 
   onMessage(msg: string) {
@@ -482,7 +418,7 @@ export default class Client extends EventEmitter {
       flipperMessagesClientPlugin.isConnected()
     ) {
       flipperMessagesClientPlugin.newMessage({
-        device: this._deviceResolved?.displayTitle(),
+        device: this.deviceSync?.displayTitle(),
         app: this.query.app,
         flipperInternalMethod: method,
         plugin: data.params?.api,
@@ -501,7 +437,7 @@ export default class Client extends EventEmitter {
           }: ${error.message} + \nDevice Stack Trace: ${error.stacktrace}`,
           'deviceError',
         );
-        this.device.then((device) => handleError(this.store, device, error));
+        handleError(this.store, this.deviceSync, error);
       } else if (method === 'refreshPlugins') {
         this.refreshPlugins();
       } else if (method === 'execute') {
@@ -583,7 +519,7 @@ export default class Client extends EventEmitter {
       reject(data.error);
       const {error} = data;
       if (error) {
-        this.device.then((device) => handleError(this.store, device, error));
+        handleError(this.store, this.deviceSync, error);
       }
     } else {
       // ???
@@ -677,7 +613,7 @@ export default class Client extends EventEmitter {
 
                   if (flipperMessagesClientPlugin.isConnected()) {
                     flipperMessagesClientPlugin.newMessage({
-                      device: this._deviceResolved?.displayTitle(),
+                      device: this.deviceSync?.displayTitle(),
                       app: this.query.app,
                       flipperInternalMethod: method,
                       payload: response,
@@ -699,7 +635,7 @@ export default class Client extends EventEmitter {
 
       if (flipperMessagesClientPlugin.isConnected()) {
         flipperMessagesClientPlugin.newMessage({
-          device: this._deviceResolved?.displayTitle(),
+          device: this.deviceSync?.displayTitle(),
           app: this.query.app,
           flipperInternalMethod: method,
           plugin: params?.api,
@@ -790,7 +726,7 @@ export default class Client extends EventEmitter {
 
     if (flipperMessagesClientPlugin.isConnected()) {
       flipperMessagesClientPlugin.newMessage({
-        device: this._deviceResolved?.displayTitle(),
+        device: this.deviceSync?.displayTitle(),
         app: this.query.app,
         flipperInternalMethod: method,
         payload: params,

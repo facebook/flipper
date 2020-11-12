@@ -67,6 +67,8 @@ export function plugin(client: PluginClient<Events, Methods>) {
     return client.send('currentState', {since: 0});
   }
 
+  expect(client.device).not.toBeNull();
+
   return {
     activateStub,
     deactivateStub,
@@ -75,6 +77,8 @@ export function plugin(client: PluginClient<Events, Methods>) {
     disconnectStub,
     getCurrentState,
     state,
+    appId: client.appId,
+    appName: client.appName,
   };
 }
 

@@ -285,8 +285,15 @@ export class FlipperPlugin<
   client: PluginClient;
   realClient: Client;
 
+  /**
+   * @deprecated use .device instead
+   */
   getDevice(): Promise<BaseDevice> {
     return this.realClient.device;
+  }
+
+  get device() {
+    return this.realClient.deviceSync;
   }
 
   _teardown() {

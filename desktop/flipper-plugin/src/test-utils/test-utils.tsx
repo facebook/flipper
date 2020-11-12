@@ -180,7 +180,18 @@ export function startPlugin<Module extends FlipperPluginModule<any>>(
 
   const sendStub = jest.fn();
   const flipperUtils = createMockFlipperLib();
+  const testDevice = createMockDevice(options);
+  const appName = 'TestApplication';
+  const deviceName = 'TestDevice';
   const fakeFlipperClient: RealFlipperClient = {
+    id: `${appName}#${testDevice.os}#${deviceName}#${testDevice.serial}`,
+    query: {
+      app: appName,
+      device: deviceName,
+      device_id: testDevice.serial,
+      os: testDevice.serial,
+    },
+    deviceSync: testDevice,
     isBackgroundPlugin(_pluginId: string) {
       return !!options?.isBackgroundPlugin;
     },
@@ -381,6 +392,7 @@ function createMockDevice(options?: StartPluginOptions): RealFlipperDevice {
   return {
     os: 'Android',
     deviceType: 'emulator',
+    serial: 'serial-000',
     isArchived: !!options?.isArchived,
     addLogListener(cb) {
       logListeners.push(cb);

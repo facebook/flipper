@@ -56,6 +56,9 @@ test('it can start a plugin and lifecycle events', () => {
   expect(instance.deactivateStub).toBeCalledTimes(2);
   expect(instance.destroyStub).toBeCalledTimes(1);
 
+  expect(instance.appName).toBe('TestApplication');
+  expect(instance.appId).toBe('TestApplication#Android#TestDevice#serial-000');
+
   // cannot interact with destroyed plugin
   expect(() => {
     p.connect();

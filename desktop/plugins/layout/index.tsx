@@ -240,7 +240,7 @@ export default class LayoutPlugin extends FlipperPlugin<
     }
 
     if (this.props.isArchivedDevice) {
-      this.getDevice()
+      Promise.resolve(this.device)
         .then((d) => {
           const handle = (d as ArchivedDevice).getArchivedScreenshotHandle();
           if (!handle) {

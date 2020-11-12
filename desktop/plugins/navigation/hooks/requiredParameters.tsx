@@ -7,7 +7,7 @@
  * @format
  */
 
-import {useEffect, useState} from 'react';
+import {useMemo, useState} from 'react';
 import {validateParameter} from '../util/uri';
 
 export const useRequiredParameterFormValidator = (
@@ -16,8 +16,7 @@ export const useRequiredParameterFormValidator = (
   const [values, setValuesArray] = useState<Array<string>>(
     requiredParameters.map(() => ''),
   );
-  const [isValid, setIsValid] = useState(false);
-  useEffect(() => {
+  const isValid = useMemo(() => {
     if (requiredParameters.length != values.length) {
       setValuesArray(requiredParameters.map(() => ''));
     }
@@ -26,10 +25,10 @@ export const useRequiredParameterFormValidator = (
         validateParameter(value, requiredParameters[idx]),
       )
     ) {
-      setIsValid(true);
+      return true;
     } else {
-      setIsValid(false);
+      return false;
     }
-  });
+  }, [requiredParameters, values]);
   return {isValid, values, setValuesArray};
 };

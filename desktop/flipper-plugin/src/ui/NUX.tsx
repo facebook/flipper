@@ -104,7 +104,7 @@ export function NUX({
   }, [title, manager, pluginInstance]);
 
   return (
-    <Badge
+    <UnanimatedBadge
       count={
         isRead ? (
           0
@@ -130,9 +130,17 @@ export function NUX({
         )
       }>
       {children}
-    </Badge>
+    </UnanimatedBadge>
   );
 }
+
+// We force visibility of the badge to invisible if count has dropped,
+// otherwise ANT will await animation end, which looks really awkard, see D24918536
+const UnanimatedBadge = styled(Badge)(({count}) => ({
+  '.ant-scroll-number-custom-component': {
+    visibility: count === 0 ? 'hidden' : undefined,
+  },
+}));
 
 const pulse = keyframes({
   '0%': {

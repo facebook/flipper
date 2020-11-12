@@ -52,19 +52,19 @@ enableMapSet();
 GK.init();
 
 const AppFrame = () => (
-  <TooltipProvider>
-    <PopoverProvider>
-      <ContextMenuProvider>
-        <Provider store={store}>
-          <CacheProvider value={cache}>
+  <Provider store={store}>
+    <CacheProvider value={cache}>
+      <TooltipProvider>
+        <PopoverProvider>
+          <ContextMenuProvider>
             <NuxManagerContext.Provider value={createNuxManager()}>
               <App logger={logger} />
             </NuxManagerContext.Provider>
-          </CacheProvider>
-        </Provider>
-      </ContextMenuProvider>
-    </PopoverProvider>
-  </TooltipProvider>
+          </ContextMenuProvider>
+        </PopoverProvider>
+      </TooltipProvider>
+    </CacheProvider>
+  </Provider>
 );
 
 function setProcessState(store: Store) {

@@ -49,6 +49,7 @@ export class Group {
     defaultPlugins: Array<string>,
     supportedOS: Array<OS>,
     deeplinkSuffix: string,
+    papercuts?: string,
   ) {
     this.name = name;
     this.requiredPlugins = requiredPlugins;
@@ -56,6 +57,7 @@ export class Group {
     this.workplaceGroupID = workplaceGroupID;
     this.supportedOS = supportedOS;
     this.deeplinkSuffix = deeplinkSuffix;
+    this.papercuts = papercuts;
   }
   readonly name: string;
   requiredPlugins: Array<string>;
@@ -63,6 +65,7 @@ export class Group {
   workplaceGroupID: number;
   supportedOS: Array<OS>;
   deeplinkSuffix: string;
+  papercuts?: string;
 
   getPluginsToSelect(): Array<string> {
     return Array.from(
@@ -261,6 +264,7 @@ const DEFAULT_GROUP = new Group(
   DEFAULT_SUPPORT_GROUP.defaultPlugins,
   DEFAULT_SUPPORT_GROUP.supportedOS,
   DEFAULT_SUPPORT_GROUP.deeplinkSuffix,
+  DEFAULT_SUPPORT_GROUP.papercuts,
 );
 
 export const SUPPORTED_GROUPS: Array<Group> = [
@@ -273,6 +277,7 @@ export const SUPPORTED_GROUPS: Array<Group> = [
       defaultPlugins,
       supportedOS,
       deeplinkSuffix,
+      papercuts,
     }) => {
       return new Group(
         name,
@@ -281,6 +286,7 @@ export const SUPPORTED_GROUPS: Array<Group> = [
         defaultPlugins,
         supportedOS,
         deeplinkSuffix,
+        papercuts,
       );
     },
   ),

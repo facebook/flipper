@@ -13,7 +13,7 @@ import {
 } from './utils/CertificateProvider';
 import {Logger} from './fb-interfaces/Logger';
 import {ClientQuery} from './Client';
-import {Store} from './reducers/index';
+import {Store, State} from './reducers/index';
 import CertificateProvider from './utils/CertificateProvider';
 import {RSocketServer} from 'rsocket-core';
 import RSocketTCPServer from 'rsocket-tcp-server';
@@ -38,6 +38,8 @@ import {IncomingMessage} from 'http';
 import ws from 'ws';
 import {initSelfInpector} from './utils/self-inspection/selfInspectionUtils';
 import ClientDevice from './devices/ClientDevice';
+import BaseDevice from './devices/BaseDevice';
+import {sideEffect} from './utils/sideEffect';
 
 type ClientInfo = {
   connection: FlipperClientConnection<any, any> | null | undefined;
@@ -529,7 +531,7 @@ class Server extends EventEmitter {
           );
         })
       : Promise.resolve(query.device_id)
-    ).then((csrId) => {
+    ).then(async (csrId) => {
       query.device_id = csrId;
       query.app = appNameWithUpdateHint(query);
 
@@ -541,7 +543,18 @@ class Server extends EventEmitter {
       });
       console.debug(`Device connected: ${id}`, 'server');
 
-      const client = new Client(id, query, conn, this.logger, this.store);
+      const device =
+        getDeviceBySerial(this.store.getState(), query.device_id) ??
+        (await findDeviceForConnection(this.store, query.app, query.device_id));
+      const client = new Client(
+        id,
+        query,
+        conn,
+        this.logger,
+        this.store,
+        undefined,
+        device,
+      );
 
       const info = {
         client,
@@ -625,6 +638,56 @@ class ConnectionTracker {
       );
     }
   }
+}
+
+function getDeviceBySerial(
+  state: State,
+  serial: string,
+): BaseDevice | undefined {
+  return state.connections.devices.find((device) => device.serial === serial);
+}
+
+async function findDeviceForConnection(
+  store: Store,
+  clientId: string,
+  serial: string,
+): Promise<BaseDevice> {
+  let lastSeenDeviceList: BaseDevice[] = [];
+  /* All clients should have a corresponding Device in the store.
+     However, clients can connect before a device is registered, so wait a
+     while for the device to be registered if it isn't already. */
+  return reportPlatformFailures(
+    new Promise<BaseDevice>((resolve, reject) => {
+      let unsubscribe: () => void = () => {};
+
+      const timeout = setTimeout(() => {
+        unsubscribe();
+        const error = `Timed out waiting for device ${serial} for client ${clientId}`;
+        console.error(error);
+        reject(error);
+      }, 5000);
+      unsubscribe = sideEffect(
+        store,
+        {name: 'waitForDevice', throttleMs: 100},
+        (state) => state.connections.devices,
+        (newDeviceList) => {
+          if (newDeviceList === lastSeenDeviceList) {
+            return;
+          }
+          lastSeenDeviceList = newDeviceList;
+          const matchingDevice = newDeviceList.find(
+            (device) => device.serial === serial,
+          );
+          if (matchingDevice) {
+            clearTimeout(timeout);
+            resolve(matchingDevice);
+            unsubscribe();
+          }
+        },
+      );
+    }),
+    'client-setMatchingDevice',
+  );
 }
 
 export default Server;

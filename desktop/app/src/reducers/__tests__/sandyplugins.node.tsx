@@ -30,10 +30,14 @@ function plugin(client: PluginClient<any, any>) {
   const connectStub = jest.fn();
   const disconnectStub = jest.fn();
   const destroyStub = jest.fn();
+  const messages: any[] = [];
 
   client.onConnect(connectStub);
   client.onDisconnect(disconnectStub);
   client.onDestroy(destroyStub);
+  client.onMessage('message', (msg) => {
+    messages.push(msg);
+  });
 
   initialized = true;
 
@@ -42,6 +46,7 @@ function plugin(client: PluginClient<any, any>) {
     disconnectStub,
     destroyStub,
     send: client.send,
+    messages,
   };
 }
 const TestPlugin = new SandyPluginDefinition(pluginDetails, {
@@ -228,4 +233,63 @@ test('it can send messages from sandy clients', async () => {
       },
     }
   `);
+});
+
+test('it should initialize "Navigation" plugin if not enabled', async () => {
+  const {client, store} = await createMockFlipperWithPlugin(TestPlugin);
+
+  const Plugin2 = new SandyPluginDefinition(
+    TestUtils.createMockPluginDetails({
+      name: 'Plugin2',
+      id: 'Navigation',
+    }),
+    {
+      plugin: jest.fn().mockImplementation(plugin),
+      Component() {
+        return null;
+      },
+    },
+  );
+
+  const pluginState1 = client.sandyPluginStates.get(TestPlugin.id);
+  expect(pluginState1).toBeInstanceOf(SandyPluginInstance);
+  store.dispatch(registerPlugins([Plugin2]));
+  await client.refreshPlugins();
+  // not enabled, but Navigation is an exception, so we still get an instance
+  const origInstance = client.sandyPluginStates.get(Plugin2.id);
+  expect(origInstance).toBeDefined();
+  expect(Plugin2.asPluginModule().plugin).toBeCalledTimes(1);
+
+  store.dispatch(
+    starPlugin({
+      plugin: Plugin2,
+      selectedApp: client.query.app,
+    }),
+  );
+
+  expect(client.sandyPluginStates.get(Plugin2.id)).toBe(origInstance);
+  const instance = client.sandyPluginStates.get(Plugin2.id)!
+    .instanceApi as PluginApi;
+  expect(Plugin2.asPluginModule().plugin).toBeCalledTimes(1);
+  expect(instance.destroyStub).toHaveBeenCalledTimes(0);
+
+  // disable plugin again
+  store.dispatch(
+    starPlugin({
+      plugin: Plugin2,
+      selectedApp: client.query.app,
+    }),
+  );
+
+  // stil enabled
+  expect(client.sandyPluginStates.get(Plugin2.id)).toBe(origInstance);
+  expect(instance.connectStub).toHaveBeenCalledTimes(0);
+  // disconnect wasn't called because connect was never called
+  expect(instance.disconnectStub).toHaveBeenCalledTimes(0);
+  expect(instance.destroyStub).toHaveBeenCalledTimes(0);
+
+  // closing does stop the plugin!
+  client.close();
+  expect(instance.destroyStub).toHaveBeenCalledTimes(1);
+  expect(client.sandyPluginStates.get(Plugin2.id)).toBeUndefined();
 });

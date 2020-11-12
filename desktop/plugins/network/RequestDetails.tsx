@@ -271,20 +271,22 @@ class HeaderInspector extends Component<
     );
 
     const rows: any = [];
-    computedHeaders.forEach((value: string, key: string) => {
-      rows.push({
-        columns: {
-          key: {
-            value: <WrappingText>{key}</WrappingText>,
+    Array.from(computedHeaders.entries())
+      .sort((a, b) => (a[0] < b[0] ? -1 : a[0] == b[0] ? 0 : 1))
+      .forEach(([key, value]) => {
+        rows.push({
+          columns: {
+            key: {
+              value: <WrappingText>{key}</WrappingText>,
+            },
+            value: {
+              value: <WrappingText>{value}</WrappingText>,
+            },
           },
-          value: {
-            value: <WrappingText>{value}</WrappingText>,
-          },
-        },
-        copyText: value,
-        key,
+          copyText: value,
+          key,
+        });
       });
-    });
 
     return rows.length > 0 ? (
       <ManagedTable

@@ -11,12 +11,8 @@ import {
   createMockFlipperWithPlugin,
   MockFlipperResult,
 } from '../../../test-utils/createMockFlipperWithPlugin';
-import {
-  findBestClient,
-  findBestDevice,
-  findMetroDevice,
-  computePluginLists,
-} from '../PluginList';
+import {computePluginLists} from '../PluginList';
+import {findBestClient, findBestDevice, findMetroDevice} from '../AppInspect';
 import {FlipperPlugin} from '../../../plugin';
 import MetroDevice from '../../../devices/MetroDevice';
 import BaseDevice from '../../../devices/BaseDevice';

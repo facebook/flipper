@@ -8,7 +8,7 @@
  * @flow strict-local
  */
 
-import {FlipperPlugin, FlexColumn, bufferToBlob} from 'flipper';
+import {bufferToBlob} from 'flipper';
 import {
   BookmarksSidebar,
   SaveBookmarkDialog,
@@ -17,217 +17,238 @@ import {
   RequiredParametersDialog,
 } from './components';
 import {
-  removeBookmark,
+  removeBookmarkFromDB,
   readBookmarksFromDB,
   writeBookmarkToDB,
 } from './util/indexedDB';
 import {
   appMatchPatternsToAutoCompleteProvider,
   bookmarksToAutoCompleteProvider,
-  DefaultProvider,
 } from './util/autoCompleteProvider';
 import {getAppMatchPatterns} from './util/appMatchPatterns';
 import {getRequiredParameters, filterOptionalParameters} from './util/uri';
 import {
-  State,
-  PersistedState,
   Bookmark,
   NavigationEvent,
   AppMatchPattern,
+  URI,
+  RawNavigationEvent,
 } from './types';
-import React from 'react';
+import React, {useMemo} from 'react';
+import {
+  PluginClient,
+  createState,
+  useValue,
+  usePlugin,
+  Layout,
+  renderReactRoot,
+} from 'flipper-plugin';
 
-export default class extends FlipperPlugin<State, any, PersistedState> {
-  static defaultPersistedState = {
-    navigationEvents: [],
-    bookmarks: new Map<string, Bookmark>(),
-    currentURI: '',
-    bookmarksProvider: DefaultProvider(),
-    appMatchPatterns: [],
-    appMatchPatternsProvider: DefaultProvider(),
-  };
+export type State = {
+  shouldShowSaveBookmarkDialog: boolean;
+  shouldShowURIErrorDialog: boolean;
+  saveBookmarkURI: URI | null;
+  requiredParameters: Array<string>;
+};
 
-  state = {
-    shouldShowSaveBookmarkDialog: false,
-    saveBookmarkURI: null as string | null,
-    shouldShowURIErrorDialog: false,
-    requiredParameters: [],
-  };
+type Events = {
+  nav_event: RawNavigationEvent;
+};
 
-  static persistedStateReducer = (
-    persistedState: PersistedState,
-    method: string,
-    payload: any,
-  ) => {
-    switch (method) {
-      case 'nav_event':
-        const navigationEvent: NavigationEvent = {
-          uri:
-            payload.uri === undefined ? null : decodeURIComponent(payload.uri),
-          date: new Date(payload.date) || new Date(),
-          className: payload.class === undefined ? null : payload.class,
-          screenshot: null,
-        };
+type Methods = {
+  navigate_to(params: {url: string}): Promise<void>;
+};
 
-        return {
-          ...persistedState,
-          currentURI:
-            navigationEvent.uri == null
-              ? persistedState.currentURI
-              : decodeURIComponent(navigationEvent.uri),
-          navigationEvents: [
-            navigationEvent,
-            ...persistedState.navigationEvents,
-          ],
-        };
-      default:
-        return persistedState;
-    }
-  };
+export type NavigationPlugin = ReturnType<typeof plugin>;
 
-  subscribeToNavigationEvents = () => {
-    this.client.subscribe('nav_event', () =>
-      // Wait for view to render and then take a screenshot
-      setTimeout(async () => {
-        const device = await this.getDevice();
-        const screenshot = await device.screenshot();
-        const blobURL = URL.createObjectURL(bufferToBlob(screenshot));
-        this.props.persistedState.navigationEvents[0].screenshot = blobURL;
-        this.props.setPersistedState({...this.props.persistedState});
-      }, 1000),
-    );
-  };
+export function plugin(client: PluginClient<Events, Methods>) {
+  const bookmarks = createState(new Map<URI, Bookmark>(), {
+    persist: 'bookmarks',
+  });
+  const navigationEvents = createState<NavigationEvent[]>([], {
+    persist: 'navigationEvents',
+  });
+  const appMatchPatterns = createState<AppMatchPattern[]>([], {
+    persist: 'appMatchPatterns',
+  });
+  const currentURI = createState('');
+  const shouldShowSaveBookmarkDialog = createState(false);
+  const saveBookmarkURI = createState<null | string>(null);
 
-  componentDidMount() {
-    const {selectedApp} = this.props;
-    this.subscribeToNavigationEvents();
-    this.getDevice()
-      .then((device) => getAppMatchPatterns(selectedApp, device))
-      .then((patterns: Array<AppMatchPattern>) => {
-        this.props.setPersistedState({
-          appMatchPatterns: patterns,
-          appMatchPatternsProvider: appMatchPatternsToAutoCompleteProvider(
-            patterns,
-          ),
-        });
-      })
-      .catch(() => {
-        /* Silently fail here. */
-      });
-    readBookmarksFromDB().then((bookmarks) => {
-      this.props.setPersistedState({
-        bookmarks: bookmarks,
-        bookmarksProvider: bookmarksToAutoCompleteProvider(bookmarks),
-      });
+  client.onMessage('nav_event', async (payload) => {
+    const navigationEvent: NavigationEvent = {
+      uri: payload.uri === undefined ? null : decodeURIComponent(payload.uri),
+      date: payload.date ? new Date(payload.date) : new Date(),
+      className: payload.class === undefined ? null : payload.class,
+      screenshot: null,
+    };
+
+    if (navigationEvent.uri) currentURI.set(navigationEvent.uri);
+
+    navigationEvents.update((draft) => {
+      draft.unshift(navigationEvent);
     });
-  }
 
-  navigateTo = async (query: string) => {
+    const screenshot: Buffer = await client.device.realDevice.screenshot();
+    const blobURL = URL.createObjectURL(bufferToBlob(screenshot));
+    // this process is async, make sure we update the correct one..
+    const navigationEventIndex = navigationEvents
+      .get()
+      .indexOf(navigationEvent);
+    if (navigationEventIndex !== -1) {
+      navigationEvents.update((draft) => {
+        draft[navigationEventIndex].screenshot = blobURL;
+      });
+    }
+  });
+
+  getAppMatchPatterns(client.appId, client.device.realDevice)
+    .then((patterns) => {
+      appMatchPatterns.set(patterns);
+    })
+    .catch((e) => {
+      console.error('[Navigation] Failed to find appMatchPatterns', e);
+    });
+
+  readBookmarksFromDB().then((bookmarksData) => {
+    bookmarks.set(bookmarksData);
+  });
+
+  function navigateTo(query: string) {
     const filteredQuery = filterOptionalParameters(query);
-    this.props.setPersistedState({currentURI: filteredQuery});
-    const requiredParameters = getRequiredParameters(filteredQuery);
-    if (requiredParameters.length === 0) {
-      const device = await this.getDevice();
-      if (this.realClient.query.app === 'Facebook' && device.os === 'iOS') {
+    currentURI.set(filteredQuery);
+    const params = getRequiredParameters(filteredQuery);
+    if (params.length === 0) {
+      if (client.appName === 'Facebook' && client.device.os === 'iOS') {
         // use custom navigate_to event for Wilde
-        this.client.send('navigate_to', {
+        client.send('navigate_to', {
           url: filterOptionalParameters(filteredQuery),
         });
       } else {
-        device.navigateToLocation(filterOptionalParameters(filteredQuery));
+        client.device.realDevice.navigateToLocation(
+          filterOptionalParameters(filteredQuery),
+        );
       }
     } else {
-      this.setState({
-        requiredParameters,
-        shouldShowURIErrorDialog: true,
-      });
+      renderReactRoot((unmount) => (
+        <RequiredParametersDialog
+          onHide={unmount}
+          uri={filteredQuery}
+          requiredParameters={params}
+          onSubmit={navigateTo}
+        />
+      ));
     }
-  };
+  }
 
-  onFavorite = (uri: string) => {
-    this.setState({shouldShowSaveBookmarkDialog: true, saveBookmarkURI: uri});
-  };
+  function onFavorite(uri: string) {
+    shouldShowSaveBookmarkDialog.set(true);
+    saveBookmarkURI.set(uri);
+  }
 
-  addBookmark = (bookmark: Bookmark) => {
+  function addBookmark(bookmark: Bookmark) {
     const newBookmark = {
       uri: bookmark.uri,
       commonName: bookmark.commonName,
     };
 
+    bookmarks.update((draft) => {
+      draft.set(newBookmark.uri, newBookmark);
+    });
     writeBookmarkToDB(newBookmark);
-    const newMapRef = this.props.persistedState.bookmarks;
-    newMapRef.set(newBookmark.uri, newBookmark);
-    this.props.setPersistedState({
-      bookmarks: newMapRef,
-      bookmarksProvider: bookmarksToAutoCompleteProvider(newMapRef),
-    });
-  };
-
-  removeBookmark = (uri: string) => {
-    removeBookmark(uri);
-    const newMapRef = this.props.persistedState.bookmarks;
-    newMapRef.delete(uri);
-    this.props.setPersistedState({
-      bookmarks: newMapRef,
-      bookmarksProvider: bookmarksToAutoCompleteProvider(newMapRef),
-    });
-  };
-
-  render() {
-    const {
-      saveBookmarkURI,
-      shouldShowSaveBookmarkDialog,
-      shouldShowURIErrorDialog,
-      requiredParameters,
-    } = this.state;
-    const {
-      bookmarks,
-      bookmarksProvider,
-      currentURI,
-      appMatchPatternsProvider,
-      navigationEvents,
-    } = this.props.persistedState;
-    const autoCompleteProviders = [bookmarksProvider, appMatchPatternsProvider];
-    return (
-      <FlexColumn grow>
-        <SearchBar
-          providers={autoCompleteProviders}
-          bookmarks={bookmarks}
-          onNavigate={this.navigateTo}
-          onFavorite={this.onFavorite}
-          uriFromAbove={currentURI}
-        />
-        <Timeline
-          bookmarks={bookmarks}
-          events={navigationEvents}
-          onNavigate={this.navigateTo}
-          onFavorite={this.onFavorite}
-        />
-        <BookmarksSidebar
-          bookmarks={bookmarks}
-          onRemove={this.removeBookmark}
-          onNavigate={this.navigateTo}
-        />
-        <SaveBookmarkDialog
-          shouldShow={shouldShowSaveBookmarkDialog}
-          uri={saveBookmarkURI}
-          onHide={() => this.setState({shouldShowSaveBookmarkDialog: false})}
-          edit={
-            saveBookmarkURI != null ? bookmarks.has(saveBookmarkURI) : false
-          }
-          onSubmit={this.addBookmark}
-          onRemove={this.removeBookmark}
-        />
-        <RequiredParametersDialog
-          shouldShow={shouldShowURIErrorDialog}
-          onHide={() => this.setState({shouldShowURIErrorDialog: false})}
-          uri={currentURI}
-          requiredParameters={requiredParameters}
-          onSubmit={this.navigateTo}
-        />
-      </FlexColumn>
-    );
   }
+
+  function removeBookmark(uri: string) {
+    bookmarks.update((draft) => {
+      draft.delete(uri);
+    });
+    removeBookmarkFromDB(uri);
+  }
+
+  return {
+    navigateTo,
+    onFavorite,
+    addBookmark,
+    removeBookmark,
+    bookmarks,
+    saveBookmarkURI,
+    shouldShowSaveBookmarkDialog,
+    appMatchPatterns,
+    navigationEvents,
+    currentURI,
+    getAutoCompleteAppMatchPatterns(
+      query: string,
+      bookmarks: Map<string, Bookmark>,
+      appMatchPatterns: AppMatchPattern[],
+      limit: number,
+    ): AppMatchPattern[] {
+      const q = query.toLowerCase();
+      const results: AppMatchPattern[] = [];
+      for (const item of appMatchPatterns) {
+        if (
+          !bookmarks.has(item.pattern) &&
+          (item.className.toLowerCase().includes(q) ||
+            item.pattern.toLowerCase().includes(q))
+        ) {
+          results.push(item);
+          if (--limit < 1) break;
+        }
+      }
+      return results;
+    },
+  };
+}
+
+export function Component() {
+  const instance = usePlugin(plugin);
+  const bookmarks = useValue(instance.bookmarks);
+  const appMatchPatterns = useValue(instance.appMatchPatterns);
+  const saveBookmarkURI = useValue(instance.saveBookmarkURI);
+  const shouldShowSaveBookmarkDialog = useValue(
+    instance.shouldShowSaveBookmarkDialog,
+  );
+  const currentURI = useValue(instance.currentURI);
+  const navigationEvents = useValue(instance.navigationEvents);
+
+  const autoCompleteProviders = useMemo(
+    () => [
+      bookmarksToAutoCompleteProvider(bookmarks),
+      appMatchPatternsToAutoCompleteProvider(appMatchPatterns),
+    ],
+    [bookmarks, appMatchPatterns],
+  );
+  return (
+    <Layout.Container>
+      <SearchBar
+        providers={autoCompleteProviders}
+        bookmarks={bookmarks}
+        onNavigate={instance.navigateTo}
+        onFavorite={instance.onFavorite}
+        uriFromAbove={currentURI}
+      />
+      <Timeline
+        bookmarks={bookmarks}
+        events={navigationEvents}
+        onNavigate={instance.navigateTo}
+        onFavorite={instance.onFavorite}
+      />
+      <BookmarksSidebar
+        bookmarks={bookmarks}
+        onRemove={instance.removeBookmark}
+        onNavigate={instance.navigateTo}
+      />
+      <SaveBookmarkDialog
+        shouldShow={shouldShowSaveBookmarkDialog}
+        uri={saveBookmarkURI}
+        onHide={() => {
+          instance.shouldShowSaveBookmarkDialog.set(false);
+        }}
+        edit={saveBookmarkURI != null ? bookmarks.has(saveBookmarkURI) : false}
+        onSubmit={instance.addBookmark}
+        onRemove={instance.removeBookmark}
+      />
+    </Layout.Container>
+  );
 }
 
 /* @scarf-info: do not remove, more info: https://fburl.com/scarf */

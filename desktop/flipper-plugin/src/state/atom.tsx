@@ -7,9 +7,11 @@
  * @format
  */
 
-import {produce, Draft} from 'immer';
+import {produce, Draft, enableMapSet} from 'immer';
 import {useState, useEffect} from 'react';
 import {getCurrentPluginInstance} from '../plugin/PluginBase';
+
+enableMapSet();
 
 export type Atom<T> = {
   get(): T;

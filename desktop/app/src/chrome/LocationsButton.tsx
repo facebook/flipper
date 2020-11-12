@@ -7,43 +7,18 @@
  * @format
  */
 
-import {Button, styled} from '../ui';
-import {connect} from 'react-redux';
-import React, {Component} from 'react';
-import {State as Store} from '../reducers';
-// TODO T71355623
-// eslint-disable-next-line flipper/no-relative-imports-across-packages
-import {
-  readBookmarksFromDB,
-  writeBookmarkToDB,
-} from '../../../plugins/navigation/util/indexedDB';
-// TODO T71355623
-// eslint-disable-next-line flipper/no-relative-imports-across-packages
-import {PersistedState as NavPluginState} from '../../../plugins/navigation/types';
-import BaseDevice from '../devices/BaseDevice';
-import {State as PluginState} from '../reducers/pluginStates';
+import React, {useCallback, useEffect} from 'react';
 import {platform} from 'os';
-import {getPluginKey} from '../utils/pluginUtils';
+import {useValue} from 'flipper-plugin';
+import {Button, styled} from '../ui';
+import {useStore} from '../utils/useStore';
+import {useMemoize} from '../utils/useMemoize';
+import {State} from '../reducers';
 
-type State = {
-  bookmarks: Array<Bookmark>;
-  hasRetrievedBookmarks: boolean;
-  retreivingBookmarks: boolean;
-};
-
-type OwnProps = {};
-
-type StateFromProps = {
-  currentURI: string | undefined;
-  selectedDevice: BaseDevice | null | undefined;
-};
-
-type DispatchFromProps = {};
-
-type Bookmark = {
-  uri: string;
-  commonName: string | null;
-};
+// eslint-disable-next-line flipper/no-relative-imports-across-packages
+import type {NavigationPlugin} from '../../../plugins/navigation/index';
+// eslint-disable-next-line flipper/no-relative-imports-across-packages
+import type {Bookmark} from '../../../plugins/navigation/types';
 
 const DropdownButton = styled(Button)({
   fontSize: 11,
@@ -57,127 +32,105 @@ const shortenText = (text: string, MAX_CHARACTERS = 30): string => {
   }
 };
 
-type Props = OwnProps & StateFromProps & DispatchFromProps;
-class LocationsButton extends Component<Props, State> {
-  state: State = {
-    bookmarks: [],
-    hasRetrievedBookmarks: false,
-    retreivingBookmarks: false,
-  };
+const NAVIGATION_PLUGIN_ID = 'Navigation';
 
-  componentDidMount() {
-    document.addEventListener('keydown', this.keyDown);
-    this.updateBookmarks();
-  }
-
-  componentWillUnmount() {
-    document.removeEventListener('keydown', this.keyDown);
-  }
-
-  goToLocation = (location: string) => {
-    const {selectedDevice} = this.props;
-    if (selectedDevice != null) {
-      selectedDevice.navigateToLocation(location);
-    }
-  };
-
-  keyDown = (e: KeyboardEvent) => {
-    if (
-      ((platform() === 'darwin' && e.metaKey) ||
-        (platform() !== 'darwin' && e.ctrlKey)) &&
-      /^\d$/.test(e.key) &&
-      this.state.bookmarks.length >= parseInt(e.key, 10)
-    ) {
-      this.goToLocation(this.state.bookmarks[parseInt(e.key, 10) - 1].uri);
-    }
-  };
-
-  updateBookmarks = () => {
-    readBookmarksFromDB().then((bookmarksMap) => {
-      const bookmarks: Array<Bookmark> = [];
-      bookmarksMap.forEach((bookmark: Bookmark) => {
-        bookmarks.push(bookmark);
-      });
-      this.setState({bookmarks});
-    });
-  };
-
-  render() {
-    const {currentURI} = this.props;
-    const {bookmarks} = this.state;
-
-    const dropdown: any[] = [
-      {
-        label: 'Bookmarks',
-        enabled: false,
-      },
-      ...bookmarks.map((bookmark, i) => {
-        return {
-          click: () => {
-            this.goToLocation(bookmark.uri);
-          },
-          accelerator: i < 9 ? `CmdOrCtrl+${i + 1}` : undefined,
-          label: shortenText(
-            (bookmark.commonName ? bookmark.commonName + ' - ' : '') +
-              bookmark.uri,
-            100,
-          ),
-        };
-      }),
-    ];
-
-    if (currentURI) {
-      dropdown.push(
-        {type: 'separator'},
-        {
-          label: 'Bookmark Current Location',
-          click: async () => {
-            await writeBookmarkToDB({
-              uri: currentURI,
-              commonName: null,
-            });
-            this.updateBookmarks();
-          },
-        },
-      );
-    }
-
-    return (
-      <DropdownButton
-        onMouseDown={this.updateBookmarks}
-        compact={true}
-        dropdown={dropdown}>
-        {(currentURI && shortenText(currentURI)) || '(none)'}
-      </DropdownButton>
-    );
-  }
+export function LocationsButton() {
+  const navPlugin = useStore(navPluginStateSelector);
+  return navPlugin ? (
+    <ActiveLocationsButton navPlugin={navPlugin} />
+  ) : (
+    <DropdownButton compact={true}>(none)</DropdownButton>
+  );
 }
 
-const mapStateFromPluginStatesToProps = (
-  pluginStates: PluginState,
-  selectedDevice: BaseDevice | null,
-  selectedApp: string | null,
-) => {
-  const pluginKey = getPluginKey(selectedApp, selectedDevice, 'Navigation');
-  let currentURI: string | undefined;
-  if (pluginKey) {
-    const navPluginState = pluginStates[pluginKey] as
-      | NavPluginState
-      | undefined;
-    currentURI = navPluginState && navPluginState.currentURI;
-  }
-  return {
-    currentURI,
-  };
-};
+function ActiveLocationsButton({navPlugin}: {navPlugin: NavigationPlugin}) {
+  const currentURI = useValue(navPlugin.currentURI);
+  const bookmarks = useValue(navPlugin.bookmarks);
 
-export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
-  ({connections: {selectedDevice, selectedApp}, pluginStates}) => ({
-    selectedDevice,
-    ...mapStateFromPluginStatesToProps(
-      pluginStates,
-      selectedDevice,
-      selectedApp,
-    ),
-  }),
-)(LocationsButton);
+  const keyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (
+        ((platform() === 'darwin' && e.metaKey) ||
+          (platform() !== 'darwin' && e.ctrlKey)) &&
+        /^\d$/.test(e.key) &&
+        bookmarks.size >= parseInt(e.key, 10)
+      ) {
+        navPlugin.navigateTo(
+          Array.from(bookmarks.values())[parseInt(e.key, 10) - 1].uri,
+        );
+      }
+    },
+    [bookmarks, navPlugin],
+  );
+
+  useEffect(() => {
+    document.addEventListener('keydown', keyDown);
+    return () => {
+      document.removeEventListener('keydown', keyDown);
+    };
+  }, [keyDown]);
+
+  const dropdown = useMemoize(computeBookmarkDropdown, [
+    navPlugin,
+    bookmarks,
+    currentURI,
+  ]);
+
+  return (
+    <DropdownButton compact={true} dropdown={dropdown}>
+      {(currentURI && shortenText(currentURI)) || '(none)'}
+    </DropdownButton>
+  );
+}
+
+export function navPluginStateSelector(state: State) {
+  const {selectedApp, clients} = state.connections;
+  if (!selectedApp) return undefined;
+  const client = clients.find((client) => client.id === selectedApp);
+  if (!client) return undefined;
+  return client.sandyPluginStates.get(NAVIGATION_PLUGIN_ID)?.instanceApi as
+    | undefined
+    | NavigationPlugin;
+}
+
+function computeBookmarkDropdown(
+  navPlugin: NavigationPlugin,
+  bookmarks: Map<string, Bookmark>,
+  currentURI: string,
+) {
+  const dropdown: Electron.MenuItemConstructorOptions[] = [
+    {
+      label: 'Bookmarks',
+      enabled: false,
+    },
+    ...Array.from(bookmarks.values()).map((bookmark, i) => {
+      return {
+        click: () => {
+          navPlugin.navigateTo(bookmark.uri);
+        },
+        accelerator: i < 9 ? `CmdOrCtrl+${i + 1}` : undefined,
+        label: shortenText(
+          (bookmark.commonName ? bookmark.commonName + ' - ' : '') +
+            bookmark.uri,
+          100,
+        ),
+      };
+    }),
+  ];
+
+  if (currentURI) {
+    dropdown.push(
+      {type: 'separator'},
+      {
+        label: 'Bookmark Current Location',
+        click: () => {
+          navPlugin.addBookmark({
+            uri: currentURI,
+            commonName: null,
+          });
+        },
+      },
+    );
+  }
+  return dropdown;
+}

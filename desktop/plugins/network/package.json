@@ -7,7 +7,7 @@
   "title": "Network",
   "description": "Use the Network inspector to inspect outgoing network traffic in your apps.",
   "icon": "internet",
-  "version": "0.64.0",
+  "version": "0.65.0",
   "license": "MIT",
   "keywords": [
     "flipper-plugin"
@@ -22,8 +22,8 @@
     "xml-beautifier": "^0.4.0"
   },
   "peerDependencies": {
-    "flipper": "0.64.0",
-    "flipper-plugin": "0.64.0"
+    "flipper": "0.65.0",
+    "flipper-plugin": "0.65.0"
   },
   "devDependencies": {
     "@types/pako": "^1.0.1",

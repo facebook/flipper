@@ -46,15 +46,14 @@ export type DevicePluginPredicate = (device: Device) => boolean;
 
 export type DevicePluginFactory = (client: DevicePluginClient) => object;
 
-export interface DevicePluginClient extends BasePluginClient {
-  readonly device: Device;
-}
+export interface DevicePluginClient extends BasePluginClient {}
 
 /**
  * Wrapper interface around BaseDevice in Flipper
  */
 export interface RealFlipperDevice {
   os: string;
+  serial: string;
   isArchived: boolean;
   deviceType: DeviceType;
   addLogListener(callback: DeviceLogListener): Symbol;
@@ -76,25 +75,8 @@ export class SandyDevicePluginInstance extends BasePluginInstance {
     realDevice: RealFlipperDevice,
     initialStates?: Record<string, any>,
   ) {
-    super(flipperLib, definition, initialStates);
-    const device: Device = {
-      realDevice, // TODO: temporarily, clean up T70688226
-      // N.B. we model OS as string, not as enum, to make custom device types possible in the future
-      os: realDevice.os,
-      isArchived: realDevice.isArchived,
-      deviceType: realDevice.deviceType,
-
-      onLogEntry(cb) {
-        const handle = realDevice.addLogListener(cb);
-        return () => {
-          realDevice.removeLogListener(handle);
-        };
-      },
-    };
-    this.client = {
-      ...this.createBasePluginClient(),
-      device,
-    };
+    super(flipperLib, definition, realDevice, initialStates);
+    this.client = this.createBasePluginClient();
     this.initializePlugin(() =>
       definition.asDevicePluginModule().devicePlugin(this.client),
     );
