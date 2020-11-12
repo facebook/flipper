@@ -547,7 +547,7 @@ export default class Client extends EventEmitter {
         }
         if (!handled) {
           console.warn(`Unhandled message ${params.api}.${params.method}`);
-          let previousUnhandled = this.unsentMessages.get(params.api) || [];
+          const previousUnhandled = this.unsentMessages.get(params.api) || [];
           previousUnhandled.push(msg);
           this.unsentMessages.set(params.api, previousUnhandled);
         }
@@ -761,7 +761,7 @@ export default class Client extends EventEmitter {
 
     if (this.unsentMessages.has(pluginId)) {
       const messages = this.unsentMessages.get(pluginId);
-      for (let message in messages) {
+      for (const message in messages) {
         this.onMessage(message);
       }
     }
