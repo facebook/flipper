@@ -10,11 +10,11 @@
 import React, {useEffect, useState} from 'react';
 import {Modal, Button, message, Alert} from 'antd';
 import {AndroidOutlined, AppleOutlined} from '@ant-design/icons';
-import {renderReactRoot} from '../../utils/renderReactRoot';
 import {Store} from '../../reducers';
 import {useStore} from '../../utils/useStore';
 import {launchEmulator} from '../../devices/AndroidDevice';
-import {Layout} from 'flipper-plugin';
+import {Layout, renderReactRoot} from 'flipper-plugin';
+import {Provider} from 'react-redux';
 import {
   launchSimulator,
   getSimulators,
@@ -22,12 +22,11 @@ import {
 } from '../../dispatcher/iOSDevice';
 
 export function showEmulatorLauncher(store: Store) {
-  renderReactRoot(
-    (unmount) => (
+  renderReactRoot((unmount) => (
+    <Provider store={store}>
       <LaunchEmulatorDialog onClose={unmount} getSimulators={getSimulators} />
-    ),
-    store,
-  );
+    </Provider>
+  ));
 }
 
 type GetSimulators = typeof getSimulators;

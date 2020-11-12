@@ -41,6 +41,7 @@ import {
   useValue,
   usePlugin,
   Layout,
+  renderReactRoot,
 } from 'flipper-plugin';
 
 export type State = {
@@ -71,8 +72,6 @@ export function plugin(client: PluginClient<Events, Methods>) {
     persist: 'appMatchPatterns',
   });
   const currentURI = createState('');
-  const shouldShowURIErrorDialog = createState(false);
-  const requiredParameters = createState<string[]>([]);
   const shouldShowSaveBookmarkDialog = createState(false);
   const saveBookmarkURI = createState<null | string>(null);
 
@@ -131,13 +130,18 @@ export function plugin(client: PluginClient<Events, Methods>) {
         );
       }
     } else {
-      requiredParameters.set(params);
-      shouldShowURIErrorDialog.set(true);
+      renderReactRoot((unmount) => (
+        <RequiredParametersDialog
+          onHide={unmount}
+          uri={filteredQuery}
+          requiredParameters={params}
+          onSubmit={navigateTo}
+        />
+      ));
     }
   }
 
   function onFavorite(uri: string) {
-    // TODO: why does this need a dialog?
     shouldShowSaveBookmarkDialog.set(true);
     saveBookmarkURI.set(uri);
   }
@@ -169,11 +173,29 @@ export function plugin(client: PluginClient<Events, Methods>) {
     bookmarks,
     saveBookmarkURI,
     shouldShowSaveBookmarkDialog,
-    shouldShowURIErrorDialog,
-    requiredParameters,
     appMatchPatterns,
     navigationEvents,
     currentURI,
+    getAutoCompleteAppMatchPatterns(
+      query: string,
+      bookmarks: Map<string, Bookmark>,
+      appMatchPatterns: AppMatchPattern[],
+      limit: number,
+    ): AppMatchPattern[] {
+      const q = query.toLowerCase();
+      const results: AppMatchPattern[] = [];
+      for (const item of appMatchPatterns) {
+        if (
+          !bookmarks.has(item.pattern) &&
+          (item.className.toLowerCase().includes(q) ||
+            item.pattern.toLowerCase().includes(q))
+        ) {
+          results.push(item);
+          if (--limit < 1) break;
+        }
+      }
+      return results;
+    },
   };
 }
 
@@ -185,8 +207,6 @@ export function Component() {
   const shouldShowSaveBookmarkDialog = useValue(
     instance.shouldShowSaveBookmarkDialog,
   );
-  const shouldShowURIErrorDialog = useValue(instance.shouldShowURIErrorDialog);
-  const requiredParameters = useValue(instance.requiredParameters);
   const currentURI = useValue(instance.currentURI);
   const navigationEvents = useValue(instance.navigationEvents);
 
@@ -226,15 +246,6 @@ export function Component() {
         edit={saveBookmarkURI != null ? bookmarks.has(saveBookmarkURI) : false}
         onSubmit={instance.addBookmark}
         onRemove={instance.removeBookmark}
-      />
-      <RequiredParametersDialog
-        shouldShow={shouldShowURIErrorDialog}
-        onHide={() => {
-          instance.shouldShowURIErrorDialog.set(false);
-        }}
-        uri={currentURI}
-        requiredParameters={requiredParameters}
-        onSubmit={instance.navigateTo}
       />
     </Layout.Container>
   );
