@@ -164,7 +164,7 @@ export const PluginList = memo(function PluginList({
             <PluginGroup
               key="disabled"
               title="Disabled"
-              hint="This section shows the plugins that are currently disabled. If a pluign is enabled, you will be able to interact with it. If a plugin is disabled it won't consume resources in Flipper or in the connected application.">
+              hint="This section shows the plugins that are currently disabled. If a plugin is enabled, you will be able to interact with it. If a plugin is disabled it won't consume resources in Flipper or in the connected application.">
               {disabledPlugins.map((plugin) => (
                 <PluginEntry
                   key={plugin.id}

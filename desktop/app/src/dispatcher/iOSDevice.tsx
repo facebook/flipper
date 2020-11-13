@@ -188,12 +188,13 @@ export function getSimulators(
     });
 }
 
-export function launchSimulator(udid: string): Promise<any> {
-  return promisify(execFile)(
+export async function launchSimulator(udid: string): Promise<any> {
+  await promisify(execFile)(
     'xcrun',
     ['simctl', ...getDeviceSetPath(), 'boot', udid],
     {encoding: 'utf8'},
   );
+  await promisify(execFile)('open', ['-a', 'simulator']);
 }
 
 function getActiveDevices(idbPath: string): Promise<Array<IOSDeviceParams>> {
