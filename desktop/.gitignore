@@ -6,3 +6,10 @@ node_modules/
 /app/src/defaultPlugins/index.tsx
 /coverage
 .env
+
+# We're creating this symlink as a part of build to include fb-internal plugins into the yarn workspaces.
+/plugins/fb-link
+
+# We're creating symlink to yarn lock which is pointing to a yarn.lock from /locks folder.
+# This allows us to use different yarn.locks for public and fb-internal builds.
+/yarn.lock

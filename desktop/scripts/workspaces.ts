@@ -7,7 +7,7 @@
  * @format
  */
 
-import {rootDir, pluginsDir, fbPluginsDir} from './paths';
+import {rootDir, pluginsDir} from './paths';
 import fs from 'fs-extra';
 import path from 'path';
 import {promisify} from 'util';
@@ -36,7 +36,8 @@ async function getWorkspacesByRoot(
     return null;
   }
   const rootPackageJson = await fs.readJson(path.join(rootDir, 'package.json'));
-  const packageGlobs = rootPackageJson.workspaces.packages as string[];
+  const packageGlobs = (rootPackageJson.workspaces
+    .packages as string[]).map((x) => x.replace('/fb-link/', '/fb/'));
   const packages = await pmap(
     await pfilter(
       ([] as string[]).concat(
@@ -71,16 +72,7 @@ async function getWorkspacesByRoot(
 }
 
 export async function getWorkspaces(): Promise<Workspaces> {
-  const rootWorkspaces = await getWorkspacesByRoot(rootDir);
-  const fbWorkspaces = await getWorkspacesByRoot(fbPluginsDir);
-  if (!fbWorkspaces) {
-    return rootWorkspaces!;
-  }
-  const mergedWorkspaces: Workspaces = {
-    rootPackage: rootWorkspaces!.rootPackage,
-    packages: [...rootWorkspaces!.packages, ...fbWorkspaces.packages],
-  };
-  return mergedWorkspaces;
+  return (await getWorkspacesByRoot(rootDir))!;
 }
 
 export async function bumpVersions({

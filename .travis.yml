@@ -34,7 +34,7 @@ matrix:
 
       install:
         - cd desktop
-        - yarn
+        - ./bootstrap --frozen-lockfile
 
       script:
         - yarn lint

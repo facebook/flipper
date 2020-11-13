@@ -16,7 +16,6 @@
   "workspaces": {
     "packages": [
       "app",
-      "app/src/fb/*",
       "babel-transformer",
       "doctor",
       "headless",
@@ -25,14 +24,17 @@
       "pkg-lib",
       "flipper-plugin",
       "static",
-      "plugins/*",
       "e2e",
       "plugin-lib",
       "test-utils",
-      "eslint-plugin-flipper"
+      "eslint-plugin-flipper",
+      "plugins/*",
+      "plugins/fb-link/**/*"
     ],
     "nohoist": [
-      "flipper-plugin-kaios-big-allocations/firefox-client"
+      "flipper-plugin-kaios-big-allocations/firefox-client",
+      "flipper-plugin-pointsofinterest/react-plotly.js",
+      "flipper-plugin-pointsofinterest/react-plotly.js/**"
     ]
   },
   "build": {
@@ -210,6 +212,7 @@
     "node-fetch": "^2.6.0",
     "p-filter": "^2.1.0",
     "p-map": "^4.0.0",
+    "patch-package": "^6.2.2",
     "pkg": "^4.4.1",
     "prettier": "^2.0.0",
     "pretty-format": "^26.1.0",
@@ -229,8 +232,9 @@
     "yazl": "^2.5.1"
   },
   "scripts": {
-    "preinstall": "node scripts/prepare-watchman-config.js && yarn config set ignore-engines",
-    "postinstall": "patch-package && ./ts-node scripts/yarn-install-fb-plugins.ts && yarn build:pkg && yarn build:eslint && ./ts-node scripts/generate-plugin-entry-points.ts && yarn build:themes",
+    "preinstall": "yarn config set ignore-engines && node scripts/preinstall.js",
+    "postinstall": "./ts-node scripts/postinstall.ts",
+    "afterinstall": "patch-package && yarn build:pkg && yarn build:eslint && ./ts-node scripts/generate-plugin-entry-points.ts && yarn build:themes",
     "rm-dist": "rimraf ../dist",
     "rm-modules": "rimraf **/*/node_modules node_modules",
     "rm-temp": "rimraf $TMPDIR/jest* $TMPDIR/react-native-packager*",

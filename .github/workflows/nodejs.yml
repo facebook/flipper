@@ -22,8 +22,8 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - name: yarn install
-      run: yarn
+    - name: bootstrap
+      run: ./bootstrap --frozen-lockfile
       working-directory: ${{env.desktop-directory}}
     - name: lint
       run: yarn lint

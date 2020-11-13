@@ -19,7 +19,7 @@
     "postinstall": "patch-package"
   },
   "devDependencies": {
-    "patch-package": "^6.2.0"
+    "patch-package": "^6.2.2"
   },
   "dependencies": {
     "firefox-client": "0.3.0",
