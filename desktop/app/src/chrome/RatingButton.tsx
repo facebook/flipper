@@ -308,7 +308,7 @@ class RatingButton extends Component<PropsFromState, State> {
 
   constructor(props: PropsFromState) {
     super(props);
-    if (GK.get('flipper_rating')) {
+    if (GK.get('flipper_enable_star_ratiings')) {
       UserFeedback.getPrompt().then((prompt) => {
         this.setState({promptData: prompt});
         setTimeout(this.triggerPopover.bind(this), 30000);
