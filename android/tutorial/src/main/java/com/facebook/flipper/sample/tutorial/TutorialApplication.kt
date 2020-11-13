@@ -10,15 +10,12 @@ package com.facebook.flipper.sample.tutorial
 import android.app.Application
 import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.flipper.android.AndroidFlipperClient
-import com.facebook.flipper.core.FlipperClient
 import com.facebook.flipper.plugins.fresco.FrescoFlipperPlugin
 import com.facebook.flipper.plugins.inspector.DescriptorMapping
 import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin
-import com.facebook.flipper.plugins.litho.LithoFlipperDescriptors
 import com.facebook.flipper.sample.tutorial.plugin.SeaMammalFlipperPlugin
 import com.facebook.litho.config.ComponentsConfiguration
-import com.facebook.litho.sections.config.SectionsConfiguration
-import com.facebook.litho.widget.SectionsDebug
+import com.facebook.litho.editor.flipper.LithoFlipperDescriptors
 import com.facebook.soloader.SoLoader
 
 class TutorialApplication : Application() {
