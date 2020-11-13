@@ -12,12 +12,21 @@ jobs:
     outputs:
       tag: ${{ steps.tag-version-commit.outputs.tag }}
     steps:
+      - uses: passy/extract-version-commit@main
+        id: extract-version-commit
+        with:
+          version_regex: '^Flipper Release: v([0-9]+\.[0-9]+\.[0-9]+)(?:\n|$)'
       - uses: actions/checkout@v2
+        if: ${{ steps.extract-version-commit.outputs.commit != ''}}
+        with:
+          ref: ${{ steps.extract-version-commit.outputs.commit }}
       - name: Tag version commit
+        if: ${{ steps.extract-version-commit.outputs.commit != ''}}
         id: tag-version-commit
-        uses: passy/tag-version-commit@v1.1.1
+        uses: passy/tag-version-commit@master
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          ref: ${{ steps.extract-version-commit.outputs.commit }}
           version_tag_prefix: 'v'
           version_assertion_command: 'grep -q "\"version\": \"$version\"" desktop/package.json'
       - name: Create release
@@ -35,12 +44,16 @@ jobs:
           prerelease: false
 
   build-mac:
+    needs:
+      - release
     runs-on: macos-latest
     env:
       desktop-directory: ./desktop
 
     steps:
     - uses: actions/checkout@v2
+      with:
+        ref: ${{ needs.release.outputs.tag }}
     - uses: actions/setup-node@v1
       with:
         node-version: '12.x'
@@ -63,12 +76,16 @@ jobs:
         path: 'dist/Flipper-mac.dmg'
 
   build-linux:
+    needs:
+      - release
     runs-on: ubuntu-latest
     env:
       desktop-directory: ./desktop
 
     steps:
     - uses: actions/checkout@v2
+      with:
+        ref: ${{ needs.release.outputs.tag }}
     - uses: actions/setup-node@v1
       with:
         node-version: '12.x'
@@ -91,12 +108,16 @@ jobs:
         path: 'dist/Flipper-linux.zip'
 
   build-win:
+    needs:
+      - release
     runs-on: windows-latest
     env:
       desktop-directory: ./desktop
 
     steps:
     - uses: actions/checkout@v2
+      with:
+        ref: ${{ needs.release.outputs.tag }}
     - uses: actions/setup-node@v1
       with:
         node-version: '12.x'
@@ -119,12 +140,12 @@ jobs:
         path: 'dist/Flipper-win.zip'
 
   publish:
-    runs-on: ubuntu-latest
     needs:
       - build-win
       - build-linux
       - build-mac
       - release
+    runs-on: ubuntu-latest
 
     steps:
     - name: Download Mac
@@ -166,3 +187,4 @@ jobs:
       with:
         workflow: Publish Pods
         token: ${{ secrets.PERSONAL_TOKEN }}
+        ref: ${{ needs.release.outputs.tag }}
