@@ -119,7 +119,7 @@
     "@types/adobe__node-fetch-retry": "^1.0.0",
     "@types/algoliasearch": "^3.30.19",
     "@types/babel__code-frame": "^7.0.1",
-    "@types/babel__core": "^7.1.10",
+    "@types/babel__core": "^7.1.12",
     "@types/babel__generator": "^7.6.1",
     "@types/babel__traverse": "^7.0.15",
     "@types/decompress": "4.2.3",
