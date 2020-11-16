@@ -1,47 +1,49 @@
 import React from 'react';
-import {FlipperPlugin, View, KeyboardActions} from 'flipper';
+import {PluginClient, usePlugin, createState, useValue, Layout} from 'flipper-plugin';
 
-type State = {};
-
-type Data = {};
-
-type PersistedState = {
-  data: Array<Data>;
+type Data = {
+  id: string;
+  message?: string;
 };
 
-export default class extends FlipperPlugin<State, any, PersistedState> {
-  static keyboardActions: KeyboardActions = ['clear'];
+type Events = {
+  newData: Data;
+};
 
-  static defaultPersistedState: PersistedState = {
-    data: [],
-  };
+// Read more: https://fbflipper.com/docs/extending/desktop-plugins#creating-a-first-plugin
+// API: https://fbflipper.com/docs/extending/flipper-plugin#pluginclient
+export function plugin(client: PluginClient<Events, {}>) {
+  const data = createState<Record<string, Data>>({}, {persist: 'data'});
 
-  static persistedStateReducer = (
-    persistedState: PersistedState,
-    method: string,
-    data: Data,
-  ): PersistedState => {
-    return {
-      ...persistedState,
-      data: persistedState.data.concat([data]),
-    };
-  };
+  client.onMessage('newData', (newData) => {
+    data.update((draft) => {
+      draft[newData.id] = newData;
+    });
+  });
 
-  state = {};
+  client.addMenuEntry({
+    action: 'clear',
+    handler: async () => {
+      data.set({});
+    },
+  });
 
-  onKeyboardAction = (action: string) => {
-    if (action === 'clear') {
-      this.props.setPersistedState({data: []});
-    }
-  };
+  return {data};
+}
 
-  render() {
-    return (
-      <View scrollable>
-        {this.props.persistedState.data.map((d) => (
-          <div>{JSON.stringify(d, null, 2)}<hr/></div>
-        ))}
-      </View>
-    )
-  }
+// Read more: https://fbflipper.com/docs/extending/desktop-plugins#building-a-user-interface-for-the-plugin
+// API: https://fbflipper.com/docs/extending/flipper-plugin#react-hooks
+export function Component() {
+  const instance = usePlugin(plugin);
+  const data = useValue(instance.data);
+
+  return (
+    <Layout.ScrollContainer>
+      {Object.entries(data).map(([id, d]) => (
+        <pre key={id} data-testid={id}>
+          {JSON.stringify(d)}
+        </pre>
+      ))}
+    </Layout.ScrollContainer>
+  );
 }

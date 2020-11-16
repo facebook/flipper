@@ -44,6 +44,14 @@ test('It generates the correct files', async () => {
       "/dev/null/.gitignore": "node_modules
     dist/
     ",
+      "/dev/null/babel.config.js": "module.exports = {
+        presets: [
+            '@babel/preset-typescript', 
+            '@babel/preset-react', 
+            ['@babel/preset-env', {targets: {node: 'current'}}]
+        ],
+    };
+    ",
       "/dev/null/package.json": "{
       \\"$schema\\": \\"https://fbflipper.com/schemas/plugin-package/v2.json\\",
       \\"name\\": \\"flipper-plugin-my-weird-package-name-etc\\",
@@ -61,65 +69,121 @@ test('It generates the correct files', async () => {
         \\"lint\\": \\"flipper-pkg lint\\",
         \\"prepack\\": \\"flipper-pkg lint && flipper-pkg bundle\\",
         \\"build\\": \\"flipper-pkg bundle\\",
-        \\"watch\\": \\"flipper-pkg bundle --watch\\"
+        \\"watch\\": \\"flipper-pkg bundle --watch\\",
+        \\"test\\": \\"jest\\"
       },
       \\"peerDependencies\\": {
-        \\"flipper\\": \\"latest\\"
+        \\"flipper\\": \\"latest\\",
+        \\"flipper-plugin\\": \\"latest\\",
+        \\"antd\\": \\"latest\\"
       },
       \\"devDependencies\\": {
+        \\"@babel/preset-react\\": \\"latest\\",
+        \\"@babel/preset-typescript\\": \\"latest\\",
+        \\"@types/jest\\": \\"latest\\",
         \\"@types/react\\": \\"latest\\",
         \\"@types/react-dom\\": \\"latest\\",
+        \\"antd\\": \\"latest\\",
         \\"flipper\\": \\"latest\\",
-        \\"flipper-pkg\\": \\"latest\\"
+        \\"flipper-plugin\\": \\"latest\\",
+        \\"flipper-pkg\\": \\"latest\\",
+        \\"jest\\": \\"latest\\"
       }
     }
     ",
+      "/dev/null/src/__tests__/test.spec.tsx": "import {TestUtils} from 'flipper-plugin';
+    import * as Plugin from '..';
+
+    // Read more: https://fbflipper.com/docs/extending/desktop-plugins#testing-plugin-logic
+    // API: https://fbflipper.com/docs/extending/desktop-plugins#testing-plugin-logic
+    test('It can store data', () => {
+      const {instance, sendEvent} = TestUtils.startPlugin(Plugin);
+
+      expect(instance.data.get()).toEqual({});
+
+      sendEvent('newData', {id: 'firstID'});
+      sendEvent('newData', {id: 'secondID'});
+
+      expect(instance.data.get()).toMatchInlineSnapshot(\`
+        Object {
+          \\"firstID\\": Object {
+            \\"id\\": \\"firstID\\",
+          },
+          \\"secondID\\": Object {
+            \\"id\\": \\"secondID\\",
+          },
+        }
+      \`);
+    });
+
+    // Read more: https://fbflipper.com/docs/extending/desktop-plugins#testing-plugin-logic
+    // API: https://fbflipper.com/docs/extending/desktop-plugins#testing-plugin-logic
+    test('It can render data', async () => {
+      const {instance, renderer, sendEvent} = TestUtils.renderPlugin(Plugin);
+
+      expect(instance.data.get()).toEqual({});
+
+      sendEvent('newData', {id: 'firstID'});
+      sendEvent('newData', {id: 'secondID'});
+
+      expect(await renderer.findByTestId('firstID')).not.toBeNull();
+      expect(await renderer.findByTestId('secondID')).toMatchInlineSnapshot(\`
+        <pre
+          data-testid=\\"secondID\\"
+        >
+          {\\"id\\":\\"secondID\\"}
+        </pre>
+      \`);
+    });
+    ",
       "/dev/null/src/index.tsx": "import React from 'react';
-    import {FlipperPlugin, View, KeyboardActions} from 'flipper';
+    import {PluginClient, usePlugin, createState, useValue, Layout} from 'flipper-plugin';
 
-    type State = {};
-
-    type Data = {};
-
-    type PersistedState = {
-      data: Array<Data>;
+    type Data = {
+      id: string;
+      message?: string;
     };
 
-    export default class extends FlipperPlugin<State, any, PersistedState> {
-      static keyboardActions: KeyboardActions = ['clear'];
+    type Events = {
+      newData: Data;
+    };
 
-      static defaultPersistedState: PersistedState = {
-        data: [],
-      };
+    // Read more: https://fbflipper.com/docs/extending/desktop-plugins#creating-a-first-plugin
+    // API: https://fbflipper.com/docs/extending/flipper-plugin#pluginclient
+    export function plugin(client: PluginClient<Events, {}>) {
+      const data = createState<Record<string, Data>>({}, {persist: 'data'});
 
-      static persistedStateReducer = (
-        persistedState: PersistedState,
-        method: string,
-        data: Data,
-      ): PersistedState => {
-        return {
-          ...persistedState,
-          data: persistedState.data.concat([data]),
-        };
-      };
+      client.onMessage('newData', (newData) => {
+        data.update((draft) => {
+          draft[newData.id] = newData;
+        });
+      });
 
-      state = {};
+      client.addMenuEntry({
+        action: 'clear',
+        handler: async () => {
+          data.set({});
+        },
+      });
 
-      onKeyboardAction = (action: string) => {
-        if (action === 'clear') {
-          this.props.setPersistedState({data: []});
-        }
-      };
+      return {data};
+    }
 
-      render() {
-        return (
-          <View scrollable>
-            {this.props.persistedState.data.map((d) => (
-              <div>{JSON.stringify(d, null, 2)}<hr/></div>
-            ))}
-          </View>
-        )
-      }
+    // Read more: https://fbflipper.com/docs/extending/desktop-plugins#building-a-user-interface-for-the-plugin
+    // API: https://fbflipper.com/docs/extending/flipper-plugin#react-hooks
+    export function Component() {
+      const instance = usePlugin(plugin);
+      const data = useValue(instance.data);
+
+      return (
+        <Layout.ScrollContainer>
+          {Object.entries(data).map(([id, d]) => (
+            <pre key={id} data-testid={id}>
+              {JSON.stringify(d)}
+            </pre>
+          ))}
+        </Layout.ScrollContainer>
+      );
     }
     ",
       "/dev/null/tsconfig.json": "{

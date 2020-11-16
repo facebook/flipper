@@ -15,15 +15,24 @@
     "lint": "flipper-pkg lint",
     "prepack": "flipper-pkg lint && flipper-pkg bundle",
     "build": "flipper-pkg bundle",
-    "watch": "flipper-pkg bundle --watch"
+    "watch": "flipper-pkg bundle --watch",
+    "test": "jest"
   },
   "peerDependencies": {
-    "flipper": "latest"
+    "flipper": "latest",
+    "flipper-plugin": "latest",
+    "antd": "latest"
   },
   "devDependencies": {
+    "@babel/preset-react": "latest",
+    "@babel/preset-typescript": "latest",
+    "@types/jest": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
+    "antd": "latest",
     "flipper": "latest",
-    "flipper-pkg": "latest"
+    "flipper-plugin": "latest",
+    "flipper-pkg": "latest",
+    "jest": "latest"
   }
 }
