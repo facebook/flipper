@@ -10,7 +10,7 @@ type Events = {
   newData: Data;
 };
 
-// Read more: https://fbflipper.com/docs/extending/desktop-plugins#creating-a-first-plugin
+// Read more: https://fbflipper.com/docs/tutorial/js-custom#creating-a-first-plugin
 // API: https://fbflipper.com/docs/extending/flipper-plugin#pluginclient
 export function plugin(client: PluginClient<Events, {}>) {
   const data = createState<Record<string, Data>>({}, {persist: 'data'});
@@ -31,7 +31,7 @@ export function plugin(client: PluginClient<Events, {}>) {
   return {data};
 }
 
-// Read more: https://fbflipper.com/docs/extending/desktop-plugins#building-a-user-interface-for-the-plugin
+// Read more: https://fbflipper.com/docs/tutorial/js-custom#building-a-user-interface-for-the-plugin
 // API: https://fbflipper.com/docs/extending/flipper-plugin#react-hooks
 export function Component() {
   const instance = usePlugin(plugin);

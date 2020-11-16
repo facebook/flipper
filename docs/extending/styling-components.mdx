@@ -10,7 +10,7 @@ We are using [emotion](https://emotion.sh) to style our components. For more det
 For basic building blocks (views, texts, ...) you can use the styled object.
 
 ```javascript
-import {styled} from 'flipper';
+import {styled} from 'flipper-plugin';
 
 const MyView = styled.div({
   fontSize: 10,
@@ -26,9 +26,9 @@ const MyInput = styled.input({ ... });
 It's very common for components to require customizing Flipper's components in some way. For example changing colors, alignment, or wrapping behavior. Flippers components can be wrapped using the `styled` function which allows adding or overwriting existing style rules.
 
 ```javascript
-import {FlexRow, styled} from 'flipper';
+import {Layout, styled} from 'flipper-plugin';
 
-const Container = styled(FlexRow)({
+const Container = styled(Layout.Container)({
   alignItems: 'center',
 });
 
@@ -65,8 +65,9 @@ Pseudo-classes can be used like this:
 
 ## Colors
 
-The colors module contains all standard colors used by Flipper. All the available colors are defined in [`desktop/src/ui/components/colors.tsx`](https://github.com/facebook/flipper/blob/master/desktop/app/src/ui/components/colors.tsx) with comments about suggested usage of them. And we strongly encourage to use them. They can be required like this:
+The `theme` module contains all standard colors used by Flipper. All available colors can be previewed by starting Flipper and opening `View > Flipper Style Guide`. 
+The colors exposed here will handle dark mode automatically, so it is recommended to use those colors over hardcoded ones.
 
 ```javascript
-import {colors} from 'flipper'
+import {theme} from 'flipper'
 ```

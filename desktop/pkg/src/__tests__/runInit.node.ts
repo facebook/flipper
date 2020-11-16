@@ -94,8 +94,8 @@ test('It generates the correct files', async () => {
       "/dev/null/src/__tests__/test.spec.tsx": "import {TestUtils} from 'flipper-plugin';
     import * as Plugin from '..';
 
-    // Read more: https://fbflipper.com/docs/extending/desktop-plugins#testing-plugin-logic
-    // API: https://fbflipper.com/docs/extending/desktop-plugins#testing-plugin-logic
+    // Read more: https://fbflipper.com/docs/tutorial/js-custom#testing-plugin-logic
+    // API: https://fbflipper.com/docs/tutorial/js-custom#testing-plugin-logic
     test('It can store data', () => {
       const {instance, sendEvent} = TestUtils.startPlugin(Plugin);
 
@@ -116,8 +116,8 @@ test('It generates the correct files', async () => {
       \`);
     });
 
-    // Read more: https://fbflipper.com/docs/extending/desktop-plugins#testing-plugin-logic
-    // API: https://fbflipper.com/docs/extending/desktop-plugins#testing-plugin-logic
+    // Read more: https://fbflipper.com/docs/tutorial/js-custom#testing-plugin-logic
+    // API: https://fbflipper.com/docs/tutorial/js-custom#testing-plugin-logic
     test('It can render data', async () => {
       const {instance, renderer, sendEvent} = TestUtils.renderPlugin(Plugin);
 
@@ -148,7 +148,7 @@ test('It generates the correct files', async () => {
       newData: Data;
     };
 
-    // Read more: https://fbflipper.com/docs/extending/desktop-plugins#creating-a-first-plugin
+    // Read more: https://fbflipper.com/docs/tutorial/js-custom#creating-a-first-plugin
     // API: https://fbflipper.com/docs/extending/flipper-plugin#pluginclient
     export function plugin(client: PluginClient<Events, {}>) {
       const data = createState<Record<string, Data>>({}, {persist: 'data'});
@@ -169,7 +169,7 @@ test('It generates the correct files', async () => {
       return {data};
     }
 
-    // Read more: https://fbflipper.com/docs/extending/desktop-plugins#building-a-user-interface-for-the-plugin
+    // Read more: https://fbflipper.com/docs/tutorial/js-custom#building-a-user-interface-for-the-plugin
     // API: https://fbflipper.com/docs/extending/flipper-plugin#react-hooks
     export function Component() {
       const instance = usePlugin(plugin);

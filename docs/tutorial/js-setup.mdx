@@ -29,26 +29,14 @@ Your file will then look something like this:
 }
 ```
 
-## Installing flipper-pkg
-
-`flipper-pkg` tool helps to define, validate and package Flipper desktop plugins. You can install it globally using:
-```
-yarn global add flipper-pkg
-```
-or
-```
-npm install flipper-pkg --global
-```
-
 ## Creating the Plugin Package
 
-With the loading part out of the way, we can create the new plugin. For that, first create a new folder inside the custom plugins directory. Then use `flpper-pkg init` to initialise a new Flipper desktop plugin package:
+With the loading part out of the way, we can create the new plugin. For that, first create a new folder inside the custom plugins directory. Then use `flipper-pkg init` to initialise a new Flipper desktop plugin package.
+`flipper-pkg` is a NPM module, so we can run it directly using `npx` if Node and NPM are installed.
 
 ```bash
 $ cd ~/Flipper/custom-plugins/
-$ mkdir sea-mammals
-$ cd sea-mammals
-$ flipper-pkg init
+$ npx flipper-pkg init
 ```
 
 The tool will ask you to provide "id" and "title" for your plugin. Use "sea-mammals" as "id" and "Sea Mammals" as "title". After that the tool will create two files in the directory: `package.json` and `src/index.tsx`.

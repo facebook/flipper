@@ -1,8 +1,8 @@
 import {TestUtils} from 'flipper-plugin';
 import * as Plugin from '..';
 
-// Read more: https://fbflipper.com/docs/extending/desktop-plugins#testing-plugin-logic
-// API: https://fbflipper.com/docs/extending/desktop-plugins#testing-plugin-logic
+// Read more: https://fbflipper.com/docs/tutorial/js-custom#testing-plugin-logic
+// API: https://fbflipper.com/docs/tutorial/js-custom#testing-plugin-logic
 test('It can store data', () => {
   const {instance, sendEvent} = TestUtils.startPlugin(Plugin);
 
@@ -23,8 +23,8 @@ test('It can store data', () => {
   `);
 });
 
-// Read more: https://fbflipper.com/docs/extending/desktop-plugins#testing-plugin-logic
-// API: https://fbflipper.com/docs/extending/desktop-plugins#testing-plugin-logic
+// Read more: https://fbflipper.com/docs/tutorial/js-custom#testing-plugin-logic
+// API: https://fbflipper.com/docs/tutorial/js-custom#testing-plugin-logic
 test('It can render data', async () => {
   const {instance, renderer, sendEvent} = TestUtils.renderPlugin(Plugin);
 

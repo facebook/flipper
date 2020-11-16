@@ -79,10 +79,12 @@ After `flipper-pkg init` finished, you should have files `package.json` and `src
     "prepack": "flipper-pkg lint && flipper-pkg bundle"
   }
   "peerDependencies": {
-    "flipper": "latest"
+    "flipper": "latest",
+    "flipper-plugin": "latest"
   },
   "devDependencies": {
     "flipper": "latest",
+    "flipper-plugin": "latest",
     "flipper-pkg": "latest"
   }
 }
@@ -108,18 +110,69 @@ Important attributes of `package.json`:
 
 - `bugs` Specify an email and/or url, where plugin bugs should be reported.
 
-In `index.tsx` you will define the plugin in JavaScript. This file must export a default class that extends `FlipperPlugin`. Browse our [JS API docs](js-plugin-api) to see what you can do, and make sure to check out our [UI Component Library](ui-components) for lots of pre-made components.
+In `index.tsx` you will define the plugin in JavaScript. 
 
 Example `index.tsx`:
-```js
-import {FlipperPlugin} from 'flipper';
 
-export default class extends FlipperPlugin {
-  render() {
-    return 'hello world';
-  }
+```js
+export function plugin(client) {
+  return {};
+}
+
+export function Component() {
+  return 'hello world';
 }
 ```
+
+Some public plugins will use a `FlipperPlugin` base class. This format is deprecated but the documentation can still be found [here](./js-plugin-api.mdx).
+
+## Anatomy of a Desktop plugin 
+
+A sandy plugin always exposes two elements from its entry module (typically `src/index.tsx`): `plugin` and `Component`:
+
+```typescript
+import {PluginClient} from 'flipper-plugin';
+
+export function plugin(client: PluginClient) {
+  return {}; // API exposed from this plugin
+}
+
+export function Component() {
+  // Plugin UI
+  return <h1>Welcome to my first plugin</h1>;
+}
+```
+
+A further guide on how to write custom Flipper plugins can be found here: [tutorial](../tutorial/js-custom).
+
+### Creating a Device Plugin 
+
+Flipper also supports so-called device plugins - plugins that are available for an entire device - but don't receive a connection to a running app,
+so are a bit more limited in general.
+Their entry module anatomy is:
+
+```typescript
+import {DevicePluginClient} from 'flipper-plugin';
+
+export function supportsDevice(device: Device) {
+  // based on the device meta-data, 
+  // determine whether this plugin should be enabled 
+  return true; 
+}
+
+export function devicePlugin(client: DevicePluginClient) {
+  return {}; // API exposed from this plugin
+}
+
+export function Component() {
+  // Plugin UI
+  return <h1>Welcome to my first plugin</h1>;
+}
+```
+
+Device plugins work in general similar to normal client plugins, so aren't worked out in detail in this document.
+The available APIs for device plugins are listed [here](./flipper-plugin#devicepluginclient).
+
 
 ### Validation
 

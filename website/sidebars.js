@@ -63,12 +63,10 @@ module.exports = {
       'tutorial/js-custom',
       'tutorial/js-publishing',
     ],
-    // start-internal-sidebars-example
     'Plugin Development': [
       'extending/js-setup',
-      'extending/js-plugin-api',
+      'extending/flipper-plugin',
       'extending/create-table-plugin',
-      'extending/ui-components',
       'extending/styling-components',
       'extending/search-and-filter',
       'extending/create-plugin',
@@ -77,11 +75,13 @@ module.exports = {
       'extending/error-handling',
       'extending/testing',
       'extending/debugging',
-      'extending/desktop-plugins',
-      'extending/flipper-plugin',
       ...fbInternalOnly([
         'extending/fb/desktop-plugin-releases',
       ]),
+    ],
+    'Deprecated APIs': [
+      'extending/ui-components',
+      'extending/js-plugin-api',
     ],
     // end-internal-sidebars-example
     'Other Platforms': [

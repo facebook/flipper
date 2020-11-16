@@ -1,6 +1,6 @@
 ---
 id: flipper-plugin
-title: flipper-plugin API reference (Sandy)
+title: Desktop Plugin API
 ---
 
 ## PluginClient
@@ -8,7 +8,7 @@ title: flipper-plugin API reference (Sandy)
 `PluginClient` is the type of the `client` passed into a standard Sandy plugin.
 It takes two generic arguments `Event` and `Methods`.
 
-* The `Event` generic is a mapping of an event name to the data structure of the payload, as explained [here](./desktop-plugins#the-plugin-declaration).
+* The `Event` generic is a mapping of an event name to the data structure of the payload, as explained [here](../tutorial/js-custom#the-plugin-declaration).
 * The `Methods` generic is used to describe the methods that are offered by the plugin implementation on the device. `Methods` is a mapping of a method name to a function that describes the signature of a method. The first argument of that function describes the parameters that can be passed to the client. The return type of the function should describe what is returned from the client. Wrapped with a `Promise`.
 
 Quick example on how those generics should be used:
@@ -54,7 +54,7 @@ A string that uniquely identifies the current application, is based on a combina
 
 #### `onMessage`
 
-Usage: `client.onMessage(event: string, callback: (object) => void)`
+Usage: `client.onMessage(event: string, callback: (params) => void)`
 
 This subscribes the plugin to a specific event that is fired from the client plugin (using [`connection.send`](../extending/create-plugin#push-data-to-the-desktop)).
 Typically used to update some of the [state](#createstate).
@@ -83,6 +83,13 @@ export function plugin(client: PluginClient<Events, {}>) {
   // etc
 }
 ```
+
+#### `onUnhandledMessage`
+
+Usage: `client.onUnhandledMessage(callback: (event: string, params) => void)`
+
+This method subscribe to all messages arriving from the devices which is not handled by an `onMessage` handler. 
+This handler is untyped, and onMessage should be favored over using onUnhandledMessage if the event name is known upfront.
 
 #### `onActivate`
 
@@ -250,7 +257,7 @@ See the similarly named method under [`PluginClient`](#pluginclient).
 ## Device
 
 `Device` captures the metadata of the device the plugin is currently connected to.
-Device objects are passed into the [`supportsDevice` method](./desktop-plugins#creating-a-device-plugin) of a device plugin, and available as `device` field on a [`DevicePluginClient`](#devicepluginclient).
+Device objects are passed into the [`supportsDevice` method](../tutorial/js-custom#creating-a-device-plugin) of a device plugin, and available as `device` field on a [`DevicePluginClient`](#devicepluginclient).
 
 ### Properties
 
@@ -337,20 +344,20 @@ Usage: `const instance = usePlugin(plugin)`
 Can be used by any component in the plugin, and gives the current `instance` that corresponds with the currently loaded plugin.
 The `plugin` parameter isn't actually used, but used to verify that a component is used correctly inside a mounted component, and helps with type inference.
 The returned `instance` method corresponds to the object that is returned from the `plugin` / `devicePlugin` definition.
-See the [tutorial](./desktop-plugins#building-an-user-interface-for-the-plugin) for how this hook is used in practice.
+See the [tutorial](../tutorial/js-custom#building-an-user-interface-for-the-plugin) for how this hook is used in practice.
 
 ### useValue
 
 Usage: `const currentValue = useValue(stateAtom)`
 
 Returns the current value of a state atom, and also subscribes the current component to future changes of the atom (in contrast to using `stateAtom.get()` directly).
-See the [tutorial](./desktop-plugins#building-an-user-interface-for-the-plugin) for how this hook is used in practice.
+See the [tutorial](../tutorial/js-custom#building-an-user-interface-for-the-plugin) for how this hook is used in practice.
 
 ## TestUtils
 
 The object `TestUtils` as exposed from `flipper-plugin` exposes utilities to write unit tests for Sandy plugins.
 Different utilities are exposed depending on whether you want to test a client or device plugin, and whether or not the component should be rendered or only the logic itself is going to be tested.
-It is recommended to follow the [tutorial](./desktop-plugins) first, as it explains how unit tests should be setup.
+It is recommended to follow the [tutorial](../tutorial/js-custom) first, as it explains how unit tests should be setup.
 
 ### Starting a plugin
 
