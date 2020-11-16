@@ -6137,10 +6137,10 @@ flatted@^2.0.0:
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-2.0.2.tgz#4575b21e2bcee7434aa9be662f4b7b5f9c2b5138"
   integrity sha512-r5wGx7YeOwNWNlCA0wQ86zKyDLMQr+/RB8xy74M4hTphfmjlijTSSXGuH8rnvKZnfT9i+75zmd8jcKdMR4O6jA==
 
-flipper-client-sdk@^0.0.2:
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/flipper-client-sdk/-/flipper-client-sdk-0.0.2.tgz#cb970908b9a948d1671d39e2ca050191753c99f7"
-  integrity sha512-7l0yM9uaUEfi179iq9TEvZ2fzDF3t0EymTpxkP/scQWVSjw+bgHYv5G66EbBbqWdJhlTA7zWki5gTV+OylzghQ==
+flipper-client-sdk@^0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/flipper-client-sdk/-/flipper-client-sdk-0.0.3.tgz#d5cc3e16a5a7c2b99f13178d1bd4ec93476ead41"
+  integrity sha512-lm1mz9zI8inOr5Zx7sTPyAjfubIh/HFpnlNodVr1mnxS8M3wNi63JmqBpA2uqxrrz3sn2JLUxu+nUlMnrMlYIw==
 
 flow-parser@0.*:
   version "0.110.0"
