@@ -32,7 +32,7 @@ import semver from 'semver';
 import {PluginDetails} from 'flipper-plugin-lib';
 import {tryCatchReportPluginFailures, reportUsage} from '../utils/metrics';
 import * as FlipperPluginSDK from 'flipper-plugin';
-import {SandyPluginDefinition} from 'flipper-plugin';
+import {_SandyPluginDefinition} from 'flipper-plugin';
 import loadDynamicPlugins from '../utils/loadDynamicPlugins';
 import Immer from 'immer';
 
@@ -223,7 +223,7 @@ const requirePluginInternal = (
     : reqFn(pluginDetails.entry);
   if (pluginDetails.flipperSDKVersion) {
     // Sandy plugin
-    return new SandyPluginDefinition(pluginDetails, plugin);
+    return new _SandyPluginDefinition(pluginDetails, plugin);
   } else {
     // classic plugin
     if (plugin.default) {

@@ -10,31 +10,41 @@
 import './plugin/PluginBase';
 import * as TestUtilites from './test-utils/test-utils';
 
-export {SandyPluginInstance, PluginClient} from './plugin/Plugin';
+export {
+  SandyPluginInstance as _SandyPluginInstance,
+  PluginClient,
+} from './plugin/Plugin';
 export {
   Device,
   DeviceLogEntry,
   DeviceLogListener,
   DevicePluginClient,
   LogLevel,
-  SandyDevicePluginInstance,
+  SandyDevicePluginInstance as _SandyDevicePluginInstance,
   DeviceType,
 } from './plugin/DevicePlugin';
-export {SandyPluginDefinition} from './plugin/SandyPluginDefinition';
-export {SandyPluginRenderer} from './plugin/PluginRenderer';
-export {SandyPluginContext, usePlugin} from './plugin/PluginContext';
+export {SandyPluginDefinition as _SandyPluginDefinition} from './plugin/SandyPluginDefinition';
+export {SandyPluginRenderer as _SandyPluginRenderer} from './plugin/PluginRenderer';
+export {
+  SandyPluginContext as _SandyPluginContext,
+  usePlugin,
+} from './plugin/PluginContext';
 export {createState, useValue, Atom} from './state/atom';
 export {FlipperLib} from './plugin/FlipperLib';
 export {
   MenuEntry,
   NormalizedMenuEntry,
-  buildInMenuEntries,
+  buildInMenuEntries as _buildInMenuEntries,
   DefaultKeyboardAction,
 } from './plugin/MenuEntry';
 
 export {theme} from './ui/theme';
 export {Layout} from './ui/Layout';
-export {NUX, NuxManagerContext, createNuxManager} from './ui/NUX';
+export {
+  NUX,
+  NuxManagerContext as _NuxManagerContext,
+  createNuxManager as _createNuxManager,
+} from './ui/NUX';
 
 export {renderReactRoot} from './utils/renderReactRoot';
 

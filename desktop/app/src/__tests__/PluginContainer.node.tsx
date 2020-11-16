@@ -12,7 +12,7 @@ import produce from 'immer';
 import {FlipperPlugin} from '../plugin';
 import {renderMockFlipperWithPlugin} from '../test-utils/createMockFlipperWithPlugin';
 import {
-  SandyPluginDefinition,
+  _SandyPluginDefinition,
   PluginClient,
   TestUtils,
   usePlugin,
@@ -141,7 +141,7 @@ test('PluginContainer can render Sandy plugins', async () => {
     };
   };
 
-  const definition = new SandyPluginDefinition(
+  const definition = new _SandyPluginDefinition(
     TestUtils.createMockPluginDetails(),
     {
       plugin,
@@ -339,7 +339,7 @@ test('PluginContainer triggers correct lifecycles for background plugin', async 
     return {connectedStub, disconnectedStub, activatedStub, deactivatedStub};
   };
 
-  const definition = new SandyPluginDefinition(
+  const definition = new _SandyPluginDefinition(
     TestUtils.createMockPluginDetails(),
     {
       plugin,
@@ -480,7 +480,7 @@ test('PluginContainer + Sandy plugin supports deeplink', async () => {
     };
   };
 
-  const definition = new SandyPluginDefinition(
+  const definition = new _SandyPluginDefinition(
     TestUtils.createMockPluginDetails(),
     {
       plugin,
@@ -636,7 +636,7 @@ test('PluginContainer can render Sandy device plugins', async () => {
     return {activatedStub, deactivatedStub, lastLogMessage};
   };
 
-  const definition = new SandyPluginDefinition(
+  const definition = new _SandyPluginDefinition(
     TestUtils.createMockPluginDetails(),
     {
       supportsDevice: () => true,
@@ -750,7 +750,7 @@ test('PluginContainer + Sandy device plugin supports deeplink', async () => {
     };
   };
 
-  const definition = new SandyPluginDefinition(
+  const definition = new _SandyPluginDefinition(
     TestUtils.createMockPluginDetails(),
     {
       devicePlugin,

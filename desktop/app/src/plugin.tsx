@@ -21,7 +21,7 @@ import {State as ReduxState} from './reducers';
 import {DEFAULT_MAX_QUEUE_SIZE} from './reducers/pluginMessageQueue';
 import {PluginDetails} from 'flipper-plugin-lib';
 import {Settings} from './reducers/settings';
-import {SandyPluginDefinition} from 'flipper-plugin';
+import {_SandyPluginDefinition} from 'flipper-plugin';
 
 type Parameters = {[key: string]: any};
 
@@ -29,19 +29,19 @@ export type PluginDefinition = ClientPluginDefinition | DevicePluginDefinition;
 
 export type DevicePluginDefinition =
   | typeof FlipperDevicePlugin
-  | SandyPluginDefinition;
+  | _SandyPluginDefinition;
 
 export type ClientPluginDefinition =
   | typeof FlipperPlugin
-  | SandyPluginDefinition;
+  | _SandyPluginDefinition;
 
 export type ClientPluginMap = Map<string, ClientPluginDefinition>;
 export type DevicePluginMap = Map<string, DevicePluginDefinition>;
 
 export function isSandyPlugin(
   plugin?: PluginDefinition | null,
-): plugin is SandyPluginDefinition {
-  return plugin instanceof SandyPluginDefinition;
+): plugin is _SandyPluginDefinition {
+  return plugin instanceof _SandyPluginDefinition;
 }
 
 // This function is intended to be called from outside of the plugin.

@@ -24,7 +24,7 @@ import {
   PluginDefinition,
 } from './plugin';
 import {deconstructPluginKey} from './utils/clientUtils';
-import {SandyPluginDefinition} from 'flipper-plugin';
+import {_SandyPluginDefinition} from 'flipper-plugin';
 import BaseDevice from './devices/BaseDevice';
 import {State as PluginStates} from './reducers/pluginStates';
 
@@ -171,7 +171,7 @@ function updateDevicePlugin(state: StoreState, plugin: DevicePluginDefinition) {
 }
 
 function supportsDevice(plugin: DevicePluginDefinition, device: BaseDevice) {
-  if (plugin instanceof SandyPluginDefinition) {
+  if (plugin instanceof _SandyPluginDefinition) {
     return (
       plugin.isDevicePlugin &&
       plugin.asDevicePluginModule().supportsDevice(device as any)

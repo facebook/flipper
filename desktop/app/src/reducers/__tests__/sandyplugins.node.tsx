@@ -12,8 +12,8 @@ import {Store, Client} from '../../';
 import {selectPlugin, starPlugin} from '../../reducers/connections';
 import {registerPlugins} from '../../reducers/plugins';
 import {
-  SandyPluginDefinition,
-  SandyPluginInstance,
+  _SandyPluginDefinition,
+  _SandyPluginInstance,
   PluginClient,
   TestUtils,
 } from 'flipper-plugin';
@@ -49,7 +49,7 @@ function plugin(client: PluginClient<any, any>) {
     messages,
   };
 }
-const TestPlugin = new SandyPluginDefinition(pluginDetails, {
+const TestPlugin = new _SandyPluginDefinition(pluginDetails, {
   plugin: jest.fn().mockImplementation(plugin) as typeof plugin,
   Component: jest.fn().mockImplementation(() => null),
 });
@@ -82,7 +82,7 @@ test('it should initialize starred sandy plugins', async () => {
   // already started, so initialized immediately
   expect(initialized).toBe(true);
   expect(client.sandyPluginStates.get(TestPlugin.id)).toBeInstanceOf(
-    SandyPluginInstance,
+    _SandyPluginInstance,
   );
   const instanceApi: PluginApi = client.sandyPluginStates.get(TestPlugin.id)!
     .instanceApi;
@@ -132,7 +132,7 @@ test('it should cleanup if client is removed', async () => {
 test('it should not initialize a sandy plugin if not enabled', async () => {
   const {client, store} = await createMockFlipperWithPlugin(TestPlugin);
 
-  const Plugin2 = new SandyPluginDefinition(
+  const Plugin2 = new _SandyPluginDefinition(
     TestUtils.createMockPluginDetails({
       name: 'Plugin2',
       id: 'Plugin2',
@@ -146,7 +146,7 @@ test('it should not initialize a sandy plugin if not enabled', async () => {
   );
 
   const pluginState1 = client.sandyPluginStates.get(TestPlugin.id);
-  expect(pluginState1).toBeInstanceOf(SandyPluginInstance);
+  expect(pluginState1).toBeInstanceOf(_SandyPluginInstance);
   store.dispatch(registerPlugins([Plugin2]));
   await client.refreshPlugins();
   // not yet enabled, so not yet started
@@ -161,7 +161,7 @@ test('it should not initialize a sandy plugin if not enabled', async () => {
   );
 
   expect(client.sandyPluginStates.get(Plugin2.id)).toBeInstanceOf(
-    SandyPluginInstance,
+    _SandyPluginInstance,
   );
   const instance = client.sandyPluginStates.get(Plugin2.id)!
     .instanceApi as PluginApi;
@@ -238,7 +238,7 @@ test('it can send messages from sandy clients', async () => {
 test('it should initialize "Navigation" plugin if not enabled', async () => {
   const {client, store} = await createMockFlipperWithPlugin(TestPlugin);
 
-  const Plugin2 = new SandyPluginDefinition(
+  const Plugin2 = new _SandyPluginDefinition(
     TestUtils.createMockPluginDetails({
       name: 'Plugin2',
       id: 'Navigation',
@@ -252,7 +252,7 @@ test('it should initialize "Navigation" plugin if not enabled', async () => {
   );
 
   const pluginState1 = client.sandyPluginStates.get(TestPlugin.id);
-  expect(pluginState1).toBeInstanceOf(SandyPluginInstance);
+  expect(pluginState1).toBeInstanceOf(_SandyPluginInstance);
   store.dispatch(registerPlugins([Plugin2]));
   await client.refreshPlugins();
   // not enabled, but Navigation is an exception, so we still get an instance

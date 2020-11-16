@@ -21,10 +21,10 @@ import {getPluginKey} from '../pluginUtils';
 import {TestIdler} from '../Idler';
 import {registerPlugins} from '../../reducers/plugins';
 import {
-  SandyPluginDefinition,
+  _SandyPluginDefinition,
   TestUtils,
   PluginClient,
-  SandyPluginInstance,
+  _SandyPluginInstance,
 } from 'flipper-plugin';
 
 type Events = {
@@ -47,7 +47,7 @@ function plugin(client: PluginClient<Events, {}>) {
   };
 }
 
-const TestPlugin = new SandyPluginDefinition(
+const TestPlugin = new _SandyPluginDefinition(
   TestUtils.createMockPluginDetails(),
   {
     plugin,
@@ -211,7 +211,7 @@ test('queue - events are NOT processed immediately if plugin is NOT selected (bu
 });
 
 test('queue - events ARE processed immediately if plugin is NOT selected / enabled BUT NAVIGATION', async () => {
-  const NavigationPlugin = new SandyPluginDefinition(
+  const NavigationPlugin = new _SandyPluginDefinition(
     TestUtils.createMockPluginDetails({
       id: 'Navigation',
     }),
@@ -599,7 +599,7 @@ test('client - incoming messages are buffered and flushed together', async () =>
     }
   `);
   expect(client.messageBuffer[pluginKey].plugin).toBeInstanceOf(
-    SandyPluginInstance,
+    _SandyPluginInstance,
   );
 
   await sleep(500);

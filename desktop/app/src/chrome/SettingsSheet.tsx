@@ -28,7 +28,7 @@ import LauncherSettingsPanel from '../fb-stubs/LauncherSettingsPanel';
 import SandySettingsPanel from '../fb-stubs/SandySettingsPanel';
 import {reportUsage} from '../utils/metrics';
 import {Modal} from 'antd';
-import {Layout, NuxManagerContext} from 'flipper-plugin';
+import {Layout, _NuxManagerContext} from 'flipper-plugin';
 
 const Container = styled(FlexColumn)({
   padding: 20,
@@ -358,7 +358,7 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
 )(SettingsSheet);
 
 function ResetTooltips() {
-  const nuxManager = useContext(NuxManagerContext);
+  const nuxManager = useContext(_NuxManagerContext);
 
   return (
     <Button

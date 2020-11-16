@@ -24,7 +24,7 @@ import {State as PluginsState} from '../../reducers/plugins';
 import {renderMockFlipperWithPlugin} from '../../test-utils/createMockFlipperWithPlugin';
 import {
   TestUtils,
-  SandyPluginDefinition,
+  _SandyPluginDefinition,
   createState,
   PluginClient,
 } from 'flipper-plugin';
@@ -1052,7 +1052,7 @@ test('test determinePluginsToProcess to ignore archived clients', async () => {
   ]);
 });
 
-const sandyTestPlugin = new SandyPluginDefinition(
+const sandyTestPlugin = new _SandyPluginDefinition(
   TestUtils.createMockPluginDetails(),
   {
     plugin(

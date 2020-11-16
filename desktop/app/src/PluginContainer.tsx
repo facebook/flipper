@@ -46,7 +46,7 @@ import {Message} from './reducers/pluginMessageQueue';
 import {Idler} from './utils/Idler';
 import {processMessageQueue} from './utils/messageQueue';
 import {ToggleButton, SmallText, Layout} from './ui';
-import {SandyPluginRenderer} from 'flipper-plugin';
+import {_SandyPluginRenderer} from 'flipper-plugin';
 import {isDevicePluginDefinition} from './utils/pluginUtils';
 import ArchivedDevice from './devices/ArchivedDevice';
 import {ContentContainer} from './sandy-chrome/ContentContainer';
@@ -377,7 +377,9 @@ class PluginContainer extends PureComponent<Props, State> {
         // happens if we selected a plugin that is not enabled on a specific app or not supported on a specific device.
         return this.renderNoPluginActive();
       }
-      pluginElement = <SandyPluginRenderer key={pluginKey} plugin={instance} />;
+      pluginElement = (
+        <_SandyPluginRenderer key={pluginKey} plugin={instance} />
+      );
     } else {
       const props: PluginProps<Object> & {
         key: string;

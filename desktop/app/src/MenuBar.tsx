@@ -26,11 +26,11 @@ import electron, {MenuItemConstructorOptions} from 'electron';
 import {notNull} from './utils/typeUtils';
 import constants from './fb-stubs/constants';
 import {Logger} from './fb-interfaces/Logger';
-import {NormalizedMenuEntry, buildInMenuEntries} from 'flipper-plugin';
+import {NormalizedMenuEntry, _buildInMenuEntries} from 'flipper-plugin';
 import {StyleGuide} from './sandy-chrome/StyleGuide';
 import {showEmulatorLauncher} from './sandy-chrome/appinspect/LaunchEmulator';
 
-export type DefaultKeyboardAction = keyof typeof buildInMenuEntries;
+export type DefaultKeyboardAction = keyof typeof _buildInMenuEntries;
 export type TopLevelMenu = 'Edit' | 'View' | 'Window' | 'Help';
 
 export type KeyboardAction = {
@@ -70,7 +70,7 @@ export function setupMenuBar(
       .map((plugin) => plugin.keyboardActions || [])
       .flat()
       .map((action: DefaultKeyboardAction | KeyboardAction) =>
-        typeof action === 'string' ? buildInMenuEntries[action] : action,
+        typeof action === 'string' ? _buildInMenuEntries[action] : action,
       )
       .filter(notNull),
   );

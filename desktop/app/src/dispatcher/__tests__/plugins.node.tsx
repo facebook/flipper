@@ -26,7 +26,7 @@ import configureStore from 'redux-mock-store';
 import {TEST_PASSING_GK, TEST_FAILING_GK} from '../../fb-stubs/GK';
 import TestPlugin from './TestPlugin';
 import {resetConfigForTesting} from '../../utils/processConfig';
-import {SandyPluginDefinition} from 'flipper-plugin';
+import {_SandyPluginDefinition} from 'flipper-plugin';
 import {mocked} from 'ts-jest/utils';
 import loadDynamicPlugins from '../../utils/loadDynamicPlugins';
 
@@ -246,9 +246,9 @@ test('requirePlugin loads valid Sandy plugin', () => {
     ),
     version: '1.0.0',
     flipperSDKVersion: '0.0.0',
-  }) as SandyPluginDefinition;
+  }) as _SandyPluginDefinition;
   expect(plugin).not.toBeNull();
-  expect(plugin).toBeInstanceOf(SandyPluginDefinition);
+  expect(plugin).toBeInstanceOf(_SandyPluginDefinition);
   expect(plugin.id).toBe('Sample');
   expect(plugin.details).toMatchObject({
     flipperSDKVersion: '0.0.0',
@@ -296,9 +296,9 @@ test('requirePlugin loads valid Sandy Device plugin', () => {
     ),
     version: '1.0.0',
     flipperSDKVersion: '0.0.0',
-  }) as SandyPluginDefinition;
+  }) as _SandyPluginDefinition;
   expect(plugin).not.toBeNull();
-  expect(plugin).toBeInstanceOf(SandyPluginDefinition);
+  expect(plugin).toBeInstanceOf(_SandyPluginDefinition);
   expect(plugin.id).toBe('Sample');
   expect(plugin.details).toMatchObject({
     flipperSDKVersion: '0.0.0',

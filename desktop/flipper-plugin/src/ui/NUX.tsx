@@ -10,7 +10,6 @@
 import React, {createContext, useCallback, useContext} from 'react';
 import {Badge, Tooltip, Typography, Button} from 'antd';
 import styled from '@emotion/styled';
-import {SandyPluginInstance, theme} from 'flipper-plugin';
 import {keyframes} from 'emotion';
 import reactElementToJSXString from 'react-element-to-jsx-string';
 import {SandyPluginContext} from '../plugin/PluginContext';
@@ -20,6 +19,8 @@ import {Layout} from './Layout';
 import {BulbTwoTone} from '@ant-design/icons';
 import {createHash} from 'crypto';
 import type {TooltipPlacement} from 'antd/lib/tooltip';
+import {SandyPluginInstance} from '../plugin/Plugin';
+import {theme} from './theme';
 
 const {Text} = Typography;
 

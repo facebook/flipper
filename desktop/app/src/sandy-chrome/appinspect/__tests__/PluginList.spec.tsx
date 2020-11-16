@@ -16,7 +16,7 @@ import {findBestClient, findBestDevice, findMetroDevice} from '../AppInspect';
 import {FlipperPlugin} from '../../../plugin';
 import MetroDevice from '../../../devices/MetroDevice';
 import BaseDevice from '../../../devices/BaseDevice';
-import {SandyPluginDefinition} from 'flipper-plugin';
+import {_SandyPluginDefinition} from 'flipper-plugin';
 import {createMockPluginDetails} from 'flipper-plugin/src/test-utils/test-utils';
 import {selectPlugin, starPlugin} from '../../../reducers/connections';
 import {registerMetroDevice} from '../../../dispatcher/metroDevice';
@@ -25,7 +25,7 @@ import {addGatekeepedPlugins, registerPlugins} from '../../../reducers/plugins';
 // eslint-disable-next-line
 import * as LogsPluginModule from '../../../../../plugins/logs/index';
 
-const logsPlugin = new SandyPluginDefinition(
+const logsPlugin = new _SandyPluginDefinition(
   createMockPluginDetails({id: 'DeviceLogs'}),
   LogsPluginModule,
 );
@@ -179,7 +179,7 @@ describe('basic findBestDevice with metro present', () => {
       },
     };
 
-    const unsupportedDevicePlugin = new SandyPluginDefinition(
+    const unsupportedDevicePlugin = new _SandyPluginDefinition(
       createMockPluginDetails({
         id: 'unsupportedDevicePlugin',
         title: 'Unsupported Device Plugin',
@@ -197,7 +197,7 @@ describe('basic findBestDevice with metro present', () => {
       },
     );
 
-    const unsupportedPlugin = new SandyPluginDefinition(
+    const unsupportedPlugin = new _SandyPluginDefinition(
       createMockPluginDetails({
         id: 'unsupportedPlugin',
         title: 'Unsupported Plugin',
@@ -211,7 +211,7 @@ describe('basic findBestDevice with metro present', () => {
       gatekeeper: 'not for you',
     });
 
-    const plugin1 = new SandyPluginDefinition(
+    const plugin1 = new _SandyPluginDefinition(
       createMockPluginDetails({
         id: 'plugin1',
         title: 'Plugin 1',
@@ -224,7 +224,7 @@ describe('basic findBestDevice with metro present', () => {
       },
     );
 
-    const plugin2 = new SandyPluginDefinition(
+    const plugin2 = new _SandyPluginDefinition(
       createMockPluginDetails({
         id: 'plugin2',
         title: 'Plugin 2',

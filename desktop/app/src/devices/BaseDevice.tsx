@@ -10,8 +10,8 @@
 import stream from 'stream';
 import {
   DeviceLogEntry,
-  SandyDevicePluginInstance,
-  SandyPluginDefinition,
+  _SandyDevicePluginInstance,
+  _SandyPluginDefinition,
   DeviceType,
   DeviceLogListener,
 } from 'flipper-plugin';
@@ -66,9 +66,9 @@ export default class BaseDevice {
   // sorted list of supported device plugins
   devicePlugins: string[] = [];
 
-  sandyPluginStates: Map<string, SandyDevicePluginInstance> = new Map<
+  sandyPluginStates: Map<string, _SandyDevicePluginInstance> = new Map<
     string,
-    SandyDevicePluginInstance
+    _SandyDevicePluginInstance
   >();
 
   supportsOS(os: OS) {
@@ -175,12 +175,12 @@ export default class BaseDevice {
   }
 
   loadDevicePlugin(plugin: DevicePluginDefinition) {
-    if (plugin instanceof SandyPluginDefinition) {
+    if (plugin instanceof _SandyPluginDefinition) {
       if (plugin.asDevicePluginModule().supportsDevice(this as any)) {
         this.devicePlugins.push(plugin.id);
         this.sandyPluginStates.set(
           plugin.id,
-          new SandyDevicePluginInstance(
+          new _SandyDevicePluginInstance(
             getFlipperLibImplementation(),
             plugin,
             this,

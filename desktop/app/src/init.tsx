@@ -34,7 +34,7 @@ import {PopoverProvider} from './ui/components/PopoverProvider';
 import {initializeFlipperLibImplementation} from './utils/flipperLibImplementation';
 import {enableConsoleHook} from './chrome/ConsoleLogs';
 import {sideEffect} from './utils/sideEffect';
-import {NuxManagerContext, createNuxManager} from 'flipper-plugin';
+import {_NuxManagerContext, _createNuxManager} from 'flipper-plugin';
 
 if (process.env.NODE_ENV === 'development' && os.platform() === 'darwin') {
   // By default Node.JS has its internal certificate storage and doesn't use
@@ -57,9 +57,9 @@ const AppFrame = () => (
       <TooltipProvider>
         <PopoverProvider>
           <ContextMenuProvider>
-            <NuxManagerContext.Provider value={createNuxManager()}>
+            <_NuxManagerContext.Provider value={_createNuxManager()}>
               <App logger={logger} />
-            </NuxManagerContext.Provider>
+            </_NuxManagerContext.Provider>
           </ContextMenuProvider>
         </PopoverProvider>
       </TooltipProvider>

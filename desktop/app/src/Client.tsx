@@ -36,7 +36,7 @@ import {processMessagesLater} from './utils/messageQueue';
 import {emitBytesReceived} from './dispatcher/tracking';
 import {debounce} from 'lodash';
 import {batch} from 'react-redux';
-import {SandyPluginInstance} from 'flipper-plugin';
+import {_SandyPluginInstance} from 'flipper-plugin';
 import {flipperMessagesClientPlugin} from './utils/self-inspection/plugins/FlipperMessagesClientPlugin';
 import {getFlipperLibImplementation} from './utils/flipperLibImplementation';
 
@@ -148,11 +148,11 @@ export default class Client extends EventEmitter {
       plugin:
         | typeof FlipperPlugin
         | typeof FlipperDevicePlugin
-        | SandyPluginInstance;
+        | _SandyPluginInstance;
       messages: Params[];
     }
   > = {};
-  sandyPluginStates = new Map<string /*pluginID*/, SandyPluginInstance>();
+  sandyPluginStates = new Map<string /*pluginID*/, _SandyPluginInstance>();
 
   requestCallbacks: Map<
     number,
@@ -251,7 +251,7 @@ export default class Client extends EventEmitter {
         // TODO: needs to be wrapped in error tracking T68955280
         this.sandyPluginStates.set(
           plugin.id,
-          new SandyPluginInstance(
+          new _SandyPluginInstance(
             getFlipperLibImplementation(),
             plugin,
             this,
@@ -301,7 +301,7 @@ export default class Client extends EventEmitter {
       // TODO: needs to be wrapped in error tracking T68955280
       this.sandyPluginStates.set(
         plugin.id,
-        new SandyPluginInstance(getFlipperLibImplementation(), plugin, this),
+        new _SandyPluginInstance(getFlipperLibImplementation(), plugin, this),
       );
     }
   }

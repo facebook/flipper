@@ -11,8 +11,8 @@ import {createMockFlipperWithPlugin} from '../../test-utils/createMockFlipperWit
 import {Store} from '../../';
 import {selectPlugin} from '../../reducers/connections';
 import {
-  SandyPluginDefinition,
-  SandyDevicePluginInstance,
+  _SandyPluginDefinition,
+  _SandyDevicePluginInstance,
   DevicePluginClient,
   TestUtils,
 } from 'flipper-plugin';
@@ -42,7 +42,7 @@ function devicePlugin(client: DevicePluginClient) {
     destroyStub,
   };
 }
-const TestPlugin = new SandyPluginDefinition(pluginDetails, {
+const TestPlugin = new _SandyPluginDefinition(pluginDetails, {
   supportsDevice: jest.fn().mockImplementation(() => true),
   devicePlugin: jest
     .fn()
@@ -69,7 +69,7 @@ test('it should initialize device sandy plugins', async () => {
   // already started, so initialized immediately
   expect(initialized).toBe(true);
   expect(device.sandyPluginStates.get(TestPlugin.id)).toBeInstanceOf(
-    SandyDevicePluginInstance,
+    _SandyDevicePluginInstance,
   );
   expect(TestPlugin.asDevicePluginModule().supportsDevice).toBeCalledTimes(1);
   const instanceApi: PluginApi = device.sandyPluginStates.get(TestPlugin.id)!

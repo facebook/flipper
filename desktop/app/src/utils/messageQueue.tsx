@@ -24,7 +24,7 @@ import {Idler, BaseIdler} from './Idler';
 import {pluginIsStarred, getSelectedPluginKey} from '../reducers/connections';
 import {deconstructPluginKey} from './clientUtils';
 import {defaultEnabledBackgroundPlugins} from './pluginUtils';
-import {SandyPluginInstance} from 'flipper-plugin';
+import {_SandyPluginInstance} from 'flipper-plugin';
 import {addBackgroundStat} from './pluginStats';
 
 function processMessageClassic(
@@ -54,7 +54,7 @@ function processMessageClassic(
 
 function processMessagesSandy(
   pluginKey: string,
-  plugin: SandyPluginInstance,
+  plugin: _SandyPluginInstance,
   messages: Message[],
 ) {
   const reducerStartTime = Date.now();
@@ -83,10 +83,10 @@ export function processMessagesImmediately(
         id: string;
         persistedStateReducer: PersistedStateReducer | null;
       }
-    | SandyPluginInstance,
+    | _SandyPluginInstance,
   messages: Message[],
 ) {
-  if (plugin instanceof SandyPluginInstance) {
+  if (plugin instanceof _SandyPluginInstance) {
     processMessagesSandy(pluginKey, plugin, messages);
   } else {
     const persistedState = getCurrentPluginState(store, plugin, pluginKey);
@@ -116,11 +116,11 @@ export function processMessagesLater(
         persistedStateReducer: PersistedStateReducer | null;
         maxQueueSize?: number;
       }
-    | SandyPluginInstance,
+    | _SandyPluginInstance,
   messages: Message[],
 ) {
   const pluginId =
-    plugin instanceof SandyPluginInstance ? plugin.definition.id : plugin.id;
+    plugin instanceof _SandyPluginInstance ? plugin.definition.id : plugin.id;
   const isSelected =
     pluginKey === getSelectedPluginKey(store.getState().connections);
   switch (true) {
@@ -130,7 +130,7 @@ export function processMessagesLater(
       processMessagesImmediately(store, pluginKey, plugin, messages);
       break;
     case isSelected:
-    case plugin instanceof SandyPluginInstance:
+    case plugin instanceof _SandyPluginInstance:
     case plugin instanceof FlipperDevicePlugin:
     case (plugin as any).prototype instanceof FlipperDevicePlugin:
     case pluginIsStarred(
@@ -142,7 +142,7 @@ export function processMessagesLater(
         queueMessages(
           pluginKey,
           messages,
-          plugin instanceof SandyPluginInstance
+          plugin instanceof _SandyPluginInstance
             ? DEFAULT_MAX_QUEUE_SIZE
             : plugin.maxQueueSize,
         ),
@@ -164,13 +164,13 @@ export async function processMessageQueue(
         id: string;
         persistedStateReducer: PersistedStateReducer | null;
       }
-    | SandyPluginInstance,
+    | _SandyPluginInstance,
   pluginKey: string,
   store: MiddlewareAPI,
   progressCallback?: (progress: {current: number; total: number}) => void,
   idler: BaseIdler = new Idler(),
 ): Promise<boolean> {
-  if (!SandyPluginInstance.is(plugin) && !plugin.persistedStateReducer) {
+  if (!_SandyPluginInstance.is(plugin) && !plugin.persistedStateReducer) {
     return true;
   }
   const total = getPendingMessages(store, pluginKey).length;
@@ -182,13 +182,13 @@ export async function processMessageQueue(
     }
     // there are messages to process! lets do so until we have to idle
     // persistedState is irrelevant for SandyPlugins, as they store state locally
-    const persistedState = SandyPluginInstance.is(plugin)
+    const persistedState = _SandyPluginInstance.is(plugin)
       ? undefined
       : getCurrentPluginState(store, plugin, pluginKey);
     let offset = 0;
     let newPluginState = persistedState;
     do {
-      if (SandyPluginInstance.is(plugin)) {
+      if (_SandyPluginInstance.is(plugin)) {
         // Optimization: we could send a batch of messages here
         processMessagesSandy(pluginKey, plugin, [messages[offset]]);
       } else {
@@ -212,7 +212,7 @@ export async function processMessageQueue(
     // resistent to kicking off this process twice; grabbing, processing messages, saving state is done synchronosly
     // until the idler has to break
     store.dispatch(clearMessageQueue(pluginKey, offset));
-    if (!SandyPluginInstance.is(plugin) && newPluginState !== persistedState) {
+    if (!_SandyPluginInstance.is(plugin) && newPluginState !== persistedState) {
       store.dispatch(
         setPluginState({
           pluginKey,
