@@ -119,7 +119,7 @@ export function getHealthchecks(): Healthchecks {
               if (!fs.existsSync(androidHome)) {
                 return {
                   hasProblem: true,
-                  message: `ANDROID_HOME points to a folder which does not exist: ${androidHome}.`,
+                  message: `ANDROID_HOME points to a folder which does not exist: ${androidHome}. You can use Flipper Settings (File > Preferences) to point to a different location.`,
                 };
               }
               const platformToolsDir = path.join(androidHome, 'platform-tools');
