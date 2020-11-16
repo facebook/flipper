@@ -353,6 +353,47 @@ Usage: `const currentValue = useValue(stateAtom)`
 Returns the current value of a state atom, and also subscribes the current component to future changes of the atom (in contrast to using `stateAtom.get()` directly).
 See the [tutorial](../tutorial/js-custom#building-an-user-interface-for-the-plugin) for how this hook is used in practice.
 
+## UI components
+
+### Layout.*
+
+Layout elements can be used to organize the screen layout. 
+See `View > Flipper Style Guide` inside the Flipper application for more details.
+
+### NUX
+
+An element that can be used to provide a New User eXperience: Hints that give a one time introduction to new features to the current user.
+See `View > Flipper Style Guide` inside the Flipper application for more details.
+
+### theme object
+
+Provides a standard set of colors and spacings, used by the Flipper style guide.
+The colors exposed here support dark mode.
+See `View > Flipper Style Guide` inside the Flipper application for more details.
+
+## Utilities
+
+### renderReactRoot
+
+Usage: `renderReactRoot(handler: (unmount: () => void) => React.ReactElement)`
+
+Renders an element outside the current DOM tree. 
+This is a low-level utility that can be used to render for example Modal dialogs. 
+The provided `handler` function should return the root element to be rendered.
+Once the element can be removed from the DOM, the `unmount` callback should be called.
+Example:
+
+```typescript
+renderReactRoot((unmount) => (
+  <RequiredParametersDialog
+    onHide={unmount}
+    uri={filteredQuery}
+    requiredParameters={params}
+    onSubmit={navigateTo}
+  />
+));
+```
+
 ## TestUtils
 
 The object `TestUtils` as exposed from `flipper-plugin` exposes utilities to write unit tests for Sandy plugins.
