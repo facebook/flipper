@@ -12,7 +12,7 @@ jobs:
     outputs:
       tag: ${{ steps.tag-version-commit.outputs.tag }}
     steps:
-      - uses: passy/extract-version-commit@main
+      - uses: passy/extract-version-commit@v1
         id: extract-version-commit
         with:
           version_regex: '^Flipper Release: v([0-9]+\.[0-9]+\.[0-9]+)(?:\n|$)'
@@ -23,7 +23,7 @@ jobs:
       - name: Tag version commit
         if: ${{ steps.extract-version-commit.outputs.commit != ''}}
         id: tag-version-commit
-        uses: passy/tag-version-commit@master
+        uses: passy/tag-version-commit@v1.2.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           ref: ${{ steps.extract-version-commit.outputs.commit }}
