@@ -64,6 +64,13 @@ export interface PluginClient<
   ): void;
 
   /**
+   * Subscribe to all messages arriving from the devices not handled by another listener.
+   *
+   * This handler is untyped, and onMessage should be favored over using onUnhandledMessage if the event name is known upfront.
+   */
+  onUnhandledMessage(callback: (event: string, params: any) => void): void;
+
+  /**
    * Send a message to the connected client
    */
   send<Method extends keyof Methods>(
@@ -156,6 +163,9 @@ export class SandyPluginInstance extends BasePluginInstance {
       onMessage: (event, callback) => {
         this.events.on('event-' + event, callback);
       },
+      onUnhandledMessage: (callback) => {
+        this.events.on('unhandled-event', callback);
+      },
       supportsMethod: async (method) => {
         this.assertConnected();
         return await realClient.supportsMethod(
@@ -212,7 +222,11 @@ export class SandyPluginInstance extends BasePluginInstance {
 
   receiveMessages(messages: Message[]) {
     messages.forEach((message) => {
-      this.events.emit('event-' + message.method, message.params);
+      if (this.events.listenerCount('event-' + message.method) > 0) {
+        this.events.emit('event-' + message.method, message.params);
+      } else {
+        this.events.emit('unhandled-event', message.method, message.params);
+      }
     });
   }
 

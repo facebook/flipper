@@ -36,6 +36,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
       persist: 'counter',
     },
   );
+  const unhandledMessages = createState<any[]>([]);
 
   client.onConnect(connectStub);
   client.onDisconnect(disconnectStub);
@@ -45,6 +46,11 @@ export function plugin(client: PluginClient<Events, Methods>) {
   client.onMessage('inc', ({delta}) => {
     state.update((draft) => {
       draft.count += delta;
+    });
+  });
+  client.onUnhandledMessage((event, params) => {
+    unhandledMessages.update((draft) => {
+      draft.push({event, params});
     });
   });
 
@@ -77,6 +83,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
     disconnectStub,
     getCurrentState,
     state,
+    unhandledMessages,
     appId: client.appId,
     appName: client.appName,
   };

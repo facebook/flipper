@@ -180,6 +180,15 @@ test('a plugin can receive messages', async () => {
       },
     }
   `);
+
+  expect(instance.unhandledMessages.get().length).toBe(0);
+  sendEvent('unhandled' as any, {hello: 'world'});
+  expect(instance.unhandledMessages.get()).toEqual([
+    {
+      event: 'unhandled',
+      params: {hello: 'world'},
+    },
+  ]);
 });
 
 test('plugins support non-serializable state', async () => {
