@@ -87,7 +87,9 @@ export function AppInspect() {
               client={client}
             />
           ) : (
-            <Alert message="No device or app selected." type="info" />
+            <Layout.Container padh>
+              <Alert message="No device or app selected." type="info" />
+            </Layout.Container>
           )}
         </Layout.ScrollContainer>
       </Layout.Top>
