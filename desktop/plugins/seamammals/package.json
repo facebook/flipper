@@ -23,11 +23,10 @@
     "prepack": "flipper-pkg lint && flipper-pkg bundle --production"
   },
   "peerDependencies": {
-    "flipper": "0.65.0",
+    "antd": "*",
     "flipper-plugin": "0.65.0"
   },
   "devDependencies": {
-    "flipper": "0.65.0",
     "flipper-pkg": "0.65.0"
   }
 }

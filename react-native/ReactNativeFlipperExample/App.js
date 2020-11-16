@@ -28,6 +28,49 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
+import {addPlugin} from 'react-native-flipper';
+
+if (__DEV__ || true) {
+  const mammals = [
+    {
+      id: 'Polar Bear',
+      title: 'Polar Bear',
+      url:
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Ursus_maritimus_4_1996-08-04.jpg/190px-Ursus_maritimus_4_1996-08-04.jpg',
+    },
+    {
+      id: 'Sea Otter',
+      title: 'Sea Otter',
+      url:
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Sea_otter_cropped.jpg/220px-Sea_otter_cropped.jpg',
+    },
+    {
+      id: 'West Indian Manatee',
+      title: 'West Indian Manatee',
+      url:
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/FL_fig04.jpg/230px-FL_fig04.jpg',
+    },
+    {
+      id: 'Bottlenose Dolphin',
+      title: 'Bottlenose Dolphin',
+      url:
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Tursiops_truncatus_01.jpg/220px-Tursiops_truncatus_01.jpg',
+    },
+  ];
+  // minimal plugin that connects to sea-mammals plugin
+  addPlugin({
+    getId() {
+      return 'sea-mammals';
+    },
+    onConnect(connection) {
+      mammals.forEach((m) => {
+        connection.send('newRow', m);
+      });
+    },
+    onDisconnect() {},
+  });
+}
+
 import FlipperTicTacToe from './FlipperTicTacToe';
 
 const API = 'https://status.npmjs.org/';
@@ -59,14 +102,14 @@ const App: () => React$Node = () => {
                 onPress={() => {
                   console.log('Making request to ' + API);
                   fetch(API, {headers: {accept: 'application/json'}})
-                    .then(res => res.json())
-                    .then(data => {
+                    .then((res) => res.json())
+                    .then((data) => {
                       console.log(
                         'Got status: ' + JSON.stringify(data, null, 2),
                       );
                       setNpmStatus(data.status.description);
                     })
-                    .catch(e => {
+                    .catch((e) => {
                       console.error('Failed to fetch status: ' + e);
                       console.error(e);
                       setNpmStatus('Error: ' + e);
