@@ -201,7 +201,12 @@ export function buildFolder(): Promise<string> {
   });
 }
 export function getVersionNumber() {
-  const {version} = require('../package.json');
+  let {version} = require('../package.json');
+  // Unique build number is passed as --version parameter from Sandcastle
+  const buildNumber = process.argv.join(' ').match(/--version=(\d+)/);
+  if (buildNumber && buildNumber.length > 0) {
+    version = [...version.split('.').slice(0, 2), buildNumber[1]].join('.');
+  }
   return version;
 }
 
