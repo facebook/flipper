@@ -172,7 +172,6 @@ class SettingsSheet extends Component<Props, State> {
         <ToggledSection
           label="iOS Developer"
           toggled={enableIOS && this.props.platform === 'darwin'}
-          frozen={this.props.platform !== 'darwin'}
           onChange={(v) => {
             this.setState({
               updatedSettings: {...this.state.updatedSettings, enableIOS: v},
@@ -186,7 +185,9 @@ class SettingsSheet extends Component<Props, State> {
           )}
           {this.props.platform !== 'darwin' && (
             <ConfigText
-              content={'iOS development is only supported on MacOS'}
+              content={
+                'iOS development has limited functionality on non-MacOS devices'
+              }
             />
           )}
           <ToggledSection

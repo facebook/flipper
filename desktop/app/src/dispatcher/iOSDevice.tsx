@@ -264,10 +264,6 @@ export async function getActiveDevicesAndSimulators(
 }
 
 export default (store: Store, logger: Logger) => {
-  // monitoring iOS devices only available on MacOS.
-  if (process.platform !== 'darwin') {
-    return;
-  }
   if (!store.getState().settingsState.enableIOS) {
     return;
   }
