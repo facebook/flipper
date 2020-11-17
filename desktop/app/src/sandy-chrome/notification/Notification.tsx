@@ -7,9 +7,9 @@
  * @format
  */
 
-import React from 'react';
+import React, {useCallback, useMemo} from 'react';
 import {Layout, theme} from 'flipper-plugin';
-import {styled} from '../../ui';
+import {styled, Glyph} from '../../ui';
 import {Input, Typography, Button, Collapse} from 'antd';
 import {
   DownOutlined,
@@ -20,52 +20,22 @@ import {
   DeleteOutlined,
 } from '@ant-design/icons';
 import {LeftSidebar, SidebarTitle} from '../LeftSidebar';
-import {PluginNotification} from '../../reducers/notifications';
+import {Notification as NotificationData} from '../../plugin';
+import {useStore, useDispatch} from '../../utils/useStore';
+import {ClientQuery} from '../../Client';
+import {deconstructClientId} from '../../utils/clientUtils';
+import {selectPlugin} from '../../reducers/connections';
+
+type NotificationExtra = {
+  onOpen: () => void;
+  clientName: string | undefined;
+  appName: string | undefined;
+  pluginName: string;
+  iconName: string | null | undefined;
+};
+type PluginNotification = NotificationData & NotificationExtra;
 
 const {Title, Text, Paragraph} = Typography;
-
-// NOTE: remove after the component link to state
-const notificationExample: Array<PluginNotification> = [
-  {
-    notification: {
-      id: 'testid_0',
-      title: `
-      CRASH: FATAL EXCEPTION:
-      mainReason: java.lang.RuntimeException: Artificially triggered crash from Flipper sample app
-      `,
-      message:
-        'very very very very very very very very very very very very very very very very very very very very very long',
-      severity: 'error',
-    },
-    pluginId: 'testPluginId',
-    client: 'iPortaldroid',
-  },
-  {
-    notification: {
-      id: 'testid_1',
-      title: `CRASH: FATAL EXCEPTION:
-      mainReason: java.lang.RuntimeException: Artificially triggered crash from Flipper sample app
-      `,
-      message: `FATAL EXCEPTION: main`,
-      severity: 'error',
-    },
-    pluginId: 'testPluginId',
-    client: 'iPortaldroid',
-  },
-  {
-    notification: {
-      id: 'testid_2',
-      action: '1',
-      title: `CRASH: FATAL EXCEPTION: mainReason: java.lang.RuntimeException: Artificially triggered`,
-      message: `Callstack: FATAL EXCEPTION: main Process: com.facebook.flipper.sample, PID: 1646 java.lang.RuntimeException: Artificially triggered crash from Flipper sample app at com.facebook.flipper.sample.RootComponentSpec`,
-      severity: 'error',
-      category:
-        'java.lang.RuntimeException: Artificially triggered crash from Flipper sample app',
-    },
-    pluginId: 'CrashReporter',
-    client: 'emulator-5554',
-  },
-];
 
 const CollapseContainer = styled.div({
   '.ant-collapse-ghost .ant-collapse-item': {
@@ -119,27 +89,39 @@ function DetailCollapse({detail}: {detail: string | React.ReactNode}) {
 }
 
 function NotificationEntry({notification}: {notification: PluginNotification}) {
-  const {notification: content, pluginId, client} = notification;
-  // TODO: figure out how to transform app name to icon
-  const icon = React.createElement(ExclamationCircleOutlined, {
-    style: {color: theme.primaryColor},
-  });
+  const {
+    onOpen,
+    message,
+    title,
+    clientName,
+    appName,
+    pluginName,
+    iconName,
+  } = notification;
+
+  const icon = iconName ? (
+    <Glyph name={iconName} size={16} color={theme.primaryColor} />
+  ) : (
+    <ExclamationCircleOutlined style={{color: theme.primaryColor}} />
+  );
   return (
     <Layout.Container gap="small" pad="medium">
       <Layout.Horizontal gap="tiny" center>
         {icon}
-        <Text>{pluginId}</Text>
+        <Text style={{fontSize: theme.fontSize.smallBody}}>{pluginName}</Text>
       </Layout.Horizontal>
       <Title level={4} ellipsis={{rows: 2}}>
-        {content.title}
+        {title}
       </Title>
       <Text type="secondary" style={{fontSize: theme.fontSize.smallBody}}>
-        {client}
+        {clientName && appName
+          ? `${clientName}/${appName}`
+          : clientName ?? appName ?? 'Not Connected'}
       </Text>
-      <Button style={{width: 'fit-content'}} size="small">
-        Open
+      <Button style={{width: 'fit-content'}} size="small" onClick={onOpen}>
+        Open {pluginName}
       </Button>
-      <DetailCollapse detail={content.message} />
+      <DetailCollapse detail={message} />
     </Layout.Container>
   );
 }
@@ -154,7 +136,7 @@ function NotificationList({
       <Layout.Container>
         {notifications.map((notification) => (
           <NotificationEntry
-            key={notification.notification.id}
+            key={notification.id}
             notification={notification}
           />
         ))}
@@ -164,6 +146,56 @@ function NotificationList({
 }
 
 export function Notification() {
+  const dispatch = useDispatch();
+
+  const clients = useStore((state) => state.connections.clients);
+  const getClientQuery = useCallback(
+    (id: string | null) =>
+      id !== null
+        ? clients.reduce(
+            (query: ClientQuery | null, client) =>
+              client.id === id ? client.query : query,
+            null,
+          ) ?? deconstructClientId(id)
+        : null,
+    [clients],
+  );
+
+  const clientPlugins = useStore((state) => state.plugins.clientPlugins);
+  const devicePlugins = useStore((state) => state.plugins.devicePlugins);
+  const getPlugin = useCallback(
+    (id: string) => clientPlugins.get(id) || devicePlugins.get(id),
+    [clientPlugins, devicePlugins],
+  );
+
+  const activeNotifications = useStore(
+    (state) => state.notifications.activeNotifications,
+  );
+
+  const displayedNotifications: Array<PluginNotification> = useMemo(
+    () =>
+      activeNotifications.map((noti) => {
+        const plugin = getPlugin(noti.pluginId);
+        const client = getClientQuery(noti.client);
+        return {
+          ...noti.notification,
+          onOpen: () =>
+            dispatch(
+              selectPlugin({
+                selectedPlugin: noti.pluginId,
+                selectedApp: noti.client,
+                deepLinkPayload: noti.notification.action,
+              }),
+            ),
+          clientName: client?.device_id,
+          appName: client?.app,
+          pluginName: plugin?.title ?? noti.pluginId,
+          iconName: plugin?.icon,
+        };
+      }),
+    [activeNotifications, getPlugin, getClientQuery, dispatch],
+  );
+
   const actions = (
     <div>
       <Layout.Horizontal gap="medium">
@@ -181,7 +213,7 @@ export function Notification() {
             <Input placeholder="Search..." prefix={<SearchOutlined />} />
           </Layout.Container>
         </Layout.Container>
-        <NotificationList notifications={notificationExample} />
+        <NotificationList notifications={displayedNotifications} />
       </Layout.Top>
     </LeftSidebar>
   );
