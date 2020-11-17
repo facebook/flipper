@@ -205,11 +205,8 @@ bool generateCertSigningRequest(
   }
 
   ret = BIO_flush(csrBio);
-  if (ret != 1) {
-    free(pKey, x509_req, bne, privateKey, csrBio);
-    return ret;
-  }
 
+  free(pKey, x509_req, bne, privateKey, csrBio);
   return (ret == 1);
 }
 
