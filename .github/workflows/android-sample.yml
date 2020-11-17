@@ -16,7 +16,7 @@ jobs:
     - name: Install NDK 20
       run: echo "y" | sudo /usr/local/lib/android/sdk/tools/bin/sdkmanager --install "ndk;20.0.5594570" --sdk_root=${ANDROID_SDK_ROOT}
     - name: Build with Gradle
-      run: ./gradlew :sample:assembleDebug
+      run: ./gradlew :sample:assembleDebug :tutorial:assembleDebug
     - name: upload artifact
       uses: actions/upload-artifact@v1
       with:
