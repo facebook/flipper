@@ -26,7 +26,7 @@ import {FeedbackPrompt} from '../fb-stubs/UserFeedback';
 import {connect} from 'react-redux';
 import {State as Store} from '../reducers';
 import {StarOutlined} from '@ant-design/icons';
-import {Popover} from 'antd';
+import {Popover, Rate} from 'antd';
 import {useStore} from '../utils/useStore';
 
 type PropsFromState = {
@@ -176,44 +176,13 @@ class FeedbackComponent extends Component<
     this.setState({allowUserInfoSharing: allowed});
   }
   render() {
-    const stars = Array(5)
-      .fill(true)
-      .map<JSX.Element>((_, index) => (
-        <div
-          key={index}
-          role="button"
-          tabIndex={0}
-          onMouseEnter={() => {
-            this.setState({hoveredRating: index + 1});
-          }}
-          onMouseLeave={() => {
-            this.setState({hoveredRating: 0});
-          }}
-          onClick={() => {
-            this.onSubmitRating(index + 1);
-          }}>
-          <Glyph
-            name={
-              (
-                this.state.hoveredRating
-                  ? index < this.state.hoveredRating
-                  : index < (this.state.rating || 0)
-              )
-                ? 'star'
-                : 'star-outline'
-            }
-            color="grey"
-            size={24}
-          />
-        </div>
-      ));
     let body: Array<ReactElement>;
     switch (this.state.nextAction) {
       case 'select-rating':
         body = [
           <Row key="bodyText">{this.props.promptData.bodyText}</Row>,
           <Row key="stars" style={{margin: 'auto'}}>
-            {stars}
+            <Rate onChange={(newRating) => this.onSubmitRating(newRating)} />
           </Row>,
           dismissRow(this.props.dismiss),
         ];
