@@ -21,10 +21,10 @@ const Row = styled(FlexColumn)({
   alignItems: 'flex-end',
 });
 
-type Tabs = 'Plugin Status' | 'Install Plugins';
+type TabsState = 'Plugin Status' | 'Install Plugins';
 
 export default function (props: {onHide: () => any}) {
-  const [tab, setTab] = useState<Tabs>('Plugin Status');
+  const [tab, setTab] = useState<TabsState>('Plugin Status');
   return (
     <Container>
       <TabsContainer>
