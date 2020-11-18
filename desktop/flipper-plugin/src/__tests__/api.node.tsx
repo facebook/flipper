@@ -29,6 +29,7 @@ test('Correct top level API exposed', () => {
       "Layout",
       "NUX",
       "TestUtils",
+      "batch",
       "createState",
       "renderReactRoot",
       "theme",

@@ -11,6 +11,7 @@ import {SandyPluginDefinition} from './SandyPluginDefinition';
 import {BasePluginInstance, BasePluginClient} from './PluginBase';
 import {FlipperLib} from './FlipperLib';
 import {RealFlipperDevice} from './DevicePlugin';
+import {batched} from '../state/batch';
 
 type EventsContract = Record<string, any>;
 type MethodsContract = Record<string, (params: any) => Promise<any>>;
@@ -146,10 +147,10 @@ export class SandyPluginInstance extends BasePluginInstance {
         return realClient.query.app;
       },
       onConnect: (cb) => {
-        this.events.on('connect', cb);
+        this.events.on('connect', batched(cb));
       },
       onDisconnect: (cb) => {
-        this.events.on('disconnect', cb);
+        this.events.on('disconnect', batched(cb));
       },
       send: async (method, params) => {
         this.assertConnected();
@@ -160,11 +161,11 @@ export class SandyPluginInstance extends BasePluginInstance {
           params as any,
         );
       },
-      onMessage: (event, callback) => {
-        this.events.on('event-' + event, callback);
+      onMessage: (event, cb) => {
+        this.events.on('event-' + event, batched(cb));
       },
-      onUnhandledMessage: (callback) => {
-        this.events.on('unhandled-event', callback);
+      onUnhandledMessage: (cb) => {
+        this.events.on('unhandled-event', batched(cb));
       },
       supportsMethod: async (method) => {
         this.assertConnected();

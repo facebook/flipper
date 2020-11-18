@@ -391,111 +391,113 @@ export default class Client extends EventEmitter {
       return;
     }
 
-    let rawData;
-    try {
-      rawData = JSON.parse(msg);
-    } catch (err) {
-      console.error(`Invalid JSON: ${msg}`, 'clientMessage');
-      return;
-    }
-
-    const data: {
-      id?: number;
-      method?: string;
-      params?: Params;
-      success?: Object;
-      error?: ErrorType;
-    } = rawData;
-
-    const {id, method} = data;
-
-    if (
-      data.params?.api != 'flipper-messages' &&
-      flipperMessagesClientPlugin.isConnected()
-    ) {
-      flipperMessagesClientPlugin.newMessage({
-        device: this.deviceSync?.displayTitle(),
-        app: this.query.app,
-        flipperInternalMethod: method,
-        plugin: data.params?.api,
-        pluginMethod: data.params?.method,
-        payload: data.params?.params,
-        direction: 'toFlipper:message',
-      });
-    }
-
-    if (id == null) {
-      const {error} = data;
-      if (error != null) {
-        console.error(
-          `Error received from device ${
-            method ? `when calling ${method}` : ''
-          }: ${error.message} + \nDevice Stack Trace: ${error.stacktrace}`,
-          'deviceError',
-        );
-        handleError(this.store, this.deviceSync, error);
-      } else if (method === 'refreshPlugins') {
-        this.refreshPlugins();
-      } else if (method === 'execute') {
-        invariant(data.params, 'expected params');
-        const params: Params = data.params;
-        const bytes = msg.length * 2; // string lengths are measured in UTF-16 units (not characters), so 2 bytes per char
-        emitBytesReceived(params.api, bytes);
-
-        const persistingPlugin: PluginDefinition | undefined =
-          this.store.getState().plugins.clientPlugins.get(params.api) ||
-          this.store.getState().plugins.devicePlugins.get(params.api);
-
-        let handled = false; // This is just for analysis
-        if (
-          persistingPlugin &&
-          ((persistingPlugin as any).persistedStateReducer ||
-            // only send messages to enabled sandy plugins
-            this.sandyPluginStates.has(params.api))
-        ) {
-          handled = true;
-          const pluginKey = getPluginKey(
-            this.id,
-            {serial: this.query.device_id},
-            params.api,
-          );
-          if (!this.messageBuffer[pluginKey]) {
-            this.messageBuffer[pluginKey] = {
-              plugin: (this.sandyPluginStates.get(params.api) ??
-                persistingPlugin) as any,
-              messages: [params],
-            };
-          } else {
-            this.messageBuffer[pluginKey].messages.push(params);
-          }
-          this.flushMessageBufferDebounced();
-        }
-        const apiCallbacks = this.broadcastCallbacks.get(params.api);
-        if (apiCallbacks) {
-          const methodCallbacks = apiCallbacks.get(params.method);
-          if (methodCallbacks) {
-            for (const callback of methodCallbacks) {
-              handled = true;
-              callback(params.params);
-            }
-          }
-        }
-        if (!handled) {
-          console.warn(`Unhandled message ${params.api}.${params.method}`);
-        }
-      }
-      return; // method === 'execute'
-    }
-
-    if (this.sdkVersion < 1) {
-      const callbacks = this.requestCallbacks.get(id);
-      if (!callbacks) {
+    batch(() => {
+      let rawData;
+      try {
+        rawData = JSON.parse(msg);
+      } catch (err) {
+        console.error(`Invalid JSON: ${msg}`, 'clientMessage');
         return;
       }
-      this.requestCallbacks.delete(id);
-      this.finishTimingRequestResponse(callbacks.metadata);
-      this.onResponse(data, callbacks.resolve, callbacks.reject);
-    }
+
+      const data: {
+        id?: number;
+        method?: string;
+        params?: Params;
+        success?: Object;
+        error?: ErrorType;
+      } = rawData;
+
+      const {id, method} = data;
+
+      if (
+        data.params?.api != 'flipper-messages' &&
+        flipperMessagesClientPlugin.isConnected()
+      ) {
+        flipperMessagesClientPlugin.newMessage({
+          device: this.deviceSync?.displayTitle(),
+          app: this.query.app,
+          flipperInternalMethod: method,
+          plugin: data.params?.api,
+          pluginMethod: data.params?.method,
+          payload: data.params?.params,
+          direction: 'toFlipper:message',
+        });
+      }
+
+      if (id == null) {
+        const {error} = data;
+        if (error != null) {
+          console.error(
+            `Error received from device ${
+              method ? `when calling ${method}` : ''
+            }: ${error.message} + \nDevice Stack Trace: ${error.stacktrace}`,
+            'deviceError',
+          );
+          handleError(this.store, this.deviceSync, error);
+        } else if (method === 'refreshPlugins') {
+          this.refreshPlugins();
+        } else if (method === 'execute') {
+          invariant(data.params, 'expected params');
+          const params: Params = data.params;
+          const bytes = msg.length * 2; // string lengths are measured in UTF-16 units (not characters), so 2 bytes per char
+          emitBytesReceived(params.api, bytes);
+
+          const persistingPlugin: PluginDefinition | undefined =
+            this.store.getState().plugins.clientPlugins.get(params.api) ||
+            this.store.getState().plugins.devicePlugins.get(params.api);
+
+          let handled = false; // This is just for analysis
+          if (
+            persistingPlugin &&
+            ((persistingPlugin as any).persistedStateReducer ||
+              // only send messages to enabled sandy plugins
+              this.sandyPluginStates.has(params.api))
+          ) {
+            handled = true;
+            const pluginKey = getPluginKey(
+              this.id,
+              {serial: this.query.device_id},
+              params.api,
+            );
+            if (!this.messageBuffer[pluginKey]) {
+              this.messageBuffer[pluginKey] = {
+                plugin: (this.sandyPluginStates.get(params.api) ??
+                  persistingPlugin) as any,
+                messages: [params],
+              };
+            } else {
+              this.messageBuffer[pluginKey].messages.push(params);
+            }
+            this.flushMessageBufferDebounced();
+          }
+          const apiCallbacks = this.broadcastCallbacks.get(params.api);
+          if (apiCallbacks) {
+            const methodCallbacks = apiCallbacks.get(params.method);
+            if (methodCallbacks) {
+              for (const callback of methodCallbacks) {
+                handled = true;
+                callback(params.params);
+              }
+            }
+          }
+          if (!handled) {
+            console.warn(`Unhandled message ${params.api}.${params.method}`);
+          }
+        }
+        return; // method === 'execute'
+      }
+
+      if (this.sdkVersion < 1) {
+        const callbacks = this.requestCallbacks.get(id);
+        if (!callbacks) {
+          return;
+        }
+        this.requestCallbacks.delete(id);
+        this.finishTimingRequestResponse(callbacks.metadata);
+        this.onResponse(data, callbacks.resolve, callbacks.reject);
+      }
+    });
   }
 
   onResponse(

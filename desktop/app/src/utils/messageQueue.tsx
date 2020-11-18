@@ -24,7 +24,7 @@ import {Idler, BaseIdler} from './Idler';
 import {pluginIsStarred, getSelectedPluginKey} from '../reducers/connections';
 import {deconstructPluginKey} from './clientUtils';
 import {defaultEnabledBackgroundPlugins} from './pluginUtils';
-import {_SandyPluginInstance} from 'flipper-plugin';
+import {batch, _SandyPluginInstance} from 'flipper-plugin';
 import {addBackgroundStat} from './pluginStats';
 
 function processMessageClassic(
@@ -187,39 +187,44 @@ export async function processMessageQueue(
       : getCurrentPluginState(store, plugin, pluginKey);
     let offset = 0;
     let newPluginState = persistedState;
-    do {
-      if (_SandyPluginInstance.is(plugin)) {
-        // Optimization: we could send a batch of messages here
-        processMessagesSandy(pluginKey, plugin, [messages[offset]]);
-      } else {
-        newPluginState = processMessageClassic(
-          newPluginState,
-          pluginKey,
-          plugin,
-          messages[offset],
+    batch(() => {
+      do {
+        if (_SandyPluginInstance.is(plugin)) {
+          // Optimization: we could send a batch of messages here
+          processMessagesSandy(pluginKey, plugin, [messages[offset]]);
+        } else {
+          newPluginState = processMessageClassic(
+            newPluginState,
+            pluginKey,
+            plugin,
+            messages[offset],
+          );
+        }
+        offset++;
+        progress++;
+
+        progressCallback?.({
+          total: Math.max(total, progress),
+          current: progress,
+        });
+      } while (offset < messages.length && !idler.shouldIdle());
+      // save progress
+      // by writing progress away first and then idling, we make sure this logic is
+      // resistent to kicking off this process twice; grabbing, processing messages, saving state is done synchronosly
+      // until the idler has to break
+      store.dispatch(clearMessageQueue(pluginKey, offset));
+      if (
+        !_SandyPluginInstance.is(plugin) &&
+        newPluginState !== persistedState
+      ) {
+        store.dispatch(
+          setPluginState({
+            pluginKey,
+            state: newPluginState,
+          }),
         );
       }
-      offset++;
-      progress++;
-
-      progressCallback?.({
-        total: Math.max(total, progress),
-        current: progress,
-      });
-    } while (offset < messages.length && !idler.shouldIdle());
-    // save progress
-    // by writing progress away first and then idling, we make sure this logic is
-    // resistent to kicking off this process twice; grabbing, processing messages, saving state is done synchronosly
-    // until the idler has to break
-    store.dispatch(clearMessageQueue(pluginKey, offset));
-    if (!_SandyPluginInstance.is(plugin) && newPluginState !== persistedState) {
-      store.dispatch(
-        setPluginState({
-          pluginKey,
-          state: newPluginState,
-        }),
-      );
-    }
+    });
 
     if (idler.isCancelled()) {
       return false;

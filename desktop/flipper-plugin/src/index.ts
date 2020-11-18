@@ -30,6 +30,7 @@ export {
   usePlugin,
 } from './plugin/PluginContext';
 export {createState, useValue, Atom} from './state/atom';
+export {batch} from './state/batch';
 export {FlipperLib} from './plugin/FlipperLib';
 export {
   MenuEntry,

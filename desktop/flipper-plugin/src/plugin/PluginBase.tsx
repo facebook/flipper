@@ -13,6 +13,7 @@ import {Atom} from '../state/atom';
 import {MenuEntry, NormalizedMenuEntry, normalizeMenuEntry} from './MenuEntry';
 import {FlipperLib} from './FlipperLib';
 import {Device, RealFlipperDevice} from './DevicePlugin';
+import {batched} from '../state/batch';
 
 export interface BasePluginClient {
   readonly device: Device;
@@ -116,7 +117,7 @@ export abstract class BasePluginInstance {
     // To be called from constructory
     setCurrentPluginInstance(this);
     try {
-      this.instanceApi = factory();
+      this.instanceApi = batched(factory)();
     } finally {
       this.initialStates = undefined;
       setCurrentPluginInstance(undefined);
@@ -127,16 +128,16 @@ export abstract class BasePluginInstance {
     return {
       device: this.device,
       onActivate: (cb) => {
-        this.events.on('activate', cb);
+        this.events.on('activate', batched(cb));
       },
       onDeactivate: (cb) => {
-        this.events.on('deactivate', cb);
+        this.events.on('deactivate', batched(cb));
       },
-      onDeepLink: (callback) => {
-        this.events.on('deeplink', callback);
+      onDeepLink: (cb) => {
+        this.events.on('deeplink', batched(cb));
       },
       onDestroy: (cb) => {
-        this.events.on('destroy', cb);
+        this.events.on('destroy', batched(cb));
       },
       addMenuEntry: (...entries) => {
         for (const entry of entries) {
