@@ -53,6 +53,7 @@ import {setStaticView} from '../reducers/connections';
 import {getInstance} from '../fb-stubs/Logger';
 import {isStaticViewActive} from '../chrome/mainsidebar/sidebarUtils';
 import {getUser} from '../fb-stubs/user';
+import {SandyRatingButton} from '../chrome/RatingButton';
 
 const LeftRailButtonElem = styled(Button)<{kind?: 'small'}>(({kind}) => ({
   width: kind === 'small' ? 32 : 36,
@@ -63,7 +64,7 @@ const LeftRailButtonElem = styled(Button)<{kind?: 'small'}>(({kind}) => ({
 }));
 LeftRailButtonElem.displayName = 'LeftRailButtonElem';
 
-function LeftRailButton({
+export function LeftRailButton({
   icon,
   small,
   selected,
@@ -151,6 +152,7 @@ export function LeftRail({
           />
         </Layout.Container>
         <Layout.Container center gap={10} padh={6}>
+          <SandyRatingButton />
           <LaunchEmulatorButton />
           <SetupDoctorButton />
           <WelcomeScreenButton />

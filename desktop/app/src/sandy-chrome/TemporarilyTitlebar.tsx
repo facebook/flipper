@@ -15,10 +15,8 @@ import isProduction from '../utils/isProduction';
 import {isAutoUpdaterEnabled} from '../utils/argvUtils';
 import AutoUpdateVersion from '../chrome/AutoUpdateVersion';
 import UpdateIndicator from '../chrome/UpdateIndicator';
-import RatingButton from '../chrome/RatingButton';
 import {Version} from '../chrome/TitleBar';
 import {useStore} from '../utils/useStore';
-import config from '../fb-stubs/config';
 import {remote} from 'electron';
 
 const version = remote.app.getVersion();
@@ -56,7 +54,6 @@ export function TemporarilyTitlebar() {
       [Sandy] Flipper{' '}
       {!isProduction() && <NetworkGraph height={20} width={60} />}
       {!isProduction() && <FpsGraph height={20} width={60} />}
-      {config.showFlipperRating ? <RatingButton /> : null}
       <Version>{version + (isProduction() ? '' : '-dev')}</Version>
       {isAutoUpdaterEnabled() ? (
         <AutoUpdateVersion version={version} />

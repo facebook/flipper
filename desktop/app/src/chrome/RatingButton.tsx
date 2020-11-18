@@ -7,7 +7,7 @@
  * @format
  */
 
-import React, {Component, ReactElement, RefObject} from 'react';
+import React, {Component, ReactElement, RefObject, useState} from 'react';
 import {
   Glyph,
   FlexColumn,
@@ -18,12 +18,16 @@ import {
   Input,
   Link,
 } from '../ui';
-import Popover from '../ui/components/Popover2';
+import LegacyPopover from '../ui/components/Popover2';
+import {LeftRailButton} from '../sandy-chrome/LeftRail';
 import GK from '../fb-stubs/GK';
 import * as UserFeedback from '../fb-stubs/UserFeedback';
 import {FeedbackPrompt} from '../fb-stubs/UserFeedback';
 import {connect} from 'react-redux';
 import {State as Store} from '../reducers';
+import {StarOutlined} from '@ant-design/icons';
+import {Popover} from 'antd';
+import {useStore} from '../utils/useStore';
 
 type PropsFromState = {
   sessionId: string | null;
@@ -374,7 +378,7 @@ class RatingButton extends Component<PropsFromState, State> {
           />
         </div>
         {this.state.isShown ? (
-          <Popover id="rating-button" targetRef={this.glyphRef}>
+          <LegacyPopover id="rating-button" targetRef={this.glyphRef}>
             <FeedbackComponent
               submitRating={this.submitRating.bind(this)}
               submitComment={this.submitComment.bind(this)}
@@ -384,11 +388,94 @@ class RatingButton extends Component<PropsFromState, State> {
               dismiss={this.onClick.bind(this)}
               promptData={promptData}
             />
-          </Popover>
+          </LegacyPopover>
         ) : null}
       </div>
     );
   }
+}
+
+export function SandyRatingButton() {
+  const [
+    promptData,
+    setPromptData,
+  ] = useState<UserFeedback.FeedbackPrompt | null>(null);
+  const [isShown, setIsShown] = useState(false);
+  const [hasTriggered, setHasTriggered] = useState(false);
+  const sessionId = useStore((store) => store.application.sessionId);
+
+  const triggerPopover = () => {
+    if (!hasTriggered) {
+      setIsShown(true);
+      setHasTriggered(true);
+    }
+  };
+
+  if (GK.get('flipper_enable_star_ratiings')) {
+    UserFeedback.getPrompt().then((prompt) => {
+      setPromptData(prompt);
+      setTimeout(triggerPopover, 30000);
+    });
+  }
+
+  const onClick = () => {
+    const willBeShown = !isShown;
+    setIsShown(willBeShown);
+    setHasTriggered(true);
+    if (!willBeShown) {
+      UserFeedback.dismiss(sessionId);
+    }
+  };
+
+  const submitRating = (rating: number) => {
+    UserFeedback.submitRating(rating, sessionId);
+  };
+
+  const submitComment = (
+    rating: number,
+    comment: string,
+    selectedPredefinedComments: Array<string>,
+    allowUserInfoSharing: boolean,
+  ) => {
+    UserFeedback.submitComment(
+      rating,
+      comment,
+      selectedPredefinedComments,
+      allowUserInfoSharing,
+      sessionId,
+    );
+  };
+
+  if (!promptData) {
+    return null;
+  }
+  if (!promptData.shouldPopup || (hasTriggered && !isShown)) {
+    return null;
+  }
+  return (
+    <Popover
+      visible={isShown}
+      content={
+        <FeedbackComponent
+          submitRating={submitRating}
+          submitComment={submitComment}
+          close={() => {
+            setIsShown(false);
+          }}
+          dismiss={onClick}
+          promptData={promptData}
+        />
+      }
+      placement="right"
+      trigger="click">
+      <LeftRailButton
+        icon={<StarOutlined />}
+        title="Rate Flipper"
+        onClick={onClick}
+        small
+      />
+    </Popover>
+  );
 }
 
 export default connect<{sessionId: string | null}, null, {}, Store>(
