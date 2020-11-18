@@ -132,7 +132,10 @@ export default class FlipperImagesPlugin extends FlipperPlugin<
         ) {
           const surface = attribution[0] ? attribution[0].trim() : undefined;
           if (surface && surface.length > 0) {
-            pluginData.surfaceList.add(surface);
+            pluginData.surfaceList = new Set([
+              ...pluginData.surfaceList,
+              surface,
+            ]);
           }
         }
         pluginData = {
@@ -182,16 +185,17 @@ export default class FlipperImagesPlugin extends FlipperPlugin<
     } else if (method == 'events') {
       const event: ImageEvent = data as ImageEvent;
       debugLog('Received events', event);
-      const {surfaceList} = persistedState;
+      let {surfaceList} = persistedState;
       const {attribution} = event;
       if (attribution instanceof Array && attribution.length > 0) {
         const surface = attribution[0] ? attribution[0].trim() : undefined;
         if (surface && surface.length > 0) {
-          surfaceList.add(surface);
+          surfaceList = new Set([...surfaceList, surface]);
         }
       }
       return {
         ...persistedState,
+        surfaceList,
         events: [
           {eventId: persistedState.nextEventId, ...event},
           ...persistedState.events,
