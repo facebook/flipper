@@ -13,7 +13,7 @@ import Orderable from './Orderable';
 import FlexRow from './FlexRow';
 import {colors} from './colors';
 import Tab, {Props as TabProps} from './Tab';
-import {WidthProperty} from 'csstype';
+import {Property} from 'csstype';
 import React, {useContext} from 'react';
 import {TabsContext} from './TabsContainer';
 
@@ -25,7 +25,7 @@ TabList.displayName = 'Tabs:TabList';
 
 const TabListItem = styled.div<{
   active?: boolean;
-  width?: WidthProperty<number>;
+  width?: Property.Width<number>;
   container?: boolean;
 }>((props) => ({
   userSelect: 'none',

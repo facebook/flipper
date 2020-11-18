@@ -12,9 +12,9 @@ import {Component} from 'react';
 import View from './View';
 import styled from '@emotion/styled';
 import React from 'react';
-import {HeightProperty, TopProperty} from 'csstype';
+import {Property} from 'csstype';
 
-const Inner = styled(FlexColumn)<{height: HeightProperty<number>}>(
+const Inner = styled(FlexColumn)<{height: Property.Height<number>}>(
   ({height}) => ({
     alignItems: 'flex-start',
     height,
@@ -26,7 +26,7 @@ const Inner = styled(FlexColumn)<{height: HeightProperty<number>}>(
 );
 Inner.displayName = 'VirtualList:Inner';
 
-const Content = styled(FlexColumn)<{top: TopProperty<number>}>(({top}) => ({
+const Content = styled(FlexColumn)<{top: Property.Top<number>}>(({top}) => ({
   alignItems: 'flex-start',
   height: '100%',
   marginTop: top,

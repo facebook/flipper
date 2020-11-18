@@ -43,7 +43,7 @@ const ALL_RESIZABLE: ResizingSides = {
   top: true,
 };
 
-type InteractiveProps = {
+export type InteractiveProps = {
   isMovableAnchor?: (event: React.MouseEvent) => boolean;
   onMoveStart?: () => void;
   onMoveEnd?: () => void;

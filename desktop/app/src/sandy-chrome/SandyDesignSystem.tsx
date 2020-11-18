@@ -11,7 +11,7 @@ import React from 'react';
 import {Typography, Button, Space, Input, Card, Alert, List} from 'antd';
 import {Layout} from '../ui';
 import {theme} from 'flipper-plugin';
-import {css} from 'emotion';
+import {css} from '@emotion/css';
 import {DesignComponentDemos} from './DesignComponentDemos';
 
 const {Title, Text, Link} = Typography;

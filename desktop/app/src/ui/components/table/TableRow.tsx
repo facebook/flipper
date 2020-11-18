@@ -20,12 +20,7 @@ import FlexRow from '../FlexRow';
 import {colors} from '../colors';
 import {normaliseColumnWidth} from './utils';
 import {DEFAULT_ROW_HEIGHT} from './types';
-import {
-  FontWeightProperty,
-  ColorProperty,
-  JustifyContentProperty,
-  BackgroundColorProperty,
-} from 'csstype';
+import {Property} from 'csstype';
 
 type TableBodyRowContainerProps = {
   even?: boolean;
@@ -33,12 +28,12 @@ type TableBodyRowContainerProps = {
   highlighted?: boolean;
   rowLineHeight?: number;
   multiline?: boolean;
-  fontWeight?: FontWeightProperty;
-  color?: ColorProperty;
+  fontWeight?: Property.FontWeight;
+  color?: Property.Color;
   highlightOnHover?: boolean;
-  backgroundColor?: BackgroundColorProperty;
-  highlightedBackgroundColor?: BackgroundColorProperty;
-  zebraBackgroundColor?: BackgroundColorProperty;
+  backgroundColor?: Property.BackgroundColor;
+  highlightedBackgroundColor?: Property.BackgroundColor;
+  zebraBackgroundColor?: Property.BackgroundColor;
 };
 
 const backgroundColor = (props: TableBodyRowContainerProps) => {
@@ -91,26 +86,20 @@ TableBodyRowContainer.displayName = 'TableRow:TableBodyRowContainer';
 const TableBodyColumnContainer = styled.div<{
   width?: any;
   multiline?: boolean;
-  justifyContent: JustifyContentProperty;
-}>(
-  (props: {
-    width?: any;
-    multiline?: boolean;
-    justifyContent: JustifyContentProperty;
-  }) => ({
-    display: 'flex',
-    flexShrink: props.width === 'flex' ? 1 : 0,
-    overflow: 'hidden',
-    padding: '0 8px',
-    textOverflow: 'ellipsis',
-    verticalAlign: 'top',
-    whiteSpace: props.multiline ? 'normal' : 'nowrap',
-    wordWrap: props.multiline ? 'break-word' : 'normal',
-    width: props.width === 'flex' ? '100%' : props.width,
-    maxWidth: '100%',
-    justifyContent: props.justifyContent,
-  }),
-);
+  justifyContent: Property.JustifyContent;
+}>((props) => ({
+  display: 'flex',
+  flexShrink: props.width === 'flex' ? 1 : 0,
+  overflow: 'hidden',
+  padding: '0 8px',
+  textOverflow: 'ellipsis',
+  verticalAlign: 'top',
+  whiteSpace: props.multiline ? 'normal' : 'nowrap',
+  wordWrap: props.multiline ? 'break-word' : 'normal',
+  width: props.width === 'flex' ? '100%' : props.width,
+  maxWidth: '100%',
+  justifyContent: props.justifyContent,
+}));
 TableBodyColumnContainer.displayName = 'TableRow:TableBodyColumnContainer';
 
 type Props = {

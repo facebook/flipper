@@ -2,7 +2,7 @@
 
 exports[`ShareSheetPendingDialog is rendered with status update 1`] = `
 <div
-  className="css-75dkqw-View-FlexBox-FlexColumn"
+  className="css-1lvu114-View-FlexBox-FlexColumn"
   style={
     Object {
       "width": undefined,
@@ -10,7 +10,7 @@ exports[`ShareSheetPendingDialog is rendered with status update 1`] = `
   }
 >
   <div
-    className="css-t9ud5p-View-FlexBox-FlexColumn"
+    className="css-1tg2qwm-View-FlexBox-FlexColumn"
   >
     <div
       className="css-hs91vy-LoadingIndicator eq9prj20"
@@ -24,13 +24,13 @@ exports[`ShareSheetPendingDialog is rendered with status update 1`] = `
     </span>
   </div>
   <div
-    className="css-17wo7w2-View-FlexBox-FlexRow epz0qe20"
+    className="css-wospjg-View-FlexBox-FlexRow epz0qe20"
   >
     <div
-      className="css-te359u-View-FlexBox-Spacer e13mj6h82"
+      className="css-t4wmtk-View-FlexBox-Spacer e13mj6h80"
     />
     <div
-      className="css-xing9h-StyledButton enfqd40"
+      className="css-xing9h-StyledButton enfqd41"
       onClick={[Function]}
       onMouseDown={[Function]}
       onMouseUp={[Function]}
@@ -38,7 +38,7 @@ exports[`ShareSheetPendingDialog is rendered with status update 1`] = `
       Cancel
     </div>
     <div
-      className="css-xing9h-StyledButton enfqd40"
+      className="css-xing9h-StyledButton enfqd41"
       onClick={[Function]}
       onMouseDown={[Function]}
       onMouseUp={[Function]}
@@ -52,7 +52,7 @@ exports[`ShareSheetPendingDialog is rendered with status update 1`] = `
 
 exports[`ShareSheetPendingDialog is rendered without status update 1`] = `
 <div
-  className="css-75dkqw-View-FlexBox-FlexColumn"
+  className="css-1lvu114-View-FlexBox-FlexColumn"
   style={
     Object {
       "width": undefined,
@@ -60,7 +60,7 @@ exports[`ShareSheetPendingDialog is rendered without status update 1`] = `
   }
 >
   <div
-    className="css-t9ud5p-View-FlexBox-FlexColumn"
+    className="css-1tg2qwm-View-FlexBox-FlexColumn"
   >
     <div
       className="css-hs91vy-LoadingIndicator eq9prj20"
@@ -74,13 +74,13 @@ exports[`ShareSheetPendingDialog is rendered without status update 1`] = `
     </span>
   </div>
   <div
-    className="css-17wo7w2-View-FlexBox-FlexRow epz0qe20"
+    className="css-wospjg-View-FlexBox-FlexRow epz0qe20"
   >
     <div
-      className="css-te359u-View-FlexBox-Spacer e13mj6h82"
+      className="css-t4wmtk-View-FlexBox-Spacer e13mj6h80"
     />
     <div
-      className="css-xing9h-StyledButton enfqd40"
+      className="css-xing9h-StyledButton enfqd41"
       onClick={[Function]}
       onMouseDown={[Function]}
       onMouseUp={[Function]}
@@ -88,7 +88,7 @@ exports[`ShareSheetPendingDialog is rendered without status update 1`] = `
       Cancel
     </div>
     <div
-      className="css-xing9h-StyledButton enfqd40"
+      className="css-xing9h-StyledButton enfqd41"
       onClick={[Function]}
       onMouseDown={[Function]}
       onMouseUp={[Function]}

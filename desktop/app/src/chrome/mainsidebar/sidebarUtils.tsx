@@ -20,7 +20,7 @@ import {
   Spacer,
   Heading,
 } from '../../ui';
-import {BackgroundColorProperty} from 'csstype';
+import {Property} from 'csstype';
 import {getPluginTitle} from '../../utils/pluginUtils';
 import {PluginDefinition} from '../../plugin';
 import {StaticView} from '../../reducers/connections';
@@ -70,7 +70,7 @@ export function PluginIcon({
 }
 
 const PluginShape = styled(FlexBox)<{
-  backgroundColor?: BackgroundColorProperty;
+  backgroundColor?: Property.BackgroundColor;
 }>(({backgroundColor}) => ({
   marginRight: 8,
   backgroundColor,

@@ -15,7 +15,7 @@ import FlexRow from './FlexRow';
 import Glyph from './Glyph';
 import styled from '@emotion/styled';
 import React from 'react';
-import {BackgroundColorProperty} from 'csstype';
+import {Property} from 'csstype';
 import {
   TableBodyRow,
   TableColumnSizes,
@@ -25,7 +25,7 @@ import {
 
 const Padder = styled.div<{
   padded?: boolean;
-  backgroundColor?: BackgroundColorProperty;
+  backgroundColor?: Property.BackgroundColor;
 }>(({padded, backgroundColor}) => ({
   padding: padded ? 10 : 0,
   backgroundColor,

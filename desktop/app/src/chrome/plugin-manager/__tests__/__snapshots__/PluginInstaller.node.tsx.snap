@@ -3,16 +3,16 @@
 exports[`load PluginInstaller list 1`] = `
 <div>
   <div
-    class="css-13jp8bd-View-FlexBox-FlexColumn"
+    class="css-9dawc5-View-FlexBox-FlexColumn"
   >
     <div
-      class="css-1qqef1i-View-FlexBox-FlexRow-ToolbarContainer e13mj6h80"
+      class="css-cjspgc-View-FlexBox-FlexRow-ToolbarContainer e13mj6h82"
     >
       <div
-        class="css-bl14sl-View-FlexBox-SearchBox e271nro1"
+        class="css-bl14sl-View-FlexBox-SearchBox e271nro4"
       >
         <input
-          class="css-184o3nx-Input-SearchInput e271nro2"
+          class="css-184o3nx-Input-SearchInput e271nro3"
           placeholder="Search Flipper plugins..."
           type="text"
           value=""
@@ -20,73 +20,73 @@ exports[`load PluginInstaller list 1`] = `
       </div>
     </div>
     <div
-      class="css-1s2tz3g-View-FlexBox-FlexColumn-Container e11hk09w0"
+      class="css-1n5hbjk-View-FlexBox-FlexColumn-Container e11hk09w0"
     >
       <div
-        class="css-k28k5g-View-FlexBox-FlexColumn ecr18to0"
+        class="css-18abd42-View-FlexBox-FlexColumn ecr18to0"
       >
         <div
-          class="css-guwxm6-View-FlexBox-FlexRow-TableHeadContainer ejga3103"
+          class="css-nzypyq-View-FlexBox-FlexRow-TableHeadContainer ejga3101"
         >
           <div
-            class="css-zk363n-TableHeadColumnContainer ejga3104"
+            class="css-zk363n-TableHeadColumnContainer ejga3100"
             title="name"
             width="25%"
           >
             <div
-              class="ejga3101 css-1859yug-InteractiveContainer-TableHeaderColumnInteractive etmd34w0"
+              class="ejga3103 css-x4q70f-InteractiveContainer-TableHeaderColumnInteractive etmd34w0"
               style="z-index: auto; right: 0px; bottom: 0px; width: 100%; height: 100%;"
             >
               <div
-                class="css-1yopr4n-TableHeaderColumnContainer ejga3102"
+                class="css-1054ash-TableHeaderColumnContainer ejga3102"
               >
                 Name
               </div>
             </div>
           </div>
           <div
-            class="css-1243222-TableHeadColumnContainer ejga3104"
+            class="css-1243222-TableHeadColumnContainer ejga3100"
             title="version"
             width="10%"
           >
             <div
-              class="ejga3101 css-1859yug-InteractiveContainer-TableHeaderColumnInteractive etmd34w0"
+              class="ejga3103 css-x4q70f-InteractiveContainer-TableHeaderColumnInteractive etmd34w0"
               style="z-index: auto; right: 0px; bottom: 0px; width: 100%; height: 100%;"
             >
               <div
-                class="css-1yopr4n-TableHeaderColumnContainer ejga3102"
+                class="css-1054ash-TableHeaderColumnContainer ejga3102"
               >
                 Version
               </div>
             </div>
           </div>
           <div
-            class="css-nyra6d-TableHeadColumnContainer ejga3104"
+            class="css-nyra6d-TableHeadColumnContainer ejga3100"
             title="description"
             width="flex"
           >
             <div
-              class="ejga3101 css-1859yug-InteractiveContainer-TableHeaderColumnInteractive etmd34w0"
+              class="ejga3103 css-x4q70f-InteractiveContainer-TableHeaderColumnInteractive etmd34w0"
               style="z-index: auto; right: 0px; bottom: 0px; width: 100%; height: 100%;"
             >
               <div
-                class="css-1yopr4n-TableHeaderColumnContainer ejga3102"
+                class="css-1054ash-TableHeaderColumnContainer ejga3102"
               >
                 Description
               </div>
             </div>
           </div>
           <div
-            class="css-hyjqmu-TableHeadColumnContainer ejga3104"
+            class="css-hyjqmu-TableHeadColumnContainer ejga3100"
             title="install"
             width="15%"
           >
             <div
-              class="ejga3101 css-1859yug-InteractiveContainer-TableHeaderColumnInteractive etmd34w0"
+              class="ejga3103 css-x4q70f-InteractiveContainer-TableHeaderColumnInteractive etmd34w0"
               style="z-index: auto; right: 0px; bottom: 0px; width: 100%; height: 100%;"
             >
               <div
-                class="css-1yopr4n-TableHeaderColumnContainer ejga3102"
+                class="css-1054ash-TableHeaderColumnContainer ejga3102"
               >
                 
               </div>
@@ -95,14 +95,14 @@ exports[`load PluginInstaller list 1`] = `
         </div>
       </div>
       <div
-        class="css-1s2tz3g-View-FlexBox-FlexColumn-Container e11hk09w0"
+        class="css-1n5hbjk-View-FlexBox-FlexColumn-Container e11hk09w0"
       >
         <div
-          class="css-1gi2nc1-View-FlexBox-FlexRow-TableBodyRowContainer ehuguum0"
+          class="css-1xll39b-View-FlexBox-FlexRow-TableBodyRowContainer ehuguum1"
           data-key="flipper-plugin-hello"
         >
           <div
-            class="css-hdg6vt-TableBodyColumnContainer ehuguum1"
+            class="css-hdg6vt-TableBodyColumnContainer ehuguum0"
             title=""
             width="25%"
           >
@@ -113,7 +113,7 @@ exports[`load PluginInstaller list 1`] = `
             </span>
           </div>
           <div
-            class="css-1rdsust-TableBodyColumnContainer ehuguum1"
+            class="css-1rdsust-TableBodyColumnContainer ehuguum0"
             title=""
             width="10%"
           >
@@ -124,12 +124,12 @@ exports[`load PluginInstaller list 1`] = `
             </span>
           </div>
           <div
-            class="css-1bw2bjn-TableBodyColumnContainer ehuguum1"
+            class="css-1bw2bjn-TableBodyColumnContainer ehuguum0"
             title=""
             width="flex"
           >
             <div
-              class="css-wxxfdj-View-FlexBox-FlexRow epz0qe20"
+              class="css-4yiclo-View-FlexBox-FlexRow epz0qe20"
             >
               <span
                 class="css-fyize4-Text"
@@ -137,13 +137,13 @@ exports[`load PluginInstaller list 1`] = `
                 World?
               </span>
               <div
-                class="css-te359u-View-FlexBox-Spacer e13mj6h82"
+                class="css-t4wmtk-View-FlexBox-Spacer e13mj6h80"
               />
               <span
                 class="css-ad6n9d-StyledLink e1mzoj7l0"
               >
                 <div
-                  class="css-1tfjvvq-ColoredIconCustom e528dze1"
+                  class="css-1tfjvvq-ColoredIconCustom e528dze0"
                   color="#bec2c9"
                   size="16"
                   src="https://external.xx.fbcdn.net/assets/?name=info-circle&variant=filled&size=16&set=facebook_icons&density=1x"
@@ -152,12 +152,12 @@ exports[`load PluginInstaller list 1`] = `
             </div>
           </div>
           <div
-            class="css-4dx1ef-TableBodyColumnContainer ehuguum1"
+            class="css-4dx1ef-TableBodyColumnContainer ehuguum0"
             title=""
             width="15%"
           >
             <div
-              class="css-1pccuw6-StyledButton enfqd40"
+              class="css-iby3qx-StyledButton enfqd41"
               type="primary"
             >
               Install
@@ -165,11 +165,11 @@ exports[`load PluginInstaller list 1`] = `
           </div>
         </div>
         <div
-          class="css-14d4692-View-FlexBox-FlexRow-TableBodyRowContainer ehuguum0"
+          class="css-1k1evb9-View-FlexBox-FlexRow-TableBodyRowContainer ehuguum1"
           data-key="flipper-plugin-world"
         >
           <div
-            class="css-hdg6vt-TableBodyColumnContainer ehuguum1"
+            class="css-hdg6vt-TableBodyColumnContainer ehuguum0"
             title=""
             width="25%"
           >
@@ -180,7 +180,7 @@ exports[`load PluginInstaller list 1`] = `
             </span>
           </div>
           <div
-            class="css-1rdsust-TableBodyColumnContainer ehuguum1"
+            class="css-1rdsust-TableBodyColumnContainer ehuguum0"
             title=""
             width="10%"
           >
@@ -191,12 +191,12 @@ exports[`load PluginInstaller list 1`] = `
             </span>
           </div>
           <div
-            class="css-1bw2bjn-TableBodyColumnContainer ehuguum1"
+            class="css-1bw2bjn-TableBodyColumnContainer ehuguum0"
             title=""
             width="flex"
           >
             <div
-              class="css-wxxfdj-View-FlexBox-FlexRow epz0qe20"
+              class="css-4yiclo-View-FlexBox-FlexRow epz0qe20"
             >
               <span
                 class="css-fyize4-Text"
@@ -204,13 +204,13 @@ exports[`load PluginInstaller list 1`] = `
                 Hello?
               </span>
               <div
-                class="css-te359u-View-FlexBox-Spacer e13mj6h82"
+                class="css-t4wmtk-View-FlexBox-Spacer e13mj6h80"
               />
               <span
                 class="css-ad6n9d-StyledLink e1mzoj7l0"
               >
                 <div
-                  class="css-1tfjvvq-ColoredIconCustom e528dze1"
+                  class="css-1tfjvvq-ColoredIconCustom e528dze0"
                   color="#bec2c9"
                   size="16"
                   src="https://external.xx.fbcdn.net/assets/?name=info-circle&variant=filled&size=16&set=facebook_icons&density=1x"
@@ -219,12 +219,12 @@ exports[`load PluginInstaller list 1`] = `
             </div>
           </div>
           <div
-            class="css-4dx1ef-TableBodyColumnContainer ehuguum1"
+            class="css-4dx1ef-TableBodyColumnContainer ehuguum0"
             title=""
             width="15%"
           >
             <div
-              class="css-1pccuw6-StyledButton enfqd40"
+              class="css-iby3qx-StyledButton enfqd41"
               type="primary"
             >
               Install
@@ -235,36 +235,36 @@ exports[`load PluginInstaller list 1`] = `
     </div>
   </div>
   <div
-    class="css-1qqef1i-View-FlexBox-FlexRow-ToolbarContainer e13mj6h80"
+    class="css-cjspgc-View-FlexBox-FlexRow-ToolbarContainer e13mj6h82"
   >
     <div
-      class="css-1stmykz-View-FlexBox-FlexRow-Container ersmi541"
+      class="css-1spj5hr-View-FlexBox-FlexRow-Container ersmi542"
     >
       <input
-        class="css-phqpi-Input-FileInputBox ersmi543"
+        class="css-phqpi-Input-FileInputBox ersmi540"
         placeholder="Specify path to a Flipper package or just drag and drop it here..."
         type="text"
         value=""
       />
       <div
-        class="css-1juns87-View-FlexBox-FlexRow-GlyphContainer ersmi542"
+        class="css-ccdckn-View-FlexBox-FlexRow-GlyphContainer ersmi541"
       >
         <img
           alt="dots-3-circle"
-          class="ersmi540 css-6iptsk-ColoredIconBlack-CenteredGlyph e528dze0"
+          class="ersmi543 css-6iptsk-ColoredIconBlack-CenteredGlyph e528dze1"
           size="16"
           src="https://external.xx.fbcdn.net/assets/?name=dots-3-circle&variant=outline&size=16&set=facebook_icons&density=1x"
           title="Open file selection dialog"
         />
       </div>
       <div
-        class="css-1juns87-View-FlexBox-FlexRow-GlyphContainer ersmi542"
+        class="css-ccdckn-View-FlexBox-FlexRow-GlyphContainer ersmi541"
       >
         <div
-          class="css-yzqaun-TooltipContainer e1abcqbd0"
+          class="css-auhar3-TooltipContainer e1abcqbd0"
         >
           <div
-            class="ersmi540 css-1vos16e-ColoredIconCustom-CenteredGlyph e528dze1"
+            class="ersmi543 css-1vos16e-ColoredIconCustom-CenteredGlyph e528dze0"
             color="#D79651"
             size="16"
             src="https://external.xx.fbcdn.net/assets/?name=caution-triangle&variant=filled&size=16&set=facebook_icons&density=1x"
@@ -273,13 +273,13 @@ exports[`load PluginInstaller list 1`] = `
       </div>
     </div>
     <div
-      class="css-16kzr4q-View-FlexBox-FlexRow-ButtonContainer evd5j492"
+      class="css-5ukfaz-View-FlexBox-FlexRow-ButtonContainer evd5j491"
     >
       <div
-        class="css-17wo7w2-View-FlexBox-FlexRow epz0qe20"
+        class="css-wospjg-View-FlexBox-FlexRow epz0qe20"
       >
         <div
-          class="css-1rxpsn8-StyledButton enfqd40"
+          class="css-1rxpsn8-StyledButton enfqd41"
           disabled=""
           title="Cannot install plugin package by the specified path"
           type="primary"
@@ -287,7 +287,7 @@ exports[`load PluginInstaller list 1`] = `
           Install
         </div>
         <div
-          class="css-ywl8lj-View-FlexBox-FlexRow-ErrorGlyphContainer evd5j493"
+          class="css-170i4ha-View-FlexBox-FlexRow-ErrorGlyphContainer evd5j490"
         />
       </div>
     </div>
@@ -298,16 +298,16 @@ exports[`load PluginInstaller list 1`] = `
 exports[`load PluginInstaller list with one plugin installed 1`] = `
 <div>
   <div
-    class="css-13jp8bd-View-FlexBox-FlexColumn"
+    class="css-9dawc5-View-FlexBox-FlexColumn"
   >
     <div
-      class="css-1qqef1i-View-FlexBox-FlexRow-ToolbarContainer e13mj6h80"
+      class="css-cjspgc-View-FlexBox-FlexRow-ToolbarContainer e13mj6h82"
     >
       <div
-        class="css-bl14sl-View-FlexBox-SearchBox e271nro1"
+        class="css-bl14sl-View-FlexBox-SearchBox e271nro4"
       >
         <input
-          class="css-184o3nx-Input-SearchInput e271nro2"
+          class="css-184o3nx-Input-SearchInput e271nro3"
           placeholder="Search Flipper plugins..."
           type="text"
           value=""
@@ -315,73 +315,73 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
       </div>
     </div>
     <div
-      class="css-1s2tz3g-View-FlexBox-FlexColumn-Container e11hk09w0"
+      class="css-1n5hbjk-View-FlexBox-FlexColumn-Container e11hk09w0"
     >
       <div
-        class="css-k28k5g-View-FlexBox-FlexColumn ecr18to0"
+        class="css-18abd42-View-FlexBox-FlexColumn ecr18to0"
       >
         <div
-          class="css-guwxm6-View-FlexBox-FlexRow-TableHeadContainer ejga3103"
+          class="css-nzypyq-View-FlexBox-FlexRow-TableHeadContainer ejga3101"
         >
           <div
-            class="css-zk363n-TableHeadColumnContainer ejga3104"
+            class="css-zk363n-TableHeadColumnContainer ejga3100"
             title="name"
             width="25%"
           >
             <div
-              class="ejga3101 css-1859yug-InteractiveContainer-TableHeaderColumnInteractive etmd34w0"
+              class="ejga3103 css-x4q70f-InteractiveContainer-TableHeaderColumnInteractive etmd34w0"
               style="z-index: auto; right: 0px; bottom: 0px; width: 100%; height: 100%;"
             >
               <div
-                class="css-1yopr4n-TableHeaderColumnContainer ejga3102"
+                class="css-1054ash-TableHeaderColumnContainer ejga3102"
               >
                 Name
               </div>
             </div>
           </div>
           <div
-            class="css-1243222-TableHeadColumnContainer ejga3104"
+            class="css-1243222-TableHeadColumnContainer ejga3100"
             title="version"
             width="10%"
           >
             <div
-              class="ejga3101 css-1859yug-InteractiveContainer-TableHeaderColumnInteractive etmd34w0"
+              class="ejga3103 css-x4q70f-InteractiveContainer-TableHeaderColumnInteractive etmd34w0"
               style="z-index: auto; right: 0px; bottom: 0px; width: 100%; height: 100%;"
             >
               <div
-                class="css-1yopr4n-TableHeaderColumnContainer ejga3102"
+                class="css-1054ash-TableHeaderColumnContainer ejga3102"
               >
                 Version
               </div>
             </div>
           </div>
           <div
-            class="css-nyra6d-TableHeadColumnContainer ejga3104"
+            class="css-nyra6d-TableHeadColumnContainer ejga3100"
             title="description"
             width="flex"
           >
             <div
-              class="ejga3101 css-1859yug-InteractiveContainer-TableHeaderColumnInteractive etmd34w0"
+              class="ejga3103 css-x4q70f-InteractiveContainer-TableHeaderColumnInteractive etmd34w0"
               style="z-index: auto; right: 0px; bottom: 0px; width: 100%; height: 100%;"
             >
               <div
-                class="css-1yopr4n-TableHeaderColumnContainer ejga3102"
+                class="css-1054ash-TableHeaderColumnContainer ejga3102"
               >
                 Description
               </div>
             </div>
           </div>
           <div
-            class="css-hyjqmu-TableHeadColumnContainer ejga3104"
+            class="css-hyjqmu-TableHeadColumnContainer ejga3100"
             title="install"
             width="15%"
           >
             <div
-              class="ejga3101 css-1859yug-InteractiveContainer-TableHeaderColumnInteractive etmd34w0"
+              class="ejga3103 css-x4q70f-InteractiveContainer-TableHeaderColumnInteractive etmd34w0"
               style="z-index: auto; right: 0px; bottom: 0px; width: 100%; height: 100%;"
             >
               <div
-                class="css-1yopr4n-TableHeaderColumnContainer ejga3102"
+                class="css-1054ash-TableHeaderColumnContainer ejga3102"
               >
                 
               </div>
@@ -390,14 +390,14 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
         </div>
       </div>
       <div
-        class="css-1s2tz3g-View-FlexBox-FlexColumn-Container e11hk09w0"
+        class="css-1n5hbjk-View-FlexBox-FlexColumn-Container e11hk09w0"
       >
         <div
-          class="css-1gi2nc1-View-FlexBox-FlexRow-TableBodyRowContainer ehuguum0"
+          class="css-1xll39b-View-FlexBox-FlexRow-TableBodyRowContainer ehuguum1"
           data-key="flipper-plugin-hello"
         >
           <div
-            class="css-hdg6vt-TableBodyColumnContainer ehuguum1"
+            class="css-hdg6vt-TableBodyColumnContainer ehuguum0"
             title=""
             width="25%"
           >
@@ -408,7 +408,7 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
             </span>
           </div>
           <div
-            class="css-1rdsust-TableBodyColumnContainer ehuguum1"
+            class="css-1rdsust-TableBodyColumnContainer ehuguum0"
             title=""
             width="10%"
           >
@@ -419,12 +419,12 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
             </span>
           </div>
           <div
-            class="css-1bw2bjn-TableBodyColumnContainer ehuguum1"
+            class="css-1bw2bjn-TableBodyColumnContainer ehuguum0"
             title=""
             width="flex"
           >
             <div
-              class="css-wxxfdj-View-FlexBox-FlexRow epz0qe20"
+              class="css-4yiclo-View-FlexBox-FlexRow epz0qe20"
             >
               <span
                 class="css-fyize4-Text"
@@ -432,13 +432,13 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
                 World?
               </span>
               <div
-                class="css-te359u-View-FlexBox-Spacer e13mj6h82"
+                class="css-t4wmtk-View-FlexBox-Spacer e13mj6h80"
               />
               <span
                 class="css-ad6n9d-StyledLink e1mzoj7l0"
               >
                 <div
-                  class="css-1tfjvvq-ColoredIconCustom e528dze1"
+                  class="css-1tfjvvq-ColoredIconCustom e528dze0"
                   color="#bec2c9"
                   size="16"
                   src="https://external.xx.fbcdn.net/assets/?name=info-circle&variant=filled&size=16&set=facebook_icons&density=1x"
@@ -447,23 +447,23 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
             </div>
           </div>
           <div
-            class="css-4dx1ef-TableBodyColumnContainer ehuguum1"
+            class="css-4dx1ef-TableBodyColumnContainer ehuguum0"
             title=""
             width="15%"
           >
             <div
-              class="css-1pccuw6-StyledButton enfqd40"
+              class="css-iby3qx-StyledButton enfqd41"
             >
               Remove
             </div>
           </div>
         </div>
         <div
-          class="css-14d4692-View-FlexBox-FlexRow-TableBodyRowContainer ehuguum0"
+          class="css-1k1evb9-View-FlexBox-FlexRow-TableBodyRowContainer ehuguum1"
           data-key="flipper-plugin-world"
         >
           <div
-            class="css-hdg6vt-TableBodyColumnContainer ehuguum1"
+            class="css-hdg6vt-TableBodyColumnContainer ehuguum0"
             title=""
             width="25%"
           >
@@ -474,7 +474,7 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
             </span>
           </div>
           <div
-            class="css-1rdsust-TableBodyColumnContainer ehuguum1"
+            class="css-1rdsust-TableBodyColumnContainer ehuguum0"
             title=""
             width="10%"
           >
@@ -485,12 +485,12 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
             </span>
           </div>
           <div
-            class="css-1bw2bjn-TableBodyColumnContainer ehuguum1"
+            class="css-1bw2bjn-TableBodyColumnContainer ehuguum0"
             title=""
             width="flex"
           >
             <div
-              class="css-wxxfdj-View-FlexBox-FlexRow epz0qe20"
+              class="css-4yiclo-View-FlexBox-FlexRow epz0qe20"
             >
               <span
                 class="css-fyize4-Text"
@@ -498,13 +498,13 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
                 Hello?
               </span>
               <div
-                class="css-te359u-View-FlexBox-Spacer e13mj6h82"
+                class="css-t4wmtk-View-FlexBox-Spacer e13mj6h80"
               />
               <span
                 class="css-ad6n9d-StyledLink e1mzoj7l0"
               >
                 <div
-                  class="css-1tfjvvq-ColoredIconCustom e528dze1"
+                  class="css-1tfjvvq-ColoredIconCustom e528dze0"
                   color="#bec2c9"
                   size="16"
                   src="https://external.xx.fbcdn.net/assets/?name=info-circle&variant=filled&size=16&set=facebook_icons&density=1x"
@@ -513,12 +513,12 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
             </div>
           </div>
           <div
-            class="css-4dx1ef-TableBodyColumnContainer ehuguum1"
+            class="css-4dx1ef-TableBodyColumnContainer ehuguum0"
             title=""
             width="15%"
           >
             <div
-              class="css-1pccuw6-StyledButton enfqd40"
+              class="css-iby3qx-StyledButton enfqd41"
               type="primary"
             >
               Install
@@ -529,36 +529,36 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
     </div>
   </div>
   <div
-    class="css-1qqef1i-View-FlexBox-FlexRow-ToolbarContainer e13mj6h80"
+    class="css-cjspgc-View-FlexBox-FlexRow-ToolbarContainer e13mj6h82"
   >
     <div
-      class="css-1stmykz-View-FlexBox-FlexRow-Container ersmi541"
+      class="css-1spj5hr-View-FlexBox-FlexRow-Container ersmi542"
     >
       <input
-        class="css-phqpi-Input-FileInputBox ersmi543"
+        class="css-phqpi-Input-FileInputBox ersmi540"
         placeholder="Specify path to a Flipper package or just drag and drop it here..."
         type="text"
         value=""
       />
       <div
-        class="css-1juns87-View-FlexBox-FlexRow-GlyphContainer ersmi542"
+        class="css-ccdckn-View-FlexBox-FlexRow-GlyphContainer ersmi541"
       >
         <img
           alt="dots-3-circle"
-          class="ersmi540 css-6iptsk-ColoredIconBlack-CenteredGlyph e528dze0"
+          class="ersmi543 css-6iptsk-ColoredIconBlack-CenteredGlyph e528dze1"
           size="16"
           src="https://external.xx.fbcdn.net/assets/?name=dots-3-circle&variant=outline&size=16&set=facebook_icons&density=1x"
           title="Open file selection dialog"
         />
       </div>
       <div
-        class="css-1juns87-View-FlexBox-FlexRow-GlyphContainer ersmi542"
+        class="css-ccdckn-View-FlexBox-FlexRow-GlyphContainer ersmi541"
       >
         <div
-          class="css-yzqaun-TooltipContainer e1abcqbd0"
+          class="css-auhar3-TooltipContainer e1abcqbd0"
         >
           <div
-            class="ersmi540 css-1vos16e-ColoredIconCustom-CenteredGlyph e528dze1"
+            class="ersmi543 css-1vos16e-ColoredIconCustom-CenteredGlyph e528dze0"
             color="#D79651"
             size="16"
             src="https://external.xx.fbcdn.net/assets/?name=caution-triangle&variant=filled&size=16&set=facebook_icons&density=1x"
@@ -567,13 +567,13 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
       </div>
     </div>
     <div
-      class="css-16kzr4q-View-FlexBox-FlexRow-ButtonContainer evd5j492"
+      class="css-5ukfaz-View-FlexBox-FlexRow-ButtonContainer evd5j491"
     >
       <div
-        class="css-17wo7w2-View-FlexBox-FlexRow epz0qe20"
+        class="css-wospjg-View-FlexBox-FlexRow epz0qe20"
       >
         <div
-          class="css-1rxpsn8-StyledButton enfqd40"
+          class="css-1rxpsn8-StyledButton enfqd41"
           disabled=""
           title="Cannot install plugin package by the specified path"
           type="primary"
@@ -581,7 +581,7 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
           Install
         </div>
         <div
-          class="css-ywl8lj-View-FlexBox-FlexRow-ErrorGlyphContainer evd5j493"
+          class="css-170i4ha-View-FlexBox-FlexRow-ErrorGlyphContainer evd5j490"
         />
       </div>
     </div>

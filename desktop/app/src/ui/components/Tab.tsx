@@ -7,7 +7,7 @@
  * @format
  */
 
-import {WidthProperty} from 'csstype';
+import {Property} from 'csstype';
 
 export type Props = {
   /**
@@ -37,7 +37,7 @@ export type Props = {
    * Contents of this tab.
    */
   children?: React.ReactNode;
-  width?: WidthProperty<number>;
+  width?: Property.Width<number>;
 };
 
 export default function Tab(_props: Props): JSX.Element {

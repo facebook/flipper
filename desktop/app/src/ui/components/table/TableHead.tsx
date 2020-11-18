@@ -18,7 +18,7 @@ import {
 import {normaliseColumnWidth, isPercentage} from './utils';
 import {PureComponent} from 'react';
 import ContextMenu from '../ContextMenu';
-import Interactive from '../Interactive';
+import Interactive, {InteractiveProps} from '../Interactive';
 import styled from '@emotion/styled';
 import {colors} from '../colors';
 import FlexRow from '../FlexRow';
@@ -31,7 +31,7 @@ const TableHeaderArrow = styled.span({
 });
 TableHeaderArrow.displayName = 'TableHead:TableHeaderArrow';
 
-const TableHeaderColumnInteractive = styled(Interactive)({
+const TableHeaderColumnInteractive = styled(Interactive)<InteractiveProps>({
   display: 'inline-block',
   overflow: 'hidden',
   textOverflow: 'ellipsis',

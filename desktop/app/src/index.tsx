@@ -8,7 +8,7 @@
  */
 
 export {default as styled} from '@emotion/styled';
-export {keyframes} from 'emotion';
+export {keyframes} from '@emotion/css';
 export {produce} from 'immer';
 
 export * from './ui/index';

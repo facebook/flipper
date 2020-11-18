@@ -9,7 +9,7 @@
 
 import {Filter} from '../filter/types';
 import {List} from 'immutable';
-import {BackgroundColorProperty} from 'csstype';
+import {Property} from 'csstype';
 
 export const MINIMUM_COLUMN_WIDTH = 100;
 export const DEFAULT_COLUMN_WIDTH = 200;
@@ -52,8 +52,8 @@ export type TableBodyRow = {
   sortKey?: string | number;
   style?: Object;
   type?: string | undefined;
-  highlightedBackgroundColor?: BackgroundColorProperty | undefined;
-  zebraBackgroundColor?: BackgroundColorProperty | undefined;
+  highlightedBackgroundColor?: Property.BackgroundColor | undefined;
+  zebraBackgroundColor?: Property.BackgroundColor | undefined;
   onDoubleClick?: (e: React.MouseEvent) => void;
   copyText?: string | (() => string);
   getSearchContent?: () => string;

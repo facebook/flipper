@@ -11,7 +11,7 @@ import React, {useContext, useState, useRef, useCallback, useMemo} from 'react';
 import electron, {MenuItemConstructorOptions} from 'electron';
 import styled from '@emotion/styled';
 import {findDOMNode} from 'react-dom';
-import {keyframes} from 'emotion';
+import {keyframes} from '@emotion/css';
 import {Button as AntdButton, Dropdown, Menu} from 'antd';
 
 import {colors} from './colors';

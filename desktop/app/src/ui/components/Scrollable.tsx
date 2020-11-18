@@ -9,9 +9,9 @@
 
 import React from 'react';
 import styled from '@emotion/styled';
-import {BackgroundProperty} from 'csstype';
+import {Property} from 'csstype';
 
-type Props = {children: React.ReactNode; background?: BackgroundProperty<any>};
+type Props = {children: React.ReactNode; background?: Property.Background<any>};
 
 const Scrollable = styled.div<Props>(({background}) => ({
   width: '100%',

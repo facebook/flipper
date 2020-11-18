@@ -10,19 +10,7 @@
 import styled from '@emotion/styled';
 import {colors} from './colors';
 import {memo, createContext, useMemo, useState, useRef} from 'react';
-import {
-  TopProperty,
-  LeftProperty,
-  BottomProperty,
-  RightProperty,
-  BackgroundColorProperty,
-  LineHeightProperty,
-  PaddingProperty,
-  BorderRadiusProperty,
-  MaxWidthProperty,
-  ColorProperty,
-  WidthProperty,
-} from 'csstype';
+import {Property} from 'csstype';
 import React from 'react';
 
 const defaultOptions = {
@@ -52,18 +40,18 @@ export type TooltipOptions = {
 };
 
 const TooltipBubble = styled.div<{
-  top: TopProperty<number>;
-  left: LeftProperty<number>;
-  bottom: BottomProperty<number>;
-  right: RightProperty<number>;
+  top: Property.Top<number>;
+  left: Property.Left<number>;
+  bottom: Property.Bottom<number>;
+  right: Property.Right<number>;
   options: {
-    backgroundColor: BackgroundColorProperty;
-    lineHeight: LineHeightProperty<number>;
-    padding: PaddingProperty<number>;
-    borderRadius: BorderRadiusProperty<number>;
-    width: WidthProperty<number>;
-    maxWidth: MaxWidthProperty<number>;
-    color: ColorProperty;
+    backgroundColor: Property.BackgroundColor;
+    lineHeight: Property.LineHeight<number>;
+    padding: Property.Padding<number>;
+    borderRadius: Property.BorderRadius<number>;
+    width: Property.Width<number>;
+    maxWidth: Property.MaxWidth<number>;
+    color: Property.Color;
   };
 }>((props) => ({
   position: 'absolute',
@@ -96,12 +84,12 @@ const TAIL_LR_POSITION_HORIZONTAL_OFFSET = 5;
 const TAIL_LR_POSITION_VERTICAL_OFFSET = 12;
 
 const TooltipTail = styled.div<{
-  top: TopProperty<number>;
-  left: LeftProperty<number>;
-  bottom: BottomProperty<number>;
-  right: RightProperty<number>;
+  top: Property.Top<number>;
+  left: Property.Left<number>;
+  bottom: Property.Bottom<number>;
+  right: Property.Right<number>;
   options: {
-    backgroundColor: BackgroundColorProperty;
+    backgroundColor: Property.BackgroundColor;
   };
 }>((props) => ({
   position: 'absolute',
@@ -209,10 +197,10 @@ function getTooltipTail(tooltip: TooltipObject) {
     return null;
   }
 
-  let left: LeftProperty<number> = 'auto';
-  let top: TopProperty<number> = 'auto';
-  let bottom: BottomProperty<number> = 'auto';
-  let right: RightProperty<number> = 'auto';
+  let left: Property.Left<number> = 'auto';
+  let top: Property.Top<number> = 'auto';
+  let bottom: Property.Bottom<number> = 'auto';
+  let right: Property.Right<number> = 'auto';
 
   if (opts.position === 'below') {
     left = tooltip.rect.left + TAIL_AB_POSITION_HORIZONTAL_OFFSET;
@@ -245,10 +233,10 @@ function getTooltipTail(tooltip: TooltipObject) {
 
 function getTooltipBubble(tooltip: TooltipObject) {
   const opts = Object.assign(defaultOptions, tooltip.options);
-  let left: LeftProperty<number> = 'auto';
-  let top: TopProperty<number> = 'auto';
-  let bottom: BottomProperty<number> = 'auto';
-  let right: RightProperty<number> = 'auto';
+  let left: Property.Left<number> = 'auto';
+  let top: Property.Top<number> = 'auto';
+  let bottom: Property.Bottom<number> = 'auto';
+  let right: Property.Right<number> = 'auto';
 
   if (opts.position === 'below') {
     left = tooltip.rect.left + BUBBLE_BELOW_POSITION_VERTICAL_OFFSET;

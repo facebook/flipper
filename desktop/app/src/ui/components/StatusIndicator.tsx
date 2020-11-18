@@ -10,11 +10,11 @@
 import styled from '@emotion/styled';
 import {colors} from './colors';
 
-import {BackgroundColorProperty, HeightProperty} from 'csstype';
+import {Property} from 'csstype';
 
 type Props = {
-  statusColor: BackgroundColorProperty;
-  diameter?: HeightProperty<number>;
+  statusColor: Property.BackgroundColor;
+  diameter?: Property.Height<number>;
   title?: string;
 };
 

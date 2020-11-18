@@ -7,23 +7,18 @@
  * @format
  */
 
-import Interactive from './Interactive';
+import Interactive, {InteractiveProps} from './Interactive';
 import FlexColumn from './FlexColumn';
 import {colors} from './colors';
 import {Component, ReactNode} from 'react';
 import styled from '@emotion/styled';
-import {
-  BackgroundClipProperty,
-  HeightProperty,
-  WidthProperty,
-  BackgroundColorProperty,
-} from 'csstype';
+import {Property} from 'csstype';
 import React from 'react';
 import FlexRow from './FlexRow';
 import {MoreOutlined} from '@ant-design/icons';
 import {theme} from 'flipper-plugin';
 
-const SidebarInteractiveContainer = styled(Interactive)({
+const SidebarInteractiveContainer = styled(Interactive)<InteractiveProps>({
   flex: 'none',
 });
 SidebarInteractiveContainer.displayName = 'Sidebar:SidebarInteractiveContainer';
@@ -32,7 +27,7 @@ type SidebarPosition = 'left' | 'top' | 'right' | 'bottom';
 
 const SidebarContainer = styled(FlexColumn)<{
   position: 'right' | 'top' | 'left' | 'bottom';
-  backgroundColor?: BackgroundClipProperty;
+  backgroundColor?: Property.BackgroundClip;
   overflow?: boolean;
   unstyled?: boolean;
 }>((props) => ({
@@ -89,7 +84,7 @@ type SidebarProps = {
   /**
    * Background color.
    */
-  backgroundColor?: BackgroundColorProperty;
+  backgroundColor?: Property.BackgroundColor;
   /**
    * Callback when the sidebar size ahs changed.
    */
@@ -109,8 +104,8 @@ type SidebarProps = {
 };
 
 type SidebarState = {
-  width?: WidthProperty<number>;
-  height?: HeightProperty<number>;
+  width?: Property.Width<number>;
+  height?: Property.Height<number>;
   userChange: boolean;
 };
 

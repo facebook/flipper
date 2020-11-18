@@ -14,9 +14,9 @@ import styled from '@emotion/styled';
 import {colors} from '../colors';
 import electron, {MenuItemConstructorOptions} from 'electron';
 import React from 'react';
-import {ColorProperty} from 'csstype';
+import {Property} from 'csstype';
 
-const Token = styled(Text)<{focused?: boolean; color?: ColorProperty}>(
+const Token = styled(Text)<{focused?: boolean; color?: Property.Color}>(
   (props) => ({
     display: 'inline-flex',
     alignItems: 'center',
