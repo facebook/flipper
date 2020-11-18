@@ -1,3 +1,10 @@
+# 0.66.0 (18/11/2020)
+
+ * [D24890375](https://github.com/facebook/flipper/search?q=D24890375&type=Commits) -  [Sandy][Navigation] on Android, the currently active deeplink of the application will now be shown in the sidebar
+ * [D24919363](https://github.com/facebook/flipper/search?q=D24919363&type=Commits) -  Automatically start an iOS simulator to launch a device when none is running yet
+ * [D24950080](https://github.com/facebook/flipper/search?q=D24950080&type=Commits) -  `flipper-pkg init` now uses the new Sandy plugin infrastructure ant Ant.design component system
+
+
 # 0.65.0 (11/11/2020)
 
  * [D24826802](https://github.com/facebook/flipper/search?q=D24826802&type=Commits) -  [Facebook] Add support form support for Flipper itself

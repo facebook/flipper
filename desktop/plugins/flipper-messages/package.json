@@ -4,7 +4,7 @@
   "id": "flipper-messages",
   "title": "Flipper Messages",
   "icon": "bird",
-  "version": "0.65.0",
+  "version": "0.66.0",
   "description": "Flipper self inspection: Messages to and from client",
   "main": "dist/bundle.js",
   "flipperBundlerEntry": "index.tsx",
@@ -22,10 +22,10 @@
     "prepack": "flipper-pkg lint && flipper-pkg bundle --production"
   },
   "peerDependencies": {
-    "flipper": "0.65.0"
+    "flipper": "0.66.0"
   },
   "devDependencies": {
-    "flipper": "0.65.0",
-    "flipper-pkg": "0.65.0"
+    "flipper": "0.66.0",
+    "flipper-pkg": "0.66.0"
   }
 }
