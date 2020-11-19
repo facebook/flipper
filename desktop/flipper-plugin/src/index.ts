@@ -7,6 +7,10 @@
  * @format
  */
 
+export {produce, Draft} from 'immer';
+import styledImport from '@emotion/styled';
+export const styled = styledImport;
+
 import './plugin/PluginBase';
 import * as TestUtilites from './test-utils/test-utils';
 

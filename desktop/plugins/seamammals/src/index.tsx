@@ -16,8 +16,9 @@ import {
   createState,
   useValue,
   theme,
+  styled,
 } from 'flipper-plugin';
-import {ManagedDataInspector, DetailSidebar, styled} from 'flipper';
+import {ManagedDataInspector, DetailSidebar} from 'flipper';
 
 type Row = {
   id: number;
