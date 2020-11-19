@@ -247,7 +247,7 @@ class SettingsSheet extends Component<Props, State> {
         />
         {!disableSandy && (
           <ToggledSection
-            label="Enable dark theme"
+            label="Enable dark theme (experimental)"
             toggled={darkMode}
             onChange={(enabled) => {
               this.setState((prevState) => ({

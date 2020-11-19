@@ -31,6 +31,7 @@ import {ContentContainer} from './ContentContainer';
 import {Notification} from './notification/Notification';
 import {SheetRenderer} from '../chrome/SheetRenderer';
 import {hasNewChangesToShow} from '../chrome/ChangelogSheet';
+import {SandyWelcomScreen} from './SandyWelcomeScreen';
 
 export type ToplevelNavItem =
   | 'appinspect'
@@ -104,6 +105,7 @@ export function SandyApp({logger}: {logger: Logger}) {
         <>
           <TemporarilyTitlebar />
           <SheetRenderer logger={logger} />
+          <SandyWelcomScreen />
         </>
         <Layout.Left>
           <Layout.Horizontal>
