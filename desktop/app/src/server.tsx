@@ -665,7 +665,7 @@ async function findDeviceForConnection(
         const error = `Timed out waiting for device ${serial} for client ${clientId}`;
         console.error(error);
         reject(error);
-      }, 5000);
+      }, 15000);
       unsubscribe = sideEffect(
         store,
         {name: 'waitForDevice', throttleMs: 100},
