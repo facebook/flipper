@@ -108,7 +108,8 @@
     "kind-of": "6.0.3",
     "bl": "4.0.3",
     "node-forge": "^0.10.0",
-    "jsdom": "16.4.0"
+    "jsdom": "16.4.0",
+    "node-fetch": "^2.6.1"
   },
   "devDependencies": {
     "@babel/code-frame": "^7.10.4",
@@ -207,7 +208,7 @@
     "metro": "^0.63.0",
     "metro-minify-terser": "^0.63.0",
     "metro-resolver": "^0.63.0",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.1",
     "p-filter": "^2.1.0",
     "p-map": "^4.0.0",
     "pkg": "^4.4.1",

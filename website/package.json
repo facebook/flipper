@@ -28,6 +28,7 @@
     "minimist": "1.2.3",
     "kind-of": "6.0.3",
     "serialize-javascript": "^3.1.0",
-    "node-forge": "^0.10.0"
+    "node-forge": "^0.10.0",
+    "node-fetch": "^2.6.1"
   }
 }
