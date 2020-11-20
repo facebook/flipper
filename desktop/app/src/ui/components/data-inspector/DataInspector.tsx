@@ -320,7 +320,7 @@ const recursiveMarker = <RecursiveBaseWrapper>Recursive</RecursiveBaseWrapper>;
  * An expandable data inspector.
  *
  * This component is fairly low level. It's likely you're looking for
- * [`<ManagedDataInspector>`]().
+ * [`<ManagedDataInspector>`](#manageddatainspector).
  */
 const DataInspector: React.FC<DataInspectorProps> = memo(
   function DataInspectorImpl({
