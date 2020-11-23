@@ -22,7 +22,7 @@
     "patch-package": "^6.2.0"
   },
   "dependencies": {
-    "firefox-client": "0.3.0",
+    "firefox-client": "1.0.0",
     "promisify-child-process": "^4.1.0"
   },
   "resolutions": {
