@@ -76,7 +76,7 @@
     "7zip-bin-mac": "^1.0.1"
   },
   "devDependencies": {
-    "@testing-library/dom": "^7.26.3",
+    "@testing-library/dom": "^7.28.1",
     "@testing-library/react": "^11.1.0",
     "@types/lodash.memoize": "^4.1.6",
     "flipper-test-utils": "0.66.0",
