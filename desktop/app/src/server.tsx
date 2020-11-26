@@ -157,7 +157,7 @@ class Server extends EventEmitter {
               'server',
             );
             server.emit('listening', port);
-            resolve(rsServer);
+            resolve(rsServer!);
           });
         return transportServer;
       };

@@ -170,7 +170,7 @@ export default class AndroidDevice extends BaseDevice {
         (_) =>
           new Promise((resolve, reject) => {
             this.adb.pull(this.serial, recordingLocation).then((stream) => {
-              stream.on('end', resolve);
+              stream.on('end', resolve as () => void);
               stream.on('error', reject);
               stream.pipe(createWriteStream(destination));
             });

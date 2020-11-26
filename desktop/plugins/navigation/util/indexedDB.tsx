@@ -49,7 +49,7 @@ const openNavigationPluginDB: () => Promise<IDBDatabase> = () => {
 };
 
 export const writeBookmarkToDB = (bookmark: Bookmark) => {
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     openNavigationPluginDB()
       .then((db: IDBDatabase) => {
         const bookmarksObjectStore = db

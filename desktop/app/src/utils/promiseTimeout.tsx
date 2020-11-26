@@ -60,7 +60,7 @@ export function showStatusUpdatesForDuration(
   removeStatusMessage: (payload: StatusMessageType) => void,
 ): void {
   showStatusUpdatesForPromise(
-    new Promise((resolve, _reject) => {
+    new Promise<void>((resolve, _reject) => {
       setTimeout(function () {
         resolve();
       }, duration);

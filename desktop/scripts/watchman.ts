@@ -24,7 +24,7 @@ export default class Watchman {
     }
     this.client = new Client();
     this.client.setMaxListeners(250);
-    await new Promise((resolve, reject) => {
+    await new Promise<void>((resolve, reject) => {
       const onError = (err: Error) => {
         this.client!.removeAllListeners('error');
         reject(err);
