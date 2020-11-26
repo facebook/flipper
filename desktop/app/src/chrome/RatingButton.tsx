@@ -7,7 +7,14 @@
  * @format
  */
 
-import React, {Component, ReactElement, RefObject, useState} from 'react';
+import React, {
+  Component,
+  ReactElement,
+  RefObject,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 import {
   Glyph,
   FlexColumn,
@@ -373,19 +380,21 @@ export function SandyRatingButton() {
   const [hasTriggered, setHasTriggered] = useState(false);
   const sessionId = useStore((store) => store.application.sessionId);
 
-  const triggerPopover = () => {
+  const triggerPopover = useCallback(() => {
     if (!hasTriggered) {
       setIsShown(true);
       setHasTriggered(true);
     }
-  };
+  }, [hasTriggered]);
 
-  if (GK.get('flipper_enable_star_ratiings')) {
-    UserFeedback.getPrompt().then((prompt) => {
-      setPromptData(prompt);
-      setTimeout(triggerPopover, 30000);
-    });
-  }
+  useEffect(() => {
+    if (GK.get('flipper_enable_star_ratiings') && !hasTriggered) {
+      UserFeedback.getPrompt().then((prompt) => {
+        setPromptData(prompt);
+        setTimeout(triggerPopover, 30000);
+      });
+    }
+  }, [triggerPopover, hasTriggered]);
 
   const onClick = () => {
     const willBeShown = !isShown;
