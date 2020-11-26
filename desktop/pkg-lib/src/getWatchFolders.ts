@@ -27,10 +27,14 @@ export default async (packageDir: string): Promise<string[]> => {
   while (packagesToProcess.length > 0) {
     let currentDir = packagesToProcess.shift() as string;
     watchDirs.add(currentDir);
-    const {dependencies} = await fs.readJson(
+    const {dependencies, peerDependencies, devDependencies} = await fs.readJson(
       path.join(currentDir, 'package.json'),
     );
-    const dependenciesSet = new Set<string>(Object.keys(dependencies ?? {}));
+    const dependenciesSet = new Set<string>([
+      ...Object.keys(dependencies ?? {}),
+      ...Object.keys(devDependencies ?? {}),
+      ...Object.keys(peerDependencies ?? {}),
+    ]);
     while (dependenciesSet.size > 0) {
       const nodeModulesDir = path.join(currentDir, 'node_modules');
       if (await fs.pathExists(nodeModulesDir)) {
