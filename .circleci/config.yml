@@ -22,7 +22,7 @@ jobs:
           name: build and deploy
           command: |
             yes | sdkmanager "platforms;android-27" || true
-            /tmp/retry -m 3 ./gradlew :android:assembleRelease 
+            /tmp/retry -m 3 ./gradlew :android:assembleRelease
             /tmp/retry -m 3 scripts/publish-android-snapshot.sh
   release:
     executor: default-executor
@@ -35,7 +35,7 @@ jobs:
           name: build and deploy
           command: |
             yes | sdkmanager "platforms;android-27" || true
-            /tmp/retry -m 3 ./gradlew :android:assembleRelease 
+            /tmp/retry -m 3 ./gradlew :android:assembleRelease
             /tmp/retry -m 3 scripts/publish-android-release.sh
 workflows:
   version: 2
