@@ -15,19 +15,27 @@ jobs:
     steps:
       - checkout
       - run:
+          name: install retry
+          command: scripts/install-retry.sh
+      - run:
           name: build and deploy
           command: |
             yes | sdkmanager "platforms;android-27" || true
-            ./gradlew :android:assembleRelease && scripts/publish-android-snapshot.sh
+            /tmp/retry -m 3 ./gradlew :android:assembleRelease
+            /tmp/retry -m 3 scripts/publish-android-snapshot.sh
   release:
     executor: default-executor
     steps:
       - checkout
       - run:
+          name: install retry
+          command: scripts/install-retry.sh
+      - run:
           name: build and deploy
           command: |
             yes | sdkmanager "platforms;android-27" || true
-            ./gradlew :android:assembleRelease && scripts/publish-android-release.sh
+            /tmp/retry -m 3 ./gradlew :android:assembleRelease
+            /tmp/retry -m 3 scripts/publish-android-release.sh
 workflows:
   version: 2
   build-and-deploy:
