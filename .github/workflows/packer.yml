@@ -11,7 +11,7 @@ jobs:
       - name: Setup toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: stable
+          toolchain: 1.48.0
       - name: Test
         run: cd packer && cargo test
       - name: Format
