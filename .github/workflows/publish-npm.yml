@@ -1,0 +1,28 @@
+name: Publish NPM
+on:
+  push:
+    tags:
+      - v*
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: desktop/
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+      - name: Install
+        run: yarn
+      - name: Set up npm token
+        run: echo "//registry.yarnpkg.com/:_authToken=${{ secrets.FLIPPER_NPM_TOKEN }}" >> ~/.npmrc
+      - name: Publish packages
+        run: yarn publish-packages
+      - name: Publish React Native
+        run: yarn publish
+        working-directory: react-native/react-native-flipper
