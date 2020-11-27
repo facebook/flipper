@@ -69,7 +69,7 @@ fn pack(
     let packtype_paths = pack_list
         .0
         .get(&platform)
-        .ok_or_else(|| error::Error::MissingPlatformDefinition(platform))?;
+        .ok_or(error::Error::MissingPlatformDefinition(platform))?;
     let res = packtype_paths
         .into_par_iter()
         .map(|(&pack_type, pack_files)| {
