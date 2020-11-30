@@ -54,6 +54,8 @@ import {getInstance} from '../fb-stubs/Logger';
 import {isStaticViewActive} from '../chrome/mainsidebar/sidebarUtils';
 import {getUser} from '../fb-stubs/user';
 import {SandyRatingButton} from '../chrome/RatingButton';
+import {filterNotifications} from './notification/notificationUtils';
+import {useMemoize} from '../utils/useMemoize';
 
 const LeftRailButtonElem = styled(Button)<{kind?: 'small'}>(({kind}) => ({
   width: kind === 'small' ? 32 : 36,
@@ -213,15 +215,18 @@ function NotificationButton({
   toplevelSelection,
   setToplevelSelection,
 }: ToplevelProps) {
-  const notificationCount = useStore(
-    (state) => state.notifications.activeNotifications.length,
-  );
+  const notifications = useStore((state) => state.notifications);
+  const activeNotifications = useMemoize(filterNotifications, [
+    notifications.activeNotifications,
+    notifications.blacklistedPlugins,
+    notifications.blacklistedCategories,
+  ]);
   return (
     <LeftRailButton
       icon={<BellOutlined />}
       title="Notifications"
       selected={toplevelSelection === 'notification'}
-      count={notificationCount}
+      count={activeNotifications.length}
       onClick={() => setToplevelSelection('notification')}
     />
   );

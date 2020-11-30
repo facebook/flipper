@@ -10,7 +10,7 @@
 import React, {useCallback, useMemo, useState} from 'react';
 import {Layout, theme} from 'flipper-plugin';
 import {styled, Glyph} from '../../ui';
-import {Input, Typography, Button, Collapse} from 'antd';
+import {Input, Typography, Button, Collapse, Dropdown, Menu} from 'antd';
 import {
   DownOutlined,
   UpOutlined,
@@ -18,6 +18,7 @@ import {
   ExclamationCircleOutlined,
   SettingOutlined,
   DeleteOutlined,
+  EllipsisOutlined,
 } from '@ant-design/icons';
 import {LeftSidebar, SidebarTitle} from '../LeftSidebar';
 import {Notification as NotificationData} from '../../plugin';
@@ -25,10 +26,18 @@ import {useStore, useDispatch} from '../../utils/useStore';
 import {ClientQuery} from '../../Client';
 import {deconstructClientId} from '../../utils/clientUtils';
 import {selectPlugin} from '../../reducers/connections';
-import {clearAllNotifications} from '../../reducers/notifications';
+import {
+  clearAllNotifications,
+  updateCategoryBlacklist,
+  updatePluginBlacklist,
+} from '../../reducers/notifications';
+import {filterNotifications} from './notificationUtils';
+import {useMemoize} from '../../utils/useMemoize';
 
 type NotificationExtra = {
   onOpen: () => void;
+  onHideSimilar: (() => void) | null;
+  onHidePlugin: () => void;
   clientName: string | undefined;
   appName: string | undefined;
   pluginName: string;
@@ -47,6 +56,11 @@ const CollapseContainer = styled.div({
       padding: 0,
     },
   },
+});
+
+const ItemContainer = styled(Layout.Container)({
+  '.notification-item-action': {visibility: 'hidden'},
+  ':hover': {'.notification-item-action': {visibility: 'visible'}},
 });
 
 function DetailCollapse({detail}: {detail: string | React.ReactNode}) {
@@ -92,6 +106,8 @@ function DetailCollapse({detail}: {detail: string | React.ReactNode}) {
 function NotificationEntry({notification}: {notification: PluginNotification}) {
   const {
     onOpen,
+    onHideSimilar,
+    onHidePlugin,
     message,
     title,
     clientName,
@@ -100,17 +116,43 @@ function NotificationEntry({notification}: {notification: PluginNotification}) {
     iconName,
   } = notification;
 
+  const actions = useMemo(
+    () => (
+      <Layout.Horizontal className="notification-item-action">
+        <Dropdown
+          overlay={
+            <Menu>
+              {onHideSimilar && (
+                <Menu.Item key="hide_similar" onClick={onHideSimilar}>
+                  Hide Similar
+                </Menu.Item>
+              )}
+              <Menu.Item key="hide_plugin" onClick={onHidePlugin}>
+                Hide {pluginName}
+              </Menu.Item>
+            </Menu>
+          }>
+          <Button type="text" size="small" icon={<EllipsisOutlined />} />
+        </Dropdown>
+      </Layout.Horizontal>
+    ),
+    [onHideSimilar, onHidePlugin, pluginName],
+  );
+
   const icon = iconName ? (
     <Glyph name={iconName} size={16} color={theme.primaryColor} />
   ) : (
     <ExclamationCircleOutlined style={{color: theme.primaryColor}} />
   );
   return (
-    <Layout.Container gap="small" pad="medium">
-      <Layout.Horizontal gap="tiny" center>
-        {icon}
-        <Text style={{fontSize: theme.fontSize.smallBody}}>{pluginName}</Text>
-      </Layout.Horizontal>
+    <ItemContainer gap="small" pad="medium">
+      <Layout.Right center>
+        <Layout.Horizontal gap="tiny" center>
+          {icon}
+          <Text style={{fontSize: theme.fontSize.smallBody}}>{pluginName}</Text>
+        </Layout.Horizontal>
+        {actions}
+      </Layout.Right>
       <Title level={4} ellipsis={{rows: 2}}>
         {title}
       </Title>
@@ -123,7 +165,7 @@ function NotificationEntry({notification}: {notification: PluginNotification}) {
         Open {pluginName}
       </Button>
       <DetailCollapse detail={message} />
-    </Layout.Container>
+    </ItemContainer>
   );
 }
 
@@ -171,44 +213,51 @@ export function Notification() {
     [clientPlugins, devicePlugins],
   );
 
-  const activeNotifications = useStore(
-    (state) => state.notifications.activeNotifications,
-  );
+  const notifications = useStore((state) => state.notifications);
 
+  const activeNotifications = useMemoize(filterNotifications, [
+    notifications.activeNotifications,
+    notifications.blacklistedPlugins,
+    notifications.blacklistedCategories,
+  ]);
   const displayedNotifications: Array<PluginNotification> = useMemo(
     () =>
-      activeNotifications
-        .filter(
-          (noti) =>
-            noti.notification.title
-              .toLocaleLowerCase()
-              .includes(searchString.toLocaleLowerCase()) ||
-            (typeof noti.notification.message === 'string'
-              ? noti.notification.message
-                  .toLocaleLowerCase()
-                  .includes(searchString.toLocaleLowerCase())
-              : false),
-        )
-        .map((noti) => {
-          const plugin = getPlugin(noti.pluginId);
-          const client = getClientQuery(noti.client);
-          return {
-            ...noti.notification,
-            onOpen: () =>
-              dispatch(
-                selectPlugin({
-                  selectedPlugin: noti.pluginId,
-                  selectedApp: noti.client,
-                  deepLinkPayload: noti.notification.action,
-                }),
-              ),
-            clientName: client?.device_id,
-            appName: client?.app,
-            pluginName: plugin?.title ?? noti.pluginId,
-            iconName: plugin?.icon,
-          };
-        }),
-    [activeNotifications, getPlugin, getClientQuery, searchString, dispatch],
+      activeNotifications.map((noti) => {
+        const plugin = getPlugin(noti.pluginId);
+        const client = getClientQuery(noti.client);
+        return {
+          ...noti.notification,
+          onOpen: () =>
+            dispatch(
+              selectPlugin({
+                selectedPlugin: noti.pluginId,
+                selectedApp: noti.client,
+                deepLinkPayload: noti.notification.action,
+              }),
+            ),
+          onHideSimilar: noti.notification.category
+            ? () =>
+                dispatch(
+                  updateCategoryBlacklist([
+                    ...notifications.blacklistedCategories,
+                    noti.notification.category!,
+                  ]),
+                )
+            : null,
+          onHidePlugin: () =>
+            dispatch(
+              updatePluginBlacklist([
+                ...notifications.blacklistedPlugins,
+                noti.pluginId,
+              ]),
+            ),
+          clientName: client?.device_id,
+          appName: client?.app,
+          pluginName: plugin?.title ?? noti.pluginId,
+          iconName: plugin?.icon,
+        };
+      }),
+    [activeNotifications, notifications, getPlugin, getClientQuery, dispatch],
   );
 
   const actions = (
