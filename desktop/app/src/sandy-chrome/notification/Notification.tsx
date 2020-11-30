@@ -16,7 +16,6 @@ import {
   UpOutlined,
   SearchOutlined,
   ExclamationCircleOutlined,
-  SettingOutlined,
   DeleteOutlined,
   EllipsisOutlined,
 } from '@ant-design/icons';
@@ -33,6 +32,7 @@ import {
 } from '../../reducers/notifications';
 import {filterNotifications} from './notificationUtils';
 import {useMemoize} from '../../utils/useMemoize';
+import BlocklistSettingButton from './BlocklistSettingButton';
 
 type NotificationExtra = {
   onOpen: () => void;
@@ -263,7 +263,28 @@ export function Notification() {
   const actions = (
     <div>
       <Layout.Horizontal>
-        <Button type="text" size="small" icon={<SettingOutlined />} />
+        <BlocklistSettingButton
+          blocklistedPlugins={notifications.blocklistedPlugins}
+          blocklistedCategories={notifications.blocklistedCategories}
+          onRemovePlugin={(removedPluginId) =>
+            dispatch(
+              updatePluginBlocklist(
+                notifications.blocklistedPlugins.filter(
+                  (pluginId) => pluginId !== removedPluginId,
+                ),
+              ),
+            )
+          }
+          onRemoveCategory={(removedCategory) =>
+            dispatch(
+              updateCategoryBlocklist(
+                notifications.blocklistedCategories.filter(
+                  (category) => category !== removedCategory,
+                ),
+              ),
+            )
+          }
+        />
         <Button
           type="text"
           size="small"
