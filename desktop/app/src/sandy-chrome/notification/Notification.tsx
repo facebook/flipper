@@ -7,7 +7,7 @@
  * @format
  */
 
-import React, {useCallback, useMemo} from 'react';
+import React, {useCallback, useMemo, useState} from 'react';
 import {Layout, theme} from 'flipper-plugin';
 import {styled, Glyph} from '../../ui';
 import {Input, Typography, Button, Collapse} from 'antd';
@@ -25,6 +25,7 @@ import {useStore, useDispatch} from '../../utils/useStore';
 import {ClientQuery} from '../../Client';
 import {deconstructClientId} from '../../utils/clientUtils';
 import {selectPlugin} from '../../reducers/connections';
+import {clearAllNotifications} from '../../reducers/notifications';
 
 type NotificationExtra = {
   onOpen: () => void;
@@ -148,6 +149,8 @@ function NotificationList({
 export function Notification() {
   const dispatch = useDispatch();
 
+  const [searchString, setSearchString] = useState('');
+
   const clients = useStore((state) => state.connections.clients);
   const getClientQuery = useCallback(
     (id: string | null) =>
@@ -174,33 +177,50 @@ export function Notification() {
 
   const displayedNotifications: Array<PluginNotification> = useMemo(
     () =>
-      activeNotifications.map((noti) => {
-        const plugin = getPlugin(noti.pluginId);
-        const client = getClientQuery(noti.client);
-        return {
-          ...noti.notification,
-          onOpen: () =>
-            dispatch(
-              selectPlugin({
-                selectedPlugin: noti.pluginId,
-                selectedApp: noti.client,
-                deepLinkPayload: noti.notification.action,
-              }),
-            ),
-          clientName: client?.device_id,
-          appName: client?.app,
-          pluginName: plugin?.title ?? noti.pluginId,
-          iconName: plugin?.icon,
-        };
-      }),
-    [activeNotifications, getPlugin, getClientQuery, dispatch],
+      activeNotifications
+        .filter(
+          (noti) =>
+            noti.notification.title
+              .toLocaleLowerCase()
+              .includes(searchString.toLocaleLowerCase()) ||
+            (typeof noti.notification.message === 'string'
+              ? noti.notification.message
+                  .toLocaleLowerCase()
+                  .includes(searchString.toLocaleLowerCase())
+              : false),
+        )
+        .map((noti) => {
+          const plugin = getPlugin(noti.pluginId);
+          const client = getClientQuery(noti.client);
+          return {
+            ...noti.notification,
+            onOpen: () =>
+              dispatch(
+                selectPlugin({
+                  selectedPlugin: noti.pluginId,
+                  selectedApp: noti.client,
+                  deepLinkPayload: noti.notification.action,
+                }),
+              ),
+            clientName: client?.device_id,
+            appName: client?.app,
+            pluginName: plugin?.title ?? noti.pluginId,
+            iconName: plugin?.icon,
+          };
+        }),
+    [activeNotifications, getPlugin, getClientQuery, searchString, dispatch],
   );
 
   const actions = (
     <div>
-      <Layout.Horizontal gap="medium">
-        <SettingOutlined style={{fontSize: theme.space.large}} />
-        <DeleteOutlined style={{fontSize: theme.space.large}} />
+      <Layout.Horizontal>
+        <Button type="text" size="small" icon={<SettingOutlined />} />
+        <Button
+          type="text"
+          size="small"
+          icon={<DeleteOutlined />}
+          onClick={() => dispatch(clearAllNotifications())}
+        />
       </Layout.Horizontal>
     </div>
   );
@@ -210,7 +230,12 @@ export function Notification() {
         <Layout.Container gap="tiny" padv="tiny" borderBottom>
           <SidebarTitle actions={actions}>notifications</SidebarTitle>
           <Layout.Container padh="medium" padv="small">
-            <Input placeholder="Search..." prefix={<SearchOutlined />} />
+            <Input
+              placeholder="Search..."
+              prefix={<SearchOutlined />}
+              value={searchString}
+              onChange={(e) => setSearchString(e.target.value)}
+            />
           </Layout.Container>
         </Layout.Container>
         <NotificationList notifications={displayedNotifications} />
