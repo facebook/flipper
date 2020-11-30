@@ -19,8 +19,8 @@ import React from 'react';
 
 type StateFromProps = {
   deepLinkPayload: unknown;
-  blacklistedPlugins: Array<string>;
-  blacklistedCategories: Array<string>;
+  blocklistedPlugins: Array<string>;
+  blocklistedCategories: Array<string>;
 };
 
 type DispatchFromProps = {
@@ -50,8 +50,8 @@ const Container = styled(FlexColumn)({
 class Notifications extends PureComponent<Props, State> {
   render() {
     const {
-      blacklistedPlugins,
-      blacklistedCategories,
+      blocklistedPlugins,
+      blocklistedCategories,
       deepLinkPayload,
       logger,
       clearAllNotifications,
@@ -68,12 +68,12 @@ class Notifications extends PureComponent<Props, State> {
             onSelectPlugin={selectPlugin}
             logger={logger}
             defaultFilters={[
-              ...blacklistedPlugins.map((value) => ({
+              ...blocklistedPlugins.map((value) => ({
                 value,
                 type: 'exclude',
                 key: 'plugin',
               })),
-              ...blacklistedCategories.map((value) => ({
+              ...blocklistedCategories.map((value) => ({
                 value,
                 type: 'exclude',
                 key: 'category',
@@ -94,11 +94,11 @@ class Notifications extends PureComponent<Props, State> {
 export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
   ({
     connections: {deepLinkPayload},
-    notifications: {blacklistedPlugins, blacklistedCategories},
+    notifications: {blocklistedPlugins, blocklistedCategories},
   }) => ({
     deepLinkPayload,
-    blacklistedPlugins,
-    blacklistedCategories,
+    blocklistedPlugins,
+    blocklistedCategories,
   }),
   {clearAllNotifications, selectPlugin},
 )(Notifications);

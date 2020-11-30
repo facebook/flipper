@@ -25,8 +25,8 @@ export type PluginNotificationReference = {
 export type State = {
   activeNotifications: Array<PluginNotification>;
   invalidatedNotifications: Array<PluginNotification>;
-  blacklistedPlugins: Array<string>;
-  blacklistedCategories: Array<string>;
+  blocklistedPlugins: Array<string>;
+  blocklistedCategories: Array<string>;
   clearedNotifications: Set<string>;
 };
 
@@ -52,11 +52,11 @@ export type Action =
       };
     }
   | {
-      type: 'UPDATE_PLUGIN_BLACKLIST';
+      type: 'UPDATE_PLUGIN_BLOCKLIST';
       payload: Array<string>;
     }
   | {
-      type: 'UPDATE_CATEGORY_BLACKLIST';
+      type: 'UPDATE_CATEGORY_BLOCKLIST';
       payload: Array<string>;
     }
   | {
@@ -71,8 +71,8 @@ export type Action =
 const INITIAL_STATE: State = {
   activeNotifications: [],
   invalidatedNotifications: [],
-  blacklistedPlugins: [],
-  blacklistedCategories: [],
+  blocklistedPlugins: [],
+  blocklistedCategories: [],
   clearedNotifications: new Set(),
 };
 
@@ -99,15 +99,15 @@ export default function reducer(
         activeNotifications: [],
         invalidatedNotifications: [],
       };
-    case 'UPDATE_PLUGIN_BLACKLIST':
+    case 'UPDATE_PLUGIN_BLOCKLIST':
       return {
         ...state,
-        blacklistedPlugins: action.payload,
+        blocklistedPlugins: action.payload,
       };
-    case 'UPDATE_CATEGORY_BLACKLIST':
+    case 'UPDATE_CATEGORY_BLOCKLIST':
       return {
         ...state,
-        blacklistedCategories: action.payload,
+        blocklistedCategories: action.payload,
       };
     case 'ADD_NOTIFICATION':
       return {
@@ -233,16 +233,16 @@ export function clearAllNotifications(): Action {
   };
 }
 
-export function updatePluginBlacklist(payload: Array<string>): Action {
+export function updatePluginBlocklist(payload: Array<string>): Action {
   return {
-    type: 'UPDATE_PLUGIN_BLACKLIST',
+    type: 'UPDATE_PLUGIN_BLOCKLIST',
     payload,
   };
 }
 
-export function updateCategoryBlacklist(payload: Array<string>): Action {
+export function updateCategoryBlocklist(payload: Array<string>): Action {
   return {
-    type: 'UPDATE_CATEGORY_BLACKLIST',
+    type: 'UPDATE_CATEGORY_BLOCKLIST',
     payload,
   };
 }

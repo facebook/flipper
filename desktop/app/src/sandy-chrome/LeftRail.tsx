@@ -218,8 +218,8 @@ function NotificationButton({
   const notifications = useStore((state) => state.notifications);
   const activeNotifications = useMemoize(filterNotifications, [
     notifications.activeNotifications,
-    notifications.blacklistedPlugins,
-    notifications.blacklistedCategories,
+    notifications.blocklistedPlugins,
+    notifications.blocklistedCategories,
   ]);
   return (
     <LeftRailButton

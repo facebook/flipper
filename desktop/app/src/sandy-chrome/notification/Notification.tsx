@@ -28,8 +28,8 @@ import {deconstructClientId} from '../../utils/clientUtils';
 import {selectPlugin} from '../../reducers/connections';
 import {
   clearAllNotifications,
-  updateCategoryBlacklist,
-  updatePluginBlacklist,
+  updateCategoryBlocklist,
+  updatePluginBlocklist,
 } from '../../reducers/notifications';
 import {filterNotifications} from './notificationUtils';
 import {useMemoize} from '../../utils/useMemoize';
@@ -217,8 +217,8 @@ export function Notification() {
 
   const activeNotifications = useMemoize(filterNotifications, [
     notifications.activeNotifications,
-    notifications.blacklistedPlugins,
-    notifications.blacklistedCategories,
+    notifications.blocklistedPlugins,
+    notifications.blocklistedCategories,
   ]);
   const displayedNotifications: Array<PluginNotification> = useMemo(
     () =>
@@ -238,16 +238,16 @@ export function Notification() {
           onHideSimilar: noti.notification.category
             ? () =>
                 dispatch(
-                  updateCategoryBlacklist([
-                    ...notifications.blacklistedCategories,
+                  updateCategoryBlocklist([
+                    ...notifications.blocklistedCategories,
                     noti.notification.category!,
                   ]),
                 )
             : null,
           onHidePlugin: () =>
             dispatch(
-              updatePluginBlacklist([
-                ...notifications.blacklistedPlugins,
+              updatePluginBlocklist([
+                ...notifications.blocklistedPlugins,
                 noti.pluginId,
               ]),
             ),

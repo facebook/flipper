@@ -143,12 +143,12 @@ const RenderNotificationsEntry = connect<
 >(
   ({
     connections: {staticView},
-    notifications: {activeNotifications, blacklistedPlugins},
+    notifications: {activeNotifications, blocklistedPlugins},
   }) => ({
     numNotifications: (() => {
-      const blacklist = new Set(blacklistedPlugins);
+      const blocklist = new Set(blocklistedPlugins);
       return activeNotifications.filter(
-        (n: PluginNotification) => !blacklist.has(n.pluginId),
+        (n: PluginNotification) => !blocklist.has(n.pluginId),
       ).length;
     })(),
     staticView,

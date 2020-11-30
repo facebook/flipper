@@ -430,13 +430,13 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
       uninitializedClients,
       staticView,
     },
-    notifications: {activeNotifications, blacklistedPlugins},
+    notifications: {activeNotifications, blocklistedPlugins},
     plugins: {devicePlugins, clientPlugins},
   }) => ({
     numNotifications: (() => {
-      const blacklist = new Set(blacklistedPlugins);
+      const blocklist = new Set(blocklistedPlugins);
       return activeNotifications.filter(
-        (n: PluginNotification) => !blacklist.has(n.pluginId),
+        (n: PluginNotification) => !blocklist.has(n.pluginId),
       ).length;
     })(),
     windowIsFocused,

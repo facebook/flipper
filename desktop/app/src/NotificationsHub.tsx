@@ -27,8 +27,8 @@ import React, {Component, Fragment} from 'react';
 import {clipboard} from 'electron';
 import {
   PluginNotification,
-  updatePluginBlacklist,
-  updateCategoryBlacklist,
+  updatePluginBlocklist,
+  updateCategoryBlocklist,
 } from './reducers/notifications';
 import {selectPlugin} from './reducers/connections';
 import {State as StoreState} from './reducers/index';
@@ -45,8 +45,8 @@ type OwnProps = {
 type StateFromProps = {
   activeNotifications: Array<PluginNotification>;
   invalidatedNotifications: Array<PluginNotification>;
-  blacklistedPlugins: Array<string>;
-  blacklistedCategories: Array<string>;
+  blocklistedPlugins: Array<string>;
+  blocklistedCategories: Array<string>;
   devicePlugins: DevicePluginMap;
   clientPlugins: ClientPluginMap;
 };
@@ -57,8 +57,8 @@ type DispatchFromProps = {
     selectedApp: string | null;
     deepLinkPayload: unknown;
   }) => any;
-  updatePluginBlacklist: (blacklist: Array<string>) => any;
-  updateCategoryBlacklist: (blacklist: Array<string>) => any;
+  updatePluginBlocklist: (blocklist: Array<string>) => any;
+  updateCategoryBlocklist: (blocklist: Array<string>) => any;
 };
 
 type Props = OwnProps & StateFromProps & DispatchFromProps;
@@ -106,7 +106,7 @@ class NotificationsTable extends Component<Props & SearchableProps, State> {
 
   componentDidUpdate(prevProps: Props & SearchableProps) {
     if (this.props.filters.length !== prevProps.filters.length) {
-      this.props.updatePluginBlacklist(
+      this.props.updatePluginBlocklist(
         this.props.filters
           .filter(
             (f) => f.type === 'exclude' && f.key.toLowerCase() === 'plugin',
@@ -114,7 +114,7 @@ class NotificationsTable extends Component<Props & SearchableProps, State> {
           .map((f) => String(f.value)),
       );
 
-      this.props.updateCategoryBlacklist(
+      this.props.updateCategoryBlocklist(
         this.props.filters
           .filter(
             (f) => f.type === 'exclude' && f.key.toLowerCase() === 'category',
@@ -140,8 +140,8 @@ class NotificationsTable extends Component<Props & SearchableProps, State> {
       type: 'exclude',
       key: 'plugin',
     });
-    this.props.updatePluginBlacklist(
-      this.props.blacklistedPlugins.concat(pluginId),
+    this.props.updatePluginBlocklist(
+      this.props.blocklistedPlugins.concat(pluginId),
     );
   };
 
@@ -152,8 +152,8 @@ class NotificationsTable extends Component<Props & SearchableProps, State> {
       type: 'exclude',
       key: 'category',
     });
-    this.props.updatePluginBlacklist(
-      this.props.blacklistedCategories.concat(category),
+    this.props.updatePluginBlocklist(
+      this.props.blocklistedCategories.concat(category),
     );
   };
 
@@ -163,20 +163,20 @@ class NotificationsTable extends Component<Props & SearchableProps, State> {
     const searchTerm = this.props.searchTerm.toLowerCase();
 
     // filter plugins
-    const blacklistedPlugins = new Set(
-      this.props.blacklistedPlugins.map((p) => p.toLowerCase()),
+    const blocklistedPlugins = new Set(
+      this.props.blocklistedPlugins.map((p) => p.toLowerCase()),
     );
-    if (blacklistedPlugins.has(n.pluginId.toLowerCase())) {
+    if (blocklistedPlugins.has(n.pluginId.toLowerCase())) {
       return false;
     }
 
     // filter categories
     const {category} = n.notification;
     if (category) {
-      const blacklistedCategories = new Set(
-        this.props.blacklistedCategories.map((p) => p.toLowerCase()),
+      const blocklistedCategories = new Set(
+        this.props.blocklistedCategories.map((p) => p.toLowerCase()),
       );
-      if (blacklistedCategories.has(category.toLowerCase())) {
+      if (blocklistedCategories.has(category.toLowerCase())) {
         return false;
       }
     }
@@ -277,21 +277,21 @@ export const ConnectedNotificationsTable = connect<
     notifications: {
       activeNotifications,
       invalidatedNotifications,
-      blacklistedPlugins,
-      blacklistedCategories,
+      blocklistedPlugins,
+      blocklistedCategories,
     },
     plugins: {devicePlugins, clientPlugins},
   }) => ({
     activeNotifications,
     invalidatedNotifications,
-    blacklistedPlugins,
-    blacklistedCategories,
+    blocklistedPlugins,
+    blocklistedCategories,
     devicePlugins,
     clientPlugins,
   }),
   {
-    updatePluginBlacklist,
-    updateCategoryBlacklist,
+    updatePluginBlocklist,
+    updateCategoryBlocklist,
     selectPlugin,
   },
 )(Searchable(NotificationsTable));

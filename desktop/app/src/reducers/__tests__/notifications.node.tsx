@@ -13,8 +13,8 @@ import {
   default as reducer,
   setActiveNotifications,
   clearAllNotifications,
-  updatePluginBlacklist,
-  updateCategoryBlacklist,
+  updatePluginBlocklist,
+  updateCategoryBlocklist,
 } from '../notifications';
 
 import {Notification} from '../../plugin';
@@ -30,33 +30,33 @@ function getInitialState(): State {
   return {
     activeNotifications: [],
     invalidatedNotifications: [],
-    blacklistedPlugins: [],
-    blacklistedCategories: [],
+    blocklistedPlugins: [],
+    blocklistedCategories: [],
     clearedNotifications: new Set(),
   };
 }
 
-test('reduce updateCategoryBlacklist', () => {
-  const blacklistedCategories = ['blacklistedCategory'];
+test('reduce updateCategoryBlocklist', () => {
+  const blocklistedCategories = ['blocklistedCategory'];
   const res = reducer(
     getInitialState(),
-    updateCategoryBlacklist(blacklistedCategories),
+    updateCategoryBlocklist(blocklistedCategories),
   );
   expect(res).toEqual({
     ...getInitialState(),
-    blacklistedCategories,
+    blocklistedCategories,
   });
 });
 
-test('reduce updatePluginBlacklist', () => {
-  const blacklistedPlugins = ['blacklistedPlugin'];
+test('reduce updatePluginBlocklist', () => {
+  const blocklistedPlugins = ['blocklistedPlugin'];
   const res = reducer(
     getInitialState(),
-    updatePluginBlacklist(blacklistedPlugins),
+    updatePluginBlocklist(blocklistedPlugins),
   );
   expect(res).toEqual({
     ...getInitialState(),
-    blacklistedPlugins,
+    blocklistedPlugins,
   });
 });
 
@@ -149,8 +149,8 @@ test('addNotification removes duplicates', () => {
           "pluginId": "test",
         },
       ],
-      "blacklistedCategories": Array [],
-      "blacklistedPlugins": Array [],
+      "blocklistedCategories": Array [],
+      "blocklistedPlugins": Array [],
       "clearedNotifications": Set {},
       "invalidatedNotifications": Array [],
     }
@@ -212,8 +212,8 @@ test('reduce removeNotification', () => {
           "pluginId": "test",
         },
       ],
-      "blacklistedCategories": Array [],
-      "blacklistedPlugins": Array [],
+      "blocklistedCategories": Array [],
+      "blocklistedPlugins": Array [],
       "clearedNotifications": Set {},
       "invalidatedNotifications": Array [],
     }

@@ -16,8 +16,8 @@ import {setStaticView} from '../reducers/connections';
 import {ipcRenderer, IpcRendererEvent} from 'electron';
 import {
   setActiveNotifications,
-  updatePluginBlacklist,
-  updateCategoryBlacklist,
+  updatePluginBlocklist,
+  updateCategoryBlocklist,
 } from '../reducers/notifications';
 import {textContent} from '../utils/index';
 import GK from '../fb-stubs/GK';
@@ -63,21 +63,21 @@ export default (store: Store, logger: Logger) => {
           );
 
           const {category} = pluginNotification.notification;
-          const {blacklistedCategories} = store.getState().notifications;
-          if (category && blacklistedCategories.indexOf(category) === -1) {
+          const {blocklistedCategories} = store.getState().notifications;
+          if (category && blocklistedCategories.indexOf(category) === -1) {
             store.dispatch(
-              updateCategoryBlacklist([...blacklistedCategories, category]),
+              updateCategoryBlocklist([...blocklistedCategories, category]),
             );
           }
         } else if (arg === 2) {
           // Hide plugin
           logger.track('usage', 'notification-hide-plugin', pluginNotification);
 
-          const {blacklistedPlugins} = store.getState().notifications;
-          if (blacklistedPlugins.indexOf(pluginNotification.pluginId) === -1) {
+          const {blocklistedPlugins} = store.getState().notifications;
+          if (blocklistedPlugins.indexOf(pluginNotification.pluginId) === -1) {
             store.dispatch(
-              updatePluginBlacklist([
-                ...blacklistedPlugins,
+              updatePluginBlocklist([
+                ...blocklistedPlugins,
                 pluginNotification.pluginId,
               ]),
             );
@@ -144,8 +144,8 @@ export default (store: Store, logger: Logger) => {
 
       const {
         activeNotifications,
-        blacklistedPlugins,
-        blacklistedCategories,
+        blocklistedPlugins,
+        blocklistedCategories,
       } = notifications;
 
       activeNotifications
@@ -161,9 +161,9 @@ export default (store: Store, logger: Logger) => {
             !isHeadless() &&
             store.getState().connections.selectedPlugin !== 'notifications' &&
             !knownNotifications.has(n.notification.id) &&
-            blacklistedPlugins.indexOf(n.pluginId) === -1 &&
+            blocklistedPlugins.indexOf(n.pluginId) === -1 &&
             (!n.notification.category ||
-              blacklistedCategories.indexOf(n.notification.category) === -1)
+              blocklistedCategories.indexOf(n.notification.category) === -1)
           ) {
             const prevNotificationTime: number =
               lastNotificationTime.get(n.pluginId) || 0;
