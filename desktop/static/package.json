@@ -1,6 +1,6 @@
 {
   "name": "flipper-static",
-  "version": "0.67.0",
+  "version": "0.0.0",
   "main": "index.js",
   "private": true,
   "license": "MIT",

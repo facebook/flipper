@@ -19,6 +19,8 @@ jobs:
           node-version: '12.x'
       - name: Install
         run: yarn
+      - name: Set versions
+        run: yarn bump-versions
       - name: Set up npm token
         run: echo "//registry.yarnpkg.com/:_authToken=${{ secrets.FLIPPER_NPM_TOKEN }}" >> ~/.npmrc
       - name: Publish packages

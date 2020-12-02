@@ -23,6 +23,8 @@ import {
   babelTransformationsDir,
 } from './paths';
 
+const {version} = require('../package.json');
+
 const dev = process.env.NODE_ENV !== 'production';
 
 export function die(err: Error) {
@@ -35,6 +37,9 @@ export async function generatePluginEntryPoints() {
   const plugins = await getSourcePlugins();
   for (const plugin of plugins) {
     plugin.isDefault = true;
+    plugin.version = plugin.version === '0.0.0' ? version : plugin.version;
+    plugin.flipperSDKVersion =
+      plugin.flipperSDKVersion === '0.0.0' ? version : plugin.flipperSDKVersion;
   }
   if (await fs.pathExists(defaultPluginsIndexDir)) {
     await fs.remove(defaultPluginsIndexDir);

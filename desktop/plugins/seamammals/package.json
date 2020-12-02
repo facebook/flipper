@@ -3,7 +3,7 @@
   "name": "flipper-plugin-sea-mammals",
   "id": "sea-mammals",
   "private": true,
-  "version": "0.67.0",
+  "version": "0.0.0",
   "main": "dist/bundle.js",
   "flipperBundlerEntry": "src/index.tsx",
   "license": "MIT",
@@ -24,9 +24,9 @@
   },
   "peerDependencies": {
     "antd": "*",
-    "flipper-plugin": "0.67.0"
+    "flipper-plugin": "0.0.0"
   },
   "devDependencies": {
-    "flipper-pkg": "0.67.0"
+    "flipper-pkg": "0.0.0"
   }
 }
