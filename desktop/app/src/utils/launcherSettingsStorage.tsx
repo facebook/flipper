@@ -9,12 +9,13 @@
 
 import fs from 'fs';
 import path from 'path';
-import TOML from '@iarna/toml';
+import TOML, {JsonMap} from '@iarna/toml';
 import {Storage} from 'redux-persist/es/types';
 import {
   defaultLauncherSettings,
   LauncherSettings,
 } from '../reducers/launcherSettings';
+import ReleaseChannel from '../ReleaseChannel';
 
 export default class LauncherSettingsStorage implements Storage {
   constructor(readonly filepath: string) {}
@@ -60,20 +61,26 @@ export default class LauncherSettingsStorage implements Storage {
 
 interface FormattedSettings {
   ignore_local_pin?: boolean;
+  release_channel?: ReleaseChannel;
 }
 
 function serialize(value: LauncherSettings): string {
-  const {ignoreLocalPin, ...rest} = value;
-  return TOML.stringify({
+  const {ignoreLocalPin, releaseChannel, ...rest} = value;
+  const formattedSettings: FormattedSettings = {
     ...rest,
     ignore_local_pin: ignoreLocalPin,
-  });
+    release_channel: releaseChannel,
+  };
+  return TOML.stringify(formattedSettings as JsonMap);
 }
 
 function deserialize(content: string): LauncherSettings {
-  const {ignore_local_pin, ...rest} = TOML.parse(content) as FormattedSettings;
+  const {ignore_local_pin, release_channel, ...rest} = TOML.parse(
+    content,
+  ) as FormattedSettings;
   return {
     ...rest,
     ignoreLocalPin: !!ignore_local_pin,
+    releaseChannel: release_channel ?? ReleaseChannel.DEFAULT,
   };
 }

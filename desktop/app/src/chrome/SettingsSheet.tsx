@@ -233,6 +233,15 @@ class SettingsSheet extends Component<Props, State> {
               },
             });
           }}
+          releaseChannel={this.state.updatedLauncherSettings.releaseChannel}
+          onReleaseChannelChange={(v) => {
+            this.setState({
+              updatedLauncherSettings: {
+                ...this.state.updatedLauncherSettings,
+                releaseChannel: v,
+              },
+            });
+          }}
         />
         <SandySettingsPanel
           toggled={this.state.updatedSettings.disableSandy}

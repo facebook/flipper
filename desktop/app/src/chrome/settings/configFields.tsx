@@ -22,14 +22,14 @@ import {promises as fs} from 'fs';
 import {remote} from 'electron';
 import path from 'path';
 
-const ConfigFieldContainer = styled(FlexRow)({
+export const ConfigFieldContainer = styled(FlexRow)({
   paddingLeft: 10,
   paddingRight: 10,
   marginBottom: 5,
   paddingTop: 5,
 });
 
-const InfoText = styled(Text)({
+export const InfoText = styled(Text)({
   lineHeight: 1.35,
   paddingTop: 5,
 });

@@ -8,8 +8,10 @@
  */
 
 import {Actions} from './index';
+import ReleaseChannel from '../ReleaseChannel';
 
 export type LauncherSettings = {
+  releaseChannel: ReleaseChannel;
   ignoreLocalPin: boolean;
 };
 
@@ -19,6 +21,7 @@ export type Action = {
 };
 
 export const defaultLauncherSettings: LauncherSettings = {
+  releaseChannel: ReleaseChannel.DEFAULT,
   ignoreLocalPin: false,
 };
 
