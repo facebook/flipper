@@ -519,6 +519,11 @@ function updateSelection(state: Readonly<State>): State {
   ) {
     // currently selected plugin is not available in this state,
     // fall back to the default
+    if (state.selectedPlugin) {
+      console.warn(
+        `Tried to open plugin '${state.selectedPlugin}' which is currently not available. Falling back to '${DEFAULT_PLUGIN}'`,
+      );
+    }
     updates.selectedPlugin = DEFAULT_PLUGIN;
   }
 
