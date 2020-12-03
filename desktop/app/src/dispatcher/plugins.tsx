@@ -233,6 +233,11 @@ const requirePluginInternal = (
       throw new Error(`Plugin ${plugin.name} is not a FlipperBasePlugin`);
     }
 
+    if (plugin.id && pluginDetails.id !== plugin.id) {
+      console.error(
+        `Plugin name mismatch: Package '${pluginDetails.id}' exposed a plugin with id '${plugin.id}'. Please update the 'package.json' to match the exposed plugin id`,
+      );
+    }
     plugin.id = plugin.id || pluginDetails.id;
     plugin.packageName = pluginDetails.name;
     plugin.details = pluginDetails;
