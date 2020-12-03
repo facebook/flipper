@@ -8,6 +8,7 @@
  */
 
 import React, {useEffect, useState, useCallback} from 'react';
+import {TrackingScope} from 'flipper-plugin';
 import {styled} from '../ui';
 import {Layout, Sidebar} from '../ui';
 import {theme} from 'flipper-plugin';
@@ -114,17 +115,29 @@ export function SandyApp({logger}: {logger: Logger}) {
               setToplevelSelection={setToplevelSelection}
             />
             <Sidebar width={250} minWidth={220} maxWidth={800} gutter>
-              {leftMenuContent && leftMenuContent}
+              {leftMenuContent && (
+                <TrackingScope scope={toplevelSelection!}>
+                  {leftMenuContent}
+                </TrackingScope>
+              )}
             </Sidebar>
           </Layout.Horizontal>
           <MainContainer>
             {outOfContentsContainer}
             {staticView ? (
-              <ContentContainer>
-                {React.createElement(staticView, {
-                  logger: logger,
-                })}
-              </ContentContainer>
+              <TrackingScope
+                scope={
+                  staticView.constructor?.name ??
+                  staticView.displayName ??
+                  staticView.name ??
+                  'unknown static view'
+                }>
+                <ContentContainer>
+                  {React.createElement(staticView, {
+                    logger: logger,
+                  })}
+                </ContentContainer>
+              </TrackingScope>
             ) : (
               <PluginContainer logger={logger} isSandy />
             )}

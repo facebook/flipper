@@ -34,7 +34,12 @@ import {PopoverProvider} from './ui/components/PopoverProvider';
 import {initializeFlipperLibImplementation} from './utils/flipperLibImplementation';
 import {enableConsoleHook} from './chrome/ConsoleLogs';
 import {sideEffect} from './utils/sideEffect';
-import {_NuxManagerContext, _createNuxManager} from 'flipper-plugin';
+import {
+  _NuxManagerContext,
+  _createNuxManager,
+  _setGlobalInteractionReporter,
+} from 'flipper-plugin';
+import isProduction from './utils/isProduction';
 
 if (process.env.NODE_ENV === 'development' && os.platform() === 'darwin') {
   // By default Node.JS has its internal certificate storage and doesn't use
@@ -92,6 +97,14 @@ function setProcessState(store: Store) {
 
 function init() {
   initializeFlipperLibImplementation(store, logger);
+  _setGlobalInteractionReporter((r) => {
+    logger.track('usage', 'interaction', r);
+    if (!isProduction()) {
+      const msg = `[interaction] ${r.scope}:${r.action} in ${r.duration}ms`;
+      if (r.success) console.log(msg);
+      else console.error(msg, r.error);
+    }
+  });
   ReactDOM.render(<AppFrame />, document.getElementById('root'));
   initLauncherHooks(config(), store);
   registerRecordingHooks(store);

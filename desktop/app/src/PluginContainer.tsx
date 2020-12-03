@@ -46,7 +46,7 @@ import {Message} from './reducers/pluginMessageQueue';
 import {Idler} from './utils/Idler';
 import {processMessageQueue} from './utils/messageQueue';
 import {ToggleButton, SmallText, Layout} from './ui';
-import {_SandyPluginRenderer} from 'flipper-plugin';
+import {TrackingScope, _SandyPluginRenderer} from 'flipper-plugin';
 import {isDevicePluginDefinition} from './utils/pluginUtils';
 import ArchivedDevice from './devices/ArchivedDevice';
 import {ContentContainer} from './sandy-chrome/ContentContainer';
@@ -431,7 +431,11 @@ class PluginContainer extends PureComponent<Props, State> {
         isArchivedDevice,
         settingsState,
       };
-      pluginElement = React.createElement(activePlugin, props);
+      pluginElement = (
+        <TrackingScope scope={'plugin:' + activePlugin.id}>
+          {React.createElement(activePlugin, props)}
+        </TrackingScope>
+      );
     }
     return isSandy ? (
       <Layout.Right>
