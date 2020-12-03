@@ -66,6 +66,11 @@ const argv = yargs
       default: 3000,
       type: 'number',
     },
+    'enable-all-gks': {
+      describe:
+        '[FB-internal only] Will yield `true` on any GK. Disabled by default. Setting env var FLIPPER_ENABLE_ALL_GKS is equivalent',
+      type: 'boolean',
+    },
   })
   .version('DEV')
   .help()
@@ -99,6 +104,11 @@ if (argv['plugin-auto-update'] === true) {
   delete process.env.FLIPPER_DISABLE_PLUGIN_AUTO_UPDATE;
 } else {
   process.env.FLIPPER_DISABLE_PLUGIN_AUTO_UPDATE = 'true';
+}
+
+// Force participating in all GKs. Mostly intersting for Flipper team members.
+if (argv['enable-all-gks'] === true) {
+  process.env.FLIPPER_ENABLE_ALL_GKS = 'true';
 }
 
 if (argv['enabled-plugins'] !== undefined) {
