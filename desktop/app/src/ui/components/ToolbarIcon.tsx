@@ -12,6 +12,7 @@ import Tooltip from './Tooltip';
 import {colors} from './colors';
 import styled from '@emotion/styled';
 import React from 'react';
+import {Tracked} from 'flipper-plugin';
 
 type Props = React.ComponentProps<typeof ToolbarIconContainer> & {
   active?: boolean;
@@ -30,17 +31,19 @@ const ToolbarIconContainer = styled.div({
 export default function ToolbarIcon({active, icon, title, ...props}: Props) {
   return (
     <Tooltip title={title}>
-      <ToolbarIconContainer {...props}>
-        <Glyph
-          name={icon}
-          size={16}
-          color={
-            active
-              ? colors.macOSTitleBarIconSelected
-              : colors.macOSTitleBarIconActive
-          }
-        />
-      </ToolbarIconContainer>
+      <Tracked action={title}>
+        <ToolbarIconContainer {...props}>
+          <Glyph
+            name={icon}
+            size={16}
+            color={
+              active
+                ? colors.macOSTitleBarIconSelected
+                : colors.macOSTitleBarIconActive
+            }
+          />
+        </ToolbarIconContainer>
+      </Tracked>
     </Tooltip>
   );
 }

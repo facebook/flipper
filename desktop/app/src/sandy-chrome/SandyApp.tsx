@@ -127,9 +127,9 @@ export function SandyApp({logger}: {logger: Logger}) {
             {staticView ? (
               <TrackingScope
                 scope={
-                  staticView.constructor?.name ??
                   staticView.displayName ??
                   staticView.name ??
+                  staticView.constructor?.name ??
                   'unknown static view'
                 }>
                 <ContentContainer>

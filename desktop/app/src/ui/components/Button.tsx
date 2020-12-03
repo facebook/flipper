@@ -21,7 +21,7 @@ import {useStore} from '../../utils/useStore';
 import {useIsSandy} from '../../sandy-chrome/SandyContext';
 import type {ButtonProps} from 'antd/lib/button';
 import {DownOutlined, CheckOutlined} from '@ant-design/icons';
-import {theme} from 'flipper-plugin';
+import {theme, Tracked} from 'flipper-plugin';
 
 type ButtonType = 'primary' | 'success' | 'warning' | 'danger';
 
@@ -366,17 +366,19 @@ function ClassicButton(props: Props) {
   }
 
   return (
-    <StyledButton
-      {...restProps}
-      ref={_ref as any}
-      windowIsFocused={windowIsFocused}
-      onClick={onClick}
-      onMouseDown={onMouseDown}
-      onMouseUp={onMouseUp}
-      inButtonGroup={inButtonGroup}>
-      {iconComponent}
-      {children}
-    </StyledButton>
+    <Tracked>
+      <StyledButton
+        {...restProps}
+        ref={_ref as any}
+        windowIsFocused={windowIsFocused}
+        onClick={onClick}
+        onMouseDown={onMouseDown}
+        onMouseUp={onMouseUp}
+        inButtonGroup={inButtonGroup}>
+        {iconComponent}
+        {children}
+      </StyledButton>
+    </Tracked>
   );
 }
 

@@ -343,7 +343,7 @@ const demos: PreviewProps[] = [
     ],
     demos: {
       'Basic example': (
-        <TrackingScope scope="Tracking scope demo">
+        <TrackingScope scope="tracking scope demo">
           <Tracked>
             <Button onClick={() => {}}>Test</Button>
           </Tracked>
@@ -356,65 +356,67 @@ const demos: PreviewProps[] = [
 function ComponentPreview({title, demos, description, props}: PreviewProps) {
   return (
     <Card title={title} size="small" type="inner">
-      <Layout.Container gap="small">
-        <Text type="secondary">{description}</Text>
-        <Collapse ghost>
-          <Collapse.Panel header="Examples" key="demos">
-            <Layout.Container gap="large">
-              {Object.entries(demos).map(([name, children]) => (
-                <div key={name}>
-                  <Tabs type="line">
-                    <Tabs.TabPane tab={name} key="1">
-                      <div
-                        style={{
-                          background: theme.backgroundWash,
-                          width: '100%',
-                        }}>
-                        {children}
-                      </div>
-                    </Tabs.TabPane>
-                    <Tabs.TabPane tab={<CodeOutlined />} key="2">
-                      <div
-                        style={{
-                          background: theme.backgroundWash,
-                          width: '100%',
-                          padding: theme.space.medium,
-                        }}>
-                        <pre>{reactElementToJSXString(children)}</pre>
-                      </div>
-                    </Tabs.TabPane>
-                  </Tabs>
-                </div>
-              ))}
-            </Layout.Container>
-          </Collapse.Panel>
-          <Collapse.Panel header="Props" key="props">
-            <Table
-              size="small"
-              pagination={false}
-              dataSource={props.map((prop) =>
-                Object.assign(prop, {key: prop[0]}),
-              )}
-              columns={[
-                {
-                  title: 'Property',
-                  dataIndex: 0,
-                  width: 100,
-                },
-                {
-                  title: 'Type and default',
-                  dataIndex: 1,
-                  width: 200,
-                },
-                {
-                  title: 'Description',
-                  dataIndex: 2,
-                },
-              ]}
-            />
-          </Collapse.Panel>
-        </Collapse>
-      </Layout.Container>
+      <TrackingScope scope={title}>
+        <Layout.Container gap="small">
+          <Text type="secondary">{description}</Text>
+          <Collapse ghost>
+            <Collapse.Panel header="Examples" key="demos">
+              <Layout.Container gap="large">
+                {Object.entries(demos).map(([name, children]) => (
+                  <div key={name}>
+                    <Tabs type="line">
+                      <Tabs.TabPane tab={name} key="1">
+                        <div
+                          style={{
+                            background: theme.backgroundWash,
+                            width: '100%',
+                          }}>
+                          {children}
+                        </div>
+                      </Tabs.TabPane>
+                      <Tabs.TabPane tab={<CodeOutlined />} key="2">
+                        <div
+                          style={{
+                            background: theme.backgroundWash,
+                            width: '100%',
+                            padding: theme.space.medium,
+                          }}>
+                          <pre>{reactElementToJSXString(children)}</pre>
+                        </div>
+                      </Tabs.TabPane>
+                    </Tabs>
+                  </div>
+                ))}
+              </Layout.Container>
+            </Collapse.Panel>
+            <Collapse.Panel header="Props" key="props">
+              <Table
+                size="small"
+                pagination={false}
+                dataSource={props.map((prop) =>
+                  Object.assign(prop, {key: prop[0]}),
+                )}
+                columns={[
+                  {
+                    title: 'Property',
+                    dataIndex: 0,
+                    width: 100,
+                  },
+                  {
+                    title: 'Type and default',
+                    dataIndex: 1,
+                    width: 200,
+                  },
+                  {
+                    title: 'Description',
+                    dataIndex: 2,
+                  },
+                ]}
+              />
+            </Collapse.Panel>
+          </Collapse>
+        </Layout.Container>
+      </TrackingScope>
     </Card>
   );
 }

@@ -26,7 +26,11 @@ import electron, {MenuItemConstructorOptions} from 'electron';
 import {notNull} from './utils/typeUtils';
 import constants from './fb-stubs/constants';
 import {Logger} from './fb-interfaces/Logger';
-import {NormalizedMenuEntry, _buildInMenuEntries} from 'flipper-plugin';
+import {
+  NormalizedMenuEntry,
+  _buildInMenuEntries,
+  _wrapInteractionHandler,
+} from 'flipper-plugin';
 import {StyleGuide} from './sandy-chrome/StyleGuide';
 import {showEmulatorLauncher} from './sandy-chrome/appinspect/LaunchEmulator';
 
@@ -191,7 +195,13 @@ export function addSandyPluginEntries(entries: NormalizedMenuEntry[]) {
       if (parent) {
         const item = new electron.remote.MenuItem({
           enabled: true,
-          click: () => pluginActionHandler?.(entry.action!),
+          click: _wrapInteractionHandler(
+            () => pluginActionHandler?.(entry.action!),
+            'MenuItem',
+            'onClick',
+            'flipper:menu:' + entry.topLevelMenu,
+            entry.label,
+          ),
           label: entry.label,
           accelerator: entry.accelerator,
         });
@@ -204,6 +214,20 @@ export function addSandyPluginEntries(entries: NormalizedMenuEntry[]) {
   if (changedItems) {
     electron.remote.Menu.setApplicationMenu(currentMenu);
   }
+}
+
+function trackMenuItems(menu: string, items: MenuItemConstructorOptions[]) {
+  items.forEach((item) => {
+    if (item.label && item.click) {
+      item.click = _wrapInteractionHandler(
+        item.click,
+        'MenuItem',
+        'onClick',
+        'flipper:menu:' + menu,
+        item.label,
+      );
+    }
+  });
 }
 
 function getTemplate(
@@ -226,6 +250,8 @@ function getTemplate(
       click: () => startLinkExport(store.dispatch),
     });
   }
+  trackMenuItems('export', exportSubmenu);
+
   const fileSubmenu: MenuItemConstructorOptions[] = [
     {
       label: 'Launch Emulator...',
@@ -250,6 +276,8 @@ function getTemplate(
       submenu: exportSubmenu,
     },
   ];
+  trackMenuItems('file', fileSubmenu);
+
   const supportRequestSubmenu = [
     {
       label: 'Create...',
@@ -259,10 +287,100 @@ function getTemplate(
       },
     },
   ];
+  trackMenuItems('support', supportRequestSubmenu);
+
   fileSubmenu.push({
     label: 'Support Requests',
     submenu: supportRequestSubmenu,
   });
+
+  const viewMenu: MenuItemConstructorOptions[] = [
+    {
+      label: 'Reload',
+      accelerator: 'CmdOrCtrl+R',
+      click: function (_, focusedWindow: electron.BrowserWindow | undefined) {
+        if (focusedWindow) {
+          logger.track('usage', 'reload');
+          focusedWindow.reload();
+        }
+      },
+    },
+    {
+      label: 'Toggle Full Screen',
+      accelerator: (function () {
+        if (process.platform === 'darwin') {
+          return 'Ctrl+Command+F';
+        } else {
+          return 'F11';
+        }
+      })(),
+      click: function (_, focusedWindow: electron.BrowserWindow | undefined) {
+        if (focusedWindow) {
+          focusedWindow.setFullScreen(!focusedWindow.isFullScreen());
+        }
+      },
+    },
+    {
+      label: 'Manage Plugins...',
+      click: function () {
+        store.dispatch(setActiveSheet(ACTIVE_SHEET_PLUGINS));
+      },
+    },
+    {
+      label: 'Flipper style guide',
+      click() {
+        store.dispatch(setStaticView(StyleGuide));
+      },
+    },
+    {
+      label: 'Toggle Developer Tools',
+      accelerator: (function () {
+        if (process.platform === 'darwin') {
+          return 'Alt+Command+I';
+        } else {
+          return 'Ctrl+Shift+I';
+        }
+      })(),
+      click: function (_, focusedWindow: electron.BrowserWindow | undefined) {
+        if (focusedWindow) {
+          // @ts-ignore: https://github.com/electron/electron/issues/7832
+          focusedWindow.toggleDevTools();
+        }
+      },
+    },
+    {
+      type: 'separator',
+    },
+  ];
+  trackMenuItems('view', viewMenu);
+
+  const helpMenu: MenuItemConstructorOptions[] = [
+    {
+      label: 'Getting started',
+      click: function () {
+        shell.openExternal('https://fbflipper.com/docs/getting-started/index');
+      },
+    },
+    {
+      label: 'Create plugins',
+      click: function () {
+        shell.openExternal('https://fbflipper.com/docs/tutorial/intro');
+      },
+    },
+    {
+      label: 'Report problems',
+      click: function () {
+        shell.openExternal(constants.FEEDBACK_GROUP_LINK);
+      },
+    },
+    {
+      label: 'Changelog',
+      click() {
+        store.dispatch(setActiveSheet(ACTIVE_SHEET_CHANGELOG));
+      },
+    },
+  ];
+  trackMenuItems('help', helpMenu);
 
   const template: MenuItemConstructorOptions[] = [
     {
@@ -309,73 +427,7 @@ function getTemplate(
     },
     {
       label: 'View',
-      submenu: [
-        {
-          label: 'Reload',
-          accelerator: 'CmdOrCtrl+R',
-          click: function (
-            _,
-            focusedWindow: electron.BrowserWindow | undefined,
-          ) {
-            if (focusedWindow) {
-              logger.track('usage', 'reload');
-              focusedWindow.reload();
-            }
-          },
-        },
-        {
-          label: 'Toggle Full Screen',
-          accelerator: (function () {
-            if (process.platform === 'darwin') {
-              return 'Ctrl+Command+F';
-            } else {
-              return 'F11';
-            }
-          })(),
-          click: function (
-            _,
-            focusedWindow: electron.BrowserWindow | undefined,
-          ) {
-            if (focusedWindow) {
-              focusedWindow.setFullScreen(!focusedWindow.isFullScreen());
-            }
-          },
-        },
-        {
-          label: 'Manage Plugins...',
-          click: function () {
-            store.dispatch(setActiveSheet(ACTIVE_SHEET_PLUGINS));
-          },
-        },
-        {
-          label: 'Flipper style guide',
-          click() {
-            store.dispatch(setStaticView(StyleGuide));
-          },
-        },
-        {
-          label: 'Toggle Developer Tools',
-          accelerator: (function () {
-            if (process.platform === 'darwin') {
-              return 'Alt+Command+I';
-            } else {
-              return 'Ctrl+Shift+I';
-            }
-          })(),
-          click: function (
-            _,
-            focusedWindow: electron.BrowserWindow | undefined,
-          ) {
-            if (focusedWindow) {
-              // @ts-ignore: https://github.com/electron/electron/issues/7832
-              focusedWindow.toggleDevTools();
-            }
-          },
-        },
-        {
-          type: 'separator',
-        },
-      ],
+      submenu: viewMenu,
     },
     {
       label: 'Window',
@@ -396,36 +448,10 @@ function getTemplate(
     {
       label: 'Help',
       role: 'help',
-      submenu: [
-        {
-          label: 'Getting started',
-          click: function () {
-            shell.openExternal(
-              'https://fbflipper.com/docs/getting-started/index',
-            );
-          },
-        },
-        {
-          label: 'Create plugins',
-          click: function () {
-            shell.openExternal('https://fbflipper.com/docs/tutorial/intro');
-          },
-        },
-        {
-          label: 'Report problems',
-          click: function () {
-            shell.openExternal(constants.FEEDBACK_GROUP_LINK);
-          },
-        },
-        {
-          label: 'Changelog',
-          click() {
-            store.dispatch(setActiveSheet(ACTIVE_SHEET_CHANGELOG));
-          },
-        },
-      ],
+      submenu: helpMenu,
     },
   ];
+  trackMenuItems('support', supportRequestSubmenu);
 
   if (process.platform === 'darwin') {
     const name = app.name;

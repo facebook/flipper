@@ -21,6 +21,7 @@ import {createHash} from 'crypto';
 import type {TooltipPlacement} from 'antd/lib/tooltip';
 import {SandyPluginInstance} from '../plugin/Plugin';
 import {theme} from './theme';
+import {Tracked} from './Tracked';
 
 const {Text} = Typography;
 
@@ -121,9 +122,11 @@ export function NUX({
                 style={{color: theme.textColorPrimary}}>
                 <BulbTwoTone style={{fontSize: 24}} />
                 <Text>{title}</Text>
-                <Button size="small" type="default" onClick={dismiss}>
-                  Dismiss
-                </Button>
+                <Tracked action={'nux:dismiss:' + title.substr(0, 50)}>
+                  <Button size="small" type="default" onClick={dismiss}>
+                    Dismiss
+                  </Button>
+                </Tracked>
               </Layout.Container>
             }>
             <Pulse />

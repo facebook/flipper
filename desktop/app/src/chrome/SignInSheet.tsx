@@ -27,6 +27,7 @@ import ContextMenu from '../ui/components/ContextMenu';
 import {clipboard} from 'electron';
 import {reportPlatformFailures} from '../utils/metrics';
 import {Modal} from 'antd';
+import {TrackingScope} from 'flipper-plugin';
 
 const Container = styled(FlexColumn)({
   padding: 20,
@@ -135,15 +136,17 @@ class SignInSheet extends Component<Props, State> {
     footer: React.ReactElement,
   ) {
     return (
-      <Modal
-        visible
-        centered
-        onCancel={this.props.onHide}
-        width={570}
-        title="Login"
-        footer={footer}>
-        <FlexColumn>{contents}</FlexColumn>
-      </Modal>
+      <TrackingScope scope="logindialog">
+        <Modal
+          visible
+          centered
+          onCancel={this.props.onHide}
+          width={570}
+          title="Login"
+          footer={footer}>
+          <FlexColumn>{contents}</FlexColumn>
+        </Modal>
+      </TrackingScope>
     );
   }
 

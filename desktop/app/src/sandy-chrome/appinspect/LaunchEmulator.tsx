@@ -13,7 +13,7 @@ import {AndroidOutlined, AppleOutlined} from '@ant-design/icons';
 import {Store} from '../../reducers';
 import {useStore} from '../../utils/useStore';
 import {launchEmulator} from '../../devices/AndroidDevice';
-import {Layout, renderReactRoot} from 'flipper-plugin';
+import {Layout, renderReactRoot, withTrackingScope} from 'flipper-plugin';
 import {Provider} from 'react-redux';
 import {
   launchSimulator,
@@ -31,77 +31,81 @@ export function showEmulatorLauncher(store: Store) {
 
 type GetSimulators = typeof getSimulators;
 
-export function LaunchEmulatorDialog({
-  onClose,
-  getSimulators,
-}: {
-  onClose: () => void;
-  getSimulators: GetSimulators;
-}) {
-  const iosEnabled = useStore((state) => state.settingsState.enableIOS);
-  const androidEmulators = useStore((state) =>
-    state.settingsState.enableAndroid ? state.connections.androidEmulators : [],
-  );
-  const [iosEmulators, setIosEmulators] = useState<IOSDeviceParams[]>([]);
+export const LaunchEmulatorDialog = withTrackingScope(
+  function LaunchEmulatorDialog({
+    onClose,
+    getSimulators,
+  }: {
+    onClose: () => void;
+    getSimulators: GetSimulators;
+  }) {
+    const iosEnabled = useStore((state) => state.settingsState.enableIOS);
+    const androidEmulators = useStore((state) =>
+      state.settingsState.enableAndroid
+        ? state.connections.androidEmulators
+        : [],
+    );
+    const [iosEmulators, setIosEmulators] = useState<IOSDeviceParams[]>([]);
 
-  useEffect(() => {
-    if (!iosEnabled) {
-      return;
-    }
-    getSimulators(false).then((emulators) => {
-      setIosEmulators(
-        emulators.filter(
-          (device) =>
-            device.state === 'Shutdown' &&
-            device.deviceTypeIdentifier?.match(/iPhone|iPad/i),
-        ),
-      );
-    });
-  }, [iosEnabled, getSimulators]);
+    useEffect(() => {
+      if (!iosEnabled) {
+        return;
+      }
+      getSimulators(false).then((emulators) => {
+        setIosEmulators(
+          emulators.filter(
+            (device) =>
+              device.state === 'Shutdown' &&
+              device.deviceTypeIdentifier?.match(/iPhone|iPad/i),
+          ),
+        );
+      });
+    }, [iosEnabled, getSimulators]);
 
-  const items = [
-    ...androidEmulators.map((name) => (
-      <Button
-        key={name}
-        icon={<AndroidOutlined />}
-        onClick={() => {
-          launchEmulator(name)
-            .catch((e) => {
-              console.error(e);
-              message.error('Failed to start emulator: ' + e);
-            })
-            .finally(onClose);
-        }}>
-        {name}
-      </Button>
-    )),
-    ...iosEmulators.map((device) => (
-      <Button
-        key={device.udid}
-        icon={<AppleOutlined />}
-        onClick={() => {
-          launchSimulator(device.udid)
-            .catch((e) => {
-              console.error(e);
-              message.error('Failed to start simulator: ' + e);
-            })
-            .finally(onClose);
-        }}>
-        {device.name}
-      </Button>
-    )),
-  ];
+    const items = [
+      ...androidEmulators.map((name) => (
+        <Button
+          key={name}
+          icon={<AndroidOutlined />}
+          onClick={() =>
+            launchEmulator(name)
+              .catch((e) => {
+                console.error(e);
+                message.error('Failed to start emulator: ' + e);
+              })
+              .then(onClose)
+          }>
+          {name}
+        </Button>
+      )),
+      ...iosEmulators.map((device) => (
+        <Button
+          key={device.udid}
+          icon={<AppleOutlined />}
+          onClick={() =>
+            launchSimulator(device.udid)
+              .catch((e) => {
+                console.error(e);
+                message.error('Failed to start simulator: ' + e);
+              })
+              .then(onClose)
+          }>
+          {device.name}
+        </Button>
+      )),
+    ];
 
-  return (
-    <Modal
-      visible
-      onCancel={onClose}
-      title="Launch Emulator"
-      footer={null}
-      bodyStyle={{maxHeight: 400, overflow: 'auto'}}>
-      <Layout.Container gap>
-        {items.length ? items : <Alert message="No emulators available" />}
-      </Layout.Container>
-    </Modal>
-  );
-}
+    return (
+      <Modal
+        visible
+        onCancel={onClose}
+        title="Launch Emulator"
+        footer={null}
+        bodyStyle={{maxHeight: 400, overflow: 'auto'}}>
+        <Layout.Container gap>
+          {items.length ? items : <Alert message="No emulators available" />}
+        </Layout.Container>
+      </Modal>
+    );
+  },
+);

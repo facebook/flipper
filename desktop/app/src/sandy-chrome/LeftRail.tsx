@@ -35,7 +35,7 @@ import {
   toggleLeftSidebarVisible,
   toggleRightSidebarVisible,
 } from '../reducers/application';
-import {theme, Layout} from 'flipper-plugin';
+import {theme, Layout, withTrackingScope} from 'flipper-plugin';
 import SetupDoctorScreen, {checkHasNewProblem} from './SetupDoctorScreen';
 import SettingsSheet from '../chrome/SettingsSheet';
 import WelcomeScreen from './WelcomeScreen';
@@ -98,6 +98,7 @@ export function LeftRailButton({
   return (
     <Tooltip title={title} placement="right">
       <LeftRailButtonElem
+        title={title}
         kind={small ? 'small' : undefined}
         type={selected ? 'primary' : 'ghost'}
         icon={iconElement}
@@ -119,7 +120,7 @@ const LeftRailDivider = styled(Divider)({
 });
 LeftRailDivider.displayName = 'LeftRailDividier';
 
-export function LeftRail({
+export const LeftRail = withTrackingScope(function LeftRail({
   toplevelSelection,
   setToplevelSelection,
 }: ToplevelProps) {
@@ -167,7 +168,7 @@ export function LeftRail({
       </Layout.Bottom>
     </Layout.Container>
   );
-}
+});
 
 function LeftSidebarToggleButton() {
   const dispatch = useDispatch();

@@ -7,11 +7,17 @@
  * @format
  */
 
-import React, {useCallback, useMemo} from 'react';
+import React, {useMemo} from 'react';
 import {AutoComplete, Input, Typography} from 'antd';
 import {StarFilled, StarOutlined} from '@ant-design/icons';
 import {useStore} from '../../utils/useStore';
-import {Layout, NUX, useValue} from 'flipper-plugin';
+import {
+  Layout,
+  NUX,
+  TrackingScope,
+  useTrackedCallback,
+  useValue,
+} from 'flipper-plugin';
 import {navPluginStateSelector} from '../../chrome/LocationsButton';
 
 // eslint-disable-next-line flipper/no-relative-imports-across-packages
@@ -25,11 +31,13 @@ export function BookmarkSection() {
   const navPlugin = useStore(navPluginStateSelector);
 
   return navPlugin ? (
-    <NUX
-      title="Use bookmarks to directly navigate to a location in the app."
-      placement="right">
-      <BookmarkSectionInput navPlugin={navPlugin} />
-    </NUX>
+    <TrackingScope scope="bookmarks">
+      <NUX
+        title="Use bookmarks to directly navigate to a location in the app."
+        placement="right">
+        <BookmarkSectionInput navPlugin={navPlugin} />
+      </NUX>
+    </TrackingScope>
   ) : null;
 }
 
@@ -48,16 +56,22 @@ function BookmarkSectionInput({navPlugin}: {navPlugin: NavigationPlugin}) {
     [currentURI, bookmarks, patterns, 20],
   );
 
-  const handleBookmarkClick = useCallback(() => {
-    if (isBookmarked) {
-      navPlugin.removeBookmark(currentURI);
-    } else if (currentURI) {
-      navPlugin.addBookmark({
-        uri: currentURI,
-        commonName: null,
-      });
-    }
-  }, [navPlugin, currentURI, isBookmarked]);
+  const handleBookmarkClick = useTrackedCallback(
+    'bookmark',
+    () => {
+      if (isBookmarked) {
+        navPlugin.removeBookmark(currentURI);
+      } else if (currentURI) {
+        navPlugin.addBookmark({
+          uri: currentURI,
+          commonName: null,
+        });
+      }
+    },
+    [navPlugin, currentURI, isBookmarked],
+  );
+
+  const navigate = useTrackedCallback('navigate', navPlugin.navigateTo, []);
 
   const bookmarkButton = isBookmarked ? (
     <StarFilled onClick={handleBookmarkClick} />
@@ -69,7 +83,7 @@ function BookmarkSectionInput({navPlugin}: {navPlugin: NavigationPlugin}) {
     <StyledAutoComplete
       dropdownMatchSelectWidth={500}
       value={currentURI}
-      onSelect={navPlugin.navigateTo}
+      onSelect={navigate}
       style={{flex: 1}}
       options={[
         {
@@ -99,7 +113,7 @@ function BookmarkSectionInput({navPlugin}: {navPlugin: NavigationPlugin}) {
           navPlugin.currentURI.set(e.target.value);
         }}
         onPressEnter={() => {
-          navPlugin.navigateTo(currentURI);
+          navigate(currentURI);
         }}
       />
     </StyledAutoComplete>

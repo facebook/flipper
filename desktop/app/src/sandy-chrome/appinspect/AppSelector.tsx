@@ -16,9 +16,9 @@ import {
   CaretDownOutlined,
 } from '@ant-design/icons';
 import {Glyph, Layout, styled} from '../../ui';
-import {theme} from 'flipper-plugin';
+import {theme, useTrackedCallback} from 'flipper-plugin';
 import {batch} from 'react-redux';
-import {Dispatch, useDispatch, useStore} from '../../utils/useStore';
+import {useDispatch, useStore} from '../../utils/useStore';
 import {
   canBeDefaultDevice,
   getAvailableClients,
@@ -55,11 +55,34 @@ export function AppSelector() {
     uninitializedClients,
     selectedApp,
   } = useStore((state) => state.connections);
+
+  const onSelectDevice = useTrackedCallback(
+    'select-device',
+    (device: BaseDevice) => {
+      batch(() => {
+        dispatch(selectDevice(device));
+        dispatch(selectClient(null));
+      });
+    },
+    [],
+  );
+  const onSelectApp = useTrackedCallback(
+    'select-app',
+    (device: BaseDevice, client: Client) => {
+      batch(() => {
+        dispatch(selectDevice(device));
+        dispatch(selectClient(client.id));
+      });
+    },
+    [],
+  );
+
   const entries = computeEntries(
     devices,
-    dispatch,
     clients,
     uninitializedClients,
+    onSelectDevice,
+    onSelectApp,
   );
   const client = clients.find((client) => client.id === selectedApp);
 
@@ -144,9 +167,10 @@ const AppIconContainer = styled.div({
 
 function computeEntries(
   devices: BaseDevice[],
-  dispatch: Dispatch,
   clients: Client[],
   uninitializedClients: State['connections']['uninitializedClients'],
+  onSelectDevice: (device: BaseDevice) => void,
+  onSelectApp: (device: BaseDevice, client: Client) => void,
 ) {
   const entries = devices.filter(canBeDefaultDevice).map((device) => {
     const deviceEntry = (
@@ -155,10 +179,7 @@ function computeEntries(
         key={device.serial}
         style={{fontWeight: 'bold'}}
         onClick={() => {
-          batch(() => {
-            dispatch(selectDevice(device));
-            dispatch(selectClient(null));
-          });
+          onSelectDevice(device);
         }}>
         {device.displayTitle()}
       </Menu.Item>
@@ -167,10 +188,7 @@ function computeEntries(
       <Menu.Item
         key={client.id}
         onClick={() => {
-          batch(() => {
-            dispatch(selectDevice(device));
-            dispatch(selectClient(client.id));
-          });
+          onSelectApp(device, client);
         }}>
         <Radio value={client.id}>{client.query.app}</Radio>
       </Menu.Item>

@@ -21,6 +21,7 @@ const {shell, remote} = !isHeadless()
   : {shell: undefined, remote: undefined};
 import {PureComponent} from 'react';
 import React from 'react';
+import {Tracked, TrackingScope} from 'flipper-plugin';
 
 const Container = styled(FlexColumn)({
   height: '100%',
@@ -127,64 +128,72 @@ export default class WelcomeScreen extends PureComponent<Props, State> {
   render() {
     return (
       <Container>
-        <Welcome isMounted={this.state.isMounted}>
-          <Logo src="./icon.png" />
-          <Title>Welcome to Flipper</Title>
-          <Version>
-            {isProduction() && remote
-              ? `Version ${remote.app.getVersion()}`
-              : 'Development Mode'}
-          </Version>
-          <Item
-            onClick={() =>
-              shell &&
-              shell.openExternal('https://fbflipper.com/docs/features/index')
-            }>
-            <Icon size={20} name="rocket" color={brandColors.Flipper} />
-            <FlexColumn>
-              <ItemTitle>Using Flipper</ItemTitle>
-              <ItemSubTitle>
-                Learn how Flipper can help you debug your App
-              </ItemSubTitle>
-            </FlexColumn>
-          </Item>
-          <Item
-            onClick={() =>
-              shell &&
-              shell.openExternal('https://fbflipper.com/docs/tutorial/intro')
-            }>
-            <Icon size={20} name="magic-wand" color={brandColors.Flipper} />
-            <FlexColumn>
-              <ItemTitle>Create your own plugin</ItemTitle>
-              <ItemSubTitle>Get started with these pointers</ItemSubTitle>
-            </FlexColumn>
-          </Item>
-          <Item
-            onClick={() =>
-              shell &&
-              shell.openExternal(
-                'https://fbflipper.com/docs/getting-started/index',
-              )
-            }>
-            <Icon size={20} name="tools" color={brandColors.Flipper} />
-            <FlexColumn>
-              <ItemTitle>Add Flipper support to your app</ItemTitle>
-              <ItemSubTitle>Get started with these pointers</ItemSubTitle>
-            </FlexColumn>
-          </Item>
-          <Item
-            onClick={() =>
-              shell && shell.openExternal(constants.FEEDBACK_GROUP_LINK)
-            }>
-            <Icon size={20} name="posts" color={brandColors.Flipper} />
-            <FlexColumn>
-              <ItemTitle>Contributing and Feedback</ItemTitle>
-              <ItemSubTitle>
-                Report issues and help us improve Flipper
-              </ItemSubTitle>
-            </FlexColumn>
-          </Item>
-        </Welcome>
+        <TrackingScope scope="welcomescreen">
+          <Welcome isMounted={this.state.isMounted}>
+            <Logo src="./icon.png" />
+            <Title>Welcome to Flipper</Title>
+            <Version>
+              {isProduction() && remote
+                ? `Version ${remote.app.getVersion()}`
+                : 'Development Mode'}
+            </Version>
+            <Tracked>
+              <Item
+                onClick={() => {
+                  shell &&
+                    shell.openExternal(
+                      'https://fbflipper.com/docs/features/index',
+                    );
+                }}>
+                <Icon size={20} name="rocket" color={brandColors.Flipper} />
+                <FlexColumn>
+                  <ItemTitle>Using Flipper</ItemTitle>
+                  <ItemSubTitle>
+                    Learn how Flipper can help you debug your App
+                  </ItemSubTitle>
+                </FlexColumn>
+              </Item>
+              <Item
+                onClick={() =>
+                  shell &&
+                  shell.openExternal(
+                    'https://fbflipper.com/docs/tutorial/intro',
+                  )
+                }>
+                <Icon size={20} name="magic-wand" color={brandColors.Flipper} />
+                <FlexColumn>
+                  <ItemTitle>Create your own plugin</ItemTitle>
+                  <ItemSubTitle>Get started with these pointers</ItemSubTitle>
+                </FlexColumn>
+              </Item>
+              <Item
+                onClick={() =>
+                  shell &&
+                  shell.openExternal(
+                    'https://fbflipper.com/docs/getting-started/index',
+                  )
+                }>
+                <Icon size={20} name="tools" color={brandColors.Flipper} />
+                <FlexColumn>
+                  <ItemTitle>Add Flipper support to your app</ItemTitle>
+                  <ItemSubTitle>Get started with these pointers</ItemSubTitle>
+                </FlexColumn>
+              </Item>
+              <Item
+                onClick={() =>
+                  shell && shell.openExternal(constants.FEEDBACK_GROUP_LINK)
+                }>
+                <Icon size={20} name="posts" color={brandColors.Flipper} />
+                <FlexColumn>
+                  <ItemTitle>Contributing and Feedback</ItemTitle>
+                  <ItemSubTitle>
+                    Report issues and help us improve Flipper
+                  </ItemSubTitle>
+                </FlexColumn>
+              </Item>
+            </Tracked>
+          </Welcome>
+        </TrackingScope>
       </Container>
     );
   }

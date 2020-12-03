@@ -48,15 +48,15 @@ export default function ScreenCaptureButtons({useSandy}: {useSandy?: boolean}) {
 
   const handleScreenshot = useCallback(() => {
     setIsTakingScreenshot(true);
-    capture(selectedDevice!)
-      .then(openFile)
-      .catch((e) => {
-        console.error('Taking screenshot failed:', e);
-        message.error('Taking screenshot failed:' + e);
-      })
-      .finally(() => {
-        setIsTakingScreenshot(false);
-      });
+    const p = capture(selectedDevice!).then(openFile);
+
+    p.catch((e) => {
+      console.error('Taking screenshot failed:', e);
+      message.error('Taking screenshot failed:' + e);
+    }).finally(() => {
+      setIsTakingScreenshot(false);
+    });
+    return p;
   }, [selectedDevice]);
   const handleRecording = useCallback(() => {
     if (!selectedDevice) {
@@ -65,13 +65,13 @@ export default function ScreenCaptureButtons({useSandy}: {useSandy?: boolean}) {
     if (!isRecording) {
       setIsRecording(true);
       const videoPath = path.join(CAPTURE_LOCATION, getFileName('mp4'));
-      selectedDevice.startScreenCapture(videoPath).catch((e) => {
+      return selectedDevice.startScreenCapture(videoPath).catch((e) => {
         console.error('Failed to start recording', e);
         message.error('Failed to start recording' + e);
         setIsRecording(false);
       });
     } else {
-      selectedDevice
+      return selectedDevice
         .stopScreenCapture()
         .then(openFile)
         .catch((e) => {

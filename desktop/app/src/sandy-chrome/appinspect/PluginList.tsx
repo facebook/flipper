@@ -12,7 +12,7 @@ import {Badge, Button, Menu, Tooltip, Typography} from 'antd';
 import {InfoIcon, SidebarTitle} from '../LeftSidebar';
 import {PlusOutlined, MinusOutlined} from '@ant-design/icons';
 import {Glyph, Layout, styled} from '../../ui';
-import {theme, NUX} from 'flipper-plugin';
+import {theme, NUX, Tracked} from 'flipper-plugin';
 import {useDispatch, useStore} from '../../utils/useStore';
 import {getPluginTitle, sortPluginsByName} from '../../utils/pluginUtils';
 import {ClientPluginDefinition, DevicePluginDefinition} from '../../plugin';
@@ -225,8 +225,9 @@ function ActionButton({
       icon={icon}
       title={title}
       style={{border: 'none', color: theme.textColorPrimary}}
-      onClick={() => {
+      onClick={(e) => {
         onClick(id);
+        e.stopPropagation();
       }}
     />
   );
@@ -273,26 +274,28 @@ const PluginEntry = memo(function PluginEntry({
   }, [active]);
 
   return (
-    <Menu.Item
-      key={plugin.id}
-      active={active}
-      disabled={disabled}
-      onClick={handleClick}
-      {...rest}>
-      <Layout.Horizontal
-        center
-        gap={10}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}>
-        <PluginIconWrapper disabled={disabled} ref={domRef}>
-          <Glyph size={16} name={plugin.icon || 'apps'} color="white" />
-        </PluginIconWrapper>
-        <Tooltip placement="right" title={tooltip} mouseEnterDelay={1}>
-          <Text style={{flex: 1}}>{getPluginTitle(plugin)}</Text>
-        </Tooltip>
-        {hovering && actions}
-      </Layout.Horizontal>
-    </Menu.Item>
+    <Tracked action={`open:${plugin.id}`}>
+      <Menu.Item
+        key={plugin.id}
+        active={active}
+        disabled={disabled}
+        onClick={handleClick}
+        {...rest}>
+        <Layout.Horizontal
+          center
+          gap={10}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}>
+          <PluginIconWrapper disabled={disabled} ref={domRef}>
+            <Glyph size={16} name={plugin.icon || 'apps'} color="white" />
+          </PluginIconWrapper>
+          <Tooltip placement="right" title={tooltip} mouseEnterDelay={1}>
+            <Text style={{flex: 1}}>{getPluginTitle(plugin)}</Text>
+          </Tooltip>
+          {hovering && actions}
+        </Layout.Horizontal>
+      </Menu.Item>
+    </Tracked>
   );
 });
 

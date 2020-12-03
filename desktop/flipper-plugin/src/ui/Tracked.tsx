@@ -109,7 +109,6 @@ export function useTrackedCallback<T extends Function>(
   }, deps) as any;
 }
 
-// Exported for test
 export function wrapInteractionHandler<T extends Function>(
   fn: T,
   element: React.ReactElement | null | string,

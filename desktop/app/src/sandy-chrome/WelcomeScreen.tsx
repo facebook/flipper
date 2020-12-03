@@ -16,7 +16,7 @@ import {
   CodeOutlined,
   BugOutlined,
 } from '@ant-design/icons';
-import {theme} from 'flipper-plugin';
+import {theme, Tracked, TrackingScope} from 'flipper-plugin';
 
 const {Text, Title} = Typography;
 
@@ -45,19 +45,21 @@ function Row(props: {
   onClick?: () => void;
 }) {
   return (
-    <RowContainer onClick={props.onClick}>
-      <Space size="middle">
-        {cloneElement(props.icon, {
-          style: {fontSize: 36, color: theme.primaryColor},
-        })}
-        <FlexColumn>
-          <Title level={3} style={{color: theme.primaryColor}}>
-            {props.title}
-          </Title>
-          <Text type="secondary">{props.subtitle}</Text>
-        </FlexColumn>
-      </Space>
-    </RowContainer>
+    <Tracked action={props.title}>
+      <RowContainer onClick={props.onClick}>
+        <Space size="middle">
+          {cloneElement(props.icon, {
+            style: {fontSize: 36, color: theme.primaryColor},
+          })}
+          <FlexColumn>
+            <Title level={3} style={{color: theme.primaryColor}}>
+              {props.title}
+            </Title>
+            <Text type="secondary">{props.subtitle}</Text>
+          </FlexColumn>
+        </Space>
+      </RowContainer>
+    </Tracked>
   );
 }
 
@@ -114,46 +116,48 @@ export default function WelcomeScreen({
         />
       }
       onCancel={onClose}>
-      <Space
-        direction="vertical"
-        size="middle"
-        style={{width: '100%', padding: '32px', alignItems: 'center'}}>
-        <Image width={125} height={125} src="./icon.png" preview={false} />
-        <Title level={1}>Welcome to Flipper</Title>
-        <Text style={{color: theme.textColorPlaceholder}}>
-          {isProduction() && remote
-            ? `Version ${remote.app.getVersion()}`
-            : 'Development Mode'}
-        </Text>
-      </Space>
-      <Space direction="vertical" size="large" style={{width: '100%'}}>
-        <Row
-          icon={<RocketOutlined />}
-          title="Using Flipper"
-          subtitle="Learn how Flipper can help you debug your App"
-          onClick={openExternal('https://fbflipper.com/docs/features/index')}
-        />
-        <Row
-          icon={<AppstoreAddOutlined />}
-          title="Create Your Own Plugin"
-          subtitle="Get started with these pointers"
-          onClick={openExternal('https://fbflipper.com/docs/tutorial/intro')}
-        />
-        <Row
-          icon={<CodeOutlined />}
-          title="Add Flipper Support to Your App"
-          subtitle="Get started with these pointers"
-          onClick={openExternal(
-            'https://fbflipper.com/docs/getting-started/index',
-          )}
-        />
-        <Row
-          icon={<BugOutlined />}
-          title="Contributing and Feedback"
-          subtitle="Report issues and help us improve Flipper"
-          onClick={openExternal(constants.FEEDBACK_GROUP_LINK)}
-        />
-      </Space>
+      <TrackingScope scope="welcomescreen">
+        <Space
+          direction="vertical"
+          size="middle"
+          style={{width: '100%', padding: '32px', alignItems: 'center'}}>
+          <Image width={125} height={125} src="./icon.png" preview={false} />
+          <Title level={1}>Welcome to Flipper</Title>
+          <Text style={{color: theme.textColorPlaceholder}}>
+            {isProduction() && remote
+              ? `Version ${remote.app.getVersion()}`
+              : 'Development Mode'}
+          </Text>
+        </Space>
+        <Space direction="vertical" size="large" style={{width: '100%'}}>
+          <Row
+            icon={<RocketOutlined />}
+            title="Using Flipper"
+            subtitle="Learn how Flipper can help you debug your App"
+            onClick={openExternal('https://fbflipper.com/docs/features/index')}
+          />
+          <Row
+            icon={<AppstoreAddOutlined />}
+            title="Create Your Own Plugin"
+            subtitle="Get started with these pointers"
+            onClick={openExternal('https://fbflipper.com/docs/tutorial/intro')}
+          />
+          <Row
+            icon={<CodeOutlined />}
+            title="Add Flipper Support to Your App"
+            subtitle="Get started with these pointers"
+            onClick={openExternal(
+              'https://fbflipper.com/docs/getting-started/index',
+            )}
+          />
+          <Row
+            icon={<BugOutlined />}
+            title="Contributing and Feedback"
+            subtitle="Report issues and help us improve Flipper"
+            onClick={openExternal(constants.FEEDBACK_GROUP_LINK)}
+          />
+        </Space>
+      </TrackingScope>
     </Modal>
   );
 }
