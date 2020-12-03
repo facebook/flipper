@@ -10,7 +10,7 @@
 import React from 'react';
 import {Typography, Card, Table, Collapse, Button, Tabs} from 'antd';
 import {Layout, Link} from '../ui';
-import {NUX, theme} from 'flipper-plugin';
+import {NUX, theme, Tracked, TrackingScope} from 'flipper-plugin';
 import reactElementToJSXString from 'react-element-to-jsx-string';
 import {CodeOutlined} from '@ant-design/icons';
 
@@ -307,6 +307,47 @@ const demos: PreviewProps[] = [
         <NUX title="This button does something cool" placement="right">
           <Button>Hello world</Button>
         </NUX>
+      ),
+    },
+  },
+  {
+    title: 'Tracked',
+    description:
+      'A component that tracks component interactions. For Facebook internal builds, global stats for these interactions will be tracked. Wrap this component around another element to track its events',
+    props: [
+      [
+        'events',
+        'string | string[] (default: "onClick")',
+        'The event(s) of the child component that should be tracked',
+      ],
+      [
+        'action',
+        'string (optional)',
+        'Describes the element the user interacted with. Will by default be derived from the title, key or contents of the element',
+      ],
+    ],
+    demos: {
+      'Basic example': (
+        <Tracked>
+          <Button onClick={() => {}}>Test</Button>
+        </Tracked>
+      ),
+    },
+  },
+  {
+    title: 'TrackingScope',
+    description:
+      'Describes more precisely the place in the UI for all underlying Tracked elements. Multiple Tracking scopes are automatically nested. Use the `withTrackingScope` HoC to automatically wrap a component definition in a tracking scope',
+    props: [
+      ['scope', 'string', 'The name of the scope. For example "Login Dialog"'],
+    ],
+    demos: {
+      'Basic example': (
+        <TrackingScope scope="Tracking scope demo">
+          <Tracked>
+            <Button onClick={() => {}}>Test</Button>
+          </Tracked>
+        </TrackingScope>
       ),
     },
   },

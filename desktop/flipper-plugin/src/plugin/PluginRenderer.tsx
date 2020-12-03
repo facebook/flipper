@@ -12,6 +12,7 @@ import {SandyPluginContext} from './PluginContext';
 import {SandyPluginInstance} from './Plugin';
 import {SandyDevicePluginInstance} from './DevicePlugin';
 import {BasePluginInstance} from './PluginBase';
+import {TrackingScope} from '../ui/Tracked';
 
 type Props = {
   plugin: SandyPluginInstance | SandyDevicePluginInstance;
@@ -32,8 +33,10 @@ export const SandyPluginRenderer = memo(({plugin}: Props) => {
   }, [plugin]);
 
   return (
-    <SandyPluginContext.Provider value={plugin}>
-      {createElement(plugin.definition.module.Component)}
-    </SandyPluginContext.Provider>
+    <TrackingScope scope={'plugin:' + plugin.definition.id}>
+      <SandyPluginContext.Provider value={plugin}>
+        {createElement(plugin.definition.module.Component)}
+      </SandyPluginContext.Provider>
+    </TrackingScope>
   );
 });

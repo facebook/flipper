@@ -52,6 +52,14 @@ export {
 } from './ui/NUX';
 
 export {renderReactRoot} from './utils/renderReactRoot';
+export {
+  Tracked,
+  TrackingScope,
+  setGlobalInteractionReporter as _setGlobalInteractionReporter,
+  withTrackingScope,
+} from './ui/Tracked';
+
+export {sleep} from './utils/sleep';
 
 // It's not ideal that this exists in flipper-plugin sources directly,
 // but is the least pain for plugin authors.

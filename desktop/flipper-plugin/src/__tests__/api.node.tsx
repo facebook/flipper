@@ -29,14 +29,18 @@ test('Correct top level API exposed', () => {
       "Layout",
       "NUX",
       "TestUtils",
+      "Tracked",
+      "TrackingScope",
       "batch",
       "createState",
       "produce",
       "renderReactRoot",
+      "sleep",
       "styled",
       "theme",
       "usePlugin",
       "useValue",
+      "withTrackingScope",
     ]
   `);
 
