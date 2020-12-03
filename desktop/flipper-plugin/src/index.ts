@@ -57,6 +57,7 @@ export {
   TrackingScope,
   setGlobalInteractionReporter as _setGlobalInteractionReporter,
   withTrackingScope,
+  useTrackedCallback,
 } from './ui/Tracked';
 
 export {sleep} from './utils/sleep';

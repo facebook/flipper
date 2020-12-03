@@ -202,3 +202,4 @@ export {checkIdbIsInstalled} from './utils/iOSContainerUtility';
 export {default as SidebarExtensions} from './fb-stubs/LayoutInspectorSidebarExtensions';
 export {IDEFileResolver, IDEType} from './fb-stubs/IDEFileResolver';
 export {renderMockFlipperWithPlugin} from './test-utils/createMockFlipperWithPlugin';
+export {Tracked} from 'flipper-plugin'; // To be able to use it in legacy plugins

@@ -1,0 +1,25 @@
+diff --git a/node_modules/rc-tabs/es/TabNavList/TabNode.js b/node_modules/rc-tabs/es/TabNavList/TabNode.js
+index 2a69e83..e00ada1 100644
+--- a/node_modules/rc-tabs/es/TabNavList/TabNode.js
++++ b/node_modules/rc-tabs/es/TabNavList/TabNode.js
+@@ -37,10 +37,19 @@ function TabNode(_ref, ref) {
+   }
+ 
+   var removable = editable && closable !== false && !disabled;
++  var scope = React.useContext(global.FlipperTrackingScopeContext);
+ 
+   function onInternalClick(e) {
+     if (disabled) return;
+-    onClick(e);
++
++    global.flipperTrackInteraction(
++      'Tabs',
++      'onTabClick',
++      scope,
++      'tab:' + key + ':' + tab,
++      onClick,
++      e
++    );
+   }
+ 
+   function onRemoveTab(event) {

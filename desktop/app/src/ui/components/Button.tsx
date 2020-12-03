@@ -383,7 +383,7 @@ function ClassicButton(props: Props) {
 /**
  * A simple button, used in many parts of the application.
  */
-export function SandyButton({
+function SandyButton({
   compact,
   disabled,
   icon,

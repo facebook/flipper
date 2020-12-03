@@ -1,0 +1,26 @@
+diff --git a/node_modules/antd/es/button/button.js b/node_modules/antd/es/button/button.js
+index 8496110..35cce19 100644
+--- a/node_modules/antd/es/button/button.js
++++ b/node_modules/antd/es/button/button.js
+@@ -186,6 +186,8 @@ var InternalButton = function InternalButton(props, ref) {
+     fixTwoCNChar();
+   }, [buttonRef]);
+ 
++  var scope = React.useContext(global.FlipperTrackingScopeContext);
++
+   var handleClick = function handleClick(e) {
+     var onClick = props.onClick;
+     
+@@ -194,7 +196,11 @@ var InternalButton = function InternalButton(props, ref) {
+     }
+     
+     if (onClick) {
+-      onClick(e);
++      global.flipperTrackInteraction(
++        'Button', 'onClick', scope, props.title || props.children || props.icon, 
++        onClick,
++        e
++      );
+     }
+   };
+ 

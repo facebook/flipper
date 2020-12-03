@@ -1,0 +1,21 @@
+diff --git a/node_modules/rc-collapse/es/Panel.js b/node_modules/rc-collapse/es/Panel.js
+index 13dc708..c5145e7 100644
+--- a/node_modules/rc-collapse/es/Panel.js
++++ b/node_modules/rc-collapse/es/Panel.js
+@@ -82,6 +82,7 @@ var CollapsePanel = function (_Component) {
+       return React.createElement(
+         'div',
+         { className: itemCls, style: style, id: id },
++        React.createElement(global.FlipperTracked, { action: 'collapse:' + header }, 
+         React.createElement(
+           'div',
+           {
+@@ -99,7 +100,7 @@ var CollapsePanel = function (_Component) {
+             { className: prefixCls + '-extra' },
+             extra
+           )
+-        ),
++        )),
+         React.createElement(
+           Animate,
+           {

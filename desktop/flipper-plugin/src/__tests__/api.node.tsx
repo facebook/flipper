@@ -39,6 +39,7 @@ test('Correct top level API exposed', () => {
       "styled",
       "theme",
       "usePlugin",
+      "useTrackedCallback",
       "useValue",
       "withTrackingScope",
     ]
