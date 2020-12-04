@@ -80,7 +80,7 @@ class SettingsSheet extends Component<Props, State> {
     this.props.updateLauncherSettings(this.state.updatedLauncherSettings);
     this.props.onHide();
     flush().then(() => {
-      restartFlipper();
+      restartFlipper(true);
     });
   };
 

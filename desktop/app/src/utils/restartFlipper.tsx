@@ -10,9 +10,18 @@
 import {remote} from 'electron';
 import isProduction from './isProduction';
 
-export default function restart() {
+export default function restart(update: boolean = false) {
   if (isProduction()) {
-    remote.app.relaunch();
+    if (update) {
+      const options = {
+        args: process.argv
+          .splice(0, 1)
+          .filter((arg) => arg !== '--no-launcher' && arg !== '--no-updater'),
+      };
+      remote.app.relaunch(options);
+    } else {
+      remote.app.relaunch();
+    }
     remote.app.exit();
   } else {
     // Relaunching the process with the standard way doesn't work in dev mode.
