@@ -24,9 +24,7 @@ const xdgConfigDir = () =>
 export const launcherConfigDir = () =>
   path.join(
     xdgConfigDir(),
-    os.platform() == 'darwin'
-      ? 'rs.flipper-launcher.flipper-launcher'
-      : 'flipper-launcher',
+    os.platform() == 'darwin' ? 'rs.flipper-launcher' : 'flipper-launcher',
   );
 
 export function initLauncherHooks(config: ProcessConfig, store: Store) {
