@@ -153,11 +153,9 @@ const siteConfig = {
   ],
   stylesheets: [],
   // start_config_example
-  plugins: [require.resolve('docusaurus-plugin-internaldocs-fb')],
-  // end_config_example
   presets: [
     [
-      '@docusaurus/preset-classic',
+      require.resolve('docusaurus-plugin-internaldocs-fb/docusaurus-preset'),
       {
         docs: {
           path: '../docs',
@@ -170,6 +168,7 @@ const siteConfig = {
       },
     ],
   ],
+  // end_config_example
 };
 
 module.exports = siteConfig;

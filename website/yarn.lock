@@ -4934,10 +4934,13 @@ doctrine@^3.0.0:
   dependencies:
     esutils "^2.0.2"
 
-docusaurus-plugin-internaldocs-fb@^0.5.2:
-  version "0.5.2"
-  resolved "https://registry.yarnpkg.com/docusaurus-plugin-internaldocs-fb/-/docusaurus-plugin-internaldocs-fb-0.5.2.tgz#635a8a7958aa64b71a92b1424a6f2a1f3d8f75a5"
-  integrity sha512-BW/Qv3P3Ztil0W3SQExL/Yq2wLEJ+IfsoGZo+3v5Gfd/fV/Oqe1EfnrW40fqhfKJFNnTKuSdP77dL8UGV0ejHA==
+docusaurus-plugin-internaldocs-fb@^0.5.5:
+  version "0.5.5"
+  resolved "https://registry.yarnpkg.com/docusaurus-plugin-internaldocs-fb/-/docusaurus-plugin-internaldocs-fb-0.5.5.tgz#3d90fd20ae68c13722459ec2fac66d81d9805732"
+  integrity sha512-6Yg+lvekTTCCeoUVOSfb822K9z0Mlr0a5V1vleKUd134dlMRJZAywtd2z6fteD47zXtgFfi0V7pVEHz+4H9m2A==
+  dependencies:
+    internaldocs-fb-helpers "^1.1.0"
+    remark-mdx-filter-imports "^0.1.1"
 
 dom-converter@^0.2:
   version "0.2.0"
@@ -6523,10 +6526,10 @@ internal-ip@^4.3.0:
     default-gateway "^4.2.0"
     ipaddr.js "^1.9.0"
 
-internaldocs-fb-helpers@1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/internaldocs-fb-helpers/-/internaldocs-fb-helpers-1.0.0.tgz#143d65a55a9c957539c47112b06f252556c11651"
-  integrity sha512-8Z7R1D+HUR7GnF/ykgrx+TRZ5rsJlHP9dZBntxYntOiUrAmnea5IVQ9BMR+6OzcPNhdcnm5KoTpFlPDLAu7OQg==
+internaldocs-fb-helpers@^1.1.0, internaldocs-fb-helpers@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/internaldocs-fb-helpers/-/internaldocs-fb-helpers-1.2.0.tgz#bdaf2a503ebbaa1eb69a5caa4f827f7beccda391"
+  integrity sha512-qlJ19P13nt5kVXniEQZfZPnU+RK20jGIyuchn2eDI9KoZ65EnNBOo0Mpb31y/+7FQtadd4oC8OWpwoEbsTWgXA==
 
 interpret@^1.0.0:
   version "1.2.0"
@@ -9821,6 +9824,13 @@ remark-footnotes@2.0.0:
   resolved "https://registry.yarnpkg.com/remark-footnotes/-/remark-footnotes-2.0.0.tgz#9001c4c2ffebba55695d2dd80ffb8b82f7e6303f"
   integrity sha512-3Clt8ZMH75Ayjp9q4CorNeyjwIxHFcTkaektplKGl2A1jNGEUey8cKL0ZC5vJwfcD5GFGsNLImLG/NGzWIzoMQ==
 
+remark-mdx-filter-imports@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/remark-mdx-filter-imports/-/remark-mdx-filter-imports-0.1.1.tgz#31791442e8e0d6b5ee0c42838e9076c426f56d98"
+  integrity sha512-fZdKz9Z2/bUJgE82D92j1Y0qzPJPowOLmem4kQYeA/ELlGEEnYvNnsmqf17kjM+DjPC2p9c7mz8vZG7lWrSwuA==
+  dependencies:
+    unist-util-visit "^2.0.3"
+
 remark-mdx@1.6.21:
   version "1.6.21"
   resolved "https://registry.yarnpkg.com/remark-mdx/-/remark-mdx-1.6.21.tgz#0c1a7e042e50938ff89ad8dd7e8e219d4b0404ce"
@@ -11155,7 +11165,7 @@ unist-util-visit-parents@^3.0.0:
     "@types/unist" "^2.0.0"
     unist-util-is "^4.0.0"
 
-unist-util-visit@2.0.3:
+unist-util-visit@2.0.3, unist-util-visit@^2.0.3:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/unist-util-visit/-/unist-util-visit-2.0.3.tgz#c3703893146df47203bb8a9795af47d7b971208c"
   integrity sha512-iJ4/RczbJMkD0712mGktuGpm/U4By4FfDonL7N/9tATGIF4imikjOuagyMY53tnZq3NP6BcmlrHhEKAfGWjh7Q==
