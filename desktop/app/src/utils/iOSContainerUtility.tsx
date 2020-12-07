@@ -70,6 +70,7 @@ async function targets(idbPath: string): Promise<Array<DeviceTarget>> {
         .trim()
         .split('\n')
         .map((line) => line.trim())
+        .filter(Boolean)
         .map((line) => JSON.parse(line))
         .filter(({type}: IdbTarget) => type !== 'simulator')
         .map((target: IdbTarget) => {
@@ -83,6 +84,7 @@ async function targets(idbPath: string): Promise<Array<DeviceTarget>> {
         .toString()
         .split('\n')
         .map((line) => line.trim())
+        .filter(Boolean)
         .map((line) => /(.+) \([^(]+\) \[(.*)\]( \(Simulator\))?/.exec(line))
         .filter(notNull)
         .filter(([_match, _name, _udid, isSim]) => !isSim)
