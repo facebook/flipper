@@ -401,3 +401,31 @@ test('available methods can be overridden', async () => {
   );
   expect(await plugin.instance.checkEnabled()).toBeFalsy();
 });
+
+test('GKs are supported', () => {
+  const pluginModule = {
+    plugin(client: PluginClient<{}, {}>) {
+      return {
+        isTest() {
+          return client.GK('bla');
+        },
+      };
+    },
+    Component() {
+      return null;
+    },
+  };
+
+  {
+    const plugin = TestUtils.startPlugin(pluginModule);
+    expect(plugin.instance.isTest()).toBe(false);
+  }
+  {
+    const plugin = TestUtils.startPlugin(pluginModule, {GKs: ['bla']});
+    expect(plugin.instance.isTest()).toBe(true);
+  }
+  {
+    const plugin = TestUtils.startPlugin(pluginModule, {GKs: ['x']});
+    expect(plugin.instance.isTest()).toBe(false);
+  }
+});

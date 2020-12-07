@@ -48,6 +48,12 @@ export interface BasePluginClient {
    * Facebook only function. Resolves to undefined if creating a paste failed.
    */
   createPaste(input: string): Promise<string | undefined>;
+
+  /**
+   * Returns true if the user is taking part in the given gatekeeper.
+   * Always returns `false` in open source.
+   */
+  GK(gkName: string): boolean;
 }
 
 let currentPluginInstance: BasePluginInstance | undefined = undefined;
@@ -155,6 +161,7 @@ export abstract class BasePluginInstance {
         }
       },
       createPaste: this.flipperLib.createPaste,
+      GK: this.flipperLib.GK,
     };
   }
 

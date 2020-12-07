@@ -11,6 +11,7 @@ import type {FlipperLib} from 'flipper-plugin';
 import type {Logger} from '../fb-interfaces/Logger';
 import type {Store} from '../reducers';
 import createPaste from '../fb-stubs/createPaste';
+import GK from '../fb-stubs/GK';
 
 let flipperLibInstance: FlipperLib | undefined;
 
@@ -25,6 +26,9 @@ export function initializeFlipperLibImplementation(
       addSandyPluginEntries(entries);
     },
     createPaste,
+    GK(gatekeeper: string) {
+      return GK.get(gatekeeper);
+    },
   };
 }
 

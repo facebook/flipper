@@ -218,6 +218,14 @@ The returned promise either contains a string with the URL of the paste, or `und
 Details of the failure will be communicated back directly to the user through Flipper notifications.
 For example if the user is currently not signed in.
 
+#### `GK`
+
+Facebook only API.
+
+Usage: `client.GK(gatekeeper: string): boolean`
+
+Returns `true` if the current user is part of the given GK. `false` in all other cases.
+
 ## DevicePluginClient
 
 ### Properties
@@ -435,6 +443,7 @@ The `options` argument is optional, but can specify the following fields:
 * `isArchived: boolean`: Setting this flag, will set the `isArchived` on the mocked device as well. Set it if you want to test the behavior of your plugin for imported devices (see also [`Device.isArchived`](#isarchived)). Defaults to `false`.
 * `isBackgroundPlugin`: This makes sure the test runner emits life-cycle events in a way that is typical for background plugins. Defaults to `false`. The notable difference in behavior is that calling `.active()` on the test runner won't trigger the `connect` event to be fired, nor the `.deactivate()` the `disconnect` event.
 * `startUnactivated`: This does not activate the plugin; `connect` needs to be explicitly called. This can be used in case setting mock implementation for `onSend` is required to make sure Client plugin works as expected. Defaults to `false`.
+* `GKs`: A string array of gatekeeper names for which `client.GK` will `true` inside the test. By default GKs are assumed to be disabled inside unit tests.
 
 #### The test runner object
 

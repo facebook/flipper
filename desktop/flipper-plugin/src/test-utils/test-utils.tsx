@@ -46,6 +46,10 @@ interface StartPluginOptions {
   startUnactivated?: boolean;
   /** Provide a set of unsupported methods to simulate older clients that don't support certain methods yet */
   unsupportedMethods?: string[];
+  /**
+   * Provide a set of GKs that are enabled in this test.
+   */
+  GKs?: string[];
 }
 
 type ExtractClientType<Module extends FlipperPluginModule<any>> = Parameters<
@@ -179,7 +183,7 @@ export function startPlugin<Module extends FlipperPluginModule<any>>(
   }
 
   const sendStub = jest.fn();
-  const flipperUtils = createMockFlipperLib();
+  const flipperUtils = createMockFlipperLib(options);
   const testDevice = createMockDevice(options);
   const appName = 'TestApplication';
   const deviceName = 'TestDevice';
@@ -290,7 +294,7 @@ export function startDevicePlugin<Module extends FlipperDevicePluginModule>(
     );
   }
 
-  const flipperLib = createMockFlipperLib();
+  const flipperLib = createMockFlipperLib(options);
   const testDevice = createMockDevice(options);
   const pluginInstance = new SandyDevicePluginInstance(
     flipperLib,
@@ -340,10 +344,13 @@ export function renderDevicePlugin<Module extends FlipperDevicePluginModule>(
   };
 }
 
-export function createMockFlipperLib(): FlipperLib {
+export function createMockFlipperLib(options?: StartPluginOptions): FlipperLib {
   return {
     enableMenuEntries: jest.fn(),
     createPaste: jest.fn(),
+    GK(gk: string) {
+      return options?.GKs?.includes(gk) || false;
+    },
   };
 }
 
