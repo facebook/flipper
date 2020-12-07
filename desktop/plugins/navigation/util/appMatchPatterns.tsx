@@ -44,7 +44,8 @@ export const getAppMatchPatterns = (
         }
       });
     } else if (appName != null) {
-      reject(new Error('No rule for app ' + appName));
+      console.log('No rule for app ' + appName);
+      resolve([]);
     } else {
       reject(new Error('selectedApp was null'));
     }
