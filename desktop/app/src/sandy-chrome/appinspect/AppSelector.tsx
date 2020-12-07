@@ -172,29 +172,38 @@ function computeEntries(
   onSelectDevice: (device: BaseDevice) => void,
   onSelectApp: (device: BaseDevice, client: Client) => void,
 ) {
-  const entries = devices.filter(canBeDefaultDevice).map((device) => {
-    const deviceEntry = (
-      <Menu.Item
-        icon={getOsIcon(device.os)}
-        key={device.serial}
-        style={{fontWeight: 'bold'}}
-        onClick={() => {
-          onSelectDevice(device);
-        }}>
-        {device.displayTitle()}
-      </Menu.Item>
-    );
-    const clientEntries = getAvailableClients(device, clients).map((client) => (
-      <Menu.Item
-        key={client.id}
-        onClick={() => {
-          onSelectApp(device, client);
-        }}>
-        <Radio value={client.id}>{client.query.app}</Radio>
-      </Menu.Item>
-    ));
-    return [deviceEntry, ...clientEntries];
-  });
+  const entries = devices
+    .filter(
+      (device) =>
+        // hide non default devices, unless they have a connected client
+        canBeDefaultDevice(device) ||
+        clients.some((c) => c.deviceSync === device),
+    )
+    .map((device) => {
+      const deviceEntry = (
+        <Menu.Item
+          icon={getOsIcon(device.os)}
+          key={device.serial}
+          style={{fontWeight: 'bold'}}
+          onClick={() => {
+            onSelectDevice(device);
+          }}>
+          {device.displayTitle()}
+        </Menu.Item>
+      );
+      const clientEntries = getAvailableClients(device, clients).map(
+        (client) => (
+          <Menu.Item
+            key={client.id}
+            onClick={() => {
+              onSelectApp(device, client);
+            }}>
+            <Radio value={client.id}>{client.query.app}</Radio>
+          </Menu.Item>
+        ),
+      );
+      return [deviceEntry, ...clientEntries];
+    });
   if (uninitializedClients.length) {
     entries.push([
       <Menu.Item key="connecting" style={{fontWeight: 'bold'}}>
