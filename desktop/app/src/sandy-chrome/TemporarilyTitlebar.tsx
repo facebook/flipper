@@ -18,6 +18,8 @@ import UpdateIndicator from '../chrome/UpdateIndicator';
 import {Version} from '../chrome/TitleBar';
 import {useStore} from '../utils/useStore';
 import {remote} from 'electron';
+import config from '../fb-stubs/config';
+import ReleaseChannel from '../ReleaseChannel';
 
 const version = remote.app.getVersion();
 
@@ -54,7 +56,13 @@ export function TemporarilyTitlebar() {
       [Sandy] Flipper{' '}
       {!isProduction() && <NetworkGraph height={20} width={60} />}
       {!isProduction() && <FpsGraph height={20} width={60} />}
-      <Version>{version + (isProduction() ? '' : '-dev')}</Version>
+      <Version>
+        {version +
+          (isProduction() ? '' : '-dev') +
+          (config.getReleaseChannel() !== ReleaseChannel.STABLE
+            ? `-${config.getReleaseChannel()}`
+            : '')}
+      </Version>
       {isAutoUpdaterEnabled() ? (
         <AutoUpdateVersion version={version} />
       ) : (

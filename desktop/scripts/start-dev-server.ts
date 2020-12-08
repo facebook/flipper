@@ -71,6 +71,11 @@ const argv = yargs
         '[FB-internal only] Will yield `true` on any GK. Disabled by default. Setting env var FLIPPER_ENABLE_ALL_GKS is equivalent',
       type: 'boolean',
     },
+    channel: {
+      describe:
+        '[FB-internal only] Release channel. "stable" by default. Setting env var "FLIPPER_RELEASE_CHANNEL" is equivalent.',
+      choices: ['stable', 'insiders'],
+    },
   })
   .version('DEV')
   .help()
@@ -113,6 +118,10 @@ if (argv['enable-all-gks'] === true) {
 
 if (argv['enabled-plugins'] !== undefined) {
   process.env.FLIPPER_ENABLED_PLUGINS = argv['enabled-plugins'].join(',');
+}
+
+if (argv.channel !== undefined) {
+  process.env.FLIPPER_RELEASE_CHANNEL = argv.channel;
 }
 
 function looksLikeDevServer(): boolean {

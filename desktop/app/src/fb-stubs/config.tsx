@@ -7,10 +7,13 @@
  * @format
  */
 
+import ReleaseChannel from '../ReleaseChannel';
+
 export default {
   updateServer: 'https://www.facebook.com/fbflipper/public/latest.json',
   showLogin: false,
   showFlipperRating: false,
   warnFBEmployees: true,
   isFBBuild: false,
+  getReleaseChannel: () => ReleaseChannel.STABLE,
 };

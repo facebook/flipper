@@ -61,6 +61,11 @@ const argv = yargs
       type: 'number',
       default: 0,
     },
+    channel: {
+      description: 'Release channel for the build',
+      choices: ['stable', 'insiders'],
+      default: 'stable',
+    },
   })
   .help()
   .strict()
@@ -79,6 +84,12 @@ const argv = yargs
   })
   .parse(process.argv.slice(1));
 
+if (isFB) {
+  process.env.FLIPPER_FB = 'true';
+}
+
+process.env.FLIPPER_RELEASE_CHANNEL = argv.channel;
+
 async function generateManifest(versionNumber: string) {
   await fs.writeFile(
     path.join(distDir, 'manifest.json'),
@@ -93,6 +104,7 @@ async function modifyPackageManifest(
   buildFolder: string,
   versionNumber: string,
   hgRevision: string | null,
+  channel: string,
 ) {
   // eslint-disable-next-line no-console
   console.log('Creating package.json manifest');
@@ -108,6 +120,7 @@ async function modifyPackageManifest(
   if (hgRevision != null) {
     manifest.revision = hgRevision;
   }
+  manifest.releaseChannel = channel;
   await fs.writeFile(
     path.join(buildFolder, 'package.json'),
     JSON.stringify(manifest, null, '  '),
@@ -244,9 +257,6 @@ function downloadIcons(buildFolder: string) {
 }
 
 (async () => {
-  if (isFB) {
-    process.env.FLIPPER_FB = 'true';
-  }
   const dir = await buildFolder();
   // eslint-disable-next-line no-console
   console.log('Created build directory', dir);
@@ -258,7 +268,7 @@ function downloadIcons(buildFolder: string) {
   await compileRenderer(dir);
   const versionNumber = getVersionNumber(argv.version);
   const hgRevision = await genMercurialRevision();
-  await modifyPackageManifest(dir, versionNumber, hgRevision);
+  await modifyPackageManifest(dir, versionNumber, hgRevision, argv.channel);
   await fs.ensureDir(distDir);
   await generateManifest(versionNumber);
   await buildDist(dir);
