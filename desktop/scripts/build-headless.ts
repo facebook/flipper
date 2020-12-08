@@ -89,7 +89,9 @@ async function createZip(buildDir: string, distDir: string, targets: string[]) {
   console.log('Created build directory', buildDir);
   await generatePluginEntryPoints();
   await compileHeadless(buildDir);
-  const versionNumber = getVersionNumber();
+  const buildNumber = process.argv.join(' ').match(/--version=(\d+)/);
+  const patch = buildNumber && buildNumber.length > 0 ? buildNumber[1] : '0';
+  const versionNumber = getVersionNumber(parseInt(patch, 10));
   const buildRevision = await genMercurialRevision();
   await preludeBundle(buildDir, versionNumber, buildRevision);
   await createBinary([
