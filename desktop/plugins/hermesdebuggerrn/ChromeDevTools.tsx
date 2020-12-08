@@ -15,7 +15,7 @@ import electron from 'electron';
 const devToolsNodeId = (url: string) =>
   `hermes-chromedevtools-out-of-react-node-${url.replace(/\W+/g, '-')}`;
 
-// TODO: build abstractionf or this: T62306732
+// TODO: build abstraction of this: T62306732
 const TARGET_CONTAINER_ID = 'flipper-out-of-contents-container'; // should be a hook in the future
 
 function createDevToolsNode(
@@ -40,7 +40,7 @@ function createDevToolsNode(
   iframe.style.height = '100%';
   iframe.style.width = '100%';
 
-  // // HACK: chrome-devtools:// is blocked by the sandbox but devtools:// isn't for some reason.
+  // HACK: chrome-devtools:// is blocked by the sandbox but devtools:// isn't for some reason.
   iframe.src = url.replace(/^chrome-/, '');
 
   wrapper.appendChild(iframe);
