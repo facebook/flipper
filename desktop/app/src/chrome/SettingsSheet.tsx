@@ -27,7 +27,7 @@ import restartFlipper from '../utils/restartFlipper';
 import LauncherSettingsPanel from '../fb-stubs/LauncherSettingsPanel';
 import SandySettingsPanel from '../fb-stubs/SandySettingsPanel';
 import {reportUsage} from '../utils/metrics';
-import {Modal} from 'antd';
+import {Modal, message} from 'antd';
 import {Layout, withTrackingScope, _NuxManagerContext} from 'flipper-plugin';
 
 const Container = styled(FlexColumn)({
@@ -143,7 +143,7 @@ class SettingsSheet extends Component<Props, State> {
       isEqual(this.props.launcherSettings, this.state.updatedLauncherSettings);
 
     const contents = (
-      <>
+      <Layout.Container gap>
         <ToggledSection
           label="Android Developer"
           toggled={enableAndroid}
@@ -326,7 +326,11 @@ class SettingsSheet extends Component<Props, State> {
           <span>Reset all new user tooltips</span>
           <ResetTooltips />
         </Layout.Right>
-      </>
+        <Layout.Right center>
+          <span>Reset all local storage based state</span>
+          <ResetLocalState />
+        </Layout.Right>
+      </Layout.Container>
     );
 
     const footer = (
@@ -375,7 +379,20 @@ function ResetTooltips() {
       onClick={() => {
         nuxManager.resetHints();
       }}>
-      Reset
+      Reset hints
+    </Button>
+  );
+}
+
+function ResetLocalState() {
+  return (
+    <Button
+      type="danger"
+      onClick={() => {
+        window.localStorage.clear();
+        message.success('Local storage state cleared');
+      }}>
+      Reset all state
     </Button>
   );
 }
