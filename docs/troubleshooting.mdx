@@ -4,9 +4,22 @@ title: Troubleshooting Issues
 sidebar_label: Troubleshooting Issues
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
+
 import Link from '@docusaurus/Link';
 
+import InternalTroubleshooting from './fb/internal-troubleshooting.mdx';
+
+import {FbInternalOnly, OssOnly} from 'internaldocs-fb-helpers';
+
 We hope that flipper works well out of the box, but the software is a work in progress and problems will occur. Below are some known issues and steps you can take to try to resolve them.
+
+<FbInternalOnly>
+
+## General Issues
+
+<InternalTroubleshooting />
+
+</FbInternalOnly>
 
 ## Mac Desktop app
 
@@ -33,6 +46,8 @@ We hope that flipper works well out of the box, but the software is a work in pr
 * Make sure the time and date are set correctly on your mobile device and desktop computer.
 * If no app plugins are showing up, there may be a connectivity issue between Flipper and your app. Check [connection issues](#connection-issues) to see if anything is failing.
 
+<OssOnly>
+
 ### Connection Issues
 The Flipper SDK includes an in-app connection diagnostics screen to help you diagnose problems.
 
@@ -46,6 +61,8 @@ This will only work if you added `FlipperDiagnosticActivity` to your `AndroidMan
 
 #### iOS
 You'll need to manually add this [ViewController](https://github.com/facebook/flipper/blob/master/iOS/FlipperKit/FlipperDiagnosticsViewController.m) to your app to see the in-app diagnostics.
+
+</OssOnly>
 
 ### Known Incompatibilities
 The following devices are known to be incompatible or face issues with flipper:

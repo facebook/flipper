@@ -75,14 +75,9 @@ module.exports = {
       'extending/error-handling',
       'extending/testing',
       'extending/debugging',
-      ...fbInternalOnly([
-        'extending/fb/desktop-plugin-releases',
-      ]),
+      ...fbInternalOnly(['extending/fb/desktop-plugin-releases']),
     ],
-    'Deprecated APIs': [
-      'extending/ui-components',
-      'extending/js-plugin-api',
-    ],
+    'Deprecated APIs': ['extending/ui-components', 'extending/js-plugin-api'],
     // end-internal-sidebars-example
     'Other Platforms': [
       'extending/new-clients',
@@ -97,7 +92,6 @@ module.exports = {
   },
   'fb-internal': {
     'FB Internal': fbInternalOnly([
-      'fb/troubleshooting',
       'fb/release-infra',
       'fb/Add-flipper-to-android-app',
       'fb/Adding-flipper-to-ios-app',
