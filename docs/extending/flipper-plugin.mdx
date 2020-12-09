@@ -386,6 +386,13 @@ interface Logger {
 }
 ```
 
+### useTrackedCallback
+
+Usage: `const eventHandler = useTrackedCallback("Interaction description", handlerFunction, deps)`
+
+Utility that wraps React's `useCallback` with tracking capabilities. 
+The API is similar, except that the first argument describes the interaction handled by the given event handler.
+See [Tracked](#tracked) for more info. 
 
 ## UI components
 
@@ -421,6 +428,19 @@ See `View > Flipper Style Guide` inside the Flipper application for more details
 
 ## Utilities
 
+### batch
+
+Usage: `batch(() => { /* state updates */ })`
+
+Low-level utility to batch state updates to reduce the amount of potential re-renders by React. 
+Wraps React's `unstable_batchedUpdates`. 
+Event handlers provided by React or `flipper-plugin` already apply `batch` automatically, so using this utility is only recommended when updating plugin state in an asynchronous process. 
+
+### produce
+
+A convenience re-export of `produce` from [Immer](https://immerjs.github.io/immer/docs/produce).
+The `update` method of the state atoms returned by `createState` automatically applies `produce` to its updater function. 
+
 ### renderReactRoot
 
 Usage: `renderReactRoot(handler: (unmount: () => void) => React.ReactElement)`
@@ -441,6 +461,16 @@ renderReactRoot((unmount) => (
   />
 ));
 ```
+
+## sleep
+
+Usage: `await sleep(1000)`
+
+Creates a promise that automatically resolves after the specified amount of milliseconds.
+
+## styled
+
+A convenience re-export of `styled` from [emotion](https://emotion.sh/docs/styled).  
 
 ## TestUtils
 

@@ -7,6 +7,8 @@
  * @format
  */
 
+import {readFile} from 'fs';
+import {promisify} from 'util';
 import * as FlipperPluginModule from '../index';
 
 test('Correct top level API exposed', () => {
@@ -66,4 +68,22 @@ test('Correct top level API exposed', () => {
       "TrackType",
     ]
   `);
+});
+
+test('All APIs documented', async () => {
+  const docs = await promisify(readFile)(
+    __dirname + '/../../../../docs/extending/flipper-plugin.mdx',
+    'utf8',
+  );
+  Object.keys(FlipperPluginModule)
+    .filter(
+      (key) =>
+        !key.startsWith('_') && (FlipperPluginModule as any)[key] !== undefined,
+    )
+    .forEach((key) => {
+      // There should be a header with this identifier
+      if (!new RegExp(`# ${key}\\b`).test(docs)) {
+        fail(`Not documented: '${key}'`);
+      }
+    });
 });
