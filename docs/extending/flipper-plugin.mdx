@@ -201,9 +201,21 @@ client.addMenuEntry({
 })
 ```
 
+#### `isPluginAvailable`
+
+Usage: `isPluginAvailable(pluginId: string): boolean`
+
+Returns `true` if a plugin with the given id is available by for consumption, that is: supported by the current application / device, and enabled by the user.
+
+#### `selectPlugin`
+
+Usage: `selectPlugin(pluginId: string, deeplinkPayload?: unknown): void`
+
+Opens a different plugin by id, optionally providing a deeplink to bring the target plugin to a certain state.
+
 #### `supportsMethod`
 
-Usage; `client.supportsMethod(method: string): Promise<Boolean>`
+Usage: `client.supportsMethod(method: string): Promise<Boolean>`
 
 Resolves to true if the client supports the specified method. Useful when adding functionality to existing plugins, when connectivity to older clients is still required. Also useful when client plugins are implemented on multitple platforms and don't all have feature parity.
 
@@ -259,6 +271,14 @@ See the similarly named event under [`PluginClient`](#pluginclient).
 See the similarly named method under [`PluginClient`](#pluginclient).
 
 #### `createPaste`
+
+See the similarly named method under [`PluginClient`](#pluginclient).
+
+### `isPluginAvailable`
+
+See the similarly named method under [`PluginClient`](#pluginclient).
+
+### `selectPlugin`
 
 See the similarly named method under [`PluginClient`](#pluginclient).
 

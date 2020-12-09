@@ -876,3 +876,128 @@ test('PluginContainer + Sandy device plugin supports deeplink', async () => {
   });
   expect(linksSeen).toEqual([theUniverse, 'london!', 'london!']);
 });
+
+test('Sandy plugins support isPluginSupported + selectPlugin', async () => {
+  let renders = 0;
+  const linksSeen: any[] = [];
+
+  function MySandyPlugin() {
+    renders++;
+    return <h1>Plugin1</h1>;
+  }
+
+  const plugin = (client: PluginClient) => {
+    const activatedStub = jest.fn();
+    const deactivatedStub = jest.fn();
+    client.onDeepLink((link) => {
+      linksSeen.push(link);
+    });
+    client.onActivate(activatedStub);
+    client.onDeactivate(deactivatedStub);
+    return {
+      activatedStub,
+      deactivatedStub,
+      isPluginAvailable: client.isPluginAvailable,
+      selectPlugin: client.selectPlugin,
+    };
+  };
+
+  const definition = new _SandyPluginDefinition(
+    TestUtils.createMockPluginDetails({id: 'base'}),
+    {
+      plugin,
+      Component: MySandyPlugin,
+    },
+  );
+  const definition2 = new _SandyPluginDefinition(
+    TestUtils.createMockPluginDetails({id: 'other'}),
+    {
+      plugin() {
+        return {};
+      },
+      Component() {
+        return <h1>Plugin2</h1>;
+      },
+    },
+  );
+  const definition3 = new _SandyPluginDefinition(
+    TestUtils.createMockPluginDetails({id: 'device'}),
+    {
+      supportsDevice() {
+        return true;
+      },
+      devicePlugin() {
+        return {};
+      },
+      Component() {
+        return <h1>Plugin3</h1>;
+      },
+    },
+  );
+  const {renderer, client, store} = await renderMockFlipperWithPlugin(
+    definition,
+    {
+      additionalPlugins: [definition2, definition3],
+    },
+  );
+
+  expect(renderer.baseElement.querySelector('h1')).toMatchInlineSnapshot(`
+    <h1>
+      Plugin1
+    </h1>
+  `);
+  expect(renders).toBe(1);
+
+  const pluginInstance: ReturnType<typeof plugin> = client.sandyPluginStates.get(
+    definition.id,
+  )!.instanceApi;
+  expect(pluginInstance.isPluginAvailable(definition.id)).toBeTruthy();
+  expect(pluginInstance.isPluginAvailable('nonsense')).toBeFalsy();
+  expect(pluginInstance.isPluginAvailable(definition2.id)).toBeFalsy(); // not enabled yet
+  expect(pluginInstance.isPluginAvailable(definition3.id)).toBeTruthy();
+  expect(pluginInstance.activatedStub).toBeCalledTimes(1);
+  expect(pluginInstance.deactivatedStub).toBeCalledTimes(0);
+  expect(linksSeen).toEqual([]);
+
+  // open a device plugin
+  pluginInstance.selectPlugin(definition3.id);
+  expect(store.getState().connections.selectedPlugin).toBe(definition3.id);
+  expect(renderer.baseElement.querySelector('h1')).toMatchInlineSnapshot(`
+    <h1>
+      Plugin3
+    </h1>
+  `);
+  expect(pluginInstance.deactivatedStub).toBeCalledTimes(1);
+
+  // go back by opening own plugin again (funny, but why not)
+  pluginInstance.selectPlugin(definition.id, 'data');
+  expect(store.getState().connections.selectedPlugin).toBe(definition.id);
+  expect(pluginInstance.activatedStub).toBeCalledTimes(2);
+  expect(renderer.baseElement.querySelector('h1')).toMatchInlineSnapshot(`
+    <h1>
+      Plugin1
+    </h1>
+  `);
+  expect(linksSeen).toEqual(['data']);
+
+  // try to go to plugin 2, fails (not starred, so no-op)
+  pluginInstance.selectPlugin(definition2.id);
+  expect(store.getState().connections.selectedPlugin).toBe(definition.id);
+
+  // star plugin 2 and navigate to plugin 2
+  store.dispatch(
+    starPlugin({
+      plugin: definition2,
+      selectedApp: client.query.app,
+    }),
+  );
+  pluginInstance.selectPlugin(definition2.id);
+  expect(store.getState().connections.selectedPlugin).toBe(definition2.id);
+  expect(pluginInstance.deactivatedStub).toBeCalledTimes(2);
+  expect(renderer.baseElement.querySelector('h1')).toMatchInlineSnapshot(`
+    <h1>
+      Plugin2
+    </h1>
+  `);
+  expect(renders).toBe(2);
+});

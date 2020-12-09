@@ -9,9 +9,9 @@
 
 import {produce} from 'immer';
 
-import BaseDevice from '../devices/BaseDevice';
+import type BaseDevice from '../devices/BaseDevice';
 import MacDevice from '../devices/MacDevice';
-import Client from '../Client';
+import type Client from '../Client';
 import {UninitializedClient} from '../UninitializedClient';
 import {isEqual} from 'lodash';
 import {performance} from 'perf_hooks';

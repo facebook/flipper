@@ -16,7 +16,6 @@ import {
   act as testingLibAct,
 } from '@testing-library/react';
 import {queries} from '@testing-library/dom';
-import {TestUtils} from 'flipper-plugin';
 
 import {
   selectPlugin,
@@ -37,7 +36,7 @@ import {registerPlugins} from '../reducers/plugins';
 import PluginContainer from '../PluginContainer';
 import {getPluginKey, isDevicePluginDefinition} from '../utils/pluginUtils';
 import {getInstance} from '../fb-stubs/Logger';
-import {setFlipperLibImplementation} from '../utils/flipperLibImplementation';
+import {initializeFlipperLibImplementation} from '../utils/flipperLibImplementation';
 
 export type MockFlipperResult = {
   client: Client;
@@ -55,7 +54,8 @@ type MockOptions = Partial<{
    * can be used to intercept outgoing calls. If it returns undefined
    * the base implementation will be used
    */
-  onSend(pluginId: string, method: string, params?: object): any;
+  onSend?: (pluginId: string, method: string, params?: object) => any;
+  additionalPlugins?: PluginDefinition[];
 }>;
 
 export async function createMockFlipperWithPlugin(
@@ -64,9 +64,10 @@ export async function createMockFlipperWithPlugin(
 ): Promise<MockFlipperResult> {
   const store = createStore(rootReducer);
   const logger = getInstance();
-  setFlipperLibImplementation(TestUtils.createMockFlipperLib());
-
-  store.dispatch(registerPlugins([pluginClazz]));
+  initializeFlipperLibImplementation(store, logger);
+  store.dispatch(
+    registerPlugins([pluginClazz, ...(options?.additionalPlugins ?? [])]),
+  );
 
   function createDevice(serial: string): BaseDevice {
     const device = new BaseDevice(

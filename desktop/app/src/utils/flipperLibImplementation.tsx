@@ -12,24 +12,62 @@ import type {Logger} from '../fb-interfaces/Logger';
 import type {Store} from '../reducers';
 import createPaste from '../fb-stubs/createPaste';
 import GK from '../fb-stubs/GK';
-import {getInstance} from '../fb-stubs/Logger';
+import type BaseDevice from '../devices/BaseDevice';
 
 let flipperLibInstance: FlipperLib | undefined;
 
 export function initializeFlipperLibImplementation(
-  _store: Store,
-  _logger: Logger,
+  store: Store,
+  logger: Logger,
 ) {
   // late require to avoid cyclic dependency
   const {addSandyPluginEntries} = require('../MenuBar');
   flipperLibInstance = {
-    logger: getInstance(),
+    logger,
     enableMenuEntries(entries) {
       addSandyPluginEntries(entries);
     },
     createPaste,
     GK(gatekeeper: string) {
       return GK.get(gatekeeper);
+    },
+    isPluginAvailable(device, client, pluginId) {
+      // supported device pluin
+      if (device.devicePlugins.includes(pluginId)) {
+        return true;
+      }
+      if (client) {
+        // plugin supported?
+        if (client.plugins.includes(pluginId)) {
+          // part of an archived device?
+          if (device.isArchived) {
+            return true;
+          }
+          // plugin enabled?
+          if (
+            store
+              .getState()
+              .connections.userStarredPlugins[client.query.app]?.includes(
+                pluginId,
+              )
+          ) {
+            return true;
+          }
+        }
+      }
+      return false;
+    },
+    selectPlugin(device, client, pluginId, deeplink) {
+      store.dispatch({
+        type: 'SELECT_PLUGIN',
+        payload: {
+          selectedPlugin: pluginId,
+          selectedDevice: device as BaseDevice,
+          selectedApp: client ? client.id : null,
+          deepLinkPayload: deeplink,
+          time: Date.now(),
+        },
+      });
     },
   };
 }

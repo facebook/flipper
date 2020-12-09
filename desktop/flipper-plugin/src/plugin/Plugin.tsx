@@ -83,6 +83,16 @@ export interface PluginClient<
    * Checks if a method is available on the client implementation
    */
   supportsMethod(method: keyof Methods): Promise<boolean>;
+
+  /**
+   * Checks if the provided plugin is available for the current device / application
+   */
+  isPluginAvailable(pluginId: string): boolean;
+
+  /**
+   * opens a different plugin by id, optionally providing a deeplink to bring the plugin to a certain state
+   */
+  selectPlugin(pluginId: string, deeplinkPayload?: unknown): void;
 }
 
 /**
@@ -98,6 +108,7 @@ export interface RealFlipperClient {
     device_id: string;
   };
   deviceSync: RealFlipperDevice;
+  plugins: string[];
   isBackgroundPlugin(pluginId: string): boolean;
   initPlugin(pluginId: string): void;
   deinitPlugin(pluginId: string): void;
@@ -173,6 +184,23 @@ export class SandyPluginInstance extends BasePluginInstance {
           this.definition.id,
           method as any,
         );
+      },
+      isPluginAvailable(pluginId: string) {
+        return flipperLib.isPluginAvailable(
+          realClient.deviceSync,
+          realClient,
+          pluginId,
+        );
+      },
+      selectPlugin(pluginId: string, deeplink?: unknown) {
+        if (this.isPluginAvailable(pluginId)) {
+          flipperLib.selectPlugin(
+            realClient.deviceSync,
+            realClient,
+            pluginId,
+            deeplink,
+          );
+        }
       },
     };
     this.initializePlugin(() =>

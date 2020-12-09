@@ -46,7 +46,17 @@ export type DevicePluginPredicate = (device: Device) => boolean;
 
 export type DevicePluginFactory = (client: DevicePluginClient) => object;
 
-export interface DevicePluginClient extends BasePluginClient {}
+export interface DevicePluginClient extends BasePluginClient {
+  /**
+   * Checks if the provided plugin is available for the current device
+   */
+  isPluginAvailable(pluginId: string): boolean;
+
+  /**
+   * opens a different plugin by id, optionally providing a deeplink to bring the plugin to a certain state
+   */
+  selectPlugin(pluginId: string, deeplinkPayload?: unknown): void;
+}
 
 /**
  * Wrapper interface around BaseDevice in Flipper
@@ -59,6 +69,7 @@ export interface RealFlipperDevice {
   addLogListener(callback: DeviceLogListener): Symbol;
   removeLogListener(id: Symbol): void;
   addLogEntry(entry: DeviceLogEntry): void;
+  devicePlugins: string[];
 }
 
 export class SandyDevicePluginInstance extends BasePluginInstance {
@@ -76,7 +87,17 @@ export class SandyDevicePluginInstance extends BasePluginInstance {
     initialStates?: Record<string, any>,
   ) {
     super(flipperLib, definition, realDevice, initialStates);
-    this.client = this.createBasePluginClient();
+    this.client = {
+      ...this.createBasePluginClient(),
+      isPluginAvailable(pluginId: string) {
+        return flipperLib.isPluginAvailable(realDevice, null, pluginId);
+      },
+      selectPlugin(pluginId: string, deeplink?: unknown) {
+        if (this.isPluginAvailable(pluginId)) {
+          flipperLib.selectPlugin(realDevice, null, pluginId, deeplink);
+        }
+      },
+    };
     this.initializePlugin(() =>
       definition.asDevicePluginModule().devicePlugin(this.client),
     );
