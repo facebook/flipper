@@ -172,6 +172,9 @@ export abstract class BasePluginInstance {
       this.activated = true;
       this.flipperLib.enableMenuEntries(this.menuEntries);
       this.events.emit('activate');
+      this.flipperLib.logger.trackTimeSince(
+        `activePlugin-${this.definition.id}`,
+      );
     }
   }
 

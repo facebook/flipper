@@ -12,6 +12,7 @@ import type {Logger} from '../fb-interfaces/Logger';
 import type {Store} from '../reducers';
 import createPaste from '../fb-stubs/createPaste';
 import GK from '../fb-stubs/GK';
+import {getInstance} from '../fb-stubs/Logger';
 
 let flipperLibInstance: FlipperLib | undefined;
 
@@ -22,6 +23,7 @@ export function initializeFlipperLibImplementation(
   // late require to avoid cyclic dependency
   const {addSandyPluginEntries} = require('../MenuBar');
   flipperLibInstance = {
+    logger: getInstance(),
     enableMenuEntries(entries) {
       addSandyPluginEntries(entries);
     },

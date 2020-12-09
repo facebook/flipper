@@ -36,6 +36,7 @@ import {
 } from '../plugin/DevicePlugin';
 import {BasePluginInstance} from '../plugin/PluginBase';
 import {FlipperLib} from '../plugin/FlipperLib';
+import {stubLogger} from '../utils/Logger';
 
 type Renderer = RenderResult<typeof queries>;
 
@@ -346,6 +347,7 @@ export function renderDevicePlugin<Module extends FlipperDevicePluginModule>(
 
 export function createMockFlipperLib(options?: StartPluginOptions): FlipperLib {
   return {
+    logger: stubLogger,
     enableMenuEntries: jest.fn(),
     createPaste: jest.fn(),
     GK(gk: string) {

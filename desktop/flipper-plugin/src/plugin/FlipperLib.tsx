@@ -7,12 +7,14 @@
  * @format
  */
 
+import {Logger} from '../utils/Logger';
 import {NormalizedMenuEntry} from './MenuEntry';
 
 /**
  * This interface exposes all global methods for which an implementation will be provided by Flipper itself
  */
 export interface FlipperLib {
+  logger: Logger;
   enableMenuEntries(menuEntries: NormalizedMenuEntry[]): void;
   createPaste(input: string): Promise<string | undefined>;
   GK(gatekeeper: string): boolean;

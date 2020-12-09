@@ -35,7 +35,7 @@ export interface Logger {
   debug(data: any, category: string): void;
 }
 
-export const _LoggerContext = createContext<Logger>({
+export const stubLogger: Logger = {
   track() {},
   trackTimeSince() {},
   info() {
@@ -54,7 +54,9 @@ export const _LoggerContext = createContext<Logger>({
     // eslint-disable-next-line
     console.debug.apply(console, arguments as any);
   },
-});
+};
+
+export const _LoggerContext = createContext<Logger>(stubLogger);
 
 /**
  * Provides the default logger that can be used for console logging,
