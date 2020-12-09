@@ -361,6 +361,32 @@ Usage: `const currentValue = useValue(stateAtom)`
 Returns the current value of a state atom, and also subscribes the current component to future changes of the atom (in contrast to using `stateAtom.get()` directly).
 See the [tutorial](../tutorial/js-custom#building-an-user-interface-for-the-plugin) for how this hook is used in practice.
 
+### useLogger
+
+Usage: `const logger = useLogger()`
+
+Provides the default logger that can be used for console logging, error reporting and performance measurements.
+In internal Facebook builds this is wired up to the internal statistic reporting.
+Prefer using `logger` over using `console` directly.
+
+The logger API is defined as:
+
+```typescript
+interface Logger {
+  track(type: TrackType, event: string, data?: any, plugin?: string): void;
+  trackTimeSince(
+    mark: string,
+    eventName?: string | null | undefined,
+    data?: any,
+  ): void;
+  info(data: any, category: string): void;
+  warn(data: any, category: string): void;
+  error(data: any, category: string): void;
+  debug(data: any, category: string): void;
+}
+```
+
+
 ## UI components
 
 ### Layout.*

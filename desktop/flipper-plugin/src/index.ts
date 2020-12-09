@@ -62,6 +62,13 @@ export {
 } from './ui/Tracked';
 
 export {sleep} from './utils/sleep';
+export {
+  LogTypes,
+  TrackType,
+  Logger,
+  useLogger,
+  _LoggerContext,
+} from './utils/Logger';
 
 // It's not ideal that this exists in flipper-plugin sources directly,
 // but is the least pain for plugin authors.

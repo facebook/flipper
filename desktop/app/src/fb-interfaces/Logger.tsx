@@ -7,33 +7,9 @@
  * @format
  */
 
-export type LogTypes = 'error' | 'warn' | 'info' | 'debug';
-export type TrackType =
-  | 'duration'
-  | 'usage'
-  | 'performance'
-  | 'success-rate'
-  | 'operation-cancelled';
+export {LogTypes, TrackType, Logger} from 'flipper-plugin';
 
 export type Args = {
   isHeadless?: boolean;
   isTest?: boolean;
 };
-
-export interface Logger {
-  track(type: TrackType, event: string, data?: any, plugin?: string): void;
-
-  trackTimeSince(
-    mark: string,
-    eventName?: string | null | undefined,
-    data?: any,
-  ): void;
-
-  info(data: any, category: string): void;
-
-  warn(data: any, category: string): void;
-
-  error(data: any, category: string): void;
-
-  debug(data: any, category: string): void;
-}

@@ -39,6 +39,8 @@ import {
   _NuxManagerContext,
   _createNuxManager,
   _setGlobalInteractionReporter,
+  Logger,
+  _LoggerContext,
 } from 'flipper-plugin';
 import isProduction from './utils/isProduction';
 import ReleaseChannel from './ReleaseChannel';
@@ -58,20 +60,22 @@ enableMapSet();
 
 GK.init();
 
-const AppFrame = () => (
-  <Provider store={store}>
-    <CacheProvider value={cache}>
-      <TooltipProvider>
-        <PopoverProvider>
-          <ContextMenuProvider>
-            <_NuxManagerContext.Provider value={_createNuxManager()}>
-              <App logger={logger} />
-            </_NuxManagerContext.Provider>
-          </ContextMenuProvider>
-        </PopoverProvider>
-      </TooltipProvider>
-    </CacheProvider>
-  </Provider>
+const AppFrame = ({logger}: {logger: Logger}) => (
+  <_LoggerContext.Provider value={logger}>
+    <Provider store={store}>
+      <CacheProvider value={cache}>
+        <TooltipProvider>
+          <PopoverProvider>
+            <ContextMenuProvider>
+              <_NuxManagerContext.Provider value={_createNuxManager()}>
+                <App logger={logger} />
+              </_NuxManagerContext.Provider>
+            </ContextMenuProvider>
+          </PopoverProvider>
+        </TooltipProvider>
+      </CacheProvider>
+    </Provider>
+  </_LoggerContext.Provider>
 );
 
 function setProcessState(store: Store) {
@@ -107,7 +111,10 @@ function init() {
       else console.error(msg, r.error);
     }
   });
-  ReactDOM.render(<AppFrame />, document.getElementById('root'));
+  ReactDOM.render(
+    <AppFrame logger={logger} />,
+    document.getElementById('root'),
+  );
   initLauncherHooks(config(), store);
   registerRecordingHooks(store);
   enableConsoleHook();

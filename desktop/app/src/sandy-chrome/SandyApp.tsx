@@ -8,11 +8,10 @@
  */
 
 import React, {useEffect, useState, useCallback} from 'react';
-import {TrackingScope} from 'flipper-plugin';
+import {TrackingScope, useLogger} from 'flipper-plugin';
 import {styled} from '../ui';
 import {Layout, Sidebar} from '../ui';
 import {theme} from 'flipper-plugin';
-import {Logger} from '../fb-interfaces/Logger';
 
 import {LeftRail} from './LeftRail';
 import {TemporarilyTitlebar} from './TemporarilyTitlebar';
@@ -44,7 +43,8 @@ export type ToplevelProps = {
   setToplevelSelection: (_newSelection: ToplevelNavItem) => void;
 };
 
-export function SandyApp({logger}: {logger: Logger}) {
+export function SandyApp() {
+  const logger = useLogger();
   const dispatch = useDispatch();
   const leftSidebarVisible = useStore(
     (state) => state.application.leftSidebarVisible,

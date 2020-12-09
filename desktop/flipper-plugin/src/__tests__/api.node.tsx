@@ -38,6 +38,7 @@ test('Correct top level API exposed', () => {
       "sleep",
       "styled",
       "theme",
+      "useLogger",
       "usePlugin",
       "useTrackedCallback",
       "useValue",
@@ -57,9 +58,12 @@ test('Correct top level API exposed', () => {
       "Draft",
       "FlipperLib",
       "LogLevel",
+      "LogTypes",
+      "Logger",
       "MenuEntry",
       "NormalizedMenuEntry",
       "PluginClient",
+      "TrackType",
     ]
   `);
 });
