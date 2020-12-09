@@ -35,7 +35,7 @@ export function SandyWelcomScreen() {
           <Checkbox
             checked={dontShowNextTime}
             onChange={(e) => {
-              setDontShowNextTime(e.target.value);
+              setDontShowNextTime(e.target.checked);
             }}>
             Don't show this dialog in the future
           </Checkbox>
