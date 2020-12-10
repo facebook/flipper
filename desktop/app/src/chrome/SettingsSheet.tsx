@@ -29,6 +29,7 @@ import SandySettingsPanel from '../fb-stubs/SandySettingsPanel';
 import {reportUsage} from '../utils/metrics';
 import {Modal, message} from 'antd';
 import {Layout, withTrackingScope, _NuxManagerContext} from 'flipper-plugin';
+import GK from '../fb-stubs/GK';
 
 const Container = styled(FlexColumn)({
   padding: 20,
@@ -254,7 +255,7 @@ class SettingsSheet extends Component<Props, State> {
             });
           }}
         />
-        {!disableSandy && (
+        {GK.get('flipper_sandy') && !disableSandy && (
           <ToggledSection
             label="Enable dark theme (experimental)"
             toggled={darkMode}
