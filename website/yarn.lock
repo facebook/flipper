@@ -4934,13 +4934,14 @@ doctrine@^3.0.0:
   dependencies:
     esutils "^2.0.2"
 
-docusaurus-plugin-internaldocs-fb@^0.5.5:
-  version "0.5.5"
-  resolved "https://registry.yarnpkg.com/docusaurus-plugin-internaldocs-fb/-/docusaurus-plugin-internaldocs-fb-0.5.5.tgz#3d90fd20ae68c13722459ec2fac66d81d9805732"
-  integrity sha512-6Yg+lvekTTCCeoUVOSfb822K9z0Mlr0a5V1vleKUd134dlMRJZAywtd2z6fteD47zXtgFfi0V7pVEHz+4H9m2A==
+docusaurus-plugin-internaldocs-fb@^0.5.6:
+  version "0.5.6"
+  resolved "https://registry.yarnpkg.com/docusaurus-plugin-internaldocs-fb/-/docusaurus-plugin-internaldocs-fb-0.5.6.tgz#1110c53c181c7593ad130627827b80d7a2f4e91b"
+  integrity sha512-rt9ddfYte4EFa5Cs5eOligulaHgcrwHWfhoY2QM384dbQMYmSdM5gGuwN3kVnmyCbVPwMK6RI66i50j/VbbuuA==
   dependencies:
     internaldocs-fb-helpers "^1.1.0"
-    remark-mdx-filter-imports "^0.1.1"
+    remark-code-snippets "^0.1.1"
+    remark-mdx-filter-imports "^0.1.2"
 
 dom-converter@^0.2:
   version "0.2.0"
@@ -9810,6 +9811,13 @@ remark-admonitions@^1.2.1:
     unified "^8.4.2"
     unist-util-visit "^2.0.1"
 
+remark-code-snippets@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/remark-code-snippets/-/remark-code-snippets-0.1.1.tgz#46d3b45e5c27d048141b6f79211e47e0ef53b89e"
+  integrity sha512-qOupYCWAiOf+Y2W0ApcaeQVvElRc5GBSLkVjsUP4avf9WAU73+8n41yTHhSVZdAUB6hw+Z7LOPmZ9Rz6FLIiTw==
+  dependencies:
+    unist-util-visit "^2.0.1"
+
 remark-emoji@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/remark-emoji/-/remark-emoji-2.1.0.tgz#69165d1181b98a54ad5d9ef811003d53d7ebc7db"
@@ -9824,12 +9832,10 @@ remark-footnotes@2.0.0:
   resolved "https://registry.yarnpkg.com/remark-footnotes/-/remark-footnotes-2.0.0.tgz#9001c4c2ffebba55695d2dd80ffb8b82f7e6303f"
   integrity sha512-3Clt8ZMH75Ayjp9q4CorNeyjwIxHFcTkaektplKGl2A1jNGEUey8cKL0ZC5vJwfcD5GFGsNLImLG/NGzWIzoMQ==
 
-remark-mdx-filter-imports@^0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/remark-mdx-filter-imports/-/remark-mdx-filter-imports-0.1.1.tgz#31791442e8e0d6b5ee0c42838e9076c426f56d98"
-  integrity sha512-fZdKz9Z2/bUJgE82D92j1Y0qzPJPowOLmem4kQYeA/ELlGEEnYvNnsmqf17kjM+DjPC2p9c7mz8vZG7lWrSwuA==
-  dependencies:
-    unist-util-visit "^2.0.3"
+remark-mdx-filter-imports@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/remark-mdx-filter-imports/-/remark-mdx-filter-imports-0.1.2.tgz#fa521585a14822a8e177f1b1d353b695e278cc96"
+  integrity sha512-8MAgusHtNjbNXKkBc/ckjh2U25N/D0aCfN2KDdnBQaWknLupU60pQzTEBpsZLZN67MsC6rVt6ZQgEzthOmQAAw==
 
 remark-mdx@1.6.21:
   version "1.6.21"
@@ -11165,7 +11171,7 @@ unist-util-visit-parents@^3.0.0:
     "@types/unist" "^2.0.0"
     unist-util-is "^4.0.0"
 
-unist-util-visit@2.0.3, unist-util-visit@^2.0.3:
+unist-util-visit@2.0.3:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/unist-util-visit/-/unist-util-visit-2.0.3.tgz#c3703893146df47203bb8a9795af47d7b971208c"
   integrity sha512-iJ4/RczbJMkD0712mGktuGpm/U4By4FfDonL7N/9tATGIF4imikjOuagyMY53tnZq3NP6BcmlrHhEKAfGWjh7Q==
