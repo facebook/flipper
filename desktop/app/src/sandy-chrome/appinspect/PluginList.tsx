@@ -102,13 +102,21 @@ export const PluginList = memo(function PluginList({
           inlineIndent={8}
           onClick={() => {}}
           defaultOpenKeys={['device', 'enabled', 'metro']}
+          selectedKeys={
+            connections.selectedPlugin
+              ? [
+                  (connections.selectedDevice === metroDevice ? 'metro:' : '') +
+                    connections.selectedPlugin,
+                ]
+              : []
+          }
           mode="inline">
           <PluginGroup key="device" title="Device">
             {devicePlugins.map((plugin) => (
               <PluginEntry
                 key={plugin.id}
                 plugin={plugin.details}
-                active={
+                scrollTo={
                   plugin.id === connections.selectedPlugin &&
                   connections.selectedDevice === activeDevice
                 }
@@ -125,9 +133,9 @@ export const PluginList = memo(function PluginList({
               hint="The following plugins are exposed by the currently running Metro instance. Note that Metro might currently be connected to a different application or device than selected above.">
               {metroPlugins.map((plugin) => (
                 <PluginEntry
-                  key={'metro' + plugin.id}
+                  key={'metro:' + plugin.id}
                   plugin={plugin.details}
-                  active={
+                  scrollTo={
                     plugin.id === connections.selectedPlugin &&
                     connections.selectedDevice === metroDevice
                   }
@@ -142,7 +150,7 @@ export const PluginList = memo(function PluginList({
               <PluginEntry
                 key={plugin.id}
                 plugin={plugin.details}
-                active={plugin.id === connections.selectedPlugin}
+                scrollTo={plugin.id === connections.selectedPlugin}
                 onClick={handleAppPluginClick}
                 tooltip={getPluginTooltip(plugin.details)}
                 actions={
@@ -169,7 +177,7 @@ export const PluginList = memo(function PluginList({
                 <PluginEntry
                   key={plugin.id}
                   plugin={plugin.details}
-                  active={plugin.id === connections.selectedPlugin}
+                  scrollTo={plugin.id === connections.selectedPlugin}
                   tooltip={getPluginTooltip(plugin.details)}
                   actions={
                     <ActionButton
@@ -233,18 +241,18 @@ function ActionButton({
   );
 }
 
-const PluginEntry = memo(function PluginEntry({
+const PluginEntry = function PluginEntry({
   plugin,
   disabled,
   tooltip,
   onClick,
-  active,
+  scrollTo,
   actions,
   ...rest
 }: {
   plugin: {id: string; title: string; icon?: string; version: string};
   disabled?: boolean;
-  active?: boolean;
+  scrollTo?: boolean;
   tooltip: string;
   onClick?: (id: string) => void;
   actions?: React.ReactElement | null;
@@ -264,23 +272,21 @@ const PluginEntry = memo(function PluginEntry({
 
   const domRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    const node = domRef.current;
-    if (active && node) {
-      const rect = node.getBoundingClientRect();
-      if (rect.top < 0 || rect.bottom > document.documentElement.clientHeight) {
-        node.scrollIntoView();
-      }
+    if (scrollTo) {
+      domRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+      });
     }
-  }, [active]);
+  }, [scrollTo]);
 
   return (
     <Tracked action={`open:${plugin.id}`}>
       <Menu.Item
+        {...rest}
         key={plugin.id}
-        active={active}
         disabled={disabled}
-        onClick={handleClick}
-        {...rest}>
+        onClick={handleClick}>
         <Layout.Horizontal
           center
           gap={10}
@@ -297,7 +303,7 @@ const PluginEntry = memo(function PluginEntry({
       </Menu.Item>
     </Tracked>
   );
-});
+};
 
 const PluginGroup = memo(function PluginGroup({
   title,
