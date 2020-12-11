@@ -363,29 +363,27 @@ function ComponentPreview({title, demos, description, props}: PreviewProps) {
             <Collapse.Panel header="Examples" key="demos">
               <Layout.Container gap="large">
                 {Object.entries(demos).map(([name, children]) => (
-                  <div key={name}>
-                    <Tabs type="line">
-                      <Tabs.TabPane tab={name} key="1">
-                        <div
-                          style={{
-                            background: theme.backgroundWash,
-                            width: '100%',
-                          }}>
-                          {children}
-                        </div>
-                      </Tabs.TabPane>
-                      <Tabs.TabPane tab={<CodeOutlined />} key="2">
-                        <div
-                          style={{
-                            background: theme.backgroundWash,
-                            width: '100%',
-                            padding: theme.space.medium,
-                          }}>
-                          <pre>{reactElementToJSXString(children)}</pre>
-                        </div>
-                      </Tabs.TabPane>
-                    </Tabs>
-                  </div>
+                  <Tabs type="line" key={name}>
+                    <Tabs.TabPane tab={name} key="1">
+                      <div
+                        style={{
+                          background: theme.backgroundWash,
+                          width: '100%',
+                        }}>
+                        {children}
+                      </div>
+                    </Tabs.TabPane>
+                    <Tabs.TabPane tab={<CodeOutlined />} key="2">
+                      <div
+                        style={{
+                          background: theme.backgroundWash,
+                          width: '100%',
+                          padding: theme.space.medium,
+                        }}>
+                        <pre>{reactElementToJSXString(children)}</pre>
+                      </div>
+                    </Tabs.TabPane>
+                  </Tabs>
                 ))}
               </Layout.Container>
             </Collapse.Panel>

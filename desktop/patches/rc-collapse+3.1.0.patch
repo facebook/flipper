@@ -1,0 +1,24 @@
+diff --git a/node_modules/rc-collapse/es/Panel.js b/node_modules/rc-collapse/es/Panel.js
+index 7be6854..b8fd6b3 100644
+--- a/node_modules/rc-collapse/es/Panel.js
++++ b/node_modules/rc-collapse/es/Panel.js
+@@ -86,7 +86,9 @@ var CollapsePanel = /*#__PURE__*/function (_React$Component) {
+         className: itemCls,
+         style: style,
+         id: id
+-      }, React.createElement("div", {
++      }, 
++      React.createElement(global.FlipperTracked, { action: 'collapse:' + header },
++      React.createElement("div", {
+         className: headerCls,
+         onClick: function onClick() {
+           return collapsible !== 'header' && _this2.handleItemClick();
+@@ -100,7 +102,7 @@ var CollapsePanel = /*#__PURE__*/function (_React$Component) {
+         className: "".concat(prefixCls, "-header-text")
+       }, header) : header, extra && React.createElement("div", {
+         className: "".concat(prefixCls, "-extra")
+-      }, extra)), React.createElement(CSSMotion, Object.assign({
++      }, extra))), React.createElement(CSSMotion, Object.assign({
+         visible: isActive,
+         leavedClassName: "".concat(prefixCls, "-content-hidden")
+       }, openMotion, {

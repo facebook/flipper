@@ -37,11 +37,11 @@ test('Can render and launch android apps', async () => {
   );
 
   expect(await renderer.findByText(/No emulators/)).toMatchInlineSnapshot(`
-    <span
+    <div
       class="ant-alert-message"
     >
       No emulators available
-    </span>
+    </div>
   `);
 
   act(() => {

@@ -16,8 +16,6 @@ import {
   WarningFilled,
   QuestionCircleFilled,
   LoadingOutlined,
-  UpOutlined,
-  DownOutlined,
 } from '@ant-design/icons';
 import {Layout} from '../ui';
 import {
@@ -39,12 +37,6 @@ import {Healthchecks} from 'flipper-doctor';
 import {reportUsage} from '../utils/metrics';
 
 const {Title, Paragraph, Text} = Typography;
-
-const borderStyle = {
-  border: `0px solid ${theme.backgroundTransparentHover}`,
-  borderBottomWidth: '1px',
-  borderRadius: 0,
-};
 
 const statusTypeAndMessage: {
   [key in HealthcheckStatus]: {
@@ -129,28 +121,13 @@ function CheckIcon(props: {status: HealthcheckStatus}) {
 
 function CollapsableCategory(props: {checks: Array<HealthcheckReportItem>}) {
   return (
-    <Collapse
-      expandIconPosition="right"
-      expandIcon={({isActive}) =>
-        isActive ? <UpOutlined /> : <DownOutlined />
-      }
-      bordered={false}
-      style={{backgroundColor: theme.backgroundDefault, border: 0}}>
+    <Collapse ghost>
       {props.checks.map((check) => (
         <Collapse.Panel
           key={check.key}
-          header={
-            <Layout.Container padv="small">
-              <Layout.Horizontal gap="medium" center>
-                <CheckIcon status={check.result.status} />
-                <Title level={4}>{check.label}</Title>
-              </Layout.Horizontal>
-            </Layout.Container>
-          }
-          style={borderStyle}>
-          <Paragraph style={{paddingLeft: '40px'}}>
-            {check.result.message}
-          </Paragraph>
+          header={check.label}
+          extra={<CheckIcon status={check.result.status} />}>
+          <Paragraph>{check.result.message}</Paragraph>
         </Collapse.Panel>
       ))}
     </Collapse>
@@ -160,15 +137,11 @@ function CollapsableCategory(props: {checks: Array<HealthcheckReportItem>}) {
 function HealthCheckList(props: {report: HealthcheckReport}) {
   useEffect(() => reportUsage('doctor:report:opened'), []);
   return (
-    <Layout.Container>
+    <Layout.Container gap>
       <ResultTopDialog status={props.report.result.status} />
       {Object.values(props.report.categories).map((category) => (
         <Layout.Container key={category.key}>
-          <Title
-            level={3}
-            style={{...borderStyle, padding: `${theme.space.small}px 0`}}>
-            {category.label}
-          </Title>
+          <Title level={3}>{category.label}</Title>
           <CollapsableCategory
             checks={
               category.result.status !== 'SKIPPED'
