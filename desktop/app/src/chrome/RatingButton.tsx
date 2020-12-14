@@ -35,6 +35,8 @@ import {State as Store} from '../reducers';
 import {StarOutlined} from '@ant-design/icons';
 import {Popover, Rate} from 'antd';
 import {useStore} from '../utils/useStore';
+import {isLoggedIn} from '../fb-stubs/user';
+import {useValue} from 'flipper-plugin';
 
 type PropsFromState = {
   sessionId: string | null;
@@ -379,6 +381,7 @@ export function SandyRatingButton() {
   const [isShown, setIsShown] = useState(false);
   const [hasTriggered, setHasTriggered] = useState(false);
   const sessionId = useStore((store) => store.application.sessionId);
+  const loggedIn = useValue(isLoggedIn());
 
   const triggerPopover = useCallback(() => {
     if (!hasTriggered) {
@@ -388,13 +391,13 @@ export function SandyRatingButton() {
   }, [hasTriggered]);
 
   useEffect(() => {
-    if (GK.get('flipper_enable_star_ratiings') && !hasTriggered) {
+    if (GK.get('flipper_enable_star_ratiings') && !hasTriggered && loggedIn) {
       UserFeedback.getPrompt().then((prompt) => {
         setPromptData(prompt);
         setTimeout(triggerPopover, 30000);
       });
     }
-  }, [triggerPopover, hasTriggered]);
+  }, [triggerPopover, hasTriggered, loggedIn]);
 
   const onClick = () => {
     const willBeShown = !isShown;
