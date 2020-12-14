@@ -1,0 +1,98 @@
+---
+id: public-releases
+title: Public Flipper Releases
+---
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+This document outlines how Flipper releases work on GitHub.
+
+## Kick-Off
+
+A release is kicked off by a special commit that has a subject with the format
+`Flipper Release vX.Y.Z`, e.g. [4fa2c9761](https://github.com/facebook/flipper/commit/4fa2c9761a8359c65ccc62fee76490572616f0c1).
+
+This is triggered from a bot within Facebook that runs [prepare-release.sh](https://github.com/facebook/flipper/blob/master/scripts/prepare-release.sh)
+but the only thing special about the commit is its subject line. Anyone could run the
+script and would kick off the remaining jobs once the commit lands in master.
+
+The commit bumps the version of Flipper Desktop as well as various SDK components
+and libraries that are to be published to npm and other package repositories.
+
+Importantly, it is immediately followed by a "SNAPSHOT" commit (e.g. [02a56da3f](https://github.com/facebook/flipper/commit/02a56da3f5440b35616604f73167307319cca48f)) which sets
+the version of our Java dependencies to `X.Y.(Z+1)-SNAPSHOT` (that's the
+patch version incremented by one and a `-SNAPSHOT` suffix appended).
+That's a weird Maven-ism which allows us to continuously publish snapshot
+releases from the main branch.
+
+## Desktop Release
+
+The release process for the desktop app is entirely driven by [GitHub Actions](https://github.com/features/actions).
+The entry point is the [release.yml](https://github.com/facebook/flipper/blob/master/.github/workflows/release.yml) workflow
+which is triggered by changes to the `desktop/package.json` file on the main branch.
+
+GitHub Actions has a limitation we need to work around here: It allows push events to as triggers for
+a workflow, but not individual commits. This requires us to first scan through all potential commits
+of a push to identify commits that match the aforementioned versioning schema.
+This is done through a [custom action](https://github.com/facebook/flipper/blob/1cad57d75077bdb3594e33e845ab6d226c5d2c86/.github/workflows/release.yml#L15-L18).
+
+Only if this action is successful, the remaining steps are taken which
+
+- Check out the versioning commit.
+- Create a git tag for it.
+- Create a GitHub release for the tag.
+- Build releases for Linux, Mac and Windows.
+- Upload all these releases to temporary storage.
+- Download the release artifacts and attach them to the GitHub release.
+- Dispatch to separate workflows for publishing Cocoapods and npm packages (see below).
+
+## Android Release
+
+Android is currently an outlier in that it does not run on GitHub Actions.
+This is mainly for legacy reasons but there's also a strong "never touch a running system"
+case to be made.
+
+The Android release is run on
+[CircleCI](https://app.circleci.com/pipelines/github/facebook/flipper?branch=master)
+and configured in
+[`.circleci/config.yml`](https://github.com/facebook/flipper/blob/master/.circleci/config.yml)
+
+There are two jobs defined:
+
+1. The `snapshot` job runs on every commit on the main branch and publishes "SNAPSHOT" releases to Maven Central.
+2. The `release` job runs only on tags and publishes artifacts to JCenter.
+
+There are two potential points for breakage:
+
+1. The [base image](https://github.com/facebook/flipper/blob/1cad57d75077bdb3594e33e845ab6d226c5d2c86/.circleci/config.yml#L5) used in the build instructions refers to a specific SDK version and requires occasional updating.
+2. The [platform installation](https://github.com/facebook/flipper/blob/b5e613141e98528f45d3d2864e08278b1c7d4973/.circleci/config.yml#L23) through the `sdkmanager` tool of the Android SDK may require additional SDKs or NDKs to be installed if they're not part of the base image.
+
+One non-obvious aspect is that of **authentication** for uploads. The repository contains a symmetrically encrypted
+copy of our credentials to Sonatype (for Maven Central) and JCenter. The [release scripts](https://github.com/facebook/flipper/blob/1cad57d75077bdb3594e33e845ab6d226c5d2c86/scripts/publish-android-release.sh#L19)
+decode the file on the fly by using a secret Circle CI exposes through an environment variable.
+
+## iOS Release
+
+iOS releases are run in GitHub Actions but exist as a separate workflow. They can be triggered in three ways:
+
+1. When a tag is pushed.
+2. By manually triggering the workflow (see below).
+3. Through a `dispatch_workflow` event which is issued as a last step of the desktop release process.
+
+<img alt="Manually triggering a workflow" src={useBaseUrl("img/trigger-publish-pod-workflow.png")} />
+
+[The workflow](https://github.com/facebook/flipper/blob/master/.github/workflows/publish-pods.yml) follows the default Cocoapods update procedure, bumps and published both the Flipper and FlipperKit pod
+and finally creates a [pull request](https://github.com/facebook/flipper/pull/1754) containing the updated references. This PR must be manually merged.
+
+**Authentication** is managed through the secret environment variable `COCOAPODS_TRUNK_TOKEN`.
+
+## npm releases
+
+The JavaScript libraries published as part of a Flipper release closely follow the iOS release procedure.
+Same as before, it is a workflow that is triggered by one of the three events, which should in all but
+exceptional circumstances be a dispatch event. The workflow is defined in [publish-npm.yml](https://github.com/facebook/flipper/blob/master/.github/workflows/publish-npm.yml).
+
+From there, we use a [script](https://github.com/facebook/flipper/blob/master/desktop/scripts/bump-versions.ts) to
+bump the versions of our Yarn workspaces, and publish all public packages (`flipper`, `flipper-babel-transformer`, ...)
+and our React Native bindings.
+
+The **authentication** to npm is managed by a secret environment variable called `FLIPPER_NPM_TOKEN`.
