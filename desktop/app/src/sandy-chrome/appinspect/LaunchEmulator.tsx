@@ -20,6 +20,8 @@ import {
   getSimulators,
   IOSDeviceParams,
 } from '../../dispatcher/iOSDevice';
+import GK from '../../fb-stubs/GK';
+import {JSEmulatorLauncherSheetSandy} from '../../chrome/JSEmulatorLauncherSheet';
 
 export function showEmulatorLauncher(store: Store) {
   renderReactRoot((unmount) => (
@@ -94,6 +96,15 @@ export const LaunchEmulatorDialog = withTrackingScope(
         </Button>
       )),
     ];
+    // Launch JS emulator
+    if (GK.get('flipper_js_client_emulator')) {
+      items.push(
+        <JSEmulatorLauncherSheetSandy
+          key="js-emulator-launcher"
+          onClose={onClose}
+        />,
+      );
+    }
 
     return (
       <Modal

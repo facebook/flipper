@@ -23,6 +23,8 @@ import {State as Store} from '../reducers';
 import {launchJsEmulator} from '../utils/js-client-server-utils/serverUtils';
 import {updateSettings, Action} from '../reducers/settings';
 import {Settings} from '../reducers/settings';
+import {Collapse, Form, Input as AntInput} from 'antd';
+import {Html5Outlined} from '@ant-design/icons';
 
 const Container = styled(FlexColumn)({
   padding: 20,
@@ -48,6 +50,7 @@ const TitleInput = styled(Input)({
 
 type OwnProps = {
   onHide: () => void;
+  useSandy?: boolean;
 };
 
 type StateFromProps = {
@@ -93,7 +96,24 @@ class JSEmulatorLauncherSheet extends Component<Props, State> {
 
   render() {
     const {url, height, width} = this.state;
-    return (
+    return this.props.useSandy ? (
+      <Form labelCol={{span: 4}}>
+        <Form.Item label="Url">
+          <AntInput value={url} onChange={this.onUrlChange} />
+        </Form.Item>
+        <Form.Item label="Height">
+          <AntInput value={height} onChange={this.onHeightChange} />
+        </Form.Item>
+        <Form.Item label="Width">
+          <AntInput value={width} onChange={this.onWidthChange} />
+        </Form.Item>
+        <Form.Item wrapperCol={{offset: 4}}>
+          <Button onClick={this.applyChanges} type="primary">
+            Launch
+          </Button>
+        </Form.Item>
+      </Form>
+    ) : (
       <Container>
         <Title>Launch Web App</Title>
         <Label>Url</Label>
@@ -118,9 +138,24 @@ class JSEmulatorLauncherSheet extends Component<Props, State> {
   }
 }
 
-export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
+const Launcher = connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
   ({settingsState}) => ({
     settings: settingsState,
   }),
   {updateSettings},
 )(JSEmulatorLauncherSheet);
+
+export default Launcher;
+
+export function JSEmulatorLauncherSheetSandy({onClose}: {onClose(): void}) {
+  return (
+    <Collapse>
+      <Collapse.Panel
+        extra={<Html5Outlined />}
+        header="Launch JS Web App"
+        key="launch-js-web-app">
+        <Launcher onHide={onClose} useSandy />
+      </Collapse.Panel>
+    </Collapse>
+  );
+}
