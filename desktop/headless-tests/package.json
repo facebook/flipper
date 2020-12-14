@@ -17,7 +17,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@babel/core": "^7.11.1",
+    "@babel/core": "^7.12.10",
     "@babel/preset-env": "^7.11.0",
     "babel-jest": "^26.2.2",
     "canonical-json": "^0.0.4",
