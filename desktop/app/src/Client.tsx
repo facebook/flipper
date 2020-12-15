@@ -487,7 +487,7 @@ export default class Client extends EventEmitter {
               }
             }
           }
-          if (!handled) {
+          if (!handled && !isProduction()) {
             console.warn(`Unhandled message ${params.api}.${params.method}`);
           }
         }
