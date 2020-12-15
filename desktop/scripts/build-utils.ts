@@ -30,24 +30,58 @@ const {version} = require('../package.json');
 
 const dev = process.env.NODE_ENV !== 'production';
 
+// For insiders builds we bundle into them all the device plugins,
+// plus top 10 "universal" plugins starred by more than 100 users.
+const hardcodedPlugins = new Set<string>([
+  // Device plugins
+  'DeviceLogs',
+  'CrashReporter',
+  'MobileBuilds',
+  'DeviceCPU',
+  'Tracery',
+  'Hermesdebuggerrn',
+  'kaios-big-allocations',
+  'kaios-graphs',
+  'React',
+  // Popular client plugins
+  'Inspector',
+  'Network',
+  'AnalyticsLogging',
+  'GraphQL',
+  'UIPerf',
+  'MobileConfig',
+  'Databases',
+  'FunnelLogger',
+  'Navigation',
+  'Fresco',
+  'Preferences',
+]);
+
 export function die(err: Error) {
   console.error(err.stack);
   process.exit(1);
 }
 
-export async function generatePluginEntryPoints() {
-  console.log('⚙️  Generating plugin entry points...');
-  const sourcePlugins = await getSourcePlugins();
-  const bundledPlugins = sourcePlugins.map(
-    (p) =>
-      ({
-        ...p,
-        isBundled: true,
-        version: p.version === '0.0.0' ? version : p.version,
-        flipperSDKVersion:
-          p.flipperSDKVersion === '0.0.0' ? version : p.flipperSDKVersion,
-      } as BundledPluginDetails),
+export async function generatePluginEntryPoints(
+  isInsidersBuild: boolean = false,
+) {
+  console.log(
+    `⚙️  Generating plugin entry points (isInsidersBuils=${isInsidersBuild})...`,
   );
+  const sourcePlugins = await getSourcePlugins();
+  const bundledPlugins = sourcePlugins
+    // we only include predefined set of plugins into insiders release
+    .filter((p) => !isInsidersBuild || hardcodedPlugins.has(p.id))
+    .map(
+      (p) =>
+        ({
+          ...p,
+          isBundled: true,
+          version: p.version === '0.0.0' ? version : p.version,
+          flipperSDKVersion:
+            p.flipperSDKVersion === '0.0.0' ? version : p.flipperSDKVersion,
+        } as BundledPluginDetails),
+    );
   if (await fs.pathExists(defaultPluginsIndexDir)) {
     await fs.remove(defaultPluginsIndexDir);
   }

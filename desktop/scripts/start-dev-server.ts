@@ -381,7 +381,7 @@ function checkDevServer() {
 
 (async () => {
   checkDevServer();
-  await generatePluginEntryPoints();
+  await generatePluginEntryPoints(argv.channel === 'insiders');
   await ensurePluginFoldersWatchable();
   const port = await detect(DEFAULT_PORT);
   const {app, server} = await startAssetServer(port);

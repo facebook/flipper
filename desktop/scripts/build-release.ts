@@ -262,7 +262,7 @@ function downloadIcons(buildFolder: string) {
   console.log('Created build directory', dir);
 
   await compileMain();
-  await generatePluginEntryPoints();
+  await generatePluginEntryPoints(argv.channel === 'insiders');
   await copyStaticFolder(dir);
   await downloadIcons(dir);
   await compileRenderer(dir);
