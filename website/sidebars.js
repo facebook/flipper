@@ -121,7 +121,6 @@ module.exports = {
         'Plugin Development': [
           'fb/developmentworkflow',
           'fb/TypeScript',
-          'fb/using-gatekeepers',
           'fb/adding-npm-dependencies-0',
           'fb/adding-analytics-0',
           {

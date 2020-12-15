@@ -2,6 +2,7 @@
 id: flipper-plugin
 title: Desktop Plugin API
 ---
+import {FbInternalOnly} from 'internaldocs-fb-helpers';
 
 ## PluginClient
 
@@ -237,6 +238,18 @@ Facebook only API.
 Usage: `client.GK(gatekeeper: string): boolean`
 
 Returns `true` if the current user is part of the given GK. `false` in all other cases.
+
+<FbInternalOnly>
+
+To use a gatekeeper in the Facebook build of Flipper:
+
+1. [Create the gatekeeper](https://www.internalfb.com/intern/gatekeeper/)
+2. Add the Gatekeepers name to the `subscribedGatekeepers` array in `fbsource/xplat/sonar/desktop/src/fb/GK.tsx`
+3. Use `client.GK('name_of_gk')` to read the gatekeeper, or alternatively: `import {GK} from 'flipper'; GK.get('name_of_gk')`
+
+The gatekeepers are cached in `localStorage`. Therefore, you might get the cached result of the gatekeeper on the first access (which defaults to `false`). On the next start of the app you will get the new result.
+
+</FbInternalOnly>
 
 ## DevicePluginClient
 
