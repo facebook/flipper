@@ -11,7 +11,6 @@ import {KeyboardActions} from './MenuBar';
 import {Logger} from './fb-interfaces/Logger';
 import Client from './Client';
 import {Store} from './reducers/index';
-import {MetricType} from './utils/exportMetrics';
 import {ReactNode, Component} from 'react';
 import BaseDevice from './devices/BaseDevice';
 import {serialize, deserialize} from './utils/serialization';
@@ -131,9 +130,6 @@ export abstract class FlipperBasePlugin<
   static defaultPersistedState: any;
   static persistedStateReducer: PersistedStateReducer | null;
   static maxQueueSize: number = DEFAULT_MAX_QUEUE_SIZE;
-  static metricsReducer:
-    | ((persistedState: StaticPersistedState) => Promise<MetricType>)
-    | undefined;
   static exportPersistedState:
     | ((
         callClient: (method: string, params?: any) => Promise<any>,

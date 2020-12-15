@@ -17,10 +17,6 @@ import dispatcher from '../app/src/dispatcher/index';
 import reducers, {Actions, State} from '../app/src/reducers/index';
 import {init as initLogger} from '../app/src/fb-stubs/Logger';
 import {exportStore} from '../app/src/utils/exportData';
-import {
-  exportMetricsWithoutTrace,
-  exportMetricsFromTrace,
-} from '../app/src/utils/exportMetrics';
 import {listDevices} from '../app/src/utils/listDevices';
 import setup from '../static/setup';
 import {
@@ -42,7 +38,7 @@ type UserArguments = {
   dev: boolean;
   exit: 'sigint' | 'disconnect';
   verbose: boolean;
-  metrics: string;
+  metrics: boolean;
   listDevices: boolean;
   device: string;
   listPlugins: boolean;
@@ -116,13 +112,6 @@ type UserArguments = {
   .version(global.__VERSION__)
   .help().argv; // http://yargs.js.org/docs/#api-argv
 
-function shouldExportMetric(metrics: string): boolean {
-  if (!metrics) {
-    return process.argv.includes('--metrics');
-  }
-  return true;
-}
-
 function outputAndExit(output: string | null | undefined): void {
   output = output || '';
   console.log(`Finished. Outputting ${output.length} characters.`);
@@ -161,7 +150,7 @@ async function exitActions(
   userArguments: UserArguments,
   store: Store,
 ): Promise<void> {
-  const {metrics, exit} = userArguments;
+  const {exit} = userArguments;
   for (const exitAction of exitClosures) {
     try {
       const action = await exitAction(userArguments, store);
@@ -176,20 +165,11 @@ async function exitActions(
   if (exit == 'sigint') {
     process.on('SIGINT', async () => {
       try {
-        if (shouldExportMetric(metrics) && !metrics) {
-          const state = store.getState();
-          const payload = await exportMetricsWithoutTrace(
-            store,
-            state.pluginStates,
-          );
-          outputAndExit(payload);
-        } else {
-          const {serializedString, fetchMetaDataErrors} = await exportStore(
-            store,
-          );
-          console.error('Error while fetching metadata', fetchMetaDataErrors);
-          outputAndExit(serializedString);
-        }
+        const {serializedString, fetchMetaDataErrors} = await exportStore(
+          store,
+        );
+        console.error('Error while fetching metadata', fetchMetaDataErrors);
+        outputAndExit(serializedString);
       } catch (e) {
         errorAndExit(e);
       }
@@ -217,7 +197,7 @@ async function storeModifyingActions(
 }
 
 async function startFlipper(userArguments: UserArguments) {
-  const {verbose, metrics, exit, insecurePort, securePort} = userArguments;
+  const {verbose, exit, insecurePort, securePort, metrics} = userArguments;
   console.error(`
    _____ _ _
   |   __| |_|___ ___ ___ ___
@@ -225,6 +205,11 @@ async function startFlipper(userArguments: UserArguments) {
   |__|  |_|_|  _|  _|___|_| v${global.__VERSION__}
             |_| |_|
   `);
+  if (metrics) {
+    throw new Error(
+      '--metrics is no longer supported, see D24332440 for details.',
+    );
+  }
 
   // redirect all logging to stderr
   const overriddenMethods = ['debug', 'info', 'log', 'warn', 'error'];
@@ -253,24 +238,13 @@ async function startFlipper(userArguments: UserArguments) {
       // TODO(T42325892): Investigate why the export stalls without exiting the
       // current eventloop task here.
       setTimeout(() => {
-        if (shouldExportMetric(metrics) && !metrics) {
-          const state = store.getState();
-          exportMetricsWithoutTrace(store as Store, state.pluginStates)
-            .then((payload: string | null) => {
-              outputAndExit(payload || '');
-            })
-            .catch((e: Error) => {
-              errorAndExit(e);
-            });
-        } else {
-          exportStore(store)
-            .then(({serializedString}) => {
-              outputAndExit(serializedString);
-            })
-            .catch((e: Error) => {
-              errorAndExit(e);
-            });
-        }
+        exportStore(store)
+          .then(({serializedString}) => {
+            outputAndExit(serializedString);
+          })
+          .catch((e: Error) => {
+            errorAndExit(e);
+          });
       }, 10);
     }
     return next(action);
@@ -378,19 +352,6 @@ async function startFlipper(userArguments: UserArguments) {
       });
     },
     async (userArguments: UserArguments, store: Store) => {
-      const {metrics} = userArguments;
-      if (shouldExportMetric(metrics) && metrics && metrics.length > 0) {
-        try {
-          const payload = await exportMetricsFromTrace(
-            metrics,
-            pluginsClassMap(store.getState().plugins),
-            store.getState().plugins.selectedPlugins,
-          );
-          return {exit: true, result: payload ? payload.toString() : ''};
-        } catch (error) {
-          return {exit: true, result: error};
-        }
-      }
       return Promise.resolve({exit: false});
     },
   ];

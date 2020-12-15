@@ -19,7 +19,7 @@ import {
 } from './api';
 import {Fragment} from 'react';
 import {ImagesMap} from './ImagePool';
-import {MetricType, ReduxState} from 'flipper';
+import {ReduxState} from 'flipper';
 import React from 'react';
 import ImagesCacheOverview from './ImagesCacheOverview';
 import {
@@ -205,37 +205,6 @@ export default class FlipperImagesPlugin extends FlipperPlugin<
     }
 
     return persistedState;
-  };
-
-  static metricsReducer = (
-    persistedState: PersistedState,
-  ): Promise<MetricType> => {
-    const {events, imagesMap, closeableReferenceLeaks} = persistedState;
-
-    const wastedBytes = (events || []).reduce((acc, event) => {
-      const {viewport, imageIds} = event;
-      if (!viewport) {
-        return acc;
-      }
-      return imageIds.reduce((innerAcc, imageID) => {
-        const imageData: ImageData = imagesMap[imageID];
-        if (!imageData) {
-          return innerAcc;
-        }
-        const imageWidth: number = imageData.width;
-        const imageHeight: number = imageData.height;
-        const viewPortWidth: number = viewport.width;
-        const viewPortHeight: number = viewport.height;
-        const viewPortArea = viewPortWidth * viewPortHeight;
-        const imageArea = imageWidth * imageHeight;
-        return innerAcc + Math.max(0, imageArea - viewPortArea);
-      }, acc);
-    }, 0);
-
-    return Promise.resolve({
-      WASTED_BYTES: wastedBytes,
-      CLOSEABLE_REFERENCE_LEAKS: (closeableReferenceLeaks || []).length,
-    });
   };
 
   static getActiveNotifications = ({

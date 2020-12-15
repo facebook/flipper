@@ -33,7 +33,6 @@ export {
 } from './plugin';
 export {PluginClient, Props} from './plugin';
 export {default as Client} from './Client';
-export {MetricType} from './utils/exportMetrics';
 export {reportUsage} from './utils/metrics';
 export {default as promiseTimeout} from './utils/promiseTimeout';
 export {clipboard, remote, OpenDialogOptions} from 'electron';
