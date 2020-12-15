@@ -11,7 +11,11 @@ declare module NodeJS {
   interface Global {
     __REVISION__: string | undefined;
     __VERSION__: string;
-    electronRequire: (name: string) => any;
+    electronRequire: {
+      (name: string): any;
+      resolve: (module: string) => string;
+      cache: {[module: string]: any};
+    };
     window: Window | undefined;
     WebSocket: any;
     fetch: any;

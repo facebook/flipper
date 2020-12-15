@@ -28,6 +28,7 @@ import {_SandyPluginDefinition} from 'flipper-plugin';
 import BaseDevice from './devices/BaseDevice';
 import {State as PluginStates} from './reducers/pluginStates';
 import {ActivatablePluginDetails} from 'flipper-plugin-lib';
+import {unloadModule} from './utils/electronModuleCache';
 
 export const store: Store = createStore<StoreState, Actions, any, any>(
   rootReducer,
@@ -168,6 +169,11 @@ function updateClientPlugin(
       ];
     });
     cleanupPluginStates(draft.pluginStates, plugin.id);
+    const previousVersion = draft.plugins.clientPlugins.get(plugin.id);
+    if (previousVersion) {
+      // unload previous version from Electron cache
+      unloadPluginModule(previousVersion.details);
+    }
     // update plugin definition
     draft.plugins.clientPlugins.set(plugin.id, plugin);
     // start plugin for each client
@@ -191,6 +197,7 @@ function uninstallPlugin(state: StoreState, plugin: PluginDefinition) {
       delete draft.pluginMessageQueue[pluginKey];
     });
     cleanupPluginStates(draft.pluginStates, plugin.id);
+    unloadPluginModule(plugin.details);
     draft.plugins.clientPlugins.delete(plugin.id);
     draft.plugins.devicePlugins.delete(plugin.id);
     draft.pluginManager.uninstalledPlugins.add(plugin.details.name);
@@ -207,6 +214,11 @@ function updateDevicePlugin(state: StoreState, plugin: DevicePluginDefinition) {
       d.unloadDevicePlugin(plugin.id);
     });
     cleanupPluginStates(draft.pluginStates, plugin.id);
+    const previousVersion = draft.plugins.devicePlugins.get(plugin.id);
+    if (previousVersion) {
+      // unload previous version from Electron cache
+      unloadPluginModule(previousVersion.details);
+    }
     draft.plugins.devicePlugins.set(plugin.id, plugin);
     devicesWithEnabledPlugin.forEach((d) => {
       d.loadDevicePlugin(plugin);
@@ -244,4 +256,12 @@ function cleanupPluginStates(pluginStates: PluginStates, pluginId: string) {
       delete pluginStates[pluginKey];
     }
   });
+}
+
+function unloadPluginModule(plugin: ActivatablePluginDetails) {
+  if (plugin.isBundled) {
+    // We cannot unload bundled plugin.
+    return;
+  }
+  unloadModule(plugin.entry);
 }
