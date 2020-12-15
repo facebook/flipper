@@ -24,6 +24,7 @@ import {getFavoritePlugins} from '../../chrome/mainsidebar/sidebarUtils';
 import {PluginDetails} from 'flipper-plugin-lib';
 import {useMemoize} from '../../utils/useMemoize';
 import MetroDevice from '../../devices/MetroDevice';
+import {DownloadablePluginDetails} from 'plugin-lib/lib';
 
 const {SubMenu} = Menu;
 const {Text} = Typography;
@@ -47,6 +48,7 @@ export const PluginList = memo(function PluginList({
     enabledPlugins,
     disabledPlugins,
     unavailablePlugins,
+    uninstalledPlugins,
   } = useMemoize(computePluginLists, [
     activeDevice,
     metroDevice,
@@ -192,6 +194,20 @@ export const PluginList = memo(function PluginList({
               ))}
             </PluginGroup>
           )}
+          <PluginGroup
+            key="uninstalled"
+            title="Detected in App"
+            hint="The plugins below are supported by the selected device / application, but not installed in Flipper.">
+            {uninstalledPlugins.map((plugin) => (
+              <PluginEntry
+                key={plugin.id}
+                plugin={plugin}
+                scrollTo={plugin.id === connections.selectedPlugin}
+                tooltip={getPluginTooltip(plugin)}
+                disabled
+              />
+            ))}
+          </PluginGroup>
           {!isArchived && (
             <PluginGroup
               key="unavailable"
@@ -371,6 +387,7 @@ export function computePluginLists(
   const enabledPlugins: ClientPluginDefinition[] = [];
   const disabledPlugins: ClientPluginDefinition[] = [];
   const unavailablePlugins: [plugin: PluginDetails, reason: string][] = [];
+  const uninstalledPlugins: DownloadablePluginDetails[] = [];
 
   if (device) {
     // find all device plugins that aren't part of the current device / metro
@@ -390,36 +407,6 @@ export function computePluginLists(
     }
   }
 
-  // process all client plugins
-  if (device && client) {
-    const clientPlugins = Array.from(plugins.clientPlugins.values()).sort(
-      sortPluginsByName,
-    );
-    const favoritePlugins = getFavoritePlugins(
-      device,
-      client,
-      clientPlugins,
-      client && userStarredPlugins[client.query.app],
-      true,
-    );
-
-    client &&
-      clientPlugins.forEach((plugin) => {
-        if (!client.plugins.includes(plugin.id)) {
-          unavailablePlugins.push([
-            plugin.details,
-            `Plugin '${getPluginTitle(
-              plugin.details,
-            )}' is not loaded by the client application`,
-          ]);
-        } else if (favoritePlugins.includes(plugin)) {
-          enabledPlugins.push(plugin);
-        } else {
-          disabledPlugins.push(plugin);
-        }
-      });
-  }
-
   // process problematic plugins
   plugins.disabledPlugins.forEach((plugin) => {
     unavailablePlugins.push([plugin, 'Plugin is disabled by configuration']);
@@ -437,9 +424,59 @@ export function computePluginLists(
     ]);
   });
 
+  // process all client plugins
+  if (device && client) {
+    const clientPlugins = Array.from(plugins.clientPlugins.values()).sort(
+      sortPluginsByName,
+    );
+    const favoritePlugins = getFavoritePlugins(
+      device,
+      client,
+      clientPlugins,
+      client && userStarredPlugins[client.query.app],
+      true,
+    );
+    clientPlugins.forEach((plugin) => {
+      if (!client.supportsPlugin(plugin.id)) {
+        unavailablePlugins.push([
+          plugin.details,
+          `Plugin '${getPluginTitle(
+            plugin.details,
+          )}' is installed in Flipper, but not supported by the client application`,
+        ]);
+      } else if (favoritePlugins.includes(plugin)) {
+        enabledPlugins.push(plugin);
+      } else {
+        disabledPlugins.push(plugin);
+      }
+    });
+    const installedPluginIds = new Set<string>([
+      ...clientPlugins.map((p) => p.id),
+      ...unavailablePlugins.map(([p]) => p.id),
+    ]);
+    const uninstalledMarketplacePlugins = plugins.marketplacePlugins.filter(
+      (p) => !installedPluginIds.has(p.id),
+    );
+    uninstalledMarketplacePlugins.forEach((plugin) => {
+      if (client.supportsPlugin(plugin.id)) {
+        uninstalledPlugins.push(plugin);
+      } else {
+        unavailablePlugins.push([
+          plugin,
+          `Plugin '${getPluginTitle(
+            plugin,
+          )}' is not installed in Flipper and not supported by the client application`,
+        ]);
+      }
+    });
+  }
+
   devicePlugins.sort(sortPluginsByName);
   metroPlugins.sort(sortPluginsByName);
   unavailablePlugins.sort(([a], [b]) => {
+    return getPluginTitle(a) > getPluginTitle(b) ? 1 : -1;
+  });
+  uninstalledPlugins.sort((a, b) => {
     return getPluginTitle(a) > getPluginTitle(b) ? 1 : -1;
   });
 
@@ -449,6 +486,7 @@ export function computePluginLists(
     enabledPlugins,
     disabledPlugins,
     unavailablePlugins,
+    uninstalledPlugins,
   };
 }
 
