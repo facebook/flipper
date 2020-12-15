@@ -10,6 +10,5 @@
 export {LogTypes, TrackType, Logger} from 'flipper-plugin';
 
 export type Args = {
-  isHeadless?: boolean;
   isTest?: boolean;
 };

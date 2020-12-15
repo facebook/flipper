@@ -12,7 +12,6 @@
  * They are used in get-cache-key.ts for cache key generation.
  */
 type FlipperEnvVars = {
-  FLIPPER_HEADLESS?: string;
   FLIPPER_FB?: string;
   FLIPPER_TEST_RUNNER?: string;
   FLIPPER_ELECTRON_VERSION?: string;
@@ -21,7 +20,6 @@ type FlipperEnvVars = {
 
 const flipperEnv = new Proxy(
   {
-    FLIPPER_HEADLESS: undefined,
     FLIPPER_FB: undefined,
     FLIPPER_TEST_RUNNER: undefined,
     FLIPPER_ELECTRON_VERSION: undefined,

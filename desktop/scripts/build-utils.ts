@@ -19,7 +19,6 @@ import {
   appDir,
   staticDir,
   defaultPluginsIndexDir,
-  headlessDir,
   babelTransformationsDir,
 } from './paths';
 
@@ -109,29 +108,6 @@ async function compile(
       out,
     },
   );
-}
-
-export async function compileHeadless(buildFolder: string) {
-  console.log(`⚙️  Compiling headless bundle...`);
-  const watchFolders = [
-    headlessDir,
-    ...(await getWatchFolders(staticDir)),
-    ...(await getAppWatchFolders()),
-    ...(await getPluginSourceFolders()),
-  ]
-    .filter((value, index, self) => self.indexOf(value) === index)
-    .filter(fs.pathExistsSync);
-  try {
-    await compile(
-      buildFolder,
-      headlessDir,
-      watchFolders,
-      path.join(headlessDir, 'index.tsx'),
-    );
-    console.log('✅  Compiled headless bundle.');
-  } catch (err) {
-    die(err);
-  }
 }
 
 export async function compileRenderer(buildFolder: string) {

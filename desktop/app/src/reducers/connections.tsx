@@ -7,6 +7,7 @@
  * @format
  */
 
+import {ComponentType} from 'react';
 import {produce} from 'immer';
 
 import type BaseDevice from '../devices/BaseDevice';
@@ -15,28 +16,18 @@ import type Client from '../Client';
 import {UninitializedClient} from '../UninitializedClient';
 import {isEqual} from 'lodash';
 import {performance} from 'perf_hooks';
-import isHeadless from '../utils/isHeadless';
 import {Actions} from '.';
-const WelcomeScreen = isHeadless()
-  ? require('../chrome/WelcomeScreenHeadless').default
-  : require('../chrome/WelcomeScreen').default;
-import NotificationScreen from '../chrome/NotificationScreen';
-import SupportRequestFormV2 from '../fb-stubs/SupportRequestFormV2';
-import SupportRequestDetails from '../fb-stubs/SupportRequestDetails';
+import WelcomeScreen from '../chrome/WelcomeScreen';
 import {getPluginKey, isDevicePluginDefinition} from '../utils/pluginUtils';
 import {deconstructClientId} from '../utils/clientUtils';
 import {PluginDefinition} from '../plugin';
 import {RegisterPluginAction} from './plugins';
-import {ConsoleLogs} from '../chrome/ConsoleLogs';
 import MetroDevice from '../devices/MetroDevice';
+import {Logger} from 'flipper-plugin';
 
-export type StaticView =
-  | null
-  | typeof WelcomeScreen
-  | typeof NotificationScreen
-  | typeof SupportRequestFormV2
-  | typeof SupportRequestDetails
-  | typeof ConsoleLogs;
+export type StaticViewProps = {logger: Logger};
+
+export type StaticView = null | ComponentType<StaticViewProps>;
 
 export type State = {
   devices: Array<BaseDevice>;

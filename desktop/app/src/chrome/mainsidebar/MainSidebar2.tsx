@@ -56,6 +56,7 @@ import {
   NoDevices,
   getColorByApp,
   getFavoritePlugins,
+  isStaticViewActive,
 } from './sidebarUtils';
 import {useLocalStorage} from '../../utils/useLocalStorage';
 import {PluginDefinition, ClientPluginMap, DevicePluginMap} from '../../plugin';
@@ -389,13 +390,6 @@ class MainSidebar2 extends PureComponent<Props, State> {
       </ListItem>
     );
   }
-}
-
-function isStaticViewActive(
-  current: StaticView,
-  selected: StaticView,
-): boolean {
-  return current && selected && current === selected;
 }
 
 function groupPluginsByCategory(

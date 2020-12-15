@@ -19,8 +19,6 @@
       "app/src/fb/*",
       "babel-transformer",
       "doctor",
-      "headless",
-      "headless-tests",
       "pkg",
       "pkg-lib",
       "flipper-plugin",
@@ -212,7 +210,6 @@
     "node-fetch": "^2.6.1",
     "p-filter": "^2.1.0",
     "p-map": "^4.0.0",
-    "pkg": "^4.4.1",
     "prettier": "^2.0.0",
     "pretty-format": "^26.1.0",
     "promisify-child-process": "^4.1.0",
@@ -252,9 +249,6 @@
     "prebuild": "yarn build:pkg && yarn rm-dist && yarn build:themes",
     "build": "cross-env NODE_ENV=production ./ts-node scripts/build-release.ts $@",
     "build:dev": "cross-env NODE_ENV=development ./ts-node scripts/build-release.ts $@",
-    "prebuild-headless": "yarn build:pkg",
-    "build-headless": "cross-env NODE_ENV=production ./ts-node scripts/build-headless.ts $@",
-    "build-headless:dev": "cross-env NODE_ENV=development ./ts-node scripts/build-headless.ts $@",
     "build-plugin": "./ts-node scripts/build-plugin.ts",
     "resolve-plugin-dir": "./ts-node scripts/resolve-plugin-dir.ts",
     "list-plugins": "./ts-node scripts/list-plugins.ts",
@@ -273,7 +267,7 @@
     "lint": "yarn lint:eslint && yarn lint:tsc",
     "bump-versions": "./ts-node scripts/bump-versions.ts",
     "publish-packages": "./ts-node scripts/publish-packages.ts",
-    "everything": "yarn reset && yarn install && yarn lint && yarn test && yarn test-electron && yarn build --mac --mac-dmg --win --linux --linux-deb && yarn build-headless --mac --linux && yarn start"
+    "everything": "yarn reset && yarn install && yarn lint && yarn test && yarn test-electron && yarn build --mac --mac-dmg --win --linux --linux-deb && yarn start"
   },
   "optionalDependencies": {
     "7zip-bin-mac": "^1.0.1"

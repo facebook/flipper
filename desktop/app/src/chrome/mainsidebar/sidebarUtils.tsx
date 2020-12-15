@@ -116,7 +116,7 @@ export function isStaticViewActive(
   current: StaticView,
   selected: StaticView,
 ): boolean {
-  return current && selected && current === selected;
+  return Boolean(current && selected && current === selected);
 }
 
 export const CategoryName = styled(PluginName)({

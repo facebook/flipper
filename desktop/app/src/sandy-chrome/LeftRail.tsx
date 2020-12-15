@@ -309,8 +309,7 @@ function ShowSettingsButton() {
 function SupportFormButton() {
   const dispatch = useDispatch();
   const staticView = useStore((state) => state.connections.staticView);
-  // const isVisible =
-  return (
+  return config.isFBBuild ? (
     <LeftRailButton
       icon={<BugOutlined />}
       small
@@ -324,7 +323,7 @@ function SupportFormButton() {
         dispatch(setStaticView(SupportRequestFormV2));
       }}
     />
-  );
+  ) : null;
 }
 
 function WelcomeScreenButton() {

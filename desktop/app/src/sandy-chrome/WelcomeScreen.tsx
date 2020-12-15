@@ -22,10 +22,7 @@ const {Text, Title} = Typography;
 
 import constants from '../fb-stubs/constants';
 import isProduction from '../utils/isProduction';
-import isHeadless from '../utils/isHeadless';
-const {shell, remote} = !isHeadless()
-  ? require('electron')
-  : {shell: undefined, remote: undefined};
+import {shell, remote} from 'electron';
 
 const RowContainer = styled(FlexRow)({
   alignItems: 'flex-start',

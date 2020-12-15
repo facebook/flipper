@@ -17,9 +17,6 @@ const plugins = [
   require('./import-react'),
   require('./app-flipper-requires'),
 ];
-if (flipperEnv.FLIPPER_HEADLESS) {
-  plugins.unshift(require('./electron-stubs'));
-}
 if (flipperEnv.FLIPPER_FB) {
   plugins.unshift(require('./fb-stubs'));
 }

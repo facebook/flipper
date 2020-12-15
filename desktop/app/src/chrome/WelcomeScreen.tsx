@@ -14,14 +14,11 @@ import Text from '../ui/components/FlexRow';
 import Glyph from '../ui/components/Glyph';
 import {colors, brandColors} from '../ui/components/colors';
 import isProduction from '../utils/isProduction';
-import isHeadless from '../utils/isHeadless';
 import constants from '../fb-stubs/constants';
-const {shell, remote} = !isHeadless()
-  ? require('electron')
-  : {shell: undefined, remote: undefined};
+import {shell, remote} from 'electron';
 import {PureComponent} from 'react';
 import React from 'react';
-import {Tracked, TrackingScope} from 'flipper-plugin';
+import {Logger, Tracked, TrackingScope} from 'flipper-plugin';
 
 const Container = styled(FlexColumn)({
   height: '100%',
@@ -95,7 +92,9 @@ const Logo = styled.img({
   marginBottom: 20,
 });
 
-type Props = {};
+type Props = {
+  logger: Logger;
+};
 type State = {
   isMounted: boolean;
 };

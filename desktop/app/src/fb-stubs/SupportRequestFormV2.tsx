@@ -8,9 +8,10 @@
  */
 
 import React, {Component} from 'react';
+import {StaticViewProps} from '../reducers/connections';
 import {Text} from '../ui';
 
-export default class extends Component<void, void> {
+export default class extends Component<StaticViewProps, {}> {
   render() {
     return <Text>Build your support request creation form.</Text>;
   }

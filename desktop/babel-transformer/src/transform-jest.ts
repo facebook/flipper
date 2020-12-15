@@ -13,9 +13,6 @@ import {default as flipperEnv} from './flipper-env';
 
 const presets = [require('@babel/preset-react')];
 const plugins = [require('./import-react')];
-if (flipperEnv.FLIPPER_HEADLESS) {
-  plugins.unshift(require('./electron-stubs'));
-}
 if (flipperEnv.FLIPPER_FB) {
   plugins.unshift(require('./fb-stubs'));
 }

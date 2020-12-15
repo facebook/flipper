@@ -11,7 +11,6 @@ import {Store} from '../reducers/index';
 import {Logger} from '../fb-interfaces/Logger';
 import {PluginNotification} from '../reducers/notifications';
 import {PluginDefinition, isSandyPlugin} from '../plugin';
-import isHeadless from '../utils/isHeadless';
 import {setStaticView} from '../reducers/connections';
 import {ipcRenderer, IpcRendererEvent} from 'electron';
 import {
@@ -158,7 +157,6 @@ export default (store: Store, logger: Logger) => {
         }))
         .forEach((n: PluginNotification) => {
           if (
-            !isHeadless() &&
             store.getState().connections.selectedPlugin !== 'notifications' &&
             !knownNotifications.has(n.notification.id) &&
             blocklistedPlugins.indexOf(n.pluginId) === -1 &&

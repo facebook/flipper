@@ -127,7 +127,7 @@ export function SandyApp() {
             {staticView ? (
               <TrackingScope
                 scope={
-                  staticView.displayName ??
+                  (staticView as any).displayName ??
                   staticView.name ??
                   staticView.constructor?.name ??
                   'unknown static view'

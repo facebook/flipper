@@ -15,9 +15,6 @@ const plugins = [
   require('./electron-requires'),
   require('./plugin-flipper-requires'),
 ];
-if (flipperEnv.FLIPPER_HEADLESS) {
-  plugins.unshift(require('./electron-stubs'));
-}
 if (flipperEnv.FLIPPER_FB) {
   plugins.unshift(require('./fb-stubs'));
 }
