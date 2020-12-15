@@ -200,6 +200,7 @@ function uninstallPlugin(state: StoreState, plugin: PluginDefinition) {
     unloadPluginModule(plugin.details);
     draft.plugins.clientPlugins.delete(plugin.id);
     draft.plugins.devicePlugins.delete(plugin.id);
+    draft.plugins.loadedPlugins.delete(plugin.id);
     draft.pluginManager.uninstalledPlugins.add(plugin.details.name);
   });
 }

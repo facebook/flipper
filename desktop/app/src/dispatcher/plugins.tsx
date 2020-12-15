@@ -20,6 +20,7 @@ import {
   addDisabledPlugins,
   addFailedPlugins,
   registerLoadedPlugins,
+  registerBundledPlugins,
 } from '../reducers/plugins';
 import GK from '../fb-stubs/GK';
 import {FlipperBasePlugin} from '../plugin';
@@ -33,7 +34,7 @@ import semver from 'semver';
 import {
   ActivatablePluginDetails,
   BundledPluginDetails,
-  InstalledPluginDetails,
+  PluginDetails,
 } from 'flipper-plugin-lib';
 import {tryCatchReportPluginFailures, reportUsage} from '../utils/metrics';
 import * as FlipperPluginSDK from 'flipper-plugin';
@@ -64,19 +65,21 @@ export default async (store: Store, logger: Logger) => {
 
   const uninstalledPlugins = store.getState().pluginManager.uninstalledPlugins;
 
+  const bundledPlugins = getBundledPlugins();
+
   const loadedPlugins = filterNewestVersionOfEachPlugin(
-    getBundledPlugins(),
+    bundledPlugins,
     await getDynamicPlugins(),
-  );
+  ).filter((p) => !uninstalledPlugins.has(p.name));
 
   const initialPlugins: PluginDefinition[] = loadedPlugins
-    .filter((p) => !uninstalledPlugins.has(p.name))
     .map(reportVersion)
     .filter(checkDisabled(disabledPlugins))
     .filter(checkGK(gatekeepedPlugins))
     .map(createRequirePluginFunction(failedPlugins))
     .filter(notNull);
 
+  store.dispatch(registerBundledPlugins(bundledPlugins));
   store.dispatch(registerLoadedPlugins(loadedPlugins));
   store.dispatch(addGatekeepedPlugins(gatekeepedPlugins));
   store.dispatch(addDisabledPlugins(disabledPlugins));
@@ -108,11 +111,11 @@ function reportVersion(pluginDetails: ActivatablePluginDetails) {
   return pluginDetails;
 }
 
-export function filterNewestVersionOfEachPlugin(
-  bundledPlugins: BundledPluginDetails[],
-  dynamicPlugins: InstalledPluginDetails[],
-): ActivatablePluginDetails[] {
-  const pluginByName: {[key: string]: ActivatablePluginDetails} = {};
+export function filterNewestVersionOfEachPlugin<
+  T1 extends PluginDetails,
+  T2 extends PluginDetails
+>(bundledPlugins: T1[], dynamicPlugins: T2[]): (T1 | T2)[] {
+  const pluginByName: {[key: string]: T1 | T2} = {};
   for (const plugin of bundledPlugins) {
     pluginByName[plugin.name] = plugin;
   }

@@ -35,7 +35,9 @@ import {
   PluginDownloadStatus,
   startPluginDownload,
 } from '../../reducers/pluginDownloads';
-import {uninstallPlugin} from '../../reducers/pluginManager';
+import {activatePlugin, uninstallPlugin} from '../../reducers/pluginManager';
+import {BundledPluginDetails} from 'plugin-lib/lib';
+import {filterNewestVersionOfEachPlugin} from '../../dispatcher/plugins';
 
 const {SubMenu} = Menu;
 const {Text} = Typography;
@@ -71,8 +73,14 @@ export const PluginList = memo(function PluginList({
   const isArchived = !!activeDevice?.isArchived;
 
   const annotatedDownloadablePlugins = useMemoize<
-    [Record<string, DownloadablePluginState>, DownloadablePluginDetails[]],
-    [plugin: DownloadablePluginDetails, downloadStatus?: PluginDownloadStatus][]
+    [
+      Record<string, DownloadablePluginState>,
+      (DownloadablePluginDetails | BundledPluginDetails)[],
+    ],
+    [
+      plugin: DownloadablePluginDetails | BundledPluginDetails,
+      downloadStatus?: PluginDownloadStatus,
+    ][]
   >(
     (downloads, downloadablePlugins) => {
       const downloadMap = new Map(
@@ -126,12 +134,11 @@ export const PluginList = memo(function PluginList({
   const handleInstallPlugin = useCallback(
     (id: string) => {
       const plugin = downloadablePlugins.find((p) => p.id === id)!;
-      dispatch(
-        startPluginDownload({
-          plugin,
-          startedByUser: true,
-        }),
-      );
+      if (plugin.isBundled) {
+        dispatch(activatePlugin({plugin, enable: true, notifyIfFailed: true}));
+      } else {
+        dispatch(startPluginDownload({plugin, startedByUser: true}));
+      }
     },
     [downloadablePlugins, dispatch],
   );
@@ -229,19 +236,14 @@ export const PluginList = memo(function PluginList({
                   tooltip={getPluginTooltip(plugin.details)}
                   actions={
                     <>
-                      {!plugin.details.isBundled && (
-                        <ActionButton
-                          id={plugin.id}
-                          title="Uninstall plugin"
-                          onClick={handleUninstallPlugin}
-                          icon={
-                            <DeleteOutlined
-                              size={16}
-                              style={{marginRight: 0}}
-                            />
-                          }
-                        />
-                      )}
+                      <ActionButton
+                        id={plugin.id}
+                        title="Uninstall plugin"
+                        onClick={handleUninstallPlugin}
+                        icon={
+                          <DeleteOutlined size={16} style={{marginRight: 0}} />
+                        }
+                      />
                       <ActionButton
                         id={plugin.id}
                         title="Enable plugin"
@@ -465,7 +467,10 @@ export function computePluginLists(
   const enabledPlugins: ClientPluginDefinition[] = [];
   const disabledPlugins: ClientPluginDefinition[] = [];
   const unavailablePlugins: [plugin: PluginDetails, reason: string][] = [];
-  const downloadablePlugins: DownloadablePluginDetails[] = [];
+  const downloadablePlugins: (
+    | DownloadablePluginDetails
+    | BundledPluginDetails
+  )[] = [];
 
   if (device) {
     // find all device plugins that aren't part of the current device / metro
@@ -528,13 +533,10 @@ export function computePluginLists(
         disabledPlugins.push(plugin);
       }
     });
-    const installedPluginIds = new Set<string>([
-      ...clientPlugins.map((p) => p.id),
-      ...unavailablePlugins.map(([p]) => p.id),
-    ]);
-    const uninstalledMarketplacePlugins = plugins.marketplacePlugins.filter(
-      (p) => !installedPluginIds.has(p.id),
-    );
+    const uninstalledMarketplacePlugins = filterNewestVersionOfEachPlugin(
+      [...plugins.bundledPlugins.values()],
+      plugins.marketplacePlugins,
+    ).filter((p) => !plugins.loadedPlugins.has(p.id));
     uninstalledMarketplacePlugins.forEach((plugin) => {
       if (client.supportsPlugin(plugin.id)) {
         downloadablePlugins.push(plugin);

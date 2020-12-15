@@ -49,6 +49,7 @@ Object {
 
 exports[`can create a Fake flipper 2`] = `
 Object {
+  "bundledPlugins": Map {},
   "clientPlugins": Map {
     "TestPlugin" => [Function],
   },
