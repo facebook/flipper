@@ -8,7 +8,7 @@
  */
 
 import {DevicePluginMap, ClientPluginMap, PluginDefinition} from '../plugin';
-import {PluginDetails} from 'flipper-plugin-lib';
+import {PluginDetails, DownloadablePluginDetails} from 'flipper-plugin-lib';
 import {Actions} from '.';
 import produce from 'immer';
 import {isDevicePluginDefinition} from '../utils/pluginUtils';
@@ -20,6 +20,7 @@ export type State = {
   disabledPlugins: Array<PluginDetails>;
   failedPlugins: Array<[PluginDetails, string]>;
   selectedPlugins: Array<string>;
+  marketplacePlugins: Array<DownloadablePluginDetails>;
 };
 
 export type RegisterPluginAction = {
@@ -44,6 +45,10 @@ export type Action =
   | {
       type: 'SELECTED_PLUGINS';
       payload: Array<string>;
+    }
+  | {
+      type: 'MARKETPLACE_PLUGINS';
+      payload: Array<DownloadablePluginDetails>;
     };
 
 const INITIAL_STATE: State = {
@@ -53,6 +58,7 @@ const INITIAL_STATE: State = {
   disabledPlugins: [],
   failedPlugins: [],
   selectedPlugins: [],
+  marketplacePlugins: [],
 };
 
 export default function reducer(
@@ -94,6 +100,11 @@ export default function reducer(
       ...state,
       selectedPlugins: action.payload,
     };
+  } else if (action.type === 'MARKETPLACE_PLUGINS') {
+    return {
+      ...state,
+      marketplacePlugins: action.payload,
+    };
   } else {
     return state;
   }
@@ -125,5 +136,12 @@ export const addFailedPlugins = (
   payload: Array<[PluginDetails, string]>,
 ): Action => ({
   type: 'FAILED_PLUGINS',
+  payload,
+});
+
+export const registerMarketplacePlugins = (
+  payload: Array<DownloadablePluginDetails>,
+): Action => ({
+  type: 'MARKETPLACE_PLUGINS',
   payload,
 });

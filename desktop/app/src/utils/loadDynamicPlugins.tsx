@@ -56,7 +56,11 @@ export default async function loadDynamicPlugins(): Promise<PluginDetails[]> {
   const compiledDynamicPlugins = (await compilations).filter(
     (c) => c !== null,
   ) as PluginDetails[];
-  console.log('✅  Loaded all plugins.');
+  console.log(
+    `✅  Loaded ${dynamicPlugins.length} dynamic plugins: ${dynamicPlugins
+      .map((x) => x.title)
+      .join(', ')}.`,
+  );
   return compiledDynamicPlugins;
 }
 async function loadPlugin(

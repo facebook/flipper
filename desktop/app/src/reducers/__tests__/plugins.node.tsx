@@ -35,6 +35,7 @@ test('add clientPlugin', () => {
       failedPlugins: [],
       disabledPlugins: [],
       selectedPlugins: [],
+      marketplacePlugins: [],
     },
     registerPlugins([testPlugin]),
   );
@@ -50,6 +51,7 @@ test('add devicePlugin', () => {
       failedPlugins: [],
       disabledPlugins: [],
       selectedPlugins: [],
+      marketplacePlugins: [],
     },
     registerPlugins([testDevicePlugin]),
   );
@@ -65,6 +67,7 @@ test('do not add plugin twice', () => {
       failedPlugins: [],
       disabledPlugins: [],
       selectedPlugins: [],
+      marketplacePlugins: [],
     },
     registerPlugins([testPlugin, testPlugin]),
   );
@@ -95,6 +98,7 @@ test('add gatekeeped plugin', () => {
       failedPlugins: [],
       disabledPlugins: [],
       selectedPlugins: [],
+      marketplacePlugins: [],
     },
     addGatekeepedPlugins(gatekeepedPlugins),
   );

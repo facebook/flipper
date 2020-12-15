@@ -21,6 +21,7 @@ import user from './user';
 import pluginManager from './pluginManager';
 import reactNative from './reactNative';
 import pluginAutoUpdate from './fb-stubs/pluginAutoUpdate';
+import pluginMarketplace from './fb-stubs/pluginMarketplace';
 
 import {Logger} from '../fb-interfaces/Logger';
 import {Store} from '../reducers/index';
@@ -33,7 +34,6 @@ export default function (store: Store, logger: Logger): () => Promise<void> {
   if (process.env.NODE_ENV === 'development') {
     remote.globalShortcut.unregisterAll();
   }
-
   const dispatchers: Array<Dispatcher> = [
     application,
     store.getState().settingsState.enableAndroid ? androidDevice : null,
@@ -48,6 +48,7 @@ export default function (store: Store, logger: Logger): () => Promise<void> {
     pluginManager,
     reactNative,
     pluginAutoUpdate,
+    pluginMarketplace,
   ].filter(notNull);
   const globalCleanup = dispatchers
     .map((dispatcher) => dispatcher(store, logger))
