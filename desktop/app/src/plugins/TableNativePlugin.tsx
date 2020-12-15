@@ -268,7 +268,7 @@ export default function createTableNativePlugin(id: string, title: string) {
       source: '',
       main: '',
       entry: '',
-      isDefault: false,
+      isDefault: true,
     };
 
     static defaultPersistedState: PersistedState = {

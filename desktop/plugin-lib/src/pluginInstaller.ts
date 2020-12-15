@@ -140,8 +140,12 @@ export async function getInstalledPlugins(): Promise<PluginDetails[]> {
     versionDirs
       .filter(([_, versionDirs]) => versionDirs.length > 0)
       .map(([_, versionDirs]) => versionDirs[0]),
-    (latestVersionDir) => getPluginDetailsFromDir(latestVersionDir),
-  );
+    (latestVersionDir) =>
+      getPluginDetailsFromDir(latestVersionDir).catch((err) => {
+        console.error(`Failed to load plugin from ${latestVersionDir}`, err);
+        return null;
+      }),
+  ).then((plugins) => plugins.filter(notNull));
 }
 
 export async function cleanupOldInstalledPluginVersions(
@@ -172,11 +176,20 @@ export async function moveInstalledPluginsFromLegacyDir() {
           fs
             .lstat(dir)
             .then((lstat) => lstat.isDirectory())
-            .catch(() => Promise.resolve(false)),
+            .catch(() => false),
         ),
       )
       .then((dirs) =>
-        pmap(dirs, (dir) => getPluginDetailsFromDir(dir).catch(() => null)),
+        pmap(dirs, (dir) =>
+          getPluginDetailsFromDir(dir).catch(async (err) => {
+            console.error(
+              `Failed to load plugin from ${dir} on moving legacy plugins. Removing it.`,
+              err,
+            );
+            fs.remove(dir);
+            return null;
+          }),
+        ),
       )
       .then((plugins) =>
         pmap(plugins.filter(notNull), (plugin) =>

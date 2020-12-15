@@ -82,6 +82,9 @@ export function rootReducer(
     } else {
       return updateClientPlugin(state, plugin, enablePlugin);
     }
+  } else if (action.type === 'UNINSTALL_PLUGIN' && state) {
+    const plugin = action.payload;
+    return uninstallPlugin(state, plugin);
   }
 
   // otherwise
@@ -170,6 +173,24 @@ function updateClientPlugin(
     clientsWithEnabledPlugin.forEach((client) => {
       startPlugin(client, plugin, true);
     });
+  });
+}
+
+function uninstallPlugin(state: StoreState, plugin: PluginDefinition) {
+  const clients = state.connections.clients;
+  return produce(state, (draft) => {
+    clients.forEach((client) => {
+      stopPlugin(client, plugin.id);
+      const pluginKey = getPluginKey(
+        client.id,
+        {serial: client.query.device_id},
+        plugin.id,
+      );
+      delete draft.pluginMessageQueue[pluginKey];
+    });
+    cleanupPluginStates(draft.pluginStates, plugin.id);
+    draft.plugins.clientPlugins.delete(plugin.id);
+    draft.pluginManager.removedPlugins.push(plugin.details);
   });
 }
 

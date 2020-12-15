@@ -10,7 +10,7 @@
 import React, {memo, useCallback, useEffect, useRef, useState} from 'react';
 import {Badge, Button, Menu, Tooltip, Typography} from 'antd';
 import {InfoIcon, SidebarTitle} from '../LeftSidebar';
-import {PlusOutlined, MinusOutlined} from '@ant-design/icons';
+import {PlusOutlined, MinusOutlined, DeleteOutlined} from '@ant-design/icons';
 import {Glyph, Layout, styled} from '../../ui';
 import {theme, NUX, Tracked} from 'flipper-plugin';
 import {useDispatch, useStore} from '../../utils/useStore';
@@ -26,6 +26,7 @@ import {useMemoize} from '../../utils/useMemoize';
 import MetroDevice from '../../devices/MetroDevice';
 import {DownloadablePluginDetails} from 'plugin-lib/lib';
 import {startPluginDownload} from '../../reducers/pluginDownloads';
+import {uninstallPlugin} from '../../reducers/pluginManager';
 
 const {SubMenu} = Menu;
 const {Text} = Typography;
@@ -107,6 +108,13 @@ export const PluginList = memo(function PluginList({
       );
     },
     [uninstalledPlugins, dispatch],
+  );
+  const handleUninstallPlugin = useCallback(
+    (id: string) => {
+      const plugin = disabledPlugins.find((p) => p.id === id)!;
+      dispatch(uninstallPlugin(plugin));
+    },
+    [disabledPlugins, dispatch],
   );
   return (
     <Layout.Container>
@@ -194,12 +202,29 @@ export const PluginList = memo(function PluginList({
                   scrollTo={plugin.id === connections.selectedPlugin}
                   tooltip={getPluginTooltip(plugin.details)}
                   actions={
-                    <ActionButton
-                      id={plugin.id}
-                      title="Enable plugin"
-                      onClick={handleStarPlugin}
-                      icon={<PlusOutlined size={16} style={{marginRight: 0}} />}
-                    />
+                    <>
+                      {!plugin.details.isDefault && (
+                        <ActionButton
+                          id={plugin.id}
+                          title="Uninstall plugin"
+                          onClick={handleUninstallPlugin}
+                          icon={
+                            <DeleteOutlined
+                              size={16}
+                              style={{marginRight: 0}}
+                            />
+                          }
+                        />
+                      )}
+                      <ActionButton
+                        id={plugin.id}
+                        title="Enable plugin"
+                        onClick={handleStarPlugin}
+                        icon={
+                          <PlusOutlined size={16} style={{marginRight: 0}} />
+                        }
+                      />
+                    </>
                   }
                   disabled
                 />
