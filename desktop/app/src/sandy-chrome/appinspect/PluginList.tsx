@@ -38,6 +38,7 @@ import {
 import {activatePlugin, uninstallPlugin} from '../../reducers/pluginManager';
 import {BundledPluginDetails} from 'plugin-lib/lib';
 import {filterNewestVersionOfEachPlugin} from '../../dispatcher/plugins';
+import {reportUsage} from '../../utils/metrics';
 
 const {SubMenu} = Menu;
 const {Text} = Typography;
@@ -134,6 +135,7 @@ export const PluginList = memo(function PluginList({
   const handleInstallPlugin = useCallback(
     (id: string) => {
       const plugin = downloadablePlugins.find((p) => p.id === id)!;
+      reportUsage('plugin:install', {version: plugin.version}, plugin.id);
       if (plugin.isBundled) {
         dispatch(activatePlugin({plugin, enable: true, notifyIfFailed: true}));
       } else {
@@ -145,6 +147,7 @@ export const PluginList = memo(function PluginList({
   const handleUninstallPlugin = useCallback(
     (id: string) => {
       const plugin = disabledPlugins.find((p) => p.id === id)!;
+      reportUsage('plugin:uninstall', {version: plugin.version}, plugin.id);
       dispatch(uninstallPlugin(plugin));
     },
     [disabledPlugins, dispatch],

@@ -55,6 +55,7 @@ import {InstalledPluginDetails} from 'plugin-lib';
 import semver from 'semver';
 import {activatePlugin} from './reducers/pluginManager';
 import {produce} from 'immer';
+import {reportUsage} from './utils/metrics';
 
 const {Text, Link} = Typography;
 
@@ -382,6 +383,13 @@ class PluginContainer extends PureComponent<Props, State> {
   reloadPlugin() {
     const {activatePlugin, latestInstalledVersion} = this.props;
     if (latestInstalledVersion) {
+      reportUsage(
+        'plugin-auto-update:alert:reloadClicked',
+        {
+          version: latestInstalledVersion.version,
+        },
+        latestInstalledVersion.id,
+      );
       activatePlugin({
         plugin: latestInstalledVersion,
         enable: false,

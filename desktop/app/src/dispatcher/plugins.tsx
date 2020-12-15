@@ -223,6 +223,13 @@ export const requirePlugin = (
   pluginDetails: ActivatablePluginDetails,
   reqFn: Function = global.electronRequire,
 ): PluginDefinition => {
+  reportUsage(
+    'plugin:load',
+    {
+      version: pluginDetails.version,
+    },
+    pluginDetails.id,
+  );
   return tryCatchReportPluginFailures(
     () => requirePluginInternal(pluginDetails, reqFn),
     'plugin:load',

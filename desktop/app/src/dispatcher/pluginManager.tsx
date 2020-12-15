@@ -22,6 +22,7 @@ import {sideEffect} from '../utils/sideEffect';
 import {requirePlugin} from './plugins';
 import {registerPluginUpdate} from '../reducers/connections';
 import {showErrorNotification} from '../utils/notifications';
+import {reportUsage} from '../utils/metrics';
 
 const maxInstalledPluginVersionsToKeep = 2;
 
@@ -47,6 +48,15 @@ export default (store: Store, _logger: Logger) => {
     (queue, store) => {
       for (const request of queue) {
         try {
+          reportUsage(
+            'plugin:activate',
+            {
+              version: request.plugin.version,
+              enable: request.enable ? '1' : '0',
+              notifyIfFailed: request.notifyIfFailed ? '1' : '0',
+            },
+            request.plugin.id,
+          );
           const plugin = requirePlugin(request.plugin);
           const enablePlugin = request.enable;
           store.dispatch(

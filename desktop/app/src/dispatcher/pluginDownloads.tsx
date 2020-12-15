@@ -30,7 +30,7 @@ import {requirePlugin} from './plugins';
 import {registerPluginUpdate, selectPlugin} from '../reducers/connections';
 import {Button} from 'antd';
 import React from 'react';
-import {reportUsage} from '../utils/metrics';
+import {reportPlatformFailures, reportUsage} from '../utils/metrics';
 import {addNotification, removeNotification} from '../reducers/notifications';
 import reloadFlipper from '../utils/reloadFlipper';
 import {activatePlugin, pluginInstalled} from '../reducers/pluginManager';
@@ -55,7 +55,22 @@ export default (store: Store) => {
     (state, store) => {
       for (const download of Object.values(state)) {
         if (download.status === PluginDownloadStatus.QUEUED) {
-          handlePluginDownload(download.plugin, download.startedByUser, store);
+          reportUsage(
+            'plugin-auto-update:download',
+            {
+              version: download.plugin.version,
+              startedByUser: download.startedByUser ? '1' : '0',
+            },
+            download.plugin.id,
+          );
+          reportPlatformFailures(
+            handlePluginDownload(
+              download.plugin,
+              download.startedByUser,
+              store,
+            ),
+            'plugin-auto-update:download',
+          ).catch(() => {});
         }
       }
     },
@@ -145,6 +160,7 @@ async function handlePluginDownload(
         `Failed to download plugin "${title}" v${version}.`,
       );
     }
+    throw error;
   } finally {
     dispatch(pluginDownloadFinished({plugin}));
     await fs.remove(tmpDir);
