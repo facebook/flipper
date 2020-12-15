@@ -29,7 +29,11 @@ import isProduction from '../utils/isProduction';
 import {notNull} from '../utils/typeUtils';
 import {sideEffect} from '../utils/sideEffect';
 import semver from 'semver';
-import {PluginDetails} from 'flipper-plugin-lib';
+import {
+  ActivatablePluginDetails,
+  BundledPluginDetails,
+  InstalledPluginDetails,
+} from 'flipper-plugin-lib';
 import {tryCatchReportPluginFailures, reportUsage} from '../utils/metrics';
 import * as FlipperPluginSDK from 'flipper-plugin';
 import {_SandyPluginDefinition} from 'flipper-plugin';
@@ -51,9 +55,9 @@ export default async (store: Store, logger: Logger) => {
   globalObject.FlipperPlugin = FlipperPluginSDK;
   globalObject.Immer = Immer;
 
-  const gatekeepedPlugins: Array<PluginDetails> = [];
-  const disabledPlugins: Array<PluginDetails> = [];
-  const failedPlugins: Array<[PluginDetails, string]> = [];
+  const gatekeepedPlugins: Array<ActivatablePluginDetails> = [];
+  const disabledPlugins: Array<ActivatablePluginDetails> = [];
+  const failedPlugins: Array<[ActivatablePluginDetails, string]> = [];
 
   defaultPluginsIndex = getDefaultPluginsIndex();
 
@@ -89,7 +93,7 @@ export default async (store: Store, logger: Logger) => {
   );
 };
 
-function reportVersion(pluginDetails: PluginDetails) {
+function reportVersion(pluginDetails: ActivatablePluginDetails) {
   reportUsage(
     'plugin:version',
     {
@@ -101,10 +105,10 @@ function reportVersion(pluginDetails: PluginDetails) {
 }
 
 export function filterNewestVersionOfEachPlugin(
-  bundledPlugins: PluginDetails[],
-  dynamicPlugins: PluginDetails[],
-): PluginDetails[] {
-  const pluginByName: {[key: string]: PluginDetails} = {};
+  bundledPlugins: BundledPluginDetails[],
+  dynamicPlugins: InstalledPluginDetails[],
+): ActivatablePluginDetails[] {
+  const pluginByName: {[key: string]: ActivatablePluginDetails} = {};
   for (const plugin of bundledPlugins) {
     pluginByName[plugin.name] = plugin;
   }
@@ -120,7 +124,7 @@ export function filterNewestVersionOfEachPlugin(
   return Object.values(pluginByName);
 }
 
-function getBundledPlugins(): Array<PluginDetails> {
+function getBundledPlugins(): Array<BundledPluginDetails> {
   // DefaultPlugins that are included in the bundle.
   // List of defaultPlugins is written at build time
   const pluginPath =
@@ -129,7 +133,7 @@ function getBundledPlugins(): Array<PluginDetails> {
       ? path.join(__dirname, 'defaultPlugins')
       : './defaultPlugins/index.json');
 
-  let bundledPlugins: Array<PluginDetails> = [];
+  let bundledPlugins: Array<BundledPluginDetails> = [];
   try {
     bundledPlugins = global.electronRequire(pluginPath);
   } catch (e) {
@@ -148,8 +152,8 @@ export async function getDynamicPlugins() {
   }
 }
 
-export const checkGK = (gatekeepedPlugins: Array<PluginDetails>) => (
-  plugin: PluginDetails,
+export const checkGK = (gatekeepedPlugins: Array<ActivatablePluginDetails>) => (
+  plugin: ActivatablePluginDetails,
 ): boolean => {
   if (!plugin.gatekeeper) {
     return true;
@@ -161,7 +165,9 @@ export const checkGK = (gatekeepedPlugins: Array<PluginDetails>) => (
   return result;
 };
 
-export const checkDisabled = (disabledPlugins: Array<PluginDetails>) => {
+export const checkDisabled = (
+  disabledPlugins: Array<ActivatablePluginDetails>,
+) => {
   const enabledList = process.env.FLIPPER_ENABLED_PLUGINS
     ? new Set<string>(process.env.FLIPPER_ENABLED_PLUGINS.split(','))
     : null;
@@ -171,7 +177,7 @@ export const checkDisabled = (disabledPlugins: Array<PluginDetails>) => {
   } catch (e) {
     console.error(e);
   }
-  return (plugin: PluginDetails): boolean => {
+  return (plugin: ActivatablePluginDetails): boolean => {
     if (disabledList.has(plugin.name)) {
       disabledPlugins.push(plugin);
       return false;
@@ -192,10 +198,10 @@ export const checkDisabled = (disabledPlugins: Array<PluginDetails>) => {
 };
 
 export const createRequirePluginFunction = (
-  failedPlugins: Array<[PluginDetails, string]>,
+  failedPlugins: Array<[ActivatablePluginDetails, string]>,
   reqFn: Function = global.electronRequire,
 ) => {
-  return (pluginDetails: PluginDetails): PluginDefinition | null => {
+  return (pluginDetails: ActivatablePluginDetails): PluginDefinition | null => {
     try {
       return requirePlugin(pluginDetails, reqFn);
     } catch (e) {
@@ -207,7 +213,7 @@ export const createRequirePluginFunction = (
 };
 
 export const requirePlugin = (
-  pluginDetails: PluginDetails,
+  pluginDetails: ActivatablePluginDetails,
   reqFn: Function = global.electronRequire,
 ): PluginDefinition => {
   return tryCatchReportPluginFailures(
@@ -218,10 +224,10 @@ export const requirePlugin = (
 };
 
 const requirePluginInternal = (
-  pluginDetails: PluginDetails,
+  pluginDetails: ActivatablePluginDetails,
   reqFn: Function = global.electronRequire,
 ): PluginDefinition => {
-  let plugin = pluginDetails.isDefault
+  let plugin = pluginDetails.isBundled
     ? defaultPluginsIndex[pluginDetails.name]
     : reqFn(pluginDetails.entry);
   if (pluginDetails.flipperSDKVersion) {
@@ -248,7 +254,8 @@ const requirePluginInternal = (
     // set values from package.json as static variables on class
     Object.keys(pluginDetails).forEach((key) => {
       if (key !== 'name' && key !== 'id') {
-        plugin[key] = plugin[key] || pluginDetails[key as keyof PluginDetails];
+        plugin[key] =
+          plugin[key] || pluginDetails[key as keyof ActivatablePluginDetails];
       }
     });
   }

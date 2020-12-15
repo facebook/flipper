@@ -83,7 +83,7 @@ test('add gatekeeped plugin', () => {
       dir: '/plugins/test',
       specVersion: 2,
       source: 'src/index.ts',
-      isDefault: false,
+      isBundled: false,
       main: 'lib/index.js',
       title: 'test',
       id: 'test',

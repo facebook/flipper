@@ -229,7 +229,7 @@ export const PluginList = memo(function PluginList({
                   tooltip={getPluginTooltip(plugin.details)}
                   actions={
                     <>
-                      {!plugin.details.isDefault && (
+                      {!plugin.details.isBundled && (
                         <ActionButton
                           id={plugin.id}
                           title="Uninstall plugin"

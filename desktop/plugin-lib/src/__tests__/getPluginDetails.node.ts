@@ -9,7 +9,7 @@
 
 import fs from 'fs-extra';
 import path from 'path';
-import {getPluginDetailsFromDir} from '../getPluginDetails';
+import {getInstalledPluginDetails} from '../getPluginDetails';
 import {pluginInstallationDir} from '../pluginPaths';
 import {normalizePath} from 'flipper-test-utils';
 
@@ -31,7 +31,7 @@ test('getPluginDetailsV1', async () => {
   };
   jest.mock('fs-extra', () => jest.fn());
   fs.readJson = jest.fn().mockImplementation(() => pluginV1);
-  const details = await getPluginDetailsFromDir(pluginPath);
+  const details = await getInstalledPluginDetails(pluginPath);
   details.dir = normalizePath(details.dir);
   details.entry = normalizePath(details.entry);
   expect(details).toMatchInlineSnapshot(`
@@ -45,7 +45,8 @@ test('getPluginDetailsV1', async () => {
       "gatekeeper": "GK_flipper_plugin_test",
       "icon": undefined,
       "id": "flipper-plugin-test",
-      "isDefault": false,
+      "isActivatable": true,
+      "isBundled": false,
       "main": "dist/bundle.js",
       "name": "flipper-plugin-test",
       "source": "src/index.tsx",
@@ -69,7 +70,7 @@ test('getPluginDetailsV2', async () => {
   };
   jest.mock('fs-extra', () => jest.fn());
   fs.readJson = jest.fn().mockImplementation(() => pluginV2);
-  const details = await getPluginDetailsFromDir(pluginPath);
+  const details = await getInstalledPluginDetails(pluginPath);
   details.dir = normalizePath(details.dir);
   details.entry = normalizePath(details.entry);
   expect(details).toMatchInlineSnapshot(`
@@ -83,7 +84,8 @@ test('getPluginDetailsV2', async () => {
       "gatekeeper": "GK_flipper_plugin_test",
       "icon": undefined,
       "id": "flipper-plugin-test",
-      "isDefault": false,
+      "isActivatable": true,
+      "isBundled": false,
       "main": "dist/bundle.js",
       "name": "flipper-plugin-test",
       "source": "src/index.tsx",
@@ -107,7 +109,7 @@ test('id used as title if the latter omited', async () => {
   };
   jest.mock('fs-extra', () => jest.fn());
   fs.readJson = jest.fn().mockImplementation(() => pluginV2);
-  const details = await getPluginDetailsFromDir(pluginPath);
+  const details = await getInstalledPluginDetails(pluginPath);
   details.dir = normalizePath(details.dir);
   details.entry = normalizePath(details.entry);
   expect(details).toMatchInlineSnapshot(`
@@ -121,7 +123,8 @@ test('id used as title if the latter omited', async () => {
       "gatekeeper": "GK_flipper_plugin_test",
       "icon": undefined,
       "id": "test",
-      "isDefault": false,
+      "isActivatable": true,
+      "isBundled": false,
       "main": "dist/bundle.js",
       "name": "flipper-plugin-test",
       "source": "src/index.tsx",
@@ -144,7 +147,7 @@ test('name without "flipper-plugin-" prefix is used as title if the latter omite
   };
   jest.mock('fs-extra', () => jest.fn());
   fs.readJson = jest.fn().mockImplementation(() => pluginV2);
-  const details = await getPluginDetailsFromDir(pluginPath);
+  const details = await getInstalledPluginDetails(pluginPath);
   details.dir = normalizePath(details.dir);
   details.entry = normalizePath(details.entry);
   expect(details).toMatchInlineSnapshot(`
@@ -158,7 +161,8 @@ test('name without "flipper-plugin-" prefix is used as title if the latter omite
       "gatekeeper": "GK_flipper_plugin_test",
       "icon": undefined,
       "id": "flipper-plugin-test",
-      "isDefault": false,
+      "isActivatable": true,
+      "isBundled": false,
       "main": "dist/bundle.js",
       "name": "flipper-plugin-test",
       "source": "src/index.tsx",
@@ -184,7 +188,7 @@ test('flipper-plugin-version is parsed', async () => {
   };
   jest.mock('fs-extra', () => jest.fn());
   fs.readJson = jest.fn().mockImplementation(() => pluginV2);
-  const details = await getPluginDetailsFromDir(pluginPath);
+  const details = await getInstalledPluginDetails(pluginPath);
   details.dir = normalizePath(details.dir);
   details.entry = normalizePath(details.entry);
   expect(details).toMatchInlineSnapshot(`
@@ -198,7 +202,8 @@ test('flipper-plugin-version is parsed', async () => {
       "gatekeeper": "GK_flipper_plugin_test",
       "icon": undefined,
       "id": "flipper-plugin-test",
-      "isDefault": false,
+      "isActivatable": true,
+      "isBundled": false,
       "main": "dist/bundle.js",
       "name": "flipper-plugin-test",
       "source": "src/index.tsx",

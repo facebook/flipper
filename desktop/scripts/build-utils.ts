@@ -14,7 +14,11 @@ import fs from 'fs-extra';
 import {spawn} from 'promisify-child-process';
 import {getWatchFolders} from 'flipper-pkg-lib';
 import getAppWatchFolders from './get-app-watch-folders';
-import {getSourcePlugins, getPluginSourceFolders} from 'flipper-plugin-lib';
+import {
+  getSourcePlugins,
+  getPluginSourceFolders,
+  BundledPluginDetails,
+} from 'flipper-plugin-lib';
 import {
   appDir,
   staticDir,
@@ -33,19 +37,26 @@ export function die(err: Error) {
 
 export async function generatePluginEntryPoints() {
   console.log('⚙️  Generating plugin entry points...');
-  const plugins = await getSourcePlugins();
-  for (const plugin of plugins) {
-    plugin.isDefault = true;
-    plugin.version = plugin.version === '0.0.0' ? version : plugin.version;
-    plugin.flipperSDKVersion =
-      plugin.flipperSDKVersion === '0.0.0' ? version : plugin.flipperSDKVersion;
-  }
+  const sourcePlugins = await getSourcePlugins();
+  const bundledPlugins = sourcePlugins.map(
+    (p) =>
+      ({
+        ...p,
+        isBundled: true,
+        version: p.version === '0.0.0' ? version : p.version,
+        flipperSDKVersion:
+          p.flipperSDKVersion === '0.0.0' ? version : p.flipperSDKVersion,
+      } as BundledPluginDetails),
+  );
   if (await fs.pathExists(defaultPluginsIndexDir)) {
     await fs.remove(defaultPluginsIndexDir);
   }
   await fs.mkdirp(defaultPluginsIndexDir);
-  await fs.writeJSON(path.join(defaultPluginsIndexDir, 'index.json'), plugins);
-  const pluginRequres = plugins
+  await fs.writeJSON(
+    path.join(defaultPluginsIndexDir, 'index.json'),
+    bundledPlugins,
+  );
+  const pluginRequres = bundledPlugins
     .map((x) => `  '${x.name}': require('${x.name}')`)
     .join(',\n');
   const generatedIndex = `

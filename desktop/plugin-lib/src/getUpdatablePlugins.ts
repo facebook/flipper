@@ -7,15 +7,12 @@
  * @format
  */
 
-import PluginDetails from './PluginDetails';
+import {InstalledPluginDetails} from './PluginDetails';
 import {getInstalledPlugins} from './pluginInstaller';
 import semver from 'semver';
 import {getNpmHostedPlugins, NpmPackageDescriptor} from './getNpmHostedPlugins';
 import NpmApi from 'npm-api';
-import {
-  getPluginDetails,
-  getPluginDetailsFromPackageJson,
-} from './getPluginDetails';
+import {getInstalledPluginDetails, getPluginDetails} from './getPluginDetails';
 import {getPluginVersionInstallationDir} from './pluginPaths';
 import pmap from 'p-map';
 import {notNull} from './typeUtils';
@@ -31,7 +28,7 @@ export type UpdatablePlugin = {
   updateStatus: UpdateResult;
 };
 
-export type UpdatablePluginDetails = PluginDetails & UpdatablePlugin;
+export type UpdatablePluginDetails = InstalledPluginDetails & UpdatablePlugin;
 
 export async function getUpdatablePlugins(
   query?: string,
@@ -51,7 +48,7 @@ export async function getUpdatablePlugins(
             semver.lt(installedPlugin.version, npmPackageDescriptor.version)
           ) {
             const pkg = await npmApi.repo(npmPackageDescriptor.name).package();
-            const npmPluginDetails = await getPluginDetails(
+            const npmPluginDetails = await getInstalledPluginDetails(
               getPluginVersionInstallationDir(
                 npmPackageDescriptor.name,
                 npmPackageDescriptor.version,
@@ -91,7 +88,7 @@ export async function getUpdatablePlugins(
     async (notInstalledPlugin) => {
       try {
         const pkg = await npmApi.repo(notInstalledPlugin.name).package();
-        const npmPluginDetails = await getPluginDetailsFromPackageJson(pkg);
+        const npmPluginDetails = getPluginDetails(pkg);
         if (npmPluginDetails.specVersion === 1) {
           return null;
         }

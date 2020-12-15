@@ -15,8 +15,8 @@ import decompress from 'decompress';
 import decompressTargz from 'decompress-targz';
 import decompressUnzip from 'decompress-unzip';
 import tmp from 'tmp';
-import PluginDetails from './PluginDetails';
-import {getPluginDetailsFromDir} from './getPluginDetails';
+import {InstalledPluginDetails} from './PluginDetails';
+import {getInstalledPluginDetails} from './getPluginDetails';
 import {
   getPluginVersionInstallationDir,
   getPluginDirNameFromPackageName,
@@ -37,8 +37,8 @@ function providePluginManagerNoDependencies(): PM {
 
 async function installPluginFromTempDir(
   sourceDir: string,
-): Promise<PluginDetails> {
-  const pluginDetails = await getPluginDetailsFromDir(sourceDir);
+): Promise<InstalledPluginDetails> {
+  const pluginDetails = await getInstalledPluginDetails(sourceDir);
   const {name, version} = pluginDetails;
   const backupDir = path.join(await getTmpDir(), `${name}-${version}`);
   const destinationDir = getPluginVersionInstallationDir(name, version);
@@ -63,7 +63,7 @@ async function installPluginFromTempDir(
     }
     throw err;
   }
-  return await getPluginDetailsFromDir(destinationDir);
+  return await getInstalledPluginDetails(destinationDir);
 }
 
 async function getPluginRootDir(dir: string) {
@@ -87,12 +87,12 @@ async function getPluginRootDir(dir: string) {
 export async function getInstalledPlugin(
   name: string,
   version: string,
-): Promise<PluginDetails | null> {
+): Promise<InstalledPluginDetails | null> {
   const dir = getPluginVersionInstallationDir(name, version);
   if (!(await fs.pathExists(dir))) {
     return null;
   }
-  return await getPluginDetailsFromDir(dir);
+  return await getInstalledPluginDetails(dir);
 }
 
 export async function installPluginFromNpm(name: string) {
@@ -114,7 +114,7 @@ export async function installPluginFromNpm(name: string) {
 
 export async function installPluginFromFile(
   packagePath: string,
-): Promise<PluginDetails> {
+): Promise<InstalledPluginDetails> {
   const tmpDir = await getTmpDir();
   try {
     const files = await decompress(packagePath, tmpDir, {
@@ -140,14 +140,14 @@ export async function removePlugins(
   await pmap(names, (name) => removePlugin(name));
 }
 
-export async function getInstalledPlugins(): Promise<PluginDetails[]> {
+export async function getInstalledPlugins(): Promise<InstalledPluginDetails[]> {
   const versionDirs = await getInstalledPluginVersionDirs();
   return pmap(
     versionDirs
       .filter(([_, versionDirs]) => versionDirs.length > 0)
       .map(([_, versionDirs]) => versionDirs[0]),
     (latestVersionDir) =>
-      getPluginDetailsFromDir(latestVersionDir).catch((err) => {
+      getInstalledPluginDetails(latestVersionDir).catch((err) => {
         console.error(`Failed to load plugin from ${latestVersionDir}`, err);
         return null;
       }),
@@ -187,7 +187,7 @@ export async function moveInstalledPluginsFromLegacyDir() {
       )
       .then((dirs) =>
         pmap(dirs, (dir) =>
-          getPluginDetailsFromDir(dir).catch(async (err) => {
+          getInstalledPluginDetails(dir).catch(async (err) => {
             console.error(
               `Failed to load plugin from ${dir} on moving legacy plugins. Removing it.`,
               err,

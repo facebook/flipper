@@ -10,16 +10,18 @@
 import path from 'path';
 import fs from 'fs-extra';
 import {
-  PluginDetails,
   getSourcePlugins,
   getInstalledPlugins,
   moveInstalledPluginsFromLegacyDir,
+  InstalledPluginDetails,
 } from 'flipper-plugin-lib';
 import {getStaticPath} from '../utils/pathUtils';
 
 // Load "dynamic" plugins, e.g. those which are either installed or loaded from sources for development purposes.
 // This opposed to "default" plugins which are included into Flipper bundle.
-export default async function loadDynamicPlugins(): Promise<PluginDetails[]> {
+export default async function loadDynamicPlugins(): Promise<
+  InstalledPluginDetails[]
+> {
   if (process.env.FLIPPER_FAST_REFRESH) {
     console.log(
       '❌  Skipping loading of dynamic plugins because Fast Refresh is enabled. Fast Refresh only works with bundled plugins.',

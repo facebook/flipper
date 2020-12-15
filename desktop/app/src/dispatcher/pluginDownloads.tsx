@@ -9,6 +9,8 @@
 
 import {
   DownloadablePluginDetails,
+  getInstalledPluginDetails,
+  getPluginVersionInstallationDir,
   installPluginFromFile,
 } from 'flipper-plugin-lib';
 import {Store} from '../reducers/index';
@@ -62,23 +64,24 @@ async function handlePluginDownload(
   store: Store,
 ) {
   const dispatch = store.dispatch;
-  const {name, title, version, downloadUrl, dir} = plugin;
+  const {name, title, version, downloadUrl} = plugin;
+  const installationDir = getPluginVersionInstallationDir(name, version);
   console.log(
-    `Downloading plugin "${title}" v${version} from "${downloadUrl}" to "${dir}".`,
+    `Downloading plugin "${title}" v${version} from "${downloadUrl}" to "${installationDir}".`,
   );
-  const targetDir = await getTempDirName();
-  const targetFile = path.join(targetDir, `${name}-${version}.tgz`);
+  const tmpDir = await getTempDirName();
+  const tmpFile = path.join(tmpDir, `${name}-${version}.tgz`);
   try {
     const cancellationSource = axios.CancelToken.source();
     dispatch(
       pluginDownloadStarted({plugin, cancel: cancellationSource.cancel}),
     );
-    if (await fs.pathExists(dir)) {
+    if (await fs.pathExists(installationDir)) {
       console.log(
-        `Using existing files instead of downloading plugin "${title}" v${version} from "${downloadUrl}" to "${dir}"`,
+        `Using existing files instead of downloading plugin "${title}" v${version} from "${downloadUrl}" to "${installationDir}"`,
       );
     } else {
-      await fs.ensureDir(targetDir);
+      await fs.ensureDir(tmpDir);
       let percentCompleted = 0;
       const response = await axios.get(plugin.downloadUrl, {
         adapter: axiosHttpAdapter,
@@ -103,15 +106,16 @@ async function handlePluginDownload(
       }
       const responseStream = response.data as fs.ReadStream;
       const writeStream = responseStream.pipe(
-        fs.createWriteStream(targetFile, {autoClose: true}),
+        fs.createWriteStream(tmpFile, {autoClose: true}),
       );
       await new Promise((resolve, reject) =>
         writeStream.once('finish', resolve).once('error', reject),
       );
-      await installPluginFromFile(targetFile);
+      await installPluginFromFile(tmpFile);
     }
+    const installedPlugin = await getInstalledPluginDetails(installationDir);
     if (!store.getState().plugins.clientPlugins.has(plugin.id)) {
-      const pluginDefinition = requirePlugin(plugin);
+      const pluginDefinition = requirePlugin(installedPlugin);
       dispatch(
         registerPluginUpdate({
           plugin: pluginDefinition,
@@ -120,11 +124,11 @@ async function handlePluginDownload(
       );
     }
     console.log(
-      `Successfully downloaded and installed plugin "${title}" v${version} from "${downloadUrl}" to "${dir}".`,
+      `Successfully downloaded and installed plugin "${title}" v${version} from "${downloadUrl}" to "${installationDir}".`,
     );
   } catch (error) {
     console.error(
-      `Failed to download plugin "${title}" v${version} from "${downloadUrl}" to "${dir}".`,
+      `Failed to download plugin "${title}" v${version} from "${downloadUrl}" to "${installationDir}".`,
       error,
     );
     if (startedByUser) {
@@ -144,6 +148,6 @@ async function handlePluginDownload(
     }
   } finally {
     dispatch(pluginDownloadFinished({plugin}));
-    await fs.remove(targetDir);
+    await fs.remove(tmpDir);
   }
 }

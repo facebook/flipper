@@ -18,7 +18,7 @@ import {
 import {getInstalledPlugins} from '../pluginInstaller';
 import {mocked} from 'ts-jest/utils';
 import type {Package} from 'npm-api';
-import PluginDetails from '../PluginDetails';
+import {InstalledPluginDetails} from '../PluginDetails';
 
 jest.mock('npm-api', () => {
   return jest.fn().mockImplementation(() => {
@@ -54,7 +54,7 @@ jest.mock('npm-api', () => {
   });
 });
 
-const installedPlugins: PluginDetails[] = [
+const installedPlugins: InstalledPluginDetails[] = [
   {
     name: 'flipper-plugin-hello',
     entry: './test/index.js',
@@ -66,7 +66,8 @@ const installedPlugins: PluginDetails[] = [
     id: 'Hello',
     title: 'Hello',
     description: 'World?',
-    isDefault: false,
+    isBundled: false,
+    isActivatable: true,
   },
   {
     name: 'flipper-plugin-world',
@@ -79,7 +80,8 @@ const installedPlugins: PluginDetails[] = [
     id: 'World',
     title: 'World',
     description: 'Hello?',
-    isDefault: false,
+    isBundled: false,
+    isActivatable: true,
   },
 ];
 

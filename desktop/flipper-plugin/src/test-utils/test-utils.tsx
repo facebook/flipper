@@ -14,7 +14,7 @@ import {
   act as testingLibAct,
 } from '@testing-library/react';
 import {queries} from '@testing-library/dom';
-import {PluginDetails} from 'flipper-plugin-lib';
+import {InstalledPluginDetails} from 'flipper-plugin-lib';
 
 import {
   RealFlipperClient,
@@ -383,15 +383,16 @@ function createBasePluginResult(
 }
 
 export function createMockPluginDetails(
-  details?: Partial<PluginDetails>,
-): PluginDetails {
+  details?: Partial<InstalledPluginDetails>,
+): InstalledPluginDetails {
   return {
     id: 'TestPlugin',
     dir: '',
     name: 'TestPlugin',
     specVersion: 0,
     entry: '',
-    isDefault: false,
+    isBundled: false,
+    isActivatable: true,
     main: '',
     source: '',
     title: 'Testing Plugin',

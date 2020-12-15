@@ -7,7 +7,7 @@
  * @format
  */
 
-import {PluginDetails} from 'flipper-plugin-lib';
+import {ActivatablePluginDetails} from 'flipper-plugin-lib';
 import {PluginFactory, FlipperPluginComponent} from './Plugin';
 import {DevicePluginPredicate, DevicePluginFactory} from './DevicePlugin';
 
@@ -42,7 +42,7 @@ export type FlipperPluginModule<Factory extends PluginFactory<any, any>> = {
 export class SandyPluginDefinition {
   id: string;
   module: FlipperPluginModule<any> | FlipperDevicePluginModule;
-  details: PluginDetails;
+  details: ActivatablePluginDetails;
   isDevicePlugin: boolean;
 
   // TODO: Implement T68683476
@@ -58,10 +58,10 @@ export class SandyPluginDefinition {
     | undefined = undefined;
 
   constructor(
-    details: PluginDetails,
+    details: ActivatablePluginDetails,
     module: FlipperPluginModule<any> | FlipperDevicePluginModule,
   );
-  constructor(details: PluginDetails, module: any) {
+  constructor(details: ActivatablePluginDetails, module: any) {
     this.id = details.id;
     this.details = details;
     if (module.supportsDevice) {
@@ -123,8 +123,8 @@ export class SandyPluginDefinition {
     return this.details.version;
   }
 
-  get isDefault() {
-    return this.details.isDefault;
+  get isBundled() {
+    return this.details.isBundled;
   }
 
   get keyboardActions() {

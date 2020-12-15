@@ -39,15 +39,12 @@ export function createMockDownloadablePluginDetails(
     },
     category: 'tools',
     description: 'Description of Test Plugin',
-    dir: `/Users/mock/.flipper/thirdparty/${name}`,
-    entry: `/Users/mock/.flipper/thirdparty/${name}/dist/bundle.js`,
     flipperSDKVersion: flipperEngineVersion,
     engines: {
       flipper: flipperEngineVersion,
     },
     gatekeeper: gatekeeper ?? `GK_${lowercasedID}`,
     icon: 'internet',
-    isDefault: false,
     main: 'dist/bundle.js',
     source: 'src/index.tsx',
     specVersion: 2,
@@ -55,6 +52,8 @@ export function createMockDownloadablePluginDetails(
     version: version,
     downloadUrl: `http://localhost/${lowercasedID}/${version}`,
     lastUpdated: lastUpdated,
+    isBundled: false,
+    isActivatable: false,
   };
   return details;
 }

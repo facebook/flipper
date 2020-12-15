@@ -9,7 +9,7 @@
 
 import path from 'path';
 import fs from 'fs-extra';
-import {getPluginDetails} from 'flipper-plugin-lib';
+import {getInstalledPluginDetails} from 'flipper-plugin-lib';
 import {kebabCase} from 'lodash';
 
 export default async function (
@@ -36,7 +36,7 @@ export default async function (
   console.log(`⚙️  Migrating Flipper plugin package in ${dir}`);
   const packageJsonString = (await fs.readFile(packageJsonPath)).toString();
   const packageJson = JSON.parse(packageJsonString);
-  const pluginDetails = await getPluginDetails(dir, packageJson);
+  const pluginDetails = await getInstalledPluginDetails(dir, packageJson);
   if (pluginDetails.specVersion === 2) {
     console.log(
       `✅  Plugin is already defined according to the latest specification version.`,

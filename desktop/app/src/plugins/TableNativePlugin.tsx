@@ -34,7 +34,7 @@ import createPaste from '../fb-stubs/createPaste';
 import {ReactNode} from 'react';
 import React from 'react';
 import {KeyboardActions} from '../MenuBar';
-import {PluginDetails} from 'flipper-plugin-lib';
+import {BundledPluginDetails} from 'flipper-plugin-lib';
 
 type ID = string;
 
@@ -256,7 +256,7 @@ export default function createTableNativePlugin(id: string, title: string) {
     static id = id || '';
     static title = title || '';
 
-    static details: PluginDetails = {
+    static details: BundledPluginDetails = {
       id,
       title,
       icon: 'apps',
@@ -264,11 +264,10 @@ export default function createTableNativePlugin(id: string, title: string) {
       // all hmm...
       specVersion: 1,
       version: 'auto',
-      dir: '',
       source: '',
       main: '',
-      entry: '',
-      isDefault: true,
+      isBundled: true,
+      isActivatable: true,
     };
 
     static defaultPersistedState: PersistedState = {

@@ -18,7 +18,7 @@ import {Idler} from './utils/Idler';
 import {StaticView} from './reducers/connections';
 import {State as ReduxState} from './reducers';
 import {DEFAULT_MAX_QUEUE_SIZE} from './reducers/pluginMessageQueue';
-import {PluginDetails} from 'flipper-plugin-lib';
+import {ActivatablePluginDetails} from 'flipper-plugin-lib';
 import {Settings} from './reducers/settings';
 import {_SandyPluginDefinition} from 'flipper-plugin';
 
@@ -122,9 +122,8 @@ export abstract class FlipperBasePlugin<
   static version: string = '';
   static icon: string | null = null;
   static gatekeeper: string | null = null;
-  static entry: string | null = null;
-  static isDefault: boolean;
-  static details: PluginDetails;
+  static isBundled: boolean;
+  static details: ActivatablePluginDetails;
   static keyboardActions: KeyboardActions | null;
   static screenshot: string | null;
   static defaultPersistedState: any;

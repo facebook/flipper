@@ -7,7 +7,10 @@
  * @format
  */
 
-import {DownloadablePluginDetails} from 'flipper-plugin-lib';
+import {
+  DownloadablePluginDetails,
+  getPluginVersionInstallationDir,
+} from 'flipper-plugin-lib';
 import {Actions} from '.';
 import produce from 'immer';
 import {Canceler} from 'axios';
@@ -66,18 +69,22 @@ export default function reducer(
   switch (action.type) {
     case 'PLUGIN_DOWNLOAD_START': {
       const {plugin, startedByUser} = action.payload;
-      const downloadState = state[plugin.dir];
+      const installationDir = getPluginVersionInstallationDir(
+        plugin.name,
+        plugin.version,
+      );
+      const downloadState = state[installationDir];
       if (downloadState) {
         // If download is already in progress - re-use the existing state.
         return produce(state, (draft) => {
-          draft[plugin.dir] = {
+          draft[installationDir] = {
             ...downloadState,
             startedByUser: startedByUser || downloadState.startedByUser,
           };
         });
       }
       return produce(state, (draft) => {
-        draft[plugin.dir] = {
+        draft[installationDir] = {
           plugin,
           startedByUser: startedByUser,
           status: PluginDownloadStatus.QUEUED,
@@ -86,15 +93,19 @@ export default function reducer(
     }
     case 'PLUGIN_DOWNLOAD_STARTED': {
       const {plugin, cancel} = action.payload;
-      const downloadState = state[plugin.dir];
+      const installationDir = getPluginVersionInstallationDir(
+        plugin.name,
+        plugin.version,
+      );
+      const downloadState = state[installationDir];
       if (downloadState?.status !== PluginDownloadStatus.QUEUED) {
         console.warn(
-          `Invalid state transition PLUGIN_DOWNLOAD_STARTED in status ${downloadState?.status} for download to directory ${plugin.dir}.`,
+          `Invalid state transition PLUGIN_DOWNLOAD_STARTED in status ${downloadState?.status} for download to directory ${installationDir}.`,
         );
         return state;
       }
       return produce(state, (draft) => {
-        draft[plugin.dir] = {
+        draft[installationDir] = {
           status: PluginDownloadStatus.STARTED,
           plugin,
           startedByUser: downloadState.startedByUser,
@@ -104,8 +115,12 @@ export default function reducer(
     }
     case 'PLUGIN_DOWNLOAD_FINISHED': {
       const {plugin} = action.payload;
+      const installationDir = getPluginVersionInstallationDir(
+        plugin.name,
+        plugin.version,
+      );
       return produce(state, (draft) => {
-        delete draft[plugin.dir];
+        delete draft[installationDir];
       });
     }
     default:

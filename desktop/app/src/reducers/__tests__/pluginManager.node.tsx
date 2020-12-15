@@ -8,7 +8,7 @@
  */
 
 import {default as reducer, registerInstalledPlugins} from '../pluginManager';
-import {PluginDetails} from 'flipper-plugin-lib';
+import {InstalledPluginDetails} from 'flipper-plugin-lib';
 
 test('reduce empty registerInstalledPlugins', () => {
   const result = reducer(undefined, registerInstalledPlugins([]));
@@ -22,12 +22,13 @@ const EXAMPLE_PLUGIN = {
   dir: '/plugins/test',
   specVersion: 2,
   source: 'src/index.ts',
-  isDefault: false,
+  isBundled: false,
+  isActivatable: true,
   main: 'lib/index.js',
   title: 'test',
   id: 'test',
   entry: '/plugins/test/lib/index.js',
-} as PluginDetails;
+} as InstalledPluginDetails;
 
 test('reduce registerInstalledPlugins, clear again', () => {
   const result = reducer(undefined, registerInstalledPlugins([EXAMPLE_PLUGIN]));

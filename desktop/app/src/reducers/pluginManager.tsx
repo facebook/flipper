@@ -8,19 +8,19 @@
  */
 
 import {Actions} from './';
-import {PluginDetails} from 'flipper-plugin-lib';
+import {InstalledPluginDetails} from 'flipper-plugin-lib';
 import {PluginDefinition} from '../plugin';
 import {produce} from 'immer';
 
 export type State = {
-  installedPlugins: PluginDetails[];
+  installedPlugins: InstalledPluginDetails[];
   uninstalledPlugins: Set<string>;
 };
 
 export type Action =
   | {
       type: 'REGISTER_INSTALLED_PLUGINS';
-      payload: PluginDetails[];
+      payload: InstalledPluginDetails[];
     }
   | {
       // Implemented by rootReducer in `store.tsx`
@@ -48,7 +48,9 @@ export default function reducer(
   }
 }
 
-export const registerInstalledPlugins = (payload: PluginDetails[]): Action => ({
+export const registerInstalledPlugins = (
+  payload: InstalledPluginDetails[],
+): Action => ({
   type: 'REGISTER_INSTALLED_PLUGINS',
   payload,
 });
