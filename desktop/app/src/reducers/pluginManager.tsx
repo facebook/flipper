@@ -8,15 +8,15 @@
  */
 
 import {Actions} from './';
-import {InstalledPluginDetails} from 'flipper-plugin-lib';
+import {PluginDetails} from 'flipper-plugin-lib';
 
 export type State = {
-  installedPlugins: InstalledPluginDetails[];
+  installedPlugins: PluginDetails[];
 };
 
 export type Action = {
   type: 'REGISTER_INSTALLED_PLUGINS';
-  payload: InstalledPluginDetails[];
+  payload: PluginDetails[];
 };
 
 const INITIAL_STATE: State = {
@@ -37,9 +37,7 @@ export default function reducer(
   }
 }
 
-export const registerInstalledPlugins = (
-  payload: InstalledPluginDetails[],
-): Action => ({
+export const registerInstalledPlugins = (payload: PluginDetails[]): Action => ({
   type: 'REGISTER_INSTALLED_PLUGINS',
   payload,
 });

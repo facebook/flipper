@@ -14,14 +14,14 @@ import React from 'react';
 import {render, waitForElement} from '@testing-library/react';
 import configureStore from 'redux-mock-store';
 import {Provider} from 'react-redux';
-import type {InstalledPluginDetails} from 'flipper-plugin-lib';
+import type {PluginDetails} from 'flipper-plugin-lib';
 import {getUpdatablePlugins, UpdatablePluginDetails} from 'flipper-plugin-lib';
 import {Store} from '../../../reducers';
 import {mocked} from 'ts-jest/utils';
 
 const getUpdatablePluginsMock = mocked(getUpdatablePlugins);
 
-function getStore(installedPlugins: InstalledPluginDetails[] = []): Store {
+function getStore(installedPlugins: PluginDetails[] = []): Store {
   return configureStore([])({
     application: {sessionId: 'mysession'},
     pluginManager: {installedPlugins},
@@ -95,9 +95,7 @@ test('load PluginInstaller list with one plugin installed', async () => {
       samplePluginDetails2,
     ]),
   );
-  const store = getStore([
-    {...samplePluginDetails1, installationStatus: 'installed'},
-  ]);
+  const store = getStore([samplePluginDetails1]);
   const component = (
     <Provider store={store}>
       <PluginInstaller

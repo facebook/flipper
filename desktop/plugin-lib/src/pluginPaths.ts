@@ -14,11 +14,14 @@ import expandTilde from 'expand-tilde';
 
 const flipperDataDir = path.join(homedir(), '.flipper');
 
-export const pluginInstallationDir = path.join(flipperDataDir, 'thirdparty');
-
-export const pluginPendingInstallationDir = path.join(
+export const legacyPluginInstallationDir = path.join(
   flipperDataDir,
-  'pending',
+  'thirdparty',
+);
+
+export const pluginInstallationDir = path.join(
+  flipperDataDir,
+  'installed-plugins',
 );
 
 export const pluginCacheDir = path.join(flipperDataDir, 'plugins');
@@ -43,25 +46,18 @@ export async function getPluginSourceFolders(): Promise<string[]> {
   return pluginFolders.map(expandTilde).filter(fs.existsSync);
 }
 
-export function getPluginPendingInstallationDir(
-  name: string,
-  version: string,
-): string {
-  return path.join(getPluginPendingInstallationsDir(name), version);
-}
-
-export function getPluginPendingInstallationsDir(name: string): string {
-  return path.join(
-    pluginPendingInstallationDir,
-    getPluginDirNameFromPackageName(name),
-  );
-}
-
-export function getPluginInstallationDir(name: string): string {
+export function getPluginInstallationDir(name: string) {
   return path.join(
     pluginInstallationDir,
     getPluginDirNameFromPackageName(name),
   );
+}
+
+export function getPluginVersionInstallationDir(
+  name: string,
+  version: string,
+): string {
+  return path.join(getPluginInstallationDir(name), version);
 }
 
 export function getPluginDirNameFromPackageName(name: string) {

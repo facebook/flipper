@@ -7,7 +7,7 @@
  * @format
  */
 
-jest.mock('../getInstalledPlugins');
+jest.mock('../pluginInstaller');
 jest.mock('../getNpmHostedPlugins');
 
 import {getUpdatablePlugins} from '../getUpdatablePlugins';
@@ -15,10 +15,10 @@ import {
   getNpmHostedPlugins,
   NpmPackageDescriptor,
 } from '../getNpmHostedPlugins';
-import type {InstalledPluginDetails} from '../getInstalledPlugins';
-import {getInstalledPlugins} from '../getInstalledPlugins';
+import {getInstalledPlugins} from '../pluginInstaller';
 import {mocked} from 'ts-jest/utils';
 import type {Package} from 'npm-api';
+import PluginDetails from '../PluginDetails';
 
 jest.mock('npm-api', () => {
   return jest.fn().mockImplementation(() => {
@@ -54,7 +54,7 @@ jest.mock('npm-api', () => {
   });
 });
 
-const installedPlugins: InstalledPluginDetails[] = [
+const installedPlugins: PluginDetails[] = [
   {
     name: 'flipper-plugin-hello',
     entry: './test/index.js',
@@ -67,7 +67,6 @@ const installedPlugins: InstalledPluginDetails[] = [
     title: 'Hello',
     description: 'World?',
     isDefault: false,
-    installationStatus: 'installed',
   },
   {
     name: 'flipper-plugin-world',
@@ -81,7 +80,6 @@ const installedPlugins: InstalledPluginDetails[] = [
     title: 'World',
     description: 'Hello?',
     isDefault: false,
-    installationStatus: 'pending',
   },
 ];
 
