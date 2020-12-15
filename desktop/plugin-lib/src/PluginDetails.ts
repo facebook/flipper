@@ -7,7 +7,7 @@
  * @format
  */
 
-export default interface PluginDetails {
+export interface PluginDetails {
   dir: string;
   name: string;
   specVersion: number;
@@ -22,9 +22,19 @@ export default interface PluginDetails {
   icon?: string;
   description?: string;
   category?: string;
+  engines?: {
+    [name: string]: string;
+  };
   bugs?: {
     email?: string;
     url?: string;
   };
   flipperSDKVersion?: string;
 }
+
+export interface DownloadablePluginDetails extends PluginDetails {
+  downloadUrl: string;
+  lastUpdated: Date;
+}
+
+export default PluginDetails;

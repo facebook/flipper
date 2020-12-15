@@ -16,10 +16,14 @@ import decompressTargz from 'decompress-targz';
 import decompressUnzip from 'decompress-unzip';
 import tmp from 'tmp';
 import PluginDetails from './PluginDetails';
-import getPluginDetails from './getPluginDetails';
+import {getPluginDetailsFromDir} from './getPluginDetails';
 import {
+  getPluginInstallationDir,
+  getPluginPendingInstallationDir,
+  getPluginPendingInstallationsDir,
   pluginInstallationDir,
   pluginPendingInstallationDir,
+  getPluginDirNameFromPackageName,
 } from './pluginPaths';
 import semver from 'semver';
 
@@ -29,35 +33,10 @@ function providePluginManagerNoDependencies(): PM {
   return new PM({ignoredDependencies: [/.*/]});
 }
 
-function getPluginPendingInstallationDir(
-  name: string,
-  version: string,
-): string {
-  return path.join(getPluginPendingInstallationsDir(name), version);
-}
-
-function getPluginPendingInstallationsDir(name: string): string {
-  return path.join(
-    pluginPendingInstallationDir,
-    replaceInvalidPathSegmentCharacters(name),
-  );
-}
-
-export function getPluginInstallationDir(name: string): string {
-  return path.join(
-    pluginInstallationDir,
-    replaceInvalidPathSegmentCharacters(name),
-  );
-}
-
-function replaceInvalidPathSegmentCharacters(name: string) {
-  return name.replace('/', '__');
-}
-
 async function installPluginFromTempDir(
   sourceDir: string,
 ): Promise<PluginDetails> {
-  const pluginDetails = await getPluginDetails(sourceDir);
+  const pluginDetails = await getPluginDetailsFromDir(sourceDir);
   const {name, version} = pluginDetails;
   const backupDir = path.join(await getTmpDir(), `${name}-${version}`);
   const installationsDir = getPluginPendingInstallationsDir(name);
@@ -93,7 +72,7 @@ async function installPluginFromTempDir(
     }
     throw err;
   }
-  return await getPluginDetails(destinationDir);
+  return await getPluginDetailsFromDir(destinationDir);
 }
 
 async function getPluginRootDir(dir: string) {
@@ -121,7 +100,7 @@ export async function getInstalledPlugin(
   if (!(await fs.pathExists(dir))) {
     return null;
   }
-  return await getPluginDetails(dir);
+  return await getPluginDetailsFromDir(dir);
 }
 
 export async function isPluginPendingInstallation(
@@ -140,7 +119,7 @@ export async function installPluginFromNpm(name: string) {
     await plugManNoDep.install(name);
     const pluginTempDir = path.join(
       tmpDir,
-      replaceInvalidPathSegmentCharacters(name),
+      getPluginDirNameFromPackageName(name),
     );
     await installPluginFromTempDir(pluginTempDir);
   } finally {

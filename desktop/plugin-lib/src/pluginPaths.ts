@@ -12,7 +12,7 @@ import {homedir} from 'os';
 import fs from 'fs-extra';
 import expandTilde from 'expand-tilde';
 
-export const flipperDataDir = path.join(homedir(), '.flipper');
+const flipperDataDir = path.join(homedir(), '.flipper');
 
 export const pluginInstallationDir = path.join(flipperDataDir, 'thirdparty');
 
@@ -41,4 +41,29 @@ export async function getPluginSourceFolders(): Promise<string[]> {
   pluginFolders.push(path.resolve(__dirname, '..', '..', 'plugins'));
   pluginFolders.push(path.resolve(__dirname, '..', '..', 'plugins', 'fb'));
   return pluginFolders.map(expandTilde).filter(fs.existsSync);
+}
+
+export function getPluginPendingInstallationDir(
+  name: string,
+  version: string,
+): string {
+  return path.join(getPluginPendingInstallationsDir(name), version);
+}
+
+export function getPluginPendingInstallationsDir(name: string): string {
+  return path.join(
+    pluginPendingInstallationDir,
+    getPluginDirNameFromPackageName(name),
+  );
+}
+
+export function getPluginInstallationDir(name: string): string {
+  return path.join(
+    pluginInstallationDir,
+    getPluginDirNameFromPackageName(name),
+  );
+}
+
+export function getPluginDirNameFromPackageName(name: string) {
+  return name.replace('/', '__');
 }
