@@ -12,7 +12,7 @@ import {InstalledPluginDetails} from 'flipper-plugin-lib';
 
 test('reduce empty registerInstalledPlugins', () => {
   const result = reducer(undefined, registerInstalledPlugins([]));
-  expect(result.installedPlugins).toEqual([]);
+  expect(result.installedPlugins).toEqual(new Map());
 });
 
 const EXAMPLE_PLUGIN = {
@@ -32,7 +32,9 @@ const EXAMPLE_PLUGIN = {
 
 test('reduce registerInstalledPlugins, clear again', () => {
   const result = reducer(undefined, registerInstalledPlugins([EXAMPLE_PLUGIN]));
-  expect(result.installedPlugins).toEqual([EXAMPLE_PLUGIN]);
+  expect(result.installedPlugins).toEqual(
+    new Map([[EXAMPLE_PLUGIN.name, EXAMPLE_PLUGIN]]),
+  );
   const result2 = reducer(result, registerInstalledPlugins([]));
-  expect(result2.installedPlugins).toEqual([]);
+  expect(result2.installedPlugins).toEqual(new Map());
 });

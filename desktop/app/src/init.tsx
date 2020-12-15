@@ -20,7 +20,6 @@ import {Store} from './reducers/index';
 import dispatcher from './dispatcher/index';
 import TooltipProvider from './ui/components/TooltipProvider';
 import config from './utils/processConfig';
-import appConfig from '../src/fb-stubs/config';
 import {initLauncherHooks} from './utils/launcher';
 import {setPersistor} from './utils/persistor';
 import React from 'react';
@@ -43,7 +42,7 @@ import {
   _LoggerContext,
 } from 'flipper-plugin';
 import isProduction from './utils/isProduction';
-import ReleaseChannel from './ReleaseChannel';
+import isSandyEnabled from './utils/isSandyEnabled';
 
 if (process.env.NODE_ENV === 'development' && os.platform() === 'darwin') {
   // By default Node.JS has its internal certificate storage and doesn't use
@@ -125,10 +124,7 @@ function init() {
     store,
     {name: 'loadTheme', fireImmediately: true, throttleMs: 500},
     (state) => ({
-      sandy:
-        (GK.get('flipper_sandy') ||
-          appConfig.getReleaseChannel() === ReleaseChannel.INSIDERS) &&
-        !state.settingsState.disableSandy,
+      sandy: isSandyEnabled(),
       dark: state.settingsState.darkMode,
     }),
     (theme) => {

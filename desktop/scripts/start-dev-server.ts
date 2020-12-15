@@ -50,6 +50,11 @@ const argv = yargs
         '[FB-internal only] Enable plugin auto-updates. The flag is disabled by default in dev mode. Env var FLIPPER_NO_PLUGIN_AUTO_UPDATE is equivalent to the command-line option "--no-plugin-auto-update"',
       type: 'boolean',
     },
+    'plugin-auto-update-interval': {
+      describe:
+        '[FB-internal only] Set custom interval in milliseconds for plugin auto-update checks. Env var FLIPPER_PLUGIN_AUTO_UPDATE_POLLING_INTERVAL is equivalent to this command-line option.',
+      type: 'number',
+    },
     'enabled-plugins': {
       describe:
         'Load only specified plugins and skip loading rest. This is useful when you are developing only one or few plugins. Plugins to load can be specified as a comma-separated list with either plugin id or name used as identifier, e.g. "--enabled-plugins network,inspector". The flag is not provided by default which means that all plugins loaded.',
@@ -113,6 +118,10 @@ if (
   delete process.env.FLIPPER_DISABLE_PLUGIN_AUTO_UPDATE;
 } else {
   process.env.FLIPPER_DISABLE_PLUGIN_AUTO_UPDATE = 'true';
+}
+
+if (argv['plugin-auto-update-interval']) {
+  process.env.FLIPPER_PLUGIN_AUTO_UPDATE_POLLING_INTERVAL = `${argv['plugin-auto-update-interval']}`;
 }
 
 // Force participating in all GKs. Mostly intersting for Flipper team members.

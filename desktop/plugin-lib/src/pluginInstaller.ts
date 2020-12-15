@@ -230,6 +230,7 @@ async function getInstalledPluginVersionDirs(): Promise<
       pmap(dirs, (dir) =>
         fs
           .readdir(dir)
+          .then((versionDirs) => versionDirs.filter((d) => semver.valid(d)))
           .then((versionDirs) =>
             versionDirs.sort((v1, v2) => semver.compare(v2, v1, true)),
           )

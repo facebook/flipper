@@ -11,9 +11,10 @@ import {
   DownloadablePluginDetails,
   getInstalledPluginDetails,
   getPluginVersionInstallationDir,
+  InstalledPluginDetails,
   installPluginFromFile,
 } from 'flipper-plugin-lib';
-import {Store} from '../reducers/index';
+import {Actions, State, Store} from '../reducers/index';
 import {
   PluginDownloadStatus,
   pluginDownloadStarted,
@@ -26,12 +27,16 @@ import path from 'path';
 import tmp from 'tmp';
 import {promisify} from 'util';
 import {requirePlugin} from './plugins';
-import {registerPluginUpdate, setStaticView} from '../reducers/connections';
-import {notification, Typography} from 'antd';
+import {registerPluginUpdate, selectPlugin} from '../reducers/connections';
+import {Button} from 'antd';
 import React from 'react';
-import {ConsoleLogs} from '../chrome/ConsoleLogs';
-
-const {Text, Link} = Typography;
+import {reportUsage} from '../utils/metrics';
+import {addNotification, removeNotification} from '../reducers/notifications';
+import reloadFlipper from '../utils/reloadFlipper';
+import {activatePlugin, pluginInstalled} from '../reducers/pluginManager';
+import {Dispatch} from 'redux';
+import {showErrorNotification} from '../utils/notifications';
+import isSandyEnabled from '../utils/isSandyEnabled';
 
 // Adapter which forces node.js implementation for axios instead of browser implementation
 // used by default in Electron. Node.js implementation is better, because it
@@ -71,6 +76,7 @@ async function handlePluginDownload(
   );
   const tmpDir = await getTempDirName();
   const tmpFile = path.join(tmpDir, `${name}-${version}.tgz`);
+  let installedPlugin: InstalledPluginDetails | undefined;
   try {
     const cancellationSource = axios.CancelToken.source();
     dispatch(
@@ -80,6 +86,7 @@ async function handlePluginDownload(
       console.log(
         `Using existing files instead of downloading plugin "${title}" v${version} from "${downloadUrl}" to "${installationDir}"`,
       );
+      installedPlugin = await getInstalledPluginDetails(installationDir);
     } else {
       await fs.ensureDir(tmpDir);
       let percentCompleted = 0;
@@ -111,17 +118,19 @@ async function handlePluginDownload(
       await new Promise((resolve, reject) =>
         writeStream.once('finish', resolve).once('error', reject),
       );
-      await installPluginFromFile(tmpFile);
+      installedPlugin = await installPluginFromFile(tmpFile);
+      dispatch(pluginInstalled(installedPlugin));
     }
-    const installedPlugin = await getInstalledPluginDetails(installationDir);
-    if (!store.getState().plugins.clientPlugins.has(plugin.id)) {
-      const pluginDefinition = requirePlugin(installedPlugin);
+    if (pluginIsDisabledForAllConnectedClients(store.getState(), plugin)) {
       dispatch(
-        registerPluginUpdate({
-          plugin: pluginDefinition,
-          enablePlugin: startedByUser,
+        activatePlugin({
+          plugin: installedPlugin,
+          enable: startedByUser,
+          notifyIfFailed: startedByUser,
         }),
       );
+    } else if (!isSandyEnabled()) {
+      notifyAboutUpdatedPluginNonSandy(installedPlugin, store.dispatch);
     }
     console.log(
       `Successfully downloaded and installed plugin "${title}" v${version} from "${downloadUrl}" to "${installationDir}".`,
@@ -132,22 +141,80 @@ async function handlePluginDownload(
       error,
     );
     if (startedByUser) {
-      notification.error({
-        message: `Failed to install plugin "${title}".`,
-        description: (
-          <Text>
-            See{' '}
-            <Link onClick={() => dispatch(setStaticView(ConsoleLogs))}>
-              logs
-            </Link>{' '}
-            for details.
-          </Text>
-        ),
-        placement: 'bottomLeft',
-      });
+      showErrorNotification(
+        `Failed to download plugin "${title}" v${version}.`,
+      );
     }
   } finally {
     dispatch(pluginDownloadFinished({plugin}));
     await fs.remove(tmpDir);
   }
+}
+
+function pluginIsDisabledForAllConnectedClients(
+  state: State,
+  plugin: DownloadablePluginDetails,
+) {
+  return (
+    !state.plugins.clientPlugins.has(plugin.id) ||
+    !state.connections.clients.some((c) =>
+      state.connections.userStarredPlugins[c.query.app]?.includes(plugin.id),
+    )
+  );
+}
+
+function notifyAboutUpdatedPluginNonSandy(
+  plugin: InstalledPluginDetails,
+  dispatch: Dispatch<Actions>,
+) {
+  const {name, version, title, id} = plugin;
+  const reloadPluginAndRemoveNotification = () => {
+    reportUsage('plugin-auto-update:notification:reloadClicked', undefined, id);
+    dispatch(
+      registerPluginUpdate({
+        plugin: requirePlugin(plugin),
+        enablePlugin: false,
+      }),
+    );
+    dispatch(
+      removeNotification({
+        pluginId: 'plugin-auto-update',
+        client: null,
+        notificationId: `auto-update.${name}.${version}`,
+      }),
+    );
+    dispatch(
+      selectPlugin({
+        selectedPlugin: id,
+        deepLinkPayload: null,
+      }),
+    );
+  };
+  const reloadAll = () => {
+    reportUsage('plugin-auto-update:notification:reloadAllClicked');
+    reloadFlipper();
+  };
+  dispatch(
+    addNotification({
+      pluginId: 'plugin-auto-update',
+      client: null,
+      notification: {
+        id: `auto-update.${name}.${version}`,
+        title: `${title} ${version} is ready to install`,
+        message: (
+          <div>
+            {title} {version} has been downloaded. Reload is required to apply
+            the update.{' '}
+            <Button onClick={reloadPluginAndRemoveNotification}>
+              Reload Plugin
+            </Button>
+            <Button onClick={reloadAll}>Reload Flipper</Button>
+          </div>
+        ),
+        severity: 'warning',
+        timestamp: Date.now(),
+        category: `Plugin Auto Update`,
+      },
+    }),
+  );
 }

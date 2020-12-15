@@ -36,7 +36,7 @@ import {
   getUpdatablePlugins,
   removePlugin,
   UpdatablePluginDetails,
-  PluginDetails,
+  InstalledPluginDetails,
 } from 'flipper-plugin-lib';
 import {installPluginFromNpm} from 'flipper-plugin-lib';
 import {State as AppState} from '../../reducers';
@@ -92,7 +92,7 @@ const RestartBar = styled(FlexColumn)({
 });
 
 type PropsFromState = {
-  installedPlugins: PluginDetails[];
+  installedPlugins: Map<string, InstalledPluginDetails>;
 };
 
 type DispatchFromProps = {
@@ -289,7 +289,7 @@ function InstallButton(props: {
 function useNPMSearch(
   query: string,
   onInstall: () => void,
-  installedPlugins: PluginDetails[],
+  installedPlugins: Map<string, InstalledPluginDetails>,
 ): TableRows_immutable {
   useEffect(() => {
     reportUsage(`${TAG}:open`);

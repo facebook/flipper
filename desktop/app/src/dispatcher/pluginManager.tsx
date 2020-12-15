@@ -9,12 +9,19 @@
 
 import {Store} from '../reducers/index';
 import {Logger} from '../fb-interfaces/Logger';
-import {registerInstalledPlugins} from '../reducers/pluginManager';
+import {
+  pluginActivationHandled,
+  registerInstalledPlugins,
+} from '../reducers/pluginManager';
 import {
   getInstalledPlugins,
   cleanupOldInstalledPluginVersions,
   removePlugins,
 } from 'flipper-plugin-lib';
+import {sideEffect} from '../utils/sideEffect';
+import {requirePlugin} from './plugins';
+import {registerPluginUpdate} from '../reducers/connections';
+import {showErrorNotification} from '../utils/notifications';
 
 const maxInstalledPluginVersionsToKeep = 2;
 
@@ -32,4 +39,35 @@ export default (store: Store, _logger: Logger) => {
   window.requestIdleCallback(() => {
     refreshInstalledPlugins(store);
   });
+
+  sideEffect(
+    store,
+    {name: 'handlePluginActivation', throttleMs: 1000, fireImmediately: true},
+    (state) => state.pluginManager.pluginActivationQueue,
+    (queue, store) => {
+      for (const request of queue) {
+        try {
+          const plugin = requirePlugin(request.plugin);
+          const enablePlugin = request.enable;
+          store.dispatch(
+            registerPluginUpdate({
+              plugin,
+              enablePlugin,
+            }),
+          );
+        } catch (err) {
+          console.error(
+            `Failed to activate plugin ${request.plugin.title} v${request.plugin.version}`,
+            err,
+          );
+          if (request.notifyIfFailed) {
+            showErrorNotification(
+              `Failed to load plugin "${request.plugin.title}" v${request.plugin.version}`,
+            );
+          }
+        }
+      }
+      store.dispatch(pluginActivationHandled(queue.length));
+    },
+  );
 };

@@ -46,10 +46,17 @@ import {Message} from './reducers/pluginMessageQueue';
 import {Idler} from './utils/Idler';
 import {processMessageQueue} from './utils/messageQueue';
 import {ToggleButton, SmallText, Layout} from './ui';
-import {TrackingScope, _SandyPluginRenderer} from 'flipper-plugin';
+import {theme, TrackingScope, _SandyPluginRenderer} from 'flipper-plugin';
 import {isDevicePluginDefinition} from './utils/pluginUtils';
 import ArchivedDevice from './devices/ArchivedDevice';
 import {ContentContainer} from './sandy-chrome/ContentContainer';
+import {Alert, Typography} from 'antd';
+import {InstalledPluginDetails} from 'plugin-lib';
+import semver from 'semver';
+import {activatePlugin} from './reducers/pluginManager';
+import {produce} from 'immer';
+
+const {Text, Link} = Typography;
 
 const Container = styled(FlexColumn)({
   width: 0,
@@ -109,6 +116,7 @@ type StateFromProps = {
   pendingMessages: Message[] | undefined;
   pluginIsEnabled: boolean;
   settingsState: Settings;
+  latestInstalledVersion: InstalledPluginDetails | undefined;
 };
 
 type DispatchFromProps = {
@@ -120,16 +128,23 @@ type DispatchFromProps = {
   setPluginState: (payload: {pluginKey: string; state: any}) => void;
   setStaticView: (payload: StaticView) => void;
   starPlugin: typeof starPlugin;
+  activatePlugin: typeof activatePlugin;
 };
 
 type Props = StateFromProps & DispatchFromProps & OwnProps;
 
 type State = {
   progress: {current: number; total: number};
+  autoUpdateAlertSuppressed: Set<string>;
 };
 
 class PluginContainer extends PureComponent<Props, State> {
   static contextType = ReactReduxContext;
+
+  constructor(props: Props) {
+    super(props);
+    this.reloadPlugin = this.reloadPlugin.bind(this);
+  }
 
   plugin:
     | FlipperPlugin<any, any, any>
@@ -160,7 +175,10 @@ class PluginContainer extends PureComponent<Props, State> {
   idler?: Idler;
   pluginBeingProcessed: string | null = null;
 
-  state = {progress: {current: 0, total: 0}};
+  state = {
+    progress: {current: 0, total: 0},
+    autoUpdateAlertSuppressed: new Set<string>(),
+  };
 
   get store(): MiddlewareAPI {
     return this.context.store;
@@ -200,7 +218,11 @@ class PluginContainer extends PureComponent<Props, State> {
     if (pluginKey !== this.pluginBeingProcessed) {
       this.pluginBeingProcessed = pluginKey;
       this.cancelCurrentQueue();
-      this.setState({progress: {current: 0, total: 0}});
+      this.setState((state) =>
+        produce(state, (draft) => {
+          draft.progress = {current: 0, total: 0};
+        }),
+      );
       // device plugins don't have connections so no message queues
       if (!activePlugin || isDevicePluginDefinition(activePlugin)) {
         return;
@@ -222,7 +244,11 @@ class PluginContainer extends PureComponent<Props, State> {
           pluginKey,
           this.store,
           (progress) => {
-            this.setState({progress});
+            this.setState((state) =>
+              produce(state, (draft) => {
+                draft.progress = progress;
+              }),
+            );
           },
           this.idler,
         ).then((completed) => {
@@ -353,6 +379,17 @@ class PluginContainer extends PureComponent<Props, State> {
     );
   }
 
+  reloadPlugin() {
+    const {activatePlugin, latestInstalledVersion} = this.props;
+    if (latestInstalledVersion) {
+      activatePlugin({
+        plugin: latestInstalledVersion,
+        enable: false,
+        notifyIfFailed: true,
+      });
+    }
+  }
+
   renderPlugin() {
     const {
       pluginState,
@@ -364,12 +401,20 @@ class PluginContainer extends PureComponent<Props, State> {
       selectedApp,
       settingsState,
       isSandy,
+      latestInstalledVersion,
     } = this.props;
     if (!activePlugin || !target || !pluginKey) {
       console.warn(`No selected plugin. Rendering empty!`);
       return this.renderNoPluginActive();
     }
     let pluginElement: null | React.ReactElement<any>;
+    const showUpdateAlert =
+      latestInstalledVersion &&
+      activePlugin &&
+      !this.state.autoUpdateAlertSuppressed.has(
+        `${latestInstalledVersion.name}@${latestInstalledVersion.version}`,
+      ) &&
+      semver.gt(latestInstalledVersion.version, activePlugin.version);
     if (isSandyPlugin(activePlugin)) {
       // Make sure we throw away the container for different pluginKey!
       const instance = target.sandyPluginStates.get(activePlugin.id);
@@ -438,15 +483,44 @@ class PluginContainer extends PureComponent<Props, State> {
       );
     }
     return isSandy ? (
-      <Layout.Right>
-        <ErrorBoundary
-          heading={`Plugin "${
-            activePlugin.title || 'Unknown'
-          }" encountered an error during render`}>
-          <ContentContainer>{pluginElement}</ContentContainer>
-        </ErrorBoundary>
-        <SidebarContainer id="detailsSidebar" />
-      </Layout.Right>
+      <Layout.Top>
+        <div>
+          {showUpdateAlert && (
+            <Alert
+              message={
+                <Text>
+                  Plugin "{activePlugin.title}" v
+                  {latestInstalledVersion?.version} downloaded and ready to
+                  install. <Link onClick={this.reloadPlugin}>Reload</Link> to
+                  start using new version.
+                </Text>
+              }
+              type="info"
+              onClose={() =>
+                this.setState((state) =>
+                  produce(state, (draft) => {
+                    draft.autoUpdateAlertSuppressed.add(
+                      `${latestInstalledVersion?.name}@${latestInstalledVersion?.version}`,
+                    );
+                  }),
+                )
+              }
+              style={{marginBottom: theme.space.large}}
+              showIcon
+              closable
+            />
+          )}
+        </div>
+        <Layout.Right>
+          <ErrorBoundary
+            heading={`Plugin "${
+              activePlugin.title || 'Unknown'
+            }" encountered an error during render`}>
+            <ContentContainer>{pluginElement}</ContentContainer>
+          </ErrorBoundary>
+          <SidebarContainer id="detailsSidebar" />
+        </Layout.Right>
+      </Layout.Top>
     ) : (
       <React.Fragment>
         <Container key="plugin">
@@ -475,6 +549,7 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
     },
     pluginStates,
     plugins: {devicePlugins, clientPlugins},
+    pluginManager: {installedPlugins},
     pluginMessageQueue,
     settingsState,
   }) => {
@@ -525,6 +600,9 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
       pendingMessages,
       pluginIsEnabled,
       settingsState,
+      latestInstalledVersion: installedPlugins.get(
+        activePlugin?.packageName ?? '',
+      ),
     };
     return s;
   },
@@ -533,5 +611,6 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
     selectPlugin,
     setStaticView,
     starPlugin,
+    activatePlugin,
   },
 )(PluginContainer);
