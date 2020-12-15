@@ -39,6 +39,7 @@
     "lodash.memoize": "^4.1.2",
     "open": "^7.0.0",
     "openssl-wrapper": "^0.3.4",
+    "p-filter": "^2.1.0",
     "p-map": "^4.0.0",
     "promise-retry": "^2.0.1",
     "promisify-child-process": "^4.1.0",

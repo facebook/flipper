@@ -10,7 +10,7 @@
 import fs from 'fs-extra';
 import path from 'path';
 import {PluginDetails} from './PluginDetails';
-import {getPluginInstallationDir, pluginCacheDir} from './pluginPaths';
+import {getPluginVersionInstallationDir, pluginCacheDir} from './pluginPaths';
 
 export async function getPluginDetails(pluginDir: string, packageJson: any) {
   const specVersion =
@@ -37,7 +37,10 @@ export async function getPluginDetailsFromDir(
 }
 
 export async function getPluginDetailsFromPackageJson(packageJson: any) {
-  const pluginDir = getPluginInstallationDir(packageJson.name);
+  const pluginDir = getPluginVersionInstallationDir(
+    packageJson.name,
+    packageJson.version,
+  );
   return await getPluginDetails(pluginDir, packageJson);
 }
 

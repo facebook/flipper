@@ -9,20 +9,16 @@
 
 import path from 'path';
 import fs from 'fs-extra';
-import pMap from 'p-map';
 import {
   PluginDetails,
   getSourcePlugins,
   getInstalledPlugins,
-  finishPendingPluginInstallations,
+  moveInstalledPluginsFromLegacyDir,
 } from 'flipper-plugin-lib';
-import os from 'os';
 import {getStaticPath} from '../utils/pathUtils';
 
-const pluginCache = path.join(os.homedir(), '.flipper', 'plugins');
-
 // Load "dynamic" plugins, e.g. those which are either installed or loaded from sources for development purposes.
-// This opposed to "static" plugins which are already included into Flipper bundle.
+// This opposed to "default" plugins which are included into Flipper bundle.
 export default async function loadDynamicPlugins(): Promise<PluginDetails[]> {
   if (process.env.FLIPPER_FAST_REFRESH) {
     console.log(
@@ -30,63 +26,38 @@ export default async function loadDynamicPlugins(): Promise<PluginDetails[]> {
     );
     return [];
   }
-  try {
-    await finishPendingPluginInstallations();
-  } catch (err) {
-    console.error('❌  Failed to finish pending installations', err);
-  }
+  await moveInstalledPluginsFromLegacyDir().catch((ex) =>
+    console.error(
+      'Eror while migrating installed plugins from legacy folder',
+      ex,
+    ),
+  );
   const staticPath = getStaticPath();
   const defaultPlugins = new Set<string>(
     (
       await fs.readJson(path.join(staticPath, 'defaultPlugins', 'index.json'))
     ).map((p: any) => p.name) as string[],
   );
-  const dynamicPlugins = [
-    ...(await getInstalledPlugins()),
-    ...(await getSourcePlugins()).filter((p) => !defaultPlugins.has(p.name)),
-  ];
-  await fs.ensureDir(pluginCache);
-  const compilations = pMap(
-    dynamicPlugins,
-    (plugin) => {
-      return loadPlugin(plugin);
-    },
-    {concurrency: 4},
+  const [installedPlugins, unfilteredSourcePlugins] = await Promise.all([
+    getInstalledPlugins(),
+    getSourcePlugins(),
+  ]);
+  const sourcePlugins = unfilteredSourcePlugins.filter(
+    (p) => !defaultPlugins.has(p.name),
   );
-  const compiledDynamicPlugins = (await compilations).filter(
-    (c) => c !== null,
-  ) as PluginDetails[];
-  console.log(
-    `✅  Loaded ${dynamicPlugins.length} dynamic plugins: ${dynamicPlugins
-      .map((x) => x.title)
-      .join(', ')}.`,
-  );
-  return compiledDynamicPlugins;
-}
-async function loadPlugin(
-  pluginDetails: PluginDetails,
-): Promise<PluginDetails | null> {
-  const {specVersion, version, entry, name} = pluginDetails;
-  if (specVersion > 1) {
-    if (await fs.pathExists(entry)) {
-      return pluginDetails;
-    } else {
-      console.error(
-        `❌  Plugin ${name} is ignored, because its entry point not found: ${entry}.`,
-      );
-      return null;
-    }
-  } else {
-    // Try to load cached version of legacy plugin
-    const entry = path.join(pluginCache, `${name}@${version || '0.0.0'}.js`);
-    if (await fs.pathExists(entry)) {
-      console.log(`🥫  Using cached version of legacy plugin ${name}...`);
-      return pluginDetails;
-    } else {
-      console.error(
-        `❌  Plugin ${name} is ignored, because it is defined by the unsupported spec v1 and could not be compiled.`,
-      );
-      return null;
-    }
+  if (installedPlugins.length > 0) {
+    console.log(
+      `✅  Loaded ${
+        installedPlugins.length
+      } installed plugins: ${installedPlugins.map((x) => x.title).join(', ')}.`,
+    );
   }
+  if (sourcePlugins.length > 0) {
+    console.log(
+      `✅  Loaded ${sourcePlugins.length} source plugins: ${sourcePlugins
+        .map((x) => x.title)
+        .join(', ')}.`,
+    );
+  }
+  return [...installedPlugins, ...sourcePlugins];
 }

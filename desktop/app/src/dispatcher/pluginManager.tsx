@@ -10,12 +10,17 @@
 import {Store} from '../reducers/index';
 import {Logger} from '../fb-interfaces/Logger';
 import {registerInstalledPlugins} from '../reducers/pluginManager';
-import {getInstalledPlugins} from 'flipper-plugin-lib';
+import {
+  getInstalledPlugins,
+  cleanupOldInstalledPluginVersions,
+} from 'flipper-plugin-lib';
+
+const maxInstalledPluginVersionsToKeep = 2;
 
 function refreshInstalledPlugins(store: Store) {
-  getInstalledPlugins().then((plugins) =>
-    store.dispatch(registerInstalledPlugins(plugins)),
-  );
+  cleanupOldInstalledPluginVersions(maxInstalledPluginVersionsToKeep)
+    .then(() => getInstalledPlugins())
+    .then((plugins) => store.dispatch(registerInstalledPlugins(plugins)));
 }
 
 export default (store: Store, _logger: Logger) => {

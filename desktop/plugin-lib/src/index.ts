@@ -10,7 +10,6 @@
 export * from './PluginDetails';
 export * from './getPluginDetails';
 export * from './pluginInstaller';
-export * from './getInstalledPlugins';
 export * from './getUpdatablePlugins';
 export * from './getSourcePlugins';
 export * from './pluginPaths';

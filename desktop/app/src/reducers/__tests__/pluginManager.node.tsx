@@ -8,7 +8,7 @@
  */
 
 import {default as reducer, registerInstalledPlugins} from '../pluginManager';
-import {InstalledPluginDetails} from 'flipper-plugin-lib';
+import {PluginDetails} from 'flipper-plugin-lib';
 
 test('reduce empty registerInstalledPlugins', () => {
   const result = reducer(undefined, registerInstalledPlugins([]));
@@ -27,8 +27,7 @@ const EXAMPLE_PLUGIN = {
   title: 'test',
   id: 'test',
   entry: '/plugins/test/lib/index.js',
-  installationStatus: 'installed',
-} as InstalledPluginDetails;
+} as PluginDetails;
 
 test('reduce registerInstalledPlugins, clear again', () => {
   const result = reducer(undefined, registerInstalledPlugins([EXAMPLE_PLUGIN]));
