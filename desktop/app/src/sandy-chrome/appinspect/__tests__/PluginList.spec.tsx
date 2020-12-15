@@ -20,10 +20,15 @@ import {_SandyPluginDefinition} from 'flipper-plugin';
 import {createMockPluginDetails} from 'flipper-plugin/src/test-utils/test-utils';
 import {selectPlugin, starPlugin} from '../../../reducers/connections';
 import {registerMetroDevice} from '../../../dispatcher/metroDevice';
-import {addGatekeepedPlugins, registerPlugins} from '../../../reducers/plugins';
+import {
+  addGatekeepedPlugins,
+  registerMarketplacePlugins,
+  registerPlugins,
+} from '../../../reducers/plugins';
 
 // eslint-disable-next-line
 import * as LogsPluginModule from '../../../../../plugins/logs/index';
+import {createMockDownloadablePluginDetails} from '../../../utils/testUtils';
 
 const logsPlugin = new _SandyPluginDefinition(
   createMockPluginDetails({id: 'DeviceLogs'}),
@@ -163,6 +168,7 @@ describe('basic findBestDevice with metro present', () => {
         state.connections.userStarredPlugins,
       ),
     ).toEqual({
+      uninstalledPlugins: [],
       devicePlugins: [logsPlugin],
       metroPlugins: [logsPlugin],
       enabledPlugins: [],
@@ -196,7 +202,6 @@ describe('basic findBestDevice with metro present', () => {
         },
       },
     );
-
     const unsupportedPlugin = new _SandyPluginDefinition(
       createMockPluginDetails({
         id: 'unsupportedPlugin',
@@ -232,6 +237,16 @@ describe('basic findBestDevice with metro present', () => {
       noopPlugin,
     );
 
+    const supportedUninstalledPlugin = createMockDownloadablePluginDetails({
+      id: 'supportedUninstalledPlugin',
+      title: 'Supported Uninstalled Plugin',
+    });
+
+    const unsupportedUninstalledPlugin = createMockDownloadablePluginDetails({
+      id: 'unsupportedUninstalledPlugin',
+      title: 'Unsupported Uninstalled Plugin',
+    });
+
     flipper.store.dispatch(
       registerPlugins([
         unsupportedDevicePlugin,
@@ -241,20 +256,29 @@ describe('basic findBestDevice with metro present', () => {
       ]),
     );
     flipper.store.dispatch(addGatekeepedPlugins([gateKeepedPlugin]));
+    flipper.store.dispatch(
+      registerMarketplacePlugins([
+        supportedUninstalledPlugin,
+        unsupportedUninstalledPlugin,
+      ]),
+    );
 
     // ok, this is a little hackish
-    flipper.client.plugins = ['plugin1', 'plugin2'];
+    flipper.client.plugins = [
+      'plugin1',
+      'plugin2',
+      'supportedUninstalledPlugin',
+    ];
 
     let state = flipper.store.getState();
-    expect(
-      computePluginLists(
-        testDevice,
-        metro,
-        flipper.client,
-        state.plugins,
-        state.connections.userStarredPlugins,
-      ),
-    ).toEqual({
+    const pluginLists = computePluginLists(
+      testDevice,
+      metro,
+      flipper.client,
+      state.plugins,
+      state.connections.userStarredPlugins,
+    );
+    expect(pluginLists).toEqual({
       devicePlugins: [logsPlugin],
       metroPlugins: [logsPlugin],
       enabledPlugins: [],
@@ -270,9 +294,14 @@ describe('basic findBestDevice with metro present', () => {
         ],
         [
           unsupportedPlugin.details,
-          "Plugin 'Unsupported Plugin' is not loaded by the client application",
+          "Plugin 'Unsupported Plugin' is installed in Flipper, but not supported by the client application",
+        ],
+        [
+          unsupportedUninstalledPlugin,
+          "Plugin 'Unsupported Uninstalled Plugin' is not installed in Flipper and not supported by the client application",
         ],
       ],
+      uninstalledPlugins: [supportedUninstalledPlugin],
     });
 
     flipper.store.dispatch(
