@@ -15,7 +15,7 @@ import {
   pluginInstallationDir,
 } from './pluginPaths';
 import PluginDetails from './PluginDetails';
-import getPluginDetails from './getPluginDetails';
+import {getPluginDetailsFromDir} from './getPluginDetails';
 import pmap from 'p-map';
 import {notNull} from './typeUtils';
 
@@ -40,7 +40,7 @@ async function getFullyInstalledPlugins(): Promise<PluginDetails[]> {
       return undefined;
     }
     try {
-      return await getPluginDetails(pluginDir);
+      return await getPluginDetailsFromDir(pluginDir);
     } catch (e) {
       console.error(`Failed to load plugin from ${pluginDir}`, e);
       return undefined;
@@ -71,7 +71,7 @@ async function getPendingInstallationPlugins(): Promise<PluginDetails[]> {
       return undefined;
     }
     try {
-      return await getPluginDetails(pluginDir);
+      return await getPluginDetailsFromDir(pluginDir);
     } catch (e) {
       console.error(`Failed to load plugin from ${pluginDir}`, e);
       return undefined;

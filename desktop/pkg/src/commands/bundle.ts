@@ -12,7 +12,7 @@ import {args} from '@oclif/parser';
 import fs from 'fs-extra';
 import path from 'path';
 import {runBuild} from 'flipper-pkg-lib';
-import {getPluginDetails} from 'flipper-plugin-lib';
+import {getPluginDetailsFromDir} from 'flipper-plugin-lib';
 
 export default class Bundle extends Command {
   public static description = 'transpiles and bundles plugin';
@@ -55,7 +55,7 @@ export default class Bundle extends Command {
         `package.json is not found in plugin source directory ${inputDirectory}.`,
       );
     }
-    const plugin = await getPluginDetails(inputDirectory);
+    const plugin = await getPluginDetailsFromDir(inputDirectory);
     const out = path.resolve(inputDirectory, plugin.main);
     await fs.ensureDir(path.dirname(out));
 

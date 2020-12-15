@@ -16,7 +16,7 @@ import * as path from 'path';
 import * as yarn from '../utils/yarn';
 import cli from 'cli-ux';
 import {runBuild} from 'flipper-pkg-lib';
-import {getPluginDetails} from 'flipper-plugin-lib';
+import {getPluginDetailsFromDir} from 'flipper-plugin-lib';
 
 async function deriveOutputFileName(inputDirectory: string): Promise<string> {
   const packageJson = await readJSON(path.join(inputDirectory, 'package.json'));
@@ -116,7 +116,7 @@ export default class Pack extends Command {
     cli.action.stop();
 
     cli.action.start('Reading plugin details');
-    const plugin = await getPluginDetails(inputDirectory);
+    const plugin = await getPluginDetailsFromDir(inputDirectory);
     const out = path.resolve(inputDirectory, plugin.main);
     cli.action.stop(`done. Source: ${plugin.source}. Main: ${plugin.main}.`);
 

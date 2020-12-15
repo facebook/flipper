@@ -9,15 +9,10 @@
 
 import fs from 'fs-extra';
 import path from 'path';
-import PluginDetails from './PluginDetails';
-import {pluginCacheDir} from './pluginPaths';
+import {PluginDetails} from './PluginDetails';
+import {getPluginInstallationDir, pluginCacheDir} from './pluginPaths';
 
-export default async function (
-  pluginDir: string,
-  packageJson?: any,
-): Promise<PluginDetails> {
-  packageJson =
-    packageJson || (await fs.readJson(path.join(pluginDir, 'package.json')));
+export async function getPluginDetails(pluginDir: string, packageJson: any) {
   const specVersion =
     packageJson.$schema &&
     packageJson.$schema ===
@@ -32,6 +27,31 @@ export default async function (
     default:
       throw new Error(`Unknown plugin format version: ${specVersion}`);
   }
+}
+
+export async function getPluginDetailsFromDir(
+  pluginDir: string,
+): Promise<PluginDetails> {
+  const packageJson = await fs.readJson(path.join(pluginDir, 'package.json'));
+  return await getPluginDetails(pluginDir, packageJson);
+}
+
+export async function getPluginDetailsFromPackageJson(packageJson: any) {
+  const pluginDir = getPluginInstallationDir(packageJson.name);
+  return await getPluginDetails(pluginDir, packageJson);
+}
+
+export async function getDownloadablePluginDetails(
+  packageJson: any,
+  downloadUrl: string,
+  lastUpdated: Date,
+) {
+  const details = await getPluginDetailsFromPackageJson(packageJson);
+  return {
+    ...details,
+    downloadUrl,
+    lastUpdated,
+  };
 }
 
 // Plugins packaged using V1 are distributed as sources and compiled in run-time.
