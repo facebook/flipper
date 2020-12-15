@@ -67,11 +67,12 @@ import {launcherConfigDir} from '../utils/launcher';
 import os from 'os';
 import {resolve} from 'path';
 import xdg from 'xdg-basedir';
-import {persistReducer} from 'redux-persist';
+import {createTransform, persistReducer} from 'redux-persist';
 import {PersistPartial} from 'redux-persist/es/persistReducer';
 
 import {Store as ReduxStore, MiddlewareAPI as ReduxMiddlewareAPI} from 'redux';
 import storage from 'redux-persist/lib/storage';
+import {TransformConfig} from 'redux-persist/es/createTransform';
 
 export type Actions =
   | ApplicationAction
@@ -101,7 +102,7 @@ export type State = {
   settingsState: SettingsState & PersistPartial;
   launcherSettingsState: LauncherSettingsState & PersistPartial;
   supportForm: SupportFormState;
-  pluginManager: PluginManagerState;
+  pluginManager: PluginManagerState & PersistPartial;
   healthchecks: HealthcheckState & PersistPartial;
   usageTracking: TrackingState;
   pluginDownloads: PluginDownloadsState;
@@ -117,6 +118,13 @@ const settingsStorage = new JsonFileStorage(
     'settings.json',
   ),
 );
+
+const setTransformer = (config: TransformConfig) =>
+  createTransform(
+    (set: Set<string>) => Array.from(set),
+    (arrayString: string[]) => new Set(arrayString),
+    config,
+  );
 
 const launcherSettingsStorage = new LauncherSettingsStorage(
   resolve(launcherConfigDir(), 'flipper-launcher.toml'),
@@ -156,7 +164,15 @@ export default combineReducers<State, Actions>({
     plugins,
   ),
   supportForm,
-  pluginManager,
+  pluginManager: persistReducer<PluginManagerState, Actions>(
+    {
+      key: 'pluginManager',
+      storage,
+      whitelist: ['uninstalledPlugins'],
+      transforms: [setTransformer({whitelist: ['uninstalledPlugins']})],
+    },
+    pluginManager,
+  ),
   user: persistReducer(
     {
       key: 'user',

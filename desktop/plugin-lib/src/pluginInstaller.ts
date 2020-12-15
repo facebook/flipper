@@ -134,6 +134,12 @@ export async function removePlugin(name: string): Promise<void> {
   await fs.remove(getPluginInstallationDir(name));
 }
 
+export async function removePlugins(
+  names: IterableIterator<string>,
+): Promise<void> {
+  await pmap(names, (name) => removePlugin(name));
+}
+
 export async function getInstalledPlugins(): Promise<PluginDetails[]> {
   const versionDirs = await getInstalledPluginVersionDirs();
   return pmap(

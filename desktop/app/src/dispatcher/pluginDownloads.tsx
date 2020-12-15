@@ -73,37 +73,43 @@ async function handlePluginDownload(
     dispatch(
       pluginDownloadStarted({plugin, cancel: cancellationSource.cancel}),
     );
-    await fs.ensureDir(targetDir);
-    let percentCompleted = 0;
-    const response = await axios.get(plugin.downloadUrl, {
-      adapter: axiosHttpAdapter,
-      cancelToken: cancellationSource.token,
-      responseType: 'stream',
-      onDownloadProgress: async (progressEvent) => {
-        const newPercentCompleted = !progressEvent.total
-          ? 0
-          : Math.round((progressEvent.loaded * 100) / progressEvent.total);
-        if (newPercentCompleted - percentCompleted >= 20) {
-          percentCompleted = newPercentCompleted;
-          console.log(
-            `Downloading plugin "${title}" v${version} from "${downloadUrl}": ${percentCompleted}% completed (${progressEvent.loaded} from ${progressEvent.total})`,
-          );
-        }
-      },
-    });
-    if (response.headers['content-type'] !== 'application/octet-stream') {
-      throw new Error(
-        `Unexpected content type ${response.headers['content-type']} received from ${plugin.downloadUrl}`,
+    if (await fs.pathExists(dir)) {
+      console.log(
+        `Using existing files instead of downloading plugin "${title}" v${version} from "${downloadUrl}" to "${dir}"`,
       );
+    } else {
+      await fs.ensureDir(targetDir);
+      let percentCompleted = 0;
+      const response = await axios.get(plugin.downloadUrl, {
+        adapter: axiosHttpAdapter,
+        cancelToken: cancellationSource.token,
+        responseType: 'stream',
+        onDownloadProgress: async (progressEvent) => {
+          const newPercentCompleted = !progressEvent.total
+            ? 0
+            : Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          if (newPercentCompleted - percentCompleted >= 20) {
+            percentCompleted = newPercentCompleted;
+            console.log(
+              `Downloading plugin "${title}" v${version} from "${downloadUrl}": ${percentCompleted}% completed (${progressEvent.loaded} from ${progressEvent.total})`,
+            );
+          }
+        },
+      });
+      if (response.headers['content-type'] !== 'application/octet-stream') {
+        throw new Error(
+          `Unexpected content type ${response.headers['content-type']} received from ${plugin.downloadUrl}`,
+        );
+      }
+      const responseStream = response.data as fs.ReadStream;
+      const writeStream = responseStream.pipe(
+        fs.createWriteStream(targetFile, {autoClose: true}),
+      );
+      await new Promise((resolve, reject) =>
+        writeStream.once('finish', resolve).once('error', reject),
+      );
+      await installPluginFromFile(targetFile);
     }
-    const responseStream = response.data as fs.ReadStream;
-    const writeStream = responseStream.pipe(
-      fs.createWriteStream(targetFile, {autoClose: true}),
-    );
-    await new Promise((resolve, reject) =>
-      writeStream.once('finish', resolve).once('error', reject),
-    );
-    await installPluginFromFile(targetFile);
     if (!store.getState().plugins.clientPlugins.has(plugin.id)) {
       const pluginDefinition = requirePlugin(plugin);
       dispatch(

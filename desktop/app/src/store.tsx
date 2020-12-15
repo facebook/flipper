@@ -173,6 +173,7 @@ function updateClientPlugin(
     clientsWithEnabledPlugin.forEach((client) => {
       startPlugin(client, plugin, true);
     });
+    draft.pluginManager.uninstalledPlugins.delete(plugin.details.name);
   });
 }
 
@@ -190,7 +191,7 @@ function uninstallPlugin(state: StoreState, plugin: PluginDefinition) {
     });
     cleanupPluginStates(draft.pluginStates, plugin.id);
     draft.plugins.clientPlugins.delete(plugin.id);
-    draft.pluginManager.removedPlugins.push(plugin.details);
+    draft.pluginManager.uninstalledPlugins.add(plugin.details.name);
   });
 }
 

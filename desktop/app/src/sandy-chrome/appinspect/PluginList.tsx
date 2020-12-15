@@ -244,7 +244,7 @@ export const PluginList = memo(function PluginList({
                 actions={
                   <ActionButton
                     id={plugin.id}
-                    title="Install and Enable plugin"
+                    title="Install and enable plugin"
                     onClick={handleInstallPlugin}
                     icon={<PlusOutlined size={16} style={{marginRight: 0}} />}
                   />

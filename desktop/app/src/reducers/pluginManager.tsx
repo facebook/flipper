@@ -9,22 +9,18 @@
 
 import {Actions} from './';
 import {PluginDetails} from 'flipper-plugin-lib';
-import {produce} from 'immer';
 import {PluginDefinition} from '../plugin';
+import {produce} from 'immer';
 
 export type State = {
   installedPlugins: PluginDetails[];
-  removedPlugins: PluginDetails[];
+  uninstalledPlugins: Set<string>;
 };
 
 export type Action =
   | {
       type: 'REGISTER_INSTALLED_PLUGINS';
       payload: PluginDetails[];
-    }
-  | {
-      type: 'PLUGIN_FILES_REMOVED';
-      payload: PluginDetails;
     }
   | {
       // Implemented by rootReducer in `store.tsx`
@@ -34,8 +30,7 @@ export type Action =
 
 const INITIAL_STATE: State = {
   installedPlugins: [],
-  // plugins which were uninstalled recently and require file cleanup
-  removedPlugins: [],
+  uninstalledPlugins: new Set<string>(),
 };
 
 export default function reducer(
@@ -43,29 +38,18 @@ export default function reducer(
   action: Actions,
 ): State {
   if (action.type === 'REGISTER_INSTALLED_PLUGINS') {
-    return {
-      ...state,
-      installedPlugins: action.payload,
-    };
-  } else if (action.type === 'PLUGIN_FILES_REMOVED') {
-    const plugin = action.payload;
     return produce(state, (draft) => {
-      draft.removedPlugins = draft.removedPlugins.filter(
-        (p) => p.id === plugin.id,
+      draft.installedPlugins = action.payload.filter(
+        (p) => !state.uninstalledPlugins?.has(p.name),
       );
     });
   } else {
-    return state;
+    return {...state};
   }
 }
 
 export const registerInstalledPlugins = (payload: PluginDetails[]): Action => ({
   type: 'REGISTER_INSTALLED_PLUGINS',
-  payload,
-});
-
-export const pluginFilesRemoved = (payload: PluginDetails): Action => ({
-  type: 'PLUGIN_FILES_REMOVED',
   payload,
 });
 

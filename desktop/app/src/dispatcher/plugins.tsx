@@ -57,10 +57,13 @@ export default async (store: Store, logger: Logger) => {
 
   defaultPluginsIndex = getDefaultPluginsIndex();
 
+  const uninstalledPlugins = store.getState().pluginManager.uninstalledPlugins;
+
   const initialPlugins: PluginDefinition[] = filterNewestVersionOfEachPlugin(
     getBundledPlugins(),
     await getDynamicPlugins(),
   )
+    .filter((p) => !uninstalledPlugins.has(p.name))
     .map(reportVersion)
     .filter(checkDisabled(disabledPlugins))
     .filter(checkGK(gatekeepedPlugins))
