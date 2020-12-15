@@ -104,8 +104,12 @@ if (argv['fast-refresh'] === true) {
 }
 
 // By default plugin auto-update is disabled in dev mode,
-// but it is possible to enable it using this command line argument.
-if (argv['plugin-auto-update'] === true) {
+// but it is possible to enable it using this command line
+// argument or env var.
+if (
+  argv['plugin-auto-update'] === true ||
+  process.env.FLIPPER_PLUGIN_AUTO_UPDATE
+) {
   delete process.env.FLIPPER_DISABLE_PLUGIN_AUTO_UPDATE;
 } else {
   process.env.FLIPPER_DISABLE_PLUGIN_AUTO_UPDATE = 'true';

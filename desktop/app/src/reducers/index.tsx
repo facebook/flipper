@@ -91,7 +91,7 @@ export type State = {
   pluginStates: PluginStatesState;
   pluginMessageQueue: PluginMessageQueueState;
   notifications: NotificationsState & PersistPartial;
-  plugins: PluginsState;
+  plugins: PluginsState & PersistPartial;
   user: UserState & PersistPartial;
   settingsState: SettingsState & PersistPartial;
   launcherSettingsState: LauncherSettingsState & PersistPartial;
@@ -141,7 +141,14 @@ export default combineReducers<State, Actions>({
     },
     notifications,
   ),
-  plugins,
+  plugins: persistReducer<PluginsState, Actions>(
+    {
+      key: 'plugins',
+      storage,
+      whitelist: ['marketplacePlugins'],
+    },
+    plugins,
+  ),
   supportForm,
   pluginManager,
   user: persistReducer(
