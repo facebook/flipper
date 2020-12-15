@@ -278,6 +278,7 @@ export const darkColors = {
 
 export const brandColors = {
   Facebook: '#0D7BED',
+  Lite: '#0D7BED',
   Messenger: '#0088FA',
   Instagram: '#E61E68',
   WhatsApp: '#25D366',
@@ -289,6 +290,7 @@ export const brandColors = {
 // https://www.internalfb.com/intern/assets/set/facebook_icons/
 export const brandIcons = {
   Facebook: 'app-facebook-f',
+  Lite: 'app-facebook-f',
   Messenger: 'app-messenger',
   Instagram: 'app-instagram',
   WhatsApp: 'app-whatsapp',

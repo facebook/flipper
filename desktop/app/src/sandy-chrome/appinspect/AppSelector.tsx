@@ -138,20 +138,20 @@ const AppInspectButton = styled(Button)({
 });
 
 function AppIcon({appname}: {appname?: string}) {
+  const invert = appname?.endsWith('Lite') ?? false;
   const brandName = appname?.replace(/ Lite$/, '');
   const color = brandName
     ? getColorByApp(brandName)
     : theme.backgroundTransparentHover;
   const icon = brandName && (brandIcons as any)[brandName];
   return (
-    <AppIconContainer
-      style={{background: brandName != appname ? 'white' : color}}>
+    <AppIconContainer style={{background: invert ? 'white' : color}}>
       {icon && (
         <Glyph
           name={icon}
           size={24}
           variant="outline"
-          color={brandName != appname ? color : 'white'}
+          color={invert ? color : 'white'}
         />
       )}
     </AppIconContainer>
