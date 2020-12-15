@@ -3,8 +3,15 @@ id: js-table
 title: Showing a table
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
+import Link from '@docusaurus/Link';
 
 <img alt="Android Tutorial App" src={useBaseUrl("img/android-tutorial-desktop.png")} />
+
+<div class="warning">
+
+The APIs described on this page are currently being revised, if you are looking for a plugin that does more than displaying a table, we recommend to skip to the <Link to={useBaseUrl('/docs/tutorial/js-custom')}>Custom Plugin</Link> page right away.
+If you want to follow the steps on this page, **remove** `flipper-plugin` from the (peer)dependencies in the `package.json` of your scaffolded plugin.
+</div>
 
 ## Building a Table
 
@@ -67,6 +74,8 @@ For this tutorial, however, we will just show the full object by
 using our `ManagedDataInspector` UI component:
 
 ```javascript
+import {Panel, ManagedDataInspector} from 'flipper';
+
 function renderSidebar(row: Row) {
   return (
     <Panel floating={false} heading={'Info'}>

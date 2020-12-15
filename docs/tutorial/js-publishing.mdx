@@ -4,6 +4,16 @@ title: Publishing your Plugin
 sidebar_label: Publishing
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
+import Link from '@docusaurus/Link';
+import {FbInternalOnly, OssOnly} from 'internaldocs-fb-helpers';
+
+<FbInternalOnly>
+
+The process of releasing plugins is largely automated at Facebook, and described in detail <Link to={useBaseUrl('/docs/extending/fb/desktop-plugin-releases')}>here</Link>.
+
+</FbInternalOnly>
+
+<OssOnly>
 
 Once you're happy with your plugin and want the world to see it,
 you can publish it to npm. Ensure that your plugin follows these
@@ -64,3 +74,5 @@ This may be Maven Central, JCenter or GitHub Packages for Android,
 CocoaPods for iOS and npm or GitHub Packages for React Native.
 Make sure to leave setup instructions in the README of your
 npm package.
+
+</OssOnly>

@@ -119,7 +119,6 @@ module.exports = {
       },
       {
         'Plugin Development': [
-          'fb/create-new-plugin',
           'fb/developmentworkflow',
           'fb/TypeScript',
           'fb/using-gatekeepers',
