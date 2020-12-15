@@ -20,11 +20,10 @@ export enum PluginDownloadStatus {
 
 export type DownloadablePluginState = {
   plugin: DownloadablePluginDetails;
-  enableDownloadedPlugin: boolean;
+  startedByUser: boolean;
 } & (
   | {status: PluginDownloadStatus.QUEUED}
   | {status: PluginDownloadStatus.STARTED; cancel: Canceler}
-  | {status: PluginDownloadStatus.FAILED; error: Error}
 );
 
 // We use plugin installation path as key as it is unique for each plugin version.
@@ -34,7 +33,7 @@ export type PluginDownloadStart = {
   type: 'PLUGIN_DOWNLOAD_START';
   payload: {
     plugin: DownloadablePluginDetails;
-    enableDownloadedPlugin: boolean;
+    startedByUser: boolean;
   };
 };
 
@@ -46,26 +45,17 @@ export type PluginDownloadStarted = {
   };
 };
 
-export type PluginDownloadSucceeded = {
-  type: 'PLUGIN_DOWNLOAD_SUCCEEDED';
+export type PluginDownloadFinished = {
+  type: 'PLUGIN_DOWNLOAD_FINISHED';
   payload: {
     plugin: DownloadablePluginDetails;
-  };
-};
-
-export type PluginDownloadFailed = {
-  type: 'PLUGIN_DOWNLOAD_FAILED';
-  payload: {
-    plugin: DownloadablePluginDetails;
-    error: Error;
   };
 };
 
 export type Action =
   | PluginDownloadStart
   | PluginDownloadStarted
-  | PluginDownloadSucceeded
-  | PluginDownloadFailed;
+  | PluginDownloadFinished;
 
 const INITIAL_STATE: State = {};
 
@@ -75,24 +65,21 @@ export default function reducer(
 ): State {
   switch (action.type) {
     case 'PLUGIN_DOWNLOAD_START': {
-      const {plugin, enableDownloadedPlugin} = action.payload;
+      const {plugin, startedByUser} = action.payload;
       const downloadState = state[plugin.dir];
-      if (
-        downloadState && // If download is already in progress - re-use the existing state.
-        downloadState.status !== PluginDownloadStatus.FAILED // Note that for failed downloads we want to retry downloads.
-      ) {
+      if (downloadState) {
+        // If download is already in progress - re-use the existing state.
         return produce(state, (draft) => {
           draft[plugin.dir] = {
             ...downloadState,
-            enableDownloadedPlugin:
-              enableDownloadedPlugin || downloadState.enableDownloadedPlugin,
+            startedByUser: startedByUser || downloadState.startedByUser,
           };
         });
       }
       return produce(state, (draft) => {
         draft[plugin.dir] = {
           plugin,
-          enableDownloadedPlugin: enableDownloadedPlugin,
+          startedByUser: startedByUser,
           status: PluginDownloadStatus.QUEUED,
         };
       });
@@ -110,29 +97,12 @@ export default function reducer(
         draft[plugin.dir] = {
           status: PluginDownloadStatus.STARTED,
           plugin,
-          enableDownloadedPlugin: downloadState.enableDownloadedPlugin,
+          startedByUser: downloadState.startedByUser,
           cancel,
         };
       });
     }
-    case 'PLUGIN_DOWNLOAD_FAILED': {
-      const {plugin, error} = action.payload;
-      const downloadState = state[plugin.dir];
-      if (!downloadState) {
-        console.warn(
-          `Invalid state transition PLUGIN_DOWNLOAD_FAILED when there is no download in progress to directory ${plugin.dir}`,
-        );
-      }
-      return produce(state, (draft) => {
-        draft[plugin.dir] = {
-          status: PluginDownloadStatus.FAILED,
-          plugin: downloadState.plugin,
-          enableDownloadedPlugin: downloadState.enableDownloadedPlugin,
-          error,
-        };
-      });
-    }
-    case 'PLUGIN_DOWNLOAD_SUCCEEDED': {
+    case 'PLUGIN_DOWNLOAD_FINISHED': {
       const {plugin} = action.payload;
       return produce(state, (draft) => {
         delete draft[plugin.dir];
@@ -145,7 +115,7 @@ export default function reducer(
 
 export const startPluginDownload = (payload: {
   plugin: DownloadablePluginDetails;
-  enableDownloadedPlugin: boolean;
+  startedByUser: boolean;
 }): Action => ({
   type: 'PLUGIN_DOWNLOAD_START',
   payload,
@@ -156,11 +126,6 @@ export const pluginDownloadStarted = (payload: {
   cancel: Canceler;
 }): Action => ({type: 'PLUGIN_DOWNLOAD_STARTED', payload});
 
-export const pluginDownloadSucceeded = (payload: {
+export const pluginDownloadFinished = (payload: {
   plugin: DownloadablePluginDetails;
-}): Action => ({type: 'PLUGIN_DOWNLOAD_SUCCEEDED', payload});
-
-export const pluginDownloadFailed = (payload: {
-  plugin: DownloadablePluginDetails;
-  error: Error;
-}): Action => ({type: 'PLUGIN_DOWNLOAD_FAILED', payload});
+}): Action => ({type: 'PLUGIN_DOWNLOAD_FINISHED', payload});

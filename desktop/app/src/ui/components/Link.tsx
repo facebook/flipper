@@ -30,6 +30,7 @@ export default function Link(props: {
   href: string;
   children?: React.ReactNode;
   style?: React.CSSProperties;
+  onClick?: ((event: React.MouseEvent<any>) => void) | undefined;
 }) {
   const isSandy = useIsSandy();
   const onClick = useCallback(
@@ -42,9 +43,9 @@ export default function Link(props: {
   );
 
   return isSandy ? (
-    <AntOriginalLink {...props} onClick={onClick} />
+    <AntOriginalLink {...props} onClick={props.onClick ?? onClick} />
   ) : (
-    <StyledLink onClick={onClick} style={props.style}>
+    <StyledLink onClick={props.onClick ?? onClick} style={props.style}>
       {props.children || props.href}
     </StyledLink>
   );

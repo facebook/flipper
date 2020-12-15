@@ -15,8 +15,7 @@ import {Store} from '../reducers/index';
 import {
   PluginDownloadStatus,
   pluginDownloadStarted,
-  pluginDownloadFailed,
-  pluginDownloadSucceeded,
+  pluginDownloadFinished,
 } from '../reducers/pluginDownloads';
 import {sideEffect} from '../utils/sideEffect';
 import {default as axios} from 'axios';
@@ -25,7 +24,12 @@ import path from 'path';
 import tmp from 'tmp';
 import {promisify} from 'util';
 import {requirePlugin} from './plugins';
-import {registerPluginUpdate} from '../reducers/connections';
+import {registerPluginUpdate, setStaticView} from '../reducers/connections';
+import {notification, Typography} from 'antd';
+import React from 'react';
+import {ConsoleLogs} from '../chrome/ConsoleLogs';
+
+const {Text, Link} = Typography;
 
 // Adapter which forces node.js implementation for axios instead of browser implementation
 // used by default in Electron. Node.js implementation is better, because it
@@ -44,11 +48,7 @@ export default (store: Store) => {
     (state, store) => {
       for (const download of Object.values(state)) {
         if (download.status === PluginDownloadStatus.QUEUED) {
-          handlePluginDownload(
-            download.plugin,
-            download.enableDownloadedPlugin,
-            store,
-          );
+          handlePluginDownload(download.plugin, download.startedByUser, store);
         }
       }
     },
@@ -58,7 +58,7 @@ export default (store: Store) => {
 
 async function handlePluginDownload(
   plugin: DownloadablePluginDetails,
-  enableDownloadedPlugin: boolean,
+  startedByUser: boolean,
   store: Store,
 ) {
   const dispatch = store.dispatch;
@@ -115,21 +115,35 @@ async function handlePluginDownload(
       dispatch(
         registerPluginUpdate({
           plugin: pluginDefinition,
-          enablePlugin: enableDownloadedPlugin,
+          enablePlugin: startedByUser,
         }),
       );
     }
     console.log(
       `Successfully downloaded and installed plugin "${title}" v${version} from "${downloadUrl}" to "${dir}".`,
     );
-    dispatch(pluginDownloadSucceeded({plugin}));
   } catch (error) {
     console.error(
       `Failed to download plugin "${title}" v${version} from "${downloadUrl}" to "${dir}".`,
       error,
     );
-    dispatch(pluginDownloadFailed({plugin, error}));
+    if (startedByUser) {
+      notification.error({
+        message: `Failed to install plugin "${title}".`,
+        description: (
+          <Text>
+            See{' '}
+            <Link onClick={() => dispatch(setStaticView(ConsoleLogs))}>
+              logs
+            </Link>{' '}
+            for details.
+          </Text>
+        ),
+        placement: 'bottomLeft',
+      });
+    }
   } finally {
+    dispatch(pluginDownloadFinished({plugin}));
     await fs.remove(targetDir);
   }
 }

@@ -168,7 +168,7 @@ describe('basic findBestDevice with metro present', () => {
         state.connections.userStarredPlugins,
       ),
     ).toEqual({
-      uninstalledPlugins: [],
+      downloadablePlugins: [],
       devicePlugins: [logsPlugin],
       metroPlugins: [logsPlugin],
       enabledPlugins: [],
@@ -237,12 +237,12 @@ describe('basic findBestDevice with metro present', () => {
       noopPlugin,
     );
 
-    const supportedUninstalledPlugin = createMockDownloadablePluginDetails({
+    const supportedDownloadablePlugin = createMockDownloadablePluginDetails({
       id: 'supportedUninstalledPlugin',
       title: 'Supported Uninstalled Plugin',
     });
 
-    const unsupportedUninstalledPlugin = createMockDownloadablePluginDetails({
+    const unsupportedDownloadablePlugin = createMockDownloadablePluginDetails({
       id: 'unsupportedUninstalledPlugin',
       title: 'Unsupported Uninstalled Plugin',
     });
@@ -258,8 +258,8 @@ describe('basic findBestDevice with metro present', () => {
     flipper.store.dispatch(addGatekeepedPlugins([gateKeepedPlugin]));
     flipper.store.dispatch(
       registerMarketplacePlugins([
-        supportedUninstalledPlugin,
-        unsupportedUninstalledPlugin,
+        supportedDownloadablePlugin,
+        unsupportedDownloadablePlugin,
       ]),
     );
 
@@ -297,11 +297,11 @@ describe('basic findBestDevice with metro present', () => {
           "Plugin 'Unsupported Plugin' is installed in Flipper, but not supported by the client application",
         ],
         [
-          unsupportedUninstalledPlugin,
+          unsupportedDownloadablePlugin,
           "Plugin 'Unsupported Uninstalled Plugin' is not installed in Flipper and not supported by the client application",
         ],
       ],
-      uninstalledPlugins: [supportedUninstalledPlugin],
+      downloadablePlugins: [supportedDownloadablePlugin],
     });
 
     flipper.store.dispatch(

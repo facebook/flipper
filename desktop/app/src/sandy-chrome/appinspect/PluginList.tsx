@@ -10,7 +10,13 @@
 import React, {memo, useCallback, useEffect, useRef, useState} from 'react';
 import {Badge, Button, Menu, Tooltip, Typography} from 'antd';
 import {InfoIcon, SidebarTitle} from '../LeftSidebar';
-import {PlusOutlined, MinusOutlined, DeleteOutlined} from '@ant-design/icons';
+import {
+  PlusOutlined,
+  MinusOutlined,
+  DeleteOutlined,
+  LoadingOutlined,
+  DownloadOutlined,
+} from '@ant-design/icons';
 import {Glyph, Layout, styled} from '../../ui';
 import {theme, NUX, Tracked} from 'flipper-plugin';
 import {useDispatch, useStore} from '../../utils/useStore';
@@ -21,11 +27,14 @@ import Client from '../../Client';
 import {State} from '../../reducers';
 import BaseDevice from '../../devices/BaseDevice';
 import {getFavoritePlugins} from '../../chrome/mainsidebar/sidebarUtils';
-import {PluginDetails} from 'flipper-plugin-lib';
+import {PluginDetails, DownloadablePluginDetails} from 'flipper-plugin-lib';
 import {useMemoize} from '../../utils/useMemoize';
 import MetroDevice from '../../devices/MetroDevice';
-import {DownloadablePluginDetails} from 'plugin-lib/lib';
-import {startPluginDownload} from '../../reducers/pluginDownloads';
+import {
+  DownloadablePluginState,
+  PluginDownloadStatus,
+  startPluginDownload,
+} from '../../reducers/pluginDownloads';
 import {uninstallPlugin} from '../../reducers/pluginManager';
 
 const {SubMenu} = Menu;
@@ -43,6 +52,7 @@ export const PluginList = memo(function PluginList({
   const dispatch = useDispatch();
   const connections = useStore((state) => state.connections);
   const plugins = useStore((state) => state.plugins);
+  const downloads = useStore((state) => state.pluginDownloads);
 
   const {
     devicePlugins,
@@ -50,7 +60,7 @@ export const PluginList = memo(function PluginList({
     enabledPlugins,
     disabledPlugins,
     unavailablePlugins,
-    uninstalledPlugins,
+    downloadablePlugins,
   } = useMemoize(computePluginLists, [
     activeDevice,
     metroDevice,
@@ -59,6 +69,22 @@ export const PluginList = memo(function PluginList({
     connections.userStarredPlugins,
   ]);
   const isArchived = !!activeDevice?.isArchived;
+
+  const annotatedDownloadablePlugins = useMemoize<
+    [Record<string, DownloadablePluginState>, DownloadablePluginDetails[]],
+    [plugin: DownloadablePluginDetails, downloadStatus?: PluginDownloadStatus][]
+  >(
+    (downloads, downloadablePlugins) => {
+      const downloadMap = new Map(
+        Object.values(downloads).map((x) => [x.plugin.id, x]),
+      );
+      return downloadablePlugins.map((plugin) => [
+        plugin,
+        downloadMap.get(plugin.id)?.status,
+      ]);
+    },
+    [downloads, downloadablePlugins],
+  );
 
   const handleAppPluginClick = useCallback(
     (pluginId) => {
@@ -99,15 +125,15 @@ export const PluginList = memo(function PluginList({
   );
   const handleInstallPlugin = useCallback(
     (id: string) => {
-      const plugin = uninstalledPlugins.find((p) => p.id === id)!;
+      const plugin = downloadablePlugins.find((p) => p.id === id)!;
       dispatch(
         startPluginDownload({
           plugin,
-          enableDownloadedPlugin: true,
+          startedByUser: true,
         }),
       );
     },
-    [uninstalledPlugins, dispatch],
+    [downloadablePlugins, dispatch],
   );
   const handleUninstallPlugin = useCallback(
     (id: string) => {
@@ -234,8 +260,9 @@ export const PluginList = memo(function PluginList({
           <PluginGroup
             key="uninstalled"
             title="Detected in App"
-            hint="The plugins below are supported by the selected device / application, but not installed in Flipper.">
-            {uninstalledPlugins.map((plugin) => (
+            hint="The plugins below are supported by the selected device / application, but not installed in Flipper.
+            To install plugin, hover it and click to the 'Download' icon.">
+            {annotatedDownloadablePlugins.map(([plugin, downloadStatus]) => (
               <PluginEntry
                 key={plugin.id}
                 plugin={plugin}
@@ -244,9 +271,15 @@ export const PluginList = memo(function PluginList({
                 actions={
                   <ActionButton
                     id={plugin.id}
-                    title="Install and enable plugin"
+                    title="Download and install plugin"
                     onClick={handleInstallPlugin}
-                    icon={<PlusOutlined size={16} style={{marginRight: 0}} />}
+                    icon={
+                      downloadStatus ? (
+                        <LoadingOutlined size={16} style={{marginRight: 0}} />
+                      ) : (
+                        <DownloadOutlined size={16} style={{marginRight: 0}} />
+                      )
+                    }
                   />
                 }
                 disabled
@@ -432,7 +465,7 @@ export function computePluginLists(
   const enabledPlugins: ClientPluginDefinition[] = [];
   const disabledPlugins: ClientPluginDefinition[] = [];
   const unavailablePlugins: [plugin: PluginDetails, reason: string][] = [];
-  const uninstalledPlugins: DownloadablePluginDetails[] = [];
+  const downloadablePlugins: DownloadablePluginDetails[] = [];
 
   if (device) {
     // find all device plugins that aren't part of the current device / metro
@@ -504,7 +537,7 @@ export function computePluginLists(
     );
     uninstalledMarketplacePlugins.forEach((plugin) => {
       if (client.supportsPlugin(plugin.id)) {
-        uninstalledPlugins.push(plugin);
+        downloadablePlugins.push(plugin);
       } else {
         unavailablePlugins.push([
           plugin,
@@ -521,7 +554,7 @@ export function computePluginLists(
   unavailablePlugins.sort(([a], [b]) => {
     return getPluginTitle(a) > getPluginTitle(b) ? 1 : -1;
   });
-  uninstalledPlugins.sort((a, b) => {
+  downloadablePlugins.sort((a, b) => {
     return getPluginTitle(a) > getPluginTitle(b) ? 1 : -1;
   });
 
@@ -531,7 +564,7 @@ export function computePluginLists(
     enabledPlugins,
     disabledPlugins,
     unavailablePlugins,
-    uninstalledPlugins,
+    downloadablePlugins,
   };
 }
 
