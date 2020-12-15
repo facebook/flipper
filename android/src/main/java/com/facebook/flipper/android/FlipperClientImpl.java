@@ -22,7 +22,7 @@ import javax.annotation.Nullable;
 @DoNotStrip
 class FlipperClientImpl implements FlipperClient {
   static {
-    if (BuildConfig.IS_INTERNAL_BUILD) {
+    if (BuildConfig.IS_INTERNAL_BUILD || BuildConfig.LOAD_FLIPPER_EXPLICIT) {
       SoLoader.loadLibrary("flipper");
     }
   }

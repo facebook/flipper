@@ -20,6 +20,7 @@ android {
         targetSdkVersion rootProject.targetSdkVersion
         buildConfigField "boolean", "IS_INTERNAL_BUILD", 'true'
         buildConfigField "boolean", "IS_ASAN_BUILD", 'false'
+        buildConfigField "boolean", "LOAD_FLIPPER_EXPLICIT", 'false'
 
         ndk {
             abiFilters 'x86', 'x86_64', 'armeabi-v7a', 'arm64-v8a'

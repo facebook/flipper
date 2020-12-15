@@ -27,7 +27,7 @@ public final class AndroidFlipperClient {
 
   public static synchronized FlipperClient getInstance(Context context) {
     if (!sIsInitialized) {
-      if (!BuildConfig.IS_INTERNAL_BUILD) {
+      if (!(BuildConfig.IS_INTERNAL_BUILD || BuildConfig.LOAD_FLIPPER_EXPLICIT)) {
         Log.e("Flipper", "Attempted to initialize in non-internal build");
         return null;
       }

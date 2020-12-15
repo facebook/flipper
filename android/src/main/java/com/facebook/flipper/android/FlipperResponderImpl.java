@@ -18,7 +18,7 @@ import com.facebook.soloader.SoLoader;
 @DoNotStrip
 class FlipperResponderImpl implements FlipperResponder {
   static {
-    if (BuildConfig.IS_INTERNAL_BUILD) {
+    if (BuildConfig.IS_INTERNAL_BUILD || BuildConfig.LOAD_FLIPPER_EXPLICIT) {
       SoLoader.loadLibrary("flipper");
     }
   }
