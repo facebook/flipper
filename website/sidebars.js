@@ -52,7 +52,6 @@ module.exports = {
     Advanced: ['custom-ports', 'stetho'],
   },
   extending: {
-    'Extending Flipper': ['extending/index'],
     Tutorial: [
       'tutorial/intro',
       'tutorial/ios',

@@ -41,7 +41,7 @@ const siteConfig = {
           position: 'right',
         },
         {
-          to: 'docs/extending/index',
+          to: 'docs/tutorial/intro',
           label: 'Extending',
           position: 'right',
         },
