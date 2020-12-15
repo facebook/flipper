@@ -8,7 +8,10 @@
  */
 
 import {DevicePluginMap, ClientPluginMap, PluginDefinition} from '../plugin';
-import {PluginDetails, DownloadablePluginDetails} from 'flipper-plugin-lib';
+import {
+  DownloadablePluginDetails,
+  ActivatablePluginDetails,
+} from 'flipper-plugin-lib';
 import {Actions} from '.';
 import produce from 'immer';
 import {isDevicePluginDefinition} from '../utils/pluginUtils';
@@ -16,9 +19,10 @@ import {isDevicePluginDefinition} from '../utils/pluginUtils';
 export type State = {
   devicePlugins: DevicePluginMap;
   clientPlugins: ClientPluginMap;
-  gatekeepedPlugins: Array<PluginDetails>;
-  disabledPlugins: Array<PluginDetails>;
-  failedPlugins: Array<[PluginDetails, string]>;
+  loadedPlugins: Map<string, ActivatablePluginDetails>;
+  gatekeepedPlugins: Array<ActivatablePluginDetails>;
+  disabledPlugins: Array<ActivatablePluginDetails>;
+  failedPlugins: Array<[ActivatablePluginDetails, string]>;
   selectedPlugins: Array<string>;
   marketplacePlugins: Array<DownloadablePluginDetails>;
 };
@@ -32,15 +36,15 @@ export type Action =
   | RegisterPluginAction
   | {
       type: 'GATEKEEPED_PLUGINS';
-      payload: Array<PluginDetails>;
+      payload: Array<ActivatablePluginDetails>;
     }
   | {
       type: 'DISABLED_PLUGINS';
-      payload: Array<PluginDetails>;
+      payload: Array<ActivatablePluginDetails>;
     }
   | {
       type: 'FAILED_PLUGINS';
-      payload: Array<[PluginDetails, string]>;
+      payload: Array<[ActivatablePluginDetails, string]>;
     }
   | {
       type: 'SELECTED_PLUGINS';
@@ -49,11 +53,16 @@ export type Action =
   | {
       type: 'MARKETPLACE_PLUGINS';
       payload: Array<DownloadablePluginDetails>;
+    }
+  | {
+      type: 'REGISTER_LOADED_PLUGINS';
+      payload: Array<ActivatablePluginDetails>;
     };
 
 const INITIAL_STATE: State = {
   devicePlugins: new Map(),
   clientPlugins: new Map(),
+  loadedPlugins: new Map(),
   gatekeepedPlugins: [],
   disabledPlugins: [],
   failedPlugins: [],
@@ -105,6 +114,11 @@ export default function reducer(
       ...state,
       marketplacePlugins: action.payload,
     };
+  } else if (action.type === 'REGISTER_LOADED_PLUGINS') {
+    return {
+      ...state,
+      loadedPlugins: new Map(action.payload.map((p) => [p.id, p])),
+    };
   } else {
     return state;
   }
@@ -121,19 +135,21 @@ export const registerPlugins = (payload: PluginDefinition[]): Action => ({
 });
 
 export const addGatekeepedPlugins = (
-  payload: Array<PluginDetails>,
+  payload: Array<ActivatablePluginDetails>,
 ): Action => ({
   type: 'GATEKEEPED_PLUGINS',
   payload,
 });
 
-export const addDisabledPlugins = (payload: Array<PluginDetails>): Action => ({
+export const addDisabledPlugins = (
+  payload: Array<ActivatablePluginDetails>,
+): Action => ({
   type: 'DISABLED_PLUGINS',
   payload,
 });
 
 export const addFailedPlugins = (
-  payload: Array<[PluginDetails, string]>,
+  payload: Array<[ActivatablePluginDetails, string]>,
 ): Action => ({
   type: 'FAILED_PLUGINS',
   payload,
@@ -143,5 +159,12 @@ export const registerMarketplacePlugins = (
   payload: Array<DownloadablePluginDetails>,
 ): Action => ({
   type: 'MARKETPLACE_PLUGINS',
+  payload,
+});
+
+export const registerLoadedPlugins = (
+  payload: Array<ActivatablePluginDetails>,
+): Action => ({
+  type: 'REGISTER_LOADED_PLUGINS',
   payload,
 });

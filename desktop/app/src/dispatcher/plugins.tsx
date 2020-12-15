@@ -19,6 +19,7 @@ import {
   addGatekeepedPlugins,
   addDisabledPlugins,
   addFailedPlugins,
+  registerLoadedPlugins,
 } from '../reducers/plugins';
 import GK from '../fb-stubs/GK';
 import {FlipperBasePlugin} from '../plugin';
@@ -63,10 +64,12 @@ export default async (store: Store, logger: Logger) => {
 
   const uninstalledPlugins = store.getState().pluginManager.uninstalledPlugins;
 
-  const initialPlugins: PluginDefinition[] = filterNewestVersionOfEachPlugin(
+  const loadedPlugins = filterNewestVersionOfEachPlugin(
     getBundledPlugins(),
     await getDynamicPlugins(),
-  )
+  );
+
+  const initialPlugins: PluginDefinition[] = loadedPlugins
     .filter((p) => !uninstalledPlugins.has(p.name))
     .map(reportVersion)
     .filter(checkDisabled(disabledPlugins))
@@ -74,6 +77,7 @@ export default async (store: Store, logger: Logger) => {
     .map(createRequirePluginFunction(failedPlugins))
     .filter(notNull);
 
+  store.dispatch(registerLoadedPlugins(loadedPlugins));
   store.dispatch(addGatekeepedPlugins(gatekeepedPlugins));
   store.dispatch(addDisabledPlugins(disabledPlugins));
   store.dispatch(addFailedPlugins(failedPlugins));

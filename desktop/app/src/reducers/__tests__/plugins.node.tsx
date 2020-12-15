@@ -13,6 +13,7 @@ import {
   addGatekeepedPlugins,
 } from '../plugins';
 import {FlipperPlugin, FlipperDevicePlugin, BaseAction} from '../../plugin';
+import {InstalledPluginDetails} from 'flipper-plugin-lib';
 
 const testPlugin = class extends FlipperPlugin<any, BaseAction, any> {
   static id = 'TestPlugin';
@@ -31,6 +32,7 @@ test('add clientPlugin', () => {
     {
       devicePlugins: new Map(),
       clientPlugins: new Map(),
+      loadedPlugins: new Map(),
       gatekeepedPlugins: [],
       failedPlugins: [],
       disabledPlugins: [],
@@ -47,6 +49,7 @@ test('add devicePlugin', () => {
     {
       devicePlugins: new Map(),
       clientPlugins: new Map(),
+      loadedPlugins: new Map(),
       gatekeepedPlugins: [],
       failedPlugins: [],
       disabledPlugins: [],
@@ -63,6 +66,7 @@ test('do not add plugin twice', () => {
     {
       devicePlugins: new Map(),
       clientPlugins: new Map(),
+      loadedPlugins: new Map(),
       gatekeepedPlugins: [],
       failedPlugins: [],
       disabledPlugins: [],
@@ -75,15 +79,15 @@ test('do not add plugin twice', () => {
 });
 
 test('add gatekeeped plugin', () => {
-  const gatekeepedPlugins = [
+  const gatekeepedPlugins: InstalledPluginDetails[] = [
     {
       name: 'plugin',
-      out: 'out.js',
       version: '1.0.0',
       dir: '/plugins/test',
       specVersion: 2,
       source: 'src/index.ts',
       isBundled: false,
+      isActivatable: true,
       main: 'lib/index.js',
       title: 'test',
       id: 'test',
@@ -94,6 +98,7 @@ test('add gatekeeped plugin', () => {
     {
       devicePlugins: new Map(),
       clientPlugins: new Map(),
+      loadedPlugins: new Map(),
       gatekeepedPlugins: [],
       failedPlugins: [],
       disabledPlugins: [],

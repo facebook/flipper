@@ -27,6 +27,7 @@ import {deconstructPluginKey} from './utils/clientUtils';
 import {_SandyPluginDefinition} from 'flipper-plugin';
 import BaseDevice from './devices/BaseDevice';
 import {State as PluginStates} from './reducers/pluginStates';
+import {ActivatablePluginDetails} from 'flipper-plugin-lib';
 
 export const store: Store = createStore<StoreState, Actions, any, any>(
   rootReducer,
@@ -173,7 +174,7 @@ function updateClientPlugin(
     clientsWithEnabledPlugin.forEach((client) => {
       startPlugin(client, plugin, true);
     });
-    draft.pluginManager.uninstalledPlugins.delete(plugin.details.name);
+    registerLoadedPlugin(draft, plugin.details);
   });
 }
 
@@ -191,6 +192,7 @@ function uninstallPlugin(state: StoreState, plugin: PluginDefinition) {
     });
     cleanupPluginStates(draft.pluginStates, plugin.id);
     draft.plugins.clientPlugins.delete(plugin.id);
+    draft.plugins.devicePlugins.delete(plugin.id);
     draft.pluginManager.uninstalledPlugins.add(plugin.details.name);
   });
 }
@@ -209,7 +211,19 @@ function updateDevicePlugin(state: StoreState, plugin: DevicePluginDefinition) {
     devicesWithEnabledPlugin.forEach((d) => {
       d.loadDevicePlugin(plugin);
     });
+    registerLoadedPlugin(draft, plugin.details);
   });
+}
+
+function registerLoadedPlugin(
+  draft: {
+    pluginManager: StoreState['pluginManager'];
+    plugins: StoreState['plugins'];
+  },
+  plugin: ActivatablePluginDetails,
+) {
+  draft.pluginManager.uninstalledPlugins.delete(plugin.name);
+  draft.plugins.loadedPlugins.set(plugin.id, plugin);
 }
 
 function supportsDevice(plugin: DevicePluginDefinition, device: BaseDevice) {

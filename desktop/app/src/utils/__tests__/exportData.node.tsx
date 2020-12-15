@@ -762,6 +762,11 @@ test('test determinePluginsToProcess for mutilple clients having plugins present
       ['RandomPlugin', TestPlugin],
     ]),
     devicePlugins: new Map([['TestDevicePlugin', TestDevicePlugin]]),
+    loadedPlugins: new Map([
+      ['TestPlugin', TestPlugin.details],
+      ['RandomPlugin', TestPlugin.details],
+      ['TestDevicePlugin', TestDevicePlugin.details],
+    ]),
     gatekeepedPlugins: [],
     disabledPlugins: [],
     failedPlugins: [],
@@ -828,6 +833,11 @@ test('test determinePluginsToProcess for no selected plugin present in any clien
       ['RandomPlugin', TestPlugin],
     ]),
     devicePlugins: new Map([['TestDevicePlugin', TestDevicePlugin]]),
+    loadedPlugins: new Map([
+      ['TestPlugin', TestPlugin.details],
+      ['RandomPlugin', TestPlugin.details],
+      ['TestDevicePlugin', TestDevicePlugin.details],
+    ]),
     gatekeepedPlugins: [],
     disabledPlugins: [],
     failedPlugins: [],
@@ -872,6 +882,10 @@ test('test determinePluginsToProcess for multiple clients on same device', async
   const plugins: PluginsState = {
     clientPlugins: new Map([['TestPlugin', TestPlugin]]),
     devicePlugins: new Map([['TestDevicePlugin', TestDevicePlugin]]),
+    loadedPlugins: new Map([
+      ['TestPlugin', TestPlugin.details],
+      ['TestDevicePlugin', TestDevicePlugin.details],
+    ]),
     gatekeepedPlugins: [],
     disabledPlugins: [],
     failedPlugins: [],
@@ -954,6 +968,10 @@ test('test determinePluginsToProcess for multiple clients on different device', 
   const plugins: PluginsState = {
     clientPlugins: new Map([['TestPlugin', TestPlugin]]),
     devicePlugins: new Map([['TestDevicePlugin', TestDevicePlugin]]),
+    loadedPlugins: new Map([
+      ['TestPlugin', TestPlugin.details],
+      ['TestDevicePlugin', TestDevicePlugin.details],
+    ]),
     gatekeepedPlugins: [],
     disabledPlugins: [],
     failedPlugins: [],
@@ -1033,6 +1051,10 @@ test('test determinePluginsToProcess to ignore archived clients', async () => {
   const plugins: PluginsState = {
     clientPlugins: new Map([['TestPlugin', TestPlugin]]),
     devicePlugins: new Map([['TestDevicePlugin', TestDevicePlugin]]),
+    loadedPlugins: new Map([
+      ['TestPlugin', TestPlugin.details],
+      ['TestDevicePlugin', TestDevicePlugin.details],
+    ]),
     gatekeepedPlugins: [],
     disabledPlugins: [],
     failedPlugins: [],
