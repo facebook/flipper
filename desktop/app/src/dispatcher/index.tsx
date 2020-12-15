@@ -22,6 +22,7 @@ import pluginManager from './pluginManager';
 import reactNative from './reactNative';
 import pluginAutoUpdate from './fb-stubs/pluginAutoUpdate';
 import pluginMarketplace from './fb-stubs/pluginMarketplace';
+import pluginDownloads from './pluginDownloads';
 
 import {Logger} from '../fb-interfaces/Logger';
 import {Store} from '../reducers/index';
@@ -49,6 +50,7 @@ export default function (store: Store, logger: Logger): () => Promise<void> {
     reactNative,
     pluginAutoUpdate,
     pluginMarketplace,
+    pluginDownloads,
   ].filter(notNull);
   const globalCleanup = dispatchers
     .map((dispatcher) => dispatcher(store, logger))

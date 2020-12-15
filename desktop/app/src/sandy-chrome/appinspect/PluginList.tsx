@@ -25,6 +25,7 @@ import {PluginDetails} from 'flipper-plugin-lib';
 import {useMemoize} from '../../utils/useMemoize';
 import MetroDevice from '../../devices/MetroDevice';
 import {DownloadablePluginDetails} from 'plugin-lib/lib';
+import {startPluginDownload} from '../../reducers/pluginDownloads';
 
 const {SubMenu} = Menu;
 const {Text} = Typography;
@@ -95,7 +96,18 @@ export const PluginList = memo(function PluginList({
     },
     [client, plugins.clientPlugins, dispatch],
   );
-
+  const handleInstallPlugin = useCallback(
+    (id: string) => {
+      const plugin = uninstalledPlugins.find((p) => p.id === id)!;
+      dispatch(
+        startPluginDownload({
+          plugin,
+          enableDownloadedPlugin: true,
+        }),
+      );
+    },
+    [uninstalledPlugins, dispatch],
+  );
   return (
     <Layout.Container>
       <SidebarTitle>Plugins</SidebarTitle>
@@ -204,6 +216,14 @@ export const PluginList = memo(function PluginList({
                 plugin={plugin}
                 scrollTo={plugin.id === connections.selectedPlugin}
                 tooltip={getPluginTooltip(plugin)}
+                actions={
+                  <ActionButton
+                    id={plugin.id}
+                    title="Install and Enable plugin"
+                    onClick={handleInstallPlugin}
+                    icon={<PlusOutlined size={16} style={{marginRight: 0}} />}
+                  />
+                }
                 disabled
               />
             ))}

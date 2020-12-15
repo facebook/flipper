@@ -76,11 +76,11 @@ export function rootReducer(
       }
     });
   } else if (action.type === 'UPDATE_PLUGIN' && state) {
-    const plugin = action.payload;
+    const {plugin, enablePlugin} = action.payload;
     if (isDevicePluginDefinition(plugin)) {
       return updateDevicePlugin(state, plugin);
     } else {
-      return updateClientPlugin(state, plugin);
+      return updateClientPlugin(state, plugin, enablePlugin);
     }
   }
 
@@ -127,13 +127,33 @@ function startPlugin(
   }
 }
 
-function updateClientPlugin(state: StoreState, plugin: typeof FlipperPlugin) {
+function updateClientPlugin(
+  state: StoreState,
+  plugin: typeof FlipperPlugin,
+  enable: boolean,
+) {
   const clients = state.connections.clients;
   return produce(state, (draft) => {
+    if (enable) {
+      clients.forEach((c) => {
+        let enabledPlugins = draft.connections.userStarredPlugins[c.query.app];
+        if (
+          c.supportsPlugin(plugin.id) &&
+          !enabledPlugins?.includes(plugin.id)
+        ) {
+          if (!enabledPlugins) {
+            enabledPlugins = [plugin.id];
+            draft.connections.userStarredPlugins[c.query.app] = enabledPlugins;
+          } else {
+            enabledPlugins.push(plugin.id);
+          }
+        }
+      });
+    }
     const clientsWithEnabledPlugin = clients.filter((c) => {
       return (
         c.supportsPlugin(plugin.id) &&
-        state.connections.userStarredPlugins[c.query.app]?.includes(plugin.id)
+        draft.connections.userStarredPlugins[c.query.app]?.includes(plugin.id)
       );
     });
     // stop plugin for each client where it is enabled

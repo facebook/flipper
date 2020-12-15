@@ -52,6 +52,10 @@ import healthchecks, {
   Action as HealthcheckAction,
   State as HealthcheckState,
 } from './healthchecks';
+import pluginDownloads, {
+  State as PluginDownloadsState,
+  Action as PluginDownloadsAction,
+} from './pluginDownloads';
 import usageTracking, {
   Action as TrackingAction,
   State as TrackingState,
@@ -83,6 +87,7 @@ export type Actions =
   | PluginManagerAction
   | HealthcheckAction
   | TrackingAction
+  | PluginDownloadsAction
   | {type: 'INIT'};
 
 export type State = {
@@ -99,6 +104,7 @@ export type State = {
   pluginManager: PluginManagerState;
   healthchecks: HealthcheckState & PersistPartial;
   usageTracking: TrackingState;
+  pluginDownloads: PluginDownloadsState;
 };
 
 export type Store = ReduxStore<State, Actions>;
@@ -181,4 +187,5 @@ export default combineReducers<State, Actions>({
     healthchecks,
   ),
   usageTracking,
+  pluginDownloads,
 });

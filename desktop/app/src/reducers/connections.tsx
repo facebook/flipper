@@ -121,7 +121,10 @@ export type Action =
   | {
       // Implemented by rootReducer in `store.tsx`
       type: 'UPDATE_PLUGIN';
-      payload: PluginDefinition;
+      payload: {
+        plugin: PluginDefinition;
+        enablePlugin: boolean;
+      };
     };
 
 const DEFAULT_PLUGIN = 'DeviceLogs';
@@ -400,7 +403,10 @@ export const selectClient = (clientId: string | null): Action => ({
   payload: clientId,
 });
 
-export const registerPluginUpdate = (payload: PluginDefinition): Action => ({
+export const registerPluginUpdate = (payload: {
+  plugin: PluginDefinition;
+  enablePlugin: boolean;
+}): Action => ({
   type: 'UPDATE_PLUGIN',
   payload,
 });
