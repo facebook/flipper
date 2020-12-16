@@ -25,6 +25,14 @@ module.exports = {
       'features/crash-reporter-plugin',
       'features/share-flipper-data',
       'features/react-native',
+      ...fbInternalOnly([
+        'fb/Memory-Tools',
+        'fb/Navigation-Plugin',
+        'fb/supporting-feed-inspector',
+        'fb/sections',
+        'fb/Trace',
+        'fb/mobile-config',
+      ]),
     ],
   },
   setup: {
@@ -101,15 +109,7 @@ module.exports = {
       'fb/Flipper-Strict-TypeScript',
       'fb/Help-Updating-Flipper',
       {
-        'Internal Plugins': [
-          'fb/plugins',
-          'fb/Memory-Tools',
-          'fb/Navigation-Plugin',
-          'fb/supporting-feed-inspector',
-          'fb/sections',
-          'fb/Trace',
-          'fb/mobile-config',
-        ],
+        'Internal Plugins': ['fb/plugins'],
       },
       {
         'Plugin Development': [
