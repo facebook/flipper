@@ -33,6 +33,7 @@ module.exports = {
       'getting-started/index',
       ...fbInternalOnly(['fb/Add-flipper-to-android-app']),
       'getting-started/android-native',
+      ...fbInternalOnly(['fb/Adding-flipper-to-ios-app']),
       'getting-started/ios-native',
       'getting-started/react-native',
       'getting-started/react-native-android',
@@ -94,7 +95,6 @@ module.exports = {
   'fb-internal': {
     'FB Internal': fbInternalOnly([
       'fb/release-infra',
-      'fb/Adding-flipper-to-ios-app',
       'fb/LauncherConfig',
       'fb/Flipper-fbsource-Pinning',
       'fb/Flipper-Release-Cycle',
