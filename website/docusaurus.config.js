@@ -42,7 +42,7 @@ const siteConfig = {
         },
         {
           to: 'docs/tutorial/intro',
-          label: 'Extending',
+          label: 'Creating Plugins',
           position: 'right',
         },
         {

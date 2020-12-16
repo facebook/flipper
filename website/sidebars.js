@@ -7,7 +7,7 @@
  * @format
  */
 
-const {fbContent, fbInternalOnly} = require('internaldocs-fb-helpers');
+const {fbInternalOnly} = require('internaldocs-fb-helpers');
 
 module.exports = {
   features: {
@@ -46,6 +46,13 @@ module.exports = {
       'getting-started/react-native-android',
       'getting-started/react-native-ios',
       'troubleshooting',
+      {
+        'Other Platforms': [
+          'extending/new-clients',
+          'extending/establishing-a-connection',
+          'extending/supporting-layout',
+        ],
+      },
     ],
     'Plugin Setup': [
       'setup/layout-plugin',
@@ -71,70 +78,70 @@ module.exports = {
       'tutorial/js-custom',
       'tutorial/js-publishing',
     ],
-    'Plugin Development': [
-      'extending/js-setup',
+    'Desktop plugin APIs': [
       'extending/flipper-plugin',
-      'extending/create-table-plugin',
       'extending/styling-components',
+      'extending/create-table-plugin',
       'extending/search-and-filter',
+      fbInternalOnly({
+        'QPL linting': ['fb/building-a-linter', 'fb/active-linters'],
+      }),
+      {
+        'Deprecated APIs': [
+          'extending/ui-components',
+          'extending/js-plugin-api',
+        ],
+      },
+    ],
+    'Client plugin APIs': [
       'extending/create-plugin',
-      'extending/client-plugin-lifecycle',
       'extending/send-data',
       'extending/error-handling',
       'extending/testing',
-      'extending/debugging',
-      ...fbInternalOnly(['extending/fb/desktop-plugin-releases']),
-    ],
-    'Deprecated APIs': ['extending/ui-components', 'extending/js-plugin-api'],
-    // end-internal-sidebars-example
-    'Other Platforms': [
-      'extending/new-clients',
-      'extending/establishing-a-connection',
-      'extending/supporting-layout',
-    ],
-    Internals: [
       'extending/arch',
+      'extending/client-plugin-lifecycle',
       'extending/layout-inspector',
-      'extending/testing-rn',
-      'extending/public-releases',
+      ...fbInternalOnly([
+        {
+          Android: [
+            'fb/android-plugin-development-Android-interacting-0',
+            'fb/android-plugin-development-testing-android-plugins-0',
+          ],
+        },
+        {
+          iOS: [
+            'fb/ios-plugin-development-sending-data-to-an-ios-plugin-0',
+            'fb/ios-plugin-development-testing-ios-plugins-0',
+          ],
+        },
+      ]),
+    ],
+    Workflow: [
+      'extending/js-setup',
+      'extending/debugging',
+      ...fbInternalOnly([
+        'extending/fb/desktop-plugin-releases',
+        'fb/developmentworkflow',
+        'fb/TypeScript',
+        'fb/adding-npm-dependencies-0',
+        'fb/adding-analytics-0',
+      ]),
     ],
   },
   'fb-internal': {
     'FB Internal': fbInternalOnly([
+      'fb/index',
+      'extending/public-releases',
       'fb/release-infra',
       'fb/LauncherConfig',
       'fb/Flipper-fbsource-Pinning',
       'fb/Flipper-Release-Cycle',
-      'fb/Flipper-Strict-TypeScript',
+      'fb/Add-Support-Group-to-Flipper-Support-Form',
       'fb/Help-Updating-Flipper',
+      'extending/testing-rn',
       {
         'Internal Plugins': ['fb/plugins'],
       },
-      {
-        'Plugin Development': [
-          'fb/developmentworkflow',
-          'fb/TypeScript',
-          'fb/adding-npm-dependencies-0',
-          'fb/adding-analytics-0',
-          {
-            Android: [
-              'fb/android-plugin-development-Android-interacting-0',
-              'fb/android-plugin-development-testing-android-plugins-0',
-            ],
-          },
-          {
-            iOS: [
-              'fb/ios-plugin-development-sending-data-to-an-ios-plugin-0',
-              'fb/ios-plugin-development-testing-ios-plugins-0',
-            ],
-          },
-          'fb/Add-Support-Group-to-Flipper-Support-Form',
-        ],
-      },
-      {
-        Lints: ['fb/building-a-linter', 'fb/active-linters'],
-      },
-      'fb/index',
     ]),
   },
 };

@@ -3,7 +3,18 @@ id: styling-components
 title: Styling Components
 ---
 
-We are using [emotion](https://emotion.sh) to style our components. For more details on how this works, please refer to emotion's documentation. We heavily use their [Styled Components](https://emotion.sh/docs/styled) approach, which allows you to extend our built-in components.
+import useBaseUrl from '@docusaurus/useBaseUrl';
+import Link from '@docusaurus/Link';
+
+Flipper ships with its own design system which is based on [Ant Design](https://ant.design/).
+In general, custom styling should be needed rarily, as Ant Design provides a very extensive set of [components](https://ant.design/components/overview/).
+
+To build plugin layout and data visualization Flipper ships with an additional set of components through the `flipper-plugin` package.
+The list of available additional compoents can be found in the <Link to={useBaseUrl('/docs/extending/flipper-plugin#ui-components')}>API Reference</Link> and are further documented 
+in the Flipper Style Guide which can be found in Flipper under `View > Flipper style guide`.
+
+In case you still need customly styled components, 
+we are using [emotion](https://emotion.sh) to style our components. For more details on how this works, please refer to emotion's documentation. We heavily use their [Styled Components](https://emotion.sh/docs/styled) approach, which allows you to extend our and Ant's built-in components.
 
 ## Basic tags
 
@@ -23,7 +34,8 @@ const MyInput = styled.input({ ... });
 
 ## Extending Flipper Components
 
-It's very common for components to require customizing Flipper's components in some way. For example changing colors, alignment, or wrapping behavior. Flippers components can be wrapped using the `styled` function which allows adding or overwriting existing style rules.
+In some cases it is required to customize Ant or Flipper's components in some way. For example changing colors, alignment, or wrapping behavior. 
+Flippers components can be wrapped using the `styled` function which allows adding or overwriting existing style rules.
 
 ```javascript
 import {Layout, styled} from 'flipper-plugin';
@@ -32,10 +44,8 @@ const Container = styled(Layout.Container)({
   alignItems: 'center',
 });
 
-class MyComponent extends Component {
-  render() {
-    return <Container>...</Container>;
-  }
+function MyComponent {
+  return <Container>...</Container>;
 }
 ```
 
@@ -49,7 +59,7 @@ The style object can also be returned from a function for dynamic values. Props 
 const MyView = styled.div(
   props => ({
     fontSize: 10,
-    color:  => (props.disabled ? colors.red : colors.black),
+    color:  => (props.disabled ? 'red' : 'black'),
   })
 );
 
@@ -60,7 +70,13 @@ const MyView = styled.div(
 Pseudo-classes can be used like this:
 
 ```javascript
-'&:hover': {color: colors.red}`
+'&:hover': {color: 'red'}`
+```
+
+Children can be matched by using normal CSS selectors. This makes it possible to customize Ant components as well:
+
+```javascript
+'.ant-btn-primary': {color: 'yellow'}
 ```
 
 ## Colors
@@ -69,5 +85,5 @@ The `theme` module contains all standard colors used by Flipper. All available c
 The colors exposed here will handle dark mode automatically, so it is recommended to use those colors over hardcoded ones.
 
 ```javascript
-import {theme} from 'flipper'
+import {theme} from 'flipper-plugin'
 ```
