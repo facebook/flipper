@@ -31,6 +31,7 @@ module.exports = {
         'fb/sections',
         'fb/Trace',
         'fb/mobile-config',
+        'fb/plugins',
       ]),
     ],
   },
@@ -140,9 +141,6 @@ module.exports = {
       'fb/Add-Support-Group-to-Flipper-Support-Form',
       'fb/Help-Updating-Flipper',
       'extending/testing-rn',
-      {
-        'Internal Plugins': ['fb/plugins'],
-      },
     ]),
   },
 };
