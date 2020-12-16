@@ -5,6 +5,8 @@ sidebar_label: React Native for iOS
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import Link from '@docusaurus/Link';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 These instructions are aimed at people manually adding Flipper to a React Native 0.62+ app.
 This should only be necessary if you have an existing app that cannot be upgraded with the
@@ -102,9 +104,8 @@ The code below enables the following integrations:
 - Shared Preferences
 - Crash Reporter
 
-<!--DOCUSAURUS_CODE_TABS-->
-
-<!--Objective-C-->
+<Tabs defaultValue="ios" values={[{ label: 'iOS', value: 'ios'}, { label: 'Swift', value: 'swift'}]}>
+<TabItem value="ios">
 
 ```objective-c
 ...
@@ -145,7 +146,8 @@ The code below enables the following integrations:
 @end
 ```
 
-<!--Swift-->
+</TabItem>
+<TabItem value="swift">
 
 ```swift
 ...
@@ -185,7 +187,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 }
 ```
 
-<!--END_DOCUSAURUS_CODE_TABS-->
+</TabItem>
+</Tabs>
 
 Lastly, open the Flipper desktop app, and run `yarn ios` in your terminal.
 

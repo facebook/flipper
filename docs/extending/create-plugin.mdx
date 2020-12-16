@@ -3,15 +3,20 @@ id: create-plugin
 title: Client Plugin API
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 ## FlipperPlugin
 
+The plugin implementation that runs on the (mobile) application side of things is called the _client plugin_ in Flipper terminology. 
 To build a client plugin, implement the `FlipperPlugin` interface.
 
 The ID that is returned from your implementation needs to match the `name` defined in your JavaScript counterpart's `package.json`.
 
 
-<!--DOCUSAURUS_CODE_TABS-->
-<!--Android-->
+<Tabs defaultValue="android" values={[{label: 'Android', value: 'android'}, { label: 'iOS', value: 'ios'}, { label: 'C++', value: 'cpp'}, { label: 'React Native (JS)', value: 'rn' }]}>
+<TabItem value="android">
+
 ```java
 public class MyFlipperPlugin implements FlipperPlugin {
   private FlipperConnection mConnection;
@@ -37,7 +42,10 @@ public class MyFlipperPlugin implements FlipperPlugin {
   }
 }
 ```
-<!--iOS-->
+
+</TabItem>
+<TabItem value="ios">
+
 ```objective-c
 @interface MyFlipperPlugin : NSObject<FlipperPlugin>
 @end
@@ -51,7 +59,10 @@ public class MyFlipperPlugin implements FlipperPlugin {
 
 @end
 ```
-<!--C++-->
+
+</TabItem>
+<TabItem value="cpp">
+
 ```cpp
 class MyFlipperPlugin : public FlipperPlugin {
 public:
@@ -61,7 +72,9 @@ public:
   bool runInBackground() override;
 };
 ```
-<!--React Native JS-->
+
+</TabItem>
+<TabItem value="rn">
 
 <div class="warning">
 
@@ -87,15 +100,17 @@ addPlugin({
   }
 })
 ```
-<!--END_DOCUSAURUS_CODE_TABS-->
+</TabItem>
+</Tabs>
 
 
 ## Using FlipperConnection
 
 `onConnect` will be called when your plugin becomes active. This will provide a `FlipperConnection` allowing you to register receivers for desktop method calls and respond with data.
 
-<!--DOCUSAURUS_CODE_TABS-->
-<!--Android-->
+<Tabs defaultValue="android" values={[{label: 'Android', value: 'android'}, { label: 'iOS', value: 'ios'}, { label: 'C++', value: 'cpp'}, { label: 'React Native (JS)', value: 'rn' }]}>
+<TabItem value="android">
+
 ```java
 connection.receive("getData", new FlipperReceiver() {
   @Override
@@ -107,7 +122,10 @@ connection.receive("getData", new FlipperReceiver() {
   }
 });
 ```
-<!--iOS-->
+
+</TabItem>
+<TabItem value="ios">
+
 ```objective-c
 @interface MyFlipperPlugin : NSObject<FlipperPlugin>
 @end
@@ -129,7 +147,10 @@ connection.receive("getData", new FlipperReceiver() {
 
 @end
 ```
-<!--C++-->
+
+</TabItem>
+<TabItem value="cpp">
+
 ```cpp
 void MyFlipperPlugin::didConnect(std::shared_ptr<FlipperConnection> conn) {
   conn->receive("getData", [](const folly::dynamic &params,
@@ -139,7 +160,10 @@ void MyFlipperPlugin::didConnect(std::shared_ptr<FlipperConnection> conn) {
   });
 }
 ```
-<!--React Native JS-->
+
+</TabItem>
+<TabItem value="rn">
+
 ```javascript
 addPlugin({
   getId() {
@@ -158,32 +182,44 @@ addPlugin({
   // ...as-is
 })
 ```
-<!--END_DOCUSAURUS_CODE_TABS-->
+
+</TabItem>
+</Tabs>
 
 ## Push data to the desktop
 
 You don't have to wait for the desktop to request data though, you can also push data directly to the desktop. If the JS plugin subscribes to the same method, it will receive the data.
 
-<!--DOCUSAURUS_CODE_TABS-->
-<!--Android-->
+<Tabs defaultValue="android" values={[{label: 'Android', value: 'android'}, { label: 'iOS', value: 'ios'}, { label: 'C++', value: 'cpp'}, { label: 'React Native (JS)', value: 'rn' }]}>
+<TabItem value="android">
+
 ```java
 connection.send("MyMessage",
     new FlipperObject.Builder()
         .put("message", "Hello")
         .build()
 ```
-<!--iOS-->
+
+</TabItem>
+<TabItem value="ios">
+
 ```objective-c
 [connection send:@"getData" withParams:@{@"message":@"hello"}];
 ```
-<!--C++-->
+
+</TabItem>
+<TabItem value="cpp">
+
 ```cpp
 void MyFlipperPlugin::didConnect(std::shared_ptr<FlipperConnection> conn) {
   dynamic message = folly::dynamic::object("message", "hello");
   conn->send("getData", message);
 }
 ```
-<!--React Native JS-->
+
+</TabItem>
+<TabItem value="rn">
+
 ```javascript
 addPlugin({
   getId() {
@@ -196,7 +232,9 @@ addPlugin({
   // ...as-is
 })
 ```
-<!--END_DOCUSAURUS_CODE_TABS-->
+
+</TabItem>
+</Tabs>
 
 ## Background Plugins
 

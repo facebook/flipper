@@ -4,6 +4,9 @@ title: Shared Preferences Setup
 sidebar_label: Shared Preferences
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 This plugin is available for both Android and iOS.
 
 ## Android
@@ -25,17 +28,23 @@ pod 'FlipperKit/FlipperKitUserDefaultsPlugin', '~>' + flipperkit_version
 
 Initialize the plugin in the following way:
 
-<!--DOCUSAURUS_CODE_TABS-->
-<!--Objective-C-->
+<Tabs defaultValue="ios" values={[{ label: 'iOS', value: 'ios'}, { label: 'Swift', value: 'swift'}]}>
+<TabItem value="ios">
+
 ```objectivec
 #import <FlipperKitUserDefaultsPlugin/FKUserDefaultsPlugin.h>
 
 [client addPlugin:[[FKUserDefaultsPlugin alloc] initWithSuiteName:@"your_suitename"]];
 ```
-<!--Swift-->
+
+</TabItem>
+<TabItem value="swift">
+
 ```swift
 import FlipperKit
 
 client?.add(FKUserDefaultsPlugin.init(suiteName: "your_suitename"))
 ```
-<!--END_DOCUSAURUS_CODE_TABS-->
+
+</TabItem>
+</Tabs>

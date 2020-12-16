@@ -4,6 +4,9 @@ title: Layout Inspector Setup
 sidebar_label: Layout Inspector
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 To use the layout inspector plugin, you need to add the plugin to your Flipper client instance.
 
 ## Android
@@ -88,22 +91,28 @@ pod 'FlipperKit/FlipperKitLayoutPlugin', '~>' + flipperkit_version
 
 Once you have added the pod, initialise the plugin and add it to the `FlipperClient` as follows.
 
-<!--DOCUSAURUS_CODE_TABS-->
-<!--Objective-C-->
+<Tabs defaultValue="ios" values={[{ label: 'iOS', value: 'ios'}, { label: 'Swift', value: 'swift'}]}>
+<TabItem value="ios">
+
 ```objective-c
 #import <FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h>
 
 SKDescriptorMapper *mapper = [[SKDescriptorMapper alloc] initWithDefaults];
 [client addPlugin:[[FlipperKitLayoutPlugin alloc] initWithRootNode:context.application withDescriptorMapper:mapper]];
 ```
-<!--Swift-->
+
+</TabItem>
+<TabItem value="swift">
+
 ```swift
 import FlipperKit
 
 let layoutDescriptorMapper = SKDescriptorMapper(defaults: ())
 client?.add(FlipperKitLayoutPlugin(rootNode: application, with: layoutDescriptorMapper!))
 ```
-<!--END_DOCUSAURUS_CODE_TABS-->
+
+</TabItem>
+</Tabs>
 
 ### With ComponentKit Support
 
@@ -113,8 +122,10 @@ If you want to enable [ComponentKit support](https://github.com/facebook/compone
 pod 'FlipperKit/FlipperKitLayoutComponentKitSupport', '~>' + flipperkit_version
 ```   
 Once you have added the pod you will then need to augment the descriptor with Componentkit-specific settings as shown below.
-<!--DOCUSAURUS_CODE_TABS-->
-<!--Objective-C-->
+
+<Tabs defaultValue="ios" values={[{ label: 'iOS', value: 'ios'}, { label: 'Swift', value: 'swift'}]}>
+<TabItem value="ios">
+
 ```objective-c
 #import <FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h>
 #import <FlipperKitLayoutComponentKitSupport/FlipperKitLayoutComponentKitSupport.h>
@@ -124,7 +135,10 @@ SKDescriptorMapper *layoutDescriptorMapper = [[SKDescriptorMapper alloc] initWit
 [client addPlugin: [[FlipperKitLayoutPlugin alloc] initWithRootNode: application
                                            withDescriptorMapper: layoutDescriptorMapper]];
 ```
-<!--Swift-->
+
+</TabItem>
+<TabItem value="swift">
+
 ```swift
 import FlipperKit
 
@@ -133,4 +147,6 @@ FlipperKitLayoutComponentKitSupport.setUpWith(layoutDescriptorMapper)
 
 client?.add(FlipperKitLayoutPlugin(rootNode: application, with: layoutDescriptorMapper!))
 ```
-<!--END_DOCUSAURUS_CODE_TABS-->
+
+</TabItem>
+</Tabs>

@@ -4,6 +4,9 @@ title: Network Setup
 sidebar_label: Network
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 To use the network plugin, you need to add the plugin to your Flipper client instance.
 
 ## Android
@@ -50,19 +53,25 @@ pod 'FlipperKit/SKIOSNetworkPlugin', '~>' + flipperkit_version
 
 Initialise the plugin in the following way:
 
-<!--DOCUSAURUS_CODE_TABS-->
-<!--Objective-C-->
+<Tabs defaultValue="ios" values={[{ label: 'iOS', value: 'ios'}, { label: 'Swift', value: 'swift'}]}>
+<TabItem value="ios">
+
 ```objective-c
 #import <FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h>
 
 [[FlipperClient sharedClient] addPlugin: [[FlipperKitNetworkPlugin alloc] initWithNetworkAdapter:[SKIOSNetworkAdapter new]]];
 
 ```
-<!--Swift-->
+
+</TabItem>
+<TabItem value="swift">
+
 ```swift
 import FlipperKit
 
 client?.add(FlipperKitNetworkPlugin(networkAdapter: SKIOSNetworkAdapter()))
 
 ```
-<!--END_DOCUSAURUS_CODE_TABS-->
+
+</TabItem>
+</Tabs>

@@ -5,6 +5,8 @@ sidebar_label: Adding Flipper to iOS apps
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import Link from '@docusaurus/Link';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 We support both Swift and Objective-C for Flipper with CocoaPods as build and distribution mechanism.
 
@@ -86,9 +88,8 @@ This is done to overcome a bug with Xcode 11 which fails to compile swift code w
 Install the dependencies by running `pod install`. You can now import and initialize Flipper in your
 AppDelegate.
 
-<!--DOCUSAURUS_CODE_TABS-->
-
-<!--Objective-C-->
+<Tabs defaultValue="ios" values={[{ label: 'iOS', value: 'ios'}, { label: 'Swift', value: 'swift'}]}>
+<TabItem value="ios">
 
 ```objective-c
 #import <FlipperKit/FlipperClient.h>
@@ -116,7 +117,8 @@ AppDelegate.
 @end
 ```
 
-<!--Swift-->
+</TabItem>
+<TabItem value="swift">
 
 ```swift
 import UIKit
@@ -139,7 +141,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 }
 ```
 
-<!--END_DOCUSAURUS_CODE_TABS-->
+</TabItem>
+</Tabs>
 
 ## Enabling plugins
 
