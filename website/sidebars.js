@@ -103,12 +103,6 @@ module.exports = {
       {
         'Internal Plugins': [
           'fb/plugins',
-          {
-            Layout: [
-              'fb/layout-extending-android-layout-inspector',
-              'fb/layout-extending-ios-layout-inspector',
-            ],
-          },
           'fb/Memory-Tools',
           'fb/Navigation-Plugin',
           'fb/supporting-feed-inspector',
