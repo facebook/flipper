@@ -134,6 +134,7 @@ module.exports = {
       'extending/public-releases',
       'fb/release-infra',
       'fb/LauncherConfig',
+      'fb/hacking-on-launcher',
       'fb/Flipper-fbsource-Pinning',
       'fb/Flipper-Release-Cycle',
       'fb/Add-Support-Group-to-Flipper-Support-Form',
