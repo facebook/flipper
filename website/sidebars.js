@@ -27,7 +27,6 @@ module.exports = {
       'features/react-native',
       ...fbInternalOnly([
         'fb/Memory-Tools',
-        'fb/Navigation-Plugin',
         'fb/supporting-feed-inspector',
         'fb/sections',
         'fb/Trace',

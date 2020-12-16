@@ -4,7 +4,20 @@ title: Navigation Plugin Setup
 sidebar_label: Navigation
 ---
 
-## Android
+import {FbInternalOnly} from 'internaldocs-fb-helpers';
+import FbNavigationPluginSetup from '../fb/Navigation-Plugin.mdx';
+
+<FbInternalOnly>
+
+## Adding the plugin using Buck
+
+<FbNavigationPluginSetup />
+
+## Adding the plugin to non-buck-based apps
+
+</FbInternalOnly>
+
+### Android
 
 First, add the plugin to your Flipper client instance:
 ```java
@@ -17,7 +30,7 @@ client.addPlugin(NavigationFlipperPlugin.getInstance());
 
 Navigation events in the app can then be recorded by calling `sendNavigationEvent` method of the `NavigationFlipperPlugin` instance from anywhere in the app. This allows for the Navigation Plugin to be integrated into existing navigation frameworks.
 
-### Using Android Deep Links
+#### Using Android Deep Links
 
 The Navigation Plugin can be used with built in [deep links for Android](https://developer.android.com/training/app-links/deep-linking).
 
@@ -45,10 +58,10 @@ public class DeepLinkActivity extends AppCompatActivity {
     ...
 ```
 
-### Third Party Solutions
+#### Third Party Solutions
 The Navigation Plugin can easily be integrated into a third party navigation framework.
 
-#### AirBnB Deep Link Dispatch
+##### AirBnB Deep Link Dispatch
 [Deep Link Dispatch](https://github.com/airbnb/DeepLinkDispatch) will work out of the box with Flipper for navigating to links, including support for url parameters. To add logging, simply add a BroadcastReceiver to your app that is called on any incoming deep links.
 
 ```java
@@ -72,5 +85,5 @@ public class DeepLinkApplication extends Application {
 }
 ```
 
-## iOS
+### iOS
 iOS support is coming soon.
