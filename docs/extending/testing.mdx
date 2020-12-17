@@ -11,6 +11,18 @@ import FbAndroidTesting from '../fb/android-plugin-development-testing-android-p
 
 Developer tools are only used if they work. We have built APIs to test plugins.
 
+## Writing tests
+
+## Desktop plugins
+
+Flipper uses [Jest](https://jestjs.io/) as unit testing framework.
+
+Writing unit tests for Flipper Desktop plugins is covered in detail in the [tutorial](../../docs/tutorial/js-custom#testing-plugin-logic). 
+
+The `flipper-plugin` package provide several [test utilities](../../docs/extending/flipper-plugin#testutils) to make testing more convenient. 
+
+## Client plugins
+
 <Tabs defaultValue="android" values={[{label: 'Android', value: 'android'}, { label: 'iOS', value: 'ios'}]}>
 <TabItem value="android">
 
@@ -113,3 +125,70 @@ TEST(MyFlipperPluginTests, testDummy) {
 
 </TabItem>
 </Tabs>
+
+## Running (Flipper) tests
+
+### Flipper Desktop
+
+<OssOnly>
+
+Run `yarn jest` or `yarn jest --watch` in the `desktop` directory of your Flipper checkout.
+
+</OssOnly>
+
+<FbInternalOnly>
+
+Run `yarn jest` or `yarn jest --watch` in `~/fbsource/xplat/sonar/desktop`
+
+</FbInternalOnly>
+
+### Flipper SDK
+
+#### Android (Java)
+
+<OssOnly>
+
+##### Gradle:
+
+In the root directory of the checkout:
+
+```
+./gradlew android:test
+```
+
+</OssOnly>
+
+<FbInternalOnly>
+
+##### Gradle:
+
+```
+cd fbsource/xplat/sonar
+./gradlew android:test
+```
+
+##### Buck:
+
+I don't know of a way to run them locally 😞 Make a change and submit a diff.
+
+`buck test ...` should work, but doesn't seem to when run in xplat on mac but they do work on mobile on demand, if you use @mode/server.
+
+*Debugging note: They do work if you copy the files and BUCK file to* `fbandroid/javatests` *and change the rule from* `sonar_android_test` *to* `robolectric3_test`
+
+</FbInternalOnly>
+
+<FbInternalOnly>
+
+### iOS
+
+Focus on the plugins, or flipper code you want but with the --with-tests param.
+
+`arc focus ... --with-tests`
+
+Then click the <-> icon  in xcode and you can run them there.
+
+</FbInternalOnly>
+
+### React Native
+
+See [testing React Native](testing-rn).

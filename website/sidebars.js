@@ -79,14 +79,27 @@ module.exports = {
       'tutorial/js-custom',
       'tutorial/js-publishing',
     ],
+    'Development workflow': [
+      'extending/dev-setup',
+      'extending/loading-custom-plugins',
+      'extending/desktop-plugin-structure',
+      'extending/testing',
+      'extending/debugging',
+      ...fbInternalOnly([
+        'fb/adding-analytics-0',
+      ]),
+      'extending/plugin-distribution',      
+    ],
     'Desktop plugin APIs': [
       'extending/flipper-plugin',
       'extending/styling-components',
       'extending/create-table-plugin',
       'extending/search-and-filter',
-      fbInternalOnly({
-        'QPL linting': ['fb/building-a-linter', 'fb/active-linters'],
-      }),
+      ...fbInternalOnly([
+        {
+          'QPL linting': ['fb/building-a-linter', 'fb/active-linters'],
+        }
+      ]),
       {
         'Deprecated APIs': [
           'extending/ui-components',
@@ -97,22 +110,10 @@ module.exports = {
     'Client plugin APIs': [
       'extending/create-plugin',
       'extending/error-handling',
-      'extending/testing',
       'extending/arch',
       'extending/client-plugin-lifecycle',
       'extending/layout-inspector',
-    ],
-    Workflow: [
-      'extending/js-setup',
-      'extending/debugging',
-      ...fbInternalOnly([
-        'extending/fb/desktop-plugin-releases',
-        'fb/developmentworkflow',
-        'fb/TypeScript',
-        'fb/adding-npm-dependencies-0',
-        'fb/adding-analytics-0',
-      ]),
-    ],
+    ],   
   },
   'fb-internal': {
     'FB Internal': fbInternalOnly([
