@@ -96,7 +96,6 @@ module.exports = {
     ],
     'Client plugin APIs': [
       'extending/create-plugin',
-      'extending/send-data',
       'extending/error-handling',
       'extending/testing',
       'extending/arch',
