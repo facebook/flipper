@@ -3,10 +3,18 @@ id: testing
 title: Testing
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import {FbInternalOnly, OssOnly} from 'internaldocs-fb-helpers';
+import FbIosTesting from '../fb/ios-plugin-development-testing-ios-plugins-0.mdx';
+import FbAndroidTesting from '../fb/android-plugin-development-testing-android-plugins-0.mdx';
+
 Developer tools are only used if they work. We have built APIs to test plugins.
 
-## Android
+<Tabs defaultValue="android" values={[{label: 'Android', value: 'android'}, { label: 'iOS', value: 'ios'}]}>
+<TabItem value="android">
 
+<OssOnly>
 Start by creating your first test file in this directory `MyFlipperPluginTest.java`. In the test method body we create our plugin which we want to test as well as a `FlipperConnectionMock`. In this contrived example we simply assert that our plugin's connected status is what we expect.
 
 ```java
@@ -46,8 +54,14 @@ public void myTest() {
           .build()));
 }
 ```
+</OssOnly>
 
-## C++
+<FbAndroidTesting />
+
+</TabItem>
+<TabItem value="ios">
+
+<OssOnly>
 
 Start by creating your first test file in this directory `MyFlipperPluginTests.cpp` and import the testing utilities from `fbsource//xplat/sonar/xplat:FlipperTestLib`. These utilities mock out core pieces of the communication channel so that you can test your plugin in isolation.
 
@@ -93,7 +107,9 @@ TEST(MyFlipperPluginTests, testDummy) {
   EXPECT_EQ(successfulResponses.back(), expectedResponse);
 }
 ```
+</OssOnly>
 
-## Testing the Flipper Desktop Plugin
+<FbIosTesting />
 
-See the [tutorial](../tutorial/js-custom#testing-plugin-logic)
+</TabItem>
+</Tabs>

@@ -105,13 +105,11 @@ module.exports = {
         {
           Android: [
             'fb/android-plugin-development-Android-interacting-0',
-            'fb/android-plugin-development-testing-android-plugins-0',
           ],
         },
         {
           iOS: [
             'fb/ios-plugin-development-sending-data-to-an-ios-plugin-0',
-            'fb/ios-plugin-development-testing-ios-plugins-0',
           ],
         },
       ]),
