@@ -101,18 +101,6 @@ module.exports = {
       'extending/arch',
       'extending/client-plugin-lifecycle',
       'extending/layout-inspector',
-      ...fbInternalOnly([
-        {
-          Android: [
-            'fb/android-plugin-development-Android-interacting-0',
-          ],
-        },
-        {
-          iOS: [
-            'fb/ios-plugin-development-sending-data-to-an-ios-plugin-0',
-          ],
-        },
-      ]),
     ],
     Workflow: [
       'extending/js-setup',

@@ -5,6 +5,7 @@ title: Client Plugin API
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import {FbInternalOnly, OssOnly} from 'internaldocs-fb-helpers';
 
 ## FlipperPlugin
 
@@ -236,9 +237,25 @@ addPlugin({
 </TabItem>
 </Tabs>
 
-### Using the FlipperClient singleton to send data  
+### Using a plugin instance to send data
 
 It is often useful to get an instance of a Flipper plugin to send data to it. Flipper makes this simple with built-in support.
+
+<FbInternalOnly>
+
+#### Dependency Injection (Android only)
+
+The preferred method to obtain a plugin instance is to use dependency injection when available.
+For apps like fb4a that use dependency injection, a Module should have already been created by the create-plugin script.
+This module will define a Singleton instance of your plugin that gets added to the FlipperClient.
+
+You should use this instance of the plugin, by having it injected into your product code by the DI framework.
+Alternatively, you can modify the plugin's injection module so that it injects a component into the FlipperPlugin.
+
+
+</FbInternalOnly>
+
+#### using FlipperClient to obtain a plugin instance
 
 Plugins should be treated as singleton instances as there can only be one `FlipperClient` and each `FlipperClient` can only have one instance of a certain plugin. The Flipper API makes this simple by offering a way to get the current client and query it for plugins.
 
@@ -248,7 +265,7 @@ Plugins are identified by the string that their identifier method returns, in th
 <TabItem value="android">
 
 ```java
-final FlipperClient client = AndroidFlipperClient.getInstance(context);
+final FlipperClient client = AndroidFlipperClient.getInstanceIfInitialized(context);
 if (client != null) {
   final MyFlipperPlugin plugin = client.getPluginByClass(MyFlipperPlugin.class);
   plugin.sendData(myData);
