@@ -56,15 +56,11 @@ const siteConfig = {
           label: 'GitHub',
           position: 'right',
         },
-        // start-internal-navbar-example
-        ...fbInternalOnly([
-          {
-            to: 'docs/fb/index',
-            label: 'FB Internal',
-            position: 'right',
-          },
-        ]),
-        // end-internal-navbar-example
+        {
+          to: 'docs/internals/index',
+          label: 'Under the Hood',
+          position: 'right',
+        },
       ],
     },
     colorMode: {
