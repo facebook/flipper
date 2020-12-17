@@ -13,7 +13,10 @@ const {fbContent, fbInternalOnly} = require('internaldocs-fb-helpers');
 
 const repoUrl = 'https://github.com/facebook/flipper';
 const siteConfig = {
-  title: fbContent({internal: 'Flipper @FB', external: 'Flipper'}),
+  title: fbContent({
+    internal: 'Flipper @FB',
+    external: 'Flipper',
+  }),
   tagline: 'Extensible mobile app debugging',
   url: fbContent({
     internal: 'https://flipper.thefacebook.com/',
@@ -24,7 +27,10 @@ const siteConfig = {
   // TODO: T69061026 enable once sandy docs are complete: external_domain: 'fbflipper.com',
   themeConfig: {
     navbar: {
-      title: fbContent({internal: 'Flipper @FB', external: 'Flipper'}),
+      title: fbContent({
+        internal: 'Flipper @FB',
+        external: 'Flipper',
+      }),
       logo: {
         alt: 'Flipper Logo',
         src: 'img/icon.png',
