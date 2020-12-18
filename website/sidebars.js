@@ -7,7 +7,7 @@
  * @format
  */
 
-const {fbInternalOnly} = require('internaldocs-fb-helpers');
+const {fbInternalOnly, fbContent} = require('internaldocs-fb-helpers');
 
 module.exports = {
   features: {
@@ -38,13 +38,35 @@ module.exports = {
   setup: {
     'Getting Started': [
       'getting-started/index',
-      ...fbInternalOnly(['fb/Add-flipper-to-android-app']),
-      'getting-started/android-native',
-      ...fbInternalOnly(['fb/Adding-flipper-to-ios-app']),
-      'getting-started/ios-native',
-      'getting-started/react-native',
-      'getting-started/react-native-android',
-      'getting-started/react-native-ios',
+      {
+        'Adding Flipper to your app': [
+          ...fbContent({
+            external: [
+              'getting-started/android-native',
+              'getting-started/ios-native',
+            ],
+            internal: [
+              {
+                Android: [
+                  'fb/Add-flipper-to-android-app',
+                  'getting-started/android-native',
+                ],
+                iOS: [
+                  'fb/Adding-flipper-to-ios-app',
+                  'getting-started/ios-native',
+                ],
+              },
+            ],
+          }),
+          {
+            'React Native': [
+              'getting-started/react-native',
+              'getting-started/react-native-android',
+              'getting-started/react-native-ios',
+            ],
+          },
+        ],
+      },
       'troubleshooting',
       {
         'Other Platforms': [
