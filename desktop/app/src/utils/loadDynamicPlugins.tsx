@@ -41,7 +41,9 @@ export default async function loadDynamicPlugins(): Promise<
     ).map((p: any) => p.name) as string[],
   );
   const [installedPlugins, unfilteredSourcePlugins] = await Promise.all([
-    getInstalledPlugins(),
+    process.env.FLIPPER_DISABLE_PLUGIN_AUTO_UPDATE
+      ? Promise.resolve([])
+      : getInstalledPlugins(),
     getSourcePlugins(),
   ]);
   const sourcePlugins = unfilteredSourcePlugins.filter(
