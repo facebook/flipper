@@ -37,7 +37,6 @@ module.exports = {
   },
   setup: {
     'Getting Started': [
-      ...fbInternalOnly(['getting-started/fb/using-flipper-at-facebook']),
       'getting-started/index',
       ...fbInternalOnly(['fb/Add-flipper-to-android-app']),
       'getting-started/android-native',
@@ -85,10 +84,8 @@ module.exports = {
       'extending/desktop-plugin-structure',
       'extending/testing',
       'extending/debugging',
-      ...fbInternalOnly([
-        'fb/adding-analytics-0',
-      ]),
-      'extending/plugin-distribution',      
+      ...fbInternalOnly(['fb/adding-analytics-0']),
+      'extending/plugin-distribution',
     ],
     'Desktop plugin APIs': [
       'extending/flipper-plugin',
@@ -98,7 +95,7 @@ module.exports = {
       ...fbInternalOnly([
         {
           'QPL linting': ['fb/building-a-linter', 'fb/active-linters'],
-        }
+        },
       ]),
       {
         'Deprecated APIs': [
@@ -113,7 +110,7 @@ module.exports = {
       'extending/arch',
       'extending/client-plugin-lifecycle',
       'extending/layout-inspector',
-    ],   
+    ],
   },
   internals: {
     Internals: [
@@ -127,7 +124,6 @@ module.exports = {
         'fb/Flipper-fbsource-Pinning',
         'fb/Flipper-Release-Cycle',
         'fb/Add-Support-Group-to-Flipper-Support-Form',
-        'fb/Help-Updating-Flipper',
         'fb/Alerts',
         'fb/bundling',
         'fb/Certificate-Exchange-Diagram',
