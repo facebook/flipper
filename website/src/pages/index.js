@@ -150,7 +150,7 @@ export default function Index() {
               className="learnmore"
               href="https://github.com/facebook/flipper"
               target="_blank">
-              Learn more
+              Explore the source on GitHub
             </a>
           </div>
         </div>
