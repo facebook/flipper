@@ -71,11 +71,13 @@ hgLog
       const matchFacebook = diffline.match(changeLogFacebookLineRe);
       if (matchFacebook) {
         changes++;
-        contentsFacebook += ` * [${diff}](https://github.com/facebook/flipper/search?q=${diff}&type=Commits) - ${matchFacebook[2]}\n`;
+        const detail = matchFacebook[2] ? ` - ${matchFacebook[2]}` : '';
+        contentsFacebook += ` * [${diff}](https://github.com/facebook/flipper/search?q=${diff}&type=Commits)${detail}\n`;
       } else if (match) {
         changes++;
-        contents += ` * [${diff}](https://github.com/facebook/flipper/search?q=${diff}&type=Commits) - ${match[2]}\n`;
-        contentsFacebook += ` * [${diff}](https://github.com/facebook/flipper/search?q=${diff}&type=Commits) - ${match[2]}\n`;
+        const detail = match[2] ? ` - ${match[2]}` : '';
+        contents += ` * [${diff}](https://github.com/facebook/flipper/search?q=${diff}&type=Commits)${detail}\n`;
+        contentsFacebook += ` * [${diff}](https://github.com/facebook/flipper/search?q=${diff}&type=Commits)${detail}\n`;
       }
     });
   });
