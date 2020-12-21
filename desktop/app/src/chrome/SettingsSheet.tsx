@@ -22,7 +22,7 @@ import {flush} from '../utils/persistor';
 import ToggledSection from './settings/ToggledSection';
 import {FilePathConfigField, ConfigText} from './settings/configFields';
 import KeyboardShortcutInput from './settings/KeyboardShortcutInput';
-import {isEqual} from 'lodash';
+import {isEqual, isMatch, isEmpty} from 'lodash';
 import restartFlipper from '../utils/restartFlipper';
 import LauncherSettingsPanel from '../fb-stubs/LauncherSettingsPanel';
 import SandySettingsPanel from '../fb-stubs/SandySettingsPanel';
@@ -64,6 +64,8 @@ type DispatchFromProps = {
 type State = {
   updatedSettings: Settings;
   updatedLauncherSettings: LauncherSettings;
+  forcedRestartSettings: Partial<Settings>;
+  forcedRestartLauncherSettings: Partial<LauncherSettings>;
 };
 
 type Props = OwnProps & StateFromProps & DispatchFromProps;
@@ -71,6 +73,8 @@ class SettingsSheet extends Component<Props, State> {
   state: State = {
     updatedSettings: {...this.props.settings},
     updatedLauncherSettings: {...this.props.launcherSettings},
+    forcedRestartSettings: {},
+    forcedRestartLauncherSettings: {},
   };
 
   componentDidMount() {
@@ -146,6 +150,15 @@ class SettingsSheet extends Component<Props, State> {
     const settingsPristine =
       isEqual(this.props.settings, this.state.updatedSettings) &&
       isEqual(this.props.launcherSettings, this.state.updatedLauncherSettings);
+
+    const forcedRestart =
+      (!isEmpty(this.state.forcedRestartSettings) &&
+        !isMatch(this.props.settings, this.state.forcedRestartSettings)) ||
+      (!isEmpty(this.state.forcedRestartLauncherSettings) &&
+        !isMatch(
+          this.props.launcherSettings,
+          this.state.forcedRestartLauncherSettings,
+        ));
 
     const contents = (
       <Layout.Container gap>
@@ -245,6 +258,10 @@ class SettingsSheet extends Component<Props, State> {
                 ...this.state.updatedLauncherSettings,
                 releaseChannel: v,
               },
+              forcedRestartLauncherSettings: {
+                ...this.state.forcedRestartLauncherSettings,
+                releaseChannel: v,
+              },
             });
           }}
         />
@@ -254,6 +271,10 @@ class SettingsSheet extends Component<Props, State> {
             this.setState({
               updatedSettings: {
                 ...this.state.updatedSettings,
+                disableSandy: v,
+              },
+              forcedRestartSettings: {
+                ...this.state.forcedRestartSettings,
                 disableSandy: v,
               },
             });
@@ -346,7 +367,7 @@ class SettingsSheet extends Component<Props, State> {
           Cancel
         </Button>
         <Button
-          disabled={settingsPristine}
+          disabled={settingsPristine || forcedRestart}
           compact
           padded
           onClick={this.applyChangesWithoutRestart}>
