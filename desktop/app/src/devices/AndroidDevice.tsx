@@ -139,12 +139,21 @@ export default class AndroidDevice extends BaseDevice {
     }
   }
 
+  private async getSdkVersion(): Promise<number> {
+    return await this.adb
+      .shell(this.serial, 'getprop ro.build.version.sdk')
+      .then(adb.util.readAll)
+      .then((output) => Number(output.toString().trim()));
+  }
+
   private async isValidFile(filePath: string): Promise<boolean> {
+    const sdkVersion = await this.getSdkVersion();
     const fileSize = await this.adb
       .shell(this.serial, `ls -l "${filePath}"`)
       .then(adb.util.readAll)
       .then((output: Buffer) => output.toString().trim().split(' '))
-      .then((x) => Number(x[4]));
+      .then((x) => x.filter(Boolean))
+      .then((x) => (sdkVersion > 23 ? Number(x[4]) : Number(x[3])));
 
     return fileSize > 0;
   }
@@ -186,7 +195,7 @@ export default class AndroidDevice extends BaseDevice {
     if (!recordingProcess) {
       return Promise.reject(new Error('Recording was not properly started'));
     }
-    await this.adb.shell(this.serial, `pgrep 'screenrecord' -L 2`);
+    await this.adb.shell(this.serial, `pkill -2 screenrecord`);
     const destination = await recordingProcess;
     this.recordingProcess = undefined;
     return destination;
