@@ -30,9 +30,14 @@ export function decodeBody(container: Request | Response): string {
       getHeaderValue(container.headers, 'Content-Encoding') === 'gzip';
     if (isGzip) {
       try {
+        const binStr = Base64.atob(container.data);
+        const dataArr = new Uint8Array(binStr.length);
+        for (let i = 0; i < binStr.length; i++) {
+          dataArr[i] = binStr.charCodeAt(i);
+        }
         // The request is gzipped, so convert the base64 back to the raw bytes first,
         // then inflate. pako will detect the BOM headers and return a proper utf-8 string right away
-        return pako.inflate(Base64.atob(container.data), {to: 'string'});
+        return pako.inflate(dataArr, {to: 'string'});
       } catch (e) {
         // on iOS, the stream send to flipper is already inflated, so the content-encoding will not
         // match the actual data anymore, and we should skip inflating.
