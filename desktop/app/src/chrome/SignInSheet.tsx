@@ -172,7 +172,7 @@ class SignInSheet extends Component<Props, State> {
         <Title>You are not currently logged in to Facebook.</Title>
         <InfoText>
           To log in you will need to{' '}
-          <Link href="https://our.internmc.facebook.com/intern/oauth/nuclide/">
+          <Link href="https://www.internalfb.com/intern/oauth/nuclide/">
             open this page
           </Link>
           , copy the Nuclide access token you find on that page to clipboard,
