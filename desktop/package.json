@@ -108,7 +108,8 @@
     "node-forge": "^0.10.0",
     "jsdom": "16.4.0",
     "node-fetch": "^2.6.1",
-    "csstype": "^3.0.5"
+    "csstype": "^3.0.5",
+    "node-notifier": "^8.0.1"
   },
   "devDependencies": {
     "@babel/code-frame": "^7.12.11",
