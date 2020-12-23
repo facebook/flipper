@@ -53,7 +53,7 @@ const StyledText = styled(Text)({
 const textAreaStyle: React.CSSProperties = {
   width: '100%',
   marginTop: 8,
-  height: 300,
+  height: 430,
   fontSize: 15,
   color: '#333',
   padding: 10,
@@ -240,6 +240,14 @@ export function MockResponseDetails({id, route, isDuplicated}: Props) {
   const [nextHeaderId, setNextHeaderId] = useState(0);
 
   const {requestUrl, requestMethod, responseData, responseStatus} = route;
+
+  let formattedResponse = ""
+  try {
+    formattedResponse = JSON.stringify(JSON.parse(responseData),null,2)
+  } catch (e) {
+    formattedResponse = responseData
+  }
+
   return (
     <Container>
       <FlexRow style={{width: '100%'}}>
@@ -298,7 +306,7 @@ export function MockResponseDetails({id, route, isDuplicated}: Props) {
             wrap="soft"
             autoComplete="off"
             spellCheck={false}
-            value={responseData}
+            value={formattedResponse}
             onChange={(event) =>
               networkRouteManager.modifyRoute(id, {
                 responseData: event.target.value,
@@ -308,6 +316,25 @@ export function MockResponseDetails({id, route, isDuplicated}: Props) {
         </Tab>
         <Tab key={'headers'} label={'Headers'}>
           <FlexColumn>
+            <AddHeaderButton
+              onClick={() => {
+                const newHeaders = {
+                  ...route.responseHeaders,
+                  [nextHeaderId.toString()]: {key: '', value: ''},
+                };
+                setNextHeaderId(nextHeaderId + 1);
+                networkRouteManager.modifyRoute(id, {
+                  responseHeaders: newHeaders,
+                });
+              }}>
+              <Glyph
+                name="plus-circle"
+                size={16}
+                variant="outline"
+                color={colors.blackAlpha30}
+              />
+              &nbsp;Add Header
+            </AddHeaderButton>
             <ManagedTable
               hideHeader={true}
               multiline={true}
@@ -322,31 +349,11 @@ export function MockResponseDetails({id, route, isDuplicated}: Props) {
               stickyBottom={true}
               autoHeight={true}
               floating={false}
-              // height={300}
               zebra={false}
               onRowHighlighted={setSelectedHeaderIds}
               highlightedRows={new Set(selectedHeaderIds)}
             />
           </FlexColumn>
-          <AddHeaderButton
-            onClick={() => {
-              const newHeaders = {
-                ...route.responseHeaders,
-                [nextHeaderId.toString()]: {key: '', value: ''},
-              };
-              setNextHeaderId(nextHeaderId + 1);
-              networkRouteManager.modifyRoute(id, {
-                responseHeaders: newHeaders,
-              });
-            }}>
-            <Glyph
-              name="plus-circle"
-              size={16}
-              variant="outline"
-              color={colors.blackAlpha30}
-            />
-            &nbsp;Add Header
-          </AddHeaderButton>
         </Tab>
       </Tabs>
     </Container>

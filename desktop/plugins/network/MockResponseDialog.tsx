@@ -7,7 +7,7 @@
  * @format
  */
 
-import {FlexColumn, Button, styled} from 'flipper';
+import {FlexColumn, Button, styled, Layout} from 'flipper';
 
 import {ManageMockResponsePanel} from './ManageMockResponsePanel';
 import {Route, Request, Response} from './types';
@@ -40,19 +40,21 @@ const Row = styled(FlexColumn)({
 
 export function MockResponseDialog(props: Props) {
   return (
-    <Container>
+    <Layout.Container pad width={1200}>
       <Title>Mock Network Responses</Title>
-      <ManageMockResponsePanel
-        routes={props.routes}
-        highlightedRows={props.highlightedRows}
-        requests={props.requests}
-        responses={props.responses}
-      />
-      <Row>
+      <Layout.Horizontal>
+        <ManageMockResponsePanel
+          routes={props.routes}
+          highlightedRows={props.highlightedRows}
+          requests={props.requests}
+          responses={props.responses}
+        />
+      </Layout.Horizontal>
+      <Layout.Horizontal>
         <Button compact padded onClick={props.onHide}>
           Close
         </Button>
-      </Row>
-    </Container>
+      </Layout.Horizontal>
+    </Layout.Container>
   );
 }
