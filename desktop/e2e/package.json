@@ -9,7 +9,7 @@
   "bugs": "https://github.com/facebook/flipper/issues",
   "dependencies": {},
   "devDependencies": {
-    "spectron": "^11.0.0"
+    "spectron": "^13.0.0"
   },
   "scripts": {
     "test": "../ts-node ./main.ts"
