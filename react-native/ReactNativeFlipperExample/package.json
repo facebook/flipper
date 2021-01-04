@@ -6,7 +6,7 @@
     "android": "relative-deps && react-native run-android",
     "ios": "relative-deps && react-native run-ios",
     "start": "relative-deps && react-native start",
-    "prepare": "relative-deps",
+    "prepare": "relative-deps && cd android && ./gradlew clean && cd ../ios && pod install",
     "test": "jest"
   },
   "dependencies": {
