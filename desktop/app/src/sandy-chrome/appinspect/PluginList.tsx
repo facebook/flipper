@@ -36,7 +36,7 @@ import {
   startPluginDownload,
 } from '../../reducers/pluginDownloads';
 import {activatePlugin, uninstallPlugin} from '../../reducers/pluginManager';
-import {BundledPluginDetails} from 'plugin-lib/lib';
+import {BundledPluginDetails} from 'plugin-lib';
 import {filterNewestVersionOfEachPlugin} from '../../dispatcher/plugins';
 import {reportUsage} from '../../utils/metrics';
 
@@ -57,6 +57,19 @@ export const PluginList = memo(function PluginList({
   const plugins = useStore((state) => state.plugins);
   const downloads = useStore((state) => state.pluginDownloads);
 
+  // client is a mutable structure, so we need the event emitter to detect the addition of plugins....
+  const [pluginsChanged, setPluginsChanged] = useState(0);
+  useEffect(() => {
+    if (!client) {
+      return;
+    }
+    const listener = () => setPluginsChanged((v) => v + 1);
+    client.on('plugins-change', listener);
+    return () => {
+      client.off('plugins-change', listener);
+    };
+  }, [client]);
+
   const {
     devicePlugins,
     metroPlugins,
@@ -70,6 +83,7 @@ export const PluginList = memo(function PluginList({
     client,
     plugins,
     connections.userStarredPlugins,
+    pluginsChanged,
   ]);
   const isArchived = !!activeDevice?.isArchived;
 
@@ -460,6 +474,7 @@ export function computePluginLists(
   client: Client | undefined,
   plugins: State['plugins'],
   userStarredPlugins: State['connections']['userStarredPlugins'],
+  _pluginsChanged?: number, // this argument is purely used to invalidate the memoization cache
 ) {
   const devicePlugins: DevicePluginDefinition[] =
     device?.devicePlugins.map((name) => plugins.devicePlugins.get(name)!) ?? [];
