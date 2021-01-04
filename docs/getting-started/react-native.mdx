@@ -26,7 +26,19 @@ Additional plugins can be installed through the plugin manager.
 
 To create your own plugins and integrate with Flipper using JavaScript, check out our <Link to={useBaseUrl("/docs/tutorial/react-native")}>writing plugins for React Native</Link> tutorial!
 
-To update the Flipper SDK in your project, you bump the version in the `ios/Podfile` and `android/gradle.properties` files of your project.
+### Using the latest Flipper SDK
+
+By default React Native might ship with an outdated Flipper SDK. To make sure you are using the latest version, determine the latest released version of Flipper by running `npm info flipper`.
+
+Android:
+
+1. Bump the `FLIPPER_VERSION` variable in `android/gradle.properties`, for example: `FLIPPER_VERSION=0.69.0`.
+2. Run `./gradlew clean` in the `android` directory.
+
+iOS:
+
+1. Call `use_flipper` with a specific version in `ios/Podfile`, for example: `use_flipper!({ 'Flipper' => '0.69.0' })`.
+2. Run `pod install` in the `ios` directory.
 
 ## Manual Setup
 
