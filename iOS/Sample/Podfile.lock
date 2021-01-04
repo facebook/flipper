@@ -87,7 +87,7 @@ DEPENDENCIES:
   - OpenSSL-Universal
 
 SPEC REPOS:
-  https://github.com/CocoaPods/Specs:
+  https://github.com/CocoaPods/Specs.git:
     - boost-for-react-native
     - CocoaAsyncSocket
     - CocoaLibEvent

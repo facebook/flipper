@@ -7,7 +7,7 @@
 
 #import "NetworkViewController.h"
 
-@interface NetworkViewController ()
+@interface NetworkViewController () 
 
 @end
 
@@ -18,21 +18,30 @@
   self.navigationItem.title = @"Network";
 }
 
+- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveResponse:(NSURLResponse *)response completionHandler:(void (^)(NSURLSessionResponseDisposition))completionHandler {
+    
+}
+
 - (IBAction)tappedGithubLitho:(UIButton*)sender {
-  [[[NSURLSession sharedSession]
-        dataTaskWithURL:
-            [NSURL
-                URLWithString:
-                    @"https://raw.githubusercontent.com/facebook/litho/master/docs/static/logo.png"]
-      completionHandler:^(
-          NSData* _Nullable data,
-          NSURLResponse* _Nullable response,
-          NSError* _Nullable error) {
-        if (error && !data) {
-          return;
-        }
-        NSLog(@"Got Image");
-      }] resume];
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:self delegateQueue:nil];
+    NSURLSessionDataTask *task = [session dataTaskWithURL:[NSURL
+                                                   URLWithString:
+                                                   @"https://raw.githubusercontent.com/facebook/litho/master/docs/static/logo.png"]];
+    [task resume];
+//  [[[NSURLSession sharedSession]
+//        dataTaskWithURL:
+//            [NSURL
+//                URLWithString:
+//                    @"https://raw.githubusercontent.com/facebook/litho/master/docs/static/logo.png"]
+//      completionHandler:^(
+//          NSData* _Nullable data,
+//          NSURLResponse* _Nullable response,
+//          NSError* _Nullable error) {
+//        if (error && !data) {
+//          return;
+//        }
+//        NSLog(@"Got Image");
+//      }] resume];
 }
 
 - (IBAction)tappedPOSTAPI:(UIButton*)sender {

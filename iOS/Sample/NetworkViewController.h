@@ -7,6 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface NetworkViewController : UIViewController
+@interface NetworkViewController : UIViewController<NSURLSessionDataDelegate>
 
 @end

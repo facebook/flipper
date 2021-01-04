@@ -48,6 +48,9 @@
   [client addPlugin:[FlipperKitExamplePlugin sharedInstance]];
   [client addPlugin:[FlipperKitReactPlugin new]];
   [client start];
+    
+  NSLog(@"%@", [self valueForKey:@"_methodDescription"]);
+
 
   UIStoryboard* storyboard = [UIStoryboard storyboardWithName:@"MainStoryBoard"
                                                        bundle:nil];
