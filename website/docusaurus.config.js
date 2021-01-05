@@ -171,6 +171,64 @@ const siteConfig = {
     ],
   ],
   // end_config_example
+  plugins: [
+    [
+      '@docusaurus/plugin-client-redirects',
+      {
+        redirects: [
+          {
+            to: '/docs/troubleshooting',
+            from: ['/docs/fb/troubleshooting'],
+          },
+          {
+            to: '/docs/tutorial/intro',
+            from: ['/docs/extending'],
+          },
+          {
+            to: '/docs/extending/desktop-plugin-structure',
+            from: ['/docs/extending/js-setup'],
+          },
+          {
+            to: '/docs/extending/create-plugin',
+            from: [
+              '/docs/extending/send-data',
+              '/docs/fb/android-plugin-development-Android-interacting-0',
+            ],
+          },
+          {
+            to: '/docs/tutorial/intro',
+            from: ['/docs/fb/create-new-plugin'],
+          },
+          {
+            to: '/docs/extending/dev-setup',
+            from: ['/docs/fb/developmentworkflow'],
+          },
+          {
+            to: '/docs/getting-started/index',
+            from: ['/docs/fb/Help-Updating-Flipper'],
+          },
+          {
+            to: '/docs/extending/create-plugin',
+            from: [
+              '/docs/fb/ios-plugin-development-sending-data-to-an-ios-plugin-0',
+            ],
+          },
+          {
+            to: '/docs/extending/dev-setup',
+            from: ['/docs/fb/TypeScript'],
+          },
+          {
+            to: '/docs/extending/flipper-plugin',
+            from: ['/docs/fb/using-gatekeepers'],
+          },
+          {
+            to: '/docs/getting-started/index',
+            from: ['/docs/fb/using-flipper-at-facebook'],
+          },
+        ],
+      },
+    ],
+  ],
 };
 
 module.exports = siteConfig;

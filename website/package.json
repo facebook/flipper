@@ -12,6 +12,7 @@
   "devDependencies": {
     "@babel/parser": "^7.8.3",
     "@docusaurus/core": "^2.0.0-alpha.66",
+    "@docusaurus/plugin-client-redirects": "2.0.0-alpha.68",
     "@docusaurus/preset-classic": "^2.0.0-alpha.66",
     "classnames": "^2.2.6",
     "docblock-parser": "^1.0.0",
