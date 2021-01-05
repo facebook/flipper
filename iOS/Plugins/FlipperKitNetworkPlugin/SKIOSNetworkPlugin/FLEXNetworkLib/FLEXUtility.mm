@@ -93,13 +93,9 @@
     Method newMethod = class_getInstanceMethod(cls, swizzledSelector);
     method_exchangeImplementations(oldMethod, newMethod);
   } else {
+      // When methodDescription.types is nil, it causes a crash on [self valueForKey:@"_methodDescription"] when it is called from the swizzled delegate class.
       const char * types = methodDescription.types == nil ? [@"unknown_description" UTF8String] : methodDescription.types;
       class_addMethod(cls, selector, implementation, types);
-//      if (methodDescription.types) {
-//          class_addMethod(cls, selector, implementation, methodDescription.types);
-//      } else {
-//          class_addMethod(cls, selector, implementation, [@"unknown_description" UTF8String]);
-//      }
   }
 }
 
