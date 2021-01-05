@@ -11,7 +11,7 @@ edition = "2018"
 
 [dependencies]
 clap = "2.33.3"
-shellexpand = "2.0.0"
+shellexpand = "2.1.0"
 tar = "0.4.30"
 serde = { version = "1.0.118", features = ["derive"] }
 serde_yaml = "0.8.13"
