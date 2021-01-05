@@ -87,14 +87,19 @@
 
   Method oldMethod = class_getInstanceMethod(cls, selector);
   if (oldMethod) {
+    objc_method_description *description = method_getDescription(oldMethod);
     class_addMethod(
-        cls, swizzledSelector, implementation, methodDescription.types);
-
+        cls, swizzledSelector, implementation, description->types);
     Method newMethod = class_getInstanceMethod(cls, swizzledSelector);
-
     method_exchangeImplementations(oldMethod, newMethod);
   } else {
-    class_addMethod(cls, selector, implementation, methodDescription.types);
+      const char * types = methodDescription.types == nil ? [@"unknown_description" UTF8String] : methodDescription.types;
+      class_addMethod(cls, selector, implementation, types);
+//      if (methodDescription.types) {
+//          class_addMethod(cls, selector, implementation, methodDescription.types);
+//      } else {
+//          class_addMethod(cls, selector, implementation, [@"unknown_description" UTF8String]);
+//      }
   }
 }
 

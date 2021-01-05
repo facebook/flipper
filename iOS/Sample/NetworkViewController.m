@@ -16,6 +16,8 @@
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.navigationItem.title = @"Network";
+    NSLog(@"RN %@", [self valueForKey:@"_methodDescription"]);
+
 }
 
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveResponse:(NSURLResponse *)response completionHandler:(void (^)(NSURLSessionResponseDisposition))completionHandler {

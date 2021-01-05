@@ -14,7 +14,7 @@
 #import <FlipperKitReactPlugin/FlipperKitReactPlugin.h>
 #import <FlipperKitUserDefaultsPlugin/FKUserDefaultsPlugin.h>
 #import <SKIOSNetworkPlugin/SKIOSNetworkAdapter.h>
-
+#import <objc/runtime.h>
 #import "MainViewController.h"
 #import "RootViewController.h"
 
@@ -25,6 +25,16 @@
 
 @implementation AppDelegate {
   UIWindow* _window;
+}
+
+void __Swizzle_OriginalMethodName(id self, SEL _cmd)
+ {
+     NSLog(@"in __Swizzle_OriginalMethodName");
+ }
+
+- (void) origMethod {
+    NSLog(@"in origMethod");
+
 }
 
 - (BOOL)application:(UIApplication*)application
@@ -48,8 +58,34 @@
   [client addPlugin:[FlipperKitExamplePlugin sharedInstance]];
   [client addPlugin:[FlipperKitReactPlugin new]];
   [client start];
-    
-  NSLog(@"%@", [self valueForKey:@"_methodDescription"]);
+//    
+//  NSLog(@"%@", [self valueForKey:@"_methodDescription"]);
+//  NSLog(@"RN %@", [self valueForKey:@"_shortMethodDescription"]);
+//    typedef void (^Blk)(void);
+//    Blk blk = ^ {
+//        NSLog(@"in blok");
+//    };
+//    
+//    IMP swizzleImp = imp_implementationWithBlock(blk);
+//    Method oldMethod = class_getInstanceMethod([self class], @selector(origMethod));
+//    struct objc_method_description *des = method_getDescription(oldMethod);
+//    
+//    SEL swizzledSelector = NSSelectorFromString(
+//                                                [NSString stringWithFormat:@"_flex_swizzle_%x_%@",
+//                                                 arc4random(),
+//                                                 NSStringFromSelector(@selector(origMethod))]);
+//    class_addMethod(
+//                    [self class], swizzledSelector, swizzleImp, des->types);
+//    
+//    Method newMethod = class_getInstanceMethod([self class], swizzledSelector);
+//    //
+//    method_exchangeImplementations(oldMethod, newMethod);
+//    [self origMethod];
+////    Method meth = class_getInstanceMethod([self class], @selector(origMethod));
+////    IMP originalImp = method_setImplementation(meth, swizzleImp);
+//////    originalImp(self, _cmd);
+////    [self origMethod];
+//    NSLog(@"%@", [self valueForKey:@"_methodDescription"]);
 
 
   UIStoryboard* storyboard = [UIStoryboard storyboardWithName:@"MainStoryBoard"
