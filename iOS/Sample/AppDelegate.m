@@ -26,16 +26,6 @@
   UIWindow* _window;
 }
 
-void __Swizzle_OriginalMethodName(id self, SEL _cmd)
- {
-     NSLog(@"in __Swizzle_OriginalMethodName");
- }
-
-- (void) origMethod {
-    NSLog(@"in origMethod");
-
-}
-
 - (BOOL)application:(UIApplication*)application
     didFinishLaunchingWithOptions:(NSDictionary*)launchOptions {
   _window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
@@ -57,7 +47,7 @@ void __Swizzle_OriginalMethodName(id self, SEL _cmd)
   [client addPlugin:[FlipperKitExamplePlugin sharedInstance]];
   [client addPlugin:[FlipperKitReactPlugin new]];
   [client start];
-    
+
   UIStoryboard* storyboard = [UIStoryboard storyboardWithName:@"MainStoryBoard"
                                                        bundle:nil];
   MainViewController* mainViewController = [storyboard

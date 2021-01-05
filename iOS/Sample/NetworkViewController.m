@@ -7,7 +7,7 @@
 
 #import "NetworkViewController.h"
 
-@interface NetworkViewController () 
+@interface NetworkViewController ()
 
 @end
 
