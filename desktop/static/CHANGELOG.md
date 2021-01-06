@@ -1,3 +1,12 @@
+# 0.70.0 (6/1/2021)
+
+ * [D25466557](https://github.com/facebook/flipper/search?q=D25466557&type=Commits) -  [Internal]
+ * [D25497305](https://github.com/facebook/flipper/search?q=D25497305&type=Commits) -  [Internal]
+ * [D25557789](https://github.com/facebook/flipper/search?q=D25557789&type=Commits)
+ * [D25620908](https://github.com/facebook/flipper/search?q=D25620908&type=Commits) -  [Internal]
+ * [D25755812](https://github.com/facebook/flipper/search?q=D25755812&type=Commits) -  Fix issue where React Native plugins didn't show up in the Sandy layout
+
+
 # 0.66.0 (18/11/2020)
 
  * [D24890375](https://github.com/facebook/flipper/search?q=D24890375&type=Commits) -  [Sandy][Navigation] on Android, the currently active deeplink of the application will now be shown in the sidebar
