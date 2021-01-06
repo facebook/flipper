@@ -7,7 +7,7 @@
  * @format
  */
 
-import {ipcRenderer} from 'electron';
+import {ipcRenderer, remote} from 'electron';
 import {performance} from 'perf_hooks';
 import {EventEmitter} from 'events';
 
@@ -71,10 +71,13 @@ export default (store: Store, logger: Logger) => {
 
   const oldExitData = loadExitData();
   if (oldExitData) {
+    const isReload = remote.process.pid === oldExitData.pid;
     const timeSinceLastStartup =
       Date.now() - parseInt(oldExitData.lastSeen, 10);
-    logger.track('usage', 'restart', {
+    // console.log(isReload ? 'reload' : 'restart', oldExitData);
+    logger.track('usage', isReload ? 'reload' : 'restart', {
       ...oldExitData,
+      pid: undefined,
       timeSinceLastStartup,
     });
     // create fresh exit data
@@ -277,6 +280,7 @@ interface ExitData {
   plugin: string;
   app: string;
   cleanExit: boolean;
+  pid: number;
 }
 
 function loadExitData(): ExitData | undefined {
@@ -317,6 +321,7 @@ export function persistExitData(
     plugin: state.selectedPlugin || '',
     app: state.selectedApp ? deconstructClientId(state.selectedApp).app : '',
     cleanExit,
+    pid: remote.process.pid,
   };
   window.localStorage.setItem(
     flipperExitDataKey,
