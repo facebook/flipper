@@ -8,12 +8,13 @@
  */
 
 import {
+  useStore as useReduxStore,
   useSelector,
   shallowEqual,
   useDispatch as useDispatchBase,
 } from 'react-redux';
 import {Dispatch as ReduxDispatch} from 'redux';
-import {State, Actions} from '../reducers/index';
+import {State, Actions, Store} from '../reducers/index';
 
 /**
  * Strongly typed wrapper or Redux's useSelector.
@@ -22,9 +23,14 @@ import {State, Actions} from '../reducers/index';
  */
 export function useStore<Selected>(
   selector: (state: State) => Selected,
-  equalityFn: (left: Selected, right: Selected) => boolean = shallowEqual,
-): Selected {
-  return useSelector(selector, equalityFn);
+  equalityFn?: (left: Selected, right: Selected) => boolean,
+): Selected;
+export function useStore(): Store;
+export function useStore(selector?: any, equalityFn?: any) {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  if (arguments.length === 0) return useReduxStore();
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  return useSelector(selector, equalityFn ?? shallowEqual);
 }
 
 export type Dispatch = ReduxDispatch<Actions>;

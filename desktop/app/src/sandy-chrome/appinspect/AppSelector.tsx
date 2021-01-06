@@ -8,12 +8,13 @@
  */
 
 import React from 'react';
-import {Button, Dropdown, Menu, Radio, Typography} from 'antd';
+import {Alert, Button, Dropdown, Menu, Radio, Typography} from 'antd';
 import {
   AppleOutlined,
   AndroidOutlined,
   WindowsOutlined,
   CaretDownOutlined,
+  RocketOutlined,
 } from '@ant-design/icons';
 import {Glyph, Layout, styled} from '../../ui';
 import {theme, useTrackedCallback} from 'flipper-plugin';
@@ -30,8 +31,9 @@ import {getColorByApp} from '../../chrome/mainsidebar/sidebarUtils';
 import Client from '../../Client';
 import {State} from '../../reducers';
 import {brandIcons} from '../../ui/components/colors';
+import {showEmulatorLauncher} from './LaunchEmulator';
 
-const {Text} = Typography;
+const {Text, Link, Title} = Typography;
 
 function getOsIcon(os?: OS) {
   switch (os) {
@@ -86,7 +88,7 @@ export function AppSelector() {
   );
   const client = clients.find((client) => client.id === selectedApp);
 
-  return (
+  return entries.length ? (
     <Radio.Group
       value={selectedApp}
       size="small"
@@ -96,9 +98,7 @@ export function AppSelector() {
       }}>
       <Dropdown
         overlay={
-          <Menu selectedKeys={selectedApp ? [selectedApp] : []}>
-            {entries.flat()}
-          </Menu>
+          <Menu selectedKeys={selectedApp ? [selectedApp] : []}>{entries}</Menu>
         }>
         <AppInspectButton title="Select the device / app to inspect">
           <Layout.Horizontal gap center>
@@ -114,6 +114,8 @@ export function AppSelector() {
         </AppInspectButton>
       </Dropdown>
     </Radio.Group>
+  ) : (
+    <NoDevices />
   );
 }
 
@@ -216,5 +218,36 @@ function computeEntries(
       )),
     ]);
   }
-  return entries;
+  return entries.flat();
+}
+
+function NoDevices() {
+  const store = useStore();
+
+  const onLaunchEmulator = useTrackedCallback(
+    'select-emulator',
+    () => {
+      showEmulatorLauncher(store);
+    },
+    [],
+  );
+
+  return (
+    <Alert
+      type="info"
+      message={
+        <>
+          <Title level={4}>No devices found</Title>
+          <Text>
+            Start a fresh emulator <RocketOutlined onClick={onLaunchEmulator} />{' '}
+            or check the{' '}
+            <Link href="https://fbflipper.com/docs/troubleshooting">
+              troubleshooting guide
+            </Link>
+            .
+          </Text>
+        </>
+      }
+    />
+  );
 }

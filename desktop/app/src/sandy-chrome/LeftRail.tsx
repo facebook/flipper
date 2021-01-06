@@ -47,7 +47,6 @@ import {logout, USER_NOT_SIGNEDIN, USER_UNAUTHORIZED} from '../reducers/user';
 import config from '../fb-stubs/config';
 import styled from '@emotion/styled';
 import {showEmulatorLauncher} from './appinspect/LaunchEmulator';
-import {useStore as useReduxStore} from 'react-redux';
 import SupportRequestFormV2 from '../fb-stubs/SupportRequestFormV2';
 import {setStaticView} from '../reducers/connections';
 import {getInstance} from '../fb-stubs/Logger';
@@ -252,7 +251,7 @@ function DebugLogsButton({
 }
 
 function LaunchEmulatorButton() {
-  const store = useReduxStore();
+  const store = useStore();
 
   return (
     <LeftRailButton
