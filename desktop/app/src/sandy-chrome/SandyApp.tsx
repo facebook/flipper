@@ -14,7 +14,6 @@ import {Layout, Sidebar} from '../ui';
 import {theme} from 'flipper-plugin';
 
 import {LeftRail} from './LeftRail';
-import {TemporarilyTitlebar} from './TemporarilyTitlebar';
 import {registerStartupTime} from '../App';
 import {useStore, useDispatch} from '../utils/useStore';
 import {SandyContext} from './SandyContext';
@@ -32,6 +31,8 @@ import {Notification} from './notification/Notification';
 import {SheetRenderer} from '../chrome/SheetRenderer';
 import {hasNewChangesToShow} from '../chrome/ChangelogSheet';
 import {SandyWelcomScreen} from './SandyWelcomeScreen';
+import {getVersionString} from '../utils/versionString';
+import config from '../fb-stubs/config';
 
 export type ToplevelNavItem =
   | 'appinspect'
@@ -85,6 +86,10 @@ export function SandyApp() {
   );
 
   useEffect(() => {
+    document.title = `Flipper (${getVersionString()}${
+      config.isFBBuild ? '@FB' : ''
+    })`;
+
     registerStartupTime(logger);
     if (hasNewChangesToShow(window.localStorage)) {
       dispatch(setActiveSheet(ACTIVE_SHEET_CHANGELOG_RECENT_ONLY));
@@ -104,7 +109,6 @@ export function SandyApp() {
     <SandyContext.Provider value={true}>
       <Layout.Top>
         <>
-          <TemporarilyTitlebar />
           <SheetRenderer logger={logger} />
           <SandyWelcomScreen />
         </>
