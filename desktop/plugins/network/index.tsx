@@ -368,7 +368,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
 
           // convert data TODO: we only want this for non-binary data! See D23403095
           const responseData =
-            response && response.data ? decodeBody(response) : null;
+            response && response.data ? decodeBody(response) : '';
 
           const newNextRouteId = nextRouteId.get();
           routes.update((draft) => {

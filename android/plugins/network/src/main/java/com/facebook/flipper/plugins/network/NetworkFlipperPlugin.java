@@ -69,7 +69,9 @@ public class NetworkFlipperPlugin extends BufferingFlipperPlugin implements Netw
             int numChunks =
                 responseInfo.body == null
                     ? 1
-                    : (int) Math.ceil((double) responseInfo.body.length / MAX_BODY_SIZE_IN_BYTES);
+                    : Math.max(
+                        (int) Math.ceil((double) responseInfo.body.length / MAX_BODY_SIZE_IN_BYTES),
+                        1);
 
             for (int i = 0; i < numChunks; i++) {
               byte[] chunk =
