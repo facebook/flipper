@@ -315,26 +315,23 @@ typedef void (^NSURLSessionAsyncCompletion)(
 + (void)injectIntoNSURLSessionTaskResume {
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    // In iOS 7 resume lives in __NSCFLocalSessionTask
-    // In iOS 8 resume lives in NSURLSessionTask
-    // In iOS 9 resume lives in __NSCFURLSessionTask
-    // In iOS 14 resume lives in NSURLSessionTask
     Class className = Nil;
-    if (![[NSProcessInfo processInfo]
+    if (![NSProcessInfo.processInfo
             respondsToSelector:@selector(operatingSystemVersion)]) {
-      className =
-          NSClassFromString([@[ @"__", @"NSC", @"FLocalS", @"ession", @"Task" ]
-              componentsJoinedByString:@""]);
-    } else if (
-        [[NSProcessInfo processInfo] operatingSystemVersion].majorVersion < 9 ||
-        [[NSProcessInfo processInfo] operatingSystemVersion].majorVersion >=
-            14) {
-      className = [NSURLSessionTask class];
+      // iOS ... 7
+      className = NSClassFromString(@"__NSCFLocalSessionTask");
     } else {
-      className =
-          NSClassFromString([@[ @"__", @"NSC", @"FURLS", @"ession", @"Task" ]
-              componentsJoinedByString:@""]);
+      NSInteger majorVersion =
+          NSProcessInfo.processInfo.operatingSystemVersion.majorVersion;
+      if (majorVersion < 9 || majorVersion >= 14) {
+        // iOS 8 or iOS 14+
+        className = [NSURLSessionTask class];
+      } else {
+        // iOS 9 ... 13
+        className = NSClassFromString(@"__NSCFURLSessionTask");
+      }
     }
+
     SEL selector = @selector(resume);
     SEL swizzledSelector = [FLEXUtility swizzledSelectorForSelector:selector];
 
