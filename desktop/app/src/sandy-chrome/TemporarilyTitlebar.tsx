@@ -12,8 +12,6 @@ import {styled, colors} from '../ui';
 import FpsGraph from '../chrome/FpsGraph';
 import NetworkGraph from '../chrome/NetworkGraph';
 import isProduction from '../utils/isProduction';
-import {isAutoUpdaterEnabled} from '../utils/argvUtils';
-import AutoUpdateVersion from '../chrome/AutoUpdateVersion';
 import UpdateIndicator from '../chrome/UpdateIndicator';
 import {Version} from '../chrome/TitleBar';
 import {useStore} from '../utils/useStore';
@@ -63,11 +61,7 @@ export function TemporarilyTitlebar() {
             ? `-${config.getReleaseChannel()}`
             : '')}
       </Version>
-      {isAutoUpdaterEnabled() ? (
-        <AutoUpdateVersion version={version} />
-      ) : (
-        <UpdateIndicator launcherMsg={launcherMsg} version={version} />
-      )}
+      <UpdateIndicator launcherMsg={launcherMsg} version={version} />
     </TemporarilyTitlebarContainer>
   );
 }
