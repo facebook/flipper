@@ -610,17 +610,18 @@ class JFlipperClient : public jni::HybridClass<JFlipperClient> {
       const std::string app,
       const std::string appId,
       const std::string privateAppDirectory) {
-    FlipperClient::init({{std::move(host),
-                          std::move(os),
-                          std::move(device),
-                          std::move(deviceId),
-                          std::move(app),
-                          std::move(appId),
-                          std::move(privateAppDirectory)},
-                         callbackWorker->eventBase(),
-                         connectionWorker->eventBase(),
-                         insecurePort,
-                         securePort});
+    FlipperClient::init(
+        {{std::move(host),
+          std::move(os),
+          std::move(device),
+          std::move(deviceId),
+          std::move(app),
+          std::move(appId),
+          std::move(privateAppDirectory)},
+         callbackWorker->eventBase(),
+         connectionWorker->eventBase(),
+         insecurePort,
+         securePort});
   }
 
  private:

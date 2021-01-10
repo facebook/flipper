@@ -124,11 +124,12 @@ bool ConnectionContextStore::resetState() {
     int ret = mkdir(dirPath.c_str(), S_IRUSR | S_IWUSR | S_IXUSR);
     return ret == 0;
   } else if (info.st_mode & S_IFDIR) {
-    for (auto file : {CSR_FILE_NAME,
-                      FLIPPER_CA_FILE_NAME,
-                      CLIENT_CERT_FILE_NAME,
-                      PRIVATE_KEY_FILE,
-                      CONNECTION_CONFIG_FILE}) {
+    for (auto file :
+         {CSR_FILE_NAME,
+          FLIPPER_CA_FILE_NAME,
+          CLIENT_CERT_FILE_NAME,
+          PRIVATE_KEY_FILE,
+          CONNECTION_CONFIG_FILE}) {
       std::remove(absoluteFilePath(file).c_str());
     }
     return true;
