@@ -147,6 +147,12 @@ describe('pluginInstaller', () => {
     ]);
   });
 
+  test('getInstalledPlugins when no plugins installed', async () => {
+    await fs.remove(pluginInstallationDir);
+    const plugins = await getInstalledPlugins();
+    expect(plugins).toHaveLength(0);
+  });
+
   test('moveInstalledPluginsFromLegacyDir', async () => {
     await moveInstalledPluginsFromLegacyDir();
     expect(

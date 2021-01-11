@@ -215,6 +215,9 @@ type InstalledPluginVersionDirs = [string, string[]][];
 async function getInstalledPluginVersionDirs(): Promise<
   InstalledPluginVersionDirs
 > {
+  if (!(await fs.pathExists(pluginInstallationDir))) {
+    return [];
+  }
   return await fs
     .readdir(pluginInstallationDir)
     .then((dirs) => dirs.map((dir) => path.join(pluginInstallationDir, dir)))
