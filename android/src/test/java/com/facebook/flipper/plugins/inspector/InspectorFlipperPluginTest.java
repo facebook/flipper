@@ -38,10 +38,12 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 
 @LooperMode(LEGACY)
 @RunWith(RobolectricTestRunner.class)
+@Config(sdk = 16)
 public class InspectorFlipperPluginTest {
 
   private MockApplicationDescriptor mApplicationDescriptor;
