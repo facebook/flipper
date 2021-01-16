@@ -60,6 +60,7 @@ PODS:
   - FlipperKit/SKIOSNetworkPlugin (0.70.0):
     - FlipperKit/Core
     - FlipperKit/FlipperKitNetworkPlugin
+  - Folly-GTest (1.10.0)
   - OpenSSL-Universal (1.0.2.20):
     - OpenSSL-Universal/Static (= 1.0.2.20)
   - OpenSSL-Universal/Static (1.0.2.20)
@@ -84,10 +85,11 @@ DEPENDENCIES:
   - FlipperKit/FlipperKitReactPlugin (from `../../FlipperKit.podspec`)
   - FlipperKit/FlipperKitUserDefaultsPlugin (from `../../FlipperKit.podspec`)
   - FlipperKit/SKIOSNetworkPlugin (from `../../FlipperKit.podspec`)
+  - Folly-GTest
   - OpenSSL-Universal
 
 SPEC REPOS:
-  https://github.com/CocoaPods/Specs:
+  https://github.com/CocoaPods/Specs.git:
     - boost-for-react-native
     - CocoaAsyncSocket
     - CocoaLibEvent
@@ -97,6 +99,7 @@ SPEC REPOS:
     - Flipper-Glog
     - Flipper-PeerTalk
     - Flipper-RSocket
+    - Folly-GTest
     - OpenSSL-Universal
     - RenderCore
     - Yoga
@@ -120,11 +123,12 @@ SPEC CHECKSUMS:
   Flipper-PeerTalk: 116d8f857dc6ef55c7a5a75ea3ceaafe878aadc9
   Flipper-RSocket: 64e7431a55835eb953b0bf984ef3b90ae9fdddd7
   FlipperKit: 17f07a7d12e21a9e140c5811a15f2f30a1609761
+  Folly-GTest: 382322cfc035ed26ecd88220ff6e4169654c1cbd
   OpenSSL-Universal: ff34003318d5e1163e9529b08470708e389ffcdd
   RenderCore: d779c47622b313ce2d51bb36d084517af38b0dc1
   Yoga: cff67a400f6b74dc38eb0bad4f156673d9aa980c
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 9035349d45b311395a7507d55c3b0a65707b6769
+PODFILE CHECKSUM: a5264d64b9b958be3ea0339eac802a28035a5a39
 
-COCOAPODS: 1.10.0
+COCOAPODS: 1.9.3
