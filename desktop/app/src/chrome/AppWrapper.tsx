@@ -9,8 +9,8 @@
 
 import React from 'react';
 import {useState, useEffect} from 'react';
-import FlipperApp from '../App';
-import WarningEmployee from '../chrome/WarningEmployee';
+import LegacyApp from './LegacyApp';
+import WarningEmployee from './WarningEmployee';
 import fbConfig from '../fb-stubs/config';
 import {isFBEmployee} from '../utils/fbEmployee';
 import {Logger} from '../fb-interfaces/Logger';
@@ -37,6 +37,6 @@ export default function App(props: Props) {
   ) : isSandyEnabled() ? (
     <SandyApp />
   ) : (
-    <FlipperApp logger={props.logger} />
+    <LegacyApp logger={props.logger} />
   );
 }

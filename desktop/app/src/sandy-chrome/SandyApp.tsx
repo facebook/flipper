@@ -14,7 +14,7 @@ import {Layout, Sidebar} from '../ui';
 import {theme} from 'flipper-plugin';
 
 import {LeftRail} from './LeftRail';
-import {registerStartupTime} from '../App';
+import {registerStartupTime} from '../chrome/LegacyApp';
 import {useStore, useDispatch} from '../utils/useStore';
 import {SandyContext} from './SandyContext';
 import {ConsoleLogs} from '../chrome/ConsoleLogs';
