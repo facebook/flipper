@@ -26,5 +26,5 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig = { "HEADER_SEARCH_PATHS" => "\"${PODS_ROOT}/Headers/Public/FlipperKit\"" }
   s.requires_arc = true
   s.compiler_flags = compiler_flags
-  s.dependency "React"
+  s.dependency "React-Core"
 end
