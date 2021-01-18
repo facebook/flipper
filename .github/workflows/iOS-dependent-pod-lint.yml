@@ -1,13 +1,11 @@
 name: Validate Dependent Podspecs
-on: [
+on:
   push:
     paths:
-        - 'iOS/Podspecs/**'
-  , 
+      - "iOS/Podspecs/**"
   pull_request:
     paths:
-      - 'iOS/Podspecs/**',
-      ]
+      - "iOS/Podspecs/**"
 
 jobs:
   lint-flipper_doubleconversion_pod:
