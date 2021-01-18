@@ -1,0 +1,71 @@
+name: Validate Dependent Podspecs
+on: [
+  push:
+    paths:
+        - 'iOS/Podspecs/**'
+  , 
+  pull_request:
+    paths:
+      - 'iOS/Podspecs/**',
+      ]
+
+jobs:
+  lint-flipper_doubleconversion_pod:
+    runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: iOS/Podspecs
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Dependences
+        run: pod repo update
+      - name: Lint DoubleConversion
+        run: pod spec lint Flipper-DoubleConversion.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
+
+  lint-flipper_folly_pod:
+    runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: iOS/Podspecs
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Dependences
+        run: pod repo update
+      - name: Lint Folly
+        run: pod spec lint Flipper-Folly.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
+
+  lint-flipper_glog_pod:
+    runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: iOS/Podspecs
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Dependences
+        run: pod repo update
+      - name: Lint Glog
+        run: pod spec lint Flipper-Glog.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
+
+  lint-flipper_peertalk_pod:
+    runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: iOS/Podspecs
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Dependences
+        run: pod repo update
+      - name: Lint Peertalk
+        run: pod spec lint Flipper-PeerTalk.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
+
+  lint-flipper_rsocket_pod:
+    runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: iOS/Podspecs
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Dependences
+        run: pod repo update
+      - name: Lint RSocket
+        run: pod spec lint Flipper-RSocket.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
