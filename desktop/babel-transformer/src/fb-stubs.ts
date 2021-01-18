@@ -22,6 +22,7 @@ module.exports = () => ({
   visitor: {
     CallExpression(path: NodePath<CallExpression>, state: any) {
       if (
+        process.env.FLIPPER_FORCE_PUBLIC_BUILD !== 'true' &&
         path.node.type === 'CallExpression' &&
         path.node.callee.type === 'Identifier' &&
         path.node.callee.name === 'require' &&
