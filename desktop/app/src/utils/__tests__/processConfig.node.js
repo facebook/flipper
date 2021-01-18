@@ -18,7 +18,6 @@ test('config is decoded from env', () => {
     disabledPlugins: ['pluginA', 'pluginB', 'pluginC'],
     lastWindowPosition: {x: 4, y: 8, width: 15, height: 16},
     launcherMsg: 'wubba lubba dub dub',
-    updaterEnabled: false,
     screenCapturePath: '/my/screenshot/path',
     launcherEnabled: false,
   });
@@ -27,7 +26,6 @@ test('config is decoded from env', () => {
     disabledPlugins: new Set(['pluginA', 'pluginB', 'pluginC']),
     lastWindowPosition: {x: 4, y: 8, width: 15, height: 16},
     launcherMsg: 'wubba lubba dub dub',
-    updaterEnabled: false,
     screenCapturePath: '/my/screenshot/path',
     launcherEnabled: false,
   });
@@ -40,7 +38,6 @@ test('config is decoded from env with defaults', () => {
     disabledPlugins: new Set([]),
     lastWindowPosition: undefined,
     launcherMsg: undefined,
-    updaterEnabled: false,
     screenCapturePath: undefined,
     launcherEnabled: true,
   });

@@ -19,7 +19,6 @@ export type ProcessConfig = {
   } | null;
   screenCapturePath: string | null;
   launcherMsg: string | null;
-  updaterEnabled: boolean;
   // Controls whether to delegate to the launcher if present.
   launcherEnabled: boolean;
 };
@@ -34,8 +33,6 @@ export default function config(): ProcessConfig {
       disabledPlugins: new Set(json.disabledPlugins || []),
       lastWindowPosition: json.lastWindowPosition,
       launcherMsg: json.launcherMsg,
-      // TODO(T64836070): The built-in updater is disabled as we don't have a strategy for signing prod builds right now.
-      updaterEnabled: false,
       screenCapturePath: json.screenCapturePath,
       launcherEnabled:
         typeof json.launcherEnabled === 'boolean' ? json.launcherEnabled : true,

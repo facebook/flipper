@@ -33,10 +33,8 @@ import RatingButton from './RatingButton';
 import DevicesButton from './DevicesButton';
 import {LocationsButton} from './LocationsButton';
 import ScreenCaptureButtons from './ScreenCaptureButtons';
-import AutoUpdateVersion from './AutoUpdateVersion';
 import UpdateIndicator from './UpdateIndicator';
 import config from '../fb-stubs/config';
-import {isAutoUpdaterEnabled} from '../utils/argvUtils';
 import isProduction from '../utils/isProduction';
 import {clipboard} from 'electron';
 import React from 'react';
@@ -176,14 +174,10 @@ class TitleBar extends React.Component<Props, StateFromProps> {
         {config.showFlipperRating ? <RatingButton /> : null}
         <Version>{this.props.version + (isProduction() ? '' : '-dev')}</Version>
 
-        {isAutoUpdaterEnabled() ? (
-          <AutoUpdateVersion version={this.props.version} />
-        ) : (
-          <UpdateIndicator
-            launcherMsg={this.props.launcherMsg}
-            version={this.props.version}
-          />
-        )}
+        <UpdateIndicator
+          launcherMsg={this.props.launcherMsg}
+          version={this.props.version}
+        />
 
         <Button
           icon="settings"
