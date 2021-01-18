@@ -25,7 +25,6 @@ import KeyboardShortcutInput from './settings/KeyboardShortcutInput';
 import {isEqual, isMatch, isEmpty} from 'lodash';
 import restartFlipper from '../utils/restartFlipper';
 import LauncherSettingsPanel from '../fb-stubs/LauncherSettingsPanel';
-import SandySettingsPanel from '../fb-stubs/SandySettingsPanel';
 import {reportUsage} from '../utils/metrics';
 import {Modal, message} from 'antd';
 import {Layout, withTrackingScope, _NuxManagerContext} from 'flipper-plugin';
@@ -261,7 +260,8 @@ class SettingsSheet extends Component<Props, State> {
             });
           }}
         />
-        <SandySettingsPanel
+        <ToggledSection
+          label="Disable Sandy UI"
           toggled={this.state.updatedSettings.disableSandy}
           onChange={(v) => {
             this.setState({
@@ -274,8 +274,14 @@ class SettingsSheet extends Component<Props, State> {
                 disableSandy: v,
               },
             });
-          }}
-        />
+          }}>
+          {' '}
+          <ConfigText
+            content={
+              'If disabled, Flipper will fall back to the classic design.'
+            }
+          />
+        </ToggledSection>
         {!disableSandy && (
           <ToggledSection
             label="Enable dark theme (experimental)"
