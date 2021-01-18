@@ -195,7 +195,7 @@ export default class AndroidDevice extends BaseDevice {
     if (!recordingProcess) {
       return Promise.reject(new Error('Recording was not properly started'));
     }
-    await this.adb.shell(this.serial, `pkill -2 screenrecord`);
+    await this.adb.shell(this.serial, `pkill -l2 screenrecord`);
     const destination = await recordingProcess;
     this.recordingProcess = undefined;
     return destination;
