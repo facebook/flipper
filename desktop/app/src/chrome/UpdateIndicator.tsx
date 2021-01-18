@@ -8,8 +8,8 @@
  */
 
 import {LauncherMsg} from '../reducers/application';
-import {colors, FlexRow, Glyph, styled} from '../ui';
-import Tooltip from '../ui/components/Tooltip';
+import {FlexRow, Glyph, styled} from '../ui';
+import {Tooltip} from 'antd';
 import isProduction from '../utils/isProduction';
 import {
   checkForUpdate,
@@ -20,10 +20,13 @@ import React from 'react';
 import {shell} from 'electron';
 import config from '../utils/processConfig';
 import fbConfig from '../fb-stubs/config';
+import {useStore} from '../utils/useStore';
+import {remote} from 'electron';
+import {theme} from 'flipper-plugin';
+const version = remote.app.getVersion();
 
 const Container = styled(FlexRow)({
   alignItems: 'center',
-  marginLeft: 4,
 });
 
 type Props = {
@@ -38,13 +41,13 @@ type State = {
 function getSeverityColor(severity: 'warning' | 'error'): string {
   switch (severity) {
     case 'warning':
-      return colors.light30;
+      return theme.warningColor;
     case 'error':
-      return colors.cherry;
+      return theme.errorColor;
   }
 }
 
-export default class UpdateIndicator extends React.PureComponent<Props, State> {
+class UpdateIndicatorImpl extends React.PureComponent<Props, State> {
   state = {
     versionCheckResult: {kind: 'up-to-date'} as VersionCheckResult,
   };
@@ -87,7 +90,7 @@ export default class UpdateIndicator extends React.PureComponent<Props, State> {
     );
     return (
       <Tooltip
-        options={{position: 'toLeft'}}
+        placement="right"
         title={`Update to Flipper v${result.version} available. Click to download.`}
         children={container}
       />
@@ -118,4 +121,9 @@ export default class UpdateIndicator extends React.PureComponent<Props, State> {
       </>
     );
   }
+}
+
+export default function UpdateIndicator() {
+  const launcherMsg = useStore((state) => state.application.launcherMsg);
+  return <UpdateIndicatorImpl launcherMsg={launcherMsg} version={version} />;
 }

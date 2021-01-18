@@ -268,8 +268,6 @@ function createWindow() {
     minWidth: 800,
     minHeight: 600,
     center: true,
-    titleBarStyle: 'hiddenInset',
-    vibrancy: 'sidebar',
     webPreferences: {
       enableRemoteModule: true,
       backgroundThrottling: false,

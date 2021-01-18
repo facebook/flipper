@@ -10,13 +10,10 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {onBytesReceived} from '../dispatcher/tracking';
 
-export default function NetworkGraph({
-  width,
-  height,
-}: {
-  width: number;
-  height: number;
-}) {
+const height = 16;
+const width = 36;
+
+export default function NetworkGraph() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const lastTime = useRef(performance.now());
   const lastBytes = useRef(0);
@@ -46,9 +43,9 @@ export default function NetworkGraph({
 
       const ctx = canvasRef.current!.getContext('2d')!;
       ctx.clearRect(0, 0, width, height);
-      ctx.strokeStyle = kiloBytesPerSecond >= 1000 ? '#f00' : '#ccc';
-      ctx.textAlign = 'end';
-      ctx.strokeText(`${kiloBytesPerSecond} kB/s`, width - 5, 5 + height / 2);
+      ctx.strokeStyle = kiloBytesPerSecond >= 1000 ? '#f00' : '#ddd';
+      ctx.font = 'lighter 10px arial';
+      ctx.strokeText(`${kiloBytesPerSecond} kB/s`, 0, height - 4);
 
       setHoverText(
         'Total data traffic per plugin:\n\n' +

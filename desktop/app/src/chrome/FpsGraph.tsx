@@ -10,20 +10,15 @@
 import React, {useEffect, useRef} from 'react';
 import {fpsEmitter} from '../dispatcher/tracking';
 
-export default function FpsGraph({
-  width,
-  height,
-  sampleRate = 200,
-}: {
-  width: number;
-  height: number;
-  sampleRate?: number;
-}) {
+const width = 36;
+const height = 36;
+const graphHeight = 20;
+
+export default function FpsGraph({sampleRate = 200}: {sampleRate?: number}) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    const graphWidth = width - 20;
-    const fps: number[] = new Array<number>(graphWidth).fill(0, 0, graphWidth);
+    const fps: number[] = new Array<number>(width).fill(0, 0, width);
     let lastFps = 0;
     let lastDraw = Date.now();
 
@@ -35,7 +30,7 @@ export default function FpsGraph({
     const interval = setInterval(() => {
       const ctx = canvasRef.current!.getContext('2d')!;
       ctx.clearRect(0, 0, width, height);
-      ctx.strokeStyle = '#ccc';
+      ctx.strokeStyle = '#ddd';
 
       const now = Date.now();
       let missedFrames = 0;
@@ -51,24 +46,26 @@ export default function FpsGraph({
       fps.push(lastFps);
       fps.shift();
 
+      ctx.font = 'lighter 10px arial';
       ctx.strokeText(
         '' +
           (missedFrames
             ? // if we were chocked, show FPS based on frames missed
               Math.floor((1000 / sampleRate) * missedFrames)
-            : lastFps),
-        width - 15,
-        5 + height / 2,
+            : lastFps) +
+          ' fps',
+        0,
+        height - 4,
       );
 
-      ctx.beginPath();
       ctx.moveTo(0, height);
+      ctx.beginPath();
       ctx.lineWidth = 1;
       fps.forEach((num, idx) => {
-        ctx.lineTo(idx, height - (Math.min(60, num) / 60) * height);
+        ctx.lineTo(idx, graphHeight - (Math.min(60, num) / 60) * graphHeight);
       });
 
-      ctx.strokeStyle = missedFrames ? '#ff0000' : '#ccc';
+      ctx.strokeStyle = missedFrames ? '#ff0000' : '#ddd';
 
       ctx.stroke();
       lastFps = 60;
