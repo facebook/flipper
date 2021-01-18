@@ -7,15 +7,8 @@
  * @format
  */
 
-import config from '../fb-stubs/config';
-import GK from '../fb-stubs/GK';
-import ReleaseChannel from '../ReleaseChannel';
 import {store} from '../store';
 
 export default function isSandyEnabled() {
-  return (
-    (GK.get('flipper_sandy') ||
-      config.getReleaseChannel() === ReleaseChannel.INSIDERS) &&
-    !store.getState().settingsState.disableSandy
-  );
+  return !store.getState().settingsState.disableSandy;
 }
