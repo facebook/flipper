@@ -16,12 +16,13 @@ import {Logger} from '../fb-interfaces/Logger';
 import isSandyEnabled from '../utils/isSandyEnabled';
 import {SandyApp} from '../sandy-chrome/SandyApp';
 import {notification} from 'antd';
+import isProduction from '../utils/isProduction';
 
 type Props = {logger: Logger};
 
 export default function App(props: Props) {
   useEffect(() => {
-    if (fbConfig.warnFBEmployees) {
+    if (fbConfig.warnFBEmployees && isProduction()) {
       isFBEmployee().then(() => {
         notification.warning({
           placement: 'bottomLeft',

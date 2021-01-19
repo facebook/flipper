@@ -9,18 +9,28 @@
 
 import {notification, Typography} from 'antd';
 import isProduction from '../utils/isProduction';
-import {
-  checkForUpdate,
-  VersionCheckResult,
-} from '../utils/publicVersionChecker';
 import {reportPlatformFailures} from '../utils/metrics';
 import React, {useEffect, useState} from 'react';
-import config from '../utils/processConfig';
 import fbConfig from '../fb-stubs/config';
 import {useStore} from '../utils/useStore';
 import {remote} from 'electron';
+import {checkForUpdate} from '../fb-stubs/checkForUpdate';
 
 const version = remote.app.getVersion();
+
+export type VersionCheckResult =
+  | {
+      kind: 'update-available';
+      url: string;
+      version: string;
+    }
+  | {
+      kind: 'up-to-date';
+    }
+  | {
+      kind: 'error';
+      msg: string;
+    };
 
 export default function UpdateIndicator() {
   const [versionCheckResult, setVersionCheckResult] = useState<
@@ -93,10 +103,7 @@ export default function UpdateIndicator() {
           duration: null,
         });
       }
-    } else if (
-      isProduction() &&
-      (config().launcherEnabled || !fbConfig.isFBBuild)
-    ) {
+    } else if (isProduction()) {
       reportPlatformFailures(
         checkForUpdate(version).then((res) => {
           if (res.kind === 'error') {

@@ -8,7 +8,9 @@
  */
 
 import os from 'os';
-import config from '../fb-stubs/config';
+import {VersionCheckResult} from '../chrome/UpdateIndicator';
+
+const updateServer = 'https://www.facebook.com/fbflipper/public/latest.json';
 
 const getPlatformSpecifier = (): string => {
   switch (os.platform()) {
@@ -47,24 +49,10 @@ const parseResponse = (resp: any): VersionCheckResult => {
   };
 };
 
-export type VersionCheckResult =
-  | {
-      kind: 'update-available';
-      url: string;
-      version: string;
-    }
-  | {
-      kind: 'up-to-date';
-    }
-  | {
-      kind: 'error';
-      msg: string;
-    };
-
 export async function checkForUpdate(
   currentVersion: string,
 ): Promise<VersionCheckResult> {
-  return fetch(`${config.updateServer}?version=${currentVersion}`).then(
+  return fetch(`${updateServer}?version=${currentVersion}`).then(
     (res: Response) => {
       switch (res.status) {
         case 204:
@@ -79,9 +67,11 @@ export async function checkForUpdate(
           }
           return res.json().then(parseResponse);
         default:
+          const msg = `Server responded with ${res.statusText}.`;
+          console.warn('Version check failure: ', msg);
           return {
             kind: 'error',
-            msg: `Server responded with ${res.statusText}.`,
+            msg,
           };
       }
     },
