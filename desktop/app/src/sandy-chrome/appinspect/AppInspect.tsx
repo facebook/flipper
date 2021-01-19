@@ -71,7 +71,7 @@ export function AppInspect() {
             ) : (
               <BookmarkSection />
             )}
-            {!isArchived && (
+            {!isArchived && activeDevice && (
               <Toolbar gap>
                 <MetroButton useSandy />
                 <ScreenCaptureButtons useSandy />
@@ -86,11 +86,7 @@ export function AppInspect() {
               metroDevice={metroDevice}
               client={client}
             />
-          ) : (
-            <Layout.Container padh>
-              <Alert message="No device or app selected." type="info" />
-            </Layout.Container>
-          )}
+          ) : null}
         </Layout.ScrollContainer>
       </Layout.Top>
     </LeftSidebar>

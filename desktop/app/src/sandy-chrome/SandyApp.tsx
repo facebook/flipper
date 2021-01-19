@@ -33,6 +33,7 @@ import {hasNewChangesToShow} from '../chrome/ChangelogSheet';
 import {SandyWelcomScreen} from './SandyWelcomeScreen';
 import {getVersionString} from '../utils/versionString';
 import config from '../fb-stubs/config';
+import {WelcomeScreenStaticView} from './WelcomeScreen';
 
 export type ToplevelNavItem =
   | 'appinspect'
@@ -136,11 +137,15 @@ export function SandyApp() {
                   staticView.constructor?.name ??
                   'unknown static view'
                 }>
-                <ContentContainer>
-                  {React.createElement(staticView, {
-                    logger: logger,
-                  })}
-                </ContentContainer>
+                {staticView === WelcomeScreenStaticView ? (
+                  React.createElement(staticView) /* avoid shadow */
+                ) : (
+                  <ContentContainer>
+                    {React.createElement(staticView, {
+                      logger: logger,
+                    })}
+                  </ContentContainer>
+                )}
               </TrackingScope>
             ) : (
               <PluginContainer logger={logger} isSandy />

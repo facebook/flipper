@@ -17,7 +17,7 @@ import {UninitializedClient} from '../UninitializedClient';
 import {isEqual} from 'lodash';
 import {performance} from 'perf_hooks';
 import {Actions} from '.';
-import WelcomeScreen from '../chrome/WelcomeScreen';
+import {WelcomeScreenStaticView} from '../sandy-chrome/WelcomeScreen';
 import {getPluginKey, isDevicePluginDefinition} from '../utils/pluginUtils';
 import {deconstructClientId} from '../utils/clientUtils';
 import {PluginDefinition} from '../plugin';
@@ -27,7 +27,10 @@ import {Logger} from 'flipper-plugin';
 
 export type StaticViewProps = {logger: Logger};
 
-export type StaticView = null | ComponentType<StaticViewProps>;
+export type StaticView =
+  | null
+  | ComponentType<StaticViewProps>
+  | React.FunctionComponent<any>;
 
 export type State = {
   devices: Array<BaseDevice>;
@@ -142,7 +145,7 @@ const INITAL_STATE: State = {
   clients: [],
   uninitializedClients: [],
   deepLinkPayload: null,
-  staticView: WelcomeScreen,
+  staticView: WelcomeScreenStaticView,
 };
 
 export default (state: State = INITAL_STATE, action: Actions): State => {
@@ -466,7 +469,7 @@ export function canBeDefaultDevice(device: BaseDevice) {
  * @param state
  */
 function updateSelection(state: Readonly<State>): State {
-  if (state.staticView && state.staticView !== WelcomeScreen) {
+  if (state.staticView && state.staticView !== WelcomeScreenStaticView) {
     return state;
   }
 
@@ -488,7 +491,7 @@ function updateSelection(state: Readonly<State>): State {
   }
   updates.selectedDevice = device;
   if (!device) {
-    updates.staticView = WelcomeScreen;
+    updates.staticView = WelcomeScreenStaticView;
   }
 
   // Select client based on device
