@@ -8,35 +8,35 @@
  */
 
 import React from 'react';
-import {useState, useEffect} from 'react';
+import {useEffect} from 'react';
 import LegacyApp from './LegacyApp';
-import WarningEmployee from './WarningEmployee';
 import fbConfig from '../fb-stubs/config';
 import {isFBEmployee} from '../utils/fbEmployee';
 import {Logger} from '../fb-interfaces/Logger';
 import isSandyEnabled from '../utils/isSandyEnabled';
 import {SandyApp} from '../sandy-chrome/SandyApp';
+import {notification} from 'antd';
 
 type Props = {logger: Logger};
 
 export default function App(props: Props) {
-  const [warnEmployee, setWarnEmployee] = useState(false);
   useEffect(() => {
     if (fbConfig.warnFBEmployees) {
-      isFBEmployee().then((isEmployee) => {
-        setWarnEmployee(isEmployee);
+      isFBEmployee().then(() => {
+        notification.warning({
+          placement: 'bottomLeft',
+          message: 'Please use Flipper@FB',
+          description: (
+            <>
+              You are using the open-source version of Flipper. Install the
+              internal build from Managed Software Center to get access to more
+              plugins.
+            </>
+          ),
+          duration: null,
+        });
       });
     }
   }, []);
-  return warnEmployee ? (
-    <WarningEmployee
-      onClick={() => {
-        setWarnEmployee(false);
-      }}
-    />
-  ) : isSandyEnabled() ? (
-    <SandyApp />
-  ) : (
-    <LegacyApp logger={props.logger} />
-  );
+  return isSandyEnabled() ? <SandyApp /> : <LegacyApp logger={props.logger} />;
 }
