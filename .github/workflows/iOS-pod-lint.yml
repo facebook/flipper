@@ -6,21 +6,19 @@ jobs:
     runs-on: macos-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Install Dependences
-      run: pod repo update
-      
-    - name: Lint FlipperKit
-      run: pod spec lint FlipperKit.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
-    
+      - uses: actions/checkout@v2
+      - name: Install Dependences
+        run: pod repo update
+
+      - name: Lint FlipperKit
+        run: pod spec lint FlipperKit.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
+
   lint-flipper_pod:
     runs-on: macos-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Install Dependences
-      run: pod repo update
-    - name: Lint Flipper
-      run: pod spec lint Flipper.podspec --use-libraries --allow-warnings --verbose
-      
-      
+      - uses: actions/checkout@v2
+      - name: Install Dependences
+        run: pod repo update
+      - name: Lint Flipper
+        run: pod spec lint Flipper.podspec --use-libraries --allow-warnings --verbose

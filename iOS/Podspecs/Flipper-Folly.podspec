@@ -16,7 +16,7 @@ Pod::Spec.new do |spec|
   spec.dependency 'boost-for-react-native'
   spec.dependency 'Flipper-Glog'
   spec.dependency 'Flipper-DoubleConversion'
-  spec.dependency 'OpenSSL-Universal', '1.1.180'
+  spec.dependency 'OpenSSL-Universal', '1.0.2.20'
   spec.dependency 'CocoaLibEvent', '~> 1.0'
   spec.compiler_flags = '-DFOLLY_HAVE_PTHREAD=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_LIBGFLAGS=0 -DFOLLY_HAVE_LIBJEMALLOC=0 -DFOLLY_HAVE_PREADV=0 -DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0 -DFOLLY_USE_SYMBOLIZER=0
     -frtti
