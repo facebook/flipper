@@ -33,19 +33,15 @@ import RatingButton from './RatingButton';
 import DevicesButton from './DevicesButton';
 import {LocationsButton} from './LocationsButton';
 import ScreenCaptureButtons from './ScreenCaptureButtons';
-import AutoUpdateVersion from './AutoUpdateVersion';
 import UpdateIndicator from './UpdateIndicator';
 import config from '../fb-stubs/config';
-import {isAutoUpdaterEnabled} from '../utils/argvUtils';
-import isProduction from '../utils/isProduction';
 import {clipboard} from 'electron';
 import React from 'react';
 import {State} from '../reducers';
 import {reportUsage} from '../utils/metrics';
-import FpsGraph from './FpsGraph';
-import NetworkGraph from './NetworkGraph';
 import MetroButton from './MetroButton';
 import {navPluginStateSelector} from './LocationsButton';
+import {getVersionString} from '../utils/versionString';
 
 const AppTitleBar = styled(FlexRow)<{focused?: boolean}>(({focused}) => ({
   userSelect: 'none',
@@ -170,20 +166,10 @@ class TitleBar extends React.Component<Props, StateFromProps> {
         )}
         <Spacer />
 
-        {!isProduction() && <NetworkGraph height={20} width={60} />}
-        {!isProduction() && <FpsGraph height={20} width={60} />}
-
         {config.showFlipperRating ? <RatingButton /> : null}
-        <Version>{this.props.version + (isProduction() ? '' : '-dev')}</Version>
+        <Version>{getVersionString()}</Version>
 
-        {isAutoUpdaterEnabled() ? (
-          <AutoUpdateVersion version={this.props.version} />
-        ) : (
-          <UpdateIndicator
-            launcherMsg={this.props.launcherMsg}
-            version={this.props.version}
-          />
-        )}
+        <UpdateIndicator />
 
         <Button
           icon="settings"

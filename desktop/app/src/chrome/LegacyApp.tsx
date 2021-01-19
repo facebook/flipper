@@ -8,24 +8,24 @@
  */
 
 import React from 'react';
-import {FlexRow, styled, Layout} from './ui';
+import {FlexRow, styled, Layout} from '../ui';
 import {connect} from 'react-redux';
-import TitleBar from './chrome/TitleBar';
-import MainSidebar2 from './chrome/mainsidebar/MainSidebar2';
-import DoctorBar from './chrome/DoctorBar';
-import PluginContainer from './PluginContainer';
+import TitleBar from './TitleBar';
+import MainSidebar2 from './mainsidebar/MainSidebar2';
+import DoctorBar from './DoctorBar';
+import PluginContainer from '../PluginContainer';
 import {ipcRenderer, remote} from 'electron';
 import {
   ACTIVE_SHEET_CHANGELOG_RECENT_ONLY,
   setActiveSheet,
-} from './reducers/application';
-import {Logger} from './fb-interfaces/Logger';
-import {State as Store} from './reducers/index';
-import {StaticView} from './reducers/connections';
-import StatusBar from './chrome/StatusBar';
-import {hasNewChangesToShow} from './chrome/ChangelogSheet';
-import QPL, {QuickLogActionType, FLIPPER_QPL_EVENTS} from './fb-stubs/QPL';
-import {SheetRenderer} from './chrome/SheetRenderer';
+} from '../reducers/application';
+import {Logger} from '../fb-interfaces/Logger';
+import {State as Store} from '../reducers/index';
+import {StaticView} from '../reducers/connections';
+import StatusBar from './StatusBar';
+import {hasNewChangesToShow} from './ChangelogSheet';
+import QPL, {QuickLogActionType, FLIPPER_QPL_EVENTS} from '../fb-stubs/QPL';
+import {SheetRenderer} from './SheetRenderer';
 
 const version = remote.app.getVersion();
 
@@ -74,7 +74,7 @@ export function registerStartupTime(logger: Logger) {
   ipcRenderer.send('componentDidMount');
 }
 
-export class App extends React.Component<Props> {
+export class LegacyApp extends React.Component<Props> {
   componentDidMount() {
     registerStartupTime(this.props.logger);
     if (hasNewChangesToShow(window.localStorage)) {
@@ -135,4 +135,4 @@ export default connect<StateFromProps, DispatchProps, OwnProps, Store>(
   {
     setActiveSheet,
   },
-)(App);
+)(LegacyApp);

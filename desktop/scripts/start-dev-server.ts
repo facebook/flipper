@@ -81,6 +81,11 @@ const argv = yargs
         '[FB-internal only] Release channel. "stable" by default. Setting env var "FLIPPER_RELEASE_CHANNEL" is equivalent.',
       choices: ['stable', 'insiders'],
     },
+    'public-build': {
+      describe:
+        '[FB-internal only] Will force using public sources only, to be able to iterate quickly on the public version. If sources are checked out from GitHub this is already the default. Setting env var "FLIPPER_FORCE_PUBLIC_BUILD" is equivalent.',
+      type: 'boolean',
+    },
   })
   .version('DEV')
   .help()
@@ -106,6 +111,17 @@ if (argv['fast-refresh'] === true) {
   process.env.FLIPPER_FAST_REFRESH = 'true';
 } else if (argv['fast-refresh'] === false) {
   delete process.env.FLIPPER_FAST_REFRESH;
+}
+
+if (argv['public-build'] === true) {
+  // we use a separate env var for forced_public builds, since
+  // FB_FLIPPER / isFB reflects whether we are running on FB sources / infra
+  // so changing that will not give the desired result (e.g. incorrect resolve paths, yarn installs)
+  // this variable purely overrides whether imports are from `fb` or `fb-stubs`
+  console.log('🐬 Emulating open source build of Flipper');
+  process.env.FLIPPER_FORCE_PUBLIC_BUILD = 'true';
+} else if (argv['public-build'] === false) {
+  delete process.env.FLIPPER_FORCE_PUBLIC_BUILD;
 }
 
 // By default plugin auto-update is disabled in dev mode,
@@ -217,6 +233,7 @@ async function startMetroServer(app: Express, server: http.Server) {
       sourceExts: ['js', 'jsx', 'ts', 'tsx', 'json', 'mjs', 'cjs'],
     },
     watch: true,
+    cacheVersion: process.env.FLIPPER_FORCE_PUBLIC_BUILD,
   });
   const connectMiddleware = await Metro.createConnectMiddleware(config);
   app.use(connectMiddleware.middleware);

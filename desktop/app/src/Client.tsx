@@ -14,7 +14,7 @@ import {
   FlipperDevicePlugin,
 } from './plugin';
 import BaseDevice, {OS} from './devices/BaseDevice';
-import {App} from './App';
+import {LegacyApp} from './chrome/LegacyApp';
 import {Logger} from './fb-interfaces/Logger';
 import {Store} from './reducers/index';
 import {setPluginState} from './reducers/pluginStates';
@@ -124,7 +124,7 @@ export interface FlipperClientConnection<D, M> {
 }
 
 export default class Client extends EventEmitter {
-  app: App | undefined;
+  app: LegacyApp | undefined;
   connected: boolean;
   id: string;
   query: ClientQuery;

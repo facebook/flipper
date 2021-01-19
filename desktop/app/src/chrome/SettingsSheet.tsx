@@ -25,12 +25,9 @@ import KeyboardShortcutInput from './settings/KeyboardShortcutInput';
 import {isEqual, isMatch, isEmpty} from 'lodash';
 import restartFlipper from '../utils/restartFlipper';
 import LauncherSettingsPanel from '../fb-stubs/LauncherSettingsPanel';
-import SandySettingsPanel from '../fb-stubs/SandySettingsPanel';
 import {reportUsage} from '../utils/metrics';
 import {Modal, message} from 'antd';
 import {Layout, withTrackingScope, _NuxManagerContext} from 'flipper-plugin';
-import GK from '../fb-stubs/GK';
-import ReleaseChannel from '../ReleaseChannel';
 
 const Container = styled(FlexColumn)({
   padding: 20,
@@ -142,8 +139,6 @@ class SettingsSheet extends Component<Props, State> {
       disableSandy,
       darkMode,
     } = this.state.updatedSettings;
-
-    const {releaseChannel} = this.state.updatedLauncherSettings;
 
     const {useSandy} = this.props;
 
@@ -265,7 +260,8 @@ class SettingsSheet extends Component<Props, State> {
             });
           }}
         />
-        <SandySettingsPanel
+        <ToggledSection
+          label="Disable Sandy UI"
           toggled={this.state.updatedSettings.disableSandy}
           onChange={(v) => {
             this.setState({
@@ -278,24 +274,28 @@ class SettingsSheet extends Component<Props, State> {
                 disableSandy: v,
               },
             });
-          }}
-        />
-        {(GK.get('flipper_sandy') ||
-          releaseChannel == ReleaseChannel.INSIDERS) &&
-          !disableSandy && (
-            <ToggledSection
-              label="Enable dark theme (experimental)"
-              toggled={darkMode}
-              onChange={(enabled) => {
-                this.setState((prevState) => ({
-                  updatedSettings: {
-                    ...prevState.updatedSettings,
-                    darkMode: enabled,
-                  },
-                }));
-              }}
-            />
-          )}
+          }}>
+          {' '}
+          <ConfigText
+            content={
+              'If disabled, Flipper will fall back to the classic design.'
+            }
+          />
+        </ToggledSection>
+        {!disableSandy && (
+          <ToggledSection
+            label="Enable dark theme (experimental)"
+            toggled={darkMode}
+            onChange={(enabled) => {
+              this.setState((prevState) => ({
+                updatedSettings: {
+                  ...prevState.updatedSettings,
+                  darkMode: enabled,
+                },
+              }));
+            }}
+          />
+        )}
         <ToggledSection
           label="React Native keyboard shortcuts"
           toggled={reactNative.shortcuts.enabled}

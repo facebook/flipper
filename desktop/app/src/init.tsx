@@ -13,7 +13,7 @@ import ReactDOM from 'react-dom';
 import ContextMenuProvider from './ui/components/ContextMenuProvider';
 import GK from './fb-stubs/GK';
 import {init as initLogger} from './fb-stubs/Logger';
-import App from './fb-stubs/App';
+import App from './chrome/AppWrapper';
 import setupPrefetcher from './fb-stubs/Prefetcher';
 import {persistStore} from 'redux-persist';
 import {Store} from './reducers/index';

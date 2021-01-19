@@ -55,6 +55,10 @@ import {getUser} from '../fb-stubs/user';
 import {SandyRatingButton} from '../chrome/RatingButton';
 import {filterNotifications} from './notification/notificationUtils';
 import {useMemoize} from '../utils/useMemoize';
+import isProduction from '../utils/isProduction';
+import NetworkGraph from '../chrome/NetworkGraph';
+import FpsGraph from '../chrome/FpsGraph';
+import UpdateIndicator from '../chrome/UpdateIndicator';
 
 const LeftRailButtonElem = styled(Button)<{kind?: 'small'}>(({kind}) => ({
   width: kind === 'small' ? 32 : 36,
@@ -154,6 +158,13 @@ export const LeftRail = withTrackingScope(function LeftRail({
           />
         </Layout.Container>
         <Layout.Container center gap={10} padh={6}>
+          {!isProduction() && (
+            <div>
+              <FpsGraph />
+              <NetworkGraph />
+            </div>
+          )}
+          <UpdateIndicator />
           <SandyRatingButton />
           <LaunchEmulatorButton />
           <SetupDoctorButton />

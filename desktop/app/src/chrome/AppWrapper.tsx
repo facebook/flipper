@@ -9,11 +9,13 @@
 
 import React from 'react';
 import {useState, useEffect} from 'react';
-import FlipperApp from '../App';
-import WarningEmployee from '../chrome/WarningEmployee';
+import LegacyApp from './LegacyApp';
+import WarningEmployee from './WarningEmployee';
 import fbConfig from '../fb-stubs/config';
 import {isFBEmployee} from '../utils/fbEmployee';
 import {Logger} from '../fb-interfaces/Logger';
+import isSandyEnabled from '../utils/isSandyEnabled';
+import {SandyApp} from '../sandy-chrome/SandyApp';
 
 type Props = {logger: Logger};
 
@@ -32,7 +34,9 @@ export default function App(props: Props) {
         setWarnEmployee(false);
       }}
     />
+  ) : isSandyEnabled() ? (
+    <SandyApp />
   ) : (
-    <FlipperApp logger={props.logger} />
+    <LegacyApp logger={props.logger} />
   );
 }
