@@ -225,6 +225,10 @@ const siteConfig = {
             to: '/docs/getting-started/index',
             from: ['/docs/fb/using-flipper-at-facebook'],
           },
+          {
+            to: '/docs/getting-started/index',
+            from: ['/docs/fb/index'],
+          },
         ],
       },
     ],
