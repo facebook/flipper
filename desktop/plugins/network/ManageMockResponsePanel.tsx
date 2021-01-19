@@ -221,19 +221,19 @@ export function ManageMockResponsePanel(props: Props) {
               props.responses,
             );
           }}>
-            <Glyph
-              name="plus-circle"
-              size={16}
-              variant="outline"
-              color={colors.blackAlpha30}
-            />
+          <Glyph
+            name="plus-circle"
+            size={16}
+            variant="outline"
+            color={colors.blackAlpha30}
+          />
           &nbsp;Copy Highlighted Calls
         </CopyHighlightedCallsButton>
-        <hr  
+        <hr
           style={{
             height: 1,
             backgroundColor: colors.grey,
-            width: '95%'
+            width: '95%',
           }}
         />
         <ManagedTable
@@ -259,13 +259,11 @@ export function ManageMockResponsePanel(props: Props) {
       </LeftPanel>
       <RightPanel>
         {selectedId && props.routes.hasOwnProperty(selectedId) && (
-          <Layout.ScrollContainer vertical style={{height: 500}}>
           <ManagedMockResponseRightPanel
             id={selectedId}
             route={props.routes[selectedId]}
             isDuplicated={duplicatedIds.includes(selectedId)}
           />
-           </Layout.ScrollContainer>
         )}
       </RightPanel>
     </Container>
