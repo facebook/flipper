@@ -8,6 +8,7 @@
  */
 
 import {
+  Layout,
   ManagedTable,
   Text,
   FlexBox,
@@ -61,14 +62,17 @@ const Container = styled(FlexRow)({
   flex: 1,
   justifyContent: 'space-around',
   alignItems: 'stretch',
+  height: '100%',
+  width: '100%',
 });
 
 const LeftPanel = styled(FlexColumn)({
-  flex: 1,
+  height: '100%',
+  width: '35%',
 });
 
 const RightPanel = styled(FlexColumn)({
-  flex: 3,
+  flex: 2,
   height: '100%',
 });
 
@@ -195,7 +199,7 @@ export function ManageMockResponsePanel(props: Props) {
     props.routes,
   ]);
   return (
-    <Container>
+    <Container style={{height: 580}}>
       <LeftPanel>
         <AddRouteButton
           onClick={() => {
@@ -225,6 +229,13 @@ export function ManageMockResponsePanel(props: Props) {
           />
           &nbsp;Copy Highlighted Calls
         </CopyHighlightedCallsButton>
+        <hr
+          style={{
+            height: 1,
+            backgroundColor: colors.grey,
+            width: '95%',
+          }}
+        />
         <ManagedTable
           hideHeader={true}
           multiline={true}
