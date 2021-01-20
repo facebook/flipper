@@ -66,7 +66,7 @@ export async function generatePluginEntryPoints(
   isInsidersBuild: boolean = false,
 ) {
   console.log(
-    `⚙️  Generating plugin entry points (isInsidersBuils=${isInsidersBuild})...`,
+    `⚙️  Generating plugin entry points (isInsidersBuild=${isInsidersBuild})...`,
   );
   const sourcePlugins = await getSourcePlugins();
   const bundledPlugins = sourcePlugins
