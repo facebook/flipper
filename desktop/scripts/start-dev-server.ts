@@ -290,10 +290,10 @@ function startAssetServer(
 }
 
 async function addWebsocket(server: http.Server) {
-  const io = socketIo(server);
+  const io = require('socket.io')(server); // 3.1.0 socket.io doesn't have type definitions
 
   // notify connected clients that there's errors in the console
-  io.on('connection', (client) => {
+  io.on('connection', (client: any) => {
     if (hasErrors()) {
       client.emit('hasErrors', ansiToHtmlConverter.toHtml(buildErrorScreen()));
     }
