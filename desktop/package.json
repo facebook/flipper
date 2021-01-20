@@ -175,7 +175,9 @@
     "detect-port": "^1.1.1",
     "dotenv": "^8.2.0",
     "electron": "11.1.0",
-    "electron-builder": "^22.9.1",
+    "electron-builder": "22.9.1",
+    "@adobe/node-fetch-retry": "^1.1.0",
+    "app-builder-lib": "22.9.1",
     "eslint": "^7.12.1",
     "eslint-config-fbjs": "^3.1.1",
     "eslint-config-prettier": "^6.15.0",
@@ -272,8 +274,5 @@
   },
   "optionalDependencies": {
     "7zip-bin-mac": "^1.0.1"
-  },
-  "dependencies": {
-    "@adobe/node-fetch-retry": "^1.1.0"
   }
 }
