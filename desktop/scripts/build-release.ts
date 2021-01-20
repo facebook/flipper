@@ -194,6 +194,9 @@ async function buildDist(buildFolder: string) {
         mac: {
           bundleVersion: '50.0.0',
         },
+        win: {
+          signAndEditExecutable: !isFB,
+        },
       },
       projectDir: buildFolder,
       targets,
