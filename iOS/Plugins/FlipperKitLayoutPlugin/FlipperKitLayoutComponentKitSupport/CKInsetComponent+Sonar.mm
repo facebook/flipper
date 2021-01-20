@@ -9,6 +9,7 @@
 
 #import "CKInsetComponent+Sonar.h"
 
+#import <ComponentKit/CKDimension.h>
 #import <FlipperKitLayoutPlugin/SKNamed.h>
 #import <FlipperKitLayoutPlugin/SKObject.h>
 
@@ -19,39 +20,27 @@ FB_LINKABLE(CKInsetComponent_Sonar)
 
 - (NSArray<SKNamed<NSDictionary<NSString*, NSObject*>*>*>*)
     sonar_additionalDataOverride {
-  return @[ [SKNamed newWithName:@"CKInsetComponent"
-                       withValue:@{
-                         @"insets" : SKMutableObject(
-                             [[self valueForKey:@"_insets"] UIEdgeInsetsValue])
-                       }] ];
+  return @[
+    [SKNamed newWithName:@"CKInsetComponent"
+               withValue:@{@"insets" : SKObject([self insetsDictionary])}],
+  ];
 }
 
-- (void)setMutableData:(id)data {
-  [self setValue:data forKey:@"_insets"];
-}
-
-- (NSDictionary<NSString*, SKNodeDataChanged>*)sonar_getDataMutationsChanged {
-  __block UIEdgeInsets insets =
-      [[self valueForKey:@"_insets"] UIEdgeInsetsValue];
-  return @{@"CKInsetComponent.insets.bottom" : ^(NSNumber* value){
-      insets.bottom = value.floatValue;
-  return [NSValue valueWithUIEdgeInsets:insets];
-}
-,
-           @"CKInsetComponent.insets.left": ^(NSNumber *value) {
-             insets.left = value.floatValue;
-             return [NSValue valueWithUIEdgeInsets:insets];
-           },
-           @"CKInsetComponent.insets.right": ^(NSNumber *value) {
-             insets.right = value.floatValue;
-             return [NSValue valueWithUIEdgeInsets:insets];
-           },
-           @"CKInsetComponent.insets.top": ^(NSNumber *value) {
-             insets.top = value.floatValue;
-             return [NSValue valueWithUIEdgeInsets:insets];
-           },
-}
-;
+- (id)insetsDictionary {
+  CKRelativeDimension top;
+  CKRelativeDimension left;
+  CKRelativeDimension bottom;
+  CKRelativeDimension right;
+  [[self valueForKey:@"_top"] getValue:&top];
+  [[self valueForKey:@"_left"] getValue:&left];
+  [[self valueForKey:@"_right"] getValue:&bottom];
+  [[self valueForKey:@"_bottom"] getValue:&right];
+  return @{
+    @"top" : top.description(),
+    @"left" : left.description(),
+    @"bottom" : bottom.description(),
+    @"right" : right.description(),
+  };
 }
 
 @end
