@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "promisify-child-process": "^4.1.0",
-    "recharts": "1.7.1"
+    "recharts": "2.0.3"
   },
   "devDependencies": {
     "@types/recharts": "1.8.18"
