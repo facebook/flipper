@@ -9,7 +9,14 @@
 
 import path from 'path';
 import fs from 'fs-extra';
-import {Platform, Arch, ElectronDownloadOptions, build} from 'electron-builder';
+import {
+  Platform,
+  Arch,
+  ElectronDownloadOptions,
+  build,
+  AfterPackContext,
+  AppInfo,
+} from 'electron-builder';
 import {spawn} from 'promisify-child-process';
 import {
   buildFolder,
@@ -26,6 +33,12 @@ import isFB from './isFB';
 import copyPackageWithDependencies from './copy-package-with-dependencies';
 import {staticDir, distDir} from './paths';
 import yargs from 'yargs';
+import {WinPackager} from 'app-builder-lib/out/winPackager';
+
+// Used in some places to avoid release-to-release changes. Needs
+// to be this high for some MacOS-specific things that I can't
+// remember right now.
+const FIX_RELEASE_VERSION = '50.0.0';
 
 const argv = yargs
   .usage('yarn build [args]')
@@ -127,6 +140,47 @@ async function modifyPackageManifest(
   );
 }
 
+// Same as for MacOS, we are hardcoding version information and other
+// properties on Windows that change from release to release to improve cache
+// behaviour. This is especially important as the .exe contains the Electron/Chromium
+// frameworks which are > 120 MB in size.
+// Note: This is run *after* packing has completed, meaning that ZIP file will
+// not include these changes. As our packer operates on the unpacked results,
+// this doesn't matter.
+async function afterPack(context: AfterPackContext) {
+  if (context.electronPlatformName !== 'win32' || !isFB) {
+    return;
+  }
+
+  // Because all of this is implemented in an OOP way,
+  // we're having to do a lot of hacky shit here to
+  // temporarily override properties. While it may look
+  // cleaner to just have a big ts-ignore block, by
+  // only disabling `readonly` flags, we at least
+  // get remaining guarantees regarding type alignment
+  // and property names being present.
+  type Mutable<T> = {-readonly [P in keyof T]: T[P]};
+  const originalPackager = Object.assign({}, context.packager);
+  const packager = context.packager as WinPackager;
+  const appInfo: Mutable<AppInfo> = packager.appInfo;
+  const exeFileName = `${packager.appInfo.productFilename}.exe`;
+  appInfo.version = FIX_RELEASE_VERSION;
+  appInfo.buildVersion = FIX_RELEASE_VERSION;
+  appInfo.shortVersion = FIX_RELEASE_VERSION;
+  // Contains a side-effect dependent on the current year.
+  Object.defineProperty(appInfo, 'copyright', {
+    get: () => 'Facebook, Inc.',
+  });
+  packager.signAndEditResources(
+    path.join(context.appOutDir, exeFileName),
+    context.arch,
+    context.outDir,
+    path.basename(exeFileName, '.exe'),
+    packager.platformSpecificBuildOptions.requestedExecutionLevel,
+  );
+  (context as Mutable<AfterPackContext>).packager = originalPackager;
+}
+
 async function buildDist(buildFolder: string) {
   const targetsRaw: Map<Platform, Map<Arch, string[]>>[] = [];
   const postBuildCallbacks: (() => void)[] = [];
@@ -192,11 +246,12 @@ async function buildDist(buildFolder: string) {
           executableName: 'flipper',
         },
         mac: {
-          bundleVersion: '50.0.0',
+          bundleVersion: FIX_RELEASE_VERSION,
         },
         win: {
           signAndEditExecutable: !isFB,
         },
+        afterPack,
       },
       projectDir: buildFolder,
       targets,
