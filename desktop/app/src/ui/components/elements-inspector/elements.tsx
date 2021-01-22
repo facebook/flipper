@@ -571,12 +571,14 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
       ((e.metaKey && process.platform === 'darwin') ||
         (e.ctrlKey && process.platform !== 'darwin'))
     ) {
+      e.stopPropagation();
       e.preventDefault();
       clipboard.writeText(selectedElement.name);
       return;
     }
 
     if (e.key === 'ArrowUp') {
+      e.stopPropagation();
       if (selectedIndex === 0 || flatKeys.length === 1) {
         return;
       }
@@ -586,6 +588,7 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
     }
 
     if (e.key === 'ArrowDown') {
+      e.stopPropagation();
       if (selectedIndex === flatKeys.length - 1) {
         return;
       }
@@ -595,6 +598,7 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
     }
 
     if (e.key === 'ArrowLeft') {
+      e.stopPropagation();
       e.preventDefault();
       if (selectedElement.expanded) {
         // unexpand
@@ -618,6 +622,7 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
     }
 
     if (e.key === 'ArrowRight' && selectedElement.children.length > 0) {
+      e.stopPropagation();
       e.preventDefault();
       if (selectedElement.expanded) {
         // go to first child
