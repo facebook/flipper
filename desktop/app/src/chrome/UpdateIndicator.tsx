@@ -15,6 +15,7 @@ import fbConfig from '../fb-stubs/config';
 import {useStore} from '../utils/useStore';
 import {remote} from 'electron';
 import {checkForUpdate} from '../fb-stubs/checkForUpdate';
+import ReleaseChannel from '../ReleaseChannel';
 
 const version = remote.app.getVersion();
 
@@ -55,11 +56,15 @@ export default function UpdateIndicator() {
             <>
               Flipper version {versionCheckResult.version} is now available.
               {fbConfig.isFBBuild ? (
-                <>
-                  {' '}
-                  Pull <code>~/fbsource</code> and/or restart Flipper to update
-                  to the latest version.
-                </>
+                fbConfig.getReleaseChannel() === ReleaseChannel.INSIDERS ? (
+                  <> Restart Flipper to update to the latest version.</>
+                ) : (
+                  <>
+                    {' '}
+                    Pull <code>~/fbsource</code> and/or restart Flipper to
+                    update to the latest version.
+                  </>
+                )
               ) : (
                 <>
                   {' '}
