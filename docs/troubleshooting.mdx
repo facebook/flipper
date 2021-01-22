@@ -29,6 +29,11 @@ We hope that flipper works well out of the box, but the software is a work in pr
 * Delete Flipper from your applications folder and redownload [Flipper](https://www.facebook.com/fbflipper/public/mac).
 * If you're using `yarn start` to run from source, make sure all dependencies are installed correctly by running yarn install.
 
+### Flipper shows weird render artifacts
+
+This is a long standing MacOS + Electron issue outside our control. In general restarting your computer fixes the problem.
+For a quick, temporarily work around start Flipper with hardware acceleration disabled. Please note that this will consume a lot of CPU: `FLIPPER_DISABLE_GPU=1 open -a Flipper`.
+
 ### iOS Simulator missing from devices dropdown
 
 * Check that `xcode-select -p` shows the same XCode version that you're using. If not, see xcode-select for how to select the correct version.
