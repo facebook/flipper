@@ -23,19 +23,21 @@ type Props = {logger: Logger};
 export default function App(props: Props) {
   useEffect(() => {
     if (fbConfig.warnFBEmployees && isProduction()) {
-      isFBEmployee().then(() => {
-        notification.warning({
-          placement: 'bottomLeft',
-          message: 'Please use Flipper@FB',
-          description: (
-            <>
-              You are using the open-source version of Flipper. Install the
-              internal build from Managed Software Center to get access to more
-              plugins.
-            </>
-          ),
-          duration: null,
-        });
+      isFBEmployee().then((isEmployee) => {
+        if (isEmployee) {
+          notification.warning({
+            placement: 'bottomLeft',
+            message: 'Please use Flipper@FB',
+            description: (
+              <>
+                You are using the open-source version of Flipper. Install the
+                internal build from Managed Software Center to get access to
+                more plugins.
+              </>
+            ),
+            duration: null,
+          });
+        }
       });
     }
   }, []);
