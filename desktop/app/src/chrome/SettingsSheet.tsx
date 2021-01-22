@@ -104,8 +104,12 @@ class SettingsSheet extends Component<Props, State> {
         onCancel={this.props.onHide}
         width={570}
         title="Settings"
-        footer={footer}>
-        <FlexColumn>{contents}</FlexColumn>
+        footer={footer}
+        bodyStyle={{
+          overflow: 'scroll',
+          maxHeight: 'calc(100vh - 250px)',
+        }}>
+        {contents}
       </Modal>
     );
   }
