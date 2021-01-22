@@ -81,7 +81,8 @@
       "publisherName": "Facebook, Inc.",
       "sign": null
     },
-    "asar": false,
+    "asar": true,
+    "asarUnpack": ["PortForwardingMacApp.app/**/*"],
     "fileAssociations": [
       {
         "ext": [

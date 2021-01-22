@@ -18,9 +18,9 @@ import child_process from 'child_process';
 const execFile = child_process.execFile;
 import iosUtil from '../utils/iOSContainerUtility';
 import IOSDevice from '../devices/IOSDevice';
-import isProduction from '../utils/isProduction';
 import {registerDeviceCallbackOnPlugins} from '../utils/onRegisterDevice';
 import {addErrorNotification} from '../reducers/notifications';
+import {getStaticPath} from '../utils/pathUtils';
 
 type iOSSimulatorDevice = {
   state: 'Booted' | 'Shutdown' | 'Shutting Down';
@@ -53,18 +53,27 @@ function isAvailable(simulator: iOSSimulatorDevice): boolean {
   );
 }
 
-const portforwardingClient = isProduction()
-  ? path.resolve(
-      __dirname,
-      'PortForwardingMacApp.app/Contents/MacOS/PortForwardingMacApp',
-    )
-  : 'PortForwardingMacApp.app/Contents/MacOS/PortForwardingMacApp';
+const portforwardingClient = path.join(
+  getStaticPath(),
+  'PortForwardingMacApp.app/Contents/MacOS/PortForwardingMacApp',
+);
 
 function forwardPort(port: number, multiplexChannelPort: number) {
-  return execFile(portforwardingClient, [
-    `-portForward=${port}`,
-    `-multiplexChannelPort=${multiplexChannelPort}`,
-  ]);
+  const childProcess = execFile(
+    portforwardingClient,
+    [`-portForward=${port}`, `-multiplexChannelPort=${multiplexChannelPort}`],
+    (err, stdout, stderr) => {
+      console.error('Port forwarding app failed to start', err, stdout, stderr);
+    },
+  );
+  console.log('Port forwarding app started', childProcess);
+  childProcess.addListener('error', (err) =>
+    console.error('Port forwarding app error', err),
+  );
+  childProcess.addListener('exit', (code) =>
+    console.log(`Port forwarding app exited with code ${code}`),
+  );
+  return childProcess;
 }
 
 function startDevicePortForwarders(): void {
