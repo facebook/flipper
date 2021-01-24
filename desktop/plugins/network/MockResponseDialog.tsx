@@ -7,11 +7,14 @@
  * @format
  */
 
-import {FlexColumn, Button, styled, Layout} from 'flipper';
+import {FlexColumn, Button, styled, Layout, Spacer} from 'flipper';
 
 import {ManageMockResponsePanel} from './ManageMockResponsePanel';
 import {Route, Request, Response} from './types';
 import React from 'react';
+
+import {NetworkRouteContext} from './index';
+import {useContext} from 'react';
 
 type Props = {
   routes: {[id: string]: Route};
@@ -39,6 +42,7 @@ const Row = styled(FlexColumn)({
 });
 
 export function MockResponseDialog(props: Props) {
+  const networkRouteManager = useContext(NetworkRouteContext);
   return (
     <Layout.Container pad width={1200}>
       <Title>Mock Network Responses</Title>
@@ -51,6 +55,31 @@ export function MockResponseDialog(props: Props) {
         />
       </Layout.Horizontal>
       <Layout.Horizontal>
+        <Button
+          compact
+          padded
+          onClick={() => {
+            networkRouteManager.importRoutes();
+          }}>
+          Import
+        </Button>
+        <Button
+          compact
+          padded
+          onClick={() => {
+            networkRouteManager.exportRoutes();
+          }}>
+          Export
+        </Button>
+        <Button
+          compact
+          padded
+          onClick={() => {
+            networkRouteManager.clearRoutes();
+          }}>
+          Clear
+        </Button>
+        <Spacer />
         <Button compact padded onClick={props.onHide}>
           Close
         </Button>

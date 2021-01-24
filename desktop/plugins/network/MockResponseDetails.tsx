@@ -11,6 +11,7 @@ import {
   FlexRow,
   FlexColumn,
   FlexBox,
+  Layout,
   Input,
   Text,
   Tabs,
@@ -42,7 +43,7 @@ const StyledSelectContainer = styled(FlexRow)({
 
 const StyledSelect = styled(Select)({
   height: '100%',
-  maxWidth: 200,
+  maxWidth: 400,
 });
 
 const StyledText = styled(Text)({
@@ -53,7 +54,7 @@ const StyledText = styled(Text)({
 const textAreaStyle: React.CSSProperties = {
   width: '100%',
   marginTop: 8,
-  height: 430,
+  height: 400,
   fontSize: 15,
   color: '#333',
   padding: 10,
@@ -114,27 +115,27 @@ const AddHeaderButton = styled(FlexBox)({
 });
 
 const HeadersColumnSizes = {
-  name: '40%',
-  value: '40%',
-  close: '10%',
-  warning: 'flex',
+  close: '4%',
+  warning: '4%',
+  name: '35%',
+  value: 'flex',
 };
 
 const HeadersColumns = {
-  name: {
-    value: 'Name',
-    resizable: false,
-  },
-  value: {
-    value: 'Value',
-    resizable: false,
-  },
   close: {
     value: '',
     resizable: false,
   },
   warning: {
     value: '',
+    resizable: false,
+  },
+  name: {
+    value: 'Name',
+    resizable: false,
+  },
+  value: {
+    value: 'Value',
     resizable: false,
   },
 };
@@ -315,7 +316,7 @@ export function MockResponseDetails({id, route, isDuplicated}: Props) {
           />
         </Tab>
         <Tab key={'headers'} label={'Headers'}>
-          <FlexColumn>
+          <Layout.Container style={{width: '100%'}}>
             <AddHeaderButton
               onClick={() => {
                 const newHeaders = {
@@ -335,25 +336,27 @@ export function MockResponseDetails({id, route, isDuplicated}: Props) {
               />
               &nbsp;Add Header
             </AddHeaderButton>
-            <ManagedTable
-              hideHeader={true}
-              multiline={true}
-              columnSizes={HeadersColumnSizes}
-              columns={HeadersColumns}
-              rows={_buildMockResponseHeaderRows(
-                id,
-                route,
-                selectedHeaderIds.length === 1 ? selectedHeaderIds[0] : null,
-                networkRouteManager,
-              )}
-              stickyBottom={true}
-              autoHeight={true}
-              floating={false}
-              zebra={false}
-              onRowHighlighted={setSelectedHeaderIds}
-              highlightedRows={new Set(selectedHeaderIds)}
-            />
-          </FlexColumn>
+            <Layout.ScrollContainer style={{width: '100%'}}>
+              <ManagedTable
+                hideHeader={true}
+                multiline={true}
+                columnSizes={HeadersColumnSizes}
+                columns={HeadersColumns}
+                rows={_buildMockResponseHeaderRows(
+                  id,
+                  route,
+                  selectedHeaderIds.length === 1 ? selectedHeaderIds[0] : null,
+                  networkRouteManager,
+                )}
+                stickyBottom={true}
+                autoHeight={true}
+                floating={false}
+                zebra={false}
+                onRowHighlighted={setSelectedHeaderIds}
+                highlightedRows={new Set(selectedHeaderIds)}
+              />
+            </Layout.ScrollContainer>
+          </Layout.Container>
         </Tab>
       </Tabs>
     </Container>

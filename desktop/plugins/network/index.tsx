@@ -45,6 +45,9 @@ import {URL} from 'url';
 import {MockResponseDialog} from './MockResponseDialog';
 import {combineBase64Chunks} from './chunks';
 import {PluginClient, createState, usePlugin, useValue} from 'flipper-plugin';
+import {remote, OpenDialogOptions} from 'electron';
+import fs from 'fs';
+import electron from 'electron';
 
 const LOCALSTORAGE_MOCK_ROUTE_LIST_KEY = '__NETWORK_CACHED_MOCK_ROUTE_LIST';
 
@@ -127,6 +130,9 @@ export interface NetworkRouteManager {
     requests: {[id: string]: Request},
     responses: {[id: string]: Response},
   ): void;
+  importRoutes(): void;
+  exportRoutes(): void;
+  clearRoutes(): void;
 }
 const nullNetworkRouteManager: NetworkRouteManager = {
   addRoute() {},
@@ -137,6 +143,9 @@ const nullNetworkRouteManager: NetworkRouteManager = {
     _requests: {[id: string]: Request},
     _responses: {[id: string]: Response},
   ) {},
+  importRoutes() {},
+  exportRoutes() {},
+  clearRoutes() {},
 };
 export const NetworkRouteContext = createContext<NetworkRouteManager>(
   nullNetworkRouteManager,
@@ -383,6 +392,67 @@ export function plugin(client: PluginClient<Events, Methods>) {
           nextRouteId.set(newNextRouteId + 1);
         });
 
+        informClientMockChange(routes.get());
+      },
+      importRoutes() {
+        const options: OpenDialogOptions = {
+          properties: ['openFile'],
+          filters: [{extensions: ['json'], name: 'Flipper Route Files'}],
+          title: 'Import Routes',
+        };
+        remote.dialog.showOpenDialog(options).then((result) => {
+          const filePaths = result.filePaths;
+          if (filePaths.length > 0) {
+            fs.readFile(filePaths[0], 'utf8', (err, data) => {
+              if (err) {
+                console.error(err);
+                return;
+              }
+              const importedRoutes = JSON.parse(data);
+              importedRoutes?.forEach((importedRoute: Route) => {
+                if (importedRoute != null) {
+                  const newNextRouteId = nextRouteId.get();
+                  routes.update((draft) => {
+                    draft[newNextRouteId.toString()] = {
+                      requestUrl: importedRoute.requestUrl,
+                      requestMethod: importedRoute.requestMethod,
+                      responseData: importedRoute.responseData as string,
+                      responseHeaders: importedRoute.responseHeaders,
+                      responseStatus: importedRoute.responseStatus,
+                    };
+                  });
+                  nextRouteId.set(newNextRouteId + 1);
+                }
+              });
+              informClientMockChange(routes.get());
+            });
+          }
+        });
+      },
+      exportRoutes() {
+        remote.dialog
+          .showSaveDialog(
+            // @ts-ignore This appears to work but isn't allowed by the types
+            null,
+            {
+              title: 'Export Routes',
+              defaultPath: 'NetworkPluginRoutesExport.json',
+            },
+          )
+          .then(async (result: electron.SaveDialogReturnValue) => {
+            const file = result.filePath;
+            if (!file) {
+              return;
+            }
+            fs.writeFileSync(
+              file,
+              JSON.stringify(routes.get(), null, 2),
+              'utf8',
+            );
+          });
+      },
+      clearRoutes() {
+        routes.set({});
         informClientMockChange(routes.get());
       },
     });
