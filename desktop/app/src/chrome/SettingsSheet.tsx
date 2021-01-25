@@ -7,7 +7,7 @@
  * @format
  */
 
-import {FlexColumn, Button, styled, Text, FlexRow, Spacer} from '../ui';
+import {FlexColumn, Button} from '../ui';
 import React, {Component, useContext} from 'react';
 import {updateSettings, Action} from '../reducers/settings';
 import {
@@ -29,22 +29,10 @@ import {reportUsage} from '../utils/metrics';
 import {Modal, message} from 'antd';
 import {Layout, withTrackingScope, _NuxManagerContext} from 'flipper-plugin';
 
-const Container = styled(FlexColumn)({
-  padding: 20,
-  width: 800,
-});
-
-const Title = styled(Text)({
-  marginBottom: 18,
-  marginRight: 10,
-  fontWeight: 100,
-  fontSize: '40px',
-});
-
 type OwnProps = {
-  useSandy?: boolean;
   onHide: () => void;
   platform: NodeJS.Platform;
+  noModal?: boolean;
 };
 
 type StateFromProps = {
@@ -114,23 +102,6 @@ class SettingsSheet extends Component<Props, State> {
     );
   }
 
-  renderNativeContainer(
-    contents: React.ReactElement,
-    footer: React.ReactElement,
-  ) {
-    return (
-      <Container>
-        <Title>Settings</Title>
-        {contents}
-        <br />
-        <FlexRow>
-          <Spacer />
-          {footer}
-        </FlexRow>
-      </Container>
-    );
-  }
-
   render() {
     const {
       enableAndroid,
@@ -140,11 +111,8 @@ class SettingsSheet extends Component<Props, State> {
       enablePrefetching,
       idbPath,
       reactNative,
-      disableSandy,
       darkMode,
     } = this.state.updatedSettings;
-
-    const {useSandy} = this.props;
 
     const settingsPristine =
       isEqual(this.props.settings, this.state.updatedSettings) &&
@@ -265,41 +233,17 @@ class SettingsSheet extends Component<Props, State> {
           }}
         />
         <ToggledSection
-          label="Disable Sandy UI"
-          toggled={this.state.updatedSettings.disableSandy}
-          onChange={(v) => {
-            this.setState({
+          label="Enable dark theme (experimental)"
+          toggled={darkMode}
+          onChange={(enabled) => {
+            this.setState((prevState) => ({
               updatedSettings: {
-                ...this.state.updatedSettings,
-                disableSandy: v,
+                ...prevState.updatedSettings,
+                darkMode: enabled,
               },
-              forcedRestartSettings: {
-                ...this.state.forcedRestartSettings,
-                disableSandy: v,
-              },
-            });
-          }}>
-          {' '}
-          <ConfigText
-            content={
-              'If disabled, Flipper will fall back to the classic design.'
-            }
-          />
-        </ToggledSection>
-        {!disableSandy && (
-          <ToggledSection
-            label="Enable dark theme (experimental)"
-            toggled={darkMode}
-            onChange={(enabled) => {
-              this.setState((prevState) => ({
-                updatedSettings: {
-                  ...prevState.updatedSettings,
-                  darkMode: enabled,
-                },
-              }));
-            }}
-          />
-        )}
+            }));
+          }}
+        />
         <ToggledSection
           label="React Native keyboard shortcuts"
           toggled={reactNative.shortcuts.enabled}
@@ -388,9 +332,14 @@ class SettingsSheet extends Component<Props, State> {
       </>
     );
 
-    return useSandy
-      ? this.renderSandyContainer(contents, footer)
-      : this.renderNativeContainer(contents, footer);
+    return this.props.noModal ? (
+      <>
+        {contents}
+        {footer}
+      </>
+    ) : (
+      this.renderSandyContainer(contents, footer)
+    );
   }
 }
 

@@ -30,8 +30,6 @@ import {LeftRailButton} from '../sandy-chrome/LeftRail';
 import GK from '../fb-stubs/GK';
 import * as UserFeedback from '../fb-stubs/UserFeedback';
 import {FeedbackPrompt} from '../fb-stubs/UserFeedback';
-import {connect} from 'react-redux';
-import {State as Store} from '../reducers';
 import {StarOutlined} from '@ant-design/icons';
 import {Popover, Rate} from 'antd';
 import {useStore} from '../utils/useStore';
@@ -458,7 +456,3 @@ export function SandyRatingButton() {
     </Popover>
   );
 }
-
-export default connect<{sessionId: string | null}, null, {}, Store>(
-  ({application: {sessionId}}) => ({sessionId}),
-)(RatingButton);

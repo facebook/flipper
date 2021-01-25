@@ -13,7 +13,7 @@ import ReactDOM from 'react-dom';
 import ContextMenuProvider from './ui/components/ContextMenuProvider';
 import GK from './fb-stubs/GK';
 import {init as initLogger} from './fb-stubs/Logger';
-import App from './chrome/AppWrapper';
+import {SandyApp} from './sandy-chrome/SandyApp';
 import setupPrefetcher from './fb-stubs/Prefetcher';
 import {persistStore} from 'redux-persist';
 import {Store} from './reducers/index';
@@ -42,7 +42,6 @@ import {
   _LoggerContext,
 } from 'flipper-plugin';
 import isProduction from './utils/isProduction';
-import isSandyEnabled from './utils/isSandyEnabled';
 
 if (process.env.NODE_ENV === 'development' && os.platform() === 'darwin') {
   // By default Node.JS has its internal certificate storage and doesn't use
@@ -67,7 +66,7 @@ const AppFrame = ({logger}: {logger: Logger}) => (
           <PopoverProvider>
             <ContextMenuProvider>
               <_NuxManagerContext.Provider value={_createNuxManager()}>
-                <App logger={logger} />
+                <SandyApp />
               </_NuxManagerContext.Provider>
             </ContextMenuProvider>
           </PopoverProvider>
@@ -124,18 +123,14 @@ function init() {
     store,
     {name: 'loadTheme', fireImmediately: true, throttleMs: 500},
     (state) => ({
-      sandy: isSandyEnabled(),
       dark: state.settingsState.darkMode,
     }),
     (theme) => {
       (document.getElementById(
         'flipper-theme-import',
       ) as HTMLLinkElement).href = `themes/${
-        theme.sandy && theme.dark ? 'dark' : 'light'
+        theme.dark ? 'dark' : 'light'
       }.css`;
-      document
-        .getElementById('root')
-        ?.classList.toggle('flipperlegacy_design', !theme.sandy);
     },
   );
 }

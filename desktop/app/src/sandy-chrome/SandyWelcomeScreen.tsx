@@ -16,7 +16,7 @@ import {useLocalStorage} from '../utils/useLocalStorage';
 
 const {Title, Text, Link} = Typography;
 
-export function SandyWelcomScreen() {
+export function SandyWelcomeScreen() {
   const [dismissed, setDismissed] = useState(false);
   const [showWelcomeScreen, setShowWelcomeScreen] = useLocalStorage(
     'flipper-sandy-show-welcome-screen',
@@ -63,10 +63,6 @@ export function SandyWelcomScreen() {
           to find new or improved features.
         </Text>
         <Text>
-          It is possible to enable the experimental dark mode, or switch back to
-          the old design, by using the{' '}
-          <Button icon={<SettingOutlined />} disabled size="small" /> settings
-          button.{' '}
           {constants.IS_PUBLIC_BUILD ? (
             <>
               Feel free let us know your thoughts about the new experience on{' '}

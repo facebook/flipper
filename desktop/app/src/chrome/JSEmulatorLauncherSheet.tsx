@@ -7,16 +7,7 @@
  * @format
  */
 
-import {
-  FlexColumn,
-  Button,
-  styled,
-  Text,
-  FlexRow,
-  Spacer,
-  Input,
-  Label,
-} from '../ui';
+import {Button} from '../ui';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {State as Store} from '../reducers';
@@ -26,31 +17,8 @@ import {Settings} from '../reducers/settings';
 import {Collapse, Form, Input as AntInput} from 'antd';
 import {Html5Outlined} from '@ant-design/icons';
 
-const Container = styled(FlexColumn)({
-  padding: 20,
-  width: 800,
-});
-
-const Title = styled(Text)({
-  marginBottom: 18,
-  marginRight: 10,
-  fontWeight: 100,
-  fontSize: '40px',
-});
-
-const textareaStyle = {
-  margin: 0,
-  marginBottom: 10,
-};
-
-const TitleInput = styled(Input)({
-  ...textareaStyle,
-  height: 30,
-});
-
 type OwnProps = {
   onHide: () => void;
-  useSandy?: boolean;
 };
 
 type StateFromProps = {
@@ -96,7 +64,7 @@ class JSEmulatorLauncherSheet extends Component<Props, State> {
 
   render() {
     const {url, height, width} = this.state;
-    return this.props.useSandy ? (
+    return (
       <Form labelCol={{span: 4}}>
         <Form.Item label="Url">
           <AntInput value={url} onChange={this.onUrlChange} />
@@ -113,27 +81,6 @@ class JSEmulatorLauncherSheet extends Component<Props, State> {
           </Button>
         </Form.Item>
       </Form>
-    ) : (
-      <Container>
-        <Title>Launch Web App</Title>
-        <Label>Url</Label>
-        <TitleInput value={url} onChange={this.onUrlChange} />
-        <Label>Height</Label>
-        <TitleInput value={height} onChange={this.onHeightChange} />
-        <Label>Width</Label>
-        <TitleInput value={width} onChange={this.onWidthChange} />
-
-        <br />
-        <FlexRow>
-          <Spacer />
-          <Button compact padded onClick={this.props.onHide}>
-            Cancel
-          </Button>
-          <Button type="primary" compact padded onClick={this.applyChanges}>
-            Launch
-          </Button>
-        </FlexRow>
-      </Container>
     );
   }
 }
@@ -154,7 +101,7 @@ export function JSEmulatorLauncherSheetSandy({onClose}: {onClose(): void}) {
         extra={<Html5Outlined />}
         header="Launch JS Web App"
         key="launch-js-web-app">
-        <Launcher onHide={onClose} useSandy />
+        <Launcher onHide={onClose} />
       </Collapse.Panel>
     </Collapse>
   );

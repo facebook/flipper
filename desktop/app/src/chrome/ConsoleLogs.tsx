@@ -16,7 +16,6 @@ import type {Styles} from 'console-feed/lib/definitions/Styles';
 import {createState, useValue} from 'flipper-plugin';
 import {useLocalStorage} from '../utils/useLocalStorage';
 import {theme} from 'flipper-plugin';
-import {useIsSandy} from '../sandy-chrome/SandyContext';
 import {useIsDarkMode} from '../utils/useIsDarkMode';
 
 const MAX_LOG_ITEMS = 1000;
@@ -65,7 +64,6 @@ const allLogLevels: Methods[] = [
 const defaultLogLevels: Methods[] = ['warn', 'error', 'table', 'assert'];
 
 export function ConsoleLogs() {
-  const isSandy = useIsSandy();
   const isDarkMode = useIsDarkMode();
   const logs = useValue(logsAtom);
   const [logLevels, setLogLevels] = useLocalStorage<Methods[]>(
@@ -90,7 +88,7 @@ export function ConsoleLogs() {
     );
   }, [logLevels, setLogLevels]);
 
-  const styles = useMemo(() => buildTheme(isSandy), [isSandy]);
+  const styles = useMemo(buildTheme, []);
 
   return (
     <Layout.Top>
@@ -106,7 +104,7 @@ export function ConsoleLogs() {
         <Console
           logs={logs}
           filter={logLevels}
-          variant={isDarkMode || !isSandy ? 'dark' : 'light'}
+          variant={isDarkMode ? 'dark' : 'light'}
           styles={styles}
         />
       </Layout.ScrollContainer>
@@ -114,15 +112,7 @@ export function ConsoleLogs() {
   );
 }
 
-function buildTheme(isSandy: boolean): Styles {
-  if (!isSandy) {
-    const bg = '#333';
-    return {
-      BASE_BACKGROUND_COLOR: bg,
-      BASE_COLOR: 'white',
-      LOG_BACKGROUND: bg,
-    };
-  }
+function buildTheme(): Styles {
   return {
     // See: https://github.com/samdenty/console-feed/blob/master/src/definitions/Styles.d.ts
     BASE_BACKGROUND_COLOR: 'transparent',

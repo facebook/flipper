@@ -12,7 +12,6 @@ import ReactDOM from 'react-dom';
 import Sidebar from '../ui/components/Sidebar';
 import {toggleRightSidebarAvailable} from '../reducers/application';
 import {useDispatch, useStore} from '../utils/useStore';
-import {useIsSandy} from '../sandy-chrome/SandyContext';
 import {ContentContainer} from '../sandy-chrome/ContentContainer';
 import {Layout} from '../ui';
 
@@ -33,7 +32,6 @@ export default function DetailSidebar({children, width, minWidth}: OwnProps) {
     return <div>{children}</div>;
   }
 
-  const isSandy = useIsSandy();
   const dispatch = useDispatch();
   const {rightSidebarAvailable, rightSidebarVisible} = useStore((state) => {
     const {rightSidebarAvailable, rightSidebarVisible} = state.application;
@@ -72,16 +70,10 @@ export default function DetailSidebar({children, width, minWidth}: OwnProps) {
           minWidth={minWidth}
           width={width || 300}
           position="right"
-          gutter={isSandy}>
-          {isSandy ? (
-            <ContentContainer>
-              <Layout.ScrollContainer vertical>
-                {children}
-              </Layout.ScrollContainer>
-            </ContentContainer>
-          ) : (
-            children
-          )}
+          gutter>
+          <ContentContainer>
+            <Layout.ScrollContainer vertical>{children}</Layout.ScrollContainer>
+          </ContentContainer>
         </Sidebar>,
         domNode,
       )) ||

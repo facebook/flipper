@@ -48,9 +48,8 @@ import config from '../fb-stubs/config';
 import styled from '@emotion/styled';
 import {showEmulatorLauncher} from './appinspect/LaunchEmulator';
 import SupportRequestFormV2 from '../fb-stubs/SupportRequestFormV2';
-import {setStaticView} from '../reducers/connections';
+import {setStaticView, StaticView} from '../reducers/connections';
 import {getInstance} from '../fb-stubs/Logger';
-import {isStaticViewActive} from '../chrome/mainsidebar/sidebarUtils';
 import {getUser} from '../fb-stubs/user';
 import {SandyRatingButton} from '../chrome/RatingButton';
 import {filterNotifications} from './notification/notificationUtils';
@@ -310,7 +309,7 @@ function ShowSettingsButton() {
         selected={showSettings}
       />
       {showSettings && (
-        <SettingsSheet platform={process.platform} onHide={onClose} useSandy />
+        <SettingsSheet platform={process.platform} onHide={onClose} />
       )}
     </>
   );
@@ -417,7 +416,14 @@ function LoginButton() {
         title="Log In"
         onClick={() => setShowLogin(true)}
       />
-      {showLogin && <SignInSheet onHide={onClose} useSandy />}
+      {showLogin && <SignInSheet onHide={onClose} />}
     </>
   );
+}
+
+function isStaticViewActive(
+  current: StaticView,
+  selected: StaticView,
+): boolean {
+  return Boolean(current && selected && current === selected);
 }

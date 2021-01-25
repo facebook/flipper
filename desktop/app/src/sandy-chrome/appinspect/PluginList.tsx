@@ -21,12 +21,15 @@ import {Glyph, Layout, styled} from '../../ui';
 import {theme, NUX, Tracked} from 'flipper-plugin';
 import {useDispatch, useStore} from '../../utils/useStore';
 import {getPluginTitle, sortPluginsByName} from '../../utils/pluginUtils';
-import {ClientPluginDefinition, DevicePluginDefinition} from '../../plugin';
+import {
+  ClientPluginDefinition,
+  DevicePluginDefinition,
+  PluginDefinition,
+} from '../../plugin';
 import {selectPlugin, starPlugin} from '../../reducers/connections';
 import Client from '../../Client';
 import {State} from '../../reducers';
 import BaseDevice from '../../devices/BaseDevice';
-import {getFavoritePlugins} from '../../chrome/mainsidebar/sidebarUtils';
 import {PluginDetails, DownloadablePluginDetails} from 'flipper-plugin-lib';
 import {useMemoize} from '../../utils/useMemoize';
 import MetroDevice from '../../devices/MetroDevice';
@@ -648,4 +651,29 @@ function iconStyle(disabled: boolean) {
     width: 24,
     height: 24,
   };
+}
+
+function getFavoritePlugins(
+  device: BaseDevice,
+  client: Client,
+  allPlugins: PluginDefinition[],
+  starredPlugins: undefined | string[],
+  returnFavoredPlugins: boolean, // if false, unfavoried plugins are returned
+): PluginDefinition[] {
+  if (device.isArchived) {
+    if (!returnFavoredPlugins) {
+      return [];
+    }
+    // for archived plugins, all stored plugins are enabled
+    return allPlugins.filter(
+      (plugin) => client.plugins.indexOf(plugin.id) !== -1,
+    );
+  }
+  if (!starredPlugins || !starredPlugins.length) {
+    return returnFavoredPlugins ? [] : allPlugins;
+  }
+  return allPlugins.filter((plugin) => {
+    const idx = starredPlugins.indexOf(plugin.id);
+    return idx === -1 ? !returnFavoredPlugins : returnFavoredPlugins;
+  });
 }

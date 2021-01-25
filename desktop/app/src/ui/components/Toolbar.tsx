@@ -8,38 +8,9 @@
  */
 
 import React from 'react';
-import {colors} from './colors';
-import FlexRow from './FlexRow';
 import FlexBox from './FlexBox';
 import styled from '@emotion/styled';
-import {useIsSandy} from '../../sandy-chrome/SandyContext';
 import {theme, Layout} from 'flipper-plugin';
-
-/**
- * A toolbar.
- */
-const ToolbarContainer = styled(FlexRow)<{
-  position?: 'bottom' | 'top';
-  compact?: boolean;
-}>((props) => ({
-  userSelect: 'none',
-  backgroundColor: colors.light02,
-  borderBottom:
-    props.position === 'bottom'
-      ? 'none'
-      : `1px solid ${colors.sectionHeaderBorder}`,
-  borderTop:
-    props.position === 'bottom'
-      ? `1px solid ${colors.sectionHeaderBorder}`
-      : 'none',
-  flexShrink: 0,
-  height: props.compact ? 28 : 42,
-  lineHeight: '32px',
-  alignItems: 'center',
-  padding: 6,
-  width: '100%',
-}));
-ToolbarContainer.displayName = 'ToolbarContainer';
 
 const SandyToolbarContainer = styled(Layout.Horizontal)({
   flexWrap: 'wrap',
@@ -55,21 +26,15 @@ Spacer.displayName = 'Spacer';
 export default function Toolbar({
   children,
   style,
-  ...rest
 }: {
   children?: React.ReactNode;
   position?: 'bottom' | 'top';
   compact?: boolean;
   style?: React.CSSProperties;
 }) {
-  const isSandy = useIsSandy();
-  return isSandy ? (
+  return (
     <SandyToolbarContainer style={style} gap={theme.space.small} center>
       {children}
     </SandyToolbarContainer>
-  ) : (
-    <ToolbarContainer style={style} {...rest}>
-      {children}
-    </ToolbarContainer>
   );
 }

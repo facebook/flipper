@@ -14,7 +14,7 @@ import {
   InstalledPluginDetails,
   installPluginFromFile,
 } from 'flipper-plugin-lib';
-import {Actions, State, Store} from '../reducers/index';
+import {State, Store} from '../reducers/index';
 import {
   PluginDownloadStatus,
   pluginDownloadStarted,
@@ -26,17 +26,9 @@ import fs from 'fs-extra';
 import path from 'path';
 import tmp from 'tmp';
 import {promisify} from 'util';
-import {requirePlugin} from './plugins';
-import {registerPluginUpdate, selectPlugin} from '../reducers/connections';
-import {Button} from 'antd';
-import React from 'react';
 import {reportPlatformFailures, reportUsage} from '../utils/metrics';
-import {addNotification, removeNotification} from '../reducers/notifications';
-import reloadFlipper from '../utils/reloadFlipper';
 import {activatePlugin, pluginInstalled} from '../reducers/pluginManager';
-import {Dispatch} from 'redux';
 import {showErrorNotification} from '../utils/notifications';
-import isSandyEnabled from '../utils/isSandyEnabled';
 
 // Adapter which forces node.js implementation for axios instead of browser implementation
 // used by default in Electron. Node.js implementation is better, because it
@@ -144,8 +136,6 @@ async function handlePluginDownload(
           notifyIfFailed: startedByUser,
         }),
       );
-    } else if (!isSandyEnabled()) {
-      notifyAboutUpdatedPluginNonSandy(installedPlugin, store.dispatch);
     }
     console.log(
       `Successfully downloaded and installed plugin "${title}" v${version} from "${downloadUrl}" to "${installationDir}".`,
@@ -176,61 +166,5 @@ function pluginIsDisabledForAllConnectedClients(
     !state.connections.clients.some((c) =>
       state.connections.userStarredPlugins[c.query.app]?.includes(plugin.id),
     )
-  );
-}
-
-function notifyAboutUpdatedPluginNonSandy(
-  plugin: InstalledPluginDetails,
-  dispatch: Dispatch<Actions>,
-) {
-  const {name, version, title, id} = plugin;
-  const reloadPluginAndRemoveNotification = () => {
-    reportUsage('plugin-auto-update:notification:reloadClicked', undefined, id);
-    dispatch(
-      registerPluginUpdate({
-        plugin: requirePlugin(plugin),
-        enablePlugin: false,
-      }),
-    );
-    dispatch(
-      removeNotification({
-        pluginId: 'plugin-auto-update',
-        client: null,
-        notificationId: `auto-update.${name}.${version}`,
-      }),
-    );
-    dispatch(
-      selectPlugin({
-        selectedPlugin: id,
-        deepLinkPayload: null,
-      }),
-    );
-  };
-  const reloadAll = () => {
-    reportUsage('plugin-auto-update:notification:reloadAllClicked');
-    reloadFlipper();
-  };
-  dispatch(
-    addNotification({
-      pluginId: 'plugin-auto-update',
-      client: null,
-      notification: {
-        id: `auto-update.${name}.${version}`,
-        title: `${title} ${version} is ready to install`,
-        message: (
-          <div>
-            {title} {version} has been downloaded. Reload is required to apply
-            the update.{' '}
-            <Button onClick={reloadPluginAndRemoveNotification}>
-              Reload Plugin
-            </Button>
-            <Button onClick={reloadAll}>Reload Flipper</Button>
-          </div>
-        ),
-        severity: 'warning',
-        timestamp: Date.now(),
-        category: `Plugin Auto Update`,
-      },
-    }),
   );
 }

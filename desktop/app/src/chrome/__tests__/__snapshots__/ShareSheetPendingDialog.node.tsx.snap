@@ -29,23 +29,24 @@ exports[`ShareSheetPendingDialog is rendered with status update 1`] = `
     <div
       className="css-t4wmtk-View-FlexBox-Spacer e13mj6h80"
     />
-    <div
-      className="css-xing9h-StyledButton enfqd41"
+    <button
+      className="ant-btn ant-btn-default"
       onClick={[Function]}
-      onMouseDown={[Function]}
-      onMouseUp={[Function]}
+      type="button"
     >
-      Cancel
-    </div>
-    <div
-      className="css-xing9h-StyledButton enfqd41"
+      <span>
+        Cancel
+      </span>
+    </button>
+    <button
+      className="ant-btn ant-btn-primary"
       onClick={[Function]}
-      onMouseDown={[Function]}
-      onMouseUp={[Function]}
-      type="primary"
+      type="button"
     >
-      Run In Background
-    </div>
+      <span>
+        Run In Background
+      </span>
+    </button>
   </div>
 </div>
 `;
@@ -79,23 +80,24 @@ exports[`ShareSheetPendingDialog is rendered without status update 1`] = `
     <div
       className="css-t4wmtk-View-FlexBox-Spacer e13mj6h80"
     />
-    <div
-      className="css-xing9h-StyledButton enfqd41"
+    <button
+      className="ant-btn ant-btn-default"
       onClick={[Function]}
-      onMouseDown={[Function]}
-      onMouseUp={[Function]}
+      type="button"
     >
-      Cancel
-    </div>
-    <div
-      className="css-xing9h-StyledButton enfqd41"
+      <span>
+        Cancel
+      </span>
+    </button>
+    <button
+      className="ant-btn ant-btn-primary"
       onClick={[Function]}
-      onMouseDown={[Function]}
-      onMouseUp={[Function]}
-      type="primary"
+      type="button"
     >
-      Run In Background
-    </div>
+      <span>
+        Run In Background
+      </span>
+    </button>
   </div>
 </div>
 `;

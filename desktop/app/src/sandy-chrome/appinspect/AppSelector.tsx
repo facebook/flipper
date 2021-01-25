@@ -27,10 +27,9 @@ import {
   selectDevice,
 } from '../../reducers/connections';
 import BaseDevice, {OS} from '../../devices/BaseDevice';
-import {getColorByApp} from '../../chrome/mainsidebar/sidebarUtils';
 import Client from '../../Client';
 import {State} from '../../reducers';
-import {brandIcons} from '../../ui/components/colors';
+import {brandColors, brandIcons, colors} from '../../ui/components/colors';
 import {showEmulatorLauncher} from './LaunchEmulator';
 
 const {Text, Link, Title} = Typography;
@@ -250,4 +249,30 @@ function NoDevices() {
       }
     />
   );
+}
+
+function getColorByApp(app?: string | null): string {
+  let iconColor: string | undefined = (brandColors as any)[app!];
+
+  if (!iconColor) {
+    if (!app) {
+      // Device plugin
+      iconColor = colors.macOSTitleBarIconBlur;
+    } else {
+      const pluginColors = [
+        colors.seaFoam,
+        colors.teal,
+        colors.lime,
+        colors.lemon,
+        colors.orange,
+        colors.tomato,
+        colors.cherry,
+        colors.pink,
+        colors.grape,
+      ];
+
+      iconColor = pluginColors[parseInt(app, 36) % pluginColors.length];
+    }
+  }
+  return iconColor;
 }

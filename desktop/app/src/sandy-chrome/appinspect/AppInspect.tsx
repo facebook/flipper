@@ -73,8 +73,8 @@ export function AppInspect() {
             )}
             {!isArchived && activeDevice && (
               <Toolbar gap>
-                <MetroButton useSandy />
-                <ScreenCaptureButtons useSandy />
+                <MetroButton />
+                <ScreenCaptureButtons />
               </Toolbar>
             )}
           </Layout.Container>

@@ -222,7 +222,7 @@ function hasNewProblems(result: HealthcheckResult) {
   return hasProblems(result) && !result.isAcknowledged;
 }
 
-export type State = {
+type State = {
   acknowledgeCheckboxVisible: boolean;
   acknowledgeOnClose?: boolean;
   selectedCheckKey?: string;

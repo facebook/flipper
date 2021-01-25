@@ -7,17 +7,7 @@
  * @format
  */
 
-import {
-  FlexColumn,
-  Button,
-  styled,
-  Text,
-  FlexRow,
-  Spacer,
-  Input,
-  Link,
-  colors,
-} from '../ui';
+import {FlexColumn, Button, styled, Text, Input, Link, colors} from '../ui';
 import React, {Component} from 'react';
 import {writeKeychain, getUser} from '../fb-stubs/user';
 import {login} from '../reducers/user';
@@ -28,11 +18,6 @@ import {clipboard} from 'electron';
 import {reportPlatformFailures} from '../utils/metrics';
 import {Modal} from 'antd';
 import {TrackingScope} from 'flipper-plugin';
-
-const Container = styled(FlexColumn)({
-  padding: 20,
-  width: 500,
-});
 
 const Title = styled(Text)({
   marginBottom: 6,
@@ -49,7 +34,6 @@ const TokenInput = styled(Input)({
 });
 
 type OwnProps = {
-  useSandy?: boolean;
   onHide: () => any;
 };
 
@@ -150,22 +134,6 @@ class SignInSheet extends Component<Props, State> {
     );
   }
 
-  renderNativeContainer(
-    contents: React.ReactElement,
-    footer: React.ReactElement,
-  ) {
-    return (
-      <Container>
-        {contents}
-        <br />
-        <FlexRow>
-          <Spacer />
-          {footer}
-        </FlexRow>
-      </Container>
-    );
-  }
-
   render() {
     const content = (
       <>
@@ -212,9 +180,7 @@ class SignInSheet extends Component<Props, State> {
       </>
     );
 
-    return this.props.useSandy
-      ? this.renderSandyContainer(content, footer)
-      : this.renderNativeContainer(content, footer);
+    return this.renderSandyContainer(content, footer);
   }
 }
 

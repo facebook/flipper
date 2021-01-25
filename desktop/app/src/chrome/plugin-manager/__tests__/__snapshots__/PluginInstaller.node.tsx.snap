@@ -6,7 +6,7 @@ exports[`load PluginInstaller list 1`] = `
     class="css-9dawc5-View-FlexBox-FlexColumn"
   >
     <div
-      class="css-cjspgc-View-FlexBox-FlexRow-ToolbarContainer e13mj6h82"
+      class="css-1lxv8hi-Container-Horizontal-SandyToolbarContainer e13mj6h81"
     >
       <div
         class="css-bl14sl-View-FlexBox-SearchBox e271nro4"
@@ -139,8 +139,9 @@ exports[`load PluginInstaller list 1`] = `
               <div
                 class="css-t4wmtk-View-FlexBox-Spacer e13mj6h80"
               />
-              <span
-                class="css-ad6n9d-StyledLink e1mzoj7l0"
+              <a
+                class="ant-typography"
+                href="https://yarnpkg.com/en/package/flipper-plugin-hello"
               >
                 <div
                   class="css-1tfjvvq-ColoredIconCustom e528dze0"
@@ -148,7 +149,7 @@ exports[`load PluginInstaller list 1`] = `
                   size="16"
                   src="https://external.xx.fbcdn.net/assets/?name=info-circle&variant=filled&size=16&set=facebook_icons&density=1x"
                 />
-              </span>
+              </a>
             </div>
           </div>
           <div
@@ -156,12 +157,14 @@ exports[`load PluginInstaller list 1`] = `
             title=""
             width="15%"
           >
-            <div
-              class="css-iby3qx-StyledButton enfqd41"
-              type="primary"
+            <button
+              class="ant-btn ant-btn-primary"
+              type="button"
             >
-              Install
-            </div>
+              <span>
+                Install
+              </span>
+            </button>
           </div>
         </div>
         <div
@@ -206,8 +209,9 @@ exports[`load PluginInstaller list 1`] = `
               <div
                 class="css-t4wmtk-View-FlexBox-Spacer e13mj6h80"
               />
-              <span
-                class="css-ad6n9d-StyledLink e1mzoj7l0"
+              <a
+                class="ant-typography"
+                href="https://yarnpkg.com/en/package/flipper-plugin-world"
               >
                 <div
                   class="css-1tfjvvq-ColoredIconCustom e528dze0"
@@ -215,7 +219,7 @@ exports[`load PluginInstaller list 1`] = `
                   size="16"
                   src="https://external.xx.fbcdn.net/assets/?name=info-circle&variant=filled&size=16&set=facebook_icons&density=1x"
                 />
-              </span>
+              </a>
             </div>
           </div>
           <div
@@ -223,19 +227,21 @@ exports[`load PluginInstaller list 1`] = `
             title=""
             width="15%"
           >
-            <div
-              class="css-iby3qx-StyledButton enfqd41"
-              type="primary"
+            <button
+              class="ant-btn ant-btn-primary"
+              type="button"
             >
-              Install
-            </div>
+              <span>
+                Install
+              </span>
+            </button>
           </div>
         </div>
       </div>
     </div>
   </div>
   <div
-    class="css-cjspgc-View-FlexBox-FlexRow-ToolbarContainer e13mj6h82"
+    class="css-1lxv8hi-Container-Horizontal-SandyToolbarContainer e13mj6h81"
   >
     <div
       class="css-1spj5hr-View-FlexBox-FlexRow-Container ersmi542"
@@ -278,14 +284,15 @@ exports[`load PluginInstaller list 1`] = `
       <div
         class="css-wospjg-View-FlexBox-FlexRow epz0qe20"
       >
-        <div
-          class="css-1rxpsn8-StyledButton enfqd41"
+        <button
+          class="ant-btn ant-btn-primary"
           disabled=""
-          title="Cannot install plugin package by the specified path"
-          type="primary"
+          type="button"
         >
-          Install
-        </div>
+          <span>
+            Install
+          </span>
+        </button>
         <div
           class="css-170i4ha-View-FlexBox-FlexRow-ErrorGlyphContainer evd5j490"
         />
@@ -301,7 +308,7 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
     class="css-9dawc5-View-FlexBox-FlexColumn"
   >
     <div
-      class="css-cjspgc-View-FlexBox-FlexRow-ToolbarContainer e13mj6h82"
+      class="css-1lxv8hi-Container-Horizontal-SandyToolbarContainer e13mj6h81"
     >
       <div
         class="css-bl14sl-View-FlexBox-SearchBox e271nro4"
@@ -434,8 +441,9 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
               <div
                 class="css-t4wmtk-View-FlexBox-Spacer e13mj6h80"
               />
-              <span
-                class="css-ad6n9d-StyledLink e1mzoj7l0"
+              <a
+                class="ant-typography"
+                href="https://yarnpkg.com/en/package/flipper-plugin-hello"
               >
                 <div
                   class="css-1tfjvvq-ColoredIconCustom e528dze0"
@@ -443,7 +451,7 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
                   size="16"
                   src="https://external.xx.fbcdn.net/assets/?name=info-circle&variant=filled&size=16&set=facebook_icons&density=1x"
                 />
-              </span>
+              </a>
             </div>
           </div>
           <div
@@ -451,11 +459,14 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
             title=""
             width="15%"
           >
-            <div
-              class="css-iby3qx-StyledButton enfqd41"
+            <button
+              class="ant-btn ant-btn-default"
+              type="button"
             >
-              Remove
-            </div>
+              <span>
+                Remove
+              </span>
+            </button>
           </div>
         </div>
         <div
@@ -500,8 +511,9 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
               <div
                 class="css-t4wmtk-View-FlexBox-Spacer e13mj6h80"
               />
-              <span
-                class="css-ad6n9d-StyledLink e1mzoj7l0"
+              <a
+                class="ant-typography"
+                href="https://yarnpkg.com/en/package/flipper-plugin-world"
               >
                 <div
                   class="css-1tfjvvq-ColoredIconCustom e528dze0"
@@ -509,7 +521,7 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
                   size="16"
                   src="https://external.xx.fbcdn.net/assets/?name=info-circle&variant=filled&size=16&set=facebook_icons&density=1x"
                 />
-              </span>
+              </a>
             </div>
           </div>
           <div
@@ -517,19 +529,21 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
             title=""
             width="15%"
           >
-            <div
-              class="css-iby3qx-StyledButton enfqd41"
-              type="primary"
+            <button
+              class="ant-btn ant-btn-primary"
+              type="button"
             >
-              Install
-            </div>
+              <span>
+                Install
+              </span>
+            </button>
           </div>
         </div>
       </div>
     </div>
   </div>
   <div
-    class="css-cjspgc-View-FlexBox-FlexRow-ToolbarContainer e13mj6h82"
+    class="css-1lxv8hi-Container-Horizontal-SandyToolbarContainer e13mj6h81"
   >
     <div
       class="css-1spj5hr-View-FlexBox-FlexRow-Container ersmi542"
@@ -572,14 +586,15 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
       <div
         class="css-wospjg-View-FlexBox-FlexRow epz0qe20"
       >
-        <div
-          class="css-1rxpsn8-StyledButton enfqd41"
+        <button
+          class="ant-btn ant-btn-primary"
           disabled=""
-          title="Cannot install plugin package by the specified path"
-          type="primary"
+          type="button"
         >
-          Install
-        </div>
+          <span>
+            Install
+          </span>
+        </button>
         <div
           class="css-170i4ha-View-FlexBox-FlexRow-ErrorGlyphContainer evd5j490"
         />

@@ -114,30 +114,31 @@ exports[`SettingsSheet snapshot with nothing enabled 1`] = `
         <div
           className="css-12n892b"
         >
-          <div
-            className="css-xing9h-StyledButton enfqd41"
+          <button
+            className="ant-btn ant-btn-default"
             onClick={[Function]}
-            onMouseDown={[Function]}
-            onMouseUp={[Function]}
+            type="button"
           >
-            Close
-          </div>
+            <span>
+              Close
+            </span>
+          </button>
         </div>
         <div
           className="css-auhar3-TooltipContainer e1abcqbd0"
           onMouseEnter={[Function]}
           onMouseLeave={[Function]}
         >
-          <div
-            className="css-ia8nd7-StyledButton enfqd41"
+          <button
+            className="ant-btn ant-btn-primary"
             disabled={true}
             onClick={[Function]}
-            onMouseDown={[Function]}
-            onMouseUp={[Function]}
-            type="primary"
+            type="button"
           >
-            Submit
-          </div>
+            <span>
+              Submit
+            </span>
+          </button>
         </div>
       </div>
     </div>
@@ -259,30 +260,31 @@ exports[`SettingsSheet snapshot with one plugin enabled 1`] = `
         <div
           className="css-12n892b"
         >
-          <div
-            className="css-xing9h-StyledButton enfqd41"
+          <button
+            className="ant-btn ant-btn-default"
             onClick={[Function]}
-            onMouseDown={[Function]}
-            onMouseUp={[Function]}
+            type="button"
           >
-            Close
-          </div>
+            <span>
+              Close
+            </span>
+          </button>
         </div>
         <div
           className="css-auhar3-TooltipContainer e1abcqbd0"
           onMouseEnter={[Function]}
           onMouseLeave={[Function]}
         >
-          <div
-            className="css-xing9h-StyledButton enfqd41"
+          <button
+            className="ant-btn ant-btn-primary"
             disabled={false}
             onClick={[Function]}
-            onMouseDown={[Function]}
-            onMouseUp={[Function]}
-            type="primary"
+            type="button"
           >
-            Submit
-          </div>
+            <span>
+              Submit
+            </span>
+          </button>
         </div>
       </div>
     </div>

@@ -8,7 +8,6 @@
  */
 
 import {Button as AntButton, message} from 'antd';
-import {Button, ButtonGroup} from '../ui';
 import React, {useState, useEffect, useCallback} from 'react';
 import path from 'path';
 import open from 'open';
@@ -16,7 +15,7 @@ import {capture, CAPTURE_LOCATION, getFileName} from '../utils/screenshot';
 import {CameraOutlined, VideoCameraOutlined} from '@ant-design/icons';
 import {useStore} from '../utils/useStore';
 
-export async function openFile(path: string | null) {
+async function openFile(path: string | null) {
   if (!path) {
     return;
   }
@@ -28,7 +27,7 @@ export async function openFile(path: string | null) {
   }
 }
 
-export default function ScreenCaptureButtons({useSandy}: {useSandy?: boolean}) {
+export default function ScreenCaptureButtons() {
   const selectedDevice = useStore((state) => state.connections.selectedDevice);
   const [isTakingScreenshot, setIsTakingScreenshot] = useState(false);
   const [isRecordingAvailable, setIsRecordingAvailable] = useState(false);
@@ -84,7 +83,7 @@ export default function ScreenCaptureButtons({useSandy}: {useSandy?: boolean}) {
     }
   }, [selectedDevice, isRecording]);
 
-  return useSandy ? (
+  return (
     <>
       <AntButton
         icon={<CameraOutlined />}
@@ -103,24 +102,5 @@ export default function ScreenCaptureButtons({useSandy}: {useSandy?: boolean}) {
         danger={isRecording}
       />
     </>
-  ) : (
-    <ButtonGroup>
-      <Button
-        compact={true}
-        onClick={handleScreenshot}
-        icon="camera"
-        title="Take Screenshot"
-        disabled={!selectedDevice}
-      />
-      <Button
-        compact={true}
-        onClick={handleRecording}
-        icon={isRecording ? 'stop-playback' : 'camcorder'}
-        pulse={isRecording}
-        selected={isRecording}
-        title="Make Screen Recording"
-        disabled={!selectedDevice || !isRecordingAvailable}
-      />
-    </ButtonGroup>
   );
 }

@@ -43,7 +43,6 @@ export type Settings = {
       openDevMenu: string;
     };
   };
-  disableSandy: boolean;
   darkMode: boolean;
   showWelcomeAtStartup: boolean;
 };
@@ -78,7 +77,6 @@ const initialState: Settings = {
       openDevMenu: 'Alt+Shift+D',
     },
   },
-  disableSandy: false,
   darkMode: false,
   showWelcomeAtStartup: true,
 };

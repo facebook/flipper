@@ -7,21 +7,17 @@
  * @format
  */
 
-import React, {useContext, useState, useRef, useCallback, useMemo} from 'react';
+import React, {useState, useCallback, useMemo} from 'react';
 import electron, {MenuItemConstructorOptions} from 'electron';
 import styled from '@emotion/styled';
-import {findDOMNode} from 'react-dom';
 import {keyframes} from '@emotion/css';
 import {Button as AntdButton, Dropdown, Menu} from 'antd';
 
 import {colors} from './colors';
 import Glyph, {IconSize} from './Glyph';
-import {ButtonGroupContext} from './ButtonGroup';
-import {useStore} from '../../utils/useStore';
-import {useIsSandy} from '../../sandy-chrome/SandyContext';
 import type {ButtonProps} from 'antd/lib/button';
 import {DownOutlined, CheckOutlined} from '@ant-design/icons';
-import {theme, Tracked} from 'flipper-plugin';
+import {theme} from 'flipper-plugin';
 
 type ButtonType = 'primary' | 'success' | 'warning' | 'danger';
 
@@ -266,120 +262,7 @@ type Props = {
  * A simple button, used in many parts of the application.
  */
 export default function Button(props: Props) {
-  const isSandy = useIsSandy();
-  return isSandy ? <SandyButton {...props} /> : <ClassicButton {...props} />;
-}
-
-function ClassicButton(props: Props) {
-  const windowIsFocused = useStore(
-    (state) => state.application.windowIsFocused,
-  );
-  const inButtonGroup = useContext(ButtonGroupContext);
-  const [active, setActive] = useState(false);
-  const [wasClosed, setWasClosed] = useState(false);
-
-  const _ref = useRef<any>();
-
-  const onMouseDown = useCallback(
-    (e: React.MouseEvent) => {
-      setActive(true);
-      setWasClosed(false);
-      props.onMouseDown?.(e);
-    },
-    [props.onMouseDown],
-  );
-
-  const onMouseUp = useCallback(() => {
-    if (props.disabled === true) {
-      return;
-    }
-    if (props.dropdown && !wasClosed) {
-      const menu = electron.remote.Menu.buildFromTemplate(props.dropdown);
-      const position: {
-        x?: number;
-        y?: number;
-      } = {};
-      const {current} = _ref;
-      if (current) {
-        const node = findDOMNode(current);
-        if (node instanceof Element) {
-          const {left, bottom} = node.getBoundingClientRect();
-          position.x = Math.floor(left);
-          position.y = Math.floor(bottom) + 6;
-        }
-      }
-      menu.popup({
-        window: electron.remote.getCurrentWindow(),
-        // @ts-ignore: async is private API in electron
-        async: true,
-        ...position,
-        callback: () => {
-          setWasClosed(true);
-        },
-      });
-    }
-    setActive(false);
-    setWasClosed(false);
-  }, [props.disabled, props.dropdown, wasClosed]);
-
-  const onClick = useCallback(
-    (e: React.MouseEvent) => {
-      if (props.disabled === true) {
-        return;
-      }
-      props.onClick?.(e);
-      if (props.href != null) {
-        electron.shell.openExternal(props.href);
-      }
-    },
-    [props.disabled, props.onClick, props.href],
-  );
-
-  const {icon, children, selected, iconSize, iconVariant, ...restProps} = props;
-
-  let color = colors.macOSTitleBarIcon;
-  if (props.disabled === true) {
-    color = colors.macOSTitleBarIconBlur;
-  } else if (windowIsFocused && selected === true) {
-    color = colors.macOSTitleBarIconSelected;
-  } else if (!windowIsFocused && (selected == null || selected === false)) {
-    color = colors.macOSTitleBarIconBlur;
-  } else if (!windowIsFocused && selected === true) {
-    color = colors.macOSTitleBarIconSelectedBlur;
-  } else if (selected == null && active) {
-    color = colors.macOSTitleBarIconActive;
-  } else if (props.type === 'danger') {
-    color = colors.red;
-  }
-
-  let iconComponent;
-  if (icon != null) {
-    iconComponent = (
-      <Icon
-        name={icon}
-        size={iconSize || (props.compact === true ? 12 : 16)}
-        color={color}
-        variant={iconVariant || 'filled'}
-        hasText={Boolean(children)}
-      />
-    );
-  }
-
-  return (
-    <Tracked>
-      <StyledButton
-        {...restProps}
-        ref={_ref as any}
-        windowIsFocused={windowIsFocused}
-        onClick={onClick}
-        onMouseDown={onMouseDown}
-        onMouseUp={onMouseUp}
-        inButtonGroup={inButtonGroup}>
-        {iconComponent}
-        {children}
-      </StyledButton>
-    </Tracked>
-  );
+  return <SandyButton {...props} />;
 }
 
 /**
