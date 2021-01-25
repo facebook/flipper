@@ -99,14 +99,16 @@ export class Group {
 
     // OS validation
     let osError: string | null = null;
-    if (!selectedOS) {
-      osError = 'Please select an app from the drop down.';
-    } else if (!this.supportedOS.includes(selectedOS)) {
-      osError = `The group ${
-        this.name
-      } supports exports from ${this.supportedOS.join(
-        ', ',
-      )}. But your selected device's OS is ${selectedOS}, which is unsupported.`;
+    if (this.name !== 'Flipper') {
+      if (!selectedOS) {
+        osError = 'Please select an app from the drop down.';
+      } else if (!this.supportedOS.includes(selectedOS)) {
+        osError = `The group ${
+          this.name
+        } supports exports from ${this.supportedOS.join(
+          ', ',
+        )}. But your selected device's OS is ${selectedOS}, which is unsupported.`;
+      }
     }
     return {plugins: str, os: osError};
   }
