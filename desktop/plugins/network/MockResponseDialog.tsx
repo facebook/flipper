@@ -54,7 +54,7 @@ export function MockResponseDialog(props: Props) {
           responses={props.responses}
         />
       </Layout.Horizontal>
-      <Layout.Horizontal>
+      <Layout.Horizontal gap>
         <Button
           compact
           padded
