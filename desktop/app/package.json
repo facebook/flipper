@@ -24,7 +24,7 @@
     "archiver": "^5.0.2",
     "async-mutex": "^0.2.6",
     "axios": "^0.21.1",
-    "console-feed": "^3.1.10",
+    "console-feed": "^3.2.1",
     "deep-equal": "^2.0.1",
     "expand-tilde": "^2.0.2",
     "flipper-client-sdk": "^0.0.3",
