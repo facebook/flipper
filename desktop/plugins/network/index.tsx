@@ -10,6 +10,7 @@
 import {padStart} from 'lodash';
 import React, {createContext} from 'react';
 import {MenuItemConstructorOptions} from 'electron';
+import {message} from 'antd';
 
 import {
   ContextMenu,
@@ -398,14 +399,13 @@ export function plugin(client: PluginClient<Events, Methods>) {
         const options: OpenDialogOptions = {
           properties: ['openFile'],
           filters: [{extensions: ['json'], name: 'Flipper Route Files'}],
-          title: 'Import Routes',
         };
         remote.dialog.showOpenDialog(options).then((result) => {
           const filePaths = result.filePaths;
           if (filePaths.length > 0) {
             fs.readFile(filePaths[0], 'utf8', (err, data) => {
               if (err) {
-                console.error(err);
+                message.error('Unable to import file');
                 return;
               }
               const importedRoutes = JSON.parse(data);
@@ -449,6 +449,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
               JSON.stringify(routes.get(), null, 2),
               'utf8',
             );
+            message.info('Successfully exported mock routes');
           });
       },
       clearRoutes() {
