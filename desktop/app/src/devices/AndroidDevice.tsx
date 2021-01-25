@@ -202,16 +202,20 @@ export default class AndroidDevice extends BaseDevice {
   }
 }
 
-export async function launchEmulator(name: string) {
+export async function launchEmulator(name: string, coldBoot: boolean = false) {
   // On Linux, you must run the emulator from the directory it's in because
   // reasons ...
   return which('emulator')
     .then((emulatorPath) => {
       if (emulatorPath) {
-        const child = spawn(emulatorPath, [`@${name}`], {
-          detached: true,
-          cwd: dirname(emulatorPath),
-        });
+        const child = spawn(
+          emulatorPath,
+          [`@${name}`, ...(coldBoot ? ['-no-snapshot-load'] : [])],
+          {
+            detached: true,
+            cwd: dirname(emulatorPath),
+          },
+        );
         child.stderr.on('data', (data) => {
           console.error(`Android emulator error: ${data}`);
         });

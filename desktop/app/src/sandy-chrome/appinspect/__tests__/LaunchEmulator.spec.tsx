@@ -66,5 +66,5 @@ test('Can render and launch android apps', async () => {
   fireEvent.click(renderer.getByText('emulator2'));
   await sleep(1000);
   expect(onClose).toBeCalled();
-  expect(launchEmulator).toBeCalledWith('emulator2');
+  expect(launchEmulator).toBeCalledWith('emulator2', false);
 });
