@@ -21,6 +21,7 @@ const builtInModules = [
   'react-dom',
   'electron',
   'adbkit',
+  'antd',
   'immer',
   '@emotion/styled',
 ];
