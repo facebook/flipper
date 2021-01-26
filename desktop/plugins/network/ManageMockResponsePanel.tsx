@@ -38,18 +38,8 @@ const ColumnSizes = {route: 'flex'};
 
 const Columns = {route: {value: 'Route', resizable: false}};
 
-const AddRouteButton = styled(FlexBox)({
+const Button = styled(FlexBox)({
   color: colors.blackAlpha50,
-  alignItems: 'center',
-  padding: 5,
-  flexShrink: 0,
-  whiteSpace: 'nowrap',
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-});
-
-const CopyHighlightedCallsButton = styled(FlexBox)({
-  color: colors.blueDark,
   alignItems: 'center',
   padding: 5,
   flexShrink: 0,
@@ -199,9 +189,9 @@ export function ManageMockResponsePanel(props: Props) {
     props.routes,
   ]);
   return (
-    <Container style={{height: 580}}>
+    <Container style={{height: 560}}>
       <LeftPanel>
-        <AddRouteButton
+        <Button
           onClick={() => {
             networkRouteManager.addRoute();
           }}>
@@ -212,8 +202,8 @@ export function ManageMockResponsePanel(props: Props) {
             color={colors.blackAlpha30}
           />
           &nbsp;Add Route
-        </AddRouteButton>
-        <CopyHighlightedCallsButton
+        </Button>
+        <Button
           onClick={() => {
             networkRouteManager.copyHighlightedCalls(
               props.highlightedRows as Set<string>,
@@ -228,7 +218,7 @@ export function ManageMockResponsePanel(props: Props) {
             color={colors.blackAlpha30}
           />
           &nbsp;Copy Highlighted Calls
-        </CopyHighlightedCallsButton>
+        </Button>
         <hr
           style={{
             height: 1,
