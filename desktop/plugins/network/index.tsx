@@ -14,8 +14,7 @@ import {message} from 'antd';
 
 import {
   ContextMenu,
-  FlexColumn,
-  FlexRow,
+  Layout,
   Button,
   Text,
   Glyph,
@@ -592,7 +591,7 @@ export function Component() {
   const networkRouteManager = useValue(instance.networkRouteManager);
 
   return (
-    <FlexColumn grow={true}>
+    <Layout.Container grow={true}>
       <NetworkRouteContext.Provider value={networkRouteManager}>
         <NetworkTable
           requests={requests || {}}
@@ -610,7 +609,7 @@ export function Component() {
         />
         <Sidebar />
       </NetworkRouteContext.Provider>
-    </FlexColumn>
+    </Layout.Container>
   );
 }
 
@@ -898,7 +897,7 @@ class NetworkTable extends PureComponent<NetworkTableProps, NetworkTableState> {
       <>
         <NetworkTable.ContextMenu
           items={this.contextMenuItems()}
-          component={FlexColumn}>
+          component={Layout.Container}>
           <SearchableTable
             virtual={true}
             multiline={false}
@@ -918,12 +917,12 @@ class NetworkTable extends PureComponent<NetworkTableProps, NetworkTableState> {
             clearSearchTerm={this.props.searchTerm !== ''}
             defaultSearchTerm={this.props.searchTerm}
             actions={
-              <FlexRow>
+              <Layout.Horizontal gap>
                 <Button onClick={this.props.clear}>Clear Table</Button>
                 {this.props.isMockResponseSupported && (
                   <Button onClick={this.props.onMockButtonPressed}>Mock</Button>
                 )}
-              </FlexRow>
+              </Layout.Horizontal>
             }
           />
         </NetworkTable.ContextMenu>
