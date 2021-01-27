@@ -162,45 +162,61 @@ export async function getDynamicPlugins() {
 export const checkGK = (gatekeepedPlugins: Array<ActivatablePluginDetails>) => (
   plugin: ActivatablePluginDetails,
 ): boolean => {
-  if (!plugin.gatekeeper) {
-    return true;
+  try {
+    if (!plugin.gatekeeper) {
+      return true;
+    }
+    const result = GK.get(plugin.gatekeeper);
+    if (!result) {
+      gatekeepedPlugins.push(plugin);
+    }
+    return result;
+  } catch (err) {
+    console.error(`Failed to check GK for plugin ${plugin.id}`, err);
+    return false;
   }
-  const result = GK.get(plugin.gatekeeper);
-  if (!result) {
-    gatekeepedPlugins.push(plugin);
-  }
-  return result;
 };
 
 export const checkDisabled = (
   disabledPlugins: Array<ActivatablePluginDetails>,
 ) => {
-  const enabledList = process.env.FLIPPER_ENABLED_PLUGINS
-    ? new Set<string>(process.env.FLIPPER_ENABLED_PLUGINS.split(','))
-    : null;
+  let enabledList: Set<string> | null = null;
   let disabledList: Set<string> = new Set();
   try {
+    if (process.env.FLIPPER_ENABLED_PLUGINS) {
+      enabledList = new Set<string>(
+        process.env.FLIPPER_ENABLED_PLUGINS.split(','),
+      );
+    }
     disabledList = config().disabledPlugins;
   } catch (e) {
-    console.error(e);
+    console.error('Failed to compute enabled/disabled plugins', e);
   }
   return (plugin: ActivatablePluginDetails): boolean => {
-    if (disabledList.has(plugin.name)) {
-      disabledPlugins.push(plugin);
+    try {
+      if (disabledList.has(plugin.name)) {
+        disabledPlugins.push(plugin);
+        return false;
+      }
+      if (
+        enabledList &&
+        !(
+          enabledList.has(plugin.name) ||
+          enabledList.has(plugin.id) ||
+          enabledList.has(plugin.name.replace('flipper-plugin-', ''))
+        )
+      ) {
+        disabledPlugins.push(plugin);
+        return false;
+      }
+      return true;
+    } catch (e) {
+      console.error(
+        `Failed to check whether plugin ${plugin.id} is disabled`,
+        e,
+      );
       return false;
     }
-    if (
-      enabledList &&
-      !(
-        enabledList.has(plugin.name) ||
-        enabledList.has(plugin.id) ||
-        enabledList.has(plugin.name.replace('flipper-plugin-', ''))
-      )
-    ) {
-      disabledPlugins.push(plugin);
-      return false;
-    }
-    return true;
   };
 };
 
