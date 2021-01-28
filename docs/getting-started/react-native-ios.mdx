@@ -32,7 +32,7 @@ target 'your-app-name' do
   #
   # Note that if you have use_frameworks! enabled, Flipper will not work and
   # you should disable these next few lines.
-  use_flipper!('Flipper' => '0.58.0') # should match the version of your Flipper client app
+  use_flipper!({'Flipper' => '0.58.0'}) # should match the version of your Flipper client app
   post_install do |installer|
     flipper_post_install(installer)
   end
