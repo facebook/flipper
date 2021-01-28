@@ -27,10 +27,31 @@ export default function Index() {
               API.
             </h2>
             <FbInternalOnly>
-              <h2>
-                Facebook employees should download the internal version of
-                Flipper from Managed Software Center
-              </h2>
+              <div>
+                <p className="landing-btn landing-btn-left landing-btn-label">
+                  Download
+                </p>
+                <a
+                  className="landing-btn landing-btn-middle primary"
+                  href="munki://detail-Flipper">
+                  Mac
+                </a>
+                <a
+                  className="landing-btn landing-btn-middle primary"
+                  href="https://fburl.com/flipper-linux-download">
+                  Linux (Beta)
+                </a>
+                <a
+                  className="landing-btn landing-btn-right primary"
+                  href="https://fburl.com/flipper-windows-download">
+                  Windows (Beta)
+                </a>
+                <a
+                  className="landing-btn"
+                  href={useBaseUrl('docs/features/index')}>
+                  Learn more
+                </a>
+              </div>
             </FbInternalOnly>
             <OssOnly>
               <div>
