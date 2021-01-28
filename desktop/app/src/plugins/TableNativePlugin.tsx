@@ -261,6 +261,7 @@ export default function createTableNativePlugin(id: string, title: string) {
       title,
       icon: 'apps',
       name: id,
+      pluginType: 'client',
       // all hmm...
       specVersion: 1,
       version: 'auto',

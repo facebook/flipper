@@ -17,12 +17,15 @@ import {
 } from 'flipper-plugin';
 import type {DevicePluginDefinition, DevicePluginMap} from '../plugin';
 import {getFlipperLibImplementation} from '../utils/flipperLibImplementation';
+import {DeviceSpec, OS as PluginOS} from 'flipper-plugin-lib';
 
 export type DeviceShell = {
   stdout: stream.Readable;
   stderr: stream.Readable;
   stdin: stream.Writable;
 };
+
+export type OS = PluginOS | 'Windows' | 'MacOS' | 'JSWebApp';
 
 export type DeviceExport = {
   os: OS;
@@ -32,14 +35,19 @@ export type DeviceExport = {
   logs: Array<DeviceLogEntry>;
 };
 
-export type OS = 'iOS' | 'Android' | 'Windows' | 'MacOS' | 'JSWebApp' | 'Metro';
-
 export default class BaseDevice {
-  constructor(serial: string, deviceType: DeviceType, title: string, os: OS) {
+  constructor(
+    serial: string,
+    deviceType: DeviceType,
+    title: string,
+    os: OS,
+    specs: DeviceSpec[] = [],
+  ) {
     this.serial = serial;
     this.title = title;
     this.deviceType = deviceType;
     this.os = os;
+    this.specs = specs;
   }
 
   // operating system of this device
@@ -53,6 +61,9 @@ export default class BaseDevice {
 
   // serial number for this device
   serial: string;
+
+  // additional device specs used for plugin compatibility checks
+  specs: DeviceSpec[];
 
   // possible src of icon to display next to the device title
   icon: string | null | undefined;

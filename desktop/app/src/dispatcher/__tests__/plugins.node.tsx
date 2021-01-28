@@ -41,6 +41,7 @@ const sampleInstalledPluginDetails: InstalledPluginDetails = {
   name: 'other Name',
   version: '1.0.0',
   specVersion: 2,
+  pluginType: 'client',
   main: 'dist/bundle.js',
   source: 'src/index.js',
   id: 'Sample',

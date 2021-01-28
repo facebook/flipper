@@ -39,6 +39,43 @@
         "pattern": "flipper-plugin"
       },
       "errorMessage": "should contain keyword \"flipper-plugin\""
+    },
+    "pluginType": {
+      "description": "Type of the plugin - client or device. If omitted, \"client\" type is used by default.",
+      "type": "string",
+      "enum": ["client", "device"]
+    },
+    "supportedDevices": {
+      "description": "List of devices supported by the plugin. The list could contain multiple devices each defined as conjunction of several properties.",
+      "type": "array",
+      "items": {
+        "description": "Device definition. E.g. {\"os\": \"Android\", \"type\": \"physical\", \"archived\": false} means that plugin supports only Android physical unarchived devices.",
+        "type": "object",
+        "properties": {
+          "os": {
+            "description": "Device OS: iOS, Android or Metro. Lack of this property means that all OSes supported.",
+            "type": "string",
+            "enum": ["iOS", "Android", "Metro"]
+          },
+          "type": {
+            "description": "Device type: physical or emulator. Lack of this property means both physical and emulator devices supported.",
+            "type": "string",
+            "enum": ["physical", "emulator"]
+          },
+          "archived": {
+            "description": "Specifies support for archived devices. Lack of this property means that both live and archived devices supported. False means only live devices supported. True means only archived devices supported.",
+            "type": "boolean"
+          },
+          "specs": {
+            "description": "Additional specs required for plugin, e.g. \"KaiOS\" runtime.",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["KaiOS"]
+            }
+          }
+        }
+      }
     }
   },
   "required": [

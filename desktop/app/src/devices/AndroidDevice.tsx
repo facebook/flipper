@@ -16,6 +16,7 @@ import type {LogLevel, DeviceType} from 'flipper-plugin';
 import which from 'which';
 import {spawn} from 'child_process';
 import {dirname} from 'path';
+import {DeviceSpec} from 'flipper-plugin-lib';
 
 const DEVICE_RECORDING_DIR = '/sdcard/flipper_recorder';
 
@@ -27,8 +28,9 @@ export default class AndroidDevice extends BaseDevice {
     adb: ADBClient,
     abiList: Array<string>,
     sdkVersion: string,
+    specs: DeviceSpec[] = [],
   ) {
-    super(serial, deviceType, title, 'Android');
+    super(serial, deviceType, title, 'Android', specs);
     this.adb = adb;
     this.icon = 'icons/android.svg';
     this.abiList = abiList;

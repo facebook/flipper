@@ -2,6 +2,12 @@
   "$schema": "https://fbflipper.com/schemas/plugin-package/v2.json",
   "name": "flipper-plugin-device-logs",
   "id": "DeviceLogs",
+  "pluginType": "device",
+  "supportedDevices": [
+    {"os": "Android"},
+    {"os": "iOS", "type": "emulator"},
+    {"os": "Metro"}
+  ],
   "version": "0.0.0",
   "main": "dist/bundle.js",
   "flipperBundlerEntry": "index.tsx",

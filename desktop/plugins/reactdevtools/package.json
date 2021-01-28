@@ -3,6 +3,10 @@
   "name": "flipper-plugin-react-devtools",
   "id": "React",
   "version": "0.0.0",
+  "pluginType": "device",
+  "supportedDevices": [
+    {"os": "Metro", "archived": false}
+  ],
   "main": "dist/bundle.js",
   "flipperBundlerEntry": "index.tsx",
   "license": "MIT",

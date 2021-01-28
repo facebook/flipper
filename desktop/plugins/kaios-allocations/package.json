@@ -3,6 +3,10 @@
   "name": "flipper-plugin-kaios-big-allocations",
   "id": "kaios-big-allocations",
   "version": "0.0.0",
+  "pluginType": "device",
+  "supportedDevices": [
+    {"os": "Android", "specs": ["KaiOS"]}
+  ],
   "main": "dist/bundle.js",
   "flipperBundlerEntry": "index.tsx",
   "license": "MIT",

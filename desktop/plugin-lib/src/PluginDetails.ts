@@ -27,7 +27,24 @@ export interface PluginDetails {
     url?: string;
   };
   flipperSDKVersion?: string;
+  pluginType: PluginType;
+  supportedDevices?: SupportedDevice[];
 }
+
+export interface SupportedDevice {
+  readonly os?: OS;
+  readonly type?: DeviceType;
+  readonly archived?: boolean;
+  readonly specs?: DeviceSpec[];
+}
+
+export type OS = 'iOS' | 'Android' | 'Metro';
+
+export type DeviceType = 'emulator' | 'physical';
+
+export type PluginType = 'client' | 'device';
+
+export type DeviceSpec = 'KaiOS';
 
 export interface ConcretePluginDetails extends PluginDetails {
   // Determines whether the plugin is a part of the Flipper JS bundle.

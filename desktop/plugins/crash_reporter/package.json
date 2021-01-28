@@ -2,6 +2,11 @@
   "$schema": "https://fbflipper.com/schemas/plugin-package/v2.json",
   "name": "flipper-plugin-crash-reporter",
   "id": "CrashReporter",
+  "pluginType": "device",
+  "supportedDevices": [
+    {"os": "Android"},
+    {"os": "iOS", "type": "emulator"}
+  ],
   "version": "0.0.0",
   "description": "A plugin which will display a crash",
   "main": "dist/bundle.js",

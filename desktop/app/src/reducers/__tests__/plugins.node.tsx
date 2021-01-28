@@ -88,6 +88,7 @@ test('add gatekeeped plugin', () => {
       version: '1.0.0',
       dir: '/plugins/test',
       specVersion: 2,
+      pluginType: 'client',
       source: 'src/index.ts',
       isBundled: false,
       isActivatable: true,

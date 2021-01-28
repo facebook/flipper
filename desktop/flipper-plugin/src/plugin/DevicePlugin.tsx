@@ -10,6 +10,7 @@
 import {SandyPluginDefinition} from './SandyPluginDefinition';
 import {BasePluginInstance, BasePluginClient} from './PluginBase';
 import {FlipperLib} from './FlipperLib';
+import {DeviceType as PluginDeviceType} from 'flipper-plugin-lib';
 
 export type DeviceLogListener = (entry: DeviceLogEntry) => void;
 
@@ -40,7 +41,7 @@ export interface Device {
   onLogEntry(cb: DeviceLogListener): () => void;
 }
 
-export type DeviceType = 'emulator' | 'physical';
+export type DeviceType = PluginDeviceType;
 
 export type DevicePluginPredicate = (device: Device) => boolean;
 

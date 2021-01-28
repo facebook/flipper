@@ -48,6 +48,7 @@ export function createMockDownloadablePluginDetails(
     main: 'dist/bundle.js',
     source: 'src/index.tsx',
     specVersion: 2,
+    pluginType: 'client',
     title: title ?? id,
     version: version,
     downloadUrl: `http://localhost/${lowercasedID}/${version}`,
