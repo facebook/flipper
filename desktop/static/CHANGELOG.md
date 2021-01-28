@@ -1,3 +1,8 @@
+# 0.73.0 (28/1/2021)
+
+ * [D26072928](https://github.com/facebook/flipper/search?q=D26072928&type=Commits) -  [Network] Mock routes can now be imported and exported. Thanks @bizzguy!
+
+
 # 0.70.0 (6/1/2021)
 
  * [D25466557](https://github.com/facebook/flipper/search?q=D25466557&type=Commits) -  [Internal]

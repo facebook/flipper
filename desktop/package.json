@@ -1,6 +1,6 @@
 {
   "name": "flipper-project",
-  "version": "0.72.0",
+  "version": "0.73.0",
   "description": "Mobile development tool",
   "productName": "Flipper",
   "author": {
@@ -82,7 +82,9 @@
       "sign": null
     },
     "asar": true,
-    "asarUnpack": ["PortForwardingMacApp.app/**/*"],
+    "asarUnpack": [
+      "PortForwardingMacApp.app/**/*"
+    ],
     "fileAssociations": [
       {
         "ext": [
@@ -113,6 +115,7 @@
     "node-notifier": "^8.0.1"
   },
   "devDependencies": {
+    "@adobe/node-fetch-retry": "^1.1.0",
     "@babel/code-frame": "^7.12.11",
     "@babel/eslint-parser": "^7.11.5",
     "@jest-runner/electron": "^3.0.0",
@@ -170,6 +173,7 @@
     "@typescript-eslint/eslint-plugin": "^4.13.0",
     "@typescript-eslint/parser": "^4.2.0",
     "ansi-to-html": "^0.6.3",
+    "app-builder-lib": "22.9.1",
     "babel-eslint": "^10.1.0",
     "chalk": "^4.0.0",
     "cross-env": "^7.0.2",
@@ -177,8 +181,6 @@
     "dotenv": "^8.2.0",
     "electron": "11.1.0",
     "electron-builder": "22.9.1",
-    "@adobe/node-fetch-retry": "^1.1.0",
-    "app-builder-lib": "22.9.1",
     "eslint": "^7.12.1",
     "eslint-config-fbjs": "^3.1.1",
     "eslint-config-prettier": "^6.15.0",
