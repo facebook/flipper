@@ -9,7 +9,7 @@
 
 import React, {useEffect, useState, useCallback} from 'react';
 import {TrackingScope, useLogger} from 'flipper-plugin';
-import {styled} from '../ui';
+import {Link, styled} from '../ui';
 import {Layout, Sidebar} from '../ui';
 import {theme} from 'flipper-plugin';
 import {ipcRenderer} from 'electron';
@@ -114,8 +114,11 @@ export function SandyApp() {
             description: (
               <>
                 You are using the open-source version of Flipper. Install the
-                internal build from Managed Software Center to get access to
-                more plugins.
+                internal build from{' '}
+                <Link href="munki://detail-Flipper">
+                  Managed Software Center
+                </Link>{' '}
+                to get access to more plugins.
               </>
             ),
             duration: null,
