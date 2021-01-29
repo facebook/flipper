@@ -13,7 +13,6 @@ import {
   Text,
   FlexBox,
   FlexRow,
-  FlexColumn,
   Glyph,
   styled,
   colors,
@@ -46,24 +45,6 @@ const Button = styled(FlexBox)({
   whiteSpace: 'nowrap',
   overflow: 'hidden',
   textOverflow: 'ellipsis',
-});
-
-const Container = styled(FlexRow)({
-  flex: 1,
-  justifyContent: 'space-around',
-  alignItems: 'stretch',
-  height: '100%',
-  width: '100%',
-});
-
-const LeftPanel = styled(FlexColumn)({
-  height: '100%',
-  width: '35%',
-});
-
-const RightPanel = styled(FlexColumn)({
-  flex: 2,
-  height: '100%',
 });
 
 const TextEllipsis = styled(Text)({
@@ -189,73 +170,74 @@ export function ManageMockResponsePanel(props: Props) {
     props.routes,
   ]);
   return (
-    <Container style={{height: 560}}>
-      <LeftPanel>
-        <Button
-          onClick={() => {
-            networkRouteManager.addRoute();
-          }}>
-          <Glyph
-            name="plus-circle"
-            size={16}
-            variant="outline"
-            color={colors.blackAlpha30}
-          />
-          &nbsp;Add Route
-        </Button>
-        <Button
-          onClick={() => {
-            networkRouteManager.copyHighlightedCalls(
-              props.highlightedRows as Set<string>,
-              props.requests,
-              props.responses,
-            );
-          }}>
-          <Glyph
-            name="plus-circle"
-            size={16}
-            variant="outline"
-            color={colors.blackAlpha30}
-          />
-          &nbsp;Copy Highlighted Calls
-        </Button>
-        <hr
-          style={{
-            height: 1,
-            backgroundColor: colors.grey,
-            width: '95%',
-          }}
-        />
-        <ManagedTable
-          hideHeader={true}
-          multiline={true}
-          columnSizes={ColumnSizes}
-          columns={Columns}
-          rows={_buildRows(props.routes, duplicatedIds, (id) => {
-            networkRouteManager.removeRoute(id);
-            setSelectedId(null);
-          })}
-          stickyBottom={true}
-          autoHeight={false}
-          floating={false}
-          zebra={false}
-          onRowHighlighted={(selectedIds) => {
-            const newSelectedId =
-              selectedIds.length === 1 ? selectedIds[0] : null;
-            setSelectedId(newSelectedId);
-          }}
-          highlightedRows={new Set(selectedId)}
-        />
-      </LeftPanel>
-      <RightPanel>
-        {selectedId && props.routes.hasOwnProperty(selectedId) && (
-          <ManagedMockResponseRightPanel
-            id={selectedId}
-            route={props.routes[selectedId]}
-            isDuplicated={duplicatedIds.includes(selectedId)}
-          />
-        )}
-      </RightPanel>
-    </Container>
+    <Layout.Container style={{height: 550}}>
+      <Layout.Left>
+        <Layout.Container width={450} pad={10} gap={5}>
+          <Button
+            onClick={() => {
+              networkRouteManager.addRoute();
+            }}>
+            <Glyph
+              name="plus-circle"
+              size={16}
+              variant="outline"
+              color={colors.blackAlpha30}
+            />
+            &nbsp;Add Route
+          </Button>
+          <Button
+            onClick={() => {
+              networkRouteManager.copyHighlightedCalls(
+                props.highlightedRows as Set<string>,
+                props.requests,
+                props.responses,
+              );
+            }}>
+            <Glyph
+              name="plus-circle"
+              size={16}
+              variant="outline"
+              color={colors.blackAlpha30}
+            />
+            &nbsp;Copy Highlighted Calls
+          </Button>
+          <Panel
+            grow={true}
+            collapsable={false}
+            floating={false}
+            heading={'Routes'}>
+            <ManagedTable
+              hideHeader={true}
+              multiline={false}
+              columnSizes={ColumnSizes}
+              columns={Columns}
+              rows={_buildRows(props.routes, duplicatedIds, (id) => {
+                networkRouteManager.removeRoute(id);
+                setSelectedId(null);
+              })}
+              stickyBottom={true}
+              autoHeight={false}
+              floating={false}
+              zebra={false}
+              onRowHighlighted={(selectedIds) => {
+                const newSelectedId =
+                  selectedIds.length === 1 ? selectedIds[0] : null;
+                setSelectedId(newSelectedId);
+              }}
+              highlightedRows={new Set(selectedId)}
+            />
+          </Panel>
+        </Layout.Container>
+        <Layout.Container>
+          {selectedId && props.routes.hasOwnProperty(selectedId) && (
+            <ManagedMockResponseRightPanel
+              id={selectedId}
+              route={props.routes[selectedId]}
+              isDuplicated={duplicatedIds.includes(selectedId)}
+            />
+          )}
+        </Layout.Container>
+      </Layout.Left>
+    </Layout.Container>
   );
 }
