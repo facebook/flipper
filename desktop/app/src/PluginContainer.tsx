@@ -498,9 +498,9 @@ class PluginContainer extends PureComponent<Props, State> {
               message={
                 <Text>
                   Plugin "{activePlugin.title}" v
-                  {latestInstalledVersion?.version} downloaded and ready to
+                  {latestInstalledVersion?.version} is downloaded and ready to
                   install. <Link onClick={this.reloadPlugin}>Reload</Link> to
-                  start using new version.
+                  start using the new version.
                 </Text>
               }
               type="info"
