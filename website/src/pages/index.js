@@ -38,11 +38,13 @@ export default function Index() {
                 </a>
                 <a
                   className="landing-btn landing-btn-middle primary"
+                  target="_top"
                   href="https://fburl.com/flipper-linux-download">
                   Linux (Beta)
                 </a>
                 <a
                   className="landing-btn landing-btn-right primary"
+                  target="_top"
                   href="https://fburl.com/flipper-windows-download">
                   Windows (Beta)
                 </a>
