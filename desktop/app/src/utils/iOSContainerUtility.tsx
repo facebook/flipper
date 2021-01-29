@@ -7,10 +7,8 @@
  * @format
  */
 
-import child_process from 'child_process';
-import {promisify} from 'util';
 import {Mutex} from 'async-mutex';
-const unsafeExec = promisify(child_process.exec);
+import {exec as unsafeExec, Output} from 'promisify-child-process';
 import {killOrphanedInstrumentsProcesses} from './processCleanup';
 import {reportPlatformFailures} from './metrics';
 import {promises, constants} from 'fs';
@@ -48,10 +46,12 @@ function isAvailable(idbPath: string): Promise<boolean> {
     .catch((_) => false);
 }
 
-function safeExec(command: string): Promise<{stdout: string; stderr: string}> {
-  return mutex.acquire().then((release) => {
-    return unsafeExec(command).finally(release);
-  });
+function safeExec(
+  command: string,
+): Promise<{stdout: string; stderr: string} | Output> {
+  return mutex
+    .acquire()
+    .then((release) => unsafeExec(command).finally(release));
 }
 
 async function targets(idbPath: string): Promise<Array<DeviceTarget>> {
@@ -65,7 +65,10 @@ async function targets(idbPath: string): Promise<Array<DeviceTarget>> {
   // when installed, use it.
   if (await memoize(isAvailable)(idbPath)) {
     return safeExec(`${idbPath} list-targets --json`).then(({stdout}) =>
-      stdout
+      // It is safe to assume this to be non-null as it only turns null
+      // if the output redirection is misconfigured:
+      // https://stackoverflow.com/questions/27786228/node-child-process-spawn-stdout-returning-as-null
+      stdout!
         .toString()
         .trim()
         .split('\n')
@@ -80,7 +83,7 @@ async function targets(idbPath: string): Promise<Array<DeviceTarget>> {
   } else {
     await killOrphanedInstrumentsProcesses();
     return safeExec('instruments -s devices').then(({stdout}) =>
-      stdout
+      stdout!
         .toString()
         .split('\n')
         .map((line) => line.trim())
@@ -173,8 +176,8 @@ function wrapWithErrorMessage<T>(p: Promise<T>): Promise<T> {
 }
 
 export default {
-  isAvailable: isAvailable,
-  targets: targets,
-  push: push,
-  pull: pull,
+  isAvailable,
+  targets,
+  push,
+  pull,
 };
