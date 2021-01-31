@@ -50,6 +50,8 @@ import fs from 'fs';
 import electron from 'electron';
 
 const LOCALSTORAGE_MOCK_ROUTE_LIST_KEY = '__NETWORK_CACHED_MOCK_ROUTE_LIST';
+const LOCALSTORAGE_RESPONSE_BODY_FORMAT_KEY =
+  '__NETWORK_CACHED_RESPONSE_BODY_FORMAT';
 
 export const BodyOptions = {
   formatted: 'formatted',
@@ -162,7 +164,10 @@ export function plugin(client: PluginClient<Events, Methods>) {
   const nextRouteId = createState<number>(0);
   const isMockResponseSupported = createState<boolean>(false);
   const showMockResponseDialog = createState<boolean>(false);
-  const detailBodyFormat = createState<string>(BodyOptions.parsed);
+  const detailBodyFormat = createState<string>(
+    localStorage.getItem(LOCALSTORAGE_RESPONSE_BODY_FORMAT_KEY) ||
+      BodyOptions.parsed,
+  );
   const highlightedRows = createState<Set<string> | null | undefined>(
     new Set(),
   );
@@ -319,7 +324,8 @@ export function plugin(client: PluginClient<Events, Methods>) {
   function init() {
     client.supportsMethod('mockResponses').then((result) => {
       const newRoutes = JSON.parse(
-        localStorage.getItem(LOCALSTORAGE_MOCK_ROUTE_LIST_KEY) || '{}',
+        localStorage.getItem(LOCALSTORAGE_MOCK_ROUTE_LIST_KEY + client.appId) ||
+          '{}',
       );
       routes.set(newRoutes);
       isMockResponseSupported.set(result);
@@ -526,7 +532,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
     if (isMockResponseSupported.get()) {
       const routesValuesArray = Object.values(filteredRoutes);
       localStorage.setItem(
-        LOCALSTORAGE_MOCK_ROUTE_LIST_KEY,
+        LOCALSTORAGE_MOCK_ROUTE_LIST_KEY + client.appId,
         JSON.stringify(routesValuesArray),
       );
 
@@ -572,6 +578,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
     },
     onSelectFormat(bodyFormat: string) {
       detailBodyFormat.set(bodyFormat);
+      localStorage.setItem(LOCALSTORAGE_RESPONSE_BODY_FORMAT_KEY, bodyFormat);
     },
     copyRequestCurlCommand,
     init,
