@@ -7,8 +7,8 @@
  * @format
  */
 
-import Client from '../Client';
-import BaseDevice from '../devices/BaseDevice';
+import type Client from '../Client';
+import type BaseDevice from '../devices/BaseDevice';
 
 /* A Client uniuely identifies an app running on some device.
 

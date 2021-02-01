@@ -11,7 +11,6 @@ import {
   createMockFlipperWithPlugin,
   MockFlipperResult,
 } from '../../../test-utils/createMockFlipperWithPlugin';
-import {computePluginLists} from '../PluginList';
 import {findBestClient, findBestDevice, findMetroDevice} from '../AppInspect';
 import {FlipperPlugin} from '../../../plugin';
 import MetroDevice from '../../../devices/MetroDevice';
@@ -29,6 +28,7 @@ import {
 // eslint-disable-next-line
 import * as LogsPluginModule from '../../../../../plugins/logs/index';
 import {createMockDownloadablePluginDetails} from '../../../utils/testUtils';
+import {computePluginLists} from '../../../utils/pluginUtils';
 
 const logsPlugin = new _SandyPluginDefinition(
   createMockPluginDetails({id: 'DeviceLogs'}),

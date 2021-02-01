@@ -47,6 +47,7 @@ export type MockFlipperResult = {
   createDevice(serial: string): BaseDevice;
   createClient(device: BaseDevice, name: string): Promise<Client>;
   logger: Logger;
+  togglePlugin(plugin?: string): void;
 };
 
 type MockOptions = Partial<{
@@ -56,6 +57,7 @@ type MockOptions = Partial<{
    */
   onSend?: (pluginId: string, method: string, params?: object) => any;
   additionalPlugins?: PluginDefinition[];
+  dontEnableAdditionalPlugins?: true;
 }>;
 
 export async function createMockFlipperWithPlugin(
@@ -108,7 +110,12 @@ export async function createMockFlipperWithPlugin(
       null, // create a stub connection to avoid this plugin to be archived?
       logger,
       store,
-      isDevicePluginDefinition(pluginClazz) ? [] : [pluginClazz.id],
+      [
+        ...(isDevicePluginDefinition(pluginClazz) ? [] : [pluginClazz.id]),
+        ...(options?.dontEnableAdditionalPlugins
+          ? []
+          : options?.additionalPlugins?.map((p) => p.id) ?? []),
+      ],
       device,
     );
 
@@ -159,6 +166,18 @@ export async function createMockFlipperWithPlugin(
         }),
       );
     }
+    if (!options?.dontEnableAdditionalPlugins) {
+      options?.additionalPlugins?.forEach((plugin) => {
+        if (!isDevicePluginDefinition(plugin)) {
+          store.dispatch(
+            starPlugin({
+              plugin,
+              selectedApp: client.query.app,
+            }),
+          );
+        }
+      });
+    }
     await client.init();
 
     // As convenience, by default we select the new client, star the plugin, and select it
@@ -204,6 +223,20 @@ export async function createMockFlipperWithPlugin(
     createClient,
     logger,
     pluginKey: getPluginKey(client.id, device, pluginClazz.id),
+    togglePlugin(id?: string) {
+      const plugin = id
+        ? store.getState().plugins.clientPlugins.get(id)
+        : pluginClazz;
+      if (!plugin) {
+        throw new Error('unknown plugin ' + id);
+      }
+      store.dispatch(
+        starPlugin({
+          plugin,
+          selectedApp: client.query.app,
+        }),
+      );
+    },
   };
 }
 

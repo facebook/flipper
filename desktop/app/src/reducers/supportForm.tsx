@@ -13,18 +13,14 @@ import {deconstructClientId} from '../utils/clientUtils';
 import {starPlugin as setStarPlugin} from './connections';
 import {showStatusUpdatesForDuration} from '../utils/promiseTimeout';
 import {selectedPlugins as setSelectedPlugins} from './plugins';
-import {getEnabledOrExportPersistedStatePlugins} from '../utils/pluginUtils';
 import {addStatusMessage, removeStatusMessage} from './application';
 import constants from '../fb-stubs/constants';
 import {getInstance} from '../fb-stubs/Logger';
 import {logPlatformSuccessRate} from '../utils/metrics';
-import {getActivePersistentPlugins} from '../utils/pluginUtils';
+import {getExportablePlugins} from '../utils/pluginUtils';
 export const SUPPORT_FORM_PREFIX = 'support-form-v2';
-import {State as PluginStatesState} from './pluginStates';
-import {State as PluginsState} from '../reducers/plugins';
-import {State as PluginMessageQueueState} from '../reducers/pluginMessageQueue';
 import Client from '../Client';
-import {OS} from '../devices/BaseDevice';
+import BaseDevice, {OS} from '../devices/BaseDevice';
 
 const {DEFAULT_SUPPORT_GROUP} = constants;
 
@@ -197,13 +193,11 @@ export class Group {
         selectedGroup: this,
       }),
     );
-    const pluginsList = selectedClient
-      ? getEnabledOrExportPersistedStatePlugins(
-          store.getState().connections.userStarredPlugins,
-          selectedClient,
-          store.getState().plugins,
-        )
-      : [];
+    const pluginsList = getExportablePlugins(
+      store.getState(),
+      store.getState().connections.selectedDevice ?? undefined,
+      selectedClient,
+    );
 
     store.dispatch(
       setSelectedPlugins(
@@ -225,17 +219,11 @@ export class Group {
   }
 
   getWarningMessage(
-    plugins: PluginsState,
-    pluginsState: PluginStatesState,
-    pluginsMessageQueue: PluginMessageQueueState,
+    state: Parameters<typeof getExportablePlugins>[0],
+    device: BaseDevice | undefined,
     client: Client,
   ): string | null {
-    const activePersistentPlugins = getActivePersistentPlugins(
-      pluginsState,
-      pluginsMessageQueue,
-      plugins,
-      client,
-    );
+    const activePersistentPlugins = getExportablePlugins(state, device, client);
     const emptyPlugins: Array<string> = [];
     for (const plugin of this.requiredPlugins) {
       if (

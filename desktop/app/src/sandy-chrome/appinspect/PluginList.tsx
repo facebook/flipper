@@ -20,17 +20,15 @@ import {
 import {Glyph, Layout, styled} from '../../ui';
 import {theme, NUX, Tracked} from 'flipper-plugin';
 import {useDispatch, useStore} from '../../utils/useStore';
-import {getPluginTitle, sortPluginsByName} from '../../utils/pluginUtils';
 import {
-  ClientPluginDefinition,
-  DevicePluginDefinition,
-  PluginDefinition,
-} from '../../plugin';
+  computePluginLists,
+  getPluginTitle,
+  getPluginTooltip,
+} from '../../utils/pluginUtils';
 import {selectPlugin, starPlugin} from '../../reducers/connections';
 import Client from '../../Client';
-import {State} from '../../reducers';
 import BaseDevice from '../../devices/BaseDevice';
-import {PluginDetails, DownloadablePluginDetails} from 'flipper-plugin-lib';
+import {DownloadablePluginDetails} from 'flipper-plugin-lib';
 import {useMemoize} from '../../utils/useMemoize';
 import MetroDevice from '../../devices/MetroDevice';
 import {
@@ -40,7 +38,6 @@ import {
 } from '../../reducers/pluginDownloads';
 import {activatePlugin, uninstallPlugin} from '../../reducers/pluginManager';
 import {BundledPluginDetails} from 'plugin-lib';
-import {filterNewestVersionOfEachPlugin} from '../../dispatcher/plugins';
 import {reportUsage} from '../../utils/metrics';
 
 const {SubMenu} = Menu;
@@ -465,132 +462,6 @@ const PluginGroup = memo(function PluginGroup({
   );
 });
 
-function getPluginTooltip(details: PluginDetails): string {
-  return `${getPluginTitle(details)} (${details.id}@${details.version}) ${
-    details.description ?? ''
-  }`;
-}
-
-export function computePluginLists(
-  device: BaseDevice | undefined,
-  metroDevice: BaseDevice | undefined,
-  client: Client | undefined,
-  plugins: State['plugins'],
-  userStarredPlugins: State['connections']['userStarredPlugins'],
-  _pluginsChanged?: number, // this argument is purely used to invalidate the memoization cache
-) {
-  const devicePlugins: DevicePluginDefinition[] =
-    device?.devicePlugins.map((name) => plugins.devicePlugins.get(name)!) ?? [];
-  const metroPlugins: DevicePluginDefinition[] =
-    metroDevice?.devicePlugins.map(
-      (name) => plugins.devicePlugins.get(name)!,
-    ) ?? [];
-  const enabledPlugins: ClientPluginDefinition[] = [];
-  const disabledPlugins: ClientPluginDefinition[] = [];
-  const unavailablePlugins: [plugin: PluginDetails, reason: string][] = [];
-  const downloadablePlugins: (
-    | DownloadablePluginDetails
-    | BundledPluginDetails
-  )[] = [];
-
-  if (device) {
-    // find all device plugins that aren't part of the current device / metro
-    const detectedDevicePlugins = new Set([
-      ...device.devicePlugins,
-      ...(metroDevice?.devicePlugins ?? []),
-    ]);
-    for (const [name, definition] of plugins.devicePlugins.entries()) {
-      if (!detectedDevicePlugins.has(name)) {
-        unavailablePlugins.push([
-          definition.details,
-          `Device plugin '${getPluginTitle(
-            definition.details,
-          )}' is not supported by the current device type.`,
-        ]);
-      }
-    }
-  }
-
-  // process problematic plugins
-  plugins.disabledPlugins.forEach((plugin) => {
-    unavailablePlugins.push([plugin, 'Plugin is disabled by configuration']);
-  });
-  plugins.gatekeepedPlugins.forEach((plugin) => {
-    unavailablePlugins.push([
-      plugin,
-      `This plugin is only available to members of gatekeeper '${plugin.gatekeeper}'`,
-    ]);
-  });
-  plugins.failedPlugins.forEach(([plugin, error]) => {
-    unavailablePlugins.push([
-      plugin,
-      `Flipper failed to load this plugin: '${error}'`,
-    ]);
-  });
-
-  // process all client plugins
-  if (device && client) {
-    const clientPlugins = Array.from(plugins.clientPlugins.values()).sort(
-      sortPluginsByName,
-    );
-    const favoritePlugins = getFavoritePlugins(
-      device,
-      client,
-      clientPlugins,
-      client && userStarredPlugins[client.query.app],
-      true,
-    );
-    clientPlugins.forEach((plugin) => {
-      if (!client.supportsPlugin(plugin.id)) {
-        unavailablePlugins.push([
-          plugin.details,
-          `Plugin '${getPluginTitle(
-            plugin.details,
-          )}' is installed in Flipper, but not supported by the client application`,
-        ]);
-      } else if (favoritePlugins.includes(plugin)) {
-        enabledPlugins.push(plugin);
-      } else {
-        disabledPlugins.push(plugin);
-      }
-    });
-    const uninstalledMarketplacePlugins = filterNewestVersionOfEachPlugin(
-      [...plugins.bundledPlugins.values()],
-      plugins.marketplacePlugins,
-    ).filter((p) => !plugins.loadedPlugins.has(p.id));
-    uninstalledMarketplacePlugins.forEach((plugin) => {
-      if (client.supportsPlugin(plugin.id)) {
-        downloadablePlugins.push(plugin);
-      } else {
-        unavailablePlugins.push([
-          plugin,
-          `Plugin '${getPluginTitle(
-            plugin,
-          )}' is not installed in Flipper and not supported by the client application`,
-        ]);
-      }
-    });
-  }
-
-  devicePlugins.sort(sortPluginsByName);
-  metroPlugins.sort(sortPluginsByName);
-  unavailablePlugins.sort(([a], [b]) => {
-    return getPluginTitle(a) > getPluginTitle(b) ? 1 : -1;
-  });
-  downloadablePlugins.sort((a, b) => {
-    return getPluginTitle(a) > getPluginTitle(b) ? 1 : -1;
-  });
-
-  return {
-    devicePlugins,
-    metroPlugins,
-    enabledPlugins,
-    disabledPlugins,
-    unavailablePlugins,
-    downloadablePlugins,
-  };
-}
-
 // Dimensions are hardcoded as they correlate strongly
 const PluginMenu = styled(Menu)({
   userSelect: 'none',
@@ -651,29 +522,4 @@ function iconStyle(disabled: boolean) {
     width: 24,
     height: 24,
   };
-}
-
-function getFavoritePlugins(
-  device: BaseDevice,
-  client: Client,
-  allPlugins: PluginDefinition[],
-  starredPlugins: undefined | string[],
-  returnFavoredPlugins: boolean, // if false, unfavoried plugins are returned
-): PluginDefinition[] {
-  if (device.isArchived) {
-    if (!returnFavoredPlugins) {
-      return [];
-    }
-    // for archived plugins, all stored plugins are enabled
-    return allPlugins.filter(
-      (plugin) => client.plugins.indexOf(plugin.id) !== -1,
-    );
-  }
-  if (!starredPlugins || !starredPlugins.length) {
-    return returnFavoredPlugins ? [] : allPlugins;
-  }
-  return allPlugins.filter((plugin) => {
-    const idx = starredPlugins.indexOf(plugin.id);
-    return idx === -1 ? !returnFavoredPlugins : returnFavoredPlugins;
-  });
 }

@@ -938,6 +938,7 @@ test('Sandy plugins support isPluginSupported + selectPlugin', async () => {
     definition,
     {
       additionalPlugins: [definition2, definition3],
+      dontEnableAdditionalPlugins: true,
     },
   );
 

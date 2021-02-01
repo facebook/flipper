@@ -159,6 +159,9 @@ class RowComponent extends Component<RowComponentProps> {
   }
 }
 
+/**
+ * @deprecated use Ant Design instead
+ */
 export default class ListView extends Component<Props, State> {
   state: State = {selectedElements: new Set([])};
   static getDerivedStateFromProps(props: Props, _state: State) {

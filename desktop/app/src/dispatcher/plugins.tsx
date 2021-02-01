@@ -7,13 +7,12 @@
  * @format
  */
 
-import {Store} from '../reducers/index';
-import {Logger} from '../fb-interfaces/Logger';
-import {PluginDefinition} from '../plugin';
+import type {Store} from '../reducers/index';
+import type {Logger} from '../fb-interfaces/Logger';
+import type {PluginDefinition} from '../plugin';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import adbkit from 'adbkit';
-import * as Flipper from '../index';
 import {
   registerPlugins,
   addGatekeepedPlugins,
@@ -52,7 +51,7 @@ export default async (store: Store, logger: Logger) => {
   const globalObject: any = typeof window === 'undefined' ? global : window;
   globalObject.React = React;
   globalObject.ReactDOM = ReactDOM;
-  globalObject.Flipper = Flipper;
+  globalObject.Flipper = require('../index');
   globalObject.adbkit = adbkit;
   globalObject.FlipperPlugin = FlipperPluginSDK;
   globalObject.Immer = Immer;

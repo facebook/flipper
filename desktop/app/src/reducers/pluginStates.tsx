@@ -7,7 +7,7 @@
  * @format
  */
 
-import {Actions} from '.';
+import type {Actions} from '.';
 import {deconstructPluginKey} from '../utils/clientUtils';
 
 export type State = {
@@ -31,10 +31,8 @@ export type Action =
       payload: {clientId: string; devicePlugins: Set<string>};
     };
 
-const INITIAL_STATE: State = {};
-
 export default function reducer(
-  state: State | undefined = INITIAL_STATE,
+  state: State | undefined = {},
   action: Actions,
 ): State {
   if (action.type === 'SET_PLUGIN_STATE') {

@@ -59,47 +59,6 @@ exports[`SettingsSheet snapshot with nothing enabled 1`] = `
             />
           </div>
         </div>
-        <div
-          className="css-18abd42-View-FlexBox-FlexColumn ecr18to0"
-        >
-          <div
-            className="css-auhar3-TooltipContainer e1abcqbd0"
-            onMouseEnter={[Function]}
-            onMouseLeave={[Function]}
-          >
-            <div
-              className="css-1jrm6r3"
-            >
-              <div
-                className="css-wospjg-View-FlexBox-FlexRow epz0qe20"
-                style={
-                  Object {
-                    "alignItems": "center",
-                  }
-                }
-              >
-                <span
-                  className="css-xsnw23-Text e19o3fcp0"
-                >
-                  TestPlugin
-                </span>
-                <div
-                  className="css-t4wmtk-View-FlexBox-Spacer e13mj6h80"
-                />
-                <input
-                  checked={false}
-                  className="css-1pxrk7-CheckboxContainer e28aqfo0"
-                  disabled={false}
-                  onChange={[Function]}
-                  type="checkbox"
-                />
-              </div>
-            </div>
-            <div
-              className="css-1p0wwd3-View"
-            />
-          </div>
-        </div>
       </div>
     </div>
     <div
@@ -233,7 +192,7 @@ exports[`SettingsSheet snapshot with one plugin enabled 1`] = `
                   className="css-t4wmtk-View-FlexBox-Spacer e13mj6h80"
                 />
                 <input
-                  checked={true}
+                  checked={false}
                   className="css-1pxrk7-CheckboxContainer e28aqfo0"
                   disabled={false}
                   onChange={[Function]}
@@ -277,7 +236,7 @@ exports[`SettingsSheet snapshot with one plugin enabled 1`] = `
         >
           <button
             className="ant-btn ant-btn-primary"
-            disabled={false}
+            disabled={true}
             onClick={[Function]}
             type="button"
           >
