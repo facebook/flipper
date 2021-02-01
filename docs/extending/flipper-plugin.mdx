@@ -142,6 +142,13 @@ Usage: `client.onExport(callback: (idler, onStatusMessage) => Promise<state>)`
 Overrides the default serialization behavior of this plugin. Should return a promise with state that is to be stored. 
 This process is async, so it is possible to first fetch some additional state from the device. 
 
+#### `onImport`
+
+Usage: `client.onImport(callback: (snapshot) => void)`
+
+Overrides the default de-serialization behavior of this plugin. Use it to update the state based on the snapshot data.
+This hook will be called immediately after constructing the plugin instance.
+
 ### Methods
 
 #### `send`

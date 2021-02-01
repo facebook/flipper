@@ -329,7 +329,6 @@ async function addSaltToDeviceSerial({
   selectedPlugins,
   pluginStates2,
   devicePluginStates,
-  idler,
 }: AddSaltToDeviceSerialOptions): Promise<ExportType> {
   const {serial} = device;
   const newSerial = salt + '-' + serial;

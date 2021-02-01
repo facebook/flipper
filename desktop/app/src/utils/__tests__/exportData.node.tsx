@@ -1380,3 +1380,141 @@ test('Sandy device plugins with custom export are export properly', async () => 
     [sandyDeviceTestPlugin.id]: {customExport: true},
   });
 });
+
+test('Sandy plugin with custom import', async () => {
+  const plugin = new _SandyPluginDefinition(
+    TestUtils.createMockPluginDetails(),
+    {
+      plugin(client: PluginClient) {
+        const counter = createState(0);
+        client.onImport((data) => {
+          counter.set(data.count);
+        });
+
+        return {
+          counter,
+        };
+      },
+      Component() {
+        return null;
+      },
+    },
+  );
+
+  const {store} = await renderMockFlipperWithPlugin(plugin);
+
+  const data = {
+    clients: [
+      {
+        id:
+          'TestApp#Android#MockAndroidDevice#2e52cea6-94b0-4ea1-b9a8-c9135ede14ca-serial',
+        query: {
+          app: 'TestApp',
+          device: 'MockAndroidDevice',
+          device_id: '2e52cea6-94b0-4ea1-b9a8-c9135ede14ca-serial',
+          os: 'Android',
+          sdk_version: 4,
+        },
+      },
+    ],
+    device: {
+      deviceType: 'physical',
+      logs: [],
+      os: 'Android',
+      serial: '2e52cea6-94b0-4ea1-b9a8-c9135ede14ca-serial',
+      title: 'MockAndroidDevice',
+    },
+    deviceScreenshot: null,
+    fileVersion: '0.9.99',
+    flipperReleaseRevision: undefined,
+    pluginStates2: {
+      'TestApp#Android#MockAndroidDevice#2e52cea6-94b0-4ea1-b9a8-c9135ede14ca-serial': {
+        [plugin.id]: {
+          count: 4,
+        },
+      },
+    },
+    store: {
+      activeNotifications: [],
+      pluginStates: {},
+    },
+  };
+
+  await importDataToStore('unittest.json', JSON.stringify(data), store);
+
+  expect(
+    store
+      .getState()
+      .connections.clients[0].sandyPluginStates.get(plugin.id)
+      ?.instanceApi.counter.get(),
+  ).toBe(0);
+  expect(
+    store
+      .getState()
+      .connections.clients[1].sandyPluginStates.get(plugin.id)
+      ?.instanceApi.counter.get(),
+  ).toBe(4);
+});
+
+test('Sandy device plugin with custom import', async () => {
+  const plugin = new _SandyPluginDefinition(
+    TestUtils.createMockPluginDetails(),
+    {
+      supportsDevice: () => true,
+      devicePlugin(client: DevicePluginClient) {
+        const counter = createState(0);
+        client.onImport((data) => {
+          counter.set(data.count);
+        });
+
+        return {
+          counter,
+        };
+      },
+      Component() {
+        return null;
+      },
+    },
+  );
+
+  const data = {
+    clients: [],
+    device: {
+      deviceType: 'archivedPhysical',
+      logs: [],
+      os: 'Android',
+      serial: '2e52cea6-94b0-4ea1-b9a8-c9135ede14ca-serial',
+      title: 'MockAndroidDevice',
+      pluginStates: {
+        [plugin.id]: {
+          count: 2,
+        },
+      },
+    },
+    deviceScreenshot: null,
+    fileVersion: '0.9.99',
+    flipperReleaseRevision: undefined,
+    pluginStates2: {},
+    store: {
+      activeNotifications: [],
+      pluginStates: {},
+    },
+  };
+
+  const {store} = await renderMockFlipperWithPlugin(plugin);
+
+  await importDataToStore('unittest.json', JSON.stringify(data), store);
+
+  expect(
+    store
+      .getState()
+      .connections.devices[0].sandyPluginStates.get(plugin.id)
+      ?.instanceApi.counter.get(),
+  ).toBe(0);
+  expect(
+    store
+      .getState()
+      .connections.devices[1].sandyPluginStates.get(plugin.id)
+      ?.instanceApi.counter.get(),
+  ).toBe(2);
+});

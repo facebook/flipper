@@ -15,11 +15,13 @@ import {FlipperLib} from './FlipperLib';
 import {Device, RealFlipperDevice} from './DevicePlugin';
 import {batched} from '../state/batch';
 import {Idler} from '../utils/Idler';
+import {message} from 'antd';
 
 type StateExportHandler = (
   idler: Idler,
   onStatusMessage: (msg: string) => void,
 ) => Promise<Record<string, any>>;
+type StateImportHandler = (data: Record<string, any>) => void;
 
 export interface BasePluginClient {
   readonly device: Device;
@@ -49,6 +51,12 @@ export interface BasePluginClient {
    * Overrides the default export behavior and ignores any 'persist' flags of state.
    */
   onExport(exporter: StateExportHandler): void;
+
+  /**
+   * Triggered directly after the plugin instance was created, if the plugin is being restored from a snapshot.
+   * Should be the inverse of the onExport handler
+   */
+  onImport(handler: StateImportHandler): void;
 
   /**
    * Register menu entries in the Flipper toolbar
@@ -96,12 +104,15 @@ export abstract class BasePluginInstance {
 
   // temporarily field that is used during deserialization
   initialStates?: Record<string, any>;
+
   // all the atoms that should be serialized when making an export / import
   rootStates: Record<string, Atom<any>> = {};
   // last seen deeplink
   lastDeeplink?: any;
   // export handler
   exportHandler?: StateExportHandler;
+  // import handler
+  importHandler?: StateImportHandler;
 
   menuEntries: NormalizedMenuEntry[] = [];
 
@@ -139,6 +150,37 @@ export abstract class BasePluginInstance {
     try {
       this.instanceApi = batched(factory)();
     } finally {
+      // check if we have both an import handler and rootStates; probably dev error
+      if (this.importHandler && Object.keys(this.rootStates).length > 0) {
+        throw new Error(
+          `A custom onImport handler was defined for plugin '${
+            this.definition.id
+          }', the 'persist' option of states ${Object.keys(
+            this.rootStates,
+          ).join(', ')} should not be set.`,
+        );
+      }
+      if (this.initialStates) {
+        if (this.importHandler) {
+          try {
+            this.importHandler(this.initialStates);
+          } catch (e) {
+            const msg = `Error occurred when importing date for plugin '${this.definition.id}': '${e}`;
+            console.error(msg, e);
+            message.error(msg);
+          }
+        } else {
+          for (const key in this.rootStates) {
+            if (key in this.initialStates) {
+              this.rootStates[key].set(this.initialStates[key]);
+            } else {
+              console.warn(
+                `Tried to initialize plugin with existing data, however data for "${key}" is missing. Was the export created with a different Flipper version?`,
+              );
+            }
+          }
+        }
+      }
       this.initialStates = undefined;
       setCurrentPluginInstance(undefined);
     }
@@ -164,6 +206,12 @@ export abstract class BasePluginInstance {
           throw new Error('onExport handler already set');
         }
         this.exportHandler = cb;
+      },
+      onImport: (cb) => {
+        if (this.importHandler) {
+          throw new Error('onImport handler already set');
+        }
+        this.importHandler = cb;
       },
       addMenuEntry: (...entries) => {
         for (const entry of entries) {

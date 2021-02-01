@@ -73,16 +73,7 @@ export function createState<T>(
 ): Atom<T> {
   const atom = new AtomValue<T>(initialValue);
   if (getCurrentPluginInstance() && options.persist) {
-    const {initialStates, rootStates} = getCurrentPluginInstance()!;
-    if (initialStates) {
-      if (options.persist in initialStates) {
-        atom.set(initialStates[options.persist]);
-      } else {
-        console.warn(
-          `Tried to initialize plugin with existing data, however data for "${options.persist}" is missing. Was the export created with a different Flipper version?`,
-        );
-      }
-    }
+    const {rootStates} = getCurrentPluginInstance()!;
     if (rootStates[options.persist]) {
       throw new Error(
         `Some other state is already persisting with key "${options.persist}"`,

@@ -128,16 +128,13 @@ test('device plugins support non-serializable state', async () => {
 });
 
 test('device plugins support restoring state', async () => {
-  const {exportState} = TestUtils.startPlugin(
+  const {exportState, instance} = TestUtils.startPlugin(
     {
       plugin() {
         const field1 = createState(1, {persist: 'field1'});
         const field2 = createState(2);
         const field3 = createState(3, {persist: 'field3'});
-        expect(field1.get()).toBe('a');
-        expect(field2.get()).toBe(2);
-        expect(field3.get()).toBe('b');
-        return {};
+        return {field1, field2, field3};
       },
       Component() {
         return null;
@@ -147,5 +144,10 @@ test('device plugins support restoring state', async () => {
       initialState: {field1: 'a', field3: 'b'},
     },
   );
+
+  const {field1, field2, field3} = instance;
+  expect(field1.get()).toBe('a');
+  expect(field2.get()).toBe(2);
+  expect(field3.get()).toBe('b');
   expect(exportState()).toEqual({field1: 'a', field3: 'b'});
 });
