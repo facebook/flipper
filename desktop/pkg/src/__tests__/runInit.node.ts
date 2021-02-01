@@ -70,7 +70,7 @@ test('It generates the correct files', async () => {
         \\"prepack\\": \\"flipper-pkg lint && flipper-pkg bundle\\",
         \\"build\\": \\"flipper-pkg bundle\\",
         \\"watch\\": \\"flipper-pkg bundle --watch\\",
-        \\"test\\": \\"jest\\"
+        \\"test\\": \\"jest --no-watchman\\"
       },
       \\"peerDependencies\\": {
         \\"flipper\\": \\"latest\\",
@@ -80,6 +80,7 @@ test('It generates the correct files', async () => {
       \\"devDependencies\\": {
         \\"@babel/preset-react\\": \\"latest\\",
         \\"@babel/preset-typescript\\": \\"latest\\",
+        \\"@testing-library/react\\": \\"latest\\",
         \\"@types/jest\\": \\"latest\\",
         \\"@types/react\\": \\"latest\\",
         \\"@types/react-dom\\": \\"latest\\",
@@ -87,7 +88,8 @@ test('It generates the correct files', async () => {
         \\"flipper\\": \\"latest\\",
         \\"flipper-plugin\\": \\"latest\\",
         \\"flipper-pkg\\": \\"latest\\",
-        \\"jest\\": \\"latest\\"
+        \\"jest\\": \\"latest\\",
+        \\"typescript\\": \\"latest\\"
       }
     }
     ",
