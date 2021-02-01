@@ -1501,3 +1501,133 @@ test('Sandy device plugin with custom import', async () => {
       ?.instanceApi.counter.get(),
   ).toBe(2);
 });
+
+test('Sandy plugins with complex data are imported  / exported correctly', async () => {
+  const deviceplugin = new _SandyPluginDefinition(
+    TestUtils.createMockPluginDetails(),
+    {
+      plugin() {
+        const m = createState(new Map([['a', 1]]), {persist: 'map'});
+        const s = createState(new Set([{x: 2}]), {persist: 'set'});
+        const d = createState(new Date(1611913002865), {persist: 'date'});
+        return {
+          m,
+          s,
+          d,
+        };
+      },
+      Component() {
+        return null;
+      },
+    },
+  );
+
+  const {store} = await renderMockFlipperWithPlugin(deviceplugin);
+
+  const data = await exportStore(store);
+  expect(Object.values(data.exportStoreData.pluginStates2)).toMatchObject([
+    {
+      TestPlugin: {
+        date: {
+          __flipper_object_type__: 'Date',
+          // no data asserted, since that is TZ sensitve
+        },
+        map: {
+          __flipper_object_type__: 'Map',
+          data: [['a', 1]],
+        },
+        set: {
+          __flipper_object_type__: 'Set',
+          data: [
+            {
+              x: 2,
+            },
+          ],
+        },
+      },
+    },
+  ]);
+
+  await importDataToStore('unittest.json', data.serializedString, store);
+  const api = store
+    .getState()
+    .connections.clients[1].sandyPluginStates.get(deviceplugin.id)?.instanceApi;
+  expect(api.m.get()).toMatchInlineSnapshot(`
+    Map {
+      "a" => 1,
+    }
+  `);
+  expect(api.s.get()).toMatchInlineSnapshot(`
+    Set {
+      Object {
+        "x": 2,
+      },
+    }
+  `);
+  expect(api.d.get()).toEqual(new Date(1611913002865));
+});
+
+test('Sandy device plugins with complex data are imported  / exported correctly', async () => {
+  const deviceplugin = new _SandyPluginDefinition(
+    TestUtils.createMockPluginDetails({id: 'deviceplugin'}),
+    {
+      supportsDevice() {
+        return true;
+      },
+      devicePlugin() {
+        const m = createState(new Map([['a', 1]]), {persist: 'map'});
+        const s = createState(new Set([{x: 2}]), {persist: 'set'});
+        const d = createState(new Date(1611913002865), {persist: 'date'});
+        return {
+          m,
+          s,
+          d,
+        };
+      },
+      Component() {
+        return null;
+      },
+    },
+  );
+
+  const {store} = await renderMockFlipperWithPlugin(deviceplugin);
+
+  const data = await exportStore(store);
+  expect(data.exportStoreData.device?.pluginStates).toMatchObject({
+    deviceplugin: {
+      date: {
+        __flipper_object_type__: 'Date',
+        // no data asserted, since that is TZ sensitve
+      },
+      map: {
+        __flipper_object_type__: 'Map',
+        data: [['a', 1]],
+      },
+      set: {
+        __flipper_object_type__: 'Set',
+        data: [
+          {
+            x: 2,
+          },
+        ],
+      },
+    },
+  });
+  await importDataToStore('unittest.json', data.serializedString, store);
+  const api = store
+    .getState()
+    .connections.devices[1].sandyPluginStates.get(deviceplugin.id)?.instanceApi;
+  expect(api.m.get()).toMatchInlineSnapshot(`
+    Map {
+      "a" => 1,
+    }
+  `);
+  expect(api.s.get()).toMatchInlineSnapshot(`
+    Set {
+      Object {
+        "x": 2,
+      },
+    }
+  `);
+  expect(api.d.get()).toEqual(new Date(1611913002865));
+});

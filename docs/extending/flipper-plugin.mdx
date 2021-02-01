@@ -139,8 +139,10 @@ Trigger when the users navigates to this plugin using a deeplink, either from an
 
 Usage: `client.onExport(callback: (idler, onStatusMessage) => Promise<state>)`
 
-Overrides the default serialization behavior of this plugin. Should return a promise with state that is to be stored. 
+Overrides the default serialization behavior of this plugin. Should return a promise with persistable state that is to be stored. 
 This process is async, so it is possible to first fetch some additional state from the device. 
+
+Serializable is defined as: non-cyclic data, consisting purely of primitive values, plain objects, arrays or Date, Set or Map objects.
 
 #### `onImport`
 
@@ -148,6 +150,29 @@ Usage: `client.onImport(callback: (snapshot) => void)`
 
 Overrides the default de-serialization behavior of this plugin. Use it to update the state based on the snapshot data.
 This hook will be called immediately after constructing the plugin instance.
+
+To synchonize the types of the data between `onImport` and `onExport`, it is possible to provide a type as generic to both hooks.
+The next example stores `counter` under the `count` field, and stores it as string rather than as number.
+
+```typescript
+type SerializedState = {
+  count: string;
+}
+
+export function plugin(client: PluginClient) {
+  const counter = createState(0);
+
+  client.onExport<SerializedState>(() => {
+    return {
+      count: "" + counter.get()
+    }
+  })
+
+  client.onImport<SerializedState>((data) => {
+    counter.set(parseInt(data.count, 10));
+  });
+}
+```
 
 ### Methods
 
@@ -372,7 +397,9 @@ Its value should be treated as immutable and is initialized by default using the
 
 Optionally, `options` can be provided when creating state. Supported options:
 
-* `persist: string`. If the `persist` value is set, this state container will be serialized when n Flipper snapshot export is being made. When a snapshot is imported into Flipper, and plugins are initialized, this state container will load its initial value from the snapshot, rather than using the `initialValue` parameter. The `persist` key should be unique within the plugin and only be set if the state stored in this container is JSON serializable, and won't become unreasonably large. See also `exportState` and `initialState` in the [`TestUtils`](#testutils) section.
+* `persist: string`. If the `persist` value is set, this state container will be serialized when n Flipper snapshot export is being made. When a snapshot is imported into Flipper, and plugins are initialized, this state container will load its initial value from the snapshot, rather than using the `initialValue` parameter. The `persist` key should be unique within the plugin and only be set if the state stored in this container is serializable and won't become unreasonably large. See also `exportState` and `initialState` in the [`TestUtils`](#testutils) section.
+
+Serializable is defined as: non-cyclic data, consisting purely of primitive values, plain objects, arrays or Date, Set or Map objects.
 
 #### The state atom object
 

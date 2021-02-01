@@ -121,7 +121,7 @@ test('export / import plugin does work', async () => {
       "logs": Array [
         Object {
           "app": "X",
-          "date": 1611854112859,
+          "date": 2021-01-28T17:15:12.859Z,
           "message": "test1",
           "pid": 0,
           "tag": "test",
@@ -130,7 +130,7 @@ test('export / import plugin does work', async () => {
         },
         Object {
           "app": "Y",
-          "date": 1611854117859,
+          "date": 2021-01-28T17:15:17.859Z,
           "message": "test2",
           "pid": 2,
           "tag": "test",

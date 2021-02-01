@@ -49,6 +49,7 @@ import {getPluginTitle} from './pluginUtils';
 import {capture} from './screenshot';
 import {uploadFlipperMedia} from '../fb-stubs/user';
 import {Idler} from 'flipper-plugin';
+import {deserializeObject, makeObjectSerializable} from './serialization';
 
 export const IMPORT_FLIPPER_TRACE_EVENT = 'import-flipper-trace';
 export const EXPORT_FLIPPER_TRACE_EVENT = 'export-flipper-trace';
@@ -266,9 +267,14 @@ async function exportSandyPluginStates(
       if (!res[client.id]) {
         res[client.id] = {};
       }
-      res[client.id][pluginId] = await client.sandyPluginStates
-        .get(pluginId)!
-        .exportState(idler, statusUpdate);
+      res[client.id][pluginId] = await makeObjectSerializable(
+        await client.sandyPluginStates
+          .get(pluginId)!
+          .exportState(idler, statusUpdate),
+        idler,
+        statusUpdate,
+        'Serializing plugin: ' + pluginId,
+      );
     }
   }
   return res;
@@ -453,7 +459,12 @@ export async function processStore(
       idler,
     );
 
-    const devicePluginStates = await device.exportState(idler, statusUpdate);
+    const devicePluginStates = await makeObjectSerializable(
+      await device.exportState(idler, statusUpdate),
+      idler,
+      statusUpdate,
+      'Serializing device plugins',
+    );
 
     statusUpdate('Uploading screenshot...');
     const deviceScreenshotLink =
@@ -781,20 +792,9 @@ export function importDataToStore(source: string, data: string, store: Store) {
     source,
     supportRequestDetails,
   });
-  const devices = store.getState().connections.devices;
-  const matchedDevices = devices.filter(
-    (availableDevice) => availableDevice.serial === serial,
-  );
-  if (matchedDevices.length > 0) {
-    store.dispatch({
-      type: 'SELECT_DEVICE',
-      payload: matchedDevices[0],
-    });
-    return;
-  }
   archivedDevice.loadDevicePlugins(
     store.getState().plugins.devicePlugins,
-    device.pluginStates,
+    deserializeObject(device.pluginStates),
   );
   store.dispatch({
     type: 'REGISTER_DEVICE',
@@ -823,7 +823,9 @@ export function importDataToStore(source: string, data: string, store: Store) {
   });
 
   clients.forEach((client: {id: string; query: ClientQuery}) => {
-    const sandyPluginStates = json.pluginStates2[client.id] || {};
+    const sandyPluginStates = deserializeObject(
+      json.pluginStates2[client.id] || {},
+    );
     const clientPlugins: Array<string> = [
       ...keys
         .filter((key) => {

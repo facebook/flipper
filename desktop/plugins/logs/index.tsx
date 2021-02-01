@@ -321,7 +321,7 @@ export function supportsDevice(device: Device) {
 }
 
 type ExportedState = {
-  logs: (Omit<DeviceLogEntry, 'date'> & {date: number})[];
+  logs: DeviceLogEntry[];
 };
 
 export function devicePlugin(client: DevicePluginClient) {
@@ -346,24 +346,13 @@ export function devicePlugin(client: DevicePluginClient) {
       logs: entries
         .get()
         .slice(-10000)
-        .map((e) => ({
-          ...e.entry,
-          date: e.entry.date.getTime(),
-        })),
+        .map((e) => e.entry),
     };
   });
 
   client.onImport<ExportedState>((data) => {
     const imported = addEntriesToState(
-      data.logs.map((log) =>
-        processEntry(
-          {
-            ...log,
-            date: new Date(log.date),
-          },
-          '' + counter++,
-        ),
-      ),
+      data.logs.map((log) => processEntry(log, '' + counter++)),
     );
     rows.set(imported.rows);
     entries.set(imported.entries);
