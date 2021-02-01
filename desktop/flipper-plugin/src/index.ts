@@ -69,6 +69,7 @@ export {
   useLogger,
   _LoggerContext,
 } from './utils/Logger';
+export {Idler} from './utils/Idler';
 
 // It's not ideal that this exists in flipper-plugin sources directly,
 // but is the least pain for plugin authors.

@@ -9,15 +9,9 @@
 
 import {CancelledPromiseError} from './errors';
 import {sleep} from './promiseTimeout';
+import {Idler} from 'flipper-plugin';
 
-export interface BaseIdler {
-  shouldIdle(): boolean;
-  idle(): Promise<void>;
-  cancel(): void;
-  isCancelled(): boolean;
-}
-
-export class Idler implements BaseIdler {
+export class IdlerImpl implements Idler {
   private lastIdle = performance.now();
   private kill = false;
 
@@ -57,11 +51,15 @@ export class Idler implements BaseIdler {
 }
 
 // This smills like we should be using generators :)
-export class TestIdler implements BaseIdler {
+export class TestIdler implements Idler {
   private resolver?: () => void;
   private kill = false;
   private autoRun = false;
   private hasProgressed = false;
+
+  constructor(autorun = false) {
+    this.autoRun = autorun;
+  }
 
   shouldIdle() {
     if (this.kill) {

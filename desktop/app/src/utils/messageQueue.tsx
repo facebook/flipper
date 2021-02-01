@@ -20,11 +20,11 @@ import {
   Message,
   DEFAULT_MAX_QUEUE_SIZE,
 } from '../reducers/pluginMessageQueue';
-import {Idler, BaseIdler} from './Idler';
+import {IdlerImpl} from './Idler';
 import {pluginIsStarred, getSelectedPluginKey} from '../reducers/connections';
 import {deconstructPluginKey} from './clientUtils';
 import {defaultEnabledBackgroundPlugins} from './pluginUtils';
-import {batch, _SandyPluginInstance} from 'flipper-plugin';
+import {batch, Idler, _SandyPluginInstance} from 'flipper-plugin';
 import {addBackgroundStat} from './pluginStats';
 
 function processMessageClassic(
@@ -168,7 +168,7 @@ export async function processMessageQueue(
   pluginKey: string,
   store: MiddlewareAPI,
   progressCallback?: (progress: {current: number; total: number}) => void,
-  idler: BaseIdler = new Idler(),
+  idler: Idler = new IdlerImpl(),
 ): Promise<boolean> {
   if (!_SandyPluginInstance.is(plugin) && !plugin.persistedStateReducer) {
     return true;

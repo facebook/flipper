@@ -42,7 +42,7 @@ export {connect} from 'react-redux';
 export {selectPlugin, StaticView} from './reducers/connections';
 export {writeBufferToFile, bufferToBlob} from './utils/screenshot';
 export {getPluginKey, getPersistedState} from './utils/pluginUtils';
-export {Idler} from './utils/Idler';
+export {Idler} from 'flipper-plugin';
 export {Store, MiddlewareAPI, State as ReduxState} from './reducers/index';
 export {default as BaseDevice} from './devices/BaseDevice';
 export {DeviceLogEntry, LogLevel, DeviceLogListener} from 'flipper-plugin';

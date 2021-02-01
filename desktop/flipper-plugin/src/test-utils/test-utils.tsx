@@ -37,6 +37,7 @@ import {
 import {BasePluginInstance} from '../plugin/PluginBase';
 import {FlipperLib} from '../plugin/FlipperLib';
 import {stubLogger} from '../utils/Logger';
+import {Idler} from '../utils/Idler';
 
 type Renderer = RenderResult<typeof queries>;
 
@@ -95,9 +96,14 @@ interface BasePluginResult {
   triggerDeepLink(deeplink: unknown): void;
 
   /**
-   * Grab all the persistable state
+   * Grab all the persistable state, but will ignore any onExport handler
    */
-  exportState(): any;
+  exportState(): Record<string, any>;
+
+  /**
+   * Grab all the persistable state, respecting onExport handlers
+   */
+  exportStateAsync(): Promise<Record<string, any>>;
 
   /**
    * Trigger menu entry by label
@@ -367,7 +373,9 @@ function createBasePluginResult(
     flipperLib: pluginInstance.flipperLib,
     activate: () => pluginInstance.activate(),
     deactivate: () => pluginInstance.deactivate(),
-    exportState: () => pluginInstance.exportState(),
+    exportStateAsync: () =>
+      pluginInstance.exportState(createStubIdler(), () => {}),
+    exportState: () => pluginInstance.exportStateSync(),
     triggerDeepLink: (deepLink: unknown) => {
       pluginInstance.triggerDeepLink(deepLink);
     },
@@ -419,6 +427,21 @@ function createMockDevice(options?: StartPluginOptions): RealFlipperDevice {
     },
     addLogEntry(entry: DeviceLogEntry) {
       logListeners.forEach((f) => f?.(entry));
+    },
+  };
+}
+
+function createStubIdler(): Idler {
+  return {
+    shouldIdle() {
+      return false;
+    },
+    idle() {
+      return Promise.resolve();
+    },
+    cancel() {},
+    isCancelled() {
+      return false;
     },
   };
 }

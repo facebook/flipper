@@ -7,7 +7,8 @@
  * @format
  */
 
-import {Idler} from './Idler';
+import {Idler} from 'flipper-plugin';
+
 export async function serialize(
   obj: Object,
   idler?: Idler,

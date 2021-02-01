@@ -43,7 +43,7 @@ import {selectPlugin} from './reducers/connections';
 import {State as Store, MiddlewareAPI} from './reducers/index';
 import {activateMenuItems} from './MenuBar';
 import {Message} from './reducers/pluginMessageQueue';
-import {Idler} from './utils/Idler';
+import {IdlerImpl} from './utils/Idler';
 import {processMessageQueue} from './utils/messageQueue';
 import {ToggleButton, SmallText, Layout} from './ui';
 import {theme, TrackingScope, _SandyPluginRenderer} from 'flipper-plugin';
@@ -173,7 +173,7 @@ class PluginContainer extends PureComponent<Props, State> {
     }
   };
 
-  idler?: Idler;
+  idler?: IdlerImpl;
   pluginBeingProcessed: string | null = null;
 
   state = {
@@ -237,7 +237,7 @@ class PluginContainer extends PureComponent<Props, State> {
         pendingMessages?.length
       ) {
         const start = Date.now();
-        this.idler = new Idler();
+        this.idler = new IdlerImpl();
         processMessageQueue(
           isSandyPlugin(activePlugin)
             ? target.sandyPluginStates.get(activePlugin.id)!

@@ -14,6 +14,12 @@ import {MenuEntry, NormalizedMenuEntry, normalizeMenuEntry} from './MenuEntry';
 import {FlipperLib} from './FlipperLib';
 import {Device, RealFlipperDevice} from './DevicePlugin';
 import {batched} from '../state/batch';
+import {Idler} from '../utils/Idler';
+
+type StateExportHandler = (
+  idler: Idler,
+  onStatusMessage: (msg: string) => void,
+) => Promise<Record<string, any>>;
 
 export interface BasePluginClient {
   readonly device: Device;
@@ -37,6 +43,12 @@ export interface BasePluginClient {
    * Triggered when this plugin is opened through a deeplink
    */
   onDeepLink(cb: (deepLink: unknown) => void): void;
+
+  /**
+   * Triggered when the current plugin is being exported and should create a snapshot of the state exported.
+   * Overrides the default export behavior and ignores any 'persist' flags of state.
+   */
+  onExport(exporter: StateExportHandler): void;
 
   /**
    * Register menu entries in the Flipper toolbar
@@ -88,6 +100,8 @@ export abstract class BasePluginInstance {
   rootStates: Record<string, Atom<any>> = {};
   // last seen deeplink
   lastDeeplink?: any;
+  // export handler
+  exportHandler?: StateExportHandler;
 
   menuEntries: NormalizedMenuEntry[] = [];
 
@@ -144,6 +158,12 @@ export abstract class BasePluginInstance {
       },
       onDestroy: (cb) => {
         this.events.on('destroy', batched(cb));
+      },
+      onExport: (cb) => {
+        if (this.exportHandler) {
+          throw new Error('onExport handler already set');
+        }
+        this.exportHandler = cb;
       },
       addMenuEntry: (...entries) => {
         for (const entry of entries) {
@@ -204,14 +224,30 @@ export abstract class BasePluginInstance {
     }
   }
 
-  exportState() {
+  exportStateSync() {
+    // This method is mainly intended for unit testing
+    if (this.exportHandler) {
+      throw new Error(
+        'Cannot export sync a plugin that does have an export handler',
+      );
+    }
     return Object.fromEntries(
       Object.entries(this.rootStates).map(([key, atom]) => [key, atom.get()]),
     );
   }
 
+  async exportState(
+    idler: Idler,
+    onStatusMessage: (msg: string) => void,
+  ): Promise<Record<string, any>> {
+    if (this.exportHandler) {
+      return await this.exportHandler(idler, onStatusMessage);
+    }
+    return this.exportStateSync();
+  }
+
   isPersistable(): boolean {
-    return Object.keys(this.rootStates).length > 0;
+    return !!this.exportHandler || Object.keys(this.rootStates).length > 0;
   }
 
   protected assertNotDestroyed() {

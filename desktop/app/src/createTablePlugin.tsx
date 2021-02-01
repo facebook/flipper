@@ -24,7 +24,7 @@ import {List, Map as ImmutableMap} from 'immutable';
 import React from 'react';
 import {KeyboardActions} from './MenuBar';
 import {TableBodyRow} from './ui';
-import {Idler} from './utils/Idler';
+import {Idler} from 'flipper-plugin';
 
 type ID = string;
 

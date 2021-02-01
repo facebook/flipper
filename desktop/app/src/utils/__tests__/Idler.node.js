@@ -7,11 +7,11 @@
  * @format
  */
 
-import {Idler, TestIdler} from '../Idler.tsx';
+import {IdlerImpl, TestIdler} from '../Idler.tsx';
 import {sleep} from '../promiseTimeout.tsx';
 
 test('Idler should interrupt', async () => {
-  const idler = new Idler();
+  const idler = new IdlerImpl();
   let i = 0;
   try {
     for (; i < 500; i++) {
@@ -30,7 +30,7 @@ test('Idler should interrupt', async () => {
 });
 
 test('Idler should want to idle', async () => {
-  const idler = new Idler(100);
+  const idler = new IdlerImpl(100);
   expect(idler.shouldIdle()).toBe(false);
   await sleep(10);
   expect(idler.shouldIdle()).toBe(false);

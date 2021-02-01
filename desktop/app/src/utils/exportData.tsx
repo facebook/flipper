@@ -35,7 +35,7 @@ import {readCurrentRevision} from './packageMetadata';
 import {tryCatchReportPlatformFailures} from './metrics';
 import {promisify} from 'util';
 import promiseTimeout from './promiseTimeout';
-import {Idler} from './Idler';
+import {TestIdler} from './Idler';
 import {setStaticView} from '../reducers/connections';
 import {
   resetSupportFormV2State,
@@ -48,6 +48,7 @@ import {processMessageQueue} from './messageQueue';
 import {getPluginTitle} from './pluginUtils';
 import {capture} from './screenshot';
 import {uploadFlipperMedia} from '../fb-stubs/user';
+import {Idler} from 'flipper-plugin';
 
 export const IMPORT_FLIPPER_TRACE_EVENT = 'import-flipper-trace';
 export const EXPORT_FLIPPER_TRACE_EVENT = 'export-flipper-trace';
@@ -109,9 +110,11 @@ type AddSaltToDeviceSerialOptions = {
   clients: Array<ClientExport>;
   pluginStates: PluginStatesExportState;
   pluginStates2: SandyPluginStates;
+  devicePluginStates: Record<string, any>;
   pluginNotification: Array<PluginNotification>;
   selectedPlugins: Array<string>;
-  statusUpdate?: (msg: string) => void;
+  statusUpdate: (msg: string) => void;
+  idler: Idler;
 };
 
 export function displayFetchMetadataErrors(
@@ -251,20 +254,23 @@ const serializePluginStates = async (
   return pluginExportState;
 };
 
-function exportSandyPluginStates(
+async function exportSandyPluginStates(
   pluginsToProcess: PluginsToProcess,
-): SandyPluginStates {
+  idler: Idler,
+  statusUpdate: (msg: string) => void,
+): Promise<SandyPluginStates> {
   const res: SandyPluginStates = {};
-  pluginsToProcess.forEach(({pluginId, client, pluginClass}) => {
+  for (const key in pluginsToProcess) {
+    const {pluginId, client, pluginClass} = pluginsToProcess[key];
     if (isSandyPlugin(pluginClass) && client.sandyPluginStates.has(pluginId)) {
       if (!res[client.id]) {
         res[client.id] = {};
       }
-      res[client.id][pluginId] = client.sandyPluginStates
+      res[client.id][pluginId] = await client.sandyPluginStates
         .get(pluginId)!
-        .exportState();
+        .exportState(idler, statusUpdate);
     }
-  });
+  }
   return res;
 }
 
@@ -322,6 +328,8 @@ async function addSaltToDeviceSerial({
   statusUpdate,
   selectedPlugins,
   pluginStates2,
+  devicePluginStates,
+  idler,
 }: AddSaltToDeviceSerialOptions): Promise<ExportType> {
   const {serial} = device;
   const newSerial = salt + '-' + serial;
@@ -379,7 +387,7 @@ async function addSaltToDeviceSerial({
     fileVersion: remote.app.getVersion(),
     flipperReleaseRevision: revision,
     clients: updatedClients,
-    device: newDevice.toJSON(),
+    device: {...newDevice.toJSON(), pluginStates: devicePluginStates},
     deviceScreenshot: deviceScreenshot,
     store: {
       pluginStates: updatedPluginStates,
@@ -415,11 +423,14 @@ export async function processStore(
     selectedPlugins,
     statusUpdate,
   }: ProcessStoreOptions,
-  idler?: Idler,
+  idler: Idler = new TestIdler(true),
 ): Promise<ExportType> {
   if (device) {
     const {serial} = device;
-    statusUpdate && statusUpdate('Capturing screenshot...');
+    if (!statusUpdate) {
+      statusUpdate = () => {};
+    }
+    statusUpdate('Capturing screenshot...');
     const deviceScreenshot = await capture(device).catch((e) => {
       console.warn('Failed to capture device screenshot when exporting. ' + e);
       return null;
@@ -449,7 +460,9 @@ export async function processStore(
       idler,
     );
 
-    statusUpdate && statusUpdate('Uploading screenshot...');
+    const devicePluginStates = await device.exportState(idler, statusUpdate);
+
+    statusUpdate('Uploading screenshot...');
     const deviceScreenshotLink =
       deviceScreenshot &&
       (await uploadFlipperMedia(deviceScreenshot, 'Image').catch((e) => {
@@ -467,6 +480,8 @@ export async function processStore(
       statusUpdate,
       selectedPlugins,
       pluginStates2,
+      devicePluginStates,
+      idler,
     });
 
     return exportFlipperData;
@@ -478,8 +493,8 @@ export async function fetchMetadata(
   pluginsToProcess: PluginsToProcess,
   pluginStates: PluginStatesState,
   state: ReduxState,
-  statusUpdate?: (msg: string) => void,
-  idler?: Idler,
+  statusUpdate: (msg: string) => void,
+  idler: Idler,
 ): Promise<{
   pluginStates: PluginStatesState;
   errors: {[plugin: string]: Error} | null;
@@ -626,8 +641,8 @@ export function determinePluginsToProcess(
 
 async function getStoreExport(
   store: MiddlewareAPI,
-  statusUpdate?: (msg: string) => void,
-  idler?: Idler,
+  statusUpdate: (msg: string) => void = () => {},
+  idler: Idler,
 ): Promise<{
   exportData: ExportType;
   fetchMetaDataErrors: {[plugin: string]: Error} | null;
@@ -657,10 +672,8 @@ async function getStoreExport(
   );
   const newPluginState = metadata.pluginStates;
 
-  // TODO: support async export like fetchMetaData T68683476
-  // TODO: support device plugins T70582933
   const pluginStates2 = pluginsToProcess
-    ? exportSandyPluginStates(pluginsToProcess)
+    ? await exportSandyPluginStates(pluginsToProcess, idler, statusUpdate)
     : {};
 
   getLogger().trackTimeSince(fetchMetaDataMarker, fetchMetaDataMarker, {
@@ -691,8 +704,8 @@ async function getStoreExport(
 export async function exportStore(
   store: MiddlewareAPI,
   includeSupportDetails?: boolean,
-  idler?: Idler,
-  statusUpdate?: (msg: string) => void,
+  idler: Idler = new TestIdler(true),
+  statusUpdate: (msg: string) => void = () => {},
 ): Promise<{
   serializedString: string;
   fetchMetaDataErrors: {

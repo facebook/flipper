@@ -28,8 +28,16 @@ import {
   createState,
   PluginClient,
   DevicePluginClient,
+  sleep,
 } from 'flipper-plugin';
 import {selectPlugin} from '../../reducers/connections';
+import {TestIdler} from '../Idler';
+
+const testIdler = new TestIdler();
+
+function testOnStatusMessage() {
+  // emtpy stub
+}
 
 class TestPlugin extends FlipperPlugin<any, any, any> {}
 TestPlugin.title = 'TestPlugin';
@@ -1103,7 +1111,20 @@ const sandyTestPlugin = new _SandyPluginDefinition(
           draft.testCount -= 1;
         });
       });
-      return {};
+      return {
+        enableCustomExport() {
+          client.onExport(async (idler, onStatus) => {
+            if (idler.shouldIdle()) {
+              await idler.idle();
+            }
+            await sleep(100);
+            onStatus('hi');
+            return {
+              customExport: true,
+            };
+          });
+        },
+      };
     },
     Component() {
       return null;
@@ -1136,6 +1157,39 @@ test('Sandy plugins are exported properly', async () => {
   expect(storeExport.exportStoreData.pluginStates2).toEqual({
     [`TestApp#Android#MockAndroidDevice#${serial}`]: {
       TestPlugin: {counter: 3, otherState: {testCount: -3}},
+    },
+  });
+});
+
+test('Sandy plugins with custom export are exported properly', async () => {
+  const {client, sendMessage, store} = await renderMockFlipperWithPlugin(
+    sandyTestPlugin,
+  );
+
+  // We do select another plugin, to verify that pending message queues are indeed processed before exporting
+  store.dispatch(
+    selectPlugin({
+      selectedPlugin: 'DeviceLogs',
+      selectedApp: client.id,
+      deepLinkPayload: null,
+    }),
+  );
+
+  client.sandyPluginStates
+    .get(sandyTestPlugin.id)
+    ?.instanceApi.enableCustomExport();
+
+  // Deliberately not using 'act' here, to verify that exportStore itself makes sure buffers are flushed first
+  sendMessage('inc', {});
+  sendMessage('inc', {});
+  sendMessage('inc', {});
+
+  const storeExport = await exportStore(store);
+  const serial = storeExport.exportStoreData.device!.serial;
+  expect(serial).not.toBeFalsy();
+  expect(storeExport.exportStoreData.pluginStates2).toEqual({
+    [`TestApp#Android#MockAndroidDevice#${serial}`]: {
+      TestPlugin: {customExport: true},
     },
   });
 });
@@ -1190,7 +1244,7 @@ test('Sandy plugins are imported properly', async () => {
   expect(client2).not.toBe(client);
   expect(client2.plugins).toEqual([TestPlugin.id]);
 
-  expect(client.sandyPluginStates.get(TestPlugin.id)!.exportState())
+  expect(client.sandyPluginStates.get(TestPlugin.id)!.exportStateSync())
     .toMatchInlineSnapshot(`
     Object {
       "counter": 0,
@@ -1199,7 +1253,7 @@ test('Sandy plugins are imported properly', async () => {
       },
     }
   `);
-  expect(client2.sandyPluginStates.get(TestPlugin.id)!.exportState())
+  expect(client2.sandyPluginStates.get(TestPlugin.id)!.exportStateSync())
     .toMatchInlineSnapshot(`
     Object {
       "counter": 3,
@@ -1227,6 +1281,18 @@ const sandyDeviceTestPlugin = new _SandyPluginDefinition(
       });
       return {
         counter,
+        enableCustomExport() {
+          client.onExport(async (idler, onStatus) => {
+            if (idler.shouldIdle()) {
+              await idler.idle();
+            }
+            onStatus('hi');
+            await sleep(100);
+            return {
+              customExport: true,
+            };
+          });
+        },
       };
     },
     Component() {
@@ -1277,7 +1343,9 @@ test('Sandy device plugins are exported / imported properly', async () => {
   const {counter} = device2.sandyPluginStates.get(TestPlugin.id)?.instanceApi;
   counter.set(counter.get() + 1);
 
-  expect(device.toJSON().pluginStates[TestPlugin.id]).toMatchInlineSnapshot(`
+  expect(
+    (await device.exportState(testIdler, testOnStatusMessage))[TestPlugin.id],
+  ).toMatchInlineSnapshot(`
     Object {
       "counter": 0,
       "otherState": Object {
@@ -1285,21 +1353,30 @@ test('Sandy device plugins are exported / imported properly', async () => {
       },
     }
   `);
-  expect(device2.toJSON()).toMatchInlineSnapshot(`
+  expect(await device2.exportState(testIdler, testOnStatusMessage))
+    .toMatchInlineSnapshot(`
     Object {
-      "deviceType": "archivedPhysical",
-      "logs": Array [],
-      "os": "Android",
-      "pluginStates": Object {
-        "TestPlugin": Object {
-          "counter": 4,
-          "otherState": Object {
-            "testCount": -3,
-          },
+      "TestPlugin": Object {
+        "counter": 4,
+        "otherState": Object {
+          "testCount": -3,
         },
       },
-      "serial": "2e52cea6-94b0-4ea1-b9a8-c9135ede14ca-serial",
-      "title": "MockAndroidDevice",
     }
   `);
+});
+
+test('Sandy device plugins with custom export are export properly', async () => {
+  const {device, store} = await renderMockFlipperWithPlugin(
+    sandyDeviceTestPlugin,
+  );
+
+  device.sandyPluginStates
+    .get(sandyDeviceTestPlugin.id)
+    ?.instanceApi.enableCustomExport();
+
+  const storeExport = await exportStore(store);
+  expect(storeExport.exportStoreData.device!.pluginStates).toEqual({
+    [sandyDeviceTestPlugin.id]: {customExport: true},
+  });
 });

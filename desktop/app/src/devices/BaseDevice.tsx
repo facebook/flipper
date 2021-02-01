@@ -14,6 +14,7 @@ import {
   _SandyPluginDefinition,
   DeviceType,
   DeviceLogListener,
+  Idler,
 } from 'flipper-plugin';
 import type {DevicePluginDefinition, DevicePluginMap} from '../plugin';
 import {getFlipperLibImplementation} from '../utils/flipperLibImplementation';
@@ -91,22 +92,31 @@ export default class BaseDevice {
     return this.title;
   }
 
-  toJSON(): DeviceExport {
+  async exportState(
+    idler: Idler,
+    onStatusMessage: (msg: string) => void,
+  ): Promise<Record<string, any>> {
     const pluginStates: Record<string, any> = {};
 
     for (const instance of this.sandyPluginStates.values()) {
       if (instance.isPersistable()) {
-        pluginStates[instance.definition.id] = instance.exportState();
+        pluginStates[instance.definition.id] = await instance.exportState(
+          idler,
+          onStatusMessage,
+        );
       }
     }
 
+    return pluginStates;
+  }
+
+  toJSON() {
     return {
       os: this.os,
       title: this.title,
       deviceType: this.deviceType,
       serial: this.serial,
       logs: this.getLogs(),
-      pluginStates,
     };
   }
 

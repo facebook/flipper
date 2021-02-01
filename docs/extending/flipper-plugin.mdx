@@ -135,6 +135,13 @@ Usage: `client.onDeepLink(callback: (payload: unknown) => void)`
 
 Trigger when the users navigates to this plugin using a deeplink, either from an external `flipper://` plugin URL, or because the user was linked here from another plugin.
 
+#### `onExport`
+
+Usage: `client.onExport(callback: (idler, onStatusMessage) => Promise<state>)`
+
+Overrides the default serialization behavior of this plugin. Should return a promise with state that is to be stored. 
+This process is async, so it is possible to first fetch some additional state from the device. 
+
 ### Methods
 
 #### `send`
@@ -274,6 +281,14 @@ See the similarly named event under [`PluginClient`](#pluginclient).
 See the similarly named event under [`PluginClient`](#pluginclient).
 
 #### `onDeepLink`
+
+See the similarly named event under [`PluginClient`](#pluginclient).
+
+#### `onExport`
+
+See the similarly named event under [`PluginClient`](#pluginclient).
+
+#### `onImport`
 
 See the similarly named event under [`PluginClient`](#pluginclient).
 

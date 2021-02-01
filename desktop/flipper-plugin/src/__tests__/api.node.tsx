@@ -59,6 +59,7 @@ test('Correct top level API exposed', () => {
       "DeviceType",
       "Draft",
       "FlipperLib",
+      "Idler",
       "LogLevel",
       "LogTypes",
       "Logger",

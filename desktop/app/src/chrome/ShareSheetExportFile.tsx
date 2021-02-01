@@ -14,7 +14,7 @@ import {reportPlatformFailures} from '../utils/metrics';
 import CancellableExportStatus from './CancellableExportStatus';
 import {performance} from 'perf_hooks';
 import {Logger} from '../fb-interfaces/Logger';
-import {Idler} from '../utils/Idler';
+import {IdlerImpl} from '../utils/Idler';
 import {
   exportStoreToFile,
   EXPORT_FLIPPER_TRACE_EVENT,
@@ -86,7 +86,7 @@ export default class ShareSheetExportFile extends Component<Props, State> {
     runInBackground: false,
   };
 
-  idler = new Idler();
+  idler = new IdlerImpl();
 
   dispatchAndUpdateToolBarStatus(msg: string) {
     this.store.dispatch(

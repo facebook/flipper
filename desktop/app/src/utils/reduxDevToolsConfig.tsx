@@ -22,13 +22,13 @@ export const stateSanitizer = (state: State) => {
           return {
             ...device.toJSON(),
             logs: [],
-          };
+          } as any;
         }),
         selectedDevice: selectedDevice
-          ? {
+          ? ({
               ...selectedDevice.toJSON(),
               logs: [],
-            }
+            } as any)
           : null,
       },
     };

@@ -14,13 +14,12 @@ import {Store} from './reducers/index';
 import {ReactNode, Component} from 'react';
 import BaseDevice from './devices/BaseDevice';
 import {serialize, deserialize} from './utils/serialization';
-import {Idler} from './utils/Idler';
 import {StaticView} from './reducers/connections';
 import {State as ReduxState} from './reducers';
 import {DEFAULT_MAX_QUEUE_SIZE} from './reducers/pluginMessageQueue';
 import {ActivatablePluginDetails} from 'flipper-plugin-lib';
 import {Settings} from './reducers/settings';
-import {_SandyPluginDefinition} from 'flipper-plugin';
+import {Idler, _SandyPluginDefinition} from 'flipper-plugin';
 
 type Parameters = {[key: string]: any};
 
