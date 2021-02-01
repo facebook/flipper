@@ -176,7 +176,6 @@ export function ManageMockResponsePanel(props: Props) {
               placement="bottom">
               <Button
                 onClick={() => {
-                  console.log(props.highlightedRows);
                   if (
                     !props.highlightedRows ||
                     props.highlightedRows.size == 0

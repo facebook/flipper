@@ -201,8 +201,6 @@ function _buildMockResponseHeaderRows(
           value: (
             <Layout.Container
               onClick={() => {
-                console.log('button pressed - delete header');
-
                 const newHeaders = produce(
                   route.responseHeaders,
                   (draftHeaders) => {
@@ -311,7 +309,6 @@ export function MockResponseDetails({id, route, isDuplicated}: Props) {
             <Layout.Horizontal>
               <Button
                 onClick={() => {
-                  console.log('button pressed - add headers');
                   const newHeaders = {
                     ...route.responseHeaders,
                     [nextHeaderId.toString()]: {key: '', value: ''},
