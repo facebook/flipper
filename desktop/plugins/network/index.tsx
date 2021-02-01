@@ -445,7 +445,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
             }
             fs.writeFile(
               file,
-              JSON.stringify(routes.get(), null, 2),
+              JSON.stringify(Object.values(routes.get()), null, 2),
               'utf8',
               (err) => {
                 if (err) {
