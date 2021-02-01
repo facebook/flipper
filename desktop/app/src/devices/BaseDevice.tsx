@@ -33,7 +33,6 @@ export type DeviceExport = {
   title: string;
   deviceType: DeviceType;
   serial: string;
-  logs: Array<DeviceLogEntry>;
   pluginStates: Record<string, any>;
 };
 
@@ -71,7 +70,6 @@ export default class BaseDevice {
   icon: string | null | undefined;
 
   logListeners: Map<Symbol, DeviceLogListener> = new Map();
-  logEntries: Array<DeviceLogEntry> = [];
   isArchived: boolean = false;
   // if imported, stores the original source location
   source = '';
@@ -116,7 +114,6 @@ export default class BaseDevice {
       title: this.title,
       deviceType: this.deviceType,
       serial: this.serial,
-      logs: this.getLogs(),
     };
   }
 
@@ -146,23 +143,7 @@ export default class BaseDevice {
   }
 
   addLogEntry(entry: DeviceLogEntry) {
-    this.logEntries.push(entry);
     this._notifyLogListeners(entry);
-  }
-
-  // TODO: remove getLogs T70688226
-  getLogs(startDate: Date | null = null) {
-    return startDate != null
-      ? this.logEntries.filter((log) => {
-          return log.date > startDate;
-        })
-      : this.logEntries;
-  }
-
-  clearLogs(): Promise<void> {
-    // Only for device types that allow clearing.
-    this.logEntries = [];
-    return Promise.resolve();
   }
 
   removeLogListener(id: Symbol) {

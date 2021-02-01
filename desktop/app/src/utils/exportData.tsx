@@ -326,7 +326,6 @@ async function addSaltToDeviceSerial({
   pluginStates,
   pluginNotification,
   statusUpdate,
-  selectedPlugins,
   pluginStates2,
   devicePluginStates,
 }: AddSaltToDeviceSerialOptions): Promise<ExportType> {
@@ -337,11 +336,6 @@ async function addSaltToDeviceSerial({
     deviceType: device.deviceType,
     title: device.title,
     os: device.os,
-    logEntries: selectedPlugins.includes('DeviceLogs')
-      ? device.getLogs(
-          new Date(new Date().getTime() - 1000 * 60 * 10), // Last 10 mins of logs
-        )
-      : [],
     screenshotHandle: deviceScreenshot,
   });
   statusUpdate &&
@@ -776,18 +770,13 @@ export function importDataToStore(source: string, data: string, store: Store) {
   if (device == null) {
     return;
   }
-  const {serial, deviceType, title, os, logs} = device;
+  const {serial, deviceType, title, os} = device;
 
   const archivedDevice = new ArchivedDevice({
     serial,
     deviceType,
     title,
     os,
-    logEntries: logs
-      ? logs.map((l) => {
-          return {...l, date: new Date(l.date)};
-        })
-      : [],
     screenshotHandle: deviceScreenshot,
     source,
     supportRequestDetails,

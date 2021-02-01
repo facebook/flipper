@@ -86,7 +86,6 @@ export default class AndroidDevice extends BaseDevice {
   }
 
   clearLogs(): Promise<void> {
-    this.logEntries = [];
     return this.executeShell(['logcat', '-c']);
   }
 
@@ -96,7 +95,6 @@ export default class AndroidDevice extends BaseDevice {
       deviceType: this.deviceType,
       title: this.title,
       os: this.os,
-      logEntries: [...this.logEntries],
       screenshotHandle: null,
     });
   }

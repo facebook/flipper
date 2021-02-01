@@ -7,8 +7,10 @@
  * @format
  */
 
+import {sleep, TestUtils} from 'flipper-plugin';
 import {addEntriesToState, processEntry} from '../index';
 import {DeviceLogEntry} from 'flipper';
+import * as LogsPlugin from '../index';
 
 const entry: DeviceLogEntry = {
   tag: 'OpenGLRenderer',
@@ -82,4 +84,71 @@ test('addEntriesToState with reversed direction (add to front)', () => {
   );
   expect(newState.entries.length).toBe(2);
   expect(newState.rows.length).toBe(2);
+});
+
+test('export / import plugin does work', async () => {
+  const {
+    instance,
+    exportStateAsync,
+    sendLogEntry,
+  } = TestUtils.startDevicePlugin(LogsPlugin);
+
+  sendLogEntry({
+    date: new Date(1611854112859),
+    message: 'test1',
+    pid: 0,
+    tag: 'test',
+    tid: 1,
+    type: 'error',
+    app: 'X',
+  });
+  sendLogEntry({
+    date: new Date(1611854117859),
+    message: 'test2',
+    pid: 2,
+    tag: 'test',
+    tid: 3,
+    type: 'warn',
+    app: 'Y',
+  });
+
+  // batching and storage is async atm
+  await sleep(500);
+
+  const data = await exportStateAsync();
+  expect(data).toMatchInlineSnapshot(`
+    Object {
+      "logs": Array [
+        Object {
+          "app": "X",
+          "date": 1611854112859,
+          "message": "test1",
+          "pid": 0,
+          "tag": "test",
+          "tid": 1,
+          "type": "error",
+        },
+        Object {
+          "app": "Y",
+          "date": 1611854117859,
+          "message": "test2",
+          "pid": 2,
+          "tag": "test",
+          "tid": 3,
+          "type": "warn",
+        },
+      ],
+    }
+  `);
+
+  expect(instance.rows.get().length).toBe(2);
+
+  // Run a second import
+  {
+    const {exportStateAsync} = TestUtils.startDevicePlugin(LogsPlugin, {
+      initialState: data,
+    });
+
+    expect(await exportStateAsync()).toEqual(data);
+  }
 });

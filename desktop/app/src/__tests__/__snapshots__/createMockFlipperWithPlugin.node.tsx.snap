@@ -19,7 +19,6 @@ Object {
   "devices": Array [
     Object {
       "deviceType": "physical",
-      "logs": Array [],
       "os": "Android",
       "serial": "serial",
       "title": "MockAndroidDevice",
@@ -28,7 +27,6 @@ Object {
   "selectedApp": "TestApp#Android#MockAndroidDevice#serial",
   "selectedDevice": Object {
     "deviceType": "physical",
-    "logs": Array [],
     "os": "Android",
     "serial": "serial",
     "title": "MockAndroidDevice",

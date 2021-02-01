@@ -108,7 +108,6 @@ test('test generateClientIndentifierWithSalt helper function', () => {
     deviceType: 'emulator',
     title: 'TestiPhone',
     os: 'iOS',
-    logEntries: [],
     screenshotHandle: null,
   });
   const identifier = generateClientIdentifier(device, 'app');
@@ -123,7 +122,6 @@ test('test generateClientFromClientWithSalt helper function', () => {
     deviceType: 'emulator',
     title: 'TestiPhone',
     os: 'iOS',
-    logEntries: [],
     screenshotHandle: null,
   });
   const client = generateClientFromDevice(device, 'app');
@@ -154,7 +152,6 @@ test('test generateClientFromDevice helper function', () => {
     deviceType: 'emulator',
     title: 'TestiPhone',
     os: 'iOS',
-    logEntries: [],
     screenshotHandle: null,
   });
   const client = generateClientFromDevice(device, 'app');
@@ -175,7 +172,6 @@ test('test generateClientIdentifier helper function', () => {
     deviceType: 'emulator',
     title: 'TestiPhone',
     os: 'iOS',
-    logEntries: [],
     screenshotHandle: null,
   });
   const identifier = generateClientIdentifier(device, 'app');
@@ -218,7 +214,6 @@ test('test processStore function for an iOS device connected', async () => {
       deviceType: 'emulator',
       title: 'TestiPhone',
       os: 'iOS',
-      logEntries: [],
       screenshotHandle: null,
     }),
     pluginStates: {},
@@ -254,7 +249,6 @@ test('test processStore function for an iOS device connected with client plugin 
     deviceType: 'emulator',
     title: 'TestiPhone',
     os: 'iOS',
-    logEntries: [],
     screenshotHandle: null,
   });
   const client = generateClientFromDevice(device, 'testapp');
@@ -305,7 +299,6 @@ test('test processStore function to have only the client for the selected device
     deviceType: 'emulator',
     title: 'TestiPhone',
     os: 'iOS',
-    logEntries: [],
     screenshotHandle: null,
   });
   const unselectedDevice = new ArchivedDevice({
@@ -313,7 +306,6 @@ test('test processStore function to have only the client for the selected device
     deviceType: 'emulator',
     title: 'TestiPhone',
     os: 'iOS',
-    logEntries: [],
     screenshotHandle: null,
   });
 
@@ -374,7 +366,6 @@ test('test processStore function to have multiple clients for the selected devic
     deviceType: 'emulator',
     title: 'TestiPhone',
     os: 'iOS',
-    logEntries: [],
     screenshotHandle: null,
   });
 
@@ -441,7 +432,6 @@ test('test processStore function for device plugin state and no clients', async 
     deviceType: 'emulator',
     title: 'TestiPhone',
     os: 'iOS',
-    logEntries: [],
     screenshotHandle: null,
   });
   const json = await processStore({
@@ -479,7 +469,6 @@ test('test processStore function for unselected device plugin state and no clien
     deviceType: 'emulator',
     title: 'TestiPhone',
     os: 'iOS',
-    logEntries: [],
     screenshotHandle: null,
   });
   const json = await processStore({
@@ -513,7 +502,6 @@ test('test processStore function for notifications for selected device', async (
     deviceType: 'emulator',
     title: 'TestiPhone',
     os: 'iOS',
-    logEntries: [],
     screenshotHandle: null,
   });
   const client = generateClientFromDevice(selectedDevice, 'testapp1');
@@ -563,7 +551,6 @@ test('test processStore function for notifications for unselected device', async
     deviceType: 'emulator',
     title: 'TestiPhone',
     os: 'iOS',
-    logEntries: [],
     screenshotHandle: null,
   });
   const unselectedDevice = new ArchivedDevice({
@@ -571,7 +558,6 @@ test('test processStore function for notifications for unselected device', async
     deviceType: 'emulator',
     title: 'TestiPhone',
     os: 'iOS',
-    logEntries: [],
     screenshotHandle: null,
   });
 
@@ -619,7 +605,6 @@ test('test processStore function for selected plugins', async () => {
     deviceType: 'emulator',
     title: 'TestiPhone',
     os: 'iOS',
-    logEntries: [],
     screenshotHandle: null,
   });
 
@@ -670,7 +655,6 @@ test('test processStore function for no selected plugins', async () => {
     deviceType: 'emulator',
     title: 'TestiPhone',
     os: 'iOS',
-    logEntries: [],
     screenshotHandle: null,
   });
   const client = generateClientFromDevice(selectedDevice, 'app');
@@ -1021,7 +1005,6 @@ test('test determinePluginsToProcess to ignore archived clients', async () => {
     deviceType: 'emulator',
     title: 'TestiPhone',
     os: 'iOS',
-    logEntries: [],
     screenshotHandle: null,
   });
   const logger = {

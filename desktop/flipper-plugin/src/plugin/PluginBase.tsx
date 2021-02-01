@@ -17,11 +17,11 @@ import {batched} from '../state/batch';
 import {Idler} from '../utils/Idler';
 import {message} from 'antd';
 
-type StateExportHandler = (
+type StateExportHandler<T = any> = (
   idler: Idler,
   onStatusMessage: (msg: string) => void,
-) => Promise<Record<string, any>>;
-type StateImportHandler = (data: Record<string, any>) => void;
+) => Promise<T>;
+type StateImportHandler<T = any> = (data: T) => void;
 
 export interface BasePluginClient {
   readonly device: Device;
@@ -50,13 +50,13 @@ export interface BasePluginClient {
    * Triggered when the current plugin is being exported and should create a snapshot of the state exported.
    * Overrides the default export behavior and ignores any 'persist' flags of state.
    */
-  onExport(exporter: StateExportHandler): void;
+  onExport<T = any>(exporter: StateExportHandler<T>): void;
 
   /**
    * Triggered directly after the plugin instance was created, if the plugin is being restored from a snapshot.
    * Should be the inverse of the onExport handler
    */
-  onImport(handler: StateImportHandler): void;
+  onImport<T = any>(handler: StateImportHandler<T>): void;
 
   /**
    * Register menu entries in the Flipper toolbar
@@ -163,7 +163,7 @@ export abstract class BasePluginInstance {
       if (this.initialStates) {
         if (this.importHandler) {
           try {
-            this.importHandler(this.initialStates);
+            batched(this.importHandler)(this.initialStates);
           } catch (e) {
             const msg = `Error occurred when importing date for plugin '${this.definition.id}': '${e}`;
             console.error(msg, e);

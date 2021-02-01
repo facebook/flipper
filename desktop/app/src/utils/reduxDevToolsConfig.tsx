@@ -19,16 +19,10 @@ export const stateSanitizer = (state: State) => {
       connections: {
         ...state.connections,
         devices: devices.map<DeviceExport>((device) => {
-          return {
-            ...device.toJSON(),
-            logs: [],
-          } as any;
+          return device.toJSON() as any;
         }),
         selectedDevice: selectedDevice
-          ? ({
-              ...selectedDevice.toJSON(),
-              logs: [],
-            } as any)
+          ? (selectedDevice.toJSON() as any)
           : null,
       },
     };

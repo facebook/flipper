@@ -205,7 +205,6 @@ export default class MetroDevice extends BaseDevice {
       deviceType: this.deviceType,
       title: this.title,
       os: this.os,
-      logEntries: [...this.logEntries],
       screenshotHandle: null,
     });
   }

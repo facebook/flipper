@@ -8,7 +8,7 @@
  */
 
 import BaseDevice from './BaseDevice';
-import type {DeviceLogEntry, DeviceType} from 'flipper-plugin';
+import type {DeviceType} from 'flipper-plugin';
 import {OS, DeviceShell} from './BaseDevice';
 import {SupportFormRequestDetailsState} from '../reducers/supportForm';
 
@@ -18,19 +18,16 @@ export default class ArchivedDevice extends BaseDevice {
     deviceType: DeviceType;
     title: string;
     os: OS;
-    logEntries: Array<DeviceLogEntry>;
     screenshotHandle: string | null;
     source?: string;
     supportRequestDetails?: SupportFormRequestDetailsState;
   }) {
     super(options.serial, options.deviceType, options.title, options.os);
-    this.logs = options.logEntries;
     this.source = options.source || '';
     this.supportRequestDetails = options.supportRequestDetails;
     this.archivedScreenshotHandle = options.screenshotHandle;
   }
 
-  logs: Array<DeviceLogEntry>;
   archivedScreenshotHandle: string | null;
   isArchived = true;
 
@@ -39,15 +36,6 @@ export default class ArchivedDevice extends BaseDevice {
   }
 
   supportRequestDetails?: SupportFormRequestDetailsState;
-
-  getLogs() {
-    return this.logs;
-  }
-
-  clearLogs(): Promise<void> {
-    this.logs = [];
-    return Promise.resolve();
-  }
 
   spawnShell(): DeviceShell | undefined | null {
     return null;
