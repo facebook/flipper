@@ -174,7 +174,7 @@ export async function makeObjectSerializable(
     } else if (element instanceof Date) {
       dict.set(element, {
         __flipper_object_type__: 'Date',
-        data: element.toString(),
+        data: element.toJSON(),
       });
     } else if (element instanceof Array) {
       const {childNeedsIteration, outputArr} = processArray(

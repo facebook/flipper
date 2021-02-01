@@ -7,18 +7,18 @@
  * @format
  */
 
-import {makeObjectSerializable, deserializeObject} from '../serialization.tsx';
+import {makeObjectSerializable, deserializeObject} from '../serialization';
 
 class TestObject extends Object {
-  constructor(title: Object, map: ?Map<any, any>, set: ?Set<any>) {
+  constructor(title: Object, map?: Map<any, any>, set?: Set<any>) {
     super();
     this.title = title;
     this.map = map;
     this.set = set;
   }
   title: Object;
-  map: ?Map<any, any>;
-  set: ?Set<any>;
+  map?: Map<any, any>;
+  set?: Set<any>;
 }
 test('test makeObjectSerializable function for unnested object with no Set and Map', async () => {
   const obj = {key1: 'value1', key2: 'value2'};
@@ -283,12 +283,13 @@ test('test serialize and deserializeObject function for non Object input', async
 });
 
 test('test makeObjectSerializable and deserializeObject function for Date input', async () => {
-  const date = new Date('2019-02-15');
-  const expectedDate = {
-    __flipper_object_type__: 'Date',
-    data: date.toString(),
-  };
-  expect(await makeObjectSerializable(date)).toEqual(expectedDate);
+  const date = new Date(2021, 1, 29, 10, 31, 7, 205);
+  expect(await makeObjectSerializable(date)).toMatchInlineSnapshot(`
+    Object {
+      "__flipper_object_type__": "Date",
+      "data": "${date.toJSON()}",
+    }
+  `);
   expect(deserializeObject(await makeObjectSerializable(date))).toEqual(date);
 });
 
@@ -296,7 +297,7 @@ test('test makeObjectSerializable and deserializeObject function for Map of Sets
   const map = new Map([
     ['k1', new Set([1, 2, 3, 4, 5, 6])],
     [new Set([1, 2]), new Map([['k3', 'v3']])],
-  ]);
+  ] as any);
   const expectedOutput = {
     __flipper_object_type__: 'Map',
     data: [
@@ -317,16 +318,16 @@ test('test makeObjectSerializable and deserializeObject function for Map, Dates 
   const map = new Map([
     ['k1', date1],
     ['k2', new Set([date2])],
-  ]);
+  ] as any);
   const expectedOutput = {
     __flipper_object_type__: 'Map',
     data: [
-      ['k1', {__flipper_object_type__: 'Date', data: date1.toString()}],
+      ['k1', {__flipper_object_type__: 'Date', data: date1.toJSON()}],
       [
         'k2',
         {
           __flipper_object_type__: 'Set',
-          data: [{__flipper_object_type__: 'Date', data: date2.toString()}],
+          data: [{__flipper_object_type__: 'Date', data: date2.toJSON()}],
         },
       ],
     ],
