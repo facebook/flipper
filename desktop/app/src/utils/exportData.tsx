@@ -791,7 +791,10 @@ export function importDataToStore(source: string, data: string, store: Store) {
     });
     return;
   }
-  archivedDevice.loadDevicePlugins(store.getState().plugins.devicePlugins);
+  archivedDevice.loadDevicePlugins(
+    store.getState().plugins.devicePlugins,
+    device.pluginStates,
+  );
   store.dispatch({
     type: 'REGISTER_DEVICE',
     payload: archivedDevice,

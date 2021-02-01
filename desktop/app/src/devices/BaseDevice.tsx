@@ -33,6 +33,7 @@ export type DeviceExport = {
   deviceType: DeviceType;
   serial: string;
   logs: Array<DeviceLogEntry>;
+  pluginStates: Record<string, any>;
 };
 
 export default class BaseDevice {
@@ -91,12 +92,21 @@ export default class BaseDevice {
   }
 
   toJSON(): DeviceExport {
+    const pluginStates: Record<string, any> = {};
+
+    for (const instance of this.sandyPluginStates.values()) {
+      if (instance.isPersistable()) {
+        pluginStates[instance.definition.id] = instance.exportState();
+      }
+    }
+
     return {
       os: this.os,
       title: this.title,
       deviceType: this.deviceType,
       serial: this.serial,
       logs: this.getLogs(),
+      pluginStates,
     };
   }
 
@@ -175,17 +185,20 @@ export default class BaseDevice {
     return null;
   }
 
-  loadDevicePlugins(devicePlugins?: DevicePluginMap) {
+  loadDevicePlugins(
+    devicePlugins?: DevicePluginMap,
+    pluginStates?: Record<string, any>,
+  ) {
     if (!devicePlugins) {
       return;
     }
     const plugins = Array.from(devicePlugins.values());
     for (const plugin of plugins) {
-      this.loadDevicePlugin(plugin);
+      this.loadDevicePlugin(plugin, pluginStates?.[plugin.id]);
     }
   }
 
-  loadDevicePlugin(plugin: DevicePluginDefinition) {
+  loadDevicePlugin(plugin: DevicePluginDefinition, initialState?: any) {
     if (plugin instanceof _SandyPluginDefinition) {
       if (plugin.asDevicePluginModule().supportsDevice(this as any)) {
         this.devicePlugins.push(plugin.id);
@@ -195,8 +208,9 @@ export default class BaseDevice {
             getFlipperLibImplementation(),
             plugin,
             this,
+            initialState,
           ),
-        ); // TODO T70582933: pass initial state if applicable
+        );
       }
     } else {
       if (plugin.supportsDevice(this)) {

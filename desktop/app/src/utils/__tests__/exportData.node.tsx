@@ -27,6 +27,7 @@ import {
   _SandyPluginDefinition,
   createState,
   PluginClient,
+  DevicePluginClient,
 } from 'flipper-plugin';
 import {selectPlugin} from '../../reducers/connections';
 
@@ -1205,6 +1206,100 @@ test('Sandy plugins are imported properly', async () => {
       "otherState": Object {
         "testCount": -3,
       },
+    }
+  `);
+});
+
+const sandyDeviceTestPlugin = new _SandyPluginDefinition(
+  TestUtils.createMockPluginDetails(),
+  {
+    supportsDevice: () => true,
+    devicePlugin(client: DevicePluginClient) {
+      const counter = createState(0, {persist: 'counter'});
+      const _somethingElse = createState(0);
+      const anotherState = createState({testCount: 0}, {persist: 'otherState'});
+
+      client.device.onLogEntry(() => {
+        counter.set(counter.get() + 1);
+        anotherState.update((draft) => {
+          draft.testCount -= 1;
+        });
+      });
+      return {
+        counter,
+      };
+    },
+    Component() {
+      return null;
+    },
+  },
+);
+
+test('Sandy device plugins are exported / imported properly', async () => {
+  const data = {
+    clients: [],
+    device: {
+      deviceType: 'archivedPhysical',
+      logs: [],
+      os: 'Android',
+      serial: '2e52cea6-94b0-4ea1-b9a8-c9135ede14ca-serial',
+      title: 'MockAndroidDevice',
+      pluginStates: {
+        [sandyDeviceTestPlugin.id]: {
+          otherState: {
+            testCount: -3,
+          },
+          counter: 3,
+        },
+      },
+    },
+    deviceScreenshot: null,
+    fileVersion: '0.9.99',
+    flipperReleaseRevision: undefined,
+    pluginStates2: {},
+    store: {
+      activeNotifications: [],
+      pluginStates: {},
+    },
+  };
+
+  const {device, store} = await renderMockFlipperWithPlugin(
+    sandyDeviceTestPlugin,
+  );
+
+  await importDataToStore('unittest.json', JSON.stringify(data), store);
+
+  const device2 = store.getState().connections.devices[1];
+  expect(device2).not.toBeFalsy();
+  expect(device2).not.toBe(device);
+  expect(device2.devicePlugins).toEqual([TestPlugin.id]);
+
+  const {counter} = device2.sandyPluginStates.get(TestPlugin.id)?.instanceApi;
+  counter.set(counter.get() + 1);
+
+  expect(device.toJSON().pluginStates[TestPlugin.id]).toMatchInlineSnapshot(`
+    Object {
+      "counter": 0,
+      "otherState": Object {
+        "testCount": 0,
+      },
+    }
+  `);
+  expect(device2.toJSON()).toMatchInlineSnapshot(`
+    Object {
+      "deviceType": "archivedPhysical",
+      "logs": Array [],
+      "os": "Android",
+      "pluginStates": Object {
+        "TestPlugin": Object {
+          "counter": 4,
+          "otherState": Object {
+            "testCount": -3,
+          },
+        },
+      },
+      "serial": "2e52cea6-94b0-4ea1-b9a8-c9135ede14ca-serial",
+      "title": "MockAndroidDevice",
     }
   `);
 });
