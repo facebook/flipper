@@ -14,24 +14,24 @@ import androidx.collection.ArrayMap;
 import androidx.collection.SimpleArrayMap;
 import com.facebook.flipper.plugins.inspector.InspectorValue;
 
-public class EnumMapping {
-  private final ArrayMap<String, Integer> mMapping = new ArrayMap<>();
+public class EnumMapping<T> {
+  private final ArrayMap<String, T> mMapping = new ArrayMap<>();
   private final String mDefaultKey;
 
   public EnumMapping(final String defaultKey) {
     mDefaultKey = defaultKey;
   }
 
-  public void put(final String s, final int i) {
+  public void put(final String s, final T i) {
     mMapping.put(s, i);
   }
 
-  public InspectorValue get(final int i) {
+  public InspectorValue<String> get(final T i) {
     return get(i, true);
   }
 
-  public static String findKeyForValue(
-      SimpleArrayMap<String, Integer> mapping, String mDefaultValue, int currentValue) {
+  public static <T> String findKeyForValue(
+      SimpleArrayMap<String, T> mapping, String mDefaultValue, T currentValue) {
     for (int i = 0, count = mapping.size(); i < count; i++) {
       if (mapping.valueAt(i).equals(currentValue)) {
         return mapping.keyAt(i);
@@ -40,33 +40,33 @@ public class EnumMapping {
     return mDefaultValue;
   }
 
-  public InspectorValue get(final int i, final boolean mutable) {
+  public InspectorValue<String> get(final T i, final boolean mutable) {
     String value = findKeyForValue(mMapping, mDefaultKey, i);
     return mutable ? InspectorValue.mutable(Enum, value) : InspectorValue.immutable(Enum, value);
   }
 
-  public int get(final String s) {
+  public T get(final String s) {
     if (mMapping.containsKey(s)) {
       return mMapping.get(s);
     }
     return mMapping.get(mDefaultKey);
   }
 
-  public InspectorValue toPicker() {
+  public InspectorValue<?> toPicker() {
     return toPicker(true);
   }
 
-  public InspectorValue toPicker(final boolean mutable) {
+  public InspectorValue<?> toPicker(final boolean mutable) {
     return mutable
         ? InspectorValue.mutable(Picker, new InspectorValue.Picker(mMapping.keySet(), mDefaultKey))
         : InspectorValue.immutable(Enum, mDefaultKey);
   }
 
-  public InspectorValue toPicker(final int currentValue) {
+  public InspectorValue<?> toPicker(final T currentValue) {
     return toPicker(currentValue, true);
   }
 
-  public InspectorValue toPicker(final int currentValue, final boolean mutable) {
+  public InspectorValue<?> toPicker(final T currentValue, final boolean mutable) {
     String value = findKeyForValue(mMapping, mDefaultKey, currentValue);
     return mutable
         ? InspectorValue.mutable(Picker, new InspectorValue.Picker(mMapping.keySet(), value))

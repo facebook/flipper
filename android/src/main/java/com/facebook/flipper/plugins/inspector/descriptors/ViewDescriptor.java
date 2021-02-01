@@ -698,8 +698,8 @@ public class ViewDescriptor extends NodeDescriptor<View> {
     }
   }
 
-  private static final EnumMapping sVisibilityMapping =
-      new EnumMapping("VISIBLE") {
+  private static final EnumMapping<Integer> sVisibilityMapping =
+      new EnumMapping<Integer>("VISIBLE") {
         {
           put("VISIBLE", View.VISIBLE);
           put("INVISIBLE", View.INVISIBLE);
@@ -707,8 +707,8 @@ public class ViewDescriptor extends NodeDescriptor<View> {
         }
       };
 
-  private static final EnumMapping sLayoutDirectionMapping =
-      new EnumMapping("LAYOUT_DIRECTION_INHERIT") {
+  private static final EnumMapping<Integer> sLayoutDirectionMapping =
+      new EnumMapping<Integer>("LAYOUT_DIRECTION_INHERIT") {
         {
           put("LAYOUT_DIRECTION_INHERIT", View.LAYOUT_DIRECTION_INHERIT);
           put("LAYOUT_DIRECTION_LOCALE", View.LAYOUT_DIRECTION_LOCALE);
@@ -717,8 +717,8 @@ public class ViewDescriptor extends NodeDescriptor<View> {
         }
       };
 
-  private static final EnumMapping sTextDirectionMapping =
-      new EnumMapping("TEXT_DIRECTION_INHERIT") {
+  private static final EnumMapping<Integer> sTextDirectionMapping =
+      new EnumMapping<Integer>("TEXT_DIRECTION_INHERIT") {
         {
           put("TEXT_DIRECTION_INHERIT", View.TEXT_DIRECTION_INHERIT);
           put("TEXT_DIRECTION_FIRST_STRONG", View.TEXT_DIRECTION_FIRST_STRONG);
@@ -731,8 +731,8 @@ public class ViewDescriptor extends NodeDescriptor<View> {
         }
       };
 
-  private static final EnumMapping sTextAlignmentMapping =
-      new EnumMapping("TEXT_ALIGNMENT_INHERIT") {
+  private static final EnumMapping<Integer> sTextAlignmentMapping =
+      new EnumMapping<Integer>("TEXT_ALIGNMENT_INHERIT") {
         {
           put("TEXT_ALIGNMENT_INHERIT", View.TEXT_ALIGNMENT_INHERIT);
           put("TEXT_ALIGNMENT_GRAVITY", View.TEXT_ALIGNMENT_GRAVITY);
@@ -744,8 +744,8 @@ public class ViewDescriptor extends NodeDescriptor<View> {
         }
       };
 
-  private static final EnumMapping sGravityMapping =
-      new EnumMapping("NO_GRAVITY") {
+  private static final EnumMapping<Integer> sGravityMapping =
+      new EnumMapping<Integer>("NO_GRAVITY") {
         {
           put("NO_GRAVITY", Gravity.NO_GRAVITY);
           put("LEFT", Gravity.LEFT);
