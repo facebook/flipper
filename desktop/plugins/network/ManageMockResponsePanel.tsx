@@ -8,11 +8,9 @@
  */
 
 import {
-  Layout,
+  Button,
   ManagedTable,
   Text,
-  FlexBox,
-  FlexRow,
   Glyph,
   styled,
   colors,
@@ -26,6 +24,9 @@ import {MockResponseDetails} from './MockResponseDetails';
 import {NetworkRouteContext} from './index';
 import {RequestId} from './types';
 
+import {message} from 'antd';
+import {NUX, Layout} from 'flipper-plugin';
+
 type Props = {
   routes: {[id: string]: Route};
   highlightedRows: Set<string> | null | undefined;
@@ -36,16 +37,6 @@ type Props = {
 const ColumnSizes = {route: 'flex'};
 
 const Columns = {route: {value: 'Route', resizable: false}};
-
-const Button = styled(FlexBox)({
-  color: colors.blackAlpha50,
-  alignItems: 'center',
-  padding: 5,
-  flexShrink: 0,
-  whiteSpace: 'nowrap',
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-});
 
 const TextEllipsis = styled(Text)({
   overflowX: 'hidden',
@@ -110,11 +101,11 @@ function RouteRow(props: {
   handleRemoveId: () => void;
 }) {
   return (
-    <FlexRow grow={true}>
-      <FlexRow onClick={props.handleRemoveId}>
+    <Layout.Horizontal>
+      <Layout.Horizontal onClick={props.handleRemoveId}>
         <Icon name="cross-circle" color={colors.red} />
-      </FlexRow>
-      <FlexRow grow={true}>
+      </Layout.Horizontal>
+      <Layout.Horizontal>
         {props.showWarning && (
           <Icon name="caution-triangle" color={colors.yellow} />
         )}
@@ -125,8 +116,8 @@ function RouteRow(props: {
         ) : (
           <TextEllipsis>{props.text}</TextEllipsis>
         )}
-      </FlexRow>
-    </FlexRow>
+      </Layout.Horizontal>
+    </Layout.Horizontal>
   );
 }
 
@@ -173,35 +164,37 @@ export function ManageMockResponsePanel(props: Props) {
     <Layout.Container style={{height: 550}}>
       <Layout.Left>
         <Layout.Container width={450} pad={10} gap={5}>
-          <Button
-            onClick={() => {
-              networkRouteManager.addRoute();
-            }}>
-            <Glyph
-              name="plus-circle"
-              size={16}
-              variant="outline"
-              color={colors.blackAlpha30}
-            />
-            &nbsp;Add Route
-          </Button>
-          <Button
-            onClick={() => {
-              networkRouteManager.copyHighlightedCalls(
-                props.highlightedRows as Set<string>,
-                props.requests,
-                props.responses,
-              );
-            }}>
-            <Glyph
-              name="plus-circle"
-              size={16}
-              variant="outline"
-              color={colors.blackAlpha30}
-            />
-            &nbsp;Copy Highlighted Calls
-          </Button>
+          <Layout.Horizontal gap>
+            <Button
+              onClick={() => {
+                networkRouteManager.addRoute();
+              }}>
+              Add Route
+            </Button>
+            <NUX
+              title="It is now possible to highlight calls from the network call list and convert them into mock routes."
+              placement="bottom">
+              <Button
+                onClick={() => {
+                  if (
+                    !props.highlightedRows ||
+                    props.highlightedRows.size == 0
+                  ) {
+                    message.info('No network calls have been highlighted');
+                    return;
+                  }
+                  networkRouteManager.copyHighlightedCalls(
+                    props.highlightedRows as Set<string>,
+                    props.requests,
+                    props.responses,
+                  );
+                }}>
+                Copy Highlighted Calls
+              </Button>
+            </NUX>
+          </Layout.Horizontal>
           <Panel
+            padded={false}
             grow={true}
             collapsable={false}
             floating={false}

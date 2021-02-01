@@ -10,8 +10,8 @@
 import {
   FlexRow,
   FlexColumn,
-  FlexBox,
   Layout,
+  Button,
   Input,
   Text,
   Tabs,
@@ -101,17 +101,6 @@ const Container = styled(FlexColumn)({
 
 const Warning = styled(FlexRow)({
   marginTop: 8,
-});
-
-const AddHeaderButton = styled(FlexBox)({
-  color: colors.blackAlpha50,
-  marginTop: 8,
-  alignItems: 'center',
-  padding: 10,
-  flexShrink: 0,
-  whiteSpace: 'nowrap',
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
 });
 
 const HeadersColumnSizes = {
@@ -210,7 +199,7 @@ function _buildMockResponseHeaderRows(
         },
         close: {
           value: (
-            <FlexBox
+            <Layout.Container
               onClick={() => {
                 const newHeaders = produce(
                   route.responseHeaders,
@@ -223,7 +212,7 @@ function _buildMockResponseHeaderRows(
                 });
               }}>
               <HeaderGlyph name="cross-circle" color={colors.red} />
-            </FlexBox>
+            </Layout.Container>
           ),
         },
       },
@@ -317,26 +306,25 @@ export function MockResponseDetails({id, route, isDuplicated}: Props) {
         </Tab>
         <Tab key={'headers'} label={'Headers'}>
           <Layout.Container style={{width: '100%'}}>
-            <AddHeaderButton
-              onClick={() => {
-                const newHeaders = {
-                  ...route.responseHeaders,
-                  [nextHeaderId.toString()]: {key: '', value: ''},
-                };
-                setNextHeaderId(nextHeaderId + 1);
-                networkRouteManager.modifyRoute(id, {
-                  responseHeaders: newHeaders,
-                });
-              }}>
-              <Glyph
-                name="plus-circle"
-                size={16}
-                variant="outline"
-                color={colors.blackAlpha30}
-              />
-              &nbsp;Add Header
-            </AddHeaderButton>
-            <Layout.ScrollContainer style={{width: '100%'}}>
+            <Layout.Horizontal>
+              <Button
+                onClick={() => {
+                  const newHeaders = {
+                    ...route.responseHeaders,
+                    [nextHeaderId.toString()]: {key: '', value: ''},
+                  };
+                  setNextHeaderId(nextHeaderId + 1);
+                  networkRouteManager.modifyRoute(id, {
+                    responseHeaders: newHeaders,
+                  });
+                }}
+                compact
+                padded
+                style={{marginBottom: 10}}>
+                Add Header
+              </Button>
+            </Layout.Horizontal>
+            <Layout.ScrollContainer>
               <ManagedTable
                 hideHeader={true}
                 multiline={true}
