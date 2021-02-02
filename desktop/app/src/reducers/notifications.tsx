@@ -203,7 +203,7 @@ export function addErrorNotification(
   error?: any,
 ): Action {
   // TODO: use this method for https://github.com/facebook/flipper/pull/1478/files as well
-  console.error(title, message, error);
+  console.warn(title, message, error);
   return addNotification({
     client: null,
     pluginId: 'globalError',
