@@ -36,6 +36,10 @@ releaseReplacements =
   ,("docs/setup/layout-plugin.mdx", spaces >> "debugImplementation 'com.facebook.flipper:flipper-litho-plugin:" *> releaseVersion <* "'")
   ,("docs/setup/network-plugin.mdx", spaces >> "debugImplementation 'com.facebook.flipper:flipper-network-plugin:" *> releaseVersion <* "'")
   ,("docs/setup/images-plugin.mdx", spaces >> "debugImplementation 'com.facebook.flipper:flipper-images-plugin:" *> releaseVersion <* "'")
+  ,("docs/getting-started/react-native-ios.mdx", spaces >> "use_flipper!('Flipper' => '" *> releaseVersion <* "')" <* many anyChar)
+  ,("docs/getting-started/react-native-ios.mdx", spaces >> "flipperkit_version = '" *> releaseVersion <* "'" <* many anyChar)
+  ,("docs/getting-started/react-native.mdx", many anyChar >> "`FLIPPER_VERSION=" *> releaseVersion <* "`.")
+  ,("docs/getting-started/react-native.mdx", many anyChar >> "`use_flipper!({ 'Flipper' => '" *> releaseVersion <* "' })`.")
   ]
 
 snapshotReplacements :: [(FilePath, Pattern Version)]
