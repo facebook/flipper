@@ -8,6 +8,7 @@
  */
 
 import os from 'os';
+import {remote} from 'electron';
 
 export type Info = {
   arch: string;
@@ -33,6 +34,17 @@ export function getInfo(): Info {
       platform: os.release(),
     },
   };
+}
+
+let APP_VERSION: string | undefined = undefined;
+// Prefer using this function over manually calling `remote.app.getVersion()`
+// as calls to the remote object go over IPC and can be slow.
+export function getAppVersion(): string | undefined {
+  if (APP_VERSION === undefined && remote) {
+    APP_VERSION = remote.app.getVersion();
+  }
+
+  return APP_VERSION;
 }
 
 export function stringifyInfo(info: Info): string {

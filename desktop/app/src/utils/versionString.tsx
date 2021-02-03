@@ -8,15 +8,13 @@
  */
 
 import isProduction from '../utils/isProduction';
-import {remote} from 'electron';
+import {getAppVersion} from './info';
 import config from '../fb-stubs/config';
 import ReleaseChannel from '../ReleaseChannel';
 
-const version = remote.app.getVersion();
-
 export function getVersionString() {
   return (
-    version +
+    getAppVersion() +
     (isProduction() ? '' : '-dev') +
     (config.getReleaseChannel() !== ReleaseChannel.STABLE
       ? `-${config.getReleaseChannel()}`

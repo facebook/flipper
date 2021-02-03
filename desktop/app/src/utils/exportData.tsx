@@ -17,6 +17,7 @@ import {State as PluginStatesState} from '../reducers/pluginStates';
 import {State as PluginsState} from '../reducers/plugins';
 import {PluginNotification} from '../reducers/notifications';
 import Client, {ClientExport, ClientQuery} from '../Client';
+import {getAppVersion} from './info';
 import {pluginKey} from '../reducers/pluginStates';
 import {
   callClient,
@@ -383,7 +384,7 @@ async function addSaltToDeviceSerial({
   });
   const revision: string | undefined = await readCurrentRevision();
   return {
-    fileVersion: remote.app.getVersion(),
+    fileVersion: getAppVersion() || 'unknown',
     flipperReleaseRevision: revision,
     clients: updatedClients,
     device: {...newDevice.toJSON(), pluginStates: devicePluginStates},

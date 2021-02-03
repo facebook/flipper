@@ -22,7 +22,8 @@ const {Text, Title} = Typography;
 
 import constants from '../fb-stubs/constants';
 import isProduction from '../utils/isProduction';
-import {shell, remote} from 'electron';
+import {getAppVersion} from '../utils/info';
+import {shell} from 'electron';
 
 const RowContainer = styled(FlexRow)({
   alignItems: 'flex-start',
@@ -144,9 +145,7 @@ function WelcomeScreenContent() {
         <Image width={125} height={125} src="./icon.png" preview={false} />
         <Title level={1}>Welcome to Flipper</Title>
         <Text style={{color: theme.textColorPlaceholder}}>
-          {isProduction() && remote
-            ? `Version ${remote.app.getVersion()}`
-            : 'Development Mode'}
+          {isProduction() ? `Version ${getAppVersion()}` : 'Development Mode'}
         </Text>
       </Space>
       <Space direction="vertical" size="large" style={{width: '100%'}}>
