@@ -782,12 +782,9 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
                 },
               ]}>
               <Line />
-              {children.map((child) => {
+              {children.map((child, index) => {
                 return (
-                  <StackTraceComponent
-                    key={child.message}
-                    stacktrace={child.message}
-                  />
+                  <StackTraceComponent key={index} stacktrace={child.message} />
                 );
               })}
             </ContextMenu>
