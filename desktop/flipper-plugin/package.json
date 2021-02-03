@@ -23,7 +23,7 @@
     "@ant-design/icons": "^4.2.2",
     "@testing-library/dom": "^7.26.3",
     "@testing-library/react": "^11.1.0",
-    "antd": "^4.8.0"
+    "antd": "^4.11.2"
   },
   "scripts": {
     "reset": "rimraf lib *.tsbuildinfo",
