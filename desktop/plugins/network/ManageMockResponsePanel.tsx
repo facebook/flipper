@@ -27,6 +27,11 @@ import {RequestId} from './types';
 import {message, Modal} from 'antd';
 import {NUX, Layout} from 'flipper-plugin';
 
+import {Modal} from 'antd';
+import {ExclamationCircleOutlined} from '@ant-design/icons';
+
+//const { confirm } = Modal;
+
 type Props = {
   routes: {[id: string]: Route};
   highlightedRows: Set<string> | null | undefined;
