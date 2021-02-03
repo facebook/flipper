@@ -5,7 +5,7 @@
 
 Pod::Spec.new do |spec|
   spec.name = 'Flipper-RSocket'
-  spec.version = '1.2.0'
+  spec.version = '1.3.0'
   spec.license = { :type => 'MIT' }
   spec.homepage = 'https://github.com/rsocket/rsocket-cpp'
   spec.summary = 'C++ implementation of RSocket'
@@ -25,7 +25,7 @@ Pod::Spec.new do |spec|
 
   spec.libraries = "stdc++"
   spec.compiler_flags = '-std=c++1y'
-  spec.dependency 'Flipper-Folly', '~> 2.4'
+  spec.dependency 'Flipper-Folly', '~> 2.5'
   spec.compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_LIBGFLAGS=0 -DFOLLY_HAVE_LIBJEMALLOC=0 -DFOLLY_HAVE_PREADV=0 -DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0 -DFOLLY_USE_SYMBOLIZER=0  -frtti
     -fexceptions
     -std=c++14
@@ -53,7 +53,7 @@ Pod::Spec.new do |spec|
   spec.header_dir = './'
   spec.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++14",
-                               "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\"/** \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/glog\" \"$(PODS_ROOT)/DoubleConversion\"/**" }
-  spec.platforms = { :ios => "9.0" }
+                               "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\"/** \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/glog\" \"$(PODS_ROOT)/libevent/include\" \"$(PODS_ROOT)/DoubleConversion\"/**" }
+  spec.platforms = { :ios => "10.0" }
 
 end

@@ -3,7 +3,7 @@ source 'https://github.com/facebook/flipper.git'
 source 'https://github.com/CocoaPods/Specs'
 
 target 'Sample' do
-  platform :ios, '9.0'
+  platform :ios, '10.0'
 
   # See docs/getting-started/ios-native.mdx
   pod 'FlipperKit', :path => '../../FlipperKit.podspec', :configuration => 'Debug'

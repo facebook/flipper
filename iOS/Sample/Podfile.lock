@@ -6,19 +6,19 @@ PODS:
     - RenderCore (= 0.30)
     - Yoga (~> 1.14)
   - Flipper (0.73.0):
-    - Flipper-Folly (~> 2.4)
-    - Flipper-RSocket (~> 1.2)
+    - Flipper-Folly (~> 2.5)
+    - Flipper-RSocket (~> 1.3)
   - Flipper-DoubleConversion (1.1.7)
-  - Flipper-Folly (2.4.0):
+  - Flipper-Folly (2.5.1):
     - boost-for-react-native
-    - CocoaLibEvent (~> 1.0)
     - Flipper-DoubleConversion
     - Flipper-Glog
+    - libevent (~> 2.1.12)
     - OpenSSL-Universal (= 1.1.180)
   - Flipper-Glog (0.3.6)
   - Flipper-PeerTalk (0.0.4)
-  - Flipper-RSocket (1.2.0):
-    - Flipper-Folly (~> 2.4)
+  - Flipper-RSocket (1.3.0):
+    - Flipper-Folly (~> 2.5)
   - FlipperKit (0.73.0):
     - FlipperKit/Core (= 0.73.0)
   - FlipperKit/Core (0.73.0):
@@ -30,7 +30,7 @@ PODS:
   - FlipperKit/CppBridge (0.73.0):
     - Flipper (~> 0.73.0)
   - FlipperKit/FBCxxFollyDynamicConvert (0.73.0):
-    - Flipper-Folly (~> 2.4)
+    - Flipper-Folly (~> 2.5)
   - FlipperKit/FBDefines (0.73.0)
   - FlipperKit/FKPortForwarding (0.73.0):
     - CocoaAsyncSocket (~> 7.6)
@@ -60,6 +60,7 @@ PODS:
   - FlipperKit/SKIOSNetworkPlugin (0.73.0):
     - FlipperKit/Core
     - FlipperKit/FlipperKitNetworkPlugin
+  - libevent (2.1.12)
   - OpenSSL-Universal (1.1.180)
   - RenderCore (0.30)
   - Yoga (1.14.0)
@@ -95,6 +96,7 @@ SPEC REPOS:
     - Flipper-Glog
     - Flipper-PeerTalk
     - Flipper-RSocket
+    - libevent
     - OpenSSL-Universal
     - RenderCore
     - Yoga
@@ -111,18 +113,19 @@ SPEC CHECKSUMS:
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   CocoaLibEvent: 2fab71b8bd46dd33ddb959f7928ec5909f838e3f
   ComponentKit: c34da1ab3515cf18db68a4ba22c6599568d1de74
-  Flipper: bd9bbd4f69593d96c8d31b7799cbfaba47eac18b
+  Flipper: 7b41f823243d0e11d02a7969b1cbd0b2891f55b2
   Flipper-DoubleConversion: 38631e41ef4f9b12861c67d17cb5518d06badc41
-  Flipper-Folly: ac90e2debaad40c347b90058feb263a80a3ba657
+  Flipper-Folly: f7a3caafbd74bda4827954fd7a6e000e36355489
   Flipper-Glog: 1dfd6abf1e922806c52ceb8701a3599a79a200a6
   Flipper-PeerTalk: 116d8f857dc6ef55c7a5a75ea3ceaafe878aadc9
-  Flipper-RSocket: a4adba0851ba12c1b011a320b2d99c93ce4e77f9
-  FlipperKit: 86d1aa083b7da7b5bc2e505e00b18d8907276b13
+  Flipper-RSocket: 602921fee03edacf18f5d6f3d3594ba477f456e5
+  FlipperKit: 5c3ac6a2de1063fd17ac88714485145aa22083d8
+  libevent: 3643423e83aec8022fc72aa7b565eec20952f65a
   OpenSSL-Universal: 1aa4f6a6ee7256b83db99ec1ccdaa80d10f9af9b
   RenderCore: d779c47622b313ce2d51bb36d084517af38b0dc1
   Yoga: cff67a400f6b74dc38eb0bad4f156673d9aa980c
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 9035349d45b311395a7507d55c3b0a65707b6769
+PODFILE CHECKSUM: d78101d63e8b2168e0f2dc550bea870debc45eb1
 
 COCOAPODS: 1.10.1
