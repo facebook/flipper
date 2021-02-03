@@ -27,6 +27,11 @@ import {RequestId} from './types';
 import {message} from 'antd';
 import {NUX, Layout} from 'flipper-plugin';
 
+import {Modal} from 'antd';
+import {ExclamationCircleOutlined} from '@ant-design/icons';
+
+//const { confirm } = Modal;
+
 type Props = {
   routes: {[id: string]: Route};
   highlightedRows: Set<string> | null | undefined;
@@ -101,23 +106,25 @@ function RouteRow(props: {
   handleRemoveId: () => void;
 }) {
   return (
-    <Layout.Horizontal>
-      <Layout.Horizontal onClick={props.handleRemoveId}>
-        <Icon name="cross-circle" color={colors.red} />
+    <Layout.Container>
+      <Layout.Horizontal style={{paddingBottom: 20}}>
+        <Layout.Horizontal onClick={props.handleRemoveId}>
+          <Icon name="cross-circle" color={colors.red} />
+        </Layout.Horizontal>
+        <Layout.Horizontal>
+          {props.showWarning && (
+            <Icon name="caution-triangle" color={colors.yellow} />
+          )}
+          {props.text.length === 0 ? (
+            <TextEllipsis style={{color: colors.blackAlpha50}}>
+              untitled
+            </TextEllipsis>
+          ) : (
+            <TextEllipsis>{props.text}</TextEllipsis>
+          )}
+        </Layout.Horizontal>
       </Layout.Horizontal>
-      <Layout.Horizontal>
-        {props.showWarning && (
-          <Icon name="caution-triangle" color={colors.yellow} />
-        )}
-        {props.text.length === 0 ? (
-          <TextEllipsis style={{color: colors.blackAlpha50}}>
-            untitled
-          </TextEllipsis>
-        ) : (
-          <TextEllipsis>{props.text}</TextEllipsis>
-        )}
-      </Layout.Horizontal>
-    </Layout.Horizontal>
+    </Layout.Container>
   );
 }
 
@@ -150,16 +157,57 @@ export function ManageMockResponsePanel(props: Props) {
   useEffect(() => {
     setSelectedId((selectedId) => {
       const keys = Object.keys(props.routes);
-      return keys.length === 0
-        ? null
-        : selectedId === null || !keys.includes(selectedId)
-        ? keys[keys.length - 1]
-        : selectedId;
+      let returnValue: string | null = null;
+      // selectId is null when there are no rows or it is the first time rows are shown
+      if (selectedId === null) {
+        if (keys.length === 0) {
+          // there are no rows
+          returnValue = null;
+        } else {
+          // first time rows are shown
+          returnValue = keys[0];
+        }
+      } else {
+        if (keys.includes(selectedId)) {
+          returnValue = selectedId;
+        } else {
+          // selectedId row value not in routes so default to first line
+          returnValue = keys[0];
+        }
+      }
+      return returnValue;
     });
   }, [props.routes]);
   const duplicatedIds = useMemo(() => _duplicateIds(props.routes), [
     props.routes,
   ]);
+
+  function getSelectedIds(): Set<string> {
+    const newSet = new Set<string>();
+    newSet.add(selectedId ?? '');
+    return newSet;
+  }
+
+  function getPreviousId(id: string): string | null {
+    const keys = Object.keys(props.routes);
+    const currentIndex = keys.indexOf(id);
+    if (currentIndex == 0) {
+      return null;
+    } else {
+      return keys[currentIndex - 1];
+    }
+  }
+
+  function getNextId(id: string): string | null {
+    const keys = Object.keys(props.routes);
+    const currentIndex = keys.indexOf(id);
+    if (currentIndex >= keys.length - 1) {
+      return getPreviousId(id);
+    } else {
+      return keys[currentIndex + 1];
+    }
+  }
+
   return (
     <Layout.Container style={{height: 550}}>
       <Layout.Left>
@@ -167,7 +215,8 @@ export function ManageMockResponsePanel(props: Props) {
           <Layout.Horizontal gap>
             <Button
               onClick={() => {
-                networkRouteManager.addRoute();
+                const newId = networkRouteManager.addRoute();
+                setSelectedId(newId);
               }}>
               Add Route
             </Button>
@@ -204,9 +253,18 @@ export function ManageMockResponsePanel(props: Props) {
               multiline={false}
               columnSizes={ColumnSizes}
               columns={Columns}
+              rowLineHeight={26}
               rows={_buildRows(props.routes, duplicatedIds, (id) => {
-                networkRouteManager.removeRoute(id);
-                setSelectedId(null);
+                Modal.confirm({
+                  title: 'Are you sure you want to delete this item?',
+                  icon: '',
+                  onOk() {
+                    const nextId = getNextId(id);
+                    networkRouteManager.removeRoute(id);
+                    setSelectedId(nextId);
+                  },
+                  onCancel() {},
+                });
               })}
               stickyBottom={true}
               autoHeight={false}
@@ -217,7 +275,7 @@ export function ManageMockResponsePanel(props: Props) {
                   selectedIds.length === 1 ? selectedIds[0] : null;
                 setSelectedId(newSelectedId);
               }}
-              highlightedRows={new Set(selectedId)}
+              highlightedRows={getSelectedIds()}
             />
           </Panel>
         </Layout.Container>
