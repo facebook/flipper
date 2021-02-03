@@ -5,7 +5,7 @@
 
 Pod::Spec.new do |spec|
   spec.name = 'Flipper-Folly'
-  spec.version = '2.3.1'
+  spec.version = '2.4.0'
   spec.license = { :type => 'Apache License, Version 2.0' }
   spec.homepage = 'https://github.com/facebook/folly'
   spec.summary = 'An open-source C++ library developed and used at Facebook.'
