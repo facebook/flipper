@@ -11,7 +11,7 @@ jobs:
         run: pod repo update
 
       - name: Lint FlipperKit
-        run: pod spec lint FlipperKit.podspec --use-libraries --allow-warnings --verbose --skip-import-validation --synchronous
+        run: pod spec lint FlipperKit.podspec --use-libraries --allow-warnings --verbose --skip-import-validation --sources=https://github.com/CocoaPods/Specs
 
   lint-flipper_pod:
     runs-on: macos-latest
@@ -21,4 +21,4 @@ jobs:
       - name: Install Dependences
         run: pod repo update
       - name: Lint Flipper
-        run: pod spec lint Flipper.podspec --use-libraries --allow-warnings --verbose --synchronous
+        run: pod spec lint Flipper.podspec --use-libraries --allow-warnings --verbose --sources=https://github.com/CocoaPods/Specs
