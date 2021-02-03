@@ -15,7 +15,7 @@ export * from './ui/index';
 export {getStringFromErrorLike, textContent, sleep} from './utils/index';
 export {serialize, deserialize} from './utils/serialization';
 export * from './utils/jsonTypes';
-export {default as GK} from './fb-stubs/GK';
+export {default as GK, loadGKs, loadDistilleryGK} from './fb-stubs/GK';
 export {default as createPaste} from './fb-stubs/createPaste';
 export {
   internGraphGETAPIRequest,
@@ -47,6 +47,7 @@ export {Store, MiddlewareAPI, State as ReduxState} from './reducers/index';
 export {default as BaseDevice} from './devices/BaseDevice';
 export {DeviceLogEntry, LogLevel, DeviceLogListener} from 'flipper-plugin';
 export {shouldParseAndroidLog} from './utils/crashReporterUtility';
+export {deconstructClientId} from './utils/clientUtils';
 export {default as isProduction} from './utils/isProduction';
 export {createTablePlugin} from './createTablePlugin';
 export {default as DetailSidebar} from './chrome/DetailSidebar';
