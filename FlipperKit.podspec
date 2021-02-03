@@ -17,7 +17,7 @@ Pod::Spec.new do |spec|
   spec.source = { :git => 'https://github.com/facebook/flipper.git',
                   :tag=> "v"+flipperkit_version }
   spec.module_name = 'FlipperKit'
-  spec.platforms = { :ios => "9.0" }
+  spec.platforms = { :ios => "10.0" }
   spec.default_subspecs = "Core"
 
   # This subspec is necessary since FBDefines.h is imported as <FBDefines/FBDefines.h>
