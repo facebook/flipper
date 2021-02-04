@@ -3,7 +3,7 @@ source 'https://github.com/facebook/flipper.git'
 source 'https://github.com/CocoaPods/Specs'
 
 target 'Sample' do
-  platform :ios, '9.0'
+  platform :ios, '10.0'
 
   # See docs/getting-started/ios-native.mdx
   pod 'FlipperKit', :path => '../../FlipperKit.podspec', :configuration => 'Debug'
@@ -17,7 +17,7 @@ target 'Sample' do
   pod 'Flipper-Folly', :configuration => 'Debug'
   pod 'Flipper-Glog', :configuration => 'Debug'
   pod 'Flipper-PeerTalk', :configuration => 'Debug'
-  pod 'CocoaLibEvent', :configuration => 'Debug'
+  pod 'libevent', :configuration => 'Debug'
   pod 'boost-for-react-native', :configuration => 'Debug'
   pod 'OpenSSL-Universal', :configuration => 'Debug'
   pod 'CocoaAsyncSocket', :configuration => 'Debug'
