@@ -83,7 +83,7 @@ export default class IOSDevice extends BaseDevice {
       return;
     }
     if (retries === 0) {
-      console.error('Attaching iOS log listener continuously failed.');
+      console.warn('Attaching iOS log listener continuously failed.');
       return;
     }
     if (!this.log) {
@@ -111,11 +111,11 @@ export default class IOSDevice extends BaseDevice {
       );
 
       this.log.on('error', (err: Error) => {
-        console.error(err);
+        console.error('iOS log tailer error', err);
       });
 
       this.log.stderr.on('data', (data: Buffer) => {
-        console.error(data.toString());
+        console.warn('iOS log tailer stderr: ', data.toString());
       });
 
       this.log.on('exit', () => {
