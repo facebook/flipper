@@ -13,11 +13,9 @@ import {reportPlatformFailures} from '../utils/metrics';
 import React, {useEffect, useState} from 'react';
 import fbConfig from '../fb-stubs/config';
 import {useStore} from '../utils/useStore';
-import {remote} from 'electron';
+import {getAppVersion} from '../utils/info';
 import {checkForUpdate} from '../fb-stubs/checkForUpdate';
 import ReleaseChannel from '../ReleaseChannel';
-
-const version = remote.app.getVersion();
 
 export type VersionCheckResult =
   | {
@@ -90,6 +88,7 @@ export default function UpdateIndicator() {
 
   // trigger the update check, unless there is a launcher message already
   useEffect(() => {
+    const version = getAppVersion();
     if (launcherMsg && launcherMsg.message) {
       if (launcherMsg.severity === 'error') {
         notification.error({
@@ -108,7 +107,7 @@ export default function UpdateIndicator() {
           duration: null,
         });
       }
-    } else if (isProduction()) {
+    } else if (version && isProduction()) {
       reportPlatformFailures(
         checkForUpdate(version).then((res) => {
           if (res.kind === 'error') {
