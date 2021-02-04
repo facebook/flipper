@@ -371,7 +371,6 @@
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/RenderCore\"",
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/Yoga\"",
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/YogaKit\"",
-					"\"${PODS_ROOT}/CocoaLibEvent/lib\"",
 				);
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				OTHER_LDFLAGS = (
