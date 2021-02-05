@@ -376,10 +376,6 @@
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
-					"-l\"event\"",
-					"-l\"event_core\"",
-					"-l\"event_extra\"",
-					"-l\"event_pthreads\"",
 					"-l\"stdc++\"",
 					"-framework",
 					"\"CFNetwork\"",
@@ -411,10 +407,6 @@
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
-					"-l\"event\"",
-					"-l\"event_core\"",
-					"-l\"event_extra\"",
-					"-l\"event_pthreads\"",
 					"-l\"stdc++\"",
 					"-framework",
 					"\"CFNetwork\"",
