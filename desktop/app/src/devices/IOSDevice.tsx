@@ -40,7 +40,7 @@ type RawLogEntry = {
 };
 
 export default class IOSDevice extends BaseDevice {
-  log: any;
+  log?: child_process.ChildProcessWithoutNullStreams;
   buffer: string;
   private recordingProcess?: ChildProcess;
   private recordingLocation?: string;
@@ -49,7 +49,7 @@ export default class IOSDevice extends BaseDevice {
     super(serial, deviceType, title, 'iOS');
     this.icon = 'icons/ios.svg';
     this.buffer = '';
-    this.log = this.startLogListener();
+    this.startLogListener();
   }
 
   screenshot(): Promise<Buffer> {
@@ -128,7 +128,7 @@ export default class IOSDevice extends BaseDevice {
       });
 
       this.log.on('exit', () => {
-        this.log = null;
+        this.log = undefined;
       });
     }
 
@@ -144,7 +144,7 @@ export default class IOSDevice extends BaseDevice {
       console.error('Could not parse iOS log stream.', e);
       // restart log stream
       this.log.kill();
-      this.log = null;
+      this.log = undefined;
       this.startLogListener(retries - 1);
     }
   }
