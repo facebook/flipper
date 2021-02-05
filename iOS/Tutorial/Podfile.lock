@@ -4,9 +4,9 @@ PODS:
   - ComponentKit (0.30):
     - RenderCore (= 0.30)
     - Yoga (~> 1.14)
-  - Flipper (0.49.2):
-    - Flipper-Folly (~> 2.2)
-    - Flipper-RSocket (~> 1.1)
+  - Flipper (0.74.0):
+    - Flipper-Folly (~> 2.5)
+    - Flipper-RSocket (~> 1.3)
   - Flipper-DoubleConversion (1.1.7)
   - Flipper-Folly (2.5.1):
     - boost-for-react-native
@@ -18,41 +18,41 @@ PODS:
   - Flipper-PeerTalk (0.0.4)
   - Flipper-RSocket (1.3.0):
     - Flipper-Folly (~> 2.5)
-  - FlipperKit (0.49.2):
-    - FlipperKit/Core (= 0.49.2)
-  - FlipperKit/Core (0.49.2):
-    - Flipper (~> 0.49.2)
+  - FlipperKit (0.74.0):
+    - FlipperKit/Core (= 0.74.0)
+  - FlipperKit/Core (0.74.0):
+    - Flipper (~> 0.74.0)
     - FlipperKit/CppBridge
     - FlipperKit/FBCxxFollyDynamicConvert
     - FlipperKit/FBDefines
     - FlipperKit/FKPortForwarding
-  - FlipperKit/CppBridge (0.49.2):
-    - Flipper (~> 0.49.2)
-  - FlipperKit/FBCxxFollyDynamicConvert (0.49.2):
-    - Flipper-Folly (~> 2.2)
-  - FlipperKit/FBDefines (0.49.2)
-  - FlipperKit/FKPortForwarding (0.49.2):
+  - FlipperKit/CppBridge (0.74.0):
+    - Flipper (~> 0.74.0)
+  - FlipperKit/FBCxxFollyDynamicConvert (0.74.0):
+    - Flipper-Folly (~> 2.5)
+  - FlipperKit/FBDefines (0.74.0)
+  - FlipperKit/FKPortForwarding (0.74.0):
     - CocoaAsyncSocket (~> 7.6)
     - Flipper-PeerTalk (~> 0.0.4)
-  - FlipperKit/FlipperKitHighlightOverlay (0.49.2)
-  - FlipperKit/FlipperKitLayoutComponentKitSupport (0.49.2):
-    - ComponentKit (~> 0.30)
+  - FlipperKit/FlipperKitHighlightOverlay (0.74.0)
+  - FlipperKit/FlipperKitLayoutComponentKitSupport (0.74.0):
+    - ComponentKit (= 0.30)
     - FlipperKit/Core
     - FlipperKit/FlipperKitHighlightOverlay
     - FlipperKit/FlipperKitLayoutPlugin
     - FlipperKit/FlipperKitLayoutTextSearchable
-    - RenderCore (~> 0.30)
-  - FlipperKit/FlipperKitLayoutPlugin (0.49.2):
+    - RenderCore (= 0.30)
+  - FlipperKit/FlipperKitLayoutPlugin (0.74.0):
     - FlipperKit/Core
     - FlipperKit/FlipperKitHighlightOverlay
     - FlipperKit/FlipperKitLayoutTextSearchable
     - YogaKit (~> 1.18)
-  - FlipperKit/FlipperKitLayoutTextSearchable (0.49.2)
-  - FlipperKit/FlipperKitNetworkPlugin (0.49.2):
+  - FlipperKit/FlipperKitLayoutTextSearchable (0.74.0)
+  - FlipperKit/FlipperKitNetworkPlugin (0.74.0):
     - FlipperKit/Core
-  - FlipperKit/FlipperKitUserDefaultsPlugin (0.49.2):
+  - FlipperKit/FlipperKitUserDefaultsPlugin (0.74.0):
     - FlipperKit/Core
-  - FlipperKit/SKIOSNetworkPlugin (0.49.2):
+  - FlipperKit/SKIOSNetworkPlugin (0.74.0):
     - FlipperKit/Core
     - FlipperKit/FlipperKitNetworkPlugin
   - libevent (2.1.12)
@@ -63,10 +63,10 @@ PODS:
     - Yoga (~> 1.14)
 
 DEPENDENCIES:
-  - FlipperKit (~> 0.49.0)
-  - FlipperKit/FlipperKitLayoutComponentKitSupport (~> 0.49.0)
-  - FlipperKit/FlipperKitUserDefaultsPlugin (~> 0.49.0)
-  - FlipperKit/SKIOSNetworkPlugin (~> 0.49.0)
+  - FlipperKit (~> 0.74.0)
+  - FlipperKit/FlipperKitLayoutComponentKitSupport (~> 0.74.0)
+  - FlipperKit/FlipperKitUserDefaultsPlugin (~> 0.74.0)
+  - FlipperKit/SKIOSNetworkPlugin (~> 0.74.0)
 
 SPEC REPOS:
   trunk:
@@ -90,19 +90,19 @@ SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   ComponentKit: c34da1ab3515cf18db68a4ba22c6599568d1de74
-  Flipper: 5e4fa8b930abb3d2ef2079d8ad33ae47d7cd8037
+  Flipper: c1ad50344bffdce628b1906b48f6e7cd06724236
   Flipper-DoubleConversion: 38631e41ef4f9b12861c67d17cb5518d06badc41
   Flipper-Folly: f7a3caafbd74bda4827954fd7a6e000e36355489
   Flipper-Glog: 1dfd6abf1e922806c52ceb8701a3599a79a200a6
   Flipper-PeerTalk: 116d8f857dc6ef55c7a5a75ea3ceaafe878aadc9
   Flipper-RSocket: 602921fee03edacf18f5d6f3d3594ba477f456e5
-  FlipperKit: 784a8f7769c3c6cdc7b10cd2a5232569ac6686ea
+  FlipperKit: f42987ea58737ac0fb3fbc38f8e703452ba56940
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   OpenSSL-Universal: 1aa4f6a6ee7256b83db99ec1ccdaa80d10f9af9b
   RenderCore: d779c47622b313ce2d51bb36d084517af38b0dc1
   Yoga: cff67a400f6b74dc38eb0bad4f156673d9aa980c
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: eee0bd8fb136f35ceb29ff650a6d04bfb903dad1
+PODFILE CHECKSUM: da89a66d68d3e086e76f820b87c626db8ef1f489
 
 COCOAPODS: 1.10.1
