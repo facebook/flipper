@@ -79,9 +79,6 @@ export default class IOSDevice extends BaseDevice {
   }
 
   startLogListener(retries: number = 3) {
-    if (this.deviceType === 'physical') {
-      return;
-    }
     if (retries === 0) {
       console.warn('Attaching iOS log listener continuously failed.');
       return;
@@ -91,24 +88,36 @@ export default class IOSDevice extends BaseDevice {
         ? ['--set', process.env.DEVICE_SET_PATH]
         : [];
 
-      this.log = child_process.spawn(
-        'xcrun',
-        [
-          'simctl',
-          ...deviceSetPath,
-          'spawn',
-          this.serial,
-          'log',
-          'stream',
-          '--style',
-          'json',
-          '--predicate',
-          'senderImagePath contains "Containers"',
-          '--info',
-          '--debug',
-        ],
-        {},
-      );
+      const extraArgs = [
+        '--style',
+        'json',
+        '--predicate',
+        'senderImagePath contains "Containers"',
+        '--debug',
+        '--info',
+      ];
+
+      if (this.deviceType === 'physical') {
+        this.log = child_process.spawn(
+          'idb',
+          ['log', '--udid', this.serial, '--', ...extraArgs],
+          {},
+        );
+      } else {
+        this.log = child_process.spawn(
+          'xcrun',
+          [
+            'simctl',
+            ...deviceSetPath,
+            'spawn',
+            this.serial,
+            'log',
+            'stream',
+            ...extraArgs,
+          ],
+          {},
+        );
+      }
 
       this.log.on('error', (err: Error) => {
         console.error('iOS log tailer error', err);
