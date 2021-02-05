@@ -82,7 +82,7 @@ android {
 
 preBuild.dependsOn(tasks.getByPath(':third-party:prepare'))
 
-apply from: rootProject.file('gradle/release.gradle')
+apply plugin: 'com.vanniktech.maven.publish'
 
 task sourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs

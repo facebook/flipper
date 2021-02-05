@@ -8,10 +8,12 @@
 buildscript {
     repositories {
         google()
+        mavenCentral()
         jcenter()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:4.0.0'
+        classpath 'com.vanniktech:gradle-maven-publish-plugin:0.13.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$KOTLIN_VERSION"
     }
 }
