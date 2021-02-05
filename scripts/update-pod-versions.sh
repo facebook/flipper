@@ -34,7 +34,7 @@ fi
 
 FLIPPER_DIR=$1
 PACKAGE_VERSION=$(jq -r .version "$FLIPPER_DIR/desktop/package.json")
-OLD_VERSION_POD_ARG=$(< "FlipperKit.podspec" grep "flipperkit_version =" )
+OLD_VERSION_POD_ARG=$(< "$2" grep "flipperkit_version =" )
 OLD_VERSION="${OLD_VERSION_POD_ARG##* }"
 FLIPPERKIT_VERSION_TAG='flipperkit_version'
 
