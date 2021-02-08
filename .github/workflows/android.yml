@@ -17,8 +17,17 @@ jobs:
         java-version: 1.8
     - name: Install NDK 20, 21
       run: echo "y" | sudo /usr/local/lib/android/sdk/tools/bin/sdkmanager --install "ndk;21.0.6113669" "ndk;20.0.5594570" --sdk_root=${ANDROID_SDK_ROOT}
+    - name: Write GPG Sec Ring
+      run: echo '${{ secrets.GPG_KEY_CONTENTS }}' | base64 -d > secring.gpg
+    - name: Update gradle.properties
+      run: echo 'signing.secretKeyRingFile=secring.gpg' >> gradle.properties
     - name: Upload Archives
       run: ./gradlew :android:uploadArchives
+      env:
+        SIGNING_KEY_ID: ${{ secrets.SIGNING_KEY_ID }}
+        SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+        SONATYPE_NEXUS_PASSWORD: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
+        SONATYPE_NEXUS_USERNAME: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
     # - name: Build with Gradle
     #   run: ./gradlew :sample:assembleDebug :sample:assembleRelease
     # - name: Rename apk
