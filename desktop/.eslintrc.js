@@ -12,6 +12,7 @@ const fbjs = require('eslint-config-fbjs');
 // enforces copy-right header and @format directive to be present in every file
 const pattern = /^\*\r?\n[\S\s]*Facebook[\S\s]* \* @format\r?\n/;
 
+// This list should match the replacements defined in `replace-flipper-requires.ts` and `dispatcher/plugins.tsx`
 const builtInModules = [
   'fb-qpl-xplat',
   'flipper',
@@ -24,6 +25,7 @@ const builtInModules = [
   'antd',
   'immer',
   '@emotion/styled',
+  '@ant-design/icons',
 ];
 
 const prettierConfig = require('./.prettierrc.json');

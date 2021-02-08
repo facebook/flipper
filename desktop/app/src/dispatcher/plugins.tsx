@@ -39,7 +39,10 @@ import {tryCatchReportPluginFailures, reportUsage} from '../utils/metrics';
 import * as FlipperPluginSDK from 'flipper-plugin';
 import {_SandyPluginDefinition} from 'flipper-plugin';
 import loadDynamicPlugins from '../utils/loadDynamicPlugins';
-import Immer from 'immer';
+import * as Immer from 'immer';
+import * as antd from 'antd';
+import * as emotion_styled from '@emotion/styled';
+import * as antdesign_icons from '@ant-design/icons';
 
 // eslint-disable-next-line import/no-unresolved
 import getDefaultPluginsIndex from '../utils/getDefaultPluginsIndex';
@@ -49,12 +52,17 @@ let defaultPluginsIndex: any = null;
 export default async (store: Store, logger: Logger) => {
   // expose Flipper and exact globally for dynamically loaded plugins
   const globalObject: any = typeof window === 'undefined' ? global : window;
+
+  // this list should match `replace-flipper-requires.tsx` and the `builtInModules` in `desktop/.eslintrc`
   globalObject.React = React;
   globalObject.ReactDOM = ReactDOM;
   globalObject.Flipper = require('../index');
   globalObject.adbkit = adbkit;
   globalObject.FlipperPlugin = FlipperPluginSDK;
   globalObject.Immer = Immer;
+  globalObject.antd = antd;
+  globalObject.emotion_styled = emotion_styled;
+  globalObject.antdesign_icons = antdesign_icons;
 
   const gatekeepedPlugins: Array<ActivatablePluginDetails> = [];
   const disabledPlugins: Array<ActivatablePluginDetails> = [];

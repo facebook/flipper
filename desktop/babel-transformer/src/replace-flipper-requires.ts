@@ -15,13 +15,17 @@ import {
 } from '@babel/types';
 import {NodePath} from '@babel/traverse';
 
+// This list should match `dispatcher/plugins.tsx` and `builtInModules` in `desktop/.eslintrc.js`
 const requireReplacements: any = {
   flipper: 'global.Flipper',
   'flipper-plugin': 'global.FlipperPlugin',
   react: 'global.React',
   'react-dom': 'global.ReactDOM',
   adbkit: 'global.adbkit',
+  antd: 'global.antd',
   immer: 'global.Immer',
+  '@emotion/styled': 'global.emotion_styled',
+  '@ant-design/icons': 'global.antdesign_icons',
 };
 
 export function tryReplaceFlipperRequire(path: NodePath<CallExpression>) {
