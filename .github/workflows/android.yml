@@ -20,12 +20,12 @@ jobs:
     - name: Write GPG Sec Ring
       run: echo '${{ secrets.GPG_KEY_CONTENTS }}' | base64 -d > secring.gpg
     - name: Update gradle.properties
-      run: echo 'signing.secretKeyRingFile=secring.gpg' >> gradle.properties
+      run: echo "signing.secretKeyRingFile=secring.gpg\nsigning.keyId=${{ secrets.SIGNING_KEY_ID }}\nsigning.password=${{ secrets.SIGNING_PASSWORD }}" >> gradle.properties
+    - name: Build artifacts
+      run: ./gradlew assembleRelease
     - name: Upload Archives
-      run: ./gradlew :android:uploadArchives
+      run: ./gradlew uploadArchives
       env:
-        SIGNING_KEY_ID: ${{ secrets.SIGNING_KEY_ID }}
-        SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
         SONATYPE_NEXUS_PASSWORD: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
         SONATYPE_NEXUS_USERNAME: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
     # - name: Build with Gradle
