@@ -39,6 +39,11 @@ subprojects {
             maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
         }
     }
+
+    // We don't build Javadoc at this time.
+    tasks.withType(Javadoc).all {
+        enabled = false
+    }
 }
 
 ext {
