@@ -23,7 +23,7 @@ jobs:
       run: echo "signing.secretKeyRingFile=secring.gpg\nsigning.keyId=${{ secrets.SIGNING_KEY_ID }}\nsigning.password=${{ secrets.SIGNING_PASSWORD }}" >> gradle.properties
     # TODO: Remove :android: qualifier once we know that this works.
     - name: Build artifacts
-      run: ./gradlew assembleRelease
+      run: ./gradlew :sample:assembleDebug assembleRelease
     - name: Upload Archives
       run: ./gradlew :android:uploadArchives
       env:
