@@ -657,10 +657,10 @@ eslint-plugin-flowtype@^5.2.0:
     lodash "^4.17.15"
     string-natural-compare "^3.0.1"
 
-eslint-plugin-header@^3.0.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-header/-/eslint-plugin-header-3.1.0.tgz#5e6819489a7722ae0c5c237387f78350d755c1d5"
-  integrity sha512-jKKcwMsB0/ftBv3UVmuQir1f8AmXzTS9rdzPkileW8/Nz9ivdea8vOU1ZrMbX+WH6CpwnHEo3403baSHk40Mag==
+eslint-plugin-header@^3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-header/-/eslint-plugin-header-3.1.1.tgz#6ce512432d57675265fac47292b50d1eff11acd6"
+  integrity sha512-9vlKxuJ4qf793CmeeSrZUvVClw6amtpghq3CuWcB5cUNnWHQhgcqy5eF8oVKFk1G3Y/CbchGfEaw3wiIJaNmVg==
 
 eslint-plugin-import@^2.22.1:
   version "2.22.1"
