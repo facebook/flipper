@@ -345,7 +345,7 @@ export function devicePlugin(client: DevicePluginClient) {
     return {
       logs: entries
         .get()
-        .slice(-10000)
+        .slice(-100 * 1000)
         .map((e) => e.entry),
     };
   });

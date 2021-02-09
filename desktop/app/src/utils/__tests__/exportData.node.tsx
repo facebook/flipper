@@ -20,7 +20,7 @@ import {
 import {FlipperPlugin, FlipperDevicePlugin} from '../../plugin';
 import {Notification} from '../../plugin';
 import {default as Client, ClientExport} from '../../Client';
-import {State as PluginsState} from '../../reducers/plugins';
+import {selectedPlugins, State as PluginsState} from '../../reducers/plugins';
 import {createMockFlipperWithPlugin} from '../../test-utils/createMockFlipperWithPlugin';
 import {
   TestUtils,
@@ -1321,13 +1321,19 @@ test('Sandy device plugins are exported / imported properly', async () => {
   const device2 = store.getState().connections.devices[1];
   expect(device2).not.toBeFalsy();
   expect(device2).not.toBe(device);
-  expect(device2.devicePlugins).toEqual([TestPlugin.id]);
+  expect(device2.devicePlugins).toEqual([sandyDeviceTestPlugin.id]);
 
-  const {counter} = device2.sandyPluginStates.get(TestPlugin.id)?.instanceApi;
+  const {counter} = device2.sandyPluginStates.get(
+    sandyDeviceTestPlugin.id,
+  )?.instanceApi;
   counter.set(counter.get() + 1);
 
   expect(
-    (await device.exportState(testIdler, testOnStatusMessage))[TestPlugin.id],
+    (
+      await device.exportState(testIdler, testOnStatusMessage, [
+        sandyDeviceTestPlugin.id,
+      ])
+    )[sandyDeviceTestPlugin.id],
   ).toMatchInlineSnapshot(`
     Object {
       "counter": 0,
@@ -1336,8 +1342,11 @@ test('Sandy device plugins are exported / imported properly', async () => {
       },
     }
   `);
-  expect(await device2.exportState(testIdler, testOnStatusMessage))
-    .toMatchInlineSnapshot(`
+  expect(
+    await device2.exportState(testIdler, testOnStatusMessage, [
+      sandyDeviceTestPlugin.id,
+    ]),
+  ).toMatchInlineSnapshot(`
     Object {
       "TestPlugin": Object {
         "counter": 4,
@@ -1358,6 +1367,7 @@ test('Sandy device plugins with custom export are export properly', async () => 
     .get(sandyDeviceTestPlugin.id)
     ?.instanceApi.enableCustomExport();
 
+  store.dispatch(selectedPlugins([sandyDeviceTestPlugin.id]));
   const storeExport = await exportStore(store);
   expect(storeExport.exportStoreData.device!.pluginStates).toEqual({
     [sandyDeviceTestPlugin.id]: {customExport: true},
@@ -1522,8 +1532,9 @@ test('Sandy plugins with complex data are imported  / exported correctly', async
     },
   );
 
-  const {store} = await createMockFlipperWithPlugin(plugin);
+  const {store, client} = await createMockFlipperWithPlugin(plugin);
 
+  client.disconnect(); // lets make sure we can still export disconnected clients
   const data = await exportStore(store);
   expect(Object.values(data.exportStoreData.pluginStates2)).toMatchObject([
     {
@@ -1591,6 +1602,7 @@ test('Sandy device plugins with complex data are imported  / exported correctly'
   );
 
   const {store} = await createMockFlipperWithPlugin(deviceplugin);
+  store.dispatch(selectedPlugins([deviceplugin.id]));
 
   const data = await exportStore(store);
   expect(data.exportStoreData.device?.pluginStates).toMatchObject({

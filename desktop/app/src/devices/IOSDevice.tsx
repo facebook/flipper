@@ -52,7 +52,10 @@ export default class IOSDevice extends BaseDevice {
     this.startLogListener();
   }
 
-  screenshot(): Promise<Buffer> {
+  async screenshot(): Promise<Buffer> {
+    if (this.isArchived) {
+      return Buffer.from([]);
+    }
     const tmpImageName = uuid() + '.png';
     const tmpDirectory = (electron.app || electron.remote.app).getPath('temp');
     const tmpFilePath = path.join(tmpDirectory, tmpImageName);
@@ -189,7 +192,7 @@ export default class IOSDevice extends BaseDevice {
   }
 
   async screenCaptureAvailable() {
-    return this.deviceType === 'emulator';
+    return this.deviceType === 'emulator' && !this.isArchived;
   }
 
   async startScreenCapture(destination: string) {

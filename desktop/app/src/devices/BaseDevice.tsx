@@ -99,11 +99,15 @@ export default class BaseDevice {
   async exportState(
     idler: Idler,
     onStatusMessage: (msg: string) => void,
+    selectedPlugins: string[],
   ): Promise<Record<string, any>> {
     const pluginStates: Record<string, any> = {};
 
     for (const instance of this.sandyPluginStates.values()) {
-      if (instance.isPersistable()) {
+      if (
+        selectedPlugins.includes(instance.definition.id) &&
+        instance.isPersistable()
+      ) {
         pluginStates[instance.definition.id] = await instance.exportState(
           idler,
           onStatusMessage,

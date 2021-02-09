@@ -208,7 +208,7 @@ export function startPlugin<Module extends FlipperPluginModule<any>>(
     isBackgroundPlugin(_pluginId: string) {
       return !!options?.isBackgroundPlugin;
     },
-    connected: createState(false),
+    connected: createState(true),
     initPlugin() {
       this.connected.set(true);
       pluginInstance.connect();

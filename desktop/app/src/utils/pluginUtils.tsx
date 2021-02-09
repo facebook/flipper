@@ -27,6 +27,7 @@ import type {
   PluginDetails,
 } from 'flipper-plugin-lib';
 import {filterNewestVersionOfEachPlugin} from '../dispatcher/plugins';
+import ArchivedDevice from '../devices/ArchivedDevice';
 
 export const defaultEnabledBackgroundPlugins = ['Navigation']; // The navigation plugin is enabled always, to make sure the navigation features works
 
@@ -300,11 +301,11 @@ function getFavoritePlugins(
   starredPlugins: undefined | string[],
   returnFavoredPlugins: boolean, // if false, unfavoried plugins are returned
 ): PluginDefinition[] {
-  if (device.isArchived) {
+  if (device instanceof ArchivedDevice) {
     if (!returnFavoredPlugins) {
       return [];
     }
-    // for archived plugins, all stored plugins are enabled
+    // for *imported* devices, all stored plugins are enabled
     return allPlugins.filter(
       (plugin) => client.plugins.indexOf(plugin.id) !== -1,
     );

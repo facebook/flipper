@@ -431,10 +431,14 @@ export async function processStore(
       statusUpdate = () => {};
     }
     statusUpdate('Capturing screenshot...');
-    const deviceScreenshot = await capture(device).catch((e) => {
-      console.warn('Failed to capture device screenshot when exporting. ' + e);
-      return null;
-    });
+    const deviceScreenshot = device.isArchived
+      ? null
+      : await capture(device).catch((e) => {
+          console.warn(
+            'Failed to capture device screenshot when exporting. ' + e,
+          );
+          return null;
+        });
     const processedClients = processClients(clients, serial, statusUpdate);
     const processedPluginStates = processPluginStates({
       clients: processedClients,
@@ -461,7 +465,7 @@ export async function processStore(
     );
 
     const devicePluginStates = await makeObjectSerializable(
-      await device.exportState(idler, statusUpdate),
+      await device.exportState(idler, statusUpdate, selectedPlugins),
       idler,
       statusUpdate,
       'Serializing device plugins',
@@ -610,11 +614,7 @@ export function determinePluginsToProcess(
   const selectedPlugins = plugins.selectedPlugins;
 
   for (const client of clients) {
-    if (
-      !selectedDevice ||
-      selectedDevice.isArchived ||
-      client.query.device_id !== selectedDevice.serial
-    ) {
+    if (!selectedDevice || client.query.device_id !== selectedDevice.serial) {
       continue;
     }
     const selectedFilteredPlugins = client

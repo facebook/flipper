@@ -26,7 +26,11 @@ export function getFileName(extension: 'png' | 'mp4'): string {
   return `screencap-${new Date().toISOString().replace(/:/g, '')}.${extension}`;
 }
 
-export function capture(device: BaseDevice): Promise<string> {
+export async function capture(device: BaseDevice): Promise<string> {
+  if (device.isArchived) {
+    console.log('Skipping screenshot for archived device');
+    return '';
+  }
   const pngPath = path.join(CAPTURE_LOCATION, getFileName('png'));
   return reportPlatformFailures(
     device.screenshot().then((buffer) => writeBufferToFile(pngPath, buffer)),

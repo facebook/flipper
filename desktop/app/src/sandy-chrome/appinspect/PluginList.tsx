@@ -18,7 +18,7 @@ import {
   DownloadOutlined,
 } from '@ant-design/icons';
 import {Glyph, Layout, styled} from '../../ui';
-import {theme, NUX, Tracked} from 'flipper-plugin';
+import {theme, NUX, Tracked, useValue} from 'flipper-plugin';
 import {useDispatch, useStore} from '../../utils/useStore';
 import {
   computePluginLists,
@@ -85,7 +85,7 @@ export const PluginList = memo(function PluginList({
     connections.userStarredPlugins,
     pluginsChanged,
   ]);
-  const isArchived = !!activeDevice?.isArchived;
+  const isArchived = useValue(activeDevice?.archivedState, false);
 
   const annotatedDownloadablePlugins = useMemoize<
     [

@@ -93,7 +93,10 @@ export default class AndroidDevice extends BaseDevice {
     this.adb.shell(this.serial, shellCommand);
   }
 
-  screenshot(): Promise<Buffer> {
+  async screenshot(): Promise<Buffer> {
+    if (this.isArchived) {
+      return Buffer.from([]);
+    }
     return new Promise((resolve, reject) => {
       this.adb.screencap(this.serial).then((stream) => {
         const chunks: Array<Buffer> = [];
@@ -108,6 +111,9 @@ export default class AndroidDevice extends BaseDevice {
   }
 
   async screenCaptureAvailable(): Promise<boolean> {
+    if (this.isArchived) {
+      return false;
+    }
     try {
       await this.executeShell(
         `[ ! -f /system/bin/screenrecord ] && echo "File does not exist"`,
