@@ -8,7 +8,7 @@
  */
 
 import React from 'react';
-import {Alert} from 'antd';
+import {Typography} from 'antd';
 import {LeftSidebar, SidebarTitle, InfoIcon} from '../LeftSidebar';
 import {Layout, Link, styled} from '../../ui';
 import {theme, useValue} from 'flipper-plugin';
@@ -23,6 +23,10 @@ import Client from '../../Client';
 import {State} from '../../reducers';
 import BaseDevice from '../../devices/BaseDevice';
 import MetroDevice from '../../devices/MetroDevice';
+import ArchivedDevice from '../../devices/ArchivedDevice';
+import {ExclamationCircleOutlined, FieldTimeOutlined} from '@ant-design/icons';
+
+const {Text} = Typography;
 
 const appTooltip = (
   <>
@@ -52,7 +56,8 @@ export function AppInspect() {
     metroDevice,
     connections.userPreferredDevice,
   ]);
-  const isArchived = useValue(activeDevice?.archivedState, false);
+  const isDeviceArchived = useValue(activeDevice?.archivedState, false);
+  const isAppConnected = useValue(client?.connected, false);
 
   return (
     <LeftSidebar>
@@ -63,15 +68,14 @@ export function AppInspect() {
           </SidebarTitle>
           <Layout.Container padv="small" padh="medium" gap={theme.space.large}>
             <AppSelector />
-            {isArchived ? (
-              <Alert
-                message="This device is a offline and cannot be interacted with."
-                type="info"
-              />
-            ) : (
-              <BookmarkSection />
+            {renderStatusMessage(
+              isDeviceArchived,
+              activeDevice,
+              client,
+              isAppConnected,
             )}
-            {!isArchived && activeDevice && (
+            {!isDeviceArchived && isAppConnected && <BookmarkSection />}
+            {!isDeviceArchived && activeDevice && (
               <Toolbar gap>
                 <MetroButton />
                 <ScreenCaptureButtons />
@@ -138,4 +142,68 @@ export function findBestDevice(
     );
   }
   return selected;
+}
+
+function renderStatusMessage(
+  isDeviceArchived: boolean,
+  activeDevice: BaseDevice | undefined,
+  client: Client | undefined,
+  isAppConnected: boolean,
+): React.ReactNode {
+  return isDeviceArchived ? (
+    activeDevice instanceof ArchivedDevice ? (
+      <Layout.Horizontal gap center>
+        <FieldTimeOutlined style={{color: theme.primaryColor}} />
+        <Text
+          type="secondary"
+          style={{
+            textTransform: 'uppercase',
+            fontSize: '0.8em',
+          }}>
+          Device loaded from file
+        </Text>
+      </Layout.Horizontal>
+    ) : (
+      <Layout.Horizontal gap center>
+        <ExclamationCircleOutlined style={{color: theme.errorColor}} />
+        <Text
+          type="secondary"
+          style={{
+            textTransform: 'uppercase',
+            fontSize: '0.8em',
+            color: theme.errorColor,
+          }}>
+          Device disconnected
+        </Text>
+      </Layout.Horizontal>
+    )
+  ) : client ? (
+    isAppConnected ? null /*connected*/ : (
+      <Layout.Horizontal gap center>
+        <ExclamationCircleOutlined style={{color: theme.errorColor}} />
+        <Text
+          type="secondary"
+          style={{
+            textTransform: 'uppercase',
+            fontSize: '0.8em',
+            color: theme.errorColor,
+          }}>
+          Application disconnected
+        </Text>
+      </Layout.Horizontal>
+    )
+  ) : (
+    <Layout.Horizontal gap center>
+      <ExclamationCircleOutlined style={{color: theme.warningColor}} />
+      <Text
+        type="secondary"
+        style={{
+          textTransform: 'uppercase',
+          fontSize: '0.8em',
+          color: theme.errorColor,
+        }}>
+        No application selected
+      </Text>
+    </Layout.Horizontal>
+  );
 }

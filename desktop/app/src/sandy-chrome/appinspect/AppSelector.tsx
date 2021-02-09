@@ -31,6 +31,7 @@ import Client from '../../Client';
 import {State} from '../../reducers';
 import {brandColors, brandIcons, colors} from '../../ui/components/colors';
 import {showEmulatorLauncher} from './LaunchEmulator';
+import ArchivedDevice from '../../devices/ArchivedDevice';
 
 const {Text, Link, Title} = Typography;
 
@@ -105,9 +106,7 @@ export function AppSelector() {
             <AppIcon appname={client?.query.app} />
             <Layout.Container grow shrink>
               <Text strong>{client?.query.app ?? ''}</Text>
-              <Text>
-                {selectedDevice?.displayTitle() || 'Available devices'}
-              </Text>
+              <Text>{selectedDevice?.title || 'Available devices'}</Text>
             </Layout.Container>
             <CaretDownOutlined />
           </Layout.Horizontal>
@@ -190,7 +189,7 @@ function computeEntries(
           onClick={() => {
             onSelectDevice(device);
           }}>
-          {device.displayTitle()}
+          <DeviceTitle device={device} />
         </Menu.Item>
       );
       const clientEntries = getAvailableClients(device, clients).map(
@@ -200,7 +199,9 @@ function computeEntries(
             onClick={() => {
               onSelectApp(device, client);
             }}>
-            <Radio value={client.id}>{client.query.app}</Radio>
+            <Radio value={client.id}>
+              <ClientTitle client={client} />
+            </Radio>
           </Menu.Item>
         ),
       );
@@ -219,6 +220,47 @@ function computeEntries(
     ]);
   }
   return entries.flat();
+}
+
+function DeviceTitle({device}: {device: BaseDevice}) {
+  const connected = !useValue(device.archivedState);
+  const isImported = device instanceof ArchivedDevice;
+  return (
+    <span>
+      <>{device.title} </>
+      {!connected || isImported ? (
+        <span
+          style={{
+            textTransform: 'uppercase',
+            fontSize: '0.6em',
+            color: isImported ? theme.primaryColor : theme.errorColor,
+            fontWeight: 'bold',
+          }}>
+          {isImported ? '(Imported)' : '(Offline)'}
+        </span>
+      ) : null}
+    </span>
+  );
+}
+
+function ClientTitle({client}: {client: Client}) {
+  const connected = useValue(client.connected);
+  return (
+    <span>
+      <>{client.query.app} </>
+      {!connected ? (
+        <span
+          style={{
+            textTransform: 'uppercase',
+            fontSize: '0.6em',
+            color: theme.errorColor,
+            fontWeight: 'bold',
+          }}>
+          (Offline)
+        </span>
+      ) : null}
+    </span>
+  );
 }
 
 function NoDevices() {
