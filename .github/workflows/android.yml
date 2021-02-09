@@ -21,9 +21,8 @@ jobs:
       run: echo '${{ secrets.GPG_KEY_CONTENTS }}' | base64 -d > /tmp/secring.gpg
     - name: Update gradle.properties
       run: echo -e "signing.secretKeyRingFile=/tmp/secring.gpg\nsigning.keyId=${{ secrets.SIGNING_KEY_ID }}\nsigning.password=${{ secrets.SIGNING_PASSWORD }}" >> gradle.properties
-    # TODO: Remove :android: qualifier once we know that this works.
     - name: Build artifacts
-      run: ./gradlew :sample:assembleDebug && ./gradlew :android:assembleRelease
+      run: ./gradlew :sample:assembleDebug :sample:assembleRelease && ./gradlew :android:assembleRelease
     - name: Upload Archives
       run: ./gradlew uploadArchives --no-parallel --no-daemon
       env:
@@ -34,13 +33,11 @@ jobs:
       env:
         SONATYPE_NEXUS_PASSWORD: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
         SONATYPE_NEXUS_USERNAME: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
-    # - name: Build with Gradle
-    #   run: ./gradlew :sample:assembleDebug :sample:assembleRelease
-    # - name: Rename apk
-    #   run: mv android/sample/build/outputs/apk/debug/sample-debug.apk SampleApp-android.apk
-    # - name: Upload Sample App
-    #   uses: skx/github-action-publish-binaries@master
-    #   env:
-    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #   with:
-    #     args: 'SampleApp-android.apk'
+    - name: Rename apk
+      run: mv android/sample/build/outputs/apk/debug/sample-debug.apk SampleApp-android.apk
+    - name: Upload Sample App
+      uses: skx/github-action-publish-binaries@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        args: 'SampleApp-android.apk'
