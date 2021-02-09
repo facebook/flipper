@@ -89,16 +89,6 @@ export default class AndroidDevice extends BaseDevice {
     return this.executeShell(['logcat', '-c']);
   }
 
-  archive(): ArchivedDevice {
-    return new ArchivedDevice({
-      serial: this.serial,
-      deviceType: this.deviceType,
-      title: this.title,
-      os: this.os,
-      screenshotHandle: null,
-    });
-  }
-
   navigateToLocation(location: string) {
     const shellCommand = `am start ${encodeURI(location)}`;
     this.adb.shell(this.serial, shellCommand);

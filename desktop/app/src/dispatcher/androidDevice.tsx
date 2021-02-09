@@ -262,28 +262,11 @@ export default (store: Store, logger: Logger) => {
       }),
     );
 
-    const archivedDevices = deviceIds
-      .map((id) => {
-        const device = store
-          .getState()
-          .connections.devices.find((device) => device.serial === id);
-        if (device && !device.isArchived) {
-          return device.archive();
-        }
-      })
-      .filter(Boolean);
-
-    store.dispatch({
-      type: 'UNREGISTER_DEVICES',
-      payload: new Set(deviceIds),
-    });
-
-    archivedDevices.forEach((device: BaseDevice) => {
-      device.loadDevicePlugins(store.getState().plugins.devicePlugins);
-      store.dispatch({
-        type: 'REGISTER_DEVICE',
-        payload: device,
-      });
+    deviceIds.forEach((id) => {
+      const device = store
+        .getState()
+        .connections.devices.find((device) => device.serial === id);
+      device?.markDisconnected();
     });
   }
 

@@ -17,7 +17,7 @@ import {
   RocketOutlined,
 } from '@ant-design/icons';
 import {Glyph, Layout, styled} from '../../ui';
-import {theme, useTrackedCallback} from 'flipper-plugin';
+import {theme, useTrackedCallback, useValue} from 'flipper-plugin';
 import {batch} from 'react-redux';
 import {useDispatch, useStore} from '../../utils/useStore';
 import {
@@ -56,6 +56,7 @@ export function AppSelector() {
     uninitializedClients,
     selectedApp,
   } = useStore((state) => state.connections);
+  useValue(selectedDevice?.archivedState, false); // subscribe to future archived state changes
 
   const onSelectDevice = useTrackedCallback(
     'select-device',

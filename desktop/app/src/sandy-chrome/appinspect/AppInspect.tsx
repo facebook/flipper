@@ -11,7 +11,7 @@ import React from 'react';
 import {Alert} from 'antd';
 import {LeftSidebar, SidebarTitle, InfoIcon} from '../LeftSidebar';
 import {Layout, Link, styled} from '../../ui';
-import {theme} from 'flipper-plugin';
+import {theme, useValue} from 'flipper-plugin';
 import {AppSelector} from './AppSelector';
 import {useStore} from '../../utils/useStore';
 import {PluginList} from './PluginList';
@@ -52,7 +52,7 @@ export function AppInspect() {
     metroDevice,
     connections.userPreferredDevice,
   ]);
-  const isArchived = !!activeDevice?.isArchived;
+  const isArchived = useValue(activeDevice?.archivedState, false);
 
   return (
     <LeftSidebar>

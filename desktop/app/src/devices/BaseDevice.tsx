@@ -15,6 +15,7 @@ import {
   DeviceType,
   DeviceLogListener,
   Idler,
+  createState,
 } from 'flipper-plugin';
 import type {DevicePluginDefinition, DevicePluginMap} from '../plugin';
 import {getFlipperLibImplementation} from '../utils/flipperLibImplementation';
@@ -70,7 +71,12 @@ export default class BaseDevice {
   icon: string | null | undefined;
 
   logListeners: Map<Symbol, DeviceLogListener> = new Map();
-  isArchived: boolean = false;
+
+  archivedState = createState(false);
+  get isArchived() {
+    return this.archivedState.get();
+  }
+
   // if imported, stores the original source location
   source = '';
 
@@ -87,7 +93,7 @@ export default class BaseDevice {
   }
 
   displayTitle(): string {
-    return this.title;
+    return this.isArchived ? `${this.title} (Offline)` : this.title;
   }
 
   async exportState(
@@ -154,10 +160,6 @@ export default class BaseDevice {
     throw new Error('unimplemented');
   }
 
-  archive(): any | null | undefined {
-    return null;
-  }
-
   screenshot(): Promise<Buffer> {
     return Promise.reject(
       new Error('No screenshot support for current device'),
@@ -217,5 +219,17 @@ export default class BaseDevice {
       this.sandyPluginStates.delete(pluginId);
     }
     this.devicePlugins.splice(this.devicePlugins.indexOf(pluginId), 1);
+  }
+
+  markDisconnected() {
+    this.archivedState.set(true);
+  }
+
+  destroy() {
+    this.markDisconnected();
+    this.sandyPluginStates.forEach((instance) => {
+      instance.destroy();
+    });
+    this.sandyPluginStates.clear();
   }
 }

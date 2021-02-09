@@ -197,6 +197,7 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
         console.debug(
           `Got a new device instance for already existing serial ${payload.serial}`,
         );
+        state.devices[existing].destroy();
         newDevices[existing] = payload;
       } else {
         newDevices.push(payload);

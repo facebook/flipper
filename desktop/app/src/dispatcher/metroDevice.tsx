@@ -79,26 +79,10 @@ async function unregisterDevices(store: Store, logger: Logger) {
     serial: METRO_URL,
   });
 
-  let archivedDevice: ArchivedDevice | undefined = undefined;
-  const device = store
-    .getState()
-    .connections.devices.find((device) => device.serial === METRO_URL);
-  if (device && !device.isArchived) {
-    archivedDevice = device.archive();
-  }
-
   store.dispatch({
     type: 'UNREGISTER_DEVICES',
     payload: new Set([METRO_URL]),
   });
-
-  if (archivedDevice) {
-    archivedDevice.loadDevicePlugins(store.getState().plugins.devicePlugins);
-    store.dispatch({
-      type: 'REGISTER_DEVICE',
-      payload: archivedDevice,
-    });
-  }
 }
 
 export default (store: Store, logger: Logger) => {

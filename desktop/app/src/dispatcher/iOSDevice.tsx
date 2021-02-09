@@ -148,15 +148,12 @@ function processDevices(
     }
   }
 
-  if (currentDeviceIDs.size > 0) {
-    currentDeviceIDs.forEach((id) =>
-      logger.track('usage', 'unregister-device', {os: 'iOS', serial: id}),
-    );
-    store.dispatch({
-      type: 'UNREGISTER_DEVICES',
-      payload: currentDeviceIDs,
-    });
-  }
+  currentDeviceIDs.forEach((id) => {
+    const device = store
+      .getState()
+      .connections.devices.find((device) => device.serial === id);
+    device?.markDisconnected();
+  });
 }
 
 function getDeviceSetPath() {

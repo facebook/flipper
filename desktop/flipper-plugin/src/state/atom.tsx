@@ -84,9 +84,16 @@ export function createState<T>(
   return atom;
 }
 
-export function useValue<T>(atom: Atom<T>): T {
-  const [localValue, setLocalValue] = useState<T>(atom.get());
+export function useValue<T>(atom: Atom<T>): T;
+export function useValue<T>(atom: Atom<T> | undefined, defaultValue: T): T;
+export function useValue<T>(atom: Atom<T> | undefined, defaultValue?: T): T {
+  const [localValue, setLocalValue] = useState<T>(
+    atom ? atom.get() : defaultValue!,
+  );
   useEffect(() => {
+    if (!atom) {
+      return;
+    }
     // atom might have changed between mounting and effect setup
     // in that case, this will cause a re-render, otherwise not
     setLocalValue(atom.get());
