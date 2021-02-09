@@ -25,7 +25,7 @@ jobs:
     - name: Build artifacts
       run: ./gradlew :sample:assembleDebug && ./gradlew :android:assembleRelease
     - name: Upload Archives
-      run: ./gradlew :android:uploadArchives
+      run: ./gradlew uploadArchives --no-parallel --no-daemon
       env:
         SONATYPE_NEXUS_PASSWORD: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
         SONATYPE_NEXUS_USERNAME: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
