@@ -14,7 +14,9 @@ import {
   _SandyPluginDefinition,
   createState,
   DevicePluginClient,
+  PluginClient,
 } from 'flipper-plugin';
+import {registerNewClient} from '../dispatcher/server';
 
 test('Devices can disconnect', async () => {
   const deviceplugin = new _SandyPluginDefinition(
@@ -43,12 +45,12 @@ test('Devices can disconnect', async () => {
 
   expect(device.isArchived).toBe(false);
 
-  device.markDisconnected();
+  device.disconnect();
 
   expect(device.isArchived).toBe(true);
   const instance = device.sandyPluginStates.get(deviceplugin.id)!;
   expect(instance).toBeTruthy();
-  expect(instance.instanceApi.counter.get(1)).toBe(1); // state preserved
+  expect(instance.instanceApi.counter.get()).toBe(1); // state preserved
   expect(instance.instanceApi.destroy).toBeCalledTimes(0);
 
   device.destroy();
@@ -105,4 +107,114 @@ test('New device with same serial removes & cleans the old one', async () => {
   ).toBeCalledTimes(0);
   expect(store.getState().connections.devices.length).toBe(1);
   expect(store.getState().connections.devices[0]).toBe(device2);
+});
+
+test('clients can disconnect but preserve state', async () => {
+  const plugin = new _SandyPluginDefinition(
+    TestUtils.createMockPluginDetails(),
+    {
+      plugin(client: PluginClient) {
+        const connect = jest.fn();
+        const disconnect = jest.fn();
+        const destroy = jest.fn();
+        client.onConnect(connect);
+        client.onDestroy(destroy);
+        client.onDisconnect(disconnect);
+        const counter = createState(0);
+        return {
+          connect,
+          disconnect,
+          counter,
+          destroy,
+        };
+      },
+      Component() {
+        return null;
+      },
+    },
+  );
+  const {client} = await createMockFlipperWithPlugin(plugin, {
+    asBackgroundPlugin: true,
+  });
+
+  let instance = client.sandyPluginStates.get(plugin.id)!;
+  instance.instanceApi.counter.set(1);
+  expect(instance.instanceApi.destroy).toBeCalledTimes(0);
+  expect(instance.instanceApi.connect).toBeCalledTimes(1);
+  expect(instance.instanceApi.disconnect).toBeCalledTimes(0);
+  expect(client.connected.get()).toBe(true);
+
+  client.disconnect();
+
+  expect(client.connected.get()).toBe(false);
+  instance = client.sandyPluginStates.get(plugin.id)!;
+  expect(instance).toBeTruthy();
+  expect(instance.instanceApi.counter.get()).toBe(1); // state preserved
+  expect(instance.instanceApi.destroy).toBeCalledTimes(0);
+  expect(instance.instanceApi.connect).toBeCalledTimes(1);
+  expect(instance.instanceApi.disconnect).toBeCalledTimes(1);
+
+  client.destroy();
+  expect(instance.instanceApi.destroy).toBeCalledTimes(1);
+  expect(instance.instanceApi.connect).toBeCalledTimes(1);
+  expect(instance.instanceApi.disconnect).toBeCalledTimes(1);
+
+  expect(client.sandyPluginStates.get(plugin.id)).toBeUndefined();
+});
+
+test('new clients replace old ones', async () => {
+  const plugin = new _SandyPluginDefinition(
+    TestUtils.createMockPluginDetails(),
+    {
+      plugin(client: PluginClient) {
+        const connect = jest.fn();
+        const disconnect = jest.fn();
+        const destroy = jest.fn();
+        client.onConnect(connect);
+        client.onDestroy(destroy);
+        client.onDisconnect(disconnect);
+        const counter = createState(0);
+        return {
+          connect,
+          disconnect,
+          counter,
+          destroy,
+        };
+      },
+      Component() {
+        return null;
+      },
+    },
+  );
+  const {
+    client,
+    store,
+    device,
+    createClient,
+  } = await createMockFlipperWithPlugin(plugin, {
+    asBackgroundPlugin: true,
+  });
+
+  const instance = client.sandyPluginStates.get(plugin.id)!;
+  instance.instanceApi.counter.set(1);
+  expect(instance.instanceApi.destroy).toBeCalledTimes(0);
+  expect(instance.instanceApi.connect).toBeCalledTimes(1);
+  expect(instance.instanceApi.disconnect).toBeCalledTimes(0);
+
+  const client2 = await createClient(device, 'AnotherApp', client.query, true);
+  registerNewClient(store, client2);
+
+  expect(client2.connected.get()).toBe(true);
+  const instance2 = client2.sandyPluginStates.get(plugin.id)!;
+  expect(instance2).toBeTruthy();
+  expect(instance2.instanceApi.counter.get()).toBe(0);
+  expect(instance2.instanceApi.destroy).toBeCalledTimes(0);
+  expect(instance2.instanceApi.connect).toBeCalledTimes(1);
+  expect(instance2.instanceApi.disconnect).toBeCalledTimes(0);
+
+  expect(client.connected.get()).toBe(false);
+  expect(instance.instanceApi.counter.get()).toBe(1);
+  expect(instance.instanceApi.destroy).toBeCalledTimes(1);
+  expect(instance.instanceApi.connect).toBeCalledTimes(1);
+  expect(instance.instanceApi.disconnect).toBeCalledTimes(1);
 });

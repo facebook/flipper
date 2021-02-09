@@ -505,7 +505,7 @@ test('queue - make sure resetting plugin state clears the message queue', async 
   expect(store.getState().pluginMessageQueue[pluginKey].length).toBe(2);
 
   store.dispatch({
-    type: 'CLEAR_PLUGIN_STATE',
+    type: 'CLEAR_CLIENT_PLUGINS_STATE',
     payload: {clientId: client.id, devicePlugins: new Set()},
   });
 

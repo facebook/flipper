@@ -65,7 +65,7 @@ export function AppInspect() {
             <AppSelector />
             {isArchived ? (
               <Alert
-                message="This device is a snapshot and cannot be interacted with."
+                message="This device is a offline and cannot be interacted with."
                 type="info"
               />
             ) : (

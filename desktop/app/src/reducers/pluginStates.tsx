@@ -27,7 +27,7 @@ export type Action =
       };
     }
   | {
-      type: 'CLEAR_PLUGIN_STATE';
+      type: 'CLEAR_CLIENT_PLUGINS_STATE';
       payload: {clientId: string; devicePlugins: Set<string>};
     };
 
@@ -47,7 +47,7 @@ export default function reducer(
       };
     }
     return {...state};
-  } else if (action.type === 'CLEAR_PLUGIN_STATE') {
+  } else if (action.type === 'CLEAR_CLIENT_PLUGINS_STATE') {
     const {payload} = action;
     return Object.keys(state).reduce((newState: State, pluginKey) => {
       // Only add the pluginState, if its from a plugin other than the one that

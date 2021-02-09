@@ -93,7 +93,7 @@ export default class BaseDevice {
   }
 
   displayTitle(): string {
-    return this.isArchived ? `${this.title} (Offline)` : this.title;
+    return this.title;
   }
 
   async exportState(
@@ -221,12 +221,12 @@ export default class BaseDevice {
     this.devicePlugins.splice(this.devicePlugins.indexOf(pluginId), 1);
   }
 
-  markDisconnected() {
+  disconnect() {
     this.archivedState.set(true);
   }
 
   destroy() {
-    this.markDisconnected();
+    this.disconnect();
     this.sandyPluginStates.forEach((instance) => {
       instance.destroy();
     });

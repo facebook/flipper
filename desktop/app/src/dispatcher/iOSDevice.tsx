@@ -152,7 +152,7 @@ function processDevices(
     const device = store
       .getState()
       .connections.devices.find((device) => device.serial === id);
-    device?.markDisconnected();
+    device?.disconnect();
   });
 }
 

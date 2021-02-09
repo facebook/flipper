@@ -45,7 +45,12 @@ export type MockFlipperResult = {
   pluginKey: string;
   sendMessage(method: string, params: any, client?: Client): void;
   createDevice(serial: string): BaseDevice;
-  createClient(device: BaseDevice, name: string): Promise<Client>;
+  createClient(
+    device: BaseDevice,
+    name: string,
+    query?: ClientQuery,
+    skipRegister?: boolean,
+  ): Promise<Client>;
   logger: Logger;
   togglePlugin(plugin?: string): void;
 };
@@ -58,6 +63,7 @@ type MockOptions = Partial<{
   onSend?: (pluginId: string, method: string, params?: object) => any;
   additionalPlugins?: PluginDefinition[];
   dontEnableAdditionalPlugins?: true;
+  asBackgroundPlugin?: true;
 }>;
 
 export async function createMockFlipperWithPlugin(
@@ -89,8 +95,10 @@ export async function createMockFlipperWithPlugin(
   async function createClient(
     device: BaseDevice,
     name: string,
+    query?: ClientQuery,
+    skipRegister?: boolean,
   ): Promise<Client> {
-    const query: ClientQuery = {
+    query = query ?? {
       app: name,
       os: 'Android',
       device: device.title,
@@ -119,12 +127,6 @@ export async function createMockFlipperWithPlugin(
       device,
     );
 
-    // yikes
-    client.device = {
-      then() {
-        return device;
-      },
-    } as any;
     client.rawCall = async (
       method: string,
       _fromPlugin: boolean,
@@ -141,7 +143,7 @@ export async function createMockFlipperWithPlugin(
             plugins: [...store.getState().plugins.clientPlugins.keys()],
           };
         case 'getBackgroundPlugins':
-          return {plugins: []};
+          return {plugins: options?.asBackgroundPlugin ? [pluginClazz.id] : []};
         default:
           throw new Error(
             `Test client doesn't support rawCall method '${method}'`,
@@ -181,10 +183,12 @@ export async function createMockFlipperWithPlugin(
     await client.init();
 
     // As convenience, by default we select the new client, star the plugin, and select it
-    store.dispatch({
-      type: 'NEW_CLIENT',
-      payload: client,
-    });
+    if (!skipRegister) {
+      store.dispatch({
+        type: 'NEW_CLIENT',
+        payload: client,
+      });
+    }
     return client;
   }
 

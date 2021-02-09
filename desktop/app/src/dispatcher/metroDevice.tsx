@@ -11,7 +11,6 @@ import {Store} from '../reducers/index';
 import {Logger} from '../fb-interfaces/Logger';
 import {registerDeviceCallbackOnPlugins} from '../utils/onRegisterDevice';
 import MetroDevice from '../devices/MetroDevice';
-import ArchivedDevice from '../devices/ArchivedDevice';
 import http from 'http';
 import {addErrorNotification} from '../reducers/notifications';
 

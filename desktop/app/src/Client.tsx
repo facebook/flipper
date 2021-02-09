@@ -35,7 +35,7 @@ import {processMessagesLater} from './utils/messageQueue';
 import {emitBytesReceived} from './dispatcher/tracking';
 import {debounce} from 'lodash';
 import {batch} from 'react-redux';
-import {_SandyPluginInstance} from 'flipper-plugin';
+import {createState, _SandyPluginInstance} from 'flipper-plugin';
 import {flipperMessagesClientPlugin} from './utils/self-inspection/plugins/FlipperMessagesClientPlugin';
 import {getFlipperLibImplementation} from './utils/flipperLibImplementation';
 import {freeze} from 'immer';
@@ -123,7 +123,7 @@ export interface FlipperClientConnection<D, M> {
 }
 
 export default class Client extends EventEmitter {
-  connected: boolean;
+  connected = createState(false);
   id: string;
   query: ClientQuery;
   sdkVersion: number;
@@ -175,7 +175,7 @@ export default class Client extends EventEmitter {
     device: BaseDevice,
   ) {
     super();
-    this.connected = true;
+    this.connected.set(true);
     this.plugins = plugins ? plugins : [];
     this.backgroundPlugins = [];
     this.connection = conn;
@@ -197,7 +197,7 @@ export default class Client extends EventEmitter {
       conn.connectionStatus().subscribe({
         onNext(payload) {
           if (payload.kind == 'ERROR' || payload.kind == 'CLOSED') {
-            client.connected = false;
+            client.connected.set(false);
           }
         },
         onSubscribe(subscription) {
@@ -324,8 +324,19 @@ export default class Client extends EventEmitter {
     }
   }
 
-  close() {
+  // connection lost, but Client might live on
+  disconnect() {
+    this.sandyPluginStates.forEach((instance) => {
+      instance.disconnect();
+    });
     this.emit('close');
+    this.connected.set(false);
+    this.connection = undefined;
+  }
+
+  // clean up this client
+  destroy() {
+    this.disconnect();
     this.plugins.forEach((pluginId) => this.stopPluginIfNeeded(pluginId, true));
   }
 

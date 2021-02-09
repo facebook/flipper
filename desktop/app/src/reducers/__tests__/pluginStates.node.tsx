@@ -17,12 +17,12 @@ test('reduce setPluginState', () => {
   expect(result).toEqual({myPlugin: {a: 1}});
 });
 
-test('CLEAR_PLUGIN_STATE removes plugin state', () => {
+test('CLEAR_CLIENT_PLUGINS_STATE removes plugin state', () => {
   const clientId = 'app1#device1';
   const pluginKey = 'app1#device1#plugin1';
 
   const action: Action = {
-    type: 'CLEAR_PLUGIN_STATE',
+    type: 'CLEAR_CLIENT_PLUGINS_STATE',
     payload: {clientId: clientId, devicePlugins: new Set()},
   };
   const result = reducer(

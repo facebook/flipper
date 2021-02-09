@@ -15,31 +15,13 @@ import Client from '../Client';
 import {UninitializedClient} from '../UninitializedClient';
 import {addErrorNotification} from '../reducers/notifications';
 import {CertificateExchangeMedium} from '../utils/CertificateProvider';
+
 export default (store: Store, logger: Logger) => {
   const server = new Server(logger, store);
   server.init();
 
   server.addListener('new-client', (client: Client) => {
-    store.dispatch({
-      type: 'NEW_CLIENT',
-      payload: client,
-    });
-  });
-
-  server.addListener('removed-client', (id: string) => {
-    store.dispatch({
-      type: 'CLIENT_REMOVED',
-      payload: id,
-    });
-    store.dispatch({
-      type: 'CLEAR_PLUGIN_STATE',
-      payload: {
-        clientId: id,
-        devicePlugins: new Set([
-          ...store.getState().plugins.devicePlugins.keys(),
-        ]),
-      },
-    });
+    registerNewClient(store, client);
   });
 
   server.addListener('error', (err) => {
@@ -112,3 +94,29 @@ export default (store: Store, logger: Logger) => {
   }
   return server.close;
 };
+
+export function registerNewClient(store: Store, client: Client) {
+  const existingClient = store
+    .getState()
+    .connections.clients.find((c) => c.id === client.id);
+
+  if (existingClient) {
+    existingClient.destroy();
+    store.dispatch({
+      type: 'CLEAR_CLIENT_PLUGINS_STATE',
+      payload: {
+        clientId: client.id,
+        devicePlugins: new Set(),
+      },
+    });
+    store.dispatch({
+      type: 'CLIENT_REMOVED',
+      payload: client.id,
+    });
+  }
+
+  store.dispatch({
+    type: 'NEW_CLIENT',
+    payload: client,
+  });
+}

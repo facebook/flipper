@@ -601,7 +601,7 @@ class Server extends EventEmitter {
   removeConnection(id: string) {
     const info = this.connections.get(id);
     if (info) {
-      info.client.close();
+      info.client.disconnect();
       this.connections.delete(id);
       this.emit('clients-change');
       this.emit('removed-client', id);

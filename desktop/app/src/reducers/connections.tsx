@@ -283,9 +283,20 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
     case 'NEW_CLIENT': {
       const {payload} = action;
 
+      const newClients = state.clients.filter((client) => {
+        if (client.id === payload.id) {
+          console.error(
+            `Received a new connection for client ${client.id}, but the old connection was not cleaned up`,
+          );
+          return false;
+        }
+        return true;
+      });
+      newClients.push(payload);
+
       return updateSelection({
         ...state,
-        clients: state.clients.concat(payload),
+        clients: newClients,
         uninitializedClients: state.uninitializedClients.filter((c) => {
           return (
             c.deviceId !== payload.query.device_id ||
@@ -306,11 +317,13 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
 
     case 'CLIENT_REMOVED': {
       const {payload} = action;
+
+      const newClients = state.clients.filter(
+        (client) => client.id !== payload,
+      );
       return updateSelection({
         ...state,
-        clients: state.clients.filter(
-          (client: Client) => client.id !== payload,
-        ),
+        clients: newClients,
       });
     }
 

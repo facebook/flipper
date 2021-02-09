@@ -116,14 +116,33 @@ test('it should cleanup a plugin if disabled', async () => {
   expect(pluginInstance.destroyStub).toHaveBeenCalledTimes(1);
 });
 
-test('it should cleanup if client is removed', async () => {
+test('it should NOT cleanup if client is removed', async () => {
   const {client} = await createMockFlipperWithPlugin(TestPlugin);
   const pluginInstance = client.sandyPluginStates.get(TestPlugin.id)!;
   expect(pluginInstance.instanceApi.destroyStub).toHaveBeenCalledTimes(0);
 
-  // close client
-  client.close();
+  pluginInstance.connect();
+  expect(client.connected.get()).toBe(true);
+  client.disconnect();
+  expect(client.connected.get()).toBe(false);
+  expect(client.sandyPluginStates.has(TestPlugin.id)).toBeTruthy();
+  expect(
+    (pluginInstance.instanceApi as PluginApi).disconnectStub,
+  ).toHaveBeenCalledTimes(1);
+
+  expect(
+    (pluginInstance.instanceApi as PluginApi).destroyStub,
+  ).toHaveBeenCalledTimes(0);
+});
+
+test('it should cleanup if client is destroyed', async () => {
+  const {client} = await createMockFlipperWithPlugin(TestPlugin);
+  const pluginInstance = client.sandyPluginStates.get(TestPlugin.id)!;
+  expect(pluginInstance.instanceApi.destroyStub).toHaveBeenCalledTimes(0);
+
+  client.destroy();
   expect(client.sandyPluginStates.has(TestPlugin.id)).toBeFalsy();
+
   expect(
     (pluginInstance.instanceApi as PluginApi).destroyStub,
   ).toHaveBeenCalledTimes(1);
@@ -188,11 +207,7 @@ test('it should not initialize a sandy plugin if not enabled', async () => {
 
 test('it trigger hooks for background plugins', async () => {
   const {client} = await createMockFlipperWithPlugin(TestPlugin, {
-    onSend(method) {
-      if (method === 'getBackgroundPlugins') {
-        return {plugins: [TestPlugin.id]};
-      }
-    },
+    asBackgroundPlugin: true,
   });
   const pluginInstance: PluginApi = client.sandyPluginStates.get(TestPlugin.id)!
     .instanceApi;
@@ -201,8 +216,7 @@ test('it trigger hooks for background plugins', async () => {
   expect(pluginInstance.connectStub).toHaveBeenCalledTimes(1);
   expect(pluginInstance.disconnectStub).toHaveBeenCalledTimes(0);
 
-  // close client
-  client.close();
+  client.destroy();
   expect(client.sandyPluginStates.has(TestPlugin.id)).toBeFalsy();
   expect(pluginInstance.destroyStub).toHaveBeenCalledTimes(1);
   expect(pluginInstance.connectStub).toHaveBeenCalledTimes(1);
@@ -289,7 +303,7 @@ test('it should initialize "Navigation" plugin if not enabled', async () => {
   expect(instance.destroyStub).toHaveBeenCalledTimes(0);
 
   // closing does stop the plugin!
-  client.close();
+  client.destroy();
   expect(instance.destroyStub).toHaveBeenCalledTimes(1);
   expect(client.sandyPluginStates.get(Plugin2.id)).toBeUndefined();
 });

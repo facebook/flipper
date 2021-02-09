@@ -10,7 +10,6 @@
 import BaseDevice from './BaseDevice';
 import adb, {Client as ADBClient} from 'adbkit';
 import {Priority} from 'adbkit-logcat';
-import ArchivedDevice from './ArchivedDevice';
 import {createWriteStream} from 'fs';
 import type {LogLevel, DeviceType} from 'flipper-plugin';
 import which from 'which';
