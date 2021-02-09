@@ -15,6 +15,7 @@ import Client from '../Client';
 import {UninitializedClient} from '../UninitializedClient';
 import {addErrorNotification} from '../reducers/notifications';
 import {CertificateExchangeMedium} from '../utils/CertificateProvider';
+import {selectClient, selectDevice} from '../reducers/connections';
 
 export default (store: Store, logger: Logger) => {
   const server = new Server(logger, store);
@@ -96,9 +97,8 @@ export default (store: Store, logger: Logger) => {
 };
 
 export function registerNewClient(store: Store, client: Client) {
-  const existingClient = store
-    .getState()
-    .connections.clients.find((c) => c.id === client.id);
+  const {connections} = store.getState();
+  const existingClient = connections.clients.find((c) => c.id === client.id);
 
   if (existingClient) {
     existingClient.destroy();
@@ -119,4 +119,21 @@ export function registerNewClient(store: Store, client: Client) {
     type: 'NEW_CLIENT',
     payload: client,
   });
+
+  const device = client.deviceSync;
+  if (device) {
+    const selectedDevice = connections.selectedDevice;
+    const selectedClient = connections.clients.find(
+      (c) => c.id === connections.selectedApp,
+    );
+    if (
+      // If this condition meets, it means that the previous app wasn't selected explicitly by the user
+      connections.selectedApp !== connections.userPreferredApp ||
+      !selectedClient ||
+      !selectedDevice
+    ) {
+      store.dispatch(selectDevice(device));
+      store.dispatch(selectClient(client.id));
+    }
+  }
 }
