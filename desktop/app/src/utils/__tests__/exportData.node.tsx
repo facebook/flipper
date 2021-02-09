@@ -1095,6 +1095,7 @@ const sandyTestPlugin = new _SandyPluginDefinition(
         });
       });
       return {
+        counter,
         enableCustomExport() {
           client.onExport(async (idler, onStatus) => {
             if (idler.shouldIdle()) {
@@ -1116,15 +1117,19 @@ const sandyTestPlugin = new _SandyPluginDefinition(
 );
 
 test('Sandy plugins are exported properly', async () => {
-  const {client, sendMessage, store} = await createMockFlipperWithPlugin(
-    sandyTestPlugin,
-  );
+  const {
+    client,
+    sendMessage,
+    store,
+    device,
+  } = await createMockFlipperWithPlugin(sandyTestPlugin);
 
   // We do select another plugin, to verify that pending message queues are indeed processed before exporting
   store.dispatch(
     selectPlugin({
       selectedPlugin: 'DeviceLogs',
-      selectedApp: client.id,
+      selectedApp: null,
+      selectedDevice: device,
       deepLinkPayload: null,
     }),
   );
@@ -1134,7 +1139,16 @@ test('Sandy plugins are exported properly', async () => {
   sendMessage('inc', {});
   sendMessage('inc', {});
 
+  // not flushed
+  expect(
+    client.sandyPluginStates.get(sandyTestPlugin.id)!.instanceApi.counter.get(),
+  ).toBe(0);
+
   const storeExport = await exportStore(store);
+  expect(
+    client.sandyPluginStates.get(sandyTestPlugin.id)!.instanceApi.counter.get(),
+  ).toBe(3);
+
   const serial = storeExport.exportStoreData.device!.serial;
   expect(serial).not.toBeFalsy();
   expect(storeExport.exportStoreData.pluginStates2).toEqual({
@@ -1142,6 +1156,67 @@ test('Sandy plugins are exported properly', async () => {
       TestPlugin: {counter: 3, otherState: {testCount: -3}},
     },
   });
+});
+
+test('Non sandy plugins are exported properly if they are still queued', async () => {
+  type State = {
+    counter: number;
+  };
+
+  const {sendMessage, store, device} = await createMockFlipperWithPlugin(
+    class TestPlugin extends FlipperPlugin<any, any, State> {
+      static id = 'TestPlugin';
+
+      static defaultPersistedState: State = {
+        counter: 0,
+      };
+
+      static persistedStateReducer(p: State, method: string): State {
+        if (method === 'inc') {
+          return {
+            counter: p.counter + 1,
+          };
+        }
+        return p;
+      }
+    } as any,
+  );
+
+  // We do select another plugin, to verify that pending message queues are indeed processed before exporting
+  store.dispatch(
+    selectPlugin({
+      selectedPlugin: 'DeviceLogs',
+      selectedApp: null,
+      selectedDevice: device,
+      deepLinkPayload: null,
+    }),
+  );
+
+  // Deliberately not using 'act' here, to verify that exportStore itself makes sure buffers are flushed first
+  sendMessage('inc', {});
+  sendMessage('inc', {});
+  sendMessage('inc', {});
+
+  // not flushed
+  expect(store.getState().pluginStates).toMatchInlineSnapshot(`Object {}`);
+
+  const storeExport = await exportStore(store);
+  // flushed
+  expect(store.getState().pluginStates).toMatchInlineSnapshot(`
+    Object {
+      "TestApp#Android#MockAndroidDevice#serial#TestPlugin": Object {
+        "counter": 3,
+      },
+    }
+  `);
+
+  const serial = storeExport.exportStoreData.device!.serial;
+  expect(serial).not.toBeFalsy();
+  expect(storeExport.exportStoreData.store.pluginStates).toMatchInlineSnapshot(`
+    Object {
+      "TestApp#Android#MockAndroidDevice#${serial}#TestPlugin": "{\\"counter\\":3}",
+    }
+  `);
 });
 
 test('Sandy plugins with custom export are exported properly', async () => {

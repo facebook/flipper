@@ -652,7 +652,7 @@ async function getStoreExport(
   exportData: ExportType;
   fetchMetaDataErrors: {[plugin: string]: Error} | null;
 }> {
-  const state = store.getState();
+  let state = store.getState();
   const {clients, selectedApp, selectedDevice} = state.connections;
   const pluginsToProcess = determinePluginsToProcess(
     clients,
@@ -662,6 +662,7 @@ async function getStoreExport(
 
   statusUpdate?.('Preparing to process data queues for plugins...');
   await processQueues(store, pluginsToProcess, statusUpdate, idler);
+  state = store.getState();
 
   statusUpdate && statusUpdate('Preparing to fetch metadata from client...');
   const fetchMetaDataMarker = `${EXPORT_FLIPPER_TRACE_EVENT}:fetch-meta-data`;
