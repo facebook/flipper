@@ -51,6 +51,13 @@ The name of the application, for example 'Facebook', 'Instagram' or 'Slack'.
 
 A string that uniquely identifies the current application, is based on a combination of the application name and device serial on which the application is running.
 
+#### `isConnected`
+
+Returns whether there is currently an active connection. This is true if:
+1. The device is still connected
+2. The client is still connected
+3. The plugin is currently selected by the user _or_ the plugin is running in the background.
+
 ### Events listeners
 
 #### `onMessage`
@@ -181,6 +188,9 @@ export function plugin(client: PluginClient) {
 Usage: `client.send(method: string, params: object): Promise<object>`
 
 If the plugin is connected, `send` can be used to invoke a [method](create-plugin#[background-plugins#using-flipperconnection) on the client implementation of the plugin.
+
+Note that if `client.isConnected` returns `false`, calling `client.send` will throw an exception. This is the case if for example the connection with the device or application was lost.
+Generally one should guard `client.send` calls with a check to `client.isConnected`.
 
 Example:
 
@@ -361,6 +371,10 @@ A `string` that describes whether the device is a physical device or an emulator
 #### isArchived
 
 This `boolean` flag is `true` if the current device is coming from an import Flipper snapshot, and not an actually connected device.
+
+#### isConnected
+
+This `boolean` flag is `true` if the connection to the device is still alive.
 
 ### Events
 

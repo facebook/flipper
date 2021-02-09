@@ -38,6 +38,7 @@ import {BasePluginInstance} from '../plugin/PluginBase';
 import {FlipperLib} from '../plugin/FlipperLib';
 import {stubLogger} from '../utils/Logger';
 import {Idler} from '../utils/Idler';
+import {createState} from '../state/atom';
 
 type Renderer = RenderResult<typeof queries>;
 
@@ -207,10 +208,13 @@ export function startPlugin<Module extends FlipperPluginModule<any>>(
     isBackgroundPlugin(_pluginId: string) {
       return !!options?.isBackgroundPlugin;
     },
+    connected: createState(false),
     initPlugin() {
+      this.connected.set(true);
       pluginInstance.connect();
     },
     deinitPlugin() {
+      this.connected.set(false);
       pluginInstance.disconnect();
     },
     call(

@@ -29,6 +29,9 @@ test('Devices can disconnect', async () => {
         return {
           counter,
           destroy,
+          get isConnected() {
+            return client.device.isConnected;
+          },
         };
       },
       supportsDevice() {
@@ -42,6 +45,9 @@ test('Devices can disconnect', async () => {
   const {device} = await createMockFlipperWithPlugin(deviceplugin);
 
   device.sandyPluginStates.get(deviceplugin.id)!.instanceApi.counter.set(1);
+  expect(
+    device.sandyPluginStates.get(deviceplugin.id)!.instanceApi.isConnected,
+  ).toBe(true);
 
   expect(device.isArchived).toBe(false);
 
@@ -49,6 +55,7 @@ test('Devices can disconnect', async () => {
 
   expect(device.isArchived).toBe(true);
   const instance = device.sandyPluginStates.get(deviceplugin.id)!;
+  expect(instance.instanceApi.isConnected).toBe(false);
   expect(instance).toBeTruthy();
   expect(instance.instanceApi.counter.get()).toBe(1); // state preserved
   expect(instance.instanceApi.destroy).toBeCalledTimes(0);
@@ -126,6 +133,9 @@ test('clients can disconnect but preserve state', async () => {
           disconnect,
           counter,
           destroy,
+          get isConnected() {
+            return client.isConnected;
+          },
         };
       },
       Component() {
@@ -142,6 +152,7 @@ test('clients can disconnect but preserve state', async () => {
   expect(instance.instanceApi.destroy).toBeCalledTimes(0);
   expect(instance.instanceApi.connect).toBeCalledTimes(1);
   expect(instance.instanceApi.disconnect).toBeCalledTimes(0);
+  expect(instance.instanceApi.isConnected).toBe(true);
   expect(client.connected.get()).toBe(true);
 
   client.disconnect();
@@ -150,6 +161,7 @@ test('clients can disconnect but preserve state', async () => {
   instance = client.sandyPluginStates.get(plugin.id)!;
   expect(instance).toBeTruthy();
   expect(instance.instanceApi.counter.get()).toBe(1); // state preserved
+  expect(instance.instanceApi.isConnected).toBe(false);
   expect(instance.instanceApi.destroy).toBeCalledTimes(0);
   expect(instance.instanceApi.connect).toBeCalledTimes(1);
   expect(instance.instanceApi.disconnect).toBeCalledTimes(1);

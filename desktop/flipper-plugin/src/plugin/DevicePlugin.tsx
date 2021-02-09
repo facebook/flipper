@@ -36,6 +36,7 @@ export type LogLevel =
 export interface Device {
   readonly realDevice: any; // TODO: temporarily, clean up T70688226
   readonly isArchived: boolean;
+  readonly isConnected: boolean;
   readonly os: string;
   readonly deviceType: DeviceType;
   onLogEntry(cb: DeviceLogListener): () => void;
@@ -79,7 +80,7 @@ export class SandyDevicePluginInstance extends BasePluginInstance {
   }
 
   /** client that is bound to this instance */
-  client: DevicePluginClient;
+  readonly client: DevicePluginClient;
 
   constructor(
     flipperLib: FlipperLib,

@@ -90,23 +90,23 @@ export function getCurrentPluginInstance(): typeof currentPluginInstance {
 
 export abstract class BasePluginInstance {
   /** generally available Flipper APIs */
-  flipperLib: FlipperLib;
+  readonly flipperLib: FlipperLib;
   /** the original plugin definition */
   definition: SandyPluginDefinition;
   /** the plugin instance api as used inside components and such  */
   instanceApi: any;
   /** the device owning this plugin */
-  device: Device;
+  readonly device: Device;
 
   activated = false;
   destroyed = false;
-  events = new EventEmitter();
+  readonly events = new EventEmitter();
 
   // temporarily field that is used during deserialization
   initialStates?: Record<string, any>;
 
   // all the atoms that should be serialized when making an export / import
-  rootStates: Record<string, Atom<any>> = {};
+  readonly rootStates: Record<string, Atom<any>> = {};
   // last seen deeplink
   lastDeeplink?: any;
   // export handler
@@ -134,6 +134,10 @@ export abstract class BasePluginInstance {
       os: realDevice.os,
       get isArchived() {
         return realDevice.isArchived;
+      },
+      get isConnected() {
+        // for now same as isArchived, in the future we might distinguish between archived/imported and disconnected/offline devices
+        return !realDevice.isArchived;
       },
       deviceType: realDevice.deviceType,
 
