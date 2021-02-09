@@ -86,6 +86,8 @@ export const PluginList = memo(function PluginList({
     pluginsChanged,
   ]);
   const isConnected = useValue(activeDevice?.connected, false);
+  const metroConnected = useValue(metroDevice?.connected, false);
+  const isArchived = activeDevice?.isArchived;
 
   const annotatedDownloadablePlugins = useMemoize<
     [
@@ -198,7 +200,7 @@ export const PluginList = memo(function PluginList({
             ))}
           </PluginGroup>
 
-          {isConnected && (
+          {!isArchived && metroConnected && (
             <PluginGroup
               key="metro"
               title="React Native"

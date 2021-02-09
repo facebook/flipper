@@ -225,6 +225,7 @@ export default class BaseDevice {
   }
 
   disconnect() {
+    this.logListeners.clear();
     this.connected.set(false);
   }
 
