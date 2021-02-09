@@ -38,6 +38,8 @@ export type DeviceExport = {
 };
 
 export default class BaseDevice {
+  isArchived = false;
+
   constructor(
     serial: string,
     deviceType: DeviceType,
@@ -72,10 +74,7 @@ export default class BaseDevice {
 
   logListeners: Map<Symbol, DeviceLogListener> = new Map();
 
-  archivedState = createState(false);
-  get isArchived() {
-    return this.archivedState.get();
-  }
+  readonly connected = createState(true);
 
   // if imported, stores the original source location
   source = '';
@@ -93,7 +92,7 @@ export default class BaseDevice {
   }
 
   displayTitle(): string {
-    return this.title;
+    return this.connected.get() ? this.title : `${this.title} (Offline)`;
   }
 
   async exportState(
@@ -226,7 +225,7 @@ export default class BaseDevice {
   }
 
   disconnect() {
-    this.archivedState.set(true);
+    this.connected.set(false);
   }
 
   destroy() {

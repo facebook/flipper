@@ -9,7 +9,6 @@
 
 import {LogLevel} from 'flipper-plugin';
 import BaseDevice from './BaseDevice';
-import ArchivedDevice from './ArchivedDevice';
 import {EventEmitter} from 'events';
 
 // From xplat/js/metro/packages/metro/src/lib/reporting.js
@@ -197,15 +196,5 @@ export default class MetroDevice extends BaseDevice {
     } else {
       console.warn('Cannot send command, no connection', command);
     }
-  }
-
-  archive() {
-    return new ArchivedDevice({
-      serial: this.serial,
-      deviceType: this.deviceType,
-      title: this.title,
-      os: this.os,
-      screenshotHandle: null,
-    });
   }
 }

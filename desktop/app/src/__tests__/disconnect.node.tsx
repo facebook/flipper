@@ -50,10 +50,12 @@ test('Devices can disconnect', async () => {
   ).toBe(true);
 
   expect(device.isArchived).toBe(false);
+  expect(device.connected.get()).toBe(true);
 
   device.disconnect();
 
-  expect(device.isArchived).toBe(true);
+  expect(device.isArchived).toBe(false);
+  expect(device.connected.get()).toBe(false);
   const instance = device.sandyPluginStates.get(deviceplugin.id)!;
   expect(instance.instanceApi.isConnected).toBe(false);
   expect(instance).toBeTruthy();
@@ -61,7 +63,8 @@ test('Devices can disconnect', async () => {
   expect(instance.instanceApi.destroy).toBeCalledTimes(0);
 
   device.destroy();
-  expect(device.isArchived).toBe(true);
+  expect(device.isArchived).toBe(false);
+  expect(device.connected.get()).toBe(false);
   expect(instance.instanceApi.destroy).toBeCalledTimes(1);
 
   expect(device.sandyPluginStates.get(deviceplugin.id)).toBeUndefined();
@@ -91,6 +94,7 @@ test('New device with same serial removes & cleans the old one', async () => {
   const instance = device.sandyPluginStates.get(deviceplugin.id)!;
 
   expect(device.isArchived).toBe(false);
+  expect(device.connected.get()).toBe(true);
   expect(instance.instanceApi.destroy).toBeCalledTimes(0);
   expect(store.getState().connections.devices).toEqual([device]);
 
@@ -107,7 +111,8 @@ test('New device with same serial removes & cleans the old one', async () => {
   });
   device2.loadDevicePlugins(store.getState().plugins.devicePlugins);
 
-  expect(device.isArchived).toBe(true);
+  expect(device.isArchived).toBe(false);
+  expect(device.connected.get()).toBe(false);
   expect(instance.instanceApi.destroy).toBeCalledTimes(1);
   expect(
     device2.sandyPluginStates.get(deviceplugin.id)!.instanceApi.destroy,

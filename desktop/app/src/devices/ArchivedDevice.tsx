@@ -13,6 +13,8 @@ import {OS, DeviceShell} from './BaseDevice';
 import {SupportFormRequestDetailsState} from '../reducers/supportForm';
 
 export default class ArchivedDevice extends BaseDevice {
+  isArchived = true;
+
   constructor(options: {
     serial: string;
     deviceType: DeviceType;
@@ -23,7 +25,7 @@ export default class ArchivedDevice extends BaseDevice {
     supportRequestDetails?: SupportFormRequestDetailsState;
   }) {
     super(options.serial, options.deviceType, options.title, options.os);
-    this.archivedState.set(true);
+    this.connected.set(false);
     this.source = options.source || '';
     this.supportRequestDetails = options.supportRequestDetails;
     this.archivedScreenshotHandle = options.screenshotHandle;

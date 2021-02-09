@@ -431,14 +431,14 @@ export async function processStore(
       statusUpdate = () => {};
     }
     statusUpdate('Capturing screenshot...');
-    const deviceScreenshot = device.isArchived
-      ? null
-      : await capture(device).catch((e) => {
+    const deviceScreenshot = device.connected.get()
+      ? await capture(device).catch((e) => {
           console.warn(
             'Failed to capture device screenshot when exporting. ' + e,
           );
           return null;
-        });
+        })
+      : null;
     const processedClients = processClients(clients, serial, statusUpdate);
     const processedPluginStates = processPluginStates({
       clients: processedClients,

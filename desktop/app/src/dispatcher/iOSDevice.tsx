@@ -118,7 +118,7 @@ function processDevices(
         (device) =>
           device instanceof IOSDevice &&
           device.deviceType === type &&
-          !device.isArchived,
+          device.connected.get(),
       )
       .map((device) => device.serial),
   );

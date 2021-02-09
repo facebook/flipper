@@ -421,6 +421,7 @@ function createMockDevice(options?: StartPluginOptions): RealFlipperDevice {
     deviceType: 'emulator',
     serial: 'serial-000',
     isArchived: !!options?.isArchived,
+    connected: createState(true),
     devicePlugins: [],
     addLogListener(cb) {
       logListeners.push(cb);

@@ -57,7 +57,7 @@ export function AppSelector() {
     uninitializedClients,
     selectedApp,
   } = useStore((state) => state.connections);
-  useValue(selectedDevice?.archivedState, false); // subscribe to future archived state changes
+  useValue(selectedDevice?.connected, false); // subscribe to future archived state changes
 
   const onSelectDevice = useTrackedCallback(
     'select-device',
@@ -223,8 +223,8 @@ function computeEntries(
 }
 
 function DeviceTitle({device}: {device: BaseDevice}) {
-  const connected = !useValue(device.archivedState);
-  const isImported = device instanceof ArchivedDevice;
+  const connected = useValue(device.connected);
+  const isImported = device.isArchived;
   return (
     <span>
       <>{device.title} </>

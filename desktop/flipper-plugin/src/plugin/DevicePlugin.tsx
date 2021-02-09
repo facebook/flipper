@@ -11,6 +11,7 @@ import {SandyPluginDefinition} from './SandyPluginDefinition';
 import {BasePluginInstance, BasePluginClient} from './PluginBase';
 import {FlipperLib} from './FlipperLib';
 import {DeviceType as PluginDeviceType} from 'flipper-plugin-lib';
+import {Atom} from '../state/atom';
 
 export type DeviceLogListener = (entry: DeviceLogEntry) => void;
 
@@ -67,6 +68,7 @@ export interface RealFlipperDevice {
   os: string;
   serial: string;
   isArchived: boolean;
+  connected: Atom<boolean>;
   deviceType: DeviceType;
   addLogListener(callback: DeviceLogListener): Symbol;
   removeLogListener(id: Symbol): void;

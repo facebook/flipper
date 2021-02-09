@@ -27,8 +27,8 @@ export function getFileName(extension: 'png' | 'mp4'): string {
 }
 
 export async function capture(device: BaseDevice): Promise<string> {
-  if (device.isArchived) {
-    console.log('Skipping screenshot for archived device');
+  if (!device.connected.get()) {
+    console.log('Skipping screenshot for disconnected device');
     return '';
   }
   const pngPath = path.join(CAPTURE_LOCATION, getFileName('png'));

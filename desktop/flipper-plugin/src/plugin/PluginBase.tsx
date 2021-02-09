@@ -136,8 +136,7 @@ export abstract class BasePluginInstance {
         return realDevice.isArchived;
       },
       get isConnected() {
-        // for now same as isArchived, in the future we might distinguish between archived/imported and disconnected/offline devices
-        return !realDevice.isArchived;
+        return realDevice.connected.get();
       },
       deviceType: realDevice.deviceType,
 

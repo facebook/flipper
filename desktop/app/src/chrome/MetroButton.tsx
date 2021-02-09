@@ -12,13 +12,12 @@ import MetroDevice, {MetroReportableEvent} from '../devices/MetroDevice';
 import {useStore} from '../utils/useStore';
 import {Button as AntButton} from 'antd';
 import {MenuOutlined, ReloadOutlined} from '@ant-design/icons';
-
-type LogEntry = {};
+import {theme} from 'flipper-plugin';
 
 export default function MetroButton() {
   const device = useStore((state) =>
     state.connections.devices.find(
-      (device) => device.os === 'Metro' && !device.isArchived,
+      (device) => device.os === 'Metro' && device.connected.get(),
     ),
   ) as MetroDevice | undefined;
 
@@ -69,6 +68,7 @@ export default function MetroButton() {
           sendCommand('reload');
         }}
         loading={progress < 1}
+        style={{color: _hasBuildError ? theme.errorColor : undefined}}
       />
       <AntButton
         icon={<MenuOutlined />}

@@ -23,7 +23,6 @@ import Client from '../../Client';
 import {State} from '../../reducers';
 import BaseDevice from '../../devices/BaseDevice';
 import MetroDevice from '../../devices/MetroDevice';
-import ArchivedDevice from '../../devices/ArchivedDevice';
 import {ExclamationCircleOutlined, FieldTimeOutlined} from '@ant-design/icons';
 
 const {Text} = Typography;
@@ -56,7 +55,7 @@ export function AppInspect() {
     metroDevice,
     connections.userPreferredDevice,
   ]);
-  const isDeviceArchived = useValue(activeDevice?.archivedState, false);
+  const isDeviceConnected = useValue(activeDevice?.connected, false);
   const isAppConnected = useValue(client?.connected, false);
 
   return (
@@ -69,13 +68,13 @@ export function AppInspect() {
           <Layout.Container padv="small" padh="medium" gap={theme.space.large}>
             <AppSelector />
             {renderStatusMessage(
-              isDeviceArchived,
+              isDeviceConnected,
               activeDevice,
               client,
               isAppConnected,
             )}
-            {!isDeviceArchived && isAppConnected && <BookmarkSection />}
-            {!isDeviceArchived && activeDevice && (
+            {isDeviceConnected && isAppConnected && <BookmarkSection />}
+            {isDeviceConnected && activeDevice && (
               <Toolbar gap>
                 <MetroButton />
                 <ScreenCaptureButtons />
@@ -145,13 +144,28 @@ export function findBestDevice(
 }
 
 function renderStatusMessage(
-  isDeviceArchived: boolean,
+  isDeviceConnected: boolean,
   activeDevice: BaseDevice | undefined,
   client: Client | undefined,
   isAppConnected: boolean,
 ): React.ReactNode {
-  return isDeviceArchived ? (
-    activeDevice instanceof ArchivedDevice ? (
+  if (!activeDevice) {
+    return (
+      <Layout.Horizontal gap center>
+        <ExclamationCircleOutlined style={{color: theme.warningColor}} />
+        <Text
+          type="secondary"
+          style={{
+            textTransform: 'uppercase',
+            fontSize: '0.8em',
+          }}>
+          Device disconnected
+        </Text>
+      </Layout.Horizontal>
+    );
+  }
+  return !isDeviceConnected ? (
+    activeDevice.isArchived ? (
       <Layout.Horizontal gap center>
         <FieldTimeOutlined style={{color: theme.primaryColor}} />
         <Text
@@ -160,7 +174,7 @@ function renderStatusMessage(
             textTransform: 'uppercase',
             fontSize: '0.8em',
           }}>
-          Device loaded from file
+          No device selected
         </Text>
       </Layout.Horizontal>
     ) : (

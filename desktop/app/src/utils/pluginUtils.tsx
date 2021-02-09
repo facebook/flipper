@@ -301,7 +301,7 @@ function getFavoritePlugins(
   starredPlugins: undefined | string[],
   returnFavoredPlugins: boolean, // if false, unfavoried plugins are returned
 ): PluginDefinition[] {
-  if (device instanceof ArchivedDevice) {
+  if (device.isArchived) {
     if (!returnFavoredPlugins) {
       return [];
     }

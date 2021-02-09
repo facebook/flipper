@@ -588,7 +588,7 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
     }
     const isArchivedDevice = !selectedDevice
       ? false
-      : selectedDevice instanceof ArchivedDevice;
+      : selectedDevice.isArchived;
     if (isArchivedDevice) {
       pluginIsEnabled = true;
     }

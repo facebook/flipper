@@ -85,7 +85,7 @@ export const PluginList = memo(function PluginList({
     connections.userStarredPlugins,
     pluginsChanged,
   ]);
-  const isArchived = useValue(activeDevice?.archivedState, false);
+  const isConnected = useValue(activeDevice?.connected, false);
 
   const annotatedDownloadablePlugins = useMemoize<
     [
@@ -198,7 +198,7 @@ export const PluginList = memo(function PluginList({
             ))}
           </PluginGroup>
 
-          {!isArchived && (
+          {isConnected && (
             <PluginGroup
               key="metro"
               title="React Native"
@@ -226,7 +226,7 @@ export const PluginList = memo(function PluginList({
                 onClick={handleAppPluginClick}
                 tooltip={getPluginTooltip(plugin.details)}
                 actions={
-                  isArchived ? null : (
+                  isConnected ? (
                     <ActionButton
                       id={plugin.id}
                       onClick={handleStarPlugin}
@@ -235,12 +235,12 @@ export const PluginList = memo(function PluginList({
                         <MinusOutlined size={16} style={{marginRight: 0}} />
                       }
                     />
-                  )
+                  ) : null
                 }
               />
             ))}
           </PluginGroup>
-          {!isArchived && (
+          {isConnected && (
             <PluginGroup
               key="disabled"
               title="Disabled"
@@ -305,7 +305,7 @@ export const PluginList = memo(function PluginList({
               />
             ))}
           </PluginGroup>
-          {!isArchived && (
+          {isConnected && (
             <PluginGroup
               key="unavailable"
               title="Unavailable plugins"

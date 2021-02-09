@@ -53,7 +53,7 @@ export default class IOSDevice extends BaseDevice {
   }
 
   async screenshot(): Promise<Buffer> {
-    if (this.isArchived) {
+    if (!this.connected.get()) {
       return Buffer.from([]);
     }
     const tmpImageName = uuid() + '.png';
@@ -192,7 +192,7 @@ export default class IOSDevice extends BaseDevice {
   }
 
   async screenCaptureAvailable() {
-    return this.deviceType === 'emulator' && !this.isArchived;
+    return this.deviceType === 'emulator' && this.connected.get();
   }
 
   async startScreenCapture(destination: string) {

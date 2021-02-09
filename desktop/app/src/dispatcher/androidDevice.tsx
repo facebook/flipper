@@ -231,7 +231,7 @@ export default (store: Store, logger: Logger) => {
       .getState()
       .connections.devices.filter(
         (device: BaseDevice) =>
-          device.serial === androidDevice.serial && device.isArchived,
+          device.serial === androidDevice.serial && !device.connected.get(),
       )
       .map((device) => device.serial);
 
