@@ -143,7 +143,11 @@ export default class CPUFrequencyTable extends FlipperDevicePlugin<
   };
 
   static supportsDevice(device: Device) {
-    return device.os === 'Android' && device.deviceType === 'physical';
+    return (
+      device.os === 'Android' &&
+      device.deviceType === 'physical' &&
+      !device.isArchived
+    );
   }
 
   init() {

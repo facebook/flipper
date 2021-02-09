@@ -4,7 +4,11 @@
   "id": "DeviceCPU",
   "pluginType": "device",
   "supportedDevices": [
-    {"os": "Android", "type": "physical"}
+    {
+      "os": "Android",
+      "type": "physical",
+      "archived": false
+    }
   ],
   "version": "0.0.0",
   "main": "dist/bundle.js",
