@@ -40,6 +40,7 @@ import {flipperMessagesClientPlugin} from './utils/self-inspection/plugins/Flipp
 import {getFlipperLibImplementation} from './utils/flipperLibImplementation';
 import {freeze} from 'immer';
 import GK from './fb-stubs/GK';
+import {message} from 'antd';
 
 type Plugins = Array<string>;
 
@@ -601,8 +602,14 @@ export default class Client extends EventEmitter {
 
       const mark = this.getPerformanceMark(metadata);
       performance.mark(mark);
-      if (!this.connected) {
+      if (!this.connected.get()) {
+        message.warn({
+          content: 'Not connected',
+          key: 'appnotconnectedwarning',
+          duration: 0.5,
+        });
         reject(new Error('Not connected to client'));
+        return;
       }
       if (!fromPlugin || this.isAcceptingMessagesFromPlugin(plugin)) {
         this.connection!.requestResponse({
@@ -714,7 +721,7 @@ export default class Client extends EventEmitter {
   deinitPlugin(pluginId: string) {
     this.activePlugins.delete(pluginId);
     this.sandyPluginStates.get(pluginId)?.disconnect();
-    if (this.connected) {
+    if (this.connected.get()) {
       this.rawSend('deinit', {plugin: pluginId});
     }
   }
