@@ -80,14 +80,16 @@ export default class LayoutPlugin extends FlipperPlugin<
   PersistedState
 > {
   static exportPersistedState = async (
-    callClient: (method: ClientMethodCalls, params?: any) => Promise<any>,
+    callClient:
+      | undefined
+      | ((method: ClientMethodCalls, params?: any) => Promise<any>),
     persistedState: PersistedState | undefined,
     store: ReduxState | undefined,
     _idler?: Idler | undefined,
     statusUpdate?: (msg: string) => void,
     supportsMethod?: (method: ClientMethodCalls) => Promise<boolean>,
   ): Promise<PersistedState | undefined> => {
-    if (!store) {
+    if (!store || !callClient) {
       return persistedState;
     }
     statusUpdate && statusUpdate('Fetching Root Node...');
@@ -211,26 +213,29 @@ export default class LayoutPlugin extends FlipperPlugin<
       // If the selected plugin from the previous session was layout, then while importing the flipper export, the redux store doesn't get updated in the first render, due to which the plugin crashes, as it has no persisted state
       this.props.setPersistedState(this.constructor.defaultPersistedState);
     }
-    // persist searchActive state when moving between plugins to prevent multiple
-    // TouchOverlayViews since we can't edit the view heirarchy in onDisconnect
-    this.client.call('isSearchActive').then(({isSearchActive}) => {
-      this.setState({inTargetMode: isSearchActive});
-    });
 
-    // disable target mode after
-    this.client.subscribe('select', () => {
-      if (this.state.inTargetMode) {
-        this.onToggleTargetMode();
-      }
-    });
+    if (this.client.isConnected) {
+      // persist searchActive state when moving between plugins to prevent multiple
+      // TouchOverlayViews since we can't edit the view heirarchy in onDisconnect
+      this.client.call('isSearchActive').then(({isSearchActive}) => {
+        this.setState({inTargetMode: isSearchActive});
+      });
 
-    this.client.subscribe('resolvePath', (params: ClassFileParams) => {
-      this.resolvePath(params);
-    });
+      // disable target mode after
+      this.client.subscribe('select', () => {
+        if (this.state.inTargetMode) {
+          this.onToggleTargetMode();
+        }
+      });
 
-    this.client.subscribe('openInIDE', (params: OpenFileParams) => {
-      this.openInIDE(params);
-    });
+      this.client.subscribe('resolvePath', (params: ClassFileParams) => {
+        this.resolvePath(params);
+      });
+
+      this.client.subscribe('openInIDE', (params: OpenFileParams) => {
+        this.openInIDE(params);
+      });
+    }
 
     // since the first launch of Myles might produce a lag (Myles daemon needs to start)
     // try to invoke Myles during the first launch of the Layout Plugin
@@ -270,10 +275,12 @@ export default class LayoutPlugin extends FlipperPlugin<
       params.dirRoot,
     );
     const resolvedPath = IDEFileResolver.getBestPath(paths, params.className);
-    this.client.send('setResolvedPath', {
-      className: params.className,
-      resolvedPath: resolvedPath,
-    });
+    if (this.client.isConnected) {
+      this.client.send('setResolvedPath', {
+        className: params.className,
+        resolvedPath: resolvedPath,
+      });
+    }
   };
 
   openInIDE = async (params: OpenFileParams) => {
@@ -294,9 +301,11 @@ export default class LayoutPlugin extends FlipperPlugin<
   };
 
   onToggleTargetMode = () => {
-    const inTargetMode = !this.state.inTargetMode;
-    this.setState({inTargetMode});
-    this.client.send('setSearchActive', {active: inTargetMode});
+    if (this.client.isConnected) {
+      const inTargetMode = !this.state.inTargetMode;
+      this.setState({inTargetMode});
+      this.client.send('setSearchActive', {active: inTargetMode});
+    }
   };
 
   onToggleAXMode = () => {
@@ -311,13 +320,15 @@ export default class LayoutPlugin extends FlipperPlugin<
       : this.client;
   }
   onToggleAlignmentMode = () => {
-    if (this.state.selectedElement) {
-      this.client.send('setHighlighted', {
-        id: this.state.selectedElement,
-        inAlignmentMode: !this.state.inAlignmentMode,
-      });
+    if (this.client.isConnected) {
+      if (this.state.selectedElement) {
+        this.client.send('setHighlighted', {
+          id: this.state.selectedElement,
+          inAlignmentMode: !this.state.inAlignmentMode,
+        });
+        this.setState({inAlignmentMode: !this.state.inAlignmentMode});
+      }
     }
-    this.setState({inAlignmentMode: !this.state.inAlignmentMode});
   };
 
   onToggleVisualizer = () => {

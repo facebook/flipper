@@ -518,9 +518,13 @@ export async function fetchMetadata(
     client,
     pluginKey,
   } of pluginsToProcess) {
-    const exportState = pluginClass ? pluginClass.exportPersistedState : null;
+    const exportState =
+      pluginClass && !isSandyPlugin(pluginClass)
+        ? pluginClass.exportPersistedState
+        : null;
     if (exportState) {
       const fetchMetaDataMarker = `${EXPORT_FLIPPER_TRACE_EVENT}:fetch-meta-data-per-plugin`;
+      const isConnected = client.connected.get();
       performance.mark(fetchMetaDataMarker);
       try {
         statusUpdate &&
@@ -528,12 +532,14 @@ export async function fetchMetadata(
         const data = await promiseTimeout(
           240000, // Fetching MobileConfig data takes ~ 3 mins, thus keeping timeout at 4 mins.
           exportState(
-            callClient(client, pluginId),
+            isConnected ? callClient(client, pluginId) : undefined,
             newPluginState[pluginKey],
             state,
             idler,
             statusUpdate,
-            supportsMethod(client, pluginId),
+            isConnected
+              ? supportsMethod(client, pluginId)
+              : () => Promise.resolve(false),
           ),
           `Timed out while collecting data for ${pluginName}`,
         );

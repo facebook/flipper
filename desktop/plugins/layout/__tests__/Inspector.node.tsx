@@ -25,6 +25,7 @@ beforeEach(() => {
     extraInfo: {},
   };
   const client: PluginClient = {
+    isConnected: true,
     send: () => {},
     call: () => Promise.resolve(mockRoot),
     subscribe: () => {},

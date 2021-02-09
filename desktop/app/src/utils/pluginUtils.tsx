@@ -110,7 +110,7 @@ function isExportablePlugin(
   plugin: PluginDefinition,
 ): boolean {
   // can generate an export when requested
-  if (plugin.exportPersistedState) {
+  if (!isSandyPlugin(plugin) && plugin.exportPersistedState) {
     return true;
   }
   const pluginKey = isDevicePluginDefinition(plugin)

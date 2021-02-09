@@ -45,18 +45,6 @@ export class SandyPluginDefinition {
   details: ActivatablePluginDetails;
   isDevicePlugin: boolean;
 
-  // TODO: Implement T68683476
-  exportPersistedState:
-    | ((
-        callClient: (method: string, params?: any) => Promise<any>,
-        persistedState: any, // TODO: type StaticPersistedState | undefined,
-        store: any, // TODO: ReduxState | undefined,
-        idler?: any, // TODO: Idler,
-        statusUpdate?: (msg: string) => void,
-        supportsMethod?: (method: string) => Promise<boolean>,
-      ) => Promise<any /* TODO: StaticPersistedState | undefined */>)
-    | undefined = undefined;
-
   constructor(
     details: ActivatablePluginDetails,
     module: FlipperPluginModule<any> | FlipperDevicePluginModule,

@@ -96,7 +96,7 @@ export default class FlipperImagesPlugin extends FlipperPlugin<
   };
 
   static exportPersistedState = (
-    callClient: (method: string, params?: any) => Promise<any>,
+    callClient: undefined | ((method: string, params?: any) => Promise<any>),
     persistedState: PersistedState,
     store?: ReduxState,
   ): Promise<PersistedState> => {
@@ -104,7 +104,7 @@ export default class FlipperImagesPlugin extends FlipperPlugin<
     if (!persistedState) {
       persistedState = FlipperImagesPlugin.defaultPersistedState;
     }
-    if (!store) {
+    if (!store || !callClient) {
       return defaultPromise;
     }
     return Promise.all([

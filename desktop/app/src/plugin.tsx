@@ -61,6 +61,7 @@ export function supportsMethod(
 }
 
 export interface PluginClient {
+  isConnected: boolean;
   // eslint-disable-next-line
   send(method: string, params?: Parameters): void;
   // eslint-disable-next-line
@@ -130,7 +131,9 @@ export abstract class FlipperBasePlugin<
   static maxQueueSize: number = DEFAULT_MAX_QUEUE_SIZE;
   static exportPersistedState:
     | ((
-        callClient: (method: string, params?: any) => Promise<any>,
+        callClient:
+          | undefined
+          | ((method: string, params?: any) => Promise<any>),
         persistedState: StaticPersistedState | undefined,
         store: ReduxState | undefined,
         idler?: Idler,
@@ -256,8 +259,11 @@ export class FlipperPlugin<
     // @ts-ignore constructor should be assigned already
     const {id} = this.constructor;
     this.subscriptions = [];
-    this.realClient = props.target as Client;
+    const realClient = (this.realClient = props.target as Client);
     this.client = {
+      get isConnected() {
+        return realClient.connected.get();
+      },
       call: (method, params) => this.realClient.call(id, method, true, params),
       send: (method, params) => this.realClient.send(id, method, params),
       subscribe: (method, callback) => {

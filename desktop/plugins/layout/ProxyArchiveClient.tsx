@@ -91,6 +91,9 @@ class ProxyArchiveClient {
     this.persistedState = cloneDeep(persistedState);
     this.onElementHighlighted = onElementHighlighted;
   }
+
+  isConnected = true;
+
   persistedState: PersistedState;
   onElementHighlighted: ((id: string) => void) | undefined;
   subscribe(_method: string, _callback: (params: any) => void): void {

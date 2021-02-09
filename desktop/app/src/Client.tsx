@@ -601,46 +601,48 @@ export default class Client extends EventEmitter {
 
       const mark = this.getPerformanceMark(metadata);
       performance.mark(mark);
+      if (!this.connected) {
+        reject(new Error('Not connected to client'));
+      }
       if (!fromPlugin || this.isAcceptingMessagesFromPlugin(plugin)) {
-        this.connection &&
-          this.connection
-            .requestResponse({data: JSON.stringify(data)})
-            .subscribe({
-              onComplete: (payload) => {
-                if (!fromPlugin || this.isAcceptingMessagesFromPlugin(plugin)) {
-                  const logEventName = this.getLogEventName(data);
-                  this.logger.trackTimeSince(mark, logEventName);
-                  emitBytesReceived(
-                    plugin || 'unknown',
-                    payload.data.length * 2,
-                  );
-                  const response: {
-                    success?: Object;
-                    error?: ErrorType;
-                  } = JSON.parse(payload.data);
+        this.connection!.requestResponse({
+          data: JSON.stringify(data),
+        }).subscribe({
+          onComplete: (payload) => {
+            if (!fromPlugin || this.isAcceptingMessagesFromPlugin(plugin)) {
+              const logEventName = this.getLogEventName(data);
+              this.logger.trackTimeSince(mark, logEventName);
+              emitBytesReceived(plugin || 'unknown', payload.data.length * 2);
+              const response: {
+                success?: Object;
+                error?: ErrorType;
+              } = JSON.parse(payload.data);
 
-                  this.onResponse(response, resolve, reject);
+              this.onResponse(response, resolve, reject);
 
-                  if (flipperMessagesClientPlugin.isConnected()) {
-                    flipperMessagesClientPlugin.newMessage({
-                      device: this.deviceSync?.displayTitle(),
-                      app: this.query.app,
-                      flipperInternalMethod: method,
-                      payload: response,
-                      plugin,
-                      pluginMethod: params?.method,
-                      direction: 'toFlipper:response',
-                    });
-                  }
-                }
-              },
-              // Open fresco then layout and you get errors because responses come back after deinit.
-              onError: (e) => {
-                if (this.isAcceptingMessagesFromPlugin(plugin)) {
-                  reject(e);
-                }
-              },
-            });
+              if (flipperMessagesClientPlugin.isConnected()) {
+                flipperMessagesClientPlugin.newMessage({
+                  device: this.deviceSync?.displayTitle(),
+                  app: this.query.app,
+                  flipperInternalMethod: method,
+                  payload: response,
+                  plugin,
+                  pluginMethod: params?.method,
+                  direction: 'toFlipper:response',
+                });
+              }
+            }
+          },
+          onError: (e) => {
+            reject(e);
+          },
+        });
+      } else {
+        reject(
+          new Error(
+            `Cannot send ${method}, client is not accepting messages for plugin ${plugin}`,
+          ),
+        );
       }
 
       if (flipperMessagesClientPlugin.isConnected()) {
