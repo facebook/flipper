@@ -354,6 +354,10 @@ export default function createTableNativePlugin(id: string, title: string) {
 
     getTableMetadata = () => {
       if (!this.props.persistedState.tableMetadata) {
+        if (!this.client.isConnected) {
+          this.setState({error: 'Application disconnected'});
+          return;
+        }
         this.client
           .call('getMetadata')
           .then((metadata) => {

@@ -113,13 +113,18 @@ export default class Inspector extends Component<Props, State> {
           {
             label: 'Focus',
             click: (id: ElementID) => {
-              this.props.client.call('onRequestAXFocus', {id});
+              if (this.props.client.isConnected) {
+                this.props.client.call('onRequestAXFocus', {id});
+              }
             },
           },
         ]
       : [];
 
   componentDidMount() {
+    if (!this.props.client.isConnected) {
+      return;
+    }
     this.props.client.call(this.call().GET_ROOT).then((root: Element) => {
       this.props.setPersistedState({
         [this.props.ax ? 'rootAXElement' : 'rootElement']: root.id,
@@ -309,7 +314,7 @@ export default class Inspector extends Component<Props, State> {
     ids: Array<ElementID> = [],
     options: GetNodesOptions,
   ): Promise<Array<Element>> {
-    if (ids.length > 0) {
+    if (ids.length > 0 && this.props.client.isConnected) {
       const {forAccessibilityEvent} = options;
       const {
         elements,
@@ -404,6 +409,9 @@ export default class Inspector extends Component<Props, State> {
   });
 
   onElementHovered = debounce((key: ElementID | null | undefined) => {
+    if (!this.props.client.isConnected) {
+      return;
+    }
     this.props.client.call(this.call().SET_HIGHLIGHTED, {
       id: key,
       isAlignmentMode: this.props.inAlignmentMode,

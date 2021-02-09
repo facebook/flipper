@@ -320,8 +320,8 @@ export default class LayoutPlugin extends FlipperPlugin<
       : this.client;
   }
   onToggleAlignmentMode = () => {
-    if (this.client.isConnected) {
-      if (this.state.selectedElement) {
+    if (this.state.selectedElement) {
+      if (this.client.isConnected) {
         this.client.send('setHighlighted', {
           id: this.state.selectedElement,
           inAlignmentMode: !this.state.inAlignmentMode,

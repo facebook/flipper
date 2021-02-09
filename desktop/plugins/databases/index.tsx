@@ -879,19 +879,21 @@ export default class DatabasesPlugin extends FlipperPlugin<
   }
 
   init() {
-    this.databaseClient = new DatabaseClient(this.client);
-    this.databaseClient.getDatabases({}).then((databases) => {
-      this.dispatchAction({
-        type: 'UpdateDatabases',
-        databases,
+    if (this.client.isConnected) {
+      this.databaseClient = new DatabaseClient(this.client);
+      this.databaseClient.getDatabases({}).then((databases) => {
+        this.dispatchAction({
+          type: 'UpdateDatabases',
+          databases,
+        });
       });
-    });
-    this.dispatchAction({
-      type: 'UpdateFavorites',
-      favorites: JSON.parse(
-        localStorage.getItem('plugin-database-favorites-sql-queries') || '[]',
-      ),
-    });
+      this.dispatchAction({
+        type: 'UpdateFavorites',
+        favorites: JSON.parse(
+          localStorage.getItem('plugin-database-favorites-sql-queries') || '[]',
+        ),
+      });
+    }
   }
 
   onDataClicked = () => {

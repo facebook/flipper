@@ -150,19 +150,7 @@ function renderStatusMessage(
   isAppConnected: boolean,
 ): React.ReactNode {
   if (!activeDevice) {
-    return (
-      <Layout.Horizontal gap center>
-        <ExclamationCircleOutlined style={{color: theme.warningColor}} />
-        <Text
-          type="secondary"
-          style={{
-            textTransform: 'uppercase',
-            fontSize: '0.8em',
-          }}>
-          Device disconnected
-        </Text>
-      </Layout.Horizontal>
-    );
+    return;
   }
   return !isDeviceConnected ? (
     activeDevice.isArchived ? (

@@ -87,13 +87,15 @@ export default class Example extends FlipperPlugin<State, any, PersistedState> {
    * Call a method of the mobile counterpart, to display a message.
    */
   sendMessage() {
-    this.client
-      .call('displayMessage', {message: this.state.message || 'Weeeee!'})
-      .then((_params: DisplayMessageResponse) => {
-        this.setState({
-          prompt: 'Nice',
+    if (this.client.isConnected) {
+      this.client
+        .call('displayMessage', {message: this.state.message || 'Weeeee!'})
+        .then((_params: DisplayMessageResponse) => {
+          this.setState({
+            prompt: 'Nice',
+          });
         });
-      });
+    }
   }
 
   render() {
