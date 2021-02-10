@@ -1,3 +1,13 @@
+# 0.75.0 (10/2/2021)
+
+ * [D26249575](https://github.com/facebook/flipper/search?q=D26249575&type=Commits) -  CPU plugin will no longer show up for archived devices
+ * [D26224310](https://github.com/facebook/flipper/search?q=D26224310&type=Commits) -  iOS and Android devices will preserve their state after being disconnected
+ * [D26224677](https://github.com/facebook/flipper/search?q=D26224677&type=Commits) -  Clients will retain their state after being disconnected, until they reconnect again
+ * [D26250894](https://github.com/facebook/flipper/search?q=D26250894&type=Commits) -  It is now possible to create a Flipper trace for disconnected devices and apps
+ * [D26250896](https://github.com/facebook/flipper/search?q=D26250896&type=Commits) -  If a new client connects, Flipper will try to focus on it
+ * [D26250897](https://github.com/facebook/flipper/search?q=D26250897&type=Commits) -  Fixed an issue where data that arrived in the background was not part of the generated Flipper export.
+
+
 # 0.73.0 (28/1/2021)
 
  * [D26072928](https://github.com/facebook/flipper/search?q=D26072928&type=Commits) -  [Network] Mock routes can now be imported and exported. Thanks @bizzguy!
