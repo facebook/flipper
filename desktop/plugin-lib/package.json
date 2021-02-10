@@ -10,7 +10,7 @@
   "bugs": "https://github.com/facebook/flipper/issues",
   "dependencies": {
     "@algolia/client-search": "^4.8.3",
-    "algoliasearch": "^4.4.0",
+    "algoliasearch": "^4.8.4",
     "decompress": "^4.2.1",
     "decompress-targz": "^4.1.1",
     "decompress-unzip": "^4.0.1",
