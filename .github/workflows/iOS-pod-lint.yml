@@ -1,0 +1,24 @@
+name: Validate Podspecs
+on: [push, pull_request]
+
+jobs:
+  lint-flipperkit_pod:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Dependences
+        run: pod repo update
+
+      - name: Lint FlipperKit
+        run: pod lib lint FlipperKit.podspec --use-libraries --allow-warnings --verbose --skip-import-validation --include-podspecs=Flipper.podspec
+
+  lint-flipper_pod:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Dependences
+        run: pod repo update
+      - name: Lint Flipper
+        run: pod lib lint Flipper.podspec --use-libraries --allow-warnings --verbose

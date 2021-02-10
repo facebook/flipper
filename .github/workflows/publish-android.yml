@@ -1,8 +1,10 @@
-name: Android Release
+name: Publish Android
 
 on:
-  release:
-    types: [created]
+  push:
+    tags:
+      - v*
+  workflow_dispatch:
 
 jobs:
   build:

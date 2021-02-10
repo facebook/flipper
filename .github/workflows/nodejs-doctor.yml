@@ -1,0 +1,23 @@
+name: Doctor Node CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: 'ubuntu-latest'
+
+    env:
+      doctor-directory: ./desktop/doctor
+
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '12.x'
+    - name: install
+      working-directory: ${{env.doctor-directory}}
+      run: yarn
+    - name: run
+      working-directory: ${{env.doctor-directory}}
+      run: yarn run run
