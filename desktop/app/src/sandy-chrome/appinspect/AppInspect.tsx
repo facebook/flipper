@@ -162,7 +162,7 @@ function renderStatusMessage(
             textTransform: 'uppercase',
             fontSize: '0.8em',
           }}>
-          No device selected
+          Imported device
         </Text>
       </Layout.Horizontal>
     ) : (
