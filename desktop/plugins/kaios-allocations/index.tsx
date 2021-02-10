@@ -82,12 +82,13 @@ Memory.prototype = extend(ClientMethods, {
   },
 
   startRecordingAllocations: function (options: any, cb: any) {
-    this.request('startRecordingAllocations', {options}, function (
-      err: any,
-      resp: any,
-    ) {
-      cb(err, resp);
-    });
+    this.request(
+      'startRecordingAllocations',
+      {options},
+      function (err: any, resp: any) {
+        cb(err, resp);
+      },
+    );
   },
 
   stopRecordingAllocations: function (cb: any) {

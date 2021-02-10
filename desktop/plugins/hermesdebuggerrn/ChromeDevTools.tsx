@@ -87,9 +87,7 @@ type ChromeDevToolsProps = {
   marginTop: string | null;
 };
 
-export default class ChromeDevTools extends React.Component<
-  ChromeDevToolsProps
-> {
+export default class ChromeDevTools extends React.Component<ChromeDevToolsProps> {
   createDevTools(url: string, marginTop: string | null) {
     const devToolsNode = createDevToolsNode(url, marginTop);
     attachDevTools(devToolsNode);

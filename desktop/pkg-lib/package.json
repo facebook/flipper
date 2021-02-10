@@ -22,7 +22,7 @@
     "globby": "^11",
     "jest": "^26",
     "mock-fs": "^4.13.0",
-    "prettier": "^2.0.0",
+    "prettier": "^2.2.1",
     "rimraf": "^3.0.2",
     "ts-jest": "^26.0.0",
     "ts-node": "^8",

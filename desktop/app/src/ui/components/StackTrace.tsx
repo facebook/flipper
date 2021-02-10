@@ -115,9 +115,9 @@ export default class StackTrace extends Component<{
       return null;
     }
 
-    const columns = (Object.keys(children[0]) as Array<keyof Child>).reduce<
-      TableColumns
-    >((acc, cv) => {
+    const columns = (Object.keys(children[0]) as Array<
+      keyof Child
+    >).reduce<TableColumns>((acc, cv) => {
       if (cv !== 'isBold') {
         acc[cv] = {
           value: cv,

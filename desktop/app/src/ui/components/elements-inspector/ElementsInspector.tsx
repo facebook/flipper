@@ -80,9 +80,7 @@ export type ElementsInspectorProps = {
   decorateRow?: DecorateRow;
 };
 
-export default class ElementsInspector extends Component<
-  ElementsInspectorProps
-> {
+export default class ElementsInspector extends Component<ElementsInspectorProps> {
   static defaultProps = {
     alternateRowColor: true,
   };

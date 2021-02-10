@@ -216,7 +216,7 @@
     "node-fetch": "^2.6.1",
     "p-filter": "^2.1.0",
     "p-map": "^4.0.0",
-    "prettier": "^2.0.0",
+    "prettier": "^2.2.1",
     "pretty-format": "^26.1.0",
     "promisify-child-process": "^4.1.0",
     "react-async": "^10.0.0",

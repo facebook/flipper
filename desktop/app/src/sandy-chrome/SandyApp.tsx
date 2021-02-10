@@ -63,9 +63,10 @@ export function SandyApp() {
    * The logic here is to sync both, but without modifying the navigation related reducers to not break classic Flipper.
    * It is possible to simplify this in the future.
    */
-  const [toplevelSelection, setStoredToplevelSelection] = useState<
-    ToplevelNavItem
-  >('appinspect');
+  const [
+    toplevelSelection,
+    setStoredToplevelSelection,
+  ] = useState<ToplevelNavItem>('appinspect');
 
   // Handle toplevel nav clicks from LeftRail
   const setToplevelSelection = useCallback(

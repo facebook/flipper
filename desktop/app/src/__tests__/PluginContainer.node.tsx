@@ -209,9 +209,9 @@ test('PluginContainer can render Sandy plugins', async () => {
   `);
 
   // make sure the plugin gets connected
-  const pluginInstance: ReturnType<typeof plugin> = client.sandyPluginStates.get(
-    definition.id,
-  )!.instanceApi;
+  const pluginInstance: ReturnType<
+    typeof plugin
+  > = client.sandyPluginStates.get(definition.id)!.instanceApi;
   expect(pluginInstance.connectedStub).toBeCalledTimes(1);
   expect(pluginInstance.disconnectedStub).toBeCalledTimes(0);
   expect(pluginInstance.activatedStub).toBeCalledTimes(1);
@@ -357,9 +357,9 @@ test('PluginContainer triggers correct lifecycles for background plugin', async 
   expect(client.rawSend).toBeCalledWith('init', {plugin: 'TestPlugin'});
   (client.rawSend as jest.Mock).mockClear();
   // make sure the plugin gets connected
-  const pluginInstance: ReturnType<typeof plugin> = client.sandyPluginStates.get(
-    definition.id,
-  )!.instanceApi;
+  const pluginInstance: ReturnType<
+    typeof plugin
+  > = client.sandyPluginStates.get(definition.id)!.instanceApi;
   expect(pluginInstance.connectedStub).toBeCalledTimes(1);
   expect(pluginInstance.disconnectedStub).toBeCalledTimes(0);
   expect(pluginInstance.activatedStub).toBeCalledTimes(1);
@@ -438,9 +438,9 @@ test('PluginContainer triggers correct lifecycles for background plugin', async 
   expect(pluginInstance.activatedStub).toBeCalledTimes(2);
   expect(pluginInstance.deactivatedStub).toBeCalledTimes(2);
 
-  const newPluginInstance: ReturnType<typeof plugin> = client.sandyPluginStates.get(
-    'TestPlugin',
-  )!.instanceApi;
+  const newPluginInstance: ReturnType<
+    typeof plugin
+  > = client.sandyPluginStates.get('TestPlugin')!.instanceApi;
   expect(newPluginInstance.connectedStub).toBeCalledTimes(1);
   expect(newPluginInstance.disconnectedStub).toBeCalledTimes(0);
   expect(newPluginInstance.activatedStub).toBeCalledTimes(0);
@@ -699,9 +699,9 @@ test('PluginContainer can render Sandy device plugins', async () => {
   `);
 
   // make sure the plugin gets connected
-  const pluginInstance: ReturnType<typeof devicePlugin> = device.sandyPluginStates.get(
-    definition.id,
-  )!.instanceApi;
+  const pluginInstance: ReturnType<
+    typeof devicePlugin
+  > = device.sandyPluginStates.get(definition.id)!.instanceApi;
   expect(pluginInstance.activatedStub).toBeCalledTimes(1);
   expect(pluginInstance.deactivatedStub).toBeCalledTimes(0);
 
@@ -949,9 +949,9 @@ test('Sandy plugins support isPluginSupported + selectPlugin', async () => {
   `);
   expect(renders).toBe(1);
 
-  const pluginInstance: ReturnType<typeof plugin> = client.sandyPluginStates.get(
-    definition.id,
-  )!.instanceApi;
+  const pluginInstance: ReturnType<
+    typeof plugin
+  > = client.sandyPluginStates.get(definition.id)!.instanceApi;
   expect(pluginInstance.isPluginAvailable(definition.id)).toBeTruthy();
   expect(pluginInstance.isPluginAvailable('nonsense')).toBeFalsy();
   expect(pluginInstance.isPluginAvailable(definition2.id)).toBeFalsy(); // not enabled yet

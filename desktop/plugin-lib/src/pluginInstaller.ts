@@ -212,9 +212,7 @@ export async function moveInstalledPluginsFromLegacyDir() {
 
 type InstalledPluginVersionDirs = [string, string[]][];
 
-async function getInstalledPluginVersionDirs(): Promise<
-  InstalledPluginVersionDirs
-> {
+async function getInstalledPluginVersionDirs(): Promise<InstalledPluginVersionDirs> {
   if (!(await fs.pathExists(pluginInstallationDir))) {
     return [];
   }
