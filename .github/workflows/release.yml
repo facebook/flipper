@@ -195,3 +195,10 @@ jobs:
         workflow: Publish NPM
         token: ${{ secrets.PERSONAL_TOKEN }}
         ref: ${{ needs.release.outputs.tag }}
+    - name: Publish Android
+      if: ${{ needs.release.outputs.tag != '' }}
+      uses: benc-uk/workflow-dispatch@v1.1
+      with:
+        workflow: Publish Android
+        token: ${{ secrets.PERSONAL_TOKEN }}
+        ref: ${{ needs.release.outputs.tag }}

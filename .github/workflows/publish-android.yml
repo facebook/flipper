@@ -1,0 +1,45 @@
+name: Publish Android
+
+on:
+  push:
+    tags:
+      - v*
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: set up JDK 1.8
+      uses: actions/setup-java@v1
+      with:
+        java-version: 1.8
+    - name: Install NDK 20, 21
+      run: echo "y" | sudo /usr/local/lib/android/sdk/tools/bin/sdkmanager --install "ndk;21.0.6113669" "ndk;20.0.5594570" --sdk_root=${ANDROID_SDK_ROOT}
+    - name: Write GPG Sec Ring
+      run: echo '${{ secrets.GPG_KEY_CONTENTS }}' | base64 -d > /tmp/secring.gpg
+    - name: Update gradle.properties
+      run: echo -e "signing.secretKeyRingFile=/tmp/secring.gpg\nsigning.keyId=${{ secrets.SIGNING_KEY_ID }}\nsigning.password=${{ secrets.SIGNING_PASSWORD }}" >> gradle.properties
+    - name: Build artifacts
+      run: ./gradlew :sample:assembleDebug :sample:assembleRelease && ./gradlew :android:assembleRelease
+    - name: Upload Archives
+      run: ./gradlew uploadArchives --no-parallel --no-daemon
+      env:
+        SONATYPE_NEXUS_PASSWORD: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
+        SONATYPE_NEXUS_USERNAME: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
+    - name: Release and close
+      run: ./gradlew closeAndReleaseRepository
+      env:
+        SONATYPE_NEXUS_PASSWORD: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
+        SONATYPE_NEXUS_USERNAME: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
+    - name: Rename apk
+      run: mv android/sample/build/outputs/apk/debug/sample-debug.apk SampleApp-android.apk
+    - name: Upload Sample App
+      uses: skx/github-action-publish-binaries@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        args: 'SampleApp-android.apk'
