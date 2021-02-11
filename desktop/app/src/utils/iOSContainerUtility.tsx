@@ -64,37 +64,47 @@ async function targets(idbPath: string): Promise<Array<DeviceTarget>> {
   // But idb is MUCH more CPU efficient than instruments, so
   // when installed, use it.
   if (await memoize(isAvailable)(idbPath)) {
-    return safeExec(`${idbPath} list-targets --json`).then(({stdout}) =>
-      // It is safe to assume this to be non-null as it only turns null
-      // if the output redirection is misconfigured:
-      // https://stackoverflow.com/questions/27786228/node-child-process-spawn-stdout-returning-as-null
-      stdout!
-        .toString()
-        .trim()
-        .split('\n')
-        .map((line) => line.trim())
-        .filter(Boolean)
-        .map((line) => JSON.parse(line))
-        .filter(({type}: IdbTarget) => type !== 'simulator')
-        .map((target: IdbTarget) => {
-          return {udid: target.udid, type: 'physical', name: target.name};
-        }),
-    );
+    return safeExec(`${idbPath} list-targets --json`)
+      .then(({stdout}) =>
+        // It is safe to assume this to be non-null as it only turns null
+        // if the output redirection is misconfigured:
+        // https://stackoverflow.com/questions/27786228/node-child-process-spawn-stdout-returning-as-null
+        stdout!
+          .toString()
+          .trim()
+          .split('\n')
+          .map((line) => line.trim())
+          .filter(Boolean)
+          .map((line) => JSON.parse(line))
+          .filter(({type}: IdbTarget) => type !== 'simulator')
+          .map<DeviceTarget>((target: IdbTarget) => {
+            return {udid: target.udid, type: 'physical', name: target.name};
+          }),
+      )
+      .catch((e: Error) => {
+        console.warn('Failed to query idb for targets:', e);
+        return [];
+      });
   } else {
     await killOrphanedInstrumentsProcesses();
-    return safeExec('instruments -s devices').then(({stdout}) =>
-      stdout!
-        .toString()
-        .split('\n')
-        .map((line) => line.trim())
-        .filter(Boolean)
-        .map((line) => /(.+) \([^(]+\) \[(.*)\]( \(Simulator\))?/.exec(line))
-        .filter(notNull)
-        .filter(([_match, _name, _udid, isSim]) => !isSim)
-        .map(([_match, name, udid]) => {
-          return {udid: udid, type: 'physical', name: name};
-        }),
-    );
+    return safeExec('instruments -s devices')
+      .then(({stdout}) =>
+        stdout!
+          .toString()
+          .split('\n')
+          .map((line) => line.trim())
+          .filter(Boolean)
+          .map((line) => /(.+) \([^(]+\) \[(.*)\]( \(Simulator\))?/.exec(line))
+          .filter(notNull)
+          .filter(([_match, _name, _udid, isSim]) => !isSim)
+          .map<DeviceTarget>(([_match, name, udid]) => {
+            return {udid, type: 'physical', name};
+          }),
+      )
+      .catch((e) => {
+        console.warn('Failed to query instruments:', e);
+        return [];
+      });
   }
 }
 
