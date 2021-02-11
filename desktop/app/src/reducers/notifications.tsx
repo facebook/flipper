@@ -146,7 +146,7 @@ function activeNotificationsReducer(
 ): State {
   const {payload} = action;
   const newActiveNotifications = [];
-  const newInactivatedNotifications = state.invalidatedNotifications;
+  const newInactivatedNotifications = state.invalidatedNotifications.slice();
 
   const newIDs = new Set(payload.notifications.map((n: Notification) => n.id));
 
