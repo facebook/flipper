@@ -33,7 +33,10 @@ const COLD_BOOT = 'cold-boot';
 export function showEmulatorLauncher(store: Store) {
   renderReactRoot((unmount) => (
     <Provider store={store}>
-      <LaunchEmulatorDialog onClose={unmount} getSimulators={getSimulators} />
+      <LaunchEmulatorDialog
+        onClose={unmount}
+        getSimulators={getSimulators.bind(store)}
+      />
     </Provider>
   ));
 }
@@ -56,11 +59,12 @@ export const LaunchEmulatorDialog = withTrackingScope(
     );
     const [iosEmulators, setIosEmulators] = useState<IOSDeviceParams[]>([]);
 
+    const store = useStore();
     useEffect(() => {
       if (!iosEnabled) {
         return;
       }
-      getSimulators(false).then((emulators) => {
+      getSimulators(store, false).then((emulators) => {
         setIosEmulators(
           emulators.filter(
             (device) =>
@@ -69,7 +73,7 @@ export const LaunchEmulatorDialog = withTrackingScope(
           ),
         );
       });
-    }, [iosEnabled, getSimulators]);
+    }, [iosEnabled, getSimulators, store]);
 
     const items = [
       ...(androidEmulators.length > 0 ? [<AndroidOutlined />] : []),

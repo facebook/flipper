@@ -94,7 +94,7 @@ if (typeof window !== 'undefined') {
 async function queryDevices(store: Store, logger: Logger): Promise<any> {
   return Promise.all([
     checkXcodeVersionMismatch(store),
-    getSimulators(true).then((devices) => {
+    getSimulators(store, true).then((devices) => {
       processDevices(store, logger, devices, 'emulator');
     }),
     getActiveDevices(store.getState().settingsState.idbPath).then(
@@ -163,6 +163,7 @@ function getDeviceSetPath() {
 }
 
 export function getSimulators(
+  store: Store,
   bootedOnly: boolean,
 ): Promise<Array<IOSDeviceParams>> {
   return promisify(execFile)(
@@ -188,8 +189,16 @@ export function getSimulators(
           } as IOSDeviceParams;
         });
     })
-    .catch((e) => {
-      console.error(e);
+    .catch((e: Error) => {
+      console.warn('Failed to query simulators:', e);
+      if (e.message.includes('Xcode license agreements')) {
+        store.dispatch(
+          addErrorNotification(
+            'Xcode license requires approval',
+            'The Xcode license agreement has changed. You need to either open Xcode and agree to the terms or run `sudo xcodebuild -license` in a Terminal to allow simulators to work with Flipper.',
+          ),
+        );
+      }
       return Promise.resolve([]);
     });
 }
@@ -205,7 +214,7 @@ export async function launchSimulator(udid: string): Promise<any> {
 
 function getActiveDevices(idbPath: string): Promise<Array<IOSDeviceParams>> {
   return iosUtil.targets(idbPath).catch((e) => {
-    console.error(e.message);
+    console.error('Failed to get active iOS devices:', e.message);
     return [];
   });
 }
@@ -218,7 +227,7 @@ function queryDevicesForever(store: Store, logger: Logger) {
       setTimeout(() => queryDevicesForever(store, logger), 3000);
     })
     .catch((err) => {
-      console.error(err);
+      console.warn('Failed to continuously query devices:', err);
     });
 }
 
@@ -246,7 +255,7 @@ async function checkXcodeVersionMismatch(store: Store) {
       }
     }
   } catch (e) {
-    console.error(e);
+    console.error('Failed to determine Xcode version:', e);
   }
 }
 async function isXcodeDetected(): Promise<boolean> {
@@ -259,7 +268,7 @@ export async function getActiveDevicesAndSimulators(
   store: Store,
 ): Promise<Array<IOSDevice>> {
   const activeDevices: Array<Array<IOSDeviceParams>> = await Promise.all([
-    getSimulators(true),
+    getSimulators(store, true),
     getActiveDevices(store.getState().settingsState.idbPath),
   ]);
   const allDevices = activeDevices[0].concat(activeDevices[1]);
