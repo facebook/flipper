@@ -38,7 +38,7 @@ async function isMetroRunning(): Promise<boolean> {
           });
       })
       .on('error', (err: any) => {
-        if (err.code !== 'ECONNREFUSED') {
+        if (err.code !== 'ECONNREFUSED' && err.code !== 'ECONNRESET') {
           console.error('Could not connect to METRO ' + err);
         }
         resolve(false);
