@@ -181,20 +181,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Publish Workflow Dispatch
-      if: ${{ needs.release.outputs.tag != '' }}
-      uses: benc-uk/workflow-dispatch@v1.1
-      with:
-        workflow: Publish Pods
-        token: ${{ secrets.PERSONAL_TOKEN }}
-        ref: ${{ needs.release.outputs.tag }}
-    - name: Publish NPM
-      if: ${{ needs.release.outputs.tag != '' }}
-      uses: benc-uk/workflow-dispatch@v1.1
-      with:
-        workflow: Publish NPM
-        token: ${{ secrets.PERSONAL_TOKEN }}
-        ref: ${{ needs.release.outputs.tag }}
     - name: Publish Android
       if: ${{ needs.release.outputs.tag != '' }}
       uses: benc-uk/workflow-dispatch@v1.1
@@ -202,3 +188,4 @@ jobs:
         workflow: Publish Android
         token: ${{ secrets.PERSONAL_TOKEN }}
         ref: ${{ needs.release.outputs.tag }}
+        input: '{"tag": "${{ needs.release.outputs.tag }}"}'
