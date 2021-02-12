@@ -30,9 +30,9 @@ pub fn tarsum<R: io::Read>(reader: R) -> Result<types::HashSum> {
 
     let mut digest = sha2::Sha256::new();
     for (_, file_hash) in map {
-        digest.input(file_hash.0);
+        digest.update(file_hash.0);
     }
-    let hash = digest.result();
+    let hash = digest.finalize();
     Ok(types::HashSum(data_encoding::HEXLOWER.encode(&hash)))
 }
 
@@ -40,7 +40,7 @@ fn digest_file<R: io::Read>(reader: &mut R) -> io::Result<types::HashSum> {
     use sha2::Digest;
     let mut digest = sha2::Sha256::new();
     io::copy(reader, &mut digest)?;
-    let hash = digest.result();
+    let hash = digest.finalize();
     Ok(types::HashSum(data_encoding::HEXLOWER.encode(&hash)))
 }
 
