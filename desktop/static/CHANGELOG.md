@@ -1,3 +1,8 @@
+# 0.75.1 (12/2/2021)
+
+ * [D26370235](https://github.com/facebook/flipper/search?q=D26370235&type=Commits) -  Reduce spamminess of iOS connection warnings
+
+
 # 0.75.0 (10/2/2021)
 
  * [D26249575](https://github.com/facebook/flipper/search?q=D26249575&type=Commits) -  CPU plugin will no longer show up for archived devices
