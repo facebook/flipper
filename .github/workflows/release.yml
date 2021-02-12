@@ -202,3 +202,4 @@ jobs:
         workflow: Publish Android
         token: ${{ secrets.PERSONAL_TOKEN }}
         ref: ${{ needs.release.outputs.tag }}
+        inputs: '{"tag": "${{ needs.release.outputs.tag }}"}'

@@ -5,6 +5,11 @@ on:
     tags:
       - v*
   workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to upload artifacts to"
+        required: false
+
 
 jobs:
   build:
@@ -37,9 +42,11 @@ jobs:
         SONATYPE_NEXUS_USERNAME: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
     - name: Rename apk
       run: mv android/sample/build/outputs/apk/debug/sample-debug.apk SampleApp-android.apk
-    - name: Upload Sample App
-      uses: skx/github-action-publish-binaries@master
+    - name: Attach sample APK to release
+      if: ${{ github.event.inputs.tag != '' }}
+      uses: passy/github-upload-release-artifacts-action@v2.1.1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
+        created_tag: ${{ github.event.inputs.tag }}
         args: 'SampleApp-android.apk'
