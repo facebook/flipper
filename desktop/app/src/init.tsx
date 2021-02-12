@@ -40,8 +40,15 @@ import {
   _setGlobalInteractionReporter,
   Logger,
   _LoggerContext,
+  Layout,
+  theme,
 } from 'flipper-plugin';
 import isProduction from './utils/isProduction';
+import {Button, Input, Result, Typography} from 'antd';
+import constants from './fb-stubs/constants';
+import styled from '@emotion/styled';
+import {CopyOutlined} from '@ant-design/icons';
+import {clipboard} from 'electron/common';
 
 if (process.env.NODE_ENV === 'development' && os.platform() === 'darwin') {
   // By default Node.JS has its internal certificate storage and doesn't use
@@ -58,23 +65,93 @@ enableMapSet();
 
 GK.init();
 
-const AppFrame = ({logger}: {logger: Logger}) => (
-  <_LoggerContext.Provider value={logger}>
-    <Provider store={store}>
-      <CacheProvider value={cache}>
-        <TooltipProvider>
-          <PopoverProvider>
-            <ContextMenuProvider>
-              <_NuxManagerContext.Provider value={_createNuxManager()}>
-                <SandyApp />
-              </_NuxManagerContext.Provider>
-            </ContextMenuProvider>
-          </PopoverProvider>
-        </TooltipProvider>
-      </CacheProvider>
-    </Provider>
-  </_LoggerContext.Provider>
-);
+class AppFrame extends React.Component<
+  {logger: Logger},
+  {error: any; errorInfo: any}
+> {
+  state = {error: undefined as any, errorInfo: undefined as any};
+
+  getError() {
+    return this.state.error
+      ? `${this.state.error}\n\nComponent stack:\n${this.state.errorInfo?.componentStack}\n\nError stacktrace:\n${this.state.error?.stack}`
+      : '';
+  }
+
+  render() {
+    const {logger} = this.props;
+    return this.state.error ? (
+      <Layout.Container grow center pad={80} style={{height: '100%'}}>
+        <Layout.Top style={{maxWidth: 800, height: '100%'}}>
+          <Result
+            status="error"
+            title="Detected a Flipper crash"
+            subTitle={
+              <p>
+                A crash was detected in the Flipper chrome. Filing a{' '}
+                <Typography.Link
+                  href={
+                    constants.IS_PUBLIC_BUILD
+                      ? 'https://github.com/facebook/flipper/issues/new/choose'
+                      : constants.FEEDBACK_GROUP_LINK
+                  }>
+                  bug report
+                </Typography.Link>{' '}
+                would be appreciated! Please include the details below.
+              </p>
+            }
+            extra={[
+              <Button
+                key="copy_error"
+                icon={<CopyOutlined />}
+                onClick={() => {
+                  clipboard.writeText(this.getError());
+                }}>
+                Copy error
+              </Button>,
+              <Button
+                key="retry_error"
+                type="primary"
+                onClick={() => {
+                  this.setState({error: undefined, errorInfo: undefined});
+                }}>
+                Retry
+              </Button>,
+            ]}
+          />
+          <CodeBlock value={this.getError()} readOnly />
+        </Layout.Top>
+      </Layout.Container>
+    ) : (
+      <_LoggerContext.Provider value={logger}>
+        <Provider store={store}>
+          <CacheProvider value={cache}>
+            <TooltipProvider>
+              <PopoverProvider>
+                <ContextMenuProvider>
+                  <_NuxManagerContext.Provider value={_createNuxManager()}>
+                    <SandyApp />
+                  </_NuxManagerContext.Provider>
+                </ContextMenuProvider>
+              </PopoverProvider>
+            </TooltipProvider>
+          </CacheProvider>
+        </Provider>
+      </_LoggerContext.Provider>
+    );
+  }
+
+  componentDidCatch(error: any, errorInfo: any) {
+    console.error(
+      `Flipper chrome crash: ${error}`,
+      error,
+      '\nComponents: ' + errorInfo?.componentStack,
+    );
+    this.setState({
+      error,
+      errorInfo,
+    });
+  }
+}
 
 function setProcessState(store: Store) {
   const settings = store.getState().settingsState;
@@ -146,3 +223,10 @@ const persistor = persistStore(store, undefined, () => {
 });
 
 setPersistor(persistor);
+
+const CodeBlock = styled(Input.TextArea)({
+  fontFamily:
+    'SFMono-Regular,Consolas,Liberation Mono,Menlo,Courier,monospace;',
+  fontSize: '0.8em',
+  color: theme.textColorSecondary,
+});

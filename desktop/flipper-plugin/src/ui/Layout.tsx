@@ -139,6 +139,7 @@ type SplitLayoutProps = {
    */
   center?: boolean;
   children: [React.ReactNode, React.ReactNode];
+  style?: React.HTMLAttributes<HTMLDivElement>['style'];
 };
 
 function renderSplitLayout(
