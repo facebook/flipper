@@ -126,12 +126,6 @@ export default class BaseDevice {
     };
   }
 
-  teardown() {
-    for (const instance of this.sandyPluginStates.values()) {
-      instance.destroy();
-    }
-  }
-
   addLogListener(callback: DeviceLogListener): Symbol {
     const id = Symbol();
     this.logListeners.set(id, callback);

@@ -218,7 +218,7 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
             if (!deviceSerials.has(device.serial)) {
               return true;
             } else {
-              device.teardown();
+              device.destroy();
               return false;
             }
           });

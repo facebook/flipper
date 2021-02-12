@@ -31,7 +31,6 @@ import Client from '../../Client';
 import {State} from '../../reducers';
 import {brandColors, brandIcons, colors} from '../../ui/components/colors';
 import {showEmulatorLauncher} from './LaunchEmulator';
-import ArchivedDevice from '../../devices/ArchivedDevice';
 
 const {Text, Link, Title} = Typography;
 
