@@ -2,14 +2,14 @@
   <img src="https://fbflipper.com/img/icon.png" alt="logo" width="20%"/>
 </p>
 <h1 align="center">
-  Flipper 
+  Flipper
 </h1>
 <p align="center">
   <a href="https://travis-ci.org/facebook/flipper">
     <img src="https://travis-ci.org/facebook/flipper.svg?branch=master" alt="Build Status" />
   </a>
-  <a href="https://bintray.com/facebook/maven/com.facebook.flipper%3Aflipper">
-    <img src="https://img.shields.io/maven-metadata/v/https/jcenter.bintray.com/com/facebook/flipper/flipper/maven-metadata.xml.svg?color=green&label=android" alt="Android Maven Badge" />
+  <a href="https://search.maven.org/artifact/com.facebook.flipper/flipper">
+    <img src="https://img.shields.io/maven-central/v/com.facebook.flipper/flipper" alt="Android Maven Badge" />
   </a>
   <a href="https://cocoapods.org/pods/Flipper">
     <img src="https://img.shields.io/cocoapods/v/FlipperKit.svg?label=iOS&color=blue" alt="iOS" />
