@@ -40,6 +40,9 @@ jobs:
       env:
         SONATYPE_NEXUS_PASSWORD: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
         SONATYPE_NEXUS_USERNAME: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
+    - name: Clean secrets
+      if: always()
+      run: rm /tmp/secring.gpg
     - name: Rename apk
       run: mv android/sample/build/outputs/apk/debug/sample-debug.apk SampleApp-android.apk
     - name: Attach sample APK to release
