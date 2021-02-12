@@ -11,6 +11,14 @@ import fs from 'fs';
 import path from 'path';
 import {BaseDevice, AndroidDevice, IOSDevice} from 'flipper';
 import {AppMatchPattern} from '../types';
+import {remote} from 'electron';
+
+let patternsPath: string | undefined;
+
+function getPatternsBasePath() {
+  return (patternsPath =
+    patternsPath ?? path.join(remote.app.getAppPath(), 'facebook'));
+}
 
 const extractAppNameFromSelectedApp = (selectedApp: string | null) => {
   if (selectedApp == null) {
@@ -35,7 +43,7 @@ export const getAppMatchPatterns = (
       } else {
         return;
       }
-      const patternsPath = path.join('facebook', filename);
+      patternsPath = path.join(getPatternsBasePath(), filename);
       fs.readFile(patternsPath, (err, data) => {
         if (err) {
           reject(err);
