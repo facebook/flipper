@@ -12,7 +12,7 @@ you can hook up the diagnostics Activity to help you troubleshoot connection iss
 
 ## Dependencies
 
-Flipper is distributed via JCenter. Add the dependencies to your `build.gradle` file.
+Flipper is distributed via Maven Central. Add the dependencies to your `build.gradle` file.
 You should also explicitly depend on [`soloader`](https://github.com/facebook/soloader)
 instead of relying on transitive dependency resolution which is getting deprecated
 with Gradle 5.
@@ -22,7 +22,7 @@ use to make it easier to strip Flipper from your release builds.
 
 ```groovy
 repositories {
-  jcenter()
+  mavenCentral()
 }
 
 dependencies {
