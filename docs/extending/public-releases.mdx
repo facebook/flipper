@@ -45,31 +45,6 @@ Only if this action is successful, the remaining steps are taken which
 - Download the release artifacts and attach them to the GitHub release.
 - Dispatch to separate workflows for publishing Cocoapods and npm packages (see below).
 
-## Android Release
-
-Android is currently an outlier in that it does not run on GitHub Actions.
-This is mainly for legacy reasons but there's also a strong "never touch a running system"
-case to be made.
-
-The Android release is run on
-[CircleCI](https://app.circleci.com/pipelines/github/facebook/flipper?branch=master)
-and configured in
-[`.circleci/config.yml`](https://github.com/facebook/flipper/blob/master/.circleci/config.yml)
-
-There are two jobs defined:
-
-1. The `snapshot` job runs on every commit on the main branch and publishes "SNAPSHOT" releases to Maven Central.
-2. The `release` job runs only on tags and publishes artifacts to JCenter.
-
-There are two potential points for breakage:
-
-1. The [base image](https://github.com/facebook/flipper/blob/1cad57d75077bdb3594e33e845ab6d226c5d2c86/.circleci/config.yml#L5) used in the build instructions refers to a specific SDK version and requires occasional updating.
-2. The [platform installation](https://github.com/facebook/flipper/blob/b5e613141e98528f45d3d2864e08278b1c7d4973/.circleci/config.yml#L23) through the `sdkmanager` tool of the Android SDK may require additional SDKs or NDKs to be installed if they're not part of the base image.
-
-One non-obvious aspect is that of **authentication** for uploads. The repository contains a symmetrically encrypted
-copy of our credentials to Sonatype (for Maven Central) and JCenter. The [release scripts](https://github.com/facebook/flipper/blob/1cad57d75077bdb3594e33e845ab6d226c5d2c86/scripts/publish-android-release.sh#L19)
-decode the file on the fly by using a secret Circle CI exposes through an environment variable.
-
 ## iOS Release
 
 iOS releases are run in GitHub Actions but exist as a separate workflow. They can be triggered in three ways:
@@ -96,3 +71,88 @@ bump the versions of our Yarn workspaces, and publish all public packages (`flip
 and our React Native bindings.
 
 The **authentication** to npm is managed by a secret environment variable called `FLIPPER_NPM_TOKEN`.
+
+## Android Release
+
+Android has three types of jobs currently running. The `snapshot` job is an
+outlier in that it still runs on CircleCI. This gives us some additional
+capacity as these jobs can take quite a while and the occasional failure
+due to timeouts or network errors isn't a dealbreaker.
+
+The three jobs are:
+
+1. The [`snapshot`](https://github.com/facebook/flipper/blob/master/.github/workflows/android-sample.yml) job runs on every commit on the main branch and publishes "SNAPSHOT" releases to Maven Central. It runs on CircleCI.
+2. The [`publish-android`](https://github.com/facebook/flipper/blob/master/.github/workflows/publish-android.yml) job is usually triggered by a `dispatch_workflow` event. It uploads our Java artifacts to Maven Central and attaches the Android sample app to the release page on GitHub. It runs on GitHub Actions.
+3. The [`android-sample`](https://github.com/facebook/flipper/blob/master/.github/workflows/android-sample.yml) job runs on every push and open pull request. It builds the sample and tutorial apps and uploads the sample APK as artifact for easy debugging and testing.
+
+### CircleCI Configuration
+
+The Android snapshot build is run on
+[CircleCI](https://app.circleci.com/pipelines/github/facebook/flipper?branch=master)
+and configured in
+[`.circleci/config.yml`](https://github.com/facebook/flipper/blob/master/.circleci/config.yml)
+
+There are two potential points for breakage:
+
+1. The [base image](https://github.com/facebook/flipper/blob/1cad57d75077bdb3594e33e845ab6d226c5d2c86/.circleci/config.yml#L5) used in the build instructions refers to a specific SDK version and requires occasional updating.
+2. The [platform installation](https://github.com/facebook/flipper/blob/b5e613141e98528f45d3d2864e08278b1c7d4973/.circleci/config.yml#L23) through the `sdkmanager` tool of the Android SDK may require additional SDKs or NDKs to be installed if they're not part of the base image.
+
+One non-obvious aspect is that of **authentication** for uploads. The repository contains a symmetrically encrypted
+copy of our credentials to Sonatype (for Maven Central). The [snapshot release script](https://github.com/facebook/flipper/blob/1cad57d75077bdb3594e33e845ab6d226c5d2c86/scripts/publish-android-snapshot.sh)
+decodes the file on the fly by using a secret Circle CI exposes through an environment variable.
+
+### GitHub Action Workflow
+
+As with the iOS release before, the workflow for Android releases is triggered by three types of events:
+
+1. When a tag is pushed.
+2. By manually triggering the workflow.
+3. Through a `dispatch_workflow` event which is issued as a last step of the desktop release process.
+
+In normal circumstances, the third event will kick off an Android release build.
+The workflow is defined in [`publish-android.yml`](https://github.com/facebook/flipper/blob/8d5f136a349e77ec9ccebd303054e0e142cbab30/.github/workflows/publish-android.yml).
+
+We first install two NDK versions that are required by our dependencies. To publish release artifacts
+(i.e. non-`SNAPSHOT` artifacts), Maven Central requires them to be signed with a GnuPG key. The
+only requirement about the key itself is, that it needs to be exported to a Keyserver. Ours
+is published [to the Ubuntu Keyserver](https://keyserver.ubuntu.com/pks/lookup?search=Flipper+Bot+%28I+sign+Flipper+releases%29+%3Crealpassy%40fb.com%3E&fingerprint=on&op=index).
+
+For the initial setup, the secret keyring was exported as `gpg2 --export-secret-keys <secret_key_id> | base64` and stored
+as secret on GitHub with the name `GPG_KEY_CONTENTS`. As part of the workflow, it is written to disk after reversing the base64 encoding.
+The key id and key password are subsequently stored in the `gradle.properties` along with the path to the key. Paths here need to be
+absolute, otherwise Gradle will look them up relative to the sub-projects (`android/`, `android/sample`, ...).
+
+Maven Central is managed by Sonatype. To sign up follow [their guide](https://central.sonatype.org/pages/ossrh-guide.html) which
+involves creating a JIRA account and opening an issue to apply for the `com.facebook` namespace. You will need
+to find an existing member of this namespace to vouch for you. While this is a lot, it ensures that nobody
+from outside the organisation can publish under our name.
+
+The `uploadArchives` gradle task uses the OSSRH Sonatype Nexus credentials to upload all Flipper Java artifacts. That
+includes the core SDK as well as our plugins. The credentials are *not* your login to Nexus, but the user tokens
+you can get from [your profile](https://oss.sonatype.org/#profile;User%20Token).
+
+This is followed by the `closeAndReleaseRepository` gradle task, which is part of the
+[`gradle-maven-publish-plugin`](https://github.com/vanniktech/gradle-maven-publish-plugin). It uses the credentials
+to identify a "staging repository" and automatically close it. This staging repository is identified by the
+[`SONATYPE_STAGING_PROFILE`](https://github.com/facebook/flipper/blob/8d5f136a349e77ec9ccebd303054e0e142cbab30/gradle.properties#L9)
+property. Sonatype usually requires people to manually go to a web UI, verify that a given release is
+complete and click some buttons. The plugin aims to do this for you.
+
+#### Troubleshooting
+
+There are a few parts which can go wrong here.
+
+- **Upload fails:** Maven Central is (at the time of writing) overloaded with projects migrating from
+  JCenter. The upload task attempts to retry but it can still time out. Manually re-running the job
+  through the GitHub UI should do the trick.
+- **Closing fails:** Same as before, this can happen because of timeouts.
+- **Retrying to close fails because of duplicate staging repositories:** This is particularly annoying
+  because you cannot fix this through automation. It happens when artifacts are uploaded multiple times
+  and now more than one staging repository exists. You must first *drop* (not close or release) the existing ones before
+  restarting the job. To do this, go to [Staging Repositories](https://oss.sonatype.org/#stagingRepositories),
+  select the open repositories and click "Drop".
+- **NDK mismatch:** If Gradle complains about a missing NDK, this usually indicates that a dependency
+  has a hard requirement on a particular NDK. You can add it to the list in the `sdkmanager` command.
+- **Artifacts not available:** Maven Central syncs with a delay of sometimes a few hours. You can
+  check directly on the [Maven2 main server](https://repo.maven.apache.org/maven2/com/facebook/flipper/)
+  if the artifacts with the new version number are uploaded.
