@@ -16,7 +16,7 @@ import {DevicePluginPredicate, DevicePluginFactory} from './DevicePlugin';
  */
 export type FlipperDevicePluginModule = {
   /** predicate that determines if this plugin applies to the currently selcted device */
-  supportsDevice: DevicePluginPredicate;
+  supportsDevice: DevicePluginPredicate; // TODO T84453692: remove this function after some transition period in favor of BaseDevice.supportsPlugin.
   /** the factory function that initializes a plugin instance */
   devicePlugin: DevicePluginFactory;
   /** the component type that can render this plugin */
@@ -52,7 +52,7 @@ export class SandyPluginDefinition {
   constructor(details: ActivatablePluginDetails, module: any) {
     this.id = details.id;
     this.details = details;
-    if (module.supportsDevice) {
+    if (details.pluginType === 'device' || module.supportsDevice) {
       // device plugin
       this.isDevicePlugin = true;
       if (!module.devicePlugin || typeof module.devicePlugin !== 'function') {

@@ -88,12 +88,18 @@ describe('basic findBestDevice with metro present', () => {
 
   beforeEach(async () => {
     flipper = await createMockFlipperWithPlugin(logsPlugin);
+    flipper.device.supportsPlugin = (p) => {
+      return p.id !== 'unsupportedDevicePlugin';
+    };
     testDevice = flipper.device;
     // flipper.store.dispatch(registerPlugins([LogsPlugin]))
     await registerMetroDevice(undefined, flipper.store, flipper.logger);
     metro = findMetroDevice(
       flipper.store.getState().connections.devices,
     )! as MetroDevice;
+    metro.supportsPlugin = (p) => {
+      return p.id !== 'unsupportedDevicePlugin';
+    };
   });
 
   test('findMetroDevice', () => {

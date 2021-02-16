@@ -87,7 +87,7 @@ function getPluginDetailsV1(packageJson: any): PluginDetails {
     category: packageJson.category,
     bugs: packageJson.bugs,
     flipperSDKVersion: packageJson?.peerDependencies?.['flipper-plugin'],
-    pluginType: packageJson?.pluginType || 'client',
+    pluginType: packageJson?.pluginType,
     supportedDevices: packageJson?.supportedDevices,
   };
 }
@@ -109,7 +109,7 @@ function getPluginDetailsV2(packageJson: any): PluginDetails {
     category: packageJson.category,
     bugs: packageJson.bugs,
     flipperSDKVersion: packageJson?.peerDependencies?.['flipper-plugin'],
-    pluginType: packageJson?.pluginType || 'client',
+    pluginType: packageJson?.pluginType,
     supportedDevices: packageJson?.supportedDevices,
   };
 }

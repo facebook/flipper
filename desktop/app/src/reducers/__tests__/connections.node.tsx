@@ -13,6 +13,7 @@ import BaseDevice from '../../devices/BaseDevice';
 import MacDevice from '../../devices/MacDevice';
 import {FlipperDevicePlugin} from '../../plugin';
 import MetroDevice from '../../devices/MetroDevice';
+import {TestUtils} from 'flipper-plugin';
 
 test('doing a double REGISTER_DEVICE keeps the last', () => {
   const device1 = new BaseDevice('serial', 'physical', 'title', 'Android');
@@ -61,6 +62,10 @@ test('triggering REGISTER_DEVICE before REGISTER_PLUGINS still registers device 
     static supportsDevice() {
       return true;
     }
+    static details = TestUtils.createMockPluginDetails({
+      id: 'test',
+      pluginType: 'device',
+    });
   }
 
   const stateWithDevice = reducer(undefined, {

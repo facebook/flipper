@@ -241,6 +241,7 @@ export class FlipperDevicePlugin<
     this.teardown();
   }
 
+  // TODO T84453692: remove this function after some transition period in favor of BaseDevice.supportsPlugin.
   static supportsDevice(_device: BaseDevice): boolean {
     throw new Error(
       'supportsDevice is unimplemented in FlipperDevicePlugin class',

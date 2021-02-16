@@ -297,7 +297,7 @@ export function startDevicePlugin<Module extends FlipperDevicePluginModule>(
   options?: StartPluginOptions,
 ): StartDevicePluginResult<Module> {
   const definition = new SandyPluginDefinition(
-    createMockPluginDetails(),
+    createMockPluginDetails({pluginType: 'device'}),
     module,
   );
   if (!definition.isDevicePlugin) {
@@ -402,7 +402,6 @@ export function createMockPluginDetails(
     dir: '',
     name: 'TestPlugin',
     specVersion: 0,
-    pluginType: 'client',
     entry: '',
     isBundled: false,
     isActivatable: true,

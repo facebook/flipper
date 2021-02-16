@@ -19,6 +19,7 @@ import {registerPlugins} from '../reducers/plugins';
 import {getInstance} from '../fb-stubs/Logger';
 import {initializeFlipperLibImplementation} from '../utils/flipperLibImplementation';
 import pluginManager from '../dispatcher/pluginManager';
+import {PluginDetails} from 'flipper-plugin-lib';
 
 export interface AppOptions {
   plugins?: PluginDefinition[];
@@ -35,6 +36,7 @@ export interface ClientOptions {
 
 export interface DeviceOptions {
   serial?: string;
+  isSupportedByPlugin?: (p: PluginDetails) => boolean;
 }
 
 export default class MockFlipper {
@@ -105,13 +107,19 @@ export default class MockFlipper {
     this.unsubscribePluginManager && this.unsubscribePluginManager();
   }
 
-  public createDevice({serial}: DeviceOptions = {}): BaseDevice {
+  public createDevice({
+    serial,
+    isSupportedByPlugin,
+  }: DeviceOptions = {}): BaseDevice {
     const device = new BaseDevice(
       serial ?? `serial_${++this._deviceCounter}`,
       'physical',
       'MockAndroidDevice',
       'Android',
     );
+    device.supportsPlugin = !isSupportedByPlugin
+      ? () => true
+      : isSupportedByPlugin;
     this._store.dispatch({
       type: 'REGISTER_DEVICE',
       payload: device,

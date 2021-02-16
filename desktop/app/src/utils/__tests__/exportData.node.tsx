@@ -1333,7 +1333,7 @@ test('Sandy plugins are imported properly', async () => {
 });
 
 const sandyDeviceTestPlugin = new _SandyPluginDefinition(
-  TestUtils.createMockPluginDetails(),
+  TestUtils.createMockPluginDetails({pluginType: 'device'}),
   {
     supportsDevice: () => true,
     devicePlugin(client: DevicePluginClient) {
@@ -1536,7 +1536,7 @@ test('Sandy plugin with custom import', async () => {
 
 test('Sandy device plugin with custom import', async () => {
   const plugin = new _SandyPluginDefinition(
-    TestUtils.createMockPluginDetails(),
+    TestUtils.createMockPluginDetails({pluginType: 'device'}),
     {
       supportsDevice: () => true,
       devicePlugin(client: DevicePluginClient) {
@@ -1665,7 +1665,10 @@ test('Sandy plugins with complex data are imported  / exported correctly', async
 
 test('Sandy device plugins with complex data are imported  / exported correctly', async () => {
   const deviceplugin = new _SandyPluginDefinition(
-    TestUtils.createMockPluginDetails({id: 'deviceplugin'}),
+    TestUtils.createMockPluginDetails({
+      id: 'deviceplugin',
+      pluginType: 'device',
+    }),
     {
       supportsDevice() {
         return true;

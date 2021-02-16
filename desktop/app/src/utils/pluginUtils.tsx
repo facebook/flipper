@@ -27,7 +27,6 @@ import type {
   PluginDetails,
 } from 'flipper-plugin-lib';
 import {filterNewestVersionOfEachPlugin} from '../dispatcher/plugins';
-import ArchivedDevice from '../devices/ArchivedDevice';
 
 export const defaultEnabledBackgroundPlugins = ['Navigation']; // The navigation plugin is enabled always, to make sure the navigation features works
 
@@ -182,12 +181,12 @@ export function computePluginLists(
   userStarredPlugins: State['connections']['userStarredPlugins'],
   _pluginsChanged?: number, // this argument is purely used to invalidate the memoization cache
 ) {
-  const devicePlugins: DevicePluginDefinition[] =
-    device?.devicePlugins.map((name) => plugins.devicePlugins.get(name)!) ?? [];
-  const metroPlugins: DevicePluginDefinition[] =
-    metroDevice?.devicePlugins.map(
-      (name) => plugins.devicePlugins.get(name)!,
-    ) ?? [];
+  const devicePlugins: DevicePluginDefinition[] = [
+    ...plugins.devicePlugins.values(),
+  ].filter((p) => device?.supportsPlugin(p));
+  const metroPlugins: DevicePluginDefinition[] = [
+    ...plugins.devicePlugins.values(),
+  ].filter((p) => metroDevice?.supportsPlugin(p));
   const enabledPlugins: ClientPluginDefinition[] = [];
   const disabledPlugins: ClientPluginDefinition[] = [];
   const unavailablePlugins: [plugin: PluginDetails, reason: string][] = [];
@@ -198,16 +197,12 @@ export function computePluginLists(
 
   if (device) {
     // find all device plugins that aren't part of the current device / metro
-    const detectedDevicePlugins = new Set([
-      ...device.devicePlugins,
-      ...(metroDevice?.devicePlugins ?? []),
-    ]);
-    for (const [name, definition] of plugins.devicePlugins.entries()) {
-      if (!detectedDevicePlugins.has(name)) {
+    for (const p of plugins.devicePlugins.values()) {
+      if (!device.supportsPlugin(p) && !metroDevice?.supportsPlugin(p)) {
         unavailablePlugins.push([
-          definition.details,
+          p.details,
           `Device plugin '${getPluginTitle(
-            definition.details,
+            p.details,
           )}' is not supported by the current device type.`,
         ]);
       }

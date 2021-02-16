@@ -17,9 +17,13 @@ import {
   Idler,
   createState,
 } from 'flipper-plugin';
-import type {DevicePluginDefinition, DevicePluginMap} from '../plugin';
+import {
+  DevicePluginDefinition,
+  DevicePluginMap,
+  FlipperDevicePlugin,
+} from '../plugin';
 import {getFlipperLibImplementation} from '../utils/flipperLibImplementation';
-import {DeviceSpec, OS as PluginOS} from 'flipper-plugin-lib';
+import {DeviceSpec, OS as PluginOS, PluginDetails} from 'flipper-plugin-lib';
 
 export type DeviceShell = {
   stdout: stream.Readable;
@@ -175,6 +179,38 @@ export default class BaseDevice {
     return null;
   }
 
+  supportsPlugin(plugin: DevicePluginDefinition | PluginDetails) {
+    let pluginDetails: PluginDetails;
+    if (isDevicePluginDefinition(plugin)) {
+      pluginDetails = plugin.details;
+      if (!pluginDetails.pluginType && !pluginDetails.supportedDevices) {
+        // TODO T84453692: this branch is to support plugins defined with the legacy approach. Need to remove this branch after some transition period when
+        // all the plugins will be migrated to the new approach with static compatibility metadata in package.json.
+        if (plugin instanceof _SandyPluginDefinition) {
+          return (
+            plugin.isDevicePlugin &&
+            plugin.asDevicePluginModule().supportsDevice(this as any)
+          );
+        } else {
+          return plugin.supportsDevice(this);
+        }
+      }
+    } else {
+      pluginDetails = plugin;
+    }
+    return (
+      pluginDetails.pluginType === 'device' &&
+      (!pluginDetails.supportedDevices ||
+        pluginDetails.supportedDevices?.some(
+          (d) =>
+            (!d.os || d.os === this.os) &&
+            (!d.type || d.type === this.deviceType) &&
+            (d.archived === undefined || d.archived === this.isArchived) &&
+            (!d.specs || d.specs.every((spec) => this.specs.includes(spec))),
+        ))
+    );
+  }
+
   loadDevicePlugins(
     devicePlugins?: DevicePluginMap,
     pluginStates?: Record<string, any>,
@@ -189,23 +225,20 @@ export default class BaseDevice {
   }
 
   loadDevicePlugin(plugin: DevicePluginDefinition, initialState?: any) {
+    if (!this.supportsPlugin(plugin)) {
+      return;
+    }
+    this.devicePlugins.push(plugin.id);
     if (plugin instanceof _SandyPluginDefinition) {
-      if (plugin.asDevicePluginModule().supportsDevice(this as any)) {
-        this.devicePlugins.push(plugin.id);
-        this.sandyPluginStates.set(
-          plugin.id,
-          new _SandyDevicePluginInstance(
-            getFlipperLibImplementation(),
-            plugin,
-            this,
-            initialState,
-          ),
-        );
-      }
-    } else {
-      if (plugin.supportsDevice(this)) {
-        this.devicePlugins.push(plugin.id);
-      }
+      this.sandyPluginStates.set(
+        plugin.id,
+        new _SandyDevicePluginInstance(
+          getFlipperLibImplementation(),
+          plugin,
+          this,
+          initialState,
+        ),
+      );
     }
   }
 
@@ -230,4 +263,13 @@ export default class BaseDevice {
     });
     this.sandyPluginStates.clear();
   }
+}
+
+function isDevicePluginDefinition(
+  definition: any,
+): definition is DevicePluginDefinition {
+  return (
+    (definition as any).prototype instanceof FlipperDevicePlugin ||
+    (definition instanceof _SandyPluginDefinition && definition.isDevicePlugin)
+  );
 }

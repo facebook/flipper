@@ -41,7 +41,6 @@ import {
   registerInstalledPlugins,
 } from '../reducers/plugins';
 import {_SandyPluginDefinition} from 'flipper-plugin';
-import type BaseDevice from '../devices/BaseDevice';
 import {pluginStarred, pluginUnstarred} from '../reducers/connections';
 import {deconstructClientId} from '../utils/clientUtils';
 import {clearMessageQueue} from '../reducers/pluginMessageQueue';
@@ -239,13 +238,13 @@ function updateClientPlugin(
 function updateDevicePlugin(store: Store, plugin: DevicePluginDefinition) {
   const devices = store.getState().connections.devices;
   const devicesWithEnabledPlugin = devices.filter((d) =>
-    supportsDevice(plugin, d),
+    d.supportsPlugin(plugin),
   );
   devicesWithEnabledPlugin.forEach((d) => {
     d.unloadDevicePlugin(plugin.id);
   });
   store.dispatch(clearPluginState({pluginId: plugin.id}));
-  const previousVersion = store.getState().plugins.clientPlugins.get(plugin.id);
+  const previousVersion = store.getState().plugins.devicePlugins.get(plugin.id);
   if (previousVersion) {
     // unload previous version from Electron cache
     unloadPluginModule(previousVersion.details);
@@ -304,15 +303,4 @@ export function isDevicePluginDefinition(
     (definition as any).prototype instanceof FlipperDevicePlugin ||
     (definition instanceof _SandyPluginDefinition && definition.isDevicePlugin)
   );
-}
-
-function supportsDevice(plugin: DevicePluginDefinition, device: BaseDevice) {
-  if (plugin instanceof _SandyPluginDefinition) {
-    return (
-      plugin.isDevicePlugin &&
-      plugin.asDevicePluginModule().supportsDevice(device as any)
-    );
-  } else {
-    return plugin.supportsDevice(device);
-  }
 }

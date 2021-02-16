@@ -27,7 +27,7 @@ export interface PluginDetails {
     url?: string;
   };
   flipperSDKVersion?: string;
-  pluginType: PluginType;
+  pluginType?: PluginType;
   supportedDevices?: SupportedDevice[];
 }
 

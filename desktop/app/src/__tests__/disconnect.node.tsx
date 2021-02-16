@@ -72,7 +72,7 @@ test('Devices can disconnect', async () => {
 
 test('New device with same serial removes & cleans the old one', async () => {
   const deviceplugin = new _SandyPluginDefinition(
-    TestUtils.createMockPluginDetails(),
+    TestUtils.createMockPluginDetails({pluginType: 'device'}),
     {
       devicePlugin(client: DevicePluginClient) {
         const destroy = jest.fn();
