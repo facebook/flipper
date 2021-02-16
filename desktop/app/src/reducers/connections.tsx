@@ -117,18 +117,22 @@ export type Action =
       };
     }
   | {
+      type: 'PLUGIN_STARRED';
+      payload: {
+        plugin: PluginDefinition;
+      };
+    }
+  | {
+      type: 'PLUGIN_UNSTARRED';
+      payload: {
+        plugin: PluginDefinition;
+      };
+    }
+  | {
       type: 'SELECT_CLIENT';
       payload: string | null;
     }
-  | RegisterPluginAction
-  | {
-      // Implemented by rootReducer in `store.tsx`
-      type: 'UPDATE_PLUGIN';
-      payload: {
-        plugin: PluginDefinition;
-        enablePlugin: boolean;
-      };
-    };
+  | RegisterPluginAction;
 
 const DEFAULT_PLUGIN = 'DeviceLogs';
 const DEFAULT_DEVICE_BLACKLIST = [MacDevice, MetroDevice];
@@ -367,6 +371,44 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
       });
       return state;
     }
+    case 'PLUGIN_STARRED': {
+      const {plugin} = action.payload;
+      const selectedPlugin = plugin.id;
+      const selectedApp = state.selectedApp
+        ? deconstructClientId(state.selectedApp).app
+        : undefined;
+      if (!selectedApp) {
+        return state;
+      }
+      return produce(state, (draft) => {
+        if (!draft.userStarredPlugins[selectedApp]) {
+          draft.userStarredPlugins[selectedApp] = [];
+        }
+        const plugins = draft.userStarredPlugins[selectedApp];
+        const idx = plugins.indexOf(selectedPlugin);
+        if (idx === -1) {
+          plugins.push(selectedPlugin);
+        }
+      });
+    }
+    case 'PLUGIN_UNSTARRED': {
+      const {plugin} = action.payload;
+      const selectedPlugin = plugin.id;
+      const selectedApp = state.selectedApp;
+      if (!selectedApp) {
+        return state;
+      }
+      return produce(state, (draft) => {
+        if (!draft.userStarredPlugins[selectedApp]) {
+          draft.userStarredPlugins[selectedApp] = [];
+        }
+        const plugins = draft.userStarredPlugins[selectedApp];
+        const idx = plugins.indexOf(selectedPlugin);
+        if (idx !== -1) {
+          plugins.splice(idx, 1);
+        }
+      });
+    }
     default:
       return state;
   }
@@ -420,12 +462,18 @@ export const selectClient = (clientId: string | null): Action => ({
   payload: clientId,
 });
 
-export const registerPluginUpdate = (payload: {
-  plugin: PluginDefinition;
-  enablePlugin: boolean;
-}): Action => ({
-  type: 'UPDATE_PLUGIN',
-  payload,
+export const pluginStarred = (plugin: PluginDefinition): Action => ({
+  type: 'PLUGIN_STARRED',
+  payload: {
+    plugin,
+  },
+});
+
+export const pluginUnstarred = (plugin: PluginDefinition): Action => ({
+  type: 'PLUGIN_UNSTARRED',
+  payload: {
+    plugin,
+  },
 });
 
 export function getAvailableClients(

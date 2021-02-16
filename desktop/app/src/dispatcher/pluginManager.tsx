@@ -8,12 +8,14 @@
  */
 
 import type {Store} from '../reducers/index';
-import type {Logger} from '../fb-interfaces/Logger';
 import {clearPluginState} from '../reducers/pluginStates';
+import type {Logger} from '../fb-interfaces/Logger';
 import {
   LoadPluginActionPayload,
-  pluginCommandsProcessed,
+  PluginCommand,
   UninstallPluginActionPayload,
+  UpdatePluginActionPayload,
+  pluginCommandsProcessed,
 } from '../reducers/pluginManager';
 import {
   getInstalledPlugins,
@@ -23,11 +25,23 @@ import {
 } from 'flipper-plugin-lib';
 import {sideEffect} from '../utils/sideEffect';
 import {requirePlugin} from './plugins';
-import {registerPluginUpdate} from '../reducers/connections';
 import {showErrorNotification} from '../utils/notifications';
+import {
+  DevicePluginDefinition,
+  FlipperDevicePlugin,
+  FlipperPlugin,
+  PluginDefinition,
+} from '../plugin';
 import type Client from '../Client';
 import {unloadModule} from '../utils/electronModuleCache';
-import {pluginUninstalled, registerInstalledPlugins} from '../reducers/plugins';
+import {
+  pluginLoaded,
+  pluginUninstalled,
+  registerInstalledPlugins,
+} from '../reducers/plugins';
+import {_SandyPluginDefinition} from 'flipper-plugin';
+import type BaseDevice from '../devices/BaseDevice';
+import {pluginStarred} from '../reducers/connections';
 import {defaultEnabledBackgroundPlugins} from '../utils/pluginUtils';
 
 const maxInstalledPluginVersionsToKeep = 2;
@@ -65,46 +79,49 @@ export default (
       noTimeBudgetWarns: true, // These side effects are critical, so we're doing them with zero throttling and want to avoid unnecessary warns
     },
     (state) => state.pluginManager.pluginCommandsQueue,
-    (queue, store) => {
-      for (const command of queue) {
-        switch (command.type) {
-          case 'LOAD_PLUGIN':
-            loadPlugin(store, command.payload);
-            break;
-          case 'UNINSTALL_PLUGIN':
-            uninstallPlugin(store, command.payload);
-            break;
-          default:
-            console.error('Unexpected plugin command', command);
-            break;
-        }
-      }
-      store.dispatch(pluginCommandsProcessed(queue.length));
-    },
+    processPluginCommandsQueue,
   );
   return async () => {
     unsubscribeHandlePluginCommands();
   };
 };
 
+export function processPluginCommandsQueue(
+  queue: PluginCommand[],
+  store: Store,
+) {
+  for (const command of queue) {
+    switch (command.type) {
+      case 'LOAD_PLUGIN':
+        loadPlugin(store, command.payload);
+        break;
+      case 'UNINSTALL_PLUGIN':
+        uninstallPlugin(store, command.payload);
+        break;
+      case 'UPDATE_PLUGIN':
+        updatePlugin(store, command.payload);
+        break;
+      default:
+        console.error('Unexpected plugin command', command);
+        break;
+    }
+  }
+  store.dispatch(pluginCommandsProcessed(queue.length));
+}
+
 function loadPlugin(store: Store, payload: LoadPluginActionPayload) {
   try {
     const plugin = requirePlugin(payload.plugin);
     const enablePlugin = payload.enable;
-    store.dispatch(
-      registerPluginUpdate({
-        plugin,
-        enablePlugin,
-      }),
-    );
+    updatePlugin(store, {plugin, enablePlugin});
   } catch (err) {
     console.error(
-      `Failed to activate plugin ${payload.plugin.title} v${payload.plugin.version}`,
+      `Failed to load plugin ${payload.plugin.title} v${payload.plugin.version}`,
       err,
     );
     if (payload.notifyIfFailed) {
       showErrorNotification(
-        `Failed to activate plugin "${payload.plugin.title}" v${payload.plugin.version}`,
+        `Failed to load plugin "${payload.plugin.title}" v${payload.plugin.version}`,
       );
     }
   }
@@ -133,6 +150,83 @@ function uninstallPlugin(store: Store, {plugin}: UninstallPluginActionPayload) {
   }
 }
 
+function updatePlugin(store: Store, payload: UpdatePluginActionPayload) {
+  const {plugin, enablePlugin} = payload;
+  if (isDevicePluginDefinition(plugin)) {
+    return updateDevicePlugin(store, plugin);
+  } else {
+    return updateClientPlugin(store, plugin, enablePlugin);
+  }
+}
+
+function updateClientPlugin(
+  store: Store,
+  plugin: typeof FlipperPlugin,
+  enable: boolean,
+) {
+  const clients = store.getState().connections.clients;
+  if (enable) {
+    store.dispatch(pluginStarred(plugin));
+  }
+  const clientsWithEnabledPlugin = clients.filter((c) => {
+    return (
+      c.supportsPlugin(plugin.id) &&
+      store
+        .getState()
+        .connections.userStarredPlugins[c.query.app]?.includes(plugin.id)
+    );
+  });
+  const previousVersion = store.getState().plugins.clientPlugins.get(plugin.id);
+  clientsWithEnabledPlugin.forEach((client) => {
+    stopPlugin(client, plugin.id);
+  });
+  store.dispatch(clearPluginState({pluginId: plugin.id}));
+  clientsWithEnabledPlugin.forEach((client) => {
+    startPlugin(client, plugin, true);
+  });
+  store.dispatch(pluginLoaded(plugin));
+  if (previousVersion) {
+    // unload previous version from Electron cache
+    unloadPluginModule(previousVersion.details);
+  }
+}
+
+function updateDevicePlugin(store: Store, plugin: DevicePluginDefinition) {
+  const devices = store.getState().connections.devices;
+  const devicesWithEnabledPlugin = devices.filter((d) =>
+    supportsDevice(plugin, d),
+  );
+  devicesWithEnabledPlugin.forEach((d) => {
+    d.unloadDevicePlugin(plugin.id);
+  });
+  store.dispatch(clearPluginState({pluginId: plugin.id}));
+  const previousVersion = store.getState().plugins.clientPlugins.get(plugin.id);
+  if (previousVersion) {
+    // unload previous version from Electron cache
+    unloadPluginModule(previousVersion.details);
+  }
+  store.dispatch(pluginLoaded(plugin));
+  devicesWithEnabledPlugin.forEach((d) => {
+    d.loadDevicePlugin(plugin);
+  });
+}
+
+function startPlugin(
+  client: Client,
+  plugin: PluginDefinition,
+  forceInitBackgroundPlugin: boolean = false,
+) {
+  client.startPluginIfNeeded(plugin, true);
+  // background plugin? connect it needed
+  if (
+    (forceInitBackgroundPlugin ||
+      !defaultEnabledBackgroundPlugins.includes(plugin.id)) &&
+    client?.isBackgroundPlugin(plugin.id)
+  ) {
+    client.initPlugin(plugin.id);
+  }
+}
+
 function stopPlugin(
   client: Client,
   pluginId: string,
@@ -156,4 +250,24 @@ function unloadPluginModule(plugin: ActivatablePluginDetails) {
     return;
   }
   unloadModule(plugin.entry);
+}
+
+export function isDevicePluginDefinition(
+  definition: PluginDefinition,
+): definition is DevicePluginDefinition {
+  return (
+    (definition as any).prototype instanceof FlipperDevicePlugin ||
+    (definition instanceof _SandyPluginDefinition && definition.isDevicePlugin)
+  );
+}
+
+function supportsDevice(plugin: DevicePluginDefinition, device: BaseDevice) {
+  if (plugin instanceof _SandyPluginDefinition) {
+    return (
+      plugin.isDevicePlugin &&
+      plugin.asDevicePluginModule().supportsDevice(device as any)
+    );
+  } else {
+    return plugin.supportsDevice(device);
+  }
 }

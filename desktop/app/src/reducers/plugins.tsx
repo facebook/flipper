@@ -83,6 +83,10 @@ export type Action =
   | {
       type: 'PLUGIN_UNINSTALLED';
       payload: ActivatablePluginDetails;
+    }
+  | {
+      type: 'PLUGIN_LOADED';
+      payload: PluginDefinition;
     };
 
 const INITIAL_STATE: State = {
@@ -178,6 +182,17 @@ export default function reducer(
       draft.loadedPlugins.delete(plugin.id);
       draft.uninstalledPlugins.add(plugin.name);
     });
+  } else if (action.type === 'PLUGIN_LOADED') {
+    const plugin = action.payload;
+    return produce(state, (draft) => {
+      if (isDevicePluginDefinition(plugin)) {
+        draft.devicePlugins.set(plugin.id, plugin);
+      } else {
+        draft.clientPlugins.set(plugin.id, plugin);
+      }
+      draft.uninstalledPlugins.delete(plugin.id);
+      draft.loadedPlugins.set(plugin.id, plugin.details);
+    });
   } else {
     return state;
   }
@@ -251,5 +266,10 @@ export const pluginUninstalled = (
   payload: ActivatablePluginDetails,
 ): Action => ({
   type: 'PLUGIN_UNINSTALLED',
+  payload,
+});
+
+export const pluginLoaded = (payload: PluginDefinition): Action => ({
+  type: 'PLUGIN_LOADED',
   payload,
 });

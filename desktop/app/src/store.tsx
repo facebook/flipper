@@ -15,21 +15,10 @@ import produce from 'immer';
 import {
   defaultEnabledBackgroundPlugins,
   getPluginKey,
-  isDevicePluginDefinition,
 } from './utils/pluginUtils';
 import Client from './Client';
-import {
-  DevicePluginDefinition,
-  FlipperPlugin,
-  PluginDefinition,
-} from './plugin';
-import {deconstructPluginKey} from './utils/clientUtils';
+import {PluginDefinition} from './plugin';
 import {_SandyPluginDefinition} from 'flipper-plugin';
-import BaseDevice from './devices/BaseDevice';
-import {State as PluginStates} from './reducers/pluginStates';
-import {ActivatablePluginDetails} from 'flipper-plugin-lib';
-import {unloadModule} from './utils/electronModuleCache';
-
 export const store: Store = createStore<StoreState, Actions, any, any>(
   rootReducer,
   // @ts-ignore Type definition mismatch
@@ -77,13 +66,6 @@ export function rootReducer(
         });
       }
     });
-  } else if (action.type === 'UPDATE_PLUGIN' && state) {
-    const {plugin, enablePlugin} = action.payload;
-    if (isDevicePluginDefinition(plugin)) {
-      return updateDevicePlugin(state, plugin);
-    } else {
-      return updateClientPlugin(state, plugin, enablePlugin);
-    }
   }
 
   // otherwise
@@ -127,118 +109,4 @@ function startPlugin(
   ) {
     client.initPlugin(plugin.id);
   }
-}
-
-function updateClientPlugin(
-  state: StoreState,
-  plugin: typeof FlipperPlugin,
-  enable: boolean,
-) {
-  const clients = state.connections.clients;
-  return produce(state, (draft) => {
-    if (enable) {
-      clients.forEach((c) => {
-        let enabledPlugins = draft.connections.userStarredPlugins[c.query.app];
-        if (
-          c.supportsPlugin(plugin.id) &&
-          !enabledPlugins?.includes(plugin.id)
-        ) {
-          if (!enabledPlugins) {
-            enabledPlugins = [plugin.id];
-            draft.connections.userStarredPlugins[c.query.app] = enabledPlugins;
-          } else {
-            enabledPlugins.push(plugin.id);
-          }
-        }
-      });
-    }
-    const clientsWithEnabledPlugin = clients.filter((c) => {
-      return (
-        c.supportsPlugin(plugin.id) &&
-        draft.connections.userStarredPlugins[c.query.app]?.includes(plugin.id)
-      );
-    });
-    // stop plugin for each client where it is enabled
-    clientsWithEnabledPlugin.forEach((client) => {
-      stopPlugin(client, plugin.id, true);
-      delete draft.pluginMessageQueue[
-        getPluginKey(client.id, {serial: client.query.device_id}, plugin.id)
-      ];
-    });
-    cleanupPluginStates(draft.pluginStates, plugin.id);
-    const previousVersion = draft.plugins.clientPlugins.get(plugin.id);
-    if (previousVersion) {
-      // unload previous version from Electron cache
-      unloadPluginModule(previousVersion.details);
-    }
-    // update plugin definition
-    draft.plugins.clientPlugins.set(plugin.id, plugin);
-    // start plugin for each client
-    clientsWithEnabledPlugin.forEach((client) => {
-      startPlugin(client, plugin, true);
-    });
-    registerLoadedPlugin(draft, plugin.details);
-  });
-}
-
-function updateDevicePlugin(state: StoreState, plugin: DevicePluginDefinition) {
-  const devices = state.connections.devices;
-  return produce(state, (draft) => {
-    const devicesWithEnabledPlugin = devices.filter((d) =>
-      supportsDevice(plugin, d),
-    );
-    devicesWithEnabledPlugin.forEach((d) => {
-      d.unloadDevicePlugin(plugin.id);
-    });
-    cleanupPluginStates(draft.pluginStates, plugin.id);
-    const previousVersion = draft.plugins.devicePlugins.get(plugin.id);
-    if (previousVersion) {
-      // unload previous version from Electron cache
-      unloadPluginModule(previousVersion.details);
-    }
-    draft.plugins.devicePlugins.set(plugin.id, plugin);
-    devicesWithEnabledPlugin.forEach((d) => {
-      d.loadDevicePlugin(plugin);
-    });
-    registerLoadedPlugin(draft, plugin.details);
-  });
-}
-
-function registerLoadedPlugin(
-  draft: {
-    pluginManager: StoreState['pluginManager'];
-    plugins: StoreState['plugins'];
-  },
-  plugin: ActivatablePluginDetails,
-) {
-  draft.plugins.uninstalledPlugins.delete(plugin.name);
-  draft.plugins.loadedPlugins.set(plugin.id, plugin);
-}
-
-function supportsDevice(plugin: DevicePluginDefinition, device: BaseDevice) {
-  if (plugin instanceof _SandyPluginDefinition) {
-    return (
-      plugin.isDevicePlugin &&
-      plugin.asDevicePluginModule().supportsDevice(device as any)
-    );
-  } else {
-    return plugin.supportsDevice(device);
-  }
-}
-
-function cleanupPluginStates(pluginStates: PluginStates, pluginId: string) {
-  Object.keys(pluginStates).forEach((pluginKey) => {
-    const pluginKeyParts = deconstructPluginKey(pluginKey);
-    if (pluginKeyParts.pluginName === pluginId) {
-      delete pluginStates[pluginKey];
-    }
-  });
-}
-
-function unloadPluginModule(plugin: ActivatablePluginDetails) {
-  if (plugin.isBundled) {
-    // We cannot unload bundled plugin.
-    return;
-  }
-  unloadModule(plugin.entry);
 }
