@@ -10,7 +10,8 @@
 import {Store} from '../reducers/index';
 import {Logger} from '../fb-interfaces/Logger';
 import {
-  pluginActivationHandled,
+  LoadPluginActionPayload,
+  pluginCommandsProcessed,
   registerInstalledPlugins,
 } from '../reducers/pluginManager';
 import {
@@ -22,7 +23,6 @@ import {sideEffect} from '../utils/sideEffect';
 import {requirePlugin} from './plugins';
 import {registerPluginUpdate} from '../reducers/connections';
 import {showErrorNotification} from '../utils/notifications';
-import {reportUsage} from '../utils/metrics';
 
 const maxInstalledPluginVersionsToKeep = 2;
 
@@ -44,40 +44,42 @@ export default (store: Store, _logger: Logger) => {
   sideEffect(
     store,
     {name: 'handlePluginActivation', throttleMs: 1000, fireImmediately: true},
-    (state) => state.pluginManager.pluginActivationQueue,
+    (state) => state.pluginManager.pluginCommandsQueue,
     (queue, store) => {
-      for (const request of queue) {
-        try {
-          reportUsage(
-            'plugin:activate',
-            {
-              version: request.plugin.version,
-              enable: request.enable ? '1' : '0',
-              notifyIfFailed: request.notifyIfFailed ? '1' : '0',
-            },
-            request.plugin.id,
-          );
-          const plugin = requirePlugin(request.plugin);
-          const enablePlugin = request.enable;
-          store.dispatch(
-            registerPluginUpdate({
-              plugin,
-              enablePlugin,
-            }),
-          );
-        } catch (err) {
-          console.error(
-            `Failed to activate plugin ${request.plugin.title} v${request.plugin.version}`,
-            err,
-          );
-          if (request.notifyIfFailed) {
-            showErrorNotification(
-              `Failed to load plugin "${request.plugin.title}" v${request.plugin.version}`,
-            );
-          }
+      for (const command of queue) {
+        switch (command.type) {
+          case 'LOAD_PLUGIN':
+            loadPlugin(store, command.payload);
+            break;
+          default:
+            console.error('Unexpected plugin command', command);
+            break;
         }
       }
-      store.dispatch(pluginActivationHandled(queue.length));
+      store.dispatch(pluginCommandsProcessed(queue.length));
     },
   );
 };
+
+function loadPlugin(store: Store, payload: LoadPluginActionPayload) {
+  try {
+    const plugin = requirePlugin(payload.plugin);
+    const enablePlugin = payload.enable;
+    store.dispatch(
+      registerPluginUpdate({
+        plugin,
+        enablePlugin,
+      }),
+    );
+  } catch (err) {
+    console.error(
+      `Failed to activate plugin ${payload.plugin.title} v${payload.plugin.version}`,
+      err,
+    );
+    if (payload.notifyIfFailed) {
+      showErrorNotification(
+        `Failed to load plugin "${payload.plugin.title}" v${payload.plugin.version}`,
+      );
+    }
+  }
+}

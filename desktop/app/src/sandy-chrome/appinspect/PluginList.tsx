@@ -36,7 +36,7 @@ import {
   PluginDownloadStatus,
   startPluginDownload,
 } from '../../reducers/pluginDownloads';
-import {activatePlugin, uninstallPlugin} from '../../reducers/pluginManager';
+import {loadPlugin, uninstallPlugin} from '../../reducers/pluginManager';
 import {BundledPluginDetails} from 'plugin-lib';
 import {reportUsage} from '../../utils/metrics';
 
@@ -153,7 +153,7 @@ export const PluginList = memo(function PluginList({
       const plugin = downloadablePlugins.find((p) => p.id === id)!;
       reportUsage('plugin:install', {version: plugin.version}, plugin.id);
       if (plugin.isBundled) {
-        dispatch(activatePlugin({plugin, enable: true, notifyIfFailed: true}));
+        dispatch(loadPlugin({plugin, enable: true, notifyIfFailed: true}));
       } else {
         dispatch(startPluginDownload({plugin, startedByUser: true}));
       }

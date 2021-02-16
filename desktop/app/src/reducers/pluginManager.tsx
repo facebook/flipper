@@ -19,13 +19,20 @@ import semver from 'semver';
 export type State = {
   installedPlugins: Map<string, InstalledPluginDetails>;
   uninstalledPlugins: Set<string>;
-  pluginActivationQueue: PluginActivationRequest[];
+  pluginCommandsQueue: PluginCommand[];
 };
 
-export type PluginActivationRequest = {
+export type PluginCommand = LoadPluginAction;
+
+export type LoadPluginActionPayload = {
   plugin: ActivatablePluginDetails;
   enable: boolean;
   notifyIfFailed: boolean;
+};
+
+export type LoadPluginAction = {
+  type: 'LOAD_PLUGIN';
+  payload: LoadPluginActionPayload;
 };
 
 export type Action =
@@ -43,18 +50,15 @@ export type Action =
       payload: InstalledPluginDetails;
     }
   | {
-      type: 'ACTIVATE_PLUGINS';
-      payload: PluginActivationRequest[];
-    }
-  | {
-      type: 'PLUGIN_ACTIVATION_HANDLED';
+      type: 'PLUGIN_COMMANDS_PROCESSED';
       payload: number;
-    };
+    }
+  | LoadPluginAction;
 
 const INITIAL_STATE: State = {
   installedPlugins: new Map<string, InstalledPluginDetails>(),
   uninstalledPlugins: new Set<string>(),
-  pluginActivationQueue: [],
+  pluginCommandsQueue: [],
 };
 
 export default function reducer(
@@ -77,13 +81,16 @@ export default function reducer(
         draft.installedPlugins.set(plugin.name, plugin);
       }
     });
-  } else if (action.type === 'ACTIVATE_PLUGINS') {
+  } else if (action.type === 'LOAD_PLUGIN') {
     return produce(state, (draft) => {
-      draft.pluginActivationQueue.push(...action.payload);
+      draft.pluginCommandsQueue.push({
+        type: 'LOAD_PLUGIN',
+        payload: action.payload,
+      });
     });
-  } else if (action.type === 'PLUGIN_ACTIVATION_HANDLED') {
+  } else if (action.type === 'PLUGIN_COMMANDS_PROCESSED') {
     return produce(state, (draft) => {
-      draft.pluginActivationQueue.splice(0, action.payload);
+      draft.pluginCommandsQueue.splice(0, action.payload);
     });
   } else {
     return {...state};
@@ -107,12 +114,12 @@ export const pluginInstalled = (payload: InstalledPluginDetails): Action => ({
   payload,
 });
 
-export const activatePlugin = (payload: PluginActivationRequest): Action => ({
-  type: 'ACTIVATE_PLUGINS',
-  payload: [payload],
+export const loadPlugin = (payload: LoadPluginActionPayload): Action => ({
+  type: 'LOAD_PLUGIN',
+  payload,
 });
 
-export const pluginActivationHandled = (payload: number): Action => ({
-  type: 'PLUGIN_ACTIVATION_HANDLED',
+export const pluginCommandsProcessed = (payload: number): Action => ({
+  type: 'PLUGIN_COMMANDS_PROCESSED',
   payload,
 });

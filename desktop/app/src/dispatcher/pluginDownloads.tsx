@@ -27,7 +27,7 @@ import path from 'path';
 import tmp from 'tmp';
 import {promisify} from 'util';
 import {reportPlatformFailures, reportUsage} from '../utils/metrics';
-import {activatePlugin, pluginInstalled} from '../reducers/pluginManager';
+import {loadPlugin, pluginInstalled} from '../reducers/pluginManager';
 import {showErrorNotification} from '../utils/notifications';
 
 // Adapter which forces node.js implementation for axios instead of browser implementation
@@ -130,7 +130,7 @@ async function handlePluginDownload(
     }
     if (pluginIsDisabledForAllConnectedClients(store.getState(), plugin)) {
       dispatch(
-        activatePlugin({
+        loadPlugin({
           plugin: installedPlugin,
           enable: startedByUser,
           notifyIfFailed: startedByUser,

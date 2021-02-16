@@ -53,7 +53,7 @@ import {ContentContainer} from './sandy-chrome/ContentContainer';
 import {Alert, Typography} from 'antd';
 import {InstalledPluginDetails} from 'plugin-lib';
 import semver from 'semver';
-import {activatePlugin} from './reducers/pluginManager';
+import {loadPlugin} from './reducers/pluginManager';
 import {produce} from 'immer';
 import {reportUsage} from './utils/metrics';
 
@@ -129,7 +129,7 @@ type DispatchFromProps = {
   setPluginState: (payload: {pluginKey: string; state: any}) => void;
   setStaticView: (payload: StaticView) => void;
   starPlugin: typeof starPlugin;
-  activatePlugin: typeof activatePlugin;
+  loadPlugin: typeof loadPlugin;
 };
 
 type Props = StateFromProps & DispatchFromProps & OwnProps;
@@ -381,7 +381,7 @@ class PluginContainer extends PureComponent<Props, State> {
   }
 
   reloadPlugin() {
-    const {activatePlugin, latestInstalledVersion} = this.props;
+    const {loadPlugin, latestInstalledVersion} = this.props;
     if (latestInstalledVersion) {
       reportUsage(
         'plugin-auto-update:alert:reloadClicked',
@@ -390,7 +390,7 @@ class PluginContainer extends PureComponent<Props, State> {
         },
         latestInstalledVersion.id,
       );
-      activatePlugin({
+      loadPlugin({
         plugin: latestInstalledVersion,
         enable: false,
         notifyIfFailed: true,
@@ -619,6 +619,6 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
     selectPlugin,
     setStaticView,
     starPlugin,
-    activatePlugin,
+    loadPlugin: loadPlugin,
   },
 )(PluginContainer);
