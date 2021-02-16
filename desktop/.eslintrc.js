@@ -68,6 +68,13 @@ module.exports = {
     'no-unsafe-negation': 2,
     'no-useless-computed-key': 2,
     'no-useless-rename': 2,
+    'no-restricted-properties': [
+      1,
+      {
+        object: 'electron',
+        property: 'remote',
+      },
+    ],
 
     // additional rules for this project
     'header/header': [2, 'block', {pattern}],
@@ -76,6 +83,7 @@ module.exports = {
     'node/no-extraneous-import': [2, {allowModules: builtInModules}],
     'node/no-extraneous-require': [2, {allowModules: builtInModules}],
     'flipper/no-relative-imports-across-packages': [2],
+    'flipper/no-electron-remote-imports': [1],
   },
   settings: {
     'import/resolver': {

@@ -10,9 +10,13 @@
 import noRelativeImportsAcrossPackages, {
   RULE_NAME as noRelativeImportsAcrossPackagesRuleName,
 } from './rules/noRelativeImportsAcrossPackages';
+import noElectronRemoteImports, {
+  RULE_NAME as noElectronRemoteImportsRuleName,
+} from './rules/noElectronRemoteImports';
 
 module.exports = {
   rules: {
     [noRelativeImportsAcrossPackagesRuleName]: noRelativeImportsAcrossPackages,
+    [noElectronRemoteImportsRuleName]: noElectronRemoteImports,
   },
 };
