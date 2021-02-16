@@ -41,7 +41,7 @@
       "errorMessage": "should contain keyword \"flipper-plugin\""
     },
     "pluginType": {
-      "description": "Type of the plugin - client or device. If omitted, \"client\" type is used by default.",
+      "description": "Type of the plugin - \"client\" if the plugin connects to a specific client plugin running in a mobile app, or \"device\" if it connects to devices. If omitted, \"client\" type is assumed by default.",
       "type": "string",
       "enum": ["client", "device"]
     },
@@ -84,6 +84,6 @@
     "id",
     "main",
     "flipperBundlerEntry",
-    "keywords"
+    "keywords"    
   ]
 }
