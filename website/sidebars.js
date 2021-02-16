@@ -155,6 +155,7 @@ module.exports = {
         'fb/Oncall-Runbook',
         'fb/sandcastle',
         'fb/Star-Ratings',
+        'fb/sandcastle-overview',
       ]),
     ],
   },
