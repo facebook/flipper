@@ -109,23 +109,17 @@ export type Action =
       deepLinkPayload: unknown;
     }
   | {
-      // Implemented by rootReducer in `store.tsx`
-      type: 'STAR_PLUGIN';
-      payload: {
-        selectedApp: string;
-        plugin: PluginDefinition;
-      };
-    }
-  | {
       type: 'PLUGIN_STARRED';
       payload: {
         plugin: PluginDefinition;
+        selectedApp: string;
       };
     }
   | {
       type: 'PLUGIN_UNSTARRED';
       payload: {
         plugin: PluginDefinition;
+        selectedApp: string;
       };
     }
   | {
@@ -372,14 +366,8 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
       return state;
     }
     case 'PLUGIN_STARRED': {
-      const {plugin} = action.payload;
+      const {plugin, selectedApp} = action.payload;
       const selectedPlugin = plugin.id;
-      const selectedApp = state.selectedApp
-        ? deconstructClientId(state.selectedApp).app
-        : undefined;
-      if (!selectedApp) {
-        return state;
-      }
       return produce(state, (draft) => {
         if (!draft.userStarredPlugins[selectedApp]) {
           draft.userStarredPlugins[selectedApp] = [];
@@ -392,12 +380,8 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
       });
     }
     case 'PLUGIN_UNSTARRED': {
-      const {plugin} = action.payload;
+      const {plugin, selectedApp} = action.payload;
       const selectedPlugin = plugin.id;
-      const selectedApp = state.selectedApp;
-      if (!selectedApp) {
-        return state;
-      }
       return produce(state, (draft) => {
         if (!draft.userStarredPlugins[selectedApp]) {
           draft.userStarredPlugins[selectedApp] = [];
@@ -449,30 +433,30 @@ export const selectPlugin = (payload: {
   payload: {...payload, time: payload.time ?? Date.now()},
 });
 
-export const starPlugin = (payload: {
-  plugin: PluginDefinition;
-  selectedApp: string;
-}): Action => ({
-  type: 'STAR_PLUGIN',
-  payload,
-});
-
 export const selectClient = (clientId: string | null): Action => ({
   type: 'SELECT_CLIENT',
   payload: clientId,
 });
 
-export const pluginStarred = (plugin: PluginDefinition): Action => ({
+export const pluginStarred = (
+  plugin: PluginDefinition,
+  appId: string,
+): Action => ({
   type: 'PLUGIN_STARRED',
   payload: {
     plugin,
+    selectedApp: appId,
   },
 });
 
-export const pluginUnstarred = (plugin: PluginDefinition): Action => ({
+export const pluginUnstarred = (
+  plugin: PluginDefinition,
+  appId: string,
+): Action => ({
   type: 'PLUGIN_UNSTARRED',
   payload: {
     plugin,
+    selectedApp: appId,
   },
 });
 

@@ -16,6 +16,7 @@ import {
   UninstallPluginActionPayload,
   UpdatePluginActionPayload,
   pluginCommandsProcessed,
+  StarPluginActionPayload,
 } from '../reducers/pluginManager';
 import {
   getInstalledPlugins,
@@ -41,8 +42,13 @@ import {
 } from '../reducers/plugins';
 import {_SandyPluginDefinition} from 'flipper-plugin';
 import type BaseDevice from '../devices/BaseDevice';
-import {pluginStarred} from '../reducers/connections';
-import {defaultEnabledBackgroundPlugins} from '../utils/pluginUtils';
+import {pluginStarred, pluginUnstarred} from '../reducers/connections';
+import {deconstructClientId} from '../utils/clientUtils';
+import {clearMessageQueue} from '../reducers/pluginMessageQueue';
+import {
+  getPluginKey,
+  defaultEnabledBackgroundPlugins,
+} from '../utils/pluginUtils';
 
 const maxInstalledPluginVersionsToKeep = 2;
 
@@ -100,6 +106,9 @@ export function processPluginCommandsQueue(
         break;
       case 'UPDATE_PLUGIN':
         updatePlugin(store, command.payload);
+        break;
+      case 'STAR_PLUGIN':
+        starPlugin(store, command.payload);
         break;
       default:
         console.error('Unexpected plugin command', command);
@@ -159,6 +168,39 @@ function updatePlugin(store: Store, payload: UpdatePluginActionPayload) {
   }
 }
 
+function getSelectedAppId(store: Store) {
+  const {connections} = store.getState();
+  const selectedApp = connections.selectedApp
+    ? deconstructClientId(connections.selectedApp).app
+    : undefined;
+  return selectedApp;
+}
+
+function starPlugin(store: Store, payload: StarPluginActionPayload) {
+  const {plugin, selectedApp} = payload;
+  const {connections} = store.getState();
+  const clients = connections.clients.filter(
+    (client) => client.query.app === selectedApp,
+  );
+  if (connections.userStarredPlugins[selectedApp]?.includes(plugin.id)) {
+    clients.forEach((client) => {
+      stopPlugin(client, plugin.id);
+      const pluginKey = getPluginKey(
+        client.id,
+        {serial: client.query.device_id},
+        plugin.id,
+      );
+      store.dispatch(clearMessageQueue(pluginKey));
+    });
+    store.dispatch(pluginUnstarred(plugin, selectedApp));
+  } else {
+    clients.forEach((client) => {
+      startPlugin(client, plugin);
+    });
+    store.dispatch(pluginStarred(plugin, selectedApp));
+  }
+}
+
 function updateClientPlugin(
   store: Store,
   plugin: typeof FlipperPlugin,
@@ -166,7 +208,10 @@ function updateClientPlugin(
 ) {
   const clients = store.getState().connections.clients;
   if (enable) {
-    store.dispatch(pluginStarred(plugin));
+    const selectedApp = getSelectedAppId(store);
+    if (selectedApp) {
+      store.dispatch(pluginStarred(plugin, selectedApp));
+    }
   }
   const clientsWithEnabledPlugin = clients.filter((c) => {
     return (

@@ -21,8 +21,9 @@ import {
   DeviceLogEntry,
   useValue,
 } from 'flipper-plugin';
-import {selectPlugin, starPlugin} from '../reducers/connections';
+import {selectPlugin} from '../reducers/connections';
 import {updateSettings} from '../reducers/settings';
+import {starPlugin} from '../reducers/pluginManager';
 
 interface PersistedState {
   count: 1;

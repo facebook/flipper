@@ -34,7 +34,7 @@ export type Action =
       type: 'CLEAR_MESSAGE_QUEUE';
       payload: {
         pluginKey: string; // client + plugin
-        amount: number;
+        amount?: number;
       };
     }
   | {
@@ -75,7 +75,11 @@ export default function reducer(
       return produce(state, (draft) => {
         const messages = draft[pluginKey];
         if (messages) {
-          messages.splice(0, amount);
+          if (amount === undefined) {
+            delete draft[pluginKey];
+          } else {
+            messages.splice(0, amount);
+          }
         }
       });
     }
@@ -130,7 +134,7 @@ export const queueMessages = (
 
 export const clearMessageQueue = (
   pluginKey: string,
-  amount: number,
+  amount?: number,
 ): Action => ({
   type: 'CLEAR_MESSAGE_QUEUE',
   payload: {pluginKey, amount},

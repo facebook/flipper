@@ -10,7 +10,7 @@
 import {Actions, Store} from './';
 import {setStaticView} from './connections';
 import {deconstructClientId} from '../utils/clientUtils';
-import {starPlugin as setStarPlugin} from './connections';
+import {starPlugin as setStarPlugin} from './pluginManager';
 import {showStatusUpdatesForDuration} from '../utils/promiseTimeout';
 import {selectedPlugins as setSelectedPlugins} from './plugins';
 import {addStatusMessage, removeStatusMessage} from './application';

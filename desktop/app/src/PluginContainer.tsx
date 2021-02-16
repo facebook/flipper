@@ -33,8 +33,8 @@ import {
   StaticView,
   setStaticView,
   pluginIsStarred,
-  starPlugin,
 } from './reducers/connections';
+import {starPlugin} from './reducers/pluginManager';
 import React, {PureComponent} from 'react';
 import {connect, ReactReduxContext} from 'react-redux';
 import {setPluginState} from './reducers/pluginStates';

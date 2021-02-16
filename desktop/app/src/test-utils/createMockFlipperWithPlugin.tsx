@@ -18,7 +18,6 @@ import {queries} from '@testing-library/dom';
 
 import {
   selectPlugin,
-  starPlugin,
   selectDevice,
   selectClient,
 } from '../reducers/connections';
@@ -32,6 +31,7 @@ import {PluginDefinition} from '../plugin';
 import PluginContainer from '../PluginContainer';
 import {getPluginKey, isDevicePluginDefinition} from '../utils/pluginUtils';
 import MockFlipper from './MockFlipper';
+import {starPlugin} from '../reducers/pluginManager';
 
 export type MockFlipperResult = {
   client: Client;

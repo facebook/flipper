@@ -25,7 +25,7 @@ import {
   getPluginTitle,
   getPluginTooltip,
 } from '../../utils/pluginUtils';
-import {selectPlugin, starPlugin} from '../../reducers/connections';
+import {selectPlugin} from '../../reducers/connections';
 import Client from '../../Client';
 import BaseDevice from '../../devices/BaseDevice';
 import {DownloadablePluginDetails} from 'flipper-plugin-lib';
@@ -36,7 +36,11 @@ import {
   PluginDownloadStatus,
   startPluginDownload,
 } from '../../reducers/pluginDownloads';
-import {loadPlugin, uninstallPlugin} from '../../reducers/pluginManager';
+import {
+  loadPlugin,
+  starPlugin,
+  uninstallPlugin,
+} from '../../reducers/pluginManager';
 import {BundledPluginDetails} from 'plugin-lib';
 import {reportUsage} from '../../utils/metrics';
 

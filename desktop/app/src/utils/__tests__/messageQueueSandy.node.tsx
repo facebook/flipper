@@ -12,7 +12,6 @@ import {createMockFlipperWithPlugin} from '../../test-utils/createMockFlipperWit
 import {Store, Client, sleep} from '../../';
 import {
   selectPlugin,
-  starPlugin,
   selectClient,
   selectDevice,
 } from '../../reducers/connections';
@@ -26,6 +25,7 @@ import {
   PluginClient,
   _SandyPluginInstance,
 } from 'flipper-plugin';
+import {starPlugin} from '../../reducers/pluginManager';
 
 type Events = {
   inc: {

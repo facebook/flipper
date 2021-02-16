@@ -9,13 +9,18 @@
 
 jest.mock('../plugins');
 jest.mock('../../utils/electronModuleCache');
-import {loadPlugin, uninstallPlugin} from '../../reducers/pluginManager';
+import {
+  loadPlugin,
+  starPlugin,
+  uninstallPlugin,
+} from '../../reducers/pluginManager';
 import {requirePlugin} from '../plugins';
 import {mocked} from 'ts-jest/utils';
 import {TestUtils} from 'flipper-plugin';
 import * as TestPlugin from '../../test-utils/TestPlugin';
 import {_SandyPluginDefinition as SandyPluginDefinition} from 'flipper-plugin';
 import MockFlipper from '../../test-utils/MockFlipper';
+import Client from '../../Client';
 
 const pluginDetails1 = TestUtils.createMockPluginDetails({
   id: 'plugin1',
@@ -43,6 +48,7 @@ const pluginDefinition2 = new SandyPluginDefinition(pluginDetails2, TestPlugin);
 const mockedRequirePlugin = mocked(requirePlugin);
 
 let mockFlipper: MockFlipper;
+let mockClient: Client;
 
 beforeEach(async () => {
   mockedRequirePlugin.mockImplementation(
@@ -56,9 +62,10 @@ beforeEach(async () => {
         : undefined)!,
   );
   mockFlipper = new MockFlipper();
-  await mockFlipper.initWithDeviceAndClient({
+  const initResult = await mockFlipper.initWithDeviceAndClient({
     clientOptions: {supportedPlugins: ['plugin1', 'plugin2']},
   });
+  mockClient = initResult.client;
 });
 
 afterEach(async () => {
@@ -76,7 +83,7 @@ test('load plugin when no other version loaded', async () => {
   expect(mockFlipper.getState().plugins.loadedPlugins.get('plugin1')).toBe(
     pluginDetails1,
   );
-  expect(mockFlipper.clients[0].sandyPluginStates.has('plugin1')).toBeFalsy();
+  expect(mockClient.sandyPluginStates.has('plugin1')).toBeFalsy();
 });
 
 test('load plugin when other version loaded', async () => {
@@ -96,7 +103,7 @@ test('load plugin when other version loaded', async () => {
   expect(mockFlipper.getState().plugins.loadedPlugins.get('plugin1')).toBe(
     pluginDetails1V2,
   );
-  expect(mockFlipper.clients[0].sandyPluginStates.has('plugin1')).toBeFalsy();
+  expect(mockClient.sandyPluginStates.has('plugin1')).toBeFalsy();
 });
 
 test('load and enable Sandy plugin', async () => {
@@ -109,7 +116,7 @@ test('load and enable Sandy plugin', async () => {
   expect(mockFlipper.getState().plugins.loadedPlugins.get('plugin1')).toBe(
     pluginDetails1,
   );
-  expect(mockFlipper.clients[0].sandyPluginStates.has('plugin1')).toBeTruthy();
+  expect(mockClient.sandyPluginStates.has('plugin1')).toBeTruthy();
 });
 
 test('uninstall plugin', async () => {
@@ -126,7 +133,7 @@ test('uninstall plugin', async () => {
   expect(
     mockFlipper.getState().plugins.uninstalledPlugins.has('flipper-plugin1'),
   ).toBeTruthy();
-  expect(mockFlipper.clients[0].sandyPluginStates.has('plugin1')).toBeFalsy();
+  expect(mockClient.sandyPluginStates.has('plugin1')).toBeFalsy();
 });
 
 test('uninstall bundled plugin', async () => {
@@ -152,7 +159,43 @@ test('uninstall bundled plugin', async () => {
       .getState()
       .plugins.uninstalledPlugins.has('flipper-bundled-plugin'),
   ).toBeTruthy();
+  expect(mockClient.sandyPluginStates.has('bundled-plugin')).toBeFalsy();
+});
+
+test('star plugin', async () => {
+  mockFlipper.dispatch(
+    loadPlugin({plugin: pluginDetails1, enable: false, notifyIfFailed: false}),
+  );
+  mockFlipper.dispatch(
+    starPlugin({
+      plugin: pluginDefinition1,
+      selectedApp: mockClient.query.app,
+    }),
+  );
   expect(
-    mockFlipper.clients[0].sandyPluginStates.has('bundled-plugin'),
-  ).toBeFalsy();
+    mockFlipper.getState().connections.userStarredPlugins[mockClient.query.app],
+  ).toContain('plugin1');
+  expect(mockClient.sandyPluginStates.has('plugin1')).toBeTruthy();
+});
+
+test('unstar plugin', async () => {
+  mockFlipper.dispatch(
+    loadPlugin({plugin: pluginDetails1, enable: false, notifyIfFailed: false}),
+  );
+  mockFlipper.dispatch(
+    starPlugin({
+      plugin: pluginDefinition1,
+      selectedApp: mockClient.query.app,
+    }),
+  );
+  mockFlipper.dispatch(
+    starPlugin({
+      plugin: pluginDefinition1,
+      selectedApp: mockClient.query.app,
+    }),
+  );
+  expect(
+    mockFlipper.getState().connections.userStarredPlugins[mockClient.query.app],
+  ).not.toContain('plugin1');
+  expect(mockClient.sandyPluginStates.has('plugin1')).toBeFalsy();
 });

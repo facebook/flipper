@@ -17,13 +17,14 @@ import MetroDevice from '../../../devices/MetroDevice';
 import BaseDevice from '../../../devices/BaseDevice';
 import {_SandyPluginDefinition} from 'flipper-plugin';
 import {createMockPluginDetails} from 'flipper-plugin/src/test-utils/test-utils';
-import {selectPlugin, starPlugin} from '../../../reducers/connections';
+import {selectPlugin} from '../../../reducers/connections';
 import {registerMetroDevice} from '../../../dispatcher/metroDevice';
 import {
   addGatekeepedPlugins,
   registerMarketplacePlugins,
   registerPlugins,
 } from '../../../reducers/plugins';
+import {starPlugin} from '../../../reducers/pluginManager';
 
 // eslint-disable-next-line
 import * as LogsPluginModule from '../../../../../plugins/logs/index';

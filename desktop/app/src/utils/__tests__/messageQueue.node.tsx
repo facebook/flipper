@@ -12,7 +12,6 @@ import {createMockFlipperWithPlugin} from '../../test-utils/createMockFlipperWit
 import {Store, Client, sleep} from '../../';
 import {
   selectPlugin,
-  starPlugin,
   selectClient,
   selectDevice,
 } from '../../reducers/connections';
@@ -24,6 +23,7 @@ import pluginMessageQueue, {
   queueMessages,
 } from '../../reducers/pluginMessageQueue';
 import {registerPlugins} from '../../reducers/plugins';
+import {starPlugin} from '../../reducers/pluginManager';
 
 interface PersistedState {
   count: 1;

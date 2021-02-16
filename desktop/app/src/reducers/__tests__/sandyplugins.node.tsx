@@ -9,7 +9,7 @@
 
 import {createMockFlipperWithPlugin} from '../../test-utils/createMockFlipperWithPlugin';
 import {Store, Client} from '../../';
-import {selectPlugin, starPlugin} from '../../reducers/connections';
+import {selectPlugin} from '../../reducers/connections';
 import {registerPlugins} from '../../reducers/plugins';
 import {
   _SandyPluginDefinition,
@@ -17,6 +17,7 @@ import {
   PluginClient,
   TestUtils,
 } from 'flipper-plugin';
+import {starPlugin} from '../pluginManager';
 
 const pluginDetails = TestUtils.createMockPluginDetails();
 
