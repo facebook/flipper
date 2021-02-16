@@ -48,7 +48,6 @@ import {processMessageQueue} from './utils/messageQueue';
 import {ToggleButton, SmallText, Layout} from './ui';
 import {theme, TrackingScope, _SandyPluginRenderer} from 'flipper-plugin';
 import {isDevicePluginDefinition} from './utils/pluginUtils';
-import ArchivedDevice from './devices/ArchivedDevice';
 import {ContentContainer} from './sandy-chrome/ContentContainer';
 import {Alert, Typography} from 'antd';
 import {InstalledPluginDetails} from 'plugin-lib';
@@ -318,7 +317,7 @@ class PluginContainer extends PureComponent<Props, State> {
               onClick={() => {
                 this.props.starPlugin({
                   plugin: activePlugin,
-                  selectedApp: (this.props.target as Client).query.app,
+                  selectedApp: (this.props.target as Client)?.query?.app,
                 });
               }}
               large
@@ -554,6 +553,7 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
       clients,
       deepLinkPayload,
       userStarredPlugins,
+      userStarredDevicePlugins,
     },
     pluginStates,
     plugins: {devicePlugins, clientPlugins, installedPlugins},
@@ -567,23 +567,25 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
 
     if (selectedPlugin) {
       activePlugin = devicePlugins.get(selectedPlugin);
-      target = selectedDevice;
       if (selectedDevice && activePlugin) {
+        target = selectedDevice;
         pluginKey = getPluginKey(selectedDevice.serial, activePlugin.id);
-        pluginIsEnabled = true;
       } else {
         target =
           clients.find((client: Client) => client.id === selectedApp) || null;
         activePlugin = clientPlugins.get(selectedPlugin);
         if (activePlugin && target) {
           pluginKey = getPluginKey(target.id, activePlugin.id);
-          pluginIsEnabled = pluginIsStarred(
-            userStarredPlugins,
-            selectedApp,
-            activePlugin.id,
-          );
         }
       }
+      pluginIsEnabled =
+        activePlugin !== undefined &&
+        pluginIsStarred(
+          userStarredPlugins,
+          userStarredDevicePlugins,
+          selectedApp,
+          activePlugin.id,
+        );
     }
     const isArchivedDevice = !selectedDevice
       ? false

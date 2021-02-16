@@ -21,6 +21,8 @@ import * as TestPlugin from '../../test-utils/TestPlugin';
 import {_SandyPluginDefinition as SandyPluginDefinition} from 'flipper-plugin';
 import MockFlipper from '../../test-utils/MockFlipper';
 import Client from '../../Client';
+import React from 'react';
+import BaseDevice from '../../devices/BaseDevice';
 
 const pluginDetails1 = TestUtils.createMockPluginDetails({
   id: 'plugin1',
@@ -45,10 +47,27 @@ const pluginDetails2 = TestUtils.createMockPluginDetails({
 });
 const pluginDefinition2 = new SandyPluginDefinition(pluginDetails2, TestPlugin);
 
+const devicePluginDetails = TestUtils.createMockPluginDetails({
+  id: 'device',
+  name: 'flipper-device',
+});
+const devicePluginDefinition = new SandyPluginDefinition(devicePluginDetails, {
+  supportsDevice() {
+    return true;
+  },
+  devicePlugin() {
+    return {};
+  },
+  Component() {
+    return <h1>Plugin3</h1>;
+  },
+});
+
 const mockedRequirePlugin = mocked(requirePlugin);
 
 let mockFlipper: MockFlipper;
 let mockClient: Client;
+let mockDevice: BaseDevice;
 
 beforeEach(async () => {
   mockedRequirePlugin.mockImplementation(
@@ -59,6 +78,8 @@ beforeEach(async () => {
         ? pluginDefinition2
         : details === pluginDetails1V2
         ? pluginDefinition1V2
+        : details === devicePluginDetails
+        ? devicePluginDefinition
         : undefined)!,
   );
   mockFlipper = new MockFlipper();
@@ -66,6 +87,7 @@ beforeEach(async () => {
     clientOptions: {supportedPlugins: ['plugin1', 'plugin2']},
   });
   mockClient = initResult.client;
+  mockDevice = initResult.device;
 });
 
 afterEach(async () => {
@@ -198,4 +220,47 @@ test('unstar plugin', async () => {
     mockFlipper.getState().connections.userStarredPlugins[mockClient.query.app],
   ).not.toContain('plugin1');
   expect(mockClient.sandyPluginStates.has('plugin1')).toBeFalsy();
+});
+
+test('star device plugin', async () => {
+  mockFlipper.dispatch(
+    loadPlugin({
+      plugin: devicePluginDetails,
+      enable: false,
+      notifyIfFailed: false,
+    }),
+  );
+  mockFlipper.dispatch(
+    starPlugin({
+      plugin: devicePluginDefinition,
+    }),
+  );
+  expect(
+    mockFlipper.getState().connections.userStarredDevicePlugins.has('device'),
+  ).toBeTruthy();
+  expect(mockDevice.sandyPluginStates.has('device')).toBeTruthy();
+});
+
+test('unstar device plugin', async () => {
+  mockFlipper.dispatch(
+    loadPlugin({
+      plugin: devicePluginDetails,
+      enable: false,
+      notifyIfFailed: false,
+    }),
+  );
+  mockFlipper.dispatch(
+    starPlugin({
+      plugin: devicePluginDefinition,
+    }),
+  );
+  mockFlipper.dispatch(
+    starPlugin({
+      plugin: devicePluginDefinition,
+    }),
+  );
+  expect(
+    mockFlipper.getState().connections.userStarredDevicePlugins.has('device'),
+  ).toBeFalsy();
+  expect(mockDevice.sandyPluginStates.has('device')).toBeFalsy();
 });

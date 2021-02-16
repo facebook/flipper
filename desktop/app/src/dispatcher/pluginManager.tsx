@@ -12,11 +12,11 @@ import {clearPluginState} from '../reducers/pluginStates';
 import type {Logger} from '../fb-interfaces/Logger';
 import {
   LoadPluginActionPayload,
-  PluginCommand,
   UninstallPluginActionPayload,
   UpdatePluginActionPayload,
   pluginCommandsProcessed,
   StarPluginActionPayload,
+  PluginCommand,
 } from '../reducers/pluginManager';
 import {
   getInstalledPlugins,
@@ -28,8 +28,8 @@ import {sideEffect} from '../utils/sideEffect';
 import {requirePlugin} from './plugins';
 import {showErrorNotification} from '../utils/notifications';
 import {
+  ClientPluginDefinition,
   DevicePluginDefinition,
-  FlipperDevicePlugin,
   FlipperPlugin,
   PluginDefinition,
 } from '../plugin';
@@ -41,11 +41,17 @@ import {
   registerInstalledPlugins,
 } from '../reducers/plugins';
 import {_SandyPluginDefinition} from 'flipper-plugin';
-import {pluginStarred, pluginUnstarred} from '../reducers/connections';
+import {
+  devicePluginStarred,
+  devicePluginUnstarred,
+  pluginStarred,
+  pluginUnstarred,
+} from '../reducers/connections';
 import {deconstructClientId} from '../utils/clientUtils';
 import {clearMessageQueue} from '../reducers/pluginMessageQueue';
 import {
   getPluginKey,
+  isDevicePluginDefinition,
   defaultEnabledBackgroundPlugins,
 } from '../utils/pluginUtils';
 
@@ -161,7 +167,7 @@ function uninstallPlugin(store: Store, {plugin}: UninstallPluginActionPayload) {
 function updatePlugin(store: Store, payload: UpdatePluginActionPayload) {
   const {plugin, enablePlugin} = payload;
   if (isDevicePluginDefinition(plugin)) {
-    return updateDevicePlugin(store, plugin);
+    return updateDevicePlugin(store, plugin, enablePlugin);
   } else {
     return updateClientPlugin(store, plugin, enablePlugin);
   }
@@ -175,8 +181,26 @@ function getSelectedAppId(store: Store) {
   return selectedApp;
 }
 
-function starPlugin(store: Store, payload: StarPluginActionPayload) {
-  const {plugin, selectedApp} = payload;
+function starPlugin(
+  store: Store,
+  {plugin, selectedApp}: StarPluginActionPayload,
+) {
+  if (isDevicePluginDefinition(plugin)) {
+    starDevicePlugin(store, plugin);
+  } else {
+    starClientPlugin(store, plugin, selectedApp);
+  }
+}
+
+function starClientPlugin(
+  store: Store,
+  plugin: ClientPluginDefinition,
+  selectedApp: string | undefined,
+) {
+  selectedApp = selectedApp ?? getSelectedAppId(store);
+  if (!selectedApp) {
+    return;
+  }
   const {connections} = store.getState();
   const clients = connections.clients.filter(
     (client) => client.query.app === selectedApp,
@@ -197,6 +221,24 @@ function starPlugin(store: Store, payload: StarPluginActionPayload) {
       startPlugin(client, plugin);
     });
     store.dispatch(pluginStarred(plugin, selectedApp));
+  }
+}
+
+function starDevicePlugin(store: Store, plugin: DevicePluginDefinition) {
+  const {connections} = store.getState();
+  const devicesWithPlugin = connections.devices.filter((d) =>
+    d.supportsPlugin(plugin.details),
+  );
+  if (connections.userStarredDevicePlugins.has(plugin.id)) {
+    devicesWithPlugin.forEach((d) => {
+      d.unloadDevicePlugin(plugin.id);
+    });
+    store.dispatch(devicePluginUnstarred(plugin));
+  } else {
+    devicesWithPlugin.forEach((d) => {
+      d.loadDevicePlugin(plugin);
+    });
+    store.dispatch(devicePluginStarred(plugin));
   }
 }
 
@@ -235,9 +277,16 @@ function updateClientPlugin(
   }
 }
 
-function updateDevicePlugin(store: Store, plugin: DevicePluginDefinition) {
-  const devices = store.getState().connections.devices;
-  const devicesWithEnabledPlugin = devices.filter((d) =>
+function updateDevicePlugin(
+  store: Store,
+  plugin: DevicePluginDefinition,
+  enable: boolean,
+) {
+  if (enable) {
+    store.dispatch(devicePluginStarred(plugin));
+  }
+  const connections = store.getState().connections;
+  const devicesWithEnabledPlugin = connections.devices.filter((d) =>
     d.supportsPlugin(plugin),
   );
   devicesWithEnabledPlugin.forEach((d) => {
@@ -294,13 +343,4 @@ function unloadPluginModule(plugin: ActivatablePluginDetails) {
     return;
   }
   unloadModule(plugin.entry);
-}
-
-export function isDevicePluginDefinition(
-  definition: PluginDefinition,
-): definition is DevicePluginDefinition {
-  return (
-    (definition as any).prototype instanceof FlipperDevicePlugin ||
-    (definition instanceof _SandyPluginDefinition && definition.isDevicePlugin)
-  );
 }

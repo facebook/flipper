@@ -248,7 +248,10 @@ export default class BaseDevice {
       instance.destroy();
       this.sandyPluginStates.delete(pluginId);
     }
-    this.devicePlugins.splice(this.devicePlugins.indexOf(pluginId), 1);
+    const index = this.devicePlugins.indexOf(pluginId);
+    if (index >= 0) {
+      this.devicePlugins.splice(index, 1);
+    }
   }
 
   disconnect() {

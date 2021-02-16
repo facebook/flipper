@@ -135,6 +135,7 @@ export function processMessagesLater(
     case (plugin as any).prototype instanceof FlipperDevicePlugin:
     case pluginIsStarred(
       store.getState().connections.userStarredPlugins,
+      store.getState().connections.userStarredDevicePlugins,
       deconstructPluginKey(pluginKey).client,
       pluginId,
     ):

@@ -42,6 +42,7 @@ export type State = {
   userPreferredPlugin: null | string;
   userPreferredApp: null | string;
   userStarredPlugins: {[client: string]: string[]};
+  userStarredDevicePlugins: Set<string>;
   clients: Array<Client>;
   uninitializedClients: Array<{
     client: UninitializedClient;
@@ -116,10 +117,22 @@ export type Action =
       };
     }
   | {
+      type: 'DEVICE_PLUGIN_STARRED';
+      payload: {
+        plugin: PluginDefinition;
+      };
+    }
+  | {
       type: 'PLUGIN_UNSTARRED';
       payload: {
         plugin: PluginDefinition;
         selectedApp: string;
+      };
+    }
+  | {
+      type: 'DEVICE_PLUGIN_UNSTARRED';
+      payload: {
+        plugin: PluginDefinition;
       };
     }
   | {
@@ -140,6 +153,7 @@ const INITAL_STATE: State = {
   userPreferredPlugin: null,
   userPreferredApp: null,
   userStarredPlugins: {},
+  userStarredDevicePlugins: new Set(),
   clients: [],
   uninitializedClients: [],
   deepLinkPayload: null,
@@ -379,6 +393,12 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
         }
       });
     }
+    case 'DEVICE_PLUGIN_STARRED': {
+      const {plugin} = action.payload;
+      return produce(state, (draft) => {
+        draft.userStarredDevicePlugins.add(plugin.id);
+      });
+    }
     case 'PLUGIN_UNSTARRED': {
       const {plugin, selectedApp} = action.payload;
       const selectedPlugin = plugin.id;
@@ -391,6 +411,12 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
         if (idx !== -1) {
           plugins.splice(idx, 1);
         }
+      });
+    }
+    case 'DEVICE_PLUGIN_UNSTARRED': {
+      const {plugin} = action.payload;
+      return produce(state, (draft) => {
+        draft.userStarredDevicePlugins.delete(plugin.id);
       });
     }
     default:
@@ -446,6 +472,20 @@ export const pluginStarred = (
   payload: {
     plugin,
     selectedApp: appId,
+  },
+});
+
+export const devicePluginStarred = (plugin: PluginDefinition): Action => ({
+  type: 'DEVICE_PLUGIN_STARRED',
+  payload: {
+    plugin,
+  },
+});
+
+export const devicePluginUnstarred = (plugin: PluginDefinition): Action => ({
+  type: 'DEVICE_PLUGIN_UNSTARRED',
+  payload: {
+    plugin,
   },
 });
 
@@ -583,9 +623,13 @@ export function getSelectedPluginKey(state: State): string | undefined {
 
 export function pluginIsStarred(
   userStarredPlugins: State['userStarredPlugins'],
+  userStarredDevicePlugins: State['userStarredDevicePlugins'],
   app: string | null,
   pluginId: string,
 ): boolean {
+  if (userStarredDevicePlugins.has(pluginId)) {
+    return true;
+  }
   if (!app) {
     return false;
   }

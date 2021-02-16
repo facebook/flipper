@@ -84,6 +84,7 @@ export function getExportablePlugins(
     client,
     state.plugins,
     state.connections.userStarredPlugins,
+    state.connections.userStarredDevicePlugins,
   );
 
   return [
@@ -179,16 +180,33 @@ export function computePluginLists(
   client: Client | undefined,
   plugins: State['plugins'],
   userStarredPlugins: State['connections']['userStarredPlugins'],
+  userStarredDevicePlugins: Set<string>,
   _pluginsChanged?: number, // this argument is purely used to invalidate the memoization cache
 ) {
+  const uninstalledMarketplacePlugins = filterNewestVersionOfEachPlugin(
+    [...plugins.bundledPlugins.values()],
+    plugins.marketplacePlugins,
+  ).filter((p) => !plugins.loadedPlugins.has(p.id));
   const devicePlugins: DevicePluginDefinition[] = [
     ...plugins.devicePlugins.values(),
-  ].filter((p) => device?.supportsPlugin(p));
+  ]
+    .filter((p) => device?.supportsPlugin(p))
+    .filter((p) => userStarredDevicePlugins.has(p.id));
   const metroPlugins: DevicePluginDefinition[] = [
     ...plugins.devicePlugins.values(),
-  ].filter((p) => metroDevice?.supportsPlugin(p));
+  ]
+    .filter((p) => metroDevice?.supportsPlugin(p))
+    .filter((p) => userStarredDevicePlugins.has(p.id));
   const enabledPlugins: ClientPluginDefinition[] = [];
-  const disabledPlugins: ClientPluginDefinition[] = [];
+  const disabledPlugins: PluginDefinition[] = [
+    ...plugins.devicePlugins.values(),
+  ]
+    .filter(
+      (p) =>
+        device?.supportsPlugin(p.details) ||
+        metroDevice?.supportsPlugin(p.details),
+    )
+    .filter((p) => !userStarredDevicePlugins.has(p.id));
   const unavailablePlugins: [plugin: PluginDetails, reason: string][] = [];
   const downloadablePlugins: (
     | DownloadablePluginDetails
@@ -203,8 +221,18 @@ export function computePluginLists(
           p.details,
           `Device plugin '${getPluginTitle(
             p.details,
-          )}' is not supported by the current device type.`,
+          )}' is not supported by the currently connected device.`,
         ]);
+      }
+    }
+    for (const plugin of uninstalledMarketplacePlugins.filter(
+      (d) => d.pluginType === 'device',
+    )) {
+      if (
+        device.supportsPlugin(plugin) ||
+        metroDevice?.supportsPlugin(plugin)
+      ) {
+        downloadablePlugins.push(plugin);
       }
     }
   }
@@ -244,7 +272,7 @@ export function computePluginLists(
           plugin.details,
           `Plugin '${getPluginTitle(
             plugin.details,
-          )}' is installed in Flipper, but not supported by the client application`,
+          )}' is not supported by the client application`,
         ]);
       } else if (favoritePlugins.includes(plugin)) {
         enabledPlugins.push(plugin);
@@ -252,23 +280,25 @@ export function computePluginLists(
         disabledPlugins.push(plugin);
       }
     });
-    const uninstalledMarketplacePlugins = filterNewestVersionOfEachPlugin(
-      [...plugins.bundledPlugins.values()],
-      plugins.marketplacePlugins,
-    ).filter((p) => !plugins.loadedPlugins.has(p.id));
     uninstalledMarketplacePlugins.forEach((plugin) => {
       if (client.supportsPlugin(plugin.id)) {
         downloadablePlugins.push(plugin);
-      } else {
-        unavailablePlugins.push([
-          plugin,
-          `Plugin '${getPluginTitle(
-            plugin,
-          )}' is not installed in Flipper and not supported by the client application`,
-        ]);
       }
     });
   }
+  const downloadablePluginSet = new Set<string>(
+    downloadablePlugins.map((p) => p.id),
+  );
+  uninstalledMarketplacePlugins
+    .filter((p) => !downloadablePluginSet.has(p.id))
+    .forEach((plugin) => {
+      unavailablePlugins.push([
+        plugin,
+        `Plugin '${getPluginTitle(
+          plugin,
+        )}' is not supported by the client application and not installed in Flipper`,
+      ]);
+    });
 
   devicePlugins.sort(sortPluginsByName);
   metroPlugins.sort(sortPluginsByName);

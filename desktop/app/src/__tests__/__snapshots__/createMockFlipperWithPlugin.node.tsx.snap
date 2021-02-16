@@ -37,6 +37,7 @@ Object {
   "userPreferredApp": "TestApp#Android#MockAndroidDevice#serial",
   "userPreferredDevice": "MockAndroidDevice",
   "userPreferredPlugin": "TestPlugin",
+  "userStarredDevicePlugins": Set {},
   "userStarredPlugins": Object {
     "TestApp": Array [
       "TestPlugin",

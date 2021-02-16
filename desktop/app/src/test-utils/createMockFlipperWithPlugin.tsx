@@ -62,6 +62,23 @@ type MockOptions = Partial<{
   supportedPlugins?: string[];
 }>;
 
+function isPluginEnabled(
+  store: Store,
+  pluginClazz: PluginDefinition,
+  selectedApp: string,
+) {
+  return (
+    (!isDevicePluginDefinition(pluginClazz) &&
+      store
+        .getState()
+        .connections.userStarredPlugins[selectedApp]?.includes(
+          pluginClazz.id,
+        )) ||
+    (isDevicePluginDefinition(pluginClazz) &&
+      store.getState().connections.userStarredDevicePlugins.has(pluginClazz.id))
+  );
+}
+
 export async function createMockFlipperWithPlugin(
   pluginClazz: PluginDefinition,
   options?: MockOptions,
@@ -89,14 +106,7 @@ export async function createMockFlipperWithPlugin(
       backgroundPlugins: options?.asBackgroundPlugin ? [pluginClazz.id] : [],
     });
     // enable the plugin
-    if (
-      !isDevicePluginDefinition(pluginClazz) &&
-      !store
-        .getState()
-        .connections.userStarredPlugins[client.query.app]?.includes(
-          pluginClazz.id,
-        )
-    ) {
+    if (!isPluginEnabled(store, pluginClazz, name)) {
       store.dispatch(
         starPlugin({
           plugin: pluginClazz,
@@ -106,7 +116,7 @@ export async function createMockFlipperWithPlugin(
     }
     if (!options?.dontEnableAdditionalPlugins) {
       options?.additionalPlugins?.forEach((plugin) => {
-        if (!isDevicePluginDefinition(plugin)) {
+        if (!isPluginEnabled(store, plugin, name)) {
           store.dispatch(
             starPlugin({
               plugin,

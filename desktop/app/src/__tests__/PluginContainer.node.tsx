@@ -961,7 +961,8 @@ test('Sandy plugins support isPluginSupported + selectPlugin', async () => {
   expect(pluginInstance.deactivatedStub).toBeCalledTimes(0);
   expect(linksSeen).toEqual([]);
 
-  // open a device plugin
+  // star and navigate to a device plugin
+  store.dispatch(starPlugin({plugin: definition3}));
   pluginInstance.selectPlugin(definition3.id);
   expect(store.getState().connections.selectedPlugin).toBe(definition3.id);
   expect(renderer.baseElement.querySelector('h1')).toMatchInlineSnapshot(`

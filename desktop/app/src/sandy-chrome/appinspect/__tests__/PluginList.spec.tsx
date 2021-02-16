@@ -16,7 +16,7 @@ import {FlipperPlugin} from '../../../plugin';
 import MetroDevice from '../../../devices/MetroDevice';
 import BaseDevice from '../../../devices/BaseDevice';
 import {_SandyPluginDefinition} from 'flipper-plugin';
-import {createMockPluginDetails} from 'flipper-plugin/src/test-utils/test-utils';
+import {TestUtils} from 'flipper-plugin';
 import {selectPlugin} from '../../../reducers/connections';
 import {registerMetroDevice} from '../../../dispatcher/metroDevice';
 import {
@@ -30,6 +30,8 @@ import {starPlugin} from '../../../reducers/pluginManager';
 import * as LogsPluginModule from '../../../../../plugins/logs/index';
 import {createMockDownloadablePluginDetails} from '../../../utils/testUtils';
 import {computePluginLists} from '../../../utils/pluginUtils';
+
+const createMockPluginDetails = TestUtils.createMockPluginDetails;
 
 const logsPlugin = new _SandyPluginDefinition(
   createMockPluginDetails({id: 'DeviceLogs'}),
@@ -173,6 +175,7 @@ describe('basic findBestDevice with metro present', () => {
         flipper.client,
         state.plugins,
         state.connections.userStarredPlugins,
+        state.connections.userStarredDevicePlugins,
       ),
     ).toEqual({
       downloadablePlugins: [],
@@ -284,6 +287,7 @@ describe('basic findBestDevice with metro present', () => {
       flipper.client,
       state.plugins,
       state.connections.userStarredPlugins,
+      state.connections.userStarredDevicePlugins,
     );
     expect(pluginLists).toEqual({
       devicePlugins: [logsPlugin],
@@ -297,15 +301,15 @@ describe('basic findBestDevice with metro present', () => {
         ],
         [
           unsupportedDevicePlugin.details,
-          "Device plugin 'Unsupported Device Plugin' is not supported by the current device type.",
+          "Device plugin 'Unsupported Device Plugin' is not supported by the currently connected device.",
         ],
         [
           unsupportedPlugin.details,
-          "Plugin 'Unsupported Plugin' is installed in Flipper, but not supported by the client application",
+          "Plugin 'Unsupported Plugin' is not supported by the client application",
         ],
         [
           unsupportedDownloadablePlugin,
-          "Plugin 'Unsupported Uninstalled Plugin' is not installed in Flipper and not supported by the client application",
+          "Plugin 'Unsupported Uninstalled Plugin' is not supported by the client application and not installed in Flipper",
         ],
       ],
       downloadablePlugins: [supportedDownloadablePlugin],
@@ -325,6 +329,7 @@ describe('basic findBestDevice with metro present', () => {
         flipper.client,
         state.plugins,
         state.connections.userStarredPlugins,
+        state.connections.userStarredDevicePlugins,
       ),
     ).toMatchObject({
       enabledPlugins: [plugin2],

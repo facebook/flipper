@@ -87,6 +87,7 @@ export const PluginList = memo(function PluginList({
     client,
     plugins,
     connections.userStarredPlugins,
+    connections.userStarredDevicePlugins,
     pluginsChanged,
   ]);
   const isConnected = useValue(activeDevice?.connected, false);
@@ -143,14 +144,16 @@ export const PluginList = memo(function PluginList({
   );
   const handleStarPlugin = useCallback(
     (id: string) => {
+      const plugin = (plugins.clientPlugins.get(id) ??
+        plugins.devicePlugins.get(id))!;
       dispatch(
         starPlugin({
-          selectedApp: client!.query.app,
-          plugin: plugins.clientPlugins.get(id)!,
+          selectedApp: client?.query.app,
+          plugin,
         }),
       );
     },
-    [client, plugins.clientPlugins, dispatch],
+    [client, plugins.clientPlugins, plugins.devicePlugins, dispatch],
   );
   const handleInstallPlugin = useCallback(
     (id: string) => {
@@ -200,6 +203,18 @@ export const PluginList = memo(function PluginList({
                 }
                 onClick={handleAppPluginClick}
                 tooltip={getPluginTooltip(plugin.details)}
+                actions={
+                  isArchived ? null : (
+                    <ActionButton
+                      id={plugin.id}
+                      onClick={handleStarPlugin}
+                      title="Disable plugin"
+                      icon={
+                        <MinusOutlined size={16} style={{marginRight: 0}} />
+                      }
+                    />
+                  )
+                }
               />
             ))}
           </PluginGroup>

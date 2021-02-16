@@ -54,7 +54,7 @@ export type UpdatePluginAction = {
 
 export type StarPluginActionPayload = {
   plugin: PluginDefinition;
-  selectedApp: string;
+  selectedApp?: string;
 };
 
 export type StarPluginAction = {
