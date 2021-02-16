@@ -55,8 +55,10 @@ Object {
   "disabledPlugins": Array [],
   "failedPlugins": Array [],
   "gatekeepedPlugins": Array [],
+  "installedPlugins": Map {},
   "loadedPlugins": Map {},
   "marketplacePlugins": Array [],
   "selectedPlugins": Array [],
+  "uninstalledPlugins": Set {},
 }
 `;

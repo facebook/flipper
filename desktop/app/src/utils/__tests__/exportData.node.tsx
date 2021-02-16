@@ -766,6 +766,8 @@ test('test determinePluginsToProcess for mutilple clients having plugins present
     failedPlugins: [],
     selectedPlugins: ['TestPlugin'],
     marketplacePlugins: [],
+    installedPlugins: new Map(),
+    uninstalledPlugins: new Set(),
   };
   const op = determinePluginsToProcess(
     [client1, client2, client3],
@@ -838,6 +840,8 @@ test('test determinePluginsToProcess for no selected plugin present in any clien
     failedPlugins: [],
     selectedPlugins: ['RandomPlugin'],
     marketplacePlugins: [],
+    installedPlugins: new Map(),
+    uninstalledPlugins: new Set(),
   };
   const op = determinePluginsToProcess([client1, client2], device1, plugins);
   expect(op).toBeDefined();
@@ -887,6 +891,8 @@ test('test determinePluginsToProcess for multiple clients on same device', async
     failedPlugins: [],
     selectedPlugins: ['TestPlugin'],
     marketplacePlugins: [],
+    installedPlugins: new Map(),
+    uninstalledPlugins: new Set(),
   };
   const op = determinePluginsToProcess([client1, client2], device1, plugins);
   expect(op).toBeDefined();
@@ -974,6 +980,8 @@ test('test determinePluginsToProcess for multiple clients on different device', 
     failedPlugins: [],
     selectedPlugins: ['TestPlugin'],
     marketplacePlugins: [],
+    installedPlugins: new Map(),
+    uninstalledPlugins: new Set(),
   };
   const op = determinePluginsToProcess(
     [client1Device1, client2Device1, client1Device2, client2Device2],
@@ -1057,6 +1065,8 @@ test('test determinePluginsToProcess to ignore archived clients', async () => {
     failedPlugins: [],
     selectedPlugins: ['TestPlugin'],
     marketplacePlugins: [],
+    installedPlugins: new Map(),
+    uninstalledPlugins: new Set(),
   };
   const op = determinePluginsToProcess(
     [client, archivedClient],

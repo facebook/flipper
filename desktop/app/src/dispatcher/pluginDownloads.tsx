@@ -27,8 +27,9 @@ import path from 'path';
 import tmp from 'tmp';
 import {promisify} from 'util';
 import {reportPlatformFailures, reportUsage} from '../utils/metrics';
-import {loadPlugin, pluginInstalled} from '../reducers/pluginManager';
+import {loadPlugin} from '../reducers/pluginManager';
 import {showErrorNotification} from '../utils/notifications';
+import {pluginInstalled} from '../reducers/plugins';
 
 // Adapter which forces node.js implementation for axios instead of browser implementation
 // used by default in Electron. Node.js implementation is better, because it

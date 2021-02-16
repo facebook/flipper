@@ -29,7 +29,7 @@ import React, {useCallback, useState, useEffect} from 'react';
 import {List} from 'immutable';
 import {reportPlatformFailures, reportUsage} from '../../utils/metrics';
 import reloadFlipper from '../../utils/reloadFlipper';
-import {registerInstalledPlugins} from '../../reducers/pluginManager';
+import {registerInstalledPlugins} from '../../reducers/plugins';
 import {
   UpdateResult,
   getInstalledPlugins,
@@ -366,7 +366,7 @@ function useNPMSearch(
 PluginInstaller.defaultProps = defaultProps;
 
 export default connect<PropsFromState, DispatchFromProps, OwnProps, AppState>(
-  ({pluginManager: {installedPlugins}}) => ({
+  ({plugins: {installedPlugins}}) => ({
     installedPlugins,
   }),
   (dispatch: Dispatch<Action<any>>) => ({

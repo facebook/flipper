@@ -16,10 +16,12 @@ import type {
   DownloadablePluginDetails,
   ActivatablePluginDetails,
   BundledPluginDetails,
+  InstalledPluginDetails,
 } from 'flipper-plugin-lib';
 import type {Actions} from '.';
 import produce from 'immer';
 import {isDevicePluginDefinition} from '../utils/pluginUtils';
+import semver from 'semver';
 
 export type State = {
   devicePlugins: DevicePluginMap;
@@ -31,6 +33,8 @@ export type State = {
   failedPlugins: Array<[ActivatablePluginDetails, string]>;
   selectedPlugins: Array<string>;
   marketplacePlugins: Array<DownloadablePluginDetails>;
+  uninstalledPlugins: Set<string>;
+  installedPlugins: Map<string, InstalledPluginDetails>;
 };
 
 export type RegisterPluginAction = {
@@ -67,20 +71,36 @@ export type Action =
   | {
       type: 'REGISTER_BUNDLED_PLUGINS';
       payload: Array<BundledPluginDetails>;
+    }
+  | {
+      type: 'REGISTER_INSTALLED_PLUGINS';
+      payload: InstalledPluginDetails[];
+    }
+  | {
+      type: 'PLUGIN_INSTALLED';
+      payload: InstalledPluginDetails;
+    }
+  | {
+      type: 'PLUGIN_UNINSTALLED';
+      payload: ActivatablePluginDetails;
     };
 
+const INITIAL_STATE: State = {
+  devicePlugins: new Map(),
+  clientPlugins: new Map(),
+  loadedPlugins: new Map(),
+  bundledPlugins: new Map(),
+  gatekeepedPlugins: [],
+  disabledPlugins: [],
+  failedPlugins: [],
+  selectedPlugins: [],
+  marketplacePlugins: [],
+  uninstalledPlugins: new Set(),
+  installedPlugins: new Map(),
+};
+
 export default function reducer(
-  state: State | undefined = {
-    devicePlugins: new Map(),
-    clientPlugins: new Map(),
-    loadedPlugins: new Map(),
-    bundledPlugins: new Map(),
-    gatekeepedPlugins: [],
-    disabledPlugins: [],
-    failedPlugins: [],
-    selectedPlugins: [],
-    marketplacePlugins: [],
-  },
+  state: State | undefined = INITIAL_STATE,
   action: Actions,
 ): State {
   if (action.type === 'REGISTER_PLUGINS') {
@@ -133,6 +153,31 @@ export default function reducer(
       ...state,
       bundledPlugins: new Map(action.payload.map((p) => [p.id, p])),
     };
+  } else if (action.type === 'REGISTER_INSTALLED_PLUGINS') {
+    return produce(state, (draft) => {
+      draft.installedPlugins.clear();
+      action.payload.forEach((p) => {
+        if (!draft.uninstalledPlugins.has(p.id)) {
+          draft.installedPlugins.set(p.id, p);
+        }
+      });
+    });
+  } else if (action.type === 'PLUGIN_INSTALLED') {
+    const plugin = action.payload;
+    return produce(state, (draft) => {
+      const existing = draft.installedPlugins.get(plugin.name);
+      if (!existing || semver.gt(plugin.version, existing.version)) {
+        draft.installedPlugins.set(plugin.name, plugin);
+      }
+    });
+  } else if (action.type === 'PLUGIN_UNINSTALLED') {
+    const plugin = action.payload;
+    return produce(state, (draft) => {
+      draft.clientPlugins.delete(plugin.id);
+      draft.devicePlugins.delete(plugin.id);
+      draft.loadedPlugins.delete(plugin.id);
+      draft.uninstalledPlugins.add(plugin.name);
+    });
   } else {
     return state;
   }
@@ -187,5 +232,24 @@ export const registerBundledPlugins = (
   payload: Array<BundledPluginDetails>,
 ): Action => ({
   type: 'REGISTER_BUNDLED_PLUGINS',
+  payload,
+});
+
+export const registerInstalledPlugins = (
+  payload: InstalledPluginDetails[],
+): Action => ({
+  type: 'REGISTER_INSTALLED_PLUGINS',
+  payload,
+});
+
+export const pluginInstalled = (payload: InstalledPluginDetails): Action => ({
+  type: 'PLUGIN_INSTALLED',
+  payload,
+});
+
+export const pluginUninstalled = (
+  payload: ActivatablePluginDetails,
+): Action => ({
+  type: 'PLUGIN_UNINSTALLED',
   payload,
 });

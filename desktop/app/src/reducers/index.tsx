@@ -102,7 +102,7 @@ export type State = {
   settingsState: SettingsState & PersistPartial;
   launcherSettingsState: LauncherSettingsState & PersistPartial;
   supportForm: SupportFormState;
-  pluginManager: PluginManagerState & PersistPartial;
+  pluginManager: PluginManagerState;
   healthchecks: HealthcheckState & PersistPartial;
   usageTracking: TrackingState;
   pluginDownloads: PluginDownloadsState;
@@ -159,20 +159,13 @@ export default combineReducers<State, Actions>({
     {
       key: 'plugins',
       storage,
-      whitelist: ['marketplacePlugins'],
+      whitelist: ['marketplacePlugins', 'uninstalledPlugins'],
+      transforms: [setTransformer({whitelist: ['uninstalledPlugins']})],
     },
     plugins,
   ),
   supportForm,
-  pluginManager: persistReducer<PluginManagerState, Actions>(
-    {
-      key: 'pluginManager',
-      storage,
-      whitelist: ['uninstalledPlugins'],
-      transforms: [setTransformer({whitelist: ['uninstalledPlugins']})],
-    },
-    pluginManager,
-  ),
+  pluginManager,
   user: persistReducer(
     {
       key: 'user',

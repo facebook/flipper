@@ -24,7 +24,7 @@ const getUpdatablePluginsMock = mocked(getUpdatablePlugins);
 function getStore(installedPlugins: PluginDetails[] = []): Store {
   return configureStore([])({
     application: {sessionId: 'mysession'},
-    pluginManager: {installedPlugins},
+    plugins: {installedPlugins},
   }) as Store;
 }
 

@@ -7,7 +7,8 @@
  * @format
  */
 
-import type {Actions} from '.';
+import {produce} from 'immer';
+import {Actions} from '.';
 import {deconstructPluginKey} from '../utils/clientUtils';
 
 export type State = {
@@ -29,6 +30,10 @@ export type Action =
   | {
       type: 'CLEAR_CLIENT_PLUGINS_STATE';
       payload: {clientId: string; devicePlugins: Set<string>};
+    }
+  | {
+      type: 'CLEAR_PLUGIN_STATE';
+      payload: {pluginId: string};
     };
 
 export default function reducer(
@@ -63,6 +68,16 @@ export default function reducer(
       }
       return newState;
     }, {});
+  } else if (action.type === 'CLEAR_PLUGIN_STATE') {
+    const {pluginId} = action.payload;
+    return produce(state, (draft) => {
+      Object.keys(draft).forEach((pluginKey) => {
+        const pluginKeyParts = deconstructPluginKey(pluginKey);
+        if (pluginKeyParts.pluginName === pluginId) {
+          delete draft[pluginKey];
+        }
+      });
+    });
   } else {
     return state;
   }
@@ -73,5 +88,10 @@ export const setPluginState = (payload: {
   state: Object;
 }): Action => ({
   type: 'SET_PLUGIN_STATE',
+  payload,
+});
+
+export const clearPluginState = (payload: {pluginId: string}): Action => ({
+  type: 'CLEAR_PLUGIN_STATE',
   payload,
 });

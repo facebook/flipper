@@ -40,6 +40,10 @@ export type Action =
   | {
       type: 'CLEAR_CLIENT_PLUGINS_STATE';
       payload: {clientId: string; devicePlugins: Set<string>};
+    }
+  | {
+      type: 'CLEAR_PLUGIN_STATE';
+      payload: {pluginId: string};
     };
 
 const INITIAL_STATE: State = {};
@@ -93,6 +97,19 @@ export default function reducer(
         return newState;
       }, {});
     }
+
+    case 'CLEAR_PLUGIN_STATE': {
+      const {pluginId} = action.payload;
+      return produce(state, (draft) => {
+        Object.keys(draft).forEach((pluginKey) => {
+          const pluginKeyParts = deconstructPluginKey(pluginKey);
+          if (pluginKeyParts.pluginName === pluginId) {
+            delete draft[pluginKey];
+          }
+        });
+      });
+    }
+
     default:
       return state;
   }

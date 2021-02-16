@@ -164,7 +164,7 @@ export const PluginList = memo(function PluginList({
     (id: string) => {
       const plugin = disabledPlugins.find((p) => p.id === id)!;
       reportUsage('plugin:uninstall', {version: plugin.version}, plugin.id);
-      dispatch(uninstallPlugin(plugin));
+      dispatch(uninstallPlugin({plugin}));
     },
     [disabledPlugins, dispatch],
   );

@@ -556,8 +556,7 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
       userStarredPlugins,
     },
     pluginStates,
-    plugins: {devicePlugins, clientPlugins},
-    pluginManager: {installedPlugins},
+    plugins: {devicePlugins, clientPlugins, installedPlugins},
     pluginMessageQueue,
     settingsState,
   }) => {

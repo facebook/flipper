@@ -70,7 +70,7 @@ export default async (store: Store, logger: Logger) => {
 
   defaultPluginsIndex = getDefaultPluginsIndex();
 
-  const uninstalledPlugins = store.getState().pluginManager.uninstalledPlugins;
+  const uninstalledPlugins = store.getState().plugins.uninstalledPlugins;
 
   const bundledPlugins = getBundledPlugins();
 

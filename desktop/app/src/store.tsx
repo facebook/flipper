@@ -84,9 +84,6 @@ export function rootReducer(
     } else {
       return updateClientPlugin(state, plugin, enablePlugin);
     }
-  } else if (action.type === 'UNINSTALL_PLUGIN' && state) {
-    const plugin = action.payload;
-    return uninstallPlugin(state, plugin);
   }
 
   // otherwise
@@ -184,27 +181,6 @@ function updateClientPlugin(
   });
 }
 
-function uninstallPlugin(state: StoreState, plugin: PluginDefinition) {
-  const clients = state.connections.clients;
-  return produce(state, (draft) => {
-    clients.forEach((client) => {
-      stopPlugin(client, plugin.id);
-      const pluginKey = getPluginKey(
-        client.id,
-        {serial: client.query.device_id},
-        plugin.id,
-      );
-      delete draft.pluginMessageQueue[pluginKey];
-    });
-    cleanupPluginStates(draft.pluginStates, plugin.id);
-    unloadPluginModule(plugin.details);
-    draft.plugins.clientPlugins.delete(plugin.id);
-    draft.plugins.devicePlugins.delete(plugin.id);
-    draft.plugins.loadedPlugins.delete(plugin.id);
-    draft.pluginManager.uninstalledPlugins.add(plugin.details.name);
-  });
-}
-
 function updateDevicePlugin(state: StoreState, plugin: DevicePluginDefinition) {
   const devices = state.connections.devices;
   return produce(state, (draft) => {
@@ -235,7 +211,7 @@ function registerLoadedPlugin(
   },
   plugin: ActivatablePluginDetails,
 ) {
-  draft.pluginManager.uninstalledPlugins.delete(plugin.name);
+  draft.plugins.uninstalledPlugins.delete(plugin.name);
   draft.plugins.loadedPlugins.set(plugin.id, plugin);
 }
 

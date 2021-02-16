@@ -7,27 +7,33 @@
  * @format
  */
 
-import {Store} from '../reducers/index';
-import {Logger} from '../fb-interfaces/Logger';
+import type {Store} from '../reducers/index';
+import type {Logger} from '../fb-interfaces/Logger';
+import {clearPluginState} from '../reducers/pluginStates';
 import {
   LoadPluginActionPayload,
   pluginCommandsProcessed,
-  registerInstalledPlugins,
+  UninstallPluginActionPayload,
 } from '../reducers/pluginManager';
 import {
   getInstalledPlugins,
   cleanupOldInstalledPluginVersions,
   removePlugins,
+  ActivatablePluginDetails,
 } from 'flipper-plugin-lib';
 import {sideEffect} from '../utils/sideEffect';
 import {requirePlugin} from './plugins';
 import {registerPluginUpdate} from '../reducers/connections';
 import {showErrorNotification} from '../utils/notifications';
+import type Client from '../Client';
+import {unloadModule} from '../utils/electronModuleCache';
+import {pluginUninstalled, registerInstalledPlugins} from '../reducers/plugins';
+import {defaultEnabledBackgroundPlugins} from '../utils/pluginUtils';
 
 const maxInstalledPluginVersionsToKeep = 2;
 
 function refreshInstalledPlugins(store: Store) {
-  removePlugins(store.getState().pluginManager.uninstalledPlugins.values())
+  removePlugins(store.getState().plugins.uninstalledPlugins.values())
     .then(() =>
       cleanupOldInstalledPluginVersions(maxInstalledPluginVersionsToKeep),
     )
@@ -65,6 +71,9 @@ export default (
           case 'LOAD_PLUGIN':
             loadPlugin(store, command.payload);
             break;
+          case 'UNINSTALL_PLUGIN':
+            uninstallPlugin(store, command.payload);
+            break;
           default:
             console.error('Unexpected plugin command', command);
             break;
@@ -95,8 +104,56 @@ function loadPlugin(store: Store, payload: LoadPluginActionPayload) {
     );
     if (payload.notifyIfFailed) {
       showErrorNotification(
-        `Failed to load plugin "${payload.plugin.title}" v${payload.plugin.version}`,
+        `Failed to activate plugin "${payload.plugin.title}" v${payload.plugin.version}`,
       );
     }
   }
+}
+
+function uninstallPlugin(store: Store, {plugin}: UninstallPluginActionPayload) {
+  try {
+    const state = store.getState();
+    const clients = state.connections.clients;
+    clients.forEach((client) => {
+      stopPlugin(client, plugin.id);
+    });
+    store.dispatch(clearPluginState({pluginId: plugin.id}));
+    if (!plugin.details.isBundled) {
+      unloadPluginModule(plugin.details);
+    }
+    store.dispatch(pluginUninstalled(plugin.details));
+  } catch (err) {
+    console.error(
+      `Failed to uninstall plugin ${plugin.title} v${plugin.version}`,
+      err,
+    );
+    showErrorNotification(
+      `Failed to uninstall plugin "${plugin.title}" v${plugin.version}`,
+    );
+  }
+}
+
+function stopPlugin(
+  client: Client,
+  pluginId: string,
+  forceInitBackgroundPlugin: boolean = false,
+): boolean {
+  if (
+    (forceInitBackgroundPlugin ||
+      !defaultEnabledBackgroundPlugins.includes(pluginId)) &&
+    client?.isBackgroundPlugin(pluginId)
+  ) {
+    client.deinitPlugin(pluginId);
+  }
+  // stop sandy plugins
+  client.stopPluginIfNeeded(pluginId);
+  return true;
+}
+
+function unloadPluginModule(plugin: ActivatablePluginDetails) {
+  if (plugin.isBundled) {
+    // We cannot unload bundled plugin.
+    return;
+  }
+  unloadModule(plugin.entry);
 }
