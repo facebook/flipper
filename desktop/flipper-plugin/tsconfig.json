@@ -4,7 +4,16 @@
     "outDir": "lib",
     "rootDir": "src"
   },
-  "references": [{"path": "../plugin-lib"}],
-  "include": ["src"],
-  "exclude": ["node_modules"]
+  "references": [
+    {
+      "path": "../plugin-lib"
+    }
+  ],
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/__tests__/*"
+  ]
 }

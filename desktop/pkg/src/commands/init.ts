@@ -16,10 +16,24 @@ import recursiveReaddirImport from 'recursive-readdir';
 import {promisify} from 'util';
 import inquirer from 'inquirer';
 import {homedir} from 'os';
+import {PluginType} from 'flipper-plugin-lib';
 
 const recursiveReaddir = promisify<string, string[]>(recursiveReaddirImport);
 
-const templateDir = path.resolve(__dirname, '..', '..', 'templates', 'plugin');
+const pluginTemplateDir = path.resolve(
+  __dirname,
+  '..',
+  '..',
+  'templates',
+  'plugin',
+);
+const devicePluginTemplateDir = path.resolve(
+  __dirname,
+  '..',
+  '..',
+  'templates',
+  'device-plugin',
+);
 const templateExt = '.template';
 
 export default class Init extends Command {
@@ -43,6 +57,18 @@ export default class Init extends Command {
     const pluginDirectory: string = path.resolve(process.cwd(), args.directory);
     await verifyFlipperSearchPath(pluginDirectory);
 
+    const pluginTypeQuestion: inquirer.QuestionCollection = [
+      {
+        type: 'list',
+        name: 'pluginType',
+        choices: ['client', 'device'],
+        message:
+          'Plugin Type ("client" if the plugin will work with a mobile app, "device" if the plugin will work with a mobile device):',
+        default: 'client',
+      },
+    ];
+    const pluginType: PluginType = (await inquirer.prompt(pluginTypeQuestion))
+      .pluginType;
     const idQuestion: inquirer.QuestionCollection = [
       {
         type: 'input',
@@ -61,6 +87,24 @@ export default class Init extends Command {
       },
     ];
     const title: string = (await inquirer.prompt(titleQuestion)).title;
+
+    let supportedDevices: string[] | undefined;
+
+    if (pluginType === 'device') {
+      const supportedDevicesQuestion: inquirer.QuestionCollection = [
+        {
+          type: 'checkbox',
+          name: 'supportedDevices',
+          choices: ['iOS', 'Android', 'Metro'],
+          message:
+            'Supported Devices (iOS, Android or Metro (React Native bundler)):',
+          default: ['iOS', 'Android'],
+        },
+      ];
+      supportedDevices = (await inquirer.prompt(supportedDevicesQuestion))
+        .supportedDevices;
+    }
+
     const packageName = getPackageNameFromId(id);
     const outputDirectory = path.join(pluginDirectory, packageName);
 
@@ -72,7 +116,13 @@ export default class Init extends Command {
       `⚙️  Initializing Flipper desktop template in ${outputDirectory}`,
     );
     await fs.ensureDir(outputDirectory);
-    await initTemplate(id, title, outputDirectory);
+    await initTemplate(
+      id,
+      title,
+      pluginType,
+      supportedDevices,
+      outputDirectory,
+    );
 
     console.log(`⚙️  Installing dependencies`);
     spawnSync('yarn', ['install'], {cwd: outputDirectory, stdio: [0, 1, 2]});
@@ -93,9 +143,13 @@ function getPackageNameFromId(id: string): string {
 export async function initTemplate(
   id: string,
   title: string,
+  pluginType: PluginType,
+  supportedDevices: string[] | undefined,
   outputDirectory: string,
 ) {
   const packageName = getPackageNameFromId(id);
+  const templateDir =
+    pluginType === 'device' ? devicePluginTemplateDir : pluginTemplateDir;
   const templateItems = await recursiveReaddir(templateDir);
 
   for (const item of templateItems) {
@@ -115,6 +169,16 @@ export async function initTemplate(
         .toString()
         .replace('{{id}}', id)
         .replace('{{title}}', title)
+        .replace(
+          '{{supported_devices}}',
+          JSON.stringify(
+            supportedDevices
+              ? supportedDevices.map((d) => ({
+                  os: d,
+                }))
+              : [],
+          ),
+        )
         .replace('{{package_name}}', packageName);
       await fs.writeFile(newFile, content);
     }
