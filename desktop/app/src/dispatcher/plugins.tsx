@@ -46,6 +46,7 @@ import * as antdesign_icons from '@ant-design/icons';
 
 // eslint-disable-next-line import/no-unresolved
 import getDefaultPluginsIndex from '../utils/getDefaultPluginsIndex';
+import {isDevicePluginDefinition} from '../utils/pluginUtils';
 
 let defaultPluginsIndex: any = null;
 
@@ -233,7 +234,17 @@ export const createRequirePluginFunction = (
 ) => {
   return (pluginDetails: ActivatablePluginDetails): PluginDefinition | null => {
     try {
-      return requirePlugin(pluginDetails, reqFn);
+      const pluginDefinition = requirePlugin(pluginDetails, reqFn);
+      if (
+        pluginDefinition &&
+        isDevicePluginDefinition(pluginDefinition) &&
+        pluginDefinition.details.pluginType !== 'device'
+      ) {
+        console.warn(
+          `Package ${pluginDefinition.details.name} contains the device plugin "${pluginDefinition.title}" defined in a wrong format. Specify "pluginType" and "supportedDevices" properties and remove exported function "supportsDevice". See details at https://fbflipper.com/docs/extending/desktop-plugin-structure#creating-a-device-plugin.`,
+        );
+      }
+      return pluginDefinition;
     } catch (e) {
       failedPlugins.push([pluginDetails, e.message]);
       console.error(`Plugin ${pluginDetails.id} failed to load`, e);
