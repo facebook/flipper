@@ -15,6 +15,15 @@ jobs:
         java-version: 1.8
     - name: Install NDK 21
       run: echo "y" | sudo /usr/local/lib/android/sdk/tools/bin/sdkmanager --install "ndk;21.0.6113669" "ndk;20.0.5594570" --sdk_root=${ANDROID_SDK_ROOT}
+    - name: Compute build cache
+      run: ./scripts/checksum-android.sh checksum-android.txt
+    - uses: actions/cache@v2
+      with:
+        path: |
+          ~/.gradle/caches/modules-*
+          ~/.gradle/caches/jars-*
+          ~/.gradle/caches/build-cache-*
+        key: gradle-${{ hashFiles('checksum-android.txt') }}
     - name: Build with Gradle
       run: ./gradlew :sample:assembleDebug :tutorial:assembleDebug
     - name: upload artifact
