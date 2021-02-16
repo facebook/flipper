@@ -57,9 +57,9 @@ export default class FileList extends Component<FileListProps, FileListState> {
 
   watcher: fs.FSWatcher | null | undefined;
 
-  fetchFile(name: string): Promise<FileListFile> {
+  fetchFile(src: string, name: string): Promise<FileListFile> {
     return new Promise((resolve, reject) => {
-      const loc = path.join(this.props.src, name);
+      const loc = path.join(src, name);
 
       fs.lstat(loc, (err, stat) => {
         if (err) {
@@ -82,6 +82,64 @@ export default class FileList extends Component<FileListProps, FileListState> {
     });
   }
 
+  fetchFilesFromFolder(
+    originalSrc: string,
+    currentSrc: string,
+    callback: Function,
+  ) {
+    const hasChangedDir = () => this.props.src !== originalSrc;
+
+    let filesSet: Map<string, FileListFile> = new Map();
+    fs.readdir(currentSrc, (err, files) => {
+      if (err) {
+        return callback(err, EMPTY_MAP);
+      }
+      let remainingPaths = files.length;
+
+      const next = () => {
+        if (hasChangedDir()) {
+          return callback(null, EMPTY_MAP);
+        }
+
+        if (!remainingPaths) {
+          return callback(null, filesSet);
+        }
+
+        const name = files.shift();
+        if (name) {
+          this.fetchFile(currentSrc, name)
+            .then((data) => {
+              filesSet.set(name, data);
+              if (data.type == 'folder') {
+                this.fetchFilesFromFolder(
+                  originalSrc,
+                  path.join(currentSrc, name),
+                  function (err: Error, files: Map<string, FileListFile>) {
+                    if (err) {
+                      return callback(err, EMPTY_MAP);
+                    }
+                    filesSet = new Map([...filesSet, ...files]);
+                    remainingPaths--;
+                    if (!remainingPaths) {
+                      return callback(null, filesSet);
+                    }
+                  },
+                );
+              } else {
+                remainingPaths--;
+              }
+              next();
+            })
+            .catch((err) => {
+              return callback(err, EMPTY_MAP);
+            });
+        }
+      };
+
+      next();
+    });
+  }
+
   fetchFiles(callback?: Function) {
     const {src} = this.props;
 
@@ -93,41 +151,16 @@ export default class FileList extends Component<FileListProps, FileListState> {
 
     const hasChangedDir = () => this.props.src !== src;
 
-    fs.readdir(src, (err, files) => {
-      if (err) {
-        setState({error: err, files: EMPTY_MAP});
-        return;
-      }
-
-      const filesSet: Map<string, FileListFile> = new Map();
-      const next = () => {
-        if (hasChangedDir()) {
-          return;
+    this.fetchFilesFromFolder(
+      src,
+      src,
+      function (err: Error, files: Map<string, FileListFile>) {
+        setState({error: err, files: files});
+        if (callback) {
+          callback();
         }
-
-        if (!files.length) {
-          setState({error: null, files: filesSet});
-          if (callback) {
-            callback();
-          }
-          return;
-        }
-
-        const name = files.shift();
-        if (name) {
-          this.fetchFile(name)
-            .then((data) => {
-              filesSet.set(name, data);
-              next();
-            })
-            .catch((err) => {
-              setState({error: err, files: EMPTY_MAP});
-            });
-        }
-      };
-
-      next();
-    });
+      },
+    );
   }
 
   UNSAFE_componentWillReceiveProps(nextProps: FileListProps) {
