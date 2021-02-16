@@ -127,6 +127,7 @@ export interface NetworkRouteManager {
   addRoute(): string | null;
   modifyRoute(id: string, routeChange: Partial<Route>): void;
   removeRoute(id: string): void;
+  enableRoute(id: string, routeChange: Partial<Route>): void;
   copyHighlightedCalls(
     highlightedRows: Set<string>,
     requests: {[id: string]: Request},
@@ -142,6 +143,7 @@ const nullNetworkRouteManager: NetworkRouteManager = {
   },
   modifyRoute(_id: string, _routeChange: Partial<Route>) {},
   removeRoute(_id: string) {},
+  enableRoute(_id: string, routeChange: Partial<Route>) {},
   copyHighlightedCalls(
     _highlightedRows: Set<string>,
     _requests: {[id: string]: Request},
@@ -348,6 +350,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
             responseData: '',
             responseHeaders: {},
             responseStatus: '200',
+            enabled: true,
           };
         });
         nextRouteId.set(newNextRouteId + 1);
@@ -368,6 +371,19 @@ export function plugin(client: PluginClient<Events, Methods>) {
             delete draft[id];
           });
         }
+        informClientMockChange(routes.get());
+      },
+      enableRoute(id: string, routeChange: Partial<Route>) {
+        console.log(routeChange)
+        console.log(routes.get()[id])
+        routeChange.enabled = !routes.get()[id].enabled;
+        console.log(routeChange)
+        if (routes.get().hasOwnProperty(id)) {
+          routes.update((draft) => {
+            Object.assign(draft[id], routeChange);
+          });
+        }
+        console.log(routes.get())
         informClientMockChange(routes.get());
       },
       copyHighlightedCalls(
@@ -396,6 +412,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
               responseData: responseData as string,
               responseHeaders: headers,
               responseStatus: responses[row].status.toString(),
+              enabled: true,
             };
           });
           nextRouteId.set(newNextRouteId + 1);
@@ -427,6 +444,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
                       responseData: importedRoute.responseData as string,
                       responseHeaders: importedRoute.responseHeaders,
                       responseStatus: importedRoute.responseStatus,
+                      enabled: true,
                     };
                   });
                   nextRouteId.set(newNextRouteId + 1);
@@ -541,12 +559,17 @@ export function plugin(client: PluginClient<Events, Methods>) {
 
       try {
         await client.send('mockResponses', {
-          routes: routesValuesArray.map((route: Route) => ({
+          routes: routesValuesArray
+          .filter((e) =>
+            e.enabled,
+          )
+          .map((route: Route) => ({
             requestUrl: route.requestUrl,
             method: route.requestMethod,
             data: route.responseData,
             headers: [...Object.values(route.responseHeaders)],
             status: route.responseStatus,
+            enabled: route.enabled,
           })),
         });
       } catch (e) {

@@ -17,20 +17,12 @@ import {
   Panel,
 } from 'flipper';
 import React, {useContext, useState, useMemo, useEffect} from 'react';
-
 import {Route, Request, Response} from './types';
-
 import {MockResponseDetails} from './MockResponseDetails';
 import {NetworkRouteContext} from './index';
 import {RequestId} from './types';
-
-import {message, Modal} from 'antd';
+import {message, Checkbox, Modal, Tooltip} from 'antd';
 import {NUX, Layout} from 'flipper-plugin';
-
-import {Modal} from 'antd';
-import {ExclamationCircleOutlined} from '@ant-design/icons';
-
-//const { confirm } = Modal;
 
 type Props = {
   routes: {[id: string]: Route};
@@ -82,6 +74,7 @@ function _buildRows(
   routes: {[id: string]: Route},
   duplicatedIds: Array<string>,
   handleRemoveId: (id: string) => void,
+  handleEnableId: (id: string) => void,
 ) {
   return Object.entries(routes).map(([id, route]) => ({
     columns: {
@@ -92,6 +85,8 @@ function _buildRows(
             text={route.requestUrl}
             showWarning={duplicatedIds.includes(id)}
             handleRemoveId={() => handleRemoveId(id)}
+            handleEnableId={() => handleEnableId(id)}
+            enabled={route.enabled}
           />
         ),
       },
@@ -104,27 +99,30 @@ function RouteRow(props: {
   text: string;
   showWarning: boolean;
   handleRemoveId: () => void;
+  handleEnableId: () => void;
+  enabled: boolean;
 }) {
   return (
-    <Layout.Container>
-      <Layout.Horizontal style={{paddingBottom: 20}}>
+    <Layout.Horizontal gap>
+      <Tooltip title="Check to enable mock route" mouseEnterDelay={1.1}>
+        <Checkbox onClick={props.handleEnableId} checked={props.enabled}></Checkbox>
+      </Tooltip>
+      <Tooltip title="Click to delete mock route" mouseEnterDelay={1.1}>
         <Layout.Horizontal onClick={props.handleRemoveId}>
           <Icon name="cross-circle" color={colors.red} />
         </Layout.Horizontal>
-        <Layout.Horizontal>
-          {props.showWarning && (
-            <Icon name="caution-triangle" color={colors.yellow} />
-          )}
-          {props.text.length === 0 ? (
-            <TextEllipsis style={{color: colors.blackAlpha50}}>
-              untitled
-            </TextEllipsis>
-          ) : (
-            <TextEllipsis>{props.text}</TextEllipsis>
-          )}
-        </Layout.Horizontal>
-      </Layout.Horizontal>
-    </Layout.Container>
+      </Tooltip>
+      {props.showWarning && (
+        <Icon name="caution-triangle" color={colors.yellow} />
+      )}
+      {props.text.length === 0 ? (
+        <TextEllipsis style={{color: colors.blackAlpha50}}>
+          untitled
+        </TextEllipsis>
+      ) : (
+        <TextEllipsis>{props.text}</TextEllipsis>
+      )}
+    </Layout.Horizontal>
   );
 }
 
@@ -253,19 +251,25 @@ export function ManageMockResponsePanel(props: Props) {
               multiline={false}
               columnSizes={ColumnSizes}
               columns={Columns}
-              rowLineHeight={26}
-              rows={_buildRows(props.routes, duplicatedIds, (id) => {
-                Modal.confirm({
-                  title: 'Are you sure you want to delete this item?',
-                  icon: '',
-                  onOk() {
-                    const nextId = getNextId(id);
-                    networkRouteManager.removeRoute(id);
-                    setSelectedId(nextId);
-                  },
-                  onCancel() {},
-                });
-              })}
+              rows={_buildRows(props.routes, duplicatedIds, 
+                (id) => {
+                  Modal.confirm({
+                    title: 'Are you sure you want to delete this item?',
+                    icon: '',
+                    onOk() {
+                      const nextId = getNextId(id);
+                      networkRouteManager.removeRoute(id);
+                      setSelectedId(nextId);
+                    },
+                    onCancel() {},
+                  })
+                },
+                (id) => {
+                  console.log('...enableRoute'); 
+                  networkRouteManager.enableRoute(id, {
+                  })
+                },
+              )}
               stickyBottom={true}
               autoHeight={false}
               floating={false}
