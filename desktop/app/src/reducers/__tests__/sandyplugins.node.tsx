@@ -250,7 +250,9 @@ test('it can send messages from sandy clients', async () => {
 });
 
 test('it should initialize "Navigation" plugin if not enabled', async () => {
-  const {client, store} = await createMockFlipperWithPlugin(TestPlugin);
+  const {client, store} = await createMockFlipperWithPlugin(TestPlugin, {
+    supportedPlugins: ['Navigation'],
+  });
 
   const Plugin2 = new _SandyPluginDefinition(
     TestUtils.createMockPluginDetails({

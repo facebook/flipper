@@ -28,7 +28,13 @@ export function sideEffect<
   State = Store extends ReduxStore<infer S, any> ? S : never
 >(
   store: Store,
-  options: {name: string; throttleMs: number; fireImmediately?: boolean},
+  options: {
+    name: string;
+    throttleMs: number;
+    fireImmediately?: boolean;
+    noTimeBudgetWarns?: boolean;
+    runSynchronously?: boolean;
+  },
   selector: (state: State) => V,
   effect: (selectedState: V, store: Store) => void,
 ): () => void {
@@ -52,7 +58,11 @@ export function sideEffect<
     }
     lastRun = performance.now();
     const duration = lastRun - start;
-    if (duration > 15 && duration > options.throttleMs / 10) {
+    if (
+      !options.noTimeBudgetWarns &&
+      duration > 15 &&
+      duration > options.throttleMs / 10
+    ) {
       console.warn(
         `Side effect '${options.name}' took ${Math.round(
           duration,
@@ -75,13 +85,17 @@ export function sideEffect<
       return; // no new value, no need to schedule
     }
     scheduled = true;
-    timeout = setTimeout(
-      run,
-      // Run ASAP (but async) or, if we recently did run, delay until at least 'throttle' time has expired
-      lastRun === -1
-        ? 1
-        : Math.max(1, lastRun + options.throttleMs - performance.now()),
-    );
+    if (options.runSynchronously) {
+      run();
+    } else {
+      timeout = setTimeout(
+        run,
+        // Run ASAP (but async) or, if we recently did run, delay until at least 'throttle' time has expired
+        lastRun === -1
+          ? 1
+          : Math.max(1, lastRun + options.throttleMs - performance.now()),
+      );
+    }
   });
 
   if (options.fireImmediately) {
