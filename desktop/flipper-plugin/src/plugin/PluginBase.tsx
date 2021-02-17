@@ -115,6 +115,7 @@ export abstract class BasePluginInstance {
   importHandler?: StateImportHandler;
 
   menuEntries: NormalizedMenuEntry[] = [];
+  logListeners: Symbol[] = [];
 
   constructor(
     flipperLib: FlipperLib,
@@ -139,9 +140,9 @@ export abstract class BasePluginInstance {
         return realDevice.connected.get();
       },
       deviceType: realDevice.deviceType,
-
-      onLogEntry(cb) {
+      onLogEntry: (cb) => {
         const handle = realDevice.addLogListener(cb);
+        this.logListeners.push(handle);
         return () => {
           realDevice.removeLogListener(handle);
         };
@@ -265,6 +266,9 @@ export abstract class BasePluginInstance {
   destroy() {
     this.assertNotDestroyed();
     this.deactivate();
+    this.logListeners.splice(0).forEach((handle) => {
+      this.device.realDevice.removeLogListener(handle);
+    });
     this.events.emit('destroy');
     this.destroyed = true;
   }

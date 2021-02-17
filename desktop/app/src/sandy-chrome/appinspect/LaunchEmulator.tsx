@@ -76,7 +76,9 @@ export const LaunchEmulatorDialog = withTrackingScope(
     }, [iosEnabled, getSimulators, store]);
 
     const items = [
-      ...(androidEmulators.length > 0 ? [<AndroidOutlined />] : []),
+      ...(androidEmulators.length > 0
+        ? [<AndroidOutlined key="android logo" />]
+        : []),
       ...androidEmulators.map((name) => {
         const launch = (coldBoot: boolean) => {
           launchEmulator(name, coldBoot)
@@ -111,7 +113,7 @@ export const LaunchEmulatorDialog = withTrackingScope(
           </Dropdown.Button>
         );
       }),
-      ...(iosEmulators.length > 0 ? [<AppleOutlined />] : []),
+      ...(iosEmulators.length > 0 ? [<AppleOutlined key="ios logo" />] : []),
       ...iosEmulators.map((device) => (
         <Button
           key={device.udid}

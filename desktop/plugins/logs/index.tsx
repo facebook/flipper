@@ -497,6 +497,8 @@ export function devicePlugin(client: DevicePluginClient) {
   }
 
   function clearLogs() {
+    // Non public Android specific api
+    (client.device.realDevice as any)?.clearLogs?.();
     entries.set([]);
     rows.set([]);
     highlightedRows.set(new Set());
