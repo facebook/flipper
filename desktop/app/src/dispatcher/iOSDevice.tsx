@@ -231,7 +231,14 @@ function queryDevicesForever(store: Store, logger: Logger) {
     });
 }
 
+export function parseXcodeFromCoreSimPath(
+  line: string,
+): RegExpMatchArray | null {
+  return line.match(/\/[\/\w@)(\-\+]*\/Xcode[^/]*\.app\/Contents\/Developer/);
+}
+
 let xcodeVersionMismatchFound = false;
+
 async function checkXcodeVersionMismatch(store: Store) {
   if (xcodeVersionMismatchFound) {
     return;
@@ -241,9 +248,7 @@ async function checkXcodeVersionMismatch(store: Store) {
     xcodeCLIVersion = xcodeCLIVersion.trim();
     const {stdout} = await exec('ps aux | grep CoreSimulator');
     for (const line of stdout.split('\n')) {
-      const match = line.match(
-        /\/Applications\/Xcode[^/]*\.app\/Contents\/Developer/,
-      );
+      const match = parseXcodeFromCoreSimPath(line);
       const runningVersion = match && match.length > 0 ? match[0].trim() : null;
       if (runningVersion && runningVersion !== xcodeCLIVersion) {
         const errorMessage = `Xcode version mismatch: Simulator is running from "${runningVersion}" while Xcode CLI is "${xcodeCLIVersion}". Running "xcode-select --switch ${runningVersion}" can fix this. For example: "sudo xcode-select -s /Applications/Xcode.app/Contents/Developer"`;
