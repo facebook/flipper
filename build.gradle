@@ -73,6 +73,8 @@ ext.deps = [
         // First-party
         soloader           : 'com.facebook.soloader:soloader:0.10.1',
         screenshot         : 'com.facebook.testing.screenshot:core:0.5.0',
+        boltsTasks         : 'com.parse.bolts:bolts-tasks:1.4.0',
+        boltsApplinks      : 'com.parse.bolts:bolts-applinks:1.4.0',
         // Annotations
         jsr305             : 'com.google.code.findbugs:jsr305:3.0.2',
         inferAnnotations   : 'com.facebook.infer.annotation:infer-annotation:0.11.2',

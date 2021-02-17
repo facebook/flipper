@@ -23,6 +23,9 @@ android {
         implementation deps.frescoFlipper
         compileOnly deps.jsr305
 
+        api deps.boltsTasks
+        api deps.boltsApplinks
+
         // Exclude the actual stetho dep as we only want some of the fresco APIs here
         implementation(deps.frescoStetho) {
             exclude group: 'com.facebook.stetho'
