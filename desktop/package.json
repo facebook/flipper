@@ -1,47 +1,53 @@
 {
-  "name": "flipper-project",
-  "version": "0.75.1",
-  "description": "Mobile development tool",
-  "productName": "Flipper",
   "author": {
-    "name": "Facebook Inc",
     "email": "n/a",
+    "name": "Facebook Inc",
     "url": "https://github.com/facebook"
-  },
-  "homepage": "https://fbflipper.com/",
-  "icon": "icon.png",
-  "category": "facebook-intern",
-  "privileged": true,
-  "private": true,
-  "workspaces": {
-    "packages": [
-      "app",
-      "app/src/fb/*",
-      "babel-transformer",
-      "doctor",
-      "pkg",
-      "pkg-lib",
-      "flipper-plugin",
-      "static",
-      "plugins/*",
-      "e2e",
-      "plugin-lib",
-      "test-utils",
-      "eslint-plugin-flipper"
-    ],
-    "nohoist": [
-      "flipper-plugin-kaios-big-allocations/firefox-client"
-    ]
   },
   "build": {
     "appId": "flipper",
-    "productName": "Flipper",
     "artifactName": "Flipper-${os}.${ext}",
-    "protocols": {
-      "name": "flipper",
-      "schemes": [
-        "flipper"
-      ]
+    "asar": true,
+    "asarUnpack": [
+      "PortForwardingMacApp.app/**/*"
+    ],
+    "deb": {
+      "icon": "icon.icns"
+    },
+    "dmg": {
+      "background": "dmgBackground.png",
+      "contents": [
+        {
+          "x": 123,
+          "y": 172
+        },
+        {
+          "path": "/Applications",
+          "type": "link",
+          "x": 539,
+          "y": 168
+        }
+      ],
+      "icon": "icon.icns",
+      "iconSize": 155,
+      "window": {
+        "height": 400,
+        "width": 660
+      }
+    },
+    "fileAssociations": [
+      {
+        "ext": [
+          ".flipper"
+        ],
+        "icon": "document-icons/document.icns",
+        "name": "Flipper Data",
+        "role": "Viewer"
+      }
+    ],
+    "linux": {
+      "category": "Development",
+      "icon": "icon.icns"
     },
     "mac": {
       "category": "public.app-category.developer-tools",
@@ -49,71 +55,20 @@
         "NSUserNotificationAlertStyle": "alert"
       }
     },
-    "linux": {
-      "icon": "icon.icns",
-      "category": "Development"
-    },
-    "deb": {
-      "icon": "icon.icns"
-    },
-    "dmg": {
-      "background": "dmgBackground.png",
-      "icon": "icon.icns",
-      "iconSize": 155,
-      "window": {
-        "width": 660,
-        "height": 400
-      },
-      "contents": [
-        {
-          "x": 123,
-          "y": 172
-        },
-        {
-          "x": 539,
-          "y": 168,
-          "type": "link",
-          "path": "/Applications"
-        }
+    "productName": "Flipper",
+    "protocols": {
+      "name": "flipper",
+      "schemes": [
+        "flipper"
       ]
     },
     "win": {
       "publisherName": "Facebook, Inc.",
       "sign": null
-    },
-    "asar": true,
-    "asarUnpack": [
-      "PortForwardingMacApp.app/**/*"
-    ],
-    "fileAssociations": [
-      {
-        "ext": [
-          ".flipper"
-        ],
-        "name": "Flipper Data",
-        "role": "Viewer",
-        "icon": "document-icons/document.icns"
-      }
-    ]
+    }
   },
-  "resolutions": {
-    "@jest-runner/electron/electron": "11.1.0",
-    "adbkit-logcat": "2.0.1",
-    "@types/react": "17.0.0",
-    "@types/react-dom": "17.0.0",
-    "acorn": "7.1.1",
-    "minimist": "1.2.3",
-    "**/metro/**/temp": "0.9.0",
-    "**/metro/**/ws": "1.1.5",
-    "ws": "7.3.0",
-    "kind-of": "6.0.3",
-    "bl": "4.0.3",
-    "node-forge": "^0.10.0",
-    "jsdom": "16.4.0",
-    "node-fetch": "^2.6.1",
-    "csstype": "^3.0.5",
-    "node-notifier": "^8.0.1"
-  },
+  "category": "facebook-intern",
+  "description": "Mobile development tool",
   "devDependencies": {
     "@adobe/node-fetch-retry": "^1.1.0",
     "@babel/code-frame": "^7.12.11",
@@ -179,7 +134,7 @@
     "cross-env": "^7.0.2",
     "detect-port": "^1.1.1",
     "dotenv": "^8.2.0",
-    "electron": "11.1.0",
+    "electron": "11.2.3",
     "electron-builder": "22.9.1",
     "eslint": "^7.12.1",
     "eslint-config-fbjs": "^3.1.1",
@@ -233,49 +188,94 @@
     "yargs": "^16.2.0",
     "yazl": "^2.5.1"
   },
+  "homepage": "https://fbflipper.com/",
+  "icon": "icon.png",
+  "name": "flipper-project",
+  "optionalDependencies": {
+    "7zip-bin-mac": "^1.0.1"
+  },
+  "private": true,
+  "privileged": true,
+  "productName": "Flipper",
+  "resolutions": {
+    "**/metro/**/temp": "0.9.0",
+    "**/metro/**/ws": "1.1.5",
+    "@jest-runner/electron/electron": "11.2.3",
+    "@types/react": "17.0.0",
+    "@types/react-dom": "17.0.0",
+    "acorn": "7.1.1",
+    "adbkit-logcat": "2.0.1",
+    "bl": "4.0.3",
+    "csstype": "^3.0.5",
+    "jsdom": "16.4.0",
+    "kind-of": "6.0.3",
+    "minimist": "1.2.3",
+    "node-fetch": "^2.6.1",
+    "node-forge": "^0.10.0",
+    "node-notifier": "^8.0.1",
+    "ws": "7.3.0"
+  },
   "scripts": {
-    "preinstall": "node scripts/prepare-watchman-config.js && yarn config set ignore-engines",
+    "build": "cross-env NODE_ENV=production ./ts-node scripts/build-release.ts $@",
+    "build-plugin": "./ts-node scripts/build-plugin.ts",
+    "build:babel-transformer": "cd babel-transformer && yarn build",
+    "build:dev": "cross-env NODE_ENV=development ./ts-node scripts/build-release.ts $@",
+    "build:eslint": "cd eslint-plugin-flipper && yarn build",
+    "build:pkg": "cd pkg && yarn build",
+    "build:themes": "lessc --js themes/light.less static/themes/light.css && lessc --js themes/dark.less static/themes/dark.css",
+    "bump-versions": "./ts-node scripts/bump-versions.ts",
+    "dev-server": "cross-env NODE_ENV=development ./ts-node scripts/start-dev-server.ts",
+    "everything": "yarn reset && yarn install && yarn lint && yarn test && yarn test-electron && yarn build --mac --mac-dmg --win --linux --linux-deb && yarn start",
+    "fix": "eslint . --fix --ext .js,.ts,.tsx",
+    "lint": "yarn lint:eslint && yarn lint:tsc",
+    "lint:eslint": "eslint . --ext .js,.ts,.tsx",
+    "lint:tsc": "tsc --noemit",
+    "list-plugins": "./ts-node scripts/list-plugins.ts",
+    "open-dist": "open ../dist/mac/Flipper.app --args --launcher=false --inspect=9229",
     "postinstall": "patch-package && ./ts-node scripts/yarn-install-fb-plugins.ts && yarn build:pkg && yarn build:eslint && ./ts-node scripts/generate-plugin-entry-points.ts && yarn build:themes",
+    "prebuild": "yarn build:pkg && yarn rm-dist && yarn build:themes",
+    "predev-server": "yarn build:pkg",
+    "preinstall": "node scripts/prepare-watchman-config.js && yarn config set ignore-engines",
+    "prelint:eslint": "yarn build:eslint",
+    "pretest": "yarn build:pkg",
+    "publish-packages": "./ts-node scripts/publish-packages.ts",
+    "reset": "yarn rm-dist && yarn rm-temp && yarn rm-metro-cache && yarn cache clean && yarn rm-bundle && yarn rm-modules",
+    "resolve-plugin-dir": "./ts-node scripts/resolve-plugin-dir.ts",
+    "rm-bundle": "rimraf static/main.bundle.* **/lib **/*.tsbuildinfo",
     "rm-dist": "rimraf ../dist",
+    "rm-metro-cache": "rimraf $TMPDIR/metro-cache*",
     "rm-modules": "rimraf **/*/node_modules node_modules",
     "rm-temp": "rimraf $TMPDIR/jest* $TMPDIR/react-native-packager*",
-    "rm-bundle": "rimraf static/main.bundle.* **/lib **/*.tsbuildinfo",
     "rm-watches": "watchman watch-del-all",
-    "rm-metro-cache": "rimraf $TMPDIR/metro-cache*",
-    "reset": "yarn rm-dist && yarn rm-temp && yarn rm-metro-cache && yarn cache clean && yarn rm-bundle && yarn rm-modules",
-    "predev-server": "yarn build:pkg",
-    "dev-server": "cross-env NODE_ENV=development ./ts-node scripts/start-dev-server.ts",
     "start": "yarn dev-server --inspect=9229",
     "start:break": "yarn dev-server --inspect-brk=9229",
     "start:no-embedded-plugins": "yarn start --no-embedded-plugins",
-    "build:babel-transformer": "cd babel-transformer && yarn build",
-    "build:pkg": "cd pkg && yarn build",
-    "build:eslint": "cd eslint-plugin-flipper && yarn build",
-    "build:themes": "lessc --js themes/light.less static/themes/light.css && lessc --js themes/dark.less static/themes/dark.css",
-    "prebuild": "yarn build:pkg && yarn rm-dist && yarn build:themes",
-    "build": "cross-env NODE_ENV=production ./ts-node scripts/build-release.ts $@",
-    "build:dev": "cross-env NODE_ENV=development ./ts-node scripts/build-release.ts $@",
-    "build-plugin": "./ts-node scripts/build-plugin.ts",
-    "resolve-plugin-dir": "./ts-node scripts/resolve-plugin-dir.ts",
-    "list-plugins": "./ts-node scripts/list-plugins.ts",
-    "open-dist": "open ../dist/mac/Flipper.app --args --launcher=false --inspect=9229",
-    "fix": "eslint . --fix --ext .js,.ts,.tsx",
-    "pretest": "yarn build:pkg",
     "test": "jest",
-    "watch": "jest --watch",
-    "test:debug": "yarn build:pkg && node --inspect node_modules/.bin/jest --runInBand",
+    "test-e2e": "cd e2e && yarn test",
     "test-electron": "yarn build:pkg && jest --testMatch=\"**/**.electron\\.(js|jsx|ts|tsx)\" --testEnvironment=@jest-runner/electron/environment --runner=@jest-runner/electron",
     "test-with-device": "yarn build:pkg && USE_ELECTRON_STUBS=1 jest --testMatch=\"**/**.device\\.(js|jsx|ts|tsx)\" --detectOpenHandles",
-    "test-e2e": "cd e2e && yarn test",
-    "lint:tsc": "tsc --noemit",
-    "prelint:eslint": "yarn build:eslint",
-    "lint:eslint": "eslint . --ext .js,.ts,.tsx",
-    "lint": "yarn lint:eslint && yarn lint:tsc",
-    "bump-versions": "./ts-node scripts/bump-versions.ts",
-    "publish-packages": "./ts-node scripts/publish-packages.ts",
-    "everything": "yarn reset && yarn install && yarn lint && yarn test && yarn test-electron && yarn build --mac --mac-dmg --win --linux --linux-deb && yarn start"
+    "test:debug": "yarn build:pkg && node --inspect node_modules/.bin/jest --runInBand",
+    "watch": "jest --watch"
   },
-  "optionalDependencies": {
-    "7zip-bin-mac": "^1.0.1"
+  "version": "0.75.1",
+  "workspaces": {
+    "nohoist": [
+      "flipper-plugin-kaios-big-allocations/firefox-client"
+    ],
+    "packages": [
+      "app",
+      "app/src/fb/*",
+      "babel-transformer",
+      "doctor",
+      "pkg",
+      "pkg-lib",
+      "flipper-plugin",
+      "static",
+      "plugins/*",
+      "e2e",
+      "plugin-lib",
+      "test-utils",
+      "eslint-plugin-flipper"
+    ]
   }
 }
