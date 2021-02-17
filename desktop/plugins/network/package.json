@@ -27,6 +27,6 @@
   },
   "devDependencies": {
     "@types/pako": "^1.0.1",
-    "js-base64": "^3.5.2"
+    "js-base64": "^3.6.0"
   }
 }
