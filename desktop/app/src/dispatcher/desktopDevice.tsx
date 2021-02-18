@@ -22,7 +22,10 @@ export default (store: Store, _logger: Logger) => {
   } else {
     return;
   }
-  device.loadDevicePlugins(store.getState().plugins.devicePlugins);
+  device.loadDevicePlugins(
+    store.getState().plugins.devicePlugins,
+    store.getState().connections.userStarredDevicePlugins,
+  );
   store.dispatch({
     type: 'REGISTER_DEVICE',
     payload: device,

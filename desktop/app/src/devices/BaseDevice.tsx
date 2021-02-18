@@ -212,13 +212,16 @@ export default class BaseDevice {
   }
 
   loadDevicePlugins(
-    devicePlugins?: DevicePluginMap,
+    devicePlugins: DevicePluginMap,
+    enabledDevicePlugins: Set<string>,
     pluginStates?: Record<string, any>,
   ) {
     if (!devicePlugins) {
       return;
     }
-    const plugins = Array.from(devicePlugins.values());
+    const plugins = Array.from(devicePlugins.values()).filter((p) =>
+      enabledDevicePlugins?.has(p.id),
+    );
     for (const plugin of plugins) {
       this.loadDevicePlugin(plugin, pluginStates?.[plugin.id]);
     }

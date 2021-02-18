@@ -956,7 +956,7 @@ test('Sandy plugins support isPluginSupported + selectPlugin', async () => {
   expect(pluginInstance.isPluginAvailable(definition.id)).toBeTruthy();
   expect(pluginInstance.isPluginAvailable('nonsense')).toBeFalsy();
   expect(pluginInstance.isPluginAvailable(definition2.id)).toBeFalsy(); // not enabled yet
-  expect(pluginInstance.isPluginAvailable(definition3.id)).toBeTruthy();
+  expect(pluginInstance.isPluginAvailable(definition3.id)).toBeFalsy(); // not enabled yet
   expect(pluginInstance.activatedStub).toBeCalledTimes(1);
   expect(pluginInstance.deactivatedStub).toBeCalledTimes(0);
   expect(linksSeen).toEqual([]);
@@ -964,6 +964,7 @@ test('Sandy plugins support isPluginSupported + selectPlugin', async () => {
   // star and navigate to a device plugin
   store.dispatch(starPlugin({plugin: definition3}));
   pluginInstance.selectPlugin(definition3.id);
+  expect(pluginInstance.isPluginAvailable(definition3.id)).toBeTruthy();
   expect(store.getState().connections.selectedPlugin).toBe(definition3.id);
   expect(renderer.baseElement.querySelector('h1')).toMatchInlineSnapshot(`
     <h1>

@@ -124,7 +124,10 @@ export default class MockFlipper {
       type: 'REGISTER_DEVICE',
       payload: device,
     });
-    device.loadDevicePlugins(this._store.getState().plugins.devicePlugins);
+    device.loadDevicePlugins(
+      this._store.getState().plugins.devicePlugins,
+      this.store.getState().connections.userStarredDevicePlugins,
+    );
     this._devices.push(device);
     return device;
   }

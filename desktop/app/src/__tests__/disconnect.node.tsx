@@ -109,7 +109,10 @@ test('New device with same serial removes & cleans the old one', async () => {
     type: 'REGISTER_DEVICE',
     payload: device2,
   });
-  device2.loadDevicePlugins(store.getState().plugins.devicePlugins);
+  device2.loadDevicePlugins(
+    store.getState().plugins.devicePlugins,
+    store.getState().connections.userStarredDevicePlugins,
+  );
 
   expect(device.isArchived).toBe(false);
   expect(device.connected.get()).toBe(false);

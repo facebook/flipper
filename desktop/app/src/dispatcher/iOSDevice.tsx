@@ -134,7 +134,10 @@ function processDevices(
         serial: udid,
       });
       const iOSDevice = new IOSDevice(udid, type, name);
-      iOSDevice.loadDevicePlugins(store.getState().plugins.devicePlugins);
+      iOSDevice.loadDevicePlugins(
+        store.getState().plugins.devicePlugins,
+        store.getState().connections.userStarredDevicePlugins,
+      );
       store.dispatch({
         type: 'REGISTER_DEVICE',
         payload: iOSDevice,

@@ -240,7 +240,10 @@ export default (store: Store, logger: Logger) => {
       payload: new Set(reconnectedDevices),
     });
 
-    androidDevice.loadDevicePlugins(store.getState().plugins.devicePlugins);
+    androidDevice.loadDevicePlugins(
+      store.getState().plugins.devicePlugins,
+      store.getState().connections.userStarredDevicePlugins,
+    );
     store.dispatch({
       type: 'REGISTER_DEVICE',
       payload: androidDevice,

@@ -57,7 +57,10 @@ export async function registerMetroDevice(
     name: metroDevice.title,
   });
 
-  metroDevice.loadDevicePlugins(store.getState().plugins.devicePlugins);
+  metroDevice.loadDevicePlugins(
+    store.getState().plugins.devicePlugins,
+    store.getState().connections.userStarredDevicePlugins,
+  );
   store.dispatch({
     type: 'REGISTER_DEVICE',
     payload: metroDevice,
