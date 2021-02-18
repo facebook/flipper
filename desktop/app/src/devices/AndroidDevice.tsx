@@ -158,8 +158,28 @@ export default class AndroidDevice extends BaseDevice {
       `mkdir -p "${DEVICE_RECORDING_DIR}" && echo -n > "${DEVICE_RECORDING_DIR}/.nomedia"`,
     );
     const recordingLocation = `${DEVICE_RECORDING_DIR}/video.mp4`;
+    let newSize: string | undefined;
+    try {
+      const sizeString = (
+        await adb.util.readAll(await this.adb.shell(this.serial, 'wm size'))
+      ).toString();
+      const size = sizeString.split(' ').slice(-1).pop()?.split('x');
+      if (size && size.length === 2) {
+        const width = parseInt(size[0], 10);
+        const height = parseInt(size[1], 10);
+        if (width > height) {
+          newSize = '1280x720';
+        } else {
+          newSize = '720x1280';
+        }
+      }
+    } catch (err) {
+      console.error('Error while getting device size', err);
+    }
+    const sizeArg = newSize ? `--size ${newSize}` : '';
+    const cmd = `screenrecord --bugreport ${sizeArg} "${recordingLocation}"`;
     this.recordingProcess = this.adb
-      .shell(this.serial, `screenrecord --bugreport "${recordingLocation}"`)
+      .shell(this.serial, cmd)
       .then(adb.util.readAll)
       .then(async (output) => {
         const isValid = await this.isValidFile(recordingLocation);
@@ -176,7 +196,9 @@ export default class AndroidDevice extends BaseDevice {
             this.adb.pull(this.serial, recordingLocation).then((stream) => {
               stream.on('end', resolve as () => void);
               stream.on('error', reject);
-              stream.pipe(createWriteStream(destination));
+              stream.pipe(createWriteStream(destination, {autoClose: true}), {
+                end: true,
+              });
             });
           }),
       )
