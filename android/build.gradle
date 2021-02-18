@@ -60,6 +60,7 @@ android {
 
     dependencies {
         compileOnly deps.proguardAnnotations
+        // Temporary until we upgrade to prefabs: https://developer.android.com/studio/releases/gradle-plugin#native-dependencies
         implementation 'com.facebook.fbjni:fbjni-java-only:0.0.4'
         extractHeaders 'com.facebook.fbjni:fbjni:0.0.4:headers'
         extractJNI 'com.facebook.fbjni:fbjni:0.0.4'
