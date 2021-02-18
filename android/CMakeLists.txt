@@ -55,6 +55,7 @@ file(GLOB libfbjni_include_DIRS "${build_DIR}/fbjni-*-headers.jar/")
 # Without NO_CMAKE_FIND_ROOT_PATH, this will for some bizarre reason only look
 # in the NDK folder.
 find_library(FBJNI_LIBRARY fbjni PATHS ${libfbjni_link_DIRS} NO_CMAKE_FIND_ROOT_PATH)
+find_package(fbjni REQUIRED CONFIG)
 
 add_subdirectory(${libflipper_DIR} ${libflipper_build_DIR})
 
@@ -73,4 +74,4 @@ target_include_directories(${PACKAGE_NAME} PRIVATE
     ${LIBEVENT_DIR}/include/event2
     )
 
-target_link_libraries(${PACKAGE_NAME} ${FBJNI_LIBRARY} flippercpp)
+target_link_libraries(${PACKAGE_NAME} fbjni::fbjni flippercpp)

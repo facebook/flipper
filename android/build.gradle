@@ -28,7 +28,7 @@ android {
 
         externalNativeBuild {
             cmake {
-                arguments '-DANDROID_TOOLCHAIN=clang', '-DANDROID_STL=c++_static'
+                arguments '-DANDROID_TOOLCHAIN=clang', '-DANDROID_STL=c++_shared'
                 targets 'flipper', 'event_shared', 'event_extra_shared', 'event_core_shared'
             }
         }
@@ -51,6 +51,9 @@ android {
         }
     }
 
+    buildFeatures {
+        prefab true
+    }
 
     externalNativeBuild {
         cmake {
@@ -60,10 +63,7 @@ android {
 
     dependencies {
         compileOnly deps.proguardAnnotations
-        // Temporary until we upgrade to prefabs: https://developer.android.com/studio/releases/gradle-plugin#native-dependencies
-        implementation 'com.facebook.fbjni:fbjni-java-only:0.0.4'
-        extractHeaders 'com.facebook.fbjni:fbjni:0.0.4:headers'
-        extractJNI 'com.facebook.fbjni:fbjni:0.0.4'
+        implementation 'com.facebook.fbjni:fbjni:0.0.6-SNAPSHOT'
         implementation deps.soloader
         implementation deps.jsr305
         implementation deps.supportAppCompat
