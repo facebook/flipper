@@ -49,19 +49,12 @@ set(libflipper_build_DIR ${build_DIR}/libflipper/${ANDROID_ABI})
 set(libfolly_build_DIR ${build_DIR}/libfolly/${ANDROID_ABI})
 
 file(MAKE_DIRECTORY ${build_DIR})
-file(GLOB libfbjni_link_DIRS "${build_DIR}/fbjni*/jni/${ANDROID_ABI}")
-file(GLOB libfbjni_include_DIRS "${build_DIR}/fbjni-*-headers.jar/")
-
-# Without NO_CMAKE_FIND_ROOT_PATH, this will for some bizarre reason only look
-# in the NDK folder.
-find_library(FBJNI_LIBRARY fbjni PATHS ${libfbjni_link_DIRS} NO_CMAKE_FIND_ROOT_PATH)
 find_package(fbjni REQUIRED CONFIG)
 
 add_subdirectory(${libflipper_DIR} ${libflipper_build_DIR})
 
 target_include_directories(${PACKAGE_NAME} PRIVATE
     ${libjnihack_DIR}
-    ${libfbjni_include_DIRS}
     ${libflipper_DIR}
     ${libfolly_DIR}
     ${glog_DIR}
