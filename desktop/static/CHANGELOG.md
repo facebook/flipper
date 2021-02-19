@@ -1,3 +1,9 @@
+# 0.76.0 (18/2/2021)
+
+ * [D26337377](https://github.com/facebook/flipper/search?q=D26337377&type=Commits) -  It is now possible to disable and uninstall device plugins if some of them not required
+ * [D26225203](https://github.com/facebook/flipper/search?q=D26225203&type=Commits) -  Android video is now always captured in 1280x720 / 720x1280 to avoid the issue when video cannot be captured because of unsupported resolution (err=-38)
+
+
 # 0.75.1 (12/2/2021)
 
  * [D26370235](https://github.com/facebook/flipper/search?q=D26370235&type=Commits) -  Reduce spamminess of iOS connection warnings
@@ -61,7 +67,7 @@
 
 # 0.59.0 (29/9/2020)
 
- * [D23908151](https://github.com/facebook/flipper/search?q=D23908151&type=Commits) - 
+ * [D23908151](https://github.com/facebook/flipper/search?q=D23908151&type=Commits) -
  * [D23729972](https://github.com/facebook/flipper/search?q=D23729972&type=Commits) -  Ability to reload single auto-updated plugin without full Flipper restart.
 
 
