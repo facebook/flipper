@@ -91,7 +91,9 @@
     class_addMethod(cls, swizzledSelector, implementation, description->types);
     Method newMethod = class_getInstanceMethod(cls, swizzledSelector);
     method_exchangeImplementations(oldMethod, newMethod);
-  }
+  } else {
+     class_addMethod(cls, selector, implementation, methodDescription.types);
+   }
 }
 
 @end
