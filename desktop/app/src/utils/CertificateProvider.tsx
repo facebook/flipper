@@ -377,7 +377,7 @@ export default class CertificateProvider {
               return {id: device.id, ...result, error: null};
             })
             .catch((e) => {
-              console.error(
+              console.warn(
                 `Unable to check for matching CSR in ${device.id}:${appName}`,
                 logTag,
               );
@@ -394,7 +394,7 @@ export default class CertificateProvider {
             const foundCsrs = devices
               .filter((d) => d.foundCsr !== null)
               .map((d) => (d.foundCsr ? encodeURI(d.foundCsr) : 'null'));
-            console.error(`Looking for CSR (url encoded):
+            console.warn(`Looking for CSR (url encoded):
 
             ${encodeURI(this.santitizeString(csr))}
 
@@ -404,7 +404,7 @@ export default class CertificateProvider {
             throw new Error(`No matching device found for app: ${appName}`);
           }
           if (matchingIds.length > 1) {
-            console.error(
+            console.warn(
               new Error('More than one matching device found for CSR'),
               csr,
             );
