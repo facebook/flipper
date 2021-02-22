@@ -8,8 +8,7 @@
  */
 
 import {reportPlatformFailures} from './metrics';
-import {promisify} from 'util';
-import child_process from 'child_process';
+import {exec} from 'promisify-child-process';
 import promiseRetry from 'promise-retry';
 import adbConfig from '../utils/adbConfig';
 import adbkit, {Client} from 'adbkit';
@@ -33,12 +32,12 @@ function createClient(store: Store): Promise<Client> {
   const androidHome = store.getState().settingsState.androidHome;
   const adbPath = path.resolve(androidHome, 'platform-tools/adb');
   return reportPlatformFailures<Client>(
-    promisify(child_process.exec)(`${adbPath} start-server`).then(() =>
+    exec(`${adbPath} start-server`).then(() =>
       adbkit.createClient(adbConfig()),
     ),
     'createADBClient.shell',
   ).catch((err) => {
-    console.error(
+    console.log(
       'Failed to create adb client using shell adb command. Trying with adbkit.\n' +
         err.toString(),
     );
