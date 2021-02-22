@@ -335,6 +335,9 @@ export default class Inspector extends Component<Props, State> {
 
   async getAndExpandPath(path: Array<ElementID>) {
     await Promise.all(path.map((id) => this.getChildren(id, {})));
+    for (const id of path) {
+      this.updateElement(id, {expanded: true});
+    }
     this.onElementSelected()(path[path.length - 1]);
   }
 
