@@ -144,7 +144,7 @@ export default (store: Store, logger: Logger) => {
           `${emulatorPath} -list-avds`,
           (error: Error | null, data: string | null) => {
             if (error != null || data == null) {
-              console.error(error || 'Failed to list AVDs');
+              console.warn('List AVD failed: ', error);
               return;
             }
             const payload = data.split('\n').filter(Boolean);
@@ -172,7 +172,7 @@ export default (store: Store, logger: Logger) => {
                   .map((device: BaseDevice) => device.serial);
 
                 unregisterDevices(deviceIDsToRemove);
-                console.error('adb server was shutdown');
+                console.warn('adb server was shutdown');
                 setTimeout(watchAndroidDevices, 500);
               } else {
                 throw err;
@@ -206,7 +206,7 @@ export default (store: Store, logger: Logger) => {
           });
       })
       .catch((e) => {
-        console.error(`Failed to watch for android devices: ${e.message}`);
+        console.warn(`Failed to watch for android devices: ${e.message}`);
       });
   };
 
