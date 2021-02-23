@@ -36,6 +36,10 @@ type LeakReport = {
   leaks: string[];
 };
 
+type LeakCanary2Report = {
+  leaks: Leak2[];
+};
+
 export type Fields = {[key: string]: string};
 export type Leak = {
   title: string;
@@ -45,6 +49,15 @@ export type Leak = {
   instanceFields: {[key: string]: Fields};
   staticFields: {[key: string]: Fields};
   retainedSize: string;
+  details?: string;
+};
+
+export type Leak2 = {
+  title: string;
+  root: string;
+  elements: {[key: string]: Element};
+  retainedSize: string;
+  details: string;
 };
 
 const Window = styled(FlexRow)({
@@ -72,22 +85,42 @@ export default class LeakCanary<PersistedState> extends FlipperPlugin<
 
   init() {
     this.client.subscribe('reportLeak', (results: LeakReport) => {
-      // We only process new leaks instead of replacing the whole list in order
-      // to both avoid redundant processing and to preserve the expanded/
-      // collapsed state of the tree view
-      const newLeaks = processLeaks(results.leaks.slice(this.state.leaksCount));
+      this._addNewLeaks(processLeaks(results.leaks));
+    });
 
-      const leaks = this.state.leaks;
-      for (let i = 0; i < newLeaks.length; i++) {
-        leaks.push(newLeaks[i]);
-      }
-
-      this.setState({
-        leaks: leaks,
-        leaksCount: results.leaks.length,
-      });
+    this.client.subscribe('reportLeak2', (results: LeakCanary2Report) => {
+      this._addNewLeaks(results.leaks.map(this._adaptLeak2));
     });
   }
+
+  _addNewLeaks = (incomingLeaks: Leak[]) => {
+    // We only process new leaks instead of replacing the whole list in order
+    // to both avoid redundant processing and to preserve the expanded/
+    // collapsed state of the tree view
+    const newLeaks = incomingLeaks.slice(this.state.leaksCount);
+    const leaks = this.state.leaks;
+    for (let i = 0; i < newLeaks.length; i++) {
+      leaks.push(newLeaks[i]);
+    }
+
+    this.setState({
+      leaks: leaks,
+      leaksCount: leaks.length,
+    });
+  };
+
+  _adaptLeak2 = (leak: Leak2) : Leak => {
+    return {
+      title: leak.title,
+      root: leak.root,
+      elements: leak.elements,
+      elementsSimple: leak.elements,
+      staticFields: {},
+      instanceFields: {},
+      retainedSize: leak.retainedSize,
+      details: leak.details
+    };
+  };
 
   _clearLeaks = () => {
     this.setState({
@@ -154,20 +187,29 @@ export default class LeakCanary<PersistedState> extends FlipperPlugin<
 
     return (
       <Sidebar position="right" width={600} minWidth={300} maxWidth={900}>
-        <Panel heading={'Instance'} floating={false} grow={false}>
-          <ManagedDataInspector
-            data={instanceFields}
-            expandRoot={true}
-            extractValue={this._extractValue}
-          />
-        </Panel>
-        <Panel heading={'Static'} floating={false} grow={false}>
-          <ManagedDataInspector
-            data={staticFields}
-            expandRoot={true}
-            extractValue={this._extractValue}
-          />
-        </Panel>
+        { instanceFields &&
+          <Panel heading={'Instance'} floating={false} grow={false}>
+            <ManagedDataInspector
+              data={instanceFields}
+              expandRoot={true}
+              extractValue={this._extractValue}
+            />
+          </Panel>
+        }
+        { staticFields &&
+          <Panel heading={'Static'} floating={false} grow={false}>
+            <ManagedDataInspector
+              data={staticFields}
+              expandRoot={true}
+              extractValue={this._extractValue}
+            />
+          </Panel>
+        }
+        { leak.details &&
+          <Panel heading={'Details'} floating={false} grow={false}>
+            <pre>{leak.details}</pre>
+          </Panel>
+        }
       </Sidebar>
     );
   }
@@ -184,6 +226,7 @@ export default class LeakCanary<PersistedState> extends FlipperPlugin<
               const elements = showFullClassPaths
                 ? leak.elements
                 : leak.elementsSimple;
+
               const selected = selectedIdx == idx ? selectedEid : null;
               return (
                 <Panel

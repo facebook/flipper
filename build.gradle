@@ -101,6 +101,7 @@ ext.deps = [
         mockito            : 'org.mockito:mockito-core:2.26.0',
         okhttp3            : 'com.squareup.okhttp3:okhttp:3.14.1',
         leakcanary         : 'com.squareup.leakcanary:leakcanary-android:1.6.3',
+        leakcanary2        : 'com.squareup.leakcanary:leakcanary-android:2.6',
         testCore           : 'androidx.test:core:1.1.0',
         testRules          : 'androidx.test:rules:1.1.0',
         // Plugin dependencies
