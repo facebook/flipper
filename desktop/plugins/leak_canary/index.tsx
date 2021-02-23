@@ -109,7 +109,7 @@ export default class LeakCanary<PersistedState> extends FlipperPlugin<
     });
   };
 
-  _adaptLeak2 = (leak: Leak2) : Leak => {
+  _adaptLeak2 = (leak: Leak2): Leak => {
     return {
       title: leak.title,
       root: leak.root,
@@ -118,7 +118,7 @@ export default class LeakCanary<PersistedState> extends FlipperPlugin<
       staticFields: {},
       instanceFields: {},
       retainedSize: leak.retainedSize,
-      details: leak.details
+      details: leak.details,
     };
   };
 
@@ -187,7 +187,7 @@ export default class LeakCanary<PersistedState> extends FlipperPlugin<
 
     return (
       <Sidebar position="right" width={600} minWidth={300} maxWidth={900}>
-        { instanceFields &&
+        {instanceFields && (
           <Panel heading={'Instance'} floating={false} grow={false}>
             <ManagedDataInspector
               data={instanceFields}
@@ -195,8 +195,8 @@ export default class LeakCanary<PersistedState> extends FlipperPlugin<
               extractValue={this._extractValue}
             />
           </Panel>
-        }
-        { staticFields &&
+        )}
+        {staticFields && (
           <Panel heading={'Static'} floating={false} grow={false}>
             <ManagedDataInspector
               data={staticFields}
@@ -204,12 +204,12 @@ export default class LeakCanary<PersistedState> extends FlipperPlugin<
               extractValue={this._extractValue}
             />
           </Panel>
-        }
-        { leak.details &&
+        )}
+        {leak.details && (
           <Panel heading={'Details'} floating={false} grow={false}>
             <pre>{leak.details}</pre>
           </Panel>
-        }
+        )}
       </Sidebar>
     );
   }
