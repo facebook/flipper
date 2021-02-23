@@ -398,7 +398,9 @@ function checkDevServer() {
 
 (async () => {
   checkDevServer();
-  await generatePluginEntryPoints(argv.channel === 'insiders');
+  await generatePluginEntryPoints(
+    process.env.FLIPPER_RELEASE_CHANNEL === 'insiders',
+  );
   await ensurePluginFoldersWatchable();
   const port = await detect(DEFAULT_PORT);
   const {app, server} = await startAssetServer(port);
