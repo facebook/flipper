@@ -64,7 +64,7 @@
     "rsocket-core": "^0.0.19",
     "rsocket-flowable": "^0.0.23",
     "rsocket-tcp-server": "^0.0.19",
-    "rsocket-types": "^0.0.16",
+    "rsocket-types": "^0.0.23",
     "semver": "^7.3.2",
     "string-natural-compare": "^3.0.0",
     "tmp": "^0.2.1",
