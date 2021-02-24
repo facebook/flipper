@@ -11134,10 +11134,10 @@ rsocket-flowable@^0.0.14:
   dependencies:
     fbjs "^1.0.0"
 
-rsocket-flowable@^0.0.22:
-  version "0.0.22"
-  resolved "https://registry.yarnpkg.com/rsocket-flowable/-/rsocket-flowable-0.0.22.tgz#0f572edd3c5fadec99cd89fe098d96c81439b99e"
-  integrity sha512-sjmvZVN10kdwHJ/XT1tbuXh6yz90IesXhMI4Wc0wlSAQ+NIIQGTeXre21t5jLYFQX/OEKgN5D2vTFLX7aYwYQA==
+rsocket-flowable@^0.0.23:
+  version "0.0.23"
+  resolved "https://registry.yarnpkg.com/rsocket-flowable/-/rsocket-flowable-0.0.23.tgz#4bbb089bc7b4cb431d3ced1aba6d587aee8167c1"
+  integrity sha512-fIZvpPNUoFlpyrJ1SdHm4QSDvVK9E+NlzvGz2oJP3A8FHS6GWpDLc5YYD3dhih1ZkL0/mS6mSQfxdQl7x2NO5g==
   dependencies:
     fbjs "^2.0.0"
 
