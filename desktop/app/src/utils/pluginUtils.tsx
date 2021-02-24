@@ -83,8 +83,8 @@ export function getExportablePlugins(
     undefined,
     client,
     state.plugins,
-    state.connections.userStarredPlugins,
-    state.connections.userStarredDevicePlugins,
+    state.connections.enabledPlugins,
+    state.connections.enabledDevicePlugins,
   );
 
   return [
@@ -179,8 +179,8 @@ export function computePluginLists(
   metroDevice: BaseDevice | undefined,
   client: Client | undefined,
   plugins: State['plugins'],
-  userStarredPlugins: State['connections']['userStarredPlugins'],
-  userStarredDevicePlugins: Set<string>,
+  enabledPluginsState: State['connections']['enabledPlugins'],
+  enabledDevicePluginsState: Set<string>,
   _pluginsChanged?: number, // this argument is purely used to invalidate the memoization cache
 ) {
   const uninstalledMarketplacePlugins = filterNewestVersionOfEachPlugin(
@@ -191,12 +191,12 @@ export function computePluginLists(
     ...plugins.devicePlugins.values(),
   ]
     .filter((p) => device?.supportsPlugin(p))
-    .filter((p) => userStarredDevicePlugins.has(p.id));
+    .filter((p) => enabledDevicePluginsState.has(p.id));
   const metroPlugins: DevicePluginDefinition[] = [
     ...plugins.devicePlugins.values(),
   ]
     .filter((p) => metroDevice?.supportsPlugin(p))
-    .filter((p) => userStarredDevicePlugins.has(p.id));
+    .filter((p) => enabledDevicePluginsState.has(p.id));
   const enabledPlugins: ClientPluginDefinition[] = [];
   const disabledPlugins: PluginDefinition[] = [
     ...plugins.devicePlugins.values(),
@@ -206,7 +206,7 @@ export function computePluginLists(
         device?.supportsPlugin(p.details) ||
         metroDevice?.supportsPlugin(p.details),
     )
-    .filter((p) => !userStarredDevicePlugins.has(p.id));
+    .filter((p) => !enabledDevicePluginsState.has(p.id));
   const unavailablePlugins: [plugin: PluginDetails, reason: string][] = [];
   const downloadablePlugins: (
     | DownloadablePluginDetails
@@ -263,7 +263,7 @@ export function computePluginLists(
       device,
       client,
       clientPlugins,
-      client && userStarredPlugins[client.query.app],
+      client && enabledPluginsState[client.query.app],
       true,
     );
     clientPlugins.forEach((plugin) => {
@@ -323,7 +323,7 @@ function getFavoritePlugins(
   device: BaseDevice,
   client: Client,
   allPlugins: PluginDefinition[],
-  starredPlugins: undefined | string[],
+  enabledPlugins: undefined | string[],
   returnFavoredPlugins: boolean, // if false, unfavoried plugins are returned
 ): PluginDefinition[] {
   if (device.isArchived) {
@@ -335,11 +335,11 @@ function getFavoritePlugins(
       (plugin) => client.plugins.indexOf(plugin.id) !== -1,
     );
   }
-  if (!starredPlugins || !starredPlugins.length) {
+  if (!enabledPlugins || !enabledPlugins.length) {
     return returnFavoredPlugins ? [] : allPlugins;
   }
   return allPlugins.filter((plugin) => {
-    const idx = starredPlugins.indexOf(plugin.id);
+    const idx = enabledPlugins.indexOf(plugin.id);
     return idx === -1 ? !returnFavoredPlugins : returnFavoredPlugins;
   });
 }

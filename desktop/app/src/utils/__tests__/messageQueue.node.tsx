@@ -23,7 +23,7 @@ import pluginMessageQueue, {
   queueMessages,
 } from '../../reducers/pluginMessageQueue';
 import {registerPlugins} from '../../reducers/plugins';
-import {starPlugin} from '../../reducers/pluginManager';
+import {switchPlugin} from '../../reducers/pluginManager';
 
 interface PersistedState {
   count: 1;
@@ -54,9 +54,9 @@ class TestPlugin extends FlipperPlugin<any, any, any> {
   }
 }
 
-function starTestPlugin(store: Store, client: Client) {
+function switchTestPlugin(store: Store, client: Client) {
   store.dispatch(
-    starPlugin({
+    switchPlugin({
       plugin: TestPlugin,
       selectedApp: client.query.app,
     }),
@@ -174,8 +174,8 @@ test('queue - events are NOT processed immediately if plugin is NOT selected (bu
     [pluginKey]: [],
   });
 
-  // unstar, but, messages still arrives because selected
-  starTestPlugin(store, client);
+  // disable, but, messages still arrives because selected
+  switchTestPlugin(store, client);
   selectTestPlugin(store, client);
   sendMessage('inc', {delta: 3});
   client.flushMessageBuffer();
@@ -186,14 +186,14 @@ test('queue - events are NOT processed immediately if plugin is NOT selected (bu
     },
   });
 
-  // different plugin, and not starred, message will never arrive
+  // different plugin, and not enabled, message will never arrive
   selectDeviceLogs(store);
   sendMessage('inc', {delta: 4});
   client.flushMessageBuffer();
   expect(store.getState().pluginMessageQueue).toEqual({});
 
   // star again, plugin still not selected, message is queued
-  starTestPlugin(store, client);
+  switchTestPlugin(store, client);
   sendMessage('inc', {delta: 5});
   client.flushMessageBuffer();
 
@@ -686,14 +686,14 @@ test('queue - messages that have not yet flushed be lost when disabling the plug
   `);
 
   // disable
-  starTestPlugin(store, client);
+  switchTestPlugin(store, client);
   expect(client.messageBuffer).toMatchInlineSnapshot(`Object {}`);
   expect(store.getState().pluginMessageQueue).toMatchInlineSnapshot(
     `Object {}`,
   );
 
   // re-enable, no messages arrive
-  starTestPlugin(store, client);
+  switchTestPlugin(store, client);
   client.flushMessageBuffer();
   processMessageQueue(TestPlugin, pluginKey, store);
   expect(store.getState().pluginStates).toMatchInlineSnapshot(`Object {}`);

@@ -24,7 +24,7 @@ import {
   registerMarketplacePlugins,
   registerPlugins,
 } from '../../../reducers/plugins';
-import {starPlugin} from '../../../reducers/pluginManager';
+import {switchPlugin} from '../../../reducers/pluginManager';
 
 // eslint-disable-next-line
 import * as LogsPluginModule from '../../../../../plugins/logs/index';
@@ -174,8 +174,8 @@ describe('basic findBestDevice with metro present', () => {
         metro,
         flipper.client,
         state.plugins,
-        state.connections.userStarredPlugins,
-        state.connections.userStarredDevicePlugins,
+        state.connections.enabledPlugins,
+        state.connections.enabledDevicePlugins,
       ),
     ).toEqual({
       downloadablePlugins: [],
@@ -286,8 +286,8 @@ describe('basic findBestDevice with metro present', () => {
       metro,
       flipper.client,
       state.plugins,
-      state.connections.userStarredPlugins,
-      state.connections.userStarredDevicePlugins,
+      state.connections.enabledPlugins,
+      state.connections.enabledDevicePlugins,
     );
     expect(pluginLists).toEqual({
       devicePlugins: [logsPlugin],
@@ -316,7 +316,7 @@ describe('basic findBestDevice with metro present', () => {
     });
 
     flipper.store.dispatch(
-      starPlugin({
+      switchPlugin({
         plugin: plugin2,
         selectedApp: flipper.client.query.app,
       }),
@@ -328,8 +328,8 @@ describe('basic findBestDevice with metro present', () => {
         metro,
         flipper.client,
         state.plugins,
-        state.connections.userStarredPlugins,
-        state.connections.userStarredDevicePlugins,
+        state.connections.enabledPlugins,
+        state.connections.enabledDevicePlugins,
       ),
     ).toMatchObject({
       enabledPlugins: [plugin2],

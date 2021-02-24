@@ -165,7 +165,7 @@ function pluginIsDisabledForAllConnectedClients(
   return (
     !state.plugins.clientPlugins.has(plugin.id) ||
     !state.connections.clients.some((c) =>
-      state.connections.userStarredPlugins[c.query.app]?.includes(plugin.id),
+      state.connections.enabledPlugins[c.query.app]?.includes(plugin.id),
     )
   );
 }

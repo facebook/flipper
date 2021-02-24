@@ -23,7 +23,7 @@ import {
 } from 'flipper-plugin';
 import {selectPlugin} from '../reducers/connections';
 import {updateSettings} from '../reducers/settings';
-import {starPlugin} from '../reducers/pluginManager';
+import {switchPlugin} from '../reducers/pluginManager';
 
 interface PersistedState {
   count: 1;
@@ -287,7 +287,7 @@ test('PluginContainer can render Sandy plugins', async () => {
   // disable
   act(() => {
     store.dispatch(
-      starPlugin({
+      switchPlugin({
         plugin: definition,
         selectedApp: client.query.app,
       }),
@@ -302,7 +302,7 @@ test('PluginContainer can render Sandy plugins', async () => {
   // re-enable
   act(() => {
     store.dispatch(
-      starPlugin({
+      switchPlugin({
         plugin: definition,
         selectedApp: client.query.app,
       }),
@@ -402,7 +402,7 @@ test('PluginContainer triggers correct lifecycles for background plugin', async 
   // disable
   act(() => {
     store.dispatch(
-      starPlugin({
+      switchPlugin({
         plugin: definition,
         selectedApp: client.query.app,
       }),
@@ -427,7 +427,7 @@ test('PluginContainer triggers correct lifecycles for background plugin', async 
   // re-enable
   act(() => {
     store.dispatch(
-      starPlugin({
+      switchPlugin({
         plugin: definition,
         selectedApp: client.query.app,
       }),
@@ -962,7 +962,7 @@ test('Sandy plugins support isPluginSupported + selectPlugin', async () => {
   expect(linksSeen).toEqual([]);
 
   // star and navigate to a device plugin
-  store.dispatch(starPlugin({plugin: definition3}));
+  store.dispatch(switchPlugin({plugin: definition3}));
   pluginInstance.selectPlugin(definition3.id);
   expect(pluginInstance.isPluginAvailable(definition3.id)).toBeTruthy();
   expect(store.getState().connections.selectedPlugin).toBe(definition3.id);
@@ -984,13 +984,13 @@ test('Sandy plugins support isPluginSupported + selectPlugin', async () => {
   `);
   expect(linksSeen).toEqual(['data']);
 
-  // try to go to plugin 2, fails (not starred, so no-op)
+  // try to go to plugin 2, fails (not enabled, so no-op)
   pluginInstance.selectPlugin(definition2.id);
   expect(store.getState().connections.selectedPlugin).toBe(definition.id);
 
   // star plugin 2 and navigate to plugin 2
   store.dispatch(
-    starPlugin({
+    switchPlugin({
       plugin: definition2,
       selectedApp: client.query.app,
     }),

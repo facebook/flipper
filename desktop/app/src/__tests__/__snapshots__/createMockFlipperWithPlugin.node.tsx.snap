@@ -24,6 +24,18 @@ Object {
       "title": "MockAndroidDevice",
     },
   ],
+  "enabledDevicePlugins": Set {
+    "DeviceLogs",
+    "CrashReporter",
+    "MobileBuilds",
+    "Hermesdebuggerrn",
+    "React",
+  },
+  "enabledPlugins": Object {
+    "TestApp": Array [
+      "TestPlugin",
+    ],
+  },
   "selectedApp": "TestApp#Android#MockAndroidDevice#serial",
   "selectedDevice": Object {
     "deviceType": "physical",
@@ -37,18 +49,6 @@ Object {
   "userPreferredApp": "TestApp#Android#MockAndroidDevice#serial",
   "userPreferredDevice": "MockAndroidDevice",
   "userPreferredPlugin": "TestPlugin",
-  "userStarredDevicePlugins": Set {
-    "DeviceLogs",
-    "CrashReporter",
-    "MobileBuilds",
-    "Hermesdebuggerrn",
-    "React",
-  },
-  "userStarredPlugins": Object {
-    "TestApp": Array [
-      "TestPlugin",
-    ],
-  },
 }
 `;
 

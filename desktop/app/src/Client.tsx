@@ -222,7 +222,7 @@ export default class Client extends EventEmitter {
   isEnabledPlugin(pluginId: string) {
     return this.store
       .getState()
-      .connections.userStarredPlugins[this.query.app]?.includes(pluginId);
+      .connections.enabledPlugins[this.query.app]?.includes(pluginId);
   }
 
   shouldConnectAsBackgroundPlugin(pluginId: string) {
@@ -294,7 +294,7 @@ export default class Client extends EventEmitter {
     plugin: PluginDefinition | undefined,
     isEnabled = plugin ? this.isEnabledPlugin(plugin.id) : false,
   ) {
-    // start a plugin on start if it is a SandyPlugin, which is starred, and doesn't have persisted state yet
+    // start a plugin on start if it is a SandyPlugin, which is enabled, and doesn't have persisted state yet
     if (
       isSandyPlugin(plugin) &&
       (isEnabled || defaultEnabledBackgroundPlugins.includes(plugin.id)) &&
@@ -375,7 +375,7 @@ export default class Client extends EventEmitter {
         !newBackgroundPlugins.includes(plugin) &&
         this.store
           .getState()
-          .connections.userStarredPlugins[this.query.app]?.includes(plugin)
+          .connections.enabledPlugins[this.query.app]?.includes(plugin)
       ) {
         this.deinitPlugin(plugin);
       }

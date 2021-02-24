@@ -31,7 +31,7 @@ import {PluginDefinition} from '../plugin';
 import PluginContainer from '../PluginContainer';
 import {getPluginKey, isDevicePluginDefinition} from '../utils/pluginUtils';
 import MockFlipper from './MockFlipper';
-import {starPlugin} from '../reducers/pluginManager';
+import {switchPlugin} from '../reducers/pluginManager';
 
 export type MockFlipperResult = {
   client: Client;
@@ -71,11 +71,9 @@ function isPluginEnabled(
     (!isDevicePluginDefinition(pluginClazz) &&
       store
         .getState()
-        .connections.userStarredPlugins[selectedApp]?.includes(
-          pluginClazz.id,
-        )) ||
+        .connections.enabledPlugins[selectedApp]?.includes(pluginClazz.id)) ||
     (isDevicePluginDefinition(pluginClazz) &&
-      store.getState().connections.userStarredDevicePlugins.has(pluginClazz.id))
+      store.getState().connections.enabledDevicePlugins.has(pluginClazz.id))
   );
 }
 
@@ -108,7 +106,7 @@ export async function createMockFlipperWithPlugin(
     // enable the plugin
     if (!isPluginEnabled(store, pluginClazz, name)) {
       store.dispatch(
-        starPlugin({
+        switchPlugin({
           plugin: pluginClazz,
           selectedApp: client.query.app,
         }),
@@ -118,7 +116,7 @@ export async function createMockFlipperWithPlugin(
       options?.additionalPlugins?.forEach((plugin) => {
         if (!isPluginEnabled(store, plugin, name)) {
           store.dispatch(
-            starPlugin({
+            switchPlugin({
               plugin,
               selectedApp: client.query.app,
             }),
@@ -172,7 +170,7 @@ export async function createMockFlipperWithPlugin(
         throw new Error('unknown plugin ' + id);
       }
       store.dispatch(
-        starPlugin({
+        switchPlugin({
           plugin,
           selectedApp: client.query.app,
         }),

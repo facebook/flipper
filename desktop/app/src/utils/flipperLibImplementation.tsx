@@ -47,9 +47,7 @@ export function initializeFlipperLibImplementation(
           if (
             store
               .getState()
-              .connections.userStarredPlugins[client.query.app]?.includes(
-                pluginId,
-              )
+              .connections.enabledPlugins[client.query.app]?.includes(pluginId)
           ) {
             return true;
           }

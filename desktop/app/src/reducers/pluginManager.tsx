@@ -20,7 +20,7 @@ export type PluginCommand =
   | LoadPluginAction
   | UninstallPluginAction
   | UpdatePluginAction
-  | StarPluginAction;
+  | SwitchPluginAction;
 
 export type LoadPluginActionPayload = {
   plugin: ActivatablePluginDetails;
@@ -52,14 +52,14 @@ export type UpdatePluginAction = {
   payload: UpdatePluginActionPayload;
 };
 
-export type StarPluginActionPayload = {
+export type SwitchPluginActionPayload = {
   plugin: PluginDefinition;
   selectedApp?: string;
 };
 
-export type StarPluginAction = {
-  type: 'STAR_PLUGIN';
-  payload: StarPluginActionPayload;
+export type SwitchPluginAction = {
+  type: 'SWITCH_PLUGIN';
+  payload: SwitchPluginActionPayload;
 };
 
 export type Action =
@@ -81,7 +81,7 @@ export default function reducer(
     case 'LOAD_PLUGIN':
     case 'UNINSTALL_PLUGIN':
     case 'UPDATE_PLUGIN':
-    case 'STAR_PLUGIN':
+    case 'SWITCH_PLUGIN':
       return produce(state, (draft) => {
         draft.pluginCommandsQueue.push(action);
       });
@@ -118,7 +118,7 @@ export const registerPluginUpdate = (
   payload,
 });
 
-export const starPlugin = (payload: StarPluginActionPayload): Action => ({
-  type: 'STAR_PLUGIN',
+export const switchPlugin = (payload: SwitchPluginActionPayload): Action => ({
+  type: 'SWITCH_PLUGIN',
   payload,
 });

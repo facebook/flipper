@@ -31,7 +31,7 @@ const {version} = require('../package.json');
 const dev = process.env.NODE_ENV !== 'production';
 
 // For insiders builds we bundle top 5 popular device plugins,
-// plus top 10 popular "universal" plugins starred by more than 100 users.
+// plus top 10 popular "universal" plugins enabled by more than 100 users.
 const hardcodedPlugins = new Set<string>([
   // Popular device plugins
   'DeviceLogs',

@@ -32,9 +32,9 @@ import {
 import {
   StaticView,
   setStaticView,
-  pluginIsStarred,
+  isPluginEnabled,
 } from './reducers/connections';
-import {starPlugin} from './reducers/pluginManager';
+import {switchPlugin} from './reducers/pluginManager';
 import React, {PureComponent} from 'react';
 import {connect, ReactReduxContext} from 'react-redux';
 import {setPluginState} from './reducers/pluginStates';
@@ -127,7 +127,7 @@ type DispatchFromProps = {
   }) => any;
   setPluginState: (payload: {pluginKey: string; state: any}) => void;
   setStaticView: (payload: StaticView) => void;
-  starPlugin: typeof starPlugin;
+  enablePlugin: typeof switchPlugin;
   loadPlugin: typeof loadPlugin;
 };
 
@@ -315,7 +315,7 @@ class PluginContainer extends PureComponent<Props, State> {
             <ToggleButton
               toggled={false}
               onClick={() => {
-                this.props.starPlugin({
+                this.props.enablePlugin({
                   plugin: activePlugin,
                   selectedApp: (this.props.target as Client)?.query?.app,
                 });
@@ -552,8 +552,8 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
       selectedApp,
       clients,
       deepLinkPayload,
-      userStarredPlugins,
-      userStarredDevicePlugins,
+      enabledPlugins,
+      enabledDevicePlugins,
     },
     pluginStates,
     plugins: {devicePlugins, clientPlugins, installedPlugins},
@@ -580,9 +580,9 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
       }
       pluginIsEnabled =
         activePlugin !== undefined &&
-        pluginIsStarred(
-          userStarredPlugins,
-          userStarredDevicePlugins,
+        isPluginEnabled(
+          enabledPlugins,
+          enabledDevicePlugins,
           selectedApp,
           activePlugin.id,
         );
@@ -619,7 +619,7 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
     setPluginState,
     selectPlugin,
     setStaticView,
-    starPlugin,
-    loadPlugin: loadPlugin,
+    enablePlugin: switchPlugin,
+    loadPlugin,
   },
 )(PluginContainer);

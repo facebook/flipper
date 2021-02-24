@@ -38,7 +38,7 @@ import {
 } from '../../reducers/pluginDownloads';
 import {
   loadPlugin,
-  starPlugin,
+  switchPlugin,
   uninstallPlugin,
 } from '../../reducers/pluginManager';
 import {BundledPluginDetails} from 'plugin-lib';
@@ -86,8 +86,8 @@ export const PluginList = memo(function PluginList({
     metroDevice,
     client,
     plugins,
-    connections.userStarredPlugins,
-    connections.userStarredDevicePlugins,
+    connections.enabledPlugins,
+    connections.enabledDevicePlugins,
     pluginsChanged,
   ]);
   const isConnected = useValue(activeDevice?.connected, false);
@@ -142,12 +142,12 @@ export const PluginList = memo(function PluginList({
     },
     [dispatch, metroDevice, connections.selectedApp],
   );
-  const handleStarPlugin = useCallback(
+  const handleEnablePlugin = useCallback(
     (id: string) => {
       const plugin = (plugins.clientPlugins.get(id) ??
         plugins.devicePlugins.get(id))!;
       dispatch(
-        starPlugin({
+        switchPlugin({
           selectedApp: client?.query.app,
           plugin,
         }),
@@ -207,7 +207,7 @@ export const PluginList = memo(function PluginList({
                   isArchived ? null : (
                     <ActionButton
                       id={plugin.id}
-                      onClick={handleStarPlugin}
+                      onClick={handleEnablePlugin}
                       title="Disable plugin"
                       icon={
                         <MinusOutlined size={16} style={{marginRight: 0}} />
@@ -250,7 +250,7 @@ export const PluginList = memo(function PluginList({
                   isConnected ? (
                     <ActionButton
                       id={plugin.id}
-                      onClick={handleStarPlugin}
+                      onClick={handleEnablePlugin}
                       title="Disable plugin"
                       icon={
                         <MinusOutlined size={16} style={{marginRight: 0}} />
@@ -285,7 +285,7 @@ export const PluginList = memo(function PluginList({
                       <ActionButton
                         id={plugin.id}
                         title="Enable plugin"
-                        onClick={handleStarPlugin}
+                        onClick={handleEnablePlugin}
                         icon={
                           <PlusOutlined size={16} style={{marginRight: 0}} />
                         }

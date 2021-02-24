@@ -24,7 +24,7 @@ export default (store: Store, _logger: Logger) => {
   }
   device.loadDevicePlugins(
     store.getState().plugins.devicePlugins,
-    store.getState().connections.userStarredDevicePlugins,
+    store.getState().connections.enabledDevicePlugins,
   );
   store.dispatch({
     type: 'REGISTER_DEVICE',

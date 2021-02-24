@@ -126,7 +126,7 @@ export default class MockFlipper {
     });
     device.loadDevicePlugins(
       this._store.getState().plugins.devicePlugins,
-      this.store.getState().connections.userStarredDevicePlugins,
+      this.store.getState().connections.enabledDevicePlugins,
     );
     this._devices.push(device);
     return device;

@@ -802,7 +802,7 @@ export function importDataToStore(source: string, data: string, store: Store) {
   });
   archivedDevice.loadDevicePlugins(
     store.getState().plugins.devicePlugins,
-    store.getState().connections.userStarredDevicePlugins,
+    store.getState().connections.enabledDevicePlugins,
     deserializeObject(device.pluginStates),
   );
   store.dispatch({

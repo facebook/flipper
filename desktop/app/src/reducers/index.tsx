@@ -15,6 +15,8 @@ import application, {
 import connections, {
   State as DevicesState,
   Action as DevicesAction,
+  persistMigrations as devicesPersistMigrations,
+  persistVersion as devicesPersistVersion,
 } from './connections';
 import pluginStates, {
   State as PluginStatesState,
@@ -67,7 +69,7 @@ import {launcherConfigDir} from '../utils/launcher';
 import os from 'os';
 import {resolve} from 'path';
 import xdg from 'xdg-basedir';
-import {createTransform, persistReducer} from 'redux-persist';
+import {createMigrate, createTransform, persistReducer} from 'redux-persist';
 import {PersistPartial} from 'redux-persist/es/persistReducer';
 
 import {Store as ReduxStore, MiddlewareAPI as ReduxMiddlewareAPI} from 'redux';
@@ -140,10 +142,16 @@ export default combineReducers<State, Actions>({
         'userPreferredDevice',
         'userPreferredPlugin',
         'userPreferredApp',
-        'userStarredPlugins',
-        'userStarredDevicePlugins',
+        'enabledPlugins',
+        'enabledDevicePlugins',
       ],
-      transforms: [setTransformer({whitelist: ['userStarredDevicePlugins']})],
+      transforms: [
+        setTransformer({
+          whitelist: ['enabledDevicePlugins', 'userStarredDevicePlugins'],
+        }),
+      ],
+      version: devicesPersistVersion,
+      migrate: createMigrate(devicesPersistMigrations),
     },
     connections,
   ),

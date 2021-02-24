@@ -242,7 +242,7 @@ export default (store: Store, logger: Logger) => {
 
     androidDevice.loadDevicePlugins(
       store.getState().plugins.devicePlugins,
-      store.getState().connections.userStarredDevicePlugins,
+      store.getState().connections.enabledDevicePlugins,
     );
     store.dispatch({
       type: 'REGISTER_DEVICE',

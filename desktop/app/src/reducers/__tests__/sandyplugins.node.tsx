@@ -17,7 +17,7 @@ import {
   PluginClient,
   TestUtils,
 } from 'flipper-plugin';
-import {starPlugin} from '../pluginManager';
+import {switchPlugin} from '../pluginManager';
 
 const pluginDetails = TestUtils.createMockPluginDetails();
 
@@ -59,7 +59,7 @@ type PluginApi = ReturnType<typeof plugin>;
 
 function starTestPlugin(store: Store, client: Client) {
   store.dispatch(
-    starPlugin({
+    switchPlugin({
       plugin: TestPlugin,
       selectedApp: client.query.app,
     }),
@@ -110,7 +110,7 @@ test('it should cleanup a plugin if disabled', async () => {
   client.initPlugin(TestPlugin.id);
   expect(pluginInstance.connectStub).toHaveBeenCalledTimes(1);
 
-  // unstar
+  // disable
   starTestPlugin(store, client);
   expect(client.sandyPluginStates.has(TestPlugin.id)).toBeFalsy();
   expect(pluginInstance.disconnectStub).toHaveBeenCalledTimes(1);
@@ -174,7 +174,7 @@ test('it should not initialize a sandy plugin if not enabled', async () => {
   expect(Plugin2.asPluginModule().plugin).toBeCalledTimes(0);
 
   store.dispatch(
-    starPlugin({
+    switchPlugin({
       plugin: Plugin2,
       selectedApp: client.query.app,
     }),
@@ -193,7 +193,7 @@ test('it should not initialize a sandy plugin if not enabled', async () => {
 
   // disable plugin again
   store.dispatch(
-    starPlugin({
+    switchPlugin({
       plugin: Plugin2,
       selectedApp: client.query.app,
     }),
@@ -278,7 +278,7 @@ test('it should initialize "Navigation" plugin if not enabled', async () => {
   expect(Plugin2.asPluginModule().plugin).toBeCalledTimes(1);
 
   store.dispatch(
-    starPlugin({
+    switchPlugin({
       plugin: Plugin2,
       selectedApp: client.query.app,
     }),
@@ -292,7 +292,7 @@ test('it should initialize "Navigation" plugin if not enabled', async () => {
 
   // disable plugin again
   store.dispatch(
-    starPlugin({
+    switchPlugin({
       plugin: Plugin2,
       selectedApp: client.query.app,
     }),

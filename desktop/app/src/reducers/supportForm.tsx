@@ -10,7 +10,7 @@
 import {Actions, Store} from './';
 import {setStaticView} from './connections';
 import {deconstructClientId} from '../utils/clientUtils';
-import {starPlugin as setStarPlugin} from './pluginManager';
+import {switchPlugin} from './pluginManager';
 import {showStatusUpdatesForDuration} from '../utils/promiseTimeout';
 import {selectedPlugins as setSelectedPlugins} from './plugins';
 import {addStatusMessage, removeStatusMessage} from './application';
@@ -125,7 +125,7 @@ export class Group {
     if (selectedApp) {
       const {app} = deconstructClientId(selectedApp);
       const enabledPlugins: Array<string> | null = store.getState().connections
-        .userStarredPlugins[app];
+        .enabledPlugins[app];
       const unsupportedPlugins = [];
       for (const requiredPlugin of this.requiredPlugins) {
         const requiredPluginEnabled =
@@ -139,7 +139,7 @@ export class Group {
             store.getState().plugins.clientPlugins.get(requiredPlugin) ||
             store.getState().plugins.devicePlugins.get(requiredPlugin)!;
           store.dispatch(
-            setStarPlugin({
+            switchPlugin({
               selectedApp: app,
               plugin,
             }),

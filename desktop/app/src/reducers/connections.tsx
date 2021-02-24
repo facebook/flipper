@@ -31,7 +31,22 @@ export type StaticView =
   | ComponentType<StaticViewProps>
   | React.FunctionComponent<any>;
 
-export type State = {
+export type State = StateV1;
+
+export const persistVersion = 1;
+export const persistMigrations = {
+  1: (state: any) => {
+    const stateV0 = state as StateV0;
+    const stateV1 = {
+      ...stateV0,
+      enabledPlugins: stateV0.userStarredPlugins,
+      enabledDevicePlugins: stateV0.userStarredDevicePlugins,
+    };
+    return stateV1 as any;
+  },
+};
+
+type StateV1 = {
   devices: Array<BaseDevice>;
   androidEmulators: Array<string>;
   selectedDevice: null | BaseDevice;
@@ -40,8 +55,8 @@ export type State = {
   userPreferredDevice: null | string;
   userPreferredPlugin: null | string;
   userPreferredApp: null | string;
-  userStarredPlugins: {[client: string]: string[]};
-  userStarredDevicePlugins: Set<string>;
+  enabledPlugins: {[client: string]: string[]};
+  enabledDevicePlugins: Set<string>;
   clients: Array<Client>;
   uninitializedClients: Array<{
     client: UninitializedClient;
@@ -50,6 +65,11 @@ export type State = {
   }>;
   deepLinkPayload: unknown;
   staticView: StaticView;
+};
+
+type StateV0 = Omit<StateV1, 'enabledPlugins' | 'enabledDevicePlugins'> & {
+  userStarredPlugins: {[client: string]: string[]};
+  userStarredDevicePlugins: Set<string>;
 };
 
 export type Action =
@@ -109,27 +129,27 @@ export type Action =
       deepLinkPayload: unknown;
     }
   | {
-      type: 'PLUGIN_STARRED';
+      type: 'SET_PLUGIN_ENABLED';
       payload: {
         pluginId: string;
         selectedApp: string;
       };
     }
   | {
-      type: 'DEVICE_PLUGIN_STARRED';
+      type: 'SET_DEVICE_PLUGIN_ENABLED';
       payload: {
         pluginId: string;
       };
     }
   | {
-      type: 'PLUGIN_UNSTARRED';
+      type: 'SET_PLUGIN_DISABLED';
       payload: {
         pluginId: string;
         selectedApp: string;
       };
     }
   | {
-      type: 'DEVICE_PLUGIN_UNSTARRED';
+      type: 'SET_DEVICE_PLUGIN_DISABLED';
       payload: {
         pluginId: string;
       };
@@ -151,8 +171,8 @@ const INITAL_STATE: State = {
   userPreferredDevice: null,
   userPreferredPlugin: null,
   userPreferredApp: null,
-  userStarredPlugins: {},
-  userStarredDevicePlugins: new Set([
+  enabledPlugins: {},
+  enabledDevicePlugins: new Set([
     'DeviceLogs',
     'CrashReporter',
     'MobileBuilds',
@@ -384,42 +404,42 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
       });
       return state;
     }
-    case 'PLUGIN_STARRED': {
+    case 'SET_PLUGIN_ENABLED': {
       const {pluginId, selectedApp} = action.payload;
       return produce(state, (draft) => {
-        if (!draft.userStarredPlugins[selectedApp]) {
-          draft.userStarredPlugins[selectedApp] = [];
+        if (!draft.enabledPlugins[selectedApp]) {
+          draft.enabledPlugins[selectedApp] = [];
         }
-        const plugins = draft.userStarredPlugins[selectedApp];
+        const plugins = draft.enabledPlugins[selectedApp];
         const idx = plugins.indexOf(pluginId);
         if (idx === -1) {
           plugins.push(pluginId);
         }
       });
     }
-    case 'DEVICE_PLUGIN_STARRED': {
+    case 'SET_DEVICE_PLUGIN_ENABLED': {
       const {pluginId} = action.payload;
       return produce(state, (draft) => {
-        draft.userStarredDevicePlugins.add(pluginId);
+        draft.enabledDevicePlugins.add(pluginId);
       });
     }
-    case 'PLUGIN_UNSTARRED': {
+    case 'SET_PLUGIN_DISABLED': {
       const {pluginId, selectedApp} = action.payload;
       return produce(state, (draft) => {
-        if (!draft.userStarredPlugins[selectedApp]) {
-          draft.userStarredPlugins[selectedApp] = [];
+        if (!draft.enabledPlugins[selectedApp]) {
+          draft.enabledPlugins[selectedApp] = [];
         }
-        const plugins = draft.userStarredPlugins[selectedApp];
+        const plugins = draft.enabledPlugins[selectedApp];
         const idx = plugins.indexOf(pluginId);
         if (idx !== -1) {
           plugins.splice(idx, 1);
         }
       });
     }
-    case 'DEVICE_PLUGIN_UNSTARRED': {
+    case 'SET_DEVICE_PLUGIN_DISABLED': {
       const {pluginId} = action.payload;
       return produce(state, (draft) => {
-        draft.userStarredDevicePlugins.delete(pluginId);
+        draft.enabledDevicePlugins.delete(pluginId);
       });
     }
     default:
@@ -467,30 +487,30 @@ export const selectClient = (clientId: string | null): Action => ({
   payload: clientId,
 });
 
-export const pluginStarred = (pluginId: string, appId: string): Action => ({
-  type: 'PLUGIN_STARRED',
+export const setPluginEnabled = (pluginId: string, appId: string): Action => ({
+  type: 'SET_PLUGIN_ENABLED',
   payload: {
     pluginId,
     selectedApp: appId,
   },
 });
 
-export const devicePluginStarred = (pluginId: string): Action => ({
-  type: 'DEVICE_PLUGIN_STARRED',
+export const setDevicePluginEnabled = (pluginId: string): Action => ({
+  type: 'SET_DEVICE_PLUGIN_ENABLED',
   payload: {
     pluginId,
   },
 });
 
-export const devicePluginUnstarred = (pluginId: string): Action => ({
-  type: 'DEVICE_PLUGIN_UNSTARRED',
+export const setDevicePluginDisabled = (pluginId: string): Action => ({
+  type: 'SET_DEVICE_PLUGIN_DISABLED',
   payload: {
     pluginId,
   },
 });
 
-export const pluginUnstarred = (pluginId: string, appId: string): Action => ({
-  type: 'PLUGIN_UNSTARRED',
+export const setPluginDisabled = (pluginId: string, appId: string): Action => ({
+  type: 'SET_PLUGIN_DISABLED',
   payload: {
     pluginId,
     selectedApp: appId,
@@ -618,19 +638,19 @@ export function getSelectedPluginKey(state: State): string | undefined {
     : undefined;
 }
 
-export function pluginIsStarred(
-  userStarredPlugins: State['userStarredPlugins'],
-  userStarredDevicePlugins: State['userStarredDevicePlugins'],
+export function isPluginEnabled(
+  enabledPlugins: State['enabledPlugins'],
+  enabledDevicePlugins: State['enabledDevicePlugins'],
   app: string | null,
   pluginId: string,
 ): boolean {
-  if (userStarredDevicePlugins.has(pluginId)) {
+  if (enabledDevicePlugins.has(pluginId)) {
     return true;
   }
   if (!app) {
     return false;
   }
   const appInfo = deconstructClientId(app);
-  const starred = userStarredPlugins[appInfo.app];
+  const starred = enabledPlugins[appInfo.app];
   return starred && starred.indexOf(pluginId) > -1;
 }

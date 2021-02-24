@@ -11,7 +11,7 @@ jest.mock('../plugins');
 jest.mock('../../utils/electronModuleCache');
 import {
   loadPlugin,
-  starPlugin,
+  switchPlugin,
   uninstallPlugin,
 } from '../../reducers/pluginManager';
 import {requirePlugin} from '../plugins';
@@ -189,35 +189,35 @@ test('star plugin', async () => {
     loadPlugin({plugin: pluginDetails1, enable: false, notifyIfFailed: false}),
   );
   mockFlipper.dispatch(
-    starPlugin({
+    switchPlugin({
       plugin: pluginDefinition1,
       selectedApp: mockClient.query.app,
     }),
   );
   expect(
-    mockFlipper.getState().connections.userStarredPlugins[mockClient.query.app],
+    mockFlipper.getState().connections.enabledPlugins[mockClient.query.app],
   ).toContain('plugin1');
   expect(mockClient.sandyPluginStates.has('plugin1')).toBeTruthy();
 });
 
-test('unstar plugin', async () => {
+test('disable plugin', async () => {
   mockFlipper.dispatch(
     loadPlugin({plugin: pluginDetails1, enable: false, notifyIfFailed: false}),
   );
   mockFlipper.dispatch(
-    starPlugin({
+    switchPlugin({
       plugin: pluginDefinition1,
       selectedApp: mockClient.query.app,
     }),
   );
   mockFlipper.dispatch(
-    starPlugin({
+    switchPlugin({
       plugin: pluginDefinition1,
       selectedApp: mockClient.query.app,
     }),
   );
   expect(
-    mockFlipper.getState().connections.userStarredPlugins[mockClient.query.app],
+    mockFlipper.getState().connections.enabledPlugins[mockClient.query.app],
   ).not.toContain('plugin1');
   expect(mockClient.sandyPluginStates.has('plugin1')).toBeFalsy();
 });
@@ -231,17 +231,17 @@ test('star device plugin', async () => {
     }),
   );
   mockFlipper.dispatch(
-    starPlugin({
+    switchPlugin({
       plugin: devicePluginDefinition,
     }),
   );
   expect(
-    mockFlipper.getState().connections.userStarredDevicePlugins.has('device'),
+    mockFlipper.getState().connections.enabledDevicePlugins.has('device'),
   ).toBeTruthy();
   expect(mockDevice.sandyPluginStates.has('device')).toBeTruthy();
 });
 
-test('unstar device plugin', async () => {
+test('disable device plugin', async () => {
   mockFlipper.dispatch(
     loadPlugin({
       plugin: devicePluginDetails,
@@ -250,17 +250,17 @@ test('unstar device plugin', async () => {
     }),
   );
   mockFlipper.dispatch(
-    starPlugin({
+    switchPlugin({
       plugin: devicePluginDefinition,
     }),
   );
   mockFlipper.dispatch(
-    starPlugin({
+    switchPlugin({
       plugin: devicePluginDefinition,
     }),
   );
   expect(
-    mockFlipper.getState().connections.userStarredDevicePlugins.has('device'),
+    mockFlipper.getState().connections.enabledDevicePlugins.has('device'),
   ).toBeFalsy();
   expect(mockDevice.sandyPluginStates.has('device')).toBeFalsy();
 });

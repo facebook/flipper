@@ -111,7 +111,7 @@ test('New device with same serial removes & cleans the old one', async () => {
   });
   device2.loadDevicePlugins(
     store.getState().plugins.devicePlugins,
-    store.getState().connections.userStarredDevicePlugins,
+    store.getState().connections.enabledDevicePlugins,
   );
 
   expect(device.isArchived).toBe(false);

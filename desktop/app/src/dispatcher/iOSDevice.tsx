@@ -136,7 +136,7 @@ function processDevices(
       const iOSDevice = new IOSDevice(udid, type, name);
       iOSDevice.loadDevicePlugins(
         store.getState().plugins.devicePlugins,
-        store.getState().connections.userStarredDevicePlugins,
+        store.getState().connections.enabledDevicePlugins,
       );
       store.dispatch({
         type: 'REGISTER_DEVICE',

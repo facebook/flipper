@@ -21,7 +21,7 @@ import {
   DEFAULT_MAX_QUEUE_SIZE,
 } from '../reducers/pluginMessageQueue';
 import {IdlerImpl} from './Idler';
-import {pluginIsStarred, getSelectedPluginKey} from '../reducers/connections';
+import {isPluginEnabled, getSelectedPluginKey} from '../reducers/connections';
 import {deconstructPluginKey} from './clientUtils';
 import {defaultEnabledBackgroundPlugins} from './pluginUtils';
 import {batch, Idler, _SandyPluginInstance} from 'flipper-plugin';
@@ -133,9 +133,9 @@ export function processMessagesLater(
     case plugin instanceof _SandyPluginInstance:
     case plugin instanceof FlipperDevicePlugin:
     case (plugin as any).prototype instanceof FlipperDevicePlugin:
-    case pluginIsStarred(
-      store.getState().connections.userStarredPlugins,
-      store.getState().connections.userStarredDevicePlugins,
+    case isPluginEnabled(
+      store.getState().connections.enabledPlugins,
+      store.getState().connections.enabledDevicePlugins,
       deconstructPluginKey(pluginKey).client,
       pluginId,
     ):
