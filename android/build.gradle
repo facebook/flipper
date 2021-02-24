@@ -55,6 +55,11 @@ android {
         prefab true
     }
 
+    packagingOptions {
+        exclude("**/libfbjni.so")
+        exclude("**/libc++_shared.so")
+    }
+
     externalNativeBuild {
         cmake {
             path './CMakeLists.txt'
