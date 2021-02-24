@@ -28,7 +28,7 @@ GROUP=com.facebook.flipper
 ...
 ```
 
-Now, run `./gradlew install` in the root of the repository. This will
+Now, run `./gradlew installArchives -PRELEASE_SIGNING_ENABLED=false` in the root of the repository. This will
 place the artifact files in your local `~/.m2/repository` folder.
 
 ## Using the new Release
@@ -45,7 +45,7 @@ FLIPPER_VERSION=0.44.99-SNAPSHOT
 
 Now run `yarn android` to rebuild, install and launch the RN sample app.
 
-To test further changes, rerun the `./gradlew install` and `yarn android` steps.
+To test further changes, rerun the `./gradlew installArchives -PRELEASE_SIGNING_ENABLED=false` and `yarn android` steps.
 
 ## Full Diff
 
@@ -58,7 +58,7 @@ index 1ccd002a..100a7169 100644
 +++ b/gradle.properties
 @@ -4,7 +4,7 @@
  # LICENSE file in the root directory of this source tree.
- 
+
  # POM publishing constants
 -VERSION_NAME=0.44.1-SNAPSHOT
 +VERSION_NAME=0.44.99-SNAPSHOT
@@ -71,7 +71,7 @@ index 495c12e8..bc815d0e 100644
 +++ b/react-native/ReactNativeFlipperExample/android/gradle.properties
 @@ -30,4 +30,4 @@ android.useAndroidX=true
  android.enableJetifier=true
- 
+
  # Version of flipper SDK to use with React Native
 -FLIPPER_VERSION=0.30.2
 +FLIPPER_VERSION=0.44.99-SNAPSHOT
