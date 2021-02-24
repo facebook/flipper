@@ -12,7 +12,7 @@
     "flipper-plugin"
   ],
   "dependencies": {
-    "dateformat": "^3.0.3",
+    "dateformat": "^4.5.1",
     "sql-formatter": "^2.3.3"
   },
   "devDependencies": {
