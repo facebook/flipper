@@ -76,8 +76,6 @@ class Sheet extends Component<Props, State> {
   }
 
   componentWillUnmount() {
-    // When switching to Sandy, we need to short-circuit this as this component itself will be thrown away
-    this.props.onHideSheet();
     document.removeEventListener('keydown', this.onKeyDown);
   }
 
