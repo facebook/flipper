@@ -20,7 +20,6 @@ import type {Actions} from '.';
 import {WelcomeScreenStaticView} from '../sandy-chrome/WelcomeScreen';
 import {getPluginKey, isDevicePluginDefinition} from '../utils/pluginUtils';
 import {deconstructClientId} from '../utils/clientUtils';
-import type {PluginDefinition} from '../plugin';
 import type {RegisterPluginAction} from './plugins';
 import MetroDevice from '../devices/MetroDevice';
 import {Logger} from 'flipper-plugin';
@@ -112,27 +111,27 @@ export type Action =
   | {
       type: 'PLUGIN_STARRED';
       payload: {
-        plugin: PluginDefinition;
+        pluginId: string;
         selectedApp: string;
       };
     }
   | {
       type: 'DEVICE_PLUGIN_STARRED';
       payload: {
-        plugin: PluginDefinition;
+        pluginId: string;
       };
     }
   | {
       type: 'PLUGIN_UNSTARRED';
       payload: {
-        plugin: PluginDefinition;
+        pluginId: string;
         selectedApp: string;
       };
     }
   | {
       type: 'DEVICE_PLUGIN_UNSTARRED';
       payload: {
-        plugin: PluginDefinition;
+        pluginId: string;
       };
     }
   | {
@@ -386,43 +385,41 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
       return state;
     }
     case 'PLUGIN_STARRED': {
-      const {plugin, selectedApp} = action.payload;
-      const selectedPlugin = plugin.id;
+      const {pluginId, selectedApp} = action.payload;
       return produce(state, (draft) => {
         if (!draft.userStarredPlugins[selectedApp]) {
           draft.userStarredPlugins[selectedApp] = [];
         }
         const plugins = draft.userStarredPlugins[selectedApp];
-        const idx = plugins.indexOf(selectedPlugin);
+        const idx = plugins.indexOf(pluginId);
         if (idx === -1) {
-          plugins.push(selectedPlugin);
+          plugins.push(pluginId);
         }
       });
     }
     case 'DEVICE_PLUGIN_STARRED': {
-      const {plugin} = action.payload;
+      const {pluginId} = action.payload;
       return produce(state, (draft) => {
-        draft.userStarredDevicePlugins.add(plugin.id);
+        draft.userStarredDevicePlugins.add(pluginId);
       });
     }
     case 'PLUGIN_UNSTARRED': {
-      const {plugin, selectedApp} = action.payload;
-      const selectedPlugin = plugin.id;
+      const {pluginId, selectedApp} = action.payload;
       return produce(state, (draft) => {
         if (!draft.userStarredPlugins[selectedApp]) {
           draft.userStarredPlugins[selectedApp] = [];
         }
         const plugins = draft.userStarredPlugins[selectedApp];
-        const idx = plugins.indexOf(selectedPlugin);
+        const idx = plugins.indexOf(pluginId);
         if (idx !== -1) {
           plugins.splice(idx, 1);
         }
       });
     }
     case 'DEVICE_PLUGIN_UNSTARRED': {
-      const {plugin} = action.payload;
+      const {pluginId} = action.payload;
       return produce(state, (draft) => {
-        draft.userStarredDevicePlugins.delete(plugin.id);
+        draft.userStarredDevicePlugins.delete(pluginId);
       });
     }
     default:
@@ -470,38 +467,32 @@ export const selectClient = (clientId: string | null): Action => ({
   payload: clientId,
 });
 
-export const pluginStarred = (
-  plugin: PluginDefinition,
-  appId: string,
-): Action => ({
+export const pluginStarred = (pluginId: string, appId: string): Action => ({
   type: 'PLUGIN_STARRED',
   payload: {
-    plugin,
+    pluginId,
     selectedApp: appId,
   },
 });
 
-export const devicePluginStarred = (plugin: PluginDefinition): Action => ({
+export const devicePluginStarred = (pluginId: string): Action => ({
   type: 'DEVICE_PLUGIN_STARRED',
   payload: {
-    plugin,
+    pluginId,
   },
 });
 
-export const devicePluginUnstarred = (plugin: PluginDefinition): Action => ({
+export const devicePluginUnstarred = (pluginId: string): Action => ({
   type: 'DEVICE_PLUGIN_UNSTARRED',
   payload: {
-    plugin,
+    pluginId,
   },
 });
 
-export const pluginUnstarred = (
-  plugin: PluginDefinition,
-  appId: string,
-): Action => ({
+export const pluginUnstarred = (pluginId: string, appId: string): Action => ({
   type: 'PLUGIN_UNSTARRED',
   payload: {
-    plugin,
+    pluginId,
     selectedApp: appId,
   },
 });

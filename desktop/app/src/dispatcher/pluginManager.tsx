@@ -215,12 +215,12 @@ function starClientPlugin(
       );
       store.dispatch(clearMessageQueue(pluginKey));
     });
-    store.dispatch(pluginUnstarred(plugin, selectedApp));
+    store.dispatch(pluginUnstarred(plugin.id, selectedApp));
   } else {
     clients.forEach((client) => {
       startPlugin(client, plugin);
     });
-    store.dispatch(pluginStarred(plugin, selectedApp));
+    store.dispatch(pluginStarred(plugin.id, selectedApp));
   }
 }
 
@@ -233,12 +233,12 @@ function starDevicePlugin(store: Store, plugin: DevicePluginDefinition) {
     devicesWithPlugin.forEach((d) => {
       d.unloadDevicePlugin(plugin.id);
     });
-    store.dispatch(devicePluginUnstarred(plugin));
+    store.dispatch(devicePluginUnstarred(plugin.id));
   } else {
     devicesWithPlugin.forEach((d) => {
       d.loadDevicePlugin(plugin);
     });
-    store.dispatch(devicePluginStarred(plugin));
+    store.dispatch(devicePluginStarred(plugin.id));
   }
 }
 
@@ -251,7 +251,7 @@ function updateClientPlugin(
   if (enable) {
     const selectedApp = getSelectedAppId(store);
     if (selectedApp) {
-      store.dispatch(pluginStarred(plugin, selectedApp));
+      store.dispatch(pluginStarred(plugin.id, selectedApp));
     }
   }
   const clientsWithEnabledPlugin = clients.filter((c) => {
@@ -283,7 +283,7 @@ function updateDevicePlugin(
   enable: boolean,
 ) {
   if (enable) {
-    store.dispatch(devicePluginStarred(plugin));
+    store.dispatch(devicePluginStarred(plugin.id));
   }
   const connections = store.getState().connections;
   const devicesWithEnabledPlugin = connections.devices.filter((d) =>
