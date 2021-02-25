@@ -644,13 +644,13 @@ export function isPluginEnabled(
   app: string | null,
   pluginId: string,
 ): boolean {
-  if (enabledDevicePlugins.has(pluginId)) {
+  if (enabledDevicePlugins?.has(pluginId)) {
     return true;
   }
-  if (!app) {
+  if (!app || !enabledPlugins) {
     return false;
   }
   const appInfo = deconstructClientId(app);
-  const starred = enabledPlugins[appInfo.app];
-  return starred && starred.indexOf(pluginId) > -1;
+  const enabledAppPlugins = enabledPlugins[appInfo.app];
+  return enabledAppPlugins && enabledAppPlugins.indexOf(pluginId) > -1;
 }
