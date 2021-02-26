@@ -1,3 +1,10 @@
+# 0.78.0 (26/2/2021)
+
+ * [D26664846](https://github.com/facebook/flipper/search?q=D26664846&type=Commits) -  fixed possible crash on startup after updating from a previous Flipper version to 0.77.0
+ * [D26690516](https://github.com/facebook/flipper/search?q=D26690516&type=Commits) -  Fixed an issue where device plugins targeting the host device didn't show up without connected clients.
+ * [D26691046](https://github.com/facebook/flipper/search?q=D26691046&type=Commits) -  Flipper will no automatically select any newly connected client
+
+
 # 0.76.0 (18/2/2021)
 
  * [D26337377](https://github.com/facebook/flipper/search?q=D26337377&type=Commits) -  It is now possible to disable and uninstall device plugins if some of them not required
