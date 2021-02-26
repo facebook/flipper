@@ -16,6 +16,7 @@ import Tab, {Props as TabProps} from './Tab';
 import {Property} from 'csstype';
 import React, {useContext} from 'react';
 import {TabsContext} from './TabsContainer';
+import {_wrapInteractionHandler} from 'flipper-plugin';
 
 const TabList = styled(FlexRow)({
   justifyContent: 'center',
@@ -168,6 +169,7 @@ export default function Tabs(props: {
   classic?: boolean;
 }) {
   let tabsContainer = useContext(TabsContext);
+  const scope = useContext((global as any).FlipperTrackingScopeContext);
   if (props.classic === true) {
     tabsContainer = false;
   }
@@ -245,11 +247,17 @@ export default function Tabs(props: {
           container={tabsContainer}
           onMouseDown={
             !isActive && onActive
-              ? (event: React.MouseEvent<HTMLDivElement>) => {
-                  if (event.target !== closeButton) {
-                    onActive(key);
-                  }
-                }
+              ? _wrapInteractionHandler(
+                  (event: React.MouseEvent<HTMLDivElement>) => {
+                    if (event.target !== closeButton) {
+                      onActive(key);
+                    }
+                  },
+                  'Tabs',
+                  'onTabClick',
+                  scope as any,
+                  'tab:' + key + ':' + comp.props.label,
+                )
               : undefined
           }>
           {comp.props.label}
