@@ -122,18 +122,7 @@ export function registerNewClient(store: Store, client: Client) {
 
   const device = client.deviceSync;
   if (device) {
-    const selectedDevice = connections.selectedDevice;
-    const selectedClient = connections.clients.find(
-      (c) => c.id === connections.selectedApp,
-    );
-    if (
-      // If this condition meets, it means that the previous app wasn't selected explicitly by the user
-      connections.selectedApp !== connections.userPreferredApp ||
-      !selectedClient ||
-      !selectedDevice
-    ) {
-      store.dispatch(selectDevice(device));
-      store.dispatch(selectClient(client.id));
-    }
+    store.dispatch(selectDevice(device));
+    store.dispatch(selectClient(client.id));
   }
 }
