@@ -245,7 +245,17 @@ export function MockResponseDetails({id, route, isDuplicated}: Props) {
           <StyledSelect
             grow={true}
             selected={requestMethod}
-            options={{GET: 'GET', POST: 'POST'}}
+            options={{
+              GET: 'GET',
+              POST: 'POST',
+              PATCH: 'PATCH',
+              HEAD: 'HEAD',
+              PUT: 'PUT',
+              DELETE: 'DELETE',
+              TRACE: 'TRACE',
+              OPTIONS: 'OPTIONS',
+              CONNECT: 'CONNECT',
+            }}
             onChange={(text: string) =>
               networkRouteManager.modifyRoute(id, {requestMethod: text})
             }
