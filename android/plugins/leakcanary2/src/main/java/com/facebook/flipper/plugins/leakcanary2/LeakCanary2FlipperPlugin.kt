@@ -3,11 +3,10 @@ package com.facebook.flipper.plugins.leakcanary2
 import com.facebook.flipper.core.FlipperConnection
 import com.facebook.flipper.core.FlipperPlugin
 
-
 private const val REPORT_LEAK_EVENT = "reportLeak2"
 private const val CLEAR_EVENT = "clear"
 
-class LeakCanary2FlipperPlugin: FlipperPlugin {
+class LeakCanary2FlipperPlugin : FlipperPlugin {
     private val leaks: MutableList<Leak> = mutableListOf()
     private val alreadySeenLeakSignatures: MutableSet<String> = mutableSetOf()
     private var connection: FlipperConnection? = null

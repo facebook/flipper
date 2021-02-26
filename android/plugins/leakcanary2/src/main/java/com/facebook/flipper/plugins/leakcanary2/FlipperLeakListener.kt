@@ -6,7 +6,7 @@ import leakcanary.OnHeapAnalyzedListener
 import shark.HeapAnalysis
 import shark.HeapAnalysisSuccess
 
-class FlipperLeakListener: OnHeapAnalyzedListener {
+class FlipperLeakListener : OnHeapAnalyzedListener {
     private val leaks: MutableList<Leak> = mutableListOf()
 
     private val defaultListener = DefaultOnHeapAnalyzedListener.create()
@@ -16,7 +16,7 @@ class FlipperLeakListener: OnHeapAnalyzedListener {
 
         AndroidFlipperClient.getInstanceIfInitialized()?.let { client ->
             (client.getPlugin(LeakCanary2FlipperPlugin.ID) as? LeakCanary2FlipperPlugin)
-                    ?.reportLeaks(leaks)
+                ?.reportLeaks(leaks)
         }
 
         defaultListener.onHeapAnalyzed(heapAnalysis)
