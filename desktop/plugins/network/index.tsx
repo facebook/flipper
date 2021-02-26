@@ -124,7 +124,7 @@ const TextEllipsis = styled(Text)({
 
 // State management
 export interface NetworkRouteManager {
-  addRoute(): void;
+  addRoute(): string | null;
   modifyRoute(id: string, routeChange: Partial<Route>): void;
   removeRoute(id: string): void;
   copyHighlightedCalls(
@@ -137,7 +137,9 @@ export interface NetworkRouteManager {
   clearRoutes(): void;
 }
 const nullNetworkRouteManager: NetworkRouteManager = {
-  addRoute() {},
+  addRoute(): string | null {
+    return '';
+  },
   modifyRoute(_id: string, _routeChange: Partial<Route>) {},
   removeRoute(_id: string) {},
   copyHighlightedCalls(
@@ -330,14 +332,14 @@ export function plugin(client: PluginClient<Events, Methods>) {
       routes.set(newRoutes);
       isMockResponseSupported.set(result);
       showMockResponseDialog.set(false);
-      nextRouteId.set(Object.keys(routes).length);
+      nextRouteId.set(Object.keys(routes.get()).length);
 
       informClientMockChange(routes.get());
     });
 
     // declare new variable to be called inside the interface
     networkRouteManager.set({
-      addRoute() {
+      addRoute(): string | null {
         const newNextRouteId = nextRouteId.get();
         routes.update((draft) => {
           draft[newNextRouteId.toString()] = {
@@ -349,6 +351,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
           };
         });
         nextRouteId.set(newNextRouteId + 1);
+        return String(newNextRouteId);
       },
       modifyRoute(id: string, routeChange: Partial<Route>) {
         if (!routes.get().hasOwnProperty(id)) {
