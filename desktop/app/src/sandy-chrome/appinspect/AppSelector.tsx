@@ -175,8 +175,9 @@ function computeEntries(
   const entries = devices
     .filter(
       (device) =>
-        // hide non default devices, unless they have a connected client
+        // hide non default devices, unless they have a connected client or plugins
         canBeDefaultDevice(device) ||
+        device.hasDevicePlugins ||
         clients.some((c) => c.deviceSync === device),
     )
     .map((device) => {

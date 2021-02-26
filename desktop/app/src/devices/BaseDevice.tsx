@@ -43,6 +43,7 @@ export type DeviceExport = {
 
 export default class BaseDevice {
   isArchived = false;
+  hasDevicePlugins = false; // true if there are device plugins for this device (not necessarily enabled)
 
   constructor(
     serial: string,
@@ -231,6 +232,7 @@ export default class BaseDevice {
     if (!this.supportsPlugin(plugin)) {
       return;
     }
+    this.hasDevicePlugins = true;
     this.devicePlugins.push(plugin.id);
     if (plugin instanceof _SandyPluginDefinition) {
       this.sandyPluginStates.set(
