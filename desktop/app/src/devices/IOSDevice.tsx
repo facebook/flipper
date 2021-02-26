@@ -47,7 +47,7 @@ export default class IOSDevice extends BaseDevice {
 
   constructor(serial: string, deviceType: DeviceType, title: string) {
     super(serial, deviceType, title, 'iOS');
-    this.icon = 'icons/ios.svg';
+    this.icon = 'mobile';
     this.buffer = '';
     this.startLogListener();
   }

@@ -102,7 +102,7 @@ export function AppSelector() {
         }>
         <AppInspectButton title="Select the device / app to inspect">
           <Layout.Horizontal gap center>
-            <AppIcon appname={client?.query.app} />
+            <AppIcon appname={client?.query.app} device={selectedDevice} />
             <Layout.Container grow shrink>
               <Text strong>{client?.query.app ?? ''}</Text>
               <Text>{selectedDevice?.title || 'Available devices'}</Text>
@@ -137,13 +137,19 @@ const AppInspectButton = styled(Button)({
   },
 });
 
-function AppIcon({appname}: {appname?: string}) {
+function AppIcon({
+  appname,
+  device,
+}: {
+  appname?: string;
+  device?: BaseDevice | null;
+}) {
   const invert = appname?.endsWith('Lite') ?? false;
   const brandName = appname?.replace(/ Lite$/, '');
   const color = brandName
     ? getColorByApp(brandName)
     : theme.backgroundTransparentHover;
-  const icon = brandName && (brandIcons as any)[brandName];
+  const icon = (brandName && (brandIcons as any)[brandName]) ?? device?.icon;
   return (
     <AppIconContainer style={{background: invert ? 'white' : color}}>
       {icon && (

@@ -296,4 +296,5 @@ export const brandIcons = {
   WhatsApp: 'app-whatsapp',
   Workplace: 'app-workplace',
   'Work Chat': 'app-work-chat',
+  Flipper: 'list-gear', // used for the self inspection client
 };

@@ -31,7 +31,7 @@ export default class AndroidDevice extends BaseDevice {
   ) {
     super(serial, deviceType, title, 'Android', specs);
     this.adb = adb;
-    this.icon = 'icons/android.svg';
+    this.icon = 'mobile';
     this.abiList = abiList;
     this.sdkVersion = sdkVersion;
     this.adb.openLogcat(this.serial).then((reader) => {

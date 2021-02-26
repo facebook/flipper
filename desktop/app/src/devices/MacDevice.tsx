@@ -12,6 +12,7 @@ import BaseDevice from './BaseDevice';
 export default class MacDevice extends BaseDevice {
   constructor() {
     super('', 'physical', 'Mac', 'MacOS');
+    this.icon = 'app-apple';
   }
 
   teardown() {}

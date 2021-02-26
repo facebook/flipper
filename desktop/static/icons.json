@@ -35,7 +35,8 @@
     16
   ],
   "box": [
-    12
+    12,
+    24
   ],
   "brush-paint": [
     12,
@@ -536,7 +537,8 @@
     16
   ],
   "mobile-outline": [
-    16
+    16,
+    24
   ],
   "bookmark-outline": [
     16
@@ -571,5 +573,14 @@
   ],
   "upload": [
     16
+  ],
+  "list-gear-outline": [
+    24
+  ],
+  "app-apple-outline": [
+    24
+  ],
+  "app-microsoft-windows": [
+    24
   ]
 }

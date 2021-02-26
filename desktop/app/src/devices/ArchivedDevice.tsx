@@ -25,6 +25,7 @@ export default class ArchivedDevice extends BaseDevice {
     supportRequestDetails?: SupportFormRequestDetailsState;
   }) {
     super(options.serial, options.deviceType, options.title, options.os);
+    this.icon = 'box';
     this.connected.set(false);
     this.source = options.source || '';
     this.supportRequestDetails = options.supportRequestDetails;
