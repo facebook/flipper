@@ -374,16 +374,16 @@ export function plugin(client: PluginClient<Events, Methods>) {
         informClientMockChange(routes.get());
       },
       enableRoute(id: string, routeChange: Partial<Route>) {
-        console.log(routeChange)
-        console.log(routes.get()[id])
+        console.log(routeChange);
+        console.log(routes.get()[id]);
         routeChange.enabled = !routes.get()[id].enabled;
-        console.log(routeChange)
+        console.log(routeChange);
         if (routes.get().hasOwnProperty(id)) {
           routes.update((draft) => {
             Object.assign(draft[id], routeChange);
           });
         }
-        console.log(routes.get())
+        console.log(routes.get());
         informClientMockChange(routes.get());
       },
       copyHighlightedCalls(
@@ -560,17 +560,15 @@ export function plugin(client: PluginClient<Events, Methods>) {
       try {
         await client.send('mockResponses', {
           routes: routesValuesArray
-          .filter((e) =>
-            e.enabled,
-          )
-          .map((route: Route) => ({
-            requestUrl: route.requestUrl,
-            method: route.requestMethod,
-            data: route.responseData,
-            headers: [...Object.values(route.responseHeaders)],
-            status: route.responseStatus,
-            enabled: route.enabled,
-          })),
+            .filter((e) => e.enabled)
+            .map((route: Route) => ({
+              requestUrl: route.requestUrl,
+              method: route.requestMethod,
+              data: route.responseData,
+              headers: [...Object.values(route.responseHeaders)],
+              status: route.responseStatus,
+              enabled: route.enabled,
+            })),
         });
       } catch (e) {
         console.error('Failed to mock responses.', e);

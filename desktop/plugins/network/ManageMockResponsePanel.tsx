@@ -105,7 +105,9 @@ function RouteRow(props: {
   return (
     <Layout.Horizontal gap>
       <Tooltip title="Check to enable mock route" mouseEnterDelay={1.1}>
-        <Checkbox onClick={props.handleEnableId} checked={props.enabled}></Checkbox>
+        <Checkbox
+          onClick={props.handleEnableId}
+          checked={props.enabled}></Checkbox>
       </Tooltip>
       <Tooltip title="Click to delete mock route" mouseEnterDelay={1.1}>
         <Layout.Horizontal onClick={props.handleRemoveId}>
@@ -251,7 +253,9 @@ export function ManageMockResponsePanel(props: Props) {
               multiline={false}
               columnSizes={ColumnSizes}
               columns={Columns}
-              rows={_buildRows(props.routes, duplicatedIds, 
+              rows={_buildRows(
+                props.routes,
+                duplicatedIds,
                 (id) => {
                   Modal.confirm({
                     title: 'Are you sure you want to delete this item?',
@@ -262,12 +266,11 @@ export function ManageMockResponsePanel(props: Props) {
                       setSelectedId(nextId);
                     },
                     onCancel() {},
-                  })
+                  });
                 },
                 (id) => {
-                  console.log('...enableRoute'); 
-                  networkRouteManager.enableRoute(id, {
-                  })
+                  console.log('...enableRoute');
+                  networkRouteManager.enableRoute(id, {});
                 },
               )}
               stickyBottom={true}
