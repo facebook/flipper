@@ -37,7 +37,7 @@
     "invariant": "^2.2.2",
     "lodash": "^4.17.19",
     "lodash.memoize": "^4.1.2",
-    "open": "^7.3.1",
+    "open": "^7.4.2",
     "openssl-wrapper": "^0.3.4",
     "p-filter": "^2.1.0",
     "p-map": "^4.0.0",
