@@ -31,22 +31,35 @@ export type StaticView =
   | ComponentType<StaticViewProps>
   | React.FunctionComponent<any>;
 
-export type State = StateV1;
+export type State = StateV2;
 
-export const persistVersion = 1;
+export const persistVersion = 2;
 export const persistMigrations = {
   1: (state: any) => {
     const stateV0 = state as StateV0;
     const stateV1 = {
       ...stateV0,
-      enabledPlugins: stateV0.userStarredPlugins,
-      enabledDevicePlugins: stateV0.userStarredDevicePlugins,
+      enabledPlugins: stateV0.userStarredPlugins ?? {},
+      enabledDevicePlugins:
+        stateV0.userStarredDevicePlugins ??
+        new Set<string>(INITAL_STATE.enabledDevicePlugins),
     };
     return stateV1 as any;
   },
+  2: (state: any) => {
+    const stateV1 = state as StateV1;
+    const stateV2 = {
+      ...stateV1,
+      enabledPlugins: stateV1.enabledPlugins ?? {},
+      enabledDevicePlugins:
+        stateV1.enabledDevicePlugins ??
+        new Set<string>(INITAL_STATE.enabledDevicePlugins),
+    };
+    return stateV2 as any;
+  },
 };
 
-type StateV1 = {
+type StateV2 = {
   devices: Array<BaseDevice>;
   androidEmulators: Array<string>;
   selectedDevice: null | BaseDevice;
@@ -67,9 +80,14 @@ type StateV1 = {
   staticView: StaticView;
 };
 
+type StateV1 = Omit<StateV2, 'enabledPlugins' | 'enabledDevicePlugins'> & {
+  enabledPlugins?: {[client: string]: string[]};
+  enabledDevicePlugins?: Set<string>;
+};
+
 type StateV0 = Omit<StateV1, 'enabledPlugins' | 'enabledDevicePlugins'> & {
-  userStarredPlugins: {[client: string]: string[]};
-  userStarredDevicePlugins: Set<string>;
+  userStarredPlugins?: {[client: string]: string[]};
+  userStarredDevicePlugins?: Set<string>;
 };
 
 export type Action =
