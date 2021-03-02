@@ -40,6 +40,7 @@ import {initSelfInpector} from './utils/self-inspection/selfInspectionUtils';
 import ClientDevice from './devices/ClientDevice';
 import BaseDevice from './devices/BaseDevice';
 import {sideEffect} from './utils/sideEffect';
+import {destroyDevice} from './reducers/connections';
 
 type ClientInfo = {
   connection: FlipperClientConnection<any, any> | null | undefined;
@@ -206,10 +207,7 @@ class Server extends EventEmitter {
         Object.values(clients).map((p) =>
           p.then((c) => this.removeConnection(c.id)),
         );
-        this.store.dispatch({
-          type: 'UNREGISTER_DEVICES',
-          payload: new Set([deviceId]),
-        });
+        destroyDevice(this.store, this.logger, deviceId);
       };
 
       ws.on('message', (rawMessage: any) => {

@@ -21,6 +21,7 @@ import IOSDevice from '../devices/IOSDevice';
 import {registerDeviceCallbackOnPlugins} from '../utils/onRegisterDevice';
 import {addErrorNotification} from '../reducers/notifications';
 import {getStaticPath} from '../utils/pathUtils';
+import {destroyDevice} from '../reducers/connections';
 
 type iOSSimulatorDevice = {
   state: 'Booted' | 'Shutdown' | 'Shutting Down';
@@ -127,6 +128,8 @@ function processDevices(
     if (currentDeviceIDs.has(udid)) {
       currentDeviceIDs.delete(udid);
     } else {
+      // clean up offline device
+      destroyDevice(store, logger, udid);
       logger.track('usage', 'register-device', {
         os: 'iOS',
         type: type,

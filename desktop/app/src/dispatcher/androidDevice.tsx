@@ -20,6 +20,7 @@ import {promisify} from 'util';
 import {ServerPorts} from '../reducers/application';
 import {Client as ADBClient} from 'adbkit';
 import {addErrorNotification} from '../reducers/notifications';
+import {destroyDevice} from '../reducers/connections';
 
 function createDevice(
   adbClient: ADBClient,
@@ -235,9 +236,8 @@ export default (store: Store, logger: Logger) => {
       )
       .map((device) => device.serial);
 
-    store.dispatch({
-      type: 'UNREGISTER_DEVICES',
-      payload: new Set(reconnectedDevices),
+    reconnectedDevices.forEach((serial) => {
+      destroyDevice(store, logger, serial);
     });
 
     androidDevice.loadDevicePlugins(

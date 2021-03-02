@@ -16,7 +16,7 @@ import type Client from '../Client';
 import type {UninitializedClient} from '../UninitializedClient';
 import {isEqual} from 'lodash';
 import {performance} from 'perf_hooks';
-import type {Actions} from '.';
+import type {Actions, Store} from '.';
 import {WelcomeScreenStaticView} from '../sandy-chrome/WelcomeScreen';
 import {getPluginKey, isDevicePluginDefinition} from '../utils/pluginUtils';
 import {deconstructClientId} from '../utils/clientUtils';
@@ -231,10 +231,9 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
         (device) => device.serial === payload.serial,
       );
       if (existing !== -1) {
-        console.debug(
+        console.warn(
           `Got a new device instance for already existing serial ${payload.serial}`,
         );
-        state.devices[existing].destroy();
         newDevices[existing] = payload;
       } else {
         newDevices.push(payload);
@@ -255,7 +254,11 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
             if (!deviceSerials.has(device.serial)) {
               return true;
             } else {
-              device.destroy();
+              if (device.connected.get()) {
+                console.warn(
+                  'Tried to unregister a device before it was destroyed',
+                );
+              }
               return false;
             }
           });
@@ -653,4 +656,21 @@ export function isPluginEnabled(
   const appInfo = deconstructClientId(app);
   const enabledAppPlugins = enabledPlugins[appInfo.app];
   return enabledAppPlugins && enabledAppPlugins.indexOf(pluginId) > -1;
+}
+
+export function destroyDevice(store: Store, logger: Logger, serial: string) {
+  const device = store
+    .getState()
+    .connections.devices.find((device) => device.serial === serial);
+  if (device) {
+    device.destroy();
+    logger.track('usage', 'unregister-device', {
+      os: device.os,
+      serial,
+    });
+    store.dispatch({
+      type: 'UNREGISTER_DEVICES',
+      payload: new Set([serial]),
+    });
+  }
 }

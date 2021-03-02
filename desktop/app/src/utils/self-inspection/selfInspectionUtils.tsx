@@ -16,6 +16,7 @@ import Server from '../../server';
 import {buildClientId} from '../clientUtils';
 import {selfInspectionClient} from './selfInspectionClient';
 import {flipperMessagesClientPlugin} from './plugins/FlipperMessagesClientPlugin';
+import {destroyDevice} from '../../reducers/connections';
 
 export function initSelfInpector(
   store: Store,
@@ -69,11 +70,7 @@ export function initSelfInpector(
       if (payload.kind == 'ERROR' || payload.kind == 'CLOSED') {
         console.debug(`Device disconnected ${client.id}`, 'server');
         flipperServer.removeConnection(client.id);
-        const toUnregister = new Set<string>();
-        store.dispatch({
-          type: 'UNREGISTER_DEVICES',
-          payload: toUnregister,
-        });
+        destroyDevice(store, logger, client.id);
       }
     },
     onSubscribe(subscription) {

@@ -13,6 +13,7 @@ import {registerDeviceCallbackOnPlugins} from '../utils/onRegisterDevice';
 import MetroDevice from '../devices/MetroDevice';
 import http from 'http';
 import {addErrorNotification} from '../reducers/notifications';
+import {destroyDevice} from '../reducers/connections';
 
 const METRO_PORT = 8081;
 const METRO_HOST = 'localhost';
@@ -75,18 +76,6 @@ export async function registerMetroDevice(
   );
 }
 
-async function unregisterDevices(store: Store, logger: Logger) {
-  logger.track('usage', 'unregister-device', {
-    os: 'Metro',
-    serial: METRO_URL,
-  });
-
-  store.dispatch({
-    type: 'UNREGISTER_DEVICES',
-    payload: new Set([METRO_URL]),
-  });
-}
-
 export default (store: Store, logger: Logger) => {
   let timeoutHandle: NodeJS.Timeout;
   let ws: WebSocket | undefined;
@@ -111,7 +100,7 @@ export default (store: Store, logger: Logger) => {
           unregistered = true;
           clearTimeout(guard);
           ws = undefined;
-          unregisterDevices(store, logger);
+          destroyDevice(store, logger, METRO_URL);
           scheduleNext();
         }
       };

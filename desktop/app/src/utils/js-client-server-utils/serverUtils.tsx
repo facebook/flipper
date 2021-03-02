@@ -18,6 +18,7 @@ import {Payload, ConnectionStatus, ISubscriber} from 'rsocket-types';
 import {Flowable, Single} from 'rsocket-flowable';
 import Server from '../../server';
 import {buildClientId} from '../clientUtils';
+import {destroyDevice} from '../../reducers/connections';
 
 const connections: Map<number, JSClientFlipperConnection<any>> = new Map();
 
@@ -83,12 +84,7 @@ export function initJsEmulatorIPC(
           if (payload.kind == 'ERROR' || payload.kind == 'CLOSED') {
             console.debug(`Device disconnected ${client.id}`, 'server');
             flipperServer.removeConnection(client.id);
-            const toUnregister = new Set<string>();
-            toUnregister.add(jsDeviceId(windowId));
-            store.dispatch({
-              type: 'UNREGISTER_DEVICES',
-              payload: toUnregister,
-            });
+            destroyDevice(store, logger, jsDeviceId(windowId));
             connections.delete(windowId);
             availablePlugins.delete(windowId);
           }
