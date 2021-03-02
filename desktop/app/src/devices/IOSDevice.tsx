@@ -19,6 +19,7 @@ import path from 'path';
 import {promisify} from 'util';
 import {exec} from 'child_process';
 import {default as promiseTimeout} from '../utils/promiseTimeout';
+import {IOSBridge} from '../utils/IOSBridge';
 
 type IOSLogLevel = 'Default' | 'Info' | 'Debug' | 'Error' | 'Fault';
 
@@ -45,11 +46,16 @@ export default class IOSDevice extends BaseDevice {
   private recordingProcess?: ChildProcess;
   private recordingLocation?: string;
 
-  constructor(serial: string, deviceType: DeviceType, title: string) {
+  constructor(
+    iOSBridge: IOSBridge,
+    serial: string,
+    deviceType: DeviceType,
+    title: string,
+  ) {
     super(serial, deviceType, title, 'iOS');
     this.icon = 'mobile';
     this.buffer = '';
-    this.startLogListener();
+    this.startLogListener(iOSBridge);
   }
 
   async screenshot(): Promise<Buffer> {
@@ -81,47 +87,13 @@ export default class IOSDevice extends BaseDevice {
     }
   }
 
-  startLogListener(retries: number = 3) {
+  startLogListener(iOSBridge: IOSBridge, retries: number = 3) {
     if (retries === 0) {
       console.warn('Attaching iOS log listener continuously failed.');
       return;
     }
     if (!this.log) {
-      const deviceSetPath = process.env.DEVICE_SET_PATH
-        ? ['--set', process.env.DEVICE_SET_PATH]
-        : [];
-
-      const extraArgs = [
-        '--style',
-        'json',
-        '--predicate',
-        'senderImagePath contains "Containers"',
-        '--debug',
-        '--info',
-      ];
-
-      if (this.deviceType === 'physical') {
-        this.log = child_process.spawn(
-          'idb',
-          ['log', '--udid', this.serial, '--', ...extraArgs],
-          {},
-        );
-      } else {
-        this.log = child_process.spawn(
-          'xcrun',
-          [
-            'simctl',
-            ...deviceSetPath,
-            'spawn',
-            this.serial,
-            'log',
-            'stream',
-            ...extraArgs,
-          ],
-          {},
-        );
-      }
-
+      this.log = iOSBridge.startLogListener(this.serial);
       this.log.on('error', (err: Error) => {
         console.error('iOS log tailer error', err);
       });
@@ -133,22 +105,22 @@ export default class IOSDevice extends BaseDevice {
       this.log.on('exit', () => {
         this.log = undefined;
       });
-    }
 
-    try {
-      this.log.stdout
-        .pipe(new StripLogPrefix())
-        .pipe(JSONStream.parse('*'))
-        .on('data', (data: RawLogEntry) => {
-          const entry = IOSDevice.parseLogEntry(data);
-          this.addLogEntry(entry);
-        });
-    } catch (e) {
-      console.error('Could not parse iOS log stream.', e);
-      // restart log stream
-      this.log.kill();
-      this.log = undefined;
-      this.startLogListener(retries - 1);
+      try {
+        this.log.stdout
+          .pipe(new StripLogPrefix())
+          .pipe(JSONStream.parse('*'))
+          .on('data', (data: RawLogEntry) => {
+            const entry = IOSDevice.parseLogEntry(data);
+            this.addLogEntry(entry);
+          });
+      } catch (e) {
+        console.error('Could not parse iOS log stream.', e);
+        // restart log stream
+        this.log.kill();
+        this.log = undefined;
+        this.startLogListener(iOSBridge, retries - 1);
+      }
     }
   }
 

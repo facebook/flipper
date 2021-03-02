@@ -22,6 +22,7 @@ import {registerDeviceCallbackOnPlugins} from '../utils/onRegisterDevice';
 import {addErrorNotification} from '../reducers/notifications';
 import {getStaticPath} from '../utils/pathUtils';
 import {destroyDevice} from '../reducers/connections';
+import {IOSBridge, makeIOSBridge} from '../utils/IOSBridge';
 
 type iOSSimulatorDevice = {
   state: 'Booted' | 'Shutdown' | 'Shutting Down';
@@ -92,15 +93,19 @@ if (typeof window !== 'undefined') {
   });
 }
 
-async function queryDevices(store: Store, logger: Logger): Promise<any> {
+async function queryDevices(
+  store: Store,
+  logger: Logger,
+  iosBridge: IOSBridge,
+): Promise<any> {
   return Promise.all([
     checkXcodeVersionMismatch(store),
     getSimulators(store, true).then((devices) => {
-      processDevices(store, logger, devices, 'emulator');
+      processDevices(store, logger, iosBridge, devices, 'emulator');
     }),
     getActiveDevices(store.getState().settingsState.idbPath).then(
       (devices: IOSDeviceParams[]) => {
-        processDevices(store, logger, devices, 'physical');
+        processDevices(store, logger, iosBridge, devices, 'physical');
       },
     ),
   ]);
@@ -109,6 +114,7 @@ async function queryDevices(store: Store, logger: Logger): Promise<any> {
 function processDevices(
   store: Store,
   logger: Logger,
+  iosBridge: IOSBridge,
   activeDevices: IOSDeviceParams[],
   type: 'physical' | 'emulator',
 ) {
@@ -136,7 +142,7 @@ function processDevices(
         name: name,
         serial: udid,
       });
-      const iOSDevice = new IOSDevice(udid, type, name);
+      const iOSDevice = new IOSDevice(iosBridge, udid, type, name);
       iOSDevice.loadDevicePlugins(
         store.getState().plugins.devicePlugins,
         store.getState().connections.enabledDevicePlugins,
@@ -225,12 +231,16 @@ function getActiveDevices(idbPath: string): Promise<Array<IOSDeviceParams>> {
   });
 }
 
-function queryDevicesForever(store: Store, logger: Logger) {
-  return queryDevices(store, logger)
+function queryDevicesForever(
+  store: Store,
+  logger: Logger,
+  iosBridge: IOSBridge,
+) {
+  return queryDevices(store, logger, iosBridge)
     .then(() => {
       // It's important to schedule the next check AFTER the current one has completed
       // to avoid simultaneous queries which can cause multiple user input prompts.
-      setTimeout(() => queryDevicesForever(store, logger), 3000);
+      setTimeout(() => queryDevicesForever(store, logger, iosBridge), 3000);
     })
     .catch((err) => {
       console.warn('Failed to continuously query devices:', err);
@@ -285,7 +295,9 @@ export default (store: Store, logger: Logger) => {
       if (store.getState().settingsState.enablePhysicalIOS) {
         startDevicePortForwarders();
       }
-      return queryDevicesForever(store, logger);
+      return makeIOSBridge(
+        store.getState().settingsState.idbPath,
+      ).then((iosBridge) => queryDevicesForever(store, logger, iosBridge));
     }
   });
 };
