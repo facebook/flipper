@@ -187,7 +187,8 @@ class Server extends EventEmitter {
         return (
           info.origin.startsWith('chrome-extension://') ||
           info.origin.startsWith('localhost:') ||
-          info.origin.startsWith('http://localhost:')
+          info.origin.startsWith('http://localhost:') ||
+          info.origin.startsWith('app://')
         );
       },
     });
