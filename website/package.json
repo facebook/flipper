@@ -24,7 +24,9 @@
     "react-docgen": "^5.2.1",
     "react-dom": "^16.13.1"
   },
-  "dependencies": {},
+  "dependencies": {
+    "prismjs": "1.23.0"
+  },
   "resolutions": {
     "axios": "0.21.1",
     "minimist": "1.2.3",
