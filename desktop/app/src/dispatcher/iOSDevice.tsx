@@ -275,20 +275,6 @@ async function isXcodeDetected(): Promise<boolean> {
     .catch((_) => false);
 }
 
-export async function getActiveDevicesAndSimulators(
-  store: Store,
-): Promise<Array<IOSDevice>> {
-  const activeDevices: Array<Array<IOSDeviceParams>> = await Promise.all([
-    getSimulators(store, true),
-    getActiveDevices(store.getState().settingsState.idbPath),
-  ]);
-  const allDevices = activeDevices[0].concat(activeDevices[1]);
-  return allDevices.map((device) => {
-    const {udid, type, name} = device;
-    return new IOSDevice(udid, type, name);
-  });
-}
-
 export default (store: Store, logger: Logger) => {
   if (!store.getState().settingsState.enableIOS) {
     return;
