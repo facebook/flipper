@@ -38,11 +38,6 @@ android {
         abortOnError false
     }
 
-    configurations {
-        extractHeaders
-        extractJNI
-    }
-
     sourceSets {
         test {
             java {
@@ -86,43 +81,3 @@ android {
 preBuild.dependsOn(tasks.getByPath(':third-party:prepare'))
 
 apply plugin: 'com.vanniktech.maven.publish'
-
-task sourcesJar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs
-    classifier = 'sources'
-}
-
-artifacts.add('archives', sourcesJar)
-
-task extractAARHeaders {
-    doLast {
-        configurations.extractHeaders.files.each {
-            def file = it.absoluteFile
-            copy {
-                from zipTree(file)
-                into "$buildDir/$file.name"
-                include "**/*.h"
-            }
-        }
-    }
-}
-
-task extractJNIFiles {
-    doLast {
-        configurations.extractJNI.files.each {
-            def file = it.absoluteFile
-            copy {
-                from zipTree(file)
-                into "$buildDir/$file.name"
-                include "jni/**/*"
-            }
-        }
-    }
-}
-
-tasks.whenTaskAdded { task ->
-    if (task.name.contains('externalNativeBuild')) {
-        task.dependsOn(extractAARHeaders)
-        task.dependsOn(extractJNIFiles)
-    }
-}
