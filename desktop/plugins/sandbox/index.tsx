@@ -128,9 +128,8 @@ export default class SandboxView extends FlipperPlugin<
           </SandboxView.FeedbackMessage>
         </SandboxView.TextInputLayout>
         {this.state.sandboxes.map((sandbox) => (
-          <ButtonContainer>
+          <ButtonContainer key={sandbox.value}>
             <BigButton
-              key={sandbox.value}
               onClick={() => this.onSendSandboxEnvironment(sandbox.value)}>
               {sandbox.name}
             </BigButton>

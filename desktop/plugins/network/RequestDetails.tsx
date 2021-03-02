@@ -578,7 +578,7 @@ class JSONTextFormatter {
         return body
           .split('\n')
           .map((json) => JSON.parse(json))
-          .map((data) => <JSONText>{data}</JSONText>);
+          .map((data, idx) => <JSONText key={idx}>{data}</JSONText>);
       }
     }
   };

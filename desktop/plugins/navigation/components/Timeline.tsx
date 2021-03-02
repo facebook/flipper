@@ -68,9 +68,8 @@ export default (props: Props) => {
         <TimelineLine />
         {events.map((event: NavigationEvent, idx: number) => {
           return (
-            <NavigationEventContainer>
+            <NavigationEventContainer key={idx}>
               <NavigationInfoBox
-                key={idx}
                 isBookmarked={
                   event.uri != null ? bookmarks.has(event.uri) : false
                 }

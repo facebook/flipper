@@ -230,6 +230,7 @@ export default class LeakCanary<PersistedState> extends FlipperPlugin<
               const selected = selectedIdx == idx ? selectedEid : null;
               return (
                 <Panel
+                  key={idx}
                   collapsable={false}
                   padded={false}
                   heading={leak.title}

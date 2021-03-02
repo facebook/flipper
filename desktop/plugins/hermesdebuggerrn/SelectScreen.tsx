@@ -71,7 +71,7 @@ export default function SelectScreen(props: Props) {
         </Item>
         {props.targets.map((target) => {
           return (
-            <Item onClick={() => props.onSelect(target)}>
+            <Item onClick={() => props.onSelect(target)} key={target.id}>
               <Icon size={20} name="code" color={colors.info} />
               <FlexColumn>
                 <ItemTitle>{target.title}</ItemTitle>

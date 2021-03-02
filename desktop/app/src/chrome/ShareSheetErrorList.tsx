@@ -51,8 +51,10 @@ export default class Popover extends PureComponent<Props> {
       <VBox scrollable={true} maxHeight={300}>
         <Info type={this.props.type}>
           <Title bold>{this.props.title}</Title>
-          {this.props.errors.map((e: Error) => (
-            <ErrorMessage code>{formatError(e)}</ErrorMessage>
+          {this.props.errors.map((e: Error, index) => (
+            <ErrorMessage code key={index}>
+              {formatError(e)}
+            </ErrorMessage>
           ))}
         </Info>
       </VBox>
