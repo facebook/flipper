@@ -25,7 +25,61 @@ updates:
     time: '13:00'
   open-pull-requests-limit: 10
 - package-ecosystem: gradle
+  directory: "/"
+  schedule:
+    interval: weekly
+    time: '13:00'
+  open-pull-requests-limit: 10
+- package-ecosystem: gradle
   directory: "/android"
+  schedule:
+    interval: weekly
+    time: '13:00'
+  open-pull-requests-limit: 10
+- package-ecosystem: gradle
+  directory: "/android/tutorial"
+  schedule:
+    interval: weekly
+    time: '13:00'
+  open-pull-requests-limit: 10
+- package-ecosystem: gradle
+  directory: "/android/sample"
+  schedule:
+    interval: weekly
+    time: '13:00'
+  open-pull-requests-limit: 10
+- package-ecosystem: gradle
+  directory: "/android/no-op"
+  schedule:
+    interval: weekly
+    time: '13:00'
+  open-pull-requests-limit: 10
+- package-ecosystem: gradle
+  directory: "/android/plugins/fresco"
+  schedule:
+    interval: weekly
+    time: '13:00'
+  open-pull-requests-limit: 10
+- package-ecosystem: gradle
+  directory: "/android/plugins/network"
+  schedule:
+    interval: weekly
+    time: '13:00'
+  open-pull-requests-limit: 10
+- package-ecosystem: gradle
+  directory: "/android/plugins/litho"
+  schedule:
+    interval: weekly
+    time: '13:00'
+  open-pull-requests-limit: 10
+- package-ecosystem: gradle
+  directory: "/android/plugins/leakcanary"
+  schedule:
+    interval: weekly
+    time: '13:00'
+  open-pull-requests-limit: 10
+- package-ecosystem: gradle
+  directory: "/android/plugins/leakcanary2"
   schedule:
     interval: weekly
     time: '13:00'
