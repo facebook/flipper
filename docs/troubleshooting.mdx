@@ -76,6 +76,8 @@ Still not working? File an issue on [GitHub](https://github.com/facebook/flipper
 
 ## Android
 
+### Exception from call site #4 bootstrap method
+
 Build error after including the Flipper dependency:
 
 ```
@@ -107,9 +109,31 @@ debugImplementation('com.facebook.flipper:flipper:*') {
 }
 ```
 
+### Duplicate class `com.facebook.jni.*`
+
+This can occur when mixing different versions of [FBJNI](https://github.com/facebookincubator/fbjni),
+a library we use to interact with native C++ code.
+
+Speficially, this can happen when the versions `0.0.x` and `0.1.x` are mixed. Version `0.1.0` of FBJNI
+switched to using [Google Prefab](https://google.github.io/prefab/) for distributing native artifacts,
+which made the split into combined, "java-only" and "header" packages redundant and only requires
+a single dependency in your projects.
+
+When including both "fbjni-java-only:0.0.1" and "fbjni:0.1.0" in one project, you will now
+duplicate class errors during the build process. You must ensure that only one of the two
+versions is used in your entire dependency tree. Start by looking at `./gradlew :myapp:dependencies`
+to see where the different version requirements come from. Then exclude the FBJNI dependency from
+one of them, e.g.
+
+```groovy
+implementation("com.facebook.react:react-native:+") {
+    exclude group:'com.facebook.fbjni'
+}
+```
+
 ## React Native
 
-Make sure the project is using the [latest Flipper SDK](getting-started/react-native#using-the-latest-flipper-sdk). 
+Make sure the project is using the [latest Flipper SDK](getting-started/react-native#using-the-latest-flipper-sdk).
 
 When using Flipper with React Native, two devices should show up:
 
