@@ -49,6 +49,7 @@ import constants from './fb-stubs/constants';
 import styled from '@emotion/styled';
 import {CopyOutlined} from '@ant-design/icons';
 import {clipboard} from 'electron/common';
+import {getVersionString} from './utils/versionString';
 
 if (process.env.NODE_ENV === 'development' && os.platform() === 'darwin') {
   // By default Node.JS has its internal certificate storage and doesn't use
@@ -73,7 +74,11 @@ class AppFrame extends React.Component<
 
   getError() {
     return this.state.error
-      ? `${this.state.error}\n\nComponent stack:\n${this.state.errorInfo?.componentStack}\n\nError stacktrace:\n${this.state.error?.stack}`
+      ? `${
+          this.state.error
+        }\n\nFlipper version: ${getVersionString()}\n\nComponent stack:\n${
+          this.state.errorInfo?.componentStack
+        }\n\nError stacktrace:\n${this.state.error?.stack}`
       : '';
   }
 
