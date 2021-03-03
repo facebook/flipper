@@ -33,6 +33,7 @@ export default function Index() {
                 </p>
                 <a
                   className="landing-btn landing-btn-middle primary"
+                  target="_top"
                   href="munki://detail-Flipper">
                   Mac
                 </a>
