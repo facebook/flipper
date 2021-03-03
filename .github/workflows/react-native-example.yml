@@ -7,12 +7,12 @@ jobs:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v1
     - name: Install yarn dependencies
-      run: react-native/ReactNativeExampleFlipper && yarn install --frozen-lockfile
+      run: cd react-native/ReactNativeFlipperExample && yarn install --frozen-lockfile
     - name: Install pod dependencies
-      run: react-native/ReactNativeExampleFlipper/ios && pod install --repo-update
+      run: cd react-native/ReactNativeFlipperExample/ios && pod install --repo-update
     - name: Build React Native iOS Example debug app
       run: |
-        cd react-native/ReactNativeExampleFlipper/ios
+        cd react-native/ReactNativeFlipperExample/ios
         IPHONESIMULATOR=$(xcodebuild -showsdks | grep -o "iphonesimulator[0-9]\\+\\.[0-9]\\+$") && echo $IPHONESIMULATOR
         xcodebuild -workspace ReactNativeFlipperExample.xcworkspace -configuration Debug -scheme ReactNativeFlipperExample -sdk $IPHONESIMULATOR EXCLUDED_ARCHS=arm64
 
@@ -37,9 +37,9 @@ jobs:
           ~/.gradle/caches/build-cache-*
         key: gradle-${{ hashFiles('checksum-android.txt') }}
     - name: Install yarn dependencies
-      run: react-native/ReactNativeExampleFlipper && yarn install --frozen-lockfile
+      run: cd react-native/ReactNativeFlipperExample && yarn install --frozen-lockfile
     - name: Build React Native Android Example debug app
       run: |
-        cd react-native/ReactNativeExampleFlipper/android
+        cd react-native/ReactNativeFlipperExample/android
         react-native bundle --platform android --dev true --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res
         ./gradlew assembleDebug
