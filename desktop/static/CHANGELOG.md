@@ -1,3 +1,8 @@
+# 0.79.0 (3/3/2021)
+
+ * [D26749214](https://github.com/facebook/flipper/search?q=D26749214&type=Commits) -  Fix a crash when disconnecting metro devices
+
+
 # 0.78.0 (26/2/2021)
 
  * [D26664846](https://github.com/facebook/flipper/search?q=D26664846&type=Commits) -  fixed possible crash on startup after updating from a previous Flipper version to 0.77.0
