@@ -1,0 +1,60 @@
+name: Build React Native example
+on: [push, pull_request]
+jobs:
+  build-react-native-example-ios:
+    runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: react-native/ReactNativeFlipperExample
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1
+    - uses: maxim-lobanov/setup-cocoapods@v1
+      with:
+        # Path to Podfile.lock file to determine Cocoapods version
+        # n.b. doesn't seem to respect cwd:
+        podfile-path: react-native/ReactNativeFlipperExample/ios/Podfile.lock
+    - name: Install yarn dependencies
+      run: yarn install --frozen-lockfile --ignore-scripts
+    - name: Install react-native-flipper
+      run: yarn relative-deps
+    - name: Install pod dependencies
+      run: cd ios && pod install --repo-update
+    - name: Build React Native iOS Example debug app
+      run: |
+        cd ios
+        IPHONESIMULATOR=$(xcodebuild -showsdks | grep -o "iphonesimulator[0-9]\\+\\.[0-9]\\+$") && echo $IPHONESIMULATOR
+        xcodebuild -workspace ReactNativeFlipperExample.xcworkspace -configuration Debug -scheme ReactNativeFlipperExample -sdk $IPHONESIMULATOR EXCLUDED_ARCHS=arm64
+
+  build-react-native-example-android:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: react-native/ReactNativeFlipperExample
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1
+    - name: set up JDK 1.8
+      uses: actions/setup-java@v1
+      with:
+        java-version: 1.8
+    - name: Install NDK 21
+      run: echo "y" | sudo /usr/local/lib/android/sdk/tools/bin/sdkmanager --install "ndk;21.0.6113669" "ndk;20.0.5594570" --sdk_root=${ANDROID_SDK_ROOT}
+    - name: Compute build cache
+      run: ${GITHUB_WORKSPACE}/scripts/checksum-android.sh checksum-android.txt
+    - uses: actions/cache@v2
+      with:
+        path: |
+          ~/.gradle/caches/modules-*
+          ~/.gradle/caches/jars-*
+          ~/.gradle/caches/build-cache-*
+        key: gradle-${{ hashFiles('checksum-android.txt') }}
+    - name: Install yarn dependencies
+      run: yarn install --frozen-lockfile --ignore-scripts
+    - name: Install react-native-flipper
+      run: yarn relative-deps
+    - name: Build React Native Android Example debug app
+      run: |
+        mkdir -p android/app/src/main/assets
+        yarn react-native bundle --platform android --dev true --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res
+        cd android && ./gradlew assembleDebug
