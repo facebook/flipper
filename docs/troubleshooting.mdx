@@ -201,3 +201,27 @@ If you experience errors such as `Undefined symbol: associated type descriptor f
    <img alt="Screenshot showing the places mentioned in the last steps" src={useBaseUrl("img/troubleshooting-react-native-ios-swift-2.png")} />
 
 1. Now you can run your build normally.
+
+#### Opting out from flipper (iOS)
+
+Comment out the relevant lines in `ios/Podfile` and run `cd ios && pod install` again:
+
+```
+  # use_flipper!
+  # post_install do |installer|
+  #  flipper_post_install(installer)
+  # end
+```  
+
+#### Disable Flipper on CI builds (iOS)
+
+To speed up CI builds, Flipper can be disabled on CI environments by making the Flipper SDK inclusion conditional (this works on most CI providers, feel free to customize the environment variable):
+
+```
+  if !ENV['CI']
+    use_flipper!
+    post_install do |installer|
+      flipper_post_install(installer)
+    end
+  end
+```
