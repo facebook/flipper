@@ -26,6 +26,7 @@ import invariant from 'invariant';
 import tls from 'tls';
 import net, {Socket} from 'net';
 import {Responder, Payload, ReactiveSocket} from 'rsocket-types';
+import constants from './fb-stubs/constants';
 import GK from './fb-stubs/GK';
 import {initJsEmulatorIPC} from './utils/js-client-server-utils/serverUtils';
 import {buildClientId} from './utils/clientUtils';
@@ -184,11 +185,8 @@ class Server extends EventEmitter {
         req: IncomingMessage;
         secure: boolean;
       }) => {
-        return (
-          info.origin.startsWith('chrome-extension://') ||
-          info.origin.startsWith('localhost:') ||
-          info.origin.startsWith('http://localhost:') ||
-          info.origin.startsWith('app://')
+        return constants.VALID_WEB_SOCKET_REQUEST_ORIGIN_PREFIXES.some(
+          (validPrefix) => info.origin.startsWith(validPrefix),
         );
       },
     });
