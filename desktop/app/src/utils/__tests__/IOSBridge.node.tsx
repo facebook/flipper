@@ -38,7 +38,7 @@ test('uses xcrun with no idb', async () => {
 });
 
 test('uses idb when present', async () => {
-  const ib = await makeIOSBridge('/usr/local/bin/idb');
+  const ib = await makeIOSBridge('/usr/local/bin/idb', async (_) => true);
   ib.startLogListener('deadbeef');
 
   expect(spawn).toHaveBeenCalledWith(

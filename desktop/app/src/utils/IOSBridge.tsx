@@ -65,8 +65,11 @@ function xcrunStartLogListener(udid: string) {
   );
 }
 
-export async function makeIOSBridge(idbPath: string): Promise<IOSBridge> {
-  if (await isAvailable(idbPath)) {
+export async function makeIOSBridge(
+  idbPath: string,
+  isAvailableFn: (idbPath: string) => Promise<boolean> = isAvailable,
+): Promise<IOSBridge> {
+  if (await isAvailableFn(idbPath)) {
     return {
       startLogListener: idbStartLogListener.bind(null, idbPath),
     };
