@@ -6,7 +6,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v1
-    - uses: maxim-lobanov/setup-cocoapods@v1
+    - uses: maxim-lobanov/setup-cocoapods@v1.1
       with:
         # Path to Podfile.lock file to determine Cocoapods version
         podfile-path: react-native/ReactNativeFlipperExample/ios/Podfile.lock
@@ -25,7 +25,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v1
-    - uses: maxim-lobanov/setup-cocoapods@v1
+    - uses: maxim-lobanov/setup-cocoapods@v1.1
       with:
         # Path to Podfile.lock file to determine Cocoapods version
         podfile-path: react-native/ReactNativeFlipperExample/ios/Podfile.lock
