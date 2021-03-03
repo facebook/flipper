@@ -6,6 +6,10 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v1
+    - uses: maxim-lobanov/setup-cocoapods@v1
+      with:
+        # Path to Podfile.lock file to determine Cocoapods version
+        podfile-path: react-native/ReactNativeFlipperExample/ios/Podfile.lock
     - name: Install yarn dependencies
       run: cd react-native/ReactNativeFlipperExample && yarn install --frozen-lockfile
     - name: Install pod dependencies
@@ -21,6 +25,10 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v1
+    - uses: maxim-lobanov/setup-cocoapods@v1
+      with:
+        # Path to Podfile.lock file to determine Cocoapods version
+        podfile-path: react-native/ReactNativeFlipperExample/ios/Podfile.lock
     - name: set up JDK 1.8
       uses: actions/setup-java@v1
       with:
