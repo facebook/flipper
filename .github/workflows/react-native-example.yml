@@ -3,27 +3,33 @@ on: [push, pull_request]
 jobs:
   build-react-native-example-ios:
     runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: react-native/ReactNativeFlipperExample
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v1
     - uses: maxim-lobanov/setup-cocoapods@v1
       with:
         # Path to Podfile.lock file to determine Cocoapods version
-        podfile-path: react-native/ReactNativeFlipperExample/ios/Podfile.lock
+        podfile-path: ios/Podfile.lock
     - name: Install yarn dependencies
-      run: cd react-native/ReactNativeFlipperExample && yarn install --frozen-lockfile --ignore-scripts
+      run: yarn install --frozen-lockfile --ignore-scripts
     - name: Install react-native-flipper
-      run: cd react-native/ReactNativeFlipperExample && yarn relative-deps
+      run: yarn relative-deps
     - name: Install pod dependencies
-      run: cd react-native/ReactNativeFlipperExample/ios && pod install --repo-update
+      run: cd ios && pod install --repo-update
     - name: Build React Native iOS Example debug app
       run: |
-        cd react-native/ReactNativeFlipperExample/ios
+        cd ios
         IPHONESIMULATOR=$(xcodebuild -showsdks | grep -o "iphonesimulator[0-9]\\+\\.[0-9]\\+$") && echo $IPHONESIMULATOR
         xcodebuild -workspace ReactNativeFlipperExample.xcworkspace -configuration Debug -scheme ReactNativeFlipperExample -sdk $IPHONESIMULATOR EXCLUDED_ARCHS=arm64
 
   build-react-native-example-android:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: react-native/ReactNativeFlipperExample
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v1
@@ -43,11 +49,11 @@ jobs:
           ~/.gradle/caches/build-cache-*
         key: gradle-${{ hashFiles('checksum-android.txt') }}
     - name: Install yarn dependencies
-      run: cd react-native/ReactNativeFlipperExample && yarn install --frozen-lockfile --ignore-scripts
+      run: yarn install --frozen-lockfile --ignore-scripts
     - name: Install react-native-flipper
-      run: cd react-native/ReactNativeFlipperExample && yarn relative-deps
+      run: yarn relative-deps
     - name: Build React Native Android Example debug app
       run: |
-        cd react-native/ReactNativeFlipperExample/android
-        react-native bundle --platform android --dev true --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res
-        ./gradlew assembleDebug
+        mkdir -p android/app/src/main/assets
+        yarn react-native bundle --platform android --dev true --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res
+        cd android && ./gradlew assembleDebug
