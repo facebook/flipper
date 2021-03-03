@@ -13,7 +13,7 @@ jobs:
       with:
         # Path to Podfile.lock file to determine Cocoapods version
         # n.b. doesn't seem to respect cwd:
-        podfile-path: ${GITHUB_WORKSPACE}/react-native/ReactNativeFlipperExample/ios/Podfile.lock
+        podfile-path: react-native/ReactNativeFlipperExample/ios/Podfile.lock
     - name: Install yarn dependencies
       run: yarn install --frozen-lockfile --ignore-scripts
     - name: Install react-native-flipper
