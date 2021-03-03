@@ -82,7 +82,7 @@
     "@testing-library/react": "^11.2.3",
     "@types/lodash.memoize": "^4.1.6",
     "flipper-test-utils": "0.0.0",
-    "metro-runtime": "^0.63.0",
+    "metro-runtime": "^0.65.2",
     "mock-fs": "^4.13.0",
     "pretty-format": "^26.1.0",
     "react-refresh": "^0.9.0",
