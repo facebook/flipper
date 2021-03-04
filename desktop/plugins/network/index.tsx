@@ -127,7 +127,7 @@ export interface NetworkRouteManager {
   addRoute(): string | null;
   modifyRoute(id: string, routeChange: Partial<Route>): void;
   removeRoute(id: string): void;
-  enableRoute(id: string, routeChange: Partial<Route>): void;
+  enableRoute(id: string): void;
   copyHighlightedCalls(
     highlightedRows: Set<string>,
     requests: {[id: string]: Request},
@@ -143,7 +143,7 @@ const nullNetworkRouteManager: NetworkRouteManager = {
   },
   modifyRoute(_id: string, _routeChange: Partial<Route>) {},
   removeRoute(_id: string) {},
-  enableRoute(_id: string, routeChange: Partial<Route>) {},
+  enableRoute(_id: string) {},
   copyHighlightedCalls(
     _highlightedRows: Set<string>,
     _requests: {[id: string]: Request},
@@ -373,17 +373,12 @@ export function plugin(client: PluginClient<Events, Methods>) {
         }
         informClientMockChange(routes.get());
       },
-      enableRoute(id: string, routeChange: Partial<Route>) {
-        console.log(routeChange);
-        console.log(routes.get()[id]);
-        routeChange.enabled = !routes.get()[id].enabled;
-        console.log(routeChange);
+      enableRoute(id: string) {
         if (routes.get().hasOwnProperty(id)) {
           routes.update((draft) => {
-            Object.assign(draft[id], routeChange);
+            draft[id].enabled = !draft[id].enabled;
           });
         }
-        console.log(routes.get());
         informClientMockChange(routes.get());
       },
       copyHighlightedCalls(

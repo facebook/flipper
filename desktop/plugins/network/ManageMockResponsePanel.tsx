@@ -102,9 +102,12 @@ function RouteRow(props: {
   handleEnableId: () => void;
   enabled: boolean;
 }) {
+  const tip = props.enabled
+    ? 'Un-check to disable mock route'
+    : 'Check to enable mock route';
   return (
     <Layout.Horizontal gap>
-      <Tooltip title="Check to enable mock route" mouseEnterDelay={1.1}>
+      <Tooltip title={tip} mouseEnterDelay={1.1}>
         <Checkbox
           onClick={props.handleEnableId}
           checked={props.enabled}></Checkbox>
@@ -269,7 +272,6 @@ export function ManageMockResponsePanel(props: Props) {
                   });
                 },
                 (id) => {
-                  console.log('...enableRoute');
                   networkRouteManager.enableRoute(id, {});
                 },
               )}
