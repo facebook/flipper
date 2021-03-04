@@ -11,7 +11,7 @@ import {ipcRenderer, remote} from 'electron';
 import {performance} from 'perf_hooks';
 import {EventEmitter} from 'events';
 
-import {Store} from '../reducers/index';
+import {State, Store} from '../reducers/index';
 import {Logger} from '../fb-interfaces/Logger';
 import Client from '../Client';
 import {
@@ -121,8 +121,19 @@ export default (store: Store, logger: Logger) => {
     );
   }
 
-  ipcRenderer.on('trackUsage', (_e, ...args: any[]) => {
-    const state = store.getState();
+  ipcRenderer.on('trackUsage', (event, ...args: any[]) => {
+    let state: State;
+    try {
+      state = store.getState();
+    } catch (e) {
+      // if trackUsage is called (indirectly) through a reducer, this will utterly die Flipper. Let's prevent that and log an error instead
+      console.error(
+        'trackUsage triggered indirectly as side effect of a reducer. Event: ',
+        event.type,
+        event,
+      );
+      return;
+    }
     const {
       selectedDevice,
       selectedPlugin,
