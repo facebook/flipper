@@ -63,7 +63,8 @@ export function buildClientId(clientInfo: {
   device: string;
   device_id: string;
 }): string {
-  for (const key of ['app', 'os', 'device', 'device_id'] as Array<
+  // N.B.: device_id can be empty, which designates the host device
+  for (const key of ['app', 'os', 'device'] as Array<
     keyof ClientIdConstituents
   >) {
     if (!clientInfo[key]) {
