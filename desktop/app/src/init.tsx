@@ -25,7 +25,6 @@ import {setPersistor} from './utils/persistor';
 import React from 'react';
 import path from 'path';
 import {store} from './store';
-import {registerRecordingHooks} from './utils/pluginStateRecorder';
 import {cache} from '@emotion/css';
 import {CacheProvider} from '@emotion/react';
 import {enableMapSet} from 'immer';
@@ -196,7 +195,6 @@ function init() {
     document.getElementById('root'),
   );
   initLauncherHooks(config(), store);
-  registerRecordingHooks(store);
   enableConsoleHook();
   window.flipperGlobalStoreDispatch = store.dispatch;
 

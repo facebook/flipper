@@ -11,10 +11,6 @@ import {PersistedStateReducer, FlipperDevicePlugin} from '../plugin';
 import {State, MiddlewareAPI} from '../reducers/index';
 import {setPluginState} from '../reducers/pluginStates';
 import {
-  flipperRecorderAddEvent,
-  isRecordingEvents,
-} from './pluginStateRecorder';
-import {
   clearMessageQueue,
   queueMessages,
   Message,
@@ -37,7 +33,6 @@ function processMessageClassic(
   message: Message,
 ): State {
   const reducerStartTime = Date.now();
-  flipperRecorderAddEvent(pluginKey, message.method, message.params);
   try {
     const newPluginState = plugin.persistedStateReducer!(
       state,
@@ -53,16 +48,10 @@ function processMessageClassic(
 }
 
 function processMessagesSandy(
-  pluginKey: string,
   plugin: _SandyPluginInstance,
   messages: Message[],
 ) {
   const reducerStartTime = Date.now();
-  if (isRecordingEvents(pluginKey)) {
-    messages.forEach((message) => {
-      flipperRecorderAddEvent(pluginKey, message.method, message.params);
-    });
-  }
   try {
     plugin.receiveMessages(messages);
     addBackgroundStat(plugin.definition.id, Date.now() - reducerStartTime);
@@ -87,7 +76,7 @@ export function processMessagesImmediately(
   messages: Message[],
 ) {
   if (plugin instanceof _SandyPluginInstance) {
-    processMessagesSandy(pluginKey, plugin, messages);
+    processMessagesSandy(plugin, messages);
   } else {
     const persistedState = getCurrentPluginState(store, plugin, pluginKey);
     const newPluginState = messages.reduce(
@@ -192,7 +181,7 @@ export async function processMessageQueue(
       do {
         if (_SandyPluginInstance.is(plugin)) {
           // Optimization: we could send a batch of messages here
-          processMessagesSandy(pluginKey, plugin, [messages[offset]]);
+          processMessagesSandy(plugin, [messages[offset]]);
         } else {
           newPluginState = processMessageClassic(
             newPluginState,
