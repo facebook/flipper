@@ -75,7 +75,7 @@
     "@babel/eslint-parser": "^7.13.8",
     "@jest-runner/electron": "^3.0.0",
     "@testing-library/dom": "^7.29.0",
-    "@testing-library/react": "^11.2.3",
+    "@testing-library/react": "^11.2.5",
     "@types/adobe__node-fetch-retry": "^1.0.0",
     "@types/algoliasearch": "^3.30.19",
     "@types/babel__code-frame": "^7.0.2",

@@ -79,7 +79,7 @@
   },
   "devDependencies": {
     "@testing-library/dom": "^7.29.0",
-    "@testing-library/react": "^11.2.3",
+    "@testing-library/react": "^11.2.5",
     "@types/lodash.memoize": "^4.1.6",
     "flipper-test-utils": "0.0.0",
     "metro-runtime": "^0.65.2",
