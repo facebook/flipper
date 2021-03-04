@@ -272,7 +272,7 @@ export function ManageMockResponsePanel(props: Props) {
                   });
                 },
                 (id) => {
-                  networkRouteManager.enableRoute(id, {});
+                  networkRouteManager.enableRoute(id);
                 },
               )}
               stickyBottom={true}
