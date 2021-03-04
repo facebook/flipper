@@ -38,15 +38,19 @@ export const uriComponents = (url: string): Array<string> => {
 export default (store: Store, _logger: Logger) => {
   const currentWindow = remote.getCurrentWindow();
   currentWindow.on('focus', () => {
-    store.dispatch({
-      type: 'windowIsFocused',
-      payload: {isFocused: true, time: Date.now()},
+    setImmediate(() => {
+      store.dispatch({
+        type: 'windowIsFocused',
+        payload: {isFocused: true, time: Date.now()},
+      });
     });
   });
   currentWindow.on('blur', () => {
-    store.dispatch({
-      type: 'windowIsFocused',
-      payload: {isFocused: false, time: Date.now()},
+    setImmediate(() => {
+      store.dispatch({
+        type: 'windowIsFocused',
+        payload: {isFocused: false, time: Date.now()},
+      });
     });
   });
 
