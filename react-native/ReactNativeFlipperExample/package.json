@@ -12,7 +12,7 @@
   "dependencies": {
     "react": "^17.0.1",
     "react-native": "^0.63.4",
-    "react-native-flipper": "^0.78.0"
+    "react-native-flipper": "^0.79.0"
   },
   "devDependencies": {
     "@babel/core": "^7.13.8",
