@@ -63,7 +63,7 @@ android {
 
     dependencies {
         compileOnly deps.proguardAnnotations
-        implementation 'com.facebook.fbjni:fbjni:0.1.0'
+        implementation 'com.facebook.fbjni:fbjni:0.2.0'
         implementation deps.soloader
         implementation deps.jsr305
         implementation deps.supportAppCompat
