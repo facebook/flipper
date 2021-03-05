@@ -7,6 +7,8 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 
 import InternalTroubleshooting from './fb/internal-troubleshooting.mdx';
 
+import PortalTroubleshooting from './fb/portal-troubleshooting.mdx';
+
 We hope that flipper works well out of the box, but the software is a work in progress and problems will occur. Below are some known issues and steps you can take to try to resolve them.
 
 <FbInternalOnly>
@@ -187,7 +189,7 @@ That is correct, the dependencies won't be actually included in the release (whe
 
 First, make sure your cocoapods is up to date (`sudo gem install cocoapods`), and that you are using the [latest FlipperKit](getting-started/react-native#using-the-latest-flipper-sdk).
 
-For inexplainable build errors, clone and verify if our [reference project](https://github.com/facebook/flipper/tree/master/react-native/ReactNativeFlipperExample) builds and runs locally. If it does, we recommend to compare the `package.json` and `ios/Podfile` files with yours. If that doesn't yield anything, compare the `ios/Podfile.lock` as well to verify any transitive pod dependencies need updating. 
+For inexplainable build errors, clone and verify if our [reference project](https://github.com/facebook/flipper/tree/master/react-native/ReactNativeFlipperExample) builds and runs locally. If it does, we recommend to compare the `package.json` and `ios/Podfile` files with yours. If that doesn't yield anything, compare the `ios/Podfile.lock` as well to verify any transitive pod dependencies need updating.
 
 #### `YogaKit.modulemap` not found
 
@@ -235,7 +237,7 @@ Comment out the relevant lines in `ios/Podfile` and run `cd ios && pod install` 
   # post_install do |installer|
   #  flipper_post_install(installer)
   # end
-```  
+```
 
 #### Disable Flipper on CI builds (iOS)
 
@@ -249,3 +251,11 @@ To speed up CI builds, Flipper can be disabled on CI environments by making the 
     end
   end
 ```
+
+<FbInternalOnly>
+
+## Portal
+
+<PortalTroubleshooting />
+
+</FbInternalOnly>
