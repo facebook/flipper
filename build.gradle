@@ -108,6 +108,6 @@ ext.deps = [
         testRules          : 'androidx.test:rules:1.1.0',
         // Plugin dependencies
         frescoFlipper      : 'com.facebook.fresco:flipper:2.4.0',
-        frescoStetho       : 'com.facebook.fresco:stetho:2.2.0',
+        frescoStetho       : 'com.facebook.fresco:stetho:2.4.0',
         fresco             : 'com.facebook.fresco:fresco:2.2.0'
 ]
