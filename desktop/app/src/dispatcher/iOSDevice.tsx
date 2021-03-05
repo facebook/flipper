@@ -93,22 +93,47 @@ if (typeof window !== 'undefined') {
   });
 }
 
+export function getAllPromisesForQueryingDevices(
+  store: Store,
+  logger: Logger,
+  iosBridge: IOSBridge,
+  isXcodeDetected: boolean,
+): Array<Promise<any>> {
+  const promArray = [
+    getActiveDevices(
+      store.getState().settingsState.idbPath,
+      store.getState().settingsState.enablePhysicalIOS,
+    ).then((devices: IOSDeviceParams[]) => {
+      processDevices(store, logger, iosBridge, devices, 'physical');
+    }),
+  ];
+  if (isXcodeDetected) {
+    promArray.push(
+      ...[
+        checkXcodeVersionMismatch(store),
+        getSimulators(store, true).then((devices) => {
+          processDevices(store, logger, iosBridge, devices, 'emulator');
+        }),
+      ],
+    );
+  }
+  return promArray;
+}
+
 async function queryDevices(
   store: Store,
   logger: Logger,
   iosBridge: IOSBridge,
 ): Promise<any> {
-  return Promise.all([
-    checkXcodeVersionMismatch(store),
-    getSimulators(store, true).then((devices) => {
-      processDevices(store, logger, iosBridge, devices, 'emulator');
-    }),
-    getActiveDevices(store.getState().settingsState.idbPath).then(
-      (devices: IOSDeviceParams[]) => {
-        processDevices(store, logger, iosBridge, devices, 'physical');
-      },
+  const isXcodeInstalled = await iosUtil.isXcodeDetected();
+  return Promise.all(
+    getAllPromisesForQueryingDevices(
+      store,
+      logger,
+      iosBridge,
+      isXcodeInstalled,
     ),
-  ]);
+  );
 }
 
 function processDevices(
@@ -224,8 +249,11 @@ export async function launchSimulator(udid: string): Promise<any> {
   await promisify(execFile)('open', ['-a', 'simulator']);
 }
 
-function getActiveDevices(idbPath: string): Promise<Array<IOSDeviceParams>> {
-  return iosUtil.targets(idbPath).catch((e) => {
+function getActiveDevices(
+  idbPath: string,
+  isPhysicalDeviceEnabled: boolean,
+): Promise<Array<IOSDeviceParams>> {
+  return iosUtil.targets(idbPath, isPhysicalDeviceEnabled).catch((e) => {
     console.error('Failed to get active iOS devices:', e.message);
     return [];
   });
@@ -279,25 +307,19 @@ async function checkXcodeVersionMismatch(store: Store) {
     console.error('Failed to determine Xcode version:', e);
   }
 }
-async function isXcodeDetected(): Promise<boolean> {
-  return exec('xcode-select -p')
-    .then((_) => true)
-    .catch((_) => false);
-}
 
 export default (store: Store, logger: Logger) => {
   if (!store.getState().settingsState.enableIOS) {
     return;
   }
-  isXcodeDetected().then((isDetected) => {
+  iosUtil.isXcodeDetected().then((isDetected) => {
     store.dispatch(setXcodeDetected(isDetected));
-    if (isDetected) {
-      if (store.getState().settingsState.enablePhysicalIOS) {
-        startDevicePortForwarders();
-      }
-      return makeIOSBridge(
-        store.getState().settingsState.idbPath,
-      ).then((iosBridge) => queryDevicesForever(store, logger, iosBridge));
+    if (store.getState().settingsState.enablePhysicalIOS) {
+      startDevicePortForwarders();
     }
+    return makeIOSBridge(
+      store.getState().settingsState.idbPath,
+      isDetected,
+    ).then((iosBridge) => queryDevicesForever(store, logger, iosBridge));
   });
 };

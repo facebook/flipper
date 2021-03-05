@@ -11,7 +11,7 @@ import fs from 'fs';
 import child_process from 'child_process';
 
 export interface IOSBridge {
-  startLogListener: (
+  startLogListener?: (
     udid: string,
   ) => child_process.ChildProcessWithoutNullStreams;
 }
@@ -35,7 +35,7 @@ const LOG_EXTRA_ARGS = [
   '--info',
 ];
 
-function idbStartLogListener(
+export function idbStartLogListener(
   idbPath: string,
   udid: string,
 ): child_process.ChildProcessWithoutNullStreams {
@@ -46,7 +46,7 @@ function idbStartLogListener(
   );
 }
 
-function xcrunStartLogListener(udid: string) {
+export function xcrunStartLogListener(udid: string) {
   const deviceSetPath = process.env.DEVICE_SET_PATH
     ? ['--set', process.env.DEVICE_SET_PATH]
     : [];
@@ -67,8 +67,14 @@ function xcrunStartLogListener(udid: string) {
 
 export async function makeIOSBridge(
   idbPath: string,
+  isXcodeDetected: boolean,
   isAvailableFn: (idbPath: string) => Promise<boolean> = isAvailable,
 ): Promise<IOSBridge> {
+  if (!isXcodeDetected) {
+    // iOS Physical Device can still get detected without Xcode. In this case there is no way to setup log listener yet.
+    // This will not be the case, idb team is working on making idb log work without XCode atleast for physical device.
+    return {};
+  }
   if (await isAvailableFn(idbPath)) {
     return {
       startLogListener: idbStartLogListener.bind(null, idbPath),

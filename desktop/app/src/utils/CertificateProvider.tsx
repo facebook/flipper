@@ -425,7 +425,10 @@ export default class CertificateProvider {
       return Promise.resolve(matches[1]);
     }
     return iosUtil
-      .targets(this.store.getState().settingsState.idbPath)
+      .targets(
+        this.store.getState().settingsState.idbPath,
+        this.store.getState().settingsState.enablePhysicalIOS,
+      )
       .then((targets) => {
         if (targets.length === 0) {
           throw new Error('No iOS devices found');

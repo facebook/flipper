@@ -14,6 +14,11 @@ import {reportPlatformFailures} from './metrics';
 import {promises, constants} from 'fs';
 import memoize from 'lodash.memoize';
 import {notNull} from './typeUtils';
+import {promisify} from 'util';
+import child_process from 'child_process';
+import fs from 'fs-extra';
+import path from 'path';
+const exec = promisify(child_process.exec);
 
 // Use debug to get helpful logs when idb fails
 const idbLogLevel = 'DEBUG';
@@ -54,9 +59,78 @@ function safeExec(
     .then((release) => unsafeExec(command).finally(release));
 }
 
-async function targets(idbPath: string): Promise<Array<DeviceTarget>> {
+export async function queryTargetsWithoutXcodeDependency(
+  idbCompanionPath: string,
+  isPhysicalDeviceEnabled: boolean,
+  isAvailableFunc: (idbPath: string) => Promise<boolean>,
+  safeExecFunc: (
+    command: string,
+  ) => Promise<{stdout: string; stderr: string} | Output>,
+): Promise<Array<DeviceTarget>> {
+  if (await isAvailableFunc(idbCompanionPath)) {
+    return safeExecFunc(`${idbCompanionPath} --list 1 --only device`)
+      .then(({stdout}) =>
+        // It is safe to assume this to be non-null as it only turns null
+        // if the output redirection is misconfigured:
+        // https://stackoverflow.com/questions/27786228/node-child-process-spawn-stdout-returning-as-null
+        stdout!
+          .toString()
+          .trim()
+          .split('\n')
+          .map((line) => line.trim())
+          .filter(Boolean)
+          .map((line) => JSON.parse(line))
+          .filter(({type}: IdbTarget) => type !== 'simulator')
+          .map<DeviceTarget>((target: IdbTarget) => {
+            return {udid: target.udid, type: 'physical', name: target.name};
+          }),
+      )
+      .then((devices) => {
+        if (devices.length > 0 && !isPhysicalDeviceEnabled) {
+          // TODO: Show a notification to enable the toggle or integrate Doctor to better suggest this advice.
+          console.warn(
+            'You are trying to connect Physical Device. Please enable the toggle "Enable physical iOS device" from the setting screen.',
+          );
+        }
+        return devices;
+      })
+      .catch((e: Error) => {
+        console.warn(
+          'Failed to query idb_companion --list 1 --only device for physical targets:',
+          e,
+        );
+        return [];
+      });
+  } else {
+    console.warn(
+      `Unable to locate idb_companion in ${idbCompanionPath}. Try running sudo yum install -y fb-idb`,
+    );
+    return [];
+  }
+}
+
+async function targets(
+  idbPath: string,
+  isPhysicalDeviceEnabled: boolean,
+): Promise<Array<DeviceTarget>> {
   if (process.platform !== 'darwin') {
     return [];
+  }
+  const isXcodeInstalled = await isXcodeDetected();
+  if (!isXcodeInstalled) {
+    if (!isPhysicalDeviceEnabled) {
+      // TODO: Show a notification to enable the toggle or integrate Doctor to better suggest this advice.
+      console.warn(
+        'You are trying to connect Physical Device. Please enable the toggle "Enable physical iOS device" from the setting screen.',
+      );
+    }
+    const idbCompanionPath = path.dirname(idbPath) + '/idb_companion';
+    return queryTargetsWithoutXcodeDependency(
+      idbCompanionPath,
+      isPhysicalDeviceEnabled,
+      isAvailable,
+      safeExec,
+    );
   }
 
   // Not all users have idb installed because you can still use
@@ -185,9 +259,18 @@ function wrapWithErrorMessage<T>(p: Promise<T>): Promise<T> {
   });
 }
 
+async function isXcodeDetected(): Promise<boolean> {
+  return exec('xcode-select -p')
+    .then(({stdout}) => {
+      return fs.pathExists(stdout);
+    })
+    .catch((_) => false);
+}
+
 export default {
   isAvailable,
   targets,
   push,
   pull,
+  isXcodeDetected,
 };
