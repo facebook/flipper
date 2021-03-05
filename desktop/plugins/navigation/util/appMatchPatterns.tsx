@@ -43,8 +43,8 @@ export const getAppMatchPatterns = (
       } else {
         return;
       }
-      patternsPath = path.join(getPatternsBasePath(), filename);
-      fs.readFile(patternsPath, (err, data) => {
+      const patternsFilePath = path.join(getPatternsBasePath(), filename);
+      fs.readFile(patternsFilePath, (err, data) => {
         if (err) {
           reject(err);
         } else {
