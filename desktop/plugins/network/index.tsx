@@ -44,7 +44,13 @@ import {clipboard} from 'electron';
 import {URL} from 'url';
 import {MockResponseDialog} from './MockResponseDialog';
 import {combineBase64Chunks} from './chunks';
-import {PluginClient, createState, usePlugin, useValue} from 'flipper-plugin';
+import {
+  PluginClient,
+  Device,
+  createState,
+  usePlugin,
+  useValue,
+} from 'flipper-plugin';
 import {remote, OpenDialogOptions} from 'electron';
 import fs from 'fs';
 import electron from 'electron';
@@ -325,8 +331,16 @@ export function plugin(client: PluginClient<Events, Methods>) {
     });
   }
 
+  function supportsMocks(device: Device): Promise<boolean> {
+    if (device.isArchived) {
+      return Promise.resolve(true);
+    } else {
+      return client.supportsMethod('mockResponses');
+    }
+  }
+
   function init() {
-    client.supportsMethod('mockResponses').then((result) => {
+    supportsMocks(client.device).then((result) => {
       const newRoutes = JSON.parse(
         localStorage.getItem(LOCALSTORAGE_MOCK_ROUTE_LIST_KEY + client.appId) ||
           '{}',
@@ -552,21 +566,23 @@ export function plugin(client: PluginClient<Events, Methods>) {
         JSON.stringify(routesValuesArray),
       );
 
-      try {
-        await client.send('mockResponses', {
-          routes: routesValuesArray
-            .filter((e) => e.enabled)
-            .map((route: Route) => ({
-              requestUrl: route.requestUrl,
-              method: route.requestMethod,
-              data: route.responseData,
-              headers: [...Object.values(route.responseHeaders)],
-              status: route.responseStatus,
-              enabled: route.enabled,
-            })),
-        });
-      } catch (e) {
-        console.error('Failed to mock responses.', e);
+      if (!client.device.isArchived) {
+        try {
+          await client.send('mockResponses', {
+            routes: routesValuesArray
+              .filter((e) => e.enabled)
+              .map((route: Route) => ({
+                requestUrl: route.requestUrl,
+                method: route.requestMethod,
+                data: route.responseData,
+                headers: [...Object.values(route.responseHeaders)],
+                status: route.responseStatus,
+                enabled: route.enabled,
+              })),
+          });
+        } catch (e) {
+          console.error('Failed to mock responses.', e);
+        }
       }
     }
   }
