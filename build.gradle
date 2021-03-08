@@ -96,7 +96,7 @@ ext.deps = [
         lithoFresco        : "com.facebook.litho:litho-fresco:$LITHO_VERSION",
         lithoTesting       : "com.facebook.litho:litho-testing:$LITHO_VERSION",
         // Debugging and testing
-        guava              : 'com.google.guava:guava:20.0',
+        guava              : 'com.google.guava:guava:23.0',
         robolectric        : 'org.robolectric:robolectric:4.4',
         junit              : 'junit:junit:4.13.2',
         hamcrest           : 'org.hamcrest:hamcrest-library:1.3',
