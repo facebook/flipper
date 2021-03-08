@@ -262,7 +262,7 @@ function wrapWithErrorMessage<T>(p: Promise<T>): Promise<T> {
 async function isXcodeDetected(): Promise<boolean> {
   return exec('xcode-select -p')
     .then(({stdout}) => {
-      return fs.pathExists(stdout);
+      return fs.pathExists(stdout.trim());
     })
     .catch((_) => false);
 }
