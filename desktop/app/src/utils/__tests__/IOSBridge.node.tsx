@@ -14,9 +14,11 @@ import {mocked} from 'ts-jest/utils';
 jest.mock('child_process');
 const spawn = mocked(childProcess.spawn);
 
-test('uses xcrun with no idb', async () => {
-  const ib = await makeIOSBridge('');
-  ib.startLogListener('deadbeef');
+test('uses xcrun with no idb when xcode is detected', async () => {
+  const ib = await makeIOSBridge('', true);
+  expect(ib.startLogListener).toBeDefined();
+
+  ib.startLogListener!('deadbeef');
 
   expect(spawn).toHaveBeenCalledWith(
     'xcrun',
@@ -37,9 +39,11 @@ test('uses xcrun with no idb', async () => {
   );
 });
 
-test('uses idb when present', async () => {
-  const ib = await makeIOSBridge('/usr/local/bin/idb', async (_) => true);
-  ib.startLogListener('deadbeef');
+test('uses idb when present and xcode detected', async () => {
+  const ib = await makeIOSBridge('/usr/local/bin/idb', true, async (_) => true);
+  expect(ib.startLogListener).toBeDefined();
+
+  ib.startLogListener!('deadbeef');
 
   expect(spawn).toHaveBeenCalledWith(
     '/usr/local/bin/idb',
@@ -57,4 +61,9 @@ test('uses idb when present', async () => {
     ],
     {},
   );
+});
+
+test('uses no log listener when xcode is not detected', async () => {
+  const ib = await makeIOSBridge('', false);
+  expect(ib.startLogListener).toBeUndefined();
 });

@@ -177,7 +177,7 @@ export default class AndroidDevice extends BaseDevice {
       console.error('Error while getting device size', err);
     }
     const sizeArg = newSize ? `--size ${newSize}` : '';
-    const cmd = `screenrecord --bugreport ${sizeArg} "${recordingLocation}"`;
+    const cmd = `screenrecord ${sizeArg} "${recordingLocation}"`;
     this.recordingProcess = this.adb
       .shell(this.serial, cmd)
       .then(adb.util.readAll)

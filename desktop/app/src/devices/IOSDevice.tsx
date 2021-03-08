@@ -92,8 +92,10 @@ export default class IOSDevice extends BaseDevice {
       console.warn('Attaching iOS log listener continuously failed.');
       return;
     }
-    if (!this.log) {
-      this.log = iOSBridge.startLogListener(this.serial);
+
+    const logListener = iOSBridge.startLogListener;
+    if (!this.log && logListener) {
+      this.log = logListener(this.serial);
       this.log.on('error', (err: Error) => {
         console.error('iOS log tailer error', err);
       });

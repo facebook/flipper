@@ -42,6 +42,7 @@ task cleanNative(type: Delete) {
 }
 
 task downloadGlog(dependsOn: createNativeDepsDirectories, type: Download) {
+    onlyIf { isCacheOutOfDate(CACHE_REVISION) }
     src 'https://github.com/google/glog/archive/v0.3.5.tar.gz'
     onlyIfNewer true
     overwrite false
@@ -78,6 +79,7 @@ task prepareGlog(dependsOn: [downloadGlog], type: Copy) {
 }
 
 task finalizeGlog(dependsOn: [prepareGlog], type: Copy) {
+    onlyIf { isCacheOutOfDate(CACHE_REVISION) }
     from './overrides/glog/'
     include 'logging.cc'
     includeEmptyDirs = false
@@ -85,6 +87,7 @@ task finalizeGlog(dependsOn: [prepareGlog], type: Copy) {
 }
 
 task downloadDoubleConversion(dependsOn: createNativeDepsDirectories, type: Download) {
+    onlyIf { isCacheOutOfDate(CACHE_REVISION) }
     src 'https://github.com/google/double-conversion/archive/v3.0.0.tar.gz'
     onlyIfNewer true
     overwrite false
@@ -92,6 +95,7 @@ task downloadDoubleConversion(dependsOn: createNativeDepsDirectories, type: Down
 }
 
 task prepareDoubleConversion(dependsOn: [downloadDoubleConversion], type: Copy) {
+    onlyIf { isCacheOutOfDate(CACHE_REVISION) }
     from tarTree(downloadDoubleConversion.dest)
     from './overrides/DoubleConversion/'
     include 'double-conversion-3.0.0/**/*', 'build.gradle', 'CMakeLists.txt', 'ApplicationManifest.xml'
@@ -100,13 +104,15 @@ task prepareDoubleConversion(dependsOn: [downloadDoubleConversion], type: Copy) 
 }
 
 task downloadBoost(dependsOn: createNativeDepsDirectories, type: Download) {
+    onlyIf { isCacheOutOfDate(CACHE_REVISION) }
     src 'https://github.com/react-native-community/boost-for-react-native/releases/download/v1.63.0-0/boost_1_63_0.tar.gz'
     onlyIfNewer true
-    overwrite true
+    overwrite false
     dest new File(downloadsDir, getDownloadFileName(src))
 }
 
 task prepareBoost(dependsOn: [downloadBoost], type: Copy) {
+    onlyIf { isCacheOutOfDate(CACHE_REVISION) }
     from tarTree(resources.gzip(downloadBoost.dest))
     include 'boost_1_63_0/boost/**/*.hpp', 'boost_1_63_0/boost/**/*.h', 'boost/boost/**/*.hpp', 'boost/boost/**/*.h'
     includeEmptyDirs = false
@@ -117,6 +123,7 @@ task prepareBoost(dependsOn: [downloadBoost], type: Copy) {
 }
 
 task downloadFolly(dependsOn: createNativeDepsDirectories, type: Download) {
+    onlyIf { isCacheOutOfDate(CACHE_REVISION) }
     src 'https://github.com/facebook/folly/archive/v2020.02.17.00.tar.gz'
     onlyIfNewer true
     overwrite false
@@ -135,6 +142,7 @@ task prepareFolly(dependsOn: [downloadFolly], type: Copy) {
 
 //TODO: Get rid off this hack.
 task finalizeFollyWithDemangle(dependsOn: [prepareFolly], type: Copy) {
+    onlyIf { isCacheOutOfDate(CACHE_REVISION) }
     from './overrides/Folly/'
     include 'Demangle.h'
     into "$externalDir/folly/folly/detail/"
@@ -142,15 +150,18 @@ task finalizeFollyWithDemangle(dependsOn: [prepareFolly], type: Copy) {
 
 // HACK to fix template issue with newest NDK
 task finalizeFollyWithFileUtil(dependsOn: [prepareFolly], type: Copy) {
+    onlyIf { isCacheOutOfDate(CACHE_REVISION) }
     from './overrides/Folly/'
     include 'FileUtil.cpp'
     into "$externalDir/folly/folly/"
 }
 
 task finalizeFolly(dependsOn: [finalizeFollyWithDemangle, finalizeFollyWithFileUtil]) {
+    onlyIf { isCacheOutOfDate(CACHE_REVISION) }
 }
 
 task downloadLibEvent(dependsOn: [], type: Download) {
+    onlyIf { isCacheOutOfDate(CACHE_REVISION) }
     src 'https://github.com/libevent/libevent/releases/download/release-2.1.11-stable/libevent-2.1.11-stable.tar.gz'
     onlyIfNewer true
     overwrite false
@@ -167,6 +178,7 @@ task prepareLibEvent(dependsOn: [downloadLibEvent], type: Copy) {
 }
 
 task prepareLibEvent2(dependsOn: [prepareLibEvent], type: Copy) {
+    onlyIf { isCacheOutOfDate(CACHE_REVISION) }
     from './overrides/LibEvent/'
     include 'event-config.h'
     includeEmptyDirs = false
@@ -174,12 +186,14 @@ task prepareLibEvent2(dependsOn: [prepareLibEvent], type: Copy) {
 }
 
 task finalizeLibEvent(dependsOn: [prepareLibEvent2], type: Copy) {
+    onlyIf { isCacheOutOfDate(CACHE_REVISION) }
     from './overrides/LibEvent/'
     include 'CMakeLists.txt'
     into "$externalDir/LibEvent/libevent-2.1.11-stable/"
 }
 
 task downloadOpenSSLSource(dependsOn: [], type: Download) {
+    onlyIf { isCacheOutOfDate(CACHE_REVISION) }
     src 'https://github.com/passy/openssl-android/releases/download/1.1.0h/openssl-1.1.0h.tar.gz'
     onlyIfNewer true
     overwrite false
@@ -187,6 +201,7 @@ task downloadOpenSSLSource(dependsOn: [], type: Download) {
 }
 
 task downloadOpenSSLLibs(dependsOn: [], type: Download) {
+    onlyIf { isCacheOutOfDate(CACHE_REVISION) }
     src 'https://github.com/passy/openssl-android/releases/download/1.1.0h-r2/openssl-1.1.0h-r2-prebuilt.tar.gz'
     onlyIfNewer true
     overwrite false
@@ -213,12 +228,14 @@ task configureOpenSSL(dependsOn: [prepareOpenSSL], type: Exec) {
 }
 
 task finalizeOpenSSL(dependsOn: [configureOpenSSL], type: Exec) {
+    onlyIf { isCacheOutOfDate(CACHE_REVISION) }
     workingDir "$externalDir/OpenSSL/openssl-1.1.0h/"
     commandLine 'make', 'build_generated'
     onlyIf { !file("$externalDir/OpenSSL/openssl-1.1.0h/include/openssl/opensslconf.h").exists() }
 }
 
 task downloadRSocket(dependsOn: [], type: Download) {
+    onlyIf { isCacheOutOfDate(CACHE_REVISION) }
     src 'https://github.com/priteshrnandgaonkar/rsocket-cpp/archive/0.10.7.tar.gz'
     onlyIfNewer true
     overwrite false
@@ -226,6 +243,7 @@ task downloadRSocket(dependsOn: [], type: Download) {
 }
 
 task prepareRSocket(dependsOn: [downloadRSocket], type: Copy) {
+    onlyIf { isCacheOutOfDate(CACHE_REVISION) }
     from tarTree(downloadRSocket.dest)
     from './overrides/RSocket/'
     include 'rsocket-cpp-0.10.7/**/*', 'build.gradle', 'ApplicationManifest.xml', 'CMakeLists.txt'
@@ -250,10 +268,6 @@ def allTasks = [
     prepareRSocket,
     writeCacheRevision,
 ]
-
-allTasks.each { i ->
-    i.onlyIf { isCacheOutOfDate(CACHE_REVISION) }
-}
 
 task prepareAllLibs() {
     onlyIf { isCacheOutOfDate(CACHE_REVISION) }
