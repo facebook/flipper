@@ -70,6 +70,7 @@ export type Route = {
   responseData: string;
   responseHeaders: {[id: string]: Header};
   responseStatus: string;
+  enabled: boolean;
 };
 
 export type MockRoute = {
@@ -78,6 +79,7 @@ export type MockRoute = {
   data: string;
   headers: Header[];
   status: string;
+  enabled: boolean;
 };
 
 export type PersistedState = {
