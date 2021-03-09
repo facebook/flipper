@@ -19,7 +19,7 @@ buildscript {
 }
 
 plugins {
-    id 'de.undercouch.download' version '4.0.1'
+    id 'de.undercouch.download' version '4.1.1'
     id 'com.github.dcendents.android-maven' version '2.1'
     id 'com.github.ben-manes.versions' version '0.28.0'
 }
