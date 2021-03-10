@@ -306,7 +306,7 @@ class Server extends EventEmitter {
     if (transformedMedium === 'WWW') {
       this.store.dispatch({
         type: 'REGISTER_DEVICE',
-        payload: new DummyDevice(device_id, app, os),
+        payload: new DummyDevice(device_id, app + ' Server Exchanged', os),
       });
     }
 
