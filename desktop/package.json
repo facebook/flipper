@@ -218,6 +218,7 @@
   "scripts": {
     "build": "cross-env NODE_ENV=production ./ts-node scripts/build-release.ts $@",
     "build-plugin": "./ts-node scripts/build-plugin.ts",
+    "bundle-all-plugins": "./ts-node scripts/bundle-all-plugins.ts",
     "build:dev": "cross-env NODE_ENV=development ./ts-node scripts/build-release.ts $@",
     "build:eslint": "cd eslint-plugin-flipper && yarn build",
     "build:themes": "lessc --js themes/light.less static/themes/light.css && lessc --js themes/dark.less static/themes/dark.css",
