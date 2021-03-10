@@ -9,3 +9,4 @@
 
 export {default as runBuild} from './runBuild';
 export {default as getWatchFolders} from './getWatchFolders';
+export {default as computePackageChecksum} from './computePackageChecksum';
