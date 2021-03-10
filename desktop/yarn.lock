@@ -1994,10 +1994,10 @@
   resolved "https://registry.yarnpkg.com/@types/algoliasearch/-/algoliasearch-3.34.11.tgz#a7f3b89a95578be3acd972167bdbadb5dcf71660"
   integrity sha512-FFMbpmXCHcgbypnOUY98SDEoiLc2bXO51gxgX02ypb8srZZnZCPV/8VKknuEtgr1VkgYLrqLi5BoYzZRVni6Fw==
 
-"@types/archiver@^3.1.0":
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/@types/archiver/-/archiver-3.1.1.tgz#10cc1be44af8911e57484342c7b3b32a5f178a1a"
-  integrity sha512-TzVZ9204sH1TuFylfr1cw/AA/3/VldAAXswEwKLXUOzA9mDg+m6gHF9EaqKNlozcjc6knX5m1KAqJzksPLSEfw==
+"@types/archiver@^5.1.0":
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/@types/archiver/-/archiver-5.1.0.tgz#869f4ce4028e49cf9a0243cf914415f4cc3d1f3d"
+  integrity sha512-baFOhanb/hxmcOd1Uey2TfFg43kTSmM6py1Eo7Rjbv/ivcl7PXLhY0QgXGf50Hx/eskGCFqPfhs/7IZLb15C5g==
   dependencies:
     "@types/glob" "*"
 
