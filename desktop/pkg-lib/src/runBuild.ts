@@ -12,6 +12,8 @@ import getWatchFolders from './getWatchFolders';
 import path from 'path';
 import fs from 'fs-extra';
 import {getInstalledPluginDetails} from 'flipper-plugin-lib';
+import {FileStore} from 'metro-cache';
+import os from 'os';
 
 let metroDir: string | undefined;
 const metroDirPromise = getMetroDir().then((dir) => (metroDir = dir));
@@ -77,11 +79,18 @@ export default async function bundlePlugin(pluginDir: string, dev: boolean) {
       sourceExts: ['js', 'jsx', 'ts', 'tsx', 'json', 'mjs', 'cjs'],
       blacklistRE: /\.native\.js$/,
     },
+    cacheStores: [
+      new FileStore({
+        root:
+          process.env.FLIPPER_METRO_CACHE ??
+          path.join(os.tmpdir(), 'metro-cache'),
+      }),
+    ],
   });
   await Metro.runBuild(config, {
     dev,
     minify: !dev,
-    resetCache: !dev,
+    resetCache: false,
     sourceMap: dev,
     sourceMapUrl,
     entry,

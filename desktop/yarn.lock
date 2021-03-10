@@ -8741,7 +8741,7 @@ metro-cache-key@0.65.2:
   resolved "https://registry.yarnpkg.com/metro-cache-key/-/metro-cache-key-0.65.2.tgz#b841ceacda1c97a5616ad99e728a3bf31c6390df"
   integrity sha512-2Re5w1kxIpdBFYavrAOrAu0pIj/gj2DUQGcCbDiYWpDw0ibyvOakmIbMZRH/J6c1KXJIGzb4YZpisKeAOsNODQ==
 
-metro-cache@0.65.2:
+metro-cache@0.65.2, metro-cache@^0.65.2:
   version "0.65.2"
   resolved "https://registry.yarnpkg.com/metro-cache/-/metro-cache-0.65.2.tgz#8922c8d4d882014e745aa01c9d1c64aeb3b08306"
   integrity sha512-+f7A57qlF2IChrFsHsYN4Lhr7nwb3lsS+Z/M1833Bhj25VBhbe3dMqt8+rOWncgkOY3aHtH7PphRABy5yfDQ3g==
