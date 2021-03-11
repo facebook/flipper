@@ -4,7 +4,8 @@
   "id": "CrashReporter",
   "pluginType": "device",
   "supportedDevices": [
-    {"os": "Android"},
+    {"os": "Android", "type": "emulator"},
+    {"os": "Android", "type": "physical"},
     {"os": "iOS", "type": "emulator"}
   ],
   "version": "0.0.0",

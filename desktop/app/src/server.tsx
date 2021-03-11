@@ -38,7 +38,7 @@ import querystring from 'querystring';
 import {IncomingMessage} from 'http';
 import ws from 'ws';
 import {initSelfInpector} from './utils/self-inspection/selfInspectionUtils';
-import ClientDevice from './devices/ClientDevice';
+import DummyDevice from './devices/DummyDevice';
 import BaseDevice from './devices/BaseDevice';
 import {sideEffect} from './utils/sideEffect';
 import {destroyDevice} from './reducers/connections';
@@ -306,7 +306,7 @@ class Server extends EventEmitter {
     if (transformedMedium === 'WWW') {
       this.store.dispatch({
         type: 'REGISTER_DEVICE',
-        payload: new ClientDevice(device_id, app, os),
+        payload: new DummyDevice(device_id, app + ' Server Exchanged', os),
       });
     }
 

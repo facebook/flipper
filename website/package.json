@@ -32,6 +32,7 @@
     "node-forge": "^0.10.0",
     "node-fetch": "^2.6.1",
     "immer": "^8.0.1",
-    "prismjs": "1.23.0"
+    "prismjs": "1.23.0",
+    "elliptic": "6.5.4"
   }
 }

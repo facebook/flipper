@@ -1,0 +1,25 @@
+{
+    "references": [
+        {
+            "path": "../babel-transformer"
+        },
+        {
+            "path": "../plugin-lib"
+        },
+        {
+            "path": "../pkg"
+        },
+        {
+            "path": "../pkg-lib"
+        },
+        {
+            "path": "../doctor"
+        },
+        {
+            "path": "../eslint-plugin-flipper"
+        },
+        {
+            "path": "../test-utils"
+        }
+    ]
+}

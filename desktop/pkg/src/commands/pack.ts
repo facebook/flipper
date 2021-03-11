@@ -10,13 +10,12 @@
 import {Command, flags} from '@oclif/command';
 import {args} from '@oclif/parser';
 import {promises as fs} from 'fs';
-import {mkdirp, pathExists, readJSON, ensureDir} from 'fs-extra';
+import {mkdirp, pathExists, readJSON} from 'fs-extra';
 import * as inquirer from 'inquirer';
 import * as path from 'path';
 import * as yarn from '../utils/yarn';
 import cli from 'cli-ux';
 import {runBuild} from 'flipper-pkg-lib';
-import {getInstalledPluginDetails} from 'flipper-plugin-lib';
 
 async function deriveOutputFileName(inputDirectory: string): Promise<string> {
   const packageJson = await readJSON(path.join(inputDirectory, 'package.json'));
@@ -115,14 +114,8 @@ export default class Pack extends Command {
     await yarn.install(inputDirectory);
     cli.action.stop();
 
-    cli.action.start('Reading plugin details');
-    const plugin = await getInstalledPluginDetails(inputDirectory);
-    const out = path.resolve(inputDirectory, plugin.main);
-    cli.action.stop(`done. Source: ${plugin.source}. Main: ${plugin.main}.`);
-
     cli.action.start(`Compiling`);
-    await ensureDir(path.dirname(out));
-    await runBuild(inputDirectory, plugin.source, out, parsedFlags.production);
+    await runBuild(inputDirectory, parsedFlags.production);
     cli.action.stop();
 
     cli.action.start(`Packing to ${outputFile}`);
