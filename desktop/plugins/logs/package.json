@@ -4,7 +4,8 @@
   "id": "DeviceLogs",
   "pluginType": "device",
   "supportedDevices": [
-    {"os": "Android"},
+    {"os": "Android", "type": "emulator"},
+    {"os": "Android", "type": "physical"},
     {"os": "iOS", "type": "emulator"},
     {"os": "Metro"}
   ],

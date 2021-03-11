@@ -4,7 +4,19 @@
     "outDir": "lib",
     "rootDir": "src"
   },
-  "references": [{"path": "../babel-transformer"}],
-  "include": ["src"],
-  "exclude": ["node_modules", "**/__tests__/*"]
+  "references": [
+    {
+      "path": "../babel-transformer"
+    },
+    {
+      "path": "../plugin-lib"
+    }
+  ],
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/__tests__/*"
+  ]
 }

@@ -40,7 +40,7 @@ export interface SupportedDevice {
 
 export type OS = 'iOS' | 'Android' | 'Metro';
 
-export type DeviceType = 'emulator' | 'physical';
+export type DeviceType = 'emulator' | 'physical' | 'dummy';
 
 export type PluginType = 'client' | 'device';
 

@@ -17,7 +17,7 @@
     "expand-tilde": "^2.0.2",
     "fs-extra": "^9.0.1",
     "live-plugin-manager": "^0.15.1",
-    "npm-api": "^1.0.0",
+    "npm-api": "^1.0.1",
     "p-filter": "^2.1.0",
     "p-map": "^4.0.0",
     "recursive-readdir": "^2.2.2",
@@ -27,7 +27,7 @@
   "devDependencies": {
     "@types/fs-extra": "^9.0.1",
     "@types/jest": "^26",
-    "@types/node": "^14.14.10",
+    "@types/node": "^14.14.31",
     "flipper-test-utils": "0.0.0",
     "globby": "^11",
     "jest": "^26",

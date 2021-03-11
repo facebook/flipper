@@ -88,6 +88,7 @@ module.exports = {
       'setup/sandbox-plugin',
       'setup/shared-preferences-plugin',
       'setup/leak-canary-plugin',
+      'setup/leak-canary-2-plugin',
       'setup/crash-reporter-plugin',
     ],
     Advanced: ['custom-ports', 'stetho'],

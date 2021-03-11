@@ -12,7 +12,6 @@ import {args} from '@oclif/parser';
 import fs from 'fs-extra';
 import path from 'path';
 import {runBuild} from 'flipper-pkg-lib';
-import {getInstalledPluginDetails} from 'flipper-plugin-lib';
 
 export default class Bundle extends Command {
   public static description = 'transpiles and bundles plugin';
@@ -45,42 +44,18 @@ export default class Bundle extends Command {
   public async run() {
     const {args, flags} = this.parse(Bundle);
     const inputDirectory: string = path.resolve(process.cwd(), args.directory);
-    const stat = await fs.lstat(inputDirectory);
-    if (!stat.isDirectory()) {
-      this.error(`Plugin source ${inputDirectory} is not a directory.`);
-    }
-    const packageJsonPath = path.join(inputDirectory, 'package.json');
-    if (!(await fs.pathExists(packageJsonPath))) {
-      this.error(
-        `package.json is not found in plugin source directory ${inputDirectory}.`,
-      );
-    }
-    const plugin = await getInstalledPluginDetails(inputDirectory);
-    const out = path.resolve(inputDirectory, plugin.main);
-    await fs.ensureDir(path.dirname(out));
-
-    const success = await runBuildOnce(
-      inputDirectory,
-      plugin.source,
-      out,
-      !flags.production,
-    );
+    const success = await runBuildOnce(inputDirectory, !flags.production);
     if (!flags.watch) {
       process.exit(success ? 0 : 1);
     } else {
-      enterWatchMode(inputDirectory, plugin.source, out, !flags.production);
+      enterWatchMode(inputDirectory, !flags.production);
     }
   }
 }
 
-async function runBuildOnce(
-  inputDirectory: string,
-  source: string,
-  out: string,
-  dev: boolean,
-) {
+async function runBuildOnce(inputDirectory: string, dev: boolean) {
   try {
-    await runBuild(inputDirectory, source, out, dev);
+    await runBuild(inputDirectory, dev);
     console.log('✅  Build succeeded');
     return true;
   } catch (e) {
@@ -90,12 +65,7 @@ async function runBuildOnce(
   }
 }
 
-function enterWatchMode(
-  inputDirectory: string,
-  source: string,
-  out: string,
-  dev: boolean,
-) {
+function enterWatchMode(inputDirectory: string, dev: boolean) {
   console.log(`⏳  Waiting for changes...`);
   let isBuilding = false;
   let pendingChanges = false;
@@ -112,7 +82,7 @@ function enterWatchMode(
       isBuilding = true;
       while (pendingChanges) {
         pendingChanges = false;
-        await runBuildOnce(inputDirectory, source, out, dev);
+        await runBuildOnce(inputDirectory, dev);
       }
       isBuilding = false;
       console.log(`⏳  Waiting for changes...`);

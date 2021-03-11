@@ -72,7 +72,6 @@ const argv = yargs
       description:
         'Unique build identifier to be used as the version patch part for the build',
       type: 'number',
-      default: 0,
     },
     channel: {
       description: 'Release channel for the build',

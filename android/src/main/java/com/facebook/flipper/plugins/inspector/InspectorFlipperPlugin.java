@@ -73,8 +73,6 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
   }
 
   private static Application getAppContextFromContext(Context context) {
-    Context nonNullContext =
-        context.getApplicationContext() == null ? context : context.getApplicationContext();
     return (Application) context;
   }
 

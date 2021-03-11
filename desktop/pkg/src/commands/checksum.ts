@@ -10,7 +10,7 @@
 import {Command} from '@oclif/command';
 import {args} from '@oclif/parser';
 import path from 'path';
-import computePackageChecksum from '../utils/computePackageChecksum';
+import {computePackageChecksum} from 'flipper-pkg-lib';
 
 export default class Lint extends Command {
   public static description =
