@@ -16,7 +16,7 @@
     "@docusaurus/preset-classic": "^2.0.0-alpha.66",
     "classnames": "^2.2.6",
     "docblock-parser": "^1.0.0",
-    "docusaurus-plugin-internaldocs-fb": "^0.7.0",
+    "docusaurus-plugin-internaldocs-fb": "^0.7.2",
     "file-cli": "^1.2.0",
     "glob": "^7.1.3",
     "mermaid": "^8.8.4",
