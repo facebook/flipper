@@ -68,7 +68,7 @@ ext.deps = [
         supportEspressoIntents : 'androidx.test.espresso:espresso-intents:3.1.0',
         supportTestRunner  : 'androidx.test:runner:1.3.0',
         // Arch
-        archPaging         : 'android.arch.paging:runtime:1.0.0',
+        archPaging         : 'android.arch.paging:runtime:1.0.1',
         // First-party
         soloader           : 'com.facebook.soloader:soloader:0.10.1',
         fbjni              : 'com.facebook.fbjni:fbjni:0.2.0',
