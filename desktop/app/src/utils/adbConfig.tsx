@@ -7,13 +7,13 @@
  * @format
  */
 
+import {parseEnvironmentVariableAsNumber} from './environmentVariables';
+
 export default () => {
-  const serverPortString = process.env.ANDROID_ADB_SERVER_PORT;
-  let port = 5037;
-  if (serverPortString) {
-    const parsedInt = parseInt(serverPortString, 10);
-    port = isNaN(parsedInt) ? port : parsedInt;
-  }
+  let port = parseEnvironmentVariableAsNumber(
+    'ANDROID_ADB_SERVER_PORT',
+    5037,
+  ) as number;
 
   let host = 'localhost';
 
