@@ -56,7 +56,7 @@ Initialise the plugin in the following way:
 <Tabs defaultValue="ios" values={[{ label: 'iOS', value: 'ios'}, { label: 'Swift', value: 'swift'}]}>
 <TabItem value="ios">
 
-```objective-c
+```objc
 #import <FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h>
 
 [[FlipperClient sharedClient] addPlugin: [[FlipperKitNetworkPlugin alloc] initWithNetworkAdapter:[SKIOSNetworkAdapter new]]];

@@ -16,9 +16,9 @@ Developer tools are only used if they work. We have built APIs to test plugins.
 
 Flipper uses [Jest](https://jestjs.io/) as unit testing framework.
 
-Writing unit tests for Flipper Desktop plugins is covered in detail in the [tutorial](../../docs/tutorial/js-custom#testing-plugin-logic). 
+Writing unit tests for Flipper Desktop plugins is covered in detail in the [tutorial](../../docs/tutorial/js-custom#testing-plugin-logic).
 
-The `flipper-plugin` package provide several [test utilities](../../docs/extending/flipper-plugin#testutils) to make testing more convenient. 
+The `flipper-plugin` package provide several [test utilities](../../docs/extending/flipper-plugin#testutils) to make testing more convenient.
 
 ## Client plugins
 
@@ -76,7 +76,7 @@ public void myTest() {
 
 Start by creating your first test file in this directory `MyFlipperPluginTests.cpp` and import the testing utilities from `fbsource//xplat/sonar/xplat:FlipperTestLib`. These utilities mock out core pieces of the communication channel so that you can test your plugin in isolation.
 
-```
+```objc
 #include <MyFlipperPlugin/MyFlipperPlugin.h>
 #include <FlipperTestLib/FlipperConnectionMock.h>
 #include <FlipperTestLib/FlipperResponderMock.h>
@@ -99,7 +99,7 @@ TEST(MyFlipperPluginTests, testDummy) {
 
 Here is a simple test using these mock utilities to create a plugin, send some data, and assert that the result is as expected.
 
-```
+```objc
 TEST(MyFlipperPluginTests, testDummy) {
   std::vector<folly::dynamic> successfulResponses;
   auto responder = std::make_unique<FlipperResponderMock>(&successfulResponses);

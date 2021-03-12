@@ -10,17 +10,17 @@ Flipper ships with its own design system which is based on [Ant Design](https://
 In general, custom styling should be needed rarily, as Ant Design provides a very extensive set of [components](https://ant.design/components/overview/).
 
 To build plugin layout and data visualization Flipper ships with an additional set of components through the `flipper-plugin` package.
-The list of available additional compoents can be found in the <Link to={useBaseUrl('/docs/extending/flipper-plugin#ui-components')}>API Reference</Link> and are further documented 
+The list of available additional components can be found in the <Link to={useBaseUrl('/docs/extending/flipper-plugin#ui-components')}>API Reference</Link> and are further documented
 in the Flipper Style Guide which can be found in Flipper under `View > Flipper style guide`.
 
-In case you still need customly styled components, 
+In case you still need customly styled components,
 we are using [emotion](https://emotion.sh) to style our components. For more details on how this works, please refer to emotion's documentation. We heavily use their [Styled Components](https://emotion.sh/docs/styled) approach, which allows you to extend our and Ant's built-in components.
 
 ## Basic tags
 
 For basic building blocks (views, texts, ...) you can use the styled object.
 
-```javascript
+```js
 import {styled} from 'flipper-plugin';
 
 const MyView = styled.div({
@@ -34,10 +34,10 @@ const MyInput = styled.input({ ... });
 
 ## Extending Flipper Components
 
-In some cases it is required to customize Ant or Flipper's components in some way. For example changing colors, alignment, or wrapping behavior. 
+In some cases it is required to customize Ant or Flipper's components in some way. For example changing colors, alignment, or wrapping behavior.
 Flippers components can be wrapped using the `styled` function which allows adding or overwriting existing style rules.
 
-```javascript
+```jsx
 import {Layout, styled} from 'flipper-plugin';
 
 const Container = styled(Layout.Container)({
@@ -55,7 +55,7 @@ The CSS-in-JS object passed to the styled components takes just any CSS rule, wi
 
 The style object can also be returned from a function for dynamic values. Props can be passed to the styled component using React.
 
-```javascript
+```jsx
 const MyView = styled.div(
   props => ({
     fontSize: 10,
@@ -81,7 +81,7 @@ Children can be matched by using normal CSS selectors. This makes it possible to
 
 ## Colors
 
-The `theme` module contains all standard colors used by Flipper. All available colors can be previewed by starting Flipper and opening `View > Flipper Style Guide`. 
+The `theme` module contains all standard colors used by Flipper. All available colors can be previewed by starting Flipper and opening `View > Flipper Style Guide`.
 The colors exposed here will handle dark mode automatically, so it is recommended to use those colors over hardcoded ones.
 
 ```javascript
