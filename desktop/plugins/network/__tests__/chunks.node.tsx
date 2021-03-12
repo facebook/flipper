@@ -9,7 +9,7 @@
 
 import {combineBase64Chunks} from '../chunks';
 import {TestUtils} from 'flipper-plugin';
-import * as NetworkPlugin from '..';
+import * as NetworkPlugin from '../index';
 
 test('Test assembling base64 chunks', () => {
   const message = 'wassup john?';
