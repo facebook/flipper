@@ -25,3 +25,15 @@ export function parseFlipperPorts(
     };
   }
 }
+
+export function parseEnvironmentVariableAsNumber(
+  envVarName: string,
+  defaultValue?: number,
+): number | undefined {
+  const envVarAsString = process.env[envVarName];
+  if (envVarAsString) {
+    const parsedInt = parseInt(envVarAsString, 10);
+    return isNaN(parsedInt) ? defaultValue : parsedInt;
+  }
+  return defaultValue;
+}
