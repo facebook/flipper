@@ -65,7 +65,7 @@ ext.deps = [
         supportSqlite      : "androidx.sqlite:sqlite-framework:2.1.0",
         supportEspresso    : 'androidx.test.espresso:espresso-core:3.3.0',
         supportDesign      : "com.google.android.material:material:1.0.0-rc01",
-        supportEspressoIntents : 'androidx.test.espresso:espresso-intents:3.1.0',
+        supportEspressoIntents : 'androidx.test.espresso:espresso-intents:3.3.0',
         supportTestRunner  : 'androidx.test:runner:1.3.0',
         // Arch
         archPaging         : 'android.arch.paging:runtime:1.0.1',
