@@ -58,9 +58,9 @@
             "enum": ["iOS", "Android", "Metro"]
           },
           "type": {
-            "description": "Device type: physical or emulator. Lack of this property means both physical and emulator devices supported.",
+            "description": "Device type: physical or emulator or dummy. Lack of this property means it supports physical, emulator and dummy devices.",
             "type": "string",
-            "enum": ["physical", "emulator"]
+            "enum": ["physical", "emulator", "dummy"]
           },
           "archived": {
             "description": "Specifies support for archived devices. Lack of this property means that both live and archived devices supported. False means only live devices supported. True means only archived devices supported.",
@@ -84,6 +84,6 @@
     "id",
     "main",
     "flipperBundlerEntry",
-    "keywords"    
+    "keywords"
   ]
 }

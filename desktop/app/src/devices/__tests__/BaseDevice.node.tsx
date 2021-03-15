@@ -11,6 +11,7 @@ import BaseDevice from '../BaseDevice';
 import * as DeviceTestPluginModule from '../../test-utils/DeviceTestPlugin';
 import {TestUtils, _SandyPluginDefinition} from 'flipper-plugin';
 import ArchivedDevice from '../ArchivedDevice';
+import DummyDevice from '../DummyDevice';
 
 const physicalDevicePluginDetails = TestUtils.createMockPluginDetails({
   id: 'physicalDevicePlugin',
@@ -103,6 +104,23 @@ const androidEmulatorDevicePlugin = new _SandyPluginDefinition(
   androidEmulatorlDevicePluginDetails,
   DeviceTestPluginModule,
 );
+
+const androidOnlyDevicePluginDetails = TestUtils.createMockPluginDetails({
+  id: 'androidEmulatorDevicePlugin',
+  name: 'flipper-plugin-android-emulator-device',
+  version: '0.0.1',
+  pluginType: 'device',
+  supportedDevices: [
+    {
+      os: 'Android',
+    },
+  ],
+});
+const androidOnlyDevicePlugin = new _SandyPluginDefinition(
+  androidOnlyDevicePluginDetails,
+  DeviceTestPluginModule,
+);
+
 test('ios physical device compatibility', () => {
   const device = new BaseDevice('serial', 'physical', 'test device', 'iOS');
   expect(device.supportsPlugin(physicalDevicePlugin)).toBeTruthy();
@@ -149,4 +167,14 @@ test('android KaiOS device compatibility', () => {
   expect(device.supportsPlugin(iosEmulatorDevicePlugin)).toBeFalsy();
   expect(device.supportsPlugin(androidKaiosPhysicalDevicePlugin)).toBeTruthy();
   expect(device.supportsPlugin(androidEmulatorDevicePlugin)).toBeFalsy();
+});
+
+test('android dummy device compatibility', () => {
+  const device = new DummyDevice('serial', 'test device', 'Android');
+  expect(device.supportsPlugin(physicalDevicePlugin)).toBeFalsy();
+  expect(device.supportsPlugin(iosPhysicalDevicePlugin)).toBeFalsy();
+  expect(device.supportsPlugin(iosEmulatorDevicePlugin)).toBeFalsy();
+  expect(device.supportsPlugin(androidKaiosPhysicalDevicePlugin)).toBeFalsy();
+  expect(device.supportsPlugin(androidEmulatorDevicePlugin)).toBeFalsy();
+  expect(device.supportsPlugin(androidOnlyDevicePlugin)).toBeTruthy();
 });
