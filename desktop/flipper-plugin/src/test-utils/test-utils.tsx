@@ -234,6 +234,7 @@ export function startPlugin<Module extends FlipperPluginModule<any>>(
     flipperUtils,
     definition,
     fakeFlipperClient,
+    `${fakeFlipperClient.id}#${definition.id}`,
     options?.initialState,
   );
 
@@ -313,6 +314,7 @@ export function startDevicePlugin<Module extends FlipperDevicePluginModule>(
     flipperLib,
     definition,
     testDevice,
+    `${testDevice.serial}#${definition.id}`,
     options?.initialState,
   );
 

@@ -7,12 +7,7 @@
  * @format
  */
 
-import {
-  PluginDefinition,
-  isSandyPlugin,
-  FlipperPlugin,
-  FlipperDevicePlugin,
-} from './plugin';
+import {PluginDefinition, FlipperPlugin, FlipperDevicePlugin} from './plugin';
 import BaseDevice, {OS} from './devices/BaseDevice';
 import {Logger} from './fb-interfaces/Logger';
 import {Store} from './reducers/index';
@@ -30,6 +25,7 @@ import invariant from 'invariant';
 import {
   getPluginKey,
   defaultEnabledBackgroundPlugins,
+  isSandyPlugin,
 } from './utils/pluginUtils';
 import {processMessagesLater} from './utils/messageQueue';
 import {emitBytesReceived} from './dispatcher/tracking';
@@ -260,6 +256,7 @@ export default class Client extends EventEmitter {
             _getFlipperLibImplementation(),
             plugin,
             this,
+            getPluginKey(this.id, {serial: this.query.device_id}, plugin.id),
             initialStates[pluginId],
           ),
         );
@@ -306,7 +303,12 @@ export default class Client extends EventEmitter {
       // TODO: needs to be wrapped in error tracking T68955280
       this.sandyPluginStates.set(
         plugin.id,
-        new _SandyPluginInstance(_getFlipperLibImplementation(), plugin, this),
+        new _SandyPluginInstance(
+          _getFlipperLibImplementation(),
+          plugin,
+          this,
+          getPluginKey(this.id, {serial: this.query.device_id}, plugin.id),
+        ),
       );
     }
   }

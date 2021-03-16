@@ -25,7 +25,6 @@ import {
   PluginDefinition,
   DevicePluginMap,
   ClientPluginMap,
-  isSandyPlugin,
 } from '../plugin';
 import {default as BaseDevice} from '../devices/BaseDevice';
 import {default as ArchivedDevice} from '../devices/ArchivedDevice';
@@ -46,7 +45,7 @@ import {setSelectPluginsToExportActiveSheet} from '../reducers/application';
 import {deconstructClientId, deconstructPluginKey} from '../utils/clientUtils';
 import {performance} from 'perf_hooks';
 import {processMessageQueue} from './messageQueue';
-import {getPluginTitle} from './pluginUtils';
+import {getPluginTitle, isSandyPlugin} from './pluginUtils';
 import {capture} from './screenshot';
 import {uploadFlipperMedia} from '../fb-stubs/user';
 import {Idler} from 'flipper-plugin';

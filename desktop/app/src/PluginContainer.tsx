@@ -12,7 +12,6 @@ import {
   FlipperDevicePlugin,
   Props as PluginProps,
   PluginDefinition,
-  isSandyPlugin,
 } from './plugin';
 import {Logger} from './fb-interfaces/Logger';
 import BaseDevice from './devices/BaseDevice';
@@ -47,7 +46,7 @@ import {IdlerImpl} from './utils/Idler';
 import {processMessageQueue} from './utils/messageQueue';
 import {ToggleButton, SmallText, Layout} from './ui';
 import {theme, TrackingScope, _SandyPluginRenderer} from 'flipper-plugin';
-import {isDevicePluginDefinition} from './utils/pluginUtils';
+import {isDevicePluginDefinition, isSandyPlugin} from './utils/pluginUtils';
 import {ContentContainer} from './sandy-chrome/ContentContainer';
 import {Alert, Typography} from 'antd';
 import {InstalledPluginDetails} from 'plugin-lib';

@@ -104,7 +104,6 @@ export type DataTableReducer<T> = Reducer<
 >;
 export type DataTableDispatch<T = any> = React.Dispatch<DataManagerActions<T>>;
 
-// TODO: make argu inference correct
 export const dataTableManagerReducer = produce(function <T>(
   draft: DataManagerState<T>,
   action: DataManagerActions<T>,
@@ -208,7 +207,7 @@ export const dataTableManagerReducer = produce(function <T>(
       throw new Error('Unknown action ' + (action as any).type);
     }
   }
-}) as any; // TODO: remove
+}) as any;
 
 /**
  * Public only imperative convienience API for DataTable

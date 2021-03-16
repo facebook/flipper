@@ -36,12 +36,6 @@ export type ClientPluginDefinition =
 export type ClientPluginMap = Map<string, ClientPluginDefinition>;
 export type DevicePluginMap = Map<string, DevicePluginDefinition>;
 
-export function isSandyPlugin(
-  plugin?: PluginDefinition | null,
-): plugin is _SandyPluginDefinition {
-  return plugin instanceof _SandyPluginDefinition;
-}
-
 // This function is intended to be called from outside of the plugin.
 // If you want to `call` from the plugin use, this.client.call
 export function callClient(

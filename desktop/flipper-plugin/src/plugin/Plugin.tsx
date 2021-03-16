@@ -148,9 +148,16 @@ export class SandyPluginInstance extends BasePluginInstance {
     flipperLib: FlipperLib,
     definition: SandyPluginDefinition,
     realClient: RealFlipperClient,
+    pluginKey: string,
     initialStates?: Record<string, any>,
   ) {
-    super(flipperLib, definition, realClient.deviceSync, initialStates);
+    super(
+      flipperLib,
+      definition,
+      realClient.deviceSync,
+      pluginKey,
+      initialStates,
+    );
     this.realClient = realClient;
     this.definition = definition;
     const self = this;

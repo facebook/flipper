@@ -88,9 +88,10 @@ export class SandyDevicePluginInstance extends BasePluginInstance {
     flipperLib: FlipperLib,
     definition: SandyPluginDefinition,
     realDevice: RealFlipperDevice,
+    pluginKey: string,
     initialStates?: Record<string, any>,
   ) {
-    super(flipperLib, definition, realDevice, initialStates);
+    super(flipperLib, definition, realDevice, pluginKey, initialStates);
     this.client = {
       ...this.createBasePluginClient(),
       isPluginAvailable(pluginId: string) {

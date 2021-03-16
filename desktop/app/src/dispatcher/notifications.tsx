@@ -10,7 +10,7 @@
 import {Store} from '../reducers/index';
 import {Logger} from '../fb-interfaces/Logger';
 import {PluginNotification} from '../reducers/notifications';
-import {PluginDefinition, isSandyPlugin} from '../plugin';
+import {PluginDefinition} from '../plugin';
 import {setStaticView} from '../reducers/connections';
 import {ipcRenderer, IpcRendererEvent} from 'electron';
 import {
@@ -22,7 +22,7 @@ import {textContent} from '../utils/index';
 import GK from '../fb-stubs/GK';
 import {deconstructPluginKey} from '../utils/clientUtils';
 import NotificationScreen from '../chrome/NotificationScreen';
-import {getPluginTitle} from '../utils/pluginUtils';
+import {getPluginTitle, isSandyPlugin} from '../utils/pluginUtils';
 import {sideEffect} from '../utils/sideEffect';
 
 type NotificationEvents = 'show' | 'click' | 'close' | 'reply' | 'action';

@@ -8,7 +8,7 @@
  */
 
 import {PersistedStateReducer, FlipperDevicePlugin} from '../plugin';
-import {State, MiddlewareAPI} from '../reducers/index';
+import type {State, MiddlewareAPI} from '../reducers/index';
 import {setPluginState} from '../reducers/pluginStates';
 import {
   clearMessageQueue,

@@ -12,7 +12,6 @@ import {
   FlipperBasePlugin,
   PluginDefinition,
   DevicePluginDefinition,
-  isSandyPlugin,
   ClientPluginDefinition,
 } from '../plugin';
 import type {State} from '../reducers';
@@ -52,6 +51,12 @@ export function getPluginKey(
     return `${baseDevice.serial}#${pluginID}`;
   }
   return `unknown#${pluginID}`;
+}
+
+export function isSandyPlugin(
+  plugin?: PluginDefinition | null,
+): plugin is _SandyPluginDefinition {
+  return plugin instanceof _SandyPluginDefinition;
 }
 
 export function getPersistedState<PersistedState>(

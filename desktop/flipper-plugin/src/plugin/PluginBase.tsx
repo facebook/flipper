@@ -23,6 +23,7 @@ type StateExportHandler<T = any> = (
 type StateImportHandler<T = any> = (data: T) => void;
 
 export interface BasePluginClient {
+  readonly pluginKey: string;
   readonly device: Device;
 
   /**
@@ -117,6 +118,9 @@ export abstract class BasePluginInstance {
   /** the device owning this plugin */
   readonly device: Device;
 
+  /** the unique plugin key for this plugin instance, which is unique for this device/app?/pluginId combo */
+  readonly pluginKey: string;
+
   activated = false;
   destroyed = false;
   readonly events = new EventEmitter();
@@ -140,11 +144,13 @@ export abstract class BasePluginInstance {
     flipperLib: FlipperLib,
     definition: SandyPluginDefinition,
     realDevice: RealFlipperDevice,
+    pluginKey: string,
     initialStates?: Record<string, any>,
   ) {
     this.flipperLib = flipperLib;
     this.definition = definition;
     this.initialStates = initialStates;
+    this.pluginKey = pluginKey;
     if (!realDevice) {
       throw new Error('Illegal State: Device has not yet been loaded');
     }
@@ -213,6 +219,7 @@ export abstract class BasePluginInstance {
 
   protected createBasePluginClient(): BasePluginClient {
     return {
+      pluginKey: this.pluginKey,
       device: this.device,
       onActivate: (cb) => {
         this.events.on('activate', batched(cb));

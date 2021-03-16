@@ -44,8 +44,8 @@ import {tableContextMenuFactory} from './TableContextMenu';
 import {Typography} from 'antd';
 import {CoffeeOutlined, SearchOutlined} from '@ant-design/icons';
 import {useAssertStableRef} from '../../utils/useAssertStableRef';
-import {TrackingScopeContext} from 'flipper-plugin/src/ui/Tracked';
 import {Formatter} from '../DataFormatter';
+import {usePluginInstance} from '../../plugin/PluginContext';
 
 interface DataTableProps<T = any> {
   columns: DataTableColumn<T>[];
@@ -103,7 +103,7 @@ export function DataTable<T extends object>(
 
   // lint disabled for conditional inclusion of a hook (_testHeight is asserted to be stable)
   // eslint-disable-next-line
-  const scope = props._testHeight ? "" : useContext(TrackingScopeContext); // TODO + plugin id
+  const scope = props._testHeight ? "" : usePluginInstance().pluginKey;
   const virtualizerRef = useRef<DataSourceVirtualizer | undefined>();
   const [state, dispatch] = useReducer(
     dataTableManagerReducer as DataTableReducer<T>,

@@ -15,13 +15,20 @@ export const SandyPluginContext = createContext<
   SandyPluginInstance | SandyDevicePluginInstance | undefined
 >(undefined);
 
+export function usePluginInstance():
+  | SandyPluginInstance
+  | SandyDevicePluginInstance {
+  const pluginInstance = useContext(SandyPluginContext);
+  if (!pluginInstance) {
+    throw new Error('Sandy Plugin context not available');
+  }
+  return pluginInstance;
+}
+
 export function usePlugin<
   Factory extends PluginFactory<any, any> | DevicePluginFactory
 >(plugin: Factory): ReturnType<Factory> {
-  const pluginInstance = useContext(SandyPluginContext);
-  if (!pluginInstance) {
-    throw new Error('Plugin context not available');
-  }
+  const pluginInstance = usePluginInstance();
   // In principle we don't *need* the plugin, but having it passed it makes sure the
   // return of this function is strongly typed, without the user needing to create it's own
   // context.

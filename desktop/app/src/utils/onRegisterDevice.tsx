@@ -7,16 +7,15 @@
  * @format
  */
 
-import {Store} from '../reducers/index';
-import {
+import type {Store} from '../reducers/index';
+import type {
   ClientPluginMap,
   DevicePluginMap,
   PluginDefinition,
-  isSandyPlugin,
 } from '../plugin';
 import {setPluginState} from '../reducers/pluginStates';
-import BaseDevice from '../devices/BaseDevice';
-import {getPersistedState} from '../utils/pluginUtils';
+import type BaseDevice from '../devices/BaseDevice';
+import {getPersistedState, isSandyPlugin} from '../utils/pluginUtils';
 
 export function registerDeviceCallbackOnPlugins(
   store: Store,

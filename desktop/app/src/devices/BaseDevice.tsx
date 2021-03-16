@@ -242,6 +242,12 @@ export default class BaseDevice {
           _getFlipperLibImplementation(),
           plugin,
           this,
+          // break circular dep, one of those days again...
+          require('../utils/pluginUtils').getPluginKey(
+            undefined,
+            {serial: this.serial},
+            plugin.id,
+          ),
           initialState,
         ),
       );
