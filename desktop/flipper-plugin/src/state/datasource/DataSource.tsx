@@ -231,6 +231,28 @@ class DataSource<
     }
   }
 
+  /**
+   * The clear operation removes any records stored, but will keep the current view preferences such as sorting and filtering
+   */
+  clear() {
+    this._records = [];
+    this._recordsById = new Map();
+    this.idToIndex = new Map();
+    this.dataUpdateQueue = [];
+    if (this._sortedRecords) this._sortedRecords = [];
+    if (this._reversedRecords) this._reversedRecords = [];
+  }
+
+  /**
+   * The reset operation resets any view preferences such as sorting and filtering, but keeps the current set of records.
+   */
+  reset() {
+    this.sortBy = undefined;
+    this._sortedRecords = undefined;
+    this.reverse = false;
+    this._reversedRecords = undefined;
+  }
+
   emitDataEvent(event: DataEvent<T>) {
     this.dataUpdateQueue.push(event);
     // TODO: schedule

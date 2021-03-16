@@ -255,3 +255,34 @@ test('reverse with sorting', () => {
   expect(ds.sortedRecords).toEqual([a, b3r, b1, b2r, b4, c]);
   expect(ds.reversedRecords).toEqual([c, b4, b2r, b1, b3r, a]);
 });
+
+test('reset', () => {
+  const ds = createDataSource<Todo>([submitBug, drinkCoffee, eatCookie], 'id');
+  ds.setSortBy('title');
+  ds.toggleReversed();
+  expect(ds.reversedRecords).toEqual([submitBug, eatCookie, drinkCoffee]);
+  expect([...ds.recordsById.keys()]).toEqual(['bug', 'coffee', 'cookie']);
+
+  ds.reset();
+  expect(ds.reversedRecords).toEqual([submitBug, drinkCoffee, eatCookie]);
+  expect([...ds.recordsById.keys()]).toEqual(['bug', 'coffee', 'cookie']);
+});
+
+test('clear', () => {
+  const ds = createDataSource<Todo>([submitBug, drinkCoffee, eatCookie], 'id');
+  ds.setSortBy('title');
+  ds.toggleReversed();
+  expect(ds.reversedRecords).toEqual([submitBug, eatCookie, drinkCoffee]);
+  expect([...ds.recordsById.keys()]).toEqual(['bug', 'coffee', 'cookie']);
+
+  ds.clear();
+  expect(ds.reversedRecords).toEqual([]);
+  expect([...ds.recordsById.keys()]).toEqual([]);
+
+  ds.append(eatCookie);
+  ds.append(drinkCoffee);
+  ds.append(submitBug);
+  expect([...ds.recordsById.keys()]).toEqual(['cookie', 'coffee', 'bug']);
+  // resets in the same ordering as view preferences were preserved
+  expect(ds.reversedRecords).toEqual([submitBug, eatCookie, drinkCoffee]);
+});
