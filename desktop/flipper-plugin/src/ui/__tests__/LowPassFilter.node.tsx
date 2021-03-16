@@ -7,7 +7,7 @@
  * @format
  */
 
-import LowPassFilter from '../LowPassFilter';
+import LowPassFilter from '../utils/LowPassFilter';
 
 test('hasFullBuffer', () => {
   const lpf = new LowPassFilter();

@@ -9,9 +9,9 @@
 
 import React, {memo} from 'react';
 import styled from '@emotion/styled';
-import {Property} from 'csstype';
 import {theme} from 'flipper-plugin';
-import {RenderingConfig} from './DataTable';
+import type {RenderContext} from './DataTable';
+import {Width} from '../utils/widthUtils';
 
 // heuristic for row estimation, should match any future styling updates
 export const DEFAULT_ROW_HEIGHT = 24;
@@ -32,7 +32,7 @@ const TableBodyRowContainer = styled.div<TableBodyRowContainerProps>(
     display: 'flex',
     flexDirection: 'row',
     backgroundColor: backgroundColor(props),
-    color: props.highlighted ? theme.white : theme.primaryColor,
+    color: props.highlighted ? theme.white : theme.textColorPrimary,
     '& *': {
       color: props.highlighted ? `${theme.white} !important` : undefined,
     },
@@ -50,25 +50,26 @@ const TableBodyRowContainer = styled.div<TableBodyRowContainerProps>(
 TableBodyRowContainer.displayName = 'TableRow:TableBodyRowContainer';
 
 const TableBodyColumnContainer = styled.div<{
-  width?: any;
+  width: Width;
   multiline?: boolean;
-  justifyContent: Property.JustifyContent;
+  justifyContent: 'left' | 'right' | 'center' | 'flex-start';
 }>((props) => ({
   display: 'flex',
-  flexShrink: props.width === 'flex' ? 1 : 0,
-  flexGrow: props.width === 'flex' ? 1 : 0,
+  flexShrink: props.width === undefined ? 1 : 0,
+  flexGrow: props.width === undefined ? 1 : 0,
   overflow: 'hidden',
   padding: `0 ${theme.space.small}px`,
   verticalAlign: 'top',
   whiteSpace: props.multiline ? 'normal' : 'nowrap',
   wordWrap: props.multiline ? 'break-word' : 'normal',
-  width: props.width === 'flex' ? undefined : props.width,
+  width: props.width,
   justifyContent: props.justifyContent,
+  borderBottom: `1px solid ${theme.dividerColor}`,
 }));
 TableBodyColumnContainer.displayName = 'TableRow:TableBodyColumnContainer';
 
 type Props = {
-  config: RenderingConfig<any>;
+  config: RenderContext;
   highlighted: boolean;
   row: any;
 };
@@ -76,47 +77,31 @@ type Props = {
 export const TableRow = memo(function TableRow(props: Props) {
   const {config, highlighted, row} = props;
   return (
-    <TableBodyRowContainer highlighted={highlighted} data-key={row.key}>
-      {config.columns.map((col) => {
-        const value = (col as any).onRender
-          ? (col as any).onRender(row)
-          : (row as any)[col.key] ?? '';
+    <TableBodyRowContainer
+      highlighted={highlighted}
+      data-key={row.key}
+      className="ant-table-row">
+      {config.columns
+        .filter((col) => col.visible)
+        .map((col) => {
+          let value = (col as any).onRender
+            ? (col as any).onRender(row)
+            : (row as any)[col.key] ?? '';
+          if (typeof value === 'boolean') {
+            value = value ? 'true' : 'false';
+          }
 
-        return (
-          <TableBodyColumnContainer
-            key={col.key as string}
-            multiline={col.wrap}
-            justifyContent={col.align ? col.align : 'flex-start'}
-            width={normaliseColumnWidth(col.width)}>
-            {value}
-          </TableBodyColumnContainer>
-        );
-      })}
+          return (
+            <TableBodyColumnContainer
+              className="ant-table-cell"
+              key={col.key as string}
+              multiline={col.wrap}
+              justifyContent={col.align ? col.align : 'flex-start'}
+              width={col.width}>
+              {value}
+            </TableBodyColumnContainer>
+          );
+        })}
     </TableBodyRowContainer>
   );
 });
-
-function normaliseColumnWidth(
-  width: string | number | null | undefined | '*',
-): number | string {
-  if (width == null || width === '*') {
-    // default
-    return 'flex';
-  }
-
-  if (isPercentage(width)) {
-    // percentage eg. 50%
-    return width;
-  }
-
-  if (typeof width === 'number') {
-    // pixel width
-    return width;
-  }
-
-  throw new TypeError(`Unknown value ${width} for table column width`);
-}
-
-function isPercentage(width: any): boolean {
-  return typeof width === 'string' && width[width.length - 1] === '%';
-}

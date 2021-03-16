@@ -75,7 +75,6 @@ export {default as ErrorBoundary} from './components/ErrorBoundary';
 
 // interactive components
 export {OrderableOrder} from './components/Orderable';
-export {default as Interactive} from './components/Interactive';
 export {default as Orderable} from './components/Orderable';
 export {default as VirtualList} from './components/VirtualList';
 

@@ -7,17 +7,16 @@
  * @format
  */
 
-import {Rect} from '../../utils/geometry';
-import LowPassFilter from '../../utils/LowPassFilter';
+import styled from '@emotion/styled';
+import React from 'react';
+import LowPassFilter from './utils/LowPassFilter';
 import {
   getDistanceTo,
   maybeSnapLeft,
   maybeSnapTop,
   SNAP_SIZE,
-} from '../../utils/snap';
-import styled from '@emotion/styled';
-import invariant from 'invariant';
-import React from 'react';
+} from './utils/snap';
+import type {Rect} from './utils/Rect';
 
 const WINDOW_CURSOR_BOUNDARY = 5;
 
@@ -96,7 +95,7 @@ const InteractiveContainer = styled.div({
 });
 InteractiveContainer.displayName = 'Interactive:InteractiveContainer';
 
-export default class Interactive extends React.Component<
+export class Interactive extends React.Component<
   InteractiveProps,
   InteractiveState
 > {
@@ -344,9 +343,6 @@ export default class Interactive extends React.Component<
   calculateMove(event: MouseEvent) {
     const {movingInitialCursor, movingInitialProps} = this.state;
 
-    invariant(movingInitialProps, 'TODO');
-    invariant(movingInitialCursor, 'TODO');
-
     const {clientX: cursorLeft, clientY: cursorTop} = event;
 
     const movedLeft = movingInitialCursor!.left - cursorLeft;
@@ -413,10 +409,6 @@ export default class Interactive extends React.Component<
       resizingInitialRect,
       resizingSides,
     } = this.state;
-
-    invariant(resizingInitialRect, 'TODO');
-    invariant(resizingInitialCursor, 'TODO');
-    invariant(resizingSides, 'TODO');
 
     const deltaLeft = resizingInitialCursor!.left - event.clientX;
     const deltaTop = resizingInitialCursor!.top - event.clientY;
@@ -503,7 +495,7 @@ export default class Interactive extends React.Component<
 
   getRect(): Rect {
     const {props, ref} = this;
-    invariant(ref, 'expected ref');
+    if (!ref) throw new Error('expected ref');
 
     return {
       height: ref!.offsetHeight || 0,

@@ -7,7 +7,7 @@
  * @format
  */
 
-import {Rect} from './geometry';
+import {Rect} from './Rect';
 
 export const SNAP_SIZE = 16;
 

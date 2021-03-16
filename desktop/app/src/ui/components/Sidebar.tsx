@@ -7,7 +7,7 @@
  * @format
  */
 
-import Interactive, {InteractiveProps} from './Interactive';
+import {_Interactive, _InteractiveProps} from 'flipper-plugin';
 import FlexColumn from './FlexColumn';
 import {colors} from './colors';
 import {Component, ReactNode} from 'react';
@@ -18,7 +18,7 @@ import FlexRow from './FlexRow';
 import {MoreOutlined} from '@ant-design/icons';
 import {theme} from 'flipper-plugin';
 
-const SidebarInteractiveContainer = styled(Interactive)<InteractiveProps>({
+const SidebarInteractiveContainer = styled(_Interactive)<_InteractiveProps>({
   flex: 'none',
 });
 SidebarInteractiveContainer.displayName = 'Sidebar:SidebarInteractiveContainer';

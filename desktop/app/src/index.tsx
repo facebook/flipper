@@ -113,7 +113,7 @@ export {default as ErrorBlock} from './ui/components/ErrorBlock';
 export {ErrorBlockContainer} from './ui/components/ErrorBlock';
 export {default as ErrorBoundary} from './ui/components/ErrorBoundary';
 export {OrderableOrder} from './ui/components/Orderable';
-export {default as Interactive} from './ui/components/Interactive';
+export {_Interactive as Interactive} from 'flipper-plugin';
 export {default as Orderable} from './ui/components/Orderable';
 export {default as VirtualList} from './ui/components/VirtualList';
 export {Component, PureComponent} from 'react';

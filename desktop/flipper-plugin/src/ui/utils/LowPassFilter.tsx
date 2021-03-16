@@ -7,8 +7,6 @@
  * @format
  */
 
-import invariant from 'invariant';
-
 export default class LowPassFilter {
   constructor(smoothing: number = 0.9) {
     this.smoothing = smoothing;
@@ -29,10 +27,10 @@ export default class LowPassFilter {
 
     if (this.hasFullBuffer()) {
       const tmp: number | undefined = this.buffer.shift();
-      invariant(
-        tmp !== undefined,
-        'Invariant violation: Buffer reported full but shift returned nothing.',
-      );
+      if (tmp === undefined)
+        throw new Error(
+          'Invariant violation: Buffer reported full but shift returned nothing.',
+        );
       removed = tmp;
     }
 

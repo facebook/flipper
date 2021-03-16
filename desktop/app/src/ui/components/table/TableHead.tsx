@@ -18,7 +18,7 @@ import {
 import {normaliseColumnWidth, isPercentage} from './utils';
 import {PureComponent} from 'react';
 import ContextMenu from '../ContextMenu';
-import Interactive, {InteractiveProps} from '../Interactive';
+import {_Interactive, _InteractiveProps} from 'flipper-plugin';
 import styled from '@emotion/styled';
 import {colors} from '../colors';
 import FlexRow from '../FlexRow';
@@ -31,7 +31,7 @@ const TableHeaderArrow = styled.span({
 });
 TableHeaderArrow.displayName = 'TableHead:TableHeaderArrow';
 
-const TableHeaderColumnInteractive = styled(Interactive)<InteractiveProps>({
+const TableHeaderColumnInteractive = styled(_Interactive)<_InteractiveProps>({
   display: 'inline-block',
   overflow: 'hidden',
   textOverflow: 'ellipsis',
