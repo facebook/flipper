@@ -43,19 +43,35 @@ export function useDataTableManager<T extends object>(
     [columns],
   );
 
-  const addColumnFilter = useCallback((columnId: string, value: string) => {
-    // TODO: fix typings
-    setEffectiveColumns(
-      produce((draft: DataTableColumn<any>[]) => {
-        const column = draft.find((c) => c.key === columnId)!;
-        column.filters!.push({
-          label: value,
-          value: value.toLowerCase(),
-          enabled: true,
-        });
-      }),
-    );
-  }, []);
+  const addColumnFilter = useCallback(
+    (columnId: string, value: string, disableOthers = false) => {
+      // TODO: fix typings
+      setEffectiveColumns(
+        produce((draft: DataTableColumn<any>[]) => {
+          const column = draft.find((c) => c.key === columnId)!;
+          const filterValue = value.toLowerCase();
+          const existing = column.filters!.find((c) => c.value === filterValue);
+          if (existing) {
+            existing.enabled = true;
+          } else {
+            column.filters!.push({
+              label: value,
+              value: filterValue,
+              enabled: true,
+            });
+          }
+          if (disableOthers) {
+            column.filters!.forEach((c) => {
+              if (c.value !== filterValue) {
+                c.enabled = false;
+              }
+            });
+          }
+        }),
+      );
+    },
+    [],
+  );
 
   const removeColumnFilter = useCallback((columnId: string, index: number) => {
     // TODO: fix typings

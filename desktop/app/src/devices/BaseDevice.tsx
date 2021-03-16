@@ -16,13 +16,13 @@ import {
   DeviceLogListener,
   Idler,
   createState,
+  _getFlipperLibImplementation,
 } from 'flipper-plugin';
 import {
   DevicePluginDefinition,
   DevicePluginMap,
   FlipperDevicePlugin,
 } from '../plugin';
-import {getFlipperLibImplementation} from '../utils/flipperLibImplementation';
 import {DeviceSpec, OS as PluginOS, PluginDetails} from 'flipper-plugin-lib';
 
 export type DeviceShell = {
@@ -238,7 +238,7 @@ export default class BaseDevice {
       this.sandyPluginStates.set(
         plugin.id,
         new _SandyDevicePluginInstance(
-          getFlipperLibImplementation(),
+          _getFlipperLibImplementation(),
           plugin,
           this,
           initialState,

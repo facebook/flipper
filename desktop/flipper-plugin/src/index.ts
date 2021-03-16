@@ -35,7 +35,11 @@ export {
 } from './plugin/PluginContext';
 export {createState, useValue, Atom} from './state/atom';
 export {batch} from './state/batch';
-export {FlipperLib} from './plugin/FlipperLib';
+export {
+  FlipperLib,
+  getFlipperLibImplementation as _getFlipperLibImplementation,
+  setFlipperLibImplementation as _setFlipperLibImplementation,
+} from './plugin/FlipperLib';
 export {
   MenuEntry,
   NormalizedMenuEntry,

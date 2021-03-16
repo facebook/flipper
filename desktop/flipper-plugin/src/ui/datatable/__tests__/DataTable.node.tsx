@@ -43,14 +43,19 @@ test('update and append', async () => {
   const ds = createTestDataSource();
   const ref = createRef<TableManager>();
   const rendering = render(
-    <DataTable dataSource={ds} columns={columns} tableManagerRef={ref} />,
+    <DataTable
+      dataSource={ds}
+      columns={columns}
+      tableManagerRef={ref}
+      _testHeight={400}
+    />,
   );
   {
     const elem = await rendering.findAllByText('test DataTable');
     expect(elem.length).toBe(1);
     expect(elem[0].parentElement).toMatchInlineSnapshot(`
       <div
-        class="css-4f2ebr-TableBodyRowContainer efe0za01"
+        class="css-1rnoidw-TableBodyRowContainer efe0za01"
       >
         <div
           class="ant-table-cell css-1g4z4wd-TableBodyColumnContainer efe0za00"
@@ -95,14 +100,19 @@ test('column visibility', async () => {
   const ds = createTestDataSource();
   const ref = createRef<TableManager>();
   const rendering = render(
-    <DataTable dataSource={ds} columns={columns} tableManagerRef={ref} />,
+    <DataTable
+      dataSource={ds}
+      columns={columns}
+      tableManagerRef={ref}
+      _testHeight={400}
+    />,
   );
   {
     const elem = await rendering.findAllByText('test DataTable');
     expect(elem.length).toBe(1);
     expect(elem[0].parentElement).toMatchInlineSnapshot(`
       <div
-        class="css-4f2ebr-TableBodyRowContainer efe0za01"
+        class="css-1rnoidw-TableBodyRowContainer efe0za01"
       >
         <div
           class="ant-table-cell css-1g4z4wd-TableBodyColumnContainer efe0za00"
@@ -127,7 +137,7 @@ test('column visibility', async () => {
     expect(elem.length).toBe(1);
     expect(elem[0].parentElement).toMatchInlineSnapshot(`
       <div
-        class="css-4f2ebr-TableBodyRowContainer efe0za01"
+        class="css-1rnoidw-TableBodyRowContainer efe0za01"
       >
         <div
           class="ant-table-cell css-1g4z4wd-TableBodyColumnContainer efe0za00"

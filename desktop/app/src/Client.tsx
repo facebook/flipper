@@ -35,9 +35,12 @@ import {processMessagesLater} from './utils/messageQueue';
 import {emitBytesReceived} from './dispatcher/tracking';
 import {debounce} from 'lodash';
 import {batch} from 'react-redux';
-import {createState, _SandyPluginInstance} from 'flipper-plugin';
+import {
+  createState,
+  _SandyPluginInstance,
+  _getFlipperLibImplementation,
+} from 'flipper-plugin';
 import {flipperMessagesClientPlugin} from './utils/self-inspection/plugins/FlipperMessagesClientPlugin';
-import {getFlipperLibImplementation} from './utils/flipperLibImplementation';
 import {freeze} from 'immer';
 import GK from './fb-stubs/GK';
 import {message} from 'antd';
@@ -254,7 +257,7 @@ export default class Client extends EventEmitter {
         this.sandyPluginStates.set(
           plugin.id,
           new _SandyPluginInstance(
-            getFlipperLibImplementation(),
+            _getFlipperLibImplementation(),
             plugin,
             this,
             initialStates[pluginId],
@@ -303,7 +306,7 @@ export default class Client extends EventEmitter {
       // TODO: needs to be wrapped in error tracking T68955280
       this.sandyPluginStates.set(
         plugin.id,
-        new _SandyPluginInstance(getFlipperLibImplementation(), plugin, this),
+        new _SandyPluginInstance(_getFlipperLibImplementation(), plugin, this),
       );
     }
   }

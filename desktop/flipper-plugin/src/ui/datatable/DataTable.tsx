@@ -26,6 +26,11 @@ import {useDataTableManager, TableManager} from './useDataTableManager';
 import {TableSearch} from './TableSearch';
 import styled from '@emotion/styled';
 import {theme} from '../theme';
+import {
+  tableContextMenuFactory,
+  TableContextMenuContext,
+} from './TableContextMenu';
+import {useMemoize} from '../../utils/useMemoize';
 
 interface DataTableProps<T = any> {
   columns: DataTableColumn<T>[];
@@ -187,6 +192,15 @@ export function DataTable<T extends object>(props: DataTableProps<T>) {
     [],
   );
 
+  /** Context menu */
+  const contexMenu = !props._testHeight // don't render context menu in tests
+    ? // eslint-disable-next-line
+      useMemoize(tableContextMenuFactory, [
+        visibleColumns,
+        tableManager.addColumnFilter,
+      ])
+    : undefined;
+
   return (
     <Layout.Container grow>
       <Layout.Top>
@@ -208,18 +222,20 @@ export function DataTable<T extends object>(props: DataTableProps<T>) {
             onToggleColumnFilter={tableManager.toggleColumnFilter}
           />
         </Layout.Container>
-        <DataSourceRenderer<T, RenderContext<T>>
-          dataSource={dataSource}
-          autoScroll={props.autoScroll}
-          useFixedRowHeight={!usesWrapping}
-          defaultRowHeight={DEFAULT_ROW_HEIGHT}
-          context={renderingConfig}
-          itemRenderer={itemRenderer}
-          onKeyDown={onKeyDown}
-          virtualizerRef={virtualizerRef}
-          onRangeChange={onRangeChange}
-          _testHeight={props._testHeight}
-        />
+        <TableContextMenuContext.Provider value={contexMenu}>
+          <DataSourceRenderer<T, RenderContext<T>>
+            dataSource={dataSource}
+            autoScroll={props.autoScroll}
+            useFixedRowHeight={!usesWrapping}
+            defaultRowHeight={DEFAULT_ROW_HEIGHT}
+            context={renderingConfig}
+            itemRenderer={itemRenderer}
+            onKeyDown={onKeyDown}
+            virtualizerRef={virtualizerRef}
+            onRangeChange={onRangeChange}
+            _testHeight={props._testHeight}
+          />
+        </TableContextMenuContext.Provider>
       </Layout.Top>
       {range && <RangeFinder>{range}</RangeFinder>}
     </Layout.Container>

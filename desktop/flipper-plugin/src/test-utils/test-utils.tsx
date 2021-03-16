@@ -359,6 +359,7 @@ export function renderDevicePlugin<Module extends FlipperDevicePluginModule>(
 
 export function createMockFlipperLib(options?: StartPluginOptions): FlipperLib {
   return {
+    isFB: false,
     logger: stubLogger,
     enableMenuEntries: jest.fn(),
     createPaste: jest.fn(),
@@ -367,6 +368,7 @@ export function createMockFlipperLib(options?: StartPluginOptions): FlipperLib {
     },
     selectPlugin: jest.fn(),
     isPluginAvailable: jest.fn().mockImplementation(() => false),
+    writeTextToClipboard: jest.fn(),
   };
 }
 

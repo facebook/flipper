@@ -7,14 +7,14 @@
  * @format
  */
 
-import type {FlipperLib} from 'flipper-plugin';
+import {_setFlipperLibImplementation} from 'flipper-plugin';
 import type {Logger} from '../fb-interfaces/Logger';
 import type {Store} from '../reducers';
 import createPaste from '../fb-stubs/createPaste';
 import GK from '../fb-stubs/GK';
 import type BaseDevice from '../devices/BaseDevice';
-
-let flipperLibInstance: FlipperLib | undefined;
+import {clipboard} from 'electron';
+import constants from '../fb-stubs/constants';
 
 export function initializeFlipperLibImplementation(
   store: Store,
@@ -22,7 +22,8 @@ export function initializeFlipperLibImplementation(
 ) {
   // late require to avoid cyclic dependency
   const {addSandyPluginEntries} = require('../MenuBar');
-  flipperLibInstance = {
+  _setFlipperLibImplementation({
+    isFB: !constants.IS_PUBLIC_BUILD,
     logger,
     enableMenuEntries(entries) {
       addSandyPluginEntries(entries);
@@ -67,16 +68,8 @@ export function initializeFlipperLibImplementation(
         },
       });
     },
-  };
-}
-
-export function getFlipperLibImplementation(): FlipperLib {
-  if (!flipperLibInstance) {
-    throw new Error('Flipper lib not instantiated');
-  }
-  return flipperLibInstance;
-}
-
-export function setFlipperLibImplementation(impl: FlipperLib) {
-  flipperLibInstance = impl;
+    writeTextToClipboard(text: string) {
+      clipboard.writeText(text);
+    },
+  });
 }

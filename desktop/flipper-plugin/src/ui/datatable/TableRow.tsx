@@ -7,12 +7,15 @@
  * @format
  */
 
-import React, {memo} from 'react';
+import React, {memo, useContext} from 'react';
 import styled from '@emotion/styled';
 import {theme} from 'flipper-plugin';
 import type {RenderContext} from './DataTable';
 import {Width} from '../../utils/widthUtils';
 import {pad} from 'lodash';
+import {DownCircleFilled} from '@ant-design/icons';
+import {Dropdown} from 'antd';
+import {TableContextMenuContext} from './TableContextMenu';
 
 // heuristic for row estimation, should match any future styling updates
 export const DEFAULT_ROW_HEIGHT = 24;
@@ -27,6 +30,18 @@ const backgroundColor = (props: TableBodyRowContainerProps) => {
   }
   return undefined;
 };
+
+const CircleMargin = 4;
+const RowContextMenu = styled(DownCircleFilled)({
+  position: 'absolute',
+  top: CircleMargin,
+  right: CircleMargin,
+  fontSize: DEFAULT_ROW_HEIGHT - CircleMargin * 2,
+  borderRadius: (DEFAULT_ROW_HEIGHT - CircleMargin * 2) * 0.5,
+  color: theme.primaryColor,
+  cursor: 'pointer',
+  visibility: 'hidden',
+});
 
 const TableBodyRowContainer = styled.div<TableBodyRowContainerProps>(
   (props) => ({
@@ -46,6 +61,10 @@ const TableBodyRowContainer = styled.div<TableBodyRowContainerProps>(
     overflow: 'hidden',
     width: '100%',
     flexShrink: 0,
+    [`&:hover ${RowContextMenu}`]: {
+      visibility: 'visible',
+      color: props.highlighted ? theme.white : undefined,
+    },
   }),
 );
 TableBodyRowContainer.displayName = 'TableRow:TableBodyRowContainer';
@@ -78,6 +97,8 @@ type Props = {
 
 export const TableRow = memo(function TableRow(props: Props) {
   const {config, highlighted, value: row} = props;
+  const menu = useContext(TableContextMenuContext);
+
   return (
     <TableBodyRowContainer
       highlighted={highlighted}
@@ -89,19 +110,9 @@ export const TableRow = memo(function TableRow(props: Props) {
       {config.columns
         .filter((col) => col.visible)
         .map((col) => {
-          let value = (col as any).onRender
+          const value = (col as any).onRender
             ? (col as any).onRender(row)
-            : (row as any)[col.key] ?? '';
-          if (typeof value === 'boolean') {
-            value = value ? 'true' : 'false';
-          }
-
-          if (value instanceof Date) {
-            value =
-              value.toTimeString().split(' ')[0] +
-              '.' +
-              pad('' + value.getMilliseconds(), 3);
-          }
+            : normalizeCellValue((row as any)[col.key]);
 
           return (
             <TableBodyColumnContainer
@@ -114,6 +125,40 @@ export const TableRow = memo(function TableRow(props: Props) {
             </TableBodyColumnContainer>
           );
         })}
+      {menu && (
+        <Dropdown
+          overlay={menu(row)}
+          placement="bottomRight"
+          trigger={['click', 'contextMenu']}>
+          <RowContextMenu />
+        </Dropdown>
+      )}
     </TableBodyRowContainer>
   );
 });
+
+export function normalizeCellValue(value: any): string {
+  switch (typeof value) {
+    case 'boolean':
+      return value ? 'true' : 'false';
+    case 'number':
+      return '' + value;
+    case 'undefined':
+      return '';
+    case 'string':
+      return value;
+    case 'object': {
+      if (value === null) return '';
+      if (value instanceof Date) {
+        return (
+          value.toTimeString().split(' ')[0] +
+          '.' +
+          pad('' + value.getMilliseconds(), 3)
+        );
+      }
+      return JSON.stringify(value, null, 2);
+    }
+    default:
+      return '<unrenderable value>';
+  }
+}
