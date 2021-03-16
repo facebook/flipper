@@ -45,6 +45,9 @@ test('can create a datasource', () => {
 
   ds.update(1, submitBug);
   expect(ds.records[1]).toBe(submitBug);
+
+  ds.remove(0);
+  expect(ds.records[0]).toBe(submitBug);
 });
 
 test('can create a keyed datasource', () => {
@@ -87,6 +90,14 @@ test('can create a keyed datasource', () => {
   ds.upsert(trash);
   expect(ds.records[2]).toBe(trash);
   expect(ds.recordsById.get('trash')).toBe(trash);
+
+  // delete by key
+  expect(ds.records).toEqual([eatCookie, newBug, trash]);
+  expect(ds.removeByKey('bug')).toBe(true);
+  expect(ds.records).toEqual([eatCookie, trash]);
+  expect(ds.indexOfKey('bug')).toBe(-1);
+  expect(ds.indexOfKey('cookie')).toBe(0);
+  expect(ds.indexOfKey('trash')).toBe(1);
 });
 
 test('throws on invalid keys', () => {
@@ -97,6 +108,14 @@ test('throws on invalid keys', () => {
   expect(() => {
     ds.append({id: 'cookie', title: 'test'});
   }).toThrow(`Duplicate key: 'cookie'`);
+});
+
+test('removing invalid keys', () => {
+  const ds = createDataSource<Todo>([eatCookie], 'id');
+  expect(ds.removeByKey('trash')).toBe(false);
+  expect(() => {
+    ds.remove(1);
+  }).toThrowError('Out of bounds');
 });
 
 test('sorting works', () => {
@@ -168,6 +187,10 @@ test('sorting preserves insertion order with equal keys', () => {
   ds.update(4, b3r);
   expect(ds.records).toEqual([b1, c, b2r, a, b3r, b4]);
   expect(unwrap(ds.output)).toEqual([a, b3r, b1, b2r, b4, c]);
+
+  ds.remove(3);
+  expect(ds.records).toEqual([b1, c, b2r, b3r, b4]);
+  expect(unwrap(ds.output)).toEqual([b3r, b1, b2r, b4, c]);
 });
 
 test('filter + sort', () => {
@@ -209,11 +232,13 @@ test('filter + sort', () => {
   ds.update(2, submitBug);
   expect(unwrap(ds.output)).toEqual([newCoffee, b, newCookie, submitBug]);
 
+  ds.remove(3); // a
+  ds.remove(3); // b
+  expect(unwrap(ds.output)).toEqual([newCoffee, newCookie, submitBug]);
+
   ds.setFilter(undefined);
   expect(unwrap(ds.output)).toEqual([
     newCoffee,
-    a,
-    b,
     drinkCoffee,
     newCookie,
     submitBug,
@@ -225,8 +250,6 @@ test('filter + sort', () => {
     newCookie,
     drinkCoffee,
     submitBug,
-    a,
-    b,
     newCoffee,
   ]);
 });
@@ -407,6 +430,9 @@ test('reverse with sorting', () => {
   };
   ds.update(4, b3r);
   expect(ds.getOutput()).toEqual([c, b4, b2r, b1, b3r, a]);
+
+  ds.remove(4);
+  expect(ds.getOutput()).toEqual([c, b4, b2r, b1, a]);
 });
 
 test('reset', () => {
@@ -443,8 +469,9 @@ test('clear', () => {
 function testEvents<T>(
   initial: T[],
   op: (ds: DataSource<T, any, any>) => void,
+  key?: keyof T,
 ): any[] {
-  const ds = createDataSource<T>(initial);
+  const ds = createDataSource<T>(initial, key);
   const events: any[] = [];
   ds.setOutputChangeListener((e) => events.push(e));
   op(ds);
@@ -543,18 +570,22 @@ test('it emits the right events - reversed view change with filter', () => {
       ds.setReversed(true);
       ds.setFilter((x) => ['a', 'b'].includes(x));
       // [b, a]
-      ds.update(0, 'x');
+      ds.update(0, 'x'); // x b
       // [b, ]
       expect(ds.getItem(0)).toEqual('b');
       expect(ds.output.length).toBe(1);
-      ds.append('y');
+      ds.append('y'); // x b y
       // [b, ]
-      ds.append('c');
+      ds.append('c'); // x b y c
       // [b, ]
-      ds.append('a');
+      ds.append('a'); // x b y c a
       // [b, a]
-      ds.append('a');
+      ds.append('a'); // x b y c a a
       // [b, a, a] // N.b. the new a is in the *middle*
+      ds.remove(2); // x b c a a
+      // no effect
+      ds.remove(4); // this removes the second a in input, so the first a in the outpat!
+      // [b, a]
     }),
   ).toEqual([
     {newCount: 2, type: 'reset'},
@@ -563,5 +594,47 @@ test('it emits the right events - reversed view change with filter', () => {
     {index: 1, delta: -1, location: 'in', newCount: 1, type: 'shift'}, // remove a
     {index: 1, delta: 1, location: 'in', newCount: 2, type: 'shift'},
     {index: 1, delta: 1, location: 'in', newCount: 3, type: 'shift'},
+    {index: 1, delta: -1, location: 'in', newCount: 2, type: 'shift'},
+  ]);
+});
+
+test('basic remove', () => {
+  const completedBug = {id: 'bug', title: 'fixed bug', done: true};
+  expect(
+    testEvents(
+      [drinkCoffee, eatCookie, submitBug],
+      (ds) => {
+        ds.setWindow(0, 100);
+        ds.remove(0);
+        expect(ds.getOutput()).toEqual([eatCookie, submitBug]);
+        expect(ds.recordsById.get('bug')).toBe(submitBug);
+        expect(ds.recordsById.get('coffee')).toBeUndefined();
+        expect(ds.recordsById.get('cookie')).toBe(eatCookie);
+        ds.upsert(completedBug);
+        ds.removeByKey('cookie');
+        expect(ds.getOutput()).toEqual([completedBug]);
+        expect(ds.recordsById.get('bug')).toBe(completedBug);
+      },
+      'id',
+    ),
+  ).toEqual([
+    {
+      type: 'shift',
+      newCount: 2,
+      location: 'in',
+      index: 0,
+      delta: -1,
+    },
+    {
+      type: 'update',
+      index: 1,
+    },
+    {
+      type: 'shift',
+      index: 0,
+      location: 'in',
+      newCount: 1,
+      delta: -1,
+    },
   ]);
 });

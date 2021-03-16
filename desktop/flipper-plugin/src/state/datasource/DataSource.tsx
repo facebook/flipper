@@ -38,8 +38,13 @@ type UpdateEvent<T> = {
   oldVisible: boolean;
   index: number;
 };
+type RemoveEvent<T> = {
+  type: 'remove';
+  entry: Entry<T>;
+  index: number;
+};
 
-type DataEvent<T> = AppendEvent<T> | UpdateEvent<T>;
+type DataEvent<T> = AppendEvent<T> | UpdateEvent<T> | RemoveEvent<T>;
 
 type Entry<T> = {
   value: T;
@@ -260,6 +265,48 @@ export class DataSource<
   }
 
   /**
+   * @param index
+   *
+   * Warning: this operation can be O(n) if a key is set
+   */
+  remove(index: number) {
+    if (index < 0 || index >= this._records.length) {
+      throw new Error('Out of bounds: ' + index);
+    }
+    const entry = this._records.splice(index, 1)[0];
+    if (this.keyAttribute) {
+      const key = this.getKey(entry.value);
+      this._recordsById.delete(key);
+      this.idToIndex.delete(key);
+      // Optimization: this is O(n)! Should be done as an async job
+      this.idToIndex.forEach((keyIndex, key) => {
+        if (keyIndex > index) this.idToIndex.set(key, keyIndex - 1);
+      });
+    }
+    this.emitDataEvent({
+      type: 'remove',
+      index,
+      entry,
+    });
+  }
+
+  /**
+   * Removes the item with the given key from this dataSource.
+   * Returns false if no record with the given key was found
+   *
+   * Warning: this operation can be O(n) if a key is set
+   */
+  removeByKey(keyValue: KEY_TYPE): boolean {
+    this.assertKeySet();
+    const index = this.idToIndex.get(keyValue);
+    if (index === undefined) {
+      return false;
+    }
+    this.remove(index);
+    return true;
+  }
+
+  /**
    * Removes the first N entries.
    * @param amount
    */
@@ -347,13 +394,13 @@ export class DataSource<
     );
   }
 
-  emitDataEvent(event: DataEvent<T>) {
+  private emitDataEvent(event: DataEvent<T>) {
     this.dataUpdateQueue.push(event);
     // TODO: schedule
     this.processEvents();
   }
 
-  normalizeIndex(viewIndex: number): number {
+  private normalizeIndex(viewIndex: number): number {
     return this.reverse ? this.output.length - 1 - viewIndex : viewIndex;
   }
 
@@ -365,7 +412,7 @@ export class DataSource<
     return this.output[this.normalizeIndex(viewIndex)];
   }
 
-  notifyItemUpdated(viewIndex: number) {
+  private notifyItemUpdated(viewIndex: number) {
     viewIndex = this.normalizeIndex(viewIndex);
     if (
       !this.outputChangeListener ||
@@ -380,7 +427,7 @@ export class DataSource<
     });
   }
 
-  notifyItemShift(index: number, delta: number) {
+  private notifyItemShift(index: number, delta: number) {
     if (!this.outputChangeListener) {
       return;
     }
@@ -403,19 +450,19 @@ export class DataSource<
     });
   }
 
-  notifyReset(count: number) {
+  private notifyReset(count: number) {
     this.outputChangeListener?.({
       type: 'reset',
       newCount: count,
     });
   }
 
-  processEvents() {
+  private processEvents() {
     const events = this.dataUpdateQueue.splice(0);
     events.forEach(this.processEvent);
   }
 
-  processEvent = (event: DataEvent<T>) => {
+  private processEvent = (event: DataEvent<T>) => {
     const {entry} = event;
     const {output, sortBy, filter} = this;
     switch (event.type) {
@@ -475,12 +522,29 @@ export class DataSource<
         }
         break;
       }
+      case 'remove': {
+        // filter active, and not visible? short circuilt
+        if (!entry.visible) {
+          return;
+        }
+        // no sorting, no filter?
+        if (!sortBy && !filter) {
+          output.splice(event.index, 1);
+          this.notifyItemShift(event.index, -1);
+        } else {
+          // sorting or filter is active, find the actual location
+          const existingIndex = this.getSortedIndex(entry, event.entry.value);
+          output.splice(existingIndex, 1);
+          this.notifyItemShift(existingIndex, -1);
+        }
+        break;
+      }
       default:
         throw new Error('unknown event type');
     }
   };
 
-  rebuildOutput() {
+  private rebuildOutput() {
     const {sortBy, filter, sortHelper} = this;
     // copy base array or run filter (with side effecty update of visible)
     // TODO: pending on the size, should we batch this in smaller steps? (and maybe merely reuse append)
