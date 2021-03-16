@@ -9,7 +9,7 @@
 
 import BaseDevice from './BaseDevice';
 import adb, {Client as ADBClient} from 'adbkit';
-import {Priority} from 'adbkit-logcat';
+import {Priority, Reader} from 'adbkit-logcat';
 import {createWriteStream} from 'fs';
 import type {LogLevel, DeviceType} from 'flipper-plugin';
 import which from 'which';
@@ -20,6 +20,13 @@ import {DeviceSpec} from 'flipper-plugin-lib';
 const DEVICE_RECORDING_DIR = '/sdcard/flipper_recorder';
 
 export default class AndroidDevice extends BaseDevice {
+  adb: ADBClient;
+  abiList: Array<string> = [];
+  sdkVersion: string | undefined = undefined;
+  pidAppMapping: {[key: number]: string} = {};
+  private recordingProcess?: Promise<string>;
+  reader?: Reader;
+
   constructor(
     serial: string,
     deviceType: DeviceType,
@@ -34,7 +41,11 @@ export default class AndroidDevice extends BaseDevice {
     this.icon = 'mobile';
     this.abiList = abiList;
     this.sdkVersion = sdkVersion;
-    this.adb.openLogcat(this.serial).then((reader) => {
+  }
+
+  startLogging() {
+    this.adb.openLogcat(this.serial, {clear: true}).then((reader) => {
+      this.reader = reader;
       reader.on('entry', (entry) => {
         let type: LogLevel = 'unknown';
         if (entry.priority === Priority.VERBOSE) {
@@ -68,11 +79,9 @@ export default class AndroidDevice extends BaseDevice {
     });
   }
 
-  adb: ADBClient;
-  abiList: Array<string> = [];
-  sdkVersion: string | undefined = undefined;
-  pidAppMapping: {[key: number]: string} = {};
-  private recordingProcess?: Promise<string>;
+  stopLogging() {
+    this.reader?.end();
+  }
 
   reverse(ports: [number, number]): Promise<void> {
     return Promise.all(
@@ -216,6 +225,13 @@ export default class AndroidDevice extends BaseDevice {
     const destination = await recordingProcess;
     this.recordingProcess = undefined;
     return destination;
+  }
+
+  disconnect() {
+    if (this.recordingProcess) {
+      this.stopScreenCapture();
+    }
+    super.disconnect();
   }
 }
 

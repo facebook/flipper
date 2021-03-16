@@ -131,7 +131,18 @@ export default class BaseDevice {
     };
   }
 
+  startLogging() {
+    // to be subclassed
+  }
+
+  stopLogging() {
+    // to be subclassed
+  }
+
   addLogListener(callback: DeviceLogListener): Symbol {
+    if (this.logListeners.size === 0) {
+      this.startLogging();
+    }
     const id = Symbol();
     this.logListeners.set(id, callback);
     return id;
@@ -156,6 +167,9 @@ export default class BaseDevice {
 
   removeLogListener(id: Symbol) {
     this.logListeners.delete(id);
+    if (this.logListeners.size === 0) {
+      this.stopLogging();
+    }
   }
 
   navigateToLocation(_location: string) {
@@ -268,6 +282,7 @@ export default class BaseDevice {
 
   disconnect() {
     this.logListeners.clear();
+    this.stopLogging();
     this.connected.set(false);
   }
 

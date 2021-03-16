@@ -120,6 +120,11 @@ export default class MockFlipper {
     device.supportsPlugin = !isSupportedByPlugin
       ? () => true
       : isSupportedByPlugin;
+    this.loadDevice(device);
+    return device;
+  }
+
+  public loadDevice(device: BaseDevice) {
     this._store.dispatch({
       type: 'REGISTER_DEVICE',
       payload: device,

@@ -61,6 +61,7 @@ type MockOptions = Partial<{
   dontEnableAdditionalPlugins?: true;
   asBackgroundPlugin?: true;
   supportedPlugins?: string[];
+  device?: BaseDevice;
 }>;
 
 function isPluginEnabled(
@@ -128,7 +129,9 @@ export async function createMockFlipperWithPlugin(
     return client;
   };
 
-  const device = createDevice('serial');
+  const device = options?.device
+    ? mockFlipper.loadDevice(options?.device)
+    : createDevice('serial');
   const client = await createClient(device, 'TestApp');
 
   store.dispatch(selectDevice(device));
@@ -172,7 +175,8 @@ export async function createMockFlipperWithPlugin(
     pluginKey: getPluginKey(client.id, device, pluginClazz.id),
     togglePlugin(id?: string) {
       const plugin = id
-        ? store.getState().plugins.clientPlugins.get(id)
+        ? store.getState().plugins.clientPlugins.get(id) ??
+          store.getState().plugins.devicePlugins.get(id)
         : pluginClazz;
       if (!plugin) {
         throw new Error('unknown plugin ' + id);
