@@ -165,3 +165,93 @@ test('sorting preserves insertion order with equal keys', () => {
   expect(ds.records).toEqual([b1, c, b2r, a, b3r, b4]);
   expect(ds.sortedRecords).toEqual([a, b3r, b1, b2r, b4, c]);
 });
+
+test('reverse without sorting', () => {
+  const ds = createDataSource<Todo>([eatCookie, drinkCoffee]);
+  expect(ds.reversedRecords).toEqual([eatCookie, drinkCoffee]);
+
+  ds.toggleReversed();
+  expect(ds.reversedRecords).toEqual([drinkCoffee, eatCookie]);
+
+  ds.append(submitBug);
+  expect(ds.records).toEqual([eatCookie, drinkCoffee, submitBug]);
+  expect(ds.reversedRecords).toEqual([submitBug, drinkCoffee, eatCookie]);
+
+  const x = {id: 'x', title: 'x'};
+  ds.update(0, x);
+  expect(ds.records).toEqual([x, drinkCoffee, submitBug]);
+  expect(ds.reversedRecords).toEqual([submitBug, drinkCoffee, x]);
+  const y = {id: 'y', title: 'y'};
+  const z = {id: 'z', title: 'z'};
+  ds.update(2, z);
+  ds.update(1, y);
+
+  expect(ds.records).toEqual([x, y, z]);
+  expect(ds.reversedRecords).toEqual([z, y, x]);
+
+  ds.setReversed(false);
+  expect(ds.reversedRecords).toEqual([x, y, z]);
+});
+
+test('reverse with sorting', () => {
+  type N = {
+    $: string;
+    name: string;
+  };
+
+  const a = {$: 'a', name: 'a'};
+  const b1 = {$: 'b', name: 'b1'};
+  const b2 = {$: 'b', name: 'b2'};
+  const b3 = {$: 'b', name: 'b3'};
+  const c = {$: 'c', name: 'c'};
+
+  const ds = createDataSource<N>([]);
+  ds.setReversed(true);
+  ds.append(b1);
+  ds.append(c);
+  expect(ds.sortedRecords).toEqual([b1, c]);
+  expect(ds.reversedRecords).toEqual([c, b1]);
+
+  ds.setSortBy('$');
+  expect(ds.sortedRecords).toEqual([b1, c]);
+  expect(ds.reversedRecords).toEqual([c, b1]);
+
+  ds.append(b2);
+  expect(ds.sortedRecords).toEqual([b1, b2, c]);
+  expect(ds.reversedRecords).toEqual([c, b2, b1]);
+
+  ds.append(a);
+  expect(ds.sortedRecords).toEqual([a, b1, b2, c]);
+  expect(ds.reversedRecords).toEqual([c, b2, b1, a]);
+
+  ds.append(b3);
+  expect(ds.sortedRecords).toEqual([a, b1, b2, b3, c]);
+  expect(ds.reversedRecords).toEqual([c, b3, b2, b1, a]);
+
+  // if we append a new item with existig item, it should end up in the end
+  const b4 = {
+    $: 'b',
+    name: 'b4',
+  };
+  ds.append(b4);
+  expect(ds.sortedRecords).toEqual([a, b1, b2, b3, b4, c]);
+  expect(ds.reversedRecords).toEqual([c, b4, b3, b2, b1, a]);
+
+  // if we replace the middle item, it should end up in the middle
+  const b2r = {
+    $: 'b',
+    name: 'b2replacement',
+  };
+  ds.update(2, b2r);
+  expect(ds.sortedRecords).toEqual([a, b1, b2r, b3, b4, c]);
+  expect(ds.reversedRecords).toEqual([c, b4, b3, b2r, b1, a]);
+
+  // if we replace something with a different sort value, it should be sorted properly, and the old should disappear
+  const b3r = {
+    $: 'aa',
+    name: 'b3replacement',
+  };
+  ds.update(4, b3r);
+  expect(ds.sortedRecords).toEqual([a, b3r, b1, b2r, b4, c]);
+  expect(ds.reversedRecords).toEqual([c, b4, b2r, b1, b3r, a]);
+});

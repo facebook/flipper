@@ -40,13 +40,17 @@ class DataSource<
   private _recordsById: Map<KEY_TYPE, T> = new Map();
   private keyAttribute: undefined | keyof T;
   private idToIndex: Map<KEY_TYPE, number> = new Map();
-  dataUpdateQueue: DataEvent<T>[] = [];
+  private dataUpdateQueue: DataEvent<T>[] = [];
 
   private sortBy: undefined | ((a: T) => number | string);
   private _sortedRecords: T[] | undefined;
 
-  viewRecords: T[] = [];
-  nextViewRecords: T[] = []; // for double buffering
+  private reverse: boolean = false;
+  private _reversedRecords: T[] | undefined;
+
+  // TODO:
+  // private viewRecords: T[] = [];
+  // private nextViewRecords: T[] = []; // for double buffering
 
   /**
    * Returns a direct reference to the stored records.
@@ -76,6 +80,14 @@ class DataSource<
    */
   get sortedRecords(): readonly T[] {
     return this.sortBy ? this._sortedRecords! : this._records;
+  }
+
+  /**
+   * Exposed for testing only.
+   * Returns the set of records after applying sorting and reversing (if applicable)
+   */
+  get reversedRecords(): readonly T[] {
+    return this.reverse ? this._reversedRecords! : this.sortedRecords;
   }
 
   constructor(keyAttribute: KEY | undefined) {
@@ -197,6 +209,26 @@ class DataSource<
         this.insertSorted(value);
       });
     }
+    // TODO: clean up to something easier to follow
+    if (this.reverse) {
+      this.toggleReversed(); // reset
+      this.toggleReversed(); // reapply
+    }
+  }
+
+  toggleReversed() {
+    this.setReversed(!this.reverse);
+  }
+
+  setReversed(reverse: boolean) {
+    if (this.reverse !== reverse) {
+      this.reverse = reverse;
+      if (reverse) {
+        this._reversedRecords = this.sortedRecords.slice().reverse();
+      } else {
+        this._reversedRecords = undefined;
+      }
+    }
   }
 
   emitDataEvent(event: DataEvent<T>) {
@@ -212,39 +244,70 @@ class DataSource<
 
   processEvent = (event: DataEvent<T>) => {
     const {value} = event;
+    const {_sortedRecords, _reversedRecords} = this;
     switch (event.type) {
-      case 'append':
+      case 'append': {
+        let insertionIndex = this._records.length - 1;
         // sort
-        if (this.sortBy) {
-          this.insertSorted(value);
+        if (_sortedRecords) {
+          insertionIndex = this.insertSorted(value);
         }
-        // reverse
+        // reverse append
+        if (_reversedRecords) {
+          _reversedRecords.splice(
+            _reversedRecords.length - insertionIndex, // N.b. no -1, since we're appending
+            0,
+            value,
+          );
+        }
 
         // filter
 
         // notify
         break;
+      }
       case 'update':
         // sort
-        if (this.sortBy) {
+        if (_sortedRecords) {
           // find old entry
           const oldIndex = this.getSortedIndex(event.oldValue);
-          if (
-            this.sortBy(this._sortedRecords![oldIndex]) === this.sortBy(value)
-          ) {
+          if (this.sortBy!(_sortedRecords[oldIndex]) === this.sortBy!(value)) {
             // sort value is the same? just swap the item
             this._sortedRecords![oldIndex] = value;
+            if (_reversedRecords) {
+              _reversedRecords[
+                _reversedRecords.length - 1 - event.index
+              ] = value;
+            }
           } else {
             // sort value is different? remove and add
             this._sortedRecords!.splice(oldIndex, 1);
-            this.insertSorted(value);
+            if (_reversedRecords) {
+              _reversedRecords.splice(
+                _reversedRecords.length - 1 - oldIndex,
+                1,
+              );
+            }
+            const insertionIndex = this.insertSorted(value);
+            if (_reversedRecords) {
+              _reversedRecords.splice(
+                _reversedRecords.length - insertionIndex,
+                0,
+                value,
+              ); // N.b. no -1, since we're appending
+            }
           }
-          // reverse
-
-          // filter
-
-          // notify
         }
+        // reverse
+        else if (_reversedRecords) {
+          // only handle reverse separately if not sorting, otherwise handled above
+          _reversedRecords[_reversedRecords.length - 1 - event.index] = value;
+        }
+
+        // filter
+
+        // notify
+
         break;
       default:
         throw new Error('unknown event type');
@@ -263,13 +326,14 @@ class DataSource<
     return index;
   }
 
-  private insertSorted(value: T) {
+  private insertSorted(value: T): number {
     const insertionIndex = sortedLastIndexBy(
       this._sortedRecords,
       value,
       this.sortBy!,
     );
     this._sortedRecords!.splice(insertionIndex, 0, value);
+    return insertionIndex;
   }
 }
 
