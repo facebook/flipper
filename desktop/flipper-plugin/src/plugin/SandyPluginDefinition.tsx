@@ -52,7 +52,11 @@ export class SandyPluginDefinition {
   constructor(details: ActivatablePluginDetails, module: any) {
     this.id = details.id;
     this.details = details;
-    if (details.pluginType === 'device' || module.supportsDevice) {
+    if (
+      details.pluginType === 'device' ||
+      module.supportsDevice ||
+      module.devicePlugin
+    ) {
       // device plugin
       this.isDevicePlugin = true;
       if (!module.devicePlugin || typeof module.devicePlugin !== 'function') {
