@@ -55,15 +55,15 @@ test('update and append', async () => {
     expect(elem.length).toBe(1);
     expect(elem[0].parentElement).toMatchInlineSnapshot(`
       <div
-        class="css-1rnoidw-TableBodyRowContainer efe0za01"
+        class="css-tihkal-TableBodyRowContainer efe0za01"
       >
         <div
-          class="ant-table-cell css-1g4z4wd-TableBodyColumnContainer efe0za00"
+          class="ant-table-cell css-1u65yt0-TableBodyColumnContainer efe0za00"
         >
           test DataTable
         </div>
         <div
-          class="ant-table-cell css-1g4z4wd-TableBodyColumnContainer efe0za00"
+          class="ant-table-cell css-1u65yt0-TableBodyColumnContainer efe0za00"
         >
           true
         </div>
@@ -112,15 +112,15 @@ test('column visibility', async () => {
     expect(elem.length).toBe(1);
     expect(elem[0].parentElement).toMatchInlineSnapshot(`
       <div
-        class="css-1rnoidw-TableBodyRowContainer efe0za01"
+        class="css-tihkal-TableBodyRowContainer efe0za01"
       >
         <div
-          class="ant-table-cell css-1g4z4wd-TableBodyColumnContainer efe0za00"
+          class="ant-table-cell css-1u65yt0-TableBodyColumnContainer efe0za00"
         >
           test DataTable
         </div>
         <div
-          class="ant-table-cell css-1g4z4wd-TableBodyColumnContainer efe0za00"
+          class="ant-table-cell css-1u65yt0-TableBodyColumnContainer efe0za00"
         >
           true
         </div>
@@ -137,10 +137,10 @@ test('column visibility', async () => {
     expect(elem.length).toBe(1);
     expect(elem[0].parentElement).toMatchInlineSnapshot(`
       <div
-        class="css-1rnoidw-TableBodyRowContainer efe0za01"
+        class="css-tihkal-TableBodyRowContainer efe0za01"
       >
         <div
-          class="ant-table-cell css-1g4z4wd-TableBodyColumnContainer efe0za00"
+          class="ant-table-cell css-1u65yt0-TableBodyColumnContainer efe0za00"
         >
           test DataTable
         </div>
@@ -509,4 +509,115 @@ test('compute filters', () => {
     ])!;
     expect(data.filter(filter)).toEqual([]);
   }
+});
+
+test('onSelect callback fires, and in order', () => {
+  const events: any[] = [];
+  const ds = createTestDataSource();
+  const ref = createRef<TableManager>();
+  const rendering = render(
+    <DataTable
+      dataSource={ds}
+      columns={columns}
+      tableManagerRef={ref}
+      _testHeight={400}
+      onSelect={(item, items) => {
+        events.push([item, items]);
+      }}
+    />,
+  );
+
+  const item1 = {
+    title: 'item 1',
+    done: false,
+  };
+  const item2 = {
+    title: 'item 2',
+    done: false,
+  };
+  const item3 = {
+    title: 'item 3',
+    done: false,
+  };
+  act(() => {
+    ds.clear();
+    ds.append(item1);
+    ds.append(item2);
+    ds.append(item3);
+    ref.current!.selectItem(2);
+  });
+
+  expect(events.splice(0)).toEqual([
+    [undefined, []],
+    [item3, [item3]],
+  ]);
+
+  act(() => {
+    ref.current!.addRangeToSelection(0, 0);
+  });
+
+  expect(events.splice(0)).toEqual([
+    [item1, [item1, item3]], // order preserved!
+  ]);
+
+  rendering.unmount();
+});
+
+test('selection always has the latest state', () => {
+  const events: any[] = [];
+  const ds = createTestDataSource();
+  const ref = createRef<TableManager>();
+  const rendering = render(
+    <DataTable
+      dataSource={ds}
+      columns={columns}
+      tableManagerRef={ref}
+      _testHeight={400}
+      onSelect={(item, items) => {
+        events.push([item, items]);
+      }}
+    />,
+  );
+
+  const item1 = {
+    title: 'item 1',
+    done: false,
+  };
+  const item2 = {
+    title: 'item 2',
+    done: false,
+  };
+  const item3 = {
+    title: 'item 3',
+    done: false,
+  };
+  act(() => {
+    ds.clear();
+    ds.append(item1);
+    ds.append(item2);
+    ds.append(item3);
+    ref.current!.selectItem(2);
+  });
+
+  expect(events.splice(0)).toEqual([
+    [undefined, []],
+    [item3, [item3]],
+  ]);
+
+  const item3updated = {
+    title: 'item 3 updated',
+    done: false,
+  };
+  act(() => {
+    ds.update(2, item3updated);
+  });
+  act(() => {
+    ref.current!.addRangeToSelection(0, 0);
+  });
+
+  expect(events.splice(0)).toEqual([
+    [item1, [item1, item3updated]], // update reflected in callback!
+  ]);
+
+  rendering.unmount();
 });

@@ -80,6 +80,7 @@ const TableHeadContainer = styled.div<{horizontallyScrollable?: boolean}>({
   borderBottom: `1px solid ${theme.dividerColor}`,
   backgroundColor: theme.backgroundWash,
   userSelect: 'none',
+  borderLeft: `4px solid ${theme.backgroundWash}`, // space for selection, see TableRow
 });
 TableHeadContainer.displayName = 'TableHead:TableHeadContainer';
 

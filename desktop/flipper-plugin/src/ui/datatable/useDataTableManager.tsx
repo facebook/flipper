@@ -10,7 +10,7 @@
 import {DataTableColumn} from 'flipper-plugin/src/ui/datatable/DataTable';
 import {Percentage} from '../../utils/widthUtils';
 import produce from 'immer';
-import {useCallback, useEffect, useMemo, useState} from 'react';
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {DataSource} from '../../state/datasource/DataSource';
 import {useMemoize} from '../../utils/useMemoize';
 
@@ -22,20 +22,30 @@ export type Sorting = {
 
 export type TableManager = ReturnType<typeof useDataTableManager>;
 
+type Selection = {items: ReadonlySet<number>; current: number};
+
+const emptySelection: Selection = {
+  items: new Set(),
+  current: -1,
+};
+
 /**
  * A hook that coordinates filtering, sorting etc for a DataSource
  */
-export function useDataTableManager<T extends object>(
+export function useDataTableManager<T>(
   dataSource: DataSource<T>,
   defaultColumns: DataTableColumn<T>[],
-  onSelect?: (item: T | undefined, index: number) => void,
+  onSelect?: (item: T | undefined, items: T[]) => void,
 ) {
   const [columns, setEffectiveColumns] = useState(
     computeInitialColumns(defaultColumns),
   );
   // TODO: move selection with shifts with index < selection?
   // TODO: clear selection if out of range
-  const [selection, setSelection] = useState(-1);
+  const [selection, setSelection] = useState<Selection>(emptySelection);
+  const selectionRef = useRef(selection);
+  selectionRef.current = selection; // store last seen selection for fetching it later
+
   const [sorting, setSorting] = useState<Sorting | undefined>(undefined);
   const [searchValue, setSearchValue] = useState('');
   const visibleColumns = useMemo(
@@ -102,6 +112,7 @@ export function useDataTableManager<T extends object>(
     setEffectiveColumns(computeInitialColumns(defaultColumns));
     setSorting(undefined);
     setSearchValue('');
+    setSelection(emptySelection);
     dataSource.reset();
   }, [dataSource, defaultColumns]);
 
@@ -148,26 +159,70 @@ export function useDataTableManager<T extends object>(
     );
   }, []);
 
-  const selectItem = useCallback(
-    (updater: (currentIndex: number) => number) => {
-      setSelection((currentIndex) => {
-        const newIndex = updater(currentIndex);
-        const item =
-          newIndex >= 0 && newIndex < dataSource.output.length
-            ? dataSource.getItem(newIndex)
-            : undefined;
-        onSelect?.(item, newIndex);
-        return newIndex;
-      });
-    },
-    [setSelection, onSelect, dataSource],
-  );
-
   useEffect(
     function applyFilter() {
       dataSource.setFilter(currentFilter);
     },
     [currentFilter, dataSource],
+  );
+
+  /**
+   * Select an individual item, used by mouse clicks and keyboard navigation
+   * Set addToSelection if the current selection should be expanded to the given position,
+   * rather than replacing the current selection.
+   *
+   * The nextIndex can be used to compute the new selection by basing relatively to the current selection
+   */
+  const selectItem = useCallback(
+    (
+      nextIndex: number | ((currentIndex: number) => number),
+      addToSelection?: boolean,
+    ) => {
+      setSelection((base) =>
+        computeSetSelection(base, nextIndex, addToSelection),
+      );
+    },
+    [],
+  );
+
+  /**
+   * Adds a range of items to the current seleciton (if any)
+   */
+  const addRangeToSelection = useCallback(
+    (start: number, end: number, allowUnselect?: boolean) => {
+      setSelection((base) =>
+        computeAddRangeToSelection(base, start, end, allowUnselect),
+      );
+    },
+    [],
+  );
+
+  // N.B: we really want to have stable refs for these functions,
+  // to avoid that all context menus need re-render for every selection change,
+  // hence the selectionRef hack
+  const getSelectedItem = useCallback(() => {
+    return selectionRef.current.current < 0
+      ? undefined
+      : dataSource.getItem(selectionRef.current.current);
+  }, [dataSource]);
+
+  const getSelectedItems = useCallback(() => {
+    return [...selectionRef.current.items]
+      .sort()
+      .map((i) => dataSource.getItem(i))
+      .filter(Boolean);
+  }, [dataSource]);
+
+  useEffect(
+    function fireSelection() {
+      if (onSelect) {
+        const item = getSelectedItem();
+        const items = getSelectedItems();
+        onSelect(item, items);
+      }
+    },
+    // selection is intentionally a dep
+    [onSelect, selection, selection, getSelectedItem, getSelectedItems],
   );
 
   return {
@@ -190,6 +245,9 @@ export function useDataTableManager<T extends object>(
     /** current selection, describes the index index in the datasources's current output (not window) */
     selection,
     selectItem,
+    addRangeToSelection,
+    getSelectedItem,
+    getSelectedItems,
     /** Changing column filters */
     addColumnFilter,
     removeColumnFilter,
@@ -243,4 +301,74 @@ export function computeDataTableFilter(
       String(v).toLowerCase().includes(searchString),
     );
   };
+}
+
+export function computeSetSelection(
+  base: Selection,
+  nextIndex: number | ((currentIndex: number) => number),
+  addToSelection?: boolean,
+): Selection {
+  const newIndex =
+    typeof nextIndex === 'number' ? nextIndex : nextIndex(base.current);
+  if (newIndex < 0) {
+    return emptySelection;
+  }
+  if (base.current < 0 || !addToSelection) {
+    return {
+      current: newIndex,
+      items: new Set([newIndex]),
+    };
+  } else {
+    const lowest = Math.min(base.current, newIndex);
+    const highest = Math.max(base.current, newIndex);
+    return {
+      current: newIndex,
+      items: addIndicesToMultiSelection(base.items, lowest, highest),
+    };
+  }
+}
+
+export function computeAddRangeToSelection(
+  base: Selection,
+  start: number,
+  end: number,
+  allowUnselect?: boolean,
+): Selection {
+  // special case: unselectiong a single existing item
+  if (start === end && allowUnselect) {
+    if (base?.items.has(start)) {
+      const copy = new Set(base.items);
+      copy.delete(start);
+      if (copy.size === 0) {
+        return emptySelection;
+      }
+      return {
+        items: copy,
+        current: start,
+      };
+    }
+    // intentional fall-through
+  }
+
+  // N.B. start and end can be reverted if selecting backwards
+  const lowest = Math.min(start, end);
+  const highest = Math.max(start, end);
+  const current = end;
+
+  return {
+    items: addIndicesToMultiSelection(base.items, lowest, highest),
+    current,
+  };
+}
+
+function addIndicesToMultiSelection(
+  base: ReadonlySet<number>,
+  lowest: number,
+  highest: number,
+): ReadonlySet<number> {
+  const copy = new Set(base);
+  for (let i = lowest; i <= highest; i++) {
+    copy.add(i);
+  }
+  return copy;
 }

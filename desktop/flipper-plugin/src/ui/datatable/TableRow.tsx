@@ -26,18 +26,18 @@ type TableBodyRowContainerProps = {
 
 const backgroundColor = (props: TableBodyRowContainerProps) => {
   if (props.highlighted) {
-    return theme.primaryColor;
+    return theme.backgroundTransparentHover;
   }
   return undefined;
 };
 
 const CircleMargin = 4;
-const RowContextMenu = styled(DownCircleFilled)({
+const RowContextMenuWrapper = styled.div({
   position: 'absolute',
-  top: CircleMargin,
-  right: CircleMargin,
+  top: 0,
+  right: 0,
+  paddingRight: CircleMargin,
   fontSize: DEFAULT_ROW_HEIGHT - CircleMargin * 2,
-  borderRadius: (DEFAULT_ROW_HEIGHT - CircleMargin * 2) * 0.5,
   color: theme.primaryColor,
   cursor: 'pointer',
   visibility: 'hidden',
@@ -48,22 +48,15 @@ const TableBodyRowContainer = styled.div<TableBodyRowContainerProps>(
     display: 'flex',
     flexDirection: 'row',
     backgroundColor: backgroundColor(props),
-    color: props.highlighted ? theme.white : theme.textColorPrimary,
-    '& *': {
-      color: props.highlighted ? `${theme.white} !important` : undefined,
-    },
-    '& img': {
-      backgroundColor: props.highlighted
-        ? `${theme.white} !important`
-        : undefined,
-    },
+    borderLeft: props.highlighted
+      ? `4px solid ${theme.primaryColor}`
+      : `4px solid ${theme.backgroundDefault}`,
     minHeight: DEFAULT_ROW_HEIGHT,
     overflow: 'hidden',
     width: '100%',
     flexShrink: 0,
-    [`&:hover ${RowContextMenu}`]: {
+    [`&:hover ${RowContextMenuWrapper}`]: {
       visibility: 'visible',
-      color: props.highlighted ? theme.white : undefined,
     },
   }),
 );
@@ -85,8 +78,14 @@ const TableBodyColumnContainer = styled.div<{
   width: props.width,
   justifyContent: props.justifyContent,
   borderBottom: `1px solid ${theme.dividerColor}`,
+  '&::selection': {
+    color: 'inherit',
+    backgroundColor: theme.buttonDefaultBackground,
+  },
 }));
 TableBodyColumnContainer.displayName = 'TableRow:TableBodyColumnContainer';
+
+const contextMenuTriggers = ['click' as const, 'contextMenu' as const];
 
 type Props = {
   config: RenderContext<any>;
@@ -98,14 +97,15 @@ type Props = {
 export const TableRow = memo(function TableRow(props: Props) {
   const {config, highlighted, value: row} = props;
   const menu = useContext(TableContextMenuContext);
-
   return (
     <TableBodyRowContainer
       highlighted={highlighted}
       data-key={row.key}
-      onClick={(e) => {
-        e.stopPropagation();
-        props.config.onClick(props.value, props.itemIndex);
+      onMouseDown={(e) => {
+        props.config.onMouseDown(e, props.value, props.itemIndex);
+      }}
+      onMouseEnter={(e) => {
+        props.config.onMouseEnter(e, props.value, props.itemIndex);
       }}>
       {config.columns
         .filter((col) => col.visible)
@@ -125,17 +125,25 @@ export const TableRow = memo(function TableRow(props: Props) {
             </TableBodyColumnContainer>
           );
         })}
-      {menu && (
-        <Dropdown
-          overlay={menu(row)}
-          placement="bottomRight"
-          trigger={['click', 'contextMenu']}>
-          <RowContextMenu />
-        </Dropdown>
+      {menu && highlighted && (
+        <RowContextMenuWrapper
+          onClick={stopPropagation}
+          onMouseDown={stopPropagation}>
+          <Dropdown
+            overlay={menu}
+            placement="bottomRight"
+            trigger={contextMenuTriggers}>
+            <DownCircleFilled />
+          </Dropdown>
+        </RowContextMenuWrapper>
       )}
     </TableBodyRowContainer>
   );
 });
+
+function stopPropagation(e: React.MouseEvent<any>) {
+  e.stopPropagation();
+}
 
 export function normalizeCellValue(value: any): string {
   switch (typeof value) {

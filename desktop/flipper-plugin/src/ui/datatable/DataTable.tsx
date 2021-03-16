@@ -38,15 +38,8 @@ interface DataTableProps<T = any> {
   autoScroll?: boolean;
   extraActions?: React.ReactElement;
   // custom onSearch(text, row) option?
-  /**
-   * onSelect event
-   * @param item currently selected item
-   * @param index index of the selected item in the datasources' output.
-   * Note that the index could potentially refer to a different item if rendering is 'behind' and items have shifted
-   */
-  onSelect?(item: T | undefined, index: number): void;
+  onSelect?(item: T | undefined, items: T[]): void;
   // multiselect?: true
-  // onMultiSelect
   tableManagerRef?: RefObject<TableManager>;
   _testHeight?: number; // exposed for unit testing only
 }
@@ -70,13 +63,24 @@ export type DataTableColumn<T = any> = {
 
 export interface RenderContext<T = any> {
   columns: DataTableColumn<T>[];
-  onClick(item: T, itemId: number): void;
+  onMouseEnter(
+    e: React.MouseEvent<HTMLDivElement>,
+    item: T,
+    itemId: number,
+  ): void;
+  onMouseDown(
+    e: React.MouseEvent<HTMLDivElement>,
+    item: T,
+    itemId: number,
+  ): void;
 }
 
-export function DataTable<T extends object>(props: DataTableProps<T>) {
+export function DataTable<T extends object>(
+  props: DataTableProps<T>,
+): React.ReactElement {
   const {dataSource} = props;
   const virtualizerRef = useRef<DataSourceVirtualizer | undefined>();
-  const tableManager = useDataTableManager<T>(
+  const tableManager = useDataTableManager(
     dataSource,
     props.columns,
     props.onSelect,
@@ -84,16 +88,50 @@ export function DataTable<T extends object>(props: DataTableProps<T>) {
   if (props.tableManagerRef) {
     (props.tableManagerRef as MutableRefObject<TableManager>).current = tableManager;
   }
-  const {visibleColumns, selectItem, selection} = tableManager;
+  const {
+    visibleColumns,
+    selectItem,
+    selection,
+    addRangeToSelection,
+    addColumnFilter,
+    getSelectedItem,
+    getSelectedItems,
+  } = tableManager;
 
   const renderingConfig = useMemo<RenderContext<T>>(() => {
+    let dragging = false;
+    let startIndex = 0;
     return {
       columns: visibleColumns,
-      onClick(_, itemIdx) {
-        selectItem(() => itemIdx);
+      onMouseEnter(_e, _item, index) {
+        if (dragging) {
+          // by computing range we make sure no intermediate items are missed when scrolling fast
+          addRangeToSelection(startIndex, index);
+        }
+      },
+      onMouseDown(e, _item, index) {
+        if (!dragging) {
+          if (e.ctrlKey || e.metaKey) {
+            addRangeToSelection(index, index, true);
+          } else if (e.shiftKey) {
+            selectItem(index, true);
+          } else {
+            selectItem(index);
+          }
+
+          dragging = true;
+          startIndex = index;
+
+          function onStopDragSelecting() {
+            dragging = false;
+            document.removeEventListener('mouseup', onStopDragSelecting);
+          }
+
+          document.addEventListener('mouseup', onStopDragSelecting);
+        }
       },
     };
-  }, [visibleColumns, selectItem]);
+  }, [visibleColumns, selectItem, addRangeToSelection]);
 
   const usesWrapping = useMemo(
     () => tableManager.columns.some((col) => col.wrap),
@@ -112,11 +150,13 @@ export function DataTable<T extends object>(props: DataTableProps<T>) {
           config={renderContext}
           value={item}
           itemIndex={index}
-          highlighted={index === tableManager.selection}
+          highlighted={
+            index === selection.current || selection.items.has(index)
+          }
         />
       );
     },
-    [tableManager.selection],
+    [selection],
   );
 
   /**
@@ -125,34 +165,34 @@ export function DataTable<T extends object>(props: DataTableProps<T>) {
   const onKeyDown = useCallback(
     (e: React.KeyboardEvent<any>) => {
       let handled = true;
+      const shiftPressed = e.shiftKey;
+      const outputSize = dataSource.output.length;
+      const windowSize = virtualizerRef.current!.virtualItems.length;
       switch (e.key) {
         case 'ArrowUp':
-          selectItem((idx) => (idx > 0 ? idx - 1 : 0));
+          selectItem((idx) => (idx > 0 ? idx - 1 : 0), shiftPressed);
           break;
         case 'ArrowDown':
-          selectItem((idx) =>
-            idx < dataSource.output.length - 1 ? idx + 1 : idx,
+          selectItem(
+            (idx) => (idx < outputSize - 1 ? idx + 1 : idx),
+            shiftPressed,
           );
           break;
         case 'Home':
-          selectItem(() => 0);
+          selectItem(0, shiftPressed);
           break;
         case 'End':
-          selectItem(() => dataSource.output.length - 1);
+          selectItem(outputSize - 1, shiftPressed);
           break;
         case ' ': // yes, that is a space
         case 'PageDown':
-          selectItem((idx) =>
-            Math.min(
-              dataSource.output.length - 1,
-              idx + virtualizerRef.current!.virtualItems.length - 1,
-            ),
+          selectItem(
+            (idx) => Math.min(outputSize - 1, idx + windowSize - 1),
+            shiftPressed,
           );
           break;
         case 'PageUp':
-          selectItem((idx) =>
-            Math.max(0, idx - virtualizerRef.current!.virtualItems.length - 1),
-          );
+          selectItem((idx) => Math.max(0, idx - windowSize + 1), shiftPressed);
           break;
         default:
           handled = false;
@@ -167,8 +207,8 @@ export function DataTable<T extends object>(props: DataTableProps<T>) {
 
   useLayoutEffect(
     function scrollSelectionIntoView() {
-      if (selection >= 0) {
-        virtualizerRef.current?.scrollToIndex(selection, {
+      if (selection && selection.current >= 0) {
+        virtualizerRef.current?.scrollToIndex(selection!.current, {
           align: 'auto',
         });
       }
@@ -193,14 +233,16 @@ export function DataTable<T extends object>(props: DataTableProps<T>) {
   );
 
   /** Context menu */
-  const contexMenu = !props._testHeight // don't render context menu in tests
-    ? // eslint-disable-next-line
-      useMemoize(tableContextMenuFactory, [
+  // TODO: support customizing context menu
+  const contexMenu = props._testHeight
+    ? undefined // don't render context menu in tests
+    : // eslint-disable-next-line
+    useMemoize(tableContextMenuFactory, [
         visibleColumns,
-        tableManager.addColumnFilter,
-      ])
-    : undefined;
-
+        addColumnFilter,
+        getSelectedItem,
+        getSelectedItems as any,
+      ]);
   return (
     <Layout.Container grow>
       <Layout.Top>
