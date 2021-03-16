@@ -96,7 +96,7 @@ export const DataSourceRenderer: <T extends object, C>(
   const parentRef = React.useRef<null | HTMLDivElement>(null);
 
   const virtualizer = useVirtual({
-    size: dataSource.output.length,
+    size: dataSource.view.size,
     parentRef,
     useObserver: _testHeight
       ? () => ({height: _testHeight, width: 1000})
@@ -148,7 +148,7 @@ export const DataSourceRenderer: <T extends object, C>(
         }
       }
 
-      dataSource.setOutputChangeListener((event) => {
+      dataSource.view.setListener((event) => {
         switch (event.type) {
           case 'reset':
             rerender(UpdatePrio.HIGH, true);
@@ -171,7 +171,7 @@ export const DataSourceRenderer: <T extends object, C>(
 
       return () => {
         unmounted = true;
-        dataSource.setOutputChangeListener(undefined);
+        dataSource.view.setListener(undefined);
       };
     },
     [dataSource, setForceUpdate, useFixedRowHeight, _testHeight],
@@ -185,15 +185,15 @@ export const DataSourceRenderer: <T extends object, C>(
   useLayoutEffect(function updateWindow() {
     const start = virtualizer.virtualItems[0]?.index ?? 0;
     const end = start + virtualizer.virtualItems.length;
-    if (start !== dataSource.windowStart && !followOutput.current) {
+    if (start !== dataSource.view.windowStart && !followOutput.current) {
       onRangeChange?.(
         start,
         end,
-        dataSource.output.length,
+        dataSource.view.size,
         parentRef.current?.scrollTop ?? 0,
       );
     }
-    dataSource.setWindow(start, end);
+    dataSource.view.setWindow(start, end);
   });
 
   /**
@@ -223,7 +223,7 @@ export const DataSourceRenderer: <T extends object, C>(
   useLayoutEffect(function scrollToEnd() {
     if (followOutput.current) {
       virtualizer.scrollToIndex(
-        dataSource.output.length - 1,
+        dataSource.view.size - 1,
         /* smooth is not typed by react-virtual, but passed on to the DOM as it should*/
         {
           align: 'end',
@@ -255,7 +255,7 @@ export const DataSourceRenderer: <T extends object, C>(
         onKeyDown={onKeyDown}
         tabIndex={0}>
         {virtualizer.virtualItems.map((virtualRow) => {
-          const entry = dataSource.getEntry(virtualRow.index);
+          const value = dataSource.view.get(virtualRow.index);
           // the position properties always change, so they are not part of the TableRow to avoid invalidating the memoized render always.
           // Also all row containers are renderd as part of same component to have 'less react' framework code in between*/}
           return (
@@ -270,7 +270,7 @@ export const DataSourceRenderer: <T extends object, C>(
                 transform: `translateY(${virtualRow.start}px)`,
               }}
               ref={useFixedRowHeight ? undefined : virtualRow.measureRef}>
-              {itemRenderer(entry.value, virtualRow.index, context)}
+              {itemRenderer(value, virtualRow.index, context)}
             </div>
           );
         })}

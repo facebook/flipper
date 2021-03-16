@@ -577,7 +577,7 @@ test('plugins can serialize dataSources', () => {
     },
   );
 
-  expect(instance.ds.records).toEqual([4, 5]);
+  expect(instance.ds.records()).toEqual([4, 5]);
   instance.ds.shift(1);
   instance.ds.append(6);
   expect(exportState()).toEqual({

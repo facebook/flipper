@@ -197,7 +197,7 @@ export function DataTable<T extends object>(
     (e: React.KeyboardEvent<any>) => {
       let handled = true;
       const shiftPressed = e.shiftKey;
-      const outputSize = dataSource.output.length;
+      const outputSize = dataSource.view.size;
       const windowSize = virtualizerRef.current!.virtualItems.length;
       switch (e.key) {
         case 'ArrowUp':
@@ -244,7 +244,7 @@ export function DataTable<T extends object>(
 
   useEffect(
     function updateFilter() {
-      dataSource.setFilter(
+      dataSource.view.setFilter(
         computeDataTableFilter(state.searchValue, state.columns),
       );
     },
@@ -257,11 +257,11 @@ export function DataTable<T extends object>(
   useEffect(
     function updateSorting() {
       if (state.sorting === undefined) {
-        dataSource.setSortBy(undefined);
-        dataSource.setReversed(false);
+        dataSource.view.setSortBy(undefined);
+        dataSource.view.setReversed(false);
       } else {
-        dataSource.setSortBy(state.sorting.key);
-        dataSource.setReversed(state.sorting.direction === 'desc');
+        dataSource.view.setSortBy(state.sorting.key);
+        dataSource.view.setReversed(state.sorting.direction === 'desc');
       }
     },
     [dataSource, state.sorting],
@@ -342,7 +342,7 @@ export function DataTable<T extends object>(
       savePreferences(stateRef.current, lastOffset.current);
       // if the component unmounts, we reset the SFRW pipeline to
       // avoid wasting resources in the background
-      dataSource.reset();
+      dataSource.view.reset();
       // clean ref
       if (props.tableManagerRef) {
         (props.tableManagerRef as MutableRefObject<any>).current = undefined;

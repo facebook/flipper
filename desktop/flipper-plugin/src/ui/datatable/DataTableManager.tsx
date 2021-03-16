@@ -342,7 +342,7 @@ export function getSelectedItem<T>(
 ): T | undefined {
   return selection.current < 0
     ? undefined
-    : dataSource.getItem(selection.current);
+    : dataSource.view.get(selection.current);
 }
 
 export function getSelectedItems<T>(
@@ -351,7 +351,7 @@ export function getSelectedItems<T>(
 ): T[] {
   return [...selection.items]
     .sort()
-    .map((i) => dataSource.getItem(i))
+    .map((i) => dataSource.view.get(i))
     .filter(Boolean) as any[];
 }
 

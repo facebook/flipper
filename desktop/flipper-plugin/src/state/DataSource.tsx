@@ -95,132 +95,93 @@ export class DataSource<
 > implements Persistable {
   private nextId = 0;
   private _records: Entry<T>[] = [];
-
   private _recordsById: Map<KEY_TYPE, T> = new Map();
   private keyAttribute: undefined | keyof T;
   private idToIndex: Map<KEY_TYPE, number> = new Map();
-  // if we shift the window, we increase shiftOffset, rather than remapping all values
+
+  // if we shift the window, we increase shiftOffset to correct idToIndex results, rather than remapping all values
   private shiftOffset = 0;
-  limit = defaultLimit;
-
-  private sortBy: undefined | ((a: T) => Primitive);
-
-  private reverse: boolean = false;
-
-  private filter?: (value: T) => boolean;
-
-  private dataUpdateQueue: DataEvent<T>[] = [];
-
-  windowStart = 0;
-  windowEnd = 0;
-
-  private outputChangeListener?: (change: OutputChange) => void;
 
   /**
-   * Exposed for testing.
-   * This is the base view data, that is filtered and sorted, but not reversed or windowed
+   * The maximum amount of records this DataSource can have
    */
-  output: Entry<T>[] = [];
+  public limit = defaultLimit;
 
   /**
-   * Returns a defensive copy of the stored records.
-   * This is a O(n) operation! Prefer using .size and .get instead!
+   * The default view on this data source. A view applies
+   * sorting, filtering and windowing to get more constrained output.
+   *
+   * Additional views can created through the fork method.
    */
-  get records(): readonly T[] {
-    return this._records.map(unwrap);
-  }
-
-  serialize() {
-    return this.records;
-  }
-
-  deserialize(value: any[]) {
-    this.clear();
-    value.forEach((record) => {
-      this.append(record);
-    });
-  }
-
-  /**
-   * returns a direct reference to the stored records as lookup map,
-   * based on the key attribute set.
-   * The colletion should be treated as readonly and mutable (it might change over time).
-   * Create a defensive copy if needed.
-   */
-  get recordsById(): ReadonlyMap<KEY_TYPE, T> {
-    this.assertKeySet();
-    return this._recordsById;
-  }
+  public readonly view: DataSourceView<T>;
 
   constructor(keyAttribute: KEY | undefined) {
     this.keyAttribute = keyAttribute;
-    this.setSortBy(undefined);
+    this.view = new DataSourceView<T>(this);
   }
 
   public get size() {
     return this._records.length;
   }
 
-  public getRecord(index: number): T {
-    return this._records[index]?.value;
-  }
-
-  public get outputSize() {
-    return this.output.length;
-  }
-
   /**
-   * Returns a defensive copy of the current output.
-   * Sort, filter, reverse and are applied.
-   * Start and end behave like slice, and default to the currently active window.
+   * Returns a defensive copy of the stored records.
+   * This is a O(n) operation! Prefer using .size and .get instead if only a subset is needed.
    */
-  public getOutput(
-    start = this.windowStart,
-    end = this.windowEnd,
-  ): readonly T[] {
-    if (this.reverse) {
-      return this.output
-        .slice(this.output.length - end, this.output.length - start)
-        .reverse()
-        .map((e) => e.value);
-    } else {
-      return this.output.slice(start, end).map((e) => e.value);
-    }
+  public records(): readonly T[] {
+    return this._records.map(unwrap);
   }
 
-  private assertKeySet() {
-    if (!this.keyAttribute) {
-      throw new Error(
-        'No key has been set. Records cannot be looked up by key',
-      );
-    }
+  public get(index: number) {
+    return unwrap(this._records[index]);
   }
 
-  private getKey(value: T): KEY_TYPE;
-  private getKey(value: any): any {
+  public getById(key: KEY_TYPE) {
     this.assertKeySet();
-    const key = value[this.keyAttribute!];
-    if ((typeof key === 'string' || typeof key === 'number') && key !== '') {
-      return key;
-    }
-    throw new Error(`Invalid key value: '${key}'`);
+    return this._recordsById.get(key);
+  }
+
+  public keys(): IterableIterator<KEY_TYPE> {
+    this.assertKeySet();
+    return this._recordsById.keys();
+  }
+
+  public entries(): IterableIterator<[KEY_TYPE, T]> {
+    this.assertKeySet();
+    return this._recordsById.entries();
+  }
+
+  public [Symbol.iterator](): IterableIterator<T> {
+    const self = this;
+    let offset = 0;
+    return {
+      next() {
+        offset++;
+        if (offset > self.size) {
+          return {done: true, value: undefined};
+        } else {
+          return {
+            value: self._records[offset - 1].value,
+          };
+        }
+      },
+      [Symbol.iterator]() {
+        return this;
+      },
+    };
   }
 
   /**
-   * Returns the index of a specific key in the *source* set
+   * Returns the index of a specific key in the *records* set.
+   * Returns -1 if the record wansn't found
    */
-  indexOfKey(key: KEY_TYPE): number {
+  public getIndexOfKey(key: KEY_TYPE): number {
     this.assertKeySet();
     const stored = this.idToIndex.get(key);
     return stored === undefined ? -1 : stored + this.shiftOffset;
   }
 
-  private storeIndexOfKey(key: KEY_TYPE, index: number) {
-    // de-normalize the index, so that on  later look ups its corrected again
-    this.idToIndex.set(key, index - this.shiftOffset);
-  }
-
-  append(value: T) {
+  public append(value: T) {
     if (this._records.length >= this.limit) {
       // we're full! let's free up some space
       this.shift(Math.ceil(this.limit * dropFactor));
@@ -236,7 +197,8 @@ export class DataSource<
     const entry = {
       value,
       id: ++this.nextId,
-      visible: this.filter ? this.filter(value) : true,
+      // once we have multiple views, the following fields should be stored per view
+      visible: true,
       approxIndex: -1,
     };
     this._records.push(entry);
@@ -250,11 +212,11 @@ export class DataSource<
    * Updates or adds a record. Returns `true` if the record already existed.
    * Can only be used if a key is used.
    */
-  upsert(value: T): boolean {
+  public upsert(value: T): boolean {
     this.assertKeySet();
     const key = this.getKey(value);
     if (this.idToIndex.has(key)) {
-      this.update(this.indexOfKey(key), value);
+      this.update(this.getIndexOfKey(key), value);
       return true;
     } else {
       this.append(value);
@@ -266,7 +228,7 @@ export class DataSource<
    * Replaces an item in the base data collection.
    * Note that the index is based on the insertion order, and not based on the current view
    */
-  update(index: number, value: T) {
+  public update(index: number, value: T) {
     const entry = this._records[index];
     const oldValue = entry.value;
     if (value === oldValue) {
@@ -274,11 +236,16 @@ export class DataSource<
     }
     const oldVisible = entry.visible;
     entry.value = value;
-    entry.visible = this.filter ? this.filter(value) : true;
     if (this.keyAttribute) {
       const key = this.getKey(value);
       const currentKey = this.getKey(oldValue);
       if (currentKey !== key) {
+        const existingIndex = this.getIndexOfKey(key);
+        if (existingIndex !== -1 && existingIndex !== index) {
+          throw new Error(
+            `Trying to insert duplicate key '${key}', which already exist in the collection`,
+          );
+        }
         this._recordsById.delete(currentKey);
         this.idToIndex.delete(currentKey);
       }
@@ -299,7 +266,7 @@ export class DataSource<
    *
    * Warning: this operation can be O(n) if a key is set
    */
-  remove(index: number) {
+  public delete(index: number) {
     if (index < 0 || index >= this._records.length) {
       throw new Error('Out of bounds: ' + index);
     }
@@ -332,13 +299,13 @@ export class DataSource<
    *
    * Warning: this operation can be O(n) if a key is set
    */
-  removeByKey(keyValue: KEY_TYPE): boolean {
+  public deleteByKey(keyValue: KEY_TYPE): boolean {
     this.assertKeySet();
-    const index = this.indexOfKey(keyValue);
+    const index = this.getIndexOfKey(keyValue);
     if (index === -1) {
       return false;
     }
-    this.remove(index);
+    this.delete(index);
     return true;
   }
 
@@ -346,7 +313,7 @@ export class DataSource<
    * Removes the first N entries.
    * @param amount
    */
-  shift(amount: number) {
+  public shift(amount: number) {
     amount = Math.min(amount, this._records.length);
     if (amount === this._records.length) {
       this.clear();
@@ -365,7 +332,7 @@ export class DataSource<
     }
 
     if (
-      this.sortBy &&
+      this.view.isSorted &&
       removed.length > 10 &&
       removed.length > shiftRebuildTreshold * this._records.length
     ) {
@@ -373,7 +340,7 @@ export class DataSource<
       // let's fallback to the async processing of all data instead
       // MWE: there is a risk here that rebuilding is too blocking, as this might happen
       // in background when new data arrives, and not explicitly on a user interaction
-      this.rebuildOutput();
+      this.view.rebuild();
     } else {
       this.emitDataEvent({
         type: 'shift',
@@ -383,13 +350,182 @@ export class DataSource<
     }
   }
 
-  setWindow(start: number, end: number) {
+  /**
+   * The clear operation removes any records stored, but will keep the current view preferences such as sorting and filtering
+   */
+  public clear() {
+    this._records = [];
+    this._recordsById = new Map();
+    this.shiftOffset = 0;
+    this.idToIndex = new Map();
+    this.view.rebuild();
+  }
+
+  /**
+   * Returns a fork of this dataSource, that shares the source data with this dataSource,
+   * but has it's own FSRW pipeline, to allow multiple views on the same data
+   */
+  public fork(): DataSourceView<T> {
+    throw new Error(
+      'Not implemented. Please contact oncall if this feature is needed',
+    );
+  }
+
+  private assertKeySet() {
+    if (!this.keyAttribute) {
+      throw new Error(
+        'No key has been set. Records cannot be looked up by key',
+      );
+    }
+  }
+
+  private getKey(value: T): KEY_TYPE;
+  private getKey(value: any): any {
+    this.assertKeySet();
+    const key = value[this.keyAttribute!];
+    if ((typeof key === 'string' || typeof key === 'number') && key !== '') {
+      return key;
+    }
+    throw new Error(`Invalid key value: '${key}'`);
+  }
+
+  private storeIndexOfKey(key: KEY_TYPE, index: number) {
+    // de-normalize the index, so that on  later look ups its corrected again
+    this.idToIndex.set(key, index - this.shiftOffset);
+  }
+
+  private emitDataEvent(event: DataEvent<T>) {
+    // Optimization: potentially we could schedule this to happen async,
+    // using a queue,
+    // or only if there is an active view (although that could leak memory)
+    this.view.processEvent(event);
+  }
+
+  /**
+   * @private
+   */
+  serialize(): readonly T[] {
+    return this.records();
+  }
+
+  /**
+   * @private
+   */
+  deserialize(value: any[]) {
+    this.clear();
+    value.forEach((record) => {
+      this.append(record);
+    });
+  }
+}
+
+type CreateDataSourceOptions<T, K extends keyof T> = {
+  /**
+   * If a key is set, the given field of the records is assumed to be unique,
+   * and it's value can be used to perform lookups and upserts.
+   */
+  key?: K;
+  /**
+   * The maximum amount of records that this DataSource will store.
+   * If the limit is exceeded, the oldest records will automatically be dropped to make place for the new ones
+   */
+  limit?: number;
+  /**
+   * Should this state persist when exporting a plugin?
+   * If set, the dataSource will be saved / loaded under the key provided
+   */
+  persist?: string;
+};
+
+export function createDataSource<T, KEY extends keyof T = any>(
+  initialSet: T[],
+  options: CreateDataSourceOptions<T, KEY>,
+): DataSource<T, KEY, ExtractKeyType<T, KEY>>;
+export function createDataSource<T>(
+  initialSet?: T[],
+): DataSource<T, never, never>;
+export function createDataSource<T, KEY extends keyof T>(
+  initialSet: T[] = [],
+  options?: CreateDataSourceOptions<T, KEY>,
+): DataSource<T, any, any> {
+  const ds = new DataSource<T, KEY>(options?.key);
+  if (options?.limit !== undefined) {
+    ds.limit = options.limit;
+  }
+  registerStorageAtom(options?.persist, ds);
+  initialSet.forEach((value) => ds.append(value));
+  return ds;
+}
+
+function unwrap<T>(entry: Entry<T>): T {
+  return entry?.value;
+}
+
+class DataSourceView<T> {
+  public readonly datasource: DataSource<T>;
+  private sortBy: undefined | ((a: T) => Primitive) = undefined;
+  private reverse: boolean = false;
+  private filter?: (value: T) => boolean = undefined;
+
+  /**
+   * @readonly
+   */
+  public windowStart = 0;
+  /**
+   * @readonly
+   */
+  public windowEnd = 0;
+
+  private outputChangeListener?: (change: OutputChange) => void;
+
+  /**
+   * This is the base view data, that is filtered and sorted, but not reversed or windowed
+   */
+  private _output: Entry<T>[] = [];
+
+  constructor(datasource: DataSource<T, any, any>) {
+    this.datasource = datasource;
+  }
+
+  public get size() {
+    return this._output.length;
+  }
+
+  public get isSorted() {
+    return !!this.sortBy;
+  }
+
+  public get isFiltered() {
+    return !!this.filter;
+  }
+
+  public get isReversed() {
+    return this.reverse;
+  }
+
+  /**
+   * Returns a defensive copy of the current output.
+   * Sort, filter, reverse and are applied.
+   * Start and end behave like slice, and default to the currently active window.
+   */
+  public output(start = this.windowStart, end = this.windowEnd): readonly T[] {
+    if (this.reverse) {
+      return this._output
+        .slice(this._output.length - end, this._output.length - start)
+        .reverse()
+        .map((e) => e.value);
+    } else {
+      return this._output.slice(start, end).map((e) => e.value);
+    }
+  }
+
+  public setWindow(start: number, end: number) {
     this.windowStart = start;
     this.windowEnd = end;
   }
 
-  setOutputChangeListener(
-    listener: typeof DataSource['prototype']['outputChangeListener'],
+  public setListener(
+    listener: typeof DataSourceView['prototype']['outputChangeListener'],
   ) {
     if (this.outputChangeListener && listener) {
       console.warn('outputChangeListener already set');
@@ -397,7 +533,7 @@ export class DataSource<
     this.outputChangeListener = listener;
   }
 
-  setSortBy(sortBy: undefined | keyof T | ((a: T) => Primitive)) {
+  public setSortBy(sortBy: undefined | keyof T | ((a: T) => Primitive)) {
     if (this.sortBy === sortBy) {
       return;
     }
@@ -411,40 +547,25 @@ export class DataSource<
       });
     }
     this.sortBy = sortBy as any;
-    this.rebuildOutput();
+    this.rebuild();
   }
 
-  setFilter(filter: undefined | ((value: T) => boolean)) {
+  public setFilter(filter: undefined | ((value: T) => boolean)) {
     if (this.filter !== filter) {
       this.filter = filter;
-      this.rebuildOutput();
+      this.rebuild();
     }
   }
 
-  toggleReversed() {
+  public toggleReversed() {
     this.setReversed(!this.reverse);
   }
 
-  setReversed(reverse: boolean) {
+  public setReversed(reverse: boolean) {
     if (this.reverse !== reverse) {
       this.reverse = reverse;
-      this.notifyReset(this.output.length);
+      this.notifyReset(this._output.length);
     }
-  }
-
-  /**
-   * The clear operation removes any records stored, but will keep the current view preferences such as sorting and filtering
-   */
-  clear() {
-    this.windowStart = 0;
-    this.windowEnd = 0;
-    this._records = [];
-    this._recordsById = new Map();
-    this.shiftOffset = 0;
-    this.idToIndex = new Map();
-    this.dataUpdateQueue = [];
-    this.output = [];
-    this.notifyReset(0);
   }
 
   /**
@@ -454,35 +575,37 @@ export class DataSource<
     this.sortBy = undefined;
     this.reverse = false;
     this.filter = undefined;
-    this.rebuildOutput();
-  }
-
-  /**
-   * Returns a fork of this dataSource, that shares the source data with this dataSource,
-   * but has it's own FSRW pipeline, to allow multiple views on the same data
-   */
-  fork(): DataSource<T> {
-    throw new Error(
-      'Not implemented. Please contact oncall if this feature is needed',
-    );
-  }
-
-  private emitDataEvent(event: DataEvent<T>) {
-    this.dataUpdateQueue.push(event);
-    // TODO: schedule
-    this.processEvents();
+    this.windowStart = 0;
+    this.windowEnd = 0;
+    this.rebuild();
   }
 
   private normalizeIndex(viewIndex: number): number {
-    return this.reverse ? this.output.length - 1 - viewIndex : viewIndex;
+    return this.reverse ? this._output.length - 1 - viewIndex : viewIndex;
   }
 
-  getItem(viewIndex: number): T {
-    return this.getEntry(viewIndex)?.value;
+  public get(viewIndex: number): T {
+    return this._output[this.normalizeIndex(viewIndex)]?.value;
   }
 
-  getEntry(viewIndex: number): Entry<T> {
-    return this.output[this.normalizeIndex(viewIndex)];
+  public [Symbol.iterator](): IterableIterator<T> {
+    const self = this;
+    let offset = this.windowStart;
+    return {
+      next() {
+        offset++;
+        if (offset > self.windowEnd || offset > self.size) {
+          return {done: true, value: undefined};
+        } else {
+          return {
+            value: self.get(offset - 1),
+          };
+        }
+      },
+      [Symbol.iterator]() {
+        return this;
+      },
+    };
   }
 
   private notifyItemUpdated(viewIndex: number) {
@@ -508,12 +631,12 @@ export class DataSource<
     if (this.reverse && delta < 0) {
       viewIndex -= delta; // we need to correct for normalize already using the new length after applying this change
     }
-    // TODO: for 'before' shifts, should the window be adjusted automatically?
+    // Idea: we could add an option to automatically shift the window for before events.
     this.outputChangeListener({
       type: 'shift',
       delta,
       index: viewIndex,
-      newCount: this.output.length,
+      newCount: this._output.length,
       location:
         viewIndex < this.windowStart
           ? 'before'
@@ -530,16 +653,15 @@ export class DataSource<
     });
   }
 
-  private processEvents() {
-    const events = this.dataUpdateQueue.splice(0);
-    events.forEach(this.processEvent);
-  }
-
-  private processEvent = (event: DataEvent<T>) => {
-    const {output, sortBy, filter} = this;
+  /**
+   * @private
+   */
+  processEvent(event: DataEvent<T>) {
+    const {_output: output, sortBy, filter} = this;
     switch (event.type) {
       case 'append': {
         const {entry} = event;
+        entry.visible = filter ? filter(entry.value) : true;
         if (!entry.visible) {
           // not in filter? skip this entry
           return;
@@ -556,6 +678,7 @@ export class DataSource<
       }
       case 'update': {
         const {entry} = event;
+        entry.visible = filter ? filter(entry.value) : true;
         // short circuit; no view active so update straight away
         if (!filter && !sortBy) {
           output[event.index].approxIndex = event.index;
@@ -624,10 +747,10 @@ export class DataSource<
       default:
         throw new Error('unknown event type');
     }
-  };
+  }
 
   private processRemoveEvent(index: number, entry: Entry<T>) {
-    const {output, sortBy, filter} = this;
+    const {_output: output, sortBy, filter} = this;
 
     // filter active, and not visible? short circuilt
     if (!entry.visible) {
@@ -645,7 +768,11 @@ export class DataSource<
     }
   }
 
-  private rebuildOutput() {
+  /**
+   * Rebuilds the entire view. Typically there should be no need to call this manually
+   * @private
+   */
+  rebuild() {
     // Pending on the size, should we batch this in smaller non-blocking steps,
     // which we update in a double-buffering mechanism, report progress, and swap out when done?
     //
@@ -654,12 +781,14 @@ export class DataSource<
     // See also comment below
     const {sortBy, filter, sortHelper} = this;
     // copy base array or run filter (with side effecty update of visible)
+    // @ts-ignore prevent making _record public
+    const records: Entry<T>[] = this.datasource._records;
     let output = filter
-      ? this._records.filter((entry) => {
+      ? records.filter((entry) => {
           entry.visible = filter(entry.value);
           return entry.visible;
         })
-      : this._records.slice();
+      : records.slice();
     if (sortBy) {
       // Pending on the size, should we batch this in smaller steps?
       // The following sorthing method can be taskified, however,
@@ -674,7 +803,7 @@ export class DataSource<
       output = lodashSort(output, sortHelper); // uses array.sort under the hood
     }
 
-    this.output = output;
+    this._output = output;
     this.notifyReset(output.length);
   }
 
@@ -682,7 +811,7 @@ export class DataSource<
     this.sortBy ? this.sortBy(a.value) : a.id;
 
   private getSortedIndex(entry: Entry<T>, oldValue: T) {
-    const {output} = this;
+    const {_output: output} = this;
     if (output[entry.approxIndex] === entry) {
       // yay!
       return entry.approxIndex;
@@ -712,54 +841,12 @@ export class DataSource<
   private insertSorted(entry: Entry<T>) {
     // apply sorting
     const insertionIndex = sortedLastIndexBy(
-      this.output,
+      this._output,
       entry,
       this.sortHelper,
     );
     entry.approxIndex = insertionIndex;
-    this.output.splice(insertionIndex, 0, entry);
+    this._output.splice(insertionIndex, 0, entry);
     this.notifyItemShift(insertionIndex, 1);
   }
-}
-
-type CreateDataSourceOptions<T, K extends keyof T> = {
-  /**
-   * If a key is set, the given field of the records is assumed to be unique,
-   * and it's value can be used to perform lookups and upserts.
-   */
-  key?: K;
-  /**
-   * The maximum amount of records that this DataSource will store.
-   * If the limit is exceeded, the oldest records will automatically be dropped to make place for the new ones
-   */
-  limit?: number;
-  /**
-   * Should this state persist when exporting a plugin?
-   * If set, the dataSource will be saved / loaded under the key provided
-   */
-  persist?: string;
-};
-
-export function createDataSource<T, KEY extends keyof T = any>(
-  initialSet: T[],
-  options: CreateDataSourceOptions<T, KEY>,
-): DataSource<T, KEY, ExtractKeyType<T, KEY>>;
-export function createDataSource<T>(
-  initialSet?: T[],
-): DataSource<T, never, never>;
-export function createDataSource<T, KEY extends keyof T>(
-  initialSet: T[] = [],
-  options?: CreateDataSourceOptions<T, KEY>,
-): DataSource<T, any, any> {
-  const ds = new DataSource<T, KEY>(options?.key);
-  if (options?.limit !== undefined) {
-    ds.limit = options.limit;
-  }
-  registerStorageAtom(options?.persist, ds);
-  initialSet.forEach((value) => ds.append(value));
-  return ds;
-}
-
-function unwrap<T>(entry: Entry<T>): T {
-  return entry.value;
 }

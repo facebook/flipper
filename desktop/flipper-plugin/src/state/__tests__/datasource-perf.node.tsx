@@ -41,7 +41,7 @@ type DataSourceish = DataSource<Todo> & FakeDataSource<Todo>;
 test.skip('run perf test', () => {
   if (!global.gc) {
     console.warn(
-      'Warning: garbage collector not available, skipping this test',
+      'Warning: garbage collector not available, skipping this test. Make sure to start the test suite using `yarn watch`',
     );
     return;
   }
@@ -73,10 +73,10 @@ test.skip('run perf test', () => {
   };
 
   Object.entries(datasources).forEach(([name, ds]) => {
-    ds.setWindow(0, 1000000);
+    ds.view.setWindow(0, 1000000);
     if (name.includes('sorted')) {
-      ds.setFilter(defaultFilter);
-      ds.setSortBy('title');
+      ds.view.setFilter(defaultFilter);
+      ds.view.setSortBy('title');
     }
   });
 
@@ -90,7 +90,7 @@ test.skip('run perf test', () => {
         // to 'render' we need to know the end result (this mimics a lazy evaluation of filter / sort)
         // note that this skews the test a bit in favor of fake data source,
         // as DataSource would *always* keep things sorted/ filtered, but doing that would explode the test for append / update :)
-        ds.buildOutput();
+        ds.view.buildOutput();
       }
       //   global.gc?.(); // to cleanup our createdmess as part of the measurement
       const duration = Date.now() - start;
@@ -119,7 +119,7 @@ test.skip('run perf test', () => {
   });
 
   measure('remove', (ds) => {
-    ds.remove(99);
+    ds.delete(99);
   });
 
   measure('shift', (ds) => {
@@ -127,11 +127,11 @@ test.skip('run perf test', () => {
   });
 
   measure('change sorting', (ds) => {
-    ds.setSortBy('id');
+    ds.view.setSortBy('id');
   });
 
   measure('change filter', (ds) => {
-    ds.setFilter((t) => t.title.includes('23')); // 23 does not occur in original text
+    ds.view.setFilter((t) => t.title.includes('23')); // 23 does not occur in original text
   });
 
   const sum: any = {};
@@ -159,37 +159,39 @@ class FakeDataSource<T> {
 
   constructor(initial: T[]) {
     this.data = initial;
-    this.buildOutput();
+    this.view.buildOutput();
   }
 
-  setWindow(_start: number, _end: number) {
-    // noop
-  }
+  view = {
+    setWindow: (_start: number, _end: number) => {
+      // noop
+    },
 
-  setFilter(filter: (t: T) => boolean) {
-    this.filterFn = filter;
-  }
+    setFilter: (filter: (t: T) => boolean) => {
+      this.filterFn = filter;
+    },
 
-  setSortBy(k: keyof T) {
-    this.sortAttr = k;
-  }
+    setSortBy: (k: keyof T) => {
+      this.sortAttr = k;
+    },
 
-  buildOutput() {
-    const filtered = this.filterFn
-      ? this.data.filter(this.filterFn)
-      : this.data;
-    const sorted = this.sortAttr
-      ? filtered
-          .slice()
-          .sort((a: any, b: any) =>
-            String.prototype.localeCompare.call(
-              a[this.sortAttr!],
-              b[this.sortAttr!],
-            ),
-          )
-      : filtered;
-    this.output = sorted;
-  }
+    buildOutput: () => {
+      const filtered = this.filterFn
+        ? this.data.filter(this.filterFn)
+        : this.data;
+      const sorted = this.sortAttr
+        ? filtered
+            .slice()
+            .sort((a: any, b: any) =>
+              String.prototype.localeCompare.call(
+                a[this.sortAttr!],
+                b[this.sortAttr!],
+              ),
+            )
+        : filtered;
+      this.output = sorted;
+    },
+  };
 
   append(v: T) {
     this.data = [...this.data, v];
