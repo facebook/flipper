@@ -255,7 +255,7 @@
     "test-electron": "yarn build:tsc && jest --testMatch=\"**/**.electron\\.(js|jsx|ts|tsx)\" --testEnvironment=@jest-runner/electron/environment --runner=@jest-runner/electron",
     "test-with-device": "yarn build:tsc && USE_ELECTRON_STUBS=1 jest --testMatch=\"**/**.device\\.(js|jsx|ts|tsx)\" --detectOpenHandles",
     "test:debug": "yarn build:tsc && node --inspect node_modules/.bin/jest --runInBand",
-    "watch": "jest --watch"
+    "watch": "node --expose-gc ./node_modules/.bin/jest --watch"
   },
   "version": "0.80.0",
   "workspaces": {
