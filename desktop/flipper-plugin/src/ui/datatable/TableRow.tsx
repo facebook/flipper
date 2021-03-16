@@ -70,18 +70,22 @@ const TableBodyColumnContainer = styled.div<{
 TableBodyColumnContainer.displayName = 'TableRow:TableBodyColumnContainer';
 
 type Props = {
-  config: RenderContext;
+  config: RenderContext<any>;
   highlighted: boolean;
-  row: any;
+  value: any;
+  itemIndex: number;
 };
 
 export const TableRow = memo(function TableRow(props: Props) {
-  const {config, highlighted, row} = props;
+  const {config, highlighted, value: row} = props;
   return (
     <TableBodyRowContainer
       highlighted={highlighted}
       data-key={row.key}
-      className="ant-table-row">
+      onClick={(e) => {
+        e.stopPropagation();
+        props.config.onClick(props.value, props.itemIndex);
+      }}>
       {config.columns
         .filter((col) => col.visible)
         .map((col) => {

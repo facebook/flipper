@@ -69,9 +69,14 @@ type StateOptions = {
 
 export function createState<T>(
   initialValue: T,
+  options?: StateOptions,
+): Atom<T>;
+export function createState<T>(): Atom<T | undefined>;
+export function createState(
+  initialValue: any = undefined,
   options: StateOptions = {},
-): Atom<T> {
-  const atom = new AtomValue<T>(initialValue);
+): Atom<any> {
+  const atom = new AtomValue(initialValue);
   if (getCurrentPluginInstance() && options.persist) {
     const {rootStates} = getCurrentPluginInstance()!;
     if (rootStates[options.persist]) {

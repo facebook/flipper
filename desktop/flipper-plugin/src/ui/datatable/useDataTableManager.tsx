@@ -27,11 +27,14 @@ export type TableManager = ReturnType<typeof useDataTableManager>;
 export function useDataTableManager<T extends object>(
   dataSource: DataSource<T>,
   defaultColumns: DataTableColumn<T>[],
+  onSelect?: (item: T | undefined, index: number) => void,
 ) {
-  // TODO: restore from local storage
   const [columns, setEffectiveColumns] = useState(
     computeInitialColumns(defaultColumns),
   );
+  // TODO: move selection with shifts with index < selection?
+  // TODO: clear selection if out of range
+  const [selection, setSelection] = useState(-1);
   const [sorting, setSorting] = useState<Sorting | undefined>(undefined);
   const [searchValue, setSearchValue] = useState('');
   const visibleColumns = useMemo(
@@ -107,6 +110,21 @@ export function useDataTableManager<T extends object>(
     );
   }, []);
 
+  const selectItem = useCallback(
+    (updater: (currentIndex: number) => number) => {
+      setSelection((currentIndex) => {
+        const newIndex = updater(currentIndex);
+        const item =
+          newIndex >= 0 && newIndex < dataSource.output.length
+            ? dataSource.getItem(newIndex)
+            : undefined;
+        onSelect?.(item, newIndex);
+        return newIndex;
+      });
+    },
+    [setSelection, onSelect, dataSource],
+  );
+
   useEffect(
     function applyFilter() {
       dataSource.setFilter(currentFilter);
@@ -131,6 +149,9 @@ export function useDataTableManager<T extends object>(
     toggleColumnVisibility,
     /** Active search value */
     setSearchValue,
+    /** current selection, describes the index index in the datasources's current output (not window) */
+    selection,
+    selectItem,
   };
 }
 

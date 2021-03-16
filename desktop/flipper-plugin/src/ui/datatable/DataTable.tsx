@@ -7,13 +7,20 @@
  * @format
  */
 
-import React, {MutableRefObject, RefObject, useMemo} from 'react';
+import React, {
+  useCallback,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  RefObject,
+  MutableRefObject,
+} from 'react';
 import {TableRow, DEFAULT_ROW_HEIGHT} from './TableRow';
 import {DataSource} from '../../state/datasource/DataSource';
 import {Layout} from '../Layout';
 import {TableHead} from './TableHead';
 import {Percentage} from '../utils/widthUtils';
-import {DataSourceRenderer} from './DataSourceRenderer';
+import {DataSourceRenderer, DataSourceVirtualizer} from './DataSourceRenderer';
 import {useDataTableManager, TableManager} from './useDataTableManager';
 import {TableSearch} from './TableSearch';
 
@@ -23,6 +30,15 @@ interface DataTableProps<T = any> {
   autoScroll?: boolean;
   extraActions?: React.ReactElement;
   // custom onSearch(text, row) option?
+  /**
+   * onSelect event
+   * @param item currently selected item
+   * @param index index of the selected item in the datasources' output.
+   * Note that the index could potentially refer to a different item if rendering is 'behind' and items have shifted
+   */
+  onSelect?(item: T | undefined, index: number): void;
+  // multiselect?: true
+  // onMultiSelect
   tableManagerRef?: RefObject<TableManager>;
   _testHeight?: number; // exposed for unit testing only
 }
@@ -38,25 +54,111 @@ export type DataTableColumn<T = any> = {
   visible?: boolean;
 };
 
-export interface RenderingConfig<T = any> {
+export interface RenderContext<T = any> {
   columns: DataTableColumn<T>[];
+  onClick(item: T, itemId: number): void;
 }
 
 export function DataTable<T extends object>(props: DataTableProps<T>) {
-  const tableManager = useDataTableManager<T>(props.dataSource, props.columns);
+  const {dataSource} = props;
+  const virtualizerRef = useRef<DataSourceVirtualizer | undefined>();
+  const tableManager = useDataTableManager<T>(
+    dataSource,
+    props.columns,
+    props.onSelect,
+  );
   if (props.tableManagerRef) {
     (props.tableManagerRef as MutableRefObject<TableManager>).current = tableManager;
   }
+  const {visibleColumns, selectItem, selection} = tableManager;
 
-  const renderingConfig = useMemo(() => {
+  const renderingConfig = useMemo<RenderContext<T>>(() => {
     return {
-      columns: tableManager.visibleColumns,
+      columns: visibleColumns,
+      onClick(_, itemIdx) {
+        selectItem(() => itemIdx);
+      },
     };
-  }, [tableManager.visibleColumns]);
+  }, [visibleColumns, selectItem]);
 
   const usesWrapping = useMemo(
     () => tableManager.columns.some((col) => col.wrap),
     [tableManager.columns],
+  );
+
+  const itemRenderer = useCallback(
+    function itemRenderer(
+      item: any,
+      index: number,
+      renderContext: RenderContext<T>,
+    ) {
+      return (
+        <TableRow
+          key={index}
+          config={renderContext}
+          value={item}
+          itemIndex={index}
+          highlighted={index === tableManager.selection}
+        />
+      );
+    },
+    [tableManager.selection],
+  );
+
+  /**
+   * Keyboard / selection handling
+   */
+  const onKeyDown = useCallback(
+    (e: React.KeyboardEvent<any>) => {
+      let handled = true;
+      switch (e.key) {
+        case 'ArrowUp':
+          selectItem((idx) => (idx > 0 ? idx - 1 : 0));
+          break;
+        case 'ArrowDown':
+          selectItem((idx) =>
+            idx < dataSource.output.length - 1 ? idx + 1 : idx,
+          );
+          break;
+        case 'Home':
+          selectItem(() => 0);
+          break;
+        case 'End':
+          selectItem(() => dataSource.output.length - 1);
+          break;
+        case 'PageDown':
+          selectItem((idx) =>
+            Math.min(
+              dataSource.output.length - 1,
+              idx + virtualizerRef.current!.virtualItems.length - 1,
+            ),
+          );
+          break;
+        case 'PageUp':
+          selectItem((idx) =>
+            Math.max(0, idx - virtualizerRef.current!.virtualItems.length - 1),
+          );
+          break;
+        default:
+          handled = false;
+      }
+      if (handled) {
+        e.stopPropagation();
+        e.preventDefault();
+      }
+    },
+    [selectItem, dataSource],
+  );
+
+  useLayoutEffect(
+    function scrollSelectionIntoView() {
+      if (selection >= 0) {
+        virtualizerRef.current?.scrollToIndex(selection, {
+          align: 'auto',
+        });
+      }
+    },
+    [selection],
   );
 
   return (
@@ -76,30 +178,17 @@ export function DataTable<T extends object>(props: DataTableProps<T>) {
           onColumnSort={tableManager.sortColumn}
         />
       </Layout.Container>
-      <DataSourceRenderer<any, RenderContext>
-        dataSource={props.dataSource}
+      <DataSourceRenderer<T, RenderContext<T>>
+        dataSource={dataSource}
         autoScroll={props.autoScroll}
         useFixedRowHeight={!usesWrapping}
         defaultRowHeight={DEFAULT_ROW_HEIGHT}
         context={renderingConfig}
         itemRenderer={itemRenderer}
+        onKeyDown={onKeyDown}
+        virtualizerRef={virtualizerRef}
         _testHeight={props._testHeight}
       />
     </Layout.Top>
-  );
-}
-
-export type RenderContext = {
-  columns: DataTableColumn<any>[];
-};
-
-function itemRenderer(item: any, index: number, renderContext: RenderContext) {
-  return (
-    <TableRow
-      key={index}
-      config={renderContext}
-      row={item}
-      highlighted={false}
-    />
   );
 }

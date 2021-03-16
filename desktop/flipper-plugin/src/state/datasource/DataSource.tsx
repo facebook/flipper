@@ -337,8 +337,12 @@ export class DataSource<
     return this.reverse ? this.output.length - 1 - viewIndex : viewIndex;
   }
 
-  getItem(viewIndex: number) {
-    return this.output[this.normalizeIndex(viewIndex)].value;
+  getItem(viewIndex: number): T {
+    return this.getEntry(viewIndex)?.value;
+  }
+
+  getEntry(viewIndex: number): Entry<T> {
+    return this.output[this.normalizeIndex(viewIndex)];
   }
 
   notifyItemUpdated(viewIndex: number) {

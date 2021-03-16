@@ -14,6 +14,7 @@ import React, {
   useRef,
   useState,
   useLayoutEffect,
+  MutableRefObject,
 } from 'react';
 import {DataSource} from '../../state/datasource/DataSource';
 import {useVirtual} from 'react-virtual';
@@ -27,6 +28,8 @@ enum UpdatePrio {
   LOW,
   HIGH,
 }
+
+export type DataSourceVirtualizer = ReturnType<typeof useVirtual>;
 
 type DataSourceProps<T extends object, C> = {
   /**
@@ -50,6 +53,8 @@ type DataSourceProps<T extends object, C> = {
   itemRenderer(item: T, index: number, context: C): React.ReactElement;
   useFixedRowHeight: boolean;
   defaultRowHeight: number;
+  onKeyDown?: React.KeyboardEventHandler<HTMLDivElement>;
+  virtualizerRef?: MutableRefObject<DataSourceVirtualizer | undefined>;
   _testHeight?: number; // exposed for unit testing only
 };
 
@@ -66,6 +71,8 @@ export const DataSourceRenderer: <T extends object, C>(
   context,
   itemRenderer,
   autoScroll,
+  onKeyDown,
+  virtualizerRef,
   _testHeight,
 }: DataSourceProps<any, any>) {
   /**
@@ -89,6 +96,9 @@ export const DataSourceRenderer: <T extends object, C>(
       estimateSize: useCallback(() => defaultRowHeight, [forceHeightRecalculation.current, defaultRowHeight]),
     overscan: 0,
   });
+  if (virtualizerRef) {
+    virtualizerRef.current = virtualizer;
+  }
 
   useEffect(
     function subscribeToDataSource() {
@@ -220,28 +230,30 @@ export const DataSourceRenderer: <T extends object, C>(
    */
   return (
     <TableContainer onScroll={onScroll} ref={parentRef}>
-      <TableWindow height={virtualizer.totalSize}>
-        {virtualizer.virtualItems.map((virtualRow) => (
+      <TableWindow
+        height={virtualizer.totalSize}
+        onKeyDown={onKeyDown}
+        tabIndex={0}>
+        {virtualizer.virtualItems.map((virtualRow) => {
+          const entry = dataSource.getEntry(virtualRow.index);
           // the position properties always change, so they are not part of the TableRow to avoid invalidating the memoized render always.
           // Also all row containers are renderd as part of same component to have 'less react' framework code in between*/}
-          <div
-            key={virtualRow.index}
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: useFixedRowHeight ? virtualRow.size : undefined,
-              transform: `translateY(${virtualRow.start}px)`,
-            }}
-            ref={useFixedRowHeight ? undefined : virtualRow.measureRef}>
-            {itemRenderer(
-              dataSource.getItem(virtualRow.index),
-              virtualRow.index,
-              context,
-            )}
-          </div>
-        ))}
+          return (
+            <div
+              key={virtualRow.index}
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: useFixedRowHeight ? virtualRow.size : undefined,
+                transform: `translateY(${virtualRow.start}px)`,
+              }}
+              ref={useFixedRowHeight ? undefined : virtualRow.measureRef}>
+              {itemRenderer(entry.value, virtualRow.index, context)}
+            </div>
+          );
+        })}
       </TableWindow>
     </TableContainer>
   );

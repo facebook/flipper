@@ -49,21 +49,21 @@ test('update and append', async () => {
     const elem = await rendering.findAllByText('test DataTable');
     expect(elem.length).toBe(1);
     expect(elem[0].parentElement).toMatchInlineSnapshot(`
+      <div
+        class="css-4f2ebr-TableBodyRowContainer efe0za01"
+      >
         <div
-          class="ant-table-row css-4f2ebr-TableBodyRowContainer efe0za01"
+          class="ant-table-cell css-1g4z4wd-TableBodyColumnContainer efe0za00"
         >
-          <div
-            class="ant-table-cell css-1g4z4wd-TableBodyColumnContainer efe0za00"
-          >
-            test DataTable
-          </div>
-          <div
-            class="ant-table-cell css-1g4z4wd-TableBodyColumnContainer efe0za00"
-          >
-            true
-          </div>
+          test DataTable
         </div>
-      `);
+        <div
+          class="ant-table-cell css-1g4z4wd-TableBodyColumnContainer efe0za00"
+        >
+          true
+        </div>
+      </div>
+    `);
   }
 
   act(() => {
@@ -102,7 +102,7 @@ test('column visibility', async () => {
     expect(elem.length).toBe(1);
     expect(elem[0].parentElement).toMatchInlineSnapshot(`
       <div
-        class="ant-table-row css-4f2ebr-TableBodyRowContainer efe0za01"
+        class="css-4f2ebr-TableBodyRowContainer efe0za01"
       >
         <div
           class="ant-table-cell css-1g4z4wd-TableBodyColumnContainer efe0za00"
@@ -127,7 +127,7 @@ test('column visibility', async () => {
     expect(elem.length).toBe(1);
     expect(elem[0].parentElement).toMatchInlineSnapshot(`
       <div
-        class="ant-table-row css-4f2ebr-TableBodyRowContainer efe0za01"
+        class="css-4f2ebr-TableBodyRowContainer efe0za01"
       >
         <div
           class="ant-table-cell css-1g4z4wd-TableBodyColumnContainer efe0za00"
