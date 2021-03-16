@@ -7,6 +7,14 @@
  * @format
  */
 
+import {createMockFlipperWithPlugin} from '../../test-utils/createMockFlipperWithPlugin';
+import {
+  _SandyPluginDefinition,
+  TestUtils,
+  PluginClient,
+  Notification,
+  DevicePluginClient,
+} from 'flipper-plugin';
 import {State, addNotification, removeNotification} from '../notifications';
 
 import {
@@ -16,8 +24,6 @@ import {
   updatePluginBlocklist,
   updateCategoryBlocklist,
 } from '../notifications';
-
-import {Notification} from 'flipper-plugin';
 
 const notification: Notification = {
   id: 'id',
@@ -212,6 +218,176 @@ test('reduce removeNotification', () => {
           "pluginId": "test",
         },
       ],
+      "blocklistedCategories": Array [],
+      "blocklistedPlugins": Array [],
+      "clearedNotifications": Set {},
+      "invalidatedNotifications": Array [],
+    }
+  `);
+});
+
+test('notifications from plugins arrive in the notifications reducer', async () => {
+  const TestPlugin = TestUtils.createTestPlugin({
+    plugin(client: PluginClient) {
+      client.onUnhandledMessage(() => {
+        client.showNotification({
+          id: 'test',
+          message: 'test message',
+          severity: 'error',
+          title: 'hi',
+          action: 'dosomething',
+        });
+      });
+      return {};
+    },
+  });
+
+  const {store, client, sendMessage} = await createMockFlipperWithPlugin(
+    TestPlugin,
+  );
+  sendMessage('testMessage', {});
+  client.flushMessageBuffer();
+  expect(store.getState().notifications).toMatchInlineSnapshot(`
+    Object {
+      "activeNotifications": Array [
+        Object {
+          "client": "TestApp#Android#MockAndroidDevice#serial",
+          "notification": Object {
+            "action": "dosomething",
+            "id": "test",
+            "message": "test message",
+            "severity": "error",
+            "title": "hi",
+          },
+          "pluginId": "TestPlugin",
+        },
+      ],
+      "blocklistedCategories": Array [],
+      "blocklistedPlugins": Array [],
+      "clearedNotifications": Set {},
+      "invalidatedNotifications": Array [],
+    }
+  `);
+});
+
+test('notifications from a device plugin arrive in the notifications reducer', async () => {
+  let trigger: any;
+  const TestPlugin = TestUtils.createTestDevicePlugin({
+    devicePlugin(client: DevicePluginClient) {
+      trigger = () => {
+        client.showNotification({
+          id: 'test',
+          message: 'test message',
+          severity: 'error',
+          title: 'hi',
+          action: 'dosomething',
+        });
+      };
+      return {};
+    },
+  });
+
+  const {store} = await createMockFlipperWithPlugin(TestPlugin);
+  trigger();
+  expect(store.getState().notifications).toMatchInlineSnapshot(`
+    Object {
+      "activeNotifications": Array [
+        Object {
+          "client": "serial",
+          "notification": Object {
+            "action": "dosomething",
+            "id": "test",
+            "message": "test message",
+            "severity": "error",
+            "title": "hi",
+          },
+          "pluginId": "TestPlugin",
+        },
+      ],
+      "blocklistedCategories": Array [],
+      "blocklistedPlugins": Array [],
+      "clearedNotifications": Set {},
+      "invalidatedNotifications": Array [],
+    }
+  `);
+});
+
+test('errors end up as notifications if crash reporter is active', async () => {
+  const TestPlugin = TestUtils.createTestPlugin({
+    plugin() {
+      return {};
+    },
+  });
+
+  // eslint-disable-next-line
+  const CrashReporterImpl = require('../../../../plugins/crash_reporter/index');
+  const CrashPlugin = TestUtils.createTestDevicePlugin(CrashReporterImpl, {
+    id: 'CrashReporter',
+  });
+
+  const {store, client, sendError} = await createMockFlipperWithPlugin(
+    TestPlugin,
+    {
+      additionalPlugins: [CrashPlugin],
+    },
+  );
+  sendError('gone wrong');
+  client.flushMessageBuffer();
+  expect(store.getState().notifications).toMatchInlineSnapshot(`
+    Object {
+      "activeNotifications": Array [
+        Object {
+          "client": "serial",
+          "notification": Object {
+            "action": "0",
+            "category": "\\"gone wrong\\"",
+            "id": "0",
+            "message": "Callstack: No callstack available",
+            "severity": "error",
+            "title": "CRASH: Plugin ErrorReason: \\"gone wrong\\"",
+          },
+          "pluginId": "CrashReporter",
+        },
+      ],
+      "blocklistedCategories": Array [],
+      "blocklistedPlugins": Array [],
+      "clearedNotifications": Set {},
+      "invalidatedNotifications": Array [],
+    }
+  `);
+});
+
+test('errors end NOT up as notifications if crash reporter is active but suppressPluginErrors is disabled', async () => {
+  const TestPlugin = TestUtils.createTestPlugin({
+    plugin() {
+      return {};
+    },
+  });
+
+  // eslint-disable-next-line
+  const CrashReporterImpl = require('../../../../plugins/crash_reporter/index');
+  const CrashPlugin = TestUtils.createTestDevicePlugin(CrashReporterImpl, {
+    id: 'CrashReporter',
+  });
+
+  const {store, client, sendError} = await createMockFlipperWithPlugin(
+    TestPlugin,
+    {
+      additionalPlugins: [CrashPlugin],
+    },
+  );
+  store.dispatch({
+    type: 'UPDATE_SETTINGS',
+    payload: {
+      ...store.getState().settingsState,
+      suppressPluginErrors: true,
+    },
+  });
+  sendError('gone wrong');
+  client.flushMessageBuffer();
+  expect(store.getState().notifications).toMatchInlineSnapshot(`
+    Object {
+      "activeNotifications": Array [],
       "blocklistedCategories": Array [],
       "blocklistedPlugins": Array [],
       "clearedNotifications": Set {},

@@ -65,26 +65,17 @@ type Params = {
 type RequestMetadata = {method: string; id: number; params: Params | undefined};
 
 const handleError = (store: Store, device: BaseDevice, error: ErrorType) => {
-  if (isProduction()) {
+  if (store.getState().settingsState.suppressPluginErrors) {
     return;
   }
-  const crashReporterPlugin: typeof FlipperDevicePlugin = store
-    .getState()
-    .plugins.devicePlugins.get('CrashReporter') as any;
+  const crashReporterPlugin = device.sandyPluginStates.get('CrashReporter');
   if (!crashReporterPlugin) {
     return;
   }
-  if (!crashReporterPlugin.persistedStateReducer) {
-    console.error('CrashReporterPlugin persistedStateReducer broken'); // Make sure we update this code if we ever convert it to Sandy
+  if (!crashReporterPlugin.instanceApi.reportCrash) {
+    console.error('CrashReporterPlugin persistedStateReducer broken');
     return;
   }
-
-  const pluginKey = getPluginKey(null, device, 'CrashReporter');
-
-  const persistedState = {
-    ...crashReporterPlugin.defaultPersistedState,
-    ...store.getState().pluginStates[pluginKey],
-  };
   const isCrashReport: boolean = Boolean(error.name || error.message);
   const payload = isCrashReport
     ? {
@@ -96,23 +87,7 @@ const handleError = (store: Store, device: BaseDevice, error: ErrorType) => {
         name: 'Plugin Error',
         reason: JSON.stringify(error),
       };
-
-  const newPluginState =
-    crashReporterPlugin.persistedStateReducer == null
-      ? persistedState
-      : crashReporterPlugin.persistedStateReducer(
-          persistedState,
-          'flipper-crash-report',
-          payload,
-        );
-  if (persistedState !== newPluginState) {
-    store.dispatch(
-      setPluginState({
-        pluginKey,
-        state: newPluginState,
-      }),
-    );
-  }
+  crashReporterPlugin.instanceApi.reportCrash(payload);
 };
 
 export interface FlipperClientConnection<D, M> {

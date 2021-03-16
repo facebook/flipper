@@ -20,6 +20,7 @@ import {
   RealFlipperClient,
   SandyPluginInstance,
   PluginClient,
+  PluginFactory,
 } from '../plugin/Plugin';
 import {
   SandyPluginDefinition,
@@ -416,6 +417,47 @@ export function createMockPluginDetails(
     version: '',
     ...details,
   };
+}
+
+export function createTestPlugin<T extends PluginFactory<any, any>>(
+  implementation: Pick<FlipperPluginModule<T>, 'plugin'> &
+    Partial<FlipperPluginModule<T>>,
+  details?: Partial<InstalledPluginDetails>,
+) {
+  return new SandyPluginDefinition(
+    createMockPluginDetails({
+      pluginType: 'client',
+      ...details,
+    }),
+    {
+      Component() {
+        return null;
+      },
+      ...implementation,
+    },
+  );
+}
+
+export function createTestDevicePlugin(
+  implementation: Pick<FlipperDevicePluginModule, 'devicePlugin'> &
+    Partial<FlipperDevicePluginModule>,
+  details?: Partial<InstalledPluginDetails>,
+) {
+  return new SandyPluginDefinition(
+    createMockPluginDetails({
+      pluginType: 'device',
+      ...details,
+    }),
+    {
+      supportsDevice() {
+        return true;
+      },
+      Component() {
+        return null;
+      },
+      ...implementation,
+    },
+  );
 }
 
 export function createMockBundledPluginDetails(

@@ -38,6 +38,7 @@ export type MockFlipperResult = {
   device: BaseDevice;
   store: Store;
   pluginKey: string;
+  sendError(error: any, client?: Client): void;
   sendMessage(method: string, params: any, client?: Client): void;
   createDevice(serial: string): BaseDevice;
   createClient(
@@ -146,6 +147,13 @@ export async function createMockFlipperWithPlugin(
     client,
     device: device as any,
     store,
+    sendError(error: any, actualClient = client) {
+      actualClient.onMessage(
+        JSON.stringify({
+          error,
+        }),
+      );
+    },
     sendMessage(method, params, actualClient = client) {
       actualClient.onMessage(
         JSON.stringify({

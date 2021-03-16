@@ -8,9 +8,6 @@
  */
 
 import {
-  FlipperBasePlugin,
-  FlipperDevicePlugin,
-  Device,
   View,
   styled,
   FlexColumn,
@@ -18,9 +15,6 @@ import {
   ContextMenu,
   clipboard,
   Button,
-  getPluginKey,
-  getPersistedState,
-  BaseDevice,
   shouldParseAndroidLog,
   Text,
   colors,
@@ -31,13 +25,17 @@ import {
 import unicodeSubstring from 'unicode-substring';
 import fs from 'fs';
 import os from 'os';
-import util from 'util';
 import path from 'path';
 import {promisify} from 'util';
-import type {Notification} from 'flipper';
-import type {Store, DeviceLogEntry, OS, Props} from 'flipper';
+import type {DeviceLogEntry} from 'flipper';
 import React from 'react';
-import {Component} from 'react';
+import {
+  createState,
+  DevicePluginClient,
+  usePlugin,
+  useValue,
+} from 'flipper-plugin';
+import type {FSWatcher} from 'fs';
 
 type Maybe<T> = T | null | undefined;
 
@@ -72,14 +70,6 @@ export type CrashLog = {
   reason: string;
   name: string;
   date: Maybe<Date>;
-};
-
-export type PersistedState = {
-  crashes: Array<Crash>;
-};
-
-type State = {
-  crash?: Crash;
 };
 
 const Padder = styled.div<{
@@ -188,102 +178,9 @@ const StackTraceContainer = styled(FlexColumn)({
 
 const UNKNOWN_CRASH_REASON = 'Cannot figure out the cause';
 
-export function getNewPersistedStateFromCrashLog(
-  persistedState: Maybe<PersistedState>,
-  persistingPlugin: typeof FlipperBasePlugin,
-  content: string,
-  os: Maybe<OS>,
-  logDate: Maybe<Date>,
-): Maybe<PersistedState> {
-  const persistedStateReducer = persistingPlugin.persistedStateReducer;
-  if (!os || !persistedStateReducer) {
-    return null;
-  }
-  const crash = parseCrashLog(content, os, logDate);
-  const newPluginState = persistedStateReducer(
-    persistedState,
-    'crash-report',
-    crash,
-  );
-  return newPluginState;
-}
-
-export function parseCrashLogAndUpdateState(
-  store: Store,
-  content: string,
-  setPersistedState: (
-    pluginKey: string,
-    newPluginState: Maybe<PersistedState>,
-  ) => void,
-  logDate: Maybe<Date>,
-) {
-  const os = store.getState().connections.selectedDevice?.os;
-  if (
-    !shouldShowCrashNotification(
-      store.getState().connections.selectedDevice,
-      content,
-      os,
-    )
-  ) {
-    return;
-  }
-  const pluginID = CrashReporterPlugin.id;
-  const pluginKey = getPluginKey(
-    null,
-    store.getState().connections.selectedDevice,
-    pluginID,
-  );
-  const persistingPlugin:
-    | typeof FlipperBasePlugin
-    | undefined = store
-    .getState()
-    .plugins.devicePlugins.get(CrashReporterPlugin.id) as any;
-  if (!persistingPlugin) {
-    return;
-  }
-  if (!persistingPlugin.persistedStateReducer) {
-    console.error('CrashReporterPlugin is incompatible');
-    return;
-  }
-  const pluginStates = store.getState().pluginStates;
-  const persistedState = getPersistedState(
-    pluginKey,
-    persistingPlugin,
-    pluginStates,
-  );
-  if (!persistedState) {
-    return;
-  }
-  const newPluginState = getNewPersistedStateFromCrashLog(
-    persistedState as PersistedState,
-    persistingPlugin,
-    content,
-    os,
-    logDate,
-  );
-  setPersistedState(pluginKey, newPluginState);
-}
-
-export function shouldShowCrashNotification(
-  baseDevice: Maybe<BaseDevice>,
-  content: string,
-  os: Maybe<OS>,
-): boolean {
-  if (os && os === 'Android') {
-    return true;
-  }
-  const appPath = parsePath(content);
-  const serial: string = baseDevice?.serial || 'unknown';
-  if (!appPath || !appPath.includes(serial)) {
-    // Do not show notifications for the app which are not the selected one
-    return false;
-  }
-  return true;
-}
-
 export function parseCrashLog(
   content: string,
-  os: OS,
+  os: string,
   logDate: Maybe<Date>,
 ): CrashLog {
   const fallbackReason = UNKNOWN_CRASH_REASON;
@@ -369,18 +266,16 @@ export function parsePath(content: string): Maybe<string> {
 }
 
 function addFileWatcherForiOSCrashLogs(
-  store: Store,
-  setPersistedState: (
-    pluginKey: string,
-    newPluginState: Maybe<PersistedState>,
-  ) => void,
+  deviceOs: string,
+  serial: string,
+  reportCrash: (payload: CrashLog | Crash) => void,
 ) {
   const dir = path.join(os.homedir(), 'Library', 'Logs', 'DiagnosticReports');
   if (!fs.existsSync(dir)) {
     // Directory doesn't exist
     return;
   }
-  fs.watch(dir, (_eventType, filename) => {
+  return fs.watch(dir, (_eventType, filename) => {
     // We just parse the crash logs with extension `.crash`
     const checkFileExtension = /.crash$/.exec(filename);
     if (!filename || !checkFileExtension) {
@@ -392,26 +287,18 @@ function addFileWatcherForiOSCrashLogs(
         return;
       }
       fs.readFile(filepath, 'utf8', function (err, data) {
-        if (store.getState().connections.selectedDevice?.os != 'iOS') {
-          // If the selected device is not iOS don't show crash notifications
-          return;
-        }
         if (err) {
           console.error(err);
           return;
         }
-        parseCrashLogAndUpdateState(
-          store,
-          util.format(data),
-          setPersistedState,
-          null,
-        );
+        if (shouldShowiOSCrashNotification(serial, data))
+          reportCrash(parseCrashLog(data, deviceOs, null));
       });
     });
   });
 }
 
-class CrashSelector extends Component<CrashSelectorProps> {
+class CrashSelector extends React.Component<CrashSelectorProps> {
   render() {
     const {crashes, selectedCrashID, orderedIDs, onCrashChange} = this.props;
     return (
@@ -471,7 +358,7 @@ class CrashSelector extends Component<CrashSelectorProps> {
   }
 }
 
-class CrashReporterBar extends Component<CrashReporterBarProps> {
+class CrashReporterBar extends React.Component<CrashReporterBarProps> {
   render() {
     const {openLogsCallback, crashSelector} = this.props;
     return (
@@ -488,7 +375,7 @@ class CrashReporterBar extends Component<CrashReporterBarProps> {
   }
 }
 
-class HeaderRow extends Component<HeaderRowProps> {
+class HeaderRow extends React.Component<HeaderRowProps> {
   render() {
     const {title, value} = this.props;
     return (
@@ -519,7 +406,7 @@ type StackTraceComponentProps = {
   stacktrace: string;
 };
 
-class StackTraceComponent extends Component<StackTraceComponentProps> {
+class StackTraceComponent extends React.Component<StackTraceComponentProps> {
   render() {
     const {stacktrace} = this.props;
     return (
@@ -533,280 +420,232 @@ class StackTraceComponent extends Component<StackTraceComponentProps> {
   }
 }
 
-export default class CrashReporterPlugin extends FlipperDevicePlugin<
-  State,
-  any,
-  PersistedState
-> {
-  static defaultPersistedState: PersistedState = {
-    crashes: [],
-  };
+export function devicePlugin(client: DevicePluginClient) {
+  let notificationID = -1;
+  let watcher: FSWatcher | undefined;
 
-  static supportsDevice(device: Device) {
-    return (
-      (device.os === 'iOS' && device.deviceType !== 'physical') ||
-      device.os === 'Android'
-    );
+  const crashes = createState<Crash[]>([], {persist: 'crashes'});
+  const selectedCrash = createState<string | undefined>();
+
+  client.onDeepLink((crashId) => {
+    selectedCrash.set(crashId as string);
+  });
+
+  function reportCrash(payload: CrashLog | Crash) {
+    notificationID++;
+
+    const crash = {
+      notificationID: notificationID.toString(),
+      callstack: payload.callstack,
+      name: payload.name,
+      reason: payload.reason,
+      date: payload.date || new Date(),
+    };
+
+    crashes.update((draft) => {
+      draft.push(crash);
+    });
+
+    // show notification?
+    const ignore = !crash.name && !crash.reason;
+    const unknownCrashCause = crash.reason === UNKNOWN_CRASH_REASON;
+    if (ignore || unknownCrashCause) {
+      console.error('Ignored the notification for the crash', crash);
+      return;
+    }
+
+    let title: string = 'CRASH: ' + truncate(crash.name || crash.reason, 50);
+    title = `${
+      crash.name == crash.reason
+        ? title
+        : title + 'Reason: ' + truncate(crash.reason, 50)
+    }`;
+    const callstack = crash.callstack
+      ? trimCallStackIfPossible(crash.callstack)
+      : 'No callstack available';
+    const msg = `Callstack: ${truncate(callstack, 200)}`;
+    client.showNotification({
+      id: crash.notificationID,
+      message: msg,
+      severity: 'error',
+      title: title,
+      action: crash.notificationID,
+      category: crash.reason || 'Unknown reason',
+    });
   }
 
-  static notificationID: number = 0;
-  /*
-   * Reducer to process incoming "send" messages from the mobile counterpart.
-   */
-  static persistedStateReducer = (
-    persistedState: PersistedState,
-    method: string,
-    payload: CrashLog | Crash,
-  ): PersistedState => {
-    if (method === 'crash-report' || method === 'flipper-crash-report') {
-      CrashReporterPlugin.notificationID++;
-      const mergedState: PersistedState = {
-        crashes: persistedState.crashes.concat([
-          {
-            notificationID: CrashReporterPlugin.notificationID.toString(), // All notifications are unique
-            callstack: payload.callstack,
-            name: payload.name,
-            reason: payload.reason,
-            date: payload.date || new Date(),
-          },
-        ]),
-      };
-      return mergedState;
-    }
-    return persistedState;
-  };
-
-  static trimCallStackIfPossible = (callstack: string): string => {
-    const regex = /Application Specific Information:/;
-    const query = regex.exec(callstack);
-    return query ? callstack.substring(0, query.index) : callstack;
-  };
-  /*
-   * Callback to provide the currently active notifications.
-   */
-  static getActiveNotifications = (
-    persistedState: PersistedState,
-  ): Array<Notification> => {
-    const filteredCrashes = persistedState.crashes.filter((crash) => {
-      const ignore = !crash.name && !crash.reason;
-      const unknownCrashCause = crash.reason === UNKNOWN_CRASH_REASON;
-      if (ignore || unknownCrashCause) {
-        console.error('Ignored the notification for the crash', crash);
-      }
-      return !ignore && !unknownCrashCause;
-    });
-    return filteredCrashes.map((crash: Crash) => {
-      const id = crash.notificationID;
-      const name: string = crash.name || crash.reason;
-      let title: string = 'CRASH: ' + truncate(name, 50);
-      title = `${
-        name == crash.reason
-          ? title
-          : title + 'Reason: ' + truncate(crash.reason, 50)
-      }`;
-      const callstack = crash.callstack
-        ? CrashReporterPlugin.trimCallStackIfPossible(crash.callstack)
-        : 'No callstack available';
-      const msg = `Callstack: ${truncate(callstack, 200)}`;
-      return {
-        id,
-        message: msg,
-        severity: 'error',
-        title: title,
-        action: id,
-        category: crash.reason || 'Unknown reason',
-      };
-    });
-  };
-
-  /*
-   * This function gets called whenever the device is registered
-   */
-  static onRegisterDevice = (
-    store: Store,
-    baseDevice: BaseDevice,
-    setPersistedState: (
-      pluginKey: string,
-      newPluginState: Maybe<PersistedState>,
-    ) => void,
-  ): void => {
-    if (baseDevice.os.includes('iOS')) {
-      addFileWatcherForiOSCrashLogs(store, setPersistedState);
+  // Startup logic to establish log monitoring
+  if (client.device.isConnected) {
+    if (client.device.os.includes('iOS')) {
+      watcher = addFileWatcherForiOSCrashLogs(
+        client.device.os,
+        client.device.serial,
+        reportCrash,
+      );
     } else {
       const referenceDate = new Date();
-      (function (
-        store: Store,
-        _date: Date,
-        setPersistedState: (
-          pluginKey: string,
-          newPluginState: Maybe<PersistedState>,
-        ) => void,
-      ) {
-        let androidLog: string = '';
-        let androidLogUnderProcess = false;
-        let timer: Maybe<NodeJS.Timeout> = null;
-        baseDevice.addLogListener((entry: DeviceLogEntry) => {
-          if (shouldParseAndroidLog(entry, referenceDate)) {
-            if (androidLogUnderProcess) {
-              androidLog += '\n' + entry.message;
-              androidLog = androidLog.trim();
-              if (timer) {
-                clearTimeout(timer);
-              }
-            } else {
-              androidLog = entry.message;
-              androidLogUnderProcess = true;
+      let androidLog: string = '';
+      let androidLogUnderProcess = false;
+      let timer: Maybe<NodeJS.Timeout> = null;
+      client.device.onLogEntry((entry: DeviceLogEntry) => {
+        if (shouldParseAndroidLog(entry, referenceDate)) {
+          if (androidLogUnderProcess) {
+            androidLog += '\n' + entry.message;
+            androidLog = androidLog.trim();
+            if (timer) {
+              clearTimeout(timer);
             }
-            timer = setTimeout(() => {
-              if (androidLog.length > 0) {
-                parseCrashLogAndUpdateState(
-                  store,
-                  androidLog,
-                  setPersistedState,
-                  entry.date,
-                );
-              }
-              androidLogUnderProcess = false;
-              androidLog = '';
-            }, 50);
+          } else {
+            androidLog = entry.message;
+            androidLogUnderProcess = true;
           }
-        });
-      })(store, referenceDate, setPersistedState);
-    }
-  };
-  openInLogs = (callstack: string) => {
-    this.props.selectPlugin('DeviceLogs', callstack);
-  };
-
-  constructor(props: Props<PersistedState>) {
-    // Required step: always call the parent class' constructor
-    super(props);
-    let crash: Crash | undefined = undefined;
-    if (
-      this.props.persistedState.crashes &&
-      this.props.persistedState.crashes.length > 0
-    ) {
-      crash = this.props.persistedState.crashes[
-        this.props.persistedState.crashes.length - 1
-      ];
-    }
-
-    let deeplinkedCrash: Crash | undefined = undefined;
-    if (this.props.deepLinkPayload) {
-      const id = this.props.deepLinkPayload;
-      const index = this.props.persistedState.crashes.findIndex((elem) => {
-        return elem.notificationID === id;
+          timer = setTimeout(() => {
+            if (androidLog.length > 0) {
+              reportCrash(
+                parseCrashLog(androidLog, client.device.os, entry.date),
+              );
+            }
+            androidLogUnderProcess = false;
+            androidLog = '';
+          }, 50);
+        }
       });
-      if (index >= 0) {
-        deeplinkedCrash = this.props.persistedState.crashes[index];
-      }
     }
-    // Set the state directly. Use props if necessary.
-    this.state = {
-      crash: deeplinkedCrash || crash,
-    };
   }
 
-  render() {
-    let crashToBeInspected = this.state.crash;
+  client.onDestroy(() => {
+    watcher?.close();
+  });
 
-    if (!crashToBeInspected && this.props.persistedState.crashes.length > 0) {
-      crashToBeInspected = this.props.persistedState.crashes[
-        this.props.persistedState.crashes.length - 1
-      ];
-    }
-    const crash = crashToBeInspected;
-    if (crash) {
-      const {crashes} = this.props.persistedState;
-      const crashMap = crashes.reduce(
-        (acc: {[key: string]: string}, persistedCrash: Crash) => {
-          const {notificationID, date} = persistedCrash;
-          const name = 'Crash at ' + date.toLocaleString();
-          acc[notificationID] = name;
-          return acc;
-        },
-        {},
-      );
+  return {
+    reportCrash,
+    crashes,
+    selectedCrash,
+    openInLogs(callstack: string) {
+      client.selectPlugin('DeviceLogs', callstack);
+    },
+    os: client.device.os,
+    copyCrashToClipboard(callstack: string) {
+      client.writeTextToClipboard(callstack);
+    },
+  };
+}
 
-      const orderedIDs = crashes.map(
-        (persistedCrash) => persistedCrash.notificationID,
-      );
-      const selectedCrashID = crash.notificationID;
-      const onCrashChange = (id: Maybe<string>) => {
-        const newSelectedCrash = crashes.find(
-          (element) => element.notificationID === id,
-        );
-        this.setState({crash: newSelectedCrash});
-      };
+export function Component() {
+  const plugin = usePlugin(devicePlugin);
+  const selectedCrash = useValue(plugin.selectedCrash);
+  const crashes = useValue(plugin.crashes);
+  const crash =
+    crashes.find((c) => c.notificationID === selectedCrash) ??
+    crashes[crashes.length - 1] ??
+    undefined;
 
-      const callstackString = crash.callstack || '';
-      const children = callstackString.split('\n').map((str) => {
-        return {message: str};
-      });
-      const crashSelector: CrashSelectorProps = {
-        crashes: crashMap,
-        orderedIDs,
-        selectedCrashID,
-        onCrashChange,
-      };
-      const showReason = crash.reason !== UNKNOWN_CRASH_REASON;
-      return (
-        <PluginRootContainer>
-          {this.device.os == 'Android' ? (
-            <CrashReporterBar
-              crashSelector={crashSelector}
-              openLogsCallback={() => {
-                if (crash.callstack) {
-                  this.openInLogs(crash.callstack);
-                }
-              }}
-            />
-          ) : (
-            <CrashReporterBar crashSelector={crashSelector} />
-          )}
-          <ScrollableColumn>
-            <HeaderRow title="Name" value={crash.name} />
-            {showReason ? (
-              <HeaderRow title="Reason" value={crash.reason} />
-            ) : null}
-            <Padder paddingLeft={8} paddingTop={4} paddingBottom={2}>
-              <Title> Stacktrace </Title>
-            </Padder>
-            <ContextMenu
-              items={[
-                {
-                  label: 'copy',
-                  click: () => {
-                    clipboard.writeText(callstackString);
-                  },
-                },
-              ]}>
-              <Line />
-              {children.map((child, index) => {
-                return (
-                  <StackTraceComponent key={index} stacktrace={child.message} />
-                );
-              })}
-            </ContextMenu>
-          </ScrollableColumn>
-        </PluginRootContainer>
-      );
-    }
-    const crashSelector = {
-      crashes: undefined,
-      orderedIDs: undefined,
-      selectedCrashID: undefined,
-      onCrashChange: () => void {},
+  if (crash) {
+    const crashMap = crashes.reduce(
+      (acc: {[key: string]: string}, persistedCrash: Crash) => {
+        const {notificationID, date} = persistedCrash;
+        const name = 'Crash at ' + date.toLocaleString();
+        acc[notificationID] = name;
+        return acc;
+      },
+      {},
+    );
+
+    const orderedIDs = crashes.map(
+      (persistedCrash) => persistedCrash.notificationID,
+    );
+    const selectedCrashID = crash.notificationID;
+    const onCrashChange = (id: Maybe<string>) => {
+      if (id) {
+        plugin.selectedCrash.set(id);
+      }
     };
+
+    const callstackString = crash.callstack || '';
+    const children = callstackString.split('\n').map((str) => {
+      return {message: str};
+    });
+    const crashSelector: CrashSelectorProps = {
+      crashes: crashMap,
+      orderedIDs,
+      selectedCrashID,
+      onCrashChange,
+    };
+    const showReason = crash.reason !== UNKNOWN_CRASH_REASON;
     return (
-      <StyledFlexGrowColumn>
-        <CrashReporterBar crashSelector={crashSelector} />
-        <StyledFlexColumn>
-          <Padder paddingBottom={8}>
-            <Title>No Crashes Logged</Title>
+      <PluginRootContainer>
+        {plugin.os == 'Android' ? (
+          <CrashReporterBar
+            crashSelector={crashSelector}
+            openLogsCallback={() => {
+              if (crash.callstack) {
+                plugin.openInLogs(crash.callstack);
+              }
+            }}
+          />
+        ) : (
+          <CrashReporterBar crashSelector={crashSelector} />
+        )}
+        <ScrollableColumn>
+          <HeaderRow title="Name" value={crash.name} />
+          {showReason ? (
+            <HeaderRow title="Reason" value={crash.reason} />
+          ) : null}
+          <Padder paddingLeft={8} paddingTop={4} paddingBottom={2}>
+            <Title> Stacktrace </Title>
           </Padder>
-        </StyledFlexColumn>
-      </StyledFlexGrowColumn>
+          <ContextMenu
+            items={[
+              {
+                label: 'copy',
+                click: () => {
+                  plugin.copyCrashToClipboard(callstackString);
+                },
+              },
+            ]}>
+            <Line />
+            {children.map((child, index) => {
+              return (
+                <StackTraceComponent key={index} stacktrace={child.message} />
+              );
+            })}
+          </ContextMenu>
+        </ScrollableColumn>
+      </PluginRootContainer>
     );
   }
+  const crashSelector = {
+    crashes: undefined,
+    orderedIDs: undefined,
+    selectedCrashID: undefined,
+    onCrashChange: () => void {},
+  };
+  return (
+    <StyledFlexGrowColumn>
+      <CrashReporterBar crashSelector={crashSelector} />
+      <StyledFlexColumn>
+        <Padder paddingBottom={8}>
+          <Title>No Crashes Logged</Title>
+        </Padder>
+      </StyledFlexColumn>
+    </StyledFlexGrowColumn>
+  );
+}
+
+function trimCallStackIfPossible(callstack: string): string {
+  const regex = /Application Specific Information:/;
+  const query = regex.exec(callstack);
+  return query ? callstack.substring(0, query.index) : callstack;
+}
+
+export function shouldShowiOSCrashNotification(
+  serial: string,
+  content: string,
+): boolean {
+  const appPath = parsePath(content);
+  if (!appPath || !appPath.includes(serial)) {
+    // Do not show notifications for the app which are not running on this device
+    return false;
+  }
+  return true;
 }

@@ -112,6 +112,7 @@ class SettingsSheet extends Component<Props, State> {
       idbPath,
       reactNative,
       darkMode,
+      suppressPluginErrors,
     } = this.state.updatedSettings;
 
     const settingsPristine =
@@ -230,6 +231,18 @@ class SettingsSheet extends Component<Props, State> {
                 releaseChannel: v,
               },
             });
+          }}
+        />
+        <ToggledSection
+          label="Suppress error notifications send from client plugins"
+          toggled={suppressPluginErrors}
+          onChange={(enabled) => {
+            this.setState((prevState) => ({
+              updatedSettings: {
+                ...prevState.updatedSettings,
+                suppressPluginErrors: enabled,
+              },
+            }));
           }}
         />
         <ToggledSection

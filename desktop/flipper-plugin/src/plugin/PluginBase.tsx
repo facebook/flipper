@@ -175,6 +175,7 @@ export abstract class BasePluginInstance {
       realDevice, // TODO: temporarily, clean up T70688226
       // N.B. we model OS as string, not as enum, to make custom device types possible in the future
       os: realDevice.os,
+      serial: realDevice.serial,
       get isArchived() {
         return realDevice.isArchived;
       },

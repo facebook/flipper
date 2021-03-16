@@ -45,6 +45,7 @@ export type Settings = {
   };
   darkMode: boolean;
   showWelcomeAtStartup: boolean;
+  suppressPluginErrors: boolean;
 };
 
 export type Action =
@@ -79,6 +80,7 @@ const initialState: Settings = {
   },
   darkMode: false,
   showWelcomeAtStartup: true,
+  suppressPluginErrors: false,
 };
 
 export default function reducer(

@@ -39,6 +39,7 @@ export interface Device {
   readonly isArchived: boolean;
   readonly isConnected: boolean;
   readonly os: string;
+  readonly serial: string;
   readonly deviceType: DeviceType;
   onLogEntry(cb: DeviceLogListener): () => void;
 }

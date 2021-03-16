@@ -8,27 +8,11 @@
  */
 
 import {BaseDevice} from 'flipper';
-import CrashReporterPlugin from '../index';
-import type {PersistedState, Crash} from '../index';
-import {
-  parseCrashLog,
-  getNewPersistedStateFromCrashLog,
-  parsePath,
-  shouldShowCrashNotification,
-} from '../index';
-import {getPluginKey, getPersistedState} from 'flipper';
-
-function setDefaultPersistedState(defaultState: PersistedState) {
-  CrashReporterPlugin.defaultPersistedState = defaultState;
-}
-
-function setNotificationID(notificationID: number) {
-  CrashReporterPlugin.notificationID = notificationID;
-}
-
-function setCrashReporterPluginID(id: string) {
-  CrashReporterPlugin.id = id;
-}
+import {Crash, shouldShowiOSCrashNotification} from '../index';
+import {parseCrashLog, parsePath} from '../index';
+import {TestUtils} from 'flipper-plugin';
+import {getPluginKey} from 'flipper';
+import * as CrashReporterPlugin from '../index';
 
 function getCrash(
   id: number,
@@ -53,19 +37,6 @@ function assertCrash(crash: Crash, expectedCrash: Crash) {
   expect(name).toEqual(expectedCrash.name);
   expect(date.toDateString()).toEqual(expectedCrash.date.toDateString());
 }
-
-beforeEach(() => {
-  setNotificationID(0); // Resets notificationID to 0
-  setDefaultPersistedState({crashes: []}); // Resets defaultpersistedstate
-  setCrashReporterPluginID('CrashReporter');
-});
-
-afterAll(() => {
-  // Reset values
-  setNotificationID(0);
-  setDefaultPersistedState({crashes: []});
-  setCrashReporterPluginID('');
-});
 
 test('test the parsing of the date and crash info for the log which matches the predefined regex', () => {
   const log =
@@ -166,125 +137,35 @@ test('test the getter of pluginKey with defined selected app and defined base de
   expect(pluginKey).toEqual('selectedApp#CrashReporter');
 });
 test('test defaultPersistedState of CrashReporterPlugin', () => {
-  expect(CrashReporterPlugin.defaultPersistedState).toEqual({crashes: []});
+  expect(
+    TestUtils.startDevicePlugin(CrashReporterPlugin).exportState(),
+  ).toEqual({crashes: []});
 });
 test('test helper setdefaultPersistedState function', () => {
   const crash = getCrash(0, 'callstack', 'crash0', 'crash0');
-  setDefaultPersistedState({crashes: [crash]});
-  expect(CrashReporterPlugin.defaultPersistedState).toEqual({crashes: [crash]});
-});
-test('test getPersistedState for non-empty defaultPersistedState and undefined pluginState', () => {
-  const crash = getCrash(0, 'callstack', 'crash0', 'crash0');
-  setDefaultPersistedState({crashes: [crash]});
-  const pluginStates = {};
-  const persistedState = getPersistedState(
-    getPluginKey(null, null, CrashReporterPlugin.id),
-    CrashReporterPlugin,
-    pluginStates,
-  );
-  expect(persistedState).toEqual({crashes: [crash]});
-});
-test('test getPersistedState for non-empty defaultPersistedState and defined pluginState', () => {
-  const crash = getCrash(0, 'callstack', 'crash0', 'crash0');
-  const pluginKey = getPluginKey(null, null, CrashReporterPlugin.id);
-  setDefaultPersistedState({crashes: [crash]});
-  const pluginStateCrash = getCrash(1, 'callstack', 'crash1', 'crash1');
-  const pluginStates = {'unknown#CrashReporter': {crashes: [pluginStateCrash]}};
-  const persistedState = getPersistedState(
-    pluginKey,
-    CrashReporterPlugin,
-    pluginStates,
-  );
-  expect(persistedState).toEqual({crashes: [pluginStateCrash]});
+  const plugin = TestUtils.startDevicePlugin(CrashReporterPlugin);
+  plugin.instance.reportCrash(crash);
+  expect(plugin.exportState()).toEqual({crashes: [crash]});
 });
 test('test getNewPersistedStateFromCrashLog for non-empty defaultPersistedState and defined pluginState', () => {
   const crash = getCrash(0, 'callstack', 'crash0', 'crash0');
-  const pluginKey = getPluginKey(null, null, CrashReporterPlugin.id);
-  setDefaultPersistedState({crashes: [crash]});
+  const plugin = TestUtils.startDevicePlugin(CrashReporterPlugin);
+  plugin.instance.reportCrash(crash);
   const pluginStateCrash = getCrash(1, 'callstack', 'crash1', 'crash1');
-  const pluginStates = {'unknown#CrashReporter': {crashes: [pluginStateCrash]}};
-  const persistedState = getPersistedState(
-    pluginKey,
-    CrashReporterPlugin,
-    pluginStates,
-  );
-  const content =
-    'Blaa Blaaa \n Blaa Blaaa \n Exception Type:  SIGSEGV \n Blaa Blaa \n Blaa Blaa';
-  expect(persistedState).toBeDefined();
-  const definedState = persistedState as PersistedState;
-  const {crashes} = definedState;
-  expect(crashes).toBeDefined();
-  expect(crashes.length).toEqual(1);
-  expect(crashes[0]).toEqual(pluginStateCrash);
-  const newPersistedState = getNewPersistedStateFromCrashLog(
-    definedState,
-    CrashReporterPlugin,
-    content,
-    'iOS',
-    null,
-  );
-  expect(newPersistedState).toBeDefined();
-  const newDefinedState = newPersistedState as PersistedState;
-  const newPersistedStateCrashes = newDefinedState.crashes;
-  expect(newPersistedStateCrashes).toBeDefined();
-  expect(newPersistedStateCrashes.length).toEqual(2);
-  assertCrash(newPersistedStateCrashes[0], pluginStateCrash);
-  assertCrash(
-    newPersistedStateCrashes[1],
-    getCrash(1, content, 'SIGSEGV', 'SIGSEGV'),
-  );
-});
-test('test getNewPersistedStateFromCrashLog for non-empty defaultPersistedState and undefined pluginState', () => {
-  setNotificationID(0);
-  const crash = getCrash(0, 'callstack', 'crash0', 'crash0');
-  const pluginKey = getPluginKey(null, null, CrashReporterPlugin.id);
-  setDefaultPersistedState({crashes: [crash]});
-  const pluginStates = {};
-  const persistedState = getPersistedState(
-    pluginKey,
-    CrashReporterPlugin,
-    pluginStates,
-  );
-  const content = 'Blaa Blaaa \n Blaa Blaaa \n Exception Type:  SIGSEGV';
-  expect(persistedState).toEqual({crashes: [crash]});
-  const newPersistedState = getNewPersistedStateFromCrashLog(
-    persistedState as PersistedState,
-    CrashReporterPlugin,
-    content,
-    'iOS',
-    null,
-  );
-  expect(newPersistedState).toBeDefined();
-  const {crashes} = newPersistedState as PersistedState;
+  plugin.instance.reportCrash(pluginStateCrash);
+  const crashes = plugin.instance.crashes.get();
   expect(crashes).toBeDefined();
   expect(crashes.length).toEqual(2);
-  assertCrash(crashes[0], crash);
-  assertCrash(crashes[1], getCrash(1, content, 'SIGSEGV', 'SIGSEGV'));
+  expect(crashes[1]).toEqual(pluginStateCrash);
 });
+
 test('test getNewPersistedStateFromCrashLog for non-empty defaultPersistedState and defined pluginState and improper crash log', () => {
-  setNotificationID(0);
-  const crash = getCrash(0, 'callstack', 'crash0', 'crash0');
-  const pluginKey = getPluginKey(null, null, CrashReporterPlugin.id);
-  setDefaultPersistedState({crashes: [crash]});
-  const pluginStateCrash = getCrash(1, 'callstack', 'crash1', 'crash1');
-  const pluginStates = {'unknown#CrashReporter': {crashes: [pluginStateCrash]}};
-  const perisistedState = getPersistedState(
-    pluginKey,
-    CrashReporterPlugin,
-    pluginStates,
-  );
+  const plugin = TestUtils.startDevicePlugin(CrashReporterPlugin);
+  const pluginStateCrash = getCrash(0, 'callstack', 'crash1', 'crash1');
+  plugin.instance.reportCrash(pluginStateCrash);
   const content = 'Blaa Blaaa \n Blaa Blaaa';
-  expect(perisistedState).toEqual({crashes: [pluginStateCrash]});
-  const newPersistedState = getNewPersistedStateFromCrashLog(
-    perisistedState as PersistedState,
-    CrashReporterPlugin,
-    content,
-    'iOS',
-    null,
-  );
-  expect(newPersistedState).toBeDefined();
-  const {crashes} = newPersistedState as PersistedState;
-  expect(crashes).toBeDefined();
+  plugin.instance.reportCrash(parseCrashLog(content, 'iOS', null));
+  const crashes = plugin.instance.crashes.get();
   expect(crashes.length).toEqual(2);
   assertCrash(crashes[0], pluginStateCrash);
   assertCrash(
@@ -297,28 +178,17 @@ test('test getNewPersistedStateFromCrashLog for non-empty defaultPersistedState 
     ),
   );
 });
+
 test('test getNewPersistedStateFromCrashLog when os is undefined', () => {
-  setNotificationID(0);
-  const crash = getCrash(0, 'callstack', 'crash0', 'crash0');
-  const pluginKey = getPluginKey(null, null, CrashReporterPlugin.id);
-  setDefaultPersistedState({crashes: [crash]});
-  const pluginStateCrash = getCrash(1, 'callstack', 'crash1', 'crash1');
-  const pluginStates = {'unknown#CrashReporter': {crashes: [pluginStateCrash]}};
-  const persistedState = getPersistedState(
-    pluginKey,
-    CrashReporterPlugin,
-    pluginStates,
-  );
+  const plugin = TestUtils.startDevicePlugin(CrashReporterPlugin);
   const content = 'Blaa Blaaa \n Blaa Blaaa';
-  const newPersistedState = getNewPersistedStateFromCrashLog(
-    persistedState as PersistedState,
-    CrashReporterPlugin,
-    content,
-    undefined,
-    null,
-  );
-  expect(newPersistedState).toEqual(null);
+  expect(() => {
+    plugin.instance.reportCrash(parseCrashLog(content, undefined as any, null));
+  }).toThrowErrorMatchingInlineSnapshot(`"Unsupported OS"`);
+  const crashes = plugin.instance.crashes.get();
+  expect(crashes.length).toEqual(0);
 });
+
 test('test parsing of path when inputs are correct', () => {
   const content =
     'Blaa Blaaa \n Blaa Blaaa \n Path:  path/to/simulator/TH1S-15DEV1CE-1D/AppName.app/AppName \n Blaa Blaa \n Blaa Blaa';
@@ -350,6 +220,7 @@ test('test parsing of path when a regex is not present', () => {
   const id = parsePath(content);
   expect(id).toEqual(null);
 });
+
 test('test shouldShowCrashNotification function for all correct inputs', () => {
   const device = new BaseDevice(
     'TH1S-15DEV1CE-1D',
@@ -359,14 +230,13 @@ test('test shouldShowCrashNotification function for all correct inputs', () => {
   );
   const content =
     'Blaa Blaaa \n Blaa Blaaa \n Path:  path/to/simulator/TH1S-15DEV1CE-1D/App Name.app/App Name \n Blaa Blaa \n Blaa Blaa';
-  const shouldShowNotification = shouldShowCrashNotification(
-    device,
+  const shouldShowNotification = shouldShowiOSCrashNotification(
+    device.serial,
     content,
-    'iOS',
   );
   expect(shouldShowNotification).toEqual(true);
 });
-test('test shouldShowCrashNotification function for all correct inputs but incorrect id', () => {
+test('test shouldShowiOSCrashNotification function for all correct inputs but incorrect id', () => {
   const device = new BaseDevice(
     'TH1S-15DEV1CE-1D',
     'emulator',
@@ -375,20 +245,39 @@ test('test shouldShowCrashNotification function for all correct inputs but incor
   );
   const content =
     'Blaa Blaaa \n Blaa Blaaa \n Path:  path/to/simulator/TH1S-1598DEV1CE-2D/App Name.app/App Name \n Blaa Blaa \n Blaa Blaa';
-  const shouldShowNotification = shouldShowCrashNotification(
-    device,
+  const shouldShowNotification = shouldShowiOSCrashNotification(
+    device.serial,
     content,
-    'iOS',
   );
   expect(shouldShowNotification).toEqual(false);
 });
-test('test shouldShowCrashNotification function for undefined device', () => {
+test('test shouldShowiOSCrashNotification function for undefined device', () => {
   const content =
     'Blaa Blaaa \n Blaa Blaaa \n Path:  path/to/simulator/TH1S-1598DEV1CE-2D/App Name.app/App Name \n Blaa Blaa \n Blaa Blaa';
-  const shouldShowNotification = shouldShowCrashNotification(
-    null,
+  const shouldShowNotification = shouldShowiOSCrashNotification(
+    null as any,
     content,
-    'iOS',
   );
   expect(shouldShowNotification).toEqual(false);
+});
+
+test('only crashes from the correct device are picked up', () => {
+  const serial = 'AC9482A2-26A4-404F-A179-A9FB60B077F6';
+  const crash = `Process:               Sample [87361]
+  Path:                  /Users/USER/Library/Developer/CoreSimulator/Devices/AC9482A2-26A4-404F-A179-A9FB60B077F6/data/Containers/Bundle/Application/9BF91EF9-F915-4745-BE91-EBA397451850/Sample.app/Sample
+  Identifier:            Sample
+  Version:               1.0 (1)
+  Code Type:             X86-64 (Native)
+  Parent Process:        launchd_sim [70150]
+  Responsible:           SimulatorTrampoline [1246]
+  User ID:               501`;
+
+  expect(shouldShowiOSCrashNotification(serial, crash)).toBe(true);
+  // wrong serial
+  expect(
+    shouldShowiOSCrashNotification(
+      'XC9482A2-26A4-404F-A179-A9FB60B077F6',
+      crash,
+    ),
+  ).toBe(false);
 });
