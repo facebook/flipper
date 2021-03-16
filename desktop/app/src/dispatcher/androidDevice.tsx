@@ -13,7 +13,6 @@ import child_process from 'child_process';
 import {Store} from '../reducers/index';
 import BaseDevice from '../devices/BaseDevice';
 import {Logger} from '../fb-interfaces/Logger';
-import {registerDeviceCallbackOnPlugins} from '../utils/onRegisterDevice';
 import {getAdbClient} from '../utils/adbClient';
 import which from 'which';
 import {promisify} from 'util';
@@ -248,13 +247,6 @@ export default (store: Store, logger: Logger) => {
       type: 'REGISTER_DEVICE',
       payload: androidDevice,
     });
-
-    registerDeviceCallbackOnPlugins(
-      store,
-      store.getState().plugins.devicePlugins,
-      store.getState().plugins.clientPlugins,
-      androidDevice,
-    );
   }
 
   async function unregisterDevices(deviceIds: Array<string>) {

@@ -9,7 +9,6 @@
 
 import {Store} from '../reducers/index';
 import {Logger} from '../fb-interfaces/Logger';
-import {registerDeviceCallbackOnPlugins} from '../utils/onRegisterDevice';
 import MetroDevice from '../devices/MetroDevice';
 import http from 'http';
 import {addErrorNotification} from '../reducers/notifications';
@@ -67,13 +66,6 @@ export async function registerMetroDevice(
     payload: metroDevice,
     serial: METRO_URL,
   });
-
-  registerDeviceCallbackOnPlugins(
-    store,
-    store.getState().plugins.devicePlugins,
-    store.getState().plugins.clientPlugins,
-    metroDevice,
-  );
 }
 
 export default (store: Store, logger: Logger) => {

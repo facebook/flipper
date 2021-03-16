@@ -128,16 +128,6 @@ export abstract class FlipperBasePlugin<
   static getActiveNotifications:
     | ((persistedState: StaticPersistedState) => Array<Notification>)
     | undefined;
-  static onRegisterDevice:
-    | ((
-        store: Store,
-        baseDevice: BaseDevice,
-        setPersistedState: (
-          pluginKey: string,
-          newPluginState: StaticPersistedState | null,
-        ) => void,
-      ) => void)
-    | null;
 
   reducers: {
     [actionName: string]: (state: State, actionData: any) => Partial<State>;
