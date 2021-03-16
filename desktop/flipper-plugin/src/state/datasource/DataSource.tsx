@@ -7,8 +7,11 @@
  * @format
  */
 
+import {sortedIndexBy, sortedLastIndexBy, property} from 'lodash';
+
 // TODO: support better minification
 // TODO: separate views from datasource to be able to support multiple transformation simultanously
+// TODO: expose interface with public members only
 
 type ExtractKeyType<
   T extends object,
@@ -22,6 +25,7 @@ type AppendEvent<T> = {
 type UpdateEvent<T> = {
   type: 'update';
   value: T;
+  oldValue: T;
   index: number;
 };
 
@@ -37,7 +41,9 @@ class DataSource<
   private keyAttribute: undefined | keyof T;
   private idToIndex: Map<KEY_TYPE, number> = new Map();
   dataUpdateQueue: DataEvent<T>[] = [];
-  // viewUpdateQueue;
+
+  private sortBy: undefined | ((a: T) => number | string);
+  private _sortedRecords: T[] | undefined;
 
   viewRecords: T[] = [];
   nextViewRecords: T[] = []; // for double buffering
@@ -64,8 +70,17 @@ class DataSource<
     return this._recordsById;
   }
 
+  /**
+   * Exposed for testing only.
+   * Returns the set of records after applying sorting
+   */
+  get sortedRecords(): readonly T[] {
+    return this.sortBy ? this._sortedRecords! : this._records;
+  }
+
   constructor(keyAttribute: KEY | undefined) {
     this.keyAttribute = keyAttribute;
+    this.setSortBy(undefined);
   }
 
   private assertKeySet() {
@@ -127,7 +142,15 @@ class DataSource<
     }
   }
 
+  /**
+   * Replaces an item in the base data collection.
+   * Note that the index is based on the insertion order, and not based on the current view
+   */
   update(index: number, value: T) {
+    const oldValue = this._records[index];
+    if (value === oldValue) {
+      return;
+    }
     if (this.keyAttribute) {
       const key = this.getKey(value);
       const currentKey = this.getKey(this._records[index]);
@@ -142,6 +165,7 @@ class DataSource<
     this.emitDataEvent({
       type: 'update',
       value,
+      oldValue,
       index,
     });
   }
@@ -156,6 +180,25 @@ class DataSource<
     throw new Error('Not Implemented');
   }
 
+  setSortBy(sortBy: undefined | keyof T | ((a: T) => number | string)) {
+    if (this.sortBy === sortBy) {
+      return;
+    }
+    if (typeof sortBy === 'string') {
+      sortBy = property(sortBy); // TODO: it'd be great to recycle those if sortBy didn't change!
+    }
+    this.sortBy = sortBy as any;
+    if (sortBy === undefined) {
+      this._sortedRecords = undefined;
+    } else {
+      this._sortedRecords = [];
+      // TODO: using .sort will be faster?
+      this._records.forEach((value) => {
+        this.insertSorted(value);
+      });
+    }
+  }
+
   emitDataEvent(event: DataEvent<T>) {
     this.dataUpdateQueue.push(event);
     // TODO: schedule
@@ -164,9 +207,69 @@ class DataSource<
 
   processEvents() {
     const events = this.dataUpdateQueue.splice(0);
-    events.forEach((_event) => {
-      // TODO:
-    });
+    events.forEach(this.processEvent);
+  }
+
+  processEvent = (event: DataEvent<T>) => {
+    const {value} = event;
+    switch (event.type) {
+      case 'append':
+        // sort
+        if (this.sortBy) {
+          this.insertSorted(value);
+        }
+        // reverse
+
+        // filter
+
+        // notify
+        break;
+      case 'update':
+        // sort
+        if (this.sortBy) {
+          // find old entry
+          const oldIndex = this.getSortedIndex(event.oldValue);
+          if (
+            this.sortBy(this._sortedRecords![oldIndex]) === this.sortBy(value)
+          ) {
+            // sort value is the same? just swap the item
+            this._sortedRecords![oldIndex] = value;
+          } else {
+            // sort value is different? remove and add
+            this._sortedRecords!.splice(oldIndex, 1);
+            this.insertSorted(value);
+          }
+          // reverse
+
+          // filter
+
+          // notify
+        }
+        break;
+      default:
+        throw new Error('unknown event type');
+    }
+  };
+
+  private getSortedIndex(value: T) {
+    let index = sortedIndexBy(this._sortedRecords, value, this.sortBy);
+    // the item we are looking for is not necessarily the first one at the insertion index
+    while (this._sortedRecords![index] !== value) {
+      index++;
+      if (index >= this._sortedRecords!.length) {
+        throw new Error('illegal state: sortedIndex not found'); // sanity check to avoid browser freeze if people mess up with internals
+      }
+    }
+    return index;
+  }
+
+  private insertSorted(value: T) {
+    const insertionIndex = sortedLastIndexBy(
+      this._sortedRecords,
+      value,
+      this.sortBy!,
+    );
+    this._sortedRecords!.splice(insertionIndex, 0, value);
   }
 }
 

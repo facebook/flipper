@@ -94,3 +94,74 @@ test('throws on invalid keys', () => {
     ds.append({id: 'cookie', title: 'test'});
   }).toThrow(`Duplicate key: 'cookie'`);
 });
+
+test('sorting works', () => {
+  const ds = createDataSource<Todo>([eatCookie, drinkCoffee]);
+  ds.setSortBy((todo) => todo.title);
+  expect(ds.sortedRecords).toEqual([drinkCoffee, eatCookie]);
+
+  ds.setSortBy(undefined);
+  ds.setSortBy(undefined);
+  expect(ds.sortedRecords).toEqual([eatCookie, drinkCoffee]);
+  ds.setSortBy((todo) => todo.title);
+  expect(ds.sortedRecords).toEqual([drinkCoffee, eatCookie]);
+
+  const aleph = {
+    id: 'd',
+    title: 'aleph',
+  };
+  ds.append(aleph);
+  expect(ds.records).toEqual([eatCookie, drinkCoffee, aleph]);
+  expect(ds.sortedRecords).toEqual([aleph, drinkCoffee, eatCookie]);
+});
+
+test('sorting preserves insertion order with equal keys', () => {
+  type N = {
+    $: string;
+    name: string;
+  };
+
+  const a = {$: 'a', name: 'a'};
+  const b1 = {$: 'b', name: 'b1'};
+  const b2 = {$: 'b', name: 'b2'};
+  const b3 = {$: 'b', name: 'b3'};
+  const c = {$: 'c', name: 'c'};
+
+  const ds = createDataSource<N>([]);
+  ds.setSortBy('$');
+  ds.append(b1);
+  ds.append(c);
+  ds.append(b2);
+  ds.append(a);
+  ds.append(b3);
+
+  expect(ds.records).toEqual([b1, c, b2, a, b3]);
+  expect(ds.sortedRecords).toEqual([a, b1, b2, b3, c]);
+
+  // if we append a new item with existig item, it should end up in the end
+  const b4 = {
+    $: 'b',
+    name: 'b4',
+  };
+  ds.append(b4);
+  expect(ds.records).toEqual([b1, c, b2, a, b3, b4]);
+  expect(ds.sortedRecords).toEqual([a, b1, b2, b3, b4, c]);
+
+  // if we replace the middle item, it should end up in the middle
+  const b2r = {
+    $: 'b',
+    name: 'b2replacement',
+  };
+  ds.update(2, b2r);
+  expect(ds.records).toEqual([b1, c, b2r, a, b3, b4]);
+  expect(ds.sortedRecords).toEqual([a, b1, b2r, b3, b4, c]);
+
+  // if we replace something with a different sort value, it should be sorted properly, and the old should disappear
+  const b3r = {
+    $: 'aa',
+    name: 'b3replacement',
+  };
+  ds.update(4, b3r);
+  expect(ds.records).toEqual([b1, c, b2r, a, b3r, b4]);
+  expect(ds.sortedRecords).toEqual([a, b3r, b1, b2r, b4, c]);
+});
