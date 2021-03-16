@@ -55,15 +55,15 @@ test('update and append', async () => {
     expect(elem.length).toBe(1);
     expect(elem[0].parentElement).toMatchInlineSnapshot(`
       <div
-        class="css-tihkal-TableBodyRowContainer efe0za01"
+        class="css-8pa5c2-TableBodyRowContainer efe0za01"
       >
         <div
-          class="ant-table-cell css-1u65yt0-TableBodyColumnContainer efe0za00"
+          class="css-kkcfb6-TableBodyColumnContainer efe0za00"
         >
           test DataTable
         </div>
         <div
-          class="ant-table-cell css-1u65yt0-TableBodyColumnContainer efe0za00"
+          class="css-kkcfb6-TableBodyColumnContainer efe0za00"
         >
           true
         </div>
@@ -112,15 +112,15 @@ test('column visibility', async () => {
     expect(elem.length).toBe(1);
     expect(elem[0].parentElement).toMatchInlineSnapshot(`
       <div
-        class="css-tihkal-TableBodyRowContainer efe0za01"
+        class="css-8pa5c2-TableBodyRowContainer efe0za01"
       >
         <div
-          class="ant-table-cell css-1u65yt0-TableBodyColumnContainer efe0za00"
+          class="css-kkcfb6-TableBodyColumnContainer efe0za00"
         >
           test DataTable
         </div>
         <div
-          class="ant-table-cell css-1u65yt0-TableBodyColumnContainer efe0za00"
+          class="css-kkcfb6-TableBodyColumnContainer efe0za00"
         >
           true
         </div>
@@ -137,10 +137,10 @@ test('column visibility', async () => {
     expect(elem.length).toBe(1);
     expect(elem[0].parentElement).toMatchInlineSnapshot(`
       <div
-        class="css-tihkal-TableBodyRowContainer efe0za01"
+        class="css-8pa5c2-TableBodyRowContainer efe0za01"
       >
         <div
-          class="ant-table-cell css-1u65yt0-TableBodyColumnContainer efe0za00"
+          class="css-kkcfb6-TableBodyColumnContainer efe0za00"
         >
           test DataTable
         </div>

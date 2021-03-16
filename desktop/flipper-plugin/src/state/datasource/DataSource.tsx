@@ -328,6 +328,16 @@ export class DataSource<
     this.rebuildOutput();
   }
 
+  /**
+   * Returns a fork of this dataSource, that shares the source data with this dataSource,
+   * but has it's own FSRW pipeline, to allow multiple views on the same data
+   */
+  fork(): DataSource<T> {
+    throw new Error(
+      'Not implemented. Please contact oncall if this feature is needed',
+    );
+  }
+
   emitDataEvent(event: DataEvent<T>) {
     this.dataUpdateQueue.push(event);
     // TODO: schedule

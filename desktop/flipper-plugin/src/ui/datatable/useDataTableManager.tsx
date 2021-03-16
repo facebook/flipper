@@ -246,6 +246,10 @@ export function useDataTableManager<T>(
     [currentFilter, dataSource],
   );
 
+  // if the component unmounts, we reset the SFRW pipeline to
+  // avoid wasting resources in the background
+  useEffect(() => () => dataSource.reset(), [dataSource]);
+
   return {
     /** The default columns, but normalized */
     columns,

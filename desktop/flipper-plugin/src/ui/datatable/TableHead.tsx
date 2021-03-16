@@ -24,7 +24,8 @@ import {Typography} from 'antd';
 import {CaretDownFilled, CaretUpFilled} from '@ant-design/icons';
 import {Layout} from '../Layout';
 import {Sorting, OnColumnResize, SortDirection} from './useDataTableManager';
-import {ColumnFilterHandlers, FilterIcon, HeaderButton} from './ColumnFilter';
+import {ColumnFilterHandlers, FilterIcon} from './ColumnFilter';
+import {DEFAULT_ROW_HEIGHT} from './TableRow';
 
 const {Text} = Typography;
 
@@ -90,14 +91,15 @@ TableHeaderColumnInteractive.displayName =
 const TableHeadColumnContainer = styled.div<{
   width: Width;
 }>((props) => ({
+  // height: DEFAULT_ROW_HEIGHT,
   flexShrink: props.width === undefined ? 1 : 0,
   flexGrow: props.width === undefined ? 1 : 0,
   width: props.width === undefined ? '100%' : props.width,
-  paddingLeft: 4,
+  paddingLeft: 8,
   [`:hover ${SortIconsContainer}`]: {
     visibility: 'visible',
   },
-  [`&:hover ${HeaderButton}`]: {
+  [`&:hover button`]: {
     visibility: 'visible !important' as any,
   },
 }));
@@ -172,7 +174,7 @@ function TableHeadColumn({
         }}
         role="button"
         tabIndex={0}>
-        <Text strong>
+        <Text type="secondary">
           {column.title ?? <>&nbsp;</>}
           <SortIcons
             direction={sorted}

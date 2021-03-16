@@ -140,7 +140,7 @@ type SplitLayoutProps = {
   center?: boolean;
   gap?: Spacing;
   children: [React.ReactNode, React.ReactNode];
-  style?: React.HTMLAttributes<HTMLDivElement>['style'];
+  style?: CSSProperties;
 };
 
 function renderSplitLayout(

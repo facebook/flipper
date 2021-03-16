@@ -15,6 +15,7 @@ import React, {
   useState,
   RefObject,
   MutableRefObject,
+  CSSProperties,
 } from 'react';
 import {TableRow, DEFAULT_ROW_HEIGHT} from './TableRow';
 import {DataSource} from '../../state/datasource/DataSource';
@@ -29,14 +30,15 @@ import {theme} from '../theme';
 import {tableContextMenuFactory} from './TableContextMenu';
 import {Typography} from 'antd';
 import {CoffeeOutlined, SearchOutlined} from '@ant-design/icons';
+import {useAssertStableRef} from '../../utils/useAssertStableRef';
 
 interface DataTableProps<T = any> {
   columns: DataTableColumn<T>[];
   dataSource: DataSource<T, any, any>;
   autoScroll?: boolean;
   extraActions?: React.ReactElement;
-  // custom onSearch(text, row) option?
-  onSelect?(item: T | undefined, items: T[]): void;
+  onSelect?(record: T | undefined, records: T[]): void;
+  onRowStyle?(record: T): CSSProperties | undefined;
   // multiselect?: true
   tableManagerRef?: RefObject<TableManager>;
   _testHeight?: number; // exposed for unit testing only
@@ -76,7 +78,13 @@ export interface RenderContext<T = any> {
 export function DataTable<T extends object>(
   props: DataTableProps<T>,
 ): React.ReactElement {
-  const {dataSource} = props;
+  const {dataSource, onRowStyle} = props;
+  useAssertStableRef(dataSource, 'dataSource');
+  useAssertStableRef(onRowStyle, 'onRowStyle');
+  useAssertStableRef(props.onSelect, 'onRowSelect');
+  useAssertStableRef(props.columns, 'columns');
+  useAssertStableRef(props._testHeight, '_testHeight');
+
   const virtualizerRef = useRef<DataSourceVirtualizer | undefined>();
   const tableManager = useDataTableManager(
     dataSource,
@@ -135,7 +143,7 @@ export function DataTable<T extends object>(
 
   const itemRenderer = useCallback(
     function itemRenderer(
-      item: any,
+      record: T,
       index: number,
       renderContext: RenderContext<T>,
     ) {
@@ -143,15 +151,16 @@ export function DataTable<T extends object>(
         <TableRow
           key={index}
           config={renderContext}
-          value={item}
+          record={record}
           itemIndex={index}
           highlighted={
             index === selection.current || selection.items.has(index)
           }
+          style={onRowStyle?.(record)}
         />
       );
     },
-    [selection],
+    [selection, onRowStyle],
   );
 
   /**

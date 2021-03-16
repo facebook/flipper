@@ -8,7 +8,6 @@
  */
 
 import {useMemo, useState} from 'react';
-import styled from '@emotion/styled';
 import React from 'react';
 import {theme} from '../theme';
 import type {DataTableColumn} from './DataTable';
@@ -18,12 +17,6 @@ import {FilterFilled, MinusCircleOutlined} from '@ant-design/icons';
 import {Layout} from '../Layout';
 
 const {Text} = Typography;
-
-export const HeaderButton = styled(Button)({
-  padding: 4,
-  backgroundColor: theme.backgroundWash,
-  borderRadius: 0,
-});
 
 export type ColumnFilterHandlers = {
   onAddColumnFilter(columnId: string, value: string): void;
@@ -135,14 +128,17 @@ export function FilterIcon({
 
   return (
     <Dropdown overlay={menu} trigger={['click']}>
-      <HeaderButton
+      <Button
+        size="small"
         type="text"
         style={{
+          backgroundColor: theme.backgroundWash,
+          borderRadius: 0,
           visibility: isActive ? 'visible' : 'hidden',
           color: isActive ? theme.primaryColor : theme.disabledColor,
         }}>
         <FilterFilled />
-      </HeaderButton>
+      </Button>
     </Dropdown>
   );
 }

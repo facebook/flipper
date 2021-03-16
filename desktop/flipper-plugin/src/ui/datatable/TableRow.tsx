@@ -7,7 +7,7 @@
  * @format
  */
 
-import React, {memo} from 'react';
+import React, {CSSProperties, memo} from 'react';
 import styled from '@emotion/styled';
 import {theme} from 'flipper-plugin';
 import type {RenderContext} from './DataTable';
@@ -23,7 +23,7 @@ type TableBodyRowContainerProps = {
 
 const backgroundColor = (props: TableBodyRowContainerProps) => {
   if (props.highlighted) {
-    return theme.backgroundTransparentHover;
+    return theme.backgroundWash;
   }
   return undefined;
 };
@@ -47,8 +47,14 @@ const TableBodyRowContainer = styled.div<TableBodyRowContainerProps>(
     backgroundColor: backgroundColor(props),
     borderLeft: props.highlighted
       ? `4px solid ${theme.primaryColor}`
-      : `4px solid ${theme.backgroundDefault}`,
+      : `4px solid transparent`,
+    paddingTop: 1,
+    borderBottom: `1px solid ${theme.dividerColor}`,
     minHeight: DEFAULT_ROW_HEIGHT,
+    lineHeight: `${DEFAULT_ROW_HEIGHT - 2}px`,
+    '& .anticon': {
+      lineHeight: `${DEFAULT_ROW_HEIGHT - 2}px`,
+    },
     overflow: 'hidden',
     width: '100%',
     flexShrink: 0,
@@ -74,7 +80,6 @@ const TableBodyColumnContainer = styled.div<{
   wordWrap: props.multiline ? 'break-word' : 'normal',
   width: props.width,
   justifyContent: props.justifyContent,
-  borderBottom: `1px solid ${theme.dividerColor}`,
   '&::selection': {
     color: 'inherit',
     backgroundColor: theme.buttonDefaultBackground,
@@ -85,32 +90,38 @@ TableBodyColumnContainer.displayName = 'TableRow:TableBodyColumnContainer';
 type Props = {
   config: RenderContext<any>;
   highlighted: boolean;
-  value: any;
+  record: any;
   itemIndex: number;
+  style?: CSSProperties;
 };
 
-export const TableRow = memo(function TableRow(props: Props) {
-  const {config, highlighted, value: row} = props;
+export const TableRow = memo(function TableRow({
+  record,
+  itemIndex,
+  highlighted,
+  style,
+  config,
+}: Props) {
   return (
     <TableBodyRowContainer
       highlighted={highlighted}
-      data-key={row.key}
+      data-key={record.key}
       onMouseDown={(e) => {
-        props.config.onMouseDown(e, props.value, props.itemIndex);
+        config.onMouseDown(e, record, itemIndex);
       }}
       onMouseEnter={(e) => {
-        props.config.onMouseEnter(e, props.value, props.itemIndex);
-      }}>
+        config.onMouseEnter(e, record, itemIndex);
+      }}
+      style={style}>
       {config.columns
         .filter((col) => col.visible)
         .map((col) => {
           const value = (col as any).onRender
-            ? (col as any).onRender(row)
-            : normalizeCellValue((row as any)[col.key]);
+            ? (col as any).onRender(record)
+            : normalizeCellValue((record as any)[col.key]);
 
           return (
             <TableBodyColumnContainer
-              className="ant-table-cell"
               key={col.key as string}
               multiline={col.wrap}
               justifyContent={col.align ? col.align : 'flex-start'}
