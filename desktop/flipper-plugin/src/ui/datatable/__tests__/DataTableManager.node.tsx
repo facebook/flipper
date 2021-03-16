@@ -46,6 +46,34 @@ test('computeSetSelection', () => {
     current: 5,
     items: new Set([2, 3, 8, 9, 5, 6, 7]), // n.b. order is irrelevant
   });
+
+  // single item existing selection
+  expect(
+    computeSetSelection(
+      {
+        current: 4,
+        items: new Set([4]),
+      },
+      5,
+    ),
+  ).toEqual({
+    current: 5,
+    items: new Set([5]),
+  });
+
+  // single item existing selection, toggle item off
+  expect(
+    computeSetSelection(
+      {
+        current: 4,
+        items: new Set([4]),
+      },
+      4,
+    ),
+  ).toEqual({
+    current: -1,
+    items: new Set(),
+  });
 });
 
 test('computeAddRangeToSelection', () => {
@@ -79,7 +107,7 @@ test('computeAddRangeToSelection', () => {
 
   // invest selection - toggle off
   expect(computeAddRangeToSelection(partialBase, 8, 8, true)).toEqual({
-    current: 8, // note: this item is not part of the selection!
+    current: 9, // select the next thing
     items: new Set([2, 3, 9]),
   });
 

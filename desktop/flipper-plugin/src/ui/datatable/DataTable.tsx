@@ -26,11 +26,7 @@ import {useDataTableManager, TableManager} from './useDataTableManager';
 import {TableSearch} from './TableSearch';
 import styled from '@emotion/styled';
 import {theme} from '../theme';
-import {
-  tableContextMenuFactory,
-  TableContextMenuContext,
-} from './TableContextMenu';
-import {useMemoize} from '../../utils/useMemoize';
+import {tableContextMenuFactory} from './TableContextMenu';
 
 interface DataTableProps<T = any> {
   columns: DataTableColumn<T>[];
@@ -93,9 +89,6 @@ export function DataTable<T extends object>(
     selectItem,
     selection,
     addRangeToSelection,
-    addColumnFilter,
-    getSelectedItem,
-    getSelectedItems,
   } = tableManager;
 
   const renderingConfig = useMemo<RenderContext<T>>(() => {
@@ -236,13 +229,8 @@ export function DataTable<T extends object>(
   // TODO: support customizing context menu
   const contexMenu = props._testHeight
     ? undefined // don't render context menu in tests
-    : // eslint-disable-next-line
-    useMemoize(tableContextMenuFactory, [
-        visibleColumns,
-        addColumnFilter,
-        getSelectedItem,
-        getSelectedItems as any,
-      ]);
+    : tableContextMenuFactory(tableManager);
+
   return (
     <Layout.Container grow>
       <Layout.Top>
@@ -250,34 +238,34 @@ export function DataTable<T extends object>(
           <TableSearch
             onSearch={tableManager.setSearchValue}
             extraActions={props.extraActions}
+            contextMenu={contexMenu}
           />
           <TableHead
-            columns={tableManager.columns}
             visibleColumns={tableManager.visibleColumns}
             onColumnResize={tableManager.resizeColumn}
             onReset={tableManager.reset}
-            onColumnToggleVisibility={tableManager.toggleColumnVisibility}
             sorting={tableManager.sorting}
             onColumnSort={tableManager.sortColumn}
             onAddColumnFilter={tableManager.addColumnFilter}
             onRemoveColumnFilter={tableManager.removeColumnFilter}
             onToggleColumnFilter={tableManager.toggleColumnFilter}
+            onSetColumnFilterFromSelection={
+              tableManager.setColumnFilterFromSelection
+            }
           />
         </Layout.Container>
-        <TableContextMenuContext.Provider value={contexMenu}>
-          <DataSourceRenderer<T, RenderContext<T>>
-            dataSource={dataSource}
-            autoScroll={props.autoScroll}
-            useFixedRowHeight={!usesWrapping}
-            defaultRowHeight={DEFAULT_ROW_HEIGHT}
-            context={renderingConfig}
-            itemRenderer={itemRenderer}
-            onKeyDown={onKeyDown}
-            virtualizerRef={virtualizerRef}
-            onRangeChange={onRangeChange}
-            _testHeight={props._testHeight}
-          />
-        </TableContextMenuContext.Provider>
+        <DataSourceRenderer<T, RenderContext<T>>
+          dataSource={dataSource}
+          autoScroll={props.autoScroll}
+          useFixedRowHeight={!usesWrapping}
+          defaultRowHeight={DEFAULT_ROW_HEIGHT}
+          context={renderingConfig}
+          itemRenderer={itemRenderer}
+          onKeyDown={onKeyDown}
+          virtualizerRef={virtualizerRef}
+          onRangeChange={onRangeChange}
+          _testHeight={props._testHeight}
+        />
       </Layout.Top>
       {range && <RangeFinder>{range}</RangeFinder>}
     </Layout.Container>

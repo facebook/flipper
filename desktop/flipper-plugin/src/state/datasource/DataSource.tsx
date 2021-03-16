@@ -299,6 +299,7 @@ export class DataSource<
   setReversed(reverse: boolean) {
     if (this.reverse !== reverse) {
       this.reverse = reverse;
+      // TODO: not needed anymore
       this.rebuildOutput();
     }
   }

@@ -7,15 +7,12 @@
  * @format
  */
 
-import React, {memo, useContext} from 'react';
+import React, {memo} from 'react';
 import styled from '@emotion/styled';
 import {theme} from 'flipper-plugin';
 import type {RenderContext} from './DataTable';
 import {Width} from '../../utils/widthUtils';
 import {pad} from 'lodash';
-import {DownCircleFilled} from '@ant-design/icons';
-import {Dropdown} from 'antd';
-import {TableContextMenuContext} from './TableContextMenu';
 
 // heuristic for row estimation, should match any future styling updates
 export const DEFAULT_ROW_HEIGHT = 24;
@@ -85,8 +82,6 @@ const TableBodyColumnContainer = styled.div<{
 }));
 TableBodyColumnContainer.displayName = 'TableRow:TableBodyColumnContainer';
 
-const contextMenuTriggers = ['click' as const, 'contextMenu' as const];
-
 type Props = {
   config: RenderContext<any>;
   highlighted: boolean;
@@ -96,7 +91,6 @@ type Props = {
 
 export const TableRow = memo(function TableRow(props: Props) {
   const {config, highlighted, value: row} = props;
-  const menu = useContext(TableContextMenuContext);
   return (
     <TableBodyRowContainer
       highlighted={highlighted}
@@ -125,25 +119,9 @@ export const TableRow = memo(function TableRow(props: Props) {
             </TableBodyColumnContainer>
           );
         })}
-      {menu && highlighted && (
-        <RowContextMenuWrapper
-          onClick={stopPropagation}
-          onMouseDown={stopPropagation}>
-          <Dropdown
-            overlay={menu}
-            placement="bottomRight"
-            trigger={contextMenuTriggers}>
-            <DownCircleFilled />
-          </Dropdown>
-        </RowContextMenuWrapper>
-      )}
     </TableBodyRowContainer>
   );
 });
-
-function stopPropagation(e: React.MouseEvent<any>) {
-  e.stopPropagation();
-}
 
 export function normalizeCellValue(value: any): string {
   switch (typeof value) {

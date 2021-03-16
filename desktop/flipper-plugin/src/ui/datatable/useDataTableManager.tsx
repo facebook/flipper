@@ -17,8 +17,10 @@ import {useMemoize} from '../../utils/useMemoize';
 export type OnColumnResize = (id: string, size: number | Percentage) => void;
 export type Sorting = {
   key: string;
-  direction: 'up' | 'down';
+  direction: Exclude<SortDirection, undefined>;
 };
+
+export type SortDirection = 'up' | 'down' | undefined;
 
 export type TableManager = ReturnType<typeof useDataTableManager>;
 
@@ -52,6 +54,69 @@ export function useDataTableManager<T>(
     () => columns.filter((column) => column.visible),
     [columns],
   );
+
+  /**
+   * Select an individual item, used by mouse clicks and keyboard navigation
+   * Set addToSelection if the current selection should be expanded to the given position,
+   * rather than replacing the current selection.
+   *
+   * The nextIndex can be used to compute the new selection by basing relatively to the current selection
+   */
+  const selectItem = useCallback(
+    (
+      nextIndex: number | ((currentIndex: number) => number),
+      addToSelection?: boolean,
+    ) => {
+      setSelection((base) =>
+        computeSetSelection(base, nextIndex, addToSelection),
+      );
+    },
+    [],
+  );
+
+  /**
+   * Adds a range of items to the current seleciton (if any)
+   */
+  const addRangeToSelection = useCallback(
+    (start: number, end: number, allowUnselect?: boolean) => {
+      setSelection((base) =>
+        computeAddRangeToSelection(base, start, end, allowUnselect),
+      );
+    },
+    [],
+  );
+
+  // N.B: we really want to have stable refs for these functions,
+  // to avoid that all context menus need re-render for every selection change,
+  // hence the selectionRef hack
+  const getSelectedItem = useCallback(() => {
+    return selectionRef.current.current < 0
+      ? undefined
+      : dataSource.getItem(selectionRef.current.current);
+  }, [dataSource]);
+
+  const getSelectedItems = useCallback(() => {
+    return [...selectionRef.current.items]
+      .sort()
+      .map((i) => dataSource.getItem(i))
+      .filter(Boolean) as any[];
+  }, [dataSource]);
+
+  useEffect(
+    function fireSelection() {
+      if (onSelect) {
+        const item = getSelectedItem();
+        const items = getSelectedItems();
+        onSelect(item, items);
+      }
+    },
+    // selection is intentionally a dep
+    [onSelect, selection, selection, getSelectedItem, getSelectedItems],
+  );
+
+  /**
+   * Filtering
+   */
 
   const addColumnFilter = useCallback(
     (columnId: string, value: string, disableOthers = false) => {
@@ -102,6 +167,22 @@ export function useDataTableManager<T>(
     );
   }, []);
 
+  const setColumnFilterFromSelection = useCallback(
+    (columnId: string) => {
+      const items = getSelectedItems();
+      if (items.length) {
+        items.forEach((item, index) => {
+          addColumnFilter(
+            columnId,
+            item[columnId],
+            index === 0, // remove existing filters before adding the first
+          );
+        });
+      }
+    },
+    [getSelectedItems, addColumnFilter],
+  );
+
   // filter is computed by useMemo to support adding column filters etc here in the future
   const currentFilter = useMemoize(
     computeDataTableFilter,
@@ -127,23 +208,22 @@ export function useDataTableManager<T>(
   }, []);
 
   const sortColumn = useCallback(
-    (key: string) => {
-      if (sorting?.key === key) {
-        if (sorting.direction === 'down') {
-          setSorting({key, direction: 'up'});
-          dataSource.setReversed(true);
-        } else {
-          setSorting(undefined);
-          dataSource.setSortBy(undefined);
-          dataSource.setReversed(false);
-        }
-      } else {
-        setSorting({
-          key,
-          direction: 'down',
-        });
-        dataSource.setSortBy(key as any);
+    (key: string, direction: SortDirection) => {
+      if (direction === undefined) {
+        // remove sorting
+        setSorting(undefined);
+        dataSource.setSortBy(undefined);
         dataSource.setReversed(false);
+      } else {
+        // update sorting
+        // TODO: make sure that setting both doesn't rebuild output twice!
+        if (!sorting || sorting.key !== key) {
+          dataSource.setSortBy(key as any);
+        }
+        if (!sorting || sorting.direction !== direction) {
+          dataSource.setReversed(direction === 'up');
+        }
+        setSorting({key, direction});
       }
     },
     [dataSource, sorting],
@@ -164,65 +244,6 @@ export function useDataTableManager<T>(
       dataSource.setFilter(currentFilter);
     },
     [currentFilter, dataSource],
-  );
-
-  /**
-   * Select an individual item, used by mouse clicks and keyboard navigation
-   * Set addToSelection if the current selection should be expanded to the given position,
-   * rather than replacing the current selection.
-   *
-   * The nextIndex can be used to compute the new selection by basing relatively to the current selection
-   */
-  const selectItem = useCallback(
-    (
-      nextIndex: number | ((currentIndex: number) => number),
-      addToSelection?: boolean,
-    ) => {
-      setSelection((base) =>
-        computeSetSelection(base, nextIndex, addToSelection),
-      );
-    },
-    [],
-  );
-
-  /**
-   * Adds a range of items to the current seleciton (if any)
-   */
-  const addRangeToSelection = useCallback(
-    (start: number, end: number, allowUnselect?: boolean) => {
-      setSelection((base) =>
-        computeAddRangeToSelection(base, start, end, allowUnselect),
-      );
-    },
-    [],
-  );
-
-  // N.B: we really want to have stable refs for these functions,
-  // to avoid that all context menus need re-render for every selection change,
-  // hence the selectionRef hack
-  const getSelectedItem = useCallback(() => {
-    return selectionRef.current.current < 0
-      ? undefined
-      : dataSource.getItem(selectionRef.current.current);
-  }, [dataSource]);
-
-  const getSelectedItems = useCallback(() => {
-    return [...selectionRef.current.items]
-      .sort()
-      .map((i) => dataSource.getItem(i))
-      .filter(Boolean);
-  }, [dataSource]);
-
-  useEffect(
-    function fireSelection() {
-      if (onSelect) {
-        const item = getSelectedItem();
-        const items = getSelectedItems();
-        onSelect(item, items);
-      }
-    },
-    // selection is intentionally a dep
-    [onSelect, selection, selection, getSelectedItem, getSelectedItems],
   );
 
   return {
@@ -252,6 +273,7 @@ export function useDataTableManager<T>(
     addColumnFilter,
     removeColumnFilter,
     toggleColumnFilter,
+    setColumnFilterFromSelection,
   };
 }
 
@@ -310,6 +332,10 @@ export function computeSetSelection(
 ): Selection {
   const newIndex =
     typeof nextIndex === 'number' ? nextIndex : nextIndex(base.current);
+  // special case: toggle existing selection off
+  if (!addToSelection && base.items.size === 1 && base.current === newIndex) {
+    return emptySelection;
+  }
   if (newIndex < 0) {
     return emptySelection;
   }
@@ -334,17 +360,18 @@ export function computeAddRangeToSelection(
   end: number,
   allowUnselect?: boolean,
 ): Selection {
-  // special case: unselectiong a single existing item
+  // special case: unselectiong a single item with the selection
   if (start === end && allowUnselect) {
     if (base?.items.has(start)) {
       const copy = new Set(base.items);
       copy.delete(start);
-      if (copy.size === 0) {
+      const current = [...copy];
+      if (current.length === 0) {
         return emptySelection;
       }
       return {
         items: copy,
-        current: start,
+        current: current[current.length - 1], // back to the last selected one
       };
     }
     // intentional fall-through

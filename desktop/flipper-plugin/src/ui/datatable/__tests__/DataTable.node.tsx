@@ -195,7 +195,7 @@ test('sorting', async () => {
   }
   // sort asc
   act(() => {
-    ref.current?.sortColumn('title');
+    ref.current?.sortColumn('title', 'down');
   });
   {
     const elem = await rendering.findAllByText(/item/);
@@ -208,7 +208,7 @@ test('sorting', async () => {
   }
   // sort desc
   act(() => {
-    ref.current?.sortColumn('title');
+    ref.current?.sortColumn('title', 'up');
   });
   {
     const elem = await rendering.findAllByText(/item/);
@@ -219,9 +219,9 @@ test('sorting', async () => {
       'item a',
     ]);
   }
-  // another click resets again
+  // reset sort
   act(() => {
-    ref.current?.sortColumn('title');
+    ref.current?.sortColumn('title', undefined);
   });
   {
     const elem = await rendering.findAllByText(/item/);

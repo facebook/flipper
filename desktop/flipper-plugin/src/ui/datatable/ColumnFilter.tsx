@@ -29,6 +29,7 @@ export type ColumnFilterHandlers = {
   onAddColumnFilter(columnId: string, value: string): void;
   onRemoveColumnFilter(columnId: string, index: number): void;
   onToggleColumnFilter(columnId: string, index: number): void;
+  onSetColumnFilterFromSelection(columnId: string): void;
 };
 
 export function FilterIcon({
@@ -98,6 +99,37 @@ export function FilterIcon({
           No active filters
         </Text>
       )}
+      <Menu.Divider />
+      <div style={{textAlign: 'right'}}>
+        <Button
+          type="link"
+          style={{fontWeight: 'unset'}}
+          onClick={() => {
+            props.onSetColumnFilterFromSelection(column.key);
+          }}>
+          From selection
+        </Button>
+        <Button
+          type="link"
+          style={{fontWeight: 'unset'}}
+          onClick={() => {
+            filters?.forEach((f, index) => {
+              if (!f.enabled) props.onToggleColumnFilter(column.key, index);
+            });
+          }}>
+          All
+        </Button>
+        <Button
+          type="link"
+          style={{fontWeight: 'unset'}}
+          onClick={() => {
+            filters?.forEach((f, index) => {
+              if (f.enabled) props.onToggleColumnFilter(column.key, index);
+            });
+          }}>
+          None
+        </Button>
+      </div>
     </Menu>
   );
 

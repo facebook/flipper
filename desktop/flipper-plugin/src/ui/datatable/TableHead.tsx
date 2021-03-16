@@ -20,23 +20,37 @@ import React from 'react';
 import {theme} from '../theme';
 import type {DataTableColumn} from './DataTable';
 
-import {Checkbox, Dropdown, Menu, Typography} from 'antd';
-import {CaretDownFilled, CaretUpFilled, DownOutlined} from '@ant-design/icons';
+import {Typography} from 'antd';
+import {CaretDownFilled, CaretUpFilled} from '@ant-design/icons';
 import {Layout} from '../Layout';
-import {Sorting, OnColumnResize} from './useDataTableManager';
+import {Sorting, OnColumnResize, SortDirection} from './useDataTableManager';
 import {ColumnFilterHandlers, FilterIcon, HeaderButton} from './ColumnFilter';
 
 const {Text} = Typography;
 
-function SortIcons({direction}: {direction?: 'up' | 'down'}) {
+function SortIcons({
+  direction,
+  onSort,
+}: {
+  direction?: SortDirection;
+  onSort(direction: SortDirection): void;
+}) {
   return (
     <SortIconsContainer direction={direction}>
       <CaretUpFilled
+        onClick={(e) => {
+          e.stopPropagation();
+          onSort(direction === 'up' ? undefined : 'up');
+        }}
         className={
           'ant-table-column-sorter-up ' + (direction === 'up' ? 'active' : '')
         }
       />
       <CaretDownFilled
+        onClick={(e) => {
+          e.stopPropagation();
+          onSort(direction === 'down' ? undefined : 'down');
+        }}
         className={
           'ant-table-column-sorter-down ' +
           (direction === 'down' ? 'active' : '')
@@ -55,25 +69,41 @@ const SortIconsContainer = styled.span<{direction?: 'up' | 'down'}>(
     position: 'relative',
     left: 4,
     top: -3,
+    cursor: 'pointer',
     color: theme.disabledColor,
+    '.ant-table-column-sorter-up:hover, .ant-table-column-sorter-down:hover': {
+      color: theme.primaryColor,
+    },
   }),
 );
-
-const SettingsButton = styled(HeaderButton)({
-  position: 'absolute',
-  right: 0,
-  top: 0,
-});
 
 const TableHeaderColumnInteractive = styled(Interactive)<InteractiveProps>({
   overflow: 'hidden',
   whiteSpace: 'nowrap',
   width: '100%',
+  borderRight: `1px solid ${theme.dividerColor}`,
+  paddingRight: 4,
 });
 TableHeaderColumnInteractive.displayName =
   'TableHead:TableHeaderColumnInteractive';
 
-const TableHeadContainer = styled.div<{horizontallyScrollable?: boolean}>({
+const TableHeadColumnContainer = styled.div<{
+  width: Width;
+}>((props) => ({
+  flexShrink: props.width === undefined ? 1 : 0,
+  flexGrow: props.width === undefined ? 1 : 0,
+  width: props.width === undefined ? '100%' : props.width,
+  paddingLeft: 4,
+  [`:hover ${SortIconsContainer}`]: {
+    visibility: 'visible',
+  },
+  [`&:hover ${HeaderButton}`]: {
+    visibility: 'visible !important' as any,
+  },
+}));
+TableHeadColumnContainer.displayName = 'TableHead:TableHeadColumnContainer';
+
+const TableHeadContainer = styled.div({
   position: 'relative',
   display: 'flex',
   flexDirection: 'row',
@@ -83,25 +113,6 @@ const TableHeadContainer = styled.div<{horizontallyScrollable?: boolean}>({
   borderLeft: `4px solid ${theme.backgroundWash}`, // space for selection, see TableRow
 });
 TableHeadContainer.displayName = 'TableHead:TableHeadContainer';
-
-const TableHeadColumnContainer = styled.div<{
-  width: Width;
-}>((props) => ({
-  flexShrink: props.width === undefined ? 1 : 0,
-  flexGrow: props.width === undefined ? 1 : 0,
-  width: props.width === undefined ? '100%' : props.width,
-  '&:last-of-type': {
-    marginRight: 20, // space for settings button
-  },
-  [`:hover ${SortIconsContainer}`]: {
-    visibility: 'visible',
-  },
-  [`&:hover ${HeaderButton}`]: {
-    visibility: 'visible !important' as any,
-  },
-  padding: '0 4px',
-}));
-TableHeadColumnContainer.displayName = 'TableHead:TableHeadColumnContainer';
 
 const RIGHT_RESIZABLE = {right: true};
 
@@ -116,7 +127,7 @@ function TableHeadColumn({
   column: DataTableColumn<any>;
   sorted: 'up' | 'down' | undefined;
   isResizable: boolean;
-  onSort: (id: string) => void;
+  onSort: (id: string, direction: SortDirection) => void;
   sortOrder: undefined | Sorting;
   onColumnResize: OnColumnResize;
 } & ColumnFilterHandlers) {
@@ -150,11 +161,23 @@ function TableHeadColumn({
   };
 
   let children = (
-    <Layout.Right center style={{padding: '0 4px'}}>
-      <div onClick={() => onSort(column.key)} role="button" tabIndex={0}>
+    <Layout.Right center>
+      <div
+        onClick={(e) => {
+          e.stopPropagation();
+          onSort(
+            column.key,
+            sorted === 'up' ? undefined : sorted === 'down' ? 'up' : 'down',
+          );
+        }}
+        role="button"
+        tabIndex={0}>
         <Text strong>
           {column.title ?? <>&nbsp;</>}
-          <SortIcons direction={sorted} />
+          <SortIcons
+            direction={sorted}
+            onSort={(dir) => onSort(column.key, dir)}
+          />
         </Text>
       </div>
       <FilterIcon column={column} {...filterHandlers} />
@@ -181,40 +204,15 @@ function TableHeadColumn({
 }
 
 export const TableHead = memo(function TableHead({
-  columns,
   visibleColumns,
   ...props
 }: {
-  columns: DataTableColumn<any>[];
   visibleColumns: DataTableColumn<any>[];
   onColumnResize: OnColumnResize;
-  onColumnToggleVisibility: (key: string) => void;
   onReset: () => void;
   sorting: Sorting | undefined;
-  onColumnSort: (key: string) => void;
+  onColumnSort: (key: string, direction: SortDirection) => void;
 } & ColumnFilterHandlers) {
-  const menu = (
-    <Menu style={{minWidth: 200}}>
-      {columns.map((column) => (
-        <Menu.Item key={column.key}>
-          <Checkbox
-            checked={column.visible}
-            onClick={(e) => {
-              e.stopPropagation();
-              e.preventDefault();
-              props.onColumnToggleVisibility(column.key);
-            }}>
-            {column.title || column.key}
-          </Checkbox>
-        </Menu.Item>
-      ))}
-      <Menu.Divider />
-      <Menu.Item key="reset" onClick={props.onReset}>
-        Reset
-      </Menu.Item>
-    </Menu>
-  );
-
   return (
     <TableHeadContainer>
       {visibleColumns.map((column, i) => (
@@ -228,6 +226,7 @@ export const TableHead = memo(function TableHead({
           onAddColumnFilter={props.onAddColumnFilter}
           onRemoveColumnFilter={props.onRemoveColumnFilter}
           onToggleColumnFilter={props.onToggleColumnFilter}
+          onSetColumnFilterFromSelection={props.onSetColumnFilterFromSelection}
           sorted={
             props.sorting?.key === column.key
               ? props.sorting!.direction
@@ -235,11 +234,6 @@ export const TableHead = memo(function TableHead({
           }
         />
       ))}
-      <Dropdown overlay={menu} trigger={['click']}>
-        <SettingsButton type="text">
-          <DownOutlined />
-        </SettingsButton>
-      </Dropdown>
     </TableHeadContainer>
   );
 });

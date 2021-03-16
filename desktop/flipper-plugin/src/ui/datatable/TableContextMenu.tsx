@@ -8,26 +8,16 @@
  */
 
 import {CopyOutlined, FilterOutlined} from '@ant-design/icons';
-import {Menu} from 'antd';
-import {DataTableColumn} from './DataTable';
+import {Checkbox, Menu} from 'antd';
 import {TableManager} from './useDataTableManager';
 import React from 'react';
-import {createContext} from 'react';
 import {normalizeCellValue} from './TableRow';
 import {tryGetFlipperLibImplementation} from '../../plugin/FlipperLib';
+import {DataTableColumn} from './DataTable';
 
 const {Item, SubMenu} = Menu;
 
-export const TableContextMenuContext = createContext<
-  React.ReactElement | undefined
->(undefined);
-
-export function tableContextMenuFactory<T>(
-  visibleColumns: DataTableColumn<T>[],
-  addColumnFilter: TableManager['addColumnFilter'],
-  _getSelection: () => T,
-  getMultiSelection: () => T[],
-) {
+export function tableContextMenuFactory(tableManager: TableManager) {
   const lib = tryGetFlipperLibImplementation();
   if (!lib) {
     return (
@@ -36,34 +26,32 @@ export function tableContextMenuFactory<T>(
       </Menu>
     );
   }
+  const hasSelection = tableManager.selection?.items.size > 0 ?? false;
   return (
     <Menu>
-      <SubMenu title="Filter on same..." icon={<FilterOutlined />}>
-        {visibleColumns.map((column) => (
+      <SubMenu
+        title="Filter on same"
+        icon={<FilterOutlined />}
+        disabled={!hasSelection}>
+        {tableManager.visibleColumns.map((column) => (
           <Item
             key={column.key}
             onClick={() => {
-              const items = getMultiSelection();
-              if (items.length) {
-                items.forEach((item, index) => {
-                  addColumnFilter(
-                    column.key,
-                    normalizeCellValue(item[column.key]),
-                    index === 0, // remove existing filters before adding the first
-                  );
-                });
-              }
+              tableManager.setColumnFilterFromSelection(column.key);
             }}>
-            {column.title || column.key}
+            {friendlyColumnTitle(column)}
           </Item>
         ))}
       </SubMenu>
-      <SubMenu title="Copy cell(s)" icon={<CopyOutlined />}>
-        {visibleColumns.map((column) => (
+      <SubMenu
+        title="Copy cell(s)"
+        icon={<CopyOutlined />}
+        disabled={!hasSelection}>
+        {tableManager.visibleColumns.map((column) => (
           <Item
             key={column.key}
             onClick={() => {
-              const items = getMultiSelection();
+              const items = tableManager.getSelectedItems();
               if (items.length) {
                 lib.writeTextToClipboard(
                   items
@@ -72,13 +60,14 @@ export function tableContextMenuFactory<T>(
                 );
               }
             }}>
-            {column.title || column.key}
+            {friendlyColumnTitle(column)}
           </Item>
         ))}
       </SubMenu>
       <Item
+        disabled={!hasSelection}
         onClick={() => {
-          const items = getMultiSelection();
+          const items = tableManager.getSelectedItems();
           if (items.length) {
             lib.writeTextToClipboard(
               JSON.stringify(items.length > 1 ? items : items[0], null, 2),
@@ -89,8 +78,9 @@ export function tableContextMenuFactory<T>(
       </Item>
       {lib.isFB && (
         <Item
+          disabled={!hasSelection}
           onClick={() => {
-            const items = getMultiSelection();
+            const items = tableManager.getSelectedItems();
             if (items.length) {
               lib.createPaste(
                 JSON.stringify(items.length > 1 ? items : items[0], null, 2),
@@ -100,6 +90,30 @@ export function tableContextMenuFactory<T>(
           Create paste
         </Item>
       )}
+      <Menu.Divider />
+      <SubMenu title="Visible columns">
+        {tableManager.columns.map((column) => (
+          <Menu.Item key={column.key}>
+            <Checkbox
+              checked={column.visible}
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                tableManager.toggleColumnVisibility(column.key);
+              }}>
+              {friendlyColumnTitle(column)}
+            </Checkbox>
+          </Menu.Item>
+        ))}
+      </SubMenu>
+      <Menu.Item key="reset" onClick={tableManager.reset}>
+        Reset view
+      </Menu.Item>
     </Menu>
   );
+}
+
+function friendlyColumnTitle(column: DataTableColumn<any>): string {
+  const name = column.title || column.key;
+  return name[0].toUpperCase() + name.substr(1);
 }
