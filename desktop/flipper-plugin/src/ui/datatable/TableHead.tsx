@@ -23,8 +23,8 @@ import type {DataTableColumn} from './DataTable';
 import {Typography} from 'antd';
 import {CaretDownFilled, CaretUpFilled} from '@ant-design/icons';
 import {Layout} from '../Layout';
-import {Sorting, OnColumnResize, SortDirection} from './useDataTableManager';
-import {ColumnFilterHandlers, FilterButton, FilterIcon} from './ColumnFilter';
+import {Sorting, SortDirection, DataTableDispatch} from './DataTableManager';
+import {FilterButton, FilterIcon} from './ColumnFilter';
 
 const {Text} = Typography;
 
@@ -120,18 +120,14 @@ const RIGHT_RESIZABLE = {right: true};
 function TableHeadColumn({
   column,
   isResizable,
-  onColumnResize,
-  onSort,
   sorted,
-  ...filterHandlers
+  dispatch,
 }: {
   column: DataTableColumn<any>;
   sorted: SortDirection;
   isResizable: boolean;
-  onSort: (id: string, direction: SortDirection) => void;
-  sortOrder: undefined | Sorting;
-  onColumnResize: OnColumnResize;
-} & ColumnFilterHandlers) {
+  dispatch: DataTableDispatch;
+}) {
   const ref = useRef<HTMLDivElement | null>(null);
 
   const onResize = (newWidth: number) => {
@@ -158,7 +154,11 @@ function TableHeadColumn({
       }
     }
 
-    onColumnResize(column.key, normalizedWidth);
+    dispatch({
+      type: 'resizeColumn',
+      column: column.key,
+      width: normalizedWidth,
+    });
   };
 
   let children = (
@@ -172,7 +172,11 @@ function TableHeadColumn({
               : sorted === 'asc'
               ? 'desc'
               : undefined;
-          onSort(column.key, newDirection);
+          dispatch({
+            type: 'sortColumn',
+            column: column.key,
+            direction: newDirection,
+          });
         }}
         role="button"
         tabIndex={0}>
@@ -180,11 +184,13 @@ function TableHeadColumn({
           {column.title ?? <>&nbsp;</>}
           <SortIcons
             direction={sorted}
-            onSort={(dir) => onSort(column.key, dir)}
+            onSort={(dir) =>
+              dispatch({type: 'sortColumn', column: column.key, direction: dir})
+            }
           />
         </Text>
       </div>
-      <FilterIcon column={column} {...filterHandlers} />
+      <FilterIcon column={column} dispatch={dispatch} />
     </Layout.Right>
   );
 
@@ -209,14 +215,13 @@ function TableHeadColumn({
 
 export const TableHead = memo(function TableHead({
   visibleColumns,
-  ...props
+  dispatch,
+  sorting,
 }: {
+  dispatch: DataTableDispatch<any>;
   visibleColumns: DataTableColumn<any>[];
-  onColumnResize: OnColumnResize;
-  onReset: () => void;
   sorting: Sorting | undefined;
-  onColumnSort: (key: string, direction: SortDirection) => void;
-} & ColumnFilterHandlers) {
+}) {
   return (
     <TableHeadContainer>
       {visibleColumns.map((column, i) => (
@@ -224,18 +229,8 @@ export const TableHead = memo(function TableHead({
           key={column.key}
           column={column}
           isResizable={i < visibleColumns.length - 1}
-          sortOrder={props.sorting}
-          onSort={props.onColumnSort}
-          onColumnResize={props.onColumnResize}
-          onAddColumnFilter={props.onAddColumnFilter}
-          onRemoveColumnFilter={props.onRemoveColumnFilter}
-          onToggleColumnFilter={props.onToggleColumnFilter}
-          onSetColumnFilterFromSelection={props.onSetColumnFilterFromSelection}
-          sorted={
-            props.sorting?.key === column.key
-              ? props.sorting!.direction
-              : undefined
-          }
+          dispatch={dispatch}
+          sorted={sorting?.key === column.key ? sorting!.direction : undefined}
         />
       ))}
     </TableHeadContainer>

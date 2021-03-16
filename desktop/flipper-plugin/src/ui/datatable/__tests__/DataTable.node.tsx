@@ -11,7 +11,7 @@ import React, {createRef} from 'react';
 import {DataTable, DataTableColumn} from '../DataTable';
 import {render, act} from '@testing-library/react';
 import {createDataSource} from '../../../state/datasource/DataSource';
-import {computeDataTableFilter, DataTableManager} from '../useDataTableManager';
+import {computeDataTableFilter, DataTableManager} from '../DataTableManager';
 import {Button} from 'antd';
 
 type Todo = {

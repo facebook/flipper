@@ -297,6 +297,7 @@ export class DataSource<
   setFilter(filter: undefined | ((value: T) => boolean)) {
     if (this.filter !== filter) {
       this.filter = filter;
+      // TODO: this needs debouncing!
       this.rebuildOutput();
     }
   }

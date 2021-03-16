@@ -9,15 +9,26 @@
 
 import {CopyOutlined, FilterOutlined} from '@ant-design/icons';
 import {Checkbox, Menu} from 'antd';
-import {DataTableManager} from './useDataTableManager';
+import {
+  DataTableDispatch,
+  getSelectedItems,
+  Selection,
+} from './DataTableManager';
 import React from 'react';
 import {normalizeCellValue} from './TableRow';
 import {tryGetFlipperLibImplementation} from '../../plugin/FlipperLib';
 import {DataTableColumn} from './DataTable';
+import {DataSource} from '../../state/datasource/DataSource';
 
 const {Item, SubMenu} = Menu;
 
-export function tableContextMenuFactory(tableManager: DataTableManager<any>) {
+export function tableContextMenuFactory<T>(
+  datasource: DataSource<T>,
+  dispatch: DataTableDispatch<T>,
+  selection: Selection,
+  columns: DataTableColumn<T>[],
+  visibleColumns: DataTableColumn<T>[],
+) {
   const lib = tryGetFlipperLibImplementation();
   if (!lib) {
     return (
@@ -26,18 +37,22 @@ export function tableContextMenuFactory(tableManager: DataTableManager<any>) {
       </Menu>
     );
   }
-  const hasSelection = tableManager.selection?.items.size > 0 ?? false;
+  const hasSelection = selection.items.size > 0 ?? false;
+
   return (
     <Menu>
       <SubMenu
         title="Filter on same"
         icon={<FilterOutlined />}
         disabled={!hasSelection}>
-        {tableManager.visibleColumns.map((column) => (
+        {visibleColumns.map((column) => (
           <Item
             key={column.key}
             onClick={() => {
-              tableManager.setColumnFilterFromSelection(column.key);
+              dispatch({
+                type: 'setColumnFilterFromSelection',
+                column: column.key,
+              });
             }}>
             {friendlyColumnTitle(column)}
           </Item>
@@ -47,11 +62,11 @@ export function tableContextMenuFactory(tableManager: DataTableManager<any>) {
         title="Copy cell(s)"
         icon={<CopyOutlined />}
         disabled={!hasSelection}>
-        {tableManager.visibleColumns.map((column) => (
+        {visibleColumns.map((column) => (
           <Item
             key={column.key}
             onClick={() => {
-              const items = tableManager.getSelectedItems();
+              const items = getSelectedItems(datasource, selection);
               if (items.length) {
                 lib.writeTextToClipboard(
                   items
@@ -67,7 +82,7 @@ export function tableContextMenuFactory(tableManager: DataTableManager<any>) {
       <Item
         disabled={!hasSelection}
         onClick={() => {
-          const items = tableManager.getSelectedItems();
+          const items = getSelectedItems(datasource, selection);
           if (items.length) {
             lib.writeTextToClipboard(
               JSON.stringify(items.length > 1 ? items : items[0], null, 2),
@@ -80,7 +95,7 @@ export function tableContextMenuFactory(tableManager: DataTableManager<any>) {
         <Item
           disabled={!hasSelection}
           onClick={() => {
-            const items = tableManager.getSelectedItems();
+            const items = getSelectedItems(datasource, selection);
             if (items.length) {
               lib.createPaste(
                 JSON.stringify(items.length > 1 ? items : items[0], null, 2),
@@ -92,21 +107,25 @@ export function tableContextMenuFactory(tableManager: DataTableManager<any>) {
       )}
       <Menu.Divider />
       <SubMenu title="Visible columns">
-        {tableManager.columns.map((column) => (
+        {columns.map((column) => (
           <Menu.Item key={column.key}>
             <Checkbox
               checked={column.visible}
               onClick={(e) => {
                 e.stopPropagation();
                 e.preventDefault();
-                tableManager.toggleColumnVisibility(column.key);
+                dispatch({type: 'toggleColumnVisibility', column: column.key});
               }}>
               {friendlyColumnTitle(column)}
             </Checkbox>
           </Menu.Item>
         ))}
       </SubMenu>
-      <Menu.Item key="reset" onClick={tableManager.reset}>
+      <Menu.Item
+        key="reset"
+        onClick={() => {
+          dispatch({type: 'reset'});
+        }}>
         Reset view
       </Menu.Item>
     </Menu>

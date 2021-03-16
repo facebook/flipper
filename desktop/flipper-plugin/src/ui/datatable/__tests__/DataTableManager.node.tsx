@@ -10,7 +10,7 @@
 import {
   computeAddRangeToSelection,
   computeSetSelection,
-} from '../useDataTableManager';
+} from '../DataTableManager';
 
 test('computeSetSelection', () => {
   const emptyBase = {

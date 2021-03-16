@@ -39,7 +39,7 @@ export function resetGlobalInteractionReporter() {
 
 const DEFAULT_SCOPE = 'Flipper';
 
-const TrackingScopeContext = createContext(DEFAULT_SCOPE);
+export const TrackingScopeContext = createContext(DEFAULT_SCOPE);
 
 export function TrackingScope({
   scope,

@@ -55,7 +55,12 @@ type DataSourceProps<T extends object, C> = {
   defaultRowHeight: number;
   onKeyDown?: React.KeyboardEventHandler<HTMLDivElement>;
   virtualizerRef?: MutableRefObject<DataSourceVirtualizer | undefined>;
-  onRangeChange?(start: number, end: number, total: number): void;
+  onRangeChange?(
+    start: number,
+    end: number,
+    total: number,
+    offset: number,
+  ): void;
   emptyRenderer?(dataSource: DataSource<T>): React.ReactElement;
   _testHeight?: number; // exposed for unit testing only
 };
@@ -181,7 +186,12 @@ export const DataSourceRenderer: <T extends object, C>(
     const start = virtualizer.virtualItems[0]?.index ?? 0;
     const end = start + virtualizer.virtualItems.length;
     if (start !== dataSource.windowStart && !followOutput.current) {
-      onRangeChange?.(start, end, dataSource.output.length);
+      onRangeChange?.(
+        start,
+        end,
+        dataSource.output.length,
+        parentRef.current?.scrollTop ?? 0,
+      );
     }
     dataSource.setWindow(start, end);
   });
@@ -208,7 +218,7 @@ export const DataSourceRenderer: <T extends object, C>(
     } else {
       followOutput.current = true;
     }
-  }, [autoScroll]);
+  }, [autoScroll, parentRef]);
 
   useLayoutEffect(function scrollToEnd() {
     if (followOutput.current) {

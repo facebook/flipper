@@ -9,39 +9,39 @@
 
 import {MenuOutlined} from '@ant-design/icons';
 import {Button, Dropdown, Input} from 'antd';
-import React, {memo, useState} from 'react';
+import React, {memo, useCallback} from 'react';
 import styled from '@emotion/styled';
 
 import {Layout} from '../Layout';
 import {theme} from '../theme';
-import {debounce} from 'lodash';
-import {useAssertStableRef} from '../../utils/useAssertStableRef';
+import type {DataTableDispatch} from './DataTableManager';
 
 export const TableSearch = memo(function TableSearch({
-  onSearch,
+  searchValue,
+  dispatch,
   extraActions,
   contextMenu,
 }: {
-  onSearch(value: string): void;
+  searchValue: string;
+  dispatch: DataTableDispatch<any>;
   extraActions?: React.ReactElement;
-  hasSelection?: boolean;
-  contextMenu?: React.ReactElement;
+  contextMenu: undefined | (() => JSX.Element);
 }) {
-  useAssertStableRef(onSearch, 'onSearch');
-  const [search, setSearch] = useState('');
-  const [performSearch] = useState(() =>
-    debounce(onSearch, 200, {leading: true}),
+  const onSearch = useCallback(
+    (value: string) => {
+      dispatch({type: 'setSearchValue', value});
+    },
+    [dispatch],
   );
   return (
     <Searchbar gap>
       <Input.Search
         allowClear
         placeholder="Search..."
-        onSearch={performSearch}
-        value={search}
+        onSearch={onSearch}
+        value={searchValue}
         onChange={(e) => {
-          setSearch(e.target.value);
-          performSearch(e.target.value);
+          onSearch(e.target.value);
         }}
       />
       {extraActions}

@@ -11,32 +11,37 @@ import {useMemo, useState} from 'react';
 import styled from '@emotion/styled';
 import React from 'react';
 import {Button, Checkbox, Dropdown, Menu, Typography, Input} from 'antd';
-import {FilterFilled, MinusCircleOutlined} from '@ant-design/icons';
+import {
+  FilterFilled,
+  MinusCircleOutlined,
+  PlusCircleOutlined,
+} from '@ant-design/icons';
 
 import {theme} from '../theme';
 import type {DataTableColumn} from './DataTable';
 import {Layout} from '../Layout';
+import type {DataTableDispatch} from './DataTableManager';
 
 const {Text} = Typography;
 
-export type ColumnFilterHandlers = {
-  onAddColumnFilter(columnId: string, value: string): void;
-  onRemoveColumnFilter(columnId: string, index: number): void;
-  onToggleColumnFilter(columnId: string, index: number): void;
-  onSetColumnFilterFromSelection(columnId: string): void;
-};
-
 export function FilterIcon({
   column,
-  ...props
-}: {column: DataTableColumn<any>} & ColumnFilterHandlers) {
+  dispatch,
+}: {
+  column: DataTableColumn<any>;
+  dispatch: DataTableDispatch;
+}) {
   const [input, setInput] = useState('');
   const {filters} = column;
   const isActive = useMemo(() => filters?.some((f) => f.enabled), [filters]);
 
   const onAddFilter = (e: React.MouseEvent | React.KeyboardEvent) => {
     e.stopPropagation();
-    props.onAddColumnFilter(column.key, input);
+    dispatch({
+      type: 'addColumnFilter',
+      column: column.key,
+      value: input,
+    });
     setInput('');
   };
 
@@ -60,7 +65,13 @@ export function FilterIcon({
             onPressEnter={onAddFilter}
             disabled={false}
           />
-          <Button onClick={onAddFilter}>Add</Button>
+          <Button
+            onClick={onAddFilter}
+            title="Add filter"
+            type="ghost"
+            style={{padding: '4px 8px'}}>
+            <PlusCircleOutlined />
+          </Button>
         </Layout.Right>
       </Menu.Item>
       <Menu.Divider />
@@ -73,7 +84,11 @@ export function FilterIcon({
                 onClick={(e) => {
                   e.stopPropagation();
                   e.preventDefault();
-                  props.onToggleColumnFilter(column.key, index);
+                  dispatch({
+                    type: 'toggleColumnFilter',
+                    column: column.key,
+                    index,
+                  });
                 }}>
                 {filter.label}
               </Checkbox>
@@ -81,7 +96,11 @@ export function FilterIcon({
                 <MinusCircleOutlined
                   onClick={(e) => {
                     e.stopPropagation();
-                    props.onRemoveColumnFilter(column.key, index);
+                    dispatch({
+                      type: 'removeColumnFilter',
+                      column: column.key,
+                      index,
+                    });
                   }}
                 />
               )}
@@ -89,52 +108,68 @@ export function FilterIcon({
           </Menu.Item>
         ))
       ) : (
-        <Text type="secondary" style={{margin: 12}}>
-          No active filters
-        </Text>
+        <Menu.Item disabled>
+          <Text type="secondary" style={{margin: 12}}>
+            No active filters
+          </Text>
+        </Menu.Item>
       )}
       <Menu.Divider />
-      <div style={{textAlign: 'right'}}>
-        <Button
-          type="link"
-          style={{fontWeight: 'unset'}}
-          onClick={() => {
-            props.onSetColumnFilterFromSelection(column.key);
-          }}>
-          From selection
-        </Button>
-        <Button
-          type="link"
-          style={{fontWeight: 'unset'}}
-          onClick={() => {
-            filters?.forEach((f, index) => {
-              if (!f.enabled) props.onToggleColumnFilter(column.key, index);
-            });
-          }}>
-          All
-        </Button>
-        <Button
-          type="link"
-          style={{fontWeight: 'unset'}}
-          onClick={() => {
-            filters?.forEach((f, index) => {
-              if (f.enabled) props.onToggleColumnFilter(column.key, index);
-            });
-          }}>
-          None
-        </Button>
-      </div>
+      <Menu.Item disabled>
+        <div style={{textAlign: 'right'}}>
+          <Button
+            type="link"
+            style={{fontWeight: 'unset'}}
+            onClick={() => {
+              dispatch({
+                type: 'setColumnFilterFromSelection',
+                column: column.key,
+              });
+            }}>
+            From selection
+          </Button>
+          <Button
+            type="link"
+            style={{fontWeight: 'unset'}}
+            onClick={() => {
+              filters?.forEach((f, index) => {
+                if (!f.enabled) {
+                  dispatch({
+                    type: 'toggleColumnFilter',
+                    column: column.key,
+                    index,
+                  });
+                }
+              });
+            }}>
+            All
+          </Button>
+          <Button
+            type="link"
+            style={{fontWeight: 'unset'}}
+            onClick={() => {
+              filters?.forEach((f, index) => {
+                if (f.enabled)
+                  dispatch({
+                    type: 'toggleColumnFilter',
+                    column: column.key,
+                    index,
+                  });
+              });
+            }}>
+            None
+          </Button>
+        </div>
+      </Menu.Item>
     </Menu>
   );
 
   return (
-    <div>
-      <Dropdown overlay={menu} trigger={['click']}>
-        <FilterButton isActive={isActive}>
-          <FilterFilled />
-        </FilterButton>
-      </Dropdown>
-    </div>
+    <Dropdown overlay={menu} trigger={['click']}>
+      <FilterButton isActive={isActive}>
+        <FilterFilled />
+      </FilterButton>
+    </Dropdown>
   );
 }
 

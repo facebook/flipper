@@ -17,6 +17,8 @@ import React, {
   MutableRefObject,
   CSSProperties,
   useEffect,
+  useContext,
+  useReducer,
 } from 'react';
 import {TableRow, DEFAULT_ROW_HEIGHT} from './TableRow';
 import {DataSource} from '../../state/datasource/DataSource';
@@ -24,7 +26,17 @@ import {Layout} from '../Layout';
 import {TableHead} from './TableHead';
 import {Percentage} from '../../utils/widthUtils';
 import {DataSourceRenderer, DataSourceVirtualizer} from './DataSourceRenderer';
-import {useDataTableManager, DataTableManager} from './useDataTableManager';
+import {
+  computeDataTableFilter,
+  createDataTableManager,
+  createInitialState,
+  DataTableManager,
+  dataTableManagerReducer,
+  DataTableReducer,
+  getSelectedItem,
+  getSelectedItems,
+  savePreferences,
+} from './DataTableManager';
 import {TableSearch} from './TableSearch';
 import styled from '@emotion/styled';
 import {theme} from '../theme';
@@ -32,6 +44,7 @@ import {tableContextMenuFactory} from './TableContextMenu';
 import {Typography} from 'antd';
 import {CoffeeOutlined, SearchOutlined} from '@ant-design/icons';
 import {useAssertStableRef} from '../../utils/useAssertStableRef';
+import {TrackingScopeContext} from 'flipper-plugin/src/ui/Tracked';
 
 interface DataTableProps<T = any> {
   columns: DataTableColumn<T>[];
@@ -79,30 +92,44 @@ export interface RenderContext<T = any> {
 export function DataTable<T extends object>(
   props: DataTableProps<T>,
 ): React.ReactElement {
-  const {dataSource, onRowStyle} = props;
+  const {dataSource, onRowStyle, onSelect} = props;
   useAssertStableRef(dataSource, 'dataSource');
   useAssertStableRef(onRowStyle, 'onRowStyle');
   useAssertStableRef(props.onSelect, 'onRowSelect');
   useAssertStableRef(props.columns, 'columns');
   useAssertStableRef(props._testHeight, '_testHeight');
 
+  // lint disabled for conditional inclusion of a hook (_testHeight is asserted to be stable)
+  // eslint-disable-next-line
+  const scope = props._testHeight ? "" : useContext(TrackingScopeContext); // TODO + plugin id
   const virtualizerRef = useRef<DataSourceVirtualizer | undefined>();
-  const tableManager = useDataTableManager(
-    dataSource,
-    props.columns,
-    props.onSelect,
+  const [state, dispatch] = useReducer(
+    dataTableManagerReducer as DataTableReducer<T>,
+    undefined,
+    () =>
+      createInitialState({
+        dataSource,
+        defaultColumns: props.columns,
+        onSelect,
+        scope,
+        virtualizerRef,
+      }),
   );
-  if (props.tableManagerRef) {
-    (props.tableManagerRef as MutableRefObject<
-      DataTableManager<T>
-    >).current = tableManager;
-  }
-  const {
-    visibleColumns,
-    selectItem,
-    selection,
-    addRangeToSelection,
-  } = tableManager;
+
+  const stateRef = useRef(state);
+  stateRef.current = state;
+  const lastOffset = useRef(0);
+
+  const [tableManager] = useState(() =>
+    createDataTableManager(dataSource, dispatch, stateRef),
+  );
+
+  const {columns, selection, searchValue, sorting} = state;
+
+  const visibleColumns = useMemo(
+    () => columns.filter((column) => column.visible),
+    [columns],
+  );
 
   const renderingConfig = useMemo<RenderContext<T>>(() => {
     let dragging = false;
@@ -112,17 +139,17 @@ export function DataTable<T extends object>(
       onMouseEnter(_e, _item, index) {
         if (dragging) {
           // by computing range we make sure no intermediate items are missed when scrolling fast
-          addRangeToSelection(startIndex, index);
+          tableManager.addRangeToSelection(startIndex, index);
         }
       },
       onMouseDown(e, _item, index) {
         if (!dragging) {
           if (e.ctrlKey || e.metaKey) {
-            addRangeToSelection(index, index, true);
+            tableManager.addRangeToSelection(index, index, true);
           } else if (e.shiftKey) {
-            selectItem(index, true);
+            tableManager.selectItem(index, true);
           } else {
-            selectItem(index);
+            tableManager.selectItem(index);
           }
 
           dragging = true;
@@ -137,12 +164,7 @@ export function DataTable<T extends object>(
         }
       },
     };
-  }, [visibleColumns, selectItem, addRangeToSelection]);
-
-  const usesWrapping = useMemo(
-    () => tableManager.columns.some((col) => col.wrap),
-    [tableManager.columns],
-  );
+  }, [visibleColumns, tableManager]);
 
   const itemRenderer = useCallback(
     function itemRenderer(
@@ -177,29 +199,35 @@ export function DataTable<T extends object>(
       const windowSize = virtualizerRef.current!.virtualItems.length;
       switch (e.key) {
         case 'ArrowUp':
-          selectItem((idx) => (idx > 0 ? idx - 1 : 0), shiftPressed);
+          tableManager.selectItem(
+            (idx) => (idx > 0 ? idx - 1 : 0),
+            shiftPressed,
+          );
           break;
         case 'ArrowDown':
-          selectItem(
+          tableManager.selectItem(
             (idx) => (idx < outputSize - 1 ? idx + 1 : idx),
             shiftPressed,
           );
           break;
         case 'Home':
-          selectItem(0, shiftPressed);
+          tableManager.selectItem(0, shiftPressed);
           break;
         case 'End':
-          selectItem(outputSize - 1, shiftPressed);
+          tableManager.selectItem(outputSize - 1, shiftPressed);
           break;
         case ' ': // yes, that is a space
         case 'PageDown':
-          selectItem(
+          tableManager.selectItem(
             (idx) => Math.min(outputSize - 1, idx + windowSize - 1),
             shiftPressed,
           );
           break;
         case 'PageUp':
-          selectItem((idx) => Math.max(0, idx - windowSize + 1), shiftPressed);
+          tableManager.selectItem(
+            (idx) => Math.max(0, idx - windowSize + 1),
+            shiftPressed,
+          );
           break;
         default:
           handled = false;
@@ -209,17 +237,63 @@ export function DataTable<T extends object>(
         e.preventDefault();
       }
     },
-    [selectItem, dataSource],
+    [dataSource, tableManager],
   );
 
+  useEffect(
+    function updateFilter() {
+      dataSource.setFilter(
+        computeDataTableFilter(state.searchValue, state.columns),
+      );
+    },
+    // Important dep optimization: we don't want to recalc filters if just the width or visibility changes!
+    // We pass entire state.columns to computeDataTableFilter, but only changes in the filter are a valid cause to compute a new filter function
+    // eslint-disable-next-line
+    [state.searchValue, ...state.columns.map((c) => c.filters)],
+  );
+
+  useEffect(
+    function updateSorting() {
+      if (state.sorting === undefined) {
+        dataSource.setSortBy(undefined);
+        dataSource.setReversed(false);
+      } else {
+        dataSource.setSortBy(state.sorting.key);
+        dataSource.setReversed(state.sorting.direction === 'desc');
+      }
+    },
+    [dataSource, state.sorting],
+  );
+
+  useEffect(
+    function triggerSelection() {
+      onSelect?.(
+        getSelectedItem(dataSource, state.selection),
+        getSelectedItems(dataSource, state.selection),
+      );
+    },
+    [onSelect, dataSource, state.selection],
+  );
+
+  // The initialScrollPosition is used to both capture the initial px we want to scroll to,
+  // and whether we performed that scrolling already (if so, it will be 0)
+  // const initialScrollPosition = useRef(scrollOffset.current);
   useLayoutEffect(
     function scrollSelectionIntoView() {
-      if (selection && selection.current >= 0) {
+      if (state.initialOffset) {
+        virtualizerRef.current?.scrollToOffset(state.initialOffset);
+        dispatch({
+          type: 'appliedInitialScroll',
+        });
+      } else if (selection && selection.current >= 0) {
         virtualizerRef.current?.scrollToIndex(selection!.current, {
           align: 'auto',
         });
       }
     },
+    // initialOffset is relevant for the first run,
+    // but should not trigger the efffect in general
+    // eslint-disable-next-line
     [selection],
   );
 
@@ -228,9 +302,10 @@ export function DataTable<T extends object>(
   const hideRange = useRef<NodeJS.Timeout>();
 
   const onRangeChange = useCallback(
-    (start: number, end: number, total: number) => {
+    (start: number, end: number, total: number, offset) => {
       // TODO: figure out if we don't trigger this callback to often hurting perf
       setRange(`${start} - ${end} / ${total}`);
+      lastOffset.current = offset;
       clearTimeout(hideRange.current!);
       hideRange.current = setTimeout(() => {
         setRange('');
@@ -240,53 +315,62 @@ export function DataTable<T extends object>(
   );
 
   /** Context menu */
-  // TODO: support customizing context menu
   const contexMenu = props._testHeight
-    ? undefined // don't render context menu in tests
-    : tableContextMenuFactory(tableManager);
+    ? undefined
+    : // eslint-disable-next-line
+    useCallback(
+        () =>
+          tableContextMenuFactory(
+            dataSource,
+            dispatch,
+            selection,
+            state.columns,
+            visibleColumns,
+          ),
+        [dataSource, dispatch, selection, state.columns, visibleColumns],
+      );
 
-  const emptyRenderer = useCallback((dataSource: DataSource<T>) => {
-    return <EmptyTable dataSource={dataSource} />;
+  useEffect(function initialSetup() {
+    if (props.tableManagerRef) {
+      (props.tableManagerRef as MutableRefObject<any>).current = tableManager;
+    }
+
+    return function cleanup() {
+      // write current prefs to local storage
+      savePreferences(stateRef.current, lastOffset.current);
+      // if the component unmounts, we reset the SFRW pipeline to
+      // avoid wasting resources in the background
+      dataSource.reset();
+      // clean ref
+      if (props.tableManagerRef) {
+        (props.tableManagerRef as MutableRefObject<any>).current = undefined;
+      }
+    };
+    // one-time setup and cleanup effect, everything in here is asserted to be stable:
+    // dataSource, tableManager, tableManagerRef
+    // eslint-disable-next-line
   }, []);
-
-  useEffect(
-    function cleanup() {
-      return () => {
-        if (props.tableManagerRef) {
-          (props.tableManagerRef as MutableRefObject<undefined>).current = undefined;
-        }
-      };
-    },
-    [props.tableManagerRef],
-  );
 
   return (
     <Layout.Container grow>
       <Layout.Top>
         <Layout.Container>
           <TableSearch
-            onSearch={tableManager.setSearchValue}
-            extraActions={props.extraActions}
+            searchValue={searchValue}
+            dispatch={dispatch as any}
             contextMenu={contexMenu}
+            extraActions={props.extraActions}
           />
           <TableHead
-            visibleColumns={tableManager.visibleColumns}
-            onColumnResize={tableManager.resizeColumn}
-            onReset={tableManager.reset}
-            sorting={tableManager.sorting}
-            onColumnSort={tableManager.sortColumn}
-            onAddColumnFilter={tableManager.addColumnFilter}
-            onRemoveColumnFilter={tableManager.removeColumnFilter}
-            onToggleColumnFilter={tableManager.toggleColumnFilter}
-            onSetColumnFilterFromSelection={
-              tableManager.setColumnFilterFromSelection
-            }
+            visibleColumns={visibleColumns}
+            dispatch={dispatch as any}
+            sorting={sorting}
           />
         </Layout.Container>
         <DataSourceRenderer<T, RenderContext<T>>
           dataSource={dataSource}
           autoScroll={props.autoScroll}
-          useFixedRowHeight={!usesWrapping}
+          useFixedRowHeight={!state.usesWrapping}
           defaultRowHeight={DEFAULT_ROW_HEIGHT}
           context={renderingConfig}
           itemRenderer={itemRenderer}
@@ -300,6 +384,10 @@ export function DataTable<T extends object>(
       {range && <RangeFinder>{range}</RangeFinder>}
     </Layout.Container>
   );
+}
+
+function emptyRenderer(dataSource: DataSource<any>) {
+  return <EmptyTable dataSource={dataSource} />;
 }
 
 function EmptyTable({dataSource}: {dataSource: DataSource<any>}) {
