@@ -12,6 +12,7 @@ import styled from '@emotion/styled';
 import {theme} from 'flipper-plugin';
 import type {RenderContext} from './DataTable';
 import {Width} from '../utils/widthUtils';
+import {pad} from 'lodash';
 
 // heuristic for row estimation, should match any future styling updates
 export const DEFAULT_ROW_HEIGHT = 24;
@@ -89,6 +90,13 @@ export const TableRow = memo(function TableRow(props: Props) {
             : (row as any)[col.key] ?? '';
           if (typeof value === 'boolean') {
             value = value ? 'true' : 'false';
+          }
+
+          if (value instanceof Date) {
+            value =
+              value.toTimeString().split(' ')[0] +
+              '.' +
+              pad('' + value.getMilliseconds(), 3);
           }
 
           return (

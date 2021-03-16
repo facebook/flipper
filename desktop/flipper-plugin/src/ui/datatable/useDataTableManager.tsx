@@ -10,7 +10,7 @@
 import {DataTableColumn} from 'flipper-plugin/src/ui/datatable/DataTable';
 import {Percentage} from '../utils/widthUtils';
 import produce from 'immer';
-import {useCallback, useMemo, useState} from 'react';
+import {useCallback, useEffect, useMemo, useState} from 'react';
 import {DataSource} from '../../state/datasource/DataSource';
 
 export type OnColumnResize = (id: string, size: number | Percentage) => void;
@@ -33,9 +33,28 @@ export function useDataTableManager<T extends object>(
     computeInitialColumns(defaultColumns),
   );
   const [sorting, setSorting] = useState<Sorting | undefined>(undefined);
+  const [searchValue, setSearchValue] = useState('');
   const visibleColumns = useMemo(
     () => columns.filter((column) => column.visible),
     [columns],
+  );
+
+  // filter is computed by useMemo to support adding column filters etc here in the future
+  const currentFilter = useMemo(
+    function computeFilter() {
+      if (searchValue === '') {
+        // unset
+        return undefined;
+      }
+
+      const searchString = searchValue.toLowerCase();
+      return function dataTableFilter(item: object) {
+        return Object.values(item).some((v) =>
+          String(v).toLowerCase().includes(searchString),
+        );
+      };
+    },
+    [searchValue],
   );
 
   const reset = useCallback(() => {
@@ -88,6 +107,13 @@ export function useDataTableManager<T extends object>(
     );
   }, []);
 
+  useEffect(
+    function applyFilter() {
+      dataSource.setFilter(currentFilter);
+    },
+    [currentFilter, dataSource],
+  );
+
   return {
     /** The default columns, but normalized */
     columns,
@@ -103,6 +129,8 @@ export function useDataTableManager<T extends object>(
     sortColumn,
     /** Show / hide the given column */
     toggleColumnVisibility,
+    /** Active search value */
+    setSearchValue,
   };
 }
 

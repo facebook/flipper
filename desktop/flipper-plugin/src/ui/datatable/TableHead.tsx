@@ -13,7 +13,7 @@ import {
   Percentage,
   Width,
 } from '../utils/widthUtils';
-import {useRef} from 'react';
+import {memo, useRef} from 'react';
 import {Interactive, InteractiveProps} from '../Interactive';
 import styled from '@emotion/styled';
 import React from 'react';
@@ -181,7 +181,7 @@ function TableHeadColumn({
   );
 }
 
-export function TableHead({
+export const TableHead = memo(function TableHead({
   columns,
   visibleColumns,
   ...props
@@ -243,7 +243,7 @@ export function TableHead({
       </Dropdown>
     </TableHeadContainer>
   );
-}
+});
 
 const SettingsButton = styled(Button)({
   padding: 4,
@@ -251,4 +251,5 @@ const SettingsButton = styled(Button)({
   right: 0,
   top: 0,
   backgroundColor: theme.backgroundWash,
+  borderRadius: 0,
 });

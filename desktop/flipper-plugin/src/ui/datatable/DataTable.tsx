@@ -15,11 +15,14 @@ import {TableHead} from './TableHead';
 import {Percentage} from '../utils/widthUtils';
 import {DataSourceRenderer} from './DataSourceRenderer';
 import {useDataTableManager, TableManager} from './useDataTableManager';
+import {TableSearch} from './TableSearch';
 
 interface DataTableProps<T = any> {
   columns: DataTableColumn<T>[];
   dataSource: DataSource<T, any, any>;
   autoScroll?: boolean;
+  extraActions?: React.ReactElement;
+  // custom onSearch(text, row) option?
   tableManagerRef?: RefObject<TableManager>;
   _testHeight?: number; // exposed for unit testing only
 }
@@ -58,15 +61,21 @@ export function DataTable<T extends object>(props: DataTableProps<T>) {
 
   return (
     <Layout.Top>
-      <TableHead
-        columns={tableManager.columns}
-        visibleColumns={tableManager.visibleColumns}
-        onColumnResize={tableManager.resizeColumn}
-        onReset={tableManager.reset}
-        onColumnToggleVisibility={tableManager.toggleColumnVisibility}
-        sorting={tableManager.sorting}
-        onColumnSort={tableManager.sortColumn}
-      />
+      <Layout.Container>
+        <TableSearch
+          onSearch={tableManager.setSearchValue}
+          extraActions={props.extraActions}
+        />
+        <TableHead
+          columns={tableManager.columns}
+          visibleColumns={tableManager.visibleColumns}
+          onColumnResize={tableManager.resizeColumn}
+          onReset={tableManager.reset}
+          onColumnToggleVisibility={tableManager.toggleColumnVisibility}
+          sorting={tableManager.sorting}
+          onColumnSort={tableManager.sortColumn}
+        />
+      </Layout.Container>
       <DataSourceRenderer<any, RenderContext>
         dataSource={props.dataSource}
         autoScroll={props.autoScroll}

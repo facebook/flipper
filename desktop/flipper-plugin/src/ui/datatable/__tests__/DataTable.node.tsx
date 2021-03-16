@@ -12,6 +12,7 @@ import {DataTable, DataTableColumn} from '../DataTable';
 import {render, act} from '@testing-library/react';
 import {createDataSource} from '../../../state/datasource/DataSource';
 import {TableManager} from '../useDataTableManager';
+import {Button} from 'antd';
 
 type Todo = {
   title: string;
@@ -220,5 +221,59 @@ test('sorting', async () => {
       'item x',
       'item b',
     ]);
+  }
+});
+
+test('search', async () => {
+  const ds = createTestDataSource();
+  ds.clear();
+  ds.append({
+    title: 'item abc',
+    done: false,
+  });
+  ds.append({
+    title: 'item x',
+    done: false,
+  });
+  ds.append({
+    title: 'item b',
+    done: false,
+  });
+  const ref = createRef<TableManager>();
+  const rendering = render(
+    <DataTable
+      dataSource={ds}
+      columns={columns}
+      tableManagerRef={ref}
+      extraActions={<Button>Test Button</Button>}
+      _testHeight={400}
+    />,
+  );
+  {
+    // button is visible
+    rendering.getByText('Test Button');
+    const elem = await rendering.findAllByText(/item/);
+    expect(elem.length).toBe(3);
+    expect(elem.map((e) => e.textContent)).toEqual([
+      'item abc',
+      'item x',
+      'item b',
+    ]);
+  }
+  {
+    // filter
+    act(() => {
+      ref.current?.setSearchValue('b');
+    });
+    const elem = await rendering.findAllByText(/item/);
+    expect(elem.map((e) => e.textContent)).toEqual(['item abc', 'item b']);
+  }
+  {
+    // reset
+    act(() => {
+      ref.current?.reset();
+    });
+    const elem = await rendering.findAllByText(/item/);
+    expect(elem.length).toBe(3);
   }
 });
