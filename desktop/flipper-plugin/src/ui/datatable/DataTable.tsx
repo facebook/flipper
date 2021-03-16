@@ -17,7 +17,6 @@ import React, {
   MutableRefObject,
   CSSProperties,
   useEffect,
-  useContext,
   useReducer,
 } from 'react';
 import {TableRow, DEFAULT_ROW_HEIGHT} from './TableRow';
@@ -46,6 +45,7 @@ import {CoffeeOutlined, SearchOutlined} from '@ant-design/icons';
 import {useAssertStableRef} from '../../utils/useAssertStableRef';
 import {Formatter} from '../DataFormatter';
 import {usePluginInstance} from '../../plugin/PluginContext';
+import {debounce} from 'lodash';
 
 interface DataTableProps<T = any> {
   columns: DataTableColumn<T>[];
@@ -105,7 +105,7 @@ export function DataTable<T extends object>(
   // eslint-disable-next-line
   const scope = props._testHeight ? "" : usePluginInstance().pluginKey;
   const virtualizerRef = useRef<DataSourceVirtualizer | undefined>();
-  const [state, dispatch] = useReducer(
+  const [tableState, dispatch] = useReducer(
     dataTableManagerReducer as DataTableReducer<T>,
     undefined,
     () =>
@@ -118,15 +118,16 @@ export function DataTable<T extends object>(
       }),
   );
 
-  const stateRef = useRef(state);
-  stateRef.current = state;
+  const stateRef = useRef(tableState);
+  stateRef.current = tableState;
   const lastOffset = useRef(0);
+  const dragging = useRef(false);
 
   const [tableManager] = useState(() =>
     createDataTableManager(dataSource, dispatch, stateRef),
   );
 
-  const {columns, selection, searchValue, sorting} = state;
+  const {columns, selection, searchValue, sorting} = tableState;
 
   const visibleColumns = useMemo(
     () => columns.filter((column) => column.visible),
@@ -134,18 +135,17 @@ export function DataTable<T extends object>(
   );
 
   const renderingConfig = useMemo<RenderContext<T>>(() => {
-    let dragging = false;
     let startIndex = 0;
     return {
       columns: visibleColumns,
-      onMouseEnter(_e, _item, index) {
-        if (dragging) {
+      onMouseEnter(e, _item, index) {
+        if (dragging.current && e.buttons === 1) {
           // by computing range we make sure no intermediate items are missed when scrolling fast
           tableManager.addRangeToSelection(startIndex, index);
         }
       },
       onMouseDown(e, _item, index) {
-        if (!dragging) {
+        if (!dragging.current) {
           if (e.ctrlKey || e.metaKey) {
             tableManager.addRangeToSelection(index, index, true);
           } else if (e.shiftKey) {
@@ -154,11 +154,11 @@ export function DataTable<T extends object>(
             tableManager.selectItem(index);
           }
 
-          dragging = true;
+          dragging.current = true;
           startIndex = index;
 
           function onStopDragSelecting() {
-            dragging = false;
+            dragging.current = false;
             document.removeEventListener('mouseup', onStopDragSelecting);
           }
 
@@ -231,6 +231,9 @@ export function DataTable<T extends object>(
             shiftPressed,
           );
           break;
+        case 'Escape':
+          tableManager.clearSelection();
+          break;
         default:
           handled = false;
       }
@@ -242,48 +245,54 @@ export function DataTable<T extends object>(
     [dataSource, tableManager],
   );
 
+  const [debouncedSetFilter] = useState(() => {
+    // we don't want to trigger filter changes too quickly, as they can be pretty expensive
+    // and would block the user from entering text in the search bar for example
+    // (and in the future would really benefit from concurrent mode here :))
+    const setFilter = (search: string, columns: DataTableColumn<T>[]) => {
+      dataSource.view.setFilter(computeDataTableFilter(search, columns));
+    };
+    return props._testHeight ? setFilter : debounce(setFilter, 250);
+  });
   useEffect(
     function updateFilter() {
-      dataSource.view.setFilter(
-        computeDataTableFilter(state.searchValue, state.columns),
-      );
+      debouncedSetFilter(tableState.searchValue, tableState.columns);
     },
     // Important dep optimization: we don't want to recalc filters if just the width or visibility changes!
     // We pass entire state.columns to computeDataTableFilter, but only changes in the filter are a valid cause to compute a new filter function
     // eslint-disable-next-line
-    [state.searchValue, ...state.columns.map((c) => c.filters)],
+    [tableState.searchValue, ...tableState.columns.map((c) => c.filters)],
   );
 
   useEffect(
     function updateSorting() {
-      if (state.sorting === undefined) {
+      if (tableState.sorting === undefined) {
         dataSource.view.setSortBy(undefined);
         dataSource.view.setReversed(false);
       } else {
-        dataSource.view.setSortBy(state.sorting.key);
-        dataSource.view.setReversed(state.sorting.direction === 'desc');
+        dataSource.view.setSortBy(tableState.sorting.key);
+        dataSource.view.setReversed(tableState.sorting.direction === 'desc');
       }
     },
-    [dataSource, state.sorting],
+    [dataSource, tableState.sorting],
   );
 
   useEffect(
     function triggerSelection() {
       onSelect?.(
-        getSelectedItem(dataSource, state.selection),
-        getSelectedItems(dataSource, state.selection),
+        getSelectedItem(dataSource, tableState.selection),
+        getSelectedItems(dataSource, tableState.selection),
       );
     },
-    [onSelect, dataSource, state.selection],
+    [onSelect, dataSource, tableState.selection],
   );
 
   // The initialScrollPosition is used to both capture the initial px we want to scroll to,
   // and whether we performed that scrolling already (if so, it will be 0)
-  // const initialScrollPosition = useRef(scrollOffset.current);
   useLayoutEffect(
     function scrollSelectionIntoView() {
-      if (state.initialOffset) {
-        virtualizerRef.current?.scrollToOffset(state.initialOffset);
+      if (tableState.initialOffset) {
+        virtualizerRef.current?.scrollToOffset(tableState.initialOffset);
         dispatch({
           type: 'appliedInitialScroll',
         });
@@ -305,7 +314,6 @@ export function DataTable<T extends object>(
 
   const onRangeChange = useCallback(
     (start: number, end: number, total: number, offset) => {
-      // TODO: figure out if we don't trigger this callback to often hurting perf
       setRange(`${start} - ${end} / ${total}`);
       lastOffset.current = offset;
       clearTimeout(hideRange.current!);
@@ -326,10 +334,10 @@ export function DataTable<T extends object>(
             dataSource,
             dispatch,
             selection,
-            state.columns,
+            tableState.columns,
             visibleColumns,
           ),
-        [dataSource, dispatch, selection, state.columns, visibleColumns],
+        [dataSource, dispatch, selection, tableState.columns, visibleColumns],
       );
 
   useEffect(function initialSetup() {
@@ -371,8 +379,8 @@ export function DataTable<T extends object>(
         </Layout.Container>
         <DataSourceRenderer<T, RenderContext<T>>
           dataSource={dataSource}
-          autoScroll={props.autoScroll}
-          useFixedRowHeight={!state.usesWrapping}
+          autoScroll={props.autoScroll && !dragging.current}
+          useFixedRowHeight={!tableState.usesWrapping}
           defaultRowHeight={DEFAULT_ROW_HEIGHT}
           context={renderingConfig}
           itemRenderer={itemRenderer}

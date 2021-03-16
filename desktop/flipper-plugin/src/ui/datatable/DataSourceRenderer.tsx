@@ -21,7 +21,9 @@ import {useVirtual} from 'react-virtual';
 import styled from '@emotion/styled';
 
 // how fast we update if updates are low-prio (e.g. out of window and not super significant)
-const DEBOUNCE = 500; //ms
+const LOW_PRIO_UPDATE = 1000; //ms
+const HIGH_PRIO_UPDATE = 40; // 25fps
+const SMALL_DATASET = 1000; // what we consider a small dataset, for which we keep all updates snappy
 
 enum UpdatePrio {
   NONE,
@@ -115,6 +117,7 @@ export const DataSourceRenderer: <T extends object, C>(
         if (unmounted) {
           return;
         }
+        timeoutHandle = undefined;
         setForceUpdate((x) => x + 1);
       };
 
@@ -135,16 +138,24 @@ export const DataSourceRenderer: <T extends object, C>(
           // already scheduled an update with equal or higher prio
           return;
         }
-        renderPending.current = prio;
+        renderPending.current = Math.max(renderPending.current, prio);
         if (prio === UpdatePrio.LOW) {
-          // TODO: make DEBOUNCE depend on how big the relative change is
-          timeoutHandle = setTimeout(forceUpdate, DEBOUNCE);
+          // Possible optimization: make DEBOUNCE depend on how big the relative change is, and how far from the current window
+          if (!timeoutHandle) {
+            timeoutHandle = setTimeout(forceUpdate, LOW_PRIO_UPDATE);
+          }
         } else {
-          // High
+          // High, drop low prio timeout
           if (timeoutHandle) {
             clearTimeout(timeoutHandle);
+            timeoutHandle = undefined;
           }
-          requestAnimationFrame(forceUpdate);
+          if (lastRender.current < Date.now() - HIGH_PRIO_UPDATE) {
+            forceUpdate(); // trigger render now
+          } else {
+            // debounced
+            timeoutHandle = setTimeout(forceUpdate, HIGH_PRIO_UPDATE);
+          }
         }
       }
 
@@ -154,7 +165,15 @@ export const DataSourceRenderer: <T extends object, C>(
             rerender(UpdatePrio.HIGH, true);
             break;
           case 'shift':
-            if (event.location === 'in') {
+            if (dataSource.view.size < SMALL_DATASET) {
+              rerender(UpdatePrio.HIGH, false);
+            } else if (
+              event.location === 'in' ||
+              // to support smooth tailing we want to render on records directly at the end of the window immediately as well
+              (event.location === 'after' &&
+                event.delta > 0 &&
+                event.index === dataSource.view.windowEnd)
+            ) {
               rerender(UpdatePrio.HIGH, false);
             } else {
               // optimization: we don't want to listen to every count change, especially after window
@@ -221,7 +240,7 @@ export const DataSourceRenderer: <T extends object, C>(
   }, [autoScroll, parentRef]);
 
   useLayoutEffect(function scrollToEnd() {
-    if (followOutput.current) {
+    if (followOutput.current && autoScroll) {
       virtualizer.scrollToIndex(
         dataSource.view.size - 1,
         /* smooth is not typed by react-virtual, but passed on to the DOM as it should*/
