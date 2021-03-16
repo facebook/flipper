@@ -27,6 +27,8 @@ import {TableSearch} from './TableSearch';
 import styled from '@emotion/styled';
 import {theme} from '../theme';
 import {tableContextMenuFactory} from './TableContextMenu';
+import {Typography} from 'antd';
+import {CoffeeOutlined, SearchOutlined} from '@ant-design/icons';
 
 interface DataTableProps<T = any> {
   columns: DataTableColumn<T>[];
@@ -231,6 +233,10 @@ export function DataTable<T extends object>(
     ? undefined // don't render context menu in tests
     : tableContextMenuFactory(tableManager);
 
+  const emptyRenderer = useCallback((dataSource: DataSource<T>) => {
+    return <EmptyTable dataSource={dataSource} />;
+  }, []);
+
   return (
     <Layout.Container grow>
       <Layout.Top>
@@ -264,10 +270,33 @@ export function DataTable<T extends object>(
           onKeyDown={onKeyDown}
           virtualizerRef={virtualizerRef}
           onRangeChange={onRangeChange}
+          emptyRenderer={emptyRenderer}
           _testHeight={props._testHeight}
         />
       </Layout.Top>
       {range && <RangeFinder>{range}</RangeFinder>}
+    </Layout.Container>
+  );
+}
+
+function EmptyTable({dataSource}: {dataSource: DataSource<any>}) {
+  return (
+    <Layout.Container
+      center
+      style={{width: '100%', padding: 40, color: theme.textColorSecondary}}>
+      {dataSource.records.length === 0 ? (
+        <>
+          <CoffeeOutlined style={{fontSize: '2em', margin: 8}} />
+          <Typography.Text type="secondary">No records yet</Typography.Text>
+        </>
+      ) : (
+        <>
+          <SearchOutlined style={{fontSize: '2em', margin: 8}} />
+          <Typography.Text type="secondary">
+            No records match the current search / filter criteria
+          </Typography.Text>
+        </>
+      )}
     </Layout.Container>
   );
 }

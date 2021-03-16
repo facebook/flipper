@@ -56,6 +56,7 @@ type DataSourceProps<T extends object, C> = {
   onKeyDown?: React.KeyboardEventHandler<HTMLDivElement>;
   virtualizerRef?: MutableRefObject<DataSourceVirtualizer | undefined>;
   onRangeChange?(start: number, end: number, total: number): void;
+  emptyRenderer?(dataSource: DataSource<T>): React.ReactElement;
   _testHeight?: number; // exposed for unit testing only
 };
 
@@ -75,6 +76,7 @@ export const DataSourceRenderer: <T extends object, C>(
   onKeyDown,
   virtualizerRef,
   onRangeChange,
+  emptyRenderer,
   _testHeight,
 }: DataSourceProps<any, any>) {
   /**
@@ -235,6 +237,9 @@ export const DataSourceRenderer: <T extends object, C>(
    */
   return (
     <TableContainer onScroll={onScroll} ref={parentRef}>
+      {virtualizer.virtualItems.length === 0
+        ? emptyRenderer?.(dataSource)
+        : null}
       <TableWindow
         height={virtualizer.totalSize}
         onKeyDown={onKeyDown}
