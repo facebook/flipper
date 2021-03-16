@@ -7,11 +7,17 @@
  * @format
  */
 
-import {sortedIndexBy, sortedLastIndexBy, property} from 'lodash';
+import {
+  sortedIndexBy,
+  sortedLastIndexBy,
+  property,
+  sortBy as lodashSort,
+} from 'lodash';
 
 // TODO: support better minification
 // TODO: separate views from datasource to be able to support multiple transformation simultanously
 // TODO: expose interface with public members only
+// TODO: replace forEach with faster for loops
 
 type ExtractKeyType<
   T extends object,
@@ -20,37 +26,57 @@ type ExtractKeyType<
 
 type AppendEvent<T> = {
   type: 'append';
-  value: T;
+  entry: Entry<T>;
 };
 type UpdateEvent<T> = {
   type: 'update';
-  value: T;
+  entry: Entry<T>;
   oldValue: T;
+  oldVisible: boolean;
   index: number;
 };
 
 type DataEvent<T> = AppendEvent<T> | UpdateEvent<T>;
+
+type Entry<T> = {
+  value: T;
+  id: number; // insertion based
+  visible: boolean; // matches current filter?
+  approxIndex: number; // we could possible live at this index in the output. No guarantees.
+};
+
+type Primitive = number | string | boolean | null | undefined;
 
 class DataSource<
   T extends object,
   KEY extends keyof T,
   KEY_TYPE extends string | number | never = ExtractKeyType<T, KEY>
 > {
-  private _records: T[] = [];
+  private nextId = 0;
+  private _records: Entry<T>[] = [];
+
   private _recordsById: Map<KEY_TYPE, T> = new Map();
   private keyAttribute: undefined | keyof T;
   private idToIndex: Map<KEY_TYPE, number> = new Map();
-  private dataUpdateQueue: DataEvent<T>[] = [];
 
-  private sortBy: undefined | ((a: T) => number | string);
-  private _sortedRecords: T[] | undefined;
+  private sortBy: undefined | ((a: T) => Primitive);
 
   private reverse: boolean = false;
-  private _reversedRecords: T[] | undefined;
+
+  private filter?: (value: T) => boolean;
+
+  private dataUpdateQueue: DataEvent<T>[] = [];
 
   // TODO:
   // private viewRecords: T[] = [];
   // private nextViewRecords: T[] = []; // for double buffering
+
+  /**
+   * Exposed for testing.
+   * This is the base view data, that is filtered and sorted, but not reversed or windowed
+   */
+  // TODO: optimize: output can link to _records if no sort & filter
+  output: Entry<T>[] = [];
 
   /**
    * Returns a direct reference to the stored records.
@@ -60,7 +86,7 @@ class DataSource<
    * `datasource.records.slice()`
    */
   get records(): readonly T[] {
-    return this._records;
+    return this._records.map(unwrap);
   }
 
   /**
@@ -72,22 +98,6 @@ class DataSource<
   get recordsById(): ReadonlyMap<KEY_TYPE, T> {
     this.assertKeySet();
     return this._recordsById;
-  }
-
-  /**
-   * Exposed for testing only.
-   * Returns the set of records after applying sorting
-   */
-  get sortedRecords(): readonly T[] {
-    return this.sortBy ? this._sortedRecords! : this._records;
-  }
-
-  /**
-   * Exposed for testing only.
-   * Returns the set of records after applying sorting and reversing (if applicable)
-   */
-  get reversedRecords(): readonly T[] {
-    return this.reverse ? this._reversedRecords! : this.sortedRecords;
   }
 
   constructor(keyAttribute: KEY | undefined) {
@@ -130,10 +140,16 @@ class DataSource<
       this._recordsById.set(key, value);
       this.idToIndex.set(key, this._records.length);
     }
-    this._records.push(value);
+    const entry = {
+      value,
+      id: ++this.nextId,
+      visible: this.filter ? this.filter(value) : true,
+      approxIndex: -1,
+    };
+    this._records.push(entry);
     this.emitDataEvent({
       type: 'append',
-      value,
+      entry,
     });
   }
 
@@ -159,13 +175,17 @@ class DataSource<
    * Note that the index is based on the insertion order, and not based on the current view
    */
   update(index: number, value: T) {
-    const oldValue = this._records[index];
+    const entry = this._records[index];
+    const oldValue = entry.value;
     if (value === oldValue) {
       return;
     }
+    const oldVisible = entry.visible;
+    entry.value = value;
+    entry.visible = this.filter ? this.filter(value) : true;
     if (this.keyAttribute) {
       const key = this.getKey(value);
-      const currentKey = this.getKey(this._records[index]);
+      const currentKey = this.getKey(oldValue);
       if (currentKey !== key) {
         this._recordsById.delete(currentKey);
         this.idToIndex.delete(currentKey);
@@ -173,11 +193,11 @@ class DataSource<
       this._recordsById.set(key, value);
       this.idToIndex.set(key, index);
     }
-    this._records[index] = value;
     this.emitDataEvent({
       type: 'update',
-      value,
+      entry,
       oldValue,
+      oldVisible,
       index,
     });
   }
@@ -192,7 +212,7 @@ class DataSource<
     throw new Error('Not Implemented');
   }
 
-  setSortBy(sortBy: undefined | keyof T | ((a: T) => number | string)) {
+  setSortBy(sortBy: undefined | keyof T | ((a: T) => Primitive)) {
     if (this.sortBy === sortBy) {
       return;
     }
@@ -200,19 +220,13 @@ class DataSource<
       sortBy = property(sortBy); // TODO: it'd be great to recycle those if sortBy didn't change!
     }
     this.sortBy = sortBy as any;
-    if (sortBy === undefined) {
-      this._sortedRecords = undefined;
-    } else {
-      this._sortedRecords = [];
-      // TODO: using .sort will be faster?
-      this._records.forEach((value) => {
-        this.insertSorted(value);
-      });
-    }
-    // TODO: clean up to something easier to follow
-    if (this.reverse) {
-      this.toggleReversed(); // reset
-      this.toggleReversed(); // reapply
+    this.rebuildOutput();
+  }
+
+  setFilter(filter: undefined | ((value: T) => boolean)) {
+    if (this.filter !== filter) {
+      this.filter = filter;
+      this.rebuildOutput();
     }
   }
 
@@ -223,11 +237,7 @@ class DataSource<
   setReversed(reverse: boolean) {
     if (this.reverse !== reverse) {
       this.reverse = reverse;
-      if (reverse) {
-        this._reversedRecords = this.sortedRecords.slice().reverse();
-      } else {
-        this._reversedRecords = undefined;
-      }
+      this.rebuildOutput();
     }
   }
 
@@ -239,8 +249,7 @@ class DataSource<
     this._recordsById = new Map();
     this.idToIndex = new Map();
     this.dataUpdateQueue = [];
-    if (this._sortedRecords) this._sortedRecords = [];
-    if (this._reversedRecords) this._reversedRecords = [];
+    this.output = [];
   }
 
   /**
@@ -248,9 +257,9 @@ class DataSource<
    */
   reset() {
     this.sortBy = undefined;
-    this._sortedRecords = undefined;
-    this.reverse = false;
-    this._reversedRecords = undefined;
+    // this.reverse = false;
+    this.filter = undefined;
+    this.rebuildOutput();
   }
 
   emitDataEvent(event: DataEvent<T>) {
@@ -265,97 +274,146 @@ class DataSource<
   }
 
   processEvent = (event: DataEvent<T>) => {
-    const {value} = event;
-    const {_sortedRecords, _reversedRecords} = this;
+    const {entry} = event;
+    const {output, sortBy, filter} = this;
     switch (event.type) {
       case 'append': {
-        let insertionIndex = this._records.length - 1;
-        // sort
-        if (_sortedRecords) {
-          insertionIndex = this.insertSorted(value);
+        // TODO: increase total counter
+        if (!entry.visible) {
+          // not in filter? skip this entry
+          return;
         }
-        // reverse append
-        if (_reversedRecords) {
-          _reversedRecords.splice(
-            _reversedRecords.length - insertionIndex, // N.b. no -1, since we're appending
-            0,
-            value,
-          );
+        if (!sortBy) {
+          // no sorting? insert at the end, or beginning
+          entry.approxIndex = output.length;
+          output.push(entry);
+          // TODO: shift window if following the end or beginning
+        } else {
+          this.insertSorted(entry);
         }
-
-        // filter
-
-        // notify
         break;
       }
-      case 'update':
-        // sort
-        if (_sortedRecords) {
-          // find old entry
-          const oldIndex = this.getSortedIndex(event.oldValue);
-          if (this.sortBy!(_sortedRecords[oldIndex]) === this.sortBy!(value)) {
-            // sort value is the same? just swap the item
-            this._sortedRecords![oldIndex] = value;
-            if (_reversedRecords) {
-              _reversedRecords[
-                _reversedRecords.length - 1 - event.index
-              ] = value;
-            }
+      case 'update': {
+        // short circuit; no view active so update straight away
+        if (!filter && !sortBy) {
+          output[event.index].approxIndex = event.index;
+          // TODO: notify updated
+        } else if (!event.oldVisible) {
+          if (!entry.visible) {
+            // Done!
           } else {
-            // sort value is different? remove and add
-            this._sortedRecords!.splice(oldIndex, 1);
-            if (_reversedRecords) {
-              _reversedRecords.splice(
-                _reversedRecords.length - 1 - oldIndex,
-                1,
+            // insertion, not visible before
+            this.insertSorted(entry);
+          }
+        } else {
+          // Entry was visible previously
+          if (!entry.visible) {
+            // Remove from output
+            const existingIndex = this.getSortedIndex(entry, event.oldValue); // TODO: lift this lookup if needed for events?
+            output.splice(existingIndex, 1);
+            // TODO: notify visible count reduced
+            // TODO: notify potential effect on window
+          } else {
+            // Entry was and still is visible
+            if (
+              !this.sortBy ||
+              this.sortBy(event.oldValue) === this.sortBy(entry.value)
+            ) {
+              // Still at same position, so done!
+              // TODO: notify of update
+            } else {
+              // item needs to be moved cause of sorting
+              const existingIndex = this.getSortedIndex(entry, event.oldValue);
+              output.splice(existingIndex, 1);
+              // find new sort index
+              const newIndex = sortedLastIndexBy(
+                this.output,
+                entry,
+                this.sortHelper,
               );
-            }
-            const insertionIndex = this.insertSorted(value);
-            if (_reversedRecords) {
-              _reversedRecords.splice(
-                _reversedRecords.length - insertionIndex,
-                0,
-                value,
-              ); // N.b. no -1, since we're appending
+              entry.approxIndex = newIndex;
+              output.splice(newIndex, 0, entry);
+              // item has moved
+              // remove and replace
+              // TODO: notify entry moved (or replaced, in case newIndex === existingIndex
             }
           }
         }
-        // reverse
-        else if (_reversedRecords) {
-          // only handle reverse separately if not sorting, otherwise handled above
-          _reversedRecords[_reversedRecords.length - 1 - event.index] = value;
-        }
-
-        // filter
-
-        // notify
-
         break;
+      }
       default:
         throw new Error('unknown event type');
     }
   };
 
-  private getSortedIndex(value: T) {
-    let index = sortedIndexBy(this._sortedRecords, value, this.sortBy);
+  rebuildOutput() {
+    const {sortBy, filter, sortHelper} = this;
+    // copy base array or run filter (with side effect update of visible)
+    // TODO: pending on the size, should we batch this in smaller steps? (and maybe merely reuse append)
+    let output = filter
+      ? this._records.filter((entry) => {
+          entry.visible = filter(entry.value);
+          return entry.visible;
+        })
+      : this._records.slice();
+    // run array.sort
+    // TODO: pending on the size, should we batch this in smaller steps?
+    if (sortBy) {
+      output = lodashSort(output, sortHelper);
+    }
+
+    // loop output and update all aproxindeces + visibilities
+    output.forEach((entry, index) => {
+      entry.approxIndex = index;
+      entry.visible = true;
+    });
+    this.output = output;
+    // TODO: bunch of events
+  }
+
+  private sortHelper = (a: Entry<T>) =>
+    this.sortBy ? this.sortBy(a.value) : a.id;
+
+  private getSortedIndex(entry: Entry<T>, oldValue: T) {
+    const {output} = this;
+    if (output[entry.approxIndex] === entry) {
+      // yay!
+      return entry.approxIndex;
+    }
+    let index = sortedIndexBy(
+      output,
+      {
+        // TODO: find a way to avoid this object construction, create a better sortHelper?
+        value: oldValue,
+        id: -1,
+        visible: true,
+        approxIndex: -1,
+      },
+      this.sortHelper,
+    );
+    index--; // TODO: this looks like a plain bug!
     // the item we are looking for is not necessarily the first one at the insertion index
-    while (this._sortedRecords![index] !== value) {
+    while (output[index] !== entry) {
       index++;
-      if (index >= this._sortedRecords!.length) {
+      if (index >= output.length) {
         throw new Error('illegal state: sortedIndex not found'); // sanity check to avoid browser freeze if people mess up with internals
       }
     }
+
     return index;
   }
 
-  private insertSorted(value: T): number {
+  private insertSorted(entry: Entry<T>) {
+    // apply sorting
     const insertionIndex = sortedLastIndexBy(
-      this._sortedRecords,
-      value,
-      this.sortBy!,
+      this.output,
+      entry,
+      this.sortHelper,
     );
-    this._sortedRecords!.splice(insertionIndex, 0, value);
-    return insertionIndex;
+    entry.approxIndex = insertionIndex;
+    this.output.splice(insertionIndex, 0, entry);
+    // TODO: notify window shift if applicable
+    // TODO: shift window if following the end or beginning
   }
 }
 
@@ -373,4 +431,8 @@ export function createDataSource<T extends object, KEY extends keyof T>(
   const ds = new DataSource<T, KEY>(keyAttribute);
   initialSet.forEach((value) => ds.append(value));
   return ds;
+}
+
+function unwrap<T>(entry: Entry<T>): T {
+  return entry.value;
 }
