@@ -18,11 +18,14 @@ import {
 // TODO: separate views from datasource to be able to support multiple transformation simultanously
 // TODO: expose interface with public members only
 // TODO: replace forEach with faster for loops
+// TODO: delete & unset operation
+// TODO: support listener for input events?
 
-type ExtractKeyType<
-  T extends object,
-  KEY extends keyof T
-> = T[KEY] extends string ? string : T[KEY] extends number ? number : never;
+type ExtractKeyType<T, KEY extends keyof T> = T[KEY] extends string
+  ? string
+  : T[KEY] extends number
+  ? number
+  : never;
 
 type AppendEvent<T> = {
   type: 'append';
@@ -47,8 +50,28 @@ type Entry<T> = {
 
 type Primitive = number | string | boolean | null | undefined;
 
-class DataSource<
-  T extends object,
+type OutputChange =
+  | {
+      type: 'shift';
+      index: number;
+      location: 'before' | 'in' | 'after'; // relative to current window
+      delta: number;
+      newCount: number;
+    }
+  | {
+      // an item, inside the current window, was changed
+      type: 'update';
+      index: number;
+    }
+  | {
+      // something big and awesome happened. Drop earlier updates to the floor and start again
+      // like: clear, filter or sorting change, etc
+      type: 'reset';
+      newCount: number;
+    };
+
+export class DataSource<
+  T,
   KEY extends keyof T,
   KEY_TYPE extends string | number | never = ExtractKeyType<T, KEY>
 > {
@@ -66,6 +89,11 @@ class DataSource<
   private filter?: (value: T) => boolean;
 
   private dataUpdateQueue: DataEvent<T>[] = [];
+
+  private windowStart = 0;
+  private windowEnd = 0;
+
+  private outputChangeListener?: (change: OutputChange) => void;
 
   // TODO:
   // private viewRecords: T[] = [];
@@ -103,6 +131,25 @@ class DataSource<
   constructor(keyAttribute: KEY | undefined) {
     this.keyAttribute = keyAttribute;
     this.setSortBy(undefined);
+  }
+
+  /**
+   * Returns a defensive copy of the current output.
+   * Sort, filter, reverse and window are applied, but windowing isn't.
+   * Start and end behave like slice, and default to the current window
+   */
+  public getOutput(
+    start = this.windowStart,
+    end = this.windowEnd,
+  ): readonly T[] {
+    if (this.reverse) {
+      return this.output
+        .slice(this.output.length - end, this.output.length - start)
+        .reverse()
+        .map((e) => e.value);
+    } else {
+      return this.output.slice(start, end).map((e) => e.value);
+    }
   }
 
   private assertKeySet() {
@@ -212,6 +259,17 @@ class DataSource<
     throw new Error('Not Implemented');
   }
 
+  setWindow(start: number, end: number) {
+    this.windowStart = start;
+    this.windowEnd = end;
+  }
+
+  setOutputChangeListener(
+    listener: typeof DataSource['prototype']['outputChangeListener'],
+  ) {
+    this.outputChangeListener = listener;
+  }
+
   setSortBy(sortBy: undefined | keyof T | ((a: T) => Primitive)) {
     if (this.sortBy === sortBy) {
       return;
@@ -268,6 +326,52 @@ class DataSource<
     this.processEvents();
   }
 
+  normalizeIndex(viewIndex: number): number {
+    return this.reverse ? this.output.length - 1 - viewIndex : viewIndex;
+  }
+
+  getItem(viewIndex: number) {
+    return this.output[this.normalizeIndex(viewIndex)].value;
+  }
+
+  notifyItemUpdated(viewIndex: number) {
+    viewIndex = this.normalizeIndex(viewIndex);
+    if (
+      !this.outputChangeListener ||
+      viewIndex < this.windowStart ||
+      viewIndex >= this.windowEnd
+    ) {
+      return;
+    }
+    this.outputChangeListener({
+      type: 'update',
+      index: viewIndex,
+    });
+  }
+
+  notifyItemShift(viewIndex: number, delta: number) {
+    if (!this.outputChangeListener) {
+      return;
+    }
+    viewIndex = this.normalizeIndex(viewIndex);
+    if (this.reverse && delta < 0) {
+      viewIndex -= delta; // we need to correct for normalize already using the new length after applying this change
+    }
+    // TODO: for 'before' shifts, should the window be adjusted automatically?
+    this.outputChangeListener({
+      type: 'shift',
+      delta,
+      index: viewIndex,
+      newCount: this.output.length,
+      location:
+        viewIndex < this.windowStart
+          ? 'before'
+          : viewIndex >= this.windowEnd
+          ? 'after'
+          : 'in',
+    });
+  }
+
   processEvents() {
     const events = this.dataUpdateQueue.splice(0);
     events.forEach(this.processEvent);
@@ -287,7 +391,7 @@ class DataSource<
           // no sorting? insert at the end, or beginning
           entry.approxIndex = output.length;
           output.push(entry);
-          // TODO: shift window if following the end or beginning
+          this.notifyItemShift(entry.approxIndex, 1);
         } else {
           this.insertSorted(entry);
         }
@@ -297,7 +401,7 @@ class DataSource<
         // short circuit; no view active so update straight away
         if (!filter && !sortBy) {
           output[event.index].approxIndex = event.index;
-          // TODO: notify updated
+          this.notifyItemUpdated(event.index);
         } else if (!event.oldVisible) {
           if (!entry.visible) {
             // Done!
@@ -307,12 +411,11 @@ class DataSource<
           }
         } else {
           // Entry was visible previously
+          const existingIndex = this.getSortedIndex(entry, event.oldValue);
           if (!entry.visible) {
             // Remove from output
-            const existingIndex = this.getSortedIndex(entry, event.oldValue); // TODO: lift this lookup if needed for events?
             output.splice(existingIndex, 1);
-            // TODO: notify visible count reduced
-            // TODO: notify potential effect on window
+            this.notifyItemShift(existingIndex, -1);
           } else {
             // Entry was and still is visible
             if (
@@ -320,22 +423,15 @@ class DataSource<
               this.sortBy(event.oldValue) === this.sortBy(entry.value)
             ) {
               // Still at same position, so done!
-              // TODO: notify of update
+              this.notifyItemUpdated(existingIndex);
             } else {
               // item needs to be moved cause of sorting
-              const existingIndex = this.getSortedIndex(entry, event.oldValue);
+              // TODO: possible optimization: if we discover that old and new index would be the same,
+              // despite different sort values, we could still only emit an update
               output.splice(existingIndex, 1);
+              this.notifyItemShift(existingIndex, -1);
               // find new sort index
-              const newIndex = sortedLastIndexBy(
-                this.output,
-                entry,
-                this.sortHelper,
-              );
-              entry.approxIndex = newIndex;
-              output.splice(newIndex, 0, entry);
-              // item has moved
-              // remove and replace
-              // TODO: notify entry moved (or replaced, in case newIndex === existingIndex
+              this.insertSorted(entry);
             }
           }
         }
@@ -348,7 +444,7 @@ class DataSource<
 
   rebuildOutput() {
     const {sortBy, filter, sortHelper} = this;
-    // copy base array or run filter (with side effect update of visible)
+    // copy base array or run filter (with side effecty update of visible)
     // TODO: pending on the size, should we batch this in smaller steps? (and maybe merely reuse append)
     let output = filter
       ? this._records.filter((entry) => {
@@ -368,7 +464,10 @@ class DataSource<
       entry.visible = true;
     });
     this.output = output;
-    // TODO: bunch of events
+    this.outputChangeListener?.({
+      type: 'reset',
+      newCount: output.length,
+    });
   }
 
   private sortHelper = (a: Entry<T>) =>
@@ -412,19 +511,18 @@ class DataSource<
     );
     entry.approxIndex = insertionIndex;
     this.output.splice(insertionIndex, 0, entry);
-    // TODO: notify window shift if applicable
-    // TODO: shift window if following the end or beginning
+    this.notifyItemShift(insertionIndex, 1);
   }
 }
 
-export function createDataSource<T extends object, KEY extends keyof T = any>(
+export function createDataSource<T, KEY extends keyof T = any>(
   initialSet: T[],
   keyAttribute: KEY,
 ): DataSource<T, KEY, ExtractKeyType<T, KEY>>;
-export function createDataSource<T extends object>(
+export function createDataSource<T>(
   initialSet?: T[],
 ): DataSource<T, never, never>;
-export function createDataSource<T extends object, KEY extends keyof T>(
+export function createDataSource<T, KEY extends keyof T>(
   initialSet: T[] = [],
   keyAttribute?: KEY | undefined,
 ): DataSource<T, any, any> {

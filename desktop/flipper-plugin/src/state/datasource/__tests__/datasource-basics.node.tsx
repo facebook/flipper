@@ -7,7 +7,7 @@
  * @format
  */
 
-import {createDataSource} from '../DataSource';
+import {createDataSource, DataSource} from '../DataSource';
 
 type Todo = {
   id: string;
@@ -276,6 +276,9 @@ test('filter + sort + index', () => {
   ds.setSortBy(undefined);
   // key insertion order
   expect(unwrap(ds.output)).toEqual([newCookie, newCoffee, submitBug, a, b]);
+  // verify getOutput
+  expect(unwrap(ds.output.slice(1, 3))).toEqual([newCoffee, submitBug]);
+  expect(ds.getOutput(1, 3)).toEqual([newCoffee, submitBug]);
 });
 
 test('filter', () => {
@@ -318,34 +321,39 @@ test('filter', () => {
   expect(unwrap(ds.output)).toEqual([newCookie, newCoffee, submitBug, a, b]);
 });
 
-test.skip('reverse without sorting', () => {
+test('reverse without sorting', () => {
   const ds = createDataSource<Todo>([eatCookie, drinkCoffee]);
-  expect(unwrap(ds.output)).toEqual([eatCookie, drinkCoffee]);
+  ds.setWindow(0, 100);
+  expect(ds.getOutput()).toEqual([eatCookie, drinkCoffee]);
 
   ds.toggleReversed();
-  expect(unwrap(ds.output)).toEqual([drinkCoffee, eatCookie]);
+  expect(ds.getOutput(1, 2)).toEqual([eatCookie]);
+  expect(ds.getOutput(0, 1)).toEqual([drinkCoffee]);
+  expect(ds.getOutput(0, 2)).toEqual([drinkCoffee, eatCookie]);
+
+  expect(ds.getOutput()).toEqual([drinkCoffee, eatCookie]);
 
   ds.append(submitBug);
   expect(ds.records).toEqual([eatCookie, drinkCoffee, submitBug]);
-  expect(unwrap(ds.output)).toEqual([submitBug, drinkCoffee, eatCookie]);
+  expect(ds.getOutput()).toEqual([submitBug, drinkCoffee, eatCookie]);
 
   const x = {id: 'x', title: 'x'};
   ds.update(0, x);
   expect(ds.records).toEqual([x, drinkCoffee, submitBug]);
-  expect(unwrap(ds.output)).toEqual([submitBug, drinkCoffee, x]);
+  expect(ds.getOutput()).toEqual([submitBug, drinkCoffee, x]);
   const y = {id: 'y', title: 'y'};
   const z = {id: 'z', title: 'z'};
   ds.update(2, z);
   ds.update(1, y);
 
   expect(ds.records).toEqual([x, y, z]);
-  expect(unwrap(ds.output)).toEqual([z, y, x]);
+  expect(ds.getOutput()).toEqual([z, y, x]);
 
   ds.setReversed(false);
-  expect(unwrap(ds.output)).toEqual([x, y, z]);
+  expect(ds.getOutput()).toEqual([x, y, z]);
 });
 
-test.skip('reverse with sorting', () => {
+test('reverse with sorting', () => {
   type N = {
     $: string;
     name: string;
@@ -358,22 +366,23 @@ test.skip('reverse with sorting', () => {
   const c = {$: 'c', name: 'c'};
 
   const ds = createDataSource<N>([]);
+  ds.setWindow(0, 100);
   ds.setReversed(true);
   ds.append(b1);
   ds.append(c);
-  expect(unwrap(ds.output)).toEqual([c, b1]);
+  expect(ds.getOutput()).toEqual([c, b1]);
 
   ds.setSortBy('$');
-  expect(unwrap(ds.output)).toEqual([c, b1]);
+  expect(ds.getOutput()).toEqual([c, b1]);
 
   ds.append(b2);
-  expect(unwrap(ds.output)).toEqual([c, b2, b1]);
+  expect(ds.getOutput()).toEqual([c, b2, b1]);
 
   ds.append(a);
-  expect(unwrap(ds.output)).toEqual([c, b2, b1, a]);
+  expect(ds.getOutput()).toEqual([c, b2, b1, a]);
 
   ds.append(b3);
-  expect(unwrap(ds.output)).toEqual([c, b3, b2, b1, a]);
+  expect(ds.getOutput()).toEqual([c, b3, b2, b1, a]);
 
   // if we append a new item with existig item, it should end up in the end
   const b4 = {
@@ -381,7 +390,7 @@ test.skip('reverse with sorting', () => {
     name: 'b4',
   };
   ds.append(b4);
-  expect(unwrap(ds.output)).toEqual([c, b4, b3, b2, b1, a]);
+  expect(ds.getOutput()).toEqual([c, b4, b3, b2, b1, a]);
 
   // if we replace the middle item, it should end up in the middle
   const b2r = {
@@ -389,7 +398,7 @@ test.skip('reverse with sorting', () => {
     name: 'b2replacement',
   };
   ds.update(2, b2r);
-  expect(unwrap(ds.output)).toEqual([c, b4, b3, b2r, b1, a]);
+  expect(ds.getOutput()).toEqual([c, b4, b3, b2r, b1, a]);
 
   // if we replace something with a different sort value, it should be sorted properly, and the old should disappear
   const b3r = {
@@ -397,7 +406,7 @@ test.skip('reverse with sorting', () => {
     name: 'b3replacement',
   };
   ds.update(4, b3r);
-  expect(unwrap(ds.output)).toEqual([c, b4, b2r, b1, b3r, a]);
+  expect(ds.getOutput()).toEqual([c, b4, b2r, b1, b3r, a]);
 });
 
 test('reset', () => {
@@ -429,4 +438,130 @@ test('clear', () => {
   expect([...ds.recordsById.keys()]).toEqual(['cookie', 'coffee', 'bug']);
   // resets in the same ordering as view preferences were preserved
   expect(unwrap(ds.output)).toEqual([drinkCoffee, submitBug]);
+});
+
+function testEvents<T>(
+  initial: T[],
+  op: (ds: DataSource<T, any, any>) => void,
+): any[] {
+  const ds = createDataSource<T>(initial);
+  const events: any[] = [];
+  ds.setOutputChangeListener((e) => events.push(e));
+  op(ds);
+  ds.setOutputChangeListener(undefined);
+  return events;
+}
+
+test('it emits the right events - zero window', () => {
+  expect(
+    testEvents(['a', 'b'], (ds) => {
+      ds.append('c');
+      ds.update(1, 'x');
+    }),
+  ).toEqual([
+    {
+      delta: 1,
+      index: 2,
+      location: 'after',
+      newCount: 3,
+      type: 'shift',
+    },
+  ]);
+});
+
+test('it emits the right events - small window', () => {
+  expect(
+    testEvents(['a', 'b'], (ds) => {
+      ds.setWindow(0, 3);
+      ds.append('c');
+      ds.update(1, 'x');
+    }),
+  ).toEqual([
+    {delta: 1, location: 'in', newCount: 3, type: 'shift', index: 2},
+    {index: 1, type: 'update'},
+  ]);
+});
+
+test('it emits the right events - view change', () => {
+  expect(
+    testEvents(['a', 'b'], (ds) => {
+      ds.setWindow(1, 2);
+      ds.setSortBy((x) => x);
+      // a, [b]
+      ds.update(0, 'x');
+      // b, [x]
+      expect(ds.getItem(0)).toEqual('b');
+      expect(ds.getItem(1)).toEqual('x');
+      ds.append('y');
+      // b, [x], y
+      ds.append('c');
+      // b, [c], x, y
+    }),
+  ).toEqual([
+    {newCount: 2, type: 'reset'},
+    {index: 0, delta: -1, location: 'before', newCount: 1, type: 'shift'}, // remove a
+    {index: 1, delta: 1, location: 'in', newCount: 2, type: 'shift'}, // pre-insert x
+    {index: 2, delta: 1, location: 'after', newCount: 3, type: 'shift'}, // y happened after
+    {index: 1, delta: 1, location: 'in', newCount: 4, type: 'shift'}, // c becomes the 'in' new indow
+  ]);
+});
+
+test('it emits the right events - reversed view change', () => {
+  expect(
+    testEvents(['a', 'b'], (ds) => {
+      ds.setWindow(1, 2);
+      ds.setSortBy((x) => x);
+      ds.setReversed(true);
+      // b, [a]
+      ds.update(0, 'x');
+      // x, [b]
+      expect(ds.getItem(0)).toEqual('x');
+      expect(ds.getItem(1)).toEqual('b');
+      ds.append('y');
+      // y, [x], b
+      ds.append('c');
+      // y, [x], c, b
+      ds.append('a');
+      // y, [x], c, b, a
+    }),
+  ).toEqual([
+    {newCount: 2, type: 'reset'},
+    {newCount: 2, type: 'reset'}, // FIXME: ideally dedupe these, but due to scheduling will do little harm
+    {index: 1, delta: -1, location: 'in', newCount: 1, type: 'shift'}, // remove a
+    {index: 0, delta: 1, location: 'before', newCount: 2, type: 'shift'}, // pre-insert x
+    {index: 0, delta: 1, location: 'before', newCount: 3, type: 'shift'},
+    {index: 2, delta: 1, location: 'after', newCount: 4, type: 'shift'},
+    {index: 4, delta: 1, location: 'after', newCount: 5, type: 'shift'},
+  ]);
+});
+
+test('it emits the right events - reversed view change with filter', () => {
+  expect(
+    testEvents(['a', 'b'], (ds) => {
+      ds.setWindow(0, 2);
+      ds.setSortBy((x) => x);
+      ds.setReversed(true);
+      ds.setFilter((x) => ['a', 'b'].includes(x));
+      // [b, a]
+      ds.update(0, 'x');
+      // [b, ]
+      expect(ds.getItem(0)).toEqual('b');
+      expect(ds.output.length).toBe(1);
+      ds.append('y');
+      // [b, ]
+      ds.append('c');
+      // [b, ]
+      ds.append('a');
+      // [b, a]
+      ds.append('a');
+      // [b, a, a] // N.b. the new a is in the *middle*
+    }),
+  ).toEqual([
+    {newCount: 2, type: 'reset'},
+    {newCount: 2, type: 'reset'}, // FIXME: ideally dedupe these, but due to scheduling will do little harm
+    {newCount: 2, type: 'reset'}, // FIXME: ideally dedupe these, but due to scheduling will do little harm
+    {index: 1, delta: -1, location: 'in', newCount: 1, type: 'shift'}, // remove a
+    {index: 1, delta: 1, location: 'in', newCount: 2, type: 'shift'},
+    {index: 1, delta: 1, location: 'in', newCount: 3, type: 'shift'},
+  ]);
 });
