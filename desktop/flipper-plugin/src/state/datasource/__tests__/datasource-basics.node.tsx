@@ -51,7 +51,7 @@ test('can create a datasource', () => {
 });
 
 test('can create a keyed datasource', () => {
-  const ds = createDataSource<Todo>([eatCookie], 'id');
+  const ds = createDataSource<Todo>([eatCookie], {key: 'id'});
   expect(ds.records).toEqual([eatCookie]);
 
   ds.append(drinkCoffee);
@@ -101,7 +101,7 @@ test('can create a keyed datasource', () => {
 });
 
 test('throws on invalid keys', () => {
-  const ds = createDataSource<Todo>([eatCookie], 'id');
+  const ds = createDataSource<Todo>([eatCookie], {key: 'id'});
   expect(() => {
     ds.append({id: '', title: 'test'});
   }).toThrow(`Invalid key value: ''`);
@@ -111,7 +111,7 @@ test('throws on invalid keys', () => {
 });
 
 test('removing invalid keys', () => {
-  const ds = createDataSource<Todo>([eatCookie], 'id');
+  const ds = createDataSource<Todo>([eatCookie], {key: 'id'});
   expect(ds.removeByKey('trash')).toBe(false);
   expect(() => {
     ds.remove(1);
@@ -255,7 +255,9 @@ test('filter + sort', () => {
 });
 
 test('filter + sort + index', () => {
-  const ds = createDataSource<Todo>([eatCookie, drinkCoffee, submitBug], 'id');
+  const ds = createDataSource<Todo>([eatCookie, drinkCoffee, submitBug], {
+    key: 'id',
+  });
 
   ds.setFilter((t) => t.title.indexOf('c') === -1);
   ds.setSortBy('title');
@@ -305,7 +307,9 @@ test('filter + sort + index', () => {
 });
 
 test('filter', () => {
-  const ds = createDataSource<Todo>([eatCookie, drinkCoffee, submitBug], 'id');
+  const ds = createDataSource<Todo>([eatCookie, drinkCoffee, submitBug], {
+    key: 'id',
+  });
 
   ds.setFilter((t) => t.title.indexOf('c') === -1);
   expect(unwrap(ds.output)).toEqual([submitBug]);
@@ -436,7 +440,9 @@ test('reverse with sorting', () => {
 });
 
 test('reset', () => {
-  const ds = createDataSource<Todo>([submitBug, drinkCoffee, eatCookie], 'id');
+  const ds = createDataSource<Todo>([submitBug, drinkCoffee, eatCookie], {
+    key: 'id',
+  });
   ds.setSortBy('title');
   ds.setFilter((v) => v.id !== 'cookie');
   expect(unwrap(ds.output)).toEqual([drinkCoffee, submitBug]);
@@ -448,7 +454,9 @@ test('reset', () => {
 });
 
 test('clear', () => {
-  const ds = createDataSource<Todo>([submitBug, drinkCoffee, eatCookie], 'id');
+  const ds = createDataSource<Todo>([submitBug, drinkCoffee, eatCookie], {
+    key: 'id',
+  });
   ds.setSortBy('title');
   ds.setFilter((v) => v.id !== 'cookie');
   expect(unwrap(ds.output)).toEqual([drinkCoffee, submitBug]);
@@ -471,7 +479,7 @@ function testEvents<T>(
   op: (ds: DataSource<T, any, any>) => void,
   key?: keyof T,
 ): any[] {
-  const ds = createDataSource<T>(initial, key);
+  const ds = createDataSource<T>(initial, {key});
   const events: any[] = [];
   ds.setOutputChangeListener((e) => events.push(e));
   op(ds);
@@ -637,4 +645,149 @@ test('basic remove', () => {
       delta: -1,
     },
   ]);
+});
+
+test('basic shift', () => {
+  const completedBug = {id: 'bug', title: 'fixed bug', done: true};
+  expect(
+    testEvents(
+      [drinkCoffee, eatCookie, submitBug],
+      (ds) => {
+        ds.setWindow(0, 100);
+        ds.shift(2);
+        expect(ds.getOutput()).toEqual([submitBug]);
+        expect(ds.recordsById.get('bug')).toBe(submitBug);
+        expect(ds.recordsById.get('coffee')).toBeUndefined();
+        expect(ds.indexOfKey('bug')).toBe(0);
+        expect(ds.indexOfKey('coffee')).toBe(-1);
+        ds.upsert(completedBug);
+        expect(ds.getOutput()).toEqual([completedBug]);
+        expect(ds.recordsById.get('bug')).toBe(completedBug);
+      },
+      'id',
+    ),
+  ).toEqual([
+    {
+      type: 'shift',
+      newCount: 1,
+      location: 'in',
+      index: 0,
+      delta: -2,
+    },
+    {
+      type: 'update',
+      index: 0,
+    },
+  ]);
+});
+
+test('sorted shift', () => {
+  expect(
+    testEvents(['c', 'b', 'a', 'e', 'd'], (ds) => {
+      ds.setWindow(0, 100);
+      ds.setSortBy((v) => v);
+      expect(ds.getOutput()).toEqual(['a', 'b', 'c', 'd', 'e']);
+      ds.shift(4);
+      expect(ds.getOutput()).toEqual(['d']);
+      ds.shift(1); // optimizes to reset
+    }),
+  ).toEqual([
+    {newCount: 5, type: 'reset'}, // sort
+    {delta: -1, index: 4, location: 'in', newCount: 4, type: 'shift'}, // e
+    {delta: -1, index: 0, location: 'in', newCount: 3, type: 'shift'}, // a
+    {delta: -1, index: 0, location: 'in', newCount: 2, type: 'shift'}, // b
+    {delta: -1, index: 0, location: 'in', newCount: 1, type: 'shift'}, // c
+    {newCount: 0, type: 'reset'}, // shift that clears
+  ]);
+});
+
+test('filtered shift', () => {
+  expect(
+    testEvents(['c', 'b', 'a', 'e', 'd'], (ds) => {
+      ds.setWindow(0, 100);
+      ds.setFilter((v) => v !== 'b' && v !== 'e');
+      expect(ds.getOutput()).toEqual(['c', 'a', 'd']);
+      ds.shift(4);
+      expect(ds.getOutput()).toEqual(['d']);
+    }),
+  ).toEqual([
+    {newCount: 3, type: 'reset'}, // filter
+    {type: 'shift', location: 'in', newCount: 1, index: 0, delta: -2}, // optimized shift
+  ]);
+});
+
+test('remove after shift works correctly', () => {
+  const a: Todo = {id: 'a', title: 'a', done: false};
+  const b: Todo = {id: 'b', title: 'b', done: false};
+
+  expect(
+    testEvents(
+      [eatCookie, drinkCoffee, submitBug, a, b],
+      (ds) => {
+        ds.setWindow(0, 100);
+        ds.shift(2);
+        ds.removeByKey('b');
+        ds.removeByKey('bug');
+        expect(ds.getOutput()).toEqual([a]);
+        expect(ds.indexOfKey('cookie')).toBe(-1);
+        expect(ds.indexOfKey('coffee')).toBe(-1);
+        expect(ds.indexOfKey('bug')).toBe(-1);
+        expect(ds.indexOfKey('a')).toBe(0);
+        expect(ds.indexOfKey('b')).toBe(-1);
+      },
+      'id',
+    ),
+  ).toEqual([
+    {
+      type: 'shift',
+      newCount: 3,
+      location: 'in',
+      index: 0,
+      delta: -2,
+    },
+    {
+      type: 'shift',
+      newCount: 2,
+      location: 'in',
+      index: 2,
+      delta: -1,
+    },
+    {
+      type: 'shift',
+      newCount: 1,
+      location: 'in',
+      index: 0,
+      delta: -1,
+    },
+  ]);
+});
+
+test('respects limit', () => {
+  const grab = (): [length: number, first: number, last: number] => {
+    const output = ds.getOutput();
+    return [output.length, output[0], output[output.length - 1]];
+  };
+
+  const ds = createDataSource(
+    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+    {limit: 20},
+  );
+  ds.setWindow(0, 100);
+
+  ds.append(19);
+  ds.append(20);
+  expect(grab()).toEqual([20, 1, 20]);
+
+  ds.append(21);
+  expect(grab()).toEqual([19, 3, 21]);
+  ds.append(22);
+  expect(grab()).toEqual([20, 3, 22]);
+
+  ds.remove(0);
+  expect(grab()).toEqual([19, 4, 22]);
+
+  ds.append(23);
+  expect(grab()).toEqual([20, 4, 23]);
+  ds.append(24);
+  expect(grab()).toEqual([19, 6, 24]);
 });

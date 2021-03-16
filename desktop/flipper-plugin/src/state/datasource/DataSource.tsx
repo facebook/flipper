@@ -14,6 +14,10 @@ import {
   sortBy as lodashSort,
 } from 'lodash';
 
+// If the dataSource becomes to large, after how many records will we start to drop items?
+const dropFactor = 0.1;
+const defaultLimit = 200 * 1000;
+
 // TODO: support better minification
 // TODO: separate views from datasource to be able to support multiple transformation simultanously
 // TODO: expose interface with public members only
@@ -43,8 +47,17 @@ type RemoveEvent<T> = {
   entry: Entry<T>;
   index: number;
 };
+type ShiftEvent<T> = {
+  type: 'shift';
+  entries: Entry<T>[];
+  amount: number;
+};
 
-type DataEvent<T> = AppendEvent<T> | UpdateEvent<T> | RemoveEvent<T>;
+type DataEvent<T> =
+  | AppendEvent<T>
+  | UpdateEvent<T>
+  | RemoveEvent<T>
+  | ShiftEvent<T>;
 
 type Entry<T> = {
   value: T;
@@ -87,6 +100,9 @@ export class DataSource<
   private _recordsById: Map<KEY_TYPE, T> = new Map();
   private keyAttribute: undefined | keyof T;
   private idToIndex: Map<KEY_TYPE, number> = new Map();
+  // if we shift the window, we increase shiftOffset, rather than remapping all values
+  private shiftOffset = 0;
+  limit = defaultLimit;
 
   private sortBy: undefined | ((a: T) => Primitive);
 
@@ -190,17 +206,27 @@ export class DataSource<
    */
   indexOfKey(key: KEY_TYPE): number {
     this.assertKeySet();
-    return this.idToIndex.get(key) ?? -1;
+    const stored = this.idToIndex.get(key);
+    return stored === undefined ? -1 : stored + this.shiftOffset;
+  }
+
+  private storeIndexOfKey(key: KEY_TYPE, index: number) {
+    // de-normalize the index, so that on  later look ups its corrected again
+    this.idToIndex.set(key, index - this.shiftOffset);
   }
 
   append(value: T) {
+    if (this._records.length >= this.limit) {
+      // we're full! let's free up some space
+      this.shift(Math.ceil(this.limit * dropFactor));
+    }
     if (this.keyAttribute) {
       const key = this.getKey(value);
       if (this._recordsById.has(key)) {
         throw new Error(`Duplicate key: '${key}'`);
       }
       this._recordsById.set(key, value);
-      this.idToIndex.set(key, this._records.length);
+      this.storeIndexOfKey(key, this._records.length);
     }
     const entry = {
       value,
@@ -223,8 +249,7 @@ export class DataSource<
     this.assertKeySet();
     const key = this.getKey(value);
     if (this.idToIndex.has(key)) {
-      const idx = this.idToIndex.get(key)!;
-      this.update(idx, value);
+      this.update(this.indexOfKey(key), value);
       return true;
     } else {
       this.append(value);
@@ -253,7 +278,7 @@ export class DataSource<
         this.idToIndex.delete(currentKey);
       }
       this._recordsById.set(key, value);
-      this.idToIndex.set(key, index);
+      this.storeIndexOfKey(key, index);
     }
     this.emitDataEvent({
       type: 'update',
@@ -278,10 +303,16 @@ export class DataSource<
       const key = this.getKey(entry.value);
       this._recordsById.delete(key);
       this.idToIndex.delete(key);
-      // Optimization: this is O(n)! Should be done as an async job
-      this.idToIndex.forEach((keyIndex, key) => {
-        if (keyIndex > index) this.idToIndex.set(key, keyIndex - 1);
-      });
+      if (index === 0) {
+        // lucky happy case, this is more efficient
+        this.shiftOffset -= 1;
+      } else {
+        // Optimization: this is O(n)! Should be done as an async job
+        this.idToIndex.forEach((keyIndex, key) => {
+          if (keyIndex + this.shiftOffset > index)
+            this.storeIndexOfKey(key, keyIndex - 1);
+        });
+      }
     }
     this.emitDataEvent({
       type: 'remove',
@@ -298,8 +329,8 @@ export class DataSource<
    */
   removeByKey(keyValue: KEY_TYPE): boolean {
     this.assertKeySet();
-    const index = this.idToIndex.get(keyValue);
-    if (index === undefined) {
+    const index = this.indexOfKey(keyValue);
+    if (index === -1) {
       return false;
     }
     this.remove(index);
@@ -310,10 +341,29 @@ export class DataSource<
    * Removes the first N entries.
    * @param amount
    */
-  shift(_amount: number) {
+  shift(amount: number) {
+    amount = Math.min(amount, this._records.length);
+    if (amount === this._records.length) {
+      this.clear();
+      return;
+    }
     // increase an offset variable with amount, and correct idToIndex reads / writes with that
+    this.shiftOffset -= amount;
     // removes the affected records for _records, _recordsById and idToIndex
-    throw new Error('Not Implemented');
+    const removed = this._records.splice(0, amount);
+    if (this.keyAttribute) {
+      removed.forEach((entry) => {
+        const key = this.getKey(entry.value);
+        this._recordsById.delete(key);
+        this.idToIndex.delete(key);
+      });
+    }
+
+    this.emitDataEvent({
+      type: 'shift',
+      entries: removed,
+      amount,
+    });
   }
 
   setWindow(start: number, end: number) {
@@ -368,6 +418,7 @@ export class DataSource<
     this.windowEnd = 0;
     this._records = [];
     this._recordsById = new Map();
+    this.shiftOffset = 0;
     this.idToIndex = new Map();
     this.dataUpdateQueue = [];
     this.output = [];
@@ -463,11 +514,10 @@ export class DataSource<
   }
 
   private processEvent = (event: DataEvent<T>) => {
-    const {entry} = event;
     const {output, sortBy, filter} = this;
     switch (event.type) {
       case 'append': {
-        // TODO: increase total counter
+        const {entry} = event;
         if (!entry.visible) {
           // not in filter? skip this entry
           return;
@@ -483,6 +533,7 @@ export class DataSource<
         break;
       }
       case 'update': {
+        const {entry} = event;
         // short circuit; no view active so update straight away
         if (!filter && !sortBy) {
           output[event.index].approxIndex = event.index;
@@ -523,19 +574,28 @@ export class DataSource<
         break;
       }
       case 'remove': {
-        // filter active, and not visible? short circuilt
-        if (!entry.visible) {
-          return;
-        }
-        // no sorting, no filter?
-        if (!sortBy && !filter) {
-          output.splice(event.index, 1);
-          this.notifyItemShift(event.index, -1);
+        this.processRemoveEvent(event.index, event.entry);
+        break;
+      }
+      case 'shift': {
+        // no sorting? then all items are removed from the start so optimize for that
+        if (!sortBy) {
+          let amount = 0;
+          if (!filter) {
+            amount = event.amount;
+          } else {
+            // if there is a filter, count the visibles and shift those
+            for (let i = 0; i < event.entries.length; i++)
+              if (event.entries[i].visible) amount++;
+          }
+          output.splice(0, amount);
+          this.notifyItemShift(0, -amount);
         } else {
-          // sorting or filter is active, find the actual location
-          const existingIndex = this.getSortedIndex(entry, event.entry.value);
-          output.splice(existingIndex, 1);
-          this.notifyItemShift(existingIndex, -1);
+          // we have sorting, so we need to remove item by item
+          // we do this backward, so that approxIndex is more likely to be correct
+          for (let i = event.entries.length - 1; i >= 0; i--) {
+            this.processRemoveEvent(i, event.entries[i]);
+          }
         }
         break;
       }
@@ -543,6 +603,25 @@ export class DataSource<
         throw new Error('unknown event type');
     }
   };
+
+  private processRemoveEvent(index: number, entry: Entry<T>) {
+    const {output, sortBy, filter} = this;
+
+    // filter active, and not visible? short circuilt
+    if (!entry.visible) {
+      return;
+    }
+    // no sorting, no filter?
+    if (!sortBy && !filter) {
+      output.splice(index, 1);
+      this.notifyItemShift(index, -1);
+    } else {
+      // sorting or filter is active, find the actual location
+      const existingIndex = this.getSortedIndex(entry, entry.value);
+      output.splice(existingIndex, 1);
+      this.notifyItemShift(existingIndex, -1);
+    }
+  }
 
   private rebuildOutput() {
     const {sortBy, filter, sortHelper} = this;
@@ -614,18 +693,26 @@ export class DataSource<
   }
 }
 
+type CreateDataSourceOptions<T, K extends keyof T> = {
+  key?: K;
+  limit?: number;
+};
+
 export function createDataSource<T, KEY extends keyof T = any>(
   initialSet: T[],
-  keyAttribute: KEY,
+  options: CreateDataSourceOptions<T, KEY>,
 ): DataSource<T, KEY, ExtractKeyType<T, KEY>>;
 export function createDataSource<T>(
   initialSet?: T[],
 ): DataSource<T, never, never>;
 export function createDataSource<T, KEY extends keyof T>(
   initialSet: T[] = [],
-  keyAttribute?: KEY | undefined,
+  options?: CreateDataSourceOptions<T, KEY>,
 ): DataSource<T, any, any> {
-  const ds = new DataSource<T, KEY>(keyAttribute);
+  const ds = new DataSource<T, KEY>(options?.key);
+  if (options?.limit !== undefined) {
+    ds.limit = options.limit;
+  }
   initialSet.forEach((value) => ds.append(value));
   return ds;
 }
