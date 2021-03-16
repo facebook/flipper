@@ -20,7 +20,7 @@ import {TableRow, DEFAULT_ROW_HEIGHT} from './TableRow';
 import {DataSource} from '../../state/datasource/DataSource';
 import {Layout} from '../Layout';
 import {TableHead} from './TableHead';
-import {Percentage} from '../utils/widthUtils';
+import {Percentage} from '../../utils/widthUtils';
 import {DataSourceRenderer, DataSourceVirtualizer} from './DataSourceRenderer';
 import {useDataTableManager, TableManager} from './useDataTableManager';
 import {TableSearch} from './TableSearch';
@@ -55,6 +55,12 @@ export type DataTableColumn<T = any> = {
   wrap?: boolean;
   align?: 'left' | 'right' | 'center';
   visible?: boolean;
+  filters?: {
+    label: string;
+    value: string;
+    enabled: boolean;
+    predefined?: boolean;
+  }[];
 };
 
 export interface RenderContext<T = any> {
@@ -129,6 +135,7 @@ export function DataTable<T extends object>(props: DataTableProps<T>) {
         case 'End':
           selectItem(() => dataSource.output.length - 1);
           break;
+        case ' ': // yes, that is a space
         case 'PageDown':
           selectItem((idx) =>
             Math.min(
@@ -196,6 +203,9 @@ export function DataTable<T extends object>(props: DataTableProps<T>) {
             onColumnToggleVisibility={tableManager.toggleColumnVisibility}
             sorting={tableManager.sorting}
             onColumnSort={tableManager.sortColumn}
+            onAddColumnFilter={tableManager.addColumnFilter}
+            onRemoveColumnFilter={tableManager.removeColumnFilter}
+            onToggleColumnFilter={tableManager.toggleColumnFilter}
           />
         </Layout.Container>
         <DataSourceRenderer<T, RenderContext<T>>

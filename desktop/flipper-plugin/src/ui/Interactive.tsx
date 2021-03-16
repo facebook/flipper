@@ -9,14 +9,14 @@
 
 import styled from '@emotion/styled';
 import React from 'react';
-import LowPassFilter from './utils/LowPassFilter';
+import LowPassFilter from '../utils/LowPassFilter';
 import {
   getDistanceTo,
   maybeSnapLeft,
   maybeSnapTop,
   SNAP_SIZE,
-} from './utils/snap';
-import type {Rect} from './utils/Rect';
+} from '../utils/snap';
+import type {Rect} from '../utils/Rect';
 
 const WINDOW_CURSOR_BOUNDARY = 5;
 

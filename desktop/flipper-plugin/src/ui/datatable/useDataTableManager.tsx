@@ -8,10 +8,11 @@
  */
 
 import {DataTableColumn} from 'flipper-plugin/src/ui/datatable/DataTable';
-import {Percentage} from '../utils/widthUtils';
+import {Percentage} from '../../utils/widthUtils';
 import produce from 'immer';
 import {useCallback, useEffect, useMemo, useState} from 'react';
 import {DataSource} from '../../state/datasource/DataSource';
+import {useMemoize} from '../../utils/useMemoize';
 
 export type OnColumnResize = (id: string, size: number | Percentage) => void;
 export type Sorting = {
@@ -42,29 +43,50 @@ export function useDataTableManager<T extends object>(
     [columns],
   );
 
-  // filter is computed by useMemo to support adding column filters etc here in the future
-  const currentFilter = useMemo(
-    function computeFilter() {
-      if (searchValue === '') {
-        // unset
-        return undefined;
-      }
+  const addColumnFilter = useCallback((columnId: string, value: string) => {
+    // TODO: fix typings
+    setEffectiveColumns(
+      produce((draft: DataTableColumn<any>[]) => {
+        const column = draft.find((c) => c.key === columnId)!;
+        column.filters!.push({
+          label: value,
+          value: value.toLowerCase(),
+          enabled: true,
+        });
+      }),
+    );
+  }, []);
 
-      const searchString = searchValue.toLowerCase();
-      return function dataTableFilter(item: object) {
-        return Object.values(item).some((v) =>
-          String(v).toLowerCase().includes(searchString),
-        );
-      };
-    },
-    [searchValue],
+  const removeColumnFilter = useCallback((columnId: string, index: number) => {
+    // TODO: fix typings
+    setEffectiveColumns(
+      produce((draft: DataTableColumn<any>[]) => {
+        draft.find((c) => c.key === columnId)!.filters?.splice(index, 1);
+      }),
+    );
+  }, []);
+
+  const toggleColumnFilter = useCallback((columnId: string, index: number) => {
+    // TODO: fix typings
+    setEffectiveColumns(
+      produce((draft: DataTableColumn<any>[]) => {
+        const f = draft.find((c) => c.key === columnId)!.filters![index];
+        f.enabled = !f.enabled;
+      }),
+    );
+  }, []);
+
+  // filter is computed by useMemo to support adding column filters etc here in the future
+  const currentFilter = useMemoize(
+    computeDataTableFilter,
+    [searchValue, columns], // possible optimization: we only need the column filters
   );
 
   const reset = useCallback(() => {
     setEffectiveColumns(computeInitialColumns(defaultColumns));
     setSorting(undefined);
+    setSearchValue('');
     dataSource.reset();
-    // TODO: local storage
   }, [dataSource, defaultColumns]);
 
   const resizeColumn = useCallback((id: string, width: number | Percentage) => {
@@ -152,6 +174,10 @@ export function useDataTableManager<T extends object>(
     /** current selection, describes the index index in the datasources's current output (not window) */
     selection,
     selectItem,
+    /** Changing column filters */
+    addColumnFilter,
+    removeColumnFilter,
+    toggleColumnFilter,
   };
 }
 
@@ -160,6 +186,45 @@ function computeInitialColumns(
 ): DataTableColumn<any>[] {
   return columns.map((c) => ({
     ...c,
+    filters:
+      c.filters?.map((f) => ({
+        ...f,
+        predefined: true,
+      })) ?? [],
     visible: c.visible !== false,
   }));
+}
+
+export function computeDataTableFilter(
+  searchValue: string,
+  columns: DataTableColumn[],
+) {
+  const searchString = searchValue.toLowerCase();
+  // the columns with an active filter are those that have filters defined,
+  // with at least one enabled
+  const filteringColumns = columns.filter((c) =>
+    c.filters?.some((f) => f.enabled),
+  );
+
+  if (searchValue === '' && !filteringColumns.length) {
+    // unset
+    return undefined;
+  }
+
+  return function dataTableFilter(item: any) {
+    for (const column of filteringColumns) {
+      if (
+        !column.filters!.some(
+          (f) =>
+            f.enabled &&
+            String(item[column.key]).toLowerCase().includes(f.value),
+        )
+      ) {
+        return false; // there are filters, but none matches
+      }
+    }
+    return Object.values(item).some((v) =>
+      String(v).toLowerCase().includes(searchString),
+    );
+  };
 }

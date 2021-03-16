@@ -11,7 +11,7 @@ import React, {memo} from 'react';
 import styled from '@emotion/styled';
 import {theme} from 'flipper-plugin';
 import type {RenderContext} from './DataTable';
-import {Width} from '../utils/widthUtils';
+import {Width} from '../../utils/widthUtils';
 import {pad} from 'lodash';
 
 // heuristic for row estimation, should match any future styling updates

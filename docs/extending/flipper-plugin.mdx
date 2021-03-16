@@ -494,6 +494,30 @@ Utility that wraps React's `useCallback` with tracking capabilities.
 The API is similar, except that the first argument describes the interaction handled by the given event handler.
 See [Tracked](#tracked) for more info. 
 
+### useMemoize
+
+Slight variation on useMemo that encourages to create hoistable memoization functions,
+which encourages reuse and testability by no longer closing over variables that are used by the memoized function, but rather receiving them as arguments so that these functions beome pure.
+
+```javascript
+function MyComponent() {
+  const {findMetroDevice} = props;
+  const connections = useSomeHook();
+
+  const metroDevice = useMemoize(
+    findMetroDevice,
+    [connections.devices],
+  );
+
+  // etc
+}
+
+export function findMetroDevice(findMetroDevice, deviceList) {
+  return deviceList.find(findMetroDevice);
+}
+
+```
+
 ## UI components
 
 ### Layout.*

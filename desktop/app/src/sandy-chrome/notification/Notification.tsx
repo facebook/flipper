@@ -31,7 +31,7 @@ import {
   updatePluginBlocklist,
 } from '../../reducers/notifications';
 import {filterNotifications} from './notificationUtils';
-import {useMemoize} from '../../utils/useMemoize';
+import {useMemoize} from 'flipper-plugin';
 import BlocklistSettingButton from './BlocklistSettingButton';
 
 type NotificationExtra = {

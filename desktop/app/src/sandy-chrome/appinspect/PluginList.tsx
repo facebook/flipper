@@ -18,7 +18,7 @@ import {
   DownloadOutlined,
 } from '@ant-design/icons';
 import {Glyph, Layout, styled} from '../../ui';
-import {theme, NUX, Tracked, useValue} from 'flipper-plugin';
+import {theme, NUX, Tracked, useValue, useMemoize} from 'flipper-plugin';
 import {useDispatch, useStore} from '../../utils/useStore';
 import {
   computePluginLists,
@@ -29,7 +29,6 @@ import {selectPlugin} from '../../reducers/connections';
 import Client from '../../Client';
 import BaseDevice from '../../devices/BaseDevice';
 import {DownloadablePluginDetails} from 'flipper-plugin-lib';
-import {useMemoize} from '../../utils/useMemoize';
 import MetroDevice from '../../devices/MetroDevice';
 import {
   DownloadablePluginState,

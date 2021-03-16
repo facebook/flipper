@@ -225,6 +225,11 @@ const demos: PreviewProps[] = [
         'boolean (false)',
         'If set, all children will use their own height, and they will be centered vertically in the layout. If not set, all children will be stretched to the height of the layout.',
       ],
+      [
+        'gap',
+        'true / number (0)',
+        'Set the spacing between children. If just set, theme.space.small will be used.',
+      ],
     ],
     demos: {
       'Layout.Top': (

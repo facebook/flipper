@@ -53,7 +53,7 @@ import {getInstance} from '../fb-stubs/Logger';
 import {getUser} from '../fb-stubs/user';
 import {SandyRatingButton} from '../chrome/RatingButton';
 import {filterNotifications} from './notification/notificationUtils';
-import {useMemoize} from '../utils/useMemoize';
+import {useMemoize} from 'flipper-plugin';
 import isProduction from '../utils/isProduction';
 import NetworkGraph from '../chrome/NetworkGraph';
 import FpsGraph from '../chrome/FpsGraph';

@@ -12,7 +12,7 @@ import {
   isPercentage,
   Percentage,
   Width,
-} from '../utils/widthUtils';
+} from '../../utils/widthUtils';
 import {memo, useRef} from 'react';
 import {Interactive, InteractiveProps} from '../Interactive';
 import styled from '@emotion/styled';
@@ -20,17 +20,13 @@ import React from 'react';
 import {theme} from '../theme';
 import type {DataTableColumn} from './DataTable';
 
-import {Button, Checkbox, Dropdown, Menu, Typography} from 'antd';
+import {Checkbox, Dropdown, Menu, Typography} from 'antd';
 import {CaretDownFilled, CaretUpFilled, DownOutlined} from '@ant-design/icons';
 import {Layout} from '../Layout';
 import {Sorting, OnColumnResize} from './useDataTableManager';
+import {ColumnFilterHandlers, FilterIcon, HeaderButton} from './ColumnFilter';
 
 const {Text} = Typography;
-
-const TableHeaderArrow = styled.span({
-  float: 'right',
-});
-TableHeaderArrow.displayName = 'TableHead:TableHeaderArrow';
 
 function SortIcons({direction}: {direction?: 'up' | 'down'}) {
   return (
@@ -56,10 +52,18 @@ const SortIconsContainer = styled.span<{direction?: 'up' | 'down'}>(
     display: 'inline-flex',
     flexDirection: 'column',
     alignItems: 'center',
-    marginLeft: 4,
+    position: 'relative',
+    left: 4,
+    top: -3,
     color: theme.disabledColor,
   }),
 );
+
+const SettingsButton = styled(HeaderButton)({
+  position: 'absolute',
+  right: 0,
+  top: 0,
+});
 
 const TableHeaderColumnInteractive = styled(Interactive)<InteractiveProps>({
   overflow: 'hidden',
@@ -68,17 +72,6 @@ const TableHeaderColumnInteractive = styled(Interactive)<InteractiveProps>({
 });
 TableHeaderColumnInteractive.displayName =
   'TableHead:TableHeaderColumnInteractive';
-
-const TableHeaderColumnContainer = styled(Layout.Horizontal)({
-  padding: '4px 8px',
-  ':hover': {
-    backgroundColor: theme.buttonDefaultBackground,
-  },
-  [`:hover ${SortIconsContainer}`]: {
-    visibility: 'visible',
-  },
-});
-TableHeaderColumnContainer.displayName = 'TableHead:TableHeaderColumnContainer';
 
 const TableHeadContainer = styled.div<{horizontallyScrollable?: boolean}>({
   position: 'relative',
@@ -96,32 +89,36 @@ const TableHeadColumnContainer = styled.div<{
   flexShrink: props.width === undefined ? 1 : 0,
   flexGrow: props.width === undefined ? 1 : 0,
   width: props.width === undefined ? '100%' : props.width,
+  '&:last-of-type': {
+    marginRight: 20, // space for settings button
+  },
+  [`:hover ${SortIconsContainer}`]: {
+    visibility: 'visible',
+  },
+  [`&:hover ${HeaderButton}`]: {
+    visibility: 'visible !important' as any,
+  },
+  padding: '0 4px',
 }));
 TableHeadColumnContainer.displayName = 'TableHead:TableHeadColumnContainer';
 
 const RIGHT_RESIZABLE = {right: true};
 
 function TableHeadColumn({
-  id,
-  title,
-  width,
+  column,
   isResizable,
-  isSortable,
   onColumnResize,
-  isSortable: sortable,
   onSort,
   sorted,
+  ...filterHandlers
 }: {
-  id: string;
-  width: Width;
-  isSortable?: boolean;
+  column: DataTableColumn<any>;
   sorted: 'up' | 'down' | undefined;
   isResizable: boolean;
   onSort: (id: string) => void;
   sortOrder: undefined | Sorting;
   onColumnResize: OnColumnResize;
-  title?: string;
-}) {
+} & ColumnFilterHandlers) {
   const ref = useRef<HTMLDivElement | null>(null);
 
   const onResize = (newWidth: number) => {
@@ -132,7 +129,7 @@ function TableHeadColumn({
     let normalizedWidth: number | Percentage = newWidth;
 
     // normalise number to a percentage if we were originally passed a percentage
-    if (isPercentage(width) && ref.current) {
+    if (isPercentage(column.width) && ref.current) {
       const {parentElement} = ref.current;
       const parentWidth = parentElement!.clientWidth;
       const {childNodes} = parentElement!;
@@ -148,14 +145,19 @@ function TableHeadColumn({
       }
     }
 
-    onColumnResize(id, normalizedWidth);
+    onColumnResize(column.key, normalizedWidth);
   };
 
   let children = (
-    <TableHeaderColumnContainer center>
-      <Text strong>{title}</Text>
-      {isSortable && <SortIcons direction={sorted} />}
-    </TableHeaderColumnContainer>
+    <Layout.Right center style={{padding: '0 4px'}}>
+      <div onClick={() => onSort(column.key)} role="button" tabIndex={0}>
+        <Text strong>
+          {column.title ?? <>&nbsp;</>}
+          <SortIcons direction={sorted} />
+        </Text>
+      </div>
+      <FilterIcon column={column} {...filterHandlers} />
+    </Layout.Right>
   );
 
   if (isResizable) {
@@ -171,11 +173,7 @@ function TableHeadColumn({
   }
 
   return (
-    <TableHeadColumnContainer
-      width={width}
-      title={title}
-      onClick={sortable ? () => onSort(id) : undefined}
-      ref={ref}>
+    <TableHeadColumnContainer width={column.width} ref={ref}>
       {children}
     </TableHeadColumnContainer>
   );
@@ -193,18 +191,18 @@ export const TableHead = memo(function TableHead({
   onReset: () => void;
   sorting: Sorting | undefined;
   onColumnSort: (key: string) => void;
-}) {
+} & ColumnFilterHandlers) {
   const menu = (
     <Menu style={{minWidth: 200}}>
       {columns.map((column) => (
-        <Menu.Item
-          key={column.key}
-          onClick={(e) => {
-            e.domEvent.stopPropagation();
-            e.domEvent.preventDefault();
-            props.onColumnToggleVisibility(column.key);
-          }}>
-          <Checkbox checked={column.visible}>
+        <Menu.Item key={column.key}>
+          <Checkbox
+            checked={column.visible}
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              props.onColumnToggleVisibility(column.key);
+            }}>
             {column.title || column.key}
           </Checkbox>
         </Menu.Item>
@@ -221,19 +219,19 @@ export const TableHead = memo(function TableHead({
       {visibleColumns.map((column, i) => (
         <TableHeadColumn
           key={column.key}
-          id={column.key}
+          column={column}
           isResizable={i < visibleColumns.length - 1}
-          width={column.width}
-          isSortable={true} // might depend in the future on for example .getValue()
           sortOrder={props.sorting}
           onSort={props.onColumnSort}
           onColumnResize={props.onColumnResize}
+          onAddColumnFilter={props.onAddColumnFilter}
+          onRemoveColumnFilter={props.onRemoveColumnFilter}
+          onToggleColumnFilter={props.onToggleColumnFilter}
           sorted={
             props.sorting?.key === column.key
               ? props.sorting!.direction
               : undefined
           }
-          title={column.title}
         />
       ))}
       <Dropdown overlay={menu} trigger={['click']}>
@@ -243,13 +241,4 @@ export const TableHead = memo(function TableHead({
       </Dropdown>
     </TableHeadContainer>
   );
-});
-
-const SettingsButton = styled(Button)({
-  padding: 4,
-  position: 'absolute',
-  right: 0,
-  top: 0,
-  backgroundColor: theme.backgroundWash,
-  borderRadius: 0,
 });

@@ -11,7 +11,7 @@ import React, {createRef} from 'react';
 import {DataTable, DataTableColumn} from '../DataTable';
 import {render, act} from '@testing-library/react';
 import {createDataSource} from '../../../state/datasource/DataSource';
-import {TableManager} from '../useDataTableManager';
+import {computeDataTableFilter, TableManager} from '../useDataTableManager';
 import {Button} from 'antd';
 
 type Todo = {
@@ -275,5 +275,228 @@ test('search', async () => {
     });
     const elem = await rendering.findAllByText(/item/);
     expect(elem.length).toBe(3);
+  }
+});
+
+test('compute filters', () => {
+  const coffee = {
+    level: 'info',
+    title: 'Drink coffee',
+    done: true,
+  };
+  const espresso = {
+    level: 'info',
+    title: 'Make espresso',
+    done: false,
+  };
+  const meet = {
+    level: 'error',
+    title: 'Meet me',
+    done: false,
+  };
+  const data = [coffee, espresso, meet];
+
+  // results in empty filter
+  expect(computeDataTableFilter('', [])).toBeUndefined();
+  expect(
+    computeDataTableFilter('', [
+      {
+        key: 'title',
+        filters: [
+          {
+            enabled: false,
+            value: 'coffee',
+            label: 'coffee',
+          },
+        ],
+      },
+    ]),
+  ).toBeUndefined();
+
+  {
+    const filter = computeDataTableFilter('tEsT', [])!;
+    expect(data.filter(filter)).toEqual([]);
+  }
+
+  {
+    const filter = computeDataTableFilter('EE', [])!;
+    expect(data.filter(filter)).toEqual([coffee, meet]);
+  }
+
+  {
+    const filter = computeDataTableFilter('D', [])!;
+    expect(data.filter(filter)).toEqual([coffee]);
+  }
+
+  {
+    const filter = computeDataTableFilter('true', [])!;
+    expect(data.filter(filter)).toEqual([coffee]);
+  }
+
+  {
+    const filter = computeDataTableFilter('false', [])!;
+    expect(data.filter(filter)).toEqual([espresso, meet]);
+  }
+
+  {
+    const filter = computeDataTableFilter('EE', [
+      {
+        key: 'level',
+        filters: [
+          {
+            enabled: true,
+            value: 'error',
+            label: 'error',
+          },
+        ],
+      },
+    ])!;
+    expect(data.filter(filter)).toEqual([meet]);
+  }
+  {
+    const filter = computeDataTableFilter('EE', [
+      {
+        key: 'level',
+        filters: [
+          {
+            enabled: true,
+            value: 'info',
+            label: 'info',
+          },
+          {
+            enabled: true,
+            value: 'error',
+            label: 'error',
+          },
+        ],
+      },
+    ])!;
+    expect(data.filter(filter)).toEqual([coffee, meet]);
+  }
+  {
+    const filter = computeDataTableFilter('', [
+      {
+        key: 'level',
+        filters: [
+          {
+            enabled: true,
+            value: 'info',
+            label: 'info',
+          },
+          {
+            enabled: false,
+            value: 'error',
+            label: 'error',
+          },
+        ],
+      },
+    ])!;
+    expect(data.filter(filter)).toEqual([coffee, espresso]);
+  }
+  {
+    const filter = computeDataTableFilter('', [
+      {
+        key: 'done',
+        filters: [
+          {
+            enabled: true,
+            value: 'false',
+            label: 'Not done',
+          },
+        ],
+      },
+    ])!;
+    expect(data.filter(filter)).toEqual([espresso, meet]);
+  }
+  {
+    // nothing selected anything will not filter anything out for that column
+    const filter = computeDataTableFilter('', [
+      {
+        key: 'level',
+        filters: [
+          {
+            enabled: false,
+            value: 'info',
+            label: 'info',
+          },
+          {
+            enabled: false,
+            value: 'error',
+            label: 'error',
+          },
+        ],
+      },
+    ])!;
+    expect(filter).toBeUndefined();
+  }
+  {
+    const filter = computeDataTableFilter('', [
+      {
+        key: 'level',
+        filters: [
+          {
+            enabled: true,
+            value: 'info',
+            label: 'info',
+          },
+          {
+            enabled: true,
+            value: 'error',
+            label: 'error',
+          },
+        ],
+      },
+    ])!;
+    expect(data.filter(filter)).toEqual([coffee, espresso, meet]);
+  }
+  {
+    const filter = computeDataTableFilter('', [
+      {
+        key: 'level',
+        filters: [
+          {
+            enabled: true,
+            value: 'info',
+            label: 'info',
+          },
+        ],
+      },
+      {
+        key: 'done',
+        filters: [
+          {
+            enabled: true,
+            value: 'false',
+            label: 'false,',
+          },
+        ],
+      },
+    ])!;
+    expect(data.filter(filter)).toEqual([espresso]);
+  }
+  {
+    const filter = computeDataTableFilter('nonsense', [
+      {
+        key: 'level',
+        filters: [
+          {
+            enabled: true,
+            value: 'info',
+            label: 'info',
+          },
+        ],
+      },
+      {
+        key: 'done',
+        filters: [
+          {
+            enabled: true,
+            value: 'false',
+            label: 'false,',
+          },
+        ],
+      },
+    ])!;
+    expect(data.filter(filter)).toEqual([]);
   }
 });

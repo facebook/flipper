@@ -138,6 +138,7 @@ type SplitLayoutProps = {
    * If set, items will be centered over the orthogonal direction, if false (the default) items will be stretched.
    */
   center?: boolean;
+  gap?: Spacing;
   children: [React.ReactNode, React.ReactNode];
   style?: React.HTMLAttributes<HTMLDivElement>['style'];
 };
@@ -191,6 +192,7 @@ Object.keys(Layout).forEach((key) => {
 
 const SandySplitContainer = styled.div<{
   grow: 1 | 2;
+  gap?: Spacing;
   center?: boolean;
   flexDirection: CSSProperties['flexDirection'];
 }>((props) => ({
@@ -199,6 +201,7 @@ const SandySplitContainer = styled.div<{
   flex: 1,
   flexDirection: props.flexDirection,
   alignItems: props.center ? 'center' : 'stretch',
+  gap: normalizeSpace(props.gap, theme.space.small),
   overflow: props.center ? undefined : 'hidden', // only use overflow hidden in container mode, to avoid weird resizing issues
   '> :nth-child(1)': {
     flex: props.grow === 1 ? splitGrowStyle : splitFixedStyle,

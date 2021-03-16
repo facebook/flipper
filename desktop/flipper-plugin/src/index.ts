@@ -80,6 +80,8 @@ export {
   InteractiveProps as _InteractiveProps,
 } from './ui/Interactive';
 
+export {useMemoize} from './utils/useMemoize';
+
 // It's not ideal that this exists in flipper-plugin sources directly,
 // but is the least pain for plugin authors.
 // Probably we should make sure that testing-library doesn't end up in our final Flipper bundle (which packages flipper-plugin)

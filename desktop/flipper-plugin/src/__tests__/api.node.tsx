@@ -44,6 +44,7 @@ test('Correct top level API exposed', () => {
       "styled",
       "theme",
       "useLogger",
+      "useMemoize",
       "usePlugin",
       "useTrackedCallback",
       "useValue",
