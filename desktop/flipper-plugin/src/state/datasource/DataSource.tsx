@@ -16,14 +16,13 @@ import {
 
 // If the dataSource becomes to large, after how many records will we start to drop items?
 const dropFactor = 0.1;
-const defaultLimit = 200 * 1000;
+// what is the default maximum amount of records before we start shifting the data set?
+const defaultLimit = 100 * 1000;
+// if a shift on a sorted dataset exceeds this tresholds, we assume it is faster to re-sort the entire set,
+// rather than search and remove the affected individual items
+const shiftRebuildTreshold = 0.05;
 
-// TODO: support better minification
-// TODO: separate views from datasource to be able to support multiple transformation simultanously
 // TODO: expose interface with public members only
-// TODO: replace forEach with faster for loops
-// TODO: delete & unset operation
-// TODO: support listener for input events?
 
 type ExtractKeyType<T, KEY extends keyof T> = T[KEY] extends string
   ? string
@@ -88,7 +87,6 @@ type OutputChange =
       newCount: number;
     };
 
-// TODO: remove class, export interface instead
 export class DataSource<
   T,
   KEY extends keyof T = any,
@@ -117,15 +115,10 @@ export class DataSource<
 
   private outputChangeListener?: (change: OutputChange) => void;
 
-  // TODO:
-  // private viewRecords: T[] = [];
-  // private nextViewRecords: T[] = []; // for double buffering
-
   /**
    * Exposed for testing.
    * This is the base view data, that is filtered and sorted, but not reversed or windowed
    */
-  // TODO: optimize: output can link to _records if no sort & filter
   output: Entry<T>[] = [];
 
   /**
@@ -359,11 +352,23 @@ export class DataSource<
       });
     }
 
-    this.emitDataEvent({
-      type: 'shift',
-      entries: removed,
-      amount,
-    });
+    if (
+      this.sortBy &&
+      removed.length > 10 &&
+      removed.length > shiftRebuildTreshold * this._records.length
+    ) {
+      // removing a large amount of items is expensive when doing it sorted,
+      // let's fallback to the async processing of all data instead
+      // MWE: there is a risk here that rebuilding is too blocking, as this might happen
+      // in background when new data arrives, and not explicitly on a user interaction
+      this.rebuildOutput();
+    } else {
+      this.emitDataEvent({
+        type: 'shift',
+        entries: removed,
+        amount,
+      });
+    }
   }
 
   setWindow(start: number, end: number) {
@@ -384,8 +389,14 @@ export class DataSource<
     if (this.sortBy === sortBy) {
       return;
     }
-    if (typeof sortBy === 'string') {
-      sortBy = property(sortBy); // TODO: it'd be great to recycle those if sortBy didn't change!
+    if (
+      typeof sortBy === 'string' &&
+      (!this.sortBy || (this.sortBy as any).sortByKey !== sortBy)
+    ) {
+      sortBy = property(sortBy);
+      Object.assign(sortBy, {
+        sortByKey: sortBy,
+      });
     }
     this.sortBy = sortBy as any;
     this.rebuildOutput();
@@ -394,7 +405,6 @@ export class DataSource<
   setFilter(filter: undefined | ((value: T) => boolean)) {
     if (this.filter !== filter) {
       this.filter = filter;
-      // TODO: this needs debouncing!
       this.rebuildOutput();
     }
   }
@@ -430,7 +440,7 @@ export class DataSource<
    */
   reset() {
     this.sortBy = undefined;
-    // this.reverse = false;
+    this.reverse = false;
     this.filter = undefined;
     this.rebuildOutput();
   }
@@ -624,26 +634,34 @@ export class DataSource<
   }
 
   private rebuildOutput() {
+    // Pending on the size, should we batch this in smaller non-blocking steps,
+    // which we update in a double-buffering mechanism, report progress, and swap out when done?
+    //
+    // MWE: 9-3-2020 postponed for now, one massive sort seems fine. It might shortly block,
+    // but that happens only (exception: limit caused shifts) on user interaction at very roughly 1ms per 1000 records.
+    // See also comment below
     const {sortBy, filter, sortHelper} = this;
     // copy base array or run filter (with side effecty update of visible)
-    // TODO: pending on the size, should we batch this in smaller steps? (and maybe merely reuse append)
     let output = filter
       ? this._records.filter((entry) => {
           entry.visible = filter(entry.value);
           return entry.visible;
         })
       : this._records.slice();
-    // run array.sort
-    // TODO: pending on the size, should we batch this in smaller steps?
     if (sortBy) {
-      output = lodashSort(output, sortHelper);
+      // Pending on the size, should we batch this in smaller steps?
+      // The following sorthing method can be taskified, however,
+      // the implementation is 20x slower than a native sort. So for now we stick to a
+      // blocking sort, until we have some more numbers that this is hanging for anyone
+      // const filtered = output;
+      // output = [];
+      // filtered.forEach((entry) => {
+      //   const insertionIndex = sortedLastIndexBy(output, entry, sortHelper);
+      //   output.splice(insertionIndex, 0, entry);
+      // });
+      output = lodashSort(output, sortHelper); // uses array.sort under the hood
     }
 
-    // loop output and update all aproxindeces + visibilities
-    output.forEach((entry, index) => {
-      entry.approxIndex = index;
-      entry.visible = true;
-    });
     this.output = output;
     this.notifyReset(output.length);
   }
@@ -660,7 +678,6 @@ export class DataSource<
     let index = sortedIndexBy(
       output,
       {
-        // TODO: find a way to avoid this object construction, create a better sortHelper?
         value: oldValue,
         id: -1,
         visible: true,
@@ -668,7 +685,7 @@ export class DataSource<
       },
       this.sortHelper,
     );
-    index--; // TODO: this looks like a plain bug!
+    index--;
     // the item we are looking for is not necessarily the first one at the insertion index
     while (output[index] !== entry) {
       index++;
