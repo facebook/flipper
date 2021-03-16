@@ -16,7 +16,7 @@ import React, {
   useLayoutEffect,
   MutableRefObject,
 } from 'react';
-import {DataSource} from '../../state/datasource/DataSource';
+import {DataSource} from '../../state/DataSource';
 import {useVirtual} from 'react-virtual';
 import styled from '@emotion/styled';
 

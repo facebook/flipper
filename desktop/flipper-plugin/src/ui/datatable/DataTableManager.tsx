@@ -10,7 +10,7 @@
 import type {DataTableColumn} from './DataTable';
 import {Percentage} from '../../utils/widthUtils';
 import {MutableRefObject, Reducer} from 'react';
-import {DataSource} from '../../state/datasource/DataSource';
+import {DataSource} from '../../state/DataSource';
 import {DataSourceVirtualizer} from './DataSourceRenderer';
 import produce, {immerable, original} from 'immer';
 

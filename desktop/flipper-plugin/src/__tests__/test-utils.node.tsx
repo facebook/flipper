@@ -14,6 +14,7 @@ import {PluginClient} from '../plugin/Plugin';
 import {DevicePluginClient} from '../plugin/DevicePlugin';
 import mockConsole from 'jest-mock-console';
 import {sleep} from '../utils/sleep';
+import {createDataSource} from '../state/DataSource';
 
 test('it can start a plugin and lifecycle events', () => {
   const {instance, ...p} = TestUtils.startPlugin(testPlugin);
@@ -556,4 +557,30 @@ test('GKs are supported', () => {
     const plugin = TestUtils.startPlugin(pluginModule, {GKs: ['x']});
     expect(plugin.instance.isTest()).toBe(false);
   }
+});
+
+test('plugins can serialize dataSources', () => {
+  const {instance, exportState} = TestUtils.startPlugin(
+    {
+      plugin(_client: PluginClient) {
+        const ds = createDataSource([1, 2, 3], {persist: 'ds'});
+        return {ds};
+      },
+      Component() {
+        return null;
+      },
+    },
+    {
+      initialState: {
+        ds: [4, 5],
+      },
+    },
+  );
+
+  expect(instance.ds.records).toEqual([4, 5]);
+  instance.ds.shift(1);
+  instance.ds.append(6);
+  expect(exportState()).toEqual({
+    ds: [5, 6],
+  });
 });

@@ -9,7 +9,6 @@
 
 import {SandyPluginDefinition} from './SandyPluginDefinition';
 import {EventEmitter} from 'events';
-import {Atom} from '../state/atom';
 import {MenuEntry, NormalizedMenuEntry, normalizeMenuEntry} from './MenuEntry';
 import {FlipperLib} from './FlipperLib';
 import {Device, RealFlipperDevice} from './DevicePlugin';
@@ -88,6 +87,26 @@ export function getCurrentPluginInstance(): typeof currentPluginInstance {
   return currentPluginInstance;
 }
 
+export interface Persistable {
+  serialize(): any;
+  deserialize(value: any): void;
+}
+
+export function registerStorageAtom(
+  key: string | undefined,
+  persistable: Persistable,
+) {
+  if (key && getCurrentPluginInstance()) {
+    const {rootStates} = getCurrentPluginInstance()!;
+    if (rootStates[key]) {
+      throw new Error(
+        `Some other state is already persisting with key "${key}"`,
+      );
+    }
+    rootStates[key] = persistable;
+  }
+}
+
 export abstract class BasePluginInstance {
   /** generally available Flipper APIs */
   readonly flipperLib: FlipperLib;
@@ -106,7 +125,7 @@ export abstract class BasePluginInstance {
   initialStates?: Record<string, any>;
 
   // all the atoms that should be serialized when making an export / import
-  readonly rootStates: Record<string, Atom<any>> = {};
+  readonly rootStates: Record<string, Persistable> = {};
   // last seen deeplink
   lastDeeplink?: any;
   // export handler
@@ -178,7 +197,7 @@ export abstract class BasePluginInstance {
         } else {
           for (const key in this.rootStates) {
             if (key in this.initialStates) {
-              this.rootStates[key].set(this.initialStates[key]);
+              this.rootStates[key].deserialize(this.initialStates[key]);
             } else {
               console.warn(
                 `Tried to initialize plugin with existing data, however data for "${key}" is missing. Was the export created with a different Flipper version?`,
@@ -289,7 +308,10 @@ export abstract class BasePluginInstance {
       );
     }
     return Object.fromEntries(
-      Object.entries(this.rootStates).map(([key, atom]) => [key, atom.get()]),
+      Object.entries(this.rootStates).map(([key, atom]) => [
+        key,
+        atom.serialize(),
+      ]),
     );
   }
 

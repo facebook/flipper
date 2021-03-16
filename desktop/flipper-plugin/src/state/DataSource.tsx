@@ -13,6 +13,7 @@ import {
   property,
   sortBy as lodashSort,
 } from 'lodash';
+import {Persistable, registerStorageAtom} from '../plugin/PluginBase';
 
 // If the dataSource becomes to large, after how many records will we start to drop items?
 const dropFactor = 0.1;
@@ -91,7 +92,7 @@ export class DataSource<
   T,
   KEY extends keyof T = any,
   KEY_TYPE extends string | number | never = ExtractKeyType<T, KEY>
-> {
+> implements Persistable {
   private nextId = 0;
   private _records: Entry<T>[] = [];
 
@@ -127,6 +128,17 @@ export class DataSource<
    */
   get records(): readonly T[] {
     return this._records.map(unwrap);
+  }
+
+  serialize() {
+    return this.records;
+  }
+
+  deserialize(value: any[]) {
+    this.clear();
+    value.forEach((record) => {
+      this.append(record);
+    });
   }
 
   /**
@@ -711,8 +723,21 @@ export class DataSource<
 }
 
 type CreateDataSourceOptions<T, K extends keyof T> = {
+  /**
+   * If a key is set, the given field of the records is assumed to be unique,
+   * and it's value can be used to perform lookups and upserts.
+   */
   key?: K;
+  /**
+   * The maximum amount of records that this DataSource will store.
+   * If the limit is exceeded, the oldest records will automatically be dropped to make place for the new ones
+   */
   limit?: number;
+  /**
+   * Should this state persist when exporting a plugin?
+   * If set, the dataSource will be saved / loaded under the key provided
+   */
+  persist?: string;
 };
 
 export function createDataSource<T, KEY extends keyof T = any>(
@@ -730,6 +755,7 @@ export function createDataSource<T, KEY extends keyof T>(
   if (options?.limit !== undefined) {
     ds.limit = options.limit;
   }
+  registerStorageAtom(options?.persist, ds);
   initialSet.forEach((value) => ds.append(value));
   return ds;
 }

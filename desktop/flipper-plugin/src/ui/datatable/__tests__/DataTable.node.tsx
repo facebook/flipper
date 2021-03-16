@@ -10,7 +10,7 @@
 import React, {createRef} from 'react';
 import {DataTable, DataTableColumn} from '../DataTable';
 import {render, act} from '@testing-library/react';
-import {createDataSource} from '../../../state/datasource/DataSource';
+import {createDataSource} from '../../../state/DataSource';
 import {computeDataTableFilter, DataTableManager} from '../DataTableManager';
 import {Button} from 'antd';
 

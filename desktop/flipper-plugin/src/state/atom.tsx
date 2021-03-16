@@ -9,7 +9,7 @@
 
 import {produce, Draft, enableMapSet} from 'immer';
 import {useState, useEffect} from 'react';
-import {getCurrentPluginInstance} from '../plugin/PluginBase';
+import {Persistable, registerStorageAtom} from '../plugin/PluginBase';
 
 enableMapSet();
 
@@ -19,7 +19,7 @@ export type Atom<T> = {
   update(recipe: (draft: Draft<T>) => void): void;
 };
 
-class AtomValue<T> implements Atom<T> {
+class AtomValue<T> implements Atom<T>, Persistable {
   value: T;
   listeners: ((value: T) => void)[] = [];
 
@@ -36,6 +36,14 @@ class AtomValue<T> implements Atom<T> {
       this.value = nextValue;
       this.notifyChanged();
     }
+  }
+
+  deserialize(value: T) {
+    this.set(value);
+  }
+
+  serialize() {
+    return this.get();
   }
 
   update(recipe: (draft: Draft<T>) => void) {
@@ -77,15 +85,7 @@ export function createState(
   options: StateOptions = {},
 ): Atom<any> {
   const atom = new AtomValue(initialValue);
-  if (getCurrentPluginInstance() && options.persist) {
-    const {rootStates} = getCurrentPluginInstance()!;
-    if (rootStates[options.persist]) {
-      throw new Error(
-        `Some other state is already persisting with key "${options.persist}"`,
-      );
-    }
-    rootStates[options.persist] = atom;
-  }
+  registerStorageAtom(options.persist, atom);
   return atom;
 }
 

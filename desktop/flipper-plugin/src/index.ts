@@ -75,7 +75,7 @@ export {
 } from './utils/Logger';
 export {Idler} from './utils/Idler';
 
-export {createDataSource, DataSource} from './state/datasource/DataSource';
+export {createDataSource, DataSource} from './state/DataSource';
 
 export {DataTable, DataTableColumn} from './ui/datatable/DataTable';
 export {DataTableManager} from './ui/datatable/DataTableManager';

@@ -21,7 +21,7 @@ import React, {
   useReducer,
 } from 'react';
 import {TableRow, DEFAULT_ROW_HEIGHT} from './TableRow';
-import {DataSource} from '../../state/datasource/DataSource';
+import {DataSource} from '../../state/DataSource';
 import {Layout} from '../Layout';
 import {TableHead} from './TableHead';
 import {Percentage} from '../../utils/widthUtils';

@@ -18,7 +18,7 @@ import React from 'react';
 import {normalizeCellValue} from './TableRow';
 import {tryGetFlipperLibImplementation} from '../../plugin/FlipperLib';
 import {DataTableColumn} from './DataTable';
-import {DataSource} from '../../state/datasource/DataSource';
+import {DataSource} from '../../state/DataSource';
 
 const {Item, SubMenu} = Menu;
 
