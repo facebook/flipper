@@ -71,7 +71,9 @@ export {
 } from './utils/Logger';
 export {Idler} from './utils/Idler';
 
-export {createDataSource} from './state/datasource/DataSource';
+export {createDataSource, DataSource} from './state/datasource/DataSource';
+
+export {DataTable, DataTableColumn} from './ui/datatable/DataTable';
 
 // It's not ideal that this exists in flipper-plugin sources directly,
 // but is the least pain for plugin authors.

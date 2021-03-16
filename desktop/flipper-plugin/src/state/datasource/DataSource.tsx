@@ -70,9 +70,10 @@ type OutputChange =
       newCount: number;
     };
 
+// TODO: remove class, export interface instead
 export class DataSource<
   T,
-  KEY extends keyof T,
+  KEY extends keyof T = any,
   KEY_TYPE extends string | number | never = ExtractKeyType<T, KEY>
 > {
   private nextId = 0;
@@ -267,6 +268,9 @@ export class DataSource<
   setOutputChangeListener(
     listener: typeof DataSource['prototype']['outputChangeListener'],
   ) {
+    if (this.outputChangeListener && listener) {
+      console.warn('outputChangeListener already set');
+    }
     this.outputChangeListener = listener;
   }
 
@@ -303,11 +307,14 @@ export class DataSource<
    * The clear operation removes any records stored, but will keep the current view preferences such as sorting and filtering
    */
   clear() {
+    this.windowStart = 0;
+    this.windowEnd = 0;
     this._records = [];
     this._recordsById = new Map();
     this.idToIndex = new Map();
     this.dataUpdateQueue = [];
     this.output = [];
+    this.notifyReset(0);
   }
 
   /**
@@ -369,6 +376,13 @@ export class DataSource<
           : viewIndex >= this.windowEnd
           ? 'after'
           : 'in',
+    });
+  }
+
+  notifyReset(count: number) {
+    this.outputChangeListener?.({
+      type: 'reset',
+      newCount: count,
     });
   }
 

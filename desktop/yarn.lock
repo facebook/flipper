@@ -1936,6 +1936,11 @@
   resolved "https://registry.yarnpkg.com/@oclif/screen/-/screen-1.0.4.tgz#b740f68609dfae8aa71c3a6cab15d816407ba493"
   integrity sha512-60CHpq+eqnTxLZQ4PGHYNwUX572hgpMHGPtTWMjdTMsAvlm69lZV/4ly6O3sAYkomo4NggGcomrDpBe34rxUqw==
 
+"@reach/observe-rect@^1.1.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@reach/observe-rect/-/observe-rect-1.2.0.tgz#d7a6013b8aafcc64c778a0ccb83355a11204d3b2"
+  integrity sha512-Ba7HmkFgfQxZqqaeIWWkNK0rEhpxVQHIoVyW1YDSkGsGIXzcaW4deC8B0pZrNSSyLTdIk7y+5olKt5+g0GmFIQ==
+
 "@sindresorhus/is@^0.14.0":
   version "0.14.0"
   resolved "https://registry.yarnpkg.com/@sindresorhus/is/-/is-0.14.0.tgz#9fb3a3cf3132328151f353de4632e01e52102bea"
@@ -10637,6 +10642,14 @@ react-transition-group@^4.4.1:
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
 
+react-virtual@^2.4.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/react-virtual/-/react-virtual-2.4.0.tgz#151d39a91b311f684229235604fe75f1d096cd12"
+  integrity sha512-D5hy0XM+SN2pPUCPXIEVs1aCcGgvkLVw8sTikeKQF4jW4ZS1vIDyGUKFMvW1ZS3Yysw5yFCSBWl8yc7IEsGPag==
+  dependencies:
+    "@reach/observe-rect" "^1.1.0"
+    ts-toolbelt "^6.4.2"
+
 react-virtualized-auto-sizer@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/react-virtualized-auto-sizer/-/react-virtualized-auto-sizer-1.0.2.tgz#a61dd4f756458bbf63bd895a92379f9b70f803bd"
@@ -12232,6 +12245,11 @@ ts-node@^8, ts-node@^8.8.1:
     make-error "^1.1.1"
     source-map-support "^0.5.6"
     yn "3.1.1"
+
+ts-toolbelt@^6.4.2:
+  version "6.15.5"
+  resolved "https://registry.yarnpkg.com/ts-toolbelt/-/ts-toolbelt-6.15.5.tgz#cb3b43ed725cb63644782c64fbcad7d8f28c0a83"
+  integrity sha512-FZIXf1ksVyLcfr7M317jbB67XFJhOO1YqdTcuGaq9q5jLUoTikukZ+98TPjKiP2jC5CgmYdWWYs0s2nLSU0/1A==
 
 tsconfig-paths@^3.9.0:
   version "3.9.0"
