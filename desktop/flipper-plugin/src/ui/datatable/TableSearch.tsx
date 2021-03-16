@@ -9,9 +9,13 @@
 
 import {MenuOutlined} from '@ant-design/icons';
 import {Button, Dropdown, Input} from 'antd';
-import React, {memo} from 'react';
+import React, {memo, useState} from 'react';
+import styled from '@emotion/styled';
+
 import {Layout} from '../Layout';
 import {theme} from '../theme';
+import {debounce} from 'lodash';
+import {useAssertStableRef} from '../../utils/useAssertStableRef';
 
 export const TableSearch = memo(function TableSearch({
   onSearch,
@@ -23,14 +27,23 @@ export const TableSearch = memo(function TableSearch({
   hasSelection?: boolean;
   contextMenu?: React.ReactElement;
 }) {
+  useAssertStableRef(onSearch, 'onSearch');
+  const [search, setSearch] = useState('');
+  const [performSearch] = useState(() =>
+    debounce(onSearch, 200, {leading: true}),
+  );
   return (
-    <Layout.Horizontal
-      gap
-      style={{
-        backgroundColor: theme.backgroundWash,
-        padding: theme.space.small,
-      }}>
-      <Input.Search allowClear placeholder="Search..." onSearch={onSearch} />
+    <Searchbar gap>
+      <Input.Search
+        allowClear
+        placeholder="Search..."
+        onSearch={performSearch}
+        value={search}
+        onChange={(e) => {
+          setSearch(e.target.value);
+          performSearch(e.target.value);
+        }}
+      />
       {extraActions}
       {contextMenu && (
         <Dropdown overlay={contextMenu} placement="bottomRight">
@@ -39,6 +52,15 @@ export const TableSearch = memo(function TableSearch({
           </Button>
         </Dropdown>
       )}
-    </Layout.Horizontal>
+    </Searchbar>
   );
+});
+
+const Searchbar = styled(Layout.Horizontal)({
+  backgroundColor: theme.backgroundWash,
+  padding: theme.space.small,
+  '.ant-btn': {
+    padding: `${theme.space.tiny}px ${theme.space.small}px`,
+    background: 'transparent',
+  },
 });

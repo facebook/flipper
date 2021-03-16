@@ -190,7 +190,8 @@ export default class BaseDevice {
         if (plugin instanceof _SandyPluginDefinition) {
           return (
             plugin.isDevicePlugin &&
-            plugin.asDevicePluginModule().supportsDevice(this as any)
+            (plugin.asDevicePluginModule().supportsDevice?.(this as any) ??
+              false)
           );
         } else {
           return plugin.supportsDevice(this);

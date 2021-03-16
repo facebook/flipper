@@ -24,7 +24,7 @@ import {Typography} from 'antd';
 import {CaretDownFilled, CaretUpFilled} from '@ant-design/icons';
 import {Layout} from '../Layout';
 import {Sorting, OnColumnResize, SortDirection} from './useDataTableManager';
-import {ColumnFilterHandlers, FilterIcon} from './ColumnFilter';
+import {ColumnFilterHandlers, FilterButton, FilterIcon} from './ColumnFilter';
 
 const {Text} = Typography;
 
@@ -98,8 +98,8 @@ const TableHeadColumnContainer = styled.div<{
   [`:hover ${SortIconsContainer}`]: {
     visibility: 'visible',
   },
-  [`&:hover button`]: {
-    visibility: 'visible !important' as any,
+  [`&:hover ${FilterButton}`]: {
+    visibility: 'visible',
   },
 }));
 TableHeadColumnContainer.displayName = 'TableHead:TableHeadColumnContainer';
@@ -166,10 +166,13 @@ function TableHeadColumn({
       <div
         onClick={(e) => {
           e.stopPropagation();
-          onSort(
-            column.key,
-            sorted === 'asc' ? 'desc' : sorted === 'desc' ? undefined : 'asc',
-          );
+          const newDirection =
+            sorted === undefined
+              ? 'asc'
+              : sorted === 'asc'
+              ? 'desc'
+              : undefined;
+          onSort(column.key, newDirection);
         }}
         role="button"
         tabIndex={0}>

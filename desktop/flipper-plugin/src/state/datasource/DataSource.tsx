@@ -145,8 +145,8 @@ export class DataSource<
 
   /**
    * Returns a defensive copy of the current output.
-   * Sort, filter, reverse and window are applied, but windowing isn't.
-   * Start and end behave like slice, and default to the current window
+   * Sort, filter, reverse and are applied.
+   * Start and end behave like slice, and default to the currently active window.
    */
   public getOutput(
     start = this.windowStart,
@@ -308,8 +308,7 @@ export class DataSource<
   setReversed(reverse: boolean) {
     if (this.reverse !== reverse) {
       this.reverse = reverse;
-      // TODO: not needed anymore
-      this.rebuildOutput();
+      this.notifyReset(this.output.length);
     }
   }
 
@@ -380,11 +379,11 @@ export class DataSource<
     });
   }
 
-  notifyItemShift(viewIndex: number, delta: number) {
+  notifyItemShift(index: number, delta: number) {
     if (!this.outputChangeListener) {
       return;
     }
-    viewIndex = this.normalizeIndex(viewIndex);
+    let viewIndex = this.normalizeIndex(index);
     if (this.reverse && delta < 0) {
       viewIndex -= delta; // we need to correct for normalize already using the new length after applying this change
     }
@@ -502,10 +501,7 @@ export class DataSource<
       entry.visible = true;
     });
     this.output = output;
-    this.outputChangeListener?.({
-      type: 'reset',
-      newCount: output.length,
-    });
+    this.notifyReset(output.length);
   }
 
   private sortHelper = (a: Entry<T>) =>

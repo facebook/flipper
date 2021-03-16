@@ -490,6 +490,9 @@ const PluginMenu = styled(Menu)({
     overflow: 'hidden',
     textOverflow: 'ellipsis',
   },
+  '.ant-menu-sub.ant-menu-inline': {
+    background: theme.backgroundDefault,
+  },
   '.ant-menu-inline .ant-menu-item, .ant-menu-inline .ant-menu-submenu-title ': {
     width: '100%', // reset to remove weird bonus pixel from ANT
   },
@@ -518,8 +521,9 @@ const PluginMenu = styled(Menu)({
     right: 8,
   },
   '.ant-badge-count': {
-    color: theme.textColorPrimary,
-    background: theme.backgroundTransparentHover,
+    color: theme.textColorSecondary,
+    // border: `1px solid ${theme.dividerColor}`,
+    background: 'transparent',
     fontWeight: 'bold',
     padding: `0 10px`,
     boxShadow: 'none',

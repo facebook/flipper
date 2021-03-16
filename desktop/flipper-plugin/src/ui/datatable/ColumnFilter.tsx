@@ -8,12 +8,13 @@
  */
 
 import {useMemo, useState} from 'react';
+import styled from '@emotion/styled';
 import React from 'react';
-import {theme} from '../theme';
-import type {DataTableColumn} from './DataTable';
-
 import {Button, Checkbox, Dropdown, Menu, Typography, Input} from 'antd';
 import {FilterFilled, MinusCircleOutlined} from '@ant-design/icons';
+
+import {theme} from '../theme';
+import type {DataTableColumn} from './DataTable';
 import {Layout} from '../Layout';
 
 const {Text} = Typography;
@@ -127,18 +128,25 @@ export function FilterIcon({
   );
 
   return (
-    <Dropdown overlay={menu} trigger={['click']}>
-      <Button
-        size="small"
-        type="text"
-        style={{
-          backgroundColor: theme.backgroundWash,
-          borderRadius: 0,
-          visibility: isActive ? 'visible' : 'hidden',
-          color: isActive ? theme.primaryColor : theme.disabledColor,
-        }}>
-        <FilterFilled />
-      </Button>
-    </Dropdown>
+    <div>
+      <Dropdown overlay={menu} trigger={['click']}>
+        <FilterButton isActive={isActive}>
+          <FilterFilled />
+        </FilterButton>
+      </Dropdown>
+    </div>
   );
 }
+
+export const FilterButton = styled.div<{isActive?: boolean}>(({isActive}) => ({
+  backgroundColor: theme.backgroundWash,
+  visibility: isActive ? 'visible' : 'hidden',
+  color: isActive ? theme.primaryColor : theme.disabledColor,
+  cursor: 'pointer',
+  marginRight: 4,
+  zIndex: 1,
+  '&:hover': {
+    color: theme.primaryColor,
+    backgroundColor: theme.backgroundWash,
+  },
+}));

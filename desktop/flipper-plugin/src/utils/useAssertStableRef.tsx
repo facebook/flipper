@@ -10,7 +10,7 @@
 import {useRef} from 'react';
 
 /**
- * This hook will throw in development builds if the value passed in is stable.
+ * This hook will throw in development builds if the value passed in is unstable.
  * Use this if to make sure consumers aren't creating or changing certain props over time
  * (intentionally or accidentally)
  */
