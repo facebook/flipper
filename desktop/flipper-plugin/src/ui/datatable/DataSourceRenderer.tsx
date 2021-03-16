@@ -55,6 +55,7 @@ type DataSourceProps<T extends object, C> = {
   defaultRowHeight: number;
   onKeyDown?: React.KeyboardEventHandler<HTMLDivElement>;
   virtualizerRef?: MutableRefObject<DataSourceVirtualizer | undefined>;
+  onRangeChange?(start: number, end: number, total: number): void;
   _testHeight?: number; // exposed for unit testing only
 };
 
@@ -73,6 +74,7 @@ export const DataSourceRenderer: <T extends object, C>(
   autoScroll,
   onKeyDown,
   virtualizerRef,
+  onRangeChange,
   _testHeight,
 }: DataSourceProps<any, any>) {
   /**
@@ -176,6 +178,9 @@ export const DataSourceRenderer: <T extends object, C>(
   useLayoutEffect(function updateWindow() {
     const start = virtualizer.virtualItems[0]?.index ?? 0;
     const end = start + virtualizer.virtualItems.length;
+    if (start !== dataSource.windowStart && !followOutput.current) {
+      onRangeChange?.(start, end, dataSource.output.length);
+    }
     dataSource.setWindow(start, end);
   });
 

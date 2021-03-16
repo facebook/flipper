@@ -12,6 +12,7 @@ import React, {
   useLayoutEffect,
   useMemo,
   useRef,
+  useState,
   RefObject,
   MutableRefObject,
 } from 'react';
@@ -23,6 +24,8 @@ import {Percentage} from '../utils/widthUtils';
 import {DataSourceRenderer, DataSourceVirtualizer} from './DataSourceRenderer';
 import {useDataTableManager, TableManager} from './useDataTableManager';
 import {TableSearch} from './TableSearch';
+import styled from '@emotion/styled';
+import {theme} from '../theme';
 
 interface DataTableProps<T = any> {
   columns: DataTableColumn<T>[];
@@ -161,34 +164,64 @@ export function DataTable<T extends object>(props: DataTableProps<T>) {
     [selection],
   );
 
+  /** Range finder */
+  const [range, setRange] = useState('');
+  const hideRange = useRef<NodeJS.Timeout>();
+
+  const onRangeChange = useCallback(
+    (start: number, end: number, total: number) => {
+      // TODO: figure out if we don't trigger this callback to often hurting perf
+      setRange(`${start} - ${end} / ${total}`);
+      clearTimeout(hideRange.current!);
+      hideRange.current = setTimeout(() => {
+        setRange('');
+      }, 1000);
+    },
+    [],
+  );
+
   return (
-    <Layout.Top>
-      <Layout.Container>
-        <TableSearch
-          onSearch={tableManager.setSearchValue}
-          extraActions={props.extraActions}
+    <Layout.Container grow>
+      <Layout.Top>
+        <Layout.Container>
+          <TableSearch
+            onSearch={tableManager.setSearchValue}
+            extraActions={props.extraActions}
+          />
+          <TableHead
+            columns={tableManager.columns}
+            visibleColumns={tableManager.visibleColumns}
+            onColumnResize={tableManager.resizeColumn}
+            onReset={tableManager.reset}
+            onColumnToggleVisibility={tableManager.toggleColumnVisibility}
+            sorting={tableManager.sorting}
+            onColumnSort={tableManager.sortColumn}
+          />
+        </Layout.Container>
+        <DataSourceRenderer<T, RenderContext<T>>
+          dataSource={dataSource}
+          autoScroll={props.autoScroll}
+          useFixedRowHeight={!usesWrapping}
+          defaultRowHeight={DEFAULT_ROW_HEIGHT}
+          context={renderingConfig}
+          itemRenderer={itemRenderer}
+          onKeyDown={onKeyDown}
+          virtualizerRef={virtualizerRef}
+          onRangeChange={onRangeChange}
+          _testHeight={props._testHeight}
         />
-        <TableHead
-          columns={tableManager.columns}
-          visibleColumns={tableManager.visibleColumns}
-          onColumnResize={tableManager.resizeColumn}
-          onReset={tableManager.reset}
-          onColumnToggleVisibility={tableManager.toggleColumnVisibility}
-          sorting={tableManager.sorting}
-          onColumnSort={tableManager.sortColumn}
-        />
-      </Layout.Container>
-      <DataSourceRenderer<T, RenderContext<T>>
-        dataSource={dataSource}
-        autoScroll={props.autoScroll}
-        useFixedRowHeight={!usesWrapping}
-        defaultRowHeight={DEFAULT_ROW_HEIGHT}
-        context={renderingConfig}
-        itemRenderer={itemRenderer}
-        onKeyDown={onKeyDown}
-        virtualizerRef={virtualizerRef}
-        _testHeight={props._testHeight}
-      />
-    </Layout.Top>
+      </Layout.Top>
+      {range && <RangeFinder>{range}</RangeFinder>}
+    </Layout.Container>
   );
 }
+
+const RangeFinder = styled.div({
+  backgroundColor: theme.backgroundWash,
+  position: 'absolute',
+  right: 40,
+  bottom: 20,
+  padding: '4px 8px',
+  color: theme.textColorSecondary,
+  fontSize: '0.8em',
+});

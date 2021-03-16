@@ -91,8 +91,8 @@ export class DataSource<
 
   private dataUpdateQueue: DataEvent<T>[] = [];
 
-  private windowStart = 0;
-  private windowEnd = 0;
+  windowStart = 0;
+  windowEnd = 0;
 
   private outputChangeListener?: (change: OutputChange) => void;
 
