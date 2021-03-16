@@ -104,9 +104,7 @@ const App: () => React$Node = () => {
                   fetch(API, {headers: {accept: 'application/json'}})
                     .then((res) => res.json())
                     .then((data) => {
-                      console.log(
-                        'Got status: ' + JSON.stringify(data, null, 2),
-                      );
+                      console.log(data.status);
                       setNpmStatus(data.status.description);
                     })
                     .catch((e) => {

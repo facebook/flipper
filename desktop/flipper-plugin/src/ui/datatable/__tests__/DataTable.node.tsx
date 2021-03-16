@@ -58,12 +58,12 @@ test('update and append', async () => {
         class="css-1b7miqb-TableBodyRowContainer efe0za01"
       >
         <div
-          class="css-bqa56k-TableBodyColumnContainer efe0za00"
+          class="css-1xxqqu6-TableBodyColumnContainer efe0za00"
         >
           test DataTable
         </div>
         <div
-          class="css-bqa56k-TableBodyColumnContainer efe0za00"
+          class="css-1xxqqu6-TableBodyColumnContainer efe0za00"
         >
           true
         </div>
@@ -115,12 +115,12 @@ test('column visibility', async () => {
         class="css-1b7miqb-TableBodyRowContainer efe0za01"
       >
         <div
-          class="css-bqa56k-TableBodyColumnContainer efe0za00"
+          class="css-1xxqqu6-TableBodyColumnContainer efe0za00"
         >
           test DataTable
         </div>
         <div
-          class="css-bqa56k-TableBodyColumnContainer efe0za00"
+          class="css-1xxqqu6-TableBodyColumnContainer efe0za00"
         >
           true
         </div>
@@ -140,7 +140,7 @@ test('column visibility', async () => {
         class="css-1b7miqb-TableBodyRowContainer efe0za01"
       >
         <div
-          class="css-bqa56k-TableBodyColumnContainer efe0za00"
+          class="css-1xxqqu6-TableBodyColumnContainer efe0za00"
         >
           test DataTable
         </div>

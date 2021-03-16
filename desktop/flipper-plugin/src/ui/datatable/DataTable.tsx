@@ -45,6 +45,7 @@ import {Typography} from 'antd';
 import {CoffeeOutlined, SearchOutlined} from '@ant-design/icons';
 import {useAssertStableRef} from '../../utils/useAssertStableRef';
 import {TrackingScopeContext} from 'flipper-plugin/src/ui/Tracked';
+import {Formatter} from '../DataFormatter';
 
 interface DataTableProps<T = any> {
   columns: DataTableColumn<T>[];
@@ -62,6 +63,7 @@ export type DataTableColumn<T = any> = {
   key: keyof T & string;
   // possible future extension: getValue(row) (and free-form key) to support computed columns
   onRender?: (row: T) => React.ReactNode;
+  formatters?: Formatter[] | Formatter;
   title?: string;
   width?: number | Percentage | undefined; // undefined: use all remaining width
   wrap?: boolean;

@@ -12,7 +12,7 @@ import styled from '@emotion/styled';
 import {theme} from 'flipper-plugin';
 import type {RenderContext} from './DataTable';
 import {Width} from '../../utils/widthUtils';
-import {pad} from 'lodash';
+import {DataFormatter} from '../DataFormatter';
 
 // heuristic for row estimation, should match any future styling updates
 export const DEFAULT_ROW_HEIGHT = 24;
@@ -69,20 +69,24 @@ const TableBodyColumnContainer = styled.div<{
   multiline?: boolean;
   justifyContent: 'left' | 'right' | 'center' | 'flex-start';
 }>((props) => ({
-  display: 'flex',
+  display: 'block',
   flexShrink: props.width === undefined ? 1 : 0,
   flexGrow: props.width === undefined ? 1 : 0,
   overflow: 'hidden',
   padding: `0 ${theme.space.small}px`,
   borderBottom: `1px solid ${theme.dividerColor}`,
   verticalAlign: 'top',
-  whiteSpace: props.multiline ? 'normal' : 'nowrap',
+  // pre-wrap preserves explicit newlines and whitespace, and wraps as well when needed
+  whiteSpace: props.multiline ? 'pre-wrap' : 'nowrap',
   wordWrap: props.multiline ? 'break-word' : 'normal',
   width: props.width,
   justifyContent: props.justifyContent,
   '&::selection': {
     color: 'inherit',
     backgroundColor: theme.buttonDefaultBackground,
+  },
+  '& p': {
+    margin: 0,
   },
 }));
 TableBodyColumnContainer.displayName = 'TableRow:TableBodyColumnContainer';
@@ -118,7 +122,7 @@ export const TableRow = memo(function TableRow({
         .map((col) => {
           const value = (col as any).onRender
             ? (col as any).onRender(record)
-            : normalizeCellValue((record as any)[col.key]);
+            : DataFormatter.format((record as any)[col.key], col.formatters);
 
           return (
             <TableBodyColumnContainer
@@ -133,29 +137,3 @@ export const TableRow = memo(function TableRow({
     </TableBodyRowContainer>
   );
 });
-
-export function normalizeCellValue(value: any): string {
-  switch (typeof value) {
-    case 'boolean':
-      return value ? 'true' : 'false';
-    case 'number':
-      return '' + value;
-    case 'undefined':
-      return '';
-    case 'string':
-      return value;
-    case 'object': {
-      if (value === null) return '';
-      if (value instanceof Date) {
-        return (
-          value.toTimeString().split(' ')[0] +
-          '.' +
-          pad('' + value.getMilliseconds(), 3)
-        );
-      }
-      return JSON.stringify(value, null, 2);
-    }
-    default:
-      return '<unrenderable value>';
-  }
-}

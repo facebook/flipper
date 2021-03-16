@@ -15,7 +15,6 @@ import {
   Selection,
 } from './DataTableManager';
 import React from 'react';
-import {normalizeCellValue} from './TableRow';
 import {tryGetFlipperLibImplementation} from '../../plugin/FlipperLib';
 import {DataTableColumn} from './DataTable';
 import {DataSource} from '../../state/DataSource';
@@ -69,9 +68,7 @@ export function tableContextMenuFactory<T>(
               const items = getSelectedItems(datasource, selection);
               if (items.length) {
                 lib.writeTextToClipboard(
-                  items
-                    .map((item) => normalizeCellValue(item[column.key]))
-                    .join('\n'),
+                  items.map((item) => '' + item[column.key]).join('\n'),
                 );
               }
             }}>

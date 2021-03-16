@@ -65,6 +65,8 @@ export {
   wrapInteractionHandler as _wrapInteractionHandler,
 } from './ui/Tracked';
 
+export {DataFormatter} from './ui/DataFormatter';
+
 export {sleep} from './utils/sleep';
 export {
   LogTypes,

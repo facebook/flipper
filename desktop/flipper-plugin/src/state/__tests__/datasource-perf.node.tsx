@@ -36,7 +36,9 @@ type DataSourceish = DataSource<Todo> & FakeDataSource<Todo>;
 
 // NOTE: this run in jest, which is not optimal for perf, but should give some idea
 // make sure to use the `yarn watch` script in desktop root, so that the garbage collector is exposed
-test('run perf test', () => {
+
+// By default skipped to not slow down each and every test run
+test.skip('run perf test', () => {
   if (!global.gc) {
     console.warn(
       'Warning: garbage collector not available, skipping this test',
