@@ -15,6 +15,8 @@ import GK from '../fb-stubs/GK';
 import type BaseDevice from '../devices/BaseDevice';
 import {clipboard} from 'electron';
 import constants from '../fb-stubs/constants';
+import {addNotification} from '../reducers/notifications';
+import {deconstructPluginKey} from './clientUtils';
 
 export function initializeFlipperLibImplementation(
   store: Store,
@@ -70,6 +72,16 @@ export function initializeFlipperLibImplementation(
     },
     writeTextToClipboard(text: string) {
       clipboard.writeText(text);
+    },
+    showNotification(pluginId, notification) {
+      const parts = deconstructPluginKey(pluginId);
+      store.dispatch(
+        addNotification({
+          pluginId: parts.pluginName,
+          client: parts.client,
+          notification,
+        }),
+      );
     },
   });
 }

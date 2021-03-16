@@ -18,11 +18,11 @@ import {
   importDataToStore,
 } from '../exportData';
 import {FlipperPlugin, FlipperDevicePlugin} from '../../plugin';
-import {Notification} from '../../plugin';
 import {default as Client, ClientExport} from '../../Client';
 import {selectedPlugins, State as PluginsState} from '../../reducers/plugins';
 import {createMockFlipperWithPlugin} from '../../test-utils/createMockFlipperWithPlugin';
 import {
+  Notification,
   TestUtils,
   _SandyPluginDefinition,
   createState,

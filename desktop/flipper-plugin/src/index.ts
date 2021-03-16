@@ -46,6 +46,7 @@ export {
   buildInMenuEntries as _buildInMenuEntries,
   DefaultKeyboardAction,
 } from './plugin/MenuEntry';
+export {Notification} from './plugin/Notification';
 
 export {theme} from './ui/theme';
 export {Layout} from './ui/Layout';

@@ -17,7 +17,7 @@ import {
   updateCategoryBlocklist,
 } from '../notifications';
 
-import {Notification} from '../../plugin';
+import {Notification} from 'flipper-plugin';
 
 const notification: Notification = {
   id: 'id',

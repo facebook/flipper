@@ -50,6 +50,10 @@ The name of the application, for example 'Facebook', 'Instagram' or 'Slack'.
 
 A string that uniquely identifies the current application, is based on a combination of the application name and device serial on which the application is running.
 
+#### `pluginKey`
+
+A key that uniquely identifies this plugin instance, captures the current device/client/plugin combination.
+
 #### `isConnected`
 
 Returns whether there is currently an active connection. This is true if:
@@ -268,6 +272,29 @@ Usage: `client.supportsMethod(method: string): Promise<Boolean>`
 
 Resolves to true if the client supports the specified method. Useful when adding functionality to existing plugins, when connectivity to older clients is still required. Also useful when client plugins are implemented on multitple platforms and don't all have feature parity.
 
+#### showNotification
+
+Usage: `client.showNotification(notification)`
+
+Shows an urgent, system wide notification, that will also be registered in Flipper's notification pane.
+For on-screen notifications, we recommend to use either the `message` or `notification` API from `antd` directly.
+
+Clicking the notification will open the sending plugin. If the `action` id is set, it will be used as deeplink.
+
+The notification interface is defined as:
+
+```typescript
+interface Notification {
+  id: string;
+  title: string;
+  message: string | React.ReactNode;
+  severity: 'warning' | 'error';
+  timestamp?: number;
+  category?: string;
+  action?: string;
+};
+```
+
 #### `createPaste`
 
 Facebook only API.
@@ -340,6 +367,10 @@ See the similarly named event under [`PluginClient`](#pluginclient).
 See the similarly named method under [`PluginClient`](#pluginclient).
 
 #### `createPaste`
+
+See the similarly named method under [`PluginClient`](#pluginclient).
+
+#### `showNotification`
 
 See the similarly named method under [`PluginClient`](#pluginclient).
 

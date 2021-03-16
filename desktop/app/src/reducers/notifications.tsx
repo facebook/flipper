@@ -7,9 +7,10 @@
  * @format
  */
 
-import {Notification} from '../plugin';
+import {Notification} from 'flipper-plugin';
 import {Actions} from './';
 import {getStringFromErrorLike} from '../utils';
+
 export type PluginNotification = {
   notification: Notification;
   pluginId: string;

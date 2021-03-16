@@ -7,14 +7,15 @@
  * @format
  */
 
-import {SandyPluginDefinition} from './SandyPluginDefinition';
+import {message} from 'antd';
 import {EventEmitter} from 'events';
+import {SandyPluginDefinition} from './SandyPluginDefinition';
 import {MenuEntry, NormalizedMenuEntry, normalizeMenuEntry} from './MenuEntry';
 import {FlipperLib} from './FlipperLib';
 import {Device, RealFlipperDevice} from './DevicePlugin';
 import {batched} from '../state/batch';
 import {Idler} from '../utils/Idler';
-import {message} from 'antd';
+import {Notification} from './Notification';
 
 type StateExportHandler<T = any> = (
   idler: Idler,
@@ -23,6 +24,9 @@ type StateExportHandler<T = any> = (
 type StateImportHandler<T = any> = (data: T) => void;
 
 export interface BasePluginClient {
+  /**
+   * A key that uniquely identifies this plugin instance, captures the current device/client/plugin combination.
+   */
   readonly pluginKey: string;
   readonly device: Device;
 
@@ -74,6 +78,14 @@ export interface BasePluginClient {
    * Always returns `false` in open source.
    */
   GK(gkName: string): boolean;
+
+  /**
+   * Shows an urgent, system wide notification, that will also be registered in Flipper's notification pane.
+   * For on-screen notifications, we recommend to use either the `message` or `notification` API from `antd` directly.
+   *
+   * Clicking the notification will open this plugin. If the `action` id is set, it will be used as deeplink.
+   */
+  showNotification(notification: Notification): void;
 }
 
 let currentPluginInstance: BasePluginInstance | undefined = undefined;
@@ -262,6 +274,9 @@ export abstract class BasePluginInstance {
       },
       createPaste: this.flipperLib.createPaste,
       GK: this.flipperLib.GK,
+      showNotification: (notification: Notification) => {
+        this.flipperLib.showNotification(this.pluginKey, notification);
+      },
     };
   }
 

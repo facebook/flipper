@@ -11,6 +11,7 @@ import {Logger} from '../utils/Logger';
 import {RealFlipperDevice} from './DevicePlugin';
 import {NormalizedMenuEntry} from './MenuEntry';
 import {RealFlipperClient} from './Plugin';
+import {Notification} from './Notification';
 
 /**
  * This interface exposes all global methods for which an implementation will be provided by Flipper itself
@@ -33,6 +34,7 @@ export interface FlipperLib {
     deeplink: unknown,
   ): void;
   writeTextToClipboard(text: string): void;
+  showNotification(pluginKey: string, notification: Notification): void;
 }
 
 let flipperLibInstance: FlipperLib | undefined;

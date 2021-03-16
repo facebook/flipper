@@ -8,7 +8,7 @@
  */
 
 import React, {useCallback, useMemo, useState} from 'react';
-import {Layout, theme} from 'flipper-plugin';
+import {Layout, theme, Notification as NotificationData} from 'flipper-plugin';
 import {styled, Glyph} from '../../ui';
 import {Input, Typography, Button, Collapse, Dropdown, Menu} from 'antd';
 import {
@@ -20,7 +20,6 @@ import {
   EllipsisOutlined,
 } from '@ant-design/icons';
 import {LeftSidebar, SidebarTitle} from '../LeftSidebar';
-import {Notification as NotificationData} from '../../plugin';
 import {useStore, useDispatch} from '../../utils/useStore';
 import {ClientQuery} from '../../Client';
 import {deconstructClientId} from '../../utils/clientUtils';
