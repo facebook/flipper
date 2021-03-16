@@ -86,6 +86,11 @@ export interface BasePluginClient {
    * Clicking the notification will open this plugin. If the `action` id is set, it will be used as deeplink.
    */
   showNotification(notification: Notification): void;
+
+  /**
+   * Writes text to the clipboard of the Operating System
+   */
+  writeTextToClipboard(text: string): void;
 }
 
 let currentPluginInstance: BasePluginInstance | undefined = undefined;
@@ -272,6 +277,7 @@ export abstract class BasePluginInstance {
           this.menuEntries.push(normalizeMenuEntry(entry));
         }
       },
+      writeTextToClipboard: this.flipperLib.writeTextToClipboard,
       createPaste: this.flipperLib.createPaste,
       GK: this.flipperLib.GK,
       showNotification: (notification: Notification) => {
