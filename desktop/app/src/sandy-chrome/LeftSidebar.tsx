@@ -42,7 +42,7 @@ export function SidebarTitle({
 const LeftMenuTitle = styled(Layout.Horizontal)({
   padding: `0px ${theme.inlinePaddingH}px`,
   lineHeight: `${theme.space.large}px`,
-  fontSize: theme.fontSize.smallBody,
+  fontSize: theme.fontSize.small,
   textTransform: 'uppercase',
   '> :first-child': {
     flex: 1,

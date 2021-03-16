@@ -78,7 +78,7 @@ function WelcomeFooter({
   return (
     <FooterContainer>
       <Checkbox checked={checked} onChange={(e) => onCheck(e.target.checked)}>
-        <Text style={{fontSize: theme.fontSize.smallBody}}>
+        <Text style={{fontSize: theme.fontSize.small}}>
           Show this when app opens (or use ? icon on left)
         </Text>
       </Checkbox>

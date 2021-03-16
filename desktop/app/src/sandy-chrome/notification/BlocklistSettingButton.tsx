@@ -45,7 +45,7 @@ export default function BlocklistSettingButton(props: {
                     key={pluginId}
                     closable
                     onClose={() => props.onRemovePlugin(pluginId)}>
-                    <Text style={{fontSize: theme.fontSize.smallBody}} ellipsis>
+                    <Text style={{fontSize: theme.fontSize.small}} ellipsis>
                       {pluginId}
                     </Text>
                   </Tag>
@@ -54,7 +54,7 @@ export default function BlocklistSettingButton(props: {
             ) : (
               <Text
                 style={{
-                  fontSize: theme.fontSize.smallBody,
+                  fontSize: theme.fontSize.small,
                   color: theme.textColorSecondary,
                 }}>
                 No Blocklisted Plugin
@@ -70,7 +70,7 @@ export default function BlocklistSettingButton(props: {
                     key={category}
                     closable
                     onClose={() => props.onRemoveCategory(category)}>
-                    <Text style={{fontSize: theme.fontSize.smallBody}} ellipsis>
+                    <Text style={{fontSize: theme.fontSize.small}} ellipsis>
                       {category}
                     </Text>
                   </Tag>
@@ -79,7 +79,7 @@ export default function BlocklistSettingButton(props: {
             ) : (
               <Text
                 style={{
-                  fontSize: theme.fontSize.smallBody,
+                  fontSize: theme.fontSize.small,
                   color: theme.textColorSecondary,
                 }}>
                 No Blocklisted Category

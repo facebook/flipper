@@ -56,6 +56,7 @@ test('Correct top level API exposed', () => {
     Array [
       "Atom",
       "DataTableColumn",
+      "DataTableManager",
       "DefaultKeyboardAction",
       "Device",
       "DeviceLogEntry",

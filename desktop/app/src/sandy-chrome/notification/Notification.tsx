@@ -69,7 +69,7 @@ function DetailCollapse({detail}: {detail: string | React.ReactNode}) {
       <Paragraph
         type="secondary"
         style={{
-          fontSize: theme.fontSize.smallBody,
+          fontSize: theme.fontSize.small,
           marginBottom: 0,
         }}
         ellipsis={{rows: 3}}>
@@ -92,7 +92,7 @@ function DetailCollapse({detail}: {detail: string | React.ReactNode}) {
         <Collapse.Panel
           key="detail"
           header={
-            <Text type="secondary" style={{fontSize: theme.fontSize.smallBody}}>
+            <Text type="secondary" style={{fontSize: theme.fontSize.small}}>
               View detail
             </Text>
           }>
@@ -149,14 +149,14 @@ function NotificationEntry({notification}: {notification: PluginNotification}) {
       <Layout.Right center>
         <Layout.Horizontal gap="tiny" center>
           {icon}
-          <Text style={{fontSize: theme.fontSize.smallBody}}>{pluginName}</Text>
+          <Text style={{fontSize: theme.fontSize.small}}>{pluginName}</Text>
         </Layout.Horizontal>
         {actions}
       </Layout.Right>
       <Title level={4} ellipsis={{rows: 2}}>
         {title}
       </Title>
-      <Text type="secondary" style={{fontSize: theme.fontSize.smallBody}}>
+      <Text type="secondary" style={{fontSize: theme.fontSize.small}}>
         {clientName && appName
           ? `${clientName}/${appName}`
           : clientName ?? appName ?? 'Not Connected'}

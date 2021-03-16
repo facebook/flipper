@@ -49,7 +49,6 @@ const TableBodyRowContainer = styled.div<TableBodyRowContainerProps>(
       ? `4px solid ${theme.primaryColor}`
       : `4px solid transparent`,
     paddingTop: 1,
-    borderBottom: `1px solid ${theme.dividerColor}`,
     minHeight: DEFAULT_ROW_HEIGHT,
     lineHeight: `${DEFAULT_ROW_HEIGHT - 2}px`,
     '& .anticon': {
@@ -75,6 +74,7 @@ const TableBodyColumnContainer = styled.div<{
   flexGrow: props.width === undefined ? 1 : 0,
   overflow: 'hidden',
   padding: `0 ${theme.space.small}px`,
+  borderBottom: `1px solid ${theme.dividerColor}`,
   verticalAlign: 'top',
   whiteSpace: props.multiline ? 'normal' : 'nowrap',
   wordWrap: props.multiline ? 'break-word' : 'normal',

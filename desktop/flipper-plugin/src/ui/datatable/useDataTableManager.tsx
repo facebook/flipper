@@ -10,7 +10,7 @@
 import {DataTableColumn} from 'flipper-plugin/src/ui/datatable/DataTable';
 import {Percentage} from '../../utils/widthUtils';
 import produce from 'immer';
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import {useCallback, useEffect, useMemo, useState} from 'react';
 import {DataSource} from '../../state/datasource/DataSource';
 import {useMemoize} from '../../utils/useMemoize';
 
@@ -20,9 +20,45 @@ export type Sorting = {
   direction: Exclude<SortDirection, undefined>;
 };
 
-export type SortDirection = 'up' | 'down' | undefined;
+export type SortDirection = 'asc' | 'desc' | undefined;
 
-export type TableManager = ReturnType<typeof useDataTableManager>;
+export interface DataTableManager<T> {
+  /** The default columns, but normalized */
+  columns: DataTableColumn<T>[];
+  /** The effective columns to be rendererd */
+  visibleColumns: DataTableColumn<T>[];
+  /** The currently applicable sorting, if any */
+  sorting: Sorting | undefined;
+  /** Reset the current table preferences, including column widths an visibility, back to the default */
+  reset(): void;
+  /** Resizes the column with the given key to the given width */
+  resizeColumn(column: string, width: number | Percentage): void;
+  /** Sort by the given column. This toggles statefully between ascending, descending, none (insertion order of the data source) */
+  sortColumn(column: string, direction: SortDirection): void;
+  /** Show / hide the given column */
+  toggleColumnVisibility(column: string): void;
+  /** Active search value */
+  setSearchValue(value: string): void;
+  /** current selection, describes the index index in the datasources's current output (not window) */
+  selection: Selection;
+  selectItem(
+    nextIndex: number | ((currentIndex: number) => number),
+    addToSelection?: boolean,
+  ): void;
+  addRangeToSelection(
+    start: number,
+    end: number,
+    allowUnselect?: boolean,
+  ): void;
+  clearSelection(): void;
+  getSelectedItem(): T | undefined;
+  getSelectedItems(): readonly T[];
+  /** Changing column filters */
+  addColumnFilter(column: string, value: string, disableOthers?: boolean): void;
+  removeColumnFilter(column: string, index: number): void;
+  toggleColumnFilter(column: string, index: number): void;
+  setColumnFilterFromSelection(column: string): void;
+}
 
 type Selection = {items: ReadonlySet<number>; current: number};
 
@@ -38,15 +74,13 @@ export function useDataTableManager<T>(
   dataSource: DataSource<T>,
   defaultColumns: DataTableColumn<T>[],
   onSelect?: (item: T | undefined, items: T[]) => void,
-) {
+): DataTableManager<T> {
   const [columns, setEffectiveColumns] = useState(
     computeInitialColumns(defaultColumns),
   );
   // TODO: move selection with shifts with index < selection?
   // TODO: clear selection if out of range
   const [selection, setSelection] = useState<Selection>(emptySelection);
-  const selectionRef = useRef(selection);
-  selectionRef.current = selection; // store last seen selection for fetching it later
 
   const [sorting, setSorting] = useState<Sorting | undefined>(undefined);
   const [searchValue, setSearchValue] = useState('');
@@ -86,21 +120,22 @@ export function useDataTableManager<T>(
     [],
   );
 
-  // N.B: we really want to have stable refs for these functions,
-  // to avoid that all context menus need re-render for every selection change,
-  // hence the selectionRef hack
+  const clearSelection = useCallback(() => {
+    setSelection(emptySelection);
+  }, []);
+
   const getSelectedItem = useCallback(() => {
-    return selectionRef.current.current < 0
+    return selection.current < 0
       ? undefined
-      : dataSource.getItem(selectionRef.current.current);
-  }, [dataSource]);
+      : dataSource.getItem(selection.current);
+  }, [dataSource, selection]);
 
   const getSelectedItems = useCallback(() => {
-    return [...selectionRef.current.items]
+    return [...selection.items]
       .sort()
       .map((i) => dataSource.getItem(i))
       .filter(Boolean) as any[];
-  }, [dataSource]);
+  }, [dataSource, selection]);
 
   useEffect(
     function fireSelection() {
@@ -221,7 +256,7 @@ export function useDataTableManager<T>(
           dataSource.setSortBy(key as any);
         }
         if (!sorting || sorting.direction !== direction) {
-          dataSource.setReversed(direction === 'up');
+          dataSource.setReversed(direction === 'desc');
         }
         setSorting({key, direction});
       }
@@ -271,6 +306,7 @@ export function useDataTableManager<T>(
     selection,
     selectItem,
     addRangeToSelection,
+    clearSelection,
     getSelectedItem,
     getSelectedItems,
     /** Changing column filters */

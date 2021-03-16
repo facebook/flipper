@@ -9,7 +9,7 @@
 
 import {CopyOutlined, FilterOutlined} from '@ant-design/icons';
 import {Checkbox, Menu} from 'antd';
-import {TableManager} from './useDataTableManager';
+import {DataTableManager} from './useDataTableManager';
 import React from 'react';
 import {normalizeCellValue} from './TableRow';
 import {tryGetFlipperLibImplementation} from '../../plugin/FlipperLib';
@@ -17,7 +17,7 @@ import {DataTableColumn} from './DataTable';
 
 const {Item, SubMenu} = Menu;
 
-export function tableContextMenuFactory(tableManager: TableManager) {
+export function tableContextMenuFactory(tableManager: DataTableManager<any>) {
   const lib = tryGetFlipperLibImplementation();
   if (!lib) {
     return (

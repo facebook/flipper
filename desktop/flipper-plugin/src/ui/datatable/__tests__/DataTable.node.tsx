@@ -11,7 +11,7 @@ import React, {createRef} from 'react';
 import {DataTable, DataTableColumn} from '../DataTable';
 import {render, act} from '@testing-library/react';
 import {createDataSource} from '../../../state/datasource/DataSource';
-import {computeDataTableFilter, TableManager} from '../useDataTableManager';
+import {computeDataTableFilter, DataTableManager} from '../useDataTableManager';
 import {Button} from 'antd';
 
 type Todo = {
@@ -41,7 +41,7 @@ const columns: DataTableColumn[] = [
 
 test('update and append', async () => {
   const ds = createTestDataSource();
-  const ref = createRef<TableManager>();
+  const ref = createRef<DataTableManager<Todo>>();
   const rendering = render(
     <DataTable
       dataSource={ds}
@@ -55,15 +55,15 @@ test('update and append', async () => {
     expect(elem.length).toBe(1);
     expect(elem[0].parentElement).toMatchInlineSnapshot(`
       <div
-        class="css-8pa5c2-TableBodyRowContainer efe0za01"
+        class="css-1b7miqb-TableBodyRowContainer efe0za01"
       >
         <div
-          class="css-kkcfb6-TableBodyColumnContainer efe0za00"
+          class="css-bqa56k-TableBodyColumnContainer efe0za00"
         >
           test DataTable
         </div>
         <div
-          class="css-kkcfb6-TableBodyColumnContainer efe0za00"
+          class="css-bqa56k-TableBodyColumnContainer efe0za00"
         >
           true
         </div>
@@ -98,7 +98,7 @@ test('update and append', async () => {
 
 test('column visibility', async () => {
   const ds = createTestDataSource();
-  const ref = createRef<TableManager>();
+  const ref = createRef<DataTableManager<Todo>>();
   const rendering = render(
     <DataTable
       dataSource={ds}
@@ -112,15 +112,15 @@ test('column visibility', async () => {
     expect(elem.length).toBe(1);
     expect(elem[0].parentElement).toMatchInlineSnapshot(`
       <div
-        class="css-8pa5c2-TableBodyRowContainer efe0za01"
+        class="css-1b7miqb-TableBodyRowContainer efe0za01"
       >
         <div
-          class="css-kkcfb6-TableBodyColumnContainer efe0za00"
+          class="css-bqa56k-TableBodyColumnContainer efe0za00"
         >
           test DataTable
         </div>
         <div
-          class="css-kkcfb6-TableBodyColumnContainer efe0za00"
+          class="css-bqa56k-TableBodyColumnContainer efe0za00"
         >
           true
         </div>
@@ -137,10 +137,10 @@ test('column visibility', async () => {
     expect(elem.length).toBe(1);
     expect(elem[0].parentElement).toMatchInlineSnapshot(`
       <div
-        class="css-8pa5c2-TableBodyRowContainer efe0za01"
+        class="css-1b7miqb-TableBodyRowContainer efe0za01"
       >
         <div
-          class="css-kkcfb6-TableBodyColumnContainer efe0za00"
+          class="css-bqa56k-TableBodyColumnContainer efe0za00"
         >
           test DataTable
         </div>
@@ -174,7 +174,7 @@ test('sorting', async () => {
     title: 'item b',
     done: false,
   });
-  const ref = createRef<TableManager>();
+  const ref = createRef<DataTableManager<Todo>>();
   const rendering = render(
     <DataTable
       dataSource={ds}
@@ -195,7 +195,7 @@ test('sorting', async () => {
   }
   // sort asc
   act(() => {
-    ref.current?.sortColumn('title', 'down');
+    ref.current?.sortColumn('title', 'asc');
   });
   {
     const elem = await rendering.findAllByText(/item/);
@@ -208,7 +208,7 @@ test('sorting', async () => {
   }
   // sort desc
   act(() => {
-    ref.current?.sortColumn('title', 'up');
+    ref.current?.sortColumn('title', 'desc');
   });
   {
     const elem = await rendering.findAllByText(/item/);
@@ -249,7 +249,7 @@ test('search', async () => {
     title: 'item b',
     done: false,
   });
-  const ref = createRef<TableManager>();
+  const ref = createRef<DataTableManager<Todo>>();
   const rendering = render(
     <DataTable
       dataSource={ds}
@@ -514,7 +514,7 @@ test('compute filters', () => {
 test('onSelect callback fires, and in order', () => {
   const events: any[] = [];
   const ds = createTestDataSource();
-  const ref = createRef<TableManager>();
+  const ref = createRef<DataTableManager<Todo>>();
   const rendering = render(
     <DataTable
       dataSource={ds}
@@ -566,7 +566,7 @@ test('onSelect callback fires, and in order', () => {
 test('selection always has the latest state', () => {
   const events: any[] = [];
   const ds = createTestDataSource();
-  const ref = createRef<TableManager>();
+  const ref = createRef<DataTableManager<Todo>>();
   const rendering = render(
     <DataTable
       dataSource={ds}

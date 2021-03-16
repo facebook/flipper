@@ -228,8 +228,6 @@ const persistor = persistStore(store, undefined, () => {
 setPersistor(persistor);
 
 const CodeBlock = styled(Input.TextArea)({
-  fontFamily:
-    'SFMono-Regular,Consolas,Liberation Mono,Menlo,Courier,monospace;',
-  fontSize: '0.8em',
+  ...theme.monospace,
   color: theme.textColorSecondary,
 });

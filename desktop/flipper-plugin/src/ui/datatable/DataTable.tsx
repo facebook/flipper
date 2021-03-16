@@ -16,6 +16,7 @@ import React, {
   RefObject,
   MutableRefObject,
   CSSProperties,
+  useEffect,
 } from 'react';
 import {TableRow, DEFAULT_ROW_HEIGHT} from './TableRow';
 import {DataSource} from '../../state/datasource/DataSource';
@@ -23,7 +24,7 @@ import {Layout} from '../Layout';
 import {TableHead} from './TableHead';
 import {Percentage} from '../../utils/widthUtils';
 import {DataSourceRenderer, DataSourceVirtualizer} from './DataSourceRenderer';
-import {useDataTableManager, TableManager} from './useDataTableManager';
+import {useDataTableManager, DataTableManager} from './useDataTableManager';
 import {TableSearch} from './TableSearch';
 import styled from '@emotion/styled';
 import {theme} from '../theme';
@@ -40,7 +41,7 @@ interface DataTableProps<T = any> {
   onSelect?(record: T | undefined, records: T[]): void;
   onRowStyle?(record: T): CSSProperties | undefined;
   // multiselect?: true
-  tableManagerRef?: RefObject<TableManager>;
+  tableManagerRef?: RefObject<DataTableManager<T> | undefined>; // Actually we want a MutableRefObject, but that is not what React.createRef() returns, and we don't want to put the burden on the plugin dev to cast it...
   _testHeight?: number; // exposed for unit testing only
 }
 
@@ -92,7 +93,9 @@ export function DataTable<T extends object>(
     props.onSelect,
   );
   if (props.tableManagerRef) {
-    (props.tableManagerRef as MutableRefObject<TableManager>).current = tableManager;
+    (props.tableManagerRef as MutableRefObject<
+      DataTableManager<T>
+    >).current = tableManager;
   }
   const {
     visibleColumns,
@@ -245,6 +248,17 @@ export function DataTable<T extends object>(
   const emptyRenderer = useCallback((dataSource: DataSource<T>) => {
     return <EmptyTable dataSource={dataSource} />;
   }, []);
+
+  useEffect(
+    function cleanup() {
+      return () => {
+        if (props.tableManagerRef) {
+          (props.tableManagerRef as MutableRefObject<undefined>).current = undefined;
+        }
+      };
+    },
+    [props.tableManagerRef],
+  );
 
   return (
     <Layout.Container grow>

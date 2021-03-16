@@ -25,7 +25,6 @@ import {CaretDownFilled, CaretUpFilled} from '@ant-design/icons';
 import {Layout} from '../Layout';
 import {Sorting, OnColumnResize, SortDirection} from './useDataTableManager';
 import {ColumnFilterHandlers, FilterIcon} from './ColumnFilter';
-import {DEFAULT_ROW_HEIGHT} from './TableRow';
 
 const {Text} = Typography;
 
@@ -41,27 +40,27 @@ function SortIcons({
       <CaretUpFilled
         onClick={(e) => {
           e.stopPropagation();
-          onSort(direction === 'up' ? undefined : 'up');
+          onSort(direction === 'asc' ? undefined : 'asc');
         }}
         className={
-          'ant-table-column-sorter-up ' + (direction === 'up' ? 'active' : '')
+          'ant-table-column-sorter-up ' + (direction === 'asc' ? 'active' : '')
         }
       />
       <CaretDownFilled
         onClick={(e) => {
           e.stopPropagation();
-          onSort(direction === 'down' ? undefined : 'down');
+          onSort(direction === 'desc' ? undefined : 'desc');
         }}
         className={
           'ant-table-column-sorter-down ' +
-          (direction === 'down' ? 'active' : '')
+          (direction === 'desc' ? 'active' : '')
         }
       />
     </SortIconsContainer>
   );
 }
 
-const SortIconsContainer = styled.span<{direction?: 'up' | 'down'}>(
+const SortIconsContainer = styled.span<{direction?: 'asc' | 'desc'}>(
   ({direction}) => ({
     visibility: direction === undefined ? 'hidden' : undefined,
     display: 'inline-flex',
@@ -127,7 +126,7 @@ function TableHeadColumn({
   ...filterHandlers
 }: {
   column: DataTableColumn<any>;
-  sorted: 'up' | 'down' | undefined;
+  sorted: SortDirection;
   isResizable: boolean;
   onSort: (id: string, direction: SortDirection) => void;
   sortOrder: undefined | Sorting;
@@ -169,7 +168,7 @@ function TableHeadColumn({
           e.stopPropagation();
           onSort(
             column.key,
-            sorted === 'up' ? undefined : sorted === 'down' ? 'up' : 'down',
+            sorted === 'asc' ? 'desc' : sorted === 'desc' ? undefined : 'asc',
           );
         }}
         role="button"

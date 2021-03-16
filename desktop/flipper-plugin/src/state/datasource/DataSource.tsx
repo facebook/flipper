@@ -108,11 +108,8 @@ export class DataSource<
   output: Entry<T>[] = [];
 
   /**
-   * Returns a direct reference to the stored records.
-   * The collection should be treated as readonly and mutable;
-   * the collection might be directly written to by the datasource,
-   * so for an immutable state create a defensive copy:
-   * `datasource.records.slice()`
+   * Returns a defensive copy of the stored records.
+   * This is a O(n) operation! Prefer using .size and .get instead!
    */
   get records(): readonly T[] {
     return this._records.map(unwrap);
@@ -132,6 +129,18 @@ export class DataSource<
   constructor(keyAttribute: KEY | undefined) {
     this.keyAttribute = keyAttribute;
     this.setSortBy(undefined);
+  }
+
+  public get size() {
+    return this._records.length;
+  }
+
+  public getRecord(index: number): T {
+    return this._records[index]?.value;
+  }
+
+  public get outputSize() {
+    return this.output.length;
   }
 
   /**
