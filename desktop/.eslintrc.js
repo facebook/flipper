@@ -109,6 +109,7 @@ module.exports = {
         // for reference: https://github.com/typescript-eslint/typescript-eslint/blob/master/packages/eslint-plugin/README.md#extension-rules
         'no-unused-vars': 0,
         'no-redeclare': 0,
+        'no-dupe-class-members': 0,
         '@typescript-eslint/no-redeclare': 1,
         '@typescript-eslint/no-unused-vars': [
           1,

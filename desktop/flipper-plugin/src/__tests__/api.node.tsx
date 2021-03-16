@@ -34,6 +34,7 @@ test('Correct top level API exposed', () => {
       "Tracked",
       "TrackingScope",
       "batch",
+      "createDataSource",
       "createState",
       "produce",
       "renderReactRoot",
