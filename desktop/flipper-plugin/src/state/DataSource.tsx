@@ -23,8 +23,6 @@ const defaultLimit = 100 * 1000;
 // rather than search and remove the affected individual items
 const shiftRebuildTreshold = 0.05;
 
-// TODO: expose interface with public members only
-
 type ExtractKeyType<T, KEY extends keyof T> = T[KEY] extends string
   ? string
   : T[KEY] extends number
@@ -707,8 +705,8 @@ class DataSourceView<T> {
               this.notifyItemUpdated(existingIndex);
             } else {
               // item needs to be moved cause of sorting
-              // TODO: possible optimization: if we discover that old and new index would be the same,
-              // despite different sort values, we could still only emit an update
+              // possible optimization: if we discover that old and new index would be the same,
+              // despite different sort values, we could still emit only an update instead of two shifts
               output.splice(existingIndex, 1);
               this.notifyItemShift(existingIndex, -1);
               // find new sort index

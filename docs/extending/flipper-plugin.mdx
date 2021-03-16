@@ -439,9 +439,226 @@ console.log(rows.get().length) // 2
 ```
 
 ### createDataSource
+
+Usage: `createDataSource<T>(initialSet?: T[], options?): DataSource<T>`
+
+Most Flipper plugins follow the basic concept of receiving events from the device, store them, and being able to tail, filter and search them. 
+To optimise for this situation, there is a dedicated `createDataSource` abstraction which creates a `DataSource`.
+`DataSource` is a data collection that is heavily optimized for `append` and `update`, 
+which stores items based on insertion order, but also allows for efficient by-id lookups. 
+
+Each `DataSource` exposes a `view` property, which contains a `DataSourceView`. 
+A `DataSourceView` is a materialized view which can be sorted, filtered and windowed, and will be kept incrementally up to date with the underlying `DataSource`.
+
+When using the `DataTable` component, this `view` will be managed by the table automatically, giving plugin users the capability to freely sort, filter, search and tail your datasource.
+
+Valid `options` are:
+
+* `key`: If a key is set, the given field of the records is assumed to be unique, and it's value can be used to perform lookups and upserts.
+* `limit`: The maximum amount of records that this DataSource will store. If the limit is exceeded, the oldest records will automatically be dropped to make place for the new ones. Defaults to 100.000 records.
+* `persist`: See the `createState` `persist` option: If set, this data source will automatically be part of Flipper imports / exports. It is recommend to set this option.
+
+All records stored in a data source should be treated as being immutable. To update a record, replace it with a new value using the `update` or `upsert` operations.
+
+#### Example
+
+```typescript
+export function devicePlugin(client: DevicePluginClient) {
+  const rows = createDataSource<ExtendedLogEntry>([], {
+    limit: 200000,
+    persist: 'logs',
+  });
+
+  client.device.onLogEntry(entry => {
+    rows.append(entry);
+  });
+
+  return {
+    rows,
+  }
+}
+```
+
 ### DataSource
 
-Coming soon.
+Stores large amounts of records efficiently. See [`createDataSource`](#createdatasource) for an introduction. 
+
+#### limit
+
+The maximum amount of records that can be stored in this DataSource to constrain memory usages. Defaults to 100.000 rows. If the limit is exceeded, the oldest 10% of records is dropped. This field is writable but does not immediately truncate if changed.
+
+#### view
+
+Returns the currently active view on the data source. Note that be default it is windowed on the impractical `[0, 0)` range.
+See [`DataSourceView`](#datasourceview) for more details.
+
+#### size
+
+The total amount of records stored in this data source.
+
+#### records
+
+Usage: `records(): T[]`. Returns all values stored in this data source in a defensive copy. Note that this operation performs `O(n)`, so typically one should operate on a subset of the records using `size` and `get`.
+
+#### get
+
+Usage: `get(index: number): T`. Returns the record at the given index, which is insertion order based. This operation does not take into consideration the current view. See also `view.get` to get a record based on _visible_ position. To look items up based on their id, use `getById`.
+
+#### getById
+
+Usage: `getById(key: string): T | undefined`. For example `users.getById("jane")`. Returns the record associated with the given key, or `undefined`. This method can only be used if the `key` option was passed to `createDataSource`.
+
+#### keys
+
+Usage: `keys()`, returns an iterator that will iterate all keys in the data source. For example to create an array of all keys: `const usernames = Array.from(users.keys())`. This method can only be used if the `key` option was passed to `createDataSource`.
+
+#### entries
+
+Usage: `entries()`. Similar to `keys()`, but will return an iterator that generate entry tuples, in the shape of `[key, value]`.
+
+#### [Symbol.iterator]
+
+`DataSource` supports the iterator protocol, so to visit all stored records one can use `for (const user of users) {....}`.
+
+#### getIndexOfKey
+
+Usage: `getById(key: string): number`. Returns the insertion index of the record associated with the given key, or `-1`. This method can only be used if the `key` option was passed to `createDataSource`.
+
+#### append
+
+Usage: `append(record: T)`. Appends a new record to the data collection. This method will throw if a duplicate key is inserted. Use `upsert` to automatically append *or* update. Mutations like `append` will be reflected in the `view` automatically.
+
+#### update
+
+Usage: `update(index: number, record: T)`. Replaces the given record in the data sources.
+
+#### delete
+
+Usage: `delete(index: number)`. Remove the record at the given index from the datasource. Note that if a the `key` option of the datasource is set, this operation degrades to `O(n)` performance and should typically be avoided.
+
+#### deleteById
+
+Usage: `delete(key: string): boolean`. Removes the record with the given key. Returns `true` if the record existed and has been removed. This operation is `O(n)` expensive and should generally be avoided.
+
+#### shift
+
+Usage: `shift(amount: number)`. Removes the first `amount` records from the datasource. This is generally a performant operation.
+
+#### clear
+
+Usage: `clear()`. Removes all records from this data source.
+
+#### fork
+
+Usage: `fork(): DataSourceView`. Creates an additional materialized view on this data source with it's own sort / filter settings. This feature is not implemented yet so contact Flipper oncall if needed.
+
+### DataSourceView
+
+A materialized view on a DataSource, which can apply windowing, sorting and filtering and will be kept incrementally up to date with the underlying datasource. 
+Note that the default window is empty, so after obtaining a `DataSourceView` one should typically call `setWindow`. 
+See [`createDataSource`](#createdatasource) for an introduction. 
+
+The DataSourceView API is important if are creating your own visualization of a `DataSource`. 
+However, if a `DataSource` is visualized using a `DataTable`, there is typically no need to directly interact with this API.
+
+#### datasource
+
+A reference to the underlying [`DataSource`](#datasource).
+
+#### windowStart
+
+See `setWindow`
+
+#### windowEnd
+
+See `setWindow`
+
+#### size
+
+The total size of the current view after applying filtering. Note that `size` does _not_ reflect windowing. To get the window size use: `windowEnd - windowStart`. To get the total amount of records, without respecting the current filter, use `datasource.size`.
+
+#### isSorted
+
+Returns `true` if a sort criterium is set.
+
+#### isFiltered
+
+Returns `true` if a filter criterium is set.
+
+#### isRevered
+
+Return `true` if the current view will be shown in reverse order.
+
+#### output
+
+Usage: `output(): T[]` or `output(start, end): T[]`. Returns a defensive copy of all items visible in the provided range window. If `start` and `end` are omitted, the current window will be used. To get all items visible in the current view, ignoring the window, use `view.output(0, view.size)`.
+
+#### [Symbol.iterator]
+
+`DataSourceView` supports the iterator protocol, so the currently visible output can be iterated using for example `for (const user in users.view) { ... }`. The iterator will always apply the current window. 
+
+#### setWindow
+
+Usage: `setWindow(start, end)`. This method sets the current visible window to the specified range (which will include `start`, but not `end`, so `[start, end)`). 
+
+Setting a window impacts the default behavior of `output` and `iterator` and, more importantly, the behavior of any listener: `update` events that happen outside the window will not be propagated to any listeners, and `shift` events will describe whether the happened `in`, `before`, or `after` the current window. 
+
+Windowing will always be applied only after applying any filters, sorting and reversing.
+
+#### setFilter
+
+Usage: `setFilter(filter: (record: T) => boolean)`. Applies a filter to the current records. This will typically reduce `size` of this view. Example: `users.view.setFilter(user => user.age >= 18)`.
+
+#### setSortBy
+
+Usage: `setSortBy(field: string)` or `setSortBy(sortBy: (irecord: T) => primitive)`. For example: `users.view.setSortBy("age")` or `users.viewSetSortBy(user => `${user.lastName} ${user.firstName}`)`. `setSortBy` will cause the data source to be sorted by the given field or criterium function. Sort is implemented efficiently by using a binary search to insert / remove newly arriving records, rather than performing a full sort. But this means that the sort function should be stable and pure. 
+
+Sorting will always happen in ascending order, and if duplicate sort values appear, the insertion order will take precedence. To sort in descending order, use `setReversed`. If a view doesn't have sorting specified, it will always show records in insertion order.
+
+#### toggleRevered
+
+Usage: `toggleReversed()`. Toggles the output order between ascending and descending. 
+
+#### setReversed
+
+Usage: `setReversed(ascending: boolean)`. Defines whether the output colletion is shown normal (ascending) or reverse (descending) order.
+
+#### reset
+
+Usage: `reset()`. Resets the window, filtering, sorting and reverse to their defaults. Note that this puts the window back to `[0, 0)` as well, meaning now recordswill be part of the output.
+
+#### get
+
+Usage: `get(index: number)`. Returns the record at the given position in the output. The `index` parameter respects sorting, filtering and reversing, but does _not_ respect any window offset. So `get(0)` will return the first record in the datasource according the given filtering, sorting and reversing, while `get(windowStart)` will return the first of the records visible in the current window.
+
+#### setListener
+
+Usage: `setListener(callback: undefined | (event: OutputChange) => void)`. Sets up a listener that will get notified whenever the `output` or `size` of this view changes. This can be used to, for example, update the UI and is used by `DataTable` under the hood. 
+The following events can be emitted. These events respect the current sorting, filtering and reversing. The shift `location` is expressed relatively to the current window. Now `update` events that are outside the current window will be emitted. `reset` events are typically emitted if a change happened that cannot be expressed in a limited amount of shifts / updates. Such as changing sorting or filtering, calling `clear()` or `reset()`, or doing a large `shift`.
+
+Currently only one listener is allowed at a time. Please contact the Flipper oncall if that doesn't suffice.
+
+```typescript
+type OutputChange =
+  | {
+      type: 'shift';
+      index: number; // the position at which records were inserted or removed
+      location: 'before' | 'in' | 'after'; // relative to current window
+      delta: number; // how many records were inserted (postive number) or removed (negative number)
+      newCount: number; // the new .size of the DataSourceView 
+    }
+  | {
+      // an item, inside the current window, was changed
+      type: 'update';
+      index: number;
+    }
+  | {
+      // something big and awesome happened. Drop earlier updates to the floor and start again
+      // like: clear, filter or sorting change, etc
+      type: 'reset';
+      newCount: number;
+    };
+```
 
 ## React Hooks
 
