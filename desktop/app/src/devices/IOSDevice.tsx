@@ -45,6 +45,7 @@ export default class IOSDevice extends BaseDevice {
   buffer: string;
   private recordingProcess?: ChildProcess;
   private recordingLocation?: string;
+  private iOSBridge: IOSBridge;
 
   constructor(
     iOSBridge: IOSBridge,
@@ -55,7 +56,7 @@ export default class IOSDevice extends BaseDevice {
     super(serial, deviceType, title, 'iOS');
     this.icon = 'mobile';
     this.buffer = '';
-    this.startLogListener(iOSBridge);
+    this.iOSBridge = iOSBridge;
   }
 
   async screenshot(): Promise<Buffer> {
@@ -81,10 +82,12 @@ export default class IOSDevice extends BaseDevice {
     exec(command);
   }
 
-  teardown() {
-    if (this.log) {
-      this.log.kill();
-    }
+  startLogging() {
+    this.startLogListener(this.iOSBridge);
+  }
+
+  stopLogging() {
+    this.log?.kill();
   }
 
   startLogListener(iOSBridge: IOSBridge, retries: number = 3) {
@@ -206,6 +209,11 @@ export default class IOSDevice extends BaseDevice {
       return output;
     }
     return null;
+  }
+
+  disconnect() {
+    this.stopScreenCapture();
+    super.disconnect();
   }
 }
 
