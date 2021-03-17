@@ -1,3 +1,11 @@
+# 0.81.0 (17/3/2021)
+
+ * [D26947007](https://github.com/facebook/flipper/search?q=D26947007&type=Commits) -  The new logs plugin will linkify urls and pretty print json-like messages
+ * [D27044507](https://github.com/facebook/flipper/search?q=D27044507&type=Commits) -  Crash reporter will now report errors triggered from the device / client plugins by default. This can be disabled in settings.
+ * [D27047041](https://github.com/facebook/flipper/search?q=D27047041&type=Commits) -  Flipper will now use less CPU if logs & crash reporter plugins are disabled by no longer tailing adb logcat.
+ * [D27048528](https://github.com/facebook/flipper/search?q=D27048528&type=Commits) -  The device logs plugin has been fully rewritten. It is faster and more reponsive, formats urls and json, and supports line wrapping and text selection. Beyond that it is now possible to sort and filter on all columns and pause and resume the log stream.
+
+
 # 0.79.0 (3/3/2021)
 
  * [D26749214](https://github.com/facebook/flipper/search?q=D26749214&type=Commits) -  Fix a crash when disconnecting metro devices
