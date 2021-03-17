@@ -9,6 +9,10 @@
   "category": "facebook-intern",
   "privileged": true,
   "license": "MIT",
+  "scripts": {
+    "reset": "rimraf lib *.tsbuildinfo",
+    "build": "tsc -b"
+  },
   "dependencies": {
     "@ant-design/icons": "^4.5.0",
     "@emotion/css": "^11.0.0",

@@ -15,10 +15,8 @@ module.exports = {
   setupFiles: ['<rootDir>/scripts/jest-setup.js'],
   moduleNameMapper: {
     '^flipper$': '<rootDir>/app/src',
-    '^flipper-doctor$': '<rootDir>/doctor/src',
-    '^flipper-pkg$': '<rootDir>/pkg/src',
-    '^flipper-pkg-lib$': '<rootDir>/pkg-lib/src',
     '^flipper-plugin$': '<rootDir>/flipper-plugin/src',
+    '^flipper-(pkg|pkg-lib|doctor|test-utils)$': '<rootDir>/$1/src',
   },
   clearMocks: true,
   coverageReporters: ['json-summary', 'lcov', 'html'],

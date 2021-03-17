@@ -8,10 +8,7 @@
  */
 
 import {StoreEnhancerStoreCreator} from 'redux';
-import {ResizeObserver} from './ResizeObserver.d';
-import {Store} from '../app/src/reducers';
-
-export {};
+import {Store} from './reducers';
 
 declare global {
   interface StoreEnhancerStateSanitizer {
@@ -28,7 +25,5 @@ declare global {
     Flipper: {
       init: () => void;
     };
-
-    ResizeObserver: ResizeObserver;
   }
 }

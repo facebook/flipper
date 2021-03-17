@@ -7,6 +7,7 @@
  * @format
  */
 
+import './global';
 import {createStore} from 'redux';
 import reducers, {Actions, State as StoreState, Store} from './reducers/index';
 import {stateSanitizer} from './utils/reduxDevToolsConfig';

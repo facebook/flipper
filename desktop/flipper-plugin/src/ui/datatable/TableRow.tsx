@@ -9,7 +9,7 @@
 
 import React, {CSSProperties, memo} from 'react';
 import styled from '@emotion/styled';
-import {theme} from 'flipper-plugin';
+import {theme} from '../theme';
 import type {RenderContext} from './DataTable';
 import {Width} from '../../utils/widthUtils';
 import {DataFormatter} from '../DataFormatter';

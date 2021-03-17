@@ -22,8 +22,8 @@
     "xml-beautifier": "^0.4.0"
   },
   "peerDependencies": {
-    "flipper": "0.0.0",
-    "flipper-plugin": "0.0.0"
+    "flipper": "*",
+    "flipper-plugin": "*"
   },
   "devDependencies": {
     "@types/pako": "^1.0.1",

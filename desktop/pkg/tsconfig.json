@@ -6,10 +6,14 @@
     "esModuleInterop": true
   },
   "references": [
-    {"path": "../pkg-lib"},
-    {"path": "../plugin-lib"},
-    {"path": "../test-utils"}
-  ],
-  "include": ["src"],
-  "exclude": ["node_modules", "**/__tests__/*"]
+    {
+      "path": "../pkg-lib"
+    },
+    {
+      "path": "../plugin-lib"
+    },
+    {
+      "path": "../test-utils"
+    }
+  ]
 }

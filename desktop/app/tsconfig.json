@@ -1,0 +1,32 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "lib",
+    "rootDir": "src",
+    "esModuleInterop": true,
+    "emitDeclarationOnly": true
+  },
+  "references": [
+    {
+      "path": "../doctor"
+    },
+    {
+      "path": "../flipper-plugin"
+    },
+    {
+      "path": "../plugin-lib"
+    },
+    {
+      "path": "../test-utils"
+    },
+    {
+      "path": "../plugins/navigation"
+    }
+  ],
+  "exclude": [
+    "**/node_modules/",
+    "**/__tests__/",
+    "**/lib/",
+    "**/fb/"
+  ]
+}

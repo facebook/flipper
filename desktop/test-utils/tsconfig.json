@@ -3,7 +3,5 @@
   "compilerOptions": {
     "outDir": "lib",
     "rootDir": "src"
-  },
-  "include": ["src"],
-  "exclude": ["node_modules", "**/__tests__/*"]
+  }
 }
