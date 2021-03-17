@@ -288,6 +288,7 @@ function createWindow() {
       nodeIntegration: true,
       webviewTag: true,
       nativeWindowOpen: true,
+      contextIsolation: false,
     },
   });
   win.once('ready-to-show', () => {
