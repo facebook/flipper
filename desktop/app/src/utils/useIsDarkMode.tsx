@@ -7,7 +7,7 @@
  * @format
  */
 
-import {useStore} from '../../../app/src/utils/useStore';
+import {useStore} from './useStore';
 
 /**
  * This hook returns whether dark mode is currently being used.
