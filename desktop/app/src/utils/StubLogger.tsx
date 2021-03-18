@@ -8,15 +8,10 @@
  */
 
 import {Logger, Args, TrackType} from '../fb-interfaces/Logger';
-import ScribeLogger from '../fb-stubs/ScribeLogger';
 import {Store} from '../reducers/index';
 
 export default class StubLogger implements Logger {
-  constructor(_store: Store, _args?: Args) {
-    this.scribeLogger = new ScribeLogger(this);
-  }
-
-  scribeLogger: ScribeLogger;
+  constructor(_store: Store, _args?: Args) {}
 
   track(_type: TrackType, _event: string, _data?: any, _plugin?: string) {}
 
