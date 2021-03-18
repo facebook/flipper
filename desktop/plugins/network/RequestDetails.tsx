@@ -27,7 +27,7 @@ import React from 'react';
 
 import querystring from 'querystring';
 import xmlBeautifier from 'xml-beautifier';
-import {ProtobufDefinitionsRepository} from "./ProtobufDefinitionsRepository";
+import {ProtobufDefinitionsRepository} from './ProtobufDefinitionsRepository';
 
 const WrappingText = styled(Text)({
   wordWrap: 'break-word',
@@ -809,17 +809,32 @@ class ProtobufFormatter {
   private protobufDefinitionRepository = ProtobufDefinitionsRepository.getInstance();
 
   formatRequest(request: Request) {
-    if (getHeaderValue(request.headers, 'content-type') === 'application/x-protobuf') {
-      let protobufDefinition = this.protobufDefinitionRepository.getRequestType(request.method, request.url)
+    if (
+      getHeaderValue(request.headers, 'content-type') ===
+      'application/x-protobuf'
+    ) {
+      const protobufDefinition = this.protobufDefinitionRepository.getRequestType(
+        request.method,
+        request.url,
+      );
       if (protobufDefinition == undefined) {
-        return <Text>Could not locate protobuf definition for request body of {request.url}</Text>
+        return (
+          <Text>
+            Could not locate protobuf definition for request body of{' '}
+            {request.url}
+          </Text>
+        );
       }
 
       if (request?.data) {
-        let data = protobufDefinition.decode(this._base64ToArrayBuffer(request.data));
+        const data = protobufDefinition.decode(
+          this._base64ToArrayBuffer(request.data),
+        );
         return <JSONText>{data.toJSON()}</JSONText>;
       } else {
-        return <Text>Could not locate request body data for {request.url}</Text>
+        return (
+          <Text>Could not locate request body data for {request.url}</Text>
+        );
       }
     }
     return undefined;
@@ -827,28 +842,41 @@ class ProtobufFormatter {
 
   formatResponse(request: Request, response: Response) {
     if (
-        getHeaderValue(response.headers, 'content-type') === 'application/x-protobuf' ||
-        request.url.endsWith(".proto")
+      getHeaderValue(response.headers, 'content-type') ===
+        'application/x-protobuf' ||
+      request.url.endsWith('.proto')
     ) {
-      let protobufDefinition = this.protobufDefinitionRepository.getResponseType(request.method, request.url)
+      const protobufDefinition = this.protobufDefinitionRepository.getResponseType(
+        request.method,
+        request.url,
+      );
       if (protobufDefinition == undefined) {
-        return <Text>Could not locate protobuf definition for response body of {request.url}</Text>
+        return (
+          <Text>
+            Could not locate protobuf definition for response body of{' '}
+            {request.url}
+          </Text>
+        );
       }
 
       if (response?.data) {
-        let data = protobufDefinition.decode(this._base64ToArrayBuffer(response.data));
+        const data = protobufDefinition.decode(
+          this._base64ToArrayBuffer(response.data),
+        );
         return <JSONText>{data.toJSON()}</JSONText>;
       } else {
-        return <Text>Could not locate response body data for {request.url}</Text>
+        return (
+          <Text>Could not locate response body data for {request.url}</Text>
+        );
       }
     }
     return undefined;
   }
 
   _base64ToArrayBuffer(base64: string): Uint8Array {
-    let binary_string = window.atob(base64);
-    let len = binary_string.length;
-    let bytes = new Uint8Array(len);
+    const binary_string = window.atob(base64);
+    const len = binary_string.length;
+    const bytes = new Uint8Array(len);
     for (let i = 0; i < len; i++) {
       bytes[i] = binary_string.charCodeAt(i);
     }
@@ -866,7 +894,7 @@ const BodyFormatters: Array<BodyFormatter> = [
   new FormUrlencodedFormatter(),
   new XMLTextFormatter(),
   new ProtobufFormatter(),
-  new BinaryFormatter()
+  new BinaryFormatter(),
 ];
 
 const TextBodyFormatters: Array<BodyFormatter> = [new JSONTextFormatter()];

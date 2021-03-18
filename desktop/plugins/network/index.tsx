@@ -40,7 +40,7 @@ import {
   ProtobufDefinition,
   AddProtobufEvent,
 } from './types';
-import {ProtobufDefinitionsRepository} from "./ProtobufDefinitionsRepository";
+import {ProtobufDefinitionsRepository} from './ProtobufDefinitionsRepository';
 import {convertRequestToCurlCommand, getHeaderValue, decodeBody} from './utils';
 import RequestDetails from './RequestDetails';
 import {clipboard} from 'electron';
@@ -194,10 +194,6 @@ export function plugin(client: PluginClient<Events, Methods>) {
     {},
     {persist: 'responses'},
   );
-    const protobufDefinitions = createState<{[path: string]: ProtobufDefinition}>(
-    {},
-    {persist: 'protobufDefinitions'},
-  );
 
   const partialResponses = createState<{
     [id: string]: {
@@ -239,8 +235,8 @@ export function plugin(client: PluginClient<Events, Methods>) {
   });
 
   client.onMessage('addProtobufDefinitions', (data) => {
-    let repository = ProtobufDefinitionsRepository.getInstance();
-    for (let [baseUrl, definitions] of Object.entries(data)) {
+    const repository = ProtobufDefinitionsRepository.getInstance();
+    for (const [baseUrl, definitions] of Object.entries(data)) {
       repository.addDefinitions(baseUrl, definitions);
     }
   });
@@ -614,7 +610,6 @@ export function plugin(client: PluginClient<Events, Methods>) {
     isDeeplinked,
     requests,
     responses,
-    protobufDefinitions,
     partialResponses,
     networkRouteManager,
     clearLogs,
@@ -647,7 +642,6 @@ export function Component() {
   const isMockResponseSupported = useValue(instance.isMockResponseSupported);
   const showMockResponseDialog = useValue(instance.showMockResponseDialog);
   const networkRouteManager = useValue(instance.networkRouteManager);
-  useValue(instance.protobufDefinitions);
 
   return (
     <Layout.Container grow={true}>
