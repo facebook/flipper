@@ -18,7 +18,7 @@ linux:
     - libffmpeg.so
     - libGLESv2.so
     - libvk_swiftshader.so
-    - libvulkan.so
+    - libvulkan.so.1
     - locales
     - resources.pak
     - snapshot_blob.bin
