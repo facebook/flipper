@@ -56,9 +56,9 @@ fn default_progress_bar(len: u64) -> indicatif::ProgressBar {
 
 fn pack(
     platform: Platform,
-    dist_dir: &std::path::PathBuf,
+    dist_dir: &std::path::Path,
     pack_list: &PackList,
-    output_directory: &std::path::PathBuf,
+    output_directory: &std::path::Path,
 ) -> Result<Vec<(PackType, path::PathBuf)>> {
     let pb = default_progress_bar(pack_list.0.len() as u64 * 2 - 1);
     pb.set_prefix(&format!(
@@ -96,10 +96,10 @@ fn pack(
     res
 }
 
-fn pack_platform(
+fn pack_platform<P: AsRef<path::Path>>(
     platform: Platform,
-    dist_dir: &std::path::PathBuf,
-    pack_files: &[path::PathBuf],
+    dist_dir: &std::path::Path,
+    pack_files: &[P],
     pack_type: PackType,
     tar_builder: &mut tar::Builder<File>,
 ) -> Result<()> {
@@ -240,14 +240,14 @@ fn compress_paths(
 fn manifest(
     archive_paths: &[(PackType, path::PathBuf)],
     compressed_archive_paths: &Option<Vec<(PackType, path::PathBuf)>>,
-    output_directory: &path::PathBuf,
+    output_directory: &path::Path,
 ) -> Result<path::PathBuf> {
     let archive_manifest = gen_manifest(archive_paths, compressed_archive_paths)?;
     write_manifest(output_directory, &archive_manifest)
 }
 
 fn write_manifest(
-    output_directory: &path::PathBuf,
+    output_directory: &path::Path,
     archive_manifest: &PackManifest,
 ) -> Result<path::PathBuf> {
     let path = path::PathBuf::from(output_directory).join("manifest.json");
