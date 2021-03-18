@@ -7,6 +7,8 @@
  * @format
  */
 
+import {AnyNestedObject} from 'protobufjs';
+
 export type RequestId = string;
 
 export type Request = {
@@ -35,9 +37,9 @@ export type ProtobufDefinition = {
   path: string;
   method: string;
   requestMessageFullName: string | null | undefined;
-  requestDefinitions: {} | null | undefined;
+  requestDefinitions: {[k: string]: AnyNestedObject} | null | undefined;
   responseMessageFullName: string | null | undefined;
-  responseDefinitions: {} | null | undefined;
+  responseDefinitions: {[k: string]: AnyNestedObject} | null | undefined;
 };
 
 export type AddProtobufEvent = {[baseUrl: string]: ProtobufDefinition[]};

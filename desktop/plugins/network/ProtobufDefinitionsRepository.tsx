@@ -67,13 +67,18 @@ export class ProtobufDefinitionsRepository {
       return;
     }
     const rawDefinition = this.rawDefinitions[key];
-    if (rawDefinition == undefined) return;
-    const responseRoot = protobuf.Root.fromJSON(
-      rawDefinition.responseDefinitions,
-    );
-    const requestRoot = protobuf.Root.fromJSON(
-      rawDefinition.requestDefinitions,
-    );
+    if (rawDefinition === undefined) return;
+
+    let responseRoot = undefined;
+    if (rawDefinition.responseDefinitions) {
+      responseRoot = protobuf.Root.fromJSON(rawDefinition.responseDefinitions);
+    }
+
+    let requestRoot = undefined;
+    if (rawDefinition.requestDefinitions) {
+      requestRoot = protobuf.Root.fromJSON(rawDefinition.requestDefinitions);
+    }
+
     this.cachedDecodedDefinitions[key] = {responseRoot, requestRoot};
   }
 
@@ -83,6 +88,6 @@ export class ProtobufDefinitionsRepository {
 }
 
 type DecodedProtobufDefinition = {
-  responseRoot: protobuf.Root;
-  requestRoot: protobuf.Root;
+  responseRoot: protobuf.Root | undefined;
+  requestRoot: protobuf.Root | undefined;
 };

@@ -37,7 +37,6 @@ import {
   ResponseFollowupChunk,
   Header,
   MockRoute,
-  ProtobufDefinition,
   AddProtobufEvent,
 } from './types';
 import {ProtobufDefinitionsRepository} from './ProtobufDefinitionsRepository';
