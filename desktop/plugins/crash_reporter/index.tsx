@@ -288,11 +288,12 @@ function addFileWatcherForiOSCrashLogs(
       }
       fs.readFile(filepath, 'utf8', function (err, data) {
         if (err) {
-          console.error(err);
+          console.warn('Failed to read crash file', err);
           return;
         }
-        if (shouldShowiOSCrashNotification(serial, data))
+        if (shouldShowiOSCrashNotification(serial, data)) {
           reportCrash(parseCrashLog(data, deviceOs, null));
+        }
       });
     });
   });
@@ -450,7 +451,7 @@ export function devicePlugin(client: DevicePluginClient) {
     const ignore = !crash.name && !crash.reason;
     const unknownCrashCause = crash.reason === UNKNOWN_CRASH_REASON;
     if (ignore || unknownCrashCause) {
-      console.error('Ignored the notification for the crash', crash);
+      console.warn('Ignored the notification for the crash', crash);
       return;
     }
 
