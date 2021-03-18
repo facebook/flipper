@@ -37,7 +37,10 @@ import {
   ResponseFollowupChunk,
   Header,
   MockRoute,
+  ProtobufDefinition,
+  AddProtobufEvent,
 } from './types';
+import {ProtobufDefinitionsRepository} from "./ProtobufDefinitionsRepository";
 import {convertRequestToCurlCommand, getHeaderValue, decodeBody} from './utils';
 import RequestDetails from './RequestDetails';
 import {clipboard} from 'electron';
@@ -68,6 +71,7 @@ type Events = {
   newRequest: Request;
   newResponse: Response;
   partialResponse: Response | ResponseFollowupChunk;
+  addProtobufDefinitions: AddProtobufEvent;
 };
 
 type Methods = {
@@ -190,6 +194,10 @@ export function plugin(client: PluginClient<Events, Methods>) {
     {},
     {persist: 'responses'},
   );
+    const protobufDefinitions = createState<{[path: string]: ProtobufDefinition}>(
+    {},
+    {persist: 'protobufDefinitions'},
+  );
 
   const partialResponses = createState<{
     [id: string]: {
@@ -230,6 +238,13 @@ export function plugin(client: PluginClient<Events, Methods>) {
     });
   });
 
+  client.onMessage('addProtobufDefinitions', (data) => {
+    let repository = ProtobufDefinitionsRepository.getInstance();
+    for (let [baseUrl, definitions] of Object.entries(data)) {
+      repository.addDefinitions(baseUrl, definitions);
+    }
+  });
+
   client.onMessage('partialResponse', (data) => {
     /* Some clients (such as low end Android devices) struggle to serialise large payloads in one go, so partial responses allow them
         to split payloads into chunks and serialise each individually.
@@ -242,7 +257,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
         The remaining chunks will be sent in ResponseFollowupChunks, which each contain another piece of the payload, along with their index from 1 onwards.
         The payload of each chunk is individually encoded in the same way that full responses are.
 
-        The order that initialResponse, and followup chunks are recieved is not guaranteed to be in index order.
+        The order that initialResponse, and followup chunks are received is not guaranteed to be in index order.
     */
     const message: Response | ResponseFollowupChunk = data as
       | Response
@@ -599,6 +614,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
     isDeeplinked,
     requests,
     responses,
+    protobufDefinitions,
     partialResponses,
     networkRouteManager,
     clearLogs,
@@ -631,6 +647,7 @@ export function Component() {
   const isMockResponseSupported = useValue(instance.isMockResponseSupported);
   const showMockResponseDialog = useValue(instance.showMockResponseDialog);
   const networkRouteManager = useValue(instance.networkRouteManager);
+  useValue(instance.protobufDefinitions);
 
   return (
     <Layout.Container grow={true}>

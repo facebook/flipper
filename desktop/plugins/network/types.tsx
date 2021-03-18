@@ -31,6 +31,17 @@ export type Response = {
   index?: number;
 };
 
+export type ProtobufDefinition = {
+  path: string;
+  method: string;
+  requestMessageFullName: string | null | undefined;
+  requestDefinitions: {} | null | undefined;
+  responseMessageFullName: string | null | undefined;
+  responseDefinitions: {} | null | undefined;
+};
+
+export type AddProtobufEvent = {[baseUrl: string]: ProtobufDefinition[]};
+
 export type ResponseFollowupChunk = {
   id: string;
   totalChunks: number;
