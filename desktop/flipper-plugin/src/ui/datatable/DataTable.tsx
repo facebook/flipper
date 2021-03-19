@@ -249,19 +249,29 @@ export function DataTable<T extends object>(
     // we don't want to trigger filter changes too quickly, as they can be pretty expensive
     // and would block the user from entering text in the search bar for example
     // (and in the future would really benefit from concurrent mode here :))
-    const setFilter = (search: string, columns: DataTableColumn<T>[]) => {
-      dataSource.view.setFilter(computeDataTableFilter(search, columns));
+    const setFilter = (
+      search: string,
+      useRegex: boolean,
+      columns: DataTableColumn<T>[],
+    ) => {
+      dataSource.view.setFilter(
+        computeDataTableFilter(search, useRegex, columns),
+      );
     };
     return props._testHeight ? setFilter : debounce(setFilter, 250);
   });
   useEffect(
     function updateFilter() {
-      debouncedSetFilter(tableState.searchValue, tableState.columns);
+      debouncedSetFilter(
+        tableState.searchValue,
+        tableState.useRegex,
+        tableState.columns,
+      );
     },
     // Important dep optimization: we don't want to recalc filters if just the width or visibility changes!
     // We pass entire state.columns to computeDataTableFilter, but only changes in the filter are a valid cause to compute a new filter function
     // eslint-disable-next-line
-    [tableState.searchValue, ...tableState.columns.map((c) => c.filters)],
+    [tableState.searchValue, tableState.useRegex, ...tableState.columns.map((c) => c.filters)],
   );
 
   useEffect(
@@ -367,6 +377,7 @@ export function DataTable<T extends object>(
         <Layout.Container>
           <TableSearch
             searchValue={searchValue}
+            useRegex={tableState.useRegex}
             dispatch={dispatch as any}
             contextMenu={contexMenu}
             extraActions={props.extraActions}
