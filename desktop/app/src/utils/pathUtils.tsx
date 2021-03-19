@@ -31,6 +31,15 @@ export function getStaticPath() {
   return _staticPath;
 }
 
+let _appPath: string | undefined = undefined;
+export function getAppPath() {
+  if (!_appPath) {
+    _appPath = path.join(getStaticPath(), '..');
+  }
+
+  return _appPath;
+}
+
 export function getChangelogPath() {
   const staticPath = getStaticPath();
   let changelogPath = '';
