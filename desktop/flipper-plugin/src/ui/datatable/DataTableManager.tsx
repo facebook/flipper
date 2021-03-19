@@ -323,13 +323,13 @@ function addColumnFilter<T>(
   disableOthers: boolean = false,
 ): void {
   const column = columns.find((c) => c.key === columnId)!;
-  const filterValue = value.toLowerCase();
+  const filterValue = String(value).toLowerCase();
   const existing = column.filters!.find((c) => c.value === filterValue);
   if (existing) {
     existing.enabled = true;
   } else {
     column.filters!.push({
-      label: value,
+      label: String(value),
       value: filterValue,
       enabled: true,
     });
