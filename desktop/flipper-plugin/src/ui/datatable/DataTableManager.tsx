@@ -32,6 +32,7 @@ const emptySelection: Selection = {
 type PersistedState = {
   /** Active search value */
   search: string;
+  useRegex: boolean;
   /** current selection, describes the index index in the datasources's current output (not window!) */
   selection: {current: number; items: number[]};
   /** The currently applicable sorting, if any */
@@ -77,7 +78,8 @@ type DataManagerActions<T> =
   | Action<'removeColumnFilter', {column: keyof T; index: number}>
   | Action<'toggleColumnFilter', {column: keyof T; index: number}>
   | Action<'setColumnFilterFromSelection', {column: keyof T}>
-  | Action<'appliedInitialScroll'>;
+  | Action<'appliedInitialScroll'>
+  | Action<'toggleUseRegex'>;
 
 type DataManagerConfig<T> = {
   dataSource: DataSource<T>;
@@ -96,6 +98,7 @@ type DataManagerState<T> = {
   sorting: Sorting<T> | undefined;
   selection: Selection;
   searchValue: string;
+  useRegex: boolean;
 };
 
 export type DataTableReducer<T> = Reducer<
@@ -140,6 +143,10 @@ export const dataTableManagerReducer = produce(function <T>(
     }
     case 'setSearchValue': {
       draft.searchValue = action.value;
+      break;
+    }
+    case 'toggleUseRegex': {
+      draft.useRegex = !draft.useRegex;
       break;
     }
     case 'selectItem': {
@@ -301,6 +308,7 @@ export function createInitialState<T>(
         }
       : emptySelection,
     searchValue: prefs?.search ?? '',
+    useRegex: prefs?.useRegex ?? false,
   };
   // @ts-ignore
   res.config[immerable] = false; // optimization: never proxy anything in config
@@ -315,13 +323,13 @@ function addColumnFilter<T>(
   disableOthers: boolean = false,
 ): void {
   const column = columns.find((c) => c.key === columnId)!;
-  const filterValue = value.toLowerCase();
+  const filterValue = String(value).toLowerCase();
   const existing = column.filters!.find((c) => c.value === filterValue);
   if (existing) {
     existing.enabled = true;
   } else {
     column.filters!.push({
-      label: value,
+      label: String(value),
       value: filterValue,
       enabled: true,
     });
@@ -363,6 +371,7 @@ export function savePreferences(
   }
   const prefs: PersistedState = {
     search: state.searchValue,
+    useRegex: state.useRegex,
     selection: {
       current: state.selection.current,
       items: Array.from(state.selection.items),
@@ -411,9 +420,11 @@ function computeInitialColumns(
 
 export function computeDataTableFilter(
   searchValue: string,
+  useRegex: boolean,
   columns: DataTableColumn[],
 ) {
   const searchString = searchValue.toLowerCase();
+  const searchRegex = useRegex ? safeCreateRegExp(searchValue) : undefined;
   // the columns with an active filter are those that have filters defined,
   // with at least one enabled
   const filteringColumns = columns.filter((c) =>
@@ -438,9 +449,19 @@ export function computeDataTableFilter(
       }
     }
     return Object.values(item).some((v) =>
-      String(v).toLowerCase().includes(searchString),
+      searchRegex
+        ? searchRegex.test(String(v))
+        : String(v).toLowerCase().includes(searchString),
     );
   };
+}
+
+export function safeCreateRegExp(source: string): RegExp | undefined {
+  try {
+    return new RegExp(source);
+  } catch (_e) {
+    return undefined;
+  }
 }
 
 export function computeSetSelection(
