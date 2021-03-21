@@ -44,3 +44,6 @@ project(':leakcanary-plugin').projectDir = file('android/plugins/leakcanary')
 
 include ':leakcanary2-plugin'
 project(':leakcanary2-plugin').projectDir = file('android/plugins/leakcanary2')
+
+include ':retrofit2-protobuf'
+project(':retrofit2-protobuf').projectDir = file('android/plugins/retrofit2-protobuf')
