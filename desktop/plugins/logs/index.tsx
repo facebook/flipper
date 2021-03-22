@@ -34,69 +34,73 @@ export type ExtendedLogEntry = DeviceLogEntry & {
   count: number;
 };
 
-const columns: DataTableColumn<ExtendedLogEntry>[] = [
-  {
-    key: 'type',
-    title: '',
-    width: 30,
-    filters: Object.entries(logTypes).map(([value, config]) => ({
-      label: config.label,
-      value,
-      enabled: config.enabled,
-    })),
-    onRender(entry) {
-      return entry.count > 1 ? (
-        <Badge
-          count={entry.count}
-          size="small"
-          style={{
-            marginTop: 4,
-            color: theme.white,
-            background:
-              (logTypes[entry.type]?.style as any)?.color ??
-              theme.textColorSecondary,
-          }}
-        />
-      ) : (
-        logTypes[entry.type]?.icon
-      );
+function createColumnConfig(
+  os: 'iOS' | 'Android' | 'Metro',
+): DataTableColumn<ExtendedLogEntry>[] {
+  return [
+    {
+      key: 'type',
+      title: '',
+      width: 30,
+      filters: Object.entries(logTypes).map(([value, config]) => ({
+        label: config.label,
+        value,
+        enabled: config.enabled,
+      })),
+      onRender(entry) {
+        return entry.count > 1 ? (
+          <Badge
+            count={entry.count}
+            size="small"
+            style={{
+              marginTop: 4,
+              color: theme.white,
+              background:
+                (logTypes[entry.type]?.style as any)?.color ??
+                theme.textColorSecondary,
+            }}
+          />
+        ) : (
+          logTypes[entry.type]?.icon
+        );
+      },
     },
-  },
-  {
-    key: 'date',
-    title: 'Time',
-    width: 120,
-  },
-  {
-    key: 'pid',
-    title: 'PID',
-    width: 60,
-    visible: false,
-  },
-  {
-    key: 'tid',
-    title: 'TID',
-    width: 60,
-    visible: false,
-  },
-  {
-    key: 'tag',
-    title: 'Tag',
-    width: 160,
-  },
-  {
-    key: 'app',
-    title: 'App',
-    width: 160,
-    visible: false,
-  },
-  {
-    key: 'message',
-    title: 'Message',
-    wrap: true,
-    formatters: [DataFormatter.prettyPrintJson, DataFormatter.linkify],
-  },
-];
+    {
+      key: 'date',
+      title: 'Time',
+      width: 120,
+    },
+    {
+      key: 'pid',
+      title: 'PID',
+      width: 60,
+      visible: os === 'Android',
+    },
+    {
+      key: 'tid',
+      title: 'TID',
+      width: 60,
+      visible: false,
+    },
+    {
+      key: 'tag',
+      title: 'Tag',
+      width: 160,
+    },
+    {
+      key: 'app',
+      title: 'App',
+      width: 160,
+      visible: false,
+    },
+    {
+      key: 'message',
+      title: 'Message',
+      wrap: true,
+      formatters: [DataFormatter.prettyPrintJson, DataFormatter.linkify],
+    },
+  ];
+}
 
 function getRowStyle(entry: DeviceLogEntry): CSSProperties | undefined {
   return (logTypes[entry.type]?.style as any) ?? baseRowStyle;
@@ -198,7 +202,10 @@ export function devicePlugin(client: DevicePluginClient) {
   // start listening to the logs
   resumePause();
 
+  const columns = createColumnConfig(client.device.os as any);
+
   return {
+    columns,
     isConnected: client.device.isConnected,
     isPaused,
     tableManagerRef,
@@ -214,7 +221,7 @@ export function Component() {
   return (
     <DataTable<ExtendedLogEntry>
       dataSource={plugin.rows}
-      columns={columns}
+      columns={plugin.columns}
       autoScroll
       onRowStyle={getRowStyle}
       extraActions={

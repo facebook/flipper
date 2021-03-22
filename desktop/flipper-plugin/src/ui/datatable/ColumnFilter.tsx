@@ -79,7 +79,7 @@ export function FilterIcon({
         filters?.map((filter, index) => (
           <Menu.Item key={index}>
             <Layout.Right center>
-              <Checkbox
+              <FilterCheckbox
                 checked={filter.enabled}
                 onClick={(e) => {
                   e.stopPropagation();
@@ -91,7 +91,7 @@ export function FilterIcon({
                   });
                 }}>
                 {filter.label}
-              </Checkbox>
+              </FilterCheckbox>
               {!filter.predefined && (
                 <MinusCircleOutlined
                   onClick={(e) => {
@@ -185,3 +185,9 @@ export const FilterButton = styled.div<{isActive?: boolean}>(({isActive}) => ({
     backgroundColor: theme.backgroundWash,
   },
 }));
+
+const FilterCheckbox = styled(Checkbox)({
+  maxWidth: 600,
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+});

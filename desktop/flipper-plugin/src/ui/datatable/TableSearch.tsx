@@ -9,7 +9,7 @@
 
 import {MenuOutlined} from '@ant-design/icons';
 import {Button, Dropdown, Input} from 'antd';
-import React, {memo, useCallback} from 'react';
+import React, {memo, useCallback, useMemo} from 'react';
 import styled from '@emotion/styled';
 
 import {Layout} from '../Layout';
@@ -18,11 +18,13 @@ import type {DataTableDispatch} from './DataTableManager';
 
 export const TableSearch = memo(function TableSearch({
   searchValue,
+  useRegex,
   dispatch,
   extraActions,
   contextMenu,
 }: {
   searchValue: string;
+  useRegex: boolean;
   dispatch: DataTableDispatch<any>;
   extraActions?: React.ReactElement;
   contextMenu: undefined | (() => JSX.Element);
@@ -33,6 +35,25 @@ export const TableSearch = memo(function TableSearch({
     },
     [dispatch],
   );
+  const onToggleRegex = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      e.preventDefault();
+      dispatch({type: 'toggleUseRegex'});
+    },
+    [dispatch],
+  );
+  const regexError = useMemo(() => {
+    if (!useRegex || !searchValue) {
+      return;
+    }
+    try {
+      new RegExp(searchValue);
+    } catch (e) {
+      return '' + e;
+    }
+  }, [useRegex, searchValue]);
+
   return (
     <Searchbar gap>
       <Input.Search
@@ -40,6 +61,27 @@ export const TableSearch = memo(function TableSearch({
         placeholder="Search..."
         onSearch={onSearch}
         value={searchValue}
+        suffix={
+          <RegexButton
+            size="small"
+            onClick={onToggleRegex}
+            style={
+              useRegex
+                ? {
+                    background: regexError
+                      ? theme.errorColor
+                      : theme.successColor,
+                    color: theme.white,
+                  }
+                : {
+                    color: theme.disabledColor,
+                  }
+            }
+            type="default"
+            title={regexError || 'Search using Regex'}>
+            .*
+          </RegexButton>
+        }
         onChange={(e) => {
           onSearch(e.target.value);
         }}
@@ -59,8 +101,25 @@ export const TableSearch = memo(function TableSearch({
 const Searchbar = styled(Layout.Horizontal)({
   backgroundColor: theme.backgroundWash,
   padding: theme.space.small,
+  '.ant-input-affix-wrapper': {
+    height: 32,
+  },
   '.ant-btn': {
     padding: `${theme.space.tiny}px ${theme.space.small}px`,
     background: 'transparent',
+  },
+});
+
+const RegexButton = styled(Button)({
+  padding: '0px !important',
+  borderRadius: 4,
+  marginRight: -6,
+  marginLeft: 4,
+  lineHeight: '20px',
+  width: 20,
+  height: 20,
+  border: 'none',
+  '& :hover': {
+    color: theme.primaryColor,
   },
 });

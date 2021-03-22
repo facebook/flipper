@@ -307,9 +307,9 @@ test('compute filters', () => {
   const data = [coffee, espresso, meet];
 
   // results in empty filter
-  expect(computeDataTableFilter('', [])).toBeUndefined();
+  expect(computeDataTableFilter('', false, [])).toBeUndefined();
   expect(
-    computeDataTableFilter('', [
+    computeDataTableFilter('', false, [
       {
         key: 'title',
         filters: [
@@ -324,32 +324,52 @@ test('compute filters', () => {
   ).toBeUndefined();
 
   {
-    const filter = computeDataTableFilter('tEsT', [])!;
+    const filter = computeDataTableFilter('tEsT', false, [])!;
     expect(data.filter(filter)).toEqual([]);
   }
 
   {
-    const filter = computeDataTableFilter('EE', [])!;
+    const filter = computeDataTableFilter('EE', false, [])!;
     expect(data.filter(filter)).toEqual([coffee, meet]);
   }
 
   {
-    const filter = computeDataTableFilter('D', [])!;
+    const filter = computeDataTableFilter('D', false, [])!;
     expect(data.filter(filter)).toEqual([coffee]);
   }
 
   {
-    const filter = computeDataTableFilter('true', [])!;
+    // regex, positive (mind the double escaping of \\b)
+    const filter = computeDataTableFilter('..t', true, [])!;
+    expect(data.filter(filter)).toEqual([meet]);
+  }
+  {
+    // regex, words with 6 chars
+    const filter = computeDataTableFilter('\\w{6}', true, [])!;
+    expect(data.filter(filter)).toEqual([coffee, espresso]);
+  }
+  {
+    // no match
+    const filter = computeDataTableFilter('\\w{18}', true, [])!;
+    expect(data.filter(filter)).toEqual([]);
+  }
+  {
+    // invalid regex
+    const filter = computeDataTableFilter('bla/[', true, [])!;
+    expect(data.filter(filter)).toEqual([]);
+  }
+  {
+    const filter = computeDataTableFilter('true', false, [])!;
     expect(data.filter(filter)).toEqual([coffee]);
   }
 
   {
-    const filter = computeDataTableFilter('false', [])!;
+    const filter = computeDataTableFilter('false', false, [])!;
     expect(data.filter(filter)).toEqual([espresso, meet]);
   }
 
   {
-    const filter = computeDataTableFilter('EE', [
+    const filter = computeDataTableFilter('EE', false, [
       {
         key: 'level',
         filters: [
@@ -364,7 +384,7 @@ test('compute filters', () => {
     expect(data.filter(filter)).toEqual([meet]);
   }
   {
-    const filter = computeDataTableFilter('EE', [
+    const filter = computeDataTableFilter('EE', false, [
       {
         key: 'level',
         filters: [
@@ -384,7 +404,7 @@ test('compute filters', () => {
     expect(data.filter(filter)).toEqual([coffee, meet]);
   }
   {
-    const filter = computeDataTableFilter('', [
+    const filter = computeDataTableFilter('', false, [
       {
         key: 'level',
         filters: [
@@ -404,7 +424,7 @@ test('compute filters', () => {
     expect(data.filter(filter)).toEqual([coffee, espresso]);
   }
   {
-    const filter = computeDataTableFilter('', [
+    const filter = computeDataTableFilter('', false, [
       {
         key: 'done',
         filters: [
@@ -420,7 +440,7 @@ test('compute filters', () => {
   }
   {
     // nothing selected anything will not filter anything out for that column
-    const filter = computeDataTableFilter('', [
+    const filter = computeDataTableFilter('', false, [
       {
         key: 'level',
         filters: [
@@ -440,7 +460,7 @@ test('compute filters', () => {
     expect(filter).toBeUndefined();
   }
   {
-    const filter = computeDataTableFilter('', [
+    const filter = computeDataTableFilter('', false, [
       {
         key: 'level',
         filters: [
@@ -460,7 +480,7 @@ test('compute filters', () => {
     expect(data.filter(filter)).toEqual([coffee, espresso, meet]);
   }
   {
-    const filter = computeDataTableFilter('', [
+    const filter = computeDataTableFilter('', false, [
       {
         key: 'level',
         filters: [
@@ -485,7 +505,7 @@ test('compute filters', () => {
     expect(data.filter(filter)).toEqual([espresso]);
   }
   {
-    const filter = computeDataTableFilter('nonsense', [
+    const filter = computeDataTableFilter('nonsense', false, [
       {
         key: 'level',
         filters: [

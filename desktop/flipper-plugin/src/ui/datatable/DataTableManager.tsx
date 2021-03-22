@@ -12,7 +12,7 @@ import {Percentage} from '../../utils/widthUtils';
 import {MutableRefObject, Reducer} from 'react';
 import {DataSource} from '../../state/DataSource';
 import {DataSourceVirtualizer} from './DataSourceRenderer';
-import produce, {immerable, original} from 'immer';
+import produce, {castDraft, immerable, original} from 'immer';
 
 export type OnColumnResize = (id: string, size: number | Percentage) => void;
 export type Sorting<T = any> = {
@@ -32,6 +32,7 @@ const emptySelection: Selection = {
 type PersistedState = {
   /** Active search value */
   search: string;
+  useRegex: boolean;
   /** current selection, describes the index index in the datasources's current output (not window!) */
   selection: {current: number; items: number[]};
   /** The currently applicable sorting, if any */
@@ -77,7 +78,8 @@ type DataManagerActions<T> =
   | Action<'removeColumnFilter', {column: keyof T; index: number}>
   | Action<'toggleColumnFilter', {column: keyof T; index: number}>
   | Action<'setColumnFilterFromSelection', {column: keyof T}>
-  | Action<'appliedInitialScroll'>;
+  | Action<'appliedInitialScroll'>
+  | Action<'toggleUseRegex'>;
 
 type DataManagerConfig<T> = {
   dataSource: DataSource<T>;
@@ -96,6 +98,7 @@ type DataManagerState<T> = {
   sorting: Sorting<T> | undefined;
   selection: Selection;
   searchValue: string;
+  useRegex: boolean;
 };
 
 export type DataTableReducer<T> = Reducer<
@@ -104,17 +107,17 @@ export type DataTableReducer<T> = Reducer<
 >;
 export type DataTableDispatch<T = any> = React.Dispatch<DataManagerActions<T>>;
 
-export const dataTableManagerReducer = produce(function <T>(
-  draft: DataManagerState<T>,
-  action: DataManagerActions<T>,
-) {
+export const dataTableManagerReducer = produce<
+  DataManagerState<any>,
+  [DataManagerActions<any>]
+>(function (draft, action) {
   const config = original(draft.config)!;
   switch (action.type) {
     case 'reset': {
       draft.columns = computeInitialColumns(config.defaultColumns);
       draft.sorting = undefined;
       draft.searchValue = '';
-      draft.selection = emptySelection;
+      draft.selection = castDraft(emptySelection);
       break;
     }
     case 'resizeColumn': {
@@ -142,27 +145,26 @@ export const dataTableManagerReducer = produce(function <T>(
       draft.searchValue = action.value;
       break;
     }
+    case 'toggleUseRegex': {
+      draft.useRegex = !draft.useRegex;
+      break;
+    }
     case 'selectItem': {
       const {nextIndex, addToSelection} = action;
-      draft.selection = computeSetSelection(
-        draft.selection,
-        nextIndex,
-        addToSelection,
+      draft.selection = castDraft(
+        computeSetSelection(draft.selection, nextIndex, addToSelection),
       );
       break;
     }
     case 'addRangeToSelection': {
       const {start, end, allowUnselect} = action;
-      draft.selection = computeAddRangeToSelection(
-        draft.selection,
-        start,
-        end,
-        allowUnselect,
+      draft.selection = castDraft(
+        computeAddRangeToSelection(draft.selection, start, end, allowUnselect),
       );
       break;
     }
     case 'clearSelection': {
-      draft.selection = emptySelection;
+      draft.selection = castDraft(emptySelection);
       break;
     }
     case 'addColumnFilter': {
@@ -188,7 +190,10 @@ export const dataTableManagerReducer = produce(function <T>(
       break;
     }
     case 'setColumnFilterFromSelection': {
-      const items = getSelectedItems(config.dataSource, draft.selection);
+      const items = getSelectedItems(
+        config.dataSource as DataSource,
+        draft.selection,
+      );
       items.forEach((item, index) => {
         addColumnFilter(
           draft.columns,
@@ -207,7 +212,7 @@ export const dataTableManagerReducer = produce(function <T>(
       throw new Error('Unknown action ' + (action as any).type);
     }
   }
-}) as any;
+});
 
 /**
  * Public only imperative convienience API for DataTable
@@ -301,6 +306,7 @@ export function createInitialState<T>(
         }
       : emptySelection,
     searchValue: prefs?.search ?? '',
+    useRegex: prefs?.useRegex ?? false,
   };
   // @ts-ignore
   res.config[immerable] = false; // optimization: never proxy anything in config
@@ -315,13 +321,13 @@ function addColumnFilter<T>(
   disableOthers: boolean = false,
 ): void {
   const column = columns.find((c) => c.key === columnId)!;
-  const filterValue = value.toLowerCase();
+  const filterValue = String(value).toLowerCase();
   const existing = column.filters!.find((c) => c.value === filterValue);
   if (existing) {
     existing.enabled = true;
   } else {
     column.filters!.push({
-      label: value,
+      label: String(value),
       value: filterValue,
       enabled: true,
     });
@@ -363,6 +369,7 @@ export function savePreferences(
   }
   const prefs: PersistedState = {
     search: state.searchValue,
+    useRegex: state.useRegex,
     selection: {
       current: state.selection.current,
       items: Array.from(state.selection.items),
@@ -411,9 +418,11 @@ function computeInitialColumns(
 
 export function computeDataTableFilter(
   searchValue: string,
+  useRegex: boolean,
   columns: DataTableColumn[],
 ) {
   const searchString = searchValue.toLowerCase();
+  const searchRegex = useRegex ? safeCreateRegExp(searchValue) : undefined;
   // the columns with an active filter are those that have filters defined,
   // with at least one enabled
   const filteringColumns = columns.filter((c) =>
@@ -438,9 +447,19 @@ export function computeDataTableFilter(
       }
     }
     return Object.values(item).some((v) =>
-      String(v).toLowerCase().includes(searchString),
+      searchRegex
+        ? searchRegex.test(String(v))
+        : String(v).toLowerCase().includes(searchString),
     );
   };
+}
+
+export function safeCreateRegExp(source: string): RegExp | undefined {
+  try {
+    return new RegExp(source);
+  } catch (_e) {
+    return undefined;
+  }
 }
 
 export function computeSetSelection(
