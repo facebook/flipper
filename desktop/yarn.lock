@@ -2537,10 +2537,10 @@
   resolved "https://registry.yarnpkg.com/@types/retry/-/retry-0.12.0.tgz#2b35eccfcee7d38cd72ad99232fbd58bffb3c84d"
   integrity sha512-wWKOClTTiizcZhXnPY4wikVAwmdYHp8q6DmC+EJUzAMsycb7HB32Kh9RN4+0gExjmPmZSAQjgURXIGATPegAvA==
 
-"@types/rsocket-core@*", "@types/rsocket-core@^0.0.5":
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/@types/rsocket-core/-/rsocket-core-0.0.5.tgz#5c5605af821a56cbce1777a420583511f3d31974"
-  integrity sha512-ARlWAs7kJGFezpaK7wGZWB5XhEqMP4NlWBqae43goLR31fLU/VmaCmlIgVOFxj5xwNO6EcUlFQBZNVNxr3Qk3Q==
+"@types/rsocket-core@*", "@types/rsocket-core@^0.0.6":
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/@types/rsocket-core/-/rsocket-core-0.0.6.tgz#a1e9febf2a21fc14fb943858740d92f430d560e1"
+  integrity sha512-jL5ZTuUMa8qDZp+1wdmE3IP5teavMQHP++5mPCCbXwEywqBLzKUrZOy0ausaYzd50wRqcBYCsO9o5UFif4fcyQ==
   dependencies:
     "@types/node" "*"
     "@types/rsocket-flowable" "*"
