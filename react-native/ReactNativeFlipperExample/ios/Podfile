@@ -5,7 +5,10 @@ platform :ios, '10.0'
 
 target 'ReactNativeFlipperExample' do
   config = use_native_modules!
-  use_react_native!(:path => config["reactNativePath"])
+  use_react_native!(
+    :path => config["reactNativePath"],
+    :hermes_enabled => true
+  )
 
   target 'ReactNativeFlipperExampleTests' do
     inherit! :complete
@@ -19,14 +22,5 @@ target 'ReactNativeFlipperExample' do
   use_flipper!({ 'Flipper' => '0.79.0' })
   post_install do |installer|
     flipper_post_install(installer)
-  end
-end
-
-target 'ReactNativeFlipperExample-tvOS' do
-  # Pods for ReactNativeFlipperExample-tvOS
-
-  target 'ReactNativeFlipperExample-tvOSTests' do
-    inherit! :search_paths
-    # Pods for testing
   end
 end
