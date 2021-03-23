@@ -26,7 +26,7 @@ const DEFAULT_PACKLIST: &str = include_str!("packlist.yaml");
 // This is to ensure that all progress bar prefixes are aligned.
 const PROGRESS_PREFIX_LEN: usize = 24;
 
-type PackListPlatform = BTreeMap<PackType, Vec<path::PathBuf>>;
+type PackListPlatform = BTreeMap<PackType, Vec<String>>;
 
 #[derive(Debug, serde::Deserialize)]
 struct PackListSpec {
@@ -91,7 +91,11 @@ fn pack(
             // MacOS uses symlinks for bundling multiple framework versions and pointing
             // to the "Current" one.
             tar.follow_symlinks(false);
-            pack_platform(platform, &base_dir, pack_files, pack_type, &mut tar)?;
+            let pack_platform_fn = match packlist_spec.mode {
+                types::PackMode::Exact => pack_platform_exact,
+                types::PackMode::Glob => pack_platform_glob,
+            };
+            pack_platform_fn(platform, &base_dir, pack_files, pack_type, &mut tar)?;
             pb.inc(1);
             tar.finish()?;
             pb.inc(1);
@@ -112,10 +116,52 @@ fn platform_base_dir(dist_dir: &path::Path, platform: Platform) -> path::PathBuf
     }
 }
 
-fn pack_platform<P: AsRef<path::Path>>(
+fn pack_platform_glob(
     platform: Platform,
     base_dir: &path::Path,
-    pack_files: &[P],
+    pack_files: &[String],
+    pack_type: PackType,
+    tar_builder: &mut tar::Builder<File>,
+) -> Result<()> {
+    let mut ov = ignore::overrides::OverrideBuilder::new(base_dir);
+    for f in pack_files {
+        ov.add(f.as_ref())?;
+    }
+
+    let walker = ignore::WalkBuilder::new(base_dir)
+        // Otherwise we'll include .ignore files, etc.
+        .standard_filters(false)
+        // This is a big restriction. We won't traverse directories at all.
+        // If we did, we could no longer make use of tar's `append_dir_all`
+        // method which does a lot of clever stuff about symlinks, etc.
+        .max_depth(Some(1))
+        .overrides(ov.build()?)
+        .build();
+
+    // The first entry is the root dir, which we don't care about.
+    for f in walker.into_iter().skip(1) {
+        let dir_entry = f?;
+        let path = dir_entry.file_name();
+        let full_path = path::Path::new(&base_dir).join(&path);
+        if !full_path.exists() {
+            bail!(error::Error::MissingPackFile(
+                platform, pack_type, full_path,
+            ));
+        }
+        if full_path.is_file() {
+            tar_builder.append_path_with_name(full_path, &path)?;
+        } else if full_path.is_dir() {
+            tar_builder.append_dir_all(path, full_path)?;
+        }
+    }
+
+    Ok(())
+}
+
+fn pack_platform_exact(
+    platform: Platform,
+    base_dir: &path::Path,
+    pack_files: &[String],
     pack_type: PackType,
     tar_builder: &mut tar::Builder<File>,
 ) -> Result<()> {
