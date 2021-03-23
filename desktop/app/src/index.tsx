@@ -49,7 +49,7 @@ export {shouldParseAndroidLog} from './utils/crashReporterUtility';
 export {deconstructClientId} from './utils/clientUtils';
 export {default as isProduction} from './utils/isProduction';
 export {createTablePlugin} from './createTablePlugin';
-export {default as DetailSidebar} from './chrome/DetailSidebar';
+export {DetailSidebar} from 'flipper-plugin';
 export {default as Device} from './devices/BaseDevice';
 export {default as AndroidDevice} from './devices/AndroidDevice';
 export {default as MetroDevice} from './devices/MetroDevice';

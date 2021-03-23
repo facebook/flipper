@@ -14,14 +14,18 @@ import {useDispatch, useStore} from '../utils/useStore';
 import {ContentContainer} from '../sandy-chrome/ContentContainer';
 import {Layout, _Sidebar} from 'flipper-plugin';
 
-type OwnProps = {
+export type DetailSidebarProps = {
   children: any;
   width?: number;
   minWidth?: number;
 };
 
 /* eslint-disable react-hooks/rules-of-hooks */
-export default function DetailSidebar({children, width, minWidth}: OwnProps) {
+export function DetailSidebarImpl({
+  children,
+  width,
+  minWidth,
+}: DetailSidebarProps) {
   const [domNode, setDomNode] = useState(
     document.getElementById('detailsSidebar'),
   );
