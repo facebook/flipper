@@ -55,6 +55,7 @@ export {
   NuxManagerContext as _NuxManagerContext,
   createNuxManager as _createNuxManager,
 } from './ui/NUX';
+export {Sidebar as _Sidebar} from './ui/Sidebar';
 
 export {renderReactRoot} from './utils/renderReactRoot';
 export {

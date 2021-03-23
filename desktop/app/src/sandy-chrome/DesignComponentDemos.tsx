@@ -230,6 +230,16 @@ const demos: PreviewProps[] = [
         'true / number (0)',
         'Set the spacing between children. If just set, theme.space.small will be used.',
       ],
+      [
+        'resizable',
+        'true / undefined',
+        'If set, this split container will be resizable by the user. It is recommend to set width, maxWidth, minWidth respectively height, maxHeight, minHeight properties as well.',
+      ],
+      [
+        'width / height / minWidth  / minHeight / maxWidth / maxHeight',
+        'number / undefined',
+        'These dimensions in pixels will be used for clamping if the layout is marked as resizable',
+      ],
     ],
     demos: {
       'Layout.Top': (
@@ -272,19 +282,19 @@ const demos: PreviewProps[] = [
           </Layout.Left>
         </Layout.Container>
       ),
-      'Layout.Right + Layout.ScrollContainer': (
+      'Layout.Right resizable + Layout.ScrollContainer': (
         <Layout.Container style={{height: 150}}>
-          <Layout.Right>
+          <Layout.Right resizable>
             <Layout.ScrollContainer>{largeChild}</Layout.ScrollContainer>
-            {aFixedWidthBox}
+            {aDynamicBox}
           </Layout.Right>
         </Layout.Container>
       ),
-      'Layout.Bottom + Layout.ScrollContainer': (
+      'Layout.Bottom resizable + Layout.ScrollContainer': (
         <Layout.Container style={{height: 150}}>
-          <Layout.Bottom>
+          <Layout.Bottom resizable height={50} minHeight={20}>
             <Layout.ScrollContainer>{largeChild}</Layout.ScrollContainer>
-            {aFixedHeightBox}
+            {aDynamicBox}
           </Layout.Bottom>
         </Layout.Container>
       ),

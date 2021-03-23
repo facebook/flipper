@@ -7,44 +7,40 @@
  * @format
  */
 
-import {theme, _Interactive, _InteractiveProps} from 'flipper-plugin';
-import FlexColumn from './FlexColumn';
-import {colors} from './colors';
-import {Component} from 'react';
+import {Layout} from './Layout';
+import {Component, ReactNode} from 'react';
 import styled from '@emotion/styled';
 import {Property} from 'csstype';
 import React from 'react';
+import {MoreOutlined} from '@ant-design/icons';
+import {Interactive, InteractiveProps} from './Interactive';
+import {theme} from './theme';
 
-const SidebarInteractiveContainer = styled(_Interactive)<_InteractiveProps>({
-  flex: 'none',
+const SidebarInteractiveContainer = styled(Interactive)<InteractiveProps>({
+  display: 'flex',
+  flex: 1,
 });
 SidebarInteractiveContainer.displayName = 'Sidebar:SidebarInteractiveContainer';
 
 type SidebarPosition = 'left' | 'top' | 'right' | 'bottom';
 
-const borderStyle = '1px solid ' + theme.dividerColor;
+const borderStyle = `1px solid ${theme.dividerColor}`;
 
-const SidebarContainer = styled(FlexColumn)<{
+const SidebarContainer = styled(Layout.Container)<{
   position: 'right' | 'top' | 'left' | 'bottom';
-  backgroundColor?: Property.BackgroundClip;
   overflow?: boolean;
   unstyled?: boolean;
 }>((props) => ({
   ...(props.unstyled
     ? undefined
     : {
-        backgroundColor:
-          props.backgroundColor || colors.macOSTitleBarBackgroundBlur,
         borderLeft: props.position === 'right' ? borderStyle : 'none',
         borderTop: props.position === 'bottom' ? borderStyle : 'none',
         borderRight: props.position === 'left' ? borderStyle : 'none',
         borderBottom: props.position === 'top' ? borderStyle : 'none',
+        backgroundColor: theme.backgroundDefault,
       }),
-  height: '100%',
-  overflowX: 'hidden',
-  overflowY: 'auto',
-  textOverflow: props.overflow ? 'ellipsis' : 'auto',
-  whiteSpace: props.overflow ? 'nowrap' : 'normal',
+  flex: 1,
 }));
 SidebarContainer.displayName = 'Sidebar:SidebarContainer';
 
@@ -79,11 +75,6 @@ type SidebarProps = {
    * Maximum sidebar height. Only used for top/bottom sidebars.
    */
   maxHeight?: number;
-
-  /**
-   * Background color.
-   */
-  backgroundColor?: Property.BackgroundColor;
   /**
    * Callback when the sidebar size ahs changed.
    */
@@ -96,6 +87,10 @@ type SidebarProps = {
    * Class name to customise styling.
    */
   className?: string;
+  /**
+   * use a Sandy themed large gutter
+   */
+  gutter?: boolean;
 };
 
 type SidebarState = {
@@ -106,9 +101,8 @@ type SidebarState = {
 
 /**
  * A resizable sidebar.
- * @deprecated use Layout.Top / Right / Bottom / Left from flipper-plugin instead
  */
-export default class Sidebar extends Component<SidebarProps, SidebarState> {
+export class Sidebar extends Component<SidebarProps, SidebarState> {
   constructor(props: SidebarProps, context: Object) {
     super(props, context);
     this.state = {
@@ -142,7 +136,7 @@ export default class Sidebar extends Component<SidebarProps, SidebarState> {
   };
 
   render() {
-    const {backgroundColor, onResize, position, children} = this.props;
+    const {onResize, position, children, gutter} = this.props;
     let height: number | undefined;
     let minHeight: number | undefined;
     let maxHeight: number | undefined;
@@ -166,7 +160,7 @@ export default class Sidebar extends Component<SidebarProps, SidebarState> {
     }
 
     const horizontal = position === 'left' || position === 'right';
-    const gutterWidth = 0;
+    const gutterWidth = gutter ? theme.space.large : 0;
 
     if (horizontal) {
       width = width == null ? 200 : width;
@@ -194,14 +188,88 @@ export default class Sidebar extends Component<SidebarProps, SidebarState> {
         minHeight={minHeight}
         maxHeight={maxHeight}
         height={
-          !horizontal ? (onResize ? height : this.state.height) : undefined
+          !horizontal
+            ? onResize
+              ? height
+              : this.state.height
+            : gutter
+            ? undefined
+            : '100%'
         }
         resizable={resizable}
-        onResize={this.onResize}>
-        <SidebarContainer position={position} backgroundColor={backgroundColor}>
-          {children}
+        onResize={this.onResize}
+        gutterWidth={gutter ? theme.space.large : undefined}>
+        <SidebarContainer position={position} unstyled={gutter}>
+          {gutter ? (
+            <GutterWrapper position={position}>{children}</GutterWrapper>
+          ) : (
+            children
+          )}
         </SidebarContainer>
       </SidebarInteractiveContainer>
     );
   }
 }
+
+const GutterWrapper = ({
+  position,
+  children,
+}: {
+  position: SidebarPosition;
+  children: ReactNode;
+}) => {
+  switch (position) {
+    case 'right':
+      return (
+        <Layout.Left>
+          <VerticalGutter enabled={!!children} />
+          {children}
+        </Layout.Left>
+      );
+    case 'left':
+      return (
+        <Layout.Right>
+          {children}
+          <VerticalGutter enabled={!!children} />
+        </Layout.Right>
+      );
+    case 'bottom':
+      // TODO: needs rotated styling
+      return (
+        <Layout.Top>
+          <VerticalGutter enabled={!!children} />
+          {children}
+        </Layout.Top>
+      );
+    case 'top':
+      // TODO: needs rotated styling
+      return (
+        <Layout.Bottom>
+          {children}
+          <VerticalGutter enabled={!!children} />
+        </Layout.Bottom>
+      );
+  }
+};
+
+const VerticalGutterContainer = styled('div')<{enabled: boolean}>(
+  ({enabled}) => ({
+    width: theme.space.large,
+    minWidth: theme.space.large,
+    cursor: enabled ? undefined : 'default', // hide cursor from interactive container
+    color: enabled ? theme.textColorPlaceholder : theme.backgroundWash,
+    fontSize: '16px',
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    background: theme.backgroundWash,
+    ':hover': {
+      background: enabled ? theme.dividerColor : undefined,
+    },
+  }),
+);
+const VerticalGutter = ({enabled}: {enabled: boolean}) => (
+  <VerticalGutterContainer enabled={enabled}>
+    <MoreOutlined />
+  </VerticalGutterContainer>
+);
