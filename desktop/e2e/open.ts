@@ -30,8 +30,8 @@ async function testSuite(app: Application) {
   await app.client.waitUntilWindowLoaded();
   app.browserWindow.focus();
   await app.client.waitUntilTextExists('html', 'Changelog');
-  await app.client.$('div[type="primary"]=Close').click();
-  await app.client.$('div=Manage Plugins').click();
+  (await app.client.$('div[type="primary"]=Close')).click();
+  (await app.client.$('div=Manage Plugins')).click();
 }
 
 export default function test() {
@@ -54,7 +54,7 @@ export default function test() {
     })
     .then(function (title) {
       // Verify the window's title
-      assert.equal(title, 'Flipper');
+      assert.equal(title.includes('Flipper'), true);
     })
     .then(async function () {
       await testSuite(app);
