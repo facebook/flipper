@@ -160,7 +160,7 @@ async function afterPack(context: AfterPackContext) {
   // and property names being present.
   type Mutable<T> = {-readonly [P in keyof T]: T[P]};
   const originalPackager = Object.assign({}, context.packager);
-  const packager = context.packager as WinPackager;
+  const packager = (context.packager as unknown) as WinPackager;
   const appInfo: Mutable<AppInfo> = packager.appInfo;
   const exeFileName = `${packager.appInfo.productFilename}.exe`;
   appInfo.version = FIX_RELEASE_VERSION;
