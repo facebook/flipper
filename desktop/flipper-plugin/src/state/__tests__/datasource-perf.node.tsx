@@ -32,7 +32,7 @@ function generateTodos(amount: number): Todo[] {
 
 const defaultFilter = (t: Todo) => !t.done;
 
-type DataSourceish = DataSource<Todo> & FakeDataSource<Todo>;
+type DataSourceish = DataSource<Todo> | FakeDataSource<Todo>;
 
 // NOTE: this run in jest, which is not optimal for perf, but should give some idea
 // make sure to use the `yarn watch` script in desktop root, so that the garbage collector is exposed
@@ -48,8 +48,8 @@ test.skip('run perf test', () => {
 
   const measurements: any = {};
 
-  const smallSize = 100000;
-  const largeSize = 200000;
+  const smallSize = 50000;
+  const largeSize = 100000;
   const smallset = generateTodos(smallSize);
   const largeset = generateTodos(largeSize);
 
@@ -202,7 +202,7 @@ class FakeDataSource<T> {
     (this.data as any)[index] = v;
   }
 
-  remove(index: number) {
+  delete(index: number) {
     this.data = this.data.slice();
     (this.data as any).splice(index, 1);
   }
