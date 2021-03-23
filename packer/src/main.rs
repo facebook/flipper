@@ -20,7 +20,7 @@ use std::collections::BTreeMap;
 use std::fs::File;
 use std::io::{self, BufReader, BufWriter, Write};
 use std::path;
-use types::{HashSum, PackType, Platform};
+use types::{HashSum, PackMode, PackType, Platform};
 
 const DEFAULT_PACKLIST: &str = include_str!("packlist.yaml");
 // This is to ensure that all progress bar prefixes are aligned.
@@ -29,7 +29,13 @@ const PROGRESS_PREFIX_LEN: usize = 24;
 type PackListPlatform = BTreeMap<PackType, Vec<path::PathBuf>>;
 
 #[derive(Debug, serde::Deserialize)]
-struct PackList(pub BTreeMap<Platform, PackListPlatform>);
+struct PackListSpec {
+    mode: PackMode,
+    files: PackListPlatform,
+}
+
+#[derive(Debug, serde::Deserialize)]
+struct PackList(pub BTreeMap<Platform, PackListSpec>);
 
 #[derive(Debug, serde::Serialize)]
 struct PackFile {
@@ -61,16 +67,18 @@ fn pack(
     output_directory: &std::path::Path,
 ) -> Result<Vec<(PackType, path::PathBuf)>> {
     let pb = default_progress_bar(pack_list.0.len() as u64 * 2 - 1);
+    let base_dir = platform_base_dir(dist_dir, platform);
     pb.set_prefix(&format!(
         "{:width$}",
         "Packing archives",
         width = PROGRESS_PREFIX_LEN
     ));
-    let packtype_paths = pack_list
+    let packlist_spec = pack_list
         .0
         .get(&platform)
         .ok_or(error::Error::MissingPlatformDefinition(platform))?;
-    let res = packtype_paths
+    let files = &packlist_spec.files;
+    let res = files
         .into_par_iter()
         .map(|(&pack_type, pack_files)| {
             let output_path = path::Path::new(output_directory).join(format!("{}.tar", pack_type));
@@ -83,7 +91,7 @@ fn pack(
             // MacOS uses symlinks for bundling multiple framework versions and pointing
             // to the "Current" one.
             tar.follow_symlinks(false);
-            pack_platform(platform, dist_dir, pack_files, pack_type, &mut tar)?;
+            pack_platform(platform, &base_dir, pack_files, pack_type, &mut tar)?;
             pb.inc(1);
             tar.finish()?;
             pb.inc(1);
@@ -96,19 +104,21 @@ fn pack(
     res
 }
 
+fn platform_base_dir(dist_dir: &path::Path, platform: Platform) -> path::PathBuf {
+    match platform {
+        Platform::Mac => path::Path::new(dist_dir).join("mac"),
+        Platform::Linux => path::Path::new(dist_dir).join("linux-unpacked"),
+        Platform::Windows => path::Path::new(dist_dir).join("win-unpacked"),
+    }
+}
+
 fn pack_platform<P: AsRef<path::Path>>(
     platform: Platform,
-    dist_dir: &std::path::Path,
+    base_dir: &path::Path,
     pack_files: &[P],
     pack_type: PackType,
     tar_builder: &mut tar::Builder<File>,
 ) -> Result<()> {
-    let base_dir = match platform {
-        Platform::Mac => path::Path::new(dist_dir).join("mac"),
-        Platform::Linux => path::Path::new(dist_dir).join("linux-unpacked"),
-        Platform::Windows => path::Path::new(dist_dir).join("win-unpacked"),
-    };
-
     for f in pack_files {
         let full_path = path::Path::new(&base_dir).join(f);
         if !full_path.exists() {
