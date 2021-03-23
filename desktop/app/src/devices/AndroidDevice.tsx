@@ -250,12 +250,12 @@ export async function launchEmulator(name: string, coldBoot: boolean = false) {
           },
         );
         child.stderr.on('data', (data) => {
-          console.error(`Android emulator error: ${data}`);
+          console.warn(`Android emulator stderr: ${data}`);
         });
-        child.on('error', (e) => console.error(e));
+        child.on('error', (e) => console.warn('Android emulator error:', e));
       } else {
         throw new Error('Could not get emulator path');
       }
     })
-    .catch((e) => console.error(e));
+    .catch((e) => console.error('Android emulator startup failed:', e));
 }
