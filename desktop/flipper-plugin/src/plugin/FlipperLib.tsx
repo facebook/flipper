@@ -12,6 +12,7 @@ import {RealFlipperDevice} from './DevicePlugin';
 import {NormalizedMenuEntry} from './MenuEntry';
 import {RealFlipperClient} from './Plugin';
 import {Notification} from './Notification';
+import {DetailSidebarProps} from '../ui/DetailSidebar';
 
 /**
  * This interface exposes all global methods for which an implementation will be provided by Flipper itself
@@ -35,6 +36,9 @@ export interface FlipperLib {
   ): void;
   writeTextToClipboard(text: string): void;
   showNotification(pluginKey: string, notification: Notification): void;
+  DetailsSidebarImplementation?(
+    props: DetailSidebarProps,
+  ): React.ReactElement | null;
 }
 
 let flipperLibInstance: FlipperLib | undefined;

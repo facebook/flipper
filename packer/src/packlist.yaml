@@ -1,50 +1,28 @@
 mac:
-  frameworks:
-    - Flipper.app/Contents/Frameworks/
-    - Flipper.app/Contents/MacOS
-    - Flipper.app/Contents/PkgInfo
-  core:
-    - Flipper.app/Contents/Resources
-    - Flipper.app/Contents/Info.plist
+  mode: exact
+  files:
+    frameworks:
+      - Flipper.app/Contents/Frameworks/
+      - Flipper.app/Contents/MacOS
+      - Flipper.app/Contents/PkgInfo
+    core:
+      - Flipper.app/Contents/Resources
+      - Flipper.app/Contents/Info.plist
 
 linux:
-  frameworks:
-    - chrome-sandbox
-    - chrome_100_percent.pak
-    - chrome_200_percent.pak
-    - flipper
-    - icudtl.dat
-    - libEGL.so
-    - libffmpeg.so
-    - libGLESv2.so
-    - libvk_swiftshader.so
-    - libvulkan.so.1
-    - locales
-    - resources.pak
-    - snapshot_blob.bin
-    - swiftshader
-    - v8_context_snapshot.bin
-    - vk_swiftshader_icd.json
-  core:
-    - resources
+  mode: glob
+  files:
+    frameworks:
+      - '!resources/'
+    core:
+      - '!*'
+      - resources
 
 windows:
-  frameworks:
-    - chrome_100_percent.pak
-    - chrome_200_percent.pak
-    - d3dcompiler_47.dll
-    - ffmpeg.dll
-    - Flipper.exe
-    - icudtl.dat
-    - libEGL.dll
-    - libGLESv2.dll
-    - locales
-    - resources.pak
-    - snapshot_blob.bin
-    - swiftshader
-    - v8_context_snapshot.bin
-    - vk_swiftshader.dll
-    - vk_swiftshader_icd.json
-    - vulkan-1.dll
-  core:
-    - resources
+  mode: glob
+  files:
+    frameworks:
+      - '!resources/'
+    core:
+      - '!*'
+      - resources

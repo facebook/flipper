@@ -15,7 +15,7 @@ import {
 } from './ui';
 import FlexColumn from './ui/components/FlexColumn';
 import Button from './ui/components/Button';
-import DetailSidebar from './chrome/DetailSidebar';
+import {DetailSidebar} from 'flipper-plugin';
 import {FlipperPlugin} from './plugin';
 import SearchableTable_immutable from './ui/components/searchable/SearchableTable_immutable';
 import textContent from './utils/textContent';

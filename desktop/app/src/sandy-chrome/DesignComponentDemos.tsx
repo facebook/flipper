@@ -213,7 +213,7 @@ const demos: PreviewProps[] = [
   {
     title: 'Layout.Top|Left|Right|Bottom',
     description:
-      "Divides all available space over two children. The (top|left|right|bottom)-most first child will keep it's own dimensions, and positioned (top|left|right|bottom) of the other child. All remaining space will be assigned to the remaining child.",
+      "Divides all available space over two children. The (top|left|right|bottom)-most first child will keep it's own dimensions, and positioned (top|left|right|bottom) of the other child. All remaining space will be assigned to the remaining child. If you are using a Layout.Right at the top level of your plugin, consider using DetailSidebar component instead, which will move its children to the right sidebar of Flipper.",
     props: [
       [
         'scrollable',
@@ -229,6 +229,16 @@ const demos: PreviewProps[] = [
         'gap',
         'true / number (0)',
         'Set the spacing between children. If just set, theme.space.small will be used.',
+      ],
+      [
+        'resizable',
+        'true / undefined',
+        'If set, this split container will be resizable by the user. It is recommend to set width, maxWidth, minWidth respectively height, maxHeight, minHeight properties as well.',
+      ],
+      [
+        'width / height / minWidth  / minHeight / maxWidth / maxHeight',
+        'number / undefined',
+        'These dimensions in pixels will be used for clamping if the layout is marked as resizable',
       ],
     ],
     demos: {
@@ -272,19 +282,19 @@ const demos: PreviewProps[] = [
           </Layout.Left>
         </Layout.Container>
       ),
-      'Layout.Right + Layout.ScrollContainer': (
+      'Layout.Right resizable + Layout.ScrollContainer': (
         <Layout.Container style={{height: 150}}>
-          <Layout.Right>
+          <Layout.Right resizable>
             <Layout.ScrollContainer>{largeChild}</Layout.ScrollContainer>
-            {aFixedWidthBox}
+            {aDynamicBox}
           </Layout.Right>
         </Layout.Container>
       ),
-      'Layout.Bottom + Layout.ScrollContainer': (
+      'Layout.Bottom resizable + Layout.ScrollContainer': (
         <Layout.Container style={{height: 150}}>
-          <Layout.Bottom>
+          <Layout.Bottom resizable height={50} minHeight={20}>
             <Layout.ScrollContainer>{largeChild}</Layout.ScrollContainer>
-            {aFixedHeightBox}
+            {aDynamicBox}
           </Layout.Bottom>
         </Layout.Container>
       ),
