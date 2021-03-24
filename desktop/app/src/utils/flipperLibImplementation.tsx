@@ -17,6 +17,7 @@ import {clipboard} from 'electron';
 import constants from '../fb-stubs/constants';
 import {addNotification} from '../reducers/notifications';
 import {deconstructPluginKey} from './clientUtils';
+import {DetailSidebarImpl} from '../sandy-chrome/DetailSidebarImpl';
 
 export function initializeFlipperLibImplementation(
   store: Store,
@@ -83,5 +84,6 @@ export function initializeFlipperLibImplementation(
         }),
       );
     },
+    DetailsSidebarImplementation: DetailSidebarImpl,
   });
 }

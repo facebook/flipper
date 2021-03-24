@@ -31,6 +31,7 @@ test('Correct top level API exposed', () => {
       "DataFormatter",
       "DataSource",
       "DataTable",
+      "DetailSidebar",
       "Layout",
       "NUX",
       "TestUtils",
