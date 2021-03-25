@@ -58,7 +58,7 @@
     "react-dom": "^17.0.1",
     "react-element-to-jsx-string": "^14.3.1",
     "react-markdown": "^5.0.3",
-    "react-player": "^1.15.2",
+    "react-player": "^2.9.0",
     "react-redux": "^7.1.1",
     "react-test-renderer": "^17.0.1",
     "react-transition-group": "^4.4.1",
