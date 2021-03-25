@@ -12,7 +12,7 @@
   ],
   "author": "Facebook, Inc",
   "scripts": {
-    "postinstall": "cross-env-shell \"cd $INIT_CWD/.. && ./ts-node scripts/gen-type-index.ts\""
+    "postinstall": "cross-env-shell \"cd $INIT_CWD && ./ts-node scripts/gen-type-index.ts\""
   },
   "devDependencies": {
     "ts-node": "^8"
