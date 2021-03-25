@@ -27,7 +27,7 @@ import {
   TableColumnOrderVal,
   TableBodyRow,
 } from '../ui/components/table/types';
-import DetailSidebar from '../chrome/DetailSidebar';
+import {DetailSidebar} from 'flipper-plugin';
 import {FlipperPlugin} from '../plugin';
 import textContent from '../utils/textContent';
 import createPaste from '../fb-stubs/createPaste';

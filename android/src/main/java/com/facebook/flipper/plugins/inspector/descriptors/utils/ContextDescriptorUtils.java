@@ -68,9 +68,6 @@ public final class ContextDescriptorUtils {
         themeKey = sThemeImplThemeKeyField.get(themeImpl);
         sThemeKeyResIdField = themeKey.getClass().getDeclaredField("mResId");
         sThemeKeyResIdField.setAccessible(true);
-
-        return builderMap;
-
       } else {
         themeImpl = sThemeImplField.get(theme);
         themeKey = sThemeImplThemeKeyField.get(themeImpl);

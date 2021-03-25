@@ -141,14 +141,79 @@ type SplitLayoutProps = {
   gap?: Spacing;
   children: [React.ReactNode, React.ReactNode];
   style?: CSSProperties;
-};
+} & SplitHorizontalResizableProps &
+  SplitVerticalResizableProps;
+
+type SplitHorizontalResizableProps =
+  | {
+      resizable: true;
+      /**
+       * Width describes the width of the resizable pane. To set a global width use the style attribute.
+       */
+      width?: number;
+      minWidth?: number;
+      maxWidth?: number;
+    }
+  | {};
+
+type SplitVerticalResizableProps =
+  | {
+      resizable: true;
+      /**
+       * Width describes the width of the resizable pane. To set a global width use the style attribute.
+       */
+      height?: number;
+      minHeight?: number;
+      maxHeight?: number;
+    }
+  | {};
 
 function renderSplitLayout(
   props: SplitLayoutProps,
   direction: 'column' | 'row',
   grow: 1 | 2,
 ) {
-  const [child1, child2] = props.children;
+  let [child1, child2] = props.children;
+  if ('resizable' in props && props.resizable) {
+    const {
+      width,
+      height,
+      minHeight,
+      minWidth,
+      maxHeight,
+      maxWidth,
+    } = props as any;
+    const sizeProps =
+      direction === 'column'
+        ? ({
+            minHeight,
+            height: height ?? 300,
+            maxHeight,
+          } as const)
+        : ({
+            minWidth,
+            width: width ?? 300,
+            maxWidth,
+          } as const);
+    const Sidebar = require('./Sidebar').Sidebar;
+    if (grow === 2) {
+      child1 = (
+        <Sidebar
+          position={direction === 'column' ? 'top' : 'left'}
+          {...sizeProps}>
+          {child1}
+        </Sidebar>
+      );
+    } else {
+      child2 = (
+        <Sidebar
+          position={direction === 'column' ? 'bottom' : 'right'}
+          {...sizeProps}>
+          {child2}
+        </Sidebar>
+      );
+    }
+  }
   return (
     <SandySplitContainer {...props} flexDirection={direction} grow={grow}>
       {child1}
@@ -169,16 +234,16 @@ function renderSplitLayout(
  * Use Layout.Top / Right / Bottom / Left to indicate where the fixed element should live.
  */
 export const Layout = {
-  Top(props: SplitLayoutProps) {
+  Top(props: SplitLayoutProps & SplitVerticalResizableProps) {
     return renderSplitLayout(props, 'column', 2);
   },
-  Bottom(props: SplitLayoutProps) {
+  Bottom(props: SplitLayoutProps & SplitVerticalResizableProps) {
     return renderSplitLayout(props, 'column', 1);
   },
-  Left(props: SplitLayoutProps) {
+  Left(props: SplitLayoutProps & SplitHorizontalResizableProps) {
     return renderSplitLayout(props, 'row', 2);
   },
-  Right(props: SplitLayoutProps) {
+  Right(props: SplitLayoutProps & SplitHorizontalResizableProps) {
     return renderSplitLayout(props, 'row', 1);
   },
   Container,

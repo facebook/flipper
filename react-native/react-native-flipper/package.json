@@ -1,7 +1,7 @@
 {
   "name": "react-native-flipper",
   "title": "React Native Flipper Bindings",
-  "version": "0.81.0",
+  "version": "0.82.0",
   "description": "Flipper bindings for React Native",
   "main": "index.js",
   "types": "index.d.ts",
@@ -29,7 +29,7 @@
   },
   "devDependencies": {
     "react": "^17.0.1",
-    "react-native": "^0.63.3"
+    "react-native": "^0.64.0"
   },
   "resolutions": {
     "logkitty": "0.7.1",

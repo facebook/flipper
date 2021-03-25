@@ -1,7 +1,5 @@
 # Flipper Packer
 
-*Work in progress and incomplete*
-
 A tool for splitting a Flipper build into smaller artifacts that can be distributed and cached separately.
 
 **N.B. Buck build files are not included in the open-source export of this tool.**
@@ -36,17 +34,18 @@ See help page:
 
 ```
 $ cargo run -- --help
-flipper-packer 0.1.0
+flipper-packer 0.3.0
 Facebook, Inc.
-
+Split the Flipper distribution into smaller, cacheable artifacts
 
 USAGE:
     flipper-packer [FLAGS] [OPTIONS] <PLATFORM>
 
 FLAGS:
-    -h, --help        Prints help information
-    -p, --packlist    Custom list of files to pack.
-    -V, --version     Prints version information
+    -h, --help              Prints help information
+        --no-compression    Skip compressing the archives (for debugging)
+    -p, --packlist          Custom list of files to pack.
+    -V, --version           Prints version information
 
 OPTIONS:
     -d, --dist <DIRECTORY>      Flipper dist directory to read from. [default: ~/fbsource/xplat/sonar/dist]
@@ -54,7 +53,6 @@ OPTIONS:
 
 ARGS:
     <PLATFORM>    Platform to build for [possible values: Mac, Linux, Windows]
-
 ```
 
 Buck:

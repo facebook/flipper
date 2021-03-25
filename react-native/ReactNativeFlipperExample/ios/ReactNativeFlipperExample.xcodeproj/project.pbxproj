@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* ReactNativeFlipperExampleTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* ReactNativeFlipperExampleTests.m */; };
 		04AABBC96725AB03A1C97DFF /* libPods-ReactNativeFlipperExample-ReactNativeFlipperExampleTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BB32988C12103FDC9491AA15 /* libPods-ReactNativeFlipperExample-ReactNativeFlipperExampleTests.a */; };
-		0CB825FB9242F403EEB7BB7B /* libPods-ReactNativeFlipperExample-tvOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2FFAD63F0CE40E74B96B5EE9 /* libPods-ReactNativeFlipperExample-tvOSTests.a */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
@@ -19,7 +18,6 @@
 		2D02E4BF1E0B4AB3006451C7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		2DCD954D1E0B4F2C00145EB5 /* ReactNativeFlipperExampleTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* ReactNativeFlipperExampleTests.m */; };
 		639C22F933B67E306797543C /* libPods-ReactNativeFlipperExample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F4E7081D6B7F1262E4655A1 /* libPods-ReactNativeFlipperExample.a */; };
-		694D62B9D8FC3230505BD01B /* libPods-ReactNativeFlipperExample-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E5E86FC2F7A4A6235ECBD215 /* libPods-ReactNativeFlipperExample-tvOS.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,7 +42,6 @@
 		00E356EE1AD99517003FC87E /* ReactNativeFlipperExampleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ReactNativeFlipperExampleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* ReactNativeFlipperExampleTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ReactNativeFlipperExampleTests.m; sourceTree = "<group>"; };
-		0FAB9DB83AF6A6EFC8A6A53B /* Pods-ReactNativeFlipperExample-tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ReactNativeFlipperExample-tvOS.release.xcconfig"; path = "Target Support Files/Pods-ReactNativeFlipperExample-tvOS/Pods-ReactNativeFlipperExample-tvOS.release.xcconfig"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* ReactNativeFlipperExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ReactNativeFlipperExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = ReactNativeFlipperExample/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = ReactNativeFlipperExample/AppDelegate.m; sourceTree = "<group>"; };
@@ -54,19 +51,14 @@
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = ReactNativeFlipperExample/main.m; sourceTree = "<group>"; };
 		2D02E47B1E0B4A5D006451C7 /* ReactNativeFlipperExample-tvOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ReactNativeFlipperExample-tvOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D02E4901E0B4A5D006451C7 /* ReactNativeFlipperExample-tvOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ReactNativeFlipperExample-tvOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		2FFAD63F0CE40E74B96B5EE9 /* libPods-ReactNativeFlipperExample-tvOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ReactNativeFlipperExample-tvOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		416BFADE15F32F0675E23F8D /* Pods-ReactNativeFlipperExample-tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ReactNativeFlipperExample-tvOS.debug.xcconfig"; path = "Target Support Files/Pods-ReactNativeFlipperExample-tvOS/Pods-ReactNativeFlipperExample-tvOS.debug.xcconfig"; sourceTree = "<group>"; };
 		8375714720F4FB5DC6AE4B8A /* Pods-ReactNativeFlipperExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ReactNativeFlipperExample.debug.xcconfig"; path = "Target Support Files/Pods-ReactNativeFlipperExample/Pods-ReactNativeFlipperExample.debug.xcconfig"; sourceTree = "<group>"; };
-		9934A36EAD23DCD5446752AE /* Pods-ReactNativeFlipperExample-tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ReactNativeFlipperExample-tvOSTests.debug.xcconfig"; path = "Target Support Files/Pods-ReactNativeFlipperExample-tvOSTests/Pods-ReactNativeFlipperExample-tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
 		9F4E7081D6B7F1262E4655A1 /* libPods-ReactNativeFlipperExample.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ReactNativeFlipperExample.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AFD7D6BFD4B9F5E066113487 /* Pods-ReactNativeFlipperExample-ReactNativeFlipperExampleTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ReactNativeFlipperExample-ReactNativeFlipperExampleTests.debug.xcconfig"; path = "Target Support Files/Pods-ReactNativeFlipperExample-ReactNativeFlipperExampleTests/Pods-ReactNativeFlipperExample-ReactNativeFlipperExampleTests.debug.xcconfig"; sourceTree = "<group>"; };
 		B39EBD8F41E2054B23A9D490 /* Pods-ReactNativeFlipperExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ReactNativeFlipperExample.release.xcconfig"; path = "Target Support Files/Pods-ReactNativeFlipperExample/Pods-ReactNativeFlipperExample.release.xcconfig"; sourceTree = "<group>"; };
 		BB32988C12103FDC9491AA15 /* libPods-ReactNativeFlipperExample-ReactNativeFlipperExampleTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ReactNativeFlipperExample-ReactNativeFlipperExampleTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DD33AD164D87475567F87ECA /* Pods-ReactNativeFlipperExample-ReactNativeFlipperExampleTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ReactNativeFlipperExample-ReactNativeFlipperExampleTests.release.xcconfig"; path = "Target Support Files/Pods-ReactNativeFlipperExample-ReactNativeFlipperExampleTests/Pods-ReactNativeFlipperExample-ReactNativeFlipperExampleTests.release.xcconfig"; sourceTree = "<group>"; };
-		E5E86FC2F7A4A6235ECBD215 /* libPods-ReactNativeFlipperExample-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ReactNativeFlipperExample-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
-		F493CDB8609947635C627005 /* Pods-ReactNativeFlipperExample-tvOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ReactNativeFlipperExample-tvOSTests.release.xcconfig"; path = "Target Support Files/Pods-ReactNativeFlipperExample-tvOSTests/Pods-ReactNativeFlipperExample-tvOSTests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -90,7 +82,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				694D62B9D8FC3230505BD01B /* libPods-ReactNativeFlipperExample-tvOS.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -98,7 +89,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0CB825FB9242F403EEB7BB7B /* libPods-ReactNativeFlipperExample-tvOSTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -143,8 +133,6 @@
 				ED2971642150620600B7C4FE /* JavaScriptCore.framework */,
 				9F4E7081D6B7F1262E4655A1 /* libPods-ReactNativeFlipperExample.a */,
 				BB32988C12103FDC9491AA15 /* libPods-ReactNativeFlipperExample-ReactNativeFlipperExampleTests.a */,
-				E5E86FC2F7A4A6235ECBD215 /* libPods-ReactNativeFlipperExample-tvOS.a */,
-				2FFAD63F0CE40E74B96B5EE9 /* libPods-ReactNativeFlipperExample-tvOSTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -156,10 +144,6 @@
 				B39EBD8F41E2054B23A9D490 /* Pods-ReactNativeFlipperExample.release.xcconfig */,
 				AFD7D6BFD4B9F5E066113487 /* Pods-ReactNativeFlipperExample-ReactNativeFlipperExampleTests.debug.xcconfig */,
 				DD33AD164D87475567F87ECA /* Pods-ReactNativeFlipperExample-ReactNativeFlipperExampleTests.release.xcconfig */,
-				416BFADE15F32F0675E23F8D /* Pods-ReactNativeFlipperExample-tvOS.debug.xcconfig */,
-				0FAB9DB83AF6A6EFC8A6A53B /* Pods-ReactNativeFlipperExample-tvOS.release.xcconfig */,
-				9934A36EAD23DCD5446752AE /* Pods-ReactNativeFlipperExample-tvOSTests.debug.xcconfig */,
-				F493CDB8609947635C627005 /* Pods-ReactNativeFlipperExample-tvOSTests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -247,7 +231,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 2D02E4BA1E0B4A5E006451C7 /* Build configuration list for PBXNativeTarget "ReactNativeFlipperExample-tvOS" */;
 			buildPhases = (
-				376D02F0ACE1F013187102C4 /* [CP] Check Pods Manifest.lock */,
 				FD10A7F122414F3F0027D42C /* Start Packager */,
 				2D02E4771E0B4A5D006451C7 /* Sources */,
 				2D02E4781E0B4A5D006451C7 /* Frameworks */,
@@ -267,7 +250,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 2D02E4BB1E0B4A5E006451C7 /* Build configuration list for PBXNativeTarget "ReactNativeFlipperExample-tvOSTests" */;
 			buildPhases = (
-				EF8F7CC3E6A26470CD1E3653 /* [CP] Check Pods Manifest.lock */,
 				2D02E48C1E0B4A5D006451C7 /* Sources */,
 				2D02E48D1E0B4A5D006451C7 /* Frameworks */,
 				2D02E48E1E0B4A5D006451C7 /* Resources */,
@@ -392,28 +374,6 @@
 			shellPath = /bin/sh;
 			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh";
 		};
-		376D02F0ACE1F013187102C4 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-ReactNativeFlipperExample-tvOS-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
 		4B4AFCCBB0879333439F0C1B /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -439,10 +399,12 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-ReactNativeFlipperExample/Pods-ReactNativeFlipperExample-frameworks.sh",
+				"${PODS_ROOT}/hermes-engine/destroot/Library/Frameworks/iphoneos/hermes.framework",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/OpenSSL/OpenSSL.framework/OpenSSL",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OpenSSL.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -501,37 +463,17 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-ReactNativeFlipperExample-ReactNativeFlipperExampleTests/Pods-ReactNativeFlipperExample-ReactNativeFlipperExampleTests-frameworks.sh",
+				"${PODS_ROOT}/hermes-engine/destroot/Library/Frameworks/iphoneos/hermes.framework",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/OpenSSL/OpenSSL.framework/OpenSSL",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OpenSSL.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-ReactNativeFlipperExample-ReactNativeFlipperExampleTests/Pods-ReactNativeFlipperExample-ReactNativeFlipperExampleTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		EF8F7CC3E6A26470CD1E3653 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-ReactNativeFlipperExample-tvOSTests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 		FC3B49C295CE038DA736697B /* [CP] Copy Pods Resources */ = {
@@ -750,7 +692,6 @@
 		};
 		2D02E4971E0B4A5E006451C7 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 416BFADE15F32F0675E23F8D /* Pods-ReactNativeFlipperExample-tvOS.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -778,7 +719,6 @@
 		};
 		2D02E4981E0B4A5E006451C7 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0FAB9DB83AF6A6EFC8A6A53B /* Pods-ReactNativeFlipperExample-tvOS.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -806,7 +746,6 @@
 		};
 		2D02E4991E0B4A5E006451C7 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9934A36EAD23DCD5446752AE /* Pods-ReactNativeFlipperExample-tvOSTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;
@@ -833,7 +772,6 @@
 		};
 		2D02E49A1E0B4A5E006451C7 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = F493CDB8609947635C627005 /* Pods-ReactNativeFlipperExample-tvOSTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;

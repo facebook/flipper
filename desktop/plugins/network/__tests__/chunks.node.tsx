@@ -8,8 +8,16 @@
  */
 
 import {combineBase64Chunks} from '../chunks';
-import {TestUtils} from 'flipper-plugin';
+import {TestUtils, createState} from 'flipper-plugin';
 import * as NetworkPlugin from '../index';
+import {assembleChunksIfResponseIsComplete} from '../chunks';
+import path from 'path';
+import {PartialResponses, Response} from '../types';
+import {Base64} from 'js-base64';
+import * as fs from 'fs';
+import {promisify} from 'util';
+
+const readFile = promisify(fs.readFile);
 
 test('Test assembling base64 chunks', () => {
   const message = 'wassup john?';
@@ -20,7 +28,7 @@ test('Test assembling base64 chunks', () => {
   }
 
   const output = combineBase64Chunks(chunks);
-  expect(output).toBe('wassup john?');
+  expect(Base64.decode(output)).toBe('wassup john?');
 });
 
 test('Reducer correctly adds initial chunk', () => {
@@ -120,4 +128,48 @@ test('Reducer correctly combines initial response and followup chunk', () => {
       "totalChunks": 2,
     }
   `);
+});
+
+async function readJsonFixture(filename: string) {
+  return JSON.parse(
+    await readFile(path.join(__dirname, 'fixtures', filename), 'utf-8'),
+  );
+}
+
+test('handle small binary payloads correctly', async () => {
+  const input = await readJsonFixture('partial_failing_example.json');
+  const partials = createState<PartialResponses>({
+    test: input,
+  });
+  const responses = createState<Record<string, Response>>({});
+  expect(() => {
+    // this used to throw
+    assembleChunksIfResponseIsComplete(partials, responses, 'test');
+  }).not.toThrow();
+});
+
+test('handle non binary payloads correcty', async () => {
+  const input = await readJsonFixture('partial_utf8_before.json');
+  const partials = createState<PartialResponses>({
+    test: input,
+  });
+  const responses = createState<Record<string, Response>>({});
+  expect(() => {
+    assembleChunksIfResponseIsComplete(partials, responses, 'test');
+  }).not.toThrow();
+  const expected = await readJsonFixture('partial_utf8_after.json');
+  expect(responses.get()['test']).toEqual(expected);
+});
+
+test('handle binary payloads correcty', async () => {
+  const input = await readJsonFixture('partial_binary_before.json');
+  const partials = createState<PartialResponses>({
+    test: input,
+  });
+  const responses = createState<Record<string, Response>>({});
+  expect(() => {
+    assembleChunksIfResponseIsComplete(partials, responses, 'test');
+  }).not.toThrow();
+  const expected = await readJsonFixture('partial_binary_after.json');
+  expect(responses.get()['test']).toEqual(expected);
 });

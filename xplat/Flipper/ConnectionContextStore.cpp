@@ -37,8 +37,10 @@ bool ConnectionContextStore::hasRequiredFiles() {
       loadStringFromFile(absoluteFilePath(CLIENT_CERT_FILE_NAME));
   std::string privateKey =
       loadStringFromFile(absoluteFilePath(PRIVATE_KEY_FILE));
+  std::string config =
+      loadStringFromFile(absoluteFilePath(CONNECTION_CONFIG_FILE));
 
-  if (caCert == "" || clientCert == "" || privateKey == "") {
+  if (caCert == "" || clientCert == "" || privateKey == "" || config == "") {
     return false;
   }
   return true;
