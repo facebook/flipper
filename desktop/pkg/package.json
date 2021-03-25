@@ -17,7 +17,7 @@
     "@oclif/parser": "^3",
     "@oclif/plugin-help": "^3.0.0",
     "@oclif/plugin-warn-if-update-available": "^1.7.0",
-    "ajv": "^6.12.2",
+    "ajv": "^7.2.3",
     "ajv-errors": "^1.0.1",
     "cli-ux": "^5.4.6",
     "flipper-pkg-lib": "0.0.0",
