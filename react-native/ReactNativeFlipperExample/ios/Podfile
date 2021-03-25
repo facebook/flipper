@@ -22,5 +22,11 @@ target 'ReactNativeFlipperExample' do
   use_flipper!({ 'Flipper' => '0.82.0' })
   post_install do |installer|
     flipper_post_install(installer)
+    # based on https://stackoverflow.com/a/37289688/1983583
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '10.0'
+      end
+    end
   end
 end
