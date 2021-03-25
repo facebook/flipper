@@ -82,13 +82,9 @@ export type MockRoute = {
   enabled: boolean;
 };
 
-export type PersistedState = {
-  requests: {[id: string]: Request};
-  responses: {[id: string]: Response};
-  partialResponses: {
-    [id: string]: {
-      initialResponse?: Response;
-      followupChunks: {[id: number]: string};
-    };
+export type PartialResponses = {
+  [id: string]: {
+    initialResponse?: Response;
+    followupChunks: {[id: number]: string};
   };
 };
