@@ -162,7 +162,7 @@ function setProcessState(store: Store) {
   const androidHome = settings.androidHome;
   const idbPath = settings.idbPath;
 
-  if (!process.env.ANDROID_HOME) {
+  if (!process.env.ANDROID_HOME && !process.env.ANDROID_SDK_ROOT) {
     process.env.ANDROID_HOME = androidHome;
   }
 

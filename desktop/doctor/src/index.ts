@@ -114,26 +114,62 @@ export function getHealthchecks(): Healthchecks {
           label: 'SDK Installed',
           isRequired: true,
           run: async (_: EnvironmentInfo) => {
-            if (process.env.ANDROID_HOME) {
-              const androidHome = process.env.ANDROID_HOME;
-              if (!fs.existsSync(androidHome)) {
-                return {
-                  hasProblem: true,
-                  message: `ANDROID_HOME points to a folder which does not exist: ${androidHome}. You can use Flipper Settings (File > Preferences) to point to a different location.`,
-                };
-              }
+            const androidHome = process.env.ANDROID_HOME
+            const androidSdkRoot = process.env.ANDROID_SDK_ROOT
+            
+            let androidHomeResult: HealthchecRunResult
+            if (!androidHome) {
+              androidHomeResult = {
+                hasProblem: true,
+                message: `ANDROID_HOME is not defined. You can use Flipper Settings (File > Preferences) to point to its location.`,
+              };
+            } else if (!fs.existsSync(androidHome)) {
+              androidHomeResult = {
+                hasProblem: true,
+                message: `ANDROID_HOME point to a folder which does not exist: ${androidHome}. You can use Flipper Settings (File > Preferences) to point to a different location.`,
+              };
+            } else {
               const platformToolsDir = path.join(androidHome, 'platform-tools');
-              if (!fs.existsSync(path.join(androidHome, 'platform-tools'))) {
-                return {
+              if (!fs.existsSync(platformToolsDir)) {
+                androidHomeResult = {
                   hasProblem: true,
                   message: `Android SDK Platform Tools not found at the expected location "${platformToolsDir}". Probably they are not installed.`,
                 };
+              } else {
+                androidHomeResult = await tryExecuteCommand(
+                  `"${path.join(platformToolsDir, 'adb')}" version`,
+                );
               }
-              return await tryExecuteCommand(
-                `"${path.join(platformToolsDir, 'adb')}" version`,
-              );
             }
-            return await tryExecuteCommand('adb version');
+            if (androidHomeResult.hasProblem == false) {
+              return androidHomeResult
+            }
+
+            let androidSdkRootResult: HealthchecRunResult
+            if (!androidSdkRoot) {
+              androidSdkRootResult = {
+                hasProblem: true,
+                message: `ANDROID_SDK_ROOT is not defined. You can use Flipper Settings (File > Preferences) to point to its location.`,
+              };
+            } else if (!fs.existsSync(androidSdkRoot)) {
+              androidSdkRootResult = {
+                hasProblem: true,
+                message: `ANDROID_SDK_ROOT point to a folder which does not exist: ${androidSdkRoot}. You can use Flipper Settings (File > Preferences) to point to a different location.`,
+              };
+            } else {
+              const platformToolsDir = path.join(androidSdkRoot, 'platform-tools');
+              if (!fs.existsSync(platformToolsDir)) {
+                androidSdkRootResult = {
+                  hasProblem: true,
+                  message: `Android SDK Platform Tools not found at the expected location "${platformToolsDir}". Probably they are not installed.`,
+                };
+              } else {
+                androidSdkRootResult = await tryExecuteCommand(
+                  `"${path.join(platformToolsDir, 'adb')}" version`,
+                );
+              }
+            }
+            return androidSdkRootResult;
           },
         },
       ],
