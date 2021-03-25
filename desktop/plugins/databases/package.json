@@ -16,7 +16,7 @@
     "sql-formatter": "^2.3.3"
   },
   "devDependencies": {
-    "@testing-library/react": "^11.2.3",
+    "@testing-library/react": "^11.2.5",
     "@types/dateformat": "^3.0.1",
     "@types/sql-formatter": "^2.3.0",
     "react-redux": "^7.1.1",

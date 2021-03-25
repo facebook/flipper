@@ -10,7 +10,7 @@
     "flipper-plugin"
   ],
   "dependencies": {
-    "lodash": "^4.17.19"
+    "lodash": "^4.17.21"
   },
   "peerDependencies": {
     "flipper-plugin": "0.0.0"

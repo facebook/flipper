@@ -5,7 +5,12 @@
   "version": "0.0.0",
   "pluginType": "device",
   "supportedDevices": [
-    {"os": "Android", "specs": ["KaiOS"]}
+    {
+      "os": "Android",
+      "specs": [
+        "KaiOS"
+      ]
+    }
   ],
   "main": "dist/bundle.js",
   "flipperBundlerEntry": "index.tsx",
@@ -24,7 +29,7 @@
     "recharts": "2.0.3"
   },
   "devDependencies": {
-    "@types/recharts": "1.8.18"
+    "@types/recharts": "1.8.19"
   },
   "resolutions": {
     "@types/react": "16.9.17"

@@ -11,10 +11,10 @@
   ],
   "dependencies": {
     "deep-equal": "^2.0.1",
-    "lodash": "^4.17.19"
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "@testing-library/react": "^11.2.3"
+    "@testing-library/react": "^11.2.5"
   },
   "title": "Layout",
   "icon": "target",
