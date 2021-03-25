@@ -43,6 +43,8 @@ import * as Immer from 'immer';
 import * as antd from 'antd';
 import * as emotion_styled from '@emotion/styled';
 import * as antdesign_icons from '@ant-design/icons';
+// @ts-ignore
+import * as crc32 from 'crc32';
 
 // eslint-disable-next-line import/no-unresolved
 import getDefaultPluginsIndex from '../utils/getDefaultPluginsIndex';
@@ -64,6 +66,7 @@ export default async (store: Store, logger: Logger) => {
   globalObject.antd = antd;
   globalObject.emotion_styled = emotion_styled;
   globalObject.antdesign_icons = antdesign_icons;
+  globalObject.crc32_hack_fix_me = crc32;
 
   const gatekeepedPlugins: Array<ActivatablePluginDetails> = [];
   const disabledPlugins: Array<ActivatablePluginDetails> = [];
