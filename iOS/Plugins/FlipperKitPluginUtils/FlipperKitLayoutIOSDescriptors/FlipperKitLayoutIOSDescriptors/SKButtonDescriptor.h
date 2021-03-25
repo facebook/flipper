@@ -7,9 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
-#import "SKNodeDescriptor.h"
+#import <FlipperKitLayoutHelpers/SKNodeDescriptor.h>
 
 @class UIButton;
+@class SKDescriptorMapper;
 
 @interface SKButtonDescriptor : SKNodeDescriptor<UIButton*>
 

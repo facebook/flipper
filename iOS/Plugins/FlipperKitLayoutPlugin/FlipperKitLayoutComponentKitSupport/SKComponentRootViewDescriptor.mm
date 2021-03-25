@@ -16,8 +16,8 @@
 #import <ComponentKit/CKComponentLayout.h>
 #import <ComponentKit/CKComponentRootViewInternal.h>
 
+#import <FlipperKitLayoutHelpers/SKObject.h>
 #import <FlipperKitLayoutPlugin/SKDescriptorMapper.h>
-#import <FlipperKitLayoutPlugin/SKObject.h>
 
 #import "SKComponentLayoutWrapper.h"
 

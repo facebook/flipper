@@ -7,8 +7,8 @@
 
 #import <ComponentKit/CKComponent.h>
 #import <FlipperKit/SKMacros.h>
-#import <FlipperKitLayoutPlugin/SKNamed.h>
-#import <FlipperKitLayoutPlugin/SKNodeDescriptor.h>
+#import <FlipperKitLayoutHelpers/SKNamed.h>
+#import <FlipperKitLayoutHelpers/SKNodeDescriptor.h>
 
 typedef id (^SKNodeDataChanged)(id value);
 

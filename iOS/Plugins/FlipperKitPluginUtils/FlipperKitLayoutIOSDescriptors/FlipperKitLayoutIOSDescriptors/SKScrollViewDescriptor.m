@@ -9,8 +9,6 @@
 
 #import "SKScrollViewDescriptor.h"
 
-#import "SKDescriptorMapper.h"
-
 @implementation SKScrollViewDescriptor
 
 - (NSString*)identifierForNode:(UIScrollView*)node {

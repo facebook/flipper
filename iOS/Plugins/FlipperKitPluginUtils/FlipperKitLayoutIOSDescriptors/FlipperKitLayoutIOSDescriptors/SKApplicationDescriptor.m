@@ -9,9 +9,8 @@
 
 #import "SKApplicationDescriptor.h"
 
+#import <FlipperKitLayoutHelpers/SKHiddenWindow.h>
 #import <objc/runtime.h>
-#import "SKDescriptorMapper.h"
-#import "SKHiddenWindow.h"
 
 @implementation SKApplicationDescriptor
 

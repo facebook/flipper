@@ -10,13 +10,13 @@
 #import "SKViewDescriptor.h"
 
 #import <FlipperKitHighlightOverlay/SKHighlightOverlay.h>
+#import <FlipperKitLayoutHelpers/FlipperKitLayoutDescriptorMapperProtocol.h>
+#import <FlipperKitLayoutHelpers/SKHiddenWindow.h>
+#import <FlipperKitLayoutHelpers/SKNamed.h>
+#import <FlipperKitLayoutHelpers/SKObject.h>
+#import <FlipperKitLayoutHelpers/SKYogaKitHelper.h>
+#import <FlipperKitLayoutHelpers/UIColor+SKSonarValueCoder.h>
 #import <YogaKit/UIView+Yoga.h>
-#import "SKDescriptorMapper.h"
-#import "SKHiddenWindow.h"
-#import "SKNamed.h"
-#import "SKObject.h"
-#import "SKYogaKitHelper.h"
-#import "UIColor+SKSonarValueCoder.h"
 
 @implementation SKViewDescriptor
 
@@ -30,7 +30,8 @@ static NSDictionary* YGOverflowEnumMap = nil;
 static NSDictionary* YGDisplayEnumMap = nil;
 static NSDictionary* YGUnitEnumMap = nil;
 
-- (instancetype)initWithDescriptorMapper:(SKDescriptorMapper*)mapper {
+- (instancetype)initWithDescriptorMapper:
+    (id<SKDescriptorMapperProtocol>)mapper {
   if (self = [super initWithDescriptorMapper:mapper]) {
     initEnumDictionaries();
   }
