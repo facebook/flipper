@@ -46,10 +46,10 @@ export type Healthcheck = {
   run: (
     env: EnvironmentInfo,
     settings?: Settings,
-  ) => Promise<HealthchecRunResult>;
+  ) => Promise<HealthcheckRunResult>;
 };
 
-export type HealthchecRunResult = {
+export type HealthcheckRunResult = {
   hasProblem: boolean;
   message: string;
 };
@@ -117,7 +117,7 @@ export function getHealthchecks(): Healthchecks {
             const androidHome = process.env.ANDROID_HOME
             const androidSdkRoot = process.env.ANDROID_SDK_ROOT
             
-            let androidHomeResult: HealthchecRunResult
+            let androidHomeResult: HealthcheckRunResult
             if (!androidHome) {
               androidHomeResult = {
                 hasProblem: true,
@@ -145,7 +145,7 @@ export function getHealthchecks(): Healthchecks {
               return androidHomeResult
             }
 
-            let androidSdkRootResult: HealthchecRunResult
+            let androidSdkRootResult: HealthcheckRunResult
             if (!androidSdkRoot) {
               androidSdkRootResult = {
                 hasProblem: true,
@@ -335,7 +335,7 @@ export async function runHealthchecks(): Promise<
 
 async function tryExecuteCommand(
   command: string,
-): Promise<HealthchecRunResult> {
+): Promise<HealthcheckRunResult> {
   try {
     const output = await promisify(exec)(command);
     return {
