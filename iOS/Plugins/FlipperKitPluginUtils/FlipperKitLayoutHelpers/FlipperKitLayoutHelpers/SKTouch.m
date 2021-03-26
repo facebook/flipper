@@ -15,7 +15,7 @@
 
   CGPoint _currentTouchPoint;
 
-  SKDescriptorMapper* _descriptorMapper;
+  id<SKDescriptorMapperProtocol> _descriptorMapper;
 
   NSMutableArray<id<NSObject>>* _nodeStack;
   NSMutableArray<NSMutableDictionary*>* _treeStack;
@@ -23,7 +23,7 @@
 
 - (instancetype)initWithTouchPoint:(CGPoint)touchPoint
                       withRootNode:(id<NSObject>)node
-              withDescriptorMapper:(SKDescriptorMapper*)mapper
+              withDescriptorMapper:(id<SKDescriptorMapperProtocol>)mapper
                    finishWithBlock:(SKTouchFinishDelegate)finishBlock {
   if (self = [super init]) {
     _onFinish = finishBlock;

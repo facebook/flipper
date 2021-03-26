@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "SKDescriptorMapper.h"
+#import <FlipperKitLayoutHelpers/FlipperKitLayoutDescriptorMapperProtocol.h>
 #import "SKNamed.h"
 #import "SKTouch.h"
 
@@ -30,7 +30,7 @@ typedef void (^SKNodeUpdateData)(id value);
  Initializes the node-descriptor with a SKDescriptorMapper which contains
  mappings between Class -> SKNodeDescriptor<Class>.
  */
-- (instancetype)initWithDescriptorMapper:(SKDescriptorMapper*)mapper;
+- (instancetype)initWithDescriptorMapper:(id<SKDescriptorMapperProtocol>)mapper;
 
 /**
  Gets the node-descriptor registered for a specific class.

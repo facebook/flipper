@@ -9,11 +9,11 @@
 
 #import "SKDescriptorMapper.h"
 
-#import "SKApplicationDescriptor.h"
-#import "SKButtonDescriptor.h"
-#import "SKScrollViewDescriptor.h"
-#import "SKViewControllerDescriptor.h"
-#import "SKViewDescriptor.h"
+#import <FlipperKitLayoutIOSDescriptors/SKApplicationDescriptor.h>
+#import <FlipperKitLayoutIOSDescriptors/SKButtonDescriptor.h>
+#import <FlipperKitLayoutIOSDescriptors/SKScrollViewDescriptor.h>
+#import <FlipperKitLayoutIOSDescriptors/SKViewControllerDescriptor.h>
+#import <FlipperKitLayoutIOSDescriptors/SKViewDescriptor.h>
 
 @implementation SKDescriptorMapper {
   NSMutableDictionary<NSString*, SKNodeDescriptor*>* _descriptors;

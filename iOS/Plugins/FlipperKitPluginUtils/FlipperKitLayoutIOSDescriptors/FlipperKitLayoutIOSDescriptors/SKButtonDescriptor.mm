@@ -9,9 +9,8 @@
 
 #import "SKButtonDescriptor.h"
 
-#import "SKDescriptorMapper.h"
-#import "SKObject.h"
-#import "UIColor+SKSonarValueCoder.h"
+#import <FlipperKitLayoutHelpers/SKObject.h>
+#import <FlipperKitLayoutHelpers/UIColor+SKSonarValueCoder.h>
 
 @implementation SKButtonDescriptor
 
