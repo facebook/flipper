@@ -13,12 +13,12 @@
 #import <FlipperKit/FlipperConnection.h>
 #import <FlipperKit/FlipperResponder.h>
 #import <FlipperKit/SKMacros.h>
+#import <FlipperKitLayoutHelpers/SKNodeDescriptor.h>
+#import <FlipperKitLayoutHelpers/SKSearchResultNode.h>
+#import <FlipperKitLayoutHelpers/SKTapListener.h>
+#import <FlipperKitLayoutHelpers/SKTapListenerImpl.h>
 #import <mutex>
 #import "SKDescriptorMapper.h"
-#import "SKNodeDescriptor.h"
-#import "SKSearchResultNode.h"
-#import "SKTapListener.h"
-#import "SKTapListenerImpl.h"
 
 NSObject* parseLayoutEditorMessage(NSObject* message);
 NSObject* flattenLayoutEditorMessage(NSObject* field);

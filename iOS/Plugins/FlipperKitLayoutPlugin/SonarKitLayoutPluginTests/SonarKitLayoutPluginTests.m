@@ -9,9 +9,9 @@
 
 #if FB_SONARKIT_ENABLED
 
+#import <FlipperKitLayoutHelpers/SKNodeDescriptor.h>
 #import <FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h>
 #import <FlipperKitLayoutPlugin/SKDescriptorMapper.h>
-#import <FlipperKitLayoutPlugin/SKNodeDescriptor.h>
 #import <FlipperKitTestUtils/FlipperConnectionMock.h>
 #import <FlipperKitTestUtils/FlipperResponderMock.h>
 

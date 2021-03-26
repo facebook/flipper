@@ -5,11 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#import <FlipperKitLayoutHelpers/FlipperKitLayoutDescriptorMapperProtocol.h>
+#import <FlipperKitLayoutHelpers/SKNodeDescriptor.h>
 #import <Foundation/Foundation.h>
 
-@class SKNodeDescriptor;
-
-@interface SKDescriptorMapper : NSObject
+@interface SKDescriptorMapper : NSObject<SKDescriptorMapperProtocol>
 
 - (instancetype)initWithDefaults;
 

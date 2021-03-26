@@ -27,7 +27,6 @@ import {
   TableHighlightedRows,
   TableRows,
   TableBodyRow,
-  produce,
 } from 'flipper';
 import {
   Request,
@@ -37,13 +36,14 @@ import {
   ResponseFollowupChunk,
   Header,
   MockRoute,
+  PartialResponses,
 } from './types';
 import {convertRequestToCurlCommand, getHeaderValue, decodeBody} from './utils';
 import RequestDetails from './RequestDetails';
 import {clipboard} from 'electron';
 import {URL} from 'url';
 import {MockResponseDialog} from './MockResponseDialog';
-import {combineBase64Chunks} from './chunks';
+import {assembleChunksIfResponseIsComplete} from './chunks';
 import {
   PluginClient,
   Device,
@@ -191,12 +191,10 @@ export function plugin(client: PluginClient<Events, Methods>) {
     {persist: 'responses'},
   );
 
-  const partialResponses = createState<{
-    [id: string]: {
-      initialResponse?: Response;
-      followupChunks: {[id: number]: string};
-    };
-  }>({}, {persist: 'partialResponses'});
+  const partialResponses = createState<PartialResponses>(
+    {},
+    {persist: 'partialResponses'},
+  );
 
   client.onDeepLink((payload: unknown) => {
     if (typeof payload === 'string') {
@@ -247,89 +245,25 @@ export function plugin(client: PluginClient<Events, Methods>) {
     const message: Response | ResponseFollowupChunk = data as
       | Response
       | ResponseFollowupChunk;
-    if (message.index !== undefined && message.index > 0) {
-      // It's a follow up chunk
-      const followupChunk: ResponseFollowupChunk = message as ResponseFollowupChunk;
-      const partialResponseEntry = partialResponses.get()[followupChunk.id] ?? {
-        followupChunks: {},
-      };
-
-      const newPartialResponseEntry = produce(partialResponseEntry, (draft) => {
-        draft.followupChunks[followupChunk.index] = followupChunk.data;
-      });
-      const newPartialResponse = {
-        ...partialResponses.get(),
-        [followupChunk.id]: newPartialResponseEntry,
-      };
-
-      assembleChunksIfResponseIsComplete(newPartialResponse, followupChunk.id);
-      return;
-    }
-    // It's an initial chunk
-    const partialResponse: Response = message as Response;
-    const partialResponseEntry = partialResponses.get()[partialResponse.id] ?? {
-      followupChunks: {},
-    };
-    const newPartialResponseEntry = {
-      ...partialResponseEntry,
-      initialResponse: partialResponse,
-    };
-    const newPartialResponse = {
-      ...partialResponses.get(),
-      [partialResponse.id]: newPartialResponseEntry,
-    };
-    assembleChunksIfResponseIsComplete(newPartialResponse, partialResponse.id);
-  });
-
-  function assembleChunksIfResponseIsComplete(
-    partialResp: {
-      [id: string]: {
-        initialResponse?: Response;
-        followupChunks: {[id: number]: string};
-      };
-    },
-    responseId: string,
-  ) {
-    const partialResponseEntry = partialResp[responseId];
-    const numChunks = partialResponseEntry.initialResponse?.totalChunks;
-    if (
-      !partialResponseEntry.initialResponse ||
-      !numChunks ||
-      Object.keys(partialResponseEntry.followupChunks).length + 1 < numChunks
-    ) {
-      // Partial response not yet complete, do nothing.
-      partialResponses.set(partialResp);
-      return;
-    }
-    // Partial response has all required chunks, convert it to a full Response.
-
-    const response: Response = partialResponseEntry.initialResponse;
-    const allChunks: string[] =
-      response.data != null
-        ? [
-            response.data,
-            ...Object.entries(partialResponseEntry.followupChunks)
-              // It's important to parseInt here or it sorts lexicographically
-              .sort((a, b) => parseInt(a[0], 10) - parseInt(b[0], 10))
-              .map(([_k, v]: [string, string]) => v),
-          ]
-        : [];
-    const data = combineBase64Chunks(allChunks);
-
-    const newResponse = {
-      ...response,
-      // Currently data is always decoded at render time, so re-encode it to match the single response format.
-      data: btoa(data),
-    };
-
-    responses.update((draft) => {
-      draft[newResponse.id] = newResponse;
-    });
 
     partialResponses.update((draft) => {
-      delete draft[newResponse.id];
+      if (!draft[message.id]) {
+        draft[message.id] = {
+          followupChunks: {},
+        };
+      }
+      const entry = draft[message.id];
+      if (message.index !== undefined && message.index > 0) {
+        // It's a follow up chunk
+        const chunk = message as ResponseFollowupChunk;
+        entry.followupChunks[chunk.index] = chunk.data;
+      } else {
+        // It's an initial chunk
+        entry.initialResponse = message as Response;
+      }
     });
-  }
+    assembleChunksIfResponseIsComplete(partialResponses, responses, message.id);
+  });
 
   function supportsMocks(device: Device): Promise<boolean> {
     if (device.isArchived) {

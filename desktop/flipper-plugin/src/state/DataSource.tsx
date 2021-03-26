@@ -87,7 +87,7 @@ type OutputChange =
     };
 
 export class DataSource<
-  T,
+  T = any,
   KEY extends keyof T = any,
   KEY_TYPE extends string | number | never = ExtractKeyType<T, KEY>
 > implements Persistable {

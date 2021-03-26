@@ -10,8 +10,5 @@
   "keywords": [
     "Flipper"
   ],
-  "author": "Facebook, Inc",
-  "scripts": {
-    "postinstall": "../ts-node ../scripts/gen-type-index.ts"
-  }
+  "author": "Facebook, Inc"
 }

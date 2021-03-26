@@ -13,7 +13,7 @@
 #import <ComponentKit/CKComponentInternal.h>
 
 #import <FlipperKitHighlightOverlay/SKHighlightOverlay.h>
-#import <FlipperKitLayoutPlugin/SKObject.h>
+#import <FlipperKitLayoutHelpers/SKObject.h>
 #import <FlipperKitLayoutTextSearchable/FKTextSearchable.h>
 
 #import "CKComponent+Sonar.h"

@@ -1,3 +1,10 @@
+# 0.82.0 (25/3/2021)
+
+ * [D27188241](https://github.com/facebook/flipper/search?q=D27188241&type=Commits) -  Restored the possibility to use Regex in logs search
+ * [D27233899](https://github.com/facebook/flipper/search?q=D27233899&type=Commits) -  Layout.Top / Left / Bottom / Right now support a resizable option
+ * [D27302961](https://github.com/facebook/flipper/search?q=D27302961&type=Commits) -  Fixed an issue where Flipper would crash when decoding large partial requests.
+
+
 # 0.81.0 (17/3/2021)
 
  * [D26947007](https://github.com/facebook/flipper/search?q=D26947007&type=Commits) -  The new logs plugin will linkify urls and pretty print json-like messages

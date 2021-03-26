@@ -16,8 +16,8 @@
 #import <ComponentKit/CKComponentSubclass.h>
 #import <ComponentKit/CKComponentViewConfiguration.h>
 #import <ComponentKit/CKMutex.h>
-#import <FlipperKitLayoutPlugin/SKNamed.h>
-#import <FlipperKitLayoutPlugin/SKObject.h>
+#import <FlipperKitLayoutHelpers/SKNamed.h>
+#import <FlipperKitLayoutHelpers/SKObject.h>
 #import <objc/message.h>
 #import <objc/runtime.h>
 

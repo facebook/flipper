@@ -12,7 +12,7 @@ import {Percentage} from '../../utils/widthUtils';
 import {MutableRefObject, Reducer} from 'react';
 import {DataSource} from '../../state/DataSource';
 import {DataSourceVirtualizer} from './DataSourceRenderer';
-import produce, {immerable, original} from 'immer';
+import produce, {castDraft, immerable, original} from 'immer';
 
 export type OnColumnResize = (id: string, size: number | Percentage) => void;
 export type Sorting<T = any> = {
@@ -107,17 +107,17 @@ export type DataTableReducer<T> = Reducer<
 >;
 export type DataTableDispatch<T = any> = React.Dispatch<DataManagerActions<T>>;
 
-export const dataTableManagerReducer = produce(function <T>(
-  draft: DataManagerState<T>,
-  action: DataManagerActions<T>,
-) {
+export const dataTableManagerReducer = produce<
+  DataManagerState<any>,
+  [DataManagerActions<any>]
+>(function (draft, action) {
   const config = original(draft.config)!;
   switch (action.type) {
     case 'reset': {
       draft.columns = computeInitialColumns(config.defaultColumns);
       draft.sorting = undefined;
       draft.searchValue = '';
-      draft.selection = emptySelection;
+      draft.selection = castDraft(emptySelection);
       break;
     }
     case 'resizeColumn': {
@@ -151,25 +151,20 @@ export const dataTableManagerReducer = produce(function <T>(
     }
     case 'selectItem': {
       const {nextIndex, addToSelection} = action;
-      draft.selection = computeSetSelection(
-        draft.selection,
-        nextIndex,
-        addToSelection,
+      draft.selection = castDraft(
+        computeSetSelection(draft.selection, nextIndex, addToSelection),
       );
       break;
     }
     case 'addRangeToSelection': {
       const {start, end, allowUnselect} = action;
-      draft.selection = computeAddRangeToSelection(
-        draft.selection,
-        start,
-        end,
-        allowUnselect,
+      draft.selection = castDraft(
+        computeAddRangeToSelection(draft.selection, start, end, allowUnselect),
       );
       break;
     }
     case 'clearSelection': {
-      draft.selection = emptySelection;
+      draft.selection = castDraft(emptySelection);
       break;
     }
     case 'addColumnFilter': {
@@ -195,7 +190,10 @@ export const dataTableManagerReducer = produce(function <T>(
       break;
     }
     case 'setColumnFilterFromSelection': {
-      const items = getSelectedItems(config.dataSource, draft.selection);
+      const items = getSelectedItems(
+        config.dataSource as DataSource,
+        draft.selection,
+      );
       items.forEach((item, index) => {
         addColumnFilter(
           draft.columns,
@@ -214,7 +212,7 @@ export const dataTableManagerReducer = produce(function <T>(
       throw new Error('Unknown action ' + (action as any).type);
     }
   }
-}) as any;
+});
 
 /**
  * Public only imperative convienience API for DataTable

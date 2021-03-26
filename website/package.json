@@ -10,29 +10,24 @@
     "generate-uidocs": "node ./generate-uidocs.js"
   },
   "devDependencies": {
-    "@babel/parser": "^7.8.3",
-    "@docusaurus/core": "^2.0.0-alpha.71",
-    "@docusaurus/plugin-client-redirects": "2.0.0-alpha.71",
-    "@docusaurus/preset-classic": "^2.0.0-alpha.66",
+    "@babel/parser": "^7.13.12",
+    "@docusaurus/core": "^2.0.0-alpha.72",
+    "@docusaurus/plugin-client-redirects": "2.0.0-alpha.72",
+    "@docusaurus/preset-classic": "^2.0.0-alpha.72",
     "classnames": "^2.2.6",
     "docblock-parser": "^1.0.0",
-    "docusaurus-plugin-internaldocs-fb": "^0.7.2",
+    "docusaurus-plugin-internaldocs-fb": "^0.7.4",
     "file-cli": "^1.2.0",
     "glob": "^7.1.3",
-    "mermaid": "^8.8.4",
-    "react": "^16.13.1",
-    "react-docgen": "^5.2.1",
-    "react-dom": "^16.13.1"
+    "mermaid": "^8.9.2",
+    "react": "^17.0.2",
+    "react-docgen": "^5.3.1",
+    "react-dom": "^17.0.2"
   },
   "resolutions": {
-    "axios": "0.21.1",
-    "minimist": "1.2.3",
     "kind-of": "6.0.3",
     "serialize-javascript": "^3.1.0",
-    "node-forge": "^0.10.0",
-    "node-fetch": "^2.6.1",
-    "immer": "^8.0.1",
-    "prismjs": "1.23.0",
-    "elliptic": "6.5.4"
+    "ssri": "8.0.1",
+    "is-svg": "4.2.2"
   }
 }

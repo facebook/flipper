@@ -9,20 +9,23 @@
 
 import React, {useEffect, useState} from 'react';
 import ReactDOM from 'react-dom';
-import Sidebar from '../ui/components/Sidebar';
 import {toggleRightSidebarAvailable} from '../reducers/application';
 import {useDispatch, useStore} from '../utils/useStore';
 import {ContentContainer} from '../sandy-chrome/ContentContainer';
-import {Layout} from '../ui';
+import {Layout, _Sidebar} from 'flipper-plugin';
 
-type OwnProps = {
+export type DetailSidebarProps = {
   children: any;
   width?: number;
   minWidth?: number;
 };
 
 /* eslint-disable react-hooks/rules-of-hooks */
-export default function DetailSidebar({children, width, minWidth}: OwnProps) {
+export function DetailSidebarImpl({
+  children,
+  width,
+  minWidth,
+}: DetailSidebarProps) {
   const [domNode, setDomNode] = useState(
     document.getElementById('detailsSidebar'),
   );
@@ -66,7 +69,7 @@ export default function DetailSidebar({children, width, minWidth}: OwnProps) {
       rightSidebarVisible &&
       domNode &&
       ReactDOM.createPortal(
-        <Sidebar
+        <_Sidebar
           minWidth={minWidth}
           width={width || 300}
           position="right"
@@ -74,7 +77,7 @@ export default function DetailSidebar({children, width, minWidth}: OwnProps) {
           <ContentContainer>
             <Layout.ScrollContainer vertical>{children}</Layout.ScrollContainer>
           </ContentContainer>
-        </Sidebar>,
+        </_Sidebar>,
         domNode,
       )) ||
     null

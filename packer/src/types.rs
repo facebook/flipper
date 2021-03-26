@@ -35,6 +35,26 @@ pub enum PackType {
     Core,
 }
 
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    serde::Deserialize,
+    serde::Serialize
+)]
+#[serde(rename_all = "lowercase")]
+pub enum PackMode {
+    /// All paths need to be specified.
+    Exact,
+    /// Can use `*` and `!` syntax to specify patterns for inclusion and exclusion.
+    /// Only works on the root folder level.
+    Glob,
+}
+
 impl Display for PackType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match *self {

@@ -41,12 +41,17 @@ PODS:
     - ComponentKit (= 0.30)
     - FlipperKit/Core
     - FlipperKit/FlipperKitHighlightOverlay
+    - FlipperKit/FlipperKitLayoutHelpers
     - FlipperKit/FlipperKitLayoutPlugin
     - FlipperKit/FlipperKitLayoutTextSearchable
     - RenderCore (= 0.30)
+  - FlipperKit/FlipperKitLayoutHelpers (0.74.0)
+  - FlipperKit/FlipperKitLayoutIOSDescriptors (0.74.0)
   - FlipperKit/FlipperKitLayoutPlugin (0.74.0):
     - FlipperKit/Core
     - FlipperKit/FlipperKitHighlightOverlay
+    - FlipperKit/FlipperKitLayoutHelpers
+    - FlipperKit/FlipperKitLayoutIOSDescriptors
     - FlipperKit/FlipperKitLayoutTextSearchable
     - YogaKit (~> 1.18)
   - FlipperKit/FlipperKitLayoutTextSearchable (0.74.0)
@@ -116,7 +121,7 @@ SPEC CHECKSUMS:
   Flipper-Glog: 1dfd6abf1e922806c52ceb8701a3599a79a200a6
   Flipper-PeerTalk: 116d8f857dc6ef55c7a5a75ea3ceaafe878aadc9
   Flipper-RSocket: 602921fee03edacf18f5d6f3d3594ba477f456e5
-  FlipperKit: f42987ea58737ac0fb3fbc38f8e703452ba56940
+  FlipperKit: fcac029fe04990813aca73c0d897bf0a91bf2b43
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   OpenSSL-Universal: 1aa4f6a6ee7256b83db99ec1ccdaa80d10f9af9b
   RenderCore: d779c47622b313ce2d51bb36d084517af38b0dc1

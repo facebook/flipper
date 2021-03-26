@@ -9,8 +9,8 @@
 
 #import "CKCenterLayoutComponent+Sonar.h"
 
-#import <FlipperKitLayoutPlugin/SKNamed.h>
-#import <FlipperKitLayoutPlugin/SKObject.h>
+#import <FlipperKitLayoutHelpers/SKNamed.h>
+#import <FlipperKitLayoutHelpers/SKObject.h>
 
 #import "CKComponent+Sonar.h"
 

@@ -26,6 +26,7 @@ const requireReplacements: any = {
   immer: 'global.Immer',
   '@emotion/styled': 'global.emotion_styled',
   '@ant-design/icons': 'global.antdesign_icons',
+  crc32: 'global.crc32_hack_fix_me',
 };
 
 export function tryReplaceFlipperRequire(path: NodePath<CallExpression>) {

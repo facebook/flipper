@@ -9,9 +9,11 @@
 
 #import <UIKit/UIKit.h>
 
-#import "SKNodeDescriptor.h"
+#import <FlipperKitLayoutHelpers/SKNodeDescriptor.h>
 
-@interface SKViewDescriptor : SKNodeDescriptor<UIView*>
+@class SKDescriptorMapper;
+
+@interface SKViewControllerDescriptor : SKNodeDescriptor<UIViewController*>
 
 @end
 

@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <FlipperKitLayoutPlugin/SKTapListener.h>
+#import <FlipperKitLayoutHelpers/SKTapListener.h>
 
 @interface SKTapListenerMock : NSObject<SKTapListener>
 

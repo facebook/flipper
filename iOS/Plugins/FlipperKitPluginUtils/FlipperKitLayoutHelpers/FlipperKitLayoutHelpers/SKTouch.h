@@ -5,9 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#import <FlipperKitLayoutHelpers/FlipperKitLayoutDescriptorMapperProtocol.h>
 #import <UIKit/UIKit.h>
-
-#import "SKDescriptorMapper.h"
 
 typedef void (^SKTouchFinishDelegate)(id<NSObject> currentNode);
 typedef void (^SKProcessFinishDelegate)(NSDictionary* tree);
@@ -16,7 +15,7 @@ typedef void (^SKProcessFinishDelegate)(NSDictionary* tree);
 
 - (instancetype)initWithTouchPoint:(CGPoint)touchPoint
                       withRootNode:(id<NSObject>)node
-              withDescriptorMapper:(SKDescriptorMapper*)mapper
+              withDescriptorMapper:(id<SKDescriptorMapperProtocol>)mapper
                    finishWithBlock:(SKTouchFinishDelegate)d;
 
 - (void)continueWithChildIndex:(NSUInteger)childIndex

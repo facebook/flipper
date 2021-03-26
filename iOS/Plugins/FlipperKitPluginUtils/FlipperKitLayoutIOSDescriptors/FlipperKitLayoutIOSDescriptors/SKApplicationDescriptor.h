@@ -7,7 +7,9 @@
 
 #import <UIKit/UIKit.h>
 
-#import "SKNodeDescriptor.h"
+#import <FlipperKitLayoutHelpers/SKNodeDescriptor.h>
+
+@class SKDescriptorMapper;
 
 @interface SKApplicationDescriptor : SKNodeDescriptor<UIApplication*>
 

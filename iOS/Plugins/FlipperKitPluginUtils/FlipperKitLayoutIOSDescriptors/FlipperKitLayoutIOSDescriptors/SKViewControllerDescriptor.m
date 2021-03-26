@@ -9,8 +9,6 @@
 
 #import "SKViewControllerDescriptor.h"
 
-#import "SKDescriptorMapper.h"
-
 @implementation SKViewControllerDescriptor
 
 - (NSString*)identifierForNode:(UIViewController*)node {
