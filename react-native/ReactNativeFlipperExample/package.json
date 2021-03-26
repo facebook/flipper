@@ -28,5 +28,8 @@
   },
   "relativeDependencies": {
     "react-native-flipper": "../react-native-flipper"
+  },
+  "resolutions": {
+    "xmldom": "0.5.0"
   }
 }
