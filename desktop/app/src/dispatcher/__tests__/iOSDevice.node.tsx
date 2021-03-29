@@ -64,7 +64,9 @@ test('test getAllPromisesForQueryingDevices when xcode detected', () => {
   const promises = getAllPromisesForQueryingDevices(
     mockStore,
     logger,
-    {},
+    {
+      idbAvailable: false,
+    },
     true,
   );
   expect(promises.length).toEqual(3);
@@ -74,7 +76,9 @@ test('test getAllPromisesForQueryingDevices when xcode is not detected', () => {
   const promises = getAllPromisesForQueryingDevices(
     mockStore,
     logger,
-    {},
+    {
+      idbAvailable: true,
+    },
     false,
   );
   expect(promises.length).toEqual(1);
