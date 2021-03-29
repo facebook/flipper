@@ -10,7 +10,7 @@
   "license": "MIT",
   "bugs": "https://github.com/facebook/flipper/issues",
   "dependencies": {
-    "@typescript-eslint/experimental-utils": "^4.7.0",
+    "@typescript-eslint/experimental-utils": "^4.19.0",
     "fs-extra": "^9.0.1"
   },
   "devDependencies": {
