@@ -41,6 +41,7 @@ const SidebarContainer = styled(Layout.Container)<{
         backgroundColor: theme.backgroundDefault,
       }),
   flex: 1,
+  overflow: 'hidden',
 }));
 SidebarContainer.displayName = 'Sidebar:SidebarContainer';
 
