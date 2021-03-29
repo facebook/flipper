@@ -6,6 +6,7 @@
  */
 
 #include "CertificateUtils.h"
+
 #include <fcntl.h>
 #include <folly/portability/Fcntl.h>
 #include <folly/portability/SysStat.h>
