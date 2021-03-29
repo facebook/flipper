@@ -5,7 +5,14 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#import <TargetConditionals.h>
+
+#if TARGET_OS_IPHONE
 #import <UIKit/UIKit.h>
+#elif TARGET_OS_OSX
+#import <AppKit/AppKit.h>
+#import <Foundation/Foundation.h>
+#endif
 
 @protocol SKSonarValueCoder
 
@@ -20,7 +27,11 @@ class SKObject {
   SKObject(CGRect rect);
   SKObject(CGSize size);
   SKObject(CGPoint point);
+#if TARGET_OS_IPHONE
   SKObject(UIEdgeInsets insets);
+#elif TARGET_OS_OSX
+  SKObject(NSEdgeInsets insets);
+#endif
   SKObject(CGAffineTransform transform);
   SKObject(id<SKSonarValueCoder> value);
   SKObject(id value);
@@ -38,7 +49,11 @@ class SKMutableObject : public SKObject {
   SKMutableObject(CGRect rect) : SKObject(rect) {}
   SKMutableObject(CGSize size) : SKObject(size){};
   SKMutableObject(CGPoint point) : SKObject(point){};
+#if TARGET_OS_IPHONE
   SKMutableObject(UIEdgeInsets insets) : SKObject(insets){};
+#elif TARGET_OS_OSX
+  SKMutableObject(NSEdgeInsets insets) : SKObject(insets){};
+#endif
   SKMutableObject(CGAffineTransform transform) : SKObject(transform){};
   SKMutableObject(id<SKSonarValueCoder> value) : SKObject(value){};
   SKMutableObject(id value) : SKObject(value){};

@@ -5,8 +5,14 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <FlipperKitLayoutHelpers/FlipperKitLayoutDescriptorMapperProtocol.h>
+#import <TargetConditionals.h>
+#if TARGET_OS_IPHONE
 #import <UIKit/UIKit.h>
+#elif TARGET_OS_OSX
+#import <AppKit/AppKit.h>
+#endif
+
+#import <FlipperKitLayoutHelpers/FlipperKitLayoutDescriptorMapperProtocol.h>
 
 typedef void (^SKTouchFinishDelegate)(id<NSObject> currentNode);
 typedef void (^SKProcessFinishDelegate)(NSDictionary* tree);

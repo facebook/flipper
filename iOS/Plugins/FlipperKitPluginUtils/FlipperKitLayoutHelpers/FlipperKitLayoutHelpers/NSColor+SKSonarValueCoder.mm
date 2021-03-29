@@ -5,13 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#if TARGET_OS_IPHONE
+#if TARGET_OS_OSX
 #if FB_SONARKIT_ENABLED
 
-#import "UIColor+SKSonarValueCoder.h"
+#import "NSColor+SKSonarValueCoder.h"
 
-FB_LINKABLE(UIColor_SonarValueCoder)
-@implementation UIColor (SonarValueCoder)
+FB_LINKABLE(NSColor_SonarValueCoder)
+@implementation NSColor (SonarValueCoder)
 
 + (instancetype)fromSonarValue:(NSNumber*)sonarValue {
   NSUInteger intColor = [sonarValue integerValue];
@@ -23,7 +23,7 @@ FB_LINKABLE(UIColor_SonarValueCoder)
   r = CGFloat((intColor >> 16) & 0xFF) / 255;
   a = CGFloat((intColor >> 24) & 0xFF) / 255;
 
-  return [[UIColor alloc] initWithRed:r green:g blue:b alpha:a];
+  return [NSColor colorWithRed:r green:g blue:b alpha:a];
 }
 
 - (NSDictionary<NSString*, id<NSObject>>*)sonarValue {

@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#if TARGET_OS_IPHONE
+
 #import <FlipperKit/SKMacros.h>
 
 FB_LINK_REQUIRE_CATEGORY(UIView_SKInvalidation)
@@ -13,3 +15,5 @@ FB_LINK_REQUIRE_CATEGORY(UIView_SKInvalidation)
 + (void)enableInvalidation;
 
 @end
+
+#endif

@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#if TARGET_OS_IPHONE
 #if FB_SONARKIT_ENABLED
 
 #import "UICollectionView+SKInvalidation.h"
@@ -36,4 +37,5 @@ FB_LINKABLE(UICollectionView_SKInvalidation)
 
 @end
 
+#endif // FB_SONARKIT_ENABLED
 #endif

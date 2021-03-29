@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#if TARGET_OS_IPHONE
+
 #import <UIKit/UIKit.h>
 
 #import <FlipperKit/SKMacros.h>
@@ -15,3 +17,5 @@ FB_LINK_REQUIRE_CATEGORY(UICollectionView_SKInvalidation)
 + (void)enableInvalidations;
 
 @end
+
+#endif
