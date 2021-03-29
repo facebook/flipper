@@ -7,6 +7,7 @@
  * @format
  */
 
+import React from 'react';
 import {Mutex} from 'async-mutex';
 import {exec as unsafeExec, Output} from 'promisify-child-process';
 import {killOrphanedInstrumentsProcesses} from './processCleanup';
@@ -18,6 +19,8 @@ import {promisify} from 'util';
 import child_process from 'child_process';
 import fs from 'fs-extra';
 import path from 'path';
+import fbConfig from '../fb-stubs/config';
+import {notification, Typography} from 'antd';
 const exec = promisify(child_process.exec);
 
 // Use debug to get helpful logs when idb fails
@@ -220,7 +223,8 @@ async function pull(
         .then(() => {
           return;
         })
-        .catch((e) => handleMissingIdb(e, idbPath)),
+        .catch((e) => handleMissingIdb(e, idbPath))
+        .catch((e) => handleMissingPermissions(e)),
       `${operationPrefix}:pull`,
     ),
   );
@@ -242,16 +246,52 @@ function handleMissingIdb(e: Error, idbPath: string): void {
     e.message &&
     e.message.includes('sudo: no tty present and no askpass program specified')
   ) {
-    throw new Error(
-      `idb doesn't appear to be installed. Run "${idbPath} list-targets" to fix this.`,
+    console.warn(e);
+    const message = `idb doesn't appear to be installed. Run "${idbPath} list-targets" to fix this.`;
+    notification.error({
+      message: 'Cannot connect to idb',
+      duration: null,
+      description: message,
+      key: 'idb_connection_failed',
+    });
+    return;
+  }
+  throw e;
+}
+
+function handleMissingPermissions(e: Error): void {
+  if (
+    e.message &&
+    e.message.includes('Command failed') &&
+    e.message.includes('file pull') &&
+    e.message.includes('sonar/app.csr')
+  ) {
+    console.warn(e);
+    const message = fbConfig.isFBBuild ? (
+      <>
+        Idb lacks permissions to exchange certificates. Did you install a source
+        build or a debug build with certificate exchange enabled?{' '}
+        <Typography.Link href="https://www.internalfb.com/intern/staticdocs/flipper/docs/getting-started/fb/connecting-to-flipper#app-on-physical-ios-device">
+          How To
+        </Typography.Link>
+      </>
+    ) : (
+      'Idb lacks permissions to exchange certificates. Did you install a source build?'
     );
+    notification.error({
+      message: 'Cannot connect to iOS application',
+      duration: null,
+      description: message,
+      key: 'idb_certificate_pull_failed',
+    });
+    return;
   }
   throw e;
 }
 
 function wrapWithErrorMessage<T>(p: Promise<T>): Promise<T> {
   return p.catch((e: Error) => {
-    console.error(e);
+    console.warn(e);
     // Give the user instructions. Don't embed the error because it's unique per invocation so won't be deduped.
     throw new Error(
       "A problem with idb has ocurred. Please run `sudo rm -rf /tmp/idb*` and `sudo yum install -y fb-idb` to update it, if that doesn't fix it, post in Flipper Support.",
