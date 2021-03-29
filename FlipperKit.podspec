@@ -104,6 +104,7 @@ Pod::Spec.new do |spec|
 
   spec.subspec 'FlipperKitLayoutHelpers' do |ss|
     ss.header_dir = 'FlipperKitLayoutHelpers'
+    ss.dependency 'FlipperKit/Core'
     ss.compiler_flags = folly_compiler_flags
     ss.source_files = 'iOS/Plugins/FlipperKitPluginUtils/FlipperKitLayoutHelpers/**/**/*.{h,mm,m}'
     ss.public_header_files = 'iOS/Plugins/FlipperKitPluginUtils/FlipperKitLayoutHelpers/FlipperKitLayoutHelpers/SKTapListener.h',
@@ -121,6 +122,8 @@ Pod::Spec.new do |spec|
 
   spec.subspec 'FlipperKitLayoutIOSDescriptors' do |ss|
     ss.header_dir = 'FlipperKitLayoutIOSDescriptors'
+    ss.dependency 'FlipperKit/Core'
+    ss.dependency 'YogaKit', yogakit_version
     ss.compiler_flags = folly_compiler_flags
     ss.source_files = 'iOS/Plugins/FlipperKitPluginUtils/FlipperKitLayoutIOSDescriptors/**/*.{h,mm,m}'
   end
