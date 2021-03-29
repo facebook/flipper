@@ -94,7 +94,7 @@ Once you have added the pod, initialise the plugin and add it to the `FlipperCli
 <Tabs defaultValue="ios" values={[{ label: 'iOS', value: 'ios'}, { label: 'Swift', value: 'swift'}]}>
 <TabItem value="ios">
 
-```objective-c
+```objc
 #import <FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h>
 
 SKDescriptorMapper *mapper = [[SKDescriptorMapper alloc] initWithDefaults];
@@ -120,13 +120,13 @@ If you want to enable [ComponentKit support](https://github.com/facebook/compone
 
 ```ruby
 pod 'FlipperKit/FlipperKitLayoutComponentKitSupport', '~>' + flipperkit_version
-```   
+```
 Once you have added the pod you will then need to augment the descriptor with Componentkit-specific settings as shown below.
 
 <Tabs defaultValue="ios" values={[{ label: 'iOS', value: 'ios'}, { label: 'Swift', value: 'swift'}]}>
 <TabItem value="ios">
 
-```objective-c
+```objc
 #import <FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h>
 #import <FlipperKitLayoutComponentKitSupport/FlipperKitLayoutComponentKitSupport.h>
 

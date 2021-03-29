@@ -232,7 +232,7 @@ If you experience errors such as `Undefined symbol: associated type descriptor f
 
 Comment out the relevant lines in `ios/Podfile` and run `cd ios && pod install` again:
 
-```
+```ruby
   # use_flipper!
   # post_install do |installer|
   #  flipper_post_install(installer)
@@ -243,7 +243,7 @@ Comment out the relevant lines in `ios/Podfile` and run `cd ios && pod install` 
 
 To speed up CI builds, Flipper can be disabled on CI environments by making the Flipper SDK inclusion conditional (this works on most CI providers, feel free to customize the environment variable):
 
-```
+```ruby
   if !ENV['CI']
     use_flipper!
     post_install do |installer|

@@ -49,7 +49,7 @@ localhost:8089/sonar?os={OS}
 ```
 
 On that connection, send the following payload:
-```
+```js
 Request = {
   "method": "signCertificate",
   "csr": string,
@@ -59,13 +59,13 @@ Request = {
 ```
 Where `csr` is a Certificate Signing Request the client has generated, and `destination` identifies a location accessible to both the client and Flipper desktop, where the certificate should be placed.
 
-The Subject Common Name (CN=...) must be included in the CSR, and your `CertificateProvider` implementation in Flipper may use this in combination with the `destination` to determine where to put the certificate. 
+The Subject Common Name (CN=...) must be included in the CSR, and your `CertificateProvider` implementation in Flipper may use this in combination with the `destination` to determine where to put the certificate.
 
 This will ask Flipper desktop to generate a client certificate, using the CSR provided, and put it into the specified `destination`.
 
 Depending on the client, `destination` can have a different meaning. A basic example would be a file path, that both the desktop and the client have access to. With this Flipper desktop could write the certificate to that path. A more involved example is that of the Android Client, where destination specifies a relative path inside an app container. And the Subject Common Name determines which app container. Together these two pieces of information form an absolute file path inside an android device.
 
-For Flipper desktop to work with a given Client type, it needs to be modified to know how to correctly interpret the `destination` argument, and deploy certificates to it. 
+For Flipper desktop to work with a given Client type, it needs to be modified to know how to correctly interpret the `destination` argument, and deploy certificates to it.
 
 `destination` field may not be relevant if your `medium` value is more than 1. `medium=1`(default) means Flipper should do certificate exchange by directly putting certificates at `destination` in the sandbox of the app. `medium=2` means Flipper will use Certificate Uploader and Provider to upload certificates and download it on the client side respectively.
 

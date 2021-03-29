@@ -144,7 +144,7 @@ const siteConfig = {
       },
     }),
     prism: {
-      additionalLanguages: ['groovy', 'java', 'kotlin', 'ruby', 'swift'],
+      additionalLanguages: ['groovy', 'java', 'kotlin', 'ruby', 'swift', 'objectivec'],
     },
   },
   favicon: 'img/icon.png',

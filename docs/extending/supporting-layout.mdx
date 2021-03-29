@@ -8,7 +8,7 @@ To enable the Flipper layout inspector on a new platform, just implement a clien
 Note that we're using [Flow](https://flow.org/en/docs/types/objects/) syntax to specify this JSON API.
 
 ### Node
-```
+```ts
 type NodeId = string;
 
 type InspectorValue = {
@@ -45,7 +45,7 @@ InspectorValue can also be used to change the parsed type of the value, such as 
 
 ### Plugin Interface
 
-```
+```ts
 interface ClientLayoutPlugin {
   Node getRoot();
   GetNodesResponse getNodes({ids: Array<NodeId>});
