@@ -4,11 +4,14 @@ on:
     paths:
       - "iOS/**"
       - "xplat/**"
+      - "Flipper.podspec"
+      - "FlipperKit.podspec"
   pull_request:
     paths:
       - "iOS/**"
       - "xplat/**"
-
+      - "Flipper.podspec"
+      - "FlipperKit.podspec"
 jobs:
   lint-flipperkit_pod:
     runs-on: macos-latest
