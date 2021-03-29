@@ -1,5 +1,13 @@
 name: Validate Podspecs
-on: [push, pull_request]
+on:
+  push:
+    paths:
+      - "iOS/**"
+      - "xplat/**"
+  pull_request:
+    paths:
+      - "iOS/**"
+      - "xplat/**"
 
 jobs:
   lint-flipperkit_pod:
