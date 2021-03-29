@@ -1,5 +1,14 @@
 name: Build iOS apps
-on: [push, pull_request]
+on:
+  push:
+    paths:
+      - "iOS/**"
+      - "xplat/**"
+  pull_request:
+    paths:
+      - "iOS/**"
+      - "xplat/**"
+
 jobs:
   build-sample-objc:
     runs-on: macos-latest
