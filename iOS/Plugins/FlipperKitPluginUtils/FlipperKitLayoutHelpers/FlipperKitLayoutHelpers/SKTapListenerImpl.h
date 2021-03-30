@@ -7,16 +7,7 @@
 
 #import "SKTapListener.h"
 
-#if TARGET_OS_IPHONE
-
 @interface SKTapListenerImpl
     : NSObject<SKTapListener, UIGestureRecognizerDelegate>
-
-#elif TARGET_OS_OSX
-
-@interface SKTapListenerImpl
-    : NSObject<SKTapListener, NSGestureRecognizerDelegate>
-
-#endif
 
 @end

@@ -21,8 +21,6 @@ SKObject::SKObject(CGPoint point) {
   _actual = @{@"x" : @(point.x), @"y" : @(point.y)};
 }
 
-#if TARGET_OS_IPHONE
-
 SKObject::SKObject(UIEdgeInsets insets) {
   _actual = @{
     @"top" : @(insets.top),
@@ -31,19 +29,6 @@ SKObject::SKObject(UIEdgeInsets insets) {
     @"right" : @(insets.right),
   };
 }
-
-#elif TARGET_OS_OSX
-
-SKObject::SKObject(NSEdgeInsets insets) {
-  _actual = @{
-    @"top" : @(insets.top),
-    @"bottom" : @(insets.bottom),
-    @"left" : @(insets.left),
-    @"right" : @(insets.right),
-  };
-}
-
-#endif
 
 SKObject::SKObject(CGAffineTransform transform) {
   _actual = @{

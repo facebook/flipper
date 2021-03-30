@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#if TARGET_OS_IPHONE
 #if FB_SONARKIT_ENABLED
 
 #import "UIColor+SKSonarValueCoder.h"
@@ -63,5 +62,4 @@ FB_LINKABLE(UIColor_SonarValueCoder)
 
 @end
 
-#endif // FB_SONARKIT_ENABLED
 #endif
