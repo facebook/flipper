@@ -70,12 +70,8 @@ NSObject* flattenLayoutEditorMessage(NSObject* field);
   _connection = connection;
 
   if (!_rootNode) {
-// TODO: T61384369 get rid off this if condition.
-#if TARGET_OS_IPHONE
+    // TODO: T61384369 get rid off this if condition.
     _rootNode = [UIApplication sharedApplication];
-#elif TARGET_OS_OSX
-    _rootNode = [NSApplication sharedApplication];
-#endif
   }
 
   [SKInvalidation enableInvalidations];
@@ -370,11 +366,7 @@ NSObject* flattenLayoutEditorMessage(NSObject* field) {
 - (void)onCallSetSearchActive:(BOOL)active
                withConnection:(id<FlipperConnection>)connection {
   if (active) {
-#if TARGET_OS_IPHONE
     [_tapListener mountWithFrame:[[UIScreen mainScreen] bounds]];
-#elif TARGET_OS_OSX
-    [_tapListener mountWithFrame:NSRectToCGRect([NSScreen mainScreen].frame)];
-#endif
     __block id<NSObject> rootNode = _rootNode;
 
     [_tapListener listenForTapWithBlock:^(CGPoint touchPoint) {
