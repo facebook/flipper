@@ -1,3 +1,8 @@
+# 0.82.2 (30/3/2021)
+
+ * [D27346262](https://github.com/facebook/flipper/search?q=D27346262&type=Commits) -  Logs plugin now supports physical iOS devices
+
+
 # 0.82.0 (25/3/2021)
 
  * [D27188241](https://github.com/facebook/flipper/search?q=D27188241&type=Commits) -  Restored the possibility to use Regex in logs search
