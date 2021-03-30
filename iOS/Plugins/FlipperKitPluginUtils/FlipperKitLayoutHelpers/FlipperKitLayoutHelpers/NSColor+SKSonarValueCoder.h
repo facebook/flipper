@@ -5,16 +5,16 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#if TARGET_OS_IPHONE
+#if TARGET_OS_OSX
 
-#import <UIKit/UIKit.h>
+#import <AppKit/AppKit.h>
 
 #import <FlipperKit/SKMacros.h>
 
 #import "SKObject.h"
 
-FB_LINK_REQUIRE_CATEGORY(UIColor_SonarValueCoder)
-@interface UIColor (SonarValueCoder)<SKSonarValueCoder>
+FB_LINK_REQUIRE_CATEGORY(NSColor_SonarValueCoder)
+@interface NSColor (SonarValueCoder)<SKSonarValueCoder>
 
 @end
 

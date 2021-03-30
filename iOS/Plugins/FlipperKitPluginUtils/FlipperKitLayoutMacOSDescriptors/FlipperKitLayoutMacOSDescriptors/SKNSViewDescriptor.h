@@ -5,16 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#if TARGET_OS_IPHONE
+#if FB_SONARKIT_ENABLED
 
-#import <UIKit/UIKit.h>
+#import <AppKit/AppKit.h>
 
-#import <FlipperKit/SKMacros.h>
+#import <FlipperKitLayoutHelpers/SKNodeDescriptor.h>
 
-#import "SKObject.h"
+@class SKDescriptorMapper;
 
-FB_LINK_REQUIRE_CATEGORY(UIColor_SonarValueCoder)
-@interface UIColor (SonarValueCoder)<SKSonarValueCoder>
+@interface SKNSViewDescriptor : SKNodeDescriptor<NSView*>
 
 @end
 

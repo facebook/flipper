@@ -5,23 +5,14 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <TargetConditionals.h>
-
-#if TARGET_OS_IPHONE
-#import <UIKit/UIKit.h>
-#elif TARGET_OS_OSX
 #import <AppKit/AppKit.h>
 #import <Foundation/Foundation.h>
-#endif
 
-#if TARGET_OS_IPHONE
+#import <FlipperKitLayoutHelpers/SKNodeDescriptor.h>
 
-@interface SKHiddenWindow : UIWindow
+@class NSButton;
+@class SKDescriptorMapper;
+
+@interface SKNSButtonDescriptor : SKNodeDescriptor<NSButton*>
+
 @end
-
-#elif TARGET_OS_OSX
-
-@interface SKHiddenWindow : NSView
-@end
-
-#endif

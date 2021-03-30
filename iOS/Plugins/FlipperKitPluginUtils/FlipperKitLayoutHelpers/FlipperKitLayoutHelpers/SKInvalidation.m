@@ -7,11 +7,21 @@
 
 #if FB_SONARKIT_ENABLED
 
-#import <UIKit/UIKit.h>
-
 #import "SKInvalidation.h"
+
+#if TARGET_OS_IPHONE
+
+#import <UIKit/UIKit.h>
 #import "UICollectionView+SKInvalidation.h"
 #import "UIView+SKInvalidation.h"
+
+#elif TARGET_OS_OSX
+
+#import <AppKit/AppKit.h>
+#import "NSCollectionView+SKInvalidation.h"
+#import "NSView+SKInvalidation.h"
+
+#endif
 
 @implementation SKInvalidation
 
@@ -29,6 +39,7 @@
 + (void)enableInvalidations {
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
+#if TARGET_OS_IPHONE
     [UIView enableInvalidation];
     [UICollectionView enableInvalidations];
 
@@ -43,6 +54,13 @@
            selector:@selector(windowDidBecomeHidden:)
                name:UIWindowDidBecomeHiddenNotification
              object:nil];
+
+#elif TARGET_OS_OSX
+
+    [NSView enableInvalidation];
+    [NSCollectionView enableInvalidations];
+
+#endif
   });
 }
 

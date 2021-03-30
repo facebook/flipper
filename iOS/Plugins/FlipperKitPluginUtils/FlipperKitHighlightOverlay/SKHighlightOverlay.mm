@@ -31,6 +31,8 @@
   return self;
 }
 
+#if TARGET_OS_IPHONE
+
 - (void)mountInView:(UIView*)view withFrame:(CGRect)frame {
   [CATransaction begin];
   [CATransaction setValue:(id)kCFBooleanTrue
@@ -40,9 +42,24 @@
   [CATransaction commit];
 }
 
+#elif TARGET_OS_OSX
+
+- (void)mountInView:(NSView*)view withFrame:(CGRect)frame {
+  [CATransaction begin];
+  [CATransaction setValue:(id)kCFBooleanTrue
+                   forKey:kCATransactionDisableActions];
+  _overlayLayer.frame = frame;
+  [view.layer addSublayer:_overlayLayer];
+  [CATransaction commit];
+}
+
+#endif
+
 - (void)unmount {
   [_overlayLayer removeFromSuperlayer];
 }
+
+#if TARGET_OS_IPHONE
 
 + (UIColor*)overlayColor {
   return [UIColor colorWithRed:136.0 / 255.0
@@ -50,6 +67,17 @@
                           blue:197.0 / 255.0
                          alpha:0.6];
 }
+
+#elif TARGET_OS_OSX
+
++ (NSColor*)overlayColor {
+  return [NSColor colorWithRed:136.0 / 255.0
+                         green:117.0 / 255.0
+                          blue:197.0 / 255.0
+                         alpha:0.6];
+}
+
+#endif
 
 @end
 
