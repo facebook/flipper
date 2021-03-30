@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import <FlipperKitLayoutHelpers/FlipperKitLayoutDescriptorMapperProtocol.h>
+#import "FlipperKitLayoutDescriptorMapperProtocol.h"
 #import "SKNamed.h"
 #import "SKTouch.h"
 

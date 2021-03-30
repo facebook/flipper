@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <FlipperKitLayoutHelpers/FlipperKitLayoutDescriptorMapperProtocol.h>
+#import "FlipperKitLayoutDescriptorMapperProtocol.h"
 #import <UIKit/UIKit.h>
 
 typedef void (^SKTouchFinishDelegate)(id<NSObject> currentNode);
