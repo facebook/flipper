@@ -126,6 +126,7 @@ Pod::Spec.new do |spec|
     ss.header_dir = 'FlipperKitLayoutIOSDescriptors'
     ss.dependency 'FlipperKit/Core'
     ss.dependency 'FlipperKit/FlipperKitHighlightOverlay'
+    ss.dependency 'FlipperKit/FlipperKitLayoutHelpers'
     ss.dependency 'YogaKit', yogakit_version
     ss.compiler_flags = folly_compiler_flags
     ss.source_files = 'iOS/Plugins/FlipperKitPluginUtils/FlipperKitLayoutIOSDescriptors/**/*.{h,mm,m}'
