@@ -255,7 +255,7 @@
     "test:debug": "yarn build:tsc && node --inspect node_modules/.bin/jest --runInBand",
     "watch": "node --expose-gc ./node_modules/.bin/jest --watch"
   },
-  "version": "0.82.2",
+  "version": "0.83.0",
   "workspaces": {
     "nohoist": [
       "flipper-plugin-kaios-big-allocations/firefox-client"
