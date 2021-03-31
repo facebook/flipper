@@ -72,7 +72,7 @@ const SortIconsContainer = styled.span<{direction?: 'asc' | 'desc'}>(
     cursor: 'pointer',
     color: theme.disabledColor,
     '.ant-table-column-sorter-up:hover, .ant-table-column-sorter-down:hover': {
-      color: theme.primaryColor,
+      color: theme.textColorActive,
     },
   }),
 );

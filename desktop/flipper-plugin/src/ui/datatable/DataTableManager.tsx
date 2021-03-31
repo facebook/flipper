@@ -40,6 +40,7 @@ type PersistedState = {
   /** The default columns, but normalized */
   columns: Pick<DataTableColumn, 'key' | 'width' | 'filters' | 'visible'>[];
   scrollOffset: number;
+  autoScroll: boolean;
 };
 
 type Action<Name extends string, Args = {}> = {type: Name} & Args;
@@ -79,7 +80,9 @@ type DataManagerActions<T> =
   | Action<'toggleColumnFilter', {column: keyof T; index: number}>
   | Action<'setColumnFilterFromSelection', {column: keyof T}>
   | Action<'appliedInitialScroll'>
-  | Action<'toggleUseRegex'>;
+  | Action<'toggleUseRegex'>
+  | Action<'toggleAutoScroll'>
+  | Action<'setAutoScroll', {autoScroll: boolean}>;
 
 type DataManagerConfig<T> = {
   dataSource: DataSource<T>;
@@ -87,6 +90,7 @@ type DataManagerConfig<T> = {
   scope: string;
   onSelect: undefined | ((item: T | undefined, items: T[]) => void);
   virtualizerRef: MutableRefObject<DataSourceVirtualizer | undefined>;
+  autoScroll?: boolean;
 };
 
 type DataManagerState<T> = {
@@ -99,6 +103,7 @@ type DataManagerState<T> = {
   selection: Selection;
   searchValue: string;
   useRegex: boolean;
+  autoScroll: boolean;
 };
 
 export type DataTableReducer<T> = Reducer<
@@ -208,6 +213,14 @@ export const dataTableManagerReducer = produce<
       draft.initialOffset = 0;
       break;
     }
+    case 'toggleAutoScroll': {
+      draft.autoScroll = !draft.autoScroll;
+      break;
+    }
+    case 'setAutoScroll': {
+      draft.autoScroll = action.autoScroll;
+      break;
+    }
     default: {
       throw new Error('Unknown action ' + (action as any).type);
     }
@@ -307,6 +320,7 @@ export function createInitialState<T>(
       : emptySelection,
     searchValue: prefs?.search ?? '',
     useRegex: prefs?.useRegex ?? false,
+    autoScroll: prefs?.autoScroll ?? config.autoScroll ?? false,
   };
   // @ts-ignore
   res.config[immerable] = false; // optimization: never proxy anything in config
@@ -382,6 +396,7 @@ export function savePreferences(
       visible: c.visible,
     })),
     scrollOffset,
+    autoScroll: state.autoScroll,
   };
   localStorage.setItem(state.storageKey, JSON.stringify(prefs));
 }

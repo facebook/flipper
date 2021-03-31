@@ -41,7 +41,7 @@ import styled from '@emotion/styled';
 import {theme} from '../theme';
 import {tableContextMenuFactory} from './TableContextMenu';
 import {Typography} from 'antd';
-import {CoffeeOutlined, SearchOutlined} from '@ant-design/icons';
+import {CoffeeOutlined, SearchOutlined, PushpinFilled} from '@ant-design/icons';
 import {useAssertStableRef} from '../../utils/useAssertStableRef';
 import {Formatter} from '../DataFormatter';
 import {usePluginInstance} from '../../plugin/PluginContext';
@@ -115,6 +115,7 @@ export function DataTable<T extends object>(
         onSelect,
         scope,
         virtualizerRef,
+        autoScroll: props.autoScroll,
       }),
   );
 
@@ -307,6 +308,7 @@ export function DataTable<T extends object>(
           type: 'appliedInitialScroll',
         });
       } else if (selection && selection.current >= 0) {
+        dispatch({type: 'setAutoScroll', autoScroll: false});
         virtualizerRef.current?.scrollToIndex(selection!.current, {
           align: 'auto',
         });
@@ -332,6 +334,15 @@ export function DataTable<T extends object>(
       }, 1000);
     },
     [],
+  );
+
+  const onUpdateAutoScroll = useCallback(
+    (autoScroll: boolean) => {
+      if (props.autoScroll) {
+        dispatch({type: 'setAutoScroll', autoScroll});
+      }
+    },
+    [props.autoScroll],
   );
 
   /** Context menu */
@@ -390,7 +401,7 @@ export function DataTable<T extends object>(
         </Layout.Container>
         <DataSourceRenderer<T, RenderContext<T>>
           dataSource={dataSource}
-          autoScroll={props.autoScroll && !dragging.current}
+          autoScroll={tableState.autoScroll && !dragging.current}
           useFixedRowHeight={!tableState.usesWrapping}
           defaultRowHeight={DEFAULT_ROW_HEIGHT}
           context={renderingConfig}
@@ -398,10 +409,23 @@ export function DataTable<T extends object>(
           onKeyDown={onKeyDown}
           virtualizerRef={virtualizerRef}
           onRangeChange={onRangeChange}
+          onUpdateAutoScroll={onUpdateAutoScroll}
           emptyRenderer={emptyRenderer}
           _testHeight={props._testHeight}
         />
       </Layout.Top>
+      {props.autoScroll && (
+        <AutoScroller>
+          <PushpinFilled
+            style={{
+              color: tableState.autoScroll ? theme.textColorActive : undefined,
+            }}
+            onClick={() => {
+              dispatch({type: 'toggleAutoScroll'});
+            }}
+          />
+        </AutoScroller>
+      )}
       {range && <RangeFinder>{range}</RangeFinder>}
     </Layout.Container>
   );
@@ -436,8 +460,19 @@ function EmptyTable({dataSource}: {dataSource: DataSource<any>}) {
 const RangeFinder = styled.div({
   backgroundColor: theme.backgroundWash,
   position: 'absolute',
+  right: 64,
+  bottom: 20,
+  padding: '4px 8px',
+  color: theme.textColorSecondary,
+  fontSize: '0.8em',
+});
+
+const AutoScroller = styled.div({
+  backgroundColor: theme.backgroundWash,
+  position: 'absolute',
   right: 40,
   bottom: 20,
+  width: 24,
   padding: '4px 8px',
   color: theme.textColorSecondary,
   fontSize: '0.8em',

@@ -159,7 +159,7 @@ function TruncateHelper({
         type="text"
         style={truncateButtonStyle}
         icon={collapsed ? <CaretRightOutlined /> : <CaretUpOutlined />}>
-        {`(and ${value.length - maxLength} more...)`}
+        {collapsed ? `and ${value.length - maxLength} more` : 'collapse'}
       </Button>
       <Button
         icon={<CopyOutlined />}
@@ -169,13 +169,13 @@ function TruncateHelper({
         size="small"
         type="text"
         style={truncateButtonStyle}>
-        Copy
+        copy
       </Button>
     </>
   );
 }
 
 const truncateButtonStyle = {
-  color: theme.textColorPrimary,
+  color: theme.primaryColor,
   marginLeft: 4,
 };

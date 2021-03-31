@@ -66,6 +66,7 @@ export default function SandyDesignSystem() {
           <ColorPreview name="textColorPrimary" />
           <ColorPreview name="textColorSecondary" />
           <ColorPreview name="textColorPlaceholder" />
+          <ColorPreview name="textColorActive" />
           <ColorPreview name="disabledColor" />
           <ColorPreview name="backgroundDefault" />
           <ColorPreview name="backgroundWash" />

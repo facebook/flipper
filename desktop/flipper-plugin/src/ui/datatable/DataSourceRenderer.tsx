@@ -66,6 +66,7 @@ type DataSourceProps<T extends object, C> = {
     total: number,
     offset: number,
   ): void;
+  onUpdateAutoScroll?(autoScroll: boolean): void;
   emptyRenderer?(dataSource: DataSource<T>): React.ReactElement;
   _testHeight?: number; // exposed for unit testing only
 };
@@ -86,6 +87,7 @@ export const DataSourceRenderer: <T extends object, C>(
   onKeyDown,
   virtualizerRef,
   onRangeChange,
+  onUpdateAutoScroll,
   emptyRenderer,
   _testHeight,
 }: DataSourceProps<any, any>) {
@@ -211,7 +213,7 @@ export const DataSourceRenderer: <T extends object, C>(
   useLayoutEffect(function updateWindow() {
     const start = virtualizer.virtualItems[0]?.index ?? 0;
     const end = start + virtualizer.virtualItems.length;
-    if (start !== dataSource.view.windowStart && !followOutput.current) {
+    if (start !== dataSource.view.windowStart && !autoScroll) {
       onRangeChange?.(
         start,
         end,
@@ -225,29 +227,21 @@ export const DataSourceRenderer: <T extends object, C>(
   /**
    * Scrolling
    */
-  // if true, scroll if new items are appended
-  const followOutput = useRef(false);
-  // if true, the next scroll event will be fired as result of a size change,
-  // ignore it
-  const suppressScroll = useRef(false);
-  suppressScroll.current = true;
-
   const onScroll = useCallback(() => {
-    // scroll event is firing as a result of painting new items?
-    if (suppressScroll.current || !autoScroll) {
+    const elem = parentRef.current;
+    if (!elem) {
       return;
     }
-    const elem = parentRef.current!;
-    // make bottom 1/3 of screen sticky
-    if (elem.scrollTop < elem.scrollHeight - elem.clientHeight * 1.3) {
-      followOutput.current = false;
-    } else {
-      followOutput.current = true;
+    const fromEnd = elem.scrollHeight - elem.scrollTop - elem.clientHeight;
+    if (autoScroll && fromEnd >= 1) {
+      onUpdateAutoScroll?.(false);
+    } else if (!autoScroll && fromEnd < 1) {
+      onUpdateAutoScroll?.(true);
     }
-  }, [autoScroll, parentRef]);
+  }, [onUpdateAutoScroll, autoScroll]);
 
   useLayoutEffect(function scrollToEnd() {
-    if (followOutput.current && autoScroll) {
+    if (autoScroll) {
       virtualizer.scrollToIndex(
         dataSource.view.size - 1,
         /* smooth is not typed by react-virtual, but passed on to the DOM as it should*/
@@ -263,7 +257,6 @@ export const DataSourceRenderer: <T extends object, C>(
    * Render finalization
    */
   useEffect(function renderCompleted() {
-    suppressScroll.current = false;
     renderPending.current = UpdatePrio.NONE;
     lastRender.current = Date.now();
   });
@@ -295,7 +288,7 @@ export const DataSourceRenderer: <T extends object, C>(
    */
   return (
     <RedrawContext.Provider value={redraw}>
-      <TableContainer onScroll={onScroll} ref={parentRef}>
+      <TableContainer ref={parentRef} onScroll={onScroll}>
         {virtualizer.virtualItems.length === 0
           ? emptyRenderer?.(dataSource)
           : null}
