@@ -13,7 +13,7 @@ import {
   CopyOutlined,
 } from '@ant-design/icons';
 import {Button, Typography} from 'antd';
-import {pad} from 'lodash';
+import {isPlainObject, pad} from 'lodash';
 import React, {createElement, Fragment, isValidElement, useState} from 'react';
 import {tryGetFlipperLibImplementation} from '../plugin/FlipperLib';
 import {safeStringify} from '../utils/safeStringify';
@@ -97,6 +97,9 @@ export const DataFormatter = {
   },
 
   prettyPrintJson(value: any) {
+    if (isValidElement(value)) {
+      return value;
+    }
     if (typeof value === 'string' && value.length >= 2) {
       const last = value.length - 1;
       // kinda looks like json
@@ -112,7 +115,11 @@ export const DataFormatter = {
         }
       }
     }
-    if (typeof value === 'object' && value !== null) {
+    if (
+      typeof value === 'object' &&
+      value !== null &&
+      (Array.isArray(value) || isPlainObject(value))
+    ) {
       try {
         // Note: we don't need to be inserted <br/>'s in the output, but assume the text container uses
         // white-space: pre-wrap (or pre)
@@ -137,7 +144,8 @@ export const DataFormatter = {
   },
 };
 
-function TruncateHelper({
+// exported for testing
+export function TruncateHelper({
   value,
   maxLength,
 }: {
