@@ -15,10 +15,13 @@ import React, {
   useState,
   useLayoutEffect,
   MutableRefObject,
+  useContext,
+  createContext,
 } from 'react';
 import {DataSource} from '../../state/DataSource';
 import {useVirtual} from 'react-virtual';
 import styled from '@emotion/styled';
+import observeRect from '@reach/observe-rect';
 
 // how fast we update if updates are low-prio (e.g. out of window and not super significant)
 const LOW_PRIO_UPDATE = 1000; //ms
@@ -92,9 +95,8 @@ export const DataSourceRenderer: <T extends object, C>(
   // render scheduling
   const renderPending = useRef(UpdatePrio.NONE);
   const lastRender = useRef(Date.now());
-  const setForceUpdate = useState(0)[1];
+  const [, setForceUpdate] = useState(0);
   const forceHeightRecalculation = useRef(0);
-
   const parentRef = React.useRef<null | HTMLDivElement>(null);
 
   const virtualizer = useVirtual({
@@ -110,6 +112,11 @@ export const DataSourceRenderer: <T extends object, C>(
   if (virtualizerRef) {
     virtualizerRef.current = virtualizer;
   }
+
+  const redraw = useCallback(() => {
+    forceHeightRecalculation.current++;
+    setForceUpdate((x) => x + 1);
+  }, []);
 
   useEffect(
     function subscribeToDataSource() {
@@ -262,39 +269,63 @@ export const DataSourceRenderer: <T extends object, C>(
   });
 
   /**
+   * Observer parent height
+   */
+  useEffect(
+    function redrawOnResize() {
+      if (!parentRef.current) {
+        return;
+      }
+
+      let lastWidth = 0;
+      const observer = observeRect(parentRef.current, (rect) => {
+        if (lastWidth !== rect.width) {
+          lastWidth = rect.width;
+          redraw();
+        }
+      });
+      observer.observe();
+      return () => observer.unobserve();
+    },
+    [redraw],
+  );
+
+  /**
    * Rendering
    */
   return (
-    <TableContainer onScroll={onScroll} ref={parentRef}>
-      {virtualizer.virtualItems.length === 0
-        ? emptyRenderer?.(dataSource)
-        : null}
-      <TableWindow
-        height={virtualizer.totalSize}
-        onKeyDown={onKeyDown}
-        tabIndex={0}>
-        {virtualizer.virtualItems.map((virtualRow) => {
-          const value = dataSource.view.get(virtualRow.index);
-          // the position properties always change, so they are not part of the TableRow to avoid invalidating the memoized render always.
-          // Also all row containers are renderd as part of same component to have 'less react' framework code in between*/}
-          return (
-            <div
-              key={virtualRow.index}
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: useFixedRowHeight ? virtualRow.size : undefined,
-                transform: `translateY(${virtualRow.start}px)`,
-              }}
-              ref={useFixedRowHeight ? undefined : virtualRow.measureRef}>
-              {itemRenderer(value, virtualRow.index, context)}
-            </div>
-          );
-        })}
-      </TableWindow>
-    </TableContainer>
+    <RedrawContext.Provider value={redraw}>
+      <TableContainer onScroll={onScroll} ref={parentRef}>
+        {virtualizer.virtualItems.length === 0
+          ? emptyRenderer?.(dataSource)
+          : null}
+        <TableWindow
+          height={virtualizer.totalSize}
+          onKeyDown={onKeyDown}
+          tabIndex={0}>
+          {virtualizer.virtualItems.map((virtualRow) => {
+            const value = dataSource.view.get(virtualRow.index);
+            // the position properties always change, so they are not part of the TableRow to avoid invalidating the memoized render always.
+            // Also all row containers are renderd as part of same component to have 'less react' framework code in between*/}
+            return (
+              <div
+                key={virtualRow.index}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: useFixedRowHeight ? virtualRow.size : undefined,
+                  transform: `translateY(${virtualRow.start}px)`,
+                }}
+                ref={useFixedRowHeight ? undefined : virtualRow.measureRef}>
+                {itemRenderer(value, virtualRow.index, context)}
+              </div>
+            );
+          })}
+        </TableWindow>
+      </TableContainer>
+    </RedrawContext.Provider>
   );
 }) as any;
 
@@ -310,3 +341,9 @@ const TableWindow = styled.div<{height: number}>(({height}) => ({
   position: 'relative',
   width: '100%',
 }));
+
+export const RedrawContext = createContext<undefined | (() => void)>(undefined);
+
+export function useTableRedraw() {
+  return useContext(RedrawContext);
+}

@@ -15,10 +15,11 @@ import {
 import {Button, Typography} from 'antd';
 import {pad} from 'lodash';
 import React, {createElement, Fragment, isValidElement, useState} from 'react';
-import styled from '@emotion/styled';
 import {tryGetFlipperLibImplementation} from '../plugin/FlipperLib';
 import {safeStringify} from '../utils/safeStringify';
 import {urlRegex} from '../utils/urlRegex';
+import {useTableRedraw} from './datatable/DataSourceRenderer';
+import {theme} from './theme';
 
 /**
  * A Formatter is used to render an arbitrarily value to React. If a formatter returns 'undefined'
@@ -136,7 +137,7 @@ export const DataFormatter = {
   },
 };
 
-const TruncateHelper = styled(function TruncateHelper({
+function TruncateHelper({
   value,
   maxLength,
 }: {
@@ -144,29 +145,37 @@ const TruncateHelper = styled(function TruncateHelper({
   maxLength: number;
 }) {
   const [collapsed, setCollapsed] = useState(true);
+  const redrawRow = useTableRedraw();
+
   return (
     <>
       {collapsed ? value.substr(0, maxLength) : value}
       <Button
-        onClick={() => setCollapsed((c) => !c)}
+        onClick={() => {
+          setCollapsed((c) => !c);
+          redrawRow?.();
+        }}
         size="small"
         type="text"
+        style={truncateButtonStyle}
         icon={collapsed ? <CaretRightOutlined /> : <CaretUpOutlined />}>
         {`(and ${value.length - maxLength} more...)`}
       </Button>
       <Button
         icon={<CopyOutlined />}
-        onClick={() =>
-          tryGetFlipperLibImplementation()?.writeTextToClipboard(value)
-        }
+        onClick={() => {
+          tryGetFlipperLibImplementation()?.writeTextToClipboard(value);
+        }}
         size="small"
-        type="text">
+        type="text"
+        style={truncateButtonStyle}>
         Copy
       </Button>
     </>
   );
-})({
-  '& button': {
-    marginRight: 4,
-  },
-});
+}
+
+const truncateButtonStyle = {
+  color: theme.textColorPrimary,
+  marginLeft: 4,
+};
