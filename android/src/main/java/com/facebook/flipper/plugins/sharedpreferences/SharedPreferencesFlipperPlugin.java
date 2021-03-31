@@ -162,6 +162,8 @@ public class SharedPreferencesFlipperPlugin implements FlipperPlugin {
     FlipperObject.Builder builder = new FlipperObject.Builder();
     Map<String, ?> map = sharedPreferences.getAll();
     for (Map.Entry<String, ?> entry : map.entrySet()) {
+      final String key = entry.getKey();
+      if (key == null) continue;
       final Object val = entry.getValue();
       builder.put(entry.getKey(), val);
     }
