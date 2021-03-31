@@ -11,9 +11,6 @@
     "asarUnpack": [
       "PortForwardingMacApp.app/**/*"
     ],
-    "deb": {
-      "icon": "icon.icns"
-    },
     "dmg": {
       "background": "dmgBackground.png",
       "contents": [
@@ -46,8 +43,7 @@
       }
     ],
     "linux": {
-      "category": "Development",
-      "icon": "icon.icns"
+      "category": "Development"
     },
     "mac": {
       "category": "public.app-category.developer-tools",
