@@ -7,9 +7,16 @@
  * @format
  */
 
-import {Typography} from 'antd';
+import {
+  CaretRightOutlined,
+  CaretUpOutlined,
+  CopyOutlined,
+} from '@ant-design/icons';
+import {Button, Typography} from 'antd';
 import {pad} from 'lodash';
-import React, {createElement, Fragment, isValidElement} from 'react';
+import React, {createElement, Fragment, isValidElement, useState} from 'react';
+import styled from '@emotion/styled';
+import {tryGetFlipperLibImplementation} from '../plugin/FlipperLib';
 import {safeStringify} from '../utils/safeStringify';
 import {urlRegex} from '../utils/urlRegex';
 
@@ -55,6 +62,15 @@ export const DataFormatter = {
       default:
         return '<unrenderable value>';
     }
+  },
+
+  truncate(maxLength: number) {
+    return (value: any) => {
+      if (typeof value === 'string' && value.length > maxLength) {
+        return <TruncateHelper value={value} maxLength={maxLength} />;
+      }
+      return value;
+    };
   },
 
   /**
@@ -119,3 +135,38 @@ export const DataFormatter = {
     return DataFormatter.defaultFormatter(res);
   },
 };
+
+const TruncateHelper = styled(function TruncateHelper({
+  value,
+  maxLength,
+}: {
+  value: string;
+  maxLength: number;
+}) {
+  const [collapsed, setCollapsed] = useState(true);
+  return (
+    <>
+      {collapsed ? value.substr(0, maxLength) : value}
+      <Button
+        onClick={() => setCollapsed((c) => !c)}
+        size="small"
+        type="text"
+        icon={collapsed ? <CaretRightOutlined /> : <CaretUpOutlined />}>
+        {`(and ${value.length - maxLength} more...)`}
+      </Button>
+      <Button
+        icon={<CopyOutlined />}
+        onClick={() =>
+          tryGetFlipperLibImplementation()?.writeTextToClipboard(value)
+        }
+        size="small"
+        type="text">
+        Copy
+      </Button>
+    </>
+  );
+})({
+  '& button': {
+    marginRight: 4,
+  },
+});

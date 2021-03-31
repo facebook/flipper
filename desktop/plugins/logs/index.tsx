@@ -97,7 +97,11 @@ function createColumnConfig(
       key: 'message',
       title: 'Message',
       wrap: true,
-      formatters: [DataFormatter.prettyPrintJson, DataFormatter.linkify],
+      formatters: [
+        DataFormatter.truncate(400),
+        DataFormatter.prettyPrintJson,
+        DataFormatter.linkify,
+      ],
     },
   ];
 }
