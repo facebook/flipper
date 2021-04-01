@@ -14,7 +14,7 @@ buildscript {
         classpath 'com.android.tools.build:gradle:4.1.3'
         classpath 'com.vanniktech:gradle-maven-publish-plugin:0.14.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$KOTLIN_VERSION"
-        classpath "org.jetbrains.dokka:dokka-gradle-plugin:1.4.20"
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:1.4.30"
     }
 }
 
@@ -71,7 +71,7 @@ ext.deps = [
         archPaging         : 'android.arch.paging:runtime:1.0.1',
         // First-party
         soloader           : 'com.facebook.soloader:soloader:0.10.1',
-        fbjni              : 'com.facebook.fbjni:fbjni:0.2.0',
+        fbjni              : 'com.facebook.fbjni:fbjni:0.2.2',
         screenshot         : 'com.facebook.testing.screenshot:core:0.13.0',
         boltsTasks         : 'com.parse.bolts:bolts-tasks:1.4.0',
         boltsApplinks      : 'com.parse.bolts:bolts-applinks:1.4.0',

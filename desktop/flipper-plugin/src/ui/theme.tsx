@@ -18,6 +18,7 @@ export const theme = {
   textColorPrimary: 'var(--flipper-text-color-primary)',
   textColorSecondary: 'var(--flipper-text-color-secondary)',
   textColorPlaceholder: 'var(--flipper-text-color-placeholder)',
+  textColorActive: 'var(--light-color-button-active)',
   disabledColor: 'var(--flipper-disabled-color)',
   backgroundDefault: 'var(--flipper-background-default)',
   backgroundWash: 'var(--flipper-background-wash)',

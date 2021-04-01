@@ -38,6 +38,14 @@ For a quick, temporarily work around start Flipper with hardware acceleration di
 
 * Check that `xcode-select -p` shows the same XCode version that you're using. If not, see xcode-select for how to select the correct version.
 
+### iOS physical device not showing up
+
+Make sure [`idb`](https://fbidb.io/docs/installation) is installed and configured in the Flipper settings.
+
+### App on physical iOS device stuck in 'connecting...' state
+
+Make sure you are building and installing the application from source.
+
 ### No plugins showing up for your device
 
 * Check your device isn't on the list of [known incompatibilities](#known-incompatibilities).
@@ -68,8 +76,9 @@ You'll need to manually add this [ViewController](https://github.com/facebook/fl
 </OssOnly>
 
 ### Known Incompatibilities
+
 The following devices are known to be incompatible or face issues with flipper:
-* Physical iOS devices. Currently on iOS, only simulators are supported ([Tracking Issue](https://github.com/facebook/flipper/issues/262)).
+
 * Some Samsung devices ([Tracking Issue](https://github.com/facebook/flipper/issues/92)).
 * Genymotion emulators on Android 8+ are reported to have issues.
 
@@ -232,7 +241,7 @@ If you experience errors such as `Undefined symbol: associated type descriptor f
 
 Comment out the relevant lines in `ios/Podfile` and run `cd ios && pod install` again:
 
-```
+```ruby
   # use_flipper!
   # post_install do |installer|
   #  flipper_post_install(installer)
@@ -243,7 +252,7 @@ Comment out the relevant lines in `ios/Podfile` and run `cd ios && pod install` 
 
 To speed up CI builds, Flipper can be disabled on CI environments by making the Flipper SDK inclusion conditional (this works on most CI providers, feel free to customize the environment variable):
 
-```
+```ruby
   if !ENV['CI']
     use_flipper!
     post_install do |installer|

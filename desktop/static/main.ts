@@ -18,6 +18,7 @@ import {
   globalShortcut,
   session,
 } from 'electron';
+import os from 'os';
 import path from 'path';
 import url from 'url';
 import fs from 'fs';
@@ -279,6 +280,12 @@ function createWindow() {
     minWidth: 800,
     minHeight: 600,
     center: true,
+    // The app icon is defined in package.json by default.
+    // When building Linux zip, it must be defined here or else it won't work.
+    icon:
+      os.platform() === 'linux'
+        ? path.join(__dirname, 'icons/app_64x64.png')
+        : undefined,
     webPreferences: {
       enableRemoteModule: true,
       backgroundThrottling: false,

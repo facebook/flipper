@@ -58,7 +58,7 @@ The syntax used for these type definitions is [Flow](https://flow.org/en/docs/ty
 ### getPlugins
 Return the available plugins as a list of identifiers. A plugin identifier is a string which is matched with the plugin identifier of desktop javascript plugins. This allows the client to specify the plugins it supports.
 
-```
+```js
 Request = {
   "method": "getPlugins",
 }
@@ -75,7 +75,7 @@ Response = {
 
 Returns a subset of the available plugins returned by `getPlugin`. The background connections will automatically receive a connection from Flipper once it starts (and if the plugins are enabled), rather than waiting for the user to open the plugin.
 
-```
+```js
 Request = {
   "method": "getBackgroundPlugins",
 }
@@ -89,7 +89,7 @@ Response = {
 
 ### init
 Initialize a plugin. This should result in an onConnected call on the appropriate plugin. Plugins should by nature be lazy and should not be initialized up front as this may incur significant cost. The Flipper desktop client knows when a plugin is needed and should control when to initialize them.
-```
+```js
 Request = {
   "method": "init",
   "params": {
@@ -100,7 +100,7 @@ Request = {
 
 ### deinit
 Opposite of init. A call to deinit is made when a plugin is no longer needed and should release any resources. Don't rely only on deinit to release plugin resources as Flipper may quit without having the chance to issue a deinit call. In those cases, you should also rely on the RSocket disconnect callbacks. This call is mainly for allowing the desktop app to control the lifecycle of plugins.
-```
+```js
 Request = {
   "method": "deinit",
   "params": {
@@ -115,7 +115,7 @@ request.params.api is the plugin id.
 request.params.method is the method within the plugin to execute.
 request.params.params is an optional params object containing the parameters to the RPC invocation.
 
-```
+```js
 Request = {
   "method": "execute",
   "params": {
@@ -137,7 +137,7 @@ Response = {
 The Flipper desktop app handles error reporting so you don't have to. If an error occurs during the execution of an RPC invocation, return a serialization of it in the response so it can be attributed to the method call.
 
 If an error occurs in some other context, you can proactively send it to Flipper with the following request structure:
-```
+```js
 Request = {
   error: {
     message: string,
@@ -150,7 +150,7 @@ While in development mode, Flipper will display any client errors next to javasc
 ## Testing
 Testing is incredibly important when building core infrastructure and tools. The following is pseudo code for tests we would expect any new FlipperClient implementation to implement and correctly execute. To run tests we strongly encourage you to build a mock for the RSocket connection to mock out the desktop side of the protocol and to not have any network dependencies in your test code.
 
-```
+```js
 test("GetPlugins", {
   let connection = new MockConnection();
   let client = new FlipperClient(connection);
@@ -172,7 +172,7 @@ test("GetPlugins", {
   }));
 });
 ```
-```
+```js
 test("InitDeinit", {
   let connection = new MockConnection();
   let client = new FlipperClient(connection);
@@ -204,7 +204,7 @@ test("InitDeinit", {
   assertFalse(plugin.connected);
 });
 ```
-```
+```js
 test("Disconnect", {
   let connection = new MockConnection();
   let client = new FlipperClient(connection);
@@ -228,7 +228,7 @@ test("Disconnect", {
   assertFalse(plugin.connected);
 });
 ```
-```
+```js
 test("Execute", {
   let connection = new MockConnection();
   let client = new FlipperClient(connection);

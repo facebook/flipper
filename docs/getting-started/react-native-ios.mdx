@@ -49,7 +49,7 @@ In 0.62, the setup includes a bit more code (which was moved to a helper in 0.63
 platform :ios, '9.0'
 
 def flipper_pods()
-  flipperkit_version = '0.82.1' # should match the version of your Flipper client app
+  flipperkit_version = '0.83.0' # should match the version of your Flipper client app
   pod 'FlipperKit', '~>' + flipperkit_version, :configuration => 'Debug'
   pod 'FlipperKit/FlipperKitLayoutPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
   pod 'FlipperKit/SKIOSNetworkPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
@@ -107,7 +107,7 @@ The code below enables the following integrations:
 <Tabs defaultValue="ios" values={[{ label: 'iOS', value: 'ios'}, { label: 'Swift', value: 'swift'}]}>
 <TabItem value="ios">
 
-```objective-c
+```objc
 ...
 #if DEBUG
 #ifdef FB_SONARKIT_ENABLED

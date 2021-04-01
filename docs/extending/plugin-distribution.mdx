@@ -13,7 +13,7 @@ Flipper plugins are essentially standard npm packages. So you can publish them b
 
 1. `package.json` and code [must follow the Flipper plugin specification](desktop-plugin-structure#plugin-definition)
 2. code must be bundled using "flipper-pkg" before packing or publishing. This can be done by executing `flipper-pkg bundle` on `prepack` step:
-    ```
+    ```json
     {
       ...
       "devDependencies": {

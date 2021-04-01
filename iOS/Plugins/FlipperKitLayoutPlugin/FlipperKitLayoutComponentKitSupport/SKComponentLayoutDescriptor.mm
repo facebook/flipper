@@ -19,9 +19,9 @@
 #import <ComponentKit/CKComponentInternal.h>
 #import <ComponentKit/CKComponentLayout.h>
 #import <ComponentKit/CKComponentRootView.h>
-#import <ComponentKit/CKComponentViewConfiguration.h>
 #import <ComponentKit/CKFlexboxComponent.h>
 #import <ComponentKit/CKInsetComponent.h>
+#import <ComponentKit/CKViewConfiguration.h>
 
 #import <FlipperKitHighlightOverlay/SKHighlightOverlay.h>
 #import <FlipperKitLayoutHelpers/SKObject.h>
