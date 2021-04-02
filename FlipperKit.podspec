@@ -5,7 +5,7 @@
 
 folly_compiler_flags = '-DDEBUG=1 -DFLIPPER_OSS=1 -DFB_SONARKIT_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_LIBGFLAGS=0 -DFOLLY_HAVE_LIBJEMALLOC=0 -DFOLLY_HAVE_PREADV=0 -DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0 -DFOLLY_USE_SYMBOLIZER=0'
 yogakit_version = '~> 1.18'
-flipperkit_version = '0.74.0'
+flipperkit_version = '0.83.0'
 Pod::Spec.new do |spec|
   spec.name = 'FlipperKit'
   spec.version = flipperkit_version
@@ -104,6 +104,9 @@ Pod::Spec.new do |spec|
 
   spec.subspec 'FlipperKitLayoutHelpers' do |ss|
     ss.header_dir = 'FlipperKitLayoutHelpers'
+    ss.dependency 'FlipperKit/Core'
+    ss.dependency 'FlipperKit/FlipperKitLayoutTextSearchable'
+    ss.dependency 'FlipperKit/FlipperKitHighlightOverlay'
     ss.compiler_flags = folly_compiler_flags
     ss.source_files = 'iOS/Plugins/FlipperKitPluginUtils/FlipperKitLayoutHelpers/**/**/*.{h,mm,m}'
     ss.public_header_files = 'iOS/Plugins/FlipperKitPluginUtils/FlipperKitLayoutHelpers/FlipperKitLayoutHelpers/SKTapListener.h',
@@ -121,6 +124,10 @@ Pod::Spec.new do |spec|
 
   spec.subspec 'FlipperKitLayoutIOSDescriptors' do |ss|
     ss.header_dir = 'FlipperKitLayoutIOSDescriptors'
+    ss.dependency 'FlipperKit/Core'
+    ss.dependency 'FlipperKit/FlipperKitHighlightOverlay'
+    ss.dependency 'FlipperKit/FlipperKitLayoutHelpers'
+    ss.dependency 'YogaKit', yogakit_version
     ss.compiler_flags = folly_compiler_flags
     ss.source_files = 'iOS/Plugins/FlipperKitPluginUtils/FlipperKitLayoutIOSDescriptors/**/*.{h,mm,m}'
   end

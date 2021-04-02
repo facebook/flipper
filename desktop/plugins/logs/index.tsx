@@ -35,7 +35,7 @@ export type ExtendedLogEntry = DeviceLogEntry & {
 };
 
 function createColumnConfig(
-  os: 'iOS' | 'Android' | 'Metro',
+  _os: 'iOS' | 'Android' | 'Metro',
 ): DataTableColumn<ExtendedLogEntry>[] {
   return [
     {
@@ -74,7 +74,7 @@ function createColumnConfig(
       key: 'pid',
       title: 'PID',
       width: 60,
-      visible: os === 'Android',
+      visible: true,
     },
     {
       key: 'tid',
@@ -97,7 +97,11 @@ function createColumnConfig(
       key: 'message',
       title: 'Message',
       wrap: true,
-      formatters: [DataFormatter.prettyPrintJson, DataFormatter.linkify],
+      formatters: [
+        DataFormatter.truncate(400),
+        DataFormatter.prettyPrintJson,
+        DataFormatter.linkify,
+      ],
     },
   ];
 }

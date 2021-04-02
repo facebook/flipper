@@ -107,8 +107,11 @@ export class InspectorSidebar extends Component<Props, State> {
     }
   }
 
-  checkIfConsoleIsEnabled() {
-    if (this.props.client.isConnected) {
+  async checkIfConsoleIsEnabled() {
+    if (
+      this.props.client.isConnected &&
+      (await this.props.client.supportsMethod('isConsoleEnabled'))
+    ) {
       this.props.client
         .call('isConsoleEnabled')
         .then((result: {isEnabled: boolean}) => {

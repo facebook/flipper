@@ -62,12 +62,6 @@ jobs:
       - name: Update Tutorial's Podfile
         run: ./scripts/update-pod-versions.sh ./ ./iOS/Tutorial/Podfile
 
-      - name: Update Sample's Podfile
-        run: ./scripts/update-pod-versions.sh ./ ./iOS/Sample/Podfile
-
-      - name: Update SampleSwift's Podfile
-        run: ./scripts/update-pod-versions.sh ./ ./iOS/SampleSwift/Podfile
-
       - name: Update Getting Started
         run: ./scripts/update-pod-versions.sh ./ ./docs/getting-started/ios-native.mdx
 

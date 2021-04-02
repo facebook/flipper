@@ -23,7 +23,10 @@ import ErrorScreen from './ErrorScreen';
 import ChromeDevTools from './ChromeDevTools';
 
 const POLL_SECS = 5 * 1000;
-const METRO_HOST = 'http://localhost:8081';
+const METRO_PORT_ENV_VAR = process.env.METRO_SERVER_PORT || '8081';
+const METRO_PORT = isNaN(+METRO_PORT_ENV_VAR) ? '8081' : METRO_PORT_ENV_VAR;
+const METRO_URL = new URL('http://localhost');
+METRO_URL.port = METRO_PORT;
 
 export type Target = Readonly<{
   id: string;
@@ -87,7 +90,7 @@ export default class extends FlipperDevicePlugin<State, any, any> {
   }
 
   checkDebugTargets = () => {
-    fetch(`${METRO_HOST}/json`)
+    fetch(`${METRO_URL.toString()}json`)
       .then((res) => res.json())
       .then(
         (result) => {

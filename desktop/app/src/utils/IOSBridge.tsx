@@ -9,10 +9,13 @@
 
 import fs from 'fs';
 import child_process from 'child_process';
+import {DeviceType} from 'flipper-plugin-lib';
 
 export interface IOSBridge {
+  idbAvailable: boolean;
   startLogListener?: (
     udid: string,
+    deviceType: DeviceType,
   ) => child_process.ChildProcessWithoutNullStreams;
 }
 
@@ -26,27 +29,36 @@ async function isAvailable(idbPath: string): Promise<boolean> {
     .catch((_) => false);
 }
 
-const LOG_EXTRA_ARGS = [
-  '--style',
-  'json',
-  '--predicate',
-  'senderImagePath contains "Containers"',
-  '--debug',
-  '--info',
-];
+function getLogExtraArgs(deviceType: DeviceType) {
+  if (deviceType === 'physical') {
+    return [
+      // idb has a --json option, but that doesn't actually work!
+    ];
+  } else {
+    return [
+      '--style',
+      'json',
+      '--predicate',
+      'senderImagePath contains "Containers"',
+      '--debug',
+      '--info',
+    ];
+  }
+}
 
 export function idbStartLogListener(
   idbPath: string,
   udid: string,
+  deviceType: DeviceType,
 ): child_process.ChildProcessWithoutNullStreams {
   return child_process.spawn(
     idbPath,
-    ['log', '--udid', udid, '--', ...LOG_EXTRA_ARGS],
+    ['log', '--udid', udid, '--', ...getLogExtraArgs(deviceType)],
     {},
   );
 }
 
-export function xcrunStartLogListener(udid: string) {
+export function xcrunStartLogListener(udid: string, deviceType: DeviceType) {
   const deviceSetPath = process.env.DEVICE_SET_PATH
     ? ['--set', process.env.DEVICE_SET_PATH]
     : [];
@@ -59,7 +71,7 @@ export function xcrunStartLogListener(udid: string) {
       udid,
       'log',
       'stream',
-      ...LOG_EXTRA_ARGS,
+      ...getLogExtraArgs(deviceType),
     ],
     {},
   );
@@ -70,18 +82,23 @@ export async function makeIOSBridge(
   isXcodeDetected: boolean,
   isAvailableFn: (idbPath: string) => Promise<boolean> = isAvailable,
 ): Promise<IOSBridge> {
-  if (!isXcodeDetected) {
-    // iOS Physical Device can still get detected without Xcode. In this case there is no way to setup log listener yet.
-    // This will not be the case, idb team is working on making idb log work without XCode atleast for physical device.
-    return {};
-  }
+  // prefer idb
   if (await isAvailableFn(idbPath)) {
     return {
+      idbAvailable: true,
       startLogListener: idbStartLogListener.bind(null, idbPath),
     };
   }
 
+  // no idb, if it's a simulator and xcode is available, we can use xcrun
+  if (isXcodeDetected) {
+    return {
+      idbAvailable: false,
+      startLogListener: xcrunStartLogListener,
+    };
+  }
+  // no idb, and not a simulator, we can't log this device
   return {
-    startLogListener: xcrunStartLogListener,
+    idbAvailable: false,
   };
 }

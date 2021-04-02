@@ -25,7 +25,7 @@ can sort, filter and select items for more detailed information.
 
 We start by defining what our table rows look like as types:
 
-```javascript
+```js
 type Id = number;
 
 type Row = {
@@ -43,7 +43,7 @@ that we know when something new was added to the table. We will use the
 
 Next, we define which columns to show and how to display them:
 
-```javascript
+```js
 const columns = {
   title: {
     value: 'Title',
@@ -73,7 +73,7 @@ table. You could, for instance, show images that you referenced.
 For this tutorial, however, we will just show the full object by
 using our `ManagedDataInspector` UI component:
 
-```javascript
+```jsx
 import {Panel, ManagedDataInspector} from 'flipper';
 
 function renderSidebar(row: Row) {
@@ -96,7 +96,7 @@ also render individual rows in our table but instead of a React
 component, we provide a description of the data based
 on the column keys we have set up before.
 
-```javascript
+```jsx
 function buildRow(row: Row): TableBodyRow {
   return {
     columns: {
@@ -130,7 +130,7 @@ any row and copy the content to their clipboard.
 Now that we've build all the individual pieces, we
 just need to hook it all up using `createTablePlugin`:
 
-```javascript
+```js
 export default createTablePlugin<Row>({
   method: 'newRow',
   columns,

@@ -1,5 +1,18 @@
 name: Build iOS apps
-on: [push, pull_request]
+on:
+  push:
+    paths:
+      - "iOS/**"
+      - "xplat/**"
+      - "Flipper.podspec"
+      - "FlipperKit.podspec"
+  pull_request:
+    paths:
+      - "iOS/**"
+      - "xplat/**"
+      - "Flipper.podspec"
+      - "FlipperKit.podspec"
+
 jobs:
   build-sample-objc:
     runs-on: macos-latest

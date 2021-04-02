@@ -12,7 +12,7 @@ import styled from '@emotion/styled';
 import React from 'react';
 import {Button, Checkbox, Dropdown, Menu, Typography, Input} from 'antd';
 import {
-  FilterFilled,
+  FilterOutlined,
   MinusCircleOutlined,
   PlusCircleOutlined,
 } from '@ant-design/icons';
@@ -167,7 +167,7 @@ export function FilterIcon({
   return (
     <Dropdown overlay={menu} trigger={['click']}>
       <FilterButton isActive={isActive}>
-        <FilterFilled />
+        <FilterOutlined />
       </FilterButton>
     </Dropdown>
   );
@@ -176,12 +176,12 @@ export function FilterIcon({
 export const FilterButton = styled.div<{isActive?: boolean}>(({isActive}) => ({
   backgroundColor: theme.backgroundWash,
   visibility: isActive ? 'visible' : 'hidden',
-  color: isActive ? theme.primaryColor : theme.disabledColor,
+  color: isActive ? theme.textColorActive : theme.disabledColor,
   cursor: 'pointer',
   marginRight: 4,
   zIndex: 1,
   '&:hover': {
-    color: theme.primaryColor,
+    color: theme.textColorActive,
     backgroundColor: theme.backgroundWash,
   },
 }));

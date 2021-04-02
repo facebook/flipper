@@ -7,11 +7,19 @@
  * @format
  */
 
-import {Typography} from 'antd';
-import {pad} from 'lodash';
-import React, {createElement, Fragment, isValidElement} from 'react';
+import {
+  CaretRightOutlined,
+  CaretUpOutlined,
+  CopyOutlined,
+} from '@ant-design/icons';
+import {Button, Typography} from 'antd';
+import {isPlainObject, pad} from 'lodash';
+import React, {createElement, Fragment, isValidElement, useState} from 'react';
+import {tryGetFlipperLibImplementation} from '../plugin/FlipperLib';
 import {safeStringify} from '../utils/safeStringify';
 import {urlRegex} from '../utils/urlRegex';
+import {useTableRedraw} from './datatable/DataSourceRenderer';
+import {theme} from './theme';
 
 /**
  * A Formatter is used to render an arbitrarily value to React. If a formatter returns 'undefined'
@@ -57,6 +65,15 @@ export const DataFormatter = {
     }
   },
 
+  truncate(maxLength: number) {
+    return (value: any) => {
+      if (typeof value === 'string' && value.length > maxLength) {
+        return <TruncateHelper value={value} maxLength={maxLength} />;
+      }
+      return value;
+    };
+  },
+
   /**
    * Formatter that will automatically create links for any urls inside the data
    */
@@ -80,6 +97,9 @@ export const DataFormatter = {
   },
 
   prettyPrintJson(value: any) {
+    if (isValidElement(value)) {
+      return value;
+    }
     if (typeof value === 'string' && value.length >= 2) {
       const last = value.length - 1;
       // kinda looks like json
@@ -95,7 +115,11 @@ export const DataFormatter = {
         }
       }
     }
-    if (typeof value === 'object' && value !== null) {
+    if (
+      typeof value === 'object' &&
+      value !== null &&
+      (Array.isArray(value) || isPlainObject(value))
+    ) {
       try {
         // Note: we don't need to be inserted <br/>'s in the output, but assume the text container uses
         // white-space: pre-wrap (or pre)
@@ -118,4 +142,48 @@ export const DataFormatter = {
     }
     return DataFormatter.defaultFormatter(res);
   },
+};
+
+// exported for testing
+export function TruncateHelper({
+  value,
+  maxLength,
+}: {
+  value: string;
+  maxLength: number;
+}) {
+  const [collapsed, setCollapsed] = useState(true);
+  const redrawRow = useTableRedraw();
+
+  return (
+    <>
+      {collapsed ? value.substr(0, maxLength) : value}
+      <Button
+        onClick={() => {
+          setCollapsed((c) => !c);
+          redrawRow?.();
+        }}
+        size="small"
+        type="text"
+        style={truncateButtonStyle}
+        icon={collapsed ? <CaretRightOutlined /> : <CaretUpOutlined />}>
+        {collapsed ? `and ${value.length - maxLength} more` : 'collapse'}
+      </Button>
+      <Button
+        icon={<CopyOutlined />}
+        onClick={() => {
+          tryGetFlipperLibImplementation()?.writeTextToClipboard(value);
+        }}
+        size="small"
+        type="text"
+        style={truncateButtonStyle}>
+        copy
+      </Button>
+    </>
+  );
+}
+
+const truncateButtonStyle = {
+  color: theme.primaryColor,
+  marginLeft: 4,
 };

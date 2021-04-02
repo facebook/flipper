@@ -44,39 +44,48 @@ export default class AndroidDevice extends BaseDevice {
   }
 
   startLogging() {
-    this.adb.openLogcat(this.serial, {clear: true}).then((reader) => {
-      this.reader = reader;
-      reader.on('entry', (entry) => {
-        let type: LogLevel = 'unknown';
-        if (entry.priority === Priority.VERBOSE) {
-          type = 'verbose';
-        }
-        if (entry.priority === Priority.DEBUG) {
-          type = 'debug';
-        }
-        if (entry.priority === Priority.INFO) {
-          type = 'info';
-        }
-        if (entry.priority === Priority.WARN) {
-          type = 'warn';
-        }
-        if (entry.priority === Priority.ERROR) {
-          type = 'error';
-        }
-        if (entry.priority === Priority.FATAL) {
-          type = 'fatal';
-        }
+    this.adb
+      .openLogcat(this.serial, {clear: true})
+      .then((reader) => {
+        this.reader = reader;
+        reader
+          .on('entry', (entry) => {
+            let type: LogLevel = 'unknown';
+            if (entry.priority === Priority.VERBOSE) {
+              type = 'verbose';
+            }
+            if (entry.priority === Priority.DEBUG) {
+              type = 'debug';
+            }
+            if (entry.priority === Priority.INFO) {
+              type = 'info';
+            }
+            if (entry.priority === Priority.WARN) {
+              type = 'warn';
+            }
+            if (entry.priority === Priority.ERROR) {
+              type = 'error';
+            }
+            if (entry.priority === Priority.FATAL) {
+              type = 'fatal';
+            }
 
-        this.addLogEntry({
-          tag: entry.tag,
-          pid: entry.pid,
-          tid: entry.tid,
-          message: entry.message,
-          date: entry.date,
-          type,
-        });
+            this.addLogEntry({
+              tag: entry.tag,
+              pid: entry.pid,
+              tid: entry.tid,
+              message: entry.message,
+              date: entry.date,
+              type,
+            });
+          })
+          .on('error', (e) => {
+            console.warn('Failed to read from adb logcat: ', e);
+          });
+      })
+      .catch((e) => {
+        console.warn('Failed to open log stream: ', e);
       });
-    });
   }
 
   stopLogging() {
