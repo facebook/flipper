@@ -496,7 +496,7 @@ export default class CertificateProvider {
             deviceId,
             originalFile,
             bundleId,
-            path.join(dir, csrFileName),
+            dir,
             this.store.getState().settingsState.idbPath,
           )
           .then(() => dir);
