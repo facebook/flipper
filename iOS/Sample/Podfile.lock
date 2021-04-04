@@ -7,14 +7,14 @@ PODS:
   - Flipper (0.83.0):
     - Flipper-Folly (~> 2.5)
     - Flipper-RSocket (~> 1.3)
-  - Flipper-DoubleConversion (1.1.7)
+  - Flipper-DoubleConversion (3.1.7)
   - Flipper-Folly (2.5.1):
     - boost-for-react-native
     - Flipper-DoubleConversion
     - Flipper-Glog
     - libevent (~> 2.1.12)
     - OpenSSL-Universal (= 1.1.180)
-  - Flipper-Glog (0.3.6)
+  - Flipper-Glog (0.3.7)
   - Flipper-PeerTalk (0.0.4)
   - Flipper-RSocket (1.3.1):
     - Flipper-Folly (~> 2.5)
@@ -123,9 +123,9 @@ SPEC CHECKSUMS:
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   ComponentKit: c34da1ab3515cf18db68a4ba22c6599568d1de74
   Flipper: b0aa213451d3d7b676af949f207dc8018e6594a7
-  Flipper-DoubleConversion: 38631e41ef4f9b12861c67d17cb5518d06badc41
+  Flipper-DoubleConversion: 57ffbe81ef95306cc9e69c4aa3aeeeeb58a6a28c
   Flipper-Folly: f7a3caafbd74bda4827954fd7a6e000e36355489
-  Flipper-Glog: 1dfd6abf1e922806c52ceb8701a3599a79a200a6
+  Flipper-Glog: 93294aae064daf7f7e2b6e9d41a13fab9388f227
   Flipper-PeerTalk: 116d8f857dc6ef55c7a5a75ea3ceaafe878aadc9
   Flipper-RSocket: 127954abe8b162fcaf68d2134d34dc2bd7076154
   FlipperKit: 22f9df8eb83cb3dbeda3e0bd7f594aa2542adfc8
