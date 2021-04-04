@@ -21,11 +21,16 @@ object SendProtobufToFlipperFromRetrofit {
     operator fun invoke(baseUrl: String, service: Class<*>) {
         AndroidFlipperClient.getInstanceIfInitialized()?.let { client ->
             (client.getPlugin(NetworkFlipperPlugin.ID) as? NetworkFlipperPlugin)
-                ?.send("addProtobufDefinitions", generateProtobufDefinitions(baseUrl, service))
+                ?.send(
+                    "addProtobufDefinitions",
+                    FlipperObject.Builder().put(
+                        baseUrl, generateProtobufDefinitions(service).toFlipperArray()
+                    ).build()
+                )
         }
     }
 
-    private fun generateProtobufDefinitions(baseUrl: String, service: Class<*>): FlipperObject {
+    private fun generateProtobufDefinitions(service: Class<*>): List<CallNestedMessagesPayload> {
         return RetrofitServiceToGenericCallDefinitions(service).let { definitions ->
             GenericCallDefinitionsToMessageDefinitionsIfProtobuf(definitions)
         }.let { messages ->
@@ -39,8 +44,6 @@ object SendProtobufToFlipperFromRetrofit {
                     responseDefinitions = FullNamedMessagesToNestedMessages(it.responseModel)
                 )
             }
-        }.let { payload ->
-            FlipperObject.Builder().put(baseUrl, payload.toFlipperArray()).build()
         }
     }
 }

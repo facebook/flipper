@@ -53,11 +53,10 @@ private val Array<Annotation>.urlPathAndMethod: Pair<String, String>?
 
 private val Method.requestBodyType: Class<*>?
     get() {
-        // TODO make safe for older APIs
-        parameters.forEach { parameter ->
-            parameter.annotations.forEach { annotation ->
+        parameterAnnotations.forEachIndexed { index, parameters ->
+            parameters.forEach { annotation ->
                 if (annotation.annotationClass == retrofit2.http.Body::class) {
-                    return parameter.type
+                    return parameterTypes[index]
                 }
             }
         }
