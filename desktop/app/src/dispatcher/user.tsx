@@ -21,7 +21,11 @@ export default (store: Store, _logger: Logger) => {
 
   getUser()
     .then((user) => {
-      store.dispatch(login(user));
+      if (user) {
+        store.dispatch(login(user));
+      } else {
+        store.dispatch(logout());
+      }
     })
     .catch((e) => {
       store.dispatch(logout());
