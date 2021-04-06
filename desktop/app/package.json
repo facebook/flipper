@@ -50,7 +50,7 @@
     "promise-retry": "^2.0.1",
     "promisify-child-process": "^4.1.0",
     "prop-types": "^15.6.0",
-    "query-string": "^6.13.3",
+    "query-string": "^7.0.0",
     "react": "17.0.2",
     "react-async": "^10.0.0",
     "react-color": "^2.19.3",
