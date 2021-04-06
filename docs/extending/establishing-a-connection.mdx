@@ -2,6 +2,8 @@
 id: establishing-a-connection
 title: Secure Communication
 ---
+import useBaseUrl from '@docusaurus/useBaseUrl';
+import Link from '@docusaurus/Link';
 
 Below is an outline of how a connection is established between an app with our SDK integrated, and the desktop app. This all goes on behind the scenes inside the mobile SDK, so users shouldn't need to worry about it.
 
@@ -31,6 +33,7 @@ This is achieved through the following steps:
   * Client certificate for the mobile app to use going forward.
 * If the chosen Certificate Exchange Medium is WWW, the desktop app will use your implementation of Certificate Uploader to upload the certificates.
   * Once uploaded the desktop app will reply back with the device id, which can be used by Certificate Provider on the client side to fetch those certificates.
+  * <OssOnly> Right now we do not support WWW mode. We are working on it to bring the support for open source.</OssOnly> <FbInternalOnly>To know more about the WWW mode and how to use it, follow the guide <Link to={useBaseUrl('/docs/fb/www-certificate-exchange')}>here</Link>.</FbInternalOnly>
 * Now the mobile app knows which server certificate it can trust, and can connect to the secure server.
 
 This allows the mobile app to trust a certificate if and only if, it is stored inside its internal data partition. Typically it's only possible to write there with physical access to the device (i.e. through ADB or a mounted simulator).
