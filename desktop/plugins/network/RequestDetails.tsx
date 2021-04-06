@@ -28,6 +28,7 @@ import React from 'react';
 import querystring from 'querystring';
 import xmlBeautifier from 'xml-beautifier';
 import {ProtobufDefinitionsRepository} from './ProtobufDefinitionsRepository';
+import {Base64} from "js-base64";
 
 const WrappingText = styled(Text)({
   wordWrap: 'break-word',
@@ -861,7 +862,7 @@ class ProtobufFormatter {
 
       if (response?.data) {
         const data = protobufDefinition.decode(
-          this._base64ToArrayBuffer(response.data),
+          Base64.toUint8Array(response.data)
         );
         return <JSONText>{data.toJSON()}</JSONText>;
       } else {
@@ -871,16 +872,6 @@ class ProtobufFormatter {
       }
     }
     return undefined;
-  }
-
-  _base64ToArrayBuffer(base64: string): Uint8Array {
-    const binary_string = window.atob(base64);
-    const len = binary_string.length;
-    const bytes = new Uint8Array(len);
-    for (let i = 0; i < len; i++) {
-      bytes[i] = binary_string.charCodeAt(i);
-    }
-    return bytes;
   }
 }
 
