@@ -43,12 +43,8 @@ export {ManagedTableProps_immutable} from './components/table/ManagedTable_immut
 export {Value} from './components/table/TypeBasedValueRenderer';
 export {renderValue} from './components/table/TypeBasedValueRenderer';
 
-export {
-  DataValueExtractor,
-  DataInspectorExpanded,
-} from './components/data-inspector/DataInspector';
-export {default as DataInspector} from './components/data-inspector/DataInspector';
-export {default as ManagedDataInspector} from './components/data-inspector/ManagedDataInspector';
+export {DataValueExtractor, DataInspectorExpanded} from 'flipper-plugin';
+export {DataInspector as ManagedDataInspector} from 'flipper-plugin';
 export {default as SearchableDataInspector} from './components/data-inspector/SearchableDataInspector';
 
 // tabs
@@ -129,8 +125,6 @@ export {default as Heading} from './components/Heading';
 
 // filters
 export {Filter} from './components/filter/types';
-
-export {default as MarkerTimeline} from './components/MarkerTimeline';
 
 export {default as StackTrace} from './components/StackTrace';
 

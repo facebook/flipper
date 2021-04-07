@@ -95,15 +95,14 @@ export {
 export {
   DataValueExtractor,
   DataInspectorExpanded,
-} from './ui/components/data-inspector/DataInspector';
-export {default as DataInspector} from './ui/components/data-inspector/DataInspector';
-export {default as ManagedDataInspector} from './ui/components/data-inspector/ManagedDataInspector';
-export {default as SearchableDataInspector} from './ui/components/data-inspector/SearchableDataInspector';
-export {
-  _DataDescription as DataDescription,
   DataDescriptionType,
+  DataDescription,
+  DataInspector,
+  MarkerTimeline,
 } from 'flipper-plugin';
-export {_HighlightManager as HighlightManager} from 'flipper-plugin';
+export {DataInspector as ManagedDataInspector} from 'flipper-plugin';
+export {default as SearchableDataInspector} from './ui/components/data-inspector/SearchableDataInspector';
+export {HighlightManager} from 'flipper-plugin';
 export {default as Tabs} from './ui/components/Tabs';
 export {default as Tab} from './ui/components/Tab';
 export {default as Input} from './ui/components/Input';
@@ -160,7 +159,6 @@ export {default as VerticalRule} from './ui/components/VerticalRule';
 export {default as Label} from './ui/components/Label';
 export {default as Heading} from './ui/components/Heading';
 export {Filter} from './ui/components/filter/types';
-export {default as MarkerTimeline} from './ui/components/MarkerTimeline';
 export {default as StackTrace} from './ui/components/StackTrace';
 export {
   SearchBox,

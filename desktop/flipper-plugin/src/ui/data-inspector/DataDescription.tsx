@@ -8,24 +8,22 @@
  */
 
 import {Typography, Popover, Input, Select, Checkbox} from 'antd';
-// TODO: restore import {DataInspectorSetValue} from './DataInspector';
+import {DataInspectorSetValue} from './DataInspector';
 import {PureComponent} from 'react';
 import styled from '@emotion/styled';
 import {SketchPicker, CompactPicker} from 'react-color';
 import React, {KeyboardEvent} from 'react';
 import {HighlightContext} from '../Highlight';
 import {parseColor} from '../../utils/parseColor';
-// import TimelineDataDescription from './TimelineDataDescription'; TODO:
+import {TimelineDataDescription} from './TimelineDataDescription';
 import {theme} from '../theme';
 import {EditOutlined} from '@ant-design/icons';
 import type {CheckboxChangeEvent} from 'antd/lib/checkbox';
 
 const {Link} = Typography;
 
-type DataInspectorSetValue = (path: Array<string>, val: any) => void;
-
 // Based on FIG UI Core, TODO: does that still makes sense?
-const presetColors = Object.values({
+export const presetColors = Object.values({
   blue: '#4267b2', // Blue - Active-state nav glyphs, nav bars, links, buttons
   green: '#42b72a', // Green - Confirmation, success, commerce and status
   red: '#FC3A4B', // Red - Badges, error states
@@ -214,6 +212,7 @@ class NumberTextEditor extends PureComponent<{
         ref={this.onNumberTextRef}
         onBlur={this.onNumberTextBlur}
         value={this.props.value}
+        style={{fontSize: 11}}
       />
     );
   }
@@ -547,24 +546,22 @@ class DataDescriptionContainer extends PureComponent<{
 
     switch (type) {
       case 'timeline': {
-        return null;
-        // TODO:
-        // return (
-        //   <>
-        //     <TimelineDataDescription
-        //       canSetCurrent={editable}
-        //       timeline={JSON.parse(val)}
-        //       onClick={(id) => {
-        //         this.props.commit({
-        //           value: id,
-        //           keep: true,
-        //           clear: false,
-        //           set: true,
-        //         });
-        //       }}
-        //     />
-        //   </>
-        // );
+        return (
+          <>
+            <TimelineDataDescription
+              canSetCurrent={editable}
+              timeline={JSON.parse(val)}
+              onClick={(id) => {
+                this.props.commit({
+                  value: id,
+                  keep: true,
+                  clear: false,
+                  set: true,
+                });
+              }}
+            />
+          </>
+        );
       }
 
       case 'number':
@@ -632,6 +629,8 @@ class DataDescriptionContainer extends PureComponent<{
                 set: true,
               })
             }
+            size="small"
+            style={{fontSize: 11}}
           />
         );
       }

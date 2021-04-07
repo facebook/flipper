@@ -7,12 +7,12 @@
  * @format
  */
 
-import {DataInspectorExpanded} from './DataInspector';
+import {DataInspectorExpanded, RootDataContext} from './DataInspector';
 import {PureComponent} from 'react';
 import DataInspector from './DataInspector';
 import React from 'react';
 import {DataValueExtractor} from './DataPreview';
-import {_HighlightProvider, _HighlightManager} from 'flipper-plugin';
+import {HighlightProvider, HighlightManager} from '../Highlight';
 
 export type ManagedDataInspectorProps = {
   /**
@@ -47,7 +47,7 @@ export type ManagedDataInspectorProps = {
   onRenderName?: (
     path: Array<string>,
     name: string,
-    highlighter: _HighlightManager,
+    highlighter: HighlightManager,
   ) => React.ReactElement;
   /**
    * Render callback that can be used to customize the rendering of object values.
@@ -83,7 +83,7 @@ const EMPTY_ARRAY: any[] = [];
  * If you require lower level access to the state then use `DataInspector`
  * directly.
  */
-export default class ManagedDataInspector extends PureComponent<
+export class ManagedDataInspector extends PureComponent<
   ManagedDataInspectorProps,
   ManagedDataInspectorState
 > {
@@ -171,27 +171,34 @@ export default class ManagedDataInspector extends PureComponent<
     });
   };
 
+  // make sure this fn is a stable ref to not invalidate the whole tree on new data
+  getRootData = () => {
+    return this.props.data;
+  };
+
   render() {
     return (
-      <_HighlightProvider text={this.props.filter}>
-        <DataInspector
-          data={this.props.data}
-          diff={this.props.diff}
-          extractValue={this.props.extractValue}
-          setValue={this.props.setValue}
-          expanded={this.state.expanded}
-          onExpanded={this.onExpanded}
-          onDelete={this.props.onDelete}
-          onRenderName={this.props.onRenderName}
-          onRenderDescription={this.props.onRenderDescription}
-          expandRoot={this.props.expandRoot}
-          collapsed={this.props.filter ? true : this.props.collapsed}
-          tooltips={this.props.tooltips}
-          parentPath={EMPTY_ARRAY}
-          depth={0}
-          parentAncestry={EMPTY_ARRAY}
-        />
-      </_HighlightProvider>
+      <RootDataContext.Provider value={this.getRootData}>
+        <HighlightProvider text={this.props.filter}>
+          <DataInspector
+            data={this.props.data}
+            diff={this.props.diff}
+            extractValue={this.props.extractValue}
+            setValue={this.props.setValue}
+            expanded={this.state.expanded}
+            onExpanded={this.onExpanded}
+            onDelete={this.props.onDelete}
+            onRenderName={this.props.onRenderName}
+            onRenderDescription={this.props.onRenderDescription}
+            expandRoot={this.props.expandRoot}
+            collapsed={this.props.filter ? true : this.props.collapsed}
+            tooltips={this.props.tooltips}
+            parentPath={EMPTY_ARRAY}
+            depth={0}
+            parentAncestry={EMPTY_ARRAY}
+          />
+        </HighlightProvider>
+      </RootDataContext.Provider>
     );
   }
 }

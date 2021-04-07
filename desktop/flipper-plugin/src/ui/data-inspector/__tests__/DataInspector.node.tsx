@@ -10,8 +10,8 @@
 import * as React from 'react';
 import {render, fireEvent, waitFor, act} from '@testing-library/react';
 
-import ManagedDataInspector from '../ManagedDataInspector';
-import {sleep} from '../../../../utils';
+import {ManagedDataInspector} from '../ManagedDataInspector';
+import {sleep} from '../../../utils/sleep';
 
 const mocks = {
   requestIdleCallback(fn: Function) {
@@ -124,7 +124,7 @@ test('can filter for data', async () => {
     <span>
       "j
       <span
-        class="css-zr1u3c-Highlighted eiud9hg0"
+        class="css-i709sw-Highlighted eiud9hg0"
       >
         son
       </span>

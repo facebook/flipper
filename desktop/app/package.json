@@ -72,7 +72,6 @@
     "rsocket-types": "^0.0.25",
     "semver": "^7.3.5",
     "split2": "^3.2.2",
-    "string-natural-compare": "^3.0.0",
     "tmp": "^0.2.1",
     "uuid": "^8.3.2",
     "which": "^2.0.1",

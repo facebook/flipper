@@ -7,26 +7,29 @@
  * @format
  */
 
-import {_DataDescription} from 'flipper-plugin';
-import {MenuTemplate} from '../ContextMenu';
-import {memo, useMemo, useRef, useState, useEffect, useCallback} from 'react';
-import ContextMenu from '../ContextMenu';
-import Tooltip from '../Tooltip';
+import {DataDescription} from './DataDescription';
+import {
+  memo,
+  useMemo,
+  useRef,
+  useState,
+  useEffect,
+  useCallback,
+  createContext,
+  useContext,
+} from 'react';
 import styled from '@emotion/styled';
-import createPaste from '../../../fb-stubs/createPaste';
-import {reportInteraction} from '../../../utils/InteractionTracker';
 import DataPreview, {DataValueExtractor, InspectorName} from './DataPreview';
 import {getSortedKeys} from './utils';
-import {colors} from '../colors';
-import {clipboard} from 'electron';
 import React from 'react';
-import {TooltipOptions} from '../TooltipProvider';
-import {
-  _useHighlighter as useHighlighter,
-  _HighlightManager,
-} from 'flipper-plugin';
+import {useHighlighter, HighlightManager} from '../Highlight';
+import {Dropdown, Menu, Tooltip} from 'antd';
+import {tryGetFlipperLibImplementation} from '../../plugin/FlipperLib';
+import {safeStringify} from '../../utils/safeStringify';
 
 export {DataValueExtractor} from './DataPreview';
+
+export const RootDataContext = createContext<() => any>(() => ({}));
 
 const BaseContainer = styled.div<{depth?: number; disabled?: boolean}>(
   (props) => ({
@@ -42,7 +45,7 @@ const BaseContainer = styled.div<{depth?: number; disabled?: boolean}>(
 BaseContainer.displayName = 'DataInspector:BaseContainer';
 
 const RecursiveBaseWrapper = styled.span({
-  color: colors.red,
+  color: '#FC3A4B',
 });
 RecursiveBaseWrapper.displayName = 'DataInspector:RecursiveBaseWrapper';
 
@@ -66,17 +69,12 @@ const ExpandControl = styled.span({
 ExpandControl.displayName = 'DataInspector:ExpandControl';
 
 const Added = styled.div({
-  backgroundColor: colors.tealTint70,
+  backgroundColor: '#d2f0ea',
 });
 
 const Removed = styled.div({
-  backgroundColor: colors.cherryTint70,
+  backgroundColor: '#fbccd2',
 });
-
-const nameTooltipOptions: TooltipOptions = {
-  position: 'toLeft',
-  showTail: true,
-};
 
 export type DataInspectorSetValue = (path: Array<string>, val: any) => void;
 
@@ -145,7 +143,7 @@ type DataInspectorProps = {
   onRenderName?: (
     path: Array<string>,
     name: string,
-    highlighter: _HighlightManager,
+    highlighter: HighlightManager,
   ) => React.ReactElement;
   /**
    * Render callback that can be used to customize the rendering of object values.
@@ -205,50 +203,29 @@ const defaultValueExtractor: DataValueExtractor = (value: any) => {
   }
 };
 
-const rootContextMenuCache: WeakMap<
-  Object,
-  Array<Electron.MenuItemConstructorOptions>
-> = new WeakMap();
-
-function getRootContextMenu(
-  data: Object,
-): Array<Electron.MenuItemConstructorOptions> {
-  const cached = rootContextMenuCache.get(data);
-  if (cached != null) {
-    return cached;
-  }
-
-  let stringValue: string;
-  try {
-    stringValue = JSON.stringify(data, null, 2);
-  } catch (e) {
-    stringValue = '<circular structure>';
-  }
-  const menu: Array<Electron.MenuItemConstructorOptions> = [
-    {
-      label: 'Copy entire tree',
-      click: () => clipboard.writeText(stringValue),
-    },
-    {
-      type: 'separator',
-    },
-    {
-      label: 'Create paste',
-      click: () => {
-        createPaste(stringValue);
-      },
-    },
-  ];
-  if (typeof data === 'object' && data !== null) {
-    rootContextMenuCache.set(data, menu);
-  } else {
-    console.error(
-      '[data-inspector] Ignoring unsupported data type for cache: ',
-      data,
-      typeof data,
-    );
-  }
-  return menu;
+function getRootContextMenu(root: Object) {
+  const lib = tryGetFlipperLibImplementation();
+  return (
+    <Menu>
+      <Menu.Item
+        key="copyClipboard"
+        onClick={() => {
+          lib?.writeTextToClipboard(safeStringify(root));
+        }}>
+        Copy tree
+      </Menu.Item>
+      <Menu.Divider />
+      {lib?.isFB && (
+        <Menu.Item
+          key="createPaste"
+          onClick={() => {
+            lib?.createPaste(safeStringify(root));
+          }}>
+          Create paste from tree
+        </Menu.Item>
+      )}
+    </Menu>
+  );
 }
 
 function isPureObject(obj: Object) {
@@ -345,6 +322,7 @@ const DataInspector: React.FC<DataInspectorProps> = memo(
     setValue: setValueProp,
   }) {
     const highlighter = useHighlighter();
+    const getRoot = useContext(RootDataContext);
 
     const shouldExpand = useRef(false);
     const expandHandle = useRef(undefined as any);
@@ -434,10 +412,6 @@ const DataInspector: React.FC<DataInspectorProps> = memo(
     const handleClick = useCallback(() => {
       cancelIdleCallback(expandHandle.current);
       const isExpanded = shouldBeExpanded(expandedPaths, path, collapsed);
-      reportInteraction('DataInspector', path.join(':'))(
-        isExpanded ? 'collapsed' : 'expanded',
-        undefined,
-      );
       setExpanded(path, !isExpanded);
     }, [expandedPaths, path, collapsed]);
 
@@ -534,11 +508,7 @@ const DataInspector: React.FC<DataInspectorProps> = memo(
     }
 
     if (expandRoot === true) {
-      return (
-        <ContextMenu component="span" items={getRootContextMenu(data)}>
-          {propertyNodesContainer}
-        </ContextMenu>
-      );
+      return <>{propertyNodesContainer}</>;
     }
 
     // create name components
@@ -551,7 +521,7 @@ const DataInspector: React.FC<DataInspectorProps> = memo(
         <Tooltip
           title={tooltips != null && tooltips[name]}
           key="name"
-          options={nameTooltipOptions}>
+          placement="left">
           <InspectorName>{text}</InspectorName>
         </Tooltip>,
       );
@@ -562,7 +532,7 @@ const DataInspector: React.FC<DataInspectorProps> = memo(
     let descriptionOrPreview;
     if (renderExpanded || !isExpandable) {
       descriptionOrPreview = (
-        <_DataDescription
+        <DataDescription
           path={path}
           setValue={setValue}
           type={type}
@@ -607,50 +577,58 @@ const DataInspector: React.FC<DataInspectorProps> = memo(
       }
     }
 
-    const contextMenuItems: MenuTemplate = [];
-
-    if (isExpandable) {
-      contextMenuItems.push(
-        {
-          label: shouldExpand.current ? 'Collapse' : 'Expand',
-          click: handleClick,
-        },
-        {
-          type: 'separator',
-        },
+    function getContextMenu() {
+      const lib = tryGetFlipperLibImplementation();
+      return (
+        <Menu>
+          <Menu.Item
+            key="copyClipboard"
+            onClick={() => {
+              lib?.writeTextToClipboard(safeStringify(getRoot()));
+            }}>
+            Copy tree
+          </Menu.Item>
+          {lib?.isFB && (
+            <Menu.Item
+              key="createPaste"
+              onClick={() => {
+                lib?.createPaste(safeStringify(getRoot()));
+              }}>
+              Create paste from tree
+            </Menu.Item>
+          )}
+          <Menu.Divider />
+          <Menu.Item
+            key="copyValue"
+            onClick={() => {
+              lib?.writeTextToClipboard(safeStringify(data));
+            }}>
+            Copy value
+          </Menu.Item>
+          {!isExpandable && onDelete ? (
+            <Menu.Item
+              key="delete"
+              onClick={() => {
+                handleDelete(path);
+              }}>
+              Delete
+            </Menu.Item>
+          ) : null}
+        </Menu>
       );
-    }
-
-    contextMenuItems.push(
-      {
-        label: 'Copy',
-        click: () =>
-          clipboard.writeText((window.getSelection() || '').toString()),
-      },
-      {
-        label: 'Copy value',
-        click: () => clipboard.writeText(JSON.stringify(data, null, 2)),
-      },
-    );
-
-    if (!isExpandable && onDelete) {
-      contextMenuItems.push({
-        label: 'Delete',
-        click: () => handleDelete(path),
-      });
     }
 
     return (
       <BaseContainer
         depth={depth}
         disabled={!!setValueProp && !!setValue === false}>
-        <ContextMenu component="span" items={contextMenuItems}>
+        <Dropdown overlay={getContextMenu} trigger={['contextMenu']}>
           <PropertyContainer onClick={isExpandable ? handleClick : undefined}>
             {expandedPaths && <ExpandControl>{expandGlyph}</ExpandControl>}
             {descriptionOrPreview}
             {wrapperStart}
           </PropertyContainer>
-        </ContextMenu>
+        </Dropdown>
         {propertyNodesContainer}
         {wrapperEnd}
       </BaseContainer>

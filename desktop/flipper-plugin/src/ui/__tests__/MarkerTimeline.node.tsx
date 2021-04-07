@@ -7,7 +7,7 @@
  * @format
  */
 
-import MarkerTimeline from '../MarkerTimeline';
+import {MarkerTimeline} from '../MarkerTimeline';
 
 test('merges points with same timestamp', () => {
   const points = [

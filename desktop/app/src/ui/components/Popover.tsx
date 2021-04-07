@@ -65,6 +65,9 @@ type Props = {
   forceOpts?: Opts;
 };
 
+/**
+ * @deprecated use Popover from antd
+ */
 export default class Popover extends PureComponent<Props> {
   _ref?: Element | null;
 

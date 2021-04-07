@@ -7,12 +7,12 @@
  * @format
  */
 
-import ManagedDataInspector from './ManagedDataInspector';
+import {ManagedDataInspector} from './ManagedDataInspector';
 import {Component, ReactNode} from 'react';
-import {colors} from '../colors';
 import React from 'react';
-import MarkerTimeline from '../MarkerTimeline';
-import Button from '../Button';
+import {MarkerTimeline} from '../MarkerTimeline';
+import {Button} from 'antd';
+import {presetColors} from './DataDescription';
 
 type TimePoint = {
   moment: number;
@@ -37,7 +37,7 @@ type State = {
   selected: string;
 };
 
-export default class TimelineDataDescription extends Component<Props, State> {
+export class TimelineDataDescription extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {selected: props.timeline.current};
@@ -50,7 +50,7 @@ export default class TimelineDataDescription extends Component<Props, State> {
       label: value.display,
       time: value.moment - firstMoment,
       color:
-        Object.entries(colors).find(([k, _]) => k === value.color)?.[1] ??
+        Object.entries(presetColors).find(([k, _]) => k === value.color)?.[1] ??
         value.color,
       key: value.key,
     }));

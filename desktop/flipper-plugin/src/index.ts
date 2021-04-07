@@ -86,21 +86,21 @@ export {DataTable, DataTableColumn} from './ui/data-table/DataTable';
 export {DataTableManager} from './ui/data-table/DataTableManager';
 
 export {
-  HighlightContext as _HighlightContext,
-  HighlightProvider as _HighlightProvider,
-  HighlightManager as _HighlightManager,
-  useHighlighter as _useHighlighter,
-} from './ui/Highlight';
-
-export {
   Interactive as _Interactive,
   InteractiveProps as _InteractiveProps,
 } from './ui/Interactive';
 
+export {HighlightManager} from './ui/Highlight';
 export {
-  DataDescription as _DataDescription,
+  DataValueExtractor,
+  DataInspectorExpanded,
+} from './ui/data-inspector/DataInspector';
+export {
   DataDescriptionType,
+  DataDescription,
 } from './ui/data-inspector/DataDescription';
+export {MarkerTimeline} from './ui/MarkerTimeline';
+export {ManagedDataInspector as DataInspector} from './ui/data-inspector/ManagedDataInspector';
 
 export {useMemoize} from './utils/useMemoize';
 

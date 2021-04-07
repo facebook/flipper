@@ -13,7 +13,7 @@ import {colors} from './colors';
 import ManagedTable from './table/ManagedTable';
 import FlexColumn from './FlexColumn';
 import Text from './Text';
-import ManagedDataInspector from './data-inspector/ManagedDataInspector';
+import {DataInspector} from 'flipper-plugin';
 import Input from './Input';
 import View from './View';
 import styled from '@emotion/styled';
@@ -160,7 +160,7 @@ export class Console extends Component<Props, State> {
       columns: {
         command: {
           value: result.isSuccess ? (
-            <ManagedDataInspector
+            <DataInspector
               data={result.value}
               expandRoot={true}
               collapsed={true}

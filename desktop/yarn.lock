@@ -2982,6 +2982,11 @@
   resolved "https://registry.yarnpkg.com/@types/stack-utils/-/stack-utils-2.0.0.tgz#7036640b4e21cc2f259ae826ce843d277dad8cff"
   integrity sha512-RJJrrySY7A8havqpGObOB4W92QXKJo63/jFLLgpvOtsGUqbQZ9Sbgl35KMm1DjC6j7AvmmU2bIno+3IyEaemaw==
 
+"@types/string-natural-compare@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@types/string-natural-compare/-/string-natural-compare-3.0.0.tgz#44d0970987df4b89697993015d4447a26d1f2d66"
+  integrity sha512-fXFxr8Isabw+XVgZ1Clsi7slyv2cGTIK/U9niVkUCva5O96eiC1CjdOPLKQnxrOVvVYJPeAEkLT3VPTlgOnz0w==
+
 "@types/tar@^4.0.3":
   version "4.0.3"
   resolved "https://registry.yarnpkg.com/@types/tar/-/tar-4.0.3.tgz#e2cce0b8ff4f285293243f5971bd7199176ac489"

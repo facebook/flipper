@@ -7,12 +7,11 @@
  * @format
  */
 
-import {DataDescriptionType, _DataDescription} from 'flipper-plugin';
+import {DataDescriptionType, DataDescription} from './DataDescription';
 import styled from '@emotion/styled';
 import {getSortedKeys} from './utils';
 import {PureComponent} from 'react';
 import React from 'react';
-import {colors} from '../colors';
 
 export type DataValueExtractor = (
   value: any,
@@ -29,7 +28,7 @@ export type DataValueExtractor = (
   | null;
 
 export const InspectorName = styled.span({
-  color: colors.grapeDark1,
+  color: '#7b64c0',
 });
 InspectorName.displayName = 'DataInspector:InspectorName';
 
@@ -79,7 +78,7 @@ export default class DataPreview extends PureComponent<{
 
               const {type, value} = res;
               return (
-                <_DataDescription
+                <DataDescription
                   key={index}
                   type={type}
                   value={value}
