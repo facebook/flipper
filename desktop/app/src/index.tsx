@@ -103,7 +103,7 @@ export {
   default as DataDescription,
   DataDescriptionType,
 } from './ui/components/data-inspector/DataDescription';
-export {HighlightManager} from './ui/components/Highlight';
+export {_HighlightManager as HighlightManager} from 'flipper-plugin';
 export {default as Tabs} from './ui/components/Tabs';
 export {default as Tab} from './ui/components/Tab';
 export {default as Input} from './ui/components/Input';

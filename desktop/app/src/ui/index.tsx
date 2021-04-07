@@ -180,4 +180,3 @@ export {default as AlternatingRows} from './components/AlternatingRows';
 export {Layout} from 'flipper-plugin';
 
 export {default as Scrollable} from './components/Scrollable';
-export * from './components/Highlight';

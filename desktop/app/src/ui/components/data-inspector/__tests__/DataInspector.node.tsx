@@ -124,7 +124,7 @@ test('can filter for data', async () => {
     <span>
       "j
       <span
-        class="css-i709sw-Highlighted ep1h60f0"
+        class="css-zr1u3c-Highlighted eiud9hg0"
       >
         son
       </span>

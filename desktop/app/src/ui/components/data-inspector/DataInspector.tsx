@@ -21,7 +21,10 @@ import {colors} from '../colors';
 import {clipboard} from 'electron';
 import React from 'react';
 import {TooltipOptions} from '../TooltipProvider';
-import {useHighlighter, HighlightManager} from '../Highlight';
+import {
+  _useHighlighter as useHighlighter,
+  _HighlightManager,
+} from 'flipper-plugin';
 
 export {DataValueExtractor} from './DataPreview';
 
@@ -142,7 +145,7 @@ type DataInspectorProps = {
   onRenderName?: (
     path: Array<string>,
     name: string,
-    highlighter: HighlightManager,
+    highlighter: _HighlightManager,
   ) => React.ReactElement;
   /**
    * Render callback that can be used to customize the rendering of object values.

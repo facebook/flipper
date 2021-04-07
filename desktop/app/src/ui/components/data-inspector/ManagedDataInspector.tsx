@@ -12,7 +12,7 @@ import {PureComponent} from 'react';
 import DataInspector from './DataInspector';
 import React from 'react';
 import {DataValueExtractor} from './DataPreview';
-import {HighlightProvider, HighlightManager} from '../Highlight';
+import {_HighlightProvider, _HighlightManager} from 'flipper-plugin';
 
 export type ManagedDataInspectorProps = {
   /**
@@ -47,7 +47,7 @@ export type ManagedDataInspectorProps = {
   onRenderName?: (
     path: Array<string>,
     name: string,
-    highlighter: HighlightManager,
+    highlighter: _HighlightManager,
   ) => React.ReactElement;
   /**
    * Render callback that can be used to customize the rendering of object values.
@@ -173,7 +173,7 @@ export default class ManagedDataInspector extends PureComponent<
 
   render() {
     return (
-      <HighlightProvider text={this.props.filter}>
+      <_HighlightProvider text={this.props.filter}>
         <DataInspector
           data={this.props.data}
           diff={this.props.diff}
@@ -191,7 +191,7 @@ export default class ManagedDataInspector extends PureComponent<
           depth={0}
           parentAncestry={EMPTY_ARRAY}
         />
-      </HighlightProvider>
+      </_HighlightProvider>
     );
   }
 }

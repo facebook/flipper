@@ -17,7 +17,7 @@ import {colors} from '../colors';
 import Input from '../Input';
 import React, {KeyboardEvent} from 'react';
 import Glyph from '../Glyph';
-import {HighlightContext} from '../Highlight';
+import {_HighlightContext} from 'flipper-plugin';
 import Select from '../Select';
 import TimelineDataDescription from './TimelineDataDescription';
 
@@ -575,8 +575,8 @@ class DataDescriptionContainer extends PureComponent<{
   editable: boolean;
   commit: (opts: DescriptionCommitOptions) => void;
 }> {
-  static contextType = HighlightContext; // Replace with useHighlighter
-  context!: React.ContextType<typeof HighlightContext>;
+  static contextType = _HighlightContext; // Replace with useHighlighter
+  context!: React.ContextType<typeof _HighlightContext>;
 
   onChangeCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.props.commit({

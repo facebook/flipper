@@ -86,6 +86,13 @@ export {DataTable, DataTableColumn} from './ui/data-table/DataTable';
 export {DataTableManager} from './ui/data-table/DataTableManager';
 
 export {
+  HighlightContext as _HighlightContext,
+  HighlightProvider as _HighlightProvider,
+  HighlightManager as _HighlightManager,
+  useHighlighter as _useHighlighter,
+} from './ui/Highlight';
+
+export {
   Interactive as _Interactive,
   InteractiveProps as _InteractiveProps,
 } from './ui/Interactive';
