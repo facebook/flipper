@@ -85,9 +85,28 @@ const EmptyObjectValue = styled.span({
 });
 EmptyObjectValue.displayName = 'DataDescription:EmptyObjectValue';
 
+export type DataDescriptionType =
+  | 'number'
+  | 'string'
+  | 'boolean'
+  | 'undefined'
+  | 'null'
+  | 'object'
+  | 'array'
+  | 'date'
+  | 'symbol'
+  | 'function'
+  | 'bigint'
+  | 'text' // deprecated, please use string
+  | 'enum' // unformatted string
+  | 'color'
+  | 'picker' // multiple choise item like an, eehhh, enum
+  | 'timeline'
+  | 'color_lite'; // color with limited palette, specific for fblite;
+
 type DataDescriptionProps = {
   path?: Array<string>;
-  type: string;
+  type: DataDescriptionType;
   value: any;
   extra?: any;
   setValue: DataInspectorSetValue | null | undefined;
@@ -102,7 +121,7 @@ type DescriptionCommitOptions = {
 
 class NumberTextEditor extends PureComponent<{
   commit: (opts: DescriptionCommitOptions) => void;
-  type: string;
+  type: DataDescriptionType;
   value: any;
   origValue: any;
 }> {
@@ -447,7 +466,7 @@ class ColorEditor extends PureComponent<{
 }
 
 class DataDescriptionPreview extends PureComponent<{
-  type: string;
+  type: DataDescriptionType;
   value: any;
   extra?: any;
   editable: boolean;
@@ -551,7 +570,7 @@ type Picker = {
 };
 
 class DataDescriptionContainer extends PureComponent<{
-  type: string;
+  type: DataDescriptionType;
   value: any;
   editable: boolean;
   commit: (opts: DescriptionCommitOptions) => void;

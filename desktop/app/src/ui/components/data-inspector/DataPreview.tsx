@@ -7,7 +7,7 @@
  * @format
  */
 
-import DataDescription from './DataDescription';
+import DataDescription, {DataDescriptionType} from './DataDescription';
 import styled from '@emotion/styled';
 import {getSortedKeys} from './utils';
 import {PureComponent} from 'react';
@@ -21,7 +21,7 @@ export type DataValueExtractor = (
 ) =>
   | {
       mutable: boolean;
-      type: string;
+      type: DataDescriptionType;
       value: any;
       extra?: any;
     }

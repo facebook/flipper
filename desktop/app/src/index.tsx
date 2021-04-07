@@ -99,7 +99,10 @@ export {
 export {default as DataInspector} from './ui/components/data-inspector/DataInspector';
 export {default as ManagedDataInspector} from './ui/components/data-inspector/ManagedDataInspector';
 export {default as SearchableDataInspector} from './ui/components/data-inspector/SearchableDataInspector';
-export {default as DataDescription} from './ui/components/data-inspector/DataDescription';
+export {
+  default as DataDescription,
+  DataDescriptionType,
+} from './ui/components/data-inspector/DataDescription';
 export {HighlightManager} from './ui/components/Highlight';
 export {default as Tabs} from './ui/components/Tabs';
 export {default as Tab} from './ui/components/Tab';
