@@ -45,6 +45,8 @@ SNAPSHOT_VERSION="$(echo "$VERSION" | sed -Ee 's/([0-9]+)\.([0-9]+)\.([0-9]+)/\1
 echo "Bumping version number for android related files..."
 # Update Android related files
 "$SONAR_DIR"/scripts/bump.sh "$VERSION"
+# Update lock file as a result of version bump
+yarn --ignore-scripts --cwd  "$SONAR_DIR"/react-native/ReactNativeFlipperExample
 
 # Generate changelog
 $nodejs "$DESKTOP_DIR"/scripts/generate-changelog.js

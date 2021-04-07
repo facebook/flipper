@@ -37,27 +37,33 @@ export const uriComponents = (url: string): Array<string> => {
 
 export default (store: Store, _logger: Logger) => {
   const currentWindow = remote.getCurrentWindow();
-  currentWindow.on('focus', () => {
+  const onFocus = () => {
     setImmediate(() => {
       store.dispatch({
         type: 'windowIsFocused',
         payload: {isFocused: true, time: Date.now()},
       });
     });
-  });
-  currentWindow.on('blur', () => {
+  };
+  const onBlur = () => {
     setImmediate(() => {
       store.dispatch({
         type: 'windowIsFocused',
         payload: {isFocused: false, time: Date.now()},
       });
     });
+  };
+  currentWindow.on('focus', onFocus);
+  currentWindow.on('blur', onBlur);
+  window.addEventListener('beforeunload', () => {
+    currentWindow.removeListener('focus', onFocus);
+    currentWindow.removeListener('blur', onBlur);
   });
 
   // windowIsFocussed is initialized in the store before the app is fully ready.
   // So wait until everything is up and running and then check and set the isFocussed state.
   window.addEventListener('flipper-store-ready', () => {
-    const isFocused = currentWindow.isFocused();
+    const isFocused = remote.getCurrentWindow().isFocused();
     store.dispatch({
       type: 'windowIsFocused',
       payload: {isFocused: isFocused, time: Date.now()},

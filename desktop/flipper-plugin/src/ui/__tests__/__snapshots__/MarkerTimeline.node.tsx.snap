@@ -3,7 +3,7 @@
 exports[`handles single point 1`] = `
 Array [
   Object {
-    "color": "#ffffff",
+    "color": "var(--flipper-background-default)",
     "isCut": false,
     "markerKeys": Array [
       "1",

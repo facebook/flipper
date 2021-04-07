@@ -16,6 +16,7 @@ import {PopoverContext} from './PopoverProvider';
  * UI framework.
  * I don't recommend using this, as it will likely be removed in future.
  * Must be nested under a PopoverProvider at some level, usually it is at the top level app so you shouldn't need to add it.
+ * @deprecated use Popover from Antd
  */
 export default function Popover2(props: {
   id: string;

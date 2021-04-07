@@ -20,6 +20,7 @@ import {
   FlipperPlugin,
   Button,
   styled,
+  DataDescriptionType,
 } from 'flipper';
 import {Element} from 'flipper';
 import {processLeaks} from './processLeakString';
@@ -163,7 +164,7 @@ export default class LeakCanary<PersistedState> extends FlipperPlugin<
   _extractValue(
     value: any,
     _: number, // depth
-  ): {mutable: boolean; type: string; value: any} {
+  ): {mutable: boolean; type: DataDescriptionType; value: any} {
     if (!isNaN(value)) {
       return {mutable: false, type: 'number', value: value};
     } else if (value == 'true' || value == 'false') {

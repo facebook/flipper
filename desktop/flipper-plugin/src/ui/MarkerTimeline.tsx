@@ -7,12 +7,12 @@
  * @format
  */
 
+import React from 'react';
 import {Component} from 'react';
 import styled from '@emotion/styled';
-import Text from './Text';
-import FlexRow from './FlexRow';
-import {colors} from './colors';
-import React from 'react';
+import {theme} from './theme';
+import {Layout} from './Layout';
+import {Typography} from 'antd';
 
 type DataPoint = {
   time: number;
@@ -40,7 +40,7 @@ const Markers = styled.div<{totalTime: number}>((props) => ({
   '::before': {
     content: '""',
     width: 1,
-    borderLeft: `1px dotted ${colors.light30}`,
+    borderLeft: `1px dotted ${theme.disabledColor}`,
     position: 'absolute',
     top: 5,
     bottom: 20,
@@ -49,7 +49,7 @@ const Markers = styled.div<{totalTime: number}>((props) => ({
 }));
 Markers.displayName = 'MarkerTimeline:Markers';
 
-const Point = styled(FlexRow)<{
+const Point = styled(Layout.Horizontal)<{
   positionY: number;
   onClick: MouseEventHandler | undefined;
   number: number | undefined;
@@ -91,7 +91,7 @@ const Point = styled(FlexRow)<{
     marginRight: 6,
     zIndex: 3,
     boxShadow: props.selected
-      ? `0 0 0 2px ${colors.macOSTitleBarIconSelected}`
+      ? `0 0 0 2px ${theme.backgroundTransparentHover}`
       : undefined,
   },
   '::after': {
@@ -101,23 +101,23 @@ const Point = styled(FlexRow)<{
     top: -20,
     left: 0,
     height: 2,
-    background: colors.white,
-    borderTop: `1px solid ${colors.light30}`,
-    borderBottom: `1px solid ${colors.light30}`,
+    background: theme.backgroundDefault,
+    borderTop: `1px solid ${theme.dividerColor}`,
+    borderBottom: `1px solid ${theme.dividerColor}`,
     transform: `skewY(-10deg)`,
   },
 }));
 Point.displayName = 'MakerTimeline:Point';
 
 const Time = styled.span({
-  color: colors.light30,
+  color: theme.dividerColor,
   fontWeight: 300,
   marginRight: 4,
   marginTop: -2,
 });
 Time.displayName = 'MakerTimeline:Time';
 
-const Code = styled(Text)({
+const Code = styled(Typography.Text)({
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   marginTop: -1,
@@ -137,7 +137,7 @@ type State = {
   timePoints: Array<TimePoint>;
 };
 
-export default class MarkerTimeline extends Component<Props, State> {
+export class MarkerTimeline extends Component<Props, State> {
   static defaultProps = {
     lineHeight: 22,
     maxGap: 100,
@@ -172,7 +172,7 @@ export default class MarkerTimeline extends Component<Props, State> {
     for (let i = 0; i < sortedMarkers.length; i++) {
       const [timestamp, points] = sortedMarkers[i];
       let isCut = false;
-      const color = sortedMarkers[i][1][0].color || colors.white;
+      const color = sortedMarkers[i][1][0].color || theme.backgroundDefault;
 
       if (i > 0) {
         const relativeTimestamp = timestamp - sortedMarkers[i - 1][0];

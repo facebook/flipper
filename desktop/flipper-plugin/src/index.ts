@@ -82,13 +82,25 @@ export {Idler} from './utils/Idler';
 
 export {createDataSource, DataSource} from './state/DataSource';
 
-export {DataTable, DataTableColumn} from './ui/datatable/DataTable';
-export {DataTableManager} from './ui/datatable/DataTableManager';
+export {DataTable, DataTableColumn} from './ui/data-table/DataTable';
+export {DataTableManager} from './ui/data-table/DataTableManager';
 
 export {
   Interactive as _Interactive,
   InteractiveProps as _InteractiveProps,
 } from './ui/Interactive';
+
+export {HighlightManager} from './ui/Highlight';
+export {
+  DataValueExtractor,
+  DataInspectorExpanded,
+} from './ui/data-inspector/DataInspector';
+export {
+  DataDescriptionType,
+  DataDescription,
+} from './ui/data-inspector/DataDescription';
+export {MarkerTimeline} from './ui/MarkerTimeline';
+export {ManagedDataInspector as DataInspector} from './ui/data-inspector/ManagedDataInspector';
 
 export {useMemoize} from './utils/useMemoize';
 

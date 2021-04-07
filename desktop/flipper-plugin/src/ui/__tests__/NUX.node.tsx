@@ -7,7 +7,7 @@
  * @format
  */
 
-import {TestUtils} from 'flipper-plugin';
+import {TestUtils} from '../../';
 import React from 'react';
 import {getNuxKey} from '../NUX';
 

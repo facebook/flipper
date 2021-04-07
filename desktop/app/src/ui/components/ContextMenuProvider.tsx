@@ -28,6 +28,7 @@ export const ContextMenuContext = createContext<ContextMenuManager | undefined>(
 /**
  * Flipper's root is already wrapped with this component, so plugins should not
  * need to use this. ContextMenu is what you probably want to use.
+ * @deprecated use https://ant.design/components/dropdown/#components-dropdown-demo-context-menu
  */
 const ContextMenuProvider: React.FC<{}> = memo(function ContextMenuProvider({
   children,

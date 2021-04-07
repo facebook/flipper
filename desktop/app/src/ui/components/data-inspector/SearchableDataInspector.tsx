@@ -10,10 +10,10 @@
 import React from 'react';
 import debounceRender from 'react-debounce-render';
 
-import ManagedDataInspector, {
-  ManagedDataInspectorProps,
-} from './ManagedDataInspector';
+import {DataInspector} from 'flipper-plugin';
 import Searchable, {SearchableProps} from '../searchable/Searchable';
+
+type ManagedDataInspectorProps = any; // TODO!
 
 type Props = ManagedDataInspectorProps & SearchableProps;
 
@@ -35,10 +35,7 @@ function filter(data: any, searchTerm: string): any {
 // Naive shallow filters matching wrapper for ManagedDataInspector
 function SearchableDataInspector(props: Props) {
   return (
-    <ManagedDataInspector
-      {...props}
-      data={filter(props.data, props.searchTerm)}
-    />
+    <DataInspector {...props} data={filter(props.data, props.searchTerm)} />
   );
 }
 

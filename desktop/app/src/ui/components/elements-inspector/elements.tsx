@@ -8,7 +8,6 @@
  */
 
 import {ElementID, Element, ElementSearchResultSet} from './ElementsInspector';
-import {reportInteraction} from '../../../utils/InteractionTracker';
 import ContextMenu from '../ContextMenu';
 import {PureComponent, ReactElement} from 'react';
 import FlexRow from '../FlexRow';
@@ -236,10 +235,7 @@ class ElementsRow extends PureComponent<ElementsRowProps, ElementsRowState> {
   constructor(props: ElementsRowProps, context: Object) {
     super(props, context);
     this.state = {hovered: false};
-    this.interaction = reportInteraction('ElementsRow', props.element.name);
   }
-
-  interaction: (name: string, data: any) => void;
 
   getContextMenu = (): Array<MenuItemConstructorOptions> => {
     const {props} = this;
@@ -296,7 +292,6 @@ class ElementsRow extends PureComponent<ElementsRowProps, ElementsRowState> {
 
   onClick = () => {
     this.props.onElementSelected(this.props.id);
-    this.interaction('selected', {level: this.props.level});
   };
 
   onDoubleClick = (event: MouseEvent<any>) => {

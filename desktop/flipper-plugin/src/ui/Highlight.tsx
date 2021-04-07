@@ -8,20 +8,18 @@
  */
 
 import styled from '@emotion/styled';
-import {colors} from './colors';
 import React, {
   useEffect,
   memo,
   useState,
   useRef,
-  useMemo,
   createContext,
   useContext,
 } from 'react';
 import {debounce} from 'lodash';
 
 const Highlighted = styled.span({
-  backgroundColor: colors.lemon,
+  backgroundColor: '#fcd872',
 });
 
 export interface HighlightManager {
@@ -108,11 +106,11 @@ export function HighlightProvider({
   text: string | undefined;
   children: React.ReactElement;
 }) {
-  const highlightManager = useMemo(() => createHighlightManager(text), []);
+  const [highlightManager] = useState(() => createHighlightManager(text));
 
   useEffect(() => {
     highlightManager.setFilter(text);
-  }, [text]);
+  }, [text, highlightManager]);
 
   return (
     <HighlightContext.Provider value={highlightManager}>

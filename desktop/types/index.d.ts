@@ -26,4 +26,3 @@
 /// <reference path="nodejs.d.ts" />
 /// <reference path="npm-api.d.ts" />
 /// <reference path="openssl-wrapper.d.ts" />
-/// <reference path="string-natural-compare.d.ts" />

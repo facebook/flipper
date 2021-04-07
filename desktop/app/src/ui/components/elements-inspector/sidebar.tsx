@@ -12,7 +12,7 @@ import {PluginClient} from '../../../plugin';
 import Client from '../../../Client';
 import {Logger} from '../../../fb-interfaces/Logger';
 import Panel from '../Panel';
-import ManagedDataInspector from '../data-inspector/ManagedDataInspector';
+import {DataInspector} from 'flipper-plugin';
 import {Component} from 'react';
 import {Console} from '../console';
 import GK from '../../../fb-stubs/GK';
@@ -64,7 +64,7 @@ class InspectorSidebarSection extends Component<InspectorSidebarSectionProps> {
     const {id} = this.props;
     return (
       <Panel heading={id} floating={false} grow={false}>
-        <ManagedDataInspector
+        <DataInspector
           data={this.props.data}
           setValue={this.props.onValueChanged ? this.setValue : undefined}
           extractValue={this.extractValue}

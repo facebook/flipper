@@ -7,12 +7,11 @@
  * @format
  */
 
-import DataDescription from './DataDescription';
+import {DataDescriptionType, DataDescription} from './DataDescription';
 import styled from '@emotion/styled';
 import {getSortedKeys} from './utils';
 import {PureComponent} from 'react';
 import React from 'react';
-import {colors} from '../colors';
 
 export type DataValueExtractor = (
   value: any,
@@ -21,7 +20,7 @@ export type DataValueExtractor = (
 ) =>
   | {
       mutable: boolean;
-      type: string;
+      type: DataDescriptionType;
       value: any;
       extra?: any;
     }
@@ -29,7 +28,7 @@ export type DataValueExtractor = (
   | null;
 
 export const InspectorName = styled.span({
-  color: colors.grapeDark1,
+  color: '#7b64c0',
 });
 InspectorName.displayName = 'DataInspector:InspectorName';
 
