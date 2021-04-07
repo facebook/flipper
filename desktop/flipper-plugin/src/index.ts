@@ -97,6 +97,11 @@ export {
   InteractiveProps as _InteractiveProps,
 } from './ui/Interactive';
 
+export {
+  DataDescription as _DataDescription,
+  DataDescriptionType,
+} from './ui/data-inspector/DataDescription';
+
 export {useMemoize} from './utils/useMemoize';
 
 // It's not ideal that this exists in flipper-plugin sources directly,

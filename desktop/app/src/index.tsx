@@ -100,9 +100,9 @@ export {default as DataInspector} from './ui/components/data-inspector/DataInspe
 export {default as ManagedDataInspector} from './ui/components/data-inspector/ManagedDataInspector';
 export {default as SearchableDataInspector} from './ui/components/data-inspector/SearchableDataInspector';
 export {
-  default as DataDescription,
+  _DataDescription as DataDescription,
   DataDescriptionType,
-} from './ui/components/data-inspector/DataDescription';
+} from 'flipper-plugin';
 export {_HighlightManager as HighlightManager} from 'flipper-plugin';
 export {default as Tabs} from './ui/components/Tabs';
 export {default as Tab} from './ui/components/Tab';

@@ -7,19 +7,41 @@
  * @format
  */
 
-import Link from '../Link';
-import {DataInspectorSetValue} from './DataInspector';
+import {Typography, Popover, Input, Select, Checkbox} from 'antd';
+// TODO: restore import {DataInspectorSetValue} from './DataInspector';
 import {PureComponent} from 'react';
 import styled from '@emotion/styled';
 import {SketchPicker, CompactPicker} from 'react-color';
-import Popover from '../Popover';
-import {colors} from '../colors';
-import Input from '../Input';
 import React, {KeyboardEvent} from 'react';
-import Glyph from '../Glyph';
-import {_HighlightContext} from 'flipper-plugin';
-import Select from '../Select';
-import TimelineDataDescription from './TimelineDataDescription';
+import {HighlightContext} from '../Highlight';
+import {parseColor} from '../../utils/parseColor';
+// import TimelineDataDescription from './TimelineDataDescription'; TODO:
+import {theme} from '../theme';
+import {EditOutlined} from '@ant-design/icons';
+import type {CheckboxChangeEvent} from 'antd/lib/checkbox';
+
+const {Link} = Typography;
+
+type DataInspectorSetValue = (path: Array<string>, val: any) => void;
+
+// Based on FIG UI Core, TODO: does that still makes sense?
+const presetColors = Object.values({
+  blue: '#4267b2', // Blue - Active-state nav glyphs, nav bars, links, buttons
+  green: '#42b72a', // Green - Confirmation, success, commerce and status
+  red: '#FC3A4B', // Red - Badges, error states
+  blueGrey: '#5f6673', // Blue Grey
+  slate: '#b9cad2', // Slate
+  aluminum: '#a3cedf', // Aluminum
+  seaFoam: '#54c7ec', // Sea Foam
+  teal: '#6bcebb', // Teal
+  lime: '#a3ce71', // Lime
+  lemon: '#fcd872', // Lemon
+  orange: '#f7923b', // Orange
+  tomato: '#fb724b', // Tomato - Tometo? Tomato.
+  cherry: '#f35369', // Cherry
+  pink: '#ec7ebd', // Pink
+  grape: '#8c72cb', // Grape
+});
 
 const NullValue = styled.span({
   color: 'rgb(128, 128, 128)',
@@ -32,13 +54,13 @@ const UndefinedValue = styled.span({
 UndefinedValue.displayName = 'DataDescription:UndefinedValue';
 
 const StringValue = styled.span({
-  color: colors.cherryDark1,
+  color: '#e04c60',
   wordWrap: 'break-word',
 });
 StringValue.displayName = 'DataDescription:StringValue';
 
 const ColorValue = styled.span({
-  color: colors.blueGrey,
+  color: '#5f6673',
 });
 ColorValue.displayName = 'DataDescription:ColorValue';
 
@@ -48,7 +70,7 @@ const SymbolValue = styled.span({
 SymbolValue.displayName = 'DataDescription:SymbolValue';
 
 const NumberValue = styled.span({
-  color: colors.tealDark1,
+  color: '#4dbba6',
 });
 NumberValue.displayName = 'DataDescription:NumberValue';
 
@@ -57,9 +79,10 @@ const ColorBox = styled.span<{color: string}>((props) => ({
   boxShadow: 'inset 0 0 1px rgba(0, 0, 0, 1)',
   display: 'inline-block',
   height: 12,
-  marginRight: 5,
+  marginRight: 4,
   verticalAlign: 'middle',
   width: 12,
+  borderRadius: 4,
 }));
 ColorBox.displayName = 'DataDescription:ColorBox';
 
@@ -185,7 +208,7 @@ class NumberTextEditor extends PureComponent<{
       <Input
         key="input"
         {...extraProps}
-        compact={true}
+        size="small"
         onChange={this.onNumberTextInputChange}
         onKeyDown={this.onNumberTextInputKeyDown}
         ref={this.onNumberTextRef}
@@ -202,7 +225,7 @@ type DataDescriptionState = {
   value: any;
 };
 
-export default class DataDescription extends PureComponent<
+export class DataDescription extends PureComponent<
   DataDescriptionProps,
   DataDescriptionState
 > {
@@ -315,13 +338,15 @@ class ColorEditor extends PureComponent<{
   colorSet?: Array<string | number>;
   commit: (opts: DescriptionCommitOptions) => void;
 }> {
-  onBlur = () => {
-    this.props.commit({
-      clear: true,
-      keep: false,
-      value: this.props.value,
-      set: true,
-    });
+  onBlur = (newVisibility: boolean) => {
+    if (!newVisibility) {
+      this.props.commit({
+        clear: true,
+        keep: false,
+        value: this.props.value,
+        set: true,
+      });
+    }
   };
 
   onChange = ({
@@ -388,16 +413,11 @@ class ColorEditor extends PureComponent<{
     }
 
     return (
-      <ColorPickerDescription>
-        <DataDescriptionPreview
-          type="color"
-          value={this.props.value}
-          extra={this.props.colorSet}
-          editable={false}
-          commit={this.props.commit}
-        />
-        <Popover onDismiss={this.onBlur}>
-          {this.props.colorSet ? (
+      <Popover
+        trigger={'click'}
+        onVisibleChange={this.onBlur}
+        content={() =>
+          this.props.colorSet ? (
             <CompactPicker
               color={colorInfo}
               colors={this.props.colorSet
@@ -425,23 +445,7 @@ class ColorEditor extends PureComponent<{
           ) : (
             <SketchPicker
               color={colorInfo}
-              presetColors={[
-                colors.blue,
-                colors.green,
-                colors.red,
-                colors.blueGrey,
-                colors.slate,
-                colors.aluminum,
-                colors.seaFoam,
-                colors.teal,
-                colors.lime,
-                colors.lemon,
-                colors.orange,
-                colors.tomato,
-                colors.cherry,
-                colors.pink,
-                colors.grape,
-              ]}
+              presetColors={presetColors}
               onChange={(color: {
                 hex: string;
                 hsl: {
@@ -458,9 +462,18 @@ class ColorEditor extends PureComponent<{
                 });
               }}
             />
-          )}
-        </Popover>
-      </ColorPickerDescription>
+          )
+        }>
+        <ColorPickerDescription>
+          <DataDescriptionPreview
+            type="color"
+            value={this.props.value}
+            extra={this.props.colorSet}
+            editable={false}
+            commit={this.props.commit}
+          />
+        </ColorPickerDescription>
+      </Popover>
     );
   }
 }
@@ -505,65 +518,6 @@ class DataDescriptionPreview extends PureComponent<{
   }
 }
 
-function parseColor(
-  val: string | number,
-):
-  | {
-      r: number;
-      g: number;
-      b: number;
-      a: number;
-    }
-  | undefined
-  | null {
-  if (typeof val === 'number') {
-    const a = ((val >> 24) & 0xff) / 255;
-    const r = (val >> 16) & 0xff;
-    const g = (val >> 8) & 0xff;
-    const b = val & 0xff;
-    return {a, b, g, r};
-  }
-  if (typeof val !== 'string') {
-    return;
-  }
-  if (val[0] !== '#') {
-    return;
-  }
-
-  // remove leading hash
-  val = val.slice(1);
-
-  // only allow RGB and ARGB hex values
-  if (val.length !== 3 && val.length !== 6 && val.length !== 8) {
-    return;
-  }
-
-  // split every 2 characters
-  const parts = val.match(/.{1,2}/g);
-  if (!parts) {
-    return;
-  }
-
-  // get the alpha value
-  let a = 1;
-
-  // extract alpha if passed AARRGGBB
-  if (val.length === 8) {
-    a = parseInt(parts.shift() || '0', 16) / 255;
-  }
-
-  const size = val.length;
-  const [r, g, b] = parts.map((num) => {
-    if (size === 3) {
-      return parseInt(num + num, 16);
-    } else {
-      return parseInt(num, 16);
-    }
-  });
-
-  return {a, b, g, r};
-}
-
 type Picker = {
   values: Set<string>;
   selected: string;
@@ -575,10 +529,10 @@ class DataDescriptionContainer extends PureComponent<{
   editable: boolean;
   commit: (opts: DescriptionCommitOptions) => void;
 }> {
-  static contextType = _HighlightContext; // Replace with useHighlighter
-  context!: React.ContextType<typeof _HighlightContext>;
+  static contextType = HighlightContext; // Replace with useHighlighter
+  context!: React.ContextType<typeof HighlightContext>;
 
-  onChangeCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
+  onChangeCheckbox = (e: CheckboxChangeEvent) => {
     this.props.commit({
       clear: true,
       keep: true,
@@ -593,22 +547,24 @@ class DataDescriptionContainer extends PureComponent<{
 
     switch (type) {
       case 'timeline': {
-        return (
-          <>
-            <TimelineDataDescription
-              canSetCurrent={editable}
-              timeline={JSON.parse(val)}
-              onClick={(id) => {
-                this.props.commit({
-                  value: id,
-                  keep: true,
-                  clear: false,
-                  set: true,
-                });
-              }}
-            />
-          </>
-        );
+        return null;
+        // TODO:
+        // return (
+        //   <>
+        //     <TimelineDataDescription
+        //       canSetCurrent={editable}
+        //       timeline={JSON.parse(val)}
+        //       onClick={(id) => {
+        //         this.props.commit({
+        //           value: id,
+        //           keep: true,
+        //           clear: false,
+        //           set: true,
+        //         });
+        //       }}
+        //     />
+        //   </>
+        // );
       }
 
       case 'number':
@@ -660,15 +616,15 @@ class DataDescriptionContainer extends PureComponent<{
 
       case 'picker': {
         const picker: Picker = JSON.parse(val);
-        const options = [...picker.values].reduce((obj, value) => {
-          return {...obj, [value]: value};
-        }, {});
         return (
           <Select
             disabled={!this.props.editable}
-            options={options}
-            selected={picker.selected}
-            onChangeWithKey={(value: string) =>
+            options={Array.from(picker.values).map((value) => ({
+              value,
+              label: value,
+            }))}
+            value={picker.selected}
+            onChange={(value: string) =>
               this.props.commit({
                 value,
                 keep: true,
@@ -688,12 +644,12 @@ class DataDescriptionContainer extends PureComponent<{
             <>
               <Link href={val}>{highlighter.render(val)}</Link>
               {editable && (
-                <Glyph
-                  name="pencil"
-                  variant="outline"
-                  color={colors.light20}
-                  size={16}
-                  style={{cursor: 'pointer', marginLeft: 8}}
+                <EditOutlined
+                  style={{
+                    color: theme.disabledColor,
+                    cursor: 'pointer',
+                    marginLeft: 8,
+                  }}
                 />
               )}
             </>
@@ -709,8 +665,7 @@ class DataDescriptionContainer extends PureComponent<{
 
       case 'boolean':
         return editable ? (
-          <input
-            type="checkbox"
+          <Checkbox
             checked={!!val}
             disabled={!editable}
             onChange={this.onChangeCheckbox}

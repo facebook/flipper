@@ -7,7 +7,7 @@
  * @format
  */
 
-import DataDescription, {DataDescriptionType} from './DataDescription';
+import {DataDescriptionType, _DataDescription} from 'flipper-plugin';
 import styled from '@emotion/styled';
 import {getSortedKeys} from './utils';
 import {PureComponent} from 'react';
@@ -79,7 +79,7 @@ export default class DataPreview extends PureComponent<{
 
               const {type, value} = res;
               return (
-                <DataDescription
+                <_DataDescription
                   key={index}
                   type={type}
                   value={value}

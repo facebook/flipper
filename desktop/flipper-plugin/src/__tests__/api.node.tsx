@@ -57,6 +57,7 @@ test('Correct top level API exposed', () => {
   expect(exposedTypes.sort()).toMatchInlineSnapshot(`
     Array [
       "Atom",
+      "DataDescriptionType",
       "DataTableColumn",
       "DataTableManager",
       "DefaultKeyboardAction",

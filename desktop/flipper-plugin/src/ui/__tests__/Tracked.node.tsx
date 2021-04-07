@@ -9,7 +9,7 @@
 
 import {render, fireEvent} from '@testing-library/react';
 import {TestUtils} from 'flipper-plugin';
-import {sleep} from 'flipper-plugin/src/utils/sleep';
+import {sleep} from '../../utils/sleep';
 import React, {Component} from 'react';
 import {
   setGlobalInteractionReporter,

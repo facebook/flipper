@@ -7,7 +7,7 @@
  * @format
  */
 
-import DataDescription from './DataDescription';
+import {_DataDescription} from 'flipper-plugin';
 import {MenuTemplate} from '../ContextMenu';
 import {memo, useMemo, useRef, useState, useEffect, useCallback} from 'react';
 import ContextMenu from '../ContextMenu';
@@ -562,7 +562,7 @@ const DataInspector: React.FC<DataInspectorProps> = memo(
     let descriptionOrPreview;
     if (renderExpanded || !isExpandable) {
       descriptionOrPreview = (
-        <DataDescription
+        <_DataDescription
           path={path}
           setValue={setValue}
           type={type}

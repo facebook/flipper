@@ -50,7 +50,6 @@ export {
 export {default as DataInspector} from './components/data-inspector/DataInspector';
 export {default as ManagedDataInspector} from './components/data-inspector/ManagedDataInspector';
 export {default as SearchableDataInspector} from './components/data-inspector/SearchableDataInspector';
-export {default as DataDescription} from './components/data-inspector/DataDescription';
 
 // tabs
 export {default as Tabs} from './components/Tabs';
