@@ -82,8 +82,8 @@ export {Idler} from './utils/Idler';
 
 export {createDataSource, DataSource} from './state/DataSource';
 
-export {DataTable, DataTableColumn} from './ui/datatable/DataTable';
-export {DataTableManager} from './ui/datatable/DataTableManager';
+export {DataTable, DataTableColumn} from './ui/data-table/DataTable';
+export {DataTableManager} from './ui/data-table/DataTableManager';
 
 export {
   Interactive as _Interactive,
