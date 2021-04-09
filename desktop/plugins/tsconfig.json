@@ -1,0 +1,20 @@
+{
+    "extends": "../tsconfig.base.json",
+    "compilerOptions": {
+        "noEmit": true,
+        "baseUrl": ".",
+        "rootDir": ".",
+        "outDir": "lib"
+    },
+    "include": [
+        "public/",
+        "fb/"
+    ],
+    "exclude": [
+        "**/lib/",
+        "**/dist/",
+        "**/node_modules/",
+        "**/__tests__/",
+        "**/__test__/"
+    ]
+}
