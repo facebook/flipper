@@ -21,8 +21,5 @@
   "devDependencies": {
     "rimraf": "^3.0.2",
     "patch-package": "^6.2.0"
-  },
-  "scripts": {
-    "postinstall": "rimraf ./node_modules/react ./node_modules/react-dom ./node_modules/@types/react ./node_modules/@types/react-dom"
   }
 }
