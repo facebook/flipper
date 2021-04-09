@@ -188,7 +188,6 @@ export {
 export {ContextMenuExtension} from './ui/components/elements-inspector/elements';
 export {default as ElementsInspector} from './ui/components/elements-inspector/ElementsInspector';
 export {InspectorSidebar} from './ui/components/elements-inspector/sidebar';
-export {Console} from './ui/components/console';
 export {default as Sheet} from './ui/components/Sheet';
 export {default as FileSelector} from './ui/components/FileSelector';
 export {KeyboardActions} from './MenuBar';

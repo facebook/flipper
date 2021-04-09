@@ -155,8 +155,6 @@ export {default as ElementsInspector} from './components/elements-inspector/Elem
 export {InspectorSidebar} from './components/elements-inspector/sidebar';
 export {VisualizerPortal} from './components/elements-inspector/Visualizer';
 
-export {Console} from './components/console';
-
 export {default as Sheet} from './components/Sheet';
 export {StarButton} from './components/StarButton';
 export {Markdown} from './components/Markdown';

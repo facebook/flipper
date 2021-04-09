@@ -14,8 +14,6 @@ import {Logger} from '../../../fb-interfaces/Logger';
 import Panel from '../Panel';
 import {DataInspector} from 'flipper-plugin';
 import {Component} from 'react';
-import {Console} from '../console';
-import GK from '../../../fb-stubs/GK';
 import React from 'react';
 
 import deepEqual from 'deep-equal';
@@ -87,39 +85,13 @@ type Props = {
   extensions?: Array<Function>;
 };
 
-type State = {
-  isConsoleEnabled: boolean;
-};
+type State = {};
 
 export class InspectorSidebar extends Component<Props, State> {
-  state = {
-    isConsoleEnabled: false,
-  };
+  state = {};
 
   constructor(props: Props) {
     super(props);
-    this.checkIfConsoleIsEnabled();
-  }
-
-  componentDidUpdate(prevProps: Props) {
-    if (prevProps.client !== this.props.client) {
-      this.checkIfConsoleIsEnabled();
-    }
-  }
-
-  async checkIfConsoleIsEnabled() {
-    if (
-      this.props.client.isConnected &&
-      (await this.props.client.supportsMethod('isConsoleEnabled'))
-    ) {
-      this.props.client
-        .call('isConsoleEnabled')
-        .then((result: {isEnabled: boolean}) => {
-          this.setState({isConsoleEnabled: result.isEnabled});
-        });
-    } else {
-      this.setState({isConsoleEnabled: false});
-    }
   }
 
   render() {
@@ -183,14 +155,6 @@ export class InspectorSidebar extends Component<Props, State> {
           />,
         );
       }
-    }
-
-    if (GK.get('sonar_show_console_plugin') && this.state.isConsoleEnabled) {
-      sections.push(
-        <Panel heading="JS Console" floating={false} grow={false}>
-          <Console client={this.props.client} getContext={() => element.id} />
-        </Panel>,
-      );
     }
 
     return sections;
