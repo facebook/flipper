@@ -1,19 +1,20 @@
 {
   "$schema": "https://fbflipper.com/schemas/plugin-package/v2.json",
-  "name": "flipper-plugin-example",
-  "id": "Example",
+  "name": "flipper-plugin-sea-mammals",
+  "id": "sea-mammals",
+  "private": true,
   "version": "0.0.0",
-  "description": "An example for a Flipper plugin",
   "main": "dist/bundle.js",
-  "flipperBundlerEntry": "index.tsx",
+  "flipperBundlerEntry": "src/index.tsx",
   "license": "MIT",
   "keywords": [
     "flipper-plugin"
   ],
-  "title": "Example Plugin",
   "icon": "apps",
+  "title": "Sea Mammals",
+  "category": "Example Plugin",
   "bugs": {
-    "url": "https://fbflipper.com/"
+    "email": "realpassy@fb.com"
   },
   "scripts": {
     "lint": "flipper-pkg lint",
@@ -22,10 +23,8 @@
     "prepack": "flipper-pkg lint && flipper-pkg bundle --production"
   },
   "peerDependencies": {
-    "flipper": "0.0.0"
-  },
-  "devDependencies": {
-    "flipper": "0.0.0",
-    "flipper-pkg": "0.0.0"
+    "antd": "*",
+    "flipper-plugin": "*",
+    "flipper-pkg": "*"
   }
 }

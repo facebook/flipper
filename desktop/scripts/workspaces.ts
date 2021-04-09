@@ -7,7 +7,7 @@
  * @format
  */
 
-import {rootDir, pluginsDir, fbPluginsDir} from './paths';
+import {rootDir, pluginsDir, fbPluginsDir, publicPluginsDir} from './paths';
 import fs from 'fs-extra';
 import path from 'path';
 import {promisify} from 'util';
@@ -72,13 +72,15 @@ async function getWorkspacesByRoot(
 
 export async function getWorkspaces(): Promise<Workspaces> {
   const rootWorkspaces = await getWorkspacesByRoot(rootDir);
-  const fbWorkspaces = await getWorkspacesByRoot(fbPluginsDir);
-  if (!fbWorkspaces) {
-    return rootWorkspaces!;
-  }
+  const publicPluginsWorkspaces = await getWorkspacesByRoot(publicPluginsDir);
+  const fbPluginsWorkspaces = await getWorkspacesByRoot(fbPluginsDir);
   const mergedWorkspaces: Workspaces = {
     rootPackage: rootWorkspaces!.rootPackage,
-    packages: [...rootWorkspaces!.packages, ...fbWorkspaces.packages],
+    packages: [
+      ...rootWorkspaces!.packages,
+      ...publicPluginsWorkspaces!.packages,
+      ...(fbPluginsWorkspaces ? fbPluginsWorkspaces.packages : []),
+    ],
   };
   return mergedWorkspaces;
 }

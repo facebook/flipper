@@ -33,7 +33,7 @@
   ],
   "dependencies": {},
   "peerDependencies": {
-    "flipper-plugin": "0.0.0"
+    "flipper-plugin": "*"
   },
   "title": "Logs",
   "icon": "arrow-right",

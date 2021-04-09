@@ -106,6 +106,7 @@
     "@types/react-virtualized": "^9.21.11",
     "@types/react-virtualized-auto-sizer": "^1.0.0",
     "@types/react-window": "^1.8.1",
+    "@types/recharts": "^1.8.19",
     "@types/recursive-readdir": "^2.2.0",
     "@types/redux-devtools-extension": "^2.13.2",
     "@types/redux-mock-store": "^1.0.1",
@@ -168,6 +169,7 @@
     "node-fetch": "^2.6.1",
     "p-filter": "^2.1.0",
     "p-map": "^4.0.0",
+    "patch-package": "^6.4.7",
     "prettier": "^2.2.1",
     "pretty-format": "^26.1.0",
     "promisify-child-process": "^4.1.0",
@@ -230,7 +232,7 @@
     "lint:tsc": "tsc --noemit",
     "list-plugins": "./ts-node scripts/list-plugins.ts",
     "open-dist": "open ../dist/mac/Flipper.app --args --launcher=false --inspect=9229",
-    "postinstall": "patch-package && ./ts-node scripts/gen-type-index.ts &&./ts-node scripts/yarn-install-fb-plugins.ts && yarn build:tsc && ./ts-node scripts/generate-plugin-entry-points.ts && yarn build:themes",
+    "postinstall": "patch-package && ./ts-node scripts/gen-type-index.ts && yarn --cwd plugins install --mutex network:30331 && yarn build:tsc && ./ts-node scripts/generate-plugin-entry-points.ts && yarn build:themes",
     "prebuild": "yarn build:tsc && yarn rm-dist && yarn build:themes",
     "predev-server": "yarn build:tsc",
     "preinstall": "node scripts/prepare-watchman-config.js && yarn config set ignore-engines",
@@ -257,9 +259,6 @@
   },
   "version": "0.84.0",
   "workspaces": {
-    "nohoist": [
-      "flipper-plugin-kaios-big-allocations/firefox-client"
-    ],
     "packages": [
       "app",
       "app/src/fb/*",
@@ -269,7 +268,6 @@
       "pkg-lib",
       "flipper-plugin",
       "static",
-      "plugins/*",
       "e2e",
       "plugin-lib",
       "test-utils",

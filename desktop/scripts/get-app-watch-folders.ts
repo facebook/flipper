@@ -10,7 +10,7 @@
 import fs from 'fs-extra';
 import path from 'path';
 import {getWatchFolders} from 'flipper-pkg-lib';
-import {appDir, pluginsDir, jsSharedDir} from './paths';
+import {appDir, publicPluginsDir, fbPluginsDir, jsSharedDir} from './paths';
 import isFB from './isFB';
 
 /**
@@ -18,10 +18,10 @@ import isFB from './isFB';
  * and their dependencies should be added as watch folders so Metro bundled can resolve them.
  */
 const pluginsReferencedDirectlyFromFlipper = [
-  path.join(pluginsDir, 'navigation'),
-  path.join(pluginsDir, 'fb', 'layout', 'sidebar_extensions'),
-  path.join(pluginsDir, 'fb', 'mobileconfig'),
-  path.join(pluginsDir, 'fb', 'watch'),
+  path.join(publicPluginsDir, 'navigation'),
+  path.join(fbPluginsDir, 'layout', 'sidebar_extensions'),
+  path.join(fbPluginsDir, 'mobileconfig'),
+  path.join(fbPluginsDir, 'watch'),
 ];
 
 export default async function getAppWatchFolders() {
