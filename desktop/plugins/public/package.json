@@ -7,7 +7,8 @@
       "*"
     ],
     "nohoist": [
-      "flipper-plugin-kaios-big-allocations/firefox-client"
+      "flipper-plugin-kaios-big-allocations/firefox-client",
+      "flipper-plugin-kaios-big-allocations/patch-package"
     ]
   },
   "resolutions": {
@@ -19,7 +20,6 @@
     "url": "https://fb.workplace.com/groups/flippersupport/"
   },
   "devDependencies": {
-    "rimraf": "^3.0.2",
-    "patch-package": "^6.2.0"
+    "rimraf": "^3.0.2"
   }
 }

@@ -49,7 +49,7 @@ import {theme, TrackingScope, _SandyPluginRenderer} from 'flipper-plugin';
 import {isDevicePluginDefinition, isSandyPlugin} from './utils/pluginUtils';
 import {ContentContainer} from './sandy-chrome/ContentContainer';
 import {Alert, Typography} from 'antd';
-import {InstalledPluginDetails} from 'plugin-lib';
+import {InstalledPluginDetails} from 'flipper-plugin-lib';
 import semver from 'semver';
 import {loadPlugin} from './reducers/pluginManager';
 import {produce} from 'immer';

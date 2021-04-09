@@ -77,7 +77,7 @@ const GrabMetroDevice = connect<
   ReduxState
 >(({connections: {devices}}) => ({
   metroDevice: devices.find(
-    (device) => device.os === 'Metro' && !device.isArchived,
+    (device: Device) => device.os === 'Metro' && !device.isArchived,
   ) as MetroDevice,
 }))(function ({
   metroDevice,
