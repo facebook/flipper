@@ -9,17 +9,14 @@
 
 import {default as doTransform} from './transform';
 import {default as getCacheKey} from './get-cache-key';
-import {default as flipperEnv} from './flipper-env';
 
 const presets = [require('@babel/preset-react')];
 const plugins = [
   require('./electron-requires'),
   require('./import-react'),
   require('./app-flipper-requires'),
+  require('./fb-stubs'),
 ];
-if (flipperEnv.FLIPPER_FB) {
-  plugins.unshift(require('./fb-stubs'));
-}
 
 module.exports = {
   transform,

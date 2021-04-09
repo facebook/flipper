@@ -8,16 +8,13 @@
  */
 
 import {default as doTransform} from './transform';
-import {default as flipperEnv} from './flipper-env';
 
 const presets = [require('@babel/preset-react')];
 const plugins = [
   require('./electron-requires'),
   require('./plugin-flipper-requires'),
+  require('./fb-stubs'),
 ];
-if (flipperEnv.FLIPPER_FB) {
-  plugins.unshift(require('./fb-stubs'));
-}
 export default function transform({
   filename,
   options,
