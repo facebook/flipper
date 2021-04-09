@@ -199,8 +199,6 @@ export {getInstance as getLogger} from './fb-stubs/Logger';
 export {callVSCode, getVSCodeUrl} from './utils/vscodeUtils';
 export {useLocalStorage} from './utils/useLocalStorage';
 export {checkIdbIsInstalled} from './utils/iOSContainerUtility';
-// Sidebar extensions should be last so they can import anything from here.
-export {default as SidebarExtensions} from './fb-stubs/LayoutInspectorSidebarExtensions';
 export {IDEFileResolver, IDEType} from './fb-stubs/IDEFileResolver';
 export {renderMockFlipperWithPlugin} from './test-utils/createMockFlipperWithPlugin';
 export {Tracked} from 'flipper-plugin'; // To be able to use it in legacy plugins
