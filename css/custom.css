@@ -517,3 +517,20 @@ footer iframe {
 .navbar-github-link:hover:after {
   opacity: 0.5;
 }
+
+.ios-support-matrix {
+  width: 70%;
+  text-align: center;
+}
+.ios-support-matrix  th {
+background: grey;
+word-wrap: break-word;
+text-align: center;
+border: 1px solid black;
+}
+
+.ios-support-matrix  .supported { background: green; color: white}
+.ios-support-matrix  .not-supported { background: red; color: white}
+.ios-support-matrix td {
+  border: 1px solid black;
+}
