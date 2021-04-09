@@ -10,6 +10,18 @@
     "fs-extra": "^9.0.1",
     "p-map": "^4.0.0"
   },
+  "peerDependencies": {
+    "flipper": "*",
+    "flipper-plugin": "*",
+    "antd": "*",
+    "react": "*",
+    "react-dom": "*",
+    "@emotion/styled": "*",
+    "@ant-design/icons": "*",
+    "@types/react": "*",
+    "@types/react-dom": "*",
+    "@types/node": "*"
+  },
   "scripts": {
     "postinstall": "../ts-node ./postinstall.ts"
   }
