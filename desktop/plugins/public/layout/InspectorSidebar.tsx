@@ -14,7 +14,6 @@ import {
   styled,
   colors,
   PluginClient,
-  SidebarExtensions,
   Element,
   Client,
   Logger,
@@ -24,6 +23,7 @@ import deepEqual from 'deep-equal';
 import React from 'react';
 import {useMemo, useEffect} from 'react';
 import {kebabCase} from 'lodash';
+import {default as SidebarExtensions} from './extensions/fb-stubs/index';
 
 const NoData = styled(FlexCenter)({
   fontSize: 18,

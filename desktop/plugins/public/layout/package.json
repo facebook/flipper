@@ -11,10 +11,14 @@
   ],
   "dependencies": {
     "deep-equal": "^2.0.5",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "prism-react-renderer": "^0.1.7"
   },
   "devDependencies": {
     "@testing-library/react": "^11.2.5"
+  },
+  "peerDependencies": {
+    "nt-shared": "*"
   },
   "title": "Layout",
   "icon": "target",

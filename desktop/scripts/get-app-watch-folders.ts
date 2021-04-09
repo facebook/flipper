@@ -19,7 +19,6 @@ import isFB from './isFB';
  */
 const pluginsReferencedDirectlyFromFlipper = [
   path.join(publicPluginsDir, 'navigation'),
-  path.join(fbPluginsDir, 'layout', 'sidebar_extensions'),
   path.join(fbPluginsDir, 'mobileconfig'),
   path.join(fbPluginsDir, 'watch'),
 ];
