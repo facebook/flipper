@@ -11,7 +11,7 @@ import {render, fireEvent} from '@testing-library/react';
 import React from 'react';
 // TODO T71355623
 // eslint-disable-next-line flipper/no-relative-imports-across-packages
-import reducers, {Store} from '../../../app/src/reducers';
+import reducers, {Store} from '../../../../app/src/reducers';
 import configureStore from 'redux-mock-store';
 import {Provider} from 'react-redux';
 

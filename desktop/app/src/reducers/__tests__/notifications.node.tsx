@@ -320,7 +320,7 @@ test('errors end up as notifications if crash reporter is active', async () => {
   });
 
   // eslint-disable-next-line
-  const CrashReporterImpl = require('../../../../plugins/crash_reporter/index');
+  const CrashReporterImpl = require('../../../../plugins/public/crash_reporter/index');
   const CrashPlugin = TestUtils.createTestDevicePlugin(CrashReporterImpl, {
     id: 'CrashReporter',
   });
@@ -365,7 +365,7 @@ test('errors end NOT up as notifications if crash reporter is active but suppres
   });
 
   // eslint-disable-next-line
-  const CrashReporterImpl = require('../../../../plugins/crash_reporter/index');
+  const CrashReporterImpl = require('../../../../plugins/public/crash_reporter/index');
   const CrashPlugin = TestUtils.createTestDevicePlugin(CrashReporterImpl, {
     id: 'CrashReporter',
   });

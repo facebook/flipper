@@ -15,7 +15,7 @@
     "email": "beneloca@fb.com"
   },
   "peerDependencies": {
-    "flipper-plugin": "0.0.0",
+    "flipper-plugin": "*",
     "antd": "*"
   }
 }
