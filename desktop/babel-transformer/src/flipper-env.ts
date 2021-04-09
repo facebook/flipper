@@ -16,6 +16,7 @@ type FlipperEnvVars = {
   FLIPPER_TEST_RUNNER?: string;
   FLIPPER_ELECTRON_VERSION?: string;
   NODE_ENV?: string;
+  FLIPPER_FORCE_PUBLIC_BUILD?: string;
 };
 
 const flipperEnv = new Proxy(
@@ -24,6 +25,7 @@ const flipperEnv = new Proxy(
     FLIPPER_TEST_RUNNER: undefined,
     FLIPPER_ELECTRON_VERSION: undefined,
     NODE_ENV: undefined,
+    FLIPPER_FORCE_PUBLIC_BUILD: undefined,
   } as FlipperEnvVars,
   {
     get: function (obj, prop) {

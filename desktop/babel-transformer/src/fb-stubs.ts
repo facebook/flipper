@@ -7,22 +7,35 @@
  * @format
  */
 
-import path from 'path';
+import {resolve, dirname, sep} from 'path';
+import env from './flipper-env';
 import {CallExpression} from '@babel/types';
 import {NodePath} from '@babel/traverse';
+import fs from 'fs-extra';
 
-const isFBFile = (filePath: string) =>
-  filePath.includes(`${path.sep}fb${path.sep}`);
+const isFBFile = (filePath: string) => filePath.includes(`${sep}fb${sep}`);
 
 const requireFromFolder = (folder: string, path: string) =>
   new RegExp(folder + '/[\\w.-]+(.js)?$', 'g').test(path);
+
+const pathExistsCache = new Map<string, boolean>();
+
+function pathExistsSync(path: string): boolean {
+  const cachedResult = pathExistsCache.get(path);
+  if (cachedResult !== undefined) {
+    return cachedResult;
+  }
+  const result = fs.pathExistsSync(path);
+  pathExistsCache.set(path, result);
+  return result;
+}
 
 module.exports = () => ({
   name: 'replace-fb-stubs',
   visitor: {
     CallExpression(path: NodePath<CallExpression>, state: any) {
       if (
-        process.env.FLIPPER_FORCE_PUBLIC_BUILD !== 'true' &&
+        env.FLIPPER_FORCE_PUBLIC_BUILD !== 'true' &&
         path.node.type === 'CallExpression' &&
         path.node.callee.type === 'Identifier' &&
         path.node.callee.name === 'require' &&
@@ -39,10 +52,21 @@ module.exports = () => ({
         } else if (
           requireFromFolder('fb-stubs', path.node.arguments[0].value)
         ) {
-          path.node.arguments[0].value = path.node.arguments[0].value.replace(
+          const fbPath = path.node.arguments[0].value.replace(
             '/fb-stubs/',
             '/fb/',
           );
+          if (
+            env.FLIPPER_FB ||
+            pathExistsSync(
+              resolve(
+                dirname(state.file.opts.filename),
+                fbPath.substr(0, fbPath.indexOf('/fb/') + 4),
+              ),
+            )
+          ) {
+            path.node.arguments[0].value = fbPath;
+          }
         }
       }
     },
