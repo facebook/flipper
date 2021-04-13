@@ -132,7 +132,7 @@
     "cross-env": "^7.0.3",
     "detect-port": "^1.1.1",
     "dotenv": "^8.2.0",
-    "electron": "12.0.1",
+    "electron": "11.2.3",
     "electron-builder": "22.10.5",
     "eslint": "^7.23.0",
     "eslint-config-fbjs": "^3.1.1",
@@ -199,7 +199,7 @@
   "resolutions": {
     "**/metro/**/temp": "0.9.0",
     "**/metro/**/ws": "1.1.5",
-    "@jest-runner/electron/electron": "12.0.1",
+    "@jest-runner/electron/electron": "11.2.3",
     "@types/react": "17.0.3",
     "@types/react-dom": "17.0.3",
     "acorn": "7.1.1",
@@ -230,7 +230,6 @@
     "lint": "yarn lint:eslint && yarn lint:tsc && yarn tsc-plugins",
     "lint:eslint": "eslint . --ext .js,.ts,.tsx",
     "lint:tsc": "tsc --noemit",
-    "tsc-plugins": "./ts-node scripts/tsc-plugins.ts",
     "list-plugins": "./ts-node scripts/list-plugins.ts",
     "open-dist": "open ../dist/mac/Flipper.app --args --launcher=false --inspect=9229",
     "postinstall": "patch-package && ./ts-node scripts/gen-type-index.ts && yarn --cwd plugins install --mutex network:30331 && yarn build:tsc && ./ts-node scripts/generate-plugin-entry-points.ts && yarn build:themes",
@@ -256,6 +255,7 @@
     "test-electron": "yarn build:tsc && jest --testMatch=\"**/**.electron\\.(js|jsx|ts|tsx)\" --testEnvironment=@jest-runner/electron/environment --runner=@jest-runner/electron",
     "test-with-device": "yarn build:tsc && USE_ELECTRON_STUBS=1 jest --testMatch=\"**/**.device\\.(js|jsx|ts|tsx)\" --detectOpenHandles",
     "test:debug": "yarn build:tsc && node --inspect node_modules/.bin/jest --runInBand",
+    "tsc-plugins": "./ts-node scripts/tsc-plugins.ts",
     "watch": "node --expose-gc ./node_modules/.bin/jest --watch"
   },
   "version": "0.84.0",
