@@ -5,7 +5,10 @@
   "version": "0.0.0",
   "pluginType": "device",
   "supportedDevices": [
-    {"os": "Metro", "archived": false}
+    {
+      "os": "Metro",
+      "archived": false
+    }
   ],
   "main": "dist/bundle.js",
   "flipperBundlerEntry": "index.tsx",
@@ -16,7 +19,7 @@
   "dependencies": {
     "address": "^1.1.2",
     "get-port": "^5.0.0",
-    "react-devtools-core": "^4.10.1"
+    "react-devtools-core": "^4.12.0"
   },
   "title": "React DevTools",
   "icon": "app-react",
