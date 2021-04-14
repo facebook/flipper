@@ -4,6 +4,7 @@ title: Plugin structure
 ---
 
 import FbNpmDeps from '../fb/adding-npm-dependencies-0.mdx'
+import FbOnlyParts from '../fb/fb-only-parts-in-os-plugins.mdx'
 
 Flipper Desktop plugins have a rigid structure. We recommend to scaffold any new plugin using our scaffolding tooling.
 
@@ -244,3 +245,11 @@ The main difference of version 2 is that plugins are transpiled and bundled befo
 The easiest way for migration is using of command `flipper-pkg migrate`. It will automatically migrate your plugin definition to the latest version.
 
 </OssOnly>
+
+<FbInternalOnly>
+
+## Adding fb-only code to open-sourced plugins
+
+<FbOnlyParts />
+
+</FbInternalOnly>

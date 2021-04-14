@@ -146,15 +146,6 @@ NSObject* flattenLayoutEditorMessage(NSObject* field);
                   responder);
             }];
 
-  [connection receive:@"isConsoleEnabled"
-            withBlock:^(NSDictionary* params, id<FlipperResponder> responder) {
-              FlipperPerformBlockOnMainThread(
-                  ^{
-                    [responder success:@{@"isEnabled" : @NO}];
-                  },
-                  responder);
-            }];
-
   [connection receive:@"getSearchResults"
             withBlock:^(NSDictionary* params, id<FlipperResponder> responder) {
               FlipperPerformBlockOnMainThread(

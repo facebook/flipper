@@ -43,14 +43,9 @@ export {ManagedTableProps_immutable} from './components/table/ManagedTable_immut
 export {Value} from './components/table/TypeBasedValueRenderer';
 export {renderValue} from './components/table/TypeBasedValueRenderer';
 
-export {
-  DataValueExtractor,
-  DataInspectorExpanded,
-} from './components/data-inspector/DataInspector';
-export {default as DataInspector} from './components/data-inspector/DataInspector';
-export {default as ManagedDataInspector} from './components/data-inspector/ManagedDataInspector';
+export {DataValueExtractor, DataInspectorExpanded} from 'flipper-plugin';
+export {DataInspector as ManagedDataInspector} from 'flipper-plugin';
 export {default as SearchableDataInspector} from './components/data-inspector/SearchableDataInspector';
-export {default as DataDescription} from './components/data-inspector/DataDescription';
 
 // tabs
 export {default as Tabs} from './components/Tabs';
@@ -131,8 +126,6 @@ export {default as Heading} from './components/Heading';
 // filters
 export {Filter} from './components/filter/types';
 
-export {default as MarkerTimeline} from './components/MarkerTimeline';
-
 export {default as StackTrace} from './components/StackTrace';
 
 export {
@@ -162,8 +155,6 @@ export {default as ElementsInspector} from './components/elements-inspector/Elem
 export {InspectorSidebar} from './components/elements-inspector/sidebar';
 export {VisualizerPortal} from './components/elements-inspector/Visualizer';
 
-export {Console} from './components/console';
-
 export {default as Sheet} from './components/Sheet';
 export {StarButton} from './components/StarButton';
 export {Markdown} from './components/Markdown';
@@ -180,4 +171,3 @@ export {default as AlternatingRows} from './components/AlternatingRows';
 export {Layout} from 'flipper-plugin';
 
 export {default as Scrollable} from './components/Scrollable';
-export * from './components/Highlight';

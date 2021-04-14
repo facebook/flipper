@@ -7,7 +7,7 @@
  * @format
  */
 
-import ManagedDataInspector from '../ui/components/data-inspector/ManagedDataInspector';
+import {DataInspector} from 'flipper-plugin';
 import Panel from '../ui/components/Panel';
 import {colors} from '../ui/components/colors';
 import styled from '@emotion/styled';
@@ -232,7 +232,7 @@ function renderSidebarSection(
     case 'json':
       return (
         <Panel floating={false} heading={section.title} key={index}>
-          <ManagedDataInspector data={section.content} expandRoot={true} />
+          <DataInspector data={section.content} expandRoot={true} />
         </Panel>
       );
     case 'toolbar':
@@ -240,7 +240,7 @@ function renderSidebarSection(
     default:
       return (
         <Panel floating={false} heading={'Details'} key={index}>
-          <ManagedDataInspector data={section} expandRoot={true} />
+          <DataInspector data={section} expandRoot={true} />
         </Panel>
       );
   }

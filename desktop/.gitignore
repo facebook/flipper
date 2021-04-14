@@ -6,3 +6,4 @@ node_modules/
 /app/src/defaultPlugins/index.tsx
 /coverage
 .env
+tsc-error.log

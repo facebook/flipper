@@ -31,6 +31,7 @@ SelectMenu.displayName = 'Select:SelectMenu';
 
 /**
  * Dropdown to select from a list of options
+ * @deprecated use Select from antd instead: https://ant.design/components/select/
  */
 export default class Select extends Component<{
   /** Additional className added to the element */

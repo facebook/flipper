@@ -41,7 +41,7 @@ export async function getPluginSourceFolders(): Promise<string[]> {
       pluginFolders.push(...config.pluginPaths);
     }
   }
-  pluginFolders.push(path.resolve(__dirname, '..', '..', 'plugins'));
+  pluginFolders.push(path.resolve(__dirname, '..', '..', 'plugins', 'public'));
   pluginFolders.push(path.resolve(__dirname, '..', '..', 'plugins', 'fb'));
   return pluginFolders.map(expandTilde).filter(fs.existsSync);
 }

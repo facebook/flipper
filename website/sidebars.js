@@ -91,7 +91,10 @@ module.exports = {
       'setup/leak-canary-2-plugin',
       'setup/crash-reporter-plugin',
     ],
-    Advanced: ['custom-ports', 'stetho'],
+    Advanced: ['custom-ports', 'stetho',
+    ...fbInternalOnly([
+      'fb/www-certificate-exchange'
+    ]),],
   },
   extending: {
     Tutorial: [

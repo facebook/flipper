@@ -17,10 +17,7 @@ const presets = [
     {targets: {electron: flipperEnv.FLIPPER_ELECTRON_VERSION}},
   ],
 ];
-const plugins = [require('./electron-requires-main')];
-if (flipperEnv.FLIPPER_FB) {
-  plugins.unshift(require('./fb-stubs'));
-}
+const plugins = [require('./electron-requires-main'), require('./fb-stubs')];
 
 module.exports = {
   transform,

@@ -20,7 +20,7 @@
       "path": "../test-utils"
     },
     {
-      "path": "../plugins/navigation"
+      "path": "../plugins/public/navigation"
     }
   ],
   "exclude": [

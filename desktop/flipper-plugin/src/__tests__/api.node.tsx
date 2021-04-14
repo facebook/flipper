@@ -28,11 +28,14 @@ test('Correct top level API exposed', () => {
   // Note, all `exposedAPIs` should be documented in `flipper-plugin.mdx`
   expect(exposedAPIs.sort()).toMatchInlineSnapshot(`
     Array [
+      "DataDescription",
       "DataFormatter",
+      "DataInspector",
       "DataSource",
       "DataTable",
       "DetailSidebar",
       "Layout",
+      "MarkerTimeline",
       "NUX",
       "TestUtils",
       "Tracked",
@@ -57,8 +60,11 @@ test('Correct top level API exposed', () => {
   expect(exposedTypes.sort()).toMatchInlineSnapshot(`
     Array [
       "Atom",
+      "DataDescriptionType",
+      "DataInspectorExpanded",
       "DataTableColumn",
       "DataTableManager",
+      "DataValueExtractor",
       "DefaultKeyboardAction",
       "Device",
       "DeviceLogEntry",
@@ -67,6 +73,7 @@ test('Correct top level API exposed', () => {
       "DeviceType",
       "Draft",
       "FlipperLib",
+      "HighlightManager",
       "Idler",
       "LogLevel",
       "LogTypes",

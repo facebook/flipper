@@ -54,7 +54,7 @@ const hardcodedPlugins = new Set<string>([
 ]);
 
 export function die(err: Error) {
-  console.error(err.stack);
+  console.error(err);
   process.exit(1);
 }
 

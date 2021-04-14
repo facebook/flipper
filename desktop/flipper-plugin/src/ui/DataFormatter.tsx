@@ -18,7 +18,7 @@ import React, {createElement, Fragment, isValidElement, useState} from 'react';
 import {tryGetFlipperLibImplementation} from '../plugin/FlipperLib';
 import {safeStringify} from '../utils/safeStringify';
 import {urlRegex} from '../utils/urlRegex';
-import {useTableRedraw} from './datatable/DataSourceRenderer';
+import {useTableRedraw} from './data-table/DataSourceRenderer';
 import {theme} from './theme';
 
 /**

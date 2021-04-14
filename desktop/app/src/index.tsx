@@ -95,12 +95,14 @@ export {
 export {
   DataValueExtractor,
   DataInspectorExpanded,
-} from './ui/components/data-inspector/DataInspector';
-export {default as DataInspector} from './ui/components/data-inspector/DataInspector';
-export {default as ManagedDataInspector} from './ui/components/data-inspector/ManagedDataInspector';
+  DataDescriptionType,
+  DataDescription,
+  DataInspector,
+  MarkerTimeline,
+} from 'flipper-plugin';
+export {DataInspector as ManagedDataInspector} from 'flipper-plugin';
 export {default as SearchableDataInspector} from './ui/components/data-inspector/SearchableDataInspector';
-export {default as DataDescription} from './ui/components/data-inspector/DataDescription';
-export {HighlightManager} from './ui/components/Highlight';
+export {HighlightManager} from 'flipper-plugin';
 export {default as Tabs} from './ui/components/Tabs';
 export {default as Tab} from './ui/components/Tab';
 export {default as Input} from './ui/components/Input';
@@ -157,7 +159,6 @@ export {default as VerticalRule} from './ui/components/VerticalRule';
 export {default as Label} from './ui/components/Label';
 export {default as Heading} from './ui/components/Heading';
 export {Filter} from './ui/components/filter/types';
-export {default as MarkerTimeline} from './ui/components/MarkerTimeline';
 export {default as StackTrace} from './ui/components/StackTrace';
 export {
   SearchBox,
@@ -187,7 +188,6 @@ export {
 export {ContextMenuExtension} from './ui/components/elements-inspector/elements';
 export {default as ElementsInspector} from './ui/components/elements-inspector/ElementsInspector';
 export {InspectorSidebar} from './ui/components/elements-inspector/sidebar';
-export {Console} from './ui/components/console';
 export {default as Sheet} from './ui/components/Sheet';
 export {default as FileSelector} from './ui/components/FileSelector';
 export {KeyboardActions} from './MenuBar';
@@ -198,8 +198,6 @@ export {getInstance as getLogger} from './fb-stubs/Logger';
 export {callVSCode, getVSCodeUrl} from './utils/vscodeUtils';
 export {useLocalStorage} from './utils/useLocalStorage';
 export {checkIdbIsInstalled} from './utils/iOSContainerUtility';
-// Sidebar extensions should be last so they can import anything from here.
-export {default as SidebarExtensions} from './fb-stubs/LayoutInspectorSidebarExtensions';
 export {IDEFileResolver, IDEType} from './fb-stubs/IDEFileResolver';
 export {renderMockFlipperWithPlugin} from './test-utils/createMockFlipperWithPlugin';
 export {Tracked} from 'flipper-plugin'; // To be able to use it in legacy plugins

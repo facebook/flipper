@@ -10,7 +10,7 @@
 import {Atom, createState} from 'flipper-plugin';
 import {User} from '../reducers/user';
 
-export async function getUser(): Promise<User> {
+export async function getUser(): Promise<User | null> {
   throw new Error('Feature not implemented');
 }
 

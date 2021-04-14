@@ -27,7 +27,7 @@ import {
 import {switchPlugin} from '../../../reducers/pluginManager';
 
 // eslint-disable-next-line
-import * as LogsPluginModule from '../../../../../plugins/logs/index';
+import * as LogsPluginModule from '../../../../../plugins/public/logs/index';
 import {createMockDownloadablePluginDetails} from '../../../utils/testUtils';
 import {computePluginLists} from '../../../utils/pluginUtils';
 

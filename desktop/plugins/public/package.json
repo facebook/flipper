@@ -1,0 +1,25 @@
+{
+  "name": "flipper-public-plugins",
+  "private": true,
+  "title": "Flipper Public Plugins",
+  "workspaces": {
+    "packages": [
+      "*"
+    ],
+    "nohoist": [
+      "flipper-plugin-kaios-big-allocations/firefox-client",
+      "flipper-plugin-kaios-big-allocations/patch-package"
+    ]
+  },
+  "resolutions": {
+    "react": "17.0.1",
+    "react-dom": "17.0.1"
+  },
+  "bugs": {
+    "email": "oncall+flipper@xmail.facebook.com",
+    "url": "https://fb.workplace.com/groups/flippersupport/"
+  },
+  "devDependencies": {
+    "rimraf": "^3.0.2"
+  }
+}

@@ -1,0 +1,34 @@
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'maven'
+
+android {
+    compileSdkVersion rootProject.compileSdkVersion
+    buildToolsVersion rootProject.buildToolsVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.minSdkVersion
+        targetSdkVersion rootProject.targetSdkVersion
+    }
+
+    dependencies {
+        implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$KOTLIN_VERSION"
+        implementation project(':android')
+        implementation project(':network-plugin')
+        implementation deps.protobuf
+        implementation "com.squareup.retrofit2:retrofit:2.9.0"
+        implementation "com.github.hbmartin:protobuf_java_to_protobufjs:0.0.1"
+        compileOnly deps.jsr305
+    }
+}
+
+apply plugin: 'com.vanniktech.maven.publish'

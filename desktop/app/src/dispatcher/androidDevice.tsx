@@ -138,7 +138,12 @@ export default (store: Store, logger: Logger) => {
   const watchAndroidDevices = () => {
     // get emulators
     promisify(which)('emulator')
-      .catch(() => `${process.env.ANDROID_HOME || ''}/tools/emulator`)
+      .catch(
+        () =>
+          `${
+            process.env.ANDROID_HOME || process.env.ANDROID_SDK_ROOT || ''
+          }/tools/emulator`,
+      )
       .then((emulatorPath) => {
         child_process.exec(
           `${emulatorPath} -list-avds`,

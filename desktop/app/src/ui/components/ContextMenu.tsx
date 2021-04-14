@@ -39,6 +39,7 @@ type Props<C> = {
  * to show menu items.
  *
  * Separators can be added by `{type: 'separator'}`
+ * @depreacted https://ant.design/components/dropdown/#components-dropdown-demo-context-menu
  */
 export default forwardRef(function ContextMenu<C>(
   {items, buildItems, component, children, ...otherProps}: Props<C>,
