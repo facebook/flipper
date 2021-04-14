@@ -41,9 +41,6 @@ releaseReplacements =
   ,("docs/getting-started/react-native-ios.mdx", spaces >> "flipperkit_version = '" *> releaseVersion <* "'" <* many anyChar)
   ,("docs/getting-started/react-native.mdx", many anyChar >> "`FLIPPER_VERSION=" *> releaseVersion <* "`.")
   ,("docs/getting-started/react-native.mdx", many anyChar >> "`use_flipper!({ 'Flipper' => '" *> releaseVersion <* "' })`.")
-  ,("react-native/ReactNativeFlipperExample/package.json", many anyChar >> "\"react-native-flipper\": \"^" *> releaseVersion <* "\"")
-  ,("react-native/ReactNativeFlipperExample/android/gradle.properties", many anyChar >> "FLIPPER_VERSION=" *> releaseVersion)
-  ,("react-native/ReactNativeFlipperExample/ios/Podfile", spaces >> "use_flipper!({ 'Flipper' => '" *> releaseVersion <* "' })")
   ]
 
 snapshotReplacements :: [(FilePath, Pattern Version)]
