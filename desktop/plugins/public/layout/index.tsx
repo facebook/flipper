@@ -521,6 +521,7 @@ export default class LayoutPlugin extends FlipperPlugin<
 
         <DetailSidebar>
           <InspectorSidebar
+            key={element?.id ?? 'no_selection'}
             client={this.getClient()}
             realClient={this.realClient}
             element={element}

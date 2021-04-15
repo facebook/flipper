@@ -18,6 +18,7 @@ import {tryGetFlipperLibImplementation} from 'flipper-plugin/src/plugin/FlipperL
 import {DownOutlined, RightOutlined} from '@ant-design/icons';
 
 const {Text} = Typography;
+const contextMenuTrigger = ['contextMenu' as const];
 
 export const ElementsConstants = {
   rowHeight: 23,
@@ -229,7 +230,7 @@ type ElementsRowProps = {
   style?: Object;
   contextMenuExtensions?: () => Array<ContextMenuExtension>;
   decorateRow?: DecorateRow;
-  forwardedRef: React.Ref<HTMLDivElement> | null;
+  forwardedRef?: React.Ref<HTMLDivElement> | null;
 };
 
 type ElementsRowState = {
@@ -377,18 +378,7 @@ class ElementsRow extends PureComponent<ElementsRowProps, ElementsRowState> {
 
     const decoration = decorateRow
       ? decorateRow(element)
-      : (() => {
-          switch (element.decoration) {
-            case 'litho':
-              return <DecorationImage src="icons/litho-logo.png" />;
-            case 'componentkit':
-              return <DecorationImage src="icons/componentkit-logo.png" />;
-            case 'accessibility':
-              return <DecorationImage src="icons/accessibility.png" />;
-            default:
-              return null;
-          }
-        })();
+      : defaultDecorateRow(element);
 
     // when we hover over or select an expanded element with children, we show a line from the
     // bottom of the element to the next sibling
@@ -403,7 +393,7 @@ class ElementsRow extends PureComponent<ElementsRowProps, ElementsRowState> {
       <Dropdown
         key={id}
         overlay={this.getContextMenu}
-        trigger={['contextMenu']}>
+        trigger={contextMenuTrigger}>
         <ElementsRowContainer
           level={level}
           ref={forwardedRef}
@@ -433,6 +423,19 @@ class ElementsRow extends PureComponent<ElementsRowProps, ElementsRowState> {
         </ElementsRowContainer>
       </Dropdown>
     );
+  }
+}
+
+function defaultDecorateRow(element: Element) {
+  switch (element.decoration) {
+    case 'litho':
+      return <DecorationImage src="icons/litho-logo.png" />;
+    case 'componentkit':
+      return <DecorationImage src="icons/componentkit-logo.png" />;
+    case 'accessibility':
+      return <DecorationImage src="icons/accessibility.png" />;
+    default:
+      return null;
   }
 }
 
@@ -657,17 +660,66 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
     }
   };
 
+  onElementHoveredHandler = (key: string | null | undefined) => {
+    this.props.onElementHovered?.(key);
+  };
+
+  onCopyExpandedTree = (
+    element: Element,
+    maxDepth: number,
+    depth: number = 0,
+  ): string => {
+    const shouldIncludeChildren = element.expanded && depth < maxDepth;
+    const children = shouldIncludeChildren
+      ? element.children.map((childId) => {
+          const childElement = this.props.elements[childId];
+          return childElement == null
+            ? ''
+            : this.onCopyExpandedTree(childElement, maxDepth, depth + 1);
+        })
+      : [];
+
+    const childrenValue = children.toString().replace(',', '');
+    const indentation = depth === 0 ? '' : '\n'.padEnd(depth * 2 + 1, ' ');
+    const attrs = element.attributes.reduce(
+      (acc, val) => acc + ` ${val.name}=${val.value}`,
+      '',
+    );
+
+    return `${indentation}${element.name}${attrs}${childrenValue}`;
+  };
+
+  scrollToSelectionRefHandler = (selectedRow: HTMLDivElement | null) => {
+    if (
+      !selectedRow ||
+      !this._outerRef.current ||
+      this.props.selected === this.state.scrolledElement
+    ) {
+      return;
+    }
+    this.setState({scrolledElement: this.props.selected});
+    const outer = this._outerRef.current;
+    if (outer.scrollTo) {
+      outer.scrollTo({
+        top: this._calculateScrollTop(
+          outer.offsetHeight,
+          outer.scrollTop,
+          selectedRow.offsetHeight,
+          selectedRow.offsetTop,
+        ),
+      });
+    }
+  };
+
   buildRow = (row: FlatElement, index: number) => {
     const {
       onElementExpanded,
-      onElementHovered,
       onElementSelected,
       selected,
       focused,
       searchResults,
       contextMenuExtensions,
       decorateRow,
-      elements,
     } = this.props;
     const {flatElements} = this.state;
 
@@ -685,30 +737,6 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
     if (this.props.alternateRowColor) {
       isEven = index % 2 === 0;
     }
-    const onCopyExpandedTree = (
-      maxDepth: number,
-      element: Element,
-      depth: number,
-    ): string => {
-      const shouldIncludeChildren = element.expanded && depth < maxDepth;
-      const children = shouldIncludeChildren
-        ? element.children.map((childId) => {
-            const childElement = elements[childId];
-            return childElement == null
-              ? ''
-              : onCopyExpandedTree(maxDepth, childElement, depth + 1);
-          })
-        : [];
-
-      const childrenValue = children.toString().replace(',', '');
-      const indentation = depth === 0 ? '' : '\n'.padEnd(depth * 2 + 1, ' ');
-      const attrs = element.attributes.reduce(
-        (acc, val) => acc + ` ${val.name}=${val.value}`,
-        '',
-      );
-
-      return `${indentation}${element.name}${attrs}${childrenValue}`;
-    };
 
     return (
       <ElementsRow
@@ -717,13 +745,9 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
         key={row.key}
         even={isEven}
         onElementExpanded={onElementExpanded}
-        onElementHovered={(key: string | null | undefined) => {
-          onElementHovered && onElementHovered(key);
-        }}
+        onElementHovered={this.onElementHoveredHandler}
         onElementSelected={onElementSelected}
-        onCopyExpandedTree={(element, maxDepth) =>
-          onCopyExpandedTree(maxDepth, element, 0)
-        }
+        onCopyExpandedTree={this.onCopyExpandedTree}
         selected={selected === row.key}
         focused={focused === row.key}
         matchingSearchQuery={
@@ -738,23 +762,7 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
         decorateRow={decorateRow}
         forwardedRef={
           selected == row.key && this.state.scrolledElement !== selected
-            ? (selectedRow) => {
-                if (!selectedRow || !this._outerRef.current) {
-                  return;
-                }
-                this.setState({scrolledElement: selected});
-                const outer = this._outerRef.current;
-                if (outer.scrollTo) {
-                  outer.scrollTo({
-                    top: this._calculateScrollTop(
-                      outer.offsetHeight,
-                      outer.scrollTop,
-                      selectedRow.offsetHeight,
-                      selectedRow.offsetTop,
-                    ),
-                  });
-                }
-              }
+            ? this.scrollToSelectionRefHandler
             : null
         }
       />

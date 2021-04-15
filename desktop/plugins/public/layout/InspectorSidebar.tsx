@@ -18,8 +18,7 @@ import {
   Client,
   Logger,
 } from 'flipper';
-import {Component} from 'react';
-import deepEqual from 'deep-equal';
+import {PureComponent} from 'react';
 import React from 'react';
 import {useMemo, useEffect} from 'react';
 import {kebabCase} from 'lodash';
@@ -39,20 +38,12 @@ type InspectorSidebarSectionProps = {
   tooltips?: Object;
 };
 
-class InspectorSidebarSection extends Component<InspectorSidebarSectionProps> {
+class InspectorSidebarSection extends PureComponent<InspectorSidebarSectionProps> {
   setValue = (path: Array<string>, value: any) => {
     if (this.props.onValueChanged) {
       this.props.onValueChanged([this.props.id, ...path], value);
     }
   };
-
-  shouldComponentUpdate(nextProps: InspectorSidebarSectionProps) {
-    return (
-      !deepEqual(nextProps, this.props) ||
-      this.props.id !== nextProps.id ||
-      this.props.onValueChanged !== nextProps.onValueChanged
-    );
-  }
 
   extractValue = (val: any, _depth: number) => {
     if (val && val.__type__) {
@@ -142,7 +133,7 @@ const Sidebar: React.FC<Props> = (props: Props) => {
       }
 
     return [sectionDefs, sectionKeys];
-  }, [props.element]);
+  }, [element]);
 
   const sections: Array<React.ReactNode> = (
     (SidebarExtensions &&
@@ -173,7 +164,7 @@ const Sidebar: React.FC<Props> = (props: Props) => {
     sectionKeys.map((key) =>
       props.logger.track('usage', `layout-sidebar-extension:${key}:loaded`),
     );
-  }, [props.element?.data]);
+  }, [sectionKeys.join(',')]);
 
   if (!element || !element.data) {
     return <NoData grow>No data</NoData>;
