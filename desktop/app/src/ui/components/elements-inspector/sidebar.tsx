@@ -7,7 +7,7 @@
  * @format
  */
 
-import {Element} from './ElementsInspector';
+import {ElementsInspectorElement} from 'flipper-plugin';
 import {PluginClient} from '../../../plugin';
 import Client from '../../../Client';
 import {Logger} from '../../../fb-interfaces/Logger';
@@ -76,7 +76,7 @@ class InspectorSidebarSection extends Component<InspectorSidebarSectionProps> {
 }
 
 type Props = {
-  element: Element | undefined | null;
+  element: ElementsInspectorElement | undefined | null;
   tooltips?: Object;
   onValueChanged: OnValueChanged | undefined | null;
   client: PluginClient;

@@ -9,18 +9,18 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {Element} from './ElementsInspector';
+import {ElementsInspectorElement} from 'flipper-plugin';
 import styled from '@emotion/styled';
 
 export function VisualizerPortal(props: {
   container: HTMLElement;
   highlightedElement: string | null;
-  elements: {[key: string]: Element};
+  elements: {[key: string]: ElementsInspectorElement};
   screenshotURL: string;
   screenDimensions: {width: number; height: number};
 }) {
   props.container.style.margin = '0';
-  const element: Element | null | '' =
+  const element: ElementsInspectorElement | null | '' =
     props.highlightedElement && props.elements[props.highlightedElement];
 
   const position =

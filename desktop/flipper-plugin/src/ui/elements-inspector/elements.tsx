@@ -7,17 +7,17 @@
  * @format
  */
 
+import {Dropdown, Menu, Typography} from 'antd';
 import {ElementID, Element, ElementSearchResultSet} from './ElementsInspector';
-import ContextMenu from '../ContextMenu';
 import {PureComponent, ReactElement} from 'react';
-import FlexRow from '../FlexRow';
-import Glyph from '../Glyph';
-import {colors} from '../colors';
-import Text from '../Text';
 import styled from '@emotion/styled';
-import {clipboard, MenuItemConstructorOptions} from 'electron';
 import React, {MouseEvent, KeyboardEvent} from 'react';
-import {Scrollable} from '../..';
+import {theme} from '../theme';
+import {Layout} from '../Layout';
+import {tryGetFlipperLibImplementation} from 'flipper-plugin/src/plugin/FlipperLib';
+import {DownOutlined, RightOutlined} from '@ant-design/icons';
+
+const {Text} = Typography;
 
 export const ElementsConstants = {
   rowHeight: 23,
@@ -30,13 +30,13 @@ const backgroundColor = (props: {
   even: boolean;
 }) => {
   if (props.selected) {
-    return colors.macOSTitleBarIconSelected;
+    return '#4d84f5';
   } else if (props.isQueryMatch) {
-    return colors.purpleLight;
+    return '#4d84f5';
   } else if (props.focused) {
     return '#00CF52';
   } else if (props.even) {
-    return colors.light02;
+    return '#f6f7f9';
   } else {
     return '';
   }
@@ -44,7 +44,7 @@ const backgroundColor = (props: {
 
 const backgroundColorHover = (props: {selected: boolean; focused: boolean}) => {
   if (props.selected) {
-    return colors.macOSTitleBarIconSelected;
+    return '#4d84f5';
   } else if (props.focused) {
     return '#00CF52';
   } else {
@@ -52,11 +52,11 @@ const backgroundColorHover = (props: {selected: boolean; focused: boolean}) => {
   }
 };
 
-const ElementsRowContainer = styled(ContextMenu)<any>((props) => ({
+const ElementsRowContainer = styled(Layout.Horizontal)<any>((props) => ({
   flexDirection: 'row',
   alignItems: 'center',
   backgroundColor: backgroundColor(props),
-  color: props.selected || props.focused ? colors.white : colors.grapeDark3,
+  color: props.selected || props.focused ? theme.backgroundDefault : '#58409b',
   flexShrink: 0,
   flexWrap: 'nowrap',
   height: ElementsConstants.rowHeight,
@@ -65,7 +65,10 @@ const ElementsRowContainer = styled(ContextMenu)<any>((props) => ({
   position: 'relative',
 
   '& *': {
-    color: props.selected || props.focused ? `${colors.white} !important` : '',
+    color:
+      props.selected || props.focused
+        ? `${theme.backgroundDefault} !important`
+        : '',
   },
 
   '&:hover': {
@@ -74,7 +77,7 @@ const ElementsRowContainer = styled(ContextMenu)<any>((props) => ({
 }));
 ElementsRowContainer.displayName = 'Elements:ElementsRowContainer';
 
-const ElementsRowDecoration = styled(FlexRow)({
+const ElementsRowDecoration = styled(Layout.Horizontal)({
   flexShrink: 0,
   justifyContent: 'flex-end',
   alignItems: 'center',
@@ -86,7 +89,7 @@ const ElementsRowDecoration = styled(FlexRow)({
 ElementsRowDecoration.displayName = 'Elements:ElementsRowDecoration';
 
 const ElementsLine = styled.div<{childrenCount: number}>((props) => ({
-  backgroundColor: colors.light20,
+  backgroundColor: '#bec2c9',
   height: props.childrenCount * ElementsConstants.rowHeight - 4,
   position: 'absolute',
   right: 3,
@@ -109,11 +112,13 @@ const NoShrinkText = styled(Text)({
   flexWrap: 'nowrap',
   overflow: 'hidden',
   fontWeight: 400,
+  font: theme.monospace.fontFamily,
+  fontSize: theme.monospace.fontSize,
 });
 NoShrinkText.displayName = 'Elements:NoShrinkText';
 
 const ElementsRowAttributeContainer = styled(NoShrinkText)({
-  color: colors.dark80,
+  color: '#333333',
   fontWeight: 300,
   marginLeft: 5,
 });
@@ -121,12 +126,12 @@ ElementsRowAttributeContainer.displayName =
   'Elements:ElementsRowAttributeContainer';
 
 const ElementsRowAttributeKey = styled.span({
-  color: colors.tomato,
+  color: '#fb724b',
 });
 ElementsRowAttributeKey.displayName = 'Elements:ElementsRowAttributeKey';
 
 const ElementsRowAttributeValue = styled.span({
-  color: colors.slateDark3,
+  color: '#688694',
 });
 ElementsRowAttributeValue.displayName = 'Elements:ElementsRowAttributeValue';
 
@@ -137,8 +142,8 @@ class PartialHighlight extends PureComponent<{
   content: string;
 }> {
   static HighlightedText = styled.span<{selected: boolean}>((props) => ({
-    backgroundColor: colors.lemon,
-    color: props.selected ? `${colors.grapeDark3} !important` : 'auto',
+    backgroundColor: '#fcd872',
+    color: props.selected ? `${'#58409b'} !important` : 'auto',
   }));
 
   render() {
@@ -180,7 +185,7 @@ class ElementsRowAttribute extends PureComponent<{
   render() {
     const {name, value, matchingSearchQuery, selected} = this.props;
     return (
-      <ElementsRowAttributeContainer code={true}>
+      <ElementsRowAttributeContainer>
         <ElementsRowAttributeKey>{name}</ElementsRowAttributeKey>=
         <ElementsRowAttributeValue>
           <PartialHighlight
@@ -237,22 +242,23 @@ class ElementsRow extends PureComponent<ElementsRowProps, ElementsRowState> {
     this.state = {hovered: false};
   }
 
-  getContextMenu = (): Array<MenuItemConstructorOptions> => {
+  getContextMenu = () => {
     const {props} = this;
-    let items: Array<MenuItemConstructorOptions> = [
-      {
-        type: 'separator',
-      },
+    let items = [
       {
         label: 'Copy',
         click: () => {
-          clipboard.writeText(props.onCopyExpandedTree(props.element, 0));
+          tryGetFlipperLibImplementation()?.writeTextToClipboard(
+            props.onCopyExpandedTree(props.element, 0),
+          );
         },
       },
       {
         label: 'Copy expanded child elements',
         click: () =>
-          clipboard.writeText(props.onCopyExpandedTree(props.element, 255)),
+          tryGetFlipperLibImplementation()?.writeTextToClipboard(
+            props.onCopyExpandedTree(props.element, 255),
+          ),
       },
       {
         label: props.element.expanded ? 'Collapse' : 'Expand',
@@ -274,7 +280,7 @@ class ElementsRow extends PureComponent<ElementsRowProps, ElementsRowState> {
         return {
           label: `Copy ${o.name}`,
           click: () => {
-            clipboard.writeText(o.value);
+            tryGetFlipperLibImplementation()?.writeTextToClipboard(o.value);
           },
         };
       }),
@@ -287,7 +293,15 @@ class ElementsRow extends PureComponent<ElementsRowProps, ElementsRowState> {
       });
     }
 
-    return items;
+    return (
+      <Menu>
+        {items.map(({label, click}) => (
+          <Menu.Item key={label} onClick={click}>
+            {label}
+          </Menu.Item>
+        ))}
+      </Menu>
+    );
   };
 
   onClick = () => {
@@ -330,12 +344,15 @@ class ElementsRow extends PureComponent<ElementsRowProps, ElementsRowState> {
     let arrow;
     if (hasChildren) {
       arrow = (
-        <span onClick={this.onDoubleClick} role="button" tabIndex={-1}>
-          <Glyph
-            size={8}
-            name={element.expanded ? 'chevron-down' : 'chevron-right'}
-            color={selected || focused ? 'white' : colors.light80}
-          />
+        <span
+          onClick={this.onDoubleClick}
+          role="button"
+          tabIndex={-1}
+          style={{
+            color: selected || focused ? 'white' : '#1d2129',
+            fontSize: '8px',
+          }}>
+          {element.expanded ? <DownOutlined /> : <RightOutlined />}
         </span>
       );
     }
@@ -377,35 +394,38 @@ class ElementsRow extends PureComponent<ElementsRowProps, ElementsRowState> {
     }
 
     return (
-      <ElementsRowContainer
-        ref={forwardedRef}
-        buildItems={this.getContextMenu}
+      <Dropdown
         key={id}
-        level={level}
-        selected={selected}
-        focused={focused}
-        matchingSearchQuery={matchingSearchQuery}
-        even={even}
-        onClick={this.onClick}
-        onDoubleClick={this.onDoubleClick}
-        onMouseEnter={this.onMouseEnter}
-        onMouseLeave={this.onMouseLeave}
-        isQueryMatch={this.props.isQueryMatch}
-        style={style}>
-        <ElementsRowDecoration>
-          {line}
-          {arrow}
-        </ElementsRowDecoration>
-        <NoShrinkText code={true}>
-          {decoration}
-          <PartialHighlight
-            content={element.name}
-            highlighted={matchingSearchQuery}
-            selected={selected}
-          />
-        </NoShrinkText>
-        {attributes}
-      </ElementsRowContainer>
+        overlay={this.getContextMenu}
+        trigger={['contextMenu']}>
+        <ElementsRowContainer
+          level={level}
+          ref={forwardedRef}
+          selected={selected}
+          focused={focused}
+          matchingSearchQuery={matchingSearchQuery}
+          even={even}
+          onClick={this.onClick}
+          onDoubleClick={this.onDoubleClick}
+          onMouseEnter={this.onMouseEnter}
+          onMouseLeave={this.onMouseLeave}
+          isQueryMatch={this.props.isQueryMatch}
+          style={style}>
+          <ElementsRowDecoration>
+            {line}
+            {arrow}
+          </ElementsRowDecoration>
+          <NoShrinkText>
+            {decoration}
+            <PartialHighlight
+              content={element.name}
+              highlighted={matchingSearchQuery}
+              selected={selected}
+            />
+          </NoShrinkText>
+          {attributes}
+        </ElementsRowContainer>
+      </Dropdown>
     );
   }
 }
@@ -419,7 +439,7 @@ function containsKeyInSearchResults(
 
 const ElementsContainer = styled('div')({
   display: 'table',
-  backgroundColor: colors.white,
+  backgroundColor: theme.backgroundDefault,
   minHeight: '100%',
   minWidth: '100%',
 });
@@ -568,7 +588,9 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
     ) {
       e.stopPropagation();
       e.preventDefault();
-      clipboard.writeText(selectedElement.name);
+      tryGetFlipperLibImplementation()?.writeTextToClipboard(
+        selectedElement.name,
+      );
       return;
     }
 
@@ -735,11 +757,11 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
 
   render() {
     return (
-      <Scrollable ref={this._outerRef}>
+      <Layout.ScrollContainer ref={this._outerRef}>
         <ElementsContainer onKeyDown={this.onKeyDown} tabIndex={0}>
           {this.state.flatElements.map(this.buildRow)}
         </ElementsContainer>
-      </Scrollable>
+      </Layout.ScrollContainer>
     );
   }
 }

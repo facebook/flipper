@@ -7,7 +7,7 @@
  * @format
  */
 
-import React, {CSSProperties} from 'react';
+import React, {CSSProperties, forwardRef} from 'react';
 import styled from '@emotion/styled';
 import {
   normalizePadding,
@@ -110,28 +110,33 @@ const ScrollChild = styled(Container)<{axis?: ScrollAxis}>(({axis}) => ({
 
 type ScrollAxis = 'x' | 'y' | 'both';
 
-const ScrollContainer = ({
-  children,
-  horizontal,
-  vertical,
-  padv,
-  padh,
-  pad,
-  ...rest
-}: React.HTMLAttributes<HTMLDivElement> & {
-  horizontal?: boolean;
-  vertical?: boolean;
-} & PaddingProps) => {
-  const axis =
-    horizontal && !vertical ? 'x' : !horizontal && vertical ? 'y' : 'both';
-  return (
-    <ScrollParent axis={axis} {...rest}>
-      <ScrollChild axis={axis} padv={padv} padh={padh} pad={pad}>
-        {children}
-      </ScrollChild>
-    </ScrollParent>
-  ) as any;
-};
+const ScrollContainer = forwardRef(
+  (
+    {
+      children,
+      horizontal,
+      vertical,
+      padv,
+      padh,
+      pad,
+      ...rest
+    }: React.HTMLAttributes<HTMLDivElement> & {
+      horizontal?: boolean;
+      vertical?: boolean;
+    } & PaddingProps,
+    ref: React.ForwardedRef<HTMLDivElement>,
+  ) => {
+    const axis =
+      horizontal && !vertical ? 'x' : !horizontal && vertical ? 'y' : 'both';
+    return (
+      <ScrollParent axis={axis} {...rest} ref={ref}>
+        <ScrollChild axis={axis} padv={padv} padh={padh} pad={pad}>
+          {children}
+        </ScrollChild>
+      </ScrollParent>
+    ) as any;
+  },
+);
 
 type SplitLayoutProps = {
   /**

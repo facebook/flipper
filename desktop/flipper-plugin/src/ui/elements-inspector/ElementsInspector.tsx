@@ -8,8 +8,7 @@
  */
 
 import {Component} from 'react';
-import {Elements, DecorateRow} from './elements';
-import {ContextMenuExtension} from '../../../ui';
+import {Elements, DecorateRow, ContextMenuExtension} from './elements';
 import React from 'react';
 
 export type ElementID = string;
@@ -31,11 +30,6 @@ export type ElementData = {
         };
   };
 };
-
-export enum ElementFramework {
-  'LITHO',
-  'CK',
-}
 
 export type ElementAttribute = {
   name: string;
@@ -80,7 +74,7 @@ export type ElementsInspectorProps = {
   decorateRow?: DecorateRow;
 };
 
-export default class ElementsInspector extends Component<ElementsInspectorProps> {
+export class ElementsInspector extends Component<ElementsInspectorProps> {
   static defaultProps = {
     alternateRowColor: true,
   };

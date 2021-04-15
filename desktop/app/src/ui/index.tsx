@@ -141,17 +141,6 @@ export {
 export {default as SearchableTable_immutable} from './components/searchable/SearchableTable_immutable';
 export {SearchableProps} from './components/searchable/Searchable';
 
-export {
-  ElementID,
-  ElementData,
-  ElementAttribute,
-  Element,
-  ElementSearchResultSet,
-  ElementsInspectorProps,
-} from './components/elements-inspector/ElementsInspector';
-export {Elements} from './components/elements-inspector/elements';
-export {ContextMenuExtension} from './components/elements-inspector/elements';
-export {default as ElementsInspector} from './components/elements-inspector/ElementsInspector';
 export {InspectorSidebar} from './components/elements-inspector/sidebar';
 export {VisualizerPortal} from './components/elements-inspector/Visualizer';
 

@@ -7,10 +7,8 @@
  * @format
  */
 
-import {
-  ElementFramework,
-  Element,
-} from '../ui/components/elements-inspector/ElementsInspector';
+import {ElementFramework} from '../ui/components/elements-inspector/ElementFramework';
+import {ElementsInspectorElement} from 'flipper-plugin';
 
 export enum IDEType {
   'DIFFUSION',
@@ -60,13 +58,15 @@ export abstract class IDEFileResolver {
   }
 
   static isElementFromFramework(
-    _node: Element,
+    _node: ElementsInspectorElement,
     _framework: ElementFramework,
   ): boolean {
     throw new Error('Method not implemented.');
   }
 
-  static isElementFromSupportedFramework(_node: Element): boolean {
+  static isElementFromSupportedFramework(
+    _node: ElementsInspectorElement,
+  ): boolean {
     throw new Error('Method not implemented.');
   }
 }

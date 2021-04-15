@@ -102,6 +102,17 @@ export {
 export {MarkerTimeline} from './ui/MarkerTimeline';
 export {ManagedDataInspector as DataInspector} from './ui/data-inspector/ManagedDataInspector';
 
+export {
+  ElementsInspector,
+  Element as ElementsInspectorElement,
+  // TODO: clean up or create namespace
+  ElementsInspectorProps,
+  ElementExtraInfo,
+  ElementAttribute,
+  ElementData,
+  ElementSearchResultSet,
+  ElementID,
+} from './ui/elements-inspector/ElementsInspector';
 export {useMemoize} from './utils/useMemoize';
 
 // It's not ideal that this exists in flipper-plugin sources directly,
