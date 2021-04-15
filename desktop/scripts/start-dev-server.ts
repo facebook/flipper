@@ -62,7 +62,7 @@ const argv = yargs
     },
     'open-dev-tools': {
       describe:
-        'Open Dev Tools window on startup. The flag is disabled by default. Env var FLIPPER_OPEN_DEV_TOOLS is equivalent to the command-line option "--open-dev-tools".',
+        'Open Dev Tools window on startup. The flag is disabled by default. Env var FLIPPER_OPEN_DEV_TOOLS is equivalent to the command-line option "--open-dev-tools". If "FLIPPER_UPDATE_DEV_TOOLS=true" is set additionally, Flipper will try to update the dev tools from the play store.',
       type: 'boolean',
     },
     'dev-server-port': {

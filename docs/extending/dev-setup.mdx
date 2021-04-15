@@ -120,7 +120,10 @@ Options:
                         which means that all plugins loaded.             [array]
   --open-dev-tools      Open Dev Tools window on startup. The flag is disabled
                         by default. Env var FLIPPER_OPEN_DEV_TOOLS is equivalent
-                        to the command-line option "--open-dev-tools". [boolean]
+                        to the command-line option "--open-dev-tools". If 
+                        "FLIPPER_UPDATE_DEV_TOOLS=true" is set additionally, 
+                        Flipper will try to update the dev tools from the play 
+                        store.                                         [boolean]
   --dev-server-port     Dev server port. 3000 by default. Env var "PORT=3001" is
                         equivalent to the command-line option "--dev-server-port
                         3001".                          [number] [default: 3000]
