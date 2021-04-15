@@ -173,12 +173,21 @@ type SplitVerticalResizableProps =
     }
   | {};
 
+const Empty = styled.div({width: 0, height: 0});
+
 function renderSplitLayout(
   props: SplitLayoutProps,
   direction: 'column' | 'row',
   grow: 1 | 2,
 ) {
   let [child1, child2] = props.children;
+  // prevent some children to be accidentally omitted if the primary one is `null`
+  if (!child1) {
+    child1 = <Empty />;
+  }
+  if (!child2) {
+    child2 = <Empty />;
+  }
   if ('resizable' in props && props.resizable) {
     const {
       width,
