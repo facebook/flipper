@@ -40,30 +40,6 @@ test('rendering a single element', () => {
   expect(res.queryAllByText(name).length).toBe(1);
 });
 
-test('collapsing an element', () => {
-  const id = 'id1';
-  const name = 'id_name';
-  const element: Element = {...dummyElmentData, id, name};
-  const res = render(
-    <MultipleSelectorSection
-      initialSelectedElement={null}
-      elements={{[id]: element}}
-      onElementSelected={() => {}}
-      onElementHovered={null}
-    />,
-  );
-
-  expect(res.queryAllByText(name).length).toBe(1);
-
-  // collapse the view
-  fireEvent.click(res.getByText(TITLE_STRING));
-  expect(res.queryAllByText(name).length).toBe(0);
-
-  // re-expand the view
-  fireEvent.click(res.getByText(TITLE_STRING));
-  expect(res.queryAllByText(name).length).toBe(1);
-});
-
 test('clicking on elements', () => {
   const ids = ['id1', 'id2', 'id3'];
   const names = ['id_name_first', 'id_name_second', 'id_name_third'];

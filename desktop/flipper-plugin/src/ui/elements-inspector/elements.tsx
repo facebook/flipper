@@ -449,8 +449,6 @@ function containsKeyInSearchResults(
 const ElementsContainer = styled('div')({
   display: 'table',
   backgroundColor: theme.backgroundDefault,
-  minHeight: '100%',
-  minWidth: '100%',
 });
 ElementsContainer.displayName = 'Elements:ElementsContainer';
 
@@ -489,7 +487,6 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
   static defaultProps = {
     alternateRowColor: true,
   };
-  _outerRef = React.createRef<HTMLDivElement>();
   constructor(props: ElementsProps, context: Object) {
     super(props, context);
     this.state = {
@@ -690,24 +687,14 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
   };
 
   scrollToSelectionRefHandler = (selectedRow: HTMLDivElement | null) => {
-    if (
-      !selectedRow ||
-      !this._outerRef.current ||
-      this.props.selected === this.state.scrolledElement
-    ) {
-      return;
-    }
-    this.setState({scrolledElement: this.props.selected});
-    const outer = this._outerRef.current;
-    if (outer.scrollTo) {
-      outer.scrollTo({
-        top: this._calculateScrollTop(
-          outer.offsetHeight,
-          outer.scrollTop,
-          selectedRow.offsetHeight,
-          selectedRow.offsetTop,
-        ),
+    if (selectedRow && this.state.scrolledElement !== this.props.selected) {
+      // second child is the element containing the element name
+      // by scrolling to the second element, we make sure padding is addressed and we scroll horizontally as well
+      selectedRow?.children[1]?.scrollIntoView?.({
+        block: 'center',
+        inline: 'center',
       });
+      this.setState({scrolledElement: this.props.selected});
     }
   };
 
@@ -761,7 +748,7 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
         contextMenuExtensions={contextMenuExtensions}
         decorateRow={decorateRow}
         forwardedRef={
-          selected == row.key && this.state.scrolledElement !== selected
+          selected == row.key // && this.state.scrolledElement !== selected
             ? this.scrollToSelectionRefHandler
             : null
         }
@@ -771,11 +758,9 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
 
   render() {
     return (
-      <Layout.ScrollContainer ref={this._outerRef}>
-        <ElementsContainer onKeyDown={this.onKeyDown} tabIndex={0}>
-          {this.state.flatElements.map(this.buildRow)}
-        </ElementsContainer>
-      </Layout.ScrollContainer>
+      <ElementsContainer onKeyDown={this.onKeyDown} tabIndex={0}>
+        {this.state.flatElements.map(this.buildRow)}
+      </ElementsContainer>
     );
   }
 }

@@ -10,6 +10,7 @@
 import {Component} from 'react';
 import {Elements, DecorateRow, ContextMenuExtension} from './elements';
 import React from 'react';
+import {Layout} from '../Layout';
 
 export type ElementID = string;
 
@@ -72,11 +73,16 @@ export type ElementsInspectorProps = {
   alternateRowColor?: boolean;
   contextMenuExtensions?: () => Array<ContextMenuExtension>;
   decorateRow?: DecorateRow;
+  /**
+   * By default the ElementsInspector takes all available space and is scrollab.e
+   */
+  scrollable?: boolean;
 };
 
 export class ElementsInspector extends Component<ElementsInspectorProps> {
   static defaultProps = {
     alternateRowColor: true,
+    scrollable: true,
   };
   render() {
     const {
@@ -91,9 +97,10 @@ export class ElementsInspector extends Component<ElementsInspectorProps> {
       alternateRowColor,
       contextMenuExtensions,
       decorateRow,
+      scrollable,
     } = this.props;
 
-    return (
+    const renderedElems = (
       <Elements
         onElementExpanded={onElementExpanded}
         onElementSelected={onElementSelected}
@@ -108,5 +115,10 @@ export class ElementsInspector extends Component<ElementsInspectorProps> {
         decorateRow={decorateRow}
       />
     );
+    if (scrollable) {
+      return <Layout.ScrollContainer>{renderedElems}</Layout.ScrollContainer>;
+    } else {
+      return renderedElems;
+    }
   }
 }
