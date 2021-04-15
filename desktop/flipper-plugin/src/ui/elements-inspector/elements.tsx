@@ -227,7 +227,7 @@ type ElementsRowProps = {
     | null;
   onCopyExpandedTree: (key: Element, maxDepth: number) => string;
   style?: Object;
-  contextMenuExtensions: Array<ContextMenuExtension>;
+  contextMenuExtensions?: () => Array<ContextMenuExtension>;
   decorateRow?: DecorateRow;
   forwardedRef: React.Ref<HTMLDivElement> | null;
 };
@@ -286,12 +286,18 @@ class ElementsRow extends PureComponent<ElementsRowProps, ElementsRowState> {
       }),
     );
 
-    for (const extension of props.contextMenuExtensions) {
+    // Array.isArray check for backward compatibility
+    const extensions: ContextMenuExtension[] | undefined = Array.isArray(
+      props.contextMenuExtensions,
+    )
+      ? props.contextMenuExtensions
+      : props.contextMenuExtensions?.();
+    extensions?.forEach((extension) => {
       items.push({
         label: extension.label,
         click: () => extension.click(this.props.id),
       });
-    }
+    });
 
     return (
       <Menu>
@@ -460,7 +466,7 @@ type ElementsProps = {
     | undefined
     | null;
   alternateRowColor?: boolean;
-  contextMenuExtensions?: Array<ContextMenuExtension>;
+  contextMenuExtensions?: () => Array<ContextMenuExtension>;
   decorateRow?: DecorateRow;
 };
 
@@ -728,7 +734,7 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
         isQueryMatch={containsKeyInSearchResults(searchResults, row.key)}
         element={row.element}
         childrenCount={childrenCount}
-        contextMenuExtensions={contextMenuExtensions || []}
+        contextMenuExtensions={contextMenuExtensions}
         decorateRow={decorateRow}
         forwardedRef={
           selected == row.key && this.state.scrolledElement !== selected

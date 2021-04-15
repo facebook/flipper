@@ -458,7 +458,7 @@ export default class Inspector extends Component<Props, State> {
           root={this.root()}
           elements={this.elements()}
           focused={this.focused()}
-          contextMenuExtensions={this.getAXContextMenuExtensions()}
+          contextMenuExtensions={this.getAXContextMenuExtensions}
         />
         {selectorData && selectorData.leaves.length > 1 ? (
           <MultipleSelectorSection

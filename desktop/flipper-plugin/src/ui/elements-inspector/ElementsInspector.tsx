@@ -70,7 +70,7 @@ export type ElementsInspectorProps = {
   elements: {[key: string]: Element};
   useAppSidebar?: boolean;
   alternateRowColor?: boolean;
-  contextMenuExtensions?: Array<ContextMenuExtension>;
+  contextMenuExtensions?: () => Array<ContextMenuExtension>;
   decorateRow?: DecorateRow;
 };
 
