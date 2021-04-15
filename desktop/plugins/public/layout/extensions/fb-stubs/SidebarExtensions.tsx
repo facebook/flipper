@@ -9,11 +9,12 @@
 
 import type {Client, Logger, PluginClient, Element} from 'flipper';
 
-export default [] as Array<
-  (
-    client: PluginClient,
-    realClient: Client,
-    selectedNode: Element,
-    logger: Logger,
-  ) => React.ReactNode
->;
+export const SidebarExtensions: Record<
+  string,
+  React.FC<{
+    client: PluginClient;
+    realClient: Client;
+    selectedNode: Element;
+    logger: Logger;
+  }>
+> = {};

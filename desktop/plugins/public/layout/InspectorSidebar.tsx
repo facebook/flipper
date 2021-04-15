@@ -23,7 +23,7 @@ import deepEqual from 'deep-equal';
 import React from 'react';
 import {useMemo, useEffect} from 'react';
 import {kebabCase} from 'lodash';
-import {default as SidebarExtensions} from './extensions/fb-stubs/index';
+import {SidebarExtensions} from './extensions/fb-stubs/SidebarExtensions';
 
 const NoData = styled(FlexCenter)({
   fontSize: 18,
@@ -147,9 +147,15 @@ const Sidebar: React.FC<Props> = (props: Props) => {
   const sections: Array<React.ReactNode> = (
     (SidebarExtensions &&
       element?.data &&
-      SidebarExtensions.map((ext) =>
-        ext(props.client, props.realClient, element, props.logger),
-      )) ||
+      Object.entries(SidebarExtensions).map(([ext, Comp]) => (
+        <Comp
+          key={ext}
+          client={props.client}
+          realClient={props.realClient}
+          logger={props.logger}
+          selectedNode={element}
+        />
+      ))) ||
     []
   ).concat(
     sectionDefs.map((def) => (
