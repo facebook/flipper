@@ -31,6 +31,8 @@ export {DataValueExtractor} from './DataPreview';
 
 export const RootDataContext = createContext<() => any>(() => ({}));
 
+const contextMenuTrigger = ['contextMenu' as const];
+
 const BaseContainer = styled.div<{depth?: number; disabled?: boolean}>(
   (props) => ({
     fontFamily: 'Menlo, monospace',
@@ -622,7 +624,7 @@ const DataInspector: React.FC<DataInspectorProps> = memo(
       <BaseContainer
         depth={depth}
         disabled={!!setValueProp && !!setValue === false}>
-        <Dropdown overlay={getContextMenu} trigger={['contextMenu']}>
+        <Dropdown overlay={getContextMenu} trigger={contextMenuTrigger}>
           <PropertyContainer onClick={isExpandable ? handleClick : undefined}>
             {expandedPaths && <ExpandControl>{expandGlyph}</ExpandControl>}
             {descriptionOrPreview}

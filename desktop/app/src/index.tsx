@@ -173,20 +173,17 @@ export {
 } from './ui/components/searchable/SearchableTable';
 export {default as SearchableTable_immutable} from './ui/components/searchable/SearchableTable_immutable';
 export {
-  ElementID,
-  ElementData,
-  ElementFramework,
-  ElementAttribute,
-  Element,
-  ElementSearchResultSet,
+  ElementsInspector,
+  ElementsInspectorElement as Element,
+  // TODO: clean up or create namespace
   ElementsInspectorProps,
-} from './ui/components/elements-inspector/ElementsInspector';
-export {
-  Elements,
-  ElementsConstants,
-} from './ui/components/elements-inspector/elements';
-export {ContextMenuExtension} from './ui/components/elements-inspector/elements';
-export {default as ElementsInspector} from './ui/components/elements-inspector/ElementsInspector';
+  ElementExtraInfo,
+  ElementAttribute,
+  ElementData,
+  ElementSearchResultSet,
+  ElementID,
+} from 'flipper-plugin';
+export {ElementFramework} from './ui/components/elements-inspector/ElementFramework';
 export {InspectorSidebar} from './ui/components/elements-inspector/sidebar';
 export {default as Sheet} from './ui/components/Sheet';
 export {default as FileSelector} from './ui/components/FileSelector';

@@ -1,3 +1,8 @@
+# 0.85.0 (14/4/2021)
+
+ * [D27732746](https://github.com/facebook/flipper/search?q=D27732746&type=Commits) -  Electron downgraded to v11.2.3 to work-around performance issues on MacOS Big Sur
+
+
 # 0.83.0 (31/3/2021)
 
  * [D27395517](https://github.com/facebook/flipper/search?q=D27395517&type=Commits) -  Logs plugin will now automatically truncate long lines

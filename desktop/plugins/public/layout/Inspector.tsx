@@ -13,19 +13,13 @@ import {
   PluginClient,
   ElementsInspector,
   ElementSearchResultSet,
-  FlexColumn,
-  styled,
 } from 'flipper';
 import {debounce} from 'lodash';
 import {Component} from 'react';
 import {PersistedState, ElementMap} from './';
 import React from 'react';
 import MultipleSelectorSection from './MultipleSelectionSection';
-
-const ElementsInspectorContainer = styled(FlexColumn)({
-  width: '100%',
-  justifyContent: 'space-between',
-});
+import {Layout} from 'flipper-plugin';
 
 type GetNodesOptions = {
   force?: boolean;
@@ -448,7 +442,17 @@ export default class Inspector extends Component<Props, State> {
       : this.state.elementSelector;
 
     return this.root() ? (
-      <ElementsInspectorContainer>
+      <Layout.Top>
+        {selectorData && selectorData.leaves.length > 1 ? (
+          <MultipleSelectorSection
+            initialSelectedElement={this.selected()}
+            elements={selectorData.elements}
+            onElementSelected={this.onElementSelectedAndExpanded}
+            onElementHovered={this.onElementHovered}
+          />
+        ) : (
+          <div />
+        )}
         <ElementsInspector
           onElementSelected={this.onElementSelectedAtMainSection}
           onElementHovered={this.onElementHovered}
@@ -458,17 +462,9 @@ export default class Inspector extends Component<Props, State> {
           root={this.root()}
           elements={this.elements()}
           focused={this.focused()}
-          contextMenuExtensions={this.getAXContextMenuExtensions()}
+          contextMenuExtensions={this.getAXContextMenuExtensions}
         />
-        {selectorData && selectorData.leaves.length > 1 ? (
-          <MultipleSelectorSection
-            initialSelectedElement={this.selected()}
-            elements={selectorData.elements}
-            onElementSelected={this.onElementSelectedAndExpanded}
-            onElementHovered={this.onElementHovered}
-          />
-        ) : null}
-      </ElementsInspectorContainer>
+      </Layout.Top>
     ) : null;
   }
 }

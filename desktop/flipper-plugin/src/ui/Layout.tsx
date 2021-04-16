@@ -7,7 +7,7 @@
  * @format
  */
 
-import React, {CSSProperties} from 'react';
+import React, {CSSProperties, forwardRef} from 'react';
 import styled from '@emotion/styled';
 import {
   normalizePadding,
@@ -110,28 +110,33 @@ const ScrollChild = styled(Container)<{axis?: ScrollAxis}>(({axis}) => ({
 
 type ScrollAxis = 'x' | 'y' | 'both';
 
-const ScrollContainer = ({
-  children,
-  horizontal,
-  vertical,
-  padv,
-  padh,
-  pad,
-  ...rest
-}: React.HTMLAttributes<HTMLDivElement> & {
-  horizontal?: boolean;
-  vertical?: boolean;
-} & PaddingProps) => {
-  const axis =
-    horizontal && !vertical ? 'x' : !horizontal && vertical ? 'y' : 'both';
-  return (
-    <ScrollParent axis={axis} {...rest}>
-      <ScrollChild axis={axis} padv={padv} padh={padh} pad={pad}>
-        {children}
-      </ScrollChild>
-    </ScrollParent>
-  ) as any;
-};
+const ScrollContainer = forwardRef(
+  (
+    {
+      children,
+      horizontal,
+      vertical,
+      padv,
+      padh,
+      pad,
+      ...rest
+    }: React.HTMLAttributes<HTMLDivElement> & {
+      horizontal?: boolean;
+      vertical?: boolean;
+    } & PaddingProps,
+    ref: React.ForwardedRef<HTMLDivElement>,
+  ) => {
+    const axis =
+      horizontal && !vertical ? 'x' : !horizontal && vertical ? 'y' : 'both';
+    return (
+      <ScrollParent axis={axis} {...rest} ref={ref}>
+        <ScrollChild axis={axis} padv={padv} padh={padh} pad={pad}>
+          {children}
+        </ScrollChild>
+      </ScrollParent>
+    ) as any;
+  },
+);
 
 type SplitLayoutProps = {
   /**
@@ -168,12 +173,21 @@ type SplitVerticalResizableProps =
     }
   | {};
 
+const Empty = styled.div({width: 0, height: 0});
+
 function renderSplitLayout(
   props: SplitLayoutProps,
   direction: 'column' | 'row',
   grow: 1 | 2,
 ) {
   let [child1, child2] = props.children;
+  // prevent some children to be accidentally omitted if the primary one is `null`
+  if (!child1) {
+    child1 = <Empty />;
+  }
+  if (!child2) {
+    child2 = <Empty />;
+  }
   if ('resizable' in props && props.resizable) {
     const {
       width,
