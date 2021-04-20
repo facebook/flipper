@@ -7,6 +7,8 @@
  * @format
  */
 
+import {AnyNestedObject} from 'protobufjs';
+
 export type RequestId = string;
 
 export type Request = {
@@ -30,6 +32,17 @@ export type Response = {
   totalChunks?: number;
   index?: number;
 };
+
+export type ProtobufDefinition = {
+  path: string;
+  method: string;
+  requestMessageFullName: string | null | undefined;
+  requestDefinitions: {[k: string]: AnyNestedObject} | null | undefined;
+  responseMessageFullName: string | null | undefined;
+  responseDefinitions: {[k: string]: AnyNestedObject} | null | undefined;
+};
+
+export type AddProtobufEvent = {[baseUrl: string]: ProtobufDefinition[]};
 
 export type ResponseFollowupChunk = {
   id: string;

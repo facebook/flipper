@@ -19,6 +19,7 @@
   "dependencies": {
     "lodash": "^4.17.21",
     "pako": "^2.0.3",
+    "protobufjs": "^6.10.2",
     "xml-beautifier": "^0.4.0"
   },
   "peerDependencies": {

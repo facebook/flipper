@@ -27,6 +27,8 @@ import React from 'react';
 
 import querystring from 'querystring';
 import xmlBeautifier from 'xml-beautifier';
+import {ProtobufDefinitionsRepository} from './ProtobufDefinitionsRepository';
+import {Base64} from 'js-base64';
 
 const WrappingText = styled(Text)({
   wordWrap: 'break-word',
@@ -804,6 +806,75 @@ class BinaryFormatter {
   }
 }
 
+class ProtobufFormatter {
+  private protobufDefinitionRepository = ProtobufDefinitionsRepository.getInstance();
+
+  formatRequest(request: Request) {
+    if (
+      getHeaderValue(request.headers, 'content-type') ===
+      'application/x-protobuf'
+    ) {
+      const protobufDefinition = this.protobufDefinitionRepository.getRequestType(
+        request.method,
+        request.url,
+      );
+      if (protobufDefinition == undefined) {
+        return (
+          <Text>
+            Could not locate protobuf definition for request body of{' '}
+            {request.url}
+          </Text>
+        );
+      }
+
+      if (request?.data) {
+        const data = protobufDefinition.decode(
+          Base64.toUint8Array(request.data),
+        );
+        return <JSONText>{data.toJSON()}</JSONText>;
+      } else {
+        return (
+          <Text>Could not locate request body data for {request.url}</Text>
+        );
+      }
+    }
+    return undefined;
+  }
+
+  formatResponse(request: Request, response: Response) {
+    if (
+      getHeaderValue(response.headers, 'content-type') ===
+        'application/x-protobuf' ||
+      request.url.endsWith('.proto')
+    ) {
+      const protobufDefinition = this.protobufDefinitionRepository.getResponseType(
+        request.method,
+        request.url,
+      );
+      if (protobufDefinition == undefined) {
+        return (
+          <Text>
+            Could not locate protobuf definition for response body of{' '}
+            {request.url}
+          </Text>
+        );
+      }
+
+      if (response?.data) {
+        const data = protobufDefinition.decode(
+          Base64.toUint8Array(response.data),
+        );
+        return <JSONText>{data.toJSON()}</JSONText>;
+      } else {
+        return (
+          <Text>Could not locate response body data for {request.url}</Text>
+        );
+      }
+    }
+    return undefined;
+  }
+}
+
 const BodyFormatters: Array<BodyFormatter> = [
   new ImageFormatter(),
   new VideoFormatter(),
@@ -813,6 +884,7 @@ const BodyFormatters: Array<BodyFormatter> = [
   new JSONFormatter(),
   new FormUrlencodedFormatter(),
   new XMLTextFormatter(),
+  new ProtobufFormatter(),
   new BinaryFormatter(),
 ];
 
