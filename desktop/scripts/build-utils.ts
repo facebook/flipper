@@ -109,6 +109,8 @@ const minifierConfig = {
     keep_fnames: true,
     module: true,
     warnings: true,
+    mangle: false,
+    compress: false,
   },
 };
 
