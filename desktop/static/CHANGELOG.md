@@ -1,3 +1,11 @@
+# 0.86.0 (21/4/2021)
+
+ * [D27685983](https://github.com/facebook/flipper/search?q=D27685983&type=Commits) -  [Layout] Addressed several performance issues in the layout plugin
+ * [D27708650](https://github.com/facebook/flipper/search?q=D27708650&type=Commits) -  [Layout] Make the layer selection more prominent
+ * [D27813660](https://github.com/facebook/flipper/search?q=D27813660&type=Commits)
+ * [D27896693](https://github.com/facebook/flipper/search?q=D27896693&type=Commits) -  [Internal]
+
+
 # 0.85.0 (14/4/2021)
 
  * [D27732746](https://github.com/facebook/flipper/search?q=D27732746&type=Commits) -  Electron downgraded to v11.2.3 to work-around performance issues on MacOS Big Sur
