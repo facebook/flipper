@@ -85,6 +85,7 @@ module.exports = {
     'node/no-extraneous-require': [2, {allowModules: builtInModules}],
     'flipper/no-relative-imports-across-packages': [2],
     'flipper/no-electron-remote-imports': [1],
+    'flipper/no-console-error-without-context': [1],
   },
   settings: {
     'import/resolver': {

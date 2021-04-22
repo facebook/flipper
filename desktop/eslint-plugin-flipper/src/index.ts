@@ -13,10 +13,14 @@ import noRelativeImportsAcrossPackages, {
 import noElectronRemoteImports, {
   RULE_NAME as noElectronRemoteImportsRuleName,
 } from './rules/noElectronRemoteImports';
+import noConsoleErrorWithoutContext, {
+  RULE_NAME as noConsoleErrorWithoutContextRuleName,
+} from './rules/noConsoleErrorWithoutContext';
 
 module.exports = {
   rules: {
     [noRelativeImportsAcrossPackagesRuleName]: noRelativeImportsAcrossPackages,
     [noElectronRemoteImportsRuleName]: noElectronRemoteImports,
+    [noConsoleErrorWithoutContextRuleName]: noConsoleErrorWithoutContext,
   },
 };
