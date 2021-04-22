@@ -334,10 +334,9 @@ export default class Client extends EventEmitter {
     if (this.sdkVersion < 4) {
       return [];
     }
-    return await this.rawCall<{plugins: Plugins}>(
-      'getBackgroundPlugins',
-      false,
-    ).then((data) => data.plugins);
+    return this.rawCall<{plugins: Plugins}>('getBackgroundPlugins', false).then(
+      (data) => data.plugins,
+    );
   }
 
   // get the plugins, and update the UI
@@ -621,7 +620,10 @@ export default class Client extends EventEmitter {
             }
           },
           onError: (e) => {
-            reject(e);
+            // This is only called if the connection is dead. Not in expected
+            // and recoverable cases like a missing receiver/method.
+            this.disconnect();
+            reject(new Error('Connection disconnected: ' + e));
           },
         });
       } else {
@@ -734,7 +736,21 @@ export default class Client extends EventEmitter {
     params?: Object,
   ): Promise<Object> {
     return reportPluginFailures(
-      this.rawCall('execute', fromPlugin, {api, method, params}),
+      this.rawCall<Object>('execute', fromPlugin, {
+        api,
+        method,
+        params,
+      }).catch((err) => {
+        // We only throw errors if the connection is still alive
+        // as connection-related ones aren't recoverable from
+        // user code.
+        if (this.connected.get()) {
+          throw err;
+        }
+        // This effectively preserves the previous behavior
+        // of ignoring disconnection-related call failures.
+        return {};
+      }),
       `Call-${method}`,
       api,
     );
