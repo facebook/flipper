@@ -22,23 +22,31 @@ import {
   clearTimeline,
   TrackingEvent,
   State as UsageTrackingState,
+  SelectedPluginData,
 } from '../reducers/usageTracking';
 import produce from 'immer';
 import BaseDevice from '../devices/BaseDevice';
-import {deconstructClientId} from '../utils/clientUtils';
+import {deconstructClientId, deconstructPluginKey} from '../utils/clientUtils';
 import {getCPUUsage} from 'process';
+import {getPluginKey} from '../utils/pluginUtils';
 
 const TIME_SPENT_EVENT = 'time-spent';
 
 type UsageInterval = {
-  plugin: string | null;
+  pluginKey: string | null;
+  pluginData: SelectedPluginData | null;
   length: number;
   focused: boolean;
 };
 
 export type UsageSummary = {
   total: {focusedTime: number; unfocusedTime: number};
-  [pluginName: string]: {focusedTime: number; unfocusedTime: number};
+  plugin: {
+    [pluginKey: string]: {
+      focusedTime: number;
+      unfocusedTime: number;
+    } & SelectedPluginData;
+  };
 };
 
 export const fpsEmitter = new EventEmitter();
@@ -152,8 +160,14 @@ export default (store: Store, logger: Logger) => {
     store.dispatch(clearTimeline(currentTime));
 
     logger.track('usage', TIME_SPENT_EVENT, usageSummary.total);
-    for (const key of Object.keys(usageSummary)) {
-      logger.track('usage', TIME_SPENT_EVENT, usageSummary[key], key);
+    for (const key of Object.keys(usageSummary.plugin)) {
+      const keyParts = deconstructPluginKey(key);
+      logger.track(
+        'usage',
+        TIME_SPENT_EVENT,
+        usageSummary.plugin[key],
+        keyParts.pluginName,
+      );
     }
 
     Object.entries(state.connections.enabledPlugins).forEach(
@@ -235,7 +249,8 @@ export function computeUsageSummary(
   const intervals: UsageInterval[] = [];
   let intervalStart = 0;
   let isFocused = false;
-  let selectedPlugin: string | null = null;
+  let pluginData: SelectedPluginData | null = null;
+  let pluginKey: string | null;
 
   function startInterval(event: TrackingEvent) {
     intervalStart = event.time;
@@ -246,12 +261,13 @@ export function computeUsageSummary(
       isFocused = event.isFocused;
     }
     if (event.type === 'PLUGIN_SELECTED') {
-      selectedPlugin = event.plugin;
+      pluginKey = event.pluginKey;
+      pluginData = event.pluginData;
     }
   }
   function endInterval(time: number) {
     const length = time - intervalStart;
-    intervals.push({length, plugin: selectedPlugin, focused: isFocused});
+    intervals.push({length, focused: isFocused, pluginKey, pluginData});
   }
 
   for (const event of state.timeline) {
@@ -273,16 +289,18 @@ export function computeUsageSummary(
       produce(acc, (draft) => {
         draft.total.focusedTime += x.focused ? x.length : 0;
         draft.total.unfocusedTime += x.focused ? 0 : x.length;
-        const pluginName = x.plugin ?? 'none';
-        draft[pluginName] = draft[pluginName] ?? {
+        const pluginKey = x.pluginKey ?? getPluginKey(null, null, 'none');
+        draft.plugin[pluginKey] = draft.plugin[pluginKey] ?? {
           focusedTime: 0,
           unfocusedTime: 0,
+          ...x.pluginData,
         };
-        draft[pluginName].focusedTime += x.focused ? x.length : 0;
-        draft[pluginName].unfocusedTime += x.focused ? 0 : x.length;
+        draft.plugin[pluginKey].focusedTime += x.focused ? x.length : 0;
+        draft.plugin[pluginKey].unfocusedTime += x.focused ? 0 : x.length;
       }),
     {
       total: {focusedTime: 0, unfocusedTime: 0},
+      plugin: {},
     },
   );
 }
