@@ -95,7 +95,7 @@ interface BasePluginResult {
   /**
    * Emulate triggering a deeplink
    */
-  triggerDeepLink(deeplink: unknown): void;
+  triggerDeepLink(deeplink: unknown): Promise<void>;
 
   /**
    * Grab all the persistable state, but will ignore any onExport handler
@@ -386,8 +386,13 @@ function createBasePluginResult(
     exportStateAsync: () =>
       pluginInstance.exportState(createStubIdler(), () => {}),
     exportState: () => pluginInstance.exportStateSync(),
-    triggerDeepLink: (deepLink: unknown) => {
+    triggerDeepLink: async (deepLink: unknown) => {
       pluginInstance.triggerDeepLink(deepLink);
+      return new Promise((resolve) => {
+        // this ensures the test won't continue until the setImmediate used by
+        // the deeplink handling event is handled
+        setImmediate(resolve);
+      });
     },
     destroy: () => pluginInstance.destroy(),
     triggerMenuEntry: (action: string) => {

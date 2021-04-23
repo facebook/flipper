@@ -48,6 +48,7 @@ const TableBodyRowContainer = styled.div<TableBodyRowContainerProps>(
     borderLeft: props.highlighted
       ? `4px solid ${theme.primaryColor}`
       : `4px solid transparent`,
+    borderBottom: `1px solid ${theme.dividerColor}`,
     paddingTop: 1,
     minHeight: DEFAULT_ROW_HEIGHT,
     lineHeight: `${DEFAULT_ROW_HEIGHT - 2}px`,
@@ -74,7 +75,6 @@ const TableBodyColumnContainer = styled.div<{
   flexGrow: props.width === undefined ? 1 : 0,
   overflow: 'hidden',
   padding: `0 ${theme.space.small}px`,
-  borderBottom: `1px solid ${theme.dividerColor}`,
   verticalAlign: 'top',
   // pre-wrap preserves explicit newlines and whitespace, and wraps as well when needed
   whiteSpace: props.multiline ? 'pre-wrap' : 'nowrap',

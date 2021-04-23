@@ -111,7 +111,11 @@ const TableHeadContainer = styled.div({
   borderBottom: `1px solid ${theme.dividerColor}`,
   backgroundColor: theme.backgroundWash,
   userSelect: 'none',
+  whiteSpace: 'nowrap',
   borderLeft: `4px solid ${theme.backgroundWash}`, // space for selection, see TableRow
+  // hardcoded value to correct for the scrollbar in the main container.
+  // ideally we should measure this instead.
+  paddingRight: 15,
 });
 TableHeadContainer.displayName = 'TableHead:TableHeadContainer';
 

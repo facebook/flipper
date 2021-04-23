@@ -63,6 +63,13 @@ type DataManagerActions<T> =
       }
     >
   | Action<
+      'selectItemById',
+      {
+        id: string | number;
+        addToSelection?: boolean;
+      }
+    >
+  | Action<
       'addRangeToSelection',
       {
         start: number;
@@ -161,6 +168,17 @@ export const dataTableManagerReducer = produce<
       );
       break;
     }
+    case 'selectItemById': {
+      const {id, addToSelection} = action;
+      // TODO: fix that this doesn't jumpt selection if items are shifted! sorting is swapped etc
+      const idx = config.dataSource.getIndexOfKey(id);
+      if (idx !== -1) {
+        draft.selection = castDraft(
+          computeSetSelection(draft.selection, idx, addToSelection),
+        );
+      }
+      break;
+    }
     case 'addRangeToSelection': {
       const {start, end, allowUnselect} = action;
       draft.selection = castDraft(
@@ -241,6 +259,7 @@ export type DataTableManager<T> = {
     end: number,
     allowUnselect?: boolean,
   ): void;
+  selectItemById(id: string | number, addToSelection?: boolean): void;
   clearSelection(): void;
   getSelectedItem(): T | undefined;
   getSelectedItems(): readonly T[];
@@ -260,6 +279,9 @@ export function createDataTableManager<T>(
     },
     selectItem(index: number, addToSelection = false) {
       dispatch({type: 'selectItem', nextIndex: index, addToSelection});
+    },
+    selectItemById(id, addToSelection = false) {
+      dispatch({type: 'selectItemById', id, addToSelection});
     },
     addRangeToSelection(start, end, allowUnselect = false) {
       dispatch({type: 'addRangeToSelection', start, end, allowUnselect});

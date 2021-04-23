@@ -57,6 +57,8 @@ interface DataTableProps<T = any> {
   // multiselect?: true
   tableManagerRef?: RefObject<DataTableManager<T> | undefined>; // Actually we want a MutableRefObject, but that is not what React.createRef() returns, and we don't want to put the burden on the plugin dev to cast it...
   _testHeight?: number; // exposed for unit testing only
+  onCopyRows?(records: T[]): string;
+  onContextMenu?: (selection: undefined | T) => React.ReactElement;
 }
 
 export type DataTableColumn<T = any> = {
@@ -94,11 +96,13 @@ export interface RenderContext<T = any> {
 export function DataTable<T extends object>(
   props: DataTableProps<T>,
 ): React.ReactElement {
-  const {dataSource, onRowStyle, onSelect} = props;
+  const {dataSource, onRowStyle, onSelect, onCopyRows, onContextMenu} = props;
   useAssertStableRef(dataSource, 'dataSource');
   useAssertStableRef(onRowStyle, 'onRowStyle');
   useAssertStableRef(props.onSelect, 'onRowSelect');
   useAssertStableRef(props.columns, 'columns');
+  useAssertStableRef(onCopyRows, 'onCopyRows');
+  useAssertStableRef(onContextMenu, 'onContextMenu');
   useAssertStableRef(props._testHeight, '_testHeight');
 
   // lint disabled for conditional inclusion of a hook (_testHeight is asserted to be stable)
@@ -357,8 +361,18 @@ export function DataTable<T extends object>(
             selection,
             tableState.columns,
             visibleColumns,
+            onCopyRows,
+            onContextMenu,
           ),
-        [dataSource, dispatch, selection, tableState.columns, visibleColumns],
+        [
+          dataSource,
+          dispatch,
+          selection,
+          tableState.columns,
+          visibleColumns,
+          onCopyRows,
+          onContextMenu,
+        ],
       );
 
   useEffect(function initialSetup() {

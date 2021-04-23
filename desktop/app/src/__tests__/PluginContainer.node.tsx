@@ -24,6 +24,7 @@ import {
 import {selectPlugin} from '../reducers/connections';
 import {updateSettings} from '../reducers/settings';
 import {switchPlugin} from '../reducers/pluginManager';
+import {sleep} from 'flipper-plugin/src/utils/sleep';
 
 interface PersistedState {
   count: 1;
@@ -528,6 +529,7 @@ test('PluginContainer + Sandy plugin supports deeplink', async () => {
     );
   });
 
+  await sleep(10);
   expect(linksSeen).toEqual(['universe!']);
   expect(renderer.baseElement).toMatchInlineSnapshot(`
     <body>
@@ -558,6 +560,7 @@ test('PluginContainer + Sandy plugin supports deeplink', async () => {
       }),
     );
   });
+  await sleep(10);
   expect(linksSeen).toEqual(['universe!']);
 
   // ...nor does a random other store update that does trigger a plugin container render
@@ -580,6 +583,7 @@ test('PluginContainer + Sandy plugin supports deeplink', async () => {
       }),
     );
   });
+  await sleep(10);
   expect(linksSeen).toEqual(['universe!', 'london!']);
 
   // and same link does trigger if something else was selected in the mean time
@@ -601,6 +605,7 @@ test('PluginContainer + Sandy plugin supports deeplink', async () => {
       }),
     );
   });
+  await sleep(10);
   expect(linksSeen).toEqual(['universe!', 'london!', 'london!']);
 });
 
@@ -802,6 +807,7 @@ test('PluginContainer + Sandy device plugin supports deeplink', async () => {
     );
   });
 
+  await sleep(10);
   expect(linksSeen).toEqual([theUniverse]);
   expect(renderer.baseElement).toMatchInlineSnapshot(`
     <body>
@@ -832,6 +838,7 @@ test('PluginContainer + Sandy device plugin supports deeplink', async () => {
       }),
     );
   });
+  await sleep(10);
   expect(linksSeen).toEqual([theUniverse]);
 
   // ...nor does a random other store update that does trigger a plugin container render
@@ -854,6 +861,7 @@ test('PluginContainer + Sandy device plugin supports deeplink', async () => {
       }),
     );
   });
+  await sleep(10);
   expect(linksSeen).toEqual([theUniverse, 'london!']);
 
   // and same link does trigger if something else was selected in the mean time
@@ -875,6 +883,7 @@ test('PluginContainer + Sandy device plugin supports deeplink', async () => {
       }),
     );
   });
+  await sleep(10);
   expect(linksSeen).toEqual([theUniverse, 'london!', 'london!']);
 });
 
@@ -977,6 +986,7 @@ test('Sandy plugins support isPluginSupported + selectPlugin', async () => {
   pluginInstance.selectPlugin(definition.id, 'data');
   expect(store.getState().connections.selectedPlugin).toBe(definition.id);
   expect(pluginInstance.activatedStub).toBeCalledTimes(2);
+  await sleep(10);
   expect(renderer.baseElement.querySelector('h1')).toMatchInlineSnapshot(`
     <h1>
       Plugin1

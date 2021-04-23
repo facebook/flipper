@@ -402,7 +402,7 @@ test('plugins can receive deeplinks', async () => {
   });
 
   expect(plugin.instance.field1.get()).toBe('');
-  plugin.triggerDeepLink('test');
+  await plugin.triggerDeepLink('test');
   expect(plugin.instance.field1.get()).toBe('test');
 });
 
@@ -424,7 +424,7 @@ test('device plugins can receive deeplinks', async () => {
   });
 
   expect(plugin.instance.field1.get()).toBe('');
-  plugin.triggerDeepLink('test');
+  await plugin.triggerDeepLink('test');
   expect(plugin.instance.field1.get()).toBe('test');
 });
 
@@ -455,7 +455,7 @@ test('plugins can register menu entries', async () => {
   });
 
   expect(plugin.instance.counter.get()).toBe(0);
-  plugin.triggerDeepLink('test');
+  await plugin.triggerDeepLink('test');
   plugin.triggerMenuEntry('createPaste');
   plugin.triggerMenuEntry('Custom Action');
   expect(plugin.instance.counter.get()).toBe(4);

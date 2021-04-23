@@ -55,15 +55,15 @@ test('update and append', async () => {
     expect(elem.length).toBe(1);
     expect(elem[0].parentElement).toMatchInlineSnapshot(`
       <div
-        class="css-w3o588-TableBodyRowContainer e1luu51r1"
+        class="css-1k3kr6b-TableBodyRowContainer e1luu51r1"
       >
         <div
-          class="css-1xxqqu6-TableBodyColumnContainer e1luu51r0"
+          class="css-744e08-TableBodyColumnContainer e1luu51r0"
         >
           test DataTable
         </div>
         <div
-          class="css-1xxqqu6-TableBodyColumnContainer e1luu51r0"
+          class="css-744e08-TableBodyColumnContainer e1luu51r0"
         >
           true
         </div>
@@ -112,15 +112,15 @@ test('column visibility', async () => {
     expect(elem.length).toBe(1);
     expect(elem[0].parentElement).toMatchInlineSnapshot(`
       <div
-        class="css-w3o588-TableBodyRowContainer e1luu51r1"
+        class="css-1k3kr6b-TableBodyRowContainer e1luu51r1"
       >
         <div
-          class="css-1xxqqu6-TableBodyColumnContainer e1luu51r0"
+          class="css-744e08-TableBodyColumnContainer e1luu51r0"
         >
           test DataTable
         </div>
         <div
-          class="css-1xxqqu6-TableBodyColumnContainer e1luu51r0"
+          class="css-744e08-TableBodyColumnContainer e1luu51r0"
         >
           true
         </div>
@@ -137,10 +137,10 @@ test('column visibility', async () => {
     expect(elem.length).toBe(1);
     expect(elem[0].parentElement).toMatchInlineSnapshot(`
       <div
-        class="css-w3o588-TableBodyRowContainer e1luu51r1"
+        class="css-1k3kr6b-TableBodyRowContainer e1luu51r1"
       >
         <div
-          class="css-1xxqqu6-TableBodyColumnContainer e1luu51r0"
+          class="css-744e08-TableBodyColumnContainer e1luu51r0"
         >
           test DataTable
         </div>

@@ -325,7 +325,14 @@ export abstract class BasePluginInstance {
     this.assertNotDestroyed();
     if (deepLink !== this.lastDeeplink) {
       this.lastDeeplink = deepLink;
-      this.events.emit('deeplink', deepLink);
+      if (typeof setImmediate !== 'undefined') {
+        // we only want to trigger deeplinks after the plugin had a chance to render
+        setImmediate(() => {
+          this.events.emit('deeplink', deepLink);
+        });
+      } else {
+        this.events.emit('deeplink', deepLink);
+      }
     }
   }
 

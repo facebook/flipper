@@ -49,7 +49,7 @@ export const DataFormatter = {
           return (
             value.toTimeString().split(' ')[0] +
             '.' +
-            pad('' + value.getMilliseconds(), 3)
+            pad('' + value.getMilliseconds(), 3, '0')
           );
         }
         if (value instanceof Map) {
