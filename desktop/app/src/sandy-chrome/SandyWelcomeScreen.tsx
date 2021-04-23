@@ -12,13 +12,13 @@ import {Modal, Button, Checkbox, Typography} from 'antd';
 import React, {useState} from 'react';
 import constants from '../fb-stubs/constants';
 import {NUX, Layout, theme} from 'flipper-plugin';
-import {useLocalStorage} from '../utils/useLocalStorage';
+import {useLocalStorageState} from 'flipper-plugin';
 
 const {Title, Text, Link} = Typography;
 
 export function SandyWelcomeScreen() {
   const [dismissed, setDismissed] = useState(false);
-  const [showWelcomeScreen, setShowWelcomeScreen] = useLocalStorage(
+  const [showWelcomeScreen, setShowWelcomeScreen] = useLocalStorageState(
     'flipper-sandy-show-welcome-screen',
     true,
   );

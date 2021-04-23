@@ -772,6 +772,19 @@ export function findMetroDevice(findMetroDevice, deviceList) {
 
 ```
 
+### useLocalStorageState
+
+Like `useState`, but the value will be stored in local storage under the given key, and read back upon initialization. 
+The hook signature is similar to `useState`, except that the first argument is the storage key.
+The storage key will be scoped automatically to the current plugin and any additional tracking scopes. (See [`TrackingScope`](#trackingscope)).
+
+```typescript
+const [showWhitespace, setShowWhitespace] = useLocalStorageState(
+  `showWhitespace`,
+  true
+);
+```
+
 ## UI components
 
 ### Layout.*
@@ -792,6 +805,7 @@ See `View > Flipper Style Guide` inside the Flipper application for more details
 ### ElementSearchResultSet
 ### ElementsInspectorElement
 ### ElementsInspectorProps
+### Panel
 
 Coming soon.
 

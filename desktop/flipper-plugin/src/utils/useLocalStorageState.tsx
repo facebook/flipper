@@ -8,25 +8,24 @@
  */
 
 import {useState, useCallback} from 'react';
+import {useCurrentScopeName} from '../ui/Tracked';
+import {useAssertStableRef} from './useAssertStableRef';
 
-export function useLocalStorage<T>(
+export function useLocalStorageState<T>(
   key: string,
   initialValue: (() => T) | T,
 ): [T, (newState: T | ((current: T) => T)) => void] {
-  const [storedKey] = useState(key);
-  if (storedKey !== key) {
-    throw new Error(
-      `The key passed to useLocalStorage should not be changed, '${storedKey}' -> '${key}'`,
-    );
-  }
-  // Based on https://usehooks.com/useLocalStorage/ (with minor adaptions)
+  useAssertStableRef(key, 'key');
+  const scope = useCurrentScopeName();
+  const storageKey = `[useLocalStorage][${scope}]${key}`;
 
+  // Based on https://usehooks.com/useLocalStorage/ (with minor adaptions)
   // State to store our value
   // Pass initial state function to useState so logic is only executed once
   const [storedValue, setStoredValue] = useState<T>(() => {
     try {
       // Get from local storage by key
-      const item = window.localStorage.getItem('[useLocalStorage]' + key);
+      const item = window.localStorage.getItem(storageKey);
       // Parse stored json or if none return initialValue
       return item
         ? JSON.parse(item)
@@ -48,14 +47,11 @@ export function useLocalStorage<T>(
         const nextValue =
           typeof value === 'function' ? value(storedValue) : value;
         // Save to local storage
-        window.localStorage.setItem(
-          '[useLocalStorage]' + key,
-          JSON.stringify(nextValue),
-        );
+        window.localStorage.setItem(storageKey, JSON.stringify(nextValue));
         return nextValue;
       });
     },
-    [key],
+    [storageKey],
   );
 
   return [storedValue, setValue];

@@ -89,6 +89,8 @@ export {
   Interactive as _Interactive,
   InteractiveProps as _InteractiveProps,
 } from './ui/Interactive';
+export {Panel} from './ui/Panel';
+export {useLocalStorageState} from './utils/useLocalStorageState';
 
 export {HighlightManager} from './ui/Highlight';
 export {

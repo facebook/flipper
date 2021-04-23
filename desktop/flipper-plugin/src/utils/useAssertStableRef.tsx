@@ -15,7 +15,7 @@ import {useRef} from 'react';
  * (intentionally or accidentally)
  */
 export const useAssertStableRef =
-  process.env.NODE_ENV === 'development'
+  process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
     ? function useAssertStableRef(value: any, prop: string) {
         const ref = useRef(value);
         if (ref.current !== value) {

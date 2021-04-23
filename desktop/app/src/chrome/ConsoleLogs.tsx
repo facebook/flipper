@@ -14,7 +14,7 @@ import {Console, Hook} from 'console-feed';
 import type {Methods} from 'console-feed/lib/definitions/Methods';
 import type {Styles} from 'console-feed/lib/definitions/Styles';
 import {createState, useValue} from 'flipper-plugin';
-import {useLocalStorage} from '../utils/useLocalStorage';
+import {useLocalStorageState} from 'flipper-plugin';
 import {theme} from 'flipper-plugin';
 import {useIsDarkMode} from '../utils/useIsDarkMode';
 
@@ -66,7 +66,7 @@ const defaultLogLevels: Methods[] = ['warn', 'error', 'table', 'assert'];
 export function ConsoleLogs() {
   const isDarkMode = useIsDarkMode();
   const logs = useValue(logsAtom);
-  const [logLevels, setLogLevels] = useLocalStorage<Methods[]>(
+  const [logLevels, setLogLevels] = useLocalStorageState<Methods[]>(
     'console-logs-loglevels',
     defaultLogLevels,
   );

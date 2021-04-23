@@ -10,7 +10,7 @@
 import * as React from 'react';
 import {render, fireEvent, act} from '@testing-library/react';
 
-import {useLocalStorage} from '../useLocalStorage';
+import {useLocalStorageState} from '../../utils/useLocalStorageState';
 
 function TestComponent({
   storageKey,
@@ -19,7 +19,7 @@ function TestComponent({
   storageKey: string;
   value: number;
 }) {
-  const [current, setCurrent] = useLocalStorage(storageKey, value);
+  const [current, setCurrent] = useLocalStorageState(storageKey, value);
 
   return (
     <div>
@@ -67,13 +67,13 @@ test('it can store values', async () => {
   expect((await res.findByTestId('value')).textContent).toEqual('2');
   expect(storage).toMatchInlineSnapshot(`
     Object {
-      "[useLocalStorage]x": "2",
+      "[useLocalStorage][Flipper]x": "2",
     }
   `);
 });
 
 test('it can read default from storage', async () => {
-  storage['[useLocalStorage]x'] = '3';
+  storage['[useLocalStorage][Flipper]x'] = '3';
   const res = render(<TestComponent storageKey="x" value={1} />);
   expect((await res.findByTestId('value')).textContent).toEqual('3');
 
@@ -84,7 +84,7 @@ test('it can read default from storage', async () => {
   expect((await res.findByTestId('value')).textContent).toEqual('4');
   expect(storage).toMatchInlineSnapshot(`
     Object {
-      "[useLocalStorage]x": "4",
+      "[useLocalStorage][Flipper]x": "4",
     }
   `);
 });
@@ -102,6 +102,6 @@ test('it does not allow changing key', async () => {
       console.error = orig;
     }
   }).toThrowErrorMatchingInlineSnapshot(
-    `"The key passed to useLocalStorage should not be changed, 'x' -> 'y'"`,
+    `"[useAssertStableRef] An unstable reference was passed to this component as property 'key'. For optimization purposes we expect that this prop doesn't change over time. You might want to create the value passed to this prop outside the render closure, store it in useCallback / useMemo / useState, or set a key on the parent component"`,
   );
 });

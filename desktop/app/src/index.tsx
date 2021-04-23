@@ -193,7 +193,7 @@ export {Rect} from './utils/geometry';
 export {Logger} from './fb-interfaces/Logger';
 export {getInstance as getLogger} from './fb-stubs/Logger';
 export {callVSCode, getVSCodeUrl} from './utils/vscodeUtils';
-export {useLocalStorage} from './utils/useLocalStorage';
+export {useLocalStorageState as useLocalStorage} from 'flipper-plugin';
 export {checkIdbIsInstalled} from './utils/iOSContainerUtility';
 export {IDEFileResolver, IDEType} from './fb-stubs/IDEFileResolver';
 export {renderMockFlipperWithPlugin} from './test-utils/createMockFlipperWithPlugin';

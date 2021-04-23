@@ -57,6 +57,14 @@ export function TrackingScope({
   );
 }
 
+/**
+ * Gives the name of the current scope that is currently rendering.
+ * Typically the current plugin id, but can be further refined by using TrackingScopes
+ */
+export function useCurrentScopeName(): string {
+  return useContext(TrackingScopeContext);
+}
+
 export function Tracked({
   events = 'onClick',
   children,
@@ -73,7 +81,7 @@ export function Tracked({
   action?: string;
   children: React.ReactNode;
 }): React.ReactElement {
-  const scope = useContext(TrackingScopeContext);
+  const scope = useCurrentScopeName();
   return Children.map(children, (child: any) => {
     if (!child || typeof child !== 'object') {
       return child;
