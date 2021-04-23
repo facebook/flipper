@@ -29,7 +29,6 @@ import {ContentContainer} from './ContentContainer';
 import {Notification} from './notification/Notification';
 import {SheetRenderer} from '../chrome/SheetRenderer';
 import {hasNewChangesToShow} from '../chrome/ChangelogSheet';
-import {SandyWelcomeScreen} from './SandyWelcomeScreen';
 import {getVersionString} from '../utils/versionString';
 import config from '../fb-stubs/config';
 import {WelcomeScreenStaticView} from './WelcomeScreen';
@@ -137,10 +136,7 @@ export function SandyApp() {
 
   return (
     <Layout.Top>
-      <>
-        <SheetRenderer logger={logger} />
-        <SandyWelcomeScreen />
-      </>
+      <SheetRenderer logger={logger} />
       <Layout.Left>
         <Layout.Horizontal>
           <LeftRail
