@@ -9,7 +9,7 @@
   "license": "MIT",
   "bugs": "https://github.com/facebook/flipper/issues",
   "dependencies": {
-    "@algolia/client-search": "^4.8.6",
+    "@algolia/client-search": "^4.9.0",
     "algoliasearch": "^4.8.6",
     "decompress": "^4.2.1",
     "decompress-targz": "^4.1.1",
