@@ -94,7 +94,7 @@
     "@types/lodash.debounce": "^4.0.6",
     "@types/mkdirp": "^1.0.0",
     "@types/mock-fs": "^4.13.0",
-    "@types/node": "^14.14.36",
+    "@types/node": "^14.14.41",
     "@types/npm-packlist": "^1.1.1",
     "@types/promise-retry": "^1.1.3",
     "@types/react": "^17.0.3",
