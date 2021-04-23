@@ -1,0 +1,157 @@
+---
+id: sandy-migration
+title: Migrating a plugin to Sandy
+---
+
+Migrating a plugin to the new Sandy plugin architecture consists of 3 steps:
+
+1. Enabling Sandy for a plugin.
+2. Update state and connection management to use the Sandy APIs. 
+3. Update the UI to use Sandy / Antd components only.
+
+## Opting in to Sandy
+
+Converting a Flipper plugin to use Sandy can best be done by running Flipper from source.
+
+<OssOnly>
+
+For open source users: clone this repository and run `yarn install` in the `desktop` folder.
+
+</OssOnly>
+
+<FbInternalOnly>
+
+For Facebook employees, pull the latest `fbsource`, and run `yarn install` in `~/fbsource/xplat/sonar/desktop`
+
+</FbInternalOnly>
+
+Enabling Sandy for a plugin requires two steps. First of all, `flipper-plugin` should be added as peer dependency to the `package.json` of the plugin:
+
+```json
+"peerDependencies": {
+  "flipper-plugin": "*"
+},
+```
+
+Next, make sure to run `yarn install` again in the `desktop/` folder.
+Sandy is now enabled for this plugin, and the plugin has to be restructured to the new architecture which we will do in the next step.
+
+
+
+## Using Sandy for state and connection management
+
+The goal of this step is to use the leave the plugin UI largely as is but convert state and connection management to use the new Sandy APIs as exposed through the `flipper-plugin` package.
+
+<FbInternalOnly>
+
+For every plugin, we generated a task on our [Sandy Plugin Migration](https://www.internalfb.com/tasks?folder_filters&q=1341478626215302&group_by_type=MANUAL) dashboard. Completing this step corresponds to completing the `[flipper][sandy] convert plugin 'xxxx' to use Sandy APIs` task.
+If you start this task, please assign yourself as owner and link it in the diff. 
+
+</FbInternalOnly>
+
+Comparing to 'classic' plugins, there are a few fundamental differences when it comes to the plugin structure of Sandy plugins. 
+A class extending from `FlipperPlugin` which is exported as `default` is _no longer_ used to define a plugin. 
+Instead, a plugin definition consists of two parts:
+
+1. A definition of the state and logic of our plugin that is exported under the name `plugin`: `export function plugin(client: PluginClient<Events, Methods>) { ... }`. Most of the state and all connection logic will move here.
+2. A definition of the root of the UI is exported under the name `Component`: `export function Component() { ... }`
+
+There are a few conceptual changes that are important to understand, as they are different compared to classic plugins:
+
+The `plugin` function is called exactly once when a plugin is set up for an application. This means that all state that is created inside the `plugin` definition will be kept as long as the app is connected,
+even when the user is navigating away.
+It used to be necessary to use `persistedState` for this kind of state, but that is no longer the case.
+
+In contrast, the `Component` component is mounted whenever the user _opens_ the plugin, so any state stored locally in that React component will be lost if the user navigates away. 
+We recommend avoiding that, and store state, including selection, in the `plugin` definition instead, using the `createState` abstraction.
+
+The relation between `plugin`, its parameter `client`, and how to use it in your `Component` definition is documented in detail in the [Plugin Declaration section](../tutorial/js-custom#the-plugin-declaration).
+Please read it before continuing as it will explain how to manage state, handle receiving and sending data and testing in detail.
+
+The full set of available APIs on `client` is documented on the [Desktop Plugin API](flipper-plugin.mdx#pluginclient) page.
+
+This step is completed if the plugin follows the next `plugin` / `component` structure and is working again. Make sure to test extensively!
+
+### Tips:
+
+* To quickly verify the plugin compiles, the simplest way is to keep `yarn tsc -w` running in the `desktop` folder. 
+* Similarly `yarn watch` can be used to run the unit tests in watch mode. Use the `p` key to filter for your specific plugin if `jest` doesn't do so automatically.
+* Example of migrating the network plugin to use Sandy APIs. D24108772 / [Github commit](https://github.com/facebook/flipper/commit/fdde2761ef054e44f399c846a2eae6baba03861e)
+* Example of migrating the example plugin to use Sandy APIs. D22308265 / [Github commit](https://github.com/facebook/flipper/commit/babc88e472612c66901d21d289bd217ef28ee385#diff-a145be72bb13a4675dcc8cbac5e55abcd9a542cc92f5c781bd7d3749f13676fc)
+* These steps typically does not involve change much the UI or touch other files than `index.tsx`. Typically, the root component needs to be changed, but most other components can remain as is. However, if a ManagedTable is used (see the next section), it might be easier to already convert the table in this step.
+* Sandy has first class support for unit testing your plugin and mocking device interactions. Please do set up unit tests per documentation linked above!
+* If the original plugin definition contained `state`, it is recommended to create one new state atoms (`createState`) per field in the original `state`, rather than having one big atom.
+* If the original plugin definition contained `persistedState`, it is recommended to create one new state atoms (`createState`) per field in the original `state`, rather than having one big atom. By setting the `persist` [option](flipper-plugin#options) of the state, you can make sure this piece of state becomes part of the import / export functionality of Flipper. Which is important if the data stored here is relevant for bug reports. 
+* For deeply nested state updates, using `state.update` is often simpler than using `state.set`, as it uses [immer](https://immerjs.github.io/immer/) under the hood to make immutable state updates straight forward.
+* When dealing a lot with promises, using [`async` / `await`](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Async_await) is usually simpler.
+* Utilities, like writing text to clipboard or creating pastes, if not exposed from the `client` object, can be typically found in the FlipperLib, for example: `tryGetFlipperLibImplementation()?.writeTextToClipboard(text)`.
+
+## Using Sandy / Ant.design to organise the plugin UI
+
+<FbInternalOnly>
+
+For every plugin, we generated a tasks on our [Sandy Plugin Migration](https://www.internalfb.com/tasks?folder_filters&q=1341478626215302&group_by_type=MANUAL) dashboard. Completing this step corresponds to completing the `[flipper][sandy] convert plugin 'xxxx's UI to use ant.design` task.
+If you start this task, please assign yourself as owner and link it in the diff. 
+
+</FbInternalOnly>
+
+The goal of this step is to update the UI of the plugin to use Sandy / Ant.design components. 
+These will provide a more consistent user experience, usually provide better UX and they support dark mode!
+Roughly speaking this typically involves replacing all imported components with their modern counterpart.
+
+For Sandy plugins, components can be found here:
+
+* Interactive data displaying components are exposed from `flipper-plugin`: `DataTable` (for tables), `DataInspector` (for JSON trees) and `ElementInspector` (for element trees). 
+* `flipper-plugin` also provides the primitives to organise the `Layout` of the plugin.
+* Practically all other, more generic components are provided by [ant.design](https://ant.design/components/overview/), a proven mature open source component library, which is much richer than the components that are offered from `flipper`.
+
+In Sandy, the layout is typically build by using a combination of `Layout.Top` (or `.Right`, `.Left`, `.Bottom`), which divides all available space in a fixed and dynamic section, `Layout.Scrollable`, which takes all available space and provides scrollbars if its content is still greater, and `Layout.Container` which organizes paddings, borders and spacing between elements etc.
+
+We generally recommend against using `margins`; use padding and `gap` instead. 
+Ideally, use `theme.spacing` to get standard numbers for margins and paddings instead of hard-coded numbers.
+This will help with achieving consistency in look and feel.
+
+### Design resources
+
+There are three important resources to check for documentation on the components available:
+
+1. If you start Flipper, and go to `View > Flipper style guide`, you will see a general overview of the Flipper design system. It will demonstrate colors, typography and creating layouts including some examples. 
+2. The [ant.design component overview](https://ant.design/components/overview/)
+3. The [API reference](flipper-plugin#ui-components) documentation for the components provided by `flipper-plugin`
+
+### Old and new components
+
+For conversion, the following table maps the old components to the new ones:
+
+| Old `flipper` component | New component | Providing package  | Notes |
+| --- | --- | --- | --- | 
+| `DetailsSidebar` | `DetailsSidebar` | `flipper-plugin` | as-is |
+| `Sidebar` | `Layout.Top` (or `.Right`, `.Left`, `.Bottom`) | `flipper-plugin` | Set the `resizable` flag to allow the user to resize the pane. | |
+| `FlexColumn` / `Pane` / `View` | `Layout.Container` | `flipper-plugin` | Use the `gap` property to provide some spacing between the children!|
+| `FlexRow` | `Layout.Horizontal` | `flipper-plugin` | Use the `gap` property to provide some spacing between the children! |
+| `Scrollable` | `Layout.ScrollContainer` | `flipper-plugin` ||
+| `Link` | `Typography.Link` | `antd` ||
+| `Text` / `Heading` | `Typography.Text` / `Typography.Heading` | `antd` ||
+| `Button` | `Button` | `antd` ||
+| `Glyph` | `Icon` | `antd` ||
+| `ManagedDataTable` | `DataTable` | `flipper-plugin` | Requires state to be provided by a [`createDataSource`](flipper-plugin#createdatasource) |
+| `ManagedDataInspector` / `DataInspector` | `DataInspector` | `flipper-plugin` ||
+| `ManagedElementInspector` / `ElementInspector` | `ElementInspector` | `flipper-plugin` ||
+
+Most other components, like `select` elements, tabs, date-pickers, etc etc can all be found in the Ant documentaiton.
+
+### Theming & custom styled components
+
+Creating your own components / styling using `styled` is still supported. 
+But ideally, you should need custom styled components a lot less!
+
+Since Sandy plugins are expected to support dark mode, (use the settings pane to quickly toggle), we recommend to not use hard-coded colors, but instead use one of the semantic colors that are provided through the `theme` object that can be imported from `flipper-plugin`.
+
+Ideally there should be no hard-coded colors anymore either, and little need to use `width: 100%` / `height: 100%` anywhere, as needing those typically signals a layout issue.
+
+### Wrapping up
+
+This step of the process is completed as soon as there are no imports from the `flipper` package anymore. 
+Don't forget to remove `flipper` from the `peerDependencies` in the `package.json` section if present.
+
+Feel free to reach out to the Flipper team for any questions!

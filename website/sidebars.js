@@ -115,6 +115,7 @@ module.exports = {
       'extending/debugging',
       ...fbInternalOnly(['fb/adding-analytics-0']),
       'extending/plugin-distribution',
+      'extending/sandy-migration',
     ],
     'Desktop plugin APIs': [
       'extending/flipper-plugin',
