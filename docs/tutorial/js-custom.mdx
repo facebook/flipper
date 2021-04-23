@@ -166,7 +166,7 @@ Using `TestUtils.startPlugin` (`(3)`) we can instantiate our plugin in a fully m
 in which our plugin can do everything except for actually rendering, which makes this operation really cheap.
 From the `startPlugin`, we get back an `instance`, which corresponds to the object we returned from our `plugin` implementation (`(4)` in our previous listing).
 Beyond that, we get a bunch of utilities to interact with our plugin.
-The full list is documented [here](../extending/flipper-plugin#the-test-runner-object), but for this test we are only interested in `sendEvent`.
+The full list is documented [here](../extending/flipper-plugin.mdx#the-test-runner-object), but for this test we are only interested in `sendEvent`.
 
 Using `sendEvent`, we can mimic the client plugin sending events to our plugin `(4)`.
 Similarly we can emulate all other possible events, such as the initial connection setup with (`.connect()`), the user (de)selecting the plugin (`.activate()` / `deactivate()`), or a deeplink being triggered (`.triggerDeepLink`) etc.

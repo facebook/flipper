@@ -8,7 +8,7 @@ title: Desktop Plugin API
 `PluginClient` is the type of the `client` passed into a standard Sandy plugin.
 It takes two generic arguments `Event` and `Methods`.
 
-* The `Event` generic is a mapping of an event name to the data structure of the payload, as explained [here](../tutorial/js-custom#the-plugin-declaration).
+* The `Event` generic is a mapping of an event name to the data structure of the payload, as explained [here](../tutorial/js-custom.mdx#the-plugin-declaration).
 * The `Methods` generic is used to describe the methods that are offered by the plugin implementation on the device. `Methods` is a mapping of a method name to a function that describes the signature of a method. The first argument of that function describes the parameters that can be passed to the client. The return type of the function should describe what is returned from the client. Wrapped with a `Promise`.
 
 Quick example on how those generics should be used:

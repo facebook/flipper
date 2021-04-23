@@ -65,7 +65,7 @@ It used to be necessary to use `persistedState` for this kind of state, but that
 In contrast, the `Component` component is mounted whenever the user _opens_ the plugin, so any state stored locally in that React component will be lost if the user navigates away. 
 We recommend avoiding that, and store state, including selection, in the `plugin` definition instead, using the `createState` abstraction.
 
-The relation between `plugin`, its parameter `client`, and how to use it in your `Component` definition is documented in detail in the [Plugin Declaration section](../tutorial/js-custom#the-plugin-declaration).
+The relation between `plugin`, its parameter `client`, and how to use it in your `Component` definition is documented in detail in the [Plugin Declaration section](../tutorial/js-custom.mdx#the-plugin-declaration).
 Please read it before continuing as it will explain how to manage state, handle receiving and sending data and testing in detail.
 
 The full set of available APIs on `client` is documented on the [Desktop Plugin API](flipper-plugin.mdx#pluginclient) page.
@@ -81,7 +81,7 @@ This step is completed if the plugin follows the next `plugin` / `component` str
 * These steps typically does not involve change much the UI or touch other files than `index.tsx`. Typically, the root component needs to be changed, but most other components can remain as is. However, if a ManagedTable is used (see the next section), it might be easier to already convert the table in this step.
 * Sandy has first class support for unit testing your plugin and mocking device interactions. Please do set up unit tests per documentation linked above!
 * If the original plugin definition contained `state`, it is recommended to create one new state atoms (`createState`) per field in the original `state`, rather than having one big atom.
-* If the original plugin definition contained `persistedState`, it is recommended to create one new state atoms (`createState`) per field in the original `state`, rather than having one big atom. By setting the `persist` [option](flipper-plugin#options) of the state, you can make sure this piece of state becomes part of the import / export functionality of Flipper. Which is important if the data stored here is relevant for bug reports. 
+* If the original plugin definition contained `persistedState`, it is recommended to create one new state atoms (`createState`) per field in the original `state`, rather than having one big atom. By setting the `persist` [option](flipper-plugin.mdx#options) of the state, you can make sure this piece of state becomes part of the import / export functionality of Flipper. Which is important if the data stored here is relevant for bug reports. 
 * For deeply nested state updates, using `state.update` is often simpler than using `state.set`, as it uses [immer](https://immerjs.github.io/immer/) under the hood to make immutable state updates straight forward.
 * When dealing a lot with promises, using [`async` / `await`](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Async_await) is usually simpler.
 * Utilities, like writing text to clipboard or creating pastes, if not exposed from the `client` object, can be typically found in the FlipperLib, for example: `tryGetFlipperLibImplementation()?.writeTextToClipboard(text)`.
@@ -117,7 +117,7 @@ There are three important resources to check for documentation on the components
 
 1. If you start Flipper, and go to `View > Flipper style guide`, you will see a general overview of the Flipper design system. It will demonstrate colors, typography and creating layouts including some examples. 
 2. The [ant.design component overview](https://ant.design/components/overview/)
-3. The [API reference](flipper-plugin#ui-components) documentation for the components provided by `flipper-plugin`
+3. The [API reference](flipper-plugin.mdx#ui-components) documentation for the components provided by `flipper-plugin`
 
 ### Old and new components
 
@@ -134,7 +134,7 @@ For conversion, the following table maps the old components to the new ones:
 | `Text` / `Heading` | `Typography.Text` / `Typography.Heading` | `antd` ||
 | `Button` | `Button` | `antd` ||
 | `Glyph` | `Icon` | `antd` ||
-| `ManagedDataTable` | `DataTable` | `flipper-plugin` | Requires state to be provided by a [`createDataSource`](flipper-plugin#createdatasource) |
+| `ManagedDataTable` | `DataTable` | `flipper-plugin` | Requires state to be provided by a [`createDataSource`](flipper-plugin.mdx#createdatasource) |
 | `ManagedDataInspector` / `DataInspector` | `DataInspector` | `flipper-plugin` ||
 | `ManagedElementInspector` / `ElementInspector` | `ElementInspector` | `flipper-plugin` ||
 
