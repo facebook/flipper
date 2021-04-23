@@ -23,7 +23,7 @@
     "flipper-pkg-lib": "0.0.0",
     "flipper-plugin-lib": "0.0.0",
     "fs-extra": "^9.0.1",
-    "inquirer": "^7.3.3",
+    "inquirer": "^8.0.0",
     "lodash": "^4.17.21",
     "recursive-readdir": "^2.2.2"
   },
