@@ -73,7 +73,7 @@
     "@testing-library/dom": "^7.30.3",
     "@testing-library/react": "^11.2.5",
     "@types/adobe__node-fetch-retry": "^1.0.0",
-    "@types/algoliasearch": "^3.30.19",
+    "@types/algoliasearch": "^4.0.0",
     "@types/babel__code-frame": "^7.0.2",
     "@types/babel__core": "^7.1.14",
     "@types/babel__generator": "^7.6.2",
