@@ -27,11 +27,6 @@
   dependencies:
     "@algolia/cache-common" "4.9.1"
 
-"@algolia/cache-common@4.9.0":
-  version "4.9.0"
-  resolved "https://registry.yarnpkg.com/@algolia/cache-common/-/cache-common-4.9.0.tgz#ec63d71ec201d0d9eb9946bc58f10e430e982b7b"
-  integrity sha512-hBqkLEw1Y7oxEJEVmcdm/s/+KKlvCmSenlX5rrQts5qCNdhdS1QkCvHx8vgFF9J6uliP2TPs+umrrXc+aKsLPw==
-
 "@algolia/cache-common@4.9.1":
   version "4.9.1"
   resolved "https://registry.yarnpkg.com/@algolia/cache-common/-/cache-common-4.9.1.tgz#2d5f37ba7aab7db76627c4a4fce51a7fd137fa65"
@@ -63,14 +58,6 @@
     "@algolia/requester-common" "4.9.1"
     "@algolia/transporter" "4.9.1"
 
-"@algolia/client-common@4.9.0":
-  version "4.9.0"
-  resolved "https://registry.yarnpkg.com/@algolia/client-common/-/client-common-4.9.0.tgz#51f9cf66b99e4042647d344bb4dd1cd970de0f81"
-  integrity sha512-Rjk4XMXi6B63jdKQwnGbKwIubB5QIgok+k67QwrgadbqVphHueJ3af3D6i3sRcKBBTmdprFAXn0zX/zaxYBhAQ==
-  dependencies:
-    "@algolia/requester-common" "4.9.0"
-    "@algolia/transporter" "4.9.0"
-
 "@algolia/client-common@4.9.1":
   version "4.9.1"
   resolved "https://registry.yarnpkg.com/@algolia/client-common/-/client-common-4.9.1.tgz#ae313b65d3249efcb4fafd2e92ed1fa2fd075482"
@@ -88,7 +75,7 @@
     "@algolia/requester-common" "4.9.1"
     "@algolia/transporter" "4.9.1"
 
-"@algolia/client-search@4.9.1":
+"@algolia/client-search@4.9.1", "@algolia/client-search@^4.9.1":
   version "4.9.1"
   resolved "https://registry.yarnpkg.com/@algolia/client-search/-/client-search-4.9.1.tgz#a2fbc47a1b343dade9a8b06310231d51ff675b1b"
   integrity sha512-r9Cw2r8kJr45iYncFDht6EshARghU265wuY8Q8oHrpFHjAziEYdsUOdNmQKbsSH5J3gLjDPx1EI5DzVd6ivn3w==
@@ -96,20 +83,6 @@
     "@algolia/client-common" "4.9.1"
     "@algolia/requester-common" "4.9.1"
     "@algolia/transporter" "4.9.1"
-
-"@algolia/client-search@^4.9.0":
-  version "4.9.0"
-  resolved "https://registry.yarnpkg.com/@algolia/client-search/-/client-search-4.9.0.tgz#806379940d08cb95f562d93e31c2f0478fc040a4"
-  integrity sha512-HFfeUJN6GPHsjfcchmksoqlBLF5gT+jRHmSait4fWtde85eGFyJVL7ubUZD9KjlEjzebmUPPIZ1ixcupaTUBnw==
-  dependencies:
-    "@algolia/client-common" "4.9.0"
-    "@algolia/requester-common" "4.9.0"
-    "@algolia/transporter" "4.9.0"
-
-"@algolia/logger-common@4.9.0":
-  version "4.9.0"
-  resolved "https://registry.yarnpkg.com/@algolia/logger-common/-/logger-common-4.9.0.tgz#488f23c0758ab0cd79f0fcbbd3691fb216a0b0dc"
-  integrity sha512-OU8lzR1I8R0Qsgk+u4GOSFpEEKZkzPYZP1OXsw92gejW08k5N6kVLzfvVvgNA1KAeZPFXADdH26VBQ/2M9wF3g==
 
 "@algolia/logger-common@4.9.1":
   version "4.9.1"
@@ -130,11 +103,6 @@
   dependencies:
     "@algolia/requester-common" "4.9.1"
 
-"@algolia/requester-common@4.9.0":
-  version "4.9.0"
-  resolved "https://registry.yarnpkg.com/@algolia/requester-common/-/requester-common-4.9.0.tgz#e65d6fb08d239d86a0076ad32638fe2d8abedaf6"
-  integrity sha512-8/ljy4/pnB8d4/yTaJQa2t3oKdbsVq9nDXkwhCACVum8tGYSSGpCtpBGln6M4g+QdfBSQxYILTB1wwHLFUstmg==
-
 "@algolia/requester-common@4.9.1":
   version "4.9.1"
   resolved "https://registry.yarnpkg.com/@algolia/requester-common/-/requester-common-4.9.1.tgz#50fcf4c7c1ed7ae13159167ac1da2844d036a630"
@@ -146,15 +114,6 @@
   integrity sha512-vYNVbSCuyrCSCjHBQJk+tLZtWCjvvDf5tSbRJjyJYMqpnXuIuP7gZm24iHil4NPYBhbBj5NU2ZDAhc/gTn75Ag==
   dependencies:
     "@algolia/requester-common" "4.9.1"
-
-"@algolia/transporter@4.9.0":
-  version "4.9.0"
-  resolved "https://registry.yarnpkg.com/@algolia/transporter/-/transporter-4.9.0.tgz#8d4cadcee1b848e3b7c3efbfb76f46c3a374afbb"
-  integrity sha512-GySLvXwg0DQ2LM0/W+hr9y1Co3QY1iNnhWA82gFhBrz7RWGzw47qEsh//9u/wnjl6S1WOjH+eKm5PaQATG1BXg==
-  dependencies:
-    "@algolia/cache-common" "4.9.0"
-    "@algolia/logger-common" "4.9.0"
-    "@algolia/requester-common" "4.9.0"
 
 "@algolia/transporter@4.9.1":
   version "4.9.1"
@@ -4538,13 +4497,6 @@ colors@^1.1.2:
   resolved "https://registry.yarnpkg.com/colors/-/colors-1.4.0.tgz#c50491479d4c1bdaed2c9ced32cf7c7dc2360f78"
   integrity sha512-a+UqTh4kgZg/SlGvfbzDHpgRu7AAQOmmqRHJnxhRZICKFUT91brVhNNt58CMWU9PsBbv3PDCZUHbVxuDiH2mtA==
 
-combined-stream@1.0.6:
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/combined-stream/-/combined-stream-1.0.6.tgz#723e7df6e801ac5613113a7e445a9b69cb632818"
-  integrity sha1-cj599ugBrFYTETp+RFqbactjKBg=
-  dependencies:
-    delayed-stream "~1.0.0"
-
 combined-stream@^1.0.6, combined-stream@^1.0.8, combined-stream@~1.0.6:
   version "1.0.8"
   resolved "https://registry.yarnpkg.com/combined-stream/-/combined-stream-1.0.8.tgz#c3d45a8b34fd730631a110a8a2520682b31d5a7f"
@@ -6448,15 +6400,6 @@ form-data@*, form-data@^3.0.0:
   dependencies:
     asynckit "^0.4.0"
     combined-stream "^1.0.8"
-    mime-types "^2.1.12"
-
-form-data@2.3.2:
-  version "2.3.2"
-  resolved "https://registry.yarnpkg.com/form-data/-/form-data-2.3.2.tgz#4970498be604c20c005d4f5c23aecd21d6b49099"
-  integrity sha1-SXBJi+YEwgwAXU9cI67NIda0kJk=
-  dependencies:
-    asynckit "^0.4.0"
-    combined-stream "1.0.6"
     mime-types "^2.1.12"
 
 form-data@~2.3.2:
@@ -8817,7 +8760,7 @@ lodash.clonedeep@^4.5.0:
   resolved "https://registry.yarnpkg.com/lodash.clonedeep/-/lodash.clonedeep-4.5.0.tgz#e23f3f9c4f8fbdde872529c1071857a086e5ccef"
   integrity sha1-4j8/nE+Pvd6HJSnBBxhXoIblzO8=
 
-lodash.debounce@4.0.8, lodash.debounce@^4.0.8:
+lodash.debounce@^4.0.8:
   version "4.0.8"
   resolved "https://registry.yarnpkg.com/lodash.debounce/-/lodash.debounce-4.0.8.tgz#82d79bff30a67c4005ffd5e2515300ad9ca4d7af"
   integrity sha1-gteb/zCmfEAF/9XiUVMArZyk168=
@@ -9552,7 +9495,7 @@ node-dir@^0.1.17:
   dependencies:
     minimatch "^3.0.2"
 
-node-fetch@1.6.3, node-fetch@2.6.0, node-fetch@^1.0.1, node-fetch@^2.2.0, node-fetch@^2.6.0, node-fetch@^2.6.1:
+node-fetch@2.6.0, node-fetch@^1.0.1, node-fetch@^2.2.0, node-fetch@^2.6.0, node-fetch@^2.6.1:
   version "2.6.1"
   resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.1.tgz#045bd323631f76ed2e2b55573394416b639a0052"
   integrity sha512-V4aYg89jEoVRxRb2fJdAg8FHvI7cEyYdVAh94HH0UIK8oJxUfkjlDQN9RbMx+bEjP7+ggMiFRprSti032Oipxw==
@@ -10435,11 +10378,6 @@ query-string@^7.0.0:
     filter-obj "^1.1.0"
     split-on-first "^1.0.0"
     strict-uri-encode "^2.0.0"
-
-querystring@0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/querystring/-/querystring-0.2.0.tgz#b209849203bb25df820da756e747005878521620"
-  integrity sha1-sgmEkgO7Jd+CDadW50cAWHhSFiA=
 
 quick-lru@^5.1.1:
   version "5.1.1"
@@ -12929,11 +12867,6 @@ utils-merge@1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/utils-merge/-/utils-merge-1.0.1.tgz#9f95710f50a267947b2ccc124741c1028427e713"
   integrity sha1-n5VxD1CiZ5R7LMwSR0HBAoQn5xM=
-
-uuid@3.0.1:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.0.1.tgz#6544bba2dfda8c1cf17e629a3a305e2bb1fee6c1"
-  integrity sha1-ZUS7ot/ajBzxfmKaOjBeK7H+5sE=
 
 uuid@^3.3.2:
   version "3.4.0"
