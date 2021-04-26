@@ -128,7 +128,7 @@
     "ansi-to-html": "^0.6.3",
     "app-builder-lib": "22.10.5",
     "babel-eslint": "^10.1.0",
-    "chalk": "^4.0.0",
+    "chalk": "^4.1.1",
     "cross-env": "^7.0.3",
     "detect-port": "^1.1.1",
     "dotenv": "^8.2.0",
