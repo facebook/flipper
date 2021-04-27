@@ -16,7 +16,7 @@
     "lodash": "^4.17.21",
     "react-color": "^2.19.3",
     "react-element-to-jsx-string": "^14.3.2",
-    "react-virtual": "^2.6.1",
+    "react-virtual": "^2.7.1",
     "string-natural-compare": "^3.0.0"
   },
   "devDependencies": {

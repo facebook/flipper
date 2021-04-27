@@ -10974,13 +10974,12 @@ react-transition-group@^4.4.1:
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
 
-react-virtual@^2.6.1:
-  version "2.6.1"
-  resolved "https://registry.yarnpkg.com/react-virtual/-/react-virtual-2.6.1.tgz#5ffd29a03ecdb7422c9b8dc41b6528f249e09e93"
-  integrity sha512-LGmeNI8nE4TWmeyLrjD7WfWBorKf5joeSCdmNeTnP9GqQfFpe6bjPmpdj3K83IMcU/wbOpA8u3v8oTjxeytqPw==
+react-virtual@^2.7.1:
+  version "2.7.1"
+  resolved "https://registry.yarnpkg.com/react-virtual/-/react-virtual-2.7.1.tgz#8bf977e780df80af692f440d627ba7a5776f0de5"
+  integrity sha512-UziFNaew48GIoTPB4svPT7NNEpKRvEXv0LIJ2FBdmRdGKspFvtxzmPfyUdH/+3yp8LqgTLayItpsilZ9FO2VAw==
   dependencies:
     "@reach/observe-rect" "^1.1.0"
-    ts-toolbelt "^6.4.2"
 
 react-virtualized-auto-sizer@^1.0.5:
   version "1.0.5"
@@ -12588,11 +12587,6 @@ ts-node@^8, ts-node@^8.8.1:
     make-error "^1.1.1"
     source-map-support "^0.5.6"
     yn "3.1.1"
-
-ts-toolbelt@^6.4.2:
-  version "6.15.5"
-  resolved "https://registry.yarnpkg.com/ts-toolbelt/-/ts-toolbelt-6.15.5.tgz#cb3b43ed725cb63644782c64fbcad7d8f28c0a83"
-  integrity sha512-FZIXf1ksVyLcfr7M317jbB67XFJhOO1YqdTcuGaq9q5jLUoTikukZ+98TPjKiP2jC5CgmYdWWYs0s2nLSU0/1A==
 
 tsconfig-paths@^3.9.0:
   version "3.9.0"
