@@ -49,7 +49,7 @@ import {debounce} from 'lodash';
 
 interface DataTableProps<T = any> {
   columns: DataTableColumn<T>[];
-  dataSource: DataSource<T, any, any>;
+
   autoScroll?: boolean;
   extraActions?: React.ReactElement;
   onSelect?(record: T | undefined, records: T[]): void;
@@ -60,6 +60,12 @@ interface DataTableProps<T = any> {
   onCopyRows?(records: T[]): string;
   onContextMenu?: (selection: undefined | T) => React.ReactElement;
 }
+
+type DataTableInput<T = any> =
+  | {dataSource: DataSource<T, any, any>}
+  | {
+      records: T[];
+    };
 
 export type DataTableColumn<T = any> = {
   key: keyof T & string;
@@ -94,9 +100,10 @@ export interface RenderContext<T = any> {
 }
 
 export function DataTable<T extends object>(
-  props: DataTableProps<T>,
+  props: DataTableInput<T> & DataTableProps<T>,
 ): React.ReactElement {
-  const {dataSource, onRowStyle, onSelect, onCopyRows, onContextMenu} = props;
+  const {onRowStyle, onSelect, onCopyRows, onContextMenu} = props;
+  const dataSource = normalizeDataSourceInput(props);
   useAssertStableRef(dataSource, 'dataSource');
   useAssertStableRef(onRowStyle, 'onRowStyle');
   useAssertStableRef(props.onSelect, 'onRowSelect');
@@ -443,6 +450,42 @@ export function DataTable<T extends object>(
       {range && <RangeFinder>{range}</RangeFinder>}
     </Layout.Container>
   );
+}
+
+/* eslint-disable react-hooks/rules-of-hooks */
+function normalizeDataSourceInput<T>(props: DataTableInput<T>): DataSource<T> {
+  if ('dataSource' in props) {
+    return props.dataSource;
+  }
+  if ('records' in props) {
+    const [dataSource] = useState(() => {
+      const ds = new DataSource<T>(undefined);
+      syncRecordsToDataSource(ds, props.records);
+      return ds;
+    });
+    useEffect(() => {
+      syncRecordsToDataSource(dataSource, props.records);
+    }, [dataSource, props.records]);
+
+    return dataSource;
+  }
+  throw new Error(
+    `Either the 'dataSource' or 'records' prop should be provided to DataTable`,
+  );
+}
+/* eslint-enable */
+
+function syncRecordsToDataSource<T>(ds: DataSource<T>, records: T[]) {
+  const startTime = Date.now();
+  ds.clear();
+  // TODO: optimize in the case we're only dealing with appends or replacements
+  records.forEach((r) => ds.append(r));
+  const duration = Math.abs(Date.now() - startTime);
+  if (duration > 50 || records.length > 1000) {
+    console.warn(
+      "The 'records' props is only intended to be used on small datasets. Please use a 'dataSource' instead. See createDataSource for details: https://fbflipper.com/docs/extending/flipper-plugin#createdatasource",
+    );
+  }
 }
 
 function emptyRenderer(dataSource: DataSource<any>) {
