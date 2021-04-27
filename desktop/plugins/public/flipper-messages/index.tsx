@@ -13,13 +13,13 @@ import {
   DetailSidebar,
   FlexCenter,
   FlexColumn,
-  FlipperPlugin,
   ManagedDataInspector,
   Panel,
   SearchableTable,
   styled,
   TableHighlightedRows,
 } from 'flipper';
+import {createState, PluginClient, usePlugin, useValue} from 'flipper-plugin';
 import React from 'react';
 
 type MessageInfo = {
@@ -65,10 +65,6 @@ type MessageRow = {
   timestamp: number;
   payload?: any;
   key: string;
-};
-
-type State = {
-  selectedId: string | null;
 };
 
 type PersistedState = {
@@ -153,86 +149,90 @@ function createRow(message: MessageInfo): MessageRow {
   };
 }
 
-export default class extends FlipperPlugin<State, any, PersistedState> {
-  static defaultPersistedState = {
+type Events = {
+  newMessage: MessageInfo;
+};
+
+export function plugin(client: PluginClient<Events, {}>) {
+  const state = createState<PersistedState>({
     messageRows: [],
-  };
-
-  state: State = {
-    selectedId: null,
-  };
-
-  static persistedStateReducer = (
-    persistedState: PersistedState,
-    method: string,
-    payload: any,
-  ): PersistedState => {
-    if (method === 'newMessage') {
-      return {
-        ...persistedState,
-        messageRows: [...persistedState.messageRows, createRow(payload)].filter(
-          (row) => Date.now() - row.timestamp < 5 * 60 * 1000,
-        ),
-      };
-    }
-    return persistedState;
-  };
-
-  render() {
-    const clearTableButton = (
-      <Button onClick={this.clear} key="clear">
-        Clear Table
-      </Button>
-    );
-
-    return (
-      <FlexColumn grow={true}>
-        <SearchableTable
-          rowLineHeight={28}
-          floating={false}
-          multiline={true}
-          columnSizes={COLUMN_SIZES}
-          columns={COLUMNS}
-          onRowHighlighted={this.onRowHighlighted}
-          rows={this.props.persistedState.messageRows}
-          stickyBottom={true}
-          actions={[clearTableButton]}
-        />
-        <DetailSidebar>{this.renderSidebar()}</DetailSidebar>
-      </FlexColumn>
-    );
-  }
-
-  onRowHighlighted = (keys: TableHighlightedRows) => {
+  });
+  const highlightedRow = createState<string | null>();
+  const setHighlightedRow = (keys: TableHighlightedRows) => {
     if (keys.length > 0) {
-      this.setState({
-        selectedId: keys[0],
-      });
+      highlightedRow.set(keys[0]);
     }
   };
-
-  renderSidebar() {
-    const {selectedId} = this.state;
-    const {messageRows} = this.props.persistedState;
-    if (selectedId !== null) {
-      const message = messageRows.find((row) => row.key == selectedId);
-      if (message != null) {
-        return this.renderExtra(message.payload);
-      }
-    }
-    return <Placeholder grow>Select a message to view details</Placeholder>;
-  }
-
-  renderExtra(extra: any) {
-    return (
-      <Panel floating={false} grow={false} heading={'Payload'}>
-        <ManagedDataInspector data={extra} expandRoot={false} />
-      </Panel>
-    );
-  }
-
-  clear = () => {
-    this.setState({selectedId: null});
-    this.props.setPersistedState({messageRows: []});
+  const clear = () => {
+    state.set({messageRows: []});
+    highlightedRow.set(null);
   };
+
+  client.onMessage('newMessage', (payload) => {
+    state.update((draft) => {
+      draft.messageRows = [...draft.messageRows, createRow(payload)].filter(
+        (row) => Date.now() - row.timestamp < 5 * 60 * 1000,
+      );
+    });
+  });
+
+  return {
+    state,
+    highlightedRow,
+    setHighlightedRow,
+    clear,
+  };
+}
+
+function Sidebar() {
+  const instance = usePlugin(plugin);
+  const rows = useValue(instance.state).messageRows;
+  const highlightedRow = useValue(instance.highlightedRow);
+  const message = rows.find((row) => row.key === highlightedRow);
+
+  const renderExtra = (extra: any) => (
+    <Panel floating={false} grow={false} heading={'Payload'}>
+      <ManagedDataInspector data={extra} expandRoot={false} />
+    </Panel>
+  );
+
+  return (
+    <>
+      {message != null ? (
+        renderExtra(message.payload)
+      ) : (
+        <Placeholder grow>Select a message to view details</Placeholder>
+      )}
+    </>
+  );
+}
+
+export function Component() {
+  const instance = usePlugin(plugin);
+  const rows = useValue(instance.state).messageRows;
+
+  const clearTableButton = (
+    <Button onClick={instance.clear} key="clear">
+      Clear Table
+    </Button>
+  );
+
+  return (
+    <FlexColumn grow={true}>
+      <SearchableTable
+        rowLineHeight={28}
+        floating={false}
+        multiline={true}
+        columnSizes={COLUMN_SIZES}
+        columns={COLUMNS}
+        onRowHighlighted={instance.setHighlightedRow}
+        rows={rows}
+        stickyBottom={true}
+        actions={[clearTableButton]}
+      />
+      <DetailSidebar>
+        <Sidebar />
+      </DetailSidebar>
+    </FlexColumn>
+  );
 }
