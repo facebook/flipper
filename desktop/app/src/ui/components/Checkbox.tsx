@@ -28,6 +28,7 @@ CheckboxContainer.displayName = 'Checkbox:CheckboxContainer';
 
 /**
  * A checkbox to toggle UI state
+ * @deprecated use Checkbox from 'antd' instead
  */
 export default class Checkbox extends PureComponent<CheckboxProps> {
   onChange = (e: React.ChangeEvent<HTMLInputElement>) => {

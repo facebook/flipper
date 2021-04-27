@@ -12,6 +12,7 @@ import {colors} from './colors';
 
 /**
  * Puts a gray border around something
+ * @deprecated use Layout.Container
  */
 const Bordered = styled.div({
   borderRadius: 4,

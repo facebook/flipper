@@ -67,6 +67,8 @@ type Props = {
  *     <Button>Three</Button>
  *   </ButtonGroupChain>
  * ```
+ *
+ * @deprecated use Layout.Horizontal with flags: gap pad wrap
  */
 export default function ButtonGroupChain({children, iconSize, icon}: Props) {
   return (

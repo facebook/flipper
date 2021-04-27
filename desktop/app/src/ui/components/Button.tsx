@@ -260,6 +260,7 @@ type Props = {
 
 /**
  * A simple button, used in many parts of the application.
+ * @deprecated use import {Button} from `antd` instead.
  */
 export default function Button(props: Props) {
   return <SandyButton {...props} />;

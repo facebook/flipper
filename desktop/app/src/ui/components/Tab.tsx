@@ -40,6 +40,9 @@ export type Props = {
   width?: Property.Width<number>;
 };
 
+/**
+ * @deprecated use Tab from flipper-plugin
+ */
 export default function Tab(_props: Props): JSX.Element {
   throw new Error("don't render me");
 }

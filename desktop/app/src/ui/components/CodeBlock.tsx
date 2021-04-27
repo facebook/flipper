@@ -9,6 +9,9 @@
 
 import styled from '@emotion/styled';
 
+/**
+ * @deprecated, use <Typography.Paragraph><pre>.... instead.
+ */
 const CodeBlock = styled.div({
   fontFamily: 'monospace',
 });

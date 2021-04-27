@@ -13,6 +13,7 @@ import React from 'react';
 
 /**
  * Button group to navigate back and forth.
+ * @deprecated
  */
 export default function ButtonNavigationGroup(props: {
   /** Back button is enabled */

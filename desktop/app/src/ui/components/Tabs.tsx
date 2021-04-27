@@ -111,6 +111,7 @@ TabContent.displayName = 'Tabs:TabContent';
 
 /**
  * A Tabs component.
+ * @deprecated use Tabs from flipper-plugin
  */
 export default function Tabs(props: {
   /**

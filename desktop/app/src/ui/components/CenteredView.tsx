@@ -30,6 +30,7 @@ ContentWrapper.displayName = 'CenteredView:ContentWrapper';
 /**
  * CenteredView creates a scrollable container with fixed with, centered content.
  * Recommended to combine with RoundedSection
+ * @deprecated
  */
 const CenteredView: React.FC<{}> = ({children}) => (
   <Container grow>
