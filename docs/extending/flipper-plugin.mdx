@@ -149,10 +149,12 @@ Trigger when the users navigates to this plugin using a deeplink, either from an
 
 Usage: `client.onExport(callback: (idler, onStatusMessage) => Promise<state>)`
 
-Overrides the default serialization behavior of this plugin. Should return a promise with persistable state that is to be stored. 
+Overrides the default serialization behavior of this plugin. Should return a promise with persistable state that is to be stored, or nothing at all. 
 This process is async, so it is possible to first fetch some additional state from the device. 
 
 Serializable is defined as: non-cyclic data, consisting purely of primitive values, plain objects, arrays or Date, Set or Map objects.
+
+If nothing is returned, the handler will be run, and after the handler has finished the `persist` keys of the different states will be used as export basis.
 
 #### `onImport`
 

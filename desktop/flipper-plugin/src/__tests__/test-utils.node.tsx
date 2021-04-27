@@ -357,6 +357,27 @@ test('plugins can handle import errors', async () => {
 });
 
 test('plugins can have custom export handler', async () => {
+  const {exportStateAsync} = TestUtils.startPlugin({
+    plugin(client: PluginClient) {
+      const field1 = createState(0, {persist: 'field1'});
+
+      client.onExport(async () => {
+        await sleep(10);
+        return {
+          b: 3,
+        };
+      });
+
+      return {field1};
+    },
+    Component() {
+      return null;
+    },
+  });
+  expect(await exportStateAsync()).toEqual({b: 3});
+});
+
+test('plugins can have custom export handler that doesnt return', async () => {
   const {exportStateAsync} = TestUtils.startPlugin(
     {
       plugin(client: PluginClient) {
@@ -364,9 +385,7 @@ test('plugins can have custom export handler', async () => {
 
         client.onExport(async () => {
           await sleep(10);
-          return {
-            b: 3,
-          };
+          field1.set(field1.get() + 1);
         });
 
         return {field1};
@@ -377,12 +396,11 @@ test('plugins can have custom export handler', async () => {
     },
     {
       initialState: {
-        a: 1,
-        b: 2,
+        field1: 1,
       },
     },
   );
-  expect(await exportStateAsync()).toEqual({b: 3});
+  expect(await exportStateAsync()).toEqual({field1: 2});
 });
 
 test('plugins can receive deeplinks', async () => {

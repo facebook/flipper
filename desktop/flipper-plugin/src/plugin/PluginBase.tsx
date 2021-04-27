@@ -21,7 +21,7 @@ import {Logger} from '../utils/Logger';
 type StateExportHandler<T = any> = (
   idler: Idler,
   onStatusMessage: (msg: string) => void,
-) => Promise<T>;
+) => Promise<T | undefined | void>;
 type StateImportHandler<T = any> = (data: T) => void;
 
 export interface BasePluginClient {
@@ -54,8 +54,11 @@ export interface BasePluginClient {
   /**
    * Triggered when the current plugin is being exported and should create a snapshot of the state exported.
    * Overrides the default export behavior and ignores any 'persist' flags of state.
+   *
+   * If an object is returned from the handler, that will be taken as export.
+   * Otherwise, if nothing is returned, the handler will be run, and after the handler has finished the `persist` keys of the different states will be used as export basis.
    */
-  onExport<T = any>(exporter: StateExportHandler<T>): void;
+  onExport<T extends object>(exporter: StateExportHandler<T>): void;
 
   /**
    * Triggered directly after the plugin instance was created, if the plugin is being restored from a snapshot.
@@ -350,6 +353,10 @@ export abstract class BasePluginInstance {
         'Cannot export sync a plugin that does have an export handler',
       );
     }
+    return this.serializeRootStates();
+  }
+
+  private serializeRootStates() {
     return Object.fromEntries(
       Object.entries(this.rootStates).map(([key, atom]) => [
         key,
@@ -363,9 +370,13 @@ export abstract class BasePluginInstance {
     onStatusMessage: (msg: string) => void,
   ): Promise<Record<string, any>> {
     if (this.exportHandler) {
-      return await this.exportHandler(idler, onStatusMessage);
+      const result = await this.exportHandler(idler, onStatusMessage);
+      if (result !== undefined) {
+        return result;
+      }
+      // intentional fall-through, the export handler merely updated the state, but prefers the default export format
     }
-    return this.exportStateSync();
+    return this.serializeRootStates();
   }
 
   isPersistable(): boolean {
