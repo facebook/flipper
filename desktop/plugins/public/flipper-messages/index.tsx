@@ -22,7 +22,7 @@ import {
 import {createState, PluginClient, usePlugin, useValue} from 'flipper-plugin';
 import React from 'react';
 
-type MessageInfo = {
+export type MessageInfo = {
   device?: string;
   app: string;
   flipperInternalMethod?: string;
@@ -32,7 +32,7 @@ type MessageInfo = {
   direction: 'toClient' | 'toFlipper';
 };
 
-type MessageRow = {
+export type MessageRow = {
   columns: {
     time: {
       value: string;
