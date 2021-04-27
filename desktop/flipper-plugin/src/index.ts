@@ -84,6 +84,7 @@ export {createDataSource, DataSource} from './state/DataSource';
 
 export {DataTable, DataTableColumn} from './ui/data-table/DataTable';
 export {DataTableManager} from './ui/data-table/DataTableManager';
+export {DataList} from './ui/DataList';
 
 export {
   Interactive as _Interactive,

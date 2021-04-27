@@ -809,6 +809,19 @@ See `View > Flipper Style Guide` inside the Flipper application for more details
 
 Coming soon.
 
+### DataList
+
+The DataList can be used to display a set of items efficiently, and where a single item can be selected.
+
+Properties:
+
+* `items`: Items to display. Per item at least a title and unique id should be provided.
+* `value`: The current selection
+* `onSelect`
+* `onRenderItem`: A custom render function. By default the component will render the `title` in bold and description (if any) below it.
+* `type`: `default` or `dropdown. Defines the styling of the component. By default shows a list, but alternatively the items can be displayed in a drop down
+* `scrollable`: By default the data list will take all available space and scroll if items aren't otherwise visible. By setting `scrollable={false}` the list will only take its natural size
+
 ### NUX
 
 An element that can be used to provide a New User eXperience: Hints that give a one time introduction to new features to the current user.

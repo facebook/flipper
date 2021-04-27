@@ -94,7 +94,10 @@ export class DataSource<
   private nextId = 0;
   private _records: Entry<T>[] = [];
   private _recordsById: Map<KEY_TYPE, T> = new Map();
-  private keyAttribute: undefined | keyof T;
+  /**
+   * @readonly
+   */
+  public keyAttribute: undefined | keyof T;
   private idToIndex: Map<KEY_TYPE, number> = new Map();
 
   // if we shift the window, we increase shiftOffset to correct idToIndex results, rather than remapping all values

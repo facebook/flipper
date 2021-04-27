@@ -31,6 +31,7 @@ test('Correct top level API exposed', () => {
       "DataDescription",
       "DataFormatter",
       "DataInspector",
+      "DataList",
       "DataSource",
       "DataTable",
       "DetailSidebar",
