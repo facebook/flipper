@@ -810,9 +810,21 @@ See `View > Flipper Style Guide` inside the Flipper application for more details
 ### ElementSearchResultSet
 ### ElementsInspectorElement
 ### ElementsInspectorProps
+
 ### Panel
 
-Coming soon.
+A collapsible UI region. The collapsed state of the pane will automatically be persisted so that the collapsed state is restored the next time user visits the plugin again. Note that the children of a Panel should have some size, either a fixed or a natural size. Elements that grow to their parent size will become invisible.
+
+For demos and property documentation see the 'Flipper style guide'.
+
+### Tabs
+### Tab
+
+The `Tabs` and `Tab` component re-expose the TabControl as provided by Antd, and support the same properties. See [official docs](https://ant.design/components/tabs/).
+
+The following additional properties are supported:
+
+* `grow`. If set, the tab control will use all available vertical space. By default `false`.
 
 ### DataList
 

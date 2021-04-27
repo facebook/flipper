@@ -26,17 +26,20 @@ export const Panel: React.FC<{
    * Initial state for panel if it is collapsable
    */
   collapsed?: boolean;
-  pad: Spacing;
+  pad?: Spacing;
+  gap?: Spacing;
 }> = (props) => {
   const [collapsed, setCollapsed] = useLocalStorageState(
     `panel:${props.title}:collapsed`,
-    props.collapsed,
+    props.collapsible === false ? false : props.collapsed,
   );
 
   const toggle = useCallback(() => {
-    console.log('click');
+    if (props.collapsible === false) {
+      return;
+    }
     setCollapsed((c) => !c);
-  }, [setCollapsed]);
+  }, [setCollapsed, props.collapsible]);
 
   return (
     <TrackingScope scope={props.title}>
@@ -46,9 +49,11 @@ export const Panel: React.FC<{
         onChange={toggle}>
         <Collapse.Panel
           key={props.title}
-          collapsible={props.collapsible ? undefined : 'disabled'}
-          header={props.title}>
-          <Layout.Container pad={props.pad}>{props.children}</Layout.Container>
+          header={props.title}
+          showArrow={props.collapsible !== false}>
+          <Layout.Container pad={props.pad} gap={props.pad}>
+            {props.children}
+          </Layout.Container>
         </Collapse.Panel>
       </StyledCollapse>
     </TrackingScope>

@@ -10,7 +10,7 @@
 import React from 'react';
 import {Typography, Card, Table, Collapse, Button, Tabs} from 'antd';
 import {Layout, Link} from '../ui';
-import {NUX, theme, Tracked, TrackingScope} from 'flipper-plugin';
+import {NUX, Panel, theme, Tracked, TrackingScope} from 'flipper-plugin';
 import reactElementToJSXString from 'react-element-to-jsx-string';
 import {CodeOutlined} from '@ant-design/icons';
 
@@ -296,6 +296,47 @@ const demos: PreviewProps[] = [
             <Layout.ScrollContainer>{largeChild}</Layout.ScrollContainer>
             {aDynamicBox}
           </Layout.Bottom>
+        </Layout.Container>
+      ),
+    },
+  },
+  {
+    title: 'Panel',
+    description:
+      'A collapsible UI region. The collapsed state of the pane will automatically be persisted so that the collapsed state is restored the next time user visits the plugin again. Note that the children of a Panel should have some size, either a fixed or a natural size. Elements that grow to their parent size will become invisible.',
+    props: [
+      ['title', 'string', 'Title of the pane'],
+      [
+        'collapsible',
+        'boolean (true)',
+        "If set to false it won't be possible to collapse the panel",
+      ],
+      [
+        'collapsed',
+        'boolean (false)',
+        'The initial collapsed state of the panel.',
+      ],
+      [
+        'pad / gap',
+        'boolean / number (false)',
+        'See the pad property of Layout.Container, determines whether the pane contents will have some padding and space between the items. By default no padding / gap is applied.',
+      ],
+    ],
+    demos: {
+      'Two panels in a fixed height container': (
+        <Layout.Container>
+          <Panel title="Panel 1">Some content</Panel>
+          <Panel title="Panel 2 (collapsed)" collapsed>
+            {aFixedHeightBox}
+          </Panel>
+          <Panel
+            title="Panel 3 (not collapsible, pad, gap)"
+            collapsible={false}
+            pad
+            gap>
+            {aFixedHeightBox}
+            {aFixedHeightBox}
+          </Panel>
         </Layout.Container>
       ),
     },
