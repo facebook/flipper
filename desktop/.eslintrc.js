@@ -76,6 +76,14 @@ module.exports = {
         property: 'remote',
       },
     ],
+    'no-restricted-imports': [
+      1,
+      {
+        name: 'flipper',
+        message:
+          "Direct imports from 'flipper' are deprecated. Import from 'flipper-plugin' instead, which can be tested and distributed stand-alone. See https://fbflipper.com/docs/extending/sandy-migration for more details.",
+      },
+    ],
 
     // additional rules for this project
     'header/header': [2, 'block', {pattern}],
