@@ -40,6 +40,8 @@ test('Correct top level API exposed', () => {
       "MarkerTimeline",
       "NUX",
       "Panel",
+      "Tab",
+      "Tabs",
       "TestUtils",
       "Tracked",
       "TrackingScope",

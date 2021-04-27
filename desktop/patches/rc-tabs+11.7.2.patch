@@ -16,7 +16,7 @@ index ac93b76..edae9be 100644
 +      'Tabs',
 +      'onTabClick',
 +      scope,
-+      'tab:' + key + ':' + tab,
++      'tab:' + key,
 +      onClick,
 +      e
 +    );

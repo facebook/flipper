@@ -8,9 +8,17 @@
  */
 
 import React from 'react';
-import {Typography, Card, Table, Collapse, Button, Tabs} from 'antd';
+import {Typography, Card, Table, Collapse, Button} from 'antd';
 import {Layout, Link} from '../ui';
-import {NUX, Panel, theme, Tracked, TrackingScope} from 'flipper-plugin';
+import {
+  NUX,
+  Panel,
+  theme,
+  Tracked,
+  TrackingScope,
+  Tabs,
+  Tab,
+} from 'flipper-plugin';
 import reactElementToJSXString from 'react-element-to-jsx-string';
 import {CodeOutlined} from '@ant-design/icons';
 
@@ -342,6 +350,52 @@ const demos: PreviewProps[] = [
     },
   },
   {
+    title: 'Tabs / Tab',
+    description:
+      "Tabs represents a tab control and all it's children should be Tab components. By default the Tab control uses all available space, but set grow=false to only use the minimally required space",
+    props: [
+      [
+        'grow (Tabs)',
+        'boolean (true)',
+        'If true, the tab control will grow all tabs to the maximum available vertical space. If false, only the minimal required (natural) vertical space will be used',
+      ],
+      [
+        'pad / gap (Tab)',
+        'boolean / number (false)',
+        'See the pad property of Layout.Container, determines whether the pane contents will have some padding and space between the items. By default no padding / gap is applied.',
+      ],
+      [
+        'other props',
+        '',
+        'This component wraps Tabs from ant design, see https://ant.design/components/tabs/ for more details',
+      ],
+    ],
+    demos: {
+      'Two tabs': (
+        <Layout.Container height={200}>
+          <Tabs>
+            <Tab tab="Pane 1">{aDynamicBox}</Tab>
+            <Tab tab="Pane 2 pad gap" pad gap>
+              {aFixedHeightBox}
+              {aFixedHeightBox}
+            </Tab>
+          </Tabs>
+        </Layout.Container>
+      ),
+      'Two tabs (no grow)': (
+        <Layout.Container grow={false}>
+          <Tabs>
+            <Tab tab="Pane 1">{aDynamicBox}</Tab>
+            <Tab tab="Pane 2 pad gap" pad gap>
+              {aFixedHeightBox}
+              {aFixedHeightBox}
+            </Tab>
+          </Tabs>
+        </Layout.Container>
+      ),
+    },
+  },
+  {
     title: 'NUX',
     description:
       'A component to provide a New-User-eXperience: Highlight new features to first time users. For tooltips that should stay available, use ToolTip from ANT design',
@@ -420,7 +474,7 @@ function ComponentPreview({title, demos, description, props}: PreviewProps) {
               <Layout.Container gap="large">
                 {Object.entries(demos).map(([name, children]) => (
                   <Tabs type="line" key={name}>
-                    <Tabs.TabPane tab={name} key="1">
+                    <Tab tab={name} key="1">
                       <div
                         style={{
                           background: theme.backgroundWash,
@@ -428,8 +482,8 @@ function ComponentPreview({title, demos, description, props}: PreviewProps) {
                         }}>
                         {children}
                       </div>
-                    </Tabs.TabPane>
-                    <Tabs.TabPane tab={<CodeOutlined />} key="2">
+                    </Tab>
+                    <Tab tab={<CodeOutlined />} key="2">
                       <div
                         style={{
                           background: theme.backgroundWash,
@@ -438,7 +492,7 @@ function ComponentPreview({title, demos, description, props}: PreviewProps) {
                         }}>
                         <pre>{reactElementToJSXString(children)}</pre>
                       </div>
-                    </Tabs.TabPane>
+                    </Tab>
                   </Tabs>
                 ))}
               </Layout.Container>
