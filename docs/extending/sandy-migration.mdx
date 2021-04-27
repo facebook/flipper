@@ -83,8 +83,20 @@ This step is completed if the plugin follows the next `plugin` / `component` str
 * If the original plugin definition contained `state`, it is recommended to create one new state atoms (`createState`) per field in the original `state`, rather than having one big atom.
 * If the original plugin definition contained `persistedState`, it is recommended to create one new state atoms (`createState`) per field in the original `state`, rather than having one big atom. By setting the `persist` [option](flipper-plugin.mdx#options) of the state, you can make sure this piece of state becomes part of the import / export functionality of Flipper. Which is important if the data stored here is relevant for bug reports. 
 * For deeply nested state updates, using `state.update` is often simpler than using `state.set`, as it uses [immer](https://immerjs.github.io/immer/) under the hood to make immutable state updates straight forward.
+* For the same reason, you don't need to shallowly clone your state anymore, as long as `state.update` is used for state updates.
 * When dealing a lot with promises, using [`async` / `await`](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Async_await) is usually simpler.
-* Utilities, like writing text to clipboard or creating pastes, if not exposed from the `client` object, can be typically found in the FlipperLib, for example: `tryGetFlipperLibImplementation()?.writeTextToClipboard(text)`.
+
+### Migration table
+
+Some abstractions that used to be (for example) static methods on `FlipperPlugin` are now exposed from the `client` object:
+
+| Old | New |
+| `persistedState` | Use `createState` and set the `persist` option |
+| `persistedStateReducer` | Create message handlers and update the state objects directly |
+| `exportPersistedState` | Use the `client.onExport` hook |
+| `getActiveNotifications` | Use `client.showNotification` for persistent notifications, or `message` / `notification` from `antd` for one-off notifications.
+| `createTablePlugin` | TBD, so these conversions can be skipped for now |
+
 
 ## Using Sandy / Ant.design to organise the plugin UI
 
@@ -138,6 +150,7 @@ For conversion, the following table maps the old components to the new ones:
 | `ManagedDataInspector` / `DataInspector` | `DataInspector` | `flipper-plugin` ||
 | `ManagedElementInspector` / `ElementInspector` | `ElementInspector` | `flipper-plugin` ||
 | `Panel` | `Panel` | `flipper-plugin` ||
+| `Tabs` / `Tab` | `Tabs` / `Tab` | `flipper-plugin ||
 
 Most other components, like `select` elements, tabs, date-pickers, etc etc can all be found in the Ant documentaiton.
 
