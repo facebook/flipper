@@ -463,6 +463,8 @@ A state atom object is returned by `createState`, exposing the following methods
 * `get(): T`: Returns the current value stored. If you want to use the atom object in a React component, consider using the `useValue` hook instead, to make sure the component is notified about future updates of this atom.
 * `set(newValue: T)`: Stores a new value into the atom. If the new value is not reference-equal to the previous one, all observing components will be notified.
 * `update(updater: (draft: Draft<T>) => void)`: Updates the current state using an [Immer](https://immerjs.github.io/immer/docs/introduction) recipe. In the `updater`, the `draft` object can be safely (deeply) mutated. Once the `updater` finishes, Immer will compute a new immutable object based on the changes, and store that. This is often simpler than using a combination of `get` and `set` if deep updates need to be made to the stored object.
+* `subscribe(listener: (value: T, prevValue: T) => void): () => void`: Subscribes a listener function to the state updates. Listener function will receive the next and previous value on each update. The method also returns function which can be called to unsubscribe the listener from further updates.
+* `unsubscribe(listener: (value: T, prevValue: T) => void): void`: Unsubscribes a listener function from the state updates if it was subscribed before.
 
 #### Example
 
@@ -472,9 +474,14 @@ import {createState} from 'flipper-plugin'
 const rows = createState<string[]>([], {persist: 'rows'});
 const selectedID = createState<string | null>(null, {persist: 'selection'});
 
-rows.set(["hello"])
+// Listener will be called on each rows.set() and rows.update() call until unsubscribed.
+const unsubscribe = rows.subscribe((value, prevValue) => {  
+  console.log(`Rows state updated. New length: ${value.length}. Prev length: ${prevValue.length}.`);
+});
+rows.set(["hello"]) // Listener will be notified about the change
 console.log(rows.get().length) // 1
-rows.update(draft => {
+unsubscribe(); // Do not notify listener anymore
+rows.update(draft => { // Listener won't be notified about the change
   draft.push("world")
 })
 console.log(rows.get().length) // 2

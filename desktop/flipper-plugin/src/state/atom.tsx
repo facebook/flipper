@@ -17,11 +17,13 @@ export type Atom<T> = {
   get(): T;
   set(newValue: T): void;
   update(recipe: (draft: Draft<T>) => void): void;
+  subscribe(listener: (value: T, prevValue: T) => void): () => void;
+  unsubscribe(listener: (value: T, prevValue: T) => void): void;
 };
 
 class AtomValue<T> implements Atom<T>, Persistable {
   value: T;
-  listeners: ((value: T) => void)[] = [];
+  listeners: ((value: T, prevValue: T) => void)[] = [];
 
   constructor(initialValue: T) {
     this.value = initialValue;
@@ -33,8 +35,9 @@ class AtomValue<T> implements Atom<T>, Persistable {
 
   set(nextValue: T) {
     if (nextValue !== this.value) {
+      const prevValue = this.value;
       this.value = nextValue;
-      this.notifyChanged();
+      this.notifyChanged(prevValue);
     }
   }
 
@@ -50,16 +53,17 @@ class AtomValue<T> implements Atom<T>, Persistable {
     this.set(produce(this.value, recipe));
   }
 
-  notifyChanged() {
+  notifyChanged(prevValue: T) {
     // TODO: add scheduling
-    this.listeners.slice().forEach((l) => l(this.value));
+    this.listeners.slice().forEach((l) => l(this.value, prevValue));
   }
 
-  subscribe(listener: (value: T) => void) {
+  subscribe(listener: (value: T, prevValue: T) => void) {
     this.listeners.push(listener);
+    return () => this.unsubscribe(listener);
   }
 
-  unsubscribe(listener: (value: T) => void) {
+  unsubscribe(listener: (value: T, prevValue: T) => void) {
     const idx = this.listeners.indexOf(listener);
     if (idx !== -1) {
       this.listeners.splice(idx, 1);
