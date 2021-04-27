@@ -16,6 +16,7 @@ import {Device, RealFlipperDevice} from './DevicePlugin';
 import {batched} from '../state/batch';
 import {Idler} from '../utils/Idler';
 import {Notification} from './Notification';
+import {Logger} from '../utils/Logger';
 
 type StateExportHandler<T = any> = (
   idler: Idler,
@@ -91,6 +92,11 @@ export interface BasePluginClient {
    * Writes text to the clipboard of the Operating System
    */
   writeTextToClipboard(text: string): void;
+
+  /**
+   * Logger instance that logs information to the console, but also to the internal logging (in FB only builds) and which can be used to track performance.
+   */
+  logger: Logger;
 }
 
 let currentPluginInstance: BasePluginInstance | undefined = undefined;
@@ -284,6 +290,7 @@ export abstract class BasePluginInstance {
       showNotification: (notification: Notification) => {
         this.flipperLib.showNotification(this.pluginKey, notification);
       },
+      logger: this.flipperLib.logger,
     };
   }
 
