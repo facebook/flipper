@@ -14,17 +14,13 @@ import {MessageRow} from '../';
 
 const fixRowTimestamps = (r: MessageRow): MessageRow => ({
   ...r,
-  columns: {
-    ...r.columns,
-    time: {value: '00:13:37'},
-  },
-  timestamp: 0,
+  time: new Date(Date.UTC(0, 0, 0, 0, 0, 0)),
 });
 
 test('It can store rows', () => {
   const {instance, ...plugin} = TestUtils.startPlugin(Plugin);
 
-  expect(instance.state.get().messageRows).toEqual([]);
+  expect(instance.rows.records()).toEqual([]);
   expect(instance.highlightedRow.get()).toBeUndefined();
 
   plugin.sendEvent('newMessage', {
@@ -39,78 +35,21 @@ test('It can store rows', () => {
     payload: {hello: 'world'},
   });
 
-  const newRows = instance.state.get().messageRows.map(fixRowTimestamps);
-  expect(newRows).toMatchInlineSnapshot(`
+  expect(instance.rows.records().map(fixRowTimestamps)).toMatchInlineSnapshot(`
     Array [
       Object {
-        "columns": Object {
-          "app": Object {
-            "isFilterable": true,
-            "value": "Flipper",
-          },
-          "device": Object {
-            "isFilterable": true,
-            "value": undefined,
-          },
-          "direction": Object {
-            "isFilterable": true,
-            "value": "toFlipper",
-          },
-          "internalMethod": Object {
-            "isFilterable": true,
-            "value": undefined,
-          },
-          "plugin": Object {
-            "isFilterable": true,
-            "value": undefined,
-          },
-          "pluginMethod": Object {
-            "isFilterable": true,
-            "value": undefined,
-          },
-          "time": Object {
-            "value": "00:13:37",
-          },
-        },
-        "key": "0",
-        "payload": undefined,
-        "timestamp": 0,
+        "app": "Flipper",
+        "direction": "toFlipper",
+        "time": 1899-12-31T00:00:00.000Z,
       },
       Object {
-        "columns": Object {
-          "app": Object {
-            "isFilterable": true,
-            "value": "FB4A",
-          },
-          "device": Object {
-            "isFilterable": true,
-            "value": "Android Phone",
-          },
-          "direction": Object {
-            "isFilterable": true,
-            "value": "toClient",
-          },
-          "internalMethod": Object {
-            "isFilterable": true,
-            "value": undefined,
-          },
-          "plugin": Object {
-            "isFilterable": true,
-            "value": undefined,
-          },
-          "pluginMethod": Object {
-            "isFilterable": true,
-            "value": undefined,
-          },
-          "time": Object {
-            "value": "00:13:37",
-          },
-        },
-        "key": "1",
+        "app": "FB4A",
+        "device": "Android Phone",
+        "direction": "toClient",
         "payload": Object {
           "hello": "world",
         },
-        "timestamp": 0,
+        "time": 1899-12-31T00:00:00.000Z,
       },
     ]
   `);
@@ -119,7 +58,7 @@ test('It can store rows', () => {
 test('It can clear', () => {
   const {instance, ...plugin} = TestUtils.startPlugin(Plugin);
 
-  expect(instance.state.get().messageRows).toEqual([]);
+  expect(instance.rows.records()).toEqual([]);
   expect(instance.highlightedRow.get()).toBeUndefined();
 
   plugin.sendEvent('newMessage', {
@@ -129,7 +68,7 @@ test('It can clear', () => {
 
   instance.clear();
 
-  const newRows = instance.state.get().messageRows.map(fixRowTimestamps);
+  const newRows = instance.rows.records().map(fixRowTimestamps);
   expect(newRows).toEqual([]);
 });
 
@@ -141,9 +80,10 @@ test('It can highlight a row', () => {
     direction: 'toFlipper',
   });
 
-  instance.setHighlightedRow(['0', '1', '2']);
+  instance.setHighlightedRow(instance.rows.records()[0]);
 
-  expect(instance.highlightedRow.get()).toEqual('0');
+  expect(instance.rows.records()).toHaveLength(1);
+  expect(instance.highlightedRow.get()?.app).toEqual('Flipper');
 });
 
 test('It can render empty', async () => {
@@ -155,4 +95,60 @@ test('It can render empty', async () => {
   ).not.toBeNull();
 });
 
-// TODO(T82512981): Can't test much more right now until UI conversion has happened.
+test('It can render rows', async () => {
+  const {renderer, ...plugin} = TestUtils.renderPlugin(Plugin);
+
+  plugin.sendEvent('newMessage', {
+    time: new Date(0, 0, 0, 0, 0, 0),
+    app: 'Flipper',
+    direction: 'toFlipper',
+  });
+
+  plugin.sendEvent('newMessage', {
+    time: new Date(0, 0, 0, 0, 0, 0),
+    app: 'FB4A',
+    direction: 'toClient',
+    device: 'Android Phone',
+    flipperInternalMethod: 'unique-string',
+    payload: {hello: 'world'},
+  });
+
+  expect((await renderer.findByText('unique-string')).parentElement)
+    .toMatchInlineSnapshot(`
+    <div
+      class="css-1k3kr6b-TableBodyRowContainer e1luu51r1"
+    >
+      <div
+        class="css-esqhnb-TableBodyColumnContainer e1luu51r0"
+      >
+        00:00:00.000
+      </div>
+      <div
+        class="css-esqhnb-TableBodyColumnContainer e1luu51r0"
+      >
+        Android Phone
+      </div>
+      <div
+        class="css-esqhnb-TableBodyColumnContainer e1luu51r0"
+      >
+        FB4A
+      </div>
+      <div
+        class="css-esqhnb-TableBodyColumnContainer e1luu51r0"
+      >
+        unique-string
+      </div>
+      <div
+        class="css-esqhnb-TableBodyColumnContainer e1luu51r0"
+      />
+      <div
+        class="css-esqhnb-TableBodyColumnContainer e1luu51r0"
+      />
+      <div
+        class="css-esqhnb-TableBodyColumnContainer e1luu51r0"
+      >
+        toClient
+      </div>
+    </div>
+  `);
+});
