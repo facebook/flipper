@@ -7,12 +7,12 @@
  * @format
  */
 
-import {ManagedDataInspector} from './ManagedDataInspector';
 import {Component, ReactNode} from 'react';
 import React from 'react';
 import {MarkerTimeline} from '../MarkerTimeline';
 import {Button} from 'antd';
 import {presetColors} from './DataDescription';
+import {DataInspector} from './DataInspector';
 
 type TimePoint = {
   moment: number;
@@ -74,7 +74,7 @@ export class TimelineDataDescription extends Component<Props, State> {
           />
         </div>
         <div>
-          <ManagedDataInspector
+          <DataInspector
             data={
               this.props.timeline.time.find(
                 (value) => value.key === this.state.selected,

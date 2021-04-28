@@ -99,13 +99,13 @@ export {HighlightManager} from './ui/Highlight';
 export {
   DataValueExtractor,
   DataInspectorExpanded,
-} from './ui/data-inspector/DataInspector';
+} from './ui/data-inspector/DataInspectorNode';
 export {
   DataDescriptionType,
   DataDescription,
 } from './ui/data-inspector/DataDescription';
 export {MarkerTimeline} from './ui/MarkerTimeline';
-export {ManagedDataInspector as DataInspector} from './ui/data-inspector/ManagedDataInspector';
+export {DataInspector} from './ui/data-inspector/DataInspector';
 
 export {
   ElementsInspector,
