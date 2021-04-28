@@ -13,13 +13,16 @@ import {Persistable, registerStorageAtom} from '../plugin/PluginBase';
 
 enableMapSet();
 
-export type Atom<T> = {
+export interface ReadOnlyAtom<T> {
   get(): T;
-  set(newValue: T): void;
-  update(recipe: (draft: Draft<T>) => void): void;
   subscribe(listener: (value: T, prevValue: T) => void): () => void;
   unsubscribe(listener: (value: T, prevValue: T) => void): void;
-};
+}
+
+export interface Atom<T> extends ReadOnlyAtom<T> {
+  set(newValue: T): void;
+  update(recipe: (draft: Draft<T>) => void): void;
+}
 
 class AtomValue<T> implements Atom<T>, Persistable {
   value: T;
@@ -93,9 +96,15 @@ export function createState(
   return atom;
 }
 
-export function useValue<T>(atom: Atom<T>): T;
-export function useValue<T>(atom: Atom<T> | undefined, defaultValue: T): T;
-export function useValue<T>(atom: Atom<T> | undefined, defaultValue?: T): T {
+export function useValue<T>(atom: ReadOnlyAtom<T>): T;
+export function useValue<T>(
+  atom: ReadOnlyAtom<T> | undefined,
+  defaultValue: T,
+): T;
+export function useValue<T>(
+  atom: ReadOnlyAtom<T> | undefined,
+  defaultValue?: T,
+): T {
   const [localValue, setLocalValue] = useState<T>(
     atom ? atom.get() : defaultValue!,
   );

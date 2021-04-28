@@ -54,12 +54,16 @@ A string that uniquely identifies the current application, is based on a combina
 
 A key that uniquely identifies this plugin instance, captures the current device/client/plugin combination.
 
+#### `connected`
 #### `isConnected`
 
 Returns whether there is currently an active connection. This is true if:
 1. The device is still connected
 2. The client is still connected
 3. The plugin is currently selected by the user _or_ the plugin is running in the background.
+
+The `connected` field provides the atom, that can be used in combination with `useValue` to subscribe to future updates in a component.
+In contrast, `isConnected` returns a boolean that merely captures the current state.
 
 ### Events listeners
 
@@ -99,7 +103,7 @@ export function plugin(client: PluginClient<Events, {}>) {
 
 Usage: `client.onUnhandledMessage(callback: (event: string, params) => void)`
 
-This method subscribe to all messages arriving from the devices which is not handled by an `onMessage` handler. 
+This method subscribe to all messages arriving from the devices which is not handled by an `onMessage` handler.
 This handler is untyped, and onMessage should be favored over using onUnhandledMessage if the event name is known upfront.
 
 #### `onActivate`
@@ -149,8 +153,8 @@ Trigger when the users navigates to this plugin using a deeplink, either from an
 
 Usage: `client.onExport(callback: (idler, onStatusMessage) => Promise<state>)`
 
-Overrides the default serialization behavior of this plugin. Should return a promise with persistable state that is to be stored, or nothing at all. 
-This process is async, so it is possible to first fetch some additional state from the device. 
+Overrides the default serialization behavior of this plugin. Should return a promise with persistable state that is to be stored, or nothing at all.
+This process is async, so it is possible to first fetch some additional state from the device.
 
 Serializable is defined as: non-cyclic data, consisting purely of primitive values, plain objects, arrays or Date, Set or Map objects.
 
@@ -477,7 +481,7 @@ const rows = createState<string[]>([], {persist: 'rows'});
 const selectedID = createState<string | null>(null, {persist: 'selection'});
 
 // Listener will be called on each rows.set() and rows.update() call until unsubscribed.
-const unsubscribe = rows.subscribe((value, prevValue) => {  
+const unsubscribe = rows.subscribe((value, prevValue) => {
   console.log(`Rows state updated. New length: ${value.length}. Prev length: ${prevValue.length}.`);
 });
 rows.set(["hello"]) // Listener will be notified about the change
@@ -493,12 +497,12 @@ console.log(rows.get().length) // 2
 
 Usage: `createDataSource<T>(initialSet?: T[], options?): DataSource<T>`
 
-Most Flipper plugins follow the basic concept of receiving events from the device, store them, and being able to tail, filter and search them. 
+Most Flipper plugins follow the basic concept of receiving events from the device, store them, and being able to tail, filter and search them.
 To optimise for this situation, there is a dedicated `createDataSource` abstraction which creates a `DataSource`.
-`DataSource` is a data collection that is heavily optimized for `append` and `update`, 
-which stores items based on insertion order, but also allows for efficient by-id lookups. 
+`DataSource` is a data collection that is heavily optimized for `append` and `update`,
+which stores items based on insertion order, but also allows for efficient by-id lookups.
 
-Each `DataSource` exposes a `view` property, which contains a `DataSourceView`. 
+Each `DataSource` exposes a `view` property, which contains a `DataSourceView`.
 A `DataSourceView` is a materialized view which can be sorted, filtered and windowed, and will be kept incrementally up to date with the underlying `DataSource`.
 
 When using the `DataTable` component, this `view` will be managed by the table automatically, giving plugin users the capability to freely sort, filter, search and tail your datasource.
@@ -532,7 +536,7 @@ export function devicePlugin(client: DevicePluginClient) {
 
 ### DataSource
 
-Stores large amounts of records efficiently. See [`createDataSource`](#createdatasource) for an introduction. 
+Stores large amounts of records efficiently. See [`createDataSource`](#createdatasource) for an introduction.
 
 #### limit
 
@@ -605,11 +609,11 @@ Usage: `fork(): DataSourceView`. Creates an additional materialized view on this
 
 ### DataSourceView
 
-A materialized view on a DataSource, which can apply windowing, sorting and filtering and will be kept incrementally up to date with the underlying datasource. 
-Note that the default window is empty, so after obtaining a `DataSourceView` one should typically call `setWindow`. 
-See [`createDataSource`](#createdatasource) for an introduction. 
+A materialized view on a DataSource, which can apply windowing, sorting and filtering and will be kept incrementally up to date with the underlying datasource.
+Note that the default window is empty, so after obtaining a `DataSourceView` one should typically call `setWindow`.
+See [`createDataSource`](#createdatasource) for an introduction.
 
-The DataSourceView API is important if are creating your own visualization of a `DataSource`. 
+The DataSourceView API is important if are creating your own visualization of a `DataSource`.
 However, if a `DataSource` is visualized using a `DataTable`, there is typically no need to directly interact with this API.
 
 #### datasource
@@ -646,13 +650,13 @@ Usage: `output(): T[]` or `output(start, end): T[]`. Returns a defensive copy of
 
 #### [Symbol.iterator]
 
-`DataSourceView` supports the iterator protocol, so the currently visible output can be iterated using for example `for (const user in users.view) { ... }`. The iterator will always apply the current window. 
+`DataSourceView` supports the iterator protocol, so the currently visible output can be iterated using for example `for (const user in users.view) { ... }`. The iterator will always apply the current window.
 
 #### setWindow
 
-Usage: `setWindow(start, end)`. This method sets the current visible window to the specified range (which will include `start`, but not `end`, so `[start, end)`). 
+Usage: `setWindow(start, end)`. This method sets the current visible window to the specified range (which will include `start`, but not `end`, so `[start, end)`).
 
-Setting a window impacts the default behavior of `output` and `iterator` and, more importantly, the behavior of any listener: `update` events that happen outside the window will not be propagated to any listeners, and `shift` events will describe whether the happened `in`, `before`, or `after` the current window. 
+Setting a window impacts the default behavior of `output` and `iterator` and, more importantly, the behavior of any listener: `update` events that happen outside the window will not be propagated to any listeners, and `shift` events will describe whether the happened `in`, `before`, or `after` the current window.
 
 Windowing will always be applied only after applying any filters, sorting and reversing.
 
@@ -662,13 +666,13 @@ Usage: `setFilter(filter: (record: T) => boolean)`. Applies a filter to the curr
 
 #### setSortBy
 
-Usage: `setSortBy(field: string)` or `setSortBy(sortBy: (irecord: T) => primitive)`. For example: `users.view.setSortBy("age")` or `users.viewSetSortBy(user => `${user.lastName} ${user.firstName}`)`. `setSortBy` will cause the data source to be sorted by the given field or criterium function. Sort is implemented efficiently by using a binary search to insert / remove newly arriving records, rather than performing a full sort. But this means that the sort function should be stable and pure. 
+Usage: `setSortBy(field: string)` or `setSortBy(sortBy: (irecord: T) => primitive)`. For example: `users.view.setSortBy("age")` or `users.viewSetSortBy(user => `${user.lastName} ${user.firstName}`)`. `setSortBy` will cause the data source to be sorted by the given field or criterium function. Sort is implemented efficiently by using a binary search to insert / remove newly arriving records, rather than performing a full sort. But this means that the sort function should be stable and pure.
 
 Sorting will always happen in ascending order, and if duplicate sort values appear, the insertion order will take precedence. To sort in descending order, use `setReversed`. If a view doesn't have sorting specified, it will always show records in insertion order.
 
 #### toggleRevered
 
-Usage: `toggleReversed()`. Toggles the output order between ascending and descending. 
+Usage: `toggleReversed()`. Toggles the output order between ascending and descending.
 
 #### setReversed
 
@@ -684,7 +688,7 @@ Usage: `get(index: number)`. Returns the record at the given position in the out
 
 #### setListener
 
-Usage: `setListener(callback: undefined | (event: OutputChange) => void)`. Sets up a listener that will get notified whenever the `output` or `size` of this view changes. This can be used to, for example, update the UI and is used by `DataTable` under the hood. 
+Usage: `setListener(callback: undefined | (event: OutputChange) => void)`. Sets up a listener that will get notified whenever the `output` or `size` of this view changes. This can be used to, for example, update the UI and is used by `DataTable` under the hood.
 The following events can be emitted. These events respect the current sorting, filtering and reversing. The shift `location` is expressed relatively to the current window. Now `update` events that are outside the current window will be emitted. `reset` events are typically emitted if a change happened that cannot be expressed in a limited amount of shifts / updates. Such as changing sorting or filtering, calling `clear()` or `reset()`, or doing a large `shift`.
 
 Currently only one listener is allowed at a time. Please contact the Flipper oncall if that doesn't suffice.
@@ -696,7 +700,7 @@ type OutputChange =
       index: number; // the position at which records were inserted or removed
       location: 'before' | 'in' | 'after'; // relative to current window
       delta: number; // how many records were inserted (postive number) or removed (negative number)
-      newCount: number; // the new .size of the DataSourceView 
+      newCount: number; // the new .size of the DataSourceView
     }
   | {
       // an item, inside the current window, was changed
@@ -758,9 +762,9 @@ interface Logger {
 
 Usage: `const eventHandler = useTrackedCallback("Interaction description", handlerFunction, deps)`
 
-Utility that wraps React's `useCallback` with tracking capabilities. 
+Utility that wraps React's `useCallback` with tracking capabilities.
 The API is similar, except that the first argument describes the interaction handled by the given event handler.
-See [Tracked](#tracked) for more info. 
+See [Tracked](#tracked) for more info.
 
 ### useMemoize
 
@@ -788,7 +792,7 @@ export function findMetroDevice(findMetroDevice, deviceList) {
 
 ### useLocalStorageState
 
-Like `useState`, but the value will be stored in local storage under the given key, and read back upon initialization. 
+Like `useState`, but the value will be stored in local storage under the given key, and read back upon initialization.
 The hook signature is similar to `useState`, except that the first argument is the storage key.
 The storage key will be scoped automatically to the current plugin and any additional tracking scopes. (See [`TrackingScope`](#trackingscope)).
 
@@ -803,7 +807,7 @@ const [showWhitespace, setShowWhitespace] = useLocalStorageState(
 
 ### Layout.*
 
-Layout elements can be used to organize the screen layout. 
+Layout elements can be used to organize the screen layout.
 See `View > Flipper Style Guide` inside the Flipper application for more details.
 
 ### DataTable
@@ -860,7 +864,7 @@ See `View > Flipper Style Guide` inside the Flipper application for more details
 ### DetailSidebar
 
 An element that can be passed children which will be shown in the right sidebar of Flipper.
-Horizontal scrolling will be enabled by default. 
+Horizontal scrolling will be enabled by default.
 To fine-tune the default dimensions use `width` and `minWidth`.
 It doesn't really matter where exactly this component is used in your layout, as the contents will be moved to the  main Flipper chrome, rather than being rendered in place.
 
@@ -868,7 +872,7 @@ It doesn't really matter where exactly this component is used in your layout, as
 
 ### Tracked
 
-An element that can be used to track user interactions. 
+An element that can be used to track user interactions.
 An example scuba query can be found [here](https://fburl.com/scuba/infinity_analytics_events/xryoq5j7).
 
 See `View > Flipper Style Guide` inside the Flipper application for more details.
@@ -892,25 +896,29 @@ See `View > Flipper Style Guide` inside the Flipper application for more details
 
 ## Utilities
 
+### createTablePlugin
+
+Utility to create a plugin that consists of a master table and details json view with minimal effort. See [../tutorial/js-table.mdx](Showing a table) for more details.
+
 ### batch
 
 Usage: `batch(() => { /* state updates */ })`
 
-Low-level utility to batch state updates to reduce the amount of potential re-renders by React. 
-Wraps React's `unstable_batchedUpdates`. 
-Event handlers provided by React or `flipper-plugin` already apply `batch` automatically, so using this utility is only recommended when updating plugin state in an asynchronous process. 
+Low-level utility to batch state updates to reduce the amount of potential re-renders by React.
+Wraps React's `unstable_batchedUpdates`.
+Event handlers provided by React or `flipper-plugin` already apply `batch` automatically, so using this utility is only recommended when updating plugin state in an asynchronous process.
 
 ### produce
 
 A convenience re-export of `produce` from [Immer](https://immerjs.github.io/immer/docs/produce).
-The `update` method of the state atoms returned by `createState` automatically applies `produce` to its updater function. 
+The `update` method of the state atoms returned by `createState` automatically applies `produce` to its updater function.
 
 ### renderReactRoot
 
 Usage: `renderReactRoot(handler: (unmount: () => void) => React.ReactElement)`
 
-Renders an element outside the current DOM tree. 
-This is a low-level utility that can be used to render for example Modal dialogs. 
+Renders an element outside the current DOM tree.
+This is a low-level utility that can be used to render for example Modal dialogs.
 The provided `handler` function should return the root element to be rendered.
 Once the element can be removed from the DOM, the `unmount` callback should be called.
 Example:
@@ -934,7 +942,7 @@ Creates a promise that automatically resolves after the specified amount of mill
 
 ## styled
 
-A convenience re-export of `styled` from [emotion](https://emotion.sh/docs/styled).  
+A convenience re-export of `styled` from [emotion](https://emotion.sh/docs/styled).
 
 ## TestUtils
 

@@ -25,6 +25,7 @@ import {CaretDownFilled, CaretUpFilled} from '@ant-design/icons';
 import {Layout} from '../Layout';
 import {Sorting, SortDirection, DataTableDispatch} from './DataTableManager';
 import {FilterButton, FilterIcon} from './ColumnFilter';
+import {toFirstUpper} from '../../utils/toFirstUpper';
 
 const {Text} = Typography;
 
@@ -187,7 +188,13 @@ function TableHeadColumn({
         role="button"
         tabIndex={0}>
         <Text type="secondary">
-          {column.title ?? <>&nbsp;</>}
+          {column.title === undefined ? (
+            toFirstUpper(column.key)
+          ) : column.title === '' ? (
+            <>&nbsp;</>
+          ) : (
+            column.title
+          )}
           <SortIcons
             direction={sorted}
             onSort={(dir) =>

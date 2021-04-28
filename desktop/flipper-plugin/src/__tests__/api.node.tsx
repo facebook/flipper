@@ -49,6 +49,7 @@ test('Correct top level API exposed', () => {
       "batch",
       "createDataSource",
       "createState",
+      "createTablePlugin",
       "produce",
       "renderReactRoot",
       "sleep",

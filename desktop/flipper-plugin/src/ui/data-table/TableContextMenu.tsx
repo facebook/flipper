@@ -19,6 +19,7 @@ import React from 'react';
 import {tryGetFlipperLibImplementation} from '../../plugin/FlipperLib';
 import {DataTableColumn} from './DataTable';
 import {DataSource} from '../../state/DataSource';
+import {toFirstUpper} from '../../utils/toFirstUpper';
 
 const {Item, SubMenu} = Menu;
 
@@ -137,5 +138,5 @@ export function tableContextMenuFactory<T>(
 
 function friendlyColumnTitle(column: DataTableColumn<any>): string {
   const name = column.title || column.key;
-  return name[0].toUpperCase() + name.substr(1);
+  return toFirstUpper(name);
 }

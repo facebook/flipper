@@ -62,6 +62,8 @@ type State = {
  * An optional resetMethod argument can be provided which will replace the current rows with the
  * data provided. This is useful when connecting to Flipper for this first time, or reconnecting to
  * the client in an unknown state.
+ *
+ * @deprecated use createTablePlugin from flipper-plugin instead
  */
 export function createTablePlugin<T extends RowData>(props: Props<T>) {
   return class extends FlipperPlugin<State, any, PersistedState<T>> {
