@@ -46,6 +46,7 @@ import {useAssertStableRef} from '../../utils/useAssertStableRef';
 import {Formatter} from '../DataFormatter';
 import {usePluginInstance} from '../../plugin/PluginContext';
 import {debounce} from 'lodash';
+import {StaticDataSourceRenderer} from './StaticDataSourceRenderer';
 
 interface DataTableProps<T = any> {
   columns: DataTableColumn<T>[];
@@ -59,6 +60,8 @@ interface DataTableProps<T = any> {
   _testHeight?: number; // exposed for unit testing only
   onCopyRows?(records: T[]): string;
   onContextMenu?: (selection: undefined | T) => React.ReactElement;
+  searchbar?: boolean;
+  scrollable?: boolean;
 }
 
 type DataTableInput<T = any> =
@@ -403,23 +406,34 @@ export function DataTable<T extends object>(
     // eslint-disable-next-line
   }, []);
 
-  return (
-    <Layout.Container grow>
+  const header = (
+    <Layout.Container>
+      {props.searchbar !== false && (
+        <TableSearch
+          searchValue={searchValue}
+          useRegex={tableState.useRegex}
+          dispatch={dispatch as any}
+          contextMenu={contexMenu}
+          extraActions={props.extraActions}
+        />
+      )}
+      <TableHead
+        visibleColumns={visibleColumns}
+        dispatch={dispatch as any}
+        sorting={sorting}
+        scrollbarSize={
+          props.scrollable === false
+            ? 0
+            : 15 /* width on MacOS: TODO, determine dynamically */
+        }
+      />
+    </Layout.Container>
+  );
+
+  const mainSection =
+    props.scrollable !== false ? (
       <Layout.Top>
-        <Layout.Container>
-          <TableSearch
-            searchValue={searchValue}
-            useRegex={tableState.useRegex}
-            dispatch={dispatch as any}
-            contextMenu={contexMenu}
-            extraActions={props.extraActions}
-          />
-          <TableHead
-            visibleColumns={visibleColumns}
-            dispatch={dispatch as any}
-            sorting={sorting}
-          />
-        </Layout.Container>
+        {header}
         <DataSourceRenderer<T, RenderContext<T>>
           dataSource={dataSource}
           autoScroll={tableState.autoScroll && !dragging.current}
@@ -435,6 +449,24 @@ export function DataTable<T extends object>(
           _testHeight={props._testHeight}
         />
       </Layout.Top>
+    ) : (
+      <Layout.Container>
+        {header}
+        <StaticDataSourceRenderer<T, RenderContext<T>>
+          dataSource={dataSource}
+          useFixedRowHeight={!tableState.usesWrapping}
+          defaultRowHeight={DEFAULT_ROW_HEIGHT}
+          context={renderingConfig}
+          itemRenderer={itemRenderer}
+          onKeyDown={onKeyDown}
+          emptyRenderer={emptyRenderer}
+        />
+      </Layout.Container>
+    );
+
+  return (
+    <Layout.Container grow={props.scrollable !== false}>
+      {mainSection}
       {props.autoScroll && (
         <AutoScroller>
           <PushpinFilled
@@ -481,7 +513,7 @@ function syncRecordsToDataSource<T>(ds: DataSource<T>, records: T[]) {
   // TODO: optimize in the case we're only dealing with appends or replacements
   records.forEach((r) => ds.append(r));
   const duration = Math.abs(Date.now() - startTime);
-  if (duration > 50 || records.length > 1000) {
+  if (duration > 50 || records.length > 500) {
     console.warn(
       "The 'records' props is only intended to be used on small datasets. Please use a 'dataSource' instead. See createDataSource for details: https://fbflipper.com/docs/extending/flipper-plugin#createdatasource",
     );

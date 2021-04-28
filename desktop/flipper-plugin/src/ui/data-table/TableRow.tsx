@@ -68,7 +68,7 @@ TableBodyRowContainer.displayName = 'TableRow:TableBodyRowContainer';
 const TableBodyColumnContainer = styled.div<{
   width: Width;
   multiline?: boolean;
-  justifyContent: 'left' | 'right' | 'center' | 'flex-start';
+  justifyContent: 'left' | 'right' | 'center';
 }>((props) => ({
   display: 'block',
   flexShrink: props.width === undefined ? 1 : 0,
@@ -80,6 +80,7 @@ const TableBodyColumnContainer = styled.div<{
   whiteSpace: props.multiline ? 'pre-wrap' : 'nowrap',
   wordWrap: props.multiline ? 'break-word' : 'normal',
   width: props.width,
+  textAlign: props.justifyContent,
   justifyContent: props.justifyContent,
   '&::selection': {
     color: 'inherit',
@@ -128,7 +129,7 @@ export const TableRow = memo(function TableRow({
             <TableBodyColumnContainer
               key={col.key as string}
               multiline={col.wrap}
-              justifyContent={col.align ? col.align : 'flex-start'}
+              justifyContent={col.align ? col.align : 'left'}
               width={col.width}>
               {value}
             </TableBodyColumnContainer>

@@ -104,19 +104,21 @@ const TableHeadColumnContainer = styled.div<{
 }));
 TableHeadColumnContainer.displayName = 'TableHead:TableHeadColumnContainer';
 
-const TableHeadContainer = styled.div({
-  position: 'relative',
-  display: 'flex',
-  flexDirection: 'row',
-  borderBottom: `1px solid ${theme.dividerColor}`,
-  backgroundColor: theme.backgroundWash,
-  userSelect: 'none',
-  whiteSpace: 'nowrap',
-  borderLeft: `4px solid ${theme.backgroundWash}`, // space for selection, see TableRow
-  // hardcoded value to correct for the scrollbar in the main container.
-  // ideally we should measure this instead.
-  paddingRight: 15,
-});
+const TableHeadContainer = styled.div<{scrollbarSize: number}>(
+  ({scrollbarSize}) => ({
+    position: 'relative',
+    display: 'flex',
+    flexDirection: 'row',
+    borderBottom: `1px solid ${theme.dividerColor}`,
+    backgroundColor: theme.backgroundWash,
+    userSelect: 'none',
+    whiteSpace: 'nowrap',
+    borderLeft: `4px solid ${theme.backgroundWash}`, // space for selection, see TableRow
+    // hardcoded value to correct for the scrollbar in the main container.
+    // ideally we should measure this instead.
+    paddingRight: scrollbarSize,
+  }),
+);
 TableHeadContainer.displayName = 'TableHead:TableHeadContainer';
 
 const RIGHT_RESIZABLE = {right: true};
@@ -221,13 +223,15 @@ export const TableHead = memo(function TableHead({
   visibleColumns,
   dispatch,
   sorting,
+  scrollbarSize,
 }: {
   dispatch: DataTableDispatch<any>;
   visibleColumns: DataTableColumn<any>[];
   sorting: Sorting | undefined;
+  scrollbarSize: number;
 }) {
   return (
-    <TableHeadContainer>
+    <TableHeadContainer scrollbarSize={scrollbarSize}>
       {visibleColumns.map((column, i) => (
         <TableHeadColumn
           key={column.key}
