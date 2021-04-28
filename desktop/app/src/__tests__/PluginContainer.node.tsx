@@ -80,7 +80,7 @@ test('Plugin container can render plugin and receive updates', async () => {
           </h1>
         </div>
         <div
-          class="css-o0040c-View-FlexBox-FlexRow"
+          class="css-724x97-View-FlexBox-FlexRow"
           id="detailsSidebar"
         />
       </div>
@@ -172,7 +172,7 @@ test('PluginContainer can render Sandy plugins', async () => {
           </div>
         </div>
         <div
-          class="css-o0040c-View-FlexBox-FlexRow"
+          class="css-724x97-View-FlexBox-FlexRow"
           id="detailsSidebar"
         />
       </div>
@@ -203,7 +203,7 @@ test('PluginContainer can render Sandy plugins', async () => {
           </div>
         </div>
         <div
-          class="css-o0040c-View-FlexBox-FlexRow"
+          class="css-724x97-View-FlexBox-FlexRow"
           id="detailsSidebar"
         />
       </div>
@@ -271,7 +271,7 @@ test('PluginContainer can render Sandy plugins', async () => {
           </div>
         </div>
         <div
-          class="css-o0040c-View-FlexBox-FlexRow"
+          class="css-724x97-View-FlexBox-FlexRow"
           id="detailsSidebar"
         />
       </div>
@@ -512,7 +512,7 @@ test('PluginContainer + Sandy plugin supports deeplink', async () => {
           </h1>
         </div>
         <div
-          class="css-o0040c-View-FlexBox-FlexRow"
+          class="css-724x97-View-FlexBox-FlexRow"
           id="detailsSidebar"
         />
       </div>
@@ -543,7 +543,7 @@ test('PluginContainer + Sandy plugin supports deeplink', async () => {
           </h1>
         </div>
         <div
-          class="css-o0040c-View-FlexBox-FlexRow"
+          class="css-724x97-View-FlexBox-FlexRow"
           id="detailsSidebar"
         />
       </div>
@@ -665,7 +665,7 @@ test('PluginContainer can render Sandy device plugins', async () => {
           </div>
         </div>
         <div
-          class="css-o0040c-View-FlexBox-FlexRow"
+          class="css-724x97-View-FlexBox-FlexRow"
           id="detailsSidebar"
         />
       </div>
@@ -697,7 +697,7 @@ test('PluginContainer can render Sandy device plugins', async () => {
           </div>
         </div>
         <div
-          class="css-o0040c-View-FlexBox-FlexRow"
+          class="css-724x97-View-FlexBox-FlexRow"
           id="detailsSidebar"
         />
       </div>
@@ -790,7 +790,7 @@ test('PluginContainer + Sandy device plugin supports deeplink', async () => {
           </h1>
         </div>
         <div
-          class="css-o0040c-View-FlexBox-FlexRow"
+          class="css-724x97-View-FlexBox-FlexRow"
           id="detailsSidebar"
         />
       </div>
@@ -821,7 +821,7 @@ test('PluginContainer + Sandy device plugin supports deeplink', async () => {
           </h1>
         </div>
         <div
-          class="css-o0040c-View-FlexBox-FlexRow"
+          class="css-724x97-View-FlexBox-FlexRow"
           id="detailsSidebar"
         />
       </div>
