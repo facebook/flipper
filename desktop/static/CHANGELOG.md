@@ -1,3 +1,8 @@
+# 0.87.0 (28/4/2021)
+
+ * [D27910514](https://github.com/facebook/flipper/search?q=D27910514&type=Commits) -  Severed RSocket connections are no longer treated as an error in plugin code
+
+
 # 0.86.0 (21/4/2021)
 
  * [D27685983](https://github.com/facebook/flipper/search?q=D27685983&type=Commits) -  [Layout] Addressed several performance issues in the layout plugin

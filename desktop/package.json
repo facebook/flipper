@@ -258,7 +258,7 @@
     "tsc-plugins": "./ts-node scripts/tsc-plugins.ts",
     "watch": "node --expose-gc ./node_modules/.bin/jest --watch"
   },
-  "version": "0.86.0",
+  "version": "0.87.0",
   "workspaces": {
     "packages": [
       "app",
