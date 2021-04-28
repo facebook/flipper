@@ -26,6 +26,7 @@ import {useHighlighter, HighlightManager} from '../Highlight';
 import {Dropdown, Menu, Tooltip} from 'antd';
 import {tryGetFlipperLibImplementation} from '../../plugin/FlipperLib';
 import {safeStringify} from '../../utils/safeStringify';
+import {useInUnitTest} from '../../utils/useInUnitTest()';
 
 export {DataValueExtractor} from './DataPreview';
 
@@ -300,6 +301,7 @@ export const DataInspectorNode: React.FC<DataInspectorProps> = memo(
   }) {
     const highlighter = useHighlighter();
     const getRoot = useContext(RootDataContext);
+    const isUnitTest = useInUnitTest();
 
     const shouldExpand = useRef(false);
     const expandHandle = useRef(undefined as any);
@@ -366,14 +368,20 @@ export const DataInspectorNode: React.FC<DataInspectorProps> = memo(
       if (!shouldExpand.current) {
         setRenderExpanded(false);
       } else {
-        expandHandle.current = requestIdleCallback(() => {
+        if (isUnitTest) {
           setRenderExpanded(true);
-        });
+        } else {
+          expandHandle.current = requestIdleCallback(() => {
+            setRenderExpanded(true);
+          });
+        }
       }
       return () => {
-        cancelIdleCallback(expandHandle.current);
+        if (!isUnitTest) {
+          cancelIdleCallback(expandHandle.current);
+        }
       };
-    }, [shouldExpand.current]);
+    }, [shouldExpand.current, isUnitTest]);
 
     const setExpanded = useCallback(
       (pathParts: Array<string>, isExpanded: boolean) => {
@@ -387,10 +395,12 @@ export const DataInspectorNode: React.FC<DataInspectorProps> = memo(
     );
 
     const handleClick = useCallback(() => {
-      cancelIdleCallback(expandHandle.current);
+      if (!isUnitTest) {
+        cancelIdleCallback(expandHandle.current);
+      }
       const isExpanded = shouldBeExpanded(expandedPaths, path, collapsed);
       setExpanded(path, !isExpanded);
-    }, [expandedPaths, path, collapsed]);
+    }, [expandedPaths, path, collapsed, isUnitTest]);
 
     const handleDelete = useCallback(
       (path: Array<string>) => {

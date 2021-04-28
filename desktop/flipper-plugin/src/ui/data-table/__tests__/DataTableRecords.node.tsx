@@ -38,9 +38,7 @@ const columns: DataTableColumn[] = [
 
 test('update and append', async () => {
   let records = createTestRecords();
-  const rendering = render(
-    <DataTable records={records} columns={columns} _testHeight={400} />,
-  );
+  const rendering = render(<DataTable records={records} columns={columns} />);
   {
     const elem = await rendering.findAllByText('test DataTable');
     expect(elem.length).toBe(1);
@@ -63,9 +61,7 @@ test('update and append', async () => {
   }
 
   function rerender() {
-    rendering.rerender(
-      <DataTable records={records} columns={columns} _testHeight={400} />,
-    );
+    rendering.rerender(<DataTable records={records} columns={columns} />);
   }
 
   // append

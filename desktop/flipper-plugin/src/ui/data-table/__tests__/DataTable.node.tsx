@@ -43,12 +43,7 @@ test('update and append', async () => {
   const ds = createTestDataSource();
   const ref = createRef<DataTableManager<Todo>>();
   const rendering = render(
-    <DataTable
-      dataSource={ds}
-      columns={columns}
-      tableManagerRef={ref}
-      _testHeight={400}
-    />,
+    <DataTable dataSource={ds} columns={columns} tableManagerRef={ref} />,
   );
   {
     const elem = await rendering.findAllByText('test DataTable');
@@ -100,12 +95,7 @@ test('column visibility', async () => {
   const ds = createTestDataSource();
   const ref = createRef<DataTableManager<Todo>>();
   const rendering = render(
-    <DataTable
-      dataSource={ds}
-      columns={columns}
-      tableManagerRef={ref}
-      _testHeight={400}
-    />,
+    <DataTable dataSource={ds} columns={columns} tableManagerRef={ref} />,
   );
   {
     const elem = await rendering.findAllByText('test DataTable');
@@ -176,12 +166,7 @@ test('sorting', async () => {
   });
   const ref = createRef<DataTableManager<Todo>>();
   const rendering = render(
-    <DataTable
-      dataSource={ds}
-      columns={columns}
-      tableManagerRef={ref}
-      _testHeight={400}
-    />,
+    <DataTable dataSource={ds} columns={columns} tableManagerRef={ref} />,
   );
   // insertion order
   {
@@ -256,7 +241,6 @@ test('search', async () => {
       columns={columns}
       tableManagerRef={ref}
       extraActions={<Button>Test Button</Button>}
-      _testHeight={400}
     />,
   );
   {
@@ -540,7 +524,6 @@ test('onSelect callback fires, and in order', () => {
       dataSource={ds}
       columns={columns}
       tableManagerRef={ref}
-      _testHeight={400}
       onSelect={(item, items) => {
         events.push([item, items]);
       }}
@@ -592,7 +575,6 @@ test('selection always has the latest state', () => {
       dataSource={ds}
       columns={columns}
       tableManagerRef={ref}
-      _testHeight={400}
       onSelect={(item, items) => {
         events.push([item, items]);
       }}

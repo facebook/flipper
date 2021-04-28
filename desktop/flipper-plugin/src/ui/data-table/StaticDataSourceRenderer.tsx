@@ -10,7 +10,6 @@
 import React, {memo, useCallback, useEffect, useState} from 'react';
 import {DataSource} from '../../state/DataSource';
 import {useVirtual} from 'react-virtual';
-import styled from '@emotion/styled';
 import {RedrawContext} from './DataSourceRenderer';
 
 export type DataSourceVirtualizer = ReturnType<typeof useVirtual>;

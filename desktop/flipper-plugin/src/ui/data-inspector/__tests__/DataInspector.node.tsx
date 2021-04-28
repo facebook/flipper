@@ -13,35 +13,6 @@ import {render, fireEvent, waitFor, act} from '@testing-library/react';
 import {DataInspector} from '../DataInspector';
 import {sleep} from '../../../utils/sleep';
 
-const mocks = {
-  requestIdleCallback(fn: Function) {
-    return setTimeout(fn, 1);
-  },
-  cancelIdleCallback(handle: any) {
-    clearTimeout(handle);
-  },
-};
-
-beforeAll(() => {
-  Object.keys(mocks).forEach((key) => {
-    // @ts-ignore
-    if (!global[key]) {
-      // @ts-ignore
-      global[key] = mocks[key];
-    }
-  });
-});
-
-afterAll(() => {
-  Object.keys(mocks).forEach((key) => {
-    // @ts-ignore
-    if (global[key] === mocks[key]) {
-      // @ts-ignore
-      delete global[key];
-    }
-  });
-});
-
 const json = {
   data: {
     is: {

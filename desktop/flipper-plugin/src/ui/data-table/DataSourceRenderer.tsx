@@ -22,6 +22,7 @@ import {DataSource} from '../../state/DataSource';
 import {useVirtual} from 'react-virtual';
 import styled from '@emotion/styled';
 import observeRect from '@reach/observe-rect';
+import {useInUnitTest} from '../../utils/useInUnitTest()';
 
 // how fast we update if updates are low-prio (e.g. out of window and not super significant)
 const LOW_PRIO_UPDATE = 1000; //ms
@@ -89,7 +90,6 @@ export const DataSourceRenderer: <T extends object, C>(
   onRangeChange,
   onUpdateAutoScroll,
   emptyRenderer,
-  _testHeight,
 }: DataSourceProps<any, any>) {
   /**
    * Virtualization
@@ -100,13 +100,12 @@ export const DataSourceRenderer: <T extends object, C>(
   const [, setForceUpdate] = useState(0);
   const forceHeightRecalculation = useRef(0);
   const parentRef = React.useRef<null | HTMLDivElement>(null);
+  const isUnitTest = useInUnitTest();
 
   const virtualizer = useVirtual({
     size: dataSource.view.size,
     parentRef,
-    useObserver: _testHeight
-      ? () => ({height: _testHeight, width: 1000})
-      : undefined,
+    useObserver: isUnitTest ? () => ({height: 500, width: 1000}) : undefined,
     // eslint-disable-next-line
       estimateSize: useCallback(() => defaultRowHeight, [forceHeightRecalculation.current, defaultRowHeight]),
     overscan: 0,
@@ -138,7 +137,7 @@ export const DataSourceRenderer: <T extends object, C>(
           // the height of some existing rows might have changed
           forceHeightRecalculation.current++;
         }
-        if (_testHeight) {
+        if (isUnitTest) {
           // test environment, update immediately
           forceUpdate();
           return;
@@ -202,7 +201,7 @@ export const DataSourceRenderer: <T extends object, C>(
         dataSource.view.setListener(undefined);
       };
     },
-    [dataSource, setForceUpdate, useFixedRowHeight, _testHeight],
+    [dataSource, setForceUpdate, useFixedRowHeight, isUnitTest],
   );
 
   useEffect(() => {

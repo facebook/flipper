@@ -47,6 +47,7 @@ import {Formatter} from '../DataFormatter';
 import {usePluginInstance} from '../../plugin/PluginContext';
 import {debounce} from 'lodash';
 import {StaticDataSourceRenderer} from './StaticDataSourceRenderer';
+import {useInUnitTest} from '../../utils/useInUnitTest()';
 
 interface DataTableProps<T = any> {
   columns: DataTableColumn<T>[];
@@ -57,7 +58,6 @@ interface DataTableProps<T = any> {
   onRowStyle?(record: T): CSSProperties | undefined;
   // multiselect?: true
   tableManagerRef?: RefObject<DataTableManager<T> | undefined>; // Actually we want a MutableRefObject, but that is not what React.createRef() returns, and we don't want to put the burden on the plugin dev to cast it...
-  _testHeight?: number; // exposed for unit testing only
   onCopyRows?(records: T[]): string;
   onContextMenu?: (selection: undefined | T) => React.ReactElement;
   searchbar?: boolean;
@@ -113,11 +113,10 @@ export function DataTable<T extends object>(
   useAssertStableRef(props.columns, 'columns');
   useAssertStableRef(onCopyRows, 'onCopyRows');
   useAssertStableRef(onContextMenu, 'onContextMenu');
-  useAssertStableRef(props._testHeight, '_testHeight');
+  const isUnitTest = useInUnitTest();
 
-  // lint disabled for conditional inclusion of a hook (_testHeight is asserted to be stable)
   // eslint-disable-next-line
-  const scope = props._testHeight ? "" : usePluginInstance().pluginKey;
+  const scope = isUnitTest ? "" : usePluginInstance().pluginKey;
   const virtualizerRef = useRef<DataSourceVirtualizer | undefined>();
   const [tableState, dispatch] = useReducer(
     dataTableManagerReducer as DataTableReducer<T>,
@@ -273,7 +272,7 @@ export function DataTable<T extends object>(
         computeDataTableFilter(search, useRegex, columns),
       );
     };
-    return props._testHeight ? setFilter : debounce(setFilter, 250);
+    return isUnitTest ? setFilter : debounce(setFilter, 250);
   });
   useEffect(
     function updateFilter() {
@@ -360,7 +359,7 @@ export function DataTable<T extends object>(
   );
 
   /** Context menu */
-  const contexMenu = props._testHeight
+  const contexMenu = isUnitTest
     ? undefined
     : // eslint-disable-next-line
     useCallback(
@@ -446,7 +445,6 @@ export function DataTable<T extends object>(
           onRangeChange={onRangeChange}
           onUpdateAutoScroll={onUpdateAutoScroll}
           emptyRenderer={emptyRenderer}
-          _testHeight={props._testHeight}
         />
       </Layout.Top>
     ) : (
@@ -479,7 +477,7 @@ export function DataTable<T extends object>(
           />
         </AutoScroller>
       )}
-      {range && <RangeFinder>{range}</RangeFinder>}
+      {range && !isUnitTest && <RangeFinder>{range}</RangeFinder>}
     </Layout.Container>
   );
 }
