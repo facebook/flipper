@@ -10,7 +10,6 @@
 import {Filter} from '../filter/types';
 import {TableColumns} from '../table/types';
 import {PureComponent} from 'react';
-import Toolbar from '../Toolbar';
 import Input from '../Input';
 import {colors} from '../colors';
 import Text from '../Text';
@@ -21,7 +20,7 @@ import styled from '@emotion/styled';
 import {debounce} from 'lodash';
 import ToggleButton from '../ToggleSwitch';
 import React from 'react';
-import {Layout, theme} from 'flipper-plugin';
+import {Layout, theme, Toolbar} from 'flipper-plugin';
 
 const SearchBar = styled(Toolbar)({
   height: 42,

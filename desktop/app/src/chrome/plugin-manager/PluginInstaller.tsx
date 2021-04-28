@@ -11,7 +11,6 @@ import {
   FlexColumn,
   styled,
   ManagedTable_immutable,
-  Toolbar,
   SearchInput,
   SearchBox,
   Button,
@@ -43,6 +42,7 @@ import {State as AppState} from '../../reducers';
 import {connect} from 'react-redux';
 import {Dispatch, Action} from 'redux';
 import PluginPackageInstaller from './PluginPackageInstaller';
+import {Toolbar} from 'flipper-plugin';
 
 const TAG = 'PluginInstaller';
 

@@ -57,6 +57,7 @@ export {
 } from './ui/NUX';
 export {Sidebar as _Sidebar} from './ui/Sidebar';
 export {DetailSidebar} from './ui/DetailSidebar';
+export {Toolbar} from './ui/Toolbar';
 
 export {renderReactRoot} from './utils/renderReactRoot';
 export {

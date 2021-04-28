@@ -6,7 +6,7 @@ exports[`load PluginInstaller list 1`] = `
     class="css-9dawc5-View-FlexBox-FlexColumn"
   >
     <div
-      class="css-1lxv8hi-Container-Horizontal-SandyToolbarContainer e13mj6h81"
+      class="css-1lxv8hi-Container-Horizontal-SandyToolbarContainer e1ecpah20"
     >
       <div
         class="css-bl14sl-View-FlexBox-SearchBox e271nro4"
@@ -241,7 +241,7 @@ exports[`load PluginInstaller list 1`] = `
     </div>
   </div>
   <div
-    class="css-1lxv8hi-Container-Horizontal-SandyToolbarContainer e13mj6h81"
+    class="css-1lxv8hi-Container-Horizontal-SandyToolbarContainer e1ecpah20"
   >
     <div
       class="css-1spj5hr-View-FlexBox-FlexRow-Container ersmi542"
@@ -308,7 +308,7 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
     class="css-9dawc5-View-FlexBox-FlexColumn"
   >
     <div
-      class="css-1lxv8hi-Container-Horizontal-SandyToolbarContainer e13mj6h81"
+      class="css-1lxv8hi-Container-Horizontal-SandyToolbarContainer e1ecpah20"
     >
       <div
         class="css-bl14sl-View-FlexBox-SearchBox e271nro4"
@@ -543,7 +543,7 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
     </div>
   </div>
   <div
-    class="css-1lxv8hi-Container-Horizontal-SandyToolbarContainer e13mj6h81"
+    class="css-1lxv8hi-Container-Horizontal-SandyToolbarContainer e1ecpah20"
   >
     <div
       class="css-1spj5hr-View-FlexBox-FlexRow-Container ersmi542"

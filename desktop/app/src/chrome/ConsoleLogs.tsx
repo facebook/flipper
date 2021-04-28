@@ -8,14 +8,14 @@
  */
 
 import {useMemo} from 'react';
-import {Button, Toolbar, ButtonGroup, Layout} from '../ui';
+import {Button, ButtonGroup, Layout} from '../ui';
 import React from 'react';
 import {Console, Hook} from 'console-feed';
 import type {Methods} from 'console-feed/lib/definitions/Methods';
 import type {Styles} from 'console-feed/lib/definitions/Styles';
 import {createState, useValue} from 'flipper-plugin';
 import {useLocalStorageState} from 'flipper-plugin';
-import {theme} from 'flipper-plugin';
+import {theme, Toolbar} from 'flipper-plugin';
 import {useIsDarkMode} from '../utils/useIsDarkMode';
 
 const MAX_LOG_ITEMS = 1000;

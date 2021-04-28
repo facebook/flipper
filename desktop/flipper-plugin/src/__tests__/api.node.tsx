@@ -43,6 +43,7 @@ test('Correct top level API exposed', () => {
       "Tab",
       "Tabs",
       "TestUtils",
+      "Toolbar",
       "Tracked",
       "TrackingScope",
       "batch",

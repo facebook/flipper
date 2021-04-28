@@ -88,10 +88,9 @@ const Container = styled.div<ContainerProps>(
   }),
 );
 
-const Horizontal = styled(Container)<{wrap?: boolean}>(({wrap}) => ({
+const Horizontal = styled(Container)({
   flexDirection: 'row',
-  flexWrap: wrap ? 'wrap' : undefined,
-}));
+});
 
 const ScrollParent = styled.div<{axis?: ScrollAxis}>(({axis}) => ({
   flex: 1,

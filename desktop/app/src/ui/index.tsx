@@ -104,7 +104,7 @@ export {default as FlexBox} from './components/FlexBox';
 export {default as FlexRow} from './components/FlexRow';
 export {default as FlexColumn} from './components/FlexColumn';
 export {default as FlexCenter} from './components/FlexCenter';
-export {default as Toolbar, Spacer} from './components/Toolbar';
+export {Spacer} from './components/Toolbar';
 export {default as ToolbarIcon} from './components/ToolbarIcon';
 export {default as Panel} from './components/Panel';
 export {default as Text} from './components/Text';

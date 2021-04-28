@@ -12,8 +12,7 @@ import Panel from '../ui/components/Panel';
 import {colors} from '../ui/components/colors';
 import styled from '@emotion/styled';
 import Text from '../ui/components/Text';
-import Toolbar from '../ui/components/Toolbar';
-import Spacer from '../ui/components/Toolbar';
+import {Spacer} from '../ui/components/Toolbar';
 import Button from '../ui/components/Button';
 import Select from '../ui/components/Select';
 import ErrorBlock from '../ui/components/ErrorBlock';
@@ -35,6 +34,7 @@ import {ReactNode} from 'react';
 import React from 'react';
 import {KeyboardActions} from '../MenuBar';
 import {BundledPluginDetails} from 'flipper-plugin-lib';
+import {Toolbar} from 'flipper-plugin';
 
 type ID = string;
 
