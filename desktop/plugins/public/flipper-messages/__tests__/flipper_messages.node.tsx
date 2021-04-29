@@ -119,33 +119,40 @@ test('It can render rows', async () => {
       class="css-1k3kr6b-TableBodyRowContainer e1luu51r1"
     >
       <div
-        class="css-esqhnb-TableBodyColumnContainer e1luu51r0"
+        class="css-1vr131n-TableBodyColumnContainer e1luu51r0"
+        width="14%"
       >
         00:00:00.000
       </div>
       <div
-        class="css-esqhnb-TableBodyColumnContainer e1luu51r0"
+        class="css-1vr131n-TableBodyColumnContainer e1luu51r0"
+        width="14%"
       >
         Android Phone
       </div>
       <div
-        class="css-esqhnb-TableBodyColumnContainer e1luu51r0"
+        class="css-1vr131n-TableBodyColumnContainer e1luu51r0"
+        width="14%"
       >
         FB4A
       </div>
       <div
-        class="css-esqhnb-TableBodyColumnContainer e1luu51r0"
+        class="css-1vr131n-TableBodyColumnContainer e1luu51r0"
+        width="14%"
       >
         unique-string
       </div>
       <div
-        class="css-esqhnb-TableBodyColumnContainer e1luu51r0"
+        class="css-1vr131n-TableBodyColumnContainer e1luu51r0"
+        width="14%"
       />
       <div
-        class="css-esqhnb-TableBodyColumnContainer e1luu51r0"
+        class="css-1vr131n-TableBodyColumnContainer e1luu51r0"
+        width="14%"
       />
       <div
-        class="css-esqhnb-TableBodyColumnContainer e1luu51r0"
+        class="css-1vr131n-TableBodyColumnContainer e1luu51r0"
+        width="14%"
       >
         toClient
       </div>

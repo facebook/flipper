@@ -442,8 +442,22 @@ function loadStateFromStorage(storageKey: string): PersistedState | undefined {
 function computeInitialColumns(
   columns: DataTableColumn<any>[],
 ): DataTableColumn<any>[] {
+  const visibleColumnCount = columns.filter((c) => c.visible !== false).length;
+  const columnsWithoutWidth = columns.filter((c) => c.width === undefined)
+    .length;
+
   return columns.map((c) => ({
     ...c,
+    width:
+      c.width ??
+      // if the width is not set, and there are multiple columns with unset widths,
+      // there will be multiple columns ith the same flex weight (1), meaning that
+      // they will all resize a best fits in a specifc row.
+      // To address that we distribute space equally
+      // (this need further fine tuning in the future as with a subset of fixed columns width can become >100%)
+      (columnsWithoutWidth > 1
+        ? `${Math.floor(100 / visibleColumnCount)}%`
+        : undefined),
     filters:
       c.filters?.map((f) => ({
         ...f,
