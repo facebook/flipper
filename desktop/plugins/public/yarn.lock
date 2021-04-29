@@ -1270,10 +1270,10 @@ raf@^3.4.0:
   dependencies:
     performance-now "^2.1.0"
 
-react-devtools-core@~4.10.3:
-  version "4.10.3"
-  resolved "https://registry.yarnpkg.com/react-devtools-core/-/react-devtools-core-4.10.3.tgz#30580721d7e9a1568a55b7107f2b6cdce6502e63"
-  integrity sha512-2CtceOczycfR1Th5B+lIPA1NnGODdbeTLTLZVCYmdXfdmvR5h1+cgr0f+R7HtWbTeIcG5PXUK1/YDnELP5opQA==
+react-devtools-core@^4.13.0:
+  version "4.13.0"
+  resolved "https://registry.yarnpkg.com/react-devtools-core/-/react-devtools-core-4.13.0.tgz#fa80ee03b1a975c1d9898e24de841e45a4b22d30"
+  integrity sha512-KR+0pLw8wTjOVr+9AECe5ctmycaAjbmxN3bbdB0vmlwm0JkxNnKMxDzanf+4V8IuPBQWgm8qdWpbSOqhu1l14g==
   dependencies:
     shell-quote "^1.6.1"
     ws "^7"
@@ -1465,9 +1465,9 @@ safe-regex@^1.1.0:
     ret "~0.1.10"
 
 scheduler@^0.20.1:
-  version "0.20.1"
-  resolved "https://registry.yarnpkg.com/scheduler/-/scheduler-0.20.1.tgz#da0b907e24026b01181ecbc75efdc7f27b5a000c"
-  integrity sha512-LKTe+2xNJBNxu/QhHvDR14wUXHRQbVY5ZOYpOGWRzhydZUqrLb2JBvLPY7cAqFmqrWuDED0Mjk7013SZiOz6Bw==
+  version "0.20.2"
+  resolved "https://registry.yarnpkg.com/scheduler/-/scheduler-0.20.2.tgz#4baee39436e34aa93b4874bddcbf0fe8b8b50e91"
+  integrity sha512-2eWfGgAqqWFGqtdMmcL5zCMK1U8KlXv8SQFGglL3CEtd0aDVDWgeF/YoCmvln55m5zSk3J/20hTaSBeSObsQDQ==
   dependencies:
     loose-envify "^1.1.0"
     object-assign "^4.1.1"
