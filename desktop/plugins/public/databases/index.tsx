@@ -11,7 +11,6 @@ import {
   styled,
   produce,
   Toolbar,
-  Select,
   ManagedTable,
   Text,
   Button,
@@ -47,7 +46,11 @@ import {
   usePlugin,
   useValue,
   Layout,
+  useMemoize,
 } from 'flipper-plugin';
+import {Select} from 'antd';
+
+const {Option} = Select;
 
 const PAGE_SIZE = 50;
 
@@ -1040,14 +1043,49 @@ export function Component() {
     [instance],
   );
 
-  const tableOptions =
-    (state.selectedDatabase &&
-      state.databases[state.selectedDatabase - 1] &&
-      state.databases[state.selectedDatabase - 1].tables.reduce(
-        (options, tableName) => ({...options, [tableName]: tableName}),
-        {},
-      )) ||
-    {};
+  const databaseOptions = useMemoize(
+    (databases) =>
+      databases.map((x) => (
+        <Option key={x.name} value={x.name} label={x.name}>
+          {x.name}
+        </Option>
+      )),
+    [state.databases],
+  );
+
+  const selectedDatabaseName = useMemoize(
+    (selectedDatabase: number, databases: DatabaseEntry[]) =>
+      selectedDatabase && databases[state.selectedDatabase - 1]
+        ? databases[selectedDatabase - 1].name
+        : undefined,
+    [state.selectedDatabase, state.databases],
+  );
+
+  const tableOptions = useMemoize(
+    (selectedDatabase: number, databases: DatabaseEntry[]) =>
+      selectedDatabase && databases[state.selectedDatabase - 1]
+        ? databases[selectedDatabase - 1].tables.map((tableName) => (
+            <Option key={tableName} value={tableName} label={tableName}>
+              {tableName}
+            </Option>
+          ))
+        : [],
+    [state.selectedDatabase, state.databases],
+  );
+
+  const selectedTableName = useMemoize(
+    (
+      selectedDatabase: number,
+      databases: DatabaseEntry[],
+      selectedDatabaseTable: string | null,
+    ) =>
+      selectedDatabase && databases[selectedDatabase - 1]
+        ? databases[selectedDatabase - 1].tables.find(
+            (t) => t === selectedDatabaseTable,
+          ) ?? databases[selectedDatabase - 1].tables[0]
+        : undefined,
+    [state.selectedDatabase, state.databases, state.selectedDatabaseTable],
+  );
 
   return (
     <Layout.Container grow>
@@ -1092,23 +1130,20 @@ export function Component() {
         <Toolbar position="top" style={{paddingLeft: 16}}>
           <BoldSpan style={{marginRight: 16}}>Database</BoldSpan>
           <Select
-            options={state.databases
-              .map((x) => x.name)
-              .reduce(
-                (obj, item) => Object.assign({}, obj, {[item]: item}),
-                {},
-              )}
-            selected={state.databases[state.selectedDatabase - 1]?.name}
+            showSearch
+            value={selectedDatabaseName}
             onChange={onDatabaseSelected}
-            style={{maxWidth: 300}}
-          />
+            style={{width: 200}}>
+            {databaseOptions}
+          </Select>
           <BoldSpan style={{marginLeft: 16, marginRight: 16}}>Table</BoldSpan>
           <Select
-            options={tableOptions}
-            selected={state.selectedDatabaseTable}
+            showSearch
+            value={selectedTableName}
             onChange={onDatabaseTableSelected}
-            style={{maxWidth: 300}}
-          />
+            style={{width: 200}}>
+            {tableOptions}
+          </Select>
           <div />
           <Button onClick={onRefreshClicked}>Refresh</Button>
         </Toolbar>
@@ -1118,15 +1153,12 @@ export function Component() {
           <Toolbar position="top" style={{paddingLeft: 16}}>
             <BoldSpan style={{marginRight: 16}}>Database</BoldSpan>
             <Select
-              options={state.databases
-                .map((x) => x.name)
-                .reduce(
-                  (obj, item) => Object.assign({}, obj, {[item]: item}),
-                  {},
-                )}
-              selected={state.databases[state.selectedDatabase - 1]?.name}
+              showSearch
+              value={selectedDatabaseName}
               onChange={onDatabaseSelected}
-            />
+              style={{width: 200}}>
+              {databaseOptions}
+            </Select>
           </Toolbar>
           {
             <Textarea

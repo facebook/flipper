@@ -23,6 +23,7 @@
     "redux-mock-store": "^1.0.1"
   },
   "peerDependencies": {
+    "antd": "*",
     "flipper-plugin": "*"
   },
   "bugs": {
