@@ -10,20 +10,16 @@
 import {
   styled,
   produce,
-  Toolbar,
   ManagedTable,
-  Text,
-  Input,
   colors,
   getStringFromErrorLike,
-  Textarea,
   TableBodyColumn,
   TableRows,
   TableBodyRow,
   TableRowSortOrder,
-  Value,
   renderValue,
   TableHighlightedRows,
+  Value,
 } from 'flipper';
 import React, {KeyboardEvent, ChangeEvent, useState, useCallback} from 'react';
 import {Methods, Events} from './ClientProtocol';
@@ -44,6 +40,7 @@ import {
   useValue,
   Layout,
   useMemoize,
+  Toolbar,
 } from 'flipper-plugin';
 import {
   Select,
@@ -53,6 +50,7 @@ import {
   Button,
   Menu,
   Dropdown,
+  Input,
 } from 'antd';
 import {
   ConsoleSqlOutlined,
@@ -65,7 +63,11 @@ import {
   TableOutlined,
 } from '@ant-design/icons';
 
+const {TextArea} = Input;
+
 const {Option} = Select;
+
+const {Text} = Typography;
 
 const PAGE_SIZE = 50;
 const FAVORITES_LOCAL_STORAGE_KEY = 'plugin-database-favorites-sql-queries';
@@ -84,14 +86,6 @@ const ErrorBar = styled.div({
 });
 const QueryHistoryManagedTable = styled(ManagedTable)({paddingLeft: 16});
 const PageInfoContainer = styled(Layout.Horizontal)({alignItems: 'center'});
-const TableInfoTextArea = styled(Textarea)({
-  width: '98%',
-  height: '100%',
-  marginLeft: '1%',
-  marginTop: '1%',
-  marginBottom: '1%',
-  readOnly: true,
-});
 
 type DatabasesPluginState = {
   selectedDatabase: number;
@@ -1211,7 +1205,7 @@ export function Component() {
             </Select>
           </Toolbar>
           {
-            <Textarea
+            <TextArea
               style={{
                 width: '98%',
                 height: '40%',
@@ -1234,6 +1228,7 @@ export function Component() {
             position="top"
             style={{paddingLeft: 16, paddingTop: 24, paddingBottom: 24}}>
             <Layout.Right>
+              <div />
               <Layout.Horizontal gap>
                 <Button
                   icon={
@@ -1256,12 +1251,13 @@ export function Component() {
                     Choose from previous queries <DownOutlined />
                   </Button>
                 </Dropdown>
+                <Button
+                  type="primary"
+                  onClick={onExecuteClicked}
+                  title={'Execute SQL [Ctrl+Return]'}>
+                  Execute
+                </Button>
               </Layout.Horizontal>
-              <Button
-                onClick={onExecuteClicked}
-                title={'Execute SQL [Ctrl+Return]'}>
-                Execute
-              </Button>
             </Layout.Right>
           </Toolbar>
         </div>
@@ -1288,8 +1284,16 @@ export function Component() {
             />
           ) : null}
           {state.viewMode === 'tableInfo' ? (
-            <TableInfoTextArea
+            <TextArea
               value={sqlFormatter.format(state.tableInfo)}
+              style={{
+                width: '98%',
+                height: '98%',
+                marginLeft: 16,
+                marginTop: '1%',
+                marginBottom: '1%',
+                resize: 'vertical',
+              }}
               readOnly
             />
           ) : null}
