@@ -33,7 +33,7 @@
     "babel-eslint": "^10.0.1",
     "eslint": "^7.25.0",
     "eslint-config-fbjs": "^3.1.1",
-    "eslint-config-prettier": "^8.2.0",
+    "eslint-config-prettier": "^8.3.0",
     "eslint-import-resolver-typescript": "^2.4.0",
     "eslint-plugin-babel": "^5.3.0",
     "eslint-plugin-flowtype": "^5.7.2",
