@@ -15,23 +15,16 @@ import {
   Panel,
   theme,
   Layout,
+  DetailSidebar,
+  DataTable,
+  DataTableColumn,
 } from 'flipper-plugin';
 import adb from 'adbkit';
 import TemperatureTable from './TemperatureTable';
-import {Button, Typography} from 'antd';
+import {Button, Typography, Switch} from 'antd';
 import {PlayCircleOutlined, PauseCircleOutlined} from '@ant-design/icons';
 
-import {
-  Toolbar,
-  ManagedTable,
-  colors,
-  styled,
-  DetailSidebar,
-  ToggleButton,
-} from 'flipper';
-import React, {useState} from 'react';
-
-type TableRows = any;
+import React, {useCallback, useState} from 'react';
 
 // we keep vairable name with underline for to physical path mappings on device
 type CPUFrequency = {
@@ -59,56 +52,6 @@ type CPUState = {
 };
 
 type ShellCallBack = (output: string) => any;
-
-const ColumnSizes = {
-  cpu_id: '10%',
-  scaling_cur_freq: 'flex',
-  scaling_min_freq: 'flex',
-  scaling_max_freq: 'flex',
-  cpuinfo_min_freq: 'flex',
-  cpuinfo_max_freq: 'flex',
-};
-
-const Columns = {
-  cpu_id: {
-    value: 'CPU ID',
-    resizable: true,
-  },
-  scaling_cur_freq: {
-    value: 'Scaling Current',
-    resizable: true,
-  },
-  scaling_min_freq: {
-    value: 'Scaling MIN',
-    resizable: true,
-  },
-  scaling_max_freq: {
-    value: 'Scaling MAX',
-    resizable: true,
-  },
-  cpuinfo_min_freq: {
-    value: 'MIN Frequency',
-    resizable: true,
-  },
-  cpuinfo_max_freq: {
-    value: 'MAX Frequency',
-    resizable: true,
-  },
-  scaling_governor: {
-    value: 'Scaling Governor',
-    resizable: true,
-  },
-};
-
-const Heading = styled.div({
-  fontWeight: 'bold',
-  fontSize: 13,
-  display: 'block',
-  marginBottom: 10,
-  '&:not(:first-child)': {
-    marginTop: 20,
-  },
-});
 
 // check if str is a number
 function isNormalInteger(str: string) {
@@ -328,9 +271,13 @@ export function devicePlugin(client: PluginClient<{}, {}>) {
   };
 
   const onStartMonitor = () => {
-    if (intervalID) {
+    if (cpuState.get().monitoring) {
       return;
     }
+
+    cpuState.update((draft) => {
+      draft.monitoring = true;
+    });
 
     for (let i = 0; i < cpuState.get().cpuCount; ++i) {
       readAvailableGovernors(i).then((output) => {
@@ -341,6 +288,9 @@ export function devicePlugin(client: PluginClient<{}, {}>) {
     }
 
     const update = async () => {
+      if (!cpuState.get().monitoring) {
+        return;
+      }
       const promises = [];
       for (let i = 0; i < cpuState.get().cpuCount; ++i) {
         promises.push(readCoreFrequency(i));
@@ -352,23 +302,15 @@ export function devicePlugin(client: PluginClient<{}, {}>) {
     };
 
     intervalID = setTimeout(update, 500);
-    cpuState.update((draft) => {
-      draft.monitoring = true;
-    });
   };
 
   const onStopMonitor = () => {
-    if (!intervalID) {
-      return;
-    } else {
-      clearInterval(intervalID);
-      intervalID = null;
-      cpuState.update((draft) => {
-        draft.monitoring = false;
-        return draft;
-      });
-      cleanup();
-    }
+    intervalID && clearInterval(intervalID);
+    intervalID = null;
+    cpuState.update((draft) => {
+      draft.monitoring = false;
+      return draft;
+    });
   };
 
   const cleanup = () => {
@@ -450,6 +392,59 @@ export function devicePlugin(client: PluginClient<{}, {}>) {
   };
 }
 
+const columns: DataTableColumn[] = [
+  {key: 'cpu_id', title: 'CPU ID'},
+  {key: 'scaling_cur_freq', title: 'Current Frequency'},
+  {key: 'scaling_min_freq', title: 'Scaling min'},
+  {key: 'scaling_max_freq', title: 'Scaling max'},
+  {key: 'cpuinfo_min_freq', title: 'CPU min'},
+  {key: 'cpuinfo_max_freq', title: 'CPU max'},
+  {key: 'scaling_governor', title: 'Scaling governor'},
+];
+
+const cpuSidebarColumns: DataTableColumn[] = [
+  {
+    key: 'key',
+    title: 'key',
+    wrap: true,
+  },
+  {
+    key: 'value',
+    title: 'value',
+    wrap: true,
+  },
+];
+
+const getRowStyle = (freq: CPUFrequency) => {
+  if (freq.scaling_cur_freq == -2) {
+    return {
+      backgroundColor: theme.backgroundWash,
+      color: theme.textColorPrimary,
+      fontWeight: 700,
+    };
+  } else if (
+    freq.scaling_min_freq != freq.cpuinfo_min_freq &&
+    freq.scaling_min_freq > 0 &&
+    freq.cpuinfo_min_freq > 0
+  ) {
+    return {
+      backgroundColor: theme.warningColor,
+      color: theme.textColorPrimary,
+      fontWeight: 700,
+    };
+  } else if (
+    freq.scaling_max_freq != freq.cpuinfo_max_freq &&
+    freq.scaling_max_freq > 0 &&
+    freq.cpuinfo_max_freq > 0
+  ) {
+    return {
+      backgroundColor: theme.backgroundWash,
+      color: theme.textColorSecondary,
+      fontWeight: 700,
+    };
+  }
+};
+
 export function Component() {
   const instance = usePlugin(devicePlugin);
   const {
@@ -463,92 +458,20 @@ export function Component() {
 
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
 
-  const buildRow = (freq: CPUFrequency, idx: number) => {
-    const selected = selectedIds.indexOf(idx) >= 0;
-    let style = {};
-    if (freq.scaling_cur_freq == -2) {
-      style = {
-        style: {
-          backgroundColor: colors.blueTint30,
-          color: colors.white,
-          fontWeight: 700,
-        },
-      };
-    } else if (
-      freq.scaling_min_freq != freq.cpuinfo_min_freq &&
-      freq.scaling_min_freq > 0 &&
-      freq.cpuinfo_min_freq > 0
-    ) {
-      style = {
-        style: {
-          backgroundColor: selected ? colors.red : colors.redTint,
-          color: colors.red,
-          fontWeight: 700,
-        },
-      };
-    } else if (
-      freq.scaling_max_freq != freq.cpuinfo_max_freq &&
-      freq.scaling_max_freq > 0 &&
-      freq.cpuinfo_max_freq > 0
-    ) {
-      style = {
-        style: {
-          backgroundColor: colors.yellowTint,
-          color: colors.yellow,
-          fontWeight: 700,
-        },
-      };
-    }
-
+  const buildRow = (freq: CPUFrequency) => {
     return {
-      columns: {
-        cpu_id: {value: <Typography.Text>CPU_{freq.cpu_id}</Typography.Text>},
-        scaling_cur_freq: {
-          value: (
-            <Typography.Text>
-              {formatFrequency(freq.scaling_cur_freq)}
-            </Typography.Text>
-          ),
-        },
-        scaling_min_freq: {
-          value: (
-            <Typography.Text>
-              {formatFrequency(freq.scaling_min_freq)}
-            </Typography.Text>
-          ),
-        },
-        scaling_max_freq: {
-          value: (
-            <Typography.Text>
-              {formatFrequency(freq.scaling_max_freq)}
-            </Typography.Text>
-          ),
-        },
-        cpuinfo_min_freq: {
-          value: (
-            <Typography.Text>
-              {formatFrequency(freq.cpuinfo_min_freq)}
-            </Typography.Text>
-          ),
-        },
-        cpuinfo_max_freq: {
-          value: (
-            <Typography.Text>
-              {formatFrequency(freq.cpuinfo_max_freq)}
-            </Typography.Text>
-          ),
-        },
-        scaling_governor: {
-          value: <Typography.Text>{freq.scaling_governor}</Typography.Text>,
-        },
-      },
-      key: freq.cpu_id,
-
-      style,
+      core: freq.cpu_id,
+      cpu_id: `CPU_${freq.cpu_id}`,
+      scaling_cur_freq: formatFrequency(freq.scaling_cur_freq),
+      scaling_min_freq: formatFrequency(freq.scaling_min_freq),
+      scaling_max_freq: formatFrequency(freq.scaling_max_freq),
+      cpuinfo_min_freq: formatFrequency(freq.cpuinfo_min_freq),
+      cpuinfo_max_freq: formatFrequency(freq.cpuinfo_max_freq),
+      scaling_governor: freq.scaling_governor,
     };
   };
 
-  const frequencyRows = (cpuFreqs: Array<CPUFrequency>): TableRows => {
+  const frequencyRows = (cpuFreqs: Array<CPUFrequency>) => {
     return cpuFreqs.map(buildRow);
   };
 
@@ -560,28 +483,24 @@ export function Component() {
     return (
       <Typography.Text>
         {freq.scaling_available_freqs.map((freq, idx) => {
-          const style: React.CSSProperties = {};
-          if (
+          const bold =
             freq == info.scaling_cur_freq ||
             freq == info.scaling_min_freq ||
-            freq == info.scaling_max_freq
-          ) {
-            style.fontWeight = 'bold';
-          }
+            freq == info.scaling_max_freq;
           return (
-            <Typography.Text key={idx} style={style}>
+            <Typography.Text key={idx} strong={bold}>
               {formatFrequency(freq)}
               {freq == info.scaling_cur_freq && (
-                <Typography.Text style={style}>
+                <Typography.Text strong={bold}>
                   {' '}
                   (scaling current)
                 </Typography.Text>
               )}
               {freq == info.scaling_min_freq && (
-                <Typography.Text style={style}> (scaling min)</Typography.Text>
+                <Typography.Text strong={bold}> (scaling min)</Typography.Text>
               )}
               {freq == info.scaling_max_freq && (
-                <Typography.Text style={style}> (scaling max)</Typography.Text>
+                <Typography.Text strong={bold}> (scaling max)</Typography.Text>
               )}
               <br />
             </Typography.Text>
@@ -600,13 +519,8 @@ export function Component() {
 
   const buildSidebarRow = (key: string, val: any) => {
     return {
-      columns: {
-        key: {value: <Typography.Text>{key}</Typography.Text>},
-        value: {
-          value: val,
-        },
-      },
       key: key,
+      value: val,
     };
   };
 
@@ -634,34 +548,14 @@ export function Component() {
       return null;
     }
     const id = selectedIds[0];
-    const cols = {
-      key: {
-        value: 'key',
-        resizable: true,
-      },
-      value: {
-        value: 'value',
-        resizable: true,
-      },
-    };
-    const colSizes = {
-      key: '35%',
-      value: 'flex',
-    };
     return (
       <DetailSidebar width={500}>
-        <Panel pad={theme.space.small} title="CPU details">
-          <Heading>CPU_{id}</Heading>
-          <ManagedTable
-            columnSizes={colSizes}
-            multiline={true}
-            columns={cols}
-            autoHeight={true}
-            floating={false}
-            zebra={true}
-            rows={sidebarRows(id)}
-          />
-        </Panel>
+        <Typography.Title>CPU Details: CPU_{id}</Typography.Title>
+        <DataTable
+          records={sidebarRows(id)}
+          columns={cpuSidebarColumns}
+          scrollable={false}
+        />
       </DetailSidebar>
     );
   };
@@ -672,7 +566,10 @@ export function Component() {
     }
     return (
       <DetailSidebar width={500}>
-        <Panel pad={theme.space.small} title="Thermal Information">
+        <Panel
+          pad={theme.space.small}
+          title="Thermal Information"
+          collapsible={false}>
           {cpuState.thermalAccessible ? (
             <TemperatureTable temperatureMap={cpuState.temperatureMap} />
           ) : (
@@ -683,9 +580,14 @@ export function Component() {
     );
   };
 
+  const setSelected = useCallback((selected: any) => {
+    setSelectedIds(selected ? [selected.core] : []);
+  }, []);
+
   return (
-    <Panel pad={theme.space.small} title="CPU info">
-      <Toolbar position="top">
+    <Layout.Container pad={theme.space.medium}>
+      <Typography.Title>CPU Info</Typography.Title>
+      <Layout.Horizontal gap={theme.space.small} center>
         {cpuState.monitoring ? (
           <Button onClick={onStopMonitor} icon={<PauseCircleOutlined />}>
             Pause
@@ -696,37 +598,30 @@ export function Component() {
           </Button>
         )}
         &nbsp; {cpuState.hardwareInfo}
-        <ToggleButton
-          toggled={cpuState.displayThermalInfo}
+        <Switch
+          checked={cpuState.displayThermalInfo}
           onClick={toggleThermalSidebar}
         />
         Thermal Information
-        <ToggleButton
+        <Switch
           onClick={toggleCPUSidebar}
-          toggled={cpuState.displayCPUDetail}
+          checked={cpuState.displayCPUDetail}
         />
         CPU Details
         {cpuState.displayCPUDetail &&
           selectedIds.length == 0 &&
           ' (Please select a core in the table below)'}
-      </Toolbar>
+      </Layout.Horizontal>
 
-      <Layout.Container grow={true}>
-        <ManagedTable
-          multiline={true}
-          columnSizes={ColumnSizes}
-          columns={Columns}
-          autoHeight={true}
-          floating={false}
-          zebra={true}
-          rows={frequencyRows(cpuState.cpuFreq)}
-          onRowHighlighted={(selectedIds) => {
-            setSelectedIds(selectedIds.map(parseInt));
-          }}
-        />
-        {renderCPUSidebar()}
-        {renderThermalSidebar()}
-      </Layout.Container>
-    </Panel>
+      <DataTable
+        records={frequencyRows(cpuState.cpuFreq)}
+        columns={columns}
+        scrollable={false}
+        onSelect={setSelected}
+        onRowStyle={getRowStyle}
+      />
+      {renderCPUSidebar()}
+      {renderThermalSidebar()}
+    </Layout.Container>
   );
 }
