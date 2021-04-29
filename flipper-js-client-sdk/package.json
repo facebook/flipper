@@ -31,7 +31,7 @@
     "@typescript-eslint/eslint-plugin": "^4.22.0",
     "ansi-to-html": "^0.6.3",
     "babel-eslint": "^10.0.1",
-    "eslint": "^7.24.0",
+    "eslint": "^7.25.0",
     "eslint-config-fbjs": "^3.1.1",
     "eslint-config-prettier": "^8.2.0",
     "eslint-import-resolver-typescript": "^2.4.0",
