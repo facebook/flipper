@@ -16,11 +16,12 @@ import {
   Value,
   valueToNullableString,
   renderValue,
-  Button,
   styled,
   produce,
   colors,
 } from 'flipper';
+
+import {Button} from 'antd';
 
 type TableRow = {
   col: string;

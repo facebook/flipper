@@ -13,12 +13,9 @@ import {
   Toolbar,
   ManagedTable,
   Text,
-  Button,
-  ButtonGroup,
   Input,
   colors,
   getStringFromErrorLike,
-  Spacer,
   Textarea,
   TableBodyColumn,
   TableRows,
@@ -48,18 +45,30 @@ import {
   Layout,
   useMemoize,
 } from 'flipper-plugin';
-import {Select, Radio, RadioChangeEvent, Typography} from 'antd';
+import {
+  Select,
+  Radio,
+  RadioChangeEvent,
+  Typography,
+  Button,
+  Menu,
+  Dropdown,
+} from 'antd';
 import {
   ConsoleSqlOutlined,
   DatabaseOutlined,
+  DownOutlined,
   HistoryOutlined,
   SettingOutlined,
+  StarFilled,
+  StarOutlined,
   TableOutlined,
 } from '@ant-design/icons';
 
 const {Option} = Select;
 
 const PAGE_SIZE = 50;
+const FAVORITES_LOCAL_STORAGE_KEY = 'plugin-database-favorites-sql-queries';
 
 const BoldSpan = styled.span({
   fontSize: 12,
@@ -97,7 +106,6 @@ type DatabasesPluginState = {
   currentSort: TableRowSortOrder | null;
   query: Query | null;
   queryResult: QueryResult | null;
-  favorites: Array<string>;
   executionTime: number;
   tableInfo: string;
   queryHistory: Array<Query>;
@@ -174,11 +182,12 @@ const QueryHistory = React.memo(({history}: {history: Array<Query>}) => {
   };
   const rows: TableRows = [];
   if (history.length > 0) {
-    for (const query of history) {
+    for (let i = 0; i < history.length; i++) {
+      const query = history[i];
       const time = query.time;
       const value = query.value;
       rows.push({
-        key: value,
+        key: `${i}`,
         columns: {time: {value: time}, query: {value: value}},
       });
     }
@@ -387,6 +396,29 @@ const QueryTable = React.memo(
   },
 );
 
+const FavoritesMenu = React.memo(
+  ({
+    favorites,
+    onClick,
+  }: {
+    favorites: string[];
+    onClick: (value: string) => void;
+  }) => {
+    const onMenuClick = useCallback((p: any) => onClick(p.key as string), [
+      onClick,
+    ]);
+    return (
+      <Menu>
+        {favorites.map((q) => (
+          <Menu.Item key={q} onClick={onMenuClick}>
+            {q}
+          </Menu.Item>
+        ))}
+      </Menu>
+    );
+  },
+);
+
 export function plugin(client: PluginClient<Events, Methods>) {
   const pluginState = createState<DatabasesPluginState>({
     selectedDatabase: 0,
@@ -401,10 +433,17 @@ export function plugin(client: PluginClient<Events, Methods>) {
     currentSort: null,
     query: null,
     queryResult: null,
-    favorites: [],
     executionTime: 0,
     tableInfo: '',
     queryHistory: [],
+  });
+
+  const favoritesState = createState<string[]>([], {persist: 'favorites'});
+  favoritesState.subscribe((favorites) => {
+    localStorage.setItem(
+      FAVORITES_LOCAL_STORAGE_KEY,
+      JSON.stringify(favorites),
+    );
   });
 
   const updateDatabases = (event: {
@@ -632,23 +671,15 @@ export function plugin(client: PluginClient<Events, Methods>) {
     });
   };
 
-  const updateFavorites = (event: {favorites: Array<string> | undefined}) => {
-    const state = pluginState.get();
-    const newFavorites = [...(event.favorites || state.favorites)];
-    if (state.query) {
-      const value = state.query.value;
-      const index = newFavorites.indexOf(value);
+  const addOrRemoveQueryToFavorites = (query: string) => {
+    favoritesState.update((favorites) => {
+      const index = favorites.indexOf(query);
       if (index < 0) {
-        newFavorites.push(value);
+        favorites.push(query);
       } else {
-        newFavorites.splice(index, 1);
+        favorites.splice(index, 1);
       }
-    }
-    pluginState.set({...state, favorites: newFavorites});
-    window.localStorage.setItem(
-      'plugin-database-favorites-sql-queries',
-      JSON.stringify(newFavorites),
-    );
+    });
   };
 
   const sortByChanged = (event: {sortOrder: TableRowSortOrder}) => {
@@ -793,15 +824,21 @@ export function plugin(client: PluginClient<Events, Methods>) {
         databases,
       });
     });
-    updateFavorites({
-      favorites: JSON.parse(
-        localStorage.getItem('plugin-database-favorites-sql-queries') || '[]',
-      ),
-    });
+    const loadedFavoritesJson = localStorage.getItem(
+      FAVORITES_LOCAL_STORAGE_KEY,
+    );
+    if (loadedFavoritesJson) {
+      try {
+        favoritesState.set(JSON.parse(loadedFavoritesJson));
+      } catch (err) {
+        console.error('Failed to load favorite queries from local storage');
+      }
+    }
   });
 
   return {
     state: pluginState,
+    favoritesState,
     updateDatabases,
     updateSelectedDatabase,
     updateSelectedDatabaseTable,
@@ -817,7 +854,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
     execute,
     goToRow,
     refresh,
-    updateFavorites,
+    addOrRemoveQueryToFavorites,
     sortByChanged,
     updateQuery,
     pageHighlightedRowsChanged,
@@ -828,6 +865,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
 export function Component() {
   const instance = usePlugin(plugin);
   const state = useValue(instance.state);
+  const favorites = useValue(instance.favoritesState);
 
   const onViewModeChanged = useCallback(
     (evt: RadioChangeEvent) => {
@@ -863,11 +901,11 @@ export function Component() {
     instance.refresh();
   }, [instance]);
 
-  const onFavoritesClicked = useCallback(() => {
-    instance.updateFavorites({
-      favorites: instance.state.get().favorites,
-    });
-  }, [instance]);
+  const onFavoriteButtonClicked = useCallback(() => {
+    if (state.query) {
+      instance.addOrRemoveQueryToFavorites(state.query.value);
+    }
+  }, [instance, state.query]);
 
   const onDatabaseSelected = useCallback(
     (selected: string) => {
@@ -928,6 +966,15 @@ export function Component() {
     (selected: any) => {
       instance.updateQuery({
         value: selected.target.value,
+      });
+    },
+    [instance],
+  );
+
+  const onFavoriteQuerySelected = useCallback(
+    (query: string) => {
+      instance.updateQuery({
+        value: query,
       });
     },
     [instance],
@@ -1186,48 +1233,36 @@ export function Component() {
           <Toolbar
             position="top"
             style={{paddingLeft: 16, paddingTop: 24, paddingBottom: 24}}>
-            <ButtonGroup>
-              <Button
-                icon={'star'}
-                iconSize={12}
-                iconVariant={
-                  state.query !== null &&
-                  typeof state.query !== 'undefined' &&
-                  state.favorites.includes(state.query.value)
-                    ? 'filled'
-                    : 'outline'
-                }
-                onClick={onFavoritesClicked}
-              />
-              {state.favorites !== null ? (
+            <Layout.Right>
+              <Layout.Horizontal gap>
                 <Button
-                  dropdown={state.favorites.map((option) => {
-                    return {
-                      click: () => {
-                        instance.state.set({
-                          ...instance.state.get(),
-                          query: {
-                            value: option,
-                            time: dateFormat(new Date(), 'hh:MM:ss'),
-                          },
-                        });
-                        onQueryChanged;
-                      },
-                      label: option,
-                    };
-                  })}>
-                  Choose from previous queries
-                </Button>
-              ) : null}
-            </ButtonGroup>
-            <Spacer />
-            <ButtonGroup>
+                  icon={
+                    state.query && favorites.includes(state.query.value) ? (
+                      <StarFilled />
+                    ) : (
+                      <StarOutlined />
+                    )
+                  }
+                  onClick={onFavoriteButtonClicked}
+                />
+                <Dropdown
+                  overlay={
+                    <FavoritesMenu
+                      favorites={favorites}
+                      onClick={onFavoriteQuerySelected}
+                    />
+                  }>
+                  <Button onClick={() => {}}>
+                    Choose from previous queries <DownOutlined />
+                  </Button>
+                </Dropdown>
+              </Layout.Horizontal>
               <Button
                 onClick={onExecuteClicked}
                 title={'Execute SQL [Ctrl+Return]'}>
                 Execute
               </Button>
-            </ButtonGroup>
+            </Layout.Right>
           </Toolbar>
         </div>
       ) : null}
