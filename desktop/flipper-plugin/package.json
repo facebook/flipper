@@ -23,7 +23,7 @@
     "@types/jest": "^26.0.22",
     "@types/string-natural-compare": "^3.0.0",
     "jest-mock-console": "^1.0.1",
-    "typescript": "^4.1.2"
+    "typescript": "^4.2.4"
   },
   "peerDependencies": {
     "@ant-design/icons": "^4.2.2",
