@@ -232,7 +232,7 @@ export const DataSourceRenderer: <T extends object, C>(
       return;
     }
     const fromEnd = elem.scrollHeight - elem.scrollTop - elem.clientHeight;
-    if (autoScroll && fromEnd >= 1) {
+    if (autoScroll && fromEnd > 1) {
       onUpdateAutoScroll?.(false);
     } else if (!autoScroll && fromEnd < 1) {
       onUpdateAutoScroll?.(true);
