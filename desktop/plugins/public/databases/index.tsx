@@ -29,6 +29,7 @@ import {
   TableRowSortOrder,
   Value,
   renderValue,
+  TableHighlightedRows,
 } from 'flipper';
 import React, {KeyboardEvent, ChangeEvent, useState, useCallback} from 'react';
 import {Methods, Events} from './ClientProtocol';
@@ -143,7 +144,7 @@ function transformRow(
   return {key: String(index), columns: transformedColumns};
 }
 
-function renderQueryHistory(history: Array<Query>) {
+const QueryHistory = React.memo(({history}: {history: Array<Query>}) => {
   if (!history || typeof history === 'undefined') {
     return null;
   }
@@ -181,7 +182,7 @@ function renderQueryHistory(history: Array<Query>) {
       />
     </FlexRow>
   );
-}
+});
 
 type PageInfoProps = {
   currentRow: number;
@@ -190,27 +191,33 @@ type PageInfoProps = {
   onChange: (currentRow: number, count: number) => void;
 };
 
-function PageInfo(props: PageInfoProps) {
+const PageInfo = React.memo((props: PageInfoProps) => {
   const [state, setState] = useState({
     isOpen: false,
     inputValue: String(props.currentRow),
   });
 
-  const onOpen = () => {
+  const onOpen = useCallback(() => {
     setState({...state, isOpen: true});
-  };
+  }, [state]);
 
-  const onInputChanged = (e: ChangeEvent<any>) => {
-    setState({...state, inputValue: e.target.value});
-  };
+  const onInputChanged = useCallback(
+    (e: ChangeEvent<any>) => {
+      setState({...state, inputValue: e.target.value});
+    },
+    [state],
+  );
 
-  const onSubmit = (e: KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      const rowNumber = parseInt(state.inputValue, 10);
-      props.onChange(rowNumber - 1, props.count);
-      setState({...state, isOpen: false});
-    }
-  };
+  const onSubmit = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        const rowNumber = parseInt(state.inputValue, 10);
+        props.onChange(rowNumber - 1, props.count);
+        setState({...state, isOpen: false});
+      }
+    },
+    [props, state],
+  );
 
   return (
     <PageInfoContainer grow={true}>
@@ -236,7 +243,135 @@ function PageInfo(props: PageInfoProps) {
       )}
     </PageInfoContainer>
   );
-}
+});
+
+const DataTable = React.memo(
+  ({
+    page,
+    highlightedRowsChanged,
+    sortOrderChanged,
+    currentSort,
+    currentStructure,
+    onRowEdited,
+  }: {
+    page: Page | null;
+    highlightedRowsChanged: (highlightedRows: TableHighlightedRows) => void;
+    sortOrderChanged: (sortOrder: TableRowSortOrder) => void;
+    currentSort: TableRowSortOrder | null;
+    currentStructure: Structure | null;
+    onRowEdited: (changes: {[key: string]: string | null}) => void;
+  }) =>
+    page ? (
+      <FlexRow grow={true}>
+        <ManagedTable
+          tableKey={`databases-${page.databaseId}-${page.table}`}
+          floating={false}
+          columnOrder={page.columns.map((name) => ({
+            key: name,
+            visible: true,
+          }))}
+          columns={page.columns.reduce(
+            (acc, val) =>
+              Object.assign({}, acc, {
+                [val]: {value: val, resizable: true, sortable: true},
+              }),
+            {},
+          )}
+          zebra={true}
+          rows={page.rows.map((row: Array<Value>, index: number) =>
+            transformRow(page.columns, row, index),
+          )}
+          horizontallyScrollable={true}
+          multiHighlight={true}
+          onRowHighlighted={highlightedRowsChanged}
+          onSort={sortOrderChanged}
+          initialSortOrder={currentSort ?? undefined}
+        />
+        {page.highlightedRows.length === 1 && (
+          <DatabaseDetailSidebar
+            columnLabels={page.columns}
+            columnValues={page.rows[page.highlightedRows[0]]}
+            onSave={
+              currentStructure &&
+              isUpdatable(currentStructure.columns, currentStructure.rows)
+                ? onRowEdited
+                : undefined
+            }
+          />
+        )}
+      </FlexRow>
+    ) : null,
+);
+
+const QueryTable = React.memo(
+  ({
+    query,
+    highlightedRowsChanged,
+  }: {
+    query: QueryResult | null;
+    highlightedRowsChanged: (highlightedRows: TableHighlightedRows) => void;
+  }) => {
+    if (!query || query === null) {
+      return null;
+    }
+    if (
+      query.table &&
+      typeof query.table !== 'undefined' &&
+      query.table !== null
+    ) {
+      const table = query.table;
+      const columns = table.columns;
+      const rows = table.rows;
+      return (
+        <FlexRow grow={true} style={{paddingTop: 18}}>
+          <ManagedTable
+            floating={false}
+            multiline={true}
+            columnOrder={columns.map((name) => ({
+              key: name,
+              visible: true,
+            }))}
+            columns={columns.reduce(
+              (acc, val) =>
+                Object.assign({}, acc, {[val]: {value: val, resizable: true}}),
+              {},
+            )}
+            zebra={true}
+            rows={rows.map((row: Array<Value>, index: number) =>
+              transformRow(columns, row, index),
+            )}
+            horizontallyScrollable={true}
+            onRowHighlighted={highlightedRowsChanged}
+          />
+          {table.highlightedRows.length === 1 && (
+            <DatabaseDetailSidebar
+              columnLabels={table.columns}
+              columnValues={table.rows[table.highlightedRows[0]]}
+            />
+          )}
+        </FlexRow>
+      );
+    } else if (query.id && query.id !== null) {
+      return (
+        <FlexRow grow={true} style={{paddingTop: 18}}>
+          <Text style={{paddingTop: 8, paddingLeft: 8}}>
+            Row id: {query.id}
+          </Text>
+        </FlexRow>
+      );
+    } else if (query.count && query.count !== null) {
+      return (
+        <FlexRow grow={true} style={{paddingTop: 18}}>
+          <Text style={{paddingTop: 8, paddingLeft: 8}}>
+            Rows affected: {query.count}
+          </Text>
+        </FlexRow>
+      );
+    } else {
+      return null;
+    }
+  },
+);
 
 export function plugin(client: PluginClient<Events, Methods>) {
   const pluginState = createState<DatabasesPluginState>({
@@ -523,6 +658,26 @@ export function plugin(client: PluginClient<Events, Methods>) {
     });
   };
 
+  const pageHighlightedRowsChanged = (event: TableHighlightedRows) => {
+    pluginState.update((draftState: DatabasesPluginState) => {
+      if (draftState.currentPage !== null) {
+        draftState.currentPage.highlightedRows = event.map(parseInt);
+      }
+    });
+  };
+
+  const queryHighlightedRowsChanged = (event: TableHighlightedRows) => {
+    pluginState.update((state) => {
+      if (state.queryResult) {
+        if (state.queryResult.table) {
+          state.queryResult.table.highlightedRows = event.map(parseInt);
+        }
+        state.queryResult.id = null;
+        state.queryResult.count = null;
+      }
+    });
+  };
+
   pluginState.subscribe(
     (newState: DatabasesPluginState, previousState: DatabasesPluginState) => {
       const databaseId = newState.selectedDatabase;
@@ -651,6 +806,8 @@ export function plugin(client: PluginClient<Events, Methods>) {
     updateFavorites,
     sortByChanged,
     updateQuery,
+    pageHighlightedRowsChanged,
+    queryHighlightedRowsChanged,
   };
 }
 
@@ -751,6 +908,27 @@ export function Component() {
       instance.updateQuery({
         value: selected.target.value,
       });
+    },
+    [instance],
+  );
+
+  const pageHighlightedRowsChanged = useCallback(
+    (rows: TableHighlightedRows) => {
+      instance.pageHighlightedRowsChanged(rows);
+    },
+    [instance],
+  );
+
+  const queryHighlightedRowsChanged = useCallback(
+    (rows: TableHighlightedRows) => {
+      instance.queryHighlightedRowsChanged(rows);
+    },
+    [instance],
+  );
+
+  const sortOrderChanged = useCallback(
+    (sortOrder: TableRowSortOrder) => {
+      instance.sortByChanged({sortOrder});
     },
     [instance],
   );
@@ -857,142 +1035,6 @@ export function Component() {
     },
     [instance],
   );
-
-  const renderTable = (page: Page | null) => {
-    if (!page) {
-      return null;
-    }
-    return (
-      <FlexRow grow={true}>
-        <ManagedTable
-          tableKey={`databases-${page.databaseId}-${page.table}`}
-          floating={false}
-          columnOrder={page.columns.map((name) => ({
-            key: name,
-            visible: true,
-          }))}
-          columns={page.columns.reduce(
-            (acc, val) =>
-              Object.assign({}, acc, {
-                [val]: {value: val, resizable: true, sortable: true},
-              }),
-            {},
-          )}
-          zebra={true}
-          rows={page.rows.map((row: Array<Value>, index: number) =>
-            transformRow(page.columns, row, index),
-          )}
-          horizontallyScrollable={true}
-          multiHighlight={true}
-          onRowHighlighted={(highlightedRows) =>
-            instance.state.update((draftState: DatabasesPluginState) => {
-              if (draftState.currentPage !== null) {
-                draftState.currentPage.highlightedRows = highlightedRows.map(
-                  parseInt,
-                );
-              }
-            })
-          }
-          onSort={(sortOrder: TableRowSortOrder) => {
-            instance.sortByChanged({
-              sortOrder,
-            });
-          }}
-          initialSortOrder={state.currentSort ?? undefined}
-        />
-        {page.highlightedRows.length === 1 && (
-          <DatabaseDetailSidebar
-            columnLabels={page.columns}
-            columnValues={page.rows[page.highlightedRows[0]]}
-            onSave={
-              state.currentStructure &&
-              isUpdatable(
-                state.currentStructure.columns,
-                state.currentStructure.rows,
-              )
-                ? onRowEdited
-                : undefined
-            }
-          />
-        )}
-      </FlexRow>
-    );
-  };
-
-  const renderQuery = (query: QueryResult | null) => {
-    if (!query || query === null) {
-      return null;
-    }
-    if (
-      query.table &&
-      typeof query.table !== 'undefined' &&
-      query.table !== null
-    ) {
-      const table = query.table;
-      const columns = table.columns;
-      const rows = table.rows;
-      return (
-        <FlexRow grow={true} style={{paddingTop: 18}}>
-          <ManagedTable
-            floating={false}
-            multiline={true}
-            columnOrder={columns.map((name) => ({
-              key: name,
-              visible: true,
-            }))}
-            columns={columns.reduce(
-              (acc, val) =>
-                Object.assign({}, acc, {[val]: {value: val, resizable: true}}),
-              {},
-            )}
-            zebra={true}
-            rows={rows.map((row: Array<Value>, index: number) =>
-              transformRow(columns, row, index),
-            )}
-            horizontallyScrollable={true}
-            onRowHighlighted={(highlightedRows) => {
-              instance.state.set({
-                ...instance.state.get(),
-                queryResult: {
-                  table: {
-                    columns: columns,
-                    rows: rows,
-                    highlightedRows: highlightedRows.map(parseInt),
-                  },
-                  id: null,
-                  count: null,
-                },
-              });
-            }}
-          />
-          {table.highlightedRows.length === 1 && (
-            <DatabaseDetailSidebar
-              columnLabels={table.columns}
-              columnValues={table.rows[table.highlightedRows[0]]}
-            />
-          )}
-        </FlexRow>
-      );
-    } else if (query.id && query.id !== null) {
-      return (
-        <FlexRow grow={true} style={{paddingTop: 18}}>
-          <Text style={{paddingTop: 8, paddingLeft: 8}}>
-            Row id: {query.id}
-          </Text>
-        </FlexRow>
-      );
-    } else if (query.count && query.count !== null) {
-      return (
-        <FlexRow grow={true} style={{paddingTop: 18}}>
-          <Text style={{paddingTop: 8, paddingLeft: 8}}>
-            Rows affected: {query.count}
-          </Text>
-        </FlexRow>
-      );
-    } else {
-      return null;
-    }
-  };
 
   const tableOptions =
     (state.selectedDatabase &&
@@ -1152,20 +1194,34 @@ export function Component() {
       ) : null}
       <FlexRow grow={true}>
         <FlexColumn grow={true}>
-          {state.viewMode === 'data' ? renderTable(state.currentPage) : null}
+          {state.viewMode === 'data' ? (
+            <DataTable
+              page={state.currentPage}
+              highlightedRowsChanged={pageHighlightedRowsChanged}
+              onRowEdited={onRowEdited}
+              sortOrderChanged={sortOrderChanged}
+              currentSort={state.currentSort}
+              currentStructure={state.currentStructure}
+            />
+          ) : null}
           {state.viewMode === 'structure' ? (
             <DatabaseStructure structure={state.currentStructure} />
           ) : null}
-          {state.viewMode === 'SQL' ? renderQuery(state.queryResult) : null}
+          {state.viewMode === 'SQL' ? (
+            <QueryTable
+              query={state.queryResult}
+              highlightedRowsChanged={queryHighlightedRowsChanged}
+            />
+          ) : null}
           {state.viewMode === 'tableInfo' ? (
             <TableInfoTextArea
               value={sqlFormatter.format(state.tableInfo)}
               readOnly
             />
           ) : null}
-          {state.viewMode === 'queryHistory'
-            ? renderQueryHistory(state.queryHistory)
-            : null}
+          {state.viewMode === 'queryHistory' ? (
+            <QueryHistory history={state.queryHistory} />
+          ) : null}
         </FlexColumn>
       </FlexRow>
       <Toolbar position="bottom" style={{paddingLeft: 8}}>
