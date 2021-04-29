@@ -485,28 +485,21 @@ export function plugin(client: PluginClient<Events, Methods>) {
 
   const updateFavorites = (event: {favorites: Array<string> | undefined}) => {
     const state = pluginState.get();
-    let newFavorites = event.favorites || state.favorites;
-    if (
-      state.query &&
-      state.query !== null &&
-      typeof state.query !== 'undefined'
-    ) {
+    const newFavorites = [...(event.favorites || state.favorites)];
+    if (state.query) {
       const value = state.query.value;
-      if (newFavorites.includes(value)) {
-        const index = newFavorites.indexOf(value);
-        newFavorites.splice(index, 1);
+      const index = newFavorites.indexOf(value);
+      if (index < 0) {
+        newFavorites.push(value);
       } else {
-        newFavorites = state.favorites.concat(value);
+        newFavorites.splice(index, 1);
       }
     }
+    pluginState.set({...state, favorites: newFavorites});
     window.localStorage.setItem(
       'plugin-database-favorites-sql-queries',
       JSON.stringify(newFavorites),
     );
-    return {
-      ...state,
-      favorites: newFavorites,
-    };
   };
 
   const sortByChanged = (event: {sortOrder: TableRowSortOrder}) => {
