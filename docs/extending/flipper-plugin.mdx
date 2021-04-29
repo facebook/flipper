@@ -111,6 +111,7 @@ This handler is untyped, and onMessage should be favored over using onUnhandledM
 Usage: `client.onActivate(callback: () => void)`
 
 Called when the plugin is selected by the user and mounted into the Flipper Desktop UI. See also the closely related `onConnect` event.
+Unlike `onConnect`, `onActivate` will trigger as well for archived / imported devices.
 
 #### `onDeactivate`
 
@@ -126,6 +127,7 @@ Usage: `client.onConnect(callback: () => void)`
 Triggered once the connection with the plugin on the client is established, and for example [`send`](#send) can be called safely.
 Typically, this happens when the plugin is activated (opened) in the Flipper Desktop.
 However, for [background plugins](create-plugin#background-plugins), this happens immediately after the plugin has been instantiated.
+For archived / imported devices, this lifecycle is never triggered.
 
 #### `onDisconnect`
 

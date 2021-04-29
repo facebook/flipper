@@ -11,7 +11,6 @@ import {PluginDefinition, FlipperPlugin, FlipperDevicePlugin} from './plugin';
 import BaseDevice, {OS} from './devices/BaseDevice';
 import {Logger} from './fb-interfaces/Logger';
 import {Store} from './reducers/index';
-import {setPluginState} from './reducers/pluginStates';
 import {Payload, ConnectionStatus} from 'rsocket-types';
 import {Flowable, Single} from 'rsocket-flowable';
 import {performance} from 'perf_hooks';
@@ -150,7 +149,7 @@ export default class Client extends EventEmitter {
     device: BaseDevice,
   ) {
     super();
-    this.connected.set(true);
+    this.connected.set(!!conn);
     this.plugins = plugins ? plugins : [];
     this.backgroundPlugins = [];
     this.connection = conn;
@@ -696,8 +695,10 @@ export default class Client extends EventEmitter {
 
   initPlugin(pluginId: string) {
     this.activePlugins.add(pluginId);
-    this.rawSend('init', {plugin: pluginId});
-    this.sandyPluginStates.get(pluginId)?.connect();
+    if (this.connected.get()) {
+      this.rawSend('init', {plugin: pluginId});
+      this.sandyPluginStates.get(pluginId)?.connect();
+    }
   }
 
   deinitPlugin(pluginId: string) {

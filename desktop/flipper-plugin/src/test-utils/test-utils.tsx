@@ -211,10 +211,16 @@ export function startPlugin<Module extends FlipperPluginModule<any>>(
     },
     connected: createState(true),
     initPlugin() {
+      if (options?.isArchived) {
+        return;
+      }
       this.connected.set(true);
       pluginInstance.connect();
     },
     deinitPlugin() {
+      if (options?.isArchived) {
+        return;
+      }
       this.connected.set(false);
       pluginInstance.disconnect();
     },

@@ -20,7 +20,7 @@ export default class ArchivedDevice extends BaseDevice {
     deviceType: DeviceType;
     title: string;
     os: OS;
-    screenshotHandle: string | null;
+    screenshotHandle?: string | null;
     source?: string;
     supportRequestDetails?: SupportFormRequestDetailsState;
   }) {
@@ -29,7 +29,7 @@ export default class ArchivedDevice extends BaseDevice {
     this.connected.set(false);
     this.source = options.source || '';
     this.supportRequestDetails = options.supportRequestDetails;
-    this.archivedScreenshotHandle = options.screenshotHandle;
+    this.archivedScreenshotHandle = options.screenshotHandle ?? null;
   }
 
   archivedScreenshotHandle: string | null;
