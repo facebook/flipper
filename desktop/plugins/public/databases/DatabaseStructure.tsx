@@ -8,13 +8,13 @@
  */
 
 import {
-  FlexRow,
   ManagedTable,
   TableBodyRow,
   TableBodyColumn,
   Value,
   renderValue,
 } from 'flipper';
+import {Layout} from 'flipper-plugin';
 import React, {useMemo} from 'react';
 
 import {Structure} from './index';
@@ -59,7 +59,7 @@ const DatabaseStructureManagedTable = React.memo(
       [columns],
     );
     return (
-      <FlexRow grow={true}>
+      <Layout.Horizontal grow>
         <ManagedTable
           floating={false}
           columnOrder={columnOrder}
@@ -68,7 +68,7 @@ const DatabaseStructureManagedTable = React.memo(
           rows={renderRows}
           horizontallyScrollable={true}
         />
-      </FlexRow>
+      </Layout.Horizontal>
     );
   },
 );

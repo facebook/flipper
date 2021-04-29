@@ -12,8 +12,6 @@ import {
   produce,
   Toolbar,
   Select,
-  FlexColumn,
-  FlexRow,
   ManagedTable,
   Text,
   Button,
@@ -43,7 +41,13 @@ import {
 } from './UpdateQueryUtil';
 import sqlFormatter from 'sql-formatter';
 import dateFormat from 'dateformat';
-import {createState, PluginClient, usePlugin, useValue} from 'flipper-plugin';
+import {
+  createState,
+  PluginClient,
+  usePlugin,
+  useValue,
+  Layout,
+} from 'flipper-plugin';
 
 const PAGE_SIZE = 50;
 
@@ -60,7 +64,7 @@ const ErrorBar = styled.div({
   textAlign: 'center',
 });
 const QueryHistoryManagedTable = styled(ManagedTable)({paddingLeft: 16});
-const PageInfoContainer = styled(FlexRow)({alignItems: 'center'});
+const PageInfoContainer = styled(Layout.Horizontal)({alignItems: 'center'});
 const TableInfoTextArea = styled(Textarea)({
   width: '98%',
   height: '100%',
@@ -171,7 +175,7 @@ const QueryHistory = React.memo(({history}: {history: Array<Query>}) => {
   }
 
   return (
-    <FlexRow grow={true}>
+    <Layout.Horizontal grow>
       <QueryHistoryManagedTable
         floating={false}
         columns={columns}
@@ -180,7 +184,7 @@ const QueryHistory = React.memo(({history}: {history: Array<Query>}) => {
         rows={rows}
         horizontallyScrollable={true}
       />
-    </FlexRow>
+    </Layout.Horizontal>
   );
 });
 
@@ -220,7 +224,7 @@ const PageInfo = React.memo((props: PageInfoProps) => {
   );
 
   return (
-    <PageInfoContainer grow={true}>
+    <PageInfoContainer grow>
       <div style={{flex: 1}} />
       <Text>
         {props.count === props.totalRows
@@ -262,7 +266,7 @@ const DataTable = React.memo(
     onRowEdited: (changes: {[key: string]: string | null}) => void;
   }) =>
     page ? (
-      <FlexRow grow={true}>
+      <Layout.Horizontal grow>
         <ManagedTable
           tableKey={`databases-${page.databaseId}-${page.table}`}
           floating={false}
@@ -299,7 +303,7 @@ const DataTable = React.memo(
             }
           />
         )}
-      </FlexRow>
+      </Layout.Horizontal>
     ) : null,
 );
 
@@ -323,7 +327,7 @@ const QueryTable = React.memo(
       const columns = table.columns;
       const rows = table.rows;
       return (
-        <FlexRow grow={true} style={{paddingTop: 18}}>
+        <Layout.Horizontal grow style={{paddingTop: 18}}>
           <ManagedTable
             floating={false}
             multiline={true}
@@ -349,23 +353,23 @@ const QueryTable = React.memo(
               columnValues={table.rows[table.highlightedRows[0]]}
             />
           )}
-        </FlexRow>
+        </Layout.Horizontal>
       );
     } else if (query.id && query.id !== null) {
       return (
-        <FlexRow grow={true} style={{paddingTop: 18}}>
+        <Layout.Horizontal grow style={{paddingTop: 18}}>
           <Text style={{paddingTop: 8, paddingLeft: 8}}>
             Row id: {query.id}
           </Text>
-        </FlexRow>
+        </Layout.Horizontal>
       );
     } else if (query.count && query.count !== null) {
       return (
-        <FlexRow grow={true} style={{paddingTop: 18}}>
+        <Layout.Horizontal grow style={{paddingTop: 18}}>
           <Text style={{paddingTop: 8, paddingLeft: 8}}>
             Rows affected: {query.count}
           </Text>
-        </FlexRow>
+        </Layout.Horizontal>
       );
     } else {
       return null;
@@ -1046,7 +1050,7 @@ export function Component() {
     {};
 
   return (
-    <FlexColumn style={{flex: 1}}>
+    <Layout.Container grow>
       <Toolbar position="top" style={{paddingLeft: 16}}>
         <ButtonGroup>
           <Button
@@ -1192,8 +1196,8 @@ export function Component() {
           </Toolbar>
         </div>
       ) : null}
-      <FlexRow grow={true}>
-        <FlexColumn grow={true}>
+      <Layout.Horizontal grow>
+        <Layout.Container grow>
           {state.viewMode === 'data' ? (
             <DataTable
               page={state.currentPage}
@@ -1222,10 +1226,10 @@ export function Component() {
           {state.viewMode === 'queryHistory' ? (
             <QueryHistory history={state.queryHistory} />
           ) : null}
-        </FlexColumn>
-      </FlexRow>
+        </Layout.Container>
+      </Layout.Horizontal>
       <Toolbar position="bottom" style={{paddingLeft: 8}}>
-        <FlexRow grow={true}>
+        <Layout.Horizontal grow>
           {state.viewMode === 'SQL' && state.executionTime !== 0 ? (
             <Text> {state.executionTime} ms </Text>
           ) : null}
@@ -1248,11 +1252,11 @@ export function Component() {
               onForward={onNextPageClicked}
             />
           ) : null}
-        </FlexRow>
+        </Layout.Horizontal>
       </Toolbar>
       {state.error && (
         <ErrorBar>{getStringFromErrorLike(state.error)}</ErrorBar>
       )}
-    </FlexColumn>
+    </Layout.Container>
   );
 }
