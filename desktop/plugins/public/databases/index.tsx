@@ -41,6 +41,7 @@ import {
   Layout,
   useMemoize,
   Toolbar,
+  theme,
 } from 'flipper-plugin';
 import {
   Select,
@@ -84,7 +85,6 @@ const ErrorBar = styled.div({
   lineHeight: '26px',
   textAlign: 'center',
 });
-const QueryHistoryManagedTable = styled(ManagedTable)({paddingLeft: 16});
 const PageInfoContainer = styled(Layout.Horizontal)({alignItems: 'center'});
 
 type DatabasesPluginState = {
@@ -189,7 +189,7 @@ const QueryHistory = React.memo(({history}: {history: Array<Query>}) => {
 
   return (
     <Layout.Horizontal grow>
-      <QueryHistoryManagedTable
+      <ManagedTable
         floating={false}
         columns={columns}
         columnSizes={{time: 75}}
@@ -340,7 +340,7 @@ const QueryTable = React.memo(
       const columns = table.columns;
       const rows = table.rows;
       return (
-        <Layout.Horizontal grow style={{paddingTop: 18}}>
+        <Layout.Horizontal grow>
           <ManagedTable
             floating={false}
             multiline={true}
@@ -370,18 +370,14 @@ const QueryTable = React.memo(
       );
     } else if (query.id && query.id !== null) {
       return (
-        <Layout.Horizontal grow style={{paddingTop: 18}}>
-          <Text style={{paddingTop: 8, paddingLeft: 8}}>
-            Row id: {query.id}
-          </Text>
+        <Layout.Horizontal grow pad>
+          <Text>Row id: {query.id}</Text>
         </Layout.Horizontal>
       );
     } else if (query.count && query.count !== null) {
       return (
-        <Layout.Horizontal grow style={{paddingTop: 18}}>
-          <Text style={{paddingTop: 8, paddingLeft: 8}}>
-            Rows affected: {query.count}
-          </Text>
+        <Layout.Horizontal grow pad>
+          <Text>Rows affected: {query.count}</Text>
         </Layout.Horizontal>
       );
     } else {
@@ -1144,7 +1140,7 @@ export function Component() {
 
   return (
     <Layout.Container grow>
-      <Toolbar position="top" style={{paddingLeft: 16}}>
+      <Toolbar position="top">
         <Radio.Group value={state.viewMode} onChange={onViewModeChanged}>
           <Radio.Button value="data" onClick={onDataClicked}>
             <TableOutlined style={{marginRight: 5}} />
@@ -1171,8 +1167,8 @@ export function Component() {
       {state.viewMode === 'data' ||
       state.viewMode === 'structure' ||
       state.viewMode === 'tableInfo' ? (
-        <Toolbar position="top" style={{paddingLeft: 16}}>
-          <BoldSpan style={{marginRight: 16}}>Database</BoldSpan>
+        <Toolbar position="top">
+          <BoldSpan>Database</BoldSpan>
           <Select
             showSearch
             value={selectedDatabaseName}
@@ -1180,7 +1176,7 @@ export function Component() {
             style={{width: 200}}>
             {databaseOptions}
           </Select>
-          <BoldSpan style={{marginLeft: 16, marginRight: 16}}>Table</BoldSpan>
+          <BoldSpan>Table</BoldSpan>
           <Select
             showSearch
             value={selectedTableName}
@@ -1193,9 +1189,9 @@ export function Component() {
         </Toolbar>
       ) : null}
       {state.viewMode === 'SQL' ? (
-        <div>
-          <Toolbar position="top" style={{paddingLeft: 16}}>
-            <BoldSpan style={{marginRight: 16}}>Database</BoldSpan>
+        <Layout.Container>
+          <Toolbar position="top">
+            <BoldSpan>Database</BoldSpan>
             <Select
               showSearch
               value={selectedDatabaseName}
@@ -1204,16 +1200,8 @@ export function Component() {
               {databaseOptions}
             </Select>
           </Toolbar>
-          {
+          <Layout.Horizontal pad={theme.space.small} style={{paddingBottom: 0}}>
             <TextArea
-              style={{
-                width: '98%',
-                height: '40%',
-                marginLeft: 16,
-                marginTop: '1%',
-                marginBottom: '1%',
-                resize: 'vertical',
-              }}
               onChange={onQueryChanged}
               onKeyPress={onQueryTextareaKeyPress}
               placeholder="Type query here.."
@@ -1223,13 +1211,11 @@ export function Component() {
                   : undefined
               }
             />
-          }
-          <Toolbar
-            position="top"
-            style={{paddingLeft: 16, paddingTop: 24, paddingBottom: 24}}>
+          </Layout.Horizontal>
+          <Toolbar position="top">
             <Layout.Right>
               <div />
-              <Layout.Horizontal gap>
+              <Layout.Horizontal gap={theme.space.small}>
                 <Button
                   icon={
                     state.query && favorites.includes(state.query.value) ? (
@@ -1260,7 +1246,7 @@ export function Component() {
               </Layout.Horizontal>
             </Layout.Right>
           </Toolbar>
-        </div>
+        </Layout.Container>
       ) : null}
       <Layout.Horizontal grow>
         <Layout.Container grow>
@@ -1284,18 +1270,12 @@ export function Component() {
             />
           ) : null}
           {state.viewMode === 'tableInfo' ? (
-            <TextArea
-              value={sqlFormatter.format(state.tableInfo)}
-              style={{
-                width: '98%',
-                height: '98%',
-                marginLeft: 16,
-                marginTop: '1%',
-                marginBottom: '1%',
-                resize: 'vertical',
-              }}
-              readOnly
-            />
+            <Layout.Horizontal
+              grow
+              pad={theme.space.small}
+              style={{paddingBottom: 0}}>
+              <TextArea value={sqlFormatter.format(state.tableInfo)} readOnly />
+            </Layout.Horizontal>
           ) : null}
           {state.viewMode === 'queryHistory' ? (
             <QueryHistory history={state.queryHistory} />
