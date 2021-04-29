@@ -1270,10 +1270,10 @@ raf@^3.4.0:
   dependencies:
     performance-now "^2.1.0"
 
-react-devtools-core@~4.10.2:
-  version "4.10.2"
-  resolved "https://registry.yarnpkg.com/react-devtools-core/-/react-devtools-core-4.10.2.tgz#3baf6e80bc6fb2ddf8bc08dc6d6c20486952710e"
-  integrity sha512-I+E/ZmcDXBo019oBk6DOKhnEFmBu4pSc5PCe/+ZFQeQaAVgv0oOd+gCIp98akcrSX8KG/15teCzkVUvI6sR6Yw==
+react-devtools-core@~4.10.3:
+  version "4.10.3"
+  resolved "https://registry.yarnpkg.com/react-devtools-core/-/react-devtools-core-4.10.3.tgz#30580721d7e9a1568a55b7107f2b6cdce6502e63"
+  integrity sha512-2CtceOczycfR1Th5B+lIPA1NnGODdbeTLTLZVCYmdXfdmvR5h1+cgr0f+R7HtWbTeIcG5PXUK1/YDnELP5opQA==
   dependencies:
     shell-quote "^1.6.1"
     ws "^7"

@@ -16,7 +16,7 @@
   "dependencies": {
     "address": "^1.1.2",
     "get-port": "^5.0.0",
-    "react-devtools-core": "~4.10.2"
+    "react-devtools-core": "~4.10.3"
   },
   "title": "React DevTools",
   "icon": "app-react",
