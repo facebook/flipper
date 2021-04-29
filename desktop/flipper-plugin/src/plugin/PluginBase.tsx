@@ -78,6 +78,12 @@ export interface BasePluginClient {
   createPaste(input: string): Promise<string | undefined>;
 
   /**
+   * Returns true if this is an internal Facebook build.
+   * Always returns `false` in open source
+   */
+  readonly isFB: boolean;
+
+  /**
    * Returns true if the user is taking part in the given gatekeeper.
    * Always returns `false` in open source.
    */
@@ -224,6 +230,8 @@ export abstract class BasePluginInstance {
             batched(this.importHandler)(this.initialStates);
           } catch (e) {
             const msg = `Error occurred when importing date for plugin '${this.definition.id}': '${e}`;
+            // msg is already specific
+            // eslint-disable-next-line
             console.error(msg, e);
             message.error(msg);
           }
@@ -275,20 +283,25 @@ export abstract class BasePluginInstance {
       addMenuEntry: (...entries) => {
         for (const entry of entries) {
           const normalized = normalizeMenuEntry(entry);
-          if (
-            this.menuEntries.find(
-              (existing) =>
-                existing.label === normalized.label ||
-                existing.action === normalized.action,
-            )
-          ) {
-            throw new Error(`Duplicate menu entry: '${normalized.label}'`);
+          const idx = this.menuEntries.findIndex(
+            (existing) =>
+              existing.label === normalized.label ||
+              existing.action === normalized.action,
+          );
+          if (idx !== -1) {
+            this.menuEntries[idx] = normalizeMenuEntry(entry);
+          } else {
+            this.menuEntries.push(normalizeMenuEntry(entry));
           }
-          this.menuEntries.push(normalizeMenuEntry(entry));
+          if (this.activated) {
+            // entries added after initial registration
+            this.flipperLib.enableMenuEntries(this.menuEntries);
+          }
         }
       },
       writeTextToClipboard: this.flipperLib.writeTextToClipboard,
       createPaste: this.flipperLib.createPaste,
+      isFB: this.flipperLib.isFB,
       GK: this.flipperLib.GK,
       showNotification: (notification: Notification) => {
         this.flipperLib.showNotification(this.pluginKey, notification);
@@ -301,8 +314,8 @@ export abstract class BasePluginInstance {
   activate() {
     this.assertNotDestroyed();
     if (!this.activated) {
-      this.activated = true;
       this.flipperLib.enableMenuEntries(this.menuEntries);
+      this.activated = true;
       this.events.emit('activate');
       this.flipperLib.logger.trackTimeSince(
         `activePlugin-${this.definition.id}`,

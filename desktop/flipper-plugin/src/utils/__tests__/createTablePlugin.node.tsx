@@ -29,11 +29,7 @@ test('createTablePlugin returns FlipperPlugin', () => {
     Array [
       "selection",
       "rows",
-      "clear",
-      "tableManagerRef",
-      "connected",
       "isPaused",
-      "resumePause",
     ]
   `);
 });

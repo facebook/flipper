@@ -58,6 +58,7 @@ export {
 export {Sidebar as _Sidebar} from './ui/Sidebar';
 export {DetailSidebar} from './ui/DetailSidebar';
 export {Toolbar} from './ui/Toolbar';
+export {MasterDetail} from './ui/MasterDetail';
 
 export {renderReactRoot} from './utils/renderReactRoot';
 export {

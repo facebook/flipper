@@ -824,6 +824,27 @@ See `View > Flipper Style Guide` inside the Flipper application for more details
 ### ElementsInspectorElement
 ### ElementsInspectorProps
 
+Coming soon
+
+### MasterDetail
+
+The `MasterDetail` provides a default setup for a `DataTable` in combination with a sidebar, and some super common features like keyboard shortcuts, paste integration, and clear / pause-resume buttons.
+
+The `MasterDetail` component accepts all `DataTable` props, and beyond that the following props.
+
+* The `sidebarPosition` prop controls here to display the details of the currently selected record:
+    * `'main'` (default): show the details in the standard, centrally controlled right sidebar
+    * `'right'`: show a resizable pane to the right
+    * `'bottom'`: show a resizable pane to the bottom
+    * `'none'`: don't show details at all
+* `sidebarComponent`: Component that accepts a 'record' prop that is used to render details.If none is provided, a standard `DataInspector` component will be used to display the entire record.
+* `sidebarSize`: Default size of the sidebar.
+* `selection`: If provided, this atom will be used to store selection in.
+* `isPaused`: If provided, this atom will be used to store pause/resume state in, and a pause/resume toggle will be shown
+* `enableClear: If set, a clear button will be shown.By default this will clear the dataSource (if any).
+* `onClear`: Callback to be called when clear action is used.
+* `enableMenuEntries`: If provided, standard menu entries will be created for clear, goToBottom and createPaste.
+
 ### Panel
 
 A collapsible UI region. The collapsed state of the pane will automatically be persisted so that the collapsed state is restored the next time user visits the plugin again. Note that the children of a Panel should have some size, either a fixed or a natural size. Elements that grow to their parent size will become invisible.

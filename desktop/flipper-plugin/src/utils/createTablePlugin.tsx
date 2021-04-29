@@ -7,31 +7,14 @@
  * @format
  */
 
-import {
-  DeleteOutlined,
-  PauseCircleOutlined,
-  PlayCircleOutlined,
-} from '@ant-design/icons';
-import {Button, notification, Typography} from 'antd';
-import React, {createRef, useCallback} from 'react';
+import {notification, Typography} from 'antd';
+import React from 'react';
 import {PluginClient} from '../plugin/Plugin';
 import {usePlugin} from '../plugin/PluginContext';
-import {createState, useValue} from '../state/atom';
+import {createState} from '../state/atom';
 import {createDataSource, DataSource} from '../state/DataSource';
-import {DataInspector} from '../ui/data-inspector/DataInspector';
-import {DataTable, DataTableColumn} from '../ui/data-table/DataTable';
-import {DataTableManager} from '../ui/data-table/DataTableManager';
-import {DetailSidebar} from '../ui/DetailSidebar';
-import {Layout} from '../ui/Layout';
-import {Panel} from '../ui/Panel';
-
-function defaultRenderSidebar<T>(record: T) {
-  return (
-    <Panel title="Payload" collapsible={false} pad>
-      <DataInspector data={record} expandRoot />
-    </Panel>
-  );
-}
+import {DataTableColumn} from '../ui/data-table/DataTable';
+import {MasterDetail} from '../ui/MasterDetail';
 
 type PluginResult<Raw, Row> = {
   plugin(
@@ -95,7 +78,6 @@ export function createTablePlugin<
     });
     const selection = createState<undefined | Row>(undefined);
     const isPaused = createState(false);
-    const tableManagerRef = createRef<undefined | DataTableManager<Row>>();
 
     client.onMessage(props.method, (event) => {
       if (isPaused.get()) {
@@ -113,7 +95,7 @@ export function createTablePlugin<
 
     if (props.resetMethod) {
       client.onMessage(props.resetMethod, () => {
-        clear();
+        rows.clear();
       });
     }
 
@@ -134,94 +116,29 @@ export function createTablePlugin<
       });
     });
 
-    client.addMenuEntry(
-      {
-        action: 'clear',
-        handler: clear,
-      },
-      {
-        action: 'createPaste',
-        handler: createPaste,
-      },
-      {
-        action: 'goToBottom',
-        handler: goToBottom,
-      },
-    );
-
-    function clear() {
-      rows.clear();
-      tableManagerRef.current?.clearSelection();
-    }
-
-    function createPaste() {
-      let selection = tableManagerRef.current?.getSelectedItems();
-      if (!selection?.length) {
-        selection = rows.view.output(0, rows.view.size);
-      }
-      if (selection?.length) {
-        client.createPaste(JSON.stringify(selection, null, 2));
-      }
-    }
-
-    function goToBottom() {
-      tableManagerRef?.current?.selectItem(rows.view.size - 1);
-    }
-
     return {
       selection,
       rows,
-      clear,
-      tableManagerRef,
-      connected: client.connected,
       isPaused,
-      resumePause() {
-        isPaused.update((v) => !v);
-      },
     };
+  }
+
+  function SidebarComponent({record}: {record: Row}) {
+    return props.renderSidebar!(record);
   }
 
   function Component() {
     const instance = usePlugin(plugin);
-    const paused = useValue(instance.isPaused);
-    const selection = useValue(instance.selection);
-    const connected = useValue(instance.connected);
-
-    const handleSelect = useCallback((v) => instance.selection.set(v), [
-      instance,
-    ]);
-
     return (
-      <Layout.Container grow>
-        <DataTable<Row>
-          columns={props.columns}
-          dataSource={instance.rows}
-          tableManagerRef={instance.tableManagerRef}
-          autoScroll
-          onSelect={handleSelect}
-          extraActions={
-            connected ? (
-              <>
-                <Button
-                  title={`Click to ${paused ? 'resume' : 'pause'} the stream`}
-                  danger={paused}
-                  onClick={instance.resumePause}>
-                  {paused ? <PlayCircleOutlined /> : <PauseCircleOutlined />}
-                </Button>
-                <Button title="Clear records" onClick={instance.clear}>
-                  <DeleteOutlined />
-                </Button>
-              </>
-            ) : undefined
-          }
-        />
-        <DetailSidebar>
-          {selection
-            ? props.renderSidebar?.(selection) ??
-              defaultRenderSidebar(selection)
-            : null}
-        </DetailSidebar>
-      </Layout.Container>
+      <MasterDetail<Row>
+        columns={props.columns}
+        dataSource={instance.rows}
+        sidebarComponent={props.renderSidebar ? SidebarComponent : undefined}
+        selection={instance.selection}
+        isPaused={instance.isPaused}
+        enableMenuEntries
+        enableClear
+      />
     );
   }
 

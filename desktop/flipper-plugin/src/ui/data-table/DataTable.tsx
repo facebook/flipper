@@ -49,7 +49,7 @@ import {debounce} from 'lodash';
 import {StaticDataSourceRenderer} from './StaticDataSourceRenderer';
 import {useInUnitTest} from '../../utils/useInUnitTest()';
 
-interface DataTableProps<T = any> {
+interface DataTableBaseProps<T = any> {
   columns: DataTableColumn<T>[];
 
   autoScroll?: boolean;
@@ -65,9 +65,10 @@ interface DataTableProps<T = any> {
 }
 
 type DataTableInput<T = any> =
-  | {dataSource: DataSource<T, any, any>}
+  | {dataSource: DataSource<T, any, any>; records?: undefined}
   | {
       records: T[];
+      dataSource?: undefined;
     };
 
 export type DataTableColumn<T = any> = {
@@ -102,8 +103,10 @@ export interface RenderContext<T = any> {
   ): void;
 }
 
+export type DataTableProps<T> = DataTableInput<T> & DataTableBaseProps<T>;
+
 export function DataTable<T extends object>(
-  props: DataTableInput<T> & DataTableProps<T>,
+  props: DataTableProps<T>,
 ): React.ReactElement {
   const {onRowStyle, onSelect, onCopyRows, onContextMenu} = props;
   const dataSource = normalizeDataSourceInput(props);
@@ -140,6 +143,9 @@ export function DataTable<T extends object>(
   const [tableManager] = useState(() =>
     createDataTableManager(dataSource, dispatch, stateRef),
   );
+  if (props.tableManagerRef) {
+    (props.tableManagerRef as MutableRefObject<any>).current = tableManager;
+  }
 
   const {columns, selection, searchValue, sorting} = tableState;
 
@@ -385,10 +391,6 @@ export function DataTable<T extends object>(
       );
 
   useEffect(function initialSetup() {
-    if (props.tableManagerRef) {
-      (props.tableManagerRef as MutableRefObject<any>).current = tableManager;
-    }
-
     return function cleanup() {
       // write current prefs to local storage
       savePreferences(stateRef.current, lastOffset.current);
@@ -484,10 +486,10 @@ export function DataTable<T extends object>(
 
 /* eslint-disable react-hooks/rules-of-hooks */
 function normalizeDataSourceInput<T>(props: DataTableInput<T>): DataSource<T> {
-  if ('dataSource' in props) {
+  if (props.dataSource) {
     return props.dataSource;
   }
-  if ('records' in props) {
+  if (props.records) {
     const [dataSource] = useState(() => {
       const ds = new DataSource<T>(undefined);
       syncRecordsToDataSource(ds, props.records);

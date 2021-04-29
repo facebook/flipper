@@ -38,6 +38,7 @@ test('Correct top level API exposed', () => {
       "ElementsInspector",
       "Layout",
       "MarkerTimeline",
+      "MasterDetail",
       "NUX",
       "Panel",
       "Tab",
