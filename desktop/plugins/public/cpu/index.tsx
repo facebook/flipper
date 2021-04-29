@@ -18,6 +18,7 @@ import {
   DetailSidebar,
   DataTable,
   DataTableColumn,
+  Toolbar,
 } from 'flipper-plugin';
 import adb from 'adbkit';
 import TemperatureTable from './TemperatureTable';
@@ -51,8 +52,6 @@ type CPUState = {
   displayCPUDetail: boolean;
 };
 
-type ShellCallBack = (output: string) => any;
-
 // check if str is a number
 function isNormalInteger(str: string) {
   const n = Math.floor(Number(str));
@@ -75,13 +74,16 @@ function formatFrequency(freq: number) {
 export function devicePlugin(client: PluginClient<{}, {}>) {
   const device = client.device;
 
-  const executeShell = (callback: ShellCallBack, command: string) => {
-    return (device.realDevice as any).adb
-      .shell(device.serial, command)
-      .then(adb.util.readAll)
-      .then(function (output: {toString: () => {trim: () => string}}) {
-        return callback(output.toString().trim());
-      });
+  const executeShell = async (command: string) => {
+    return new Promise<string>((resolve, reject) => {
+      (device.realDevice as any).adb
+        .shell(device.serial, command)
+        .then(adb.util.readAll)
+        .then(function (output: {toString: () => {trim: () => string}}) {
+          resolve(output.toString().trim());
+        })
+        .catch((e: unknown) => reject(e));
+    });
   };
 
   let intervalID: NodeJS.Timer | null = null;
@@ -96,77 +98,70 @@ export function devicePlugin(client: PluginClient<{}, {}>) {
     displayCPUDetail: true,
   });
 
-  const updateCoreFrequency: (core: number, type: string) => Promise<void> = (
+  const updateCoreFrequency: (
     core: number,
     type: string,
-  ) => {
-    return new Promise((resolve, _reject) => {
-      executeShell((output: string) => {
-        cpuState.update((draft) => {
-          const newFreq = isNormalInteger(output) ? parseInt(output, 10) : -1;
-          // update table only if frequency changed
-          if (draft.cpuFreq[core][type] != newFreq) {
-            draft.cpuFreq[core][type] = newFreq;
-            if (type == 'scaling_cur_freq' && draft.cpuFreq[core][type] < 0) {
-              // cannot find current freq means offline
-              draft.cpuFreq[core][type] = -2;
-            }
-          }
-          return draft;
-        });
-        resolve();
-      }, 'cat /sys/devices/system/cpu/cpu' + core + '/cpufreq/' + type);
+  ) => Promise<void> = async (core: number, type: string) => {
+    const output = await executeShell(
+      'cat /sys/devices/system/cpu/cpu' + core + '/cpufreq/' + type,
+    );
+    cpuState.update((draft) => {
+      const newFreq = isNormalInteger(output) ? parseInt(output, 10) : -1;
+      // update table only if frequency changed
+      if (draft.cpuFreq[core][type] != newFreq) {
+        draft.cpuFreq[core][type] = newFreq;
+        if (type == 'scaling_cur_freq' && draft.cpuFreq[core][type] < 0) {
+          // cannot find current freq means offline
+          draft.cpuFreq[core][type] = -2;
+        }
+      }
     });
   };
 
-  const updateAvailableFrequencies: (core: number) => Promise<void> = (
+  const updateAvailableFrequencies: (core: number) => Promise<void> = async (
     core: number,
   ) => {
-    return new Promise((resolve, _reject) => {
-      executeShell((output: string) => {
-        cpuState.update((draft) => {
-          const freqs = output.split(' ').map((num: string) => {
-            return parseInt(num, 10);
-          });
-          draft.cpuFreq[core].scaling_available_freqs = freqs;
-          const maxFreq = draft.cpuFreq[core].scaling_max_freq;
-          if (maxFreq > 0 && freqs.indexOf(maxFreq) == -1) {
-            freqs.push(maxFreq); // always add scaling max to available frequencies
-          }
-          return draft;
-        });
-        resolve();
-      }, 'cat /sys/devices/system/cpu/cpu' + core + '/cpufreq/scaling_available_frequencies');
+    const output = await executeShell(
+      'cat /sys/devices/system/cpu/cpu' +
+        core +
+        '/cpufreq/scaling_available_frequencies',
+    );
+    cpuState.update((draft) => {
+      const freqs = output.split(' ').map((num: string) => {
+        return parseInt(num, 10);
+      });
+      draft.cpuFreq[core].scaling_available_freqs = freqs;
+      const maxFreq = draft.cpuFreq[core].scaling_max_freq;
+      if (maxFreq > 0 && freqs.indexOf(maxFreq) == -1) {
+        freqs.push(maxFreq); // always add scaling max to available frequencies
+      }
     });
   };
 
-  const updateCoreGovernor: (core: number) => Promise<void> = (
+  const updateCoreGovernor: (core: number) => Promise<void> = async (
     core: number,
   ) => {
-    return new Promise((resolve, _reject) => {
-      executeShell((output: string) => {
-        cpuState.update((draft) => {
-          if (output.toLowerCase().includes('no such file')) {
-            draft.cpuFreq[core].scaling_governor = 'N/A';
-          } else {
-            draft.cpuFreq[core].scaling_governor = output;
-          }
-          return draft;
-        });
-        resolve();
-      }, 'cat /sys/devices/system/cpu/cpu' + core + '/cpufreq/scaling_governor');
+    const output = await executeShell(
+      'cat /sys/devices/system/cpu/cpu' + core + '/cpufreq/scaling_governor',
+    );
+    cpuState.update((draft) => {
+      if (output.toLowerCase().includes('no such file')) {
+        draft.cpuFreq[core].scaling_governor = 'N/A';
+      } else {
+        draft.cpuFreq[core].scaling_governor = output;
+      }
     });
   };
 
-  const readAvailableGovernors: (core: number) => Promise<string[]> = (
+  const readAvailableGovernors: (core: number) => Promise<string[]> = async (
     core: number,
   ) => {
-    return new Promise((resolve, _reject) => {
-      executeShell((output: string) => {
-        // draft.cpuFreq[core].scaling_available_governors = output.split(' ');
-        resolve(output.split(' '));
-      }, 'cat /sys/devices/system/cpu/cpu' + core + '/cpufreq/scaling_available_governors');
-    });
+    const output = await executeShell(
+      'cat /sys/devices/system/cpu/cpu' +
+        core +
+        '/cpufreq/scaling_available_governors',
+    );
+    return output.split(' ');
   };
 
   const readCoreFrequency = async (core: number) => {
@@ -184,90 +179,82 @@ export function devicePlugin(client: PluginClient<{}, {}>) {
     return Promise.all(promises).then(() => {});
   };
 
-  const updateHardwareInfo = () => {
-    executeShell((output: string) => {
-      let hwInfo = '';
-      if (
-        output.startsWith('msm') ||
-        output.startsWith('apq') ||
-        output.startsWith('sdm')
-      ) {
-        hwInfo = 'QUALCOMM ' + output.toUpperCase();
-      } else if (output.startsWith('exynos')) {
-        executeShell((output: string) => {
-          if (output != null) {
-            cpuState.update((draft) => {
-              draft.hardwareInfo = 'SAMSUMG ' + output.toUpperCase();
-            });
-          }
-        }, 'getprop ro.chipname');
-        return;
-      } else if (output.startsWith('mt')) {
-        hwInfo = 'MEDIATEK ' + output.toUpperCase();
-      } else if (output.startsWith('sc')) {
-        hwInfo = 'SPREADTRUM ' + output.toUpperCase();
-      } else if (output.startsWith('hi') || output.startsWith('kirin')) {
-        hwInfo = 'HISILICON ' + output.toUpperCase();
-      } else if (output.startsWith('rk')) {
-        hwInfo = 'ROCKCHIP ' + output.toUpperCase();
-      } else if (output.startsWith('bcm')) {
-        hwInfo = 'BROADCOM ' + output.toUpperCase();
+  const updateHardwareInfo = async () => {
+    const output = await executeShell('getprop ro.board.platform');
+    let hwInfo = '';
+    if (
+      output.startsWith('msm') ||
+      output.startsWith('apq') ||
+      output.startsWith('sdm')
+    ) {
+      hwInfo = 'QUALCOMM ' + output.toUpperCase();
+    } else if (output.startsWith('exynos')) {
+      const chipname = await executeShell('getprop ro.chipname');
+      if (chipname != null) {
+        cpuState.update((draft) => {
+          draft.hardwareInfo = 'SAMSUMG ' + chipname.toUpperCase();
+        });
       }
-      cpuState.update((draft) => {
-        draft.hardwareInfo = hwInfo;
-        return draft;
-      });
-    }, 'getprop ro.board.platform');
+      return;
+    } else if (output.startsWith('mt')) {
+      hwInfo = 'MEDIATEK ' + output.toUpperCase();
+    } else if (output.startsWith('sc')) {
+      hwInfo = 'SPREADTRUM ' + output.toUpperCase();
+    } else if (output.startsWith('hi') || output.startsWith('kirin')) {
+      hwInfo = 'HISILICON ' + output.toUpperCase();
+    } else if (output.startsWith('rk')) {
+      hwInfo = 'ROCKCHIP ' + output.toUpperCase();
+    } else if (output.startsWith('bcm')) {
+      hwInfo = 'BROADCOM ' + output.toUpperCase();
+    }
+    cpuState.update((draft) => {
+      draft.hardwareInfo = hwInfo;
+    });
   };
 
-  const readThermalZones = () => {
+  const readThermalZones = async () => {
     const thermal_dir = '/sys/class/thermal/';
     const map = {};
-    executeShell(async (output: string) => {
-      if (output.toLowerCase().includes('permission denied')) {
-        cpuState.update((draft) => {
-          draft.thermalAccessible = false;
-          return draft;
-        });
-        return;
-      }
-      const dirs = output.split(/\s/);
-      const promises = [];
-      for (let d of dirs) {
-        d = d.trim();
-        if (d.length == 0) {
-          continue;
-        }
-        const path = thermal_dir + d;
-        promises.push(readThermalZone(path, d, map));
-      }
-      await Promise.all(promises);
+    const output = await executeShell('ls ' + thermal_dir);
+    if (output.toLowerCase().includes('permission denied')) {
       cpuState.update((draft) => {
-        draft.temperatureMap = map;
-        draft.thermalAccessible = true;
-        return draft;
+        draft.thermalAccessible = false;
       });
-      if (cpuState.get().displayThermalInfo) {
-        setTimeout(readThermalZones, 1000);
+      return;
+    }
+    const dirs = output.split(/\s/);
+    const promises = [];
+    for (let d of dirs) {
+      d = d.trim();
+      if (d.length == 0) {
+        continue;
       }
-    }, 'ls ' + thermal_dir);
+      const path = thermal_dir + d;
+      promises.push(readThermalZone(path, d, map));
+    }
+    await Promise.all(promises);
+    cpuState.update((draft) => {
+      draft.temperatureMap = map;
+      draft.thermalAccessible = true;
+    });
+    if (cpuState.get().displayThermalInfo) {
+      setTimeout(readThermalZones, 1000);
+    }
   };
 
-  const readThermalZone = (path: string, dir: string, map: any) => {
-    return executeShell((type: string) => {
-      if (type.length == 0) {
-        return;
-      }
-      return executeShell((temp: string) => {
-        if (Number.isNaN(Number(temp))) {
-          return;
-        }
-        map[type] = {
-          path: dir,
-          temp: parseInt(temp, 10),
-        };
-      }, 'cat ' + path + '/temp');
-    }, 'cat ' + path + '/type');
+  const readThermalZone = async (path: string, dir: string, map: any) => {
+    const type = await executeShell('cat ' + path + '/type');
+    if (type.length == 0) {
+      return;
+    }
+    const temp = await executeShell('cat ' + path + '/temp');
+    if (Number.isNaN(Number(temp))) {
+      return;
+    }
+    map[type] = {
+      path: dir,
+      temp: parseInt(temp, 10),
+    };
   };
 
   const onStartMonitor = () => {
@@ -309,11 +296,11 @@ export function devicePlugin(client: PluginClient<{}, {}>) {
     intervalID = null;
     cpuState.update((draft) => {
       draft.monitoring = false;
-      return draft;
     });
   };
 
   const cleanup = () => {
+    onStopMonitor();
     cpuState.update((draft) => {
       for (let i = 0; i < draft.cpuCount; ++i) {
         draft.cpuFreq[i].scaling_cur_freq = -1;
@@ -334,7 +321,6 @@ export function devicePlugin(client: PluginClient<{}, {}>) {
     cpuState.update((draft) => {
       draft.displayThermalInfo = !draft.displayThermalInfo;
       draft.displayCPUDetail = false;
-      return draft;
     });
   };
 
@@ -342,12 +328,11 @@ export function devicePlugin(client: PluginClient<{}, {}>) {
     cpuState.update((draft) => {
       draft.displayCPUDetail = !draft.displayCPUDetail;
       draft.displayThermalInfo = false;
-      return draft;
     });
   };
 
   // check how many cores we have on this device
-  executeShell((output: string) => {
+  executeShell('cat /sys/devices/system/cpu/possible').then((output) => {
     const idx = output.indexOf('-');
     const cpuFreq = [];
     const count = parseInt(output.substring(idx + 1), 10) + 1;
@@ -374,7 +359,7 @@ export function devicePlugin(client: PluginClient<{}, {}>) {
       displayThermalInfo: false,
       displayCPUDetail: true,
     });
-  }, 'cat /sys/devices/system/cpu/possible');
+  });
 
   client.onDeactivate(() => cleanup());
   client.onActivate(() => {
@@ -415,36 +400,6 @@ const cpuSidebarColumns: DataTableColumn[] = [
   },
 ];
 
-const getRowStyle = (freq: CPUFrequency) => {
-  if (freq.scaling_cur_freq == -2) {
-    return {
-      backgroundColor: theme.backgroundWash,
-      color: theme.textColorPrimary,
-      fontWeight: 700,
-    };
-  } else if (
-    freq.scaling_min_freq != freq.cpuinfo_min_freq &&
-    freq.scaling_min_freq > 0 &&
-    freq.cpuinfo_min_freq > 0
-  ) {
-    return {
-      backgroundColor: theme.warningColor,
-      color: theme.textColorPrimary,
-      fontWeight: 700,
-    };
-  } else if (
-    freq.scaling_max_freq != freq.cpuinfo_max_freq &&
-    freq.scaling_max_freq > 0 &&
-    freq.cpuinfo_max_freq > 0
-  ) {
-    return {
-      backgroundColor: theme.backgroundWash,
-      color: theme.textColorSecondary,
-      fontWeight: 700,
-    };
-  }
-};
-
 export function Component() {
   const instance = usePlugin(devicePlugin);
   const {
@@ -457,72 +412,6 @@ export function Component() {
   const cpuState = useValue(instance.cpuState);
 
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
-
-  const buildRow = (freq: CPUFrequency) => {
-    return {
-      core: freq.cpu_id,
-      cpu_id: `CPU_${freq.cpu_id}`,
-      scaling_cur_freq: formatFrequency(freq.scaling_cur_freq),
-      scaling_min_freq: formatFrequency(freq.scaling_min_freq),
-      scaling_max_freq: formatFrequency(freq.scaling_max_freq),
-      cpuinfo_min_freq: formatFrequency(freq.cpuinfo_min_freq),
-      cpuinfo_max_freq: formatFrequency(freq.cpuinfo_max_freq),
-      scaling_governor: freq.scaling_governor,
-    };
-  };
-
-  const frequencyRows = (cpuFreqs: Array<CPUFrequency>) => {
-    return cpuFreqs.map(buildRow);
-  };
-
-  const buildAvailableFreqList = (freq: CPUFrequency) => {
-    if (freq.scaling_available_freqs.length == 0) {
-      return <Typography.Text>N/A</Typography.Text>;
-    }
-    const info = freq;
-    return (
-      <Typography.Text>
-        {freq.scaling_available_freqs.map((freq, idx) => {
-          const bold =
-            freq == info.scaling_cur_freq ||
-            freq == info.scaling_min_freq ||
-            freq == info.scaling_max_freq;
-          return (
-            <Typography.Text key={idx} strong={bold}>
-              {formatFrequency(freq)}
-              {freq == info.scaling_cur_freq && (
-                <Typography.Text strong={bold}>
-                  {' '}
-                  (scaling current)
-                </Typography.Text>
-              )}
-              {freq == info.scaling_min_freq && (
-                <Typography.Text strong={bold}> (scaling min)</Typography.Text>
-              )}
-              {freq == info.scaling_max_freq && (
-                <Typography.Text strong={bold}> (scaling max)</Typography.Text>
-              )}
-              <br />
-            </Typography.Text>
-          );
-        })}
-      </Typography.Text>
-    );
-  };
-
-  const buildAvailableGovList = (freq: CPUFrequency): string => {
-    if (freq.scaling_available_governors.length == 0) {
-      return 'N/A';
-    }
-    return freq.scaling_available_governors.join(', ');
-  };
-
-  const buildSidebarRow = (key: string, val: any) => {
-    return {
-      key: key,
-      value: val,
-    };
-  };
 
   const sidebarRows = (id: number) => {
     let availableFreqTitle = 'Scaling Available Frequencies';
@@ -550,12 +439,15 @@ export function Component() {
     const id = selectedIds[0];
     return (
       <DetailSidebar width={500}>
-        <Typography.Title>CPU Details: CPU_{id}</Typography.Title>
-        <DataTable
-          records={sidebarRows(id)}
-          columns={cpuSidebarColumns}
-          scrollable={false}
-        />
+        <Layout.Container pad>
+          <Typography.Title>CPU Details: CPU_{id}</Typography.Title>
+          <DataTable
+            records={sidebarRows(id)}
+            columns={cpuSidebarColumns}
+            scrollable={false}
+            searchbar={false}
+          />
+        </Layout.Container>
       </DetailSidebar>
     );
   };
@@ -585,9 +477,9 @@ export function Component() {
   }, []);
 
   return (
-    <Layout.Container pad={theme.space.medium}>
+    <Layout.Container pad>
       <Typography.Title>CPU Info</Typography.Title>
-      <Layout.Horizontal gap={theme.space.small} center>
+      <Toolbar>
         {cpuState.monitoring ? (
           <Button onClick={onStopMonitor} icon={<PauseCircleOutlined />}>
             Pause
@@ -611,7 +503,7 @@ export function Component() {
         {cpuState.displayCPUDetail &&
           selectedIds.length == 0 &&
           ' (Please select a core in the table below)'}
-      </Layout.Horizontal>
+      </Toolbar>
 
       <DataTable
         records={frequencyRows(cpuState.cpuFreq)}
@@ -619,9 +511,106 @@ export function Component() {
         scrollable={false}
         onSelect={setSelected}
         onRowStyle={getRowStyle}
+        searchbar={false}
       />
       {renderCPUSidebar()}
       {renderThermalSidebar()}
     </Layout.Container>
+  );
+}
+
+function buildAvailableGovList(freq: CPUFrequency): string {
+  if (freq.scaling_available_governors.length == 0) {
+    return 'N/A';
+  }
+  return freq.scaling_available_governors.join(', ');
+}
+
+function buildSidebarRow(key: string, val: any) {
+  return {
+    key: key,
+    value: val,
+  };
+}
+
+function buildRow(freq: CPUFrequency) {
+  return {
+    core: freq.cpu_id,
+    cpu_id: `CPU_${freq.cpu_id}`,
+    scaling_cur_freq: formatFrequency(freq.scaling_cur_freq),
+    scaling_min_freq: formatFrequency(freq.scaling_min_freq),
+    scaling_max_freq: formatFrequency(freq.scaling_max_freq),
+    cpuinfo_min_freq: formatFrequency(freq.cpuinfo_min_freq),
+    cpuinfo_max_freq: formatFrequency(freq.cpuinfo_max_freq),
+    scaling_governor: freq.scaling_governor,
+  };
+}
+
+function frequencyRows(cpuFreqs: Array<CPUFrequency>) {
+  return cpuFreqs.map(buildRow);
+}
+
+function getRowStyle(freq: CPUFrequency) {
+  if (freq.scaling_cur_freq == -2) {
+    return {
+      backgroundColor: theme.backgroundWash,
+      color: theme.textColorPrimary,
+      fontWeight: 700,
+    };
+  } else if (
+    freq.scaling_min_freq != freq.cpuinfo_min_freq &&
+    freq.scaling_min_freq > 0 &&
+    freq.cpuinfo_min_freq > 0
+  ) {
+    return {
+      backgroundColor: theme.warningColor,
+      color: theme.textColorPrimary,
+      fontWeight: 700,
+    };
+  } else if (
+    freq.scaling_max_freq != freq.cpuinfo_max_freq &&
+    freq.scaling_max_freq > 0 &&
+    freq.cpuinfo_max_freq > 0
+  ) {
+    return {
+      backgroundColor: theme.backgroundWash,
+      color: theme.textColorSecondary,
+      fontWeight: 700,
+    };
+  }
+}
+
+function buildAvailableFreqList(freq: CPUFrequency) {
+  if (freq.scaling_available_freqs.length == 0) {
+    return <Typography.Text>N/A</Typography.Text>;
+  }
+  const info = freq;
+  return (
+    <Typography.Text>
+      {freq.scaling_available_freqs.map((freq, idx) => {
+        const bold =
+          freq == info.scaling_cur_freq ||
+          freq == info.scaling_min_freq ||
+          freq == info.scaling_max_freq;
+        return (
+          <Typography.Text key={idx} strong={bold}>
+            {formatFrequency(freq)}
+            {freq == info.scaling_cur_freq && (
+              <Typography.Text strong={bold}>
+                {' '}
+                (scaling current)
+              </Typography.Text>
+            )}
+            {freq == info.scaling_min_freq && (
+              <Typography.Text strong={bold}> (scaling min)</Typography.Text>
+            )}
+            {freq == info.scaling_max_freq && (
+              <Typography.Text strong={bold}> (scaling max)</Typography.Text>
+            )}
+            <br />
+          </Typography.Text>
+        );
+      })}
+    </Typography.Text>
   );
 }
