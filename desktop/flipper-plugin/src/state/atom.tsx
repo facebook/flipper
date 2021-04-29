@@ -22,6 +22,7 @@ export interface ReadOnlyAtom<T> {
 export interface Atom<T> extends ReadOnlyAtom<T> {
   set(newValue: T): void;
   update(recipe: (draft: Draft<T>) => void): void;
+  update<X extends T>(recipe: (draft: X) => void): void;
 }
 
 class AtomValue<T> implements Atom<T>, Persistable {
