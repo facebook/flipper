@@ -10,8 +10,8 @@
   "bugs": "https://github.com/facebook/flipper/issues",
   "dependencies": {
     "@babel/core": "^7.13.16",
-    "@babel/generator": "^7.13.9",
-    "@babel/parser": "^7.13.13",
+    "@babel/generator": "^7.13.16",
+    "@babel/parser": "^7.13.16",
     "@babel/plugin-proposal-class-properties": "^7.13.0",
     "@babel/plugin-proposal-nullish-coalescing-operator": "^7.13.8",
     "@babel/plugin-proposal-object-rest-spread": "^7.13.8",
@@ -21,22 +21,22 @@
     "@babel/plugin-transform-typescript": "^7.13.0",
     "@babel/preset-env": "^7.13.15",
     "@babel/preset-react": "^7.13.13",
-    "@babel/traverse": "^7.13.13",
-    "@babel/types": "^7.13.12",
-    "@emotion/babel-plugin": "^11.2.0",
-    "@types/fs-extra": "^9.0.9",
+    "@babel/traverse": "^7.13.17",
+    "@babel/types": "^7.13.17",
+    "@emotion/babel-plugin": "^11.3.0",
+    "@types/fs-extra": "^9.0.11",
     "@types/node": "^14.14.41",
     "fs-extra": "^9.0.1",
     "tslib": "^2"
   },
   "devDependencies": {
-    "@types/jest": "26.0.22",
+    "@types/jest": "26.0.23",
     "jest": "^26.6.3",
     "prettier": "^2.2.1",
     "rimraf": "^3.0.2",
-    "ts-jest": "^26.0.0",
-    "ts-node": "^8",
-    "typescript": "^4.1.2"
+    "ts-jest": "^26.5.5",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.2.4"
   },
   "scripts": {
     "reset": "rimraf lib *.tsbuildinfo",

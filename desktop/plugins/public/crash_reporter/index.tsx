@@ -310,7 +310,7 @@ class CrashSelector extends React.Component<CrashSelectorProps> {
               disabled={Boolean(!orderedIDs || orderedIDs.length <= 1)}
               compact={true}
               onClick={() => {
-                if (onCrashChange && orderedIDs && selectedCrashID) {
+                if (orderedIDs && selectedCrashID) {
                   const index = orderedIDs.indexOf(selectedCrashID as string);
                   const nextIndex =
                     index < 1 ? orderedIDs.length - 1 : index - 1;
@@ -328,7 +328,7 @@ class CrashSelector extends React.Component<CrashSelectorProps> {
               disabled={Boolean(!orderedIDs || orderedIDs.length <= 1)}
               compact={true}
               onClick={() => {
-                if (onCrashChange && orderedIDs && selectedCrashID) {
+                if (orderedIDs && selectedCrashID) {
                   const index = orderedIDs.indexOf(selectedCrashID as string);
                   const nextIndex =
                     index >= orderedIDs.length - 1 ? 0 : index + 1;
