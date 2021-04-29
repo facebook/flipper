@@ -7,23 +7,29 @@
  * @format
  */
 
-import {FlipperDevicePlugin, Device, AndroidDevice} from 'flipper';
+import {
+  createState,
+  PluginClient,
+  usePlugin,
+  useValue,
+  Panel,
+  theme,
+  Layout,
+} from 'flipper-plugin';
 import adb from 'adbkit';
 import TemperatureTable from './TemperatureTable';
+import {Button, Typography} from 'antd';
+import {PlayCircleOutlined, PauseCircleOutlined} from '@ant-design/icons';
 
 import {
-  FlexColumn,
-  Button,
   Toolbar,
-  Text,
   ManagedTable,
   colors,
   styled,
-  Panel,
   DetailSidebar,
   ToggleButton,
 } from 'flipper';
-import React from 'react';
+import React, {useState} from 'react';
 
 type TableRows = any;
 
@@ -46,7 +52,6 @@ type CPUState = {
   cpuCount: number;
   monitoring: boolean;
   hardwareInfo: string;
-  selectedIds: Array<number>;
   temperatureMap: any;
   thermalAccessible: boolean;
   displayThermalInfo: boolean;
@@ -124,152 +129,100 @@ function formatFrequency(freq: number) {
   }
 }
 
-export default class CPUFrequencyTable extends FlipperDevicePlugin<
-  CPUState,
-  any,
-  any
-> {
-  intervalID: NodeJS.Timer | null = null;
-  state: CPUState = {
-    cpuCount: 0,
-    cpuFreq: [],
-    monitoring: false,
-    hardwareInfo: '',
-    selectedIds: [],
-    temperatureMap: {},
-    thermalAccessible: true,
-    displayThermalInfo: false,
-    displayCPUDetail: true,
-  };
+export function devicePlugin(client: PluginClient<{}, {}>) {
+  const device = client.device;
 
-  static supportsDevice(device: Device) {
-    return (
-      device.os === 'Android' &&
-      device.deviceType === 'physical' &&
-      !device.isArchived
-    );
-  }
-
-  init() {
-    this.updateHardwareInfo();
-    this.readThermalZones();
-
-    // check how many cores we have on this device
-    this.executeShell((output: string) => {
-      const idx = output.indexOf('-');
-      const cpuFreq = [];
-      const count = parseInt(output.substring(idx + 1), 10) + 1;
-      for (let i = 0; i < count; ++i) {
-        cpuFreq[i] = {
-          cpu_id: i,
-          scaling_cur_freq: -1,
-          scaling_min_freq: -1,
-          scaling_max_freq: -1,
-          cpuinfo_min_freq: -1,
-          cpuinfo_max_freq: -1,
-          scaling_available_freqs: [],
-          scaling_governor: 'N/A',
-          scaling_available_governors: [],
-        };
-      }
-      this.setState({
-        cpuCount: count,
-        cpuFreq: cpuFreq,
-        monitoring: false,
-        hardwareInfo: '',
-        selectedIds: [],
-        temperatureMap: {},
-        thermalAccessible: true,
-        displayThermalInfo: false,
-        displayCPUDetail: true,
-      });
-    }, 'cat /sys/devices/system/cpu/possible');
-  }
-  executeShell = (callback: ShellCallBack, command: string) => {
-    return (this.device as AndroidDevice).adb
-      .shell(this.device.serial, command)
+  const executeShell = (callback: ShellCallBack, command: string) => {
+    return (device.realDevice as any).adb
+      .shell(device.serial, command)
       .then(adb.util.readAll)
       .then(function (output: {toString: () => {trim: () => string}}) {
         return callback(output.toString().trim());
       });
   };
 
-  updateCoreFrequency = (core: number, type: string) => {
-    this.executeShell((output: string) => {
-      const cpuFreq = this.state.cpuFreq;
-      const newFreq = isNormalInteger(output) ? parseInt(output, 10) : -1;
-      // update table only if frequency changed
-      if (cpuFreq[core][type] != newFreq) {
-        cpuFreq[core][type] = newFreq;
-        if (type == 'scaling_cur_freq' && cpuFreq[core][type] < 0) {
-          // cannot find current freq means offline
-          cpuFreq[core][type] = -2;
-        }
+  let intervalID: NodeJS.Timer | null = null;
+  const cpuState = createState<CPUState>({
+    cpuCount: 0,
+    cpuFreq: [],
+    monitoring: false,
+    hardwareInfo: '',
+    temperatureMap: {},
+    thermalAccessible: true,
+    displayThermalInfo: false,
+    displayCPUDetail: true,
+  });
 
-        this.setState({
-          cpuFreq: cpuFreq,
-        });
-      }
+  const updateCoreFrequency = (core: number, type: string) => {
+    executeShell((output: string) => {
+      cpuState.update((draft) => {
+        const newFreq = isNormalInteger(output) ? parseInt(output, 10) : -1;
+        // update table only if frequency changed
+        if (draft.cpuFreq[core][type] != newFreq) {
+          draft.cpuFreq[core][type] = newFreq;
+          if (type == 'scaling_cur_freq' && draft.cpuFreq[core][type] < 0) {
+            // cannot find current freq means offline
+            draft.cpuFreq[core][type] = -2;
+          }
+        }
+        return draft;
+      });
     }, 'cat /sys/devices/system/cpu/cpu' + core + '/cpufreq/' + type);
   };
 
-  updateAvailableFrequencies = (core: number) => {
-    this.executeShell((output: string) => {
-      const cpuFreq = this.state.cpuFreq;
-      const freqs = output.split(' ').map((num: string) => {
-        return parseInt(num, 10);
-      });
-      cpuFreq[core].scaling_available_freqs = freqs;
-      const maxFreq = cpuFreq[core].scaling_max_freq;
-      if (maxFreq > 0 && freqs.indexOf(maxFreq) == -1) {
-        freqs.push(maxFreq); // always add scaling max to available frequencies
-      }
-      this.setState({
-        cpuFreq: cpuFreq,
+  const updateAvailableFrequencies = (core: number) => {
+    executeShell((output: string) => {
+      cpuState.update((draft) => {
+        const freqs = output.split(' ').map((num: string) => {
+          return parseInt(num, 10);
+        });
+        draft.cpuFreq[core].scaling_available_freqs = freqs;
+        const maxFreq = draft.cpuFreq[core].scaling_max_freq;
+        if (maxFreq > 0 && freqs.indexOf(maxFreq) == -1) {
+          freqs.push(maxFreq); // always add scaling max to available frequencies
+        }
+        return draft;
       });
     }, 'cat /sys/devices/system/cpu/cpu' + core + '/cpufreq/scaling_available_frequencies');
   };
 
-  updateCoreGovernor = (core: number) => {
-    this.executeShell((output: string) => {
-      const cpuFreq = this.state.cpuFreq;
-      if (output.toLowerCase().includes('no such file')) {
-        cpuFreq[core].scaling_governor = 'N/A';
-      } else {
-        cpuFreq[core].scaling_governor = output;
-      }
-      this.setState({
-        cpuFreq: cpuFreq,
+  const updateCoreGovernor = (core: number) => {
+    executeShell((output: string) => {
+      cpuState.update((draft) => {
+        if (output.toLowerCase().includes('no such file')) {
+          draft.cpuFreq[core].scaling_governor = 'N/A';
+        } else {
+          draft.cpuFreq[core].scaling_governor = output;
+        }
+        return draft;
       });
     }, 'cat /sys/devices/system/cpu/cpu' + core + '/cpufreq/scaling_governor');
   };
 
-  readAvailableGovernors = (core: number) => {
-    this.executeShell((output: string) => {
-      const cpuFreq = this.state.cpuFreq;
-      cpuFreq[core].scaling_available_governors = output.split(' ');
-
-      this.setState({
-        cpuFreq: cpuFreq,
+  const readAvailableGovernors = (core: number) => {
+    executeShell((output: string) => {
+      cpuState.update((draft) => {
+        draft.cpuFreq[core].scaling_available_governors = output.split(' ');
+        return draft;
       });
     }, 'cat /sys/devices/system/cpu/cpu' + core + '/cpufreq/scaling_available_governors');
   };
 
-  readCoreFrequency = (core: number) => {
-    const freq = this.state.cpuFreq[core];
+  const readCoreFrequency = (core: number) => {
+    const freq = cpuState.get().cpuFreq[core];
     if (freq.cpuinfo_max_freq < 0) {
-      this.updateCoreFrequency(core, 'cpuinfo_max_freq');
+      updateCoreFrequency(core, 'cpuinfo_max_freq');
     }
     if (freq.cpuinfo_min_freq < 0) {
-      this.updateCoreFrequency(core, 'cpuinfo_min_freq');
+      updateCoreFrequency(core, 'cpuinfo_min_freq');
     }
-    this.updateCoreFrequency(core, 'scaling_cur_freq');
-    this.updateCoreFrequency(core, 'scaling_min_freq');
-    this.updateCoreFrequency(core, 'scaling_max_freq');
+    updateCoreFrequency(core, 'scaling_cur_freq');
+    updateCoreFrequency(core, 'scaling_min_freq');
+    updateCoreFrequency(core, 'scaling_max_freq');
   };
 
-  updateHardwareInfo = () => {
-    this.executeShell((output: string) => {
+  const updateHardwareInfo = () => {
+    executeShell((output: string) => {
       let hwInfo = '';
       if (
         output.startsWith('msm') ||
@@ -278,10 +231,10 @@ export default class CPUFrequencyTable extends FlipperDevicePlugin<
       ) {
         hwInfo = 'QUALCOMM ' + output.toUpperCase();
       } else if (output.startsWith('exynos')) {
-        this.executeShell((output: string) => {
+        executeShell((output: string) => {
           if (output != null) {
-            this.setState({
-              hardwareInfo: 'SAMSUMG ' + output.toUpperCase(),
+            cpuState.update((draft) => {
+              draft.hardwareInfo = 'SAMSUMG ' + output.toUpperCase();
             });
           }
         }, 'getprop ro.chipname');
@@ -297,18 +250,22 @@ export default class CPUFrequencyTable extends FlipperDevicePlugin<
       } else if (output.startsWith('bcm')) {
         hwInfo = 'BROADCOM ' + output.toUpperCase();
       }
-      this.setState({
-        hardwareInfo: hwInfo,
+      cpuState.update((draft) => {
+        draft.hardwareInfo = hwInfo;
+        return draft;
       });
     }, 'getprop ro.board.platform');
   };
 
-  readThermalZones = () => {
+  const readThermalZones = () => {
     const thermal_dir = '/sys/class/thermal/';
     const map = {};
-    this.executeShell(async (output: string) => {
+    executeShell(async (output: string) => {
       if (output.toLowerCase().includes('permission denied')) {
-        this.setState({thermalAccessible: false});
+        cpuState.update((draft) => {
+          draft.thermalAccessible = false;
+          return draft;
+        });
         return;
       }
       const dirs = output.split(/\s/);
@@ -319,22 +276,26 @@ export default class CPUFrequencyTable extends FlipperDevicePlugin<
           continue;
         }
         const path = thermal_dir + d;
-        promises.push(this.readThermalZone(path, d, map));
+        promises.push(readThermalZone(path, d, map));
       }
       await Promise.all(promises);
-      this.setState({temperatureMap: map, thermalAccessible: true});
-      if (this.state.displayThermalInfo) {
-        setTimeout(this.readThermalZones, 1000);
+      cpuState.update((draft) => {
+        draft.temperatureMap = map;
+        draft.thermalAccessible = true;
+        return draft;
+      });
+      if (cpuState.get().displayThermalInfo) {
+        setTimeout(readThermalZones, 1000);
       }
     }, 'ls ' + thermal_dir);
   };
 
-  readThermalZone = (path: string, dir: string, map: any) => {
-    return this.executeShell((type: string) => {
+  const readThermalZone = (path: string, dir: string, map: any) => {
+    return executeShell((type: string) => {
       if (type.length == 0) {
         return;
       }
-      return this.executeShell((temp: string) => {
+      return executeShell((temp: string) => {
         if (Number.isNaN(Number(temp))) {
           return;
         }
@@ -346,63 +307,136 @@ export default class CPUFrequencyTable extends FlipperDevicePlugin<
     }, 'cat ' + path + '/type');
   };
 
-  onStartMonitor = () => {
-    if (this.intervalID) {
+  const onStartMonitor = () => {
+    if (intervalID) {
       return;
     }
 
-    for (let i = 0; i < this.state.cpuCount; ++i) {
-      this.readAvailableGovernors(i);
+    for (let i = 0; i < cpuState.get().cpuCount; ++i) {
+      readAvailableGovernors(i);
     }
 
-    this.intervalID = setInterval(() => {
-      for (let i = 0; i < this.state.cpuCount; ++i) {
-        this.readCoreFrequency(i);
-        this.updateCoreGovernor(i);
-        this.updateAvailableFrequencies(i); // scaling max might change, so we also update this
+    intervalID = setInterval(() => {
+      console.log('Starting task');
+      for (let i = 0; i < cpuState.get().cpuCount; ++i) {
+        readCoreFrequency(i);
+        updateCoreGovernor(i);
+        updateAvailableFrequencies(i); // scaling max might change, so we also update this
       }
     }, 500);
-
-    this.setState({
-      monitoring: true,
+    cpuState.update((draft) => {
+      draft.monitoring = true;
     });
   };
 
-  onStopMonitor = () => {
-    if (!this.intervalID) {
+  const onStopMonitor = () => {
+    if (!intervalID) {
       return;
     } else {
-      clearInterval(this.intervalID);
-      this.intervalID = null;
-      this.setState({
-        monitoring: false,
+      clearInterval(intervalID);
+      intervalID = null;
+      cpuState.update((draft) => {
+        draft.monitoring = false;
+        return draft;
       });
-      this.cleanup();
+      cleanup();
     }
   };
 
-  cleanup = () => {
-    const cpuFreq = this.state.cpuFreq;
-    for (let i = 0; i < this.state.cpuCount; ++i) {
-      cpuFreq[i].scaling_cur_freq = -1;
-      cpuFreq[i].scaling_min_freq = -1;
-      cpuFreq[i].scaling_max_freq = -1;
-      cpuFreq[i].scaling_available_freqs = [];
-      cpuFreq[i].scaling_governor = 'N/A';
-      // we don't cleanup cpuinfo_min_freq, cpuinfo_max_freq
-      // because usually they are fixed (hardware)
-    }
-    this.setState({
-      cpuFreq: cpuFreq,
+  const cleanup = () => {
+    cpuState.update((draft) => {
+      for (let i = 0; i < draft.cpuCount; ++i) {
+        draft.cpuFreq[i].scaling_cur_freq = -1;
+        draft.cpuFreq[i].scaling_min_freq = -1;
+        draft.cpuFreq[i].scaling_max_freq = -1;
+        draft.cpuFreq[i].scaling_available_freqs = [];
+        draft.cpuFreq[i].scaling_governor = 'N/A';
+        // we don't cleanup cpuinfo_min_freq, cpuinfo_max_freq
+        // because usually they are fixed (hardware)
+      }
     });
   };
 
-  teardown() {
-    this.cleanup();
-  }
+  const toggleThermalSidebar = () => {
+    if (!cpuState.get().displayThermalInfo) {
+      readThermalZones();
+    }
+    cpuState.update((draft) => {
+      draft.displayThermalInfo = !draft.displayThermalInfo;
+      draft.displayCPUDetail = false;
+      return draft;
+    });
+  };
 
-  buildRow = (freq: CPUFrequency, idx: number) => {
-    const selected = this.state.selectedIds.indexOf(idx) >= 0;
+  const toggleCPUSidebar = () => {
+    cpuState.update((draft) => {
+      draft.displayCPUDetail = !draft.displayCPUDetail;
+      draft.displayThermalInfo = false;
+      return draft;
+    });
+  };
+
+  // check how many cores we have on this device
+  executeShell((output: string) => {
+    const idx = output.indexOf('-');
+    const cpuFreq = [];
+    const count = parseInt(output.substring(idx + 1), 10) + 1;
+    for (let i = 0; i < count; ++i) {
+      cpuFreq[i] = {
+        cpu_id: i,
+        scaling_cur_freq: -1,
+        scaling_min_freq: -1,
+        scaling_max_freq: -1,
+        cpuinfo_min_freq: -1,
+        cpuinfo_max_freq: -1,
+        scaling_available_freqs: [],
+        scaling_governor: 'N/A',
+        scaling_available_governors: [],
+      };
+    }
+    cpuState.set({
+      cpuCount: count,
+      cpuFreq: cpuFreq,
+      monitoring: false,
+      hardwareInfo: '',
+      temperatureMap: {},
+      thermalAccessible: true,
+      displayThermalInfo: false,
+      displayCPUDetail: true,
+    });
+  }, 'cat /sys/devices/system/cpu/possible');
+
+  client.onDeactivate(() => cleanup());
+  client.onActivate(() => {
+    updateHardwareInfo();
+    readThermalZones();
+  });
+
+  return {
+    executeShell,
+    cpuState,
+    onStartMonitor,
+    onStopMonitor,
+    toggleCPUSidebar,
+    toggleThermalSidebar,
+  };
+}
+
+export function Component() {
+  const instance = usePlugin(devicePlugin);
+  const {
+    onStartMonitor,
+    onStopMonitor,
+    toggleCPUSidebar,
+    toggleThermalSidebar,
+  } = instance;
+
+  const cpuState = useValue(instance.cpuState);
+
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
+
+  const buildRow = (freq: CPUFrequency, idx: number) => {
+    const selected = selectedIds.indexOf(idx) >= 0;
     let style = {};
     if (freq.scaling_cur_freq == -2) {
       style = {
@@ -440,24 +474,44 @@ export default class CPUFrequencyTable extends FlipperDevicePlugin<
 
     return {
       columns: {
-        cpu_id: {value: <Text>CPU_{freq.cpu_id}</Text>},
+        cpu_id: {value: <Typography.Text>CPU_{freq.cpu_id}</Typography.Text>},
         scaling_cur_freq: {
-          value: <Text>{formatFrequency(freq.scaling_cur_freq)}</Text>,
+          value: (
+            <Typography.Text>
+              {formatFrequency(freq.scaling_cur_freq)}
+            </Typography.Text>
+          ),
         },
         scaling_min_freq: {
-          value: <Text>{formatFrequency(freq.scaling_min_freq)}</Text>,
+          value: (
+            <Typography.Text>
+              {formatFrequency(freq.scaling_min_freq)}
+            </Typography.Text>
+          ),
         },
         scaling_max_freq: {
-          value: <Text>{formatFrequency(freq.scaling_max_freq)}</Text>,
+          value: (
+            <Typography.Text>
+              {formatFrequency(freq.scaling_max_freq)}
+            </Typography.Text>
+          ),
         },
         cpuinfo_min_freq: {
-          value: <Text>{formatFrequency(freq.cpuinfo_min_freq)}</Text>,
+          value: (
+            <Typography.Text>
+              {formatFrequency(freq.cpuinfo_min_freq)}
+            </Typography.Text>
+          ),
         },
         cpuinfo_max_freq: {
-          value: <Text>{formatFrequency(freq.cpuinfo_max_freq)}</Text>,
+          value: (
+            <Typography.Text>
+              {formatFrequency(freq.cpuinfo_max_freq)}
+            </Typography.Text>
+          ),
         },
         scaling_governor: {
-          value: <Text>{freq.scaling_governor}</Text>,
+          value: <Typography.Text>{freq.scaling_governor}</Typography.Text>,
         },
       },
       key: freq.cpu_id,
@@ -466,17 +520,17 @@ export default class CPUFrequencyTable extends FlipperDevicePlugin<
     };
   };
 
-  frequencyRows = (cpuFreqs: Array<CPUFrequency>): TableRows => {
-    return cpuFreqs.map(this.buildRow);
+  const frequencyRows = (cpuFreqs: Array<CPUFrequency>): TableRows => {
+    return cpuFreqs.map(buildRow);
   };
 
-  buildAvailableFreqList = (freq: CPUFrequency) => {
+  const buildAvailableFreqList = (freq: CPUFrequency) => {
     if (freq.scaling_available_freqs.length == 0) {
-      return <Text>N/A</Text>;
+      return <Typography.Text>N/A</Typography.Text>;
     }
     const info = freq;
     return (
-      <Text>
+      <Typography.Text>
         {freq.scaling_available_freqs.map((freq, idx) => {
           const style: React.CSSProperties = {};
           if (
@@ -487,36 +541,39 @@ export default class CPUFrequencyTable extends FlipperDevicePlugin<
             style.fontWeight = 'bold';
           }
           return (
-            <Text key={idx} style={style}>
+            <Typography.Text key={idx} style={style}>
               {formatFrequency(freq)}
               {freq == info.scaling_cur_freq && (
-                <Text style={style}> (scaling current)</Text>
+                <Typography.Text style={style}>
+                  {' '}
+                  (scaling current)
+                </Typography.Text>
               )}
               {freq == info.scaling_min_freq && (
-                <Text style={style}> (scaling min)</Text>
+                <Typography.Text style={style}> (scaling min)</Typography.Text>
               )}
               {freq == info.scaling_max_freq && (
-                <Text style={style}> (scaling max)</Text>
+                <Typography.Text style={style}> (scaling max)</Typography.Text>
               )}
               <br />
-            </Text>
+            </Typography.Text>
           );
         })}
-      </Text>
+      </Typography.Text>
     );
   };
 
-  buildAvailableGovList = (freq: CPUFrequency): string => {
+  const buildAvailableGovList = (freq: CPUFrequency): string => {
     if (freq.scaling_available_governors.length == 0) {
       return 'N/A';
     }
     return freq.scaling_available_governors.join(', ');
   };
 
-  buildSidebarRow = (key: string, val: any) => {
+  const buildSidebarRow = (key: string, val: any) => {
     return {
       columns: {
-        key: {value: <Text>{key}</Text>},
+        key: {value: <Typography.Text>{key}</Typography.Text>},
         value: {
           value: val,
         },
@@ -525,9 +582,9 @@ export default class CPUFrequencyTable extends FlipperDevicePlugin<
     };
   };
 
-  sidebarRows = (id: number) => {
+  const sidebarRows = (id: number) => {
     let availableFreqTitle = 'Scaling Available Frequencies';
-    const selected = this.state.cpuFreq[id];
+    const selected = cpuState.cpuFreq[id];
     if (selected.scaling_available_freqs.length > 0) {
       availableFreqTitle +=
         ' (' + selected.scaling_available_freqs.length.toString() + ')';
@@ -536,19 +593,19 @@ export default class CPUFrequencyTable extends FlipperDevicePlugin<
     const keys = [availableFreqTitle, 'Scaling Available Governors'];
 
     const vals = [
-      this.buildAvailableFreqList(selected),
-      this.buildAvailableGovList(selected),
+      buildAvailableFreqList(selected),
+      buildAvailableGovList(selected),
     ];
     return keys.map<any>((key, idx) => {
-      return this.buildSidebarRow(key, vals[idx]);
+      return buildSidebarRow(key, vals[idx]);
     });
   };
 
-  renderCPUSidebar = () => {
-    if (!this.state.displayCPUDetail || this.state.selectedIds.length == 0) {
+  const renderCPUSidebar = () => {
+    if (!cpuState.displayCPUDetail || selectedIds.length == 0) {
       return null;
     }
-    const id = this.state.selectedIds[0];
+    const id = selectedIds[0];
     const cols = {
       key: {
         value: 'key',
@@ -565,12 +622,7 @@ export default class CPUFrequencyTable extends FlipperDevicePlugin<
     };
     return (
       <DetailSidebar width={500}>
-        <Panel
-          padded={true}
-          heading="CPU details"
-          floating={false}
-          collapsable={true}
-          grow={true}>
+        <Panel pad={theme.space.small} title="CPU details">
           <Heading>CPU_{id}</Heading>
           <ManagedTable
             columnSizes={colSizes}
@@ -579,27 +631,22 @@ export default class CPUFrequencyTable extends FlipperDevicePlugin<
             autoHeight={true}
             floating={false}
             zebra={true}
-            rows={this.sidebarRows(id)}
+            rows={sidebarRows(id)}
           />
         </Panel>
       </DetailSidebar>
     );
   };
 
-  renderThermalSidebar = () => {
-    if (!this.state.displayThermalInfo) {
+  const renderThermalSidebar = () => {
+    if (!cpuState.displayThermalInfo) {
       return null;
     }
     return (
       <DetailSidebar width={500}>
-        <Panel
-          padded={true}
-          heading="Thermal Information"
-          floating={false}
-          collapsable={true}
-          grow={false}>
-          {this.state.thermalAccessible ? (
-            <TemperatureTable temperatureMap={this.state.temperatureMap} />
+        <Panel pad={theme.space.small} title="Thermal Information">
+          {cpuState.thermalAccessible ? (
+            <TemperatureTable temperatureMap={cpuState.temperatureMap} />
           ) : (
             'Temperature information not accessible on this device.'
           )}
@@ -608,76 +655,50 @@ export default class CPUFrequencyTable extends FlipperDevicePlugin<
     );
   };
 
-  toggleThermalSidebar = () => {
-    if (!this.state.displayThermalInfo) {
-      this.readThermalZones();
-    }
-    this.setState({
-      displayThermalInfo: !this.state.displayThermalInfo,
-      displayCPUDetail: false,
-    });
-  };
+  return (
+    <Panel pad={theme.space.small} title="CPU info">
+      <Toolbar position="top">
+        {cpuState.monitoring ? (
+          <Button onClick={onStopMonitor} icon={<PauseCircleOutlined />}>
+            Pause
+          </Button>
+        ) : (
+          <Button onClick={onStartMonitor} icon={<PlayCircleOutlined />}>
+            Start
+          </Button>
+        )}
+        &nbsp; {cpuState.hardwareInfo}
+        <ToggleButton
+          toggled={cpuState.displayThermalInfo}
+          onClick={toggleThermalSidebar}
+        />
+        Thermal Information
+        <ToggleButton
+          onClick={toggleCPUSidebar}
+          toggled={cpuState.displayCPUDetail}
+        />
+        CPU Details
+        {cpuState.displayCPUDetail &&
+          selectedIds.length == 0 &&
+          ' (Please select a core in the table below)'}
+      </Toolbar>
 
-  toggleCPUSidebar = () => {
-    this.setState({
-      displayCPUDetail: !this.state.displayCPUDetail,
-      displayThermalInfo: false,
-    });
-  };
-
-  render() {
-    return (
-      <Panel
-        padded={false}
-        heading="CPU info"
-        floating={false}
-        collapsable={false}
-        grow={true}>
-        <Toolbar position="top">
-          {this.state.monitoring ? (
-            <Button onClick={this.onStopMonitor} icon="pause">
-              Pause
-            </Button>
-          ) : (
-            <Button onClick={this.onStartMonitor} icon="play">
-              Start
-            </Button>
-          )}
-          &nbsp; {this.state.hardwareInfo}
-          <ToggleButton
-            toggled={this.state.displayThermalInfo}
-            onClick={this.toggleThermalSidebar}
-          />
-          Thermal Information
-          <ToggleButton
-            onClick={this.toggleCPUSidebar}
-            toggled={this.state.displayCPUDetail}
-          />
-          CPU Details
-          {this.state.displayCPUDetail &&
-            this.state.selectedIds.length == 0 &&
-            ' (Please select a core in the table below)'}
-        </Toolbar>
-
-        <FlexColumn grow={true}>
-          <ManagedTable
-            multiline={true}
-            columnSizes={ColumnSizes}
-            columns={Columns}
-            autoHeight={true}
-            floating={false}
-            zebra={true}
-            rows={this.frequencyRows(this.state.cpuFreq)}
-            onRowHighlighted={(selectedIds) => {
-              this.setState({
-                selectedIds: selectedIds.map(parseInt),
-              });
-            }}
-          />
-          {this.renderCPUSidebar()}
-          {this.renderThermalSidebar()}
-        </FlexColumn>
-      </Panel>
-    );
-  }
+      <Layout.Container grow={true}>
+        <ManagedTable
+          multiline={true}
+          columnSizes={ColumnSizes}
+          columns={Columns}
+          autoHeight={true}
+          floating={false}
+          zebra={true}
+          rows={frequencyRows(cpuState.cpuFreq)}
+          onRowHighlighted={(selectedIds) => {
+            setSelectedIds(selectedIds.map(parseInt));
+          }}
+        />
+        {renderCPUSidebar()}
+        {renderThermalSidebar()}
+      </Layout.Container>
+    </Panel>
+  );
 }

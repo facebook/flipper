@@ -10,13 +10,16 @@
       "archived": false
     }
   ],
-  "version": "0.0.0",
+  "version": "0.0.1",
   "main": "dist/bundle.js",
   "flipperBundlerEntry": "index.tsx",
   "license": "MIT",
   "keywords": [
     "flipper-plugin"
   ],
+  "peerDependencies": {
+    "flipper-plugin": "*"
+  },
   "title": "CPU",
   "icon": "underline",
   "bugs": {
