@@ -153,72 +153,92 @@ export function devicePlugin(client: PluginClient<{}, {}>) {
     displayCPUDetail: true,
   });
 
-  const updateCoreFrequency = (core: number, type: string) => {
-    executeShell((output: string) => {
-      cpuState.update((draft) => {
-        const newFreq = isNormalInteger(output) ? parseInt(output, 10) : -1;
-        // update table only if frequency changed
-        if (draft.cpuFreq[core][type] != newFreq) {
-          draft.cpuFreq[core][type] = newFreq;
-          if (type == 'scaling_cur_freq' && draft.cpuFreq[core][type] < 0) {
-            // cannot find current freq means offline
-            draft.cpuFreq[core][type] = -2;
+  const updateCoreFrequency: (core: number, type: string) => Promise<void> = (
+    core: number,
+    type: string,
+  ) => {
+    return new Promise((resolve, _reject) => {
+      executeShell((output: string) => {
+        cpuState.update((draft) => {
+          const newFreq = isNormalInteger(output) ? parseInt(output, 10) : -1;
+          // update table only if frequency changed
+          if (draft.cpuFreq[core][type] != newFreq) {
+            draft.cpuFreq[core][type] = newFreq;
+            if (type == 'scaling_cur_freq' && draft.cpuFreq[core][type] < 0) {
+              // cannot find current freq means offline
+              draft.cpuFreq[core][type] = -2;
+            }
           }
-        }
-        return draft;
-      });
-    }, 'cat /sys/devices/system/cpu/cpu' + core + '/cpufreq/' + type);
-  };
-
-  const updateAvailableFrequencies = (core: number) => {
-    executeShell((output: string) => {
-      cpuState.update((draft) => {
-        const freqs = output.split(' ').map((num: string) => {
-          return parseInt(num, 10);
+          return draft;
         });
-        draft.cpuFreq[core].scaling_available_freqs = freqs;
-        const maxFreq = draft.cpuFreq[core].scaling_max_freq;
-        if (maxFreq > 0 && freqs.indexOf(maxFreq) == -1) {
-          freqs.push(maxFreq); // always add scaling max to available frequencies
-        }
-        return draft;
-      });
-    }, 'cat /sys/devices/system/cpu/cpu' + core + '/cpufreq/scaling_available_frequencies');
+        resolve();
+      }, 'cat /sys/devices/system/cpu/cpu' + core + '/cpufreq/' + type);
+    });
   };
 
-  const updateCoreGovernor = (core: number) => {
-    executeShell((output: string) => {
-      cpuState.update((draft) => {
-        if (output.toLowerCase().includes('no such file')) {
-          draft.cpuFreq[core].scaling_governor = 'N/A';
-        } else {
-          draft.cpuFreq[core].scaling_governor = output;
-        }
-        return draft;
-      });
-    }, 'cat /sys/devices/system/cpu/cpu' + core + '/cpufreq/scaling_governor');
+  const updateAvailableFrequencies: (core: number) => Promise<void> = (
+    core: number,
+  ) => {
+    return new Promise((resolve, _reject) => {
+      executeShell((output: string) => {
+        cpuState.update((draft) => {
+          const freqs = output.split(' ').map((num: string) => {
+            return parseInt(num, 10);
+          });
+          draft.cpuFreq[core].scaling_available_freqs = freqs;
+          const maxFreq = draft.cpuFreq[core].scaling_max_freq;
+          if (maxFreq > 0 && freqs.indexOf(maxFreq) == -1) {
+            freqs.push(maxFreq); // always add scaling max to available frequencies
+          }
+          return draft;
+        });
+        resolve();
+      }, 'cat /sys/devices/system/cpu/cpu' + core + '/cpufreq/scaling_available_frequencies');
+    });
   };
 
-  const readAvailableGovernors = (core: number) => {
-    executeShell((output: string) => {
-      cpuState.update((draft) => {
-        draft.cpuFreq[core].scaling_available_governors = output.split(' ');
-        return draft;
-      });
-    }, 'cat /sys/devices/system/cpu/cpu' + core + '/cpufreq/scaling_available_governors');
+  const updateCoreGovernor: (core: number) => Promise<void> = (
+    core: number,
+  ) => {
+    return new Promise((resolve, _reject) => {
+      executeShell((output: string) => {
+        cpuState.update((draft) => {
+          if (output.toLowerCase().includes('no such file')) {
+            draft.cpuFreq[core].scaling_governor = 'N/A';
+          } else {
+            draft.cpuFreq[core].scaling_governor = output;
+          }
+          return draft;
+        });
+        resolve();
+      }, 'cat /sys/devices/system/cpu/cpu' + core + '/cpufreq/scaling_governor');
+    });
   };
 
-  const readCoreFrequency = (core: number) => {
+  const readAvailableGovernors: (core: number) => Promise<string[]> = (
+    core: number,
+  ) => {
+    return new Promise((resolve, _reject) => {
+      executeShell((output: string) => {
+        // draft.cpuFreq[core].scaling_available_governors = output.split(' ');
+        resolve(output.split(' '));
+      }, 'cat /sys/devices/system/cpu/cpu' + core + '/cpufreq/scaling_available_governors');
+    });
+  };
+
+  const readCoreFrequency = async (core: number) => {
     const freq = cpuState.get().cpuFreq[core];
+    const promises = [];
     if (freq.cpuinfo_max_freq < 0) {
-      updateCoreFrequency(core, 'cpuinfo_max_freq');
+      promises.push(updateCoreFrequency(core, 'cpuinfo_max_freq'));
     }
     if (freq.cpuinfo_min_freq < 0) {
-      updateCoreFrequency(core, 'cpuinfo_min_freq');
+      promises.push(updateCoreFrequency(core, 'cpuinfo_min_freq'));
     }
-    updateCoreFrequency(core, 'scaling_cur_freq');
-    updateCoreFrequency(core, 'scaling_min_freq');
-    updateCoreFrequency(core, 'scaling_max_freq');
+    promises.push(updateCoreFrequency(core, 'scaling_cur_freq'));
+    promises.push(updateCoreFrequency(core, 'scaling_min_freq'));
+    promises.push(updateCoreFrequency(core, 'scaling_max_freq'));
+    return Promise.all(promises).then(() => {});
   };
 
   const updateHardwareInfo = () => {
@@ -313,17 +333,25 @@ export function devicePlugin(client: PluginClient<{}, {}>) {
     }
 
     for (let i = 0; i < cpuState.get().cpuCount; ++i) {
-      readAvailableGovernors(i);
+      readAvailableGovernors(i).then((output) => {
+        cpuState.update((draft) => {
+          draft.cpuFreq[i].scaling_available_governors = output;
+        });
+      });
     }
 
-    intervalID = setInterval(() => {
-      console.log('Starting task');
+    const update = async () => {
+      const promises = [];
       for (let i = 0; i < cpuState.get().cpuCount; ++i) {
-        readCoreFrequency(i);
-        updateCoreGovernor(i);
-        updateAvailableFrequencies(i); // scaling max might change, so we also update this
+        promises.push(readCoreFrequency(i));
+        promises.push(updateCoreGovernor(i));
+        promises.push(updateAvailableFrequencies(i)); // scaling max might change, so we also update this
       }
-    }, 500);
+      await Promise.all(promises);
+      intervalID = setTimeout(update, 500);
+    };
+
+    intervalID = setTimeout(update, 500);
     cpuState.update((draft) => {
       draft.monitoring = true;
     });
