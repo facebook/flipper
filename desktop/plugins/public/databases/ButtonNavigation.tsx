@@ -7,8 +7,9 @@
  * @format
  */
 
-import {Button, ButtonGroup, Glyph, colors} from 'flipper';
+import {Radio} from 'antd';
 import React from 'react';
+import {LeftOutlined, RightOutlined} from '@ant-design/icons';
 
 export default React.memo(
   (props: {
@@ -22,30 +23,14 @@ export default React.memo(
     onForward: () => void;
   }) => {
     return (
-      <ButtonGroup>
-        <Button disabled={!props.canGoBack} onClick={props.onBack}>
-          <Glyph
-            name="chevron-left"
-            size={16}
-            color={
-              props.canGoBack
-                ? colors.macOSTitleBarIconActive
-                : colors.macOSTitleBarIconBlur
-            }
-          />
-        </Button>
-        <Button disabled={!props.canGoForward} onClick={props.onForward}>
-          <Glyph
-            name="chevron-right"
-            size={16}
-            color={
-              props.canGoForward
-                ? colors.macOSTitleBarIconActive
-                : colors.macOSTitleBarIconBlur
-            }
-          />
-        </Button>
-      </ButtonGroup>
+      <Radio.Group style={{marginLeft: 5, marginRight: 5}}>
+        <Radio.Button disabled={!props.canGoBack} onClick={props.onBack}>
+          <LeftOutlined size={16} />
+        </Radio.Button>
+        <Radio.Button disabled={!props.canGoForward} onClick={props.onForward}>
+          <RightOutlined size={16} />
+        </Radio.Button>
+      </Radio.Group>
     );
   },
 );

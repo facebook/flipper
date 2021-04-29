@@ -48,7 +48,14 @@ import {
   Layout,
   useMemoize,
 } from 'flipper-plugin';
-import {Select} from 'antd';
+import {Select, Radio, RadioChangeEvent, Typography} from 'antd';
+import {
+  ConsoleSqlOutlined,
+  DatabaseOutlined,
+  HistoryOutlined,
+  SettingOutlined,
+  TableOutlined,
+} from '@ant-design/icons';
 
 const {Option} = Select;
 
@@ -822,6 +829,13 @@ export function Component() {
   const instance = usePlugin(plugin);
   const state = useValue(instance.state);
 
+  const onViewModeChanged = useCallback(
+    (evt: RadioChangeEvent) => {
+      instance.updateViewMode({viewMode: evt.target.value ?? 'data'});
+    },
+    [instance],
+  );
+
   const onDataClicked = useCallback(() => {
     instance.updateViewMode({viewMode: 'data'});
   }, [instance]);
@@ -1090,39 +1104,28 @@ export function Component() {
   return (
     <Layout.Container grow>
       <Toolbar position="top" style={{paddingLeft: 16}}>
-        <ButtonGroup>
-          <Button
-            icon={'data-table'}
-            onClick={onDataClicked}
-            selected={state.viewMode === 'data'}>
-            Data
-          </Button>
-          <Button
-            icon={'gears-two'}
-            onClick={onStructureClicked}
-            selected={state.viewMode === 'structure'}>
-            Structure
-          </Button>
-          <Button
-            icon={'magnifying-glass'}
-            onClick={onSQLClicked}
-            selected={state.viewMode === 'SQL'}>
-            SQL
-          </Button>
-          <Button
-            icon={'info-cursive'}
-            onClick={onTableInfoClicked}
-            selected={state.viewMode === 'tableInfo'}>
-            Table Info
-          </Button>
-          <Button
-            icon={'on-this-day'}
-            iconSize={12}
-            onClick={onQueryHistoryClicked}
-            selected={state.viewMode === 'queryHistory'}>
-            Query History
-          </Button>
-        </ButtonGroup>
+        <Radio.Group value={state.viewMode} onChange={onViewModeChanged}>
+          <Radio.Button value="data" onClick={onDataClicked}>
+            <TableOutlined style={{marginRight: 5}} />
+            <Typography.Text>Data</Typography.Text>
+          </Radio.Button>
+          <Radio.Button onClick={onStructureClicked} value="structure">
+            <SettingOutlined style={{marginRight: 5}} />
+            <Typography.Text>Structure</Typography.Text>
+          </Radio.Button>
+          <Radio.Button onClick={onSQLClicked} value="SQL">
+            <ConsoleSqlOutlined style={{marginRight: 5}} />
+            <Typography.Text>SQL</Typography.Text>
+          </Radio.Button>
+          <Radio.Button onClick={onTableInfoClicked} value="tableInfo">
+            <DatabaseOutlined style={{marginRight: 5}} />
+            <Typography.Text>Table Info</Typography.Text>
+          </Radio.Button>
+          <Radio.Button onClick={onQueryHistoryClicked} value="queryHistory">
+            <HistoryOutlined style={{marginRight: 5}} />
+            <Typography.Text>Query History</Typography.Text>
+          </Radio.Button>
+        </Radio.Group>
       </Toolbar>
       {state.viewMode === 'data' ||
       state.viewMode === 'structure' ||
