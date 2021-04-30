@@ -7,7 +7,7 @@
  * @format
  */
 
-import {Value} from 'flipper';
+import {Value} from './TypeBasedValueRenderer';
 
 type DatabaseListRequest = {};
 

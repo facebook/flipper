@@ -88,11 +88,6 @@ export {
   ManagedTableProps_immutable,
 } from './ui/components/table/ManagedTable_immutable';
 export {
-  Value,
-  renderValue,
-  valueToNullableString,
-} from './ui/components/table/TypeBasedValueRenderer';
-export {
   DataValueExtractor,
   DataInspectorExpanded,
   DataDescriptionType,

@@ -8,9 +8,11 @@
  */
 
 import {default as styled} from '@emotion/styled';
-import {colors} from '../colors';
-import {default as Text} from '../Text';
+import {theme} from 'flipper-plugin';
+import {Typography} from 'antd';
 import React from 'react';
+
+const {Text} = Typography;
 
 export type Value =
   | {
@@ -52,7 +54,7 @@ const BooleanValue = styled(NonWrappingText)<{active?: boolean}>((props) => ({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: props.active ? colors.green : colors.red,
+    backgroundColor: props.active ? theme.successColor : theme.errorColor,
     marginRight: 5,
     marginTop: 1,
   },
@@ -68,9 +70,7 @@ export function renderValue(val: Value, wordWrap?: boolean) {
   switch (val.type) {
     case 'boolean':
       return (
-        <BooleanValue code={true} active={val.value}>
-          {val.value.toString()}
-        </BooleanValue>
+        <BooleanValue active={val.value}>{val.value.toString()}</BooleanValue>
       );
     case 'blob':
     case 'string':

@@ -13,13 +13,16 @@ import {
   DetailSidebar,
   Panel,
   ManagedDataInspector,
-  Value,
-  valueToNullableString,
-  renderValue,
   styled,
   produce,
   colors,
 } from 'flipper';
+
+import {
+  Value,
+  valueToNullableString,
+  renderValue,
+} from './TypeBasedValueRenderer';
 
 import {Button} from 'antd';
 

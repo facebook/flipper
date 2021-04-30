@@ -16,10 +16,9 @@ import {
   TableRows,
   TableBodyRow,
   TableRowSortOrder,
-  renderValue,
   TableHighlightedRows,
-  Value,
 } from 'flipper';
+import {Value, renderValue} from './TypeBasedValueRenderer';
 import React, {KeyboardEvent, ChangeEvent, useState, useCallback} from 'react';
 import {Methods, Events} from './ClientProtocol';
 import ButtonNavigation from './ButtonNavigation';

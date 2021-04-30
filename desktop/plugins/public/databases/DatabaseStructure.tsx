@@ -7,7 +7,7 @@
  * @format
  */
 
-import {Value, renderValue} from 'flipper';
+import {Value, renderValue} from './TypeBasedValueRenderer';
 import {DataTable, DataTableColumn, Layout, useMemoize} from 'flipper-plugin';
 import React from 'react';
 import {Structure} from './index';

@@ -40,9 +40,6 @@ export {ManagedTableProps} from './components/table/ManagedTable';
 export {default as ManagedTable_immutable} from './components/table/ManagedTable_immutable';
 export {ManagedTableProps_immutable} from './components/table/ManagedTable_immutable';
 
-export {Value} from './components/table/TypeBasedValueRenderer';
-export {renderValue} from './components/table/TypeBasedValueRenderer';
-
 export {DataValueExtractor, DataInspectorExpanded} from 'flipper-plugin';
 export {DataInspector as ManagedDataInspector} from 'flipper-plugin';
 export {default as SearchableDataInspector} from './components/data-inspector/SearchableDataInspector';

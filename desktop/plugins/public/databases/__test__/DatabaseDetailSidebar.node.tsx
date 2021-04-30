@@ -15,7 +15,7 @@ import reducers, {Store} from '../../../../app/src/reducers';
 import configureStore from 'redux-mock-store';
 import {Provider} from 'react-redux';
 
-import {Value} from 'flipper';
+import {Value} from '../TypeBasedValueRenderer';
 import DatabaseDetailSidebar from '../DatabaseDetailSidebar';
 
 const labels: Array<string> = [
