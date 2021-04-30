@@ -23,8 +23,7 @@ import {hostname} from 'os';
 import {compileMain, generatePluginEntryPoints} from './build-utils';
 import Watchman from './watchman';
 import Metro from 'metro';
-import MetroResolver from 'metro-resolver';
-import {staticDir, appDir, babelTransformationsDir} from './paths';
+import {staticDir, babelTransformationsDir, rootDir} from './paths';
 import isFB from './isFB';
 import getAppWatchFolders from './get-app-watch-folders';
 import {getPluginSourceFolders} from 'flipper-plugin-lib';
@@ -167,7 +166,7 @@ function looksLikeDevServer(): boolean {
 function launchElectron(port: number) {
   const entry = process.env.FLIPPER_FAST_REFRESH ? 'init-fast-refresh' : 'init';
   const devServerURL = `http://localhost:${port}`;
-  const bundleURL = `http://localhost:${port}/src/${entry}.bundle?platform=web&dev=true&minify=false`;
+  const bundleURL = `http://localhost:${port}/app/src/${entry}.bundle?platform=web&dev=true&minify=false`;
   const electronURL = `http://localhost:${port}/index.dev.html`;
   const args = [
     path.join(staticDir, 'index.js'),
@@ -210,7 +209,7 @@ async function startMetroServer(app: Express, server: http.Server) {
   );
   const baseConfig = await Metro.loadConfig();
   const config = Object.assign({}, baseConfig, {
-    projectRoot: appDir,
+    projectRoot: rootDir,
     watchFolders,
     transformer: {
       ...baseConfig.transformer,
@@ -220,16 +219,6 @@ async function startMetroServer(app: Express, server: http.Server) {
       ...baseConfig.resolver,
       resolverMainFields: ['flipperBundlerEntry', 'module', 'main'],
       blacklistRE: /\.native\.js$/,
-      resolveRequest: (context: any, moduleName: string, platform: string) => {
-        if (moduleName.startsWith('./localhost:3000')) {
-          moduleName = moduleName.replace('./localhost:3000', '.');
-        }
-        return MetroResolver.resolve(
-          {...context, resolveRequest: null},
-          moduleName,
-          platform,
-        );
-      },
       sourceExts: ['js', 'jsx', 'ts', 'tsx', 'json', 'mjs', 'cjs'],
     },
     watch: true,
@@ -376,6 +365,7 @@ function outputScreen(socket?: socketIo.Server) {
   // output screen
   if (hasErrors()) {
     const errorScreen = buildErrorScreen();
+    // eslint-disable-next-line flipper/no-console-error-without-context
     console.error(errorScreen);
 
     // notify live clients of errors

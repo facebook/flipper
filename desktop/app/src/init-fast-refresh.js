@@ -12,7 +12,7 @@ import {default as ReactRefreshRuntime} from 'react-refresh/runtime';
 
 HmrClient.setup(
   'web',
-  '/src/init-fast-refresh.bundle',
+  '/app/src/init-fast-refresh.bundle',
   'localhost',
   '3000',
   true,
