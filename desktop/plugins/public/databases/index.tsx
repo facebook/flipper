@@ -8,16 +8,14 @@
  */
 
 import {
-  styled,
-  produce,
   ManagedTable,
-  getStringFromErrorLike,
   TableBodyColumn,
   TableRows,
   TableBodyRow,
   TableRowSortOrder,
   TableHighlightedRows,
 } from 'flipper';
+import {getStringFromErrorLike} from './utils';
 import {Value, renderValue} from './TypeBasedValueRenderer';
 import React, {KeyboardEvent, ChangeEvent, useState, useCallback} from 'react';
 import {Methods, Events} from './ClientProtocol';
@@ -40,6 +38,8 @@ import {
   useMemoize,
   Toolbar,
   theme,
+  styled,
+  produce,
 } from 'flipper-plugin';
 import {
   Select,
