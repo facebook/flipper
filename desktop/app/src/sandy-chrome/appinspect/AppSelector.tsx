@@ -97,6 +97,7 @@ export function AppSelector() {
         flex: 1,
       }}>
       <Dropdown
+        trigger={['click']}
         overlay={
           <Menu selectedKeys={selectedApp ? [selectedApp] : []}>{entries}</Menu>
         }>
