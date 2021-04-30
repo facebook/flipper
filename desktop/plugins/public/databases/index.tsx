@@ -11,7 +11,6 @@ import {
   styled,
   produce,
   ManagedTable,
-  colors,
   getStringFromErrorLike,
   TableBodyColumn,
   TableRows,
@@ -80,8 +79,8 @@ const BoldSpan = styled.span({
   textTransform: 'uppercase',
 });
 const ErrorBar = styled.div({
-  backgroundColor: colors.cherry,
-  color: colors.white,
+  backgroundColor: theme.errorColor,
+  color: theme.textColorPrimary,
   lineHeight: '26px',
   textAlign: 'center',
 });
@@ -1185,7 +1184,9 @@ export function Component() {
             {tableOptions}
           </Select>
           <div />
-          <Button onClick={onRefreshClicked}>Refresh</Button>
+          <Button onClick={onRefreshClicked} type="default">
+            Refresh
+          </Button>
         </Toolbar>
       ) : null}
       {state.viewMode === 'SQL' ? (
@@ -1260,7 +1261,7 @@ export function Component() {
               currentStructure={state.currentStructure}
             />
           ) : null}
-          {state.viewMode === 'structure' ? (
+          {state.viewMode === 'structure' && state.currentStructure ? (
             <DatabaseStructure structure={state.currentStructure} />
           ) : null}
           {state.viewMode === 'SQL' ? (
