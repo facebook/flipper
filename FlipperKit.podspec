@@ -3,7 +3,7 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-folly_compiler_flags = '-DDEBUG=1 -DFLIPPER_OSS=1 -DFB_SONARKIT_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_LIBGFLAGS=0 -DFOLLY_HAVE_LIBJEMALLOC=0 -DFOLLY_HAVE_PREADV=0 -DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0 -DFOLLY_USE_SYMBOLIZER=0'
+folly_compiler_flags = '-DDEBUG=1 -DFLIPPER_OSS=1 -DFB_SONARKIT_ENABLED=1 -DFOLLY_HAVE_BACKTRACE=1 -DFOLLY_HAVE_CLOCK_GETTIME=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_LIBGFLAGS=0 -DFOLLY_HAVE_LIBJEMALLOC=0 -DFOLLY_HAVE_PREADV=0 -DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0 -DFOLLY_USE_SYMBOLIZER=0'
 yogakit_version = '~> 1.18'
 flipperkit_version = '0.87.0'
 Pod::Spec.new do |spec|
@@ -40,7 +40,7 @@ Pod::Spec.new do |spec|
     # by other FlipperKit source files
     ss.private_header_files = 'iOS/FlipperKit/CppBridge/**/*.h'
     ss.preserve_path = 'iOS/FlipperKit/CppBridge/**/*.h'
-    header_search_paths = "\"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/Flipper-DoubleConversion\" \"$(PODS_ROOT)/FlipperKit/iOS/**/\" \"$(PODS_ROOT)/libevent/include\""
+    header_search_paths = "\"$(PODS_ROOT)/Flipper-Boost-iOSX\" \"$(PODS_ROOT)/Flipper-DoubleConversion\" \"$(PODS_ROOT)/FlipperKit/iOS/**/\" \"$(PODS_ROOT)/libevent/include\""
     ss.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
                                 "ONLY_ACTIVE_ARCH": "YES",
                              "DEFINES_MODULE" => "YES",
@@ -50,12 +50,12 @@ Pod::Spec.new do |spec|
   spec.subspec 'FBCxxFollyDynamicConvert' do |ss|
     ss.header_dir = 'FBCxxFollyDynamicConvert'
     ss.compiler_flags = folly_compiler_flags
-    ss.dependency 'Flipper-Folly', '~> 2.5'
+    ss.dependency 'Flipper-Folly', '~> 2.6'
     ss.source_files = 'iOS/FlipperKit/FBCxxFollyDynamicConvert/**/*.{h,mm}'
     # We set these files as private headers since they only need to be accessed
     # by other FlipperKit source files
     ss.private_header_files = 'iOS/FlipperKit/FBCxxFollyDynamicConvert/**/*.h'
-    header_search_paths = "\"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/Flipper-DoubleConversion\" \"$(PODS_ROOT)/libevent/include\""
+    header_search_paths = "\"$(PODS_ROOT)/Flipper-Boost-iOSX\" \"$(PODS_ROOT)/Flipper-DoubleConversion\" \"$(PODS_ROOT)/libevent/include\""
     ss.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
                                "ONLY_ACTIVE_ARCH": "YES",
                                "DEFINES_MODULE" => "YES",
@@ -80,7 +80,7 @@ Pod::Spec.new do |spec|
     ss.compiler_flags = folly_compiler_flags
     ss.source_files = 'iOS/FlipperKit/*.{h,m,mm}', 'iOS/FlipperKit/CppBridge/*.{h,mm}'
     ss.public_header_files = 'iOS/FlipperKit/**/{FlipperDiagnosticsViewController,FlipperStateUpdateListener,FlipperClient,FlipperPlugin,FlipperConnection,FlipperResponder,SKMacros,FlipperKitCertificateProvider}.h'
-    header_search_paths = "\"$(PODS_ROOT)/FlipperKit/iOS/FlipperKit/\" \"$(PODS_ROOT)/Headers/Private/FlipperKit/\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/libevent/include\""
+    header_search_paths = "\"$(PODS_ROOT)/FlipperKit/iOS/FlipperKit/\" \"$(PODS_ROOT)/Headers/Private/FlipperKit/\" \"$(PODS_ROOT)/Flipper-Boost-iOSX\" \"$(PODS_ROOT)/libevent/include\""
     ss.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
                                "ONLY_ACTIVE_ARCH": "YES",
                                "DEFINES_MODULE" => "YES",
@@ -151,8 +151,8 @@ Pod::Spec.new do |spec|
   spec.subspec "FlipperKitLayoutComponentKitSupport" do |ss|
     ss.header_dir = "FlipperKitLayoutComponentKitSupport"
     ss.dependency             'FlipperKit/Core'
-    ss.dependency             'ComponentKit', '0.30'
-    ss.dependency             'RenderCore', '0.30' # Pinning it to 0.30, as there won't be any new releases from CK team.
+    ss.dependency             'ComponentKit', '0.31'
+    ss.dependency             'RenderCore', '0.31' # Pinning it to 0.30, as there won't be any new releases from CK team.
     ss.dependency             'FlipperKit/FlipperKitLayoutPlugin'
     ss.dependency             'FlipperKit/FlipperKitLayoutTextSearchable'
     ss.dependency             'FlipperKit/FlipperKitHighlightOverlay'
