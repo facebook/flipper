@@ -43,6 +43,7 @@ const BaseContainer = styled.div<{depth?: number; disabled?: boolean}>(
     margin: props.depth === 0 ? '7.5px 0' : '0',
     paddingLeft: 10,
     userSelect: 'text',
+    width: '100%',
   }),
 );
 BaseContainer.displayName = 'DataInspector:BaseContainer';
@@ -606,19 +607,19 @@ export const DataInspectorNode: React.FC<DataInspectorProps> = memo(
     }
 
     return (
-      <BaseContainer
-        depth={depth}
-        disabled={!!setValueProp && !!setValue === false}>
-        <Dropdown overlay={getContextMenu} trigger={contextMenuTrigger}>
+      <Dropdown overlay={getContextMenu} trigger={contextMenuTrigger}>
+        <BaseContainer
+          depth={depth}
+          disabled={!!setValueProp && !!setValue === false}>
           <PropertyContainer onClick={isExpandable ? handleClick : undefined}>
             {expandedPaths && <ExpandControl>{expandGlyph}</ExpandControl>}
             {descriptionOrPreview}
             {wrapperStart}
           </PropertyContainer>
-        </Dropdown>
-        {propertyNodesContainer}
-        {wrapperEnd}
-      </BaseContainer>
+          {propertyNodesContainer}
+          {wrapperEnd}
+        </BaseContainer>
+      </Dropdown>
     );
   },
   dataInspectorPropsAreEqual,
