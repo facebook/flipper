@@ -8,11 +8,12 @@
  */
 
 import {BaseDevice} from 'flipper';
-import {Crash, shouldShowiOSCrashNotification} from '../index';
-import {parseCrashLog, parsePath} from '../index';
+import {Crash} from '../index';
 import {TestUtils} from 'flipper-plugin';
 import {getPluginKey} from 'flipper';
 import * as CrashReporterPlugin from '../index';
+import {parseCrashLog} from '../crash-utils';
+import {parsePath, shouldShowiOSCrashNotification} from '../ios-crash-utils';
 
 function getCrash(
   id: number,
@@ -41,7 +42,7 @@ function assertCrash(crash: Crash, expectedCrash: Crash) {
 test('test the parsing of the date and crash info for the log which matches the predefined regex', () => {
   const log =
     'Blaa Blaaa \n Blaa Blaaa \n Exception Type:  SIGSEGV \n Blaa Blaa \n Blaa Blaa Date/Time: 2019-03-21 12:07:00.861 +0000 \n Blaa balaaa';
-  const crash = parseCrashLog(log, 'iOS', null);
+  const crash = parseCrashLog(log, 'iOS', undefined);
   expect(crash.callstack).toEqual(log);
   expect(crash.reason).toEqual('SIGSEGV');
   expect(crash.name).toEqual('SIGSEGV');
@@ -105,7 +106,7 @@ test('test the parsing of the Android crash log for the unknown crash format and
 });
 test('test the parsing of the Android crash log for the partial format matching the crash format', () => {
   const log = 'First Line Break \n Blaa Blaa \n Blaa Blaa ';
-  const crash = parseCrashLog(log, 'Android', null);
+  const crash = parseCrashLog(log, 'Android', undefined);
   expect(crash.callstack).toEqual(log);
   expect(crash.reason).toEqual('Cannot figure out the cause');
   expect(crash.name).toEqual('First Line Break ');
@@ -113,7 +114,7 @@ test('test the parsing of the Android crash log for the partial format matching 
 test('test the parsing of the Android crash log with os being iOS', () => {
   const log =
     'FATAL EXCEPTION: main\nProcess: com.facebook.flipper.sample, PID: 27026\njava.lang.IndexOutOfBoundsException: Index: 190, Size: 0\n\tat java.util.ArrayList.get(ArrayList.java:437)\n\tat com.facebook.flipper.sample.RootComponentSpec.hitGetRequest(RootComponentSpec.java:72)\n\tat com.facebook.flipper.sample.RootComponent.hitGetRequest(RootComponent.java:46)\n';
-  const crash = parseCrashLog(log, 'iOS', null);
+  const crash = parseCrashLog(log, 'iOS', undefined);
   expect(crash.callstack).toEqual(log);
   expect(crash.reason).toEqual('Cannot figure out the cause');
   expect(crash.name).toEqual('Cannot figure out the cause');
@@ -164,7 +165,7 @@ test('test getNewPersistedStateFromCrashLog for non-empty defaultPersistedState 
   const pluginStateCrash = getCrash(0, 'callstack', 'crash1', 'crash1');
   plugin.instance.reportCrash(pluginStateCrash);
   const content = 'Blaa Blaaa \n Blaa Blaaa';
-  plugin.instance.reportCrash(parseCrashLog(content, 'iOS', null));
+  plugin.instance.reportCrash(parseCrashLog(content, 'iOS', undefined));
   const crashes = plugin.instance.crashes.get();
   expect(crashes.length).toEqual(2);
   assertCrash(crashes[0], pluginStateCrash);
@@ -183,7 +184,9 @@ test('test getNewPersistedStateFromCrashLog when os is undefined', () => {
   const plugin = TestUtils.startDevicePlugin(CrashReporterPlugin);
   const content = 'Blaa Blaaa \n Blaa Blaaa';
   expect(() => {
-    plugin.instance.reportCrash(parseCrashLog(content, undefined as any, null));
+    plugin.instance.reportCrash(
+      parseCrashLog(content, undefined as any, undefined),
+    );
   }).toThrowErrorMatchingInlineSnapshot(`"Unsupported OS"`);
   const crashes = plugin.instance.crashes.get();
   expect(crashes.length).toEqual(0);

@@ -45,7 +45,6 @@ export {Idler, Notification} from 'flipper-plugin';
 export {Store, MiddlewareAPI, State as ReduxState} from './reducers/index';
 export {default as BaseDevice} from './devices/BaseDevice';
 export {DeviceLogEntry, LogLevel, DeviceLogListener} from 'flipper-plugin';
-export {shouldParseAndroidLog} from './utils/crashReporterUtility';
 export {deconstructClientId} from './utils/clientUtils';
 export {default as isProduction} from './utils/isProduction';
 export {createTablePlugin} from './createTablePlugin';

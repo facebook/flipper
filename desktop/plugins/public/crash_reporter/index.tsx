@@ -15,27 +15,29 @@ import {
   ContextMenu,
   clipboard,
   Button,
-  shouldParseAndroidLog,
   Text,
   colors,
   Toolbar,
   Spacer,
   Select,
 } from 'flipper';
-import unicodeSubstring from 'unicode-substring';
-import fs from 'fs';
-import os from 'os';
-import path from 'path';
-import {promisify} from 'util';
-import type {DeviceLogEntry} from 'flipper';
 import React from 'react';
 import {
   createState,
+  DeviceLogEntry,
   DevicePluginClient,
   usePlugin,
   useValue,
 } from 'flipper-plugin';
 import type {FSWatcher} from 'fs';
+import {
+  parseCrashLog,
+  trimCallStackIfPossible,
+  truncate,
+  UNKNOWN_CRASH_REASON,
+} from './crash-utils';
+import {addFileWatcherForiOSCrashLogs} from './ios-crash-utils';
+import {shouldParseAndroidLog} from './android-crash-utils';
 
 type Maybe<T> = T | null | undefined;
 
@@ -175,129 +177,6 @@ const StackTraceContainer = styled(FlexColumn)({
   backgroundColor: colors.greyStackTraceTint,
   flexShrink: 0,
 });
-
-const UNKNOWN_CRASH_REASON = 'Cannot figure out the cause';
-
-export function parseCrashLog(
-  content: string,
-  os: string,
-  logDate: Maybe<Date>,
-): CrashLog {
-  const fallbackReason = UNKNOWN_CRASH_REASON;
-  switch (os) {
-    case 'iOS': {
-      const regex = /Exception Type: *\w*/;
-      const arr = regex.exec(content);
-      const exceptionString = arr ? arr[0] : '';
-      const exceptionRegex = /\w*$/;
-      const tmp = exceptionRegex.exec(exceptionString);
-      const exception = tmp && tmp[0].length ? tmp[0] : fallbackReason;
-
-      let date = logDate;
-      if (!date) {
-        const dateRegex = /Date\/Time: *[\w\s\.:-]*/;
-        const dateArr = dateRegex.exec(content);
-        const dateString = dateArr ? dateArr[0] : '';
-        const dateRegex2 = /[\w\s\.:-]*$/;
-        const tmp1 = dateRegex2.exec(dateString);
-        const extractedDateString: Maybe<string> =
-          tmp1 && tmp1[0].length ? tmp1[0] : null;
-        date = extractedDateString ? new Date(extractedDateString) : logDate;
-      }
-
-      const crash: CrashLog = {
-        callstack: content,
-        name: exception,
-        reason: exception,
-        date,
-      };
-      return crash;
-    }
-    case 'Android': {
-      const regForName = /.*\n/;
-      const nameRegArr = regForName.exec(content);
-      let name = nameRegArr ? nameRegArr[0] : fallbackReason;
-      const regForCallStack = /\tat[\w\s\n\.$&+,:;=?@#|'<>.^*()%!-]*$/;
-      const callStackArray = regForCallStack.exec(content);
-      const callStack = callStackArray ? callStackArray[0] : '';
-      let remainingString =
-        callStack.length > 0 ? content.replace(callStack, '') : '';
-      if (remainingString[remainingString.length - 1] === '\n') {
-        remainingString = remainingString.slice(0, -1);
-      }
-      const reasonText =
-        remainingString.length > 0
-          ? remainingString.split('\n').pop()
-          : fallbackReason;
-      const reason = reasonText ? reasonText : fallbackReason;
-      if (name[name.length - 1] === '\n') {
-        name = name.slice(0, -1);
-      }
-      const crash: CrashLog = {
-        callstack: content,
-        name: name,
-        reason: reason,
-        date: logDate,
-      };
-      return crash;
-    }
-    default: {
-      throw new Error('Unsupported OS');
-    }
-  }
-}
-
-function truncate(baseString: string, numOfChars: number): string {
-  if (baseString.length <= numOfChars) {
-    return baseString;
-  }
-  const truncated_string = unicodeSubstring(baseString, 0, numOfChars - 1);
-  return truncated_string + '\u2026';
-}
-
-export function parsePath(content: string): Maybe<string> {
-  const regex = /(?<=.*Path: *)[^\n]*/;
-  const arr = regex.exec(content);
-  if (!arr || arr.length <= 0) {
-    return null;
-  }
-  const path = arr[0];
-  return path.trim();
-}
-
-function addFileWatcherForiOSCrashLogs(
-  deviceOs: string,
-  serial: string,
-  reportCrash: (payload: CrashLog | Crash) => void,
-) {
-  const dir = path.join(os.homedir(), 'Library', 'Logs', 'DiagnosticReports');
-  if (!fs.existsSync(dir)) {
-    // Directory doesn't exist
-    return;
-  }
-  return fs.watch(dir, (_eventType, filename) => {
-    // We just parse the crash logs with extension `.crash`
-    const checkFileExtension = /.crash$/.exec(filename);
-    if (!filename || !checkFileExtension) {
-      return;
-    }
-    const filepath = path.join(dir, filename);
-    promisify(fs.exists)(filepath).then((exists) => {
-      if (!exists) {
-        return;
-      }
-      fs.readFile(filepath, 'utf8', function (err, data) {
-        if (err) {
-          console.warn('Failed to read crash file', err);
-          return;
-        }
-        if (shouldShowiOSCrashNotification(serial, data)) {
-          reportCrash(parseCrashLog(data, deviceOs, null));
-        }
-      });
-    });
-  });
-}
 
 class CrashSelector extends React.Component<CrashSelectorProps> {
   render() {
@@ -631,22 +510,4 @@ export function Component() {
       </StyledFlexColumn>
     </StyledFlexGrowColumn>
   );
-}
-
-function trimCallStackIfPossible(callstack: string): string {
-  const regex = /Application Specific Information:/;
-  const query = regex.exec(callstack);
-  return query ? callstack.substring(0, query.index) : callstack;
-}
-
-export function shouldShowiOSCrashNotification(
-  serial: string,
-  content: string,
-): boolean {
-  const appPath = parsePath(content);
-  if (!appPath || !appPath.includes(serial)) {
-    // Do not show notifications for the app which are not running on this device
-    return false;
-  }
-  return true;
 }
