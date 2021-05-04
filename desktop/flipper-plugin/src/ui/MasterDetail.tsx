@@ -194,7 +194,7 @@ export function MasterDetail<T extends object>({
 
   const table = (
     <DataTable<T>
-      autoScroll
+      enableAutoScroll
       {...tableProps}
       dataSource={dataSource as any}
       records={records!}

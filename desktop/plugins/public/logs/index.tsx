@@ -226,7 +226,7 @@ export function Component() {
     <DataTable<ExtendedLogEntry>
       dataSource={plugin.rows}
       columns={plugin.columns}
-      autoScroll
+      enableAutoScroll
       onRowStyle={getRowStyle}
       extraActions={
         plugin.isConnected ? (

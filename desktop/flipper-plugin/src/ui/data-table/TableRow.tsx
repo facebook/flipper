@@ -10,7 +10,7 @@
 import React, {CSSProperties, memo} from 'react';
 import styled from '@emotion/styled';
 import {theme} from '../theme';
-import type {RenderContext} from './DataTable';
+import type {TableRowRenderContext} from './DataTable';
 import {Width} from '../../utils/widthUtils';
 import {DataFormatter} from '../DataFormatter';
 
@@ -92,37 +92,35 @@ const TableBodyColumnContainer = styled.div<{
 }));
 TableBodyColumnContainer.displayName = 'TableRow:TableBodyColumnContainer';
 
-type Props = {
-  config: RenderContext<any>;
+type TableRowProps<T> = {
+  config: TableRowRenderContext<any>;
   highlighted: boolean;
-  record: any;
+  record: T;
   itemIndex: number;
   style?: CSSProperties;
 };
 
-export const TableRow = memo(function TableRow({
+export const TableRow = memo(function TableRow<T>({
   record,
   itemIndex,
   highlighted,
-  style,
   config,
-}: Props) {
+}: TableRowProps<T>) {
   return (
     <TableBodyRowContainer
       highlighted={highlighted}
-      data-key={record.key}
       onMouseDown={(e) => {
         config.onMouseDown(e, record, itemIndex);
       }}
       onMouseEnter={(e) => {
         config.onMouseEnter(e, record, itemIndex);
       }}
-      style={style}>
+      style={config.onRowStyle?.(record)}>
       {config.columns
         .filter((col) => col.visible)
         .map((col) => {
-          const value = (col as any).onRender
-            ? (col as any).onRender(record)
+          const value = col.onRender
+            ? (col as any).onRender(record, highlighted, itemIndex) // TODO: ever used?
             : DataFormatter.format((record as any)[col.key], col.formatters);
 
           return (

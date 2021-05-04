@@ -63,12 +63,12 @@ export default React.memo((props: {structure: Structure}) => {
       <DataTable<{[key: string]: Value}>
         records={rowObjs}
         columns={columnObjs}
-        searchbar={false}
+        enableSearchbar={false}
       />
       <DataTable<{[key: string]: Value}>
         records={indexRowObjs}
         columns={indexColumnObjs}
-        searchbar={false}
+        enableSearchbar={false}
       />
     </Layout.Top>
   );

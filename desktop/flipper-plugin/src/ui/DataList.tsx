@@ -7,11 +7,29 @@
  * @format
  */
 
-import React, {useCallback, memo} from 'react';
+import React, {
+  useCallback,
+  memo,
+  createRef,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {DataFormatter} from './DataFormatter';
 import {Layout} from './Layout';
-import {theme} from './theme';
 import {Typography} from 'antd';
+import {
+  DataTable,
+  DataTableColumn,
+  DataTableProps,
+  ItemRenderer,
+} from './data-table/DataTable';
+import {RightOutlined} from '@ant-design/icons';
+import {theme} from './theme';
+import styled from '@emotion/styled';
+import {DataTableManager} from './data-table/DataTableManager';
+import {Atom, createState} from '../state/atom';
+import {useAssertStableRef} from '../utils/useAssertStableRef';
 
 const {Text} = Typography;
 
@@ -21,7 +39,7 @@ interface Item {
   description?: string;
 }
 
-interface DataListProps<T extends Item> {
+interface DataListBaseProps<T extends Item> {
   /**
    * Defines the styling of the component. By default shows a list, but alternatively the items can be displayed in a drop down
    */
@@ -34,11 +52,11 @@ interface DataListProps<T extends Item> {
   /**
    * The current selection
    */
-  value?: string /* | Atom<string>*/;
+  selection: Atom<string | undefined>;
   /**
    * Handler that is fired if selection is changed
    */
-  onSelect?(id: string, value: T): void;
+  onSelect?(id: string | undefined, value: T | undefined): void;
   className?: string;
   style?: React.CSSProperties;
   /**
@@ -48,105 +66,143 @@ interface DataListProps<T extends Item> {
   /**
    * Custom render function. By default the component will render the `title` in bold and description (if any) below it
    */
-  onRenderItem?: (item: T, selected: boolean) => React.ReactElement;
+  onRenderItem?: ItemRenderer<T>;
+  /**
+   * Show a right arrow by default
+   */
+  enableArrow?: boolean;
 }
+
+export type DataListProps<T extends Item> = DataListBaseProps<T> &
+  // Some table props are set by DataList instead, so override them
+  Omit<DataTableProps<T>, 'records' | 'dataSource' | 'columns' | 'onSelect'>;
 
 export const DataList: React.FC<DataListProps<any>> = function DataList<
   T extends Item
 >({
-  // type,
-  scrollable,
-  value,
+  selection: baseSelection,
   onSelect,
   className,
   style,
   items,
   onRenderItem,
+  enableArrow,
+  ...tableProps
 }: DataListProps<T>) {
+  // if a tableManagerRef is provided, we piggy back on that same ref
+  // eslint-disable-next-line
+  const tableManagerRef = tableProps.tableManagerRef ?? createRef<undefined | DataTableManager<T>>();
+
+  useAssertStableRef(baseSelection, 'selection');
+  // create local selection atom if none provided
+  // eslint-disable-next-line
+  const selection = baseSelection ?? useState(() => createState<string|undefined>())[0];
+
   const handleSelect = useCallback(
-    (key: string, item: T) => {
-      onSelect?.(key, item);
+    (item: T | undefined) => {
+      selection.set(item?.id);
     },
-    [onSelect],
+    [selection],
   );
 
-  const renderedItems = items.map((item) => (
-    <DataListItemWrapper
-      item={item}
-      key={item.id}
-      selected={item.id === value}
-      onRenderItem={onRenderItem as any}
-      onSelect={handleSelect as any}
-    />
-  ));
+  const dataListColumns: DataTableColumn<T>[] = useMemo(
+    () => [
+      {
+        key: 'id' as const,
+        wrap: true,
+        onRender(item: T, selected: boolean, index: number) {
+          return onRenderItem ? (
+            onRenderItem(item, selected, index)
+          ) : (
+            <DataListItem
+              title={item.title}
+              description={item.description}
+              enableArrow={enableArrow}
+            />
+          );
+        },
+      },
+    ],
+    [onRenderItem, enableArrow],
+  );
 
-  return scrollable ? (
-    <Layout.Container
-      style={style}
-      className={className}
-      borderTop
-      borderBottom
-      grow>
-      <Layout.ScrollContainer vertical>{renderedItems}</Layout.ScrollContainer>
-    </Layout.Container>
-  ) : (
-    <Layout.Container style={style} className={className} borderTop>
-      {renderedItems}
+  useEffect(
+    function updateSelection() {
+      return selection.subscribe((valueFromAtom) => {
+        const m = tableManagerRef.current;
+        if (!m) {
+          return;
+        }
+        if (!valueFromAtom && m.getSelectedItem()) {
+          m.clearSelection();
+        } else if (valueFromAtom && m.getSelectedItem()?.id !== valueFromAtom) {
+          // find valueFromAtom in the selection
+          m.selectItemById(valueFromAtom);
+        }
+      });
+    },
+    [selection, tableManagerRef],
+  );
+
+  return (
+    <Layout.Container style={style} className={className} grow>
+      <DataTable<any>
+        {...tableProps}
+        tableManagerRef={tableManagerRef}
+        records={items}
+        recordsKey="id"
+        columns={dataListColumns}
+        onSelect={handleSelect}
+      />
     </Layout.Container>
   );
 };
 
 DataList.defaultProps = {
   type: 'default',
-  scrollable: false,
-  onRenderItem: defaultItemRenderer,
+  scrollable: true,
+  enableSearchbar: false,
+  enableColumnHeaders: false,
+  enableArrow: true,
 };
 
-function defaultItemRenderer(item: Item, _selected: boolean) {
-  return <DataListItem title={item.title} description={item.description} />;
-}
-
-const DataListItemWrapper = memo(
+const DataListItem = memo(
   ({
-    item,
-    onRenderItem,
-    onSelect,
-    selected,
+    title,
+    description,
+    enableArrow,
   }: {
-    item: Item;
-    onRenderItem: typeof defaultItemRenderer;
-    onSelect: (id: string, item: Item) => void;
-    selected: boolean;
+    // TODO: add icon support
+    title: string;
+    description?: string;
+    enableArrow?: boolean;
   }) => {
     return (
-      <Layout.Container
-        pad
-        borderBottom
-        key={item.id}
-        style={{
-          background: selected ? theme.backgroundWash : undefined,
-          borderLeft: selected
-            ? `4px solid ${theme.primaryColor}`
-            : `4px solid transparent`,
-        }}
-        onClick={() => {
-          onSelect(item.id, item);
-        }}>
-        {onRenderItem(item, selected)}
-      </Layout.Container>
+      <Layout.Horizontal center grow shrink padv>
+        <Layout.Container grow shrink>
+          <Text strong ellipsis>
+            {DataFormatter.format(title)}
+          </Text>
+          {description != null && (
+            <Text type="secondary" ellipsis>
+              {DataFormatter.format(description)}
+            </Text>
+          )}
+        </Layout.Container>
+        {enableArrow && (
+          <ArrowWrapper>
+            <RightOutlined />
+          </ArrowWrapper>
+        )}
+      </Layout.Horizontal>
     );
   },
 );
 
-const DataListItem = memo(
-  ({title, description}: {title: string; description?: string}) => {
-    return (
-      <>
-        <Text strong>{DataFormatter.format(title)}</Text>
-        {description != null && (
-          <Text type="secondary">{DataFormatter.format(description)}</Text>
-        )}
-      </>
-    );
+const ArrowWrapper = styled.div({
+  flex: 0,
+  paddingLeft: theme.space.small,
+  '.anticon': {
+    lineHeight: '14px',
   },
-);
+});

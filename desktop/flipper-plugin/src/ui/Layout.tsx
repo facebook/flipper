@@ -73,6 +73,7 @@ const Container = styled.div<ContainerProps>(
     gap: normalizeSpace(gap, theme.space.small),
 
     minWidth: shrink ? 0 : undefined,
+    maxWidth: shrink ? '100%' : undefined,
     boxSizing: 'border-box',
     width,
     height,

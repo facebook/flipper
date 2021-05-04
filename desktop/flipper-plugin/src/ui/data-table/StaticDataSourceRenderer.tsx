@@ -34,7 +34,7 @@ type DataSourceProps<T extends object, C> = {
   defaultRowHeight: number;
   onKeyDown?: React.KeyboardEventHandler<HTMLDivElement>;
   onUpdateAutoScroll?(autoScroll: boolean): void;
-  emptyRenderer?(dataSource: DataSource<T>): React.ReactElement;
+  emptyRenderer?: null | ((dataSource: DataSource<T>) => React.ReactElement);
 };
 
 /**

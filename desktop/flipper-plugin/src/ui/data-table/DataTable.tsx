@@ -51,30 +51,45 @@ import {useInUnitTest} from '../../utils/useInUnitTest()';
 
 interface DataTableBaseProps<T = any> {
   columns: DataTableColumn<T>[];
-
-  autoScroll?: boolean;
+  enableSearchbar?: boolean;
+  enableAutoScroll?: boolean;
+  enableColumnHeaders?: boolean;
+  enableMultiSelect?: boolean;
+  // if set (the default) will grow and become scrollable. Otherwise will use natural size
+  scrollable?: boolean;
   extraActions?: React.ReactElement;
   onSelect?(record: T | undefined, records: T[]): void;
   onRowStyle?(record: T): CSSProperties | undefined;
-  // multiselect?: true
   tableManagerRef?: RefObject<DataTableManager<T> | undefined>; // Actually we want a MutableRefObject, but that is not what React.createRef() returns, and we don't want to put the burden on the plugin dev to cast it...
   onCopyRows?(records: T[]): string;
   onContextMenu?: (selection: undefined | T) => React.ReactElement;
-  searchbar?: boolean;
-  scrollable?: boolean;
+  onRenderEmpty?:
+    | null
+    | ((dataSource?: DataSource<T, any, any>) => React.ReactElement);
 }
 
+export type ItemRenderer<T> = (
+  item: T,
+  selected: boolean,
+  index: number,
+) => React.ReactNode;
+
 type DataTableInput<T = any> =
-  | {dataSource: DataSource<T, any, any>; records?: undefined}
   | {
-      records: T[];
+      dataSource: DataSource<T, any, any>;
+      records?: undefined;
+      recordsKey?: undefined;
+    }
+  | {
+      records: readonly T[];
+      recordsKey?: keyof T;
       dataSource?: undefined;
     };
 
 export type DataTableColumn<T = any> = {
   key: keyof T & string;
   // possible future extension: getValue(row) (and free-form key) to support computed columns
-  onRender?: (row: T) => React.ReactNode;
+  onRender?: (row: T, selected: boolean, index: number) => React.ReactNode;
   formatters?: Formatter[] | Formatter;
   title?: string;
   width?: number | Percentage | undefined; // undefined: use all remaining width
@@ -89,7 +104,7 @@ export type DataTableColumn<T = any> = {
   }[];
 };
 
-export interface RenderContext<T = any> {
+export interface TableRowRenderContext<T = any> {
   columns: DataTableColumn<T>[];
   onMouseEnter(
     e: React.MouseEvent<HTMLDivElement>,
@@ -101,6 +116,7 @@ export interface RenderContext<T = any> {
     item: T,
     itemId: number,
   ): void;
+  onRowStyle?(item: T): React.CSSProperties | undefined;
 }
 
 export type DataTableProps<T> = DataTableInput<T> & DataTableBaseProps<T>;
@@ -116,6 +132,7 @@ export function DataTable<T extends object>(
   useAssertStableRef(props.columns, 'columns');
   useAssertStableRef(onCopyRows, 'onCopyRows');
   useAssertStableRef(onContextMenu, 'onContextMenu');
+
   const isUnitTest = useInUnitTest();
 
   // eslint-disable-next-line
@@ -131,7 +148,7 @@ export function DataTable<T extends object>(
         onSelect,
         scope,
         virtualizerRef,
-        autoScroll: props.autoScroll,
+        autoScroll: props.enableAutoScroll,
       }),
   );
 
@@ -154,7 +171,7 @@ export function DataTable<T extends object>(
     [columns],
   );
 
-  const renderingConfig = useMemo<RenderContext<T>>(() => {
+  const renderingConfig = useMemo<TableRowRenderContext<T>>(() => {
     let startIndex = 0;
     return {
       columns: visibleColumns,
@@ -185,14 +202,15 @@ export function DataTable<T extends object>(
           document.addEventListener('mouseup', onStopDragSelecting);
         }
       },
+      onRowStyle,
     };
-  }, [visibleColumns, tableManager]);
+  }, [visibleColumns, tableManager, onRowStyle]);
 
   const itemRenderer = useCallback(
     function itemRenderer(
       record: T,
       index: number,
-      renderContext: RenderContext<T>,
+      renderContext: TableRowRenderContext<T>,
     ) {
       return (
         <TableRow
@@ -357,11 +375,11 @@ export function DataTable<T extends object>(
 
   const onUpdateAutoScroll = useCallback(
     (autoScroll: boolean) => {
-      if (props.autoScroll) {
+      if (props.enableAutoScroll) {
         dispatch({type: 'setAutoScroll', autoScroll});
       }
     },
-    [props.autoScroll],
+    [props.enableAutoScroll],
   );
 
   /** Context menu */
@@ -409,7 +427,7 @@ export function DataTable<T extends object>(
 
   const header = (
     <Layout.Container>
-      {props.searchbar !== false && (
+      {props.enableSearchbar && (
         <TableSearch
           searchValue={searchValue}
           useRegex={tableState.useRegex}
@@ -418,56 +436,61 @@ export function DataTable<T extends object>(
           extraActions={props.extraActions}
         />
       )}
-      <TableHead
-        visibleColumns={visibleColumns}
-        dispatch={dispatch as any}
-        sorting={sorting}
-        scrollbarSize={
-          props.scrollable === false
-            ? 0
-            : 15 /* width on MacOS: TODO, determine dynamically */
-        }
+      {props.enableColumnHeaders && (
+        <TableHead
+          visibleColumns={visibleColumns}
+          dispatch={dispatch as any}
+          sorting={sorting}
+          scrollbarSize={
+            props.scrollable
+              ? 0
+              : 15 /* width on MacOS: TODO, determine dynamically */
+          }
+        />
+      )}
+    </Layout.Container>
+  );
+
+  const emptyRenderer =
+    props.onRenderEmpty === undefined
+      ? props.onRenderEmpty
+      : props.onRenderEmpty;
+  const mainSection = props.scrollable ? (
+    <Layout.Top>
+      {header}
+      <DataSourceRenderer<T, TableRowRenderContext<T>>
+        dataSource={dataSource}
+        autoScroll={tableState.autoScroll && !dragging.current}
+        useFixedRowHeight={!tableState.usesWrapping}
+        defaultRowHeight={DEFAULT_ROW_HEIGHT}
+        context={renderingConfig}
+        itemRenderer={itemRenderer}
+        onKeyDown={onKeyDown}
+        virtualizerRef={virtualizerRef}
+        onRangeChange={onRangeChange}
+        onUpdateAutoScroll={onUpdateAutoScroll}
+        emptyRenderer={emptyRenderer}
+      />
+    </Layout.Top>
+  ) : (
+    <Layout.Container>
+      {header}
+      <StaticDataSourceRenderer<T, TableRowRenderContext<T>>
+        dataSource={dataSource}
+        useFixedRowHeight={!tableState.usesWrapping}
+        defaultRowHeight={DEFAULT_ROW_HEIGHT}
+        context={renderingConfig}
+        itemRenderer={itemRenderer}
+        onKeyDown={onKeyDown}
+        emptyRenderer={emptyRenderer}
       />
     </Layout.Container>
   );
 
-  const mainSection =
-    props.scrollable !== false ? (
-      <Layout.Top>
-        {header}
-        <DataSourceRenderer<T, RenderContext<T>>
-          dataSource={dataSource}
-          autoScroll={tableState.autoScroll && !dragging.current}
-          useFixedRowHeight={!tableState.usesWrapping}
-          defaultRowHeight={DEFAULT_ROW_HEIGHT}
-          context={renderingConfig}
-          itemRenderer={itemRenderer}
-          onKeyDown={onKeyDown}
-          virtualizerRef={virtualizerRef}
-          onRangeChange={onRangeChange}
-          onUpdateAutoScroll={onUpdateAutoScroll}
-          emptyRenderer={emptyRenderer}
-        />
-      </Layout.Top>
-    ) : (
-      <Layout.Container>
-        {header}
-        <StaticDataSourceRenderer<T, RenderContext<T>>
-          dataSource={dataSource}
-          useFixedRowHeight={!tableState.usesWrapping}
-          defaultRowHeight={DEFAULT_ROW_HEIGHT}
-          context={renderingConfig}
-          itemRenderer={itemRenderer}
-          onKeyDown={onKeyDown}
-          emptyRenderer={emptyRenderer}
-        />
-      </Layout.Container>
-    );
-
   return (
-    <Layout.Container grow={props.scrollable !== false}>
+    <Layout.Container grow={props.scrollable}>
       {mainSection}
-      {props.autoScroll && (
+      {props.enableAutoScroll && (
         <AutoScroller>
           <PushpinFilled
             style={{
@@ -484,6 +507,15 @@ export function DataTable<T extends object>(
   );
 }
 
+DataTable.defaultProps = {
+  scrollable: true,
+  enableSearchbar: true,
+  enableAutoScroll: false,
+  enableColumnHeaders: true,
+  eanbleMultiSelect: true,
+  onRenderEmpty: emptyRenderer,
+} as Partial<DataTableProps<any>>;
+
 /* eslint-disable react-hooks/rules-of-hooks */
 function normalizeDataSourceInput<T>(props: DataTableInput<T>): DataSource<T> {
   if (props.dataSource) {
@@ -491,7 +523,7 @@ function normalizeDataSourceInput<T>(props: DataTableInput<T>): DataSource<T> {
   }
   if (props.records) {
     const [dataSource] = useState(() => {
-      const ds = new DataSource<T>(undefined);
+      const ds = new DataSource<T>(props.recordsKey);
       syncRecordsToDataSource(ds, props.records);
       return ds;
     });
@@ -507,7 +539,7 @@ function normalizeDataSourceInput<T>(props: DataTableInput<T>): DataSource<T> {
 }
 /* eslint-enable */
 
-function syncRecordsToDataSource<T>(ds: DataSource<T>, records: T[]) {
+function syncRecordsToDataSource<T>(ds: DataSource<T>, records: readonly T[]) {
   const startTime = Date.now();
   ds.clear();
   // TODO: optimize in the case we're only dealing with appends or replacements

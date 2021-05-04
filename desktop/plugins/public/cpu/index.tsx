@@ -445,7 +445,7 @@ export function Component() {
             records={sidebarRows(id)}
             columns={cpuSidebarColumns}
             scrollable={false}
-            searchbar={false}
+            enableSearchbar={false}
           />
         </Layout.Container>
       </DetailSidebar>
@@ -511,7 +511,7 @@ export function Component() {
         scrollable={false}
         onSelect={setSelected}
         onRowStyle={getRowStyle}
-        searchbar={false}
+        enableSearchbar={false}
       />
       {renderCPUSidebar()}
       {renderThermalSidebar()}
