@@ -164,6 +164,8 @@ Since Sandy plugins are expected to support dark mode, (use the settings pane to
 
 Ideally there should be no hard-coded colors anymore either, and little need to use `width: 100%` / `height: 100%` anywhere, as needing those typically signals a layout issue.
 
+Tip: it is recommended to keep components as much as possible outside the entry file, as components defined outside the index.tsx file will benefit from fast refresh.
+
 ### Wrapping up
 
 This step of the process is completed as soon as there are no imports from the `flipper` package anymore. 

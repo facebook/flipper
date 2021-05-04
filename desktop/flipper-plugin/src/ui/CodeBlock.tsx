@@ -28,5 +28,7 @@ const StyledParagrah = styled(Typography.Paragraph)({
   },
   '& pre': {
     margin: 0,
+    border: 'none',
+    background: 'none',
   },
 });

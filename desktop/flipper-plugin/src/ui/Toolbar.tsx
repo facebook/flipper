@@ -12,23 +12,32 @@ import styled from '@emotion/styled';
 import {Layout} from './Layout';
 import {theme} from './theme';
 
-const SandyToolbarContainer = styled(Layout.Horizontal)({
-  flexWrap: 'wrap',
-  padding: theme.space.small,
-  boxShadow: `inset 0px -1px 0px ${theme.dividerColor}`,
-});
+const SandyToolbarContainer = styled(Layout.Horizontal)<{wash?: boolean}>(
+  ({wash}) => ({
+    flexWrap: 'wrap',
+    padding: theme.space.small,
+    boxShadow: `inset 0px -1px 0px ${theme.dividerColor}`,
+    background: wash ? theme.backgroundWash : undefined,
+  }),
+);
 
 export function Toolbar({
   children,
   style,
+  wash,
 }: {
   children?: React.ReactNode;
   position?: 'bottom' | 'top';
   compact?: boolean;
+  wash?: boolean;
   style?: React.CSSProperties;
 }) {
   return (
-    <SandyToolbarContainer style={style} gap={theme.space.small} center>
+    <SandyToolbarContainer
+      style={style}
+      gap={theme.space.small}
+      center
+      wash={wash}>
       {children}
     </SandyToolbarContainer>
   );
