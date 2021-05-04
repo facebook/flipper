@@ -45,9 +45,14 @@ export const theme = {
     fontFamily: 'SF Mono,Monaco,Andale Mono,monospace',
     fontSize: '12px',
   } as const,
+  bold: 600,
 } as const;
 
-export type Spacing = keyof typeof theme['space'] | number | undefined | true;
+export type Spacing =
+  | keyof typeof theme['space']
+  | number
+  | undefined
+  | boolean;
 
 export type PaddingProps = {
   padv?: Spacing;
@@ -72,7 +77,7 @@ export function normalizePadding({
 export function normalizeSpace(spacing: Spacing, defaultSpace: number): number {
   return spacing === true
     ? defaultSpace
-    : spacing === undefined
+    : spacing === undefined || spacing === false
     ? 0
     : typeof spacing === 'string'
     ? theme.space[spacing]

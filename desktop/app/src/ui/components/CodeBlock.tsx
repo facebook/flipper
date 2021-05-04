@@ -10,7 +10,7 @@
 import styled from '@emotion/styled';
 
 /**
- * @deprecated, use <Typography.Paragraph><pre>.... instead.
+ * @deprecated, use CodeBlock from flipper-plugin instead
  */
 const CodeBlock = styled.div({
   fontFamily: 'monospace',

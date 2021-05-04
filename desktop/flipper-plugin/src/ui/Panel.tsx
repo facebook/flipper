@@ -78,7 +78,7 @@ const StyledCollapse = styled(Collapse)({
       padding: `5px 0px`,
       left: 8,
       fontSize: '10px',
-      fontWeight: 'bold',
+      fontWeight: theme.bold,
     },
   },
   '& > .ant-collapse-item': {

@@ -190,13 +190,7 @@ export class Sidebar extends Component<SidebarProps, SidebarState> {
         minHeight={minHeight}
         maxHeight={maxHeight}
         height={
-          !horizontal
-            ? onResize
-              ? height
-              : this.state.height
-            : gutter
-            ? undefined
-            : '100%'
+          !horizontal ? (onResize ? height : this.state.height) : undefined
         }
         resizable={resizable}
         onResize={this.onResize}
