@@ -321,7 +321,7 @@ export const DataSourceRenderer: <T extends object, C>(
 }) as any;
 
 const TableContainer = styled.div({
-  overflowY: 'scroll',
+  overflowY: 'auto',
   overflowX: 'hidden',
   display: 'flex',
   flex: 1,

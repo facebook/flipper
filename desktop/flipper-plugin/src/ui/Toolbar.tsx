@@ -25,12 +25,17 @@ export function Toolbar({
   children,
   style,
   wash,
+  right,
 }: {
   children?: React.ReactNode;
   position?: 'bottom' | 'top';
   compact?: boolean;
   wash?: boolean;
   style?: React.CSSProperties;
+  /**
+   * Additional children that are always right-aligned
+   */
+  right?: React.ReactNode;
 }) {
   return (
     <SandyToolbarContainer
@@ -39,6 +44,12 @@ export function Toolbar({
       center
       wash={wash}>
       {children}
+      {right ? (
+        <>
+          <div style={{flexGrow: 1}}></div>
+          {right}
+        </>
+      ) : null}
     </SandyToolbarContainer>
   );
 }

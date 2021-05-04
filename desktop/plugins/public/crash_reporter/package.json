@@ -35,6 +35,8 @@
     "unicode-substring": "^1.0.0"
   },
   "peerDependencies": {
-    "flipper-plugin": "0.0.0"
+    "@ant-design/icons": "*",
+    "ant-design": "*",
+    "flipper-plugin": "*"
   }
 }

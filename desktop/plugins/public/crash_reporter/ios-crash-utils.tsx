@@ -8,35 +8,28 @@
  */
 
 import type {Crash, CrashLog} from './index';
-import {parseCrashLog} from './crash-utils';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import {promisify} from 'util';
+import {UNKNOWN_CRASH_REASON} from './crash-utils';
 
-export function parseIosCrash(
-  content: string,
-  fallbackReason: string,
-  logDate?: Date,
-) {
+export function parseIosCrash(content: string) {
   const regex = /Exception Type: *\w*/;
   const arr = regex.exec(content);
   const exceptionString = arr ? arr[0] : '';
   const exceptionRegex = /\w*$/;
   const tmp = exceptionRegex.exec(exceptionString);
-  const exception = tmp && tmp[0].length ? tmp[0] : fallbackReason;
+  const exception = tmp && tmp[0].length ? tmp[0] : UNKNOWN_CRASH_REASON;
 
-  let date = logDate;
-  if (!date) {
-    const dateRegex = /Date\/Time: *[\w\s\.:-]*/;
-    const dateArr = dateRegex.exec(content);
-    const dateString = dateArr ? dateArr[0] : '';
-    const dateRegex2 = /[\w\s\.:-]*$/;
-    const tmp1 = dateRegex2.exec(dateString);
-    const extractedDateString: string | null =
-      tmp1 && tmp1[0].length ? tmp1[0] : null;
-    date = extractedDateString ? new Date(extractedDateString) : logDate;
-  }
+  const dateRegex = /Date\/Time: *[\w\s\.:-]*/;
+  const dateArr = dateRegex.exec(content);
+  const dateString = dateArr ? dateArr[0] : '';
+  const dateRegex2 = /[\w\s\.:-]*$/;
+  const tmp1 = dateRegex2.exec(dateString);
+  const extractedDateString: string | null =
+    tmp1 && tmp1[0].length ? tmp1[0] : null;
+  const date = extractedDateString ? new Date(extractedDateString) : new Date();
 
   const crash: CrashLog = {
     callstack: content,
@@ -70,7 +63,6 @@ export function parsePath(content: string): string | null {
 }
 
 export function addFileWatcherForiOSCrashLogs(
-  deviceOs: string,
   serial: string,
   reportCrash: (payload: CrashLog | Crash) => void,
 ) {
@@ -96,7 +88,7 @@ export function addFileWatcherForiOSCrashLogs(
           return;
         }
         if (shouldShowiOSCrashNotification(serial, data)) {
-          reportCrash(parseCrashLog(data, deviceOs, undefined));
+          reportCrash(parseIosCrash(data));
         }
       });
     });

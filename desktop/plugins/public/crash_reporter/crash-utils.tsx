@@ -8,32 +8,12 @@
  */
 
 import unicodeSubstring from 'unicode-substring';
-import type {CrashLog} from './index';
-import {parseAndroidCrash} from './android-crash-utils';
-import {parseIosCrash} from './ios-crash-utils';
+import type {Crash} from './index';
+import {DevicePluginClient} from 'flipper-plugin';
 
 export const UNKNOWN_CRASH_REASON = 'Cannot figure out the cause';
 
-export function parseCrashLog(
-  content: string,
-  os: string,
-  logDate?: Date,
-): CrashLog {
-  const fallbackReason = UNKNOWN_CRASH_REASON;
-  switch (os) {
-    case 'iOS': {
-      return parseIosCrash(content, fallbackReason, logDate);
-    }
-    case 'Android': {
-      return parseAndroidCrash(content, fallbackReason, logDate);
-    }
-    default: {
-      throw new Error('Unsupported OS');
-    }
-  }
-}
-
-export function truncate(baseString: string, numOfChars: number): string {
+function truncate(baseString: string, numOfChars: number): string {
   if (baseString.length <= numOfChars) {
     return baseString;
   }
@@ -41,8 +21,40 @@ export function truncate(baseString: string, numOfChars: number): string {
   return truncated_string + '\u2026';
 }
 
-export function trimCallStackIfPossible(callstack: string): string {
+function trimCallStackIfPossible(callstack: string): string {
   const regex = /Application Specific Information:/;
   const query = regex.exec(callstack);
   return query ? callstack.substring(0, query.index) : callstack;
+}
+
+export function showCrashNotification(
+  client: DevicePluginClient,
+  crash: Crash,
+) {
+  const ignore = !crash.name && !crash.reason;
+  const unknownCrashCause = crash.reason === UNKNOWN_CRASH_REASON;
+  if (ignore || unknownCrashCause) {
+    console.warn('Ignored the notification for the crash', crash);
+    return;
+  }
+
+  let title: string = 'CRASH: ' + truncate(crash.name || crash.reason, 50);
+  title = `${
+    crash.name == crash.reason
+      ? title
+      : title + 'Reason: ' + truncate(crash.reason, 50)
+  }`;
+  const callstack = crash.callstack
+    ? trimCallStackIfPossible(crash.callstack)
+    : 'No callstack available';
+  const msg = `Callstack: ${truncate(callstack, 200)}`;
+  // TODO: fix client id
+  client.showNotification({
+    id: crash.notificationID,
+    message: msg,
+    severity: 'error',
+    title: title,
+    action: crash.notificationID,
+    category: crash.reason || 'Unknown reason',
+  });
 }

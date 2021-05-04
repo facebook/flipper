@@ -7,17 +7,14 @@
  * @format
  */
 
-import type {DeviceLogEntry} from 'flipper-plugin';
-import type {CrashLog} from './index';
+import type {DeviceLogEntry, DevicePluginClient} from 'flipper-plugin';
+import {UNKNOWN_CRASH_REASON} from './crash-utils';
+import type {Crash, CrashLog} from './index';
 
-export function parseAndroidCrash(
-  content: string,
-  fallbackReason: string,
-  logDate?: Date,
-) {
+export function parseAndroidCrash(content: string, logDate?: Date) {
   const regForName = /.*\n/;
   const nameRegArr = regForName.exec(content);
-  let name = nameRegArr ? nameRegArr[0] : fallbackReason;
+  let name = nameRegArr ? nameRegArr[0] : UNKNOWN_CRASH_REASON;
   const regForCallStack = /\tat[\w\s\n\.$&+,:;=?@#|'<>.^*()%!-]*$/;
   const callStackArray = regForCallStack.exec(content);
   const callStack = callStackArray ? callStackArray[0] : '';
@@ -29,8 +26,8 @@ export function parseAndroidCrash(
   const reasonText =
     remainingString.length > 0
       ? remainingString.split('\n').pop()
-      : fallbackReason;
-  const reason = reasonText ? reasonText : fallbackReason;
+      : UNKNOWN_CRASH_REASON;
+  const reason = reasonText ? reasonText : UNKNOWN_CRASH_REASON;
   if (name[name.length - 1] === '\n') {
     name = name.slice(0, -1);
   }
@@ -52,4 +49,35 @@ export function shouldParseAndroidLog(
     ((entry.type === 'error' && entry.tag === 'AndroidRuntime') ||
       entry.type === 'fatal')
   );
+}
+
+export function startAndroidCrashWatcher(
+  client: DevicePluginClient,
+  reportCrash: (payload: CrashLog | Crash) => void,
+) {
+  const referenceDate = new Date();
+  let androidLog: string = '';
+  let androidLogUnderProcess = false;
+  let timer: null | NodeJS.Timeout = null;
+  client.device.onLogEntry((entry: DeviceLogEntry) => {
+    if (shouldParseAndroidLog(entry, referenceDate)) {
+      if (androidLogUnderProcess) {
+        androidLog += '\n' + entry.message;
+        androidLog = androidLog.trim();
+        if (timer) {
+          clearTimeout(timer);
+        }
+      } else {
+        androidLog = entry.message;
+        androidLogUnderProcess = true;
+      }
+      timer = setTimeout(() => {
+        if (androidLog.length > 0) {
+          reportCrash(parseAndroidCrash(androidLog, entry.date));
+        }
+        androidLogUnderProcess = false;
+        androidLog = '';
+      }, 50);
+    }
+  });
 }

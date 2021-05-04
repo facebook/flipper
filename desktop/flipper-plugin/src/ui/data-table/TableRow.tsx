@@ -120,7 +120,7 @@ export const TableRow = memo(function TableRow<T>({
         .filter((col) => col.visible)
         .map((col) => {
           const value = col.onRender
-            ? (col as any).onRender(record, highlighted, itemIndex) // TODO: ever used?
+            ? (col as any).onRender(record, highlighted, itemIndex)
             : DataFormatter.format((record as any)[col.key], col.formatters);
 
           return (
