@@ -58,6 +58,7 @@ test('it can start a plugin and lifecycle events', () => {
   expect(instance.activateStub).toBeCalledTimes(2);
   expect(instance.deactivateStub).toBeCalledTimes(2);
   expect(instance.destroyStub).toBeCalledTimes(1);
+  expect(instance.readyStub).toBeCalledTimes(1);
 
   expect(instance.appName).toBe('TestApplication');
   expect(instance.appId).toBe('TestApplication#Android#TestDevice#serial-000');
@@ -220,12 +221,14 @@ test('plugins support non-serializable state', async () => {
 });
 
 test('plugins support restoring state', async () => {
+  const readyFn = jest.fn();
   const {exportState, instance} = TestUtils.startPlugin(
     {
-      plugin() {
+      plugin(c: PluginClient<{}, {}>) {
         const field1 = createState(1, {persist: 'field1'});
         const field2 = createState(2);
         const field3 = createState(3, {persist: 'field3'});
+        c.onReady(readyFn);
         return {
           field1,
           field2,
@@ -247,6 +250,7 @@ test('plugins support restoring state', async () => {
   expect(field3.get()).toBe('b');
 
   expect(exportState()).toEqual({field1: 'a', field3: 'b'});
+  expect(readyFn).toBeCalledTimes(1);
 });
 
 test('plugins cannot use a persist key twice', async () => {
@@ -267,6 +271,8 @@ test('plugins cannot use a persist key twice', async () => {
 });
 
 test('plugins can have custom import handler', () => {
+  const readyFn = jest.fn();
+
   const {instance} = TestUtils.startPlugin(
     {
       plugin(client: PluginClient) {
@@ -277,6 +283,7 @@ test('plugins can have custom import handler', () => {
           field1.set(data.a);
           field2.set(data.b);
         });
+        client.onReady(readyFn);
 
         return {field1, field2};
       },
@@ -293,6 +300,7 @@ test('plugins can have custom import handler', () => {
   );
   expect(instance.field1.get()).toBe(1);
   expect(instance.field2.get()).toBe(2);
+  expect(readyFn).toBeCalledTimes(1);
 });
 
 test('plugins cannot combine import handler with persist option', async () => {
@@ -344,7 +352,7 @@ test('plugins can handle import errors', async () => {
     expect(console.error.mock.calls).toMatchInlineSnapshot(`
       Array [
         Array [
-          "Error occurred when importing date for plugin 'TestPlugin': 'Error: Oops",
+          "An error occurred when importing data for plugin 'TestPlugin': 'Error: Oops",
           [Error: Oops],
         ],
       ]

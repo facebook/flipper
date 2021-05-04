@@ -192,6 +192,13 @@ export function plugin(client: PluginClient) {
 }
 ```
 
+### `onReady`
+
+The `onReady` event is triggered immediately after a plugin has been initialized and any pending state was restored.
+This event fires after `onImport` / the interpretation of any `persist` flags and indicates that the initialization process has finished.
+This event does not signal that the plugin is loaded in the UI yet (see `onActivated`) and does fire before deeplinks (see `onDeeplink`) are handled.
+If a plugin has complex initialization logic it is recommended to put it in the `onReady` hook, as an error in the onReady hook won't cause the plugin not to be loaded.
+
 ### Methods
 
 #### `send`

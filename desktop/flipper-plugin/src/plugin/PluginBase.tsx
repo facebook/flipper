@@ -67,6 +67,13 @@ export interface BasePluginClient {
   onImport<T = any>(handler: StateImportHandler<T>): void;
 
   /**
+   * The `onReady` event is triggered immediately after a plugin has been initialized and any pending state was restored.
+   * This event fires after `onImport` / the interpretation of any `persist` flags and indicates that the initialization process has finished.
+   * This event does not signal that the plugin is loaded in the UI yet (see `onActivated`) and does fire before deeplinks (see `onDeeplink`) are handled.
+   */
+  onReady(handler: () => void): void;
+
+  /**
    * Register menu entries in the Flipper toolbar
    */
   addMenuEntry(...entry: MenuEntry[]): void;
@@ -225,30 +232,39 @@ export abstract class BasePluginInstance {
         );
       }
       if (this.initialStates) {
-        if (this.importHandler) {
-          try {
+        try {
+          if (this.importHandler) {
             batched(this.importHandler)(this.initialStates);
-          } catch (e) {
-            const msg = `Error occurred when importing date for plugin '${this.definition.id}': '${e}`;
-            // msg is already specific
-            // eslint-disable-next-line
-            console.error(msg, e);
-            message.error(msg);
-          }
-        } else {
-          for (const key in this.rootStates) {
-            if (key in this.initialStates) {
-              this.rootStates[key].deserialize(this.initialStates[key]);
-            } else {
-              console.warn(
-                `Tried to initialize plugin with existing data, however data for "${key}" is missing. Was the export created with a different Flipper version?`,
-              );
+          } else {
+            for (const key in this.rootStates) {
+              if (key in this.initialStates) {
+                this.rootStates[key].deserialize(this.initialStates[key]);
+              } else {
+                console.warn(
+                  `Tried to initialize plugin with existing data, however data for "${key}" is missing. Was the export created with a different Flipper version?`,
+                );
+              }
             }
           }
+        } catch (e) {
+          const msg = `An error occurred when importing data for plugin '${this.definition.id}': '${e}`;
+          // msg is already specific
+          // eslint-disable-next-line
+          console.error(msg, e);
+          message.error(msg);
         }
       }
       this.initialStates = undefined;
       setCurrentPluginInstance(undefined);
+    }
+    try {
+      this.events.emit('ready');
+    } catch (e) {
+      const msg = `An error occurred when initializing plugin '${this.definition.id}': '${e}`;
+      // msg is already specific
+      // eslint-disable-next-line
+      console.error(msg, e);
+      message.error(msg);
     }
   }
 
@@ -279,6 +295,9 @@ export abstract class BasePluginInstance {
           throw new Error('onImport handler already set');
         }
         this.importHandler = cb;
+      },
+      onReady: (cb) => {
+        this.events.on('ready', batched(cb));
       },
       addMenuEntry: (...entries) => {
         for (const entry of entries) {
