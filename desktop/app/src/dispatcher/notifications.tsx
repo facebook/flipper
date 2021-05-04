@@ -11,7 +11,6 @@ import {Store} from '../reducers/index';
 import {Logger} from '../fb-interfaces/Logger';
 import {PluginNotification} from '../reducers/notifications';
 import {PluginDefinition} from '../plugin';
-import {setStaticView} from '../reducers/connections';
 import {ipcRenderer, IpcRendererEvent} from 'electron';
 import {
   setActiveNotifications,
@@ -19,20 +18,15 @@ import {
   updateCategoryBlocklist,
 } from '../reducers/notifications';
 import {textContent} from '../utils/index';
-import GK from '../fb-stubs/GK';
 import {deconstructPluginKey} from '../utils/clientUtils';
-import NotificationScreen from '../chrome/NotificationScreen';
 import {getPluginTitle, isSandyPlugin} from '../utils/pluginUtils';
 import {sideEffect} from '../utils/sideEffect';
+import {openNotification} from '../sandy-chrome/notification/Notification';
 
 type NotificationEvents = 'show' | 'click' | 'close' | 'reply' | 'action';
 const NOTIFICATION_THROTTLE = 5 * 1000; // in milliseconds
 
 export default (store: Store, logger: Logger) => {
-  if (GK.get('flipper_disable_notifications')) {
-    return;
-  }
-
   const knownNotifications: Set<string> = new Set();
   const knownPluginStates: Map<string, Object> = new Map();
   const lastNotificationTime: Map<string, number> = new Map();
@@ -46,12 +40,7 @@ export default (store: Store, logger: Logger) => {
       arg: null | string | number,
     ) => {
       if (eventName === 'click' || (eventName === 'action' && arg === 0)) {
-        store.dispatch(
-          setStaticView(
-            NotificationScreen,
-            pluginNotification.notification.action ?? null,
-          ),
-        );
+        openNotification(store, pluginNotification);
       } else if (eventName === 'action') {
         if (arg === 1 && pluginNotification.notification.category) {
           // Hide similar (category)
@@ -114,7 +103,6 @@ export default (store: Store, logger: Logger) => {
           const persistingPlugin: undefined | PluginDefinition = getPlugin(
             pluginName,
           );
-          // TODO: add support for Sandy plugins T68683442
           if (
             persistingPlugin &&
             !isSandyPlugin(persistingPlugin) &&
