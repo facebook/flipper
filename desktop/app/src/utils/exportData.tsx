@@ -75,6 +75,8 @@ export type ExportType = {
     pluginStates: PluginStatesExportState;
     activeNotifications: Array<PluginNotification>;
   };
+  // The GraphQL plugin relies on this format for generating
+  // Flipper traces from employee dogfooding. See D28209561.
   pluginStates2: SandyPluginStates;
   supportRequestDetails?: SupportFormRequestDetailsState;
 };
