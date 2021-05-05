@@ -19,43 +19,23 @@ import {
 } from './api';
 import {Fragment} from 'react';
 import {ImagesMap} from './ImagePool';
-import {ReduxState} from 'flipper';
+import {PluginClient, createState, usePlugin, useValue} from 'flipper-plugin';
 import React from 'react';
 import ImagesCacheOverview from './ImagesCacheOverview';
 import {
-  FlipperPlugin,
   FlexRow,
   Text,
   DetailSidebar,
   colors,
   styled,
   isProduction,
-  Notification,
-  BaseAction,
 } from 'flipper';
 import ImagesSidebar from './ImagesSidebar';
 import ImagePool from './ImagePool';
 
 export type ImageEventWithId = ImageEvent & {eventId: number};
-
-export type PersistedState = {
-  surfaceList: Set<string>;
-  images: ImagesList;
+export type AllImageEventsInfo = {
   events: Array<ImageEventWithId>;
-  imagesMap: ImagesMap;
-  closeableReferenceLeaks: Array<AndroidCloseableReferenceLeakEvent>;
-  isLeakTrackingEnabled: boolean;
-  showDiskImages: boolean;
-  nextEventId: number;
-};
-
-type PluginState = {
-  selectedSurfaces: Set<string>;
-  selectedImage: ImageId | null;
-  isDebugOverlayEnabled: boolean;
-  isAutoRefreshEnabled: boolean;
-  images: ImagesList;
-  coldStartFilter: boolean;
 };
 
 const EmptySidebar = styled(FlexRow)({
@@ -79,141 +59,57 @@ const debugLog = (...args: any[]) => {
   }
 };
 
-export default class FlipperImagesPlugin extends FlipperPlugin<
-  PluginState,
-  BaseAction,
-  PersistedState
-> {
-  static defaultPersistedState: PersistedState = {
-    images: [],
-    events: [],
-    imagesMap: {},
-    surfaceList: new Set(),
-    closeableReferenceLeaks: [],
-    isLeakTrackingEnabled: false,
-    showDiskImages: false,
-    nextEventId: 0,
-  };
+type Methods = {
+  getAllImageEventsInfo(params: {}): Promise<AllImageEventsInfo>;
+  listImages(params: {showDiskImages: boolean}): Promise<ImagesListResponse>;
+  getImage(params: {imageId: string}): Promise<ImageData>;
+  clear(params: {type: string}): Promise<void>;
+  trimMemory(params: {}): Promise<void>;
+  enableDebugOverlay(params: {enabled: boolean}): Promise<void>;
+};
 
-  static exportPersistedState = (
-    callClient: undefined | ((method: string, params?: any) => Promise<any>),
-    persistedState: PersistedState,
-    store?: ReduxState,
-  ): Promise<PersistedState> => {
-    const defaultPromise = Promise.resolve(persistedState);
-    if (!persistedState) {
-      persistedState = FlipperImagesPlugin.defaultPersistedState;
-    }
-    if (!store || !callClient) {
-      return defaultPromise;
-    }
-    return Promise.all([
-      callClient('listImages', {showDiskImages: persistedState.showDiskImages}),
-      callClient('getAllImageEventsInfo'),
-    ]).then(async ([responseImages, responseEvents]) => {
-      const levels: ImagesList = responseImages.levels;
-      const events: Array<ImageEventWithId> = responseEvents.events;
-      let pluginData: PersistedState = {
-        ...persistedState,
-        images: persistedState ? [...persistedState.images, ...levels] : levels,
-        closeableReferenceLeaks:
-          (persistedState && persistedState.closeableReferenceLeaks) || [],
-      };
+type Events = {
+  closeable_reference_leak_event: AndroidCloseableReferenceLeakEvent;
+  events: ImageEvent;
+  debug_overlay_event: FrescoDebugOverlayEvent;
+};
 
-      events.forEach((event: ImageEventWithId, index) => {
-        if (!event) {
-          return;
-        }
-        const {attribution} = event;
-        if (
-          attribution &&
-          attribution instanceof Array &&
-          attribution.length > 0
-        ) {
-          const surface = attribution[0] ? attribution[0].trim() : undefined;
-          if (surface && surface.length > 0) {
-            pluginData.surfaceList = new Set([
-              ...pluginData.surfaceList,
-              surface,
-            ]);
-          }
-        }
-        pluginData = {
-          ...pluginData,
-          events: [{...event, eventId: index}, ...pluginData.events],
-        };
-      });
-      const idSet: Set<string> = levels.reduce((acc, level: CacheInfo) => {
-        level.imageIds.forEach((id) => {
-          acc.add(id);
-        });
-        return acc;
-      }, new Set<string>());
-      const imageDataList: Array<ImageData> = [];
-      for (const id of idSet) {
-        try {
-          const imageData: ImageData = await callClient('getImage', {
-            imageId: id,
-          });
-          imageDataList.push(imageData);
-        } catch (e) {
-          console.error(e);
-        }
-      }
-      imageDataList.forEach((data: ImageData) => {
-        const imagesMap = {...pluginData.imagesMap};
-        imagesMap[data.imageId] = data;
-        pluginData.imagesMap = imagesMap;
-      });
-      return pluginData;
-    });
-  };
+export function plugin(client: PluginClient<Events, Methods>) {
+  const selectedSurfaces = createState<Set<string>>(
+    new Set([surfaceDefaultText]),
+  );
+  const currentSelectedImage = createState<ImageId | null>(null);
+  const isDebugOverlayEnabled = createState<boolean>(false);
+  const isAutoRefreshEnabled = createState<boolean>(false);
+  const currentImages = createState<ImagesList>([]);
+  const coldStartFilter = createState<boolean>(false);
+  const imagePool = createState<ImagePool | null>(null);
 
-  static persistedStateReducer = (
-    persistedState: PersistedState,
-    method: string,
-    data: AndroidCloseableReferenceLeakEvent | ImageEvent,
-  ): PersistedState => {
-    if (method == 'closeable_reference_leak_event') {
-      const event: AndroidCloseableReferenceLeakEvent = data as AndroidCloseableReferenceLeakEvent;
-      return {
-        ...persistedState,
-        closeableReferenceLeaks: persistedState.closeableReferenceLeaks.concat(
-          event,
-        ),
-      };
-    } else if (method == 'events') {
-      const event: ImageEvent = data as ImageEvent;
-      debugLog('Received events', event);
-      let {surfaceList} = persistedState;
-      const {attribution} = event;
-      if (attribution instanceof Array && attribution.length > 0) {
-        const surface = attribution[0] ? attribution[0].trim() : undefined;
-        if (surface && surface.length > 0) {
-          surfaceList = new Set([...surfaceList, surface]);
-        }
-      }
-      return {
-        ...persistedState,
-        surfaceList,
-        events: [
-          {eventId: persistedState.nextEventId, ...event},
-          ...persistedState.events,
-        ],
-        nextEventId: persistedState.nextEventId + 1,
-      };
-    }
+  const surfaceList = createState<Set<string>>(new Set(), {
+    persist: 'surfaceList',
+  });
+  const images = createState<ImagesList>([], {persist: 'images'});
+  const events = createState<Array<ImageEventWithId>>([], {persist: 'events'});
+  const imagesMap = createState<ImagesMap>({}, {persist: 'imagesMap'});
+  const isLeakTrackingEnabled = createState<boolean>(false, {
+    persist: 'isLeakTrackingEnabled',
+  });
+  const showDiskImages = createState<boolean>(false, {
+    persist: 'showDiskImages',
+  });
+  const nextEventId = createState<number>(0, {persist: 'nextEventId'});
 
-    return persistedState;
-  };
+  client.onConnect(() => {
+    init();
+  });
 
-  static getActiveNotifications = ({
-    closeableReferenceLeaks = [],
-    isLeakTrackingEnabled = false,
-  }: PersistedState): Array<Notification> =>
-    closeableReferenceLeaks
-      .filter((_) => isLeakTrackingEnabled)
-      .map((event: AndroidCloseableReferenceLeakEvent) => ({
+  client.onDestroy(() => {
+    imagePool?.get()?.clear();
+  });
+
+  client.onMessage('closeable_reference_leak_event', (event) => {
+    if (isLeakTrackingEnabled) {
+      client.showNotification({
         id: event.identityHashCode,
         title: `Leaked CloseableReference: ${event.className}`,
         message: (
@@ -233,25 +129,183 @@ export default class FlipperImagesPlugin extends FlipperPlugin<
         ),
         severity: 'error',
         category: 'closeablereference_leak',
-      }));
+      });
+    }
+  });
 
-  state: PluginState = {
-    selectedSurfaces: new Set([surfaceDefaultText]),
-    selectedImage: null,
-    isDebugOverlayEnabled: false,
-    isAutoRefreshEnabled: false,
-    images: [],
-    coldStartFilter: false,
-  };
-  imagePool: ImagePool | undefined;
-  nextEventId: number = 1;
+  client.onExport(async () => {
+    const [responseImages, responseEvents] = await Promise.all([
+      client.send('listImages', {showDiskImages: showDiskImages.get()}),
+      client.send('getAllImageEventsInfo', {}),
+    ]);
+    const levels: ImagesList = responseImages.levels;
+    const newEvents: Array<ImageEventWithId> = responseEvents.events;
 
-  filterImages = (
+    images.set([...images.get(), ...levels]);
+
+    newEvents.forEach((event: ImageEventWithId, index) => {
+      if (!event) {
+        return;
+      }
+      const {attribution} = event;
+      if (
+        attribution &&
+        attribution instanceof Array &&
+        attribution.length > 0
+      ) {
+        const surface = attribution[0] ? attribution[0].trim() : undefined;
+        if (surface && surface.length > 0) {
+          surfaceList.set(new Set([...surfaceList.get(), surface]));
+        }
+      }
+      events.set([{...event, eventId: index}, ...events.get()]);
+    });
+    const idSet: Set<string> = levels.reduce((acc, level: CacheInfo) => {
+      level.imageIds.forEach((id) => {
+        acc.add(id);
+      });
+      return acc;
+    }, new Set<string>());
+    const imageDataList: Array<ImageData> = [];
+    for (const id of idSet) {
+      try {
+        const imageData: ImageData = await client.send('getImage', {
+          imageId: id,
+        });
+        imageDataList.push(imageData);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    const imagesMapCopy = {...imagesMap.get()};
+    imageDataList.forEach((data: ImageData) => {
+      imagesMapCopy[data.imageId] = data;
+    });
+    imagesMap.set(imagesMapCopy);
+  });
+
+  client.onMessage('debug_overlay_event', (event) => {
+    isDebugOverlayEnabled.set(event.enabled);
+  });
+
+  client.onMessage('events', (event) => {
+    debugLog('Received events', event);
+    const {attribution} = event;
+    if (attribution instanceof Array && attribution.length > 0) {
+      const surface = attribution[0] ? attribution[0].trim() : undefined;
+      if (surface && surface.length > 0) {
+        surfaceList.update((draft) => (draft = new Set([...draft, surface])));
+      }
+    }
+    events.update((draft) => {
+      draft.unshift({
+        eventId: nextEventId.get(),
+        ...event,
+      });
+    });
+
+    nextEventId.set(nextEventId.get() + 1);
+  });
+
+  function onClear(type: string) {
+    client.send('clear', {type});
+    setTimeout(() => updateCaches('onClear'), 1000);
+  }
+
+  function onTrimMemory() {
+    client.send('trimMemory', {});
+    setTimeout(() => updateCaches('onTrimMemory'), 1000);
+  }
+
+  function onEnableDebugOverlay(enabled: boolean) {
+    client.send('enableDebugOverlay', {enabled});
+  }
+
+  function onEnableAutoRefresh(enabled: boolean) {
+    isAutoRefreshEnabled.set(enabled);
+
+    if (enabled) {
+      // Delay the call just enough to allow the state change to complete.
+      setTimeout(() => onAutoRefresh());
+    }
+  }
+
+  function onAutoRefresh() {
+    updateCaches('auto-refresh');
+    if (isAutoRefreshEnabled.get()) {
+      setTimeout(() => onAutoRefresh(), 1000);
+    }
+  }
+
+  function getImage(imageId: string) {
+    if (!client.isConnected) {
+      debugLog(`Cannot fetch image ${imageId}: disconnected`);
+      return;
+    }
+    debugLog('<- getImage requested for ' + imageId);
+    client.send('getImage', {imageId}).then((image: ImageData) => {
+      debugLog('-> getImage ' + imageId + ' returned');
+      imagePool.get()?._fetchCompleted(image);
+    });
+  }
+
+  function onImageSelected(selectedImage: ImageId) {
+    currentSelectedImage.set(selectedImage);
+  }
+
+  function onSurfaceChange(surfaces: Set<string>) {
+    updateImagesOnUI(images.get(), surfaces, coldStartFilter.get());
+  }
+
+  function onColdStartChange(checked: boolean) {
+    updateImagesOnUI(images.get(), selectedSurfaces.get(), checked);
+  }
+
+  function onTrackLeaks(checked: boolean) {
+    client.logger.track('usage', 'fresco:onTrackLeaks', {
+      enabled: checked,
+    });
+
+    isLeakTrackingEnabled.set(checked);
+  }
+
+  function onShowDiskImages(checked: boolean) {
+    client.logger.track('usage', 'fresco:onShowDiskImages', {
+      enabled: checked,
+    });
+
+    showDiskImages.set(checked);
+    updateCaches('refresh');
+  }
+
+  function init() {
+    debugLog('init()');
+    if (client.isConnected) {
+      updateCaches('init');
+    } else {
+      debugLog(`not connected)`);
+    }
+    imagePool.set(
+      new ImagePool(getImage, (images: ImagesMap) => imagesMap.set(images)),
+    );
+
+    const filteredImages = filterImages(
+      images.get(),
+      events.get(),
+      selectedSurfaces.get(),
+      coldStartFilter.get(),
+    );
+
+    images.set(filteredImages);
+  }
+
+  function filterImages(
     images: ImagesList,
     events: Array<ImageEventWithId>,
     surfaces: Set<string>,
     coldStart: boolean,
-  ): ImagesList => {
+  ): ImagesList {
     if (!surfaces || (surfaces.has(surfaceDefaultText) && !coldStart)) {
       return images;
     }
@@ -280,216 +334,149 @@ export default class FlipperImagesPlugin extends FlipperPlugin<
       return {...image, imageIds: imageIdList};
     });
     return imageList;
-  };
-
-  init() {
-    debugLog('init()');
-    if (this.client.isConnected) {
-      this.updateCaches('init');
-      this.client.subscribe(
-        'debug_overlay_event',
-        (event: FrescoDebugOverlayEvent) => {
-          this.setState({isDebugOverlayEnabled: event.enabled});
-        },
-      );
-    } else {
-      debugLog(`not connected)`);
-    }
-    this.imagePool = new ImagePool(this.getImage, (images: ImagesMap) =>
-      this.props.setPersistedState({imagesMap: images}),
-    );
-
-    const images = this.filterImages(
-      this.props.persistedState.images,
-      this.props.persistedState.events,
-      this.state.selectedSurfaces,
-      this.state.coldStartFilter,
-    );
-
-    this.setState({images});
   }
 
-  teardown() {
-    this.imagePool ? this.imagePool.clear() : undefined;
-  }
-
-  updateImagesOnUI = (
-    images: ImagesList,
+  function updateImagesOnUI(
+    newImages: ImagesList,
     surfaces: Set<string>,
     coldStart: boolean,
-  ) => {
-    const filteredImages = this.filterImages(
-      images,
-      this.props.persistedState.events,
+  ) {
+    const filteredImages = filterImages(
+      newImages,
+      events.get(),
       surfaces,
       coldStart,
     );
 
-    this.setState({
-      selectedSurfaces: surfaces,
-      images: filteredImages,
-      coldStartFilter: coldStart,
-    });
-  };
-  updateCaches = (reason: string) => {
+    selectedSurfaces.set(surfaces);
+    images.set(filteredImages);
+    coldStartFilter.set(coldStart);
+  }
+
+  function updateCaches(reason: string) {
     debugLog('Requesting images list (reason=' + reason + ')');
-    this.client
-      .call('listImages', {
-        showDiskImages: this.props.persistedState.showDiskImages,
+    client
+      .send('listImages', {
+        showDiskImages: showDiskImages.get(),
       })
       .then((response: ImagesListResponse) => {
         response.levels.forEach((data) =>
-          this.imagePool
-            ? this.imagePool.fetchImages(data.imageIds)
-            : undefined,
+          imagePool?.get()?.fetchImages(data.imageIds),
         );
-        this.props.setPersistedState({images: response.levels});
-        this.updateImagesOnUI(
-          this.props.persistedState.images,
-          this.state.selectedSurfaces,
-          this.state.coldStartFilter,
+        images.set(response.levels);
+        updateImagesOnUI(
+          images.get(),
+          selectedSurfaces.get(),
+          coldStartFilter.get(),
         );
       });
+  }
+
+  return {
+    selectedSurfaces,
+    currentSelectedImage,
+    isDebugOverlayEnabled,
+    isAutoRefreshEnabled,
+    currentImages,
+    coldStartFilter,
+    surfaceList,
+    images,
+    events,
+    imagesMap,
+    isLeakTrackingEnabled,
+    showDiskImages,
+    nextEventId,
+    imagePool,
+    onSurfaceChange,
+    onColdStartChange,
+    onClear,
+    onTrimMemory,
+    updateCaches,
+    onEnableDebugOverlay,
+    onEnableAutoRefresh,
+    onImageSelected,
+    onTrackLeaks,
+    onShowDiskImages,
   };
+}
 
-  onClear = (type: string) => {
-    this.client.call('clear', {type});
-    setTimeout(() => this.updateCaches('onClear'), 1000);
-  };
+export function Component() {
+  const instance = usePlugin(plugin);
 
-  onTrimMemory = () => {
-    this.client.call('trimMemory', {});
-    setTimeout(() => this.updateCaches('onTrimMemory'), 1000);
-  };
+  let selectedSurfaces = useValue(instance.selectedSurfaces);
+  const isDebugOverlayEnabled = useValue(instance.isDebugOverlayEnabled);
+  const isAutoRefreshEnabled = useValue(instance.isAutoRefreshEnabled);
+  const coldStartFilter = useValue(instance.coldStartFilter);
 
-  onEnableDebugOverlay = (enabled: boolean) => {
-    this.client.call('enableDebugOverlay', {enabled});
-  };
+  const surfaceList = useValue(instance.surfaceList);
+  const images = useValue(instance.images);
+  const events = useValue(instance.events);
+  const imagesMap = useValue(instance.imagesMap);
+  const isLeakTrackingEnabled = useValue(instance.isLeakTrackingEnabled);
+  const showDiskImages = useValue(instance.showDiskImages);
 
-  onEnableAutoRefresh = (enabled: boolean) => {
-    this.setState({isAutoRefreshEnabled: enabled});
-    if (enabled) {
-      // Delay the call just enough to allow the state change to complete.
-      setTimeout(() => this.onAutoRefresh());
-    }
-  };
+  const options = [...surfaceList].reduce(
+    (acc, item) => {
+      return [...acc, item];
+    },
+    [surfaceDefaultText],
+  );
 
-  onAutoRefresh = () => {
-    this.updateCaches('auto-refresh');
-    if (this.state.isAutoRefreshEnabled) {
-      setTimeout(() => this.onAutoRefresh(), 1000);
-    }
-  };
+  if (selectedSurfaces.has(surfaceDefaultText)) {
+    selectedSurfaces = new Set(options);
+  }
 
-  getImage = (imageId: string) => {
-    if (!this.client.isConnected) {
-      debugLog(`Cannot fetch image ${imageId}: disconnected`);
-      return;
-    }
-    debugLog('<- getImage requested for ' + imageId);
-    this.client.call('getImage', {imageId}).then((image: ImageData) => {
-      debugLog('-> getImage ' + imageId + ' returned');
-      this.imagePool ? this.imagePool._fetchCompleted(image) : undefined;
-    });
-  };
+  return (
+    <React.Fragment>
+      <ImagesCacheOverview
+        allSurfacesOption={surfaceDefaultText}
+        surfaceOptions={new Set(options)}
+        selectedSurfaces={selectedSurfaces}
+        onChangeSurface={instance.onSurfaceChange}
+        coldStartFilter={coldStartFilter}
+        onColdStartChange={instance.onColdStartChange}
+        images={images}
+        onClear={instance.onClear}
+        onTrimMemory={instance.onTrimMemory}
+        onRefresh={() => instance.updateCaches('refresh')}
+        onEnableDebugOverlay={instance.onEnableDebugOverlay}
+        onEnableAutoRefresh={instance.onEnableAutoRefresh}
+        isDebugOverlayEnabled={isDebugOverlayEnabled}
+        isAutoRefreshEnabled={isAutoRefreshEnabled}
+        onImageSelected={instance.onImageSelected}
+        imagesMap={imagesMap}
+        events={events}
+        isLeakTrackingEnabled={isLeakTrackingEnabled}
+        onTrackLeaks={instance.onTrackLeaks}
+        showDiskImages={showDiskImages}
+        onShowDiskImages={instance.onShowDiskImages}
+      />
+      <DetailSidebar>
+        <Sidebar />
+      </DetailSidebar>
+    </React.Fragment>
+  );
+}
 
-  onImageSelected = (selectedImage: ImageId) => this.setState({selectedImage});
+function Sidebar() {
+  const instance = usePlugin(plugin);
+  const events = useValue(instance.events);
+  const imagesMap = useValue(instance.imagesMap);
+  const currentSelectedImage = useValue(instance.currentSelectedImage);
 
-  renderSidebar = () => {
-    const {selectedImage} = this.state;
-
-    if (selectedImage == null) {
-      return (
-        <EmptySidebar grow={true}>
-          <Text align="center">
-            Select an image to see the events associated with it.
-          </Text>
-        </EmptySidebar>
-      );
-    }
-
-    const maybeImage = this.props.persistedState.imagesMap[selectedImage];
-    const events = this.props.persistedState.events.filter((e) =>
-      e.imageIds.includes(selectedImage),
-    );
-    return <ImagesSidebar image={maybeImage} events={events} />;
-  };
-
-  onSurfaceChange = (surfaces: Set<string>) => {
-    this.updateImagesOnUI(
-      this.props.persistedState.images,
-      surfaces,
-      this.state.coldStartFilter,
-    );
-  };
-
-  onColdStartChange = (checked: boolean) => {
-    this.updateImagesOnUI(
-      this.props.persistedState.images,
-      this.state.selectedSurfaces,
-      checked,
-    );
-  };
-
-  onTrackLeaks = (checked: boolean) => {
-    this.props.logger.track('usage', 'fresco:onTrackLeaks', {enabled: checked});
-    this.props.setPersistedState({
-      isLeakTrackingEnabled: checked,
-    });
-  };
-
-  onShowDiskImages = (checked: boolean) => {
-    this.props.logger.track('usage', 'fresco:onShowDiskImages', {
-      enabled: checked,
-    });
-    this.props.setPersistedState({
-      showDiskImages: checked,
-    });
-    this.updateCaches('refresh');
-  };
-
-  render() {
-    const options = [...this.props.persistedState.surfaceList].reduce(
-      (acc, item) => {
-        return [...acc, item];
-      },
-      [surfaceDefaultText],
-    );
-    let {selectedSurfaces} = this.state;
-
-    if (selectedSurfaces.has(surfaceDefaultText)) {
-      selectedSurfaces = new Set(options);
-    }
-
+  if (currentSelectedImage == null) {
     return (
-      <React.Fragment>
-        <ImagesCacheOverview
-          allSurfacesOption={surfaceDefaultText}
-          surfaceOptions={new Set(options)}
-          selectedSurfaces={selectedSurfaces}
-          onChangeSurface={this.onSurfaceChange}
-          coldStartFilter={this.state.coldStartFilter}
-          onColdStartChange={this.onColdStartChange}
-          images={this.state.images}
-          onClear={this.onClear}
-          onTrimMemory={this.onTrimMemory}
-          onRefresh={() => this.updateCaches('refresh')}
-          onEnableDebugOverlay={this.onEnableDebugOverlay}
-          onEnableAutoRefresh={this.onEnableAutoRefresh}
-          isDebugOverlayEnabled={this.state.isDebugOverlayEnabled}
-          isAutoRefreshEnabled={this.state.isAutoRefreshEnabled}
-          onImageSelected={this.onImageSelected}
-          imagesMap={this.props.persistedState.imagesMap}
-          events={this.props.persistedState.events}
-          isLeakTrackingEnabled={
-            this.props.persistedState.isLeakTrackingEnabled
-          }
-          onTrackLeaks={this.onTrackLeaks}
-          showDiskImages={this.props.persistedState.showDiskImages}
-          onShowDiskImages={this.onShowDiskImages}
-        />
-        <DetailSidebar>{this.renderSidebar()}</DetailSidebar>
-      </React.Fragment>
+      <EmptySidebar grow={true}>
+        <Text align="center">
+          Select an image to see the events associated with it.
+        </Text>
+      </EmptySidebar>
     );
   }
+
+  const maybeImage = imagesMap[currentSelectedImage];
+  const filteredEvents = events.filter((e) =>
+    e.imageIds.includes(currentSelectedImage),
+  );
+  return <ImagesSidebar image={maybeImage} events={filteredEvents} />;
 }

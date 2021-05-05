@@ -13,5 +13,8 @@
   "icon": "profile",
   "bugs": {
     "email": "oncall+fresco@xmail.facebook.com"
+  },
+  "peerDependencies": {
+    "flipper-plugin": "*"
   }
 }
