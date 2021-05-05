@@ -7,8 +7,7 @@
  * @format
  */
 
-import {default as styled} from '@emotion/styled';
-import {theme} from 'flipper-plugin';
+import {theme, styled} from 'flipper-plugin';
 import {Typography} from 'antd';
 import React from 'react';
 
