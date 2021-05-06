@@ -7,42 +7,12 @@
  * @format
  */
 
-import React, {createContext, createRef} from 'react';
-import {Menu, message} from 'antd';
+import React, {createRef} from 'react';
+import {Button, Menu, Modal, Typography} from 'antd';
 
 import {
   Layout,
-  Button,
-  Glyph,
-  colors,
   DetailSidebar,
-  styled,
-  Sheet,
-} from 'flipper';
-import {
-  Request,
-  RequestInfo,
-  ResponseInfo,
-  Route,
-  ResponseFollowupChunk,
-  Header,
-  MockRoute,
-  AddProtobufEvent,
-  PartialResponses,
-  Requests,
-} from './types';
-import {ProtobufDefinitionsRepository} from './ProtobufDefinitionsRepository';
-import {
-  convertRequestToCurlCommand,
-  getHeaderValue,
-  decodeBody,
-  getResponseLength,
-} from './utils';
-import RequestDetails from './RequestDetails';
-import {URL} from 'url';
-import {MockResponseDialog} from './MockResponseDialog';
-import {assembleChunksIfResponseIsComplete} from './chunks';
-import {
   PluginClient,
   Device,
   createState,
@@ -52,20 +22,49 @@ import {
   DataTable,
   DataTableColumn,
   DataTableManager,
+  theme,
 } from 'flipper-plugin';
-import fs from 'fs';
-// eslint-disable-next-line
-import electron, {OpenDialogOptions, remote} from 'electron';
+import {
+  Request,
+  RequestInfo,
+  ResponseInfo,
+  ResponseFollowupChunk,
+  AddProtobufEvent,
+  PartialResponses,
+} from './types';
+import {ProtobufDefinitionsRepository} from './ProtobufDefinitionsRepository';
+import {
+  convertRequestToCurlCommand,
+  getHeaderValue,
+  getResponseLength,
+  formatStatus,
+  formatBytes,
+  formatDuration,
+  requestsToText,
+} from './utils';
+import RequestDetails from './RequestDetails';
+import {URL} from 'url';
+import {assembleChunksIfResponseIsComplete} from './chunks';
 import {DeleteOutlined} from '@ant-design/icons';
+import {ManageMockResponsePanel} from './request-mocking/ManageMockResponsePanel';
+import {
+  NetworkRouteContext,
+  NetworkRouteManager,
+  nullNetworkRouteManager,
+  Route,
+  MockRoute,
+  createNetworkManager,
+  computeMockRoutes,
+} from './request-mocking/NetworkRouteManager';
 
 const LOCALSTORAGE_MOCK_ROUTE_LIST_KEY = '__NETWORK_CACHED_MOCK_ROUTE_LIST';
 const LOCALSTORAGE_RESPONSE_BODY_FORMAT_KEY =
   '__NETWORK_CACHED_RESPONSE_BODY_FORMAT';
 
-export const BodyOptions = {
-  formatted: 'formatted',
-  parsed: 'parsed',
-};
+export const BodyOptions = ['formatted', 'parsed'].map((value) => ({
+  label: value,
+  value,
+}));
 
 type Events = {
   newRequest: RequestInfo;
@@ -78,58 +77,6 @@ type Methods = {
   mockResponses(params: {routes: MockRoute[]}): Promise<void>;
 };
 
-const mockingStyle = {
-  backgroundColor: colors.yellowTint,
-  color: colors.yellow,
-  fontWeight: 500,
-};
-
-const errorStyle = {
-  backgroundColor: colors.redTint,
-  color: colors.red,
-  fontWeight: 500,
-};
-
-export function formatBytes(count: number | undefined): string {
-  if (typeof count !== 'number') {
-    return '';
-  }
-  if (count > 1024 * 1024) {
-    return (count / (1024.0 * 1024)).toFixed(1) + ' MB';
-  }
-  if (count > 1024) {
-    return (count / 1024.0).toFixed(1) + ' kB';
-  }
-  return count + ' B';
-}
-
-// State management
-export interface NetworkRouteManager {
-  addRoute(): string | null;
-  modifyRoute(id: string, routeChange: Partial<Route>): void;
-  removeRoute(id: string): void;
-  enableRoute(id: string): void;
-  copyHighlightedCalls(highlightedRows: Set<string>, requests: Requests): void;
-  importRoutes(): void;
-  exportRoutes(): void;
-  clearRoutes(): void;
-}
-const nullNetworkRouteManager: NetworkRouteManager = {
-  addRoute(): string | null {
-    return '';
-  },
-  modifyRoute(_id: string, _routeChange: Partial<Route>) {},
-  removeRoute(_id: string) {},
-  enableRoute(_id: string) {},
-  copyHighlightedCalls(_highlightedRows: Set<string>, _requests: Requests) {},
-  importRoutes() {},
-  exportRoutes() {},
-  clearRoutes() {},
-};
-export const NetworkRouteContext = createContext<NetworkRouteManager>(
-  nullNetworkRouteManager,
-);
-
 export function plugin(client: PluginClient<Events, Methods>) {
   const networkRouteManager = createState<NetworkRouteManager>(
     nullNetworkRouteManager,
@@ -137,11 +84,12 @@ export function plugin(client: PluginClient<Events, Methods>) {
 
   const routes = createState<{[id: string]: Route}>({});
   const nextRouteId = createState<number>(0);
-  const isMockResponseSupported = createState<boolean>(false);
+  const isMockResponseSupported = createState<boolean>(false, {
+    persist: 'isMockResponseSupported',
+  });
   const showMockResponseDialog = createState<boolean>(false);
   const detailBodyFormat = createState<string>(
-    localStorage.getItem(LOCALSTORAGE_RESPONSE_BODY_FORMAT_KEY) ||
-      BodyOptions.parsed,
+    localStorage.getItem(LOCALSTORAGE_RESPONSE_BODY_FORMAT_KEY) || 'parsed',
   );
   const requests = createDataSource<Request, 'id'>([], {
     key: 'id',
@@ -250,9 +198,9 @@ export function plugin(client: PluginClient<Events, Methods>) {
     }
   });
 
-  function supportsMocks(device: Device): Promise<boolean> {
+  async function supportsMocks(device: Device): Promise<boolean> {
     if (device.isArchived) {
-      return Promise.resolve(true);
+      return isMockResponseSupported.get();
     } else {
       return client.supportsMethod('mockResponses');
     }
@@ -273,157 +221,14 @@ export function plugin(client: PluginClient<Events, Methods>) {
     });
 
     // declare new variable to be called inside the interface
-    networkRouteManager.set({
-      addRoute(): string | null {
-        const newNextRouteId = nextRouteId.get();
-        routes.update((draft) => {
-          draft[newNextRouteId.toString()] = {
-            requestUrl: '',
-            requestMethod: 'GET',
-            responseData: '',
-            responseHeaders: {},
-            responseStatus: '200',
-            enabled: true,
-          };
-        });
-        nextRouteId.set(newNextRouteId + 1);
-        return String(newNextRouteId);
-      },
-      modifyRoute(id: string, routeChange: Partial<Route>) {
-        if (!routes.get().hasOwnProperty(id)) {
-          return;
-        }
-        routes.update((draft) => {
-          Object.assign(draft[id], routeChange);
-        });
-        informClientMockChange(routes.get());
-      },
-      removeRoute(id: string) {
-        if (routes.get().hasOwnProperty(id)) {
-          routes.update((draft) => {
-            delete draft[id];
-          });
-        }
-        informClientMockChange(routes.get());
-      },
-      enableRoute(id: string) {
-        if (routes.get().hasOwnProperty(id)) {
-          routes.update((draft) => {
-            draft[id].enabled = !draft[id].enabled;
-          });
-        }
-        informClientMockChange(routes.get());
-      },
-      copyHighlightedCalls(
-        highlightedRows: Set<string> | null | undefined,
-        requests: Requests,
-      ) {
-        // iterate through highlighted rows
-        highlightedRows?.forEach((row) => {
-          const request = requests.getById(row);
-          if (!request) {
-            return;
-          }
-          // convert headers
-          const headers: {[id: string]: Header} = {};
-          request.responseHeaders?.forEach((e) => {
-            headers[e.key] = e;
-          });
-
-          // convert data TODO: we only want this for non-binary data! See D23403095
-          const responseData =
-            request && request.responseData
-              ? decodeBody({
-                  headers: request.responseHeaders ?? [],
-                  data: request.responseData,
-                })
-              : '';
-
-          const newNextRouteId = nextRouteId.get();
-          routes.update((draft) => {
-            draft[newNextRouteId.toString()] = {
-              requestUrl: request.url,
-              requestMethod: request.method,
-              responseData: responseData as string,
-              responseHeaders: headers,
-              responseStatus: request.status?.toString() ?? '',
-              enabled: true,
-            };
-          });
-          nextRouteId.set(newNextRouteId + 1);
-        });
-
-        informClientMockChange(routes.get());
-      },
-      importRoutes() {
-        const options: OpenDialogOptions = {
-          properties: ['openFile'],
-          filters: [{extensions: ['json'], name: 'Flipper Route Files'}],
-        };
-        remote.dialog.showOpenDialog(options).then((result) => {
-          const filePaths = result.filePaths;
-          if (filePaths.length > 0) {
-            fs.readFile(filePaths[0], 'utf8', (err, data) => {
-              if (err) {
-                message.error('Unable to import file');
-                return;
-              }
-              const importedRoutes = JSON.parse(data);
-              importedRoutes?.forEach((importedRoute: Route) => {
-                if (importedRoute != null) {
-                  const newNextRouteId = nextRouteId.get();
-                  routes.update((draft) => {
-                    draft[newNextRouteId.toString()] = {
-                      requestUrl: importedRoute.requestUrl,
-                      requestMethod: importedRoute.requestMethod,
-                      responseData: importedRoute.responseData as string,
-                      responseHeaders: importedRoute.responseHeaders,
-                      responseStatus: importedRoute.responseStatus,
-                      enabled: true,
-                    };
-                  });
-                  nextRouteId.set(newNextRouteId + 1);
-                }
-              });
-              informClientMockChange(routes.get());
-            });
-          }
-        });
-      },
-      exportRoutes() {
-        remote.dialog
-          .showSaveDialog(
-            // @ts-ignore This appears to work but isn't allowed by the types
-            null,
-            {
-              title: 'Export Routes',
-              defaultPath: 'NetworkPluginRoutesExport.json',
-            },
-          )
-          .then((result: electron.SaveDialogReturnValue) => {
-            const file = result.filePath;
-            if (!file) {
-              return;
-            }
-            fs.writeFile(
-              file,
-              JSON.stringify(Object.values(routes.get()), null, 2),
-              'utf8',
-              (err) => {
-                if (err) {
-                  message.error('Failed to store mock routes: ' + err);
-                } else {
-                  message.info('Successfully exported mock routes');
-                }
-              },
-            );
-          });
-      },
-      clearRoutes() {
-        routes.set({});
-        informClientMockChange(routes.get());
-      },
-    });
+    networkRouteManager.set(
+      createNetworkManager(
+        nextRouteId,
+        routes,
+        informClientMockChange,
+        tableManagerRef,
+      ),
+    );
   }
 
   function clearLogs() {
@@ -431,29 +236,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
   }
 
   async function informClientMockChange(routes: {[id: string]: Route}) {
-    const existedIdSet: {[id: string]: {[method: string]: boolean}} = {};
-    const filteredRoutes: {[id: string]: Route} = Object.entries(routes).reduce(
-      (accRoutes, [id, route]) => {
-        if (existedIdSet.hasOwnProperty(route.requestUrl)) {
-          if (
-            existedIdSet[route.requestUrl].hasOwnProperty(route.requestMethod)
-          ) {
-            return accRoutes;
-          }
-          existedIdSet[route.requestUrl] = {
-            ...existedIdSet[route.requestUrl],
-            [route.requestMethod]: true,
-          };
-          return Object.assign({[id]: route}, accRoutes);
-        } else {
-          existedIdSet[route.requestUrl] = {
-            [route.requestMethod]: true,
-          };
-          return Object.assign({[id]: route}, accRoutes);
-        }
-      },
-      {},
-    );
+    const filteredRoutes: {[id: string]: Route} = computeMockRoutes(routes);
 
     if (isMockResponseSupported.get()) {
       const routesValuesArray = Object.values(filteredRoutes);
@@ -584,7 +367,7 @@ export function Component() {
           onRowStyle={getRowStyle}
           tableManagerRef={instance.tableManagerRef}
           onSelect={instance.onSelect}
-          onCopyRows={copyRow}
+          onCopyRows={requestsToText}
           onContextMenu={instance.onContextMenu}
           enableAutoScroll
           extraActions={
@@ -598,30 +381,43 @@ export function Component() {
             </Layout.Horizontal>
           }
         />
-        {showMockResponseDialog ? (
-          <Sheet>
-            {(onHide) => (
-              <MockResponseDialog
-                routes={routes}
-                onHide={() => {
-                  onHide();
-                  instance.onCloseButtonPressed();
-                }}
-                highlightedRows={
-                  new Set(
-                    instance.tableManagerRef
-                      .current!.getSelectedItems()
-                      .map((r) => r.id),
-                  )
-                }
-                requests={instance.requests}
-              />
-            )}
-          </Sheet>
-        ) : null}
-        <Sidebar />
+        <Modal
+          visible={showMockResponseDialog}
+          onCancel={instance.onCloseButtonPressed}
+          footer={null}
+          title="Mock Network Responses"
+          width={1200}>
+          <ManageMockResponsePanel routes={routes} />
+        </Modal>
+        <DetailSidebar width={400}>
+          <Sidebar />
+        </DetailSidebar>
       </Layout.Container>
     </NetworkRouteContext.Provider>
+  );
+}
+
+function Sidebar() {
+  const instance = usePlugin(plugin);
+  const selectedId = useValue(instance.selectedId);
+  const detailBodyFormat = useValue(instance.detailBodyFormat);
+
+  const request = instance.requests.getById(selectedId!);
+  if (!request) {
+    return (
+      <Layout.Container pad grow center>
+        <Typography.Text type="secondary">No request selected</Typography.Text>
+      </Layout.Container>
+    );
+  }
+
+  return (
+    <RequestDetails
+      key={selectedId}
+      request={request}
+      bodyFormat={detailBodyFormat}
+      onSelectFormat={instance.onSelectFormat}
+    />
   );
 }
 
@@ -673,108 +469,18 @@ const columns: DataTableColumn<Request>[] = [
   },
 ];
 
+const mockingStyle = {
+  color: theme.warningColor,
+};
+
+const errorStyle = {
+  color: theme.errorColor,
+};
+
 function getRowStyle(row: Request) {
   return row.responseIsMock
     ? mockingStyle
     : row.status && row.status >= 400 && row.status < 600
     ? errorStyle
     : undefined;
-}
-
-function copyRow(requests: Request[]): string {
-  const request = requests[0];
-  if (!request || !request.url) {
-    return '<empty request>';
-  }
-
-  let copyText = `# HTTP request for ${request.domain} (ID: ${request.id})
-  ## Request
-  HTTP ${request.method} ${request.url}
-  ${request.requestHeaders
-    .map(
-      ({key, value}: {key: string; value: string}): string =>
-        `${key}: ${String(value)}`,
-    )
-    .join('\n')}`;
-
-  // TODO: we want decoding only for non-binary data! See D23403095
-  const requestData = request.requestData
-    ? decodeBody({
-        headers: request.requestHeaders,
-        data: request.requestData,
-      })
-    : null;
-  const responseData = request.responseData
-    ? decodeBody({
-        headers: request.responseHeaders,
-        data: request.responseData,
-      })
-    : null;
-
-  if (requestData) {
-    copyText += `\n\n${requestData}`;
-  }
-  if (request.status) {
-    copyText += `
-
-  ## Response
-  HTTP ${request.status} ${request.reason}
-  ${
-    request.responseHeaders
-      ?.map(
-        ({key, value}: {key: string; value: string}): string =>
-          `${key}: ${String(value)}`,
-      )
-      .join('\n') ?? ''
-  }`;
-  }
-
-  if (responseData) {
-    copyText += `\n\n${responseData}`;
-  }
-  return copyText;
-}
-
-function Sidebar() {
-  const instance = usePlugin(plugin);
-  const selectedId = useValue(instance.selectedId);
-  const detailBodyFormat = useValue(instance.detailBodyFormat);
-
-  const request = instance.requests.getById(selectedId!);
-  if (!request) {
-    return null;
-  }
-
-  return (
-    <DetailSidebar width={500}>
-      <RequestDetails
-        key={selectedId}
-        request={request}
-        bodyFormat={detailBodyFormat}
-        onSelectFormat={instance.onSelectFormat}
-      />
-    </DetailSidebar>
-  );
-}
-
-const Icon = styled(Glyph)({
-  marginTop: -3,
-  marginRight: 3,
-});
-
-function formatStatus(status: number | undefined) {
-  if (typeof status === 'number' && status >= 400 && status < 600) {
-    return (
-      <>
-        <Icon name="stop" color={colors.red} />
-        {status}
-      </>
-    );
-  }
-  return status;
-}
-
-function formatDuration(duration: number | undefined) {
-  if (typeof duration === 'number') return duration + 'ms';
-  return '';
 }

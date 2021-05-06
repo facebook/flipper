@@ -127,3 +127,79 @@ export function getResponseLength(request: ResponseInfo): number {
   }
   return 0;
 }
+
+export function formatDuration(duration: number | undefined) {
+  if (typeof duration === 'number') return duration + 'ms';
+  return '';
+}
+
+export function formatBytes(count: number | undefined): string {
+  if (typeof count !== 'number') {
+    return '';
+  }
+  if (count > 1024 * 1024) {
+    return (count / (1024.0 * 1024)).toFixed(1) + ' MB';
+  }
+  if (count > 1024) {
+    return (count / 1024.0).toFixed(1) + ' kB';
+  }
+  return count + ' B';
+}
+
+export function formatStatus(status: number | undefined) {
+  return status ? '' + status : '';
+}
+
+export function requestsToText(requests: Request[]): string {
+  const request = requests[0];
+  if (!request || !request.url) {
+    return '<empty request>';
+  }
+
+  let copyText = `# HTTP request for ${request.domain} (ID: ${request.id})
+  ## Request
+  HTTP ${request.method} ${request.url}
+  ${request.requestHeaders
+    .map(
+      ({key, value}: {key: string; value: string}): string =>
+        `${key}: ${String(value)}`,
+    )
+    .join('\n')}`;
+
+  // TODO: we want decoding only for non-binary data! See D23403095
+  const requestData = request.requestData
+    ? decodeBody({
+        headers: request.requestHeaders,
+        data: request.requestData,
+      })
+    : null;
+  const responseData = request.responseData
+    ? decodeBody({
+        headers: request.responseHeaders,
+        data: request.responseData,
+      })
+    : null;
+
+  if (requestData) {
+    copyText += `\n\n${requestData}`;
+  }
+  if (request.status) {
+    copyText += `
+
+  ## Response
+  HTTP ${request.status} ${request.reason}
+  ${
+    request.responseHeaders
+      ?.map(
+        ({key, value}: {key: string; value: string}): string =>
+          `${key}: ${String(value)}`,
+      )
+      .join('\n') ?? ''
+  }`;
+  }
+
+  if (responseData) {
+    copyText += `\n\n${responseData}`;
+  }
+  return copyText;
+}

@@ -101,24 +101,6 @@ export type Insights = {
   retries: RetryInsights | null | undefined;
 };
 
-export type Route = {
-  requestUrl: string;
-  requestMethod: string;
-  responseData: string;
-  responseHeaders: {[id: string]: Header};
-  responseStatus: string;
-  enabled: boolean;
-};
-
-export type MockRoute = {
-  requestUrl: string;
-  method: string;
-  data: string;
-  headers: Header[];
-  status: string;
-  enabled: boolean;
-};
-
 export type PartialResponse = {
   initialResponse?: ResponseInfo;
   followupChunks: {[id: number]: string};
