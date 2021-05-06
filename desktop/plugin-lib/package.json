@@ -15,7 +15,7 @@
     "decompress-targz": "^4.1.1",
     "decompress-unzip": "^4.0.1",
     "expand-tilde": "^2.0.2",
-    "fs-extra": "^9.0.1",
+    "fs-extra": "^10.0.0",
     "live-plugin-manager": "^0.15.1",
     "npm-api": "^1.0.1",
     "p-filter": "^2.1.0",
