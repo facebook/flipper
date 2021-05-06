@@ -7,42 +7,38 @@
  * @format
  */
 
-import {padStart} from 'lodash';
-import React, {createContext} from 'react';
-import {MenuItemConstructorOptions} from 'electron';
-import {message} from 'antd';
+import React, {createContext, createRef} from 'react';
+import {Menu, message} from 'antd';
 
 import {
-  ContextMenu,
   Layout,
   Button,
-  Text,
   Glyph,
   colors,
-  PureComponent,
   DetailSidebar,
   styled,
-  SearchableTable,
   Sheet,
-  TableHighlightedRows,
-  TableRows,
-  TableBodyRow,
 } from 'flipper';
 import {
   Request,
-  RequestId,
-  Response,
+  RequestInfo,
+  ResponseInfo,
   Route,
   ResponseFollowupChunk,
   Header,
   MockRoute,
   AddProtobufEvent,
   PartialResponses,
+  Requests,
 } from './types';
 import {ProtobufDefinitionsRepository} from './ProtobufDefinitionsRepository';
-import {convertRequestToCurlCommand, getHeaderValue, decodeBody} from './utils';
+import {
+  convertRequestToCurlCommand,
+  getHeaderValue,
+  decodeBody,
+  getResponseLength,
+} from './utils';
 import RequestDetails from './RequestDetails';
-import {clipboard} from 'electron';
 import {URL} from 'url';
 import {MockResponseDialog} from './MockResponseDialog';
 import {assembleChunksIfResponseIsComplete} from './chunks';
@@ -52,10 +48,15 @@ import {
   createState,
   usePlugin,
   useValue,
+  createDataSource,
+  DataTable,
+  DataTableColumn,
+  DataTableManager,
 } from 'flipper-plugin';
-import {remote, OpenDialogOptions} from 'electron';
 import fs from 'fs';
-import electron from 'electron';
+// eslint-disable-next-line
+import electron, {OpenDialogOptions, remote} from 'electron';
+import {DeleteOutlined} from '@ant-design/icons';
 
 const LOCALSTORAGE_MOCK_ROUTE_LIST_KEY = '__NETWORK_CACHED_MOCK_ROUTE_LIST';
 const LOCALSTORAGE_RESPONSE_BODY_FORMAT_KEY =
@@ -67,44 +68,14 @@ export const BodyOptions = {
 };
 
 type Events = {
-  newRequest: Request;
-  newResponse: Response;
-  partialResponse: Response | ResponseFollowupChunk;
+  newRequest: RequestInfo;
+  newResponse: ResponseInfo;
+  partialResponse: ResponseInfo | ResponseFollowupChunk;
   addProtobufDefinitions: AddProtobufEvent;
 };
 
 type Methods = {
   mockResponses(params: {routes: MockRoute[]}): Promise<void>;
-};
-
-const COLUMN_SIZE = {
-  requestTimestamp: 100,
-  responseTimestamp: 100,
-  domain: 'flex',
-  method: 100,
-  status: 70,
-  size: 100,
-  duration: 100,
-};
-
-const COLUMN_ORDER = [
-  {key: 'requestTimestamp', visible: true},
-  {key: 'responseTimestamp', visible: false},
-  {key: 'domain', visible: true},
-  {key: 'method', visible: true},
-  {key: 'status', visible: true},
-  {key: 'size', visible: true},
-  {key: 'duration', visible: true},
-];
-
-const COLUMNS = {
-  requestTimestamp: {value: 'Request Time'},
-  responseTimestamp: {value: 'Response Time'},
-  domain: {value: 'Domain'},
-  method: {value: 'Method'},
-  status: {value: 'Status'},
-  size: {value: 'Size'},
-  duration: {value: 'Duration'},
 };
 
 const mockingStyle = {
@@ -113,7 +84,16 @@ const mockingStyle = {
   fontWeight: 500,
 };
 
-export function formatBytes(count: number): string {
+const errorStyle = {
+  backgroundColor: colors.redTint,
+  color: colors.red,
+  fontWeight: 500,
+};
+
+export function formatBytes(count: number | undefined): string {
+  if (typeof count !== 'number') {
+    return '';
+  }
   if (count > 1024 * 1024) {
     return (count / (1024.0 * 1024)).toFixed(1) + ' MB';
   }
@@ -123,25 +103,13 @@ export function formatBytes(count: number): string {
   return count + ' B';
 }
 
-const TextEllipsis = styled(Text)({
-  overflowX: 'hidden',
-  textOverflow: 'ellipsis',
-  maxWidth: '100%',
-  lineHeight: '18px',
-  paddingTop: 4,
-});
-
 // State management
 export interface NetworkRouteManager {
   addRoute(): string | null;
   modifyRoute(id: string, routeChange: Partial<Route>): void;
   removeRoute(id: string): void;
   enableRoute(id: string): void;
-  copyHighlightedCalls(
-    highlightedRows: Set<string>,
-    requests: {[id: string]: Request},
-    responses: {[id: string]: Response},
-  ): void;
+  copyHighlightedCalls(highlightedRows: Set<string>, requests: Requests): void;
   importRoutes(): void;
   exportRoutes(): void;
   clearRoutes(): void;
@@ -153,11 +121,7 @@ const nullNetworkRouteManager: NetworkRouteManager = {
   modifyRoute(_id: string, _routeChange: Partial<Route>) {},
   removeRoute(_id: string) {},
   enableRoute(_id: string) {},
-  copyHighlightedCalls(
-    _highlightedRows: Set<string>,
-    _requests: {[id: string]: Request},
-    _responses: {[id: string]: Response},
-  ) {},
+  copyHighlightedCalls(_highlightedRows: Set<string>, _requests: Requests) {},
   importRoutes() {},
   exportRoutes() {},
   clearRoutes() {},
@@ -171,8 +135,6 @@ export function plugin(client: PluginClient<Events, Methods>) {
     nullNetworkRouteManager,
   );
 
-  const selectedIds = createState<Array<RequestId>>([]);
-  const searchTerm = createState<string>('');
   const routes = createState<{[id: string]: Route}>({});
   const nextRouteId = createState<number>(0);
   const isMockResponseSupported = createState<boolean>(false);
@@ -181,18 +143,14 @@ export function plugin(client: PluginClient<Events, Methods>) {
     localStorage.getItem(LOCALSTORAGE_RESPONSE_BODY_FORMAT_KEY) ||
       BodyOptions.parsed,
   );
-  const highlightedRows = createState<Set<string> | null | undefined>(
-    new Set(),
-  );
-  const isDeeplinked = createState<boolean>(false);
-  const requests = createState<{[id: string]: Request}>(
-    {},
-    {persist: 'requests'},
-  );
-  const responses = createState<{[id: string]: Response}>(
-    {},
-    {persist: 'responses'},
-  );
+  const requests = createDataSource<Request, 'id'>([], {
+    key: 'id',
+    persist: 'requests2',
+  });
+  const selectedId = createState<string | undefined>(undefined, {
+    persist: 'selectedId',
+  });
+  const tableManagerRef = createRef<undefined | DataTableManager<Request>>();
 
   const partialResponses = createState<PartialResponses>(
     {},
@@ -200,9 +158,17 @@ export function plugin(client: PluginClient<Events, Methods>) {
   );
 
   client.onDeepLink((payload: unknown) => {
-    if (typeof payload === 'string') {
-      parseDeepLinkPayload(payload);
-      isDeeplinked.set(true);
+    const searchTermDelim = 'searchTerm=';
+    if (typeof payload !== 'string') {
+      return;
+    } else if (payload.startsWith(searchTermDelim)) {
+      tableManagerRef.current?.clearSelection();
+      tableManagerRef.current?.setSearchValue(
+        payload.slice(searchTermDelim.length),
+      );
+    } else {
+      tableManagerRef.current?.setSearchValue('');
+      tableManagerRef.current?.selectItemById(payload);
     }
   });
 
@@ -215,20 +181,23 @@ export function plugin(client: PluginClient<Events, Methods>) {
     init();
   });
 
-  client.onDeactivate(() => {
-    isDeeplinked.set(false);
+  client.onMessage('newRequest', (data) => {
+    // TODO: This should be append, but there is currently a bug where requests are send multiple times from the
+    // device! (Wilde on emulator)
+    requests.upsert(createRequestFromRequestInfo(data));
   });
 
-  client.onMessage('newRequest', (data) => {
-    requests.update((draft) => {
-      draft[data.id] = data;
-    });
-  });
+  function storeResponse(response: ResponseInfo) {
+    const request = requests.getById(response.id);
+    if (!request) {
+      return; // request table might have been cleared
+    }
+
+    requests.upsert(updateRequestWithResponseInfo(request, response));
+  }
 
   client.onMessage('newResponse', (data) => {
-    responses.update((draft) => {
-      draft[data.id] = data;
-    });
+    storeResponse(data);
   });
 
   client.onMessage('addProtobufDefinitions', (data) => {
@@ -252,9 +221,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
 
         The order that initialResponse, and followup chunks are received is not guaranteed to be in index order.
     */
-    const message: Response | ResponseFollowupChunk = data as
-      | Response
-      | ResponseFollowupChunk;
+    const message = data as ResponseInfo | ResponseFollowupChunk;
 
     partialResponses.update((draft) => {
       if (!draft[message.id]) {
@@ -269,10 +236,18 @@ export function plugin(client: PluginClient<Events, Methods>) {
         entry.followupChunks[chunk.index] = chunk.data;
       } else {
         // It's an initial chunk
-        entry.initialResponse = message as Response;
+        entry.initialResponse = message as ResponseInfo;
       }
     });
-    assembleChunksIfResponseIsComplete(partialResponses, responses, message.id);
+    const response = assembleChunksIfResponseIsComplete(
+      partialResponses.get()[message.id],
+    );
+    if (response) {
+      storeResponse(response);
+      partialResponses.update((draft) => {
+        delete draft[response.id];
+      });
+    }
   });
 
   function supportsMocks(device: Device): Promise<boolean> {
@@ -341,30 +316,37 @@ export function plugin(client: PluginClient<Events, Methods>) {
       },
       copyHighlightedCalls(
         highlightedRows: Set<string> | null | undefined,
-        requests: {[id: string]: Request},
-        responses: {[id: string]: Response},
+        requests: Requests,
       ) {
         // iterate through highlighted rows
         highlightedRows?.forEach((row) => {
-          const response = responses[row];
+          const request = requests.getById(row);
+          if (!request) {
+            return;
+          }
           // convert headers
           const headers: {[id: string]: Header} = {};
-          response.headers.forEach((e) => {
+          request.responseHeaders?.forEach((e) => {
             headers[e.key] = e;
           });
 
           // convert data TODO: we only want this for non-binary data! See D23403095
           const responseData =
-            response && response.data ? decodeBody(response) : '';
+            request && request.responseData
+              ? decodeBody({
+                  headers: request.responseHeaders ?? [],
+                  data: request.responseData,
+                })
+              : '';
 
           const newNextRouteId = nextRouteId.get();
           routes.update((draft) => {
             draft[newNextRouteId.toString()] = {
-              requestUrl: requests[row].url,
-              requestMethod: requests[row].method,
+              requestUrl: request.url,
+              requestMethod: request.method,
               responseData: responseData as string,
               responseHeaders: headers,
-              responseStatus: responses[row].status.toString(),
+              responseStatus: request.status?.toString() ?? '',
               enabled: true,
             };
           });
@@ -444,38 +426,8 @@ export function plugin(client: PluginClient<Events, Methods>) {
     });
   }
 
-  function parseDeepLinkPayload(deepLinkPayload: unknown) {
-    const searchTermDelim = 'searchTerm=';
-    if (typeof deepLinkPayload !== 'string') {
-      selectedIds.set([]);
-      searchTerm.set('');
-    } else if (deepLinkPayload.startsWith(searchTermDelim)) {
-      selectedIds.set([]);
-      searchTerm.set(deepLinkPayload.slice(searchTermDelim.length));
-    } else {
-      selectedIds.set([deepLinkPayload]);
-      searchTerm.set('');
-    }
-  }
-
   function clearLogs() {
-    selectedIds.set([]);
-    responses.set({});
-    requests.set({});
-  }
-
-  function copyRequestCurlCommand() {
-    // Ensure there is only one row highlighted.
-    if (selectedIds.get().length !== 1) {
-      return;
-    }
-
-    const request = requests.get()[selectedIds.get()[0]];
-    if (!request) {
-      return;
-    }
-    const command = convertRequestToCurlCommand(request);
-    clipboard.writeText(command);
+    requests.clear();
   }
 
   async function informClientMockChange(routes: {[id: string]: Route}) {
@@ -532,23 +484,15 @@ export function plugin(client: PluginClient<Events, Methods>) {
   }
 
   return {
-    selectedIds,
-    searchTerm,
     routes,
     nextRouteId,
     isMockResponseSupported,
     showMockResponseDialog,
     detailBodyFormat,
-    highlightedRows,
-    isDeeplinked,
     requests,
-    responses,
     partialResponses,
     networkRouteManager,
     clearLogs,
-    onRowHighlighted(selectedIdsArr: Array<RequestId>) {
-      selectedIds.set(selectedIdsArr);
-    },
     onMockButtonPressed() {
       showMockResponseDialog.set(true);
     },
@@ -559,262 +503,245 @@ export function plugin(client: PluginClient<Events, Methods>) {
       detailBodyFormat.set(bodyFormat);
       localStorage.setItem(LOCALSTORAGE_RESPONSE_BODY_FORMAT_KEY, bodyFormat);
     },
-    copyRequestCurlCommand,
+    selectedId,
+    onSelect(request: Request) {
+      selectedId.set(request?.id);
+    },
     init,
+    tableManagerRef,
+    onContextMenu(request: Request | undefined) {
+      return (
+        <Menu.Item
+          key="curl"
+          onClick={() => {
+            if (!request) {
+              return;
+            }
+            const command = convertRequestToCurlCommand(request);
+            client.writeTextToClipboard(command);
+          }}>
+          Copy cURL command
+        </Menu.Item>
+      );
+    },
+  };
+}
+
+function createRequestFromRequestInfo(data: RequestInfo): Request {
+  let url: URL | undefined = undefined;
+  try {
+    url = data.url ? new URL(data.url) : undefined;
+  } catch (e) {
+    console.warn(`Failed to parse url: '${data.url}'`, e);
+  }
+  const domain =
+    getHeaderValue(data.headers, 'X-FB-Friendly-Name') ||
+    (url ? (url.pathname ? url.host + url.pathname : url.host) : '<unknown>');
+
+  return {
+    id: data.id,
+    // request
+    requestTime: new Date(data.timestamp),
+    method: data.method,
+    url: data.url ?? '',
+    domain,
+    requestHeaders: data.headers,
+    requestData: data.data ?? undefined,
+  };
+}
+
+function updateRequestWithResponseInfo(
+  request: Request,
+  response: ResponseInfo,
+): Request {
+  return {
+    ...request,
+    responseTime: new Date(response.timestamp),
+    status: response.status,
+    reason: response.reason,
+    responseHeaders: response.headers,
+    responseData: response.data ?? undefined,
+    responseIsMock: response.isMock,
+    responseLength: getResponseLength(response),
+    duration: response.timestamp - request.requestTime.getTime(),
+    insights: response.insights ?? undefined,
   };
 }
 
 export function Component() {
   const instance = usePlugin(plugin);
-
-  const requests = useValue(instance.requests);
-  const responses = useValue(instance.responses);
-  const selectedIds = useValue(instance.selectedIds);
-  const searchTerm = useValue(instance.searchTerm);
   const routes = useValue(instance.routes);
   const isMockResponseSupported = useValue(instance.isMockResponseSupported);
   const showMockResponseDialog = useValue(instance.showMockResponseDialog);
   const networkRouteManager = useValue(instance.networkRouteManager);
 
   return (
-    <Layout.Container grow={true}>
-      <NetworkRouteContext.Provider value={networkRouteManager}>
-        <NetworkTable
-          requests={requests || {}}
-          responses={responses || {}}
-          routes={routes}
-          onMockButtonPressed={instance.onMockButtonPressed}
-          onCloseButtonPressed={instance.onCloseButtonPressed}
-          showMockResponseDialog={showMockResponseDialog}
-          clear={instance.clearLogs}
-          copyRequestCurlCommand={instance.copyRequestCurlCommand}
-          onRowHighlighted={instance.onRowHighlighted}
-          highlightedRows={selectedIds ? new Set(selectedIds) : null}
-          searchTerm={searchTerm}
-          isMockResponseSupported={isMockResponseSupported}
+    <NetworkRouteContext.Provider value={networkRouteManager}>
+      <Layout.Container grow={true}>
+        <DataTable
+          columns={columns}
+          dataSource={instance.requests}
+          onRowStyle={getRowStyle}
+          tableManagerRef={instance.tableManagerRef}
+          onSelect={instance.onSelect}
+          onCopyRows={copyRow}
+          onContextMenu={instance.onContextMenu}
+          enableAutoScroll
+          extraActions={
+            <Layout.Horizontal gap>
+              <Button title="Clear logs" onClick={instance.clearLogs}>
+                <DeleteOutlined />
+              </Button>
+              {isMockResponseSupported && (
+                <Button onClick={instance.onMockButtonPressed}>Mock</Button>
+              )}
+            </Layout.Horizontal>
+          }
         />
+        {showMockResponseDialog ? (
+          <Sheet>
+            {(onHide) => (
+              <MockResponseDialog
+                routes={routes}
+                onHide={() => {
+                  onHide();
+                  instance.onCloseButtonPressed();
+                }}
+                highlightedRows={
+                  new Set(
+                    instance.tableManagerRef
+                      .current!.getSelectedItems()
+                      .map((r) => r.id),
+                  )
+                }
+                requests={instance.requests}
+              />
+            )}
+          </Sheet>
+        ) : null}
         <Sidebar />
-      </NetworkRouteContext.Provider>
-    </Layout.Container>
+      </Layout.Container>
+    </NetworkRouteContext.Provider>
   );
 }
 
-type NetworkTableProps = {
-  requests: {[id: string]: Request};
-  responses: {[id: string]: Response};
-  routes: {[id: string]: Route};
-  clear: () => void;
-  copyRequestCurlCommand: () => void;
-  onRowHighlighted: (keys: TableHighlightedRows) => void;
-  highlightedRows: Set<string> | null | undefined;
-  searchTerm: string;
-  onMockButtonPressed: () => void;
-  onCloseButtonPressed: () => void;
-  showMockResponseDialog: boolean;
-  isMockResponseSupported: boolean;
-};
+const columns: DataTableColumn<Request>[] = [
+  {
+    key: 'requestTime',
+    title: 'Request Time',
+    width: 120,
+  },
+  {
+    key: 'responseTime',
+    title: 'Response Time',
+    width: 120,
+    visible: false,
+  },
+  {
+    key: 'domain',
+  },
+  {
+    key: 'url',
+    title: 'Full URL',
+    visible: false,
+  },
+  {
+    key: 'method',
+    title: 'Method',
+    width: 70,
+  },
+  {
+    key: 'status',
+    title: 'Status',
+    width: 70,
+    formatters: formatStatus,
+    align: 'right',
+  },
+  {
+    key: 'responseLength',
+    title: 'Size',
+    width: 100,
+    formatters: formatBytes,
+    align: 'right',
+  },
+  {
+    key: 'duration',
+    title: 'Time',
+    width: 100,
+    formatters: formatDuration,
+    align: 'right',
+  },
+];
 
-type NetworkTableState = {
-  sortedRows: TableRows;
-  routes: {[id: string]: Route};
-  highlightedRows: Set<string> | null | undefined;
-  requests: {[id: string]: Request};
-  responses: {[id: string]: Response};
-};
-
-function formatTimestamp(timestamp: number): string {
-  const date = new Date(timestamp);
-  return `${padStart(date.getHours().toString(), 2, '0')}:${padStart(
-    date.getMinutes().toString(),
-    2,
-    '0',
-  )}:${padStart(date.getSeconds().toString(), 2, '0')}.${padStart(
-    date.getMilliseconds().toString(),
-    3,
-    '0',
-  )}`;
+function getRowStyle(row: Request) {
+  return row.responseIsMock
+    ? mockingStyle
+    : row.status && row.status >= 400 && row.status < 600
+    ? errorStyle
+    : undefined;
 }
 
-function buildRow(
-  request: Request,
-  response: Response | null | undefined,
-): TableBodyRow | null | undefined {
-  if (request == null) {
-    return null;
+function copyRow(requests: Request[]): string {
+  const request = requests[0];
+  if (!request || !request.url) {
+    return '<empty request>';
   }
 
-  if (request.url == null) {
-    return null;
-  }
-  let url: URL | undefined = undefined;
-  try {
-    url = new URL(request.url);
-  } catch (e) {
-    console.warn(`Failed to parse url: '${request.url}'`, e);
-  }
-  const domain = url ? url.host + url.pathname : '<unknown>';
-  const friendlyName = getHeaderValue(request.headers, 'X-FB-Friendly-Name');
-  const style = response && response.isMock ? mockingStyle : undefined;
-
-  const copyText = () => {
-    let copyText = `# HTTP request for ${domain} (ID: ${request.id})
+  let copyText = `# HTTP request for ${request.domain} (ID: ${request.id})
   ## Request
   HTTP ${request.method} ${request.url}
-  ${request.headers
+  ${request.requestHeaders
     .map(
       ({key, value}: {key: string; value: string}): string =>
         `${key}: ${String(value)}`,
     )
     .join('\n')}`;
 
-    // TODO: we want decoding only for non-binary data! See D23403095
-    const requestData = request.data ? decodeBody(request) : null;
-    const responseData =
-      response && response.data ? decodeBody(response) : null;
+  // TODO: we want decoding only for non-binary data! See D23403095
+  const requestData = request.requestData
+    ? decodeBody({
+        headers: request.requestHeaders,
+        data: request.requestData,
+      })
+    : null;
+  const responseData = request.responseData
+    ? decodeBody({
+        headers: request.responseHeaders,
+        data: request.responseData,
+      })
+    : null;
 
-    if (requestData) {
-      copyText += `\n\n${requestData}`;
-    }
-
-    if (response) {
-      copyText += `
+  if (requestData) {
+    copyText += `\n\n${requestData}`;
+  }
+  if (request.status) {
+    copyText += `
 
   ## Response
-  HTTP ${response.status} ${response.reason}
-  ${response.headers
-    .map(
-      ({key, value}: {key: string; value: string}): string =>
-        `${key}: ${String(value)}`,
-    )
-    .join('\n')}`;
-    }
-
-    if (responseData) {
-      copyText += `\n\n${responseData}`;
-    }
-    return copyText;
-  };
-
-  return {
-    columns: {
-      requestTimestamp: {
-        value: (
-          <TextEllipsis>{formatTimestamp(request.timestamp)}</TextEllipsis>
-        ),
-      },
-      responseTimestamp: {
-        value: (
-          <TextEllipsis>
-            {response && formatTimestamp(response.timestamp)}
-          </TextEllipsis>
-        ),
-      },
-      domain: {
-        value: (
-          <TextEllipsis>{friendlyName ? friendlyName : domain}</TextEllipsis>
-        ),
-        isFilterable: true,
-      },
-      method: {
-        value: <TextEllipsis>{request.method}</TextEllipsis>,
-        isFilterable: true,
-      },
-      status: {
-        value: (
-          <StatusColumn>{response ? response.status : undefined}</StatusColumn>
-        ),
-        isFilterable: true,
-      },
-      size: {
-        value: <SizeColumn response={response ? response : undefined} />,
-      },
-      duration: {
-        value: <DurationColumn request={request} response={response} />,
-      },
-    },
-    key: request.id,
-    filterValue: `${request.method} ${request.url}`,
-    sortKey: request.timestamp,
-    copyText,
-    getSearchContent: copyText,
-    highlightOnHover: true,
-    style: style,
-  };
-}
-
-function calculateState(
-  props: {
-    requests: {[id: string]: Request};
-    responses: {[id: string]: Response};
-  },
-  nextProps: NetworkTableProps,
-  rows: TableRows = [],
-): NetworkTableState {
-  rows = [...rows];
-  if (Object.keys(nextProps.requests).length === 0) {
-    // cleared
-    rows = [];
-  } else if (props.requests !== nextProps.requests) {
-    // new request
-    for (const [requestId, request] of Object.entries(nextProps.requests)) {
-      if (props.requests[requestId] == null) {
-        const newRow = buildRow(request, nextProps.responses[requestId]);
-        if (newRow) {
-          rows.push(newRow);
-        }
-      }
-    }
-  }
-  if (props.responses !== nextProps.responses) {
-    // new or updated response
-    const resIds = Object.keys(nextProps.responses).filter(
-      (responseId: RequestId) =>
-        props.responses[responseId] !== nextProps.responses[responseId],
-    );
-    for (const resId of resIds) {
-      if (resId) {
-        const request = nextProps.requests[resId];
-        // sanity check; to pass null check
-        if (request) {
-          const newRow = buildRow(request, nextProps.responses[resId]);
-          const index = rows.findIndex(
-            (r: TableBodyRow) => r.key === request.id,
-          );
-          if (index > -1 && newRow) {
-            rows[index] = newRow;
-          }
-        }
-      }
-    }
+  HTTP ${request.status} ${request.reason}
+  ${
+    request.responseHeaders
+      ?.map(
+        ({key, value}: {key: string; value: string}): string =>
+          `${key}: ${String(value)}`,
+      )
+      .join('\n') ?? ''
+  }`;
   }
 
-  rows.sort(
-    (a: TableBodyRow, b: TableBodyRow) =>
-      (a.sortKey as number) - (b.sortKey as number),
-  );
-
-  return {
-    sortedRows: rows,
-    routes: nextProps.routes,
-    highlightedRows: nextProps.highlightedRows,
-    requests: props.requests,
-    responses: props.responses,
-  };
+  if (responseData) {
+    copyText += `\n\n${responseData}`;
+  }
+  return copyText;
 }
 
 function Sidebar() {
   const instance = usePlugin(plugin);
-  const requests = useValue(instance.requests);
-  const responses = useValue(instance.responses);
-  const selectedIds = useValue(instance.selectedIds);
+  const selectedId = useValue(instance.selectedId);
   const detailBodyFormat = useValue(instance.detailBodyFormat);
-  const selectedId = selectedIds.length === 1 ? selectedIds[0] : null;
 
-  if (!selectedId) {
-    return null;
-  }
-  const requestWithId = requests[selectedId];
-  if (!requestWithId) {
+  const request = instance.requests.getById(selectedId!);
+  if (!request) {
     return null;
   }
 
@@ -822,8 +749,7 @@ function Sidebar() {
     <DetailSidebar width={500}>
       <RequestDetails
         key={selectedId}
-        request={requestWithId}
-        response={responses[selectedId]}
+        request={request}
         bodyFormat={detailBodyFormat}
         onSelectFormat={instance.onSelectFormat}
       />
@@ -831,189 +757,24 @@ function Sidebar() {
   );
 }
 
-class NetworkTable extends PureComponent<NetworkTableProps, NetworkTableState> {
-  static ContextMenu = styled(ContextMenu)({
-    flex: 1,
-  });
-
-  constructor(props: NetworkTableProps) {
-    super(props);
-    this.state = calculateState({requests: {}, responses: {}}, props);
-  }
-
-  UNSAFE_componentWillReceiveProps(nextProps: NetworkTableProps) {
-    this.setState(calculateState(this.props, nextProps, this.state.sortedRows));
-  }
-
-  contextMenuItems(): Array<MenuItemConstructorOptions> {
-    type ContextMenuType =
-      | 'normal'
-      | 'separator'
-      | 'submenu'
-      | 'checkbox'
-      | 'radio';
-    const separator: ContextMenuType = 'separator';
-    const {clear, copyRequestCurlCommand, highlightedRows} = this.props;
-    const highlightedMenuItems =
-      highlightedRows && highlightedRows.size === 1
-        ? [
-            {
-              type: separator,
-            },
-            {
-              label: 'Copy as cURL',
-              click: copyRequestCurlCommand,
-            },
-          ]
-        : [];
-
-    return highlightedMenuItems.concat([
-      {
-        type: separator,
-      },
-      {
-        label: 'Clear all',
-        click: clear,
-      },
-    ]);
-  }
-
-  render() {
-    return (
-      <>
-        <NetworkTable.ContextMenu
-          items={this.contextMenuItems()}
-          component={Layout.Container}>
-          <SearchableTable
-            virtual={true}
-            multiline={false}
-            multiHighlight={true}
-            stickyBottom={true}
-            floating={false}
-            columnSizes={COLUMN_SIZE}
-            columns={COLUMNS}
-            columnOrder={COLUMN_ORDER}
-            rows={this.state.sortedRows}
-            onRowHighlighted={this.props.onRowHighlighted}
-            highlightedRows={this.props.highlightedRows}
-            rowLineHeight={26}
-            allowRegexSearch={true}
-            allowContentSearch={true}
-            zebra={false}
-            clearSearchTerm={this.props.searchTerm !== ''}
-            defaultSearchTerm={this.props.searchTerm}
-            actions={
-              <Layout.Horizontal gap>
-                <Button onClick={this.props.clear}>Clear Table</Button>
-                {this.props.isMockResponseSupported && (
-                  <Button onClick={this.props.onMockButtonPressed}>Mock</Button>
-                )}
-              </Layout.Horizontal>
-            }
-          />
-        </NetworkTable.ContextMenu>
-        {this.props.showMockResponseDialog ? (
-          <Sheet>
-            {(onHide) => (
-              <MockResponseDialog
-                routes={this.state.routes}
-                onHide={() => {
-                  onHide();
-                  this.props.onCloseButtonPressed();
-                }}
-                highlightedRows={this.state.highlightedRows}
-                requests={this.state.requests}
-                responses={this.state.responses}
-              />
-            )}
-          </Sheet>
-        ) : null}
-      </>
-    );
-  }
-}
-
 const Icon = styled(Glyph)({
   marginTop: -3,
   marginRight: 3,
 });
 
-class StatusColumn extends PureComponent<{
-  children?: number;
-}> {
-  render() {
-    const {children} = this.props;
-    let glyph;
-
-    if (children != null && children >= 400 && children < 600) {
-      glyph = <Icon name="stop" color={colors.red} />;
-    }
-
+function formatStatus(status: number | undefined) {
+  if (typeof status === 'number' && status >= 400 && status < 600) {
     return (
-      <TextEllipsis>
-        {glyph}
-        {children}
-      </TextEllipsis>
+      <>
+        <Icon name="stop" color={colors.red} />
+        {status}
+      </>
     );
   }
+  return status;
 }
 
-class DurationColumn extends PureComponent<{
-  request: Request;
-  response: Response | null | undefined;
-}> {
-  static Text = styled(Text)({
-    flex: 1,
-    textAlign: 'right',
-    paddingRight: 10,
-  });
-
-  render() {
-    const {request, response} = this.props;
-    const duration = response
-      ? response.timestamp - request.timestamp
-      : undefined;
-    return (
-      <DurationColumn.Text selectable={false}>
-        {duration != null ? duration.toLocaleString() + 'ms' : ''}
-      </DurationColumn.Text>
-    );
-  }
-}
-
-class SizeColumn extends PureComponent<{
-  response: Response | null | undefined;
-}> {
-  static Text = styled(Text)({
-    flex: 1,
-    textAlign: 'right',
-    paddingRight: 10,
-  });
-
-  render() {
-    const {response} = this.props;
-    if (response) {
-      const text = formatBytes(this.getResponseLength(response));
-      return <SizeColumn.Text>{text}</SizeColumn.Text>;
-    } else {
-      return null;
-    }
-  }
-
-  getResponseLength(response: Response | null | undefined) {
-    if (!response) {
-      return 0;
-    }
-
-    let length = 0;
-    const lengthString = response.headers
-      ? getHeaderValue(response.headers, 'content-length')
-      : undefined;
-    if (lengthString != null && lengthString != '') {
-      length = parseInt(lengthString, 10);
-    } else if (response.data) {
-      length = Buffer.byteLength(response.data, 'base64');
-    }
-    return length;
-  }
+function formatDuration(duration: number | undefined) {
+  if (typeof duration === 'number') return duration + 'ms';
+  return '';
 }

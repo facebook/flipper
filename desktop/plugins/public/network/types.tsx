@@ -7,20 +7,44 @@
  * @format
  */
 
+import {DataSource} from 'flipper-plugin';
 import {AnyNestedObject} from 'protobufjs';
 
 export type RequestId = string;
 
-export type Request = {
+export interface Request {
+  id: RequestId;
+  // request
+  requestTime: Date;
+  method: string;
+  url: string;
+  domain: string;
+  requestHeaders: Array<Header>;
+  requestData?: string;
+  // response
+  responseTime?: Date;
+  status?: number;
+  reason?: string;
+  responseHeaders?: Array<Header>;
+  responseData?: string;
+  responseLength?: number;
+  responseIsMock?: boolean;
+  duration?: number;
+  insights?: Insights;
+}
+
+export type Requests = DataSource<Request, 'id', string>;
+
+export type RequestInfo = {
   id: RequestId;
   timestamp: number;
   method: string;
-  url: string;
+  url?: string;
   headers: Array<Header>;
   data: string | null | undefined;
 };
 
-export type Response = {
+export type ResponseInfo = {
   id: RequestId;
   timestamp: number;
   status: number;
@@ -95,9 +119,9 @@ export type MockRoute = {
   enabled: boolean;
 };
 
-export type PartialResponses = {
-  [id: string]: {
-    initialResponse?: Response;
-    followupChunks: {[id: number]: string};
-  };
+export type PartialResponse = {
+  initialResponse?: ResponseInfo;
+  followupChunks: {[id: number]: string};
 };
+
+export type PartialResponses = Record<string, PartialResponse>;

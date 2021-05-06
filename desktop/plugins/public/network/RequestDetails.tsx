@@ -7,7 +7,7 @@
  * @format
  */
 
-import {Request, Response, Header, Insights, RetryInsights} from './types';
+import {Request, Header, Insights, RetryInsights} from './types';
 
 import {
   Component,
@@ -55,7 +55,6 @@ const KeyValueColumns = {
 
 type RequestDetailsProps = {
   request: Request;
-  response: Response | null | undefined;
   bodyFormat: string;
   onSelectFormat: (bodyFormat: string) => void;
 };
@@ -111,7 +110,7 @@ export default class RequestDetails extends Component<RequestDetailsProps> {
   };
 
   render() {
-    const {request, response, bodyFormat, onSelectFormat} = this.props;
+    const {request, bodyFormat, onSelectFormat} = this.props;
     const url = new URL(request.url);
 
     const formattedText = bodyFormat == BodyOptions.formatted;
@@ -143,17 +142,17 @@ export default class RequestDetails extends Component<RequestDetailsProps> {
           </Panel>
         ) : null}
 
-        {request.headers.length > 0 ? (
+        {request.requestHeaders.length > 0 ? (
           <Panel
             key="headers"
             heading={'Request Headers'}
             floating={false}
             padded={false}>
-            <HeaderInspector headers={request.headers} />
+            <HeaderInspector headers={request.requestHeaders} />
           </Panel>
         ) : null}
 
-        {request.data != null ? (
+        {request.requestData != null ? (
           <Panel
             key="requestData"
             heading={'Request Body'}
@@ -165,28 +164,29 @@ export default class RequestDetails extends Component<RequestDetailsProps> {
             />
           </Panel>
         ) : null}
-        {response ? (
+        {request.status ? (
           <>
-            {response.headers.length > 0 ? (
+            {request.responseHeaders?.length ? (
               <Panel
                 key={'responseheaders'}
                 heading={`Response Headers${
-                  response.isMock ? ' (Mocked)' : ''
+                  request.responseIsMock ? ' (Mocked)' : ''
                 }`}
                 floating={false}
                 padded={false}>
-                <HeaderInspector headers={response.headers} />
+                <HeaderInspector headers={request.responseHeaders} />
               </Panel>
             ) : null}
             <Panel
               key={'responsebody'}
-              heading={`Response Body${response.isMock ? ' (Mocked)' : ''}`}
+              heading={`Response Body${
+                request.responseIsMock ? ' (Mocked)' : ''
+              }`}
               floating={false}
               padded={!formattedText}>
               <ResponseBodyInspector
                 formattedText={formattedText}
                 request={request}
-                response={response}
               />
             </Panel>
           </>
@@ -204,13 +204,13 @@ export default class RequestDetails extends Component<RequestDetailsProps> {
             options={BodyOptions}
           />
         </Panel>
-        {response && response.insights ? (
+        {request.insights ? (
           <Panel
             key="insights"
             heading={'Insights'}
             floating={false}
             collapsed={true}>
-            <InsightsInspector insights={response.insights} />
+            <InsightsInspector insights={request.insights} />
           </Panel>
         ) : null}
       </RequestDetails.Container>
@@ -311,7 +311,7 @@ const BodyContainer = styled.div({
 
 type BodyFormatter = {
   formatRequest?: (request: Request) => any;
-  formatResponse?: (request: Request, response: Response) => any;
+  formatResponse?: (request: Request) => any;
 };
 
 class RequestBodyInspector extends Component<{
@@ -320,7 +320,7 @@ class RequestBodyInspector extends Component<{
 }> {
   render() {
     const {request, formattedText} = this.props;
-    if (request.data == null || request.data.trim() === '') {
+    if (request.requestData == null || request.requestData.trim() === '') {
       return <Empty />;
     }
     const bodyFormatters = formattedText ? TextBodyFormatters : BodyFormatters;
@@ -346,25 +346,24 @@ class RequestBodyInspector extends Component<{
         }
       }
     }
-    return renderRawBody(request);
+    return renderRawBody(request, 'request');
   }
 }
 
 class ResponseBodyInspector extends Component<{
-  response: Response;
   request: Request;
   formattedText: boolean;
 }> {
   render() {
-    const {request, response, formattedText} = this.props;
-    if (response.data == null || response.data.trim() === '') {
+    const {request, formattedText} = this.props;
+    if (request.responseData == null || request.responseData.trim() === '') {
       return <Empty />;
     }
     const bodyFormatters = formattedText ? TextBodyFormatters : BodyFormatters;
     for (const formatter of bodyFormatters) {
       if (formatter.formatResponse) {
         try {
-          const component = formatter.formatResponse(request, response);
+          const component = formatter.formatResponse(request);
           if (component) {
             return (
               <BodyContainer>
@@ -383,7 +382,7 @@ class ResponseBodyInspector extends Component<{
         }
       }
     }
-    return renderRawBody(response);
+    return renderRawBody(request, 'response');
   }
 }
 
@@ -400,9 +399,26 @@ const Empty = () => (
   </BodyContainer>
 );
 
-function renderRawBody(container: Request | Response) {
+function getRequestData(request: Request) {
+  return {
+    headers: request.requestHeaders,
+    data: request.requestData,
+  };
+}
+
+function getResponseData(request: Request) {
+  return {
+    headers: request.responseHeaders,
+    data: request.responseData,
+  };
+}
+
+function renderRawBody(request: Request, mode: 'request' | 'response') {
   // TODO: we want decoding only for non-binary data! See D23403095
-  const decoded = decodeBody(container);
+  const data = mode === 'request' ? request.requestData : request.responseData;
+  const decoded = decodeBody(
+    mode === 'request' ? getRequestData(request) : getResponseData(request),
+  );
   return (
     <BodyContainer>
       {decoded ? (
@@ -413,7 +429,7 @@ function renderRawBody(container: Request | Response) {
         <>
           <FormattedBy>(Failed to decode)</FormattedBy>
           <Text selectable wordWrap="break-word">
-            {container.data}
+            {data}
           </Text>
         </>
       )}
@@ -482,20 +498,24 @@ class ImageWithSize extends Component<ImageWithSizeProps, ImageWithSizeState> {
 }
 
 class ImageFormatter {
-  formatResponse = (request: Request, response: Response) => {
-    if (getHeaderValue(response.headers, 'content-type').startsWith('image/')) {
-      if (response.data) {
+  formatResponse(request: Request) {
+    if (
+      getHeaderValue(request.responseHeaders, 'content-type').startsWith(
+        'image/',
+      )
+    ) {
+      if (request.responseData) {
         const src = `data:${getHeaderValue(
-          response.headers,
+          request.responseHeaders,
           'content-type',
-        )};base64,${response.data}`;
+        )};base64,${request.responseData}`;
         return <ImageWithSize src={src} />;
       } else {
         // fallback to using the request url
         return <ImageWithSize src={request.url} />;
       }
     }
-  };
+  }
 }
 
 class VideoFormatter {
@@ -504,8 +524,8 @@ class VideoFormatter {
     maxHeight: 500,
   });
 
-  formatResponse = (request: Request, response: Response) => {
-    const contentType = getHeaderValue(response.headers, 'content-type');
+  formatResponse = (request: Request) => {
+    const contentType = getHeaderValue(request.responseHeaders, 'content-type');
     if (contentType.startsWith('video/')) {
       return (
         <MediaContainer>
@@ -551,21 +571,21 @@ class XMLText extends Component<{body: any}> {
 }
 
 class JSONTextFormatter {
-  formatRequest = (request: Request) => {
+  formatRequest(request: Request) {
     return this.format(
-      decodeBody(request),
-      getHeaderValue(request.headers, 'content-type'),
+      decodeBody(getRequestData(request)),
+      getHeaderValue(request.requestHeaders, 'content-type'),
     );
-  };
+  }
 
-  formatResponse = (_request: Request, response: Response) => {
+  formatResponse(request: Request) {
     return this.format(
-      decodeBody(response),
-      getHeaderValue(response.headers, 'content-type'),
+      decodeBody(getResponseData(request)),
+      getHeaderValue(request.responseHeaders, 'content-type'),
     );
-  };
+  }
 
-  format = (body: string, contentType: string) => {
+  format(body: string, contentType: string) {
     if (
       contentType.startsWith('application/json') ||
       contentType.startsWith('application/hal+json') ||
@@ -583,47 +603,47 @@ class JSONTextFormatter {
           .map((data, idx) => <JSONText key={idx}>{data}</JSONText>);
       }
     }
-  };
+  }
 }
 
 class XMLTextFormatter {
-  formatRequest = (request: Request) => {
+  formatRequest(request: Request) {
     return this.format(
-      decodeBody(request),
-      getHeaderValue(request.headers, 'content-type'),
+      decodeBody(getRequestData(request)),
+      getHeaderValue(request.requestHeaders, 'content-type'),
     );
-  };
+  }
 
-  formatResponse = (_request: Request, response: Response) => {
+  formatResponse(request: Request) {
     return this.format(
-      decodeBody(response),
-      getHeaderValue(response.headers, 'content-type'),
+      decodeBody(getResponseData(request)),
+      getHeaderValue(request.responseHeaders, 'content-type'),
     );
-  };
+  }
 
-  format = (body: string, contentType: string) => {
+  format(body: string, contentType: string) {
     if (contentType.startsWith('text/html')) {
       return <XMLText body={body} />;
     }
-  };
+  }
 }
 
 class JSONFormatter {
-  formatRequest = (request: Request) => {
+  formatRequest(request: Request) {
     return this.format(
-      decodeBody(request),
-      getHeaderValue(request.headers, 'content-type'),
+      decodeBody(getRequestData(request)),
+      getHeaderValue(request.requestHeaders, 'content-type'),
     );
-  };
+  }
 
-  formatResponse = (_request: Request, response: Response) => {
+  formatResponse(request: Request) {
     return this.format(
-      decodeBody(response),
-      getHeaderValue(response.headers, 'content-type'),
+      decodeBody(getResponseData(request)),
+      getHeaderValue(request.responseHeaders, 'content-type'),
     );
-  };
+  }
 
-  format = (body: string, contentType: string) => {
+  format(body: string, contentType: string) {
     if (
       contentType.startsWith('application/json') ||
       contentType.startsWith('application/hal+json') ||
@@ -651,35 +671,35 @@ class JSONFormatter {
         );
       }
     }
-  };
+  }
 }
 
 class LogEventFormatter {
-  formatRequest = (request: Request) => {
+  formatRequest(request: Request) {
     if (request.url.indexOf('logging_client_event') > 0) {
-      const data = querystring.parse(decodeBody(request));
+      const data = querystring.parse(decodeBody(getRequestData(request)));
       if (typeof data.message === 'string') {
         data.message = JSON.parse(data.message);
       }
       return <ManagedDataInspector expandRoot={true} data={data} />;
     }
-  };
+  }
 }
 
 class GraphQLBatchFormatter {
-  formatRequest = (request: Request) => {
+  formatRequest(request: Request) {
     if (request.url.indexOf('graphqlbatch') > 0) {
-      const data = querystring.parse(decodeBody(request));
+      const data = querystring.parse(decodeBody(getRequestData(request)));
       if (typeof data.queries === 'string') {
         data.queries = JSON.parse(data.queries);
       }
       return <ManagedDataInspector expandRoot={true} data={data} />;
     }
-  };
+  }
 }
 
 class GraphQLFormatter {
-  parsedServerTimeForFirstFlush = (data: any) => {
+  parsedServerTimeForFirstFlush(data: any) {
     const firstResponse =
       Array.isArray(data) && data.length > 0 ? data[0] : data;
     if (!firstResponse) {
@@ -702,10 +722,10 @@ class GraphQLFormatter {
           (timeAtFlushMs - requestStartMs)}
       </WrappingText>
     );
-  };
-  formatRequest = (request: Request) => {
+  }
+  formatRequest(request: Request) {
     if (request.url.indexOf('graphql') > 0) {
-      const decoded = decodeBody(request);
+      const decoded = decodeBody(getRequestData(request));
       if (!decoded) {
         return undefined;
       }
@@ -718,14 +738,14 @@ class GraphQLFormatter {
       }
       return <ManagedDataInspector expandRoot={true} data={data} />;
     }
-  };
+  }
 
-  formatResponse = (_request: Request, response: Response) => {
+  formatResponse(request: Request) {
     return this.format(
-      decodeBody(response),
-      getHeaderValue(response.headers, 'content-type'),
+      decodeBody(getResponseData(request)),
+      getHeaderValue(request.responseHeaders, 'content-type'),
     );
-  };
+  }
 
   format = (body: string, contentType: string) => {
     if (
@@ -770,9 +790,9 @@ class GraphQLFormatter {
 
 class FormUrlencodedFormatter {
   formatRequest = (request: Request) => {
-    const contentType = getHeaderValue(request.headers, 'content-type');
+    const contentType = getHeaderValue(request.requestHeaders, 'content-type');
     if (contentType.startsWith('application/x-www-form-urlencoded')) {
-      const decoded = decodeBody(request);
+      const decoded = decodeBody(getRequestData(request));
       if (!decoded) {
         return undefined;
       }
@@ -788,16 +808,18 @@ class FormUrlencodedFormatter {
 
 class BinaryFormatter {
   formatRequest(request: Request) {
-    return this.format(request);
-  }
-
-  formatResponse(_request: Request, response: Response) {
-    return this.format(response);
-  }
-
-  format(container: Request | Response) {
     if (
-      getHeaderValue(container.headers, 'content-type') ===
+      getHeaderValue(request.requestHeaders, 'content-type') ===
+      'application/octet-stream'
+    ) {
+      return '(binary data)'; // we could offer a download button here?
+    }
+    return undefined;
+  }
+
+  formatResponse(request: Request) {
+    if (
+      getHeaderValue(request.responseHeaders, 'content-type') ===
       'application/octet-stream'
     ) {
       return '(binary data)'; // we could offer a download button here?
@@ -811,7 +833,7 @@ class ProtobufFormatter {
 
   formatRequest(request: Request) {
     if (
-      getHeaderValue(request.headers, 'content-type') ===
+      getHeaderValue(request.requestHeaders, 'content-type') ===
       'application/x-protobuf'
     ) {
       const protobufDefinition = this.protobufDefinitionRepository.getRequestType(
@@ -827,9 +849,9 @@ class ProtobufFormatter {
         );
       }
 
-      if (request?.data) {
+      if (request.requestData) {
         const data = protobufDefinition.decode(
-          Base64.toUint8Array(request.data),
+          Base64.toUint8Array(request.requestData),
         );
         return <JSONText>{data.toJSON()}</JSONText>;
       } else {
@@ -841,9 +863,9 @@ class ProtobufFormatter {
     return undefined;
   }
 
-  formatResponse(request: Request, response: Response) {
+  formatResponse(request: Request) {
     if (
-      getHeaderValue(response.headers, 'content-type') ===
+      getHeaderValue(request.responseHeaders, 'content-type') ===
         'application/x-protobuf' ||
       request.url.endsWith('.proto')
     ) {
@@ -860,9 +882,9 @@ class ProtobufFormatter {
         );
       }
 
-      if (response?.data) {
+      if (request.responseData) {
         const data = protobufDefinition.decode(
-          Base64.toUint8Array(response.data),
+          Base64.toUint8Array(request.responseData),
         );
         return <JSONText>{data.toJSON()}</JSONText>;
       } else {

@@ -10,7 +10,7 @@
 import {Button, styled, Layout, Spacer} from 'flipper';
 
 import {ManageMockResponsePanel} from './ManageMockResponsePanel';
-import {Route, Request, Response} from './types';
+import {Route, Requests} from './types';
 import React from 'react';
 
 import {NetworkRouteContext} from './index';
@@ -20,8 +20,7 @@ type Props = {
   routes: {[id: string]: Route};
   onHide: () => void;
   highlightedRows: Set<string> | null | undefined;
-  requests: {[id: string]: Request};
-  responses: {[id: string]: Response};
+  requests: Requests;
 };
 
 const Title = styled('div')({
@@ -45,7 +44,6 @@ export function MockResponseDialog(props: Props) {
           routes={props.routes}
           highlightedRows={props.highlightedRows}
           requests={props.requests}
-          responses={props.responses}
         />
       </Layout.Container>
       <Layout.Horizontal gap>

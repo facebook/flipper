@@ -78,6 +78,7 @@ This step is completed if the plugin follows the next `plugin` / `component` str
 * Similarly `yarn watch` can be used to run the unit tests in watch mode. Use the `p` key to filter for your specific plugin if `jest` doesn't do so automatically.
 * Example of migrating the network plugin to use Sandy APIs. D24108772 / [Github commit](https://github.com/facebook/flipper/commit/fdde2761ef054e44f399c846a2eae6baba03861e)
 * Example of migrating the example plugin to use Sandy APIs. D22308265 / [Github commit](https://github.com/facebook/flipper/commit/babc88e472612c66901d21d289bd217ef28ee385#diff-a145be72bb13a4675dcc8cbac5e55abcd9a542cc92f5c781bd7d3749f13676fc)
+* Other plugins that can be check for inspiration are the Logs and Network plugins.
 * These steps typically does not involve change much the UI or touch other files than `index.tsx`. Typically, the root component needs to be changed, but most other components can remain as is. However, if a ManagedTable is used (see the next section), it might be easier to already convert the table in this step.
 * Sandy has first class support for unit testing your plugin and mocking device interactions. Please do set up unit tests per documentation linked above!
 * If the original plugin definition contained `state`, it is recommended to create one new state atoms (`createState`) per field in the original `state`, rather than having one big atom.

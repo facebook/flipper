@@ -17,7 +17,7 @@ import {
   Panel,
 } from 'flipper';
 import React, {useContext, useState, useMemo, useEffect} from 'react';
-import {Route, Request, Response} from './types';
+import {Route, Requests} from './types';
 import {MockResponseDetails} from './MockResponseDetails';
 import {NetworkRouteContext} from './index';
 import {RequestId} from './types';
@@ -27,8 +27,7 @@ import {NUX, Layout} from 'flipper-plugin';
 type Props = {
   routes: {[id: string]: Route};
   highlightedRows: Set<string> | null | undefined;
-  requests: {[id: string]: Request};
-  responses: {[id: string]: Response};
+  requests: Requests;
 };
 
 const ColumnSizes = {route: 'flex'};
@@ -224,7 +223,7 @@ export function ManageMockResponsePanel(props: Props) {
               Add Route
             </Button>
             <NUX
-              title="It is now possible to highlight calls from the network call list and convert them into mock routes."
+              title="It is now possible to select calls from the network call list and convert them into mock routes."
               placement="bottom">
               <Button
                 onClick={() => {
@@ -232,13 +231,12 @@ export function ManageMockResponsePanel(props: Props) {
                     !props.highlightedRows ||
                     props.highlightedRows.size == 0
                   ) {
-                    message.info('No network calls have been highlighted');
+                    message.info('No network calls have been selected');
                     return;
                   }
                   networkRouteManager.copyHighlightedCalls(
                     props.highlightedRows as Set<string>,
                     props.requests,
-                    props.responses,
                   );
                 }}>
                 Copy Highlighted Calls

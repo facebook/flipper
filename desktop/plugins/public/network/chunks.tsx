@@ -7,20 +7,16 @@
  * @format
  */
 
-import type {PartialResponses, Response} from './types';
-import {Atom} from 'flipper-plugin';
+import type {PartialResponse, ResponseInfo} from './types';
 import {Base64} from 'js-base64';
 
 export function assembleChunksIfResponseIsComplete(
-  partialResponses: Atom<PartialResponses>,
-  responses: Atom<Record<string, Response>>,
-  responseId: string,
-) {
-  const partialResponseEntry = partialResponses.get()[responseId];
-  const numChunks = partialResponseEntry.initialResponse?.totalChunks;
+  partialResponseEntry: PartialResponse | undefined,
+): ResponseInfo | undefined {
+  const numChunks = partialResponseEntry?.initialResponse?.totalChunks;
   if (
-    !partialResponseEntry.initialResponse ||
     !numChunks ||
+    !partialResponseEntry?.initialResponse ||
     Object.keys(partialResponseEntry.followupChunks).length + 1 < numChunks
   ) {
     // Partial response not yet complete, do nothing.
@@ -28,7 +24,7 @@ export function assembleChunksIfResponseIsComplete(
   }
 
   // Partial response has all required chunks, convert it to a full Response.
-  const response: Response = partialResponseEntry.initialResponse;
+  const response: ResponseInfo = partialResponseEntry.initialResponse;
   const allChunks: string[] =
     response.data != null
       ? [
@@ -41,17 +37,11 @@ export function assembleChunksIfResponseIsComplete(
       : [];
   const data = combineBase64Chunks(allChunks);
 
-  responses.update((draft) => {
-    draft[responseId] = {
-      ...response,
-      // Currently data is always decoded at render time, so re-encode it to match the single response format.
-      data,
-    };
-  });
-
-  partialResponses.update((draft) => {
-    delete draft[responseId];
-  });
+  return {
+    ...response,
+    // Currently data is always decoded at render time, so re-encode it to match the single response format.
+    data,
+  };
 }
 
 export function combineBase64Chunks(chunks: string[]): string {

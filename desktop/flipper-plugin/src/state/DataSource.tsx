@@ -137,6 +137,11 @@ export class DataSource<
     return unwrap(this._records[index]);
   }
 
+  public has(key: KEY_TYPE) {
+    this.assertKeySet();
+    return this._recordsById.has(key);
+  }
+
   public getById(key: KEY_TYPE) {
     this.assertKeySet();
     return this._recordsById.get(key);

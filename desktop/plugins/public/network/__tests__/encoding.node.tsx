@@ -10,17 +10,17 @@
 import {readFile} from 'fs';
 import path from 'path';
 import {decodeBody} from '../utils';
-import {Response} from '../types';
+import {ResponseInfo} from '../types';
 import {promisify} from 'util';
 import {readFileSync} from 'fs';
 
-async function createMockResponse(input: string): Promise<Response> {
+async function createMockResponse(input: string): Promise<ResponseInfo> {
   const inputData = await promisify(readFile)(
     path.join(__dirname, 'fixtures', input),
     'ascii',
   );
   const gzip = input.includes('gzip'); // if gzip in filename, assume it is a gzipped body
-  const testResponse: Response = {
+  const testResponse: ResponseInfo = {
     id: '0',
     timestamp: 0,
     status: 200,
