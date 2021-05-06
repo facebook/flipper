@@ -436,6 +436,13 @@ export default class Client extends EventEmitter {
           const params: Params = data.params;
           const bytes = msg.length * 2; // string lengths are measured in UTF-16 units (not characters), so 2 bytes per char
           emitBytesReceived(params.api, bytes);
+          if (bytes > 5 * 1024 * 1024 && params.api !== 'flipper-messages') {
+            console.warn(
+              `Plugin '${params.api}' received excessively large message for '${
+                params.method
+              }': ${Math.round(bytes / 1024)}kB`,
+            );
+          }
 
           const persistingPlugin: PluginDefinition | undefined =
             this.store.getState().plugins.clientPlugins.get(params.api) ||
