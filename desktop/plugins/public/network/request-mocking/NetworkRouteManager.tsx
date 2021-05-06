@@ -13,7 +13,7 @@ import electron, {OpenDialogOptions, remote} from 'electron';
 import {Atom, DataTableManager} from 'flipper-plugin';
 import {createContext} from 'react';
 import {Header, Request} from '../types';
-import {decodeBody} from '../utils';
+import {bodyAsString, decodeBody} from '../utils';
 import {message} from 'antd';
 
 export type Route = {
@@ -120,10 +120,10 @@ export function createNetworkManager(
         // convert data TODO: we only want this for non-binary data! See D23403095
         const responseData =
           request && request.responseData
-            ? decodeBody({
-                headers: request.responseHeaders ?? [],
-                data: request.responseData,
-              })
+            ? decodeBody(
+                request.responseHeaders ?? [],
+                bodyAsString(request.responseData),
+              )
             : '';
 
         const newNextRouteId = nextRouteId.get();

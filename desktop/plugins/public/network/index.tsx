@@ -41,6 +41,7 @@ import {
   formatBytes,
   formatDuration,
   requestsToText,
+  decodeBody,
 } from './utils';
 import RequestDetails from './RequestDetails';
 import {URL} from 'url';
@@ -329,7 +330,7 @@ function createRequestFromRequestInfo(data: RequestInfo): Request {
     url: data.url ?? '',
     domain,
     requestHeaders: data.headers,
-    requestData: data.data ?? undefined,
+    requestData: decodeBody(data.headers, data.data),
   };
 }
 
@@ -343,7 +344,7 @@ function updateRequestWithResponseInfo(
     status: response.status,
     reason: response.reason,
     responseHeaders: response.headers,
-    responseData: response.data ?? undefined,
+    responseData: decodeBody(response.headers, response.data),
     responseIsMock: response.isMock,
     responseLength: getResponseLength(response),
     duration: response.timestamp - request.requestTime.getTime(),

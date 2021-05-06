@@ -88,8 +88,14 @@ test('Reducer correctly adds followup chunk', () => {
 test('Reducer correctly combines initial response and followup chunk', () => {
   const {instance, sendEvent} = TestUtils.startPlugin(NetworkPlugin);
   sendEvent('newRequest', {
-    data: 'x',
-    headers: [{key: 'y', value: 'z'}],
+    data: btoa('x'),
+    headers: [
+      {key: 'y', value: 'z'},
+      {
+        key: 'Content-Type',
+        value: 'text/plain',
+      },
+    ],
     id: '1',
     method: 'GET',
     timestamp: 0,
@@ -97,7 +103,7 @@ test('Reducer correctly combines initial response and followup chunk', () => {
   });
   sendEvent('partialResponse', {
     data: 'aGVs',
-    headers: [],
+    headers: [{key: 'Content-Type', value: 'text/plain'}],
     id: '1',
     insights: null,
     isMock: false,
@@ -113,7 +119,12 @@ test('Reducer correctly combines initial response and followup chunk', () => {
         "followupChunks": Object {},
         "initialResponse": Object {
           "data": "aGVs",
-          "headers": Array [],
+          "headers": Array [
+            Object {
+              "key": "Content-Type",
+              "value": "text/plain",
+            },
+          ],
           "id": "1",
           "index": 0,
           "insights": null,
@@ -128,7 +139,13 @@ test('Reducer correctly combines initial response and followup chunk', () => {
   `);
   expect(instance.requests.records()[0]).toMatchObject({
     requestData: 'x',
-    requestHeaders: [{key: 'y', value: 'z'}],
+    requestHeaders: [
+      {key: 'y', value: 'z'},
+      {
+        key: 'Content-Type',
+        value: 'text/plain',
+      },
+    ],
     id: '1',
     method: 'GET',
     url: 'http://test.com',
@@ -155,9 +172,13 @@ test('Reducer correctly combines initial response and followup chunk', () => {
         key: 'y',
         value: 'z',
       },
+      {
+        key: 'Content-Type',
+        value: 'text/plain',
+      },
     ],
-    responseData: 'aGVsbG8=',
-    responseHeaders: [],
+    responseData: 'hello',
+    responseHeaders: [{key: 'Content-Type', value: 'text/plain'}],
     responseIsMock: false,
     responseLength: 5,
     status: 200,

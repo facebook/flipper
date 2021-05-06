@@ -23,7 +23,7 @@ import {
 } from 'flipper-plugin';
 import {Select, Typography} from 'antd';
 
-import {formatBytes, decodeBody, getHeaderValue} from './utils';
+import {bodyAsBinary, bodyAsString, formatBytes, getHeaderValue} from './utils';
 import {Request, Header, Insights, RetryInsights} from './types';
 import {BodyOptions} from './index';
 import {ProtobufDefinitionsRepository} from './ProtobufDefinitionsRepository';
@@ -185,7 +185,7 @@ class RequestBodyInspector extends Component<{
 }> {
   render() {
     const {request, formattedText} = this.props;
-    if (request.requestData == null || request.requestData.trim() === '') {
+    if (request.requestData == null || request.requestData === '') {
       return <Empty />;
     }
     const bodyFormatters = formattedText ? TextBodyFormatters : BodyFormatters;
@@ -221,7 +221,7 @@ class ResponseBodyInspector extends Component<{
 }> {
   render() {
     const {request, formattedText} = this.props;
-    if (request.responseData == null || request.responseData.trim() === '') {
+    if (request.responseData == null || request.responseData === '') {
       return <Empty />;
     }
     const bodyFormatters = formattedText ? TextBodyFormatters : BodyFormatters;
@@ -265,36 +265,11 @@ const Empty = () => (
   </Layout.Container>
 );
 
-function getRequestData(request: Request) {
-  return {
-    headers: request.requestHeaders,
-    data: request.requestData,
-  };
-}
-
-function getResponseData(request: Request) {
-  return {
-    headers: request.responseHeaders,
-    data: request.responseData,
-  };
-}
-
 function renderRawBody(request: Request, mode: 'request' | 'response') {
-  // TODO: we want decoding only for non-binary data! See D23403095
   const data = mode === 'request' ? request.requestData : request.responseData;
-  const decoded = decodeBody(
-    mode === 'request' ? getRequestData(request) : getResponseData(request),
-  );
   return (
     <Layout.Container gap>
-      {decoded ? (
-        <CodeBlock>{decoded}</CodeBlock>
-      ) : (
-        <>
-          <FormattedBy>(Failed to decode)</FormattedBy>
-          <CodeBlock>{data}</CodeBlock>
-        </>
-      )}
+      <CodeBlock>{bodyAsString(data)}</CodeBlock>
     </Layout.Container>
   );
 }
@@ -359,7 +334,9 @@ class ImageFormatter {
         const src = `data:${getHeaderValue(
           request.responseHeaders,
           'content-type',
-        )};base64,${request.responseData}`;
+        )};base64,${Base64.fromUint8Array(
+          bodyAsBinary(request.responseData)!,
+        )}`;
         return <ImageWithSize src={src} />;
       } else {
         // fallback to using the request url
@@ -416,14 +393,14 @@ class XMLText extends Component<{body: any}> {
 class JSONTextFormatter {
   formatRequest(request: Request) {
     return this.format(
-      decodeBody(getRequestData(request)),
+      bodyAsString(request.requestData),
       getHeaderValue(request.requestHeaders, 'content-type'),
     );
   }
 
   formatResponse(request: Request) {
     return this.format(
-      decodeBody(getResponseData(request)),
+      bodyAsString(request.responseData),
       getHeaderValue(request.responseHeaders, 'content-type'),
     );
   }
@@ -452,14 +429,14 @@ class JSONTextFormatter {
 class XMLTextFormatter {
   formatRequest(request: Request) {
     return this.format(
-      decodeBody(getRequestData(request)),
+      bodyAsString(request.requestData),
       getHeaderValue(request.requestHeaders, 'content-type'),
     );
   }
 
   formatResponse(request: Request) {
     return this.format(
-      decodeBody(getResponseData(request)),
+      bodyAsString(request.responseData),
       getHeaderValue(request.responseHeaders, 'content-type'),
     );
   }
@@ -474,14 +451,14 @@ class XMLTextFormatter {
 class JSONFormatter {
   formatRequest(request: Request) {
     return this.format(
-      decodeBody(getRequestData(request)),
+      bodyAsString(request.requestData),
       getHeaderValue(request.requestHeaders, 'content-type'),
     );
   }
 
   formatResponse(request: Request) {
     return this.format(
-      decodeBody(getResponseData(request)),
+      bodyAsString(request.responseData),
       getHeaderValue(request.responseHeaders, 'content-type'),
     );
   }
@@ -514,7 +491,7 @@ class JSONFormatter {
 class LogEventFormatter {
   formatRequest(request: Request) {
     if (request.url.indexOf('logging_client_event') > 0) {
-      const data = querystring.parse(decodeBody(getRequestData(request)));
+      const data = querystring.parse(bodyAsString(request.requestData));
       if (typeof data.message === 'string') {
         data.message = JSON.parse(data.message);
       }
@@ -526,7 +503,7 @@ class LogEventFormatter {
 class GraphQLBatchFormatter {
   formatRequest(request: Request) {
     if (request.url.indexOf('graphqlbatch') > 0) {
-      const data = querystring.parse(decodeBody(getRequestData(request)));
+      const data = querystring.parse(bodyAsString(request.requestData));
       if (typeof data.queries === 'string') {
         data.queries = JSON.parse(data.queries);
       }
@@ -554,7 +531,7 @@ class GraphQLFormatter {
     const requestStartMs = serverMetadata['request_start_time_ms'];
     const timeAtFlushMs = serverMetadata['time_at_flush_ms'];
     return (
-      <Text>
+      <Text type="secondary">
         {'Server wall time for initial response (ms): ' +
           (timeAtFlushMs - requestStartMs)}
       </Text>
@@ -562,11 +539,11 @@ class GraphQLFormatter {
   }
   formatRequest(request: Request) {
     if (request.url.indexOf('graphql') > 0) {
-      const decoded = decodeBody(getRequestData(request));
+      const decoded = request.requestData;
       if (!decoded) {
         return undefined;
       }
-      const data = querystring.parse(decoded);
+      const data = querystring.parse(bodyAsString(decoded));
       if (typeof data.variables === 'string') {
         data.variables = JSON.parse(data.variables);
       }
@@ -579,7 +556,7 @@ class GraphQLFormatter {
 
   formatResponse(request: Request) {
     return this.format(
-      decodeBody(getResponseData(request)),
+      bodyAsString(request.responseData!),
       getHeaderValue(request.responseHeaders, 'content-type'),
     );
   }
@@ -621,11 +598,16 @@ class FormUrlencodedFormatter {
   formatRequest = (request: Request) => {
     const contentType = getHeaderValue(request.requestHeaders, 'content-type');
     if (contentType.startsWith('application/x-www-form-urlencoded')) {
-      const decoded = decodeBody(getRequestData(request));
+      const decoded = request.requestData;
       if (!decoded) {
         return undefined;
       }
-      return <DataInspector expandRoot data={querystring.parse(decoded)} />;
+      return (
+        <DataInspector
+          expandRoot
+          data={querystring.parse(bodyAsString(decoded))}
+        />
+      );
     }
   };
 }
@@ -675,7 +657,7 @@ class ProtobufFormatter {
 
       if (request.requestData) {
         const data = protobufDefinition.decode(
-          Base64.toUint8Array(request.requestData),
+          bodyAsBinary(request.requestData)!,
         );
         return <JSONText>{data.toJSON()}</JSONText>;
       } else {
@@ -708,7 +690,7 @@ class ProtobufFormatter {
 
       if (request.responseData) {
         const data = protobufDefinition.decode(
-          Base64.toUint8Array(request.responseData),
+          bodyAsBinary(request.responseData)!,
         );
         return <JSONText>{data.toJSON()}</JSONText>;
       } else {

@@ -20,13 +20,13 @@ export interface Request {
   url: string;
   domain: string;
   requestHeaders: Array<Header>;
-  requestData?: string;
+  requestData: string | Uint8Array | undefined;
   // response
   responseTime?: Date;
   status?: number;
   reason?: string;
   responseHeaders?: Array<Header>;
-  responseData?: string;
+  responseData?: string | Uint8Array | undefined;
   responseLength?: number;
   responseIsMock?: boolean;
   duration?: number;

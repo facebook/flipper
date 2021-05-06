@@ -14,12 +14,16 @@ import {ResponseInfo} from '../types';
 import {promisify} from 'util';
 import {readFileSync} from 'fs';
 
-async function createMockResponse(input: string): Promise<ResponseInfo> {
+async function createMockResponse(
+  input: string,
+  contentType: string,
+): Promise<ResponseInfo> {
   const inputData = await promisify(readFile)(
     path.join(__dirname, 'fixtures', input),
     'ascii',
   );
   const gzip = input.includes('gzip'); // if gzip in filename, assume it is a gzipped body
+  const contentTypeHeader = {key: 'Content-Type', value: contentType};
   const testResponse: ResponseInfo = {
     id: '0',
     timestamp: 0,
@@ -31,8 +35,9 @@ async function createMockResponse(input: string): Promise<ResponseInfo> {
             key: 'Content-Encoding',
             value: 'gzip',
           },
+          contentTypeHeader,
         ]
-      : [],
+      : [contentTypeHeader],
     data: inputData.replace(/\s+?/g, '').trim(), // remove whitespace caused by copy past of the base64 data,
     isMock: false,
     insights: undefined,
@@ -40,6 +45,18 @@ async function createMockResponse(input: string): Promise<ResponseInfo> {
     index: 0,
   };
   return testResponse;
+}
+
+function bodyAsString(response: ResponseInfo) {
+  const res = decodeBody(response.headers, response.data);
+  expect(typeof res).toBe('string');
+  return (res as string).trim();
+}
+
+function bodyAsBuffer(response: ResponseInfo) {
+  const res = decodeBody(response.headers, response.data);
+  expect(res).toBeInstanceOf(Uint8Array);
+  return Buffer.from(res as Uint8Array);
 }
 
 describe('network data encoding', () => {
@@ -56,46 +73,66 @@ describe('network data encoding', () => {
   );
 
   test('donating.md.utf8.ios.txt', async () => {
-    const response = await createMockResponse('donating.md.utf8.ios.txt');
-    expect(decodeBody(response).trim()).toEqual(donatingExpected);
+    const response = await createMockResponse(
+      'donating.md.utf8.ios.txt',
+      'text/plain',
+    );
+    expect(bodyAsString(response)).toEqual(donatingExpected);
   });
 
   test('donating.md.utf8.gzip.ios.txt', async () => {
-    const response = await createMockResponse('donating.md.utf8.gzip.ios.txt');
-    expect(decodeBody(response).trim()).toEqual(donatingExpected);
+    const response = await createMockResponse(
+      'donating.md.utf8.gzip.ios.txt',
+      'text/plain',
+    );
+    expect(bodyAsString(response)).toEqual(donatingExpected);
   });
 
   test('donating.md.utf8.android.txt', async () => {
-    const response = await createMockResponse('donating.md.utf8.android.txt');
-    expect(decodeBody(response).trim()).toEqual(donatingExpected);
+    const response = await createMockResponse(
+      'donating.md.utf8.android.txt',
+      'text/plain',
+    );
+    expect(bodyAsString(response)).toEqual(donatingExpected);
   });
 
   test('donating.md.utf8.gzip.android.txt', async () => {
     const response = await createMockResponse(
       'donating.md.utf8.gzip.android.txt',
+      'text/plain',
     );
-    expect(decodeBody(response).trim()).toEqual(donatingExpected);
+    expect(bodyAsString(response)).toEqual(donatingExpected);
   });
 
   test('tiny_logo.android.txt', async () => {
-    const response = await createMockResponse('tiny_logo.android.txt');
+    const response = await createMockResponse(
+      'tiny_logo.android.txt',
+      'image/png',
+    );
     expect(response.data).toEqual(tinyLogoExpected.toString('base64'));
+    expect(bodyAsBuffer(response)).toEqual(tinyLogoExpected);
   });
 
   test('tiny_logo.android.txt - encoded', async () => {
-    const response = await createMockResponse('tiny_logo.android.txt');
+    const response = await createMockResponse(
+      'tiny_logo.android.txt',
+      'image/png',
+    );
     // this compares to the correct base64 encoded src tag of the img in Flipper UI
     expect(response.data).toEqual(tinyLogoBase64Expected.trim());
+    expect(bodyAsBuffer(response)).toEqual(tinyLogoExpected);
   });
 
   test('tiny_logo.ios.txt', async () => {
-    const response = await createMockResponse('tiny_logo.ios.txt');
+    const response = await createMockResponse('tiny_logo.ios.txt', 'image/png');
     expect(response.data).toEqual(tinyLogoExpected.toString('base64'));
+    expect(bodyAsBuffer(response)).toEqual(tinyLogoExpected);
   });
 
   test('tiny_logo.ios.txt - encoded', async () => {
-    const response = await createMockResponse('tiny_logo.ios.txt');
+    const response = await createMockResponse('tiny_logo.ios.txt', 'image/png');
     // this compares to the correct base64 encoded src tag of the img in Flipper UI
     expect(response.data).toEqual(tinyLogoBase64Expected.trim());
+    expect(bodyAsBuffer(response)).toEqual(tinyLogoExpected);
   });
 });
