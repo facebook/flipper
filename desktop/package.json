@@ -256,7 +256,7 @@
     "test-with-device": "yarn build:tsc && USE_ELECTRON_STUBS=1 jest --testMatch=\"**/**.device\\.(js|jsx|ts|tsx)\" --detectOpenHandles",
     "test:debug": "yarn build:tsc && node --inspect node_modules/.bin/jest --runInBand",
     "tsc-plugins": "./ts-node scripts/tsc-plugins.ts",
-    "watch": "node --expose-gc ./node_modules/.bin/jest --watch"
+    "watch": "node --expose-gc --stack-trace-limit=40 ./node_modules/.bin/jest --watch"
   },
   "version": "0.87.0",
   "workspaces": {

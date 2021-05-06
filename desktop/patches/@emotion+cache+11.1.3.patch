@@ -1,0 +1,13 @@
+diff --git a/node_modules/@emotion/cache/dist/emotion-cache.cjs.dev.js b/node_modules/@emotion/cache/dist/emotion-cache.cjs.dev.js
+index b25808a..043f626 100644
+--- a/node_modules/@emotion/cache/dist/emotion-cache.cjs.dev.js
++++ b/node_modules/@emotion/cache/dist/emotion-cache.cjs.dev.js
+@@ -136,7 +136,7 @@ var createUnsafeSelectorsAlarm = function createUnsafeSelectorsAlarm(cache) {
+       }
+
+       unsafePseudoClasses.forEach(function (unsafePseudoClass) {
+-        console.error("The pseudo class \"" + unsafePseudoClass + "\" is potentially unsafe when doing server-side rendering. Try changing it to \"" + unsafePseudoClass.split('-child')[0] + "-of-type\".");
++// we're not doing SSR and not interested in pedantic errors:       console.error("The pseudo class \"" + unsafePseudoClass + "\" is potentially unsafe when doing server-side rendering. Try changing it to \"" + unsafePseudoClass.split('-child')[0] + "-of-type\".");
+       });
+     }
+   };
