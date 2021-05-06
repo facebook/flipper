@@ -1,3 +1,11 @@
+# 0.88.0 (6/5/2021)
+
+ * [D28117560](https://github.com/facebook/flipper/search?q=D28117560&type=Commits) -  Standardize CodeBlock component
+ * [D28119721](https://github.com/facebook/flipper/search?q=D28119721&type=Commits) -  Standardized DataList component
+ * [D28119719](https://github.com/facebook/flipper/search?q=D28119719&type=Commits) -  Fixed application crash notifications not opening the crash log
+ * [D28102398](https://github.com/facebook/flipper/search?q=D28102398&type=Commits) -  CrashReporter plugin got a fresh look and several navigation issues were addressed.
+
+
 # 0.87.0 (28/4/2021)
 
  * [D27910514](https://github.com/facebook/flipper/search?q=D27910514&type=Commits) -  Severed RSocket connections are no longer treated as an error in plugin code
