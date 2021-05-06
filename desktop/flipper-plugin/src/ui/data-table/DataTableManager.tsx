@@ -443,8 +443,9 @@ function computeInitialColumns(
   columns: DataTableColumn<any>[],
 ): DataTableColumn<any>[] {
   const visibleColumnCount = columns.filter((c) => c.visible !== false).length;
-  const columnsWithoutWidth = columns.filter((c) => c.width === undefined)
-    .length;
+  const columnsWithoutWidth = columns.filter(
+    (c) => c.visible !== false && c.width === undefined,
+  ).length;
 
   return columns.map((c) => ({
     ...c,

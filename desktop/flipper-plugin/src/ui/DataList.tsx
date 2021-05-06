@@ -94,6 +94,9 @@ export const DataList: React.FC<DataListProps<any>> = function DataList<
   const tableManagerRef = tableProps.tableManagerRef ?? createRef<undefined | DataTableManager<T>>();
 
   useAssertStableRef(baseSelection, 'selection');
+  useAssertStableRef(onRenderItem, 'onRenderItem');
+  useAssertStableRef(enableArrow, 'enableArrow');
+
   // create local selection atom if none provided
   // eslint-disable-next-line
   const selection = baseSelection ?? useState(() => createState<string|undefined>())[0];
