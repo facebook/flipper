@@ -3,6 +3,8 @@ on:
   push:
     tags:
       - v*
+    branches:
+      - fix-create-pr
   workflow_dispatch:
 
 jobs:
@@ -114,7 +116,7 @@ jobs:
           git branch
 
       - name: Create PR to Update Podfile.lock
-        uses: peter-evans/create-pull-request@v2
+        uses: peter-evans/create-pull-request@v3
         with:
           title: "Automated: Update Podfile.lock"
           body: |
