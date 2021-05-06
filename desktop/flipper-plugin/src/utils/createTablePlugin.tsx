@@ -44,6 +44,7 @@ export function createTablePlugin<Row extends object>(props: {
   columns: DataTableColumn<Row>[];
   renderSidebar?: (record: Row) => any;
   key?: keyof Row;
+  onCopyRows?(records: Row[]): string;
 }): PluginResult<Row, Row>;
 export function createTablePlugin<
   Raw extends object,
@@ -55,6 +56,7 @@ export function createTablePlugin<
   columns: DataTableColumn<Row>[];
   renderSidebar?: (record: Row) => any;
   key?: keyof Raw;
+  onCopyRows?(records: Row[]): string;
 }): PluginResult<Raw, Row>;
 export function createTablePlugin<
   Raw extends object,
@@ -68,6 +70,7 @@ export function createTablePlugin<
   renderSidebar?: (record: Row) => any;
   buildRow?: (record: Raw) => Row;
   key?: keyof Raw;
+  onCopyRows?(records: Row[]): string;
 }) {
   function plugin(
     client: PluginClient<Record<Method, Raw> & Record<ResetMethod, {}>, {}>,
@@ -138,6 +141,7 @@ export function createTablePlugin<
         isPaused={instance.isPaused}
         enableMenuEntries
         enableClear
+        onCopyRows={props.onCopyRows}
       />
     );
   }
