@@ -8,7 +8,7 @@
  */
 
 import React, {createRef} from 'react';
-import {Button, Menu, Modal, Typography} from 'antd';
+import {Button, Menu, message, Modal, Typography} from 'antd';
 
 import {
   Layout,
@@ -308,6 +308,10 @@ export function plugin(client: PluginClient<Events, Methods>) {
         </Menu.Item>
       );
     },
+    onCopyText(text: string) {
+      client.writeTextToClipboard(text);
+      message.success('Text copied to clipboard');
+    },
   };
 }
 
@@ -418,6 +422,7 @@ function Sidebar() {
       request={request}
       bodyFormat={detailBodyFormat}
       onSelectFormat={instance.onSelectFormat}
+      onCopyText={instance.onCopyText}
     />
   );
 }

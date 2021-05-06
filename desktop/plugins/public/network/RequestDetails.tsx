@@ -23,11 +23,18 @@ import {
 } from 'flipper-plugin';
 import {Select, Typography} from 'antd';
 
-import {bodyAsBinary, bodyAsString, formatBytes, getHeaderValue} from './utils';
+import {
+  bodyAsBinary,
+  bodyAsString,
+  formatBytes,
+  getHeaderValue,
+  isTextual,
+} from './utils';
 import {Request, Header, Insights, RetryInsights} from './types';
 import {BodyOptions} from './index';
 import {ProtobufDefinitionsRepository} from './ProtobufDefinitionsRepository';
 import {KeyValueItem, KeyValueTable} from './KeyValueTable';
+import {CopyOutlined} from '@ant-design/icons';
 
 const {Text} = Typography;
 
@@ -35,6 +42,7 @@ type RequestDetailsProps = {
   request: Request;
   bodyFormat: string;
   onSelectFormat: (bodyFormat: string) => void;
+  onCopyText(test: string): void;
 };
 export default class RequestDetails extends Component<RequestDetailsProps> {
   urlColumns = (url: URL) => {
@@ -59,7 +67,7 @@ export default class RequestDetails extends Component<RequestDetailsProps> {
   };
 
   render() {
-    const {request, bodyFormat, onSelectFormat} = this.props;
+    const {request, bodyFormat, onSelectFormat, onCopyText} = this.props;
     const url = new URL(request.url);
 
     const formattedText = bodyFormat == 'formatted';
@@ -83,7 +91,21 @@ export default class RequestDetails extends Component<RequestDetailsProps> {
         ) : null}
 
         {request.requestData != null ? (
-          <Panel key="requestData" title={'Request Body'} pad>
+          <Panel
+            key="requestData"
+            title={'Request Body'}
+            extraActions={
+              isTextual(request.requestHeaders) ? (
+                <CopyOutlined
+                  title="Copy request body"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onCopyText(request.requestData as string);
+                  }}
+                />
+              ) : null
+            }
+            pad>
             <RequestBodyInspector
               formattedText={formattedText}
               request={request}
@@ -106,6 +128,17 @@ export default class RequestDetails extends Component<RequestDetailsProps> {
               title={`Response Body${
                 request.responseIsMock ? ' (Mocked)' : ''
               }`}
+              extraActions={
+                isTextual(request.responseHeaders) && request.responseData ? (
+                  <CopyOutlined
+                    title="Copy response body"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onCopyText(request.responseData as string);
+                    }}
+                  />
+                ) : null
+              }
               pad>
               <ResponseBodyInspector
                 formattedText={formattedText}

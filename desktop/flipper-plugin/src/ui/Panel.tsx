@@ -28,6 +28,7 @@ export const Panel: React.FC<{
   collapsed?: boolean;
   pad?: Spacing;
   gap?: Spacing;
+  extraActions?: React.ReactElement | null;
 }> = (props) => {
   const [collapsed, setCollapsed] = useLocalStorageState(
     `panel:${props.title}:collapsed`,
@@ -49,7 +50,16 @@ export const Panel: React.FC<{
         onChange={toggle}>
         <Collapse.Panel
           key={props.title}
-          header={props.title}
+          header={
+            props.extraActions ? (
+              <Layout.Right center>
+                <span>{props.title}</span>
+                {props.extraActions}
+              </Layout.Right>
+            ) : (
+              props.title
+            )
+          }
           showArrow={props.collapsible !== false}>
           <Layout.Container pad={props.pad} gap={props.pad}>
             {props.children}
