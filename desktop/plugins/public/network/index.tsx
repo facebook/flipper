@@ -8,7 +8,16 @@
  */
 
 import React, {createRef} from 'react';
-import {Button, Menu, message, Modal, Typography} from 'antd';
+import {
+  Button,
+  Form,
+  Input,
+  Menu,
+  message,
+  Modal,
+  Radio,
+  Typography,
+} from 'antd';
 
 import {
   Layout,
@@ -23,6 +32,8 @@ import {
   DataTableColumn,
   DataTableManager,
   theme,
+  renderReactRoot,
+  batch,
 } from 'flipper-plugin';
 import {
   Request,
@@ -78,6 +89,11 @@ type Methods = {
   mockResponses(params: {routes: MockRoute[]}): Promise<void>;
 };
 
+type CustomColumnConfig = {
+  header: string;
+  type: 'response' | 'request';
+};
+
 export function plugin(client: PluginClient<Events, Methods>) {
   const networkRouteManager = createState<NetworkRouteManager>(
     nullNetworkRouteManager,
@@ -106,6 +122,11 @@ export function plugin(client: PluginClient<Events, Methods>) {
     {persist: 'partialResponses'},
   );
 
+  const customColumns = createState<CustomColumnConfig[]>([], {
+    persist: 'customColumns', // Store in local storage as well: T69989583
+  });
+  const columns = createState<DataTableColumn<Request>[]>(baseColumns); // not persistable
+
   client.onDeepLink((payload: unknown) => {
     const searchTermDelim = 'searchTerm=';
     if (typeof payload !== 'string') {
@@ -133,7 +154,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
   client.onMessage('newRequest', (data) => {
     // TODO: This should be append, but there is currently a bug where requests are send multiple times from the
     // device! (Wilde on emulator)
-    requests.upsert(createRequestFromRequestInfo(data));
+    requests.upsert(createRequestFromRequestInfo(data, customColumns.get()));
   });
 
   function storeResponse(response: ResponseInfo) {
@@ -142,7 +163,9 @@ export function plugin(client: PluginClient<Events, Methods>) {
       return; // request table might have been cleared
     }
 
-    requests.upsert(updateRequestWithResponseInfo(request, response));
+    requests.upsert(
+      updateRequestWithResponseInfo(request, response, customColumns.get()),
+    );
   }
 
   client.onMessage('newResponse', (data) => {
@@ -213,10 +236,12 @@ export function plugin(client: PluginClient<Events, Methods>) {
         localStorage.getItem(LOCALSTORAGE_MOCK_ROUTE_LIST_KEY + client.appId) ||
           '{}',
       );
-      routes.set(newRoutes);
-      isMockResponseSupported.set(result);
-      showMockResponseDialog.set(false);
-      nextRouteId.set(Object.keys(routes.get()).length);
+      batch(() => {
+        routes.set(newRoutes);
+        isMockResponseSupported.set(result);
+        showMockResponseDialog.set(false);
+        nextRouteId.set(Object.keys(routes.get()).length);
+      });
 
       informClientMockChange(routes.get());
     });
@@ -267,7 +292,53 @@ export function plugin(client: PluginClient<Events, Methods>) {
     }
   }
 
+  function addCustomColumn(column: CustomColumnConfig) {
+    // prevent doubles
+    if (
+      customColumns
+        .get()
+        .find((c) => c.header === column.header && c.type === column.type)
+    ) {
+      return;
+    }
+    // add custom column config
+    customColumns.update((d) => {
+      d.push(column);
+    });
+    // generate DataTable column config
+    addDataTableColumnConfig(column);
+    // update existing entries
+    for (let i = 0; i < requests.size; i++) {
+      const request = requests.get(i);
+      requests.update(i, {
+        ...request,
+        [`${column.type}_header_${column.header}`]: getHeaderValue(
+          column.type === 'request'
+            ? request.requestHeaders
+            : request.responseHeaders,
+          column.header,
+        ),
+      });
+    }
+  }
+
+  function addDataTableColumnConfig(column: CustomColumnConfig) {
+    columns.update((d) => {
+      d.push({
+        key: `${column.type}_header_${column.header}` as any,
+        width: 200,
+        title: `${column.header} (${column.type})`,
+      });
+    });
+  }
+
+  client.onReady(() => {
+    // after restoring a snapshot, let's make sure we update the columns
+    customColumns.get().forEach(addDataTableColumnConfig);
+  });
+
   return {
+    columns,
     routes,
     nextRouteId,
     isMockResponseSupported,
@@ -295,27 +366,85 @@ export function plugin(client: PluginClient<Events, Methods>) {
     tableManagerRef,
     onContextMenu(request: Request | undefined) {
       return (
-        <Menu.Item
-          key="curl"
-          onClick={() => {
-            if (!request) {
-              return;
-            }
-            const command = convertRequestToCurlCommand(request);
-            client.writeTextToClipboard(command);
-          }}>
-          Copy cURL command
-        </Menu.Item>
+        <>
+          <Menu.Item
+            key="curl"
+            onClick={() => {
+              if (!request) {
+                return;
+              }
+              const command = convertRequestToCurlCommand(request);
+              client.writeTextToClipboard(command);
+            }}>
+            Copy cURL command
+          </Menu.Item>
+          <Menu.Item
+            key="custom header"
+            onClick={() => {
+              showCustomColumnDialog(addCustomColumn);
+            }}>
+            Add header column{'\u2026'}
+          </Menu.Item>
+        </>
       );
     },
     onCopyText(text: string) {
       client.writeTextToClipboard(text);
       message.success('Text copied to clipboard');
     },
+    addCustomColumn,
   };
 }
 
-function createRequestFromRequestInfo(data: RequestInfo): Request {
+function showCustomColumnDialog(
+  addCustomColumn: (column: CustomColumnConfig) => void,
+) {
+  function CustomColumnDialog({unmount}: {unmount(): void}) {
+    const [form] = Form.useForm();
+    return (
+      <Modal
+        title="Add custom column"
+        visible
+        onOk={() => {
+          const header = form.getFieldValue('header');
+          const type = form.getFieldValue('type');
+          if (header && type) {
+            addCustomColumn({
+              header,
+              type,
+            });
+            unmount();
+          }
+        }}
+        onCancel={unmount}>
+        <Form
+          layout={'vertical'}
+          form={form}
+          initialValues={{
+            type: 'response',
+            header: '',
+          }}>
+          <Form.Item label="Header name" name="header">
+            <Input placeholder="Header name" />
+          </Form.Item>
+          <Form.Item label="Header type" name="type">
+            <Radio.Group>
+              <Radio value={'request'}>Request</Radio>
+              <Radio value={'response'}>Response</Radio>
+            </Radio.Group>
+          </Form.Item>
+        </Form>
+      </Modal>
+    );
+  }
+
+  renderReactRoot((unmount) => <CustomColumnDialog unmount={unmount} />);
+}
+
+function createRequestFromRequestInfo(
+  data: RequestInfo,
+  customColumns: CustomColumnConfig[],
+): Request {
   let url: URL | undefined = undefined;
   try {
     url = data.url ? new URL(data.url) : undefined;
@@ -326,7 +455,7 @@ function createRequestFromRequestInfo(data: RequestInfo): Request {
     getHeaderValue(data.headers, 'X-FB-Friendly-Name') ||
     (url ? (url.pathname ? url.host + url.pathname : url.host) : '<unknown>');
 
-  return {
+  const res = {
     id: data.id,
     // request
     requestTime: new Date(data.timestamp),
@@ -336,13 +465,23 @@ function createRequestFromRequestInfo(data: RequestInfo): Request {
     requestHeaders: data.headers,
     requestData: decodeBody(data.headers, data.data),
   };
+  customColumns
+    .filter((c) => c.type === 'request')
+    .forEach(({header}) => {
+      (res as any)['request_header_' + header] = getHeaderValue(
+        data.headers,
+        header,
+      );
+    });
+  return res;
 }
 
 function updateRequestWithResponseInfo(
   request: Request,
   response: ResponseInfo,
+  customColumns: CustomColumnConfig[],
 ): Request {
-  return {
+  const res = {
     ...request,
     responseTime: new Date(response.timestamp),
     status: response.status,
@@ -354,6 +493,15 @@ function updateRequestWithResponseInfo(
     duration: response.timestamp - request.requestTime.getTime(),
     insights: response.insights ?? undefined,
   };
+  customColumns
+    .filter((c) => c.type === 'response')
+    .forEach(({header}) => {
+      (res as any)['response_header_' + header] = getHeaderValue(
+        response.headers,
+        header,
+      );
+    });
+  return res;
 }
 
 export function Component() {
@@ -362,10 +510,15 @@ export function Component() {
   const isMockResponseSupported = useValue(instance.isMockResponseSupported);
   const showMockResponseDialog = useValue(instance.showMockResponseDialog);
   const networkRouteManager = useValue(instance.networkRouteManager);
+  const columns = useValue(instance.columns);
 
   return (
     <NetworkRouteContext.Provider value={networkRouteManager}>
-      <Layout.Container grow={true}>
+      <Layout.Container
+        grow={true}
+        key={
+          columns.length /* make sure to reset the table if colums change */
+        }>
         <DataTable
           columns={columns}
           dataSource={instance.requests}
@@ -427,7 +580,7 @@ function Sidebar() {
   );
 }
 
-const columns: DataTableColumn<Request>[] = [
+const baseColumns: DataTableColumn<Request>[] = [
   {
     key: 'requestTime',
     title: 'Request Time',
