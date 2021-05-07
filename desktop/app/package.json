@@ -64,7 +64,7 @@
     "react-virtualized-auto-sizer": "^1.0.5",
     "react-window": "^1.8.6",
     "recursive-readdir": "^2.2.2",
-    "redux": "^4.0.0",
+    "redux": "^4.1.0",
     "redux-persist": "^6.0.0",
     "rsocket-core": "^0.0.19",
     "rsocket-flowable": "^0.0.25",
@@ -75,7 +75,7 @@
     "tmp": "^0.2.1",
     "uuid": "^8.3.2",
     "which": "^2.0.1",
-    "ws": "^7.4.4",
+    "ws": "^7.4.5",
     "xdg-basedir": "^4.0.0"
   },
   "optionalDependencies": {
