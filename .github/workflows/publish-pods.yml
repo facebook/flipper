@@ -68,6 +68,9 @@ jobs:
       - name: Update RN getting started guide
         run: ./scripts/update-pod-versions.sh ./ ./docs/getting-started/react-native-ios.mdx
 
+      - name: Update ReactNativeFlipperExample
+        run: ./scripts/update-pod-versions.sh ./ ./react-native/ReactNativeFlipperExample/ios/Podfile
+
       - name: Install Dependencies
         run: pod repo update
 
@@ -91,6 +94,12 @@ jobs:
           cd iOS/Tutorial/
           # Retrying an update, as Flipper and FlipperKit pod may take time to get updated on CocoaPods. Putting this hack unless we have cocoapods 1.10. More information related to the bug https://github.com/CocoaPods/CocoaPods/issues/9502#issuecomment-579486258
           for i in {1..20}; do pod update && break || sleep 30; done
+          ls
+
+      - name: Update ReactNativeFlipperExample Podfile.lock
+        run: |
+          cd react-native/ReactNativeFlipperExample/ios/
+          pod update --repo-update
           ls
 
       # Followed this https://github.com/peter-evans/create-pull-request/blob/master/docs/concepts-guidelines.md#creating-pull-requests-on-tag-push

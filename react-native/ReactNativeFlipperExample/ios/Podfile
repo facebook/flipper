@@ -3,6 +3,9 @@ require_relative '../node_modules/@react-native-community/cli-platform-ios/nativ
 
 platform :ios, '10.0'
 
+# used for automatic bumping
+flipperkit_version = '0.88.0'
+
 target 'ReactNativeFlipperExample' do
   config = use_native_modules!
   use_react_native!(
@@ -19,7 +22,7 @@ target 'ReactNativeFlipperExample' do
   #
   # Note that if you have use_frameworks! enabled, Flipper will not work and
   # you should disable these next few lines.
-  use_flipper!({ 'Flipper' => '0.88.0', 'Flipper-Folly' => '2.6.7', 'Flipper-RSocket' => '1.4.3', 'Flipper-DoubleConversion' => '3.1.7', 'Flipper-Glog' => '0.3.9', 'Flipper-PeerTalk' => '0.0.4' })
+  use_flipper!({ 'Flipper' => flipperkit_version, 'Flipper-Folly' => '2.6.7', 'Flipper-RSocket' => '1.4.3', 'Flipper-DoubleConversion' => '3.1.7', 'Flipper-Glog' => '0.3.9', 'Flipper-PeerTalk' => '0.0.4' })
   post_install do |installer|
     flipper_post_install(installer)
     # based on https://stackoverflow.com/a/37289688/1983583
