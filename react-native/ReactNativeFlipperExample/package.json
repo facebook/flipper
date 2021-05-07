@@ -30,6 +30,7 @@
     "react-native-flipper": "../react-native-flipper"
   },
   "resolutions": {
-    "xmldom": "0.5.0"
+    "xmldom": "0.5.0",
+    "react-devtools-core": "4.13.2"
   }
 }
