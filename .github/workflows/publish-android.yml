@@ -42,13 +42,13 @@ jobs:
     - name: Upload Archives
       run: ./gradlew uploadArchives --no-parallel --no-daemon
       env:
-        SONATYPE_NEXUS_PASSWORD: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
-        SONATYPE_NEXUS_USERNAME: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
+        mavenCentralPassword: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
+        mavenCentralUsername: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
     - name: Release and close
       run: ./gradlew closeAndReleaseRepository
       env:
-        SONATYPE_NEXUS_PASSWORD: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
-        SONATYPE_NEXUS_USERNAME: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
+        mavenCentralPassword: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
+        mavenCentralUsername: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
     - name: Clean secrets
       if: always()
       run: rm /tmp/secring.gpg
