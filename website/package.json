@@ -28,6 +28,7 @@
     "kind-of": "6.0.3",
     "serialize-javascript": "^3.1.0",
     "ssri": "8.0.1",
-    "is-svg": "4.2.2"
+    "is-svg": "4.2.2",
+    "lodash": "4.17.21"
   }
 }
