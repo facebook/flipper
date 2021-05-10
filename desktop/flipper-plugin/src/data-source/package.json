@@ -9,8 +9,8 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "build": "microbundle --tsconfig flipper-data-source.tsconfig.json --no-compress",
-    "watch": "microbundle --tsconfig flipper-data-source.tsconfig.json --no-compress watch"
+    "build": "microbundle --tsconfig flipper-data-source.tsconfig.json --compress --jsx React.createElement",
+    "watch": "microbundle --tsconfig flipper-data-source.tsconfig.json --compress --jsx React.createElement watch"
   },
   "files": [
     "lib/"
