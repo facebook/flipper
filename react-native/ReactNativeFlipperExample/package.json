@@ -32,6 +32,7 @@
   "resolutions": {
     "xmldom": "0.5.0",
     "react-devtools-core": "4.13.2",
-    "lodash":"4.17.21"
+    "lodash": "4.17.21",
+    "hosted-git-info": "3.0.8"
   }
 }
