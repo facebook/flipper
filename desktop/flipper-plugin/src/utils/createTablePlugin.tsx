@@ -8,13 +8,14 @@
  */
 
 import {notification, Typography} from 'antd';
+import {DataSource} from '../data-source/DataSource';
 import React from 'react';
 import {PluginClient} from '../plugin/Plugin';
 import {usePlugin} from '../plugin/PluginContext';
 import {createState} from '../state/atom';
-import {createDataSource, DataSource} from '../state/DataSource';
 import {DataTableColumn} from '../ui/data-table/DataTable';
 import {MasterDetail} from '../ui/MasterDetail';
+import {createDataSource} from '../state/createDataSource';
 
 type PluginResult<Raw, Row> = {
   plugin(

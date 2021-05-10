@@ -10,8 +10,8 @@
 import type {DataTableColumn} from './DataTable';
 import {Percentage} from '../../utils/widthUtils';
 import {MutableRefObject, Reducer} from 'react';
-import {DataSource} from '../../state/DataSource';
-import {DataSourceVirtualizer} from './DataSourceRenderer';
+import {DataSource} from '../../data-source/DataSource';
+import {DataSourceVirtualizer} from '../../data-source/DataSourceRendererVirtual';
 import produce, {castDraft, immerable, original} from 'immer';
 
 export type OnColumnResize = (id: string, size: number | Percentage) => void;

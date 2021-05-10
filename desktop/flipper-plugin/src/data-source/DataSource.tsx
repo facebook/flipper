@@ -13,7 +13,6 @@ import {
   property,
   sortBy as lodashSort,
 } from 'lodash';
-import {Persistable, registerStorageAtom} from '../plugin/PluginBase';
 
 // If the dataSource becomes to large, after how many records will we start to drop items?
 const dropFactor = 0.1;
@@ -23,7 +22,7 @@ const defaultLimit = 100 * 1000;
 // rather than search and remove the affected individual items
 const shiftRebuildTreshold = 0.05;
 
-type ExtractKeyType<T, KEY extends keyof T> = T[KEY] extends string
+export type ExtractKeyType<T, KEY extends keyof T> = T[KEY] extends string
   ? string
   : T[KEY] extends number
   ? number
@@ -90,7 +89,7 @@ export class DataSource<
   T = any,
   KEY extends keyof T = any,
   KEY_TYPE extends string | number | never = ExtractKeyType<T, KEY>
-> implements Persistable {
+> {
   private nextId = 0;
   private _records: Entry<T>[] = [];
   private _recordsById: Map<KEY_TYPE, T> = new Map();
@@ -423,44 +422,6 @@ export class DataSource<
       this.append(record);
     });
   }
-}
-
-type CreateDataSourceOptions<T, K extends keyof T> = {
-  /**
-   * If a key is set, the given field of the records is assumed to be unique,
-   * and it's value can be used to perform lookups and upserts.
-   */
-  key?: K;
-  /**
-   * The maximum amount of records that this DataSource will store.
-   * If the limit is exceeded, the oldest records will automatically be dropped to make place for the new ones
-   */
-  limit?: number;
-  /**
-   * Should this state persist when exporting a plugin?
-   * If set, the dataSource will be saved / loaded under the key provided
-   */
-  persist?: string;
-};
-
-export function createDataSource<T, KEY extends keyof T = any>(
-  initialSet: T[],
-  options: CreateDataSourceOptions<T, KEY>,
-): DataSource<T, KEY, ExtractKeyType<T, KEY>>;
-export function createDataSource<T>(
-  initialSet?: T[],
-): DataSource<T, never, never>;
-export function createDataSource<T, KEY extends keyof T>(
-  initialSet: T[] = [],
-  options?: CreateDataSourceOptions<T, KEY>,
-): DataSource<T, any, any> {
-  const ds = new DataSource<T, KEY>(options?.key);
-  if (options?.limit !== undefined) {
-    ds.limit = options.limit;
-  }
-  registerStorageAtom(options?.persist, ds);
-  initialSet.forEach((value) => ds.append(value));
-  return ds;
 }
 
 function unwrap<T>(entry: Entry<T>): T {

@@ -7,12 +7,10 @@
  * @format
  */
 
+import {DataSource} from './DataSource';
 import React, {memo, useCallback, useEffect, useState} from 'react';
-import {DataSource} from '../../state/DataSource';
-import {useVirtual} from 'react-virtual';
-import {RedrawContext} from './DataSourceRenderer';
 
-export type DataSourceVirtualizer = ReturnType<typeof useVirtual>;
+import {RedrawContext} from './DataSourceRendererVirtual';
 
 type DataSourceProps<T extends object, C> = {
   /**
@@ -41,9 +39,9 @@ type DataSourceProps<T extends object, C> = {
  * This component is UI agnostic, and just takes care of rendering all items in the DataSource.
  * This component does not apply virtualization, so don't use it for large datasets!
  */
-export const StaticDataSourceRenderer: <T extends object, C>(
+export const DataSourceRendererStatic: <T extends object, C>(
   props: DataSourceProps<T, C>,
-) => React.ReactElement = memo(function StaticDataSourceRenderer({
+) => React.ReactElement = memo(function DataSourceRendererStatic({
   dataSource,
   useFixedRowHeight,
   context,
@@ -98,7 +96,7 @@ export const StaticDataSourceRenderer: <T extends object, C>(
 
   return (
     <RedrawContext.Provider value={redraw}>
-      <div onKeyDown={onKeyDown}>
+      <div onKeyDown={onKeyDown} tabIndex={0}>
         {records.length === 0
           ? emptyRenderer?.(dataSource)
           : records.map((item, index) => (

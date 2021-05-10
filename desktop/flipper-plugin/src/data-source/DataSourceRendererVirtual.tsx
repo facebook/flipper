@@ -18,11 +18,9 @@ import React, {
   useContext,
   createContext,
 } from 'react';
-import {DataSource} from '../../state/DataSource';
+import {DataSource} from './DataSource';
 import {useVirtual} from 'react-virtual';
-import styled from '@emotion/styled';
 import observeRect from '@reach/observe-rect';
-import {useInUnitTest} from '../../utils/useInUnitTest()';
 
 // how fast we update if updates are low-prio (e.g. out of window and not super significant)
 const LOW_PRIO_UPDATE = 1000; //ms
@@ -75,9 +73,9 @@ type DataSourceProps<T extends object, C> = {
  * This component is UI agnostic, and just takes care of virtualizing the provided dataSource, and render it as efficiently a possibible,
  * de priorizing off screen updates etc.
  */
-export const DataSourceRenderer: <T extends object, C>(
+export const DataSourceRendererVirtual: <T extends object, C>(
   props: DataSourceProps<T, C>,
-) => React.ReactElement = memo(function DataSourceRenderer({
+) => React.ReactElement = memo(function DataSourceRendererVirtual({
   dataSource,
   defaultRowHeight,
   useFixedRowHeight,
@@ -286,12 +284,15 @@ export const DataSourceRenderer: <T extends object, C>(
    */
   return (
     <RedrawContext.Provider value={redraw}>
-      <TableContainer ref={parentRef} onScroll={onScroll}>
+      <div ref={parentRef} onScroll={onScroll} style={tableContainerStyle}>
         {virtualizer.virtualItems.length === 0
           ? emptyRenderer?.(dataSource)
           : null}
-        <TableWindow
-          height={virtualizer.totalSize}
+        <div
+          style={{
+            ...tableWindowStyle,
+            height: virtualizer.totalSize,
+          }}
           onKeyDown={onKeyDown}
           tabIndex={0}>
           {virtualizer.virtualItems.map((virtualRow) => {
@@ -314,27 +315,30 @@ export const DataSourceRenderer: <T extends object, C>(
               </div>
             );
           })}
-        </TableWindow>
-      </TableContainer>
+        </div>
+      </div>
     </RedrawContext.Provider>
   );
 }) as any;
 
-const TableContainer = styled.div({
+const tableContainerStyle = {
   overflowY: 'auto',
   overflowX: 'hidden',
   display: 'flex',
   flex: 1,
-});
+} as const;
 
-const TableWindow = styled.div<{height: number}>(({height}) => ({
-  height,
+const tableWindowStyle = {
   position: 'relative',
   width: '100%',
-}));
+} as const;
 
 export const RedrawContext = createContext<undefined | (() => void)>(undefined);
 
 export function useTableRedraw() {
   return useContext(RedrawContext);
+}
+
+function useInUnitTest(): boolean {
+  return process.env.NODE_ENV === 'test';
 }

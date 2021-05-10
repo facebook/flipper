@@ -26,7 +26,7 @@ import {useHighlighter, HighlightManager} from '../Highlight';
 import {Dropdown, Menu, Tooltip} from 'antd';
 import {tryGetFlipperLibImplementation} from '../../plugin/FlipperLib';
 import {safeStringify} from '../../utils/safeStringify';
-import {useInUnitTest} from '../../utils/useInUnitTest()';
+import {useInUnitTest} from '../../utils/useInUnitTest';
 
 export {DataValueExtractor} from './DataPreview';
 

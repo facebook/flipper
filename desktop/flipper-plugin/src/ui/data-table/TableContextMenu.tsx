@@ -18,8 +18,8 @@ import {
 import React from 'react';
 import {tryGetFlipperLibImplementation} from '../../plugin/FlipperLib';
 import {DataTableColumn} from './DataTable';
-import {DataSource} from '../../state/DataSource';
 import {toFirstUpper} from '../../utils/toFirstUpper';
+import {DataSource} from '../../data-source/DataSource';
 
 const {Item, SubMenu} = Menu;
 

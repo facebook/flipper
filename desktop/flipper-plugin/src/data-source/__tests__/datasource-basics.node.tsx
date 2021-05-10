@@ -7,7 +7,8 @@
  * @format
  */
 
-import {createDataSource, DataSource} from '../DataSource';
+import {createDataSource} from '../../state/createDataSource';
+import {DataSource} from '../DataSource';
 
 type Todo = {
   id: string;

@@ -20,11 +20,15 @@ import React, {
   useReducer,
 } from 'react';
 import {TableRow, DEFAULT_ROW_HEIGHT} from './TableRow';
-import {DataSource} from '../../state/DataSource';
 import {Layout} from '../Layout';
 import {TableHead} from './TableHead';
 import {Percentage} from '../../utils/widthUtils';
-import {DataSourceRenderer, DataSourceVirtualizer} from './DataSourceRenderer';
+import {
+  DataSourceRendererVirtual,
+  DataSourceRendererStatic,
+  DataSource,
+  DataSourceVirtualizer,
+} from '../../data-source';
 import {
   computeDataTableFilter,
   createDataTableManager,
@@ -46,8 +50,7 @@ import {useAssertStableRef} from '../../utils/useAssertStableRef';
 import {Formatter} from '../DataFormatter';
 import {usePluginInstance} from '../../plugin/PluginContext';
 import {debounce} from 'lodash';
-import {StaticDataSourceRenderer} from './StaticDataSourceRenderer';
-import {useInUnitTest} from '../../utils/useInUnitTest()';
+import {useInUnitTest} from '../../utils/useInUnitTest';
 
 interface DataTableBaseProps<T = any> {
   columns: DataTableColumn<T>[];
@@ -458,7 +461,7 @@ export function DataTable<T extends object>(
   const mainSection = props.scrollable ? (
     <Layout.Top>
       {header}
-      <DataSourceRenderer<T, TableRowRenderContext<T>>
+      <DataSourceRendererVirtual<T, TableRowRenderContext<T>>
         dataSource={dataSource}
         autoScroll={tableState.autoScroll && !dragging.current}
         useFixedRowHeight={!tableState.usesWrapping}
@@ -475,7 +478,7 @@ export function DataTable<T extends object>(
   ) : (
     <Layout.Container>
       {header}
-      <StaticDataSourceRenderer<T, TableRowRenderContext<T>>
+      <DataSourceRendererStatic<T, TableRowRenderContext<T>>
         dataSource={dataSource}
         useFixedRowHeight={!tableState.usesWrapping}
         defaultRowHeight={DEFAULT_ROW_HEIGHT}

@@ -14,7 +14,7 @@ import {PluginClient} from '../plugin/Plugin';
 import {DevicePluginClient} from '../plugin/DevicePlugin';
 import mockConsole from 'jest-mock-console';
 import {sleep} from '../utils/sleep';
-import {createDataSource} from '../state/DataSource';
+import {createDataSource} from '../state/createDataSource';
 
 test('it can start a plugin and lifecycle events', () => {
   const {instance, ...p} = TestUtils.startPlugin(testPlugin);
