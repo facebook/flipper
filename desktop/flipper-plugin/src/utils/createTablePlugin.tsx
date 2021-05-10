@@ -8,7 +8,7 @@
  */
 
 import {notification, Typography} from 'antd';
-import {DataSource} from '../data-source/DataSource';
+import {DataSource} from '../data-source/index';
 import React from 'react';
 import {PluginClient} from '../plugin/Plugin';
 import {usePlugin} from '../plugin/PluginContext';

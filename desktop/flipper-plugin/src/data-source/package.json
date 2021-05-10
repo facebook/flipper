@@ -1,0 +1,28 @@
+{
+  "name": "flipper-data-source",
+  "version": "0.0.1",
+  "description": "Library to power streamig data visualisations",
+  "repository": "https://github.com/facebook/flipper",
+  "author": "Facebook Inc",
+  "license": "MIT",
+  "source": "index.tsx",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "microbundle --tsconfig flipper-data-source.tsconfig.json --no-compress",
+    "watch": "microbundle --tsconfig flipper-data-source.tsconfig.json --no-compress watch"
+  },
+  "files": [
+    "lib/"
+  ],
+  "devDependencies": {
+    "@reach/observe-rect": "^1.2.0",
+    "lodash": "^4.17.21",
+    "microbundle": "^0.13.0",
+    "react-virtual": "^2.6.2"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-dom": "*"
+  }
+}

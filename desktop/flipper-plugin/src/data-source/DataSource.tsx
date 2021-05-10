@@ -7,12 +7,10 @@
  * @format
  */
 
-import {
-  sortedIndexBy,
-  sortedLastIndexBy,
-  property,
-  sortBy as lodashSort,
-} from 'lodash';
+import sortedIndexBy from 'lodash/sortedIndexBy';
+import sortedLastIndexBy from 'lodash/sortedLastIndexBy';
+import property from 'lodash/property';
+import lodashSort from 'lodash/sortBy';
 
 // If the dataSource becomes to large, after how many records will we start to drop items?
 const dropFactor = 0.1;

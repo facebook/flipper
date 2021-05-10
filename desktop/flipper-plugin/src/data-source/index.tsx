@@ -7,9 +7,10 @@
  * @format
  */
 
-export {DataSource} from './DataSource';
+export {DataSource, ExtractKeyType} from './DataSource';
 export {
   DataSourceRendererVirtual,
   DataSourceVirtualizer,
+  useTableRedraw,
 } from './DataSourceRendererVirtual';
 export {DataSourceRendererStatic} from './DataSourceRendererStatic';

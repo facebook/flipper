@@ -28,7 +28,7 @@ import {
   DataSourceRendererStatic,
   DataSource,
   DataSourceVirtualizer,
-} from '../../data-source';
+} from '../../data-source/index';
 import {
   computeDataTableFilter,
   createDataTableManager,

@@ -7,6 +7,8 @@
  * @format
  */
 
+// ok for now, should be factored if this becomes a stand-alone lib
+// eslint-disable-next-line
 import {createDataSource} from '../../state/createDataSource';
 import {DataSource} from '../DataSource';
 

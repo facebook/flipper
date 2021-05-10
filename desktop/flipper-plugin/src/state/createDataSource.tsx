@@ -7,7 +7,7 @@
  * @format
  */
 
-import {DataSource, ExtractKeyType} from '../data-source/DataSource';
+import {DataSource, ExtractKeyType} from '../data-source/index';
 import {registerStorageAtom} from '../plugin/PluginBase';
 
 type CreateDataSourceOptions<T, K extends keyof T> = {

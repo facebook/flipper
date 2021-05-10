@@ -83,7 +83,8 @@ export {
 } from './utils/Logger';
 export {Idler} from './utils/Idler';
 
-export {DataSource} from './data-source/DataSource';
+// Import from the index file directly, to make sure package.json's main field is skipped.
+export {DataSource} from './data-source/index';
 export {createDataSource} from './state/createDataSource';
 
 export {DataTable, DataTableColumn} from './ui/data-table/DataTable';
