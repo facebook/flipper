@@ -49,6 +49,8 @@ module.exports = {
     'flowtype/define-flow-type': 0,
     'flowtype/use-flow-type': 0,
     'react/react-in-jsx-scope': 0, // not needed with our metro implementation
+    // Disallow boolean JSX properties set to true, e.g. `grow={true}`.
+    'react/jsx-boolean-value': ['warn', 'never'],
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'warn',
     'react/jsx-key': 'error',
