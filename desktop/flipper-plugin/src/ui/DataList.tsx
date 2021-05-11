@@ -78,7 +78,7 @@ export type DataListProps<T extends Item> = DataListBaseProps<T> &
   Omit<DataTableProps<T>, 'records' | 'dataSource' | 'columns' | 'onSelect'>;
 
 export const DataList: React.FC<DataListProps<any>> = function DataList<
-  T extends Item
+  T extends Item,
 >({
   selection: baseSelection,
   onSelect,

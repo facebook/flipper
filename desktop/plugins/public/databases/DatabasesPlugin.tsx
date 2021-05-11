@@ -332,9 +332,10 @@ const FavoritesMenu = React.memo(
     favorites: string[];
     onClick: (value: string) => void;
   }) => {
-    const onMenuClick = useCallback((p: any) => onClick(p.key as string), [
-      onClick,
-    ]);
+    const onMenuClick = useCallback(
+      (p: any) => onClick(p.key as string),
+      [onClick],
+    );
     return (
       <Menu>
         {favorites.map((q) => (
@@ -488,12 +489,8 @@ export function Component() {
 
   const onRowEdited = useCallback(
     (change: {[key: string]: string | null}) => {
-      const {
-        selectedDatabaseTable,
-        currentStructure,
-        viewMode,
-        currentPage,
-      } = instance.state.get();
+      const {selectedDatabaseTable, currentStructure, viewMode, currentPage} =
+        instance.state.get();
       const highlightedRowIdx = currentPage?.highlightedRows[0] ?? -1;
       const row =
         highlightedRowIdx >= 0

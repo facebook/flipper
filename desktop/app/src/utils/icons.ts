@@ -34,9 +34,10 @@ export function getIcons(): Icons {
 
 // Takes a string like 'star', or 'star-outline', and converts it to
 // {trimmedName: 'star', variant: 'filled'} or {trimmedName: 'star', variant: 'outline'}
-function getIconPartsFromName(
-  icon: string,
-): {trimmedName: string; variant: 'outline' | 'filled'} {
+function getIconPartsFromName(icon: string): {
+  trimmedName: string;
+  variant: 'outline' | 'filled';
+} {
   const isOutlineVersion = icon.endsWith('-outline');
   const trimmedName = isOutlineVersion ? icon.replace('-outline', '') : icon;
   const variant = isOutlineVersion ? 'outline' : 'filled';

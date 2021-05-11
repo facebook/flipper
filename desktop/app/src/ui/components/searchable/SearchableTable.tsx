@@ -91,14 +91,16 @@ export function rowMatchesSearchTerm(
   );
 }
 
-export const filterRowsFactory = (
-  filters: Array<Filter>,
-  searchTerm: string,
-  regexSearch: boolean,
-  contentSearch: boolean,
-) => (row: TableBodyRow): boolean =>
-  rowMatchesFilters(filters, row) &&
-  rowMatchesSearchTerm(searchTerm, regexSearch, contentSearch, row);
+export const filterRowsFactory =
+  (
+    filters: Array<Filter>,
+    searchTerm: string,
+    regexSearch: boolean,
+    contentSearch: boolean,
+  ) =>
+  (row: TableBodyRow): boolean =>
+    rowMatchesFilters(filters, row) &&
+    rowMatchesSearchTerm(searchTerm, regexSearch, contentSearch, row);
 
 class SearchableManagedTable extends PureComponent<Props, State> {
   static defaultProps = {

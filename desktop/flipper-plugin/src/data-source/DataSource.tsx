@@ -86,7 +86,7 @@ type OutputChange =
 export class DataSource<
   T = any,
   KEY extends keyof T = any,
-  KEY_TYPE extends string | number | never = ExtractKeyType<T, KEY>
+  KEY_TYPE extends string | number | never = ExtractKeyType<T, KEY>,
 > {
   private nextId = 0;
   private _records: Entry<T>[] = [];

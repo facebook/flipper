@@ -30,9 +30,8 @@ type Props = {
 
 export default (props: Props) => {
   const {onHide, onSubmit, uri, requiredParameters} = props;
-  const {isValid, values, setValuesArray} = useRequiredParameterFormValidator(
-    requiredParameters,
-  );
+  const {isValid, values, setValuesArray} =
+    useRequiredParameterFormValidator(requiredParameters);
   return (
     <Modal
       visible

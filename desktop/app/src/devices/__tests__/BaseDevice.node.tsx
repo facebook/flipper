@@ -69,8 +69,8 @@ const iosEmulatorDevicePlugin = new _SandyPluginDefinition(
   iosEmulatorlDevicePluginDetails,
   DeviceTestPluginModule,
 );
-const androiKaiosPhysicalDevicePluginDetails = TestUtils.createMockPluginDetails(
-  {
+const androiKaiosPhysicalDevicePluginDetails =
+  TestUtils.createMockPluginDetails({
     id: 'androidPhysicalDevicePlugin',
     name: 'flipper-plugin-android-physical-device',
     version: '0.0.1',
@@ -82,8 +82,7 @@ const androiKaiosPhysicalDevicePluginDetails = TestUtils.createMockPluginDetails
         specs: ['KaiOS'],
       },
     ],
-  },
-);
+  });
 const androidKaiosPhysicalDevicePlugin = new _SandyPluginDefinition(
   androiKaiosPhysicalDevicePluginDetails,
   DeviceTestPluginModule,

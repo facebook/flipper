@@ -95,12 +95,8 @@ class SearchBar extends Component<Props, State> {
 
   render() {
     const {bookmarks, providers} = this.props;
-    const {
-      autoCompleteSheetOpen,
-      inputFocused,
-      searchInputValue,
-      query,
-    } = this.state;
+    const {autoCompleteSheetOpen, inputFocused, searchInputValue, query} =
+      this.state;
     return (
       <ToolbarContainer>
         <Toolbar>

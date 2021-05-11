@@ -47,16 +47,9 @@ function createDevice(
           const isKaiOSDevice = Object.keys(props).some(
             (name) => name.startsWith('kaios') || name.startsWith('ro.kaios'),
           );
-          const androidLikeDevice = new (isKaiOSDevice
-            ? KaiOSDevice
-            : AndroidDevice)(
-            device.id,
-            type,
-            name,
-            adbClient,
-            abiList,
-            sdkVersion,
-          );
+          const androidLikeDevice = new (
+            isKaiOSDevice ? KaiOSDevice : AndroidDevice
+          )(device.id, type, name, adbClient, abiList, sdkVersion);
           if (ports) {
             await androidLikeDevice
               .reverse([ports.secure, ports.insecure])

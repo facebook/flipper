@@ -67,9 +67,8 @@ test('it can start a device plugin and listen to lifecycle events', () => {
 });
 
 test('it can render a device plugin', () => {
-  const {renderer, instance, sendLogEntry} = TestUtils.renderDevicePlugin(
-    testPlugin,
-  );
+  const {renderer, instance, sendLogEntry} =
+    TestUtils.renderDevicePlugin(testPlugin);
 
   expect(renderer.baseElement).toMatchInlineSnapshot(`
     <body>

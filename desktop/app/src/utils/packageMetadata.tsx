@@ -26,13 +26,12 @@ const getPackageJSON = async () => {
   return JSON.parse(content);
 };
 
-export const readCurrentRevision: () => Promise<
-  string | undefined
-> = lodash.memoize(async () => {
-  // This is provided as part of the bundling process for headless.
-  if (global.__REVISION__) {
-    return global.__REVISION__;
-  }
-  const json = await getPackageJSON();
-  return json.revision;
-});
+export const readCurrentRevision: () => Promise<string | undefined> =
+  lodash.memoize(async () => {
+    // This is provided as part of the bundling process for headless.
+    if (global.__REVISION__) {
+      return global.__REVISION__;
+    }
+    const json = await getPackageJSON();
+    return json.revision;
+  });

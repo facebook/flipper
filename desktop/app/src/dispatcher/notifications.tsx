@@ -100,9 +100,8 @@ export default (store: Store, logger: Logger) => {
             return;
           }
 
-          const persistingPlugin: undefined | PluginDefinition = getPlugin(
-            pluginName,
-          );
+          const persistingPlugin: undefined | PluginDefinition =
+            getPlugin(pluginName);
           if (
             persistingPlugin &&
             !isSandyPlugin(persistingPlugin) &&
@@ -129,11 +128,8 @@ export default (store: Store, logger: Logger) => {
         }
       });
 
-      const {
-        activeNotifications,
-        blocklistedPlugins,
-        blocklistedCategories,
-      } = notifications;
+      const {activeNotifications, blocklistedPlugins, blocklistedCategories} =
+        notifications;
 
       activeNotifications
         .map((n) => ({

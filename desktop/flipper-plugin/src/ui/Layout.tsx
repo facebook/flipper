@@ -190,14 +190,8 @@ function renderSplitLayout(
     child2 = <Empty />;
   }
   if ('resizable' in props && props.resizable) {
-    const {
-      width,
-      height,
-      minHeight,
-      minWidth,
-      maxHeight,
-      maxWidth,
-    } = props as any;
+    const {width, height, minHeight, minWidth, maxHeight, maxWidth} =
+      props as any;
     const sizeProps =
       direction === 'column'
         ? ({

@@ -372,10 +372,8 @@ class RatingButton extends Component<PropsFromState, State> {
 }
 
 export function SandyRatingButton() {
-  const [
-    promptData,
-    setPromptData,
-  ] = useState<UserFeedback.FeedbackPrompt | null>(null);
+  const [promptData, setPromptData] =
+    useState<UserFeedback.FeedbackPrompt | null>(null);
   const [isShown, setIsShown] = useState(false);
   const [hasTriggered, setHasTriggered] = useState(false);
   const sessionId = useStore((store) => store.application.sessionId);

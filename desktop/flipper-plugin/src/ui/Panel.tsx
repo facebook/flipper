@@ -94,7 +94,8 @@ const StyledCollapse = styled(Collapse)({
   '& > .ant-collapse-item': {
     borderBottom: 'none',
   },
-  '& > .ant-collapse-item > .ant-collapse-content > .ant-collapse-content-box': {
-    padding: 0,
-  },
+  '& > .ant-collapse-item > .ant-collapse-content > .ant-collapse-content-box':
+    {
+      padding: 0,
+    },
 });

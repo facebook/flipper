@@ -49,13 +49,8 @@ function getOsIcon(os?: OS) {
 
 export function AppSelector() {
   const dispatch = useDispatch();
-  const {
-    devices,
-    selectedDevice,
-    clients,
-    uninitializedClients,
-    selectedApp,
-  } = useStore((state) => state.connections);
+  const {devices, selectedDevice, clients, uninitializedClients, selectedApp} =
+    useStore((state) => state.connections);
   useValue(selectedDevice?.connected, false); // subscribe to future archived state changes
 
   const onSelectDevice = useTrackedCallback(

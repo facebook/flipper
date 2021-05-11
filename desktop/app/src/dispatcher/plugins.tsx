@@ -124,7 +124,7 @@ function reportVersion(pluginDetails: ActivatablePluginDetails) {
 
 export function filterNewestVersionOfEachPlugin<
   T1 extends PluginDetails,
-  T2 extends PluginDetails
+  T2 extends PluginDetails,
 >(bundledPlugins: T1[], dynamicPlugins: T2[]): (T1 | T2)[] {
   const pluginByName: {[key: string]: T1 | T2} = {};
   for (const plugin of bundledPlugins) {
@@ -170,23 +170,23 @@ export async function getDynamicPlugins() {
   }
 }
 
-export const checkGK = (gatekeepedPlugins: Array<ActivatablePluginDetails>) => (
-  plugin: ActivatablePluginDetails,
-): boolean => {
-  try {
-    if (!plugin.gatekeeper) {
-      return true;
+export const checkGK =
+  (gatekeepedPlugins: Array<ActivatablePluginDetails>) =>
+  (plugin: ActivatablePluginDetails): boolean => {
+    try {
+      if (!plugin.gatekeeper) {
+        return true;
+      }
+      const result = GK.get(plugin.gatekeeper);
+      if (!result) {
+        gatekeepedPlugins.push(plugin);
+      }
+      return result;
+    } catch (err) {
+      console.error(`Failed to check GK for plugin ${plugin.id}`, err);
+      return false;
     }
-    const result = GK.get(plugin.gatekeeper);
-    if (!result) {
-      gatekeepedPlugins.push(plugin);
-    }
-    return result;
-  } catch (err) {
-    console.error(`Failed to check GK for plugin ${plugin.id}`, err);
-    return false;
-  }
-};
+  };
 
 export const checkDisabled = (
   disabledPlugins: Array<ActivatablePluginDetails>,

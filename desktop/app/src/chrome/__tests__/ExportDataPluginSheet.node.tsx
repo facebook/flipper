@@ -42,15 +42,10 @@ TestDevicePlugin.defaultPersistedState = {msg: 'TestDevicePlugin'};
 
 test('SettingsSheet snapshot with nothing enabled', async () => {
   let root: ReactTestRenderer;
-  const {
-    store,
-    togglePlugin,
-    client,
-    device,
-    pluginKey,
-  } = await createMockFlipperWithPlugin(TestPlugin, {
-    additionalPlugins: [TestDevicePlugin],
-  });
+  const {store, togglePlugin, client, device, pluginKey} =
+    await createMockFlipperWithPlugin(TestPlugin, {
+      additionalPlugins: [TestDevicePlugin],
+    });
 
   togglePlugin();
 

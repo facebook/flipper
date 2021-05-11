@@ -27,7 +27,7 @@ type Message = {
  */
 export interface PluginClient<
   Events extends EventsContract = {},
-  Methods extends MethodsContract = {}
+  Methods extends MethodsContract = {},
 > extends BasePluginClient {
   /**
    * Identifier that uniquely identifies the connected application
@@ -128,7 +128,7 @@ export interface RealFlipperClient {
 
 export type PluginFactory<
   Events extends EventsContract,
-  Methods extends MethodsContract
+  Methods extends MethodsContract,
 > = (client: PluginClient<Events, Methods>) => object;
 
 export type FlipperPluginComponent = React.FC<{}>;

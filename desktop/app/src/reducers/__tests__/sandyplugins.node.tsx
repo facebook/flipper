@@ -85,8 +85,9 @@ test('it should initialize starred sandy plugins', async () => {
   expect(client.sandyPluginStates.get(TestPlugin.id)).toBeInstanceOf(
     _SandyPluginInstance,
   );
-  const instanceApi: PluginApi = client.sandyPluginStates.get(TestPlugin.id)!
-    .instanceApi;
+  const instanceApi: PluginApi = client.sandyPluginStates.get(
+    TestPlugin.id,
+  )!.instanceApi;
 
   expect(instanceApi.connectStub).toBeCalledTimes(0);
   selectTestPlugin(store, client);
@@ -104,8 +105,9 @@ test('it should cleanup a plugin if disabled', async () => {
   const {client, store} = await createMockFlipperWithPlugin(TestPlugin);
 
   expect(TestPlugin.asPluginModule().plugin).toBeCalledTimes(1);
-  const pluginInstance: PluginApi = client.sandyPluginStates.get(TestPlugin.id)!
-    .instanceApi;
+  const pluginInstance: PluginApi = client.sandyPluginStates.get(
+    TestPlugin.id,
+  )!.instanceApi;
   expect(pluginInstance.destroyStub).toHaveBeenCalledTimes(0);
   client.initPlugin(TestPlugin.id);
   expect(pluginInstance.connectStub).toHaveBeenCalledTimes(1);
@@ -210,8 +212,9 @@ test('it trigger hooks for background plugins', async () => {
   const {client} = await createMockFlipperWithPlugin(TestPlugin, {
     asBackgroundPlugin: true,
   });
-  const pluginInstance: PluginApi = client.sandyPluginStates.get(TestPlugin.id)!
-    .instanceApi;
+  const pluginInstance: PluginApi = client.sandyPluginStates.get(
+    TestPlugin.id,
+  )!.instanceApi;
   expect(client.isBackgroundPlugin(TestPlugin.id)).toBeTruthy();
   expect(pluginInstance.destroyStub).toHaveBeenCalledTimes(0);
   expect(pluginInstance.connectStub).toHaveBeenCalledTimes(1);
@@ -234,8 +237,9 @@ test('it can send messages from sandy clients', async () => {
       }
     },
   });
-  const pluginInstance: PluginApi = client.sandyPluginStates.get(TestPlugin.id)!
-    .instanceApi;
+  const pluginInstance: PluginApi = client.sandyPluginStates.get(
+    TestPlugin.id,
+  )!.instanceApi;
   // without rendering, non-bg plugins won't connect automatically,
   client.initPlugin(TestPlugin.id);
   await pluginInstance.send('test', {test: 3});

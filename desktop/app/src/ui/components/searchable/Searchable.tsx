@@ -208,11 +208,8 @@ export default function Searchable(
               const filters = new Set(
                 savedDefaultFilter.enum.map((filter) => filter.value),
               );
-              savedStateFilters[
-                filterIndex
-              ].value = savedDefaultFilter.value.filter((value) =>
-                filters.has(value),
-              );
+              savedStateFilters[filterIndex].value =
+                savedDefaultFilter.value.filter((value) => filters.has(value));
             }
           });
         }

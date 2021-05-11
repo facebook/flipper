@@ -174,7 +174,8 @@ export async function compileRenderer(buildFolder: string) {
 
 export async function compileMain() {
   const out = path.join(staticDir, 'main.bundle.js');
-  process.env.FLIPPER_ELECTRON_VERSION = require('electron/package.json').version;
+  process.env.FLIPPER_ELECTRON_VERSION =
+    require('electron/package.json').version;
   console.log('⚙️  Compiling main bundle...');
   try {
     const config = Object.assign({}, await Metro.loadConfig(), {

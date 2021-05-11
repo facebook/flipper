@@ -11,9 +11,10 @@ import {createContext, useContext} from 'react';
 import {SandyPluginInstance, PluginFactory} from './Plugin';
 import {SandyDevicePluginInstance, DevicePluginFactory} from './DevicePlugin';
 
-export const SandyPluginContext = createContext<
-  SandyPluginInstance | SandyDevicePluginInstance | undefined
->(undefined);
+export const SandyPluginContext =
+  createContext<SandyPluginInstance | SandyDevicePluginInstance | undefined>(
+    undefined,
+  );
 
 export function usePluginInstance():
   | SandyPluginInstance
@@ -26,7 +27,7 @@ export function usePluginInstance():
 }
 
 export function usePlugin<
-  Factory extends PluginFactory<any, any> | DevicePluginFactory
+  Factory extends PluginFactory<any, any> | DevicePluginFactory,
 >(plugin: Factory): ReturnType<Factory> {
   const pluginInstance = usePluginInstance();
   // In principle we don't *need* the plugin, but having it passed it makes sure the

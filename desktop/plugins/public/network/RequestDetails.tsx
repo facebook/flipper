@@ -668,17 +668,19 @@ class BinaryFormatter {
 }
 
 class ProtobufFormatter {
-  private protobufDefinitionRepository = ProtobufDefinitionsRepository.getInstance();
+  private protobufDefinitionRepository =
+    ProtobufDefinitionsRepository.getInstance();
 
   formatRequest(request: Request) {
     if (
       getHeaderValue(request.requestHeaders, 'content-type') ===
       'application/x-protobuf'
     ) {
-      const protobufDefinition = this.protobufDefinitionRepository.getRequestType(
-        request.method,
-        request.url,
-      );
+      const protobufDefinition =
+        this.protobufDefinitionRepository.getRequestType(
+          request.method,
+          request.url,
+        );
       if (protobufDefinition == undefined) {
         return (
           <Text>
@@ -708,10 +710,11 @@ class ProtobufFormatter {
         'application/x-protobuf' ||
       request.url.endsWith('.proto')
     ) {
-      const protobufDefinition = this.protobufDefinitionRepository.getResponseType(
-        request.method,
-        request.url,
-      );
+      const protobufDefinition =
+        this.protobufDefinitionRepository.getResponseType(
+          request.method,
+          request.url,
+        );
       if (protobufDefinition == undefined) {
         return (
           <Text>

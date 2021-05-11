@@ -15,12 +15,9 @@ export async function serialize(
   statusUpdate?: (msg: string) => void,
   statusMsg?: string,
 ): Promise<string> {
-  return makeObjectSerializable(
-    obj,
-    idler,
-    statusUpdate,
-    statusMsg,
-  ).then((obj) => JSON.stringify(obj));
+  return makeObjectSerializable(obj, idler, statusUpdate, statusMsg).then(
+    (obj) => JSON.stringify(obj),
+  );
 }
 
 export function deserialize(str: string): any {

@@ -197,9 +197,8 @@ export default class Inspector extends Component<Props, State> {
       selectedElement !== prevProps.selectedElement
     ) {
       // selected element in non-AX tree changed, find linked element in AX tree
-      const newlySelectedElem = this.props.persistedState.elements[
-        selectedElement
-      ];
+      const newlySelectedElem =
+        this.props.persistedState.elements[selectedElement];
       if (newlySelectedElem) {
         this.props.onSelect(
           newlySelectedElem.extraInfo
@@ -213,9 +212,8 @@ export default class Inspector extends Component<Props, State> {
       selectedAXElement !== prevProps.selectedAXElement
     ) {
       // selected element in AX tree changed, find linked element in non-AX tree
-      const newlySelectedAXElem = this.props.persistedState.AXelements[
-        selectedAXElement
-      ];
+      const newlySelectedAXElem =
+        this.props.persistedState.AXelements[selectedAXElement];
       if (newlySelectedAXElem) {
         this.props.onSelect(
           newlySelectedAXElem.extraInfo
@@ -310,16 +308,12 @@ export default class Inspector extends Component<Props, State> {
   ): Promise<Array<Element>> {
     if (ids.length > 0 && this.props.client.isConnected) {
       const {forAccessibilityEvent} = options;
-      const {
-        elements,
-      }: {elements: Array<Element>} = await this.props.client.call(
-        this.call().GET_NODES,
-        {
+      const {elements}: {elements: Array<Element>} =
+        await this.props.client.call(this.call().GET_NODES, {
           ids,
           forAccessibilityEvent,
           selected: false,
-        },
-      );
+        });
       elements.forEach((e) => this.updateElement(e.id, e));
       return elements;
     } else {

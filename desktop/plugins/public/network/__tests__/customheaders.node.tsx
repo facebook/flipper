@@ -11,13 +11,8 @@ import {TestUtils} from 'flipper-plugin';
 import * as NetworkPlugin from '../index';
 
 test('Can handle custom headers', async () => {
-  const {
-    instance,
-    sendEvent,
-    act,
-    renderer,
-    exportState,
-  } = TestUtils.renderPlugin(NetworkPlugin);
+  const {instance, sendEvent, act, renderer, exportState} =
+    TestUtils.renderPlugin(NetworkPlugin);
 
   act(() => {
     sendEvent('newRequest', {

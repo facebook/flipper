@@ -40,12 +40,8 @@ class TestPlugin extends FlipperPlugin<any, any, any> {
 }
 
 test('can create a Fake flipper', async () => {
-  const {
-    client,
-    device,
-    store,
-    sendMessage,
-  } = await createMockFlipperWithPlugin(TestPlugin);
+  const {client, device, store, sendMessage} =
+    await createMockFlipperWithPlugin(TestPlugin);
   expect(client).toBeTruthy();
   expect(device).toBeTruthy();
   expect(store).toBeTruthy();

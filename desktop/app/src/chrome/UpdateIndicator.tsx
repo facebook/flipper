@@ -32,10 +32,8 @@ export type VersionCheckResult =
     };
 
 export default function UpdateIndicator() {
-  const [
-    versionCheckResult,
-    setVersionCheckResult,
-  ] = useState<VersionCheckResult>({kind: 'up-to-date'});
+  const [versionCheckResult, setVersionCheckResult] =
+    useState<VersionCheckResult>({kind: 'up-to-date'});
   const launcherMsg = useStore((state) => state.application.launcherMsg);
 
   // Effect to show notification if details change

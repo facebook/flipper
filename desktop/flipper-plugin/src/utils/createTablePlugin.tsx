@@ -18,9 +18,7 @@ import {MasterDetail} from '../ui/MasterDetail';
 import {createDataSource} from '../state/createDataSource';
 
 type PluginResult<Raw, Row> = {
-  plugin(
-    client: PluginClient<Record<string, Raw | {}>>,
-  ): {
+  plugin(client: PluginClient<Record<string, Raw | {}>>): {
     rows: DataSource<Row>;
   };
   Component(): React.ReactElement;
@@ -49,7 +47,7 @@ export function createTablePlugin<Row extends object>(props: {
 }): PluginResult<Row, Row>;
 export function createTablePlugin<
   Raw extends object,
-  Row extends object = Raw
+  Row extends object = Raw,
 >(props: {
   buildRow: (record: Raw) => Row;
   method: string;
@@ -63,7 +61,7 @@ export function createTablePlugin<
   Raw extends object,
   Method extends string,
   ResetMethod extends string,
-  Row extends object = Raw
+  Row extends object = Raw,
 >(props: {
   method: Method;
   resetMethod?: ResetMethod;
@@ -89,7 +87,7 @@ export function createTablePlugin<
       }
       const record = props.buildRow
         ? props.buildRow(event)
-        : ((event as any) as Row);
+        : (event as any as Row);
       if (props.key) {
         rows.upsert(record);
       } else {

@@ -206,11 +206,9 @@ function init() {
       dark: state.settingsState.darkMode,
     }),
     (theme) => {
-      (document.getElementById(
-        'flipper-theme-import',
-      ) as HTMLLinkElement).href = `themes/${
-        theme.dark ? 'dark' : 'light'
-      }.css`;
+      (
+        document.getElementById('flipper-theme-import') as HTMLLinkElement
+      ).href = `themes/${theme.dark ? 'dark' : 'light'}.css`;
     },
   );
 }

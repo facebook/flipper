@@ -212,9 +212,10 @@ export default function SetupDoctorScreen(props: {
   const [acknowlodgeProblem, setAcknowlodgeProblem] = useState(
     checkHasNewProblem(healthcheckReport.result),
   );
-  const hasProblem = useMemo(() => checkHasProblem(healthcheckReport.result), [
-    healthcheckReport,
-  ]);
+  const hasProblem = useMemo(
+    () => checkHasProblem(healthcheckReport.result),
+    [healthcheckReport],
+  );
   const onCloseModal = useCallback(() => {
     const hasNewProblem = checkHasNewProblem(healthcheckReport.result);
     if (acknowlodgeProblem) {

@@ -90,9 +90,10 @@ export function ManageMockResponsePanel(props: Props) {
       return returnValue;
     });
   }, [props.routes, selectedIdAtom]);
-  const duplicatedIds = useMemo(() => _duplicateIds(props.routes), [
-    props.routes,
-  ]);
+  const duplicatedIds = useMemo(
+    () => _duplicateIds(props.routes),
+    [props.routes],
+  );
 
   const items: RouteItem[] = Object.entries(props.routes).map(
     ([id, route]) => ({

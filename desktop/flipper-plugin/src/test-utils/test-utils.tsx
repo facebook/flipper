@@ -60,17 +60,15 @@ type ExtractClientType<Module extends FlipperPluginModule<any>> = Parameters<
   Module['plugin']
 >[0];
 
-type ExtractMethodsType<
-  Module extends FlipperPluginModule<any>
-> = ExtractClientType<Module> extends PluginClient<any, infer Methods>
-  ? Methods
-  : never;
+type ExtractMethodsType<Module extends FlipperPluginModule<any>> =
+  ExtractClientType<Module> extends PluginClient<any, infer Methods>
+    ? Methods
+    : never;
 
-type ExtractEventsType<
-  Module extends FlipperPluginModule<any>
-> = ExtractClientType<Module> extends PluginClient<infer Events, any>
-  ? Events
-  : never;
+type ExtractEventsType<Module extends FlipperPluginModule<any>> =
+  ExtractClientType<Module> extends PluginClient<infer Events, any>
+    ? Events
+    : never;
 
 interface BasePluginResult {
   /**

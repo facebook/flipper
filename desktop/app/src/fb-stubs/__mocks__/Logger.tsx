@@ -20,9 +20,10 @@ const instance = {
   debug: jest.fn(),
 };
 
-export function extractError(
-  ...data: Array<any>
-): {message: string; error: Error} {
+export function extractError(...data: Array<any>): {
+  message: string;
+  error: Error;
+} {
   const message = data.map(getStringFromErrorLike).join(' ');
   const error = data.find((e) => e instanceof Error) || new Error(message);
   return {

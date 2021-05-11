@@ -470,13 +470,8 @@ export default function createTableNativePlugin(id: string, title: string) {
       if (!this.props.persistedState.tableMetadata) {
         return 'Loading...';
       }
-      const {
-        topToolbar,
-        bottomToolbar,
-        columns,
-        columnSizes,
-        columnOrder,
-      } = this.props.persistedState.tableMetadata;
+      const {topToolbar, bottomToolbar, columns, columnSizes, columnOrder} =
+        this.props.persistedState.tableMetadata;
       const {rows} = this.props.persistedState;
 
       const topToolbarComponent = topToolbar ? renderToolbar(topToolbar) : null;

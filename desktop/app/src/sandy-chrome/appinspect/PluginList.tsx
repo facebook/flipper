@@ -493,33 +493,36 @@ const PluginMenu = styled(Menu)({
   '.ant-menu-sub.ant-menu-inline': {
     background: theme.backgroundDefault,
   },
-  '.ant-menu-inline .ant-menu-item, .ant-menu-inline .ant-menu-submenu-title ': {
-    width: '100%', // reset to remove weird bonus pixel from ANT
-  },
-  '.ant-menu-submenu > .ant-menu-submenu-title, .ant-menu-sub.ant-menu-inline > .ant-menu-item': {
-    borderRadius: theme.borderRadius,
-    height: '32px',
-    lineHeight: '24px',
-    padding: `4px 8px !important`,
-    '&:hover': {
-      color: theme.textColorPrimary,
-      background: theme.backgroundTransparentHover,
+  '.ant-menu-inline .ant-menu-item, .ant-menu-inline .ant-menu-submenu-title ':
+    {
+      width: '100%', // reset to remove weird bonus pixel from ANT
     },
-    '&.ant-menu-item-selected::after': {
-      border: 'none',
+  '.ant-menu-submenu > .ant-menu-submenu-title, .ant-menu-sub.ant-menu-inline > .ant-menu-item':
+    {
+      borderRadius: theme.borderRadius,
+      height: '32px',
+      lineHeight: '24px',
+      padding: `4px 8px !important`,
+      '&:hover': {
+        color: theme.textColorPrimary,
+        background: theme.backgroundTransparentHover,
+      },
+      '&.ant-menu-item-selected::after': {
+        border: 'none',
+      },
+      '&.ant-menu-item-selected': {
+        color: theme.white,
+        background: theme.primaryColor,
+        border: 'none',
+      },
+      '&.ant-menu-item-selected .ant-typography': {
+        color: theme.white,
+      },
     },
-    '&.ant-menu-item-selected': {
-      color: theme.white,
-      background: theme.primaryColor,
-      border: 'none',
+  '.ant-menu-submenu-inline > .ant-menu-submenu-title .ant-menu-submenu-arrow':
+    {
+      right: 8,
     },
-    '&.ant-menu-item-selected .ant-typography': {
-      color: theme.white,
-    },
-  },
-  '.ant-menu-submenu-inline > .ant-menu-submenu-title .ant-menu-submenu-arrow': {
-    right: 8,
-  },
   '.ant-badge-count': {
     color: theme.textColorSecondary,
     // border: `1px solid ${theme.dividerColor}`,

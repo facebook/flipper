@@ -1127,12 +1127,8 @@ const sandyTestPlugin = new _SandyPluginDefinition(
 );
 
 test('Sandy plugins are exported properly', async () => {
-  const {
-    client,
-    sendMessage,
-    store,
-    device,
-  } = await createMockFlipperWithPlugin(sandyTestPlugin);
+  const {client, sendMessage, store, device} =
+    await createMockFlipperWithPlugin(sandyTestPlugin);
 
   // We do select another plugin, to verify that pending message queues are indeed processed before exporting
   store.dispatch(
@@ -1266,8 +1262,7 @@ test('Sandy plugins are imported properly', async () => {
   const data = {
     clients: [
       {
-        id:
-          'TestApp#Android#MockAndroidDevice#2e52cea6-94b0-4ea1-b9a8-c9135ede14ca-serial',
+        id: 'TestApp#Android#MockAndroidDevice#2e52cea6-94b0-4ea1-b9a8-c9135ede14ca-serial',
         query: {
           app: 'TestApp',
           device: 'MockAndroidDevice',
@@ -1288,14 +1283,15 @@ test('Sandy plugins are imported properly', async () => {
     fileVersion: '0.9.99',
     flipperReleaseRevision: undefined,
     pluginStates2: {
-      'TestApp#Android#MockAndroidDevice#2e52cea6-94b0-4ea1-b9a8-c9135ede14ca-serial': {
-        TestPlugin: {
-          otherState: {
-            testCount: -3,
+      'TestApp#Android#MockAndroidDevice#2e52cea6-94b0-4ea1-b9a8-c9135ede14ca-serial':
+        {
+          TestPlugin: {
+            otherState: {
+              testCount: -3,
+            },
+            counter: 3,
           },
-          counter: 3,
         },
-      },
     },
     store: {
       activeNotifications: [],
@@ -1484,8 +1480,7 @@ test('Sandy plugin with custom import', async () => {
   const data = {
     clients: [
       {
-        id:
-          'TestApp#Android#MockAndroidDevice#2e52cea6-94b0-4ea1-b9a8-c9135ede14ca-serial',
+        id: 'TestApp#Android#MockAndroidDevice#2e52cea6-94b0-4ea1-b9a8-c9135ede14ca-serial',
         query: {
           app: 'TestApp',
           device: 'MockAndroidDevice',
@@ -1506,11 +1501,12 @@ test('Sandy plugin with custom import', async () => {
     fileVersion: '0.9.99',
     flipperReleaseRevision: undefined,
     pluginStates2: {
-      'TestApp#Android#MockAndroidDevice#2e52cea6-94b0-4ea1-b9a8-c9135ede14ca-serial': {
-        [plugin.id]: {
-          count: 4,
+      'TestApp#Android#MockAndroidDevice#2e52cea6-94b0-4ea1-b9a8-c9135ede14ca-serial':
+        {
+          [plugin.id]: {
+            count: 4,
+          },
         },
-      },
     },
     store: {
       activeNotifications: [],

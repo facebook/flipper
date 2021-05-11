@@ -185,17 +185,16 @@ function InstallButton(props: {
     | {kind: 'Remove'; error?: string}
     | {kind: 'Update'; error?: string};
 
-  const catchError = (
-    actionKind: 'Install' | 'Remove' | 'Update',
-    fn: () => Promise<void>,
-  ) => async () => {
-    try {
-      await fn();
-    } catch (err) {
-      console.error(err);
-      setAction({kind: actionKind, error: err.toString()});
-    }
-  };
+  const catchError =
+    (actionKind: 'Install' | 'Remove' | 'Update', fn: () => Promise<void>) =>
+    async () => {
+      try {
+        await fn();
+      } catch (err) {
+        console.error(err);
+        setAction({kind: actionKind, error: err.toString()});
+      }
+    };
 
   const mkInstallCallback = (action: 'Install' | 'Update') =>
     catchError(action, async () => {

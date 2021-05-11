@@ -540,8 +540,9 @@ export class ManagedTable extends React.Component<
                 .map((column, index) => ({
                   label: this.props.columns[column].value,
                   click: () => {
-                    const rowId = this.state.highlightedRows.values().next()
-                      .value;
+                    const rowId = this.state.highlightedRows
+                      .values()
+                      .next().value;
                     rowId && this.onCopyCell(rowId, index);
                   },
                 })),
@@ -665,13 +666,8 @@ export class ManagedTable extends React.Component<
   };
 
   render() {
-    const {
-      columns,
-      rows,
-      rowLineHeight,
-      hideHeader,
-      horizontallyScrollable,
-    } = this.props;
+    const {columns, rows, rowLineHeight, hideHeader, horizontallyScrollable} =
+      this.props;
     const {columnOrder, columnSizes} = this.state;
 
     let computedWidth = 0;

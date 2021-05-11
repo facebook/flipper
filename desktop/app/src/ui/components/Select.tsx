@@ -69,15 +69,8 @@ export default class Select extends Component<{
   };
 
   render() {
-    const {
-      className,
-      options,
-      selected,
-      label,
-      grow,
-      disabled,
-      style,
-    } = this.props;
+    const {className, options, selected, label, grow, disabled, style} =
+      this.props;
 
     let select = (
       <SelectMenu

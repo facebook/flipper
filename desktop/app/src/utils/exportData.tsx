@@ -201,13 +201,8 @@ export function processPluginStates(
 export function processNotificationStates(
   options: ProcessNotificationStatesOptions,
 ): Array<PluginNotification> {
-  const {
-    clients,
-    serial,
-    allActiveNotifications,
-    devicePlugins,
-    statusUpdate,
-  } = options;
+  const {clients, serial, allActiveNotifications, devicePlugins, statusUpdate} =
+    options;
   statusUpdate &&
     statusUpdate('Filtering the notifications for the filtered Clients...');
   const activeNotifications = allActiveNotifications.filter((notif) => {

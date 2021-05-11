@@ -21,7 +21,8 @@ export class ProtobufDefinitionsRepository {
 
   public static getInstance(): ProtobufDefinitionsRepository {
     if (!ProtobufDefinitionsRepository.instance) {
-      ProtobufDefinitionsRepository.instance = new ProtobufDefinitionsRepository();
+      ProtobufDefinitionsRepository.instance =
+        new ProtobufDefinitionsRepository();
     }
     return ProtobufDefinitionsRepository.instance;
   }

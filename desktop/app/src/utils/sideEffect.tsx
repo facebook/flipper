@@ -25,7 +25,7 @@ import {shallowEqual} from 'react-redux';
 export function sideEffect<
   Store extends ReduxStore<any, any>,
   V,
-  State = Store extends ReduxStore<infer S, any> ? S : never
+  State = Store extends ReduxStore<infer S, any> ? S : never,
 >(
   store: Store,
   options: {

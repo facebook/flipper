@@ -96,7 +96,7 @@ type StaticPersistedState = any;
 export abstract class FlipperBasePlugin<
   State,
   Actions extends BaseAction,
-  PersistedState
+  PersistedState,
 > extends Component<Props<PersistedState>, State> {
   abstract ['constructor']: any;
   static title: string | null = null;
@@ -197,7 +197,7 @@ export abstract class FlipperBasePlugin<
 export class FlipperDevicePlugin<
   S,
   A extends BaseAction,
-  P
+  P,
 > extends FlipperBasePlugin<S, A, P> {
   ['constructor']: typeof FlipperPlugin;
   device: BaseDevice;
@@ -226,7 +226,7 @@ export class FlipperDevicePlugin<
 export class FlipperPlugin<
   S,
   A extends BaseAction,
-  P
+  P,
 > extends FlipperBasePlugin<S, A, P> {
   ['constructor']: typeof FlipperPlugin;
   constructor(props: Props<P>) {

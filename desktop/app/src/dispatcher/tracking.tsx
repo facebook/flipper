@@ -89,11 +89,8 @@ export default (store: Store, logger: Logger) => {
       timeSinceLastStartup,
     });
     // create fresh exit data
-    const {
-      selectedDevice,
-      selectedApp,
-      selectedPlugin,
-    } = store.getState().connections;
+    const {selectedDevice, selectedApp, selectedPlugin} =
+      store.getState().connections;
     persistExitData(
       {
         selectedDevice,
@@ -142,12 +139,8 @@ export default (store: Store, logger: Logger) => {
       );
       return;
     }
-    const {
-      selectedDevice,
-      selectedPlugin,
-      selectedApp,
-      clients,
-    } = state.connections;
+    const {selectedDevice, selectedPlugin, selectedApp, clients} =
+      state.connections;
 
     persistExitData(
       {selectedDevice, selectedPlugin, selectedApp},

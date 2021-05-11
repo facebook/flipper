@@ -301,38 +301,37 @@ export async function runHealthchecks(): Promise<
 > {
   const environmentInfo = await getEnvInfo();
   const healthchecks: Healthchecks = getHealthchecks();
-  const results: Array<
-    CategoryResult | SkippedHealthcheckCategory
-  > = await Promise.all(
-    Object.entries(healthchecks).map(async ([key, category]) => {
-      if (category.isSkipped) {
-        return category;
-      }
-      const categoryResult: CategoryResult = [
-        key,
-        {
-          label: category.label,
-          results: await Promise.all(
-            category.healthchecks.map(
-              async ({key, label, run, isRequired}) => ({
-                key,
-                label,
-                isRequired: isRequired ?? true,
-                result: await run(environmentInfo).catch((e) => {
-                  console.error(e);
-                  // TODO Improve result type to be: OK | Problem(message, fix...)
-                  return {
-                    hasProblem: true,
-                  };
+  const results: Array<CategoryResult | SkippedHealthcheckCategory> =
+    await Promise.all(
+      Object.entries(healthchecks).map(async ([key, category]) => {
+        if (category.isSkipped) {
+          return category;
+        }
+        const categoryResult: CategoryResult = [
+          key,
+          {
+            label: category.label,
+            results: await Promise.all(
+              category.healthchecks.map(
+                async ({key, label, run, isRequired}) => ({
+                  key,
+                  label,
+                  isRequired: isRequired ?? true,
+                  result: await run(environmentInfo).catch((e) => {
+                    console.error(e);
+                    // TODO Improve result type to be: OK | Problem(message, fix...)
+                    return {
+                      hasProblem: true,
+                    };
+                  }),
                 }),
-              }),
+              ),
             ),
-          ),
-        },
-      ];
-      return categoryResult;
-    }),
-  );
+          },
+        ];
+        return categoryResult;
+      }),
+    );
   return results;
 }
 

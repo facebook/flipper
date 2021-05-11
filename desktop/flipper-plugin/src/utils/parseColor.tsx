@@ -7,9 +7,7 @@
  * @format
  */
 
-export function parseColor(
-  val: string | number,
-):
+export function parseColor(val: string | number):
   | {
       r: number;
       g: number;

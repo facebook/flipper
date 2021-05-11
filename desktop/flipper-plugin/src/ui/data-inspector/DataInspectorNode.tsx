@@ -326,18 +326,14 @@ export const DataInspectorNode: React.FC<DataInspectorProps> = memo(
       [extractValueProp],
     );
 
-    const res = useMemo(() => extractValue(data, depth, path), [
-      extractValue,
-      data,
-      depth,
-      path,
-    ]);
-    const resDiff = useMemo(() => extractValue(diff, depth, path), [
-      extractValue,
-      diff,
-      depth,
-      path,
-    ]);
+    const res = useMemo(
+      () => extractValue(data, depth, path),
+      [extractValue, data, depth, path],
+    );
+    const resDiff = useMemo(
+      () => extractValue(diff, depth, path),
+      [extractValue, diff, depth, path],
+    );
     const ancestry = useMemo(
       () => (res ? parentAncestry!.concat([res.value]) : []),
       [parentAncestry, res?.value],
