@@ -124,7 +124,7 @@ function renderValue({type, value}: {type: string; value: any}) {
   switch (type) {
     case 'boolean':
       return (
-        <BooleanValue code={true} active={value}>
+        <BooleanValue code active={value}>
           {value.toString()}
         </BooleanValue>
       );
@@ -232,7 +232,7 @@ function renderSidebarSection(
     case 'json':
       return (
         <Panel floating={false} heading={section.title} key={index}>
-          <DataInspector data={section.content} expandRoot={true} />
+          <DataInspector data={section.content} expandRoot />
         </Panel>
       );
     case 'toolbar':
@@ -240,7 +240,7 @@ function renderSidebarSection(
     default:
       return (
         <Panel floating={false} heading={'Details'} key={index}>
-          <DataInspector data={section} expandRoot={true} />
+          <DataInspector data={section} expandRoot />
         </Panel>
       );
   }
@@ -480,20 +480,20 @@ export default function createTableNativePlugin(id: string, title: string) {
         : null;
 
       return (
-        <FlexColumn grow={true}>
+        <FlexColumn grow>
           {topToolbarComponent}
           <SearchableTable
             key={this.constructor.id}
             rowLineHeight={28}
             floating={false}
-            multiline={true}
+            multiline
             columnSizes={columnSizes}
             columnOrder={columnOrder}
             columns={columns}
             onRowHighlighted={this.onRowHighlighted}
-            multiHighlight={true}
+            multiHighlight
             rows={this.applyMetadataToRows(rows)}
-            stickyBottom={true}
+            stickyBottom
             actions={<Button onClick={this.clear}>Clear Table</Button>}
           />
           <DetailSidebar>{this.renderSidebar()}</DetailSidebar>

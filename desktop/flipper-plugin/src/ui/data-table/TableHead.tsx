@@ -210,7 +210,7 @@ function TableHeadColumn({
   if (isResizable) {
     children = (
       <TableHeaderColumnInteractive
-        grow={true}
+        grow
         resizable={RIGHT_RESIZABLE}
         onResize={onResize}
         minWidth={20}>

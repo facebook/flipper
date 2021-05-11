@@ -26,7 +26,7 @@ export const TabsContext = React.createContext(true);
 export default function TabsContainer(props: {children: any}) {
   return (
     <Container>
-      <TabsContext.Provider value={true}>{props.children}</TabsContext.Provider>
+      <TabsContext.Provider value>{props.children}</TabsContext.Provider>
     </Container>
   );
 }

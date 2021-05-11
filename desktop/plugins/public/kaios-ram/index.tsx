@@ -244,7 +244,7 @@ export default class KaiOSGraphs extends FlipperDevicePlugin<State, any, any> {
         heading="Free memory"
         floating={false}
         collapsable={false}
-        grow={true}>
+        grow>
         <Toolbar position="top">
           {this.state.monitoring ? (
             <Button onClick={this.onStopMonitor} icon="pause">
@@ -256,7 +256,7 @@ export default class KaiOSGraphs extends FlipperDevicePlugin<State, any, any> {
             </Button>
           )}
         </Toolbar>
-        <FlexColumn grow={true}>
+        <FlexColumn grow>
           <ResponsiveContainer height={500}>
             <LineChart data={pointsToDraw}>
               <XAxis type="number" domain={[0, MAX_POINTS]} dataKey="idx" />

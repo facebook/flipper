@@ -69,8 +69,8 @@ class InspectorSidebarSection extends PureComponent<InspectorSidebarSectionProps
           data={this.props.data}
           setValue={this.props.onValueChanged ? this.setValue : undefined}
           extractValue={this.extractValue}
-          expandRoot={true}
-          collapsed={true}
+          expandRoot
+          collapsed
           tooltips={this.props.tooltips}
         />
       </Panel>

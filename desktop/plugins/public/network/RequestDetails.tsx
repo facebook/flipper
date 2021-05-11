@@ -390,7 +390,7 @@ class VideoFormatter {
     if (contentType.startsWith('video/')) {
       return (
         <Layout.Container center>
-          <VideoFormatter.Video controls={true}>
+          <VideoFormatter.Video controls>
             <source src={request.url} type={contentType} />
           </VideoFormatter.Video>
         </Layout.Container>

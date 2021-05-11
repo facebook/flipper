@@ -36,7 +36,7 @@ export const ButtonGroupContext = createContext(false);
  */
 export default function ButtonGroup({children}: {children: React.ReactNode}) {
   return (
-    <ButtonGroupContext.Provider value={true}>
+    <ButtonGroupContext.Provider value>
       <Space>{children}</Space>
     </ButtonGroupContext.Provider>
   );

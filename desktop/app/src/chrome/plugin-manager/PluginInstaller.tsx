@@ -147,7 +147,7 @@ const PluginInstaller = function ({
         <ManagedTable_immutable
           rowLineHeight={28}
           floating={false}
-          multiline={true}
+          multiline
           columnSizes={columnSizes}
           columns={columns}
           highlightableRows={false}

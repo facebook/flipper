@@ -48,7 +48,7 @@ export default class Popover extends PureComponent<Props> {
       return null;
     }
     return (
-      <VBox scrollable={true} maxHeight={300}>
+      <VBox scrollable maxHeight={300}>
         <Info type={this.props.type}>
           <Title bold>{this.props.title}</Title>
           {this.props.errors.map((e: Error, index) => (

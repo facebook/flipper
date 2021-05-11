@@ -315,7 +315,7 @@ export default function Tabs(props: {
   }
 
   return (
-    <FlexColumn grow={true}>
+    <FlexColumn grow>
       <TabList>
         {before}
         {tabList}

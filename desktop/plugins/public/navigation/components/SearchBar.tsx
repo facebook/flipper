@@ -143,7 +143,7 @@ class SearchBar extends Component<Props, State> {
               <IconButton
                 icon="send"
                 size={16}
-                outline={true}
+                outline
                 onClick={() => this.navigateTo(searchInputValue)}
               />
               <FavoriteButton

@@ -223,7 +223,7 @@ class FeedbackComponent extends Component<
               onKeyDown={(e) =>
                 e.key == 'Enter' && this.onCommentSubmitted(this.state.comment)
               }
-              autoFocus={true}
+              autoFocus
             />
           </Row>,
           <Row key="contactCheckbox">

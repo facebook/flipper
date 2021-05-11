@@ -32,7 +32,7 @@ test('changing collapsed property works', async () => {
   res.rerender(<DataInspector data={json} collapsed={false} expandRoot />);
   await res.findByText(/cool/);
 
-  res.rerender(<DataInspector data={json} collapsed={true} expandRoot />);
+  res.rerender(<DataInspector data={json} collapsed expandRoot />);
   expect(res.queryAllByText(/cool/).length).toBe(0);
 });
 

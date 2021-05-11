@@ -198,18 +198,18 @@ export function createTablePlugin<T extends RowData>(props: Props<T>) {
       const {columns, columnSizes} = props;
       const {rows} = this.props.persistedState;
       return (
-        <FlexColumn grow={true}>
+        <FlexColumn grow>
           <SearchableTable_immutable
             key={this.constructor.id}
             rowLineHeight={28}
             floating={false}
-            multiline={true}
+            multiline
             columnSizes={columnSizes}
             columns={columns}
             onRowHighlighted={this.onRowHighlighted}
-            multiHighlight={true}
+            multiHighlight
             rows={rows}
-            stickyBottom={true}
+            stickyBottom
             actions={<Button onClick={this.clear}>Clear Table</Button>}
           />
           <DetailSidebar>{this.renderSidebar()}</DetailSidebar>

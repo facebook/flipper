@@ -515,7 +515,7 @@ export function Component() {
   return (
     <NetworkRouteContext.Provider value={networkRouteManager}>
       <Layout.Container
-        grow={true}
+        grow
         key={
           columns.length /* make sure to reset the table if colums change */
         }>

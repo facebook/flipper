@@ -100,10 +100,7 @@ class EventDetails extends Component<{
     const {event} = this.props;
 
     return (
-      <Panel
-        heading={<RequestHeader event={event} />}
-        floating={false}
-        padded={true}>
+      <Panel heading={<RequestHeader event={event} />} floating={false} padded>
         <p>
           <DataDescriptionKey>Attribution</DataDescriptionKey>
           <span key="sep">: </span>

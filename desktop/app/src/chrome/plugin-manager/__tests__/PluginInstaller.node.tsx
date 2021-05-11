@@ -82,7 +82,7 @@ test('load PluginInstaller list', async () => {
         // Bit ugly to have this as an effectively test-only option, but
         // without, we rely on height information from Electron which we don't
         // have, causing no items to be rendered.
-        autoHeight={true}
+        autoHeight
       />
     </Provider>
   );
@@ -106,7 +106,7 @@ test('load PluginInstaller list with one plugin installed', async () => {
         // Bit ugly to have this as an effectively test-only option, but
         // without, we rely on height information from Electron which we don't
         // have, causing no items to be rendered.
-        autoHeight={true}
+        autoHeight
       />
     </Provider>
   );

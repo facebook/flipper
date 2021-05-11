@@ -448,7 +448,7 @@ export default class LayoutPlugin extends FlipperPlugin<
         <Inspector
           {...inspectorProps}
           onSelect={(selectedAXElement) => this.setState({selectedAXElement})}
-          showsSidebar={true}
+          showsSidebar
           ax
         />
       </Sidebar>
@@ -533,7 +533,7 @@ export default class LayoutPlugin extends FlipperPlugin<
           element.decoration === 'litho' ? (
             <Button
               icon={'share-external'}
-              compact={true}
+              compact
               style={{marginTop: 8, marginRight: 12}}
               onClick={() => {
                 this.props.selectPlugin('YogaPerformance', element!.id);

@@ -115,15 +115,14 @@ export function plugin(client: PluginClient<Events, Methods>) {
         message: (
           <Fragment>
             <InlineFlexRow>
-              CloseableReference leaked for{' '}
-              <Text code={true}>{event.className}</Text>
+              CloseableReference leaked for <Text code>{event.className}</Text>
               (identity hashcode: {event.identityHashCode}).
             </InlineFlexRow>
             <InlineFlexRow>
-              <Text bold={true}>Stacktrace:</Text>
+              <Text bold>Stacktrace:</Text>
             </InlineFlexRow>
             <InlineFlexRow>
-              <Text code={true}>{event.stacktrace || '<unavailable>'}</Text>
+              <Text code>{event.stacktrace || '<unavailable>'}</Text>
             </InlineFlexRow>
           </Fragment>
         ),
@@ -466,7 +465,7 @@ function Sidebar() {
 
   if (currentSelectedImage == null) {
     return (
-      <EmptySidebar grow={true}>
+      <EmptySidebar grow>
         <Text align="center">
           Select an image to see the events associated with it.
         </Text>

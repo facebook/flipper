@@ -131,9 +131,9 @@ const QueryHistory = React.memo(({history}: {history: Array<Query>}) => {
         floating={false}
         columns={columns}
         columnSizes={{time: 75}}
-        zebra={true}
+        zebra
         rows={rows}
-        horizontallyScrollable={true}
+        horizontallyScrollable
       />
     </Layout.Horizontal>
   );
@@ -232,12 +232,12 @@ const DataTable = React.memo(
               }),
             {},
           )}
-          zebra={true}
+          zebra
           rows={page.rows.map((row: Array<Value>, index: number) =>
             transformRow(page.columns, row, index),
           )}
-          horizontallyScrollable={true}
-          multiHighlight={true}
+          horizontallyScrollable
+          multiHighlight
           onRowHighlighted={highlightedRowsChanged}
           onSort={sortOrderChanged}
           initialSortOrder={currentSort ?? undefined}
@@ -281,7 +281,7 @@ const QueryTable = React.memo(
         <Layout.Horizontal grow>
           <ManagedTable
             floating={false}
-            multiline={true}
+            multiline
             columnOrder={columns.map((name) => ({
               key: name,
               visible: true,
@@ -291,11 +291,11 @@ const QueryTable = React.memo(
                 Object.assign({}, acc, {[val]: {value: val, resizable: true}}),
               {},
             )}
-            zebra={true}
+            zebra
             rows={rows.map((row: Array<Value>, index: number) =>
               transformRow(columns, row, index),
             )}
-            horizontallyScrollable={true}
+            horizontallyScrollable
             onRowHighlighted={highlightedRowsChanged}
           />
           {table.highlightedRows.length === 1 && (

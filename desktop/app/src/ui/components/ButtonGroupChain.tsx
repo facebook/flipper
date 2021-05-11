@@ -72,7 +72,7 @@ type Props = {
  */
 export default function ButtonGroupChain({children, iconSize, icon}: Props) {
   return (
-    <ButtonGroupContext.Provider value={true}>
+    <ButtonGroupContext.Provider value>
       <ButtonGroupChainContainer iconSize={iconSize}>
         {React.Children.map(children, (child, idx) => {
           if (idx === 0) {

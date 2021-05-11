@@ -188,7 +188,7 @@ export default class StackTrace extends Component<{
           <ManagedTable
             columns={columns}
             rows={rows}
-            hideHeader={true}
+            hideHeader
             autoHeight
             zebra={false}
             columnOrder={columnOrder}

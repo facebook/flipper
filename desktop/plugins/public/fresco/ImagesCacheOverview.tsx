@@ -191,7 +191,7 @@ export default class ImagesCacheOverview extends PureComponent<
 
     return (
       <ImagesCacheOverview.Container
-        grow={true}
+        grow
         onKeyDown={this.onKeyDown}
         tabIndex={0}>
         <Toolbar position="top">
