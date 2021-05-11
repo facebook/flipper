@@ -9130,10 +9130,10 @@ metro-inspector-proxy@0.66.0:
     ws "^1.1.5"
     yargs "^15.3.1"
 
-metro-minify-terser@^0.65.2:
-  version "0.65.2"
-  resolved "https://registry.yarnpkg.com/metro-minify-terser/-/metro-minify-terser-0.65.2.tgz#20782c1523ff81e1b93ab6beb7ed63e418e55b80"
-  integrity sha512-oprYbe+jNaK3xmOtNh51Y5S1BuPtKW4PZGLVfqc3Z0wBM+FinGO+exqbB1+e/v8yui52aDmdMLejPHwh1y7sPQ==
+metro-minify-terser@^0.66.0:
+  version "0.66.0"
+  resolved "https://registry.yarnpkg.com/metro-minify-terser/-/metro-minify-terser-0.66.0.tgz#d357cd3e6debe8b6d61226c7d5149dd4c8f9117c"
+  integrity sha512-KjE5i14GQ50yZeMu+CK447x4NOB9GqbLKdbLg/b/b/oYKP9PtXf22cX+XzNBHc/ne+n86iHsixp7/AT4mepekA==
   dependencies:
     terser "^4.6.3"
 

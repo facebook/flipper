@@ -164,7 +164,7 @@
     "less": "^3.12.2",
     "line-replace": "^2.0.1",
     "metro": "^0.66.0",
-    "metro-minify-terser": "^0.65.2",
+    "metro-minify-terser": "^0.66.0",
     "metro-resolver": "^0.66.0",
     "node-fetch": "^2.6.1",
     "p-filter": "^2.1.0",
