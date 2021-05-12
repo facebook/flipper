@@ -140,6 +140,19 @@ export async function removePlugins(
   await pmap(names, (name) => removePlugin(name));
 }
 
+export async function getAllInstalledPluginVersions(): Promise<
+  InstalledPluginDetails[]
+> {
+  const pluginDirs = await getInstalledPluginVersionDirs();
+  const versionDirs = pluginDirs.map(([_, versionDirs]) => versionDirs).flat();
+  return await pmap(versionDirs, (versionDir) =>
+    getInstalledPluginDetails(versionDir).catch((err) => {
+      console.error(`Failed to load plugin details from ${versionDir}`, err);
+      return null;
+    }),
+  ).then((versionDetails) => versionDetails.filter(notNull));
+}
+
 export async function getInstalledPlugins(): Promise<InstalledPluginDetails[]> {
   const versionDirs = await getInstalledPluginVersionDirs();
   return pmap(

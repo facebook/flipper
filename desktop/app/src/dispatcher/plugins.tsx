@@ -52,7 +52,7 @@ import * as crc32 from 'crc32';
 // eslint-disable-next-line import/no-unresolved
 import getDefaultPluginsIndex from '../utils/getDefaultPluginsIndex';
 import {isDevicePluginDefinition} from '../utils/pluginUtils';
-import {isPluginCompatible} from '../utils/isPluginCompatible';
+import isPluginCompatible from '../utils/isPluginCompatible';
 
 let defaultPluginsIndex: any = null;
 
@@ -90,10 +90,25 @@ export default async (store: Store, logger: Logger) => {
 
   const bundledPlugins = getBundledPlugins();
 
-  const loadedPlugins = filterNewestVersionOfEachPlugin(
-    bundledPlugins,
-    await getDynamicPlugins(),
-  ).filter((p) => !uninstalledPluginNames.has(p.name));
+  const allLocalVersions = [
+    ...getBundledPlugins(),
+    ...(await getDynamicPlugins()),
+  ].filter((p) => !uninstalledPluginNames.has(p.name));
+
+  const loadedVersionsMap: Map<string, ActivatablePluginDetails> = new Map();
+  for (const localVersion of allLocalVersions) {
+    if (isPluginCompatible(localVersion)) {
+      const loadedVersion = loadedVersionsMap.get(localVersion.id);
+      if (
+        !loadedVersion ||
+        semver.gt(localVersion.version, loadedVersion.version)
+      ) {
+        loadedVersionsMap.set(localVersion.id, localVersion);
+      }
+    }
+  }
+
+  const loadedPlugins = Array.from(loadedVersionsMap.values());
 
   const initialPlugins: PluginDefinition[] = loadedPlugins
     .map(reportVersion)

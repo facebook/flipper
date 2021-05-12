@@ -11,9 +11,9 @@ import path from 'path';
 import fs from 'fs-extra';
 import {
   getSourcePlugins,
-  getInstalledPlugins,
   moveInstalledPluginsFromLegacyDir,
   InstalledPluginDetails,
+  getAllInstalledPluginVersions,
 } from 'flipper-plugin-lib';
 import {getStaticPath} from '../utils/pathUtils';
 
@@ -43,7 +43,7 @@ export default async function loadDynamicPlugins(): Promise<
   const [installedPlugins, unfilteredSourcePlugins] = await Promise.all([
     process.env.FLIPPER_DISABLE_PLUGIN_AUTO_UPDATE
       ? Promise.resolve([])
-      : getInstalledPlugins(),
+      : getAllInstalledPluginVersions(),
     getSourcePlugins(),
   ]);
   const sourcePlugins = unfilteredSourcePlugins.filter(

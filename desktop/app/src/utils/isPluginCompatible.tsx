@@ -7,7 +7,7 @@
  * @format
  */
 
-import {PluginDetails} from 'plugin-lib';
+import {PluginDetails} from 'flipper-plugin-lib';
 import semver from 'semver';
 import GK from '../fb-stubs/GK';
 import {getAppVersion} from './info';
