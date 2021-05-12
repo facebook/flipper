@@ -1,5 +1,5 @@
 diff --git a/node_modules/antd/es/button/button.js b/node_modules/antd/es/button/button.js
-index c96d188..06a814b 100644
+index c96d188..bba8ba5 100644
 --- a/node_modules/antd/es/button/button.js
 +++ b/node_modules/antd/es/button/button.js
 @@ -189,6 +189,8 @@ var InternalButton = function InternalButton(props, ref) {
@@ -11,17 +11,18 @@ index c96d188..06a814b 100644
    var handleClick = function handleClick(e) {
      var _a;
  
-@@ -200,6 +202,13 @@ var InternalButton = function InternalButton(props, ref) {
+@@ -200,7 +202,13 @@ var InternalButton = function InternalButton(props, ref) {
        return;
      }
  
+-    (_a = onClick) === null || _a === void 0 ? void 0 : _a(e);
 +    if(onClick !== null && onClick !== void 0) {
 +      global.flipperTrackInteraction(
 +        'Button', 'onClick', scope, props.title || props.children || props.icon,
 +        onClick,
 +        e
 +      );
-+     }
-     (_a = onClick) === null || _a === void 0 ? void 0 : _a(e);
++    }
    };
  
+   devWarning(!(typeof icon === 'string' && icon.length > 2), 'Button', "`icon` is using ReactNode instead of string naming in v4. Please check `".concat(icon, "` at https://ant.design/components/icon"));
