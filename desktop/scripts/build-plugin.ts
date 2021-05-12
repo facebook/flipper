@@ -7,13 +7,14 @@
  * @format
  */
 
-import {pluginsDir, rootDir, distDir} from './paths';
+import {pluginsDir, distDir, rootDir} from './paths';
 import path from 'path';
 import fs from 'fs-extra';
-import {execSync} from 'child_process';
 import {resolvePluginDir} from './workspaces';
 import {runBuild, computePackageChecksum} from 'flipper-pkg-lib';
 import yargs from 'yargs';
+import tmp from 'tmp';
+import {execSync} from 'child_process';
 
 const argv = yargs
   .usage('yarn build-plugin [args]')
@@ -30,6 +31,11 @@ const argv = yargs
       description: 'New version to set',
       type: 'string',
       alias: 'v',
+    },
+    'min-flipper-version': {
+      description: 'Minimum Flipper version required for plugin',
+      type: 'string',
+      alias: 'mfv',
     },
     checksum: {
       description:
@@ -52,6 +58,8 @@ async function buildPlugin() {
   const previousChecksum = argv.checksum;
   const pluginDir = await resolvePluginDir(pluginName);
   const outputFileArg = argv.output;
+  const minFlipperVersion = argv['min-flipper-version'];
+  const packageJsonPath = path.join(pluginDir, 'package.json');
   await runBuild(pluginDir, false);
   const checksum = await computePackageChecksum(pluginDir);
   if (previousChecksum !== checksum && argv.version) {
@@ -65,10 +73,27 @@ async function buildPlugin() {
         );
     await fs.ensureDir(path.dirname(outputFile));
     await fs.remove(outputFile);
-    const versionCmd = `yarn version --cwd "${pluginDir}" --new-version ${argv.version}`;
-    execSync(versionCmd, {cwd: rootDir, stdio: 'inherit'});
-    const packCmd = `yarn pack --cwd "${pluginDir}" --filename ${outputFile}`;
-    execSync(packCmd, {cwd: rootDir, stdio: 'inherit'});
+    const {name: tmpDir} = tmp.dirSync();
+    const packageJsonBackupPath = path.join(tmpDir, 'package.json');
+    await fs.copy(packageJsonPath, packageJsonBackupPath, {overwrite: true});
+    try {
+      const packageJson = await fs.readJson(packageJsonPath);
+      if (minFlipperVersion) {
+        if (!packageJson.engines) {
+          packageJson.engines = {};
+        }
+        packageJson.engines.flipper = minFlipperVersion;
+      }
+      if (argv.version) {
+        packageJson.version = argv.version;
+      }
+      await fs.writeJson(packageJsonPath, packageJson, {spaces: 2});
+      const packCmd = `yarn pack --cwd "${pluginDir}" --filename ${outputFile}`;
+      execSync(packCmd, {cwd: rootDir, stdio: 'inherit'});
+    } finally {
+      await fs.move(packageJsonBackupPath, packageJsonPath, {overwrite: true});
+      await fs.remove(tmpDir);
+    }
     await fs.writeFile(outputFile + '.hash', checksum);
   }
 }
@@ -78,6 +103,6 @@ buildPlugin()
     process.exit(0);
   })
   .catch((err: any) => {
-    console.error(err);
+    console.error(`Error while building plugin ${argv.plugin}`, err);
     process.exit(1);
   });
