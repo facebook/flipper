@@ -16,16 +16,43 @@ import {
   useValue,
   theme,
   sleep,
+  Toolbar,
 } from 'flipper-plugin';
 import React, {createRef, useEffect} from 'react';
 import getPort from 'get-port';
-import {Alert, Button} from 'antd';
+import {Alert, Button, Switch} from 'antd';
+import child_process from 'child_process';
+import fs from 'fs';
+import path from 'path';
 
 const DEV_TOOLS_NODE_ID = 'reactdevtools-out-of-react-node';
 
 interface MetroDevice {
   ws?: WebSocket;
   sendCommand(command: string, params?: any): void;
+}
+
+function findGlobalDevTools(): Promise<string | undefined> {
+  return new Promise((resolve) => {
+    child_process.exec('npm root -g', (error, basePath) => {
+      if (error) {
+        console.warn(
+          'Failed to find globally installed React DevTools: ' + error,
+        );
+        resolve(undefined);
+      } else {
+        const devToolsPath = path.join(
+          basePath.trim(),
+          'react-devtools',
+          'node_modules',
+          'react-devtools-core',
+        );
+        fs.stat(devToolsPath, (err, stats) => {
+          resolve(!err && stats ? devToolsPath : undefined);
+        });
+      }
+    });
+  });
 }
 
 function createDevToolsNode(): HTMLElement {
@@ -77,10 +104,34 @@ export function devicePlugin(client: DevicePluginClient) {
   const connectionStatus = createState<ConnectionStatus>(
     ConnectionStatus.Initializing,
   );
+  const globalDevToolsPath = createState<string>();
+  const useGlobalDevTools = createState(false); // TODO: store in local storage T69989583
+  let devToolsInstance: typeof ReactDevToolsStandalone =
+    ReactDevToolsStandalone;
+  let startResult: {close(): void} | undefined = undefined;
 
   const containerRef = createRef<HTMLDivElement>();
   let pollHandle: NodeJS.Timeout | undefined = undefined;
   let isMounted = false;
+
+  async function toggleUseGlobalDevTools() {
+    if (!globalDevToolsPath.get()) {
+      return;
+    }
+    useGlobalDevTools.update((v) => !v);
+    if (useGlobalDevTools.get()) {
+      console.log('Loading ' + globalDevToolsPath.get());
+      devToolsInstance = global.electronRequire(
+        globalDevToolsPath.get()!,
+      ).default;
+    } else {
+      devToolsInstance = ReactDevToolsStandalone;
+    }
+    startResult?.close();
+    stopDevtools();
+    findDevToolsNode()!.remove();
+    await bootDevTools();
+  }
 
   async function bootDevTools() {
     isMounted = true;
@@ -88,6 +139,7 @@ export function devicePlugin(client: DevicePluginClient) {
     if (!devToolsNode) {
       devToolsNode = createDevToolsNode();
     }
+
     attachDevTools(containerRef.current!, devToolsNode);
     initializeDevTools(devToolsNode);
     setStatus(
@@ -169,11 +221,12 @@ export function devicePlugin(client: DevicePluginClient) {
       );
       // Currently a new port is negotatiated every time the plugin is opened.
       // This can be potentially optimized by keeping the devTools instance around
-      ReactDevToolsStandalone.setContentDOMNode(devToolsNode)
+      startResult = devToolsInstance
+        .setContentDOMNode(devToolsNode)
         .setStatusListener((status) => {
           setStatus(ConnectionStatus.Initializing, status);
         })
-        .startServer(port);
+        .startServer(port) as any;
       setStatus(ConnectionStatus.Initializing, 'Waiting for device');
 
       // This is a hack that should be cleaned up. Instead of setting up port forwarding
@@ -211,6 +264,16 @@ export function devicePlugin(client: DevicePluginClient) {
     }
   }
 
+  client.onReady(() => {
+    console.log('searching');
+    findGlobalDevTools().then((path) => {
+      globalDevToolsPath.set(path + '/standalone');
+      if (path) {
+        console.log('Found global React DevTools: ', path);
+      }
+    });
+  });
+
   return {
     devtoolsHaveStarted,
     connectionStatus,
@@ -219,6 +282,9 @@ export function devicePlugin(client: DevicePluginClient) {
     metroDevice,
     containerRef,
     stopDevtools,
+    globalDevToolsPath,
+    useGlobalDevTools,
+    toggleUseGlobalDevTools,
   };
 }
 
@@ -226,6 +292,8 @@ export function Component() {
   const instance = usePlugin(devicePlugin);
   const connectionStatus = useValue(instance.connectionStatus);
   const statusMessage = useValue(instance.statusMessage);
+  const globalDevToolsPath = useValue(instance.globalDevToolsPath);
+  const useGlobalDevTools = useValue(instance.useGlobalDevTools);
 
   useEffect(() => {
     instance.bootDevTools();
@@ -234,6 +302,19 @@ export function Component() {
 
   return (
     <Layout.Container grow>
+      {globalDevToolsPath ? (
+        <Toolbar
+          right={
+            <>
+              <Switch
+                checked={useGlobalDevTools}
+                onChange={instance.toggleUseGlobalDevTools}
+              />
+              Use globally installed DevTools
+            </>
+          }
+        />
+      ) : null}
       {!instance.devtoolsHaveStarted() ? (
         <Layout.Container
           style={{width: 400, margin: `${theme.space.large}px auto`}}>
