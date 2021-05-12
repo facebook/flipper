@@ -13,6 +13,7 @@ import reducers, {Actions, State as StoreState, Store} from './reducers/index';
 import {stateSanitizer} from './utils/reduxDevToolsConfig';
 import isProduction from './utils/isProduction';
 import {_SandyPluginDefinition} from 'flipper-plugin';
+
 export const store: Store = createStore<StoreState, Actions, any, any>(
   rootReducer,
   // @ts-ignore Type definition mismatch
@@ -36,3 +37,7 @@ if (!isProduction()) {
   // @ts-ignore
   window.flipperStore = store;
 }
+// Escape hatch during Sandy conversion;
+// Some plugins directly interact with the Store and need further abstractions
+// @ts-ignore
+window.__SECRET_FLIPPER_STORE_DONT_USE_OR_YOU_WILL_BE_FIRED__ = store;

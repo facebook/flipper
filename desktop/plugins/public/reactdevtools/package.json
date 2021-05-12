@@ -26,5 +26,8 @@
   "bugs": {
     "email": "danielbuechele@fb.com"
   },
-  "devDependencies": {}
+  "devDependencies": {},
+  "peerDependencies": {
+    "flipper-plugin": "*"
+  }
 }
