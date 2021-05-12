@@ -8,7 +8,10 @@
  */
 
 import os from 'os';
-import {isTest} from './isProduction';
+import isProduction, {isTest} from './isProduction';
+import fs from 'fs-extra';
+import path from 'path';
+import {getStaticPath} from './pathUtils';
 
 export type Info = {
   arch: string;
@@ -41,7 +44,13 @@ export function getAppVersion(): string {
   return (APP_VERSION =
     APP_VERSION ??
     process.env.FLIPPER_FORCE_VERSION ??
-    (isTest() ? '0.0.0' : require('../../package.json').version ?? '0.0.0'));
+    (isTest()
+      ? '0.0.0'
+      : (isProduction()
+          ? fs.readJsonSync(path.join(getStaticPath(), 'package.json'), {
+              throws: false,
+            })?.version
+          : require('../../package.json').version) ?? '0.0.0'));
 }
 
 export function stringifyInfo(info: Info): string {
