@@ -20,6 +20,8 @@ import {
   addFailedPlugins,
   registerLoadedPlugins,
   registerBundledPlugins,
+  registerMarketplacePlugins,
+  MarketplacePluginDetails,
 } from '../reducers/plugins';
 import GK from '../fb-stubs/GK';
 import {FlipperBasePlugin} from '../plugin';
@@ -49,6 +51,7 @@ import * as crc32 from 'crc32';
 // eslint-disable-next-line import/no-unresolved
 import getDefaultPluginsIndex from '../utils/getDefaultPluginsIndex';
 import {isDevicePluginDefinition} from '../utils/pluginUtils';
+import {isPluginCompatible} from '../utils/isPluginCompatible';
 
 let defaultPluginsIndex: any = null;
 
@@ -73,6 +76,13 @@ export default async (store: Store, logger: Logger) => {
   const failedPlugins: Array<[ActivatablePluginDetails, string]> = [];
 
   defaultPluginsIndex = getDefaultPluginsIndex();
+
+  const marketplacePlugins = store.getState().plugins.marketplacePlugins;
+  store.dispatch(
+    registerMarketplacePlugins(
+      selectCompatibleMarketplaceVersions(marketplacePlugins),
+    ),
+  );
 
   const uninstalledPlugins = store.getState().plugins.uninstalledPlugins;
 
@@ -320,3 +330,27 @@ const requirePluginInternal = (
   }
   return plugin;
 };
+
+export function selectCompatibleMarketplaceVersions(
+  availablePlugins: MarketplacePluginDetails[],
+): MarketplacePluginDetails[] {
+  const plugins: MarketplacePluginDetails[] = [];
+  for (const plugin of availablePlugins) {
+    if (!isPluginCompatible(plugin)) {
+      const compatibleVersion =
+        plugin.availableVersions?.find(isPluginCompatible) ??
+        plugin.availableVersions?.slice(-1).pop();
+      if (compatibleVersion) {
+        plugins.push({
+          ...compatibleVersion,
+          availableVersions: plugin?.availableVersions,
+        });
+      } else {
+        plugins.push(plugin);
+      }
+    } else {
+      plugins.push(plugin);
+    }
+  }
+  return plugins;
+}
