@@ -27,7 +27,9 @@ export interface MarketplacePluginDetails extends DownloadablePluginDetails {
   availableVersions?: DownloadablePluginDetails[];
 }
 
-export type State = {
+export type State = StateV1;
+
+type StateV1 = {
   devicePlugins: DevicePluginMap;
   clientPlugins: ClientPluginMap;
   loadedPlugins: Map<string, ActivatablePluginDetails>;
@@ -37,9 +39,25 @@ export type State = {
   failedPlugins: Array<[ActivatablePluginDetails, string]>;
   selectedPlugins: Array<string>;
   marketplacePlugins: Array<MarketplacePluginDetails>;
-  uninstalledPlugins: Set<string>;
+  uninstalledPluginNames: Set<string>;
   installedPlugins: Map<string, InstalledPluginDetails>;
   initialised: boolean;
+};
+
+type StateV0 = Omit<StateV1, 'uninstalledPluginNames'> & {
+  uninstalledPlugins: Set<string>;
+};
+
+export const persistVersion = 1;
+export const persistMigrations = {
+  1: (state: any) => {
+    const stateV0 = state as StateV0;
+    const stateV1: StateV1 = {
+      ...stateV0,
+      uninstalledPluginNames: new Set(stateV0.uninstalledPlugins),
+    };
+    return stateV1 as any;
+  },
 };
 
 export type RegisterPluginAction = {
@@ -107,7 +125,7 @@ const INITIAL_STATE: State = {
   failedPlugins: [],
   selectedPlugins: [],
   marketplacePlugins: [],
-  uninstalledPlugins: new Set(),
+  uninstalledPluginNames: new Set(),
   installedPlugins: new Map(),
   initialised: false,
 };
@@ -169,7 +187,7 @@ export default function reducer(
     return produce(state, (draft) => {
       draft.installedPlugins.clear();
       action.payload.forEach((p) => {
-        if (!draft.uninstalledPlugins.has(p.id)) {
+        if (!draft.uninstalledPluginNames.has(p.name)) {
           draft.installedPlugins.set(p.id, p);
         }
       });
@@ -188,7 +206,7 @@ export default function reducer(
       draft.clientPlugins.delete(plugin.id);
       draft.devicePlugins.delete(plugin.id);
       draft.loadedPlugins.delete(plugin.id);
-      draft.uninstalledPlugins.add(plugin.name);
+      draft.uninstalledPluginNames.add(plugin.name);
     });
   } else if (action.type === 'PLUGIN_LOADED') {
     const plugin = action.payload;
@@ -198,7 +216,7 @@ export default function reducer(
       } else {
         draft.clientPlugins.set(plugin.id, plugin);
       }
-      draft.uninstalledPlugins.delete(plugin.id);
+      draft.uninstalledPluginNames.delete(plugin.details.name);
       draft.loadedPlugins.set(plugin.id, plugin.details);
     });
   } else if (action.type === 'PLUGINS_INITIALISED') {

@@ -67,6 +67,6 @@ Object {
   "loadedPlugins": Map {},
   "marketplacePlugins": Array [],
   "selectedPlugins": Array [],
-  "uninstalledPlugins": Set {},
+  "uninstalledPluginNames": Set {},
 }
 `;

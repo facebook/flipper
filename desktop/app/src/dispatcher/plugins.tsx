@@ -85,14 +85,15 @@ export default async (store: Store, logger: Logger) => {
     ),
   );
 
-  const uninstalledPlugins = store.getState().plugins.uninstalledPlugins;
+  const uninstalledPluginNames =
+    store.getState().plugins.uninstalledPluginNames;
 
   const bundledPlugins = getBundledPlugins();
 
   const loadedPlugins = filterNewestVersionOfEachPlugin(
     bundledPlugins,
     await getDynamicPlugins(),
-  ).filter((p) => !uninstalledPlugins.has(p.name));
+  ).filter((p) => !uninstalledPluginNames.has(p.name));
 
   const initialPlugins: PluginDefinition[] = loadedPlugins
     .map(reportVersion)

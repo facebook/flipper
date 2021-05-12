@@ -153,7 +153,9 @@ test('uninstall plugin', async () => {
     mockFlipper.getState().plugins.loadedPlugins.has('plugin1'),
   ).toBeFalsy();
   expect(
-    mockFlipper.getState().plugins.uninstalledPlugins.has('flipper-plugin1'),
+    mockFlipper
+      .getState()
+      .plugins.uninstalledPluginNames.has('flipper-plugin1'),
   ).toBeTruthy();
   expect(mockClient.sandyPluginStates.has('plugin1')).toBeFalsy();
 });
@@ -179,7 +181,7 @@ test('uninstall bundled plugin', async () => {
   expect(
     mockFlipper
       .getState()
-      .plugins.uninstalledPlugins.has('flipper-bundled-plugin'),
+      .plugins.uninstalledPluginNames.has('flipper-bundled-plugin'),
   ).toBeTruthy();
   expect(mockClient.sandyPluginStates.has('bundled-plugin')).toBeFalsy();
 });
