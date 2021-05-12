@@ -23,6 +23,10 @@ import produce from 'immer';
 import {isDevicePluginDefinition} from '../utils/pluginUtils';
 import semver from 'semver';
 
+export interface MarketplacePluginDetails extends DownloadablePluginDetails {
+  availableVersions?: DownloadablePluginDetails[];
+}
+
 export type State = {
   devicePlugins: DevicePluginMap;
   clientPlugins: ClientPluginMap;
@@ -32,7 +36,7 @@ export type State = {
   disabledPlugins: Array<ActivatablePluginDetails>;
   failedPlugins: Array<[ActivatablePluginDetails, string]>;
   selectedPlugins: Array<string>;
-  marketplacePlugins: Array<DownloadablePluginDetails>;
+  marketplacePlugins: Array<MarketplacePluginDetails>;
   uninstalledPlugins: Set<string>;
   installedPlugins: Map<string, InstalledPluginDetails>;
 };
