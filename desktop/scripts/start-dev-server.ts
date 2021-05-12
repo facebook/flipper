@@ -85,6 +85,11 @@ const argv = yargs
         '[FB-internal only] Will force using public sources only, to be able to iterate quickly on the public version. If sources are checked out from GitHub this is already the default. Setting env var "FLIPPER_FORCE_PUBLIC_BUILD" is equivalent.',
       type: 'boolean',
     },
+    'force-version': {
+      describe:
+        'Will force using the given value as Flipper version, to be able to test logic which is version-dependent. Setting env var "FLIPPER_FORCE_VERSION" is equivalent.',
+      type: 'string',
+    },
   })
   .version('DEV')
   .help()
@@ -150,6 +155,10 @@ if (argv['enabled-plugins'] !== undefined) {
 
 if (argv.channel !== undefined) {
   process.env.FLIPPER_RELEASE_CHANNEL = argv.channel;
+}
+
+if (argv['force-version']) {
+  process.env.FLIPPER_FORCE_VERSION = argv['force-version'];
 }
 
 function looksLikeDevServer(): boolean {

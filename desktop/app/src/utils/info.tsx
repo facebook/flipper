@@ -8,7 +8,7 @@
  */
 
 import os from 'os';
-import {remote} from 'electron';
+import {isTest} from './isProduction';
 
 export type Info = {
   arch: string;
@@ -36,15 +36,12 @@ export function getInfo(): Info {
   };
 }
 
-let APP_VERSION: string | undefined = undefined;
-// Prefer using this function over manually calling `remote.app.getVersion()`
-// as calls to the remote object go over IPC and can be slow.
-export function getAppVersion(): string | undefined {
-  if (APP_VERSION === undefined && remote) {
-    APP_VERSION = remote.app.getVersion();
-  }
-
-  return APP_VERSION;
+let APP_VERSION: string | undefined;
+export function getAppVersion(): string {
+  return (APP_VERSION =
+    APP_VERSION ??
+    process.env.FLIPPER_FORCE_VERSION ??
+    (isTest() ? '0.0.0' : require('../../package.json').version ?? '0.0.0'));
 }
 
 export function stringifyInfo(info: Info): string {
