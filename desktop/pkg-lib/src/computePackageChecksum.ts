@@ -55,6 +55,9 @@ export default async function computePackageChecksum(
       if (packageJson.version) {
         packageJson.version = '0.0.0';
       }
+      if (packageJson.engines && packageJson.engines.flipper) {
+        packageJson.engines.flipper = '0.0.0';
+      }
       hash.write(JSON.stringify(packageJson));
     } else {
       // add hash of file content
