@@ -286,7 +286,7 @@ export function computePluginLists(
       }
     });
     uninstalledMarketplacePlugins.forEach((plugin) => {
-      if (client.supportsPlugin(plugin.id)) {
+      if (plugin.pluginType !== 'device' && client.supportsPlugin(plugin.id)) {
         downloadablePlugins.push(plugin);
       }
     });
