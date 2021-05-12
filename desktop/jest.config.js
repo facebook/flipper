@@ -22,4 +22,5 @@ module.exports = {
   coverageReporters: ['json-summary', 'lcov', 'html'],
   testMatch: ['**/**.(node|spec).(js|jsx|ts|tsx)'],
   testEnvironment: 'jest-environment-jsdom-sixteen',
+  resolver: '<rootDir>/jest.resolver.js',
 };
