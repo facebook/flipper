@@ -106,7 +106,7 @@ export default class AndroidDevice extends BaseDevice {
     this.reader = undefined;
   }
 
-  reverse(ports: [number, number]): Promise<void> {
+  reverse(ports: number[]): Promise<void> {
     return Promise.all(
       ports.map((port) =>
         this.adb.reverse(this.serial, `tcp:${port}`, `tcp:${port}`),

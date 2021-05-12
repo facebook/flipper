@@ -150,7 +150,6 @@ export function SandyApp() {
           </_Sidebar>
         </Layout.Horizontal>
         <MainContainer>
-          {outOfContentsContainer}
           {staticView ? (
             <TrackingScope
               scope={
@@ -172,6 +171,7 @@ export function SandyApp() {
           ) : (
             <PluginContainer logger={logger} isSandy />
           )}
+          {outOfContentsContainer}
         </MainContainer>
       </Layout.Left>
     </Layout.Top>

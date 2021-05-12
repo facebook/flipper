@@ -16,6 +16,7 @@ const devToolsNodeId = (url: string) =>
   `hermes-chromedevtools-out-of-react-node-${url.replace(/\W+/g, '-')}`;
 
 // TODO: build abstraction of this: T62306732
+// TODO: reuse reactdevtools/DevToolsEmbedder for this
 const TARGET_CONTAINER_ID = 'flipper-out-of-contents-container'; // should be a hook in the future
 
 function createDevToolsNode(
@@ -62,6 +63,8 @@ function attachDevTools(devToolsNode: HTMLElement) {
   document.getElementById(TARGET_CONTAINER_ID)!.style.display = 'block';
   document.getElementById(TARGET_CONTAINER_ID)!.parentElement!.style.display =
     'block';
+  document.getElementById(TARGET_CONTAINER_ID)!.parentElement!.style.height =
+    '100%';
 }
 
 function detachDevTools(devToolsNode: HTMLElement | null) {

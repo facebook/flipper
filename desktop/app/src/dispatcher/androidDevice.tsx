@@ -61,6 +61,15 @@ function createDevice(
                 );
               });
           }
+          if (type === 'physical') {
+            // forward port for React DevTools, which is fixed on React Native
+            await androidLikeDevice.reverse([8097]).catch((e) => {
+              console.warn(
+                `Failed to reverse-proxy React DevTools port 8097 on ${androidLikeDevice.serial}`,
+                e,
+              );
+            });
+          }
           resolve(androidLikeDevice);
         } catch (e) {
           reject(e);
