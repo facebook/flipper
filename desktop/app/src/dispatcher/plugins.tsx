@@ -22,6 +22,7 @@ import {
   registerBundledPlugins,
   registerMarketplacePlugins,
   MarketplacePluginDetails,
+  pluginsInitialised,
 } from '../reducers/plugins';
 import GK from '../fb-stubs/GK';
 import {FlipperBasePlugin} from '../plugin';
@@ -106,6 +107,7 @@ export default async (store: Store, logger: Logger) => {
   store.dispatch(addDisabledPlugins(disabledPlugins));
   store.dispatch(addFailedPlugins(failedPlugins));
   store.dispatch(registerPlugins(initialPlugins));
+  store.dispatch(pluginsInitialised());
 
   sideEffect(
     store,
@@ -165,7 +167,7 @@ function getBundledPlugins(): Array<BundledPluginDetails> {
   try {
     bundledPlugins = global.electronRequire(pluginPath);
   } catch (e) {
-    console.error(e);
+    console.error('Failed to load bundled plugins', e);
   }
 
   return bundledPlugins;

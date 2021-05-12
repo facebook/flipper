@@ -62,6 +62,7 @@ Object {
   "disabledPlugins": Array [],
   "failedPlugins": Array [],
   "gatekeepedPlugins": Array [],
+  "initialised": false,
   "installedPlugins": Map {},
   "loadedPlugins": Map {},
   "marketplacePlugins": Array [],

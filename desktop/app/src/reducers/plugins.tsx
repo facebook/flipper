@@ -39,6 +39,7 @@ export type State = {
   marketplacePlugins: Array<MarketplacePluginDetails>;
   uninstalledPlugins: Set<string>;
   installedPlugins: Map<string, InstalledPluginDetails>;
+  initialised: boolean;
 };
 
 export type RegisterPluginAction = {
@@ -91,6 +92,9 @@ export type Action =
   | {
       type: 'PLUGIN_LOADED';
       payload: PluginDefinition;
+    }
+  | {
+      type: 'PLUGINS_INITIALISED';
     };
 
 const INITIAL_STATE: State = {
@@ -105,6 +109,7 @@ const INITIAL_STATE: State = {
   marketplacePlugins: [],
   uninstalledPlugins: new Set(),
   installedPlugins: new Map(),
+  initialised: false,
 };
 
 export default function reducer(
@@ -118,7 +123,6 @@ export default function reducer(
         if (devicePlugins.has(p.id) || clientPlugins.has(p.id)) {
           return;
         }
-
         if (isDevicePluginDefinition(p)) {
           devicePlugins.set(p.id, p);
         } else {
@@ -196,6 +200,10 @@ export default function reducer(
       }
       draft.uninstalledPlugins.delete(plugin.id);
       draft.loadedPlugins.set(plugin.id, plugin.details);
+    });
+  } else if (action.type === 'PLUGINS_INITIALISED') {
+    return produce(state, (draft) => {
+      draft.initialised = true;
     });
   } else {
     return state;
@@ -276,4 +284,8 @@ export const pluginUninstalled = (
 export const pluginLoaded = (payload: PluginDefinition): Action => ({
   type: 'PLUGIN_LOADED',
   payload,
+});
+
+export const pluginsInitialised = (): Action => ({
+  type: 'PLUGINS_INITIALISED',
 });
