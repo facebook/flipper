@@ -48,6 +48,11 @@ const argv = yargs
       type: 'string',
       alias: 'o',
     },
+    'output-unpacked': {
+      description: 'Where to save the unpacked plugin package',
+      type: 'string',
+      alias: 'ou',
+    },
   })
   .help()
   .strict()
@@ -58,6 +63,7 @@ async function buildPlugin() {
   const previousChecksum = argv.checksum;
   const pluginDir = await resolvePluginDir(pluginName);
   const outputFileArg = argv.output;
+  const outputUnpackedArg = argv['output-unpacked'];
   const minFlipperVersion = argv['min-flipper-version'];
   const packageJsonPath = path.join(pluginDir, 'package.json');
   await runBuild(pluginDir, false);
@@ -71,6 +77,9 @@ async function buildPlugin() {
           'plugins',
           path.relative(pluginsDir, pluginDir) + '.tgz',
         );
+    const outputUnpackedDir = outputUnpackedArg
+      ? path.resolve(outputUnpackedArg)
+      : path.join(distDir, 'plugins', path.relative(pluginsDir, pluginDir));
     await fs.ensureDir(path.dirname(outputFile));
     await fs.remove(outputFile);
     const {name: tmpDir} = tmp.dirSync();
@@ -84,12 +93,13 @@ async function buildPlugin() {
         }
         packageJson.engines.flipper = minFlipperVersion;
       }
-      if (argv.version) {
-        packageJson.version = argv.version;
-      }
+      packageJson.version = argv.version;
       await fs.writeJson(packageJsonPath, packageJson, {spaces: 2});
       const packCmd = `yarn pack --cwd "${pluginDir}" --filename ${outputFile}`;
       execSync(packCmd, {cwd: rootDir, stdio: 'inherit'});
+      await fs.remove(outputUnpackedDir);
+      await fs.copy(pluginDir, outputUnpackedDir, {overwrite: true});
+      console.log(`Unpacked package saved to ${outputUnpackedDir}`);
     } finally {
       await fs.move(packageJsonBackupPath, packageJsonPath, {overwrite: true});
       await fs.remove(tmpDir);
