@@ -1,3 +1,9 @@
+# 0.89.0 (13/5/2021)
+
+ * [D28382586](https://github.com/facebook/flipper/search?q=D28382586&type=Commits) -  [React DevTools] It is now possible to switch between the embedded and globally installed version of the React DevTools. This will enable the React DevTools to connect to older RN versions. Fixes #2250, #2224
+ * [D28382587](https://github.com/facebook/flipper/search?q=D28382587&type=Commits) -  [React DevTools] Several improvements that should improve the overal experience, the plugin should load much quicker and behave more predictably.
+
+
 # 0.88.0 (6/5/2021)
 
  * [D28117560](https://github.com/facebook/flipper/search?q=D28117560&type=Commits) -  Standardize CodeBlock component
