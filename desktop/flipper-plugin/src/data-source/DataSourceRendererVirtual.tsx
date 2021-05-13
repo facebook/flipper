@@ -325,7 +325,8 @@ const tableContainerStyle = {
   overflowY: 'auto',
   overflowX: 'hidden',
   display: 'flex',
-  flex: 1,
+  // because: https://stackoverflow.com/questions/37386244/what-does-flex-1-mean
+  flex: `1 1 0`,
 } as const;
 
 const tableWindowStyle = {

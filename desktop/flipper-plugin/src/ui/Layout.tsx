@@ -94,7 +94,7 @@ const Horizontal = styled(Container)({
 });
 
 const ScrollParent = styled.div<{axis?: ScrollAxis}>(({axis}) => ({
-  flex: 1,
+  flex: `1 1 0`,
   boxSizing: 'border-box',
   position: 'relative',
   overflowX: axis === 'y' ? 'hidden' : 'auto',
@@ -272,7 +272,7 @@ const SandySplitContainer = styled.div<{
 }>((props) => ({
   boxSizing: 'border-box',
   display: 'flex',
-  flex: 1,
+  flex: `1 1 0`,
   flexDirection: props.flexDirection,
   alignItems: props.center ? 'center' : 'stretch',
   gap: normalizeSpace(props.gap, theme.space.small),
