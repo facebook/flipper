@@ -27,7 +27,7 @@ jobs:
     - name: Write GPG Sec Ring
       run: echo '${{ secrets.GPG_KEY_CONTENTS }}' | base64 -d > /tmp/secring.gpg
     - name: Update gradle.properties
-      run: echo -e "signing.secretKeyRingFile=/tmp/secring.gpg\nsigning.keyId=${{ secrets.SIGNING_KEY_ID }}\nsigning.password=${{ secrets.SIGNING_PASSWORD }}" >> gradle.properties
+      run: echo -e "signing.secretKeyRingFile=/tmp/secring.gpg\nsigning.keyId=${{ secrets.SIGNING_KEY_ID }}\nsigning.password=${{ secrets.SIGNING_PASSWORD }}\nmavenCentralPassword=${{ secrets.SONATYPE_NEXUS_PASSWORD }}\nmavenCentralUsername=${{ secrets.SONATYPE_NEXUS_USERNAME }}" >> gradle.properties
     - name: Compute build cache
       run: ./scripts/checksum-android.sh checksum-android.txt
     - uses: actions/cache@v2
@@ -41,14 +41,8 @@ jobs:
       run: ./gradlew :sample:assembleDebug :sample:assembleRelease && ./gradlew :android:assembleRelease
     - name: Upload Archives
       run: ./gradlew uploadArchives --no-parallel --no-daemon
-      env:
-        mavenCentralPassword: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
-        mavenCentralUsername: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
     - name: Release and close
       run: ./gradlew closeAndReleaseRepository
-      env:
-        mavenCentralPassword: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
-        mavenCentralUsername: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
     - name: Clean secrets
       if: always()
       run: rm /tmp/secring.gpg
