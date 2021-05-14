@@ -10,7 +10,7 @@
       "archived": false
     }
   ],
-  "version": "0.0.1",
+  "version": "0.0.0",
   "main": "dist/bundle.js",
   "flipperBundlerEntry": "index.tsx",
   "license": "MIT",

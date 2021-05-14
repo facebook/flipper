@@ -55,6 +55,16 @@ async function postinstall(): Promise<number> {
           );
         }
       }
+      if (packageJson.version !== '0.0.0') {
+        errors.push(
+          `[ERROR] Plugin package "${path.relative(
+            rootDir,
+            packageDir,
+          )}" has version "${
+            packageJson.version
+          }" set in package.json. Plugin sources must have version set to "0.0.0". Version is automatically bumped when plugin released.`,
+        );
+      }
       if (
         packageJson.keywords &&
         packageJson.keywords.includes('flipper-plugin')
