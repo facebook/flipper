@@ -12,6 +12,10 @@ We support both Swift and Objective-C for Flipper with CocoaPods as build and di
 
 ## CocoaPods
 
+<div class="warning">
+Use Flipper/FlipperKit Version 0.87.0 and Flipper-Folly 2.5.3, if you depend on arm64 and i386 artifacts for the simulator. Versions greater than 0.87 and 2.5.3 of Flipper and Flipper-Folly, respectively, do not have these artifacts. This issue is tracked <Link to="https://github.com/facebook/flipper/issues/2268">here</Link>.
+</div>
+
 The following configuration assumed CocoaPods 1.9+.
 
 ```ruby
@@ -151,9 +155,3 @@ Finally, you need to add plugins to your Flipper client. Above, we have only add
 ## Having trouble?
 
 See the <Link to={useBaseUrl("/docs/troubleshooting")}>troubleshooting page</Link> for help with known problems.
-
-<div class="warning">
-
-On iOS, we currently do not support connecting to physical devices.
-
-</div>
