@@ -39,7 +39,8 @@ export function isTextual(headers?: Array<Header>): boolean {
     contentType.startsWith('application/json') ||
     contentType.startsWith('multipart/') ||
     contentType.startsWith('message/') ||
-    contentType.startsWith('image/svg')
+    contentType.startsWith('image/svg') ||
+    contentType.startsWith('application/xhtml+xml')
   );
 }
 
