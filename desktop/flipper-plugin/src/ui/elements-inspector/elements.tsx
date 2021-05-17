@@ -9,7 +9,7 @@
 
 import {Dropdown, Menu, Typography} from 'antd';
 import {ElementID, Element, ElementSearchResultSet} from './ElementsInspector';
-import {PureComponent, ReactElement} from 'react';
+import {createRef, PureComponent, ReactElement} from 'react';
 import styled from '@emotion/styled';
 import React, {MouseEvent, KeyboardEvent} from 'react';
 import {theme} from '../theme';
@@ -316,6 +316,7 @@ class ElementsRow extends PureComponent<ElementsRowProps, ElementsRowState> {
   };
 
   onDoubleClick = (event: MouseEvent<any>) => {
+    this.props.onElementSelected(this.props.id);
     this.props.onElementExpanded(this.props.id, event.altKey);
   };
 
@@ -548,22 +549,6 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
     return {flatElements, flatKeys, maxDepth};
   }
 
-  _calculateScrollTop(
-    parentHeight: number,
-    parentOffsetTop: number,
-    childHeight: number,
-    childOffsetTop: number,
-  ): number {
-    const childOffsetMid = childOffsetTop + childHeight / 2;
-    if (
-      parentOffsetTop < childOffsetMid &&
-      childOffsetMid < parentOffsetTop + parentHeight
-    ) {
-      return parentOffsetTop;
-    }
-    return childOffsetMid - parentHeight / 2;
-  }
-
   selectElement = (key: ElementID) => {
     this.props.onElementSelected(key);
   };
@@ -686,14 +671,21 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
     return `${indentation}${element.name}${attrs}${childrenValue}`;
   };
 
+  parentRef = createRef<HTMLDivElement>();
+
   scrollToSelectionRefHandler = (selectedRow: HTMLDivElement | null) => {
     if (selectedRow && this.state.scrolledElement !== this.props.selected) {
-      // second child is the element containing the element name
-      // by scrolling to the second element, we make sure padding is addressed and we scroll horizontally as well
-      selectedRow?.children[1]?.scrollIntoView?.({
-        block: 'center',
-        inline: 'center',
-      });
+      if (
+        this.parentRef.current &&
+        !isInView(this.parentRef.current, selectedRow as HTMLElement)
+      ) {
+        // second child is the element containing the element name
+        // by scrolling to the second element, we make sure padding is addressed and we scroll horizontally as well
+        selectedRow.children[1]?.scrollIntoView?.({
+          block: 'center',
+          inline: 'center',
+        });
+      }
       this.setState({scrolledElement: this.props.selected});
     }
   };
@@ -758,9 +750,34 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
 
   render() {
     return (
-      <ElementsContainer onKeyDown={this.onKeyDown} tabIndex={0}>
+      <ElementsContainer
+        onKeyDown={this.onKeyDown}
+        tabIndex={0}
+        ref={this.parentRef}>
         {this.state.flatElements.map(this.buildRow)}
       </ElementsContainer>
     );
   }
+}
+
+function isInView(parent: HTMLElement, el: HTMLElement) {
+  // find the scroll container. (This is fragile)
+  const scrollContainer = parent.parentElement!.parentElement!;
+  // check vertical scroll
+  if (
+    el.offsetTop > scrollContainer.scrollTop &&
+    el.offsetTop < scrollContainer.scrollTop + scrollContainer.clientHeight
+  ) {
+    // check if horizontal scroll is needed,
+    // do this by checking the indented node, not the row (which is always visible)
+    const child = el.childNodes[0] as HTMLElement;
+    if (
+      child.offsetLeft > scrollContainer.scrollLeft &&
+      child.offsetLeft <
+        scrollContainer.scrollLeft + scrollContainer.clientWidth
+    ) {
+      return true;
+    }
+  }
+  return false;
 }
