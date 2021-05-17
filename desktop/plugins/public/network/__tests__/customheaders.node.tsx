@@ -11,7 +11,7 @@ import {TestUtils} from 'flipper-plugin';
 import * as NetworkPlugin from '../index';
 
 test('Can handle custom headers', async () => {
-  const {instance, sendEvent, act, renderer, exportState} =
+  const {instance, sendEvent, act, renderer, exportStateAsync} =
     TestUtils.renderPlugin(NetworkPlugin);
 
   act(() => {
@@ -122,7 +122,7 @@ test('Can handle custom headers', async () => {
 
   // after import, columns should be visible and restored
   {
-    const snapshot = exportState();
+    const snapshot = await exportStateAsync();
     // Note: snapshot is set in the previous test
     const {instance: instance2, renderer: renderer2} = TestUtils.renderPlugin(
       NetworkPlugin,

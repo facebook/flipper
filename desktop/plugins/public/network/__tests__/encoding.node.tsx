@@ -13,6 +13,8 @@ import {decodeBody} from '../utils';
 import {ResponseInfo} from '../types';
 import {promisify} from 'util';
 import {readFileSync} from 'fs';
+import {TestUtils} from 'flipper-plugin';
+import * as NetworkPlugin from '../index';
 
 async function createMockResponse(
   input: string,
@@ -134,5 +136,124 @@ describe('network data encoding', () => {
     // this compares to the correct base64 encoded src tag of the img in Flipper UI
     expect(response.data).toEqual(tinyLogoBase64Expected.trim());
     expect(bodyAsBuffer(response)).toEqual(tinyLogoExpected);
+  });
+});
+
+test('binary data gets serialized correctly', async () => {
+  const tinyLogoExpected = readFileSync(
+    path.join(__dirname, 'fixtures', 'tiny_logo.png'),
+  );
+  const tinyLogoData = readFileSync(
+    path.join(__dirname, 'fixtures', 'tiny_logo.base64.txt'),
+    'utf-8',
+  );
+  const donatingExpected = readFileSync(
+    path.join(__dirname, 'fixtures', 'donating.md'),
+    'utf-8',
+  );
+  const donatingData = readFileSync(
+    path.join(__dirname, 'fixtures', 'donating.md.utf8.gzip.ios.txt'),
+    'utf-8',
+  );
+  const {instance, sendEvent, exportStateAsync} =
+    TestUtils.startPlugin(NetworkPlugin);
+  sendEvent('newRequest', {
+    id: '0',
+    timestamp: 0,
+    data: donatingData,
+    headers: [
+      {
+        key: 'Content-Type',
+        value: 'text/plain',
+      },
+    ],
+    method: 'post',
+    url: 'http://www.fbflipper.com',
+  });
+  const response = await createMockResponse(
+    'tiny_logo.android.txt',
+    'image/png',
+  );
+  sendEvent('newResponse', response);
+
+  expect(instance.requests.getById('0')).toMatchObject({
+    requestHeaders: [
+      {
+        key: 'Content-Type',
+        value: 'text/plain',
+      },
+    ],
+    requestData: donatingExpected,
+    responseHeaders: [
+      {
+        key: 'Content-Type',
+        value: 'image/png',
+      },
+    ],
+    responseData: new Uint8Array(tinyLogoExpected),
+  });
+
+  const snapshot = await exportStateAsync();
+  expect(snapshot).toMatchObject({
+    isMockResponseSupported: true,
+    selectedId: undefined,
+    requests2: [
+      {
+        domain: 'www.fbflipper.com/',
+        duration: 0,
+        id: '0',
+        insights: undefined,
+        method: 'post',
+        reason: 'dunno',
+        requestHeaders: [
+          {
+            key: 'Content-Type',
+            value: 'text/plain',
+          },
+        ],
+        requestData: donatingExpected, // not encoded
+        responseData: [tinyLogoData.trim()], // wrapped represents base64
+        responseHeaders: [
+          {
+            key: 'Content-Type',
+            value: 'image/png',
+          },
+        ],
+        responseIsMock: false,
+        responseLength: 24838,
+        status: 200,
+        url: 'http://www.fbflipper.com',
+      },
+    ],
+  });
+
+  const {instance: instance2} = TestUtils.startPlugin(NetworkPlugin, {
+    initialState: snapshot,
+  });
+  expect(instance2.requests.getById('0')).toMatchObject({
+    domain: 'www.fbflipper.com/',
+    duration: 0,
+    id: '0',
+    insights: undefined,
+    method: 'post',
+    reason: 'dunno',
+    requestHeaders: [
+      {
+        key: 'Content-Type',
+        value: 'text/plain',
+      },
+    ],
+    requestData: donatingExpected,
+    responseData: new Uint8Array(tinyLogoExpected),
+    responseHeaders: [
+      {
+        key: 'Content-Type',
+        value: 'image/png',
+      },
+    ],
+    responseIsMock: false,
+    responseLength: 24838,
+    status: 200,
+    url: 'http://www.fbflipper.com',
   });
 });

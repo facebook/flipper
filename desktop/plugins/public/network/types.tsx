@@ -35,6 +35,16 @@ export interface Request {
 
 export type Requests = DataSource<Request, 'id', string>;
 
+export type SerializedRequest = Omit<
+  Request,
+  'requestTime' | 'responseTime' | 'requestData' | 'responseData'
+> & {
+  requestTime: number;
+  requestData?: string | [string]; // wrapped in Array represents base64 encoded
+  responseTime?: number;
+  responseData?: string | [string]; // wrapped in Array represents base64 encoded
+};
+
 export type RequestInfo = {
   id: RequestId;
   timestamp: number;

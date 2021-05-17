@@ -42,6 +42,7 @@ import {
   ResponseFollowupChunk,
   AddProtobufEvent,
   PartialResponses,
+  SerializedRequest,
 } from './types';
 import {ProtobufDefinitionsRepository} from './ProtobufDefinitionsRepository';
 import {
@@ -68,6 +69,7 @@ import {
   createNetworkManager,
   computeMockRoutes,
 } from './request-mocking/NetworkRouteManager';
+import {Base64} from 'js-base64';
 
 const LOCALSTORAGE_MOCK_ROUTE_LIST_KEY = '__NETWORK_CACHED_MOCK_ROUTE_LIST';
 const LOCALSTORAGE_RESPONSE_BODY_FORMAT_KEY =
@@ -94,6 +96,13 @@ type CustomColumnConfig = {
   type: 'response' | 'request';
 };
 
+type StateExport = {
+  requests2: SerializedRequest[];
+  isMockResponseSupported: boolean;
+  selectedId: string | undefined;
+  customColumns: CustomColumnConfig[];
+};
+
 export function plugin(client: PluginClient<Events, Methods>) {
   const networkRouteManager = createState<NetworkRouteManager>(
     nullNetworkRouteManager,
@@ -101,30 +110,20 @@ export function plugin(client: PluginClient<Events, Methods>) {
 
   const routes = createState<{[id: string]: Route}>({});
   const nextRouteId = createState<number>(0);
-  const isMockResponseSupported = createState<boolean>(false, {
-    persist: 'isMockResponseSupported',
-  });
+  const isMockResponseSupported = createState<boolean>(false);
   const showMockResponseDialog = createState<boolean>(false);
   const detailBodyFormat = createState<string>(
     localStorage.getItem(LOCALSTORAGE_RESPONSE_BODY_FORMAT_KEY) || 'parsed',
   );
   const requests = createDataSource<Request, 'id'>([], {
     key: 'id',
-    persist: 'requests2',
   });
-  const selectedId = createState<string | undefined>(undefined, {
-    persist: 'selectedId',
-  });
+  const selectedId = createState<string | undefined>(undefined);
   const tableManagerRef = createRef<undefined | DataTableManager<Request>>();
 
-  const partialResponses = createState<PartialResponses>(
-    {},
-    {persist: 'partialResponses'},
-  );
+  const partialResponses = createState<PartialResponses>({});
 
-  const customColumns = createState<CustomColumnConfig[]>([], {
-    persist: 'customColumns', // Store in local storage as well: T69989583
-  });
+  const customColumns = createState<CustomColumnConfig[]>([]); // Store in local storage as well: T69989583
   const columns = createState<DataTableColumn<Request>[]>(baseColumns); // not persistable
 
   client.onDeepLink((payload: unknown) => {
@@ -335,6 +334,61 @@ export function plugin(client: PluginClient<Events, Methods>) {
   client.onReady(() => {
     // after restoring a snapshot, let's make sure we update the columns
     customColumns.get().forEach(addDataTableColumnConfig);
+  });
+
+  client.onExport<StateExport>(async (idler, onStatusMessage) => {
+    const serializedRequests: SerializedRequest[] = [];
+    for (let i = 0; i < requests.size; i++) {
+      const request = requests.get(i);
+      serializedRequests.push({
+        ...request,
+        requestTime: request.requestTime.getTime(),
+        responseTime: request.responseTime?.getTime(),
+        requestData:
+          request.requestData instanceof Uint8Array
+            ? [Base64.fromUint8Array(request.requestData)]
+            : request.requestData,
+        responseData:
+          request.responseData instanceof Uint8Array
+            ? [Base64.fromUint8Array(request.responseData)]
+            : request.responseData,
+      });
+      if (idler.isCancelled()) {
+        return;
+      }
+      if (idler.shouldIdle()) {
+        onStatusMessage(`Serializing request ${i + 1}/${requests.size}`);
+        await idler.idle();
+      }
+    }
+    return {
+      isMockResponseSupported: isMockResponseSupported.get(),
+      selectedId: selectedId.get(),
+      requests2: serializedRequests,
+      customColumns: customColumns.get(),
+    };
+  });
+
+  client.onImport<StateExport>((data) => {
+    selectedId.set(data.selectedId);
+    isMockResponseSupported.set(data.isMockResponseSupported);
+    customColumns.set(data.customColumns);
+    data.requests2.forEach((request) => {
+      requests.append({
+        ...request,
+        requestTime: new Date(request.requestTime),
+        responseTime:
+          request.responseTime != null
+            ? new Date(request.responseTime)
+            : undefined,
+        requestData: Array.isArray(request.requestData)
+          ? Base64.toUint8Array(request.requestData[0])
+          : request.requestData,
+        responseData: Array.isArray(request.responseData)
+          ? Base64.toUint8Array(request.responseData[0])
+          : request.responseData,
+      });
+    });
   });
 
   return {
