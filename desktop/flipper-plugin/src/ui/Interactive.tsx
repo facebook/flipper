@@ -626,6 +626,17 @@ export class Interactive extends React.Component<
       newCursor = 'row-resize';
     }
 
+    if (
+      this.state.resizingSides?.bottom === bottom &&
+      this.state.resizingSides?.left === left &&
+      this.state.resizingSides?.top === top &&
+      this.state.resizingSides?.right === right &&
+      this.state.cursor === newCursor &&
+      this.state.couldResize === Boolean(newCursor)
+    ) {
+      return;
+    }
+
     const resizingSides = {
       bottom,
       left,
