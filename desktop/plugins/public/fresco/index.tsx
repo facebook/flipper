@@ -17,19 +17,21 @@ import {
   AndroidCloseableReferenceLeakEvent,
   CacheInfo,
 } from './api';
-import {Fragment} from 'react';
 import {ImagesMap} from './ImagePool';
-import {PluginClient, createState, usePlugin, useValue} from 'flipper-plugin';
+import {
+  PluginClient,
+  createState,
+  usePlugin,
+  useValue,
+  DetailSidebar,
+  Layout,
+} from 'flipper-plugin';
 import React from 'react';
 import ImagesCacheOverview from './ImagesCacheOverview';
-import {
-  FlexRow,
-  Text,
-  DetailSidebar,
-  colors,
-  styled,
-  isProduction,
-} from 'flipper';
+import {isProduction} from 'flipper';
+
+import {Typography} from 'antd';
+
 import ImagesSidebar from './ImagesSidebar';
 import ImagePool from './ImagePool';
 
@@ -37,18 +39,6 @@ export type ImageEventWithId = ImageEvent & {eventId: number};
 export type AllImageEventsInfo = {
   events: Array<ImageEventWithId>;
 };
-
-const EmptySidebar = styled(FlexRow)({
-  alignItems: 'center',
-  justifyContent: 'center',
-  color: colors.light30,
-  padding: 15,
-  fontSize: 16,
-});
-
-export const InlineFlexRow = styled(FlexRow)({
-  display: 'inline-block',
-});
 
 const surfaceDefaultText = 'SELECT ALL SURFACES';
 
@@ -113,18 +103,17 @@ export function plugin(client: PluginClient<Events, Methods>) {
         id: event.identityHashCode,
         title: `Leaked CloseableReference: ${event.className}`,
         message: (
-          <Fragment>
-            <InlineFlexRow>
-              CloseableReference leaked for <Text code>{event.className}</Text>
+          <Layout.Container>
+            <Typography.Text>CloseableReference leaked for </Typography.Text>
+            <Typography.Text code>{event.className}</Typography.Text>
+            <Typography.Text>
               (identity hashcode: {event.identityHashCode}).
-            </InlineFlexRow>
-            <InlineFlexRow>
-              <Text bold>Stacktrace:</Text>
-            </InlineFlexRow>
-            <InlineFlexRow>
-              <Text code>{event.stacktrace || '<unavailable>'}</Text>
-            </InlineFlexRow>
-          </Fragment>
+            </Typography.Text>
+            <Typography.Text strong>Stacktrace:</Typography.Text>
+            <Typography.Text code>
+              {event.stacktrace || '<unavailable>'}
+            </Typography.Text>
+          </Layout.Container>
         ),
         severity: 'error',
         category: 'closeablereference_leak',
@@ -465,11 +454,11 @@ function Sidebar() {
 
   if (currentSelectedImage == null) {
     return (
-      <EmptySidebar grow>
-        <Text align="center">
+      <Layout.Container pad>
+        <Typography.Text>
           Select an image to see the events associated with it.
-        </Text>
-      </EmptySidebar>
+        </Typography.Text>
+      </Layout.Container>
     );
   }
 

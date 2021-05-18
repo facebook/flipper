@@ -9,20 +9,15 @@
 
 import {ImageData} from './api';
 import {ImageEventWithId} from './index';
+import React, {Component} from 'react';
 import {
-  Component,
-  ContextMenu,
-  DataDescription,
-  Text,
-  Panel,
-  ManagedDataInspector,
-  FlexColumn,
-  FlexRow,
-  colors,
+  Layout,
+  theme,
   styled,
-} from 'flipper';
-import React from 'react';
-import {clipboard, MenuItemConstructorOptions} from 'electron';
+  DataDescription,
+  Panel,
+  DataInspector,
+} from 'flipper-plugin';
 
 type ImagesSidebarProps = {
   image: ImageData;
@@ -32,10 +27,10 @@ type ImagesSidebarProps = {
 type ImagesSidebarState = {};
 
 const DataDescriptionKey = styled.span({
-  color: colors.grapeDark1,
+  color: theme.textColorPrimary,
 });
 
-const WordBreakFlexColumn = styled(FlexColumn)({
+const WordBreakFlexColumn = styled(Layout.Container)({
   wordBreak: 'break-all',
 });
 
@@ -62,37 +57,22 @@ export default class ImagesSidebar extends Component<
       return null;
     }
 
-    const contextMenuItems: MenuItemConstructorOptions[] = [
-      {
-        label: 'Copy URI',
-        click: () => clipboard.writeText(this.props.image.uri!),
-      },
-    ];
-
     return (
-      <Panel heading="Sources" floating={false}>
-        <FlexRow>
-          <FlexColumn>
-            <DataDescriptionKey>URI</DataDescriptionKey>
-          </FlexColumn>
-          <FlexColumn>
-            <span key="sep">:&nbsp;</span>
-          </FlexColumn>
-          <WordBreakFlexColumn>
-            <ContextMenu component="span" items={contextMenuItems}>
-              <DataDescription
-                type="string"
-                value={this.props.image.uri}
-                setValue={null}
-              />
-            </ContextMenu>
-          </WordBreakFlexColumn>
-        </FlexRow>
+      <Panel title="Sources" pad>
+        <WordBreakFlexColumn>
+          <span>
+            URI<span key="sep">: </span>
+            <DataDescription
+              type="string"
+              value={this.props.image.uri}
+              setValue={null}
+            />
+          </span>
+        </WordBreakFlexColumn>
       </Panel>
     );
   }
 }
-
 class EventDetails extends Component<{
   event: ImageEventWithId;
 }> {
@@ -100,11 +80,11 @@ class EventDetails extends Component<{
     const {event} = this.props;
 
     return (
-      <Panel heading={<RequestHeader event={event} />} floating={false} padded>
+      <Panel title={requestHeader(event)} pad>
         <p>
           <DataDescriptionKey>Attribution</DataDescriptionKey>
           <span key="sep">: </span>
-          <ManagedDataInspector data={event.attribution} />
+          <DataInspector data={event.attribution} />
         </p>
         <p>
           <DataDescriptionKey>Time start</DataDescriptionKey>
@@ -163,24 +143,11 @@ class EventDetails extends Component<{
   }
 }
 
-class RequestHeader extends Component<{
-  event: ImageEventWithId;
-}> {
-  dateString = (timestamp: number) => {
-    const date = new Date(timestamp);
-    return `${date.toTimeString().split(' ')[0]}.${(
-      '000' + date.getMilliseconds()
-    ).substr(-3)}`;
-  };
+function requestHeader(event: ImageEventWithId) {
+  const date = new Date(event.startTime);
+  const dateString = `${date.toTimeString().split(' ')[0]}.${(
+    '000' + date.getMilliseconds()
+  ).substr(-3)}`;
 
-  render() {
-    const {event} = this.props;
-    const durationMs = event.endTime - event.startTime;
-    return (
-      <Text>
-        {event.viewport ? 'Request' : 'Prefetch'} at{' '}
-        {this.dateString(event.startTime)} ({durationMs}ms)
-      </Text>
-    );
-  }
+  return (event.viewport ? 'Request' : 'Prefetch') + ' at ' + dateString;
 }
