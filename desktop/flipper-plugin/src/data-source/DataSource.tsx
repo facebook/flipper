@@ -489,9 +489,7 @@ class DataSourceView<T> {
     this.windowEnd = end;
   }
 
-  public setListener(
-    listener: typeof DataSourceView['prototype']['outputChangeListener'],
-  ) {
+  public setListener(listener?: (change: OutputChange) => void) {
     if (this.outputChangeListener && listener) {
       console.warn('outputChangeListener already set');
     }
