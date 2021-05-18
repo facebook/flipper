@@ -164,6 +164,7 @@ module.exports = {
         'fb/sandcastle',
         'fb/Star-Ratings',
         'fb/sandcastle-overview',
+        'fb/error-logging',
       ]),
     ],
   },
