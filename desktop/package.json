@@ -159,7 +159,7 @@
     "ignore": "^5.1.4",
     "invariant": "^2.2.4",
     "jest": "^26.6.3",
-    "jest-environment-jsdom-sixteen": "^1.0.3",
+    "jest-environment-jsdom-sixteen": "^2.0.0",
     "jest-fetch-mock": "^3.0.3",
     "less": "^4.1.1",
     "line-replace": "^2.0.1",
