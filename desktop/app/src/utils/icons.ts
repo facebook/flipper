@@ -16,7 +16,7 @@ const AVAILABLE_SIZES = [8, 10, 12, 16, 18, 20, 24, 32];
 const DENSITIES = [1, 1.5, 2, 3, 4];
 
 function getIconsPath() {
-  return path.resolve(getStaticPath(), 'icons.json');
+  return getStaticPath('icons.json');
 }
 
 export type Icons = {

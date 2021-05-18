@@ -14,7 +14,7 @@ import {getPluginSourceFolders} from './pluginPaths';
 import pmap from 'p-map';
 import pfilter from 'p-filter';
 import {satisfies} from 'semver';
-import {getInstalledPluginDetails} from './getPluginDetails';
+import {getInstalledPluginDetails, isPluginJson} from './getPluginDetails';
 import {InstalledPluginDetails} from './PluginDetails';
 
 const flipperVersion = require('../package.json').version;
@@ -75,8 +75,8 @@ async function entryPointForPluginFolder(
         } catch (e) {
           console.error(
             `Could not load plugin from "${dir}", because package.json is invalid.`,
+            e,
           );
-          console.error(e);
           return null;
         }
       }),
@@ -84,10 +84,10 @@ async function entryPointForPluginFolder(
     .then((packages) => packages.filter(notNull))
     .then((packages) => packages.filter(({manifest}) => !manifest.workspaces))
     .then((packages) =>
-      packages.filter(({manifest: {keywords, name}}) => {
-        if (!keywords || !keywords.includes('flipper-plugin')) {
+      packages.filter(({manifest}) => {
+        if (!isPluginJson(manifest)) {
           console.log(
-            `Skipping package "${name}" as its "keywords" field does not contain tag "flipper-plugin"`,
+            `Skipping package "${manifest.name}" as its "keywords" field does not contain tag "flipper-plugin"`,
           );
           return false;
         }
@@ -110,8 +110,8 @@ async function entryPointForPluginFolder(
         } catch (e) {
           console.error(
             `Could not load plugin from "${dir}", because package.json is invalid.`,
+            e,
           );
-          console.error(e);
           return null;
         }
       }),

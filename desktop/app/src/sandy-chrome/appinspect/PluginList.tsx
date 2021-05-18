@@ -40,7 +40,7 @@ import {
   switchPlugin,
   uninstallPlugin,
 } from '../../reducers/pluginManager';
-import {BundledPluginDetails} from 'plugin-lib';
+import {BundledPluginDetails} from 'flipper-plugin-lib';
 import {reportUsage} from '../../utils/metrics';
 
 const {SubMenu} = Menu;

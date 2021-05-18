@@ -54,9 +54,13 @@ function isAvailable(simulator: iOSSimulatorDevice): boolean {
   );
 }
 
-const portforwardingClient = path.join(
-  getStaticPath(),
-  'PortForwardingMacApp.app/Contents/MacOS/PortForwardingMacApp',
+const portforwardingClient = getStaticPath(
+  path.join(
+    'PortForwardingMacApp.app',
+    'Contents',
+    'MacOS',
+    'PortForwardingMacApp',
+  ),
 );
 
 function forwardPort(port: number, multiplexChannelPort: number) {

@@ -14,7 +14,7 @@ import config from '../fb-stubs/config';
 
 let _staticPath = '';
 
-export function getStaticPath() {
+function getStaticDir() {
   if (_staticPath) {
     return _staticPath;
   }
@@ -31,31 +31,35 @@ export function getStaticPath() {
   return _staticPath;
 }
 
+export function getStaticPath(
+  relativePath: string = '.',
+  {asarUnpacked}: {asarUnpacked: boolean} = {asarUnpacked: false},
+) {
+  const staticDir = getStaticDir();
+  const absolutePath = path.resolve(staticDir, relativePath);
+  // Unfortunately, path.resolve, fs.pathExists, fs.read etc do not automatically work with asarUnpacked files.
+  // All these functions still look for files in "app.asar" even if they are unpacked.
+  // Looks like automatic resolving for asarUnpacked files only work for "child_process" module.
+  // So we're using a hack here to actually look to "app.asar.unpacked" dir instead of app.asar package.
+  return asarUnpacked
+    ? absolutePath.replace('app.asar', 'app.asar.unpacked')
+    : absolutePath;
+}
+
 let _appPath: string | undefined = undefined;
 export function getAppPath() {
   if (!_appPath) {
-    _appPath = path.join(getStaticPath(), '..');
+    _appPath = getStaticPath('..');
   }
 
   return _appPath;
 }
 
 export function getChangelogPath() {
-  const staticPath = getStaticPath();
-  let changelogPath = '';
-
-  if (config.isFBBuild) {
-    changelogPath = path.resolve(staticPath, 'facebook');
-  } else {
-    changelogPath = staticPath;
-  }
-
+  const changelogPath = getStaticPath(config.isFBBuild ? 'facebook' : '.');
   if (fs.existsSync(changelogPath)) {
     return changelogPath;
-  }
-
-  if (!fs.existsSync(changelogPath)) {
+  } else {
     throw new Error('Changelog path path does not exist: ' + changelogPath);
   }
-  return changelogPath;
 }

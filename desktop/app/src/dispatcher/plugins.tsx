@@ -27,16 +27,15 @@ import {
 import GK from '../fb-stubs/GK';
 import {FlipperBasePlugin} from '../plugin';
 import {setupMenuBar} from '../MenuBar';
+import fs from 'fs-extra';
 import path from 'path';
 import {default as config} from '../utils/processConfig';
-import isProduction from '../utils/isProduction';
 import {notNull} from '../utils/typeUtils';
 import {sideEffect} from '../utils/sideEffect';
-import semver from 'semver';
 import {
   ActivatablePluginDetails,
   BundledPluginDetails,
-  PluginDetails,
+  ConcretePluginDetails,
 } from 'flipper-plugin-lib';
 import {tryCatchReportPluginFailures, reportUsage} from '../utils/metrics';
 import * as FlipperPluginSDK from 'flipper-plugin';
@@ -53,7 +52,8 @@ import * as crc32 from 'crc32';
 import getDefaultPluginsIndex from '../utils/getDefaultPluginsIndex';
 import {isDevicePluginDefinition} from '../utils/pluginUtils';
 import isPluginCompatible from '../utils/isPluginCompatible';
-
+import isPluginVersionMoreRecent from '../utils/isPluginVersionMoreRecent';
+import {getStaticPath} from '../utils/pathUtils';
 let defaultPluginsIndex: any = null;
 
 export default async (store: Store, logger: Logger) => {
@@ -78,37 +78,23 @@ export default async (store: Store, logger: Logger) => {
 
   defaultPluginsIndex = getDefaultPluginsIndex();
 
-  const marketplacePlugins = store.getState().plugins.marketplacePlugins;
-  store.dispatch(
-    registerMarketplacePlugins(
-      selectCompatibleMarketplaceVersions(marketplacePlugins),
-    ),
+  const marketplacePlugins = selectCompatibleMarketplaceVersions(
+    store.getState().plugins.marketplacePlugins,
   );
+  store.dispatch(registerMarketplacePlugins(marketplacePlugins));
 
   const uninstalledPluginNames =
     store.getState().plugins.uninstalledPluginNames;
 
-  const bundledPlugins = getBundledPlugins();
+  const bundledPlugins = await getBundledPlugins();
 
   const allLocalVersions = [
-    ...getBundledPlugins(),
+    ...bundledPlugins,
     ...(await getDynamicPlugins()),
   ].filter((p) => !uninstalledPluginNames.has(p.name));
 
-  const loadedVersionsMap: Map<string, ActivatablePluginDetails> = new Map();
-  for (const localVersion of allLocalVersions) {
-    if (isPluginCompatible(localVersion)) {
-      const loadedVersion = loadedVersionsMap.get(localVersion.id);
-      if (
-        !loadedVersion ||
-        semver.gt(localVersion.version, loadedVersion.version)
-      ) {
-        loadedVersionsMap.set(localVersion.id, localVersion);
-      }
-    }
-  }
-
-  const loadedPlugins = Array.from(loadedVersionsMap.values());
+  const loadedPlugins =
+    getLatestCompatibleVersionOfEachPlugin(allLocalVersions);
 
   const initialPlugins: PluginDefinition[] = loadedPlugins
     .map(reportVersion)
@@ -150,40 +136,33 @@ function reportVersion(pluginDetails: ActivatablePluginDetails) {
   return pluginDetails;
 }
 
-export function filterNewestVersionOfEachPlugin<
-  T1 extends PluginDetails,
-  T2 extends PluginDetails,
->(bundledPlugins: T1[], dynamicPlugins: T2[]): (T1 | T2)[] {
-  const pluginByName: {[key: string]: T1 | T2} = {};
-  for (const plugin of bundledPlugins) {
-    pluginByName[plugin.name] = plugin;
-  }
-  for (const plugin of dynamicPlugins) {
-    if (
-      !pluginByName[plugin.name] ||
-      (!process.env.FLIPPER_DISABLE_PLUGIN_AUTO_UPDATE &&
-        semver.gt(plugin.version, pluginByName[plugin.name].version, true))
-    ) {
-      pluginByName[plugin.name] = plugin;
+export function getLatestCompatibleVersionOfEachPlugin<
+  T extends ConcretePluginDetails,
+>(plugins: T[]): T[] {
+  const latestCompatibleVersions: Map<string, T> = new Map();
+  for (const plugin of plugins) {
+    if (isPluginCompatible(plugin)) {
+      const loadedVersion = latestCompatibleVersions.get(plugin.id);
+      if (!loadedVersion || isPluginVersionMoreRecent(plugin, loadedVersion)) {
+        latestCompatibleVersions.set(plugin.id, plugin);
+      }
     }
   }
-  return Object.values(pluginByName);
+  return Array.from(latestCompatibleVersions.values());
 }
 
-function getBundledPlugins(): Array<BundledPluginDetails> {
-  // DefaultPlugins that are included in the bundle.
-  // List of defaultPlugins is written at build time
-  const pluginPath =
-    process.env.BUNDLED_PLUGIN_PATH ||
-    (isProduction()
-      ? path.join(__dirname, 'defaultPlugins')
-      : './defaultPlugins/index.json');
-
+async function getBundledPlugins(): Promise<Array<BundledPluginDetails>> {
+  // defaultPlugins that are included in the Flipper distributive.
+  // List of default bundled plugins is written at build time to defaultPlugins/bundled.json.
+  const pluginPath = getStaticPath(
+    path.join('defaultPlugins', 'bundled.json'),
+    {asarUnpacked: true},
+  );
   let bundledPlugins: Array<BundledPluginDetails> = [];
   try {
-    bundledPlugins = global.electronRequire(pluginPath);
+    bundledPlugins = await fs.readJson(pluginPath);
   } catch (e) {
-    console.error('Failed to load bundled plugins', e);
+    console.error('Failed to load list of bundled plugins', e);
   }
 
   return bundledPlugins;

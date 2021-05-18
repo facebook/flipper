@@ -9,7 +9,8 @@
     "artifactName": "Flipper-${os}.${ext}",
     "asar": true,
     "asarUnpack": [
-      "PortForwardingMacApp.app/**/*"
+      "PortForwardingMacApp.app/**/*",
+      "defaultPlugins/**/*"
     ],
     "dmg": {
       "background": "dmgBackground.png",

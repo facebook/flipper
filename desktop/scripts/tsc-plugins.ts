@@ -14,6 +14,7 @@ import {EOL} from 'os';
 import pmap from 'p-map';
 import {rootDir} from './paths';
 import yargs from 'yargs';
+import {isPluginJson} from 'flipper-plugin-lib';
 
 const argv = yargs
   .usage('yarn tsc-plugins [args]')
@@ -107,7 +108,7 @@ async function findAffectedPlugins(errors: string[]) {
     depsByName.set(name, getDependencies(name));
   }
   for (const pkg of allPackages) {
-    if (!pkg.json?.keywords?.includes('flipper-plugin')) {
+    if (!isPluginJson(pkg.json)) {
       continue;
     }
     const logFile = path.join(pkg.dir, 'tsc-error.log');

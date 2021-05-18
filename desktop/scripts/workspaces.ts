@@ -15,6 +15,7 @@ import globImport from 'glob';
 import pfilter from 'p-filter';
 import pmap from 'p-map';
 import {execSync} from 'child_process';
+import {isPluginJson} from 'flipper-plugin-lib';
 const glob = promisify(globImport);
 
 export interface Package {
@@ -52,10 +53,7 @@ async function getWorkspacesByRoot(
         dir,
         json,
         isPrivate: json.private || dir.startsWith(pluginsDir),
-        isPlugin:
-          json.keywords &&
-          Array.isArray(json.keywords) &&
-          json.keywords.includes('flipper-plugin'),
+        isPlugin: isPluginJson(json),
       };
     },
   );

@@ -2,7 +2,7 @@ lib/
 node_modules/
 *.tsbuildinfo
 /static/themes/
-/static/defaultPlugins/index.json
+/static/defaultPlugins/
 /app/src/defaultPlugins/index.tsx
 /coverage
 .env

@@ -47,7 +47,7 @@ export function getAppVersion(): string {
     (isTest()
       ? '0.0.0'
       : (isProduction()
-          ? fs.readJsonSync(path.join(getStaticPath(), 'package.json'), {
+          ? fs.readJsonSync(getStaticPath('package.json'), {
               throws: false,
             })?.version
           : require('../../package.json').version) ?? '0.0.0'));

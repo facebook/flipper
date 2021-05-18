@@ -20,7 +20,7 @@ import http from 'http';
 import path from 'path';
 import fs from 'fs-extra';
 import {hostname} from 'os';
-import {compileMain, generatePluginEntryPoints} from './build-utils';
+import {compileMain, prepareDefaultPlugins} from './build-utils';
 import Watchman from './watchman';
 import Metro from 'metro';
 import {staticDir, babelTransformationsDir, rootDir} from './paths';
@@ -34,9 +34,19 @@ import yargs from 'yargs';
 const argv = yargs
   .usage('yarn start [args]')
   .options({
-    'embedded-plugins': {
+    'default-plugins': {
       describe:
-        'Enables embedding of plugins into Flipper bundle. If it disabled then only installed plugins are loaded. The flag is enabled by default. Env var FLIPPER_NO_EMBEDDED_PLUGINS is equivalent to the command-line option "--no-embedded-plugins".',
+        'Enables embedding of default plugins into Flipper package so they are always available. The flag is enabled by default. Env var FLIPPER_NO_DEFAULT_PLUGINS is equivalent to the command-line option "--no-default-plugins".',
+      type: 'boolean',
+    },
+    'bundled-plugins': {
+      describe:
+        'Enables bundling of plugins into Flipper bundle. This is useful for debugging, because it makes Flipper dev mode loading faster and unblocks fast refresh. The flag is enabled by default. Env var FLIPPER_NO_BUNDLEDD_PLUGINS is equivalent to the command-line option "--no-bundled-plugins".',
+      type: 'boolean',
+    },
+    'rebuild-plugins': {
+      describe:
+        'Enables rebuilding of default plugins on Flipper build. Only make sense in conjunction with "--no-bundled-plugins". Enabled by default, but if disabled using "--no-plugin-rebuild", then plugins are just released as is without rebuilding. This can save some time if you know plugin bundles are already up-to-date.',
       type: 'boolean',
     },
     'fast-refresh': {
@@ -44,9 +54,9 @@ const argv = yargs
         'Enable Fast Refresh - quick reload of UI component changes without restarting Flipper. The flag is disabled by default. Env var FLIPPER_FAST_REFRESH is equivalent to the command-line option "--fast-refresh".',
       type: 'boolean',
     },
-    'plugin-auto-update': {
+    'plugin-marketplace': {
       describe:
-        '[FB-internal only] Enable plugin auto-updates. The flag is disabled by default in dev mode. Env var FLIPPER_NO_PLUGIN_AUTO_UPDATE is equivalent to the command-line option "--no-plugin-auto-update"',
+        'Enable plugin marketplace - ability to install plugins from NPM or other sources. Without the flag Flipper will only show default plugins. The flag is disabled by default in dev mode. Env var FLIPPER_NO_PLUGIN_MARKETPLACE is equivalent to the command-line option "--no-plugin-marketplace"',
       type: 'boolean',
     },
     'plugin-auto-update-interval': {
@@ -105,10 +115,22 @@ if (isFB) {
   process.env.FLIPPER_FB = 'true';
 }
 
-if (argv['embedded-plugins'] === true) {
-  delete process.env.FLIPPER_NO_EMBEDDED_PLUGINS;
-} else if (argv['embedded-plugins'] === false) {
-  process.env.FLIPPER_NO_EMBEDDED_PLUGINS = 'true';
+if (argv['default-plugins'] === true) {
+  delete process.env.FLIPPER_NO_DEFAULT_PLUGINS;
+} else if (argv['default-plugins'] === false) {
+  process.env.FLIPPER_NO_DEFAULT_PLUGINS = 'true';
+}
+
+if (argv['bundled-plugins'] === true) {
+  delete process.env.FLIPPER_NO_BUNDLED_PLUGINS;
+} else if (argv['bundled-plugins'] === false) {
+  process.env.FLIPPER_NO_BUNDLED_PLUGINS = 'true';
+}
+
+if (argv['rebuild-plugins'] === false) {
+  process.env.FLIPPER_NO_REBUILD_PLUGINS = 'true';
+} else if (argv['rebuild-plugins'] === true) {
+  delete process.env.FLIPPER_NO_REBUILD_PLUGINS;
 }
 
 if (argv['fast-refresh'] === true) {
@@ -128,16 +150,13 @@ if (argv['public-build'] === true) {
   delete process.env.FLIPPER_FORCE_PUBLIC_BUILD;
 }
 
-// By default plugin auto-update is disabled in dev mode,
+// By default plugin marketplace is disabled in dev mode,
 // but it is possible to enable it using this command line
 // argument or env var.
-if (
-  argv['plugin-auto-update'] === true ||
-  process.env.FLIPPER_PLUGIN_AUTO_UPDATE
-) {
-  delete process.env.FLIPPER_DISABLE_PLUGIN_AUTO_UPDATE;
+if (argv['plugin-marketplace'] === true) {
+  delete process.env.FLIPPER_NO_PLUGIN_MARKETPLACE;
 } else {
-  process.env.FLIPPER_DISABLE_PLUGIN_AUTO_UPDATE = 'true';
+  process.env.FLIPPER_NO_PLUGIN_MARKETPLACE = 'true';
 }
 
 if (argv['plugin-auto-update-interval']) {
@@ -397,7 +416,7 @@ function checkDevServer() {
 
 (async () => {
   checkDevServer();
-  await generatePluginEntryPoints(
+  await prepareDefaultPlugins(
     process.env.FLIPPER_RELEASE_CHANNEL === 'insiders',
   );
   await ensurePluginFoldersWatchable();

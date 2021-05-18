@@ -16,6 +16,20 @@ import {
 } from './PluginDetails';
 import {pluginCacheDir} from './pluginPaths';
 
+export function isPluginJson(packageJson: any): boolean {
+  return packageJson?.keywords?.includes('flipper-plugin');
+}
+
+export async function isPluginDir(dir: string): Promise<boolean> {
+  const packageJsonPath = path.join(dir, 'package.json');
+  const json = (await fs.pathExists(packageJsonPath))
+    ? await fs.readJson(path.join(dir, 'package.json'), {
+        throws: false,
+      })
+    : undefined;
+  return isPluginJson(json);
+}
+
 export function getPluginDetails(packageJson: any): PluginDetails {
   const specVersion =
     packageJson.$schema &&
