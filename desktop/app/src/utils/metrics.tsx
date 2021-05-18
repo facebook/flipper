@@ -8,7 +8,7 @@
  */
 
 import {getInstance} from '../fb-stubs/Logger';
-import {CancelledPromiseError} from './errors';
+import {CancelledPromiseError, isError} from './errors';
 
 type Result =
   | {kind: 'success'}
@@ -180,7 +180,7 @@ function logPluginSuccessRate(name: string, plugin: string, result: Result) {
 }
 
 function extractMessage(error: any) {
-  if (error instanceof Error) {
+  if (isError(error)) {
     return error.message;
   }
   return JSON.stringify(error);
