@@ -144,10 +144,10 @@ exports[`load PluginInstaller list 1`] = `
                 href="https://yarnpkg.com/en/package/flipper-plugin-hello"
               >
                 <div
-                  class="css-1tfjvvq-ColoredIconCustom e528dze0"
+                  class="css-5r6dd6-ColoredIconCustom e528dze0"
                   color="#bec2c9"
                   size="16"
-                  src="https://external.xx.fbcdn.net/assets/?name=info-circle&variant=filled&size=16&set=facebook_icons&density=1x"
+                  src="https://facebook.com/assets/?name=info-circle&variant=filled&size=16&set=facebook_icons&density=1x"
                 />
               </a>
             </div>
@@ -214,10 +214,10 @@ exports[`load PluginInstaller list 1`] = `
                 href="https://yarnpkg.com/en/package/flipper-plugin-world"
               >
                 <div
-                  class="css-1tfjvvq-ColoredIconCustom e528dze0"
+                  class="css-5r6dd6-ColoredIconCustom e528dze0"
                   color="#bec2c9"
                   size="16"
-                  src="https://external.xx.fbcdn.net/assets/?name=info-circle&variant=filled&size=16&set=facebook_icons&density=1x"
+                  src="https://facebook.com/assets/?name=info-circle&variant=filled&size=16&set=facebook_icons&density=1x"
                 />
               </a>
             </div>
@@ -259,7 +259,7 @@ exports[`load PluginInstaller list 1`] = `
           alt="dots-3-circle"
           class="ersmi543 css-6iptsk-ColoredIconBlack-CenteredGlyph e528dze1"
           size="16"
-          src="https://external.xx.fbcdn.net/assets/?name=dots-3-circle&variant=outline&size=16&set=facebook_icons&density=1x"
+          src="https://facebook.com/assets/?name=dots-3-circle&variant=outline&size=16&set=facebook_icons&density=1x"
           title="Open file selection dialog"
         />
       </div>
@@ -270,10 +270,10 @@ exports[`load PluginInstaller list 1`] = `
           class="css-auhar3-TooltipContainer e1abcqbd0"
         >
           <div
-            class="ersmi543 css-1vos16e-ColoredIconCustom-CenteredGlyph e528dze0"
+            class="ersmi543 css-1qsl9s4-ColoredIconCustom-CenteredGlyph e528dze0"
             color="#D79651"
             size="16"
-            src="https://external.xx.fbcdn.net/assets/?name=caution-triangle&variant=filled&size=16&set=facebook_icons&density=1x"
+            src="https://facebook.com/assets/?name=caution-triangle&variant=filled&size=16&set=facebook_icons&density=1x"
           />
         </div>
       </div>
@@ -446,10 +446,10 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
                 href="https://yarnpkg.com/en/package/flipper-plugin-hello"
               >
                 <div
-                  class="css-1tfjvvq-ColoredIconCustom e528dze0"
+                  class="css-5r6dd6-ColoredIconCustom e528dze0"
                   color="#bec2c9"
                   size="16"
-                  src="https://external.xx.fbcdn.net/assets/?name=info-circle&variant=filled&size=16&set=facebook_icons&density=1x"
+                  src="https://facebook.com/assets/?name=info-circle&variant=filled&size=16&set=facebook_icons&density=1x"
                 />
               </a>
             </div>
@@ -516,10 +516,10 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
                 href="https://yarnpkg.com/en/package/flipper-plugin-world"
               >
                 <div
-                  class="css-1tfjvvq-ColoredIconCustom e528dze0"
+                  class="css-5r6dd6-ColoredIconCustom e528dze0"
                   color="#bec2c9"
                   size="16"
-                  src="https://external.xx.fbcdn.net/assets/?name=info-circle&variant=filled&size=16&set=facebook_icons&density=1x"
+                  src="https://facebook.com/assets/?name=info-circle&variant=filled&size=16&set=facebook_icons&density=1x"
                 />
               </a>
             </div>
@@ -561,7 +561,7 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
           alt="dots-3-circle"
           class="ersmi543 css-6iptsk-ColoredIconBlack-CenteredGlyph e528dze1"
           size="16"
-          src="https://external.xx.fbcdn.net/assets/?name=dots-3-circle&variant=outline&size=16&set=facebook_icons&density=1x"
+          src="https://facebook.com/assets/?name=dots-3-circle&variant=outline&size=16&set=facebook_icons&density=1x"
           title="Open file selection dialog"
         />
       </div>
@@ -572,10 +572,10 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
           class="css-auhar3-TooltipContainer e1abcqbd0"
         >
           <div
-            class="ersmi543 css-1vos16e-ColoredIconCustom-CenteredGlyph e528dze0"
+            class="ersmi543 css-1qsl9s4-ColoredIconCustom-CenteredGlyph e528dze0"
             color="#D79651"
             size="16"
-            src="https://external.xx.fbcdn.net/assets/?name=caution-triangle&variant=filled&size=16&set=facebook_icons&density=1x"
+            src="https://facebook.com/assets/?name=caution-triangle&variant=filled&size=16&set=facebook_icons&density=1x"
           />
         </div>
       </div>
