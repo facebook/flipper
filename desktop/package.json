@@ -161,7 +161,7 @@
     "jest": "^26.6.3",
     "jest-environment-jsdom-sixteen": "^1.0.3",
     "jest-fetch-mock": "^3.0.3",
-    "less": "^3.12.2",
+    "less": "^4.1.1",
     "line-replace": "^2.0.1",
     "metro": "^0.66.0",
     "metro-minify-terser": "^0.66.0",
