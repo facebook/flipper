@@ -10,6 +10,7 @@
 import React, {useMemo} from 'react';
 import {Children, cloneElement, createContext, useContext} from 'react';
 import reactElementToJSXString from 'react-element-to-jsx-string';
+import {v4 as uuid} from 'uuid';
 
 export type InteractionReport = {
   // Duration of the event handler itself, not including any time the promise handler might have been pending
@@ -22,6 +23,7 @@ export type InteractionReport = {
   action: string;
   componentType: string;
   event: string;
+  uuid: string;
 };
 
 export type InteractionReporter = (report: InteractionReport) => void;
@@ -124,8 +126,9 @@ export function wrapInteractionHandler<T extends Function>(
   scope: string,
   action?: string,
 ): T {
+  const interaction_uuid = uuid();
   function report(start: number, initialEnd: number, error?: any) {
-    globalInteractionReporter({
+    const interactionReport: InteractionReport = {
       duration: initialEnd - start,
       totalDuration: Date.now() - start,
       success: error ? 0 : 1,
@@ -143,7 +146,13 @@ export function wrapInteractionHandler<T extends Function>(
           : 'unknown'),
       scope,
       event,
-    });
+      uuid: interaction_uuid,
+    };
+    if (error && typeof error === 'object') {
+      // associate the error with the interaction caused it
+      error.interaction = interactionReport;
+    }
+    globalInteractionReporter(interactionReport);
   }
 
   const res = function trappedInteractionHandler(this: any) {
@@ -168,7 +177,7 @@ export function wrapInteractionHandler<T extends Function>(
         (error: any) => r(initialEnd, error),
       );
       res = res.catch((error: any) => {
-        // we need to create another rejected promise so error is again marked as "unhandled"
+        // we need to create another rejected promise so error is again marked as "unhandled".
         return Promise.reject(error);
       });
     } else {

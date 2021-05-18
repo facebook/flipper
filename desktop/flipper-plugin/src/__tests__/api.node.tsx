@@ -92,6 +92,8 @@ test('Correct top level API exposed', () => {
       "FlipperLib",
       "HighlightManager",
       "Idler",
+      "InteractionReport",
+      "InteractionReporter",
       "LogLevel",
       "LogTypes",
       "Logger",

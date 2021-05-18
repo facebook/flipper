@@ -15,14 +15,7 @@
 export function cleanStack(_stack: string, _loc?: string) {}
 import ScribeLogger from './ScribeLogger';
 
-export type ObjectError =
-  | Error
-  | {
-      message: string;
-      stack?: string;
-    };
-
 export default class ErrorReporter {
   constructor(_scribeLogger: ScribeLogger) {}
-  report(_err: ObjectError) {}
+  report(_err: Error) {}
 }

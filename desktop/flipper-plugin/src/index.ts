@@ -69,6 +69,8 @@ export {
   withTrackingScope,
   useTrackedCallback,
   wrapInteractionHandler as _wrapInteractionHandler,
+  InteractionReport,
+  InteractionReporter,
 } from './ui/Tracked';
 
 export {DataFormatter} from './ui/DataFormatter';

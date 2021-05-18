@@ -7,10 +7,19 @@
  * @format
  */
 
+import {InteractionReport} from 'flipper-plugin';
+
 export class CancelledPromiseError extends Error {
   constructor(msg: string) {
     super(msg);
     this.name = 'CancelledPromiseError';
+  }
+  name: 'CancelledPromiseError';
+}
+
+declare global {
+  interface Error {
+    interaction?: InteractionReport;
   }
 }
 
