@@ -26,6 +26,9 @@ export function getHeaderValue(
   return '';
 }
 
+// Matches `application/json` and `application/vnd.api.v42+json` (see https://jsonapi.org/#mime-types)
+const jsonContentTypeRegex = new RegExp('application/(json|.+\\+json)');
+
 export function isTextual(headers?: Array<Header>): boolean {
   const contentType = getHeaderValue(headers, 'Content-Type');
   if (!contentType) {
@@ -36,7 +39,7 @@ export function isTextual(headers?: Array<Header>): boolean {
   return (
     contentType.startsWith('text/') ||
     contentType.startsWith('application/x-www-form-urlencoded') ||
-    contentType.startsWith('application/json') ||
+    jsonContentTypeRegex.test(contentType) ||
     contentType.startsWith('multipart/') ||
     contentType.startsWith('message/') ||
     contentType.startsWith('image/svg') ||
