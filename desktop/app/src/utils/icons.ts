@@ -69,7 +69,7 @@ export function buildLocalIconURL(name: string, size: number, density: number) {
 export function buildIconURL(name: string, size: number, density: number) {
   const icon = getIconPartsFromName(name);
   // eslint-disable-next-line prettier/prettier
-  const url = `https://external.xx.fbcdn.net/assets/?name=${
+  const url = `https://facebook.com/assets/?name=${
     icon.trimmedName
     }&variant=${
     icon.variant
