@@ -161,12 +161,16 @@ export function wrapInteractionHandler<T extends Function>(
       throw e;
     }
     const initialEnd = Date.now();
-    if (typeof res?.then === 'function') {
+    if (typeof res?.then === 'function' && typeof res?.catch === 'function') {
       // async / promise
       res.then(
         () => r(initialEnd),
         (error: any) => r(initialEnd, error),
       );
+      res = res.catch((error: any) => {
+        // we need to create another rejected promise so error is again marked as "unhandled"
+        return Promise.reject(error);
+      });
     } else {
       // not a Promise
       r(initialEnd);

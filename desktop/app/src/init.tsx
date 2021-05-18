@@ -187,7 +187,7 @@ function init() {
     if (!isProduction()) {
       const msg = `[interaction] ${r.scope}:${r.action} in ${r.duration}ms`;
       if (r.success) console.log(msg);
-      else console.error(msg, r.error);
+      else console.warn(msg, r.error);
     }
   });
   ReactDOM.render(
