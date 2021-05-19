@@ -148,9 +148,9 @@ export function ManageMockResponsePanel(props: Props) {
             placement="bottom">
             <Button
               onClick={() => {
-                networkRouteManager.copyHighlightedCalls();
+                networkRouteManager.copySelectedCalls();
               }}>
-              Copy Highlighted Calls
+              Copy Selected Calls
             </Button>
           </NUX>
           <Button onClick={networkRouteManager.importRoutes}>Import</Button>
