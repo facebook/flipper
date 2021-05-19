@@ -8,16 +8,13 @@
  */
 
 import {computeUsageSummary} from '../tracking';
-import {SelectedPluginData, State} from '../../reducers/usageTracking';
-import BaseDevice from '../../devices/BaseDevice';
-import {getPluginKey} from '../../utils/pluginUtils';
+import type {State} from '../../reducers/usageTracking';
+import type {SelectionInfo} from '../../utils/info';
 
-const device = new BaseDevice('serial', 'emulator', 'test device', 'iOS');
-const layoutPluginKey = getPluginKey('Facebook', device, 'Layout');
-const networkPluginKey = getPluginKey('Facebook', device, 'Network');
-const databasesPluginKey = getPluginKey('Facebook', device, 'Databases');
-const pluginData: SelectedPluginData = {
+const layoutSelection: SelectionInfo = {
   plugin: 'Layout',
+  pluginName: 'flipper-plugin-layout',
+  pluginVersion: '0.0.0',
   app: 'Facebook',
   device: 'test device',
   deviceName: 'test device',
@@ -26,8 +23,12 @@ const pluginData: SelectedPluginData = {
   os: 'iOS',
   archived: false,
 };
-const pluginData2 = {...pluginData, plugin: 'Network'};
-const pluginData3 = {...pluginData, plugin: 'Databases'};
+const networkSelection = {...layoutSelection, plugin: 'Network'};
+const databasesSelection = {...layoutSelection, plugin: 'Databases'};
+
+const layoutPluginKey = JSON.stringify(layoutSelection);
+const networkPluginKey = JSON.stringify(networkSelection);
+const databasesPluginKey = JSON.stringify(databasesSelection);
 
 test('Never focused', () => {
   const state: State = {
@@ -96,10 +97,10 @@ test('Always focused plugin change', () => {
     timeline: [
       {type: 'TIMELINE_START', time: 100, isFocused: true},
       {
-        type: 'PLUGIN_SELECTED',
+        type: 'SELECTION_CHANGED',
         time: 150,
-        pluginKey: layoutPluginKey,
-        pluginData,
+        selectionKey: layoutPluginKey,
+        selection: layoutSelection,
       },
     ],
   };
@@ -113,10 +114,10 @@ test('Focused then plugin change then unfocusd', () => {
     timeline: [
       {type: 'TIMELINE_START', time: 100, isFocused: true},
       {
-        type: 'PLUGIN_SELECTED',
+        type: 'SELECTION_CHANGED',
         time: 150,
-        pluginKey: layoutPluginKey,
-        pluginData,
+        selectionKey: layoutPluginKey,
+        selection: layoutSelection,
       },
       {type: 'WINDOW_FOCUS_CHANGE', time: 350, isFocused: false},
     ],
@@ -131,28 +132,28 @@ test('Multiple plugin changes', () => {
     timeline: [
       {type: 'TIMELINE_START', time: 100, isFocused: true},
       {
-        type: 'PLUGIN_SELECTED',
+        type: 'SELECTION_CHANGED',
         time: 150,
-        pluginKey: layoutPluginKey,
-        pluginData,
+        selectionKey: layoutPluginKey,
+        selection: layoutSelection,
       },
       {
-        type: 'PLUGIN_SELECTED',
+        type: 'SELECTION_CHANGED',
         time: 350,
-        pluginKey: networkPluginKey,
-        pluginData: pluginData2,
+        selectionKey: networkPluginKey,
+        selection: networkSelection,
       },
       {
-        type: 'PLUGIN_SELECTED',
+        type: 'SELECTION_CHANGED',
         time: 650,
-        pluginKey: layoutPluginKey,
-        pluginData,
+        selectionKey: layoutPluginKey,
+        selection: layoutSelection,
       },
       {
-        type: 'PLUGIN_SELECTED',
+        type: 'SELECTION_CHANGED',
         time: 1050,
-        pluginKey: databasesPluginKey,
-        pluginData: pluginData3,
+        selectionKey: databasesPluginKey,
+        selection: databasesSelection,
       },
     ],
   };

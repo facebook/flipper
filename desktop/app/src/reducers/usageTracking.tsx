@@ -10,19 +10,7 @@
 import {produce} from 'immer';
 import {remote} from 'electron';
 import {Actions} from './';
-import {getPluginKey} from '../utils/pluginUtils';
-import {deconstructClientId} from '../utils/clientUtils';
-
-export type SelectedPluginData = {
-  plugin: string | null;
-  app: string | null;
-  os: string | null;
-  device: string | null;
-  deviceName: string | null;
-  deviceSerial: string | null;
-  deviceType: string | null;
-  archived: boolean | null;
-};
+import {SelectionInfo} from '../utils/info';
 
 export type TrackingEvent =
   | {
@@ -31,9 +19,9 @@ export type TrackingEvent =
       isFocused: boolean;
     }
   | {
-      type: 'PLUGIN_SELECTED';
-      pluginKey: string | null;
-      pluginData: SelectedPluginData | null;
+      type: 'SELECTION_CHANGED';
+      selectionKey: string | null;
+      selection: SelectionInfo | null;
       time: number;
     }
   | {type: 'TIMELINE_START'; time: number; isFocused: boolean};
@@ -56,7 +44,11 @@ export type Action =
       type: 'windowIsFocused';
       payload: {isFocused: boolean; time: number};
     }
-  | {type: 'CLEAR_TIMELINE'; payload: {time: number; isFocused: boolean}};
+  | {type: 'CLEAR_TIMELINE'; payload: {time: number; isFocused: boolean}}
+  | {
+      type: 'SELECTION_CHANGED';
+      payload: {selection: SelectionInfo; time: number};
+    };
 
 export default function reducer(
   state: State = INITAL_STATE,
@@ -81,32 +73,14 @@ export default function reducer(
         isFocused: action.payload.isFocused,
       });
     });
-  } else if (action.type === 'SELECT_PLUGIN') {
+  } else if (action.type === 'SELECTION_CHANGED') {
+    const {selection, time} = action.payload;
     return produce(state, (draft) => {
-      const selectedApp = action.payload.selectedApp;
-      const clientIdParts = selectedApp
-        ? deconstructClientId(selectedApp)
-        : null;
       draft.timeline.push({
-        type: 'PLUGIN_SELECTED',
-        time: action.payload.time,
-        pluginKey: action.payload.selectedPlugin
-          ? getPluginKey(
-              action.payload.selectedApp,
-              action.payload.selectedDevice,
-              action.payload.selectedPlugin,
-            )
-          : null,
-        pluginData: {
-          plugin: action.payload.selectedPlugin || null,
-          app: clientIdParts?.app || null,
-          device: action.payload.selectedDevice?.title || null,
-          deviceName: clientIdParts?.device || null,
-          deviceSerial: action.payload.selectedDevice?.serial || null,
-          deviceType: action.payload.selectedDevice?.deviceType || null,
-          os: action.payload.selectedDevice?.os || null,
-          archived: action.payload.selectedDevice?.isArchived || false,
-        },
+        type: 'SELECTION_CHANGED',
+        time,
+        selectionKey: selection?.plugin ? JSON.stringify(selection) : null,
+        selection,
       });
     });
   }
@@ -120,5 +94,15 @@ export function clearTimeline(time: number): Action {
       time,
       isFocused: remote.getCurrentWindow().isFocused(),
     },
+  };
+}
+
+export function selectionChanged(payload: {
+  selection: SelectionInfo;
+  time: number;
+}): Action {
+  return {
+    type: 'SELECTION_CHANGED',
+    payload,
   };
 }

@@ -10,10 +10,13 @@
 import os from 'os';
 import isProduction, {isTest} from './isProduction';
 import fs from 'fs-extra';
-import path from 'path';
 import {getStaticPath} from './pathUtils';
+import type {State, Store} from '../reducers/index';
+import {deconstructClientId} from './clientUtils';
+import {sideEffect} from './sideEffect';
+import {Logger} from '../fb-interfaces/Logger';
 
-export type Info = {
+type PlatformInfo = {
   arch: string;
   platform: string;
   unixname: string;
@@ -22,20 +25,77 @@ export type Info = {
   };
 };
 
+export type SelectionInfo = {
+  plugin: string | null;
+  pluginName: string | null;
+  pluginVersion: string | null;
+  app: string | null;
+  os: string | null;
+  device: string | null;
+  deviceName: string | null;
+  deviceSerial: string | null;
+  deviceType: string | null;
+  archived: boolean | null;
+};
+
+export type Info = PlatformInfo & {
+  selection: SelectionInfo;
+};
+
+let platformInfo: PlatformInfo | undefined;
+let selection: SelectionInfo = {
+  plugin: null,
+  pluginName: null,
+  pluginVersion: null,
+  app: null,
+  os: null,
+  device: null,
+  deviceName: null,
+  deviceSerial: null,
+  deviceType: null,
+  archived: null,
+};
+
+export default (store: Store, _logger: Logger) => {
+  return sideEffect(
+    store,
+    {
+      name: 'recomputeSelectionInfo',
+      throttleMs: 0,
+      noTimeBudgetWarns: true,
+      runSynchronously: true,
+      fireImmediately: true,
+    },
+    (state) => ({
+      connections: state.connections,
+      loadedPlugins: state.plugins.loadedPlugins,
+    }),
+    (state, _store) => {
+      selection = getSelectionInfo(state.connections, state.loadedPlugins);
+    },
+  );
+};
+
 /**
  * This method builds up some metadata about the users environment that we send
  * on bug reports, analytic events, errors etc.
  */
 export function getInfo(): Info {
+  if (!platformInfo) {
+    platformInfo = {
+      arch: process.arch,
+      platform: process.platform,
+      unixname: os.userInfo().username,
+      versions: {
+        electron: process.versions.electron,
+        node: process.versions.node,
+        platform: os.release(),
+      },
+    };
+  }
   return {
-    arch: process.arch,
-    platform: process.platform,
-    unixname: os.userInfo().username,
-    versions: {
-      electron: process.versions.electron,
-      node: process.versions.node,
-      platform: os.release(),
-    },
+    ...platformInfo,
+    selection,
   };
 }
 
@@ -65,4 +125,27 @@ export function stringifyInfo(info: Info): string {
   }
 
   return lines.join('\n');
+}
+
+export function getSelectionInfo(
+  connections: State['connections'],
+  loadedPlugins: State['plugins']['loadedPlugins'],
+): SelectionInfo {
+  const selectedApp = connections.selectedApp;
+  const clientIdParts = selectedApp ? deconstructClientId(selectedApp) : null;
+  const loadedPlugin = connections.selectedPlugin
+    ? loadedPlugins.get(connections.selectedPlugin)
+    : null;
+  return {
+    plugin: connections.selectedPlugin || null,
+    pluginName: loadedPlugin?.name || null,
+    pluginVersion: loadedPlugin?.version || null,
+    app: clientIdParts?.app || null,
+    device: connections.selectedDevice?.title || null,
+    deviceName: clientIdParts?.device || null,
+    deviceSerial: connections.selectedDevice?.serial || null,
+    deviceType: connections.selectedDevice?.deviceType || null,
+    os: connections.selectedDevice?.os || null,
+    archived: connections.selectedDevice?.isArchived || false,
+  };
 }
