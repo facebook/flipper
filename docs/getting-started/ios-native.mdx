@@ -3,18 +3,15 @@ id: ios-native
 title: Adding Flipper to iOS apps
 sidebar_label: Generic iOS apps
 ---
-import useBaseUrl from '@docusaurus/useBaseUrl';
-import Link from '@docusaurus/Link';
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
+
+import useBaseUrl from "@docusaurus/useBaseUrl";
+import Link from "@docusaurus/Link";
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
 
 We support both Swift and Objective-C for Flipper with CocoaPods as build and distribution mechanism.
 
 ## CocoaPods
-
-<div class="warning">
-Use Flipper/FlipperKit Version 0.87.0 and Flipper-Folly 2.5.3, if you depend on arm64 and i386 artifacts for the simulator. Versions greater than 0.87 and 2.5.3 of Flipper and Flipper-Folly, respectively, do not have these artifacts. This issue is tracked <Link to="https://github.com/facebook/flipper/issues/2268">here</Link>.
-</div>
 
 The following configuration assumed CocoaPods 1.9+.
 
