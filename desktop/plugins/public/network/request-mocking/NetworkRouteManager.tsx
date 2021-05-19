@@ -39,7 +39,7 @@ export interface NetworkRouteManager {
   modifyRoute(id: string, routeChange: Partial<Route>): void;
   removeRoute(id: string): void;
   enableRoute(id: string): void;
-  copyHighlightedCalls(): void;
+  copySelectedCalls(): void;
   importRoutes(): void;
   exportRoutes(): void;
   clearRoutes(): void;
@@ -52,7 +52,7 @@ export const nullNetworkRouteManager: NetworkRouteManager = {
   modifyRoute(_id: string, _routeChange: Partial<Route>) {},
   removeRoute(_id: string) {},
   enableRoute(_id: string) {},
-  copyHighlightedCalls() {},
+  copySelectedCalls() {},
   importRoutes() {},
   exportRoutes() {},
   clearRoutes() {},
@@ -109,7 +109,7 @@ export function createNetworkManager(
       }
       informClientMockChange(routes.get());
     },
-    copyHighlightedCalls() {
+    copySelectedCalls() {
       tableManagerRef.current?.getSelectedItems().forEach((request) => {
         // convert headers
         const headers: {[id: string]: Header} = {};
@@ -117,14 +117,9 @@ export function createNetworkManager(
           headers[e.key] = e;
         });
 
-        // convert data TODO: we only want this for non-binary data! See D23403095
+        // no need to convert data, already converted when real call was created
         const responseData =
-          request && request.responseData
-            ? decodeBody(
-                request.responseHeaders ?? [],
-                bodyAsString(request.responseData),
-              )
-            : '';
+          request && request.responseData ? request.responseData : '';
 
         const newNextRouteId = nextRouteId.get();
         routes.update((draft) => {
