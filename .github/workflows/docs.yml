@@ -20,9 +20,9 @@ jobs:
         working-directory: website/
 
       - name: Deploy
-        uses: JamesIves/github-pages-deploy-action@3.7.1
+        uses: JamesIves/github-pages-deploy-action@4.1.3
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: gh-pages
-          FOLDER: website/build
-          CLEAN: true
+          branch: gh-pages
+          folder: website/build
+          clean: true
+          commit-message: "[ci skip] Deploying documentation update"
