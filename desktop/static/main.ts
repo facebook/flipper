@@ -193,9 +193,11 @@ app.on('ready', () => {
         console.log('Force updating DevTools');
       }
       // Redux
-      await installExtension(REDUX_DEVTOOLS.id).catch((e: any) => {
+      await installExtension(REDUX_DEVTOOLS.id, {
+        loadExtensionOptions: {allowFileAccess: true, forceDownload},
+      }).catch((e: any) => {
         console.error('Failed to install Redux devtools extension', e);
-      }, forceDownload);
+      });
       // React
       // Fix for extension loading (see D27685981)
       // Work around per https://github.com/electron/electron/issues/23662#issuecomment-787420799
