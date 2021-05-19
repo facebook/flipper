@@ -151,9 +151,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
   });
 
   client.onMessage('newRequest', (data) => {
-    // TODO: This should be append, but there is currently a bug where requests are send multiple times from the
-    // device! (Wilde on emulator)
-    requests.upsert(createRequestFromRequestInfo(data, customColumns.get()));
+    requests.append(createRequestFromRequestInfo(data, customColumns.get()));
   });
 
   function storeResponse(response: ResponseInfo) {
