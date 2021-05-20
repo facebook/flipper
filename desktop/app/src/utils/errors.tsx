@@ -26,7 +26,8 @@ declare global {
 export function isError(obj: any): obj is Error {
   return (
     obj instanceof Error ||
-    (obj.name &&
+    (obj &&
+      obj.name &&
       typeof obj.name === 'string' &&
       obj.message &&
       typeof obj.message === 'string' &&
