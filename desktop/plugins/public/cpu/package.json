@@ -23,6 +23,6 @@
   "title": "CPU",
   "icon": "underline",
   "bugs": {
-    "email": "barney@fb.com"
+    "url": "https://github.com/facebook/flipper/issues"
   }
 }

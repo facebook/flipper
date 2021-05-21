@@ -24,7 +24,7 @@
   "title": "React DevTools",
   "icon": "app-react",
   "bugs": {
-    "email": "danielbuechele@fb.com"
+    "url": "https://github.com/facebook/flipper/issues"
   },
   "devDependencies": {},
   "peerDependencies": {

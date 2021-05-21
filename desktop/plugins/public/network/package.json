@@ -13,8 +13,7 @@
     "flipper-plugin"
   ],
   "bugs": {
-    "email": "oncall+flipper@xmail.facebook.com",
-    "url": "https://fb.workplace.com/groups/flippersupport/"
+    "url": "https://github.com/facebook/flipper/issues"
   },
   "dependencies": {
     "lodash": "^4.17.21",

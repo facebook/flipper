@@ -22,7 +22,6 @@
   "title": "Layout",
   "icon": "target",
   "bugs": {
-    "email": "oncall+flipper@xmail.facebook.com",
-    "url": "https://fb.workplace.com/groups/flippersupport/"
+    "url": "https://github.com/facebook/flipper/issues"
   }
 }

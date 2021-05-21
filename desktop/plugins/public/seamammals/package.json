@@ -14,7 +14,7 @@
   "title": "Sea Mammals",
   "category": "Example Plugin",
   "bugs": {
-    "email": "realpassy@fb.com"
+    "url": "https://github.com/facebook/flipper/issues"
   },
   "scripts": {
     "lint": "flipper-pkg lint",

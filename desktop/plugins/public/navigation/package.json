@@ -12,7 +12,7 @@
   "title": "Navigation",
   "icon": "directions",
   "bugs": {
-    "email": "beneloca@fb.com"
+    "url": "https://github.com/facebook/flipper/issues"
   },
   "peerDependencies": {
     "flipper-plugin": "*",

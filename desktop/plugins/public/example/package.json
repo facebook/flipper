@@ -13,7 +13,7 @@
   "title": "Example Plugin",
   "icon": "apps",
   "bugs": {
-    "url": "https://fbflipper.com/"
+    "url": "https://github.com/facebook/flipper/issues"
   },
   "scripts": {
     "lint": "flipper-pkg lint",
