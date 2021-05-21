@@ -26,7 +26,7 @@ jobs:
       run: |
         cd ios
         IPHONESIMULATOR=$(xcodebuild -showsdks | grep -o "iphonesimulator[0-9]\\+\\.[0-9]\\+$") && echo $IPHONESIMULATOR
-        xcodebuild -workspace ReactNativeFlipperExample.xcworkspace -configuration Debug -scheme ReactNativeFlipperExample -sdk $IPHONESIMULATOR EXCLUDED_ARCHS="arm64 i386"
+        xcodebuild -workspace ReactNativeFlipperExample.xcworkspace -configuration Debug -scheme ReactNativeFlipperExample -sdk $IPHONESIMULATOR EXCLUDED_ARCHS="arm64"
 
   build-react-native-example-android:
     runs-on: ubuntu-latest

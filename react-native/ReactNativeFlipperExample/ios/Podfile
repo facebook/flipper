@@ -4,7 +4,7 @@ require_relative '../node_modules/@react-native-community/cli-platform-ios/nativ
 platform :ios, '10.0'
 
 # used for automatic bumping
-flipperkit_version = '0.88.0'
+flipperkit_version = '0.91.1'
 
 target 'ReactNativeFlipperExample' do
   config = use_native_modules!
