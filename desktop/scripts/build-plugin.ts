@@ -66,6 +66,7 @@ async function buildPlugin() {
   const outputUnpackedArg = argv['output-unpacked'];
   const minFlipperVersion = argv['min-flipper-version'];
   const packageJsonPath = path.join(pluginDir, 'package.json');
+  const packageJsonOverridePath = path.join(pluginDir, 'fb', 'package.json');
   await runBuild(pluginDir, false);
   const checksum = await computePackageChecksum(pluginDir);
   if (previousChecksum !== checksum && argv.version) {
@@ -86,7 +87,14 @@ async function buildPlugin() {
     const packageJsonBackupPath = path.join(tmpDir, 'package.json');
     await fs.copy(packageJsonPath, packageJsonBackupPath, {overwrite: true});
     try {
-      const packageJson = await fs.readJson(packageJsonPath);
+      const packageJsonOverride =
+        (await fs.readJson(packageJsonOverridePath, {
+          throws: false,
+        })) ?? {};
+      const packageJson = Object.assign(
+        await fs.readJson(packageJsonPath),
+        packageJsonOverride,
+      );
       if (minFlipperVersion) {
         if (!packageJson.engines) {
           packageJson.engines = {};

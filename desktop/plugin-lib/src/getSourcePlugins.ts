@@ -14,7 +14,7 @@ import {getPluginSourceFolders} from './pluginPaths';
 import pmap from 'p-map';
 import pfilter from 'p-filter';
 import {satisfies} from 'semver';
-import {getInstalledPluginDetails, isPluginJson} from './getPluginDetails';
+import {getInstalledPluginDetails, isPluginDir} from './getPluginDetails';
 import {InstalledPluginDetails} from './PluginDetails';
 
 const flipperVersion = require('../package.json').version;
@@ -55,55 +55,18 @@ async function entryPointForPluginFolder(
   }
   return await fs
     .readdir(pluginsDir)
-    .then((entries) =>
-      entries.map((name) => ({
-        dir: path.join(pluginsDir, name),
-        manifestPath: path.join(pluginsDir, name, 'package.json'),
-      })),
-    )
-    .then((entries) =>
-      pfilter(entries, ({manifestPath}) => fs.pathExists(manifestPath)),
-    )
+    .then((entries) => entries.map((name) => path.join(pluginsDir, name)))
+    .then((entries) => pfilter(entries, isPluginDir))
     .then((packages) =>
-      pmap(packages, async ({manifestPath, dir}) => {
+      pmap(packages, async (dir) => {
         try {
-          const manifest = await fs.readJson(manifestPath);
-          return {
-            dir,
-            manifest,
-          };
-        } catch (e) {
-          console.error(
-            `Could not load plugin from "${dir}", because package.json is invalid.`,
-            e,
-          );
-          return null;
-        }
-      }),
-    )
-    .then((packages) => packages.filter(notNull))
-    .then((packages) => packages.filter(({manifest}) => !manifest.workspaces))
-    .then((packages) =>
-      packages.filter(({manifest}) => {
-        if (!isPluginJson(manifest)) {
-          console.log(
-            `Skipping package "${manifest.name}" as its "keywords" field does not contain tag "flipper-plugin"`,
-          );
-          return false;
-        }
-        return true;
-      }),
-    )
-    .then((packages) =>
-      pmap(packages, async ({manifest, dir}) => {
-        try {
-          const details = await getInstalledPluginDetails(dir, manifest);
+          const details = await getInstalledPluginDetails(dir);
           if (
             details.flipperSDKVersion &&
             !satisfies(flipperVersion, details.flipperSDKVersion)
           ) {
             console.warn(
-              `⚠️ The current Flipper version (${flipperVersion}) doesn't look compatible with the plugin '${manifest.name}', which expects 'flipper-plugin: ${details.flipperSDKVersion}'`,
+              `⚠️ The current Flipper version (${flipperVersion}) doesn't look compatible with the plugin '${details.name}', which expects 'flipper-plugin: ${details.flipperSDKVersion}'`,
             );
           }
           return details;
