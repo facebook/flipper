@@ -362,10 +362,10 @@ void FlipperConnectionManagerImpl::requestSignedCertFromFlipper() {
   int medium = certProvider_ != nullptr
       ? certProvider_->getCertificateExchangeMedium()
       : FlipperCertificateExchangeMedium::FS_ACCESS;
-  folly::dynamic message =
-      folly::dynamic::object("method", "signCertificate")("csr", csr.c_str())(
-          "destination", contextStore_->getCertificateDirectoryPath().c_str())(
-          "medium", medium);
+  folly::dynamic message = folly::dynamic::object("method", "signCertificate")(
+      "csr", csr.c_str())(
+      "destination",
+      contextStore_->getCertificateDirectoryPath().c_str())("medium", medium);
   auto gettingCert = flipperState_->start("Getting cert from desktop");
 
   flipperEventBase_->add([this, message, gettingCert]() {
