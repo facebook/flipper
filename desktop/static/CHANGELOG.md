@@ -1,3 +1,8 @@
+# 0.91.2 (24/5/2021)
+
+ * [D28477074](https://github.com/facebook/flipper/search?q=D28477074&type=Commits) -  [Internal]
+
+
 # 0.90.0 (13/5/2021)
 
  * [D28422966](https://github.com/facebook/flipper/search?q=D28422966&type=Commits) -  [Logs] Fix regression causing the scrollbars to be hidden. This diff fixes a regression where the Logs plugin was no longer scrollable (and scrolls indefinitely, killing perf).
