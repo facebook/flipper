@@ -13,7 +13,7 @@ import isFB from './isFB';
 export const rootDir = path.resolve(__dirname, '..');
 export const appDir = path.join(rootDir, 'app');
 export const staticDir = path.join(rootDir, 'static');
-export const defaultPluginsIndexDir = path.join(staticDir, 'defaultPlugins');
+export const defaultPluginsDir = path.join(staticDir, 'defaultPlugins');
 export const pluginsDir = path.join(rootDir, 'plugins');
 export const fbPluginsDir = path.join(pluginsDir, 'fb');
 export const publicPluginsDir = path.join(pluginsDir, 'public');

@@ -23,7 +23,7 @@ import {
 import {
   appDir,
   staticDir,
-  defaultPluginsIndexDir,
+  defaultPluginsDir,
   babelTransformationsDir,
 } from './paths';
 
@@ -55,7 +55,7 @@ const hardcodedPlugins = new Set<string>([
 ]);
 
 export function die(err: Error) {
-  console.error(err);
+  console.error('Script termnated.', err);
   process.exit(1);
 }
 
@@ -63,24 +63,42 @@ export async function prepareDefaultPlugins(isInsidersBuild: boolean = false) {
   console.log(
     `⚙️  Preparing default plugins (isInsidersBuild=${isInsidersBuild})...`,
   );
-  await fs.emptyDir(defaultPluginsIndexDir);
-  const sourcePlugins = process.env.FLIPPER_NO_DEFAULT_PLUGINS
-    ? []
-    : await getSourcePlugins();
-  const defaultPlugins = sourcePlugins
-    // we only include predefined set of plugins into insiders release
-    .filter((p) => !isInsidersBuild || hardcodedPlugins.has(p.id));
-  if (isInsidersBuild || process.env.FLIPPER_NO_BUNDLED_PLUGINS) {
-    await buildDefaultPlugins(defaultPlugins);
+  await fs.emptyDir(defaultPluginsDir);
+  const forcedDefaultPluginsDir = process.env.FLIPPER_DEFAULT_PLUGINS_DIR;
+  if (forcedDefaultPluginsDir) {
+    console.log(
+      `⚙️  Copying the provided default plugins dir "${forcedDefaultPluginsDir}"...`,
+    );
+    await fs.copy(forcedDefaultPluginsDir, defaultPluginsDir, {
+      recursive: true,
+      overwrite: true,
+      dereference: true,
+    });
+    console.log('✅  Copied the provided default plugins dir.');
     await generateDefaultPluginEntryPoints([]); // calling it here just to generate empty indexes
   } else {
-    await generateDefaultPluginEntryPoints(defaultPlugins);
+    const sourcePlugins = process.env.FLIPPER_NO_DEFAULT_PLUGINS
+      ? []
+      : await getSourcePlugins();
+    const defaultPlugins = sourcePlugins
+      // we only include predefined set of plugins into insiders release
+      .filter((p) => !isInsidersBuild || hardcodedPlugins.has(p.id));
+    if (process.env.FLIPPER_NO_BUNDLED_PLUGINS) {
+      await buildDefaultPlugins(defaultPlugins);
+      await generateDefaultPluginEntryPoints([]); // calling it here just to generate empty indexes
+    } else {
+      await generateDefaultPluginEntryPoints(defaultPlugins);
+    }
   }
+  console.log('✅  Prepared default plugins.');
 }
 
 async function generateDefaultPluginEntryPoints(
   defaultPlugins: InstalledPluginDetails[],
 ) {
+  console.log(
+    `⚙️  Generating entry points for ${defaultPlugins.length} bundled plugins...`,
+  );
   const bundledPlugins = defaultPlugins.map(
     (p) =>
       ({
@@ -94,7 +112,7 @@ async function generateDefaultPluginEntryPoints(
       } as BundledPluginDetails),
   );
   await fs.writeJSON(
-    path.join(defaultPluginsIndexDir, 'bundled.json'),
+    path.join(defaultPluginsDir, 'bundled.json'),
     bundledPlugins,
   );
   const pluginRequres = bundledPlugins
@@ -110,7 +128,7 @@ async function generateDefaultPluginEntryPoints(
     path.join(appDir, 'src', 'defaultPlugins', 'index.tsx'),
     generatedIndex,
   );
-  console.log('✅  Generated plugin entry points.');
+  console.log('✅  Generated bundled plugin entry points.');
 }
 
 async function buildDefaultPlugins(defaultPlugins: InstalledPluginDetails[]) {
@@ -133,7 +151,7 @@ async function buildDefaultPlugins(defaultPlugins: InstalledPluginDetails[]) {
       }
       await fs.ensureSymlink(
         plugin.dir,
-        path.join(defaultPluginsIndexDir, plugin.name),
+        path.join(defaultPluginsDir, plugin.name),
         'junction',
       );
     } catch (err) {
