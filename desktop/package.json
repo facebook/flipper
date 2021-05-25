@@ -116,7 +116,7 @@
     "@types/resize-observer-browser": "^0.1.5",
     "@types/rsocket-core": "^0.0.6",
     "@types/rsocket-tcp-server": "^0.0.2",
-    "@types/socket.io": "^2.1.13",
+    "@types/socket.io": "^3.0.2",
     "@types/testing-library__react": "^10.2.0",
     "@types/tmp": "^0.2.0",
     "@types/uuid": "^8.0.0",
