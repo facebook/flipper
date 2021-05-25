@@ -12,6 +12,8 @@ import {createStore, Store} from 'redux';
 import produce from 'immer';
 import {sleep} from '../promiseTimeout';
 
+jest.useFakeTimers();
+
 const initialState = {
   counter: {count: 0},
   somethingUnrelated: false,
@@ -73,13 +75,13 @@ describe('sideeffect', () => {
     expect(events.length).toBe(0);
 
     // arrive as a single effect
-    await sleep(10);
+    jest.advanceTimersByTime(10);
     expect(events).toEqual(['counter: 2']);
 
     // no more events arrive after unsubscribe
     unsubscribe();
     store.dispatch({type: 'inc'});
-    await sleep(10);
+    jest.advanceTimersByTime(10);
     expect(events).toEqual(['counter: 2']);
     expect(warn).not.toBeCalled();
     expect(error).not.toBeCalled();
@@ -99,13 +101,13 @@ describe('sideeffect', () => {
     expect(events.length).toBe(0);
 
     // unrelated event doesn't trigger
-    await sleep(10);
+    jest.advanceTimersByTime(10);
     expect(events.length).toBe(0);
 
     // counter increment does
     store.dispatch({type: 'inc'});
 
-    await sleep(10);
+    jest.advanceTimersByTime(10);
     expect(events).toEqual(['counter: 1']);
     expect(warn).not.toBeCalled();
     expect(error).not.toBeCalled();
@@ -125,13 +127,13 @@ describe('sideeffect', () => {
     expect(events.length).toBe(0);
 
     // unrelated event doesn't trigger
-    await sleep(10);
+    jest.advanceTimersByTime(10);
     expect(events.length).toBe(0);
 
     // counter increment does
     store.dispatch({type: 'inc'});
 
-    await sleep(10);
+    jest.advanceTimersByTime(10);
     expect(events).toEqual(['counter: 1']);
     expect(warn).not.toBeCalled();
     expect(error).not.toBeCalled();
@@ -151,7 +153,7 @@ describe('sideeffect', () => {
       store.dispatch({type: 'inc'});
     }).not.toThrow();
 
-    await sleep(10);
+    jest.advanceTimersByTime(10);
     expect(error.mock.calls).toMatchInlineSnapshot(`
       Array [
         Array [
@@ -178,7 +180,7 @@ describe('sideeffect', () => {
     );
 
     store.dispatch({type: 'inc'});
-    await sleep(200);
+    jest.advanceTimersByTime(200);
     expect(done).toBe(true);
     expect(warn.mock.calls[0][0]).toContain("Side effect 'test' took");
   });
@@ -195,30 +197,40 @@ describe('sideeffect', () => {
 
     // Fires immediately
     store.dispatch({type: 'inc'});
-    await sleep(100);
+    jest.advanceTimersByTime(100);
     expect(events).toEqual(['counter: 1']);
 
     // no new tick in the next 100 ms
-    await sleep(300);
+    jest.advanceTimersByTime(300);
     store.dispatch({type: 'inc'});
 
-    await sleep(300);
+    jest.advanceTimersByTime(300);
     store.dispatch({type: 'inc'});
 
     expect(events).toEqual(['counter: 1']);
-    await sleep(1000);
+    jest.advanceTimersByTime(1000);
     expect(events).toEqual(['counter: 1', 'counter: 3']);
 
-    // long time now effect, it will fire right away again
-    await sleep(2000);
+    // long time no effect, it will fire right away again
+    // N.b. we need call sleep here to create a timeout, as time wouldn't progress otherwise
+    const p = sleep(2000);
+    jest.advanceTimersByTime(2000);
+    await p;
 
     // ..but firing an event that doesn't match the selector doesn't reset the timer
     store.dispatch({type: 'unrelated'});
-    await sleep(100);
+    expect(events).toEqual(['counter: 1', 'counter: 3']);
+
+    jest.advanceTimersByTime(100);
 
     store.dispatch({type: 'inc'});
     store.dispatch({type: 'inc'});
-    await sleep(100);
+    jest.advanceTimersByTime(100);
+
+    const p2 = sleep(2000);
+    jest.advanceTimersByTime(2000);
+    await p2;
+
     expect(events).toEqual(['counter: 1', 'counter: 3', 'counter: 5']);
   });
 
@@ -239,7 +251,7 @@ describe('sideeffect', () => {
     store.dispatch({type: 'inc'});
     store.dispatch({type: 'inc'});
     // arrive as a single effect
-    await sleep(10);
+    jest.advanceTimersByTime(10);
     expect(events).toEqual(['counter: 2', 'counter: 4']);
     unsubscribe?.();
   });
