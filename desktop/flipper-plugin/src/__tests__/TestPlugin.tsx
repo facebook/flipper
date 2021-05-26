@@ -28,6 +28,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
   const activateStub = jest.fn();
   const deactivateStub = jest.fn();
   const destroyStub = jest.fn();
+  const readyStub = jest.fn();
   const state = createState(
     {
       count: 0,
@@ -43,6 +44,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
   client.onActivate(activateStub);
   client.onDeactivate(deactivateStub);
   client.onDestroy(destroyStub);
+  client.onReady(readyStub);
   client.onMessage('inc', ({delta}) => {
     state.update((draft) => {
       draft.count += delta;
@@ -81,6 +83,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
     connectStub,
     destroyStub,
     disconnectStub,
+    readyStub,
     getCurrentState,
     state,
     unhandledMessages,

@@ -1,6 +1,6 @@
 project 'Tutorial.xcodeproj'
 swift_version = "4.1"
-flipperkit_version = '0.84.0'
+flipperkit_version = '0.88.0'
 use_frameworks!
 
 target 'Tutorial' do
@@ -20,7 +20,7 @@ target 'Tutorial' do
   $static_framework = ['FlipperKit', 'Flipper', 'Flipper-Folly',
     'CocoaAsyncSocket', 'ComponentKit', 'Flipper-DoubleConversion',
     'Flipper-Glog', 'Flipper-PeerTalk', 'Flipper-RSocket', 'Yoga', 'YogaKit',
-    'CocoaLibEvent', 'OpenSSL-Universal', 'boost-for-react-native']
+    'CocoaLibEvent', 'OpenSSL-Universal', 'Flipper-Boost-iOSX', 'Flipper-Fmt']
 
   pre_install do |installer|
     Pod::Installer::Xcode::TargetValidator.send(:define_method, :verify_no_static_framework_transitive_dependencies) {}

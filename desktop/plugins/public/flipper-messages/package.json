@@ -13,7 +13,7 @@
     "flipper-plugin"
   ],
   "bugs": {
-    "url": "https://fbflipper.com/"
+    "url": "https://github.com/facebook/flipper/issues"
   },
   "scripts": {
     "lint": "flipper-pkg lint",
@@ -23,6 +23,7 @@
   },
   "peerDependencies": {
     "flipper": "*",
-    "flipper-pkg": "*"
+    "flipper-pkg": "*",
+    "flipper-plugin": "*"
   }
 }

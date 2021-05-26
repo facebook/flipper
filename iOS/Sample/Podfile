@@ -18,7 +18,7 @@ target 'Sample' do
   pod 'Flipper-Glog', :configuration => 'Debug'
   pod 'Flipper-PeerTalk', :configuration => 'Debug'
   pod 'libevent', :configuration => 'Debug'
-  pod 'boost-for-react-native', :configuration => 'Debug'
+  pod 'Flipper-Boost-iOSX', :configuration => 'Debug'
   pod 'OpenSSL-Universal', :configuration => 'Debug'
   pod 'CocoaAsyncSocket', :configuration => 'Debug'
   pod 'ComponentKit', '~> 0.30'

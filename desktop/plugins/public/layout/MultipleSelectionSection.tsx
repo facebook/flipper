@@ -7,42 +7,16 @@
  * @format
  */
 
-import {
-  FlexColumn,
-  FlexBox,
-  Element,
-  ElementsConstants,
-  ElementID,
-  ElementsInspector,
-  Glyph,
-  colors,
-  styled,
-} from 'flipper';
+import {Typography} from 'antd';
+import {Element, ElementID, ElementsInspector, styled} from 'flipper';
+import {Layout, theme} from 'flipper-plugin';
 import React, {memo, useState} from 'react';
 
-const MultipleSelectorSectionContainer = styled(FlexColumn)({
-  maxHeight: 3 * ElementsConstants.rowHeight + 24,
-});
-
-const MultipleSelectorSectionTitle = styled(FlexBox)({
-  cursor: 'pointer',
-  backgroundColor: '#f6f7f9',
-  padding: '2px',
-  paddingLeft: '9px',
-  width: '325px',
-  height: '20px',
-  fontWeight: 500,
-  boxShadow: '2px 2px 2px #ccc',
-  border: `1px solid ${colors.light20}`,
-  borderTopLeftRadius: '4px',
-  borderTopRightRadius: '4px',
-  textAlign: 'center',
-});
-
-const Chevron = styled(Glyph)({
-  marginRight: 4,
-  marginLeft: -2,
-  marginBottom: 1,
+const MultipleSelectorSectionContainer = styled(Layout.Container)({
+  padding: theme.space.medium,
+  background: theme.backgroundWash,
+  borderTop: `${theme.space.tiny}px solid ${theme.warningColor}`,
+  borderBottom: `${theme.space.tiny}px solid ${theme.warningColor}`,
 });
 
 type MultipleSelectorSectionProps = {
@@ -66,29 +40,24 @@ const MultipleSelectorSection: React.FC<MultipleSelectorSectionProps> = memo(
     const [selectedId, setSelectedId] = useState<ElementID | null | undefined>(
       initialSelectedElement,
     );
-    const [collapsed, setCollapsed] = useState(false);
     return (
-      <MultipleSelectorSectionContainer>
-        <MultipleSelectorSectionTitle
-          onClick={() => {
-            setCollapsed(!collapsed);
-          }}>
-          <Chevron name={collapsed ? 'chevron-up' : 'chevron-down'} size={12} />
-          Multiple elements found at the target coordinates
-        </MultipleSelectorSectionTitle>
-        {!collapsed && (
-          <ElementsInspector
-            onElementSelected={(key: string) => {
-              setSelectedId(key);
-              onElementSelected(key);
-            }}
-            onElementHovered={onElementHovered}
-            onElementExpanded={() => {}}
-            root={null}
-            selected={selectedId}
-            elements={elements}
-          />
-        )}
+      <MultipleSelectorSectionContainer gap>
+        <Typography.Text>
+          Multiple elements were found at the target coordinates. Please select
+          one:
+        </Typography.Text>
+        <ElementsInspector
+          onElementSelected={(key: string) => {
+            setSelectedId(key);
+            onElementSelected(key);
+          }}
+          onElementHovered={onElementHovered}
+          onElementExpanded={() => {}}
+          root={null}
+          selected={selectedId}
+          elements={elements}
+          scrollable={false}
+        />
       </MultipleSelectorSectionContainer>
     );
   },

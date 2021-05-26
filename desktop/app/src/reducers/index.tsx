@@ -33,6 +33,8 @@ import notifications, {
 import plugins, {
   State as PluginsState,
   Action as PluginsAction,
+  persistMigrations as pluginsPersistMigrations,
+  persistVersion as pluginsPersistVersion,
 } from './plugins';
 import supportForm, {
   State as SupportFormState,
@@ -169,8 +171,10 @@ export default combineReducers<State, Actions>({
     {
       key: 'plugins',
       storage,
-      whitelist: ['marketplacePlugins', 'uninstalledPlugins'],
-      transforms: [setTransformer({whitelist: ['uninstalledPlugins']})],
+      whitelist: ['marketplacePlugins', 'uninstalledPluginNames'],
+      transforms: [setTransformer({whitelist: ['uninstalledPluginNames']})],
+      version: pluginsPersistVersion,
+      migrate: createMigrate(pluginsPersistMigrations),
     },
     plugins,
   ),

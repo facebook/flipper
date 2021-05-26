@@ -74,7 +74,6 @@ class SignInSheet extends Component<Props, State> {
       this.setState({loading: false});
       this.props.onHide();
     } catch (error) {
-      console.error(error);
       this.setState({
         loading: false,
         error: `${error}`,

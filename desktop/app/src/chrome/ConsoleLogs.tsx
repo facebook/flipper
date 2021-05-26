@@ -8,14 +8,14 @@
  */
 
 import {useMemo} from 'react';
-import {Button, Toolbar, ButtonGroup, Layout} from '../ui';
+import {Button, ButtonGroup, Layout} from '../ui';
 import React from 'react';
 import {Console, Hook} from 'console-feed';
 import type {Methods} from 'console-feed/lib/definitions/Methods';
 import type {Styles} from 'console-feed/lib/definitions/Styles';
 import {createState, useValue} from 'flipper-plugin';
-import {useLocalStorage} from '../utils/useLocalStorage';
-import {theme} from 'flipper-plugin';
+import {useLocalStorageState} from 'flipper-plugin';
+import {theme, Toolbar} from 'flipper-plugin';
 import {useIsDarkMode} from '../utils/useIsDarkMode';
 
 const MAX_LOG_ITEMS = 1000;
@@ -66,7 +66,7 @@ const defaultLogLevels: Methods[] = ['warn', 'error', 'table', 'assert'];
 export function ConsoleLogs() {
   const isDarkMode = useIsDarkMode();
   const logs = useValue(logsAtom);
-  const [logLevels, setLogLevels] = useLocalStorage<Methods[]>(
+  const [logLevels, setLogLevels] = useLocalStorageState<Methods[]>(
     'console-logs-loglevels',
     defaultLogLevels,
   );

@@ -58,7 +58,7 @@ import {
 const maxInstalledPluginVersionsToKeep = 2;
 
 function refreshInstalledPlugins(store: Store) {
-  removePlugins(store.getState().plugins.uninstalledPlugins.values())
+  removePlugins(store.getState().plugins.uninstalledPluginNames.values())
     .then(() =>
       cleanupOldInstalledPluginVersions(maxInstalledPluginVersionsToKeep),
     )

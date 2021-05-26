@@ -7,18 +7,54 @@
  * @format
  */
 
+import {DataSource} from 'flipper-plugin';
+import {AnyNestedObject} from 'protobufjs';
+
 export type RequestId = string;
 
-export type Request = {
+export interface Request {
+  id: RequestId;
+  // request
+  requestTime: Date;
+  method: string;
+  url: string;
+  domain: string;
+  requestHeaders: Array<Header>;
+  requestData: string | Uint8Array | undefined;
+  // response
+  responseTime?: Date;
+  status?: number;
+  reason?: string;
+  responseHeaders?: Array<Header>;
+  responseData?: string | Uint8Array | undefined;
+  responseLength?: number;
+  responseIsMock?: boolean;
+  duration?: number;
+  insights?: Insights;
+}
+
+export type Requests = DataSource<Request, 'id', string>;
+
+export type SerializedRequest = Omit<
+  Request,
+  'requestTime' | 'responseTime' | 'requestData' | 'responseData'
+> & {
+  requestTime: number;
+  requestData?: string | [string]; // wrapped in Array represents base64 encoded
+  responseTime?: number;
+  responseData?: string | [string]; // wrapped in Array represents base64 encoded
+};
+
+export type RequestInfo = {
   id: RequestId;
   timestamp: number;
   method: string;
-  url: string;
+  url?: string;
   headers: Array<Header>;
   data: string | null | undefined;
 };
 
-export type Response = {
+export type ResponseInfo = {
   id: RequestId;
   timestamp: number;
   status: number;
@@ -30,6 +66,17 @@ export type Response = {
   totalChunks?: number;
   index?: number;
 };
+
+export type ProtobufDefinition = {
+  path: string;
+  method: string;
+  requestMessageFullName: string | null | undefined;
+  requestDefinitions: {[k: string]: AnyNestedObject} | null | undefined;
+  responseMessageFullName: string | null | undefined;
+  responseDefinitions: {[k: string]: AnyNestedObject} | null | undefined;
+};
+
+export type AddProtobufEvent = {[baseUrl: string]: ProtobufDefinition[]};
 
 export type ResponseFollowupChunk = {
   id: string;
@@ -64,27 +111,9 @@ export type Insights = {
   retries: RetryInsights | null | undefined;
 };
 
-export type Route = {
-  requestUrl: string;
-  requestMethod: string;
-  responseData: string;
-  responseHeaders: {[id: string]: Header};
-  responseStatus: string;
-  enabled: boolean;
+export type PartialResponse = {
+  initialResponse?: ResponseInfo;
+  followupChunks: {[id: number]: string};
 };
 
-export type MockRoute = {
-  requestUrl: string;
-  method: string;
-  data: string;
-  headers: Header[];
-  status: string;
-  enabled: boolean;
-};
-
-export type PartialResponses = {
-  [id: string]: {
-    initialResponse?: Response;
-    followupChunks: {[id: number]: string};
-  };
-};
+export type PartialResponses = Record<string, PartialResponse>;

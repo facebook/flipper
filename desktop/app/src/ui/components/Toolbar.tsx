@@ -7,34 +7,13 @@
  * @format
  */
 
-import React from 'react';
 import FlexBox from './FlexBox';
 import styled from '@emotion/styled';
-import {theme, Layout} from 'flipper-plugin';
 
-const SandyToolbarContainer = styled(Layout.Horizontal)({
-  flexWrap: 'wrap',
-  padding: theme.space.small,
-  boxShadow: `inset 0px -1px 0px ${theme.dividerColor}`,
-});
-
+/**
+ * Deprecated, set 'gap' on the parent container instead
+ */
 export const Spacer = styled(FlexBox)({
   flexGrow: 1,
 });
 Spacer.displayName = 'Spacer';
-
-export default function Toolbar({
-  children,
-  style,
-}: {
-  children?: React.ReactNode;
-  position?: 'bottom' | 'top';
-  compact?: boolean;
-  style?: React.CSSProperties;
-}) {
-  return (
-    <SandyToolbarContainer style={style} gap={theme.space.small} center>
-      {children}
-    </SandyToolbarContainer>
-  );
-}

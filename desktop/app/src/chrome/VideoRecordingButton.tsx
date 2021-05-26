@@ -81,7 +81,7 @@ export default class VideoRecordingButton extends Component<Props, State> {
     const {selectedDevice} = this.props;
     return (
       <Button
-        compact={true}
+        compact
         onClick={this.onRecordingClicked}
         pulse={this.state.recording}
         selected={this.state.recording}

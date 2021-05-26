@@ -49,13 +49,8 @@ function getOsIcon(os?: OS) {
 
 export function AppSelector() {
   const dispatch = useDispatch();
-  const {
-    devices,
-    selectedDevice,
-    clients,
-    uninitializedClients,
-    selectedApp,
-  } = useStore((state) => state.connections);
+  const {devices, selectedDevice, clients, uninitializedClients, selectedApp} =
+    useStore((state) => state.connections);
   useValue(selectedDevice?.connected, false); // subscribe to future archived state changes
 
   const onSelectDevice = useTrackedCallback(
@@ -97,6 +92,7 @@ export function AppSelector() {
         flex: 1,
       }}>
       <Dropdown
+        trigger={['click']}
         overlay={
           <Menu selectedKeys={selectedApp ? [selectedApp] : []}>{entries}</Menu>
         }>

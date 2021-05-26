@@ -13,15 +13,21 @@ import {Persistable, registerStorageAtom} from '../plugin/PluginBase';
 
 enableMapSet();
 
-export type Atom<T> = {
+export interface ReadOnlyAtom<T> {
   get(): T;
+  subscribe(listener: (value: T, prevValue: T) => void): () => void;
+  unsubscribe(listener: (value: T, prevValue: T) => void): void;
+}
+
+export interface Atom<T> extends ReadOnlyAtom<T> {
   set(newValue: T): void;
   update(recipe: (draft: Draft<T>) => void): void;
-};
+  update<X extends T>(recipe: (draft: X) => void): void;
+}
 
 class AtomValue<T> implements Atom<T>, Persistable {
   value: T;
-  listeners: ((value: T) => void)[] = [];
+  listeners: ((value: T, prevValue: T) => void)[] = [];
 
   constructor(initialValue: T) {
     this.value = initialValue;
@@ -33,8 +39,9 @@ class AtomValue<T> implements Atom<T>, Persistable {
 
   set(nextValue: T) {
     if (nextValue !== this.value) {
+      const prevValue = this.value;
       this.value = nextValue;
-      this.notifyChanged();
+      this.notifyChanged(prevValue);
     }
   }
 
@@ -50,16 +57,17 @@ class AtomValue<T> implements Atom<T>, Persistable {
     this.set(produce(this.value, recipe));
   }
 
-  notifyChanged() {
+  notifyChanged(prevValue: T) {
     // TODO: add scheduling
-    this.listeners.slice().forEach((l) => l(this.value));
+    this.listeners.slice().forEach((l) => l(this.value, prevValue));
   }
 
-  subscribe(listener: (value: T) => void) {
+  subscribe(listener: (value: T, prevValue: T) => void) {
     this.listeners.push(listener);
+    return () => this.unsubscribe(listener);
   }
 
-  unsubscribe(listener: (value: T) => void) {
+  unsubscribe(listener: (value: T, prevValue: T) => void) {
     const idx = this.listeners.indexOf(listener);
     if (idx !== -1) {
       this.listeners.splice(idx, 1);
@@ -89,9 +97,15 @@ export function createState(
   return atom;
 }
 
-export function useValue<T>(atom: Atom<T>): T;
-export function useValue<T>(atom: Atom<T> | undefined, defaultValue: T): T;
-export function useValue<T>(atom: Atom<T> | undefined, defaultValue?: T): T {
+export function useValue<T>(atom: ReadOnlyAtom<T>): T;
+export function useValue<T>(
+  atom: ReadOnlyAtom<T> | undefined,
+  defaultValue: T,
+): T;
+export function useValue<T>(
+  atom: ReadOnlyAtom<T> | undefined,
+  defaultValue?: T,
+): T {
   const [localValue, setLocalValue] = useState<T>(
     atom ? atom.get() : defaultValue!,
   );

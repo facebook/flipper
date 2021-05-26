@@ -7,85 +7,69 @@
  * @format
  */
 
-import {
-  FlexRow,
-  ManagedTable,
-  TableBodyRow,
-  TableBodyColumn,
-  Value,
-  renderValue,
-} from 'flipper';
-import React, {useMemo} from 'react';
-
+import {Value, renderValue} from './TypeBasedValueRenderer';
+import {DataTable, DataTableColumn, Layout, useMemoize} from 'flipper-plugin';
+import React from 'react';
 import {Structure} from './index';
 
-function transformRow(
-  columns: Array<string>,
-  row: Array<Value>,
-  index: number,
-): TableBodyRow {
-  const transformedColumns: {[key: string]: TableBodyColumn} = {};
-  for (let i = 0; i < columns.length; i++) {
-    transformedColumns[columns[i]] = {value: renderValue(row[i], true)};
-  }
-  return {key: String(index), columns: transformedColumns};
+function createRows(
+  columns: string[],
+  rows: Value[][],
+): {[key: string]: Value}[] {
+  return rows.map((values) =>
+    values.reduce((acc: {[key: string]: Value}, cur: Value, i: number) => {
+      acc[columns[i]] = cur;
+      return acc;
+    }, {}),
+  );
 }
 
-const DatabaseStructureManagedTable = React.memo(
-  (props: {columns: Array<string>; rows: Array<Array<Value>>}) => {
-    const {columns, rows} = props;
-    const renderRows = useMemo(
-      () =>
-        rows.map((row: Array<Value>, index: number) =>
-          transformRow(columns, row, index),
-        ),
-      [rows, columns],
-    );
-    const renderColumns = useMemo(
-      () =>
-        columns.reduce(
-          (acc, val) =>
-            Object.assign({}, acc, {[val]: {value: val, resizable: true}}),
-          {},
-        ),
-      [columns],
-    );
-    const columnOrder = useMemo(
-      () =>
-        columns.map((name) => ({
-          key: name,
-          visible: true,
-        })),
-      [columns],
-    );
-    return (
-      <FlexRow grow={true}>
-        <ManagedTable
-          floating={false}
-          columnOrder={columnOrder}
-          columns={renderColumns}
-          zebra={true}
-          rows={renderRows}
-          horizontallyScrollable={true}
-        />
-      </FlexRow>
-    );
-  },
-);
+function createColumnConfig(columns: string[]) {
+  const columnObjs: DataTableColumn<{[key: string]: Value}>[] = columns.map(
+    (c) => ({
+      key: c,
+      title: c,
+      onRender(row) {
+        return renderValue(row[c]);
+      },
+    }),
+  );
+  return columnObjs;
+}
 
-export default React.memo((props: {structure: Structure | null}) => {
+export default React.memo((props: {structure: Structure}) => {
   const {structure} = props;
-  if (!structure) {
-    return null;
-  }
   const {columns, rows, indexesColumns, indexesValues} = structure;
+  const rowObjs = useMemoize(
+    (columns: string[], rows: Value[][]) => createRows(columns, rows),
+    [columns, rows],
+  );
+  const columnObjs = useMemoize(
+    (columns: string[]) => createColumnConfig(columns),
+    [columns],
+  );
+  const indexRowObjs = useMemoize(
+    (indexesColumns: string[], indexesValues: Value[][]) =>
+      createRows(indexesColumns, indexesValues),
+    [indexesColumns, indexesValues],
+  );
+  const indexColumnObjs = useMemoize(
+    (indexesColumns: string[]) => createColumnConfig(indexesColumns),
+    [indexesColumns],
+  );
+
   return (
-    <>
-      <DatabaseStructureManagedTable columns={columns} rows={rows} />
-      <DatabaseStructureManagedTable
-        columns={indexesColumns}
-        rows={indexesValues}
+    <Layout.Top resizable height={400}>
+      <DataTable<{[key: string]: Value}>
+        records={rowObjs}
+        columns={columnObjs}
+        enableSearchbar={false}
       />
-    </>
+      <DataTable<{[key: string]: Value}>
+        records={indexRowObjs}
+        columns={indexColumnObjs}
+        enableSearchbar={false}
+      />
+    </Layout.Top>
   );
 });

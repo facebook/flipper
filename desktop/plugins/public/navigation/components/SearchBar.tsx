@@ -95,12 +95,8 @@ class SearchBar extends Component<Props, State> {
 
   render() {
     const {bookmarks, providers} = this.props;
-    const {
-      autoCompleteSheetOpen,
-      inputFocused,
-      searchInputValue,
-      query,
-    } = this.state;
+    const {autoCompleteSheetOpen, inputFocused, searchInputValue, query} =
+      this.state;
     return (
       <ToolbarContainer>
         <Toolbar>
@@ -147,7 +143,7 @@ class SearchBar extends Component<Props, State> {
               <IconButton
                 icon="send"
                 size={16}
-                outline={true}
+                outline
                 onClick={() => this.navigateTo(searchInputValue)}
               />
               <FavoriteButton

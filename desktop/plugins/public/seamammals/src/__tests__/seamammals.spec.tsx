@@ -65,13 +65,8 @@ test('It can store rows', () => {
 });
 
 test('It can have selection and render details', async () => {
-  const {
-    instance,
-    renderer,
-    act,
-    sendEvent,
-    exportState,
-  } = TestUtils.renderPlugin(MammalsPlugin);
+  const {instance, renderer, act, sendEvent, exportState} =
+    TestUtils.renderPlugin(MammalsPlugin);
 
   expect(instance.rows.get()).toEqual({});
   expect(instance.selectedID.get()).toBeNull();

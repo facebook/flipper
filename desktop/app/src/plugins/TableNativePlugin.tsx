@@ -12,8 +12,7 @@ import Panel from '../ui/components/Panel';
 import {colors} from '../ui/components/colors';
 import styled from '@emotion/styled';
 import Text from '../ui/components/Text';
-import Toolbar from '../ui/components/Toolbar';
-import Spacer from '../ui/components/Toolbar';
+import {Spacer} from '../ui/components/Toolbar';
 import Button from '../ui/components/Button';
 import Select from '../ui/components/Select';
 import ErrorBlock from '../ui/components/ErrorBlock';
@@ -35,6 +34,7 @@ import {ReactNode} from 'react';
 import React from 'react';
 import {KeyboardActions} from '../MenuBar';
 import {BundledPluginDetails} from 'flipper-plugin-lib';
+import {Toolbar} from 'flipper-plugin';
 
 type ID = string;
 
@@ -124,7 +124,7 @@ function renderValue({type, value}: {type: string; value: any}) {
   switch (type) {
     case 'boolean':
       return (
-        <BooleanValue code={true} active={value}>
+        <BooleanValue code active={value}>
           {value.toString()}
         </BooleanValue>
       );
@@ -232,7 +232,7 @@ function renderSidebarSection(
     case 'json':
       return (
         <Panel floating={false} heading={section.title} key={index}>
-          <DataInspector data={section.content} expandRoot={true} />
+          <DataInspector data={section.content} expandRoot />
         </Panel>
       );
     case 'toolbar':
@@ -240,7 +240,7 @@ function renderSidebarSection(
     default:
       return (
         <Panel floating={false} heading={'Details'} key={index}>
-          <DataInspector data={section} expandRoot={true} />
+          <DataInspector data={section} expandRoot />
         </Panel>
       );
   }
@@ -470,13 +470,8 @@ export default function createTableNativePlugin(id: string, title: string) {
       if (!this.props.persistedState.tableMetadata) {
         return 'Loading...';
       }
-      const {
-        topToolbar,
-        bottomToolbar,
-        columns,
-        columnSizes,
-        columnOrder,
-      } = this.props.persistedState.tableMetadata;
+      const {topToolbar, bottomToolbar, columns, columnSizes, columnOrder} =
+        this.props.persistedState.tableMetadata;
       const {rows} = this.props.persistedState;
 
       const topToolbarComponent = topToolbar ? renderToolbar(topToolbar) : null;
@@ -485,20 +480,20 @@ export default function createTableNativePlugin(id: string, title: string) {
         : null;
 
       return (
-        <FlexColumn grow={true}>
+        <FlexColumn grow>
           {topToolbarComponent}
           <SearchableTable
             key={this.constructor.id}
             rowLineHeight={28}
             floating={false}
-            multiline={true}
+            multiline
             columnSizes={columnSizes}
             columnOrder={columnOrder}
             columns={columns}
             onRowHighlighted={this.onRowHighlighted}
-            multiHighlight={true}
+            multiHighlight
             rows={this.applyMetadataToRows(rows)}
-            stickyBottom={true}
+            stickyBottom
             actions={<Button onClick={this.clear}>Clear Table</Button>}
           />
           <DetailSidebar>{this.renderSidebar()}</DetailSidebar>

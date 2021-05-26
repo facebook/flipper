@@ -28,6 +28,7 @@ RadioboxContainer.displayName = 'Radiobox:RadioboxContainer';
 
 /**
  * A radio button to toggle UI state
+ * @deprecated use Radio from 'antd'
  */
 export default class Radio extends PureComponent<RadioProps> {
   onChange = (e: React.ChangeEvent<HTMLInputElement>) => {

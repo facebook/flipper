@@ -11,7 +11,6 @@ import {PluginDefinition, FlipperPlugin, FlipperDevicePlugin} from './plugin';
 import BaseDevice, {OS} from './devices/BaseDevice';
 import {Logger} from './fb-interfaces/Logger';
 import {Store} from './reducers/index';
-import {setPluginState} from './reducers/pluginStates';
 import {Payload, ConnectionStatus} from 'rsocket-types';
 import {Flowable, Single} from 'rsocket-flowable';
 import {performance} from 'perf_hooks';
@@ -150,7 +149,7 @@ export default class Client extends EventEmitter {
     device: BaseDevice,
   ) {
     super();
-    this.connected.set(true);
+    this.connected.set(!!conn);
     this.plugins = plugins ? plugins : [];
     this.backgroundPlugins = [];
     this.connection = conn;
@@ -334,10 +333,9 @@ export default class Client extends EventEmitter {
     if (this.sdkVersion < 4) {
       return [];
     }
-    return await this.rawCall<{plugins: Plugins}>(
-      'getBackgroundPlugins',
-      false,
-    ).then((data) => data.plugins);
+    return this.rawCall<{plugins: Plugins}>('getBackgroundPlugins', false).then(
+      (data) => data.plugins,
+    );
   }
 
   // get the plugins, and update the UI
@@ -438,6 +436,13 @@ export default class Client extends EventEmitter {
           const params: Params = data.params;
           const bytes = msg.length * 2; // string lengths are measured in UTF-16 units (not characters), so 2 bytes per char
           emitBytesReceived(params.api, bytes);
+          if (bytes > 5 * 1024 * 1024 && params.api !== 'flipper-messages') {
+            console.warn(
+              `Plugin '${params.api}' received excessively large message for '${
+                params.method
+              }': ${Math.round(bytes / 1024)}kB`,
+            );
+          }
 
           const persistingPlugin: PluginDefinition | undefined =
             this.store.getState().plugins.clientPlugins.get(params.api) ||
@@ -621,7 +626,10 @@ export default class Client extends EventEmitter {
             }
           },
           onError: (e) => {
-            reject(e);
+            // This is only called if the connection is dead. Not in expected
+            // and recoverable cases like a missing receiver/method.
+            this.disconnect();
+            reject(new Error('Connection disconnected: ' + e));
           },
         });
       } else {
@@ -694,8 +702,10 @@ export default class Client extends EventEmitter {
 
   initPlugin(pluginId: string) {
     this.activePlugins.add(pluginId);
-    this.rawSend('init', {plugin: pluginId});
-    this.sandyPluginStates.get(pluginId)?.connect();
+    if (this.connected.get()) {
+      this.rawSend('init', {plugin: pluginId});
+      this.sandyPluginStates.get(pluginId)?.connect();
+    }
   }
 
   deinitPlugin(pluginId: string) {
@@ -734,7 +744,21 @@ export default class Client extends EventEmitter {
     params?: Object,
   ): Promise<Object> {
     return reportPluginFailures(
-      this.rawCall('execute', fromPlugin, {api, method, params}),
+      this.rawCall<Object>('execute', fromPlugin, {
+        api,
+        method,
+        params,
+      }).catch((err) => {
+        // We only throw errors if the connection is still alive
+        // as connection-related ones aren't recoverable from
+        // user code.
+        if (this.connected.get()) {
+          throw err;
+        }
+        // This effectively preserves the previous behavior
+        // of ignoring disconnection-related call failures.
+        return {};
+      }),
       `Call-${method}`,
       api,
     );

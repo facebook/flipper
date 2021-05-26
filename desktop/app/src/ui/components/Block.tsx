@@ -11,6 +11,7 @@ import styled from '@emotion/styled';
 
 /**
  * A Block styled div
+ * @deprecated use Layout.Container
  */
 const Block = styled.div({
   display: 'block',

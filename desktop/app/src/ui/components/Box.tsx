@@ -10,6 +10,9 @@
 import FlexBox from './FlexBox';
 import styled from '@emotion/styled';
 
+/**
+ * @deprecated use Layout.Container
+ */
 const Box = styled(FlexBox)({
   height: '100%',
   overflow: 'auto',

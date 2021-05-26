@@ -14,6 +14,7 @@ import {colors} from './colors';
 
 /**
  * Displays all children in a bordered, zebra styled vertical layout
+ * @deprecated use Layout.Container gap
  */
 const AlternatingRows: React.FC<{
   children: React.ReactNode[] | React.ReactNode;

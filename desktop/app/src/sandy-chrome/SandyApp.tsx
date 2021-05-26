@@ -29,7 +29,6 @@ import {ContentContainer} from './ContentContainer';
 import {Notification} from './notification/Notification';
 import {SheetRenderer} from '../chrome/SheetRenderer';
 import {hasNewChangesToShow} from '../chrome/ChangelogSheet';
-import {SandyWelcomeScreen} from './SandyWelcomeScreen';
 import {getVersionString} from '../utils/versionString';
 import config from '../fb-stubs/config';
 import {WelcomeScreenStaticView} from './WelcomeScreen';
@@ -62,10 +61,8 @@ export function SandyApp() {
    * The logic here is to sync both, but without modifying the navigation related reducers to not break classic Flipper.
    * It is possible to simplify this in the future.
    */
-  const [
-    toplevelSelection,
-    setStoredToplevelSelection,
-  ] = useState<ToplevelNavItem>('appinspect');
+  const [toplevelSelection, setStoredToplevelSelection] =
+    useState<ToplevelNavItem>('appinspect');
 
   // Handle toplevel nav clicks from LeftRail
   const setToplevelSelection = useCallback(
@@ -137,10 +134,7 @@ export function SandyApp() {
 
   return (
     <Layout.Top>
-      <>
-        <SheetRenderer logger={logger} />
-        <SandyWelcomeScreen />
-      </>
+      <SheetRenderer logger={logger} />
       <Layout.Left>
         <Layout.Horizontal>
           <LeftRail
@@ -156,7 +150,6 @@ export function SandyApp() {
           </_Sidebar>
         </Layout.Horizontal>
         <MainContainer>
-          {outOfContentsContainer}
           {staticView ? (
             <TrackingScope
               scope={
@@ -178,6 +171,7 @@ export function SandyApp() {
           ) : (
             <PluginContainer logger={logger} isSandy />
           )}
+          {outOfContentsContainer}
         </MainContainer>
       </Layout.Left>
     </Layout.Top>

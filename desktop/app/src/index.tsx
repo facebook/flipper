@@ -45,7 +45,6 @@ export {Idler, Notification} from 'flipper-plugin';
 export {Store, MiddlewareAPI, State as ReduxState} from './reducers/index';
 export {default as BaseDevice} from './devices/BaseDevice';
 export {DeviceLogEntry, LogLevel, DeviceLogListener} from 'flipper-plugin';
-export {shouldParseAndroidLog} from './utils/crashReporterUtility';
 export {deconstructClientId} from './utils/clientUtils';
 export {default as isProduction} from './utils/isProduction';
 export {createTablePlugin} from './createTablePlugin';
@@ -87,11 +86,6 @@ export {
   default as ManagedTable_immutable,
   ManagedTableProps_immutable,
 } from './ui/components/table/ManagedTable_immutable';
-export {
-  Value,
-  renderValue,
-  valueToNullableString,
-} from './ui/components/table/TypeBasedValueRenderer';
 export {
   DataValueExtractor,
   DataInspectorExpanded,
@@ -142,7 +136,8 @@ export {default as FlexBox} from './ui/components/FlexBox';
 export {default as FlexRow} from './ui/components/FlexRow';
 export {default as FlexColumn} from './ui/components/FlexColumn';
 export {default as FlexCenter} from './ui/components/FlexCenter';
-export {default as Toolbar, Spacer} from './ui/components/Toolbar';
+export {Toolbar} from 'flipper-plugin';
+export {Spacer} from './ui/components/Toolbar';
 export {default as ToolbarIcon} from './ui/components/ToolbarIcon';
 export {default as Panel} from './ui/components/Panel';
 export {default as Text} from './ui/components/Text';
@@ -173,20 +168,17 @@ export {
 } from './ui/components/searchable/SearchableTable';
 export {default as SearchableTable_immutable} from './ui/components/searchable/SearchableTable_immutable';
 export {
-  ElementID,
-  ElementData,
-  ElementFramework,
-  ElementAttribute,
-  Element,
-  ElementSearchResultSet,
+  ElementsInspector,
+  ElementsInspectorElement as Element,
+  // TODO: clean up or create namespace
   ElementsInspectorProps,
-} from './ui/components/elements-inspector/ElementsInspector';
-export {
-  Elements,
-  ElementsConstants,
-} from './ui/components/elements-inspector/elements';
-export {ContextMenuExtension} from './ui/components/elements-inspector/elements';
-export {default as ElementsInspector} from './ui/components/elements-inspector/ElementsInspector';
+  ElementExtraInfo,
+  ElementAttribute,
+  ElementData,
+  ElementSearchResultSet,
+  ElementID,
+} from 'flipper-plugin';
+export {ElementFramework} from './ui/components/elements-inspector/ElementFramework';
 export {InspectorSidebar} from './ui/components/elements-inspector/sidebar';
 export {default as Sheet} from './ui/components/Sheet';
 export {default as FileSelector} from './ui/components/FileSelector';
@@ -196,7 +188,7 @@ export {Rect} from './utils/geometry';
 export {Logger} from './fb-interfaces/Logger';
 export {getInstance as getLogger} from './fb-stubs/Logger';
 export {callVSCode, getVSCodeUrl} from './utils/vscodeUtils';
-export {useLocalStorage} from './utils/useLocalStorage';
+export {useLocalStorageState as useLocalStorage} from 'flipper-plugin';
 export {checkIdbIsInstalled} from './utils/iOSContainerUtility';
 export {IDEFileResolver, IDEType} from './fb-stubs/IDEFileResolver';
 export {renderMockFlipperWithPlugin} from './test-utils/createMockFlipperWithPlugin';

@@ -145,6 +145,7 @@ export class Sidebar extends Component<SidebarProps, SidebarState> {
     let minWidth: number | undefined;
     let maxWidth: number | undefined;
 
+    // TODO: memo
     const resizable: {[key: string]: boolean} = {};
     if (position === 'left') {
       resizable.right = true;
@@ -189,13 +190,7 @@ export class Sidebar extends Component<SidebarProps, SidebarState> {
         minHeight={minHeight}
         maxHeight={maxHeight}
         height={
-          !horizontal
-            ? onResize
-              ? height
-              : this.state.height
-            : gutter
-            ? undefined
-            : '100%'
+          !horizontal ? (onResize ? height : this.state.height) : undefined
         }
         resizable={resizable}
         onResize={this.onResize}

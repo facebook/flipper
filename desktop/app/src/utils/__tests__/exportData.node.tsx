@@ -767,7 +767,8 @@ test('test determinePluginsToProcess for mutilple clients having plugins present
     selectedPlugins: ['TestPlugin'],
     marketplacePlugins: [],
     installedPlugins: new Map(),
-    uninstalledPlugins: new Set(),
+    uninstalledPluginNames: new Set(),
+    initialised: true,
   };
   const op = determinePluginsToProcess(
     [client1, client2, client3],
@@ -841,7 +842,8 @@ test('test determinePluginsToProcess for no selected plugin present in any clien
     selectedPlugins: ['RandomPlugin'],
     marketplacePlugins: [],
     installedPlugins: new Map(),
-    uninstalledPlugins: new Set(),
+    uninstalledPluginNames: new Set(),
+    initialised: true,
   };
   const op = determinePluginsToProcess([client1, client2], device1, plugins);
   expect(op).toBeDefined();
@@ -892,7 +894,8 @@ test('test determinePluginsToProcess for multiple clients on same device', async
     selectedPlugins: ['TestPlugin'],
     marketplacePlugins: [],
     installedPlugins: new Map(),
-    uninstalledPlugins: new Set(),
+    uninstalledPluginNames: new Set(),
+    initialised: true,
   };
   const op = determinePluginsToProcess([client1, client2], device1, plugins);
   expect(op).toBeDefined();
@@ -981,7 +984,8 @@ test('test determinePluginsToProcess for multiple clients on different device', 
     selectedPlugins: ['TestPlugin'],
     marketplacePlugins: [],
     installedPlugins: new Map(),
-    uninstalledPlugins: new Set(),
+    uninstalledPluginNames: new Set(),
+    initialised: true,
   };
   const op = determinePluginsToProcess(
     [client1Device1, client2Device1, client1Device2, client2Device2],
@@ -1066,7 +1070,8 @@ test('test determinePluginsToProcess to ignore archived clients', async () => {
     selectedPlugins: ['TestPlugin'],
     marketplacePlugins: [],
     installedPlugins: new Map(),
-    uninstalledPlugins: new Set(),
+    uninstalledPluginNames: new Set(),
+    initialised: true,
   };
   const op = determinePluginsToProcess(
     [client, archivedClient],
@@ -1127,12 +1132,8 @@ const sandyTestPlugin = new _SandyPluginDefinition(
 );
 
 test('Sandy plugins are exported properly', async () => {
-  const {
-    client,
-    sendMessage,
-    store,
-    device,
-  } = await createMockFlipperWithPlugin(sandyTestPlugin);
+  const {client, sendMessage, store, device} =
+    await createMockFlipperWithPlugin(sandyTestPlugin);
 
   // We do select another plugin, to verify that pending message queues are indeed processed before exporting
   store.dispatch(
@@ -1266,8 +1267,7 @@ test('Sandy plugins are imported properly', async () => {
   const data = {
     clients: [
       {
-        id:
-          'TestApp#Android#MockAndroidDevice#2e52cea6-94b0-4ea1-b9a8-c9135ede14ca-serial',
+        id: 'TestApp#Android#MockAndroidDevice#2e52cea6-94b0-4ea1-b9a8-c9135ede14ca-serial',
         query: {
           app: 'TestApp',
           device: 'MockAndroidDevice',
@@ -1288,14 +1288,15 @@ test('Sandy plugins are imported properly', async () => {
     fileVersion: '0.9.99',
     flipperReleaseRevision: undefined,
     pluginStates2: {
-      'TestApp#Android#MockAndroidDevice#2e52cea6-94b0-4ea1-b9a8-c9135ede14ca-serial': {
-        TestPlugin: {
-          otherState: {
-            testCount: -3,
+      'TestApp#Android#MockAndroidDevice#2e52cea6-94b0-4ea1-b9a8-c9135ede14ca-serial':
+        {
+          TestPlugin: {
+            otherState: {
+              testCount: -3,
+            },
+            counter: 3,
           },
-          counter: 3,
         },
-      },
     },
     store: {
       activeNotifications: [],
@@ -1484,8 +1485,7 @@ test('Sandy plugin with custom import', async () => {
   const data = {
     clients: [
       {
-        id:
-          'TestApp#Android#MockAndroidDevice#2e52cea6-94b0-4ea1-b9a8-c9135ede14ca-serial',
+        id: 'TestApp#Android#MockAndroidDevice#2e52cea6-94b0-4ea1-b9a8-c9135ede14ca-serial',
         query: {
           app: 'TestApp',
           device: 'MockAndroidDevice',
@@ -1506,11 +1506,12 @@ test('Sandy plugin with custom import', async () => {
     fileVersion: '0.9.99',
     flipperReleaseRevision: undefined,
     pluginStates2: {
-      'TestApp#Android#MockAndroidDevice#2e52cea6-94b0-4ea1-b9a8-c9135ede14ca-serial': {
-        [plugin.id]: {
-          count: 4,
+      'TestApp#Android#MockAndroidDevice#2e52cea6-94b0-4ea1-b9a8-c9135ede14ca-serial':
+        {
+          [plugin.id]: {
+            count: 4,
+          },
         },
-      },
     },
     store: {
       activeNotifications: [],

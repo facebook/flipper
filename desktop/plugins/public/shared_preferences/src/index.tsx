@@ -166,7 +166,7 @@ export function Component() {
   }
 
   return (
-    <RootColumn grow={true}>
+    <RootColumn grow>
       <Heading>
         <span style={{marginRight: '16px'}}>Preference File</span>
         <Select
@@ -180,7 +180,7 @@ export function Component() {
           onChange={instance.setSelectedPreferences}
         />
       </Heading>
-      <FlexRow grow={true} scrollable={true}>
+      <FlexRow grow scrollable>
         <InspectorColumn>
           <Heading>Inspector</Heading>
           <ManagedDataInspector

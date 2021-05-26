@@ -91,7 +91,7 @@ export default function FileSelector({
       <FileInputBox
         placeholder={placeholderText}
         value={value}
-        isValid={true}
+        isValid
         onDrop={(e) => {
           if (e.dataTransfer.files.length) {
             onChange(e.dataTransfer.files[0].path);

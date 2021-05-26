@@ -17,7 +17,7 @@ jobs:
         # n.b. doesn't seem to respect cwd:
         podfile-path: react-native/ReactNativeFlipperExample/ios/Podfile.lock
     - name: Install yarn dependencies
-      run: yarn install --frozen-lockfile --ignore-scripts
+      run: yarn install --ignore-scripts
     - name: Install react-native-flipper
       run: yarn relative-deps
     - name: Install pod dependencies
@@ -26,7 +26,7 @@ jobs:
       run: |
         cd ios
         IPHONESIMULATOR=$(xcodebuild -showsdks | grep -o "iphonesimulator[0-9]\\+\\.[0-9]\\+$") && echo $IPHONESIMULATOR
-        xcodebuild -workspace ReactNativeFlipperExample.xcworkspace -configuration Debug -scheme ReactNativeFlipperExample -sdk $IPHONESIMULATOR EXCLUDED_ARCHS=arm64
+        xcodebuild -workspace ReactNativeFlipperExample.xcworkspace -configuration Debug -scheme ReactNativeFlipperExample -sdk $IPHONESIMULATOR EXCLUDED_ARCHS="arm64"
 
   build-react-native-example-android:
     runs-on: ubuntu-latest
@@ -54,7 +54,7 @@ jobs:
           ~/.gradle/caches/build-cache-*
         key: gradle-${{ hashFiles('checksum-android.txt') }}
     - name: Install yarn dependencies
-      run: yarn install --frozen-lockfile --ignore-scripts
+      run: yarn install --ignore-scripts
     - name: Install react-native-flipper
       run: yarn relative-deps
     - name: Build React Native Android Example debug app

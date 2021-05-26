@@ -25,6 +25,7 @@ import {CaretDownFilled, CaretUpFilled} from '@ant-design/icons';
 import {Layout} from '../Layout';
 import {Sorting, SortDirection, DataTableDispatch} from './DataTableManager';
 import {FilterButton, FilterIcon} from './ColumnFilter';
+import {toFirstUpper} from '../../utils/toFirstUpper';
 
 const {Text} = Typography;
 
@@ -104,15 +105,21 @@ const TableHeadColumnContainer = styled.div<{
 }));
 TableHeadColumnContainer.displayName = 'TableHead:TableHeadColumnContainer';
 
-const TableHeadContainer = styled.div({
-  position: 'relative',
-  display: 'flex',
-  flexDirection: 'row',
-  borderBottom: `1px solid ${theme.dividerColor}`,
-  backgroundColor: theme.backgroundWash,
-  userSelect: 'none',
-  borderLeft: `4px solid ${theme.backgroundWash}`, // space for selection, see TableRow
-});
+const TableHeadContainer = styled.div<{scrollbarSize: number}>(
+  ({scrollbarSize}) => ({
+    position: 'relative',
+    display: 'flex',
+    flexDirection: 'row',
+    borderBottom: `1px solid ${theme.dividerColor}`,
+    backgroundColor: theme.backgroundWash,
+    userSelect: 'none',
+    whiteSpace: 'nowrap',
+    borderLeft: `4px solid ${theme.backgroundWash}`, // space for selection, see TableRow
+    // hardcoded value to correct for the scrollbar in the main container.
+    // ideally we should measure this instead.
+    paddingRight: scrollbarSize,
+  }),
+);
 TableHeadContainer.displayName = 'TableHead:TableHeadContainer';
 
 const RIGHT_RESIZABLE = {right: true};
@@ -181,7 +188,13 @@ function TableHeadColumn({
         role="button"
         tabIndex={0}>
         <Text type="secondary">
-          {column.title ?? <>&nbsp;</>}
+          {column.title === undefined ? (
+            toFirstUpper(column.key)
+          ) : column.title === '' ? (
+            <>&nbsp;</>
+          ) : (
+            column.title
+          )}
           <SortIcons
             direction={sorted}
             onSort={(dir) =>
@@ -197,7 +210,7 @@ function TableHeadColumn({
   if (isResizable) {
     children = (
       <TableHeaderColumnInteractive
-        grow={true}
+        grow
         resizable={RIGHT_RESIZABLE}
         onResize={onResize}
         minWidth={20}>
@@ -217,13 +230,15 @@ export const TableHead = memo(function TableHead({
   visibleColumns,
   dispatch,
   sorting,
+  scrollbarSize,
 }: {
   dispatch: DataTableDispatch<any>;
   visibleColumns: DataTableColumn<any>[];
   sorting: Sorting | undefined;
+  scrollbarSize: number;
 }) {
   return (
-    <TableHeadContainer>
+    <TableHeadContainer scrollbarSize={scrollbarSize}>
       {visibleColumns.map((column, i) => (
         <TableHeadColumn
           key={column.key}

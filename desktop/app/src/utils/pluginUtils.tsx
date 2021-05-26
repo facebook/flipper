@@ -25,7 +25,7 @@ import type {
   DownloadablePluginDetails,
   PluginDetails,
 } from 'flipper-plugin-lib';
-import {filterNewestVersionOfEachPlugin} from '../dispatcher/plugins';
+import {getLatestCompatibleVersionOfEachPlugin} from '../dispatcher/plugins';
 
 export const defaultEnabledBackgroundPlugins = ['Navigation']; // The navigation plugin is enabled always, to make sure the navigation features works
 
@@ -188,10 +188,10 @@ export function computePluginLists(
   enabledDevicePluginsState: Set<string>,
   _pluginsChanged?: number, // this argument is purely used to invalidate the memoization cache
 ) {
-  const uninstalledMarketplacePlugins = filterNewestVersionOfEachPlugin(
-    [...plugins.bundledPlugins.values()],
-    plugins.marketplacePlugins,
-  ).filter((p) => !plugins.loadedPlugins.has(p.id));
+  const uninstalledMarketplacePlugins = getLatestCompatibleVersionOfEachPlugin([
+    ...plugins.bundledPlugins.values(),
+    ...plugins.marketplacePlugins,
+  ]).filter((p) => !plugins.loadedPlugins.has(p.id));
   const devicePlugins: DevicePluginDefinition[] = [
     ...plugins.devicePlugins.values(),
   ]
@@ -286,7 +286,7 @@ export function computePluginLists(
       }
     });
     uninstalledMarketplacePlugins.forEach((plugin) => {
-      if (client.supportsPlugin(plugin.id)) {
+      if (plugin.pluginType !== 'device' && client.supportsPlugin(plugin.id)) {
         downloadablePlugins.push(plugin);
       }
     });

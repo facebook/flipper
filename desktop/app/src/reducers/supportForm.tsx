@@ -124,8 +124,8 @@ export class Group {
     let errorMessage: string | undefined = undefined;
     if (selectedApp) {
       const {app} = deconstructClientId(selectedApp);
-      const enabledPlugins: Array<string> | null = store.getState().connections
-        .enabledPlugins[app];
+      const enabledPlugins: Array<string> | null =
+        store.getState().connections.enabledPlugins[app];
       const unsupportedPlugins = [];
       for (const requiredPlugin of this.requiredPlugins) {
         const requiredPluginEnabled =

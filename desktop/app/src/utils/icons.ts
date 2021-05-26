@@ -16,7 +16,7 @@ const AVAILABLE_SIZES = [8, 10, 12, 16, 18, 20, 24, 32];
 const DENSITIES = [1, 1.5, 2, 3, 4];
 
 function getIconsPath() {
-  return path.resolve(getStaticPath(), 'icons.json');
+  return getStaticPath('icons.json');
 }
 
 export type Icons = {
@@ -34,9 +34,10 @@ export function getIcons(): Icons {
 
 // Takes a string like 'star', or 'star-outline', and converts it to
 // {trimmedName: 'star', variant: 'filled'} or {trimmedName: 'star', variant: 'outline'}
-function getIconPartsFromName(
-  icon: string,
-): {trimmedName: string; variant: 'outline' | 'filled'} {
+function getIconPartsFromName(icon: string): {
+  trimmedName: string;
+  variant: 'outline' | 'filled';
+} {
   const isOutlineVersion = icon.endsWith('-outline');
   const trimmedName = isOutlineVersion ? icon.replace('-outline', '') : icon;
   const variant = isOutlineVersion ? 'outline' : 'filled';
@@ -68,7 +69,7 @@ export function buildLocalIconURL(name: string, size: number, density: number) {
 export function buildIconURL(name: string, size: number, density: number) {
   const icon = getIconPartsFromName(name);
   // eslint-disable-next-line prettier/prettier
-  const url = `https://external.xx.fbcdn.net/assets/?name=${
+  const url = `https://facebook.com/assets/?name=${
     icon.trimmedName
     }&variant=${
     icon.variant

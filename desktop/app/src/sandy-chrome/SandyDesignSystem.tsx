@@ -55,6 +55,21 @@ export default function SandyDesignSystem() {
               Avoid using <code>width / height: 100%</code>, use{' '}
               <code>Layout.Container</code> instead.
             </li>
+            <li>
+              In general, components that have a <code>grow</code> property will
+              grow to use the full height of their <em>parents</em> if{' '}
+              <code>true</code>. In contrast, if grow is set to{' '}
+              <code>false</code> components will use their natural size, based
+              on their <em>children</em>.
+            </li>
+            <li>
+              The other important property here is <em>scrollable</em>. If an
+              element supports this property, setting it will imply{' '}
+              <code>grow</code>, and the element will show a scrollbar if
+              needed. Setting <code>scrollabe</code> to <code>false</code>{' '}
+              causes the element to always use its natural size, growing or
+              shrinking based on the contents rather than the parent.
+            </li>
           </ul>
         </Card>
         <Card title="Colors" bordered={false}>

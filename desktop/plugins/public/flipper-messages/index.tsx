@@ -8,21 +8,26 @@
  */
 
 import {
-  Button,
-  colors,
+  DataInspector,
+  DataTable,
+  DataTableColumn,
+  Layout,
+  createState,
+  PluginClient,
+  usePlugin,
+  useValue,
+  createDataSource,
   DetailSidebar,
-  FlexCenter,
-  FlexColumn,
-  FlipperPlugin,
-  ManagedDataInspector,
   Panel,
-  SearchableTable,
+  theme,
   styled,
-  TableHighlightedRows,
-} from 'flipper';
+} from 'flipper-plugin';
+import {Button} from 'antd';
+import {DeleteOutlined} from '@ant-design/icons';
 import React from 'react';
 
-type MessageInfo = {
+export interface MessageInfo {
+  time?: Date;
   device?: string;
   app: string;
   flipperInternalMethod?: string;
@@ -30,209 +35,129 @@ type MessageInfo = {
   pluginMethod?: string;
   payload?: any;
   direction: 'toClient' | 'toFlipper';
-};
+}
 
-type MessageRow = {
-  columns: {
-    time: {
-      value: string;
-    };
-    device: {
-      value?: string;
-      isFilterable: true;
-    };
-    app: {
-      value: string;
-      isFilterable: true;
-    };
-    internalMethod: {
-      value?: string;
-      isFilterable: true;
-    };
-    plugin: {
-      value?: string;
-      isFilterable: true;
-    };
-    pluginMethod: {
-      value?: string;
-      isFilterable: true;
-    };
-    direction: {
-      value: string;
-      isFilterable: true;
-    };
-  };
-  timestamp: number;
-  payload?: any;
-  key: string;
-};
+export interface MessageRow extends MessageInfo {
+  time: Date;
+}
 
-type State = {
-  selectedId: string | null;
-};
-
-type PersistedState = {
-  messageRows: Array<MessageRow>;
-};
-
-const Placeholder = styled(FlexCenter)({
+const Placeholder = styled(Layout.Container)({
+  center: true,
+  color: theme.textColorPlaceholder,
   fontSize: 18,
-  color: colors.macOSTitleBarIcon,
 });
-
-const COLUMNS = {
-  time: {
-    value: 'Time',
-  },
-  device: {
-    value: 'Device',
-  },
-  app: {
-    value: 'App',
-  },
-  internalMethod: {
-    value: 'Flipper internal method',
-  },
-  plugin: {
-    value: 'Plugin',
-  },
-  pluginMethod: {
-    value: 'Method',
-  },
-  direction: {
-    value: 'Direction',
-  },
-};
-
-const COLUMN_SIZES = {
-  time: 'flex',
-  device: 'flex',
-  app: 'flex',
-  internalMethod: 'flex',
-  plugin: 'flex',
-  pluginMethod: 'flex',
-  direction: 'flex',
-};
-
-let rowId = 0;
 
 function createRow(message: MessageInfo): MessageRow {
   return {
-    columns: {
-      time: {
-        value: new Date().toLocaleTimeString(),
-      },
-      device: {
-        value: message.device,
-        isFilterable: true,
-      },
-      app: {
-        value: message.app,
-        isFilterable: true,
-      },
-      internalMethod: {
-        value: message.flipperInternalMethod,
-        isFilterable: true,
-      },
-      plugin: {
-        value: message.plugin,
-        isFilterable: true,
-      },
-      pluginMethod: {
-        value: message.pluginMethod,
-        isFilterable: true,
-      },
-      direction: {
-        value: message.direction,
-        isFilterable: true,
-      },
-    },
-    timestamp: Date.now(),
-    payload: message.payload,
-    key: '' + rowId++,
+    ...message,
+    time: message.time == null ? new Date() : message.time,
   };
 }
 
-export default class extends FlipperPlugin<State, any, PersistedState> {
-  static defaultPersistedState = {
-    messageRows: [],
+type Events = {
+  newMessage: MessageInfo;
+};
+
+const COLUMN_CONFIG: DataTableColumn<MessageRow>[] = [
+  {
+    key: 'time',
+    title: 'Time',
+  },
+  {
+    key: 'device',
+    title: 'Device',
+  },
+  {
+    key: 'app',
+    title: 'App',
+  },
+  {
+    key: 'flipperInternalMethod',
+    title: 'Flipper Internal Method',
+  },
+  {
+    key: 'plugin',
+    title: 'Plugin',
+  },
+  {
+    key: 'pluginMethod',
+    title: 'Method',
+  },
+  {
+    key: 'direction',
+    title: 'Direction',
+  },
+];
+
+export function plugin(client: PluginClient<Events, {}>) {
+  const highlightedRow = createState<MessageRow>();
+  const rows = createDataSource<MessageRow>([], {
+    limit: 1024 * 10,
+    persist: 'messages',
+  });
+
+  const setHighlightedRow = (record: MessageRow) => {
+    highlightedRow.set(record);
   };
 
-  state: State = {
-    selectedId: null,
+  const clear = () => {
+    highlightedRow.set(undefined);
+    rows.clear();
   };
 
-  static persistedStateReducer = (
-    persistedState: PersistedState,
-    method: string,
-    payload: any,
-  ): PersistedState => {
-    if (method === 'newMessage') {
-      return {
-        ...persistedState,
-        messageRows: [...persistedState.messageRows, createRow(payload)].filter(
-          (row) => Date.now() - row.timestamp < 5 * 60 * 1000,
-        ),
-      };
-    }
-    return persistedState;
+  client.onMessage('newMessage', (payload) => {
+    rows.append(createRow(payload));
+  });
+
+  return {
+    rows,
+    highlightedRow,
+    setHighlightedRow,
+    clear,
   };
+}
 
-  render() {
-    const clearTableButton = (
-      <Button onClick={this.clear} key="clear">
-        Clear Table
-      </Button>
-    );
+function Sidebar() {
+  const instance = usePlugin(plugin);
+  const message = useValue(instance.highlightedRow);
 
-    return (
-      <FlexColumn grow={true}>
-        <SearchableTable
-          rowLineHeight={28}
-          floating={false}
-          multiline={true}
-          columnSizes={COLUMN_SIZES}
-          columns={COLUMNS}
-          onRowHighlighted={this.onRowHighlighted}
-          rows={this.props.persistedState.messageRows}
-          stickyBottom={true}
-          actions={[clearTableButton]}
-        />
-        <DetailSidebar>{this.renderSidebar()}</DetailSidebar>
-      </FlexColumn>
-    );
-  }
+  const renderExtra = (extra: any) => (
+    <Panel title={'Payload'} collapsible={false}>
+      <DataInspector data={extra} expandRoot={false} />
+    </Panel>
+  );
 
-  onRowHighlighted = (keys: TableHighlightedRows) => {
-    if (keys.length > 0) {
-      this.setState({
-        selectedId: keys[0],
-      });
-    }
-  };
+  return (
+    <DetailSidebar>
+      {message != null ? (
+        renderExtra(message.payload)
+      ) : (
+        <Placeholder grow pad="large">
+          Select a message to view details
+        </Placeholder>
+      )}
+    </DetailSidebar>
+  );
+}
 
-  renderSidebar() {
-    const {selectedId} = this.state;
-    const {messageRows} = this.props.persistedState;
-    if (selectedId !== null) {
-      const message = messageRows.find((row) => row.key == selectedId);
-      if (message != null) {
-        return this.renderExtra(message.payload);
-      }
-    }
-    return <Placeholder grow>Select a message to view details</Placeholder>;
-  }
+export function Component() {
+  const instance = usePlugin(plugin);
 
-  renderExtra(extra: any) {
-    return (
-      <Panel floating={false} grow={false} heading={'Payload'}>
-        <ManagedDataInspector data={extra} expandRoot={false} />
-      </Panel>
-    );
-  }
+  const clearTableButton = (
+    <Button title="Clear logs" onClick={instance.clear}>
+      <DeleteOutlined />
+    </Button>
+  );
 
-  clear = () => {
-    this.setState({selectedId: null});
-    this.props.setPersistedState({messageRows: []});
-  };
+  return (
+    <Layout.Container grow>
+      <DataTable<MessageRow>
+        dataSource={instance.rows}
+        columns={COLUMN_CONFIG}
+        onSelect={instance.setHighlightedRow}
+        extraActions={clearTableButton}
+      />
+      <Sidebar />
+    </Layout.Container>
+  );
 }

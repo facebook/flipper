@@ -11,7 +11,6 @@ import {
   FlexColumn,
   styled,
   ManagedTable_immutable,
-  Toolbar,
   SearchInput,
   SearchBox,
   Button,
@@ -43,6 +42,7 @@ import {State as AppState} from '../../reducers';
 import {connect} from 'react-redux';
 import {Dispatch, Action} from 'redux';
 import PluginPackageInstaller from './PluginPackageInstaller';
+import {Toolbar} from 'flipper-plugin';
 
 const TAG = 'PluginInstaller';
 
@@ -147,7 +147,7 @@ const PluginInstaller = function ({
         <ManagedTable_immutable
           rowLineHeight={28}
           floating={false}
-          multiline={true}
+          multiline
           columnSizes={columnSizes}
           columns={columns}
           highlightableRows={false}
@@ -185,17 +185,16 @@ function InstallButton(props: {
     | {kind: 'Remove'; error?: string}
     | {kind: 'Update'; error?: string};
 
-  const catchError = (
-    actionKind: 'Install' | 'Remove' | 'Update',
-    fn: () => Promise<void>,
-  ) => async () => {
-    try {
-      await fn();
-    } catch (err) {
-      console.error(err);
-      setAction({kind: actionKind, error: err.toString()});
-    }
-  };
+  const catchError =
+    (actionKind: 'Install' | 'Remove' | 'Update', fn: () => Promise<void>) =>
+    async () => {
+      try {
+        await fn();
+      } catch (err) {
+        console.error(err);
+        setAction({kind: actionKind, error: err.toString()});
+      }
+    };
 
   const mkInstallCallback = (action: 'Install' | 'Update') =>
     catchError(action, async () => {

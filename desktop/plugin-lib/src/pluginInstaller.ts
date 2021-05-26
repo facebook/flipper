@@ -16,7 +16,7 @@ import decompressTargz from 'decompress-targz';
 import decompressUnzip from 'decompress-unzip';
 import tmp from 'tmp';
 import {InstalledPluginDetails} from './PluginDetails';
-import {getInstalledPluginDetails} from './getPluginDetails';
+import {getInstalledPluginDetails, isPluginDir} from './getPluginDetails';
 import {
   getPluginVersionInstallationDir,
   getPluginDirNameFromPackageName,
@@ -140,6 +140,19 @@ export async function removePlugins(
   await pmap(names, (name) => removePlugin(name));
 }
 
+export async function getAllInstalledPluginVersions(): Promise<
+  InstalledPluginDetails[]
+> {
+  const pluginDirs = await getInstalledPluginVersionDirs();
+  const versionDirs = pluginDirs.map(([_, versionDirs]) => versionDirs).flat();
+  return await pmap(versionDirs, (versionDir) =>
+    getInstalledPluginDetails(versionDir).catch((err) => {
+      console.error(`Failed to load plugin details from ${versionDir}`, err);
+      return null;
+    }),
+  ).then((versionDetails) => versionDetails.filter(notNull));
+}
+
 export async function getInstalledPlugins(): Promise<InstalledPluginDetails[]> {
   const versionDirs = await getInstalledPluginVersionDirs();
   return pmap(
@@ -253,4 +266,29 @@ async function getInstalledPluginVersionDirs(): Promise<InstalledPluginVersionDi
         }, []),
       ),
     );
+}
+
+export async function getAllInstalledPluginsInDir(
+  dir: string,
+  recursive: boolean = false,
+): Promise<InstalledPluginDetails[]> {
+  const plugins: InstalledPluginDetails[] = [];
+  if (!((await fs.pathExists(dir)) && (await fs.stat(dir)).isDirectory())) {
+    console.log('defaultPlugins dir not found');
+    return plugins;
+  }
+  const items = await fs.readdir(dir);
+  await pmap(items, async (item) => {
+    const fullPath = path.join(dir, item);
+    if (await isPluginDir(fullPath)) {
+      try {
+        plugins.push(await getInstalledPluginDetails(fullPath));
+      } catch (err) {
+        console.error(`Failed to load plugin from ${fullPath}`);
+      }
+    } else if (recursive) {
+      plugins.push(...(await getAllInstalledPluginsInDir(fullPath, recursive)));
+    }
+  });
+  return plugins;
 }

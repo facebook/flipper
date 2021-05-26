@@ -60,17 +60,15 @@ type ExtractClientType<Module extends FlipperPluginModule<any>> = Parameters<
   Module['plugin']
 >[0];
 
-type ExtractMethodsType<
-  Module extends FlipperPluginModule<any>
-> = ExtractClientType<Module> extends PluginClient<any, infer Methods>
-  ? Methods
-  : never;
+type ExtractMethodsType<Module extends FlipperPluginModule<any>> =
+  ExtractClientType<Module> extends PluginClient<any, infer Methods>
+    ? Methods
+    : never;
 
-type ExtractEventsType<
-  Module extends FlipperPluginModule<any>
-> = ExtractClientType<Module> extends PluginClient<infer Events, any>
-  ? Events
-  : never;
+type ExtractEventsType<Module extends FlipperPluginModule<any>> =
+  ExtractClientType<Module> extends PluginClient<infer Events, any>
+    ? Events
+    : never;
 
 interface BasePluginResult {
   /**
@@ -95,7 +93,7 @@ interface BasePluginResult {
   /**
    * Emulate triggering a deeplink
    */
-  triggerDeepLink(deeplink: unknown): void;
+  triggerDeepLink(deeplink: unknown): Promise<void>;
 
   /**
    * Grab all the persistable state, but will ignore any onExport handler
@@ -211,10 +209,16 @@ export function startPlugin<Module extends FlipperPluginModule<any>>(
     },
     connected: createState(true),
     initPlugin() {
+      if (options?.isArchived) {
+        return;
+      }
       this.connected.set(true);
       pluginInstance.connect();
     },
     deinitPlugin() {
+      if (options?.isArchived) {
+        return;
+      }
       this.connected.set(false);
       pluginInstance.disconnect();
     },
@@ -386,8 +390,13 @@ function createBasePluginResult(
     exportStateAsync: () =>
       pluginInstance.exportState(createStubIdler(), () => {}),
     exportState: () => pluginInstance.exportStateSync(),
-    triggerDeepLink: (deepLink: unknown) => {
+    triggerDeepLink: async (deepLink: unknown) => {
       pluginInstance.triggerDeepLink(deepLink);
+      return new Promise((resolve) => {
+        // this ensures the test won't continue until the setImmediate used by
+        // the deeplink handling event is handled
+        setImmediate(resolve);
+      });
     },
     destroy: () => pluginInstance.destroy(),
     triggerMenuEntry: (action: string) => {

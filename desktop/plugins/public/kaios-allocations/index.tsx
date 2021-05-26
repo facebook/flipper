@@ -390,7 +390,7 @@ export default class AllocationsPlugin extends FlipperDevicePlugin<
           heading="Page allocations"
           floating={false}
           collapsable={false}
-          grow={true}>
+          grow>
           <Toolbar position="top">
             <Select
               options={appTitlesForSelect}
@@ -429,11 +429,11 @@ export default class AllocationsPlugin extends FlipperDevicePlugin<
             {(this.state.totalAllocatedBytes / 1024 / 1024).toFixed(3)}
           </Label>
           <ManagedTable
-            multiline={true}
+            multiline
             columnSizes={ColumnSizes}
             columns={Columns}
             floating={false}
-            zebra={true}
+            zebra
             rows={this.buildMemRows()}
           />
         </Panel>

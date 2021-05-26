@@ -11,15 +11,21 @@ import {CopyOutlined, FilterOutlined} from '@ant-design/icons';
 import {Checkbox, Menu} from 'antd';
 import {
   DataTableDispatch,
+  getSelectedItem,
   getSelectedItems,
   Selection,
 } from './DataTableManager';
 import React from 'react';
 import {tryGetFlipperLibImplementation} from '../../plugin/FlipperLib';
 import {DataTableColumn} from './DataTable';
-import {DataSource} from '../../state/DataSource';
+import {toFirstUpper} from '../../utils/toFirstUpper';
+import {DataSource} from '../../data-source/index';
 
 const {Item, SubMenu} = Menu;
+
+function defaultOnCopyRows<T>(items: T[]) {
+  return JSON.stringify(items.length > 1 ? items : items[0], null, 2);
+}
 
 export function tableContextMenuFactory<T>(
   datasource: DataSource<T>,
@@ -27,6 +33,8 @@ export function tableContextMenuFactory<T>(
   selection: Selection,
   columns: DataTableColumn<T>[],
   visibleColumns: DataTableColumn<T>[],
+  onCopyRows: (rows: T[]) => string = defaultOnCopyRows,
+  onContextMenu?: (selection: undefined | T) => React.ReactElement,
 ) {
   const lib = tryGetFlipperLibImplementation();
   if (!lib) {
@@ -40,6 +48,9 @@ export function tableContextMenuFactory<T>(
 
   return (
     <Menu>
+      {onContextMenu
+        ? onContextMenu(getSelectedItem(datasource, selection))
+        : null}
       <SubMenu
         title="Filter on same"
         icon={<FilterOutlined />}
@@ -81,9 +92,7 @@ export function tableContextMenuFactory<T>(
         onClick={() => {
           const items = getSelectedItems(datasource, selection);
           if (items.length) {
-            lib.writeTextToClipboard(
-              JSON.stringify(items.length > 1 ? items : items[0], null, 2),
-            );
+            lib.writeTextToClipboard(onCopyRows(items));
           }
         }}>
         Copy row(s)
@@ -94,9 +103,7 @@ export function tableContextMenuFactory<T>(
           onClick={() => {
             const items = getSelectedItems(datasource, selection);
             if (items.length) {
-              lib.createPaste(
-                JSON.stringify(items.length > 1 ? items : items[0], null, 2),
-              );
+              lib.createPaste(onCopyRows(items));
             }
           }}>
           Create paste
@@ -131,5 +138,5 @@ export function tableContextMenuFactory<T>(
 
 function friendlyColumnTitle(column: DataTableColumn<any>): string {
   const name = column.title || column.key;
-  return name[0].toUpperCase() + name.substr(1);
+  return toFirstUpper(name);
 }

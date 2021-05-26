@@ -8,7 +8,6 @@
  */
 
 import {
-  Toolbar,
   Button,
   FlexRow,
   Tooltip,
@@ -20,6 +19,7 @@ import styled from '@emotion/styled';
 import {default as FileSelector} from '../../ui/components/FileSelector';
 import React, {useState} from 'react';
 import {installPluginFromFile} from 'flipper-plugin-lib';
+import {Toolbar} from 'flipper-plugin';
 
 const CenteredGlyph = styled(Glyph)({
   margin: 'auto',

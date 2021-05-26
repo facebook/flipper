@@ -235,6 +235,7 @@
     16
   ],
   "star-outline": [
+    12,
     16,
     24
   ],
@@ -480,7 +481,8 @@
     12
   ],
   "megaphone": [
-    12
+    12,
+    16
   ],
   "wireless": [
     16
@@ -586,5 +588,11 @@
   ],
   "box-outline": [
     24
+  ],
+  "differential": [
+    16
+  ],
+  "raincloud": [
+    16
   ]
 }

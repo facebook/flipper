@@ -116,9 +116,8 @@ export function devicePlugin(client: DevicePluginClient) {
     persist: 'logs',
   });
   const isPaused = createState(true);
-  const tableManagerRef = createRef<
-    undefined | DataTableManager<ExtendedLogEntry>
-  >();
+  const tableManagerRef =
+    createRef<undefined | DataTableManager<ExtendedLogEntry>>();
 
   client.onDeepLink((payload: unknown) => {
     if (typeof payload === 'string') {
@@ -226,7 +225,7 @@ export function Component() {
     <DataTable<ExtendedLogEntry>
       dataSource={plugin.rows}
       columns={plugin.columns}
-      autoScroll
+      enableAutoScroll
       onRowStyle={getRowStyle}
       extraActions={
         plugin.isConnected ? (

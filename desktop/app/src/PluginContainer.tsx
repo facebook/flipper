@@ -65,7 +65,7 @@ const Container = styled(FlexColumn)({
 });
 
 export const SidebarContainer = styled(FlexRow)({
-  backgroundColor: colors.light02,
+  backgroundColor: theme.backgroundWash,
   height: '100%',
   overflow: 'auto',
 });
@@ -207,13 +207,8 @@ class PluginContainer extends PureComponent<Props, State> {
   }
 
   processMessageQueue() {
-    const {
-      pluginKey,
-      pendingMessages,
-      activePlugin,
-      pluginIsEnabled,
-      target,
-    } = this.props;
+    const {pluginKey, pendingMessages, activePlugin, pluginIsEnabled, target} =
+      this.props;
     if (pluginKey !== this.pluginBeingProcessed) {
       this.pluginBeingProcessed = pluginKey;
       this.cancelCurrentQueue();
@@ -273,13 +268,8 @@ class PluginContainer extends PureComponent<Props, State> {
   }
 
   render() {
-    const {
-      activePlugin,
-      pluginKey,
-      target,
-      pendingMessages,
-      pluginIsEnabled,
-    } = this.props;
+    const {activePlugin, pluginKey, target, pendingMessages, pluginIsEnabled} =
+      this.props;
     if (!activePlugin || !target || !pluginKey) {
       return null;
     }

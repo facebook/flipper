@@ -12,6 +12,9 @@ import path from 'path';
 import {getInstalledPluginDetails} from '../getPluginDetails';
 import {pluginInstallationDir} from '../pluginPaths';
 import {normalizePath} from 'flipper-test-utils';
+import {mocked} from 'ts-jest/utils';
+
+jest.mock('fs-extra');
 
 jest.mock('../pluginPaths', () => ({
   pluginInstallationDir: '/Users/mock/.flipper/thirdparty',
@@ -29,7 +32,6 @@ test('getPluginDetailsV1', async () => {
     description: 'Description of Test Plugin',
     gatekeeper: 'GK_flipper_plugin_test',
   };
-  jest.mock('fs-extra', () => jest.fn());
   fs.readJson = jest.fn().mockImplementation(() => pluginV1);
   const details = await getInstalledPluginDetails(pluginPath);
   details.dir = normalizePath(details.dir);
@@ -40,6 +42,7 @@ test('getPluginDetailsV1', async () => {
       "category": undefined,
       "description": "Description of Test Plugin",
       "dir": "/Users/mock/.flipper/thirdparty/flipper-plugin-test",
+      "engines": undefined,
       "entry": "/Users/mock/.flipper/plugins/flipper-plugin-test@2.0.0.js",
       "flipperSDKVersion": undefined,
       "gatekeeper": "GK_flipper_plugin_test",
@@ -70,7 +73,6 @@ test('getPluginDetailsV2', async () => {
     description: 'Description of Test Plugin',
     gatekeeper: 'GK_flipper_plugin_test',
   };
-  jest.mock('fs-extra', () => jest.fn());
   fs.readJson = jest.fn().mockImplementation(() => pluginV2);
   const details = await getInstalledPluginDetails(pluginPath);
   details.dir = normalizePath(details.dir);
@@ -81,6 +83,7 @@ test('getPluginDetailsV2', async () => {
       "category": undefined,
       "description": "Description of Test Plugin",
       "dir": "/Users/mock/.flipper/thirdparty/flipper-plugin-test",
+      "engines": undefined,
       "entry": "/Users/mock/.flipper/thirdparty/flipper-plugin-test/dist/bundle.js",
       "flipperSDKVersion": undefined,
       "gatekeeper": "GK_flipper_plugin_test",
@@ -111,7 +114,6 @@ test('id used as title if the latter omited', async () => {
     description: 'Description of Test Plugin',
     gatekeeper: 'GK_flipper_plugin_test',
   };
-  jest.mock('fs-extra', () => jest.fn());
   fs.readJson = jest.fn().mockImplementation(() => pluginV2);
   const details = await getInstalledPluginDetails(pluginPath);
   details.dir = normalizePath(details.dir);
@@ -122,6 +124,7 @@ test('id used as title if the latter omited', async () => {
       "category": undefined,
       "description": "Description of Test Plugin",
       "dir": "/Users/mock/.flipper/thirdparty/flipper-plugin-test",
+      "engines": undefined,
       "entry": "/Users/mock/.flipper/thirdparty/flipper-plugin-test/dist/bundle.js",
       "flipperSDKVersion": undefined,
       "gatekeeper": "GK_flipper_plugin_test",
@@ -151,7 +154,6 @@ test('name without "flipper-plugin-" prefix is used as title if the latter omite
     description: 'Description of Test Plugin',
     gatekeeper: 'GK_flipper_plugin_test',
   };
-  jest.mock('fs-extra', () => jest.fn());
   fs.readJson = jest.fn().mockImplementation(() => pluginV2);
   const details = await getInstalledPluginDetails(pluginPath);
   details.dir = normalizePath(details.dir);
@@ -162,6 +164,7 @@ test('name without "flipper-plugin-" prefix is used as title if the latter omite
       "category": undefined,
       "description": "Description of Test Plugin",
       "dir": "/Users/mock/.flipper/thirdparty/flipper-plugin-test",
+      "engines": undefined,
       "entry": "/Users/mock/.flipper/thirdparty/flipper-plugin-test/dist/bundle.js",
       "flipperSDKVersion": undefined,
       "gatekeeper": "GK_flipper_plugin_test",
@@ -194,7 +197,6 @@ test('flipper-plugin-version is parsed', async () => {
       'flipper-plugin': '^0.45',
     },
   };
-  jest.mock('fs-extra', () => jest.fn());
   fs.readJson = jest.fn().mockImplementation(() => pluginV2);
   const details = await getInstalledPluginDetails(pluginPath);
   details.dir = normalizePath(details.dir);
@@ -205,6 +207,7 @@ test('flipper-plugin-version is parsed', async () => {
       "category": undefined,
       "description": "Description of Test Plugin",
       "dir": "/Users/mock/.flipper/thirdparty/flipper-plugin-test",
+      "engines": undefined,
       "entry": "/Users/mock/.flipper/thirdparty/flipper-plugin-test/dist/bundle.js",
       "flipperSDKVersion": "^0.45",
       "gatekeeper": "GK_flipper_plugin_test",
@@ -241,7 +244,6 @@ test('plugin type and supported devices parsed', async () => {
     description: 'Description of Test Plugin',
     gatekeeper: 'GK_flipper_plugin_test',
   };
-  jest.mock('fs-extra', () => jest.fn());
   fs.readJson = jest.fn().mockImplementation(() => pluginV2);
   const details = await getInstalledPluginDetails(pluginPath);
   details.dir = normalizePath(details.dir);
@@ -252,6 +254,90 @@ test('plugin type and supported devices parsed', async () => {
       "category": undefined,
       "description": "Description of Test Plugin",
       "dir": "/Users/mock/.flipper/thirdparty/flipper-plugin-test",
+      "engines": undefined,
+      "entry": "/Users/mock/.flipper/thirdparty/flipper-plugin-test/dist/bundle.js",
+      "flipperSDKVersion": undefined,
+      "gatekeeper": "GK_flipper_plugin_test",
+      "icon": undefined,
+      "id": "flipper-plugin-test",
+      "isActivatable": true,
+      "isBundled": false,
+      "main": "dist/bundle.js",
+      "name": "flipper-plugin-test",
+      "pluginType": "device",
+      "source": "src/index.tsx",
+      "specVersion": 2,
+      "supportedDevices": Array [
+        Object {
+          "archived": false,
+          "os": "Android",
+        },
+        Object {
+          "os": "Android",
+          "specs": Array [
+            "KaiOS",
+          ],
+          "type": "physical",
+        },
+        Object {
+          "os": "iOS",
+          "type": "emulator",
+        },
+      ],
+      "title": "Test",
+      "version": "3.0.1",
+    }
+  `);
+});
+
+test('can merge two package.json files', async () => {
+  const pluginBase = {
+    $schema: 'https://fbflipper.com/schemas/plugin-package/v2.json',
+    name: 'flipper-plugin-test',
+    title: 'Test',
+    version: '3.0.1',
+    pluginType: 'device',
+    supportedDevices: [
+      {os: 'Android', archived: false},
+      {os: 'Android', type: 'physical', specs: ['KaiOS']},
+      {os: 'iOS', type: 'emulator'},
+    ],
+    main: 'dist/bundle.js',
+    flipperBundlerEntry: 'src/index.tsx',
+    description: 'Description of Test Plugin',
+    bugs: {
+      url: 'https://github.com/facebook/flipper/issues',
+    },
+  };
+  const pluginAdditional = {
+    gatekeeper: 'GK_flipper_plugin_test',
+    bugs: {
+      url: 'https://fb.com/groups/flippersupport',
+      email: 'flippersupport@example.localhost',
+    },
+  };
+  const mockedFs = mocked(fs);
+  mockedFs.readJson.mockImplementation((file) => {
+    if (file === path.join(pluginPath, 'package.json')) {
+      return pluginBase;
+    } else if (file === path.join(pluginPath, 'fb', 'package.json')) {
+      return pluginAdditional;
+    }
+  });
+  mockedFs.pathExists.mockImplementation(() => Promise.resolve(true));
+  const details = await getInstalledPluginDetails(pluginPath);
+  details.dir = normalizePath(details.dir);
+  details.entry = normalizePath(details.entry);
+  expect(details).toMatchInlineSnapshot(`
+    Object {
+      "bugs": Object {
+        "email": "flippersupport@example.localhost",
+        "url": "https://fb.com/groups/flippersupport",
+      },
+      "category": undefined,
+      "description": "Description of Test Plugin",
+      "dir": "/Users/mock/.flipper/thirdparty/flipper-plugin-test",
+      "engines": undefined,
       "entry": "/Users/mock/.flipper/thirdparty/flipper-plugin-test/dist/bundle.js",
       "flipperSDKVersion": undefined,
       "gatekeeper": "GK_flipper_plugin_test",

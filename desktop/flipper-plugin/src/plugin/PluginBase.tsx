@@ -16,11 +16,12 @@ import {Device, RealFlipperDevice} from './DevicePlugin';
 import {batched} from '../state/batch';
 import {Idler} from '../utils/Idler';
 import {Notification} from './Notification';
+import {Logger} from '../utils/Logger';
 
 type StateExportHandler<T = any> = (
   idler: Idler,
   onStatusMessage: (msg: string) => void,
-) => Promise<T>;
+) => Promise<T | undefined | void>;
 type StateImportHandler<T = any> = (data: T) => void;
 
 export interface BasePluginClient {
@@ -53,14 +54,24 @@ export interface BasePluginClient {
   /**
    * Triggered when the current plugin is being exported and should create a snapshot of the state exported.
    * Overrides the default export behavior and ignores any 'persist' flags of state.
+   *
+   * If an object is returned from the handler, that will be taken as export.
+   * Otherwise, if nothing is returned, the handler will be run, and after the handler has finished the `persist` keys of the different states will be used as export basis.
    */
-  onExport<T = any>(exporter: StateExportHandler<T>): void;
+  onExport<T extends object>(exporter: StateExportHandler<T>): void;
 
   /**
    * Triggered directly after the plugin instance was created, if the plugin is being restored from a snapshot.
    * Should be the inverse of the onExport handler
    */
   onImport<T = any>(handler: StateImportHandler<T>): void;
+
+  /**
+   * The `onReady` event is triggered immediately after a plugin has been initialized and any pending state was restored.
+   * This event fires after `onImport` / the interpretation of any `persist` flags and indicates that the initialization process has finished.
+   * This event does not signal that the plugin is loaded in the UI yet (see `onActivated`) and does fire before deeplinks (see `onDeeplink`) are handled.
+   */
+  onReady(handler: () => void): void;
 
   /**
    * Register menu entries in the Flipper toolbar
@@ -72,6 +83,12 @@ export interface BasePluginClient {
    * Facebook only function. Resolves to undefined if creating a paste failed.
    */
   createPaste(input: string): Promise<string | undefined>;
+
+  /**
+   * Returns true if this is an internal Facebook build.
+   * Always returns `false` in open source
+   */
+  readonly isFB: boolean;
 
   /**
    * Returns true if the user is taking part in the given gatekeeper.
@@ -91,6 +108,11 @@ export interface BasePluginClient {
    * Writes text to the clipboard of the Operating System
    */
   writeTextToClipboard(text: string): void;
+
+  /**
+   * Logger instance that logs information to the console, but also to the internal logging (in FB only builds) and which can be used to track performance.
+   */
+  logger: Logger;
 }
 
 let currentPluginInstance: BasePluginInstance | undefined = undefined;
@@ -210,28 +232,39 @@ export abstract class BasePluginInstance {
         );
       }
       if (this.initialStates) {
-        if (this.importHandler) {
-          try {
+        try {
+          if (this.importHandler) {
             batched(this.importHandler)(this.initialStates);
-          } catch (e) {
-            const msg = `Error occurred when importing date for plugin '${this.definition.id}': '${e}`;
-            console.error(msg, e);
-            message.error(msg);
-          }
-        } else {
-          for (const key in this.rootStates) {
-            if (key in this.initialStates) {
-              this.rootStates[key].deserialize(this.initialStates[key]);
-            } else {
-              console.warn(
-                `Tried to initialize plugin with existing data, however data for "${key}" is missing. Was the export created with a different Flipper version?`,
-              );
+          } else {
+            for (const key in this.rootStates) {
+              if (key in this.initialStates) {
+                this.rootStates[key].deserialize(this.initialStates[key]);
+              } else {
+                console.warn(
+                  `Tried to initialize plugin with existing data, however data for "${key}" is missing. Was the export created with a different Flipper version?`,
+                );
+              }
             }
           }
+        } catch (e) {
+          const msg = `An error occurred when importing data for plugin '${this.definition.id}': '${e}`;
+          // msg is already specific
+          // eslint-disable-next-line
+          console.error(msg, e);
+          message.error(msg);
         }
       }
       this.initialStates = undefined;
       setCurrentPluginInstance(undefined);
+    }
+    try {
+      this.events.emit('ready');
+    } catch (e) {
+      const msg = `An error occurred when initializing plugin '${this.definition.id}': '${e}`;
+      // msg is already specific
+      // eslint-disable-next-line
+      console.error(msg, e);
+      message.error(msg);
     }
   }
 
@@ -263,27 +296,36 @@ export abstract class BasePluginInstance {
         }
         this.importHandler = cb;
       },
+      onReady: (cb) => {
+        this.events.on('ready', batched(cb));
+      },
       addMenuEntry: (...entries) => {
         for (const entry of entries) {
           const normalized = normalizeMenuEntry(entry);
-          if (
-            this.menuEntries.find(
-              (existing) =>
-                existing.label === normalized.label ||
-                existing.action === normalized.action,
-            )
-          ) {
-            throw new Error(`Duplicate menu entry: '${normalized.label}'`);
+          const idx = this.menuEntries.findIndex(
+            (existing) =>
+              existing.label === normalized.label ||
+              existing.action === normalized.action,
+          );
+          if (idx !== -1) {
+            this.menuEntries[idx] = normalizeMenuEntry(entry);
+          } else {
+            this.menuEntries.push(normalizeMenuEntry(entry));
           }
-          this.menuEntries.push(normalizeMenuEntry(entry));
+          if (this.activated) {
+            // entries added after initial registration
+            this.flipperLib.enableMenuEntries(this.menuEntries);
+          }
         }
       },
       writeTextToClipboard: this.flipperLib.writeTextToClipboard,
       createPaste: this.flipperLib.createPaste,
+      isFB: this.flipperLib.isFB,
       GK: this.flipperLib.GK,
       showNotification: (notification: Notification) => {
         this.flipperLib.showNotification(this.pluginKey, notification);
       },
+      logger: this.flipperLib.logger,
     };
   }
 
@@ -291,8 +333,8 @@ export abstract class BasePluginInstance {
   activate() {
     this.assertNotDestroyed();
     if (!this.activated) {
-      this.activated = true;
       this.flipperLib.enableMenuEntries(this.menuEntries);
+      this.activated = true;
       this.events.emit('activate');
       this.flipperLib.logger.trackTimeSince(
         `activePlugin-${this.definition.id}`,
@@ -325,7 +367,14 @@ export abstract class BasePluginInstance {
     this.assertNotDestroyed();
     if (deepLink !== this.lastDeeplink) {
       this.lastDeeplink = deepLink;
-      this.events.emit('deeplink', deepLink);
+      if (typeof setImmediate !== 'undefined') {
+        // we only want to trigger deeplinks after the plugin had a chance to render
+        setImmediate(() => {
+          this.events.emit('deeplink', deepLink);
+        });
+      } else {
+        this.events.emit('deeplink', deepLink);
+      }
     }
   }
 
@@ -336,6 +385,10 @@ export abstract class BasePluginInstance {
         'Cannot export sync a plugin that does have an export handler',
       );
     }
+    return this.serializeRootStates();
+  }
+
+  private serializeRootStates() {
     return Object.fromEntries(
       Object.entries(this.rootStates).map(([key, atom]) => [
         key,
@@ -349,9 +402,13 @@ export abstract class BasePluginInstance {
     onStatusMessage: (msg: string) => void,
   ): Promise<Record<string, any>> {
     if (this.exportHandler) {
-      return await this.exportHandler(idler, onStatusMessage);
+      const result = await this.exportHandler(idler, onStatusMessage);
+      if (result !== undefined) {
+        return result;
+      }
+      // intentional fall-through, the export handler merely updated the state, but prefers the default export format
     }
-    return this.exportStateSync();
+    return this.serializeRootStates();
   }
 
   isPersistable(): boolean {

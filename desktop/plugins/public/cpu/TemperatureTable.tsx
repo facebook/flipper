@@ -62,14 +62,14 @@ export default class TemperatureTable extends Component<TemperatureTableProps> {
   render() {
     return (
       <SearchableTable
-        multiline={true}
-        autoHeight={true}
+        multiline
+        autoHeight
         floating={false}
-        zebra={true}
+        zebra
         columnSizes={ColumnSizes}
         columns={Columns}
         rows={this.buildRows()}
-        grow={true}
+        grow
       />
     );
   }

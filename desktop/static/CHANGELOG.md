@@ -1,3 +1,40 @@
+# 0.91.2 (24/5/2021)
+
+ * [D28477074](https://github.com/facebook/flipper/search?q=D28477074&type=Commits) -  [Internal]
+
+
+# 0.90.0 (13/5/2021)
+
+ * [D28422966](https://github.com/facebook/flipper/search?q=D28422966&type=Commits) -  [Logs] Fix regression causing the scrollbars to be hidden. This diff fixes a regression where the Logs plugin was no longer scrollable (and scrolls indefinitely, killing perf).
+
+
+# 0.89.0 (13/5/2021)
+
+ * [D28382586](https://github.com/facebook/flipper/search?q=D28382586&type=Commits) -  [React DevTools] It is now possible to switch between the embedded and globally installed version of the React DevTools. This will enable the React DevTools to connect to older RN versions. Fixes #2250, #2224
+ * [D28382587](https://github.com/facebook/flipper/search?q=D28382587&type=Commits) -  [React DevTools] Several improvements that should improve the overal experience, the plugin should load much quicker and behave more predictably.
+
+
+# 0.88.0 (6/5/2021)
+
+ * [D28117560](https://github.com/facebook/flipper/search?q=D28117560&type=Commits) -  Standardize CodeBlock component
+ * [D28119721](https://github.com/facebook/flipper/search?q=D28119721&type=Commits) -  Standardized DataList component
+ * [D28119719](https://github.com/facebook/flipper/search?q=D28119719&type=Commits) -  Fixed application crash notifications not opening the crash log
+ * [D28102398](https://github.com/facebook/flipper/search?q=D28102398&type=Commits) -  CrashReporter plugin got a fresh look and several navigation issues were addressed.
+
+
+# 0.87.0 (28/4/2021)
+
+ * [D27910514](https://github.com/facebook/flipper/search?q=D27910514&type=Commits) -  Severed RSocket connections are no longer treated as an error in plugin code
+
+
+# 0.86.0 (21/4/2021)
+
+ * [D27685983](https://github.com/facebook/flipper/search?q=D27685983&type=Commits) -  [Layout] Addressed several performance issues in the layout plugin
+ * [D27708650](https://github.com/facebook/flipper/search?q=D27708650&type=Commits) -  [Layout] Make the layer selection more prominent
+ * [D27813660](https://github.com/facebook/flipper/search?q=D27813660&type=Commits)
+ * [D27896693](https://github.com/facebook/flipper/search?q=D27896693&type=Commits) -  [Internal]
+
+
 # 0.85.0 (14/4/2021)
 
  * [D27732746](https://github.com/facebook/flipper/search?q=D27732746&type=Commits) -  Electron downgraded to v11.2.3 to work-around performance issues on MacOS Big Sur

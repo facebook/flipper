@@ -54,9 +54,9 @@ export const buildInMenuEntries = {
 
 export function normalizeMenuEntry(entry: MenuEntry): NormalizedMenuEntry;
 export function normalizeMenuEntry(entry: any): NormalizedMenuEntry {
-  const builtInEntry:
-    | NormalizedMenuEntry
-    | undefined = (buildInMenuEntries as any)[entry.action];
+  const builtInEntry: NormalizedMenuEntry | undefined = (
+    buildInMenuEntries as any
+  )[entry.action];
   return builtInEntry
     ? {...builtInEntry, ...entry}
     : {

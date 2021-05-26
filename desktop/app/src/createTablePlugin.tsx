@@ -62,6 +62,8 @@ type State = {
  * An optional resetMethod argument can be provided which will replace the current rows with the
  * data provided. This is useful when connecting to Flipper for this first time, or reconnecting to
  * the client in an unknown state.
+ *
+ * @deprecated use createTablePlugin from flipper-plugin instead
  */
 export function createTablePlugin<T extends RowData>(props: Props<T>) {
   return class extends FlipperPlugin<State, any, PersistedState<T>> {
@@ -196,18 +198,18 @@ export function createTablePlugin<T extends RowData>(props: Props<T>) {
       const {columns, columnSizes} = props;
       const {rows} = this.props.persistedState;
       return (
-        <FlexColumn grow={true}>
+        <FlexColumn grow>
           <SearchableTable_immutable
             key={this.constructor.id}
             rowLineHeight={28}
             floating={false}
-            multiline={true}
+            multiline
             columnSizes={columnSizes}
             columns={columns}
             onRowHighlighted={this.onRowHighlighted}
-            multiHighlight={true}
+            multiHighlight
             rows={rows}
-            stickyBottom={true}
+            stickyBottom
             actions={<Button onClick={this.clear}>Clear Table</Button>}
           />
           <DetailSidebar>{this.renderSidebar()}</DetailSidebar>

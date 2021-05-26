@@ -71,8 +71,9 @@ test('it should initialize device sandy plugins', async () => {
   expect(device.sandyPluginStates.get(TestPlugin.id)).toBeInstanceOf(
     _SandyDevicePluginInstance,
   );
-  const instanceApi: PluginApi = device.sandyPluginStates.get(TestPlugin.id)!
-    .instanceApi;
+  const instanceApi: PluginApi = device.sandyPluginStates.get(
+    TestPlugin.id,
+  )!.instanceApi;
 
   expect(instanceApi.activateStub).toBeCalledTimes(0);
   selectTestPlugin(store);

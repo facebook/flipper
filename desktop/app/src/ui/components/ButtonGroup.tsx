@@ -32,10 +32,11 @@ export const ButtonGroupContext = createContext(false);
  *     <Button>Three</Button>
  *   </ButtonGroup>
  * ```
+ * @deprecated use Layout.Horizontal with flags: gap pad wrap
  */
 export default function ButtonGroup({children}: {children: React.ReactNode}) {
   return (
-    <ButtonGroupContext.Provider value={true}>
+    <ButtonGroupContext.Provider value>
       <Space>{children}</Space>
     </ButtonGroupContext.Provider>
   );

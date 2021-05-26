@@ -29,7 +29,7 @@ export default (store: Store, _logger: Logger) => {
     })
     .catch((e) => {
       store.dispatch(logout());
-      console.error(e);
+      console.warn('Failed to load user:', e);
     });
 
   let prevUserName = store.getState().user.name;

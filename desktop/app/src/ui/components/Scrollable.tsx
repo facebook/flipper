@@ -13,6 +13,9 @@ import {Property} from 'csstype';
 
 type Props = {children: React.ReactNode; background?: Property.Background<any>};
 
+/**
+ * @deprecated use Layout.ScrollContainer from 'flipper-plugin'
+ */
 const Scrollable = styled.div<Props>(({background}) => ({
   width: '100%',
   height: '100%',

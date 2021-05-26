@@ -18,12 +18,11 @@ import {
   Client,
   Logger,
 } from 'flipper';
-import {Component} from 'react';
-import deepEqual from 'deep-equal';
+import {PureComponent} from 'react';
 import React from 'react';
 import {useMemo, useEffect} from 'react';
 import {kebabCase} from 'lodash';
-import {default as SidebarExtensions} from './extensions/fb-stubs/index';
+import {SidebarExtensions} from './extensions/fb-stubs/SidebarExtensions';
 
 const NoData = styled(FlexCenter)({
   fontSize: 18,
@@ -39,20 +38,12 @@ type InspectorSidebarSectionProps = {
   tooltips?: Object;
 };
 
-class InspectorSidebarSection extends Component<InspectorSidebarSectionProps> {
+class InspectorSidebarSection extends PureComponent<InspectorSidebarSectionProps> {
   setValue = (path: Array<string>, value: any) => {
     if (this.props.onValueChanged) {
       this.props.onValueChanged([this.props.id, ...path], value);
     }
   };
-
-  shouldComponentUpdate(nextProps: InspectorSidebarSectionProps) {
-    return (
-      !deepEqual(nextProps, this.props) ||
-      this.props.id !== nextProps.id ||
-      this.props.onValueChanged !== nextProps.onValueChanged
-    );
-  }
 
   extractValue = (val: any, _depth: number) => {
     if (val && val.__type__) {
@@ -78,8 +69,8 @@ class InspectorSidebarSection extends Component<InspectorSidebarSectionProps> {
           data={this.props.data}
           setValue={this.props.onValueChanged ? this.setValue : undefined}
           extractValue={this.extractValue}
-          expandRoot={true}
-          collapsed={true}
+          expandRoot
+          collapsed
           tooltips={this.props.tooltips}
         />
       </Panel>
@@ -142,14 +133,20 @@ const Sidebar: React.FC<Props> = (props: Props) => {
       }
 
     return [sectionDefs, sectionKeys];
-  }, [props.element]);
+  }, [element]);
 
   const sections: Array<React.ReactNode> = (
     (SidebarExtensions &&
       element?.data &&
-      SidebarExtensions.map((ext) =>
-        ext(props.client, props.realClient, element, props.logger),
-      )) ||
+      Object.entries(SidebarExtensions).map(([ext, Comp]) => (
+        <Comp
+          key={ext}
+          client={props.client}
+          realClient={props.realClient}
+          logger={props.logger}
+          selectedNode={element}
+        />
+      ))) ||
     []
   ).concat(
     sectionDefs.map((def) => (
@@ -167,7 +164,7 @@ const Sidebar: React.FC<Props> = (props: Props) => {
     sectionKeys.map((key) =>
       props.logger.track('usage', `layout-sidebar-extension:${key}:loaded`),
     );
-  }, [props.element?.data]);
+  }, [sectionKeys.join(',')]);
 
   if (!element || !element.data) {
     return <NoData grow>No data</NoData>;

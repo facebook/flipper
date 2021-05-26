@@ -20,11 +20,10 @@ import http from 'http';
 import path from 'path';
 import fs from 'fs-extra';
 import {hostname} from 'os';
-import {compileMain, generatePluginEntryPoints} from './build-utils';
+import {compileMain, prepareDefaultPlugins} from './build-utils';
 import Watchman from './watchman';
 import Metro from 'metro';
-import MetroResolver from 'metro-resolver';
-import {staticDir, appDir, babelTransformationsDir} from './paths';
+import {staticDir, babelTransformationsDir, rootDir} from './paths';
 import isFB from './isFB';
 import getAppWatchFolders from './get-app-watch-folders';
 import {getPluginSourceFolders} from 'flipper-plugin-lib';
@@ -35,9 +34,19 @@ import yargs from 'yargs';
 const argv = yargs
   .usage('yarn start [args]')
   .options({
-    'embedded-plugins': {
+    'default-plugins': {
       describe:
-        'Enables embedding of plugins into Flipper bundle. If it disabled then only installed plugins are loaded. The flag is enabled by default. Env var FLIPPER_NO_EMBEDDED_PLUGINS is equivalent to the command-line option "--no-embedded-plugins".',
+        'Enables embedding of default plugins into Flipper package so they are always available. The flag is enabled by default. Env var FLIPPER_NO_DEFAULT_PLUGINS is equivalent to the command-line option "--no-default-plugins".',
+      type: 'boolean',
+    },
+    'bundled-plugins': {
+      describe:
+        'Enables bundling of plugins into Flipper bundle. This is useful for debugging, because it makes Flipper dev mode loading faster and unblocks fast refresh. The flag is enabled by default. Env var FLIPPER_NO_BUNDLEDD_PLUGINS is equivalent to the command-line option "--no-bundled-plugins".',
+      type: 'boolean',
+    },
+    'rebuild-plugins': {
+      describe:
+        'Enables rebuilding of default plugins on Flipper build. Only make sense in conjunction with "--no-bundled-plugins". Enabled by default, but if disabled using "--no-plugin-rebuild", then plugins are just released as is without rebuilding. This can save some time if you know plugin bundles are already up-to-date.',
       type: 'boolean',
     },
     'fast-refresh': {
@@ -45,9 +54,9 @@ const argv = yargs
         'Enable Fast Refresh - quick reload of UI component changes without restarting Flipper. The flag is disabled by default. Env var FLIPPER_FAST_REFRESH is equivalent to the command-line option "--fast-refresh".',
       type: 'boolean',
     },
-    'plugin-auto-update': {
+    'plugin-marketplace': {
       describe:
-        '[FB-internal only] Enable plugin auto-updates. The flag is disabled by default in dev mode. Env var FLIPPER_NO_PLUGIN_AUTO_UPDATE is equivalent to the command-line option "--no-plugin-auto-update"',
+        'Enable plugin marketplace - ability to install plugins from NPM or other sources. Without the flag Flipper will only show default plugins. The flag is disabled by default in dev mode. Env var FLIPPER_NO_PLUGIN_MARKETPLACE is equivalent to the command-line option "--no-plugin-marketplace"',
       type: 'boolean',
     },
     'plugin-auto-update-interval': {
@@ -62,7 +71,7 @@ const argv = yargs
     },
     'open-dev-tools': {
       describe:
-        'Open Dev Tools window on startup. The flag is disabled by default. Env var FLIPPER_OPEN_DEV_TOOLS is equivalent to the command-line option "--open-dev-tools".',
+        'Open Dev Tools window on startup. The flag is disabled by default. Env var FLIPPER_OPEN_DEV_TOOLS is equivalent to the command-line option "--open-dev-tools". If "FLIPPER_UPDATE_DEV_TOOLS=true" is set additionally, Flipper will try to update the dev tools from the play store.',
       type: 'boolean',
     },
     'dev-server-port': {
@@ -86,6 +95,11 @@ const argv = yargs
         '[FB-internal only] Will force using public sources only, to be able to iterate quickly on the public version. If sources are checked out from GitHub this is already the default. Setting env var "FLIPPER_FORCE_PUBLIC_BUILD" is equivalent.',
       type: 'boolean',
     },
+    'force-version': {
+      describe:
+        'Will force using the given value as Flipper version, to be able to test logic which is version-dependent. Setting env var "FLIPPER_FORCE_VERSION" is equivalent.',
+      type: 'string',
+    },
   })
   .version('DEV')
   .help()
@@ -101,10 +115,22 @@ if (isFB) {
   process.env.FLIPPER_FB = 'true';
 }
 
-if (argv['embedded-plugins'] === true) {
-  delete process.env.FLIPPER_NO_EMBEDDED_PLUGINS;
-} else if (argv['embedded-plugins'] === false) {
-  process.env.FLIPPER_NO_EMBEDDED_PLUGINS = 'true';
+if (argv['default-plugins'] === true) {
+  delete process.env.FLIPPER_NO_DEFAULT_PLUGINS;
+} else if (argv['default-plugins'] === false) {
+  process.env.FLIPPER_NO_DEFAULT_PLUGINS = 'true';
+}
+
+if (argv['bundled-plugins'] === true) {
+  delete process.env.FLIPPER_NO_BUNDLED_PLUGINS;
+} else if (argv['bundled-plugins'] === false) {
+  process.env.FLIPPER_NO_BUNDLED_PLUGINS = 'true';
+}
+
+if (argv['rebuild-plugins'] === false) {
+  process.env.FLIPPER_NO_REBUILD_PLUGINS = 'true';
+} else if (argv['rebuild-plugins'] === true) {
+  delete process.env.FLIPPER_NO_REBUILD_PLUGINS;
 }
 
 if (argv['fast-refresh'] === true) {
@@ -124,16 +150,13 @@ if (argv['public-build'] === true) {
   delete process.env.FLIPPER_FORCE_PUBLIC_BUILD;
 }
 
-// By default plugin auto-update is disabled in dev mode,
+// By default plugin marketplace is disabled in dev mode,
 // but it is possible to enable it using this command line
 // argument or env var.
-if (
-  argv['plugin-auto-update'] === true ||
-  process.env.FLIPPER_PLUGIN_AUTO_UPDATE
-) {
-  delete process.env.FLIPPER_DISABLE_PLUGIN_AUTO_UPDATE;
+if (argv['plugin-marketplace'] === true) {
+  delete process.env.FLIPPER_NO_PLUGIN_MARKETPLACE;
 } else {
-  process.env.FLIPPER_DISABLE_PLUGIN_AUTO_UPDATE = 'true';
+  process.env.FLIPPER_NO_PLUGIN_MARKETPLACE = 'true';
 }
 
 if (argv['plugin-auto-update-interval']) {
@@ -153,6 +176,10 @@ if (argv.channel !== undefined) {
   process.env.FLIPPER_RELEASE_CHANNEL = argv.channel;
 }
 
+if (argv['force-version']) {
+  process.env.FLIPPER_FORCE_VERSION = argv['force-version'];
+}
+
 function looksLikeDevServer(): boolean {
   const hn = hostname();
   if (/^devvm.*\.facebook\.com$/.test(hn)) {
@@ -167,7 +194,7 @@ function looksLikeDevServer(): boolean {
 function launchElectron(port: number) {
   const entry = process.env.FLIPPER_FAST_REFRESH ? 'init-fast-refresh' : 'init';
   const devServerURL = `http://localhost:${port}`;
-  const bundleURL = `http://localhost:${port}/src/${entry}.bundle?platform=web&dev=true&minify=false`;
+  const bundleURL = `http://localhost:${port}/app/src/${entry}.bundle?platform=web&dev=true&minify=false`;
   const electronURL = `http://localhost:${port}/index.dev.html`;
   const args = [
     path.join(staticDir, 'index.js'),
@@ -210,7 +237,7 @@ async function startMetroServer(app: Express, server: http.Server) {
   );
   const baseConfig = await Metro.loadConfig();
   const config = Object.assign({}, baseConfig, {
-    projectRoot: appDir,
+    projectRoot: rootDir,
     watchFolders,
     transformer: {
       ...baseConfig.transformer,
@@ -220,16 +247,6 @@ async function startMetroServer(app: Express, server: http.Server) {
       ...baseConfig.resolver,
       resolverMainFields: ['flipperBundlerEntry', 'module', 'main'],
       blacklistRE: /\.native\.js$/,
-      resolveRequest: (context: any, moduleName: string, platform: string) => {
-        if (moduleName.startsWith('./localhost:3000')) {
-          moduleName = moduleName.replace('./localhost:3000', '.');
-        }
-        return MetroResolver.resolve(
-          {...context, resolveRequest: null},
-          moduleName,
-          platform,
-        );
-      },
       sourceExts: ['js', 'jsx', 'ts', 'tsx', 'json', 'mjs', 'cjs'],
     },
     watch: true,
@@ -376,6 +393,7 @@ function outputScreen(socket?: socketIo.Server) {
   // output screen
   if (hasErrors()) {
     const errorScreen = buildErrorScreen();
+    // eslint-disable-next-line flipper/no-console-error-without-context
     console.error(errorScreen);
 
     // notify live clients of errors
@@ -398,7 +416,7 @@ function checkDevServer() {
 
 (async () => {
   checkDevServer();
-  await generatePluginEntryPoints(
+  await prepareDefaultPlugins(
     process.env.FLIPPER_RELEASE_CHANNEL === 'insiders',
   );
   await ensurePluginFoldersWatchable();

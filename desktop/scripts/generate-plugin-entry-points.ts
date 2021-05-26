@@ -7,9 +7,9 @@
  * @format
  */
 
-import {generatePluginEntryPoints} from './build-utils';
+import {prepareDefaultPlugins} from './build-utils';
 
-generatePluginEntryPoints().catch((err) => {
+prepareDefaultPlugins().catch((err) => {
   console.error(err);
   process.exit(1);
 });

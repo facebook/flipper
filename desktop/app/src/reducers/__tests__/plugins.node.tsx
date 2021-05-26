@@ -40,8 +40,9 @@ test('add clientPlugin', () => {
       disabledPlugins: [],
       selectedPlugins: [],
       marketplacePlugins: [],
-      uninstalledPlugins: new Set(),
+      uninstalledPluginNames: new Set(),
       installedPlugins: new Map(),
+      initialised: false,
     },
     registerPlugins([testPlugin]),
   );
@@ -60,8 +61,9 @@ test('add devicePlugin', () => {
       disabledPlugins: [],
       selectedPlugins: [],
       marketplacePlugins: [],
-      uninstalledPlugins: new Set(),
+      uninstalledPluginNames: new Set(),
       installedPlugins: new Map(),
+      initialised: false,
     },
     registerPlugins([testDevicePlugin]),
   );
@@ -80,8 +82,9 @@ test('do not add plugin twice', () => {
       disabledPlugins: [],
       selectedPlugins: [],
       marketplacePlugins: [],
-      uninstalledPlugins: new Set(),
+      uninstalledPluginNames: new Set(),
       installedPlugins: new Map(),
+      initialised: false,
     },
     registerPlugins([testPlugin, testPlugin]),
   );
@@ -117,7 +120,8 @@ test('add gatekeeped plugin', () => {
       selectedPlugins: [],
       marketplacePlugins: [],
       installedPlugins: new Map(),
-      uninstalledPlugins: new Set(),
+      uninstalledPluginNames: new Set(),
+      initialised: false,
     },
     addGatekeepedPlugins(gatekeepedPlugins),
   );

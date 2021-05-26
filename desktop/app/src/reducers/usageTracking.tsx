@@ -10,6 +10,7 @@
 import {produce} from 'immer';
 import {remote} from 'electron';
 import {Actions} from './';
+import {SelectionInfo} from '../utils/info';
 
 export type TrackingEvent =
   | {
@@ -17,7 +18,12 @@ export type TrackingEvent =
       time: number;
       isFocused: boolean;
     }
-  | {type: 'PLUGIN_SELECTED'; time: number; plugin: string | null}
+  | {
+      type: 'SELECTION_CHANGED';
+      selectionKey: string | null;
+      selection: SelectionInfo | null;
+      time: number;
+    }
   | {type: 'TIMELINE_START'; time: number; isFocused: boolean};
 
 export type State = {
@@ -38,7 +44,11 @@ export type Action =
       type: 'windowIsFocused';
       payload: {isFocused: boolean; time: number};
     }
-  | {type: 'CLEAR_TIMELINE'; payload: {time: number; isFocused: boolean}};
+  | {type: 'CLEAR_TIMELINE'; payload: {time: number; isFocused: boolean}}
+  | {
+      type: 'SELECTION_CHANGED';
+      payload: {selection: SelectionInfo; time: number};
+    };
 
 export default function reducer(
   state: State = INITAL_STATE,
@@ -63,12 +73,14 @@ export default function reducer(
         isFocused: action.payload.isFocused,
       });
     });
-  } else if (action.type === 'SELECT_PLUGIN') {
+  } else if (action.type === 'SELECTION_CHANGED') {
+    const {selection, time} = action.payload;
     return produce(state, (draft) => {
       draft.timeline.push({
-        type: 'PLUGIN_SELECTED',
-        time: action.payload.time,
-        plugin: action.payload.selectedPlugin || null,
+        type: 'SELECTION_CHANGED',
+        time,
+        selectionKey: selection?.plugin ? JSON.stringify(selection) : null,
+        selection,
       });
     });
   }
@@ -82,5 +94,15 @@ export function clearTimeline(time: number): Action {
       time,
       isFocused: remote.getCurrentWindow().isFocused(),
     },
+  };
+}
+
+export function selectionChanged(payload: {
+  selection: SelectionInfo;
+  time: number;
+}): Action {
+  return {
+    type: 'SELECTION_CHANGED',
+    payload,
   };
 }

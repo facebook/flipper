@@ -8,11 +8,10 @@
  */
 
 import {combineBase64Chunks} from '../chunks';
-import {TestUtils, createState} from 'flipper-plugin';
+import {TestUtils} from 'flipper-plugin';
 import * as NetworkPlugin from '../index';
 import {assembleChunksIfResponseIsComplete} from '../chunks';
 import path from 'path';
-import {PartialResponses, Response} from '../types';
 import {Base64} from 'js-base64';
 import * as fs from 'fs';
 import {promisify} from 'util';
@@ -88,24 +87,70 @@ test('Reducer correctly adds followup chunk', () => {
 
 test('Reducer correctly combines initial response and followup chunk', () => {
   const {instance, sendEvent} = TestUtils.startPlugin(NetworkPlugin);
-  instance.partialResponses.set({
-    '1': {
-      followupChunks: {},
-      initialResponse: {
-        data: 'aGVs',
-        headers: [],
-        id: '1',
-        insights: null,
-        isMock: false,
-        reason: 'nothing',
-        status: 200,
-        timestamp: 123,
-        index: 0,
-        totalChunks: 2,
+  sendEvent('newRequest', {
+    data: btoa('x'),
+    headers: [
+      {key: 'y', value: 'z'},
+      {
+        key: 'Content-Type',
+        value: 'text/plain',
       },
-    },
+    ],
+    id: '1',
+    method: 'GET',
+    timestamp: 0,
+    url: 'http://test.com',
   });
-  expect(instance.responses.get()).toEqual({});
+  sendEvent('partialResponse', {
+    data: 'aGVs',
+    headers: [{key: 'Content-Type', value: 'text/plain'}],
+    id: '1',
+    insights: null,
+    isMock: false,
+    reason: 'nothing',
+    status: 200,
+    timestamp: 123,
+    index: 0,
+    totalChunks: 2,
+  });
+  expect(instance.partialResponses.get()).toMatchInlineSnapshot(`
+    Object {
+      "1": Object {
+        "followupChunks": Object {},
+        "initialResponse": Object {
+          "data": "aGVs",
+          "headers": Array [
+            Object {
+              "key": "Content-Type",
+              "value": "text/plain",
+            },
+          ],
+          "id": "1",
+          "index": 0,
+          "insights": null,
+          "isMock": false,
+          "reason": "nothing",
+          "status": 200,
+          "timestamp": 123,
+          "totalChunks": 2,
+        },
+      },
+    }
+  `);
+  expect(instance.requests.records()[0]).toMatchObject({
+    requestData: 'x',
+    requestHeaders: [
+      {key: 'y', value: 'z'},
+      {
+        key: 'Content-Type',
+        value: 'text/plain',
+      },
+    ],
+    id: '1',
+    method: 'GET',
+    url: 'http://test.com',
+    domain: 'test.com/',
+  });
   sendEvent('partialResponse', {
     id: '1',
     totalChunks: 2,
@@ -114,20 +159,31 @@ test('Reducer correctly combines initial response and followup chunk', () => {
   });
 
   expect(instance.partialResponses.get()).toEqual({});
-  expect(instance.responses.get()['1']).toMatchInlineSnapshot(`
-    Object {
-      "data": "aGVsbG8=",
-      "headers": Array [],
-      "id": "1",
-      "index": 0,
-      "insights": null,
-      "isMock": false,
-      "reason": "nothing",
-      "status": 200,
-      "timestamp": 123,
-      "totalChunks": 2,
-    }
-  `);
+  expect(instance.requests.records()[0]).toMatchObject({
+    domain: 'test.com/',
+    duration: 123,
+    id: '1',
+    insights: undefined,
+    method: 'GET',
+    reason: 'nothing',
+    requestData: 'x',
+    requestHeaders: [
+      {
+        key: 'y',
+        value: 'z',
+      },
+      {
+        key: 'Content-Type',
+        value: 'text/plain',
+      },
+    ],
+    responseData: 'hello',
+    responseHeaders: [{key: 'Content-Type', value: 'text/plain'}],
+    responseIsMock: false,
+    responseLength: 5,
+    status: 200,
+    url: 'http://test.com',
+  });
 });
 
 async function readJsonFixture(filename: string) {
@@ -138,38 +194,22 @@ async function readJsonFixture(filename: string) {
 
 test('handle small binary payloads correctly', async () => {
   const input = await readJsonFixture('partial_failing_example.json');
-  const partials = createState<PartialResponses>({
-    test: input,
-  });
-  const responses = createState<Record<string, Response>>({});
   expect(() => {
     // this used to throw
-    assembleChunksIfResponseIsComplete(partials, responses, 'test');
+    assembleChunksIfResponseIsComplete(input);
   }).not.toThrow();
 });
 
 test('handle non binary payloads correcty', async () => {
   const input = await readJsonFixture('partial_utf8_before.json');
-  const partials = createState<PartialResponses>({
-    test: input,
-  });
-  const responses = createState<Record<string, Response>>({});
-  expect(() => {
-    assembleChunksIfResponseIsComplete(partials, responses, 'test');
-  }).not.toThrow();
   const expected = await readJsonFixture('partial_utf8_after.json');
-  expect(responses.get()['test']).toEqual(expected);
+  const response = assembleChunksIfResponseIsComplete(input);
+  expect(response).toEqual(expected);
 });
 
 test('handle binary payloads correcty', async () => {
   const input = await readJsonFixture('partial_binary_before.json');
-  const partials = createState<PartialResponses>({
-    test: input,
-  });
-  const responses = createState<Record<string, Response>>({});
-  expect(() => {
-    assembleChunksIfResponseIsComplete(partials, responses, 'test');
-  }).not.toThrow();
   const expected = await readJsonFixture('partial_binary_after.json');
-  expect(responses.get()['test']).toEqual(expected);
+  const response = assembleChunksIfResponseIsComplete(input);
+  expect(response).toEqual(expected);
 });

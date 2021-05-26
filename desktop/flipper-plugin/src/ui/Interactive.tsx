@@ -404,11 +404,8 @@ export class Interactive extends React.Component<
   }
 
   calculateResize(event: MouseEvent) {
-    const {
-      resizingInitialCursor,
-      resizingInitialRect,
-      resizingSides,
-    } = this.state;
+    const {resizingInitialCursor, resizingInitialRect, resizingSides} =
+      this.state;
 
     const deltaLeft = resizingInitialCursor!.left - event.clientX;
     const deltaTop = resizingInitialCursor!.top - event.clientY;
@@ -517,9 +514,7 @@ export class Interactive extends React.Component<
     }
   }
 
-  checkIfResizable(
-    event: MouseEvent,
-  ):
+  checkIfResizable(event: MouseEvent):
     | {
         left: boolean;
         right: boolean;
@@ -629,6 +624,17 @@ export class Interactive extends React.Component<
       (canResize.top !== true || canResize.bottom !== true)
     ) {
       newCursor = 'row-resize';
+    }
+
+    if (
+      this.state.resizingSides?.bottom === bottom &&
+      this.state.resizingSides?.left === left &&
+      this.state.resizingSides?.top === top &&
+      this.state.resizingSides?.right === right &&
+      this.state.cursor === newCursor &&
+      this.state.couldResize === Boolean(newCursor)
+    ) {
+      return;
     }
 
     const resizingSides = {

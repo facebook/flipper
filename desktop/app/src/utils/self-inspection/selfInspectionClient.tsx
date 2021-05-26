@@ -26,7 +26,8 @@ interface IFutureSubject<T> {
 
 export class SelfInspectionFlipperClient<M>
   extends FlipperClient
-  implements FlipperClientConnection<string, M> {
+  implements FlipperClientConnection<string, M>
+{
   connStatusSubscribers: Set<ISubscriber<ConnectionStatus>> = new Set();
   connStatus: ConnectionStatus = {kind: 'CONNECTED'};
 

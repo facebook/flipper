@@ -13,19 +13,13 @@ import {
   PluginClient,
   ElementsInspector,
   ElementSearchResultSet,
-  FlexColumn,
-  styled,
 } from 'flipper';
 import {debounce} from 'lodash';
 import {Component} from 'react';
 import {PersistedState, ElementMap} from './';
 import React from 'react';
 import MultipleSelectorSection from './MultipleSelectionSection';
-
-const ElementsInspectorContainer = styled(FlexColumn)({
-  width: '100%',
-  justifyContent: 'space-between',
-});
+import {Layout} from 'flipper-plugin';
 
 type GetNodesOptions = {
   force?: boolean;
@@ -203,9 +197,8 @@ export default class Inspector extends Component<Props, State> {
       selectedElement !== prevProps.selectedElement
     ) {
       // selected element in non-AX tree changed, find linked element in AX tree
-      const newlySelectedElem = this.props.persistedState.elements[
-        selectedElement
-      ];
+      const newlySelectedElem =
+        this.props.persistedState.elements[selectedElement];
       if (newlySelectedElem) {
         this.props.onSelect(
           newlySelectedElem.extraInfo
@@ -219,9 +212,8 @@ export default class Inspector extends Component<Props, State> {
       selectedAXElement !== prevProps.selectedAXElement
     ) {
       // selected element in AX tree changed, find linked element in non-AX tree
-      const newlySelectedAXElem = this.props.persistedState.AXelements[
-        selectedAXElement
-      ];
+      const newlySelectedAXElem =
+        this.props.persistedState.AXelements[selectedAXElement];
       if (newlySelectedAXElem) {
         this.props.onSelect(
           newlySelectedAXElem.extraInfo
@@ -316,16 +308,12 @@ export default class Inspector extends Component<Props, State> {
   ): Promise<Array<Element>> {
     if (ids.length > 0 && this.props.client.isConnected) {
       const {forAccessibilityEvent} = options;
-      const {
-        elements,
-      }: {elements: Array<Element>} = await this.props.client.call(
-        this.call().GET_NODES,
-        {
+      const {elements}: {elements: Array<Element>} =
+        await this.props.client.call(this.call().GET_NODES, {
           ids,
           forAccessibilityEvent,
           selected: false,
-        },
-      );
+        });
       elements.forEach((e) => this.updateElement(e.id, e));
       return elements;
     } else {
@@ -448,7 +436,17 @@ export default class Inspector extends Component<Props, State> {
       : this.state.elementSelector;
 
     return this.root() ? (
-      <ElementsInspectorContainer>
+      <Layout.Top>
+        {selectorData && selectorData.leaves.length > 1 ? (
+          <MultipleSelectorSection
+            initialSelectedElement={this.selected()}
+            elements={selectorData.elements}
+            onElementSelected={this.onElementSelectedAndExpanded}
+            onElementHovered={this.onElementHovered}
+          />
+        ) : (
+          <div />
+        )}
         <ElementsInspector
           onElementSelected={this.onElementSelectedAtMainSection}
           onElementHovered={this.onElementHovered}
@@ -458,17 +456,9 @@ export default class Inspector extends Component<Props, State> {
           root={this.root()}
           elements={this.elements()}
           focused={this.focused()}
-          contextMenuExtensions={this.getAXContextMenuExtensions()}
+          contextMenuExtensions={this.getAXContextMenuExtensions}
         />
-        {selectorData && selectorData.leaves.length > 1 ? (
-          <MultipleSelectorSection
-            initialSelectedElement={this.selected()}
-            elements={selectorData.elements}
-            onElementSelected={this.onElementSelectedAndExpanded}
-            onElementHovered={this.onElementHovered}
-          />
-        ) : null}
-      </ElementsInspectorContainer>
+      </Layout.Top>
     ) : null;
   }
 }

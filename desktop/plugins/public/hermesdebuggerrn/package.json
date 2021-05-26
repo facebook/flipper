@@ -4,7 +4,10 @@
   "id": "Hermesdebuggerrn",
   "pluginType": "device",
   "supportedDevices": [
-    {"os": "Metro", "archived": false}
+    {
+      "os": "Metro",
+      "archived": false
+    }
   ],
   "version": "0.0.0",
   "main": "dist/bundle.js",
@@ -16,6 +19,6 @@
     "flipper-plugin"
   ],
   "bugs": {
-    "email": "rickhanlonii@fb.com"
+    "url": "https://github.com/facebook/flipper/issues"
   }
 }

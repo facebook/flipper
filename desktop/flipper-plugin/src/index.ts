@@ -57,6 +57,9 @@ export {
 } from './ui/NUX';
 export {Sidebar as _Sidebar} from './ui/Sidebar';
 export {DetailSidebar} from './ui/DetailSidebar';
+export {Toolbar} from './ui/Toolbar';
+export {MasterDetail} from './ui/MasterDetail';
+export {CodeBlock} from './ui/CodeBlock';
 
 export {renderReactRoot} from './utils/renderReactRoot';
 export {
@@ -66,6 +69,8 @@ export {
   withTrackingScope,
   useTrackedCallback,
   wrapInteractionHandler as _wrapInteractionHandler,
+  InteractionReport,
+  InteractionReporter,
 } from './ui/Tracked';
 
 export {DataFormatter} from './ui/DataFormatter';
@@ -80,29 +85,48 @@ export {
 } from './utils/Logger';
 export {Idler} from './utils/Idler';
 
-export {createDataSource, DataSource} from './state/DataSource';
+// Import from the index file directly, to make sure package.json's main field is skipped.
+export {DataSource} from './data-source/index';
+export {createDataSource} from './state/createDataSource';
 
 export {DataTable, DataTableColumn} from './ui/data-table/DataTable';
 export {DataTableManager} from './ui/data-table/DataTableManager';
+export {DataList} from './ui/DataList';
 
 export {
   Interactive as _Interactive,
   InteractiveProps as _InteractiveProps,
 } from './ui/Interactive';
+export {Panel} from './ui/Panel';
+export {Tabs, Tab} from './ui/Tabs';
+export {useLocalStorageState} from './utils/useLocalStorageState';
 
 export {HighlightManager} from './ui/Highlight';
 export {
   DataValueExtractor,
   DataInspectorExpanded,
-} from './ui/data-inspector/DataInspector';
+} from './ui/data-inspector/DataInspectorNode';
 export {
   DataDescriptionType,
   DataDescription,
 } from './ui/data-inspector/DataDescription';
 export {MarkerTimeline} from './ui/MarkerTimeline';
-export {ManagedDataInspector as DataInspector} from './ui/data-inspector/ManagedDataInspector';
+export {DataInspector} from './ui/data-inspector/DataInspector';
 
+export {
+  ElementsInspector,
+  Element as ElementsInspectorElement,
+  // TODO: clean up or create namespace
+  ElementsInspectorProps,
+  ElementExtraInfo,
+  ElementAttribute,
+  ElementData,
+  ElementSearchResultSet,
+  ElementID,
+} from './ui/elements-inspector/ElementsInspector';
 export {useMemoize} from './utils/useMemoize';
+
+export {createTablePlugin} from './utils/createTablePlugin';
 
 // It's not ideal that this exists in flipper-plugin sources directly,
 // but is the least pain for plugin authors.

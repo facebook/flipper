@@ -213,14 +213,10 @@ test('new clients replace old ones', async () => {
       },
     },
   );
-  const {
-    client,
-    store,
-    device,
-    createClient,
-  } = await createMockFlipperWithPlugin(plugin, {
-    asBackgroundPlugin: true,
-  });
+  const {client, store, device, createClient} =
+    await createMockFlipperWithPlugin(plugin, {
+      asBackgroundPlugin: true,
+    });
 
   const instance = client.sandyPluginStates.get(plugin.id)!;
   instance.instanceApi.counter.set(1);

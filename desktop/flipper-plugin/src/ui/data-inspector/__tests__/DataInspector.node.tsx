@@ -10,37 +10,8 @@
 import * as React from 'react';
 import {render, fireEvent, waitFor, act} from '@testing-library/react';
 
-import {ManagedDataInspector} from '../ManagedDataInspector';
+import {DataInspector} from '../DataInspector';
 import {sleep} from '../../../utils/sleep';
-
-const mocks = {
-  requestIdleCallback(fn: Function) {
-    return setTimeout(fn, 1);
-  },
-  cancelIdleCallback(handle: any) {
-    clearTimeout(handle);
-  },
-};
-
-beforeAll(() => {
-  Object.keys(mocks).forEach((key) => {
-    // @ts-ignore
-    if (!global[key]) {
-      // @ts-ignore
-      global[key] = mocks[key];
-    }
-  });
-});
-
-afterAll(() => {
-  Object.keys(mocks).forEach((key) => {
-    // @ts-ignore
-    if (global[key] === mocks[key]) {
-      // @ts-ignore
-      delete global[key];
-    }
-  });
-});
 
 const json = {
   data: {
@@ -54,23 +25,19 @@ const json = {
 };
 
 test('changing collapsed property works', async () => {
-  const res = render(<ManagedDataInspector data={json} collapsed expandRoot />);
+  const res = render(<DataInspector data={json} collapsed expandRoot />);
   expect(await res.findByText(/is/)).toBeTruthy(); // from expandRoot
   expect(res.queryAllByText(/cool/).length).toBe(0);
 
-  res.rerender(
-    <ManagedDataInspector data={json} collapsed={false} expandRoot />,
-  );
+  res.rerender(<DataInspector data={json} collapsed={false} expandRoot />);
   await res.findByText(/cool/);
 
-  res.rerender(
-    <ManagedDataInspector data={json} collapsed={true} expandRoot />,
-  );
+  res.rerender(<DataInspector data={json} collapsed expandRoot />);
   expect(res.queryAllByText(/cool/).length).toBe(0);
 });
 
 test('can manually collapse properties', async () => {
-  const res = render(<ManagedDataInspector data={json} collapsed expandRoot />);
+  const res = render(<DataInspector data={json} collapsed expandRoot />);
 
   await res.findByText(/is/); // previewed as key, like: "data: {is, and}"
   expect(res.queryAllByText(/awesomely/).length).toBe(0);
@@ -101,19 +68,14 @@ test('can manually collapse properties', async () => {
 
 test('can filter for data', async () => {
   const res = render(
-    <ManagedDataInspector data={json} collapsed={false} expandRoot />,
+    <DataInspector data={json} collapsed={false} expandRoot />,
   );
   await res.findByText(/awesomely/); // everything is shown
 
   // act here is used to make sure the highlight changes have propagated
   await act(async () => {
     res.rerender(
-      <ManagedDataInspector
-        data={json}
-        collapsed={false}
-        expandRoot
-        filter="sOn"
-      />,
+      <DataInspector data={json} collapsed={false} expandRoot filter="sOn" />,
     );
     await sleep(200);
   });
@@ -139,12 +101,7 @@ test('can filter for data', async () => {
   // find by key
   await act(async () => {
     res.rerender(
-      <ManagedDataInspector
-        data={json}
-        collapsed={false}
-        expandRoot
-        filter="somel"
-      />,
+      <DataInspector data={json} collapsed={false} expandRoot filter="somel" />,
     );
     await sleep(200);
   });
@@ -157,12 +114,7 @@ test('can filter for data', async () => {
 
   await act(async () => {
     res.rerender(
-      <ManagedDataInspector
-        data={json}
-        collapsed={false}
-        expandRoot
-        filter=""
-      />,
+      <DataInspector data={json} collapsed={false} expandRoot filter="" />,
     );
     await sleep(200);
   });
@@ -181,7 +133,7 @@ test('can render recursive data for data', async () => {
   json.a.recursive = json;
 
   const res = render(
-    <ManagedDataInspector data={json} collapsed={false} expandRoot />,
+    <DataInspector data={json} collapsed={false} expandRoot />,
   );
   await res.findByText(/Recursive/);
 });

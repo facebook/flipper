@@ -187,7 +187,7 @@ function init() {
     if (!isProduction()) {
       const msg = `[interaction] ${r.scope}:${r.action} in ${r.duration}ms`;
       if (r.success) console.log(msg);
-      else console.error(msg, r.error);
+      else console.warn(msg, r.error);
     }
   });
   ReactDOM.render(
@@ -206,11 +206,9 @@ function init() {
       dark: state.settingsState.darkMode,
     }),
     (theme) => {
-      (document.getElementById(
-        'flipper-theme-import',
-      ) as HTMLLinkElement).href = `themes/${
-        theme.dark ? 'dark' : 'light'
-      }.css`;
+      (
+        document.getElementById('flipper-theme-import') as HTMLLinkElement
+      ).href = `themes/${theme.dark ? 'dark' : 'light'}.css`;
     },
   );
 }

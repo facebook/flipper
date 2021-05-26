@@ -46,10 +46,10 @@ function BookmarkSectionInput({navPlugin}: {navPlugin: NavigationPlugin}) {
   const bookmarks = useValue(navPlugin.bookmarks);
   const patterns = useValue(navPlugin.appMatchPatterns);
 
-  const isBookmarked = useMemo(() => bookmarks.has(currentURI), [
-    bookmarks,
-    currentURI,
-  ]);
+  const isBookmarked = useMemo(
+    () => bookmarks.has(currentURI),
+    [bookmarks, currentURI],
+  );
 
   const autoCompleteItems = useMemoize(
     navPlugin.getAutoCompleteAppMatchPatterns,

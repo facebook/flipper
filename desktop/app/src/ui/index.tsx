@@ -40,9 +40,6 @@ export {ManagedTableProps} from './components/table/ManagedTable';
 export {default as ManagedTable_immutable} from './components/table/ManagedTable_immutable';
 export {ManagedTableProps_immutable} from './components/table/ManagedTable_immutable';
 
-export {Value} from './components/table/TypeBasedValueRenderer';
-export {renderValue} from './components/table/TypeBasedValueRenderer';
-
 export {DataValueExtractor, DataInspectorExpanded} from 'flipper-plugin';
 export {DataInspector as ManagedDataInspector} from 'flipper-plugin';
 export {default as SearchableDataInspector} from './components/data-inspector/SearchableDataInspector';
@@ -104,7 +101,7 @@ export {default as FlexBox} from './components/FlexBox';
 export {default as FlexRow} from './components/FlexRow';
 export {default as FlexColumn} from './components/FlexColumn';
 export {default as FlexCenter} from './components/FlexCenter';
-export {default as Toolbar, Spacer} from './components/Toolbar';
+export {Spacer} from './components/Toolbar';
 export {default as ToolbarIcon} from './components/ToolbarIcon';
 export {default as Panel} from './components/Panel';
 export {default as Text} from './components/Text';
@@ -141,17 +138,6 @@ export {
 export {default as SearchableTable_immutable} from './components/searchable/SearchableTable_immutable';
 export {SearchableProps} from './components/searchable/Searchable';
 
-export {
-  ElementID,
-  ElementData,
-  ElementAttribute,
-  Element,
-  ElementSearchResultSet,
-  ElementsInspectorProps,
-} from './components/elements-inspector/ElementsInspector';
-export {Elements} from './components/elements-inspector/elements';
-export {ContextMenuExtension} from './components/elements-inspector/elements';
-export {default as ElementsInspector} from './components/elements-inspector/ElementsInspector';
 export {InspectorSidebar} from './components/elements-inspector/sidebar';
 export {VisualizerPortal} from './components/elements-inspector/Visualizer';
 

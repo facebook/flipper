@@ -24,6 +24,9 @@ type TooltipProps = {
   options?: TooltipOptions;
 };
 
+/**
+ * @deprecated use Tooltip from 'tantd'
+ */
 export default function Tooltip(props: TooltipProps) {
   const tooltipManager = useContext(TooltipContext);
   const ref = useRef<HTMLDivElement | null>();

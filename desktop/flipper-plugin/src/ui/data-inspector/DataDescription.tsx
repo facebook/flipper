@@ -8,7 +8,7 @@
  */
 
 import {Typography, Popover, Input, Select, Checkbox} from 'antd';
-import {DataInspectorSetValue} from './DataInspector';
+import {DataInspectorSetValue} from './DataInspectorNode';
 import {PureComponent} from 'react';
 import styled from '@emotion/styled';
 import {SketchPicker, CompactPicker} from 'react-color';

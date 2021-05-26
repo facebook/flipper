@@ -105,7 +105,7 @@ function renderSidebar(row: Row) {
   return (
     <Layout.Container gap pad>
       <Typography.Title level={4}>Extras</Typography.Title>
-      <ManagedDataInspector data={row} expandRoot={true} />
+      <ManagedDataInspector data={row} expandRoot />
     </Layout.Container>
   );
 }

@@ -286,18 +286,15 @@ export default class CertificateProvider {
       const deviceIdPromise = appNamePromise.then((app) =>
         this.getTargetAndroidDeviceId(app, destination, csr),
       );
-      return Promise.all([
-        deviceIdPromise,
-        appNamePromise,
-        this.adb,
-      ]).then(([deviceId, appName, adbClient]) =>
-        androidUtil.push(
-          adbClient,
-          deviceId,
-          appName,
-          destination + filename,
-          contents,
-        ),
+      return Promise.all([deviceIdPromise, appNamePromise, this.adb]).then(
+        ([deviceId, appName, adbClient]) =>
+          androidUtil.push(
+            adbClient,
+            deviceId,
+            appName,
+            destination + filename,
+            contents,
+          ),
       );
     }
     if (os === 'iOS' || os === 'windows' || os == 'MacOS') {
@@ -305,9 +302,8 @@ export default class CertificateProvider {
         (err) => {
           if (os === 'iOS') {
             // Writing directly to FS failed. It's probably a physical device.
-            const relativePathInsideApp = this.getRelativePathInAppContainer(
-              destination,
-            );
+            const relativePathInsideApp =
+              this.getRelativePathInAppContainer(destination);
             return appNamePromise
               .then((appName) => {
                 return this.getTargetiOSDeviceId(appName, destination, csr);

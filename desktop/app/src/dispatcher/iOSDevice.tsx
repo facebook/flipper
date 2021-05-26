@@ -54,9 +54,13 @@ function isAvailable(simulator: iOSSimulatorDevice): boolean {
   );
 }
 
-const portforwardingClient = path.join(
-  getStaticPath(),
-  'PortForwardingMacApp.app/Contents/MacOS/PortForwardingMacApp',
+const portforwardingClient = getStaticPath(
+  path.join(
+    'PortForwardingMacApp.app',
+    'Contents',
+    'MacOS',
+    'PortForwardingMacApp',
+  ),
 );
 
 function forwardPort(port: number, multiplexChannelPort: number) {
@@ -64,12 +68,13 @@ function forwardPort(port: number, multiplexChannelPort: number) {
     portforwardingClient,
     [`-portForward=${port}`, `-multiplexChannelPort=${multiplexChannelPort}`],
     (err, stdout, stderr) => {
-      console.error('Port forwarding app failed to start', err, stdout, stderr);
+      // This happens on app reloads and doesn't need to be treated as an error.
+      console.warn('Port forwarding app failed to start', err, stdout, stderr);
     },
   );
   console.log('Port forwarding app started', childProcess);
   childProcess.addListener('error', (err) =>
-    console.error('Port forwarding app error', err),
+    console.warn('Port forwarding app error', err),
   );
   childProcess.addListener('exit', (code) =>
     console.log(`Port forwarding app exited with code ${code}`),

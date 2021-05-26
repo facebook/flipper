@@ -430,8 +430,8 @@ typedef void (^NSURLSessionAsyncCompletion)(
     SEL selector = @selector(sendSynchronousRequest:returningResponse:error:);
     SEL swizzledSelector = [FLEXUtility swizzledSelectorForSelector:selector];
 
-    NSData* (^syncSwizzleBlock)(
-        Class, NSURLRequest*, NSURLResponse**, NSError**) =
+    NSData* (
+        ^syncSwizzleBlock)(Class, NSURLRequest*, NSURLResponse**, NSError**) =
         ^NSData*(
             Class slf,
             NSURLRequest* request,
@@ -449,8 +449,9 @@ typedef void (^NSURLSessionAsyncCompletion)(
                                                 forRequestID:requestID];
       NSError* temporaryError = nil;
       NSURLResponse* temporaryResponse = nil;
-      data = ((id(*)(id, SEL, id, NSURLResponse**, NSError**))objc_msgSend)(
-          slf, swizzledSelector, request, &temporaryResponse, &temporaryError);
+      data =
+          ((id(*)(id, SEL, id, NSURLResponse**, NSError**))
+               objc_msgSend)(slf, swizzledSelector, request, &temporaryResponse, &temporaryError);
       [[FLEXNetworkRecorder defaultRecorder]
           recordResponseReceivedWithRequestID:requestID
                                      response:temporaryResponse];
@@ -511,8 +512,8 @@ typedef void (^NSURLSessionAsyncCompletion)(
         className = [[NSURLSession sharedSession] class];
       }
 
-      NSURLSessionTask* (^asyncDataOrDownloadSwizzleBlock)(
-          Class, id, NSURLSessionAsyncCompletion) =
+      NSURLSessionTask* (
+          ^asyncDataOrDownloadSwizzleBlock)(Class, id, NSURLSessionAsyncCompletion) =
           ^NSURLSessionTask*(
               Class slf, id argument, NSURLSessionAsyncCompletion completion) {
         NSURLSessionTask* task = nil;
@@ -528,12 +529,16 @@ typedef void (^NSURLSessionAsyncCompletion)(
               [self asyncCompletionWrapperForRequestID:requestID
                                              mechanism:mechanism
                                             completion:completion];
-          task = ((id(*)(id, SEL, id, id))objc_msgSend)(
-              slf, swizzledSelector, argument, completionWrapper);
+          task = ((id(*)(
+              id,
+              SEL,
+              id,
+              id))objc_msgSend)(slf, swizzledSelector, argument, completionWrapper);
           [self setRequestID:requestID forConnectionOrTask:task];
         } else {
-          task = ((id(*)(id, SEL, id, id))objc_msgSend)(
-              slf, swizzledSelector, argument, completion);
+          task =
+              ((id(*)(id, SEL, id, id))
+                   objc_msgSend)(slf, swizzledSelector, argument, completion);
         }
         return task;
       };
@@ -574,8 +579,8 @@ typedef void (^NSURLSessionAsyncCompletion)(
         className = [[NSURLSession sharedSession] class];
       }
 
-      NSURLSessionUploadTask* (^asyncUploadTaskSwizzleBlock)(
-          Class, NSURLRequest*, id, NSURLSessionAsyncCompletion) =
+      NSURLSessionUploadTask* (
+          ^asyncUploadTaskSwizzleBlock)(Class, NSURLRequest*, id, NSURLSessionAsyncCompletion) =
           ^NSURLSessionUploadTask*(
               Class slf,
               NSURLRequest* request,
@@ -590,12 +595,20 @@ typedef void (^NSURLSessionAsyncCompletion)(
               [self asyncCompletionWrapperForRequestID:requestID
                                              mechanism:mechanism
                                             completion:completion];
-          task = ((id(*)(id, SEL, id, id, id))objc_msgSend)(
-              slf, swizzledSelector, request, argument, completionWrapper);
+          task = ((id(*)(
+              id,
+              SEL,
+              id,
+              id,
+              id))objc_msgSend)(slf, swizzledSelector, request, argument, completionWrapper);
           [self setRequestID:requestID forConnectionOrTask:task];
         } else {
-          task = ((id(*)(id, SEL, id, id, id))objc_msgSend)(
-              slf, swizzledSelector, request, argument, completion);
+          task = ((id(*)(
+              id,
+              SEL,
+              id,
+              id,
+              id))objc_msgSend)(slf, swizzledSelector, request, argument, completion);
         }
         return task;
       };
@@ -665,11 +678,8 @@ typedef void (^NSURLSessionAsyncCompletion)(
   struct objc_method_description methodDescription =
       protocol_getMethodDescription(protocol, selector, NO, YES);
 
-  typedef NSURLRequest* (^NSURLConnectionWillSendRequestBlock)(
-      id<NSURLConnectionDelegate> slf,
-      NSURLConnection* connection,
-      NSURLRequest* request,
-      NSURLResponse* response);
+  typedef NSURLRequest* (
+      ^NSURLConnectionWillSendRequestBlock)(id<NSURLConnectionDelegate> slf, NSURLConnection* connection, NSURLRequest* request, NSURLResponse* response);
 
   NSURLConnectionWillSendRequestBlock undefinedBlock = ^NSURLRequest*(
       id<NSURLConnectionDelegate> slf,
@@ -695,8 +705,12 @@ typedef void (^NSURLSessionAsyncCompletion)(
           undefinedBlock(slf, connection, request, response);
         }
         originalImplementationBlock:^{
-          returnValue = ((id(*)(id, SEL, id, id, id))objc_msgSend)(
-              slf, swizzledSelector, connection, request, response);
+          returnValue = ((id(*)(
+              id,
+              SEL,
+              id,
+              id,
+              id))objc_msgSend)(slf, swizzledSelector, connection, request, response);
         }];
     return returnValue;
   };

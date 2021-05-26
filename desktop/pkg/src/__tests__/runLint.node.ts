@@ -34,7 +34,8 @@ beforeEach(() => {
   jest.mock('fs-extra', () => jest.fn());
   fs.pathExists = jest.fn().mockResolvedValue(true);
   fs.pathExistsSync = jest.fn().mockReturnValue(true);
-  fs.lstatSync = jest.fn().mockReturnValue({
+  // Required by some inconsistent node types for rw access.
+  (fs.lstatSync as any) = jest.fn().mockReturnValue({
     isFile: function () {
       return true;
     },

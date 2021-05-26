@@ -76,7 +76,7 @@ export default class ErrorBoundary extends Component<
       }
 
       return (
-        <ErrorBoundaryContainer grow={true}>
+        <ErrorBoundaryContainer grow>
           <Heading>{heading}</Heading>
           {this.props.showStack !== false && (
             <ErrorBoundaryStack error={error} />

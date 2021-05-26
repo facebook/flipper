@@ -17,9 +17,12 @@
   "keywords": [
     "flipper-plugin"
   ],
+  "peerDependencies": {
+    "flipper-plugin": "*"
+  },
   "title": "CPU",
   "icon": "underline",
   "bugs": {
-    "email": "barney@fb.com"
+    "url": "https://github.com/facebook/flipper/issues"
   }
 }

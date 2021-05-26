@@ -13,7 +13,8 @@ import {Payload, ConnectionStatus, ISubscriber} from 'rsocket-types';
 import WebSocket from 'ws';
 
 export class WebsocketClientFlipperConnection<M>
-  implements FlipperClientConnection<string, M> {
+  implements FlipperClientConnection<string, M>
+{
   websocket: WebSocket;
   connStatusSubscribers: Set<ISubscriber<ConnectionStatus>> = new Set();
   connStatus: ConnectionStatus;

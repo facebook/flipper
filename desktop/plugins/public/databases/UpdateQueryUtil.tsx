@@ -7,7 +7,7 @@
  * @format
  */
 
-import {Value} from 'flipper';
+import {Value} from './TypeBasedValueRenderer';
 
 const INT_DATA_TYPE = ['INTEGER', 'LONG', 'INT', 'BIGINT'];
 const FLOAT_DATA_TYPE = ['REAL', 'DOUBLE'];

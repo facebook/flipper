@@ -71,6 +71,8 @@ export default async function bundlePlugin(pluginDir: string, dev: boolean) {
         keep_fnames: true,
         module: true,
         warnings: true,
+        mangle: false,
+        compress: false,
       },
     },
     resolver: {

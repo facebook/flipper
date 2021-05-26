@@ -43,12 +43,15 @@ module.exports = {
     'node',
     'react-hooks',
     'flipper',
+    'promise',
   ],
   rules: {
     // disable rules from eslint-config-fbjs
     'flowtype/define-flow-type': 0,
     'flowtype/use-flow-type': 0,
     'react/react-in-jsx-scope': 0, // not needed with our metro implementation
+    // Disallow boolean JSX properties set to true, e.g. `grow={true}`.
+    'react/jsx-boolean-value': ['warn', 'never'],
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'warn',
     'react/jsx-key': 'error',
@@ -76,6 +79,14 @@ module.exports = {
         property: 'remote',
       },
     ],
+    'no-restricted-imports': [
+      1,
+      {
+        name: 'flipper',
+        message:
+          "Direct imports from 'flipper' are deprecated. Import from 'flipper-plugin' instead, which can be tested and distributed stand-alone. See https://fbflipper.com/docs/extending/sandy-migration for more details.",
+      },
+    ],
 
     // additional rules for this project
     'header/header': [2, 'block', {pattern}],
@@ -85,6 +96,15 @@ module.exports = {
     'node/no-extraneous-require': [2, {allowModules: builtInModules}],
     'flipper/no-relative-imports-across-packages': [2],
     'flipper/no-electron-remote-imports': [1],
+    'flipper/no-console-error-without-context': [1],
+
+    // promise rules, see https://github.com/xjamundx/eslint-plugin-promise for details on each of them
+    'promise/catch-or-return': 'warn',
+    'promise/no-nesting': 'warn',
+    'promise/no-promise-in-callback': 'warn',
+    'promise/no-callback-in-promise': 'warn',
+    'promise/no-return-in-finally': 'warn',
+    'promise/valid-params': 'error',
   },
   settings: {
     'import/resolver': {

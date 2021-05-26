@@ -11,6 +11,9 @@ import {theme} from 'flipper-plugin';
 
 // Last updated: Jan 30 2016
 
+/**
+ * @deprecated use `theme` from 'flipper-plugin' instead, which exposes semantic colors that respect dark/light mode.
+ */
 export const colors = {
   // FIG UI Core
   blue: '#4267b2', // Blue - Active-state nav glyphs, nav bars, links, buttons

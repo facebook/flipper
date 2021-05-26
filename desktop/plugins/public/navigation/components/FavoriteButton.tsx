@@ -39,12 +39,7 @@ export default (props: Props) => {
           {...iconButtonProps}
         />
       ) : null}
-      <IconButton
-        outline={true}
-        icon="star"
-        onClick={onClick}
-        {...iconButtonProps}
-      />
+      <IconButton outline icon="star" onClick={onClick} {...iconButtonProps} />
     </FavoriteButtonContainer>
   );
 };

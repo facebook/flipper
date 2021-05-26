@@ -62,6 +62,7 @@ type MockOptions = Partial<{
   asBackgroundPlugin?: true;
   supportedPlugins?: string[];
   device?: BaseDevice;
+  archivedDevice?: boolean;
 }>;
 
 function isPluginEnabled(
@@ -90,7 +91,8 @@ export async function createMockFlipperWithPlugin(
   const logger = mockFlipper.logger;
   const store = mockFlipper.store;
 
-  const createDevice = (serial: string) => mockFlipper.createDevice({serial});
+  const createDevice = (serial: string, archived?: boolean) =>
+    mockFlipper.createDevice({serial, archived});
   const createClient = async (
     device: BaseDevice,
     name: string,
@@ -131,7 +133,7 @@ export async function createMockFlipperWithPlugin(
 
   const device = options?.device
     ? mockFlipper.loadDevice(options?.device)
-    : createDevice('serial');
+    : createDevice('serial', options?.archivedDevice);
   const client = await createClient(device, 'TestApp');
 
   store.dispatch(selectDevice(device));

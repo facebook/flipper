@@ -127,6 +127,19 @@ public class NetworkFlipperPlugin extends BufferingFlipperPlugin implements Netw
     job.run();
   }
 
+  public void addProtobufDefinitions(
+      final String baseUrl, final FlipperArray callNestedMessagesPayloads) {
+    (new ErrorReportingRunnable(getConnection()) {
+          @Override
+          protected void runOrThrow() throws Exception {
+            send(
+                "addProtobufDefinitions",
+                new FlipperObject.Builder().put(baseUrl, callNestedMessagesPayloads).build());
+          }
+        })
+        .run();
+  }
+
   private String toBase64(@Nullable byte[] bytes) {
     if (bytes == null) {
       return null;

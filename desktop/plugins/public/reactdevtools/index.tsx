@@ -7,89 +7,55 @@
  * @format
  */
 
-import ReactDevToolsStandalone from 'react-devtools-core/standalone';
+import ReactDevToolsStandaloneEmbedded from 'react-devtools-core/standalone';
 import {
-  FlipperDevicePlugin,
-  AndroidDevice,
-  styled,
-  View,
-  MetroDevice,
-  ReduxState,
-  connect,
-  Device,
-  CenteredView,
-  RoundedSection,
-  Text,
-  Button,
-} from 'flipper';
-import React, {useEffect} from 'react';
+  Layout,
+  usePlugin,
+  DevicePluginClient,
+  createState,
+  useValue,
+  sleep,
+  Toolbar,
+} from 'flipper-plugin';
+import React from 'react';
 import getPort from 'get-port';
-
-const Container = styled.div({
-  display: 'flex',
-  flex: '1 1 0%',
-  justifyContent: 'center',
-  alignItems: 'stretch',
-  height: '100%',
-});
+import {Button, Switch, Typography} from 'antd';
+import child_process from 'child_process';
+import fs from 'fs';
+import path from 'path';
+import {DevToolsEmbedder} from './DevToolsEmbedder';
 
 const DEV_TOOLS_NODE_ID = 'reactdevtools-out-of-react-node';
-
-function createDevToolsNode(): HTMLElement {
-  const div = document.createElement('div');
-  div.id = DEV_TOOLS_NODE_ID;
-  div.style.display = 'none';
-  div.style.width = '100%';
-  div.style.height = '100%';
-  div.style.flex = '1 1 0%';
-  div.style.justifyContent = 'center';
-  div.style.alignItems = 'stretch';
-
-  document.body && document.body.appendChild(div);
-
-  return div;
-}
-
-function findDevToolsNode(): HTMLElement | null {
-  return document.querySelector('#' + DEV_TOOLS_NODE_ID);
-}
-
-function attachDevTools(target: Element | Text, devToolsNode: HTMLElement) {
-  target.appendChild(devToolsNode);
-  devToolsNode.style.display = 'flex';
-}
-
-function detachDevTools(devToolsNode: HTMLElement) {
-  devToolsNode.style.display = 'none';
-  document.body && document.body.appendChild(devToolsNode);
-}
-
 const CONNECTED = 'DevTools connected';
+const DEV_TOOLS_PORT = 8097; // hardcoded in RN
 
-type GrabMetroDeviceStoreProps = {metroDevice: MetroDevice};
-type GrabMetroDeviceOwnProps = {onHasDevice(device: MetroDevice): void};
+interface MetroDevice {
+  ws?: WebSocket;
+  sendCommand(command: string, params?: any): void;
+}
 
-// Utility component to grab the metroDevice from the store if there is one
-const GrabMetroDevice = connect<
-  GrabMetroDeviceStoreProps,
-  {},
-  GrabMetroDeviceOwnProps,
-  ReduxState
->(({connections: {devices}}) => ({
-  metroDevice: devices.find(
-    (device: Device) => device.os === 'Metro' && !device.isArchived,
-  ) as MetroDevice,
-}))(function ({
-  metroDevice,
-  onHasDevice,
-}: GrabMetroDeviceStoreProps & GrabMetroDeviceOwnProps) {
-  useEffect(() => {
-    onHasDevice(metroDevice);
-  }, [metroDevice, onHasDevice]);
-  return null;
-});
-
-const SUPPORTED_OCULUS_DEVICE_TYPES = ['quest', 'go', 'pacific'];
+function findGlobalDevTools(): Promise<string | undefined> {
+  return new Promise((resolve) => {
+    child_process.exec('npm root -g', (error, basePath) => {
+      if (error) {
+        console.warn(
+          'Failed to find globally installed React DevTools: ' + error,
+        );
+        resolve(undefined);
+      } else {
+        const devToolsPath = path.join(
+          basePath.trim(),
+          'react-devtools',
+          'node_modules',
+          'react-devtools-core',
+        );
+        fs.stat(devToolsPath, (err, stats) => {
+          resolve(!err && stats ? devToolsPath : undefined);
+        });
+      }
+    });
+  });
+}
 
 enum ConnectionStatus {
   Initializing = 'Initializing...',
@@ -98,184 +64,238 @@ enum ConnectionStatus {
   Error = 'Error',
 }
 
-export default class ReactDevTools extends FlipperDevicePlugin<
-  {status: string},
-  any,
-  {}
-> {
-  static supportsDevice(device: Device) {
-    return !device.isArchived && device.os === 'Metro';
+export function devicePlugin(client: DevicePluginClient) {
+  const metroDevice: MetroDevice = client.device.realDevice;
+  if (!metroDevice.sendCommand || !('ws' in metroDevice)) {
+    throw new Error('Invalid metroDevice');
   }
 
-  pollHandle?: NodeJS.Timeout;
-  containerRef: React.RefObject<HTMLDivElement> = React.createRef();
-  connectionStatus: ConnectionStatus = ConnectionStatus.Initializing;
-  metroDevice?: MetroDevice;
-  isMounted = true;
+  const statusMessage = createState('initializing');
+  const connectionStatus = createState<ConnectionStatus>(
+    ConnectionStatus.Initializing,
+  );
+  const globalDevToolsPath = createState<string>();
+  const useGlobalDevTools = createState(false); // TODO: store in local storage T69989583
+  let devToolsInstance: typeof ReactDevToolsStandaloneEmbedded =
+    ReactDevToolsStandaloneEmbedded;
+  let startResult: {close(): void} | undefined = undefined;
 
-  state = {
-    status: 'initializing',
-  };
+  let pollHandle: NodeJS.Timeout | undefined = undefined;
 
-  componentDidMount() {
-    this.bootDevTools();
-  }
-
-  componentWillUnmount() {
-    this.isMounted = false;
-    if (this.pollHandle) {
-      clearTimeout(this.pollHandle);
-    }
-    const devToolsNode = findDevToolsNode();
-    devToolsNode && detachDevTools(devToolsNode);
-  }
-
-  setStatus(connectionStatus: ConnectionStatus, status: string) {
-    this.connectionStatus = connectionStatus;
-    if (!this.isMounted) {
+  async function toggleUseGlobalDevTools() {
+    if (!globalDevToolsPath.get()) {
       return;
     }
-    if (status.startsWith('The server is listening on')) {
-      this.setState({status: status + ' Waiting for connection...'});
+    useGlobalDevTools.update((v) => !v);
+
+    // Load right library
+    if (useGlobalDevTools.get()) {
+      console.log('Loading ' + globalDevToolsPath.get());
+      devToolsInstance = global.electronRequire(
+        globalDevToolsPath.get()!,
+      ).default;
     } else {
-      this.setState({status});
+      devToolsInstance = ReactDevToolsStandaloneEmbedded;
     }
+
+    statusMessage.set('Switching devTools');
+    connectionStatus.set(ConnectionStatus.Initializing);
+    // clean old instance
+    if (pollHandle) {
+      clearTimeout(pollHandle);
+    }
+    startResult?.close();
+    await sleep(1000); // wait for port to close
+    startResult = undefined;
+    await bootDevTools();
   }
 
-  devtoolsHaveStarted() {
-    return !!findDevToolsNode()?.innerHTML;
-  }
-
-  bootDevTools() {
-    let devToolsNode = findDevToolsNode();
+  async function bootDevTools() {
+    const devToolsNode = document.getElementById(DEV_TOOLS_NODE_ID);
     if (!devToolsNode) {
-      devToolsNode = createDevToolsNode();
-      this.initializeDevTools(devToolsNode);
+      setStatus(ConnectionStatus.Error, 'Failed to find target DOM Node');
+      return;
     }
-    this.setStatus(
+
+    // React DevTools were initilized before
+    if (startResult) {
+      if (devtoolsHaveStarted()) {
+        setStatus(ConnectionStatus.Connected, CONNECTED);
+      } else {
+        startPollForConnection();
+      }
+      return;
+    }
+
+    // They're new!
+    try {
+      setStatus(
+        ConnectionStatus.Initializing,
+        'Waiting for port ' + DEV_TOOLS_PORT,
+      );
+      const port = await getPort({port: DEV_TOOLS_PORT}); // default port for dev tools
+      if (port !== DEV_TOOLS_PORT) {
+        setStatus(
+          ConnectionStatus.Error,
+          `Port ${DEV_TOOLS_PORT} is already taken`,
+        );
+        return;
+      }
+      setStatus(
+        ConnectionStatus.Initializing,
+        'Starting DevTools server on ' + port,
+      );
+      startResult = devToolsInstance
+        .setContentDOMNode(devToolsNode)
+        .setStatusListener((status) => {
+          // TODO: since devToolsInstance is an instance, we are probably leaking memory here
+          setStatus(ConnectionStatus.Initializing, status);
+        })
+        .startServer(port) as any;
+      setStatus(ConnectionStatus.Initializing, 'Waiting for device');
+    } catch (e) {
+      console.error('Failed to initalize React DevTools' + e);
+      setStatus(ConnectionStatus.Error, 'Failed to initialize DevTools: ' + e);
+    }
+
+    setStatus(
       ConnectionStatus.Initializing,
       'DevTools have been initialized, waiting for connection...',
     );
-    if (this.devtoolsHaveStarted()) {
-      this.setStatus(ConnectionStatus.Connected, CONNECTED);
+    if (devtoolsHaveStarted()) {
+      setStatus(ConnectionStatus.Connected, CONNECTED);
     } else {
-      this.startPollForConnection();
+      startPollForConnection();
     }
-
-    attachDevTools(this.containerRef?.current!, devToolsNode);
-    this.startPollForConnection();
   }
 
-  startPollForConnection(delay = 3000) {
-    this.pollHandle = setTimeout(() => {
+  function setStatus(cs: ConnectionStatus, status: string) {
+    connectionStatus.set(cs);
+    if (status.startsWith('The server is listening on')) {
+      statusMessage.set(status + ' Waiting for connection...');
+    } else {
+      statusMessage.set(status);
+    }
+  }
+
+  function startPollForConnection(delay = 3000) {
+    pollHandle = setTimeout(async () => {
       switch (true) {
-        // Closed already, ignore
-        case !this.isMounted:
-          return;
         // Found DevTools!
-        case this.devtoolsHaveStarted():
-          this.setStatus(ConnectionStatus.Connected, CONNECTED);
+        case devtoolsHaveStarted():
+          setStatus(ConnectionStatus.Connected, CONNECTED);
           return;
         // Waiting for connection, but we do have an active Metro connection, lets force a reload to enter Dev Mode on app
         // prettier-ignore
-        case this.connectionStatus === ConnectionStatus.Initializing && !!this.metroDevice?.ws:
-          this.setStatus(
+        case connectionStatus.get() === ConnectionStatus.Initializing && !!metroDevice?.ws:
+          setStatus(
             ConnectionStatus.WaitingForReload,
             "Sending 'reload' to Metro to force the DevTools to connect...",
           );
-          this.metroDevice!.sendCommand('reload');
-          this.startPollForConnection(10000);
+          metroDevice!.sendCommand('reload');
+          startPollForConnection(2000);
           return;
         // Waiting for initial connection, but no WS bridge available
-        case this.connectionStatus === ConnectionStatus.Initializing:
-          this.setStatus(
+        case connectionStatus.get() === ConnectionStatus.Initializing:
+          setStatus(
             ConnectionStatus.WaitingForReload,
-            "The DevTools didn't connect yet. Please trigger the DevMenu in the React Native app, or Reload it to connect",
+            "The DevTools didn't connect yet. Please trigger the DevMenu in the React Native app, or Reload it to connect.",
           );
-          this.startPollForConnection(10000);
+          startPollForConnection(10000);
           return;
         // Still nothing? Users might not have done manual action, or some other tools have picked it up?
-        case this.connectionStatus === ConnectionStatus.WaitingForReload:
-          this.setStatus(
+        case connectionStatus.get() === ConnectionStatus.WaitingForReload:
+          setStatus(
             ConnectionStatus.WaitingForReload,
-            "The DevTools didn't connect yet. Please verify your React Native app is in development mode, and that no other instance of the React DevTools are attached to the app already.",
+            "The DevTools didn't connect yet. Check if no other instances are running.",
           );
-          this.startPollForConnection();
+          startPollForConnection();
           return;
       }
     }, delay);
   }
 
-  async initializeDevTools(devToolsNode: HTMLElement) {
-    try {
-      this.setStatus(ConnectionStatus.Initializing, 'Waiting for port 8097');
-      const port = await getPort({port: 8097}); // default port for dev tools
-      this.setStatus(
-        ConnectionStatus.Initializing,
-        'Starting DevTools server on ' + port,
-      );
-      ReactDevToolsStandalone.setContentDOMNode(devToolsNode)
-        .setStatusListener((status) => {
-          this.setStatus(ConnectionStatus.Initializing, status);
-        })
-        .startServer(port);
-      this.setStatus(ConnectionStatus.Initializing, 'Waiting for device');
-      const device = this.device;
-
-      if (device) {
-        if (
-          device.deviceType === 'physical' ||
-          SUPPORTED_OCULUS_DEVICE_TYPES.includes(device.title.toLowerCase())
-        ) {
-          this.setStatus(
-            ConnectionStatus.Initializing,
-            `Setting up reverse port mapping: ${port}:${port}`,
-          );
-          (device as AndroidDevice).reverse([port, port]);
-        }
-      }
-    } catch (e) {
-      console.error(e);
-      this.setStatus(
-        ConnectionStatus.Error,
-        'Failed to initialize DevTools: ' + e,
-      );
-    }
-  }
-
-  render() {
+  function devtoolsHaveStarted() {
     return (
-      <View grow>
-        {!this.devtoolsHaveStarted() ? this.renderStatus() : null}
-        <Container ref={this.containerRef} />
-        <GrabMetroDevice
-          onHasDevice={(device) => {
-            this.metroDevice = device;
-          }}
-        />
-      </View>
+      (document.getElementById(DEV_TOOLS_NODE_ID)?.childElementCount ?? 0) > 0
     );
   }
 
-  renderStatus() {
-    return (
-      <CenteredView>
-        <RoundedSection title={this.connectionStatus}>
-          <Text>{this.state.status}</Text>
-          {(this.connectionStatus === ConnectionStatus.WaitingForReload &&
-            this.metroDevice?.ws) ||
-          this.connectionStatus === ConnectionStatus.Error ? (
+  client.onReady(() => {
+    findGlobalDevTools().then((path) => {
+      globalDevToolsPath.set(path + '/standalone');
+      if (path) {
+        console.log('Found global React DevTools: ', path);
+      }
+    });
+  });
+
+  client.onDestroy(() => {
+    startResult?.close();
+  });
+
+  client.onActivate(() => {
+    bootDevTools();
+  });
+
+  client.onDeactivate(() => {
+    if (pollHandle) {
+      clearTimeout(pollHandle);
+    }
+  });
+
+  return {
+    devtoolsHaveStarted,
+    connectionStatus,
+    statusMessage,
+    bootDevTools,
+    metroDevice,
+    globalDevToolsPath,
+    useGlobalDevTools,
+    toggleUseGlobalDevTools,
+  };
+}
+
+export function Component() {
+  const instance = usePlugin(devicePlugin);
+  const connectionStatus = useValue(instance.connectionStatus);
+  const statusMessage = useValue(instance.statusMessage);
+  const globalDevToolsPath = useValue(instance.globalDevToolsPath);
+  const useGlobalDevTools = useValue(instance.useGlobalDevTools);
+
+  return (
+    <Layout.Container grow>
+      {globalDevToolsPath ? (
+        <Toolbar
+          right={
+            <>
+              <Switch
+                checked={useGlobalDevTools}
+                onChange={instance.toggleUseGlobalDevTools}
+                size="small"
+              />
+              Use globally installed DevTools
+            </>
+          }
+          wash>
+          {connectionStatus !== ConnectionStatus.Connected ? (
+            <Typography.Text type="secondary">{statusMessage}</Typography.Text>
+          ) : null}
+          {(connectionStatus === ConnectionStatus.WaitingForReload &&
+            instance.metroDevice?.ws) ||
+          connectionStatus === ConnectionStatus.Error ? (
             <Button
-              style={{width: 200, margin: '10px auto 0 auto'}}
+              size="small"
               onClick={() => {
-                this.metroDevice?.sendCommand('reload');
-                this.bootDevTools();
+                instance.metroDevice?.sendCommand('reload');
+                instance.bootDevTools();
               }}>
               Retry
             </Button>
           ) : null}
-        </RoundedSection>
-      </CenteredView>
-    );
-  }
+        </Toolbar>
+      ) : null}
+      <DevToolsEmbedder offset={40} nodeId={DEV_TOOLS_NODE_ID} />
+    </Layout.Container>
+  );
 }

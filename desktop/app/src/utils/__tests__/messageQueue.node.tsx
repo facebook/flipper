@@ -109,12 +109,8 @@ test('queue - events are processed immediately if plugin is selected', async () 
 });
 
 test('queue - events are NOT processed immediately if plugin is NOT selected (but enabled)', async () => {
-  const {
-    store,
-    client,
-    sendMessage,
-    device,
-  } = await createMockFlipperWithPlugin(TestPlugin);
+  const {store, client, sendMessage, device} =
+    await createMockFlipperWithPlugin(TestPlugin);
   selectDeviceLogs(store);
   expect(store.getState().connections.selectedPlugin).not.toBe('TestPlugin');
 
@@ -203,12 +199,8 @@ test('queue - events are NOT processed immediately if plugin is NOT selected (bu
 });
 
 test('queue - events are queued for plugins that are favorite when app is not selected', async () => {
-  const {
-    device,
-    store,
-    sendMessage,
-    createClient,
-  } = await createMockFlipperWithPlugin(TestPlugin);
+  const {device, store, sendMessage, createClient} =
+    await createMockFlipperWithPlugin(TestPlugin);
   selectDeviceLogs(store);
   expect(store.getState().connections.selectedPlugin).not.toBe('TestPlugin');
 
@@ -235,13 +227,8 @@ test('queue - events are queued for plugins that are favorite when app is not se
 });
 
 test('queue - events are queued for plugins that are favorite when app is selected on different device', async () => {
-  const {
-    client,
-    store,
-    sendMessage,
-    createDevice,
-    createClient,
-  } = await createMockFlipperWithPlugin(TestPlugin);
+  const {client, store, sendMessage, createDevice, createClient} =
+    await createMockFlipperWithPlugin(TestPlugin);
   selectDeviceLogs(store);
   expect(store.getState().connections.selectedPlugin).not.toBe('TestPlugin');
 
@@ -282,12 +269,8 @@ test('queue - events are queued for plugins that are favorite when app is select
 });
 
 test('queue - events processing will be paused', async () => {
-  const {
-    client,
-    device,
-    store,
-    sendMessage,
-  } = await createMockFlipperWithPlugin(TestPlugin);
+  const {client, device, store, sendMessage} =
+    await createMockFlipperWithPlugin(TestPlugin);
   selectDeviceLogs(store);
 
   sendMessage('inc', {});
@@ -330,12 +313,8 @@ test('queue - events processing will be paused', async () => {
 });
 
 test('queue - messages that arrive during processing will be queued', async () => {
-  const {
-    client,
-    device,
-    store,
-    sendMessage,
-  } = await createMockFlipperWithPlugin(TestPlugin);
+  const {client, device, store, sendMessage} =
+    await createMockFlipperWithPlugin(TestPlugin);
   selectDeviceLogs(store);
 
   sendMessage('inc', {});
@@ -380,12 +359,8 @@ test('queue - messages that arrive during processing will be queued', async () =
 });
 
 test('queue - processing can be cancelled', async () => {
-  const {
-    client,
-    device,
-    store,
-    sendMessage,
-  } = await createMockFlipperWithPlugin(TestPlugin);
+  const {client, device, store, sendMessage} =
+    await createMockFlipperWithPlugin(TestPlugin);
   selectDeviceLogs(store);
 
   sendMessage('inc', {});
@@ -415,12 +390,8 @@ test('queue - processing can be cancelled', async () => {
 });
 
 test('queue - make sure resetting plugin state clears the message queue', async () => {
-  const {
-    client,
-    device,
-    store,
-    sendMessage,
-  } = await createMockFlipperWithPlugin(TestPlugin);
+  const {client, device, store, sendMessage} =
+    await createMockFlipperWithPlugin(TestPlugin);
   selectDeviceLogs(store);
 
   sendMessage('inc', {});
@@ -486,12 +457,8 @@ test('client - incoming messages are buffered and flushed together', async () =>
     static persistedStateReducer = jest.fn();
   }
 
-  const {
-    client,
-    store,
-    device,
-    sendMessage,
-  } = await createMockFlipperWithPlugin(TestPlugin);
+  const {client, store, device, sendMessage} =
+    await createMockFlipperWithPlugin(TestPlugin);
   selectDeviceLogs(store);
 
   store.dispatch(registerPlugins([StubDeviceLogs]));
@@ -646,12 +613,8 @@ test('client - incoming messages are buffered and flushed together', async () =>
 });
 
 test('queue - messages that have not yet flushed be lost when disabling the plugin', async () => {
-  const {
-    client,
-    store,
-    sendMessage,
-    pluginKey,
-  } = await createMockFlipperWithPlugin(TestPlugin);
+  const {client, store, sendMessage, pluginKey} =
+    await createMockFlipperWithPlugin(TestPlugin);
   selectDeviceLogs(store);
 
   sendMessage('inc', {});

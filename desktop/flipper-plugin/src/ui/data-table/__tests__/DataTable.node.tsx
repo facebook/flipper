@@ -10,7 +10,7 @@
 import React, {createRef} from 'react';
 import {DataTable, DataTableColumn} from '../DataTable';
 import {render, act} from '@testing-library/react';
-import {createDataSource} from '../../../state/DataSource';
+import {createDataSource} from '../../../state/createDataSource';
 import {computeDataTableFilter, DataTableManager} from '../DataTableManager';
 import {Button} from 'antd';
 
@@ -43,27 +43,24 @@ test('update and append', async () => {
   const ds = createTestDataSource();
   const ref = createRef<DataTableManager<Todo>>();
   const rendering = render(
-    <DataTable
-      dataSource={ds}
-      columns={columns}
-      tableManagerRef={ref}
-      _testHeight={400}
-    />,
+    <DataTable dataSource={ds} columns={columns} tableManagerRef={ref} />,
   );
   {
     const elem = await rendering.findAllByText('test DataTable');
     expect(elem.length).toBe(1);
     expect(elem[0].parentElement).toMatchInlineSnapshot(`
       <div
-        class="css-w3o588-TableBodyRowContainer e1luu51r1"
+        class="css-1k3kr6b-TableBodyRowContainer e1luu51r1"
       >
         <div
-          class="css-1xxqqu6-TableBodyColumnContainer e1luu51r0"
+          class="css-9bipfg-TableBodyColumnContainer e1luu51r0"
+          width="50%"
         >
           test DataTable
         </div>
         <div
-          class="css-1xxqqu6-TableBodyColumnContainer e1luu51r0"
+          class="css-9bipfg-TableBodyColumnContainer e1luu51r0"
+          width="50%"
         >
           true
         </div>
@@ -100,27 +97,24 @@ test('column visibility', async () => {
   const ds = createTestDataSource();
   const ref = createRef<DataTableManager<Todo>>();
   const rendering = render(
-    <DataTable
-      dataSource={ds}
-      columns={columns}
-      tableManagerRef={ref}
-      _testHeight={400}
-    />,
+    <DataTable dataSource={ds} columns={columns} tableManagerRef={ref} />,
   );
   {
     const elem = await rendering.findAllByText('test DataTable');
     expect(elem.length).toBe(1);
     expect(elem[0].parentElement).toMatchInlineSnapshot(`
       <div
-        class="css-w3o588-TableBodyRowContainer e1luu51r1"
+        class="css-1k3kr6b-TableBodyRowContainer e1luu51r1"
       >
         <div
-          class="css-1xxqqu6-TableBodyColumnContainer e1luu51r0"
+          class="css-9bipfg-TableBodyColumnContainer e1luu51r0"
+          width="50%"
         >
           test DataTable
         </div>
         <div
-          class="css-1xxqqu6-TableBodyColumnContainer e1luu51r0"
+          class="css-9bipfg-TableBodyColumnContainer e1luu51r0"
+          width="50%"
         >
           true
         </div>
@@ -137,10 +131,11 @@ test('column visibility', async () => {
     expect(elem.length).toBe(1);
     expect(elem[0].parentElement).toMatchInlineSnapshot(`
       <div
-        class="css-w3o588-TableBodyRowContainer e1luu51r1"
+        class="css-1k3kr6b-TableBodyRowContainer e1luu51r1"
       >
         <div
-          class="css-1xxqqu6-TableBodyColumnContainer e1luu51r0"
+          class="css-9bipfg-TableBodyColumnContainer e1luu51r0"
+          width="50%"
         >
           test DataTable
         </div>
@@ -176,12 +171,7 @@ test('sorting', async () => {
   });
   const ref = createRef<DataTableManager<Todo>>();
   const rendering = render(
-    <DataTable
-      dataSource={ds}
-      columns={columns}
-      tableManagerRef={ref}
-      _testHeight={400}
-    />,
+    <DataTable dataSource={ds} columns={columns} tableManagerRef={ref} />,
   );
   // insertion order
   {
@@ -256,7 +246,6 @@ test('search', async () => {
       columns={columns}
       tableManagerRef={ref}
       extraActions={<Button>Test Button</Button>}
-      _testHeight={400}
     />,
   );
   {
@@ -540,7 +529,6 @@ test('onSelect callback fires, and in order', () => {
       dataSource={ds}
       columns={columns}
       tableManagerRef={ref}
-      _testHeight={400}
       onSelect={(item, items) => {
         events.push([item, items]);
       }}
@@ -592,7 +580,6 @@ test('selection always has the latest state', () => {
       dataSource={ds}
       columns={columns}
       tableManagerRef={ref}
-      _testHeight={400}
       onSelect={(item, items) => {
         events.push([item, items]);
       }}

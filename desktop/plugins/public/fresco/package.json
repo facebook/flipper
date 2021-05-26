@@ -12,6 +12,9 @@
   "title": "Images",
   "icon": "profile",
   "bugs": {
-    "email": "oncall+fresco@xmail.facebook.com"
+    "url": "https://github.com/facebook/flipper/issues"
+  },
+  "peerDependencies": {
+    "flipper-plugin": "*"
   }
 }

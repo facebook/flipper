@@ -122,13 +122,11 @@ export default class ShareSheetExportUrl extends Component<Props, State> {
           this.setState({statusUpdate: msg});
         }
       };
-      const {
-        serializedString,
-        fetchMetaDataErrors,
-      } = await reportPlatformFailures(
-        exportStore(this.store, false, this.idler, statusUpdate),
-        `${EXPORT_FLIPPER_TRACE_EVENT}:UI_LINK`,
-      );
+      const {serializedString, fetchMetaDataErrors} =
+        await reportPlatformFailures(
+          exportStore(this.store, false, this.idler, statusUpdate),
+          `${EXPORT_FLIPPER_TRACE_EVENT}:UI_LINK`,
+        );
       const uploadMarker = `${EXPORT_FLIPPER_TRACE_EVENT}:upload`;
       performance.mark(uploadMarker);
       statusUpdate('Uploading Flipper Export...');

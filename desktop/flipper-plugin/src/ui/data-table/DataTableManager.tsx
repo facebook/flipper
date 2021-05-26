@@ -10,8 +10,7 @@
 import type {DataTableColumn} from './DataTable';
 import {Percentage} from '../../utils/widthUtils';
 import {MutableRefObject, Reducer} from 'react';
-import {DataSource} from '../../state/DataSource';
-import {DataSourceVirtualizer} from './DataSourceRenderer';
+import {DataSource, DataSourceVirtualizer} from '../../data-source/index';
 import produce, {castDraft, immerable, original} from 'immer';
 
 export type OnColumnResize = (id: string, size: number | Percentage) => void;
@@ -59,6 +58,13 @@ type DataManagerActions<T> =
       'selectItem',
       {
         nextIndex: number | ((currentIndex: number) => number);
+        addToSelection?: boolean;
+      }
+    >
+  | Action<
+      'selectItemById',
+      {
+        id: string | number;
         addToSelection?: boolean;
       }
     >
@@ -161,6 +167,17 @@ export const dataTableManagerReducer = produce<
       );
       break;
     }
+    case 'selectItemById': {
+      const {id, addToSelection} = action;
+      // TODO: fix that this doesn't jumpt selection if items are shifted! sorting is swapped etc
+      const idx = config.dataSource.getIndexOfKey(id);
+      if (idx !== -1) {
+        draft.selection = castDraft(
+          computeSetSelection(draft.selection, idx, addToSelection),
+        );
+      }
+      break;
+    }
     case 'addRangeToSelection': {
       const {start, end, allowUnselect} = action;
       draft.selection = castDraft(
@@ -241,6 +258,7 @@ export type DataTableManager<T> = {
     end: number,
     allowUnselect?: boolean,
   ): void;
+  selectItemById(id: string | number, addToSelection?: boolean): void;
   clearSelection(): void;
   getSelectedItem(): T | undefined;
   getSelectedItems(): readonly T[];
@@ -260,6 +278,9 @@ export function createDataTableManager<T>(
     },
     selectItem(index: number, addToSelection = false) {
       dispatch({type: 'selectItem', nextIndex: index, addToSelection});
+    },
+    selectItemById(id, addToSelection = false) {
+      dispatch({type: 'selectItemById', id, addToSelection});
     },
     addRangeToSelection(start, end, allowUnselect = false) {
       dispatch({type: 'addRangeToSelection', start, end, allowUnselect});
@@ -420,8 +441,23 @@ function loadStateFromStorage(storageKey: string): PersistedState | undefined {
 function computeInitialColumns(
   columns: DataTableColumn<any>[],
 ): DataTableColumn<any>[] {
+  const visibleColumnCount = columns.filter((c) => c.visible !== false).length;
+  const columnsWithoutWidth = columns.filter(
+    (c) => c.visible !== false && c.width === undefined,
+  ).length;
+
   return columns.map((c) => ({
     ...c,
+    width:
+      c.width ??
+      // if the width is not set, and there are multiple columns with unset widths,
+      // there will be multiple columns ith the same flex weight (1), meaning that
+      // they will all resize a best fits in a specifc row.
+      // To address that we distribute space equally
+      // (this need further fine tuning in the future as with a subset of fixed columns width can become >100%)
+      (columnsWithoutWidth > 1
+        ? `${Math.floor(100 / visibleColumnCount)}%`
+        : undefined),
     filters:
       c.filters?.map((f) => ({
         ...f,

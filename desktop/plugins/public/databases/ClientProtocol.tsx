@@ -7,9 +7,7 @@
  * @format
  */
 
-import {PluginClient, Value} from 'flipper';
-
-type ClientCall<Params, Response> = (arg: Params) => Promise<Response>;
+import {Value} from './TypeBasedValueRenderer';
 
 type DatabaseListRequest = {};
 
@@ -71,28 +69,14 @@ type GetTableInfoResponse = {
   definition: string;
 };
 
-export class DatabaseClient {
-  client: PluginClient;
+export type Methods = {
+  databaseList(params: DatabaseListRequest): Promise<DatabaseListResponse>;
+  getTableData(params: QueryTableRequest): Promise<QueryTableResponse>;
+  getTableStructure(
+    params: GetTableStructureRequest,
+  ): Promise<GetTableStructureResponse>;
+  execute(params: ExecuteSqlRequest): Promise<ExecuteSqlResponse>;
+  getTableInfo(params: GetTableInfoRequest): Promise<GetTableInfoResponse>;
+};
 
-  constructor(pluginClient: PluginClient) {
-    this.client = pluginClient;
-  }
-
-  getDatabases: ClientCall<DatabaseListRequest, DatabaseListResponse> = () =>
-    this.client.call('databaseList', {});
-
-  getTableData: ClientCall<QueryTableRequest, QueryTableResponse> = (params) =>
-    this.client.call('getTableData', params);
-
-  getTableStructure: ClientCall<
-    GetTableStructureRequest,
-    GetTableStructureResponse
-  > = (params) => this.client.call('getTableStructure', params);
-
-  getExecution: ClientCall<ExecuteSqlRequest, ExecuteSqlResponse> = (params) =>
-    this.client.call('execute', params);
-
-  getTableInfo: ClientCall<GetTableInfoRequest, GetTableInfoResponse> = (
-    params,
-  ) => this.client.call('getTableInfo', params);
-}
+export type Events = {};

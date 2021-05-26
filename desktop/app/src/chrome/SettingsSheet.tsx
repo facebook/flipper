@@ -191,7 +191,7 @@ class SettingsSheet extends Component<Props, State> {
             <FilePathConfigField
               label="IDB binary location"
               defaultValue={idbPath}
-              isRegularFile={true}
+              isRegularFile
               onChange={(v) => {
                 this.setState({
                   updatedSettings: {...this.state.updatedSettings, idbPath: v},

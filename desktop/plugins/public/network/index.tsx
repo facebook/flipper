@@ -7,199 +7,137 @@
  * @format
  */
 
-import {padStart} from 'lodash';
-import React, {createContext} from 'react';
-import {MenuItemConstructorOptions} from 'electron';
-import {message} from 'antd';
+import React, {createRef} from 'react';
+import {
+  Button,
+  Form,
+  Input,
+  Menu,
+  message,
+  Modal,
+  Radio,
+  Typography,
+} from 'antd';
 
 import {
-  ContextMenu,
   Layout,
-  Button,
-  Text,
-  Glyph,
-  colors,
-  PureComponent,
   DetailSidebar,
-  styled,
-  SearchableTable,
-  Sheet,
-  TableHighlightedRows,
-  TableRows,
-  TableBodyRow,
-} from 'flipper';
-import {
-  Request,
-  RequestId,
-  Response,
-  Route,
-  ResponseFollowupChunk,
-  Header,
-  MockRoute,
-  PartialResponses,
-} from './types';
-import {convertRequestToCurlCommand, getHeaderValue, decodeBody} from './utils';
-import RequestDetails from './RequestDetails';
-import {clipboard} from 'electron';
-import {URL} from 'url';
-import {MockResponseDialog} from './MockResponseDialog';
-import {assembleChunksIfResponseIsComplete} from './chunks';
-import {
   PluginClient,
   Device,
   createState,
   usePlugin,
   useValue,
+  createDataSource,
+  DataTable,
+  DataTableColumn,
+  DataTableManager,
+  theme,
+  renderReactRoot,
+  batch,
 } from 'flipper-plugin';
-import {remote, OpenDialogOptions} from 'electron';
-import fs from 'fs';
-import electron from 'electron';
+import {
+  Request,
+  RequestInfo,
+  ResponseInfo,
+  ResponseFollowupChunk,
+  AddProtobufEvent,
+  PartialResponses,
+  SerializedRequest,
+} from './types';
+import {ProtobufDefinitionsRepository} from './ProtobufDefinitionsRepository';
+import {
+  convertRequestToCurlCommand,
+  getHeaderValue,
+  getResponseLength,
+  formatStatus,
+  formatBytes,
+  formatDuration,
+  requestsToText,
+  decodeBody,
+} from './utils';
+import RequestDetails from './RequestDetails';
+import {URL} from 'url';
+import {assembleChunksIfResponseIsComplete} from './chunks';
+import {DeleteOutlined} from '@ant-design/icons';
+import {ManageMockResponsePanel} from './request-mocking/ManageMockResponsePanel';
+import {
+  NetworkRouteContext,
+  NetworkRouteManager,
+  nullNetworkRouteManager,
+  Route,
+  MockRoute,
+  createNetworkManager,
+  computeMockRoutes,
+} from './request-mocking/NetworkRouteManager';
+import {Base64} from 'js-base64';
 
 const LOCALSTORAGE_MOCK_ROUTE_LIST_KEY = '__NETWORK_CACHED_MOCK_ROUTE_LIST';
 const LOCALSTORAGE_RESPONSE_BODY_FORMAT_KEY =
   '__NETWORK_CACHED_RESPONSE_BODY_FORMAT';
 
-export const BodyOptions = {
-  formatted: 'formatted',
-  parsed: 'parsed',
-};
+export const BodyOptions = ['formatted', 'parsed'].map((value) => ({
+  label: value,
+  value,
+}));
 
 type Events = {
-  newRequest: Request;
-  newResponse: Response;
-  partialResponse: Response | ResponseFollowupChunk;
+  newRequest: RequestInfo;
+  newResponse: ResponseInfo;
+  partialResponse: ResponseInfo | ResponseFollowupChunk;
+  addProtobufDefinitions: AddProtobufEvent;
 };
 
 type Methods = {
   mockResponses(params: {routes: MockRoute[]}): Promise<void>;
 };
 
-const COLUMN_SIZE = {
-  requestTimestamp: 100,
-  responseTimestamp: 100,
-  domain: 'flex',
-  method: 100,
-  status: 70,
-  size: 100,
-  duration: 100,
+type CustomColumnConfig = {
+  header: string;
+  type: 'response' | 'request';
 };
 
-const COLUMN_ORDER = [
-  {key: 'requestTimestamp', visible: true},
-  {key: 'responseTimestamp', visible: false},
-  {key: 'domain', visible: true},
-  {key: 'method', visible: true},
-  {key: 'status', visible: true},
-  {key: 'size', visible: true},
-  {key: 'duration', visible: true},
-];
-
-const COLUMNS = {
-  requestTimestamp: {value: 'Request Time'},
-  responseTimestamp: {value: 'Response Time'},
-  domain: {value: 'Domain'},
-  method: {value: 'Method'},
-  status: {value: 'Status'},
-  size: {value: 'Size'},
-  duration: {value: 'Duration'},
+type StateExport = {
+  requests2: SerializedRequest[];
+  isMockResponseSupported: boolean;
+  selectedId: string | undefined;
+  customColumns: CustomColumnConfig[];
 };
-
-const mockingStyle = {
-  backgroundColor: colors.yellowTint,
-  color: colors.yellow,
-  fontWeight: 500,
-};
-
-export function formatBytes(count: number): string {
-  if (count > 1024 * 1024) {
-    return (count / (1024.0 * 1024)).toFixed(1) + ' MB';
-  }
-  if (count > 1024) {
-    return (count / 1024.0).toFixed(1) + ' kB';
-  }
-  return count + ' B';
-}
-
-const TextEllipsis = styled(Text)({
-  overflowX: 'hidden',
-  textOverflow: 'ellipsis',
-  maxWidth: '100%',
-  lineHeight: '18px',
-  paddingTop: 4,
-});
-
-// State management
-export interface NetworkRouteManager {
-  addRoute(): string | null;
-  modifyRoute(id: string, routeChange: Partial<Route>): void;
-  removeRoute(id: string): void;
-  enableRoute(id: string): void;
-  copyHighlightedCalls(
-    highlightedRows: Set<string>,
-    requests: {[id: string]: Request},
-    responses: {[id: string]: Response},
-  ): void;
-  importRoutes(): void;
-  exportRoutes(): void;
-  clearRoutes(): void;
-}
-const nullNetworkRouteManager: NetworkRouteManager = {
-  addRoute(): string | null {
-    return '';
-  },
-  modifyRoute(_id: string, _routeChange: Partial<Route>) {},
-  removeRoute(_id: string) {},
-  enableRoute(_id: string) {},
-  copyHighlightedCalls(
-    _highlightedRows: Set<string>,
-    _requests: {[id: string]: Request},
-    _responses: {[id: string]: Response},
-  ) {},
-  importRoutes() {},
-  exportRoutes() {},
-  clearRoutes() {},
-};
-export const NetworkRouteContext = createContext<NetworkRouteManager>(
-  nullNetworkRouteManager,
-);
 
 export function plugin(client: PluginClient<Events, Methods>) {
   const networkRouteManager = createState<NetworkRouteManager>(
     nullNetworkRouteManager,
   );
 
-  const selectedIds = createState<Array<RequestId>>([]);
-  const searchTerm = createState<string>('');
   const routes = createState<{[id: string]: Route}>({});
   const nextRouteId = createState<number>(0);
   const isMockResponseSupported = createState<boolean>(false);
   const showMockResponseDialog = createState<boolean>(false);
   const detailBodyFormat = createState<string>(
-    localStorage.getItem(LOCALSTORAGE_RESPONSE_BODY_FORMAT_KEY) ||
-      BodyOptions.parsed,
+    localStorage.getItem(LOCALSTORAGE_RESPONSE_BODY_FORMAT_KEY) || 'parsed',
   );
-  const highlightedRows = createState<Set<string> | null | undefined>(
-    new Set(),
-  );
-  const isDeeplinked = createState<boolean>(false);
-  const requests = createState<{[id: string]: Request}>(
-    {},
-    {persist: 'requests'},
-  );
-  const responses = createState<{[id: string]: Response}>(
-    {},
-    {persist: 'responses'},
-  );
+  const requests = createDataSource<Request, 'id'>([], {
+    key: 'id',
+  });
+  const selectedId = createState<string | undefined>(undefined);
+  const tableManagerRef = createRef<undefined | DataTableManager<Request>>();
 
-  const partialResponses = createState<PartialResponses>(
-    {},
-    {persist: 'partialResponses'},
-  );
+  const partialResponses = createState<PartialResponses>({});
+
+  const customColumns = createState<CustomColumnConfig[]>([]); // Store in local storage as well: T69989583
+  const columns = createState<DataTableColumn<Request>[]>(baseColumns); // not persistable
 
   client.onDeepLink((payload: unknown) => {
-    if (typeof payload === 'string') {
-      parseDeepLinkPayload(payload);
-      isDeeplinked.set(true);
+    const searchTermDelim = 'searchTerm=';
+    if (typeof payload !== 'string') {
+      return;
+    } else if (payload.startsWith(searchTermDelim)) {
+      tableManagerRef.current?.clearSelection();
+      tableManagerRef.current?.setSearchValue(
+        payload.slice(searchTermDelim.length),
+      );
+    } else {
+      tableManagerRef.current?.setSearchValue('');
+      tableManagerRef.current?.selectItemById(payload);
     }
   });
 
@@ -212,20 +150,30 @@ export function plugin(client: PluginClient<Events, Methods>) {
     init();
   });
 
-  client.onDeactivate(() => {
-    isDeeplinked.set(false);
+  client.onMessage('newRequest', (data) => {
+    requests.append(createRequestFromRequestInfo(data, customColumns.get()));
   });
 
-  client.onMessage('newRequest', (data) => {
-    requests.update((draft) => {
-      draft[data.id] = data;
-    });
-  });
+  function storeResponse(response: ResponseInfo) {
+    const request = requests.getById(response.id);
+    if (!request) {
+      return; // request table might have been cleared
+    }
+
+    requests.upsert(
+      updateRequestWithResponseInfo(request, response, customColumns.get()),
+    );
+  }
 
   client.onMessage('newResponse', (data) => {
-    responses.update((draft) => {
-      draft[data.id] = data;
-    });
+    storeResponse(data);
+  });
+
+  client.onMessage('addProtobufDefinitions', (data) => {
+    const repository = ProtobufDefinitionsRepository.getInstance();
+    for (const [baseUrl, definitions] of Object.entries(data)) {
+      repository.addDefinitions(baseUrl, definitions);
+    }
   });
 
   client.onMessage('partialResponse', (data) => {
@@ -240,11 +188,9 @@ export function plugin(client: PluginClient<Events, Methods>) {
         The remaining chunks will be sent in ResponseFollowupChunks, which each contain another piece of the payload, along with their index from 1 onwards.
         The payload of each chunk is individually encoded in the same way that full responses are.
 
-        The order that initialResponse, and followup chunks are recieved is not guaranteed to be in index order.
+        The order that initialResponse, and followup chunks are received is not guaranteed to be in index order.
     */
-    const message: Response | ResponseFollowupChunk = data as
-      | Response
-      | ResponseFollowupChunk;
+    const message = data as ResponseInfo | ResponseFollowupChunk;
 
     partialResponses.update((draft) => {
       if (!draft[message.id]) {
@@ -259,15 +205,23 @@ export function plugin(client: PluginClient<Events, Methods>) {
         entry.followupChunks[chunk.index] = chunk.data;
       } else {
         // It's an initial chunk
-        entry.initialResponse = message as Response;
+        entry.initialResponse = message as ResponseInfo;
       }
     });
-    assembleChunksIfResponseIsComplete(partialResponses, responses, message.id);
+    const response = assembleChunksIfResponseIsComplete(
+      partialResponses.get()[message.id],
+    );
+    if (response) {
+      storeResponse(response);
+      partialResponses.update((draft) => {
+        delete draft[response.id];
+      });
+    }
   });
 
-  function supportsMocks(device: Device): Promise<boolean> {
+  async function supportsMocks(device: Device): Promise<boolean> {
     if (device.isArchived) {
-      return Promise.resolve(true);
+      return isMockResponseSupported.get();
     } else {
       return client.supportsMethod('mockResponses');
     }
@@ -279,219 +233,33 @@ export function plugin(client: PluginClient<Events, Methods>) {
         localStorage.getItem(LOCALSTORAGE_MOCK_ROUTE_LIST_KEY + client.appId) ||
           '{}',
       );
-      routes.set(newRoutes);
-      isMockResponseSupported.set(result);
-      showMockResponseDialog.set(false);
-      nextRouteId.set(Object.keys(routes.get()).length);
+      batch(() => {
+        routes.set(newRoutes);
+        isMockResponseSupported.set(result);
+        showMockResponseDialog.set(false);
+        nextRouteId.set(Object.keys(routes.get()).length);
+      });
 
       informClientMockChange(routes.get());
     });
 
     // declare new variable to be called inside the interface
-    networkRouteManager.set({
-      addRoute(): string | null {
-        const newNextRouteId = nextRouteId.get();
-        routes.update((draft) => {
-          draft[newNextRouteId.toString()] = {
-            requestUrl: '',
-            requestMethod: 'GET',
-            responseData: '',
-            responseHeaders: {},
-            responseStatus: '200',
-            enabled: true,
-          };
-        });
-        nextRouteId.set(newNextRouteId + 1);
-        return String(newNextRouteId);
-      },
-      modifyRoute(id: string, routeChange: Partial<Route>) {
-        if (!routes.get().hasOwnProperty(id)) {
-          return;
-        }
-        routes.update((draft) => {
-          Object.assign(draft[id], routeChange);
-        });
-        informClientMockChange(routes.get());
-      },
-      removeRoute(id: string) {
-        if (routes.get().hasOwnProperty(id)) {
-          routes.update((draft) => {
-            delete draft[id];
-          });
-        }
-        informClientMockChange(routes.get());
-      },
-      enableRoute(id: string) {
-        if (routes.get().hasOwnProperty(id)) {
-          routes.update((draft) => {
-            draft[id].enabled = !draft[id].enabled;
-          });
-        }
-        informClientMockChange(routes.get());
-      },
-      copyHighlightedCalls(
-        highlightedRows: Set<string> | null | undefined,
-        requests: {[id: string]: Request},
-        responses: {[id: string]: Response},
-      ) {
-        // iterate through highlighted rows
-        highlightedRows?.forEach((row) => {
-          const response = responses[row];
-          // convert headers
-          const headers: {[id: string]: Header} = {};
-          response.headers.forEach((e) => {
-            headers[e.key] = e;
-          });
-
-          // convert data TODO: we only want this for non-binary data! See D23403095
-          const responseData =
-            response && response.data ? decodeBody(response) : '';
-
-          const newNextRouteId = nextRouteId.get();
-          routes.update((draft) => {
-            draft[newNextRouteId.toString()] = {
-              requestUrl: requests[row].url,
-              requestMethod: requests[row].method,
-              responseData: responseData as string,
-              responseHeaders: headers,
-              responseStatus: responses[row].status.toString(),
-              enabled: true,
-            };
-          });
-          nextRouteId.set(newNextRouteId + 1);
-        });
-
-        informClientMockChange(routes.get());
-      },
-      importRoutes() {
-        const options: OpenDialogOptions = {
-          properties: ['openFile'],
-          filters: [{extensions: ['json'], name: 'Flipper Route Files'}],
-        };
-        remote.dialog.showOpenDialog(options).then((result) => {
-          const filePaths = result.filePaths;
-          if (filePaths.length > 0) {
-            fs.readFile(filePaths[0], 'utf8', (err, data) => {
-              if (err) {
-                message.error('Unable to import file');
-                return;
-              }
-              const importedRoutes = JSON.parse(data);
-              importedRoutes?.forEach((importedRoute: Route) => {
-                if (importedRoute != null) {
-                  const newNextRouteId = nextRouteId.get();
-                  routes.update((draft) => {
-                    draft[newNextRouteId.toString()] = {
-                      requestUrl: importedRoute.requestUrl,
-                      requestMethod: importedRoute.requestMethod,
-                      responseData: importedRoute.responseData as string,
-                      responseHeaders: importedRoute.responseHeaders,
-                      responseStatus: importedRoute.responseStatus,
-                      enabled: true,
-                    };
-                  });
-                  nextRouteId.set(newNextRouteId + 1);
-                }
-              });
-              informClientMockChange(routes.get());
-            });
-          }
-        });
-      },
-      exportRoutes() {
-        remote.dialog
-          .showSaveDialog(
-            // @ts-ignore This appears to work but isn't allowed by the types
-            null,
-            {
-              title: 'Export Routes',
-              defaultPath: 'NetworkPluginRoutesExport.json',
-            },
-          )
-          .then((result: electron.SaveDialogReturnValue) => {
-            const file = result.filePath;
-            if (!file) {
-              return;
-            }
-            fs.writeFile(
-              file,
-              JSON.stringify(Object.values(routes.get()), null, 2),
-              'utf8',
-              (err) => {
-                if (err) {
-                  message.error('Failed to store mock routes: ' + err);
-                } else {
-                  message.info('Successfully exported mock routes');
-                }
-              },
-            );
-          });
-      },
-      clearRoutes() {
-        routes.set({});
-        informClientMockChange(routes.get());
-      },
-    });
-  }
-
-  function parseDeepLinkPayload(deepLinkPayload: unknown) {
-    const searchTermDelim = 'searchTerm=';
-    if (typeof deepLinkPayload !== 'string') {
-      selectedIds.set([]);
-      searchTerm.set('');
-    } else if (deepLinkPayload.startsWith(searchTermDelim)) {
-      selectedIds.set([]);
-      searchTerm.set(deepLinkPayload.slice(searchTermDelim.length));
-    } else {
-      selectedIds.set([deepLinkPayload]);
-      searchTerm.set('');
-    }
+    networkRouteManager.set(
+      createNetworkManager(
+        nextRouteId,
+        routes,
+        informClientMockChange,
+        tableManagerRef,
+      ),
+    );
   }
 
   function clearLogs() {
-    selectedIds.set([]);
-    responses.set({});
-    requests.set({});
-  }
-
-  function copyRequestCurlCommand() {
-    // Ensure there is only one row highlighted.
-    if (selectedIds.get().length !== 1) {
-      return;
-    }
-
-    const request = requests.get()[selectedIds.get()[0]];
-    if (!request) {
-      return;
-    }
-    const command = convertRequestToCurlCommand(request);
-    clipboard.writeText(command);
+    requests.clear();
   }
 
   async function informClientMockChange(routes: {[id: string]: Route}) {
-    const existedIdSet: {[id: string]: {[method: string]: boolean}} = {};
-    const filteredRoutes: {[id: string]: Route} = Object.entries(routes).reduce(
-      (accRoutes, [id, route]) => {
-        if (existedIdSet.hasOwnProperty(route.requestUrl)) {
-          if (
-            existedIdSet[route.requestUrl].hasOwnProperty(route.requestMethod)
-          ) {
-            return accRoutes;
-          }
-          existedIdSet[route.requestUrl] = {
-            ...existedIdSet[route.requestUrl],
-            [route.requestMethod]: true,
-          };
-          return Object.assign({[id]: route}, accRoutes);
-        } else {
-          existedIdSet[route.requestUrl] = {
-            [route.requestMethod]: true,
-          };
-          return Object.assign({[id]: route}, accRoutes);
-        }
-      },
-      {},
-    );
+    const filteredRoutes: {[id: string]: Route} = computeMockRoutes(routes);
 
     if (isMockResponseSupported.get()) {
       const routesValuesArray = Object.values(filteredRoutes);
@@ -521,24 +289,117 @@ export function plugin(client: PluginClient<Events, Methods>) {
     }
   }
 
+  function addCustomColumn(column: CustomColumnConfig) {
+    // prevent doubles
+    if (
+      customColumns
+        .get()
+        .find((c) => c.header === column.header && c.type === column.type)
+    ) {
+      return;
+    }
+    // add custom column config
+    customColumns.update((d) => {
+      d.push(column);
+    });
+    // generate DataTable column config
+    addDataTableColumnConfig(column);
+    // update existing entries
+    for (let i = 0; i < requests.size; i++) {
+      const request = requests.get(i);
+      requests.update(i, {
+        ...request,
+        [`${column.type}_header_${column.header}`]: getHeaderValue(
+          column.type === 'request'
+            ? request.requestHeaders
+            : request.responseHeaders,
+          column.header,
+        ),
+      });
+    }
+  }
+
+  function addDataTableColumnConfig(column: CustomColumnConfig) {
+    columns.update((d) => {
+      d.push({
+        key: `${column.type}_header_${column.header}` as any,
+        width: 200,
+        title: `${column.header} (${column.type})`,
+      });
+    });
+  }
+
+  client.onReady(() => {
+    // after restoring a snapshot, let's make sure we update the columns
+    customColumns.get().forEach(addDataTableColumnConfig);
+  });
+
+  client.onExport<StateExport>(async (idler, onStatusMessage) => {
+    const serializedRequests: SerializedRequest[] = [];
+    for (let i = 0; i < requests.size; i++) {
+      const request = requests.get(i);
+      serializedRequests.push({
+        ...request,
+        requestTime: request.requestTime.getTime(),
+        responseTime: request.responseTime?.getTime(),
+        requestData:
+          request.requestData instanceof Uint8Array
+            ? [Base64.fromUint8Array(request.requestData)]
+            : request.requestData,
+        responseData:
+          request.responseData instanceof Uint8Array
+            ? [Base64.fromUint8Array(request.responseData)]
+            : request.responseData,
+      });
+      if (idler.isCancelled()) {
+        return;
+      }
+      if (idler.shouldIdle()) {
+        onStatusMessage(`Serializing request ${i + 1}/${requests.size}`);
+        await idler.idle();
+      }
+    }
+    return {
+      isMockResponseSupported: isMockResponseSupported.get(),
+      selectedId: selectedId.get(),
+      requests2: serializedRequests,
+      customColumns: customColumns.get(),
+    };
+  });
+
+  client.onImport<StateExport>((data) => {
+    selectedId.set(data.selectedId);
+    isMockResponseSupported.set(data.isMockResponseSupported);
+    customColumns.set(data.customColumns);
+    data.requests2.forEach((request) => {
+      requests.append({
+        ...request,
+        requestTime: new Date(request.requestTime),
+        responseTime:
+          request.responseTime != null
+            ? new Date(request.responseTime)
+            : undefined,
+        requestData: Array.isArray(request.requestData)
+          ? Base64.toUint8Array(request.requestData[0])
+          : request.requestData,
+        responseData: Array.isArray(request.responseData)
+          ? Base64.toUint8Array(request.responseData[0])
+          : request.responseData,
+      });
+    });
+  });
+
   return {
-    selectedIds,
-    searchTerm,
+    columns,
     routes,
     nextRouteId,
     isMockResponseSupported,
     showMockResponseDialog,
     detailBodyFormat,
-    highlightedRows,
-    isDeeplinked,
     requests,
-    responses,
     partialResponses,
     networkRouteManager,
     clearLogs,
-    onRowHighlighted(selectedIdsArr: Array<RequestId>) {
-      selectedIds.set(selectedIdsArr);
-    },
     onMockButtonPressed() {
       showMockResponseDialog.set(true);
     },
@@ -549,461 +410,288 @@ export function plugin(client: PluginClient<Events, Methods>) {
       detailBodyFormat.set(bodyFormat);
       localStorage.setItem(LOCALSTORAGE_RESPONSE_BODY_FORMAT_KEY, bodyFormat);
     },
-    copyRequestCurlCommand,
+    selectedId,
+    onSelect(request: Request) {
+      selectedId.set(request?.id);
+    },
     init,
+    tableManagerRef,
+    onContextMenu(request: Request | undefined) {
+      return (
+        <>
+          <Menu.Item
+            key="curl"
+            onClick={() => {
+              if (!request) {
+                return;
+              }
+              const command = convertRequestToCurlCommand(request);
+              client.writeTextToClipboard(command);
+            }}>
+            Copy cURL command
+          </Menu.Item>
+          <Menu.Item
+            key="custom header"
+            onClick={() => {
+              showCustomColumnDialog(addCustomColumn);
+            }}>
+            Add header column{'\u2026'}
+          </Menu.Item>
+        </>
+      );
+    },
+    onCopyText(text: string) {
+      client.writeTextToClipboard(text);
+      message.success('Text copied to clipboard');
+    },
+    addCustomColumn,
   };
+}
+
+function showCustomColumnDialog(
+  addCustomColumn: (column: CustomColumnConfig) => void,
+) {
+  function CustomColumnDialog({unmount}: {unmount(): void}) {
+    const [form] = Form.useForm();
+    return (
+      <Modal
+        title="Add custom column"
+        visible
+        onOk={() => {
+          const header = form.getFieldValue('header');
+          const type = form.getFieldValue('type');
+          if (header && type) {
+            addCustomColumn({
+              header,
+              type,
+            });
+            unmount();
+          }
+        }}
+        onCancel={unmount}>
+        <Form
+          layout={'vertical'}
+          form={form}
+          initialValues={{
+            type: 'response',
+            header: '',
+          }}>
+          <Form.Item label="Header name" name="header">
+            <Input placeholder="Header name" />
+          </Form.Item>
+          <Form.Item label="Header type" name="type">
+            <Radio.Group>
+              <Radio value={'request'}>Request</Radio>
+              <Radio value={'response'}>Response</Radio>
+            </Radio.Group>
+          </Form.Item>
+        </Form>
+      </Modal>
+    );
+  }
+
+  renderReactRoot((unmount) => <CustomColumnDialog unmount={unmount} />);
+}
+
+function createRequestFromRequestInfo(
+  data: RequestInfo,
+  customColumns: CustomColumnConfig[],
+): Request {
+  let url: URL | undefined = undefined;
+  try {
+    url = data.url ? new URL(data.url) : undefined;
+  } catch (e) {
+    console.warn(`Failed to parse url: '${data.url}'`, e);
+  }
+  const domain =
+    getHeaderValue(data.headers, 'X-FB-Friendly-Name') ||
+    (url ? (url.pathname ? url.host + url.pathname : url.host) : '<unknown>');
+
+  const res = {
+    id: data.id,
+    // request
+    requestTime: new Date(data.timestamp),
+    method: data.method,
+    url: data.url ?? '',
+    domain,
+    requestHeaders: data.headers,
+    requestData: decodeBody(data.headers, data.data),
+  };
+  customColumns
+    .filter((c) => c.type === 'request')
+    .forEach(({header}) => {
+      (res as any)['request_header_' + header] = getHeaderValue(
+        data.headers,
+        header,
+      );
+    });
+  return res;
+}
+
+function updateRequestWithResponseInfo(
+  request: Request,
+  response: ResponseInfo,
+  customColumns: CustomColumnConfig[],
+): Request {
+  const res = {
+    ...request,
+    responseTime: new Date(response.timestamp),
+    status: response.status,
+    reason: response.reason,
+    responseHeaders: response.headers,
+    responseData: decodeBody(response.headers, response.data),
+    responseIsMock: response.isMock,
+    responseLength: getResponseLength(response),
+    duration: response.timestamp - request.requestTime.getTime(),
+    insights: response.insights ?? undefined,
+  };
+  customColumns
+    .filter((c) => c.type === 'response')
+    .forEach(({header}) => {
+      (res as any)['response_header_' + header] = getHeaderValue(
+        response.headers,
+        header,
+      );
+    });
+  return res;
 }
 
 export function Component() {
   const instance = usePlugin(plugin);
-
-  const requests = useValue(instance.requests);
-  const responses = useValue(instance.responses);
-  const selectedIds = useValue(instance.selectedIds);
-  const searchTerm = useValue(instance.searchTerm);
   const routes = useValue(instance.routes);
   const isMockResponseSupported = useValue(instance.isMockResponseSupported);
   const showMockResponseDialog = useValue(instance.showMockResponseDialog);
   const networkRouteManager = useValue(instance.networkRouteManager);
+  const columns = useValue(instance.columns);
 
   return (
-    <Layout.Container grow={true}>
-      <NetworkRouteContext.Provider value={networkRouteManager}>
-        <NetworkTable
-          requests={requests || {}}
-          responses={responses || {}}
-          routes={routes}
-          onMockButtonPressed={instance.onMockButtonPressed}
-          onCloseButtonPressed={instance.onCloseButtonPressed}
-          showMockResponseDialog={showMockResponseDialog}
-          clear={instance.clearLogs}
-          copyRequestCurlCommand={instance.copyRequestCurlCommand}
-          onRowHighlighted={instance.onRowHighlighted}
-          highlightedRows={selectedIds ? new Set(selectedIds) : null}
-          searchTerm={searchTerm}
-          isMockResponseSupported={isMockResponseSupported}
-        />
-        <Sidebar />
-      </NetworkRouteContext.Provider>
-    </Layout.Container>
-  );
-}
-
-type NetworkTableProps = {
-  requests: {[id: string]: Request};
-  responses: {[id: string]: Response};
-  routes: {[id: string]: Route};
-  clear: () => void;
-  copyRequestCurlCommand: () => void;
-  onRowHighlighted: (keys: TableHighlightedRows) => void;
-  highlightedRows: Set<string> | null | undefined;
-  searchTerm: string;
-  onMockButtonPressed: () => void;
-  onCloseButtonPressed: () => void;
-  showMockResponseDialog: boolean;
-  isMockResponseSupported: boolean;
-};
-
-type NetworkTableState = {
-  sortedRows: TableRows;
-  routes: {[id: string]: Route};
-  highlightedRows: Set<string> | null | undefined;
-  requests: {[id: string]: Request};
-  responses: {[id: string]: Response};
-};
-
-function formatTimestamp(timestamp: number): string {
-  const date = new Date(timestamp);
-  return `${padStart(date.getHours().toString(), 2, '0')}:${padStart(
-    date.getMinutes().toString(),
-    2,
-    '0',
-  )}:${padStart(date.getSeconds().toString(), 2, '0')}.${padStart(
-    date.getMilliseconds().toString(),
-    3,
-    '0',
-  )}`;
-}
-
-function buildRow(
-  request: Request,
-  response: Response | null | undefined,
-): TableBodyRow | null | undefined {
-  if (request == null) {
-    return null;
-  }
-
-  if (request.url == null) {
-    return null;
-  }
-  let url: URL | undefined = undefined;
-  try {
-    url = new URL(request.url);
-  } catch (e) {
-    console.warn(`Failed to parse url: '${request.url}'`, e);
-  }
-  const domain = url ? url.host + url.pathname : '<unknown>';
-  const friendlyName = getHeaderValue(request.headers, 'X-FB-Friendly-Name');
-  const style = response && response.isMock ? mockingStyle : undefined;
-
-  const copyText = () => {
-    let copyText = `# HTTP request for ${domain} (ID: ${request.id})
-  ## Request
-  HTTP ${request.method} ${request.url}
-  ${request.headers
-    .map(
-      ({key, value}: {key: string; value: string}): string =>
-        `${key}: ${String(value)}`,
-    )
-    .join('\n')}`;
-
-    // TODO: we want decoding only for non-binary data! See D23403095
-    const requestData = request.data ? decodeBody(request) : null;
-    const responseData =
-      response && response.data ? decodeBody(response) : null;
-
-    if (requestData) {
-      copyText += `\n\n${requestData}`;
-    }
-
-    if (response) {
-      copyText += `
-
-  ## Response
-  HTTP ${response.status} ${response.reason}
-  ${response.headers
-    .map(
-      ({key, value}: {key: string; value: string}): string =>
-        `${key}: ${String(value)}`,
-    )
-    .join('\n')}`;
-    }
-
-    if (responseData) {
-      copyText += `\n\n${responseData}`;
-    }
-    return copyText;
-  };
-
-  return {
-    columns: {
-      requestTimestamp: {
-        value: (
-          <TextEllipsis>{formatTimestamp(request.timestamp)}</TextEllipsis>
-        ),
-      },
-      responseTimestamp: {
-        value: (
-          <TextEllipsis>
-            {response && formatTimestamp(response.timestamp)}
-          </TextEllipsis>
-        ),
-      },
-      domain: {
-        value: (
-          <TextEllipsis>{friendlyName ? friendlyName : domain}</TextEllipsis>
-        ),
-        isFilterable: true,
-      },
-      method: {
-        value: <TextEllipsis>{request.method}</TextEllipsis>,
-        isFilterable: true,
-      },
-      status: {
-        value: (
-          <StatusColumn>{response ? response.status : undefined}</StatusColumn>
-        ),
-        isFilterable: true,
-      },
-      size: {
-        value: <SizeColumn response={response ? response : undefined} />,
-      },
-      duration: {
-        value: <DurationColumn request={request} response={response} />,
-      },
-    },
-    key: request.id,
-    filterValue: `${request.method} ${request.url}`,
-    sortKey: request.timestamp,
-    copyText,
-    getSearchContent: copyText,
-    highlightOnHover: true,
-    style: style,
-  };
-}
-
-function calculateState(
-  props: {
-    requests: {[id: string]: Request};
-    responses: {[id: string]: Response};
-  },
-  nextProps: NetworkTableProps,
-  rows: TableRows = [],
-): NetworkTableState {
-  rows = [...rows];
-  if (Object.keys(nextProps.requests).length === 0) {
-    // cleared
-    rows = [];
-  } else if (props.requests !== nextProps.requests) {
-    // new request
-    for (const [requestId, request] of Object.entries(nextProps.requests)) {
-      if (props.requests[requestId] == null) {
-        const newRow = buildRow(request, nextProps.responses[requestId]);
-        if (newRow) {
-          rows.push(newRow);
-        }
-      }
-    }
-  }
-  if (props.responses !== nextProps.responses) {
-    // new or updated response
-    const resIds = Object.keys(nextProps.responses).filter(
-      (responseId: RequestId) =>
-        props.responses[responseId] !== nextProps.responses[responseId],
-    );
-    for (const resId of resIds) {
-      if (resId) {
-        const request = nextProps.requests[resId];
-        // sanity check; to pass null check
-        if (request) {
-          const newRow = buildRow(request, nextProps.responses[resId]);
-          const index = rows.findIndex(
-            (r: TableBodyRow) => r.key === request.id,
-          );
-          if (index > -1 && newRow) {
-            rows[index] = newRow;
+    <NetworkRouteContext.Provider value={networkRouteManager}>
+      <Layout.Container
+        grow
+        key={
+          columns.length /* make sure to reset the table if colums change */
+        }>
+        <DataTable
+          columns={columns}
+          dataSource={instance.requests}
+          onRowStyle={getRowStyle}
+          tableManagerRef={instance.tableManagerRef}
+          onSelect={instance.onSelect}
+          onCopyRows={requestsToText}
+          onContextMenu={instance.onContextMenu}
+          enableAutoScroll
+          extraActions={
+            <Layout.Horizontal gap>
+              <Button title="Clear logs" onClick={instance.clearLogs}>
+                <DeleteOutlined />
+              </Button>
+              {isMockResponseSupported && (
+                <Button onClick={instance.onMockButtonPressed}>Mock</Button>
+              )}
+            </Layout.Horizontal>
           }
-        }
-      }
-    }
-  }
-
-  rows.sort(
-    (a: TableBodyRow, b: TableBodyRow) =>
-      (a.sortKey as number) - (b.sortKey as number),
+        />
+        <Modal
+          visible={showMockResponseDialog}
+          onCancel={instance.onCloseButtonPressed}
+          footer={null}
+          title="Mock Network Responses"
+          width={1200}>
+          <ManageMockResponsePanel routes={routes} />
+        </Modal>
+        <DetailSidebar width={400}>
+          <Sidebar />
+        </DetailSidebar>
+      </Layout.Container>
+    </NetworkRouteContext.Provider>
   );
-
-  return {
-    sortedRows: rows,
-    routes: nextProps.routes,
-    highlightedRows: nextProps.highlightedRows,
-    requests: props.requests,
-    responses: props.responses,
-  };
 }
 
 function Sidebar() {
   const instance = usePlugin(plugin);
-  const requests = useValue(instance.requests);
-  const responses = useValue(instance.responses);
-  const selectedIds = useValue(instance.selectedIds);
+  const selectedId = useValue(instance.selectedId);
   const detailBodyFormat = useValue(instance.detailBodyFormat);
-  const selectedId = selectedIds.length === 1 ? selectedIds[0] : null;
 
-  if (!selectedId) {
-    return null;
-  }
-  const requestWithId = requests[selectedId];
-  if (!requestWithId) {
-    return null;
+  const request = instance.requests.getById(selectedId!);
+  if (!request) {
+    return (
+      <Layout.Container pad grow center>
+        <Typography.Text type="secondary">No request selected</Typography.Text>
+      </Layout.Container>
+    );
   }
 
   return (
-    <DetailSidebar width={500}>
-      <RequestDetails
-        key={selectedId}
-        request={requestWithId}
-        response={responses[selectedId]}
-        bodyFormat={detailBodyFormat}
-        onSelectFormat={instance.onSelectFormat}
-      />
-    </DetailSidebar>
+    <RequestDetails
+      key={selectedId}
+      request={request}
+      bodyFormat={detailBodyFormat}
+      onSelectFormat={instance.onSelectFormat}
+      onCopyText={instance.onCopyText}
+    />
   );
 }
 
-class NetworkTable extends PureComponent<NetworkTableProps, NetworkTableState> {
-  static ContextMenu = styled(ContextMenu)({
-    flex: 1,
-  });
+const baseColumns: DataTableColumn<Request>[] = [
+  {
+    key: 'requestTime',
+    title: 'Request Time',
+    width: 120,
+  },
+  {
+    key: 'responseTime',
+    title: 'Response Time',
+    width: 120,
+    visible: false,
+  },
+  {
+    key: 'domain',
+  },
+  {
+    key: 'url',
+    title: 'Full URL',
+    visible: false,
+  },
+  {
+    key: 'method',
+    title: 'Method',
+    width: 70,
+  },
+  {
+    key: 'status',
+    title: 'Status',
+    width: 70,
+    formatters: formatStatus,
+    align: 'right',
+  },
+  {
+    key: 'responseLength',
+    title: 'Size',
+    width: 100,
+    formatters: formatBytes,
+    align: 'right',
+  },
+  {
+    key: 'duration',
+    title: 'Time',
+    width: 100,
+    formatters: formatDuration,
+    align: 'right',
+  },
+];
 
-  constructor(props: NetworkTableProps) {
-    super(props);
-    this.state = calculateState({requests: {}, responses: {}}, props);
-  }
+const mockingStyle = {
+  color: theme.warningColor,
+};
 
-  UNSAFE_componentWillReceiveProps(nextProps: NetworkTableProps) {
-    this.setState(calculateState(this.props, nextProps, this.state.sortedRows));
-  }
+const errorStyle = {
+  color: theme.errorColor,
+};
 
-  contextMenuItems(): Array<MenuItemConstructorOptions> {
-    type ContextMenuType =
-      | 'normal'
-      | 'separator'
-      | 'submenu'
-      | 'checkbox'
-      | 'radio';
-    const separator: ContextMenuType = 'separator';
-    const {clear, copyRequestCurlCommand, highlightedRows} = this.props;
-    const highlightedMenuItems =
-      highlightedRows && highlightedRows.size === 1
-        ? [
-            {
-              type: separator,
-            },
-            {
-              label: 'Copy as cURL',
-              click: copyRequestCurlCommand,
-            },
-          ]
-        : [];
-
-    return highlightedMenuItems.concat([
-      {
-        type: separator,
-      },
-      {
-        label: 'Clear all',
-        click: clear,
-      },
-    ]);
-  }
-
-  render() {
-    return (
-      <>
-        <NetworkTable.ContextMenu
-          items={this.contextMenuItems()}
-          component={Layout.Container}>
-          <SearchableTable
-            virtual={true}
-            multiline={false}
-            multiHighlight={true}
-            stickyBottom={true}
-            floating={false}
-            columnSizes={COLUMN_SIZE}
-            columns={COLUMNS}
-            columnOrder={COLUMN_ORDER}
-            rows={this.state.sortedRows}
-            onRowHighlighted={this.props.onRowHighlighted}
-            highlightedRows={this.props.highlightedRows}
-            rowLineHeight={26}
-            allowRegexSearch={true}
-            allowContentSearch={true}
-            zebra={false}
-            clearSearchTerm={this.props.searchTerm !== ''}
-            defaultSearchTerm={this.props.searchTerm}
-            actions={
-              <Layout.Horizontal gap>
-                <Button onClick={this.props.clear}>Clear Table</Button>
-                {this.props.isMockResponseSupported && (
-                  <Button onClick={this.props.onMockButtonPressed}>Mock</Button>
-                )}
-              </Layout.Horizontal>
-            }
-          />
-        </NetworkTable.ContextMenu>
-        {this.props.showMockResponseDialog ? (
-          <Sheet>
-            {(onHide) => (
-              <MockResponseDialog
-                routes={this.state.routes}
-                onHide={() => {
-                  onHide();
-                  this.props.onCloseButtonPressed();
-                }}
-                highlightedRows={this.state.highlightedRows}
-                requests={this.state.requests}
-                responses={this.state.responses}
-              />
-            )}
-          </Sheet>
-        ) : null}
-      </>
-    );
-  }
-}
-
-const Icon = styled(Glyph)({
-  marginTop: -3,
-  marginRight: 3,
-});
-
-class StatusColumn extends PureComponent<{
-  children?: number;
-}> {
-  render() {
-    const {children} = this.props;
-    let glyph;
-
-    if (children != null && children >= 400 && children < 600) {
-      glyph = <Icon name="stop" color={colors.red} />;
-    }
-
-    return (
-      <TextEllipsis>
-        {glyph}
-        {children}
-      </TextEllipsis>
-    );
-  }
-}
-
-class DurationColumn extends PureComponent<{
-  request: Request;
-  response: Response | null | undefined;
-}> {
-  static Text = styled(Text)({
-    flex: 1,
-    textAlign: 'right',
-    paddingRight: 10,
-  });
-
-  render() {
-    const {request, response} = this.props;
-    const duration = response
-      ? response.timestamp - request.timestamp
-      : undefined;
-    return (
-      <DurationColumn.Text selectable={false}>
-        {duration != null ? duration.toLocaleString() + 'ms' : ''}
-      </DurationColumn.Text>
-    );
-  }
-}
-
-class SizeColumn extends PureComponent<{
-  response: Response | null | undefined;
-}> {
-  static Text = styled(Text)({
-    flex: 1,
-    textAlign: 'right',
-    paddingRight: 10,
-  });
-
-  render() {
-    const {response} = this.props;
-    if (response) {
-      const text = formatBytes(this.getResponseLength(response));
-      return <SizeColumn.Text>{text}</SizeColumn.Text>;
-    } else {
-      return null;
-    }
-  }
-
-  getResponseLength(response: Response | null | undefined) {
-    if (!response) {
-      return 0;
-    }
-
-    let length = 0;
-    const lengthString = response.headers
-      ? getHeaderValue(response.headers, 'content-length')
-      : undefined;
-    if (lengthString != null && lengthString != '') {
-      length = parseInt(lengthString, 10);
-    } else if (response.data) {
-      length = Buffer.byteLength(response.data, 'base64');
-    }
-    return length;
-  }
+function getRowStyle(row: Request) {
+  return row.responseIsMock
+    ? mockingStyle
+    : row.status && row.status >= 400 && row.status < 600
+    ? errorStyle
+    : undefined;
 }

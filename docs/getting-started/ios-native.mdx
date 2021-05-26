@@ -3,10 +3,11 @@ id: ios-native
 title: Adding Flipper to iOS apps
 sidebar_label: Generic iOS apps
 ---
-import useBaseUrl from '@docusaurus/useBaseUrl';
-import Link from '@docusaurus/Link';
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
+
+import useBaseUrl from "@docusaurus/useBaseUrl";
+import Link from "@docusaurus/Link";
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
 
 We support both Swift and Objective-C for Flipper with CocoaPods as build and distribution mechanism.
 
@@ -16,7 +17,7 @@ The following configuration assumed CocoaPods 1.9+.
 
 ```ruby
 project 'MyApp.xcodeproj'
-flipperkit_version = '0.84.0'
+flipperkit_version = '0.88.0'
 
 target 'MyApp' do
   platform :ios, '9.0'
@@ -151,9 +152,3 @@ Finally, you need to add plugins to your Flipper client. Above, we have only add
 ## Having trouble?
 
 See the <Link to={useBaseUrl("/docs/troubleshooting")}>troubleshooting page</Link> for help with known problems.
-
-<div class="warning">
-
-On iOS, we currently do not support connecting to physical devices.
-
-</div>

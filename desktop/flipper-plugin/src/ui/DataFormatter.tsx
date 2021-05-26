@@ -18,7 +18,7 @@ import React, {createElement, Fragment, isValidElement, useState} from 'react';
 import {tryGetFlipperLibImplementation} from '../plugin/FlipperLib';
 import {safeStringify} from '../utils/safeStringify';
 import {urlRegex} from '../utils/urlRegex';
-import {useTableRedraw} from './data-table/DataSourceRenderer';
+import {useTableRedraw} from '../data-source/index';
 import {theme} from './theme';
 
 /**
@@ -49,7 +49,7 @@ export const DataFormatter = {
           return (
             value.toTimeString().split(' ')[0] +
             '.' +
-            pad('' + value.getMilliseconds(), 3)
+            pad('' + value.getMilliseconds(), 3, '0')
           );
         }
         if (value instanceof Map) {

@@ -22,9 +22,8 @@ const Container = styled.div({
 });
 Container.displayName = 'ContextMenuProvider:Container';
 
-export const ContextMenuContext = createContext<ContextMenuManager | undefined>(
-  undefined,
-);
+export const ContextMenuContext =
+  createContext<ContextMenuManager | undefined>(undefined);
 /**
  * Flipper's root is already wrapped with this component, so plugins should not
  * need to use this. ContextMenu is what you probably want to use.

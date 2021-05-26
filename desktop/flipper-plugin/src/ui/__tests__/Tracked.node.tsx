@@ -54,6 +54,7 @@ test('Tracked button', () => {
     event: 'onClick',
     scope: 'Flipper',
     success: 1,
+    uuid: '00000000-0000-0000-0000-000000000000',
   });
 });
 
@@ -74,6 +75,7 @@ test('Tracked button - custom handler', () => {
     event: 'onDoubleClick',
     scope: 'Flipper',
     success: 1,
+    uuid: '00000000-0000-0000-0000-000000000000',
   });
 });
 
@@ -99,6 +101,7 @@ test('Throwing action', () => {
     event: 'click',
     scope: 'test',
     success: 0,
+    uuid: '00000000-0000-0000-0000-000000000000',
   });
 });
 
@@ -124,6 +127,7 @@ test('Async action', async () => {
     event: 'click',
     scope: 'test',
     success: 1,
+    uuid: '00000000-0000-0000-0000-000000000000',
   });
 });
 
@@ -155,6 +159,7 @@ test('Throwing async action', async () => {
     event: 'click',
     scope: 'test',
     success: 0,
+    uuid: '00000000-0000-0000-0000-000000000000',
   });
 });
 

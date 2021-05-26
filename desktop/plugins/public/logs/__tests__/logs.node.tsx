@@ -86,13 +86,8 @@ test('it will merge equal rows', () => {
 });
 
 test('it supports deeplink and select nodes + navigating to bottom', async () => {
-  const {
-    instance,
-    sendLogEntry,
-    triggerDeepLink,
-    act,
-    triggerMenuEntry,
-  } = TestUtils.renderDevicePlugin(LogsPlugin);
+  const {instance, sendLogEntry, triggerDeepLink, act, triggerMenuEntry} =
+    TestUtils.renderDevicePlugin(LogsPlugin);
 
   sendLogEntry(entry1);
   sendLogEntry(entry2);
@@ -126,11 +121,8 @@ test('it supports deeplink and select nodes + navigating to bottom', async () =>
 });
 
 test('export / import plugin does work', async () => {
-  const {
-    instance,
-    exportStateAsync,
-    sendLogEntry,
-  } = TestUtils.startDevicePlugin(LogsPlugin);
+  const {instance, exportStateAsync, sendLogEntry} =
+    TestUtils.startDevicePlugin(LogsPlugin);
 
   sendLogEntry(entry1);
   sendLogEntry(entry2);

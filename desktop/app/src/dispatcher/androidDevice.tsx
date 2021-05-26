@@ -47,16 +47,9 @@ function createDevice(
           const isKaiOSDevice = Object.keys(props).some(
             (name) => name.startsWith('kaios') || name.startsWith('ro.kaios'),
           );
-          const androidLikeDevice = new (isKaiOSDevice
-            ? KaiOSDevice
-            : AndroidDevice)(
-            device.id,
-            type,
-            name,
-            adbClient,
-            abiList,
-            sdkVersion,
-          );
+          const androidLikeDevice = new (
+            isKaiOSDevice ? KaiOSDevice : AndroidDevice
+          )(device.id, type, name, adbClient, abiList, sdkVersion);
           if (ports) {
             await androidLikeDevice
               .reverse([ports.secure, ports.insecure])
@@ -67,6 +60,15 @@ function createDevice(
                   `Failed to reverse-proxy ports on device ${androidLikeDevice.serial}: ${e}`,
                 );
               });
+          }
+          if (type === 'physical') {
+            // forward port for React DevTools, which is fixed on React Native
+            await androidLikeDevice.reverse([8097]).catch((e) => {
+              console.warn(
+                `Failed to reverse-proxy React DevTools port 8097 on ${androidLikeDevice.serial}`,
+                e,
+              );
+            });
           }
           resolve(androidLikeDevice);
         } catch (e) {

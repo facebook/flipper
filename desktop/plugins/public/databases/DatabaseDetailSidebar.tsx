@@ -8,19 +8,24 @@
  */
 
 import React, {useMemo, useState, useEffect, useReducer} from 'react';
+
 import {
-  Input,
-  DetailSidebar,
   Panel,
-  ManagedDataInspector,
+  DetailSidebar,
+  DataInspector as ManagedDataInspector,
+  theme,
+  styled,
+  produce,
+  Layout,
+} from 'flipper-plugin';
+
+import {
   Value,
   valueToNullableString,
   renderValue,
-  Button,
-  styled,
-  produce,
-  colors,
-} from 'flipper';
+} from './TypeBasedValueRenderer';
+
+import {Button, Input} from 'antd';
 
 type TableRow = {
   col: string;
@@ -44,7 +49,7 @@ const EditTriggerSection = styled.div({
 });
 
 const TableDetailRow = styled.div({
-  borderBottom: `1px solid ${colors.blackAlpha10}`,
+  borderBottom: `1px solid ${theme.dividerColor}`,
   padding: 8,
 });
 
@@ -54,7 +59,7 @@ const TableDetailRowTitle = styled.div({
 });
 
 const TableDetailRowType = styled.span({
-  color: colors.light20,
+  color: theme.white,
   marginLeft: 8,
   fontWeight: 'normal',
 });
@@ -76,9 +81,7 @@ function buildSidebarRow(key: string, val: Value): TableRow {
       var parsed = JSON.parse(val.value);
     } catch (_error) {}
     if (parsed) {
-      output = (
-        <ManagedDataInspector data={parsed} expandRoot={true} collapsed />
-      );
+      output = <ManagedDataInspector data={parsed} expandRoot collapsed />;
     }
   }
   return {
@@ -181,29 +184,29 @@ export default React.memo(function DatabaseDetailSidebar(
   );
   return (
     <DetailSidebar>
-      <Panel
-        heading="Row details"
-        floating={false}
-        collapsable={true}
-        padded={false}>
+      <Panel title="Row details" collapsible>
         {onSave ? (
-          <EditTriggerSection>
+          <Layout.Right>
+            <div />
             {editing ? (
-              <>
+              <Layout.Horizontal pad gap>
+                <Button onClick={() => setEditing(false)}>Close</Button>
                 <Button
                   disabled={!rowState.updated}
+                  type="primary"
                   onClick={() => {
                     onSave(rowState.changes);
                     setEditing(false);
                   }}>
                   Save
                 </Button>
-                <Button onClick={() => setEditing(false)}>Close</Button>
-              </>
+              </Layout.Horizontal>
             ) : (
-              <Button onClick={() => setEditing(true)}>Edit</Button>
+              <Layout.Horizontal pad>
+                <Button onClick={() => setEditing(true)}>Edit</Button>
+              </Layout.Horizontal>
             )}
-          </EditTriggerSection>
+          </Layout.Right>
         ) : null}
         <div>
           {rows.map((row) => (

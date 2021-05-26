@@ -112,12 +112,10 @@ const KeyboardShortcutInput = (props: {
   const [initialPressedKeys] = useState<PressedKeys>(
     getInitialStateFromProps(),
   );
-  const [pressedKeys, setPressedKeys] = useState<PressedKeys>(
-    initialPressedKeys,
-  );
-  const [isShortcutValid, setIsShortcutValid] = useState<boolean | undefined>(
-    undefined,
-  );
+  const [pressedKeys, setPressedKeys] =
+    useState<PressedKeys>(initialPressedKeys);
+  const [isShortcutValid, setIsShortcutValid] =
+    useState<boolean | undefined>(undefined);
 
   useEffect(() => {
     if (!isShortcutValid) {

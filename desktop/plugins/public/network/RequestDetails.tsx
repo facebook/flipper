@@ -7,246 +7,174 @@
  * @format
  */
 
-import {Request, Response, Header, Insights, RetryInsights} from './types';
-
-import {
-  Component,
-  FlexColumn,
-  ManagedTable,
-  ManagedDataInspector,
-  Text,
-  Panel,
-  Select,
-  styled,
-  colors,
-  SmallText,
-} from 'flipper';
-import {decodeBody, getHeaderValue} from './utils';
-import {formatBytes, BodyOptions} from './index';
 import React from 'react';
-
+import {Component} from 'react';
 import querystring from 'querystring';
 import xmlBeautifier from 'xml-beautifier';
+import {Base64} from 'js-base64';
 
-const WrappingText = styled(Text)({
-  wordWrap: 'break-word',
-  width: '100%',
-  lineHeight: '125%',
-  padding: '3px 0',
-});
+import {
+  DataInspector,
+  Layout,
+  Panel,
+  styled,
+  theme,
+  CodeBlock,
+} from 'flipper-plugin';
+import {Select, Typography} from 'antd';
 
-const KeyValueColumnSizes = {
-  key: '30%',
-  value: 'flex',
-};
+import {
+  bodyAsBinary,
+  bodyAsString,
+  formatBytes,
+  getHeaderValue,
+  isTextual,
+} from './utils';
+import {Request, Header, Insights, RetryInsights} from './types';
+import {BodyOptions} from './index';
+import {ProtobufDefinitionsRepository} from './ProtobufDefinitionsRepository';
+import {KeyValueItem, KeyValueTable} from './KeyValueTable';
+import {CopyOutlined} from '@ant-design/icons';
 
-const KeyValueColumns = {
-  key: {
-    value: 'Key',
-    resizable: false,
-  },
-  value: {
-    value: 'Value',
-    resizable: false,
-  },
-};
+const {Text} = Typography;
 
 type RequestDetailsProps = {
   request: Request;
-  response: Response | null | undefined;
   bodyFormat: string;
   onSelectFormat: (bodyFormat: string) => void;
+  onCopyText(test: string): void;
 };
 export default class RequestDetails extends Component<RequestDetailsProps> {
-  static Container = styled(FlexColumn)({
-    height: '100%',
-    overflow: 'auto',
-  });
-
   urlColumns = (url: URL) => {
     return [
       {
-        columns: {
-          key: {value: <WrappingText>Full URL</WrappingText>},
-          value: {
-            value: <WrappingText>{url.href}</WrappingText>,
-          },
-        },
-        copyText: url.href,
-        key: 'url',
+        key: 'Full URL',
+        value: url.href,
       },
       {
-        columns: {
-          key: {value: <WrappingText>Host</WrappingText>},
-          value: {
-            value: <WrappingText>{url.host}</WrappingText>,
-          },
-        },
-        copyText: url.host,
-        key: 'host',
+        key: 'Host',
+        value: url.host,
       },
       {
-        columns: {
-          key: {value: <WrappingText>Path</WrappingText>},
-          value: {
-            value: <WrappingText>{url.pathname}</WrappingText>,
-          },
-        },
-        copyText: url.pathname,
-        key: 'path',
+        key: 'Path',
+        value: url.pathname,
       },
       {
-        columns: {
-          key: {value: <WrappingText>Query String</WrappingText>},
-          value: {
-            value: <WrappingText>{url.search}</WrappingText>,
-          },
-        },
-        copyText: url.search,
-        key: 'query',
+        key: 'Query String',
+        value: url.search,
       },
     ];
   };
 
   render() {
-    const {request, response, bodyFormat, onSelectFormat} = this.props;
+    const {request, bodyFormat, onSelectFormat, onCopyText} = this.props;
     const url = new URL(request.url);
 
-    const formattedText = bodyFormat == BodyOptions.formatted;
+    const formattedText = bodyFormat == 'formatted';
 
     return (
-      <RequestDetails.Container>
-        <Panel
-          key="request"
-          heading={'Request'}
-          floating={false}
-          padded={false}>
-          <ManagedTable
-            multiline={true}
-            columnSizes={KeyValueColumnSizes}
-            columns={KeyValueColumns}
-            rows={this.urlColumns(url)}
-            autoHeight={true}
-            floating={false}
-            zebra={false}
-          />
+      <>
+        <Panel key="request" title={'Request'}>
+          <KeyValueTable items={this.urlColumns(url)} />
         </Panel>
 
         {url.search ? (
-          <Panel
-            heading={'Request Query Parameters'}
-            floating={false}
-            padded={false}>
+          <Panel title={'Request Query Parameters'}>
             <QueryInspector queryParams={url.searchParams} />
           </Panel>
         ) : null}
 
-        {request.headers.length > 0 ? (
-          <Panel
-            key="headers"
-            heading={'Request Headers'}
-            floating={false}
-            padded={false}>
-            <HeaderInspector headers={request.headers} />
+        {request.requestHeaders.length > 0 ? (
+          <Panel key="headers" title={'Request Headers'}>
+            <HeaderInspector headers={request.requestHeaders} />
           </Panel>
         ) : null}
 
-        {request.data != null ? (
+        {request.requestData != null ? (
           <Panel
             key="requestData"
-            heading={'Request Body'}
-            floating={false}
-            padded={!formattedText}>
+            title={'Request Body'}
+            extraActions={
+              isTextual(request.requestHeaders) ? (
+                <CopyOutlined
+                  title="Copy request body"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onCopyText(request.requestData as string);
+                  }}
+                />
+              ) : null
+            }
+            pad>
             <RequestBodyInspector
               formattedText={formattedText}
               request={request}
             />
           </Panel>
         ) : null}
-        {response ? (
+        {request.status ? (
           <>
-            {response.headers.length > 0 ? (
+            {request.responseHeaders?.length ? (
               <Panel
                 key={'responseheaders'}
-                heading={`Response Headers${
-                  response.isMock ? ' (Mocked)' : ''
-                }`}
-                floating={false}
-                padded={false}>
-                <HeaderInspector headers={response.headers} />
+                title={`Response Headers${
+                  request.responseIsMock ? ' (Mocked)' : ''
+                }`}>
+                <HeaderInspector headers={request.responseHeaders} />
               </Panel>
             ) : null}
             <Panel
               key={'responsebody'}
-              heading={`Response Body${response.isMock ? ' (Mocked)' : ''}`}
-              floating={false}
-              padded={!formattedText}>
+              title={`Response Body${
+                request.responseIsMock ? ' (Mocked)' : ''
+              }`}
+              extraActions={
+                isTextual(request.responseHeaders) && request.responseData ? (
+                  <CopyOutlined
+                    title="Copy response body"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onCopyText(request.responseData as string);
+                    }}
+                  />
+                ) : null
+              }
+              pad>
               <ResponseBodyInspector
                 formattedText={formattedText}
                 request={request}
-                response={response}
               />
             </Panel>
           </>
         ) : null}
-        <Panel
-          key="options"
-          heading={'Options'}
-          floating={false}
-          collapsed={true}>
+        <Panel key="options" title={'Options'} collapsed pad>
+          <Text>Body formatting:</Text>
           <Select
-            grow
-            label="Body"
-            selected={bodyFormat}
+            value={bodyFormat}
             onChange={onSelectFormat}
             options={BodyOptions}
           />
         </Panel>
-        {response && response.insights ? (
-          <Panel
-            key="insights"
-            heading={'Insights'}
-            floating={false}
-            collapsed={true}>
-            <InsightsInspector insights={response.insights} />
+        {request.insights ? (
+          <Panel key="insights" title={'Insights'} collapsed>
+            <InsightsInspector insights={request.insights} />
           </Panel>
         ) : null}
-      </RequestDetails.Container>
+      </>
     );
   }
 }
 
 class QueryInspector extends Component<{queryParams: URLSearchParams}> {
   render() {
-    const {queryParams} = this.props;
-
-    const rows: any = [];
-    queryParams.forEach((value: string, key: string) => {
+    const rows: KeyValueItem[] = [];
+    this.props.queryParams.forEach((value: string, key: string) => {
       rows.push({
-        columns: {
-          key: {
-            value: <WrappingText>{key}</WrappingText>,
-          },
-          value: {
-            value: <WrappingText>{value}</WrappingText>,
-          },
-        },
-        copyText: value,
-        key: key,
+        key,
+        value,
       });
     });
-
-    return rows.length > 0 ? (
-      <ManagedTable
-        multiline={true}
-        columnSizes={KeyValueColumnSizes}
-        columns={KeyValueColumns}
-        rows={rows}
-        autoHeight={true}
-        floating={false}
-        zebra={false}
-      />
-    ) : null;
+    return rows.length > 0 ? <KeyValueTable items={rows} /> : null;
   }
 }
 
@@ -270,46 +198,18 @@ class HeaderInspector extends Component<
       new Map(),
     );
 
-    const rows: any = [];
-    Array.from(computedHeaders.entries())
+    const rows = Array.from(computedHeaders.entries())
       .sort((a, b) => (a[0] < b[0] ? -1 : a[0] == b[0] ? 0 : 1))
-      .forEach(([key, value]) => {
-        rows.push({
-          columns: {
-            key: {
-              value: <WrappingText>{key}</WrappingText>,
-            },
-            value: {
-              value: <WrappingText>{value}</WrappingText>,
-            },
-          },
-          copyText: value,
-          key,
-        });
-      });
-
+      .map(([key, value]) => ({key, value}));
     return rows.length > 0 ? (
-      <ManagedTable
-        multiline={true}
-        columnSizes={KeyValueColumnSizes}
-        columns={KeyValueColumns}
-        rows={rows}
-        autoHeight={true}
-        floating={false}
-        zebra={false}
-      />
+      <KeyValueTable items={this.props.headers} />
     ) : null;
   }
 }
 
-const BodyContainer = styled.div({
-  paddingTop: 10,
-  paddingBottom: 20,
-});
-
 type BodyFormatter = {
   formatRequest?: (request: Request) => any;
-  formatResponse?: (request: Request, response: Response) => any;
+  formatResponse?: (request: Request) => any;
 };
 
 class RequestBodyInspector extends Component<{
@@ -318,7 +218,7 @@ class RequestBodyInspector extends Component<{
 }> {
   render() {
     const {request, formattedText} = this.props;
-    if (request.data == null || request.data.trim() === '') {
+    if (request.requestData == null || request.requestData === '') {
       return <Empty />;
     }
     const bodyFormatters = formattedText ? TextBodyFormatters : BodyFormatters;
@@ -328,12 +228,12 @@ class RequestBodyInspector extends Component<{
           const component = formatter.formatRequest(request);
           if (component) {
             return (
-              <BodyContainer>
+              <Layout.Container gap>
                 {component}
                 <FormattedBy>
                   Formatted by {formatter.constructor.name}
                 </FormattedBy>
-              </BodyContainer>
+              </Layout.Container>
             );
           }
         } catch (e) {
@@ -344,33 +244,32 @@ class RequestBodyInspector extends Component<{
         }
       }
     }
-    return renderRawBody(request);
+    return renderRawBody(request, 'request');
   }
 }
 
 class ResponseBodyInspector extends Component<{
-  response: Response;
   request: Request;
   formattedText: boolean;
 }> {
   render() {
-    const {request, response, formattedText} = this.props;
-    if (response.data == null || response.data.trim() === '') {
+    const {request, formattedText} = this.props;
+    if (request.responseData == null || request.responseData === '') {
       return <Empty />;
     }
     const bodyFormatters = formattedText ? TextBodyFormatters : BodyFormatters;
     for (const formatter of bodyFormatters) {
       if (formatter.formatResponse) {
         try {
-          const component = formatter.formatResponse(request, response);
+          const component = formatter.formatResponse(request);
           if (component) {
             return (
-              <BodyContainer>
+              <Layout.Container gap>
                 {component}
                 <FormattedBy>
                   Formatted by {formatter.constructor.name}
                 </FormattedBy>
-              </BodyContainer>
+              </Layout.Container>
             );
           }
         } catch (e) {
@@ -381,49 +280,32 @@ class ResponseBodyInspector extends Component<{
         }
       }
     }
-    return renderRawBody(response);
+    return renderRawBody(request, 'response');
   }
 }
 
-const FormattedBy = styled(SmallText)({
+const FormattedBy = styled(Text)({
   marginTop: 8,
   fontSize: '0.7em',
   textAlign: 'center',
   display: 'block',
+  color: theme.disabledColor,
 });
 
 const Empty = () => (
-  <BodyContainer>
+  <Layout.Container pad>
     <Text>(empty)</Text>
-  </BodyContainer>
+  </Layout.Container>
 );
 
-function renderRawBody(container: Request | Response) {
-  // TODO: we want decoding only for non-binary data! See D23403095
-  const decoded = decodeBody(container);
+function renderRawBody(request: Request, mode: 'request' | 'response') {
+  const data = mode === 'request' ? request.requestData : request.responseData;
   return (
-    <BodyContainer>
-      {decoded ? (
-        <Text selectable wordWrap="break-word">
-          {decoded}
-        </Text>
-      ) : (
-        <>
-          <FormattedBy>(Failed to decode)</FormattedBy>
-          <Text selectable wordWrap="break-word">
-            {container.data}
-          </Text>
-        </>
-      )}
-    </BodyContainer>
+    <Layout.Container gap>
+      <CodeBlock>{bodyAsString(data)}</CodeBlock>
+    </Layout.Container>
   );
 }
-
-const MediaContainer = styled(FlexColumn)({
-  alignItems: 'center',
-  justifyContent: 'center',
-  width: '100%',
-});
 
 type ImageWithSizeProps = {
   src: string;
@@ -441,13 +323,8 @@ class ImageWithSize extends Component<ImageWithSizeProps, ImageWithSizeState> {
     marginBottom: 10,
   });
 
-  static Text = styled(Text)({
-    color: colors.dark70,
-    fontSize: 14,
-  });
-
-  constructor(props: ImageWithSizeProps, context: any) {
-    super(props, context);
+  constructor(props: ImageWithSizeProps) {
+    super(props);
     this.state = {
       width: 0,
       height: 0,
@@ -469,31 +346,37 @@ class ImageWithSize extends Component<ImageWithSizeProps, ImageWithSizeState> {
 
   render() {
     return (
-      <MediaContainer>
+      <Layout.Container center>
         <ImageWithSize.Image src={this.props.src} />
-        <ImageWithSize.Text>
+        <Text type="secondary">
           {this.state.width} x {this.state.height}
-        </ImageWithSize.Text>
-      </MediaContainer>
+        </Text>
+      </Layout.Container>
     );
   }
 }
 
 class ImageFormatter {
-  formatResponse = (request: Request, response: Response) => {
-    if (getHeaderValue(response.headers, 'content-type').startsWith('image/')) {
-      if (response.data) {
+  formatResponse(request: Request) {
+    if (
+      getHeaderValue(request.responseHeaders, 'content-type').startsWith(
+        'image/',
+      )
+    ) {
+      if (request.responseData) {
         const src = `data:${getHeaderValue(
-          response.headers,
+          request.responseHeaders,
           'content-type',
-        )};base64,${response.data}`;
+        )};base64,${Base64.fromUint8Array(
+          bodyAsBinary(request.responseData)!,
+        )}`;
         return <ImageWithSize src={src} />;
       } else {
         // fallback to using the request url
         return <ImageWithSize src={request.url} />;
       }
     }
-  };
+  }
 }
 
 class VideoFormatter {
@@ -502,68 +385,60 @@ class VideoFormatter {
     maxHeight: 500,
   });
 
-  formatResponse = (request: Request, response: Response) => {
-    const contentType = getHeaderValue(response.headers, 'content-type');
+  formatResponse = (request: Request) => {
+    const contentType = getHeaderValue(request.responseHeaders, 'content-type');
     if (contentType.startsWith('video/')) {
       return (
-        <MediaContainer>
-          <VideoFormatter.Video controls={true}>
+        <Layout.Container center>
+          <VideoFormatter.Video controls>
             <source src={request.url} type={contentType} />
           </VideoFormatter.Video>
-        </MediaContainer>
+        </Layout.Container>
       );
     }
   };
 }
 
 class JSONText extends Component<{children: any}> {
-  static NoScrollbarText = styled(Text)({
-    overflowY: 'hidden',
-  });
-
   render() {
     const jsonObject = this.props.children;
     return (
-      <JSONText.NoScrollbarText code whiteSpace="pre" selectable>
+      <CodeBlock>
         {JSON.stringify(jsonObject, null, 2)}
         {'\n'}
-      </JSONText.NoScrollbarText>
+      </CodeBlock>
     );
   }
 }
 
 class XMLText extends Component<{body: any}> {
-  static NoScrollbarText = styled(Text)({
-    overflowY: 'hidden',
-  });
-
   render() {
     const xmlPretty = xmlBeautifier(this.props.body);
     return (
-      <XMLText.NoScrollbarText code whiteSpace="pre" selectable>
+      <CodeBlock>
         {xmlPretty}
         {'\n'}
-      </XMLText.NoScrollbarText>
+      </CodeBlock>
     );
   }
 }
 
 class JSONTextFormatter {
-  formatRequest = (request: Request) => {
+  formatRequest(request: Request) {
     return this.format(
-      decodeBody(request),
-      getHeaderValue(request.headers, 'content-type'),
+      bodyAsString(request.requestData),
+      getHeaderValue(request.requestHeaders, 'content-type'),
     );
-  };
+  }
 
-  formatResponse = (_request: Request, response: Response) => {
+  formatResponse(request: Request) {
     return this.format(
-      decodeBody(response),
-      getHeaderValue(response.headers, 'content-type'),
+      bodyAsString(request.responseData),
+      getHeaderValue(request.responseHeaders, 'content-type'),
     );
-  };
+  }
 
-  format = (body: string, contentType: string) => {
+  format(body: string, contentType: string) {
     if (
       contentType.startsWith('application/json') ||
       contentType.startsWith('application/hal+json') ||
@@ -581,47 +456,47 @@ class JSONTextFormatter {
           .map((data, idx) => <JSONText key={idx}>{data}</JSONText>);
       }
     }
-  };
+  }
 }
 
 class XMLTextFormatter {
-  formatRequest = (request: Request) => {
+  formatRequest(request: Request) {
     return this.format(
-      decodeBody(request),
-      getHeaderValue(request.headers, 'content-type'),
+      bodyAsString(request.requestData),
+      getHeaderValue(request.requestHeaders, 'content-type'),
     );
-  };
+  }
 
-  formatResponse = (_request: Request, response: Response) => {
+  formatResponse(request: Request) {
     return this.format(
-      decodeBody(response),
-      getHeaderValue(response.headers, 'content-type'),
+      bodyAsString(request.responseData),
+      getHeaderValue(request.responseHeaders, 'content-type'),
     );
-  };
+  }
 
-  format = (body: string, contentType: string) => {
+  format(body: string, contentType: string) {
     if (contentType.startsWith('text/html')) {
       return <XMLText body={body} />;
     }
-  };
+  }
 }
 
 class JSONFormatter {
-  formatRequest = (request: Request) => {
+  formatRequest(request: Request) {
     return this.format(
-      decodeBody(request),
-      getHeaderValue(request.headers, 'content-type'),
+      bodyAsString(request.requestData),
+      getHeaderValue(request.requestHeaders, 'content-type'),
     );
-  };
+  }
 
-  formatResponse = (_request: Request, response: Response) => {
+  formatResponse(request: Request) {
     return this.format(
-      decodeBody(response),
-      getHeaderValue(response.headers, 'content-type'),
+      bodyAsString(request.responseData),
+      getHeaderValue(request.responseHeaders, 'content-type'),
     );
-  };
+  }
 
-  format = (body: string, contentType: string) => {
+  format(body: string, contentType: string) {
     if (
       contentType.startsWith('application/json') ||
       contentType.startsWith('application/hal+json') ||
@@ -630,54 +505,48 @@ class JSONFormatter {
     ) {
       try {
         const data = JSON.parse(body);
-        return (
-          <ManagedDataInspector
-            collapsed={true}
-            expandRoot={true}
-            data={data}
-          />
-        );
+        return <DataInspector collapsed expandRoot data={data} />;
       } catch (SyntaxError) {
         // Multiple top level JSON roots, map them one by one
         const roots = body.split('\n');
         return (
-          <ManagedDataInspector
-            collapsed={true}
-            expandRoot={true}
+          <DataInspector
+            collapsed
+            expandRoot
             data={roots.map((json) => JSON.parse(json))}
           />
         );
       }
     }
-  };
+  }
 }
 
 class LogEventFormatter {
-  formatRequest = (request: Request) => {
+  formatRequest(request: Request) {
     if (request.url.indexOf('logging_client_event') > 0) {
-      const data = querystring.parse(decodeBody(request));
+      const data = querystring.parse(bodyAsString(request.requestData));
       if (typeof data.message === 'string') {
         data.message = JSON.parse(data.message);
       }
-      return <ManagedDataInspector expandRoot={true} data={data} />;
+      return <DataInspector expandRoot data={data} />;
     }
-  };
+  }
 }
 
 class GraphQLBatchFormatter {
-  formatRequest = (request: Request) => {
+  formatRequest(request: Request) {
     if (request.url.indexOf('graphqlbatch') > 0) {
-      const data = querystring.parse(decodeBody(request));
+      const data = querystring.parse(bodyAsString(request.requestData));
       if (typeof data.queries === 'string') {
         data.queries = JSON.parse(data.queries);
       }
-      return <ManagedDataInspector expandRoot={true} data={data} />;
+      return <DataInspector expandRoot data={data} />;
     }
-  };
+  }
 }
 
 class GraphQLFormatter {
-  parsedServerTimeForFirstFlush = (data: any) => {
+  parsedServerTimeForFirstFlush(data: any) {
     const firstResponse =
       Array.isArray(data) && data.length > 0 ? data[0] : data;
     if (!firstResponse) {
@@ -695,35 +564,35 @@ class GraphQLFormatter {
     const requestStartMs = serverMetadata['request_start_time_ms'];
     const timeAtFlushMs = serverMetadata['time_at_flush_ms'];
     return (
-      <WrappingText>
+      <Text type="secondary">
         {'Server wall time for initial response (ms): ' +
           (timeAtFlushMs - requestStartMs)}
-      </WrappingText>
+      </Text>
     );
-  };
-  formatRequest = (request: Request) => {
+  }
+  formatRequest(request: Request) {
     if (request.url.indexOf('graphql') > 0) {
-      const decoded = decodeBody(request);
+      const decoded = request.requestData;
       if (!decoded) {
         return undefined;
       }
-      const data = querystring.parse(decoded);
+      const data = querystring.parse(bodyAsString(decoded));
       if (typeof data.variables === 'string') {
         data.variables = JSON.parse(data.variables);
       }
       if (typeof data.query_params === 'string') {
         data.query_params = JSON.parse(data.query_params);
       }
-      return <ManagedDataInspector expandRoot={true} data={data} />;
+      return <DataInspector expandRoot data={data} />;
     }
-  };
+  }
 
-  formatResponse = (_request: Request, response: Response) => {
+  formatResponse(request: Request) {
     return this.format(
-      decodeBody(response),
-      getHeaderValue(response.headers, 'content-type'),
+      bodyAsString(request.responseData!),
+      getHeaderValue(request.responseHeaders, 'content-type'),
     );
-  };
+  }
 
   format = (body: string, contentType: string) => {
     if (
@@ -738,11 +607,7 @@ class GraphQLFormatter {
         return (
           <div>
             {this.parsedServerTimeForFirstFlush(data)}
-            <ManagedDataInspector
-              collapsed={true}
-              expandRoot={true}
-              data={data}
-            />
+            <DataInspector collapsed expandRoot data={data} />
           </div>
         );
       } catch (SyntaxError) {
@@ -754,11 +619,7 @@ class GraphQLFormatter {
         return (
           <div>
             {this.parsedServerTimeForFirstFlush(parsedResponses)}
-            <ManagedDataInspector
-              collapsed={true}
-              expandRoot={true}
-              data={parsedResponses}
-            />
+            <DataInspector collapsed expandRoot data={parsedResponses} />
           </div>
         );
       }
@@ -768,16 +629,16 @@ class GraphQLFormatter {
 
 class FormUrlencodedFormatter {
   formatRequest = (request: Request) => {
-    const contentType = getHeaderValue(request.headers, 'content-type');
+    const contentType = getHeaderValue(request.requestHeaders, 'content-type');
     if (contentType.startsWith('application/x-www-form-urlencoded')) {
-      const decoded = decodeBody(request);
+      const decoded = request.requestData;
       if (!decoded) {
         return undefined;
       }
       return (
-        <ManagedDataInspector
-          expandRoot={true}
-          data={querystring.parse(decoded)}
+        <DataInspector
+          expandRoot
+          data={querystring.parse(bodyAsString(decoded))}
         />
       );
     }
@@ -786,19 +647,93 @@ class FormUrlencodedFormatter {
 
 class BinaryFormatter {
   formatRequest(request: Request) {
-    return this.format(request);
-  }
-
-  formatResponse(_request: Request, response: Response) {
-    return this.format(response);
-  }
-
-  format(container: Request | Response) {
     if (
-      getHeaderValue(container.headers, 'content-type') ===
+      getHeaderValue(request.requestHeaders, 'content-type') ===
       'application/octet-stream'
     ) {
       return '(binary data)'; // we could offer a download button here?
+    }
+    return undefined;
+  }
+
+  formatResponse(request: Request) {
+    if (
+      getHeaderValue(request.responseHeaders, 'content-type') ===
+      'application/octet-stream'
+    ) {
+      return '(binary data)'; // we could offer a download button here?
+    }
+    return undefined;
+  }
+}
+
+class ProtobufFormatter {
+  private protobufDefinitionRepository =
+    ProtobufDefinitionsRepository.getInstance();
+
+  formatRequest(request: Request) {
+    if (
+      getHeaderValue(request.requestHeaders, 'content-type') ===
+      'application/x-protobuf'
+    ) {
+      const protobufDefinition =
+        this.protobufDefinitionRepository.getRequestType(
+          request.method,
+          request.url,
+        );
+      if (protobufDefinition == undefined) {
+        return (
+          <Text>
+            Could not locate protobuf definition for request body of{' '}
+            {request.url}
+          </Text>
+        );
+      }
+
+      if (request.requestData) {
+        const data = protobufDefinition.decode(
+          bodyAsBinary(request.requestData)!,
+        );
+        return <JSONText>{data.toJSON()}</JSONText>;
+      } else {
+        return (
+          <Text>Could not locate request body data for {request.url}</Text>
+        );
+      }
+    }
+    return undefined;
+  }
+
+  formatResponse(request: Request) {
+    if (
+      getHeaderValue(request.responseHeaders, 'content-type') ===
+        'application/x-protobuf' ||
+      request.url.endsWith('.proto')
+    ) {
+      const protobufDefinition =
+        this.protobufDefinitionRepository.getResponseType(
+          request.method,
+          request.url,
+        );
+      if (protobufDefinition == undefined) {
+        return (
+          <Text>
+            Could not locate protobuf definition for response body of{' '}
+            {request.url}
+          </Text>
+        );
+      }
+
+      if (request.responseData) {
+        const data = protobufDefinition.decode(
+          bodyAsBinary(request.responseData)!,
+        );
+        return <JSONText>{data.toJSON()}</JSONText>;
+      } else {
+        return (
+          <Text>Could not locate response body data for {request.url}</Text>
+        );
+      }
     }
     return undefined;
   }
@@ -813,6 +748,7 @@ const BodyFormatters: Array<BodyFormatter> = [
   new JSONFormatter(),
   new FormUrlencodedFormatter(),
   new XMLTextFormatter(),
+  new ProtobufFormatter(),
   new BinaryFormatter(),
 ];
 
@@ -827,13 +763,13 @@ class InsightsInspector extends Component<{insights: Insights}> {
     return `${formatBytes(value)}/sec`;
   }
 
-  formatRetries(retry: RetryInsights): string {
+  formatRetries = (retry: RetryInsights): string => {
     const timesWord = retry.limit === 1 ? 'time' : 'times';
 
     return `${this.formatTime(retry.timeSpent)} (${
       retry.count
     } ${timesWord} out of ${retry.limit})`;
-  }
+  };
 
   buildRow<T>(
     name: string,
@@ -842,16 +778,8 @@ class InsightsInspector extends Component<{insights: Insights}> {
   ): any {
     return value
       ? {
-          columns: {
-            key: {
-              value: <WrappingText>{name}</WrappingText>,
-            },
-            value: {
-              value: <WrappingText>{formatter(value)}</WrappingText>,
-            },
-          },
-          copyText: () => `${name}: ${formatter(value)}`,
           key: name,
+          value: formatter(value),
         }
       : null;
   }
@@ -861,7 +789,7 @@ class InsightsInspector extends Component<{insights: Insights}> {
     const {buildRow, formatTime, formatSpeed, formatRetries} = this;
 
     const rows = [
-      buildRow('Retries', insights.retries, formatRetries.bind(this)),
+      buildRow('Retries', insights.retries, formatRetries),
       buildRow('DNS lookup time', insights.dnsLookupTime, formatTime),
       buildRow('Connect time', insights.connectTime, formatTime),
       buildRow('SSL handshake time', insights.sslHandshakeTime, formatTime),
@@ -874,16 +802,6 @@ class InsightsInspector extends Component<{insights: Insights}> {
       buildRow('Transfer speed', insights.transferSpeed, formatSpeed),
     ].filter((r) => r != null);
 
-    return rows.length > 0 ? (
-      <ManagedTable
-        multiline={true}
-        columnSizes={KeyValueColumnSizes}
-        columns={KeyValueColumns}
-        rows={rows}
-        autoHeight={true}
-        floating={false}
-        zebra={false}
-      />
-    ) : null;
+    return rows.length > 0 ? <KeyValueTable items={rows} /> : null;
   }
 }

@@ -157,7 +157,8 @@ export function launchJsEmulator(url: string, height: number, width: number) {
 }
 
 export class JSClientFlipperConnection<M>
-  implements FlipperClientConnection<string, M> {
+  implements FlipperClientConnection<string, M>
+{
   webContentsId: number;
   connStatusSubscribers: Set<ISubscriber<ConnectionStatus>> = new Set();
   connStatus: ConnectionStatus;

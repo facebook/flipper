@@ -79,6 +79,19 @@ export default class AndroidDevice extends BaseDevice {
               type,
             });
           })
+          .on('end', () => {
+            if (this.reader) {
+              // logs didn't stop gracefully
+              setTimeout(() => {
+                if (this.connected.get()) {
+                  console.warn(
+                    `Log stream broken: ${this.serial} - restarting`,
+                  );
+                  this.startLogging();
+                }
+              }, 100);
+            }
+          })
           .on('error', (e) => {
             console.warn('Failed to read from adb logcat: ', e);
           });
@@ -90,9 +103,10 @@ export default class AndroidDevice extends BaseDevice {
 
   stopLogging() {
     this.reader?.end();
+    this.reader = undefined;
   }
 
-  reverse(ports: [number, number]): Promise<void> {
+  reverse(ports: number[]): Promise<void> {
     return Promise.all(
       ports.map((port) =>
         this.adb.reverse(this.serial, `tcp:${port}`, `tcp:${port}`),

@@ -182,6 +182,21 @@ That is correct, the dependencies won't be actually included in the release (whe
 1. Make sure you have only one device running to connect to. If there are multiple devices, close them and try again (restart Flipper if needed).
 1. Make sure there is only one RN app running on the device
 
+#### Q: Cannot inspect an element in the React DevTools: "Could not inspect element with id ..."
+
+The "Could not inspect element with id XXX" error will appear when selecting a specific element in the React DevTools, when the version of the DevTools shipped in Flipper is incompatible with the `react-devtools-core` package used by the React Native application.
+
+Flipper supports using a globally installed `react-devtools` (after using `npm install -g react-devtools@x.x.x`) instead of the embedded one. 
+This should help with any compatibility issues.
+
+Another way to fix this is to set the `resolutions` field in the `package.json` of the app to force a specific version and then run `yarn install`, for example: 
+
+```json
+"resolutions": {
+  "react-devtools-core": "4.13.2"
+}
+```
+
 #### Q: How to select a specific element in the React DevTools?
 
 1. Trigger the debug menu on your RN app (you can use the button in the Flipper toolbar for that)

@@ -115,9 +115,9 @@ export default class StackTrace extends Component<{
       return null;
     }
 
-    const columns = (Object.keys(children[0]) as Array<
-      keyof Child
-    >).reduce<TableColumns>((acc, cv) => {
+    const columns = (
+      Object.keys(children[0]) as Array<keyof Child>
+    ).reduce<TableColumns>((acc, cv) => {
       if (cv !== 'isBold') {
         acc[cv] = {
           value: cv,
@@ -131,9 +131,9 @@ export default class StackTrace extends Component<{
       visible: Boolean(columns[key]),
     }));
 
-    const columnSizes = (Object.keys(COLUMNS) as Array<
-      keyof typeof COLUMNS
-    >).reduce<TableColumnSizes>((acc, cv: keyof typeof COLUMNS) => {
+    const columnSizes = (
+      Object.keys(COLUMNS) as Array<keyof typeof COLUMNS>
+    ).reduce<TableColumnSizes>((acc, cv: keyof typeof COLUMNS) => {
       acc[cv] =
         COLUMNS[cv] === 'flex'
           ? 'flex'
@@ -188,7 +188,7 @@ export default class StackTrace extends Component<{
           <ManagedTable
             columns={columns}
             rows={rows}
-            hideHeader={true}
+            hideHeader
             autoHeight
             zebra={false}
             columnOrder={columnOrder}

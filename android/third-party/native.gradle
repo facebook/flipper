@@ -52,6 +52,7 @@ task downloadGlog(dependsOn: createNativeDepsDirectories, type: Download) {
 task prepareGlog(dependsOn: [downloadGlog], type: Copy) {
     onlyIf { isCacheOutOfDate(CACHE_REVISION) }
     from tarTree(downloadGlog.dest)
+    duplicatesStrategy DuplicatesStrategy.INCLUDE
     from './overrides/glog/'
     include 'glog-0.3.5/src/**/*', 'Android.mk', 'config.h', 'build.gradle', 'CMakeLists.txt', 'ApplicationManifest.xml'
     includeEmptyDirs = false

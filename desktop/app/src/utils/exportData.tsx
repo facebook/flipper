@@ -75,6 +75,8 @@ export type ExportType = {
     pluginStates: PluginStatesExportState;
     activeNotifications: Array<PluginNotification>;
   };
+  // The GraphQL plugin relies on this format for generating
+  // Flipper traces from employee dogfooding. See D28209561.
   pluginStates2: SandyPluginStates;
   supportRequestDetails?: SupportFormRequestDetailsState;
 };
@@ -199,13 +201,8 @@ export function processPluginStates(
 export function processNotificationStates(
   options: ProcessNotificationStatesOptions,
 ): Array<PluginNotification> {
-  const {
-    clients,
-    serial,
-    allActiveNotifications,
-    devicePlugins,
-    statusUpdate,
-  } = options;
+  const {clients, serial, allActiveNotifications, devicePlugins, statusUpdate} =
+    options;
   statusUpdate &&
     statusUpdate('Filtering the notifications for the filtered Clients...');
   const activeNotifications = allActiveNotifications.filter((notif) => {

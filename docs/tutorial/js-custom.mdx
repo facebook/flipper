@@ -166,7 +166,7 @@ Using `TestUtils.startPlugin` (`(3)`) we can instantiate our plugin in a fully m
 in which our plugin can do everything except for actually rendering, which makes this operation really cheap.
 From the `startPlugin`, we get back an `instance`, which corresponds to the object we returned from our `plugin` implementation (`(4)` in our previous listing).
 Beyond that, we get a bunch of utilities to interact with our plugin.
-The full list is documented [here](../extending/flipper-plugin#the-test-runner-object), but for this test we are only interested in `sendEvent`.
+The full list is documented [here](../extending/flipper-plugin.mdx#the-test-runner-object), but for this test we are only interested in `sendEvent`.
 
 Using `sendEvent`, we can mimic the client plugin sending events to our plugin `(4)`.
 Similarly we can emulate all other possible events, such as the initial connection setup with (`.connect()`), the user (de)selecting the plugin (`.activate()` / `deactivate()`), or a deeplink being triggered (`.triggerDeepLink`) etc.
@@ -254,10 +254,13 @@ The benefit of `useValue(instance.rows)` over using `rows.get()`, is that the fi
 Since both `usePlugin` and `useValue` are hooks, they usual React rules for them apply; they need to be called unconditionally.
 So it is recommended to put them at the top of your component body.
 Both hooks can not only be used in the root `Component`, but also in any other component in your plugin component tree.
-So it is not necessary to grab all the data at the root, or pass down the `instance` to all child components.
+So it is not necessary to grab all the data at the root and pass it down using props.
+Using `useValue` as deep in the component tree as possible will benefit performance.
 
 Finally (`(4)`) we render the data we have. The details have been left out here, as from here it is just idiomatic React code.
 The source of the other `MammalCard` component can be found [here](https://github.com/facebook/flipper/blob/master/desktop/plugins/public/seamammals/src/index.tsx#L113-L165).
+
+Tip: it is recommended to keep components as much as possible outside the entry file, as components defined outside the index.tsx file will benefit from fast refresh.
 
 ### Unit testing the User Interface
 
