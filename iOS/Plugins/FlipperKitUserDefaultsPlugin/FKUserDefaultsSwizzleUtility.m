@@ -59,9 +59,7 @@
         NSString* originalStr =
             [@"comfacebookFlipperKit_" stringByAppendingString:selStr];
         [invocation setSelector:NSSelectorFromString(originalStr)];
-        if (block != nil) {
-          block(invocation);
-        }
+        block(invocation);
       } else {
         ((void (*)(id, SEL, NSInvocation*))orig)(this, fwdSel, invocation);
       }
