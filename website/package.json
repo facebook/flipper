@@ -32,6 +32,7 @@
     "lodash": "4.17.21",
     "ua-parser-js": "0.7.24",
     "trim": "0.0.3",
-    "browserslist": "^4.16.5"
+    "browserslist": "^4.16.5",
+    "dns-packet": "^5.2.2"
   }
 }
