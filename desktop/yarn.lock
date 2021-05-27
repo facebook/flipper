@@ -13811,7 +13811,7 @@ ws@1.1.5, ws@^1.1.5:
     options ">=0.0.5"
     ultron "1.0.x"
 
-ws@7.3.0, ws@^7.2.3, ws@^7.4.4, ws@^7.4.5, ws@~7.4.2:
+ws@7.3.0, ws@^7.2.3, ws@^7.4.6, ws@~7.4.2:
   version "7.3.0"
   resolved "https://registry.yarnpkg.com/ws/-/ws-7.3.0.tgz#4b2f7f219b3d3737bc1a2fbf145d825b94d38ffd"
   integrity sha512-iFtXzngZVXPGgpTlP1rBqsUK82p9tKqsWRPg5L56egiljujJT3vGAYnHANvFxBieXrTFavhzhxW52jnaWV+w2w==
