@@ -77,7 +77,7 @@
     "uuid": "^8.3.2",
     "which": "^2.0.1",
     "ws": "^7.4.6",
-    "xdg-basedir": "^4.0.0"
+    "xdg-basedir": "^5.0.1"
   },
   "optionalDependencies": {
     "7zip-bin-mac": "^1.0.1"
