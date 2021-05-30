@@ -53,8 +53,8 @@ private val Array<Annotation>.urlPathAndMethod: Pair<String, String>?
 
 private val Method.requestBodyType: Class<*>?
     get() {
-        parameterAnnotations.forEachIndexed { index, parameters ->
-            parameters.forEach { annotation ->
+        parameterAnnotations.forEachIndexed { index, annotations ->
+            annotations.forEach { annotation ->
                 if (annotation.annotationClass == retrofit2.http.Body::class) {
                     return parameterTypes[index]
                 }
