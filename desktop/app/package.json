@@ -61,7 +61,7 @@
     "react-player": "^2.9.0",
     "react-redux": "^7.2.4",
     "react-test-renderer": "^17.0.1",
-    "react-transition-group": "^4.4.1",
+    "react-transition-group": "^4.4.2",
     "react-virtualized-auto-sizer": "^1.0.5",
     "react-window": "^1.8.6",
     "recursive-readdir": "^2.2.2",
