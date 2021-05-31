@@ -20,7 +20,7 @@ buildscript {
 
 plugins {
     id 'de.undercouch.download' version '4.1.1'
-    id 'com.github.ben-manes.versions' version '0.38.0'
+    id 'com.github.ben-manes.versions' version '0.39.0'
 }
 
 ext.isSnapshot = { VERSION_NAME.endsWith('-SNAPSHOT') }
