@@ -4832,13 +4832,6 @@ colors@^1.1.2:
   resolved "https://registry.yarnpkg.com/colors/-/colors-1.4.0.tgz#c50491479d4c1bdaed2c9ced32cf7c7dc2360f78"
   integrity sha512-a+UqTh4kgZg/SlGvfbzDHpgRu7AAQOmmqRHJnxhRZICKFUT91brVhNNt58CMWU9PsBbv3PDCZUHbVxuDiH2mtA==
 
-combined-stream@1.0.6:
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/combined-stream/-/combined-stream-1.0.6.tgz#723e7df6e801ac5613113a7e445a9b69cb632818"
-  integrity sha1-cj599ugBrFYTETp+RFqbactjKBg=
-  dependencies:
-    delayed-stream "~1.0.0"
-
 combined-stream@^1.0.6, combined-stream@^1.0.8, combined-stream@~1.0.6:
   version "1.0.8"
   resolved "https://registry.yarnpkg.com/combined-stream/-/combined-stream-1.0.8.tgz#c3d45a8b34fd730631a110a8a2520682b31d5a7f"
@@ -6799,15 +6792,6 @@ form-data@*, form-data@^3.0.0:
   dependencies:
     asynckit "^0.4.0"
     combined-stream "^1.0.8"
-    mime-types "^2.1.12"
-
-form-data@2.3.2:
-  version "2.3.2"
-  resolved "https://registry.yarnpkg.com/form-data/-/form-data-2.3.2.tgz#4970498be604c20c005d4f5c23aecd21d6b49099"
-  integrity sha1-SXBJi+YEwgwAXU9cI67NIda0kJk=
-  dependencies:
-    asynckit "^0.4.0"
-    combined-stream "1.0.6"
     mime-types "^2.1.12"
 
 form-data@~2.3.2:
@@ -9177,7 +9161,7 @@ lodash.clonedeep@^4.5.0:
   resolved "https://registry.yarnpkg.com/lodash.clonedeep/-/lodash.clonedeep-4.5.0.tgz#e23f3f9c4f8fbdde872529c1071857a086e5ccef"
   integrity sha1-4j8/nE+Pvd6HJSnBBxhXoIblzO8=
 
-lodash.debounce@4.0.8, lodash.debounce@^4.0.8:
+lodash.debounce@^4.0.8:
   version "4.0.8"
   resolved "https://registry.yarnpkg.com/lodash.debounce/-/lodash.debounce-4.0.8.tgz#82d79bff30a67c4005ffd5e2515300ad9ca4d7af"
   integrity sha1-gteb/zCmfEAF/9XiUVMArZyk168=
@@ -9485,21 +9469,12 @@ metro-cache-key@0.66.0:
   resolved "https://registry.yarnpkg.com/metro-cache-key/-/metro-cache-key-0.66.0.tgz#e628445f2a17e6e3dec970a87a090b4ec876bd1d"
   integrity sha512-qAHMC4Tpj3rUH8Pz5IEmT/fGgitCO86B6jndzKyXT+aDBr7BcNnRA8T25MoUMiBtsuRdxAeMHmBbhmvNK+tEEg==
 
-metro-cache@0.66.0:
+metro-cache@0.66.0, metro-cache@^0.66.0:
   version "0.66.0"
   resolved "https://registry.yarnpkg.com/metro-cache/-/metro-cache-0.66.0.tgz#65bfcf8a4bff559855c404220368866779216430"
   integrity sha512-Yppsf28TLGZwQIpNkx/9c5xc9FWFglhaUH6Ovtbth8DmDauAwakvdoMklFvkYQGE9W8OceehQAvRW2D9YQn9Ew==
   dependencies:
     metro-core "0.66.0"
-    mkdirp "^0.5.1"
-    rimraf "^2.5.4"
-
-metro-cache@^0.65.2:
-  version "0.65.2"
-  resolved "https://registry.yarnpkg.com/metro-cache/-/metro-cache-0.65.2.tgz#8922c8d4d882014e745aa01c9d1c64aeb3b08306"
-  integrity sha512-+f7A57qlF2IChrFsHsYN4Lhr7nwb3lsS+Z/M1833Bhj25VBhbe3dMqt8+rOWncgkOY3aHtH7PphRABy5yfDQ3g==
-  dependencies:
-    metro-core "0.65.2"
     mkdirp "^0.5.1"
     rimraf "^2.5.4"
 
@@ -9514,15 +9489,6 @@ metro-config@0.66.0:
     metro-cache "0.66.0"
     metro-core "0.66.0"
     metro-runtime "0.66.0"
-
-metro-core@0.65.2:
-  version "0.65.2"
-  resolved "https://registry.yarnpkg.com/metro-core/-/metro-core-0.65.2.tgz#038b8775aaa9cd3b15144add0258d12a23cb37a7"
-  integrity sha512-FIChFjUWSJOIrScAorwtzSY7Y1jxUr8U8hFquLIlnmVl+cye/dfrL1NQMj7X/j9OyRo9OeBe7PuRM/z6qz7G1w==
-  dependencies:
-    jest-haste-map "^26.5.2"
-    lodash.throttle "^4.1.1"
-    metro-resolver "0.65.2"
 
 metro-core@0.66.0:
   version "0.66.0"
@@ -9607,13 +9573,6 @@ metro-react-native-babel-preset@0.66.0:
     "@babel/plugin-transform-unicode-regex" "^7.0.0"
     "@babel/template" "^7.0.0"
     react-refresh "^0.4.0"
-
-metro-resolver@0.65.2:
-  version "0.65.2"
-  resolved "https://registry.yarnpkg.com/metro-resolver/-/metro-resolver-0.65.2.tgz#9cd2e749189bcce167cb5413189cec33ea4a8bd0"
-  integrity sha512-MBr83o3LJetdsHmSdC28M9kU60ReF1eDxBM0210OaB7JqGD6qt3umTFYveS65dg3GkU7Qndw+hK2JPgXyDvv/Q==
-  dependencies:
-    absolute-path "^0.0.0"
 
 metro-resolver@0.66.0, metro-resolver@^0.66.0:
   version "0.66.0"
@@ -9970,7 +9929,7 @@ node-dir@^0.1.17:
   dependencies:
     minimatch "^3.0.2"
 
-node-fetch@1.6.3, node-fetch@2.6.0, node-fetch@^1.0.1, node-fetch@^2.2.0, node-fetch@^2.6.0, node-fetch@^2.6.1:
+node-fetch@2.6.0, node-fetch@^1.0.1, node-fetch@^2.2.0, node-fetch@^2.6.0, node-fetch@^2.6.1:
   version "2.6.1"
   resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.1.tgz#045bd323631f76ed2e2b55573394416b639a0052"
   integrity sha512-V4aYg89jEoVRxRb2fJdAg8FHvI7cEyYdVAh94HH0UIK8oJxUfkjlDQN9RbMx+bEjP7+ggMiFRprSti032Oipxw==
@@ -10870,11 +10829,6 @@ query-string@^7.0.0:
     filter-obj "^1.1.0"
     split-on-first "^1.0.0"
     strict-uri-encode "^2.0.0"
-
-querystring@0.2.1:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/querystring/-/querystring-0.2.1.tgz#40d77615bb09d16902a85c3e38aa8b5ed761c2dd"
-  integrity sha512-wkvS7mL/JMugcup3/rMitHmd9ecIGd2lhFhK9N3UUQ450h66d1r3Y9nvXzQAW1Lq+wyx61k/1pfKS5KuKiyEbg==
 
 quick-lru@^5.1.1:
   version "5.1.1"
@@ -13484,11 +13438,6 @@ utils-merge@1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/utils-merge/-/utils-merge-1.0.1.tgz#9f95710f50a267947b2ccc124741c1028427e713"
   integrity sha1-n5VxD1CiZ5R7LMwSR0HBAoQn5xM=
-
-uuid@3.0.1:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.0.1.tgz#6544bba2dfda8c1cf17e629a3a305e2bb1fee6c1"
-  integrity sha1-ZUS7ot/ajBzxfmKaOjBeK7H+5sE=
 
 uuid@^3.3.2:
   version "3.4.0"
