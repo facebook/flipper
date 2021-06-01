@@ -24,7 +24,9 @@ jobs:
           ~/.gradle/caches/jars-*
           ~/.gradle/caches/build-cache-*
         key: gradle-${{ hashFiles('checksum-android.txt') }}
-    - name: Build with Gradle
+    - name: Build artifacts with Gradle
+      run: ./gradlew assembleDebug
+    - name: Build sample apps with Gradle
       run: ./gradlew :sample:assembleDebug :tutorial:assembleDebug
     - name: upload artifact
       uses: actions/upload-artifact@v1
