@@ -7,13 +7,7 @@
  * @format
  */
 
-import React, {
-  cloneElement,
-  useState,
-  useCallback,
-  useMemo,
-  useEffect,
-} from 'react';
+import React, {cloneElement, useState, useCallback, useMemo} from 'react';
 import {Button, Divider, Badge, Tooltip, Avatar, Popover} from 'antd';
 import {
   MobileFilled,
@@ -50,7 +44,6 @@ import {showEmulatorLauncher} from './appinspect/LaunchEmulator';
 import SupportRequestFormV2 from '../fb-stubs/SupportRequestFormV2';
 import {setStaticView, StaticView} from '../reducers/connections';
 import {getInstance} from '../fb-stubs/Logger';
-import {getUser} from '../fb-stubs/user';
 import {SandyRatingButton} from '../chrome/RatingButton';
 import {filterNotifications} from './notification/notificationUtils';
 import {useMemoize} from 'flipper-plugin';
@@ -58,7 +51,6 @@ import isProduction from '../utils/isProduction';
 import NetworkGraph from '../chrome/NetworkGraph';
 import FpsGraph from '../chrome/FpsGraph';
 import UpdateIndicator from '../chrome/UpdateIndicator';
-import {UserNotSignedInError, UserUnauthorizedError} from '../utils/errors';
 
 const LeftRailButtonElem = styled(Button)<{kind?: 'small'}>(({kind}) => ({
   width: kind === 'small' ? 32 : 36,
@@ -378,20 +370,6 @@ function LoginButton() {
     (visible) => setShowLogout(visible),
     [],
   );
-
-  useEffect(() => {
-    if (config.showLogin) {
-      getUser().catch((error) => {
-        if (
-          error instanceof UserUnauthorizedError ||
-          error instanceof UserNotSignedInError
-        ) {
-          showLogin();
-        }
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return login ? (
     <Popover

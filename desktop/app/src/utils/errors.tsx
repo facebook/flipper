@@ -9,12 +9,34 @@
 
 import {InteractionReport} from 'flipper-plugin';
 
+export function isAuthError(
+  err: any,
+): err is UserNotSignedInError | UserUnauthorizedError {
+  return (
+    err instanceof UserNotSignedInError || err instanceof UserUnauthorizedError
+  );
+}
+
+export function isConnectivityOrAuthError(
+  err: any,
+): err is ConnectivityError | UserNotSignedInError | UserUnauthorizedError {
+  return err instanceof ConnectivityError || isAuthError(err);
+}
+
 export class CancelledPromiseError extends Error {
   constructor(msg: string) {
     super(msg);
     this.name = 'CancelledPromiseError';
   }
   name: 'CancelledPromiseError';
+}
+
+export class ConnectivityError extends Error {
+  constructor(msg: string) {
+    super(msg);
+    this.name = 'ConnectivityError';
+  }
+  name: 'ConnectivityError';
 }
 
 export class UserUnauthorizedError extends Error {
