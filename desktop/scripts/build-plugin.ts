@@ -87,10 +87,9 @@ async function buildPlugin() {
     const packageJsonBackupPath = path.join(tmpDir, 'package.json');
     await fs.copy(packageJsonPath, packageJsonBackupPath, {overwrite: true});
     try {
-      const packageJsonOverride =
-        (await fs.readJson(packageJsonOverridePath, {
-          throws: false,
-        })) ?? {};
+      const packageJsonOverride = (await fs.pathExists(packageJsonOverridePath))
+        ? await fs.readJson(packageJsonOverridePath)
+        : {};
       const packageJson = Object.assign(
         await fs.readJson(packageJsonPath),
         packageJsonOverride,

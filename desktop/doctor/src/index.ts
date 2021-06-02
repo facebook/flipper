@@ -318,7 +318,10 @@ export async function runHealthchecks(): Promise<
                   label,
                   isRequired: isRequired ?? true,
                   result: await run(environmentInfo).catch((e) => {
-                    console.error(e);
+                    console.warn(
+                      `Health check ${key}/${label} failed with:`,
+                      e,
+                    );
                     // TODO Improve result type to be: OK | Problem(message, fix...)
                     return {
                       hasProblem: true,

@@ -98,7 +98,9 @@ jobs:
 
       - name: Update ReactNativeFlipperExample Podfile.lock
         run: |
-          cd react-native/ReactNativeFlipperExample/ios/
+          cd react-native/ReactNativeFlipperExample
+          yarn install
+          cd ios
           pod update --repo-update
           ls
 

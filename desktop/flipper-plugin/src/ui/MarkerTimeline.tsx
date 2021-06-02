@@ -110,7 +110,7 @@ const Point = styled(Layout.Horizontal)<{
 Point.displayName = 'MakerTimeline:Point';
 
 const Time = styled.span({
-  color: theme.dividerColor,
+  color: theme.textColorSecondary,
   fontWeight: 300,
   marginRight: 4,
   marginTop: -2,

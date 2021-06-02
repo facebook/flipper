@@ -88,6 +88,11 @@ const argv = yargs
         'Enables rebuilding of default plugins on Flipper build. Only make sense in conjunction with "--no-bundled-plugins". Enabled by default, but if disabled using "--no-plugin-rebuild", then plugins are just released as is without rebuilding. This can save some time if you know plugin bundles are already up-to-date.',
       type: 'boolean',
     },
+    'default-plugins-dir': {
+      describe:
+        'Directory with prepared list of default plugins which will be included into the Flipper distribution as "defaultPlugins" dir',
+      type: 'string',
+    },
   })
   .help()
   .strict()
@@ -122,6 +127,10 @@ if (argv['rebuild-plugins'] === false) {
   process.env.FLIPPER_NO_REBUILD_PLUGINS = 'true';
 } else if (argv['rebuild-plugins'] === true) {
   delete process.env.FLIPPER_NO_REBUILD_PLUGINS;
+}
+
+if (argv['default-plugins-dir']) {
+  process.env.FLIPPER_DEFAULT_PLUGINS_DIR = argv['default-plugins-dir'];
 }
 
 async function generateManifest(versionNumber: string) {
@@ -308,7 +317,13 @@ function downloadIcons(buildFolder: string) {
   return Promise.all(
     iconURLs.map(({name, size, density}) => {
       const url = getIconURL(name, size, density);
-      return fetch(url, {})
+      return fetch(url, {
+        retryOptions: {
+          // Be default, only 5xx are retried but we're getting the odd 404
+          // which goes away on a retry for some reason.
+          retryOnHttpResponse: (res) => res.status >= 400,
+        },
+      })
         .then((res) => {
           if (res.status !== 200) {
             throw new Error(

@@ -33,6 +33,7 @@ import {
 } from 'flipper-plugin';
 import {StyleGuide} from './sandy-chrome/StyleGuide';
 import {showEmulatorLauncher} from './sandy-chrome/appinspect/LaunchEmulator';
+import {webFrame} from 'electron';
 
 export type DefaultKeyboardAction = keyof typeof _buildInMenuEntries;
 export type TopLevelMenu = 'Edit' | 'View' | 'Window' | 'Help';
@@ -318,6 +319,33 @@ function getTemplate(
         if (focusedWindow) {
           focusedWindow.setFullScreen(!focusedWindow.isFullScreen());
         }
+      },
+    },
+    {
+      label: 'Actual Size',
+      accelerator: (function () {
+        return 'CmdOrCtrl+0';
+      })(),
+      click: function (_, _focusedWindow: electron.BrowserWindow | undefined) {
+        webFrame.setZoomFactor(1);
+      },
+    },
+    {
+      label: 'Zoom In',
+      accelerator: (function () {
+        return 'CmdOrCtrl+=';
+      })(),
+      click: function (_, _focusedWindow: electron.BrowserWindow | undefined) {
+        webFrame.setZoomFactor(webFrame.getZoomFactor() + 0.25);
+      },
+    },
+    {
+      label: 'Zoom Out',
+      accelerator: (function () {
+        return 'CmdOrCtrl+-';
+      })(),
+      click: function (_, _focusedWindow: electron.BrowserWindow | undefined) {
+        webFrame.setZoomFactor(webFrame.getZoomFactor() - 0.25);
       },
     },
     {

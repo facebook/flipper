@@ -15,7 +15,7 @@ The network plugin is shipped as a separate Maven artifact:
 
 ```groovy
 dependencies {
-  debugImplementation 'com.facebook.flipper:flipper-network-plugin:0.91.1'
+  debugImplementation 'com.facebook.flipper:flipper-network-plugin:0.91.2'
 }
 ```
 
@@ -26,6 +26,12 @@ the client:
 import com.facebook.flipper.plugins.network.NetworkFlipperPlugin;
 
 NetworkFlipperPlugin networkFlipperPlugin = new NetworkFlipperPlugin();
+new NetworkingModule.CustomClientBuilder() {
+    @Override
+    public void apply(OkHttpClient.Builder builder) {
+        builder.addNetworkInterceptor(new FlipperOkhttpInterceptor(networkFlipperPlugin));
+    }
+});
 client.addPlugin(networkFlipperPlugin);
 ```
 
