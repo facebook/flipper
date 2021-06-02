@@ -38,7 +38,7 @@ export async function graphQLQuery(_query: string): Promise<any> {
   throw new Error('Feature not implemented');
 }
 
-export function logoutUser(): Promise<void> {
+export function logoutUser(_persist: boolean = false): Promise<void> {
   throw new Error('Feature not implemented');
 }
 
