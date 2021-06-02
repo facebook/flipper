@@ -9,24 +9,23 @@ package com.facebook.flipper.plugins.retrofit2protobuf
 
 import com.facebook.flipper.android.AndroidFlipperClient
 import com.facebook.flipper.core.FlipperArray
-import com.facebook.flipper.core.FlipperObject
 import com.facebook.flipper.core.FlipperValue
 import com.facebook.flipper.plugins.network.NetworkFlipperPlugin
 import com.facebook.flipper.plugins.retrofit2protobuf.adapter.GenericCallDefinitionsToMessageDefinitionsIfProtobuf
 import com.facebook.flipper.plugins.retrofit2protobuf.adapter.RetrofitServiceToGenericCallDefinitions
 import com.facebook.flipper.plugins.retrofit2protobuf.model.CallNestedMessagesPayload
-import me.haroldmartin.protobufjavatoprotobufjs.adapter.FullNamedMessagesToNestedMessages
 
 object SendProtobufToFlipperFromRetrofit {
     operator fun invoke(baseUrl: String, service: Class<*>) {
-        AndroidFlipperClient.getInstanceIfInitialized()?.let { client ->
-            (client.getPlugin(NetworkFlipperPlugin.ID) as? NetworkFlipperPlugin)
-                ?.send(
-                    "addProtobufDefinitions",
-                    FlipperObject.Builder().put(
-                        baseUrl, generateProtobufDefinitions(service).toFlipperArray()
-                    ).build()
-                )
+        getNetworkPlugin()?.addProtobufDefinitions(
+            baseUrl,
+            generateProtobufDefinitions(service).toFlipperArray()
+        )
+    }
+
+    private fun getNetworkPlugin(): NetworkFlipperPlugin? {
+        return AndroidFlipperClient.getInstanceIfInitialized()?.let { client ->
+            client.getPlugin(NetworkFlipperPlugin.ID) as? NetworkFlipperPlugin
         }
     }
 
@@ -39,9 +38,9 @@ object SendProtobufToFlipperFromRetrofit {
                     path = it.path,
                     method = it.method,
                     requestMessageFullName = it.requestMessageFullName,
-                    requestDefinitions = FullNamedMessagesToNestedMessages(it.requestModel),
+                    requestDefinitions = it.requestModel,
                     responseMessageFullName = it.responseMessageFullName,
-                    responseDefinitions = FullNamedMessagesToNestedMessages(it.responseModel)
+                    responseDefinitions = it.responseModel
                 )
             }
         }

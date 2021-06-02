@@ -25,9 +25,9 @@ internal object GenericCallDefinitionsToMessageDefinitionsIfProtobuf {
                 path = definition.path,
                 method = definition.method,
                 responseMessageFullName = responseRootAndMessages?.rootFullName,
-                responseModel = responseRootAndMessages?.messages,
+                responseModel = responseRootAndMessages?.descriptors,
                 requestMessageFullName = requestRootAndMessages?.rootFullName,
-                requestModel = requestRootAndMessages?.messages
+                requestModel = requestRootAndMessages?.descriptors
             )
         }
     }

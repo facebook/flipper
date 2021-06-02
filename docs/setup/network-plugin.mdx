@@ -49,6 +49,25 @@ new OkHttpClient.Builder()
 
 As interceptors can modify the request and response, add the Flipper interceptor after all others to get an accurate view of the network traffic.
 
+### Protobuf / Retrofit Integration
+
+If you are using Retrofit with Protobuf request or response types, you can setup automatic decoding so that the network inspector can display a human readable payload. First you must add the separate dependency:
+
+```groovy
+dependencies {
+  debugImplementation 'com.facebook.flipper:flipper-retrofit2-protobuf-plugin:0.91.2'
+}
+```
+
+Then call `SendProtobufToFlipperFromRetrofit` for each service class.
+
+```kotlin
+import com.facebook.flipper.plugins.retrofit2protobuf.SendProtobufToFlipperFromRetrofit
+
+SendProtobufToFlipperFromRetrofit("https://baseurl.com/", MyApiService::class.java)
+```
+
+
 ## iOS
 
 To enable network inspection, add the following pod to your Podfile:

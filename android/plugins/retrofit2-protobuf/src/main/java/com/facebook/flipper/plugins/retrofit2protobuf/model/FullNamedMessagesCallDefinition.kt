@@ -7,13 +7,13 @@
 
 package com.facebook.flipper.plugins.retrofit2protobuf.model
 
-import me.haroldmartin.protobufjavatoprotobufjs.model.FullNamedMessages
+import me.haroldmartin.protobufjavatoprotobufjs.adapter.JsDescriptors
 
 internal data class FullNamedMessagesCallDefinition(
     val path: String,
     val method: String,
     val requestMessageFullName: String?,
     val responseMessageFullName: String?,
-    val responseModel: FullNamedMessages?,
-    val requestModel: FullNamedMessages?
+    val responseModel: JsDescriptors?,
+    val requestModel: JsDescriptors?
 )
