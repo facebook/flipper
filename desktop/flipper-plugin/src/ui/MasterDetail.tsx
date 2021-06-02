@@ -238,7 +238,7 @@ export function MasterDetail<T extends object>({
       );
     case 'bottom':
       return (
-        <Layout.Bottom resizable width={sidebarSize}>
+        <Layout.Bottom resizable height={sidebarSize}>
           {table}
           {sidebar}
         </Layout.Bottom>
