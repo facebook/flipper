@@ -39,7 +39,7 @@ import {theme, Layout, withTrackingScope} from 'flipper-plugin';
 import SetupDoctorScreen, {checkHasNewProblem} from './SetupDoctorScreen';
 import SettingsSheet from '../chrome/SettingsSheet';
 import WelcomeScreen from './WelcomeScreen';
-import SignInSheet from '../chrome/SignInSheet';
+import SignInSheet from '../chrome/fb-stubs/SignInSheet';
 import {errorCounterAtom} from '../chrome/ConsoleLogs';
 import {ToplevelProps} from './SandyApp';
 import {useValue} from 'flipper-plugin';

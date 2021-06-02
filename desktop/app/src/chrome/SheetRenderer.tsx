@@ -9,7 +9,7 @@
 
 import React, {useCallback} from 'react';
 import ShareSheetExportUrl from './ShareSheetExportUrl';
-import SignInSheet from './SignInSheet';
+import SignInSheet from './fb-stubs/SignInSheet';
 import ExportDataPluginSheet from './ExportDataPluginSheet';
 import ShareSheetExportFile from './ShareSheetExportFile';
 import JSEmulatorLauncherSheet from './JSEmulatorLauncherSheet';
