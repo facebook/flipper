@@ -317,7 +317,13 @@ function downloadIcons(buildFolder: string) {
   return Promise.all(
     iconURLs.map(({name, size, density}) => {
       const url = getIconURL(name, size, density);
-      return fetch(url, {})
+      return fetch(url, {
+        retryOptions: {
+          // Be default, only 5xx are retried but we're getting the odd 404
+          // which goes away on a retry for some reason.
+          retryOnHttpResponse: (res) => res.status >= 400,
+        },
+      })
         .then((res) => {
           if (res.status !== 200) {
             throw new Error(
