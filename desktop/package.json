@@ -260,7 +260,7 @@
     "tsc-plugins": "./ts-node scripts/tsc-plugins.ts",
     "watch": "node --expose-gc --stack-trace-limit=40 ./node_modules/.bin/jest --watch"
   },
-  "version": "0.91.2",
+  "version": "0.92.0",
   "workspaces": {
     "packages": [
       "app",
