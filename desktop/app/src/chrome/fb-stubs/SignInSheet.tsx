@@ -7,12 +7,6 @@
  * @format
  */
 
-import {Component} from 'react';
-
-class SignInSheet extends Component<{onHide: () => any}, {}> {
-  render() {
-    return null;
-  }
+export default function SignInSheetFunc(_: {onHide: () => any}) {
+  return null;
 }
-
-export default SignInSheet;
