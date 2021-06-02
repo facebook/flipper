@@ -76,7 +76,7 @@ ext.deps = [
         // Annotations
         jsr305             : 'com.google.code.findbugs:jsr305:3.0.2',
         inferAnnotations   : 'com.facebook.infer.annotation:infer-annotation:0.18.0',
-        proguardAnnotations: 'com.facebook.yoga:proguard-annotations:1.16.0',
+        proguardAnnotations: 'com.facebook.yoga:proguard-annotations:1.19.0',
         // Litho
         lithoAnnotations   : "com.facebook.litho:litho-annotations:$LITHO_VERSION",
         lithoCore          : "com.facebook.litho:litho-core:$LITHO_VERSION",
