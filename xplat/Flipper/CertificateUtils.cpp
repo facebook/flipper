@@ -43,7 +43,7 @@ bool generateCertSigningRequest(
   const char* subjectProvince = "CA";
   const char* subjectCity = "Menlo Park";
   const char* subjectOrganization = "Flipper";
-  const char* subjectCommon = appId;
+  const char* subjectCommon = strlen(appId) >= 64 ? "com.flipper" : appId;
 
   X509_REQ* x509_req = X509_REQ_new();
   EVP_PKEY* pKey = EVP_PKEY_new();
