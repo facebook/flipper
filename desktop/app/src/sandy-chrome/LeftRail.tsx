@@ -31,6 +31,7 @@ import {SidebarLeft, SidebarRight} from './SandyIcons';
 import {useDispatch, useStore} from '../utils/useStore';
 import {
   ACTIVE_SHEET_PLUGINS,
+  ACTIVE_SHEET_SIGN_IN,
   setActiveSheet,
   toggleLeftSidebarVisible,
   toggleRightSidebarVisible,
@@ -39,7 +40,6 @@ import {theme, Layout, withTrackingScope} from 'flipper-plugin';
 import SetupDoctorScreen, {checkHasNewProblem} from './SetupDoctorScreen';
 import SettingsSheet from '../chrome/SettingsSheet';
 import WelcomeScreen from './WelcomeScreen';
-import SignInSheet from '../chrome/fb-stubs/SignInSheet';
 import {errorCounterAtom} from '../chrome/ConsoleLogs';
 import {ToplevelProps} from './SandyApp';
 import {useValue} from 'flipper-plugin';
@@ -370,9 +370,10 @@ function LoginButton() {
   const user = useStore((state) => state.user);
   const login = (user?.id ?? null) !== null;
   const profileUrl = user?.profile_picture?.uri;
-  const [showLogin, setShowLogin] = useState(false);
+  const showLogin = useCallback(() => {
+    dispatch(setActiveSheet(ACTIVE_SHEET_SIGN_IN));
+  }, [dispatch]);
   const [showLogout, setShowLogout] = useState(false);
-  const onClose = useCallback(() => setShowLogin(false), []);
   const onHandleVisibleChange = useCallback(
     (visible) => setShowLogout(visible),
     [],
@@ -385,10 +386,11 @@ function LoginButton() {
           error instanceof UserUnauthorizedError ||
           error instanceof UserNotSignedInError
         ) {
-          setShowLogin(true);
+          showLogin();
         }
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return login ? (
@@ -418,9 +420,8 @@ function LoginButton() {
       <LeftRailButton
         icon={<LoginOutlined />}
         title="Log In"
-        onClick={() => setShowLogin(true)}
+        onClick={showLogin}
       />
-      {showLogin && <SignInSheet onHide={onClose} />}
     </>
   );
 }

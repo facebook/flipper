@@ -12,6 +12,7 @@ import {v1 as uuidv1} from 'uuid';
 import {ReactElement} from 'react';
 import CancellableExportStatus from '../chrome/CancellableExportStatus';
 import {Actions} from './';
+import produce from 'immer';
 export const ACTIVE_SHEET_PLUGIN_SHEET: 'PLUGIN_SHEET' = 'PLUGIN_SHEET';
 export const ACTIVE_SHEET_PLUGINS: 'PLUGINS' = 'PLUGINS';
 export const ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT: 'SELECT_PLUGINS_TO_EXPORT' =
@@ -87,6 +88,7 @@ export type State = {
   launcherMsg: LauncherMsg;
   statusMessages: Array<string>;
   xcodeCommandLineToolsDetected: boolean;
+  pastedToken?: string;
 };
 
 type BooleanActionType =
@@ -154,6 +156,10 @@ export type Action =
       payload: {
         isDetected: boolean;
       };
+    }
+  | {
+      type: 'SET_PASTED_TOKEN';
+      payload?: string;
     };
 
 export const initialState: () => State = () => ({
@@ -288,6 +294,10 @@ export default function reducer(
     return state;
   } else if (action.type === 'SET_XCODE_DETECTED') {
     return {...state, xcodeCommandLineToolsDetected: action.payload.isDetected};
+  } else if (action.type === 'SET_PASTED_TOKEN') {
+    return produce(state, (draft) => {
+      draft.pastedToken = action.payload;
+    });
   } else {
     return state;
   }
@@ -365,4 +375,9 @@ export const removeStatusMessage = (payload: StatusMessageType): Action => ({
 export const setXcodeDetected = (isDetected: boolean): Action => ({
   type: 'SET_XCODE_DETECTED',
   payload: {isDetected},
+});
+
+export const setPastedToken = (pastedToken?: string): Action => ({
+  type: 'SET_PASTED_TOKEN',
+  payload: pastedToken,
 });

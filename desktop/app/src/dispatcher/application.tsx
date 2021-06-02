@@ -8,7 +8,12 @@
  */
 
 import {remote, ipcRenderer, IpcRendererEvent} from 'electron';
-import {toggleAction} from '../reducers/application';
+import {
+  ACTIVE_SHEET_SIGN_IN,
+  setActiveSheet,
+  setPastedToken,
+  toggleAction,
+} from '../reducers/application';
 import {Group, SUPPORTED_GROUPS} from '../reducers/supportForm';
 import {Store} from '../reducers/index';
 import {Logger} from '../fb-interfaces/Logger';
@@ -20,7 +25,6 @@ import {
 } from '../utils/exportData';
 import {tryCatchReportPlatformFailures} from '../utils/metrics';
 import {selectPlugin} from '../reducers/connections';
-import qs from 'query-string';
 
 export const uriComponents = (url: string): Array<string> => {
   if (!url) {
@@ -74,9 +78,11 @@ export default (store: Store, _logger: Logger) => {
     'flipper-protocol-handler',
     (_event: IpcRendererEvent, query: string) => {
       const uri = new URL(query);
-      if (query.startsWith('flipper://import')) {
-        const {search} = new URL(query);
-        const {url} = qs.parse(search);
+      if (uri.protocol !== 'flipper:') {
+        return;
+      }
+      if (uri.pathname.match(/^\/*import\/*$/)) {
+        const url = uri.searchParams.get('url');
         store.dispatch(toggleAction('downloadingImportData', true));
         return (
           typeof url === 'string' &&
@@ -91,14 +97,18 @@ export default (store: Store, _logger: Logger) => {
               store.dispatch(toggleAction('downloadingImportData', false));
             })
         );
-      } else if (
-        uri.protocol === 'flipper:' &&
-        uri.pathname.includes('support-form')
-      ) {
+      } else if (uri.pathname.match(/^\/*support-form\/*$/)) {
         const formParam = uri.searchParams.get('form');
         const grp = deeplinkFormParamToGroups(formParam);
         if (grp) {
           grp.handleSupportFormDeeplinks(store);
+        }
+        return;
+      } else if (uri.pathname.match(/^\/*login\/*$/)) {
+        const token = uri.searchParams.get('token');
+        store.dispatch(setPastedToken(token ?? undefined));
+        if (store.getState().application.activeSheet !== ACTIVE_SHEET_SIGN_IN) {
+          store.dispatch(setActiveSheet(ACTIVE_SHEET_SIGN_IN));
         }
         return;
       }
