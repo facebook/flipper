@@ -9521,21 +9521,12 @@ metro-cache-key@0.66.0:
   resolved "https://registry.yarnpkg.com/metro-cache-key/-/metro-cache-key-0.66.0.tgz#e628445f2a17e6e3dec970a87a090b4ec876bd1d"
   integrity sha512-qAHMC4Tpj3rUH8Pz5IEmT/fGgitCO86B6jndzKyXT+aDBr7BcNnRA8T25MoUMiBtsuRdxAeMHmBbhmvNK+tEEg==
 
-metro-cache@0.66.0:
+metro-cache@0.66.0, metro-cache@^0.66.0:
   version "0.66.0"
   resolved "https://registry.yarnpkg.com/metro-cache/-/metro-cache-0.66.0.tgz#65bfcf8a4bff559855c404220368866779216430"
   integrity sha512-Yppsf28TLGZwQIpNkx/9c5xc9FWFglhaUH6Ovtbth8DmDauAwakvdoMklFvkYQGE9W8OceehQAvRW2D9YQn9Ew==
   dependencies:
     metro-core "0.66.0"
-    mkdirp "^0.5.1"
-    rimraf "^2.5.4"
-
-metro-cache@^0.65.2:
-  version "0.65.2"
-  resolved "https://registry.yarnpkg.com/metro-cache/-/metro-cache-0.65.2.tgz#8922c8d4d882014e745aa01c9d1c64aeb3b08306"
-  integrity sha512-+f7A57qlF2IChrFsHsYN4Lhr7nwb3lsS+Z/M1833Bhj25VBhbe3dMqt8+rOWncgkOY3aHtH7PphRABy5yfDQ3g==
-  dependencies:
-    metro-core "0.65.2"
     mkdirp "^0.5.1"
     rimraf "^2.5.4"
 
@@ -9550,15 +9541,6 @@ metro-config@0.66.0:
     metro-cache "0.66.0"
     metro-core "0.66.0"
     metro-runtime "0.66.0"
-
-metro-core@0.65.2:
-  version "0.65.2"
-  resolved "https://registry.yarnpkg.com/metro-core/-/metro-core-0.65.2.tgz#038b8775aaa9cd3b15144add0258d12a23cb37a7"
-  integrity sha512-FIChFjUWSJOIrScAorwtzSY7Y1jxUr8U8hFquLIlnmVl+cye/dfrL1NQMj7X/j9OyRo9OeBe7PuRM/z6qz7G1w==
-  dependencies:
-    jest-haste-map "^26.5.2"
-    lodash.throttle "^4.1.1"
-    metro-resolver "0.65.2"
 
 metro-core@0.66.0:
   version "0.66.0"
@@ -9643,13 +9625,6 @@ metro-react-native-babel-preset@0.66.0:
     "@babel/plugin-transform-unicode-regex" "^7.0.0"
     "@babel/template" "^7.0.0"
     react-refresh "^0.4.0"
-
-metro-resolver@0.65.2:
-  version "0.65.2"
-  resolved "https://registry.yarnpkg.com/metro-resolver/-/metro-resolver-0.65.2.tgz#9cd2e749189bcce167cb5413189cec33ea4a8bd0"
-  integrity sha512-MBr83o3LJetdsHmSdC28M9kU60ReF1eDxBM0210OaB7JqGD6qt3umTFYveS65dg3GkU7Qndw+hK2JPgXyDvv/Q==
-  dependencies:
-    absolute-path "^0.0.0"
 
 metro-resolver@0.66.0, metro-resolver@^0.66.0:
   version "0.66.0"
