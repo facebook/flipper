@@ -35,7 +35,7 @@ export async function getUpdatablePlugins(
 ): Promise<UpdatablePluginDetails[]> {
   const installedPlugins = await getInstalledPlugins();
   const npmHostedPlugins = new Map<string, NpmPackageDescriptor>(
-    (await getNpmHostedPlugins()).map((p) => [p.name, p]),
+    (await getNpmHostedPlugins({query})).map((p) => [p.name, p]),
   );
   const annotatedInstalledPlugins = await pmap(
     installedPlugins,
