@@ -9,9 +9,6 @@
 
 import {Actions} from './';
 
-export const USER_UNAUTHORIZED = 'Unauthorized.';
-export const USER_NOT_SIGNEDIN = 'Not signed in.';
-
 export type User = {
   id?: string;
   name?: string;

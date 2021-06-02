@@ -43,7 +43,7 @@ import SignInSheet from '../chrome/fb-stubs/SignInSheet';
 import {errorCounterAtom} from '../chrome/ConsoleLogs';
 import {ToplevelProps} from './SandyApp';
 import {useValue} from 'flipper-plugin';
-import {logout, USER_NOT_SIGNEDIN, USER_UNAUTHORIZED} from '../reducers/user';
+import {logout} from '../reducers/user';
 import config from '../fb-stubs/config';
 import styled from '@emotion/styled';
 import {showEmulatorLauncher} from './appinspect/LaunchEmulator';
@@ -58,6 +58,7 @@ import isProduction from '../utils/isProduction';
 import NetworkGraph from '../chrome/NetworkGraph';
 import FpsGraph from '../chrome/FpsGraph';
 import UpdateIndicator from '../chrome/UpdateIndicator';
+import {UserNotSignedInError, UserUnauthorizedError} from '../utils/errors';
 
 const LeftRailButtonElem = styled(Button)<{kind?: 'small'}>(({kind}) => ({
   width: kind === 'small' ? 32 : 36,
@@ -380,7 +381,10 @@ function LoginButton() {
   useEffect(() => {
     if (config.showLogin) {
       getUser().catch((error) => {
-        if (error === USER_UNAUTHORIZED || error === USER_NOT_SIGNEDIN) {
+        if (
+          error instanceof UserUnauthorizedError ||
+          error instanceof UserNotSignedInError
+        ) {
           setShowLogin(true);
         }
       });

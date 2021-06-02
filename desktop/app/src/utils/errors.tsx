@@ -17,6 +17,22 @@ export class CancelledPromiseError extends Error {
   name: 'CancelledPromiseError';
 }
 
+export class UserUnauthorizedError extends Error {
+  constructor(msg: string = 'User unauthorized.') {
+    super(msg);
+    this.name = 'UserUnauthorizedError';
+  }
+  name: 'UserUnauthorizedError';
+}
+
+export class UserNotSignedInError extends Error {
+  constructor(msg: string = 'User not signed in.') {
+    super(msg);
+    this.name = 'UserNotSignedInError';
+  }
+  name: 'UserNotSignedInError';
+}
+
 declare global {
   interface Error {
     interaction?: InteractionReport;
