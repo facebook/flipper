@@ -42,6 +42,7 @@ import {
 } from '../../reducers/pluginManager';
 import {BundledPluginDetails} from 'flipper-plugin-lib';
 import {reportUsage} from '../../utils/metrics';
+import ConnectivityStatus from './fb-stubs/ConnectivityStatus';
 
 const {SubMenu} = Menu;
 const {Text} = Typography;
@@ -176,7 +177,7 @@ export const PluginList = memo(function PluginList({
   );
   return (
     <Layout.Container>
-      <SidebarTitle>Plugins</SidebarTitle>
+      <SidebarTitle actions={<ConnectivityStatus />}>Plugins</SidebarTitle>
       <Layout.Container padv={theme.space.small} padh={theme.space.tiny}>
         <PluginMenu
           inlineIndent={8}

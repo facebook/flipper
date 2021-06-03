@@ -90,7 +90,12 @@ export async function appendAccessTokenToUrl(_url: URL): Promise<string> {
 }
 
 const isLoggedInAtom = createState(false);
+const isConnectedAtom = createState(true);
 
 export function isLoggedIn(): Atom<boolean> {
   return isLoggedInAtom;
+}
+
+export function isConnected(): Atom<boolean> {
+  return isConnectedAtom;
 }
