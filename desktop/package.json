@@ -208,7 +208,6 @@
     "csstype": "^3.0.5",
     "jsdom": "16.6.0",
     "kind-of": "^6.0.3",
-    "minimist": "^1.2.3",
     "node-fetch": "^2.6.1",
     "node-forge": "^0.10.0",
     "node-notifier": "^10.0.0",
