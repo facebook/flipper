@@ -203,7 +203,6 @@
     "**/metro/**/ws": "1.1.5",
     "@jest-runner/electron/electron": "11.2.3",
     "@types/react": "17.0.9",
-    "acorn": "^8.3.0",
     "adbkit-logcat": "^2.0.1",
     "bl": "^5.0.0",
     "csstype": "^3.0.5",
