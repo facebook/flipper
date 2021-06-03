@@ -116,7 +116,7 @@ async function handlePluginDownload(
       });
       if (response.headers['content-type'] !== 'application/octet-stream') {
         throw new Error(
-          `Unexpected content type ${response.headers['content-type']} received from ${plugin.downloadUrl}`,
+          `It looks like you are not on VPN/Lighthouse. Unexpected content type received: ${response.headers['content-type']}.`,
         );
       }
       const responseStream = response.data as fs.ReadStream;
@@ -149,6 +149,7 @@ async function handlePluginDownload(
     if (startedByUser) {
       showErrorNotification(
         `Failed to download plugin "${title}" v${version}.`,
+        'Please check that you are on VPN/Lighthouse.',
       );
     }
     throw error;

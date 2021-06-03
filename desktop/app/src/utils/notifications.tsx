@@ -12,20 +12,31 @@ import React from 'react';
 import {ConsoleLogs} from '../chrome/ConsoleLogs';
 import {setStaticView} from '../reducers/connections';
 import {store} from '../store';
+import {Layout} from '../ui';
+import {v4 as uuid} from 'uuid';
 
-const {Text, Link} = Typography;
+const {Link} = Typography;
 
-export function showErrorNotification(message: string) {
+export function showErrorNotification(message: string, description?: string) {
+  const key = uuid();
   notification.error({
+    key,
     message,
     description: (
-      <Text>
-        See{' '}
-        <Link onClick={() => store.dispatch(setStaticView(ConsoleLogs))}>
-          logs
-        </Link>{' '}
-        for details.
-      </Text>
+      <Layout.Container gap>
+        {description ?? <p>{description}</p>}
+        <p>
+          See{' '}
+          <Link
+            onClick={() => {
+              store.dispatch(setStaticView(ConsoleLogs));
+              notification.close(key);
+            }}>
+            logs
+          </Link>{' '}
+          for details.
+        </p>
+      </Layout.Container>
     ),
     placement: 'bottomLeft',
   });
