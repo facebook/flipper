@@ -8,46 +8,46 @@ on:
   workflow_dispatch:
 
 jobs:
-  # publish_flipper_pod:
-  #   runs-on: macos-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
+  publish_flipper_pod:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
 
-  #     - name: Install Dependences
-  #       run: pod repo update
+      - name: Install Dependences
+        run: pod repo update
 
-  #     - name: Pod Version
-  #       run: pod --version
+      - name: Pod Version
+        run: pod --version
 
-  #     - name: Update Flipper version
-  #       run: ./scripts/update-pod-versions.sh ./ ./Flipper.podspec
+      - name: Update Flipper version
+        run: ./scripts/update-pod-versions.sh ./ ./Flipper.podspec
 
-  #     - name: Push Flipper
-  #       run: pod trunk push Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
-  #       env:
-  #         COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
+      - name: Push Flipper
+        run: pod trunk push Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
+        env:
+          COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
 
-  # publish_flipperkit_pod:
-  #   needs: publish_flipper_pod
-  #   runs-on: macos-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
+  publish_flipperkit_pod:
+    needs: publish_flipper_pod
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
 
-  #     - name: Install Dependences
-  #       run: pod repo update
+      - name: Install Dependences
+        run: pod repo update
 
-  #     - name: Pod Version
-  #       run: pod --version
+      - name: Pod Version
+        run: pod --version
 
-  #     - name: Update FlipperKit version
-  #       run: ./scripts/update-pod-versions.sh ./ ./FlipperKit.podspec
+      - name: Update FlipperKit version
+        run: ./scripts/update-pod-versions.sh ./ ./FlipperKit.podspec
 
-  #     - name: Push FlipperKit
-  #       run: |
-  #         # Retry publishing FlipperKit 20 times. Putting this hack unless we have cocoapods 1.10. More information related to the bug https://github.com/CocoaPods/CocoaPods/issues/9502#issuecomment-579486258
-  #         for i in {1..20}; do pod trunk push FlipperKit.podspec --use-libraries --allow-warnings --verbose --skip-import-validation --synchronous && break || sleep 30; done
-  #       env:
-  #         COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
+      - name: Push FlipperKit
+        run: |
+          # Retry publishing FlipperKit 20 times. Putting this hack unless we have cocoapods 1.10. More information related to the bug https://github.com/CocoaPods/CocoaPods/issues/9502#issuecomment-579486258
+          for i in {1..20}; do pod trunk push FlipperKit.podspec --use-libraries --allow-warnings --verbose --skip-import-validation --synchronous && break || sleep 30; done
+        env:
+          COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
 
   create_pr:
     runs-on: macos-latest
