@@ -3,8 +3,6 @@ on:
   push:
     tags:
       - v*
-    branches:
-      - fix-create-pr-rn
   workflow_dispatch:
 
 jobs:
