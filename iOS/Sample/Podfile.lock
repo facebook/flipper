@@ -82,7 +82,7 @@ PODS:
 
 DEPENDENCIES:
   - CocoaAsyncSocket
-  - ComponentKit (~> 0.30)
+  - ComponentKit (~> 0.31)
   - Flipper (from `../../Flipper.podspec`)
   - Flipper-Boost-iOSX
   - Flipper-DoubleConversion
@@ -99,7 +99,7 @@ DEPENDENCIES:
   - OpenSSL-Universal
 
 SPEC REPOS:
-  https://github.com/CocoaPods/Specs:
+  https://github.com/CocoaPods/Specs.git:
     - CocoaAsyncSocket
     - ComponentKit
     - Flipper-Boost-iOSX
@@ -139,6 +139,6 @@ SPEC CHECKSUMS:
   Yoga: cff67a400f6b74dc38eb0bad4f156673d9aa980c
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 1851d403b80e8171a90a5086cf56f579d45a1f71
+PODFILE CHECKSUM: 154af3b1cdd6d65b1141c1215a3789297116c992
 
 COCOAPODS: 1.10.1

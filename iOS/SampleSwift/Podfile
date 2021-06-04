@@ -20,5 +20,4 @@ target 'SampleSwift' do
   pod 'boost-for-react-native', :configuration => 'Debug'
   pod 'OpenSSL-Universal', :configuration => 'Debug'
   pod 'CocoaAsyncSocket', :configuration => 'Debug'
-  pod 'ComponentKit', '~> 0.30'
 end

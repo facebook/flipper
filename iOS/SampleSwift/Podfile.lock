@@ -82,7 +82,6 @@ PODS:
 DEPENDENCIES:
   - boost-for-react-native
   - CocoaAsyncSocket
-  - ComponentKit (~> 0.30)
   - Flipper (from `../../Flipper.podspec`)
   - Flipper-DoubleConversion
   - Flipper-Folly
@@ -97,7 +96,7 @@ DEPENDENCIES:
   - OpenSSL-Universal
 
 SPEC REPOS:
-  https://github.com/CocoaPods/Specs:
+  https://github.com/CocoaPods/Specs.git:
     - boost-for-react-native
     - CocoaAsyncSocket
     - ComponentKit
@@ -139,6 +138,6 @@ SPEC CHECKSUMS:
   Yoga: cff67a400f6b74dc38eb0bad4f156673d9aa980c
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 491980555e3479cbdc02de1d54ad3cb5c7388ec5
+PODFILE CHECKSUM: d2f6b1f5f7b3ca7994bb97a2c78943c23570db33
 
 COCOAPODS: 1.10.1
