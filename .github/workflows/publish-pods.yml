@@ -48,6 +48,7 @@ jobs:
           COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
 
   create_pr:
+    needs: publish_flipperkit_pod
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
