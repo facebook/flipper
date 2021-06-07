@@ -96,7 +96,7 @@ ext.deps = [
         robolectric        : 'org.robolectric:robolectric:4.5.1',
         junit              : 'junit:junit:4.13.2',
         hamcrest           : 'org.hamcrest:hamcrest-library:2.2',
-        mockito            : 'org.mockito:mockito-core:3.10.0',
+        mockito            : 'org.mockito:mockito-core:3.11.0',
         okhttp3            : 'com.squareup.okhttp3:okhttp:4.9.1',
         leakcanary         : 'com.squareup.leakcanary:leakcanary-android:1.6.3',
         leakcanary2        : 'com.squareup.leakcanary:leakcanary-android:2.6',
