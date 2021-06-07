@@ -11,10 +11,9 @@ import {createContext, useContext} from 'react';
 import {SandyPluginInstance, PluginFactory} from './Plugin';
 import {SandyDevicePluginInstance, DevicePluginFactory} from './DevicePlugin';
 
-export const SandyPluginContext =
-  createContext<SandyPluginInstance | SandyDevicePluginInstance | undefined>(
-    undefined,
-  );
+export const SandyPluginContext = createContext<
+  SandyPluginInstance | SandyDevicePluginInstance | undefined
+>(undefined);
 
 export function usePluginInstance():
   | SandyPluginInstance

@@ -63,11 +63,10 @@ const PopoverElement = (props: {
   children: ReactNode;
 }) => {
   const ref = useRef<HTMLDivElement | null>(null);
-  const [dimensions, setDimensions] =
-    useState<{
-      width: number;
-      height: number;
-    } | null>(null);
+  const [dimensions, setDimensions] = useState<{
+    width: number;
+    height: number;
+  } | null>(null);
   useEffect(() => {
     if (!ref.current) {
       return;

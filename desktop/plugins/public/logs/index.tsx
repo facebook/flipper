@@ -116,8 +116,9 @@ export function devicePlugin(client: DevicePluginClient) {
     persist: 'logs',
   });
   const isPaused = createState(true);
-  const tableManagerRef =
-    createRef<undefined | DataTableManager<ExtendedLogEntry>>();
+  const tableManagerRef = createRef<
+    undefined | DataTableManager<ExtendedLogEntry>
+  >();
 
   client.onDeepLink((payload: unknown) => {
     if (typeof payload === 'string') {
