@@ -47,7 +47,7 @@
     "open": "^8.2.0",
     "openssl-wrapper": "^0.3.4",
     "p-filter": "^2.1.0",
-    "p-map": "^4.0.0",
+    "p-map": "^5.0.0",
     "promise-retry": "^2.0.1",
     "promisify-child-process": "^4.1.0",
     "prop-types": "^15.6.0",

@@ -19,7 +19,7 @@
     "live-plugin-manager": "^0.15.1",
     "npm-api": "^1.0.1",
     "p-filter": "^2.1.0",
-    "p-map": "^4.0.0",
+    "p-map": "^5.0.0",
     "recursive-readdir": "^2.2.2",
     "semver": "^7.3.5",
     "tmp": "^0.2.1"

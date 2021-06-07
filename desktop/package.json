@@ -170,7 +170,7 @@
     "metro-resolver": "^0.66.0",
     "node-fetch": "^2.6.1",
     "p-filter": "^2.1.0",
-    "p-map": "^4.0.0",
+    "p-map": "^5.0.0",
     "patch-package": "^6.4.7",
     "prettier": "^2.3.1",
     "pretty-format": "^26.1.0",
