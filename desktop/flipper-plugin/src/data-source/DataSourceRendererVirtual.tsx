@@ -39,7 +39,7 @@ type DataSourceProps<T extends object, C> = {
   /**
    * The data source to render
    */
-  dataSource: DataSource<T, any, any>;
+  dataSource: DataSource<T>;
   /**
    * Automatically scroll if the user is near the end?
    */
