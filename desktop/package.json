@@ -156,7 +156,7 @@
     "flipper-babel-transformer": "0.0.0",
     "flipper-pkg-lib": "0.0.0",
     "flipper-plugin-lib": "0.0.0",
-    "fs-extra": "^9.0.0",
+    "fs-extra": "^10.0.0",
     "glob": "^7.1.7",
     "ignore": "^5.1.4",
     "invariant": "^2.2.4",
