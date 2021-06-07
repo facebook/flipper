@@ -27,7 +27,7 @@
   "devDependencies": {
     "@types/fs-extra": "^9.0.11",
     "@types/jest": "^26.0.23",
-    "@types/node": "^15.12.0",
+    "@types/node": "^15.12.1",
     "flipper-test-utils": "0.0.0",
     "globby": "^11.0.3",
     "jest": "^26.6.3",
