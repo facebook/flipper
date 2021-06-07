@@ -12,6 +12,8 @@ import {Actions} from './';
 import {getStringFromErrorLike} from '../utils';
 import React from 'react';
 
+export const GLOBAL_NOTIFICATION_PLUGIN_ID = 'Flipper';
+
 export type PluginNotification = {
   notification: Notification;
   pluginId: string;
@@ -208,7 +210,7 @@ export function addErrorNotification(
   console.warn(title, message, error);
   return addNotification({
     client: null,
-    pluginId: 'globalError',
+    pluginId: GLOBAL_NOTIFICATION_PLUGIN_ID,
     notification: {
       id: title,
       title,

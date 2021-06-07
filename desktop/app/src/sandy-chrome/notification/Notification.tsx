@@ -24,6 +24,7 @@ import {useDispatch, useStore} from '../../utils/useStore';
 import {selectPlugin} from '../../reducers/connections';
 import {
   clearAllNotifications,
+  GLOBAL_NOTIFICATION_PLUGIN_ID,
   PluginNotification as PluginNotificationOrig,
   updateCategoryBlocklist,
   updatePluginBlocklist,
@@ -39,7 +40,7 @@ type NotificationExtra = {
   onHidePlugin: () => void;
   clientName: string | undefined;
   appName: string | undefined;
-  pluginName: string;
+  pluginName: string | null | undefined;
   iconName: string | null | undefined;
 };
 type PluginNotification = NotificationData & NotificationExtra;
@@ -152,17 +153,21 @@ function NotificationEntry({notification}: {notification: PluginNotification}) {
         </Layout.Horizontal>
         {actions}
       </Layout.Right>
-      <Title level={4} ellipsis={{rows: 2}}>
+      <Title level={4} ellipsis={{rows: 3}}>
         {title}
       </Title>
-      <Text type="secondary" style={{fontSize: theme.fontSize.small}}>
-        {clientName && appName
-          ? `${clientName}/${appName}`
-          : clientName ?? appName ?? 'Not Connected'}
-      </Text>
-      <Button style={{width: 'fit-content'}} size="small" onClick={onOpen}>
-        Open {pluginName}
-      </Button>
+      {pluginName !== GLOBAL_NOTIFICATION_PLUGIN_ID && (
+        <>
+          <Text type="secondary" style={{fontSize: theme.fontSize.small}}>
+            {clientName && appName
+              ? `${clientName}/${appName}`
+              : clientName ?? appName ?? 'Not Connected'}
+          </Text>
+          <Button style={{width: 'fit-content'}} size="small" onClick={onOpen}>
+            Open {pluginName}
+          </Button>
+        </>
+      )}
       <DetailCollapse detail={message} />
     </ItemContainer>
   );
