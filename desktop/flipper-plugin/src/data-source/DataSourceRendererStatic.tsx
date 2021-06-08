@@ -16,7 +16,7 @@ type DataSourceProps<T extends object, C> = {
   /**
    * The data source to render
    */
-  dataSource: DataSource<T, any, any>;
+  dataSource: DataSource<T>;
   /**
    * additional context that will be passed verbatim to the itemRenderer, so that it can be easily memoized
    */

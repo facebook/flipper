@@ -7,10 +7,7 @@
  * @format
  */
 
-// ok for now, should be factored if this becomes a stand-alone lib
-// eslint-disable-next-line
-import {createDataSource} from '../../state/createDataSource';
-import {DataSource} from '../DataSource';
+import {DataSource, createDataSource} from '../DataSource';
 
 type Todo = {
   id: string;
