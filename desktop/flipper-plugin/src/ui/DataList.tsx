@@ -30,6 +30,7 @@ import styled from '@emotion/styled';
 import {DataTableManager} from './data-table/DataTableManager';
 import {Atom, createState} from '../state/atom';
 import {useAssertStableRef} from '../utils/useAssertStableRef';
+import {DataSource} from '../data-source';
 
 const {Text} = Typography;
 
@@ -62,7 +63,7 @@ interface DataListBaseProps<T extends Item> {
   /**
    * Items to display. Per item at least a title and unique id should be provided
    */
-  items: readonly Item[];
+  items: DataSource<Item> | readonly Item[];
   /**
    * Custom render function. By default the component will render the `title` in bold and description (if any) below it
    */
@@ -152,7 +153,8 @@ export const DataList: React.FC<DataListProps<any>> = function DataList<
       <DataTable<any>
         {...tableProps}
         tableManagerRef={tableManagerRef}
-        records={items}
+        records={Array.isArray(items) ? items : undefined}
+        dataSource={Array.isArray(items) ? undefined : (items as any)}
         recordsKey="id"
         columns={dataListColumns}
         onSelect={handleSelect}

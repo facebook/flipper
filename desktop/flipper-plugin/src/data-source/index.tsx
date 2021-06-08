@@ -7,7 +7,7 @@
  * @format
  */
 
-export {DataSource, ExtractKeyType} from './DataSource';
+export {DataSource, createDataSource, DataSourceOptions} from './DataSource';
 export {
   DataSourceRendererVirtual,
   DataSourceVirtualizer,

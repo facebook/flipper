@@ -20,12 +20,6 @@ const defaultLimit = 100 * 1000;
 // rather than search and remove the affected individual items
 const shiftRebuildTreshold = 0.05;
 
-export type ExtractKeyType<T, KEY extends keyof T> = T[KEY] extends string
-  ? string
-  : T[KEY] extends number
-  ? number
-  : never;
-
 type AppendEvent<T> = {
   type: 'append';
   entry: Entry<T>;
@@ -83,19 +77,45 @@ type OutputChange =
       newCount: number;
     };
 
-export class DataSource<
-  T = any,
-  KEY extends keyof T = any,
-  KEY_TYPE extends string | number | never = ExtractKeyType<T, KEY>,
-> {
+export type DataSourceOptions<T, K extends keyof T> = {
+  /**
+   * If a key is set, the given field of the records is assumed to be unique,
+   * and it's value can be used to perform lookups and upserts.
+   */
+  key?: K;
+  /**
+   * The maximum amount of records that this DataSource will store.
+   * If the limit is exceeded, the oldest records will automatically be dropped to make place for the new ones
+   */
+  limit?: number;
+};
+
+export function createDataSource<T, KEY extends keyof T = any>(
+  initialSet: readonly T[],
+  options?: DataSourceOptions<T, KEY>,
+): DataSource<T>;
+export function createDataSource<T>(initialSet?: readonly T[]): DataSource<T>;
+export function createDataSource<T, KEY extends keyof T>(
+  initialSet: readonly T[] = [],
+  options?: DataSourceOptions<T, KEY>,
+): DataSource<T> {
+  const ds = new DataSource<T>(options?.key);
+  if (options?.limit !== undefined) {
+    ds.limit = options.limit;
+  }
+  initialSet.forEach((value) => ds.append(value));
+  return ds as any;
+}
+
+export class DataSource<T> {
   private nextId = 0;
   private _records: Entry<T>[] = [];
-  private _recordsById: Map<KEY_TYPE, T> = new Map();
+  private _recordsById: Map<string, T> = new Map();
   /**
    * @readonly
    */
-  public keyAttribute: undefined | keyof T;
-  private idToIndex: Map<KEY_TYPE, number> = new Map();
+  public keyAttribute: keyof T | undefined;
+  private idToIndex: Map<string, number> = new Map();
 
   // if we shift the window, we increase shiftOffset to correct idToIndex results, rather than remapping all values
   private shiftOffset = 0;
@@ -113,7 +133,7 @@ export class DataSource<
    */
   public readonly view: DataSourceView<T>;
 
-  constructor(keyAttribute: KEY | undefined) {
+  constructor(keyAttribute: keyof T | undefined) {
     this.keyAttribute = keyAttribute;
     this.view = new DataSourceView<T>(this);
   }
@@ -134,22 +154,22 @@ export class DataSource<
     return unwrap(this._records[index]);
   }
 
-  public has(key: KEY_TYPE) {
+  public has(key: string) {
     this.assertKeySet();
     return this._recordsById.has(key);
   }
 
-  public getById(key: KEY_TYPE) {
+  public getById(key: string): T | undefined {
     this.assertKeySet();
     return this._recordsById.get(key);
   }
 
-  public keys(): IterableIterator<KEY_TYPE> {
+  public keys(): IterableIterator<string> {
     this.assertKeySet();
     return this._recordsById.keys();
   }
 
-  public entries(): IterableIterator<[KEY_TYPE, T]> {
+  public entries(): IterableIterator<[string, T]> {
     this.assertKeySet();
     return this._recordsById.entries();
   }
@@ -178,7 +198,7 @@ export class DataSource<
    * Returns the index of a specific key in the *records* set.
    * Returns -1 if the record wansn't found
    */
-  public getIndexOfKey(key: KEY_TYPE): number {
+  public getIndexOfKey(key: string): number {
     this.assertKeySet();
     const stored = this.idToIndex.get(key);
     return stored === undefined ? -1 : stored + this.shiftOffset;
@@ -302,7 +322,7 @@ export class DataSource<
    *
    * Warning: this operation can be O(n) if a key is set
    */
-  public deleteByKey(keyValue: KEY_TYPE): boolean {
+  public deleteByKey(keyValue: string): boolean {
     this.assertKeySet();
     const index = this.getIndexOfKey(keyValue);
     if (index === -1) {
@@ -382,7 +402,7 @@ export class DataSource<
     }
   }
 
-  private getKey(value: T): KEY_TYPE;
+  private getKey(value: T): string;
   private getKey(value: any): any {
     this.assertKeySet();
     const key = value[this.keyAttribute!];
@@ -392,7 +412,7 @@ export class DataSource<
     throw new Error(`Invalid key value: '${key}'`);
   }
 
-  private storeIndexOfKey(key: KEY_TYPE, index: number) {
+  private storeIndexOfKey(key: string, index: number) {
     // de-normalize the index, so that on  later look ups its corrected again
     this.idToIndex.set(key, index - this.shiftOffset);
   }
@@ -448,7 +468,7 @@ class DataSourceView<T> {
    */
   private _output: Entry<T>[] = [];
 
-  constructor(datasource: DataSource<T, any, any>) {
+  constructor(datasource: DataSource<T>) {
     this.datasource = datasource;
   }
 

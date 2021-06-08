@@ -37,6 +37,7 @@
     "kind-of": "6.0.3",
     "node-fetch": "^2.6.1",
     "xmldom": "0.5.0",
-    "browserslist": "^4.16.5"
+    "browserslist": "^4.16.5",
+    "ws": "7.4.6"
   }
 }
