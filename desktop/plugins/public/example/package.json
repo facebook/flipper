@@ -22,7 +22,8 @@
     "prepack": "flipper-pkg lint && flipper-pkg bundle --production"
   },
   "peerDependencies": {
-    "flipper": "*",
+    "antd": "*",
+    "flipper-plugin": "*",
     "flipper-pkg": "*"
   }
 }

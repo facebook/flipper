@@ -7,112 +7,115 @@
  * @format
  */
 
-import {Button, Input, FlipperPlugin, FlexColumn, styled, Text} from 'flipper';
+import {
+  createState,
+  Layout,
+  PluginClient,
+  usePlugin,
+  useValue,
+} from 'flipper-plugin';
+import {Button, Input, message, Typography} from 'antd';
 import React from 'react';
+
+const {Text} = Typography;
 
 type DisplayMessageResponse = {
   greeting: string;
 };
 
-type Message = {
-  id: number;
-  msg: string | null | undefined;
-};
-
-type State = {
-  prompt: string;
-  message: string;
-};
-
-type PersistedState = {
-  currentNotificationIds: Array<number>;
-  receivedMessage: string | null;
-};
-
-const Container = styled(FlexColumn)({
-  alignItems: 'center',
-  justifyContent: 'space-around',
-  padding: 20,
-});
-
-export default class Example extends FlipperPlugin<State, any, PersistedState> {
-  static defaultPersistedState = {
-    currentNotificationIds: [],
-    receivedMessage: null,
+/**
+ * Events that can be received FROM the client application
+ */
+type Events = {
+  triggerNotification: {
+    id: number;
   };
-
-  state = {
-    prompt: 'Type a message below to see it displayed on the mobile app',
-    message: '',
+  displayMessage: {
+    msg: string;
   };
+};
+
+/**
+ * Methods that can be invoked ON the client application
+ */
+type Methods = {
+  displayMessage(payload: {message: string}): Promise<DisplayMessageResponse>;
+};
+
+export function plugin(client: PluginClient<Events, Methods>) {
+  const receivedMessage = createState('');
+  const prompt = createState(
+    'Type a message below to see it displayed on the mobile app',
+  );
+  const nextMessage = createState('');
 
   /*
-   * Reducer to process incoming "send" messages from the mobile counterpart.
+   * Process incoming messages
    */
-  static persistedStateReducer(
-    persistedState: PersistedState,
-    method: string,
-    payload: Message,
-  ) {
-    if (method === 'triggerNotification') {
-      return Object.assign({}, persistedState, {
-        currentNotificationIds: persistedState.currentNotificationIds.concat([
-          payload.id,
-        ]),
-      });
-    }
-    if (method === 'displayMessage') {
-      return Object.assign({}, persistedState, {
-        receivedMessage: payload.msg,
-      });
-    }
-    return persistedState;
-  }
-
-  /*
-   * Callback to provide the currently active notifications.
-   */
-  static getActiveNotifications(persistedState: PersistedState) {
-    return persistedState.currentNotificationIds.map((x: number) => {
-      return {
-        id: 'test-notification:' + x,
-        message: 'Example Notification',
-        severity: 'warning' as 'warning',
-        title: 'Notification: ' + x,
-      };
+  client.onMessage('triggerNotification', ({id}) => {
+    client.showNotification({
+      id: 'test-notification:' + id,
+      message: 'Example Notification',
+      severity: 'warning' as 'warning',
+      title: 'Notification: ' + id,
     });
-  }
+  });
+
+  client.onMessage('displayMessage', ({msg}) => {
+    receivedMessage.set(msg);
+  });
 
   /*
    * Call a method of the mobile counterpart, to display a message.
    */
-  sendMessage() {
-    if (this.client.isConnected) {
-      this.client
-        .call('displayMessage', {message: this.state.message || 'Weeeee!'})
-        .then((_params: DisplayMessageResponse) => {
-          this.setState({
-            prompt: 'Nice',
-          });
+  async function sendMessage() {
+    if (client.isConnected) {
+      try {
+        const response = await client.send('displayMessage', {
+          message: nextMessage.get() || 'Weeeee!',
         });
+        prompt.set(response.greeting || 'Nice');
+        nextMessage.set('');
+      } catch (e) {
+        console.warn('Error returned from client', e);
+        message.error('Failed to get response from client ' + e);
+      }
     }
   }
 
-  render() {
-    return (
-      <Container>
-        <Text>{this.state.prompt}</Text>
+  return {
+    sendMessage,
+    prompt,
+    nextMessage,
+    receivedMessage,
+  };
+}
+
+export function Component() {
+  const instance = usePlugin(plugin);
+  const prompt = useValue(instance.prompt);
+  const nextMessage = useValue(instance.nextMessage);
+  const receivedMessage = useValue(instance.receivedMessage);
+
+  return (
+    <Layout.Container pad center>
+      <Layout.Container pad gap width={400}>
+        <Text>{prompt}</Text>
         <Input
           placeholder="Message"
+          value={nextMessage}
           onChange={(event) => {
-            this.setState({message: event.target.value});
+            instance.nextMessage.set(event.target.value);
           }}
         />
-        <Button onClick={this.sendMessage.bind(this)}>Send</Button>
-        {this.props.persistedState.receivedMessage && (
-          <Text> {this.props.persistedState.receivedMessage} </Text>
-        )}
-      </Container>
-    );
-  }
+        <Button
+          onClick={() => {
+            instance.sendMessage();
+          }}>
+          Send
+        </Button>
+        {receivedMessage && <Text> {receivedMessage} </Text>}
+      </Layout.Container>
+    </Layout.Container>
+  );
 }
