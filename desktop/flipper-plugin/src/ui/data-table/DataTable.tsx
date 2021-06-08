@@ -188,9 +188,9 @@ export function DataTable<T extends object>(
           if (e.ctrlKey || e.metaKey) {
             tableManager.addRangeToSelection(index, index, true);
           } else if (e.shiftKey) {
-            tableManager.selectItem(index, true);
+            tableManager.selectItem(index, true, true);
           } else {
-            tableManager.selectItem(index);
+            tableManager.selectItem(index, false, true);
           }
 
           dragging.current = true;

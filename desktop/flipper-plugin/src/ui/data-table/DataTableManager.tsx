@@ -59,6 +59,7 @@ type DataManagerActions<T> =
       {
         nextIndex: number | ((currentIndex: number) => number);
         addToSelection?: boolean;
+        allowUnselect?: boolean;
       }
     >
   | Action<
@@ -161,9 +162,14 @@ export const dataTableManagerReducer = produce<
       break;
     }
     case 'selectItem': {
-      const {nextIndex, addToSelection} = action;
+      const {nextIndex, addToSelection, allowUnselect} = action;
       draft.selection = castDraft(
-        computeSetSelection(draft.selection, nextIndex, addToSelection),
+        computeSetSelection(
+          draft.selection,
+          nextIndex,
+          addToSelection,
+          allowUnselect,
+        ),
       );
       break;
     }
@@ -252,6 +258,7 @@ export type DataTableManager<T> = {
   selectItem(
     index: number | ((currentSelection: number) => number),
     addToSelection?: boolean,
+    allowUnselect?: boolean,
   ): void;
   addRangeToSelection(
     start: number,
@@ -276,8 +283,13 @@ export function createDataTableManager<T>(
     reset() {
       dispatch({type: 'reset'});
     },
-    selectItem(index: number, addToSelection = false) {
-      dispatch({type: 'selectItem', nextIndex: index, addToSelection});
+    selectItem(index: number, addToSelection = false, allowUnselect = false) {
+      dispatch({
+        type: 'selectItem',
+        nextIndex: index,
+        addToSelection,
+        allowUnselect,
+      });
     },
     selectItemById(id, addToSelection = false) {
       dispatch({type: 'selectItemById', id, addToSelection});
@@ -517,11 +529,17 @@ export function computeSetSelection(
   base: Selection,
   nextIndex: number | ((currentIndex: number) => number),
   addToSelection?: boolean,
+  allowUnselect?: boolean,
 ): Selection {
   const newIndex =
     typeof nextIndex === 'number' ? nextIndex : nextIndex(base.current);
   // special case: toggle existing selection off
-  if (!addToSelection && base.items.size === 1 && base.current === newIndex) {
+  if (
+    !addToSelection &&
+    allowUnselect &&
+    base.items.size === 1 &&
+    base.current === newIndex
+  ) {
     return emptySelection;
   }
   if (newIndex < 0) {

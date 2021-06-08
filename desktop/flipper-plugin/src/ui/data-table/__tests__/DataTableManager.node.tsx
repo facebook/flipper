@@ -61,6 +61,20 @@ test('computeSetSelection', () => {
     items: new Set([5]),
   });
 
+  // single item existing selection, no selection toggle
+  expect(
+    computeSetSelection(
+      {
+        current: 4,
+        items: new Set([4]),
+      },
+      4,
+    ),
+  ).toEqual({
+    current: 4,
+    items: new Set([4]),
+  });
+
   // single item existing selection, toggle item off
   expect(
     computeSetSelection(
@@ -69,6 +83,8 @@ test('computeSetSelection', () => {
         items: new Set([4]),
       },
       4,
+      false,
+      true,
     ),
   ).toEqual({
     current: -1,
