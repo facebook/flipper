@@ -238,7 +238,12 @@ export function DataTable<T extends object>(
       let handled = true;
       const shiftPressed = e.shiftKey;
       const outputSize = dataSource.view.size;
-      const windowSize = virtualizerRef.current!.virtualItems.length;
+      const windowSize = props.scrollable
+        ? virtualizerRef.current?.virtualItems.length ?? 0
+        : dataSource.view.size;
+      if (!windowSize) {
+        return;
+      }
       switch (e.key) {
         case 'ArrowUp':
           tableManager.selectItem(
@@ -282,7 +287,7 @@ export function DataTable<T extends object>(
         e.preventDefault();
       }
     },
-    [dataSource, tableManager],
+    [dataSource, tableManager, props.scrollable],
   );
 
   const [debouncedSetFilter] = useState(() => {
