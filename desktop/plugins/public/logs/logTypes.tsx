@@ -41,7 +41,7 @@ export const logTypes: {
       ...baseRowStyle,
       color: theme.textColorSecondary,
     },
-    enabled: false,
+    enabled: true,
   },
   info: {
     label: 'Info',
