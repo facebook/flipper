@@ -7,10 +7,7 @@
  * @format
  */
 
-// ok for now, should be factored if this becomes a stand-alone lib
-// eslint-disable-next-line
-import {createDataSource} from '../../state/createDataSource';
-import {DataSource} from '../DataSource';
+import {DataSource, createDataSource} from '../DataSource';
 
 type Todo = {
   id: string;
@@ -487,7 +484,7 @@ test('clear', () => {
 
 function testEvents<T>(
   initial: T[],
-  op: (ds: DataSource<T, any, any>) => void,
+  op: (ds: DataSource<T>) => void,
   key?: keyof T,
 ): any[] {
   const ds = createDataSource<T>(initial, {key});

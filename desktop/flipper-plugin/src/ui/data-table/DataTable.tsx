@@ -51,6 +51,7 @@ import {Formatter} from '../DataFormatter';
 import {usePluginInstance} from '../../plugin/PluginContext';
 import {debounce} from 'lodash';
 import {useInUnitTest} from '../../utils/useInUnitTest';
+import {createDataSource} from 'flipper-plugin/src/state/createDataSource';
 
 interface DataTableBaseProps<T = any> {
   columns: DataTableColumn<T>[];
@@ -66,9 +67,7 @@ interface DataTableBaseProps<T = any> {
   tableManagerRef?: RefObject<DataTableManager<T> | undefined>; // Actually we want a MutableRefObject, but that is not what React.createRef() returns, and we don't want to put the burden on the plugin dev to cast it...
   onCopyRows?(records: T[]): string;
   onContextMenu?: (selection: undefined | T) => React.ReactElement;
-  onRenderEmpty?:
-    | null
-    | ((dataSource?: DataSource<T, any, any>) => React.ReactElement);
+  onRenderEmpty?: null | ((dataSource?: DataSource<T>) => React.ReactElement);
 }
 
 export type ItemRenderer<T> = (
@@ -79,7 +78,7 @@ export type ItemRenderer<T> = (
 
 type DataTableInput<T = any> =
   | {
-      dataSource: DataSource<T, any, any>;
+      dataSource: DataSource<T>;
       records?: undefined;
       recordsKey?: undefined;
     }
@@ -239,7 +238,12 @@ export function DataTable<T extends object>(
       let handled = true;
       const shiftPressed = e.shiftKey;
       const outputSize = dataSource.view.size;
-      const windowSize = virtualizerRef.current!.virtualItems.length;
+      const windowSize = props.scrollable
+        ? virtualizerRef.current?.virtualItems.length ?? 0
+        : dataSource.view.size;
+      if (!windowSize) {
+        return;
+      }
       switch (e.key) {
         case 'ArrowUp':
           tableManager.selectItem(
@@ -283,7 +287,7 @@ export function DataTable<T extends object>(
         e.preventDefault();
       }
     },
-    [dataSource, tableManager],
+    [dataSource, tableManager, props.scrollable],
   );
 
   const [debouncedSetFilter] = useState(() => {
@@ -525,11 +529,9 @@ function normalizeDataSourceInput<T>(props: DataTableInput<T>): DataSource<T> {
     return props.dataSource;
   }
   if (props.records) {
-    const [dataSource] = useState(() => {
-      const ds = new DataSource<T>(props.recordsKey);
-      syncRecordsToDataSource(ds, props.records);
-      return ds;
-    });
+    const [dataSource] = useState(() =>
+      createDataSource(props.records, {key: props.recordsKey}),
+    );
     useEffect(() => {
       syncRecordsToDataSource(dataSource, props.records);
     }, [dataSource, props.records]);

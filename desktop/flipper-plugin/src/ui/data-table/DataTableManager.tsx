@@ -64,7 +64,7 @@ type DataManagerActions<T> =
   | Action<
       'selectItemById',
       {
-        id: string | number;
+        id: string;
         addToSelection?: boolean;
       }
     >
@@ -213,7 +213,7 @@ export const dataTableManagerReducer = produce<
     }
     case 'setColumnFilterFromSelection': {
       const items = getSelectedItems(
-        config.dataSource as DataSource,
+        config.dataSource as DataSource<any>,
         draft.selection,
       );
       items.forEach((item, index) => {
@@ -258,7 +258,7 @@ export type DataTableManager<T> = {
     end: number,
     allowUnselect?: boolean,
   ): void;
-  selectItemById(id: string | number, addToSelection?: boolean): void;
+  selectItemById(id: string, addToSelection?: boolean): void;
   clearSelection(): void;
   getSelectedItem(): T | undefined;
   getSelectedItems(): readonly T[];
