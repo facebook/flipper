@@ -936,7 +936,29 @@ See `View > Flipper Style Guide` inside the Flipper application for more details
 
 ### createTablePlugin
 
-Utility to create a plugin that consists of a master table and details json view with minimal effort. See [../tutorial/js-table.mdx](Showing a table) for more details.
+Utility to create a plugin that consists of a master table and details JSON view with minimal effort. See the [Showing a table](../tutorial/js-table.mdx) tutorial for an example.
+
+`createTablePlugin` creates a plugin that handles receiving data from the client and
+displaying it in a table. The table handles selection of items, sorting, filtering and rendering a sidebar where more detailed information can be presented about the selected row.
+
+The plugin expects to be able to subscribe to the `method` argument and receive either single data objects. 
+Each data object represents a row in the table.
+
+An optional `resetMethod` argument can be provided which will replace the current rows with the data provided. 
+This is useful when connecting to Flipper for this first time, or reconnecting to
+the client in an unknown state.
+
+Since the `createTablePlugin` defines both the `plugin` and `Component` for the plugin in one go, making the result is most easily done by using `module.exports = createTablePlugin(....)` so that both are exported from the plugin package.
+
+Valid options are:
+
+* `method: string`: The event that is sent from the corresponding client plugin, and should be collected.
+* `resetMethod?: string`: An event name, that, when sent from the client, should clear the current table.
+* `columns: DataTableColumn`: A description of the columns to display. See the [DataTable columns](#datatable).
+* `key?: string`: If set, the specified field of the incoming data will be treated as unique identifier. Receiving new data for existing rows will replace the existing rows. Without this property the table will only be appended.
+* `onCopyRows?: (rows) => string`: A function that can be used to customize how records are copied to the clipboard. By default they will be `JSON.stringify`-ed.  
+* `buildRow?: (rawData) => row`: A function that can be used to preprocess the incoming data before it is handed of to the table. 
+* `renderSidebar?: (row) => React.Element`: A function that can be used to customize how the sidebar is rendered.
 
 ### batch
 

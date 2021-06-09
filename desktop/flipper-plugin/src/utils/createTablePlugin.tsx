@@ -25,17 +25,18 @@ type PluginResult<Raw, Row> = {
 };
 
 /**
- * createTablePlugin creates a Plugin class which handles fetching data from the client and
- * displaying in in a table. The table handles selection of items and rendering a sidebar where
- * more detailed information can be presented about the selected row.
+ * `createTablePlugin` creates a plugin that handles receiving data from the client and
+ * displaying it in a table. The table handles selection of items, sorting, filtering and
+ * rendering a sidebar where more detailed information can be presented about the selected row.
  *
- * The plugin expects the be able to subscribe to the `method` argument and recieve either an array
- * of data objects or a single data object. Each data object represents a row in the table which is
- * build by calling the `buildRow` function argument.
+ * The plugin expects the be able to subscribe to the `method` argument and receive either single data objects.
+ * Each data object represents a row in the table.
  *
- * An optional resetMethod argument can be provided which will replace the current rows with the
- * data provided. This is useful when connecting to Flipper for this first time, or reconnecting to
- * the client in an unknown state.
+ * An optional `resetMethod` argument can be provided which will replace the current rows with the data provided.
+ * This is useful when connecting to Flipper for this first time, or reconnecting to the client in an unknown state.
+ *
+ * Since the `createTablePlugin` defines both the `plugin` and `Component` for the plugin in one go,
+ * making the result is most easily done by using `module.exports = createTablePlugin(....)` so that both are exported from the plugin package.
  */
 export function createTablePlugin<Row extends object>(props: {
   method: string;
