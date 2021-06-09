@@ -1,3 +1,7 @@
+# 0.93.0 (9/6/2021)
+
+
+
 # 0.91.2 (24/5/2021)
 
  * [D28477074](https://github.com/facebook/flipper/search?q=D28477074&type=Commits) -  [Internal]
