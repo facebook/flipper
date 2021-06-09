@@ -297,6 +297,13 @@ if (myPlugin) {
 
 Here, `sendData` is an example of a method that might be implemented by the Flipper plugin.
 
+### Bi-directional communication demo
+
+An minimal communication demo can be found in our [Sample project]:
+
+* [Desktop implementation](https://github.com/facebook/flipper/blob/master/desktop/plugins/public/example/index.tsx)
+* [Android implementation](https://github.com/facebook/flipper/blob/master/android/sample/src/debug/java/com/facebook/flipper/plugins/example/ExampleFlipperPlugin.java) / [iOS implementation](https://github.com/facebook/flipper/tree/7bd4f80c2570bebb52af3cf49e45fc6130d6a473/iOS/Plugins/FlipperKitExamplePlugin/FlipperKitExamplePlugin)
+
 ## Background Plugins
 
 In some cases you may want to provide data to Flipper even when your plugin is not currently active. Returning true in `runInBackground()` will result in `onConnect` being called as soon as Flipper connects, and allow you to use the connection at any time. See the [Client Plugin Lifecycle](client-plugin-lifecycle) for more details.
