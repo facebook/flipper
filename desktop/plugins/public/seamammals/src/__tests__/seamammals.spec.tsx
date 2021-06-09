@@ -7,27 +7,6 @@
  * @format
  */
 
-// eslint-disable-next-line
-import {act} from '@testing-library/react';
-
-{
-  // These mocks are needed because seammammals still uses Flipper in its UI implementation,
-  // so we need to mock some things
-  const origRequestIdleCallback = window.requestIdleCallback;
-  const origCancelIdleCallback = window.cancelIdleCallback;
-  // @ts-ignore
-  window.requestIdleCallback = (fn: () => void) => {
-    // the synchronous implementation forces DataInspector to render in sync
-    act(fn);
-  };
-  // @ts-ignore
-  window.cancelIdleCallback = clearImmediate;
-  afterAll(() => {
-    window.requestIdleCallback = origRequestIdleCallback;
-    window.cancelIdleCallback = origCancelIdleCallback;
-  });
-}
-
 import {TestUtils} from 'flipper-plugin';
 import * as MammalsPlugin from '../index_custom';
 

@@ -5,7 +5,7 @@
   "private": true,
   "version": "0.0.0",
   "main": "dist/bundle.js",
-  "flipperBundlerEntry": "src/index_table.tsx",
+  "flipperBundlerEntry": "src/index_custom.tsx",
   "license": "MIT",
   "keywords": [
     "flipper-plugin"

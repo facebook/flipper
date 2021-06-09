@@ -11,15 +11,14 @@ Displaying your data in a table might work for many use-cases. However, dependin
 ## Replacing the table
 
 For our sea mammals app, we might not only want to see them listed as image URLs in a table but render the actual images in nice little cards. When selecting one of the cards we still want to display all details in the sidebar.
+
 <img alt="Custom cards UI for our sea mammals plugin" src={useBaseUrl("img/js-custom.png")} />
 
 Currently, the default export in our `index.tsx` is from `createTablePlugin`.
 Now we are going to replace this with a custom React component by using the more flexible APIs exposed by `flipper-plugin` .
-So first let's add `flipper-plugin` as dependency: `yarn add --peer flipper-plugin antd && yarn add --dev flipper-plugin antd`.
 
 After that, we replace our `createTablePlugin` with a `plugin` definition, and a `Component` definition which is used for rendering.
 Separating those two concepts helps with testing and maintaining state when the user switches plugins.
-
 
 ```tsx
 import React from 'react';
@@ -90,6 +89,7 @@ In this case, we return the state atoms `rows` and `selectedID`, and expose the 
 
 Since the `plugin` function will execute only once during the entire life-cycle of the plugin, we can use local variables in the function body to preserve state.
 In our example, we create two pieces of state, the set of rows available, `rows`, and the current selection: `selectionID`. See `(5)`.
+For larger data collections, we strongly recommend to leverage the better optimized [`createDataSource`](../extending/flipper-plugin#createdatasource), but in this simple example `createState` will suffice for the small data set.
 
 It is possible to store state directly in `let` declarations, but `createState` creates a storage container that gives us a few advantages.
 Most importantly, state created using `createState` can be subscribed to by our UI components using the `useValue` hook.
@@ -176,8 +176,6 @@ The assertions are provided by [Jest](https://jestjs.io/), and `toMatchInlineSna
 
 ## Building a User Interface for the plugin
 
-_Note: For now, the plugin implementation as shown here uses the old Flipper component library `flipper`, expect nicer components in the future as part of `flipper-plugin`._
-
 So far, in `index.tsx`, our `Component` didn't do anything useful yet. Time to build some nice UI.
 Flipper leverages Ant design, so any [official Ant component](https://ant.design/components/overview/) can be used in Flipper plugins.
 
@@ -195,8 +193,9 @@ import {
   useValue,
   theme,
   styled,
+  DataInspector,
+  DetailSidebar
 } from 'flipper-plugin';
-import {ManagedDataInspector, DetailSidebar} from 'flipper';
 
 // (1)
 export function Component() {
@@ -234,7 +233,7 @@ function renderSidebar(row: Row) {
   return (
     <Layout.Container gap pad>
       <Typography.Title level={4}>Extras</Typography.Title>
-      <ManagedDataInspector data={row} expandRoot={true} />
+      <DataInspector data={row} expandRoot={true} />
     </Layout.Container>
   );
 }
@@ -258,7 +257,7 @@ So it is not necessary to grab all the data at the root and pass it down using p
 Using `useValue` as deep in the component tree as possible will benefit performance.
 
 Finally (`(4)`) we render the data we have. The details have been left out here, as from here it is just idiomatic React code.
-The source of the other `MammalCard` component can be found [here](https://github.com/facebook/flipper/blob/master/desktop/plugins/public/seamammals/src/index.tsx#L113-L165).
+The source of the other `MammalCard` component can be found [here](https://github.com/facebook/flipper/blob/master/desktop/plugins/public/seamammals/src/index_custom.tsx#L118-L132).
 
 Tip: it is recommended to keep components as much as possible outside the entry file, as components defined outside the index.tsx file will benefit from fast refresh.
 

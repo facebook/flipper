@@ -17,8 +17,9 @@ import {
   useValue,
   theme,
   styled,
+  DataInspector,
+  DetailSidebar,
 } from 'flipper-plugin';
-import {ManagedDataInspector, DetailSidebar} from 'flipper';
 
 type Row = {
   id: number;
@@ -47,10 +48,9 @@ export function plugin(client: PluginClient<Events, {}>) {
       handler: async () => {
         const selection = selectedID.get();
         if (selection) {
-          const url = await client.createPaste(
+          await client.createPaste(
             JSON.stringify(rows.get()[selection], null, 2),
           );
-          alert(url); // TODO: use notifications T69990351
         }
       },
     },
@@ -105,7 +105,7 @@ function renderSidebar(row: Row) {
   return (
     <Layout.Container gap pad>
       <Typography.Title level={4}>Extras</Typography.Title>
-      <ManagedDataInspector data={row} expandRoot />
+      <DataInspector data={row} expandRoot />
     </Layout.Container>
   );
 }
