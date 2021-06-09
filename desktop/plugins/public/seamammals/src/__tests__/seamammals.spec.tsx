@@ -29,7 +29,7 @@ import {act} from '@testing-library/react';
 }
 
 import {TestUtils} from 'flipper-plugin';
-import * as MammalsPlugin from '..';
+import * as MammalsPlugin from '../index_custom';
 
 test('It can store rows', () => {
   const {instance, sendEvent} = TestUtils.startPlugin(MammalsPlugin);

@@ -1,17 +1,12 @@
 ---
 id: js-table
 title: Showing a table
+sidebar_label: Desktop Plugin - Table
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import Link from '@docusaurus/Link';
 
 <img alt="Android Tutorial App" src={useBaseUrl("img/android-tutorial-desktop.png")} />
-
-<div class="warning">
-
-The APIs described on this page are currently being revised, if you are looking for a plugin that does more than displaying a table, we recommend to skip to the <Link to={useBaseUrl('/docs/tutorial/js-custom')}>Custom Plugin</Link> page right away.
-If you want to follow the steps on this page, **remove** `flipper-plugin` from the (peer)dependencies in the `package.json` of your scaffolded plugin.
-</div>
 
 ## Building a Table
 
@@ -20,16 +15,15 @@ is to give you easy access to the underlying data used to display items on scree
 easy way of doing this is by showing the data in a table. We have optimized for this
 particular use case that makes it dead-simple to expose your data in a table that you
 can sort, filter and select items for more detailed information.
+For the purpose of this tutorial, we will be editing the `index.tsx` file that was generated in the previous scaffolding step, and update it as follows:
 
 ### Row Types
 
 We start by defining what our table rows look like as types:
 
-```js
-type Id = number;
-
+```typescript
 type Row = {
-  id: Id,
+  id: number,
   title: string,
   url: string,
 };
@@ -43,107 +37,47 @@ that we know when something new was added to the table. We will use the
 
 Next, we define which columns to show and how to display them:
 
-```js
-const columns = {
-  title: {
-    value: 'Title',
-  },
-  url: {
-    value: 'URL',
-  },
-};
+```typescript
+import {DataTableColumn} from 'flipper-plugin';
 
-const columnSizes = {
-  title: '15%',
-  url: 'flex',
-};
+const columns: DataTableColumn<Row>[] = [
+  {
+    key: 'title',
+    width: 150,
+  },
+  {
+    key: 'url',
+    title: 'URL',
+  },
+];
 ```
 
 The keys used here will show up again in the next step when building
-your rows, so keep them consistent. The `value` we define for each column will show up as the header at the top of the table.
+your rows, so keep them consistent. The `title` we define for each column will show up as the header at the top of the table, and will be default to the `key` value if omitted.
 
-For the size you can either choose a fixed proportion or choose `flex`
+For the `width` you can either choose a fixed number (pixels), a percentage, or leave it out 
 to distribute the remaining available space.
 
-### Sidebar
+### Configuring the table
 
-When clicking on an element in your table, you can display a sidebar
-which gives more detail about an object than what is shown inline in the
-table. You could, for instance, show images that you referenced.
-For this tutorial, however, we will just show the full object by
-using our `ManagedDataInspector` UI component:
+With a type describing the data we'll be storing, `Row`, and a descriptions of the columns to display, getting up table showing our data, including search / sort and a details view is now trivial!
 
-```jsx
-import {Panel, ManagedDataInspector} from 'flipper';
+```typescript
+import {DataTableColumn, createTablePlugin} from 'flipper-plugin';
 
-function renderSidebar(row: Row) {
-  return (
-    <Panel floating={false} heading={'Info'}>
-      <ManagedDataInspector data={row} expandRoot={true} />
-    </Panel>
-  );
-}
-```
-
-You'll notice how the function takes the `Row` type we have defined
-before and returns a React component. What you render in this sidebar is
-entirely up to you.
-
-### Building Rows
-
-In the same way that we create our sidebar from a `Row`, we
-also render individual rows in our table but instead of a React
-component, we provide a description of the data based
-on the column keys we have set up before.
-
-```jsx
-function buildRow(row: Row): TableBodyRow {
-  return {
-    columns: {
-      title: {
-        value: <Text>{row.title}</Text>,
-        filterValue: row.title,
-      },
-      url: {
-        value: <Text>{row.url}</Text>,
-        filterValue: row.url,
-      },
-    },
-    key: row.id,
-    copyText: JSON.stringify(row),
-    filterValue: `${row.title} ${row.url}`,
-  };
-}
-```
-
-The `title` and `url` fields correspond to the keys
-we have previously set up as part of the `columns`
-object.
-
-`filterValue` is used to power the search bar at the top
-of the table. Defining `copyText` allows you to come up
-with a serialization scheme so users can right-click on
-any row and copy the content to their clipboard.
-
-### Putting it all to work
-
-Now that we've build all the individual pieces, we
-just need to hook it all up using `createTablePlugin`:
-
-```js
-export default createTablePlugin<Row>({
-  method: 'newRow',
+module.exports = createTablePlugin<Row>({
   columns,
-  columnSizes,
-  renderSidebar,
-  buildRow,
+  method: 'newRow',
+  key: 'id',
 });
 ```
-*See [index.tsx](https://github.com/facebook/flipper/blob/master/desktop/plugins/public/seamammals/src/index.tsx)*
 
-The `method` we define here corresponds to the name
-of the function we call on the native side to inform
-the desktop about new data we want to display.
+The `method` refers to the method that should be listened to to fill the table with data. 
+The string `"newRow"` that is used here refers back to identifier we used with `connection.send` to send our data to the Flipper desktop application in the previous step.
+
+The `key` property is optional, but by setting it the `'id'` field will be used as identifier. As a result, once a `newRow` message arrives with an existing `id`, it will overwrite the old entry, rather than appending a new one.
+
+The `createTablePlugin` API supports more options, which are documented [here](../extending/flipper-plugin#createtableplugin).
 
 And that's it! Starting Flipper will now compile your
 plugin and connect to the native side. It's a good
@@ -151,12 +85,14 @@ idea to start Flipper from the command line to see
 any potential errors. The console in the DevTools
 is a great source of information if something doesn't
 work as expected, too.
+The final result of this step can be seen at [index_table.tsx](https://github.com/facebook/flipper/blob/master/desktop/plugins/public/seamammals/src/index_table.tsx).
 
 ## What's next?
 
 You now have an interactive table that you can sort,
 filter and use to get additional information about
 the stuff you see on screen.
+`createTablePlugin` is a high level abstraction that takes care of both connection management and a standardized UI for the most common scenario. 
 
 For many cases, this is already all you need. However,
 sometimes you want to go the extra mile and want
