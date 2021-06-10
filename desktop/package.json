@@ -225,7 +225,6 @@
     "bump-versions": "./ts-node scripts/bump-versions.ts",
     "bundle-all-plugins": "./ts-node scripts/bundle-all-plugins.ts",
     "dev-server": "cross-env NODE_ENV=development ./ts-node scripts/start-dev-server.ts",
-    "everything": "yarn reset && yarn install && yarn lint && yarn test && yarn test-electron && yarn build --mac --mac-dmg --win --linux --linux-deb && yarn start",
     "fix": "eslint . --fix --ext .js,.ts,.tsx",
     "lint": "yarn lint:eslint && yarn lint:tsc && yarn tsc-plugins",
     "lint:eslint": "eslint . --ext .js,.ts,.tsx",
@@ -251,9 +250,6 @@
     "start:break": "yarn dev-server --inspect-brk=9229",
     "start:no-embedded-plugins": "yarn start --no-embedded-plugins",
     "test": "cross-env TZ=Pacific/Pohnpei jest",
-    "test-e2e": "cd e2e && yarn test",
-    "test-electron": "yarn build:tsc && cross-env TZ=Pacific/Pohnpei jest --testMatch=\"**/**.electron\\.(js|jsx|ts|tsx)\" --testEnvironment=@jest-runner/electron/environment --runner=@jest-runner/electron",
-    "test-with-device": "yarn build:tsc && cross-env TZ=Pacific/Pohnpei USE_ELECTRON_STUBS=1 jest --testMatch=\"**/**.device\\.(js|jsx|ts|tsx)\" --detectOpenHandles",
     "test:debug": "yarn build:tsc && cross-env TZ=Pacific/Pohnpei node --inspect node_modules/.bin/jest --runInBand",
     "tsc-plugins": "./ts-node scripts/tsc-plugins.ts",
     "watch": "cross-env TZ=Pacific/Pohnpei node --expose-gc --stack-trace-limit=40 ./node_modules/.bin/jest --watch"
