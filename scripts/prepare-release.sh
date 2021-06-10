@@ -55,15 +55,12 @@ hg addremove
 hg commit -m "$(echo -e "Flipper Release: v${VERSION}\n\n\
 Summary:\nReleasing version $VERSION\n\n\
 Test Plan:\n\
-1. Flipper Bot will comment \"#flipperrelease ephemeral\" to trigger a new ephemeral release job [\"flipper-release-ephemeral\"](https://fburl.com/sandcastle/4mt4rj18) on Sandcastle.\n\
-1. After the job has finished, Flipper Bot will post to the Signal Hub the command to run the produced build with the exact version:\n\
-\`env FLIPPERVERSIONV2=<FLIPPERVERSION> RUST_LOG=flipper_launcher=info /Applications/Flipper.app/Contents/MacOS/Flipper\`\n\
-1. Run the build and perform exploratory tests.\n\
-1. If everything is ok, accept and land the diff.\n\
-1. After the diff has landed, Flipper Bot will comment \"#flipperrelease with bump\" to trigger the actual release build job [\"flipper-release\"](https://fburl.com/sandcastle/uh698xj2) on Sandcastle.\n\
-1. After the job has finished, a new diff will be published for pinning the released version to the fbsource checkout, check further instructions in that diff.\n\
-1. In case the release job has failed, Flipper Bot will post to the Signal Hub. In addition to that, the \"flipper\" oncall will receive an e-mail and a task for investigation.\n\n\
-See more details about the Flipper release process [here](https://fburl.com/flipperreleasebot).\n\
+Please follow these steps to ship the new Flipper release:\n\n\
+1. Check Signal Hub for the ephemeral Flipper build. You will find instructions on how to run it in there: https://www.internalfb.com/intern/px/p/1Kcbk\n\
+2. Perform some brief exploratory tests. Start an emulator, click around in the layout. This should only take a few minutes.\n\
+3. If things are looking okay, accept both diffs and land them *together* as a stack.\n\
+4. Once landed, the Flipper bot will comment with \"#flipperrelease with bump\" on the diff. If this doesn't happen, please do this yourself. This will kick off the [\"flipper-release\"](https://fburl.com/sandcastle/uh698xj2) job, resulting in another diff which when landed pins the new release for our users.\n\
+See more details about the Flipper release process [here](https://fburl.com/flipperreleasebot).\n\n\
 Reviewers: flipper\n\n\
 Tags: accept2ship"
 )"
@@ -84,7 +81,7 @@ Tags: accept2ship"
 if [ "$SANDCASTLE_REVISION" == "" ];
 then
   # Submit diffs, we only do this when running locally.
-  # From SandcastleFlipperAutoReleaseCommand, the diffs are submitted 
+  # From SandcastleFlipperAutoReleaseCommand, the diffs are submitted
   # later by using the bot context
   echo "Submitting diffs for review..."
   jf submit -n -r.^::.
