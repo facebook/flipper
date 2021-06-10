@@ -147,6 +147,12 @@ export async function initTemplate(
   supportedDevices: string[] | undefined,
   outputDirectory: string,
 ) {
+  const flipper_version = JSON.parse(
+    await fs.readFile(
+      path.resolve(__dirname, '..', '..', 'package.json'),
+      'utf-8',
+    ),
+  ).version;
   const packageName = getPackageNameFromId(id);
   const templateDir =
     pluginType === 'device' ? devicePluginTemplateDir : pluginTemplateDir;
@@ -169,6 +175,7 @@ export async function initTemplate(
         .toString()
         .replace('{{id}}', id)
         .replace('{{title}}', title)
+        .replace('{{flipper_version}}', flipper_version)
         .replace(
           '{{supported_devices}}',
           JSON.stringify(

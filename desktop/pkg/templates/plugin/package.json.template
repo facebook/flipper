@@ -20,8 +20,7 @@
     "test": "jest --no-watchman"
   },
   "peerDependencies": {
-    "flipper": "latest",
-    "flipper-plugin": "latest",
+    "flipper-plugin": "^{{flipper_version}}",
     "antd": "latest"
   },
   "devDependencies": {
@@ -32,7 +31,6 @@
     "@types/react": "latest",
     "@types/react-dom": "latest",
     "antd": "latest",
-    "flipper": "latest",
     "flipper-plugin": "latest",
     "flipper-pkg": "latest",
     "jest": "latest",

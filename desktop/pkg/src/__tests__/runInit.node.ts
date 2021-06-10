@@ -80,8 +80,7 @@ test('It generates the correct files for client plugin', async () => {
         \\"test\\": \\"jest --no-watchman\\"
       },
       \\"peerDependencies\\": {
-        \\"flipper\\": \\"latest\\",
-        \\"flipper-plugin\\": \\"latest\\",
+        \\"flipper-plugin\\": \\"^0.0.0\\",
         \\"antd\\": \\"latest\\"
       },
       \\"devDependencies\\": {
@@ -92,7 +91,6 @@ test('It generates the correct files for client plugin', async () => {
         \\"@types/react\\": \\"latest\\",
         \\"@types/react-dom\\": \\"latest\\",
         \\"antd\\": \\"latest\\",
-        \\"flipper\\": \\"latest\\",
         \\"flipper-plugin\\": \\"latest\\",
         \\"flipper-pkg\\": \\"latest\\",
         \\"jest\\": \\"latest\\",
@@ -258,8 +256,7 @@ test('It generates the correct files for device plugin', async () => {
         \\"test\\": \\"jest --no-watchman\\"
       },
       \\"peerDependencies\\": {
-        \\"flipper\\": \\"latest\\",
-        \\"flipper-plugin\\": \\"latest\\",
+        \\"flipper-plugin\\": \\"^0.0.0\\",
         \\"antd\\": \\"latest\\"
       },
       \\"devDependencies\\": {
@@ -270,7 +267,6 @@ test('It generates the correct files for device plugin', async () => {
         \\"@types/react\\": \\"latest\\",
         \\"@types/react-dom\\": \\"latest\\",
         \\"antd\\": \\"latest\\",
-        \\"flipper\\": \\"latest\\",
         \\"flipper-plugin\\": \\"latest\\",
         \\"flipper-pkg\\": \\"latest\\",
         \\"jest\\": \\"latest\\",
