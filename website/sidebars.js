@@ -120,7 +120,6 @@ module.exports = {
     'Desktop plugin APIs': [
       'extending/flipper-plugin',
       'extending/styling-components',
-      'extending/search-and-filter',
       ...fbInternalOnly([
         {
           'QPL linting': ['fb/building-a-linter', 'fb/active-linters'],
@@ -131,6 +130,7 @@ module.exports = {
           'extending/ui-components',
           'extending/js-plugin-api',
           'extending/create-table-plugin',
+          'extending/search-and-filter',
         ],
       },
     ],

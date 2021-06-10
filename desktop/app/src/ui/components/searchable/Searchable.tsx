@@ -144,6 +144,8 @@ function compileRegex(s: string): RegExp | null {
 }
 
 /**
+ * @deprecated use DataTabe / DataList instead
+ *
  * Higher-order-component that allows adding a searchbar on top of the wrapped
  * component. See SearchableManagedTable for usage with a table.
  */
