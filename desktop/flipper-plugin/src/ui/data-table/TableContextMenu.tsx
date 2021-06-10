@@ -45,19 +45,19 @@ export function tableContextMenuFactory<T>(
     );
   }
   const hasSelection = selection.items.size > 0 ?? false;
-
   return (
     <Menu>
       {onContextMenu
         ? onContextMenu(getSelectedItem(datasource, selection))
         : null}
       <SubMenu
+        key="filter same"
         title="Filter on same"
         icon={<FilterOutlined />}
         disabled={!hasSelection}>
-        {visibleColumns.map((column) => (
+        {visibleColumns.map((column, idx) => (
           <Item
-            key={column.key}
+            key={column.key ?? idx}
             onClick={() => {
               dispatch({
                 type: 'setColumnFilterFromSelection',
@@ -69,12 +69,13 @@ export function tableContextMenuFactory<T>(
         ))}
       </SubMenu>
       <SubMenu
+        key="copy cells"
         title="Copy cell(s)"
         icon={<CopyOutlined />}
         disabled={!hasSelection}>
-        {visibleColumns.map((column) => (
+        {visibleColumns.map((column, idx) => (
           <Item
-            key={column.key}
+            key={column.key ?? idx}
             onClick={() => {
               const items = getSelectedItems(datasource, selection);
               if (items.length) {
@@ -88,6 +89,7 @@ export function tableContextMenuFactory<T>(
         ))}
       </SubMenu>
       <Item
+        key="copyToClipboard"
         disabled={!hasSelection}
         onClick={() => {
           const items = getSelectedItems(datasource, selection);
@@ -99,6 +101,7 @@ export function tableContextMenuFactory<T>(
       </Item>
       {lib.isFB && (
         <Item
+          key="createPaste"
           disabled={!hasSelection}
           onClick={() => {
             const items = getSelectedItems(datasource, selection);
@@ -110,9 +113,9 @@ export function tableContextMenuFactory<T>(
         </Item>
       )}
       <Menu.Divider />
-      <SubMenu title="Visible columns">
-        {columns.map((column) => (
-          <Menu.Item key={column.key}>
+      <SubMenu title="Visible columns" key="visible columns">
+        {columns.map((column, idx) => (
+          <Menu.Item key={column.key ?? idx}>
             <Checkbox
               checked={column.visible}
               onClick={(e) => {

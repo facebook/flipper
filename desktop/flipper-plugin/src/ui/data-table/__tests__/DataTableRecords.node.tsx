@@ -44,7 +44,7 @@ test('update and append', async () => {
     expect(elem.length).toBe(1);
     expect(elem[0].parentElement).toMatchInlineSnapshot(`
       <div
-        class="css-1k3kr6b-TableBodyRowContainer e1luu51r1"
+        class="ant-dropdown-trigger css-1k3kr6b-TableBodyRowContainer e1luu51r1"
       >
         <div
           class="css-9bipfg-TableBodyColumnContainer e1luu51r0"

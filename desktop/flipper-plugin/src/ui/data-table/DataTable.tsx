@@ -59,6 +59,7 @@ interface DataTableBaseProps<T = any> {
   enableAutoScroll?: boolean;
   enableColumnHeaders?: boolean;
   enableMultiSelect?: boolean;
+  enableContextMenu?: boolean;
   // if set (the default) will grow and become scrollable. Otherwise will use natural size
   scrollable?: boolean;
   extraActions?: React.ReactElement;
@@ -119,6 +120,7 @@ export interface TableRowRenderContext<T = any> {
     itemId: number,
   ): void;
   onRowStyle?(item: T): React.CSSProperties | undefined;
+  onContextMenu?(): React.ReactElement;
 }
 
 export type DataTableProps<T> = DataTableInput<T> & DataTableBaseProps<T>;
@@ -185,7 +187,10 @@ export function DataTable<T extends object>(
       },
       onMouseDown(e, _item, index) {
         if (!dragging.current) {
-          if (e.ctrlKey || e.metaKey) {
+          if (e.buttons > 1) {
+            // for right click we only want to add if needed, not deselect
+            tableManager.addRangeToSelection(index, index, false);
+          } else if (e.ctrlKey || e.metaKey) {
             tableManager.addRangeToSelection(index, index, true);
           } else if (e.shiftKey) {
             tableManager.selectItem(index, true, true);
@@ -205,8 +210,15 @@ export function DataTable<T extends object>(
         }
       },
       onRowStyle,
+      onContextMenu: props.enableContextMenu
+        ? () => {
+            // using a ref keeps the config stable, so that a new context menu doesn't need
+            // all rows to be rerendered, but rather shows it conditionally
+            return contextMenuRef.current?.()!;
+          }
+        : undefined,
     };
-  }, [visibleColumns, tableManager, onRowStyle]);
+  }, [visibleColumns, tableManager, onRowStyle, props.enableContextMenu]);
 
   const itemRenderer = useCallback(
     function itemRenderer(
@@ -415,6 +427,9 @@ export function DataTable<T extends object>(
         ],
       );
 
+  const contextMenuRef = useRef(contexMenu);
+  contextMenuRef.current = contexMenu;
+
   useEffect(function initialSetup() {
     return function cleanup() {
       // write current prefs to local storage
@@ -519,7 +534,8 @@ DataTable.defaultProps = {
   enableSearchbar: true,
   enableAutoScroll: false,
   enableColumnHeaders: true,
-  eanbleMultiSelect: true,
+  enableMultiSelect: true,
+  enableContextMenu: true,
   onRenderEmpty: emptyRenderer,
 } as Partial<DataTableProps<any>>;
 

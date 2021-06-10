@@ -116,7 +116,7 @@ test('It can render rows', async () => {
   expect((await renderer.findByText('unique-string')).parentElement)
     .toMatchInlineSnapshot(`
     <div
-      class="css-1k3kr6b-TableBodyRowContainer e1luu51r1"
+      class="ant-dropdown-trigger css-1k3kr6b-TableBodyRowContainer e1luu51r1"
     >
       <div
         class="css-1vr131n-TableBodyColumnContainer e1luu51r0"

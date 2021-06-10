@@ -169,6 +169,8 @@ DataList.defaultProps = {
   enableSearchbar: false,
   enableColumnHeaders: false,
   enableArrow: true,
+  enableContextMenu: false,
+  enableMultiSelect: false,
 };
 
 const DataListItem = memo(

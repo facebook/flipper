@@ -32,7 +32,7 @@ export {DataValueExtractor} from './DataPreview';
 
 export const RootDataContext = createContext<() => any>(() => ({}));
 
-const contextMenuTrigger = ['contextMenu' as const];
+export const contextMenuTrigger = ['contextMenu' as const];
 
 const BaseContainer = styled.div<{depth?: number; disabled?: boolean}>(
   (props) => ({

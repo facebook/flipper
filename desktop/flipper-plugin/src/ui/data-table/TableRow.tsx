@@ -13,6 +13,8 @@ import {theme} from '../theme';
 import type {TableRowRenderContext} from './DataTable';
 import {Width} from '../../utils/widthUtils';
 import {DataFormatter} from '../DataFormatter';
+import {Dropdown} from 'antd';
+import {contextMenuTrigger} from '../data-inspector/DataInspectorNode';
 
 // heuristic for row estimation, should match any future styling updates
 export const DEFAULT_ROW_HEIGHT = 24;
@@ -106,7 +108,7 @@ export const TableRow = memo(function TableRow<T>({
   highlighted,
   config,
 }: TableRowProps<T>) {
-  return (
+  const row = (
     <TableBodyRowContainer
       highlighted={highlighted}
       onMouseDown={(e) => {
@@ -135,4 +137,13 @@ export const TableRow = memo(function TableRow<T>({
         })}
     </TableBodyRowContainer>
   );
+  if (config.onContextMenu) {
+    return (
+      <Dropdown overlay={config.onContextMenu} trigger={contextMenuTrigger}>
+        {row}
+      </Dropdown>
+    );
+  } else {
+    return row;
+  }
 });
