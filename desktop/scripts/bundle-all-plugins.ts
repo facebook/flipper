@@ -7,6 +7,8 @@
  * @format
  */
 
+/* eslint-disable flipper/no-console-error-without-context */
+
 import {pluginsDir} from './paths';
 import path from 'path';
 import {runBuild} from 'flipper-pkg-lib';
