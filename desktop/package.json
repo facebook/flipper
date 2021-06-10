@@ -250,13 +250,13 @@
     "start": "yarn dev-server --inspect=9229",
     "start:break": "yarn dev-server --inspect-brk=9229",
     "start:no-embedded-plugins": "yarn start --no-embedded-plugins",
-    "test": "jest",
+    "test": "cross-env TZ=Pacific/Pohnpei jest",
     "test-e2e": "cd e2e && yarn test",
-    "test-electron": "yarn build:tsc && jest --testMatch=\"**/**.electron\\.(js|jsx|ts|tsx)\" --testEnvironment=@jest-runner/electron/environment --runner=@jest-runner/electron",
-    "test-with-device": "yarn build:tsc && USE_ELECTRON_STUBS=1 jest --testMatch=\"**/**.device\\.(js|jsx|ts|tsx)\" --detectOpenHandles",
-    "test:debug": "yarn build:tsc && node --inspect node_modules/.bin/jest --runInBand",
+    "test-electron": "yarn build:tsc && cross-env TZ=Pacific/Pohnpei jest --testMatch=\"**/**.electron\\.(js|jsx|ts|tsx)\" --testEnvironment=@jest-runner/electron/environment --runner=@jest-runner/electron",
+    "test-with-device": "yarn build:tsc && cross-env TZ=Pacific/Pohnpei USE_ELECTRON_STUBS=1 jest --testMatch=\"**/**.device\\.(js|jsx|ts|tsx)\" --detectOpenHandles",
+    "test:debug": "yarn build:tsc && cross-env TZ=Pacific/Pohnpei node --inspect node_modules/.bin/jest --runInBand",
     "tsc-plugins": "./ts-node scripts/tsc-plugins.ts",
-    "watch": "node --expose-gc --stack-trace-limit=40 ./node_modules/.bin/jest --watch"
+    "watch": "cross-env TZ=Pacific/Pohnpei node --expose-gc --stack-trace-limit=40 ./node_modules/.bin/jest --watch"
   },
   "version": "0.93.0",
   "workspaces": {
