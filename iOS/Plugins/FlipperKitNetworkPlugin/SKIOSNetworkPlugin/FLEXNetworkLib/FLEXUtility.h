@@ -19,7 +19,8 @@
 
 @interface NSDate (SonarUtility)
 
-+ (uint64_t)timestamp;
++ (NSTimeInterval)timestamp;
+
 @end
 
 @interface FLEXUtility : NSObject
