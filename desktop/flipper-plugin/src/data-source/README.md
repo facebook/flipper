@@ -11,7 +11,7 @@ _Library to power streamig data visualisations as used in Facebook's Flipper_
 * [DataSource API documentation](https://fbflipper.com/docs/extending/flipper-plugin#createdatasource)
 * [Demo sandbox](https://codesandbox.io/s/flipper-datasource-demo-iy0tq)
 * [Demo setup recording](https://www.youtube.com/watch?v=stL66GByQU0)
-* Introduction talk (TODO)
+* [In-depth introduction talk, featured at @fwdays, 5-6-2021](https://www.youtube.com/watch?v=WCs09c1B1Lk)
 * [Source code](https://github.com/facebook/flipper/tree/master/desktop/flipper-plugin/src/data-source)
 * [Lightning talk using DataSource in Logs view](https://fb.workplace.com/groups/427492358561913/permalink/432720091372473/) [FB-Only]
 * [DataSource project plan](https://fb.quip.com/noJDArpLF7Fe) [FB-Only]
@@ -167,3 +167,4 @@ Features:
 * [ ] **Break up operations that process the full data set in smaller tasks**: There are several operations that process the full data set, for example changing the sort / filter criteria. Currently this is done synchronously (and we debounce changing the filter), in the future we will split up the filtering in smaller taks to make it efficient. But we don't have a way to efficiently break down sorting into smaller tasks as using insertion sorting is 20x slower than the native sorting mechanism if the full data set needs to be processed.
 * [ ] **Add built-in support for downsampling data**
 * [ ] **Leverage React concurrent mode**: Currently there is custom scheduler logic to handle high- and low- (outside window) priority updates. In principle this could probably be achieved through React concurrent mode as well, but ANT.design (which is used in Flipper) doesn't support it yet.
+* [ ] **Introduce adapters for other technologies**. The `DataSource(View)` concepts do all the heavy lifting, but are framework agnostic. This means it should be fairly easy to create adapters for other UI farmeworks as well.
