@@ -20,6 +20,7 @@ import {ServerPorts} from '../reducers/application';
 import {Client as ADBClient} from 'adbkit';
 import {addErrorNotification} from '../reducers/notifications';
 import {destroyDevice} from '../reducers/connections';
+import {join} from 'path';
 
 function createDevice(
   adbClient: ADBClient,
@@ -140,15 +141,17 @@ export default (store: Store, logger: Logger) => {
   const watchAndroidDevices = () => {
     // get emulators
     promisify(which)('emulator')
-      .catch(
-        () =>
-          `${
-            process.env.ANDROID_HOME || process.env.ANDROID_SDK_ROOT || ''
-          }/tools/emulator`,
+      .catch(() =>
+        join(
+          process.env.ANDROID_HOME || process.env.ANDROID_SDK_ROOT || '',
+          'tools',
+          'emulator',
+        ),
       )
       .then((emulatorPath) => {
-        child_process.exec(
-          `${emulatorPath} -list-avds`,
+        child_process.execFile(
+          emulatorPath as string,
+          ['-list-avds'],
           (error: Error | null, data: string | null) => {
             if (error != null || data == null) {
               console.warn('List AVD failed: ', error);
@@ -161,9 +164,12 @@ export default (store: Store, logger: Logger) => {
             });
           },
         );
+      })
+      .catch((err) => {
+        console.warn('Failed to query AVDs:', err);
       });
 
-    getAdbClient(store)
+    return getAdbClient(store)
       .then((client) => {
         client
           .trackDevices()

@@ -8,7 +8,7 @@
  */
 
 import {reportPlatformFailures} from './metrics';
-import {exec} from 'promisify-child-process';
+import {execFile} from 'promisify-child-process';
 import promiseRetry from 'promise-retry';
 import adbConfig from '../utils/adbConfig';
 import adbkit, {Client} from 'adbkit';
@@ -32,7 +32,7 @@ function createClient(store: Store): Promise<Client> {
   const androidHome = store.getState().settingsState.androidHome;
   const adbPath = path.resolve(androidHome, 'platform-tools/adb');
   return reportPlatformFailures<Client>(
-    exec(`${adbPath} start-server`).then(() =>
+    execFile(adbPath, ['start-server']).then(() =>
       adbkit.createClient(adbConfig()),
     ),
     'createADBClient.shell',
