@@ -73,7 +73,10 @@ echo "Release commit made as $RELEASE_REV, creating new snapshot version $SNAPSH
 
 hg commit -m "$(echo -e "Flipper Snapshot Bump: v${SNAPSHOT_VERSION}\n\n\
 Summary:\nReleasing snapshot version $SNAPSHOT_VERSION\n\n\
-Test Plan:\nN/A\n\n\
+Test Plan:\n\
+No specific test action required. Please land this **together with the previous diff**.\n\
+This diff is only exists to enable continuous snapshot releases on Maven. It's a Java thing. Don't think about it too much.\n\
+\n\n\
 Reviewers: flipper\n\n\
 Tags: accept2ship"
 )"
