@@ -5,7 +5,7 @@
   "private": true,
   "license": "MIT",
   "dependencies": {
-    "electron-devtools-installer": "^3.1.1",
+    "electron-devtools-installer": "^3.2.0",
     "fix-path": "^3.0.0",
     "mac-ca": "^1.0.6",
     "mkdirp": "^1.0.4",
