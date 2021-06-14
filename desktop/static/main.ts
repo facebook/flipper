@@ -113,6 +113,7 @@ let win: BrowserWindow;
 let appReady = false;
 let deeplinkURL: string | undefined = argv.url;
 let filePath: string | undefined = argv.file;
+let didMount = false;
 
 // tracking
 setInterval(() => {
@@ -151,10 +152,11 @@ app.on('will-finish-launching', () => {
   // Protocol handler for osx
   app.on('open-url', function (event, url) {
     event.preventDefault();
-    deeplinkURL = url;
     argv.url = url;
-    if (win) {
-      win.webContents.send('flipper-protocol-handler', deeplinkURL);
+    if (win && didMount) {
+      win.webContents.send('flipper-protocol-handler', url);
+    } else {
+      deeplinkURL = url;
     }
   });
   app.on('open-file', (event, path) => {
@@ -245,6 +247,7 @@ app.on('will-quit', () => {
 });
 
 ipcMain.on('componentDidMount', (_event) => {
+  didMount = true;
   if (deeplinkURL) {
     win.webContents.send('flipper-protocol-handler', deeplinkURL);
     deeplinkURL = undefined;
