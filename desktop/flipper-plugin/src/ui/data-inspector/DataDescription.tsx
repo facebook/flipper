@@ -631,6 +631,7 @@ class DataDescriptionContainer extends PureComponent<{
             }
             size="small"
             style={{fontSize: 11}}
+            dropdownMatchSelectWidth={false}
           />
         );
       }
