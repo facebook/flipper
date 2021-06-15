@@ -13,7 +13,7 @@
     "@emotion/react": "^11.4.0",
     "@reach/observe-rect": "^1.2.0",
     "@types/uuid": "^8.3.0",
-    "immer": "^9.0.2",
+    "immer": "^9.0.3",
     "lodash": "^4.17.21",
     "react-color": "^2.19.3",
     "react-element-to-jsx-string": "^14.3.2",
