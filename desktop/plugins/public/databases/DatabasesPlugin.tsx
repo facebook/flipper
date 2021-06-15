@@ -664,16 +664,18 @@ export function Component() {
           <Select
             showSearch
             value={selectedDatabaseName}
+            onChange={onDatabaseSelected}
             style={{flex: 1}}
-            onChange={onDatabaseSelected}>
+            dropdownMatchSelectWidth={false}>
             {databaseOptions}
           </Select>
           <BoldSpan>Table</BoldSpan>
           <Select
             showSearch
             value={selectedTableName}
+            onChange={onDatabaseTableSelected}
             style={{flex: 1}}
-            onChange={onDatabaseTableSelected}>
+            dropdownMatchSelectWidth={false}>
             {tableOptions}
           </Select>
           <div />
@@ -689,7 +691,8 @@ export function Component() {
             <Select
               showSearch
               value={selectedDatabaseName}
-              onChange={onDatabaseSelected}>
+              onChange={onDatabaseSelected}
+              dropdownMatchSelectWidth={false}>
               {databaseOptions}
             </Select>
           </Toolbar>
