@@ -9,16 +9,16 @@
   "license": "MIT",
   "bugs": "https://github.com/facebook/flipper/issues",
   "dependencies": {
-    "@babel/core": "^7.14.5",
+    "@babel/core": "^7.14.6",
     "@babel/generator": "^7.14.5",
-    "@babel/parser": "^7.14.5",
+    "@babel/parser": "^7.14.6",
     "@babel/plugin-proposal-class-properties": "^7.14.5",
     "@babel/plugin-proposal-nullish-coalescing-operator": "^7.14.5",
     "@babel/plugin-proposal-object-rest-spread": "^7.14.5",
     "@babel/plugin-proposal-optional-chaining": "^7.14.5",
     "@babel/plugin-transform-flow-strip-types": "^7.14.5",
     "@babel/plugin-transform-modules-commonjs": "^7.14.5",
-    "@babel/plugin-transform-typescript": "^7.14.5",
+    "@babel/plugin-transform-typescript": "^7.14.6",
     "@babel/preset-env": "^7.14.5",
     "@babel/preset-react": "^7.14.5",
     "@babel/traverse": "^7.14.5",
@@ -27,7 +27,7 @@
     "@types/fs-extra": "^9.0.11",
     "@types/node": "^15.12.2",
     "fs-extra": "^10.0.0",
-    "tslib": "^2"
+    "tslib": "^2.3.0"
   },
   "devDependencies": {
     "@types/jest": "26.0.23",
