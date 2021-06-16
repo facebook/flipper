@@ -186,7 +186,7 @@ export default React.memo(function DatabaseDetailSidebar(
     <DetailSidebar>
       <Panel title="Row details" collapsible>
         {onSave ? (
-          <Layout.Right>
+          <Layout.Right center>
             <div />
             {editing ? (
               <Layout.Horizontal pad gap>
