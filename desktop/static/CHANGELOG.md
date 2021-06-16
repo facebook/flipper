@@ -1,3 +1,12 @@
+# 0.94.0 (16/6/2021)
+
+ * [D28996137](https://github.com/facebook/flipper/search?q=D28996137&type=Commits) -  Restored context menu in data tables
+ * [D29062064](https://github.com/facebook/flipper/search?q=D29062064&type=Commits) -  Increase width of database name and table name dropdowns
+ * [D29128014](https://github.com/facebook/flipper/search?q=D29128014&type=Commits) -  [Flipper] Provide clearer error if Flipper ports are already in use, making device connections impossible
+ * [D29130379](https://github.com/facebook/flipper/search?q=D29130379&type=Commits) -  [Database] Fix database names not being readable in selection dropdowns
+ * [D29130378](https://github.com/facebook/flipper/search?q=D29130378&type=Commits) -  [Layout] Fixed issue where enum dropdowns would truncate their items
+
+
 # 0.93.0 (9/6/2021)
 
 
