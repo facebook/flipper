@@ -1,3 +1,8 @@
+# 0.94.1 (16/6/2021)
+
+ * [D28314408](https://github.com/facebook/flipper/search?q=D28314408&type=Commits) -  [MobileConfig] Fix issues with scrolling not working and several other improvements
+
+
 # 0.94.0 (16/6/2021)
 
  * [D28996137](https://github.com/facebook/flipper/search?q=D28996137&type=Commits) -  Restored context menu in data tables
