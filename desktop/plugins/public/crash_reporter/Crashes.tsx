@@ -37,7 +37,7 @@ export function Crashes() {
           title: crash.reason ?? crash.name,
           description: `${crash.date.toLocaleString()} - ${crash.name}`,
         }))}
-        selection={plugin.selectedCrash}
+        selection={selectedCrashId}
         onRenderEmpty={null}
       />
       {selectedCrash ? (

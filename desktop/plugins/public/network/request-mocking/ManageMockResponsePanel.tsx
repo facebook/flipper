@@ -159,7 +159,7 @@ export function ManageMockResponsePanel(props: Props) {
         </Toolbar>
         <DataList
           items={items}
-          selection={selectedIdAtom}
+          selection={selectedId}
           onRenderItem={handleRender}
           scrollable
         />

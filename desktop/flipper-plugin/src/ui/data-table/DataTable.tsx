@@ -60,6 +60,7 @@ interface DataTableBaseProps<T = any> {
   enableColumnHeaders?: boolean;
   enableMultiSelect?: boolean;
   enableContextMenu?: boolean;
+  enablePersistSettings?: boolean;
   // if set (the default) will grow and become scrollable. Otherwise will use natural size
   scrollable?: boolean;
   extraActions?: React.ReactElement;
@@ -153,6 +154,7 @@ export function DataTable<T extends object>(
         scope,
         virtualizerRef,
         autoScroll: props.enableAutoScroll,
+        enablePersistSettings: props.enablePersistSettings,
       }),
   );
 
@@ -177,15 +179,20 @@ export function DataTable<T extends object>(
 
   const renderingConfig = useMemo<TableRowRenderContext<T>>(() => {
     let startIndex = 0;
+
     return {
       columns: visibleColumns,
       onMouseEnter(e, _item, index) {
-        if (dragging.current && e.buttons === 1) {
+        if (dragging.current && e.buttons === 1 && props.enableMultiSelect) {
           // by computing range we make sure no intermediate items are missed when scrolling fast
           tableManager.addRangeToSelection(startIndex, index);
         }
       },
       onMouseDown(e, _item, index) {
+        if (!props.enableMultiSelect && e.buttons > 1) {
+          tableManager.selectItem(index, false, true);
+          return;
+        }
         if (!dragging.current) {
           if (e.buttons > 1) {
             // for right click we only want to add if needed, not deselect
@@ -218,7 +225,13 @@ export function DataTable<T extends object>(
           }
         : undefined,
     };
-  }, [visibleColumns, tableManager, onRowStyle, props.enableContextMenu]);
+  }, [
+    visibleColumns,
+    tableManager,
+    onRowStyle,
+    props.enableContextMenu,
+    props.enableMultiSelect,
+  ]);
 
   const itemRenderer = useCallback(
     function itemRenderer(
@@ -454,7 +467,7 @@ export function DataTable<T extends object>(
           searchValue={searchValue}
           useRegex={tableState.useRegex}
           dispatch={dispatch as any}
-          contextMenu={contexMenu}
+          contextMenu={props.enableContextMenu ? contexMenu : undefined}
           extraActions={props.extraActions}
         />
       )}
