@@ -11,7 +11,7 @@ import React from 'react';
 import {Typography} from 'antd';
 import {LeftSidebar, SidebarTitle, InfoIcon} from '../LeftSidebar';
 import {Layout, Link, styled} from '../../ui';
-import {theme, useValue, useMemoize} from 'flipper-plugin';
+import {theme, useValue} from 'flipper-plugin';
 import {AppSelector} from './AppSelector';
 import {useStore} from '../../utils/useStore';
 import {PluginList} from './PluginList';
@@ -19,9 +19,7 @@ import ScreenCaptureButtons from '../../chrome/ScreenCaptureButtons';
 import MetroButton from '../../chrome/MetroButton';
 import {BookmarkSection} from './BookmarkSection';
 import Client from '../../Client';
-import {State} from '../../reducers';
 import BaseDevice from '../../devices/BaseDevice';
-import MetroDevice from '../../devices/MetroDevice';
 import {ExclamationCircleOutlined, FieldTimeOutlined} from '@ant-design/icons';
 
 const {Text} = Typography;
@@ -40,20 +38,9 @@ const appTooltip = (
 export function AppInspect() {
   const connections = useStore((state) => state.connections);
 
-  const metroDevice = useMemoize(findMetroDevice, [connections.devices]);
-  const client = useMemoize(findBestClient, [
-    connections.clients,
-    connections.selectedApp,
-    connections.userPreferredApp,
-  ]);
-  // // if the selected device is Metro, we want to keep the owner of the selected App as active device if possible
-  const activeDevice = useMemoize(findBestDevice, [
-    client,
-    connections.devices,
-    connections.selectedDevice,
-    metroDevice,
-    connections.userPreferredDevice,
-  ]);
+  const metroDevice = connections.metroDevice;
+  const client = connections.activeClient;
+  const activeDevice = connections.activeDevice;
   const isDeviceConnected = useValue(activeDevice?.connected, false);
   const isAppConnected = useValue(client?.connected, false);
 
@@ -101,51 +88,10 @@ const Toolbar = styled(Layout.Horizontal)({
   },
 });
 
-export function findBestClient(
-  clients: Client[],
-  selectedApp: string | null,
-  userPreferredApp: string | null,
-): Client | undefined {
-  return clients.find((c) => c.id === (selectedApp || userPreferredApp));
-}
-
-export function findMetroDevice(
-  devices: State['connections']['devices'],
-): MetroDevice | undefined {
-  return devices?.find(
-    (device) => device.os === 'Metro' && !device.isArchived,
-  ) as MetroDevice;
-}
-
-export function findBestDevice(
-  client: Client | undefined,
-  devices: State['connections']['devices'],
-  selectedDevice: BaseDevice | null,
-  metroDevice: BaseDevice | undefined,
-  userPreferredDevice: string | null,
-): BaseDevice | undefined {
-  // if not Metro device, use the selected device as metro device
-  const selected = selectedDevice ?? undefined;
-  if (selected !== metroDevice) {
-    return selected;
-  }
-  // if there is an active app, use device owning the app
-  if (client) {
-    return client.deviceSync;
-  }
-  // if no active app, use the preferred device
-  if (userPreferredDevice) {
-    return (
-      devices.find((device) => device.title === userPreferredDevice) ?? selected
-    );
-  }
-  return selected;
-}
-
 function renderStatusMessage(
   isDeviceConnected: boolean,
-  activeDevice: BaseDevice | undefined,
-  client: Client | undefined,
+  activeDevice: BaseDevice | null,
+  client: Client | null,
   isAppConnected: boolean,
 ): React.ReactNode {
   if (!activeDevice) {

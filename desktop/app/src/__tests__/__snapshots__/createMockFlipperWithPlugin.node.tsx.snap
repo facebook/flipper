@@ -2,6 +2,22 @@
 
 exports[`can create a Fake flipper 1`] = `
 Object {
+  "activeClient": Object {
+    "id": "TestApp#Android#MockAndroidDevice#serial",
+    "query": Object {
+      "app": "TestApp",
+      "device": "MockAndroidDevice",
+      "device_id": "serial",
+      "os": "Android",
+      "sdk_version": 4,
+    },
+  },
+  "activeDevice": Object {
+    "deviceType": "physical",
+    "os": "Android",
+    "serial": "serial",
+    "title": "MockAndroidDevice",
+  },
   "androidEmulators": Array [],
   "clients": Array [
     Object {
@@ -36,6 +52,7 @@ Object {
       "TestPlugin",
     ],
   },
+  "metroDevice": null,
   "selectedApp": "TestApp#Android#MockAndroidDevice#serial",
   "selectedDevice": Object {
     "deviceType": "physical",
