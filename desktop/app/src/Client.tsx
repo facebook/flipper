@@ -251,6 +251,7 @@ export default class Client extends EventEmitter {
       .filter(notNull)
       .map(([id, type, title]) => {
         // TODO put this in another component, and make the "types" registerable
+        console.warn(`TableNative plugins are deprecated: ${id}`);
         switch (type) {
           case 'Table':
             return createTableNativePlugin(id, title);
