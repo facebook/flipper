@@ -58,8 +58,9 @@ export default function UpdateIndicator() {
                 ) : (
                   <>
                     {' '}
-                    Pull <code>~/fbsource</code> and/or restart Flipper to
-                    update to the latest version.
+                    Run <code>arc pull</code> (optionally with{' '}
+                    <code>--latest</code>) in <code>~/fbsource</code> and
+                    restart Flipper to update to the latest version.
                   </>
                 )
               ) : (
