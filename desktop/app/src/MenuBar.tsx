@@ -90,22 +90,6 @@ export function setupMenuBar(
   // create actual menu instance
   const applicationMenu = electron.remote.Menu.buildFromTemplate(template);
 
-  // add menu items to map, so we can modify them easily later
-  registeredActions.forEach((keyboardAction) => {
-    if (keyboardAction != null) {
-      const {topLevelMenu, label, action} = keyboardAction;
-      const menu = applicationMenu.items.find(
-        (menuItem) => menuItem.label === topLevelMenu,
-      );
-      if (menu && menu.submenu) {
-        const menuItem = menu.submenu.items.find(
-          (menuItem) => menuItem.label === label,
-        );
-        menuItem && menuItems.set(action, menuItem);
-      }
-    }
-  });
-
   // update menubar
   electron.remote.Menu.setApplicationMenu(applicationMenu);
 }
@@ -209,6 +193,8 @@ export function addSandyPluginEntries(entries: NormalizedMenuEntry[]) {
         parent.submenu!.append(item);
         menuItems.set(entry.action!, item);
         changedItems = true;
+      } else {
+        console.warn('Invalid top level menu: ' + entry.topLevelMenu);
       }
     }
   }

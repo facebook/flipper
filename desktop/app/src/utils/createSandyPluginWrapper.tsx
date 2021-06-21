@@ -17,7 +17,7 @@ import {
   PluginClient,
   DevicePluginClient,
 } from 'flipper-plugin';
-import {useEffect, useRef} from 'react';
+import {useEffect} from 'react';
 import {
   BaseAction,
   FlipperDevicePlugin,
@@ -32,24 +32,10 @@ export type SandyPluginModule = ConstructorParameters<
 >[1];
 
 // Wrapped features
-// keyboardActions
-// defaultPersistedState
-// persistedStateReducer
 // exportPersistedState
 // getActiveNotifications
-// reducers?
-// onKeyboardAction
-// call _init (not .init) in onactivate / deactivate
 // serializePersistedState
 // static deserializePersistedState: (
-// call _teardown
-// dispatchAction
-
-// Device:
-// .device property
-
-// Client
-// this.client
 
 export function createSandyPluginWrapper<S, A extends BaseAction, P>(
   Plugin: typeof FlipperPlugin | typeof FlipperDevicePlugin,
@@ -63,6 +49,7 @@ export function createSandyPluginWrapper<S, A extends BaseAction, P>(
 
   function plugin(client: PluginClient | DevicePluginClient) {
     const appClient = isDevicePlugin ? undefined : (client as PluginClient);
+    const instanceRef = React.createRef<FlipperPlugin<S, A, P> | null>();
 
     const persistedState = createState<P>(Plugin.defaultPersistedState, {
       persist: 'persistedState',
@@ -81,7 +68,37 @@ export function createSandyPluginWrapper<S, A extends BaseAction, P>(
       }
     });
 
+    if (Plugin.keyboardActions) {
+      function executeKeyboardAction(action: string) {
+        instanceRef?.current?.onKeyboardAction?.(action);
+      }
+
+      client.addMenuEntry(
+        ...Plugin.keyboardActions.map((def) => {
+          if (typeof def === 'string') {
+            return {
+              action: def,
+              handler() {
+                executeKeyboardAction(def);
+              },
+            };
+          } else {
+            const {action, label, accelerator, topLevelMenu} = def;
+            return {
+              label,
+              accelerator,
+              topLevelMenu,
+              handler() {
+                executeKeyboardAction(action);
+              },
+            };
+          }
+        }),
+      );
+    }
+
     return {
+      instanceRef,
       device: client.device.realDevice,
       persistedState,
       deeplink,
@@ -104,7 +121,6 @@ export function createSandyPluginWrapper<S, A extends BaseAction, P>(
   function Component() {
     const instance = usePlugin(plugin);
     const logger = useLogger();
-    const pluginInstanceRef = useRef<FlipperPlugin<S, A, P>>(null);
     const persistedState = useValue(instance.persistedState);
     const deepLinkPayload = useValue(instance.deeplink);
     const dispatch = useDispatch();
@@ -122,7 +138,7 @@ export function createSandyPluginWrapper<S, A extends BaseAction, P>(
     const settingsState = useStore((state) => state.settingsState);
 
     useEffect(function triggerInitAndTeardown() {
-      const ref = pluginInstanceRef.current!;
+      const ref = instance.instanceRef.current!;
       ref._init();
       return () => {
         ref._teardown();
@@ -143,7 +159,7 @@ export function createSandyPluginWrapper<S, A extends BaseAction, P>(
         dispatch(setStaticView(payload));
       },
       // @ts-ignore ref is not on Props
-      ref: pluginInstanceRef as any,
+      ref: instance.instanceRef,
     };
 
     return React.createElement(Plugin, props);
