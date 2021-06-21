@@ -9,7 +9,7 @@
 
 import type {Store} from '../reducers/index';
 import type {Logger} from '../fb-interfaces/Logger';
-import type {PluginDefinition} from '../plugin';
+import {PluginDefinition} from '../plugin';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import adbkit from 'adbkit';
@@ -54,6 +54,7 @@ import {isDevicePluginDefinition} from '../utils/pluginUtils';
 import isPluginCompatible from '../utils/isPluginCompatible';
 import isPluginVersionMoreRecent from '../utils/isPluginVersionMoreRecent';
 import {getStaticPath} from '../utils/pathUtils';
+import {createSandyPluginWrapper} from '../utils/createSandyPluginWrapper';
 let defaultPluginsIndex: any = null;
 
 export default async (store: Store, logger: Logger) => {
@@ -316,6 +317,13 @@ const requirePluginInternal = (
     plugin.id = plugin.id || pluginDetails.id;
     plugin.packageName = pluginDetails.name;
     plugin.details = pluginDetails;
+
+    if (GK.get('flipper_use_sandy_plugin_wrapper')) {
+      return new _SandyPluginDefinition(
+        pluginDetails,
+        createSandyPluginWrapper(plugin),
+      );
+    }
 
     // set values from package.json as static variables on class
     Object.keys(pluginDetails).forEach((key) => {

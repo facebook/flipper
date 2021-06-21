@@ -10,7 +10,6 @@
 import {KeyboardActions} from './MenuBar';
 import {Logger} from './fb-interfaces/Logger';
 import Client from './Client';
-import {Store} from './reducers/index';
 import {Component} from 'react';
 import BaseDevice from './devices/BaseDevice';
 import {serialize, deserialize} from './utils/serialization';
@@ -74,7 +73,7 @@ export type Props<T> = {
   setPersistedState: (state: Partial<T>) => void;
   target: PluginTarget;
   deepLinkPayload: unknown;
-  selectPlugin: (pluginID: string, deepLinkPayload: unknown) => boolean;
+  selectPlugin: (pluginID: string, deepLinkPayload: unknown) => void;
   isArchivedDevice: boolean;
   selectedApp: string | null;
   setStaticView: (payload: StaticView) => void;
@@ -167,13 +166,6 @@ export abstract class FlipperBasePlugin<
   };
 
   teardown(): void {}
-
-  computeNotifications(
-    _props: Props<PersistedState>,
-    _state: State,
-  ): Array<Notification> {
-    return [];
-  }
 
   // methods to be overridden by subclasses
   _init(): void {}
