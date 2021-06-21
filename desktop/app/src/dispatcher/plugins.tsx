@@ -318,11 +318,11 @@ const requirePluginInternal = (
     plugin.packageName = pluginDetails.name;
     plugin.details = pluginDetails;
 
-    if (GK.get('flipper_use_sandy_plugin_wrapper')) {
-      return new _SandyPluginDefinition(
-        pluginDetails,
-        createSandyPluginWrapper(plugin),
-      );
+    if (
+      GK.get('flipper_use_sandy_plugin_wrapper') ||
+      process.env.NODE_ENV === 'test'
+    ) {
+      return createSandyPluginFromClassicPlugin(pluginDetails, plugin);
     }
 
     // set values from package.json as static variables on class
@@ -335,6 +335,17 @@ const requirePluginInternal = (
   }
   return plugin;
 };
+
+export function createSandyPluginFromClassicPlugin(
+  pluginDetails: ActivatablePluginDetails,
+  plugin: any,
+) {
+  pluginDetails.id = plugin.id; // for backward compatibility, see above check!
+  return new _SandyPluginDefinition(
+    pluginDetails,
+    createSandyPluginWrapper(plugin),
+  );
+}
 
 export function selectCompatibleMarketplaceVersions(
   availablePlugins: MarketplacePluginDetails[],

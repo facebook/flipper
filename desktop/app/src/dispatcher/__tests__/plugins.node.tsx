@@ -162,7 +162,14 @@ test('requirePlugin loads plugin', () => {
     version: '1.0.0',
   });
   expect(plugin).not.toBeNull();
-  expect((plugin as any).prototype).toBeInstanceOf(FlipperPlugin);
+  expect(Object.keys(plugin as any)).toEqual([
+    'id',
+    'details',
+    'isDevicePlugin',
+    'module',
+  ]);
+  expect(Object.keys((plugin as any).module)).toEqual(['plugin', 'Component']);
+
   expect(plugin!.id).toBe(TestPlugin.id);
 });
 

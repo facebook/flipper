@@ -9,7 +9,6 @@
 
 import {createMockFlipperWithPlugin} from '../../test-utils/createMockFlipperWithPlugin';
 import {Store, Client} from '../../';
-import {selectPlugin} from '../../reducers/connections';
 import {registerPlugins} from '../../reducers/plugins';
 import {
   _SandyPluginDefinition,
@@ -66,19 +65,8 @@ function starTestPlugin(store: Store, client: Client) {
   );
 }
 
-function selectTestPlugin(store: Store, client: Client) {
-  store.dispatch(
-    selectPlugin({
-      selectedPlugin: TestPlugin.id,
-      selectedApp: client.query.app,
-      deepLinkPayload: null,
-      selectedDevice: store.getState().connections.selectedDevice!,
-    }),
-  );
-}
-
 test('it should initialize starred sandy plugins', async () => {
-  const {client, store} = await createMockFlipperWithPlugin(TestPlugin);
+  const {client} = await createMockFlipperWithPlugin(TestPlugin);
 
   // already started, so initialized immediately
   expect(initialized).toBe(true);
@@ -89,12 +77,6 @@ test('it should initialize starred sandy plugins', async () => {
     TestPlugin.id,
   )!.instanceApi;
 
-  expect(instanceApi.connectStub).toBeCalledTimes(0);
-  selectTestPlugin(store, client);
-
-  // without rendering, non-bg plugins won't connect automatically,
-  // so this isn't the best test, but PluginContainer tests do test that part of the lifecycle
-  client.initPlugin(TestPlugin.id);
   expect(instanceApi.connectStub).toBeCalledTimes(1);
   client.deinitPlugin(TestPlugin.id);
   expect(instanceApi.disconnectStub).toBeCalledTimes(1);

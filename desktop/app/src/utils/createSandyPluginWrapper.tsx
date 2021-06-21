@@ -37,11 +37,13 @@ export function createSandyPluginWrapper<S, A extends BaseAction, P>(
   Plugin: typeof FlipperPlugin | typeof FlipperDevicePlugin,
 ): SandyPluginModule {
   const isDevicePlugin = Plugin.prototype instanceof FlipperDevicePlugin;
-  console.warn(
-    `Loading ${isDevicePlugin ? 'device' : 'client'} plugin ${
-      Plugin.id
-    } in legacy mode. Please visit https://fbflipper.com/docs/extending/sandy-migration to learn how to migrate this plugin to the new Sandy architecture`,
-  );
+  if (process.env.NODE_ENV !== 'test') {
+    console.warn(
+      `Loading ${isDevicePlugin ? 'device' : 'client'} plugin ${
+        Plugin.id
+      } in legacy mode. Please visit https://fbflipper.com/docs/extending/sandy-migration to learn how to migrate this plugin to the new Sandy architecture`,
+    );
+  }
 
   function legacyPluginWrapper(client: PluginClient | DevicePluginClient) {
     const store = getStore();

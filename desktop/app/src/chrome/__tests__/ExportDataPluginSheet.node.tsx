@@ -93,8 +93,15 @@ test('SettingsSheet snapshot with one plugin enabled', async () => {
     },
   );
 
-  // enabled, but no data
-  expect(getExportablePlugins(store.getState(), device, client)).toEqual([]);
+  // enabled
+  // in Sandy wrapper, a plugin is either persistable or not, but it doesn't depend on the current state.
+  // So this plugin will show up, even though its state is still the default
+  expect(getExportablePlugins(store.getState(), device, client)).toEqual([
+    {
+      id: 'TestPlugin',
+      label: 'TestPlugin',
+    },
+  ]);
 
   store.dispatch(
     setPluginState({

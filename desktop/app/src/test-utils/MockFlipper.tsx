@@ -216,9 +216,10 @@ export default class MockFlipper {
       }
     };
     client.rawSend = jest.fn();
-
     if (!device.isArchived) {
       await client.init();
+    } else {
+      await client.initFromImport({});
     }
 
     // As convenience, by default we select the new client, star the plugin, and select it
