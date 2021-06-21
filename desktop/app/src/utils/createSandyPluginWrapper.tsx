@@ -24,15 +24,14 @@ import {
   FlipperPlugin,
   Props as PluginProps,
 } from '../plugin';
-import {useDispatch, useStore} from './useStore';
+import {useStore} from './useStore';
 import {setStaticView, StaticView} from '../reducers/connections';
+import {getStore} from '../store';
+import {setActiveNotifications} from '../reducers/notifications';
 
 export type SandyPluginModule = ConstructorParameters<
   typeof _SandyPluginDefinition
 >[1];
-
-// Wrapped features
-// getActiveNotifications
 
 export function createSandyPluginWrapper<S, A extends BaseAction, P>(
   Plugin: typeof FlipperPlugin | typeof FlipperDevicePlugin,
@@ -44,12 +43,13 @@ export function createSandyPluginWrapper<S, A extends BaseAction, P>(
     } in legacy mode. Please visit https://fbflipper.com/docs/extending/sandy-migration to learn how to migrate this plugin to the new Sandy architecture`,
   );
 
-  function plugin(client: PluginClient | DevicePluginClient) {
+  function legacyPluginWrapper(client: PluginClient | DevicePluginClient) {
+    const store = getStore();
     const appClient = isDevicePlugin
       ? undefined
       : (client as PluginClient<any, any>);
-    const instanceRef = React.createRef<FlipperPlugin<S, A, P> | null>();
 
+    const instanceRef = React.createRef<FlipperPlugin<S, A, P> | null>();
     const persistedState = createState<P>(Plugin.defaultPersistedState);
     const deeplink = createState<unknown>();
 
@@ -135,6 +135,27 @@ export function createSandyPluginWrapper<S, A extends BaseAction, P>(
       );
     }
 
+    if (Plugin.getActiveNotifications && !isDevicePlugin) {
+      const unsub = persistedState.subscribe((state) => {
+        try {
+          const notifications = Plugin.getActiveNotifications!(state);
+          store.dispatch(
+            setActiveNotifications({
+              notifications,
+              client: appClient!.appId,
+              pluginId: Plugin.id,
+            }),
+          );
+        } catch (e) {
+          console.error(
+            'Failed to compute notifications for plugin ' + Plugin.id,
+            e,
+          );
+        }
+      });
+      client.onDestroy(unsub);
+    }
+
     return {
       instanceRef,
       device: client.device.realDevice,
@@ -153,15 +174,18 @@ export function createSandyPluginWrapper<S, A extends BaseAction, P>(
       get isArchived() {
         return client.device.isArchived;
       },
+      setStaticView(payload: StaticView) {
+        store.dispatch(setStaticView(payload));
+      },
     };
   }
 
   function Component() {
-    const instance = usePlugin(plugin);
+    const instance = usePlugin(legacyPluginWrapper);
     const logger = useLogger();
     const persistedState = useValue(instance.persistedState);
     const deepLinkPayload = useValue(instance.deeplink);
-    const dispatch = useDispatch();
+    const settingsState = useStore((state) => state.settingsState);
 
     const target = isDevicePlugin
       ? instance.device
@@ -173,29 +197,28 @@ export function createSandyPluginWrapper<S, A extends BaseAction, P>(
       throw new Error('Illegal state: missing target');
     }
 
-    const settingsState = useStore((state) => state.settingsState);
-
-    useEffect(function triggerInitAndTeardown() {
-      const ref = instance.instanceRef.current!;
-      ref._init();
-      return () => {
-        ref._teardown();
-      };
-    }, []);
+    useEffect(
+      function triggerInitAndTeardown() {
+        const ref = instance.instanceRef.current!;
+        ref._init();
+        return () => {
+          ref._teardown();
+        };
+      },
+      [instance.instanceRef],
+    );
 
     const props: PluginProps<P> = {
       logger,
       persistedState,
-      target,
       deepLinkPayload,
       settingsState,
+      target,
       setPersistedState: instance.setPersistedState,
       selectPlugin: instance.selectPlugin,
       isArchivedDevice: instance.isArchived,
       selectedApp: instance.appName,
-      setStaticView(payload: StaticView) {
-        dispatch(setStaticView(payload));
-      },
+      setStaticView: instance.setStaticView,
       // @ts-ignore ref is not on Props
       ref: instance.instanceRef,
     };
@@ -204,9 +227,9 @@ export function createSandyPluginWrapper<S, A extends BaseAction, P>(
   }
 
   return isDevicePlugin
-    ? {devicePlugin: plugin, Component}
+    ? {devicePlugin: legacyPluginWrapper, Component}
     : {
-        plugin,
+        plugin: legacyPluginWrapper,
         Component,
       };
 }
