@@ -10,7 +10,7 @@
     "@types/fb-watchman": "2.0.0",
     "@types/jest": "^26.0.23",
     "@typescript-eslint/eslint-plugin": "^4.26.1",
-    "eslint": "^7.28.0",
+    "eslint": "^7.29.0",
     "eslint-plugin-babel": "^5.3.1",
     "eslint-plugin-header": "^3.1.1",
     "eslint-plugin-jsx-a11y": "^6.4.1",
