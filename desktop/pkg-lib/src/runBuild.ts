@@ -33,7 +33,15 @@ async function getMetroDir() {
   return __dirname;
 }
 
-export default async function bundlePlugin(pluginDir: string, dev: boolean) {
+type Options = {
+  sourceMapPath?: string | undefined;
+};
+
+export default async function bundlePlugin(
+  pluginDir: string,
+  dev: boolean,
+  options?: Options,
+) {
   const stat = await fs.lstat(pluginDir);
   if (!stat.isDirectory()) {
     throw new Error(`Plugin source ${pluginDir} is not a directory.`);
@@ -49,7 +57,6 @@ export default async function bundlePlugin(pluginDir: string, dev: boolean) {
   const out = path.resolve(pluginDir, plugin.main);
   await fs.ensureDir(path.dirname(out));
 
-  const sourceMapUrl = null; // inline source map
   const baseConfig = await Metro.loadConfig();
   const config = Object.assign({}, baseConfig, {
     reporter: {update: () => {}},
@@ -89,13 +96,23 @@ export default async function bundlePlugin(pluginDir: string, dev: boolean) {
       }),
     ],
   });
+  const sourceMapUrl = out.replace(/\.js$/, '.map');
   await Metro.runBuild(config, {
     dev,
-    minify: !dev,
-    resetCache: false,
-    sourceMap: dev,
+    sourceMap: dev || !!options?.sourceMapPath,
     sourceMapUrl,
+    minify: !dev,
+    inlineSourceMap: dev,
+    resetCache: false,
     entry,
     out,
   });
+  if (
+    options?.sourceMapPath &&
+    path.resolve(options.sourceMapPath) !== path.resolve(sourceMapUrl)
+  ) {
+    console.log(`Moving plugin sourcemap to ${options.sourceMapPath}`);
+    await fs.ensureDir(path.dirname(options.sourceMapPath));
+    await fs.move(sourceMapUrl, options.sourceMapPath, {overwrite: true});
+  }
 }
