@@ -9,7 +9,7 @@
 
 import {createStore} from 'redux';
 import BaseDevice from '../devices/BaseDevice';
-import {rootReducer} from '../store';
+import {createRootReducer} from '../reducers';
 import {Store} from '../reducers/index';
 import Client, {ClientQuery, FlipperClientConnection} from '../Client';
 import {buildClientId} from '../utils/clientUtils';
@@ -75,7 +75,7 @@ export default class MockFlipper {
   }
 
   public async init({plugins}: AppOptions = {}) {
-    this._store = createStore(rootReducer);
+    this._store = createStore(createRootReducer());
     this._logger = getInstance();
     this.unsubscribePluginManager = pluginManager(this._store, this._logger, {
       runSideEffectsSynchronously: true,

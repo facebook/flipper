@@ -20,7 +20,7 @@ import {BundledPluginDetails, InstalledPluginDetails} from 'flipper-plugin-lib';
 import path from 'path';
 import {remote} from 'electron';
 import {FlipperPlugin} from '../../plugin';
-import reducers, {State} from '../../reducers/index';
+import {createRootReducer, State} from '../../reducers/index';
 import {getInstance} from '../../fb-stubs/Logger';
 import configureStore from 'redux-mock-store';
 import {TEST_PASSING_GK, TEST_FAILING_GK} from '../../fb-stubs/GK';
@@ -33,7 +33,7 @@ import loadDynamicPlugins from '../../utils/loadDynamicPlugins';
 const loadDynamicPluginsMock = mocked(loadDynamicPlugins);
 
 const mockStore = configureStore<State, {}>([])(
-  reducers(undefined, {type: 'INIT'}),
+  createRootReducer()(undefined, {type: 'INIT'}),
 );
 const logger = getInstance();
 
