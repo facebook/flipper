@@ -32,10 +32,7 @@ export type SandyPluginModule = ConstructorParameters<
 >[1];
 
 // Wrapped features
-// exportPersistedState
 // getActiveNotifications
-// serializePersistedState
-// static deserializePersistedState: (
 
 export function createSandyPluginWrapper<S, A extends BaseAction, P>(
   Plugin: typeof FlipperPlugin | typeof FlipperDevicePlugin,
@@ -48,12 +45,12 @@ export function createSandyPluginWrapper<S, A extends BaseAction, P>(
   );
 
   function plugin(client: PluginClient | DevicePluginClient) {
-    const appClient = isDevicePlugin ? undefined : (client as PluginClient);
+    const appClient = isDevicePlugin
+      ? undefined
+      : (client as PluginClient<any, any>);
     const instanceRef = React.createRef<FlipperPlugin<S, A, P> | null>();
 
-    const persistedState = createState<P>(Plugin.defaultPersistedState, {
-      persist: 'persistedState',
-    });
+    const persistedState = createState<P>(Plugin.defaultPersistedState);
     const deeplink = createState<unknown>();
 
     client.onDeepLink((link) => {
@@ -67,6 +64,47 @@ export function createSandyPluginWrapper<S, A extends BaseAction, P>(
         );
       }
     });
+
+    if (
+      Plugin.persistedStateReducer ||
+      Plugin.exportPersistedState ||
+      Plugin.defaultPersistedState ||
+      Plugin.serializePersistedState
+    ) {
+      client.onExport(async (idler, onStatusMessage) => {
+        const state = Plugin.exportPersistedState
+          ? await Plugin.exportPersistedState(
+              isDevicePlugin
+                ? undefined
+                : (method: string, params: any) =>
+                    appClient!.send(method, params),
+              persistedState.get(),
+              undefined, // passing an undefined Store is safe, as no plugin actually uses this param
+              idler,
+              onStatusMessage,
+              isDevicePlugin
+                ? undefined
+                : (method: string) => appClient!.supportsMethod(method),
+            )
+          : persistedState.get();
+        // respect custom serialization
+        return Plugin.serializePersistedState
+          ? await Plugin.serializePersistedState(
+              state,
+              onStatusMessage,
+              idler,
+              Plugin.id,
+            )
+          : state;
+      });
+
+      client.onImport((data) => {
+        if (Plugin.deserializePersistedState) {
+          data = Plugin.deserializePersistedState(data);
+        }
+        persistedState.set(data);
+      });
+    }
 
     if (Plugin.keyboardActions) {
       function executeKeyboardAction(action: string) {

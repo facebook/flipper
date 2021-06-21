@@ -84,12 +84,12 @@ export default class LayoutPlugin extends FlipperPlugin<
       | undefined
       | ((method: ClientMethodCalls, params?: any) => Promise<any>),
     persistedState: PersistedState | undefined,
-    store: ReduxState | undefined,
+    _store: ReduxState | undefined,
     _idler?: Idler | undefined,
     statusUpdate?: (msg: string) => void,
     supportsMethod?: (method: ClientMethodCalls) => Promise<boolean>,
   ): Promise<PersistedState | undefined> => {
-    if (!store || !callClient) {
+    if (!callClient) {
       return persistedState;
     }
     statusUpdate && statusUpdate('Fetching Root Node...');
