@@ -3044,10 +3044,10 @@
     "@types/react" "*"
     hoist-non-react-statics "^3.3.0"
 
-"@types/inquirer@^7.3.1":
-  version "7.3.1"
-  resolved "https://registry.yarnpkg.com/@types/inquirer/-/inquirer-7.3.1.tgz#1f231224e7df11ccfaf4cf9acbcc3b935fea292d"
-  integrity sha512-osD38QVIfcdgsPCT0V3lD7eH0OFurX71Jft18bZrsVQWVRt6TuxRzlr0GJLrxoHZR2V5ph7/qP8se/dcnI7o0g==
+"@types/inquirer@^7.3.2":
+  version "7.3.2"
+  resolved "https://registry.yarnpkg.com/@types/inquirer/-/inquirer-7.3.2.tgz#35d2ef4d98dd42feeb4e1256cdeb9f13f457d420"
+  integrity sha512-EkeX/hU0SWinA2c7Qu/+6+7KbepFPYJcjankUgtA/VSY6BlVHybL0Cgyey9PDbXwhNXnNGBLU3t+MORp23RgAw==
   dependencies:
     "@types/through" "*"
     rxjs "^6.4.0"

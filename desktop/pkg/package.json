@@ -30,7 +30,7 @@
   "devDependencies": {
     "@oclif/dev-cli": "^1",
     "@types/fs-extra": "^9.0.11",
-    "@types/inquirer": "^7.3.1",
+    "@types/inquirer": "^7.3.2",
     "@types/jest": "^26.0.23",
     "@types/node": "^15.12.4",
     "flipper-test-utils": "0.0.0",
