@@ -35,6 +35,7 @@ import {
   IDEFileResolver,
   IDEType,
 } from 'flipper';
+import {message} from 'antd';
 
 type State = {
   init: boolean;
@@ -335,8 +336,9 @@ export default class LayoutPlugin extends FlipperPlugin<
     if (this.state.visualizerWindow) {
       this.state.visualizerWindow.close();
     } else {
-      const screenDimensions = this.state.screenDimensions;
-      if (!screenDimensions) {
+      const screenDimensions = this.loadScreenDimensions();
+      if (!screenDimensions || !this.state.visualizerScreenshot) {
+        message.warn('No visualizer screenshot or dimensions available');
         return;
       }
       const visualizerWindow = window.open(
@@ -376,44 +378,39 @@ export default class LayoutPlugin extends FlipperPlugin<
     });
   };
 
-  getScreenDimensions(): {width: number; height: number} | null {
-    if (this.state.screenDimensions) {
-      return this.state.screenDimensions;
-    }
-
-    requestIdleCallback(() => {
-      // Walk the layout tree from root node down until a node with width and height is found.
-      // Assume these are the dimensions of the screen.
-      let elementId = this.props.persistedState.rootElement;
-      while (elementId != null) {
-        const element = this.props.persistedState.elements[elementId];
-        if (!element) {
-          return null;
-        }
-        if (element.data.View?.width) {
-          break;
-        }
-        elementId = element.children[0];
-      }
-      if (elementId == null) {
+  loadScreenDimensions(): {width: number; height: number} | null {
+    // Walk the layout tree from root node down until a node with width and height is found.
+    // Assume these are the dimensions of the screen.
+    let elementId = this.props.persistedState.rootElement;
+    while (elementId != null) {
+      const element: any = this.props.persistedState.elements[elementId];
+      if (!element) {
         return null;
       }
-      const element = this.props.persistedState.elements[elementId];
       if (
-        element == null ||
-        typeof element.data.View?.width != 'object' ||
-        typeof element.data.View?.height != 'object'
+        element.data?.View?.width ||
+        element.data?.UIView?.bounds?.size?.width
       ) {
-        return null;
+        break;
       }
-      const screenDimensions = {
-        width: element.data.View?.width.value,
-        height: element.data.View?.height.value,
-      };
-      this.setState({screenDimensions});
-    });
-
-    return null;
+      elementId = element.children[0];
+    }
+    if (elementId == null) {
+      return null;
+    }
+    const element: any = this.props.persistedState.elements[elementId];
+    const width =
+      element?.data?.View?.width?.value ??
+      element?.data?.UIView?.bounds?.size?.width;
+    const height =
+      element?.data?.View?.height?.value ??
+      element?.data?.UIView?.bounds?.size?.height;
+    if (typeof width !== 'number' || typeof height !== 'number') {
+      return null;
+    }
+    const screenDimensions = {width, height};
+    this.setState({screenDimensions});
+    return screenDimensions;
   }
 
   render() {
@@ -455,8 +452,6 @@ export default class LayoutPlugin extends FlipperPlugin<
     ) : null;
 
     const showAnalyzeYogaPerformanceButton = GK.get('flipper_yogaperformance');
-
-    const screenDimensions = this.getScreenDimensions();
 
     if (!this.state.init) {
       return null;
@@ -543,14 +538,14 @@ export default class LayoutPlugin extends FlipperPlugin<
           ) : null}
         </DetailSidebar>
         {this.state.visualizerWindow &&
-          screenDimensions &&
+          this.state.screenDimensions &&
           (this.state.visualizerScreenshot ? (
             <VisualizerPortal
               container={this.state.visualizerWindow.document.body}
               elements={this.props.persistedState.elements}
               highlightedElement={this.state.highlightedElement}
               screenshotURL={this.state.visualizerScreenshot}
-              screenDimensions={screenDimensions}
+              screenDimensions={this.state.screenDimensions}
             />
           ) : (
             'Loading...'
