@@ -466,7 +466,12 @@ export default class Client extends EventEmitter {
               }
             }
           }
-          if (!handled && !isProduction()) {
+          // TODO: Flipper debug as full client is overkill, clean up
+          if (
+            !handled &&
+            !isProduction() &&
+            params.api !== 'flipper-messages'
+          ) {
             console.warn(`Unhandled message ${params.api}.${params.method}`);
           }
         }
