@@ -89,7 +89,7 @@
     "flipper-test-utils": "0.0.0",
     "metro-runtime": "^0.65.2",
     "mock-fs": "^4.14.0",
-    "pretty-format": "^26.1.0",
+    "pretty-format": "^27.0.2",
     "react-refresh": "^0.10.0",
     "redux-mock-store": "^1.0.1",
     "ts-jest": "^26.5.6"
