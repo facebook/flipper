@@ -38,6 +38,9 @@ export function Crashes() {
           description: `${crash.date.toLocaleString()} - ${crash.name}`,
         }))}
         selection={selectedCrashId}
+        onSelect={(id) => {
+          plugin.selectedCrash.set(id);
+        }}
         onRenderEmpty={null}
       />
       {selectedCrash ? (
