@@ -555,10 +555,7 @@ test('onSelect callback fires, and in order', () => {
     ref.current!.selectItem(2);
   });
 
-  expect(events.splice(0)).toEqual([
-    [undefined, []],
-    [item3, [item3]],
-  ]);
+  expect(events.splice(0)).toEqual([[item3, [item3]]]);
 
   act(() => {
     ref.current!.addRangeToSelection(0, 0);
@@ -606,10 +603,7 @@ test('selection always has the latest state', () => {
     ref.current!.selectItem(2);
   });
 
-  expect(events.splice(0)).toEqual([
-    [undefined, []],
-    [item3, [item3]],
-  ]);
+  expect(events.splice(0)).toEqual([[item3, [item3]]]);
 
   const item3updated = {
     title: 'item 3 updated',

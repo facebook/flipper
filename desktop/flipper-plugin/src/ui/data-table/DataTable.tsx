@@ -357,12 +357,16 @@ export function DataTable<T extends object>(
     [dataSource, tableState.sorting],
   );
 
+  const isMounted = useRef(false);
   useEffect(
     function triggerSelection() {
-      onSelect?.(
-        getSelectedItem(dataSource, tableState.selection),
-        getSelectedItems(dataSource, tableState.selection),
-      );
+      if (isMounted.current) {
+        onSelect?.(
+          getSelectedItem(dataSource, tableState.selection),
+          getSelectedItems(dataSource, tableState.selection),
+        );
+      }
+      isMounted.current = true;
     },
     [onSelect, dataSource, tableState.selection],
   );
