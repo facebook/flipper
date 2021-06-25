@@ -20,7 +20,8 @@ exports[`load PluginInstaller list 1`] = `
       </div>
     </div>
     <div
-      class="css-1n5hbjk-View-FlexBox-FlexColumn-Container e11hk09w0"
+      class="css-p5h61d-View-FlexBox-FlexColumn-Container esta8x30"
+      tabindex="0"
     >
       <div
         class="css-18abd42-View-FlexBox-FlexColumn ecr18to0"
@@ -95,146 +96,150 @@ exports[`load PluginInstaller list 1`] = `
         </div>
       </div>
       <div
-        class="css-1n5hbjk-View-FlexBox-FlexColumn-Container e11hk09w0"
+        class="css-p5h61d-View-FlexBox-FlexColumn-Container esta8x30"
       >
         <div
-          class="css-1xll39b-View-FlexBox-FlexRow-TableBodyRowContainer ehuguum1"
-          data-key="flipper-plugin-hello"
+          class="css-18abd42-View-FlexBox-FlexColumn ecr18to0"
         >
           <div
-            class="css-hdg6vt-TableBodyColumnContainer ehuguum0"
-            title=""
-            width="25%"
-          >
-            <span
-              class="css-fyize4-Text"
-            >
-              hello
-            </span>
-          </div>
-          <div
-            class="css-1rdsust-TableBodyColumnContainer ehuguum0"
-            title=""
-            width="10%"
-          >
-            <span
-              class="css-fyize4-Text"
-            >
-              0.1.0
-            </span>
-          </div>
-          <div
-            class="css-1bw2bjn-TableBodyColumnContainer ehuguum0"
-            title=""
-            width="flex"
+            class="css-1xll39b-View-FlexBox-FlexRow-TableBodyRowContainer ehuguum1"
+            data-key="flipper-plugin-hello"
           >
             <div
-              class="css-4yiclo-View-FlexBox-FlexRow epz0qe20"
+              class="css-hdg6vt-TableBodyColumnContainer ehuguum0"
+              title=""
+              width="25%"
             >
               <span
                 class="css-fyize4-Text"
               >
-                World?
+                hello
               </span>
-              <div
-                class="css-t4wmtk-View-FlexBox-Spacer e13mj6h80"
-              />
-              <a
-                class="ant-typography"
-                href="https://yarnpkg.com/en/package/flipper-plugin-hello"
-              >
-                <div
-                  class="css-5r6dd6-ColoredIconCustom e528dze0"
-                  color="#bec2c9"
-                  size="16"
-                  src="https://facebook.com/assets/?name=info-circle&variant=filled&size=16&set=facebook_icons&density=1x"
-                />
-              </a>
             </div>
-          </div>
-          <div
-            class="css-4dx1ef-TableBodyColumnContainer ehuguum0"
-            title=""
-            width="15%"
-          >
-            <button
-              class="ant-btn ant-btn-primary"
-              type="button"
-            >
-              <span>
-                Install
-              </span>
-            </button>
-          </div>
-        </div>
-        <div
-          class="css-1k1evb9-View-FlexBox-FlexRow-TableBodyRowContainer ehuguum1"
-          data-key="flipper-plugin-world"
-        >
-          <div
-            class="css-hdg6vt-TableBodyColumnContainer ehuguum0"
-            title=""
-            width="25%"
-          >
-            <span
-              class="css-fyize4-Text"
-            >
-              world
-            </span>
-          </div>
-          <div
-            class="css-1rdsust-TableBodyColumnContainer ehuguum0"
-            title=""
-            width="10%"
-          >
-            <span
-              class="css-fyize4-Text"
-            >
-              0.2.0
-            </span>
-          </div>
-          <div
-            class="css-1bw2bjn-TableBodyColumnContainer ehuguum0"
-            title=""
-            width="flex"
-          >
             <div
-              class="css-4yiclo-View-FlexBox-FlexRow epz0qe20"
+              class="css-1rdsust-TableBodyColumnContainer ehuguum0"
+              title=""
+              width="10%"
             >
               <span
                 class="css-fyize4-Text"
               >
-                Hello?
+                0.1.0
               </span>
+            </div>
+            <div
+              class="css-1bw2bjn-TableBodyColumnContainer ehuguum0"
+              title=""
+              width="flex"
+            >
               <div
-                class="css-t4wmtk-View-FlexBox-Spacer e13mj6h80"
-              />
-              <a
-                class="ant-typography"
-                href="https://yarnpkg.com/en/package/flipper-plugin-world"
+                class="css-4yiclo-View-FlexBox-FlexRow epz0qe20"
               >
+                <span
+                  class="css-fyize4-Text"
+                >
+                  World?
+                </span>
                 <div
-                  class="css-5r6dd6-ColoredIconCustom e528dze0"
-                  color="#bec2c9"
-                  size="16"
-                  src="https://facebook.com/assets/?name=info-circle&variant=filled&size=16&set=facebook_icons&density=1x"
+                  class="css-t4wmtk-View-FlexBox-Spacer e13mj6h80"
                 />
-              </a>
+                <a
+                  class="ant-typography"
+                  href="https://yarnpkg.com/en/package/flipper-plugin-hello"
+                >
+                  <div
+                    class="css-5r6dd6-ColoredIconCustom e528dze0"
+                    color="#bec2c9"
+                    size="16"
+                    src="https://facebook.com/assets/?name=info-circle&variant=filled&size=16&set=facebook_icons&density=1x"
+                  />
+                </a>
+              </div>
+            </div>
+            <div
+              class="css-4dx1ef-TableBodyColumnContainer ehuguum0"
+              title=""
+              width="15%"
+            >
+              <button
+                class="ant-btn ant-btn-primary"
+                type="button"
+              >
+                <span>
+                  Install
+                </span>
+              </button>
             </div>
           </div>
           <div
-            class="css-4dx1ef-TableBodyColumnContainer ehuguum0"
-            title=""
-            width="15%"
+            class="css-1k1evb9-View-FlexBox-FlexRow-TableBodyRowContainer ehuguum1"
+            data-key="flipper-plugin-world"
           >
-            <button
-              class="ant-btn ant-btn-primary"
-              type="button"
+            <div
+              class="css-hdg6vt-TableBodyColumnContainer ehuguum0"
+              title=""
+              width="25%"
             >
-              <span>
-                Install
+              <span
+                class="css-fyize4-Text"
+              >
+                world
               </span>
-            </button>
+            </div>
+            <div
+              class="css-1rdsust-TableBodyColumnContainer ehuguum0"
+              title=""
+              width="10%"
+            >
+              <span
+                class="css-fyize4-Text"
+              >
+                0.2.0
+              </span>
+            </div>
+            <div
+              class="css-1bw2bjn-TableBodyColumnContainer ehuguum0"
+              title=""
+              width="flex"
+            >
+              <div
+                class="css-4yiclo-View-FlexBox-FlexRow epz0qe20"
+              >
+                <span
+                  class="css-fyize4-Text"
+                >
+                  Hello?
+                </span>
+                <div
+                  class="css-t4wmtk-View-FlexBox-Spacer e13mj6h80"
+                />
+                <a
+                  class="ant-typography"
+                  href="https://yarnpkg.com/en/package/flipper-plugin-world"
+                >
+                  <div
+                    class="css-5r6dd6-ColoredIconCustom e528dze0"
+                    color="#bec2c9"
+                    size="16"
+                    src="https://facebook.com/assets/?name=info-circle&variant=filled&size=16&set=facebook_icons&density=1x"
+                  />
+                </a>
+              </div>
+            </div>
+            <div
+              class="css-4dx1ef-TableBodyColumnContainer ehuguum0"
+              title=""
+              width="15%"
+            >
+              <button
+                class="ant-btn ant-btn-primary"
+                type="button"
+              >
+                <span>
+                  Install
+                </span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -322,7 +327,8 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
       </div>
     </div>
     <div
-      class="css-1n5hbjk-View-FlexBox-FlexColumn-Container e11hk09w0"
+      class="css-p5h61d-View-FlexBox-FlexColumn-Container esta8x30"
+      tabindex="0"
     >
       <div
         class="css-18abd42-View-FlexBox-FlexColumn ecr18to0"
@@ -397,146 +403,150 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
         </div>
       </div>
       <div
-        class="css-1n5hbjk-View-FlexBox-FlexColumn-Container e11hk09w0"
+        class="css-p5h61d-View-FlexBox-FlexColumn-Container esta8x30"
       >
         <div
-          class="css-1xll39b-View-FlexBox-FlexRow-TableBodyRowContainer ehuguum1"
-          data-key="flipper-plugin-hello"
+          class="css-18abd42-View-FlexBox-FlexColumn ecr18to0"
         >
           <div
-            class="css-hdg6vt-TableBodyColumnContainer ehuguum0"
-            title=""
-            width="25%"
-          >
-            <span
-              class="css-fyize4-Text"
-            >
-              hello
-            </span>
-          </div>
-          <div
-            class="css-1rdsust-TableBodyColumnContainer ehuguum0"
-            title=""
-            width="10%"
-          >
-            <span
-              class="css-fyize4-Text"
-            >
-              0.1.0
-            </span>
-          </div>
-          <div
-            class="css-1bw2bjn-TableBodyColumnContainer ehuguum0"
-            title=""
-            width="flex"
+            class="css-1xll39b-View-FlexBox-FlexRow-TableBodyRowContainer ehuguum1"
+            data-key="flipper-plugin-hello"
           >
             <div
-              class="css-4yiclo-View-FlexBox-FlexRow epz0qe20"
+              class="css-hdg6vt-TableBodyColumnContainer ehuguum0"
+              title=""
+              width="25%"
             >
               <span
                 class="css-fyize4-Text"
               >
-                World?
+                hello
               </span>
-              <div
-                class="css-t4wmtk-View-FlexBox-Spacer e13mj6h80"
-              />
-              <a
-                class="ant-typography"
-                href="https://yarnpkg.com/en/package/flipper-plugin-hello"
-              >
-                <div
-                  class="css-5r6dd6-ColoredIconCustom e528dze0"
-                  color="#bec2c9"
-                  size="16"
-                  src="https://facebook.com/assets/?name=info-circle&variant=filled&size=16&set=facebook_icons&density=1x"
-                />
-              </a>
             </div>
-          </div>
-          <div
-            class="css-4dx1ef-TableBodyColumnContainer ehuguum0"
-            title=""
-            width="15%"
-          >
-            <button
-              class="ant-btn ant-btn-default"
-              type="button"
-            >
-              <span>
-                Remove
-              </span>
-            </button>
-          </div>
-        </div>
-        <div
-          class="css-1k1evb9-View-FlexBox-FlexRow-TableBodyRowContainer ehuguum1"
-          data-key="flipper-plugin-world"
-        >
-          <div
-            class="css-hdg6vt-TableBodyColumnContainer ehuguum0"
-            title=""
-            width="25%"
-          >
-            <span
-              class="css-fyize4-Text"
-            >
-              world
-            </span>
-          </div>
-          <div
-            class="css-1rdsust-TableBodyColumnContainer ehuguum0"
-            title=""
-            width="10%"
-          >
-            <span
-              class="css-fyize4-Text"
-            >
-              0.2.0
-            </span>
-          </div>
-          <div
-            class="css-1bw2bjn-TableBodyColumnContainer ehuguum0"
-            title=""
-            width="flex"
-          >
             <div
-              class="css-4yiclo-View-FlexBox-FlexRow epz0qe20"
+              class="css-1rdsust-TableBodyColumnContainer ehuguum0"
+              title=""
+              width="10%"
             >
               <span
                 class="css-fyize4-Text"
               >
-                Hello?
+                0.1.0
               </span>
+            </div>
+            <div
+              class="css-1bw2bjn-TableBodyColumnContainer ehuguum0"
+              title=""
+              width="flex"
+            >
               <div
-                class="css-t4wmtk-View-FlexBox-Spacer e13mj6h80"
-              />
-              <a
-                class="ant-typography"
-                href="https://yarnpkg.com/en/package/flipper-plugin-world"
+                class="css-4yiclo-View-FlexBox-FlexRow epz0qe20"
               >
+                <span
+                  class="css-fyize4-Text"
+                >
+                  World?
+                </span>
                 <div
-                  class="css-5r6dd6-ColoredIconCustom e528dze0"
-                  color="#bec2c9"
-                  size="16"
-                  src="https://facebook.com/assets/?name=info-circle&variant=filled&size=16&set=facebook_icons&density=1x"
+                  class="css-t4wmtk-View-FlexBox-Spacer e13mj6h80"
                 />
-              </a>
+                <a
+                  class="ant-typography"
+                  href="https://yarnpkg.com/en/package/flipper-plugin-hello"
+                >
+                  <div
+                    class="css-5r6dd6-ColoredIconCustom e528dze0"
+                    color="#bec2c9"
+                    size="16"
+                    src="https://facebook.com/assets/?name=info-circle&variant=filled&size=16&set=facebook_icons&density=1x"
+                  />
+                </a>
+              </div>
+            </div>
+            <div
+              class="css-4dx1ef-TableBodyColumnContainer ehuguum0"
+              title=""
+              width="15%"
+            >
+              <button
+                class="ant-btn ant-btn-default"
+                type="button"
+              >
+                <span>
+                  Remove
+                </span>
+              </button>
             </div>
           </div>
           <div
-            class="css-4dx1ef-TableBodyColumnContainer ehuguum0"
-            title=""
-            width="15%"
+            class="css-1k1evb9-View-FlexBox-FlexRow-TableBodyRowContainer ehuguum1"
+            data-key="flipper-plugin-world"
           >
-            <button
-              class="ant-btn ant-btn-primary"
-              type="button"
+            <div
+              class="css-hdg6vt-TableBodyColumnContainer ehuguum0"
+              title=""
+              width="25%"
             >
-              <span>
-                Install
+              <span
+                class="css-fyize4-Text"
+              >
+                world
               </span>
-            </button>
+            </div>
+            <div
+              class="css-1rdsust-TableBodyColumnContainer ehuguum0"
+              title=""
+              width="10%"
+            >
+              <span
+                class="css-fyize4-Text"
+              >
+                0.2.0
+              </span>
+            </div>
+            <div
+              class="css-1bw2bjn-TableBodyColumnContainer ehuguum0"
+              title=""
+              width="flex"
+            >
+              <div
+                class="css-4yiclo-View-FlexBox-FlexRow epz0qe20"
+              >
+                <span
+                  class="css-fyize4-Text"
+                >
+                  Hello?
+                </span>
+                <div
+                  class="css-t4wmtk-View-FlexBox-Spacer e13mj6h80"
+                />
+                <a
+                  class="ant-typography"
+                  href="https://yarnpkg.com/en/package/flipper-plugin-world"
+                >
+                  <div
+                    class="css-5r6dd6-ColoredIconCustom e528dze0"
+                    color="#bec2c9"
+                    size="16"
+                    src="https://facebook.com/assets/?name=info-circle&variant=filled&size=16&set=facebook_icons&density=1x"
+                  />
+                </a>
+              </div>
+            </div>
+            <div
+              class="css-4dx1ef-TableBodyColumnContainer ehuguum0"
+              title=""
+              width="15%"
+            >
+              <button
+                class="ant-btn ant-btn-primary"
+                type="button"
+              >
+                <span>
+                  Install
+                </span>
+              </button>
+            </div>
           </div>
         </div>
       </div>

@@ -10,22 +10,21 @@
 import {
   FlexColumn,
   styled,
-  ManagedTable_immutable,
   SearchInput,
   SearchBox,
   Button,
   colors,
   Spacer,
-  TableRows_immutable,
   FlexRow,
   Glyph,
   Link,
   Text,
   LoadingIndicator,
   Tooltip,
+  TableRows,
+  ManagedTable,
 } from '../../ui';
 import React, {useCallback, useState, useEffect} from 'react';
-import {List} from 'immutable';
 import {reportPlatformFailures, reportUsage} from '../../utils/metrics';
 import reloadFlipper from '../../utils/reloadFlipper';
 import {registerInstalledPlugins} from '../../reducers/plugins';
@@ -144,7 +143,7 @@ const PluginInstaller = function ({
             />
           </SearchBox>
         </Toolbar>
-        <ManagedTable_immutable
+        <ManagedTable
           rowLineHeight={28}
           floating={false}
           multiline
@@ -289,7 +288,7 @@ function useNPMSearch(
   query: string,
   onInstall: () => void,
   installedPlugins: Map<string, InstalledPluginDetails>,
-): TableRows_immutable {
+): TableRows {
   useEffect(() => {
     reportUsage(`${TAG}:open`);
   }, []);
@@ -358,7 +357,7 @@ function useNPMSearch(
     })();
   }, [query, installedPlugins]);
 
-  const rows: TableRows_immutable = List(searchResults.map(createRow));
+  const rows = searchResults.map(createRow);
   return rows;
 }
 
