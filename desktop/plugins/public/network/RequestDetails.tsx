@@ -23,13 +23,7 @@ import {
 } from 'flipper-plugin';
 import {Select, Typography} from 'antd';
 
-import {
-  bodyAsBinary,
-  bodyAsString,
-  formatBytes,
-  getHeaderValue,
-  isTextual,
-} from './utils';
+import {bodyAsBinary, bodyAsString, formatBytes, getHeaderValue} from './utils';
 import {Request, Header, Insights, RetryInsights} from './types';
 import {BodyOptions} from './index';
 import {ProtobufDefinitionsRepository} from './ProtobufDefinitionsRepository';
@@ -95,7 +89,7 @@ export default class RequestDetails extends Component<RequestDetailsProps> {
             key="requestData"
             title={'Request Body'}
             extraActions={
-              isTextual(request.requestHeaders) ? (
+              typeof request.requestData === 'string' ? (
                 <CopyOutlined
                   title="Copy request body"
                   onClick={(e) => {
@@ -129,7 +123,8 @@ export default class RequestDetails extends Component<RequestDetailsProps> {
                 request.responseIsMock ? ' (Mocked)' : ''
               }`}
               extraActions={
-                isTextual(request.responseHeaders) && request.responseData ? (
+                typeof request.responseData === 'string' &&
+                request.responseData ? (
                   <CopyOutlined
                     title="Copy response body"
                     onClick={(e) => {
