@@ -52,7 +52,7 @@ const statusTypeAndMessage: {
   },
   WARNING: {
     type: 'warning',
-    message: 'Doctor has discoverd warnings. Please expand items for details.',
+    message: 'Doctor has discovered warnings. Please expand items for details.',
   },
   SUCCESS: {
     type: 'success',
