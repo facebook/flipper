@@ -1,0 +1,57 @@
+diff --git a/node_modules/antd/es/button/button.js b/node_modules/antd/es/button/button.js
+index 28a12c7..13f7382 100644
+--- a/node_modules/antd/es/button/button.js
++++ b/node_modules/antd/es/button/button.js
+@@ -193,6 +193,8 @@ var InternalButton = function InternalButton(props, ref) {
+   }, [loadingOrDelay]);
+   React.useEffect(fixTwoCNChar, [buttonRef]);
+ 
++  var scope = React.useContext(global.FlipperTrackingScopeContext);
++
+   var handleClick = function handleClick(e) {
+     var _a;
+ 
+@@ -204,7 +206,13 @@ var InternalButton = function InternalButton(props, ref) {
+       return;
+     }
+ 
+-    (_a = onClick) === null || _a === void 0 ? void 0 : _a(e);
++    if(onClick !== null && onClick !== void 0) {
++      global.flipperTrackInteraction(
++        'Button', 'onClick', scope, props.title || props.children || props.icon,
++        onClick,
++        e
++      );
++    }
+   };
+ 
+   devWarning(!(typeof icon === 'string' && icon.length > 2), 'Button', "`icon` is using ReactNode instead of string naming in v4. Please check `".concat(icon, "` at https://ant.design/components/icon"));
+diff --git a/node_modules/antd/es/typography/Link.js b/node_modules/antd/es/typography/Link.js
+index 2847840..294ec8d 100644
+--- a/node_modules/antd/es/typography/Link.js
++++ b/node_modules/antd/es/typography/Link.js
+@@ -36,12 +36,23 @@ var Link = function Link(_a, ref) {
+   }); // https://github.com/ant-design/ant-design/issues/26622
+   // @ts-ignore
+ 
++  var onClick = React.useCallback((e) => {
++    if (mergedProps.onClick) {
++      return mergedProps.onClick(e);
++    }
++    if (mergedProps.href) {
++      global.flipperOpenLink(mergedProps.href);
++      e.preventDefault();
++      e.stopPropagation();
++    };
++  }, [mergedProps.href, mergedProps.onClick])
+ 
+   delete mergedProps.navigate;
+   return /*#__PURE__*/React.createElement(Base, _extends({}, mergedProps, {
+     ref: baseRef,
+     ellipsis: !!ellipsis,
+-    component: "a"
++    component: "a",
++    onClick: onClick,
+   }));
+ };
+ 

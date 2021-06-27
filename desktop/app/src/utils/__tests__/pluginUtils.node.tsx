@@ -99,10 +99,10 @@ test('getActivePersistentPlugins, where the non persistent plugins getting exclu
       id: 'ClientPlugin4',
       label: 'ClientPlugin4',
     },
-    {
-      id: 'ClientPlugin5',
-      label: 'ClientPlugin5',
-    },
+    // {  Never activated, and no data received
+    //   id: 'ClientPlugin5',
+    //   label: 'ClientPlugin5',
+    // },
   ]);
 });
 
@@ -139,6 +139,12 @@ test('getActivePersistentPlugins, where the plugins not in pluginState or queue 
     {
       id: 'ClientPlugin3', // queued
       label: 'ClientPlugin3',
+    },
+    {
+      // in Sandy wrapper, a plugin is either persistable or not, but it doesn't depend on the current state.
+      // So this plugin will show up, even though its state is still the default
+      id: 'Plugin1',
+      label: 'Plugin1',
     },
   ]);
 });

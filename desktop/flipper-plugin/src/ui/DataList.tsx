@@ -7,14 +7,7 @@
  * @format
  */
 
-import React, {
-  useCallback,
-  memo,
-  createRef,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import React, {memo, createRef, useMemo, useEffect, useCallback} from 'react';
 import {DataFormatter} from './DataFormatter';
 import {Layout} from './Layout';
 import {Typography} from 'antd';
@@ -28,19 +21,13 @@ import {RightOutlined} from '@ant-design/icons';
 import {theme} from './theme';
 import styled from '@emotion/styled';
 import {DataTableManager} from './data-table/DataTableManager';
-import {Atom, createState} from '../state/atom';
 import {useAssertStableRef} from '../utils/useAssertStableRef';
 import {DataSource} from '../data-source';
+import {useMakeStableCallback} from '../utils/useMakeStableCallback';
 
 const {Text} = Typography;
 
-interface Item {
-  id: string;
-  title: string;
-  description?: string;
-}
-
-interface DataListBaseProps<T extends Item> {
+type DataListBaseProps<Item> = {
   /**
    * Defines the styling of the component. By default shows a list, but alternatively the items can be displayed in a drop down
    */
@@ -51,13 +38,10 @@ interface DataListBaseProps<T extends Item> {
    */
   scrollable?: boolean;
   /**
-   * The current selection
-   */
-  selection: Atom<string | undefined>;
-  /**
    * Handler that is fired if selection is changed
    */
-  onSelect?(id: string | undefined, value: T | undefined): void;
+  selection?: string | undefined;
+  onSelect?(id: string | undefined, value: Item | undefined): void;
   className?: string;
   style?: React.CSSProperties;
   /**
@@ -67,103 +51,150 @@ interface DataListBaseProps<T extends Item> {
   /**
    * Custom render function. By default the component will render the `title` in bold and description (if any) below it
    */
-  onRenderItem?: ItemRenderer<T>;
+  onRenderItem?: ItemRenderer<Item>;
+  /**
+   * The attributes that will be picked as id/title/description for the default rendering.
+   * Defaults to id/title/description, but can be customized
+   */
+
+  titleAttribute?: keyof Item & string;
+  descriptionAttribute?: keyof Item & string;
   /**
    * Show a right arrow by default
    */
   enableArrow?: boolean;
-}
+} & (Item extends {id: string}
+  ? {
+      idAttribute?: keyof Item & string; // optional if id field is present
+    }
+  : {
+      idAttribute: keyof Item & string;
+    });
 
-export type DataListProps<T extends Item> = DataListBaseProps<T> &
+export type DataListProps<Item> = DataListBaseProps<Item> &
   // Some table props are set by DataList instead, so override them
-  Omit<DataTableProps<T>, 'records' | 'dataSource' | 'columns' | 'onSelect'>;
+  Omit<DataTableProps<Item>, 'records' | 'dataSource' | 'columns' | 'onSelect'>;
 
-export const DataList: React.FC<DataListProps<any>> = function DataList<
-  T extends Item,
->({
-  selection: baseSelection,
-  onSelect,
-  className,
-  style,
-  items,
-  onRenderItem,
-  enableArrow,
-  ...tableProps
-}: DataListProps<T>) {
-  // if a tableManagerRef is provided, we piggy back on that same ref
-  // eslint-disable-next-line
-  const tableManagerRef = tableProps.tableManagerRef ?? createRef<undefined | DataTableManager<T>>();
+export const DataList: (<T>(props: DataListProps<T>) => React.ReactElement) & {
+  Item: React.FC<DataListItemProps>;
+} = Object.assign(
+  function <T>({
+    onSelect: baseOnSelect,
+    selection,
+    className,
+    style,
+    items,
+    onRenderItem,
+    enableArrow,
+    idAttribute,
+    titleAttribute,
+    descriptionAttribute,
+    ...tableProps
+  }: DataListProps<T>) {
+    // if a tableManagerRef is provided, we piggy back on that same ref
+    // eslint-disable-next-line
+    const tableManagerRef = tableProps.tableManagerRef ?? createRef<undefined | DataTableManager<T>>();
 
-  useAssertStableRef(baseSelection, 'selection');
-  useAssertStableRef(onRenderItem, 'onRenderItem');
-  useAssertStableRef(enableArrow, 'enableArrow');
+    useAssertStableRef(onRenderItem, 'onRenderItem');
+    useAssertStableRef(enableArrow, 'enableArrow');
+    const onSelect = useMakeStableCallback(baseOnSelect);
 
-  // create local selection atom if none provided
-  // eslint-disable-next-line
-  const selection = baseSelection ?? useState(() => createState<string|undefined>())[0];
-
-  const handleSelect = useCallback(
-    (item: T | undefined) => {
-      selection.set(item?.id);
-    },
-    [selection],
-  );
-
-  const dataListColumns: DataTableColumn<T>[] = useMemo(
-    () => [
-      {
-        key: 'id' as const,
-        wrap: true,
-        onRender(item: T, selected: boolean, index: number) {
-          return onRenderItem ? (
-            onRenderItem(item, selected, index)
-          ) : (
-            <DataListItem
-              title={item.title}
-              description={item.description}
-              enableArrow={enableArrow}
-            />
-          );
-        },
+    const handleSelect = useCallback(
+      (item: T | undefined) => {
+        if (!item) {
+          onSelect?.(undefined, undefined);
+        } else {
+          const id = '' + item[idAttribute!];
+          if (id == null) {
+            throw new Error(`No valid identifier for attribute ${idAttribute}`);
+          }
+          onSelect?.(id, item);
+        }
       },
-    ],
-    [onRenderItem, enableArrow],
-  );
+      [onSelect, idAttribute],
+    );
 
-  useEffect(
-    function updateSelection() {
-      return selection.subscribe((valueFromAtom) => {
-        const m = tableManagerRef.current;
-        if (!m) {
-          return;
-        }
-        if (!valueFromAtom && m.getSelectedItem()) {
-          m.clearSelection();
-        } else if (valueFromAtom && m.getSelectedItem()?.id !== valueFromAtom) {
-          // find valueFromAtom in the selection
-          m.selectItemById(valueFromAtom);
-        }
-      });
-    },
-    [selection, tableManagerRef],
-  );
+    useEffect(() => {
+      if (selection) {
+        tableManagerRef.current?.selectItemById(selection);
+      } else {
+        tableManagerRef.current?.clearSelection();
+      }
+    }, [selection, tableManagerRef]);
 
-  return (
-    <Layout.Container style={style} className={className} grow>
-      <DataTable<any>
-        {...tableProps}
-        tableManagerRef={tableManagerRef}
-        records={Array.isArray(items) ? items : undefined}
-        dataSource={Array.isArray(items) ? undefined : (items as any)}
-        recordsKey="id"
-        columns={dataListColumns}
-        onSelect={handleSelect}
-      />
-    </Layout.Container>
-  );
-};
+    const dataListColumns: DataTableColumn<T>[] = useMemo(
+      () => [
+        {
+          key: idAttribute!,
+          wrap: true,
+          onRender(item: T, selected: boolean, index: number) {
+            return onRenderItem ? (
+              onRenderItem(item, selected, index)
+            ) : (
+              <DataList.Item
+                title={item[titleAttribute!] as any}
+                description={item[descriptionAttribute!] as any}
+                enableArrow={enableArrow}
+              />
+            );
+          },
+        },
+      ],
+      [
+        onRenderItem,
+        enableArrow,
+        titleAttribute,
+        descriptionAttribute,
+        idAttribute,
+      ],
+    );
 
-DataList.defaultProps = {
+    return (
+      <Layout.Container style={style} className={className} grow>
+        <DataTable<any>
+          {...tableProps}
+          tableManagerRef={tableManagerRef}
+          records={Array.isArray(items) ? items : undefined!}
+          dataSource={Array.isArray(items) ? undefined! : (items as any)}
+          recordsKey={idAttribute}
+          columns={dataListColumns}
+          onSelect={handleSelect}
+        />
+      </Layout.Container>
+    );
+  },
+  {
+    Item: memo(({title, description, enableArrow}: DataListItemProps) => {
+      return (
+        <Layout.Horizontal center grow shrink padv>
+          <Layout.Container grow shrink>
+            {typeof title === 'string' ? (
+              <Text strong ellipsis>
+                {DataFormatter.format(title)}
+              </Text>
+            ) : (
+              title
+            )}
+            {typeof description === 'string' ? (
+              <Text type="secondary" ellipsis>
+                {DataFormatter.format(description)}
+              </Text>
+            ) : (
+              description
+            )}
+          </Layout.Container>
+          {enableArrow && (
+            <ArrowWrapper>
+              <RightOutlined />
+            </ArrowWrapper>
+          )}
+        </Layout.Horizontal>
+      );
+    }),
+  },
+);
+
+(DataList as React.FC<DataListProps<any>>).defaultProps = {
   type: 'default',
   scrollable: true,
   enableSearchbar: false,
@@ -171,40 +202,20 @@ DataList.defaultProps = {
   enableArrow: true,
   enableContextMenu: false,
   enableMultiSelect: false,
+  idAttribute: 'id',
+  titleAttribute: 'title',
+  descriptionAttribute: 'description',
+};
+(DataList.Item as React.FC<DataListItemProps>).defaultProps = {
+  enableArrow: true,
 };
 
-const DataListItem = memo(
-  ({
-    title,
-    description,
-    enableArrow,
-  }: {
-    // TODO: add icon support
-    title: string;
-    description?: string;
-    enableArrow?: boolean;
-  }) => {
-    return (
-      <Layout.Horizontal center grow shrink padv>
-        <Layout.Container grow shrink>
-          <Text strong ellipsis>
-            {DataFormatter.format(title)}
-          </Text>
-          {description != null && (
-            <Text type="secondary" ellipsis>
-              {DataFormatter.format(description)}
-            </Text>
-          )}
-        </Layout.Container>
-        {enableArrow && (
-          <ArrowWrapper>
-            <RightOutlined />
-          </ArrowWrapper>
-        )}
-      </Layout.Horizontal>
-    );
-  },
-);
+interface DataListItemProps {
+  // TODO: add icon support
+  title?: string | React.ReactElement;
+  description?: string | React.ReactElement;
+  enableArrow?: boolean;
+}
 
 const ArrowWrapper = styled.div({
   flex: 0,

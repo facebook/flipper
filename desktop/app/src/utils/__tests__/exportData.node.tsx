@@ -1208,24 +1208,16 @@ test('Non sandy plugins are exported properly if they are still queued', async (
   sendMessage('inc', {});
   sendMessage('inc', {});
 
-  // not flushed
-  expect(store.getState().pluginStates).toMatchInlineSnapshot(`Object {}`);
-
+  // store export will cause flush
   const storeExport = await exportStore(store);
-  // flushed
-  expect(store.getState().pluginStates).toMatchInlineSnapshot(`
-    Object {
-      "TestApp#Android#MockAndroidDevice#serial#TestPlugin": Object {
-        "counter": 3,
-      },
-    }
-  `);
 
   const serial = storeExport.exportStoreData.device!.serial;
   expect(serial).not.toBeFalsy();
-  expect(storeExport.exportStoreData.store.pluginStates).toMatchInlineSnapshot(`
+  expect(storeExport.exportStoreData.pluginStates2).toMatchInlineSnapshot(`
     Object {
-      "TestApp#Android#MockAndroidDevice#${serial}#TestPlugin": "{\\"counter\\":3}",
+      "TestApp#Android#MockAndroidDevice#00000000-0000-0000-0000-000000000000-serial": Object {
+        "TestPlugin": "{\\"counter\\":3}",
+      },
     }
   `);
 });

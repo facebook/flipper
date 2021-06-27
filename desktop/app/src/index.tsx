@@ -47,7 +47,6 @@ export {default as BaseDevice} from './devices/BaseDevice';
 export {DeviceLogEntry, LogLevel, DeviceLogListener} from 'flipper-plugin';
 export {deconstructClientId} from './utils/clientUtils';
 export {default as isProduction} from './utils/isProduction';
-export {createTablePlugin} from './createTablePlugin';
 export {DetailSidebar} from 'flipper-plugin';
 export {default as Device} from './devices/BaseDevice';
 export {default as AndroidDevice} from './devices/AndroidDevice';

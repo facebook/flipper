@@ -18,7 +18,7 @@ import {CertificateExchangeMedium} from '../utils/CertificateProvider';
 import {selectClient, selectDevice} from '../reducers/connections';
 import {isLoggedIn} from '../fb-stubs/user';
 import React from 'react';
-import {Typography} from 'antd';
+import {notification, Typography} from 'antd';
 import {ACTIVE_SHEET_SIGN_IN, setActiveSheet} from '../reducers/application';
 
 export default (store: Store, logger: Logger) => {
@@ -30,14 +30,27 @@ export default (store: Store, logger: Logger) => {
   });
 
   server.addListener('error', (err) => {
-    store.dispatch(
-      addErrorNotification(
-        'Failed to start websocket server',
-        err.code === 'EADDRINUSE'
-          ? "Couldn't start websocket server. Looks like you have multiple copies of Flipper running."
-          : err.message || 'Unknown error',
-      ),
-    );
+    notification.error({
+      message: 'Failed to start connection server',
+      description:
+        err.code === 'EADDRINUSE' ? (
+          <>
+            Couldn't start connection server. Looks like you have multiple
+            copies of Flipper running or another process is using the same
+            port(s). As a result devices will not be able to connect to Flipper.
+            <br />
+            <br />
+            Please try to kill the offending process by running{' '}
+            <code>kill $(lsof -ti:PORTNUMBER)</code> and restart flipper.
+            <br />
+            <br />
+            {'' + err}
+          </>
+        ) : (
+          <>Failed to start connection server: ${err.message}</>
+        ),
+      duration: null,
+    });
   });
 
   server.addListener('start-client-setup', (client: UninitializedClient) => {

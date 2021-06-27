@@ -12,11 +12,11 @@ import {
   getAllPromisesForQueryingDevices,
 } from '../iOSDevice';
 import configureStore from 'redux-mock-store';
-import reducers, {State} from '../../reducers/index';
+import {State, createRootReducer} from '../../reducers/index';
 import {getInstance} from '../../fb-stubs/Logger';
 
 const mockStore = configureStore<State, {}>([])(
-  reducers(undefined, {type: 'INIT'}),
+  createRootReducer()(undefined, {type: 'INIT'}),
 );
 const logger = getInstance();
 

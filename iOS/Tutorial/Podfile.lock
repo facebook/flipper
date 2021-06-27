@@ -3,7 +3,7 @@ PODS:
   - ComponentKit (0.31):
     - RenderCore (= 0.31)
     - Yoga (~> 1.14)
-  - Flipper (0.93.0):
+  - Flipper (0.95.0):
     - Flipper-Folly (~> 2.6)
     - Flipper-RSocket (~> 1.4)
   - Flipper-Boost-iOSX (1.76.0.1.11)
@@ -20,24 +20,24 @@ PODS:
   - Flipper-PeerTalk (0.0.4)
   - Flipper-RSocket (1.4.3):
     - Flipper-Folly (~> 2.6)
-  - FlipperKit (0.93.0):
-    - FlipperKit/Core (= 0.93.0)
-  - FlipperKit/Core (0.93.0):
-    - Flipper (~> 0.93.0)
+  - FlipperKit (0.95.0):
+    - FlipperKit/Core (= 0.95.0)
+  - FlipperKit/Core (0.95.0):
+    - Flipper (~> 0.95.0)
     - FlipperKit/CppBridge
     - FlipperKit/FBCxxFollyDynamicConvert
     - FlipperKit/FBDefines
     - FlipperKit/FKPortForwarding
-  - FlipperKit/CppBridge (0.93.0):
-    - Flipper (~> 0.93.0)
-  - FlipperKit/FBCxxFollyDynamicConvert (0.93.0):
+  - FlipperKit/CppBridge (0.95.0):
+    - Flipper (~> 0.95.0)
+  - FlipperKit/FBCxxFollyDynamicConvert (0.95.0):
     - Flipper-Folly (~> 2.6)
-  - FlipperKit/FBDefines (0.93.0)
-  - FlipperKit/FKPortForwarding (0.93.0):
+  - FlipperKit/FBDefines (0.95.0)
+  - FlipperKit/FKPortForwarding (0.95.0):
     - CocoaAsyncSocket (~> 7.6)
     - Flipper-PeerTalk (~> 0.0.4)
-  - FlipperKit/FlipperKitHighlightOverlay (0.93.0)
-  - FlipperKit/FlipperKitLayoutComponentKitSupport (0.93.0):
+  - FlipperKit/FlipperKitHighlightOverlay (0.95.0)
+  - FlipperKit/FlipperKitLayoutComponentKitSupport (0.95.0):
     - ComponentKit (= 0.31)
     - FlipperKit/Core
     - FlipperKit/FlipperKitHighlightOverlay
@@ -45,28 +45,28 @@ PODS:
     - FlipperKit/FlipperKitLayoutPlugin
     - FlipperKit/FlipperKitLayoutTextSearchable
     - RenderCore (= 0.31)
-  - FlipperKit/FlipperKitLayoutHelpers (0.93.0):
+  - FlipperKit/FlipperKitLayoutHelpers (0.95.0):
     - FlipperKit/Core
     - FlipperKit/FlipperKitHighlightOverlay
     - FlipperKit/FlipperKitLayoutTextSearchable
-  - FlipperKit/FlipperKitLayoutIOSDescriptors (0.93.0):
+  - FlipperKit/FlipperKitLayoutIOSDescriptors (0.95.0):
     - FlipperKit/Core
     - FlipperKit/FlipperKitHighlightOverlay
     - FlipperKit/FlipperKitLayoutHelpers
     - YogaKit (~> 1.18)
-  - FlipperKit/FlipperKitLayoutPlugin (0.93.0):
+  - FlipperKit/FlipperKitLayoutPlugin (0.95.0):
     - FlipperKit/Core
     - FlipperKit/FlipperKitHighlightOverlay
     - FlipperKit/FlipperKitLayoutHelpers
     - FlipperKit/FlipperKitLayoutIOSDescriptors
     - FlipperKit/FlipperKitLayoutTextSearchable
     - YogaKit (~> 1.18)
-  - FlipperKit/FlipperKitLayoutTextSearchable (0.93.0)
-  - FlipperKit/FlipperKitNetworkPlugin (0.93.0):
+  - FlipperKit/FlipperKitLayoutTextSearchable (0.95.0)
+  - FlipperKit/FlipperKitNetworkPlugin (0.95.0):
     - FlipperKit/Core
-  - FlipperKit/FlipperKitUserDefaultsPlugin (0.93.0):
+  - FlipperKit/FlipperKitUserDefaultsPlugin (0.95.0):
     - FlipperKit/Core
-  - FlipperKit/SKIOSNetworkPlugin (0.93.0):
+  - FlipperKit/SKIOSNetworkPlugin (0.95.0):
     - FlipperKit/Core
     - FlipperKit/FlipperKitNetworkPlugin
   - libevent (2.1.12)
@@ -77,10 +77,10 @@ PODS:
     - Yoga (~> 1.14)
 
 DEPENDENCIES:
-  - FlipperKit (~> 0.93.0)
-  - FlipperKit/FlipperKitLayoutComponentKitSupport (~> 0.93.0)
-  - FlipperKit/FlipperKitUserDefaultsPlugin (~> 0.93.0)
-  - FlipperKit/SKIOSNetworkPlugin (~> 0.93.0)
+  - FlipperKit (~> 0.95.0)
+  - FlipperKit/FlipperKitLayoutComponentKitSupport (~> 0.95.0)
+  - FlipperKit/FlipperKitUserDefaultsPlugin (~> 0.95.0)
+  - FlipperKit/SKIOSNetworkPlugin (~> 0.95.0)
 
 SPEC REPOS:
   trunk:
@@ -104,21 +104,21 @@ SPEC REPOS:
 SPEC CHECKSUMS:
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   ComponentKit: 7bf7048b9814afc6b6641645a14177f95fd9b9ae
-  Flipper: b1fddf9a17c32097b2b4c806ad158b2f36bb2692
+  Flipper: bf2cb2c4a64ec4fdd53feffd2e526794ed29c1a8
   Flipper-Boost-iOSX: fd1e2b8cbef7e662a122412d7ac5f5bea715403c
   Flipper-DoubleConversion: 57ffbe81ef95306cc9e69c4aa3aeeeeb58a6a28c
   Flipper-Fmt: 60cbdd92fc254826e61d669a5d87ef7015396a9b
   Flipper-Folly: 83af37379faa69497529e414bd43fbfc7cae259a
-  Flipper-Glog: 05579840e2750ec907ee2f81544f41ad76a7cae4
+  Flipper-Glog: 1d83ad3697bf5baf44c9f18202cd2578797066f6
   Flipper-PeerTalk: 116d8f857dc6ef55c7a5a75ea3ceaafe878aadc9
   Flipper-RSocket: d9d9ade67cbecf6ac10730304bf5607266dd2541
-  FlipperKit: aec2d931adeee48a07bab1ea8bcc8a6bb87dfce4
+  FlipperKit: fb8358107dcb8021a207e5c90facef30ee23b917
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   OpenSSL-Universal: 1aa4f6a6ee7256b83db99ec1ccdaa80d10f9af9b
   RenderCore: 090beb17b5bff80b86929a7ceb49df789923d23a
   Yoga: cff67a400f6b74dc38eb0bad4f156673d9aa980c
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 2e3fe5e0551bca6475184699efac8f185365796e
+PODFILE CHECKSUM: ffd542605d2a8be2af060815c4fceacb1e7b9930
 
 COCOAPODS: 1.10.1

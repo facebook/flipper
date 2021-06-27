@@ -264,6 +264,7 @@ async function exportSandyPluginStates(
       if (!res[client.id]) {
         res[client.id] = {};
       }
+      // makeObjectSerializable is slow but very convenient by default. If people want to speed things up
       res[client.id][pluginId] = await makeObjectSerializable(
         await client.sandyPluginStates
           .get(pluginId)!

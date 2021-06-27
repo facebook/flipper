@@ -21,26 +21,40 @@
       "request": "launch",
       "name": "Launch Current Jest Suite",
       "program": "${workspaceFolder}/node_modules/.bin/jest",
-      "args": ["--runInBand", "${relativeFile}"]
+      "args": [
+        "--runInBand",
+        "${relativeFile}"
+      ],
+      "env": {
+        "TZ": "Pacific/Pohnpei"
+      }
     },
     {
       "type": "node",
       "cwd": "${fileDirname}",
       "request": "launch",
       "name": "Launch Current Script",
-      "args": ["${file}"],
+      "args": [
+        "${file}"
+      ],
       "env": {
         "TS_NODE_FILES": "true"
       },
       "protocol": "inspector",
       "internalConsoleOptions": "openOnSessionStart",
-      "runtimeArgs": ["--require", "ts-node/register"]
+      "runtimeArgs": [
+        "--require",
+        "ts-node/register"
+      ]
     }
   ],
   "compounds": [
     {
       "name": "Attach to All",
-      "configurations": ["Attach to Running Main", "Attach to Running Renderer"]
+      "configurations": [
+        "Attach to Running Main",
+        "Attach to Running Renderer"
+      ]
     }
   ]
 }

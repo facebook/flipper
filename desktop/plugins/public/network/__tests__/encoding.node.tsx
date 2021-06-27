@@ -9,7 +9,7 @@
 
 import {readFile} from 'fs';
 import path from 'path';
-import {decodeBody} from '../utils';
+import {decodeBody, isTextual} from '../utils';
 import {ResponseInfo} from '../types';
 import {promisify} from 'util';
 import {readFileSync} from 'fs';
@@ -137,6 +137,19 @@ describe('network data encoding', () => {
     expect(response.data).toEqual(tinyLogoBase64Expected.trim());
     expect(bodyAsBuffer(response)).toEqual(tinyLogoExpected);
   });
+});
+
+test('detects utf8 strings in binary arrays', async () => {
+  const binaryBuffer = readFileSync(
+    path.join(__dirname, 'fixtures', 'tiny_logo.png'),
+  );
+  const textBuffer = readFileSync(
+    path.join(__dirname, 'fixtures', 'donating.md'),
+  );
+  const textBuffer2 = readFileSync(__filename);
+  expect(isTextual(undefined, binaryBuffer)).toBe(false);
+  expect(isTextual(undefined, textBuffer)).toBe(true);
+  expect(isTextual(undefined, textBuffer2)).toBe(true);
 });
 
 test('binary data gets serialized correctly', async () => {

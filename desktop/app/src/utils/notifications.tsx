@@ -11,7 +11,7 @@ import {notification, Typography} from 'antd';
 import React from 'react';
 import {ConsoleLogs} from '../chrome/ConsoleLogs';
 import {setStaticView} from '../reducers/connections';
-import {store} from '../store';
+import {getStore} from '../store';
 import {Layout} from '../ui';
 import {v4 as uuid} from 'uuid';
 
@@ -29,7 +29,7 @@ export function showErrorNotification(message: string, description?: string) {
           See{' '}
           <Link
             onClick={() => {
-              store.dispatch(setStaticView(ConsoleLogs));
+              getStore().dispatch(setStaticView(ConsoleLogs));
               notification.close(key);
             }}>
             logs

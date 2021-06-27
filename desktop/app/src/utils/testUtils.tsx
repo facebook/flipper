@@ -7,7 +7,10 @@
  * @format
  */
 
-import {DownloadablePluginDetails} from 'flipper-plugin-lib';
+import {
+  ActivatablePluginDetails,
+  DownloadablePluginDetails,
+} from 'flipper-plugin-lib';
 
 export function createMockDownloadablePluginDetails(
   params: {
@@ -57,4 +60,24 @@ export function createMockDownloadablePluginDetails(
     isActivatable: false,
   };
   return details;
+}
+
+export function createMockActivatablePluginDetails(
+  base: Partial<ActivatablePluginDetails>,
+): ActivatablePluginDetails {
+  return {
+    id: 'Hello',
+    specVersion: 2,
+    isBundled: false,
+    isActivatable: true,
+    dir: '/Users/mock/.flipper/thirdparty/flipper-plugin-sample1',
+    entry: './test/index.js',
+    name: 'flipper-plugin-hello',
+    version: '0.1.0',
+    pluginType: 'client',
+    source: 'src/index.js',
+    main: 'dist/bundle.js',
+    title: 'Hello',
+    ...base,
+  };
 }

@@ -9,31 +9,43 @@
 
 import './global';
 import {createStore} from 'redux';
-import reducers, {Actions, State as StoreState, Store} from './reducers/index';
+import {
+  createRootReducer,
+  Actions,
+  State as StoreState,
+  Store,
+} from './reducers/index';
 import {stateSanitizer} from './utils/reduxDevToolsConfig';
 import isProduction from './utils/isProduction';
-import {_SandyPluginDefinition} from 'flipper-plugin';
 
-export const store: Store = createStore<StoreState, Actions, any, any>(
-  rootReducer,
-  // @ts-ignore Type definition mismatch
-  window.__REDUX_DEVTOOLS_EXTENSION__
-    ? window.__REDUX_DEVTOOLS_EXTENSION__({
-        // @ts-ignore: stateSanitizer is not part of type definition.
-        stateSanitizer,
-      })
-    : undefined,
-);
+let store: Store;
 
-export function rootReducer(
-  state: StoreState | undefined,
-  action: Actions,
-): StoreState {
-  return reducers(state, action);
+function initStore() {
+  const rootReducer = createRootReducer();
+
+  store = createStore<StoreState, Actions, any, any>(
+    rootReducer,
+    // @ts-ignore Type definition mismatch
+    window.__REDUX_DEVTOOLS_EXTENSION__
+      ? window.__REDUX_DEVTOOLS_EXTENSION__({
+          // @ts-ignore: stateSanitizer is not part of type definition.
+          stateSanitizer,
+        })
+      : undefined,
+  );
+
+  if (!isProduction()) {
+    // For debugging purposes only
+    // @ts-ignore
+    window.flipperStore = store;
+  }
+  return store;
 }
 
-if (!isProduction()) {
-  // For debugging purposes only
-  // @ts-ignore
-  window.flipperStore = store;
+// grab store lazily, to not break module loading order...
+export function getStore() {
+  if (!store) {
+    return initStore();
+  }
+  return store;
 }

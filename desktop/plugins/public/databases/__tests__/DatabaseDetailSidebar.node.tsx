@@ -11,7 +11,7 @@ import {render, fireEvent} from '@testing-library/react';
 import React from 'react';
 // TODO T71355623
 // eslint-disable-next-line flipper/no-relative-imports-across-packages
-import reducers, {Store} from '../../../../app/src/reducers';
+import {Store, createRootReducer} from '../../../../app/src/reducers';
 import configureStore from 'redux-mock-store';
 import {Provider} from 'react-redux';
 
@@ -46,7 +46,7 @@ const values: Array<Value> = [
 ];
 
 const mockStore: Store = configureStore([])(
-  reducers(undefined, {type: 'INIT'}),
+  createRootReducer()(undefined, {type: 'INIT'}),
 ) as Store;
 
 beforeEach(() => {

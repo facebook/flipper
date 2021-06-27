@@ -83,15 +83,7 @@ export function getExportablePlugins(
   device: BaseDevice | undefined | null,
   client?: Client,
 ): {id: string; label: string}[] {
-  const availablePlugins = computePluginLists(
-    device ?? undefined,
-    undefined,
-    client,
-    state.plugins,
-    state.connections.enabledPlugins,
-    state.connections.enabledDevicePlugins,
-  );
-
+  const availablePlugins = computePluginLists(state.connections, state.plugins);
   return [
     ...availablePlugins.devicePlugins.filter((plugin) => {
       return isExportablePlugin(state, device, client, plugin);
@@ -180,14 +172,38 @@ export function getPluginTooltip(details: PluginDetails): string {
 }
 
 export function computePluginLists(
-  device: BaseDevice | undefined,
-  metroDevice: BaseDevice | undefined,
-  client: Client | undefined,
-  plugins: State['plugins'],
-  enabledPluginsState: State['connections']['enabledPlugins'],
-  enabledDevicePluginsState: Set<string>,
-  _pluginsChanged?: number, // this argument is purely used to invalidate the memoization cache
-) {
+  connections: Pick<
+    State['connections'],
+    | 'activeDevice'
+    | 'activeClient'
+    | 'metroDevice'
+    | 'enabledDevicePlugins'
+    | 'enabledPlugins'
+  >,
+  plugins: Pick<
+    State['plugins'],
+    | 'bundledPlugins'
+    | 'marketplacePlugins'
+    | 'loadedPlugins'
+    | 'devicePlugins'
+    | 'disabledPlugins'
+    | 'gatekeepedPlugins'
+    | 'failedPlugins'
+    | 'clientPlugins'
+  >,
+): {
+  devicePlugins: DevicePluginDefinition[];
+  metroPlugins: DevicePluginDefinition[];
+  enabledPlugins: ClientPluginDefinition[];
+  disabledPlugins: PluginDefinition[];
+  unavailablePlugins: [plugin: PluginDetails, reason: string][];
+  downloadablePlugins: (DownloadablePluginDetails | BundledPluginDetails)[];
+} {
+  const device = connections.activeDevice;
+  const client = connections.activeClient;
+  const metroDevice = connections.metroDevice;
+  const enabledDevicePluginsState = connections.enabledDevicePlugins;
+  const enabledPluginsState = connections.enabledPlugins;
   const uninstalledMarketplacePlugins = getLatestCompatibleVersionOfEachPlugin([
     ...plugins.bundledPlugins.values(),
     ...plugins.marketplacePlugins,

@@ -24,7 +24,7 @@ import {initLauncherHooks} from './utils/launcher';
 import {setPersistor} from './utils/persistor';
 import React from 'react';
 import path from 'path';
-import {store} from './store';
+import {getStore} from './store';
 import {cache} from '@emotion/css';
 import {CacheProvider} from '@emotion/react';
 import {enableMapSet} from 'immer';
@@ -58,8 +58,6 @@ if (process.env.NODE_ENV === 'development' && os.platform() === 'darwin') {
   // this "mac-ca" library to load them into Node.JS.
   global.electronRequire('mac-ca');
 }
-
-const logger = initLogger(store);
 
 enableMapSet();
 
@@ -127,7 +125,7 @@ class AppFrame extends React.Component<
       </Layout.Container>
     ) : (
       <_LoggerContext.Provider value={logger}>
-        <Provider store={store}>
+        <Provider store={getStore()}>
           <CacheProvider value={cache}>
             <TooltipProvider>
               <PopoverProvider>
@@ -181,6 +179,18 @@ function setProcessState(store: Store) {
 }
 
 function init() {
+  const store = getStore();
+  const logger = initLogger(store);
+
+  // rehydrate app state before exposing init
+  const persistor = persistStore(store, undefined, () => {
+    // Make sure process state is set before dispatchers run
+    setProcessState(store);
+    dispatcher(store, logger);
+  });
+
+  setPersistor(persistor);
+
   initializeFlipperLibImplementation(store, logger);
   _setGlobalInteractionReporter((r) => {
     logger.track('usage', 'interaction', r);
@@ -213,17 +223,12 @@ function init() {
   );
 }
 
-// rehydrate app state before exposing init
-const persistor = persistStore(store, undefined, () => {
-  // Make sure process state is set before dispatchers run
-  setProcessState(store);
-  dispatcher(store, logger);
-  // make init function callable from outside
-  window.Flipper.init = init;
+setImmediate(() => {
+  // make sure all modules are loaded
+  // @ts-ignore
+  window.flipperInit = init;
   window.dispatchEvent(new Event('flipper-store-ready'));
 });
-
-setPersistor(persistor);
 
 const CodeBlock = styled(Input.TextArea)({
   ...theme.monospace,

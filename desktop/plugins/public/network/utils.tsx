@@ -28,23 +28,66 @@ export function getHeaderValue(
 
 // Matches `application/json` and `application/vnd.api.v42+json` (see https://jsonapi.org/#mime-types)
 const jsonContentTypeRegex = new RegExp('application/(json|.+\\+json)');
+const binaryContentType =
+  /^(application\/(zip|octet-stream|pdf))|(video|audio)|(image\/(png|webp|jpeg|gif|avif))$/;
 
-export function isTextual(headers?: Array<Header>): boolean {
+export function isTextual(
+  headers?: Array<Header>,
+  body?: Uint8Array | string,
+): boolean {
   const contentType = getHeaderValue(headers, 'Content-Type');
-  if (!contentType) {
-    return false;
-  }
   // https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types
   // https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
-  return (
-    contentType.startsWith('text/') ||
-    contentType.startsWith('application/x-www-form-urlencoded') ||
-    jsonContentTypeRegex.test(contentType) ||
-    contentType.startsWith('multipart/') ||
-    contentType.startsWith('message/') ||
-    contentType.startsWith('image/svg') ||
-    contentType.startsWith('application/xhtml+xml')
-  );
+  if (contentType) {
+    if (
+      contentType.startsWith('text/') ||
+      contentType.startsWith('application/x-www-form-urlencoded') ||
+      jsonContentTypeRegex.test(contentType) ||
+      contentType.startsWith('multipart/') ||
+      contentType.startsWith('message/') ||
+      contentType.startsWith('image/svg') ||
+      contentType.startsWith('application/xhtml+xml') ||
+      contentType.startsWith('application/xml')
+    ) {
+      return true;
+    }
+    if (binaryContentType.test(contentType)) {
+      return false;
+    }
+  }
+  if (
+    (body instanceof Buffer || body instanceof Uint8Array) &&
+    isValidUtf8(body)
+  ) {
+    return true;
+  }
+  return false;
+}
+
+function isValidUtf8(data: Uint8Array) {
+  if (data[0] === 0xef && data[1] === 0xbb && data[2] === 0xbf) {
+    return true; // valid utf8 BOM
+  }
+  // From https://weblog.rogueamoeba.com/2017/02/27/javascript-correctly-converting-a-byte-array-to-a-utf-8-string/
+  const extraByteMap = [1, 1, 1, 1, 2, 2, 3, 0];
+  const count = data.length;
+
+  for (let index = 0; index < count; ) {
+    let ch = data[index++];
+    if (ch & 0x80) {
+      let extra = extraByteMap[(ch >> 3) & 0x07];
+      if (!(ch & 0x40) || !extra || index + extra > count) return false;
+
+      ch &= 0x3f >> extra;
+      for (; extra > 0; extra -= 1) {
+        const chx = data[index++];
+        if ((chx & 0xc0) != 0x80) return false;
+
+        ch = (ch << 6) | (chx & 0x3f);
+      }
+    }
+  }
+  return true;
 }
 
 export function decodeBody(
@@ -62,7 +105,7 @@ export function decodeBody(
         // The request is gzipped, so convert the raw bytes back to base64 first.
         const dataArr = Base64.toUint8Array(data);
         // then inflate.
-        return isTextual(headers)
+        return isTextual(headers, dataArr)
           ? // pako will detect the BOM headers and return a proper utf-8 string right away
             pako.inflate(dataArr, {to: 'string'})
           : pako.inflate(dataArr);
@@ -78,10 +121,11 @@ export function decodeBody(
     // If this is not a gzipped request, assume we are interested in a proper utf-8 string.
     //  - If the raw binary data in is needed, in base64 form, use data directly
     //  - either directly use data (for example)
-    if (isTextual(headers)) {
+    const bytes = Base64.toUint8Array(data);
+    if (isTextual(headers, bytes)) {
       return Base64.decode(data);
     } else {
-      return Base64.toUint8Array(data);
+      return bytes;
     }
   } catch (e) {
     console.warn(

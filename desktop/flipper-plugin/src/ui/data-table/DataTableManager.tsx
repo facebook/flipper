@@ -98,6 +98,7 @@ type DataManagerConfig<T> = {
   onSelect: undefined | ((item: T | undefined, items: T[]) => void);
   virtualizerRef: MutableRefObject<DataSourceVirtualizer | undefined>;
   autoScroll?: boolean;
+  enablePersistSettings?: boolean;
 };
 
 type DataManagerState<T> = {
@@ -272,6 +273,7 @@ export type DataTableManager<T> = {
   toggleColumnVisibility(column: keyof T): void;
   sortColumn(column: keyof T, direction?: SortDirection): void;
   setSearchValue(value: string): void;
+  dataSource: DataSource<T>;
 };
 
 export function createDataTableManager<T>(
@@ -315,6 +317,7 @@ export function createDataTableManager<T>(
     setSearchValue(value) {
       dispatch({type: 'setSearchValue', value});
     },
+    dataSource,
   };
 }
 
@@ -324,7 +327,9 @@ export function createInitialState<T>(
   const storageKey = `${config.scope}:DataTable:${config.defaultColumns
     .map((c) => c.key)
     .join(',')}`;
-  const prefs = loadStateFromStorage(storageKey);
+  const prefs = config.enablePersistSettings
+    ? loadStateFromStorage(storageKey)
+    : undefined;
   let initialColumns = computeInitialColumns(config.defaultColumns);
   if (prefs) {
     // merge prefs with the default column config
@@ -411,7 +416,7 @@ export function savePreferences(
   state: DataManagerState<any>,
   scrollOffset: number,
 ) {
-  if (!state.config.scope) {
+  if (!state.config.scope || !state.config.enablePersistSettings) {
     return;
   }
   const prefs: PersistedState = {

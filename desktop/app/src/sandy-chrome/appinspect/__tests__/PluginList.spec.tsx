@@ -11,7 +11,6 @@ import {
   createMockFlipperWithPlugin,
   MockFlipperResult,
 } from '../../../test-utils/createMockFlipperWithPlugin';
-import {findBestClient, findBestDevice, findMetroDevice} from '../AppInspect';
 import {FlipperPlugin} from '../../../plugin';
 import MetroDevice from '../../../devices/MetroDevice';
 import BaseDevice from '../../../devices/BaseDevice';
@@ -47,39 +46,21 @@ describe('basic findBestDevice', () => {
   });
 
   test('findBestDevice prefers selected device', () => {
-    const {client, device} = flipper;
+    const {device} = flipper;
     const {connections} = flipper.store.getState();
-    expect(
-      findBestDevice(
-        client,
-        connections.devices,
-        device,
-        undefined,
-        device.title,
-      ),
-    ).toBe(device);
+    expect(connections.activeDevice).toBe(device);
   });
 
   test('findBestDevice picks device of current client', () => {
-    const {client, device} = flipper;
+    const {device} = flipper;
     const {connections} = flipper.store.getState();
-    expect(
-      findBestDevice(client, connections.devices, null, undefined, null),
-    ).toBe(device);
+    expect(connections.activeDevice).toBe(device);
   });
 
   test('findBestDevice picks preferred device if no client and device', () => {
     const {device} = flipper;
     const {connections} = flipper.store.getState();
-    expect(
-      findBestDevice(
-        undefined,
-        connections.devices,
-        null,
-        undefined,
-        device.title,
-      ),
-    ).toBe(device);
+    expect(connections.activeDevice).toBe(device);
   });
 });
 
@@ -96,9 +77,7 @@ describe('basic findBestDevice with metro present', () => {
     testDevice = flipper.device;
     // flipper.store.dispatch(registerPlugins([LogsPlugin]))
     await registerMetroDevice(undefined, flipper.store, flipper.logger);
-    metro = findMetroDevice(
-      flipper.store.getState().connections.devices,
-    )! as MetroDevice;
+    metro = flipper.store.getState().connections.metroDevice!;
     metro.supportsPlugin = (p) => {
       return p.id !== 'unsupportedDevicePlugin';
     };
@@ -118,13 +97,7 @@ describe('basic findBestDevice with metro present', () => {
       userPreferredPlugin: 'DeviceLogs',
       userPreferredApp: 'TestApp#Android#MockAndroidDevice#serial',
     });
-    expect(
-      findBestClient(
-        connections.clients,
-        connections.selectedApp,
-        connections.userPreferredApp,
-      ),
-    ).toBe(flipper.client);
+    expect(connections.activeClient).toBe(flipper.client);
   });
 
   test('selecting Metro Logs works but keeps normal device preferred', () => {
@@ -147,37 +120,14 @@ describe('basic findBestDevice with metro present', () => {
     });
     const {connections} = flipper.store.getState();
     // find best device is still metro
-    expect(
-      findBestDevice(
-        undefined,
-        connections.devices,
-        connections.selectedDevice,
-        metro,
-        connections.userPreferredDevice,
-      ),
-    ).toBe(testDevice);
+    expect(connections.activeDevice).toBe(testDevice);
     // find best client still returns app
-    expect(
-      findBestClient(
-        connections.clients,
-        connections.selectedApp,
-        connections.userPreferredApp,
-      ),
-    ).toBe(flipper.client);
+    expect(connections.activeClient).toBe(flipper.client);
   });
 
   test('computePluginLists', () => {
     const state = flipper.store.getState();
-    expect(
-      computePluginLists(
-        testDevice,
-        metro,
-        flipper.client,
-        state.plugins,
-        state.connections.enabledPlugins,
-        state.connections.enabledDevicePlugins,
-      ),
-    ).toEqual({
+    expect(computePluginLists(state.connections, state.plugins)).toEqual({
       downloadablePlugins: [],
       devicePlugins: [logsPlugin],
       metroPlugins: [logsPlugin],
@@ -281,14 +231,7 @@ describe('basic findBestDevice with metro present', () => {
     ];
 
     let state = flipper.store.getState();
-    const pluginLists = computePluginLists(
-      testDevice,
-      metro,
-      flipper.client,
-      state.plugins,
-      state.connections.enabledPlugins,
-      state.connections.enabledDevicePlugins,
-    );
+    const pluginLists = computePluginLists(state.connections, state.plugins);
     expect(pluginLists).toEqual({
       devicePlugins: [logsPlugin],
       metroPlugins: [logsPlugin],
@@ -322,16 +265,7 @@ describe('basic findBestDevice with metro present', () => {
       }),
     );
     state = flipper.store.getState();
-    expect(
-      computePluginLists(
-        testDevice,
-        metro,
-        flipper.client,
-        state.plugins,
-        state.connections.enabledPlugins,
-        state.connections.enabledDevicePlugins,
-      ),
-    ).toMatchObject({
+    expect(computePluginLists(state.connections, state.plugins)).toMatchObject({
       enabledPlugins: [plugin2],
       disabledPlugins: [plugin1],
     });

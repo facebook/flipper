@@ -9,7 +9,7 @@
 
 import {Store} from '../../reducers/index';
 import {createStore} from 'redux';
-import {rootReducer} from '../../store';
+import {createRootReducer} from '../../reducers';
 import initialize, {getInfo} from '../info';
 import {registerLoadedPlugins} from '../../reducers/plugins';
 import {TestUtils} from 'flipper-plugin';
@@ -37,7 +37,7 @@ describe('info', () => {
   let mockStore: Store;
 
   beforeEach(() => {
-    mockStore = createStore(rootReducer);
+    mockStore = createStore(createRootReducer());
     mockStore.dispatch({type: 'INIT'});
   });
 

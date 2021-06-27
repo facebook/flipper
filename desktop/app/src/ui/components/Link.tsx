@@ -7,32 +7,15 @@
  * @format
  */
 
-import {useCallback} from 'react';
 import {shell} from 'electron';
-import React from 'react';
 import {Typography} from 'antd';
 
 const AntOriginalLink = Typography.Link;
 
-export default function Link(props: {
-  href: string;
-  children?: React.ReactNode;
-  style?: React.CSSProperties;
-  onClick?: ((event: React.MouseEvent<any>) => void) | undefined;
-}) {
-  const onClick = useCallback(
-    (e: React.MouseEvent<any>) => {
-      shell.openExternal(props.href);
-      e.preventDefault();
-      e.stopPropagation();
-    },
-    [props.href],
-  );
-
-  return <AntOriginalLink {...props} onClick={props.onClick ?? onClick} />;
-}
-
-// XXX. For consistent usage, we monkey patch AntDesign's Link component,
-// as we never want to open links internally, which gives a really bad experience
+// used by patch for Typography.Link in AntD
 // @ts-ignore
-Typography.Link = Link;
+global.flipperOpenLink = function openLinkExternal(url: string) {
+  shell.openExternal(url);
+};
+
+export default AntOriginalLink;

@@ -18,7 +18,6 @@ import {reportPluginFailures} from './utils/metrics';
 import {notNull} from './utils/typeUtils';
 import {default as isProduction} from './utils/isProduction';
 import {registerPlugins} from './reducers/plugins';
-import createTableNativePlugin from './plugins/TableNativePlugin';
 import {EventEmitter} from 'events';
 import invariant from 'invariant';
 import {
@@ -241,26 +240,11 @@ export default class Client extends EventEmitter {
 
   // get the supported plugins
   async loadPlugins(): Promise<Plugins> {
-    const plugins = await this.rawCall<{plugins: Plugins}>(
+    const {plugins} = await this.rawCall<{plugins: Plugins}>(
       'getPlugins',
       false,
-    ).then((data) => data.plugins);
+    );
     this.plugins = plugins;
-    const nativeplugins = plugins
-      .map((plugin) => /_nativeplugin_([^_]+)_([^_]+)/.exec(plugin))
-      .filter(notNull)
-      .map(([id, type, title]) => {
-        // TODO put this in another component, and make the "types" registerable
-        switch (type) {
-          case 'Table':
-            return createTableNativePlugin(id, title);
-          default: {
-            return null;
-          }
-        }
-      })
-      .filter(Boolean);
-    this.store.dispatch(registerPlugins(nativeplugins as any));
     return plugins;
   }
 
@@ -482,7 +466,12 @@ export default class Client extends EventEmitter {
               }
             }
           }
-          if (!handled && !isProduction()) {
+          // TODO: Flipper debug as full client is overkill, clean up
+          if (
+            !handled &&
+            !isProduction() &&
+            params.api !== 'flipper-messages'
+          ) {
             console.warn(`Unhandled message ${params.api}.${params.method}`);
           }
         }

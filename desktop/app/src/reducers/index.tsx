@@ -64,6 +64,10 @@ import usageTracking, {
   Action as TrackingAction,
   State as TrackingState,
 } from './usageTracking';
+import pluginLists, {
+  State as PluginListsState,
+  Action as PluginListsAction,
+} from './pluginLists';
 import user, {State as UserState, Action as UserAction} from './user';
 import JsonFileStorage from '../utils/jsonFileReduxPersistStorage';
 import LauncherSettingsStorage from '../utils/launcherSettingsStorage';
@@ -93,6 +97,7 @@ export type Actions =
   | HealthcheckAction
   | TrackingAction
   | PluginDownloadsAction
+  | PluginListsAction
   | {type: 'INIT'};
 
 export type State = {
@@ -110,6 +115,7 @@ export type State = {
   healthchecks: HealthcheckState & PersistPartial;
   usageTracking: TrackingState;
   pluginDownloads: PluginDownloadsState;
+  pluginLists: PluginListsState;
 };
 
 export type Store = ReduxStore<State, Actions>;
@@ -134,81 +140,84 @@ const launcherSettingsStorage = new LauncherSettingsStorage(
   resolve(launcherConfigDir(), 'flipper-launcher.toml'),
 );
 
-export default combineReducers<State, Actions>({
-  application,
-  connections: persistReducer<DevicesState, Actions>(
-    {
-      key: 'connections',
-      storage,
-      whitelist: [
-        'userPreferredDevice',
-        'userPreferredPlugin',
-        'userPreferredApp',
-        'enabledPlugins',
-        'enabledDevicePlugins',
-      ],
-      transforms: [
-        setTransformer({
-          whitelist: ['enabledDevicePlugins', 'userStarredDevicePlugins'],
-        }),
-      ],
-      version: devicesPersistVersion,
-      migrate: createMigrate(devicesPersistMigrations),
-    },
-    connections,
-  ),
-  pluginStates,
-  pluginMessageQueue: pluginMessageQueue as any,
-  notifications: persistReducer(
-    {
-      key: 'notifications',
-      storage,
-      whitelist: ['blacklistedPlugins', 'blacklistedCategories'],
-    },
-    notifications,
-  ),
-  plugins: persistReducer<PluginsState, Actions>(
-    {
-      key: 'plugins',
-      storage,
-      whitelist: ['marketplacePlugins', 'uninstalledPluginNames'],
-      transforms: [setTransformer({whitelist: ['uninstalledPluginNames']})],
-      version: pluginsPersistVersion,
-      migrate: createMigrate(pluginsPersistMigrations),
-    },
-    plugins,
-  ),
-  supportForm,
-  pluginManager,
-  user: persistReducer(
-    {
-      key: 'user',
-      storage,
-    },
-    user,
-  ),
-  settingsState: persistReducer(
-    {key: 'settings', storage: settingsStorage},
-    settings,
-  ),
-  launcherSettingsState: persistReducer(
-    {
-      key: 'launcherSettings',
-      storage: launcherSettingsStorage,
-      serialize: false,
-      // @ts-ignore: property is erroneously missing in redux-persist type definitions
-      deserialize: false,
-    },
-    launcherSettings,
-  ),
-  healthchecks: persistReducer<HealthcheckState, Actions>(
-    {
-      key: 'healthchecks',
-      storage,
-      whitelist: ['acknowledgedProblems'],
-    },
-    healthchecks,
-  ),
-  usageTracking,
-  pluginDownloads,
-});
+export function createRootReducer() {
+  return combineReducers<State, Actions>({
+    application,
+    connections: persistReducer<DevicesState, Actions>(
+      {
+        key: 'connections',
+        storage,
+        whitelist: [
+          'userPreferredDevice',
+          'userPreferredPlugin',
+          'userPreferredApp',
+          'enabledPlugins',
+          'enabledDevicePlugins',
+        ],
+        transforms: [
+          setTransformer({
+            whitelist: ['enabledDevicePlugins', 'userStarredDevicePlugins'],
+          }),
+        ],
+        version: devicesPersistVersion,
+        migrate: createMigrate(devicesPersistMigrations),
+      },
+      connections,
+    ),
+    pluginStates,
+    pluginMessageQueue: pluginMessageQueue as any,
+    notifications: persistReducer(
+      {
+        key: 'notifications',
+        storage,
+        whitelist: ['blacklistedPlugins', 'blacklistedCategories'],
+      },
+      notifications,
+    ),
+    plugins: persistReducer<PluginsState, Actions>(
+      {
+        key: 'plugins',
+        storage,
+        whitelist: ['marketplacePlugins', 'uninstalledPluginNames'],
+        transforms: [setTransformer({whitelist: ['uninstalledPluginNames']})],
+        version: pluginsPersistVersion,
+        migrate: createMigrate(pluginsPersistMigrations),
+      },
+      plugins,
+    ),
+    supportForm,
+    pluginManager,
+    user: persistReducer(
+      {
+        key: 'user',
+        storage,
+      },
+      user,
+    ),
+    settingsState: persistReducer(
+      {key: 'settings', storage: settingsStorage},
+      settings,
+    ),
+    launcherSettingsState: persistReducer(
+      {
+        key: 'launcherSettings',
+        storage: launcherSettingsStorage,
+        serialize: false,
+        // @ts-ignore: property is erroneously missing in redux-persist type definitions
+        deserialize: false,
+      },
+      launcherSettings,
+    ),
+    healthchecks: persistReducer<HealthcheckState, Actions>(
+      {
+        key: 'healthchecks',
+        storage,
+        whitelist: ['acknowledgedProblems'],
+      },
+      healthchecks,
+    ),
+    usageTracking,
+    pluginDownloads,
+    pluginLists,
+  });
+}
