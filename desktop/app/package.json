@@ -88,7 +88,7 @@
     "@types/split2": "^3.2.0",
     "flipper-test-utils": "0.0.0",
     "metro-runtime": "^0.65.2",
-    "mock-fs": "^4.14.0",
+    "mock-fs": "^5.0.0",
     "pretty-format": "^27.0.2",
     "react-refresh": "^0.10.0",
     "redux-mock-store": "^1.0.1",
