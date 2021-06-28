@@ -166,6 +166,7 @@ module.exports = {
         'fb/sandcastle-overview',
         'fb/error-logging',
         'fb/scribe',
+        'fb/async-testing'
       ]),
     ],
   },
