@@ -16,7 +16,7 @@ Pod::Spec.new do |spec|
   spec.dependency 'Flipper-Boost-iOSX'
   spec.dependency 'Flipper-Glog'
   spec.dependency 'Flipper-DoubleConversion'
-  spec.dependency 'OpenSSL-Universal', '1.1.180'
+  spec.dependency 'OpenSSL-Universal', '1.1.1100'
   spec.dependency 'libevent', '~> 2.1.12'
   spec.dependency 'Flipper-Fmt', '7.1.7'
   spec.compiler_flags = '-DFOLLY_HAVE_BACKTRACE=1 -DFOLLY_HAVE_CLOCK_GETTIME=1 -DFOLLY_HAVE_PTHREAD=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_LIBGFLAGS=0 -DFOLLY_HAVE_LIBJEMALLOC=0 -DFOLLY_HAVE_PREADV=0 -DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0
