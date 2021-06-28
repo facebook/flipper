@@ -87,7 +87,7 @@
     "@types/lodash.memoize": "^4.1.6",
     "@types/split2": "^3.2.0",
     "flipper-test-utils": "0.0.0",
-    "metro-runtime": "^0.65.2",
+    "metro-runtime": "^0.66.0",
     "mock-fs": "^4.14.0",
     "pretty-format": "^27.0.2",
     "react-refresh": "^0.10.0",
