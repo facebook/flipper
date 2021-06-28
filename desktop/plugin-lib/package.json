@@ -9,8 +9,8 @@
   "license": "MIT",
   "bugs": "https://github.com/facebook/flipper/issues",
   "dependencies": {
-    "@algolia/client-search": "^4.9.3",
-    "algoliasearch": "^4.9.3",
+    "@algolia/client-search": "^4.10.2",
+    "algoliasearch": "^4.10.2",
     "decompress": "^4.2.1",
     "decompress-targz": "^4.1.1",
     "decompress-unzip": "^4.0.1",
@@ -27,7 +27,7 @@
   "devDependencies": {
     "@types/fs-extra": "^9.0.11",
     "@types/jest": "^26.0.23",
-    "@types/node": "^15.12.4",
+    "@types/node": "^15.12.5",
     "flipper-test-utils": "0.0.0",
     "globby": "^11.0.3",
     "jest": "^26.6.3",

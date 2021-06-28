@@ -9,7 +9,7 @@
   "devDependencies": {
     "@types/fb-watchman": "2.0.0",
     "@types/jest": "^26.0.23",
-    "@typescript-eslint/eslint-plugin": "^4.27.0",
+    "@typescript-eslint/eslint-plugin": "^4.28.0",
     "eslint": "^7.29.0",
     "eslint-plugin-babel": "^5.3.1",
     "eslint-plugin-header": "^3.1.1",
@@ -17,7 +17,7 @@
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-react": "^7.24.0",
     "jest": "^26.6.3",
-    "prettier": "^2.3.1",
+    "prettier": "^2.3.2",
     "ts-jest": "^26.5.6",
     "tslint-config-prettier": "^1.18.0",
     "typescript": "^4.3.2"
@@ -37,7 +37,7 @@
   ],
   "author": "Facebook, Inc",
   "dependencies": {
-    "@types/node": "^15.12.4",
+    "@types/node": "^15.12.5",
     "envinfo": "^7.8.1",
     "fb-watchman": "^2.0.1"
   }
