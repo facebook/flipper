@@ -15,7 +15,7 @@ import GK from './fb-stubs/GK';
 import {init as initLogger} from './fb-stubs/Logger';
 import {SandyApp} from './sandy-chrome/SandyApp';
 import setupPrefetcher from './fb-stubs/Prefetcher';
-import {persistStore} from 'redux-persist';
+import {Persistor, persistStore} from 'redux-persist';
 import {Store} from './reducers/index';
 import dispatcher from './dispatcher/index';
 import TooltipProvider from './ui/components/TooltipProvider';
@@ -49,6 +49,7 @@ import styled from '@emotion/styled';
 import {CopyOutlined} from '@ant-design/icons';
 import {clipboard} from 'electron/common';
 import {getVersionString} from './utils/versionString';
+import {PersistGate} from 'redux-persist/integration/react';
 
 if (process.env.NODE_ENV === 'development' && os.platform() === 'darwin') {
   // By default Node.JS has its internal certificate storage and doesn't use
@@ -64,7 +65,7 @@ enableMapSet();
 GK.init();
 
 class AppFrame extends React.Component<
-  {logger: Logger},
+  {logger: Logger; persistor: Persistor},
   {error: any; errorInfo: any}
 > {
   state = {error: undefined as any, errorInfo: undefined as any};
@@ -80,7 +81,7 @@ class AppFrame extends React.Component<
   }
 
   render() {
-    const {logger} = this.props;
+    const {logger, persistor} = this.props;
     return this.state.error ? (
       <Layout.Container grow center pad={80} style={{height: '100%'}}>
         <Layout.Top style={{maxWidth: 800, height: '100%'}}>
@@ -126,17 +127,19 @@ class AppFrame extends React.Component<
     ) : (
       <_LoggerContext.Provider value={logger}>
         <Provider store={getStore()}>
-          <CacheProvider value={cache}>
-            <TooltipProvider>
-              <PopoverProvider>
-                <ContextMenuProvider>
-                  <_NuxManagerContext.Provider value={_createNuxManager()}>
-                    <SandyApp />
-                  </_NuxManagerContext.Provider>
-                </ContextMenuProvider>
-              </PopoverProvider>
-            </TooltipProvider>
-          </CacheProvider>
+          <PersistGate persistor={persistor}>
+            <CacheProvider value={cache}>
+              <TooltipProvider>
+                <PopoverProvider>
+                  <ContextMenuProvider>
+                    <_NuxManagerContext.Provider value={_createNuxManager()}>
+                      <SandyApp />
+                    </_NuxManagerContext.Provider>
+                  </ContextMenuProvider>
+                </PopoverProvider>
+              </TooltipProvider>
+            </CacheProvider>
+          </PersistGate>
         </Provider>
       </_LoggerContext.Provider>
     );
@@ -201,7 +204,7 @@ function init() {
     }
   });
   ReactDOM.render(
-    <AppFrame logger={logger} />,
+    <AppFrame logger={logger} persistor={persistor} />,
     document.getElementById('root'),
   );
   initLauncherHooks(config(), store);
