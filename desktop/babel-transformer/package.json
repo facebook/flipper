@@ -25,7 +25,7 @@
     "@babel/types": "^7.14.5",
     "@emotion/babel-plugin": "^11.3.0",
     "@types/fs-extra": "^9.0.11",
-    "@types/node": "^15.12.4",
+    "@types/node": "^15.12.5",
     "fs-extra": "^10.0.0",
     "tslib": "^2.3.0"
   },
