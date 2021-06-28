@@ -78,7 +78,7 @@
     "@types/babel__code-frame": "^7.0.2",
     "@types/babel__core": "^7.1.14",
     "@types/babel__generator": "^7.6.2",
-    "@types/babel__traverse": "^7.11.1",
+    "@types/babel__traverse": "^7.14.0",
     "@types/decompress": "4.2.3",
     "@types/deep-equal": "^1.0.1",
     "@types/detect-port": "^1.1.0",
