@@ -4,7 +4,7 @@ PODS:
   - ComponentKit (0.31):
     - RenderCore (= 0.31)
     - Yoga (~> 1.14)
-  - Flipper (0.95.0):
+  - Flipper (0.95.1):
     - Flipper-Folly (~> 2.6)
     - Flipper-RSocket (~> 1.4)
   - Flipper-Boost-iOSX (1.76.0.1.11)
@@ -21,26 +21,26 @@ PODS:
   - Flipper-PeerTalk (0.0.4)
   - Flipper-RSocket (1.4.3):
     - Flipper-Folly (~> 2.6)
-  - FlipperKit (0.95.0):
-    - FlipperKit/Core (= 0.95.0)
-  - FlipperKit/Core (0.95.0):
-    - Flipper (~> 0.95.0)
+  - FlipperKit (0.95.1):
+    - FlipperKit/Core (= 0.95.1)
+  - FlipperKit/Core (0.95.1):
+    - Flipper (~> 0.95.1)
     - FlipperKit/CppBridge
     - FlipperKit/FBCxxFollyDynamicConvert
     - FlipperKit/FBDefines
     - FlipperKit/FKPortForwarding
-  - FlipperKit/CppBridge (0.95.0):
-    - Flipper (~> 0.95.0)
-  - FlipperKit/FBCxxFollyDynamicConvert (0.95.0):
+  - FlipperKit/CppBridge (0.95.1):
+    - Flipper (~> 0.95.1)
+  - FlipperKit/FBCxxFollyDynamicConvert (0.95.1):
     - Flipper-Folly (~> 2.6)
-  - FlipperKit/FBDefines (0.95.0)
-  - FlipperKit/FKPortForwarding (0.95.0):
+  - FlipperKit/FBDefines (0.95.1)
+  - FlipperKit/FKPortForwarding (0.95.1):
     - CocoaAsyncSocket (~> 7.6)
     - Flipper-PeerTalk (~> 0.0.4)
-  - FlipperKit/FlipperKitExamplePlugin (0.95.0):
+  - FlipperKit/FlipperKitExamplePlugin (0.95.1):
     - FlipperKit/Core
-  - FlipperKit/FlipperKitHighlightOverlay (0.95.0)
-  - FlipperKit/FlipperKitLayoutComponentKitSupport (0.95.0):
+  - FlipperKit/FlipperKitHighlightOverlay (0.95.1)
+  - FlipperKit/FlipperKitLayoutComponentKitSupport (0.95.1):
     - ComponentKit (= 0.31)
     - FlipperKit/Core
     - FlipperKit/FlipperKitHighlightOverlay
@@ -48,28 +48,28 @@ PODS:
     - FlipperKit/FlipperKitLayoutPlugin
     - FlipperKit/FlipperKitLayoutTextSearchable
     - RenderCore (= 0.31)
-  - FlipperKit/FlipperKitLayoutHelpers (0.95.0):
+  - FlipperKit/FlipperKitLayoutHelpers (0.95.1):
     - FlipperKit/Core
     - FlipperKit/FlipperKitHighlightOverlay
     - FlipperKit/FlipperKitLayoutTextSearchable
-  - FlipperKit/FlipperKitLayoutIOSDescriptors (0.95.0):
+  - FlipperKit/FlipperKitLayoutIOSDescriptors (0.95.1):
     - FlipperKit/Core
     - FlipperKit/FlipperKitHighlightOverlay
     - FlipperKit/FlipperKitLayoutHelpers
     - YogaKit (~> 1.18)
-  - FlipperKit/FlipperKitLayoutPlugin (0.95.0):
+  - FlipperKit/FlipperKitLayoutPlugin (0.95.1):
     - FlipperKit/Core
     - FlipperKit/FlipperKitHighlightOverlay
     - FlipperKit/FlipperKitLayoutHelpers
     - FlipperKit/FlipperKitLayoutIOSDescriptors
     - FlipperKit/FlipperKitLayoutTextSearchable
     - YogaKit (~> 1.18)
-  - FlipperKit/FlipperKitLayoutTextSearchable (0.95.0)
-  - FlipperKit/FlipperKitNetworkPlugin (0.95.0):
+  - FlipperKit/FlipperKitLayoutTextSearchable (0.95.1)
+  - FlipperKit/FlipperKitNetworkPlugin (0.95.1):
     - FlipperKit/Core
-  - FlipperKit/FlipperKitUserDefaultsPlugin (0.95.0):
+  - FlipperKit/FlipperKitUserDefaultsPlugin (0.95.1):
     - FlipperKit/Core
-  - FlipperKit/SKIOSNetworkPlugin (0.95.0):
+  - FlipperKit/SKIOSNetworkPlugin (0.95.1):
     - FlipperKit/Core
     - FlipperKit/FlipperKitNetworkPlugin
   - libevent (2.1.12)
@@ -123,7 +123,7 @@ SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   ComponentKit: 7bf7048b9814afc6b6641645a14177f95fd9b9ae
-  Flipper: bf2cb2c4a64ec4fdd53feffd2e526794ed29c1a8
+  Flipper: 7311910c1b4b66034051c0311c0489d0c9a8b0e1
   Flipper-Boost-iOSX: fd1e2b8cbef7e662a122412d7ac5f5bea715403c
   Flipper-DoubleConversion: 57ffbe81ef95306cc9e69c4aa3aeeeeb58a6a28c
   Flipper-Fmt: 60cbdd92fc254826e61d669a5d87ef7015396a9b
@@ -131,7 +131,7 @@ SPEC CHECKSUMS:
   Flipper-Glog: 05579840e2750ec907ee2f81544f41ad76a7cae4
   Flipper-PeerTalk: 116d8f857dc6ef55c7a5a75ea3ceaafe878aadc9
   Flipper-RSocket: d9d9ade67cbecf6ac10730304bf5607266dd2541
-  FlipperKit: fb8358107dcb8021a207e5c90facef30ee23b917
+  FlipperKit: 8bb03ea9def7c291409670e14f41931c2adabb57
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   OpenSSL-Universal: 1aa4f6a6ee7256b83db99ec1ccdaa80d10f9af9b
   RenderCore: 090beb17b5bff80b86929a7ceb49df789923d23a
