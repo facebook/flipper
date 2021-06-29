@@ -18,6 +18,7 @@ import {
   globalShortcut,
   session,
   nativeTheme,
+  shell,
 } from 'electron';
 import os from 'os';
 import path from 'path';
@@ -230,6 +231,20 @@ app.on('ready', () => {
       }
     }
   });
+});
+
+app.on('web-contents-created', (_event, contents) => {
+  if (contents.getType() === 'webview') {
+    contents.on('new-window', async (event, url) => {
+      // Disable creating of native Electron windows when requested from web views.
+      // This can happen e.g. when user clicks to a link with target="__blank" on a page loaded in a web view,
+      // or if some javascript code in a web view executes window.open.
+      // Instead of the default implementation, we redirect such URLs to the operating system which handles them automatically:
+      // using default browser for http/https links, using default mail client for "mailto" links etc.
+      event.preventDefault();
+      await shell.openExternal(url);
+    });
+  }
 });
 
 function configureSession() {
