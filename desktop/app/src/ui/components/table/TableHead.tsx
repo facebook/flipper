@@ -18,7 +18,7 @@ import {
 import {normaliseColumnWidth, isPercentage} from './utils';
 import {PureComponent} from 'react';
 import ContextMenu from '../ContextMenu';
-import {_Interactive, _InteractiveProps} from 'flipper-plugin';
+import {theme, _Interactive, _InteractiveProps} from 'flipper-plugin';
 import styled from '@emotion/styled';
 import {colors} from '../colors';
 import FlexRow from '../FlexRow';
@@ -48,8 +48,7 @@ TableHeaderColumnContainer.displayName = 'TableHead:TableHeaderColumnContainer';
 
 const TableHeadContainer = styled(FlexRow)<{horizontallyScrollable?: boolean}>(
   (props) => ({
-    borderBottom: `1px solid ${colors.sectionHeaderBorder}`,
-    color: colors.light50,
+    borderBottom: `1px solid ${theme.dividerColor}`,
     flexShrink: 0,
     left: 0,
     overflow: 'hidden',
@@ -65,7 +64,7 @@ TableHeadContainer.displayName = 'TableHead:TableHeadContainer';
 const TableHeadColumnContainer = styled.div<{width: string | number}>(
   (props) => ({
     position: 'relative',
-    backgroundColor: colors.white,
+    backgroundColor: theme.backgroundWash,
     flexShrink: props.width === 'flex' ? 1 : 0,
     height: 23,
     lineHeight: '23px',

@@ -17,9 +17,10 @@ import React, {
   useContext,
 } from 'react';
 import {debounce} from 'lodash';
+import {theme} from './theme';
 
 const Highlighted = styled.span({
-  backgroundColor: '#fcd872',
+  backgroundColor: theme.searchHighlightBackground,
 });
 
 export interface HighlightManager {

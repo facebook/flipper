@@ -17,10 +17,10 @@ import React from 'react';
 import FilterRow from '../filter/FilterRow';
 import styled from '@emotion/styled';
 import FlexRow from '../FlexRow';
-import {colors} from '../colors';
 import {normaliseColumnWidth} from './utils';
 import {DEFAULT_ROW_HEIGHT} from './types';
 import {Property} from 'csstype';
+import {theme} from 'flipper-plugin';
 
 type TableBodyRowContainerProps = {
   even?: boolean;
@@ -41,15 +41,13 @@ const backgroundColor = (props: TableBodyRowContainerProps) => {
     if (props.highlightedBackgroundColor) {
       return props.highlightedBackgroundColor;
     } else {
-      return colors.macOSTitleBarIconSelected;
+      return theme.backgroundWash;
     }
   } else {
     if (props.zebra && props.zebraBackgroundColor && props.backgroundColor) {
       return props.even ? props.zebraBackgroundColor : props.backgroundColor;
     } else if (props.backgroundColor) {
       return props.backgroundColor;
-    } else if (props.even && props.zebra) {
-      return colors.light02;
     } else {
       return 'transparent';
     }
@@ -59,26 +57,14 @@ const backgroundColor = (props: TableBodyRowContainerProps) => {
 const TableBodyRowContainer = styled(FlexRow)<TableBodyRowContainerProps>(
   (props) => ({
     backgroundColor: backgroundColor(props),
-    boxShadow: props.zebra ? 'none' : 'inset 0 -1px #E9EBEE',
-    color: props.highlighted ? colors.white : props.color || undefined,
-    '& *': {
-      color: props.highlighted ? `${colors.white} !important` : undefined,
-    },
-    '& img': {
-      backgroundColor: props.highlighted
-        ? `${colors.white} !important`
-        : undefined,
-    },
+    boxShadow: props.zebra ? 'none' : `inset 0 -1px ${theme.dividerColor}`,
+    color: theme.textColorPrimary,
     height: props.multiline ? 'auto' : props.rowLineHeight,
     lineHeight: `${String(props.rowLineHeight || DEFAULT_ROW_HEIGHT)}px`,
     fontWeight: props.fontWeight,
     overflow: 'hidden',
     width: '100%',
     flexShrink: 0,
-    '&:hover': {
-      backgroundColor:
-        !props.highlighted && props.highlightOnHover ? colors.light02 : 'none',
-    },
   }),
 );
 TableBodyRowContainer.displayName = 'TableRow:TableBodyRowContainer';

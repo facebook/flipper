@@ -27,10 +27,10 @@ exports[`load PluginInstaller list 1`] = `
         class="css-18abd42-View-FlexBox-FlexColumn ecr18to0"
       >
         <div
-          class="css-nzypyq-View-FlexBox-FlexRow-TableHeadContainer ejga3101"
+          class="css-1hdusim-View-FlexBox-FlexRow-TableHeadContainer ejga3101"
         >
           <div
-            class="css-zk363n-TableHeadColumnContainer ejga3100"
+            class="css-it9ar6-TableHeadColumnContainer ejga3100"
             title="name"
             width="25%"
           >
@@ -46,7 +46,7 @@ exports[`load PluginInstaller list 1`] = `
             </div>
           </div>
           <div
-            class="css-1243222-TableHeadColumnContainer ejga3100"
+            class="css-1m9d124-TableHeadColumnContainer ejga3100"
             title="version"
             width="10%"
           >
@@ -62,7 +62,7 @@ exports[`load PluginInstaller list 1`] = `
             </div>
           </div>
           <div
-            class="css-nyra6d-TableHeadColumnContainer ejga3100"
+            class="css-qmwopt-TableHeadColumnContainer ejga3100"
             title="description"
             width="flex"
           >
@@ -78,7 +78,7 @@ exports[`load PluginInstaller list 1`] = `
             </div>
           </div>
           <div
-            class="css-hyjqmu-TableHeadColumnContainer ejga3100"
+            class="css-ux5muk-TableHeadColumnContainer ejga3100"
             title="install"
             width="15%"
           >
@@ -102,7 +102,7 @@ exports[`load PluginInstaller list 1`] = `
           class="css-18abd42-View-FlexBox-FlexColumn ecr18to0"
         >
           <div
-            class="css-1xll39b-View-FlexBox-FlexRow-TableBodyRowContainer ehuguum1"
+            class="css-hg3ptm-View-FlexBox-FlexRow-TableBodyRowContainer ehuguum1"
             data-key="flipper-plugin-hello"
           >
             <div
@@ -172,7 +172,7 @@ exports[`load PluginInstaller list 1`] = `
             </div>
           </div>
           <div
-            class="css-1k1evb9-View-FlexBox-FlexRow-TableBodyRowContainer ehuguum1"
+            class="css-hg3ptm-View-FlexBox-FlexRow-TableBodyRowContainer ehuguum1"
             data-key="flipper-plugin-world"
           >
             <div
@@ -334,10 +334,10 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
         class="css-18abd42-View-FlexBox-FlexColumn ecr18to0"
       >
         <div
-          class="css-nzypyq-View-FlexBox-FlexRow-TableHeadContainer ejga3101"
+          class="css-1hdusim-View-FlexBox-FlexRow-TableHeadContainer ejga3101"
         >
           <div
-            class="css-zk363n-TableHeadColumnContainer ejga3100"
+            class="css-it9ar6-TableHeadColumnContainer ejga3100"
             title="name"
             width="25%"
           >
@@ -353,7 +353,7 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
             </div>
           </div>
           <div
-            class="css-1243222-TableHeadColumnContainer ejga3100"
+            class="css-1m9d124-TableHeadColumnContainer ejga3100"
             title="version"
             width="10%"
           >
@@ -369,7 +369,7 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
             </div>
           </div>
           <div
-            class="css-nyra6d-TableHeadColumnContainer ejga3100"
+            class="css-qmwopt-TableHeadColumnContainer ejga3100"
             title="description"
             width="flex"
           >
@@ -385,7 +385,7 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
             </div>
           </div>
           <div
-            class="css-hyjqmu-TableHeadColumnContainer ejga3100"
+            class="css-ux5muk-TableHeadColumnContainer ejga3100"
             title="install"
             width="15%"
           >
@@ -409,7 +409,7 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
           class="css-18abd42-View-FlexBox-FlexColumn ecr18to0"
         >
           <div
-            class="css-1xll39b-View-FlexBox-FlexRow-TableBodyRowContainer ehuguum1"
+            class="css-hg3ptm-View-FlexBox-FlexRow-TableBodyRowContainer ehuguum1"
             data-key="flipper-plugin-hello"
           >
             <div
@@ -479,7 +479,7 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
             </div>
           </div>
           <div
-            class="css-1k1evb9-View-FlexBox-FlexRow-TableBodyRowContainer ehuguum1"
+            class="css-hg3ptm-View-FlexBox-FlexRow-TableBodyRowContainer ehuguum1"
             data-key="flipper-plugin-world"
           >
             <div

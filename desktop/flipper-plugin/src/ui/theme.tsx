@@ -7,6 +7,8 @@
  * @format
  */
 
+import * as antColors from '@ant-design/colors';
+
 // Exposes all the variables defined in themes/base.less:
 export const theme = {
   white: 'white', // use as counter color for primary
@@ -19,6 +21,7 @@ export const theme = {
   textColorSecondary: 'var(--flipper-text-color-secondary)',
   textColorPlaceholder: 'var(--flipper-text-color-placeholder)',
   textColorActive: 'var(--light-color-button-active)',
+  searchHighlightBackground: antColors.yellow[3],
   disabledColor: 'var(--flipper-disabled-color)',
   backgroundDefault: 'var(--flipper-background-default)',
   backgroundWash: 'var(--flipper-background-wash)',
@@ -46,6 +49,16 @@ export const theme = {
     fontSize: '12px',
   } as const,
   bold: 600,
+  semanticColors: {
+    attribute: antColors.orange[5],
+    nullValue: antColors.grey.primary!,
+    stringValue: antColors.orange[5],
+    colorValue: antColors.cyan[5],
+    booleanValue: antColors.magenta[5],
+    numberValue: antColors.blue[5],
+    diffAddedBackground: antColors.lime[1],
+    diffRemovedBackground: antColors.volcano[1],
+  },
 } as const;
 
 export type Spacing =

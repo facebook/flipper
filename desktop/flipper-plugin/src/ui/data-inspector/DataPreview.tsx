@@ -12,6 +12,7 @@ import styled from '@emotion/styled';
 import {getSortedKeys} from './utils';
 import {PureComponent} from 'react';
 import React from 'react';
+import {theme} from '../theme';
 
 export type DataValueExtractor = (
   value: any,
@@ -28,12 +29,16 @@ export type DataValueExtractor = (
   | null;
 
 export const InspectorName = styled.span({
-  color: '#7b64c0',
+  color: theme.textColorPrimary,
 });
 InspectorName.displayName = 'DataInspector:InspectorName';
 
 const PreviewContainer = styled.span({
   fontStyle: 'italic',
+  color: theme.textColorSecondary,
+  [`${InspectorName}`]: {
+    color: theme.textColorSecondary,
+  },
 });
 PreviewContainer.displayName = 'DataPreview:PreviewContainer';
 
