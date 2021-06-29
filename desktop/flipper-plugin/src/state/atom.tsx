@@ -10,6 +10,10 @@
 import {produce, Draft, enableMapSet} from 'immer';
 import {useState, useEffect} from 'react';
 import {Persistable, registerStorageAtom} from '../plugin/PluginBase';
+import {
+  deserializeShallowObject,
+  makeShallowSerializable,
+} from '../utils/shallowSerialization';
 
 enableMapSet();
 
@@ -46,11 +50,11 @@ class AtomValue<T> implements Atom<T>, Persistable {
   }
 
   deserialize(value: T) {
-    this.set(value);
+    this.set(deserializeShallowObject(value));
   }
 
   serialize() {
-    return this.get();
+    return makeShallowSerializable(this.get());
   }
 
   update(recipe: (draft: Draft<T>) => void) {

@@ -12,13 +12,18 @@ import {Logger} from './fb-interfaces/Logger';
 import Client from './Client';
 import {Component} from 'react';
 import BaseDevice from './devices/BaseDevice';
-import {serialize, deserialize} from './utils/serialization';
 import {StaticView} from './reducers/connections';
 import {State as ReduxState} from './reducers';
 import {DEFAULT_MAX_QUEUE_SIZE} from './reducers/pluginMessageQueue';
 import {ActivatablePluginDetails} from 'flipper-plugin-lib';
 import {Settings} from './reducers/settings';
-import {Notification, Idler, _SandyPluginDefinition} from 'flipper-plugin';
+import {
+  Notification,
+  Idler,
+  _SandyPluginDefinition,
+  _makeShallowSerializable,
+  _deserializeShallowObject,
+} from 'flipper-plugin';
 
 type Parameters = {[key: string]: any};
 
@@ -145,24 +150,44 @@ export abstract class FlipperBasePlugin<
     statusUpdate?: (msg: string) => void,
     idler?: Idler,
     pluginName?: string,
-  ) => Promise<string> = (
+  ) => Promise<string> = async (
     persistedState: StaticPersistedState,
-    statusUpdate?: (msg: string) => void,
-    idler?: Idler,
-    pluginName?: string,
+    _statusUpdate?: (msg: string) => void,
+    _idler?: Idler,
+    _pluginName?: string,
   ) => {
-    return serialize(
-      persistedState,
-      idler,
-      statusUpdate,
-      pluginName != null ? `Serializing ${pluginName}` : undefined,
-    );
+    if (
+      persistedState &&
+      typeof persistedState === 'object' &&
+      !Array.isArray(persistedState)
+    ) {
+      return JSON.stringify(
+        Object.fromEntries(
+          Object.entries(persistedState).map(([key, value]) => [
+            key,
+            _makeShallowSerializable(value), // make first level of persisted state serializable
+          ]),
+        ),
+      );
+    } else {
+      return JSON.stringify(persistedState);
+    }
   };
 
   static deserializePersistedState: (
     serializedString: string,
   ) => StaticPersistedState = (serializedString: string) => {
-    return deserialize(serializedString);
+    const raw = JSON.parse(serializedString);
+    if (raw && typeof raw === 'object' && !Array.isArray(raw)) {
+      return Object.fromEntries(
+        Object.entries(raw).map(([key, value]) => [
+          key,
+          _deserializeShallowObject(value),
+        ]),
+      );
+    } else {
+      return raw;
+    }
   };
 
   teardown(): void {}

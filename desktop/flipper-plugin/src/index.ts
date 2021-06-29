@@ -125,6 +125,10 @@ export {
   ElementID,
 } from './ui/elements-inspector/ElementsInspector';
 export {useMemoize} from './utils/useMemoize';
+export {
+  makeShallowSerializable as _makeShallowSerializable,
+  deserializeShallowObject as _deserializeShallowObject,
+} from './utils/shallowSerialization';
 
 export {createTablePlugin} from './utils/createTablePlugin';
 

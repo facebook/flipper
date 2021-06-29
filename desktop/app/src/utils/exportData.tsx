@@ -49,7 +49,6 @@ import {getPluginTitle, isSandyPlugin} from './pluginUtils';
 import {capture} from './screenshot';
 import {uploadFlipperMedia} from '../fb-stubs/user';
 import {Idler} from 'flipper-plugin';
-import {deserializeObject, makeObjectSerializable} from './serialization';
 
 export const IMPORT_FLIPPER_TRACE_EVENT = 'import-flipper-trace';
 export const EXPORT_FLIPPER_TRACE_EVENT = 'export-flipper-trace';
@@ -264,15 +263,14 @@ async function exportSandyPluginStates(
       if (!res[client.id]) {
         res[client.id] = {};
       }
-      // makeObjectSerializable is slow but very convenient by default. If people want to speed things up
-      res[client.id][pluginId] = await makeObjectSerializable(
-        await client.sandyPluginStates
+      try {
+        res[client.id][pluginId] = await client.sandyPluginStates
           .get(pluginId)!
-          .exportState(idler, statusUpdate),
-        idler,
-        statusUpdate,
-        'Serializing plugin: ' + pluginId,
-      );
+          .exportState(idler, statusUpdate);
+      } catch (error) {
+        console.error('Error while serializing plugin ' + pluginId, error);
+        throw new Error(`Failed to serialize plugin ${pluginId}: ${error}`);
+      }
     }
   }
   return res;
@@ -461,11 +459,10 @@ export async function processStore(
       idler,
     );
 
-    const devicePluginStates = await makeObjectSerializable(
-      await device.exportState(idler, statusUpdate, selectedPlugins),
+    const devicePluginStates = await device.exportState(
       idler,
       statusUpdate,
-      'Serializing device plugins',
+      selectedPlugins,
     );
 
     statusUpdate('Uploading screenshot...');
@@ -800,7 +797,7 @@ export function importDataToStore(source: string, data: string, store: Store) {
   archivedDevice.loadDevicePlugins(
     store.getState().plugins.devicePlugins,
     store.getState().connections.enabledDevicePlugins,
-    deserializeObject(device.pluginStates),
+    device.pluginStates,
   );
   store.dispatch({
     type: 'REGISTER_DEVICE',
@@ -829,9 +826,7 @@ export function importDataToStore(source: string, data: string, store: Store) {
   });
 
   clients.forEach((client: {id: string; query: ClientQuery}) => {
-    const sandyPluginStates = deserializeObject(
-      json.pluginStates2[client.id] || {},
-    );
+    const sandyPluginStates = json.pluginStates2[client.id] || {};
     const clientPlugins: Array<string> = [
       ...keys
         .filter((key) => {
