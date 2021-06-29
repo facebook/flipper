@@ -64,10 +64,6 @@ import usageTracking, {
   Action as TrackingAction,
   State as TrackingState,
 } from './usageTracking';
-import pluginLists, {
-  State as PluginListsState,
-  Action as PluginListsAction,
-} from './pluginLists';
 import user, {State as UserState, Action as UserAction} from './user';
 import JsonFileStorage from '../utils/jsonFileReduxPersistStorage';
 import LauncherSettingsStorage from '../utils/launcherSettingsStorage';
@@ -97,7 +93,6 @@ export type Actions =
   | HealthcheckAction
   | TrackingAction
   | PluginDownloadsAction
-  | PluginListsAction
   | {type: 'INIT'};
 
 export type State = {
@@ -115,7 +110,6 @@ export type State = {
   healthchecks: HealthcheckState & PersistPartial;
   usageTracking: TrackingState;
   pluginDownloads: PluginDownloadsState;
-  pluginLists: PluginListsState;
 };
 
 export type Store = ReduxStore<State, Actions>;
@@ -218,6 +212,5 @@ export function createRootReducer() {
     ),
     usageTracking,
     pluginDownloads,
-    pluginLists,
   });
 }

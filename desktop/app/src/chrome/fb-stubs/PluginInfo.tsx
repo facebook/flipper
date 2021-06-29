@@ -14,6 +14,8 @@ import {switchPlugin} from '../../reducers/pluginManager';
 import {isPluginEnabled} from '../../reducers/connections';
 import {theme} from 'flipper-plugin';
 import {PluginDefinition} from '../../plugin';
+import {useSelector} from 'react-redux';
+import {getActiveClient} from '../../selectors/connections';
 
 const Waiting = styled(Layout.Container)({
   width: '100%',
@@ -30,7 +32,7 @@ export default function PluginInfo() {
   const enabledDevicePlugins = useStore(
     (state) => state.connections.enabledDevicePlugins,
   );
-  const activeClient = useStore((state) => state.connections.activeClient);
+  const activeClient = useSelector(getActiveClient);
   const clientPlugins = useStore((state) => state.plugins.clientPlugins);
   const devicePlugins = useStore((state) => state.plugins.devicePlugins);
   const selectedClientId = activeClient?.id ?? null;

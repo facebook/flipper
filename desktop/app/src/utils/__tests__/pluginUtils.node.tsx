@@ -7,9 +7,10 @@
  * @format
  */
 
-import {getExportablePlugins, getPluginKey} from '../pluginUtils';
+import {getPluginKey} from '../pluginUtils';
 import {FlipperPlugin, FlipperDevicePlugin} from '../../plugin';
 import {createMockFlipperWithPlugin} from '../../test-utils/createMockFlipperWithPlugin';
+import {getExportablePlugins} from '../../selectors/connections';
 
 function createMockFlipperPluginWithDefaultPersistedState(id: string) {
   return class MockFlipperPluginWithDefaultPersistedState extends FlipperPlugin<
@@ -89,7 +90,7 @@ test('getActivePersistentPlugins, where the non persistent plugins getting exclu
     [getPluginKey(client.id, device, 'ClientPlugin4')]: {msg: 'ClientPlugin2'},
   };
 
-  const list = getExportablePlugins(state, device, client);
+  const list = getExportablePlugins(state);
   expect(list).toEqual([
     {
       id: 'ClientPlugin1',
@@ -130,7 +131,7 @@ test('getActivePersistentPlugins, where the plugins not in pluginState or queue 
     ],
   };
 
-  const list = getExportablePlugins(store.getState(), device, client);
+  const list = getExportablePlugins(store.getState());
   expect(list).toEqual([
     {
       id: 'ClientPlugin2', // has state

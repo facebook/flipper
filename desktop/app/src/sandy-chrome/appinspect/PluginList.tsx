@@ -39,6 +39,8 @@ import {
 import {BundledPluginDetails} from 'flipper-plugin-lib';
 import {reportUsage} from '../../utils/metrics';
 import ConnectivityStatus from './fb-stubs/ConnectivityStatus';
+import {useSelector} from 'react-redux';
+import {getPluginLists} from '../../selectors/connections';
 
 const {SubMenu} = Menu;
 const {Text} = Typography;
@@ -55,7 +57,7 @@ export const PluginList = memo(function PluginList({
   const dispatch = useDispatch();
   const connections = useStore((state) => state.connections);
   const plugins = useStore((state) => state.plugins);
-  const pluginLists = useStore((state) => state.pluginLists);
+  const pluginLists = useSelector(getPluginLists);
   const downloads = useStore((state) => state.pluginDownloads);
   const isConnected = useValue(activeDevice?.connected, false);
   const metroConnected = useValue(metroDevice?.connected, false);

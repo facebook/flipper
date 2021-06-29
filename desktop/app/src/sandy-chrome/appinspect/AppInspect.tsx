@@ -13,7 +13,6 @@ import {LeftSidebar, SidebarTitle, InfoIcon} from '../LeftSidebar';
 import {Layout, Link, styled} from '../../ui';
 import {theme, useValue} from 'flipper-plugin';
 import {AppSelector} from './AppSelector';
-import {useStore} from '../../utils/useStore';
 import {PluginList} from './PluginList';
 import ScreenCaptureButtons from '../../chrome/ScreenCaptureButtons';
 import MetroButton from '../../chrome/MetroButton';
@@ -21,6 +20,12 @@ import {BookmarkSection} from './BookmarkSection';
 import Client from '../../Client';
 import BaseDevice from '../../devices/BaseDevice';
 import {ExclamationCircleOutlined, FieldTimeOutlined} from '@ant-design/icons';
+import {useSelector} from 'react-redux';
+import {
+  getActiveClient,
+  getActiveDevice,
+  getMetroDevice,
+} from '../../selectors/connections';
 
 const {Text} = Typography;
 
@@ -36,11 +41,9 @@ const appTooltip = (
 );
 
 export function AppInspect() {
-  const connections = useStore((state) => state.connections);
-
-  const metroDevice = connections.metroDevice;
-  const client = connections.activeClient;
-  const activeDevice = connections.activeDevice;
+  const metroDevice = useSelector(getMetroDevice);
+  const client = useSelector(getActiveClient);
+  const activeDevice = useSelector(getActiveDevice);
   const isDeviceConnected = useValue(activeDevice?.connected, false);
   const isAppConnected = useValue(client?.connected, false);
 

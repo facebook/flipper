@@ -26,6 +26,7 @@ import type {
   PluginDetails,
 } from 'flipper-plugin-lib';
 import {getLatestCompatibleVersionOfEachPlugin} from '../dispatcher/plugins';
+import {PluginLists} from '../selectors/connections';
 
 export const defaultEnabledBackgroundPlugins = ['Navigation']; // The navigation plugin is enabled always, to make sure the navigation features works
 
@@ -75,15 +76,15 @@ export function getPersistedState<PersistedState>(
   return persistedState;
 }
 
-export function getExportablePlugins(
+export function computeExportablePlugins(
   state: Pick<
     State,
     'plugins' | 'connections' | 'pluginStates' | 'pluginMessageQueue'
   >,
-  device: BaseDevice | undefined | null,
-  client?: Client,
+  device: BaseDevice | null,
+  client: Client | null,
+  availablePlugins: PluginLists,
 ): {id: string; label: string}[] {
-  const availablePlugins = computePluginLists(state.connections, state.plugins);
   return [
     ...availablePlugins.devicePlugins.filter((plugin) => {
       return isExportablePlugin(state, device, client, plugin);
@@ -102,8 +103,8 @@ function isExportablePlugin(
     pluginStates,
     pluginMessageQueue,
   }: Pick<State, 'pluginStates' | 'pluginMessageQueue'>,
-  device: BaseDevice | undefined | null,
-  client: Client | undefined,
+  device: BaseDevice | null,
+  client: Client | null,
   plugin: PluginDefinition,
 ): boolean {
   // can generate an export when requested
@@ -174,11 +175,7 @@ export function getPluginTooltip(details: PluginDetails): string {
 export function computePluginLists(
   connections: Pick<
     State['connections'],
-    | 'activeDevice'
-    | 'activeClient'
-    | 'metroDevice'
-    | 'enabledDevicePlugins'
-    | 'enabledPlugins'
+    'enabledDevicePlugins' | 'enabledPlugins'
   >,
   plugins: Pick<
     State['plugins'],
@@ -191,6 +188,9 @@ export function computePluginLists(
     | 'failedPlugins'
     | 'clientPlugins'
   >,
+  device: BaseDevice | null,
+  metroDevice: BaseDevice | null,
+  client: Client | null,
 ): {
   devicePlugins: DevicePluginDefinition[];
   metroPlugins: DevicePluginDefinition[];
@@ -199,9 +199,6 @@ export function computePluginLists(
   unavailablePlugins: [plugin: PluginDetails, reason: string][];
   downloadablePlugins: (DownloadablePluginDetails | BundledPluginDetails)[];
 } {
-  const device = connections.activeDevice;
-  const client = connections.activeClient;
-  const metroDevice = connections.metroDevice;
   const enabledDevicePluginsState = connections.enabledDevicePlugins;
   const enabledPluginsState = connections.enabledPlugins;
   const uninstalledMarketplacePlugins = getLatestCompatibleVersionOfEachPlugin([

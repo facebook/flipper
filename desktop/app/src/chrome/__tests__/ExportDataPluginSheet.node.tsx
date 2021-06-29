@@ -12,9 +12,10 @@ import {create, act, ReactTestRenderer} from 'react-test-renderer';
 import {Provider} from 'react-redux';
 import ExportDataPluginSheet from '../ExportDataPluginSheet';
 import {FlipperPlugin, FlipperDevicePlugin} from '../../plugin';
-import {getExportablePlugins, getPluginKey} from '../../utils/pluginUtils';
+import {getPluginKey} from '../../utils/pluginUtils';
 import {createMockFlipperWithPlugin} from '../../test-utils/createMockFlipperWithPlugin';
 import {setPluginState} from '../../reducers/pluginStates';
+import {getExportablePlugins} from '../../selectors/connections';
 
 class TestPlugin extends FlipperPlugin<any, any, any> {
   static details = {
@@ -56,7 +57,7 @@ test('SettingsSheet snapshot with nothing enabled', async () => {
     }),
   );
 
-  expect(getExportablePlugins(store.getState(), device, client)).toEqual([]);
+  expect(getExportablePlugins(store.getState())).toEqual([]);
 
   // makes device plugin visible
   store.dispatch(
@@ -66,7 +67,7 @@ test('SettingsSheet snapshot with nothing enabled', async () => {
     }),
   );
 
-  expect(getExportablePlugins(store.getState(), device, client)).toEqual([
+  expect(getExportablePlugins(store.getState())).toEqual([
     {
       id: 'TestDevicePlugin',
       label: 'TestDevicePlugin',
@@ -86,7 +87,7 @@ test('SettingsSheet snapshot with nothing enabled', async () => {
 
 test('SettingsSheet snapshot with one plugin enabled', async () => {
   let root: ReactTestRenderer;
-  const {store, device, client, pluginKey} = await createMockFlipperWithPlugin(
+  const {store, device, pluginKey} = await createMockFlipperWithPlugin(
     TestPlugin,
     {
       additionalPlugins: [TestDevicePlugin],
@@ -96,7 +97,7 @@ test('SettingsSheet snapshot with one plugin enabled', async () => {
   // enabled
   // in Sandy wrapper, a plugin is either persistable or not, but it doesn't depend on the current state.
   // So this plugin will show up, even though its state is still the default
-  expect(getExportablePlugins(store.getState(), device, client)).toEqual([
+  expect(getExportablePlugins(store.getState())).toEqual([
     {
       id: 'TestPlugin',
       label: 'TestPlugin',
@@ -115,7 +116,7 @@ test('SettingsSheet snapshot with one plugin enabled', async () => {
       state: {test: '1'},
     }),
   );
-  expect(getExportablePlugins(store.getState(), device, client)).toEqual([
+  expect(getExportablePlugins(store.getState())).toEqual([
     {
       id: 'TestDevicePlugin',
       label: 'TestDevicePlugin',
