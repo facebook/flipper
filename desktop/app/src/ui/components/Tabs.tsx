@@ -16,7 +16,7 @@ import Tab, {Props as TabProps} from './Tab';
 import {Property} from 'csstype';
 import React, {useContext} from 'react';
 import {TabsContext} from './TabsContainer';
-import {_wrapInteractionHandler} from 'flipper-plugin';
+import {theme, _wrapInteractionHandler} from 'flipper-plugin';
 
 const TabList = styled(FlexRow)({
   justifyContent: 'center',
@@ -35,14 +35,22 @@ const TabListItem = styled.div<{
       ? 'linear-gradient(to bottom, #67a6f7 0%, #0072FA 100%)'
       : `linear-gradient(to bottom, white 0%,${colors.macOSTitleBarButtonBackgroundBlur} 100%)`
     : props.active
-    ? colors.light15
-    : colors.light02,
-  borderBottom: props.container ? '1px solid #B8B8B8' : '1px solid #dddfe2',
+    ? theme.primaryColor
+    : theme.backgroundWash,
+  borderBottom: props.container
+    ? '1px solid #B8B8B8'
+    : `1px solid ${theme.dividerColor}`,
   boxShadow:
     props.active && props.container
       ? 'inset 0px 0px 3px rgba(0,0,0,0.25)'
       : 'none',
-  color: props.container && props.active ? colors.white : colors.dark80,
+  color: props.container
+    ? props.active
+      ? colors.white
+      : colors.dark80
+    : props.active
+    ? colors.white
+    : theme.textColorPrimary,
   flex: props.container ? 'unset' : 1,
   top: props.container ? -11 : 0,
   fontWeight: 500,
@@ -63,7 +71,7 @@ const TabListItem = styled.div<{
     borderBottomRightRadius: props.container ? 3 : 0,
   },
   '&:hover': {
-    backgroundColor: props.active ? colors.light15 : colors.light05,
+    backgroundColor: theme.backgroundTransparentHover,
   },
 }));
 TabListItem.displayName = 'Tabs:TabListItem';
@@ -77,7 +85,7 @@ const TabListAddItem = styled(TabListItem)({
 TabListAddItem.displayName = 'Tabs:TabListAddItem';
 
 const CloseButton = styled.div({
-  color: '#000',
+  color: theme.textColorPrimary,
   float: 'right',
   fontSize: 10,
   fontWeight: 'bold',

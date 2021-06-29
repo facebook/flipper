@@ -9,10 +9,10 @@ exports[`load PluginInstaller list 1`] = `
       class="css-1lxv8hi-Container-Horizontal-SandyToolbarContainer e1ecpah20"
     >
       <div
-        class="css-bl14sl-View-FlexBox-SearchBox e271nro4"
+        class="css-r8ah0d-View-FlexBox-SearchBox e271nro4"
       >
         <input
-          class="css-184o3nx-Input-SearchInput e271nro3"
+          class="css-84x0xt-Input-SearchInput e271nro3"
           placeholder="Search Flipper plugins..."
           type="text"
           value=""
@@ -252,7 +252,7 @@ exports[`load PluginInstaller list 1`] = `
       class="css-1spj5hr-View-FlexBox-FlexRow-Container ersmi542"
     >
       <input
-        class="css-phqpi-Input-FileInputBox ersmi540"
+        class="css-sli06x-Input-FileInputBox ersmi540"
         placeholder="Specify path to a Flipper package or just drag and drop it here..."
         type="text"
         value=""
@@ -316,10 +316,10 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
       class="css-1lxv8hi-Container-Horizontal-SandyToolbarContainer e1ecpah20"
     >
       <div
-        class="css-bl14sl-View-FlexBox-SearchBox e271nro4"
+        class="css-r8ah0d-View-FlexBox-SearchBox e271nro4"
       >
         <input
-          class="css-184o3nx-Input-SearchInput e271nro3"
+          class="css-84x0xt-Input-SearchInput e271nro3"
           placeholder="Search Flipper plugins..."
           type="text"
           value=""
@@ -559,7 +559,7 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
       class="css-1spj5hr-View-FlexBox-FlexRow-Container ersmi542"
     >
       <input
-        class="css-phqpi-Input-FileInputBox ersmi540"
+        class="css-sli06x-Input-FileInputBox ersmi540"
         placeholder="Specify path to a Flipper package or just drag and drop it here..."
         type="text"
         value=""

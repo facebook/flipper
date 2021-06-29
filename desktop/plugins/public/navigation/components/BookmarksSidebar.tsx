@@ -11,7 +11,6 @@ import {
   DetailSidebar,
   FlexCenter,
   styled,
-  colors,
   FlexRow,
   FlexColumn,
   Text,
@@ -20,6 +19,7 @@ import {
 import {Bookmark, URI} from '../types';
 import {IconButton} from './';
 import React from 'react';
+import {theme} from 'flipper-plugin';
 
 type Props = {
   bookmarks: Map<string, Bookmark>;
@@ -29,14 +29,14 @@ type Props = {
 
 const NoData = styled(FlexCenter)({
   fontSize: 18,
-  color: colors.macOSTitleBarIcon,
+  color: theme.textColorSecondary,
 });
 
 const BookmarksList = styled.div({
   overflowY: 'scroll',
   overflowX: 'hidden',
   height: '100%',
-  backgroundColor: colors.white,
+  backgroundColor: theme.backgroundDefault,
 });
 
 const BookmarkContainer = styled(FlexRow)({
@@ -45,16 +45,12 @@ const BookmarkContainer = styled(FlexRow)({
   height: 55,
   alignItems: 'center',
   cursor: 'pointer',
-  borderBottom: `1px ${colors.greyTint} solid`,
+  borderBottom: `1px ${theme.dividerColor} solid`,
   ':last-child': {
     borderBottom: '0',
   },
   ':active': {
-    backgroundColor: colors.highlight,
-    color: colors.white,
-  },
-  ':active *': {
-    color: colors.white,
+    backgroundColor: theme.backgroundWash,
   },
 });
 
@@ -70,7 +66,7 @@ const BookmarkSubtitle = styled(Text)({
   overflowX: 'hidden',
   whiteSpace: 'nowrap',
   textOverflow: 'ellipsis',
-  color: colors.greyTint3,
+  color: theme.textColorSecondary,
   marginTop: 4,
 });
 
@@ -110,7 +106,7 @@ export default (props: Props) => {
                     )}
                   </TextContainer>
                   <IconButton
-                    color={colors.macOSTitleBarButtonBackgroundActive}
+                    color={theme.textColorSecondary}
                     outline={false}
                     icon="cross-circle"
                     size={16}

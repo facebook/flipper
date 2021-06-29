@@ -19,6 +19,7 @@ import {
 } from 'flipper';
 import {parseURIParameters, stripQueryParameters} from '../util/uri';
 import React from 'react';
+import {theme} from 'flipper-plugin';
 
 const BOX_HEIGHT = 240;
 
@@ -81,7 +82,7 @@ const NavigationInfoBoxContainer = styled.div({
   flexGrow: 1,
   position: 'relative',
   marginBottom: 10,
-  backgroundColor: colors.white,
+  backgroundColor: theme.backgroundDefault,
   boxShadow: '1px 1px 5px rgba(0,0,0,0.1)',
 });
 
@@ -117,7 +118,7 @@ const TimelineCircle = styled.div({
   height: 18,
   top: 11,
   left: -33,
-  backgroundColor: colors.light02,
+  backgroundColor: theme.backgroundWash,
   border: `4px solid ${colors.highlight}`,
   borderRadius: '50%',
   position: 'absolute',
@@ -129,7 +130,7 @@ const TimelineMiniCircle = styled.div({
   top: 1,
   left: -30,
   borderRadius: '50%',
-  backgroundColor: colors.highlight,
+  backgroundColor: theme.textColorActive,
   position: 'absolute',
 });
 

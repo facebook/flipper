@@ -7,10 +7,11 @@
  * @format
  */
 
-import {colors, FlexCenter, styled} from 'flipper';
+import {FlexCenter, styled} from 'flipper';
 import {NavigationInfoBox} from './';
 import {Bookmark, NavigationEvent, URI} from '../types';
 import React, {useRef} from 'react';
+import {theme} from 'flipper-plugin';
 
 type Props = {
   bookmarks: Map<string, Bookmark>;
@@ -21,7 +22,7 @@ type Props = {
 
 const TimelineLine = styled.div({
   width: 2,
-  backgroundColor: colors.highlight,
+  backgroundColor: theme.textColorActive,
   position: 'absolute',
   top: 38,
   bottom: 0,
@@ -32,7 +33,7 @@ const TimelineContainer = styled.div({
   paddingLeft: 25,
   overflowY: 'scroll',
   flexGrow: 1,
-  backgroundColor: colors.light02,
+  backgroundColor: theme.backgroundWash,
   scrollBehavior: 'smooth',
   '&>div': {
     position: 'relative',
@@ -53,8 +54,8 @@ const NavigationEventContainer = styled.div({
 const NoData = styled(FlexCenter)({
   height: '100%',
   fontSize: 18,
-  backgroundColor: colors.macOSTitleBarBackgroundBlur,
-  color: colors.macOSTitleBarIcon,
+  backgroundColor: theme.backgroundWash,
+  color: theme.textColorSecondary,
 });
 
 export default (props: Props) => {

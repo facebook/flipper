@@ -8,24 +8,26 @@
  */
 
 import styled from '@emotion/styled';
-import {colors} from './colors';
+import {theme} from 'flipper-plugin';
 
 export const inputStyle = (props: {
   compact: boolean;
   valid: boolean;
   readOnly: boolean;
 }) => ({
-  border: `1px solid ${props.valid ? colors.light15 : colors.red}`,
+  border: `1px solid ${props.valid ? theme.dividerColor : theme.errorColor}`,
   borderRadius: 4,
   font: 'inherit',
   fontSize: '1em',
 
   height: props.compact ? '17px' : '28px',
   lineHeight: props.compact ? '17px' : '28px',
-  backgroundColor: props.readOnly ? colors.light02 : undefined,
+  backgroundColor: props.readOnly
+    ? theme.backgroundWash
+    : theme.backgroundDefault,
   '&:disabled': {
-    backgroundColor: '#ddd',
-    borderColor: '#ccc',
+    backgroundColor: theme.disabledColor,
+    borderColor: theme.disabledColor,
     cursor: 'not-allowed',
   },
 });

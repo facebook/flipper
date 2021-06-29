@@ -11,18 +11,18 @@ import {Filter} from '../filter/types';
 import {PureComponent} from 'react';
 import Text from '../Text';
 import styled from '@emotion/styled';
-import {colors} from '../colors';
 import electron, {MenuItemConstructorOptions} from 'electron';
 import React from 'react';
 import {Property} from 'csstype';
+import {theme} from 'flipper-plugin';
 
 const Token = styled(Text)<{focused?: boolean; color?: Property.Color}>(
   (props) => ({
     display: 'inline-flex',
     alignItems: 'center',
     backgroundColor: props.focused
-      ? colors.macOSHighlightActive
-      : props.color || colors.macOSHighlight,
+      ? theme.textColorActive
+      : props.color || theme.buttonDefaultBackground,
     borderRadius: 4,
     marginRight: 4,
     padding: 4,
@@ -30,8 +30,8 @@ const Token = styled(Text)<{focused?: boolean; color?: Property.Color}>(
     height: 21,
     color: props.focused ? 'white' : 'inherit',
     '&:active': {
-      backgroundColor: colors.macOSHighlightActive,
-      color: colors.white,
+      backgroundColor: theme.textColorActive,
+      color: theme.textColorPrimary,
     },
     '&:first-of-type': {
       marginLeft: 3,
@@ -57,7 +57,7 @@ const Key = styled(Text)<{
     fontSize: 14,
   },
   '&:active:after': {
-    backgroundColor: colors.macOSHighlightActive,
+    backgroundColor: theme.textColorActive,
   },
 }));
 Key.displayName = 'FilterToken:Key';
@@ -83,7 +83,7 @@ const Chevron = styled.div<{focused?: boolean}>((props) => ({
   top: -2,
   height: 'auto',
   lineHeight: 'initial',
-  color: props.focused ? colors.white : 'inherit',
+  color: props.focused ? theme.textColorActive : 'inherit',
   '&:hover, &:active, &:focus': {
     color: 'inherit',
     border: 0,
