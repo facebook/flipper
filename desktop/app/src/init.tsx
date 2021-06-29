@@ -50,6 +50,7 @@ import {CopyOutlined} from '@ant-design/icons';
 import {clipboard} from 'electron/common';
 import {getVersionString} from './utils/versionString';
 import {PersistGate} from 'redux-persist/integration/react';
+import {ipcRenderer} from 'electron';
 
 if (process.env.NODE_ENV === 'development' && os.platform() === 'darwin') {
   // By default Node.JS has its internal certificate storage and doesn't use
@@ -222,6 +223,7 @@ function init() {
       (
         document.getElementById('flipper-theme-import') as HTMLLinkElement
       ).href = `themes/${theme.dark ? 'dark' : 'light'}.css`;
+      ipcRenderer.send('setTheme', theme.dark ? 'dark' : 'light');
     },
   );
 }

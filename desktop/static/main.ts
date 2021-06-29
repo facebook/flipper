@@ -17,6 +17,7 @@ import {
   Notification,
   globalShortcut,
   session,
+  nativeTheme,
 } from 'electron';
 import os from 'os';
 import path from 'path';
@@ -266,6 +267,11 @@ ipcMain.on('getLaunchTime', (event) => {
     // launch times for example after reloading the renderer process
     launchStartTime = undefined;
   }
+});
+
+ipcMain.on('setTheme', (_e, mode: 'light' | 'dark') => {
+  console.log('Switching to theme ' + mode);
+  nativeTheme.themeSource = mode;
 });
 
 ipcMain.on(
