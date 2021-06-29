@@ -1,32 +1,96 @@
 name: Validate Podspecs
 on:
   push:
-    paths:
-      - "iOS/**"
-      - "xplat/**"
-      - "Flipper.podspec"
-      - "FlipperKit.podspec"
-  pull_request:
-    paths:
-      - "iOS/**"
-      - "xplat/**"
-      - "Flipper.podspec"
-      - "FlipperKit.podspec"
+  #   paths:
+  #     - "iOS/**"
+  #     - "xplat/**"
+  #     - "Flipper.podspec"
+  #     - "FlipperKit.podspec"
+  # pull_request:
+  #   paths:
+  #     - "iOS/**"
+  #     - "xplat/**"
+  #     - "Flipper.podspec"
+  #     - "FlipperKit.podspec"
+  branches:
+    - 'pod-lib-lint-subspecs'
 jobs:
-  lint-flipperkit_pod:
+  lint-flipperkit_fbdefines_pod:
     runs-on: macos-latest
 
     steps:
       - uses: actions/checkout@v2
       - name: Install Dependences
         run: pod repo update
+      - name: Lint FlipperKit/FBDefines
+        run: pod lib lint FlipperKit.podspec --subspec=FBDefines --use-libraries --allow-warnings --verbose --skip-import-validation
+      
+  lint-flipperkit_fbdefines_pod:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Dependences
+        run: pod repo update
+      - name: Lint FlipperKit/FBDefines
+        run: pod lib lint FlipperKit.podspec --subspec=FBDefines --use-libraries --allow-warnings --verbose --skip-import-validation
 
-      - name: Lint FlipperKit
-        run: pod lib lint FlipperKit.podspec --use-libraries --allow-warnings --verbose --skip-import-validation --include-podspecs=Flipper.podspec
+  lint-flipperkit_cppbridge_pod:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Dependences
+        run: pod repo update
+      - name: Lint FlipperKit/CppBridge
+        run: pod lib lint FlipperKit.podspec --subspec=CppBridge --include-podspecs=Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
+
+  lint-flipperkit_dynamic_convert_pod:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Dependences
+        run: pod repo update
+      - name: Lint FlipperKit/FBCxxFollyDynamicConvert
+        run: pod lib lint FlipperKit.podspec --subspec=FBCxxFollyDynamicConvert --include-podspecs=Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
+
+  lint-flipperkit_port_forwarding_pod:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Dependences
+        run: pod repo update
+      - name: Lint FlipperKit/FKPortForwarding
+        run: pod lib lint FlipperKit.podspec --subspec=FKPortForwarding --include-podspecs=Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
+  
+  lint-flipperkit_highlight_overlay_pod:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Dependences
+        run: pod repo update
+      - name: Lint FlipperKit/FlipperKitHighlightOverlay
+        run: pod lib lint FlipperKit.podspec --subspec=FlipperKitHighlightOverlay --include-podspecs=Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
+  
+  lint-flipperkit_layout_ck_plugin_pod:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Dependences
+        run: pod repo update
+      - name: Lint FlipperKit/FlipperKitLayoutComponentKitSupport
+        run: pod lib lint FlipperKit.podspec --subspec=FlipperKitLayoutComponentKitSupport --include-podspecs=Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
+
+  lint-flipperkit_network_pod:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Dependences
+        run: pod repo update
+      - name: Lint FlipperKit/SKIOSNetworkPlugin
+        run: pod lib lint FlipperKit.podspec --subspec=SKIOSNetworkPlugin --include-podspecs=Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
+
 
   lint-flipper_pod:
     runs-on: macos-latest
-
     steps:
       - uses: actions/checkout@v2
       - name: Install Dependences
