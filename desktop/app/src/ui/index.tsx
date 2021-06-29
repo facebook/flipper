@@ -26,7 +26,6 @@ export {default as Popover} from './components/Popover';
 export {
   TableColumns,
   TableRows,
-  TableRows_immutable,
   TableBodyColumn,
   TableBodyRow,
   TableHighlightedRows,
@@ -37,8 +36,6 @@ export {
 } from './components/table/types';
 export {default as ManagedTable} from './components/table/ManagedTable';
 export {ManagedTableProps} from './components/table/ManagedTable';
-export {default as ManagedTable_immutable} from './components/table/ManagedTable_immutable';
-export {ManagedTableProps_immutable} from './components/table/ManagedTable_immutable';
 
 export {DataValueExtractor, DataInspectorExpanded} from 'flipper-plugin';
 export {DataInspector as ManagedDataInspector} from 'flipper-plugin';
@@ -135,7 +132,6 @@ export {
   default as SearchableTable,
   filterRowsFactory,
 } from './components/searchable/SearchableTable';
-export {default as SearchableTable_immutable} from './components/searchable/SearchableTable_immutable';
 export {SearchableProps} from './components/searchable/Searchable';
 
 export {InspectorSidebar} from './components/elements-inspector/sidebar';

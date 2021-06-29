@@ -67,7 +67,6 @@ export {default as Popover} from './ui/components/Popover';
 export {
   TableColumns,
   TableRows,
-  TableRows_immutable,
   TableBodyColumn,
   TableBodyRow,
   TableHighlightedRows,
@@ -81,10 +80,6 @@ export {
   ManagedTable as ManagedTableClass,
 } from './ui/components/table/ManagedTable';
 export {ManagedTableProps} from './ui/components/table/ManagedTable';
-export {
-  default as ManagedTable_immutable,
-  ManagedTableProps_immutable,
-} from './ui/components/table/ManagedTable_immutable';
 export {
   DataValueExtractor,
   DataInspectorExpanded,
@@ -165,7 +160,6 @@ export {
   default as SearchableTable,
   filterRowsFactory,
 } from './ui/components/searchable/SearchableTable';
-export {default as SearchableTable_immutable} from './ui/components/searchable/SearchableTable_immutable';
 export {
   ElementsInspector,
   ElementsInspectorElement as Element,

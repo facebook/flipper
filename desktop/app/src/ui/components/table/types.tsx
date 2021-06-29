@@ -8,7 +8,6 @@
  */
 
 import {Filter} from '../filter/types';
-import {List} from 'immutable';
 import {Property} from 'csstype';
 
 export const MINIMUM_COLUMN_WIDTH = 100;
@@ -76,8 +75,6 @@ export type TableColumns = {
 };
 
 export type TableRows = Array<TableBodyRow>;
-
-export type TableRows_immutable = List<TableBodyRow>;
 
 export type TableRowSortOrder = {
   key: string;
