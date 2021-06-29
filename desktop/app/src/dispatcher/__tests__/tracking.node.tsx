@@ -15,6 +15,7 @@ const layoutSelection: SelectionInfo = {
   plugin: 'Layout',
   pluginName: 'flipper-plugin-layout',
   pluginVersion: '0.0.0',
+  pluginEnabled: true,
   app: 'Facebook',
   device: 'test device',
   deviceName: 'test device',
