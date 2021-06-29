@@ -15,9 +15,7 @@ import {Payload, ConnectionStatus} from 'rsocket-types';
 import {Flowable, Single} from 'rsocket-flowable';
 import {performance} from 'perf_hooks';
 import {reportPluginFailures} from './utils/metrics';
-import {notNull} from './utils/typeUtils';
 import {default as isProduction} from './utils/isProduction';
-import {registerPlugins} from './reducers/plugins';
 import {EventEmitter} from 'events';
 import invariant from 'invariant';
 import {
@@ -39,7 +37,8 @@ import {freeze} from 'immer';
 import GK from './fb-stubs/GK';
 import {message} from 'antd';
 
-type Plugins = Array<string>;
+type Plugins = Set<string>;
+type PluginsArr = Array<string>;
 
 export type ClientQuery = {
   app: string;
@@ -149,8 +148,8 @@ export default class Client extends EventEmitter {
   ) {
     super();
     this.connected.set(!!conn);
-    this.plugins = plugins ? plugins : [];
-    this.backgroundPlugins = [];
+    this.plugins = plugins ? plugins : new Set();
+    this.backgroundPlugins = new Set();
     this.connection = conn;
     this.id = id;
     this.query = query;
@@ -184,11 +183,11 @@ export default class Client extends EventEmitter {
   }
 
   supportsPlugin(pluginId: string): boolean {
-    return this.plugins.includes(pluginId);
+    return this.plugins.has(pluginId);
   }
 
   isBackgroundPlugin(pluginId: string) {
-    return this.backgroundPlugins.includes(pluginId);
+    return this.backgroundPlugins.has(pluginId);
   }
 
   isEnabledPlugin(pluginId: string) {
@@ -210,7 +209,7 @@ export default class Client extends EventEmitter {
     this.plugins.forEach((pluginId) =>
       this.startPluginIfNeeded(this.getPlugin(pluginId)),
     );
-    this.backgroundPlugins = await this.getBackgroundPlugins();
+    this.backgroundPlugins = new Set(await this.getBackgroundPlugins());
     this.backgroundPlugins.forEach((plugin) => {
       if (this.shouldConnectAsBackgroundPlugin(plugin)) {
         this.initPlugin(plugin);
@@ -244,7 +243,7 @@ export default class Client extends EventEmitter {
       'getPlugins',
       false,
     );
-    this.plugins = plugins;
+    this.plugins = new Set(plugins);
     return plugins;
   }
 
@@ -313,13 +312,14 @@ export default class Client extends EventEmitter {
   }
 
   // get the supported background plugins
-  async getBackgroundPlugins(): Promise<Plugins> {
+  async getBackgroundPlugins(): Promise<PluginsArr> {
     if (this.sdkVersion < 4) {
       return [];
     }
-    return this.rawCall<{plugins: Plugins}>('getBackgroundPlugins', false).then(
-      (data) => data.plugins,
-    );
+    return this.rawCall<{plugins: PluginsArr}>(
+      'getBackgroundPlugins',
+      false,
+    ).then((data) => data.plugins);
   }
 
   // get the plugins, and update the UI
@@ -330,11 +330,11 @@ export default class Client extends EventEmitter {
       this.startPluginIfNeeded(this.getPlugin(pluginId)),
     );
     const newBackgroundPlugins = await this.getBackgroundPlugins();
-    this.backgroundPlugins = newBackgroundPlugins;
+    this.backgroundPlugins = new Set(newBackgroundPlugins);
     // diff the background plugin list, disconnect old, connect new ones
     oldBackgroundPlugins.forEach((plugin) => {
       if (
-        !newBackgroundPlugins.includes(plugin) &&
+        !this.backgroundPlugins.has(plugin) &&
         this.store
           .getState()
           .connections.enabledPlugins[this.query.app]?.includes(plugin)
@@ -344,7 +344,7 @@ export default class Client extends EventEmitter {
     });
     newBackgroundPlugins.forEach((plugin) => {
       if (
-        !oldBackgroundPlugins.includes(plugin) &&
+        !oldBackgroundPlugins.has(plugin) &&
         this.shouldConnectAsBackgroundPlugin(plugin)
       ) {
         this.initPlugin(plugin);

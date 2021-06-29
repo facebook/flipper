@@ -181,7 +181,7 @@ export default class MockFlipper {
       device.isArchived ? null : createStubConnection(),
       this._logger,
       this._store,
-      supportedPlugins,
+      new Set(supportedPlugins),
       device,
     );
     // yikes

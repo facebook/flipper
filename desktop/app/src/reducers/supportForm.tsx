@@ -132,7 +132,7 @@ export class Group {
           enabledPlugins != null && enabledPlugins.includes(requiredPlugin);
         if (
           selectedClient &&
-          selectedClient.plugins.includes(requiredPlugin) &&
+          selectedClient.plugins.has(requiredPlugin) &&
           !requiredPluginEnabled
         ) {
           const plugin =
@@ -146,7 +146,7 @@ export class Group {
           );
         } else if (
           !selectedClient ||
-          !selectedClient.plugins.includes(requiredPlugin)
+          !selectedClient.plugins.has(requiredPlugin)
         ) {
           unsupportedPlugins.push(requiredPlugin);
         }

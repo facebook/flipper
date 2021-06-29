@@ -108,7 +108,7 @@ export interface RealFlipperClient {
     device_id: string;
   };
   deviceSync: RealFlipperDevice;
-  plugins: string[];
+  plugins: Set<string>;
   isBackgroundPlugin(pluginId: string): boolean;
   initPlugin(pluginId: string): void;
   deinitPlugin(pluginId: string): void;

@@ -619,11 +619,13 @@ export function determinePluginsToProcess(
     }
     const selectedFilteredPlugins = client
       ? selectedPlugins.length > 0
-        ? client.plugins.filter((plugin) => selectedPlugins.includes(plugin))
+        ? Array.from(client.plugins).filter((plugin) =>
+            selectedPlugins.includes(plugin),
+          )
         : client.plugins
       : [];
     for (const plugin of selectedFilteredPlugins) {
-      if (!client.plugins.includes(plugin)) {
+      if (!client.plugins.has(plugin)) {
         // Ignore clients which doesn't support the selected plugins.
         continue;
       }
@@ -827,7 +829,7 @@ export function importDataToStore(source: string, data: string, store: Store) {
 
   clients.forEach((client: {id: string; query: ClientQuery}) => {
     const sandyPluginStates = json.pluginStates2[client.id] || {};
-    const clientPlugins: Array<string> = [
+    const clientPlugins: Set<string> = new Set([
       ...keys
         .filter((key) => {
           const plugin = deconstructPluginKey(key);
@@ -835,7 +837,7 @@ export function importDataToStore(source: string, data: string, store: Store) {
         })
         .map((pluginKey) => deconstructPluginKey(pluginKey).pluginName),
       ...Object.keys(sandyPluginStates),
-    ];
+    ]);
     store.dispatch({
       type: 'NEW_CLIENT',
       payload: new Client(

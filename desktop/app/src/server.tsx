@@ -555,9 +555,9 @@ class Server extends EventEmitter {
 
       client.init().then(() => {
         console.debug(
-          `Device client initialised: ${id}. Supported plugins: ${client.plugins.join(
-            ', ',
-          )}`,
+          `Device client initialised: ${id}. Supported plugins: ${Array.from(
+            client.plugins,
+          ).join(', ')}`,
           'server',
         );
 

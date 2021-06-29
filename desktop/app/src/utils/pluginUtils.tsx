@@ -352,9 +352,7 @@ function getFavoritePlugins(
       return [];
     }
     // for *imported* devices, all stored plugins are enabled
-    return allPlugins.filter(
-      (plugin) => client.plugins.indexOf(plugin.id) !== -1,
-    );
+    return allPlugins.filter((plugin) => client.plugins.has(plugin.id));
   }
   if (!enabledPlugins || !enabledPlugins.length) {
     return returnFavoredPlugins ? [] : allPlugins;

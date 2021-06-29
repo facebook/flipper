@@ -47,7 +47,7 @@ test('can create a Fake flipper', async () => {
   expect(device).toBeTruthy();
   expect(store).toBeTruthy();
   expect(sendMessage).toBeTruthy();
-  expect(client.plugins.includes(TestPlugin.id)).toBe(true);
+  expect(client.plugins.has(TestPlugin.id)).toBe(true);
   expect(store.getState().connections).toMatchSnapshot();
   expect(store.getState().plugins).toMatchSnapshot();
   sendMessage('inc', {});
@@ -73,7 +73,7 @@ test('can create a Fake flipper with legacy wrapper', async () => {
   expect(device).toBeTruthy();
   expect(store).toBeTruthy();
   expect(sendMessage).toBeTruthy();
-  expect(client.plugins.includes(TestPlugin.id)).toBe(true);
+  expect(client.plugins.has(TestPlugin.id)).toBe(true);
   expect(client.sandyPluginStates.has(TestPlugin.id)).toBe(true);
   const state = store.getState();
   expect(state.connections).toMatchSnapshot();

@@ -417,10 +417,7 @@ class PluginContainer extends PureComponent<Props, State> {
         selectPlugin: (pluginID: string, deepLinkPayload: unknown) => {
           const {target} = this.props;
           // check if plugin will be available
-          if (
-            target instanceof Client &&
-            target.plugins.some((p) => p === pluginID)
-          ) {
+          if (target instanceof Client && target.plugins.has(pluginID)) {
             this.props.selectPlugin({
               selectedPlugin: pluginID,
               deepLinkPayload,

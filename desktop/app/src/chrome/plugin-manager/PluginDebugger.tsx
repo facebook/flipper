@@ -128,7 +128,7 @@ class PluginDebugger extends Component<Props> {
   getSupportedClients(id: string): string {
     return this.props.clients
       .reduce((acc: Array<string>, cv: Client) => {
-        if (cv.plugins.includes(id)) {
+        if (cv.plugins.has(id)) {
           acc.push(cv.query.app);
         }
         return acc;

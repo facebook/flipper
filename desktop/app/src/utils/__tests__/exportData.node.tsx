@@ -718,7 +718,7 @@ test('test determinePluginsToProcess for mutilple clients having plugins present
     null,
     logger,
     mockStore,
-    ['TestPlugin', 'TestDevicePlugin'],
+    new Set(['TestPlugin', 'TestDevicePlugin']),
     device1,
   );
   const client2 = new Client(
@@ -732,7 +732,7 @@ test('test determinePluginsToProcess for mutilple clients having plugins present
     null,
     logger,
     mockStore,
-    ['TestDevicePlugin'],
+    new Set(['TestDevicePlugin']),
     device1,
   );
   const client3 = new Client(
@@ -746,7 +746,7 @@ test('test determinePluginsToProcess for mutilple clients having plugins present
     null,
     logger,
     mockStore,
-    ['TestPlugin', 'TestDevicePlugin'],
+    new Set(['TestPlugin', 'TestDevicePlugin']),
     device1,
   );
   const plugins: PluginsState = {
@@ -807,7 +807,7 @@ test('test determinePluginsToProcess for no selected plugin present in any clien
     null,
     logger,
     mockStore,
-    ['TestPlugin', 'TestDevicePlugin'],
+    new Set(['TestPlugin', 'TestDevicePlugin']),
     device1,
   );
   const client2 = new Client(
@@ -821,7 +821,7 @@ test('test determinePluginsToProcess for no selected plugin present in any clien
     null,
     logger,
     mockStore,
-    ['TestDevicePlugin'],
+    new Set(['TestDevicePlugin']),
     device1,
   );
   const plugins: PluginsState = {
@@ -863,7 +863,7 @@ test('test determinePluginsToProcess for multiple clients on same device', async
     null,
     logger,
     mockStore,
-    ['TestPlugin', 'TestDevicePlugin'],
+    new Set(['TestPlugin', 'TestDevicePlugin']),
     device1,
   );
   const client2 = new Client(
@@ -877,7 +877,7 @@ test('test determinePluginsToProcess for multiple clients on same device', async
     null,
     logger,
     mockStore,
-    ['TestDevicePlugin'],
+    new Set(['TestDevicePlugin']),
     device1,
   );
   const plugins: PluginsState = {
@@ -925,7 +925,7 @@ test('test determinePluginsToProcess for multiple clients on different device', 
     null,
     logger,
     mockStore,
-    ['TestPlugin', 'TestDevicePlugin'],
+    new Set(['TestPlugin', 'TestDevicePlugin']),
     device1,
   );
   const client2Device1 = new Client(
@@ -939,7 +939,7 @@ test('test determinePluginsToProcess for multiple clients on different device', 
     null,
     logger,
     mockStore,
-    ['TestDevicePlugin'],
+    new Set(['TestDevicePlugin']),
     device1,
   );
   const client1Device2 = new Client(
@@ -953,7 +953,7 @@ test('test determinePluginsToProcess for multiple clients on different device', 
     null,
     logger,
     mockStore,
-    ['TestPlugin', 'TestDevicePlugin'],
+    new Set(['TestPlugin', 'TestDevicePlugin']),
     device1,
   );
   const client2Device2 = new Client(
@@ -967,7 +967,7 @@ test('test determinePluginsToProcess for multiple clients on different device', 
     null,
     logger,
     mockStore,
-    ['TestDevicePlugin'],
+    new Set(['TestDevicePlugin']),
     device1,
   );
   const plugins: PluginsState = {
@@ -1039,7 +1039,7 @@ test('test determinePluginsToProcess to ignore archived clients', async () => {
     null,
     logger,
     mockStore,
-    ['TestPlugin', 'TestDevicePlugin'],
+    new Set(['TestPlugin', 'TestDevicePlugin']),
     archivedDevice,
   );
   const archivedClient = new Client(
@@ -1053,7 +1053,7 @@ test('test determinePluginsToProcess to ignore archived clients', async () => {
     null,
     logger,
     mockStore,
-    ['TestPlugin', 'TestDevicePlugin'],
+    new Set(['TestPlugin', 'TestDevicePlugin']),
     archivedDevice,
   );
   const plugins: PluginsState = {
@@ -1303,7 +1303,7 @@ test('Sandy plugins are imported properly', async () => {
   const client2 = store.getState().connections.clients[1];
   expect(client2).not.toBeFalsy();
   expect(client2).not.toBe(client);
-  expect(client2.plugins).toEqual([TestPlugin.id]);
+  expect(Array.from(client2.plugins)).toEqual([TestPlugin.id]);
 
   expect(client.sandyPluginStates.get(TestPlugin.id)!.exportStateSync())
     .toMatchInlineSnapshot(`

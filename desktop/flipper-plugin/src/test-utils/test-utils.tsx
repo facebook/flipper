@@ -196,7 +196,7 @@ export function startPlugin<Module extends FlipperPluginModule<any>>(
   const deviceName = 'TestDevice';
   const fakeFlipperClient: RealFlipperClient = {
     id: `${appName}#${testDevice.os}#${deviceName}#${testDevice.serial}`,
-    plugins: [definition.id],
+    plugins: new Set([definition.id]),
     query: {
       app: appName,
       device: deviceName,

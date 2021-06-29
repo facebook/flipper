@@ -224,11 +224,11 @@ describe('basic findBestDevice with metro present', () => {
     );
 
     // ok, this is a little hackish
-    flipper.client.plugins = [
+    flipper.client.plugins = new Set([
       'plugin1',
       'plugin2',
       'supportedUninstalledPlugin',
-    ];
+    ]);
 
     let state = flipper.store.getState();
     const pluginLists = computePluginLists(state.connections, state.plugins);
