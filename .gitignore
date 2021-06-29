@@ -38,3 +38,6 @@ libs/*/bin/**/*.class
 
 # Automatically generated
 docs/extending/ui-components.mdx
+docs/setup/plugins/
+docs/features/plugins/
+website/src/embedded-pages/docs/plugins/

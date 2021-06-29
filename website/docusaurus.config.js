@@ -173,7 +173,15 @@ const siteConfig = {
   ],
   // end_config_example
   plugins: [
-    [
+    './src/plugins/support-symlinks',
+    [require.resolve('@docusaurus/plugin-content-pages'),
+      {
+        id: 'embedded-pages',
+        path: './src/embedded-pages/',
+        mdxPageComponent: '@theme/EmbeddedMDXPage',
+      }
+    ],    
+    [      
       '@docusaurus/plugin-client-redirects',
       {
         redirects: [

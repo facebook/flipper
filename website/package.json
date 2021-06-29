@@ -1,28 +1,33 @@
 {
   "scripts": {
     "copy-schema": "fcli ensure static/schemas/plugin-package && fcli copy ../desktop/pkg/schemas/plugin-package-v2.json static/schemas/plugin-package/v2.json -o",
-    "start": "yarn copy-schema && yarn generate-uidocs && docusaurus start",
-    "build": "yarn copy-schema && yarn generate-uidocs && docusaurus build",
+    "start": "yarn copy-schema && yarn generate-uidocs && yarn generate-plugin-docs && docusaurus start --port 3001",
+    "build": "yarn copy-schema && yarn generate-uidocs && yarn generate-plugin-docs && docusaurus build",
     "publish-gh-pages": "docusaurus deploy",
     "write-translations": "docusaurus write-translations",
     "version": "docusaurus version",
     "rename-version": "docusaurus rename-version",
-    "generate-uidocs": "node ./generate-uidocs.js"
+    "generate-uidocs": "node ./generate-uidocs.js",
+    "generate-plugin-docs": "ts-node ./generate-plugin-docs.ts"
   },
   "devDependencies": {
     "@babel/parser": "^7.14.5",
     "@docusaurus/core": "^2.0.0-beta.0",
     "@docusaurus/plugin-client-redirects": "2.0.0-beta.0",
     "@docusaurus/preset-classic": "^2.0.0-beta.0",
+    "@types/fs-extra": "^9.0.11",
     "classnames": "^2.3.1",
     "docblock-parser": "^1.0.0",
     "docusaurus-plugin-internaldocs-fb": "^0.8.5",
     "file-cli": "^1.2.0",
+    "fs-extra": "^10.0.0",
     "glob": "^7.1.7",
     "mermaid": "^8.10.2",
     "react": "^17.0.2",
     "react-docgen": "^5.4.0",
-    "react-dom": "^17.0.2"
+    "react-dom": "^17.0.2",
+    "ts-node": "^10.0.0",
+    "typescript": "^4.3.4"
   },
   "resolutions": {
     "kind-of": "6.0.3",
