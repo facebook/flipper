@@ -54,6 +54,7 @@
     "react-async": "^10.0.0",
     "react-debounce-render": "^7.0.0",
     "react-dom": "^17.0.1",
+    "react-electron-web-view": "^2.0.1",
     "react-element-to-jsx-string": "^14.3.1",
     "react-markdown": "^6.0.2",
     "react-player": "^2.9.0",

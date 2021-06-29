@@ -41,6 +41,7 @@ export const theme = {
     huge: 24,
   } as const,
   fontSize: {
+    large: '16px',
     default: '14px',
     small: '12px',
   } as const,

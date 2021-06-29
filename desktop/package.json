@@ -253,6 +253,7 @@
     "start": "yarn dev-server --inspect=9229",
     "start:break": "yarn dev-server --inspect-brk=9229",
     "start:no-embedded-plugins": "yarn start --no-embedded-plugins",
+    "docs": "cd ../website && yarn start",
     "test": "cross-env TZ=Pacific/Pohnpei jest",
     "test:debug": "yarn build:tsc && cross-env TZ=Pacific/Pohnpei node --inspect node_modules/.bin/jest --runInBand",
     "tsc-plugins": "./ts-node scripts/tsc-plugins.ts",

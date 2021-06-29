@@ -29,6 +29,10 @@ export interface PluginDetails {
   flipperSDKVersion?: string;
   pluginType?: PluginType;
   supportedDevices?: SupportedDevice[];
+  publishedDocs?: {
+    overview?: boolean;
+    setup?: boolean;
+  };
 }
 
 export interface SupportedDevice {

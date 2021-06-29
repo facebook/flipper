@@ -63,6 +63,20 @@ export async function getInstalledPluginDetails(
 ): Promise<InstalledPluginDetails> {
   packageJson = packageJson ?? (await readPluginPackageJson(dir));
   const pluginDetails = getPluginDetails(packageJson);
+  const [hasOverviewDocs, hasSetupDocs] = await Promise.all([
+    pluginDetails.publishedDocs?.overview === undefined
+      ? fs.pathExists(path.join(dir, 'docs', 'overview.mdx'))
+      : Promise.resolve(pluginDetails.publishedDocs.overview),
+    pluginDetails.publishedDocs?.setup === undefined
+      ? fs.pathExists(path.join(dir, 'docs', 'setup.mdx'))
+      : Promise.resolve(pluginDetails.publishedDocs.setup),
+  ]);
+  if (hasOverviewDocs || hasSetupDocs) {
+    pluginDetails.publishedDocs = {
+      overview: hasOverviewDocs,
+      setup: hasSetupDocs,
+    };
+  }
   const entry =
     pluginDetails.specVersion === 1
       ? path.resolve(
@@ -136,6 +150,7 @@ function getPluginDetailsV2(packageJson: any): PluginDetails {
     pluginType: packageJson?.pluginType,
     supportedDevices: packageJson?.supportedDevices,
     engines: packageJson.engines,
+    publishedDocs: packageJson.publishedDocs,
   };
 }
 

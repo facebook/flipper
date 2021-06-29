@@ -100,6 +100,11 @@ const argv = yargs
         'Will force using the given value as Flipper version, to be able to test logic which is version-dependent. Setting env var "FLIPPER_FORCE_VERSION" is equivalent.',
       type: 'string',
     },
+    'local-docs': {
+      describe:
+        '[FB-internal only] Use local instance of documentation website for showing embedded plugin docs.',
+      type: 'boolean',
+    },
   })
   .version('DEV')
   .help()
@@ -178,6 +183,10 @@ if (argv.channel !== undefined) {
 
 if (argv['force-version']) {
   process.env.FLIPPER_FORCE_VERSION = argv['force-version'];
+}
+
+if (argv['local-docs']) {
+  process.env.FLIPPER_DOCS_BASE_URL = 'http://localhost:3001/docs';
 }
 
 function looksLikeDevServer(): boolean {
