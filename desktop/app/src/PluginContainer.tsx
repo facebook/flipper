@@ -44,7 +44,7 @@ import {activateMenuItems} from './MenuBar';
 import {Message} from './reducers/pluginMessageQueue';
 import {IdlerImpl} from './utils/Idler';
 import {processMessageQueue} from './utils/messageQueue';
-import {ToggleButton, SmallText, Layout} from './ui';
+import {Layout} from './ui';
 import {theme, TrackingScope, _SandyPluginRenderer} from 'flipper-plugin';
 import {isDevicePluginDefinition, isSandyPlugin} from './utils/pluginUtils';
 import {ContentContainer} from './sandy-chrome/ContentContainer';
@@ -54,6 +54,7 @@ import semver from 'semver';
 import {loadPlugin} from './reducers/pluginManager';
 import {produce} from 'immer';
 import {reportUsage} from './utils/metrics';
+import PluginInfo from './chrome/PluginInfo';
 
 const {Text, Link} = Typography;
 
@@ -275,7 +276,7 @@ class PluginContainer extends PureComponent<Props, State> {
     }
 
     if (!pluginIsEnabled) {
-      return this.renderPluginEnabler();
+      return this.renderPluginInfo();
     }
     if (!pendingMessages || pendingMessages.length === 0) {
       return this.renderPlugin();
@@ -283,41 +284,8 @@ class PluginContainer extends PureComponent<Props, State> {
     return this.renderPluginLoader();
   }
 
-  renderPluginEnabler() {
-    const activePlugin = this.props.activePlugin!;
-    return (
-      <View grow>
-        <Waiting>
-          <VBox>
-            <FlexRow>
-              <Label
-                style={{
-                  fontSize: '16px',
-                  color: colors.light30,
-                  textTransform: 'uppercase',
-                }}>
-                {activePlugin.title}
-              </Label>
-            </FlexRow>
-          </VBox>
-          <VBox>
-            <ToggleButton
-              toggled={false}
-              onClick={() => {
-                this.props.enablePlugin({
-                  plugin: activePlugin,
-                  selectedApp: (this.props.target as Client)?.query?.app,
-                });
-              }}
-              large
-            />
-          </VBox>
-          <VBox>
-            <SmallText>Click to enable this plugin</SmallText>
-          </VBox>
-        </Waiting>
-      </View>
-    );
+  renderPluginInfo() {
+    return <PluginInfo />;
   }
 
   renderPluginLoader() {
