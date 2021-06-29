@@ -8,12 +8,12 @@
  */
 
 import React, {useCallback, useMemo} from 'react';
-import {Label, ToggleButton, SmallText, styled, Layout} from '../ui';
-import {useDispatch, useStore} from '../utils/useStore';
-import {switchPlugin} from '../reducers/pluginManager';
-import {isPluginEnabled} from '../reducers/connections';
+import {Label, ToggleButton, SmallText, styled, Layout} from '../../ui';
+import {useDispatch, useStore} from '../../utils/useStore';
+import {switchPlugin} from '../../reducers/pluginManager';
+import {isPluginEnabled} from '../../reducers/connections';
 import {theme} from 'flipper-plugin';
-import {PluginDefinition} from '../plugin';
+import {PluginDefinition} from '../../plugin';
 
 const Waiting = styled(Layout.Container)({
   width: '100%',
