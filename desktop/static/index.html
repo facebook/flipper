@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="style.css">
-    <link id="flipper-theme-import" rel="stylesheet" href="themes/light.css">
+    <link id="flipper-theme-import" rel="stylesheet">
     <link rel="stylesheet" href="graphiql/graphiql.css">
     <link rel="stylesheet" href="vis/vis.min.css">
     <title>Flipper</title>
@@ -15,6 +15,18 @@
       global.electronRequire = window.require;
     </script>
     <script>
+      // load correct theme
+      try {
+        if (JSON.parse(window.process.env.CONFIG).darkMode) {
+          document.getElementById('flipper-theme-import').href="themes/dark.css";
+        } else {
+          document.getElementById('flipper-theme-import').href="themes/light.css";
+        }
+      } catch(e) {
+        console.error("Failed to initialize theme", e);
+        document.getElementById('flipper-theme-import').href="themes/light.css";
+      }
+
       window.addEventListener('flipper-store-ready', () => global.flipperInit());
     </script>
     <script src="bundle.js"></script>

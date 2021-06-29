@@ -24,6 +24,7 @@ export type Config = {
   launcherMsg?: string | undefined;
   updaterEnabled?: boolean;
   launcherEnabled?: boolean;
+  darkMode?: boolean;
 };
 
 export default function setup(argv: any) {

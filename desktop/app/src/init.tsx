@@ -215,7 +215,7 @@ function init() {
   // listen to settings and load the right theme
   sideEffect(
     store,
-    {name: 'loadTheme', fireImmediately: true, throttleMs: 500},
+    {name: 'loadTheme', fireImmediately: false, throttleMs: 500},
     (state) => ({
       dark: state.settingsState.darkMode,
     }),

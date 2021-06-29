@@ -108,6 +108,9 @@ if (argv['disable-gpu'] || process.env.FLIPPER_DISABLE_GPU === '1') {
 }
 
 process.env.CONFIG = JSON.stringify(config);
+if (config.darkMode) {
+  nativeTheme.themeSource = 'dark';
+}
 
 // possible reference to main app window
 let win: BrowserWindow;
@@ -270,7 +273,6 @@ ipcMain.on('getLaunchTime', (event) => {
 });
 
 ipcMain.on('setTheme', (_e, mode: 'light' | 'dark') => {
-  console.log('Switching to theme ' + mode);
   nativeTheme.themeSource = mode;
 });
 
@@ -362,6 +364,7 @@ function createWindow() {
       configPath,
       JSON.stringify({
         ...config,
+        darkMode: nativeTheme.themeSource === 'dark',
         lastWindowPosition: {
           x,
           y,
