@@ -37,6 +37,18 @@ type Options = {
   sourceMapPath?: string | undefined;
 };
 
+// Metro erroneously adds source map comments to the bottom of the file
+// which break checksums on CI environments where paths change and are generally
+// undesired. We manually strip the comment here and write the file back.
+async function stripSourceMapComment(out: string) {
+  const lines = (await fs.readFile(out, 'utf-8')).split(os.EOL);
+  const lastLine = lines[lines.length - 1];
+  if (lastLine.startsWith('//# sourceMappingURL=')) {
+    console.log(`Updating ${out} to remove sourceMapURL= comment.`);
+    await fs.writeFile(out, lines.slice(0, lines.length - 1).join(os.EOL));
+  }
+}
+
 export default async function bundlePlugin(
   pluginDir: string,
   dev: boolean,
@@ -97,9 +109,10 @@ export default async function bundlePlugin(
     ],
   });
   const sourceMapUrl = out.replace(/\.js$/, '.map');
+  const sourceMap = dev || !!options?.sourceMapPath;
   await Metro.runBuild(config, {
     dev,
-    sourceMap: dev || !!options?.sourceMapPath,
+    sourceMap,
     sourceMapUrl,
     minify: !dev,
     inlineSourceMap: dev,
@@ -107,6 +120,9 @@ export default async function bundlePlugin(
     entry,
     out,
   });
+  if (sourceMap && !dev) {
+    await stripSourceMapComment(out);
+  }
   if (
     options?.sourceMapPath &&
     path.resolve(options.sourceMapPath) !== path.resolve(sourceMapUrl)
