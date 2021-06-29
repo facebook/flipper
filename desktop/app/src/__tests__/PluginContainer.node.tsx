@@ -38,6 +38,10 @@ class TestPlugin extends FlipperPlugin<any, any, any> {
     count: 0,
   };
 
+  static details = TestUtils.createMockPluginDetails({
+    id: 'TestPlugin',
+  });
+
   static persistedStateReducer(
     persistedState: PersistedState,
     method: string,
@@ -636,7 +640,7 @@ test('PluginContainer can render Sandy device plugins', async () => {
   };
 
   const definition = new _SandyPluginDefinition(
-    TestUtils.createMockPluginDetails(),
+    TestUtils.createMockPluginDetails({pluginType: 'device'}),
     {
       supportsDevice: () => true,
       devicePlugin,
@@ -749,7 +753,7 @@ test('PluginContainer + Sandy device plugin supports deeplink', async () => {
   };
 
   const definition = new _SandyPluginDefinition(
-    TestUtils.createMockPluginDetails(),
+    TestUtils.createMockPluginDetails({pluginType: 'device'}),
     {
       devicePlugin,
       supportsDevice: () => true,
@@ -922,7 +926,7 @@ test('Sandy plugins support isPluginSupported + selectPlugin', async () => {
     },
   );
   const definition3 = new _SandyPluginDefinition(
-    TestUtils.createMockPluginDetails({id: 'device'}),
+    TestUtils.createMockPluginDetails({id: 'device', pluginType: 'device'}),
     {
       supportsDevice() {
         return true;

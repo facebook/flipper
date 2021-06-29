@@ -21,12 +21,44 @@ import {_SandyPluginDefinition} from 'flipper-plugin';
 import type BaseDevice from '../devices/BaseDevice';
 import type Client from '../Client';
 import type {
+  ActivatablePluginDetails,
   BundledPluginDetails,
   DownloadablePluginDetails,
   PluginDetails,
 } from 'flipper-plugin-lib';
 import {getLatestCompatibleVersionOfEachPlugin} from '../dispatcher/plugins';
-import {PluginLists} from '../selectors/connections';
+
+export type PluginLists = {
+  devicePlugins: DevicePluginDefinition[];
+  metroPlugins: DevicePluginDefinition[];
+  enabledPlugins: ClientPluginDefinition[];
+  disabledPlugins: PluginDefinition[];
+  unavailablePlugins: [plugin: PluginDetails, reason: string][];
+  downloadablePlugins: (DownloadablePluginDetails | BundledPluginDetails)[];
+};
+
+export type ActivePluginListItem =
+  | {
+      status: 'enabled';
+      details: ActivatablePluginDetails;
+      definition: PluginDefinition;
+    }
+  | {
+      status: 'disabled';
+      details: ActivatablePluginDetails;
+      definition: PluginDefinition;
+    }
+  | {
+      status: 'uninstalled';
+      details: DownloadablePluginDetails | BundledPluginDetails;
+    }
+  | {
+      status: 'unavailable';
+      details: PluginDetails;
+      reason: string;
+    };
+
+export type ActivePluginList = Record<string, ActivePluginListItem | undefined>;
 
 export const defaultEnabledBackgroundPlugins = ['Navigation']; // The navigation plugin is enabled always, to make sure the navigation features works
 
@@ -157,6 +189,16 @@ export function sortPluginsByName(
   return getPluginTitle(a) > getPluginTitle(b) ? 1 : -1;
 }
 
+export function isDevicePlugin(activePlugin: ActivePluginListItem) {
+  if (activePlugin.details.pluginType === 'device') {
+    return true;
+  }
+  return (
+    (activePlugin.status === 'enabled' || activePlugin.status === 'disabled') &&
+    isDevicePluginDefinition(activePlugin.definition)
+  );
+}
+
 export function isDevicePluginDefinition(
   definition: PluginDefinition,
 ): definition is DevicePluginDefinition {
@@ -239,7 +281,9 @@ export function computePluginLists(
           p.details,
           `Device plugin '${getPluginTitle(
             p.details,
-          )}' is not supported by the currently connected device.`,
+          )}' is not supported by the selected device '${device.title}' (${
+            device.os
+          })`,
         ]);
       }
     }
@@ -290,7 +334,9 @@ export function computePluginLists(
           plugin.details,
           `Plugin '${getPluginTitle(
             plugin.details,
-          )}' is not supported by the client application`,
+          )}' is not supported by the selected application '${
+            client.query.app
+          }' (${client.query.os})`,
         ]);
       } else if (favoritePlugins.includes(plugin)) {
         enabledPlugins.push(plugin);
@@ -312,13 +358,21 @@ export function computePluginLists(
     .forEach((plugin) => {
       unavailablePlugins.push([
         plugin,
-        `Plugin '${getPluginTitle(
-          plugin,
-        )}' is not supported by the client application and not installed in Flipper`,
+        `Plugin '${getPluginTitle(plugin)}' is not supported by the selected ${
+          plugin.pluginType === 'device' ? 'device' : 'application'
+        } '${
+          (plugin.pluginType === 'device'
+            ? device?.title
+            : client?.query.app) ?? 'unknown'
+        }' (${
+          plugin.pluginType === 'device' ? device?.os : client?.query.os
+        }) and not installed in Flipper`,
       ]);
     });
 
+  enabledPlugins.sort(sortPluginsByName);
   devicePlugins.sort(sortPluginsByName);
+  disabledPlugins.sort(sortPluginsByName);
   metroPlugins.sort(sortPluginsByName);
   unavailablePlugins.sort(([a], [b]) => {
     return getPluginTitle(a) > getPluginTitle(b) ? 1 : -1;
@@ -358,4 +412,49 @@ function getFavoritePlugins(
     const idx = enabledPlugins.indexOf(plugin.id);
     return idx === -1 ? !returnFavoredPlugins : returnFavoredPlugins;
   });
+}
+
+export function computeActivePluginList({
+  enabledPlugins,
+  devicePlugins,
+  disabledPlugins,
+  downloadablePlugins,
+  unavailablePlugins,
+}: PluginLists) {
+  const pluginList: ActivePluginList = {};
+  for (const plugin of enabledPlugins) {
+    pluginList[plugin.id] = {
+      status: 'enabled',
+      details: plugin.details,
+      definition: plugin,
+    };
+  }
+  for (const plugin of devicePlugins) {
+    pluginList[plugin.id] = {
+      status: 'enabled',
+      details: plugin.details,
+      definition: plugin,
+    };
+  }
+  for (const plugin of disabledPlugins) {
+    pluginList[plugin.id] = {
+      status: 'disabled',
+      details: plugin.details,
+      definition: plugin,
+    };
+  }
+  for (const plugin of downloadablePlugins) {
+    pluginList[plugin.id] = {
+      status: 'uninstalled',
+      details: plugin,
+    };
+  }
+  for (const [plugin, reason] of unavailablePlugins) {
+    pluginList[plugin.id] = {
+      status: 'unavailable',
+      details: plugin,
+      reason,
+    };
+  }
+  return pluginList;
 }

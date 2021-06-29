@@ -7,33 +7,16 @@
  * @format
  */
 
-import {
-  PluginDetails,
-  DownloadablePluginDetails,
-  BundledPluginDetails,
-} from 'flipper-plugin-lib';
 import MetroDevice from '../devices/MetroDevice';
-import {
-  DevicePluginDefinition,
-  ClientPluginDefinition,
-  PluginDefinition,
-} from '../plugin';
 import {State} from '../reducers';
 import {
   computePluginLists,
   computeExportablePlugins,
+  computeActivePluginList,
 } from '../utils/pluginUtils';
 import createSelector from './createSelector';
 
-export type PluginLists = {
-  devicePlugins: DevicePluginDefinition[];
-  metroPlugins: DevicePluginDefinition[];
-  enabledPlugins: ClientPluginDefinition[];
-  disabledPlugins: PluginDefinition[];
-  unavailablePlugins: [plugin: PluginDetails, reason: string][];
-  downloadablePlugins: (DownloadablePluginDetails | BundledPluginDetails)[];
-};
-
+const getSelectedPluginId = (state: State) => state.connections.selectedPlugin;
 const getSelectedApp = (state: State) =>
   state.connections.selectedApp || state.connections.userPreferredApp;
 const getSelectedDevice = (state: State) => state.connections.selectedDevice;
@@ -134,4 +117,19 @@ export const getExportablePlugins = createSelector(
   getActiveClient,
   getPluginLists,
   computeExportablePlugins,
+);
+export const getActivePluginList = createSelector(
+  getPluginLists,
+  computeActivePluginList,
+);
+
+export const getActivePlugin = createSelector(
+  getSelectedPluginId,
+  getActivePluginList,
+  (pluginId, pluginList) => {
+    if (!pluginId) {
+      return null;
+    }
+    return pluginList[pluginId] ?? null;
+  },
 );

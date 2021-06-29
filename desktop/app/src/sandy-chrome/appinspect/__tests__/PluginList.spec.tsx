@@ -248,15 +248,15 @@ describe('basic getActiveDevice with metro present', () => {
         ],
         [
           unsupportedDevicePlugin.details,
-          "Device plugin 'Unsupported Device Plugin' is not supported by the currently connected device.",
+          "Device plugin 'Unsupported Device Plugin' is not supported by the selected device 'MockAndroidDevice' (Android)",
         ],
         [
           unsupportedPlugin.details,
-          "Plugin 'Unsupported Plugin' is not supported by the client application",
+          "Plugin 'Unsupported Plugin' is not supported by the selected application 'TestApp' (Android)",
         ],
         [
           unsupportedDownloadablePlugin,
-          "Plugin 'Unsupported Uninstalled Plugin' is not supported by the client application and not installed in Flipper",
+          "Plugin 'Unsupported Uninstalled Plugin' is not supported by the selected application 'TestApp' (Android) and not installed in Flipper",
         ],
       ],
       downloadablePlugins: [supportedDownloadablePlugin],

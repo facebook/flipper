@@ -11,7 +11,6 @@ import {
   FlipperPlugin,
   FlipperDevicePlugin,
   Props as PluginProps,
-  PluginDefinition,
 } from './plugin';
 import {Logger} from './fb-interfaces/Logger';
 import BaseDevice from './devices/BaseDevice';
@@ -28,11 +27,7 @@ import {
   VBox,
   View,
 } from './ui';
-import {
-  StaticView,
-  setStaticView,
-  isPluginEnabled,
-} from './reducers/connections';
+import {StaticView, setStaticView} from './reducers/connections';
 import {switchPlugin} from './reducers/pluginManager';
 import React, {PureComponent} from 'react';
 import {connect, ReactReduxContext} from 'react-redux';
@@ -46,7 +41,12 @@ import {IdlerImpl} from './utils/Idler';
 import {processMessageQueue} from './utils/messageQueue';
 import {Layout} from './ui';
 import {theme, TrackingScope, _SandyPluginRenderer} from 'flipper-plugin';
-import {isDevicePluginDefinition, isSandyPlugin} from './utils/pluginUtils';
+import {
+  ActivePluginListItem,
+  isDevicePlugin,
+  isDevicePluginDefinition,
+  isSandyPlugin,
+} from './utils/pluginUtils';
 import {ContentContainer} from './sandy-chrome/ContentContainer';
 import {Alert, Typography} from 'antd';
 import {InstalledPluginDetails} from 'flipper-plugin-lib';
@@ -55,6 +55,7 @@ import {loadPlugin} from './reducers/pluginManager';
 import {produce} from 'immer';
 import {reportUsage} from './utils/metrics';
 import PluginInfo from './chrome/fb-stubs/PluginInfo';
+import {getActiveClient, getActivePlugin} from './selectors/connections';
 
 const {Text, Link} = Typography;
 
@@ -107,14 +108,13 @@ type OwnProps = {
 
 type StateFromProps = {
   pluginState: Object;
-  activePlugin: PluginDefinition | undefined;
+  activePlugin: ActivePluginListItem | null;
   target: Client | BaseDevice | null;
   pluginKey: string | null;
   deepLinkPayload: unknown;
   selectedApp: string | null;
   isArchivedDevice: boolean;
   pendingMessages: Message[] | undefined;
-  pluginIsEnabled: boolean;
   settingsState: Settings;
   latestInstalledVersion: InstalledPluginDetails | undefined;
 };
@@ -202,14 +202,13 @@ class PluginContainer extends PureComponent<Props, State> {
     const {deepLinkPayload, target, activePlugin} = this.props;
     if (deepLinkPayload && activePlugin && target) {
       target.sandyPluginStates
-        .get(activePlugin.id)
+        .get(activePlugin.details.id)
         ?.triggerDeepLink(deepLinkPayload);
     }
   }
 
   processMessageQueue() {
-    const {pluginKey, pendingMessages, activePlugin, pluginIsEnabled, target} =
-      this.props;
+    const {pluginKey, pendingMessages, activePlugin, target} = this.props;
     if (pluginKey !== this.pluginBeingProcessed) {
       this.pluginBeingProcessed = pluginKey;
       this.cancelCurrentQueue();
@@ -219,23 +218,27 @@ class PluginContainer extends PureComponent<Props, State> {
         }),
       );
       // device plugins don't have connections so no message queues
-      if (!activePlugin || isDevicePluginDefinition(activePlugin)) {
+      if (
+        !activePlugin ||
+        activePlugin.status !== 'enabled' ||
+        isDevicePluginDefinition(activePlugin.definition)
+      ) {
         return;
       }
       if (
-        pluginIsEnabled &&
         target instanceof Client &&
         activePlugin &&
-        (isSandyPlugin(activePlugin) || activePlugin.persistedStateReducer) &&
+        (isSandyPlugin(activePlugin.definition) ||
+          activePlugin.definition.persistedStateReducer) &&
         pluginKey &&
         pendingMessages?.length
       ) {
         const start = Date.now();
         this.idler = new IdlerImpl();
         processMessageQueue(
-          isSandyPlugin(activePlugin)
-            ? target.sandyPluginStates.get(activePlugin.id)!
-            : activePlugin,
+          isSandyPlugin(activePlugin.definition)
+            ? target.sandyPluginStates.get(activePlugin.definition.id)!
+            : activePlugin.definition,
           pluginKey,
           this.store,
           (progress) => {
@@ -246,18 +249,22 @@ class PluginContainer extends PureComponent<Props, State> {
             );
           },
           this.idler,
-        ).then((completed) => {
-          const duration = Date.now() - start;
-          this.props.logger.track(
-            'duration',
-            'queue-processing-before-plugin-open',
-            {
-              completed,
-              duration,
-            },
-            activePlugin.id,
+        )
+          .then((completed) => {
+            const duration = Date.now() - start;
+            this.props.logger.track(
+              'duration',
+              'queue-processing-before-plugin-open',
+              {
+                completed,
+                duration,
+              },
+              activePlugin.definition.id,
+            );
+          })
+          .catch((err) =>
+            console.error('Error while processing plugin message queue', err),
           );
-        });
       }
     }
   }
@@ -269,13 +276,11 @@ class PluginContainer extends PureComponent<Props, State> {
   }
 
   render() {
-    const {activePlugin, pluginKey, target, pendingMessages, pluginIsEnabled} =
-      this.props;
+    const {activePlugin, pluginKey, target, pendingMessages} = this.props;
     if (!activePlugin || !target || !pluginKey) {
       return null;
     }
-
-    if (!pluginIsEnabled) {
+    if (activePlugin.status !== 'enabled') {
       return this.renderPluginInfo();
     }
     if (!pendingMessages || pendingMessages.length === 0) {
@@ -303,7 +308,7 @@ class PluginContainer extends PureComponent<Props, State> {
           <VBox>
             <Label>
               Processing {this.state.progress.total} events for{' '}
-              {this.props.activePlugin?.id ?? 'plugin'}
+              {this.props.activePlugin?.details?.id ?? 'plugin'}
             </Label>
           </VBox>
           <VBox>
@@ -367,7 +372,12 @@ class PluginContainer extends PureComponent<Props, State> {
       isSandy,
       latestInstalledVersion,
     } = this.props;
-    if (!activePlugin || !target || !pluginKey) {
+    if (
+      !activePlugin ||
+      !target ||
+      !pluginKey ||
+      activePlugin.status !== 'enabled'
+    ) {
       console.warn(`No selected plugin. Rendering empty!`);
       return this.renderNoPluginActive();
     }
@@ -378,10 +388,13 @@ class PluginContainer extends PureComponent<Props, State> {
       !this.state.autoUpdateAlertSuppressed.has(
         `${latestInstalledVersion.name}@${latestInstalledVersion.version}`,
       ) &&
-      semver.gt(latestInstalledVersion.version, activePlugin.version);
-    if (isSandyPlugin(activePlugin)) {
+      semver.gt(
+        latestInstalledVersion.version,
+        activePlugin.definition.version,
+      );
+    if (isSandyPlugin(activePlugin.definition)) {
       // Make sure we throw away the container for different pluginKey!
-      const instance = target.sandyPluginStates.get(activePlugin.id);
+      const instance = target.sandyPluginStates.get(activePlugin.definition.id);
       if (!instance) {
         // happens if we selected a plugin that is not enabled on a specific app or not supported on a specific device.
         return this.renderNoPluginActive();
@@ -403,9 +416,9 @@ class PluginContainer extends PureComponent<Props, State> {
         key: pluginKey,
         logger: this.props.logger,
         selectedApp,
-        persistedState: activePlugin.defaultPersistedState
+        persistedState: activePlugin.definition.defaultPersistedState
           ? {
-              ...activePlugin.defaultPersistedState,
+              ...activePlugin.definition.defaultPersistedState,
               ...pluginState,
             }
           : pluginState,
@@ -438,8 +451,8 @@ class PluginContainer extends PureComponent<Props, State> {
         settingsState,
       };
       pluginElement = (
-        <TrackingScope scope={'plugin:' + activePlugin.id}>
-          {React.createElement(activePlugin, props)}
+        <TrackingScope scope={'plugin:' + activePlugin.definition.id}>
+          {React.createElement(activePlugin.definition, props)}
         </TrackingScope>
       );
     }
@@ -450,7 +463,7 @@ class PluginContainer extends PureComponent<Props, State> {
             <Alert
               message={
                 <Text>
-                  Plugin "{activePlugin.title}" v
+                  Plugin "{activePlugin.definition.title}" v
                   {latestInstalledVersion?.version} is downloaded and ready to
                   install. <Link onClick={this.reloadPlugin}>Reload</Link> to
                   start using the new version.
@@ -475,7 +488,7 @@ class PluginContainer extends PureComponent<Props, State> {
         <Layout.Right>
           <ErrorBoundary
             heading={`Plugin "${
-              activePlugin.title || 'Unknown'
+              activePlugin.definition.title || 'Unknown'
             }" encountered an error during render`}>
             <ContentContainer>{pluginElement}</ContentContainer>
           </ErrorBoundary>
@@ -487,7 +500,7 @@ class PluginContainer extends PureComponent<Props, State> {
         <Container key="plugin">
           <ErrorBoundary
             heading={`Plugin "${
-              activePlugin.title || 'Unknown'
+              activePlugin.definition.title || 'Unknown'
             }" encountered an error during render`}>
             {pluginElement}
           </ErrorBoundary>
@@ -499,54 +512,33 @@ class PluginContainer extends PureComponent<Props, State> {
 }
 
 export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
-  ({
-    connections: {
-      selectedPlugin,
-      selectedDevice,
-      selectedApp,
-      clients,
-      deepLinkPayload,
-      enabledPlugins,
-      enabledDevicePlugins,
-    },
-    pluginStates,
-    plugins: {devicePlugins, clientPlugins, installedPlugins},
-    pluginMessageQueue,
-    settingsState,
-  }) => {
-    let pluginKey = null;
-    let target = null;
-    let activePlugin: PluginDefinition | undefined;
-    let pluginIsEnabled = false;
-
-    if (selectedPlugin) {
-      activePlugin = devicePlugins.get(selectedPlugin);
-      if (selectedDevice && activePlugin) {
+  (state: Store) => {
+    let pluginKey: string | null = null;
+    let target: BaseDevice | Client | null = null;
+    const {
+      connections: {selectedDevice, selectedApp, deepLinkPayload},
+      pluginStates,
+      plugins: {installedPlugins},
+      pluginMessageQueue,
+      settingsState,
+    } = state;
+    const selectedClient = getActiveClient(state);
+    const activePlugin = getActivePlugin(state);
+    if (activePlugin) {
+      if (selectedDevice && isDevicePlugin(activePlugin)) {
         target = selectedDevice;
-        pluginKey = getPluginKey(selectedDevice.serial, activePlugin.id);
-      } else {
-        target =
-          clients.find((client: Client) => client.id === selectedApp) || null;
-        activePlugin = clientPlugins.get(selectedPlugin);
-        if (activePlugin && target) {
-          pluginKey = getPluginKey(target.id, activePlugin.id);
-        }
-      }
-      pluginIsEnabled =
-        activePlugin !== undefined &&
-        isPluginEnabled(
-          enabledPlugins,
-          enabledDevicePlugins,
-          selectedApp,
-          activePlugin.id,
+        pluginKey = getPluginKey(
+          selectedDevice.serial,
+          activePlugin.details.id,
         );
+      } else if (selectedClient) {
+        target = selectedClient;
+        pluginKey = getPluginKey(selectedClient.id, activePlugin.details.id);
+      }
     }
     const isArchivedDevice = !selectedDevice
       ? false
       : selectedDevice.isArchived;
-    if (isArchivedDevice) {
-      pluginIsEnabled = true;
-    }
 
     const pendingMessages = pluginKey
       ? pluginMessageQueue[pluginKey]
@@ -554,17 +546,16 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
 
     const s: StateFromProps = {
       pluginState: pluginStates[pluginKey as string],
-      activePlugin: activePlugin,
+      activePlugin,
       target,
       deepLinkPayload,
       pluginKey,
       isArchivedDevice,
       selectedApp: selectedApp || null,
       pendingMessages,
-      pluginIsEnabled,
       settingsState,
       latestInstalledVersion: installedPlugins.get(
-        activePlugin?.packageName ?? '',
+        activePlugin?.details?.name ?? '',
       ),
     };
     return s;
