@@ -3,8 +3,6 @@ on:
   push:
     tags:
       - v*
-    branches:
-      - update-pod-push-workflow
   workflow_dispatch:
 
 jobs:
