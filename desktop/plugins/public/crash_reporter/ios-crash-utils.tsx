@@ -7,7 +7,7 @@
  * @format
  */
 
-import type {Crash, CrashLog} from './index';
+import type {CrashLog} from './index';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
@@ -29,7 +29,9 @@ export function parseIosCrash(content: string) {
   const tmp1 = dateRegex2.exec(dateString);
   const extractedDateString: string | null =
     tmp1 && tmp1[0].length ? tmp1[0] : null;
-  const date = extractedDateString ? new Date(extractedDateString) : new Date();
+  const date = extractedDateString
+    ? new Date(extractedDateString).getTime()
+    : Date.now();
 
   const crash: CrashLog = {
     callstack: content,
@@ -64,7 +66,7 @@ export function parsePath(content: string): string | null {
 
 export function addFileWatcherForiOSCrashLogs(
   serial: string,
-  reportCrash: (payload: CrashLog | Crash) => void,
+  reportCrash: (payload: CrashLog) => void,
 ) {
   const dir = path.join(os.homedir(), 'Library', 'Logs', 'DiagnosticReports');
   if (!fs.existsSync(dir)) {

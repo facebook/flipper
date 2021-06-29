@@ -9,7 +9,7 @@
 
 import type {DeviceLogEntry, DevicePluginClient} from 'flipper-plugin';
 import {UNKNOWN_CRASH_REASON} from './crash-utils';
-import type {Crash, CrashLog} from './index';
+import type {CrashLog} from './index';
 
 export function parseAndroidCrash(content: string, logDate?: Date) {
   const regForName = /.*\n/;
@@ -35,7 +35,7 @@ export function parseAndroidCrash(content: string, logDate?: Date) {
     callstack: content,
     name: name,
     reason: reason,
-    date: logDate,
+    date: logDate?.getTime(),
   };
   return crash;
 }
@@ -53,7 +53,7 @@ export function shouldParseAndroidLog(
 
 export function startAndroidCrashWatcher(
   client: DevicePluginClient,
-  reportCrash: (payload: CrashLog | Crash) => void,
+  reportCrash: (payload: CrashLog) => void,
 ) {
   const referenceDate = new Date();
   let androidLog: string = '';
