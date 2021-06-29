@@ -249,6 +249,7 @@ export const PluginList = memo(function PluginList({
                   plugin={plugin.details}
                   scrollTo={plugin.id === connections.selectedPlugin}
                   tooltip={getPluginTooltip(plugin.details)}
+                  onClick={handleAppPluginClick}
                   actions={
                     <>
                       <ActionButton
@@ -285,6 +286,7 @@ export const PluginList = memo(function PluginList({
                 plugin={plugin}
                 scrollTo={plugin.id === connections.selectedPlugin}
                 tooltip={getPluginTooltip(plugin)}
+                onClick={handleAppPluginClick}
                 actions={
                   <ActionButton
                     id={plugin.id}
@@ -315,6 +317,7 @@ export const PluginList = memo(function PluginList({
                   tooltip={`${getPluginTitle(plugin)} (${plugin.id}@${
                     plugin.version
                   }): ${reason}`}
+                  onClick={handleAppPluginClick}
                   disabled
                   actions={<InfoIcon>{reason}</InfoIcon>}
                 />
@@ -396,7 +399,7 @@ const PluginEntry = function PluginEntry({
       <Menu.Item
         {...rest}
         key={plugin.id}
-        disabled={disabled}
+        style={{cursor: 'pointer'}}
         onClick={handleClick}>
         <Layout.Horizontal
           center

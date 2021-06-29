@@ -1399,7 +1399,6 @@ test('Sandy device plugins are exported / imported properly', async () => {
   const device2 = store.getState().connections.devices[1];
   expect(device2).not.toBeFalsy();
   expect(device2).not.toBe(device);
-  expect(device2.devicePlugins).toEqual([sandyDeviceTestPlugin.id]);
 
   const {counter} = device2.sandyPluginStates.get(
     sandyDeviceTestPlugin.id,

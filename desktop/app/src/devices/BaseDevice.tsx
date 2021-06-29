@@ -84,9 +84,6 @@ export default class BaseDevice {
   // if imported, stores the original source location
   source = '';
 
-  // sorted list of supported device plugins
-  devicePlugins: string[] = [];
-
   sandyPluginStates: Map<string, _SandyDevicePluginInstance> = new Map<
     string,
     _SandyDevicePluginInstance
@@ -248,7 +245,6 @@ export default class BaseDevice {
       return;
     }
     this.hasDevicePlugins = true;
-    this.devicePlugins.push(plugin.id);
     if (plugin instanceof _SandyPluginDefinition) {
       this.sandyPluginStates.set(
         plugin.id,
@@ -273,10 +269,6 @@ export default class BaseDevice {
     if (instance) {
       instance.destroy();
       this.sandyPluginStates.delete(pluginId);
-    }
-    const index = this.devicePlugins.indexOf(pluginId);
-    if (index >= 0) {
-      this.devicePlugins.splice(index, 1);
     }
   }
 

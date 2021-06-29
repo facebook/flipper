@@ -23,11 +23,6 @@ export interface FlipperLib {
   enableMenuEntries(menuEntries: NormalizedMenuEntry[]): void;
   createPaste(input: string): Promise<string | undefined>;
   GK(gatekeeper: string): boolean;
-  isPluginAvailable(
-    device: RealFlipperDevice,
-    client: RealFlipperClient | null,
-    pluginId: string,
-  ): boolean;
   selectPlugin(
     device: RealFlipperDevice,
     client: RealFlipperClient | null,

@@ -35,30 +35,6 @@ export function initializeFlipperLibImplementation(
     GK(gatekeeper: string) {
       return GK.get(gatekeeper);
     },
-    isPluginAvailable(device, client, pluginId) {
-      // supported device pluin
-      if (device.devicePlugins.includes(pluginId)) {
-        return true;
-      }
-      if (client) {
-        // plugin supported?
-        if (client.plugins.includes(pluginId)) {
-          // part of an archived device?
-          if (device.isArchived) {
-            return true;
-          }
-          // plugin enabled?
-          if (
-            store
-              .getState()
-              .connections.enabledPlugins[client.query.app]?.includes(pluginId)
-          ) {
-            return true;
-          }
-        }
-      }
-      return false;
-    },
     selectPlugin(device, client, pluginId, deeplink) {
       store.dispatch({
         type: 'SELECT_PLUGIN',

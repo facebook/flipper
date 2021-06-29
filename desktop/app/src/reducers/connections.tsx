@@ -649,20 +649,15 @@ function updateSelection(state: Readonly<State>): State {
     updates.metroDevice,
   );
 
-  const availablePlugins: string[] = [
-    ...(device?.devicePlugins || []),
-    ...(updates.activeClient?.plugins || []),
-  ];
-
   if (
     // Try the preferred plugin first
     state.userPreferredPlugin &&
-    availablePlugins.includes(state.userPreferredPlugin)
+    state.userPreferredPlugin !== state.selectedPlugin
   ) {
     updates.selectedPlugin = state.userPreferredPlugin;
   } else if (
-    !state.selectedPlugin ||
-    !availablePlugins.includes(state.selectedPlugin)
+    !state.selectedPlugin &&
+    state.enabledDevicePlugins.has(DEFAULT_PLUGIN)
   ) {
     // currently selected plugin is not available in this state,
     // fall back to the default

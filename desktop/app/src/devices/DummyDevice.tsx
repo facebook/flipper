@@ -15,6 +15,5 @@ import BaseDevice, {OS} from './BaseDevice';
 export default class DummyDevice extends BaseDevice {
   constructor(serial: string, title: string, os: OS) {
     super(serial, 'dummy', title, os);
-    this.devicePlugins = [];
   }
 }

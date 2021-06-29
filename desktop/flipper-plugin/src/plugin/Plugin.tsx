@@ -89,11 +89,6 @@ export interface PluginClient<
   supportsMethod(method: keyof Methods): Promise<boolean>;
 
   /**
-   * Checks if the provided plugin is available for the current device / application
-   */
-  isPluginAvailable(pluginId: string): boolean;
-
-  /**
    * opens a different plugin by id, optionally providing a deeplink to bring the plugin to a certain state
    */
   selectPlugin(pluginId: string, deeplinkPayload?: unknown): void;
@@ -202,22 +197,13 @@ export class SandyPluginInstance extends BasePluginInstance {
           method as any,
         );
       },
-      isPluginAvailable(pluginId: string) {
-        return flipperLib.isPluginAvailable(
+      selectPlugin(pluginId: string, deeplink?: unknown) {
+        flipperLib.selectPlugin(
           realClient.deviceSync,
           realClient,
           pluginId,
+          deeplink,
         );
-      },
-      selectPlugin(pluginId: string, deeplink?: unknown) {
-        if (this.isPluginAvailable(pluginId)) {
-          flipperLib.selectPlugin(
-            realClient.deviceSync,
-            realClient,
-            pluginId,
-            deeplink,
-          );
-        }
       },
     };
     this.initializePlugin(() =>
