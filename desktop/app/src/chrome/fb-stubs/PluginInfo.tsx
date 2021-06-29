@@ -26,7 +26,7 @@ const Waiting = styled(Layout.Container)({
   textAlign: 'center',
 });
 
-export default function PluginInfo() {
+export function PluginInfo() {
   const pluginId = useStore((state) => state.connections.selectedPlugin);
   const enabledPlugins = useStore((state) => state.connections.enabledPlugins);
   const enabledDevicePlugins = useStore(

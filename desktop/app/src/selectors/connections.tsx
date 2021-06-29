@@ -24,6 +24,7 @@ const getUserPreferredDevice = (state: State) =>
   state.connections.userPreferredDevice;
 const getClients = (state: State) => state.connections.clients;
 const getDevices = (state: State) => state.connections.devices;
+const getPluginDownloads = (state: State) => state.pluginDownloads;
 
 export const getActiveClient = createSelector(
   getSelectedApp,
@@ -131,5 +132,15 @@ export const getActivePlugin = createSelector(
       return null;
     }
     return pluginList[pluginId] ?? null;
+  },
+);
+
+export const getPluginDownloadStatusMap = createSelector(
+  getPluginDownloads,
+  (downloads) => {
+    const downloadMap = new Map(
+      Object.values(downloads).map((x) => [x.plugin.id, x]),
+    );
+    return downloadMap;
   },
 );

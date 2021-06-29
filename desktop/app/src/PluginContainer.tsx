@@ -54,7 +54,7 @@ import semver from 'semver';
 import {loadPlugin} from './reducers/pluginManager';
 import {produce} from 'immer';
 import {reportUsage} from './utils/metrics';
-import PluginInfo from './chrome/fb-stubs/PluginInfo';
+import {PluginInfo} from './chrome/fb-stubs/PluginInfo';
 import {getActiveClient, getActivePlugin} from './selectors/connections';
 
 const {Text, Link} = Typography;
