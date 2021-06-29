@@ -12,8 +12,8 @@ on:
   #     - "xplat/**"
   #     - "Flipper.podspec"
   #     - "FlipperKit.podspec"
-  branches:
-    - 'pod-lib-lint-subspecs'
+    branches:
+      - "pod-lib-lint-subspecs"
 jobs:
   lint-flipperkit_fbdefines_pod:
     runs-on: macos-latest
