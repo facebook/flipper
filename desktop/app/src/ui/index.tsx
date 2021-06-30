@@ -39,7 +39,6 @@ export {ManagedTableProps} from './components/table/ManagedTable';
 
 export {DataValueExtractor, DataInspectorExpanded} from 'flipper-plugin';
 export {DataInspector as ManagedDataInspector} from 'flipper-plugin';
-export {default as SearchableDataInspector} from './components/data-inspector/SearchableDataInspector';
 
 // tabs
 export {default as Tabs} from './components/Tabs';

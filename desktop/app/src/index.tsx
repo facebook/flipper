@@ -89,7 +89,6 @@ export {
   MarkerTimeline,
 } from 'flipper-plugin';
 export {DataInspector as ManagedDataInspector} from 'flipper-plugin';
-export {default as SearchableDataInspector} from './ui/components/data-inspector/SearchableDataInspector';
 export {HighlightManager} from 'flipper-plugin';
 export {default as Tabs} from './ui/components/Tabs';
 export {default as Tab} from './ui/components/Tab';
