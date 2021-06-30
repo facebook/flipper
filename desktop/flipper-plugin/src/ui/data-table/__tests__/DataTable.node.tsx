@@ -494,6 +494,40 @@ test('compute filters', () => {
     expect(data.filter(filter)).toEqual([espresso]);
   }
   {
+    // inverse filter
+    const filter = computeDataTableFilter('', false, [
+      {
+        key: 'level',
+        filters: [
+          {
+            enabled: true,
+            value: 'error',
+            label: 'error',
+          },
+        ],
+        inversed: true,
+      },
+    ])!;
+    expect(data.filter(filter)).toEqual([coffee, espresso]);
+  }
+  {
+    // inverse filter with search
+    const filter = computeDataTableFilter('coffee', false, [
+      {
+        key: 'level',
+        filters: [
+          {
+            enabled: true,
+            value: 'error',
+            label: 'error',
+          },
+        ],
+        inversed: true,
+      },
+    ])!;
+    expect(data.filter(filter)).toEqual([coffee]);
+  }
+  {
     const filter = computeDataTableFilter('nonsense', false, [
       {
         key: 'level',

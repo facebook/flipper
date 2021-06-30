@@ -106,6 +106,7 @@ export type DataTableColumn<T = any> = {
     enabled: boolean;
     predefined?: boolean;
   }[];
+  inversed?: boolean;
 };
 
 export interface TableRowRenderContext<T = any> {
@@ -341,7 +342,7 @@ export function DataTable<T extends object>(
     // Important dep optimization: we don't want to recalc filters if just the width or visibility changes!
     // We pass entire state.columns to computeDataTableFilter, but only changes in the filter are a valid cause to compute a new filter function
     // eslint-disable-next-line
-    [tableState.searchValue, tableState.useRegex, ...tableState.columns.map((c) => c.filters)],
+    [tableState.searchValue, tableState.useRegex, ...tableState.columns.map((c) => c.filters), ...tableState.columns.map((c => c.inversed))],
   );
 
   useEffect(
@@ -599,7 +600,7 @@ function EmptyTable({dataSource}: {dataSource: DataSource<any>}) {
     <Layout.Container
       center
       style={{width: '100%', padding: 40, color: theme.textColorSecondary}}>
-      {dataSource.records.length === 0 ? (
+      {dataSource.size === 0 ? (
         <>
           <CoffeeOutlined style={{fontSize: '2em', margin: 8}} />
           <Typography.Text type="secondary">No records yet</Typography.Text>

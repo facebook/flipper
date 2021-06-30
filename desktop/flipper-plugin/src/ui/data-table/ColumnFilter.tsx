@@ -10,7 +10,15 @@
 import {useMemo, useState} from 'react';
 import styled from '@emotion/styled';
 import React from 'react';
-import {Button, Checkbox, Dropdown, Menu, Typography, Input} from 'antd';
+import {
+  Button,
+  Checkbox,
+  Dropdown,
+  Menu,
+  Typography,
+  Input,
+  Switch,
+} from 'antd';
 import {
   FilterOutlined,
   MinusCircleOutlined,
@@ -114,6 +122,29 @@ export function FilterIcon({
           </Text>
         </Menu.Item>
       )}
+      <Menu.Divider />
+      <Menu.Item>
+        <Layout.Horizontal
+          gap
+          center
+          onClick={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+          }}>
+          <Switch
+            checked={!!column.inversed}
+            size="small"
+            onChange={(inversed) => {
+              dispatch({
+                type: 'setColumnFilterInverse',
+                column: column.key,
+                inversed,
+              });
+            }}
+          />
+          Exclude items matching filter
+        </Layout.Horizontal>
+      </Menu.Item>
       <Menu.Divider />
       <Menu.Item disabled>
         <div style={{textAlign: 'right'}}>
