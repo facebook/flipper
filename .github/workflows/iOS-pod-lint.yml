@@ -113,7 +113,7 @@ jobs:
         run: pod repo update
       - name: Lint FlipperKit/FlipperKitLayoutComponentKitSupport
         run: pod lib lint FlipperKit.podspec --subspec=FlipperKit/FlipperKitLayoutComponentKitSupport --include-podspecs=Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
- 
+
   lint-flipperkit_network_pod:
     runs-on: macos-latest
     steps:
@@ -131,15 +131,6 @@ jobs:
         run: pod repo update
       - name: Lint FlipperKit/SKIOSNetworkPlugin
         run: pod lib lint FlipperKit.podspec --subspec=FlipperKit/SKIOSNetworkPlugin --include-podspecs=Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
-
-  lint-flipperkit_user_default_pod:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Install Dependences
-        run: pod repo update
-      - name: Lint FlipperKit/FlipperKitUserDefaultsPlugin
-        run: pod lib lint FlipperKit.podspec --subspec=FlipperKit/FlipperKitUserDefaultsPlugin --include-podspecs=Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
 
   lint-flipperkit_user_default_pod:
     runs-on: macos-latest
