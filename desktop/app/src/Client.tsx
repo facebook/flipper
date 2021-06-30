@@ -7,7 +7,7 @@
  * @format
  */
 
-import {PluginDefinition, FlipperPlugin, FlipperDevicePlugin} from './plugin';
+import {PluginDefinition} from './plugin';
 import BaseDevice, {OS} from './devices/BaseDevice';
 import {Logger} from './fb-interfaces/Logger';
 import {Store} from './reducers/index';
@@ -21,7 +21,6 @@ import invariant from 'invariant';
 import {
   getPluginKey,
   defaultEnabledBackgroundPlugins,
-  isSandyPlugin,
 } from './utils/pluginUtils';
 import {processMessagesLater} from './utils/messageQueue';
 import {emitBytesReceived} from './dispatcher/tracking';
@@ -118,10 +117,7 @@ export default class Client extends EventEmitter {
   messageBuffer: Record<
     string /*pluginKey*/,
     {
-      plugin:
-        | typeof FlipperPlugin
-        | typeof FlipperDevicePlugin
-        | _SandyPluginInstance;
+      plugin: _SandyPluginInstance;
       messages: Params[];
     }
   > = {};
@@ -220,7 +216,7 @@ export default class Client extends EventEmitter {
   initFromImport(initialStates: Record<string, Record<string, any>>): this {
     this.plugins.forEach((pluginId) => {
       const plugin = this.getPlugin(pluginId);
-      if (isSandyPlugin(plugin)) {
+      if (plugin) {
         // TODO: needs to be wrapped in error tracking T68955280
         this.sandyPluginStates.set(
           plugin.id,
@@ -253,7 +249,7 @@ export default class Client extends EventEmitter {
   ) {
     // start a plugin on start if it is a SandyPlugin, which is enabled, and doesn't have persisted state yet
     if (
-      isSandyPlugin(plugin) &&
+      plugin &&
       (isEnabled || defaultEnabledBackgroundPlugins.includes(plugin.id)) &&
       !this.sandyPluginStates.has(plugin.id)
     ) {

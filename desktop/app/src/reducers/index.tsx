@@ -18,10 +18,6 @@ import connections, {
   persistMigrations as devicesPersistMigrations,
   persistVersion as devicesPersistVersion,
 } from './connections';
-import pluginStates, {
-  State as PluginStatesState,
-  Action as PluginStatesAction,
-} from './pluginStates';
 import pluginMessageQueue, {
   State as PluginMessageQueueState,
   Action as PluginMessageQueueAction,
@@ -81,7 +77,6 @@ import {TransformConfig} from 'redux-persist/es/createTransform';
 export type Actions =
   | ApplicationAction
   | DevicesAction
-  | PluginStatesAction
   | PluginMessageQueueAction
   | NotificationsAction
   | PluginsAction
@@ -98,7 +93,6 @@ export type Actions =
 export type State = {
   application: ApplicationState;
   connections: DevicesState & PersistPartial;
-  pluginStates: PluginStatesState;
   pluginMessageQueue: PluginMessageQueueState;
   notifications: NotificationsState & PersistPartial;
   plugins: PluginsState & PersistPartial;
@@ -158,7 +152,6 @@ export function createRootReducer() {
       },
       connections,
     ),
-    pluginStates,
     pluginMessageQueue: pluginMessageQueue as any,
     notifications: persistReducer(
       {

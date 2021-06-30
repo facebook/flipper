@@ -20,7 +20,10 @@ import {
 import {FlipperPlugin, FlipperDevicePlugin} from '../../plugin';
 import {default as Client, ClientExport} from '../../Client';
 import {selectedPlugins, State as PluginsState} from '../../reducers/plugins';
-import {createMockFlipperWithPlugin} from '../../test-utils/createMockFlipperWithPlugin';
+import {
+  createMockFlipperWithPlugin,
+  wrapSandy,
+} from '../../test-utils/createMockFlipperWithPlugin';
 import {
   Notification,
   TestUtils,
@@ -39,12 +42,16 @@ function testOnStatusMessage() {
   // emtpy stub
 }
 
-class TestPlugin extends FlipperPlugin<any, any, any> {}
-TestPlugin.title = 'TestPlugin';
-TestPlugin.id = 'TestPlugin';
-class TestDevicePlugin extends FlipperDevicePlugin<any, any, any> {}
-TestDevicePlugin.title = 'TestDevicePlugin';
-TestDevicePlugin.id = 'TestDevicePlugin';
+class TestPluginOrig extends FlipperPlugin<any, any, any> {}
+TestPluginOrig.title = 'TestPlugin';
+TestPluginOrig.id = 'TestPlugin';
+const TestPlugin = wrapSandy(TestPluginOrig);
+
+class TestDevicePluginOrig extends FlipperDevicePlugin<any, any, any> {}
+TestDevicePluginOrig.title = 'TestDevicePlugin';
+TestDevicePluginOrig.id = 'TestDevicePlugin';
+const TestDevicePlugin = wrapSandy(TestDevicePluginOrig);
+
 const logger = {
   track: () => {},
   info: () => {},
@@ -193,7 +200,6 @@ test('test processStore function for empty state', async () => {
     processStore({
       activeNotifications: [],
       device: null,
-      pluginStates: {},
       clients: [],
       devicePlugins: new Map(),
       clientPlugins: new Map(),
@@ -216,7 +222,6 @@ test('test processStore function for an iOS device connected', async () => {
       os: 'iOS',
       screenshotHandle: null,
     }),
-    pluginStates: {},
     pluginStates2: {},
     clients: [],
     devicePlugins: new Map(),
@@ -238,8 +243,8 @@ test('test processStore function for an iOS device connected', async () => {
   expect(deviceType).toEqual('emulator');
   expect(title).toEqual('TestiPhone');
   expect(os).toEqual('iOS');
-  const {pluginStates, activeNotifications} = json.store;
-  expect(pluginStates).toEqual({});
+  const {activeNotifications} = json.store;
+  expect(json.pluginStates2).toEqual({});
   expect(activeNotifications).toEqual([]);
 });
 
@@ -256,11 +261,11 @@ test('test processStore function for an iOS device connected with client plugin 
   const json = await processStore({
     activeNotifications: [],
     device,
-    pluginStates: {
-      [`${clientIdentifier}#TestPlugin`]: {msg: 'Test plugin'},
-    },
     pluginStates2: {
-      [`${clientIdentifier}`]: {TestPlugin2: [{msg: 'Test plugin2'}]},
+      [clientIdentifier]: {
+        TestPlugin2: [{msg: 'Test plugin2'}],
+        TestPlugin: {msg: 'Test plugin'},
+      },
     },
     clients: [client],
     devicePlugins: new Map(),
@@ -271,25 +276,16 @@ test('test processStore function for an iOS device connected with client plugin 
   if (!json) {
     fail('json is undefined');
   }
-  const {pluginStates} = json.store;
-  const expectedPluginState = {
-    [`${generateClientIdentifierWithSalt(
-      clientIdentifier,
-      'salt',
-    )}#TestPlugin`]: JSON.stringify({
-      msg: 'Test plugin',
-    }),
-  };
   const expectedPluginState2 = {
-    [`${generateClientIdentifierWithSalt(clientIdentifier, 'salt')}`]: {
+    [generateClientIdentifierWithSalt(clientIdentifier, 'salt')]: {
       TestPlugin2: [
         {
           msg: 'Test plugin2',
         },
       ],
+      TestPlugin: {msg: 'Test plugin'},
     },
   };
-  expect(pluginStates).toEqual(expectedPluginState);
   expect(json.pluginStates2).toEqual(expectedPluginState2);
 });
 
@@ -324,15 +320,18 @@ test('test processStore function to have only the client for the selected device
   const json = await processStore({
     activeNotifications: [],
     device: selectedDevice,
-    pluginStates: {
-      [unselectedDeviceClientIdentifier + '#TestDevicePlugin']: {
-        msg: 'Test plugin unselected device',
+    pluginStates2: {
+      [unselectedDeviceClientIdentifier]: {
+        TestDevicePlugin: {
+          msg: 'Test plugin unselected device',
+        },
       },
-      [selectedDeviceClientIdentifier + '#TestDevicePlugin']: {
-        msg: 'Test plugin selected device',
+      [selectedDeviceClientIdentifier]: {
+        TestDevicePlugin: {
+          msg: 'Test plugin selected device',
+        },
       },
     },
-    pluginStates2: {},
     clients: [
       selectedDeviceClient,
       generateClientFromDevice(unselectedDevice, 'testapp'),
@@ -347,17 +346,18 @@ test('test processStore function to have only the client for the selected device
     fail('json is undefined');
   }
   const {clients} = json;
-  const {pluginStates} = json.store;
   const expectedPluginState = {
-    [generateClientIdentifierWithSalt(selectedDeviceClientIdentifier, 'salt') +
-    '#TestDevicePlugin']: JSON.stringify({
-      msg: 'Test plugin selected device',
-    }),
+    [generateClientIdentifierWithSalt(selectedDeviceClientIdentifier, 'salt')]:
+      {
+        TestDevicePlugin: {
+          msg: 'Test plugin selected device',
+        },
+      },
   };
   expect(clients).toEqual([
     generateClientFromClientWithSalt(selectedDeviceClient, 'salt'),
   ]);
-  expect(pluginStates).toEqual(expectedPluginState);
+  expect(json.pluginStates2).toEqual(expectedPluginState);
 });
 
 test('test processStore function to have multiple clients for the selected device', async () => {
@@ -384,15 +384,18 @@ test('test processStore function to have multiple clients for the selected devic
   const json = await processStore({
     activeNotifications: [],
     device: selectedDevice,
-    pluginStates: {
-      [clientIdentifierApp1 + '#TestPlugin']: {
-        msg: 'Test plugin App1',
+    pluginStates2: {
+      [clientIdentifierApp1]: {
+        TestPlugin: {
+          msg: 'Test plugin App1',
+        },
       },
-      [clientIdentifierApp2 + '#TestPlugin']: {
-        msg: 'Test plugin App2',
+      [clientIdentifierApp2]: {
+        TestPlugin: {
+          msg: 'Test plugin App2',
+        },
       },
     },
-    pluginStates2: {},
     clients: [
       generateClientFromDevice(selectedDevice, 'testapp1'),
       generateClientFromDevice(selectedDevice, 'testapp2'),
@@ -407,22 +410,23 @@ test('test processStore function to have multiple clients for the selected devic
     fail('json is undefined');
   }
   const {clients} = json;
-  const {pluginStates} = json.store;
   const expectedPluginState = {
-    [generateClientIdentifierWithSalt(clientIdentifierApp1, 'salt') +
-    '#TestPlugin']: JSON.stringify({
-      msg: 'Test plugin App1',
-    }),
-    [generateClientIdentifierWithSalt(clientIdentifierApp2, 'salt') +
-    '#TestPlugin']: JSON.stringify({
-      msg: 'Test plugin App2',
-    }),
+    [generateClientIdentifierWithSalt(clientIdentifierApp1, 'salt')]: {
+      TestPlugin: {
+        msg: 'Test plugin App1',
+      },
+    },
+    [generateClientIdentifierWithSalt(clientIdentifierApp2, 'salt')]: {
+      TestPlugin: {
+        msg: 'Test plugin App2',
+      },
+    },
   };
   expect(clients).toEqual([
     generateClientFromClientWithSalt(client1, 'salt'),
     generateClientFromClientWithSalt(client2, 'salt'),
   ]);
-  expect(pluginStates).toEqual(expectedPluginState);
+  expect(json.pluginStates2).toEqual(expectedPluginState);
 });
 
 test('test processStore function for device plugin state and no clients', async () => {
@@ -437,12 +441,13 @@ test('test processStore function for device plugin state and no clients', async 
   const json = await processStore({
     activeNotifications: [],
     device: selectedDevice,
-    pluginStates: {
-      'serial#TestDevicePlugin': {
-        msg: 'Test Device plugin',
+    pluginStates2: {
+      serial: {
+        TestDevicePlugin: {
+          msg: 'Test Device plugin',
+        },
       },
     },
-    pluginStates2: {},
     clients: [],
     devicePlugins: new Map([['TestDevicePlugin', TestDevicePlugin]]),
     clientPlugins: new Map(),
@@ -453,12 +458,11 @@ test('test processStore function for device plugin state and no clients', async 
   if (!json) {
     fail('json is undefined');
   }
-  const {pluginStates} = json.store;
   const {clients} = json;
   const expectedPluginState = {
-    'salt-serial#TestDevicePlugin': JSON.stringify({msg: 'Test Device plugin'}),
+    'salt-serial': {TestDevicePlugin: {msg: 'Test Device plugin'}},
   };
-  expect(pluginStates).toEqual(expectedPluginState);
+  expect(json.pluginStates2).toEqual(expectedPluginState);
   expect(clients).toEqual([]);
 });
 
@@ -474,12 +478,13 @@ test('test processStore function for unselected device plugin state and no clien
   const json = await processStore({
     activeNotifications: [],
     device: selectedDevice,
-    pluginStates: {
-      'unselectedDeviceIdentifier#TestDevicePlugin': {
-        msg: 'Test Device plugin',
+    pluginStates2: {
+      unselectedDeviceIdentifier: {
+        TestDevicePlugin: {
+          msg: 'Test Device plugin',
+        },
       },
     },
-    pluginStates2: {},
     clients: [],
     devicePlugins: new Map([['TestDevicePlugin', TestDevicePlugin]]),
     clientPlugins: new Map(),
@@ -489,9 +494,8 @@ test('test processStore function for unselected device plugin state and no clien
   if (!json) {
     fail('json is undefined');
   }
-  const {pluginStates} = json.store;
   const {clients} = json;
-  expect(pluginStates).toEqual({});
+  expect(json.pluginStates2).toEqual({});
   expect(clients).toEqual([]);
 });
 
@@ -519,7 +523,6 @@ test('test processStore function for notifications for selected device', async (
   const json = await processStore({
     activeNotifications: [activeNotification],
     device: selectedDevice,
-    pluginStates: {},
     pluginStates2: {},
     clients: [client],
     devicePlugins: new Map([['TestDevicePlugin', TestDevicePlugin]]),
@@ -531,9 +534,8 @@ test('test processStore function for notifications for selected device', async (
   if (!json) {
     fail('json is undefined');
   }
-  const {pluginStates} = json.store;
   const {clients} = json;
-  expect(pluginStates).toEqual({});
+  expect(json.pluginStates2).toEqual({});
   expect(clients).toEqual([generateClientFromClientWithSalt(client, 'salt')]);
   const {activeNotifications} = json.store;
   const expectedActiveNotification = {
@@ -580,7 +582,6 @@ test('test processStore function for notifications for unselected device', async
   const json = await processStore({
     activeNotifications: [activeNotification],
     device: selectedDevice,
-    pluginStates: {},
     pluginStates2: {},
     clients: [client, unselectedclient],
     devicePlugins: new Map(),
@@ -591,9 +592,8 @@ test('test processStore function for notifications for unselected device', async
   if (!json) {
     fail('json is undefined');
   }
-  const {pluginStates} = json.store;
   const {clients} = json;
-  expect(pluginStates).toEqual({});
+  expect(json.pluginStates2).toEqual({});
   expect(clients).toEqual([generateClientFromClientWithSalt(client, 'salt')]);
   const {activeNotifications} = json.store;
   expect(activeNotifications).toEqual([]);
@@ -610,18 +610,21 @@ test('test processStore function for selected plugins', async () => {
 
   const client = generateClientFromDevice(selectedDevice, 'app');
   const pluginstates = {
-    [generateClientIdentifier(selectedDevice, 'app') + '#TestDevicePlugin1']: {
-      msg: 'Test plugin1',
+    [generateClientIdentifier(selectedDevice, 'app')]: {
+      TestDevicePlugin1: {
+        msg: 'Test plugin1',
+      },
     },
-    [generateClientIdentifier(selectedDevice, 'app') + '#TestDevicePlugin2']: {
-      msg: 'Test plugin2',
+    [generateClientIdentifier(selectedDevice, 'app')]: {
+      TestDevicePlugin2: {
+        msg: 'Test plugin2',
+      },
     },
   };
   const json = await processStore({
     activeNotifications: [],
     device: selectedDevice,
-    pluginStates: pluginstates,
-    pluginStates2: {},
+    pluginStates2: pluginstates as any,
     clients: [client],
     devicePlugins: new Map([
       ['TestDevicePlugin1', TestDevicePlugin],
@@ -634,15 +637,16 @@ test('test processStore function for selected plugins', async () => {
   if (!json) {
     fail('json is undefined');
   }
-  const {pluginStates} = json.store;
   const {clients} = json;
-  expect(pluginStates).toEqual({
+  expect(json.pluginStates2).toEqual({
     [generateClientIdentifierWithSalt(
       generateClientIdentifier(selectedDevice, 'app'),
       'salt',
-    ) + '#TestDevicePlugin2']: JSON.stringify({
-      msg: 'Test plugin2',
-    }),
+    )]: {
+      TestDevicePlugin2: {
+        msg: 'Test plugin2',
+      },
+    },
   });
   expect(clients).toEqual([generateClientFromClientWithSalt(client, 'salt')]);
   const {activeNotifications} = json.store;
@@ -659,18 +663,19 @@ test('test processStore function for no selected plugins', async () => {
   });
   const client = generateClientFromDevice(selectedDevice, 'app');
   const pluginstates = {
-    [generateClientIdentifier(selectedDevice, 'app') + '#TestDevicePlugin1']: {
-      msg: 'Test plugin1',
-    },
-    [generateClientIdentifier(selectedDevice, 'app') + '#TestDevicePlugin2']: {
-      msg: 'Test plugin2',
+    [generateClientIdentifier(selectedDevice, 'app')]: {
+      TestDevicePlugin1: {
+        msg: 'Test plugin1',
+      },
+      TestDevicePlugin2: {
+        msg: 'Test plugin2',
+      },
     },
   };
   const json = await processStore({
     activeNotifications: [],
     device: selectedDevice,
-    pluginStates: pluginstates,
-    pluginStates2: {},
+    pluginStates2: pluginstates as any,
     clients: [client],
     devicePlugins: new Map([
       ['TestDevicePlugin1', TestDevicePlugin],
@@ -684,21 +689,20 @@ test('test processStore function for no selected plugins', async () => {
   if (!json) {
     fail('json is undefined');
   }
-  const {pluginStates} = json.store;
   const {clients} = json;
-  expect(pluginStates).toEqual({
+  expect(json.pluginStates2).toEqual({
     [generateClientIdentifierWithSalt(
       generateClientIdentifier(selectedDevice, 'app'),
       'salt',
-    ) + '#TestDevicePlugin2']: JSON.stringify({
-      msg: 'Test plugin2',
-    }),
-    [generateClientIdentifierWithSalt(
-      generateClientIdentifier(selectedDevice, 'app'),
-      'salt',
-    ) + '#TestDevicePlugin1']: JSON.stringify({
-      msg: 'Test plugin1',
-    }),
+    )]: {
+      TestDevicePlugin2: {
+        msg: 'Test plugin2',
+      },
+
+      TestDevicePlugin1: {
+        msg: 'Test plugin1',
+      },
+    },
   });
   expect(clients).toEqual([generateClientFromClientWithSalt(client, 'salt')]);
   const {activeNotifications} = json.store;
@@ -781,14 +785,12 @@ test('test determinePluginsToProcess for mutilple clients having plugins present
       pluginKey: `${client1.id}#TestPlugin`,
       pluginId: 'TestPlugin',
       pluginName: 'TestPlugin',
-      pluginClass: TestPlugin,
       client: client1,
     },
     {
       pluginKey: `${client3.id}#TestPlugin`,
       pluginId: 'TestPlugin',
       pluginName: 'TestPlugin',
-      pluginClass: TestPlugin,
       client: client3,
     },
   ]);
@@ -905,7 +907,6 @@ test('test determinePluginsToProcess for multiple clients on same device', async
       pluginKey: `${client1.id}#TestPlugin`,
       pluginId: 'TestPlugin',
       pluginName: 'TestPlugin',
-      pluginClass: TestPlugin,
       client: client1,
     },
   ]);
@@ -999,7 +1000,6 @@ test('test determinePluginsToProcess for multiple clients on different device', 
       pluginKey: `${client1Device2.id}#TestPlugin`,
       pluginId: 'TestPlugin',
       pluginName: 'TestPlugin',
-      pluginClass: TestPlugin,
       client: client1Device2,
     },
   ]);
@@ -1085,7 +1085,6 @@ test('test determinePluginsToProcess to ignore archived clients', async () => {
       pluginKey: `${client.id}#TestPlugin`,
       pluginId: 'TestPlugin',
       pluginName: 'TestPlugin',
-      pluginClass: TestPlugin,
       client: client,
     },
   ]);

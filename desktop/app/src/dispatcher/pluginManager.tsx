@@ -8,7 +8,6 @@
  */
 
 import type {Store} from '../reducers/index';
-import {clearPluginState} from '../reducers/pluginStates';
 import type {Logger} from '../fb-interfaces/Logger';
 import {
   LoadPluginActionPayload,
@@ -27,12 +26,7 @@ import {
 import {sideEffect} from '../utils/sideEffect';
 import {requirePlugin} from './plugins';
 import {showErrorNotification} from '../utils/notifications';
-import {
-  ClientPluginDefinition,
-  DevicePluginDefinition,
-  FlipperPlugin,
-  PluginDefinition,
-} from '../plugin';
+import {PluginDefinition} from '../plugin';
 import type Client from '../Client';
 import {unloadModule} from '../utils/electronModuleCache';
 import {
@@ -148,7 +142,6 @@ function uninstallPlugin(store: Store, {plugin}: UninstallPluginActionPayload) {
     clients.forEach((client) => {
       stopPlugin(client, plugin.id);
     });
-    store.dispatch(clearPluginState({pluginId: plugin.id}));
     if (!plugin.details.isBundled) {
       unloadPluginModule(plugin.details);
     }
@@ -194,7 +187,7 @@ function switchPlugin(
 
 function switchClientPlugin(
   store: Store,
-  plugin: ClientPluginDefinition,
+  plugin: PluginDefinition,
   selectedApp: string | undefined,
 ) {
   selectedApp = selectedApp ?? getSelectedAppId(store);
@@ -224,7 +217,7 @@ function switchClientPlugin(
   }
 }
 
-function switchDevicePlugin(store: Store, plugin: DevicePluginDefinition) {
+function switchDevicePlugin(store: Store, plugin: PluginDefinition) {
   const {connections} = store.getState();
   const devicesWithPlugin = connections.devices.filter((d) =>
     d.supportsPlugin(plugin.details),
@@ -244,7 +237,7 @@ function switchDevicePlugin(store: Store, plugin: DevicePluginDefinition) {
 
 function updateClientPlugin(
   store: Store,
-  plugin: typeof FlipperPlugin,
+  plugin: PluginDefinition,
   enable: boolean,
 ) {
   const clients = store.getState().connections.clients;
@@ -266,7 +259,6 @@ function updateClientPlugin(
   clientsWithEnabledPlugin.forEach((client) => {
     stopPlugin(client, plugin.id);
   });
-  store.dispatch(clearPluginState({pluginId: plugin.id}));
   clientsWithEnabledPlugin.forEach((client) => {
     startPlugin(client, plugin, true);
   });
@@ -279,7 +271,7 @@ function updateClientPlugin(
 
 function updateDevicePlugin(
   store: Store,
-  plugin: DevicePluginDefinition,
+  plugin: PluginDefinition,
   enable: boolean,
 ) {
   if (enable) {
@@ -292,7 +284,6 @@ function updateDevicePlugin(
   devicesWithEnabledPlugin.forEach((d) => {
     d.unloadDevicePlugin(plugin.id);
   });
-  store.dispatch(clearPluginState({pluginId: plugin.id}));
   const previousVersion = store.getState().plugins.devicePlugins.get(plugin.id);
   if (previousVersion) {
     // unload previous version from Electron cache

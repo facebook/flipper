@@ -27,18 +27,10 @@ import {
 
 type Parameters = {[key: string]: any};
 
-export type PluginDefinition = ClientPluginDefinition | DevicePluginDefinition;
+export type PluginDefinition = _SandyPluginDefinition;
 
-export type DevicePluginDefinition =
-  | typeof FlipperDevicePlugin
-  | _SandyPluginDefinition;
-
-export type ClientPluginDefinition =
-  | typeof FlipperPlugin
-  | _SandyPluginDefinition;
-
-export type ClientPluginMap = Map<string, ClientPluginDefinition>;
-export type DevicePluginMap = Map<string, DevicePluginDefinition>;
+export type ClientPluginMap = Map<string, PluginDefinition>;
+export type DevicePluginMap = Map<string, PluginDefinition>;
 
 // This function is intended to be called from outside of the plugin.
 // If you want to `call` from the plugin use, this.client.call
@@ -211,6 +203,10 @@ export abstract class FlipperBasePlugin<
   }
 }
 
+/**
+ * @deprecated Please use the newer "Sandy" plugin APIs!
+ * https://fbflipper.com/docs/extending/sandy-migration
+ */
 export class FlipperDevicePlugin<
   S,
   A extends BaseAction,
@@ -240,6 +236,10 @@ export class FlipperDevicePlugin<
   }
 }
 
+/**
+ * @deprecated Please use the newer "Sandy" plugin APIs!
+ * https://fbflipper.com/docs/extending/sandy-migration
+ */
 export class FlipperPlugin<
   S,
   A extends BaseAction,

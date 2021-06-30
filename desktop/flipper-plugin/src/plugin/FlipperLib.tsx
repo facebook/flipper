@@ -49,6 +49,6 @@ export function getFlipperLibImplementation(): FlipperLib {
   return flipperLibInstance;
 }
 
-export function setFlipperLibImplementation(impl: FlipperLib) {
+export function setFlipperLibImplementation(impl: FlipperLib | undefined) {
   flipperLibInstance = impl;
 }

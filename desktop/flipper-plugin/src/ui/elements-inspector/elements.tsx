@@ -14,7 +14,7 @@ import styled from '@emotion/styled';
 import React, {MouseEvent, KeyboardEvent} from 'react';
 import {theme} from '../theme';
 import {Layout} from '../Layout';
-import {tryGetFlipperLibImplementation} from 'flipper-plugin/src/plugin/FlipperLib';
+import {_getFlipperLibImplementation} from 'flipper-plugin';
 import {DownOutlined, RightOutlined} from '@ant-design/icons';
 
 const {Text} = Typography;
@@ -221,7 +221,7 @@ class ElementsRow extends PureComponent<ElementsRowProps, ElementsRowState> {
       {
         label: 'Copy',
         click: () => {
-          tryGetFlipperLibImplementation()?.writeTextToClipboard(
+          _getFlipperLibImplementation()?.writeTextToClipboard(
             props.onCopyExpandedTree(props.element, 0),
           );
         },
@@ -229,7 +229,7 @@ class ElementsRow extends PureComponent<ElementsRowProps, ElementsRowState> {
       {
         label: 'Copy expanded child elements',
         click: () =>
-          tryGetFlipperLibImplementation()?.writeTextToClipboard(
+          _getFlipperLibImplementation()?.writeTextToClipboard(
             props.onCopyExpandedTree(props.element, 255),
           ),
       },
@@ -253,7 +253,7 @@ class ElementsRow extends PureComponent<ElementsRowProps, ElementsRowState> {
         return {
           label: `Copy ${o.name}`,
           click: () => {
-            tryGetFlipperLibImplementation()?.writeTextToClipboard(o.value);
+            _getFlipperLibImplementation()?.writeTextToClipboard(o.value);
           },
         };
       }),
@@ -555,7 +555,7 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
     ) {
       e.stopPropagation();
       e.preventDefault();
-      tryGetFlipperLibImplementation()?.writeTextToClipboard(
+      _getFlipperLibImplementation()?.writeTextToClipboard(
         selectedElement.name,
       );
       return;

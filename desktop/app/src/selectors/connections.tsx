@@ -108,10 +108,9 @@ export const getPluginLists = createSelector(
 );
 
 export const getExportablePlugins = createSelector(
-  ({plugins, connections, pluginStates, pluginMessageQueue}: State) => ({
+  ({plugins, connections, pluginMessageQueue}: State) => ({
     plugins,
     connections,
-    pluginStates,
     pluginMessageQueue,
   }),
   getActiveDevice,

@@ -18,11 +18,7 @@ import {
   createState,
   _getFlipperLibImplementation,
 } from 'flipper-plugin';
-import {
-  DevicePluginDefinition,
-  DevicePluginMap,
-  FlipperDevicePlugin,
-} from '../plugin';
+import {PluginDefinition, DevicePluginMap} from '../plugin';
 import {DeviceSpec, OS as PluginOS, PluginDetails} from 'flipper-plugin-lib';
 
 export type DeviceShell = {
@@ -191,9 +187,9 @@ export default class BaseDevice {
     return null;
   }
 
-  supportsPlugin(plugin: DevicePluginDefinition | PluginDetails) {
+  supportsPlugin(plugin: PluginDefinition | PluginDetails) {
     let pluginDetails: PluginDetails;
-    if (isDevicePluginDefinition(plugin)) {
+    if (plugin instanceof _SandyPluginDefinition) {
       pluginDetails = plugin.details;
       if (!pluginDetails.pluginType && !pluginDetails.supportedDevices) {
         // TODO T84453692: this branch is to support plugins defined with the legacy approach. Need to remove this branch after some transition period when
@@ -205,7 +201,7 @@ export default class BaseDevice {
               false)
           );
         } else {
-          return plugin.supportsDevice(this);
+          return (plugin as any).supportsDevice(this);
         }
       }
     } else {
@@ -240,7 +236,7 @@ export default class BaseDevice {
     }
   }
 
-  loadDevicePlugin(plugin: DevicePluginDefinition, initialState?: any) {
+  loadDevicePlugin(plugin: PluginDefinition, initialState?: any) {
     if (!this.supportsPlugin(plugin)) {
       return;
     }
@@ -285,13 +281,4 @@ export default class BaseDevice {
     });
     this.sandyPluginStates.clear();
   }
-}
-
-function isDevicePluginDefinition(
-  definition: any,
-): definition is DevicePluginDefinition {
-  return (
-    (definition as any).prototype instanceof FlipperDevicePlugin ||
-    (definition instanceof _SandyPluginDefinition && definition.isDevicePlugin)
-  );
 }

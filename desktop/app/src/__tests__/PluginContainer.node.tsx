@@ -72,22 +72,31 @@ test('Plugin container can render plugin and receive updates', async () => {
     <body>
       <div>
         <div
-          class="css-w6yhx2-View-FlexBox-FlexColumn"
+          class="css-1x2cmzz-SandySplitContainer e1hsqii10"
         >
-          <h1>
-            Hello:
-             
-            <span
-              data-testid="counter"
+          <div />
+          <div
+            class="css-1knrt0j-SandySplitContainer e1hsqii10"
+          >
+            <div
+              class="css-1woty6b-Container"
             >
-              0
-            </span>
-          </h1>
+              <h1>
+                Hello:
+                 
+                <span
+                  data-testid="counter"
+                >
+                  0
+                </span>
+              </h1>
+            </div>
+            <div
+              class="css-724x97-View-FlexBox-FlexRow"
+              id="detailsSidebar"
+            />
+          </div>
         </div>
-        <div
-          class="css-724x97-View-FlexBox-FlexRow"
-          id="detailsSidebar"
-        />
       </div>
     </body>
   `);
@@ -164,17 +173,26 @@ test('PluginContainer can render Sandy plugins', async () => {
     <body>
       <div>
         <div
-          class="css-w6yhx2-View-FlexBox-FlexColumn"
+          class="css-1x2cmzz-SandySplitContainer e1hsqii10"
         >
-          <div>
-            Hello from Sandy
-            0
+          <div />
+          <div
+            class="css-1knrt0j-SandySplitContainer e1hsqii10"
+          >
+            <div
+              class="css-1woty6b-Container"
+            >
+              <div>
+                Hello from Sandy
+                0
+              </div>
+            </div>
+            <div
+              class="css-724x97-View-FlexBox-FlexRow"
+              id="detailsSidebar"
+            />
           </div>
         </div>
-        <div
-          class="css-724x97-View-FlexBox-FlexRow"
-          id="detailsSidebar"
-        />
       </div>
     </body>
   `);
@@ -195,17 +213,26 @@ test('PluginContainer can render Sandy plugins', async () => {
     <body>
       <div>
         <div
-          class="css-w6yhx2-View-FlexBox-FlexColumn"
+          class="css-1x2cmzz-SandySplitContainer e1hsqii10"
         >
-          <div>
-            Hello from Sandy
-            2
+          <div />
+          <div
+            class="css-1knrt0j-SandySplitContainer e1hsqii10"
+          >
+            <div
+              class="css-1woty6b-Container"
+            >
+              <div>
+                Hello from Sandy
+                2
+              </div>
+            </div>
+            <div
+              class="css-724x97-View-FlexBox-FlexRow"
+              id="detailsSidebar"
+            />
           </div>
         </div>
-        <div
-          class="css-724x97-View-FlexBox-FlexRow"
-          id="detailsSidebar"
-        />
       </div>
     </body>
   `);
@@ -262,17 +289,26 @@ test('PluginContainer can render Sandy plugins', async () => {
     <body>
       <div>
         <div
-          class="css-w6yhx2-View-FlexBox-FlexColumn"
+          class="css-1x2cmzz-SandySplitContainer e1hsqii10"
         >
-          <div>
-            Hello from Sandy
-            9
+          <div />
+          <div
+            class="css-1knrt0j-SandySplitContainer e1hsqii10"
+          >
+            <div
+              class="css-1woty6b-Container"
+            >
+              <div>
+                Hello from Sandy
+                9
+              </div>
+            </div>
+            <div
+              class="css-724x97-View-FlexBox-FlexRow"
+              id="detailsSidebar"
+            />
           </div>
         </div>
-        <div
-          class="css-724x97-View-FlexBox-FlexRow"
-          id="detailsSidebar"
-        />
       </div>
     </body>
   `);
@@ -501,17 +537,26 @@ test('PluginContainer + Sandy plugin supports deeplink', async () => {
     <body>
       <div>
         <div
-          class="css-w6yhx2-View-FlexBox-FlexColumn"
+          class="css-1x2cmzz-SandySplitContainer e1hsqii10"
         >
-          <h1>
-            hello 
-            world
-          </h1>
+          <div />
+          <div
+            class="css-1knrt0j-SandySplitContainer e1hsqii10"
+          >
+            <div
+              class="css-1woty6b-Container"
+            >
+              <h1>
+                hello 
+                world
+              </h1>
+            </div>
+            <div
+              class="css-724x97-View-FlexBox-FlexRow"
+              id="detailsSidebar"
+            />
+          </div>
         </div>
-        <div
-          class="css-724x97-View-FlexBox-FlexRow"
-          id="detailsSidebar"
-        />
       </div>
     </body>
   `);
@@ -532,17 +577,26 @@ test('PluginContainer + Sandy plugin supports deeplink', async () => {
     <body>
       <div>
         <div
-          class="css-w6yhx2-View-FlexBox-FlexColumn"
+          class="css-1x2cmzz-SandySplitContainer e1hsqii10"
         >
-          <h1>
-            hello 
-            universe!
-          </h1>
+          <div />
+          <div
+            class="css-1knrt0j-SandySplitContainer e1hsqii10"
+          >
+            <div
+              class="css-1woty6b-Container"
+            >
+              <h1>
+                hello 
+                universe!
+              </h1>
+            </div>
+            <div
+              class="css-724x97-View-FlexBox-FlexRow"
+              id="detailsSidebar"
+            />
+          </div>
         </div>
-        <div
-          class="css-724x97-View-FlexBox-FlexRow"
-          id="detailsSidebar"
-        />
       </div>
     </body>
   `);
@@ -655,16 +709,25 @@ test('PluginContainer can render Sandy device plugins', async () => {
     <body>
       <div>
         <div
-          class="css-w6yhx2-View-FlexBox-FlexColumn"
+          class="css-1x2cmzz-SandySplitContainer e1hsqii10"
         >
-          <div>
-            Hello from Sandy: 
+          <div />
+          <div
+            class="css-1knrt0j-SandySplitContainer e1hsqii10"
+          >
+            <div
+              class="css-1woty6b-Container"
+            >
+              <div>
+                Hello from Sandy: 
+              </div>
+            </div>
+            <div
+              class="css-724x97-View-FlexBox-FlexRow"
+              id="detailsSidebar"
+            />
           </div>
         </div>
-        <div
-          class="css-724x97-View-FlexBox-FlexRow"
-          id="detailsSidebar"
-        />
       </div>
     </body>
   `);
@@ -686,17 +749,26 @@ test('PluginContainer can render Sandy device plugins', async () => {
     <body>
       <div>
         <div
-          class="css-w6yhx2-View-FlexBox-FlexColumn"
+          class="css-1x2cmzz-SandySplitContainer e1hsqii10"
         >
-          <div>
-            Hello from Sandy: 
-            helleuh
+          <div />
+          <div
+            class="css-1knrt0j-SandySplitContainer e1hsqii10"
+          >
+            <div
+              class="css-1woty6b-Container"
+            >
+              <div>
+                Hello from Sandy: 
+                helleuh
+              </div>
+            </div>
+            <div
+              class="css-724x97-View-FlexBox-FlexRow"
+              id="detailsSidebar"
+            />
           </div>
         </div>
-        <div
-          class="css-724x97-View-FlexBox-FlexRow"
-          id="detailsSidebar"
-        />
       </div>
     </body>
   `);
@@ -778,17 +850,26 @@ test('PluginContainer + Sandy device plugin supports deeplink', async () => {
     <body>
       <div>
         <div
-          class="css-w6yhx2-View-FlexBox-FlexColumn"
+          class="css-1x2cmzz-SandySplitContainer e1hsqii10"
         >
-          <h1>
-            hello 
-            world
-          </h1>
+          <div />
+          <div
+            class="css-1knrt0j-SandySplitContainer e1hsqii10"
+          >
+            <div
+              class="css-1woty6b-Container"
+            >
+              <h1>
+                hello 
+                world
+              </h1>
+            </div>
+            <div
+              class="css-724x97-View-FlexBox-FlexRow"
+              id="detailsSidebar"
+            />
+          </div>
         </div>
-        <div
-          class="css-724x97-View-FlexBox-FlexRow"
-          id="detailsSidebar"
-        />
       </div>
     </body>
   `);
@@ -809,17 +890,26 @@ test('PluginContainer + Sandy device plugin supports deeplink', async () => {
     <body>
       <div>
         <div
-          class="css-w6yhx2-View-FlexBox-FlexColumn"
+          class="css-1x2cmzz-SandySplitContainer e1hsqii10"
         >
-          <h1>
-            hello 
-            {"thisIs":"theUniverse"}
-          </h1>
+          <div />
+          <div
+            class="css-1knrt0j-SandySplitContainer e1hsqii10"
+          >
+            <div
+              class="css-1woty6b-Container"
+            >
+              <h1>
+                hello 
+                {"thisIs":"theUniverse"}
+              </h1>
+            </div>
+            <div
+              class="css-724x97-View-FlexBox-FlexRow"
+              id="detailsSidebar"
+            />
+          </div>
         </div>
-        <div
-          class="css-724x97-View-FlexBox-FlexRow"
-          id="detailsSidebar"
-        />
       </div>
     </body>
   `);
@@ -1076,17 +1166,26 @@ test('PluginContainer can render Sandy plugins for archived devices', async () =
     <body>
       <div>
         <div
-          class="css-w6yhx2-View-FlexBox-FlexColumn"
+          class="css-1x2cmzz-SandySplitContainer e1hsqii10"
         >
-          <div>
-            Hello from Sandy
-            0
+          <div />
+          <div
+            class="css-1knrt0j-SandySplitContainer e1hsqii10"
+          >
+            <div
+              class="css-1woty6b-Container"
+            >
+              <div>
+                Hello from Sandy
+                0
+              </div>
+            </div>
+            <div
+              class="css-724x97-View-FlexBox-FlexRow"
+              id="detailsSidebar"
+            />
           </div>
         </div>
-        <div
-          class="css-724x97-View-FlexBox-FlexRow"
-          id="detailsSidebar"
-        />
       </div>
     </body>
   `);
@@ -1136,17 +1235,26 @@ test('PluginContainer can render Sandy plugins for archived devices', async () =
     <body>
       <div>
         <div
-          class="css-w6yhx2-View-FlexBox-FlexColumn"
+          class="css-1x2cmzz-SandySplitContainer e1hsqii10"
         >
-          <div>
-            Hello from Sandy
-            0
+          <div />
+          <div
+            class="css-1knrt0j-SandySplitContainer e1hsqii10"
+          >
+            <div
+              class="css-1woty6b-Container"
+            >
+              <div>
+                Hello from Sandy
+                0
+              </div>
+            </div>
+            <div
+              class="css-724x97-View-FlexBox-FlexRow"
+              id="detailsSidebar"
+            />
           </div>
         </div>
-        <div
-          class="css-724x97-View-FlexBox-FlexRow"
-          id="detailsSidebar"
-        />
       </div>
     </body>
   `);

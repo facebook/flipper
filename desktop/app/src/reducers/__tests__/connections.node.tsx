@@ -13,7 +13,17 @@ import BaseDevice from '../../devices/BaseDevice';
 import MacDevice from '../../devices/MacDevice';
 import {FlipperDevicePlugin} from '../../plugin';
 import MetroDevice from '../../devices/MetroDevice';
-import {TestUtils} from 'flipper-plugin';
+import {TestUtils, _setFlipperLibImplementation} from 'flipper-plugin';
+import {wrapSandy} from '../../test-utils/createMockFlipperWithPlugin';
+import {createMockFlipperLib} from 'flipper-plugin/src/test-utils/test-utils';
+
+beforeEach(() => {
+  _setFlipperLibImplementation(createMockFlipperLib());
+});
+
+afterEach(() => {
+  _setFlipperLibImplementation(undefined);
+});
 
 test('doing a double REGISTER_DEVICE keeps the last', () => {
   const device1 = new BaseDevice('serial', 'physical', 'title', 'Android');

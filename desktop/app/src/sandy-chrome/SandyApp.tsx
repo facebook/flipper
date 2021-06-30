@@ -169,7 +169,7 @@ export function SandyApp() {
               )}
             </TrackingScope>
           ) : (
-            <PluginContainer logger={logger} isSandy />
+            <PluginContainer logger={logger} />
           )}
           {outOfContentsContainer}
         </MainContainer>

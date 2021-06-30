@@ -15,18 +15,21 @@ import {
 } from '../plugins';
 import {FlipperPlugin, FlipperDevicePlugin, BaseAction} from '../../plugin';
 import {InstalledPluginDetails} from 'flipper-plugin-lib';
+import {wrapSandy} from '../../test-utils/createMockFlipperWithPlugin';
 
-const testPlugin = class extends FlipperPlugin<any, BaseAction, any> {
+const testPluginOrig = class extends FlipperPlugin<any, BaseAction, any> {
   static id = 'TestPlugin';
 };
+const testPlugin = wrapSandy(testPluginOrig);
 
-const testDevicePlugin = class extends FlipperDevicePlugin<
+const testDevicePluginOrig = class extends FlipperDevicePlugin<
   any,
   BaseAction,
   any
 > {
   static id = 'TestDevicePlugin';
 };
+const testDevicePlugin = wrapSandy(testDevicePluginOrig);
 
 test('add clientPlugin', () => {
   const res = reducer(

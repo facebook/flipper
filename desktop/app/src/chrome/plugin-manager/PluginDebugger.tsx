@@ -15,7 +15,7 @@ import {connect} from 'react-redux';
 import {Text, ManagedTable, styled, colors, Link, Bordered} from '../../ui';
 import StatusIndicator from '../../ui/components/StatusIndicator';
 import {State as Store} from '../../reducers';
-import {DevicePluginDefinition, ClientPluginDefinition} from '../../plugin';
+import {PluginDefinition} from '../../plugin';
 
 const InfoText = styled(Text)({
   lineHeight: '130%',
@@ -43,8 +43,8 @@ type StateFromProps = {
   failedPlugins: Array<[PluginDetails, string]>;
   clients: Array<Client>;
   selectedDevice: string | null | undefined;
-  devicePlugins: DevicePluginDefinition[];
-  clientPlugins: ClientPluginDefinition[];
+  devicePlugins: PluginDefinition[];
+  clientPlugins: PluginDefinition[];
 };
 
 type DispatchFromProps = {};
