@@ -51,7 +51,6 @@ async function generatePluginDocs() {
   const publicDirs = (await fs.readdir(pluginsDir)).map(dir => path.join(pluginsDir, dir));
   const fbDirs = process.env.FB_INTERNAL ? (await fs.readdir(fbPluginsDir)).map(dir => path.join(fbPluginsDir, dir)) : [];
   const allDirs = [...publicDirs, ...fbDirs];
-  console.log(allDirs.length);
   for (const pluginSourceDir of allDirs) {
     const pluginSourceDocsDir = path.join(pluginSourceDir, 'docs');    
     const packageJsonPath = path.join(pluginSourceDir, 'package.json');
