@@ -98,7 +98,7 @@ module.exports = {
       'extending/desktop-plugin-structure',
       'extending/testing',
       'extending/debugging',
-      ...fbInternalOnly(['fb/adding-analytics-0']),
+      ...fbInternalOnly(['fb/adding-analytics-0', 'extending/fb/plugin-documentation']),
       'extending/plugin-distribution',
       'extending/sandy-migration',
     ],
