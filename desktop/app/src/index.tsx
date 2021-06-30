@@ -21,6 +21,7 @@ export {
   internGraphPOSTAPIRequest,
   graphQLQuery,
   isLoggedIn,
+  getUser,
 } from './fb-stubs/user';
 export {FlipperPlugin, FlipperDevicePlugin, BaseAction} from './plugin';
 export {PluginClient, Props} from './plugin';
