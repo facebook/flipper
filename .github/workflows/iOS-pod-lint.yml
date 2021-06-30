@@ -22,7 +22,11 @@ jobs:
       - name: Install Dependences
         run: pod repo update
       - name: Lint FlipperKit/FBDefines
-        run: pod lib lint FlipperKit.podspec --subspec=FlipperKit/FBDefines --use-libraries --allow-warnings --verbose --skip-import-validation
+        uses: nick-invision/retry@v2.0.0
+        with:
+          timeout_minutes: 60
+          max_attempts: 3
+          command: pod lib lint FlipperKit.podspec --subspec=FlipperKit/FBDefines --use-libraries --allow-warnings --verbose --skip-import-validation
 
   lint-flipperkit_core_pod:
     runs-on: macos-latest
@@ -31,7 +35,11 @@ jobs:
       - name: Install Dependences
         run: pod repo update
       - name: Lint FlipperKit/Core
-        run: pod lib lint FlipperKit.podspec --subspec=FlipperKit/Core --use-libraries --allow-warnings --verbose --skip-import-validation
+        uses: nick-invision/retry@v2.0.0
+        with:
+          timeout_minutes: 60
+          max_attempts: 3
+          command: pod lib lint FlipperKit.podspec --subspec=FlipperKit/Core --use-libraries --allow-warnings --verbose --skip-import-validation
 
   lint-flipperkit_cppbridge_pod:
     runs-on: macos-latest
@@ -40,7 +48,11 @@ jobs:
       - name: Install Dependences
         run: pod repo update
       - name: Lint FlipperKit/CppBridge
-        run: pod lib lint FlipperKit.podspec --subspec=FlipperKit/CppBridge --include-podspecs=Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
+        uses: nick-invision/retry@v2.0.0
+        with:
+          timeout_minutes: 60
+          max_attempts: 3
+          command: pod lib lint FlipperKit.podspec --subspec=FlipperKit/CppBridge --use-libraries --allow-warnings --verbose --skip-import-validation
 
   lint-flipperkit_dynamic_convert_pod:
     runs-on: macos-latest
@@ -49,7 +61,11 @@ jobs:
       - name: Install Dependences
         run: pod repo update
       - name: Lint FlipperKit/FBCxxFollyDynamicConvert
-        run: pod lib lint FlipperKit.podspec --subspec=FlipperKit/FBCxxFollyDynamicConvert --include-podspecs=Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
+        uses: nick-invision/retry@v2.0.0
+        with:
+          timeout_minutes: 60
+          max_attempts: 3
+          command: pod lib lint FlipperKit.podspec --subspec=FlipperKit/FBCxxFollyDynamicConvert --use-libraries --allow-warnings --verbose --skip-import-validation
 
   lint-flipperkit_port_forwarding_pod:
     runs-on: macos-latest
@@ -58,7 +74,11 @@ jobs:
       - name: Install Dependences
         run: pod repo update
       - name: Lint FlipperKit/FKPortForwarding
-        run: pod lib lint FlipperKit.podspec --subspec=FlipperKit/FKPortForwarding --include-podspecs=Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
+        uses: nick-invision/retry@v2.0.0
+        with:
+          timeout_minutes: 60
+          max_attempts: 3
+          command: pod lib lint FlipperKit.podspec --subspec=FlipperKit/FKPortForwarding --use-libraries --allow-warnings --verbose --skip-import-validation
 
   lint-flipperkit_layout_highlight_pod:
     runs-on: macos-latest
@@ -67,7 +87,11 @@ jobs:
       - name: Install Dependences
         run: pod repo update
       - name: Lint FlipperKit/FlipperKitHighlightOverlay
-        run: pod lib lint FlipperKit.podspec --subspec=FlipperKit/FlipperKitHighlightOverlay --include-podspecs=Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
+        uses: nick-invision/retry@v2.0.0
+        with:
+          timeout_minutes: 60
+          max_attempts: 3
+          command: pod lib lint FlipperKit.podspec --subspec=FlipperKit/FlipperKitHighlightOverlay --use-libraries --allow-warnings --verbose --skip-import-validation
 
   lint-flipperkit_layout_text_searchable_pod:
     runs-on: macos-latest
@@ -75,8 +99,12 @@ jobs:
       - uses: actions/checkout@v2
       - name: Install Dependences
         run: pod repo update
-      - name: Lint FlipperKit/FlipperKitLayoutTextSearchable
-        run: pod lib lint FlipperKit.podspec --subspec=FlipperKit/FlipperKitLayoutTextSearchable --include-podspecs=Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
+      - name: Lint FlipperKit/FlipperKitHighlightOverlay
+        uses: nick-invision/retry@v2.0.0
+        with:
+          timeout_minutes: 60
+          max_attempts: 3
+          command: pod lib lint FlipperKit.podspec --subspec=FlipperKit/FlipperKitLayoutTextSearchable --include-podspecs=Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
 
   lint-flipperkit_layout_helpers_pod:
     runs-on: macos-latest
@@ -85,7 +113,11 @@ jobs:
       - name: Install Dependences
         run: pod repo update
       - name: Lint FlipperKit/FlipperKitLayoutHelpers
-        run: pod lib lint FlipperKit.podspec --subspec=FlipperKit/FlipperKitLayoutHelpers --include-podspecs=Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
+        uses: nick-invision/retry@v2.0.0
+        with:
+          timeout_minutes: 60
+          max_attempts: 3
+          command: pod lib lint FlipperKit.podspec --subspec=FlipperKit/FlipperKitLayoutHelpers --include-podspecs=Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
 
   lint-flipperkit_layout_ios_descriptors_pod:
     runs-on: macos-latest
@@ -94,7 +126,11 @@ jobs:
       - name: Install Dependences
         run: pod repo update
       - name: Lint FlipperKit/FlipperKitLayoutIOSDescriptors
-        run: pod lib lint FlipperKit.podspec --subspec=FlipperKit/FlipperKitLayoutIOSDescriptors --include-podspecs=Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
+        uses: nick-invision/retry@v2.0.0
+        with:
+          timeout_minutes: 60
+          max_attempts: 3
+          command: pod lib lint FlipperKit.podspec --subspec=FlipperKit/FlipperKitLayoutIOSDescriptors --include-podspecs=Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
 
   lint-flipperkit_layout_plugin_pod:
     runs-on: macos-latest
@@ -103,7 +139,11 @@ jobs:
       - name: Install Dependences
         run: pod repo update
       - name: Lint FlipperKit/FlipperKitLayoutPlugin
-        run: pod lib lint FlipperKit.podspec --subspec=FlipperKit/FlipperKitLayoutPlugin --include-podspecs=Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
+        uses: nick-invision/retry@v2.0.0
+        with:
+          timeout_minutes: 60
+          max_attempts: 3
+          command: pod lib lint FlipperKit.podspec --subspec=FlipperKit/FlipperKitLayoutPlugin --include-podspecs=Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
 
   lint-flipperkit_layout_ck_plugin_pod:
     runs-on: macos-latest
@@ -112,7 +152,11 @@ jobs:
       - name: Install Dependences
         run: pod repo update
       - name: Lint FlipperKit/FlipperKitLayoutComponentKitSupport
-        run: pod lib lint FlipperKit.podspec --subspec=FlipperKit/FlipperKitLayoutComponentKitSupport --include-podspecs=Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
+        uses: nick-invision/retry@v2.0.0
+        with:
+          timeout_minutes: 60
+          max_attempts: 3
+          command: pod lib lint FlipperKit.podspec --subspec=FlipperKit/FlipperKitLayoutComponentKitSupport --include-podspecs=Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
 
   lint-flipperkit_network_pod:
     runs-on: macos-latest
@@ -121,7 +165,11 @@ jobs:
       - name: Install Dependences
         run: pod repo update
       - name: Lint FlipperKit/FlipperKitNetworkPlugin
-        run: pod lib lint FlipperKit.podspec --subspec=FlipperKit/FlipperKitNetworkPlugin --include-podspecs=Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
+        uses: nick-invision/retry@v2.0.0
+        with:
+          timeout_minutes: 60
+          max_attempts: 3
+          command: pod lib lint FlipperKit.podspec --subspec=FlipperKit/FlipperKitNetworkPlugin --include-podspecs=Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
 
   lint-flipperkit_skiosnetwork_pod:
     runs-on: macos-latest
@@ -130,7 +178,11 @@ jobs:
       - name: Install Dependences
         run: pod repo update
       - name: Lint FlipperKit/SKIOSNetworkPlugin
-        run: pod lib lint FlipperKit.podspec --subspec=FlipperKit/SKIOSNetworkPlugin --include-podspecs=Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
+        uses: nick-invision/retry@v2.0.0
+        with:
+          timeout_minutes: 60
+          max_attempts: 3
+          command: pod lib lint FlipperKit.podspec --subspec=FlipperKit/SKIOSNetworkPlugin --include-podspecs=Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
 
   lint-flipperkit_user_default_pod:
     runs-on: macos-latest
@@ -139,7 +191,11 @@ jobs:
       - name: Install Dependences
         run: pod repo update
       - name: Lint FlipperKit/FlipperKitUserDefaultsPlugin
-        run: pod lib lint FlipperKit.podspec --subspec=FlipperKit/FlipperKitUserDefaultsPlugin --include-podspecs=Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
+        uses: nick-invision/retry@v2.0.0
+        with:
+          timeout_minutes: 60
+          max_attempts: 3
+          command: pod lib lint FlipperKit.podspec --subspec=FlipperKit/FlipperKitUserDefaultsPlugin --include-podspecs=Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
 
   lint-flipperkit_example_plugin_pod:
     runs-on: macos-latest
@@ -148,7 +204,11 @@ jobs:
       - name: Install Dependences
         run: pod repo update
       - name: Lint FlipperKit/FlipperKitExamplePlugin
-        run: pod lib lint FlipperKit.podspec --subspec=FlipperKit/FlipperKitExamplePlugin --include-podspecs=Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
+        uses: nick-invision/retry@v2.0.0
+        with:
+          timeout_minutes: 60
+          max_attempts: 3
+          command: pod lib lint FlipperKit.podspec --subspec=FlipperKit/FlipperKitExamplePlugin --include-podspecs=Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
 
   lint-flipperkit_react_plugin_pod:
     runs-on: macos-latest
@@ -157,7 +217,11 @@ jobs:
       - name: Install Dependences
         run: pod repo update
       - name: Lint FlipperKit/FlipperKitReactPlugin
-        run: pod lib lint FlipperKit.podspec --subspec=FlipperKit/FlipperKitReactPlugin --include-podspecs=Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
+        uses: nick-invision/retry@v2.0.0
+        with:
+          timeout_minutes: 60
+          max_attempts: 3
+          command: pod lib lint FlipperKit.podspec --subspec=FlipperKit/FlipperKitReactPlugin --include-podspecs=Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
 
   lint-flipper_pod:
     runs-on: macos-latest
@@ -166,4 +230,8 @@ jobs:
       - name: Install Dependences
         run: pod repo update
       - name: Lint Flipper
-        run: pod lib lint Flipper.podspec --use-libraries --allow-warnings --verbose
+        uses: nick-invision/retry@v2.0.0
+        with:
+          timeout_minutes: 60
+          max_attempts: 3
+          command: pod lib lint Flipper.podspec --use-libraries --allow-warnings --verbose
