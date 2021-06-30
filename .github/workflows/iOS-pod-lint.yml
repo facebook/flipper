@@ -6,12 +6,14 @@ on:
       - "xplat/**"
       - "Flipper.podspec"
       - "FlipperKit.podspec"
+      - "iOS-pod-lint.yml"
   pull_request:
     paths:
       - "iOS/**"
       - "xplat/**"
       - "Flipper.podspec"
       - "FlipperKit.podspec"
+      - "iOS-pod-lint.yml"
 
 jobs:
   lint-flipperkit_fbdefines_pod:
