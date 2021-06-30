@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="generator" content="Docusaurus v2.0.0-beta.0">
+<link rel="alternate" type="application/rss+xml" href="/blog/rss.xml" title="Flipper Blog RSS Feed">
+<link rel="alternate" type="application/atom+xml" href="/blog/atom.xml" title="Flipper Blog Atom Feed">
+<link rel="search" type="application/opensearchdescription+xml" title="Flipper" href="/opensearch.xml">
+<script src="https://buttons.github.io/buttons.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+<script src="/js/code-blocks-buttons.js"></script>
+<script src="/js/google-analytics.js"></script><title data-react-helmet="true"></title><link rel="stylesheet" href="/assets/css/styles.5e2bdcea.css">
+<link rel="preload" href="/assets/js/runtime~main.3f543b2a.js" as="script">
+<link rel="preload" href="/assets/js/main.88d7c5de.js" as="script">
+</head>
+<body>
+<script>!function(){function t(t){document.documentElement.setAttribute("data-theme",t)}var e=function(){var t=null;try{t=localStorage.getItem("theme")}catch(t){}return t}();t(null!==e?e:"light")}()</script>
+<div style="display: none; text-align: center; background-color: white; color: black;" id="internaldocs-banner"></div><div id="__docusaurus">
+<div class="main-wrapper mdx-wrapper mdx-page embedded"><main><p>The images plugin allows you to inspect what images were fetched, where they are
+coming from and selectively clear caches. Currently, the plugin supports
+<a href="https://github.com/facebook/fresco/" target="_blank" rel="noopener noreferrer">Fresco</a> as backend.</p><img alt="Images plugin" src="/img/images-plugin.png"><h2><a aria-hidden="true" tabindex="-1" class="anchor enhancedAnchor_2LWZ" id="cache-inspector"></a>Cache Inspector<a class="hash-link" href="#cache-inspector" title="Direct link to heading">#</a></h2><p>Images are grouped by the different caching layers they are stored in. The current
+fill rate of the cache is shown and you can choose to selectively clear caches.</p><h2><a aria-hidden="true" tabindex="-1" class="anchor enhancedAnchor_2LWZ" id="attribution"></a>Attribution<a class="hash-link" href="#attribution" title="Direct link to heading">#</a></h2><p>Images can be annotated with attributes that can help to determine the context in
+which an image was loaded and displayed. You can use that information to filter
+by a particular surface or only inspect images that are in the critical path
+of your application, for instance during cold start.</p><h2><a aria-hidden="true" tabindex="-1" class="anchor enhancedAnchor_2LWZ" id="leak-tracking"></a>Leak Tracking<a class="hash-link" href="#leak-tracking" title="Direct link to heading">#</a></h2><p>Dealing with large resources can require special APIs to be used that circumvent
+usual garbage collection. The plugin allows tracking <code>CloseableReference</code>s for
+Fresco on Android that weren&#x27;t properly closed, which can help you improve
+the performance of your app.</p></main></div></div>
+<script src="/assets/js/runtime~main.3f543b2a.js"></script>
+<script src="/assets/js/main.88d7c5de.js"></script>
+</body>
+</html>
