@@ -6,30 +6,233 @@ on:
       - "xplat/**"
       - "Flipper.podspec"
       - "FlipperKit.podspec"
+      - "iOS-pod-lint.yml"
   pull_request:
     paths:
       - "iOS/**"
       - "xplat/**"
       - "Flipper.podspec"
       - "FlipperKit.podspec"
-jobs:
-  lint-flipperkit_pod:
-    runs-on: macos-latest
+      - "iOS-pod-lint.yml"
 
+jobs:
+  lint-flipperkit_fbdefines_pod:
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
       - name: Install Dependences
         run: pod repo update
+      - name: Lint FlipperKit/FBDefines
+        uses: nick-invision/retry@v2.0.0
+        with:
+          timeout_minutes: 60
+          max_attempts: 3
+          command: pod lib lint FlipperKit.podspec --subspec=FlipperKit/FBDefines --use-libraries --allow-warnings --verbose --skip-import-validation
 
-      - name: Lint FlipperKit
-        run: pod lib lint FlipperKit.podspec --use-libraries --allow-warnings --verbose --skip-import-validation --include-podspecs=Flipper.podspec
+  lint-flipperkit_core_pod:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Dependences
+        run: pod repo update
+      - name: Lint FlipperKit/Core
+        uses: nick-invision/retry@v2.0.0
+        with:
+          timeout_minutes: 60
+          max_attempts: 3
+          command: pod lib lint FlipperKit.podspec --subspec=FlipperKit/Core --use-libraries --allow-warnings --verbose --skip-import-validation
+
+  lint-flipperkit_cppbridge_pod:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Dependences
+        run: pod repo update
+      - name: Lint FlipperKit/CppBridge
+        uses: nick-invision/retry@v2.0.0
+        with:
+          timeout_minutes: 60
+          max_attempts: 3
+          command: pod lib lint FlipperKit.podspec --subspec=FlipperKit/CppBridge --use-libraries --allow-warnings --verbose --skip-import-validation
+
+  lint-flipperkit_dynamic_convert_pod:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Dependences
+        run: pod repo update
+      - name: Lint FlipperKit/FBCxxFollyDynamicConvert
+        uses: nick-invision/retry@v2.0.0
+        with:
+          timeout_minutes: 60
+          max_attempts: 3
+          command: pod lib lint FlipperKit.podspec --subspec=FlipperKit/FBCxxFollyDynamicConvert --use-libraries --allow-warnings --verbose --skip-import-validation
+
+  lint-flipperkit_port_forwarding_pod:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Dependences
+        run: pod repo update
+      - name: Lint FlipperKit/FKPortForwarding
+        uses: nick-invision/retry@v2.0.0
+        with:
+          timeout_minutes: 60
+          max_attempts: 3
+          command: pod lib lint FlipperKit.podspec --subspec=FlipperKit/FKPortForwarding --use-libraries --allow-warnings --verbose --skip-import-validation
+
+  lint-flipperkit_layout_highlight_pod:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Dependences
+        run: pod repo update
+      - name: Lint FlipperKit/FlipperKitHighlightOverlay
+        uses: nick-invision/retry@v2.0.0
+        with:
+          timeout_minutes: 60
+          max_attempts: 3
+          command: pod lib lint FlipperKit.podspec --subspec=FlipperKit/FlipperKitHighlightOverlay --use-libraries --allow-warnings --verbose --skip-import-validation
+
+  lint-flipperkit_layout_text_searchable_pod:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Dependences
+        run: pod repo update
+      - name: Lint FlipperKit/FlipperKitHighlightOverlay
+        uses: nick-invision/retry@v2.0.0
+        with:
+          timeout_minutes: 60
+          max_attempts: 3
+          command: pod lib lint FlipperKit.podspec --subspec=FlipperKit/FlipperKitLayoutTextSearchable --include-podspecs=Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
+
+  lint-flipperkit_layout_helpers_pod:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Dependences
+        run: pod repo update
+      - name: Lint FlipperKit/FlipperKitLayoutHelpers
+        uses: nick-invision/retry@v2.0.0
+        with:
+          timeout_minutes: 60
+          max_attempts: 3
+          command: pod lib lint FlipperKit.podspec --subspec=FlipperKit/FlipperKitLayoutHelpers --include-podspecs=Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
+
+  lint-flipperkit_layout_ios_descriptors_pod:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Dependences
+        run: pod repo update
+      - name: Lint FlipperKit/FlipperKitLayoutIOSDescriptors
+        uses: nick-invision/retry@v2.0.0
+        with:
+          timeout_minutes: 60
+          max_attempts: 3
+          command: pod lib lint FlipperKit.podspec --subspec=FlipperKit/FlipperKitLayoutIOSDescriptors --include-podspecs=Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
+
+  lint-flipperkit_layout_plugin_pod:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Dependences
+        run: pod repo update
+      - name: Lint FlipperKit/FlipperKitLayoutPlugin
+        uses: nick-invision/retry@v2.0.0
+        with:
+          timeout_minutes: 60
+          max_attempts: 3
+          command: pod lib lint FlipperKit.podspec --subspec=FlipperKit/FlipperKitLayoutPlugin --include-podspecs=Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
+
+  lint-flipperkit_layout_ck_plugin_pod:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Dependences
+        run: pod repo update
+      - name: Lint FlipperKit/FlipperKitLayoutComponentKitSupport
+        uses: nick-invision/retry@v2.0.0
+        with:
+          timeout_minutes: 60
+          max_attempts: 3
+          command: pod lib lint FlipperKit.podspec --subspec=FlipperKit/FlipperKitLayoutComponentKitSupport --include-podspecs=Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
+
+  lint-flipperkit_network_pod:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Dependences
+        run: pod repo update
+      - name: Lint FlipperKit/FlipperKitNetworkPlugin
+        uses: nick-invision/retry@v2.0.0
+        with:
+          timeout_minutes: 60
+          max_attempts: 3
+          command: pod lib lint FlipperKit.podspec --subspec=FlipperKit/FlipperKitNetworkPlugin --include-podspecs=Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
+
+  lint-flipperkit_skiosnetwork_pod:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Dependences
+        run: pod repo update
+      - name: Lint FlipperKit/SKIOSNetworkPlugin
+        uses: nick-invision/retry@v2.0.0
+        with:
+          timeout_minutes: 60
+          max_attempts: 3
+          command: pod lib lint FlipperKit.podspec --subspec=FlipperKit/SKIOSNetworkPlugin --include-podspecs=Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
+
+  lint-flipperkit_user_default_pod:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Dependences
+        run: pod repo update
+      - name: Lint FlipperKit/FlipperKitUserDefaultsPlugin
+        uses: nick-invision/retry@v2.0.0
+        with:
+          timeout_minutes: 60
+          max_attempts: 3
+          command: pod lib lint FlipperKit.podspec --subspec=FlipperKit/FlipperKitUserDefaultsPlugin --include-podspecs=Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
+
+  lint-flipperkit_example_plugin_pod:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Dependences
+        run: pod repo update
+      - name: Lint FlipperKit/FlipperKitExamplePlugin
+        uses: nick-invision/retry@v2.0.0
+        with:
+          timeout_minutes: 60
+          max_attempts: 3
+          command: pod lib lint FlipperKit.podspec --subspec=FlipperKit/FlipperKitExamplePlugin --include-podspecs=Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
+
+  lint-flipperkit_react_plugin_pod:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Dependences
+        run: pod repo update
+      - name: Lint FlipperKit/FlipperKitReactPlugin
+        uses: nick-invision/retry@v2.0.0
+        with:
+          timeout_minutes: 60
+          max_attempts: 3
+          command: pod lib lint FlipperKit.podspec --subspec=FlipperKit/FlipperKitReactPlugin --include-podspecs=Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
 
   lint-flipper_pod:
     runs-on: macos-latest
-
     steps:
       - uses: actions/checkout@v2
       - name: Install Dependences
         run: pod repo update
       - name: Lint Flipper
-        run: pod lib lint Flipper.podspec --use-libraries --allow-warnings --verbose
+        uses: nick-invision/retry@v2.0.0
+        with:
+          timeout_minutes: 60
+          max_attempts: 3
+          command: pod lib lint Flipper.podspec --use-libraries --allow-warnings --verbose
