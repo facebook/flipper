@@ -301,18 +301,21 @@ export function computePluginLists(
 
   // process problematic plugins
   plugins.disabledPlugins.forEach((plugin) => {
-    unavailablePlugins.push([plugin, 'Plugin is disabled by configuration']);
+    unavailablePlugins.push([
+      plugin,
+      `Plugin '${plugin.title}' is disabled by configuration`,
+    ]);
   });
   plugins.gatekeepedPlugins.forEach((plugin) => {
     unavailablePlugins.push([
       plugin,
-      `This plugin is only available to members of gatekeeper '${plugin.gatekeeper}'`,
+      `Plugin '${plugin.title}' is only available to members of gatekeeper '${plugin.gatekeeper}'`,
     ]);
   });
   plugins.failedPlugins.forEach(([plugin, error]) => {
     unavailablePlugins.push([
       plugin,
-      `Flipper failed to load this plugin: '${error}'`,
+      `Plugin '${plugin.title}' failed to load: '${error}'`,
     ]);
   });
 

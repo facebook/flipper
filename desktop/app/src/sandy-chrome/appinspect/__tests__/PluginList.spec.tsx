@@ -244,7 +244,7 @@ describe('basic getActiveDevice with metro present', () => {
       unavailablePlugins: [
         [
           gateKeepedPlugin,
-          "This plugin is only available to members of gatekeeper 'not for you'",
+          "Plugin 'Gatekeeped Plugin' is only available to members of gatekeeper 'not for you'",
         ],
         [
           unsupportedDevicePlugin.details,

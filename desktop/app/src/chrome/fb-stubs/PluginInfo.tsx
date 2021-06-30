@@ -7,94 +7,46 @@
  * @format
  */
 
-import React, {useCallback, useMemo} from 'react';
-import {Label, ToggleButton, SmallText, styled, Layout} from '../../ui';
-import {useDispatch, useStore} from '../../utils/useStore';
-import {switchPlugin} from '../../reducers/pluginManager';
-import {isPluginEnabled} from '../../reducers/connections';
-import {theme} from 'flipper-plugin';
-import {PluginDefinition} from '../../plugin';
+import React from 'react';
 import {useSelector} from 'react-redux';
-import {getActiveClient} from '../../selectors/connections';
+import {getActivePlugin} from '../../selectors/connections';
+import {ActivePluginListItem} from '../../utils/pluginUtils';
+import {Layout} from '../../ui';
+import {CenteredContainer} from '../../sandy-chrome/CenteredContainer';
+import {Typography} from 'antd';
+import {PluginActions} from '../PluginActions';
+import {CoffeeOutlined} from '@ant-design/icons';
 
-const Waiting = styled(Layout.Container)({
-  width: '100%',
-  height: '100%',
-  flexGrow: 1,
-  alignItems: 'center',
-  justifyContent: 'center',
-  textAlign: 'center',
-});
+const {Text, Title} = Typography;
 
 export function PluginInfo() {
-  const pluginId = useStore((state) => state.connections.selectedPlugin);
-  const enabledPlugins = useStore((state) => state.connections.enabledPlugins);
-  const enabledDevicePlugins = useStore(
-    (state) => state.connections.enabledDevicePlugins,
-  );
-  const activeClient = useSelector(getActiveClient);
-  const clientPlugins = useStore((state) => state.plugins.clientPlugins);
-  const devicePlugins = useStore((state) => state.plugins.devicePlugins);
-  const selectedClientId = activeClient?.id ?? null;
-  const selectedApp = activeClient?.query.app ?? null;
-  const disabledPlugin = useMemo(
-    () =>
-      pluginId &&
-      !isPluginEnabled(
-        enabledPlugins,
-        enabledDevicePlugins,
-        selectedClientId,
-        pluginId,
-      )
-        ? clientPlugins.get(pluginId) ?? devicePlugins.get(pluginId)
-        : undefined,
-    [
-      pluginId,
-      enabledPlugins,
-      enabledDevicePlugins,
-      selectedClientId,
-      clientPlugins,
-      devicePlugins,
-    ],
-  );
-  return disabledPlugin ? (
-    <PluginEnabler plugin={disabledPlugin} selectedApp={selectedApp} />
-  ) : null;
+  const activePlugin = useSelector(getActivePlugin);
+  if (activePlugin) {
+    return <PluginMarketplace activePlugin={activePlugin} />;
+  } else {
+    return null;
+  }
 }
 
-function PluginEnabler({
-  plugin,
-  selectedApp,
+function PluginMarketplace({
+  activePlugin,
 }: {
-  plugin: PluginDefinition;
-  selectedApp: string | null;
+  activePlugin: ActivePluginListItem;
 }) {
-  const dispatch = useDispatch();
-  const enablePlugin = useCallback(() => {
-    dispatch(switchPlugin({plugin, selectedApp: selectedApp ?? undefined}));
-  }, [dispatch, plugin, selectedApp]);
   return (
-    <Layout.Container grow>
-      <Waiting>
-        <Layout.Container>
-          <Layout.Horizontal>
-            <Label
-              style={{
-                fontSize: '16px',
-                color: theme.textColorSecondary,
-                textTransform: 'uppercase',
-              }}>
-              {plugin.title}
-            </Label>
-          </Layout.Horizontal>
-        </Layout.Container>
-        <Layout.Container>
-          <ToggleButton toggled={false} onClick={enablePlugin} large />
-        </Layout.Container>
-        <Layout.Container>
-          <SmallText>Click to enable this plugin</SmallText>
-        </Layout.Container>
-      </Waiting>
-    </Layout.Container>
+    <CenteredContainer>
+      <Layout.Container center gap style={{maxWidth: 350}}>
+        <CoffeeOutlined style={{fontSize: '24px'}} />
+        <Title level={4}>
+          Plugin '{activePlugin.details.title}' is {activePlugin.status}
+        </Title>
+        {activePlugin.status === 'unavailable' ? (
+          <Text style={{textAlign: 'center'}}>{activePlugin.reason}.</Text>
+        ) : null}
+        <Layout.Horizontal gap>
+          <PluginActions activePlugin={activePlugin} type="link" />
+        </Layout.Horizontal>
+      </Layout.Container>
+    </CenteredContainer>
   );
 }
