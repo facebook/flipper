@@ -1,3 +1,11 @@
+# 0.96.0 (30/6/2021)
+
+ * [D29388968](https://github.com/facebook/flipper/search?q=D29388968&type=Commits) -  [Network] The network plugin will now detect utf-8 strings if no content header is present
+ * [D29265677](https://github.com/facebook/flipper/search?q=D29265677&type=Commits) -  'flipper' package no longer uses or exposes immutablejs, or ManagedTable_Immutable
+ * [D29327499](https://github.com/facebook/flipper/search?q=D29327499&type=Commits) -  [Flipper] Improve serialisation mechanism format & speed
+ * [D29436059](https://github.com/facebook/flipper/search?q=D29436059&type=Commits) -  Improved dark mode support!
+
+
 # 0.94.1 (16/6/2021)
 
  * [D28314408](https://github.com/facebook/flipper/search?q=D28314408&type=Commits) -  [MobileConfig] Fix issues with scrolling not working and several other improvements
