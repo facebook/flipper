@@ -49,7 +49,6 @@
     "p-map": "^4.0.0",
     "promise-retry": "^2.0.1",
     "promisify-child-process": "^4.1.0",
-    "prop-types": "^15.6.0",
     "react": "17.0.2",
     "react-async": "^10.0.0",
     "react-debounce-render": "^7.0.0",

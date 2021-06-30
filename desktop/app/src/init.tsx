@@ -29,7 +29,6 @@ import {cache} from '@emotion/css';
 import {CacheProvider} from '@emotion/react';
 import {enableMapSet} from 'immer';
 import os from 'os';
-import {PopoverProvider} from './ui/components/PopoverProvider';
 import {initializeFlipperLibImplementation} from './utils/flipperLibImplementation';
 import {enableConsoleHook} from './chrome/ConsoleLogs';
 import {sideEffect} from './utils/sideEffect';
@@ -131,13 +130,11 @@ class AppFrame extends React.Component<
           <PersistGate persistor={persistor}>
             <CacheProvider value={cache}>
               <TooltipProvider>
-                <PopoverProvider>
-                  <ContextMenuProvider>
-                    <_NuxManagerContext.Provider value={_createNuxManager()}>
-                      <SandyApp />
-                    </_NuxManagerContext.Provider>
-                  </ContextMenuProvider>
-                </PopoverProvider>
+                <ContextMenuProvider>
+                  <_NuxManagerContext.Provider value={_createNuxManager()}>
+                    <SandyApp />
+                  </_NuxManagerContext.Provider>
+                </ContextMenuProvider>
               </TooltipProvider>
             </CacheProvider>
           </PersistGate>

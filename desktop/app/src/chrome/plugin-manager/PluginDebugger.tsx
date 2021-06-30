@@ -12,7 +12,7 @@ import Client from '../../Client';
 import {TableBodyRow} from '../../ui/components/table/types';
 import React, {Component, Fragment} from 'react';
 import {connect} from 'react-redux';
-import {Text, ManagedTable, styled, colors, Link, Bordered} from '../../ui';
+import {Text, ManagedTable, styled, colors, Link} from '../../ui';
 import StatusIndicator from '../../ui/components/StatusIndicator';
 import {State as Store} from '../../reducers';
 import {PluginDefinition} from '../../plugin';
@@ -28,7 +28,7 @@ const Ellipsis = styled(Text)({
   whiteSpace: 'nowrap',
 });
 
-const TableContainer = styled(Bordered)({
+const TableContainer = styled.div({
   marginTop: 10,
   height: 400,
 });

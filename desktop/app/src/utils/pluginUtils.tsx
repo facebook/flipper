@@ -7,7 +7,7 @@
  * @format
  */
 
-import {PluginDefinition} from '../plugin';
+import type {PluginDefinition} from '../plugin';
 import type {State} from '../reducers';
 import type {State as PluginsState} from '../reducers/plugins';
 import type BaseDevice from '../devices/BaseDevice';

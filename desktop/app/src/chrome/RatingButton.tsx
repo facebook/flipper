@@ -10,13 +10,11 @@
 import React, {
   Component,
   ReactElement,
-  RefObject,
   useCallback,
   useEffect,
   useState,
 } from 'react';
 import {
-  Glyph,
   FlexColumn,
   FlexRow,
   Button,
@@ -25,7 +23,6 @@ import {
   Input,
   Link,
 } from '../ui';
-import LegacyPopover from '../ui/components/Popover2';
 import {LeftRailButton} from '../sandy-chrome/LeftRail';
 import GK from '../fb-stubs/GK';
 import * as UserFeedback from '../fb-stubs/UserFeedback';
@@ -35,16 +32,6 @@ import {Popover, Rate} from 'antd';
 import {useStore} from '../utils/useStore';
 import {isLoggedIn} from '../fb-stubs/user';
 import {useValue} from 'flipper-plugin';
-
-type PropsFromState = {
-  sessionId: string | null;
-};
-
-type State = {
-  promptData: FeedbackPrompt | null;
-  isShown: boolean;
-  hasTriggered: boolean;
-};
 
 type NextAction = 'select-rating' | 'leave-comment' | 'finished';
 
@@ -273,100 +260,6 @@ class FeedbackComponent extends Component<
         </Row>
         {body}
       </FlexColumn>
-    );
-  }
-}
-
-class RatingButton extends Component<PropsFromState, State> {
-  state: State = {
-    promptData: null,
-    isShown: false,
-    hasTriggered: false,
-  };
-
-  glyphRef: RefObject<HTMLDivElement> = React.createRef();
-
-  constructor(props: PropsFromState) {
-    super(props);
-    if (GK.get('flipper_enable_star_ratiings')) {
-      UserFeedback.getPrompt().then((prompt) => {
-        this.setState({promptData: prompt});
-        setTimeout(this.triggerPopover.bind(this), 30000);
-      });
-    }
-  }
-
-  onClick() {
-    const willBeShown = !this.state.isShown;
-    this.setState({isShown: willBeShown, hasTriggered: true});
-    if (!willBeShown) {
-      UserFeedback.dismiss(this.props.sessionId);
-    }
-  }
-
-  submitRating(rating: number) {
-    UserFeedback.submitRating(rating, this.props.sessionId);
-  }
-
-  submitComment(
-    rating: number,
-    comment: string,
-    selectedPredefinedComments: Array<string>,
-    allowUserInfoSharing: boolean,
-  ) {
-    UserFeedback.submitComment(
-      rating,
-      comment,
-      selectedPredefinedComments,
-      allowUserInfoSharing,
-      this.props.sessionId,
-    );
-  }
-
-  triggerPopover() {
-    if (!this.state.hasTriggered) {
-      this.setState({isShown: true, hasTriggered: true});
-    }
-  }
-
-  render() {
-    const promptData = this.state.promptData;
-    if (!promptData) {
-      return null;
-    }
-    if (
-      !promptData.shouldPopup ||
-      (this.state.hasTriggered && !this.state.isShown)
-    ) {
-      return null;
-    }
-    return (
-      <div style={{position: 'relative'}}>
-        <div
-          role="button"
-          tabIndex={0}
-          onClick={this.onClick.bind(this)}
-          ref={this.glyphRef}>
-          <Glyph
-            name="star"
-            color="grey"
-            variant={this.state.isShown ? 'filled' : 'outline'}
-          />
-        </div>
-        {this.state.isShown ? (
-          <LegacyPopover id="rating-button" targetRef={this.glyphRef}>
-            <FeedbackComponent
-              submitRating={this.submitRating.bind(this)}
-              submitComment={this.submitComment.bind(this)}
-              close={() => {
-                this.setState({isShown: false});
-              }}
-              dismiss={this.onClick.bind(this)}
-              promptData={promptData}
-            />
-          </LegacyPopover>
-        ) : null}
-      </div>
     );
   }
 }

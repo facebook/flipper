@@ -20,7 +20,6 @@ import {
   ACTIVE_SHEET_CHANGELOG,
 } from './reducers/application';
 import {setStaticView} from './reducers/connections';
-import SupportRequestFormV2 from './fb-stubs/SupportRequestFormV2';
 import {Store} from './reducers/';
 import electron, {MenuItemConstructorOptions} from 'electron';
 import {notNull} from './utils/typeUtils';
@@ -270,7 +269,9 @@ function getTemplate(
       label: 'Create...',
       click: function () {
         // Dispatch an action to open the export screen of Support Request form
-        store.dispatch(setStaticView(SupportRequestFormV2));
+        store.dispatch(
+          setStaticView(require('./fb-stubs/SupportRequestFormV2').default),
+        );
       },
     },
   ];
