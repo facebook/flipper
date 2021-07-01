@@ -370,6 +370,7 @@ function getFavoritePlugins(
 export function computeActivePluginList({
   enabledPlugins,
   devicePlugins,
+  metroPlugins,
   disabledPlugins,
   downloadablePlugins,
   unavailablePlugins,
@@ -383,6 +384,13 @@ export function computeActivePluginList({
     };
   }
   for (const plugin of devicePlugins) {
+    pluginList[plugin.id] = {
+      status: 'enabled',
+      details: plugin.details,
+      definition: plugin,
+    };
+  }
+  for (const plugin of metroPlugins) {
     pluginList[plugin.id] = {
       status: 'enabled',
       details: plugin.details,

@@ -36,9 +36,9 @@ export const getActiveClient = createSelector(
 
 export const getMetroDevice = createSelector(getDevices, (devices) => {
   return (
-    (devices.find(
-      (device) => device.os === 'Metro' && !device.isArchived,
-    ) as MetroDevice) ?? null
+    (devices.find((device) => device.os === 'Metro' && !device.isArchived) as
+      | MetroDevice
+      | undefined) ?? null
   );
 });
 
