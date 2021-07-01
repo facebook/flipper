@@ -9,7 +9,11 @@
 
 import {produce, Draft, enableMapSet} from 'immer';
 import {useState, useEffect} from 'react';
-import {Persistable, registerStorageAtom} from '../plugin/PluginBase';
+import {
+  getCurrentPluginInstance,
+  Persistable,
+  registerStorageAtom,
+} from '../plugin/PluginBase';
 import {
   deserializeShallowObject,
   makeShallowSerializable,
@@ -85,6 +89,12 @@ type StateOptions = {
    * If set, the atom will be saved / loaded under the key provided
    */
   persist?: string;
+  /**
+   * Store this state in local storage, instead of as part of the plugin import / export.
+   * State stored in local storage is shared between the same plugin
+   * across multiple clients/ devices, but not actively synced.
+   */
+  persistToLocalStorage?: boolean;
 };
 
 export function createState<T>(
@@ -97,8 +107,34 @@ export function createState(
   options: StateOptions = {},
 ): Atom<any> {
   const atom = new AtomValue(initialValue);
-  registerStorageAtom(options.persist, atom);
+  if (options?.persistToLocalStorage) {
+    syncAtomWithLocalStorage(options, atom);
+  } else {
+    registerStorageAtom(options.persist, atom);
+  }
   return atom;
+}
+
+function syncAtomWithLocalStorage(options: StateOptions, atom: AtomValue<any>) {
+  if (!options?.persist) {
+    throw new Error(
+      "The 'persist' option should be set when 'persistToLocalStorage' is set",
+    );
+  }
+  const pluginInstance = getCurrentPluginInstance();
+  if (!pluginInstance) {
+    throw new Error(
+      "The 'persistToLocalStorage' option cannot be used outside a plugin definition",
+    );
+  }
+  const storageKey = `flipper:${pluginInstance.definition.id}:atom:${options.persist}`;
+  const storedValue = window.localStorage.getItem(storageKey);
+  if (storedValue != null) {
+    atom.deserialize(JSON.parse(storedValue));
+  }
+  atom.subscribe(() => {
+    window.localStorage.setItem(storageKey, JSON.stringify(atom.serialize()));
+  });
 }
 
 export function useValue<T>(atom: ReadOnlyAtom<T>): T;
