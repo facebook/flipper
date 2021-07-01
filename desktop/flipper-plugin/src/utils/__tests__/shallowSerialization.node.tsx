@@ -225,16 +225,20 @@ test('test serialize and deserializeShallowObject function for non Object input'
   );
 });
 
-test('test makeObjectSerializable and deserializeShallowObject function for Date input', () => {
-  const date = new Date(2021, 1, 29, 10, 31, 7, 205);
-  expect(makeShallowSerializable(date)).toMatchInlineSnapshot(`
+if (process.platform !== 'win32') {
+  test('test makeObjectSerializable and deserializeShallowObject function for Date input', () => {
+    const date = new Date(2021, 1, 29, 10, 31, 7, 205);
+    expect(makeShallowSerializable(date)).toMatchInlineSnapshot(`
     Object {
       "__flipper_object_type__": "Date",
       "data": 1614555067205,
     }
   `);
-  expect(deserializeShallowObject(makeShallowSerializable(date))).toEqual(date);
-});
+    expect(deserializeShallowObject(makeShallowSerializable(date))).toEqual(
+      date,
+    );
+  });
+}
 
 test('test makeObjectSerializable and deserializeShallowObject function for Map of Sets', () => {
   const map = new Map([
