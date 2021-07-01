@@ -16,7 +16,7 @@ import {Logger} from '../fb-interfaces/Logger';
 
 import {LeftRail} from './LeftRail';
 import {useStore, useDispatch} from '../utils/useStore';
-import {ConsoleLogs} from '../chrome/ConsoleLogs';
+import {FlipperDevTools} from '../chrome/FlipperDevTools';
 import {setStaticView} from '../reducers/connections';
 import {
   ACTIVE_SHEET_CHANGELOG_RECENT_ONLY,
@@ -79,7 +79,7 @@ export function SandyApp() {
       }
       switch (newSelection) {
         case 'flipperlogs':
-          dispatch(setStaticView(ConsoleLogs));
+          dispatch(setStaticView(FlipperDevTools));
           break;
         default:
       }

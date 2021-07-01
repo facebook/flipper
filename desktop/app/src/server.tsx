@@ -37,7 +37,6 @@ import {WebsocketClientFlipperConnection} from './utils/js-client-server-utils/w
 import querystring from 'querystring';
 import {IncomingMessage} from 'http';
 import ws from 'ws';
-import {initSelfInpector} from './utils/self-inspection/selfInspectionUtils';
 import DummyDevice from './devices/DummyDevice';
 import BaseDevice from './devices/BaseDevice';
 import {sideEffect} from './utils/sideEffect';
@@ -106,10 +105,6 @@ class Server extends EventEmitter {
   }
 
   init() {
-    if (process.env.NODE_ENV === 'development') {
-      initSelfInpector(this.store, this.logger, this, this.connections);
-    }
-
     const {insecure, secure} = this.store.getState().application.serverPorts;
     this.initialisePromise = this.certificateProvider
       .loadSecureServerConfig()

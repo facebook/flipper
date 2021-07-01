@@ -31,10 +31,13 @@ import {
   _SandyPluginInstance,
   _getFlipperLibImplementation,
 } from 'flipper-plugin';
-import {flipperMessagesClientPlugin} from './utils/self-inspection/plugins/FlipperMessagesClientPlugin';
 import {freeze} from 'immer';
 import GK from './fb-stubs/GK';
 import {message} from 'antd';
+import {
+  isFlipperMessageDebuggingEnabled,
+  registerFlipperDebugMessage,
+} from './chrome/FlipperMessages';
 
 type Plugins = Set<string>;
 type PluginsArr = Array<string>;
@@ -384,11 +387,8 @@ export default class Client extends EventEmitter {
 
       const {id, method} = data;
 
-      if (
-        data.params?.api != 'flipper-messages' &&
-        flipperMessagesClientPlugin.isConnected()
-      ) {
-        flipperMessagesClientPlugin.newMessage({
+      if (isFlipperMessageDebuggingEnabled()) {
+        registerFlipperDebugMessage({
           device: this.deviceSync?.displayTitle(),
           app: this.query.app,
           flipperInternalMethod: method,
@@ -416,7 +416,7 @@ export default class Client extends EventEmitter {
           const params: Params = data.params;
           const bytes = msg.length * 2; // string lengths are measured in UTF-16 units (not characters), so 2 bytes per char
           emitBytesReceived(params.api, bytes);
-          if (bytes > 5 * 1024 * 1024 && params.api !== 'flipper-messages') {
+          if (bytes > 5 * 1024 * 1024) {
             console.warn(
               `Plugin '${params.api}' received excessively large message for '${
                 params.method
@@ -462,12 +462,7 @@ export default class Client extends EventEmitter {
               }
             }
           }
-          // TODO: Flipper debug as full client is overkill, clean up
-          if (
-            !handled &&
-            !isProduction() &&
-            params.api !== 'flipper-messages'
-          ) {
+          if (!handled && !isProduction()) {
             console.warn(`Unhandled message ${params.api}.${params.method}`);
           }
         }
@@ -597,8 +592,8 @@ export default class Client extends EventEmitter {
 
               this.onResponse(response, resolve, reject);
 
-              if (flipperMessagesClientPlugin.isConnected()) {
-                flipperMessagesClientPlugin.newMessage({
+              if (isFlipperMessageDebuggingEnabled()) {
+                registerFlipperDebugMessage({
                   device: this.deviceSync?.displayTitle(),
                   app: this.query.app,
                   flipperInternalMethod: method,
@@ -625,8 +620,8 @@ export default class Client extends EventEmitter {
         );
       }
 
-      if (flipperMessagesClientPlugin.isConnected()) {
-        flipperMessagesClientPlugin.newMessage({
+      if (isFlipperMessageDebuggingEnabled()) {
+        registerFlipperDebugMessage({
           device: this.deviceSync?.displayTitle(),
           app: this.query.app,
           flipperInternalMethod: method,
@@ -711,8 +706,8 @@ export default class Client extends EventEmitter {
       this.connection.fireAndForget({data: JSON.stringify(data)});
     }
 
-    if (flipperMessagesClientPlugin.isConnected()) {
-      flipperMessagesClientPlugin.newMessage({
+    if (isFlipperMessageDebuggingEnabled()) {
+      registerFlipperDebugMessage({
         device: this.deviceSync?.displayTitle(),
         app: this.query.app,
         flipperInternalMethod: method,

@@ -48,7 +48,7 @@ import {Typography} from 'antd';
 import {CoffeeOutlined, SearchOutlined, PushpinFilled} from '@ant-design/icons';
 import {useAssertStableRef} from '../../utils/useAssertStableRef';
 import {Formatter} from '../DataFormatter';
-import {usePluginInstance} from '../../plugin/PluginContext';
+import {usePluginInstanceMaybe} from '../../plugin/PluginContext';
 import {debounce} from 'lodash';
 import {useInUnitTest} from '../../utils/useInUnitTest';
 import {createDataSource} from 'flipper-plugin/src/state/createDataSource';
@@ -142,7 +142,7 @@ export function DataTable<T extends object>(
   const isUnitTest = useInUnitTest();
 
   // eslint-disable-next-line
-  const scope = isUnitTest ? "" : usePluginInstance().pluginKey;
+  const scope = isUnitTest ? "" : usePluginInstanceMaybe()?.pluginKey ?? "";
   const virtualizerRef = useRef<DataSourceVirtualizer | undefined>();
   const [tableState, dispatch] = useReducer(
     dataTableManagerReducer as DataTableReducer<T>,

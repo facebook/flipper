@@ -7,45 +7,67 @@
  * @format
  */
 
-import {TestUtils} from 'flipper-plugin';
+import * as React from 'react';
+import {act, render} from '@testing-library/react';
 
-import * as Plugin from '../';
-import {MessageRow} from '../';
+import {
+  clearFlipperDebugMessages,
+  FlipperMessages,
+  getFlipperDebugMessages,
+  MessageRow,
+  registerFlipperDebugMessage,
+  setFlipperMessageDebuggingEnabled,
+} from '../FlipperMessages';
 
 const fixRowTimestamps = (r: MessageRow): MessageRow => ({
   ...r,
   time: new Date(Date.UTC(0, 0, 0, 0, 0, 0)),
 });
 
+beforeEach(() => {
+  clearFlipperDebugMessages();
+  setFlipperMessageDebuggingEnabled(true);
+});
+
+afterEach(() => {
+  clearFlipperDebugMessages();
+  setFlipperMessageDebuggingEnabled(false);
+});
+
 test('It can store rows', () => {
-  const {instance, ...plugin} = TestUtils.startPlugin(Plugin);
-
-  expect(instance.rows.records()).toEqual([]);
-  expect(instance.highlightedRow.get()).toBeUndefined();
-
-  plugin.sendEvent('newMessage', {
+  registerFlipperDebugMessage({
     app: 'Flipper',
-    direction: 'toFlipper',
+    direction: 'toFlipper:message',
   });
 
-  plugin.sendEvent('newMessage', {
+  registerFlipperDebugMessage({
     app: 'FB4A',
-    direction: 'toClient',
+    direction: 'toClient:call',
     device: 'Android Phone',
     payload: {hello: 'world'},
   });
 
-  expect(instance.rows.records().map(fixRowTimestamps)).toMatchInlineSnapshot(`
+  setFlipperMessageDebuggingEnabled(false);
+
+  registerFlipperDebugMessage({
+    app: 'FB4A',
+    direction: 'toClient:call',
+    device: 'Android PhoneTEst',
+    payload: {hello: 'world'},
+  });
+
+  expect(getFlipperDebugMessages().map(fixRowTimestamps))
+    .toMatchInlineSnapshot(`
     Array [
       Object {
         "app": "Flipper",
-        "direction": "toFlipper",
+        "direction": "toFlipper:message",
         "time": 1899-12-31T00:00:00.000Z,
       },
       Object {
         "app": "FB4A",
         "device": "Android Phone",
-        "direction": "toClient",
+        "direction": "toClient:call",
         "payload": Object {
           "hello": "world",
         },
@@ -56,61 +78,43 @@ test('It can store rows', () => {
 });
 
 test('It can clear', () => {
-  const {instance, ...plugin} = TestUtils.startPlugin(Plugin);
-
-  expect(instance.rows.records()).toEqual([]);
-  expect(instance.highlightedRow.get()).toBeUndefined();
-
-  plugin.sendEvent('newMessage', {
+  registerFlipperDebugMessage({
     app: 'Flipper',
-    direction: 'toFlipper',
+    direction: 'toFlipper:message',
   });
 
-  instance.clear();
-
-  const newRows = instance.rows.records().map(fixRowTimestamps);
-  expect(newRows).toEqual([]);
-});
-
-test('It can highlight a row', () => {
-  const {instance, ...plugin} = TestUtils.startPlugin(Plugin);
-
-  plugin.sendEvent('newMessage', {
-    app: 'Flipper',
-    direction: 'toFlipper',
-  });
-
-  instance.setHighlightedRow(instance.rows.records()[0]);
-
-  expect(instance.rows.records()).toHaveLength(1);
-  expect(instance.highlightedRow.get()?.app).toEqual('Flipper');
+  clearFlipperDebugMessages();
+  expect(getFlipperDebugMessages()).toEqual([]);
 });
 
 test('It can render empty', async () => {
-  const {renderer} = TestUtils.renderPlugin(Plugin);
+  const renderer = render(<FlipperMessages />);
 
   // Default message without any highlighted rows.
   expect(
     await renderer.findByText('Select a message to view details'),
   ).not.toBeNull();
+  renderer.unmount();
 });
 
 test('It can render rows', async () => {
-  const {renderer, ...plugin} = TestUtils.renderPlugin(Plugin);
+  const renderer = render(<FlipperMessages />);
 
-  plugin.sendEvent('newMessage', {
-    time: new Date(0, 0, 0, 0, 0, 0),
-    app: 'Flipper',
-    direction: 'toFlipper',
-  });
+  act(() => {
+    registerFlipperDebugMessage({
+      time: new Date(0, 0, 0, 0, 0, 0),
+      app: 'Flipper',
+      direction: 'toFlipper:message',
+    });
 
-  plugin.sendEvent('newMessage', {
-    time: new Date(0, 0, 0, 0, 0, 0),
-    app: 'FB4A',
-    direction: 'toClient',
-    device: 'Android Phone',
-    flipperInternalMethod: 'unique-string',
-    payload: {hello: 'world'},
+    registerFlipperDebugMessage({
+      time: new Date(0, 0, 0, 0, 0, 0),
+      app: 'FB4A',
+      direction: 'toClient:send',
+      device: 'Android Phone',
+      flipperInternalMethod: 'unique-string',
+      payload: {hello: 'world'},
+    });
   });
 
   expect((await renderer.findByText('unique-string')).parentElement)
@@ -154,8 +158,10 @@ test('It can render rows', async () => {
         class="css-1vr131n-TableBodyColumnContainer e1luu51r0"
         width="14%"
       >
-        toClient
+        toClient:send
       </div>
     </div>
   `);
+
+  renderer.unmount();
 });

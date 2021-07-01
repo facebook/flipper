@@ -8,7 +8,7 @@
  */
 
 import {useMemo} from 'react';
-import {Button, ButtonGroup, Layout} from '../ui';
+import {Button, Layout} from '../ui';
 import React from 'react';
 import {Console, Hook} from 'console-feed';
 import type {Methods} from 'console-feed/lib/definitions/Methods';
@@ -92,13 +92,11 @@ export function ConsoleLogs() {
 
   return (
     <Layout.Top>
-      <Toolbar>
-        <ButtonGroup>
-          <Button onClick={clearLogs} icon="trash">
-            Clear Logs
-          </Button>
-          <Button dropdown={dropdown}>Log Levels</Button>
-        </ButtonGroup>
+      <Toolbar wash>
+        <Button onClick={clearLogs} icon="trash">
+          Clear Logs
+        </Button>
+        <Button dropdown={dropdown}>Log Levels</Button>
       </Toolbar>
       <Layout.ScrollContainer vertical>
         <Console
