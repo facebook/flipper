@@ -1,3 +1,11 @@
+# 0.96.1 (1/7/2021)
+
+ * [D29394736](https://github.com/facebook/flipper/search?q=D29394736&type=Commits) -  Flipper that don't use the new Sandy plugin format yet (see https://fbflipper.com/docs/extending/sandy-migration) will now always be loaded inside a legacy container
+ * [D29486096](https://github.com/facebook/flipper/search?q=D29486096&type=Commits) -  Add support for negative filters in data tables
+ * [D29487811](https://github.com/facebook/flipper/search?q=D29487811&type=Commits) -  Flipper message debugging moved from a separate device to the console tab
+ * [D29516394](https://github.com/facebook/flipper/search?q=D29516394&type=Commits) -  Fixed bug with React Native plugins not loaded: Hermes Debugger, React Dev Tools etc.
+
+
 # 0.96.0 (30/6/2021)
 
  * [D29388968](https://github.com/facebook/flipper/search?q=D29388968&type=Commits) -  [Network] The network plugin will now detect utf-8 strings if no content header is present
