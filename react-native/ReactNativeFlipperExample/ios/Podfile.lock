@@ -490,7 +490,7 @@ SPEC CHECKSUMS:
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   DoubleConversion: cf9b38bf0b2d048436d9a82ad2abe1404f11e7de
   FBLazyVector: e686045572151edef46010a6f819ade377dfeb4b
-  FBReactNativeSpec: 7a64f01e5f406d56328f7d591e1fd8525cd25d3a
+  FBReactNativeSpec: 19264ed9ba64d7d3751a09f08b2b017c6c78ac5c
   Flipper: 1dae30a6929a29e74fa2a0dfde524fea5841f081
   Flipper-Boost-iOSX: fd1e2b8cbef7e662a122412d7ac5f5bea715403c
   Flipper-DoubleConversion: 57ffbe81ef95306cc9e69c4aa3aeeeeb58a6a28c
