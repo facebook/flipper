@@ -9,6 +9,7 @@
 
 import Metro from 'metro';
 import tmp from 'tmp';
+import os from 'os';
 import path from 'path';
 import fs from 'fs-extra';
 import {spawn} from 'promisify-child-process';
@@ -160,6 +161,16 @@ async function buildDefaultPlugins(defaultPlugins: InstalledPluginDetails[]) {
   }
 }
 
+// TODO: Share this with the runBuild util in pkg-lib.
+async function stripSourceMapComment(out: string) {
+  const lines = (await fs.readFile(out, 'utf-8')).split(os.EOL);
+  const lastLine = lines[lines.length - 1];
+  if (lastLine.startsWith('//# sourceMappingURL=')) {
+    console.log(`Updating ${out} to remove sourceMapURL= comment.`);
+    await fs.writeFile(out, lines.slice(0, lines.length - 1).join(os.EOL));
+  }
+}
+
 const minifierConfig = {
   minifierPath: require.resolve('metro-minify-terser'),
   minifierConfig: {
@@ -179,7 +190,6 @@ async function compile(
   entry: string,
 ) {
   const out = path.join(buildFolder, 'bundle.js');
-  const sourceMapUrl = dev ? 'bundle.map' : undefined;
   await Metro.runBuild(
     {
       reporter: {update: () => {}},
@@ -203,12 +213,16 @@ async function compile(
       dev,
       minify: !dev,
       resetCache: !dev,
-      sourceMap: dev,
-      sourceMapUrl,
+      sourceMap: true,
+      sourceMapUrl: dev ? 'bundle.map' : undefined,
+      inlineSourceMap: false,
       entry,
       out,
     },
   );
+  if (!dev) {
+    stripSourceMapComment(out);
+  }
 }
 
 export async function compileRenderer(buildFolder: string) {
@@ -227,6 +241,33 @@ export async function compileRenderer(buildFolder: string) {
     console.log('✅  Compiled renderer bundle.');
   } catch (err) {
     die(err);
+  }
+}
+
+export async function moveSourceMaps(
+  buildFolder: string,
+  sourceMapFolder: string | undefined,
+) {
+  console.log(`⚙️  Moving source maps...`);
+  const mainBundleMap = path.join(buildFolder, 'bundle.map');
+  const rendererBundleMap = path.join(staticDir, 'main.bundle.map');
+  if (sourceMapFolder) {
+    await fs.ensureDir(sourceMapFolder);
+    await fs.move(mainBundleMap, path.join(sourceMapFolder, 'bundle.map'), {
+      overwrite: true,
+    });
+    await fs.move(
+      rendererBundleMap,
+      path.join(sourceMapFolder, 'main.bundle.map'),
+      {overwrite: true},
+    );
+    console.log(`✅  Moved to ${sourceMapFolder}.`);
+  } else {
+    // If we don't move them out of the build folders, they'll get included in the ASAR
+    // which we don't want.
+    await fs.remove(mainBundleMap);
+    await fs.remove(rendererBundleMap);
+    console.log(`⏭  Removing source maps.`);
   }
 }
 
@@ -259,10 +300,15 @@ export async function compileMain() {
       out,
       dev,
       minify: !dev,
-      sourceMap: dev,
+      sourceMap: true,
+      sourceMapUrl: dev ? 'main.bundle.map' : undefined,
+      inlineSourceMap: false,
       resetCache: !dev,
     });
     console.log('✅  Compiled main bundle.');
+    if (!dev) {
+      stripSourceMapComment(out);
+    }
   } catch (err) {
     die(err);
   }

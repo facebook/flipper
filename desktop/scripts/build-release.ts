@@ -26,6 +26,7 @@ import {
   getVersionNumber,
   genMercurialRevision,
   prepareDefaultPlugins,
+  moveSourceMaps,
 } from './build-utils';
 import fetch from '@adobe/node-fetch-retry';
 import {getIcons, buildLocalIconPath, getIconURL} from '../app/src/utils/icons';
@@ -91,6 +92,11 @@ const argv = yargs
     'default-plugins-dir': {
       describe:
         'Directory with prepared list of default plugins which will be included into the Flipper distribution as "defaultPlugins" dir',
+      type: 'string',
+    },
+    'source-map-dir': {
+      describe:
+        'Directory to write the main.bundle.map and bundle.map files for the main and render bundle sourcemaps, respectively',
       type: 'string',
     },
   })
@@ -360,6 +366,7 @@ function downloadIcons(buildFolder: string) {
   await copyStaticFolder(dir);
   await downloadIcons(dir);
   await compileRenderer(dir);
+  await moveSourceMaps(dir, argv['source-map-dir']);
   const versionNumber = getVersionNumber(argv.version);
   const hgRevision = await genMercurialRevision();
   await modifyPackageManifest(dir, versionNumber, hgRevision, argv.channel);
