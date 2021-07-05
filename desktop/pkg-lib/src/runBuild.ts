@@ -13,6 +13,7 @@ import path from 'path';
 import fs from 'fs-extra';
 import {getInstalledPluginDetails} from 'flipper-plugin-lib';
 import {FileStore} from 'metro-cache';
+import stripSourceMapComment from './stripSourceMap';
 import os from 'os';
 
 let metroDir: string | undefined;
@@ -36,18 +37,6 @@ async function getMetroDir() {
 type Options = {
   sourceMapPath?: string | undefined;
 };
-
-// Metro erroneously adds source map comments to the bottom of the file
-// which break checksums on CI environments where paths change and are generally
-// undesired. We manually strip the comment here and write the file back.
-async function stripSourceMapComment(out: string) {
-  const lines = (await fs.readFile(out, 'utf-8')).split(os.EOL);
-  const lastLine = lines[lines.length - 1];
-  if (lastLine.startsWith('//# sourceMappingURL=')) {
-    console.log(`Updating ${out} to remove sourceMapURL= comment.`);
-    await fs.writeFile(out, lines.slice(0, lines.length - 1).join(os.EOL));
-  }
-}
 
 export default async function bundlePlugin(
   pluginDir: string,

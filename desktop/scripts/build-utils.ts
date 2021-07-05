@@ -9,11 +9,14 @@
 
 import Metro from 'metro';
 import tmp from 'tmp';
-import os from 'os';
 import path from 'path';
 import fs from 'fs-extra';
 import {spawn} from 'promisify-child-process';
-import {getWatchFolders, runBuild} from 'flipper-pkg-lib';
+import {
+  getWatchFolders,
+  runBuild,
+  stripSourceMapComment,
+} from 'flipper-pkg-lib';
 import getAppWatchFolders from './get-app-watch-folders';
 import {
   getSourcePlugins,
@@ -158,16 +161,6 @@ async function buildDefaultPlugins(defaultPlugins: InstalledPluginDetails[]) {
     } catch (err) {
       console.error(`✖ Failed to build plugin ${plugin.id}`, err);
     }
-  }
-}
-
-// TODO: Share this with the runBuild util in pkg-lib.
-async function stripSourceMapComment(out: string) {
-  const lines = (await fs.readFile(out, 'utf-8')).split(os.EOL);
-  const lastLine = lines[lines.length - 1];
-  if (lastLine.startsWith('//# sourceMappingURL=')) {
-    console.log(`Updating ${out} to remove sourceMapURL= comment.`);
-    await fs.writeFile(out, lines.slice(0, lines.length - 1).join(os.EOL));
   }
 }
 
