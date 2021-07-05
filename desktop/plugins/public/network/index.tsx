@@ -123,7 +123,10 @@ export function plugin(client: PluginClient<Events, Methods>) {
 
   const partialResponses = createState<PartialResponses>({});
 
-  const customColumns = createState<CustomColumnConfig[]>([]); // Store in local storage as well: T69989583
+  const customColumns = createState<CustomColumnConfig[]>([], {
+    persist: 'customColumns',
+    persistToLocalStorage: true,
+  });
   const columns = createState<DataTableColumn<Request>[]>(baseColumns); // not persistable
 
   client.onDeepLink((payload: unknown) => {
