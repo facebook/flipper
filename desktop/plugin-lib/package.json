@@ -9,7 +9,7 @@
   "license": "MIT",
   "bugs": "https://github.com/facebook/flipper/issues",
   "dependencies": {
-    "algoliasearch": "^4.10.2",
+    "algoliasearch": "^4.10.3",
     "decompress": "^4.2.1",
     "decompress-targz": "^4.1.1",
     "decompress-unzip": "^4.0.1",
@@ -31,19 +31,19 @@
     "mock-fs": "^5.0.0",
     "rimraf": "^3.0.2",
     "ts-jest": "^26.5.6",
-    "typescript": "^4.3.4"
+    "typescript": "^4.3.5"
   },
   "scripts": {
     "reset": "rimraf lib *.tsbuildinfo",
     "build": "tsc -b",
     "prepack": "yarn reset && yarn build"
-    },
-    "files": [
-      "lib/**/*"
-    ],
-    "homepage": "https://github.com/facebook/flipper",
-    "keywords": [
-      "Flipper"
-    ],
-    "author": "Facebook, Inc"
-  }
+  },
+  "files": [
+    "lib/**/*"
+  ],
+  "homepage": "https://github.com/facebook/flipper",
+  "keywords": [
+    "Flipper"
+  ],
+  "author": "Facebook, Inc"
+}
