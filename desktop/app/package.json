@@ -75,7 +75,7 @@
     "tmp": "^0.2.1",
     "uuid": "^8.3.2",
     "which": "^2.0.1",
-    "ws": "^7.5.0",
+    "ws": "^7.5.2",
     "xdg-basedir": "^4.0.0"
   },
   "optionalDependencies": {
