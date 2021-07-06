@@ -16,16 +16,17 @@
 
 // // const DevSettings = require('./DevSettings');
 import invariant from 'invariant';
+// @ts-ignore
 import {default as MetroHMRClient} from 'metro-runtime/src/modules/HMRClient';
 // // const Platform = require('./Platform');
 import prettyFormat from 'pretty-format';
 
-const pendingEntryPoints = [];
-let hmrClient = null;
-let hmrUnavailableReason = null;
-let currentCompileErrorMessage = null;
+const pendingEntryPoints: string[] = [];
+let hmrClient: any = null;
+let hmrUnavailableReason: null | string = null;
+let currentCompileErrorMessage: null | string = null;
 let didConnect = false;
-const pendingLogs = [];
+const pendingLogs: [string, any][] = [];
 
 /**
  * HMR Client that receives from the server HMR updates and propagates them
@@ -75,13 +76,13 @@ const HMRClient = {
     hmrClient.disable();
   },
 
-  registerBundle(requestUrl) {
+  registerBundle(requestUrl: string) {
     invariant(hmrClient, 'Expected HMRClient.setup() call at startup.');
     pendingEntryPoints.push(requestUrl);
     registerBundleEntryPoints(hmrClient);
   },
 
-  log(level, data) {
+  log(level: string, data: any) {
     if (!hmrClient) {
       // Catch a reasonable number of early logs
       // in case hmrClient gets initialized later.
@@ -96,7 +97,7 @@ const HMRClient = {
         JSON.stringify({
           type: 'log',
           level,
-          data: data.map((item) =>
+          data: data.map((item: any) =>
             typeof item === 'string'
               ? item
               : prettyFormat(item, {
@@ -104,7 +105,7 @@ const HMRClient = {
                   highlight: true,
                   maxDepth: 3,
                   min: true,
-                  plugins: [prettyFormat.plugins.ReactElement],
+                  plugins: [(prettyFormat as any).plugins.ReactElement],
                 }),
           ),
         }),
@@ -117,7 +118,13 @@ const HMRClient = {
 
   // Called once by the bridge on startup, even if Fast Refresh is off.
   // It creates the HMR client but doesn't actually set up the socket yet.
-  setup(platform, bundleEntry, host, port, isEnabled) {
+  setup(
+    platform: string,
+    bundleEntry: string,
+    host: string,
+    port: string,
+    isEnabled: boolean,
+  ) {
     invariant(platform, 'Missing required parameter `platform`');
     invariant(bundleEntry, 'Missing required parameter `bundleEntry`');
     invariant(host, 'Missing required parameter `host`');
@@ -133,7 +140,7 @@ const HMRClient = {
       `ws://${wsHost}/hot?bundleEntry=${bundleEntry}&platform=${platform}`,
     );
 
-    client.on('connection-error', (e) => {
+    client.on('connection-error', (e: any) => {
       let error = `Cannot connect to the Metro server.
 Try the following to fix the issue:
 - Ensure that the Metro server is running and available on the same network`;
@@ -150,7 +157,7 @@ Error: ${e.message}`;
       setHMRUnavailableReason(error);
     });
 
-    client.on('update-start', ({isInitialUpdate}) => {
+    client.on('update-start', ({isInitialUpdate}: any) => {
       currentCompileErrorMessage = null;
       didConnect = true;
 
@@ -160,7 +167,7 @@ Error: ${e.message}`;
       }
     });
 
-    client.on('update', ({isInitialUpdate}) => {
+    client.on('update', ({isInitialUpdate}: any) => {
       if (client.isEnabled() && !isInitialUpdate) {
         dismissRedbox();
         //// LogBoxData.clear();
@@ -172,7 +179,7 @@ Error: ${e.message}`;
       console.log('Loading end');
     });
 
-    client.on('error', (data) => {
+    client.on('error', (data: any) => {
       //// LoadingView.hide();
       console.log('Loading end');
 
@@ -194,7 +201,7 @@ Error: ${e.message}`;
       }
     });
 
-    client.on('close', (data) => {
+    client.on('close', (data: any) => {
       //// LoadingView.hide();
       console.log('Loading end');
       setHMRUnavailableReason('Disconnected from the Metro server.');
@@ -211,7 +218,7 @@ Error: ${e.message}`;
   },
 };
 
-function setHMRUnavailableReason(reason) {
+function setHMRUnavailableReason(reason: string) {
   invariant(hmrClient, 'Expected HMRClient.setup() call at startup.');
   if (hmrUnavailableReason !== null) {
     // Don't show more than one warning.
@@ -228,7 +235,7 @@ function setHMRUnavailableReason(reason) {
   }
 }
 
-function registerBundleEntryPoints(client) {
+function registerBundleEntryPoints(client: any) {
   if (hmrUnavailableReason) {
     // // DevSettings.reload('Bundle Splitting – Metro disconnected');
     console.log('Bundle Spliiting - Metro disconnected');
@@ -246,7 +253,7 @@ function registerBundleEntryPoints(client) {
   }
 }
 
-function flushEarlyLogs(client) {
+function flushEarlyLogs(_client: any) {
   try {
     pendingLogs.forEach(([level, data]) => {
       HMRClient.log(level, data);
@@ -287,7 +294,7 @@ function showCompileError() {
   const error = new Error(message);
   // Symbolicating compile errors is wasted effort
   // because the stack trace is meaningless:
-  error.preventSymbolication = true;
+  (error as any).preventSymbolication = true;
   throw error;
 }
 

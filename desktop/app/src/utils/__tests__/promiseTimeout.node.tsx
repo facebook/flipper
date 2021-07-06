@@ -7,12 +7,12 @@
  * @format
  */
 
-import promiseTimeout from '../promiseTimeout.tsx';
+import promiseTimeout from '../promiseTimeout';
 
 test('test promiseTimeout for timeout to happen', () => {
   const promise = promiseTimeout(
     200,
-    new Promise((resolve, reject) => {
+    new Promise<void>((resolve) => {
       const id = setTimeout(() => {
         clearTimeout(id);
         resolve();
@@ -27,7 +27,7 @@ test('test promiseTimeout for timeout to happen', () => {
 test('test promiseTimeout for timeout not to happen', () => {
   const promise = promiseTimeout(
     200,
-    new Promise((resolve, reject) => {
+    new Promise<string | void>((resolve) => {
       const id = setTimeout(() => {
         clearTimeout(id);
         resolve();

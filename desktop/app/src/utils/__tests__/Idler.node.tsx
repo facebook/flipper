@@ -7,8 +7,8 @@
  * @format
  */
 
-import {IdlerImpl, TestIdler} from '../Idler.tsx';
-import {sleep} from '../promiseTimeout.tsx';
+import {IdlerImpl, TestIdler} from '../Idler';
+import {sleep} from '../promiseTimeout';
 
 test('Idler should interrupt', async () => {
   const idler = new IdlerImpl();
@@ -64,7 +64,7 @@ test('TestIdler can be controlled', async () => {
   expect(idler.shouldIdle()).toBe(true);
 
   let threw = false;
-  const p = idler.idle().catch((e) => {
+  const p = idler.idle().catch((e: any) => {
     threw = true;
     expect(e).toMatchInlineSnapshot(
       `[CancelledPromiseError: Idler got killed]`,

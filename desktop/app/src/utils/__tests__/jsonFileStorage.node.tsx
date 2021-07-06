@@ -7,7 +7,7 @@
  * @format
  */
 
-import JsonFileStorage from '../jsonFileReduxPersistStorage.tsx';
+import JsonFileStorage from '../jsonFileReduxPersistStorage';
 import fs from 'fs';
 
 const validSerializedData = fs

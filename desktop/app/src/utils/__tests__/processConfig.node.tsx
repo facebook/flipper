@@ -7,7 +7,7 @@
  * @format
  */
 
-import {default as config, resetConfigForTesting} from '../processConfig.tsx';
+import {default as config, resetConfigForTesting} from '../processConfig';
 
 afterEach(() => {
   resetConfigForTesting();

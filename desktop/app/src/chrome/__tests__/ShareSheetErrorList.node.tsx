@@ -7,7 +7,7 @@
  * @format
  */
 
-import {formatError} from '../ShareSheetErrorList.tsx';
+import {formatError} from '../ShareSheetErrorList';
 
 test('normal error is formatted', () => {
   const e = new Error('something went wrong');

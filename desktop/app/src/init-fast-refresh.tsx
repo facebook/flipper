@@ -8,6 +8,7 @@
  */
 
 import {default as HmrClient} from './HMRClient';
+// @ts-ignore
 import {default as ReactRefreshRuntime} from 'react-refresh/runtime';
 
 HmrClient.setup(
@@ -21,7 +22,7 @@ HmrClient.setup(
 ReactRefreshRuntime.injectIntoGlobalHook(window);
 
 const Refresh = {
-  performFullRefresh(reason) {
+  performFullRefresh(reason: string) {
     console.log('Perform full refresh', reason);
     window.location.reload();
   },
@@ -46,7 +47,7 @@ const Refresh = {
   },
 };
 
-require.Refresh = Refresh;
+(require as any).Refresh = Refresh;
 
 // eslint-disable-next-line import/no-commonjs
 require('./init.tsx');

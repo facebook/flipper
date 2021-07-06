@@ -7,7 +7,7 @@
  * @format
  */
 
-import adbConfig from '../adbConfig.tsx';
+import adbConfig from '../adbConfig';
 
 test('get host and port from ADB_SERVER_SOCKET', () => {
   process.env.ANDROID_ADB_SERVER_PORT = undefined;
