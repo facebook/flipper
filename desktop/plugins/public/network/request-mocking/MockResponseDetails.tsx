@@ -35,8 +35,10 @@ function HeaderInput(props: {
       type="text"
       placeholder="Name"
       value={value}
-      onChange={(event) => setValue(event.target.value)}
-      onBlur={() => props.onUpdate(value)}
+      onChange={(event) => {
+        setValue(event.target.value);
+        props.onUpdate(event.target.value);
+      }}
       style={props.style}
     />
   );

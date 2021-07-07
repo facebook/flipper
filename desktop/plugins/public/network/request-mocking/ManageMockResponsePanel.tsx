@@ -132,6 +132,12 @@ export function ManageMockResponsePanel(props: Props) {
     [handleDelete, handleToggle],
   );
 
+  const handleSelect = useCallback((id: string, item: RouteItem) => {
+    if (id) {
+      selectedIdAtom.set(id);
+    }
+  }, []);
+
   return (
     <Layout.Left resizable style={{minHeight: 400}}>
       <Layout.Top>
@@ -161,6 +167,7 @@ export function ManageMockResponsePanel(props: Props) {
           items={items}
           selection={selectedId}
           onRenderItem={handleRender}
+          onSelect={handleSelect}
           scrollable
         />
       </Layout.Top>
