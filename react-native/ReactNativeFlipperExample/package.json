@@ -37,7 +37,7 @@
     "browserslist": "^4.16.5",
     "glob-parent": "5.1.2",
     "**/metro/**/ws": "^1.1.5",
-    "**/@react-native-community/cli-server-api/**/ws": "^1.1.5",
+    "**/@react-native-community/cli-server-api/**/ws": "^5.2.3",
     "**/react-native/**/ws": "^6.2.2",
     "ws": "^7.4.6"
   }
