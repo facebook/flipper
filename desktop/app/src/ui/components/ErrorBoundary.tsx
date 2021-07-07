@@ -79,7 +79,9 @@ export default class ErrorBoundary extends Component<
         <ErrorBoundaryContainer grow>
           <Heading>{heading}</Heading>
           {this.props.showStack !== false && (
-            <ErrorBoundaryStack>{error}</ErrorBoundaryStack>
+            <ErrorBoundaryStack>{`${
+              error.stack ?? error.toString()
+            }`}</ErrorBoundaryStack>
           )}
           <Button onClick={this.clearError}>Clear error and try again</Button>
         </ErrorBoundaryContainer>
