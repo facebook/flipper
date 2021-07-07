@@ -41,7 +41,7 @@ export const presetColors = Object.values({
   grape: '#8c72cb', // Grape
 });
 
-const NullValue = styled.span({
+export const NullValue = styled.span({
   color: theme.semanticColors.nullValue,
 });
 NullValue.displayName = 'DataDescription:NullValue';
@@ -51,7 +51,7 @@ const UndefinedValue = styled.span({
 });
 UndefinedValue.displayName = 'DataDescription:UndefinedValue';
 
-const StringValue = styled.span({
+export const StringValue = styled.span({
   color: theme.semanticColors.stringValue,
   wordWrap: 'break-word',
 });
@@ -67,12 +67,12 @@ const SymbolValue = styled.span({
 });
 SymbolValue.displayName = 'DataDescription:SymbolValue';
 
-const NumberValue = styled.span({
+export const NumberValue = styled.span({
   color: theme.semanticColors.numberValue,
 });
 NumberValue.displayName = 'DataDescription:NumberValue';
 
-const BooleanValue = styled.span({
+export const BooleanValue = styled.span({
   color: theme.semanticColors.booleanValue,
 });
 BooleanValue.displayName = 'DataDescription:BooleanValue';

@@ -7,7 +7,14 @@
  * @format
  */
 
-import {DataDescriptionType, DataDescription} from './DataDescription';
+import {
+  DataDescriptionType,
+  DataDescription,
+  NullValue,
+  BooleanValue,
+  NumberValue,
+  StringValue,
+} from './DataDescription';
 import styled from '@emotion/styled';
 import {getSortedKeys} from './utils';
 import {PureComponent} from 'react';
@@ -67,6 +74,27 @@ export default class DataPreview extends PureComponent<{
     maxProperties: 5,
   };
 
+  previewSimpleValue(propValue: any) {
+    let propValueElement: React.ReactElement | null = null;
+    switch (typeof propValue) {
+      case 'object':
+        if (propValue === null) propValueElement = <NullValue>null</NullValue>;
+        break;
+      case 'boolean':
+        propValueElement = <BooleanValue>{'' + propValue}</BooleanValue>;
+        break;
+      case 'number':
+        propValueElement = <NumberValue>{'' + propValue}</NumberValue>;
+        break;
+      case 'string':
+        if (propValue.length <= 20) {
+          propValueElement = <StringValue>{propValue}</StringValue>;
+        }
+        break;
+    }
+    return propValueElement;
+  }
+
   render() {
     const {depth, extractValue, path, type, value} = this.props;
 
@@ -109,10 +137,17 @@ export default class DataPreview extends PureComponent<{
         if (i >= this.props.maxProperties) {
           ellipsis = <span key={'ellipsis'}>…</span>;
         }
+        const propValueElement = this.previewSimpleValue(
+          value[key]?.value ?? value[key], // might be a wrapped reflection object or not..
+        );
 
         propertyNodes.push(
           <span key={key}>
-            <InspectorName>{key}</InspectorName>
+            <InspectorName>
+              {key}
+              {propValueElement ? `: ` : null}
+              {propValueElement}
+            </InspectorName>
             {ellipsis}
           </span>,
         );
