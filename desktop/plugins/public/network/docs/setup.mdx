@@ -71,10 +71,10 @@ To enable network inspection, add the following pod to your Podfile:
 pod 'FlipperKit/SKIOSNetworkPlugin', '~>' + flipperkit_version
 ```
 
-Initialise the plugin in the following way:
+Initialise the plugin in the following way by updating AppDelegate.m:
 
-<Tabs defaultValue="ios" values={[{ label: 'iOS', value: 'ios'}, { label: 'Swift', value: 'swift'}]}>
-<TabItem value="ios">
+<Tabs defaultValue="objc" values={[{ label: 'ObjC', value: 'objc'}, { label: 'Swift', value: 'swift'}]}>
+<TabItem value="objc">
 
 ```objc
 #import <FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h>
