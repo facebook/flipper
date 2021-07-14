@@ -18,7 +18,7 @@
     "@types/fs-extra": "^9.0.11",
     "classnames": "^2.3.1",
     "docblock-parser": "^1.0.0",
-    "docusaurus-plugin-internaldocs-fb": "^0.8.5",
+    "docusaurus-plugin-internaldocs-fb": "^0.9.0",
     "file-cli": "^1.2.0",
     "fs-extra": "^10.0.0",
     "glob": "^7.1.7",
