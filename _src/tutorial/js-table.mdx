@@ -1,0 +1,100 @@
+---
+id: js-table
+title: Showing a table
+sidebar_label: Desktop Plugin - Table
+---
+import useBaseUrl from '@docusaurus/useBaseUrl';
+import Link from '@docusaurus/Link';
+
+<img alt="Android Tutorial App" src={useBaseUrl("img/android-tutorial-desktop.png")} />
+
+## Building a Table
+
+We have found that one of the most useful things you can do to understand how your app works
+is to give you easy access to the underlying data used to display items on screen. A very
+easy way of doing this is by showing the data in a table. We have optimized for this
+particular use case that makes it dead-simple to expose your data in a table that you
+can sort, filter and select items for more detailed information.
+For the purpose of this tutorial, we will be editing the `index.tsx` file that was generated in the previous scaffolding step, and update it as follows:
+
+### Row Types
+
+We start by defining what our table rows look like as types:
+
+```typescript
+type Row = {
+  id: number,
+  title: string,
+  url: string,
+};
+```
+
+It is important that you have some unique identifier for every row so
+that we know when something new was added to the table. We will use the
+`id` field here for this purpose.
+
+### Columns
+
+Next, we define which columns to show and how to display them:
+
+```typescript
+import {DataTableColumn} from 'flipper-plugin';
+
+const columns: DataTableColumn<Row>[] = [
+  {
+    key: 'title',
+    width: 150,
+  },
+  {
+    key: 'url',
+    title: 'URL',
+  },
+];
+```
+
+The keys used here will show up again in the next step when building
+your rows, so keep them consistent. The `title` we define for each column will show up as the header at the top of the table, and will be default to the `key` value if omitted.
+
+For the `width` you can either choose a fixed number (pixels), a percentage, or leave it out 
+to distribute the remaining available space.
+
+### Configuring the table
+
+With a type describing the data we'll be storing, `Row`, and a descriptions of the columns to display, getting up table showing our data, including search / sort and a details view is now trivial!
+
+```typescript
+import {DataTableColumn, createTablePlugin} from 'flipper-plugin';
+
+module.exports = createTablePlugin<Row>({
+  columns,
+  method: 'newRow',
+  key: 'id',
+});
+```
+
+The `method` refers to the method that should be listened to to fill the table with data. 
+The string `"newRow"` that is used here refers back to identifier we used with `connection.send` to send our data to the Flipper desktop application in the previous step.
+
+The `key` property is optional, but by setting it the `'id'` field will be used as identifier. As a result, once a `newRow` message arrives with an existing `id`, it will overwrite the old entry, rather than appending a new one.
+
+The `createTablePlugin` API supports more options, which are documented [here](../extending/flipper-plugin#createtableplugin).
+
+And that's it! Starting Flipper will now compile your
+plugin and connect to the native side. It's a good
+idea to start Flipper from the command line to see
+any potential errors. The console in the DevTools
+is a great source of information if something doesn't
+work as expected, too.
+The final result of this step can be seen at [index_table.tsx](https://github.com/facebook/flipper/blob/master/desktop/plugins/public/seamammals/src/index_table.tsx).
+
+## What's next?
+
+You now have an interactive table that you can sort,
+filter and use to get additional information about
+the stuff you see on screen.
+`createTablePlugin` is a high level abstraction that takes care of both connection management and a standardized UI for the most common scenario. 
+
+For many cases, this is already all you need. However,
+sometimes you want to go the extra mile and want
+to build something a bit more custom. That's what
+we're going to do in the next part of our tutorial.

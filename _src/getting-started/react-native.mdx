@@ -1,0 +1,49 @@
+---
+id: react-native
+title: Set up your React Native App
+sidebar_label: Automatic Setup
+---
+import useBaseUrl from '@docusaurus/useBaseUrl';
+import Link from '@docusaurus/Link';
+
+Starting with React Native 0.62, after generating your project with `react-native init`, the Flipper integration is ready out of the box for debug builds:
+
+* For Android, start the Flipper Desktop application, and start your project using `yarn android`. Your application will appear in Flipper.
+* For iOS, run `pod install` once in the `ios` directory of your project. After that, run `yarn ios` and start Flipper. Your application will show up in Flipper.
+
+By default, the following plugins will be available:
+
+* Layout Inspector
+* Network
+* Databases
+* Images
+* Shared Preferences
+* Crash Reporter
+* React DevTools
+* Metro Logs
+
+Additional plugins can be installed through the plugin manager.
+
+To create your own plugins and integrate with Flipper using JavaScript, check out our <Link to={useBaseUrl("/docs/tutorial/react-native")}>writing plugins for React Native</Link> tutorial!
+
+### Using the latest Flipper SDK
+
+By default React Native might ship with an outdated Flipper SDK. To make sure you are using the latest version, determine the latest released version of Flipper by running `npm info flipper`.
+
+Android:
+
+1. Bump the `FLIPPER_VERSION` variable in `android/gradle.properties`, for example: `FLIPPER_VERSION=0.97.0`.
+2. Run `./gradlew clean` in the `android` directory.
+
+iOS:
+
+1. Call `use_flipper` with a specific version in `ios/Podfile`, for example: `use_flipper!({ 'Flipper' => '0.97.0' })`.
+2. Run `pod install` in the `ios` directory.
+
+## Manual Setup
+
+If you are not using a default React Native template or cannot use the upgrade tool,
+you can find instructions for how to integate Flipper into your projects in these guides:
+
+- <a href={useBaseUrl("/docs/getting-started/react-native-android")}>React Native for Android</a>
+- <a href={useBaseUrl("/docs/getting-started/react-native-ios")}>React Native for iOS</a>

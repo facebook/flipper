@@ -1,0 +1,285 @@
+---
+id: troubleshooting
+title: Troubleshooting Issues
+sidebar_label: Troubleshooting Issues
+---
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+import InternalTroubleshooting from './fb/internal-troubleshooting.mdx';
+
+import PortalTroubleshooting from './fb/portal-troubleshooting.mdx';
+
+We hope that flipper works well out of the box, but the software is a work in progress and problems will occur. Below are some known issues and steps you can take to try to resolve them.
+
+<FbInternalOnly>
+
+## General Issues
+
+<InternalTroubleshooting />
+
+</FbInternalOnly>
+
+## Mac Desktop app
+
+### Flipper won't launch on Mac
+
+* If the window is appearing, try opening the Chrome DevTools within Flipper. To do so, from the View menu select Toggle Developer Tools or press CMD+Option+I and check if there are any errors on the console.
+* Launch Flipper from the command line using `/Applications/Flipper.app/Contents/MacOS/Flipper`. This should give you some logs, that might be helpful when debugging.
+* Delete `~/.flipper` and try relaunching Flipper.
+* Delete Flipper from your applications folder and redownload [Flipper](https://www.facebook.com/fbflipper/public/mac).
+* If you're using `yarn start` to run from source, make sure all dependencies are installed correctly by running yarn install.
+
+### Flipper shows weird render artifacts
+
+This is a long standing MacOS + Electron issue outside our control. In general restarting your computer fixes the problem.
+For a quick, temporarily work around start Flipper with hardware acceleration disabled. Please note that this will consume a lot of CPU: `FLIPPER_DISABLE_GPU=1 open -a Flipper`.
+
+### iOS Simulator missing from devices dropdown
+
+* Check that `xcode-select -p` shows the same XCode version that you're using. If not, see xcode-select for how to select the correct version.
+
+### iOS physical device not showing up
+
+Make sure [`idb`](https://fbidb.io/docs/installation) is installed and configured in the Flipper settings.
+
+### App on physical iOS device stuck in 'connecting...' state
+
+Make sure you are building and installing the application from source.
+
+### No plugins showing up for your device
+
+* Check your device isn't on the list of [known incompatibilities](#known-incompatibilities).
+* Make sure your version of Flipper is up to date.
+* Make sure the mobile SDK you are using is relatively recent (<1 month old).
+* Open Chrome dev tools within Flipper. To do so, from the View menu select Toggle Developer Tools or press CMD+Option+I and check if there are any errors on the console.
+* Delete `~/.flipper`.
+* **Uninstall** and reinstall the mobile app.
+* Make sure the time and date are set correctly on your mobile device and desktop computer.
+* If no app plugins are showing up, there may be a connectivity issue between Flipper and your app. Check [connection issues](#connection-issues) to see if anything is failing.
+
+<OssOnly>
+
+### Connection Issues
+The Flipper SDK includes an in-app connection diagnostics screen to help you diagnose problems.
+
+#### Android
+Replace `<APP_PACKAGE>` below with the package name of your app, e.g. `com.facebook.flipper.sample`.
+On a terminal, run the following:
+```bash
+adb shell am start -n <APP_PACKAGE>/com.facebook.flipper.android.diagnostics.FlipperDiagnosticActivity
+```
+This will only work if you added `FlipperDiagnosticActivity` to your `AndroidManifest.xml`. See [getting started](./getting-started/android-native.mdx#diagnostics) for help.
+
+#### iOS
+You'll need to manually add this [ViewController](https://github.com/facebook/flipper/blob/master/iOS/FlipperKit/FlipperDiagnosticsViewController.m) to your app to see the in-app diagnostics.
+
+</OssOnly>
+
+### Known Incompatibilities
+
+The following devices are known to be incompatible or face issues with flipper:
+
+* Some Samsung devices ([Tracking Issue](https://github.com/facebook/flipper/issues/92)).
+* Genymotion emulators on Android 8+ are reported to have issues.
+
+### File an Issue
+Still not working? File an issue on [GitHub](https://github.com/facebook/flipper/issues) with the chrome DevTools logs and the output from the diagnostics screen, if relevant.
+
+## Android
+
+### Exception from call site #4 bootstrap method
+
+Build error after including the Flipper dependency:
+
+```
+Exception from call site #4 bootstrap method
+```
+
+This can happen because we include [OkHttp3](https://github.com/square/okhttp/issues/4597#issuecomment-461204144) as dependency which makes use of Java 8 features. There are two ways of dealing with this:
+
+**Enable Java 8 support**
+
+Add this to your Gradle config:
+
+```groovy
+android {
+  compileOptions {
+    targetCompatibility = "8"
+    sourceCompatibility = "8"
+   }
+ }
+ ```
+
+ **Exclude the OkHttp3 dependency**
+
+ Alternatively, if you don't plan on making use of OkHttp, you can exclude the dependency from the build entirely:
+
+ ```
+debugImplementation('com.facebook.flipper:flipper:*') {
+  exclude group: 'com.squareup.okhttp3'
+}
+```
+
+### Duplicate class `com.facebook.jni.*`
+
+This can occur when mixing different versions of [FBJNI](https://github.com/facebookincubator/fbjni),
+a library we use to interact with native C++ code.
+
+Speficially, this can happen when the versions `0.0.x` and `0.1.x` are mixed. Version `0.1.0` of FBJNI
+switched to using [Google Prefab](https://google.github.io/prefab/) for distributing native artifacts,
+which made the split into combined, "java-only" and "header" packages redundant and only requires
+a single dependency in your projects.
+
+When including both "fbjni-java-only:0.0.1" and "fbjni:0.1.0" in one project, you will now
+duplicate class errors during the build process. You must ensure that only one of the two
+versions is used in your entire dependency tree. Start by looking at `./gradlew :myapp:dependencies`
+to see where the different version requirements come from. Then exclude the FBJNI dependency from
+one of them, e.g.
+
+```groovy
+implementation("com.facebook.react:react-native:+") {
+    exclude group:'com.facebook.fbjni'
+}
+```
+
+## React Native
+
+Make sure the project is using the [latest Flipper SDK](getting-started/react-native#using-the-latest-flipper-sdk).
+
+When using Flipper with React Native, two devices should show up:
+
+1. The 'React Native' device. This is the "device" that talks to the Metro server and shows plugins that connect to or through Metro, such as the React DevTools, the Hermes Debugger and Metro logs.
+1. The device on which your app is running (like `SM760FS`, `Pixel 3`, `android_emulator`, `iPhone 11`). This is the device that Flipper connects to ADB / IDB. We primarily support emulators and USB connected devices.
+
+#### Q: I don't see the 'React Native' device
+
+1. Make sure that the Metro server is running.
+1. Make sure you are on React Native 0.62 or higher.
+1. Verify that the `@react-native-community/cli` version is `0.47.0` or higher (using `yarn why @react-native-community/cli`).
+
+#### Q: I see my device / emulator, but I can't see the app
+
+1. Make sure you are running a debug build. Flipper _only_ supports debug builds.
+1. If you are upgraded from RN < 0.62.2, make sure you've updated all the dependencies and build related files according to the upgrade helper. For example: https://react-native-community.github.io/upgrade-helper/?from=0.61.4&to=0.62.2
+1. If you upgraded, make sure you made a clean build: `cd android && ./gradlew clean`, `cd iOS && pod install --repo-update`
+1. For iOS, make sure it works on a simulator first
+1. (Unconfirmed) check the deployment info target in the XCode project settings. Target should be `iOS 9.0`.
+
+#### Q: I see my app, but I don't see the external plugins I've installed
+
+1. Make sure you've installed the desktop part of the plugin (usually through "Manage plugins" in Flipper). If no plugins show up under "Manage plugins" > "Status", make sure you've selected your running device in the Flipper toolbar (and _not_ "React Native").
+1. Make sure you've installed the app part of the plugin. Typically the installation instructions of the plugin itself need to be followed here.
+1. Make sure you've installed the latest version of `react-native-flipper` in your app, and run `pod install` in the `iOS` dir afterwards.
+1. Make sure you've restarted both Flipper and your app.
+
+#### Q: On iOS it seems that the Flipper dependencies are compiled when making a release build
+
+That is correct, the dependencies won't be actually included in the release (when using `react-native-flipper` > 0.45), but sadly we can't exclude those dependencies from the build process.
+
+#### Q: The React DevTools don't seem to connect
+
+1. Make sure there are no other instances of the React DevTools are running (For example a stand-alone version). Restart Flipper if needed after closing other tools.
+1. Make sure you have only one device running to connect to. If there are multiple devices, close them and try again (restart Flipper if needed).
+1. Make sure there is only one RN app running on the device
+
+#### Q: Cannot inspect an element in the React DevTools: "Could not inspect element with id ..."
+
+The "Could not inspect element with id XXX" error will appear when selecting a specific element in the React DevTools, when the version of the DevTools shipped in Flipper is incompatible with the `react-devtools-core` package used by the React Native application.
+
+Flipper supports using a globally installed `react-devtools` (after using `npm install -g react-devtools@x.x.x`) instead of the embedded one. 
+This should help with any compatibility issues.
+
+Another way to fix this is to set the `resolutions` field in the `package.json` of the app to force a specific version and then run `yarn install`, for example: 
+
+```json
+"resolutions": {
+  "react-devtools-core": "4.13.2"
+}
+```
+
+#### Q: How to select a specific element in the React DevTools?
+
+1. Trigger the debug menu on your RN app (you can use the button in the Flipper toolbar for that)
+1. Use `Show Inspector`. Flipper will now follow the selection on your device.
+
+#### Q: The Hermes Debugger does not connect
+
+1. Make sure the Hermes engine is [enabled](https://reactnative.dev/docs/hermes)
+1. Make sure only one device with React Native is running
+1. Make sure there is only one RN app running on the device
+1. Make sure the React Native app is _not_ in debug mode already (trigger dev menu, and make sure that `Remote JS Debugging` is _not_ enabled).
+
+#### iOS Build errors in React Native
+
+First, make sure your cocoapods is up to date (`sudo gem install cocoapods`), and that you are using the [latest FlipperKit](getting-started/react-native#using-the-latest-flipper-sdk).
+
+For inexplainable build errors, clone and verify if our [reference project](https://github.com/facebook/flipper/tree/master/react-native/ReactNativeFlipperExample) builds and runs locally. If it does, we recommend to compare the `package.json` and `ios/Podfile` files with yours. If that doesn't yield anything, compare the `ios/Podfile.lock` as well to verify any transitive pod dependencies need updating.
+
+#### `YogaKit.modulemap` not found
+
+1. Make sure you are opening the `.xcodeworkspace` dir when building from XCode, _not_ the project file. Pods based projects should always be opened this way.
+1. Make sure you did run `cd ios && pod install`.
+1. Restarting your machine seems to magically fix the issue for quite some people. This might especially be needed after doing an XCode upgrade.
+1. Make sure that the simulators are spawned by your current Xcode version. Force quite all simulators, run `sudo xcode-select --switch /Applications/Xcode.app` (update path were necessary), and start simulators & Flipper again.
+1. Make sure the iOS build target version aligns with the podfile and target iOS 11. [Example](https://github.com/facebook/react-native/issues/28503#issuecomment-696026013)
+1. [Verify](https://github.com/facebook/react-native/issues/28503#issuecomment-621662670) XCode has enough permissions.
+1. More solutions might be found in this [thread](https://github.com/facebook/react-native/issues/28503).
+
+####  Swift errors
+
+If you experience errors such as `Undefined symbol: associated type descriptor for FloatLiteralType` or `Undefined symbol: __swift_FORCE_LOAD_$_swiftCompatibility50` after going through the [Getting Started](getting-started/index) tutorial you must do as follows:
+
+1. Open your project in Xcode;
+1. Click in your project's name on the left side;
+1. Make sure that you choose your project under `PROJECT` on the screen that has been opened;
+1. Go to the tab `Build Settings`;
+1. Search for `LD_RUNPATH_SEARCH_PATHS` (make sure that `All` is selected);
+1. Double-click `Runpath Search Paths` and, in the dialog that opens, click on the plus button at the bottom-left corner and paste `/usr/lib/swift $(inherited)` there;
+   <img alt="Screenshot showing the places mentioned in the first steps" src={useBaseUrl("img/troubleshooting-react-native-ios-swift.png")} />
+1. Now search for `LIBRARY_SEARCH_PATHS`;
+1. Double-click `Library Search Paths` and, in the dialog that opens, add the following items:
+
+   ```
+   "$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)"
+   "$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)"
+   "$(inherited)"
+   ```
+
+   _Note: all of them should be added as `non-recursive` (the default)._
+
+   In the end it should look like this:
+   <img alt="Screenshot showing the places mentioned in the last steps" src={useBaseUrl("img/troubleshooting-react-native-ios-swift-2.png")} />
+
+1. Now you can run your build normally.
+
+#### Opting out from flipper (iOS)
+
+Comment out the relevant lines in `ios/Podfile` and run `cd ios && pod install` again:
+
+```ruby
+  # use_flipper!
+  # post_install do |installer|
+  #  flipper_post_install(installer)
+  # end
+```
+
+#### Disable Flipper on CI builds (iOS)
+
+To speed up CI builds, Flipper can be disabled on CI environments by making the Flipper SDK inclusion conditional (this works on most CI providers, feel free to customize the environment variable):
+
+```ruby
+  if !ENV['CI']
+    use_flipper!
+    post_install do |installer|
+      flipper_post_install(installer)
+    end
+  end
+```
+
+<FbInternalOnly>
+
+## Portal
+
+<PortalTroubleshooting />
+
+</FbInternalOnly>

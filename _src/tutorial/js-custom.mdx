@@ -1,0 +1,362 @@
+---
+id: js-custom
+title: Building A Custom Desktop Plugin
+sidebar_label: Desktop Plugin - Custom UI
+---
+import useBaseUrl from '@docusaurus/useBaseUrl';
+import Link from '@docusaurus/Link';
+
+Displaying your data in a table might work for many use-cases. However, depending on your plugin and data it might make sense to customize the way your data is visualized. Flipper uses React to render the plugins and provides a variety of ready-to-use UI components that can be used to build custom plugin UIs.
+
+## Replacing the table
+
+For our sea mammals app, we might not only want to see them listed as image URLs in a table but render the actual images in nice little cards. When selecting one of the cards we still want to display all details in the sidebar.
+
+<img alt="Custom cards UI for our sea mammals plugin" src={useBaseUrl("img/js-custom.png")} />
+
+Currently, the default export in our `index.tsx` is from `createTablePlugin`.
+Now we are going to replace this with a custom React component by using the more flexible APIs exposed by `flipper-plugin` .
+
+After that, we replace our `createTablePlugin` with a `plugin` definition, and a `Component` definition which is used for rendering.
+Separating those two concepts helps with testing and maintaining state when the user switches plugins.
+
+```tsx
+import React from 'react';
+import {PluginClient, createState} from 'flipper-plugin';
+
+// (3)
+type Row = {
+  id: number;
+  title: string;
+  url: string;
+};
+
+// (2)
+type Events = {
+  newRow: Row;
+};
+
+// (1)
+export function plugin(client: PluginClient<Events, {}>) {
+  // (5)
+  const rows = createState<Record<string, Row>>({}, {persist: 'rows'});
+  const selectedID = createState<string | null>(null, {persist: 'selection'});
+
+  // (6)
+  client.onMessage('newRow', (row) => {
+    rows.update((draft) => {
+      draft[row.id] = row;
+    });
+  });
+
+  // (7)
+  function setSelection(id: number) {
+    selectedID.set('' + id);
+  }
+
+  // (4)
+  return {
+    rows,
+    selectedID,
+    setSelection,
+  };
+}
+
+export function Component() {
+  return <h1>Sea Mammals plugin</h1>;
+}
+```
+
+## The `plugin` declaration
+
+The implementation of our plugin is driven by the named, exported function `plugin` as defined at `(3)`.
+The `plugin` method is called upon instantiating the plugin.
+The `plugin` method receives one argument, the `client`, which provides all APIs needed to both interact with Flipper desktop,
+and the plugin loaded into the client application.
+The `PluginClient` types all available APIs and takes two generic arguments.
+
+The first, `Events`, describes all possible events that can be sent from the client plugin to the desktop plugin,
+and determines the events available for `client.onMessage` (see below).
+In our example, only one event can occur, `newRow`, as defined at `(2)`.
+But typically there are more.
+The data provided by this `newRow` event is described with the `Row` type, as defined at `(3)`.
+The event names and data structures should correspond with the data that is send using [`connection.send`](../extending/create-plugin#push-data-to-the-desktop) from the client.
+
+From our `plugin` function, as shown at `(4)`, we have to return an object that captures the entire API we want to expose from our plugin to our UI components and unit tests.
+In this case, we return the state atoms `rows` and `selectedID`, and expose the `setSelection` method.
+
+## Writing `plugin` logic
+
+Since the `plugin` function will execute only once during the entire life-cycle of the plugin, we can use local variables in the function body to preserve state.
+In our example, we create two pieces of state, the set of rows available, `rows`, and the current selection: `selectionID`. See `(5)`.
+For larger data collections, we strongly recommend to leverage the better optimized [`createDataSource`](../extending/flipper-plugin#createdatasource), but in this simple example `createState` will suffice for the small data set.
+
+It is possible to store state directly in `let` declarations, but `createState` creates a storage container that gives us a few advantages.
+Most importantly, state created using `createState` can be subscribed to by our UI components using the `useValue` hook.
+Secondly, state created with `createState` can be made part of Flipper imports / exports.
+We can enable this feature by providing a unique `persist` key.
+The current value of a the container can be read using `.get()`, and `.set()` or `.update()` can be used to replace the current value.
+
+The `client` can be used to receive and send information to the client plugin.
+With `client.send`, we can invoke methods on the plugin.
+With `client.onMessage` (`(6)`) we can subscribe to the specific events as specified with the `Events` type (`(2)`).
+In the event handler, we can update some pieces of state, using the `.set` method to replace state, or the `.update` method to immutably update the state using [immer](https://immerjs.github.io/immer).
+In this case, we add the received row to the `rows` state under its own `id`.
+
+Finally, `(7)`, we create (and expose at `(4)`) a utility to update the selection, which we will user later in our UI.
+
+Note that no state should be stored outside the `plugin` definition; multiple invocations of `plugin` can be 'alive' if multiple connected apps are using the plugin.
+Storing the state inside the closure makes sure no state is mixed up.
+
+### Testing `plugin` logic
+
+Before we create the UI for our plugin, we are going to pretend that we always write unit tests first.
+Unit tests will be picked automatically by Jest if they are named like `__tests__/*.spec.tsx`, so we create a file called `__tests__/seamammals.spec.tsx` and start the test runner by
+running `yarn test --watch` in our plugin root.
+Here is our initial unit test:
+
+```ts
+// (1)
+import {TestUtils} from 'flipper-plugin';
+// (2)
+import * as MammalsPlugin from '..';
+
+test('It can store rows', () => {
+  // (3)
+  const {instance, sendEvent} = TestUtils.startPlugin(MammalsPlugin);
+
+  expect(instance.rows.get()).toEqual({});
+  expect(instance.selectedID.get()).toBeNull();
+
+  // (4)
+  sendEvent('newRow', {
+    id: 1,
+    title: 'Dolphin',
+    url: 'http://dolphin.png',
+  });
+  sendEvent('newRow', {
+    id: 2,
+    title: 'Turtle',
+    url: 'http://turtle.png',
+  });
+
+  // (5)
+  expect(instance.rows.get()).toMatchInlineSnapshot(`
+    Object {
+      "1": Object {
+        "id": 1,
+        "title": "Dolphin",
+        "url": "http://dolphin.png",
+      },
+      "2": Object {
+        "id": 2,
+        "title": "Turtle",
+        "url": "http://turtle.png",
+      },
+    }
+  `);
+});
+```
+
+Testing utilities for plugins are shipped as part of `flipper-plugin`, so we import them (`(1)`).
+Secondly, we directly import our above plugin implementation into our unit test.
+Using `as`, we put the entire implementation into one object, which is the format in which our utilities expect them (`(2)`).
+
+Using `TestUtils.startPlugin` (`(3)`) we can instantiate our plugin in a fully mocked environment,
+in which our plugin can do everything except for actually rendering, which makes this operation really cheap.
+From the `startPlugin`, we get back an `instance`, which corresponds to the object we returned from our `plugin` implementation (`(4)` in our previous listing).
+Beyond that, we get a bunch of utilities to interact with our plugin.
+The full list is documented [here](../extending/flipper-plugin.mdx#the-test-runner-object), but for this test we are only interested in `sendEvent`.
+
+Using `sendEvent`, we can mimic the client plugin sending events to our plugin `(4)`.
+Similarly we can emulate all other possible events, such as the initial connection setup with (`.connect()`), the user (de)selecting the plugin (`.activate()` / `deactivate()`), or a deeplink being triggered (`.triggerDeepLink`) etc.
+
+After the events have been sent, the internal state of our plugin should have been updated, so we assert this is the case at `(5)`.
+The assertions are provided by [Jest](https://jestjs.io/), and `toMatchInlineSnapshot` is particularly useful, as it will generate the initial snapshot during the first run of the unit tests, which saves a lot of effort.
+
+## Building a User Interface for the plugin
+
+So far, in `index.tsx`, our `Component` didn't do anything useful yet. Time to build some nice UI.
+Flipper leverages Ant design, so any [official Ant component](https://ant.design/components/overview/) can be used in Flipper plugins.
+
+The styling system used by Flipper can be found by starting Flipper, and opening `View > Flipper Style Guide`.
+The different `Layout` elements are documented there as well.
+
+```tsx
+import React, {memo} from 'react';
+import {Typography, Card} from 'antd';
+import {
+  Layout,
+  PluginClient,
+  usePlugin,
+  createState,
+  useValue,
+  theme,
+  styled,
+  DataInspector,
+  DetailSidebar
+} from 'flipper-plugin';
+
+// (1)
+export function Component() {
+  // (2)
+  const instance = usePlugin(plugin);
+  // (3)
+  const rows = useValue(instance.rows);
+  const selectedID = useValue(instance.selectedID);
+
+  // (4)
+  return (
+    <>
+      <Layout.ScrollContainer
+        vertical
+        style={{background: theme.backgroundWash}}>
+        <Layout.Horizontal gap pad style={{flexWrap: 'wrap'}}>
+          {Object.entries(rows).map(([id, row]) => (
+            <MammalCard
+              row={row}
+              onSelect={instance.setSelection}
+              selected={id === selectedID}
+              key={id}
+            />
+          ))}
+        </Layout.Horizontal>
+      </Layout.ScrollContainer>
+      <DetailSidebar>
+        {selectedID && renderSidebar(rows[selectedID])}
+      </DetailSidebar>
+    </>
+  );
+}
+
+function renderSidebar(row: Row) {
+  return (
+    <Layout.Container gap pad>
+      <Typography.Title level={4}>Extras</Typography.Title>
+      <DataInspector data={row} expandRoot={true} />
+    </Layout.Container>
+  );
+}
+```
+
+A plugin module can have many components, but it should always export one component named `Component` that is used as the root component for the plugin rendering.
+The component mustn't take any props, and will be mounted by Flipper when the user selects the plugin (`(1)`).
+
+Inside the component we can grab the relevant instance of the plugin by using the `usePlugin` (`(2)`) hook.
+This returns the instance API we returned in the first listing at the end of the `plugin` function.
+Our original `plugin` definition is passed to the `usePlugin` as argument.
+This is done to get the typings of `instance` correct and should always be done.
+
+With the `useValue` hook (`(3)`), we can grab the current value from the states we created earlier using `createState`.
+The benefit of `useValue(instance.rows)` over using `rows.get()`, is that the first will automatically subscribe our component to any future updates to the state, causing the component to re-render when new rows arrive.
+
+Since both `usePlugin` and `useValue` are hooks, they usual React rules for them apply; they need to be called unconditionally.
+So it is recommended to put them at the top of your component body.
+Both hooks can not only be used in the root `Component`, but also in any other component in your plugin component tree.
+So it is not necessary to grab all the data at the root and pass it down using props.
+Using `useValue` as deep in the component tree as possible will benefit performance.
+
+Finally (`(4)`) we render the data we have. The details have been left out here, as from here it is just idiomatic React code.
+The source of the other `MammalCard` component can be found [here](https://github.com/facebook/flipper/blob/master/desktop/plugins/public/seamammals/src/index_custom.tsx#L118-L132).
+
+Tip: it is recommended to keep components as much as possible outside the entry file, as components defined outside the index.tsx file will benefit from fast refresh.
+
+### Unit testing the User Interface
+
+At this moment the plugin is ready to be used in Flipper, and opening it should lead to sane results.
+But let's verify with some tests that the UI works correctly, and doesn't regress in the future by adding another unit test to the `seamammals.spec.tsx` file and assert that the rendering is correct and interactive:
+
+```ts
+test('It can have selection and render details', async () => {
+  // (1)
+  const {
+    instance,
+    renderer,
+    act,
+    sendEvent,
+    exportState,
+  } = TestUtils.renderPlugin(MammalsPlugin);
+
+  // (2)
+  sendEvent('newRow', {
+    id: 1,
+    title: 'Dolphin',
+    url: 'http://dolphin.png',
+  });
+  sendEvent('newRow', {
+    id: 2,
+    title: 'Turtle',
+    url: 'http://turtle.png',
+  });
+
+  // (3) Dolphin card should now be visible
+  expect(await renderer.findByTestId('Dolphin')).not.toBeNull();
+  // (4) Let's assert the structure of the Turtle card as well
+  expect(await renderer.findByTestId('Turtle')).toMatchInlineSnapshot(`
+    <div
+      class="css-ok7d66-View-FlexBox-FlexColumn"
+      data-testid="Turtle"
+    >
+      <div
+        class="css-vgz97s"
+        style="background-image: url(http://turtle.png);"
+      />
+      <span
+        class="css-8j2gzl-Text"
+      >
+        Turtle
+      </span>
+    </div>
+  `);
+
+  // (5) Nothing selected, so we should not have a sidebar
+  expect(renderer.queryAllByText('Extras').length).toBe(0);
+
+  act(() => {
+    instance.setSelection(2);
+  });
+
+  // Sidebar should be visible now
+  expect(await renderer.findByText('Extras')).not.toBeNull();
+
+  // (6) Verify export
+  expect(exportState()).toEqual({
+    rows: {
+      '1': {
+        id: 1,
+        title: 'Dolphin',
+        url: 'http://dolphin.png',
+      },
+      '2': {
+        id: 2,
+        title: 'Turtle',
+        url: 'http://turtle.png',
+      },
+    },
+    selection: '2',
+  });
+});
+```
+
+Like in our previous test, we use `TestUtils` to start our plugin.
+But rather than using `startPlugin`, we now use `renderPlugin`.
+Which does the same but also renders the component in memory, using [react-testing-library](https://testing-library.com/docs/react-testing-library/intro).
+The `renderer` returned by `startPlugin` allows us to interact with the DOM.
+
+Like in the previous test, we start by sending some events to the plugin (`(2)`).
+After that (`(3)`), our new data should be reflected in the dom.
+Since we used `<Card data-testid={row.title}` in our component implementation (not shown above) we can search in the DOM based on that test-id to find the right element.
+But it is also possible to search for a specific classname, etc.
+The available queries are documented [here](https://testing-library.com/docs/dom-testing-library/api-queries#queries).
+
+Rather than just checking that the rendering isn't `null`, we can also take a snapshot of the DOM, and assert that it doesn't change accidentally in the future.
+Jest's `toMatchInlineSnapshot` (`(4)`) is quite useful for that.
+But don't overuse it as large snapshots are pretty useless and just create a maintenance burden without catching much.
+
+In the next section, `(5)`, we simulate updating the selection from code, and assert that the sidebar has become visible. Note that the update is wrapped in `act`, which is recommended as it makes sure that updates are flushed to the DOM before we make queries and assertions on the DOM (the earlier `sendEvent` does apply `act` automatically and doesn't need wrapping).
+
+Alternatively, we could have emulated actually clicking a DOM element, by using `fireEvent.click(renderer.findByTestId('dolphin'))`. See [firing events](https://testing-library.com/docs/dom-testing-library/api-events) in the docs of React testing library for details.
+
+Finally (`(6)`) we grab the final state of our plugin state by using the `exportState` utility.
+It returns all the persistable state of our plugin, based on the `persist` keys we passed to `createState` in our first listing.
+We can now assert that the plugin ends up in the desired state.

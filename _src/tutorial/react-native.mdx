@@ -1,0 +1,54 @@
+---
+id: react-native
+title: Building a React Native Plugin
+---
+import useBaseUrl from '@docusaurus/useBaseUrl';
+import Link from '@docusaurus/Link';
+
+<div class="warning">
+
+This tutorial requires React Native 0.62 or higher.
+
+</div>
+
+Once you have connected Flipper to a React Native application,
+writing your own Flipper plugin can be done without reaching into the native world.
+
+To expose Flipper to the JavaScript world, the React Native Native Module `react-native-flipper` needs to be installed in the hosting application by running `yarn add react-native-flipper` and `cd ios && pod install`. If you are developing a plugin that is distributed as NPM package, make sure to add this to the installation instruction of your package as well!
+
+Registering a new plugin is done by importing `addPlugin` from `"react-native-flipper"` and providing it an object that at least implements the method  `getId` (the plugin id that should be used in the desktop plugin as well to make the connection) and two event handlers for the `onConnect` and `onDisconnect` events.
+
+These `onConnect` and `onDisconnect` events are triggered every time the plugin becomes (in)active in the Flipper desktop application.
+If the plugin is a <Link to={useBaseUrl("/docs/extending/create-plugin#background-plugins")}>background plugin</Link>, these events are triggered typically only once (they might be triggered never, if the Desktop user didn't enable the plugin, or multiple times if they enabled or disabled the plugin a few times).
+
+The `onConnect` callback receive a `connection` which can be used to communicate with the backend:
+
+```javascript
+import {addPlugin} from "react-native-flipper"
+
+addPlugin({
+  getId() {
+    return 'ReactNativeExamplePlugin';
+  },
+  onConnect(connection) {
+    mammmals.forEach(({ title, pictureUrl }, index) => {
+      connection.send('newRow', {
+          id: index,
+          title,
+          url: pictureUrl
+      })
+    })
+  },
+  onDisconnect() {
+  }
+})
+```
+
+You might want to store the connection somewhere to be able to send more events as long as `onDisconnect` event hasn't been fired.
+
+The `connection` object can also be used to listen to messages coming from the Desktop plugin. See <Link to={useBaseUrl("/docs/extending/create-plugin")}>Client Plugin API</Link> for details.
+
+An example plugin to play a little Tic-Tac-Toe between the Flipper Desktop and a React Native app can be found inside this repository as well (run `yarn && yarn android` in `react-native/ReactNativeFlipperExample` to start the test project):
+
+ * The React Native JavaScript based plugin implementation: [FlipperTicTacToe.js](https://github.com/facebook/flipper/tree/master/react-native/ReactNativeFlipperExample/FlipperTicTacToe.js)
+ * The Flipper Desktop plugin implementation: [rn-tic-tac-toe/index.tsx](https://github.com/facebook/flipper/blob/master/desktop/plugins/public/rn-tic-tac-toe/index.tsx)

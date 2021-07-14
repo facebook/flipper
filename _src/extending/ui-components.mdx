@@ -1,0 +1,526 @@
+---
+id: ui-components
+title: UI Components
+custom_edit_url: 'https://github.com/facebook/flipper/blob/master/website/generate-uidocs.js'
+---
+
+Flipper has a lot of built in React components to build UIs. You can import them directly using e.g. `import {Button} from 'flipper'`.
+## Button
+
+A simple button, used in many parts of the application.
+@deprecated use import {Button} from `antd` instead.
+
+| Property | Type | Description |
+|---------|------|-------------|
+| `onMouseDown` | `(event: React.MouseEvent) => any` | onMouseUp handler. |
+| `onClick` | `(event: React.MouseEvent) => any` | onClick handler. |
+| `disabled` | `boolean` | Whether this button is disabled. |
+| `large` | `boolean` | Whether this button is large. Increases padding and line-height. |
+| `compact` | `boolean` | Whether this button is compact. Decreases padding and line-height. |
+| `type` | `'primary' ⎮ 'success' ⎮ 'warning' ⎮ 'danger'` | Type of button. |
+| `children` | `ReactReactNode` | Children. |
+| `dropdown` | `Array<MenuItemConstructorOptions>` | Dropdown menu template shown on click. |
+| `icon` | `string` | Name of the icon dispalyed next to the text |
+| `iconSize` | `IconSize` | Size of the icon in pixels. |
+| `selected` | `boolean` | For toggle buttons, if the button is selected |
+| `pulse` | `boolean` | Button is pulsing |
+| `href` | `string` | URL to open in the browser on click |
+| `depressed` | `boolean` | Whether the button should render depressed into its socket |
+| `iconVariant` | `'filled' ⎮ 'outline'` | Style of the icon. `filled` is the default |
+| `padded` | `boolean` | Whether the button should have additional padding left and right. |
+
+  
+## ButtonGroup
+
+Group a series of buttons together.
+
+```jsx
+  <ButtonGroup>
+    <Button>One</Button>
+    <Button>Two</Button>
+    <Button>Three</Button>
+  </ButtonGroup>
+```
+@deprecated use Layout.Horizontal with flags: gap pad wrap
+
+| Property | Type | Description |
+|---------|------|-------------|
+| `children` | `ReactReactNode` |  |
+
+  
+## CenteredView
+
+CenteredView creates a scrollable container with fixed with, centered content.
+Recommended to combine with RoundedSection
+@deprecated
+
+
+  
+## Checkbox
+
+A checkbox to toggle UI state
+@deprecated use Checkbox from 'antd' instead
+
+| Property | Type | Description |
+|---------|------|-------------|
+| `checked` | `boolean` | Whether the checkbox is checked. |
+| `onChange` | `(checked: boolean) => void` | Called when a state change is triggered |
+| `disabled` | `boolean` |  |
+
+  
+## undefined
+
+Native context menu that is shown on secondary click.
+Uses [Electron's context menu API](https://electronjs.org/docs/api/menu-item)
+to show menu items.
+
+Separators can be added by `{type: 'separator'}`
+@depreacted https://ant.design/components/dropdown/#components-dropdown-demo-context-menu
+
+| Property | Type | Description |
+|---------|------|-------------|
+| `items` | `Array<MenuItemConstructorOptions>` | List of items in the context menu. Used for static menus. |
+| `buildItems` | `() => MenuTemplate` | Function to generate the menu. Called right before the menu is showed. Used for dynamic menus. |
+| `children` | `ReactReactNode` | Nodes that should have a context menu |
+| `component` | `React.ComponentType<any> ⎮ string` | The component that is used to wrap the children. Defaults to `FlexColumn`. |
+| `onMouseDown` | `(e: React.MouseEvent) => any` |  |
+
+  
+## ContextMenuProvider
+
+Flipper's root is already wrapped with this component, so plugins should not
+need to use this. ContextMenu is what you probably want to use.
+@deprecated use https://ant.design/components/dropdown/#components-dropdown-demo-context-menu
+
+
+  
+## InspectorSidebar
+
+
+
+| Property | Type | Description |
+|---------|------|-------------|
+| `element` | `ElementsInspectorElement ⎮ undefined ⎮ null` |  |
+| `tooltips` | `Object` |  |
+| `onValueChanged` | `OnValueChanged ⎮ undefined ⎮ null` |  |
+| `client` | `PluginClient` |  |
+| `realClient` | `Client` |  |
+| `logger` | `Logger` |  |
+| `extensions` | `Array<Function>` |  |
+
+  
+## ErrorBlock
+
+Displaying error messages in a red box.
+
+| Property | Type | Description |
+|---------|------|-------------|
+| `error` | `Error ⎮ string ⎮ null` | Error message to display. Error object's `stack` or `message` property is used. |
+| `className` | `string` | Additional className added to the container. |
+
+  
+## ErrorBoundary
+
+Boundary catching errors and displaying an ErrorBlock instead.
+
+| Property | Type | Description |
+|---------|------|-------------|
+| `buildHeading` | `(err: Error) => string` | Function to dynamically generate the heading of the ErrorBox. |
+| `heading` | `string` | Heading of the ErrorBox. Used as an alternative to `buildHeading`. |
+| `showStack` | `boolean` | Whether the stacktrace of the error is shown in the error box |
+| `children` | `ReactReactNode` | Code that might throw errors that will be catched |
+
+  
+## FileList
+
+List the contents of a folder from the user's file system. The file system is watched for
+changes and this list will automatically update.
+
+| Property | Type | Description |
+|---------|------|-------------|
+| `src` | `string` | Path to the folder |
+| `onError` | `(err: Error) => React.ReactNode ⎮ null ⎮ undefined` | Content to be rendered in case of an error |
+| `onLoad` | `() => void` | Content to be rendered while loading |
+| `onFiles` | `(files: FileListFiles) => React.ReactNode` | Content to be rendered when the file list is loaded |
+
+  
+## FileSelector
+
+
+
+| Property | Type | Description |
+|---------|------|-------------|
+| `onPathChanged` | `(evtArgs: {path: string; isValid: boolean}) => void` |  |
+| `placeholderText` | `string` |  |
+| `defaultPath` | `string` |  |
+| `showHiddenFiles` | `boolean` |  |
+
+  
+## FilterRow
+
+
+
+| Property | Type | Description |
+|---------|------|-------------|
+| `children` | `ReactReactNode` |  |
+| `addFilter` | `(filter: Filter) => void` |  |
+| `filterKey` | `string` |  |
+
+  
+## Glyph
+
+
+
+| Property | Type | Description |
+|---------|------|-------------|
+| `name` | `string` |  |
+| `size` | `8 ⎮ 10 ⎮ 12 ⎮ 16 ⎮ 18 ⎮ 20 ⎮ 24 ⎮ 32` |  |
+| `variant` | `'filled' ⎮ 'outline'` |  |
+| `className` | `string` |  |
+| `color` | `string` |  |
+| `style` | `ReactCSSProperties` |  |
+| `title` | `string` |  |
+
+  
+## HBox
+
+@deprecated use Layout.Left / Layout.Right or Layout.Horizonta from flipper-plugin instead
+
+| Property | Type | Description |
+|---------|------|-------------|
+| `grow` | `` |  |
+| `childWidth` | `` |  |
+| `verticalAlign` | `` |  |
+
+  
+## Heading
+
+A heading component.
+
+| Property | Type | Description |
+|---------|------|-------------|
+| `level` | `number` | Level of the heading. A number from 1-6. Where 1 is the largest heading. |
+| `children` | `ReactReactNode` | Children. |
+
+  
+## Info
+
+Shows an info box with some text and a symbol.
+Supported types: info | spinning | warning | error
+
+| Property | Type | Description |
+|---------|------|-------------|
+| `children` | `ReactReactNode` |  |
+| `type` | `'info' ⎮ 'spinning' ⎮ 'warning' ⎮ 'error'` |  |
+| `small` | `boolean` |  |
+
+  
+## Labeled
+
+Vertically arranged section that starts with a label and includes standard margins
+
+
+  
+## Markdown
+
+
+
+| Property | Type | Description |
+|---------|------|-------------|
+| `source` | `string` |  |
+| `style` | `CSSProperties` |  |
+
+  
+## ModalOverlay
+
+
+
+| Property | Type | Description |
+|---------|------|-------------|
+| `onClose` | `() => void` |  |
+| `children` | `ReactReactNode` |  |
+
+  
+## Orderable
+
+
+
+| Property | Type | Description |
+|---------|------|-------------|
+| `items` | `{[key: string]: React.ReactNode}` |  |
+| `orientation` | `'horizontal' ⎮ 'vertical'` |  |
+| `onChange` | `(order: OrderableOrder, key: string) => void` |  |
+| `order` | `OrderableOrder ⎮ null ⎮ undefined` |  |
+| `className` | `string` |  |
+| `reverse` | `boolean` |  |
+| `altKey` | `boolean` |  |
+| `moveDelay` | `number` |  |
+| `dragOpacity` | `number` |  |
+| `ignoreChildEvents` | `boolean` |  |
+
+  
+## Panel
+
+A Panel component.
+
+| Property | Type | Description |
+|---------|------|-------------|
+| `className` | `string` | Class name to customise styling. |
+| `floating` | `boolean` | Whether this panel is floating from the rest of the UI. ie. if it has margin and a border. |
+| `grow` | `boolean` | Whether the panel takes up all the space it can. Equivalent to the following CSS:   height: 100%;  width: 100%; |
+| `heading` | `ReactReactNode` | Heading for this panel. If this is anything other than a string then no padding is applied to the heading. |
+| `children` | `ReactReactNode` | Contents of the panel. |
+| `padded` | `boolean` | Whether the panel header and body have padding. |
+| `collapsable` | `boolean` | Whether the panel can be collapsed. Defaults to true |
+| `collapsed` | `boolean` | Initial state for panel if it is collapsable |
+| `accessory` | `ReactReactNode` | Heading for this panel. If this is anything other than a string then no padding is applied to the heading. |
+| `style` | `CSSProperties` |  |
+
+  
+## Radio
+
+A radio button to toggle UI state
+@deprecated use Radio from 'antd'
+
+| Property | Type | Description |
+|---------|------|-------------|
+| `checked` | `boolean` | Whether the radio button is checked. |
+| `onChange` | `(selected: boolean) => void` | Called when a state change is triggered |
+| `disabled` | `boolean` |  |
+
+  
+## RequireLogin
+
+
+
+
+  
+## RoundedSection
+
+Section with a title, dropshadow, rounded border and white backgorund.
+
+Recommended to be used inside a CenteredView
+
+
+  
+## FilterToken
+
+
+
+| Property | Type | Description |
+|---------|------|-------------|
+| `filter` | `Filter` |  |
+| `focused` | `boolean` |  |
+| `index` | `number` |  |
+| `onFocus` | `(focusedToken: number) => void` |  |
+| `onBlur` | `() => void` |  |
+| `onDelete` | `(deletedToken: number) => void` |  |
+| `onReplace` | `(index: number, filter: Filter) => void` |  |
+
+  
+## SearchableManagedTable
+
+
+
+| Property | Type | Description |
+|---------|------|-------------|
+| `innerRef` | `(ref: React.RefObject<any>) => void` | Reference to the table |
+| `defaultFilters` | `Array<Filter>` | Filters that are added to the filterbar by default |
+
+  
+## Select
+
+Dropdown to select from a list of options
+@deprecated use Select from antd instead: https://ant.design/components/select/
+
+| Property | Type | Description |
+|---------|------|-------------|
+| `className` | `string` | Additional className added to the element |
+| `options` | `{   [key: string]: string; }` | The list of options to display |
+| `onChange` | `(value: string) => void` | DEPRECATED: Callback when the selected value changes. The callback is called with the displayed value. |
+| `onChangeWithKey` | `(key: string) => void` | Callback when the selected value changes. The callback is called with the key for the displayed value |
+| `selected` | `string ⎮ null ⎮ undefined` | Selected key |
+| `label` | `string` | Label shown next to the dropdown |
+| `grow` | `boolean` | Select box should take all available space |
+| `disabled` | `boolean` | Whether the user can interact with the select and change the selcted option |
+| `style` | `CSSProperties` |  |
+
+  
+## Sheet
+
+Usage: `<Sheet>{onHide => <YourSheetContent onHide={onHide} />}</Sheet>`
+
+| Property | Type | Description |
+|---------|------|-------------|
+| `children` | `(onHide: () => void) => React.ReactNode ⎮ undefined` | Function as child component (FaCC) to render the contents of the sheet. A `onHide` function is passed as argument, that can be called to remove the sheet. |
+| `onHideSheet` | `() => void` |  |
+| `setActiveSheet` | `(sheet: ActiveSheet) => any` |  |
+| `activeSheet` | `ActiveSheet` | Function that is called when the sheet becomes hidden. |
+
+  
+## Sidebar
+
+A resizable sidebar.
+@deprecated use Layout.Top / Right / Bottom / Left from flipper-plugin instead
+
+| Property | Type | Description |
+|---------|------|-------------|
+| `position` | `'left' ⎮ 'top' ⎮ 'right' ⎮ 'bottom'` | Position of the sidebar. |
+| `width` | `number` | Default width of the sidebar.  Only used for left/right sidebars. |
+| `minWidth` | `number` | Minimum sidebar width. Only used for left/right sidebars. |
+| `maxWidth` | `number` | Maximum sidebar width. Only used for left/right sidebars. |
+| `height` | `number` | Default height of the sidebar. |
+| `minHeight` | `number` | Minimum sidebar height. Only used for top/bottom sidebars. |
+| `maxHeight` | `number` | Maximum sidebar height. Only used for top/bottom sidebars. |
+| `backgroundColor` | `Property.BackgroundColor` | Background color. |
+| `onResize` | `(width: number, height: number) => void` | Callback when the sidebar size ahs changed. |
+| `children` | `ReactReactNode` | Contents of the sidebar. |
+| `className` | `string` | Class name to customise styling. |
+
+  
+## StackTrace
+
+Display a stack trace
+
+| Property | Type | Description |
+|---------|------|-------------|
+| `children` | `Child[]` |  |
+| `reason` | `string` | Reason for the crash, displayed above the trace |
+| `isCrash` | `boolean` | Does the trace show a crash |
+| `padded` | `boolean` | Display the stack trace in a padded container |
+| `backgroundColor` | `string` | Background color of the stack trace |
+
+  
+## StarButton
+
+
+
+| Property | Type | Description |
+|---------|------|-------------|
+| `starred` | `boolean` |  |
+| `onStar` | `() => void` |  |
+
+  
+## Tab.tsx
+
+
+
+
+  
+## TableHead
+
+
+
+| Property | Type | Description |
+|---------|------|-------------|
+| `columnOrder` | `TableColumnOrder` |  |
+| `onColumnOrder` | `(order: TableColumnOrder) => void` |  |
+| `columns` | `TableColumns` |  |
+| `sortOrder` | `TableRowSortOrder` |  |
+| `onSort` | `TableOnSort` |  |
+| `columnSizes` | `TableColumnSizes` |  |
+| `onColumnResize` | `TableOnColumnResize` |  |
+| `horizontallyScrollable` | `boolean` |  |
+
+  
+## TableRow
+
+
+
+| Property | Type | Description |
+|---------|------|-------------|
+| `columnSizes` | `TableColumnSizes` |  |
+| `columnKeys` | `TableColumnKeys` |  |
+| `onMouseDown` | `(e: React.MouseEvent, row: TableBodyRow, index: number) => void` |  |
+| `onMouseEnter` | `(   e: React.MouseEvent,   row: TableBodyRow,   index: number, ) => void` |  |
+| `multiline` | `boolean` |  |
+| `rowLineHeight` | `number` |  |
+| `highlighted` | `boolean` |  |
+| `row` | `TableBodyRow` |  |
+| `index` | `number` |  |
+| `style` | `React.CSSProperties ⎮ undefined` |  |
+| `onAddFilter` | `TableOnAddFilter` |  |
+| `zebra` | `boolean` |  |
+
+  
+## Tabs
+
+A Tabs component.
+@deprecated use Tabs from flipper-plugin
+
+| Property | Type | Description |
+|---------|------|-------------|
+| `onActive` | `(key: string ⎮ null ⎮ undefined) => void` | Callback for when the active tab has changed. |
+| `defaultActive` | `string` | The key of the default active tab. |
+| `active` | `string ⎮ null ⎮ undefined` | The key of the currently active tab. |
+| `children` | `React.ReactElement<TabProps>[] ⎮ React.ReactElement<TabProps>` | Tab elements. |
+| `orderable` | `boolean` | Whether the tabs can be reordered by the user. |
+| `onOrder` | `(order: Array<string>) => void` | Callback when the tab order changes. |
+| `order` | `Array<string>` | Order of tabs. |
+| `persist` | `boolean` | Whether to include the contents of every tab in the DOM and just toggle its visibility. |
+| `newable` | `boolean` | Whether to include a button to create additional items. |
+| `onNew` | `() => void` | Callback for when the new button is clicked. |
+| `before` | `Array<React.ReactNode>` | Elements to insert before all tabs in the tab list. |
+| `after` | `Array<React.ReactNode>` | Elements to insert after all tabs in the tab list. |
+| `classic` | `boolean` | By default tabs are rendered in mac-style tabs, with a negative offset. By setting classic mode the classic style is rendered. |
+
+  
+## TabsContainer
+
+
+
+| Property | Type | Description |
+|---------|------|-------------|
+| `children` | `any` |  |
+
+  
+## ToggleButton
+
+Toggle Button.
+
+**Usage**
+
+```jsx
+import {ToggleButton} from '../ui';
+<ToggleButton onClick={handler} toggled={boolean}/>
+```
+
+| Property | Type | Description |
+|---------|------|-------------|
+| `onClick` | `(event: React.MouseEvent) => void` | onClick handler. |
+| `toggled` | `boolean` | whether the button is toggled |
+| `className` | `string` |  |
+| `label` | `string` |  |
+| `tooltip` | `string` |  |
+| `large` | `boolean` |  |
+
+  
+## ToolbarIcon
+
+
+
+| Property | Type | Description |
+|---------|------|-------------|
+| `active` | `boolean` |  |
+| `icon` | `string` |  |
+| `title` | `string` |  |
+| `onClick` | `() => void` |  |
+
+  
+## Tooltip
+
+@deprecated use Tooltip from 'tantd'
+
+| Property | Type | Description |
+|---------|------|-------------|
+| `title` | `ReactReactNode` | Content shown in the tooltip |
+| `children` | `ReactReactNode` | Component that will show the tooltip |
+| `options` | `TooltipOptions` |  |
+
+  
+## TooltipProvider
+
+
+
+
+  

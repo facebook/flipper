@@ -1,0 +1,44 @@
+---
+id: loading-custom-plugins
+title: Dynamically Loading Plugins
+---
+
+<FbInternalOnly>
+
+<div class="warning">
+
+Inside Facebook, plugins sources are stored and loaded from `~/fbsource/xplat/sonar/desktop/plugins`,
+in which case no further configuration is needed.
+
+If your team uses Flipper plugins that are stored outside `fbsource`, please follow your team specific instructions.
+
+</div>
+
+</FbInternalOnly>
+
+Flipper loads and runs plugins it finds in a configurable location. The paths searched are specified in `~/.flipper/config.json`. These paths, `pluginPaths`, should contain one folder for each of the plugins it stores. An example config setting and plugin file structure is shown below:
+
+`~/.flipper/config.json`:
+```
+{
+  ...,
+  "pluginPaths": ["~/flipper-plugins"]
+}
+```
+Plugin File example structure:
+```
+~ flipper-plugins/
+    my-plugin/
+      package.json
+      src/index.tsx
+      dist/bundle.js
+```
+
+<OssOnly>
+
+Note: when using `npx flipper-pkg init` for scaffolding, as explained in the [tutorial](../tutorial/intro) or on the next page, the path should be configured automatically for you in most cases.
+
+</OssOnly>
+
+Typically, the above setup is only needed if you are developing plugins. 
+To consume plugins, it is recommended to use one of the existing [distribution mechanisms](plugin-distribution) instead.

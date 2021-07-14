@@ -1,0 +1,42 @@
+---
+id: js-setup
+title: Building a Desktop Plugin
+sidebar_label: Desktop Plugin - Setup
+---
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+Now that we have the native side covered, let's display the data we're sending
+on the desktop side. 
+
+<img alt="Custom cards UI for our sea mammals plugin" src={useBaseUrl("img/js-custom.png")} />
+
+<FbInternalOnly>
+[FB-Only] After scaffolding and starting Flipper from source, no further steps are needed to setup the desktop plugin. 
+</FbInternalOnly>
+
+<OssOnly>
+
+## Scaffolding a new Desktop plugin
+
+A new Flipper Desktop plugin can be scaffolded by running `npx flipper-pkg init` in the directory where you want to store the plugin sources (Don't run this command inside the Flipper repository itself!). 
+Before running this command, make sure Flipper is closed.
+
+For example:
+
+```bash
+mkdir ~/FlipperPlugins
+cd ~/FlipperPlugins
+npx flipper-pkg init
+```
+
+Add the directory to the Flipper watch folder if asked. In this tutorial we will be creating a `client` plugin. `device` plugins are only used when creating plugins that _don't_ connect to a specific application and are pretty rare.
+
+The tool will ask you to provide "id" and "title" for your plugin. Use "sea-mammals" as "id" and "Sea Mammals" as "title". After that the tool will create two files in the directory: `package.json` and `src/index.tsx`.
+
+After the process has finished, use `yarn watch` in the generated directory to start compiling the plugin on the fly. 
+
+Now that our package has been set up, we are ready to build a UI for our plugin. Either by using a standardized table-based plugin, or by creating a custom UI.
+
+</OssOnly>
+
+For more background on the generated files and overal plugin structure, see the [Plugin Structure](../extending/desktop-plugin-structure) page.

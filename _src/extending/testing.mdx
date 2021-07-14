@@ -1,0 +1,193 @@
+---
+id: testing
+title: Testing
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import FbIosTesting from '../fb/ios-plugin-development-testing-ios-plugins-0.mdx';
+import FbAndroidTesting from '../fb/android-plugin-development-testing-android-plugins-0.mdx';
+
+Developer tools are only used if they work. We have built APIs to test plugins.
+
+## Writing tests
+
+## Desktop plugins
+
+Flipper uses [Jest](https://jestjs.io/) as unit testing framework.
+
+Writing unit tests for Flipper Desktop plugins is covered in detail in the [tutorial](../../docs/tutorial/js-custom#testing-plugin-logic).
+
+The `flipper-plugin` package provide several [test utilities](../../docs/extending/flipper-plugin#testutils) to make testing more convenient.
+
+## Client plugins
+
+<Tabs defaultValue="android" values={[{label: 'Android', value: 'android'}, { label: 'iOS', value: 'ios'}]}>
+<TabItem value="android">
+
+<OssOnly>
+Start by creating your first test file in this directory `MyFlipperPluginTest.java`. In the test method body we create our plugin which we want to test as well as a `FlipperConnectionMock`. In this contrived example we simply assert that our plugin's connected status is what we expect.
+
+```java
+@RunWith(RobolectricTestRunner.class)
+public class MyFlipperPluginTest {
+
+  @Test
+  public void myTest() {
+    final MyFlipperPlugin plugin = new MyFlipperPlugin();
+    final FlipperConnectionMock connection = new FlipperConnectionMock();
+
+    plugin.onConnect(connection);
+    assertThat(plugin.connected(), equalTo(true));
+  }
+}
+```
+
+There are two mock classes that are used to construct tests `FlipperConnectionMock` and `FlipperResponderMock`. Together these can be used to write very powerful tests to verify the end to end behavior of your plugin. For example we can test if for a given incoming message our plugin responds as we expect.
+
+```java
+@Test
+public void myTest() {
+  final MyFlipperPlugin plugin = new MyFlipperPlugin();
+  final FlipperConnectionMock connection = new FlipperConnectionMock();
+  final FlipperResponderMock responder = new FlipperResponderMock();
+
+  plugin.onConnect(connection);
+
+  final FlipperObject params = new FlipperObject.Builder()
+      .put("phrase", "flipper")
+      .build();
+  connection.receivers.get("myMethod").onReceive(params, responder);
+
+  assertThat(responder.successes, hasItem(
+      new FlipperObject.Builder()
+          .put("phrase", "ranos")
+          .build()));
+}
+```
+</OssOnly>
+
+<FbAndroidTesting />
+
+</TabItem>
+<TabItem value="ios">
+
+<OssOnly>
+
+Start by creating your first test file in this directory `MyFlipperPluginTests.cpp` and import the testing utilities from `fbsource//xplat/sonar/xplat:FlipperTestLib`. These utilities mock out core pieces of the communication channel so that you can test your plugin in isolation.
+
+```objc
+#include <MyFlipperPlugin/MyFlipperPlugin.h>
+#include <FlipperTestLib/FlipperConnectionMock.h>
+#include <FlipperTestLib/FlipperResponderMock.h>
+
+#include <folly/json.h>
+#include <gtest/gtest.h>
+
+namespace facebook {
+namespace flipper {
+namespace test {
+
+TEST(MyFlipperPluginTests, testDummy) {
+  EXPECT_EQ(1 + 1, 2);
+}
+
+} // namespace test
+} // namespace flipper
+} // namespace facebook
+```
+
+Here is a simple test using these mock utilities to create a plugin, send some data, and assert that the result is as expected.
+
+```objc
+TEST(MyFlipperPluginTests, testDummy) {
+  std::vector<folly::dynamic> successfulResponses;
+  auto responder = std::make_unique<FlipperResponderMock>(&successfulResponses);
+  auto conn = std::make_shared<FlipperConnectionMock>();
+
+  MyFlipperPlugin plugin;
+  plugin.didConnect(conn);
+
+  folly::dynamic message = folly::dynamic::object("param1", "hello");
+  folly::dynamic expectedResponse = folly::dynamic::object("response", "Hi there");
+
+  auto receiver = conn->receivers_["someMethod"];
+  receiver(message, std::move(responder));
+
+  EXPECT_EQ(successfulResponses.size(), 1);
+  EXPECT_EQ(successfulResponses.back(), expectedResponse);
+}
+```
+</OssOnly>
+
+<FbIosTesting />
+
+</TabItem>
+</Tabs>
+
+## Running (Flipper) tests
+
+### Flipper Desktop
+
+<OssOnly>
+
+Run `yarn jest` or `yarn jest --watch` in the `desktop` directory of your Flipper checkout.
+
+</OssOnly>
+
+<FbInternalOnly>
+
+Run `yarn jest` or `yarn jest --watch` in `~/fbsource/xplat/sonar/desktop`
+
+</FbInternalOnly>
+
+### Flipper SDK
+
+#### Android (Java)
+
+<OssOnly>
+
+##### Gradle:
+
+In the root directory of the checkout:
+
+```
+./gradlew android:test
+```
+
+</OssOnly>
+
+<FbInternalOnly>
+
+##### Gradle:
+
+```
+cd fbsource/xplat/sonar
+./gradlew android:test
+```
+
+##### Buck:
+
+I don't know of a way to run them locally 😞 Make a change and submit a diff.
+
+`buck test ...` should work, but doesn't seem to when run in xplat on mac but they do work on mobile on demand, if you use @mode/server.
+
+*Debugging note: They do work if you copy the files and BUCK file to* `fbandroid/javatests` *and change the rule from* `sonar_android_test` *to* `robolectric3_test`
+
+</FbInternalOnly>
+
+<FbInternalOnly>
+
+### iOS
+
+Focus on the plugins, or flipper code you want but with the --with-tests param.
+
+`arc focus ... --with-tests`
+
+Then click the <-> icon  in xcode and you can run them there.
+
+</FbInternalOnly>
+
+### React Native
+
+See [testing React Native](testing-rn).

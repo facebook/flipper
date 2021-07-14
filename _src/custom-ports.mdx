@@ -1,0 +1,41 @@
+---
+id: custom-ports
+title: Running Flipper with different ports
+sidebar_label: Using different ports
+---
+
+## FLIPPER ports
+
+By default Flipper runs its servers on ports 8088 and 8089, and the mobile SDKs look for servers on those ports.
+
+Each of these can be overridden by setting an environment variable, with the format `${INSECURE_PORT},${SECURE_PORT}`.
+
+To run the desktop app using custom ports:
+
+```
+FLIPPER_PORTS=1111,2222 ./flipper
+```
+
+To configure the Android SDK for custom ports, set the `flipper.ports` prop to your chosen ports `1111,2222` like so, and then launch the Android app:
+
+```
+adb shell su 0 setprop flipper.ports 1111,2222
+```
+
+To configure the iOS SDK for custom ports, set the FLIPPER_PORTS environment variable in your app launch script.
+
+## METRO SERVER PORTS
+
+You can also setup Flipper to use a different Metro Server port (default=8081) using this environement variable:
+
+```
+METRO_SERVER_PORT=3333 ./flipper
+```
+
+## ADB REVERSE PROXY PORTS
+
+And setup a different ADB port used for reverse proxying when plugged through USB (default=5037) using:
+
+```
+ANDROID_ADB_SERVER_PORT=4444 ./flipper
+```

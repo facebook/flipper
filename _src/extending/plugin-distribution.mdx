@@ -1,0 +1,62 @@
+---
+id: plugin-distribution
+title: Plugin Distribution
+---
+
+import FbPluginReleases from './fb/desktop-plugin-releases.mdx'
+
+<OssOnly>
+
+## Publishing to npm
+
+Flipper plugins are essentially standard npm packages. So you can publish them by executing `yarn publish` or `npm publish` in the plugin directory. The only requirements are:
+
+1. `package.json` and code [must follow the Flipper plugin specification](desktop-plugin-structure#plugin-definition)
+2. code must be bundled using "flipper-pkg" before packing or publishing. This can be done by executing `flipper-pkg bundle` on `prepack` step:
+    ```json
+    {
+      ...
+      "devDependencies": {
+        ...
+        "flipper-pkg": "latest"
+      },
+      "scripts": {
+        ...
+        "prepack": "flipper-pkg bundle"
+      }
+    }
+    ```
+
+</OssOnly>
+
+<FbInternalOnly>
+
+## Publishing plugins
+
+<FbPluginReleases />
+
+</FbInternalOnly>
+
+## Packaging to File
+
+To package plugin as a tarball, you can use the same command as for packaging any other npm package, e.g. `yarn pack` or `npm pack`.
+
+"flipper-pkg" also provides a convenient command `pack` which:
+
+1. Installs the plugin dependencies
+2. Bundles the plugin
+3. Creates the tarball and saves it at the specified location
+
+E.g. to package plugin located at `~/flipper-plugins/my-plugin` to `~/Desktop`, execute the following command:
+```
+flipper-pkg pack ~/flipper-plugins/my-plugin -o ~/Desktop
+```
+
+## Installation from File
+
+It is possible to install plugins into Flipper from tarballs. This is useful in cases when you need to try a plugin version which is not published to npm, or if you want to distribute plugin privately:
+
+1. Launch Flipper
+2. Click the "Manage Plugins" button in the bottom-left corner
+3. Select the "Install Plugins" tab in the opened sheet
+4. Specify the path to the plugin package (or just drag and drop it) and click "Install"

@@ -1,0 +1,75 @@
+---
+id: establishing-a-connection
+title: Secure Communication
+---
+import useBaseUrl from '@docusaurus/useBaseUrl';
+import Link from '@docusaurus/Link';
+
+Below is an outline of how a connection is established between an app with our SDK integrated, and the desktop app. This all goes on behind the scenes inside the mobile SDK, so users shouldn't need to worry about it.
+
+The connection process is a little more involved than you might expect, to stop Flipper clients on mobile apps from connecting to any server that happens to be running on localhost and potentially leaking information from your app.
+
+## Transport Protocol
+
+Flipper uses [RSocket](http://rsocket.io/) to communicate between the desktop and mobile apps. RSocket allows for bi-directional communication.
+
+## Client-Server relationship
+
+When the desktop app starts up, it opens a secure socket on port 8088.
+The Flipper client will continually attempt to connect to this port on localhost to establish a connection with the desktop app.
+
+## Certificate Exchange
+
+To avoid mobile apps from connecting to untrusted ports on localhost, a Flipper client should only connect to servers that have a valid, trusted TLS certificate.
+In order for the mobile app to know which certificates it can trust, it conducts a certificate exchange with the desktop app before it can make its first secure connection.
+
+This is achieved through the following steps:
+* Desktop app starts an insecure server on port 8089.
+* Mobile app connects to localhost:8089 and sends a Certificate Signing Request to the desktop app.
+* Desktop app uses it's private key (this is generated once and stored in ~/.flipper) to sign a client certificate for the mobile app.
+* Along with the Certificate Signing Request, mobile app also lets the desktop app know which certificate exchange medium to use.
+* If the chosen Certificate Exchange Medium is FS_ACCESS, the desktop uses ADB (for Android), or the mounted file system (for iOS simulators) to write the following files to the mobile app's private data partition
+  * Server certificate that the mobile app can now trust.
+  * Client certificate for the mobile app to use going forward.
+* If the chosen Certificate Exchange Medium is WWW, the desktop app will use your implementation of Certificate Uploader to upload the certificates.
+  * Once uploaded the desktop app will reply back with the device id, which can be used by Certificate Provider on the client side to fetch those certificates.
+  * <OssOnly> Right now we do not support WWW mode. We are working on it to bring the support for open source.</OssOnly> <FbInternalOnly>To know more about the WWW mode and how to use it, follow the guide <Link to={useBaseUrl('/docs/fb/www-certificate-exchange')}>here</Link>.</FbInternalOnly>
+* Now the mobile app knows which server certificate it can trust, and can connect to the secure server.
+
+This allows the mobile app to trust a certificate if and only if, it is stored inside its internal data partition. Typically it's only possible to write there with physical access to the device (i.e. through ADB or a mounted simulator).
+
+To get the desktop app to generate a client certificate for your client, and then deploy it, go through the following steps:
+
+Use an RSocket client to connect (insecurely) to the following URL:
+
+(Parameters are defined in [Implementing a Flipper Client](new-clients))
+```
+localhost:8089/sonar?os={OS}
+                     &device={DEVICE}
+                     &app={APP}
+                     &sdk_version={SDK_VERSION}
+                     &medium={CERTIFICATE_EXCHANGE_MEDIUM}
+```
+
+On that connection, send the following payload:
+```js
+Request = {
+  "method": "signCertificate",
+  "csr": string,
+  "destination": string,
+  "medium": int
+}
+```
+Where `csr` is a Certificate Signing Request the client has generated, and `destination` identifies a location accessible to both the client and Flipper desktop, where the certificate should be placed.
+
+The Subject Common Name (CN=...) must be included in the CSR, and your `CertificateProvider` implementation in Flipper may use this in combination with the `destination` to determine where to put the certificate.
+
+This will ask Flipper desktop to generate a client certificate, using the CSR provided, and put it into the specified `destination`.
+
+Depending on the client, `destination` can have a different meaning. A basic example would be a file path, that both the desktop and the client have access to. With this Flipper desktop could write the certificate to that path. A more involved example is that of the Android Client, where destination specifies a relative path inside an app container. And the Subject Common Name determines which app container. Together these two pieces of information form an absolute file path inside an android device.
+
+For Flipper desktop to work with a given Client type, it needs to be modified to know how to correctly interpret the `destination` argument, and deploy certificates to it.
+
+`destination` field may not be relevant if your `medium` value is more than 1. `medium=1`(default) means Flipper should do certificate exchange by directly putting certificates at `destination` in the sandbox of the app. `medium=2` means Flipper will use Certificate Uploader and Provider to upload certificates and download it on the client side respectively.
+
+You can see the current implementations in [CertificateProvider.tsx](https://github.com/facebook/flipper/blob/master/desktop/app/src/utils/CertificateProvider.tsx).

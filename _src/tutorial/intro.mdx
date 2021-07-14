@@ -1,0 +1,62 @@
+---
+id: intro
+title: Intro
+---
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+<img alt="Android App Tutorial" src={useBaseUrl("img/android-tutorial.png")} />
+
+Flipper was designed with extensibility in mind from the start to enable engineers to quickly build quality, easy-to-use tools for their own needs and applications.
+In addition to building plugins for the existing platforms, you can also extend the capabilities of Flipper to other platforms by conforming to the `FlipperClient` API. After this, you can make use of the existing desktop plugins by writing client plugins that conform to the same API.
+
+In this tutorial, we show you how how easy it is to build a Flipper plugin
+for Android and iOS that extracts data from your native application and
+displays it in the desktop app.
+
+We then guide you through the process of converting a basic table plugin into
+a full plugin with custom UI components.
+
+Before we get started, let's define two terms we will use frequently throughout
+this tutorial:
+
+- **Desktop app**: This is the Electron-based application you run on your desktop.
+- **Mobile client**: This is the mobile app running most likely on a phone or other mobile device. It connects to the desktop app.
+
+<FbInternalOnly>
+
+## Scaffolding a new plugin
+
+To create your plugin and add it to Wilde / fb4a there are some steps to go through. That's why we made a simple scripts for it.
+
+Go to your terminal and simply run `scarf flipper-plugin`, this will setup all required files for you.
+
+On completion you'll have everything set up ready to start and running it on Flipper. Run `hg diff` to see the following:
+
+* **Desktop plugin files**: The UI code for your plugin. Everything starts in the `index.js` file
+* **Native Flipper plugin files**: The Android / iOS code for your plugin
+* **Integration with flagship apps**: Your plugin has already been added into Wilde and/or fb4a!
+
+### Gatekeeper
+
+Depending on the scaffolding choices, we've gated your new plugin behind a GK, so you can go ahead and ship it without premature exposure. You will have to create the gatekeeper, and add yourself to it so you can see your plugin. The GK name is defined in your plugins `package.json`.
+
+### Let's see something on screen
+
+Now that you have a good ground for your plugin there is nothing better than actually see something on screen. Make sure you build and run fb4a or wilde with your generated changes.
+
+You also need to compile and run the flipper desktop app, with your new plugin.
+
+To locally run Flipper just go to your terminal (please use non-atom terminal):
+
+```
+$ cd ~/fbsource/xplat/sonar/desktop
+$ yarn install
+$ yarn start
+```
+This will kickoff a local build of Flipper that will spawn automatically for you once its ready. While you're working on your custom plugin you'll not be using the Flipper build pre-installed on your machine.
+
+As you keep tweaking and improving your desktop plugin, the only thing to do is to save your changes (on your `index.tsx` file) and it will automatically reload flipper with all changes applied for you. This makes it possible to see your changes automatically appear on screen without rebuilding Flipper every time.
+
+To start an IDE we recommend to run `code-fb ~/fbsource/xplat/sonar/`
+
+</FbInternalOnly>
