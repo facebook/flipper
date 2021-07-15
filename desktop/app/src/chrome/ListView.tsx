@@ -16,12 +16,12 @@ import {
   Spacer,
   Checkbox,
   Radio,
-  colors,
   View,
   Tooltip,
   Glyph,
 } from '../ui';
 import React, {Component} from 'react';
+import {theme} from 'flipper-plugin';
 
 export type SelectionType = 'multiple' | 'single';
 
@@ -62,7 +62,7 @@ const Container = styled(FlexColumn)({
 });
 
 const Line = styled(View)({
-  backgroundColor: colors.greyTint2,
+  backgroundColor: theme.dividerColor,
   height: 1,
   width: 'auto',
   flexShrink: 0,
@@ -71,7 +71,7 @@ const Line = styled(View)({
 const RowComponentContainer = styled(FlexColumn)({
   overflow: 'scroll',
   height: 'auto',
-  backgroundColor: colors.white,
+  backgroundColor: theme.backgroundDefault,
   maxHeight: 500,
 });
 
@@ -121,12 +121,14 @@ class RowComponent extends Component<RowComponentProps> {
             paddingBottom={8}
             paddingLeft={leftPadding || 0}>
             <FlexRow style={{alignItems: 'center'}}>
-              <Text color={disabled ? colors.light20 : undefined}>{label}</Text>
+              <Text color={disabled ? theme.disabledColor : undefined}>
+                {label}
+              </Text>
               <Spacer />
               {disabled && (
                 <Glyph
                   name="caution-triangle"
-                  color={colors.light20}
+                  color={theme.dividerColor}
                   size={12}
                   variant="filled"
                   style={{marginRight: 5}}

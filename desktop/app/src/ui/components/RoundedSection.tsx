@@ -9,24 +9,23 @@
 
 import React from 'react';
 import styled from '@emotion/styled';
-import {colors} from './colors';
-import Heading from './Heading';
-import FlexColumn from './FlexColumn';
+import {theme, Layout} from 'flipper-plugin';
+import {Typography} from 'antd';
 
 const Divider = styled.hr({
   margin: '16px -20px 20px -20px',
   border: 'none',
-  borderTop: `1px solid ${colors.light05}`,
+  borderTop: `1px solid ${theme.dividerColor}`,
 });
 Divider.displayName = 'RoundedSection:Divider';
 
 const Container = styled.div({
-  background: colors.white,
-  borderRadius: 10,
-  boxShadow: '0 1px 3px rgba(0,0,0,0.25)',
-  marginBottom: '20px',
+  background: theme.backgroundDefault,
+  borderRadius: theme.space.medium,
+  boxShadow: `0 1px 3px ${theme.dividerColor}`,
+  marginBottom: theme.space.large,
   width: '100%',
-  padding: 20,
+  padding: theme.space.large,
 });
 Container.displayName = 'RoundedSection:Container';
 
@@ -37,9 +36,9 @@ Container.displayName = 'RoundedSection:Container';
  */
 const RoundedSection: React.FC<{title: string}> = ({title, children}) => (
   <Container>
-    <Heading>{title}</Heading>
+    <Typography.Title level={3}>{title}</Typography.Title>
     <Divider />
-    <FlexColumn>{children}</FlexColumn>
+    <Layout.Container>{children}</Layout.Container>
   </Container>
 );
 

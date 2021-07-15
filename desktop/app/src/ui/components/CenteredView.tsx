@@ -8,24 +8,7 @@
  */
 
 import React from 'react';
-import styled from '@emotion/styled';
-import {colors} from './colors';
-import FlexColumn from './FlexColumn';
-
-const Container = styled(FlexColumn)({
-  height: '100%',
-  overflow: 'auto',
-  backgroundColor: colors.light02,
-});
-Container.displayName = 'CenteredView:Container';
-
-const ContentWrapper = styled.div({
-  width: 500,
-  marginLeft: 'auto',
-  marginRight: 'auto',
-  padding: '20px 0',
-});
-ContentWrapper.displayName = 'CenteredView:ContentWrapper';
+import {Layout, theme} from 'flipper-plugin';
 
 /**
  * CenteredView creates a scrollable container with fixed with, centered content.
@@ -33,9 +16,18 @@ ContentWrapper.displayName = 'CenteredView:ContentWrapper';
  * @deprecated
  */
 const CenteredView: React.FC<{}> = ({children}) => (
-  <Container grow>
-    <ContentWrapper>{children}</ContentWrapper>
-  </Container>
+  <Layout.ScrollContainer style={{background: theme.backgroundWash}}>
+    <Layout.Container
+      center
+      padv={theme.space.huge}
+      width={500}
+      style={{
+        marginLeft: 'auto',
+        marginRight: 'auto',
+      }}>
+      {children}
+    </Layout.Container>
+  </Layout.ScrollContainer>
 );
 
 export default CenteredView;

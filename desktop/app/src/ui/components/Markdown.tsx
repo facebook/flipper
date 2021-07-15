@@ -10,8 +10,7 @@
 import React, {CSSProperties, ReactNode} from 'react';
 import styled from '@emotion/styled';
 import ReactMarkdown from 'react-markdown';
-import {colors} from './colors';
-import {getFlipperLib} from 'flipper-plugin';
+import {getFlipperLib, theme} from 'flipper-plugin';
 
 const Container = styled.div({
   padding: 10,
@@ -25,7 +24,7 @@ const Heading = styled.div({fontSize: 18, marginTop: 10, marginBottom: 10});
 const SubHeading = styled.div({
   fontSize: 12,
   textTransform: 'uppercase',
-  color: '#90949c',
+  color: theme.textColorSecondary,
   marginTop: 10,
   marginBottom: 10,
   fontWeight: 'bold',
@@ -37,23 +36,23 @@ const ListItem = styled.li({
 });
 const Strong = styled.span({
   fontWeight: 'bold',
-  color: '#1d2129',
+  color: theme.textColorPrimary,
 });
 const Emphasis = styled.span({
   fontStyle: 'italic',
 });
 const Quote = styled(Row)({
   padding: 10,
-  backgroundColor: '#f1f2f3',
+  backgroundColor: theme.backgroundWash,
   fontSize: 13,
 });
 const Code = styled.span({
   fontFamily: '"Courier New", Courier, monospace',
-  backgroundColor: '#f1f2f3',
+  backgroundColor: theme.backgroundWash,
 });
 const Pre = styled(Row)({
   padding: 10,
-  backgroundColor: '#f1f2f3',
+  backgroundColor: theme.backgroundWash,
 });
 function CodeBlock(props: {
   children: ReactNode[];
@@ -69,7 +68,7 @@ function CodeBlock(props: {
   );
 }
 const Link = styled.span({
-  color: colors.blue,
+  color: theme.textColorActive,
 });
 function LinkReference(props: {href: string; children: Array<ReactNode>}) {
   return (
