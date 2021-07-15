@@ -139,6 +139,12 @@ FLIPPER_OPEN_DEV_TOOLS=true
 FLIPPER_ENABLED_PLUGINS=flipper-messages,network,inspector
 ```
 
+<FbInternalOnly>
+
+To start Flipper against a specific OnDemand instance, set FB_ONDEMAND flag, e.g: `FB_ONDEMAND=34435.od yarn start`
+
+</FbInternalOnly>
+
 ## Guidelines for writing TypeScript
 * **Important:** Use `.tsx` file extension for all TypeScript files (instead of `.ts`)
 * Prefer `type` for React props and state over interfaces
