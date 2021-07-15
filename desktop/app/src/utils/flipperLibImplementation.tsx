@@ -13,7 +13,7 @@ import type {Store} from '../reducers';
 import createPaste from '../fb-stubs/createPaste';
 import GK from '../fb-stubs/GK';
 import type BaseDevice from '../devices/BaseDevice';
-import {clipboard} from 'electron';
+import {clipboard, shell} from 'electron';
 import constants from '../fb-stubs/constants';
 import {addNotification} from '../reducers/notifications';
 import {deconstructPluginKey} from './clientUtils';
@@ -49,6 +49,9 @@ export function initializeFlipperLibImplementation(
     },
     writeTextToClipboard(text: string) {
       clipboard.writeText(text);
+    },
+    openLink(url: string) {
+      shell.openExternal(url);
     },
     showNotification(pluginId, notification) {
       const parts = deconstructPluginKey(pluginId);

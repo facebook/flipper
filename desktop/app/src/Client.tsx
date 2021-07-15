@@ -26,11 +26,7 @@ import {processMessagesLater} from './utils/messageQueue';
 import {emitBytesReceived} from './dispatcher/tracking';
 import {debounce} from 'lodash';
 import {batch} from 'react-redux';
-import {
-  createState,
-  _SandyPluginInstance,
-  _getFlipperLibImplementation,
-} from 'flipper-plugin';
+import {createState, _SandyPluginInstance, getFlipperLib} from 'flipper-plugin';
 import {freeze} from 'immer';
 import GK from './fb-stubs/GK';
 import {message} from 'antd';
@@ -224,7 +220,7 @@ export default class Client extends EventEmitter {
         this.sandyPluginStates.set(
           plugin.id,
           new _SandyPluginInstance(
-            _getFlipperLibImplementation(),
+            getFlipperLib(),
             plugin,
             this,
             getPluginKey(this.id, {serial: this.query.device_id}, plugin.id),
@@ -260,7 +256,7 @@ export default class Client extends EventEmitter {
       this.sandyPluginStates.set(
         plugin.id,
         new _SandyPluginInstance(
-          _getFlipperLibImplementation(),
+          getFlipperLib(),
           plugin,
           this,
           getPluginKey(this.id, {serial: this.query.device_id}, plugin.id),

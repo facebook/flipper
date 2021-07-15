@@ -37,7 +37,7 @@ export {createState, useValue, Atom} from './state/atom';
 export {batch} from './state/batch';
 export {
   FlipperLib,
-  getFlipperLibImplementation as _getFlipperLibImplementation,
+  getFlipperLib,
   setFlipperLibImplementation as _setFlipperLibImplementation,
 } from './plugin/FlipperLib';
 export {

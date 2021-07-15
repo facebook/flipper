@@ -23,7 +23,7 @@ const {Text, Title} = Typography;
 import constants from '../fb-stubs/constants';
 import isProduction from '../utils/isProduction';
 import {getAppVersion} from '../utils/info';
-import {shell} from 'electron';
+import {getFlipperLib} from 'flipper-plugin';
 
 const RowContainer = styled(FlexRow)({
   alignItems: 'flex-start',
@@ -89,7 +89,7 @@ function WelcomeFooter({
   );
 }
 
-const openExternal = (url: string) => () => shell && shell.openExternal(url);
+const openExternal = (url: string) => () => getFlipperLib().openLink(url);
 
 export default function WelcomeScreen({
   visible,

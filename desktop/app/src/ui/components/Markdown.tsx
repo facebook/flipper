@@ -11,7 +11,7 @@ import React, {CSSProperties, ReactNode} from 'react';
 import styled from '@emotion/styled';
 import ReactMarkdown from 'react-markdown';
 import {colors} from './colors';
-import {shell} from 'electron';
+import {getFlipperLib} from 'flipper-plugin';
 
 const Container = styled.div({
   padding: 10,
@@ -73,7 +73,9 @@ const Link = styled.span({
 });
 function LinkReference(props: {href: string; children: Array<ReactNode>}) {
   return (
-    <Link onClick={() => shell.openExternal(props.href)}>{props.children}</Link>
+    <Link onClick={() => getFlipperLib().openLink(props.href)}>
+      {props.children}
+    </Link>
   );
 }
 

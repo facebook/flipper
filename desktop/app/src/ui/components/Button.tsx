@@ -8,14 +8,14 @@
  */
 
 import React, {useState, useCallback, useMemo} from 'react';
-import electron, {MenuItemConstructorOptions} from 'electron';
+import {MenuItemConstructorOptions} from 'electron';
 import styled from '@emotion/styled';
 import {Button as AntdButton, Dropdown, Menu} from 'antd';
 
 import Glyph, {IconSize} from './Glyph';
 import type {ButtonProps} from 'antd/lib/button';
 import {DownOutlined, CheckOutlined} from '@ant-design/icons';
-import {theme} from 'flipper-plugin';
+import {theme, getFlipperLib} from 'flipper-plugin';
 
 type ButtonType = 'primary' | 'success' | 'warning' | 'danger';
 
@@ -124,7 +124,7 @@ function SandyButton({
       }
       onClick?.(e);
       if (href != null) {
-        electron.shell.openExternal(href); // TODO: decouple from Electron
+        getFlipperLib().openLink(href);
       }
     },
     [disabled, onClick, href],

@@ -29,6 +29,7 @@ import {
   NormalizedMenuEntry,
   _buildInMenuEntries,
   _wrapInteractionHandler,
+  getFlipperLib,
 } from 'flipper-plugin';
 import {StyleGuide} from './sandy-chrome/StyleGuide';
 import {showEmulatorLauncher} from './sandy-chrome/appinspect/LaunchEmulator';
@@ -373,19 +374,21 @@ function getTemplate(
     {
       label: 'Getting started',
       click: function () {
-        shell.openExternal('https://fbflipper.com/docs/getting-started/index');
+        getFlipperLib().openLink(
+          'https://fbflipper.com/docs/getting-started/index',
+        );
       },
     },
     {
       label: 'Create plugins',
       click: function () {
-        shell.openExternal('https://fbflipper.com/docs/tutorial/intro');
+        getFlipperLib().openLink('https://fbflipper.com/docs/tutorial/intro');
       },
     },
     {
       label: 'Report problems',
       click: function () {
-        shell.openExternal(constants.FEEDBACK_GROUP_LINK);
+        getFlipperLib().openLink(constants.FEEDBACK_GROUP_LINK);
       },
     },
     {

@@ -16,7 +16,7 @@ import {
   DeviceLogListener,
   Idler,
   createState,
-  _getFlipperLibImplementation,
+  getFlipperLib,
 } from 'flipper-plugin';
 import {PluginDefinition, DevicePluginMap} from '../plugin';
 import {DeviceSpec, OS as PluginOS, PluginDetails} from 'flipper-plugin-lib';
@@ -245,7 +245,7 @@ export default class BaseDevice {
       this.sandyPluginStates.set(
         plugin.id,
         new _SandyDevicePluginInstance(
-          _getFlipperLibImplementation(),
+          getFlipperLib(),
           plugin,
           this,
           // break circular dep, one of those days again...

@@ -7,13 +7,15 @@
  * @format
  */
 
+import {getFlipperLib} from 'flipper-plugin';
 import {getPreferredEditorUriScheme} from '../fb-stubs/user';
-import {shell} from 'electron';
 
 let preferredEditorUriScheme: string | undefined = undefined;
 
 export function callVSCode(plugin: string, command: string, params?: string) {
-  getVSCodeUrl(plugin, command, params).then((url) => shell.openExternal(url));
+  getVSCodeUrl(plugin, command, params).then((url) =>
+    getFlipperLib().openLink(url),
+  );
 }
 
 export async function getVSCodeUrl(

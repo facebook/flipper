@@ -40,13 +40,13 @@ import {
   _LoggerContext,
   Layout,
   theme,
+  getFlipperLib,
 } from 'flipper-plugin';
 import isProduction from './utils/isProduction';
 import {Button, Input, Result, Typography} from 'antd';
 import constants from './fb-stubs/constants';
 import styled from '@emotion/styled';
 import {CopyOutlined} from '@ant-design/icons';
-import {clipboard} from 'electron/common';
 import {getVersionString} from './utils/versionString';
 import {PersistGate} from 'redux-persist/integration/react';
 import {ipcRenderer} from 'electron';
@@ -107,7 +107,7 @@ class AppFrame extends React.Component<
                 key="copy_error"
                 icon={<CopyOutlined />}
                 onClick={() => {
-                  clipboard.writeText(this.getError());
+                  getFlipperLib().writeTextToClipboard(this.getError());
                 }}>
                 Copy error
               </Button>,
