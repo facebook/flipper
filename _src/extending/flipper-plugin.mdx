@@ -935,6 +935,13 @@ See `View > Flipper Style Guide` inside the Flipper application for more details
 
 ## Utilities
 
+### getFlipperLib
+
+A set of globally available utilities like opening links, interacting with the clipboard, etc.
+Example: `getFlipperLib().writeTextToClipboard("hello from Flipper");
+
+The full set of utilities can be found [here](https://github.com/facebook/flipper/blob/master/desktop/flipper-plugin/src/plugin/FlipperLib.tsx#L20)
+
 ### createTablePlugin
 
 Utility to create a plugin that consists of a master table and details JSON view with minimal effort. See the [Showing a table](../tutorial/js-table.mdx) tutorial for an example.
