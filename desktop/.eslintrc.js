@@ -86,6 +86,11 @@ module.exports = {
         message:
           "Direct imports from 'flipper' are deprecated. Import from 'flipper-plugin' instead, which can be tested and distributed stand-alone. See https://fbflipper.com/docs/extending/sandy-migration for more details.",
       },
+      {
+        name: 'electron',
+        message:
+          "Direct imports from 'electron' are deprecated. Most functions can be found in getFlipperLib() from flipper-plugin package instead.",
+      },
     ],
 
     // additional rules for this project
