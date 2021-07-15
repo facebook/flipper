@@ -7,14 +7,12 @@
  * @format
  */
 
-import React, {useState, useCallback, useMemo} from 'react';
-import {MenuItemConstructorOptions} from 'electron';
+import React, {useCallback} from 'react';
 import styled from '@emotion/styled';
-import {Button as AntdButton, Dropdown, Menu} from 'antd';
+import {Button as AntdButton} from 'antd';
 
 import Glyph, {IconSize} from './Glyph';
 import type {ButtonProps} from 'antd/lib/button';
-import {DownOutlined, CheckOutlined} from '@ant-design/icons';
 import {theme, getFlipperLib} from 'flipper-plugin';
 
 type ButtonType = 'primary' | 'success' | 'warning' | 'danger';
@@ -53,10 +51,6 @@ type Props = {
    * Children.
    */
   children?: React.ReactNode;
-  /**
-   * Dropdown menu template shown on click.
-   */
-  dropdown?: Array<MenuItemConstructorOptions>;
   /**
    * Name of the icon dispalyed next to the text
    */
@@ -109,14 +103,11 @@ function SandyButton({
   children,
   iconSize,
   iconVariant,
-  dropdown,
   type,
   onClick,
   href,
   ...restProps
 }: Props) {
-  const [dropdownVisible, setDropdownVible] = useState(false);
-
   const handleClick = useCallback(
     (e: React.MouseEvent) => {
       if (disabled === true) {
@@ -129,9 +120,6 @@ function SandyButton({
     },
     [disabled, onClick, href],
   );
-  const handleVisibleChange = useCallback((flag: boolean) => {
-    setDropdownVible(flag);
-  }, []);
   let iconComponent;
   if (icon != null) {
     iconComponent = (
@@ -145,39 +133,7 @@ function SandyButton({
     );
   }
 
-  const dropdownItems = useMemo(
-    () =>
-      dropdown && (
-        <Menu>
-          {dropdown!.map((item, idx) => (
-            <Menu.Item
-              onClick={(e) => {
-                // @ts-ignore this event args are bound to electron, remove in the future
-                item.click(item);
-                if (item.checked !== undefined) {
-                  // keep the menu item for check lists
-                  e.domEvent.stopPropagation();
-                  e.domEvent.preventDefault();
-                }
-              }}
-              disabled={item.enabled === false}
-              icon={
-                item.checked !== undefined && (
-                  <CheckOutlined
-                    style={{visibility: item.checked ? 'visible' : 'hidden'}}
-                  />
-                )
-              }
-              key={idx}>
-              {item.label}
-            </Menu.Item>
-          ))}
-        </Menu>
-      ),
-    [dropdown],
-  );
-
-  const button = (
+  return (
     <AntdButton
       /* Probably more properties need passing on, but lets be explicit about it */
       style={restProps.style}
@@ -187,19 +143,6 @@ function SandyButton({
       onClick={handleClick}
       icon={iconComponent}>
       {children}
-      {dropdown ? <DownOutlined /> : null}
     </AntdButton>
   );
-  if (dropdown) {
-    return (
-      <Dropdown
-        overlay={dropdownItems!}
-        visible={dropdownVisible}
-        onVisibleChange={handleVisibleChange}>
-        {button}
-      </Dropdown>
-    );
-  } else {
-    return button;
-  }
 }
