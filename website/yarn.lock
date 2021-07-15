@@ -5008,10 +5008,10 @@ doctrine@^3.0.0:
   dependencies:
     esutils "^2.0.2"
 
-docusaurus-plugin-internaldocs-fb@^0.9.1:
-  version "0.9.1"
-  resolved "https://registry.yarnpkg.com/docusaurus-plugin-internaldocs-fb/-/docusaurus-plugin-internaldocs-fb-0.9.1.tgz#4e1fab6e504dfca59cc29f7e0d683626e254f472"
-  integrity sha512-32EOBijLSb2tsZrNtsZrIB22xDRUW23Ri+sGEuQOsyw5vVi8B9R/OkD0N58vACuqST3/8EuHeHOMOAlOxKCuPw==
+docusaurus-plugin-internaldocs-fb@^0.9.2:
+  version "0.9.2"
+  resolved "https://registry.yarnpkg.com/docusaurus-plugin-internaldocs-fb/-/docusaurus-plugin-internaldocs-fb-0.9.2.tgz#a26d0729d38f803297b2f589b8b1fd635def01be"
+  integrity sha512-bYxW73C0dQlij8QhTaC2FMcHwVq1ggZTKP5tgd3gK+hZlrS24VcEXGVTsJ6n+nTn6ETzhL9aeb/N9g5jFdFYkA==
   dependencies:
     clsx "^1.1.1"
     fs-extra "^10.0.0"
