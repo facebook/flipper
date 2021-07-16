@@ -31,9 +31,8 @@ import createPaste from '../../../fb-stubs/createPaste';
 import debounceRender from 'react-debounce-render';
 import {debounce} from 'lodash';
 import {DEFAULT_ROW_HEIGHT} from './types';
-import textContent from '../../../utils/textContent';
 import {notNull} from '../../../utils/typeUtils';
-import {getFlipperLib} from 'flipper-plugin';
+import {getFlipperLib, textContent} from 'flipper-plugin';
 
 const EMPTY_OBJECT = {};
 Object.freeze(EMPTY_OBJECT);

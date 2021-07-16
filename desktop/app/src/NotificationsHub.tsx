@@ -31,7 +31,7 @@ import {
 } from './reducers/notifications';
 import {selectPlugin} from './reducers/connections';
 import {State as StoreState} from './reducers/index';
-import textContent from './utils/textContent';
+import {textContent} from 'flipper-plugin';
 import createPaste from './fb-stubs/createPaste';
 import {getPluginTitle} from './utils/pluginUtils';
 import {getFlipperLib} from 'flipper-plugin';

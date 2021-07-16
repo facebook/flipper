@@ -57,6 +57,7 @@ test('Correct top level API exposed', () => {
       "renderReactRoot",
       "sleep",
       "styled",
+      "textContent",
       "theme",
       "useLocalStorageState",
       "useLogger",

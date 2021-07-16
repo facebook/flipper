@@ -15,7 +15,7 @@ import {
   updatePluginBlocklist,
   updateCategoryBlocklist,
 } from '../reducers/notifications';
-import {textContent} from '../utils/index';
+import {textContent} from 'flipper-plugin';
 import {getPluginTitle} from '../utils/pluginUtils';
 import {sideEffect} from '../utils/sideEffect';
 import {openNotification} from '../sandy-chrome/notification/Notification';

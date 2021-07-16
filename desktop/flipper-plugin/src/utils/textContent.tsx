@@ -21,7 +21,7 @@ function isReactElement(object: any) {
  * Recursively walks through all children of a React element and returns
  * the string representation of the leafs concatenated.
  */
-export default (node: ReactNode): string => {
+export function textContent(node: ReactNode): string {
   let res = '';
   const traverse = (node: ReactNode) => {
     if (typeof node === 'string' || typeof node === 'number') {
@@ -44,4 +44,4 @@ export default (node: ReactNode): string => {
   traverse(node);
 
   return res;
-};
+}

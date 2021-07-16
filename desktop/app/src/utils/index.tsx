@@ -7,6 +7,5 @@
  * @format
  */
 
-export {default as textContent} from './textContent';
 export {getStringFromErrorLike} from './errors';
 export {sleep} from './promiseTimeout';

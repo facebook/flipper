@@ -7,7 +7,7 @@
  * @format
  */
 
-import {CopyOutlined, FilterOutlined} from '@ant-design/icons';
+import {CopyOutlined, FilterOutlined, TableOutlined} from '@ant-design/icons';
 import {Checkbox, Menu} from 'antd';
 import {
   DataTableDispatch,
@@ -20,12 +20,10 @@ import {tryGetFlipperLibImplementation} from '../../plugin/FlipperLib';
 import {DataTableColumn} from './DataTable';
 import {toFirstUpper} from '../../utils/toFirstUpper';
 import {DataSource} from '../../data-source/index';
+import {renderColumnValue} from './TableRow';
+import {textContent} from '../../utils/textContent';
 
 const {Item, SubMenu} = Menu;
-
-function defaultOnCopyRows<T>(items: T[]) {
-  return JSON.stringify(items.length > 1 ? items : items[0], null, 2);
-}
 
 export function tableContextMenuFactory<T>(
   datasource: DataSource<T>,
@@ -33,7 +31,10 @@ export function tableContextMenuFactory<T>(
   selection: Selection,
   columns: DataTableColumn<T>[],
   visibleColumns: DataTableColumn<T>[],
-  onCopyRows: (rows: T[]) => string = defaultOnCopyRows,
+  onCopyRows: (
+    rows: T[],
+    visibleColumns: DataTableColumn<T>[],
+  ) => string = defaultOnCopyRows,
   onContextMenu?: (selection: undefined | T) => React.ReactElement,
 ) {
   const lib = tryGetFlipperLibImplementation();
@@ -69,6 +70,61 @@ export function tableContextMenuFactory<T>(
         ))}
       </SubMenu>
       <SubMenu
+        key="copy rows"
+        title="Copy row(s)"
+        icon={<TableOutlined />}
+        disabled={!hasSelection}>
+        <Item
+          key="copyToClipboard"
+          disabled={!hasSelection}
+          onClick={() => {
+            const items = getSelectedItems(datasource, selection);
+            if (items.length) {
+              lib.writeTextToClipboard(onCopyRows(items, visibleColumns));
+            }
+          }}>
+          Copy row(s)
+        </Item>
+        {lib.isFB && (
+          <Item
+            key="createPaste"
+            disabled={!hasSelection}
+            onClick={() => {
+              const items = getSelectedItems(datasource, selection);
+              if (items.length) {
+                lib.createPaste(onCopyRows(items, visibleColumns));
+              }
+            }}>
+            Create paste
+          </Item>
+        )}
+        <Item
+          key="copyToClipboardJSON"
+          disabled={!hasSelection}
+          onClick={() => {
+            const items = getSelectedItems(datasource, selection);
+            if (items.length) {
+              lib.writeTextToClipboard(rowsToJson(items));
+            }
+          }}>
+          Copy row(s) (JSON)
+        </Item>
+        {lib.isFB && (
+          <Item
+            key="createPaste"
+            disabled={!hasSelection}
+            onClick={() => {
+              const items = getSelectedItems(datasource, selection);
+              if (items.length) {
+                lib.createPaste(rowsToJson(items));
+              }
+            }}>
+            Create paste (JSON)
+          </Item>
+        )}
+      </SubMenu>
+
+      <SubMenu
         key="copy cells"
         title="Copy cell(s)"
         icon={<CopyOutlined />}
@@ -88,30 +144,6 @@ export function tableContextMenuFactory<T>(
           </Item>
         ))}
       </SubMenu>
-      <Item
-        key="copyToClipboard"
-        disabled={!hasSelection}
-        onClick={() => {
-          const items = getSelectedItems(datasource, selection);
-          if (items.length) {
-            lib.writeTextToClipboard(onCopyRows(items));
-          }
-        }}>
-        Copy row(s)
-      </Item>
-      {lib.isFB && (
-        <Item
-          key="createPaste"
-          disabled={!hasSelection}
-          onClick={() => {
-            const items = getSelectedItems(datasource, selection);
-            if (items.length) {
-              lib.createPaste(onCopyRows(items));
-            }
-          }}>
-          Create paste
-        </Item>
-      )}
       <Menu.Divider />
       <SubMenu title="Visible columns" key="visible columns">
         {columns.map((column, idx) => (
@@ -142,4 +174,25 @@ export function tableContextMenuFactory<T>(
 function friendlyColumnTitle(column: DataTableColumn<any>): string {
   const name = column.title || column.key;
   return toFirstUpper(name);
+}
+
+function defaultOnCopyRows<T>(
+  items: T[],
+  visibleColumns: DataTableColumn<T>[],
+) {
+  return (
+    visibleColumns.map(friendlyColumnTitle).join('\t') +
+    '\n' +
+    items
+      .map((row, idx) =>
+        visibleColumns
+          .map((col) => textContent(renderColumnValue(col, row, true, idx)))
+          .join('\t'),
+      )
+      .join('\n')
+  );
+}
+
+function rowsToJson<T>(items: T[]) {
+  return JSON.stringify(items.length > 1 ? items : items[0], null, 2);
 }
