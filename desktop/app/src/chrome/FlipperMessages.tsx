@@ -14,8 +14,6 @@ import {
   Layout,
   createState,
   createDataSource,
-  DetailSidebar,
-  Panel,
   theme,
   styled,
   useValue,
@@ -124,13 +122,11 @@ export function getFlipperDebugMessages() {
 
 function Sidebar({selection}: {selection: undefined | MessageRow}) {
   const renderExtra = (extra: any) => (
-    <Panel title={'Payload'} collapsible={false}>
-      <DataInspector data={extra} expandRoot={false} />
-    </Panel>
+    <DataInspector data={extra} expandRoot={false} />
   );
 
   return (
-    <DetailSidebar>
+    <Layout.ScrollContainer pad>
       {selection != null ? (
         renderExtra(selection.payload)
       ) : (
@@ -138,7 +134,7 @@ function Sidebar({selection}: {selection: undefined | MessageRow}) {
           Select a message to view details
         </Placeholder>
       )}
-    </DetailSidebar>
+    </Layout.ScrollContainer>
   );
 }
 
@@ -189,7 +185,7 @@ export function FlipperMessages() {
   );
 
   return (
-    <Layout.Container grow>
+    <Layout.Right resizable width={400}>
       <DataTable<MessageRow>
         dataSource={flipperDebugMessages}
         columns={COLUMN_CONFIG}
@@ -204,6 +200,6 @@ export function FlipperMessages() {
         }
       />
       <Sidebar selection={selection} />
-    </Layout.Container>
+    </Layout.Right>
   );
 }

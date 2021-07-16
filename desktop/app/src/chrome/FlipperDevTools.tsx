@@ -15,7 +15,7 @@ import {FlipperMessages} from './FlipperMessages';
 
 export function FlipperDevTools() {
   return (
-    <Layout.Container pad grow>
+    <Layout.Container grow>
       <Tabs grow>
         <Tab tab="Console">
           <ConsoleLogs />
