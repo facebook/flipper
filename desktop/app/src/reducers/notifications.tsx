@@ -9,8 +9,8 @@
 
 import {Notification} from 'flipper-plugin';
 import {Actions} from './';
-import {getStringFromErrorLike} from '../utils';
 import React from 'react';
+import {getStringFromErrorLike} from '../utils/errors';
 
 export const GLOBAL_NOTIFICATION_PLUGIN_ID = 'Flipper';
 

@@ -7,6 +7,7 @@
  * @format
  */
 
+import {sleep} from 'flipper-plugin';
 import {StatusMessageType} from '../reducers/application';
 
 export default function promiseTimeout<T>(
@@ -21,15 +22,6 @@ export default function promiseTimeout<T>(
 
   // Returns a race between our timeout and the passed in promise
   return Promise.race([promise, timeout]);
-}
-
-export function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => {
-    const id = setTimeout(() => {
-      clearTimeout(id);
-      resolve();
-    }, ms);
-  });
 }
 
 export function showStatusUpdatesForPromise<T>(

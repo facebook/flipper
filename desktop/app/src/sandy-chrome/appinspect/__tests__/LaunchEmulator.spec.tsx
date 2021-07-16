@@ -15,7 +15,7 @@ import {LaunchEmulatorDialog} from '../LaunchEmulator';
 
 import {createRootReducer} from '../../../reducers';
 import {act} from 'react-dom/test-utils';
-import {sleep} from '../../../utils';
+import {sleep} from 'flipper-plugin';
 
 jest.mock('../../../devices/AndroidDevice', () => ({
   launchEmulator: jest.fn(() => Promise.resolve([])),

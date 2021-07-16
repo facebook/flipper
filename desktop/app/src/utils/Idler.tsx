@@ -8,8 +8,7 @@
  */
 
 import {CancelledPromiseError} from './errors';
-import {sleep} from './promiseTimeout';
-import {Idler} from 'flipper-plugin';
+import {Idler, sleep} from 'flipper-plugin';
 
 export class IdlerImpl implements Idler {
   private lastIdle = performance.now();

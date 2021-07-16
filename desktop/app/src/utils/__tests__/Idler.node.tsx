@@ -8,7 +8,7 @@
  */
 
 import {IdlerImpl, TestIdler} from '../Idler';
-import {sleep} from '../promiseTimeout';
+import {sleep} from 'flipper-plugin';
 
 test('Idler should interrupt', async () => {
   const idler = new IdlerImpl();

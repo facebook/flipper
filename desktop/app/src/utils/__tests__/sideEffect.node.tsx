@@ -10,7 +10,7 @@
 import {sideEffect} from '../sideEffect';
 import {createStore, Store} from 'redux';
 import produce from 'immer';
-import {sleep} from '../promiseTimeout';
+import {sleep} from 'flipper-plugin';
 
 jest.useFakeTimers();
 
