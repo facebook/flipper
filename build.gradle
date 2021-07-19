@@ -46,12 +46,10 @@ subprojects {
 
 ext {
     minSdkVersion = 15
-    targetSdkVersion = 29
-    compileSdkVersion = 29
+    targetSdkVersion = 30
+    compileSdkVersion = 30
     buildToolsVersion = '30.0.2'
     ndkVersion = '21.3.6528147'
-    sourceCompatibilityVersion = JavaVersion.VERSION_1_7
-    targetCompatibilityVersion = JavaVersion.VERSION_1_7
 }
 
 ext.deps = [

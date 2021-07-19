@@ -11,20 +11,19 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 28
-
 
     defaultConfig {
         applicationId "com.facebook.flipper.sample.tutorial"
         minSdkVersion 23
-        targetSdkVersion 28
+        targetSdkVersion rootProject.targetSdkVersion
+        compileSdkVersion rootProject.compileSdkVersion
         versionCode 1
         versionName "1.0"
     }
 
     compileOptions {
-        targetCompatibility = JavaVersion.VERSION_1_8
-        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_8
     }
 
     buildTypes {
@@ -34,6 +33,9 @@ android {
         }
     }
 
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }
 
 dependencies {
