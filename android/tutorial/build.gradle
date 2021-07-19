@@ -39,9 +39,9 @@ android {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$KOTLIN_VERSION"
-    implementation "androidx.appcompat:appcompat:$ANDROIDX_VERSION"
-    implementation "androidx.core:core-ktx:$ANDROIDX_VERSION"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.4.32"
+    implementation "androidx.appcompat:appcompat:1.3.0"
+    implementation "androidx.core:core-ktx:1.5.0"
 
     // Flipper
     // For simplicity, we use Flipper for both debug and release builds here.
