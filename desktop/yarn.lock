@@ -3125,11 +3125,6 @@
   resolved "https://registry.yarnpkg.com/@types/electron-devtools-installer/-/electron-devtools-installer-2.2.0.tgz#32ee4ebbe99b3daf9847a6d2097dc00b5de94f10"
   integrity sha512-HJNxpaOXuykCK4rQ6FOMxAA0NLFYsf7FiPFGmab0iQmtVBHSAfxzy3MRFpLTTDDWbV0yD2YsHOQvdu8yCqtCfw==
 
-"@types/events@*":
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/@types/events/-/events-3.0.0.tgz#2862f3f58a9a7f7c3e78d79f130dd4d71c25c2a7"
-  integrity sha512-EaObqwIvayI5a8dCzhFrjKzVwKLxjoG9T6Ppd5CEo07LRKfQ8Yokw54r5+Wq7FaBQ+yXRvQAYPrHwya1/UFt9g==
-
 "@types/expand-tilde@^2.0.0":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@types/expand-tilde/-/expand-tilde-2.0.0.tgz#c01a706675b9d60931bf6a7dc7dfa45d63540c97"
@@ -3154,12 +3149,10 @@
     "@types/qs" "*"
     "@types/serve-static" "*"
 
-"@types/fb-watchman@2.0.0", "@types/fb-watchman@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@types/fb-watchman/-/fb-watchman-2.0.0.tgz#ca60ded406baa8c81c65ac1f86763a5d00aa7c55"
-  integrity sha512-Ao2jlksPEUGCEXBvJz5e2MuDpYUtxXgtUk45cg0g5Mmy4f0j7bQuDlOlqBMgKGRl9dZAK4ZTzFtukuzj2mURlQ==
-  dependencies:
-    "@types/events" "*"
+"@types/fb-watchman@2.0.1", "@types/fb-watchman@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@types/fb-watchman/-/fb-watchman-2.0.1.tgz#4f44c7b7ac98463488765d41d269272dd34cb815"
+  integrity sha512-iJ7/e6drSmuCzAp96/dpksm8YjxbhhyXWV6m1HPbRHvZwUOUZ5vZvZIAUJxKDtI0UpdNfDvLPiai0MTJmmS+HA==
 
 "@types/form-data@^2.2.1":
   version "2.5.0"
