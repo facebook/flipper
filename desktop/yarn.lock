@@ -3352,10 +3352,10 @@
     "@types/node" "*"
     form-data "^3.0.0"
 
-"@types/node@*", "@types/node@>=10.0.0":
-  version "15.12.4"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-15.12.4.tgz#e1cf817d70a1e118e81922c4ff6683ce9d422e26"
-  integrity sha512-zrNj1+yqYF4WskCMOHwN+w9iuD12+dGm0rQ35HLl9/Ouuq52cEtd0CH9qMgrdNmi5ejC1/V7vKEXYubB+65DkA==
+"@types/node@*", "@types/node@>=10.0.0", "@types/node@^16.0.0":
+  version "16.0.0"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-16.0.0.tgz#067a6c49dc7a5c2412a505628e26902ae967bf6f"
+  integrity sha512-TmCW5HoZ2o2/z2EYi109jLqIaPIi9y/lc2LmDCWzuCi35bcaQ+OtUh6nwBiFK7SOu25FAU5+YKdqFZUwtqGSdg==
 
 "@types/node@^12.0.12":
   version "12.20.7"
@@ -3366,11 +3366,6 @@
   version "15.12.5"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-15.12.5.tgz#9a78318a45d75c9523d2396131bd3cca54b2d185"
   integrity sha512-se3yX7UHv5Bscf8f1ERKvQOD6sTyycH3hdaoozvaLxgUiY5lIGEeH37AD0G0Qi9kPqihPn0HOfd2yaIEN9VwEg==
-
-"@types/node@^16.0.0":
-  version "16.0.0"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-16.0.0.tgz#067a6c49dc7a5c2412a505628e26902ae967bf6f"
-  integrity sha512-TmCW5HoZ2o2/z2EYi109jLqIaPIi9y/lc2LmDCWzuCi35bcaQ+OtUh6nwBiFK7SOu25FAU5+YKdqFZUwtqGSdg==
 
 "@types/normalize-package-data@^2.4.0":
   version "2.4.0"
@@ -3554,10 +3549,10 @@
   resolved "https://registry.yarnpkg.com/@types/retry/-/retry-0.12.0.tgz#2b35eccfcee7d38cd72ad99232fbd58bffb3c84d"
   integrity sha512-wWKOClTTiizcZhXnPY4wikVAwmdYHp8q6DmC+EJUzAMsycb7HB32Kh9RN4+0gExjmPmZSAQjgURXIGATPegAvA==
 
-"@types/rsocket-core@*", "@types/rsocket-core@^0.0.6":
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/@types/rsocket-core/-/rsocket-core-0.0.6.tgz#a1e9febf2a21fc14fb943858740d92f430d560e1"
-  integrity sha512-jL5ZTuUMa8qDZp+1wdmE3IP5teavMQHP++5mPCCbXwEywqBLzKUrZOy0ausaYzd50wRqcBYCsO9o5UFif4fcyQ==
+"@types/rsocket-core@*", "@types/rsocket-core@^0.0.7":
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/@types/rsocket-core/-/rsocket-core-0.0.7.tgz#e9ed6d9ec918ec7a9aab0c48fefbb74b33712235"
+  integrity sha512-y4WRagbMA+7DZOtVbCow0Qkk7B8jJAH834Cu+ntmPqiAmHHn9RaVfwmlADQJk17Yuh+e6D5dS18oJNrpUXNEKQ==
   dependencies:
     "@types/node" "*"
     "@types/rsocket-flowable" "*"
