@@ -9779,12 +9779,21 @@ metro-cache-key@0.66.0:
   resolved "https://registry.yarnpkg.com/metro-cache-key/-/metro-cache-key-0.66.0.tgz#e628445f2a17e6e3dec970a87a090b4ec876bd1d"
   integrity sha512-qAHMC4Tpj3rUH8Pz5IEmT/fGgitCO86B6jndzKyXT+aDBr7BcNnRA8T25MoUMiBtsuRdxAeMHmBbhmvNK+tEEg==
 
-metro-cache@0.66.0, metro-cache@^0.66.0:
+metro-cache@0.66.0:
   version "0.66.0"
   resolved "https://registry.yarnpkg.com/metro-cache/-/metro-cache-0.66.0.tgz#65bfcf8a4bff559855c404220368866779216430"
   integrity sha512-Yppsf28TLGZwQIpNkx/9c5xc9FWFglhaUH6Ovtbth8DmDauAwakvdoMklFvkYQGE9W8OceehQAvRW2D9YQn9Ew==
   dependencies:
     metro-core "0.66.0"
+    mkdirp "^0.5.1"
+    rimraf "^2.5.4"
+
+metro-cache@^0.66.1:
+  version "0.66.1"
+  resolved "https://registry.yarnpkg.com/metro-cache/-/metro-cache-0.66.1.tgz#ced25f2d2f452b88952d8110b78fb6d3cdd5e292"
+  integrity sha512-EUREnyDiUkemmgFXn3sc03lmKNf5OkmVZ+gzwg5ZBzsL8LYARiXI8IT05JguXGHS/LBEw4ZoVCsiQqmGUQ0Tng==
+  dependencies:
+    metro-core "0.66.1"
     mkdirp "^0.5.1"
     rimraf "^2.5.4"
 
@@ -9808,6 +9817,15 @@ metro-core@0.66.0:
     jest-haste-map "^26.5.2"
     lodash.throttle "^4.1.1"
     metro-resolver "0.66.0"
+
+metro-core@0.66.1:
+  version "0.66.1"
+  resolved "https://registry.yarnpkg.com/metro-core/-/metro-core-0.66.1.tgz#6ae14a17498be9295990ffdcf81ee6865f73a59e"
+  integrity sha512-XcAQ3x4L2OEQPbsKtT3mHALrHWAIBF5aqKh+5oLJL33l/Frz+4efmH8m1HQFsZuWmT04CWpLU1S+eoH62agqzA==
+  dependencies:
+    jest-haste-map "^26.5.2"
+    lodash.throttle "^4.1.1"
+    metro-resolver "0.66.1"
 
 metro-hermes-compiler@0.66.0:
   version "0.66.0"
@@ -9888,6 +9906,13 @@ metro-resolver@0.66.0, metro-resolver@^0.66.0:
   version "0.66.0"
   resolved "https://registry.yarnpkg.com/metro-resolver/-/metro-resolver-0.66.0.tgz#068c1bb98cd80c239f051e7b0f43f00e763b889d"
   integrity sha512-JUbkmznwgMSb5ViFpvau5sPD7uuZekToVsitrDLTAeMPruvjxjae2+XSIai9NmcGSprfvqyGYURlz0qXu1YnJQ==
+  dependencies:
+    absolute-path "^0.0.0"
+
+metro-resolver@0.66.1:
+  version "0.66.1"
+  resolved "https://registry.yarnpkg.com/metro-resolver/-/metro-resolver-0.66.1.tgz#1b10118964008464a98d5e3932e8f37d66955ac0"
+  integrity sha512-3hZSxLqDRJXn7ci3dylrzKiLzT05RIBpn0K9wRyTf6SD4y5XHZ7L0y5+BRxKJegjny2C5SYsarclCg/+14RsjA==
   dependencies:
     absolute-path "^0.0.0"
 
@@ -13956,9 +13981,9 @@ ws@1.1.5, ws@^1.1.5:
     ultron "1.0.x"
 
 ws@^7.4.5, ws@^7.4.6, ws@^7.5.2, ws@~7.4.2:
-  version "7.5.2"
-  resolved "https://registry.yarnpkg.com/ws/-/ws-7.5.2.tgz#09cc8fea3bec1bc5ed44ef51b42f945be36900f6"
-  integrity sha512-lkF7AWRicoB9mAgjeKbGqVUekLnSNO4VjKVnuPHpQeOxZOErX6BPXwJk70nFslRCEEA8EVW7ZjKwXaP9N+1sKQ==
+  version "7.5.3"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-7.5.3.tgz#160835b63c7d97bfab418fc1b8a9fced2ac01a74"
+  integrity sha512-kQ/dHIzuLrS6Je9+uv81ueZomEwH0qVYstcAQ4/Z93K8zeko9gtAbttJWzoC5ukqXY1PpoouV3+VSOqEAFt5wg==
 
 xdg-basedir@^4.0.0:
   version "4.0.0"
