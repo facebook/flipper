@@ -7,12 +7,14 @@
  * @format
  */
 
-import {FlexColumn, styled, Text, FlexRow, Button, Markdown} from '../ui';
+import {Markdown} from '../ui';
 import {readFileSync} from 'fs';
 import React, {Component} from 'react';
 import path from 'path';
 import {reportUsage} from '../utils/metrics';
 import {getChangelogPath} from '../utils/pathUtils';
+import {Modal} from 'antd';
+import {theme} from 'flipper-plugin';
 
 const changelogKey = 'FlipperChangelogStatus';
 
@@ -30,24 +32,12 @@ let getChangelogFromDisk = (): string => {
   return changelogFromDisk;
 };
 
-const Container = styled(FlexColumn)({
-  padding: 20,
-  width: 600,
-});
-
-const Title = styled(Text)({
-  marginBottom: 18,
-  marginRight: 10,
-  fontWeight: 100,
-  fontSize: '40px',
-});
-
 const changelogSectionStyle = {
   padding: 10,
   maxHeight: '60vh',
   overflow: 'scroll',
   marginBottom: 10,
-  background: 'white',
+  background: theme.backgroundDefault,
   borderRadius: 4,
   width: '100%',
 };
@@ -76,27 +66,20 @@ export default class ChangelogSheet extends Component<Props, {}> {
 
   render() {
     return (
-      <Container>
-        <Title>Changelog</Title>
-        <FlexRow>
-          <Markdown
-            source={
-              this.props.recent
-                ? getRecentChangelog(
-                    window.localStorage,
-                    getChangelogFromDisk(),
-                  )
-                : getChangelogFromDisk()
-            }
-            style={changelogSectionStyle}
-          />
-        </FlexRow>
-        <FlexRow>
-          <Button type="primary" compact padded onClick={this.props.onHide}>
-            Close
-          </Button>
-        </FlexRow>
-      </Container>
+      <Modal
+        visible
+        title="Changelog"
+        onCancel={this.props.onHide}
+        footer={null}>
+        <Markdown
+          source={
+            this.props.recent
+              ? getRecentChangelog(window.localStorage, getChangelogFromDisk())
+              : getChangelogFromDisk()
+          }
+          style={changelogSectionStyle}
+        />
+      </Modal>
     );
   }
 }
