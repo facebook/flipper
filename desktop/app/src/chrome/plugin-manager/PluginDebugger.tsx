@@ -12,7 +12,7 @@ import Client from '../../Client';
 import {TableBodyRow} from '../../ui/components/table/types';
 import React, {Component, Fragment} from 'react';
 import {connect} from 'react-redux';
-import {Text, ManagedTable, styled, colors, Link} from '../../ui';
+import {Text, ManagedTable, styled, colors} from '../../ui';
 import StatusIndicator from '../../ui/components/StatusIndicator';
 import {State as Store} from '../../reducers';
 import {PluginDefinition} from '../../plugin';
@@ -30,7 +30,7 @@ const Ellipsis = styled(Text)({
 
 const TableContainer = styled.div({
   marginTop: 10,
-  height: 400,
+  height: 480,
 });
 
 const Lamp = (props: {on: boolean}) => (

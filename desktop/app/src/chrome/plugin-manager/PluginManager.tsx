@@ -7,41 +7,23 @@
  * @format
  */
 
-import React, {useState} from 'react';
-import {FlexColumn, Button, styled, Tab, Tabs, TabsContainer} from '../../ui';
+import React from 'react';
+import {Tab, Tabs} from 'flipper-plugin';
 import PluginDebugger from './PluginDebugger';
 import PluginInstaller from './PluginInstaller';
-
-const Container = styled(FlexColumn)({
-  padding: 15,
-  width: 760,
-});
-
-const Row = styled(FlexColumn)({
-  alignItems: 'flex-end',
-});
-
-type TabsState = 'Plugin Status' | 'Install Plugins';
+import {Modal} from 'antd';
 
 export default function (props: {onHide: () => any}) {
-  const [tab, setTab] = useState<TabsState>('Plugin Status');
   return (
-    <Container>
-      <TabsContainer>
-        <Tabs
-          active={tab}
-          onActive={setTab as (s: string | null | undefined) => void}>
-          <Tab label="Plugin Status" />
-          <Tab label="Install Plugins" />
-        </Tabs>
-        {tab === 'Plugin Status' && <PluginDebugger />}
-        {tab === 'Install Plugins' && <PluginInstaller />}
-      </TabsContainer>
-      <Row>
-        <Button compact padded onClick={props.onHide}>
-          Close
-        </Button>
-      </Row>
-    </Container>
+    <Modal width={800} visible onCancel={props.onHide} footer={null}>
+      <Tabs>
+        <Tab tab="Plugin Status">
+          <PluginDebugger />
+        </Tab>
+        <Tab tab="Install Plugins">
+          <PluginInstaller />
+        </Tab>
+      </Tabs>
+    </Modal>
   );
 }

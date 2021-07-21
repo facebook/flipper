@@ -7,23 +7,8 @@
  * @format
  */
 
-import {
-  FlexColumn,
-  styled,
-  SearchInput,
-  SearchBox,
-  Button,
-  colors,
-  Spacer,
-  FlexRow,
-  Glyph,
-  Link,
-  Text,
-  LoadingIndicator,
-  Tooltip,
-  TableRows,
-  ManagedTable,
-} from '../../ui';
+import {Layout, theme} from 'flipper-plugin';
+import {LoadingIndicator, TableRows, ManagedTable, Glyph} from '../../ui';
 import React, {useCallback, useState, useEffect} from 'react';
 import {reportPlatformFailures, reportUsage} from '../../utils/metrics';
 import reloadFlipper from '../../utils/reloadFlipper';
@@ -42,14 +27,11 @@ import {connect} from 'react-redux';
 import {Dispatch, Action} from 'redux';
 import PluginPackageInstaller from './PluginPackageInstaller';
 import {Toolbar} from 'flipper-plugin';
+import {Alert, Button, Input, Tooltip, Typography} from 'antd';
+
+const {Text, Link} = Typography;
 
 const TAG = 'PluginInstaller';
-
-const EllipsisText = styled(Text)({
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-  whiteSpace: 'nowrap',
-});
 
 const columnSizes = {
   name: '25%',
@@ -72,23 +54,6 @@ const columns = {
     value: '',
   },
 };
-
-const Container = styled(FlexColumn)({
-  height: 300,
-  backgroundColor: colors.white,
-  borderRadius: 4,
-  overflow: 'hidden',
-  border: `1px solid ${colors.macOSTitleBarButtonBorder}`,
-});
-
-const RestartBar = styled(FlexColumn)({
-  backgroundColor: colors.red,
-  color: colors.white,
-  fontWeight: 500,
-  padding: 10,
-  cursor: 'pointer',
-  textAlign: 'center',
-});
 
 type PropsFromState = {
   installedPlugins: Map<string, InstalledPluginDetails>;
@@ -127,50 +92,37 @@ const PluginInstaller = function ({
   }, []);
 
   return (
-    <>
-      <Container>
-        {restartRequired && (
-          <RestartBar onClick={restartApp}>
-            To apply the changes, Flipper needs to reload. Click here to reload!
-          </RestartBar>
-        )}
-        <Toolbar>
-          <SearchBox>
-            <SearchInput
-              onChange={(e) => setQuery(e.target.value)}
-              value={query}
-              placeholder="Search Flipper plugins..."
-            />
-          </SearchBox>
-        </Toolbar>
-        <ManagedTable
-          rowLineHeight={28}
-          floating={false}
-          multiline
-          columnSizes={columnSizes}
-          columns={columns}
-          highlightableRows={false}
-          highlightedRows={new Set()}
-          autoHeight={autoHeight}
-          rows={rows}
+    <Layout.Container gap height={500}>
+      {restartRequired && (
+        <Alert
+          onClick={restartApp}
+          type="error"
+          message="To apply the changes, Flipper needs to reload. Click here to reload!"
+          style={{cursor: 'pointer'}}
         />
-      </Container>
+      )}
+      <Toolbar>
+        <Input.Search
+          onChange={(e) => setQuery(e.target.value)}
+          value={query}
+          placeholder="Search Flipper plugins..."
+        />
+      </Toolbar>
+      <ManagedTable
+        rowLineHeight={28}
+        floating={false}
+        multiline
+        columnSizes={columnSizes}
+        columns={columns}
+        highlightableRows={false}
+        highlightedRows={new Set()}
+        autoHeight={autoHeight}
+        rows={rows}
+      />
       <PluginPackageInstaller onInstall={onInstall} />
-    </>
+    </Layout.Container>
   );
 };
-
-const TableButton = styled(Button)({
-  marginTop: 2,
-});
-
-const Spinner = styled(LoadingIndicator)({
-  marginTop: 6,
-});
-
-const AlignedGlyph = styled(Glyph)({
-  marginTop: 6,
-});
 
 function InstallButton(props: {
   name: string;
@@ -240,13 +192,13 @@ function InstallButton(props: {
   );
 
   if (action.kind === 'Waiting') {
-    return <Spinner size={16} />;
+    return <LoadingIndicator size={16} />;
   }
   if ((action.kind === 'Install' || action.kind === 'Remove') && action.error) {
   }
   const button = (
-    <TableButton
-      compact
+    <Button
+      size="small"
       type={action.kind !== 'Remove' ? 'primary' : undefined}
       onClick={() => {
         switch (action.kind) {
@@ -262,22 +214,22 @@ function InstallButton(props: {
         }
       }}>
       {action.kind}
-    </TableButton>
+    </Button>
   );
 
   if (action.error) {
     const glyph = (
-      <AlignedGlyph color={colors.orange} size={16} name="caution-triangle" />
+      <Glyph color={theme.warningColor} size={16} name="caution-triangle" />
     );
     return (
-      <FlexRow>
+      <Layout.Horizontal gap>
         <Tooltip
-          options={{position: 'toLeft'}}
+          placement="leftBottom"
           title={`Something went wrong: ${action.error}`}
           children={glyph}
         />
         {button}
-      </FlexRow>
+      </Layout.Horizontal>
     );
   } else {
     return button;
@@ -302,25 +254,24 @@ function useNPMSearch(
       key: h.name,
       columns: {
         name: {
-          value: (
-            <EllipsisText>
-              {h.name.replace(/^flipper-plugin-/, '')}
-            </EllipsisText>
-          ),
+          value: <Text ellipsis>{h.name.replace(/^flipper-plugin-/, '')}</Text>,
         },
         version: {
-          value: <EllipsisText>{h.version}</EllipsisText>,
+          value: <Text ellipsis>{h.version}</Text>,
           align: 'flex-end' as 'flex-end',
         },
         description: {
           value: (
-            <FlexRow grow>
-              <EllipsisText>{h.description}</EllipsisText>
-              <Spacer />
+            <Layout.Horizontal center gap>
+              <Text ellipsis>{h.description}</Text>
               <Link href={`https://yarnpkg.com/en/package/${h.name}`}>
-                <Glyph color={colors.light20} name="info-circle" size={16} />
+                <Glyph
+                  color={theme.textColorActive}
+                  name="info-circle"
+                  size={16}
+                />
               </Link>
-            </FlexRow>
+            </Layout.Horizontal>
           ),
         },
         install: {
