@@ -225,8 +225,10 @@ test('test serialize and deserializeShallowObject function for non Object input'
   );
 });
 
-if (process.platform !== 'win32') {
-  test('test makeObjectSerializable and deserializeShallowObject function for Date input', () => {
+// dates on windows don't support changed timezones
+test.unix(
+  'test makeObjectSerializable and deserializeShallowObject function for Date input',
+  () => {
     const date = new Date(2021, 1, 29, 10, 31, 7, 205);
     expect(makeShallowSerializable(date)).toMatchInlineSnapshot(`
     Object {
@@ -237,8 +239,8 @@ if (process.platform !== 'win32') {
     expect(deserializeShallowObject(makeShallowSerializable(date))).toEqual(
       date,
     );
-  });
-}
+  },
+);
 
 test('test makeObjectSerializable and deserializeShallowObject function for Map of Sets', () => {
   const map = new Map([

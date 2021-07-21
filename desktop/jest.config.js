@@ -13,6 +13,7 @@ module.exports = {
     '\\.(js|tsx?)$': '<rootDir>/scripts/jest-transform.js',
   },
   setupFiles: ['<rootDir>/scripts/jest-setup.js'],
+  setupFilesAfterEnv: ['<rootDir>/scripts/jest-setup-after.js'],
   moduleNameMapper: {
     '^flipper$': '<rootDir>/app/src',
     '^flipper-plugin$': '<rootDir>/flipper-plugin/src',
