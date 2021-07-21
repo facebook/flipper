@@ -7,11 +7,10 @@
  * @format
  */
 
-import {FlexCenter, styled} from 'flipper';
 import {NavigationInfoBox} from './';
 import {Bookmark, NavigationEvent, URI} from '../types';
 import React, {useRef} from 'react';
-import {theme} from 'flipper-plugin';
+import {theme, Layout, styled} from 'flipper-plugin';
 
 type Props = {
   bookmarks: Map<string, Bookmark>;
@@ -28,22 +27,6 @@ const TimelineLine = styled.div({
   bottom: 0,
 });
 
-const TimelineContainer = styled.div({
-  position: 'relative',
-  paddingLeft: 25,
-  overflowY: 'scroll',
-  flexGrow: 1,
-  backgroundColor: theme.backgroundWash,
-  scrollBehavior: 'smooth',
-  '&>div': {
-    position: 'relative',
-    minHeight: '100%',
-    '&:last-child': {
-      paddingBottom: 25,
-    },
-  },
-});
-
 const NavigationEventContainer = styled.div({
   display: 'flex',
   paddingTop: 25,
@@ -51,21 +34,23 @@ const NavigationEventContainer = styled.div({
   marginRight: 25,
 });
 
-const NoData = styled(FlexCenter)({
-  height: '100%',
-  fontSize: 18,
-  backgroundColor: theme.backgroundWash,
-  color: theme.textColorSecondary,
-});
-
 export function Timeline(props: Props) {
   const {bookmarks, events, onNavigate, onFavorite} = props;
   const timelineRef = useRef<HTMLDivElement>(null);
   return events.length === 0 ? (
-    <NoData>No Navigation Events to Show</NoData>
+    <Layout.Container
+      center
+      grow
+      style={{
+        fontSize: 18,
+        backgroundColor: theme.backgroundWash,
+        color: theme.textColorSecondary,
+      }}>
+      No Navigation Events to Show
+    </Layout.Container>
   ) : (
-    <TimelineContainer ref={timelineRef}>
-      <div>
+    <Layout.ScrollContainer ref={timelineRef}>
+      <Layout.Container grow style={{paddingBottom: 25, paddingLeft: 25}}>
         <TimelineLine />
         {events.map((event: NavigationEvent, idx: number) => {
           return (
@@ -89,7 +74,7 @@ export function Timeline(props: Props) {
             </NavigationEventContainer>
           );
         })}
-      </div>
-    </TimelineContainer>
+      </Layout.Container>
+    </Layout.ScrollContainer>
   );
 }
