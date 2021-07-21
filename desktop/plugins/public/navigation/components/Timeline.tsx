@@ -58,7 +58,7 @@ const NoData = styled(FlexCenter)({
   color: theme.textColorSecondary,
 });
 
-export default (props: Props) => {
+export function Timeline(props: Props) {
   const {bookmarks, events, onNavigate, onFavorite} = props;
   const timelineRef = useRef<HTMLDivElement>(null);
   return events.length === 0 ? (
@@ -92,4 +92,4 @@ export default (props: Props) => {
       </div>
     </TimelineContainer>
   );
-};
+}

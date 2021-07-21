@@ -43,23 +43,23 @@ const RippleEffect = styled.div({
   },
 });
 
-const IconButton = styled.div({
+const IconButtonContainer = styled.div({
   ':active': {
     animation: `${shrinkAnimation} .25s ease forwards`,
   },
 });
 
-export default function (props: Props) {
+export function IconButton(props: Props) {
   return (
     <RippleEffect>
-      <IconButton className="icon-button" onClick={props.onClick}>
+      <IconButtonContainer className="icon-button" onClick={props.onClick}>
         <Glyph
           name={props.icon}
           size={props.size}
           color={props.color}
           variant={props.outline ? 'outline' : 'filled'}
         />
-      </IconButton>
+      </IconButtonContainer>
     </RippleEffect>
   );
 }

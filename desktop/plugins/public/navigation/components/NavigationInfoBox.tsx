@@ -160,7 +160,7 @@ const buildParameterTable = (parameters: Map<string, string>) => {
   );
 };
 
-export default (props: Props) => {
+export function NavigationInfoBox(props: Props) {
   const {
     uri,
     isBookmarked,
@@ -238,4 +238,4 @@ export default (props: Props) => {
       </NavigationInfoBoxContainer>
     );
   }
-};
+}

@@ -78,7 +78,7 @@ const alphabetizeBookmarkCompare = (b1: Bookmark, b2: Bookmark) => {
   return b1.uri < b2.uri ? -1 : b1.uri > b2.uri ? 1 : 0;
 };
 
-export default (props: Props) => {
+export function BookmarksSidebar(props: Props) {
   const {bookmarks, onNavigate, onRemove} = props;
   return (
     <DetailSidebar>
@@ -119,4 +119,4 @@ export default (props: Props) => {
       </Panel>
     </DetailSidebar>
   );
-};
+}

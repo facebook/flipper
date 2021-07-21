@@ -7,12 +7,12 @@
  * @format
  */
 
-export {default as AutoCompleteSheet} from './AutoCompleteSheet';
-export {default as BookmarksSidebar} from './BookmarksSidebar';
-export {default as FavoriteButton} from './FavoriteButton';
-export {default as IconButton} from './IconButton';
-export {default as NavigationInfoBox} from './NavigationInfoBox';
-export {default as RequiredParametersDialog} from './RequiredParametersDialog';
-export {default as SaveBookmarkDialog} from './SaveBookmarkDialog';
-export {default as SearchBar} from './SearchBar';
-export {default as Timeline} from './Timeline';
+export {AutoCompleteSheet} from './AutoCompleteSheet';
+export {BookmarksSidebar} from './BookmarksSidebar';
+export {FavoriteButton} from './FavoriteButton';
+export {IconButton} from './IconButton';
+export {NavigationInfoBox} from './NavigationInfoBox';
+export {RequiredParametersDialog} from './RequiredParametersDialog';
+export {SaveBookmarkDialog} from './SaveBookmarkDialog';
+export {SearchBar} from './SearchBar';
+export {Timeline} from './Timeline';
