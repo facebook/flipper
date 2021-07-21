@@ -71,8 +71,7 @@ test('can manually collapse properties', async () => {
   });
 });
 
-// TODO(T95985157): Flaky in open source.
-test.skip('can filter for data', async () => {
+test.local('can filter for data', async () => {
   const res = render(
     <DataInspector data={json} collapsed={false} expandRoot />,
   );
