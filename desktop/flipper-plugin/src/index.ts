@@ -112,7 +112,7 @@ export {
 } from './ui/data-inspector/DataDescription';
 export {MarkerTimeline} from './ui/MarkerTimeline';
 export {DataInspector} from './ui/data-inspector/DataInspector';
-
+export {Dialog} from './ui/Dialog';
 export {
   ElementsInspector,
   Element as ElementsInspectorElement,

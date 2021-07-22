@@ -895,6 +895,34 @@ Properties:
 * `type`: `default` or `dropdown. Defines the styling of the component. By default shows a list, but alternatively the items can be displayed in a drop down
 * `scrollable`: By default the data list will take all available space and scroll if items aren't otherwise visible. By setting `scrollable={false}` the list will only take its natural size
 
+### Dialog
+
+The `Dialog` namespace provides a set of utility to prompt the user with feedback of input. Rather than spawning dialogs by hand, the benefit of the `Dialog` utilities is that they all return promises capture the results.
+
+The promises returned by `Dialog` will resolve to `false` if the user intentionally closed the dialog (typically by using cancel / escape / clicking the close button).
+
+The promises returend by `Dialog` utilities will expose a `close()` method that can be used to programmatically close a dialog. In which case the pending promise will resolve to `false` as well.
+
+General properties accepted by the `Dialog` utility:
+
+* `title` - Overrides the title of the dialog, defaults to empty.
+* `width` - Overrides the default width (400) for dialogs. Number in pixels.
+* `okText` - Overrides the caption of the OK button
+* `cancelText` - Overrides the caption of the Cancel button
+
+Available utilities
+
+* `Dialog.confirm(options): Promise<boolean>`. Show a confirmation dialog to the user. Options:
+  * `message`: Description of what the user is confirming.
+* `Dialog.prompt(options): Promise<string | false>`. Prompt the user for some input. Options:
+  * `message`: Text accompanying the input
+  * `defaultValue`
+  * `onConfirm(value) => Promise<string>`. Can be used to transform the inputted value before resolving the prompt promise. If the handler throws, this will be shown as validation error in the dialog.
+* `Dialog.show<T>(options): Promise<T | false`. Low level building block to build dialogs. Options:
+  * `children`: React Element to render as children of the dialog.
+  * `onConfirm: () => Promise<T>`. Handler to handle the OK button, which should produce the value the `Dialog.show` call will resolve to.
+
+
 ### NUX
 
 An element that can be used to provide a New User eXperience: Hints that give a one time introduction to new features to the current user.

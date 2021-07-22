@@ -36,6 +36,7 @@ test('Correct top level API exposed', () => {
       "DataSource",
       "DataTable",
       "DetailSidebar",
+      "Dialog",
       "ElementsInspector",
       "Layout",
       "MarkerTimeline",

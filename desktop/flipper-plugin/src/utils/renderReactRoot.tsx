@@ -16,13 +16,12 @@ import {render, unmountComponentAtNode} from 'react-dom';
  */
 export function renderReactRoot(
   handler: (unmount: () => void) => React.ReactElement,
-): void {
+): () => void {
   const div = document.body.appendChild(document.createElement('div'));
-  render(
-    handler(() => {
-      unmountComponentAtNode(div);
-      div.remove();
-    }),
-    div,
-  );
+  const unmount = () => {
+    unmountComponentAtNode(div);
+    div.remove();
+  };
+  render(handler(unmount), div);
+  return unmount;
 }

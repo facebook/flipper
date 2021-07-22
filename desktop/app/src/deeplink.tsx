@@ -17,9 +17,7 @@ import {Group, SUPPORTED_GROUPS} from './reducers/supportForm';
 import {Store} from './reducers/index';
 import {importDataToStore} from './utils/exportData';
 import {selectPlugin} from './reducers/connections';
-import {Layout, renderReactRoot} from 'flipper-plugin';
-import React, {useState} from 'react';
-import {Alert, Input, Modal} from 'antd';
+import {Dialog} from 'flipper-plugin';
 import {handleOpenPluginDeeplink} from './dispatcher/handleOpenPluginDeeplink';
 
 const UNKNOWN = 'Unknown deeplink';
@@ -118,40 +116,13 @@ export const uriComponents = (url: string): Array<string> => {
 };
 
 export function openDeeplinkDialog(store: Store) {
-  renderReactRoot((hide) => <TestDeeplinkDialog store={store} onHide={hide} />);
-}
-
-function TestDeeplinkDialog({
-  store,
-  onHide,
-}: {
-  store: Store;
-  onHide: () => void;
-}) {
-  const [query, setQuery] = useState('flipper://');
-  const [error, setError] = useState('');
-  return (
-    <Modal
-      title="Open deeplink..."
-      visible
-      onOk={() => {
-        handleDeeplink(store, query)
-          .then(onHide)
-          .catch((e) => {
-            setError(`Failed to handle deeplink '${query}': ${e}`);
-          });
-      }}
-      onCancel={onHide}>
-      <Layout.Container gap>
-        <>Enter a deeplink to test it:</>
-        <Input
-          value={query}
-          onChange={(v) => {
-            setQuery(v.target.value);
-          }}
-        />
-        {error && <Alert type="error" message={error} />}
-      </Layout.Container>
-    </Modal>
-  );
+  Dialog.prompt({
+    title: 'Open deeplink',
+    message: 'Enter a deeplink:',
+    defaultValue: 'flipper://',
+    onConfirm: async (deeplink) => {
+      await handleDeeplink(store, deeplink);
+      return deeplink;
+    },
+  });
 }
