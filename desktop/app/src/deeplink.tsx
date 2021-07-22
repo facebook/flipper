@@ -11,7 +11,6 @@ import {
   ACTIVE_SHEET_SIGN_IN,
   setActiveSheet,
   setPastedToken,
-  toggleAction,
 } from './reducers/application';
 import {Group, SUPPORTED_GROUPS} from './reducers/supportForm';
 import {Store} from './reducers/index';
@@ -19,6 +18,7 @@ import {importDataToStore} from './utils/exportData';
 import {selectPlugin} from './reducers/connections';
 import {Dialog} from 'flipper-plugin';
 import {handleOpenPluginDeeplink} from './dispatcher/handleOpenPluginDeeplink';
+import {message} from 'antd';
 
 const UNKNOWN = 'Unknown deeplink';
 /**
@@ -37,18 +37,22 @@ export async function handleDeeplink(
   }
   if (uri.pathname.match(/^\/*import\/*$/)) {
     const url = uri.searchParams.get('url');
-    store.dispatch(toggleAction('downloadingImportData', true));
     if (url) {
+      const handle = Dialog.loading({
+        message: 'Importing Flipper trace...',
+      });
       return fetch(url)
         .then((res) => res.text())
         .then((data) => importDataToStore(url, data, store))
-        .then(() => {
-          store.dispatch(toggleAction('downloadingImportData', false));
-        })
         .catch((e: Error) => {
-          console.error('Failed to download Flipper trace' + e);
-          store.dispatch(toggleAction('downloadingImportData', false));
-          throw e;
+          console.warn('Failed to download Flipper trace', e);
+          message.error({
+            duration: null,
+            content: 'Failed to download Flipper trace: ' + e,
+          });
+        })
+        .finally(() => {
+          handle.close();
         });
     }
     throw new Error(UNKNOWN);
