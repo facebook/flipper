@@ -1,3 +1,9 @@
+# 0.99.0 (21/7/2021)
+
+ * [D29800712](https://github.com/facebook/flipper/search?q=D29800712&type=Commits) -  Added dark mode support to plugin manager
+ * [D29801181](https://github.com/facebook/flipper/search?q=D29801181&type=Commits) -  Fix dark mode support in changelog dialog.
+
+
 # 0.97.0 (7/7/2021)
 
  * [D29228868](https://github.com/facebook/flipper/search?q=D29228868&type=Commits) -  [Internal]
