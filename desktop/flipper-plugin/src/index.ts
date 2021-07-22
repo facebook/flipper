@@ -92,6 +92,7 @@ export {createDataSource} from './state/createDataSource';
 export {DataTable, DataTableColumn} from './ui/data-table/DataTable';
 export {DataTableManager} from './ui/data-table/DataTableManager';
 export {DataList} from './ui/DataList';
+export {Spinner} from './ui/Spinner';
 
 export {
   Interactive as _Interactive,

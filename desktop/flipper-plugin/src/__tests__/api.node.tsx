@@ -43,6 +43,7 @@ test('Correct top level API exposed', () => {
       "MasterDetail",
       "NUX",
       "Panel",
+      "Spinner",
       "Tab",
       "Tabs",
       "TestUtils",

@@ -918,10 +918,15 @@ Available utilities
   * `message`: Text accompanying the input
   * `defaultValue`
   * `onConfirm(value) => Promise<string>`. Can be used to transform the inputted value before resolving the prompt promise. If the handler throws, this will be shown as validation error in the dialog.
+* `Dialog.loading(options): Promise<void>`. Shows a dialog with a loading spinner. This dialog cannot be closed by the user, so instead `.close()` should be called programmatically on the returned promise.
+  * `message`: Message to display with the loading spinner.
 * `Dialog.show<T>(options): Promise<T | false`. Low level building block to build dialogs. Options:
   * `children`: React Element to render as children of the dialog.
   * `onConfirm: () => Promise<T>`. Handler to handle the OK button, which should produce the value the `Dialog.show` call will resolve to.
 
+### Spinner
+
+Shows a loading spinner. Accept an optional `size` to make the spinner larger / smaller.
 
 ### NUX
 

@@ -12,6 +12,7 @@ import {Atom, createState, useValue} from '../state/atom';
 import React from 'react';
 import {renderReactRoot} from '../utils/renderReactRoot';
 import {Layout} from './Layout';
+import {Spinner} from './Spinner';
 
 type DialogResult<T> = Promise<false | T> & {close: () => void};
 
@@ -19,7 +20,10 @@ type BaseDialogOptions = {
   title: string;
   okText?: string;
   cancelText?: string;
+  width?: number;
 };
+
+const defaultWidth = 400;
 
 export const Dialog = {
   show<T>(
@@ -54,7 +58,7 @@ export const Dialog = {
                 }
               }}
               onCancel={cancel}
-              width={400}>
+              width={opts.width ?? defaultWidth}>
               <Layout.Container gap>
                 {opts.children}
                 <SubmissionError submissionError={submissionError} />
@@ -111,6 +115,47 @@ export const Dialog = {
         return value;
       },
     });
+  },
+
+  loading({
+    title,
+    message,
+    width,
+  }: {
+    title?: string;
+    message: string | React.ReactElement;
+    width?: number;
+  }) {
+    let cancel: () => void;
+
+    return Object.assign(
+      new Promise<void>((resolve) => {
+        renderReactRoot((hide) => {
+          cancel = () => {
+            hide();
+            resolve();
+          };
+          return (
+            <Modal
+              title={title ?? 'Loading...'}
+              visible
+              footer={null}
+              width={width ?? defaultWidth}
+              closable={false}>
+              <Layout.Container gap center>
+                <Spinner />
+                {message}
+              </Layout.Container>
+            </Modal>
+          );
+        });
+      }),
+      {
+        close() {
+          cancel();
+        },
+      },
+    );
   },
 };
 
