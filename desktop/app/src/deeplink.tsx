@@ -20,6 +20,7 @@ import {selectPlugin} from './reducers/connections';
 import {Layout, renderReactRoot} from 'flipper-plugin';
 import React, {useState} from 'react';
 import {Alert, Input, Modal} from 'antd';
+import {handleOpenPluginDeeplink} from './dispatcher/handleOpenPluginDeeplink';
 
 const UNKNOWN = 'Unknown deeplink';
 /**
@@ -32,6 +33,9 @@ export async function handleDeeplink(
   const uri = new URL(query);
   if (uri.protocol !== 'flipper:') {
     throw new Error(UNKNOWN);
+  }
+  if (uri.href.startsWith('flipper://open-plugin')) {
+    return handleOpenPluginDeeplink(store, query);
   }
   if (uri.pathname.match(/^\/*import\/*$/)) {
     const url = uri.searchParams.get('url');
@@ -68,7 +72,14 @@ export async function handleDeeplink(
   }
   const match = uriComponents(query);
   if (match.length > 1) {
+    // deprecated, use the open-plugin format instead, which is more flexible
+    // and will guide the user through any necessary set up steps
     // flipper://<client>/<pluginId>/<payload>
+    console.warn(
+      `Deprecated deeplink format: '${query}', use 'flipper://open-plugin?plugin-id=${
+        match[1]
+      }&client=${match[0]}&payload=${encodeURIComponent(match[2])}' instead.`,
+    );
     store.dispatch(
       selectPlugin({
         selectedApp: match[0],
