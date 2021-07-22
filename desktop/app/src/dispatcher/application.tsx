@@ -8,36 +8,16 @@
  */
 
 import {remote, ipcRenderer, IpcRendererEvent} from 'electron';
-import {
-  ACTIVE_SHEET_SIGN_IN,
-  setActiveSheet,
-  setPastedToken,
-  toggleAction,
-} from '../reducers/application';
-import {Group, SUPPORTED_GROUPS} from '../reducers/supportForm';
 import {Store} from '../reducers/index';
 import {Logger} from '../fb-interfaces/Logger';
 import {parseFlipperPorts} from '../utils/environmentVariables';
 import {
-  importDataToStore,
   importFileToStore,
   IMPORT_FLIPPER_TRACE_EVENT,
 } from '../utils/exportData';
 import {tryCatchReportPlatformFailures} from '../utils/metrics';
-import {selectPlugin} from '../reducers/connections';
-
-export const uriComponents = (url: string): Array<string> => {
-  if (!url) {
-    return [];
-  }
-  const match: Array<string> | undefined | null = url.match(
-    /^flipper:\/\/([^\/]*)\/([^\/\?]*)\/?(.*)$/,
-  );
-  if (match) {
-    return match.map(decodeURIComponent).slice(1).filter(Boolean);
-  }
-  return [];
-};
+import {handleDeeplink} from '../deeplink';
+import {message} from 'antd';
 
 export default (store: Store, _logger: Logger) => {
   const currentWindow = remote.getCurrentWindow();
@@ -77,65 +57,12 @@ export default (store: Store, _logger: Logger) => {
   ipcRenderer.on(
     'flipper-protocol-handler',
     (_event: IpcRendererEvent, query: string) => {
-      const uri = new URL(query);
-      if (uri.protocol !== 'flipper:') {
-        return;
-      }
-      if (uri.pathname.match(/^\/*import\/*$/)) {
-        const url = uri.searchParams.get('url');
-        store.dispatch(toggleAction('downloadingImportData', true));
-        return (
-          typeof url === 'string' &&
-          fetch(url)
-            .then((res) => res.text())
-            .then((data) => importDataToStore(url, data, store))
-            .then(() => {
-              store.dispatch(toggleAction('downloadingImportData', false));
-            })
-            .catch((e: Error) => {
-              console.error(e);
-              store.dispatch(toggleAction('downloadingImportData', false));
-            })
-        );
-      } else if (uri.pathname.match(/^\/*support-form\/*$/)) {
-        const formParam = uri.searchParams.get('form');
-        const grp = deeplinkFormParamToGroups(formParam);
-        if (grp) {
-          grp.handleSupportFormDeeplinks(store);
-        }
-        return;
-      } else if (uri.pathname.match(/^\/*login\/*$/)) {
-        const token = uri.searchParams.get('token');
-        store.dispatch(setPastedToken(token ?? undefined));
-        if (store.getState().application.activeSheet !== ACTIVE_SHEET_SIGN_IN) {
-          store.dispatch(setActiveSheet(ACTIVE_SHEET_SIGN_IN));
-        }
-        return;
-      }
-      const match = uriComponents(query);
-      if (match.length > 1) {
-        // flipper://<client>/<pluginId>/<payload>
-        return store.dispatch(
-          selectPlugin({
-            selectedApp: match[0],
-            selectedPlugin: match[1],
-            deepLinkPayload: match[2],
-          }),
-        );
-      }
+      handleDeeplink(store, query).catch((e) => {
+        console.warn('Failed to handle deeplink', query, e);
+        message.error(`Failed to handle deeplink '${query}': ${e}`);
+      });
     },
   );
-
-  function deeplinkFormParamToGroups(
-    formParam: string | null,
-  ): Group | undefined {
-    if (!formParam) {
-      return undefined;
-    }
-    return SUPPORTED_GROUPS.find((grp) => {
-      return grp.deeplinkSuffix.toLowerCase() === formParam.toLowerCase();
-    });
-  }
 
   ipcRenderer.on(
     'open-flipper-file',

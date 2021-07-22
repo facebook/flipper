@@ -34,6 +34,7 @@ import {
 import {StyleGuide} from './sandy-chrome/StyleGuide';
 import {showEmulatorLauncher} from './sandy-chrome/appinspect/LaunchEmulator';
 import {webFrame} from 'electron';
+import {openDeeplinkDialog} from './deeplink';
 
 export type DefaultKeyboardAction = keyof typeof _buildInMenuEntries;
 export type TopLevelMenu = 'Edit' | 'View' | 'Window' | 'Help';
@@ -362,6 +363,12 @@ function getTemplate(
           // @ts-ignore: https://github.com/electron/electron/issues/7832
           focusedWindow.toggleDevTools();
         }
+      },
+    },
+    {
+      label: 'Trigger deeplink...',
+      click() {
+        openDeeplinkDialog(store);
       },
     },
     {
