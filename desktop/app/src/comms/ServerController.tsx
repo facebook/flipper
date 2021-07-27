@@ -64,7 +64,7 @@ function transformCertificateExchangeMediumToType(
   }
 }
 
-declare interface Server {
+declare interface ServerController {
   on(event: 'new-client', callback: (client: Client) => void): this;
   on(event: 'error', callback: (err: Error) => void): this;
   on(event: 'clients-change', callback: () => void): this;
@@ -81,7 +81,7 @@ function appNameWithUpdateHint(query: ClientQuery): string {
   return query.app;
 }
 
-class Server extends EventEmitter {
+class ServerController extends EventEmitter {
   connections: Map<string, ClientInfo>;
   secureServer: Promise<RSocketServer<any, any>> | null;
   insecureServer: Promise<RSocketServer<any, any>> | null;
@@ -677,4 +677,4 @@ async function findDeviceForConnection(
   );
 }
 
-export default Server;
+export default ServerController;

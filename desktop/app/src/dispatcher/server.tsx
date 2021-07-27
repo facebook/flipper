@@ -7,7 +7,7 @@
  * @format
  */
 
-import Server from '../comms/server';
+import ServerController from '../comms/ServerController';
 
 import {Store} from '../reducers/index';
 import {Logger} from '../fb-interfaces/Logger';
@@ -22,7 +22,7 @@ import {notification, Typography} from 'antd';
 import {ACTIVE_SHEET_SIGN_IN, setActiveSheet} from '../reducers/application';
 
 export default (store: Store, logger: Logger) => {
-  const server = new Server(logger, store);
+  const server = new ServerController(logger, store);
   server.init();
 
   server.addListener('new-client', (client: Client) => {
