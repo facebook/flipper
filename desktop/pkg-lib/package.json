@@ -18,8 +18,8 @@
     "npm-packlist": "^2.2.2"
   },
   "devDependencies": {
-    "@types/fs-extra": "^9.0.11",
-    "@types/jest": "^26.0.23",
+    "@types/fs-extra": "^9.0.12",
+    "@types/jest": "^26.0.24",
     "@types/node": "^15.12.5",
     "flipper-test-utils": "0.0.0",
     "globby": "^11.0.4",

@@ -8,9 +8,9 @@
   "license": "MIT",
   "devDependencies": {
     "@types/fb-watchman": "2.0.1",
-    "@types/jest": "^26.0.23",
-    "@typescript-eslint/eslint-plugin": "^4.28.1",
-    "eslint": "^7.30.0",
+    "@types/jest": "^26.0.24",
+    "@typescript-eslint/eslint-plugin": "^4.28.5",
+    "eslint": "^7.31.0",
     "eslint-plugin-babel": "^5.3.1",
     "eslint-plugin-header": "^3.1.1",
     "eslint-plugin-jsx-a11y": "^6.4.1",
@@ -37,7 +37,7 @@
   ],
   "author": "Facebook, Inc",
   "dependencies": {
-    "@types/node": "^16.0.0",
+    "@types/node": "^16.4.3",
     "envinfo": "^7.8.1",
     "fb-watchman": "^2.0.1"
   }
