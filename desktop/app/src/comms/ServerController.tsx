@@ -46,6 +46,10 @@ import DummyDevice from '../devices/DummyDevice';
 import BaseDevice from '../devices/BaseDevice';
 import {sideEffect} from '../utils/sideEffect';
 import {destroyDevice} from '../reducers/connections';
+import {
+  appNameWithUpdateHint,
+  transformCertificateExchangeMediumToType,
+} from './Utilities';
 
 type ClientInfo = {
   connection: ClientConnection | null | undefined;
@@ -57,33 +61,10 @@ type ClientCsrQuery = {
   csr_path?: string | undefined;
 };
 
-function transformCertificateExchangeMediumToType(
-  medium: number | undefined,
-): CertificateExchangeMedium {
-  if (medium == 1) {
-    return 'FS_ACCESS';
-  } else if (medium == 2) {
-    return 'WWW';
-  } else {
-    return 'FS_ACCESS';
-  }
-}
-
 declare interface ServerController {
   on(event: 'new-client', callback: (client: Client) => void): this;
   on(event: 'error', callback: (err: Error) => void): this;
   on(event: 'clients-change', callback: () => void): this;
-}
-
-function appNameWithUpdateHint(query: ClientQuery): string {
-  // in previous version (before 3), app may not appear in correct device
-  // section because it refers to the name given by client which is not fixed
-  // for android emulators, so it is indicated as outdated so that developers
-  // might want to update SDK to get rid of this connection swap problem
-  if (query.os === 'Android' && (!query.sdk_version || query.sdk_version < 3)) {
-    return query.app + ' (Outdated SDK)';
-  }
-  return query.app;
 }
 
 class ServerController extends EventEmitter {
