@@ -38,7 +38,7 @@ import {buildClientId} from '../utils/clientUtils';
 import {Single} from 'rsocket-flowable';
 import WebSocket from 'ws';
 import JSDevice from '../devices/JSDevice';
-import {WebsocketClientFlipperConnection} from '../utils/js-client-server-utils/websocketClientFlipperConnection';
+import {BrowserClientFlipperConnection} from '../utils/js-client-server-utils/BrowserClientFlipperConnection';
 import querystring from 'querystring';
 import {IncomingMessage} from 'http';
 import ws from 'ws';
@@ -217,7 +217,7 @@ class ServerController extends EventEmitter {
             const plugins = message.plugins;
             let resolvedClient: Client | null = null;
             const client = this.addConnection(
-              new WebsocketClientFlipperConnection(ws, app, plugins),
+              new BrowserClientFlipperConnection(ws, app, plugins),
               {
                 app,
                 os: 'JSWebApp',

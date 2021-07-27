@@ -15,7 +15,7 @@ import {
   ResponseType,
 } from '../../comms/ClientConnection';
 
-export class WebsocketClientFlipperConnection implements ClientConnection {
+export class BrowserClientFlipperConnection implements ClientConnection {
   websocket: WebSocket;
   connStatusSubscribers: Set<ConnectionStatusChange> = new Set();
   connStatus: ConnectionStatus;
