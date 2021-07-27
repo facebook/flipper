@@ -7,7 +7,7 @@
  * @format
  */
 
-import Server from '../server';
+import Server from '../comms/server';
 
 import {Store} from '../reducers/index';
 import {Logger} from '../fb-interfaces/Logger';

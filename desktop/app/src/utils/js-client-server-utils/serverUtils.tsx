@@ -16,7 +16,7 @@ import {Logger} from '../../fb-interfaces/Logger';
 
 import {Payload, ConnectionStatus, ISubscriber} from 'rsocket-types';
 import {Flowable, Single} from 'rsocket-flowable';
-import Server from '../../server';
+import Server from '../../comms/server';
 import {buildClientId} from '../clientUtils';
 import {destroyDevice} from '../../reducers/connections';
 

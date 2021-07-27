@@ -9,7 +9,7 @@
 
 import {Logger} from '../fb-interfaces/Logger';
 import {internGraphPOSTAPIRequest} from '../fb-stubs/user';
-import Server from '../server';
+import Server from '../comms/server';
 import {promisify} from 'util';
 import fs from 'fs';
 import fsExtra from 'fs-extra';
