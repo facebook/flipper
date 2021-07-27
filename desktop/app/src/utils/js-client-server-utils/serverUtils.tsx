@@ -16,7 +16,7 @@ import {Logger} from '../../fb-interfaces/Logger';
 
 import {Payload, ConnectionStatus, ISubscriber} from 'rsocket-types';
 import {Flowable, Single} from 'rsocket-flowable';
-import Server from '../../server';
+import ServerController from '../../comms/ServerController';
 import {buildClientId} from '../clientUtils';
 import {destroyDevice} from '../../reducers/connections';
 
@@ -31,7 +31,7 @@ function jsDeviceId(windowId: number): string {
 export function initJsEmulatorIPC(
   store: Store,
   logger: Logger,
-  flipperServer: Server,
+  flipperServer: ServerController,
   flipperConnections: Map<
     string,
     {

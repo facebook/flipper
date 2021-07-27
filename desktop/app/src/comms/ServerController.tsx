@@ -10,37 +10,37 @@
 import {
   SecureServerConfig,
   CertificateExchangeMedium,
-} from './utils/CertificateProvider';
-import {Logger} from './fb-interfaces/Logger';
-import {ClientQuery} from './Client';
-import {Store, State} from './reducers/index';
-import CertificateProvider from './utils/CertificateProvider';
+} from '../utils/CertificateProvider';
+import {Logger} from '../fb-interfaces/Logger';
+import {ClientQuery} from '../Client';
+import {Store, State} from '../reducers/index';
+import CertificateProvider from '../utils/CertificateProvider';
 import {RSocketServer} from 'rsocket-core';
 import RSocketTCPServer from 'rsocket-tcp-server';
-import Client from './Client';
-import {FlipperClientConnection} from './Client';
-import {UninitializedClient} from './UninitializedClient';
-import {reportPlatformFailures} from './utils/metrics';
+import Client from '../Client';
+import {FlipperClientConnection} from '../Client';
+import {UninitializedClient} from '../UninitializedClient';
+import {reportPlatformFailures} from '../utils/metrics';
 import {EventEmitter} from 'events';
 import invariant from 'invariant';
 import tls from 'tls';
 import net, {Socket} from 'net';
 import {Responder, Payload, ReactiveSocket} from 'rsocket-types';
-import constants from './fb-stubs/constants';
-import GK from './fb-stubs/GK';
-import {initJsEmulatorIPC} from './utils/js-client-server-utils/serverUtils';
-import {buildClientId} from './utils/clientUtils';
+import constants from '../fb-stubs/constants';
+import GK from '../fb-stubs/GK';
+import {initJsEmulatorIPC} from '../utils/js-client-server-utils/serverUtils';
+import {buildClientId} from '../utils/clientUtils';
 import {Single} from 'rsocket-flowable';
 import WebSocket from 'ws';
-import JSDevice from './devices/JSDevice';
-import {WebsocketClientFlipperConnection} from './utils/js-client-server-utils/websocketClientFlipperConnection';
+import JSDevice from '../devices/JSDevice';
+import {WebsocketClientFlipperConnection} from '../utils/js-client-server-utils/websocketClientFlipperConnection';
 import querystring from 'querystring';
 import {IncomingMessage} from 'http';
 import ws from 'ws';
-import DummyDevice from './devices/DummyDevice';
-import BaseDevice from './devices/BaseDevice';
-import {sideEffect} from './utils/sideEffect';
-import {destroyDevice} from './reducers/connections';
+import DummyDevice from '../devices/DummyDevice';
+import BaseDevice from '../devices/BaseDevice';
+import {sideEffect} from '../utils/sideEffect';
+import {destroyDevice} from '../reducers/connections';
 
 type ClientInfo = {
   connection: FlipperClientConnection<any, any> | null | undefined;
@@ -64,7 +64,7 @@ function transformCertificateExchangeMediumToType(
   }
 }
 
-declare interface Server {
+declare interface ServerController {
   on(event: 'new-client', callback: (client: Client) => void): this;
   on(event: 'error', callback: (err: Error) => void): this;
   on(event: 'clients-change', callback: () => void): this;
@@ -81,7 +81,7 @@ function appNameWithUpdateHint(query: ClientQuery): string {
   return query.app;
 }
 
-class Server extends EventEmitter {
+class ServerController extends EventEmitter {
   connections: Map<string, ClientInfo>;
   secureServer: Promise<RSocketServer<any, any>> | null;
   insecureServer: Promise<RSocketServer<any, any>> | null;
@@ -677,4 +677,4 @@ async function findDeviceForConnection(
   );
 }
 
-export default Server;
+export default ServerController;
