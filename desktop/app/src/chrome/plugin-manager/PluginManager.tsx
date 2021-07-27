@@ -21,7 +21,7 @@ export default function (props: {onHide: () => any}) {
           <PluginDebugger />
         </Tab>
         <Tab tab="Install Plugins">
-          <PluginInstaller />
+          <PluginInstaller autoHeight />
         </Tab>
       </Tabs>
     </Modal>
