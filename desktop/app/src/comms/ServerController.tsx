@@ -38,7 +38,7 @@ import {buildClientId} from '../utils/clientUtils';
 import {Single} from 'rsocket-flowable';
 import WebSocket from 'ws';
 import JSDevice from '../devices/JSDevice';
-import {BrowserClientFlipperConnection} from '../utils/js-client-server-utils/BrowserClientFlipperConnection';
+import {BrowserClientFlipperConnection} from './BrowserClientFlipperConnection';
 import querystring from 'querystring';
 import {IncomingMessage} from 'http';
 import ws from 'ws';

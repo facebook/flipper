@@ -13,7 +13,7 @@ import {
   ConnectionStatus,
   ClientConnection,
   ResponseType,
-} from '../../comms/ClientConnection';
+} from './ClientConnection';
 
 export class BrowserClientFlipperConnection implements ClientConnection {
   websocket: WebSocket;
