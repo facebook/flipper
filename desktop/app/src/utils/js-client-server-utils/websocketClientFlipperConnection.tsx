@@ -7,71 +7,48 @@
  * @format
  */
 
-import {FlipperClientConnection} from '../../Client';
-import {Flowable, Single} from 'rsocket-flowable';
-import {Payload, ConnectionStatus, ISubscriber} from 'rsocket-types';
 import WebSocket from 'ws';
+import {
+  ConnectionStatusChange,
+  ConnectionStatus,
+  ClientConnection,
+  ResponseType,
+} from '../../comms/ClientConnection';
 
-export class WebsocketClientFlipperConnection<M>
-  implements FlipperClientConnection<string, M>
-{
+export class WebsocketClientFlipperConnection implements ClientConnection {
   websocket: WebSocket;
-  connStatusSubscribers: Set<ISubscriber<ConnectionStatus>> = new Set();
+  connStatusSubscribers: Set<ConnectionStatusChange> = new Set();
   connStatus: ConnectionStatus;
   app: string;
   plugins: string[] | undefined = undefined;
 
   constructor(ws: WebSocket, app: string, plugins: string[]) {
     this.websocket = ws;
-    this.connStatus = {kind: 'CONNECTED'};
+    this.connStatus = ConnectionStatus.CONNECTED;
     this.app = app;
     this.plugins = plugins;
   }
-
-  connectionStatus(): Flowable<ConnectionStatus> {
-    return new Flowable<ConnectionStatus>((subscriber) => {
-      subscriber.onSubscribe({
-        cancel: () => {
-          this.connStatusSubscribers.delete(subscriber);
-        },
-        request: (_) => {
-          this.connStatusSubscribers.add(subscriber);
-          subscriber.onNext(this.connStatus);
-        },
-      });
-    });
+  subscribeToEvents(subscriber: ConnectionStatusChange): void {
+    this.connStatusSubscribers.add(subscriber);
   }
-
-  close(): void {
-    this.connStatus = {kind: 'CLOSED'};
-    this.connStatusSubscribers.forEach((subscriber) => {
-      subscriber.onNext(this.connStatus);
-    });
-    this.websocket.send(JSON.stringify({type: 'disconnect', app: this.app}));
-  }
-
-  fireAndForget(payload: Payload<string, M>): void {
+  send(data: any): void {
     this.websocket.send(
       JSON.stringify({
         type: 'send',
         app: this.app,
-        payload: payload.data != null ? payload.data : {},
+        payload: data != null ? data : {},
       }),
     );
   }
-
-  requestResponse(payload: Payload<string, M>): Single<Payload<string, M>> {
-    return new Single((subscriber) => {
+  sendExpectResponse(data: any): Promise<ResponseType> {
+    return new Promise((resolve, reject) => {
       const {id: callId = undefined, method = undefined} =
-        payload.data != null ? JSON.parse(payload.data) : {};
-
-      subscriber.onSubscribe(() => {});
+        data != null ? data : {};
 
       if (method === 'getPlugins' && this.plugins != null) {
-        subscriber.onComplete({
-          data: JSON.stringify({
-            success: {plugins: this.plugins},
-          }),
+        resolve({
+          success: {plugins: this.plugins},
+          length: 0,
         });
         return;
       }
@@ -80,7 +57,7 @@ export class WebsocketClientFlipperConnection<M>
         JSON.stringify({
           type: 'call',
           app: this.app,
-          payload: payload.data != null ? payload.data : {},
+          payload: data != null ? data : {},
         }),
       );
 
@@ -88,9 +65,20 @@ export class WebsocketClientFlipperConnection<M>
         const {app, payload} = JSON.parse(message);
 
         if (app === this.app && payload?.id === callId) {
-          subscriber.onComplete({data: JSON.stringify(payload)});
+          resolve(payload);
         }
       });
+      this.websocket.on('error', (error: Error) => {
+        reject(error);
+      });
     });
+  }
+
+  close(): void {
+    this.connStatus = ConnectionStatus.CLOSED;
+    this.connStatusSubscribers.forEach((subscriber) => {
+      subscriber(this.connStatus);
+    });
+    this.websocket.send(JSON.stringify({type: 'disconnect', app: this.app}));
   }
 }

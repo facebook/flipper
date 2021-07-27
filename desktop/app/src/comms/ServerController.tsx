@@ -18,7 +18,12 @@ import CertificateProvider from '../utils/CertificateProvider';
 import {RSocketServer} from 'rsocket-core';
 import RSocketTCPServer from 'rsocket-tcp-server';
 import Client from '../Client';
-import {FlipperClientConnection} from '../Client';
+import {
+  ClientConnection,
+  ConnectionStatus,
+  ConnectionStatusChange,
+  ResponseType,
+} from './ClientConnection';
 import {UninitializedClient} from '../UninitializedClient';
 import {reportPlatformFailures} from '../utils/metrics';
 import {EventEmitter} from 'events';
@@ -43,7 +48,7 @@ import {sideEffect} from '../utils/sideEffect';
 import {destroyDevice} from '../reducers/connections';
 
 type ClientInfo = {
-  connection: FlipperClientConnection<any, any> | null | undefined;
+  connection: ClientConnection | null | undefined;
   client: Client;
 };
 
@@ -234,7 +239,7 @@ class ServerController extends EventEmitter {
                 if (resolvedClient) {
                   resolvedClient.onMessage(message);
                 } else {
-                  client.then((c) => c.onMessage(message));
+                  client.then((c) => c.onMessage(message)).catch((_) => {});
                 }
               }
             });
@@ -242,10 +247,12 @@ class ServerController extends EventEmitter {
           }
           case 'disconnect': {
             const app = message.app;
-            (clients[app] || Promise.resolve()).then((c) => {
-              this.removeConnection(c.id);
-              delete clients[app];
-            });
+            (clients[app] || Promise.resolve())
+              .then((c) => {
+                this.removeConnection(c.id);
+                delete clients[app];
+              })
+              .catch((_) => {});
             break;
           }
         }
@@ -297,8 +304,58 @@ class ServerController extends EventEmitter {
       });
     }
 
+    const clientConnection: ClientConnection = {
+      subscribeToEvents(subscriber: ConnectionStatusChange): void {
+        socket.connectionStatus().subscribe({
+          onNext(payload) {
+            let status = ConnectionStatus.CONNECTED;
+
+            if (payload.kind == 'ERROR') status = ConnectionStatus.ERROR;
+            else if (payload.kind == 'CLOSED') status = ConnectionStatus.CLOSED;
+            else if (payload.kind == 'CONNECTED')
+              status = ConnectionStatus.CONNECTED;
+            else if (payload.kind == 'NOT_CONNECTED')
+              status = ConnectionStatus.NOT_CONNECTED;
+            else if (payload.kind == 'CONNECTING')
+              status = ConnectionStatus.CONNECTING;
+
+            subscriber(status);
+          },
+          onSubscribe(subscription) {
+            subscription.request(Number.MAX_SAFE_INTEGER);
+          },
+          onError(payload) {
+            console.error('[client] connection status error ', payload);
+          },
+        });
+      },
+      close(): void {
+        socket.close();
+      },
+      send(data: any): void {
+        socket.fireAndForget({data: JSON.stringify(data)});
+      },
+      sendExpectResponse(data: any): Promise<any> {
+        return new Promise<any>((resolve, reject) => {
+          socket
+            .requestResponse({
+              data: JSON.stringify(data),
+            })
+            .subscribe({
+              onComplete: (payload: Payload<any, any>) => {
+                const response: ResponseType = JSON.parse(payload.data);
+                response.length = payload.data.length;
+                resolve(response);
+              },
+              onError: (e) => {
+                reject(e);
+              },
+            });
+        });
+      },
+    };
     const client: Promise<Client> = this.addConnection(
-      socket,
+      clientConnection,
       {
         app,
         os,
@@ -316,10 +373,16 @@ class ServerController extends EventEmitter {
     socket.connectionStatus().subscribe({
       onNext(payload) {
         if (payload.kind == 'ERROR' || payload.kind == 'CLOSED') {
-          client.then((client) => {
-            console.log(`Device disconnected ${client.id}`, 'server', payload);
-            server.removeConnection(client.id);
-          });
+          client
+            .then((client) => {
+              console.log(
+                `Device disconnected ${client.id}`,
+                'server',
+                payload,
+              );
+              server.removeConnection(client.id);
+            })
+            .catch((_) => {});
         }
       },
       onSubscribe(subscription) {
@@ -335,9 +398,11 @@ class ServerController extends EventEmitter {
         if (resolvedClient) {
           resolvedClient.onMessage(payload.data);
         } else {
-          client.then((client) => {
-            client.onMessage(payload.data);
-          });
+          client
+            .then((client) => {
+              client.onMessage(payload.data);
+            })
+            .catch((_) => {});
         }
       },
     };
@@ -469,7 +534,7 @@ class ServerController extends EventEmitter {
               transformCertificateExchangeMediumToType(medium),
             )
             .catch((e) => {
-              console.error(e);
+              console.error('Unable to process CSR. Error:', e);
             });
         }
       },
@@ -495,7 +560,7 @@ class ServerController extends EventEmitter {
   }
 
   async addConnection(
-    conn: FlipperClientConnection<any, any>,
+    conn: ClientConnection,
     query: ClientQuery & {medium: CertificateExchangeMedium},
     csrQuery: ClientCsrQuery,
   ): Promise<Client> {
@@ -548,31 +613,34 @@ class ServerController extends EventEmitter {
         connection: conn,
       };
 
-      client.init().then(() => {
-        console.debug(
-          `Device client initialised: ${id}. Supported plugins: ${Array.from(
-            client.plugins,
-          ).join(', ')}`,
-          'server',
-        );
+      client
+        .init()
+        .then(() => {
+          console.debug(
+            `Device client initialised: ${id}. Supported plugins: ${Array.from(
+              client.plugins,
+            ).join(', ')}`,
+            'server',
+          );
 
-        /* If a device gets disconnected without being cleaned up properly,
-         * Flipper won't be aware until it attempts to reconnect.
-         * When it does we need to terminate the zombie connection.
-         */
-        if (this.connections.has(id)) {
-          const connectionInfo = this.connections.get(id);
-          connectionInfo &&
-            connectionInfo.connection &&
-            connectionInfo.connection.close();
-          this.removeConnection(id);
-        }
+          /* If a device gets disconnected without being cleaned up properly,
+           * Flipper won't be aware until it attempts to reconnect.
+           * When it does we need to terminate the zombie connection.
+           */
+          if (this.connections.has(id)) {
+            const connectionInfo = this.connections.get(id);
+            connectionInfo &&
+              connectionInfo.connection &&
+              connectionInfo.connection.close();
+            this.removeConnection(id);
+          }
 
-        this.connections.set(id, info);
-        this.emit('new-client', client);
-        this.emit('clients-change');
-        client.emit('plugins-change');
-      });
+          this.connections.set(id, info);
+          this.emit('new-client', client);
+          this.emit('clients-change');
+          client.emit('plugins-change');
+        })
+        .catch((_) => {});
 
       return client;
     });
@@ -650,7 +718,7 @@ async function findDeviceForConnection(
       const timeout = setTimeout(() => {
         unsubscribe();
         const error = `Timed out waiting for device ${serial} for client ${clientId}`;
-        console.error(error);
+        console.error('Unable to find device for connection. Error:', error);
         reject(error);
       }, 15000);
       unsubscribe = sideEffect(
