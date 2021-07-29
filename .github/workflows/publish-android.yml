@@ -40,7 +40,7 @@ jobs:
     - name: Build artifacts
       run: ./gradlew :sample:assembleDebug :sample:assembleRelease && ./gradlew :android:assembleRelease
     - name: Upload Archives
-      run: ./gradlew uploadArchives --no-parallel --no-daemon
+      run: ./gradlew publish --no-parallel --no-daemon
     - name: Release and close
       run: ./gradlew closeAndReleaseRepository
     - name: Clean secrets

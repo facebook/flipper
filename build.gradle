@@ -12,7 +12,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:4.2.1'
-        classpath 'com.vanniktech:gradle-maven-publish-plugin:0.16.0'
+        classpath 'com.vanniktech:gradle-maven-publish-plugin:0.17.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$KOTLIN_VERSION"
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:1.5.0"
     }
@@ -24,7 +24,7 @@ plugins {
 }
 
 ext.isSnapshot = { VERSION_NAME.endsWith('-SNAPSHOT') }
-ext.isRelease = { ['uploadArchives', 'bintrayUpload'].any { gradle.startParameter.taskNames.contains(it) } }
+ext.isRelease = { ['publish', 'publishToMavenLocal'].any { gradle.startParameter.taskNames.contains(it) } }
 
 subprojects {
     repositories {
