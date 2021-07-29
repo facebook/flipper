@@ -20,6 +20,14 @@ updates:
     interval: weekly
     time: '13:00'
   open-pull-requests-limit: 10
+  ignore:
+    - dependency-name: "eslint*"
+      update-types: ["version-update:semver-major"]
+    - dependency-name: "@babel/*"
+      update-types: ["version-update:semver-major"]
+    - dependency-name: "@typescript-eslint/*"
+      update-types: ["version-update:semver-major"]
+    - dependency-name: "@types/*"
 - package-ecosystem: npm
   directory: "/react-native/ReactNativeFlipperExample"
   schedule:
@@ -30,6 +38,8 @@ updates:
     - dependency-name: "eslint*"
       update-types: ["version-update:semver-major"]
     - dependency-name: "@babel/*"
+      update-types: ["version-update:semver-major"]
+    - dependency-name: "@typescript-eslint/*"
       update-types: ["version-update:semver-major"]
     - dependency-name: "@types/*"
 - package-ecosystem: npm
@@ -42,6 +52,8 @@ updates:
     - dependency-name: "eslint*"
       update-types: ["version-update:semver-major"]
     - dependency-name: "@babel/*"
+      update-types: ["version-update:semver-major"]
+    - dependency-name: "@typescript-eslint/*"
       update-types: ["version-update:semver-major"]
     - dependency-name: "@types/*"
 - package-ecosystem: gradle
