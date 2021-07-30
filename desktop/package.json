@@ -126,7 +126,7 @@
     "@types/yazl": "^2.4.2",
     "@typescript-eslint/eslint-plugin": "^4.28.5",
     "@typescript-eslint/parser": "^4.28.5",
-    "ansi-to-html": "^0.6.15",
+    "ansi-to-html": "^0.7.1",
     "app-builder-lib": "22.11.1",
     "babel-eslint": "^10.1.0",
     "chalk": "^4.1.1",
