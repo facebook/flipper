@@ -44,6 +44,7 @@ module.exports = {
     'react-hooks',
     'flipper',
     'promise',
+    'communist-spelling',
   ],
   rules: {
     // disable rules from eslint-config-fbjs
@@ -102,6 +103,7 @@ module.exports = {
     'flipper/no-relative-imports-across-packages': [2],
     'flipper/no-electron-remote-imports': [1],
     'flipper/no-console-error-without-context': [1],
+    'communist-spelling/communist-spelling': [1],
 
     // promise rules, see https://github.com/xjamundx/eslint-plugin-promise for details on each of them
     'promise/catch-or-return': 'warn',
