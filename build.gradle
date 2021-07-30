@@ -12,19 +12,19 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:4.2.1'
-        classpath 'com.vanniktech:gradle-maven-publish-plugin:0.16.0'
+        classpath 'com.vanniktech:gradle-maven-publish-plugin:0.17.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$KOTLIN_VERSION"
-        classpath "org.jetbrains.dokka:dokka-gradle-plugin:1.4.32"
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:1.5.0"
     }
 }
 
 plugins {
-    id 'de.undercouch.download' version '4.1.1'
+    id 'de.undercouch.download' version '4.1.2'
     id 'com.github.ben-manes.versions' version '0.39.0'
 }
 
 ext.isSnapshot = { VERSION_NAME.endsWith('-SNAPSHOT') }
-ext.isRelease = { ['uploadArchives', 'bintrayUpload'].any { gradle.startParameter.taskNames.contains(it) } }
+ext.isRelease = { ['publish', 'publishToMavenLocal'].any { gradle.startParameter.taskNames.contains(it) } }
 
 subprojects {
     repositories {
@@ -46,12 +46,10 @@ subprojects {
 
 ext {
     minSdkVersion = 15
-    targetSdkVersion = 29
-    compileSdkVersion = 29
+    targetSdkVersion = 30
+    compileSdkVersion = 30
     buildToolsVersion = '30.0.2'
     ndkVersion = '21.3.6528147'
-    sourceCompatibilityVersion = JavaVersion.VERSION_1_7
-    targetCompatibilityVersion = JavaVersion.VERSION_1_7
 }
 
 ext.deps = [
@@ -62,8 +60,8 @@ ext.deps = [
         supportRecyclerView: "androidx.recyclerview:recyclerview:$ANDROIDX_VERSION",
         supportConstraintLayout: "androidx.constraintlayout:constraintlayout:2.0.4",
         supportSqlite      : "androidx.sqlite:sqlite-framework:2.1.0",
-        supportEspresso    : 'androidx.test.espresso:espresso-core:3.3.0',
-        supportEspressoIntents : 'androidx.test.espresso:espresso-intents:3.3.0',
+        supportEspresso    : 'androidx.test.espresso:espresso-core:3.4.0',
+        supportEspressoIntents : 'androidx.test.espresso:espresso-intents:3.4.0',
         supportTestRunner  : 'androidx.test:runner:1.3.0',
         // Arch
         archPaging         : 'android.arch.paging:runtime:1.0.1',
@@ -72,7 +70,6 @@ ext.deps = [
         fbjni              : 'com.facebook.fbjni:fbjni:0.2.2',
         screenshot         : 'com.facebook.testing.screenshot:core:0.14.0',
         boltsTasks         : 'com.parse.bolts:bolts-tasks:1.4.0',
-        boltsApplinks      : 'com.parse.bolts:bolts-applinks:1.4.0',
         // Annotations
         jsr305             : 'com.google.code.findbugs:jsr305:3.0.2',
         inferAnnotations   : 'com.facebook.infer.annotation:infer-annotation:0.18.0',
@@ -96,13 +93,13 @@ ext.deps = [
         robolectric        : 'org.robolectric:robolectric:4.5.1',
         junit              : 'junit:junit:4.13.2',
         hamcrest           : 'org.hamcrest:hamcrest-library:2.2',
-        mockito            : 'org.mockito:mockito-core:3.11.1',
+        mockito            : 'org.mockito:mockito-core:3.11.2',
         okhttp3            : 'com.squareup.okhttp3:okhttp:4.9.1',
         leakcanary         : 'com.squareup.leakcanary:leakcanary-android:1.6.3',
         leakcanary2        : 'com.squareup.leakcanary:leakcanary-android:2.6',
         protobuf           : 'com.google.protobuf:protobuf-java:3.17.3',
-        testCore           : 'androidx.test:core:1.3.0',
-        testRules          : 'androidx.test:rules:1.3.0',
+        testCore           : 'androidx.test:core:1.4.0',
+        testRules          : 'androidx.test:rules:1.4.0',
         // Plugin dependencies
         frescoFlipper      : 'com.facebook.fresco:flipper:2.5.0',
         frescoStetho       : 'com.facebook.fresco:stetho:2.5.0',

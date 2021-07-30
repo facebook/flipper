@@ -7,10 +7,10 @@
  * @format
  */
 
-import {colors, FlexCenter, styled} from 'flipper';
 import {NavigationInfoBox} from './';
 import {Bookmark, NavigationEvent, URI} from '../types';
 import React, {useRef} from 'react';
+import {theme, Layout, styled} from 'flipper-plugin';
 
 type Props = {
   bookmarks: Map<string, Bookmark>;
@@ -21,26 +21,10 @@ type Props = {
 
 const TimelineLine = styled.div({
   width: 2,
-  backgroundColor: colors.highlight,
+  backgroundColor: theme.textColorActive,
   position: 'absolute',
   top: 38,
   bottom: 0,
-});
-
-const TimelineContainer = styled.div({
-  position: 'relative',
-  paddingLeft: 25,
-  overflowY: 'scroll',
-  flexGrow: 1,
-  backgroundColor: colors.light02,
-  scrollBehavior: 'smooth',
-  '&>div': {
-    position: 'relative',
-    minHeight: '100%',
-    '&:last-child': {
-      paddingBottom: 25,
-    },
-  },
 });
 
 const NavigationEventContainer = styled.div({
@@ -50,21 +34,23 @@ const NavigationEventContainer = styled.div({
   marginRight: 25,
 });
 
-const NoData = styled(FlexCenter)({
-  height: '100%',
-  fontSize: 18,
-  backgroundColor: colors.macOSTitleBarBackgroundBlur,
-  color: colors.macOSTitleBarIcon,
-});
-
-export default (props: Props) => {
+export function Timeline(props: Props) {
   const {bookmarks, events, onNavigate, onFavorite} = props;
   const timelineRef = useRef<HTMLDivElement>(null);
   return events.length === 0 ? (
-    <NoData>No Navigation Events to Show</NoData>
+    <Layout.Container
+      center
+      grow
+      style={{
+        fontSize: 18,
+        backgroundColor: theme.backgroundWash,
+        color: theme.textColorSecondary,
+      }}>
+      No Navigation Events to Show
+    </Layout.Container>
   ) : (
-    <TimelineContainer ref={timelineRef}>
-      <div>
+    <Layout.ScrollContainer ref={timelineRef}>
+      <Layout.Container grow style={{paddingBottom: 25, paddingLeft: 25}}>
         <TimelineLine />
         {events.map((event: NavigationEvent, idx: number) => {
           return (
@@ -88,7 +74,7 @@ export default (props: Props) => {
             </NavigationEventContainer>
           );
         })}
-      </div>
-    </TimelineContainer>
+      </Layout.Container>
+    </Layout.ScrollContainer>
   );
-};
+}

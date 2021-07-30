@@ -10,16 +10,13 @@
 import {Store} from '../reducers/index';
 import {Logger} from '../fb-interfaces/Logger';
 import {PluginNotification} from '../reducers/notifications';
-import {PluginDefinition} from '../plugin';
 import {ipcRenderer, IpcRendererEvent} from 'electron';
 import {
-  setActiveNotifications,
   updatePluginBlocklist,
   updateCategoryBlocklist,
 } from '../reducers/notifications';
-import {textContent} from '../utils/index';
-import {deconstructPluginKey} from '../utils/clientUtils';
-import {getPluginTitle, isSandyPlugin} from '../utils/pluginUtils';
+import {textContent} from 'flipper-plugin';
+import {getPluginTitle} from '../utils/pluginUtils';
 import {sideEffect} from '../utils/sideEffect';
 import {openNotification} from '../sandy-chrome/notification/Notification';
 
@@ -28,7 +25,6 @@ const NOTIFICATION_THROTTLE = 5 * 1000; // in milliseconds
 
 export default (store: Store, logger: Logger) => {
   const knownNotifications: Set<string> = new Set();
-  const knownPluginStates: Map<string, Object> = new Map();
   const lastNotificationTime: Map<string, number> = new Map();
 
   ipcRenderer.on(
@@ -78,55 +74,15 @@ export default (store: Store, logger: Logger) => {
   sideEffect(
     store,
     {name: 'notifications', throttleMs: 500},
-    ({notifications, pluginStates, plugins}) => ({
+    ({notifications, plugins}) => ({
       notifications,
-      pluginStates,
       devicePlugins: plugins.devicePlugins,
       clientPlugins: plugins.clientPlugins,
     }),
-    ({notifications, pluginStates, devicePlugins, clientPlugins}, store) => {
+    ({notifications, devicePlugins, clientPlugins}, store) => {
       function getPlugin(name: string) {
         return devicePlugins.get(name) ?? clientPlugins.get(name);
       }
-
-      Object.keys(pluginStates).forEach((key) => {
-        if (knownPluginStates.get(key) !== pluginStates[key]) {
-          knownPluginStates.set(key, pluginStates[key]);
-          const plugin = deconstructPluginKey(key);
-          const pluginName = plugin.pluginName;
-          const client = plugin.client;
-
-          if (!pluginName) {
-            return;
-          }
-
-          const persistingPlugin: undefined | PluginDefinition =
-            getPlugin(pluginName);
-          if (
-            persistingPlugin &&
-            !isSandyPlugin(persistingPlugin) &&
-            persistingPlugin.getActiveNotifications
-          ) {
-            try {
-              const notifications = persistingPlugin.getActiveNotifications(
-                pluginStates[key],
-              );
-              store.dispatch(
-                setActiveNotifications({
-                  notifications,
-                  client,
-                  pluginId: pluginName,
-                }),
-              );
-            } catch (e) {
-              console.error(
-                'Failed to compute notifications for plugin ' + pluginName,
-                e,
-              );
-            }
-          }
-        }
-      });
 
       const {activeNotifications, blocklistedPlugins, blocklistedCategories} =
         notifications;

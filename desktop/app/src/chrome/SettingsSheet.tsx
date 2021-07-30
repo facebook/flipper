@@ -246,7 +246,7 @@ class SettingsSheet extends Component<Props, State> {
           }}
         />
         <ToggledSection
-          label="Enable dark theme (experimental)"
+          label="Enable dark theme"
           toggled={darkMode}
           onChange={(enabled) => {
             this.setState((prevState) => ({

@@ -22,7 +22,7 @@ import React from 'react';
 import styled from '@emotion/styled';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import {VariableSizeList as List} from 'react-window';
-import {clipboard, MenuItemConstructorOptions} from 'electron';
+import {MenuItemConstructorOptions} from 'electron';
 import TableHead from './TableHead';
 import TableRow from './TableRow';
 import ContextMenu from '../ContextMenu';
@@ -31,8 +31,8 @@ import createPaste from '../../../fb-stubs/createPaste';
 import debounceRender from 'react-debounce-render';
 import {debounce} from 'lodash';
 import {DEFAULT_ROW_HEIGHT} from './types';
-import textContent from '../../../utils/textContent';
 import {notNull} from '../../../utils/typeUtils';
+import {getFlipperLib, textContent} from 'flipper-plugin';
 
 const EMPTY_OBJECT = {};
 Object.freeze(EMPTY_OBJECT);
@@ -319,7 +319,7 @@ export class ManagedTable extends React.Component<
   };
 
   onCopy = (withHeader: boolean) => {
-    clipboard.writeText(
+    getFlipperLib().writeTextToClipboard(
       [
         ...(withHeader ? [this.getHeaderText()] : []),
         this.getSelectedText(),
@@ -520,7 +520,7 @@ export class ManagedTable extends React.Component<
 
   onCopyCell = (rowId: string, index: number) => {
     const cellText = this.getTextContentOfRow(rowId)[index];
-    clipboard.writeText(cellText);
+    getFlipperLib().writeTextToClipboard(cellText);
   };
 
   buildContextMenuItems: () => Array<MenuItemConstructorOptions> = () => {

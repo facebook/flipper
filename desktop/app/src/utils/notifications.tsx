@@ -9,7 +9,7 @@
 
 import {notification, Typography} from 'antd';
 import React from 'react';
-import {ConsoleLogs} from '../chrome/ConsoleLogs';
+import {FlipperDevTools} from '../chrome/FlipperDevTools';
 import {setStaticView} from '../reducers/connections';
 import {getStore} from '../store';
 import {Layout} from '../ui';
@@ -29,7 +29,7 @@ export function showErrorNotification(message: string, description?: string) {
           See{' '}
           <Link
             onClick={() => {
-              getStore().dispatch(setStaticView(ConsoleLogs));
+              getStore().dispatch(setStaticView(FlipperDevTools));
               notification.close(key);
             }}>
             logs

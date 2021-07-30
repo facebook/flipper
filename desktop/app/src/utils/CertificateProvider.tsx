@@ -9,7 +9,7 @@
 
 import {Logger} from '../fb-interfaces/Logger';
 import {internGraphPOSTAPIRequest} from '../fb-stubs/user';
-import Server from '../server';
+import ServerController from '../comms/ServerController';
 import {promisify} from 'util';
 import fs from 'fs';
 import fsExtra from 'fs-extra';
@@ -87,9 +87,9 @@ export default class CertificateProvider {
   adb: Promise<ADBClient>;
   certificateSetup: Promise<void>;
   store: Store;
-  server: Server;
+  server: ServerController;
 
-  constructor(server: Server, logger: Logger, store: Store) {
+  constructor(server: ServerController, logger: Logger, store: Store) {
     this.logger = logger;
     this.adb = getAdbClient(store);
     this.certificateSetup = reportPlatformFailures(

@@ -12,10 +12,10 @@ import Client from '../../Client';
 import {TableBodyRow} from '../../ui/components/table/types';
 import React, {Component, Fragment} from 'react';
 import {connect} from 'react-redux';
-import {Text, ManagedTable, styled, colors, Link, Bordered} from '../../ui';
+import {Text, ManagedTable, styled, colors} from '../../ui';
 import StatusIndicator from '../../ui/components/StatusIndicator';
 import {State as Store} from '../../reducers';
-import {DevicePluginDefinition, ClientPluginDefinition} from '../../plugin';
+import {PluginDefinition} from '../../plugin';
 
 const InfoText = styled(Text)({
   lineHeight: '130%',
@@ -28,9 +28,9 @@ const Ellipsis = styled(Text)({
   whiteSpace: 'nowrap',
 });
 
-const TableContainer = styled(Bordered)({
+const TableContainer = styled.div({
   marginTop: 10,
-  height: 400,
+  height: 480,
 });
 
 const Lamp = (props: {on: boolean}) => (
@@ -43,8 +43,8 @@ type StateFromProps = {
   failedPlugins: Array<[PluginDetails, string]>;
   clients: Array<Client>;
   selectedDevice: string | null | undefined;
-  devicePlugins: DevicePluginDefinition[];
-  clientPlugins: ClientPluginDefinition[];
+  devicePlugins: PluginDefinition[];
+  clientPlugins: PluginDefinition[];
 };
 
 type DispatchFromProps = {};
@@ -128,7 +128,7 @@ class PluginDebugger extends Component<Props> {
   getSupportedClients(id: string): string {
     return this.props.clients
       .reduce((acc: Array<string>, cv: Client) => {
-        if (cv.plugins.includes(id)) {
+        if (cv.plugins.has(id)) {
           acc.push(cv.query.app);
         }
         return acc;
@@ -210,73 +210,19 @@ class PluginDebugger extends Component<Props> {
   }
 
   render() {
-    let content = null;
-
-    if (!this.props.selectedDevice) {
-      content = (
-        <InfoText>
-          We can't find any device connected to your computer. Is an
-          emulator/simulator currently running on your system, or is there a
-          development device connected via USB? There are some devices/emulators
-          known to have problems connecting to Flipper. Check out the{' '}
-          <Link href="https://fbflipper.com/docs/troubleshooting#known-incompatibilities">
-            known incompatibilities
-          </Link>
-          .
-        </InfoText>
-      );
-    } else if (
-      !this.props.clients.some(
-        (client: Client) =>
-          client.query.device_id === this.props.selectedDevice,
-      )
-    ) {
-      // no clients for selected device
-      content = (
-        <Fragment>
-          <InfoText>
-            While Flipper was able to connect to your device, it wasn't able to
-            connect to the app you are running on your device. For this reason,
-            app-specific plugins will not show up.
-          </InfoText>
-          {this.props.clients.length > 0 && (
-            // we have clients, but not for this device
-            <InfoText>
-              Make sure you selected the correct device from the dropdown button
-              in the upper left corner. Only plugins for the selected device are
-              shown in the sidebar.
-            </InfoText>
-          )}
-          <InfoText>
-            To debug why Flipper couldn't establish a connection to the app,
-            check out our documentation about{' '}
-            <Link href="https://fbflipper.com/docs/troubleshooting#connection-issues">
-              connection issues
-            </Link>
-            .
-          </InfoText>
-        </Fragment>
-      );
-    } else {
-      content = (
-        <Fragment>
-          <InfoText>
-            The table lists all plugins known to Flipper. Some of them might be
-            blocked by GKs, others may not show up, because none of the
-            connected apps are supporting it.
-          </InfoText>
-          <TableContainer>
-            <ManagedTable
-              columns={COLUMNS}
-              rows={this.getRows()}
-              highlightableRows={false}
-              columnSizes={COLUMNS_SIZES}
-            />
-          </TableContainer>
-        </Fragment>
-      );
-    }
-    return content;
+    return (
+      <Fragment>
+        <InfoText>The table lists all plugins known to Flipper.</InfoText>
+        <TableContainer>
+          <ManagedTable
+            columns={COLUMNS}
+            rows={this.getRows()}
+            highlightableRows={false}
+            columnSizes={COLUMNS_SIZES}
+          />
+        </TableContainer>
+      </Fragment>
+    );
   }
 }
 

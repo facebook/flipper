@@ -21,7 +21,7 @@ jobs:
         run: ./scripts/update-pod-versions.sh ./ ./Flipper.podspec
 
       - name: Push Flipper
-        run: pod trunk push Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
+        run: ./scripts/publish-flipper-pods.sh ./ Flipper
         env:
           COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
 
@@ -41,9 +41,7 @@ jobs:
         run: ./scripts/update-pod-versions.sh ./ ./FlipperKit.podspec
 
       - name: Push FlipperKit
-        run: |
-          # Retry publishing FlipperKit 20 times. Putting this hack unless we have cocoapods 1.10. More information related to the bug https://github.com/CocoaPods/CocoaPods/issues/9502#issuecomment-579486258
-          for i in {1..20}; do pod trunk push FlipperKit.podspec --use-libraries --allow-warnings --verbose --skip-import-validation --synchronous && break || sleep 30; done
+        run: ./scripts/publish-flipper-pods.sh ./ FlipperKit
         env:
           COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
 

@@ -8,8 +8,8 @@
  */
 
 import React from 'react';
-import {shell} from 'electron';
 import {styled, colors, FlexRow, Text, GK} from 'flipper';
+import {Typography} from 'antd';
 
 const BannerContainer = styled(FlexRow)({
   height: '30px',
@@ -34,14 +34,6 @@ const BannerLink = styled(CustomLink)({
   },
 });
 
-const StyledLink = styled.span({
-  '&:hover': {
-    cursor: 'pointer',
-  },
-});
-
-StyledLink.displayName = 'CustomLink:StyledLink';
-
 function CustomLink(props: {
   href: string;
   className?: string;
@@ -49,12 +41,12 @@ function CustomLink(props: {
   style?: React.CSSProperties;
 }) {
   return (
-    <StyledLink
+    <Typography.Link
       className={props.className}
-      onClick={() => shell.openExternal(props.href)}
+      href={props.href}
       style={props.style}>
       {props.children || props.href}
-    </StyledLink>
+    </Typography.Link>
   );
 }
 

@@ -26,10 +26,10 @@ repositories {
 }
 
 dependencies {
-  debugImplementation 'com.facebook.flipper:flipper:0.95.0'
+  debugImplementation 'com.facebook.flipper:flipper:0.100.0'
   debugImplementation 'com.facebook.soloader:soloader:0.10.1'
 
-  releaseImplementation 'com.facebook.flipper:flipper-noop:0.95.0'
+  releaseImplementation 'com.facebook.flipper:flipper-noop:0.100.0'
 }
 ```
 
@@ -101,16 +101,16 @@ repositories {
 }
 
 dependencies {
-  debugImplementation 'com.facebook.flipper:flipper:0.95.1-SNAPSHOT'
+  debugImplementation 'com.facebook.flipper:flipper:0.100.1-SNAPSHOT'
   debugImplementation 'com.facebook.soloader:soloader:0.10.1'
 
-  releaseImplementation 'com.facebook.flipper:flipper-noop:0.95.1-SNAPSHOT'
+  releaseImplementation 'com.facebook.flipper:flipper-noop:0.100.1-SNAPSHOT'
 }
 ```
 
 ## Enabling plugins
 
-Finally, you need to add plugins to your Flipper client. Above, we have only added the Layout Inspector plugin to get you started. See <Link to={useBaseUrl("/docs/setup/network-plugin")}>Network Plugin</Link> and <Link to={useBaseUrl("/docs/setup/layout-plugin")}>Layout Inspector Plugin</Link> for information on how to add them, and also enable Litho or ComponentKit support. You can check the sample apps in the [GitHub repo](https://github.com/facebook/flipper) for examples of integrating other plugins.
+Finally, you need to add plugins to your Flipper client. Above, we have only added the Layout Inspector plugin to get you started. See <Link to={useBaseUrl("/docs/setup/plugins/network")}>Network Plugin</Link> and <Link to={useBaseUrl("/docs/setup/layout-plugin")}>Layout Inspector Plugin</Link> for information on how to add them, and also enable Litho or ComponentKit support. You can check the sample apps in the [GitHub repo](https://github.com/facebook/flipper) for examples of integrating other plugins.
 
 ## Having trouble?
 

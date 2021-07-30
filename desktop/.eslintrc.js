@@ -44,6 +44,7 @@ module.exports = {
     'react-hooks',
     'flipper',
     'promise',
+    'communist-spelling',
   ],
   rules: {
     // disable rules from eslint-config-fbjs
@@ -86,6 +87,11 @@ module.exports = {
         message:
           "Direct imports from 'flipper' are deprecated. Import from 'flipper-plugin' instead, which can be tested and distributed stand-alone. See https://fbflipper.com/docs/extending/sandy-migration for more details.",
       },
+      {
+        name: 'electron',
+        message:
+          "Direct imports from 'electron' are deprecated. Most functions can be found in getFlipperLib() from flipper-plugin package instead.",
+      },
     ],
 
     // additional rules for this project
@@ -97,6 +103,7 @@ module.exports = {
     'flipper/no-relative-imports-across-packages': [2],
     'flipper/no-electron-remote-imports': [1],
     'flipper/no-console-error-without-context': [1],
+    'communist-spelling/communist-spelling': [1],
 
     // promise rules, see https://github.com/xjamundx/eslint-plugin-promise for details on each of them
     'promise/catch-or-return': 'warn',

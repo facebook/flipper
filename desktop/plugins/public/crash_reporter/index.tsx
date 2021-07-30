@@ -18,14 +18,14 @@ export type Crash = {
   callstack?: string;
   reason: string;
   name: string;
-  date: Date;
+  date: number;
 };
 
 export type CrashLog = {
   callstack: string;
   reason: string;
   name: string;
-  date?: Date | null;
+  date?: number;
 };
 
 export function devicePlugin(client: DevicePluginClient) {
@@ -39,7 +39,7 @@ export function devicePlugin(client: DevicePluginClient) {
     selectedCrash.set(crashId as string);
   });
 
-  function reportCrash(payload: CrashLog | Crash) {
+  function reportCrash(payload: CrashLog) {
     notificationID++;
 
     const crash = {
@@ -47,7 +47,7 @@ export function devicePlugin(client: DevicePluginClient) {
       callstack: payload.callstack,
       name: payload.name,
       reason: payload.reason,
-      date: payload.date || new Date(),
+      date: payload.date ?? Date.now(),
     };
 
     crashes.update((draft) => {

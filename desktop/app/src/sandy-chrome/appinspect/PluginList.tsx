@@ -39,6 +39,8 @@ import {
 import {BundledPluginDetails} from 'flipper-plugin-lib';
 import {reportUsage} from '../../utils/metrics';
 import ConnectivityStatus from './fb-stubs/ConnectivityStatus';
+import {useSelector} from 'react-redux';
+import {getPluginLists} from '../../selectors/connections';
 
 const {SubMenu} = Menu;
 const {Text} = Typography;
@@ -55,7 +57,7 @@ export const PluginList = memo(function PluginList({
   const dispatch = useDispatch();
   const connections = useStore((state) => state.connections);
   const plugins = useStore((state) => state.plugins);
-  const pluginLists = useStore((state) => state.pluginLists);
+  const pluginLists = useSelector(getPluginLists);
   const downloads = useStore((state) => state.pluginDownloads);
   const isConnected = useValue(activeDevice?.connected, false);
   const metroConnected = useValue(metroDevice?.connected, false);
@@ -249,6 +251,7 @@ export const PluginList = memo(function PluginList({
                   plugin={plugin.details}
                   scrollTo={plugin.id === connections.selectedPlugin}
                   tooltip={getPluginTooltip(plugin.details)}
+                  onClick={handleAppPluginClick}
                   actions={
                     <>
                       <ActionButton
@@ -285,6 +288,7 @@ export const PluginList = memo(function PluginList({
                 plugin={plugin}
                 scrollTo={plugin.id === connections.selectedPlugin}
                 tooltip={getPluginTooltip(plugin)}
+                onClick={handleAppPluginClick}
                 actions={
                   <ActionButton
                     id={plugin.id}
@@ -315,6 +319,7 @@ export const PluginList = memo(function PluginList({
                   tooltip={`${getPluginTitle(plugin)} (${plugin.id}@${
                     plugin.version
                   }): ${reason}`}
+                  onClick={handleAppPluginClick}
                   disabled
                   actions={<InfoIcon>{reason}</InfoIcon>}
                 />
@@ -396,7 +401,7 @@ const PluginEntry = function PluginEntry({
       <Menu.Item
         {...rest}
         key={plugin.id}
-        disabled={disabled}
+        style={{cursor: 'pointer'}}
         onClick={handleClick}>
         <Layout.Horizontal
           center

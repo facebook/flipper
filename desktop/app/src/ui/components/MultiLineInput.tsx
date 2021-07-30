@@ -8,20 +8,21 @@
  */
 
 import styled from '@emotion/styled';
-import {colors} from './colors';
+import {theme} from 'flipper-plugin';
 
 export const multilineStyle = (props: {valid: boolean}) => ({
-  border: `1px solid ${props.valid === false ? colors.red : colors.light15}`,
+  border: `1px solid ${
+    props.valid === false ? theme.errorColor : theme.dividerColor
+  }`,
   borderRadius: 4,
   font: 'inherit',
   fontSize: '1em',
   height: '28px',
   lineHeight: '28px',
   marginRight: 5,
-
+  backgroundColor: theme.backgroundDefault,
   '&:disabled': {
-    backgroundColor: '#ddd',
-    borderColor: '#ccc',
+    backgroundColor: theme.backgroundWash,
     cursor: 'not-allowed',
   },
 });

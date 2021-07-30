@@ -9,6 +9,7 @@
 
 import {FlexColumn, styled, FlexRow, Text, Glyph, colors} from '../../ui';
 import React, {useRef, useState, useEffect} from 'react';
+import {theme} from 'flipper-plugin';
 
 type PressedKeys = {
   metaKey: boolean;
@@ -62,7 +63,7 @@ const ShortcutKeysContainer = styled(FlexRow)<{invalid: boolean}>(
 
 const ShortcutKeyContainer = styled.div({
   border: `1px solid ${colors.light20}`,
-  backgroundColor: colors.light05,
+  backgroundColor: theme.backgroundWash,
   padding: 3,
   margin: '0 1px',
   borderRadius: 3,

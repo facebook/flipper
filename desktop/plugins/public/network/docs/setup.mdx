@@ -1,0 +1,101 @@
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import ProtobufRetrofitSetup from './protobuf-retrofit.mdx';
+
+To use the network plugin, you need to add the plugin to your Flipper client instance.
+
+## Android
+
+The network plugin is shipped as a separate Maven artifact:
+
+```groovy
+dependencies {
+  debugImplementation 'com.facebook.flipper:flipper-network-plugin:0.100.0'
+}
+```
+
+Once added to your dependencies, you can instantiate the plugin and add it to
+the client:
+
+```java
+import com.facebook.flipper.plugins.network.NetworkFlipperPlugin;
+
+NetworkFlipperPlugin networkFlipperPlugin = new NetworkFlipperPlugin();
+new NetworkingModule.CustomClientBuilder() {
+    @Override
+    public void apply(OkHttpClient.Builder builder) {
+        builder.addNetworkInterceptor(new FlipperOkhttpInterceptor(networkFlipperPlugin));
+    }
+});
+client.addPlugin(networkFlipperPlugin);
+```
+
+### OkHttp Integration
+
+If you are using the popular OkHttp library, you can use the Interceptors system to automatically hook into your existing stack.
+
+```java
+import com.facebook.flipper.plugins.network.FlipperOkhttpInterceptor;
+
+new OkHttpClient.Builder()
+    .addNetworkInterceptor(new FlipperOkhttpInterceptor(networkFlipperPlugin))
+    .build();
+```
+
+As interceptors can modify the request and response, add the Flipper interceptor after all others to get an accurate view of the network traffic.
+
+### Protobuf / Retrofit Integration
+
+If you are using Retrofit with Protobuf request or response types, you can setup automatic decoding so that the network inspector can display a human readable payload. First you must add the separate dependency:
+
+```groovy
+dependencies {
+  debugImplementation 'com.facebook.flipper:flipper-retrofit2-protobuf-plugin:0.93.0'
+}
+```
+
+Then call `SendProtobufToFlipperFromRetrofit` for each service class.
+
+```kotlin
+import com.facebook.flipper.plugins.retrofit2protobuf.SendProtobufToFlipperFromRetrofit
+
+SendProtobufToFlipperFromRetrofit("https://baseurl.com/", MyApiService::class.java)
+```
+
+
+## iOS
+
+To enable network inspection, add the following pod to your Podfile:
+
+```ruby
+pod 'FlipperKit/SKIOSNetworkPlugin', '~>' + flipperkit_version
+```
+
+Initialise the plugin in the following way by updating AppDelegate.m:
+
+<Tabs defaultValue="objc" values={[{ label: 'ObjC', value: 'objc'}, { label: 'Swift', value: 'swift'}]}>
+<TabItem value="objc">
+
+```objc
+#import <FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h>
+
+[[FlipperClient sharedClient] addPlugin: [[FlipperKitNetworkPlugin alloc] initWithNetworkAdapter:[SKIOSNetworkAdapter new]]];
+
+```
+
+</TabItem>
+<TabItem value="swift">
+
+```swift
+import FlipperKit
+
+client?.add(FlipperKitNetworkPlugin(networkAdapter: SKIOSNetworkAdapter()))
+
+```
+
+</TabItem>
+</Tabs>
+
+## Protobut + Retrofit Setup
+
+<ProtobufRetrofitSetup />

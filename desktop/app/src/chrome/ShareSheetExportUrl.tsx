@@ -27,7 +27,6 @@ import {
   EXPORT_FLIPPER_TRACE_EVENT,
   displayFetchMetadataErrors,
 } from '../utils/exportData';
-import {clipboard} from 'electron';
 import ShareSheetErrorList from './ShareSheetErrorList';
 import {reportPlatformFailures} from '../utils/metrics';
 import CancellableExportStatus from './CancellableExportStatus';
@@ -36,6 +35,7 @@ import ShareSheetPendingDialog from './ShareSheetPendingDialog';
 import {getInstance as getLogger} from '../fb-stubs/Logger';
 import {resetSupportFormV2State} from '../reducers/supportForm';
 import {MiddlewareAPI} from '../reducers/index';
+import {getFlipperLib} from 'flipper-plugin';
 
 export const SHARE_FLIPPER_TRACE_EVENT = 'share-flipper-link';
 
@@ -148,7 +148,7 @@ export default class ShareSheetExportUrl extends Component<Props, State> {
       if (flipperUrl) {
         this.store.dispatch(setExportURL(flipperUrl));
         if (this.state.runInBackground) {
-          clipboard.writeText(String(flipperUrl));
+          getFlipperLib().writeTextToClipboard(String(flipperUrl));
           new Notification('Shareable Flipper Export created', {
             body: 'URL copied to clipboard',
             requireInteraction: true,

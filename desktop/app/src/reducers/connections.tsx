@@ -78,9 +78,7 @@ type StateV2 = {
   }>;
   deepLinkPayload: unknown;
   staticView: StaticView;
-  activeClient: Client | null;
-  activeDevice: BaseDevice | null;
-  metroDevice: MetroDevice | null;
+  selectedAppPluginListRevision: number;
 };
 
 type StateV1 = Omit<StateV2, 'enabledPlugins' | 'enabledDevicePlugins'> & {
@@ -179,6 +177,9 @@ export type Action =
       type: 'SELECT_CLIENT';
       payload: string | null;
     }
+  | {
+      type: 'APP_PLUGIN_LIST_CHANGED';
+    }
   | RegisterPluginAction;
 
 const DEFAULT_PLUGIN = 'DeviceLogs';
@@ -204,9 +205,7 @@ const INITAL_STATE: State = {
   uninitializedClients: [],
   deepLinkPayload: null,
   staticView: WelcomeScreenStaticView,
-  activeClient: null,
-  activeDevice: null,
-  metroDevice: null,
+  selectedAppPluginListRevision: 0,
 };
 
 export default (state: State = INITAL_STATE, action: Actions): State => {
@@ -469,6 +468,11 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
         draft.enabledDevicePlugins.delete(pluginId);
       });
     }
+    case 'APP_PLUGIN_LIST_CHANGED': {
+      return produce(state, (draft) => {
+        draft.selectedAppPluginListRevision++;
+      });
+    }
     default:
       return state;
   }
@@ -544,6 +548,10 @@ export const setPluginDisabled = (pluginId: string, appId: string): Action => ({
   },
 });
 
+export const appPluginListChanged = (): Action => ({
+  type: 'APP_PLUGIN_LIST_CHANGED',
+});
+
 export function getAvailableClients(
   device: null | undefined | BaseDevice,
   clients: Client[],
@@ -568,10 +576,10 @@ function getBestAvailableClient(
   device: BaseDevice | null | undefined,
   clients: Client[],
   preferredClient: string | null,
-): Client | undefined {
+): Client | null {
   const availableClients = getAvailableClients(device, clients);
   if (availableClients.length === 0) {
-    return undefined;
+    return null;
   }
   return (
     getClientById(availableClients, preferredClient) ||
@@ -625,44 +633,22 @@ function updateSelection(state: Readonly<State>): State {
   }
 
   // Select client based on device
-  updates.activeClient = getBestAvailableClient(
+  const client = getBestAvailableClient(
     device,
     state.clients,
     state.selectedApp || state.userPreferredApp,
   );
-  updates.selectedApp = updates.activeClient ? updates.activeClient.id : null;
-
-  updates.metroDevice =
-    (state.devices?.find(
-      (device) => device.os === 'Metro' && !device.isArchived,
-    ) as MetroDevice) ?? null;
-
-  updates.activeClient =
-    state.clients.find(
-      (c) => c.id === (updates.selectedApp || state.userPreferredApp),
-    ) ?? null;
-
-  // if the selected device is Metro, we want to keep the owner of the selected App as active device if possible
-  updates.activeDevice = findBestDevice(
-    state,
-    updates.activeClient,
-    updates.metroDevice,
-  );
-
-  const availablePlugins: string[] = [
-    ...(device?.devicePlugins || []),
-    ...(updates.activeClient?.plugins || []),
-  ];
+  updates.selectedApp = client ? client.id : null;
 
   if (
     // Try the preferred plugin first
     state.userPreferredPlugin &&
-    availablePlugins.includes(state.userPreferredPlugin)
+    state.userPreferredPlugin !== state.selectedPlugin
   ) {
     updates.selectedPlugin = state.userPreferredPlugin;
   } else if (
-    !state.selectedPlugin ||
-    !availablePlugins.includes(state.selectedPlugin)
+    !state.selectedPlugin &&
+    state.enabledDevicePlugins.has(DEFAULT_PLUGIN)
   ) {
     // currently selected plugin is not available in this state,
     // fall back to the default
@@ -670,31 +656,6 @@ function updateSelection(state: Readonly<State>): State {
   }
 
   return {...state, ...updates};
-}
-
-export function findBestDevice(
-  state: State,
-  client: Client | null,
-  metroDevice: BaseDevice | null,
-): BaseDevice | null {
-  // if not Metro device, use the selected device as metro device
-  const selected = state.selectedDevice ?? null;
-  if (selected !== metroDevice) {
-    return selected;
-  }
-  // if there is an active app, use device owning the app
-  if (client) {
-    return client.deviceSync;
-  }
-  // if no active app, use the preferred device
-  if (state.userPreferredDevice) {
-    return (
-      state.devices.find(
-        (device) => device.title === state.userPreferredDevice,
-      ) ?? selected
-    );
-  }
-  return selected;
 }
 
 export function getSelectedPluginKey(state: State): string | undefined {

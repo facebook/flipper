@@ -144,7 +144,14 @@ const siteConfig = {
       },
     }),
     prism: {
-      additionalLanguages: ['groovy', 'java', 'kotlin', 'ruby', 'swift', 'objectivec'],
+      additionalLanguages: [
+        'groovy',
+        'java',
+        'kotlin',
+        'ruby',
+        'swift',
+        'objectivec',
+      ],
     },
   },
   favicon: 'img/icon.png',
@@ -163,16 +170,30 @@ const siteConfig = {
         docs: {
           path: '../docs',
           sidebarPath: require.resolve('./sidebars.js'),
-          editUrl: 'https://github.com/facebook/flipper/blob/master/website',
+          editUrl: fbContent({
+            internal:
+              'https://www.internalfb.com/intern/diffusion/FBS/browse/master/xplat/sonar/website/',
+            external: 'https://github.com/facebook/flipper/blob/master/website',
+          }),
         },
         theme: {
           customCss: require.resolve('./static/css/custom.css'),
         },
+        enableEditor: true,
       },
     ],
   ],
   // end_config_example
   plugins: [
+    './src/plugins/support-symlinks',
+    [
+      require.resolve('@docusaurus/plugin-content-pages'),
+      {
+        id: 'embedded-pages',
+        path: './src/embedded-pages/',
+        mdxPageComponent: '@theme/EmbeddedMDXPage',
+      },
+    ],
     [
       '@docusaurus/plugin-client-redirects',
       {
@@ -230,6 +251,105 @@ const siteConfig = {
             to: '/docs/getting-started/index',
             from: ['/docs/fb/index'],
           },
+          {
+            from: ['/docs/features/network-plugin'],
+            to: '/docs/features/plugins/network',
+          },
+          {
+            from: ['/docs/features/logs-plugin'],
+            to: '/docs/features/plugins/device-logs',
+          },
+          {
+            from: ['/docs/features/layout-plugin'],
+            to: '/docs/features/plugins/inspector',
+          },
+          {
+            from: ['/docs/features/navigation-plugin'],
+            to: '/docs/features/plugins/navigation',
+          },
+          {
+            from: ['/docs/features/databases-plugin'],
+            to: '/docs/features/plugins/databases',
+          },
+          {
+            from: ['/docs/features/images-plugin'],
+            to: '/docs/features/plugins/fresco',
+          },
+          {
+            from: ['/docs/features/sandbox-plugin'],
+            to: '/docs/features/plugins/sandbox',
+          },
+          {
+            from: ['/docs/features/shared-preferences-plugin'],
+            to: '/docs/features/plugins/preferences',
+          },
+          {
+            from: ['/docs/features/leak-canary-plugin'],
+            to: '/docs/features/plugins/leak-canary',
+          },
+          {
+            from: ['/docs/features/crash-reporter-plugin'],
+            to: '/docs/features/plugins/crash-reporter',
+          },
+          {
+            from: ['/docs/setup/network-plugin'],
+            to: '/docs/setup/plugins/network',
+          },
+          {
+            from: ['/docs/setup/layout-plugin'],
+            to: '/docs/setup/plugins/inspector',
+          },
+          {
+            from: ['/docs/setup/navigation-plugin'],
+            to: '/docs/setup/plugins/navigation',
+          },
+          {
+            from: ['/docs/setup/databases-plugin'],
+            to: '/docs/setup/plugins/databases',
+          },
+          {
+            from: ['/docs/setup/images-plugin'],
+            to: '/docs/setup/plugins/fresco',
+          },
+          {
+            from: ['/docs/setup/sandbox-plugin'],
+            to: '/docs/setup/plugins/sandbox',
+          },
+          {
+            from: ['/docs/setup/shared-preferences-plugin'],
+            to: '/docs/setup/plugins/preferences',
+          },
+          {
+            from: ['/docs/setup/leak-canary-plugin'],
+            to: '/docs/setup/plugins/leak-canary',
+          },
+          {
+            from: ['/docs/setup/leak-canary-2-plugin'],
+            to: '/docs/setup/plugins/leak-canary',
+          },
+          {
+            from: ['/docs/setup/crash-reporter-plugin'],
+            to: '/docs/setup/plugins/crash-reporter',
+          },
+          ...fbInternalOnly([
+            {
+              from: ['/docs/fb/Memory-Tools'],
+              to: '/docs/features/plugins/memory-tools',
+            },
+            {
+              from: ['/docs/fb/supporting-feed-inspector'],
+              to: '/docs/features/plugins/feed-inspector',
+            },
+            {
+              from: ['/docs/fb/sections'],
+              to: '/docs/features/plugins/sections',
+            },
+            {from: ['/docs/fb/Trace'], to: '/docs/features/plugins/tracery'},
+            {
+              from: ['/docs/fb/mobile-config'],
+              to: '/docs/features/plugins/mobile-config',
+            },
+          ]),
         ],
       },
     ],

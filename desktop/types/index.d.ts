@@ -16,6 +16,7 @@
 /// <reference path="decompress-targz.d.ts" />
 /// <reference path="decompress-unzip.d.ts" />
 /// <reference path="download-tarball.d.ts" />
+/// <reference path="jest-extensions.d.ts" />
 /// <reference path="json-format-highlight.d.ts" />
 /// <reference path="line-replace.d.ts" />
 /// <reference path="live-plugin-manager.d.ts" />

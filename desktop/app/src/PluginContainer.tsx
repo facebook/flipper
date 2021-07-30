@@ -7,15 +7,10 @@
  * @format
  */
 
-import {
-  FlipperPlugin,
-  FlipperDevicePlugin,
-  Props as PluginProps,
-  PluginDefinition,
-} from './plugin';
+import {FlipperPlugin, FlipperDevicePlugin} from './plugin';
 import {Logger} from './fb-interfaces/Logger';
 import BaseDevice from './devices/BaseDevice';
-import {pluginKey as getPluginKey} from './reducers/pluginStates';
+import {pluginKey as getPluginKey} from './utils/pluginUtils';
 import Client from './Client';
 import {
   ErrorBoundary,
@@ -28,25 +23,23 @@ import {
   VBox,
   View,
 } from './ui';
-import {
-  StaticView,
-  setStaticView,
-  isPluginEnabled,
-} from './reducers/connections';
+import {StaticView, setStaticView} from './reducers/connections';
 import {switchPlugin} from './reducers/pluginManager';
 import React, {PureComponent} from 'react';
 import {connect, ReactReduxContext} from 'react-redux';
-import {setPluginState} from './reducers/pluginStates';
-import {Settings} from './reducers/settings';
 import {selectPlugin} from './reducers/connections';
 import {State as Store, MiddlewareAPI} from './reducers/index';
 import {activateMenuItems} from './MenuBar';
 import {Message} from './reducers/pluginMessageQueue';
 import {IdlerImpl} from './utils/Idler';
 import {processMessageQueue} from './utils/messageQueue';
-import {ToggleButton, SmallText, Layout} from './ui';
-import {theme, TrackingScope, _SandyPluginRenderer} from 'flipper-plugin';
-import {isDevicePluginDefinition, isSandyPlugin} from './utils/pluginUtils';
+import {Layout} from './ui';
+import {theme, _SandyPluginRenderer} from 'flipper-plugin';
+import {
+  ActivePluginListItem,
+  isDevicePlugin,
+  isDevicePluginDefinition,
+} from './utils/pluginUtils';
 import {ContentContainer} from './sandy-chrome/ContentContainer';
 import {Alert, Typography} from 'antd';
 import {InstalledPluginDetails} from 'flipper-plugin-lib';
@@ -54,15 +47,10 @@ import semver from 'semver';
 import {loadPlugin} from './reducers/pluginManager';
 import {produce} from 'immer';
 import {reportUsage} from './utils/metrics';
+import {PluginInfo} from './chrome/fb-stubs/PluginInfo';
+import {getActiveClient, getActivePlugin} from './selectors/connections';
 
 const {Text, Link} = Typography;
-
-const Container = styled(FlexColumn)({
-  width: 0,
-  flexGrow: 1,
-  flexShrink: 1,
-  backgroundColor: colors.white,
-});
 
 export const SidebarContainer = styled(FlexRow)({
   backgroundColor: theme.backgroundWash,
@@ -101,20 +89,14 @@ const ProgressBarBar = styled.div<{progress: number}>(({progress}) => ({
 
 type OwnProps = {
   logger: Logger;
-  isSandy?: boolean;
 };
 
 type StateFromProps = {
-  pluginState: Object;
-  activePlugin: PluginDefinition | undefined;
+  activePlugin: ActivePluginListItem | null;
   target: Client | BaseDevice | null;
   pluginKey: string | null;
   deepLinkPayload: unknown;
-  selectedApp: string | null;
-  isArchivedDevice: boolean;
   pendingMessages: Message[] | undefined;
-  pluginIsEnabled: boolean;
-  settingsState: Settings;
   latestInstalledVersion: InstalledPluginDetails | undefined;
 };
 
@@ -124,7 +106,6 @@ type DispatchFromProps = {
     selectedApp?: string | null;
     deepLinkPayload: unknown;
   }) => any;
-  setPluginState: (payload: {pluginKey: string; state: any}) => void;
   setStaticView: (payload: StaticView) => void;
   enablePlugin: typeof switchPlugin;
   loadPlugin: typeof loadPlugin;
@@ -201,14 +182,13 @@ class PluginContainer extends PureComponent<Props, State> {
     const {deepLinkPayload, target, activePlugin} = this.props;
     if (deepLinkPayload && activePlugin && target) {
       target.sandyPluginStates
-        .get(activePlugin.id)
+        .get(activePlugin.details.id)
         ?.triggerDeepLink(deepLinkPayload);
     }
   }
 
   processMessageQueue() {
-    const {pluginKey, pendingMessages, activePlugin, pluginIsEnabled, target} =
-      this.props;
+    const {pluginKey, pendingMessages, activePlugin, target} = this.props;
     if (pluginKey !== this.pluginBeingProcessed) {
       this.pluginBeingProcessed = pluginKey;
       this.cancelCurrentQueue();
@@ -218,23 +198,23 @@ class PluginContainer extends PureComponent<Props, State> {
         }),
       );
       // device plugins don't have connections so no message queues
-      if (!activePlugin || isDevicePluginDefinition(activePlugin)) {
+      if (
+        !activePlugin ||
+        activePlugin.status !== 'enabled' ||
+        isDevicePluginDefinition(activePlugin.definition)
+      ) {
         return;
       }
       if (
-        pluginIsEnabled &&
         target instanceof Client &&
         activePlugin &&
-        (isSandyPlugin(activePlugin) || activePlugin.persistedStateReducer) &&
         pluginKey &&
         pendingMessages?.length
       ) {
         const start = Date.now();
         this.idler = new IdlerImpl();
         processMessageQueue(
-          isSandyPlugin(activePlugin)
-            ? target.sandyPluginStates.get(activePlugin.id)!
-            : activePlugin,
+          target.sandyPluginStates.get(activePlugin.definition.id)!,
           pluginKey,
           this.store,
           (progress) => {
@@ -245,18 +225,22 @@ class PluginContainer extends PureComponent<Props, State> {
             );
           },
           this.idler,
-        ).then((completed) => {
-          const duration = Date.now() - start;
-          this.props.logger.track(
-            'duration',
-            'queue-processing-before-plugin-open',
-            {
-              completed,
-              duration,
-            },
-            activePlugin.id,
+        )
+          .then((completed) => {
+            const duration = Date.now() - start;
+            this.props.logger.track(
+              'duration',
+              'queue-processing-before-plugin-open',
+              {
+                completed,
+                duration,
+              },
+              activePlugin.definition.id,
+            );
+          })
+          .catch((err) =>
+            console.error('Error while processing plugin message queue', err),
           );
-        });
       }
     }
   }
@@ -268,14 +252,12 @@ class PluginContainer extends PureComponent<Props, State> {
   }
 
   render() {
-    const {activePlugin, pluginKey, target, pendingMessages, pluginIsEnabled} =
-      this.props;
+    const {activePlugin, pluginKey, target, pendingMessages} = this.props;
     if (!activePlugin || !target || !pluginKey) {
       return null;
     }
-
-    if (!pluginIsEnabled) {
-      return this.renderPluginEnabler();
+    if (activePlugin.status !== 'enabled') {
+      return this.renderPluginInfo();
     }
     if (!pendingMessages || pendingMessages.length === 0) {
       return this.renderPlugin();
@@ -283,41 +265,8 @@ class PluginContainer extends PureComponent<Props, State> {
     return this.renderPluginLoader();
   }
 
-  renderPluginEnabler() {
-    const activePlugin = this.props.activePlugin!;
-    return (
-      <View grow>
-        <Waiting>
-          <VBox>
-            <FlexRow>
-              <Label
-                style={{
-                  fontSize: '16px',
-                  color: colors.light30,
-                  textTransform: 'uppercase',
-                }}>
-                {activePlugin.title}
-              </Label>
-            </FlexRow>
-          </VBox>
-          <VBox>
-            <ToggleButton
-              toggled={false}
-              onClick={() => {
-                this.props.enablePlugin({
-                  plugin: activePlugin,
-                  selectedApp: (this.props.target as Client)?.query?.app,
-                });
-              }}
-              large
-            />
-          </VBox>
-          <VBox>
-            <SmallText>Click to enable this plugin</SmallText>
-          </VBox>
-        </Waiting>
-      </View>
-    );
+  renderPluginInfo() {
+    return <PluginInfo />;
   }
 
   renderPluginLoader() {
@@ -335,7 +284,7 @@ class PluginContainer extends PureComponent<Props, State> {
           <VBox>
             <Label>
               Processing {this.state.progress.total} events for{' '}
-              {this.props.activePlugin?.id ?? 'plugin'}
+              {this.props.activePlugin?.details?.id ?? 'plugin'}
             </Label>
           </VBox>
           <VBox>
@@ -387,105 +336,42 @@ class PluginContainer extends PureComponent<Props, State> {
   }
 
   renderPlugin() {
-    const {
-      pluginState,
-      setPluginState,
-      activePlugin,
-      pluginKey,
-      target,
-      isArchivedDevice,
-      selectedApp,
-      settingsState,
-      isSandy,
-      latestInstalledVersion,
-    } = this.props;
-    if (!activePlugin || !target || !pluginKey) {
+    const {activePlugin, pluginKey, target, latestInstalledVersion} =
+      this.props;
+    if (
+      !activePlugin ||
+      !target ||
+      !pluginKey ||
+      activePlugin.status !== 'enabled'
+    ) {
       console.warn(`No selected plugin. Rendering empty!`);
       return this.renderNoPluginActive();
     }
-    let pluginElement: null | React.ReactElement<any>;
     const showUpdateAlert =
       latestInstalledVersion &&
       activePlugin &&
       !this.state.autoUpdateAlertSuppressed.has(
         `${latestInstalledVersion.name}@${latestInstalledVersion.version}`,
       ) &&
-      semver.gt(latestInstalledVersion.version, activePlugin.version);
-    if (isSandyPlugin(activePlugin)) {
-      // Make sure we throw away the container for different pluginKey!
-      const instance = target.sandyPluginStates.get(activePlugin.id);
-      if (!instance) {
-        // happens if we selected a plugin that is not enabled on a specific app or not supported on a specific device.
-        return this.renderNoPluginActive();
-      }
-      pluginElement = (
-        <_SandyPluginRenderer key={pluginKey} plugin={instance} />
+      semver.gt(
+        latestInstalledVersion.version,
+        activePlugin.definition.version,
       );
-    } else {
-      const props: PluginProps<Object> & {
-        key: string;
-        ref: (
-          ref:
-            | FlipperPlugin<any, any, any>
-            | FlipperDevicePlugin<any, any, any>
-            | null
-            | undefined,
-        ) => void;
-      } = {
-        key: pluginKey,
-        logger: this.props.logger,
-        selectedApp,
-        persistedState: activePlugin.defaultPersistedState
-          ? {
-              ...activePlugin.defaultPersistedState,
-              ...pluginState,
-            }
-          : pluginState,
-        setStaticView: (payload: StaticView) =>
-          this.props.setStaticView(payload),
-        setPersistedState: (state) => setPluginState({pluginKey, state}),
-        target,
-        deepLinkPayload: this.props.deepLinkPayload,
-        selectPlugin: (pluginID: string, deepLinkPayload: unknown) => {
-          const {target} = this.props;
-          // check if plugin will be available
-          if (
-            target instanceof Client &&
-            target.plugins.some((p) => p === pluginID)
-          ) {
-            this.props.selectPlugin({
-              selectedPlugin: pluginID,
-              deepLinkPayload,
-            });
-            return true;
-          } else if (target instanceof BaseDevice) {
-            this.props.selectPlugin({
-              selectedPlugin: pluginID,
-              deepLinkPayload,
-            });
-            return true;
-          } else {
-            return false;
-          }
-        },
-        ref: this.refChanged,
-        isArchivedDevice,
-        settingsState,
-      };
-      pluginElement = (
-        <TrackingScope scope={'plugin:' + activePlugin.id}>
-          {React.createElement(activePlugin, props)}
-        </TrackingScope>
-      );
+    // Make sure we throw away the container for different pluginKey!
+    const instance = target.sandyPluginStates.get(activePlugin.definition.id);
+    if (!instance) {
+      // happens if we selected a plugin that is not enabled on a specific app or not supported on a specific device.
+      return this.renderNoPluginActive();
     }
-    return isSandy ? (
+
+    return (
       <Layout.Top>
         <div>
           {showUpdateAlert && (
             <Alert
               message={
                 <Text>
-                  Plugin "{activePlugin.title}" v
+                  Plugin "{activePlugin.definition.title}" v
                   {latestInstalledVersion?.version} is downloaded and ready to
                   install. <Link onClick={this.reloadPlugin}>Reload</Link> to
                   start using the new version.
@@ -510,77 +396,41 @@ class PluginContainer extends PureComponent<Props, State> {
         <Layout.Right>
           <ErrorBoundary
             heading={`Plugin "${
-              activePlugin.title || 'Unknown'
+              activePlugin.definition.title || 'Unknown'
             }" encountered an error during render`}>
-            <ContentContainer>{pluginElement}</ContentContainer>
+            <ContentContainer>
+              <_SandyPluginRenderer key={pluginKey} plugin={instance} />
+            </ContentContainer>
           </ErrorBoundary>
           <SidebarContainer id="detailsSidebar" />
         </Layout.Right>
       </Layout.Top>
-    ) : (
-      <React.Fragment>
-        <Container key="plugin">
-          <ErrorBoundary
-            heading={`Plugin "${
-              activePlugin.title || 'Unknown'
-            }" encountered an error during render`}>
-            {pluginElement}
-          </ErrorBoundary>
-        </Container>
-        <SidebarContainer id="detailsSidebar" />
-      </React.Fragment>
     );
   }
 }
 
 export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
-  ({
-    connections: {
-      selectedPlugin,
-      selectedDevice,
-      selectedApp,
-      clients,
-      deepLinkPayload,
-      enabledPlugins,
-      enabledDevicePlugins,
-    },
-    pluginStates,
-    plugins: {devicePlugins, clientPlugins, installedPlugins},
-    pluginMessageQueue,
-    settingsState,
-  }) => {
-    let pluginKey = null;
-    let target = null;
-    let activePlugin: PluginDefinition | undefined;
-    let pluginIsEnabled = false;
-
-    if (selectedPlugin) {
-      activePlugin = devicePlugins.get(selectedPlugin);
-      if (selectedDevice && activePlugin) {
+  (state: Store) => {
+    let pluginKey: string | null = null;
+    let target: BaseDevice | Client | null = null;
+    const {
+      connections: {selectedDevice, deepLinkPayload},
+      plugins: {installedPlugins},
+      pluginMessageQueue,
+    } = state;
+    const selectedClient = getActiveClient(state);
+    const activePlugin = getActivePlugin(state);
+    if (activePlugin) {
+      if (selectedDevice && isDevicePlugin(activePlugin)) {
         target = selectedDevice;
-        pluginKey = getPluginKey(selectedDevice.serial, activePlugin.id);
-      } else {
-        target =
-          clients.find((client: Client) => client.id === selectedApp) || null;
-        activePlugin = clientPlugins.get(selectedPlugin);
-        if (activePlugin && target) {
-          pluginKey = getPluginKey(target.id, activePlugin.id);
-        }
-      }
-      pluginIsEnabled =
-        activePlugin !== undefined &&
-        isPluginEnabled(
-          enabledPlugins,
-          enabledDevicePlugins,
-          selectedApp,
-          activePlugin.id,
+        pluginKey = getPluginKey(
+          selectedDevice.serial,
+          activePlugin.details.id,
         );
-    }
-    const isArchivedDevice = !selectedDevice
-      ? false
-      : selectedDevice.isArchived;
-    if (isArchivedDevice) {
-      pluginIsEnabled = true;
+      } else if (selectedClient) {
+        target = selectedClient;
+        pluginKey = getPluginKey(selectedClient.id, activePlugin.details.id);
+      }
     }
 
     const pendingMessages = pluginKey
@@ -588,24 +438,18 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
       : undefined;
 
     const s: StateFromProps = {
-      pluginState: pluginStates[pluginKey as string],
-      activePlugin: activePlugin,
+      activePlugin,
       target,
       deepLinkPayload,
       pluginKey,
-      isArchivedDevice,
-      selectedApp: selectedApp || null,
       pendingMessages,
-      pluginIsEnabled,
-      settingsState,
       latestInstalledVersion: installedPlugins.get(
-        activePlugin?.packageName ?? '',
+        activePlugin?.details?.name ?? '',
       ),
     };
     return s;
   },
   {
-    setPluginState,
     selectPlugin,
     setStaticView,
     enablePlugin: switchPlugin,

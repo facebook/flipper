@@ -11,7 +11,11 @@ import {createStore} from 'redux';
 import BaseDevice from '../devices/BaseDevice';
 import {createRootReducer} from '../reducers';
 import {Store} from '../reducers/index';
-import Client, {ClientQuery, FlipperClientConnection} from '../Client';
+import Client, {ClientQuery} from '../Client';
+import {
+  ClientConnection,
+  ConnectionStatusChange,
+} from '../comms/ClientConnection';
 import {buildClientId} from '../utils/clientUtils';
 import {Logger} from '../fb-interfaces/Logger';
 import {PluginDefinition} from '../plugin';
@@ -181,7 +185,7 @@ export default class MockFlipper {
       device.isArchived ? null : createStubConnection(),
       this._logger,
       this._store,
-      supportedPlugins,
+      new Set(supportedPlugins),
       device,
     );
     // yikes
@@ -235,33 +239,17 @@ export default class MockFlipper {
     return client;
   }
 }
-function createStubConnection():
-  | FlipperClientConnection<any, any>
-  | null
-  | undefined {
+function createStubConnection(): ClientConnection | null | undefined {
   return {
+    subscribeToEvents(_: ConnectionStatusChange) {},
     close() {
       throw new Error('Should not be called in test');
     },
-    fireAndForget() {
+    send(_: any) {
       throw new Error('Should not be called in test');
     },
-    requestResponse() {
+    sendExpectResponse(_: any): Promise<ResponseType> {
       throw new Error('Should not be called in test');
-    },
-    connectionStatus() {
-      return {
-        subscribe() {},
-        lift() {
-          throw new Error('Should not be called in test');
-        },
-        map() {
-          throw new Error('Should not be called in test');
-        },
-        take() {
-          throw new Error('Should not be called in test');
-        },
-      };
     },
   };
 }

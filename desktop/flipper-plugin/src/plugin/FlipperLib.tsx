@@ -23,11 +23,6 @@ export interface FlipperLib {
   enableMenuEntries(menuEntries: NormalizedMenuEntry[]): void;
   createPaste(input: string): Promise<string | undefined>;
   GK(gatekeeper: string): boolean;
-  isPluginAvailable(
-    device: RealFlipperDevice,
-    client: RealFlipperClient | null,
-    pluginId: string,
-  ): boolean;
   selectPlugin(
     device: RealFlipperDevice,
     client: RealFlipperClient | null,
@@ -35,25 +30,26 @@ export interface FlipperLib {
     deeplink: unknown,
   ): void;
   writeTextToClipboard(text: string): void;
+  openLink(url: string): void;
   showNotification(pluginKey: string, notification: Notification): void;
   DetailsSidebarImplementation?(
     props: DetailSidebarProps,
   ): React.ReactElement | null;
 }
 
-let flipperLibInstance: FlipperLib | undefined;
+export let flipperLibInstance: FlipperLib | undefined;
 
 export function tryGetFlipperLibImplementation(): FlipperLib | undefined {
   return flipperLibInstance;
 }
 
-export function getFlipperLibImplementation(): FlipperLib {
+export function getFlipperLib(): FlipperLib {
   if (!flipperLibInstance) {
     throw new Error('Flipper lib not instantiated');
   }
   return flipperLibInstance;
 }
 
-export function setFlipperLibImplementation(impl: FlipperLib) {
+export function setFlipperLibImplementation(impl: FlipperLib | undefined) {
   flipperLibInstance = impl;
 }

@@ -131,7 +131,12 @@ export default class ShareSheetExportFile extends Component<Props, State> {
           requireInteraction: true,
         });
       }
-      this.setState({fetchMetaDataErrors, result: {kind: 'success'}});
+      this.setState({
+        fetchMetaDataErrors,
+        result: fetchMetaDataErrors
+          ? {error: JSON.stringify(fetchMetaDataErrors) as any, kind: 'error'}
+          : {kind: 'success'},
+      });
       this.store.dispatch(unsetShare());
       this.props.logger.trackTimeSince(mark, 'export:file-success');
     } catch (err) {
@@ -145,8 +150,9 @@ export default class ShareSheetExportFile extends Component<Props, State> {
       if (!this.state.runInBackground) {
         // Show the error in UI.
         this.setState({result});
+      } else {
+        this.store.dispatch(unsetShare());
       }
-      this.store.dispatch(unsetShare());
       this.props.logger.trackTimeSince(mark, 'export:file-error', result);
       throw err;
     }

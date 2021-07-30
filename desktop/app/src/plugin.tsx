@@ -12,28 +12,25 @@ import {Logger} from './fb-interfaces/Logger';
 import Client from './Client';
 import {Component} from 'react';
 import BaseDevice from './devices/BaseDevice';
-import {serialize, deserialize} from './utils/serialization';
 import {StaticView} from './reducers/connections';
 import {State as ReduxState} from './reducers';
 import {DEFAULT_MAX_QUEUE_SIZE} from './reducers/pluginMessageQueue';
 import {ActivatablePluginDetails} from 'flipper-plugin-lib';
 import {Settings} from './reducers/settings';
-import {Notification, Idler, _SandyPluginDefinition} from 'flipper-plugin';
+import {
+  Notification,
+  Idler,
+  _SandyPluginDefinition,
+  _makeShallowSerializable,
+  _deserializeShallowObject,
+} from 'flipper-plugin';
 
 type Parameters = {[key: string]: any};
 
-export type PluginDefinition = ClientPluginDefinition | DevicePluginDefinition;
+export type PluginDefinition = _SandyPluginDefinition;
 
-export type DevicePluginDefinition =
-  | typeof FlipperDevicePlugin
-  | _SandyPluginDefinition;
-
-export type ClientPluginDefinition =
-  | typeof FlipperPlugin
-  | _SandyPluginDefinition;
-
-export type ClientPluginMap = Map<string, ClientPluginDefinition>;
-export type DevicePluginMap = Map<string, DevicePluginDefinition>;
+export type ClientPluginMap = Map<string, PluginDefinition>;
+export type DevicePluginMap = Map<string, PluginDefinition>;
 
 // This function is intended to be called from outside of the plugin.
 // If you want to `call` from the plugin use, this.client.call
@@ -145,24 +142,44 @@ export abstract class FlipperBasePlugin<
     statusUpdate?: (msg: string) => void,
     idler?: Idler,
     pluginName?: string,
-  ) => Promise<string> = (
+  ) => Promise<string> = async (
     persistedState: StaticPersistedState,
-    statusUpdate?: (msg: string) => void,
-    idler?: Idler,
-    pluginName?: string,
+    _statusUpdate?: (msg: string) => void,
+    _idler?: Idler,
+    _pluginName?: string,
   ) => {
-    return serialize(
-      persistedState,
-      idler,
-      statusUpdate,
-      pluginName != null ? `Serializing ${pluginName}` : undefined,
-    );
+    if (
+      persistedState &&
+      typeof persistedState === 'object' &&
+      !Array.isArray(persistedState)
+    ) {
+      return JSON.stringify(
+        Object.fromEntries(
+          Object.entries(persistedState).map(([key, value]) => [
+            key,
+            _makeShallowSerializable(value), // make first level of persisted state serializable
+          ]),
+        ),
+      );
+    } else {
+      return JSON.stringify(persistedState);
+    }
   };
 
   static deserializePersistedState: (
     serializedString: string,
   ) => StaticPersistedState = (serializedString: string) => {
-    return deserialize(serializedString);
+    const raw = JSON.parse(serializedString);
+    if (raw && typeof raw === 'object' && !Array.isArray(raw)) {
+      return Object.fromEntries(
+        Object.entries(raw).map(([key, value]) => [
+          key,
+          _deserializeShallowObject(value),
+        ]),
+      );
+    } else {
+      return raw;
+    }
   };
 
   teardown(): void {}
@@ -186,6 +203,10 @@ export abstract class FlipperBasePlugin<
   }
 }
 
+/**
+ * @deprecated Please use the newer "Sandy" plugin APIs!
+ * https://fbflipper.com/docs/extending/sandy-migration
+ */
 export class FlipperDevicePlugin<
   S,
   A extends BaseAction,
@@ -215,6 +236,10 @@ export class FlipperDevicePlugin<
   }
 }
 
+/**
+ * @deprecated Please use the newer "Sandy" plugin APIs!
+ * https://fbflipper.com/docs/extending/sandy-migration
+ */
 export class FlipperPlugin<
   S,
   A extends BaseAction,

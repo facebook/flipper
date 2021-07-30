@@ -14,7 +14,6 @@ export default class JSDevice extends BaseDevice {
 
   constructor(serial: string, title: string, webContentsId: number) {
     super(serial, 'emulator', title, 'JSWebApp');
-    this.devicePlugins = [];
     this.webContentsId = webContentsId;
   }
 }

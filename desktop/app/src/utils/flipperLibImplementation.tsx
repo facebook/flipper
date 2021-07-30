@@ -13,7 +13,7 @@ import type {Store} from '../reducers';
 import createPaste from '../fb-stubs/createPaste';
 import GK from '../fb-stubs/GK';
 import type BaseDevice from '../devices/BaseDevice';
-import {clipboard} from 'electron';
+import {clipboard, shell} from 'electron';
 import constants from '../fb-stubs/constants';
 import {addNotification} from '../reducers/notifications';
 import {deconstructPluginKey} from './clientUtils';
@@ -35,30 +35,6 @@ export function initializeFlipperLibImplementation(
     GK(gatekeeper: string) {
       return GK.get(gatekeeper);
     },
-    isPluginAvailable(device, client, pluginId) {
-      // supported device pluin
-      if (device.devicePlugins.includes(pluginId)) {
-        return true;
-      }
-      if (client) {
-        // plugin supported?
-        if (client.plugins.includes(pluginId)) {
-          // part of an archived device?
-          if (device.isArchived) {
-            return true;
-          }
-          // plugin enabled?
-          if (
-            store
-              .getState()
-              .connections.enabledPlugins[client.query.app]?.includes(pluginId)
-          ) {
-            return true;
-          }
-        }
-      }
-      return false;
-    },
     selectPlugin(device, client, pluginId, deeplink) {
       store.dispatch({
         type: 'SELECT_PLUGIN',
@@ -73,6 +49,9 @@ export function initializeFlipperLibImplementation(
     },
     writeTextToClipboard(text: string) {
       clipboard.writeText(text);
+    },
+    openLink(url: string) {
+      shell.openExternal(url);
     },
     showNotification(pluginId, notification) {
       const parts = deconstructPluginKey(pluginId);

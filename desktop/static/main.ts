@@ -17,6 +17,8 @@ import {
   Notification,
   globalShortcut,
   session,
+  nativeTheme,
+  shell,
 } from 'electron';
 import os from 'os';
 import path from 'path';
@@ -107,6 +109,9 @@ if (argv['disable-gpu'] || process.env.FLIPPER_DISABLE_GPU === '1') {
 }
 
 process.env.CONFIG = JSON.stringify(config);
+if (config.darkMode) {
+  nativeTheme.themeSource = 'dark';
+}
 
 // possible reference to main app window
 let win: BrowserWindow;
@@ -228,6 +233,20 @@ app.on('ready', () => {
   });
 });
 
+app.on('web-contents-created', (_event, contents) => {
+  if (contents.getType() === 'webview') {
+    contents.on('new-window', async (event, url) => {
+      // Disable creating of native Electron windows when requested from web views.
+      // This can happen e.g. when user clicks to a link with target="__blank" on a page loaded in a web view,
+      // or if some javascript code in a web view executes window.open.
+      // Instead of the default implementation, we redirect such URLs to the operating system which handles them automatically:
+      // using default browser for http/https links, using default mail client for "mailto" links etc.
+      event.preventDefault();
+      await shell.openExternal(url);
+    });
+  }
+});
+
 function configureSession() {
   session.defaultSession.webRequest.onBeforeSendHeaders(
     {
@@ -266,6 +285,10 @@ ipcMain.on('getLaunchTime', (event) => {
     // launch times for example after reloading the renderer process
     launchStartTime = undefined;
   }
+});
+
+ipcMain.on('setTheme', (_e, mode: 'light' | 'dark') => {
+  nativeTheme.themeSource = mode;
 });
 
 ipcMain.on(
@@ -356,6 +379,7 @@ function createWindow() {
       configPath,
       JSON.stringify({
         ...config,
+        darkMode: nativeTheme.themeSource === 'dark',
         lastWindowPosition: {
           x,
           y,

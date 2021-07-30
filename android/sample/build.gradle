@@ -15,7 +15,7 @@ android {
         minSdkVersion 21
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         applicationId 'com.facebook.flipper.sample'
-        targetSdkVersion 28
+        targetSdkVersion rootProject.targetSdkVersion
     }
 
     lintOptions {
@@ -35,8 +35,8 @@ android {
     }
 
     compileOptions {
-        targetCompatibility = JavaVersion.VERSION_1_8
-        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_8
     }
 }
 

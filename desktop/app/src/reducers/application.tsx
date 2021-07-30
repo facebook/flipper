@@ -84,7 +84,6 @@ export type State = {
   share: ShareType | null;
   sessionId: string | null;
   serverPorts: ServerPorts;
-  downloadingImportData: boolean;
   launcherMsg: LauncherMsg;
   statusMessages: Array<string>;
   xcodeCommandLineToolsDetected: boolean;
@@ -94,8 +93,7 @@ export type State = {
 type BooleanActionType =
   | 'leftSidebarVisible'
   | 'rightSidebarVisible'
-  | 'rightSidebarAvailable'
-  | 'downloadingImportData';
+  | 'rightSidebarAvailable';
 
 export type Action =
   | {
@@ -174,7 +172,6 @@ export const initialState: () => State = () => ({
     insecure: 8089,
     secure: 8088,
   },
-  downloadingImportData: false,
   launcherMsg: {
     severity: 'warning',
     message: '',
@@ -203,8 +200,7 @@ export default function reducer(
   if (
     action.type === 'leftSidebarVisible' ||
     action.type === 'rightSidebarVisible' ||
-    action.type === 'rightSidebarAvailable' ||
-    action.type === 'downloadingImportData'
+    action.type === 'rightSidebarAvailable'
   ) {
     const newValue =
       typeof action.payload === 'undefined'

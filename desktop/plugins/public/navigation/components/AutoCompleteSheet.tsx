@@ -50,7 +50,7 @@ const SheetItemIcon = styled.span({
   padding: 8,
 });
 
-export default (props: Props) => {
+export function AutoCompleteSheet(props: Props) {
   const {providers, onHighlighted, onNavigate, query} = props;
   const lineItems = filterProvidersToLineItems(providers, query, MAX_ITEMS);
   lineItems.unshift({uri: query, matchPattern: query, icon: 'send'});
@@ -70,4 +70,4 @@ export default (props: Props) => {
       ))}
     </AutoCompleteSheetContainer>
   );
-};
+}

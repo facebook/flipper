@@ -41,40 +41,45 @@ export const presetColors = Object.values({
   grape: '#8c72cb', // Grape
 });
 
-const NullValue = styled.span({
-  color: 'rgb(128, 128, 128)',
+export const NullValue = styled.span({
+  color: theme.semanticColors.nullValue,
 });
 NullValue.displayName = 'DataDescription:NullValue';
 
 const UndefinedValue = styled.span({
-  color: 'rgb(128, 128, 128)',
+  color: theme.semanticColors.nullValue,
 });
 UndefinedValue.displayName = 'DataDescription:UndefinedValue';
 
-const StringValue = styled.span({
-  color: '#e04c60',
+export const StringValue = styled.span({
+  color: theme.semanticColors.stringValue,
   wordWrap: 'break-word',
 });
 StringValue.displayName = 'DataDescription:StringValue';
 
 const ColorValue = styled.span({
-  color: '#5f6673',
+  color: theme.semanticColors.colorValue,
 });
 ColorValue.displayName = 'DataDescription:ColorValue';
 
 const SymbolValue = styled.span({
-  color: 'rgb(196, 26, 22)',
+  color: theme.semanticColors.stringValue,
 });
 SymbolValue.displayName = 'DataDescription:SymbolValue';
 
-const NumberValue = styled.span({
-  color: '#4dbba6',
+export const NumberValue = styled.span({
+  color: theme.semanticColors.numberValue,
 });
 NumberValue.displayName = 'DataDescription:NumberValue';
 
+export const BooleanValue = styled.span({
+  color: theme.semanticColors.booleanValue,
+});
+BooleanValue.displayName = 'DataDescription:BooleanValue';
+
 const ColorBox = styled.span<{color: string}>((props) => ({
   backgroundColor: props.color,
-  boxShadow: 'inset 0 0 1px rgba(0, 0, 0, 1)',
+  boxShadow: `inset 0 0 1px ${theme.black}`,
   display: 'inline-block',
   height: 12,
   marginRight: 4,
@@ -85,7 +90,7 @@ const ColorBox = styled.span<{color: string}>((props) => ({
 ColorBox.displayName = 'DataDescription:ColorBox';
 
 const FunctionKeyword = styled.span({
-  color: 'rgb(170, 13, 145)',
+  color: theme.semanticColors.nullValue,
   fontStyle: 'italic',
 });
 FunctionKeyword.displayName = 'DataDescription:FunctionKeyword';
@@ -671,7 +676,7 @@ class DataDescriptionContainer extends PureComponent<{
             onChange={this.onChangeCheckbox}
           />
         ) : (
-          <StringValue>{'' + val}</StringValue>
+          <BooleanValue>{'' + val}</BooleanValue>
         );
 
       case 'undefined':

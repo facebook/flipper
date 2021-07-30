@@ -9,7 +9,6 @@
 
 import React from 'react';
 import styled from '@emotion/styled';
-import PropTypes from 'prop-types';
 import {getIconURL} from '../../utils/icons';
 
 export type IconSize = 8 | 10 | 12 | 16 | 18 | 20 | 24 | 32;
@@ -94,9 +93,6 @@ function ColoredIcon(
   }
 }
 ColoredIcon.displayName = 'Glyph:ColoredIcon';
-ColoredIcon.contextTypes = {
-  glyphColor: PropTypes.string,
-};
 
 export default class Glyph extends React.PureComponent<{
   name: string;

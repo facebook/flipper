@@ -13,6 +13,7 @@ import path from 'path';
 import fs from 'fs-extra';
 import {getInstalledPluginDetails} from 'flipper-plugin-lib';
 import {FileStore} from 'metro-cache';
+import stripSourceMapComment from './stripSourceMap';
 import os from 'os';
 
 let metroDir: string | undefined;
@@ -97,9 +98,10 @@ export default async function bundlePlugin(
     ],
   });
   const sourceMapUrl = out.replace(/\.js$/, '.map');
+  const sourceMap = dev || !!options?.sourceMapPath;
   await Metro.runBuild(config, {
     dev,
-    sourceMap: dev || !!options?.sourceMapPath,
+    sourceMap,
     sourceMapUrl,
     minify: !dev,
     inlineSourceMap: dev,
@@ -107,6 +109,9 @@ export default async function bundlePlugin(
     entry,
     out,
   });
+  if (sourceMap && !dev) {
+    await stripSourceMapComment(out);
+  }
   if (
     options?.sourceMapPath &&
     path.resolve(options.sourceMapPath) !== path.resolve(sourceMapUrl)

@@ -196,7 +196,7 @@ export function startPlugin<Module extends FlipperPluginModule<any>>(
   const deviceName = 'TestDevice';
   const fakeFlipperClient: RealFlipperClient = {
     id: `${appName}#${testDevice.os}#${deviceName}#${testDevice.serial}`,
-    plugins: [definition.id],
+    plugins: new Set([definition.id]),
     query: {
       app: appName,
       device: deviceName,
@@ -314,7 +314,6 @@ export function startDevicePlugin<Module extends FlipperDevicePluginModule>(
 
   const flipperLib = createMockFlipperLib(options);
   const testDevice = createMockDevice(options);
-  testDevice.devicePlugins.push(definition.id);
   const pluginInstance = new SandyDevicePluginInstance(
     flipperLib,
     definition,
@@ -374,8 +373,8 @@ export function createMockFlipperLib(options?: StartPluginOptions): FlipperLib {
       return options?.GKs?.includes(gk) || false;
     },
     selectPlugin: jest.fn(),
-    isPluginAvailable: jest.fn().mockImplementation(() => false),
     writeTextToClipboard: jest.fn(),
+    openLink: jest.fn(),
     showNotification: jest.fn(),
   };
 }
@@ -495,7 +494,6 @@ function createMockDevice(options?: StartPluginOptions): RealFlipperDevice {
     serial: 'serial-000',
     isArchived: !!options?.isArchived,
     connected: createState(true),
-    devicePlugins: [],
     addLogListener(cb) {
       logListeners.push(cb);
       return (logListeners.length - 1) as any;

@@ -7,39 +7,39 @@
  * @format
  */
 
-import {PluginDefinition, FlipperPlugin, FlipperDevicePlugin} from './plugin';
+import {PluginDefinition} from './plugin';
 import BaseDevice, {OS} from './devices/BaseDevice';
 import {Logger} from './fb-interfaces/Logger';
 import {Store} from './reducers/index';
-import {Payload, ConnectionStatus} from 'rsocket-types';
-import {Flowable, Single} from 'rsocket-flowable';
 import {performance} from 'perf_hooks';
 import {reportPluginFailures} from './utils/metrics';
-import {notNull} from './utils/typeUtils';
 import {default as isProduction} from './utils/isProduction';
-import {registerPlugins} from './reducers/plugins';
 import {EventEmitter} from 'events';
 import invariant from 'invariant';
 import {
   getPluginKey,
   defaultEnabledBackgroundPlugins,
-  isSandyPlugin,
 } from './utils/pluginUtils';
 import {processMessagesLater} from './utils/messageQueue';
 import {emitBytesReceived} from './dispatcher/tracking';
 import {debounce} from 'lodash';
 import {batch} from 'react-redux';
-import {
-  createState,
-  _SandyPluginInstance,
-  _getFlipperLibImplementation,
-} from 'flipper-plugin';
-import {flipperMessagesClientPlugin} from './utils/self-inspection/plugins/FlipperMessagesClientPlugin';
+import {createState, _SandyPluginInstance, getFlipperLib} from 'flipper-plugin';
 import {freeze} from 'immer';
 import GK from './fb-stubs/GK';
 import {message} from 'antd';
+import {
+  isFlipperMessageDebuggingEnabled,
+  registerFlipperDebugMessage,
+} from './chrome/FlipperMessages';
+import {
+  ConnectionStatus,
+  ErrorType,
+  ClientConnection,
+} from './comms/ClientConnection';
 
-type Plugins = Array<string>;
+type Plugins = Set<string>;
+type PluginsArr = Array<string>;
 
 export type ClientQuery = {
   app: string;
@@ -54,7 +54,6 @@ export type ClientExport = {
   query: ClientQuery;
 };
 
-type ErrorType = {message: string; stacktrace: string; name: string};
 type Params = {
   api: string;
   method: string;
@@ -88,13 +87,6 @@ const handleError = (store: Store, device: BaseDevice, error: ErrorType) => {
   crashReporterPlugin.instanceApi.reportCrash(payload);
 };
 
-export interface FlipperClientConnection<D, M> {
-  connectionStatus(): Flowable<ConnectionStatus>;
-  close(): void;
-  fireAndForget(payload: Payload<D, M>): void;
-  requestResponse(payload: Payload<D, M>): Single<Payload<D, M>>;
-}
-
 export default class Client extends EventEmitter {
   connected = createState(false);
   id: string;
@@ -103,7 +95,7 @@ export default class Client extends EventEmitter {
   messageIdCounter: number;
   plugins: Plugins;
   backgroundPlugins: Plugins;
-  connection: FlipperClientConnection<any, any> | null | undefined;
+  connection: ClientConnection | null | undefined;
   store: Store;
   activePlugins: Set<string>;
   freezeData = GK.get('flipper_frozen_data');
@@ -119,10 +111,7 @@ export default class Client extends EventEmitter {
   messageBuffer: Record<
     string /*pluginKey*/,
     {
-      plugin:
-        | typeof FlipperPlugin
-        | typeof FlipperDevicePlugin
-        | _SandyPluginInstance;
+      plugin: _SandyPluginInstance;
       messages: Params[];
     }
   > = {};
@@ -141,7 +130,7 @@ export default class Client extends EventEmitter {
   constructor(
     id: string,
     query: ClientQuery,
-    conn: FlipperClientConnection<any, any> | null | undefined,
+    conn: ClientConnection | null | undefined,
     logger: Logger,
     store: Store,
     plugins: Plugins | null | undefined,
@@ -149,8 +138,8 @@ export default class Client extends EventEmitter {
   ) {
     super();
     this.connected.set(!!conn);
-    this.plugins = plugins ? plugins : [];
-    this.backgroundPlugins = [];
+    this.plugins = plugins ? plugins : new Set();
+    this.backgroundPlugins = new Set();
     this.connection = conn;
     this.id = id;
     this.query = query;
@@ -167,28 +156,23 @@ export default class Client extends EventEmitter {
 
     const client = this;
     if (conn) {
-      conn.connectionStatus().subscribe({
-        onNext(payload) {
-          if (payload.kind == 'ERROR' || payload.kind == 'CLOSED') {
-            client.connected.set(false);
-          }
-        },
-        onSubscribe(subscription) {
-          subscription.request(Number.MAX_SAFE_INTEGER);
-        },
-        onError(payload) {
-          console.error('[client] connection status error ', payload);
-        },
+      conn.subscribeToEvents((status) => {
+        if (
+          status === ConnectionStatus.CLOSED ||
+          status === ConnectionStatus.ERROR
+        ) {
+          client.connected.set(false);
+        }
       });
     }
   }
 
   supportsPlugin(pluginId: string): boolean {
-    return this.plugins.includes(pluginId);
+    return this.plugins.has(pluginId);
   }
 
   isBackgroundPlugin(pluginId: string) {
-    return this.backgroundPlugins.includes(pluginId);
+    return this.backgroundPlugins.has(pluginId);
   }
 
   isEnabledPlugin(pluginId: string) {
@@ -210,7 +194,7 @@ export default class Client extends EventEmitter {
     this.plugins.forEach((pluginId) =>
       this.startPluginIfNeeded(this.getPlugin(pluginId)),
     );
-    this.backgroundPlugins = await this.getBackgroundPlugins();
+    this.backgroundPlugins = new Set(await this.getBackgroundPlugins());
     this.backgroundPlugins.forEach((plugin) => {
       if (this.shouldConnectAsBackgroundPlugin(plugin)) {
         this.initPlugin(plugin);
@@ -221,12 +205,12 @@ export default class Client extends EventEmitter {
   initFromImport(initialStates: Record<string, Record<string, any>>): this {
     this.plugins.forEach((pluginId) => {
       const plugin = this.getPlugin(pluginId);
-      if (isSandyPlugin(plugin)) {
+      if (plugin) {
         // TODO: needs to be wrapped in error tracking T68955280
         this.sandyPluginStates.set(
           plugin.id,
           new _SandyPluginInstance(
-            _getFlipperLibImplementation(),
+            getFlipperLib(),
             plugin,
             this,
             getPluginKey(this.id, {serial: this.query.device_id}, plugin.id),
@@ -244,7 +228,7 @@ export default class Client extends EventEmitter {
       'getPlugins',
       false,
     );
-    this.plugins = plugins;
+    this.plugins = new Set(plugins);
     return plugins;
   }
 
@@ -254,7 +238,7 @@ export default class Client extends EventEmitter {
   ) {
     // start a plugin on start if it is a SandyPlugin, which is enabled, and doesn't have persisted state yet
     if (
-      isSandyPlugin(plugin) &&
+      plugin &&
       (isEnabled || defaultEnabledBackgroundPlugins.includes(plugin.id)) &&
       !this.sandyPluginStates.has(plugin.id)
     ) {
@@ -262,7 +246,7 @@ export default class Client extends EventEmitter {
       this.sandyPluginStates.set(
         plugin.id,
         new _SandyPluginInstance(
-          _getFlipperLibImplementation(),
+          getFlipperLib(),
           plugin,
           this,
           getPluginKey(this.id, {serial: this.query.device_id}, plugin.id),
@@ -313,13 +297,14 @@ export default class Client extends EventEmitter {
   }
 
   // get the supported background plugins
-  async getBackgroundPlugins(): Promise<Plugins> {
+  async getBackgroundPlugins(): Promise<PluginsArr> {
     if (this.sdkVersion < 4) {
       return [];
     }
-    return this.rawCall<{plugins: Plugins}>('getBackgroundPlugins', false).then(
-      (data) => data.plugins,
-    );
+    return this.rawCall<{plugins: PluginsArr}>(
+      'getBackgroundPlugins',
+      false,
+    ).then((data) => data.plugins);
   }
 
   // get the plugins, and update the UI
@@ -330,11 +315,11 @@ export default class Client extends EventEmitter {
       this.startPluginIfNeeded(this.getPlugin(pluginId)),
     );
     const newBackgroundPlugins = await this.getBackgroundPlugins();
-    this.backgroundPlugins = newBackgroundPlugins;
+    this.backgroundPlugins = new Set(newBackgroundPlugins);
     // diff the background plugin list, disconnect old, connect new ones
     oldBackgroundPlugins.forEach((plugin) => {
       if (
-        !newBackgroundPlugins.includes(plugin) &&
+        !this.backgroundPlugins.has(plugin) &&
         this.store
           .getState()
           .connections.enabledPlugins[this.query.app]?.includes(plugin)
@@ -344,7 +329,7 @@ export default class Client extends EventEmitter {
     });
     newBackgroundPlugins.forEach((plugin) => {
       if (
-        !oldBackgroundPlugins.includes(plugin) &&
+        !oldBackgroundPlugins.has(plugin) &&
         this.shouldConnectAsBackgroundPlugin(plugin)
       ) {
         this.initPlugin(plugin);
@@ -388,11 +373,8 @@ export default class Client extends EventEmitter {
 
       const {id, method} = data;
 
-      if (
-        data.params?.api != 'flipper-messages' &&
-        flipperMessagesClientPlugin.isConnected()
-      ) {
-        flipperMessagesClientPlugin.newMessage({
+      if (isFlipperMessageDebuggingEnabled()) {
+        registerFlipperDebugMessage({
           device: this.deviceSync?.displayTitle(),
           app: this.query.app,
           flipperInternalMethod: method,
@@ -420,7 +402,7 @@ export default class Client extends EventEmitter {
           const params: Params = data.params;
           const bytes = msg.length * 2; // string lengths are measured in UTF-16 units (not characters), so 2 bytes per char
           emitBytesReceived(params.api, bytes);
-          if (bytes > 5 * 1024 * 1024 && params.api !== 'flipper-messages') {
+          if (bytes > 5 * 1024 * 1024) {
             console.warn(
               `Plugin '${params.api}' received excessively large message for '${
                 params.method
@@ -466,12 +448,7 @@ export default class Client extends EventEmitter {
               }
             }
           }
-          // TODO: Flipper debug as full client is overkill, clean up
-          if (
-            !handled &&
-            !isProduction() &&
-            params.api !== 'flipper-messages'
-          ) {
+          if (!handled && !isProduction()) {
             console.warn(`Unhandled message ${params.api}.${params.method}`);
           }
         }
@@ -544,7 +521,7 @@ export default class Client extends EventEmitter {
   }
 
   rawCall<T>(method: string, fromPlugin: boolean, params?: Params): Promise<T> {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       const id = this.messageIdCounter++;
       const metadata: RequestMetadata = {
         method,
@@ -569,7 +546,7 @@ export default class Client extends EventEmitter {
       if (this.sdkVersion < 1) {
         this.startTimingRequestResponse({method, id, params});
         if (this.connection) {
-          this.connection.fireAndForget({data: JSON.stringify(data)});
+          this.connection.send(data);
         }
         return;
       }
@@ -586,41 +563,33 @@ export default class Client extends EventEmitter {
         return;
       }
       if (!fromPlugin || this.isAcceptingMessagesFromPlugin(plugin)) {
-        this.connection!.requestResponse({
-          data: JSON.stringify(data),
-        }).subscribe({
-          onComplete: (payload) => {
-            if (!fromPlugin || this.isAcceptingMessagesFromPlugin(plugin)) {
-              const logEventName = this.getLogEventName(data);
-              this.logger.trackTimeSince(mark, logEventName);
-              emitBytesReceived(plugin || 'unknown', payload.data.length * 2);
-              const response: {
-                success?: Object;
-                error?: ErrorType;
-              } = JSON.parse(payload.data);
+        try {
+          const response = await this.connection!.sendExpectResponse(data);
+          if (!fromPlugin || this.isAcceptingMessagesFromPlugin(plugin)) {
+            const logEventName = this.getLogEventName(data);
+            this.logger.trackTimeSince(mark, logEventName);
+            emitBytesReceived(plugin || 'unknown', response.length * 2);
 
-              this.onResponse(response, resolve, reject);
+            this.onResponse(response, resolve, reject);
 
-              if (flipperMessagesClientPlugin.isConnected()) {
-                flipperMessagesClientPlugin.newMessage({
-                  device: this.deviceSync?.displayTitle(),
-                  app: this.query.app,
-                  flipperInternalMethod: method,
-                  payload: response,
-                  plugin,
-                  pluginMethod: params?.method,
-                  direction: 'toFlipper:response',
-                });
-              }
+            if (isFlipperMessageDebuggingEnabled()) {
+              registerFlipperDebugMessage({
+                device: this.deviceSync?.displayTitle(),
+                app: this.query.app,
+                flipperInternalMethod: method,
+                payload: response,
+                plugin,
+                pluginMethod: params?.method,
+                direction: 'toFlipper:response',
+              });
             }
-          },
-          onError: (e) => {
-            // This is only called if the connection is dead. Not in expected
-            // and recoverable cases like a missing receiver/method.
-            this.disconnect();
-            reject(new Error('Connection disconnected: ' + e));
-          },
-        });
+          }
+        } catch (error) {
+          // This is only called if the connection is dead. Not in expected
+          // and recoverable cases like a missing receiver/method.
+          this.disconnect();
+          reject(new Error('Unable to send, connection error: ' + error));
+        }
       } else {
         reject(
           new Error(
@@ -629,8 +598,8 @@ export default class Client extends EventEmitter {
         );
       }
 
-      if (flipperMessagesClientPlugin.isConnected()) {
-        flipperMessagesClientPlugin.newMessage({
+      if (isFlipperMessageDebuggingEnabled()) {
+        registerFlipperDebugMessage({
           device: this.deviceSync?.displayTitle(),
           app: this.query.app,
           flipperInternalMethod: method,
@@ -712,11 +681,11 @@ export default class Client extends EventEmitter {
     };
     console.debug(data, 'message:send');
     if (this.connection) {
-      this.connection.fireAndForget({data: JSON.stringify(data)});
+      this.connection.send(data);
     }
 
-    if (flipperMessagesClientPlugin.isConnected()) {
-      flipperMessagesClientPlugin.newMessage({
+    if (isFlipperMessageDebuggingEnabled()) {
+      registerFlipperDebugMessage({
         device: this.deviceSync?.displayTitle(),
         app: this.query.app,
         flipperInternalMethod: method,

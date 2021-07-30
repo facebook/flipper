@@ -88,6 +88,7 @@ describe('info', () => {
         "deviceType": "physical",
         "os": "Android",
         "plugin": "Network",
+        "pluginEnabled": true,
         "pluginName": "flipper-plugin-network",
         "pluginVersion": "0.78.0",
       }
@@ -102,6 +103,7 @@ describe('info', () => {
         "deviceType": "physical",
         "os": "Android",
         "plugin": "Inspector",
+        "pluginEnabled": true,
         "pluginName": "flipper-plugin-inspector",
         "pluginVersion": "0.59.0",
       }

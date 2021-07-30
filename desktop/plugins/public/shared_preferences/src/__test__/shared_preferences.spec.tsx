@@ -7,12 +7,8 @@
  * @format
  */
 
-import {TestUtils} from 'flipper-plugin';
+import {TestUtils, sleep} from 'flipper-plugin';
 import * as plugin from '..';
-
-async function sleep(ms: number) {
-  return new Promise<void>((resolve) => setTimeout(() => resolve(), ms));
-}
 
 // this testing is inspired by Flipper sample app
 test('general plugin logic testing', async () => {

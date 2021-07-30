@@ -145,7 +145,6 @@ export default class MetroDevice extends BaseDevice {
 
   constructor(serial: string, ws: WebSocket | undefined) {
     super(serial, 'emulator', 'React Native', 'Metro');
-    this.devicePlugins = [];
     if (ws) {
       this.ws = ws;
       ws.onmessage = this._handleWSMessage;

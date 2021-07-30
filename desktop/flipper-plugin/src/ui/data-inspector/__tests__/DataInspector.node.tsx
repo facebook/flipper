@@ -16,10 +16,12 @@ import {sleep} from '../../../utils/sleep';
 const json = {
   data: {
     is: {
-      awesomely: 'cool',
+      awesomely: 'cool cool cool cool cool cool cool', // long enough to prevent quick preview
     },
     and: {
-      also: 'json',
+      also: {
+        deeper: 'json',
+      },
     },
   },
 };
@@ -46,10 +48,13 @@ test('can manually collapse properties', async () => {
   fireEvent.click(await res.findByText(/data/));
   await res.findByText(/awesomely/);
   expect(res.queryAllByText(/cool/).length).toBe(0);
+  expect(res.queryAllByText(/also/).length).toBe(1); // key shown as preview
+  expect(res.queryAllByText(/deeper/).length).toBe(0);
 
   fireEvent.click(await res.findByText(/is/));
   await res.findByText(/cool/);
-  expect(res.queryAllByText(/json/).length).toBe(0); // this node is not shown
+
+  expect(res.queryAllByText(/json/).length).toBe(0); // this is shown thanks to quick preview
 
   // collapsing everything again
   fireEvent.click(await res.findByText(/data/));
@@ -66,7 +71,7 @@ test('can manually collapse properties', async () => {
   });
 });
 
-test('can filter for data', async () => {
+test.local('can filter for data', async () => {
   const res = render(
     <DataInspector data={json} collapsed={false} expandRoot />,
   );
@@ -86,7 +91,7 @@ test('can filter for data', async () => {
     <span>
       "j
       <span
-        class="css-i709sw-Highlighted eiud9hg0"
+        class="css-1cfwmd7-Highlighted eiud9hg0"
       >
         son
       </span>

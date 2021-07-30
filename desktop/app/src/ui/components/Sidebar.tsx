@@ -9,7 +9,6 @@
 
 import {theme, _Interactive, _InteractiveProps} from 'flipper-plugin';
 import FlexColumn from './FlexColumn';
-import {colors} from './colors';
 import {Component} from 'react';
 import styled from '@emotion/styled';
 import {Property} from 'csstype';
@@ -33,8 +32,7 @@ const SidebarContainer = styled(FlexColumn)<{
   ...(props.unstyled
     ? undefined
     : {
-        backgroundColor:
-          props.backgroundColor || colors.macOSTitleBarBackgroundBlur,
+        backgroundColor: props.backgroundColor || theme.backgroundDefault,
         borderLeft: props.position === 'right' ? borderStyle : 'none',
         borderTop: props.position === 'bottom' ? borderStyle : 'none',
         borderRight: props.position === 'left' ? borderStyle : 'none',

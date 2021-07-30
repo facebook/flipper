@@ -7,25 +7,50 @@
  * @format
  */
 
-import {
-  FlipperDevicePlugin,
-  FlipperBasePlugin,
-  PluginDefinition,
-  DevicePluginDefinition,
-  ClientPluginDefinition,
-} from '../plugin';
+import type {PluginDefinition} from '../plugin';
 import type {State} from '../reducers';
-import type {State as PluginStatesState} from '../reducers/pluginStates';
 import type {State as PluginsState} from '../reducers/plugins';
-import {_SandyPluginDefinition} from 'flipper-plugin';
 import type BaseDevice from '../devices/BaseDevice';
 import type Client from '../Client';
 import type {
+  ActivatablePluginDetails,
   BundledPluginDetails,
   DownloadablePluginDetails,
   PluginDetails,
 } from 'flipper-plugin-lib';
 import {getLatestCompatibleVersionOfEachPlugin} from '../dispatcher/plugins';
+
+export type PluginLists = {
+  devicePlugins: PluginDefinition[];
+  metroPlugins: PluginDefinition[];
+  enabledPlugins: PluginDefinition[];
+  disabledPlugins: PluginDefinition[];
+  unavailablePlugins: [plugin: PluginDetails, reason: string][];
+  downloadablePlugins: (DownloadablePluginDetails | BundledPluginDetails)[];
+};
+
+export type ActivePluginListItem =
+  | {
+      status: 'enabled';
+      details: ActivatablePluginDetails;
+      definition: PluginDefinition;
+    }
+  | {
+      status: 'disabled';
+      details: ActivatablePluginDetails;
+      definition: PluginDefinition;
+    }
+  | {
+      status: 'uninstalled';
+      details: DownloadablePluginDetails | BundledPluginDetails;
+    }
+  | {
+      status: 'unavailable';
+      details: PluginDetails;
+      reason: string;
+    };
+
+export type ActivePluginList = Record<string, ActivePluginListItem | undefined>;
 
 export const defaultEnabledBackgroundPlugins = ['Navigation']; // The navigation plugin is enabled always, to make sure the navigation features works
 
@@ -53,37 +78,16 @@ export function getPluginKey(
   return `unknown#${pluginID}`;
 }
 
-export function isSandyPlugin(
-  plugin?: PluginDefinition | null,
-): plugin is _SandyPluginDefinition {
-  return plugin instanceof _SandyPluginDefinition;
-}
+export const pluginKey = (serial: string, pluginName: string): string => {
+  return `${serial}#${pluginName}`;
+};
 
-export function getPersistedState<PersistedState>(
-  pluginKey: string,
-  persistingPlugin: typeof FlipperBasePlugin | null,
-  pluginStates: PluginStatesState,
-): PersistedState | null {
-  if (!persistingPlugin) {
-    return null;
-  }
-
-  const persistedState: PersistedState = {
-    ...persistingPlugin.defaultPersistedState,
-    ...pluginStates[pluginKey],
-  };
-  return persistedState;
-}
-
-export function getExportablePlugins(
-  state: Pick<
-    State,
-    'plugins' | 'connections' | 'pluginStates' | 'pluginMessageQueue'
-  >,
-  device: BaseDevice | undefined | null,
-  client?: Client,
+export function computeExportablePlugins(
+  state: Pick<State, 'plugins' | 'connections' | 'pluginMessageQueue'>,
+  device: BaseDevice | null,
+  client: Client | null,
+  availablePlugins: PluginLists,
 ): {id: string; label: string}[] {
-  const availablePlugins = computePluginLists(state.connections, state.plugins);
   return [
     ...availablePlugins.devicePlugins.filter((plugin) => {
       return isExportablePlugin(state, device, client, plugin);
@@ -98,25 +102,14 @@ export function getExportablePlugins(
 }
 
 function isExportablePlugin(
-  {
-    pluginStates,
-    pluginMessageQueue,
-  }: Pick<State, 'pluginStates' | 'pluginMessageQueue'>,
-  device: BaseDevice | undefined | null,
-  client: Client | undefined,
+  {pluginMessageQueue}: Pick<State, 'pluginMessageQueue'>,
+  device: BaseDevice | null,
+  client: Client | null,
   plugin: PluginDefinition,
 ): boolean {
-  // can generate an export when requested
-  if (!isSandyPlugin(plugin) && plugin.exportPersistedState) {
-    return true;
-  }
   const pluginKey = isDevicePluginDefinition(plugin)
     ? getPluginKey(undefined, device, plugin.id)
     : getPluginKey(client?.id, undefined, plugin.id);
-  // plugin has exportable redux state
-  if (pluginStates[pluginKey]) {
-    return true;
-  }
   // plugin has exportable sandy state
   if (client?.sandyPluginStates.get(plugin.id)?.isPersistable()) {
     return true;
@@ -125,10 +118,7 @@ function isExportablePlugin(
     return true;
   }
   // plugin has pending messages and a persisted state reducer or isSandy
-  if (
-    pluginMessageQueue[pluginKey] &&
-    ((plugin as any).defaultPersistedState || isSandyPlugin(plugin))
-  ) {
+  if (pluginMessageQueue[pluginKey]) {
     return true;
   }
   // nothing to serialize
@@ -156,13 +146,20 @@ export function sortPluginsByName(
   return getPluginTitle(a) > getPluginTitle(b) ? 1 : -1;
 }
 
+export function isDevicePlugin(activePlugin: ActivePluginListItem) {
+  if (activePlugin.details.pluginType === 'device') {
+    return true;
+  }
+  return (
+    (activePlugin.status === 'enabled' || activePlugin.status === 'disabled') &&
+    isDevicePluginDefinition(activePlugin.definition)
+  );
+}
+
 export function isDevicePluginDefinition(
   definition: PluginDefinition,
-): definition is DevicePluginDefinition {
-  return (
-    (definition as any).prototype instanceof FlipperDevicePlugin ||
-    (definition instanceof _SandyPluginDefinition && definition.isDevicePlugin)
-  );
+): boolean {
+  return definition.isDevicePlugin;
 }
 
 export function getPluginTooltip(details: PluginDetails): string {
@@ -174,11 +171,7 @@ export function getPluginTooltip(details: PluginDetails): string {
 export function computePluginLists(
   connections: Pick<
     State['connections'],
-    | 'activeDevice'
-    | 'activeClient'
-    | 'metroDevice'
-    | 'enabledDevicePlugins'
-    | 'enabledPlugins'
+    'enabledDevicePlugins' | 'enabledPlugins'
   >,
   plugins: Pick<
     State['plugins'],
@@ -191,34 +184,30 @@ export function computePluginLists(
     | 'failedPlugins'
     | 'clientPlugins'
   >,
+  device: BaseDevice | null,
+  metroDevice: BaseDevice | null,
+  client: Client | null,
 ): {
-  devicePlugins: DevicePluginDefinition[];
-  metroPlugins: DevicePluginDefinition[];
-  enabledPlugins: ClientPluginDefinition[];
+  devicePlugins: PluginDefinition[];
+  metroPlugins: PluginDefinition[];
+  enabledPlugins: PluginDefinition[];
   disabledPlugins: PluginDefinition[];
   unavailablePlugins: [plugin: PluginDetails, reason: string][];
   downloadablePlugins: (DownloadablePluginDetails | BundledPluginDetails)[];
 } {
-  const device = connections.activeDevice;
-  const client = connections.activeClient;
-  const metroDevice = connections.metroDevice;
   const enabledDevicePluginsState = connections.enabledDevicePlugins;
   const enabledPluginsState = connections.enabledPlugins;
   const uninstalledMarketplacePlugins = getLatestCompatibleVersionOfEachPlugin([
     ...plugins.bundledPlugins.values(),
     ...plugins.marketplacePlugins,
   ]).filter((p) => !plugins.loadedPlugins.has(p.id));
-  const devicePlugins: DevicePluginDefinition[] = [
-    ...plugins.devicePlugins.values(),
-  ]
+  const devicePlugins: PluginDefinition[] = [...plugins.devicePlugins.values()]
     .filter((p) => device?.supportsPlugin(p))
     .filter((p) => enabledDevicePluginsState.has(p.id));
-  const metroPlugins: DevicePluginDefinition[] = [
-    ...plugins.devicePlugins.values(),
-  ]
+  const metroPlugins: PluginDefinition[] = [...plugins.devicePlugins.values()]
     .filter((p) => metroDevice?.supportsPlugin(p))
     .filter((p) => enabledDevicePluginsState.has(p.id));
-  const enabledPlugins: ClientPluginDefinition[] = [];
+  const enabledPlugins: PluginDefinition[] = [];
   const disabledPlugins: PluginDefinition[] = [
     ...plugins.devicePlugins.values(),
   ]
@@ -242,7 +231,9 @@ export function computePluginLists(
           p.details,
           `Device plugin '${getPluginTitle(
             p.details,
-          )}' is not supported by the currently connected device.`,
+          )}' is not supported by the selected device '${device.title}' (${
+            device.os
+          })`,
         ]);
       }
     }
@@ -260,18 +251,21 @@ export function computePluginLists(
 
   // process problematic plugins
   plugins.disabledPlugins.forEach((plugin) => {
-    unavailablePlugins.push([plugin, 'Plugin is disabled by configuration']);
+    unavailablePlugins.push([
+      plugin,
+      `Plugin '${plugin.title}' is disabled by configuration`,
+    ]);
   });
   plugins.gatekeepedPlugins.forEach((plugin) => {
     unavailablePlugins.push([
       plugin,
-      `This plugin is only available to members of gatekeeper '${plugin.gatekeeper}'`,
+      `Plugin '${plugin.title}' is only available to members of gatekeeper '${plugin.gatekeeper}'`,
     ]);
   });
   plugins.failedPlugins.forEach(([plugin, error]) => {
     unavailablePlugins.push([
       plugin,
-      `Flipper failed to load this plugin: '${error}'`,
+      `Plugin '${plugin.title}' failed to load: '${error}'`,
     ]);
   });
 
@@ -293,7 +287,9 @@ export function computePluginLists(
           plugin.details,
           `Plugin '${getPluginTitle(
             plugin.details,
-          )}' is not supported by the client application`,
+          )}' is not supported by the selected application '${
+            client.query.app
+          }' (${client.query.os})`,
         ]);
       } else if (favoritePlugins.includes(plugin)) {
         enabledPlugins.push(plugin);
@@ -315,13 +311,21 @@ export function computePluginLists(
     .forEach((plugin) => {
       unavailablePlugins.push([
         plugin,
-        `Plugin '${getPluginTitle(
-          plugin,
-        )}' is not supported by the client application and not installed in Flipper`,
+        `Plugin '${getPluginTitle(plugin)}' is not supported by the selected ${
+          plugin.pluginType === 'device' ? 'device' : 'application'
+        } '${
+          (plugin.pluginType === 'device'
+            ? device?.title
+            : client?.query.app) ?? 'unknown'
+        }' (${
+          plugin.pluginType === 'device' ? device?.os : client?.query.os
+        }) and not installed in Flipper`,
       ]);
     });
 
+  enabledPlugins.sort(sortPluginsByName);
   devicePlugins.sort(sortPluginsByName);
+  disabledPlugins.sort(sortPluginsByName);
   metroPlugins.sort(sortPluginsByName);
   unavailablePlugins.sort(([a], [b]) => {
     return getPluginTitle(a) > getPluginTitle(b) ? 1 : -1;
@@ -352,9 +356,7 @@ function getFavoritePlugins(
       return [];
     }
     // for *imported* devices, all stored plugins are enabled
-    return allPlugins.filter(
-      (plugin) => client.plugins.indexOf(plugin.id) !== -1,
-    );
+    return allPlugins.filter((plugin) => client.plugins.has(plugin.id));
   }
   if (!enabledPlugins || !enabledPlugins.length) {
     return returnFavoredPlugins ? [] : allPlugins;
@@ -363,4 +365,57 @@ function getFavoritePlugins(
     const idx = enabledPlugins.indexOf(plugin.id);
     return idx === -1 ? !returnFavoredPlugins : returnFavoredPlugins;
   });
+}
+
+export function computeActivePluginList({
+  enabledPlugins,
+  devicePlugins,
+  metroPlugins,
+  disabledPlugins,
+  downloadablePlugins,
+  unavailablePlugins,
+}: PluginLists) {
+  const pluginList: ActivePluginList = {};
+  for (const plugin of enabledPlugins) {
+    pluginList[plugin.id] = {
+      status: 'enabled',
+      details: plugin.details,
+      definition: plugin,
+    };
+  }
+  for (const plugin of devicePlugins) {
+    pluginList[plugin.id] = {
+      status: 'enabled',
+      details: plugin.details,
+      definition: plugin,
+    };
+  }
+  for (const plugin of metroPlugins) {
+    pluginList[plugin.id] = {
+      status: 'enabled',
+      details: plugin.details,
+      definition: plugin,
+    };
+  }
+  for (const plugin of disabledPlugins) {
+    pluginList[plugin.id] = {
+      status: 'disabled',
+      details: plugin.details,
+      definition: plugin,
+    };
+  }
+  for (const plugin of downloadablePlugins) {
+    pluginList[plugin.id] = {
+      status: 'uninstalled',
+      details: plugin,
+    };
+  }
+  for (const [plugin, reason] of unavailablePlugins) {
+    pluginList[plugin.id] = {
+      status: 'unavailable',
+      details: plugin,
+      reason,
+    };
+  }
+  return pluginList;
 }

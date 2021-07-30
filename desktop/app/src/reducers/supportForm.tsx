@@ -17,10 +17,9 @@ import {addStatusMessage, removeStatusMessage} from './application';
 import constants from '../fb-stubs/constants';
 import {getInstance} from '../fb-stubs/Logger';
 import {logPlatformSuccessRate} from '../utils/metrics';
-import {getExportablePlugins} from '../utils/pluginUtils';
 export const SUPPORT_FORM_PREFIX = 'support-form-v2';
-import Client from '../Client';
-import BaseDevice, {OS} from '../devices/BaseDevice';
+import {OS} from '../devices/BaseDevice';
+import {getExportablePlugins} from '../selectors/connections';
 
 const {DEFAULT_SUPPORT_GROUP} = constants;
 
@@ -132,7 +131,7 @@ export class Group {
           enabledPlugins != null && enabledPlugins.includes(requiredPlugin);
         if (
           selectedClient &&
-          selectedClient.plugins.includes(requiredPlugin) &&
+          selectedClient.plugins.has(requiredPlugin) &&
           !requiredPluginEnabled
         ) {
           const plugin =
@@ -146,7 +145,7 @@ export class Group {
           );
         } else if (
           !selectedClient ||
-          !selectedClient.plugins.includes(requiredPlugin)
+          !selectedClient.plugins.has(requiredPlugin)
         ) {
           unsupportedPlugins.push(requiredPlugin);
         }
@@ -193,11 +192,7 @@ export class Group {
         selectedGroup: this,
       }),
     );
-    const pluginsList = getExportablePlugins(
-      store.getState(),
-      store.getState().connections.selectedDevice ?? undefined,
-      selectedClient,
-    );
+    const pluginsList = getExportablePlugins(store.getState());
 
     store.dispatch(
       setSelectedPlugins(
@@ -220,10 +215,8 @@ export class Group {
 
   getWarningMessage(
     state: Parameters<typeof getExportablePlugins>[0],
-    device: BaseDevice | undefined,
-    client: Client,
   ): string | null {
-    const activePersistentPlugins = getExportablePlugins(state, device, client);
+    const activePersistentPlugins = getExportablePlugins(state);
     const emptyPlugins: Array<string> = [];
     for (const plugin of this.requiredPlugins) {
       if (

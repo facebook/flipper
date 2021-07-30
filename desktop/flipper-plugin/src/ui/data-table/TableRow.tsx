@@ -10,7 +10,7 @@
 import React, {CSSProperties, memo} from 'react';
 import styled from '@emotion/styled';
 import {theme} from '../theme';
-import type {TableRowRenderContext} from './DataTable';
+import {DataTableColumn, TableRowRenderContext} from './DataTable';
 import {Width} from '../../utils/widthUtils';
 import {DataFormatter} from '../DataFormatter';
 import {Dropdown} from 'antd';
@@ -121,9 +121,12 @@ export const TableRow = memo(function TableRow<T>({
       {config.columns
         .filter((col) => col.visible)
         .map((col) => {
-          const value = col.onRender
-            ? (col as any).onRender(record, highlighted, itemIndex)
-            : DataFormatter.format((record as any)[col.key], col.formatters);
+          const value = renderColumnValue<T>(
+            col,
+            record,
+            highlighted,
+            itemIndex,
+          );
 
           return (
             <TableBodyColumnContainer
@@ -147,3 +150,14 @@ export const TableRow = memo(function TableRow<T>({
     return row;
   }
 });
+
+export function renderColumnValue<T>(
+  col: DataTableColumn<any>,
+  record: T,
+  highlighted: boolean,
+  itemIndex: number,
+) {
+  return col.onRender
+    ? col.onRender(record, highlighted, itemIndex)
+    : DataFormatter.format((record as any)[col.key], col.formatters);
+}

@@ -7,7 +7,7 @@
  * @format
  */
 
-import {shell} from 'electron';
+import {getFlipperLib} from 'flipper-plugin';
 import {Typography} from 'antd';
 
 const AntOriginalLink = Typography.Link;
@@ -15,7 +15,7 @@ const AntOriginalLink = Typography.Link;
 // used by patch for Typography.Link in AntD
 // @ts-ignore
 global.flipperOpenLink = function openLinkExternal(url: string) {
-  shell.openExternal(url);
+  getFlipperLib().openLink(url);
 };
 
 export default AntOriginalLink;

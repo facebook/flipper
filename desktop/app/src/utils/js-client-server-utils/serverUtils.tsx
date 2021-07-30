@@ -8,19 +8,21 @@
  */
 
 import Client, {ClientQuery} from '../../Client';
-import {FlipperClientConnection} from '../../Client';
+import {
+  ClientConnection,
+  ConnectionStatus,
+  ConnectionStatusChange,
+  ResponseType,
+} from '../../comms/ClientConnection';
 import {ipcRenderer, remote, IpcRendererEvent} from 'electron';
 import JSDevice from '../../devices/JSDevice';
 import {Store} from '../../reducers';
 import {Logger} from '../../fb-interfaces/Logger';
-
-import {Payload, ConnectionStatus, ISubscriber} from 'rsocket-types';
-import {Flowable, Single} from 'rsocket-flowable';
-import Server from '../../server';
+import ServerController from '../../comms/ServerController';
 import {buildClientId} from '../clientUtils';
 import {destroyDevice} from '../../reducers/connections';
 
-const connections: Map<number, JSClientFlipperConnection<any>> = new Map();
+const connections: Map<number, JSClientFlipperConnection> = new Map();
 
 const availablePlugins: Map<number, Array<string>> = new Map();
 
@@ -31,11 +33,11 @@ function jsDeviceId(windowId: number): string {
 export function initJsEmulatorIPC(
   store: Store,
   logger: Logger,
-  flipperServer: Server,
+  flipperServer: ServerController,
   flipperConnections: Map<
     string,
     {
-      connection: FlipperClientConnection<any, any> | null | undefined;
+      connection: ClientConnection | null | undefined;
       client: Client;
     }
   >,
@@ -79,46 +81,47 @@ export function initJsEmulatorIPC(
         client: client,
       });
 
-      connection.connectionStatus().subscribe({
-        onNext(payload) {
-          if (payload.kind == 'ERROR' || payload.kind == 'CLOSED') {
-            console.debug(`Device disconnected ${client.id}`, 'server');
-            flipperServer.removeConnection(client.id);
-            destroyDevice(store, logger, jsDeviceId(windowId));
-            connections.delete(windowId);
-            availablePlugins.delete(windowId);
-          }
-        },
-        onSubscribe(subscription) {
-          subscription.request(Number.MAX_SAFE_INTEGER);
-        },
+      connection.subscribeToEvents((status) => {
+        if (
+          status == ConnectionStatus.ERROR ||
+          status == ConnectionStatus.CLOSED
+        ) {
+          console.debug(`Device disconnected ${client.id}`, 'server');
+          flipperServer.removeConnection(client.id);
+          destroyDevice(store, logger, jsDeviceId(windowId));
+          connections.delete(windowId);
+          availablePlugins.delete(windowId);
+        }
       });
 
-      client.init().then(() => {
-        console.log(client);
-        flipperServer.emit('new-client', client);
-        flipperServer.emit('clients-change');
-        client.emit('plugins-change');
+      client
+        .init()
+        .then(() => {
+          console.log(client);
+          flipperServer.emit('new-client', client);
+          flipperServer.emit('clients-change');
+          client.emit('plugins-change');
 
-        ipcRenderer.on(
-          'from-js-emulator',
-          (_event: IpcRendererEvent, message: any) => {
-            const {command, payload} = message;
-            if (command === 'sendFlipperObject') {
-              client.onMessage(
-                JSON.stringify({
-                  params: {
-                    api: payload.api,
-                    method: payload.method,
-                    params: JSON.parse(payload.params),
-                  },
-                  method: 'execute',
-                }),
-              );
-            }
-          },
-        );
-      });
+          ipcRenderer.on(
+            'from-js-emulator',
+            (_event: IpcRendererEvent, message: any) => {
+              const {command, payload} = message;
+              if (command === 'sendFlipperObject') {
+                client.onMessage(
+                  JSON.stringify({
+                    params: {
+                      api: payload.api,
+                      method: payload.method,
+                      params: JSON.parse(payload.params),
+                    },
+                    method: 'execute',
+                  }),
+                );
+              }
+            },
+          );
+        })
+        .catch((_) => {});
     },
   );
 }
@@ -156,65 +159,53 @@ export function launchJsEmulator(url: string, height: number, width: number) {
   });
 }
 
-export class JSClientFlipperConnection<M>
-  implements FlipperClientConnection<string, M>
-{
+export class JSClientFlipperConnection implements ClientConnection {
   webContentsId: number;
-  connStatusSubscribers: Set<ISubscriber<ConnectionStatus>> = new Set();
+  connStatusSubscribers: Set<ConnectionStatusChange> = new Set();
   connStatus: ConnectionStatus;
 
   constructor(webContentsId: number) {
     this.webContentsId = webContentsId;
-    this.connStatus = {kind: 'CONNECTED'};
+    this.connStatus = ConnectionStatus.CONNECTED;
   }
-
-  connectionStatus(): Flowable<ConnectionStatus> {
-    return new Flowable<ConnectionStatus>((subscriber) => {
-      subscriber.onSubscribe({
-        cancel: () => {
-          this.connStatusSubscribers.delete(subscriber);
-        },
-        request: (_) => {
-          this.connStatusSubscribers.add(subscriber);
-          subscriber.onNext(this.connStatus);
-        },
-      });
-    });
+  subscribeToEvents(subscriber: ConnectionStatusChange): void {
+    this.connStatusSubscribers.add(subscriber);
   }
-
-  close(): void {
-    this.connStatus = {kind: 'CLOSED'};
-    this.connStatusSubscribers.forEach((subscriber) => {
-      subscriber.onNext(this.connStatus);
-    });
-  }
-
-  fireAndForget(payload: Payload<string, M>): void {
+  send(data: any): void {
     ipcRenderer.sendTo(
       this.webContentsId,
       'message-to-plugin',
-      JSON.parse(payload.data != null ? payload.data : '{}'),
+      JSON.parse(data != null ? data : '{}'),
     );
   }
-
   // TODO: fully implement and return actual result
-  requestResponse(payload: Payload<string, M>): Single<Payload<string, M>> {
-    return new Single((subscriber) => {
-      const method =
-        payload.data != null ? JSON.parse(payload.data).method : 'not-defined';
-      if (method != 'getPlugins') {
-        this.fireAndForget(payload);
+  sendExpectResponse(data: any): Promise<ResponseType> {
+    return new Promise((resolve, _) => {
+      const method = data != null ? JSON.parse(data).method : 'not-defined';
+
+      if (method !== 'getPlugins') {
+        this.send(data);
       }
-      subscriber.onSubscribe(() => {});
-      subscriber.onComplete(
-        method == 'getPlugins'
-          ? {
-              data: JSON.stringify({
-                success: {plugins: availablePlugins.get(this.webContentsId)},
-              }),
-            }
-          : {data: JSON.stringify({success: null})},
-      );
+
+      if (method === 'getPlugins') {
+        resolve({
+          success: {
+            plugins: availablePlugins.get(this.webContentsId),
+          },
+          length: 0,
+        });
+      } else {
+        resolve({
+          success: undefined,
+          length: 0,
+        });
+      }
+    });
+  }
+  close(): void {
+    this.connStatus = ConnectionStatus.CLOSED;
+    this.connStatusSubscribers.forEach((subscriber) => {
+      subscriber(this.connStatus);
     });
   }
 }

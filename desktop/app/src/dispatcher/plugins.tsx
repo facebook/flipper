@@ -318,22 +318,8 @@ const requirePluginInternal = (
     plugin.packageName = pluginDetails.name;
     plugin.details = pluginDetails;
 
-    if (
-      GK.get('flipper_use_sandy_plugin_wrapper') ||
-      process.env.NODE_ENV === 'test'
-    ) {
-      return createSandyPluginFromClassicPlugin(pluginDetails, plugin);
-    }
-
-    // set values from package.json as static variables on class
-    Object.keys(pluginDetails).forEach((key) => {
-      if (key !== 'name' && key !== 'id') {
-        plugin[key] =
-          plugin[key] || pluginDetails[key as keyof ActivatablePluginDetails];
-      }
-    });
+    return createSandyPluginFromClassicPlugin(pluginDetails, plugin);
   }
-  return plugin;
 };
 
 export function createSandyPluginFromClassicPlugin(

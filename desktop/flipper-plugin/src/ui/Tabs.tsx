@@ -54,7 +54,11 @@ export function Tabs({
         setActiveTab(key);
       }}
       {...baseProps}
-      className={cx(className, grow !== false ? growingTabs : undefined)}>
+      className={cx(
+        className,
+        baseTabs,
+        grow !== false ? growingTabs : undefined,
+      )}>
       {keyedChildren}
     </AntdTabs>
   );
@@ -74,6 +78,14 @@ export const Tab: React.FC<
     </AntdTabs.TabPane>
   );
 };
+
+const baseTabs = css`
+  & .ant-tabs-nav {
+    margin: 0;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+`;
 
 const growingTabs = css`
   flex: 1;

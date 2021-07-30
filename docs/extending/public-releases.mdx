@@ -127,7 +127,7 @@ involves creating a JIRA account and opening an issue to apply for the `com.face
 to find an existing member of this namespace to vouch for you. While this is a lot, it ensures that nobody
 from outside the organisation can publish under our name.
 
-The `uploadArchives` gradle task uses the OSSRH Sonatype Nexus credentials to upload all Flipper Java artifacts. That
+The `publish` (previously `uploadArchives`) gradle task uses the OSSRH Sonatype Nexus credentials to upload all Flipper Java artifacts. That
 includes the core SDK as well as our plugins. The credentials are *not* your login to Nexus, but the user tokens
 you can get from [your profile](https://oss.sonatype.org/#profile;User%20Token).
 

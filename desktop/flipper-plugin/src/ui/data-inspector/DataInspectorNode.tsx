@@ -27,6 +27,7 @@ import {Dropdown, Menu, Tooltip} from 'antd';
 import {tryGetFlipperLibImplementation} from '../../plugin/FlipperLib';
 import {safeStringify} from '../../utils/safeStringify';
 import {useInUnitTest} from '../../utils/useInUnitTest';
+import {theme} from '../theme';
 
 export {DataValueExtractor} from './DataPreview';
 
@@ -49,12 +50,12 @@ const BaseContainer = styled.div<{depth?: number; disabled?: boolean}>(
 BaseContainer.displayName = 'DataInspector:BaseContainer';
 
 const RecursiveBaseWrapper = styled.span({
-  color: '#FC3A4B',
+  color: theme.errorColor,
 });
 RecursiveBaseWrapper.displayName = 'DataInspector:RecursiveBaseWrapper';
 
 const Wrapper = styled.span({
-  color: '#555',
+  color: theme.textColorSecondary,
 });
 Wrapper.displayName = 'DataInspector:Wrapper';
 
@@ -64,7 +65,7 @@ const PropertyContainer = styled.span({
 PropertyContainer.displayName = 'DataInspector:PropertyContainer';
 
 const ExpandControl = styled.span({
-  color: '#6e6e6e',
+  color: theme.textColorSecondary,
   fontSize: 10,
   marginLeft: -11,
   marginRight: 5,
@@ -73,11 +74,11 @@ const ExpandControl = styled.span({
 ExpandControl.displayName = 'DataInspector:ExpandControl';
 
 const Added = styled.div({
-  backgroundColor: '#d2f0ea',
+  backgroundColor: theme.semanticColors.diffAddedBackground,
 });
 
 const Removed = styled.div({
-  backgroundColor: '#fbccd2',
+  backgroundColor: theme.semanticColors.diffRemovedBackground,
 });
 
 export type DataInspectorSetValue = (path: Array<string>, val: any) => void;

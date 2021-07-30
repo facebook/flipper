@@ -35,7 +35,9 @@ export function Crashes() {
         items={crashes.map((crash) => ({
           id: crash.notificationID,
           title: crash.reason ?? crash.name,
-          description: `${crash.date.toLocaleString()} - ${crash.name}`,
+          description: `${new Date(crash.date).toLocaleString()} - ${
+            crash.name
+          }`,
         }))}
         selection={selectedCrashId}
         onSelect={(id) => {

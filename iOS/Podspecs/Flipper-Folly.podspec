@@ -5,18 +5,18 @@
 
 Pod::Spec.new do |spec|
   spec.name = 'Flipper-Folly'
-  spec.version = '2.6.7'
+  spec.version = '2.6.9'
   spec.license = { :type => 'Apache License, Version 2.0' }
   spec.homepage = 'https://github.com/facebook/folly'
   spec.summary = 'An open-source C++ library developed and used at Facebook.'
   spec.authors = 'Facebook'
   spec.source = { :git => 'https://github.com/facebook/folly.git',
-                  :tag => "v2021.04.26.00"}
+                  :tag => "v2021.06.14.00"}
   spec.module_name = 'folly'
   spec.dependency 'Flipper-Boost-iOSX'
   spec.dependency 'Flipper-Glog'
   spec.dependency 'Flipper-DoubleConversion'
-  spec.dependency 'OpenSSL-Universal', '1.1.180'
+  spec.dependency 'OpenSSL-Universal', '1.1.1100'
   spec.dependency 'libevent', '~> 2.1.12'
   spec.dependency 'Flipper-Fmt', '7.1.7'
   spec.compiler_flags = '-DFOLLY_HAVE_BACKTRACE=1 -DFOLLY_HAVE_CLOCK_GETTIME=1 -DFOLLY_HAVE_PTHREAD=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_LIBGFLAGS=0 -DFOLLY_HAVE_LIBJEMALLOC=0 -DFOLLY_HAVE_PREADV=0 -DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0

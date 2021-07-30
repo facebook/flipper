@@ -24,7 +24,6 @@ import {
 import {PluginDefinition, DevicePluginMap, ClientPluginMap} from './plugin';
 import {connect} from 'react-redux';
 import React, {Component, Fragment} from 'react';
-import {clipboard} from 'electron';
 import {
   PluginNotification,
   updatePluginBlocklist,
@@ -32,9 +31,10 @@ import {
 } from './reducers/notifications';
 import {selectPlugin} from './reducers/connections';
 import {State as StoreState} from './reducers/index';
-import textContent from './utils/textContent';
+import {textContent} from 'flipper-plugin';
 import createPaste from './fb-stubs/createPaste';
 import {getPluginTitle} from './utils/pluginUtils';
+import {getFlipperLib} from 'flipper-plugin';
 
 type OwnProps = {
   onClear: () => void;
@@ -459,7 +459,7 @@ class NotificationItem extends Component<
     createPaste(this.getContent());
   };
 
-  copy = () => clipboard.writeText(this.getContent());
+  copy = () => getFlipperLib().writeTextToClipboard(this.getContent());
 
   getContent = (): string =>
     [

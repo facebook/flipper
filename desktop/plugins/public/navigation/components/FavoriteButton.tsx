@@ -27,7 +27,7 @@ const FavoriteButtonContainer = styled.div({
   },
 });
 
-export default (props: Props) => {
+export function FavoriteButton(props: Props) {
   const {highlighted, onClick, ...iconButtonProps} = props;
   return (
     <FavoriteButtonContainer>
@@ -42,4 +42,4 @@ export default (props: Props) => {
       <IconButton outline icon="star" onClick={onClick} {...iconButtonProps} />
     </FavoriteButtonContainer>
   );
-};
+}

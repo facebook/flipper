@@ -40,26 +40,6 @@ class TestPlugin extends FlipperPlugin<any, any, any> {
   }
 }
 
-test('can create a Fake flipper', async () => {
-  const {client, device, store, sendMessage} =
-    await createMockFlipperWithPlugin(TestPlugin, {disableLegacyWrapper: true});
-  expect(client).toBeTruthy();
-  expect(device).toBeTruthy();
-  expect(store).toBeTruthy();
-  expect(sendMessage).toBeTruthy();
-  expect(client.plugins.includes(TestPlugin.id)).toBe(true);
-  expect(store.getState().connections).toMatchSnapshot();
-  expect(store.getState().plugins).toMatchSnapshot();
-  sendMessage('inc', {});
-  expect(store.getState().pluginStates).toMatchInlineSnapshot(`
-        Object {
-          "TestApp#Android#MockAndroidDevice#serial#TestPlugin": Object {
-            "count": 1,
-          },
-        }
-      `);
-});
-
 const testIdler = new TestIdler();
 
 function testOnStatusMessage() {
@@ -73,7 +53,7 @@ test('can create a Fake flipper with legacy wrapper', async () => {
   expect(device).toBeTruthy();
   expect(store).toBeTruthy();
   expect(sendMessage).toBeTruthy();
-  expect(client.plugins.includes(TestPlugin.id)).toBe(true);
+  expect(client.plugins.has(TestPlugin.id)).toBe(true);
   expect(client.sandyPluginStates.has(TestPlugin.id)).toBe(true);
   const state = store.getState();
   expect(state.connections).toMatchSnapshot();

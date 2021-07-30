@@ -39,6 +39,11 @@ export default async function computePackageChecksum(
   hash.setEncoding('hex');
   const files = (await packlist({path: dir})).sort();
   for (const file of files) {
+    const segments = file.split(path.sep);
+    if (segments.length > 0 && segments[0] === 'docs') {
+      continue;
+    }
+
     const filePath = path.resolve(dir, file);
 
     if (filePath === fullChecksumFilePath) {

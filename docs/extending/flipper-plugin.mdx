@@ -472,8 +472,9 @@ Its value should be treated as immutable and is initialized by default using the
 Optionally, `options` can be provided when creating state. Supported options:
 
 * `persist: string`. If the `persist` value is set, this state container will be serialized when n Flipper snapshot export is being made. When a snapshot is imported into Flipper, and plugins are initialized, this state container will load its initial value from the snapshot, rather than using the `initialValue` parameter. The `persist` key should be unique within the plugin and only be set if the state stored in this container is serializable and won't become unreasonably large. See also `exportState` and `initialState` in the [`TestUtils`](#testutils) section.
+* `persistToLocalStorage: boolean`. If this option is set in combination with the `persist` option. The atom will store its state in local storage instead of as part of the plugin import / export. State stored in local storage is shared between the same plugin across multiple clients/ devices, but not actively synced.
 
-Serializable is defined as: non-cyclic data, consisting purely of primitive values, plain objects, arrays or Date, Set or Map objects.
+Serializable is defined as: non-cyclic data, consisting purely of primitive values, plain objects and arrays. Precisely as the root, `Date`, `Set` or `Map` objects are allowed as well, but they shouldn't appear deeper in the tree.
 
 #### The state atom object
 
@@ -894,6 +895,39 @@ Properties:
 * `type`: `default` or `dropdown. Defines the styling of the component. By default shows a list, but alternatively the items can be displayed in a drop down
 * `scrollable`: By default the data list will take all available space and scroll if items aren't otherwise visible. By setting `scrollable={false}` the list will only take its natural size
 
+### Dialog
+
+The `Dialog` namespace provides a set of utility to prompt the user with feedback of input. Rather than spawning dialogs by hand, the benefit of the `Dialog` utilities is that they all return promises capture the results.
+
+The promises returned by `Dialog` will resolve to `false` if the user intentionally closed the dialog (typically by using cancel / escape / clicking the close button).
+
+The promises returend by `Dialog` utilities will expose a `close()` method that can be used to programmatically close a dialog. In which case the pending promise will resolve to `false` as well.
+
+General properties accepted by the `Dialog` utility:
+
+* `title` - Overrides the title of the dialog, defaults to empty.
+* `width` - Overrides the default width (400) for dialogs. Number in pixels.
+* `okText` - Overrides the caption of the OK button
+* `cancelText` - Overrides the caption of the Cancel button
+
+Available utilities
+
+* `Dialog.confirm(options): Promise<boolean>`. Show a confirmation dialog to the user. Options:
+  * `message`: Description of what the user is confirming.
+* `Dialog.prompt(options): Promise<string | false>`. Prompt the user for some input. Options:
+  * `message`: Text accompanying the input
+  * `defaultValue`
+  * `onConfirm(value) => Promise<string>`. Can be used to transform the inputted value before resolving the prompt promise. If the handler throws, this will be shown as validation error in the dialog.
+* `Dialog.loading(options): Promise<void>`. Shows a dialog with a loading spinner. This dialog cannot be closed by the user, so instead `.close()` should be called programmatically on the returned promise.
+  * `message`: Message to display with the loading spinner.
+* `Dialog.show<T>(options): Promise<T | false`. Low level building block to build dialogs. Options:
+  * `children`: React Element to render as children of the dialog.
+  * `onConfirm: () => Promise<T>`. Handler to handle the OK button, which should produce the value the `Dialog.show` call will resolve to.
+
+### Spinner
+
+Shows a loading spinner. Accept an optional `size` to make the spinner larger / smaller.
+
 ### NUX
 
 An element that can be used to provide a New User eXperience: Hints that give a one time introduction to new features to the current user.
@@ -934,6 +968,13 @@ See `View > Flipper Style Guide` inside the Flipper application for more details
 
 ## Utilities
 
+### getFlipperLib
+
+A set of globally available utilities like opening links, interacting with the clipboard, etc.
+Example: `getFlipperLib().writeTextToClipboard("hello from Flipper");
+
+The full set of utilities can be found [here](https://github.com/facebook/flipper/blob/master/desktop/flipper-plugin/src/plugin/FlipperLib.tsx#L20)
+
 ### createTablePlugin
 
 Utility to create a plugin that consists of a master table and details JSON view with minimal effort. See the [Showing a table](../tutorial/js-table.mdx) tutorial for an example.
@@ -941,10 +982,10 @@ Utility to create a plugin that consists of a master table and details JSON view
 `createTablePlugin` creates a plugin that handles receiving data from the client and
 displaying it in a table. The table handles selection of items, sorting, filtering and rendering a sidebar where more detailed information can be presented about the selected row.
 
-The plugin expects to be able to subscribe to the `method` argument and receive either single data objects. 
+The plugin expects to be able to subscribe to the `method` argument and receive either single data objects.
 Each data object represents a row in the table.
 
-An optional `resetMethod` argument can be provided which will replace the current rows with the data provided. 
+An optional `resetMethod` argument can be provided which will replace the current rows with the data provided.
 This is useful when connecting to Flipper for this first time, or reconnecting to
 the client in an unknown state.
 
@@ -956,8 +997,8 @@ Valid options are:
 * `resetMethod?: string`: An event name, that, when sent from the client, should clear the current table.
 * `columns: DataTableColumn`: A description of the columns to display. See the [DataTable columns](#datatable).
 * `key?: string`: If set, the specified field of the incoming data will be treated as unique identifier. Receiving new data for existing rows will replace the existing rows. Without this property the table will only be appended.
-* `onCopyRows?: (rows) => string`: A function that can be used to customize how records are copied to the clipboard. By default they will be `JSON.stringify`-ed.  
-* `buildRow?: (rawData) => row`: A function that can be used to preprocess the incoming data before it is handed of to the table. 
+* `onCopyRows?: (rows) => string`: A function that can be used to customize how records are copied to the clipboard. By default they will be `JSON.stringify`-ed.
+* `buildRow?: (rawData) => row`: A function that can be used to preprocess the incoming data before it is handed of to the table.
 * `renderSidebar?: (row) => React.Element`: A function that can be used to customize how the sidebar is rendered.
 
 ### batch
@@ -1003,6 +1044,10 @@ Creates a promise that automatically resolves after the specified amount of mill
 ## styled
 
 A convenience re-export of `styled` from [emotion](https://emotion.sh/docs/styled).
+
+## textContent
+
+Given a string or React element, returns a text representation of that element, that is suitable as plain text.
 
 ## TestUtils
 

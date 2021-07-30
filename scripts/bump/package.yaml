@@ -1,5 +1,5 @@
 name:                bump
-version:             0.2.6
+version:             0.2.7
 
 dependencies:
   - base >= 4.7 && < 5
@@ -12,3 +12,4 @@ executables:
   bump:
     source-dirs:      .
     main:             bump.hs
+    ghc-options:      -optl-static -optl-pthread -fPIC

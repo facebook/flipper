@@ -13,8 +13,9 @@ import FlexColumn from './FlexColumn';
 import FlexBox from './FlexBox';
 import {colors} from './colors';
 import Glyph from './Glyph';
+import {theme} from 'flipper-plugin';
 
-const BORDER = '1px solid #dddfe2';
+const BORDER = `1px solid ${theme.dividerColor}`;
 
 const Chevron = styled(Glyph)({
   marginRight: 4,
@@ -100,7 +101,8 @@ export default class Panel extends React.Component<
   static PanelHeader = styled(FlexBox)<{floating?: boolean; padded?: boolean}>(
     (props) => ({
       userSelect: 'none',
-      backgroundColor: '#f6f7f9',
+      color: theme.textColorPrimary,
+      backgroundColor: theme.backgroundWash,
       border: props.floating ? BORDER : 'none',
       borderBottom: BORDER,
       borderTopLeftRadius: 2,
@@ -118,7 +120,7 @@ export default class Panel extends React.Component<
 
   static PanelBody = styled(FlexColumn)<{floating?: boolean; padded?: boolean}>(
     (props) => ({
-      backgroundColor: '#fff',
+      backgroundColor: theme.backgroundDefault,
       border: props.floating ? BORDER : 'none',
       borderBottomLeftRadius: 2,
       borderBottomRightRadius: 2,

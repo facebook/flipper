@@ -85,6 +85,7 @@ type DataManagerActions<T> =
     >
   | Action<'removeColumnFilter', {column: keyof T; index: number}>
   | Action<'toggleColumnFilter', {column: keyof T; index: number}>
+  | Action<'setColumnFilterInverse', {column: keyof T; inversed: boolean}>
   | Action<'setColumnFilterFromSelection', {column: keyof T}>
   | Action<'appliedInitialScroll'>
   | Action<'toggleUseRegex'>
@@ -216,6 +217,11 @@ export const dataTableManagerReducer = produce<
         action.index
       ];
       f.enabled = !f.enabled;
+      break;
+    }
+    case 'setColumnFilterInverse': {
+      draft.columns.find((c) => c.key === action.column)!.inversed =
+        action.inversed;
       break;
     }
     case 'setColumnFilterFromSelection': {
@@ -504,14 +510,15 @@ export function computeDataTableFilter(
 
   return function dataTableFilter(item: any) {
     for (const column of filteringColumns) {
-      if (
-        !column.filters!.some(
-          (f) =>
-            f.enabled &&
-            String(item[column.key]).toLowerCase().includes(f.value),
-        )
-      ) {
-        return false; // there are filters, but none matches
+      const rowMatchesFilter = column.filters!.some(
+        (f) =>
+          f.enabled && String(item[column.key]).toLowerCase().includes(f.value),
+      );
+      if (column.inversed && rowMatchesFilter) {
+        return false;
+      }
+      if (!column.inversed && !rowMatchesFilter) {
+        return false;
       }
     }
     return Object.values(item).some((v) =>

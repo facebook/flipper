@@ -84,15 +84,8 @@ export default (store: Store, logger: Logger) => {
       noTimeBudgetWarns: true,
       runSynchronously: true,
     },
-    (state) => ({
-      connections: state.connections,
-      loadedPlugins: state.plugins.loadedPlugins,
-    }),
-    (state, store) => {
-      const selection = getSelectionInfo(
-        state.connections,
-        state.loadedPlugins,
-      );
+    getSelectionInfo,
+    (selection, store) => {
       const time = Date.now();
       store.dispatch(selectionChanged({selection, time}));
     },

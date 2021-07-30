@@ -25,6 +25,13 @@ export function usePluginInstance():
   return pluginInstance;
 }
 
+export function usePluginInstanceMaybe():
+  | SandyPluginInstance
+  | SandyDevicePluginInstance
+  | undefined {
+  return useContext(SandyPluginContext);
+}
+
 export function usePlugin<
   Factory extends PluginFactory<any, any> | DevicePluginFactory,
 >(plugin: Factory): ReturnType<Factory> {

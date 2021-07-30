@@ -9,7 +9,7 @@
 
 import styled from '@emotion/styled';
 import React from 'react';
-import CodeBlock from './CodeBlock';
+import {CodeBlock} from 'flipper-plugin';
 
 export const ErrorBlockContainer = styled(CodeBlock)({
   backgroundColor: '#f2dede',

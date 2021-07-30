@@ -107,6 +107,14 @@ async function buildPlugin() {
         packageJson.engines.flipper = minFlipperVersion;
       }
       packageJson.version = argv.version;
+      if (await fs.pathExists(path.join(pluginDir, 'docs', 'overview.mdx'))) {
+        packageJson.publishedDocs = packageJson.publishedDocs ?? {};
+        packageJson.publishedDocs.overview = true;
+      }
+      if (await fs.pathExists(path.join(pluginDir, 'docs', 'setup.mdx'))) {
+        packageJson.publishedDocs = packageJson.publishedDocs ?? {};
+        packageJson.publishedDocs.setup = true;
+      }
       await fs.writeJson(packageJsonPath, packageJson, {spaces: 2});
       const packCmd = `yarn pack --cwd "${pluginDir}" --filename ${outputFile}`;
       execSync(packCmd, {cwd: rootDir, stdio: 'inherit'});

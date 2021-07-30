@@ -19,7 +19,7 @@ import {
 } from 'flipper-plugin';
 import React from 'react';
 import getPort from 'get-port';
-import {Button, Switch, Typography} from 'antd';
+import {Button, message, Switch, Typography} from 'antd';
 import child_process from 'child_process';
 import fs from 'fs';
 import path from 'path';
@@ -75,28 +75,37 @@ export function devicePlugin(client: DevicePluginClient) {
     ConnectionStatus.Initializing,
   );
   const globalDevToolsPath = createState<string>();
-  const useGlobalDevTools = createState(false); // TODO: store in local storage T69989583
+  const useGlobalDevTools = createState(false, {
+    persist: 'useGlobalDevTools',
+    persistToLocalStorage: true,
+  });
   let devToolsInstance: typeof ReactDevToolsStandaloneEmbedded =
     ReactDevToolsStandaloneEmbedded;
+
   let startResult: {close(): void} | undefined = undefined;
 
   let pollHandle: NodeJS.Timeout | undefined = undefined;
 
+  function getDevToolsModule() {
+    // Load right library
+    if (useGlobalDevTools.get()) {
+      console.log('Loading ' + globalDevToolsPath.get());
+      return global.electronRequire(globalDevToolsPath.get()!).default;
+    } else {
+      return ReactDevToolsStandaloneEmbedded;
+    }
+  }
+
   async function toggleUseGlobalDevTools() {
     if (!globalDevToolsPath.get()) {
+      message.warn(
+        "No globally installed react-devtools package found. Run 'npm install -g react-devtools'.",
+      );
       return;
     }
     useGlobalDevTools.update((v) => !v);
 
-    // Load right library
-    if (useGlobalDevTools.get()) {
-      console.log('Loading ' + globalDevToolsPath.get());
-      devToolsInstance = global.electronRequire(
-        globalDevToolsPath.get()!,
-      ).default;
-    } else {
-      devToolsInstance = ReactDevToolsStandaloneEmbedded;
-    }
+    devToolsInstance = getDevToolsModule();
 
     statusMessage.set('Switching devTools');
     connectionStatus.set(ConnectionStatus.Initializing);
@@ -221,13 +230,17 @@ export function devicePlugin(client: DevicePluginClient) {
     );
   }
 
-  client.onReady(() => {
-    findGlobalDevTools().then((path) => {
+  client.onReady(async () => {
+    const path = await findGlobalDevTools();
+    if (path) {
       globalDevToolsPath.set(path + '/standalone');
-      if (path) {
-        console.log('Found global React DevTools: ', path);
-      }
-    });
+      console.log('Found global React DevTools: ', path);
+      // load it, if the flag is set
+      devToolsInstance = getDevToolsModule();
+    } else {
+      console.log('Found global React DevTools: ', path);
+      useGlobalDevTools.set(false); // disable in case it was enabled
+    }
   });
 
   client.onDestroy(() => {

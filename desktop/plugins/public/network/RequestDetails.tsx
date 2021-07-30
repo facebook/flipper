@@ -610,6 +610,7 @@ class GraphQLFormatter {
         const parsedResponses = body
           .replace(/}{/g, '}\r\n{')
           .split('\n')
+          .filter((json) => json.length > 0)
           .map((json) => JSON.parse(json));
         return (
           <div>

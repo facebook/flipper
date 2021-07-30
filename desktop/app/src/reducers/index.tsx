@@ -18,10 +18,6 @@ import connections, {
   persistMigrations as devicesPersistMigrations,
   persistVersion as devicesPersistVersion,
 } from './connections';
-import pluginStates, {
-  State as PluginStatesState,
-  Action as PluginStatesAction,
-} from './pluginStates';
 import pluginMessageQueue, {
   State as PluginMessageQueueState,
   Action as PluginMessageQueueAction,
@@ -64,10 +60,6 @@ import usageTracking, {
   Action as TrackingAction,
   State as TrackingState,
 } from './usageTracking';
-import pluginLists, {
-  State as PluginListsState,
-  Action as PluginListsAction,
-} from './pluginLists';
 import user, {State as UserState, Action as UserAction} from './user';
 import JsonFileStorage from '../utils/jsonFileReduxPersistStorage';
 import LauncherSettingsStorage from '../utils/launcherSettingsStorage';
@@ -85,7 +77,6 @@ import {TransformConfig} from 'redux-persist/es/createTransform';
 export type Actions =
   | ApplicationAction
   | DevicesAction
-  | PluginStatesAction
   | PluginMessageQueueAction
   | NotificationsAction
   | PluginsAction
@@ -97,13 +88,11 @@ export type Actions =
   | HealthcheckAction
   | TrackingAction
   | PluginDownloadsAction
-  | PluginListsAction
   | {type: 'INIT'};
 
 export type State = {
   application: ApplicationState;
   connections: DevicesState & PersistPartial;
-  pluginStates: PluginStatesState;
   pluginMessageQueue: PluginMessageQueueState;
   notifications: NotificationsState & PersistPartial;
   plugins: PluginsState & PersistPartial;
@@ -115,7 +104,6 @@ export type State = {
   healthchecks: HealthcheckState & PersistPartial;
   usageTracking: TrackingState;
   pluginDownloads: PluginDownloadsState;
-  pluginLists: PluginListsState;
 };
 
 export type Store = ReduxStore<State, Actions>;
@@ -164,7 +152,6 @@ export function createRootReducer() {
       },
       connections,
     ),
-    pluginStates,
     pluginMessageQueue: pluginMessageQueue as any,
     notifications: persistReducer(
       {
@@ -218,6 +205,5 @@ export function createRootReducer() {
     ),
     usageTracking,
     pluginDownloads,
-    pluginLists,
   });
 }

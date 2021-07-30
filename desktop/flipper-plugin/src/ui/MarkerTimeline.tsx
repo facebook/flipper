@@ -66,7 +66,7 @@ const Point = styled(Layout.Horizontal)<{
   alignItems: 'flex-start',
   lineHeight: '16px',
   ':hover': {
-    background: `linear-gradient(to top, rgba(255,255,255,0) 0, #ffffff 10px)`,
+    background: `linear-gradient(to top, ${theme.black} 0, ${theme.white} 10px)`,
     paddingBottom: 5,
     zIndex: 2,
     '> span': {
@@ -83,10 +83,10 @@ const Point = styled(Layout.Horizontal)<{
     width: 9,
     height: 9,
     flexShrink: 0,
-    color: 'rgba(0,0,0,0.4)',
+    color: theme.textColorSecondary,
     lineHeight: '9px',
     borderRadius: '999em',
-    border: '1px solid rgba(0,0,0,0.2)',
+    border: theme.dividerColor,
     backgroundColor: props.threadColor,
     marginRight: 6,
     zIndex: 3,

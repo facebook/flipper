@@ -70,8 +70,7 @@ export function createSandyPluginWrapper<S, A extends BaseAction, P>(
     if (
       Plugin.persistedStateReducer ||
       Plugin.exportPersistedState ||
-      Plugin.defaultPersistedState ||
-      Plugin.serializePersistedState
+      Plugin.defaultPersistedState
     ) {
       client.onExport(async (idler, onStatusMessage) => {
         const state = Plugin.exportPersistedState

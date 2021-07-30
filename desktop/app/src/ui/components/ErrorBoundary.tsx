@@ -7,7 +7,7 @@
  * @format
  */
 
-import ErrorBlock from './ErrorBlock';
+import {CodeBlock} from 'flipper-plugin';
 import {Component} from 'react';
 import Heading from './Heading';
 import Button from './Button';
@@ -21,7 +21,7 @@ const ErrorBoundaryContainer = styled(View)({
 });
 ErrorBoundaryContainer.displayName = 'ErrorBoundary:ErrorBoundaryContainer';
 
-const ErrorBoundaryStack = styled(ErrorBlock)({
+const ErrorBoundaryStack = styled(CodeBlock)({
   marginBottom: 10,
   whiteSpace: 'pre',
 });
@@ -79,7 +79,9 @@ export default class ErrorBoundary extends Component<
         <ErrorBoundaryContainer grow>
           <Heading>{heading}</Heading>
           {this.props.showStack !== false && (
-            <ErrorBoundaryStack error={error} />
+            <ErrorBoundaryStack>{`${
+              error.stack ?? error.toString()
+            }`}</ErrorBoundaryStack>
           )}
           <Button onClick={this.clearError}>Clear error and try again</Button>
         </ErrorBoundaryContainer>

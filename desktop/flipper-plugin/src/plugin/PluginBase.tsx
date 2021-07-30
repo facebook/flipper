@@ -390,10 +390,13 @@ export abstract class BasePluginInstance {
 
   private serializeRootStates() {
     return Object.fromEntries(
-      Object.entries(this.rootStates).map(([key, atom]) => [
-        key,
-        atom.serialize(),
-      ]),
+      Object.entries(this.rootStates).map(([key, atom]) => {
+        try {
+          return [key, atom.serialize()];
+        } catch (e) {
+          throw new Error(`Failed to serialize state '${key}': ${e}`);
+        }
+      }),
     );
   }
 

@@ -29,6 +29,7 @@ export type SelectionInfo = {
   plugin: string | null;
   pluginName: string | null;
   pluginVersion: string | null;
+  pluginEnabled: boolean | null;
   app: string | null;
   os: string | null;
   device: string | null;
@@ -47,6 +48,7 @@ let selection: SelectionInfo = {
   plugin: null,
   pluginName: null,
   pluginVersion: null,
+  pluginEnabled: null,
   app: null,
   os: null,
   device: null,
@@ -66,12 +68,9 @@ export default (store: Store, _logger: Logger) => {
       runSynchronously: true,
       fireImmediately: true,
     },
-    (state) => ({
-      connections: state.connections,
-      loadedPlugins: state.plugins.loadedPlugins,
-    }),
-    (state, _store) => {
-      selection = getSelectionInfo(state.connections, state.loadedPlugins);
+    getSelectionInfo,
+    (newSelection, _store) => {
+      selection = newSelection;
     },
   );
 };
@@ -127,25 +126,38 @@ export function stringifyInfo(info: Info): string {
   return lines.join('\n');
 }
 
-export function getSelectionInfo(
-  connections: State['connections'],
-  loadedPlugins: State['plugins']['loadedPlugins'],
-): SelectionInfo {
-  const selectedApp = connections.selectedApp;
+export function getSelectionInfo({
+  plugins: {clientPlugins, devicePlugins, loadedPlugins},
+  connections: {
+    selectedApp,
+    selectedPlugin,
+    enabledDevicePlugins,
+    enabledPlugins,
+    selectedDevice,
+  },
+}: State): SelectionInfo {
   const clientIdParts = selectedApp ? deconstructClientId(selectedApp) : null;
-  const loadedPlugin = connections.selectedPlugin
-    ? loadedPlugins.get(connections.selectedPlugin)
+  const loadedPlugin = selectedPlugin
+    ? loadedPlugins.get(selectedPlugin)
     : null;
+  const pluginEnabled =
+    !!selectedPlugin &&
+    ((enabledDevicePlugins.has(selectedPlugin) &&
+      devicePlugins.has(selectedPlugin)) ||
+      (clientIdParts &&
+        enabledPlugins[clientIdParts.app]?.includes(selectedPlugin) &&
+        clientPlugins.has(selectedPlugin)));
   return {
-    plugin: connections.selectedPlugin || null,
+    plugin: selectedPlugin || null,
     pluginName: loadedPlugin?.name || null,
     pluginVersion: loadedPlugin?.version || null,
+    pluginEnabled,
     app: clientIdParts?.app || null,
-    device: connections.selectedDevice?.title || null,
+    device: selectedDevice?.title || null,
     deviceName: clientIdParts?.device || null,
-    deviceSerial: connections.selectedDevice?.serial || null,
-    deviceType: connections.selectedDevice?.deviceType || null,
-    os: connections.selectedDevice?.os || null,
-    archived: connections.selectedDevice?.isArchived || false,
+    deviceSerial: selectedDevice?.serial || null,
+    deviceType: selectedDevice?.deviceType || null,
+    os: selectedDevice?.os || null,
+    archived: selectedDevice?.isArchived || false,
   };
 }

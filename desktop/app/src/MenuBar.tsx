@@ -20,7 +20,6 @@ import {
   ACTIVE_SHEET_CHANGELOG,
 } from './reducers/application';
 import {setStaticView} from './reducers/connections';
-import SupportRequestFormV2 from './fb-stubs/SupportRequestFormV2';
 import {Store} from './reducers/';
 import electron, {MenuItemConstructorOptions} from 'electron';
 import {notNull} from './utils/typeUtils';
@@ -30,10 +29,12 @@ import {
   NormalizedMenuEntry,
   _buildInMenuEntries,
   _wrapInteractionHandler,
+  getFlipperLib,
 } from 'flipper-plugin';
 import {StyleGuide} from './sandy-chrome/StyleGuide';
 import {showEmulatorLauncher} from './sandy-chrome/appinspect/LaunchEmulator';
 import {webFrame} from 'electron';
+import {openDeeplinkDialog} from './deeplink';
 
 export type DefaultKeyboardAction = keyof typeof _buildInMenuEntries;
 export type TopLevelMenu = 'Edit' | 'View' | 'Window' | 'Help';
@@ -270,7 +271,9 @@ function getTemplate(
       label: 'Create...',
       click: function () {
         // Dispatch an action to open the export screen of Support Request form
-        store.dispatch(setStaticView(SupportRequestFormV2));
+        store.dispatch(
+          setStaticView(require('./fb-stubs/SupportRequestFormV2').default),
+        );
       },
     },
   ];
@@ -363,6 +366,12 @@ function getTemplate(
       },
     },
     {
+      label: 'Trigger deeplink...',
+      click() {
+        openDeeplinkDialog(store);
+      },
+    },
+    {
       type: 'separator',
     },
   ];
@@ -372,19 +381,21 @@ function getTemplate(
     {
       label: 'Getting started',
       click: function () {
-        shell.openExternal('https://fbflipper.com/docs/getting-started/index');
+        getFlipperLib().openLink(
+          'https://fbflipper.com/docs/getting-started/index',
+        );
       },
     },
     {
       label: 'Create plugins',
       click: function () {
-        shell.openExternal('https://fbflipper.com/docs/tutorial/intro');
+        getFlipperLib().openLink('https://fbflipper.com/docs/tutorial/intro');
       },
     },
     {
       label: 'Report problems',
       click: function () {
-        shell.openExternal(constants.FEEDBACK_GROUP_LINK);
+        getFlipperLib().openLink(constants.FEEDBACK_GROUP_LINK);
       },
     },
     {

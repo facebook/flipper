@@ -57,7 +57,7 @@ const SearchInputContainer = styled.div({
   position: 'relative',
 });
 
-class SearchBar extends Component<Props, State> {
+export class SearchBar extends Component<Props, State> {
   state = {
     inputFocused: false,
     autoCompleteSheetOpen: false,
@@ -158,5 +158,3 @@ class SearchBar extends Component<Props, State> {
     );
   }
 }
-
-export default SearchBar;

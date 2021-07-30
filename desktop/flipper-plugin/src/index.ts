@@ -37,7 +37,7 @@ export {createState, useValue, Atom} from './state/atom';
 export {batch} from './state/batch';
 export {
   FlipperLib,
-  getFlipperLibImplementation as _getFlipperLibImplementation,
+  getFlipperLib,
   setFlipperLibImplementation as _setFlipperLibImplementation,
 } from './plugin/FlipperLib';
 export {
@@ -92,6 +92,7 @@ export {createDataSource} from './state/createDataSource';
 export {DataTable, DataTableColumn} from './ui/data-table/DataTable';
 export {DataTableManager} from './ui/data-table/DataTableManager';
 export {DataList} from './ui/DataList';
+export {Spinner} from './ui/Spinner';
 
 export {
   Interactive as _Interactive,
@@ -112,7 +113,7 @@ export {
 } from './ui/data-inspector/DataDescription';
 export {MarkerTimeline} from './ui/MarkerTimeline';
 export {DataInspector} from './ui/data-inspector/DataInspector';
-
+export {Dialog} from './ui/Dialog';
 export {
   ElementsInspector,
   Element as ElementsInspectorElement,
@@ -125,8 +126,14 @@ export {
   ElementID,
 } from './ui/elements-inspector/ElementsInspector';
 export {useMemoize} from './utils/useMemoize';
+export {
+  makeShallowSerializable as _makeShallowSerializable,
+  deserializeShallowObject as _deserializeShallowObject,
+} from './utils/shallowSerialization';
 
 export {createTablePlugin} from './utils/createTablePlugin';
+
+export {textContent} from './utils/textContent';
 
 // It's not ideal that this exists in flipper-plugin sources directly,
 // but is the least pain for plugin authors.

@@ -8,15 +8,17 @@
  */
 
 import {useMemo} from 'react';
-import {Button, ButtonGroup, Layout} from '../ui';
 import React from 'react';
 import {Console, Hook} from 'console-feed';
 import type {Methods} from 'console-feed/lib/definitions/Methods';
 import type {Styles} from 'console-feed/lib/definitions/Styles';
 import {createState, useValue} from 'flipper-plugin';
 import {useLocalStorageState} from 'flipper-plugin';
-import {theme, Toolbar} from 'flipper-plugin';
+import {theme, Toolbar, Layout} from 'flipper-plugin';
 import {useIsDarkMode} from '../utils/useIsDarkMode';
+import {Button, Dropdown, Menu, Checkbox} from 'antd';
+import {DownOutlined} from '@ant-design/icons';
+import {DeleteOutlined} from '@ant-design/icons';
 
 const MAX_LOG_ITEMS = 1000;
 
@@ -71,34 +73,37 @@ export function ConsoleLogs() {
     defaultLogLevels,
   );
 
-  const dropdown = useMemo(() => {
-    return allLogLevels.map(
-      (l): Electron.MenuItemConstructorOptions => ({
-        label: l,
-        checked: logLevels.includes(l),
-        type: 'checkbox',
-        click() {
-          setLogLevels((state) =>
-            state.includes(l)
-              ? state.filter((level) => level !== l)
-              : [l, ...state],
-          );
-        },
-      }),
-    );
-  }, [logLevels, setLogLevels]);
-
   const styles = useMemo(buildTheme, []);
 
   return (
     <Layout.Top>
-      <Toolbar>
-        <ButtonGroup>
-          <Button onClick={clearLogs} icon="trash">
-            Clear Logs
+      <Toolbar wash>
+        <Button onClick={clearLogs} icon={<DeleteOutlined />}>
+          Clear Logs
+        </Button>
+        <Dropdown
+          overlay={
+            <Menu>
+              {allLogLevels.map((l) => (
+                <Menu.Item
+                  key={l}
+                  onClick={() => {
+                    setLogLevels((state) =>
+                      state.includes(l)
+                        ? state.filter((level) => level !== l)
+                        : [l, ...state],
+                    );
+                  }}>
+                  <Checkbox checked={logLevels.includes(l)}>{l}</Checkbox>
+                </Menu.Item>
+              ))}
+            </Menu>
+          }>
+          <Button>
+            Log Levels
+            <DownOutlined />
           </Button>
-          <Button dropdown={dropdown}>Log Levels</Button>
-        </ButtonGroup>
+        </Dropdown>
       </Toolbar>
       <Layout.ScrollContainer vertical>
         <Console

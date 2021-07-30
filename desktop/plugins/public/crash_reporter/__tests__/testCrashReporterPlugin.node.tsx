@@ -8,7 +8,7 @@
  */
 
 import {BaseDevice} from 'flipper';
-import {Crash} from '../index';
+import {Crash, CrashLog} from '../index';
 import {TestUtils} from 'flipper-plugin';
 import {getPluginKey} from 'flipper';
 import * as CrashReporterPlugin from '../index';
@@ -24,13 +24,13 @@ function getCrash(
   callstack: string,
   name: string,
   reason: string,
-): Crash {
+): Crash & CrashLog {
   return {
     notificationID: id.toString(),
     callstack: callstack,
     reason: reason,
     name: name,
-    date: new Date(),
+    date: new Date().getTime(),
   };
 }
 
@@ -40,7 +40,7 @@ function assertCrash(crash: Crash, expectedCrash: Crash) {
   expect(callstack).toEqual(expectedCrash.callstack);
   expect(reason).toEqual(expectedCrash.reason);
   expect(name).toEqual(expectedCrash.name);
-  expect(date.toDateString()).toEqual(expectedCrash.date.toDateString());
+  expect(Math.abs(date - expectedCrash.date)).toBeLessThan(1000);
 }
 
 test('test the parsing of the date and crash info for the log which matches the predefined regex', () => {
@@ -50,7 +50,7 @@ test('test the parsing of the date and crash info for the log which matches the 
   expect(crash.callstack).toEqual(log);
   expect(crash.reason).toEqual('SIGSEGV');
   expect(crash.name).toEqual('SIGSEGV');
-  expect(crash.date).toEqual(new Date('2019-03-21 12:07:00.861'));
+  expect(crash.date).toEqual(new Date('2019-03-21 12:07:00.861').getTime());
 });
 
 test('test the parsing of the reason for crash when log matches the crash regex, but there is no mention of date', () => {
@@ -95,7 +95,7 @@ test('test the parsing of the Android crash log for the proper android crash for
     'java.lang.IndexOutOfBoundsException: Index: 190, Size: 0',
   );
   expect(crash.name).toEqual('FATAL EXCEPTION: main');
-  expect(crash.date).toEqual(date);
+  expect(crash.date).toEqual(date.getTime());
 });
 test('test the parsing of the Android crash log for the unknown crash format and no date', () => {
   const log = 'Blaa Blaa Blaa';
@@ -147,7 +147,9 @@ test('test helper setdefaultPersistedState function', () => {
   const crash = getCrash(0, 'callstack', 'crash0', 'crash0');
   const plugin = TestUtils.startDevicePlugin(CrashReporterPlugin);
   plugin.instance.reportCrash(crash);
-  expect(plugin.exportState()).toEqual({crashes: [crash]});
+  expect(plugin.exportState()).toEqual({
+    crashes: [crash],
+  });
 });
 test('test getNewPersistedStateFromCrashLog for non-empty defaultPersistedState and defined pluginState', () => {
   const crash = getCrash(0, 'callstack', 'crash0', 'crash0');

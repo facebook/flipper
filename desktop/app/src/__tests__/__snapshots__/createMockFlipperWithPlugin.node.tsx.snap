@@ -1,111 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`can create a Fake flipper 1`] = `
-Object {
-  "activeClient": Object {
-    "id": "TestApp#Android#MockAndroidDevice#serial",
-    "query": Object {
-      "app": "TestApp",
-      "device": "MockAndroidDevice",
-      "device_id": "serial",
-      "os": "Android",
-      "sdk_version": 4,
-    },
-  },
-  "activeDevice": Object {
-    "deviceType": "physical",
-    "os": "Android",
-    "serial": "serial",
-    "title": "MockAndroidDevice",
-  },
-  "androidEmulators": Array [],
-  "clients": Array [
-    Object {
-      "id": "TestApp#Android#MockAndroidDevice#serial",
-      "query": Object {
-        "app": "TestApp",
-        "device": "MockAndroidDevice",
-        "device_id": "serial",
-        "os": "Android",
-        "sdk_version": 4,
-      },
-    },
-  ],
-  "deepLinkPayload": null,
-  "devices": Array [
-    Object {
-      "deviceType": "physical",
-      "os": "Android",
-      "serial": "serial",
-      "title": "MockAndroidDevice",
-    },
-  ],
-  "enabledDevicePlugins": Set {
-    "DeviceLogs",
-    "CrashReporter",
-    "MobileBuilds",
-    "Hermesdebuggerrn",
-    "React",
-  },
-  "enabledPlugins": Object {
-    "TestApp": Array [
-      "TestPlugin",
-    ],
-  },
-  "metroDevice": null,
-  "selectedApp": "TestApp#Android#MockAndroidDevice#serial",
-  "selectedDevice": Object {
-    "deviceType": "physical",
-    "os": "Android",
-    "serial": "serial",
-    "title": "MockAndroidDevice",
-  },
-  "selectedPlugin": "TestPlugin",
-  "staticView": null,
-  "uninitializedClients": Array [],
-  "userPreferredApp": "TestApp#Android#MockAndroidDevice#serial",
-  "userPreferredDevice": "MockAndroidDevice",
-  "userPreferredPlugin": "TestPlugin",
-}
-`;
-
-exports[`can create a Fake flipper 2`] = `
-Object {
-  "bundledPlugins": Map {},
-  "clientPlugins": Map {
-    "TestPlugin" => [Function],
-  },
-  "devicePlugins": Map {},
-  "disabledPlugins": Array [],
-  "failedPlugins": Array [],
-  "gatekeepedPlugins": Array [],
-  "initialised": false,
-  "installedPlugins": Map {},
-  "loadedPlugins": Map {},
-  "marketplacePlugins": Array [],
-  "selectedPlugins": Array [],
-  "uninstalledPluginNames": Set {},
-}
-`;
-
 exports[`can create a Fake flipper with legacy wrapper 1`] = `
 Object {
-  "activeClient": Object {
-    "id": "TestApp#Android#MockAndroidDevice#serial",
-    "query": Object {
-      "app": "TestApp",
-      "device": "MockAndroidDevice",
-      "device_id": "serial",
-      "os": "Android",
-      "sdk_version": 4,
-    },
-  },
-  "activeDevice": Object {
-    "deviceType": "physical",
-    "os": "Android",
-    "serial": "serial",
-    "title": "MockAndroidDevice",
-  },
   "androidEmulators": Array [],
   "clients": Array [
     Object {
@@ -140,8 +36,8 @@ Object {
       "TestPlugin",
     ],
   },
-  "metroDevice": null,
   "selectedApp": "TestApp#Android#MockAndroidDevice#serial",
+  "selectedAppPluginListRevision": 0,
   "selectedDevice": Object {
     "deviceType": "physical",
     "os": "Android",

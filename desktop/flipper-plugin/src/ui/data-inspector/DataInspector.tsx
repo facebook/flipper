@@ -13,6 +13,7 @@ import {DataInspectorNode} from './DataInspectorNode';
 import React from 'react';
 import {DataValueExtractor} from './DataPreview';
 import {HighlightProvider, HighlightManager} from '../Highlight';
+import {Layout} from '../Layout';
 
 export type DataInspectorProps = {
   /**
@@ -178,27 +179,29 @@ export class DataInspector extends PureComponent<
 
   render() {
     return (
-      <RootDataContext.Provider value={this.getRootData}>
-        <HighlightProvider text={this.props.filter}>
-          <DataInspectorNode
-            data={this.props.data}
-            diff={this.props.diff}
-            extractValue={this.props.extractValue}
-            setValue={this.props.setValue}
-            expanded={this.state.expanded}
-            onExpanded={this.onExpanded}
-            onDelete={this.props.onDelete}
-            onRenderName={this.props.onRenderName}
-            onRenderDescription={this.props.onRenderDescription}
-            expandRoot={this.props.expandRoot}
-            collapsed={this.props.filter ? true : this.props.collapsed}
-            tooltips={this.props.tooltips}
-            parentPath={EMPTY_ARRAY}
-            depth={0}
-            parentAncestry={EMPTY_ARRAY}
-          />
-        </HighlightProvider>
-      </RootDataContext.Provider>
+      <Layout.Container>
+        <RootDataContext.Provider value={this.getRootData}>
+          <HighlightProvider text={this.props.filter}>
+            <DataInspectorNode
+              data={this.props.data}
+              diff={this.props.diff}
+              extractValue={this.props.extractValue}
+              setValue={this.props.setValue}
+              expanded={this.state.expanded}
+              onExpanded={this.onExpanded}
+              onDelete={this.props.onDelete}
+              onRenderName={this.props.onRenderName}
+              onRenderDescription={this.props.onRenderDescription}
+              expandRoot={this.props.expandRoot}
+              collapsed={this.props.filter ? true : this.props.collapsed}
+              tooltips={this.props.tooltips}
+              parentPath={EMPTY_ARRAY}
+              depth={0}
+              parentAncestry={EMPTY_ARRAY}
+            />
+          </HighlightProvider>
+        </RootDataContext.Provider>
+      </Layout.Container>
     );
   }
 }

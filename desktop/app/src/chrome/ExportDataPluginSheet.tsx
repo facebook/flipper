@@ -13,7 +13,6 @@ import {ShareType} from '../reducers/application';
 import {State as Store} from '../reducers';
 import {ActiveSheet} from '../reducers/application';
 import {selectedPlugins as actionForSelectedPlugins} from '../reducers/plugins';
-import {getExportablePlugins} from '../utils/pluginUtils';
 import {
   ACTIVE_SHEET_SHARE_DATA,
   setActiveSheet as getActiveSheetAction,
@@ -23,6 +22,7 @@ import ListView from './ListView';
 import {Dispatch, Action} from 'redux';
 import {unsetShare} from '../reducers/application';
 import {FlexColumn, styled} from '../ui';
+import {getExportablePlugins} from '../selectors/connections';
 
 type OwnProps = {
   onHide: () => void;
@@ -104,14 +104,7 @@ class ExportDataPluginSheet extends Component<Props, {}> {
 
 export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
   (state) => {
-    const selectedClient = state.connections.clients.find((o) => {
-      return o.id === state.connections.selectedApp;
-    });
-    const availablePluginsToExport = getExportablePlugins(
-      state,
-      state.connections.selectedDevice ?? undefined,
-      selectedClient,
-    );
+    const availablePluginsToExport = getExportablePlugins(state);
     return {
       share: state.application.share,
       selectedPlugins: state.plugins.selectedPlugins,

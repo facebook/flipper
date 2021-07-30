@@ -10,7 +10,7 @@
 import {sideEffect} from '../sideEffect';
 import {createStore, Store} from 'redux';
 import produce from 'immer';
-import {sleep} from '../promiseTimeout';
+import {sleep} from 'flipper-plugin';
 
 jest.useFakeTimers();
 
@@ -59,8 +59,7 @@ describe('sideeffect', () => {
     console.error = origError;
   });
 
-  // TODO(T93353978): Re-enable.
-  test.skip('can run a basic effect', async () => {
+  test.local('can run a basic effect', async () => {
     unsubscribe = sideEffect(
       store,
       {name: 'test', throttleMs: 1},

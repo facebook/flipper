@@ -48,7 +48,7 @@ const NameInput = styled(Input)({
   height: 30,
 });
 
-export default (props: Props) => {
+export function SaveBookmarkDialog(props: Props) {
   const {edit, shouldShow, onHide, onRemove, onSubmit, uri} = props;
   const [commonName, setCommonName] = useState('');
   if (uri == null || !shouldShow) {
@@ -114,4 +114,4 @@ export default (props: Props) => {
       </Sheet>
     );
   }
-};
+}
