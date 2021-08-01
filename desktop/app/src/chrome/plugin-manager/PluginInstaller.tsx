@@ -118,6 +118,7 @@ const PluginInstaller = function ({
         highlightedRows={new Set()}
         autoHeight={autoHeight}
         rows={rows}
+        horizontallyScrollable
       />
       <PluginPackageInstaller onInstall={onInstall} />
     </Layout.Container>
