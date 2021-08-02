@@ -69,7 +69,7 @@
     "rsocket-core": "^0.0.27",
     "rsocket-flowable": "^0.0.27",
     "rsocket-tcp-server": "^0.0.25",
-    "rsocket-types": "^0.0.25",
+    "rsocket-types": "^0.0.27",
     "semver": "^7.3.5",
     "split2": "^3.2.2",
     "tmp": "^0.2.1",
