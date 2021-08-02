@@ -8,13 +8,12 @@
  */
 
 import React from 'react';
-import {Alert, Button, Dropdown, Menu, Radio, Typography} from 'antd';
+import {Button, Dropdown, Menu, Radio, Typography} from 'antd';
 import {
   AppleOutlined,
   AndroidOutlined,
   WindowsOutlined,
   CaretDownOutlined,
-  RocketOutlined,
 } from '@ant-design/icons';
 import {Glyph, Layout, styled} from '../../ui';
 import {theme, useTrackedCallback, useValue} from 'flipper-plugin';
@@ -30,10 +29,9 @@ import BaseDevice, {OS} from '../../devices/BaseDevice';
 import Client from '../../Client';
 import {State} from '../../reducers';
 import {brandColors, brandIcons, colors} from '../../ui/components/colors';
-import {showEmulatorLauncher} from './LaunchEmulator';
 import TroubleshootingGuide from './fb-stubs/TroubleshootingGuide';
 
-const {Text, Link, Title} = Typography;
+const {Text} = Typography;
 
 function getOsIcon(os?: OS) {
   switch (os) {
@@ -263,37 +261,6 @@ function ClientTitle({client}: {client: Client}) {
         </span>
       ) : null}
     </span>
-  );
-}
-
-export function NoDevices() {
-  const store = useStore();
-
-  const onLaunchEmulator = useTrackedCallback(
-    'select-emulator',
-    () => {
-      showEmulatorLauncher(store);
-    },
-    [],
-  );
-
-  return (
-    <Alert
-      type="info"
-      message={
-        <>
-          <Title level={4}>No devices found</Title>
-          <Text>
-            Start a fresh emulator <RocketOutlined onClick={onLaunchEmulator} />{' '}
-            or check the{' '}
-            <Link href="https://fbflipper.com/docs/troubleshooting">
-              troubleshooting guide
-            </Link>
-            .
-          </Text>
-        </>
-      }
-    />
   );
 }
 

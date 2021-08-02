@@ -8,7 +8,7 @@
  */
 
 import React from 'react';
-import {NoDevices} from '../AppSelector';
+import {NoDevices} from '../NoDevices';
 
 export default function TroubleshootingGuide() {
   return <NoDevices />;
