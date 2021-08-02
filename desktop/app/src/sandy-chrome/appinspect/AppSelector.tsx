@@ -31,6 +31,7 @@ import Client from '../../Client';
 import {State} from '../../reducers';
 import {brandColors, brandIcons, colors} from '../../ui/components/colors';
 import {showEmulatorLauncher} from './LaunchEmulator';
+import TroubleshootingGuide from './fb-stubs/TroubleshootingGuide';
 
 const {Text, Link, Title} = Typography;
 
@@ -109,7 +110,7 @@ export function AppSelector() {
       </Dropdown>
     </Radio.Group>
   ) : (
-    <NoDevices />
+    <TroubleshootingGuide />
   );
 }
 
@@ -265,7 +266,7 @@ function ClientTitle({client}: {client: Client}) {
   );
 }
 
-function NoDevices() {
+export function NoDevices() {
   const store = useStore();
 
   const onLaunchEmulator = useTrackedCallback(
