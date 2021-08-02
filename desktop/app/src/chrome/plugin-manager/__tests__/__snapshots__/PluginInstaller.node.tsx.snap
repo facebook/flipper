@@ -53,19 +53,19 @@ exports[`load PluginInstaller list 1`] = `
       </span>
     </div>
     <div
-      class="css-p5h61d-View-FlexBox-FlexColumn-Container esta8x30"
+      class="css-bgfc37-View-FlexBox-FlexColumn-Container esta8x30"
       tabindex="0"
     >
       <div
         class="css-18abd42-View-FlexBox-FlexColumn ecr18to0"
       >
         <div
-          class="css-1hdusim-View-FlexBox-FlexRow-TableHeadContainer ejga3101"
+          class="css-1otvu18-View-FlexBox-FlexRow-TableHeadContainer ejga3101"
         >
           <div
-            class="css-it9ar6-TableHeadColumnContainer ejga3100"
+            class="css-mpoiz3-TableHeadColumnContainer ejga3100"
             title="name"
-            width="25%"
+            width="0"
           >
             <div
               class="ejga3103 css-x4q70f-InteractiveContainer-TableHeaderColumnInteractive e14xwmxq0"
@@ -79,9 +79,9 @@ exports[`load PluginInstaller list 1`] = `
             </div>
           </div>
           <div
-            class="css-1m9d124-TableHeadColumnContainer ejga3100"
+            class="css-mpoiz3-TableHeadColumnContainer ejga3100"
             title="version"
-            width="10%"
+            width="0"
           >
             <div
               class="ejga3103 css-x4q70f-InteractiveContainer-TableHeaderColumnInteractive e14xwmxq0"
@@ -95,9 +95,9 @@ exports[`load PluginInstaller list 1`] = `
             </div>
           </div>
           <div
-            class="css-qmwopt-TableHeadColumnContainer ejga3100"
+            class="css-mpoiz3-TableHeadColumnContainer ejga3100"
             title="description"
-            width="flex"
+            width="0"
           >
             <div
               class="ejga3103 css-x4q70f-InteractiveContainer-TableHeaderColumnInteractive e14xwmxq0"
@@ -111,9 +111,9 @@ exports[`load PluginInstaller list 1`] = `
             </div>
           </div>
           <div
-            class="css-ux5muk-TableHeadColumnContainer ejga3100"
+            class="css-mpoiz3-TableHeadColumnContainer ejga3100"
             title="install"
-            width="15%"
+            width="0"
           >
             <div
               class="ejga3103 css-x4q70f-InteractiveContainer-TableHeaderColumnInteractive e14xwmxq0"
@@ -139,9 +139,9 @@ exports[`load PluginInstaller list 1`] = `
             data-key="flipper-plugin-hello"
           >
             <div
-              class="css-hdg6vt-TableBodyColumnContainer ehuguum0"
+              class="css-yt4330-TableBodyColumnContainer ehuguum0"
               title=""
-              width="25%"
+              width="0"
             >
               <span
                 class="ant-typography ant-typography-ellipsis ant-typography-single-line ant-typography-ellipsis-single-line"
@@ -150,9 +150,9 @@ exports[`load PluginInstaller list 1`] = `
               </span>
             </div>
             <div
-              class="css-1rdsust-TableBodyColumnContainer ehuguum0"
+              class="css-pfp0fy-TableBodyColumnContainer ehuguum0"
               title=""
-              width="10%"
+              width="0"
             >
               <span
                 class="ant-typography ant-typography-ellipsis ant-typography-single-line ant-typography-ellipsis-single-line"
@@ -161,9 +161,9 @@ exports[`load PluginInstaller list 1`] = `
               </span>
             </div>
             <div
-              class="css-1bw2bjn-TableBodyColumnContainer ehuguum0"
+              class="css-yt4330-TableBodyColumnContainer ehuguum0"
               title=""
-              width="flex"
+              width="0"
             >
               <div
                 class="css-s1wsbn-Container-Horizontal e1hsqii14"
@@ -187,9 +187,9 @@ exports[`load PluginInstaller list 1`] = `
               </div>
             </div>
             <div
-              class="css-4dx1ef-TableBodyColumnContainer ehuguum0"
+              class="css-16v1lq1-TableBodyColumnContainer ehuguum0"
               title=""
-              width="15%"
+              width="0"
             >
               <button
                 class="ant-btn ant-btn-primary ant-btn-sm"
@@ -206,9 +206,9 @@ exports[`load PluginInstaller list 1`] = `
             data-key="flipper-plugin-world"
           >
             <div
-              class="css-hdg6vt-TableBodyColumnContainer ehuguum0"
+              class="css-yt4330-TableBodyColumnContainer ehuguum0"
               title=""
-              width="25%"
+              width="0"
             >
               <span
                 class="ant-typography ant-typography-ellipsis ant-typography-single-line ant-typography-ellipsis-single-line"
@@ -217,9 +217,9 @@ exports[`load PluginInstaller list 1`] = `
               </span>
             </div>
             <div
-              class="css-1rdsust-TableBodyColumnContainer ehuguum0"
+              class="css-pfp0fy-TableBodyColumnContainer ehuguum0"
               title=""
-              width="10%"
+              width="0"
             >
               <span
                 class="ant-typography ant-typography-ellipsis ant-typography-single-line ant-typography-ellipsis-single-line"
@@ -228,9 +228,9 @@ exports[`load PluginInstaller list 1`] = `
               </span>
             </div>
             <div
-              class="css-1bw2bjn-TableBodyColumnContainer ehuguum0"
+              class="css-yt4330-TableBodyColumnContainer ehuguum0"
               title=""
-              width="flex"
+              width="0"
             >
               <div
                 class="css-s1wsbn-Container-Horizontal e1hsqii14"
@@ -254,9 +254,9 @@ exports[`load PluginInstaller list 1`] = `
               </div>
             </div>
             <div
-              class="css-4dx1ef-TableBodyColumnContainer ehuguum0"
+              class="css-16v1lq1-TableBodyColumnContainer ehuguum0"
               title=""
-              width="15%"
+              width="0"
             >
               <button
                 class="ant-btn ant-btn-primary ant-btn-sm"
@@ -387,19 +387,19 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
       </span>
     </div>
     <div
-      class="css-p5h61d-View-FlexBox-FlexColumn-Container esta8x30"
+      class="css-bgfc37-View-FlexBox-FlexColumn-Container esta8x30"
       tabindex="0"
     >
       <div
         class="css-18abd42-View-FlexBox-FlexColumn ecr18to0"
       >
         <div
-          class="css-1hdusim-View-FlexBox-FlexRow-TableHeadContainer ejga3101"
+          class="css-1otvu18-View-FlexBox-FlexRow-TableHeadContainer ejga3101"
         >
           <div
-            class="css-it9ar6-TableHeadColumnContainer ejga3100"
+            class="css-mpoiz3-TableHeadColumnContainer ejga3100"
             title="name"
-            width="25%"
+            width="0"
           >
             <div
               class="ejga3103 css-x4q70f-InteractiveContainer-TableHeaderColumnInteractive e14xwmxq0"
@@ -413,9 +413,9 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
             </div>
           </div>
           <div
-            class="css-1m9d124-TableHeadColumnContainer ejga3100"
+            class="css-mpoiz3-TableHeadColumnContainer ejga3100"
             title="version"
-            width="10%"
+            width="0"
           >
             <div
               class="ejga3103 css-x4q70f-InteractiveContainer-TableHeaderColumnInteractive e14xwmxq0"
@@ -429,9 +429,9 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
             </div>
           </div>
           <div
-            class="css-qmwopt-TableHeadColumnContainer ejga3100"
+            class="css-mpoiz3-TableHeadColumnContainer ejga3100"
             title="description"
-            width="flex"
+            width="0"
           >
             <div
               class="ejga3103 css-x4q70f-InteractiveContainer-TableHeaderColumnInteractive e14xwmxq0"
@@ -445,9 +445,9 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
             </div>
           </div>
           <div
-            class="css-ux5muk-TableHeadColumnContainer ejga3100"
+            class="css-mpoiz3-TableHeadColumnContainer ejga3100"
             title="install"
-            width="15%"
+            width="0"
           >
             <div
               class="ejga3103 css-x4q70f-InteractiveContainer-TableHeaderColumnInteractive e14xwmxq0"
@@ -473,9 +473,9 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
             data-key="flipper-plugin-hello"
           >
             <div
-              class="css-hdg6vt-TableBodyColumnContainer ehuguum0"
+              class="css-yt4330-TableBodyColumnContainer ehuguum0"
               title=""
-              width="25%"
+              width="0"
             >
               <span
                 class="ant-typography ant-typography-ellipsis ant-typography-single-line ant-typography-ellipsis-single-line"
@@ -484,9 +484,9 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
               </span>
             </div>
             <div
-              class="css-1rdsust-TableBodyColumnContainer ehuguum0"
+              class="css-pfp0fy-TableBodyColumnContainer ehuguum0"
               title=""
-              width="10%"
+              width="0"
             >
               <span
                 class="ant-typography ant-typography-ellipsis ant-typography-single-line ant-typography-ellipsis-single-line"
@@ -495,9 +495,9 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
               </span>
             </div>
             <div
-              class="css-1bw2bjn-TableBodyColumnContainer ehuguum0"
+              class="css-yt4330-TableBodyColumnContainer ehuguum0"
               title=""
-              width="flex"
+              width="0"
             >
               <div
                 class="css-s1wsbn-Container-Horizontal e1hsqii14"
@@ -521,9 +521,9 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
               </div>
             </div>
             <div
-              class="css-4dx1ef-TableBodyColumnContainer ehuguum0"
+              class="css-16v1lq1-TableBodyColumnContainer ehuguum0"
               title=""
-              width="15%"
+              width="0"
             >
               <button
                 class="ant-btn ant-btn-sm"
@@ -540,9 +540,9 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
             data-key="flipper-plugin-world"
           >
             <div
-              class="css-hdg6vt-TableBodyColumnContainer ehuguum0"
+              class="css-yt4330-TableBodyColumnContainer ehuguum0"
               title=""
-              width="25%"
+              width="0"
             >
               <span
                 class="ant-typography ant-typography-ellipsis ant-typography-single-line ant-typography-ellipsis-single-line"
@@ -551,9 +551,9 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
               </span>
             </div>
             <div
-              class="css-1rdsust-TableBodyColumnContainer ehuguum0"
+              class="css-pfp0fy-TableBodyColumnContainer ehuguum0"
               title=""
-              width="10%"
+              width="0"
             >
               <span
                 class="ant-typography ant-typography-ellipsis ant-typography-single-line ant-typography-ellipsis-single-line"
@@ -562,9 +562,9 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
               </span>
             </div>
             <div
-              class="css-1bw2bjn-TableBodyColumnContainer ehuguum0"
+              class="css-yt4330-TableBodyColumnContainer ehuguum0"
               title=""
-              width="flex"
+              width="0"
             >
               <div
                 class="css-s1wsbn-Container-Horizontal e1hsqii14"
@@ -588,9 +588,9 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
               </div>
             </div>
             <div
-              class="css-4dx1ef-TableBodyColumnContainer ehuguum0"
+              class="css-16v1lq1-TableBodyColumnContainer ehuguum0"
               title=""
-              width="15%"
+              width="0"
             >
               <button
                 class="ant-btn ant-btn-primary ant-btn-sm"
