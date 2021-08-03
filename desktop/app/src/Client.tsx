@@ -54,12 +54,16 @@ export type ClientExport = {
   query: ClientQuery;
 };
 
-type Params = {
+export type Params = {
   api: string;
   method: string;
   params?: Object;
 };
-type RequestMetadata = {method: string; id: number; params: Params | undefined};
+export type RequestMetadata = {
+  method: string;
+  id: number;
+  params: Params | undefined;
+};
 
 const handleError = (store: Store, device: BaseDevice, error: ErrorType) => {
   if (store.getState().settingsState.suppressPluginErrors) {

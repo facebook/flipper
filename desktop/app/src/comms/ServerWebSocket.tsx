@@ -133,7 +133,7 @@ class ServerWebSocket extends ServerWebSocketBase {
         error?: ErrorType | undefined;
       } = json;
 
-      if (data.hasOwnProperty('id') && data.id) {
+      if (data.hasOwnProperty('id') && data.id !== undefined) {
         const callbacks = pendingRequests.get(data.id);
         if (!callbacks) {
           return;
