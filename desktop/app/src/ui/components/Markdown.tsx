@@ -91,6 +91,7 @@ export function Markdown(props: {source: string; style?: CSSProperties}) {
           strong: Strong,
           em: Emphasis,
           code: CodeBlock,
+          // @ts-ignore missing in declaration
           blockquote: Quote,
           // @ts-ignore props missing href but existing run-time
           a: LinkReference,
