@@ -7,9 +7,11 @@
  * @format
  */
 
+import GK from '../fb-stubs/GK';
 import {SecureServerConfig} from '../utils/CertificateProvider';
 import ServerAdapter, {ServerEventsListener} from './ServerAdapter';
 import ServerRSocket from './ServerRSocket';
+import ServerWebSocket from './ServerWebSocket';
 import ServerWebSocketBrowser from './ServerWebSocketBrowser';
 
 function _createServer(listener: ServerEventsListener) {
@@ -18,6 +20,10 @@ function _createServer(listener: ServerEventsListener) {
    * WebSocket. Default is RSocket, but the stage is set for different type
    * of communication channels.
    */
+  if (GK.get('flipper_websocket_server')) {
+    return new ServerWebSocket(listener);
+  }
+
   return new ServerRSocket(listener);
 }
 
