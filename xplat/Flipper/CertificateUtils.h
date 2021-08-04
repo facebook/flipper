@@ -20,6 +20,14 @@ bool generateCertSigningRequest(
     const char* csrFile,
     const char* privateKeyFile);
 
+bool generateCertPKCS12(
+    const char* caCertificateFile,
+    const char* certificateFile,
+    const char* keyFile,
+    const char* pkcs12File,
+    const char* pkcs12Name,
+    const char* pkcs12Password);
+
 } // namespace flipper
 } // namespace facebook
 

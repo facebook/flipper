@@ -37,6 +37,8 @@ static constexpr int maxPayloadSize = 0xFFFFFF;
 // To be bumped for every core platform interface change.
 static constexpr int sdkVersion = 4;
 
+using namespace folly;
+
 namespace facebook {
 namespace flipper {
 

@@ -12,8 +12,6 @@
 #include <string>
 #include "FlipperInitConfig.h"
 
-using namespace folly;
-
 namespace facebook {
 namespace flipper {
 
@@ -22,11 +20,18 @@ class ConnectionContextStore {
   ConnectionContextStore(DeviceData deviceData);
   bool hasRequiredFiles();
   std::string getCertificateSigningRequest();
-  std::shared_ptr<SSLContext> getSSLContext();
+  std::shared_ptr<folly::SSLContext> getSSLContext();
   std::string getCertificateDirectoryPath();
   std::string getDeviceId();
   void storeConnectionConfig(folly::dynamic& config);
   bool resetState();
+
+  /** Convert and save to disk the existing certificate to PKCS #12 format.
+   * @return Returns a pair where `first` contains the certificate file path and
+   * `second` contains the certificate export password. If there's an error, the
+   * pair will contain both empty strings.
+   */
+  std::pair<std::string, std::string> getCertificate();
 
  private:
   DeviceData deviceData_;
