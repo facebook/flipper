@@ -218,7 +218,8 @@
     "axios": "^0.21.1",
     "glob-parent": "^5.1.2",
     "normalize-url": "^4.5.1",
-    "d3-array": "2.3.3"
+    "d3-array": "2.3.3",
+    "tar": "^6.1.2"
   },
   "scripts": {
     "build": "cross-env NODE_ENV=production ./ts-node scripts/build-release.ts $@",
