@@ -14,6 +14,7 @@ import {getInstance as getFormInstance} from '../../../fb-stubs/Logger';
 import {useDispatch} from '../../../utils/useStore';
 import {setStaticView} from '../../../reducers/connections';
 import SupportRequestFormV2 from '../../../fb-stubs/SupportRequestFormV2';
+import {Tracked} from 'flipper-plugin';
 
 export function GuideEndScreen(props: {
   showModal: boolean;
@@ -41,17 +42,21 @@ export function GuideEndScreen(props: {
       onCancel={() => props.toggleModal(false)}
       bodyStyle={{maxHeight: 800, overflow: 'auto'}}>
       <Layout.Horizontal gap="huge">
-        <Button
-          type="primary"
-          style={{flex: 1, marginBottom: 18}}
-          onClick={problemSolved}>
-          Problem Solved
-        </Button>
+        <Tracked>
+          <Button
+            type="primary"
+            style={{flex: 1, marginBottom: 18}}
+            onClick={problemSolved}>
+            Problem Solved
+          </Button>
+        </Tracked>
       </Layout.Horizontal>
       <Layout.Horizontal gap="huge">
-        <Button type="primary" style={{flex: 1}} onClick={loadForm}>
-          File Support Request
-        </Button>
+        <Tracked>
+          <Button type="primary" style={{flex: 1}} onClick={loadForm}>
+            File Support Request
+          </Button>
+        </Tracked>
       </Layout.Horizontal>
     </Modal>
   );
