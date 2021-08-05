@@ -102,6 +102,10 @@ async function handlePluginDownload(
         adapter: axiosHttpAdapter,
         cancelToken: cancellationSource.token,
         responseType: 'stream',
+        headers: {
+          'Sec-Fetch-Site': 'none',
+          'Sec-Fetch-Mode': 'navigate',
+        },
         onDownloadProgress: async (progressEvent) => {
           const newPercentCompleted = !progressEvent.total
             ? 0

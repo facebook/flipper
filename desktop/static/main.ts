@@ -253,6 +253,9 @@ function configureSession() {
       urls: ['*://*/*'],
     },
     (details, callback) => {
+      // setting sec-fetch-site to always be 'none' so Flipper requests are not blocked by SecFetch policies
+      details.requestHeaders['Sec-Fetch-Site'] = 'none';
+      details.requestHeaders['Sec-Fetch-Mode'] = 'navigate';
       // setting Origin to always be 'localhost' to avoid issues when dev version and release version behaves differently.
       details.requestHeaders.origin = 'http://localhost:3000';
       details.requestHeaders.referer = 'http://localhost:3000/index.dev.html';
