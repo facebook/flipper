@@ -76,6 +76,30 @@
           }
         }
       }
+    },
+    "supportedApps": {
+      "description": "List of apps supported by the plugin.",
+      "type": "array",
+      "items": {
+        "description": "App definition. E.g. {\"appID\": \"Facebook\", \"os\": \"Android\", \"type\": \"physical\"} means that plugin supports only Facebook app on Android physical devices.",
+        "type": "object",
+        "properties": {
+          "appID": {
+            "description": "App name: Facebook, Instagram or Messenger.",
+            "type": "string"
+          },
+          "os": {
+            "description": "Device OS: iOS, Android or Metro. Lack of this property means that all OSes supported.",
+            "type": "string",
+            "enum": ["iOS", "Android", "Metro"]
+          },
+          "type": {
+            "description": "Device type: physical or emulator or dummy. Lack of this property means it supports physical, emulator and dummy devices.",
+            "type": "string",
+            "enum": ["physical", "emulator"]
+          }
+        }
+      }
     }
   },
   "required": [
