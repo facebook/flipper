@@ -126,6 +126,7 @@ function getPluginDetailsV1(packageJson: any): PluginDetails {
     flipperSDKVersion: packageJson?.peerDependencies?.['flipper-plugin'],
     pluginType: packageJson?.pluginType,
     supportedDevices: packageJson?.supportedDevices,
+    supportedApps: packageJson?.supportedApps,
     engines: packageJson.engines,
   };
 }
@@ -149,6 +150,7 @@ function getPluginDetailsV2(packageJson: any): PluginDetails {
     flipperSDKVersion: packageJson?.peerDependencies?.['flipper-plugin'],
     pluginType: packageJson?.pluginType,
     supportedDevices: packageJson?.supportedDevices,
+    supportedApps: packageJson?.supportedApps,
     engines: packageJson.engines,
     publishedDocs: packageJson.publishedDocs,
   };

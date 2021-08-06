@@ -29,6 +29,7 @@ export interface PluginDetails {
   flipperSDKVersion?: string;
   pluginType?: PluginType;
   supportedDevices?: SupportedDevice[];
+  supportedApps?: SupportedApp[];
   publishedDocs?: {
     overview?: boolean;
     setup?: boolean;
@@ -40,6 +41,12 @@ export interface SupportedDevice {
   readonly type?: DeviceType;
   readonly archived?: boolean;
   readonly specs?: DeviceSpec[];
+}
+
+export interface SupportedApp {
+  readonly appID?: string;
+  readonly os?: OS;
+  readonly type?: DeviceType;
 }
 
 export type OS = 'iOS' | 'Android' | 'Metro';
