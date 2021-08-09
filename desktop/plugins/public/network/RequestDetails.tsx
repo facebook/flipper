@@ -670,11 +670,7 @@ class ProtobufFormatter {
   formatRequest(request: Request) {
     if (
       getHeaderValue(request.requestHeaders, 'content-type') ===
-        'application/x-protobuf' ||
-      this.protobufDefinitionRepository.hasDefinition(
-        request.method,
-        request.url,
-      )
+      'application/x-protobuf'
     ) {
       const protobufDefinition =
         this.protobufDefinitionRepository.getRequestType(
@@ -685,9 +681,7 @@ class ProtobufFormatter {
         return (
           <Text>
             Could not locate protobuf definition for request body of{' '}
-            {request.url} <br />
-            Please send ProtobufJS definitions with the plugin's
-            addProtobufDefinitions method.
+            {request.url}
           </Text>
         );
       }
@@ -710,11 +704,7 @@ class ProtobufFormatter {
     if (
       getHeaderValue(request.responseHeaders, 'content-type') ===
         'application/x-protobuf' ||
-      request.url.endsWith('.proto') ||
-      this.protobufDefinitionRepository.hasDefinition(
-        request.method,
-        request.url,
-      )
+      request.url.endsWith('.proto')
     ) {
       const protobufDefinition =
         this.protobufDefinitionRepository.getResponseType(
@@ -725,9 +715,7 @@ class ProtobufFormatter {
         return (
           <Text>
             Could not locate protobuf definition for response body of{' '}
-            {request.url} <br />
-            Please send ProtobufJS definitions with the plugin's
-            addProtobufDefinitions method.
+            {request.url}
           </Text>
         );
       }

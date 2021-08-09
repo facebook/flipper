@@ -63,10 +63,6 @@ export class ProtobufDefinitionsRepository {
     }
   }
 
-  public hasDefinition(method: string, path: string): boolean {
-    return this.rawDefinitions.hasOwnProperty(this.key(method, path));
-  }
-
   private generateRoots(key: string) {
     if (key in this.cachedDecodedDefinitions) {
       return;
