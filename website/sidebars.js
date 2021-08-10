@@ -105,6 +105,7 @@ module.exports = {
     'Desktop plugin APIs': [
       'extending/flipper-plugin',
       'extending/styling-components',
+      'extending/deeplinks',
       ...fbInternalOnly([
         {
           'QPL linting': ['fb/building-a-linter', 'fb/active-linters'],
