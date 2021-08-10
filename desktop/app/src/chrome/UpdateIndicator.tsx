@@ -49,32 +49,7 @@ export default function UpdateIndicator() {
           placement: 'bottomLeft',
           key: 'flipperupdatecheck',
           message: 'Update available',
-          description: (
-            <>
-              Flipper version {versionCheckResult.version} is now available.
-              {fbConfig.isFBBuild ? (
-                fbConfig.getReleaseChannel() === ReleaseChannel.INSIDERS ? (
-                  <> Restart Flipper to update to the latest version.</>
-                ) : (
-                  <>
-                    {' '}
-                    Run <code>arc pull</code> (optionally with{' '}
-                    <code>--latest</code>) in <code>~/fbsource</code> and
-                    restart Flipper to update to the latest version.
-                  </>
-                )
-              ) : (
-                <>
-                  {' '}
-                  Click to{' '}
-                  <Typography.Link href={versionCheckResult.url}>
-                    download
-                  </Typography.Link>
-                  .
-                </>
-              )}
-            </>
-          ),
+          description: getUpdateAvailableMessage(versionCheckResult),
           duration: null, // no auto close
         });
         break;
@@ -126,4 +101,36 @@ export default function UpdateIndicator() {
   }, [launcherMsg]);
 
   return null;
+}
+
+export function getUpdateAvailableMessage(versionCheckResult: {
+  url: string;
+  version: string;
+}): React.ReactNode {
+  return (
+    <>
+      Flipper version {versionCheckResult.version} is now available.
+      {fbConfig.isFBBuild ? (
+        fbConfig.getReleaseChannel() === ReleaseChannel.INSIDERS ? (
+          <> Restart Flipper to update to the latest version.</>
+        ) : (
+          <>
+            {' '}
+            Run <code>arc pull</code> (optionally with <code>--latest</code>) in{' '}
+            <code>~/fbsource</code> and restart Flipper to update to the latest
+            version.
+          </>
+        )
+      ) : (
+        <>
+          {' '}
+          Click to{' '}
+          <Typography.Link href={versionCheckResult.url}>
+            download
+          </Typography.Link>
+          .
+        </>
+      )}
+    </>
+  );
 }

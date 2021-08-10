@@ -79,7 +79,7 @@ export const Dialog = {
     message,
     ...rest
   }: {
-    message: string | React.ReactElement;
+    message: React.ReactNode;
   } & BaseDialogOptions): DialogResult<true> {
     return Dialog.show<true>({
       ...rest,
@@ -94,7 +94,7 @@ export const Dialog = {
     onConfirm,
     ...rest
   }: BaseDialogOptions & {
-    message: string | React.ReactElement;
+    message: React.ReactNode;
     defaultValue?: string;
     onConfirm?: (value: string) => Promise<string>;
   }): DialogResult<string> {
@@ -123,7 +123,7 @@ export const Dialog = {
     width,
   }: {
     title?: string;
-    message: string | React.ReactElement;
+    message: React.ReactNode;
     width?: number;
   }) {
     let cancel: () => void;

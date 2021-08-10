@@ -7,14 +7,17 @@
  * @format
  */
 
+import React from 'react';
 import {Dialog, getFlipperLib} from 'flipper-plugin';
 import {getUser} from '../fb-stubs/user';
 import {Store} from '../reducers/index';
-// import {checkForUpdate} from '../fb-stubs/checkForUpdate';
-// import {getAppVersion} from '../utils/info';
+import {checkForUpdate} from '../fb-stubs/checkForUpdate';
+import {getAppVersion} from '../utils/info';
 import {ACTIVE_SHEET_SIGN_IN, setActiveSheet} from '../reducers/application';
 import {UserNotSignedInError} from '../utils/errors';
 import {selectPlugin} from '../reducers/connections';
+import {getUpdateAvailableMessage} from '../chrome/UpdateIndicator';
+import {Typography} from 'antd';
 
 type OpenPluginParams = {
   pluginId: string;
@@ -42,11 +45,12 @@ export function parseOpenPluginParams(query: string): OpenPluginParams {
 
 export async function handleOpenPluginDeeplink(store: Store, query: string) {
   const params = parseOpenPluginParams(query);
+  const title = `Starting plugin ${params.pluginId}…`;
 
-  if (!(await verifyLighthouseAndUserLoggedIn(store, params))) {
+  if (!(await verifyLighthouseAndUserLoggedIn(store, title))) {
     return;
   }
-  // await verifyFlipperIsUpToDate();
+  await verifyFlipperIsUpToDate(title);
   // await verifyPluginInstalled();
   // await verifyDevices();
   // await verifyClient();
@@ -57,13 +61,11 @@ export async function handleOpenPluginDeeplink(store: Store, query: string) {
 // check if user is connected to VPN and logged in. Returns true if OK, or false if aborted
 async function verifyLighthouseAndUserLoggedIn(
   store: Store,
-  params: OpenPluginParams,
+  title: string,
 ): Promise<boolean> {
   if (!getFlipperLib().isFB || process.env.NODE_ENV === 'test') {
     return true; // ok, continue
   }
-
-  const title = `Starting plugin ${params.pluginId}…`;
 
   // repeat until connection succeeded
   while (true) {
@@ -134,6 +136,41 @@ async function waitForLogin(store: Store) {
       }
     });
   });
+}
+
+async function verifyFlipperIsUpToDate(title: string) {
+  const currentVersion = getAppVersion();
+  const handle = Dialog.loading({
+    title,
+    message: 'Checking if Flipper is up-to-date',
+  });
+  try {
+    const result = await checkForUpdate(currentVersion);
+    handle.close();
+    switch (result.kind) {
+      case 'error':
+        // if we can't tell if we're up to date, we don't want to halt the process on that.
+        console.warn('Failed to verify Flipper version', result);
+        return;
+      case 'up-to-date':
+        return;
+      case 'update-available':
+        await Dialog.confirm({
+          title,
+          message: (
+            <Typography.Text>
+              {getUpdateAvailableMessage(result)}
+            </Typography.Text>
+          ),
+          okText: 'Skip',
+        });
+        return;
+    }
+  } catch (e) {
+    // if we can't tell if we're up to date, we don't want to halt the process on that.
+    console.warn('Failed to verify Flipper version', e);
+    handle.close();
+  }
 }
 
 function openPlugin(store: Store, params: OpenPluginParams) {
