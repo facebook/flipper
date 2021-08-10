@@ -77,14 +77,33 @@ export const Dialog = {
 
   confirm({
     message,
+    onConfirm,
     ...rest
   }: {
     message: React.ReactNode;
+    onConfirm?: () => Promise<true>;
   } & BaseDialogOptions): DialogResult<true> {
     return Dialog.show<true>({
       ...rest,
       children: message,
-      onConfirm: async () => true,
+      onConfirm: onConfirm ?? (async () => true),
+    });
+  },
+
+  alert({
+    message,
+    type,
+    ...rest
+  }: {
+    message: React.ReactNode;
+    type: 'info' | 'error' | 'warning' | 'success';
+  } & BaseDialogOptions): Promise<void> {
+    return new Promise((resolve) => {
+      Modal[type]({
+        afterClose: resolve,
+        content: message,
+        ...rest,
+      });
     });
   },
 

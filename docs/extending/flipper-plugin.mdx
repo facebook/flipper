@@ -914,7 +914,7 @@ Available utilities
 
 * `Dialog.confirm(options): Promise<boolean>`. Show a confirmation dialog to the user. Options:
   * `message`: Description of what the user is confirming.
-* `Dialog.prompt(options): Promise<string | false>`. Prompt the user for some input. Options:
+* `Dialog.prompt(options): Promise<string | false>`. Inspired by `window.prompt`. Prompt the user for some input. Options:
   * `message`: Text accompanying the input
   * `defaultValue`
   * `onConfirm(value) => Promise<string>`. Can be used to transform the inputted value before resolving the prompt promise. If the handler throws, this will be shown as validation error in the dialog.
@@ -923,6 +923,9 @@ Available utilities
 * `Dialog.show<T>(options): Promise<T | false`. Low level building block to build dialogs. Options:
   * `children`: React Element to render as children of the dialog.
   * `onConfirm: () => Promise<T>`. Handler to handle the OK button, which should produce the value the `Dialog.show` call will resolve to.
+* `Dialog.alert(options)` show a small dialog, inspired by window.alert. Returns a `Promise<void>`. Options:
+  * `type`, determines style. One of: `'info' | 'error' | 'warning' | 'success'`.
+  * `message` parameter to specificy the content of the dialog.
 
 ### Spinner
 

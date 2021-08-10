@@ -17,7 +17,7 @@ import {
 } from '../utils/exportData';
 import {tryCatchReportPlatformFailures} from '../utils/metrics';
 import {handleDeeplink} from '../deeplink';
-import {message} from 'antd';
+import {Dialog} from 'flipper-plugin';
 
 export default (store: Store, _logger: Logger) => {
   const currentWindow = remote.getCurrentWindow();
@@ -59,7 +59,13 @@ export default (store: Store, _logger: Logger) => {
     (_event: IpcRendererEvent, query: string) => {
       handleDeeplink(store, query).catch((e) => {
         console.warn('Failed to handle deeplink', query, e);
-        message.error(`Failed to handle deeplink '${query}': ${e}`);
+        Dialog.alert({
+          title: 'Failed to open deeplink',
+          type: 'error',
+          message: `Failed to handle deeplink '${query}': ${
+            e.message ?? e.toString()
+          }`,
+        });
       });
     },
   );
