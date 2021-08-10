@@ -7,8 +7,14 @@
  * @format
  */
 
-import {selectPlugin} from '../reducers/connections';
+import {Dialog, getFlipperLib} from 'flipper-plugin';
+import {getUser} from '../fb-stubs/user';
 import {Store} from '../reducers/index';
+// import {checkForUpdate} from '../fb-stubs/checkForUpdate';
+// import {getAppVersion} from '../utils/info';
+import {ACTIVE_SHEET_SIGN_IN, setActiveSheet} from '../reducers/application';
+import {UserNotSignedInError} from '../utils/errors';
+import {selectPlugin} from '../reducers/connections';
 
 type OpenPluginParams = {
   pluginId: string;
@@ -36,32 +42,98 @@ export function parseOpenPluginParams(query: string): OpenPluginParams {
 
 export async function handleOpenPluginDeeplink(store: Store, query: string) {
   const params = parseOpenPluginParams(query);
-  await verifyLighthouse();
-  await verifyUserIsLoggedIn();
-  await verifyFlipperIsUpToDate();
-  await verifyPluginInstalled();
-  await verifyClient();
-  await verifyPluginInstalled();
+
+  if (!(await verifyLighthouseAndUserLoggedIn(store, params))) {
+    return;
+  }
+  // await verifyFlipperIsUpToDate();
+  // await verifyPluginInstalled();
+  // await verifyDevices();
+  // await verifyClient();
+  // await verifyPluginEnabled();
   await openPlugin(store, params);
 }
-function verifyLighthouse() {
-  // TODO:
+
+// check if user is connected to VPN and logged in. Returns true if OK, or false if aborted
+async function verifyLighthouseAndUserLoggedIn(
+  store: Store,
+  params: OpenPluginParams,
+): Promise<boolean> {
+  if (!getFlipperLib().isFB || process.env.NODE_ENV === 'test') {
+    return true; // ok, continue
+  }
+
+  const title = `Starting plugin ${params.pluginId}…`;
+
+  // repeat until connection succeeded
+  while (true) {
+    const spinnerDialog = Dialog.loading({
+      title,
+      message: 'Checking connection to Facebook Intern',
+    });
+
+    try {
+      const user = await getUser();
+      spinnerDialog.close();
+      // User is logged in
+      if (user) {
+        return true;
+      } else {
+        // Connected, but not logged in or no valid profile object returned
+        return await showPleaseLoginDialog(store, title);
+      }
+    } catch (e) {
+      spinnerDialog.close();
+      if (e instanceof UserNotSignedInError) {
+        // connection, but user is not logged in
+        return await showPleaseLoginDialog(store, title);
+      }
+      // General connection error.
+      // Not connected (to presumably) intern at all
+      if (
+        !(await Dialog.confirm({
+          title,
+          message:
+            'It looks you are currently not connected to Lighthouse / VPN. Please connect and retry.',
+          okText: 'Retry',
+        }))
+      ) {
+        return false;
+      }
+    }
+  }
 }
 
-function verifyUserIsLoggedIn() {
-  // TODO:
+async function showPleaseLoginDialog(
+  store: Store,
+  title: string,
+): Promise<boolean> {
+  if (
+    !(await Dialog.confirm({
+      title,
+      message: 'You are currently not logged in, please login.',
+      okText: 'Login',
+    }))
+  ) {
+    // cancelled login
+    return false;
+  }
+
+  store.dispatch(setActiveSheet(ACTIVE_SHEET_SIGN_IN));
+  // wait until login succeeded
+  await waitForLogin(store);
+  return true;
 }
 
-function verifyFlipperIsUpToDate() {
-  // TODO:
-}
-
-function verifyPluginInstalled() {
-  // TODO:
-}
-
-function verifyClient() {
-  // TODO:
+async function waitForLogin(store: Store) {
+  return new Promise<void>((resolve) => {
+    const unsub = store.subscribe(() => {
+      if (store.getState().user?.id) {
+        unsub();
+        resolve();
+      }
+    });
+  });
 }
 
 function openPlugin(store: Store, params: OpenPluginParams) {
