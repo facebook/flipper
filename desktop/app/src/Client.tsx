@@ -710,11 +710,22 @@ export default class Client extends EventEmitter {
         api,
         method,
         params,
-      }).catch((err) => {
+      }).catch((err: Error) => {
         // We only throw errors if the connection is still alive
         // as connection-related ones aren't recoverable from
         // user code.
         if (this.connected.get()) {
+          // This is a special case where we a send failed because of
+          // a disconnect "mid-air". This can happen, for instance,
+          // when you pull the plug from a connected phone. We can
+          // still handle this gracefully.
+          if (err.toString().includes('Socket closed unexpectedly')) {
+            console.warn(
+              `Failed to call device due to unexpected disconnect: ${err}`,
+            );
+            this.disconnect();
+            return {};
+          }
           throw err;
         }
         // This effectively preserves the previous behavior
