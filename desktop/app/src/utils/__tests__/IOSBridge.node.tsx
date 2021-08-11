@@ -94,17 +94,20 @@ test('throws if no iOS support', async () => {
   );
 });
 
-test('uses xcrun to take screenshots with no idb when xcode is detected', async () => {
-  const ib = await makeIOSBridge('', true);
+test.unix(
+  'uses xcrun to take screenshots with no idb when xcode is detected',
+  async () => {
+    const ib = await makeIOSBridge('', true);
 
-  ib.screenshot('deadbeef');
+    ib.screenshot('deadbeef');
 
-  expect(exec).toHaveBeenCalledWith(
-    'xcrun simctl io deadbeef screenshot /temp/00000000-0000-0000-0000-000000000000.png',
-  );
-});
+    expect(exec).toHaveBeenCalledWith(
+      'xcrun simctl io deadbeef screenshot /temp/00000000-0000-0000-0000-000000000000.png',
+    );
+  },
+);
 
-test('uses idb to take screenshots when available', async () => {
+test.unix('uses idb to take screenshots when available', async () => {
   const ib = await makeIOSBridge('/usr/local/bin/idb', true, async (_) => true);
 
   ib.screenshot('deadbeef');
