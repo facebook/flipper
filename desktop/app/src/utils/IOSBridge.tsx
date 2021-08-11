@@ -97,16 +97,14 @@ function makeTempScreenshotFilePath() {
   return path.join(directory, imageName);
 }
 
-function runScreenshotCommand(
+async function runScreenshotCommand(
   command: string,
   imagePath: string,
 ): Promise<Buffer> {
-  return exec(command)
-    .then(() => fs.readFile(imagePath))
-    .then(async (buffer) => {
-      await fs.unlink(imagePath);
-      return buffer;
-    });
+  await exec(command);
+  const buffer = await fs.readFile(imagePath);
+  await fs.unlink(imagePath);
+  return buffer;
 }
 
 export async function xcrunScreenshot(serial: string): Promise<Buffer> {
