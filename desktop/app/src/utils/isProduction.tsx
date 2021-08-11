@@ -10,6 +10,8 @@
 import electron from 'electron';
 
 const _isProduction = !/node_modules[\\/]electron[\\/]/.test(
+  // We only run this once and cache the output so this slow access is okay.
+  // eslint-disable-next-line no-restricted-properties
   process.execPath || electron.remote.process.execPath,
 );
 
