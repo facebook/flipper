@@ -310,14 +310,27 @@ export default (store: Store, logger: Logger) => {
   if (!store.getState().settingsState.enableIOS) {
     return;
   }
-  iosUtil.isXcodeDetected().then((isDetected) => {
-    store.dispatch(setXcodeDetected(isDetected));
-    if (store.getState().settingsState.enablePhysicalIOS) {
-      startDevicePortForwarders();
-    }
-    return makeIOSBridge(
-      store.getState().settingsState.idbPath,
-      isDetected,
-    ).then((iosBridge) => queryDevicesForever(store, logger, iosBridge));
-  });
+  iosUtil
+    .isXcodeDetected()
+    .then(
+      (isDetected) => {
+        store.dispatch(setXcodeDetected(isDetected));
+        if (store.getState().settingsState.enablePhysicalIOS) {
+          startDevicePortForwarders();
+        }
+        return makeIOSBridge(
+          store.getState().settingsState.idbPath,
+          isDetected,
+        );
+      },
+      (err) => {
+        console.error('Failed to initialize iOS dispatcher:', err);
+      },
+    )
+    .then(
+      (iosBridge) => iosBridge && queryDevicesForever(store, logger, iosBridge),
+    )
+    .catch((err) => {
+      console.error('Error while querying iOS devices:', err);
+    });
 };
