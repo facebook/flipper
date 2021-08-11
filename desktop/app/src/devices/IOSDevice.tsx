@@ -249,9 +249,9 @@ export default class IOSDevice extends BaseDevice {
           this.recordingLocation = undefined;
           return recordingLocation!;
         })
-        .catch((_e) => {
+        .catch((e) => {
           this.recordingLocation = undefined;
-          console.error(_e);
+          console.warn('Failed to terminate iOS screen recording:', e);
           return null;
         });
       return output;
