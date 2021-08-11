@@ -12,14 +12,10 @@ import child_process, {ChildProcess} from 'child_process';
 import BaseDevice from './BaseDevice';
 import JSONStream from 'JSONStream';
 import {Transform} from 'stream';
-import fs from 'fs-extra';
-import {v1 as uuid} from 'uuid';
-import path from 'path';
 import {exec} from 'promisify-child-process';
 import {default as promiseTimeout} from '../utils/promiseTimeout';
 import {IOSBridge} from '../utils/IOSBridge';
 import split2 from 'split2';
-import {getAppTempPath} from '../utils/pathUtils';
 
 type IOSLogLevel = 'Default' | 'Info' | 'Debug' | 'Error' | 'Fault';
 
@@ -67,19 +63,8 @@ export default class IOSDevice extends BaseDevice {
     if (!this.connected.get()) {
       return Buffer.from([]);
     }
-    const tmpImageName = uuid() + '.png';
-    const tmpDirectory = getAppTempPath();
-    const tmpFilePath = path.join(tmpDirectory, tmpImageName);
-    const command =
-      this.deviceType === 'emulator'
-        ? `xcrun simctl io ${this.serial} screenshot ${tmpFilePath}`
-        : `idb screenshot --udid ${this.serial} ${tmpFilePath}`;
-    return exec(command)
-      .then(() => fs.readFile(tmpFilePath))
-      .then(async (buffer) => {
-        await fs.unlink(tmpFilePath);
-        return buffer;
-      });
+    // HACK: Will restructure the types to allow for the ! to be removed.
+    return await this.iOSBridge.screenshot!(this.serial);
   }
 
   navigateToLocation(location: string) {

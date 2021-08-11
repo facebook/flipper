@@ -7,9 +7,13 @@
  * @format
  */
 
-import fs from 'fs';
+import fs from 'fs-extra';
 import child_process from 'child_process';
 import {DeviceType} from 'flipper-plugin-lib';
+import {v1 as uuid} from 'uuid';
+import path from 'path';
+import {exec} from 'promisify-child-process';
+import {getAppTempPath} from '../utils/pathUtils';
 
 export interface IOSBridge {
   idbAvailable: boolean;
@@ -17,6 +21,7 @@ export interface IOSBridge {
     udid: string,
     deviceType: DeviceType,
   ) => child_process.ChildProcessWithoutNullStreams;
+  screenshot?: (serial: string) => Promise<Buffer>;
 }
 
 async function isAvailable(idbPath: string): Promise<boolean> {
@@ -32,7 +37,8 @@ async function isAvailable(idbPath: string): Promise<boolean> {
 function getLogExtraArgs(deviceType: DeviceType) {
   if (deviceType === 'physical') {
     return [
-      // idb has a --json option, but that doesn't actually work!
+      // idb has a --json option, but that doesn't actually work for physical
+      // devices!
     ];
   } else {
     return [
@@ -77,6 +83,36 @@ export function xcrunStartLogListener(udid: string, deviceType: DeviceType) {
   );
 }
 
+function makeTempScreenshotFilePath() {
+  const imageName = uuid() + '.png';
+  const directory = getAppTempPath();
+  return path.join(directory, imageName);
+}
+
+function runScreenshotCommand(
+  command: string,
+  imagePath: string,
+): Promise<Buffer> {
+  return exec(command)
+    .then(() => fs.readFile(imagePath))
+    .then(async (buffer) => {
+      await fs.unlink(imagePath);
+      return buffer;
+    });
+}
+
+export async function xcrunScreenshot(serial: string): Promise<Buffer> {
+  const imagePath = makeTempScreenshotFilePath();
+  const command = `xcrun simctl io ${serial} screenshot ${imagePath}`;
+  return runScreenshotCommand(command, imagePath);
+}
+
+export async function idbScreenshot(serial: string): Promise<Buffer> {
+  const imagePath = makeTempScreenshotFilePath();
+  const command = `idb screenshot --udid ${serial} ${imagePath}`;
+  return runScreenshotCommand(command, imagePath);
+}
+
 export async function makeIOSBridge(
   idbPath: string,
   isXcodeDetected: boolean,
@@ -87,6 +123,7 @@ export async function makeIOSBridge(
     return {
       idbAvailable: true,
       startLogListener: idbStartLogListener.bind(null, idbPath),
+      screenshot: idbScreenshot,
     };
   }
 
@@ -95,6 +132,7 @@ export async function makeIOSBridge(
     return {
       idbAvailable: false,
       startLogListener: xcrunStartLogListener,
+      screenshot: xcrunScreenshot,
     };
   }
   // no idb, and not a simulator, we can't log this device
