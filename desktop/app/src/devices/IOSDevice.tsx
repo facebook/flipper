@@ -14,7 +14,10 @@ import JSONStream from 'JSONStream';
 import {Transform} from 'stream';
 import {exec} from 'promisify-child-process';
 import {default as promiseTimeout} from '../utils/promiseTimeout';
-import {IOSBridge} from '../utils/IOSBridge';
+import {
+  ERR_PHYSICAL_DEVICE_LOGS_WITHOUT_IDB,
+  IOSBridge,
+} from '../utils/IOSBridge';
 import split2 from 'split2';
 
 type IOSLogLevel = 'Default' | 'Info' | 'Debug' | 'Error' | 'Fault';
@@ -63,8 +66,7 @@ export default class IOSDevice extends BaseDevice {
     if (!this.connected.get()) {
       return Buffer.from([]);
     }
-    // HACK: Will restructure the types to allow for the ! to be removed.
-    return await this.iOSBridge.screenshot!(this.serial);
+    return await this.iOSBridge.screenshot(this.serial);
   }
 
   navigateToLocation(location: string) {
@@ -86,14 +88,18 @@ export default class IOSDevice extends BaseDevice {
       return;
     }
 
-    const logListener = iOSBridge.startLogListener;
-    if (
-      !this.log &&
-      logListener &&
-      (this.deviceType === 'emulator' ||
-        (this.deviceType === 'physical' && iOSBridge.idbAvailable))
-    ) {
-      this.log = logListener(this.serial, this.deviceType);
+    if (!this.log) {
+      try {
+        this.log = iOSBridge.startLogListener(this.serial, this.deviceType);
+      } catch (e) {
+        if (e.message === ERR_PHYSICAL_DEVICE_LOGS_WITHOUT_IDB) {
+          console.warn(e);
+        } else {
+          console.error('Failed to initialise device logs:', e);
+          this.startLogListener(iOSBridge, retries - 1);
+        }
+        return;
+      }
       this.log.on('error', (err: Error) => {
         console.error('iOS log tailer error', err);
       });

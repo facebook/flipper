@@ -15,13 +15,18 @@ import path from 'path';
 import {exec} from 'promisify-child-process';
 import {getAppTempPath} from '../utils/pathUtils';
 
+export const ERR_NO_IDB_OR_XCODE_AVAILABLE =
+  'Neither Xcode nor idb available. Cannot provide iOS device functionality.';
+
+export const ERR_PHYSICAL_DEVICE_LOGS_WITHOUT_IDB =
+  'Cannot provide logs from a physical device without idb.';
+
 export interface IOSBridge {
-  idbAvailable: boolean;
-  startLogListener?: (
+  startLogListener: (
     udid: string,
     deviceType: DeviceType,
   ) => child_process.ChildProcessWithoutNullStreams;
-  screenshot?: (serial: string) => Promise<Buffer>;
+  screenshot: (serial: string) => Promise<Buffer>;
 }
 
 async function isAvailable(idbPath: string): Promise<boolean> {
@@ -65,6 +70,9 @@ export function idbStartLogListener(
 }
 
 export function xcrunStartLogListener(udid: string, deviceType: DeviceType) {
+  if (deviceType === 'physical') {
+    throw new Error(ERR_PHYSICAL_DEVICE_LOGS_WITHOUT_IDB);
+  }
   const deviceSetPath = process.env.DEVICE_SET_PATH
     ? ['--set', process.env.DEVICE_SET_PATH]
     : [];
@@ -121,7 +129,6 @@ export async function makeIOSBridge(
   // prefer idb
   if (await isAvailableFn(idbPath)) {
     return {
-      idbAvailable: true,
       startLogListener: idbStartLogListener.bind(null, idbPath),
       screenshot: idbScreenshot,
     };
@@ -130,13 +137,10 @@ export async function makeIOSBridge(
   // no idb, if it's a simulator and xcode is available, we can use xcrun
   if (isXcodeDetected) {
     return {
-      idbAvailable: false,
       startLogListener: xcrunStartLogListener,
       screenshot: xcrunScreenshot,
     };
   }
-  // no idb, and not a simulator, we can't log this device
-  return {
-    idbAvailable: false,
-  };
+
+  throw new Error(ERR_NO_IDB_OR_XCODE_AVAILABLE);
 }

@@ -21,7 +21,11 @@ import IOSDevice from '../devices/IOSDevice';
 import {addErrorNotification} from '../reducers/notifications';
 import {getStaticPath} from '../utils/pathUtils';
 import {destroyDevice} from '../reducers/connections';
-import {IOSBridge, makeIOSBridge} from '../utils/IOSBridge';
+import {
+  ERR_NO_IDB_OR_XCODE_AVAILABLE,
+  IOSBridge,
+  makeIOSBridge,
+} from '../utils/IOSBridge';
 
 type iOSSimulatorDevice = {
   state: 'Booted' | 'Shutdown' | 'Shutting Down';
@@ -312,21 +316,29 @@ export default (store: Store, logger: Logger) => {
   }
   iosUtil
     .isXcodeDetected()
-    .then(
-      (isDetected) => {
-        store.dispatch(setXcodeDetected(isDetected));
-        if (store.getState().settingsState.enablePhysicalIOS) {
-          startDevicePortForwarders();
-        }
-        return makeIOSBridge(
+    .then(async (isDetected) => {
+      store.dispatch(setXcodeDetected(isDetected));
+      if (store.getState().settingsState.enablePhysicalIOS) {
+        startDevicePortForwarders();
+      }
+      try {
+        // Awaiting the promise here to trigger immediate error handling.
+        return await makeIOSBridge(
           store.getState().settingsState.idbPath,
           isDetected,
         );
-      },
-      (err) => {
-        console.error('Failed to initialize iOS dispatcher:', err);
-      },
-    )
+      } catch (err) {
+        // This case is expected if both Xcode and idb are missing.
+        if (err.message === ERR_NO_IDB_OR_XCODE_AVAILABLE) {
+          console.warn(
+            'Failed to init iOS device. You may want to disable iOS support in the settings.',
+            err,
+          );
+        } else {
+          console.error('Failed to initialize iOS dispatcher:', err);
+        }
+      }
+    })
     .then(
       (iosBridge) => iosBridge && queryDevicesForever(store, logger, iosBridge),
     )

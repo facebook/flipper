@@ -20,9 +20,8 @@ const exec = mocked(promisifyChildProcess.exec);
 
 test('uses xcrun with no idb when xcode is detected', async () => {
   const ib = await makeIOSBridge('', true);
-  expect(ib.startLogListener).toBeDefined();
 
-  ib.startLogListener!('deadbeef', 'emulator');
+  ib.startLogListener('deadbeef', 'emulator');
 
   expect(spawn).toHaveBeenCalledWith(
     'xcrun',
@@ -45,9 +44,8 @@ test('uses xcrun with no idb when xcode is detected', async () => {
 
 test('uses idb when present and xcode detected', async () => {
   const ib = await makeIOSBridge('/usr/local/bin/idb', true, async (_) => true);
-  expect(ib.startLogListener).toBeDefined();
 
-  ib.startLogListener!('deadbeef', 'emulator');
+  ib.startLogListener('deadbeef', 'emulator');
 
   expect(spawn).toHaveBeenCalledWith(
     '/usr/local/bin/idb',
@@ -69,9 +67,8 @@ test('uses idb when present and xcode detected', async () => {
 
 test('uses idb when present and xcode detected and physical device connected', async () => {
   const ib = await makeIOSBridge('/usr/local/bin/idb', true, async (_) => true);
-  expect(ib.startLogListener).toBeDefined();
 
-  ib.startLogListener!('deadbeef', 'physical');
+  ib.startLogListener('deadbeef', 'physical');
 
   expect(spawn).toHaveBeenCalledWith(
     '/usr/local/bin/idb',
@@ -88,19 +85,19 @@ test('uses idb when present and xcode detected and physical device connected', a
 
 test("without idb physical devices can't log", async () => {
   const ib = await makeIOSBridge('', true);
-  expect(ib.idbAvailable).toBeFalsy();
   expect(ib.startLogListener).toBeDefined(); // since we have xcode
 });
 
-test('uses no log listener when xcode is not detected', async () => {
-  const ib = await makeIOSBridge('', false);
-  expect(ib.startLogListener).toBeUndefined();
+test('throws if no iOS support', async () => {
+  await expect(makeIOSBridge('', false)).rejects.toThrow(
+    'Neither Xcode nor idb available. Cannot provide iOS device functionality.',
+  );
 });
 
 test('uses xcrun to take screenshots with no idb when xcode is detected', async () => {
   const ib = await makeIOSBridge('', true);
 
-  ib.screenshot!('deadbeef');
+  ib.screenshot('deadbeef');
 
   expect(exec).toHaveBeenCalledWith(
     'xcrun simctl io deadbeef screenshot /temp/00000000-0000-0000-0000-000000000000.png',
@@ -110,7 +107,7 @@ test('uses xcrun to take screenshots with no idb when xcode is detected', async 
 test('uses idb to take screenshots when available', async () => {
   const ib = await makeIOSBridge('/usr/local/bin/idb', true, async (_) => true);
 
-  ib.screenshot!('deadbeef');
+  ib.screenshot('deadbeef');
 
   expect(exec).toHaveBeenCalledWith(
     'idb screenshot --udid deadbeef /temp/00000000-0000-0000-0000-000000000000.png',

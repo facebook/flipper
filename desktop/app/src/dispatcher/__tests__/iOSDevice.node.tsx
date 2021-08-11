@@ -14,6 +14,7 @@ import {
 import configureStore from 'redux-mock-store';
 import {State, createRootReducer} from '../../reducers/index';
 import {getInstance} from '../../fb-stubs/Logger';
+import {IOSBridge} from '../../utils/IOSBridge';
 
 const mockStore = configureStore<State, {}>([])(
   createRootReducer()(undefined, {type: 'INIT'}),
@@ -64,9 +65,7 @@ test('test getAllPromisesForQueryingDevices when xcode detected', () => {
   const promises = getAllPromisesForQueryingDevices(
     mockStore,
     logger,
-    {
-      idbAvailable: false,
-    },
+    {} as IOSBridge,
     true,
   );
   expect(promises.length).toEqual(3);
@@ -76,9 +75,7 @@ test('test getAllPromisesForQueryingDevices when xcode is not detected', () => {
   const promises = getAllPromisesForQueryingDevices(
     mockStore,
     logger,
-    {
-      idbAvailable: true,
-    },
+    {} as IOSBridge,
     false,
   );
   expect(promises.length).toEqual(1);
