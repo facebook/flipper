@@ -9,7 +9,9 @@
 
 import path from 'path';
 import fs from 'fs';
-import {remote} from 'electron';
+// In utils this is fine when used with caching.
+// eslint-disable-next-line flipper/no-electron-remote-imports
+import {default as electron, remote} from 'electron';
 import config from '../fb-stubs/config';
 
 let _staticPath = '';
@@ -53,6 +55,17 @@ export function getAppPath() {
   }
 
   return _appPath;
+}
+
+let _tempPath: string | undefined = undefined;
+export function getAppTempPath() {
+  if (!_tempPath) {
+    // We cache this.
+    // eslint-disable-next-line no-restricted-properties
+    _tempPath = (electron.app || electron.remote.app).getPath('temp');
+  }
+
+  return _tempPath;
 }
 
 export function getChangelogPath() {

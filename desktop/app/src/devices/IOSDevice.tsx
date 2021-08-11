@@ -12,7 +12,6 @@ import child_process, {ChildProcess} from 'child_process';
 import BaseDevice from './BaseDevice';
 import JSONStream from 'JSONStream';
 import {Transform} from 'stream';
-import electron from 'electron';
 import fs from 'fs';
 import {v1 as uuid} from 'uuid';
 import path from 'path';
@@ -21,6 +20,7 @@ import {exec} from 'child_process';
 import {default as promiseTimeout} from '../utils/promiseTimeout';
 import {IOSBridge} from '../utils/IOSBridge';
 import split2 from 'split2';
+import {getAppTempPath} from '../utils/pathUtils';
 
 type IOSLogLevel = 'Default' | 'Info' | 'Debug' | 'Error' | 'Fault';
 
@@ -69,7 +69,7 @@ export default class IOSDevice extends BaseDevice {
       return Buffer.from([]);
     }
     const tmpImageName = uuid() + '.png';
-    const tmpDirectory = (electron.app || electron.remote.app).getPath('temp');
+    const tmpDirectory = getAppTempPath();
     const tmpFilePath = path.join(tmpDirectory, tmpImageName);
     const command =
       this.deviceType === 'emulator'
