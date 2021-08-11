@@ -12,11 +12,10 @@ import child_process, {ChildProcess} from 'child_process';
 import BaseDevice from './BaseDevice';
 import JSONStream from 'JSONStream';
 import {Transform} from 'stream';
-import fs from 'fs';
+import fs from 'fs-extra';
 import {v1 as uuid} from 'uuid';
 import path from 'path';
-import {promisify} from 'util';
-import {exec} from 'child_process';
+import {exec} from 'promisify-child-process';
 import {default as promiseTimeout} from '../utils/promiseTimeout';
 import {IOSBridge} from '../utils/IOSBridge';
 import split2 from 'split2';
@@ -75,10 +74,11 @@ export default class IOSDevice extends BaseDevice {
       this.deviceType === 'emulator'
         ? `xcrun simctl io ${this.serial} screenshot ${tmpFilePath}`
         : `idb screenshot --udid ${this.serial} ${tmpFilePath}`;
-    return promisify(exec)(command)
-      .then(() => promisify(fs.readFile)(tmpFilePath))
-      .then((buffer) => {
-        return promisify(fs.unlink)(tmpFilePath).then(() => buffer);
+    return exec(command)
+      .then(() => fs.readFile(tmpFilePath))
+      .then(async (buffer) => {
+        await fs.unlink(tmpFilePath);
+        return buffer;
       });
   }
 
