@@ -8,7 +8,7 @@
  */
 
 import {State} from '../reducers/index';
-import {DeviceExport} from '../devices/BaseDevice';
+import {DeviceExport} from '../server/devices/BaseDevice';
 
 export const stateSanitizer = (state: State) => {
   if (state.connections && state.connections.devices) {

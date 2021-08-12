@@ -7,7 +7,7 @@
  * @format
  */
 
-import {getPluginKey} from '../pluginUtils';
+import {getPluginKey} from '../pluginKey';
 import {FlipperPlugin, FlipperDevicePlugin} from '../../plugin';
 import {createMockFlipperWithPlugin} from '../../test-utils/createMockFlipperWithPlugin';
 import {getExportablePlugins} from '../../selectors/connections';

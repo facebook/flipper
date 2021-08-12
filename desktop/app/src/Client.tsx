@@ -8,7 +8,7 @@
  */
 
 import {PluginDefinition} from './plugin';
-import BaseDevice, {OS} from './devices/BaseDevice';
+import BaseDevice, {OS} from './server/devices/BaseDevice';
 import {Logger} from './fb-interfaces/Logger';
 import {Store} from './reducers/index';
 import {performance} from 'perf_hooks';
@@ -16,10 +16,9 @@ import {reportPluginFailures} from './utils/metrics';
 import {default as isProduction} from './utils/isProduction';
 import {EventEmitter} from 'events';
 import invariant from 'invariant';
-import {
-  getPluginKey,
-  defaultEnabledBackgroundPlugins,
-} from './utils/pluginUtils';
+import {getPluginKey} from './utils/pluginKey';
+
+import {defaultEnabledBackgroundPlugins} from './utils/pluginUtils';
 import {processMessagesLater} from './utils/messageQueue';
 import {emitBytesReceived} from './dispatcher/tracking';
 import {debounce} from 'lodash';
@@ -36,7 +35,7 @@ import {
   ConnectionStatus,
   ErrorType,
   ClientConnection,
-} from './comms/ClientConnection';
+} from './server/comms/ClientConnection';
 
 type Plugins = Set<string>;
 type PluginsArr = Array<string>;

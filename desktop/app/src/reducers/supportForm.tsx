@@ -18,7 +18,7 @@ import constants from '../fb-stubs/constants';
 import {getInstance} from '../fb-stubs/Logger';
 import {logPlatformSuccessRate} from '../utils/metrics';
 export const SUPPORT_FORM_PREFIX = 'support-form-v2';
-import {OS} from '../devices/BaseDevice';
+import {OS} from '../server/devices/BaseDevice';
 import {getExportablePlugins} from '../selectors/connections';
 
 const {DEFAULT_SUPPORT_GROUP} = constants;

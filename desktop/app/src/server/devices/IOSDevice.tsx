@@ -7,13 +7,12 @@
  * @format
  */
 
-import type {LogLevel, DeviceLogEntry, DeviceType} from 'flipper-plugin';
+import {LogLevel, DeviceLogEntry, DeviceType, timeout} from 'flipper-plugin';
 import child_process, {ChildProcess} from 'child_process';
 import BaseDevice from './BaseDevice';
 import JSONStream from 'JSONStream';
 import {Transform} from 'stream';
 import {exec} from 'promisify-child-process';
-import {default as promiseTimeout} from '../utils/promiseTimeout';
 import {
   ERR_PHYSICAL_DEVICE_LOGS_WITHOUT_IDB,
   IOSBridge,
@@ -230,7 +229,7 @@ export default class IOSDevice extends BaseDevice {
         this.recordingProcess!.kill('SIGINT');
       });
 
-      const output: string | null = await promiseTimeout<void>(
+      const output: string | null = await timeout<void>(
         5000,
         prom,
         'Timed out to stop a screen capture.',

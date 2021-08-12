@@ -8,7 +8,7 @@
  */
 
 import type Client from '../Client';
-import type BaseDevice from '../devices/BaseDevice';
+import type BaseDevice from '../server/devices/BaseDevice';
 
 /* A Client uniuely identifies an app running on some device.
 

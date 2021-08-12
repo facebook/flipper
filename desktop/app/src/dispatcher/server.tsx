@@ -7,14 +7,14 @@
  * @format
  */
 
-import ServerController from '../comms/ServerController';
+import ServerController from '../server/comms/ServerController';
 
 import {Store} from '../reducers/index';
 import {Logger} from '../fb-interfaces/Logger';
 import Client from '../Client';
 import {UninitializedClient} from '../UninitializedClient';
 import {addErrorNotification} from '../reducers/notifications';
-import {CertificateExchangeMedium} from '../utils/CertificateProvider';
+import {CertificateExchangeMedium} from '../server/utils/CertificateProvider';
 import {selectClient, selectDevice} from '../reducers/connections';
 import {isLoggedIn} from '../fb-stubs/user';
 import React from 'react';

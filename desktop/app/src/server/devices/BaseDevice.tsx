@@ -18,8 +18,8 @@ import {
   createState,
   getFlipperLib,
 } from 'flipper-plugin';
-import {PluginDefinition, DevicePluginMap} from '../plugin';
 import {DeviceSpec, OS as PluginOS, PluginDetails} from 'flipper-plugin-lib';
+import {getPluginKey} from '../../utils/pluginKey';
 
 export type DeviceShell = {
   stdout: stream.Readable;
@@ -28,6 +28,9 @@ export type DeviceShell = {
 };
 
 export type OS = PluginOS | 'Windows' | 'MacOS' | 'JSWebApp';
+
+type PluginDefinition = _SandyPluginDefinition;
+type PluginMap = Map<string, PluginDefinition>;
 
 export type DeviceExport = {
   os: OS;
@@ -80,6 +83,7 @@ export default class BaseDevice {
   // if imported, stores the original source location
   source = '';
 
+  // TODO: ideally we don't want BasePlugin to know about the concept of plugins
   sandyPluginStates: Map<string, _SandyDevicePluginInstance> = new Map<
     string,
     _SandyDevicePluginInstance
@@ -221,7 +225,7 @@ export default class BaseDevice {
   }
 
   loadDevicePlugins(
-    devicePlugins: DevicePluginMap,
+    devicePlugins: PluginMap,
     enabledDevicePlugins: Set<string>,
     pluginStates?: Record<string, any>,
   ) {
@@ -249,11 +253,7 @@ export default class BaseDevice {
           plugin,
           this,
           // break circular dep, one of those days again...
-          require('../utils/pluginUtils').getPluginKey(
-            undefined,
-            {serial: this.serial},
-            plugin.id,
-          ),
+          getPluginKey(undefined, {serial: this.serial}, plugin.id),
           initialState,
         ),
       );

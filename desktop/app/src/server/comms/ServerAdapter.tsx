@@ -11,7 +11,7 @@ import {
   CertificateExchangeMedium,
   SecureServerConfig,
 } from '../utils/CertificateProvider';
-import Client, {ClientQuery} from '../Client';
+import Client, {ClientQuery} from '../../Client';
 import {ClientConnection} from './ClientConnection';
 import {transformCertificateExchangeMediumToType} from './Utilities';
 

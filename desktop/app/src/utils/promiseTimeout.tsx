@@ -7,21 +7,22 @@
  * @format
  */
 
-import {sleep} from 'flipper-plugin';
+import {timeout} from 'flipper-plugin';
 import {StatusMessageType} from '../reducers/application';
 
+/**
+ * @deprecated use timeout from flipper-plugin
+ * @param ms @
+ * @param promise
+ * @param timeoutMessage
+ * @returns
+ */
 export default function promiseTimeout<T>(
   ms: number,
   promise: Promise<T>,
   timeoutMessage?: string,
 ): Promise<T> {
-  // Create a promise that rejects in <ms> milliseconds
-  const timeout = sleep(ms).then(() => {
-    throw new Error(timeoutMessage || `Timed out in ${ms} ms.`);
-  });
-
-  // Returns a race between our timeout and the passed in promise
-  return Promise.race([promise, timeout]);
+  return timeout(ms, promise, timeoutMessage);
 }
 
 export function showStatusUpdatesForPromise<T>(

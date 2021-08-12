@@ -9,8 +9,8 @@
 
 import {State} from '../../reducers/index';
 import configureStore from 'redux-mock-store';
-import {default as BaseDevice} from '../../devices/BaseDevice';
-import {default as ArchivedDevice} from '../../devices/ArchivedDevice';
+import {default as BaseDevice} from '../../server/devices/BaseDevice';
+import {default as ArchivedDevice} from '../../server/devices/ArchivedDevice';
 import {
   processStore,
   determinePluginsToProcess,

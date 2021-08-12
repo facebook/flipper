@@ -8,23 +8,23 @@
  */
 
 import {CertificateExchangeMedium} from '../utils/CertificateProvider';
-import {Logger} from '../fb-interfaces/Logger';
-import {ClientQuery} from '../Client';
-import {Store, State} from '../reducers/index';
+import {Logger} from '../../fb-interfaces/Logger';
+import {ClientQuery} from '../../Client';
+import {Store, State} from '../../reducers/index';
 import CertificateProvider from '../utils/CertificateProvider';
-import Client from '../Client';
+import Client from '../../Client';
 import {ClientConnection, ConnectionStatus} from './ClientConnection';
-import {UninitializedClient} from '../UninitializedClient';
-import {reportPlatformFailures} from '../utils/metrics';
+import {UninitializedClient} from '../../UninitializedClient';
+import {reportPlatformFailures} from '../../utils/metrics';
 import {EventEmitter} from 'events';
 import invariant from 'invariant';
-import GK from '../fb-stubs/GK';
+import GK from '../../fb-stubs/GK';
 import {initJsEmulatorIPC} from '../utils/js-client-server-utils/serverUtils';
-import {buildClientId} from '../utils/clientUtils';
-import JSDevice from '../devices/JSDevice';
-import DummyDevice from '../devices/DummyDevice';
-import BaseDevice from '../devices/BaseDevice';
-import {sideEffect} from '../utils/sideEffect';
+import {buildClientId} from '../../utils/clientUtils';
+import JSDevice from '../../server/devices/JSDevice';
+import DummyDevice from '../../server/devices/DummyDevice';
+import BaseDevice from '../../server/devices/BaseDevice';
+import {sideEffect} from '../../utils/sideEffect';
 import {
   appNameWithUpdateHint,
   transformCertificateExchangeMediumToType,
@@ -79,7 +79,11 @@ class ServerController extends EventEmitter implements ServerEventsListener {
     super();
     this.logger = logger;
     this.connections = new Map();
-    this.certificateProvider = new CertificateProvider(this, logger, store);
+    this.certificateProvider = new CertificateProvider(
+      this,
+      logger,
+      store.getState().settingsState,
+    );
     this.connectionTracker = new ConnectionTracker(logger);
     this.secureServer = null;
     this.insecureServer = null;

@@ -7,7 +7,7 @@
  * @format
  */
 
-import {OS} from '../devices/BaseDevice';
+import {OS} from '../server/devices/BaseDevice';
 
 export default Object.freeze({
   GRAPH_APP_ID: '',

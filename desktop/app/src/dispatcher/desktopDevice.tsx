@@ -10,8 +10,8 @@
 import {Store} from '../reducers/index';
 import {Logger} from '../fb-interfaces/Logger';
 
-import MacDevice from '../devices/MacDevice';
-import WindowsDevice from '../devices/WindowsDevice';
+import MacDevice from '../server/devices/MacDevice';
+import WindowsDevice from '../server/devices/WindowsDevice';
 
 export default (store: Store, _logger: Logger) => {
   let device;

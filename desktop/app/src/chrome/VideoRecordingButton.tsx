@@ -8,7 +8,7 @@
  */
 
 import React, {Component} from 'react';
-import BaseDevice from '../devices/BaseDevice';
+import BaseDevice from '../server/devices/BaseDevice';
 import {Button, Glyph, colors} from '../ui';
 import path from 'path';
 import os from 'os';

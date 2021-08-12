@@ -10,7 +10,7 @@
 import type {PluginDefinition} from '../plugin';
 import type {State} from '../reducers';
 import type {State as PluginsState} from '../reducers/plugins';
-import type BaseDevice from '../devices/BaseDevice';
+import type BaseDevice from '../server/devices/BaseDevice';
 import type Client from '../Client';
 import type {
   ActivatablePluginDetails,
@@ -19,6 +19,7 @@ import type {
   PluginDetails,
 } from 'flipper-plugin-lib';
 import {getLatestCompatibleVersionOfEachPlugin} from '../dispatcher/plugins';
+import {getPluginKey} from './pluginKey';
 
 export type PluginLists = {
   devicePlugins: PluginDefinition[];
@@ -62,25 +63,6 @@ export function pluginsClassMap(
     ...plugins.devicePlugins.entries(),
   ]);
 }
-
-export function getPluginKey(
-  selectedAppId: string | null | undefined,
-  baseDevice: {serial: string} | null | undefined,
-  pluginID: string,
-): string {
-  if (selectedAppId) {
-    return `${selectedAppId}#${pluginID}`;
-  }
-  if (baseDevice) {
-    // If selected App is not defined, then the plugin is a device plugin
-    return `${baseDevice.serial}#${pluginID}`;
-  }
-  return `unknown#${pluginID}`;
-}
-
-export const pluginKey = (serial: string, pluginName: string): string => {
-  return `${serial}#${pluginName}`;
-};
 
 export function computeExportablePlugins(
   state: Pick<State, 'plugins' | 'connections' | 'pluginMessageQueue'>,

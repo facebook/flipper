@@ -7,7 +7,7 @@
  * @format
  */
 
-import GK from '../fb-stubs/GK';
+import GK from '../../fb-stubs/GK';
 import {SecureServerConfig} from '../utils/CertificateProvider';
 import ServerAdapter, {ServerEventsListener} from './ServerAdapter';
 import ServerRSocket from './ServerRSocket';

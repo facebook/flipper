@@ -12,8 +12,8 @@ import {
   MockFlipperResult,
 } from '../../../test-utils/createMockFlipperWithPlugin';
 import {FlipperPlugin} from '../../../plugin';
-import MetroDevice from '../../../devices/MetroDevice';
-import BaseDevice from '../../../devices/BaseDevice';
+import MetroDevice from '../../../server/devices/MetroDevice';
+import BaseDevice from '../../../server/devices/BaseDevice';
 import {_SandyPluginDefinition} from 'flipper-plugin';
 import {TestUtils} from 'flipper-plugin';
 import {selectPlugin} from '../../../reducers/connections';

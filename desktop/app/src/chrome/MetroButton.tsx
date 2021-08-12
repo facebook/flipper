@@ -8,7 +8,7 @@
  */
 
 import React, {useCallback, useEffect, useState} from 'react';
-import MetroDevice, {MetroReportableEvent} from '../devices/MetroDevice';
+import MetroDevice, {MetroReportableEvent} from '../server/devices/MetroDevice';
 import {useStore} from '../utils/useStore';
 import {Button as AntButton} from 'antd';
 import {MenuOutlined, ReloadOutlined} from '@ant-design/icons';

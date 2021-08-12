@@ -76,6 +76,8 @@ export {
 export {DataFormatter} from './ui/DataFormatter';
 
 export {sleep} from './utils/sleep';
+export {timeout} from './utils/timeout';
+
 export {
   LogTypes,
   TrackType,

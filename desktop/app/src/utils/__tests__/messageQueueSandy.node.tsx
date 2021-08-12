@@ -19,7 +19,7 @@ import {
   selectDevice,
 } from '../../reducers/connections';
 import {processMessageQueue} from '../messageQueue';
-import {getPluginKey} from '../pluginUtils';
+import {getPluginKey} from '../pluginKey';
 import {TestIdler} from '../Idler';
 import {registerPlugins} from '../../reducers/plugins';
 import {

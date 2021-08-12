@@ -8,7 +8,7 @@
  */
 
 import {CertificateExchangeMedium} from '../utils/CertificateProvider';
-import {ClientQuery} from '../Client';
+import {ClientQuery} from '../../Client';
 
 /**
  * Transforms the certificate exchange medium type as number to the

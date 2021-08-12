@@ -7,8 +7,8 @@
  * @format
  */
 
-import {Logger} from '../fb-interfaces/Logger';
-import {internGraphPOSTAPIRequest} from '../fb-stubs/user';
+import {Logger} from '../../fb-interfaces/Logger';
+import {internGraphPOSTAPIRequest} from '../../fb-stubs/user';
 import ServerController from '../comms/ServerController';
 import {promisify} from 'util';
 import fs from 'fs';
@@ -21,14 +21,13 @@ import {
 import path from 'path';
 import tmp, {DirOptions, FileOptions} from 'tmp';
 import iosUtil from './iOSContainerUtility';
-import {reportPlatformFailures} from './metrics';
+import {reportPlatformFailures} from '../../utils/metrics';
 import {getAdbClient} from './adbClient';
 import * as androidUtil from './androidContainerUtility';
 import os from 'os';
 import {Client as ADBClient} from 'adbkit';
-import {Store} from '../reducers/index';
 import archiver from 'archiver';
-import promiseTimeout from '../utils/promiseTimeout';
+import {timeout} from 'flipper-plugin';
 import {v4 as uuid} from 'uuid';
 
 export type CertificateExchangeMedium = 'FS_ACCESS' | 'WWW';
@@ -71,6 +70,12 @@ export type SecureServerConfig = {
   rejectUnauthorized: boolean;
 };
 
+type CertificateProviderConfig = {
+  idbPath: string;
+  androidHome: string;
+  enablePhysicalIOS: boolean;
+};
+
 /*
  * This class is responsible for generating and deploying server and client
  * certificates to allow for secure communication between Flipper and apps.
@@ -86,17 +91,21 @@ export default class CertificateProvider {
   logger: Logger;
   adb: Promise<ADBClient>;
   certificateSetup: Promise<void>;
-  store: Store;
+  config: CertificateProviderConfig;
   server: ServerController;
 
-  constructor(server: ServerController, logger: Logger, store: Store) {
+  constructor(
+    server: ServerController,
+    logger: Logger,
+    config: CertificateProviderConfig,
+  ) {
     this.logger = logger;
-    this.adb = getAdbClient(store);
+    this.adb = getAdbClient(config);
     this.certificateSetup = reportPlatformFailures(
       this.ensureServerCertExists(),
       'ensureServerCertExists',
     );
-    this.store = store;
+    this.config = config;
     this.server = server;
   }
 
@@ -104,7 +113,7 @@ export default class CertificateProvider {
     const buff = await fsExtra.readFile(zipPath);
     const file = new File([buff], 'certs.zip');
     return reportPlatformFailures(
-      promiseTimeout(
+      timeout(
         5 * 60 * 1000,
         internGraphPOSTAPIRequest('flipper/certificates', {
           certificate_zip: file,
@@ -345,7 +354,7 @@ export default class CertificateProvider {
           filePath,
           bundleId,
           destination,
-          this.store.getState().settingsState.idbPath,
+          this.config.idbPath,
         ),
       );
     });
@@ -421,10 +430,7 @@ export default class CertificateProvider {
       return Promise.resolve(matches[1]);
     }
     return iosUtil
-      .targets(
-        this.store.getState().settingsState.idbPath,
-        this.store.getState().settingsState.enablePhysicalIOS,
-      )
+      .targets(this.config.idbPath, this.config.enablePhysicalIOS)
       .then((targets) => {
         if (targets.length === 0) {
           throw new Error('No iOS devices found');
@@ -493,7 +499,7 @@ export default class CertificateProvider {
             originalFile,
             bundleId,
             path.join(dir, csrFileName),
-            this.store.getState().settingsState.idbPath,
+            this.config.idbPath,
           )
           .then(() => dir);
       })

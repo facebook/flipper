@@ -12,7 +12,7 @@ import WebSocket from 'ws';
 import ws from 'ws';
 import {SecureClientQuery, ServerEventsListener} from './ServerAdapter';
 import querystring from 'querystring';
-import Client, {ClientQuery} from '../Client';
+import Client, {ClientQuery} from '../../Client';
 import {OS} from '../devices/BaseDevice';
 import {
   ClientConnection,

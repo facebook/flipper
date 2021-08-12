@@ -7,7 +7,7 @@
  * @format
  */
 
-import Client, {ClientQuery} from '../../Client';
+import Client, {ClientQuery} from '../../../Client';
 import {
   ClientConnection,
   ConnectionStatus,
@@ -16,11 +16,11 @@ import {
 } from '../../comms/ClientConnection';
 import {ipcRenderer, remote, IpcRendererEvent} from 'electron';
 import JSDevice from '../../devices/JSDevice';
-import {Store} from '../../reducers';
-import {Logger} from '../../fb-interfaces/Logger';
+import {Store} from '../../../reducers';
+import {Logger} from '../../../fb-interfaces/Logger';
 import ServerController from '../../comms/ServerController';
-import {buildClientId} from '../clientUtils';
-import {destroyDevice} from '../../reducers/connections';
+import {buildClientId} from '../../../utils/clientUtils';
+import {destroyDevice} from '../../../reducers/connections';
 
 const connections: Map<number, JSClientFlipperConnection> = new Map();
 

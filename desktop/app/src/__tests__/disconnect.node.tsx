@@ -7,7 +7,7 @@
  * @format
  */
 
-import {default as BaseDevice} from '../devices/BaseDevice';
+import {default as BaseDevice} from '../server/devices/BaseDevice';
 import {createMockFlipperWithPlugin} from '../test-utils/createMockFlipperWithPlugin';
 import {
   TestUtils,

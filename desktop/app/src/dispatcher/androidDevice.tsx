@@ -7,13 +7,13 @@
  * @format
  */
 
-import AndroidDevice from '../devices/AndroidDevice';
-import KaiOSDevice from '../devices/KaiOSDevice';
+import AndroidDevice from '../server/devices/AndroidDevice';
+import KaiOSDevice from '../server/devices/KaiOSDevice';
 import child_process from 'child_process';
 import {Store} from '../reducers/index';
-import BaseDevice from '../devices/BaseDevice';
+import BaseDevice from '../server/devices/BaseDevice';
 import {Logger} from '../fb-interfaces/Logger';
-import {getAdbClient} from '../utils/adbClient';
+import {getAdbClient} from '../server/utils/adbClient';
 import which from 'which';
 import {promisify} from 'util';
 import {ServerPorts} from '../reducers/application';
@@ -105,7 +105,7 @@ function createDevice(
 export async function getActiveAndroidDevices(
   store: Store,
 ): Promise<Array<BaseDevice>> {
-  const client = await getAdbClient(store);
+  const client = await getAdbClient(store.getState().settingsState);
   const androidDevices = await client.listDevices();
   const devices = await Promise.all(
     androidDevices.map((device) => createDevice(client, device, store)),
@@ -169,7 +169,7 @@ export default (store: Store, logger: Logger) => {
         console.warn('Failed to query AVDs:', err);
       });
 
-    return getAdbClient(store)
+    return getAdbClient(store.getState().settingsState)
       .then((client) => {
         client
           .trackDevices()
@@ -282,7 +282,7 @@ export default (store: Store, logger: Logger) => {
 
   // cleanup method
   return () =>
-    getAdbClient(store).then((client) => {
+    getAdbClient(store.getState().settingsState).then((client) => {
       client.kill();
     });
 };

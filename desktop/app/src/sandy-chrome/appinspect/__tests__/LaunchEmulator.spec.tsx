@@ -17,11 +17,11 @@ import {createRootReducer} from '../../../reducers';
 import {act} from 'react-dom/test-utils';
 import {sleep} from 'flipper-plugin';
 
-jest.mock('../../../devices/AndroidDevice', () => ({
+jest.mock('../../../server/devices/AndroidDevice', () => ({
   launchEmulator: jest.fn(() => Promise.resolve([])),
 }));
 
-import {launchEmulator} from '../../../devices/AndroidDevice';
+import {launchEmulator} from '../../../server/devices/AndroidDevice';
 
 test('Can render and launch android apps', async () => {
   const store = createStore(createRootReducer());

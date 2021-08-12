@@ -8,11 +8,11 @@
  */
 
 import BaseDevice from '../BaseDevice';
-import * as DeviceTestPluginModule from '../../test-utils/DeviceTestPlugin';
+import * as DeviceTestPluginModule from '../../../test-utils/DeviceTestPlugin';
 import {TestUtils, _SandyPluginDefinition} from 'flipper-plugin';
 import ArchivedDevice from '../ArchivedDevice';
 import DummyDevice from '../DummyDevice';
-import {createMockFlipperWithPlugin} from '../../test-utils/createMockFlipperWithPlugin';
+import {createMockFlipperWithPlugin} from '../../../test-utils/createMockFlipperWithPlugin';
 
 const physicalDevicePluginDetails = TestUtils.createMockPluginDetails({
   id: 'physicalDevicePlugin',

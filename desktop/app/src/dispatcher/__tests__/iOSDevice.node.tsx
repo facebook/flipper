@@ -14,7 +14,7 @@ import {
 import configureStore from 'redux-mock-store';
 import {State, createRootReducer} from '../../reducers/index';
 import {getInstance} from '../../fb-stubs/Logger';
-import {IOSBridge} from '../../utils/IOSBridge';
+import {IOSBridge} from '../../server/utils/IOSBridge';
 
 const mockStore = configureStore<State, {}>([])(
   createRootReducer()(undefined, {type: 'INIT'}),

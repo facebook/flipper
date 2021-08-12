@@ -17,7 +17,7 @@ import {
 } from '@ant-design/icons';
 import {Store} from '../../reducers';
 import {useStore} from '../../utils/useStore';
-import {launchEmulator} from '../../devices/AndroidDevice';
+import {launchEmulator} from '../../server/devices/AndroidDevice';
 import {Layout, renderReactRoot, withTrackingScope} from 'flipper-plugin';
 import {Provider} from 'react-redux';
 import {

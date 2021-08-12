@@ -44,10 +44,10 @@ import {
 import {deconstructClientId} from '../utils/clientUtils';
 import {clearMessageQueue} from '../reducers/pluginMessageQueue';
 import {
-  getPluginKey,
   isDevicePluginDefinition,
   defaultEnabledBackgroundPlugins,
 } from '../utils/pluginUtils';
+import {getPluginKey} from '../utils/pluginKey';
 
 const maxInstalledPluginVersionsToKeep = 2;
 

@@ -9,8 +9,8 @@
 
 import {FlipperPlugin, FlipperDevicePlugin} from './plugin';
 import {Logger} from './fb-interfaces/Logger';
-import BaseDevice from './devices/BaseDevice';
-import {pluginKey as getPluginKey} from './utils/pluginUtils';
+import BaseDevice from './server/devices/BaseDevice';
+import {pluginKey as getPluginKey} from './utils/pluginKey';
 import Client from './Client';
 import {
   ErrorBoundary,

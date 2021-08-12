@@ -8,14 +8,14 @@
  */
 
 import {createStore} from 'redux';
-import BaseDevice from '../devices/BaseDevice';
+import BaseDevice from '../server/devices/BaseDevice';
 import {createRootReducer} from '../reducers';
 import {Store} from '../reducers/index';
 import Client, {ClientQuery} from '../Client';
 import {
   ClientConnection,
   ConnectionStatusChange,
-} from '../comms/ClientConnection';
+} from '../server/comms/ClientConnection';
 import {buildClientId} from '../utils/clientUtils';
 import {Logger} from '../fb-interfaces/Logger';
 import {PluginDefinition} from '../plugin';
@@ -24,7 +24,7 @@ import {getInstance} from '../fb-stubs/Logger';
 import {initializeFlipperLibImplementation} from '../utils/flipperLibImplementation';
 import pluginManager from '../dispatcher/pluginManager';
 import {PluginDetails} from 'flipper-plugin-lib';
-import ArchivedDevice from '../devices/ArchivedDevice';
+import ArchivedDevice from '../server/devices/ArchivedDevice';
 
 export interface AppOptions {
   plugins?: PluginDefinition[];

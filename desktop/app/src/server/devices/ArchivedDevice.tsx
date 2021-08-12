@@ -10,7 +10,7 @@
 import BaseDevice from './BaseDevice';
 import type {DeviceType} from 'flipper-plugin';
 import {OS, DeviceShell} from './BaseDevice';
-import {SupportFormRequestDetailsState} from '../reducers/supportForm';
+import {SupportFormRequestDetailsState} from '../../reducers/supportForm';
 
 export default class ArchivedDevice extends BaseDevice {
   isArchived = true;

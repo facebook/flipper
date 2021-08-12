@@ -12,7 +12,7 @@
  * opaque types will ensure the commands are only ever run on validated
  * arguments.
  */
-import {UnsupportedError} from './metrics';
+import {UnsupportedError} from '../../utils/metrics';
 import adbkit, {Client} from 'adbkit';
 
 const allowedAppNameRegex = /^[\w.-]+$/;

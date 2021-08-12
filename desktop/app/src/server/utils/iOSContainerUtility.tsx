@@ -11,7 +11,7 @@ import React from 'react';
 import {Mutex} from 'async-mutex';
 import {exec as unsafeExec, Output} from 'promisify-child-process';
 import {killOrphanedInstrumentsProcesses} from './processCleanup';
-import {reportPlatformFailures} from './metrics';
+import {reportPlatformFailures} from '../../utils/metrics';
 import {promises, constants} from 'fs';
 import memoize from 'lodash.memoize';
 import {notNull} from './typeUtils';
@@ -19,7 +19,7 @@ import {promisify} from 'util';
 import child_process from 'child_process';
 import fs from 'fs-extra';
 import path from 'path';
-import fbConfig from '../fb-stubs/config';
+import fbConfig from '../../fb-stubs/config';
 import {notification, Typography} from 'antd';
 const exec = promisify(child_process.exec);
 

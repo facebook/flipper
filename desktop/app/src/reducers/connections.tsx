@@ -10,18 +10,20 @@
 import {ComponentType} from 'react';
 import {produce} from 'immer';
 
-import type BaseDevice from '../devices/BaseDevice';
-import MacDevice from '../devices/MacDevice';
+import type BaseDevice from '../server/devices/BaseDevice';
+import MacDevice from '../server/devices/MacDevice';
 import type Client from '../Client';
 import type {UninitializedClient} from '../UninitializedClient';
 import {isEqual} from 'lodash';
 import {performance} from 'perf_hooks';
 import type {Actions, Store} from '.';
 import {WelcomeScreenStaticView} from '../sandy-chrome/WelcomeScreen';
-import {getPluginKey, isDevicePluginDefinition} from '../utils/pluginUtils';
+import {isDevicePluginDefinition} from '../utils/pluginUtils';
+import {getPluginKey} from '../utils/pluginKey';
+
 import {deconstructClientId} from '../utils/clientUtils';
 import type {RegisterPluginAction} from './plugins';
-import MetroDevice from '../devices/MetroDevice';
+import MetroDevice from '../server/devices/MetroDevice';
 import {Logger} from 'flipper-plugin';
 
 export type StaticViewProps = {logger: Logger};

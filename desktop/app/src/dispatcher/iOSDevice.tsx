@@ -16,8 +16,8 @@ import {promisify} from 'util';
 import path from 'path';
 import child_process from 'child_process';
 const execFile = child_process.execFile;
-import iosUtil from '../utils/iOSContainerUtility';
-import IOSDevice from '../devices/IOSDevice';
+import iosUtil from '../server/utils/iOSContainerUtility';
+import IOSDevice from '../server/devices/IOSDevice';
 import {addErrorNotification} from '../reducers/notifications';
 import {getStaticPath} from '../utils/pathUtils';
 import {destroyDevice} from '../reducers/connections';
@@ -25,7 +25,7 @@ import {
   ERR_NO_IDB_OR_XCODE_AVAILABLE,
   IOSBridge,
   makeIOSBridge,
-} from '../utils/IOSBridge';
+} from '../server/utils/IOSBridge';
 
 type iOSSimulatorDevice = {
   state: 'Booted' | 'Shutdown' | 'Shutting Down';

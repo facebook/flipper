@@ -13,7 +13,7 @@ import {DeviceType} from 'flipper-plugin-lib';
 import {v1 as uuid} from 'uuid';
 import path from 'path';
 import {exec} from 'promisify-child-process';
-import {getAppTempPath} from '../utils/pathUtils';
+import {getAppTempPath} from '../../utils/pathUtils';
 
 export const ERR_NO_IDB_OR_XCODE_AVAILABLE =
   'Neither Xcode nor idb available. Cannot provide iOS device functionality.';

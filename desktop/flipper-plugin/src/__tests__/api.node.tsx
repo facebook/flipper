@@ -61,6 +61,7 @@ test('Correct top level API exposed', () => {
       "styled",
       "textContent",
       "theme",
+      "timeout",
       "useLocalStorageState",
       "useLogger",
       "useMemoize",

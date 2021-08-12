@@ -23,9 +23,9 @@ import {useDispatch, useStore} from '../../utils/useStore';
 import {getPluginTitle, getPluginTooltip} from '../../utils/pluginUtils';
 import {selectPlugin} from '../../reducers/connections';
 import Client from '../../Client';
-import BaseDevice from '../../devices/BaseDevice';
+import BaseDevice from '../../server/devices/BaseDevice';
 import {DownloadablePluginDetails} from 'flipper-plugin-lib';
-import MetroDevice from '../../devices/MetroDevice';
+import MetroDevice from '../../server/devices/MetroDevice';
 import {
   DownloadablePluginState,
   PluginDownloadStatus,

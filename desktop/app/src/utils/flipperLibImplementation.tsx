@@ -12,7 +12,7 @@ import type {Logger} from '../fb-interfaces/Logger';
 import type {Store} from '../reducers';
 import createPaste from '../fb-stubs/createPaste';
 import GK from '../fb-stubs/GK';
-import type BaseDevice from '../devices/BaseDevice';
+import type BaseDevice from '../server/devices/BaseDevice';
 import {clipboard, shell} from 'electron';
 import constants from '../fb-stubs/constants';
 import {addNotification} from '../reducers/notifications';

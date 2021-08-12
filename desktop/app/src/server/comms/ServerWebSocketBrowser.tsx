@@ -10,10 +10,10 @@
 import ServerWebSocketBase from './ServerWebSocketBase';
 import WebSocket from 'ws';
 import querystring from 'querystring';
-import Client, {ClientQuery} from '../Client';
+import Client, {ClientQuery} from '../../Client';
 import {BrowserClientFlipperConnection} from './BrowserClientFlipperConnection';
 import {ServerEventsListener} from './ServerAdapter';
-import constants from '../fb-stubs/constants';
+import constants from '../../fb-stubs/constants';
 import ws from 'ws';
 import {IncomingMessage} from 'http';
 

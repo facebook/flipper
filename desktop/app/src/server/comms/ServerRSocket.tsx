@@ -17,7 +17,7 @@ import net, {Socket} from 'net';
 import {RSocketServer} from 'rsocket-core';
 import RSocketTCPServer from 'rsocket-tcp-server';
 import {Payload, ReactiveSocket, Responder} from 'rsocket-types';
-import Client, {ClientQuery} from '../Client';
+import Client, {ClientQuery} from '../../Client';
 import {Single} from 'rsocket-flowable';
 import {
   ClientConnection,

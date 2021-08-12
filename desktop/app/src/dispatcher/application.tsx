@@ -10,7 +10,7 @@
 import {remote, ipcRenderer, IpcRendererEvent} from 'electron';
 import {Store} from '../reducers/index';
 import {Logger} from '../fb-interfaces/Logger';
-import {parseFlipperPorts} from '../utils/environmentVariables';
+import {parseFlipperPorts} from '../server/utils/environmentVariables';
 import {
   importFileToStore,
   IMPORT_FLIPPER_TRACE_EVENT,

@@ -25,7 +25,7 @@ import {
   selectClient,
   selectDevice,
 } from '../../reducers/connections';
-import BaseDevice, {OS} from '../../devices/BaseDevice';
+import BaseDevice, {OS} from '../../server/devices/BaseDevice';
 import Client from '../../Client';
 import {State} from '../../reducers';
 import {brandColors, brandIcons, colors} from '../../ui/components/colors';
