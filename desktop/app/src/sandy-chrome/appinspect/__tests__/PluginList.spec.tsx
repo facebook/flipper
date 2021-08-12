@@ -17,7 +17,7 @@ import BaseDevice from '../../../server/devices/BaseDevice';
 import {_SandyPluginDefinition} from 'flipper-plugin';
 import {TestUtils} from 'flipper-plugin';
 import {selectPlugin} from '../../../reducers/connections';
-import {registerMetroDevice} from '../../../dispatcher/metroDevice';
+import {registerMetroDevice} from '../../../server/metroDevice';
 import {
   addGatekeepedPlugins,
   registerMarketplacePlugins,

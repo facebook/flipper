@@ -24,7 +24,7 @@ import {
   launchSimulator,
   getSimulators,
   IOSDeviceParams,
-} from '../../dispatcher/iOSDevice';
+} from '../../server/iOSDevice';
 import GK from '../../fb-stubs/GK';
 import {JSEmulatorLauncherSheetSandy} from '../../chrome/JSEmulatorLauncherSheet';
 

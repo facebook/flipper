@@ -8,13 +8,13 @@
  */
 
 import {remote} from 'electron';
-import androidDevice from './androidDevice';
-import metroDevice from './metroDevice';
-import iOSDevice from './iOSDevice';
+import androidDevice from '../server/androidDevice';
+import metroDevice from '../server/metroDevice';
+import iOSDevice from '../server/iOSDevice';
 import desktopDevice from './desktopDevice';
 import application from './application';
 import tracking from './tracking';
-import server from './server';
+import server from '../server/server';
 import notifications from './notifications';
 import plugins from './plugins';
 import user from './fb-stubs/user';

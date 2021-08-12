@@ -16,7 +16,7 @@ import {
   DevicePluginClient,
   PluginClient,
 } from 'flipper-plugin';
-import {registerNewClient} from '../dispatcher/server';
+import {registerNewClient} from '../server/server';
 import {destroyDevice} from '../reducers/connections';
 
 test('Devices can disconnect', async () => {
