@@ -480,6 +480,9 @@ const PluginMenu = styled(Menu)({
     {
       width: '100%', // reset to remove weird bonus pixel from ANT
     },
+  '.ant-menu-submenu > .ant-menu-submenu-title > .ant-menu-title-content': {
+    overflow: 'visible',
+  },
   '.ant-menu-submenu > .ant-menu-submenu-title, .ant-menu-sub.ant-menu-inline > .ant-menu-item':
     {
       borderRadius: theme.borderRadius,
