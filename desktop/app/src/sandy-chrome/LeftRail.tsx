@@ -122,7 +122,7 @@ export const LeftRail = withTrackingScope(function LeftRail({
   const dispatch = useDispatch();
   return (
     <Layout.Container borderRight padv={12} width={48}>
-      <Layout.Bottom>
+      <Layout.Bottom style={{overflow: 'visible'}}>
         <Layout.Container center gap={10} padh={6}>
           <LeftRailButton
             icon={<MobileFilled />}
