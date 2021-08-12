@@ -27,6 +27,7 @@ export interface IOSBridge {
     deviceType: DeviceType,
   ) => child_process.ChildProcessWithoutNullStreams;
   screenshot: (serial: string) => Promise<Buffer>;
+  navigate: (serial: string, location: string) => Promise<void>;
 }
 
 async function isAvailable(idbPath: string): Promise<boolean> {
@@ -119,6 +120,20 @@ export async function idbScreenshot(serial: string): Promise<Buffer> {
   return runScreenshotCommand(command, imagePath);
 }
 
+export async function xcrunNavigate(
+  serial: string,
+  location: string,
+): Promise<void> {
+  exec(`xcrun simctl io ${serial} launch url "${location}"`);
+}
+
+export async function idbNavigate(
+  serial: string,
+  location: string,
+): Promise<void> {
+  exec(`idb open --udid ${serial} "${location}"`);
+}
+
 export async function makeIOSBridge(
   idbPath: string,
   isXcodeDetected: boolean,
@@ -129,6 +144,7 @@ export async function makeIOSBridge(
     return {
       startLogListener: idbStartLogListener.bind(null, idbPath),
       screenshot: idbScreenshot,
+      navigate: idbNavigate,
     };
   }
 
@@ -137,6 +153,7 @@ export async function makeIOSBridge(
     return {
       startLogListener: xcrunStartLogListener,
       screenshot: xcrunScreenshot,
+      navigate: xcrunNavigate,
     };
   }
 

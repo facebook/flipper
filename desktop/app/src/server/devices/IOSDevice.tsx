@@ -69,8 +69,10 @@ export default class IOSDevice extends BaseDevice {
   }
 
   navigateToLocation(location: string) {
-    const command = `xcrun simctl openurl ${this.serial} "${location}"`;
-    exec(command);
+    return this.iOSBridge.navigate(this.serial, location).catch((err) => {
+      console.warn(`Failed to navigate to location ${location}:`, err);
+      return err;
+    });
   }
 
   startLogging() {
