@@ -136,7 +136,41 @@ export function Component() {
 }
 ```
 
+<FbInternalOnly>
+
+Client plugins must have the property `pluginType` set to `client` in their package.json. They should also specify supported apps using property `supportedApps`
+in package.json. The property should contain an array of supported apps each defined as conjunction of app properties in the following format:
+`{"appID": <"Facebook" | "Instagram" | "Messenger">,  "os": <"Android" | "iOS" | "Metro">, "type": <"physical" | "emulator"> }`. For example: `{ "appID": "Facebook", "os": "Android", "type": "emulator" }` means
+that app facebook must work on Android AND must be an emulator in order to debug it using the plugin.
+
+Note that if the os field is missing that means both Android and iOS are supported by the app and similarly we assume that a specific plugin working for a physical device will also work for the emulator. Hence the type field is assumed to be true for both physical and emulator devices unless specifically only one of them is written in the .json file.
+
+To specify that a plugin supports Facebook on Android/iOS physical/emulator devices, Messenger on only Android physical/emulator and does not support Instagram, the plugin package.json should look like that:
+```json
+{
+  "$schema": "https://fbflipper.com/schemas/plugin-package/v2.json",
+  "name": "flipper-plugin-myclientplugin",
+  "id": "myclientplugin",
+  "pluginType": "client",
+  "supportedApps": [
+    {"AppID": "Facebook"},
+    {"AppID": "Messenger", "os": "Android"}
+  ]
+...
+}
+```
+
+</FbInternalOnly>
+
 A further guide on how to write custom Flipper plugins can be found here: [tutorial](../tutorial/js-custom.mdx).
+
+<FbInternalOnly>
+
+Note after adding new plugins the metadata of the supportedApps field needs to be updated. This has to be done in the package.json file in the directory by the name of the plugin under plugins/fb/\{directory name\} or plugins/public/\{directory name\}/fb.
+If an App is not listed in the supportedApps definition, it does not always mean flipper doesn't support it. It could just be because the plugin was recently added and the .json files were not updated. 
+Plugins will work for apps that register them, even when they are not registered here in the metadata. The most important reason to add supported apps to the suppertedApps is to allow Flipper to signal to the user which plugins are supposed to work on which apps during troubleshooting.
+
+</FbInternalOnly>
 
 ### Creating a Device Plugin
 
