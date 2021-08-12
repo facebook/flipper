@@ -116,3 +116,21 @@ test.unix('uses idb to take screenshots when available', async () => {
     'idb screenshot --udid deadbeef /temp/00000000-0000-0000-0000-000000000000.png',
   );
 });
+
+test('uses xcrun to navigate with no idb when xcode is detected', async () => {
+  const ib = await makeIOSBridge('', true);
+
+  ib.navigate('deadbeef', 'fb://dummy');
+
+  expect(exec).toHaveBeenCalledWith(
+    'xcrun simctl io deadbeef launch url "fb://dummy"',
+  );
+});
+
+test('uses idb to navigate when available', async () => {
+  const ib = await makeIOSBridge('/usr/local/bin/idb', true, async (_) => true);
+
+  ib.navigate('deadbeef', 'fb://dummy');
+
+  expect(exec).toHaveBeenCalledWith('idb open --udid deadbeef "fb://dummy"');
+});
