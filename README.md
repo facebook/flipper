@@ -5,9 +5,6 @@
   Flipper
 </h1>
 <p align="center">
-  <a href="https://travis-ci.org/facebook/flipper">
-    <img src="https://travis-ci.org/facebook/flipper.svg?branch=master" alt="Build Status" />
-  </a>
   <a href="https://search.maven.org/artifact/com.facebook.flipper/flipper">
     <img src="https://img.shields.io/maven-central/v/com.facebook.flipper/flipper" alt="Android Maven Badge" />
   </a>
