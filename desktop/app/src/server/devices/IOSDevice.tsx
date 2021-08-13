@@ -213,8 +213,9 @@ export default class IOSDevice extends BaseDevice {
   }
 
   async startScreenCapture(destination: string) {
-    this.recordingProcess = exec(
-      `xcrun simctl io ${this.serial} recordVideo --codec=h264 --force ${destination}`,
+    this.recordingProcess = this.iOSBridge.recordVideo(
+      this.serial,
+      destination,
     );
     this.recordingLocation = destination;
   }

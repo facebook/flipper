@@ -134,3 +134,23 @@ test('uses idb to navigate when available', async () => {
 
   expect(exec).toHaveBeenCalledWith('idb open --udid deadbeef "fb://dummy"');
 });
+
+test('uses xcrun to record with no idb when xcode is detected', async () => {
+  const ib = await makeIOSBridge('', true);
+
+  ib.recordVideo('deadbeef', '/tmp/video.mp4');
+
+  expect(exec).toHaveBeenCalledWith(
+    'xcrun simctl io deadbeef recordVideo --codec=h264 --force /tmp/video.mp4',
+  );
+});
+
+test('uses idb to record when available', async () => {
+  const ib = await makeIOSBridge('/usr/local/bin/idb', true, async (_) => true);
+
+  ib.recordVideo('deadbeef', '/tmo/video.mp4');
+
+  expect(exec).toHaveBeenCalledWith(
+    'idb record-video --udid deadbeef /tmo/video.mp4',
+  );
+});

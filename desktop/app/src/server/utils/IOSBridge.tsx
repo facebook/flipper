@@ -28,6 +28,10 @@ export interface IOSBridge {
   ) => child_process.ChildProcessWithoutNullStreams;
   screenshot: (serial: string) => Promise<Buffer>;
   navigate: (serial: string, location: string) => Promise<void>;
+  recordVideo: (
+    serial: string,
+    outputFile: string,
+  ) => child_process.ChildProcess;
 }
 
 async function isAvailable(idbPath: string): Promise<boolean> {
@@ -134,6 +138,24 @@ export async function idbNavigate(
   exec(`idb open --udid ${serial} "${location}"`);
 }
 
+export function xcrunRecordVideo(
+  serial: string,
+  outputFile: string,
+): child_process.ChildProcess {
+  console.log(`Starting screen record via xcrun to ${outputFile}.`);
+  return exec(
+    `xcrun simctl io ${serial} recordVideo --codec=h264 --force ${outputFile}`,
+  );
+}
+
+export function idbRecordVideo(
+  serial: string,
+  outputFile: string,
+): child_process.ChildProcess {
+  console.log(`Starting screen record via idb to ${outputFile}.`);
+  return exec(`idb record-video --udid ${serial} ${outputFile}`);
+}
+
 export async function makeIOSBridge(
   idbPath: string,
   isXcodeDetected: boolean,
@@ -145,6 +167,7 @@ export async function makeIOSBridge(
       startLogListener: idbStartLogListener.bind(null, idbPath),
       screenshot: idbScreenshot,
       navigate: idbNavigate,
+      recordVideo: idbRecordVideo,
     };
   }
 
@@ -154,6 +177,7 @@ export async function makeIOSBridge(
       startLogListener: xcrunStartLogListener,
       screenshot: xcrunScreenshot,
       navigate: xcrunNavigate,
+      recordVideo: xcrunRecordVideo,
     };
   }
 
