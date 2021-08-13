@@ -16,7 +16,7 @@ import {
   DevicePluginClient,
   PluginClient,
 } from 'flipper-plugin';
-import {registerNewClient} from '../server/server';
+import {handleClientConnected} from '../dispatcher/flipperServer';
 import {destroyDevice} from '../reducers/connections';
 
 test('Devices can disconnect', async () => {
@@ -225,7 +225,7 @@ test('new clients replace old ones', async () => {
   expect(instance.instanceApi.disconnect).toBeCalledTimes(0);
 
   const client2 = await createClient(device, 'AnotherApp', client.query, true);
-  registerNewClient(store, client2);
+  handleClientConnected(store, client2);
 
   expect(client2.connected.get()).toBe(true);
   const instance2 = client2.sandyPluginStates.get(plugin.id)!;

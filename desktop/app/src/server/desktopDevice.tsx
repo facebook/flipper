@@ -7,13 +7,11 @@
  * @format
  */
 
-import {Store} from '../reducers/index';
-import {Logger} from '../fb-interfaces/Logger';
-
 import MacDevice from '../server/devices/MacDevice';
 import WindowsDevice from '../server/devices/WindowsDevice';
+import {FlipperServer} from './FlipperServer';
 
-export default (store: Store, _logger: Logger) => {
+export default (flipperServer: FlipperServer) => {
   let device;
   if (process.platform === 'darwin') {
     device = new MacDevice();
@@ -22,12 +20,5 @@ export default (store: Store, _logger: Logger) => {
   } else {
     return;
   }
-  device.loadDevicePlugins(
-    store.getState().plugins.devicePlugins,
-    store.getState().connections.enabledDevicePlugins,
-  );
-  store.dispatch({
-    type: 'REGISTER_DEVICE',
-    payload: device,
-  });
+  flipperServer.emit('device-connected', device);
 };

@@ -8,13 +8,9 @@
  */
 
 import {remote} from 'electron';
-import androidDevice from '../server/androidDevice';
-import metroDevice from '../server/metroDevice';
-import iOSDevice from '../server/iOSDevice';
-import desktopDevice from './desktopDevice';
+import flipperServer from './flipperServer';
 import application from './application';
 import tracking from './tracking';
-import server from '../server/server';
 import notifications from './notifications';
 import plugins from './plugins';
 import user from './fb-stubs/user';
@@ -38,12 +34,8 @@ export default function (store: Store, logger: Logger): () => Promise<void> {
   }
   const dispatchers: Array<Dispatcher> = [
     application,
-    store.getState().settingsState.enableAndroid ? androidDevice : null,
-    iOSDevice,
-    metroDevice,
-    desktopDevice,
     tracking,
-    server,
+    flipperServer,
     notifications,
     plugins,
     user,
