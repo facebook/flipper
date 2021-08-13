@@ -2,7 +2,7 @@ name: Release
 on:
   push:
     branches:
-      - master
+      - main
     paths:
       - 'desktop/package.json'
 
@@ -38,7 +38,7 @@ jobs:
           tag_name: ${{ steps.tag-version-commit.outputs.tag }}
           release_name: ${{ steps.tag-version-commit.outputs.tag }}
           body: |
-            See https://github.com/facebook/flipper/blob/master/desktop/static/CHANGELOG.md
+            See https://github.com/facebook/flipper/blob/main/desktop/static/CHANGELOG.md
             for full notes.
           draft: false
           prerelease: false

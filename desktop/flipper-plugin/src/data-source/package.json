@@ -3,7 +3,7 @@
   "version": "0.0.2",
   "description": "Library to power streamig data visualisations",
   "repository": "https://github.com/facebook/flipper",
-  "homepage": "https://github.com/facebook/flipper/blob/master/desktop/flipper-plugin/src/data-source/README.md",
+  "homepage": "https://github.com/facebook/flipper/blob/main/desktop/flipper-plugin/src/data-source/README.md",
   "author": "Facebook Inc",
   "license": "MIT",
   "source": "index.tsx",

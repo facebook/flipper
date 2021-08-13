@@ -11,7 +11,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/facebook/flipper.git",
-    "baseUrl": "https://github.com/facebook/flipper/tree/master/react-native/react-native-flipper"
+    "baseUrl": "https://github.com/facebook/flipper/tree/main/react-native/react-native-flipper"
   },
   "keywords": [
     "react-native",
