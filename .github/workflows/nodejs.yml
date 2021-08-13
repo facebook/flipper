@@ -1,4 +1,4 @@
-name: Flipper Node CI
+name: Desktop Node CI
 
 on: [push, pull_request]
 
@@ -17,9 +17,9 @@ jobs:
         os: ['ubuntu-latest', 'windows-latest', 'macos-latest']
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v2
       with:
         node-version: ${{ matrix.node-version }}
     - name: Get yarn cache directory path
@@ -32,9 +32,12 @@ jobs:
         key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
         restore-keys: |
           ${{ runner.os }}-yarn-
-    - name: yarn install
-      run: yarn
-      working-directory: ${{env.desktop-directory}}
+    - name: yarn install (with retry)
+      uses: nick-invision/retry@v2.4.0
+      with:
+        command: cd ${{env.desktop-directory}}; yarn
+        timeout_minutes: 30
+        max_attempts: 3
     - name: lint
       run: yarn lint
       working-directory: ${{env.desktop-directory}}
