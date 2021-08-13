@@ -41,7 +41,7 @@ const generatedPluginSymlinksDir = path.resolve(
   'docs',
   'plugins'
 );
-const repoUrl = process.env.FB_INTERNAL ? 'https://www.internalfb.com/code/fbsource/xplat/sonar' : 'https://github.com/facebook/flipper/blob/master';
+const repoUrl = process.env.FB_INTERNAL ? 'https://www.internalfb.com/code/fbsource/xplat/sonar' : 'https://github.com/facebook/flipper/blob/main';
 const relativePluginSymlinksDir = path.relative(
   generatedPluginsDocsDir,
   generatedPluginSymlinksDir,

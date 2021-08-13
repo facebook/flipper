@@ -72,7 +72,7 @@ adb shell am start -n <APP_PACKAGE>/com.facebook.flipper.android.diagnostics.Fli
 This will only work if you added `FlipperDiagnosticActivity` to your `AndroidManifest.xml`. See [getting started](./getting-started/android-native.mdx#diagnostics) for help.
 
 #### iOS
-You'll need to manually add this [ViewController](https://github.com/facebook/flipper/blob/master/iOS/FlipperKit/FlipperDiagnosticsViewController.m) to your app to see the in-app diagnostics.
+You'll need to manually add this [ViewController](https://github.com/facebook/flipper/blob/main/iOS/FlipperKit/FlipperDiagnosticsViewController.m) to your app to see the in-app diagnostics.
 
 </OssOnly>
 
@@ -214,7 +214,7 @@ Another way to fix this is to set the `resolutions` field in the `package.json` 
 
 First, make sure your cocoapods is up to date (`sudo gem install cocoapods`), and that you are using the [latest FlipperKit](getting-started/react-native#using-the-latest-flipper-sdk).
 
-For inexplainable build errors, clone and verify if our [reference project](https://github.com/facebook/flipper/tree/master/react-native/ReactNativeFlipperExample) builds and runs locally. If it does, we recommend to compare the `package.json` and `ios/Podfile` files with yours. If that doesn't yield anything, compare the `ios/Podfile.lock` as well to verify any transitive pod dependencies need updating.
+For inexplainable build errors, clone and verify if our [reference project](https://github.com/facebook/flipper/tree/main/react-native/ReactNativeFlipperExample) builds and runs locally. If it does, we recommend to compare the `package.json` and `ios/Podfile` files with yours. If that doesn't yield anything, compare the `ios/Podfile.lock` as well to verify any transitive pod dependencies need updating.
 
 #### `YogaKit.modulemap` not found
 

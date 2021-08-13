@@ -23,7 +23,7 @@
         dataTaskWithURL:
             [NSURL
                 URLWithString:
-                    @"https://raw.githubusercontent.com/facebook/litho/master/docs/static/logo.png"]
+                    @"https://raw.githubusercontent.com/facebook/litho/main/docs/static/logo.png"]
       completionHandler:^(
           NSData* _Nullable data,
           NSURLResponse* _Nullable response,

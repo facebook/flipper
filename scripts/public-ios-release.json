@@ -15,7 +15,7 @@
         "name": "Publish to github",
         "required": true,
         "shell":
-          "curl -o RELEASE.json -x fwdproxy:8080 --silent --data '{ \"tag_name\": \"v__VERSION__\", \"target_commitish\": \"master\", \"name\": \"v__VERSION__\", \"body\": \"\", \"draft\": false, \"prerelease\": true}' -H 'Authorization: token '$(secrets_tool get FLIPPER_GITHUB_TOKEN) https://api.github.com/repos/facebook/flipper/releases",
+          "curl -o RELEASE.json -x fwdproxy:8080 --silent --data '{ \"tag_name\": \"v__VERSION__\", \"target_commitish\": \"main\", \"name\": \"v__VERSION__\", \"body\": \"\", \"draft\": false, \"prerelease\": true}' -H 'Authorization: token '$(secrets_tool get FLIPPER_GITHUB_TOKEN) https://api.github.com/repos/facebook/flipper/releases",
         "shell_type": "SandcastleLocalShell"
       }
     ]
@@ -25,7 +25,7 @@
     "vcs": "fbcode-fbsource",
     "type": "lego-mac"
   },
-  "hash": "master",
+  "hash": "main",
   "report": [
     {
       "type": "email",

@@ -15,7 +15,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/facebook/flipper.git",
-    "baseUrl": "https://github.com/facebook/flipper/tree/master/flipper-js-client-sdk"
+    "baseUrl": "https://github.com/facebook/flipper/tree/main/flipper-js-client-sdk"
   },
   "keywords": [
     "flipper"

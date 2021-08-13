@@ -173,7 +173,7 @@ const siteConfig = {
           editUrl: fbContent({
             internal:
               'https://www.internalfb.com/intern/diffusion/FBS/browse/master/xplat/sonar/website/',
-            external: 'https://github.com/facebook/flipper/blob/master/website',
+            external: 'https://github.com/facebook/flipper/blob/main/website',
           }),
         },
         theme: {

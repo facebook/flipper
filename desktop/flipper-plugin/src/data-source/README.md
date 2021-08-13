@@ -12,7 +12,7 @@ _Library to power streamig data visualisations as used in Facebook's Flipper_
 * [Demo sandbox](https://codesandbox.io/s/flipper-datasource-demo-iy0tq)
 * [Demo setup recording](https://www.youtube.com/watch?v=stL66GByQU0)
 * [In-depth introduction talk, featured at @fwdays, 5-6-2021](https://www.youtube.com/watch?v=WCs09c1B1Lk)
-* [Source code](https://github.com/facebook/flipper/tree/master/desktop/flipper-plugin/src/data-source)
+* [Source code](https://github.com/facebook/flipper/tree/main/desktop/flipper-plugin/src/data-source)
 * [Lightning talk using DataSource in Logs view](https://fb.workplace.com/groups/427492358561913/permalink/432720091372473/) [FB-Only]
 * [DataSource project plan](https://fb.quip.com/noJDArpLF7Fe) [FB-Only]
 * [Demo project](https://www.internalfb.com/code/flipper/src/fbsource/xplat/sonar/facebook/data-source-demo/) [FB-Only]

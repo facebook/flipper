@@ -30,4 +30,4 @@ workflows:
       - snapshot:
           filters:
             branches:
-              only: master
+              only: main

@@ -26,7 +26,7 @@
     },
     "icon": {
       "type": "string",
-      "description": "Determines the plugin icon which is displayed in the main sidebar. The list of available icons is static for now and can be found in https://github.com/facebook/flipper/blob/master/desktop/static/icons.json."
+      "description": "Determines the plugin icon which is displayed in the main sidebar. The list of available icons is static for now and can be found in https://github.com/facebook/flipper/blob/main/desktop/static/icons.json."
     },
     "keywords": {
       "description": "This helps people discover your package as it's listed in 'npm search'. To make the plugin discoverable in Flipper, the property must contain \"flipper-plugin\" keyword.",

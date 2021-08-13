@@ -7,7 +7,7 @@ In the GitHub repo, you'll find Flipper clients for Android, iOS and C++ code, b
 
 Flipper clients communicate with the Flipper desktop app using JSON RPC messages over an [RSocket](http://rsocket.io/) connection.
 
-This page documents the API, and you can use [FlipperConnectionManagerImpl.cpp](https://github.com/facebook/flipper/blob/master/xplat/Flipper/FlipperConnectionManagerImpl.cpp) for reference.
+This page documents the API, and you can use [FlipperConnectionManagerImpl.cpp](https://github.com/facebook/flipper/blob/main/xplat/Flipper/FlipperConnectionManagerImpl.cpp) for reference.
 
 ## Establishing a connection
 Start by connecting to the Flipper server running within the desktop app. Connecting to the server registers your application with Flipper and enables plugins to interact with it. As the Flipper desktop has a different lifecycle than your app and may connect and disconnect at any time it is important that you attempt to reconnect to the Flipper server until it accepts your connection.
@@ -37,7 +37,7 @@ localhost:8088/sonar?os={OS}
 
 **FOREGROUND**: A boolean indicating whether this connection was established with a foreground process. This is a hint to the Flipper desktop app of whether to re-focus on this connection or not. For example `foreground=true`. This parameter is recommended but optional.
 
-**SDK_VERSION**: A number indicating the latest protocol version this client is compatible with. You can find the current version in our [C++ connection implementation](https://github.com/facebook/flipper/blob/master/xplat/Flipper/FlipperConnectionManagerImpl.cpp#L37). Usually stored as a constant in the client code, this allows protocol changes to be made whilst still preserving connectivity with old clients. When Flipper desktop encounters an old SDK version, it may attempt to communicate using a matching protocol. However, backwards compatibility is not guaranteed and you should strive to update clients on the rare occasion that the protocol version advances.
+**SDK_VERSION**: A number indicating the latest protocol version this client is compatible with. You can find the current version in our [C++ connection implementation](https://github.com/facebook/flipper/blob/main/xplat/Flipper/FlipperConnectionManagerImpl.cpp#L37). Usually stored as a constant in the client code, this allows protocol changes to be made whilst still preserving connectivity with old clients. When Flipper desktop encounters an old SDK version, it may attempt to communicate using a matching protocol. However, backwards compatibility is not guaranteed and you should strive to update clients on the rare occasion that the protocol version advances.
 
 ## Responding to messages
 
