@@ -19,10 +19,10 @@ import {isLoggedIn} from '../fb-stubs/user';
 import React from 'react';
 import {Typography} from 'antd';
 import {ACTIVE_SHEET_SIGN_IN, setActiveSheet} from '../reducers/application';
-import androidDevice from './androidDevice';
-import iOSDevice from './iOSDevice';
-import metroDevice from './metroDevice';
-import desktopDevice from './desktopDevice';
+import androidDevice from './devices/android/androidDeviceManager';
+import iOSDevice from './devices/ios/iOSDeviceManager';
+import metroDevice from './devices/metro/metroDeviceManager';
+import desktopDevice from './devices/desktop/desktopDeviceManager';
 import BaseDevice from './devices/BaseDevice';
 
 type FlipperServerEvents = {

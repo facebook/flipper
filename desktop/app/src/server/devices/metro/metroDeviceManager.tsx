@@ -7,13 +7,13 @@
  * @format
  */
 
-import {Store} from '../reducers/index';
-import {Logger} from '../fb-interfaces/Logger';
-import MetroDevice from '../server/devices/MetroDevice';
+import {Store} from '../../../reducers/index';
+import {Logger} from '../../../fb-interfaces/Logger';
+import MetroDevice from './MetroDevice';
 import http from 'http';
-import {addErrorNotification} from '../reducers/notifications';
-import {destroyDevice} from '../reducers/connections';
-import {parseEnvironmentVariableAsNumber} from '../server/utils/environmentVariables';
+import {addErrorNotification} from '../../../reducers/notifications';
+import {destroyDevice} from '../../../reducers/connections';
+import {parseEnvironmentVariableAsNumber} from '../../utils/environmentVariables';
 
 const METRO_HOST = 'localhost';
 const METRO_PORT = parseEnvironmentVariableAsNumber('METRO_SERVER_PORT', 8081);

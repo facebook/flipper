@@ -7,7 +7,7 @@
  * @format
  */
 
-import {parseEnvironmentVariableAsNumber} from './environmentVariables';
+import {parseEnvironmentVariableAsNumber} from '../../utils/environmentVariables';
 
 export default () => {
   let port = parseEnvironmentVariableAsNumber(

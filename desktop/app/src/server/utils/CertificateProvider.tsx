@@ -20,10 +20,10 @@ import {
 } from './openssl-wrapper-with-promises';
 import path from 'path';
 import tmp, {DirOptions, FileOptions} from 'tmp';
-import iosUtil from './iOSContainerUtility';
+import iosUtil from '../devices/ios/iOSContainerUtility';
 import {reportPlatformFailures} from '../../utils/metrics';
-import {getAdbClient} from './adbClient';
-import * as androidUtil from './androidContainerUtility';
+import {getAdbClient} from '../devices/android/adbClient';
+import * as androidUtil from '../devices/android/androidContainerUtility';
 import os from 'os';
 import {Client as ADBClient} from 'adbkit';
 import archiver from 'archiver';

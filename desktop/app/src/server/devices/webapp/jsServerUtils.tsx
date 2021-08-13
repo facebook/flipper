@@ -15,7 +15,7 @@ import {
   ResponseType,
 } from '../../comms/ClientConnection';
 import {ipcRenderer, remote, IpcRendererEvent} from 'electron';
-import JSDevice from '../../devices/JSDevice';
+import JSDevice from './JSDevice';
 import {Store} from '../../../reducers';
 import {Logger} from '../../../fb-interfaces/Logger';
 import ServerController from '../../comms/ServerController';

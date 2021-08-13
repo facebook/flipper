@@ -9,14 +9,11 @@
 
 import {LogLevel, DeviceLogEntry, DeviceType, timeout} from 'flipper-plugin';
 import child_process, {ChildProcess} from 'child_process';
-import BaseDevice from './BaseDevice';
+import BaseDevice from '../BaseDevice';
 import JSONStream from 'JSONStream';
 import {Transform} from 'stream';
 import {exec} from 'promisify-child-process';
-import {
-  ERR_PHYSICAL_DEVICE_LOGS_WITHOUT_IDB,
-  IOSBridge,
-} from '../utils/IOSBridge';
+import {ERR_PHYSICAL_DEVICE_LOGS_WITHOUT_IDB, IOSBridge} from './IOSBridge';
 import split2 from 'split2';
 
 type IOSLogLevel = 'Default' | 'Info' | 'Debug' | 'Error' | 'Fault';

@@ -7,10 +7,10 @@
  * @format
  */
 
-import {reportPlatformFailures} from '../../utils/metrics';
+import {reportPlatformFailures} from '../../../utils/metrics';
 import {execFile} from 'promisify-child-process';
 import promiseRetry from 'promise-retry';
-import adbConfig from '../utils/adbConfig';
+import adbConfig from './adbConfig';
 import adbkit, {Client} from 'adbkit';
 import path from 'path';
 

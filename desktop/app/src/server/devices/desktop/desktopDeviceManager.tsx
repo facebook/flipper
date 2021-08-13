@@ -7,9 +7,9 @@
  * @format
  */
 
-import MacDevice from '../server/devices/MacDevice';
-import WindowsDevice from '../server/devices/WindowsDevice';
-import {FlipperServer} from './FlipperServer';
+import MacDevice from './MacDevice';
+import WindowsDevice from './WindowsDevice';
+import {FlipperServer} from '../../FlipperServer';
 
 export default (flipperServer: FlipperServer) => {
   let device;

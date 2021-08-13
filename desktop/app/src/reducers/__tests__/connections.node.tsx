@@ -10,11 +10,8 @@
 import reducer from '../connections';
 import {State, selectPlugin} from '../connections';
 import BaseDevice from '../../server/devices/BaseDevice';
-import MacDevice from '../../server/devices/MacDevice';
-import {FlipperDevicePlugin} from '../../plugin';
-import MetroDevice from '../../server/devices/MetroDevice';
-import {TestUtils, _setFlipperLibImplementation} from 'flipper-plugin';
-import {wrapSandy} from '../../test-utils/createMockFlipperWithPlugin';
+import MetroDevice from '../../server/devices/metro/MetroDevice';
+import {_setFlipperLibImplementation} from 'flipper-plugin';
 import {createMockFlipperLib} from 'flipper-plugin/src/test-utils/test-utils';
 
 beforeEach(() => {

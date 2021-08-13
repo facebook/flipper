@@ -7,7 +7,7 @@
  * @format
  */
 
-import MetroDevice from '../server/devices/MetroDevice';
+import MetroDevice from '../server/devices/metro/MetroDevice';
 import {State} from '../reducers';
 import {
   computePluginLists,

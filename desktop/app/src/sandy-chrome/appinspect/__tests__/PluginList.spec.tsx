@@ -12,12 +12,12 @@ import {
   MockFlipperResult,
 } from '../../../test-utils/createMockFlipperWithPlugin';
 import {FlipperPlugin} from '../../../plugin';
-import MetroDevice from '../../../server/devices/MetroDevice';
+import MetroDevice from '../../../server/devices/metro/MetroDevice';
 import BaseDevice from '../../../server/devices/BaseDevice';
 import {_SandyPluginDefinition} from 'flipper-plugin';
 import {TestUtils} from 'flipper-plugin';
 import {selectPlugin} from '../../../reducers/connections';
-import {registerMetroDevice} from '../../../server/metroDevice';
+import {registerMetroDevice} from '../../../server/devices/metro/metroDeviceManager';
 import {
   addGatekeepedPlugins,
   registerMarketplacePlugins,

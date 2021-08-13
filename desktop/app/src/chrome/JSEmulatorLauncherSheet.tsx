@@ -11,7 +11,7 @@ import {Button} from '../ui';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {State as Store} from '../reducers';
-import {launchJsEmulator} from '../server/utils/js-client-server-utils/serverUtils';
+import {launchJsEmulator} from '../server/devices/webapp/jsServerUtils';
 import {updateSettings, Action} from '../reducers/settings';
 import {Settings} from '../reducers/settings';
 import {Collapse, Form, Input as AntInput} from 'antd';

@@ -7,19 +7,19 @@
  * @format
  */
 
-import AndroidDevice from '../server/devices/AndroidDevice';
-import KaiOSDevice from '../server/devices/KaiOSDevice';
+import AndroidDevice from './AndroidDevice';
+import KaiOSDevice from './KaiOSDevice';
 import child_process from 'child_process';
-import {Store} from '../reducers/index';
-import BaseDevice from '../server/devices/BaseDevice';
-import {Logger} from '../fb-interfaces/Logger';
-import {getAdbClient} from '../server/utils/adbClient';
+import {Store} from '../../../reducers/index';
+import BaseDevice from '../BaseDevice';
+import {Logger} from '../../../fb-interfaces/Logger';
+import {getAdbClient} from './adbClient';
 import which from 'which';
 import {promisify} from 'util';
-import {ServerPorts} from '../reducers/application';
+import {ServerPorts} from '../../../reducers/application';
 import {Client as ADBClient} from 'adbkit';
-import {addErrorNotification} from '../reducers/notifications';
-import {destroyDevice} from '../reducers/connections';
+import {addErrorNotification} from '../../../reducers/notifications';
+import {destroyDevice} from '../../../reducers/connections';
 import {join} from 'path';
 
 function createDevice(

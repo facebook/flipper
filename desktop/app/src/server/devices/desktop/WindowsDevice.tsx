@@ -7,7 +7,7 @@
  * @format
  */
 
-import BaseDevice from './BaseDevice';
+import BaseDevice from '../BaseDevice';
 
 export default class WindowsDevice extends BaseDevice {
   constructor() {

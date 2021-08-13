@@ -8,7 +8,7 @@
  */
 
 import {remote} from 'electron';
-import MetroDevice from '../server/devices/MetroDevice';
+import MetroDevice from '../server/devices/metro/MetroDevice';
 import {Store} from '../reducers';
 
 type ShortcutEventCommand =

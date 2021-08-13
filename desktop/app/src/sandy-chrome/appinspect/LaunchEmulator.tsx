@@ -17,14 +17,14 @@ import {
 } from '@ant-design/icons';
 import {Store} from '../../reducers';
 import {useStore} from '../../utils/useStore';
-import {launchEmulator} from '../../server/devices/AndroidDevice';
+import {launchEmulator} from '../../server/devices/android/AndroidDevice';
 import {Layout, renderReactRoot, withTrackingScope} from 'flipper-plugin';
 import {Provider} from 'react-redux';
 import {
   launchSimulator,
   getSimulators,
   IOSDeviceParams,
-} from '../../server/iOSDevice';
+} from '../../server/devices/ios/iOSDeviceManager';
 import GK from '../../fb-stubs/GK';
 import {JSEmulatorLauncherSheetSandy} from '../../chrome/JSEmulatorLauncherSheet';
 

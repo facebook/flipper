@@ -8,24 +8,24 @@
  */
 
 import {ChildProcess} from 'child_process';
-import {Store} from '../reducers/index';
-import {setXcodeDetected} from '../reducers/application';
-import {Logger} from '../fb-interfaces/Logger';
+import {Store} from '../../../reducers/index';
+import {setXcodeDetected} from '../../../reducers/application';
+import {Logger} from '../../../fb-interfaces/Logger';
 import type {DeviceType} from 'flipper-plugin';
 import {promisify} from 'util';
 import path from 'path';
 import child_process from 'child_process';
 const execFile = child_process.execFile;
-import iosUtil from '../server/utils/iOSContainerUtility';
-import IOSDevice from '../server/devices/IOSDevice';
-import {addErrorNotification} from '../reducers/notifications';
-import {getStaticPath} from '../utils/pathUtils';
-import {destroyDevice} from '../reducers/connections';
+import iosUtil from './iOSContainerUtility';
+import IOSDevice from './IOSDevice';
+import {addErrorNotification} from '../../../reducers/notifications';
+import {getStaticPath} from '../../../utils/pathUtils';
+import {destroyDevice} from '../../../reducers/connections';
 import {
   ERR_NO_IDB_OR_XCODE_AVAILABLE,
   IOSBridge,
   makeIOSBridge,
-} from '../server/utils/IOSBridge';
+} from './IOSBridge';
 
 type iOSSimulatorDevice = {
   state: 'Booted' | 'Shutdown' | 'Shutting Down';

@@ -7,7 +7,7 @@
  * @format
  */
 
-import BaseDevice from './BaseDevice';
+import BaseDevice from '../BaseDevice';
 import adb, {Client as ADBClient} from 'adbkit';
 import {Priority, Reader} from 'adbkit-logcat';
 import {createWriteStream} from 'fs';

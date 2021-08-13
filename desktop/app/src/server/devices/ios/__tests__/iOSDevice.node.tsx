@@ -10,11 +10,11 @@
 import {
   parseXcodeFromCoreSimPath,
   getAllPromisesForQueryingDevices,
-} from '../iOSDevice';
+} from '../iOSDeviceManager';
 import configureStore from 'redux-mock-store';
-import {State, createRootReducer} from '../../reducers/index';
-import {getInstance} from '../../fb-stubs/Logger';
-import {IOSBridge} from '../../server/utils/IOSBridge';
+import {State, createRootReducer} from '../../../../reducers/index';
+import {getInstance} from '../../../../fb-stubs/Logger';
+import {IOSBridge} from '../IOSBridge';
 
 const mockStore = configureStore<State, {}>([])(
   createRootReducer()(undefined, {type: 'INIT'}),
