@@ -212,7 +212,13 @@ export class DataSource<T> {
     if (this.keyAttribute) {
       const key = this.getKey(value);
       if (this._recordsById.has(key)) {
-        throw new Error(`Duplicate key: '${key}'`);
+        const existingValue = this._recordsById.get(key);
+        console.warn(
+          `Tried to append value with duplicate key: ${key} (key attribute is ${this.keyAttribute}). Old/new values:`,
+          existingValue,
+          value,
+        );
+        throw new Error(`Duplicate key`);
       }
       this._recordsById.set(key, value);
       this.storeIndexOfKey(key, this._records.length);

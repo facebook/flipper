@@ -112,6 +112,7 @@ export function getAllPromisesForQueryingDevices(
       store.getState().settingsState.idbPath,
       store.getState().settingsState.enablePhysicalIOS,
     ).then((devices: IOSDeviceParams[]) => {
+      console.log('Active iOS devices:', devices);
       processDevices(store, logger, iosBridge, devices, 'physical');
     }),
   ];

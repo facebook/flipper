@@ -12,7 +12,6 @@ import child_process, {ChildProcess} from 'child_process';
 import BaseDevice from '../BaseDevice';
 import JSONStream from 'JSONStream';
 import {Transform} from 'stream';
-import {exec} from 'promisify-child-process';
 import {ERR_PHYSICAL_DEVICE_LOGS_WITHOUT_IDB, IOSBridge} from './IOSBridge';
 import split2 from 'split2';
 

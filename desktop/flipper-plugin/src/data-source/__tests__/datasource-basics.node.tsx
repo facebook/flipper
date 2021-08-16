@@ -116,7 +116,7 @@ test('throws on invalid keys', () => {
   }).toThrow(`Invalid key value: ''`);
   expect(() => {
     ds.append({id: 'cookie', title: 'test'});
-  }).toThrow(`Duplicate key: 'cookie'`);
+  }).toThrow(`Duplicate key`);
 });
 
 test('throws on update causing duplicate key', () => {
