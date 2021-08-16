@@ -8,6 +8,7 @@
  */
 
 import {queryTargetsWithoutXcodeDependency} from '../iOSContainerUtility';
+import {idbDescribeTargets} from '../iOSContainerUtility';
 
 test('uses idbcompanion command for queryTargetsWithoutXcodeDependency', async () => {
   const mockedExec = jest.fn((_) =>
@@ -40,4 +41,32 @@ test('do not call idbcompanion if the path does not exist', async () => {
     mockedExec,
   );
   expect(mockedExec).toHaveBeenCalledTimes(0);
+});
+
+test('parses idb describe output', async () => {
+  const mockedExec = jest.fn((_) =>
+    Promise.resolve({
+      stdout: `{"udid": "deafbeed", "type": "simulator", "name": "name", "state": "Booted"}
+      {"udid": "f4ceb00c", "type": "physical", "name": "ponzicoin-miner", "state": "Booted"}
+      {"udid": "ded", "type": "physical", "name": "350ppm", "state": "Shutdown"}
+      `,
+      stderr: '',
+    }),
+  );
+  const targets = await idbDescribeTargets('/usr/bin/idb', mockedExec);
+  expect(mockedExec).toBeCalledWith('/usr/bin/idb describe --json');
+  expect(targets).toMatchInlineSnapshot(`
+    Array [
+      Object {
+        "name": "name",
+        "type": "emulator",
+        "udid": "deafbeed",
+      },
+      Object {
+        "name": "ponzicoin-miner",
+        "type": "physical",
+        "udid": "f4ceb00c",
+      },
+    ]
+  `);
 });

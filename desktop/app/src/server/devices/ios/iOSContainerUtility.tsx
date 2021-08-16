@@ -32,15 +32,18 @@ const mutex = new Mutex();
 type IdbTarget = {
   name: string;
   udid: string;
-  state: string;
-  type: string;
+  state: 'Booted' | 'Shutdown';
+  type: string | DeviceType;
+  target_type?: string | DeviceType;
   os_version: string;
   architecture: string;
 };
 
+export type DeviceType = 'physical' | 'emulator';
+
 export type DeviceTarget = {
   udid: string;
-  type: 'physical' | 'emulator';
+  type: DeviceType;
   name: string;
 };
 
@@ -72,22 +75,7 @@ export async function queryTargetsWithoutXcodeDependency(
 ): Promise<Array<DeviceTarget>> {
   if (await isAvailableFunc(idbCompanionPath)) {
     return safeExecFunc(`${idbCompanionPath} --list 1 --only device`)
-      .then(({stdout}) =>
-        // It is safe to assume this to be non-null as it only turns null
-        // if the output redirection is misconfigured:
-        // https://stackoverflow.com/questions/27786228/node-child-process-spawn-stdout-returning-as-null
-        stdout!
-          .toString()
-          .trim()
-          .split('\n')
-          .map((line) => line.trim())
-          .filter(Boolean)
-          .map((line) => JSON.parse(line))
-          .filter(({type}: IdbTarget) => type !== 'simulator')
-          .map<DeviceTarget>((target: IdbTarget) => {
-            return {udid: target.udid, type: 'physical', name: target.name};
-          }),
-      )
+      .then(({stdout}) => parseIdbTargets(stdout!.toString()))
       .then((devices) => {
         if (devices.length > 0 && !isPhysicalDeviceEnabled) {
           // TODO: Show a notification to enable the toggle or integrate Doctor to better suggest this advice.
@@ -110,6 +98,60 @@ export async function queryTargetsWithoutXcodeDependency(
     );
     return [];
   }
+}
+
+function parseIdbTargets(lines: string): Array<DeviceTarget> {
+  return lines
+    .trim()
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => JSON.parse(line))
+    .filter(({state}: IdbTarget) => state.toLocaleLowerCase() === 'booted')
+    .map<IdbTarget>(({type, target_type, ...rest}: IdbTarget) => ({
+      type: (type || target_type) === 'simulator' ? 'emulator' : 'physical',
+      ...rest,
+    }))
+    .map<DeviceTarget>((target: IdbTarget) => ({
+      udid: target.udid,
+      type: target.type as DeviceType,
+      name: target.name,
+    }));
+}
+
+export async function idbDescribeTargets(
+  idbPath: string,
+  safeExecFunc: (
+    command: string,
+  ) => Promise<{stdout: string; stderr: string} | Output> = safeExec,
+): Promise<Array<DeviceTarget>> {
+  return safeExecFunc(`${idbPath} describe --json`)
+    .then(({stdout}) => parseIdbTargets(stdout!.toString()))
+    .catch((e: Error) => {
+      // idb describe doesn't work when multiple devices are available.
+      // That's expected behavior and we can skip the log.
+      if (!e.message.includes('multiple companions')) {
+        console.warn('Failed to query idb for targets:', e);
+      }
+      return [];
+    });
+}
+
+export async function idbListTargets(
+  idbPath: string,
+  safeExecFunc: (
+    command: string,
+  ) => Promise<{stdout: string; stderr: string} | Output> = safeExec,
+): Promise<Array<DeviceTarget>> {
+  return safeExecFunc(`${idbPath} list-targets --json`)
+    .then(({stdout}) =>
+      // See above.
+      parseIdbTargets(stdout!.toString()),
+    )
+    .catch((e: Error) => {
+      console.warn('Failed to query idb for targets:', e);
+      return [];
+    });
 }
 
 async function targets(
@@ -140,28 +182,12 @@ async function targets(
   // Flipper with Simulators without it.
   // But idb is MUCH more CPU efficient than instruments, so
   // when installed, use it.
+  // TODO: Move idb availability check up.
   if (await memoize(isAvailable)(idbPath)) {
-    return safeExec(`${idbPath} list-targets --json`)
-      .then(({stdout}) =>
-        // It is safe to assume this to be non-null as it only turns null
-        // if the output redirection is misconfigured:
-        // https://stackoverflow.com/questions/27786228/node-child-process-spawn-stdout-returning-as-null
-        stdout!
-          .toString()
-          .trim()
-          .split('\n')
-          .map((line) => line.trim())
-          .filter(Boolean)
-          .map((line) => JSON.parse(line))
-          .filter(({type}: IdbTarget) => type !== 'simulator')
-          .map<DeviceTarget>((target: IdbTarget) => {
-            return {udid: target.udid, type: 'physical', name: target.name};
-          }),
-      )
-      .catch((e: Error) => {
-        console.warn('Failed to query idb for targets:', e);
-        return [];
-      });
+    // We want to get both `idb describe` and `idb list-targets` outputs
+    // as in certain setups devices may not show up on one but the other.
+    const targets = await idbDescribeTargets(idbPath);
+    return targets.concat(await idbListTargets(idbPath));
   } else {
     await killOrphanedInstrumentsProcesses();
     return safeExec('instruments -s devices')
