@@ -7,14 +7,12 @@
  * @format
  */
 
-import {
-  parseXcodeFromCoreSimPath,
-  getAllPromisesForQueryingDevices,
-} from '../iOSDeviceManager';
+import {parseXcodeFromCoreSimPath} from '../iOSDeviceManager';
 import configureStore from 'redux-mock-store';
 import {State, createRootReducer} from '../../../../reducers/index';
 import {getInstance} from '../../../../fb-stubs/Logger';
 import {IOSBridge} from '../IOSBridge';
+import {FlipperServer} from '../../../FlipperServer';
 
 const mockStore = configureStore<State, {}>([])(
   createRootReducer()(undefined, {type: 'INIT'}),
@@ -62,21 +60,15 @@ test('test parseXcodeFromCoreSimPath from standard locations', () => {
 });
 
 test('test getAllPromisesForQueryingDevices when xcode detected', () => {
-  const promises = getAllPromisesForQueryingDevices(
-    mockStore,
-    logger,
-    {} as IOSBridge,
-    true,
-  );
+  const flipperServer = new FlipperServer({}, mockStore, getInstance());
+  flipperServer.ios.iosBridge = {} as IOSBridge;
+  const promises = flipperServer.ios.getAllPromisesForQueryingDevices(true);
   expect(promises.length).toEqual(3);
 });
 
 test('test getAllPromisesForQueryingDevices when xcode is not detected', () => {
-  const promises = getAllPromisesForQueryingDevices(
-    mockStore,
-    logger,
-    {} as IOSBridge,
-    false,
-  );
+  const flipperServer = new FlipperServer({}, mockStore, getInstance());
+  flipperServer.ios.iosBridge = {} as IOSBridge;
+  const promises = flipperServer.ios.getAllPromisesForQueryingDevices(false);
   expect(promises.length).toEqual(1);
 });

@@ -8,9 +8,6 @@
  */
 
 import {ChildProcess} from 'child_process';
-import {Store} from '../../../reducers/index';
-import {setXcodeDetected} from '../../../reducers/application';
-import {Logger} from '../../../fb-interfaces/Logger';
 import type {DeviceType} from 'flipper-plugin';
 import {promisify} from 'util';
 import path from 'path';
@@ -18,14 +15,13 @@ import child_process from 'child_process';
 const execFile = child_process.execFile;
 import iosUtil from './iOSContainerUtility';
 import IOSDevice from './IOSDevice';
-import {addErrorNotification} from '../../../reducers/notifications';
 import {getStaticPath} from '../../../utils/pathUtils';
-import {destroyDevice} from '../../../reducers/connections';
 import {
   ERR_NO_IDB_OR_XCODE_AVAILABLE,
   IOSBridge,
   makeIOSBridge,
 } from './IOSBridge';
+import {FlipperServer} from '../../FlipperServer';
 
 type iOSSimulatorDevice = {
   state: 'Booted' | 'Shutdown' | 'Shutting Down';
@@ -45,8 +41,6 @@ export type IOSDeviceParams = {
 
 const exec = promisify(child_process.exec);
 
-let portForwarders: Array<ChildProcess> = [];
-
 function isAvailable(simulator: iOSSimulatorDevice): boolean {
   // For some users "availability" is set, for others it's "isAvailable"
   // It's not clear which key is set, so we are checking both.
@@ -58,189 +52,245 @@ function isAvailable(simulator: iOSSimulatorDevice): boolean {
   );
 }
 
-const portforwardingClient = getStaticPath(
-  path.join(
-    'PortForwardingMacApp.app',
-    'Contents',
-    'MacOS',
-    'PortForwardingMacApp',
-  ),
-);
+export class IOSDeviceManager {
+  private portForwarders: Array<ChildProcess> = [];
 
-function forwardPort(port: number, multiplexChannelPort: number) {
-  const childProcess = execFile(
-    portforwardingClient,
-    [`-portForward=${port}`, `-multiplexChannelPort=${multiplexChannelPort}`],
-    (err, stdout, stderr) => {
-      // This happens on app reloads and doesn't need to be treated as an error.
-      console.warn('Port forwarding app failed to start', err, stdout, stderr);
-    },
-  );
-  console.log('Port forwarding app started', childProcess);
-  childProcess.addListener('error', (err) =>
-    console.warn('Port forwarding app error', err),
-  );
-  childProcess.addListener('exit', (code) =>
-    console.log(`Port forwarding app exited with code ${code}`),
-  );
-  return childProcess;
-}
-
-function startDevicePortForwarders(): void {
-  if (portForwarders.length > 0) {
-    // Only ever start them once.
-    return;
-  }
-  // start port forwarding server for real device connections
-  portForwarders = [forwardPort(8089, 8079), forwardPort(8088, 8078)];
-}
-
-if (typeof window !== 'undefined') {
-  window.addEventListener('beforeunload', () => {
-    portForwarders.forEach((process) => process.kill());
-  });
-}
-
-export function getAllPromisesForQueryingDevices(
-  store: Store,
-  logger: Logger,
-  iosBridge: IOSBridge,
-  isXcodeDetected: boolean,
-): Array<Promise<any>> {
-  const promArray = [
-    getActiveDevices(
-      store.getState().settingsState.idbPath,
-      store.getState().settingsState.enablePhysicalIOS,
-    ).then((devices: IOSDeviceParams[]) => {
-      console.log('Active iOS devices:', devices);
-      processDevices(store, logger, iosBridge, devices, 'physical');
-    }),
-  ];
-  if (isXcodeDetected) {
-    promArray.push(
-      ...[
-        checkXcodeVersionMismatch(store),
-        getSimulators(store, true).then((devices) => {
-          processDevices(store, logger, iosBridge, devices, 'emulator');
-        }),
-      ],
-    );
-  }
-  return promArray;
-}
-
-async function queryDevices(
-  store: Store,
-  logger: Logger,
-  iosBridge: IOSBridge,
-): Promise<any> {
-  const isXcodeInstalled = await iosUtil.isXcodeDetected();
-  return Promise.all(
-    getAllPromisesForQueryingDevices(
-      store,
-      logger,
-      iosBridge,
-      isXcodeInstalled,
+  private portforwardingClient = getStaticPath(
+    path.join(
+      'PortForwardingMacApp.app',
+      'Contents',
+      'MacOS',
+      'PortForwardingMacApp',
     ),
   );
-}
+  iosBridge: IOSBridge | undefined;
+  private xcodeVersionMismatchFound = false;
+  public xcodeCommandLineToolsDetected = false;
 
-function processDevices(
-  store: Store,
-  logger: Logger,
-  iosBridge: IOSBridge,
-  activeDevices: IOSDeviceParams[],
-  type: 'physical' | 'emulator',
-) {
-  const {connections} = store.getState();
-  const currentDeviceIDs: Set<string> = new Set(
-    connections.devices
-      .filter(
-        (device) =>
-          device instanceof IOSDevice &&
-          device.deviceType === type &&
-          device.connected.get(),
-      )
-      .map((device) => device.serial),
-  );
-
-  for (const {udid, type, name} of activeDevices) {
-    if (currentDeviceIDs.has(udid)) {
-      currentDeviceIDs.delete(udid);
-    } else {
-      // clean up offline device
-      destroyDevice(store, logger, udid);
-      logger.track('usage', 'register-device', {
-        os: 'iOS',
-        type: type,
-        name: name,
-        serial: udid,
-      });
-      const iOSDevice = new IOSDevice(iosBridge, udid, type, name);
-      iOSDevice.loadDevicePlugins(
-        store.getState().plugins.devicePlugins,
-        store.getState().connections.enabledDevicePlugins,
-      );
-      store.dispatch({
-        type: 'REGISTER_DEVICE',
-        payload: iOSDevice,
+  constructor(private flipperServer: FlipperServer) {
+    if (typeof window !== 'undefined') {
+      window.addEventListener('beforeunload', () => {
+        this.portForwarders.forEach((process) => process.kill());
       });
     }
   }
 
-  currentDeviceIDs.forEach((id) => {
-    const device = store
-      .getState()
-      .connections.devices.find((device) => device.serial === id);
-    device?.disconnect();
-  });
+  private forwardPort(port: number, multiplexChannelPort: number) {
+    const childProcess = execFile(
+      this.portforwardingClient,
+      [`-portForward=${port}`, `-multiplexChannelPort=${multiplexChannelPort}`],
+      (err, stdout, stderr) => {
+        // This happens on app reloads and doesn't need to be treated as an error.
+        console.warn(
+          'Port forwarding app failed to start',
+          err,
+          stdout,
+          stderr,
+        );
+      },
+    );
+    console.log('Port forwarding app started', childProcess);
+    childProcess.addListener('error', (err) =>
+      console.warn('Port forwarding app error', err),
+    );
+    childProcess.addListener('exit', (code) =>
+      console.log(`Port forwarding app exited with code ${code}`),
+    );
+    return childProcess;
+  }
+
+  private startDevicePortForwarders(): void {
+    if (this.portForwarders.length > 0) {
+      // Only ever start them once.
+      return;
+    }
+    // start port forwarding server for real device connections
+    // TODO: ports should be picked up from flipperServer.config?
+    this.portForwarders = [
+      this.forwardPort(8089, 8079),
+      this.forwardPort(8088, 8078),
+    ];
+  }
+
+  getAllPromisesForQueryingDevices(
+    isXcodeDetected: boolean,
+  ): Array<Promise<any>> {
+    const {config} = this.flipperServer;
+    const promArray = [
+      getActiveDevices(config.idbPath, config.enablePhysicalIOS).then(
+        (devices: IOSDeviceParams[]) => {
+          this.processDevices(devices, 'physical');
+        },
+      ),
+    ];
+    if (isXcodeDetected) {
+      promArray.push(
+        ...[
+          this.checkXcodeVersionMismatch(),
+          this.getSimulators(true).then((devices) => {
+            this.processDevices(devices, 'emulator');
+          }),
+        ],
+      );
+    }
+    return promArray;
+  }
+
+  private async queryDevices(): Promise<any> {
+    const isXcodeInstalled = await iosUtil.isXcodeDetected();
+    return Promise.all(this.getAllPromisesForQueryingDevices(isXcodeInstalled));
+  }
+
+  private processDevices(
+    activeDevices: IOSDeviceParams[],
+    type: 'physical' | 'emulator',
+  ) {
+    if (!this.iosBridge) {
+      throw new Error('iOS bridge not yet initialized');
+    }
+    const currentDeviceIDs = new Set(
+      this.flipperServer
+        .getDevices()
+        .filter(
+          (device) =>
+            device instanceof IOSDevice &&
+            device.deviceType === type &&
+            device.connected.get(),
+        )
+        .map((device) => device.serial),
+    );
+
+    for (const {udid, type, name} of activeDevices) {
+      if (currentDeviceIDs.has(udid)) {
+        currentDeviceIDs.delete(udid);
+      } else {
+        const iOSDevice = new IOSDevice(this.iosBridge, udid, type, name);
+        this.flipperServer.registerDevice(iOSDevice);
+      }
+    }
+
+    currentDeviceIDs.forEach((id) => {
+      this.flipperServer.unregisterDevice(id);
+    });
+  }
+
+  public async watchIOSDevices() {
+    // TODO: pull this condition up
+    if (!this.flipperServer.config.enableIOS) {
+      return;
+    }
+    try {
+      const isDetected = await iosUtil.isXcodeDetected();
+      this.xcodeCommandLineToolsDetected = isDetected;
+      if (this.flipperServer.config.enablePhysicalIOS) {
+        this.startDevicePortForwarders();
+      }
+      try {
+        // Awaiting the promise here to trigger immediate error handling.
+        this.iosBridge = await makeIOSBridge(
+          this.flipperServer.config.idbPath,
+          isDetected,
+        );
+        this.queryDevicesForever();
+      } catch (err) {
+        // This case is expected if both Xcode and idb are missing.
+        if (err.message === ERR_NO_IDB_OR_XCODE_AVAILABLE) {
+          console.warn(
+            'Failed to init iOS device. You may want to disable iOS support in the settings.',
+            err,
+          );
+        } else {
+          console.error('Failed to initialize iOS dispatcher:', err);
+        }
+      }
+    } catch (err) {
+      console.error('Error while querying iOS devices:', err);
+    }
+  }
+
+  getSimulators(bootedOnly: boolean): Promise<Array<IOSDeviceParams>> {
+    return promisify(execFile)(
+      'xcrun',
+      ['simctl', ...getDeviceSetPath(), 'list', 'devices', '--json'],
+      {
+        encoding: 'utf8',
+      },
+    )
+      .then(({stdout}) => JSON.parse(stdout).devices)
+      .then((simulatorDevices: Array<iOSSimulatorDevice>) => {
+        const simulators = Object.values(simulatorDevices).flat();
+        return simulators
+          .filter(
+            (simulator) =>
+              (!bootedOnly || simulator.state === 'Booted') &&
+              isAvailable(simulator),
+          )
+          .map((simulator) => {
+            return {
+              ...simulator,
+              type: 'emulator',
+            } as IOSDeviceParams;
+          });
+      })
+      .catch((e: Error) => {
+        console.warn('Failed to query simulators:', e);
+        if (e.message.includes('Xcode license agreements')) {
+          this.flipperServer.emit('notification', {
+            type: 'error',
+            title: 'Xcode license requires approval',
+            description:
+              'The Xcode license agreement has changed. You need to either open Xcode and agree to the terms or run `sudo xcodebuild -license` in a Terminal to allow simulators to work with Flipper.',
+          });
+        }
+        return Promise.resolve([]);
+      });
+  }
+
+  private queryDevicesForever() {
+    return this.queryDevices()
+      .then(() => {
+        // It's important to schedule the next check AFTER the current one has completed
+        // to avoid simultaneous queries which can cause multiple user input prompts.
+        setTimeout(() => this.queryDevicesForever(), 3000);
+      })
+      .catch((err) => {
+        console.warn('Failed to continuously query devices:', err);
+      });
+  }
+
+  async checkXcodeVersionMismatch() {
+    if (this.xcodeVersionMismatchFound) {
+      return;
+    }
+    try {
+      let {stdout: xcodeCLIVersion} = await exec('xcode-select -p');
+      xcodeCLIVersion = xcodeCLIVersion.trim();
+      const {stdout} = await exec('ps aux | grep CoreSimulator');
+      for (const line of stdout.split('\n')) {
+        const match = parseXcodeFromCoreSimPath(line);
+        const runningVersion =
+          match && match.length > 0 ? match[0].trim() : null;
+        if (runningVersion && runningVersion !== xcodeCLIVersion) {
+          const errorMessage = `Xcode version mismatch: Simulator is running from "${runningVersion}" while Xcode CLI is "${xcodeCLIVersion}". Running "xcode-select --switch ${runningVersion}" can fix this. For example: "sudo xcode-select -s /Applications/Xcode.app/Contents/Developer"`;
+          this.flipperServer.emit('notification', {
+            type: 'error',
+            title: 'Xcode version mismatch',
+            description: '' + errorMessage,
+          });
+          this.xcodeVersionMismatchFound = true;
+          break;
+        }
+      }
+    } catch (e) {
+      console.error('Failed to determine Xcode version:', e);
+    }
+  }
 }
 
 function getDeviceSetPath() {
   return process.env.DEVICE_SET_PATH
     ? ['--set', process.env.DEVICE_SET_PATH]
     : [];
-}
-
-export function getSimulators(
-  store: Store,
-  bootedOnly: boolean,
-): Promise<Array<IOSDeviceParams>> {
-  return promisify(execFile)(
-    'xcrun',
-    ['simctl', ...getDeviceSetPath(), 'list', 'devices', '--json'],
-    {
-      encoding: 'utf8',
-    },
-  )
-    .then(({stdout}) => JSON.parse(stdout).devices)
-    .then((simulatorDevices: Array<iOSSimulatorDevice>) => {
-      const simulators = Object.values(simulatorDevices).flat();
-      return simulators
-        .filter(
-          (simulator) =>
-            (!bootedOnly || simulator.state === 'Booted') &&
-            isAvailable(simulator),
-        )
-        .map((simulator) => {
-          return {
-            ...simulator,
-            type: 'emulator',
-          } as IOSDeviceParams;
-        });
-    })
-    .catch((e: Error) => {
-      console.warn('Failed to query simulators:', e);
-      if (e.message.includes('Xcode license agreements')) {
-        store.dispatch(
-          addErrorNotification(
-            'Xcode license requires approval',
-            'The Xcode license agreement has changed. You need to either open Xcode and agree to the terms or run `sudo xcodebuild -license` in a Terminal to allow simulators to work with Flipper.',
-          ),
-        );
-      }
-      return Promise.resolve([]);
-    });
 }
 
 export async function launchSimulator(udid: string): Promise<any> {
@@ -262,88 +312,8 @@ function getActiveDevices(
   });
 }
 
-function queryDevicesForever(
-  store: Store,
-  logger: Logger,
-  iosBridge: IOSBridge,
-) {
-  return queryDevices(store, logger, iosBridge)
-    .then(() => {
-      // It's important to schedule the next check AFTER the current one has completed
-      // to avoid simultaneous queries which can cause multiple user input prompts.
-      setTimeout(() => queryDevicesForever(store, logger, iosBridge), 3000);
-    })
-    .catch((err) => {
-      console.warn('Failed to continuously query devices:', err);
-    });
-}
-
 export function parseXcodeFromCoreSimPath(
   line: string,
 ): RegExpMatchArray | null {
   return line.match(/\/[\/\w@)(\-\+]*\/Xcode[^/]*\.app\/Contents\/Developer/);
 }
-
-let xcodeVersionMismatchFound = false;
-
-async function checkXcodeVersionMismatch(store: Store) {
-  if (xcodeVersionMismatchFound) {
-    return;
-  }
-  try {
-    let {stdout: xcodeCLIVersion} = await exec('xcode-select -p');
-    xcodeCLIVersion = xcodeCLIVersion.trim();
-    const {stdout} = await exec('ps aux | grep CoreSimulator');
-    for (const line of stdout.split('\n')) {
-      const match = parseXcodeFromCoreSimPath(line);
-      const runningVersion = match && match.length > 0 ? match[0].trim() : null;
-      if (runningVersion && runningVersion !== xcodeCLIVersion) {
-        const errorMessage = `Xcode version mismatch: Simulator is running from "${runningVersion}" while Xcode CLI is "${xcodeCLIVersion}". Running "xcode-select --switch ${runningVersion}" can fix this. For example: "sudo xcode-select -s /Applications/Xcode.app/Contents/Developer"`;
-        store.dispatch(
-          addErrorNotification('Xcode version mismatch', errorMessage),
-        );
-        xcodeVersionMismatchFound = true;
-        break;
-      }
-    }
-  } catch (e) {
-    console.error('Failed to determine Xcode version:', e);
-  }
-}
-
-export default (store: Store, logger: Logger) => {
-  if (!store.getState().settingsState.enableIOS) {
-    return;
-  }
-  iosUtil
-    .isXcodeDetected()
-    .then(async (isDetected) => {
-      store.dispatch(setXcodeDetected(isDetected));
-      if (store.getState().settingsState.enablePhysicalIOS) {
-        startDevicePortForwarders();
-      }
-      try {
-        // Awaiting the promise here to trigger immediate error handling.
-        return await makeIOSBridge(
-          store.getState().settingsState.idbPath,
-          isDetected,
-        );
-      } catch (err) {
-        // This case is expected if both Xcode and idb are missing.
-        if (err.message === ERR_NO_IDB_OR_XCODE_AVAILABLE) {
-          console.warn(
-            'Failed to init iOS device. You may want to disable iOS support in the settings.',
-            err,
-          );
-        } else {
-          console.error('Failed to initialize iOS dispatcher:', err);
-        }
-      }
-    })
-    .then(
-      (iosBridge) => iosBridge && queryDevicesForever(store, logger, iosBridge),
-    )
-    .catch((err) => {
-      console.error('Error while querying iOS devices:', err);
-    });
-};

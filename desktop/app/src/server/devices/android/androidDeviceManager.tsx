@@ -10,7 +10,6 @@
 import AndroidDevice from './AndroidDevice';
 import KaiOSDevice from './KaiOSDevice';
 import child_process from 'child_process';
-import BaseDevice from '../BaseDevice';
 import {getAdbClient} from './adbClient';
 import which from 'which';
 import {promisify} from 'util';
@@ -22,11 +21,10 @@ import {notNull} from '../../utils/typeUtils';
 export class AndroidDeviceManager {
   // cache emulator path
   private emulatorPath: string | undefined;
-  private devices: Map<string, AndroidDevice> = new Map();
 
   constructor(public flipperServer: FlipperServer) {}
 
-  createDevice(
+  private createDevice(
     adbClient: ADBClient,
     device: any,
   ): Promise<AndroidDevice | undefined> {
@@ -106,15 +104,6 @@ export class AndroidDeviceManager {
     });
   }
 
-  async getActiveAndroidDevices(): Promise<Array<BaseDevice>> {
-    const client = await getAdbClient(this.flipperServer.config);
-    const androidDevices = await client.listDevices();
-    const devices = await Promise.all(
-      androidDevices.map((device) => this.createDevice(client, device)),
-    );
-    return devices.filter(Boolean) as any;
-  }
-
   async getEmulatorPath(): Promise<string> {
     if (this.emulatorPath) {
       return this.emulatorPath;
@@ -154,7 +143,9 @@ export class AndroidDeviceManager {
     });
   }
 
-  async getRunningEmulatorName(id: string): Promise<string | null | undefined> {
+  private async getRunningEmulatorName(
+    id: string,
+  ): Promise<string | null | undefined> {
     return new Promise((resolve, reject) => {
       const port = id.replace('emulator-', '');
       // The GNU version of netcat doesn't terminate after 1s when
@@ -184,8 +175,13 @@ export class AndroidDeviceManager {
         .then((tracker) => {
           tracker.on('error', (err) => {
             if (err.message === 'Connection closed') {
-              this.unregisterDevices(Array.from(this.devices.keys()));
               console.warn('adb server was shutdown');
+              this.flipperServer
+                .getDevices()
+                .filter((d) => d instanceof AndroidDevice)
+                .forEach((d) => {
+                  this.flipperServer.unregisterDevice(d.serial);
+                });
               setTimeout(() => {
                 this.watchAndroidDevices();
               }, 500);
@@ -202,14 +198,14 @@ export class AndroidDeviceManager {
 
           tracker.on('change', async (device) => {
             if (device.type === 'offline') {
-              this.unregisterDevices([device.id]);
+              this.flipperServer.unregisterDevice(device.id);
             } else {
               this.registerDevice(client, device);
             }
           });
 
           tracker.on('remove', (device) => {
-            this.unregisterDevices([device.id]);
+            this.flipperServer.unregisterDevice(device.id);
           });
         })
         .catch((err: {code: string}) => {
@@ -224,18 +220,12 @@ export class AndroidDeviceManager {
     }
   }
 
-  async registerDevice(adbClient: ADBClient, deviceData: any) {
+  private async registerDevice(adbClient: ADBClient, deviceData: any) {
     const androidDevice = await this.createDevice(adbClient, deviceData);
     if (!androidDevice) {
       return;
     }
 
     this.flipperServer.registerDevice(androidDevice);
-  }
-
-  unregisterDevices(serials: Array<string>) {
-    serials.forEach((serial) => {
-      this.flipperServer.unregisterDevice(serial);
-    });
   }
 }

@@ -21,8 +21,7 @@ import {launchEmulator} from '../../server/devices/android/AndroidDevice';
 import {Layout, renderReactRoot, withTrackingScope} from 'flipper-plugin';
 import {Provider} from 'react-redux';
 import {
-  launchSimulator,
-  getSimulators,
+  launchSimulator, // TODO: move to iOSDeviceManager
   IOSDeviceParams,
 } from '../../server/devices/ios/iOSDeviceManager';
 import GK from '../../fb-stubs/GK';
@@ -39,18 +38,15 @@ export function showEmulatorLauncher(store: Store) {
 }
 
 function LaunchEmulatorContainer({onClose}: {onClose: () => void}) {
-  const store = useStore();
   const flipperServer = useStore((state) => state.connections.flipperServer);
   return (
     <LaunchEmulatorDialog
       onClose={onClose}
-      getSimulators={getSimulators.bind(store)}
+      getSimulators={() => flipperServer!.ios.getSimulators(false)}
       getEmulators={() => flipperServer!.android.getAndroidEmulators()}
     />
   );
 }
-
-type GetSimulators = typeof getSimulators;
 
 export const LaunchEmulatorDialog = withTrackingScope(
   function LaunchEmulatorDialog({
@@ -59,7 +55,7 @@ export const LaunchEmulatorDialog = withTrackingScope(
     getEmulators,
   }: {
     onClose: () => void;
-    getSimulators: GetSimulators;
+    getSimulators: () => Promise<IOSDeviceParams[]>;
     getEmulators: () => Promise<string[]>;
   }) {
     const iosEnabled = useStore((state) => state.settingsState.enableIOS);
@@ -74,15 +70,19 @@ export const LaunchEmulatorDialog = withTrackingScope(
       if (!iosEnabled) {
         return;
       }
-      getSimulators(store, false).then((emulators) => {
-        setIosEmulators(
-          emulators.filter(
-            (device) =>
-              device.state === 'Shutdown' &&
-              device.deviceTypeIdentifier?.match(/iPhone|iPad/i),
-          ),
-        );
-      });
+      getSimulators()
+        .then((emulators) => {
+          setIosEmulators(
+            emulators.filter(
+              (device) =>
+                device.state === 'Shutdown' &&
+                device.deviceTypeIdentifier?.match(/iPhone|iPad/i),
+            ),
+          );
+        })
+        .catch((e) => {
+          console.warn('Failed to find simulators', e);
+        });
     }, [iosEnabled, getSimulators, store]);
 
     useEffect(() => {
@@ -94,7 +94,7 @@ export const LaunchEmulatorDialog = withTrackingScope(
           setAndroidEmulators(emulators);
         })
         .catch((e) => {
-          console.warn('Failed to find emulatiors', e);
+          console.warn('Failed to find emulators', e);
         });
     }, [androidEnabled, getEmulators]);
 

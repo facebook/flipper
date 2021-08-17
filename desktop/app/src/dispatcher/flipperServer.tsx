@@ -16,11 +16,15 @@ import Client from '../Client';
 import {notification} from 'antd';
 
 export default async (store: Store, logger: Logger) => {
-  const {enableAndroid, androidHome} = store.getState().settingsState;
+  const {enableAndroid, androidHome, idbPath, enableIOS, enablePhysicalIOS} =
+    store.getState().settingsState;
   const server = new FlipperServer(
     {
       enableAndroid,
       androidHome,
+      idbPath,
+      enableIOS,
+      enablePhysicalIOS,
       serverPorts: store.getState().application.serverPorts,
     },
     store,

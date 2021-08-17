@@ -29,6 +29,7 @@ import {Client as ADBClient} from 'adbkit';
 import archiver from 'archiver';
 import {timeout} from 'flipper-plugin';
 import {v4 as uuid} from 'uuid';
+import {isTest} from '../../utils/isProduction';
 
 export type CertificateExchangeMedium = 'FS_ACCESS' | 'WWW';
 
@@ -581,7 +582,10 @@ export default class CertificateProvider {
     });
   }
 
-  ensureCertificateAuthorityExists(): Promise<void> {
+  async ensureCertificateAuthorityExists(): Promise<void> {
+    if (isTest()) {
+      return;
+    }
     if (!fs.existsSync(caKey)) {
       return this.generateCertificateAuthority();
     }

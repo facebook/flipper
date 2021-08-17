@@ -86,7 +86,6 @@ export type State = {
   serverPorts: ServerPorts;
   launcherMsg: LauncherMsg;
   statusMessages: Array<string>;
-  xcodeCommandLineToolsDetected: boolean;
   pastedToken?: string;
 };
 
@@ -150,12 +149,6 @@ export type Action =
       payload: {msg: string; sender: string};
     }
   | {
-      type: 'SET_XCODE_DETECTED';
-      payload: {
-        isDetected: boolean;
-      };
-    }
-  | {
       type: 'SET_PASTED_TOKEN';
       payload?: string;
     };
@@ -177,7 +170,6 @@ export const initialState: () => State = () => ({
     message: '',
   },
   statusMessages: [],
-  xcodeCommandLineToolsDetected: false,
   trackingTimeline: [],
 });
 
@@ -288,8 +280,6 @@ export default function reducer(
       return {...state, statusMessages};
     }
     return state;
-  } else if (action.type === 'SET_XCODE_DETECTED') {
-    return {...state, xcodeCommandLineToolsDetected: action.payload.isDetected};
   } else if (action.type === 'SET_PASTED_TOKEN') {
     return produce(state, (draft) => {
       draft.pastedToken = action.payload;
@@ -366,11 +356,6 @@ export const addStatusMessage = (payload: StatusMessageType): Action => ({
 export const removeStatusMessage = (payload: StatusMessageType): Action => ({
   type: 'REMOVE_STATUS_MSG',
   payload,
-});
-
-export const setXcodeDetected = (isDetected: boolean): Action => ({
-  type: 'SET_XCODE_DETECTED',
-  payload: {isDetected},
 });
 
 export const setPastedToken = (pastedToken?: string): Action => ({

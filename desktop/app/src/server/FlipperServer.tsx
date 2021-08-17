@@ -24,7 +24,7 @@ import {
   setActiveSheet,
 } from '../reducers/application';
 import {AndroidDeviceManager} from './devices/android/androidDeviceManager';
-import iOSDevice from './devices/ios/iOSDeviceManager';
+import {IOSDeviceManager} from './devices/ios/iOSDeviceManager';
 import metroDevice from './devices/metro/metroDeviceManager';
 import desktopDevice from './devices/desktop/desktopDeviceManager';
 import BaseDevice from './devices/BaseDevice';
@@ -45,6 +45,9 @@ type FlipperServerEvents = {
 export interface FlipperServerConfig {
   enableAndroid: boolean;
   androidHome: string;
+  enableIOS: boolean;
+  idbPath: string;
+  enablePhysicalIOS: boolean;
   serverPorts: ServerPorts;
 }
 
@@ -54,6 +57,9 @@ type ServerState = 'pending' | 'starting' | 'started' | 'error' | 'closed';
 const defaultConfig: FlipperServerConfig = {
   androidHome: '',
   enableAndroid: false,
+  enableIOS: false,
+  enablePhysicalIOS: false,
+  idbPath: '',
   serverPorts: {
     insecure: -1,
     secure: -1,
@@ -78,6 +84,7 @@ export class FlipperServer {
   private readonly devices = new Map<string, BaseDevice>();
   state: ServerState = 'pending';
   android: AndroidDeviceManager;
+  ios: IOSDeviceManager;
 
   // TODO: remove store argument
   constructor(
@@ -89,6 +96,7 @@ export class FlipperServer {
     this.config = {...defaultConfig, ...config};
     const server = (this.server = new ServerController(this));
     this.android = new AndroidDeviceManager(this);
+    this.ios = new IOSDeviceManager(this);
 
     server.addListener('new-client', (client: Client) => {
       this.emit('client-connected', client);
@@ -200,7 +208,7 @@ export class FlipperServer {
   async startDeviceListeners() {
     this.disposers.push(
       await this.android.watchAndroidDevices(),
-      iOSDevice(this.store, this.logger),
+      await this.ios.watchIOSDevices(),
       metroDevice(this),
       desktopDevice(this),
     );
@@ -269,6 +277,10 @@ export class FlipperServer {
 
   getDeviceSerials(): string[] {
     return Array.from(this.devices.keys());
+  }
+
+  getDevices(): BaseDevice[] {
+    return Array.from(this.devices.values());
   }
 
   public async close() {
