@@ -92,10 +92,7 @@ test('Triggering a deeplink will work', async () => {
   jest.runAllTimers();
   expect(linksSeen).toEqual(['universe']);
   expect(renderer.baseElement).toMatchInlineSnapshot(`
-    <body
-      class=""
-      style=""
-    >
+    <body>
       <div>
         <div
           class="css-1x2cmzz-SandySplitContainer e1hsqii10"

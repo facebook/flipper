@@ -8,7 +8,7 @@
  */
 
 import type {PluginDefinition} from '../plugin';
-import type {State} from '../reducers';
+import type {State, Store} from '../reducers';
 import type {State as PluginsState} from '../reducers/plugins';
 import type BaseDevice from '../server/devices/BaseDevice';
 import type Client from '../Client';
@@ -400,4 +400,40 @@ export function computeActivePluginList({
     };
   }
   return pluginList;
+}
+
+export function getPluginStatus(
+  store: Store,
+  id: string,
+): [
+  state:
+    | 'ready'
+    | 'unknown'
+    | 'failed'
+    | 'gatekeeped'
+    | 'bundle_installable'
+    | 'marketplace_installable',
+  reason?: string,
+] {
+  const state: PluginsState = store.getState().plugins;
+  if (state.devicePlugins.has(id) || state.clientPlugins.has(id)) {
+    return ['ready'];
+  }
+  const gateKeepedDetails = state.gatekeepedPlugins.find((d) => d.id === id);
+  if (gateKeepedDetails) {
+    return ['gatekeeped', gateKeepedDetails.gatekeeper];
+  }
+  const failedPluginEntry = state.failedPlugins.find(
+    ([details]) => details.id === id,
+  );
+  if (failedPluginEntry) {
+    return ['failed', failedPluginEntry[1]];
+  }
+  if (state.bundledPlugins.has(id)) {
+    return ['bundle_installable'];
+  }
+  if (state.marketplacePlugins.find((d) => d.id === id)) {
+    return ['marketplace_installable'];
+  }
+  return ['unknown'];
 }

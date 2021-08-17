@@ -7,6 +7,10 @@
  * @format
  */
 
+export async function loadPluginsFromMarketplace() {
+  // Marketplace is not implemented in public version of Flipper
+}
+
 export default () => {
   // Marketplace is not implemented in public version of Flipper
 };
