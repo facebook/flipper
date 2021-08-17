@@ -13,7 +13,7 @@ import {produce} from 'immer';
 import type BaseDevice from '../server/devices/BaseDevice';
 import MacDevice from '../server/devices/desktop/MacDevice';
 import type Client from '../Client';
-import type {UninitializedClient} from '../UninitializedClient';
+import type {UninitializedClient} from '../server/UninitializedClient';
 import {isEqual} from 'lodash';
 import {performance} from 'perf_hooks';
 import type {Actions, Store} from '.';
