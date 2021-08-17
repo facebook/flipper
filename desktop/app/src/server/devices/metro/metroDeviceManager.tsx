@@ -7,13 +7,10 @@
  * @format
  */
 
-import {Store} from '../../../reducers/index';
-import {Logger} from '../../../fb-interfaces/Logger';
 import MetroDevice from './MetroDevice';
 import http from 'http';
-import {addErrorNotification} from '../../../reducers/notifications';
-import {destroyDevice} from '../../../reducers/connections';
 import {parseEnvironmentVariableAsNumber} from '../../utils/environmentVariables';
+import {FlipperServer} from '../../FlipperServer';
 
 const METRO_HOST = 'localhost';
 const METRO_PORT = parseEnvironmentVariableAsNumber('METRO_SERVER_PORT', 8081);
@@ -47,29 +44,15 @@ async function isMetroRunning(): Promise<boolean> {
   });
 }
 
-export async function registerMetroDevice(
+async function registerMetroDevice(
   ws: WebSocket | undefined,
-  store: Store,
-  logger: Logger,
+  flipperServer: FlipperServer,
 ) {
   const metroDevice = new MetroDevice(METRO_URL, ws);
-  logger.track('usage', 'register-device', {
-    os: 'Metro',
-    name: metroDevice.title,
-  });
-
-  metroDevice.loadDevicePlugins(
-    store.getState().plugins.devicePlugins,
-    store.getState().connections.enabledDevicePlugins,
-  );
-  store.dispatch({
-    type: 'REGISTER_DEVICE',
-    payload: metroDevice,
-    serial: METRO_URL,
-  });
+  flipperServer.registerDevice(metroDevice);
 }
 
-export default (store: Store, logger: Logger) => {
+export default (flipperServer: FlipperServer) => {
   let timeoutHandle: NodeJS.Timeout;
   let ws: WebSocket | undefined;
   let unregistered = false;
@@ -86,7 +69,7 @@ export default (store: Store, logger: Logger) => {
         _ws.onopen = () => {
           clearTimeout(guard);
           ws = _ws;
-          registerMetroDevice(ws, store, logger);
+          registerMetroDevice(ws, flipperServer);
         };
 
         _ws.onclose = _ws.onerror = function (event?: any) {
@@ -100,20 +83,19 @@ export default (store: Store, logger: Logger) => {
             unregistered = true;
             clearTimeout(guard);
             ws = undefined;
-            destroyDevice(store, logger, METRO_URL);
+            flipperServer.unregisterDevice(METRO_URL);
             scheduleNext();
           }
         };
 
         const guard = setTimeout(() => {
           // Metro is running, but didn't respond to /events endpoint
-          store.dispatch(
-            addErrorNotification(
-              'Failed to connect to Metro',
-              `Flipper did find a running Metro instance, but couldn't connect to the logs. Probably your React Native version is too old to support Flipper. Cause: Failed to get a connection to ${METRO_LOGS_ENDPOINT} in a timely fashion`,
-            ),
-          );
-          registerMetroDevice(undefined, store, logger);
+          flipperServer.emit('notification', {
+            type: 'error',
+            title: 'Failed to connect to Metro',
+            description: `Flipper did find a running Metro instance, but couldn't connect to the logs. Probably your React Native version is too old to support Flipper. Cause: Failed to get a connection to ${METRO_LOGS_ENDPOINT} in a timely fashion`,
+          });
+          registerMetroDevice(undefined, flipperServer);
           // Note: no scheduleNext, we won't retry until restart
         }, 5000);
       } catch (e) {

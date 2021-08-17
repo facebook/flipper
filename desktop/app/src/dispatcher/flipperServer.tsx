@@ -17,7 +17,7 @@ import {notification} from 'antd';
 
 export default async (store: Store, logger: Logger) => {
   const {enableAndroid, androidHome} = store.getState().settingsState;
-  const server = await startFlipperServer(
+  const server = startFlipperServer(
     {
       enableAndroid,
       androidHome,
@@ -40,7 +40,7 @@ export default async (store: Store, logger: Logger) => {
     });
   });
 
-  server.on('server-start-error', (err) => {
+  server.on('server-error', (err) => {
     notification.error({
       message: 'Failed to start connection server',
       description:
@@ -58,7 +58,7 @@ export default async (store: Store, logger: Logger) => {
             {'' + err}
           </>
         ) : (
-          <>Failed to start connection server: ${err.message}</>
+          <>Failed to start Flipper server: ${err.message}</>
         ),
       duration: null,
     });
@@ -87,7 +87,7 @@ export default async (store: Store, logger: Logger) => {
       os: device.os,
       serial: device.serial,
     });
-    // N.B.: note that we don't remove the device, we keep it in offline mode!
+    // N.B.: note that we don't remove the device, we keep it in offline
   });
 
   server.on('client-connected', (payload) =>
@@ -99,6 +99,21 @@ export default async (store: Store, logger: Logger) => {
       server.close();
     });
   }
+
+  server
+    .waitForServerStarted()
+    .then(() => {
+      console.log(
+        'Flipper server started and accepting device / client connections',
+      );
+    })
+    .catch((e) => {
+      console.error('Failed to start Flipper server', e);
+      notification.error({
+        message: 'Failed to start Flipper server',
+        description: 'error: ' + e,
+      });
+    });
 
   return () => {
     server.close();

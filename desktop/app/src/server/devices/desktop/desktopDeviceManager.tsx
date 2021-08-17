@@ -20,5 +20,5 @@ export default (flipperServer: FlipperServer) => {
   } else {
     return;
   }
-  flipperServer.emit('device-connected', device);
+  flipperServer.registerDevice(device);
 };

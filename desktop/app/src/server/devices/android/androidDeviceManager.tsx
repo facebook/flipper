@@ -230,20 +230,12 @@ export class AndroidDeviceManager {
       return;
     }
 
-    // remove offline devices with same serial as the connected.
-    this.devices.get(androidDevice.serial)?.destroy();
-    // register new device
-    this.devices.set(androidDevice.serial, androidDevice);
-    this.flipperServer.emit('device-connected', androidDevice);
+    this.flipperServer.registerDevice(androidDevice);
   }
 
   unregisterDevices(serials: Array<string>) {
     serials.forEach((serial) => {
-      const device = this.devices.get(serial);
-      if (device?.connected?.get()) {
-        device.disconnect();
-        this.flipperServer.emit('device-disconnected', device);
-      }
+      this.flipperServer.unregisterDevice(serial);
     });
   }
 }

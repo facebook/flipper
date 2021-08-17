@@ -30,7 +30,8 @@ import desktopDevice from './devices/desktop/desktopDeviceManager';
 import BaseDevice from './devices/BaseDevice';
 
 type FlipperServerEvents = {
-  'server-start-error': any;
+  'server-state': {state: ServerState; error?: Error};
+  'server-error': any;
   notification: {
     type: 'error';
     title: string;
@@ -47,16 +48,17 @@ export interface FlipperServerConfig {
   serverPorts: ServerPorts;
 }
 
-export async function startFlipperServer(
+export function startFlipperServer(
   config: FlipperServerConfig,
   store: Store,
   logger: Logger,
-): Promise<FlipperServer> {
+): FlipperServer {
   const server = new FlipperServer(config, store, logger);
-
-  await server.start();
+  server.start();
   return server;
 }
+
+type ServerState = 'pending' | 'starting' | 'started' | 'error' | 'closed';
 
 /**
  * FlipperServer takes care of all incoming device & client connections.
@@ -70,7 +72,8 @@ export class FlipperServer {
   private readonly events = new EventEmitter();
   readonly server: ServerController;
   readonly disposers: ((() => void) | void)[] = [];
-
+  private readonly devices = new Map<string, BaseDevice>();
+  state: ServerState = 'pending';
   android: AndroidDeviceManager;
 
   // TODO: remove store argument
@@ -84,8 +87,50 @@ export class FlipperServer {
     this.android = new AndroidDeviceManager(this);
   }
 
+  setServerState(state: ServerState, error?: Error) {
+    this.state = state;
+    this.emit('server-state', {state, error});
+  }
+
+  async waitForServerStarted() {
+    return new Promise<void>((resolve, reject) => {
+      switch (this.state) {
+        case 'closed':
+          return reject(new Error('Server was closed already'));
+        case 'error':
+          return reject(new Error('Server has errored already'));
+        case 'started':
+          return resolve();
+        default: {
+          const listener = ({
+            state,
+            error,
+          }: {
+            state: ServerState;
+            error: Error;
+          }) => {
+            switch (state) {
+              case 'error':
+                return reject(error);
+              case 'started':
+                return resolve();
+              case 'closed':
+                return reject(new Error('Server closed'));
+            }
+            this.events.off('server-state', listener);
+          };
+          this.events.on('server-state', listener);
+        }
+      }
+    });
+  }
+
   /** @private */
   async start() {
+    if (this.state !== 'pending') {
+      throw new Error('Server already started');
+    }
+    this.setServerState('starting');
     const server = this.server;
 
     server.addListener('new-client', (client: Client) => {
@@ -93,7 +138,7 @@ export class FlipperServer {
     });
 
     server.addListener('error', (err) => {
-      this.emit('server-start-error', err);
+      this.emit('server-error', err);
     });
 
     server.addListener('start-client-setup', (client: UninitializedClient) => {
@@ -170,15 +215,21 @@ export class FlipperServer {
       },
     );
 
-    await server.init();
-    await this.startDeviceListeners();
+    try {
+      await server.init();
+      await this.startDeviceListeners();
+      this.setServerState('started');
+    } catch (e) {
+      console.error('Failed to start FlipperServer', e);
+      this.setServerState('error', e);
+    }
   }
 
   async startDeviceListeners() {
     this.disposers.push(
       await this.android.watchAndroidDevices(),
       iOSDevice(this.store, this.logger),
-      metroDevice(this.store, this.logger),
+      metroDevice(this),
       desktopDevice(this),
     );
   }
@@ -200,8 +251,60 @@ export class FlipperServer {
     this.events.emit(event, payload);
   }
 
+  registerDevice(device: BaseDevice) {
+    // destroy existing device
+    const existing = this.devices.get(device.serial);
+    if (existing) {
+      // assert different kind of devices aren't accidentally reusing the same serial
+      if (Object.getPrototypeOf(existing) !== Object.getPrototypeOf(device)) {
+        throw new Error(
+          `Tried to register a new device type for existing serial '${
+            device.serial
+          }': Trying to replace existing '${
+            Object.getPrototypeOf(existing).constructor.name
+          }' with a new '${Object.getPrototypeOf(device).constructor.name}`,
+        );
+      }
+      // devices should be recycled, unless they have lost connection
+      if (existing.connected.get()) {
+        throw new Error(
+          `Tried to replace still connected device '${device.serial}' with a new instance`,
+        );
+      }
+      existing.destroy();
+    }
+    // register new device
+    this.devices.set(device.serial, device);
+    this.emit('device-connected', device);
+  }
+
+  unregisterDevice(serial: string) {
+    const device = this.devices.get(serial);
+    if (!device) {
+      return;
+    }
+    device.disconnect(); // we'll only destroy upon replacement
+    this.emit('device-disconnected', device);
+  }
+
+  getDevice(serial: string): BaseDevice {
+    const device = this.devices.get(serial);
+    if (!device) {
+      throw new Error('No device with serial: ' + serial);
+    }
+    return device;
+  }
+
+  getDeviceSerials(): string[] {
+    return Array.from(this.devices.keys());
+  }
+
   public async close() {
     this.server.close();
+    for (const device of this.devices.values()) {
+      device.destroy();
+    }
     this.disposers.forEach((f) => f?.());
+    this.setServerState('closed');
   }
 }

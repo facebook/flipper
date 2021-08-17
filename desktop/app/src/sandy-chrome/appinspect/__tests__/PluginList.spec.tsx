@@ -17,7 +17,6 @@ import BaseDevice from '../../../server/devices/BaseDevice';
 import {_SandyPluginDefinition} from 'flipper-plugin';
 import {TestUtils} from 'flipper-plugin';
 import {selectPlugin} from '../../../reducers/connections';
-import {registerMetroDevice} from '../../../server/devices/metro/metroDeviceManager';
 import {
   addGatekeepedPlugins,
   registerMarketplacePlugins,
@@ -78,7 +77,10 @@ describe('basic getActiveDevice with metro present', () => {
     };
     testDevice = flipper.device;
     // flipper.store.dispatch(registerPlugins([LogsPlugin]))
-    await registerMetroDevice(undefined, flipper.store, flipper.logger);
+    flipper.store.dispatch({
+      type: 'REGISTER_DEVICE',
+      payload: new MetroDevice('http://localhost:8081', undefined),
+    });
     metro = getMetroDevice(flipper.store.getState())!;
     metro.supportsPlugin = (p) => {
       return p.id !== 'unsupportedDevicePlugin';
