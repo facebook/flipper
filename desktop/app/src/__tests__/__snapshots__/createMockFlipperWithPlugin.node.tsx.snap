@@ -2,7 +2,6 @@
 
 exports[`can create a Fake flipper with legacy wrapper 1`] = `
 Object {
-  "androidEmulators": Array [],
   "clients": Array [
     Object {
       "id": "TestApp#Android#MockAndroidDevice#serial",
@@ -36,6 +35,7 @@ Object {
       "TestPlugin",
     ],
   },
+  "flipperServer": undefined,
   "selectedApp": "TestApp#Android#MockAndroidDevice#serial",
   "selectedAppPluginListRevision": 0,
   "selectedDevice": Object {

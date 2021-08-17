@@ -33,12 +33,21 @@ const COLD_BOOT = 'cold-boot';
 export function showEmulatorLauncher(store: Store) {
   renderReactRoot((unmount) => (
     <Provider store={store}>
-      <LaunchEmulatorDialog
-        onClose={unmount}
-        getSimulators={getSimulators.bind(store)}
-      />
+      <LaunchEmulatorContainer onClose={unmount} />
     </Provider>
   ));
+}
+
+function LaunchEmulatorContainer({onClose}: {onClose: () => void}) {
+  const store = useStore();
+  const flipperServer = useStore((state) => state.connections.flipperServer);
+  return (
+    <LaunchEmulatorDialog
+      onClose={onClose}
+      getSimulators={getSimulators.bind(store)}
+      getEmulators={() => flipperServer!.android.getAndroidEmulators()}
+    />
+  );
 }
 
 type GetSimulators = typeof getSimulators;
@@ -47,17 +56,18 @@ export const LaunchEmulatorDialog = withTrackingScope(
   function LaunchEmulatorDialog({
     onClose,
     getSimulators,
+    getEmulators,
   }: {
     onClose: () => void;
     getSimulators: GetSimulators;
+    getEmulators: () => Promise<string[]>;
   }) {
     const iosEnabled = useStore((state) => state.settingsState.enableIOS);
-    const androidEmulators = useStore((state) =>
-      state.settingsState.enableAndroid
-        ? state.connections.androidEmulators
-        : [],
+    const androidEnabled = useStore(
+      (state) => state.settingsState.enableAndroid,
     );
     const [iosEmulators, setIosEmulators] = useState<IOSDeviceParams[]>([]);
+    const [androidEmulators, setAndroidEmulators] = useState<string[]>([]);
 
     const store = useStore();
     useEffect(() => {
@@ -75,6 +85,19 @@ export const LaunchEmulatorDialog = withTrackingScope(
       });
     }, [iosEnabled, getSimulators, store]);
 
+    useEffect(() => {
+      if (!androidEnabled) {
+        return;
+      }
+      getEmulators()
+        .then((emulators) => {
+          setAndroidEmulators(emulators);
+        })
+        .catch((e) => {
+          console.warn('Failed to find emulatiors', e);
+        });
+    }, [androidEnabled, getEmulators]);
+
     const items = [
       ...(androidEmulators.length > 0
         ? [<AndroidOutlined key="android logo" />]
@@ -82,11 +105,11 @@ export const LaunchEmulatorDialog = withTrackingScope(
       ...androidEmulators.map((name) => {
         const launch = (coldBoot: boolean) => {
           launchEmulator(name, coldBoot)
+            .then(onClose)
             .catch((e) => {
-              console.error(e);
+              console.error('Failed to start emulator: ', e);
               message.error('Failed to start emulator: ' + e);
-            })
-            .then(onClose);
+            });
         };
         const menu = (
           <Menu

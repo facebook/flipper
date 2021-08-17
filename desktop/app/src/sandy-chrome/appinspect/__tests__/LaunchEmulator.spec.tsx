@@ -14,16 +14,14 @@ import {createStore} from 'redux';
 import {LaunchEmulatorDialog} from '../LaunchEmulator';
 
 import {createRootReducer} from '../../../reducers';
-import {act} from 'react-dom/test-utils';
 import {sleep} from 'flipper-plugin';
 
+import {launchEmulator} from '../../../server/devices/android/AndroidDevice';
 jest.mock('../../../server/devices/android/AndroidDevice', () => ({
   launchEmulator: jest.fn(() => Promise.resolve([])),
 }));
 
-import {launchEmulator} from '../../../server/devices/android/AndroidDevice';
-
-test('Can render and launch android apps', async () => {
+test('Can render and launch android apps - empty', async () => {
   const store = createStore(createRootReducer());
   const onClose = jest.fn();
 
@@ -32,6 +30,7 @@ test('Can render and launch android apps', async () => {
       <LaunchEmulatorDialog
         onClose={onClose}
         getSimulators={() => Promise.resolve([])}
+        getEmulators={() => Promise.resolve([])}
       />
     </Provider>,
   );
@@ -43,13 +42,32 @@ test('Can render and launch android apps', async () => {
       No emulators available
     </div>
   `);
+});
 
-  act(() => {
-    store.dispatch({
-      type: 'REGISTER_ANDROID_EMULATORS',
-      payload: ['emulator1', 'emulator2'],
-    });
+test('Can render and launch android apps', async () => {
+  const store = createStore(createRootReducer());
+  store.dispatch({
+    type: 'UPDATE_SETTINGS',
+    payload: {
+      ...store.getState().settingsState,
+      enableAndroid: true,
+    },
   });
+  const onClose = jest.fn();
+
+  let p: Promise<any> | undefined = undefined;
+
+  const renderer = render(
+    <Provider store={store}>
+      <LaunchEmulatorDialog
+        onClose={onClose}
+        getSimulators={() => Promise.resolve([])}
+        getEmulators={() => (p = Promise.resolve(['emulator1', 'emulator2']))}
+      />
+    </Provider>,
+  );
+
+  await p!;
 
   expect(await renderer.findAllByText(/emulator/)).toMatchInlineSnapshot(`
     Array [

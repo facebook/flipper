@@ -10,40 +10,41 @@
 import AndroidDevice from './AndroidDevice';
 import KaiOSDevice from './KaiOSDevice';
 import child_process from 'child_process';
-import {Store} from '../../../reducers/index';
 import BaseDevice from '../BaseDevice';
-import {Logger} from '../../../fb-interfaces/Logger';
 import {getAdbClient} from './adbClient';
 import which from 'which';
 import {promisify} from 'util';
-import {ServerPorts} from '../../../reducers/application';
 import {Client as ADBClient} from 'adbkit';
-import {addErrorNotification} from '../../../reducers/notifications';
-import {destroyDevice} from '../../../reducers/connections';
 import {join} from 'path';
+import {FlipperServer} from '../../FlipperServer';
+import {notNull} from '../../utils/typeUtils';
 
-function createDevice(
-  adbClient: ADBClient,
-  device: any,
-  store: Store,
-  ports?: ServerPorts,
-): Promise<AndroidDevice | undefined> {
-  return new Promise((resolve, reject) => {
-    const type =
-      device.type !== 'device' || device.id.startsWith('emulator')
-        ? 'emulator'
-        : 'physical';
+export class AndroidDeviceManager {
+  // cache emulator path
+  private emulatorPath: string | undefined;
+  private devices: Map<string, AndroidDevice> = new Map();
 
-    adbClient
-      .getProperties(device.id)
-      .then(async (props) => {
+  constructor(public flipperServer: FlipperServer) {}
+
+  createDevice(
+    adbClient: ADBClient,
+    device: any,
+  ): Promise<AndroidDevice | undefined> {
+    return new Promise(async (resolve, reject) => {
+      const type =
+        device.type !== 'device' || device.id.startsWith('emulator')
+          ? 'emulator'
+          : 'physical';
+
+      try {
+        const props = await adbClient.getProperties(device.id);
         try {
           let name = props['ro.product.model'];
           const abiString = props['ro.product.cpu.abilist'] || '';
           const sdkVersion = props['ro.build.version.sdk'] || '';
           const abiList = abiString.length > 0 ? abiString.split(',') : [];
           if (type === 'emulator') {
-            name = (await getRunningEmulatorName(device.id)) || name;
+            name = (await this.getRunningEmulatorName(device.id)) || name;
           }
           const isKaiOSDevice = Object.keys(props).some(
             (name) => name.startsWith('kaios') || name.startsWith('ro.kaios'),
@@ -51,9 +52,12 @@ function createDevice(
           const androidLikeDevice = new (
             isKaiOSDevice ? KaiOSDevice : AndroidDevice
           )(device.id, type, name, adbClient, abiList, sdkVersion);
-          if (ports) {
+          if (this.flipperServer.config.serverPorts) {
             await androidLikeDevice
-              .reverse([ports.secure, ports.insecure])
+              .reverse([
+                this.flipperServer.config.serverPorts.secure,
+                this.flipperServer.config.serverPorts.insecure,
+              ])
               // We may not be able to establish a reverse connection, e.g. for old Android SDKs.
               // This is *generally* fine, because we hard-code the ports on the SDK side.
               .catch((e) => {
@@ -75,8 +79,7 @@ function createDevice(
         } catch (e) {
           reject(e);
         }
-      })
-      .catch((e) => {
+      } catch (e) {
         if (
           e &&
           e.message &&
@@ -87,202 +90,160 @@ function createDevice(
           const isAuthorizationError = (e?.message as string)?.includes(
             'device unauthorized',
           );
-          store.dispatch(
-            addErrorNotification(
-              'Could not connect to ' + device.id,
-              isAuthorizationError
-                ? 'Make sure to authorize debugging on the phone'
-                : 'Failed to setup connection',
-              e,
-            ),
-          );
+          if (!isAuthorizationError) {
+            console.error('Failed to connect to android device', e);
+          }
+          this.flipperServer.emit('notification', {
+            type: 'error',
+            title: 'Could not connect to ' + device.id,
+            description: isAuthorizationError
+              ? 'Make sure to authorize debugging on the phone'
+              : 'Failed to setup connection: ' + e,
+          });
         }
         resolve(undefined); // not ready yet, we will find it in the next tick
-      });
-  });
-}
+      }
+    });
+  }
 
-export async function getActiveAndroidDevices(
-  store: Store,
-): Promise<Array<BaseDevice>> {
-  const client = await getAdbClient(store.getState().settingsState);
-  const androidDevices = await client.listDevices();
-  const devices = await Promise.all(
-    androidDevices.map((device) => createDevice(client, device, store)),
-  );
-  return devices.filter(Boolean) as any;
-}
-
-function getRunningEmulatorName(
-  id: string,
-): Promise<string | null | undefined> {
-  return new Promise((resolve, reject) => {
-    const port = id.replace('emulator-', '');
-    // The GNU version of netcat doesn't terminate after 1s when
-    // specifying `-w 1`, so we kill it after a timeout. Because
-    // of that, even in case of an error, there may still be
-    // relevant data for us to parse.
-    child_process.exec(
-      `echo "avd name" | nc -w 1 localhost ${port}`,
-      {timeout: 1000, encoding: 'utf-8'},
-      (error: Error | null | undefined, data) => {
-        if (data != null && typeof data === 'string') {
-          const match = data.trim().match(/(.*)\r\nOK$/);
-          resolve(match != null && match.length > 0 ? match[1] : null);
-        } else {
-          reject(error);
-        }
-      },
+  async getActiveAndroidDevices(): Promise<Array<BaseDevice>> {
+    const client = await getAdbClient(this.flipperServer.config);
+    const androidDevices = await client.listDevices();
+    const devices = await Promise.all(
+      androidDevices.map((device) => this.createDevice(client, device)),
     );
-  });
-}
+    return devices.filter(Boolean) as any;
+  }
 
-export default (store: Store, logger: Logger) => {
-  const watchAndroidDevices = () => {
-    // get emulators
-    promisify(which)('emulator')
-      .catch(() =>
-        join(
-          process.env.ANDROID_HOME || process.env.ANDROID_SDK_ROOT || '',
-          'tools',
-          'emulator',
-        ),
-      )
-      .then((emulatorPath) => {
-        child_process.execFile(
-          emulatorPath as string,
-          ['-list-avds'],
-          (error: Error | null, data: string | null) => {
-            if (error != null || data == null) {
-              console.warn('List AVD failed: ', error);
-              return;
-            }
-            const payload = data.split('\n').filter(Boolean);
-            store.dispatch({
-              type: 'REGISTER_ANDROID_EMULATORS',
-              payload,
-            });
-          },
-        );
-      })
-      .catch((err) => {
-        console.warn('Failed to query AVDs:', err);
-      });
+  async getEmulatorPath(): Promise<string> {
+    if (this.emulatorPath) {
+      return this.emulatorPath;
+    }
+    // TODO: this doesn't respect the currently configured android_home in settings!
+    try {
+      this.emulatorPath = (await promisify(which)('emulator')) as string;
+    } catch (_e) {
+      this.emulatorPath = join(
+        process.env.ANDROID_HOME || process.env.ANDROID_SDK_ROOT || '',
+        'tools',
+        'emulator',
+      );
+    }
+    return this.emulatorPath;
+  }
 
-    return getAdbClient(store.getState().settingsState)
-      .then((client) => {
-        client
-          .trackDevices()
-          .then((tracker) => {
-            tracker.on('error', (err) => {
-              if (err.message === 'Connection closed') {
-                // adb server has shutdown, remove all android devices
-                const {connections} = store.getState();
-                const deviceIDsToRemove: Array<string> = connections.devices
-                  .filter(
-                    (device: BaseDevice) => device instanceof AndroidDevice,
-                  )
-                  .map((device: BaseDevice) => device.serial);
+  async getAndroidEmulators(): Promise<string[]> {
+    const emulatorPath = await this.getEmulatorPath();
+    return new Promise<string[]>((resolve) => {
+      child_process.execFile(
+        emulatorPath as string,
+        ['-list-avds'],
+        (error: Error | null, data: string | null) => {
+          if (error != null || data == null) {
+            console.warn('List AVD failed: ', error);
+            resolve([]);
+            return;
+          }
+          const devices = data
+            .split('\n')
+            .filter(notNull)
+            .filter((l) => l !== '');
+          resolve(devices);
+        },
+      );
+    });
+  }
 
-                unregisterDevices(deviceIDsToRemove);
-                console.warn('adb server was shutdown');
-                setTimeout(watchAndroidDevices, 500);
-              } else {
-                throw err;
-              }
-            });
+  async getRunningEmulatorName(id: string): Promise<string | null | undefined> {
+    return new Promise((resolve, reject) => {
+      const port = id.replace('emulator-', '');
+      // The GNU version of netcat doesn't terminate after 1s when
+      // specifying `-w 1`, so we kill it after a timeout. Because
+      // of that, even in case of an error, there may still be
+      // relevant data for us to parse.
+      child_process.exec(
+        `echo "avd name" | nc -w 1 localhost ${port}`,
+        {timeout: 1000, encoding: 'utf-8'},
+        (error: Error | null | undefined, data) => {
+          if (data != null && typeof data === 'string') {
+            const match = data.trim().match(/(.*)\r\nOK$/);
+            resolve(match != null && match.length > 0 ? match[1] : null);
+          } else {
+            reject(error);
+          }
+        },
+      );
+    });
+  }
 
-            tracker.on('add', async (device) => {
-              if (device.type !== 'offline') {
-                registerDevice(client, device, store);
-              }
-            });
-
-            tracker.on('change', async (device) => {
-              if (device.type === 'offline') {
-                unregisterDevices([device.id]);
-              } else {
-                registerDevice(client, device, store);
-              }
-            });
-
-            tracker.on('remove', (device) => {
-              unregisterDevices([device.id]);
-            });
-          })
-          .catch((err: {code: string}) => {
-            if (err.code === 'ECONNREFUSED') {
-              console.warn('adb server not running');
+  async watchAndroidDevices() {
+    try {
+      const client = await getAdbClient(this.flipperServer.config);
+      client
+        .trackDevices()
+        .then((tracker) => {
+          tracker.on('error', (err) => {
+            if (err.message === 'Connection closed') {
+              this.unregisterDevices(Array.from(this.devices.keys()));
+              console.warn('adb server was shutdown');
+              setTimeout(() => {
+                this.watchAndroidDevices();
+              }, 500);
             } else {
               throw err;
             }
           });
-      })
-      .catch((e) => {
-        console.warn(`Failed to watch for android devices: ${e.message}`);
-      });
-  };
 
-  async function registerDevice(adbClient: any, deviceData: any, store: Store) {
-    const androidDevice = await createDevice(
-      adbClient,
-      deviceData,
-      store,
-      store.getState().application.serverPorts,
-    );
+          tracker.on('add', async (device) => {
+            if (device.type !== 'offline') {
+              this.registerDevice(client, device);
+            }
+          });
+
+          tracker.on('change', async (device) => {
+            if (device.type === 'offline') {
+              this.unregisterDevices([device.id]);
+            } else {
+              this.registerDevice(client, device);
+            }
+          });
+
+          tracker.on('remove', (device) => {
+            this.unregisterDevices([device.id]);
+          });
+        })
+        .catch((err: {code: string}) => {
+          if (err.code === 'ECONNREFUSED') {
+            console.warn('adb server not running');
+          } else {
+            throw err;
+          }
+        });
+    } catch (e) {
+      console.warn(`Failed to watch for android devices: ${e.message}`);
+    }
+  }
+
+  async registerDevice(adbClient: ADBClient, deviceData: any) {
+    const androidDevice = await this.createDevice(adbClient, deviceData);
     if (!androidDevice) {
       return;
     }
-    logger.track('usage', 'register-device', {
-      os: 'Android',
-      name: androidDevice.title,
-      serial: androidDevice.serial,
-    });
 
     // remove offline devices with same serial as the connected.
-    const reconnectedDevices = store
-      .getState()
-      .connections.devices.filter(
-        (device: BaseDevice) =>
-          device.serial === androidDevice.serial && !device.connected.get(),
-      )
-      .map((device) => device.serial);
-
-    reconnectedDevices.forEach((serial) => {
-      destroyDevice(store, logger, serial);
-    });
-
-    androidDevice.loadDevicePlugins(
-      store.getState().plugins.devicePlugins,
-      store.getState().connections.enabledDevicePlugins,
-    );
-    store.dispatch({
-      type: 'REGISTER_DEVICE',
-      payload: androidDevice,
-    });
+    this.devices.get(androidDevice.serial)?.destroy();
+    // register new device
+    this.devices.set(androidDevice.serial, androidDevice);
+    this.flipperServer.emit('device-connected', androidDevice);
   }
 
-  async function unregisterDevices(deviceIds: Array<string>) {
-    deviceIds.forEach((id) =>
-      logger.track('usage', 'unregister-device', {
-        os: 'Android',
-        serial: id,
-      }),
-    );
-
-    deviceIds.forEach((id) => {
-      const device = store
-        .getState()
-        .connections.devices.find((device) => device.serial === id);
-      device?.disconnect();
+  unregisterDevices(serials: Array<string>) {
+    serials.forEach((serial) => {
+      const device = this.devices.get(serial);
+      if (device?.connected?.get()) {
+        device.disconnect();
+        this.flipperServer.emit('device-disconnected', device);
+      }
     });
   }
-
-  watchAndroidDevices();
-
-  // cleanup method
-  return () =>
-    getAdbClient(store.getState().settingsState).then((client) => {
-      client.kill();
-    });
-};
+}

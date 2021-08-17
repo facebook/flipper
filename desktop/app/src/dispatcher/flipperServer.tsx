@@ -16,14 +16,29 @@ import Client from '../Client';
 import {notification} from 'antd';
 
 export default async (store: Store, logger: Logger) => {
-  const {enableAndroid} = store.getState().settingsState;
+  const {enableAndroid, androidHome} = store.getState().settingsState;
   const server = await startFlipperServer(
     {
       enableAndroid,
+      androidHome,
+      serverPorts: store.getState().application.serverPorts,
     },
     store,
     logger,
   );
+
+  store.dispatch({
+    type: 'SET_FLIPPER_SERVER',
+    payload: server,
+  });
+
+  server.on('notification', (notif) => {
+    notification.open({
+      message: notif.title,
+      description: notif.description,
+      type: notif.type,
+    });
+  });
 
   server.on('server-start-error', (err) => {
     notification.error({
@@ -50,6 +65,12 @@ export default async (store: Store, logger: Logger) => {
   });
 
   server.on('device-connected', (device) => {
+    logger.track('usage', 'register-device', {
+      os: 'Android',
+      name: device.title,
+      serial: device.serial,
+    });
+
     device.loadDevicePlugins(
       store.getState().plugins.devicePlugins,
       store.getState().connections.enabledDevicePlugins,
@@ -59,6 +80,14 @@ export default async (store: Store, logger: Logger) => {
       type: 'REGISTER_DEVICE',
       payload: device,
     });
+  });
+
+  server.on('device-disconnected', (device) => {
+    logger.track('usage', 'unregister-device', {
+      os: device.os,
+      serial: device.serial,
+    });
+    // N.B.: note that we don't remove the device, we keep it in offline mode!
   });
 
   server.on('client-connected', (payload) =>

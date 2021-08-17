@@ -25,6 +25,7 @@ import {deconstructClientId} from '../utils/clientUtils';
 import type {RegisterPluginAction} from './plugins';
 import MetroDevice from '../server/devices/metro/MetroDevice';
 import {Logger} from 'flipper-plugin';
+import {FlipperServer} from '../server/FlipperServer';
 
 export type StaticViewProps = {logger: Logger};
 
@@ -63,7 +64,6 @@ export const persistMigrations = {
 
 type StateV2 = {
   devices: Array<BaseDevice>;
-  androidEmulators: Array<string>;
   selectedDevice: null | BaseDevice;
   selectedPlugin: null | string;
   selectedApp: null | string;
@@ -81,6 +81,7 @@ type StateV2 = {
   deepLinkPayload: unknown;
   staticView: StaticView;
   selectedAppPluginListRevision: number;
+  flipperServer: FlipperServer | undefined;
 };
 
 type StateV1 = Omit<StateV2, 'enabledPlugins' | 'enabledDevicePlugins'> & {
@@ -101,10 +102,6 @@ export type Action =
   | {
       type: 'REGISTER_DEVICE';
       payload: BaseDevice;
-    }
-  | {
-      type: 'REGISTER_ANDROID_EMULATORS';
-      payload: Array<string>;
     }
   | {
       type: 'SELECT_DEVICE';
@@ -182,13 +179,16 @@ export type Action =
   | {
       type: 'APP_PLUGIN_LIST_CHANGED';
     }
+  | {
+      type: 'SET_FLIPPER_SERVER';
+      payload: FlipperServer;
+    }
   | RegisterPluginAction;
 
 const DEFAULT_PLUGIN = 'DeviceLogs';
 const DEFAULT_DEVICE_BLACKLIST = [MacDevice, MetroDevice];
 const INITAL_STATE: State = {
   devices: [],
-  androidEmulators: [],
   selectedDevice: null,
   selectedApp: null,
   selectedPlugin: DEFAULT_PLUGIN,
@@ -208,10 +208,18 @@ const INITAL_STATE: State = {
   deepLinkPayload: null,
   staticView: WelcomeScreenStaticView,
   selectedAppPluginListRevision: 0,
+  flipperServer: undefined,
 };
 
 export default (state: State = INITAL_STATE, action: Actions): State => {
   switch (action.type) {
+    case 'SET_FLIPPER_SERVER': {
+      return {
+        ...state,
+        flipperServer: action.payload,
+      };
+    }
+
     case 'SET_STATIC_VIEW': {
       const {payload, deepLinkPayload} = action;
       const {selectedPlugin} = state;
@@ -241,13 +249,7 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
           : state.userPreferredDevice,
       });
     }
-    case 'REGISTER_ANDROID_EMULATORS': {
-      const {payload} = action;
-      return {
-        ...state,
-        androidEmulators: payload,
-      };
-    }
+
     case 'REGISTER_DEVICE': {
       const {payload} = action;
 
@@ -256,9 +258,7 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
         (device) => device.serial === payload.serial,
       );
       if (existing !== -1) {
-        console.warn(
-          `Got a new device instance for already existing serial ${payload.serial}`,
-        );
+        newDevices[existing].destroy();
         newDevices[existing] = payload;
       } else {
         newDevices.push(payload);
@@ -270,6 +270,7 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
       });
     }
 
+    // TODO: remove
     case 'UNREGISTER_DEVICES': {
       const deviceSerials = action.payload;
 
@@ -290,6 +291,7 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
         }),
       );
     }
+
     case 'SELECT_PLUGIN': {
       const {payload} = action;
       const {selectedPlugin, selectedApp, deepLinkPayload} = payload;
@@ -687,6 +689,7 @@ export function isPluginEnabled(
   return enabledAppPlugins && enabledAppPlugins.indexOf(pluginId) > -1;
 }
 
+// TODO: remove!
 export function destroyDevice(store: Store, logger: Logger, serial: string) {
   const device = store
     .getState()

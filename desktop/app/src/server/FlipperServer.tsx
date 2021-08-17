@@ -18,21 +18,33 @@ import {CertificateExchangeMedium} from '../server/utils/CertificateProvider';
 import {isLoggedIn} from '../fb-stubs/user';
 import React from 'react';
 import {Typography} from 'antd';
-import {ACTIVE_SHEET_SIGN_IN, setActiveSheet} from '../reducers/application';
-import androidDevice from './devices/android/androidDeviceManager';
+import {
+  ACTIVE_SHEET_SIGN_IN,
+  ServerPorts,
+  setActiveSheet,
+} from '../reducers/application';
+import {AndroidDeviceManager} from './devices/android/androidDeviceManager';
 import iOSDevice from './devices/ios/iOSDeviceManager';
 import metroDevice from './devices/metro/metroDeviceManager';
 import desktopDevice from './devices/desktop/desktopDeviceManager';
 import BaseDevice from './devices/BaseDevice';
 
 type FlipperServerEvents = {
-  'device-connected': BaseDevice;
-  'client-connected': Client;
   'server-start-error': any;
+  notification: {
+    type: 'error';
+    title: string;
+    description: string;
+  };
+  'device-connected': BaseDevice;
+  'device-disconnected': BaseDevice;
+  'client-connected': Client;
 };
 
 export interface FlipperServerConfig {
   enableAndroid: boolean;
+  androidHome: string;
+  serverPorts: ServerPorts;
 }
 
 export async function startFlipperServer(
@@ -59,6 +71,8 @@ export class FlipperServer {
   readonly server: ServerController;
   readonly disposers: ((() => void) | void)[] = [];
 
+  android: AndroidDeviceManager;
+
   // TODO: remove store argument
   constructor(
     public config: FlipperServerConfig,
@@ -67,6 +81,7 @@ export class FlipperServer {
     public logger: Logger,
   ) {
     this.server = new ServerController(logger, store);
+    this.android = new AndroidDeviceManager(this);
   }
 
   /** @private */
@@ -160,10 +175,8 @@ export class FlipperServer {
   }
 
   async startDeviceListeners() {
-    if (this.config.enableAndroid) {
-      this.disposers.push(await androidDevice(this.store, this.logger));
-    }
     this.disposers.push(
+      await this.android.watchAndroidDevices(),
       iOSDevice(this.store, this.logger),
       metroDevice(this.store, this.logger),
       desktopDevice(this),
