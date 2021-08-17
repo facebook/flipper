@@ -34,6 +34,7 @@ import ServerAdapter, {
   ServerEventsListener,
 } from './ServerAdapter';
 import {createBrowserServer, createServer} from './ServerFactory';
+import {FlipperServer} from '../FlipperServer';
 
 type ClientInfo = {
   connection: ClientConnection | null | undefined;
@@ -70,27 +71,36 @@ class ServerController extends EventEmitter implements ServerEventsListener {
   certificateProvider: CertificateProvider;
   connectionTracker: ConnectionTracker;
 
-  logger: Logger;
-  store: Store;
+  flipperServer: FlipperServer;
 
   timeHandler: NodeJS.Timeout | undefined;
 
-  constructor(logger: Logger, store: Store) {
+  constructor(flipperServer: FlipperServer) {
     super();
-    this.logger = logger;
+    this.flipperServer = flipperServer;
     this.connections = new Map();
     this.certificateProvider = new CertificateProvider(
       this,
-      logger,
-      store.getState().settingsState,
+      this.logger,
+      this.store.getState().settingsState,
     );
-    this.connectionTracker = new ConnectionTracker(logger);
+    this.connectionTracker = new ConnectionTracker(this.logger);
     this.secureServer = null;
     this.insecureServer = null;
     this.browserServer = null;
     this.initialized = null;
-    this.store = store;
     this.timeHandler = undefined;
+  }
+
+  get logger(): Logger {
+    return this.flipperServer.logger;
+  }
+
+  /**
+   * @deprecated
+   */
+  get store(): Store {
+    return this.flipperServer.store;
   }
 
   /**
@@ -117,7 +127,7 @@ class ServerController extends EventEmitter implements ServerEventsListener {
     reportPlatformFailures(this.initialized, 'initializeServer');
 
     if (GK.get('flipper_js_client_emulator')) {
-      initJsEmulatorIPC(this.store, this.logger, this, this.connections);
+      initJsEmulatorIPC(this.flipperServer, this.connections);
     }
 
     return this.initialized;

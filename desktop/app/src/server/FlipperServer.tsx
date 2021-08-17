@@ -48,17 +48,17 @@ export interface FlipperServerConfig {
   serverPorts: ServerPorts;
 }
 
-export function startFlipperServer(
-  config: FlipperServerConfig,
-  store: Store,
-  logger: Logger,
-): FlipperServer {
-  const server = new FlipperServer(config, store, logger);
-  server.start();
-  return server;
-}
-
 type ServerState = 'pending' | 'starting' | 'started' | 'error' | 'closed';
+
+// defaultConfig should be used for testing only, and disables by default all features
+const defaultConfig: FlipperServerConfig = {
+  androidHome: '',
+  enableAndroid: false,
+  serverPorts: {
+    insecure: -1,
+    secure: -1,
+  },
+};
 
 /**
  * FlipperServer takes care of all incoming device & client connections.
@@ -69,7 +69,10 @@ type ServerState = 'pending' | 'starting' | 'started' | 'error' | 'closed';
  * using '.on'. All events are strongly typed.
  */
 export class FlipperServer {
+  public config: FlipperServerConfig;
+
   private readonly events = new EventEmitter();
+  // server handles the incoming RSocket / WebSocket connections from Flipper clients
   readonly server: ServerController;
   readonly disposers: ((() => void) | void)[] = [];
   private readonly devices = new Map<string, BaseDevice>();
@@ -78,60 +81,14 @@ export class FlipperServer {
 
   // TODO: remove store argument
   constructor(
-    public config: FlipperServerConfig,
+    config: Partial<FlipperServerConfig>,
     /** @deprecated remove! */
     public store: Store,
     public logger: Logger,
   ) {
-    this.server = new ServerController(logger, store);
+    this.config = {...defaultConfig, ...config};
+    const server = (this.server = new ServerController(this));
     this.android = new AndroidDeviceManager(this);
-  }
-
-  setServerState(state: ServerState, error?: Error) {
-    this.state = state;
-    this.emit('server-state', {state, error});
-  }
-
-  async waitForServerStarted() {
-    return new Promise<void>((resolve, reject) => {
-      switch (this.state) {
-        case 'closed':
-          return reject(new Error('Server was closed already'));
-        case 'error':
-          return reject(new Error('Server has errored already'));
-        case 'started':
-          return resolve();
-        default: {
-          const listener = ({
-            state,
-            error,
-          }: {
-            state: ServerState;
-            error: Error;
-          }) => {
-            switch (state) {
-              case 'error':
-                return reject(error);
-              case 'started':
-                return resolve();
-              case 'closed':
-                return reject(new Error('Server closed'));
-            }
-            this.events.off('server-state', listener);
-          };
-          this.events.on('server-state', listener);
-        }
-      }
-    });
-  }
-
-  /** @private */
-  async start() {
-    if (this.state !== 'pending') {
-      throw new Error('Server already started');
-    }
-    this.setServerState('starting');
-    const server = this.server;
 
     server.addListener('new-client', (client: Client) => {
       this.emit('client-connected', client);
@@ -214,9 +171,24 @@ export class FlipperServer {
         );
       },
     );
+  }
+
+  setServerState(state: ServerState, error?: Error) {
+    this.state = state;
+    this.emit('server-state', {state, error});
+  }
+
+  /**
+   * Starts listening to parts and watching for devices
+   */
+  async start() {
+    if (this.state !== 'pending') {
+      throw new Error('Server already started');
+    }
+    this.setServerState('starting');
 
     try {
-      await server.init();
+      await this.server.init();
       await this.startDeviceListeners();
       this.setServerState('started');
     } catch (e) {

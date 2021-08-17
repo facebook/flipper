@@ -10,14 +10,14 @@
 import React from 'react';
 import {Store} from '../reducers/index';
 import {Logger} from '../fb-interfaces/Logger';
-import {startFlipperServer} from '../server/FlipperServer';
+import {FlipperServer} from '../server/FlipperServer';
 import {selectClient, selectDevice} from '../reducers/connections';
 import Client from '../Client';
 import {notification} from 'antd';
 
 export default async (store: Store, logger: Logger) => {
   const {enableAndroid, androidHome} = store.getState().settingsState;
-  const server = startFlipperServer(
+  const server = new FlipperServer(
     {
       enableAndroid,
       androidHome,
@@ -101,7 +101,7 @@ export default async (store: Store, logger: Logger) => {
   }
 
   server
-    .waitForServerStarted()
+    .start()
     .then(() => {
       console.log(
         'Flipper server started and accepting device / client connections',

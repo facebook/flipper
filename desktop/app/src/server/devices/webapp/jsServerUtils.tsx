@@ -16,11 +16,8 @@ import {
 } from '../../comms/ClientConnection';
 import {ipcRenderer, remote, IpcRendererEvent} from 'electron';
 import JSDevice from './JSDevice';
-import {Store} from '../../../reducers';
-import {Logger} from '../../../fb-interfaces/Logger';
-import ServerController from '../../comms/ServerController';
 import {buildClientId} from '../../../utils/clientUtils';
-import {destroyDevice} from '../../../reducers/connections';
+import {FlipperServer} from '../../FlipperServer';
 
 const connections: Map<number, JSClientFlipperConnection> = new Map();
 
@@ -31,9 +28,7 @@ function jsDeviceId(windowId: number): string {
 }
 
 export function initJsEmulatorIPC(
-  store: Store,
-  logger: Logger,
-  flipperServer: ServerController,
+  flipperServer: FlipperServer,
   flipperConnections: Map<
     string,
     {
@@ -48,10 +43,7 @@ export function initJsEmulatorIPC(
       const {windowId} = message;
       const {plugins, appName} = message.payload;
       const device = new JSDevice(jsDeviceId(windowId), 'jsEmulator', windowId);
-      store.dispatch({
-        type: 'REGISTER_DEVICE',
-        payload: device,
-      });
+      flipperServer.registerDevice(device);
 
       const connection = new JSClientFlipperConnection(windowId);
       connections.set(windowId, connection);
@@ -70,8 +62,8 @@ export function initJsEmulatorIPC(
         clientId,
         query,
         connection,
-        logger,
-        store,
+        flipperServer.logger,
+        flipperServer.store,
         plugins,
         device,
       );
@@ -87,8 +79,8 @@ export function initJsEmulatorIPC(
           status == ConnectionStatus.CLOSED
         ) {
           console.debug(`Device disconnected ${client.id}`, 'server');
-          flipperServer.removeConnection(client.id);
-          destroyDevice(store, logger, jsDeviceId(windowId));
+          flipperServer.server.removeConnection(client.id);
+          flipperServer.unregisterDevice(jsDeviceId(windowId));
           connections.delete(windowId);
           availablePlugins.delete(windowId);
         }
@@ -98,8 +90,8 @@ export function initJsEmulatorIPC(
         .init()
         .then(() => {
           console.log(client);
-          flipperServer.emit('new-client', client);
-          flipperServer.emit('clients-change');
+          flipperServer.server.emit('new-client', client);
+          flipperServer.server.emit('clients-change');
           client.emit('plugins-change');
 
           ipcRenderer.on(
