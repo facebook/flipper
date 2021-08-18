@@ -12,7 +12,7 @@ import Client from '../Client';
 import {Store} from '../reducers/index';
 import {Logger} from '../fb-interfaces/Logger';
 import ServerController from './comms/ServerController';
-import {UninitializedClient} from './UninitializedClient';
+import {UninitializedClient} from '../UninitializedClient';
 import {addErrorNotification} from '../reducers/notifications';
 import {CertificateExchangeMedium} from '../server/utils/CertificateProvider';
 import {isLoggedIn} from '../fb-stubs/user';

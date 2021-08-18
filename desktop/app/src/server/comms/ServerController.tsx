@@ -14,7 +14,7 @@ import {Store, State} from '../../reducers/index';
 import CertificateProvider from '../utils/CertificateProvider';
 import Client from '../../Client';
 import {ClientConnection, ConnectionStatus} from './ClientConnection';
-import {UninitializedClient} from '../UninitializedClient';
+import {UninitializedClient} from '../../UninitializedClient';
 import {reportPlatformFailures} from '../../utils/metrics';
 import {EventEmitter} from 'events';
 import invariant from 'invariant';
