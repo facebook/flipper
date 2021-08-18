@@ -29,7 +29,8 @@ import BaseDevice, {OS} from '../../server/devices/BaseDevice';
 import Client from '../../Client';
 import {State} from '../../reducers';
 import {brandColors, brandIcons, colors} from '../../ui/components/colors';
-import TroubleshootingGuide from './fb-stubs/TroubleshootingGuide';
+import {TroubleshootingGuide} from './fb-stubs/TroubleshootingGuide';
+import GK from '../../fb-stubs/GK';
 
 const {Text} = Typography;
 
@@ -108,7 +109,8 @@ export function AppSelector() {
       </Dropdown>
     </Radio.Group>
   ) : (
-    <TroubleshootingGuide />
+    // GK check to decide if troubleshooting guide will be visible or not
+    <TroubleshootingGuide showGuide={GK.get('flipper_self_sufficiency')} />
   );
 }
 
