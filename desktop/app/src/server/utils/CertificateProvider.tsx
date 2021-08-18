@@ -309,26 +309,24 @@ export default class CertificateProvider {
     }
     if (os === 'iOS' || os === 'windows' || os == 'MacOS') {
       return promisify(fs.writeFile)(destination + filename, contents).catch(
-        (err) => {
+        async (err) => {
           if (os === 'iOS') {
             // Writing directly to FS failed. It's probably a physical device.
             const relativePathInsideApp =
               this.getRelativePathInAppContainer(destination);
-            return appNamePromise
-              .then((appName) => {
-                return this.getTargetiOSDeviceId(appName, destination, csr);
-              })
-              .then((udid) => {
-                return appNamePromise.then((appName) =>
-                  this.pushFileToiOSDevice(
-                    udid,
-                    appName,
-                    relativePathInsideApp,
-                    filename,
-                    contents,
-                  ),
-                );
-              });
+            const appName = await appNamePromise;
+            const udid = await this.getTargetiOSDeviceId(
+              appName,
+              destination,
+              csr,
+            );
+            return await this.pushFileToiOSDevice(
+              udid,
+              appName,
+              relativePathInsideApp,
+              filename,
+              contents,
+            );
           }
           throw new Error(
             `Invalid appDirectory recieved from ${os} device: ${destination}: ` +
