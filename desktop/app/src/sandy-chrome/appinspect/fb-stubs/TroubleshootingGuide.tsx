@@ -10,6 +10,6 @@
 import React from 'react';
 import {NoDevices} from '../NoDevices';
 
-export default function TroubleshootingGuide() {
+export function TroubleshootingGuide(_props: {showGuide: boolean}) {
   return <NoDevices />;
 }
