@@ -277,8 +277,8 @@ export default class Inspector extends Component<Props, State> {
 
   // When opening the inspector for the first time, expand all elements that
   // contain only 1 child recursively.
-  async performInitialExpand(element: Element): Promise<void> {
-    if (!element.children.length) {
+  async performInitialExpand(element: Element | undefined): Promise<void> {
+    if (!element || !element.children.length) {
       // element has no children so we're as deep as we can be
       return;
     }
