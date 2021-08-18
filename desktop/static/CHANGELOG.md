@@ -1,3 +1,8 @@
+# 0.103.0 (18/8/2021)
+
+ * [D30337820](https://github.com/facebook/flipper/search?q=D30337820&type=Commits) -  Network requests with duplicate IDs are filtered out
+
+
 # 0.99.0 (21/7/2021)
 
  * [D29800712](https://github.com/facebook/flipper/search?q=D29800712&type=Commits) -  Added dark mode support to plugin manager
