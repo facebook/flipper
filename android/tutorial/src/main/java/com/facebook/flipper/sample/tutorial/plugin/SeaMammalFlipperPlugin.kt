@@ -13,28 +13,31 @@ import com.facebook.flipper.core.FlipperPlugin
 import com.facebook.flipper.sample.tutorial.MarineMammals
 
 class SeaMammalFlipperPlugin : FlipperPlugin {
-    private var connection: FlipperConnection? = null
+  private var connection: FlipperConnection? = null
 
-    override fun getId(): String = "sea-mammals"
+  override fun getId(): String = "sea-mammals"
 
-    override fun onConnect(connection: FlipperConnection?) {
-        this.connection = connection
+  override fun onConnect(connection: FlipperConnection?) {
+    this.connection = connection
 
-        MarineMammals.list.mapIndexed { index, (title, picture_url) ->
-            FlipperObject.Builder()
-                    .put("id", index)
-                    .put("title", title)
-                    .put("url", picture_url).build()
-        }.forEach(this::newRow)
-    }
+    MarineMammals.list
+        .mapIndexed { index, (title, picture_url) ->
+          FlipperObject.Builder()
+              .put("id", index)
+              .put("title", title)
+              .put("url", picture_url)
+              .build()
+        }
+        .forEach(this::newRow)
+  }
 
-    override fun onDisconnect() {
-        connection = null
-    }
+  override fun onDisconnect() {
+    connection = null
+  }
 
-    override fun runInBackground(): Boolean = true
+  override fun runInBackground(): Boolean = true
 
-    private fun newRow(row: FlipperObject) {
-        connection?.send("newRow", row)
-    }
+  private fun newRow(row: FlipperObject) {
+    connection?.send("newRow", row)
+  }
 }

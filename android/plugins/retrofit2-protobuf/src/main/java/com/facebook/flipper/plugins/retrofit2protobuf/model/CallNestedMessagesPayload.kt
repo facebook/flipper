@@ -19,29 +19,30 @@ internal data class CallNestedMessagesPayload(
     val responseMessageFullName: String?,
     val responseDefinitions: Map<String, Any>?
 ) : FlipperValue {
-    override fun toFlipperObject(): FlipperObject {
-        return FlipperObject.Builder()
-            .put("path", path)
-            .put("method", method)
-            .put("requestMessageFullName", requestMessageFullName)
-            .put("requestDefinitions", requestDefinitions?.toFlipperObject())
-            .put("responseMessageFullName", responseMessageFullName)
-            .put("responseDefinitions", responseDefinitions?.toFlipperObject())
-            .build()
-    }
+  override fun toFlipperObject(): FlipperObject {
+    return FlipperObject.Builder()
+        .put("path", path)
+        .put("method", method)
+        .put("requestMessageFullName", requestMessageFullName)
+        .put("requestDefinitions", requestDefinitions?.toFlipperObject())
+        .put("responseMessageFullName", responseMessageFullName)
+        .put("responseDefinitions", responseDefinitions?.toFlipperObject())
+        .build()
+  }
 }
 
 private fun Map<*, *>.toFlipperObject(): FlipperObject {
-    val builder = FlipperObject.Builder()
-    this.forEach { (key, value) ->
-        val castValue = when (value) {
-            is Map<*, *> -> value.toFlipperObject()
-            is Iterable<*> -> value.toFlipperArray()
-            else -> value
+  val builder = FlipperObject.Builder()
+  this.forEach { (key, value) ->
+    val castValue =
+        when (value) {
+          is Map<*, *> -> value.toFlipperObject()
+          is Iterable<*> -> value.toFlipperArray()
+          else -> value
         }
-        builder.put(key as String, castValue)
-    }
-    return builder.build()
+    builder.put(key as String, castValue)
+  }
+  return builder.build()
 }
 
 private fun Iterable<*>.toFlipperArray(): FlipperArray =

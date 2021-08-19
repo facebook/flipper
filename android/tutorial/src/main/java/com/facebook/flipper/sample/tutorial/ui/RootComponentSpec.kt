@@ -18,11 +18,11 @@ import com.facebook.yoga.YogaEdge
 
 @LayoutSpec
 object RootComponentSpec {
-    @OnCreateLayout
-    fun onCreateLayout(c: ComponentContext): Component =
-            RecyclerCollectionComponent.create(c)
-                    .disablePTR(true)
-                    .section(FeedSection.create(SectionContext(c)).data(MarineMammals.list).build())
-                    .paddingDip(YogaEdge.TOP, 8f)
-                    .build()
+  @OnCreateLayout
+  fun onCreateLayout(c: ComponentContext): Component =
+      RecyclerCollectionComponent.create(c)
+          .disablePTR(true)
+          .section(FeedSection.create(SectionContext(c)).data(MarineMammals.list).build())
+          .paddingDip(YogaEdge.TOP, 8f)
+          .build()
 }

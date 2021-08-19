@@ -15,7 +15,6 @@ import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateLayout
 import com.facebook.litho.annotations.Prop
 import com.facebook.litho.widget.Card
-
 import com.facebook.yoga.YogaEdge.HORIZONTAL
 import com.facebook.yoga.YogaEdge.VERTICAL
 
@@ -23,17 +22,10 @@ import com.facebook.yoga.YogaEdge.VERTICAL
 object FeedItemCardSpec {
 
   @OnCreateLayout
-  fun onCreateLayout(
-      c: ComponentContext,
-      @Prop mammal: MarineMammal
-  ): Component =
+  fun onCreateLayout(c: ComponentContext, @Prop mammal: MarineMammal): Component =
       Column.create(c)
           .paddingDip(VERTICAL, 8f)
           .paddingDip(HORIZONTAL, 16f)
-          .child(
-              Card.create(c)
-                  .content(
-                      MarineMammelComponent.create(c)
-                          .mammal(mammal)))
+          .child(Card.create(c).content(MarineMammelComponent.create(c).mammal(mammal)))
           .build()
 }

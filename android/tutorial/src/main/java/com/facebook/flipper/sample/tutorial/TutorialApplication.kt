@@ -19,23 +19,23 @@ import com.facebook.litho.editor.flipper.LithoFlipperDescriptors
 import com.facebook.soloader.SoLoader
 
 class TutorialApplication : Application() {
-    override fun onCreate() {
-        super.onCreate()
+  override fun onCreate() {
+    super.onCreate()
 
-        SoLoader.init(this, false)
-        Fresco.initialize(this)
+    SoLoader.init(this, false)
+    Fresco.initialize(this)
 
-        // Normally, you would want to make these dependent on BuildConfig.DEBUG.
-        ComponentsConfiguration.isDebugModeEnabled = true
-        ComponentsConfiguration.enableRenderInfoDebugging = true
+    // Normally, you would want to make these dependent on BuildConfig.DEBUG.
+    ComponentsConfiguration.isDebugModeEnabled = true
+    ComponentsConfiguration.enableRenderInfoDebugging = true
 
-        val flipperClient = AndroidFlipperClient.getInstance(this)
-        val descriptorMapping = DescriptorMapping.withDefaults()
-        LithoFlipperDescriptors.addWithSections(descriptorMapping)
+    val flipperClient = AndroidFlipperClient.getInstance(this)
+    val descriptorMapping = DescriptorMapping.withDefaults()
+    LithoFlipperDescriptors.addWithSections(descriptorMapping)
 
-        flipperClient.addPlugin(InspectorFlipperPlugin(this, descriptorMapping))
-        flipperClient.addPlugin(FrescoFlipperPlugin())
-        flipperClient.addPlugin(SeaMammalFlipperPlugin())
-        flipperClient.start()
-    }
+    flipperClient.addPlugin(InspectorFlipperPlugin(this, descriptorMapping))
+    flipperClient.addPlugin(FrescoFlipperPlugin())
+    flipperClient.addPlugin(SeaMammalFlipperPlugin())
+    flipperClient.start()
+  }
 }

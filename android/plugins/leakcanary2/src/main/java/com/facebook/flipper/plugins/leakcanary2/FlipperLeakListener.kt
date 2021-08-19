@@ -14,32 +14,34 @@ import shark.HeapAnalysis
 import shark.HeapAnalysisSuccess
 
 class FlipperLeakListener : OnHeapAnalyzedListener {
-    private val leaks: MutableList<Leak> = mutableListOf()
+  private val leaks: MutableList<Leak> = mutableListOf()
 
-    private val defaultListener = DefaultOnHeapAnalyzedListener.create()
+  private val defaultListener = DefaultOnHeapAnalyzedListener.create()
 
-    override fun onHeapAnalyzed(heapAnalysis: HeapAnalysis) {
-        leaks.addAll(heapAnalysis.toLeakList())
+  override fun onHeapAnalyzed(heapAnalysis: HeapAnalysis) {
+    leaks.addAll(heapAnalysis.toLeakList())
 
-        AndroidFlipperClient.getInstanceIfInitialized()?.let { client ->
-            (client.getPlugin(LeakCanary2FlipperPlugin.ID) as? LeakCanary2FlipperPlugin)
-                    ?.reportLeaks(leaks)
-        }
-
-        defaultListener.onHeapAnalyzed(heapAnalysis)
+    AndroidFlipperClient.getInstanceIfInitialized()?.let { client ->
+      (client.getPlugin(LeakCanary2FlipperPlugin.ID) as? LeakCanary2FlipperPlugin)?.reportLeaks(
+          leaks)
     }
 
-    private fun HeapAnalysis.toLeakList(): List<Leak> {
-        return if (this is HeapAnalysisSuccess) {
-            allLeaks.mapNotNull {
-                if (it.leakTraces.isNotEmpty()) {
-                    it.leakTraces[0].toLeak(it.shortDescription)
-                } else {
-                    null
-                }
-            }.toList()
-        } else {
-            emptyList()
-        }
+    defaultListener.onHeapAnalyzed(heapAnalysis)
+  }
+
+  private fun HeapAnalysis.toLeakList(): List<Leak> {
+    return if (this is HeapAnalysisSuccess) {
+      allLeaks
+          .mapNotNull {
+            if (it.leakTraces.isNotEmpty()) {
+              it.leakTraces[0].toLeak(it.shortDescription)
+            } else {
+              null
+            }
+          }
+          .toList()
+    } else {
+      emptyList()
     }
+  }
 }

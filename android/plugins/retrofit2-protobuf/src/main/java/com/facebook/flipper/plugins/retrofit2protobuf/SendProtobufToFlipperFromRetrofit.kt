@@ -16,35 +16,32 @@ import com.facebook.flipper.plugins.retrofit2protobuf.adapter.RetrofitServiceToG
 import com.facebook.flipper.plugins.retrofit2protobuf.model.CallNestedMessagesPayload
 
 object SendProtobufToFlipperFromRetrofit {
-    operator fun invoke(baseUrl: String, service: Class<*>) {
-        getNetworkPlugin()?.addProtobufDefinitions(
-            baseUrl,
-            generateProtobufDefinitions(service).toFlipperArray()
-        )
-    }
+  operator fun invoke(baseUrl: String, service: Class<*>) {
+    getNetworkPlugin()
+        ?.addProtobufDefinitions(baseUrl, generateProtobufDefinitions(service).toFlipperArray())
+  }
 
-    private fun getNetworkPlugin(): NetworkFlipperPlugin? {
-        return AndroidFlipperClient.getInstanceIfInitialized()?.let { client ->
-            client.getPlugin(NetworkFlipperPlugin.ID) as? NetworkFlipperPlugin
-        }
+  private fun getNetworkPlugin(): NetworkFlipperPlugin? {
+    return AndroidFlipperClient.getInstanceIfInitialized()?.let { client ->
+      client.getPlugin(NetworkFlipperPlugin.ID) as? NetworkFlipperPlugin
     }
+  }
 
-    private fun generateProtobufDefinitions(service: Class<*>): List<CallNestedMessagesPayload> {
-        return RetrofitServiceToGenericCallDefinitions(service).let { definitions ->
-            GenericCallDefinitionsToMessageDefinitionsIfProtobuf(definitions)
-        }.let { messages ->
-            messages.map {
-                CallNestedMessagesPayload(
-                    path = it.path,
-                    method = it.method,
-                    requestMessageFullName = it.requestMessageFullName,
-                    requestDefinitions = it.requestModel,
-                    responseMessageFullName = it.responseMessageFullName,
-                    responseDefinitions = it.responseModel
-                )
-            }
+  private fun generateProtobufDefinitions(service: Class<*>): List<CallNestedMessagesPayload> {
+    return RetrofitServiceToGenericCallDefinitions(service)
+        .let { definitions -> GenericCallDefinitionsToMessageDefinitionsIfProtobuf(definitions) }
+        .let { messages ->
+          messages.map {
+            CallNestedMessagesPayload(
+                path = it.path,
+                method = it.method,
+                requestMessageFullName = it.requestMessageFullName,
+                requestDefinitions = it.requestModel,
+                responseMessageFullName = it.responseMessageFullName,
+                responseDefinitions = it.responseModel)
+          }
         }
-    }
+  }
 }
 
 private fun Iterable<FlipperValue>.toFlipperArray(): FlipperArray =

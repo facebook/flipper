@@ -22,20 +22,16 @@ import com.facebook.litho.widget.RenderInfo
 
 @GroupSectionSpec
 object FeedSectionSpec {
-    @OnCreateChildren
-    fun onCreateChildren(c: SectionContext, @Prop data: List<MarineMammal>): Children =
-            Children.create()
-                    .child(DataDiffSection.create<MarineMammal>(c)
-                            .data(data)
-                            .renderEventHandler(FeedSection.render(c)))
-                    .build()
+  @OnCreateChildren
+  fun onCreateChildren(c: SectionContext, @Prop data: List<MarineMammal>): Children =
+      Children.create()
+          .child(
+              DataDiffSection.create<MarineMammal>(c)
+                  .data(data)
+                  .renderEventHandler(FeedSection.render(c)))
+          .build()
 
-    @OnEvent(RenderEvent::class)
-    fun render(
-            c: SectionContext,
-            @FromEvent model: MarineMammal
-    ): RenderInfo =
-            ComponentRenderInfo.create()
-                    .component(FeedItemCard.create(c).mammal(model).build())
-                    .build()
+  @OnEvent(RenderEvent::class)
+  fun render(c: SectionContext, @FromEvent model: MarineMammal): RenderInfo =
+      ComponentRenderInfo.create().component(FeedItemCard.create(c).mammal(model).build()).build()
 }

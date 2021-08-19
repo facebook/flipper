@@ -12,23 +12,22 @@ import com.facebook.flipper.plugins.retrofit2protobuf.model.GenericCallDefinitio
 import me.haroldmartin.protobufjavatoprotobufjs.ProtobufGeneratedJavaToProtobufJs
 
 internal object GenericCallDefinitionsToMessageDefinitionsIfProtobuf {
-    operator fun invoke(callDefinitions: List<GenericCallDefinition>): List<FullNamedMessagesCallDefinition> {
-        return callDefinitions.mapNotNull { definition ->
-            val responseRootAndMessages = definition.responseType?.let {
-                ProtobufGeneratedJavaToProtobufJs(it)
-            }
-            val requestRootAndMessages = definition.requestType?.let {
-                ProtobufGeneratedJavaToProtobufJs(it)
-            }
+  operator fun invoke(
+      callDefinitions: List<GenericCallDefinition>
+  ): List<FullNamedMessagesCallDefinition> {
+    return callDefinitions.mapNotNull { definition ->
+      val responseRootAndMessages =
+          definition.responseType?.let { ProtobufGeneratedJavaToProtobufJs(it) }
+      val requestRootAndMessages =
+          definition.requestType?.let { ProtobufGeneratedJavaToProtobufJs(it) }
 
-            FullNamedMessagesCallDefinition(
-                path = definition.path,
-                method = definition.method,
-                responseMessageFullName = responseRootAndMessages?.rootFullName,
-                responseModel = responseRootAndMessages?.descriptors,
-                requestMessageFullName = requestRootAndMessages?.rootFullName,
-                requestModel = requestRootAndMessages?.descriptors
-            )
-        }
+      FullNamedMessagesCallDefinition(
+          path = definition.path,
+          method = definition.method,
+          responseMessageFullName = responseRootAndMessages?.rootFullName,
+          responseModel = responseRootAndMessages?.descriptors,
+          requestMessageFullName = requestRootAndMessages?.rootFullName,
+          requestModel = requestRootAndMessages?.descriptors)
     }
+  }
 }

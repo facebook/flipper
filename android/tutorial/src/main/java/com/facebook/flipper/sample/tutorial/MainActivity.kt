@@ -7,21 +7,19 @@
 
 package com.facebook.flipper.sample.tutorial
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.facebook.flipper.sample.tutorial.ui.RootComponent
 import com.facebook.litho.LithoView
 import com.facebook.litho.sections.SectionContext
 
 class MainActivity : AppCompatActivity() {
 
-    private val sectionContext: SectionContext by lazy { SectionContext(this) }
+  private val sectionContext: SectionContext by lazy { SectionContext(this) }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
 
-        setContentView(
-                LithoView.create(this, RootComponent.create(sectionContext).build())
-        )
-    }
+    setContentView(LithoView.create(this, RootComponent.create(sectionContext).build()))
+  }
 }
