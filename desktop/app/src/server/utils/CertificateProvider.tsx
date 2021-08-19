@@ -102,15 +102,24 @@ export default class CertificateProvider {
   ) {
     this.logger = logger;
     this.adb = getAdbClient(config);
-    this.certificateSetup = reportPlatformFailures(
-      this.ensureServerCertExists(),
-      'ensureServerCertExists',
-    );
+    if (isTest()) {
+      this.certificateSetup = Promise.reject(
+        new Error('Server certificates not available in test'),
+      );
+    } else {
+      this.certificateSetup = reportPlatformFailures(
+        this.ensureServerCertExists(),
+        'ensureServerCertExists',
+      );
+    }
     this.config = config;
     this.server = server;
   }
 
-  uploadFiles = async (zipPath: string, deviceID: string): Promise<void> => {
+  private uploadFiles = async (
+    zipPath: string,
+    deviceID: string,
+  ): Promise<void> => {
     const buff = await fsExtra.readFile(zipPath);
     const file = new File([buff], 'certs.zip');
     return reportPlatformFailures(
@@ -223,7 +232,7 @@ export default class CertificateProvider {
     return Promise.resolve('unknown');
   }
 
-  ensureOpenSSLIsAvailable(): void {
+  private ensureOpenSSLIsAvailable(): void {
     if (!opensslInstalled()) {
       const e = Error(
         "It looks like you don't have OpenSSL installed. Please install it to continue.",
@@ -232,7 +241,7 @@ export default class CertificateProvider {
     }
   }
 
-  getCACertificate(): Promise<string> {
+  private getCACertificate(): Promise<string> {
     return new Promise((resolve, reject) => {
       fs.readFile(caCert, (err, data) => {
         if (err) {
@@ -244,7 +253,7 @@ export default class CertificateProvider {
     });
   }
 
-  generateClientCertificate(csr: string): Promise<string> {
+  private generateClientCertificate(csr: string): Promise<string> {
     console.debug('Creating new client cert', logTag);
 
     return this.writeToTempFile(csr).then((path) => {
@@ -259,7 +268,7 @@ export default class CertificateProvider {
     });
   }
 
-  getRelativePathInAppContainer(absolutePath: string) {
+  private getRelativePathInAppContainer(absolutePath: string) {
     const matches = /Application\/[^/]+\/(.*)/.exec(absolutePath);
     if (matches && matches.length === 2) {
       return matches[1];
@@ -267,7 +276,7 @@ export default class CertificateProvider {
     throw new Error("Path didn't match expected pattern: " + absolutePath);
   }
 
-  async deployOrStageFileForMobileApp(
+  private async deployOrStageFileForMobileApp(
     destination: string,
     filename: string,
     contents: string,
@@ -338,7 +347,7 @@ export default class CertificateProvider {
     return Promise.reject(new Error(`Unsupported device os: ${os}`));
   }
 
-  pushFileToiOSDevice(
+  private pushFileToiOSDevice(
     udid: string,
     bundleId: string,
     destination: string,
@@ -359,7 +368,7 @@ export default class CertificateProvider {
     });
   }
 
-  getTargetAndroidDeviceId(
+  private getTargetAndroidDeviceId(
     appName: string,
     deviceCsrFilePath: string,
     csr: string,
@@ -418,7 +427,7 @@ export default class CertificateProvider {
       });
   }
 
-  getTargetiOSDeviceId(
+  private getTargetiOSDeviceId(
     appName: string,
     deviceCsrFilePath: string,
     csr: string,
@@ -454,7 +463,7 @@ export default class CertificateProvider {
       });
   }
 
-  androidDeviceHasMatchingCSR(
+  private androidDeviceHasMatchingCSR(
     directory: string,
     deviceId: string,
     processName: string,
@@ -481,7 +490,7 @@ export default class CertificateProvider {
       });
   }
 
-  iOSDeviceHasMatchingCSR(
+  private iOSDeviceHasMatchingCSR(
     directory: string,
     deviceId: string,
     bundleId: string,
@@ -523,7 +532,7 @@ export default class CertificateProvider {
       .then((csrFromDevice) => csrFromDevice === this.santitizeString(csr));
   }
 
-  santitizeString(csrString: string): string {
+  private santitizeString(csrString: string): string {
     return csrString.replace(/\r/g, '').trim();
   }
 
@@ -581,9 +590,6 @@ export default class CertificateProvider {
   }
 
   async ensureCertificateAuthorityExists(): Promise<void> {
-    if (isTest()) {
-      return;
-    }
     if (!fs.existsSync(caKey)) {
       return this.generateCertificateAuthority();
     }
@@ -592,7 +598,7 @@ export default class CertificateProvider {
     );
   }
 
-  checkCertIsValid(filename: string): Promise<void> {
+  private checkCertIsValid(filename: string): Promise<void> {
     if (!fs.existsSync(filename)) {
       return Promise.reject(new Error(`${filename} does not exist`));
     }
@@ -634,7 +640,7 @@ export default class CertificateProvider {
       });
   }
 
-  verifyServerCertWasIssuedByCA() {
+  private verifyServerCertWasIssuedByCA() {
     const options: {
       [key: string]: any;
     } = {CAfile: caCert};
@@ -649,7 +655,7 @@ export default class CertificateProvider {
     });
   }
 
-  generateCertificateAuthority(): Promise<void> {
+  private generateCertificateAuthority(): Promise<void> {
     if (!fs.existsSync(getFilePath(''))) {
       fs.mkdirSync(getFilePath(''));
     }
@@ -667,7 +673,7 @@ export default class CertificateProvider {
       .then((_) => undefined);
   }
 
-  ensureServerCertExists(): Promise<void> {
+  private async ensureServerCertExists(): Promise<void> {
     if (
       !(
         fs.existsSync(serverKey) &&
@@ -683,7 +689,7 @@ export default class CertificateProvider {
       .catch(() => this.generateServerCertificate());
   }
 
-  generateServerCertificate(): Promise<void> {
+  private generateServerCertificate(): Promise<void> {
     return this.ensureCertificateAuthorityExists()
       .then((_) => {
         console.warn('Creating new server cert', logTag);
@@ -711,7 +717,7 @@ export default class CertificateProvider {
       .then((_) => undefined);
   }
 
-  writeToTempFile(content: string): Promise<string> {
+  private writeToTempFile(content: string): Promise<string> {
     return tmpFile().then((path) =>
       promisify(fs.writeFile)(path, content).then((_) => path),
     );

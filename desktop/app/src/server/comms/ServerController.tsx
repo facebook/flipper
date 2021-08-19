@@ -35,6 +35,7 @@ import ServerAdapter, {
 } from './ServerAdapter';
 import {createBrowserServer, createServer} from './ServerFactory';
 import {FlipperServer} from '../FlipperServer';
+import {isTest} from '../../utils/isProduction';
 
 type ClientInfo = {
   connection: ClientConnection | null | undefined;
@@ -109,6 +110,9 @@ class ServerController extends EventEmitter implements ServerEventsListener {
    * which point Flipper is accepting connections.
    */
   init() {
+    if (isTest()) {
+      throw new Error('Spawing new server is not supported in test');
+    }
     const {insecure, secure} = this.store.getState().application.serverPorts;
     this.initialized = this.certificateProvider
       .loadSecureServerConfig()
