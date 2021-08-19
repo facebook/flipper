@@ -21,7 +21,7 @@ namespace flipper {
 class ConnectionEvents;
 class ConnectionContextStore;
 class FlipperRSocketResponder;
-
+class FlipperConnectionManagerWrapper;
 class FlipperConnectionManagerImpl : public FlipperConnectionManager {
   friend ConnectionEvents;
 
@@ -70,6 +70,7 @@ class FlipperConnectionManagerImpl : public FlipperConnectionManager {
   bool connectionIsTrusted_;
   int failedConnectionAttempts_ = 0;
   std::shared_ptr<ConnectionContextStore> contextStore_;
+  std::shared_ptr<FlipperConnectionManagerWrapper> implWrapper_;
 
   void startSync();
   bool connectAndExchangeCertificate();

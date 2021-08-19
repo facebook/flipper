@@ -35,11 +35,11 @@ rsocket::Payload toRSocketPayload(folly::dynamic data);
 
 class RSocketEvents : public rsocket::RSocketConnectionEvents {
  private:
-  const SocketEventHandler& handler_;
+  const SocketEventHandler handler_;
 
  public:
-  RSocketEvents(const SocketEventHandler& eventHandler)
-      : handler_(eventHandler) {}
+  RSocketEvents(const SocketEventHandler eventHandler)
+      : handler_(std::move(eventHandler)) {}
 
   void onConnected() {
     handler_(SocketEvent::OPEN);

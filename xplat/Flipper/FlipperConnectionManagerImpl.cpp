@@ -36,33 +36,51 @@ using namespace folly;
 namespace facebook {
 namespace flipper {
 
-class ConnectionEvents {
+class FlipperConnectionManagerWrapper {
  public:
-  ConnectionEvents(FlipperConnectionManagerImpl* impl) : impl_(impl) {}
-  void operator()(const SocketEvent event) {
-    switch (event) {
-      case SocketEvent::OPEN:
-        impl_->isOpen_ = true;
-        if (impl_->connectionIsTrusted_) {
-          impl_->callbacks_->onConnected();
-        }
-        break;
-      case SocketEvent::CLOSE:
-      case SocketEvent::ERROR:
-        if (!impl_->isOpen_)
-          return;
-        impl_->isOpen_ = false;
-        if (impl_->connectionIsTrusted_) {
-          impl_->connectionIsTrusted_ = false;
-          impl_->callbacks_->onDisconnected();
-        }
-        impl_->reconnect();
-        break;
-    }
+  FlipperConnectionManagerWrapper(FlipperConnectionManagerImpl* impl)
+      : impl_(impl) {}
+  FlipperConnectionManagerImpl* get_impl() {
+    return impl_;
   }
 
  private:
   FlipperConnectionManagerImpl* impl_;
+};
+class ConnectionEvents {
+ public:
+  ConnectionEvents(std::weak_ptr<FlipperConnectionManagerWrapper> impl)
+      : impl_(impl) {}
+  void operator()(const SocketEvent event) {
+    if (auto w = impl_.lock()) {
+      FlipperConnectionManagerImpl* impl = w->get_impl();
+      if (impl == nullptr) {
+        return;
+      }
+      switch (event) {
+        case SocketEvent::OPEN:
+          impl->isOpen_ = true;
+          if (impl->connectionIsTrusted_) {
+            impl->callbacks_->onConnected();
+          }
+          break;
+        case SocketEvent::CLOSE:
+        case SocketEvent::ERROR:
+          if (!impl->isOpen_)
+            return;
+          impl->isOpen_ = false;
+          if (impl->connectionIsTrusted_) {
+            impl->connectionIsTrusted_ = false;
+            impl->callbacks_->onDisconnected();
+          }
+          impl->reconnect();
+          break;
+      }
+    }
+  }
+
+ private:
+  std::weak_ptr<FlipperConnectionManagerWrapper> impl_;
 };
 
 FlipperConnectionManagerImpl::FlipperConnectionManagerImpl(
@@ -75,7 +93,8 @@ FlipperConnectionManagerImpl::FlipperConnectionManagerImpl(
       securePort(config.securePort),
       flipperEventBase_(config.callbackWorker),
       connectionEventBase_(config.connectionWorker),
-      contextStore_(contextStore) {
+      contextStore_(contextStore),
+      implWrapper_(std::make_shared<FlipperConnectionManagerWrapper>(this)) {
   CHECK_THROW(config.callbackWorker, std::invalid_argument);
   CHECK_THROW(config.connectionWorker, std::invalid_argument);
 }
@@ -188,7 +207,7 @@ bool FlipperConnectionManagerImpl::connectAndExchangeCertificate() {
 
   auto newClient = std::make_unique<FlipperRSocket>(
       endpoint, std::move(payload), connectionEventBase_);
-  newClient->setEventHandler(ConnectionEvents(this));
+  newClient->setEventHandler(ConnectionEvents(implWrapper_));
 
   auto connectingInsecurely = flipperState_->start("Connect insecurely");
   connectionIsTrusted_ = false;
@@ -234,7 +253,7 @@ bool FlipperConnectionManagerImpl::connectSecurely() {
 
   auto newClient = std::make_unique<FlipperRSocket>(
       endpoint, std::move(payload), connectionEventBase_, contextStore_.get());
-  newClient->setEventHandler(ConnectionEvents(this));
+  newClient->setEventHandler(ConnectionEvents(implWrapper_));
 
   auto connectingSecurely = flipperState_->start("Connect securely");
   connectionIsTrusted_ = true;
