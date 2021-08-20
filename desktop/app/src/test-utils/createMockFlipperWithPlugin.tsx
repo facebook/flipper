@@ -45,7 +45,7 @@ export type MockFlipperResult = {
   pluginKey: string;
   sendError(error: any, client?: Client): void;
   sendMessage(method: string, params: any, client?: Client): void;
-  createDevice(serial: string): BaseDevice;
+  createDevice(options: Parameters<MockFlipper['createDevice']>[0]): BaseDevice;
   createClient(
     device: BaseDevice,
     name: string,
@@ -127,8 +127,8 @@ export async function createMockFlipperWithPlugin(
   const logger = mockFlipper.logger;
   const store = mockFlipper.store;
 
-  const createDevice = (serial: string, archived?: boolean) =>
-    mockFlipper.createDevice({serial, archived});
+  const createDevice = (options: Parameters<MockFlipper['createDevice']>[0]) =>
+    mockFlipper.createDevice(options);
   const createClient = async (
     device: BaseDevice,
     name: string,
@@ -171,7 +171,7 @@ export async function createMockFlipperWithPlugin(
 
   const device = options?.device
     ? mockFlipper.loadDevice(options?.device)
-    : createDevice('serial', options?.archivedDevice);
+    : createDevice({serial: 'serial', archived: options?.archivedDevice});
   const client = await createClient(device, 'TestApp');
 
   store.dispatch(selectDevice(device));

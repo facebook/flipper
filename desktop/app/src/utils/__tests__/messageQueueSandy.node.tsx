@@ -295,7 +295,7 @@ test('queue - events are queued for plugins that are favorite when app is select
   selectDeviceLogs(store);
   expect(store.getState().connections.selectedPlugin).not.toBe('TestPlugin');
 
-  const device2 = createDevice('serial2');
+  const device2 = createDevice({serial: 'serial2'});
   const client2 = await createClient(device2, client.query.app); // same app id
   store.dispatch(selectDevice(device2));
   store.dispatch(selectClient(client2.id));

@@ -17,6 +17,7 @@ import {render, unmountComponentAtNode} from 'react-dom';
 export function renderReactRoot(
   handler: (unmount: () => void) => React.ReactElement,
 ): () => void {
+  // TODO: find a way to make this visible in unit tests as well
   const div = document.body.appendChild(document.createElement('div'));
   const unmount = () => {
     unmountComponentAtNode(div);

@@ -72,7 +72,7 @@ export const Dialog = {
               }}
               okButtonProps={{
                 disabled: opts.onValidate
-                  ? opts.onValidate(currentValue) !== ''
+                  ? !!opts.onValidate(currentValue) // non-falsy value means validation error
                   : false,
               }}
               onCancel={cancel}
@@ -175,11 +175,12 @@ export const Dialog = {
     message: React.ReactNode;
     options: {label: string; value: string}[];
     onConfirm?: (value: string) => Promise<string>;
-  }): DialogResult<string> {
+  }): DialogResult<string | false> {
     return Dialog.show<string>({
       ...rest,
-      defaultValue: '',
-      onValidate: (value) => (value === '' ? 'Please select an option' : ''),
+      defaultValue: undefined as any,
+      onValidate: (value) =>
+        value === undefined ? 'Please select an option' : '',
       children: (value, onChange) => (
         <Layout.Container gap style={{maxHeight: '50vh', overflow: 'auto'}}>
           <Typography.Text>{message}</Typography.Text>

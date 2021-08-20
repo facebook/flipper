@@ -8,7 +8,7 @@
  */
 
 import {createStore} from 'redux';
-import BaseDevice from '../server/devices/BaseDevice';
+import BaseDevice, {OS} from '../server/devices/BaseDevice';
 import {createRootReducer} from '../reducers';
 import {Store} from '../reducers/index';
 import Client, {ClientQuery} from '../Client';
@@ -43,6 +43,7 @@ export interface DeviceOptions {
   serial?: string;
   isSupportedByPlugin?: (p: PluginDetails) => boolean;
   archived?: boolean;
+  os?: OS;
 }
 
 export default class MockFlipper {
@@ -117,6 +118,7 @@ export default class MockFlipper {
     serial,
     isSupportedByPlugin,
     archived,
+    os,
   }: DeviceOptions = {}): BaseDevice {
     const s = serial ?? `serial_${++this._deviceCounter}`;
     const device = archived
@@ -126,7 +128,7 @@ export default class MockFlipper {
           title: 'archived device',
           os: 'Android',
         })
-      : new BaseDevice(s, 'physical', 'MockAndroidDevice', 'Android');
+      : new BaseDevice(s, 'physical', 'MockAndroidDevice', os ?? 'Android');
     device.supportsPlugin = !isSupportedByPlugin
       ? () => true
       : isSupportedByPlugin;

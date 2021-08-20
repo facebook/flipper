@@ -15,15 +15,20 @@ import {checkForUpdate} from '../fb-stubs/checkForUpdate';
 import {getAppVersion} from '../utils/info';
 import {ACTIVE_SHEET_SIGN_IN, setActiveSheet} from '../reducers/application';
 import {UserNotSignedInError} from '../utils/errors';
-import {selectPlugin} from '../reducers/connections';
+import {selectPlugin, setPluginEnabled} from '../reducers/connections';
 import {getUpdateAvailableMessage} from '../chrome/UpdateIndicator';
 import {Typography} from 'antd';
 import {getPluginStatus} from '../utils/pluginUtils';
 import {loadPluginsFromMarketplace} from './fb-stubs/pluginMarketplace';
-import {loadPlugin} from '../reducers/pluginManager';
+import {loadPlugin, switchPlugin} from '../reducers/pluginManager';
 import {startPluginDownload} from '../reducers/pluginDownloads';
 import isProduction, {isTest} from '../utils/isProduction';
 import restart from '../utils/restartFlipper';
+import BaseDevice from '../server/devices/BaseDevice';
+import Client from '../Client';
+import {Button} from 'antd';
+import {RocketOutlined} from '@ant-design/icons';
+import {showEmulatorLauncher} from '../sandy-chrome/appinspect/LaunchEmulator';
 
 type OpenPluginParams = {
   pluginId: string;
@@ -51,7 +56,7 @@ export function parseOpenPluginParams(query: string): OpenPluginParams {
 
 export async function handleOpenPluginDeeplink(store: Store, query: string) {
   const params = parseOpenPluginParams(query);
-  const title = `Starting plugin ${params.pluginId}…`;
+  const title = `Opening plugin ${params.pluginId}…`;
 
   if (!(await verifyLighthouseAndUserLoggedIn(store, title))) {
     return;
@@ -60,10 +65,78 @@ export async function handleOpenPluginDeeplink(store: Store, query: string) {
   if (!(await verifyPluginStatus(store, params.pluginId, title))) {
     return;
   }
-  // await verifyDevices();
-  // await verifyClient();
-  // await verifyPluginEnabled();
-  await openPlugin(store, params);
+
+  const isDevicePlugin = store
+    .getState()
+    .plugins.devicePlugins.has(params.pluginId);
+  const pluginDefinition = isDevicePlugin
+    ? store.getState().plugins.devicePlugins.get(params.pluginId)!
+    : store.getState().plugins.clientPlugins.get(params.pluginId)!;
+  const deviceOrClient = await selectDevicesAndClient(
+    store,
+    params,
+    title,
+    isDevicePlugin,
+  );
+  if (deviceOrClient === false) {
+    return;
+  }
+  const client: Client | undefined = isDevicePlugin
+    ? undefined
+    : (deviceOrClient as Client);
+  const device: BaseDevice = isDevicePlugin
+    ? (deviceOrClient as BaseDevice)
+    : (deviceOrClient as Client).deviceSync;
+
+  // verify plugin supported by selected device / client
+  if (isDevicePlugin && !device.supportsPlugin(pluginDefinition)) {
+    await Dialog.alert({
+      title,
+      type: 'error',
+      message: `This plugin is not supported by device ${device.displayTitle()}`,
+    });
+    return;
+  }
+  if (!isDevicePlugin && !client!.plugins.has(params.pluginId)) {
+    await Dialog.alert({
+      title,
+      type: 'error',
+      message: `This plugin is not supported by client ${client!.query.app}`,
+    });
+  }
+
+  // verify plugin enabled
+  if (isDevicePlugin) {
+    // for the device plugins enabling is a bit more complication and should go through the pluginManager
+    if (
+      !store.getState().connections.enabledDevicePlugins.has(params.pluginId)
+    ) {
+      store.dispatch(switchPlugin({plugin: pluginDefinition}));
+    }
+  } else {
+    store.dispatch(setPluginEnabled(params.pluginId, client!.query.app));
+  }
+
+  // open the plugin
+  if (isDevicePlugin) {
+    store.dispatch(
+      selectPlugin({
+        selectedPlugin: params.pluginId,
+        selectedApp: null,
+        selectedDevice: device,
+        deepLinkPayload: params.payload,
+      }),
+    );
+  } else {
+    store.dispatch(
+      selectPlugin({
+        selectedPlugin: params.pluginId,
+        selectedApp: client!.query.app,
+        selectedDevice: device,
+        deepLinkPayload: params.payload,
+      }),
+    );
+  }
 }
 
 // check if user is connected to VPN and logged in. Returns true if OK, or false if aborted
@@ -325,12 +398,169 @@ async function installMarketPlacePlugin(
   return true;
 }
 
-function openPlugin(store: Store, params: OpenPluginParams) {
-  store.dispatch(
-    selectPlugin({
-      selectedApp: params.client,
-      selectedPlugin: params.pluginId,
-      deepLinkPayload: params.payload,
-    }),
-  );
+async function selectDevicesAndClient(
+  store: Store,
+  params: OpenPluginParams,
+  title: string,
+  isDevicePlugin: boolean,
+): Promise<false | BaseDevice | Client> {
+  function findValidDevices() {
+    // find connected devices with the right OS.
+    return store
+      .getState()
+      .connections.devices.filter((d) => d.connected.get())
+      .filter(
+        (d) => params.devices.length === 0 || params.devices.includes(d.os),
+      );
+  }
+
+  // loop until we have devices (or abort)
+  while (!findValidDevices().length) {
+    if (!(await launchDeviceDialog(store, params, title))) {
+      return false;
+    }
+  }
+
+  // at this point we have 1 or more valid devices
+  const availableDevices = findValidDevices();
+  // device plugin
+  if (isDevicePlugin) {
+    if (availableDevices.length === 1) {
+      return availableDevices[0];
+    }
+    return (await selectDeviceDialog(availableDevices, title)) ?? false;
+  }
+
+  // wait for valid client
+  while (true) {
+    const validClients = store
+      .getState()
+      .connections.clients.filter(
+        // correct app name, or, if not set, an app that at least supports this plugin
+        (c) =>
+          params.client
+            ? c.query.app === params.client
+            : c.plugins.has(params.pluginId),
+      )
+      .filter((c) => c.connected.get())
+      .filter((c) => availableDevices.includes(c.deviceSync));
+
+    if (validClients.length === 1) {
+      return validClients[0];
+    }
+    if (validClients.length > 1) {
+      return (await selectClientDialog(validClients, title)) ?? false;
+    }
+
+    // no valid client yet
+    const result = await new Promise<boolean>((resolve) => {
+      const dialog = Dialog.alert({
+        title,
+        type: 'warning',
+        message: params.client
+          ? `Application '${params.client}' doesn't seem to be connected yet. Please start a debug version of the app to continue.`
+          : `No application that supports plugin '${params.pluginId}' seems to be running. Please start a debug application that supports the plugin to continue.`,
+        okText: 'Cancel',
+      });
+      // eslint-disable-next-line promise/catch-or-return
+      dialog.then(() => resolve(false));
+
+      const origClients = store.getState().connections.clients;
+      // eslint-disable-next-line promise/catch-or-return
+      waitFor(store, (state) => state.connections.clients !== origClients).then(
+        () => {
+          dialog.close();
+          resolve(true);
+        },
+      );
+    });
+
+    if (!result) {
+      return false; // User cancelled
+    }
+  }
+}
+
+/**
+ * Shows a warning that no device was found, with button to launch emulator.
+ * Resolves false if cancelled, or true if new devices were detected.
+ */
+async function launchDeviceDialog(
+  store: Store,
+  params: OpenPluginParams,
+  title: string,
+) {
+  return new Promise<boolean>((resolve) => {
+    const dialog = Dialog.alert({
+      title,
+      type: 'warning',
+      message: (
+        <p>
+          To open the current deeplink for plugin {params.pluginId} a device{' '}
+          {params.devices.length ? ' of type ' + params.devices.join(', ') : ''}{' '}
+          should be up and running. No device was found. Please connect a device
+          or launch an emulator / simulator{' '}
+          <Button
+            icon={<RocketOutlined />}
+            title="Start Emulator / Simulator"
+            onClick={() => {
+              showEmulatorLauncher(store);
+            }}
+            size="small"
+          />
+          .
+        </p>
+      ),
+      okText: 'Cancel',
+    });
+    // eslint-disable-next-line promise/catch-or-return
+    dialog.then(() => {
+      // dialog was canceled
+      resolve(false);
+    });
+
+    const currentDevices = store.getState().connections.devices;
+    // new devices were found
+    // eslint-disable-next-line promise/catch-or-return
+    waitFor(
+      store,
+      (state) => state.connections.devices !== currentDevices,
+    ).then(() => {
+      dialog.close();
+      resolve(true);
+    });
+  });
+}
+
+async function selectDeviceDialog(
+  devices: BaseDevice[],
+  title: string,
+): Promise<undefined | BaseDevice> {
+  const selectedId = await Dialog.options({
+    title,
+    message: 'Select the device to open:',
+    options: devices.map((d) => ({
+      value: d.serial,
+      label: d.displayTitle(),
+    })),
+  });
+  // might find nothing if id === false
+  return devices.find((d) => d.serial === selectedId);
+}
+
+async function selectClientDialog(
+  clients: Client[],
+  title: string,
+): Promise<undefined | Client> {
+  const selectedId = await Dialog.options({
+    title,
+    message:
+      'Multiple applications running this plugin were found, please select one:',
+    options: clients.map((c) => ({
+      value: c.id,
+      label: `${c.query.app} on ${c.deviceSync.displayTitle()}`,
+    })),
+  });
+  // might find nothing if id === false
+  return clients.find((c) => c.id === selectedId);
 }
