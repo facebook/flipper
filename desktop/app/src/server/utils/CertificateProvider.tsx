@@ -187,7 +187,7 @@ export default class CertificateProvider {
       .then(async (deviceId) => {
         if (medium === 'WWW') {
           const zipPromise = new Promise((resolve, reject) => {
-            const output = fs.createWriteStream(certsZipPath);
+            const output = fsExtra.createWriteStream(certsZipPath);
             const archive = archiver('zip', {
               zlib: {level: 9}, // Sets the compression level.
             });
@@ -292,13 +292,11 @@ export default class CertificateProvider {
       if (!certPathExists) {
         await fsExtra.mkdir(certFolder);
       }
-      return promisify(fs.writeFile)(certFolder + filename, contents).catch(
-        (e) => {
-          throw new Error(
-            `Failed to write ${filename} to temporary folder. Error: ${e}`,
-          );
-        },
-      );
+      return fsExtra.writeFile(certFolder + filename, contents).catch((e) => {
+        throw new Error(
+          `Failed to write ${filename} to temporary folder. Error: ${e}`,
+        );
+      });
     }
 
     if (os === 'Android') {
@@ -317,8 +315,9 @@ export default class CertificateProvider {
       );
     }
     if (os === 'iOS' || os === 'windows' || os == 'MacOS') {
-      return promisify(fs.writeFile)(destination + filename, contents).catch(
-        async (err) => {
+      return fsExtra
+        .writeFile(destination + filename, contents)
+        .catch(async (err) => {
           if (os === 'iOS') {
             // Writing directly to FS failed. It's probably a physical device.
             const relativePathInsideApp =
@@ -341,31 +340,28 @@ export default class CertificateProvider {
             `Invalid appDirectory recieved from ${os} device: ${destination}: ` +
               err.toString(),
           );
-        },
-      );
+        });
     }
     return Promise.reject(new Error(`Unsupported device os: ${os}`));
   }
 
-  private pushFileToiOSDevice(
+  private async pushFileToiOSDevice(
     udid: string,
     bundleId: string,
     destination: string,
     filename: string,
     contents: string,
   ): Promise<void> {
-    return tmpDir({unsafeCleanup: true}).then((dir) => {
-      const filePath = path.resolve(dir, filename);
-      promisify(fs.writeFile)(filePath, contents).then(() =>
-        iosUtil.push(
-          udid,
-          filePath,
-          bundleId,
-          destination,
-          this.config.idbPath,
-        ),
-      );
-    });
+    const dir = await tmpDir({unsafeCleanup: true});
+    const filePath = path.resolve(dir, filename);
+    await fsExtra.writeFile(filePath, contents);
+    return await iosUtil.push(
+      udid,
+      filePath,
+      bundleId,
+      destination,
+      this.config.idbPath,
+    );
   }
 
   private getTargetAndroidDeviceId(
@@ -512,7 +508,8 @@ export default class CertificateProvider {
           .then(() => dir);
       })
       .then((dir) => {
-        return promisify(fs.readdir)(dir)
+        return fsExtra
+          .readdir(dir)
           .then((items) => {
             if (items.length > 1) {
               throw new Error('Conflict in temp dir');
@@ -524,9 +521,9 @@ export default class CertificateProvider {
           })
           .then((fileName) => {
             const copiedFile = path.resolve(dir, fileName);
-            return promisify(fs.readFile)(copiedFile).then((data) =>
-              this.santitizeString(data.toString()),
-            );
+            return fsExtra
+              .readFile(copiedFile)
+              .then((data) => this.santitizeString(data.toString()));
           });
       })
       .then((csrFromDevice) => csrFromDevice === this.santitizeString(csr));
@@ -577,20 +574,19 @@ export default class CertificateProvider {
       });
   }
 
-  loadSecureServerConfig(): Promise<SecureServerConfig> {
-    return this.certificateSetup.then(() => {
-      return {
-        key: fs.readFileSync(serverKey),
-        cert: fs.readFileSync(serverCert),
-        ca: fs.readFileSync(caCert),
-        requestCert: true,
-        rejectUnauthorized: true, // can be false if necessary as we don't strictly need to verify the client
-      };
-    });
+  async loadSecureServerConfig(): Promise<SecureServerConfig> {
+    await this.certificateSetup;
+    return {
+      key: await fsExtra.readFile(serverKey),
+      cert: await fsExtra.readFile(serverCert),
+      ca: await fsExtra.readFile(caCert),
+      requestCert: true,
+      rejectUnauthorized: true, // can be false if necessary as we don't strictly need to verify the client
+    };
   }
 
   async ensureCertificateAuthorityExists(): Promise<void> {
-    if (!fs.existsSync(caKey)) {
+    if (!(await fsExtra.pathExists(caKey))) {
       return this.generateCertificateAuthority();
     }
     return this.checkCertIsValid(caCert).catch(() =>
@@ -598,8 +594,8 @@ export default class CertificateProvider {
     );
   }
 
-  private checkCertIsValid(filename: string): Promise<void> {
-    if (!fs.existsSync(filename)) {
+  private async checkCertIsValid(filename: string): Promise<void> {
+    if (!(await fsExtra.pathExists(filename))) {
       return Promise.reject(new Error(`${filename} does not exist`));
     }
     // openssl checkend is a nice feature but it only checks for certificates
@@ -655,9 +651,9 @@ export default class CertificateProvider {
     });
   }
 
-  private generateCertificateAuthority(): Promise<void> {
-    if (!fs.existsSync(getFilePath(''))) {
-      fs.mkdirSync(getFilePath(''));
+  private async generateCertificateAuthority(): Promise<void> {
+    if (!(await fsExtra.pathExists(getFilePath('')))) {
+      await fsExtra.mkdir(getFilePath(''));
     }
     console.log('Generating new CA', logTag);
     return openssl('genrsa', {out: caKey, '2048': false})
@@ -674,13 +670,12 @@ export default class CertificateProvider {
   }
 
   private async ensureServerCertExists(): Promise<void> {
-    if (
-      !(
-        fs.existsSync(serverKey) &&
-        fs.existsSync(serverCert) &&
-        fs.existsSync(caCert)
-      )
-    ) {
+    const allExist = Promise.all([
+      fsExtra.existsSync(serverKey),
+      fsExtra.existsSync(serverCert),
+      fsExtra.existsSync(caCert),
+    ]).then((exist) => exist.every(Boolean));
+    if (!allExist) {
       return this.generateServerCertificate();
     }
 
@@ -719,7 +714,7 @@ export default class CertificateProvider {
 
   private writeToTempFile(content: string): Promise<string> {
     return tmpFile().then((path) =>
-      promisify(fs.writeFile)(path, content).then((_) => path),
+      fsExtra.writeFile(path, content).then((_) => path),
     );
   }
 }
