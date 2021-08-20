@@ -7,8 +7,8 @@
  * @format
  */
 
-import {Alert, Input, Modal, Typography} from 'antd';
-import {Atom, createState, useValue} from '../state/atom';
+import {Alert, Input, Modal, Radio, Space, Typography} from 'antd';
+import {createState, useValue} from '../state/atom';
 import React from 'react';
 import {renderReactRoot} from '../utils/renderReactRoot';
 import {Layout} from './Layout';
@@ -28,20 +28,31 @@ const defaultWidth = 400;
 export const Dialog = {
   show<T>(
     opts: BaseDialogOptions & {
-      children: React.ReactNode;
-      onConfirm: () => Promise<T>;
+      defaultValue: T;
+      children: (currentValue: T, setValue: (v: T) => void) => React.ReactNode;
+      onConfirm?: (currentValue: T) => Promise<T>;
+      onValidate?: (value: T) => string;
     },
   ): DialogResult<T> {
     let cancel: () => void;
 
     return Object.assign(
       new Promise<false | T>((resolve) => {
-        renderReactRoot((hide) => {
-          const submissionError = createState<string>('');
-          cancel = () => {
-            hide();
-            resolve(false);
+        const state = createState<T>(opts.defaultValue);
+        const submissionError = createState<string>('');
+
+        // create inline component to subscribe to dialog state
+        const DialogComponent = ({onHide}: {onHide: () => void}) => {
+          const currentValue = useValue(state);
+          const currentError = useValue(submissionError);
+
+          const setCurrentValue = (v: T) => {
+            state.set(v);
+            if (opts.onValidate) {
+              submissionError.set(opts.onValidate(v));
+            }
           };
+
           return (
             <Modal
               title={opts.title}
@@ -50,21 +61,36 @@ export const Dialog = {
               cancelText={opts.cancelText}
               onOk={async () => {
                 try {
-                  const value = await opts.onConfirm();
-                  hide();
+                  const value = opts.onConfirm
+                    ? await opts.onConfirm(currentValue)
+                    : currentValue!;
+                  onHide();
                   resolve(value);
                 } catch (e) {
                   submissionError.set(e.toString());
                 }
               }}
+              okButtonProps={{
+                disabled: opts.onValidate
+                  ? opts.onValidate(currentValue) !== ''
+                  : false,
+              }}
               onCancel={cancel}
               width={opts.width ?? defaultWidth}>
               <Layout.Container gap>
-                {opts.children}
-                <SubmissionError submissionError={submissionError} />
+                {opts.children(currentValue, setCurrentValue)}
+                {currentError && <Alert type="error" message={currentError} />}
               </Layout.Container>
             </Modal>
           );
+        };
+
+        renderReactRoot((hide) => {
+          cancel = () => {
+            hide();
+            resolve(false);
+          };
+          return <DialogComponent onHide={hide} />;
         });
       }),
       {
@@ -85,8 +111,9 @@ export const Dialog = {
   } & BaseDialogOptions): DialogResult<true> {
     return Dialog.show<true>({
       ...rest,
-      children: message,
-      onConfirm: onConfirm ?? (async () => true),
+      defaultValue: true,
+      children: () => message,
+      onConfirm: onConfirm,
     });
   },
 
@@ -97,14 +124,22 @@ export const Dialog = {
   }: {
     message: React.ReactNode;
     type: 'info' | 'error' | 'warning' | 'success';
-  } & BaseDialogOptions): Promise<void> {
-    return new Promise((resolve) => {
-      Modal[type]({
-        afterClose: resolve,
-        content: message,
-        ...rest,
-      });
-    });
+  } & BaseDialogOptions): Promise<void> & {close(): void} {
+    let modalRef: ReturnType<typeof Modal['info']>;
+    return Object.assign(
+      new Promise<void>((resolve) => {
+        modalRef = Modal[type]({
+          afterClose: resolve,
+          content: message,
+          ...rest,
+        });
+      }),
+      {
+        close() {
+          modalRef.destroy();
+        },
+      },
+    );
   },
 
   prompt({
@@ -117,22 +152,53 @@ export const Dialog = {
     defaultValue?: string;
     onConfirm?: (value: string) => Promise<string>;
   }): DialogResult<string> {
-    const inputValue = createState(defaultValue ?? '');
     return Dialog.show<string>({
       ...rest,
-      children: (
-        <>
+      defaultValue: defaultValue ?? '',
+      children: (value, onChange) => (
+        <Layout.Container gap>
           <Typography.Text>{message}</Typography.Text>
-          <PromptInput inputValue={inputValue} />
-        </>
+          <Input value={value} onChange={(e) => onChange(e.target.value)} />
+        </Layout.Container>
       ),
-      onConfirm: async () => {
-        const value = inputValue.get();
-        if (onConfirm) {
-          return await onConfirm(value);
-        }
-        return value;
-      },
+      onValidate: (value) => (value ? '' : 'No input provided'),
+      onConfirm,
+    });
+  },
+
+  options({
+    message,
+    onConfirm,
+    options,
+    ...rest
+  }: BaseDialogOptions & {
+    message: React.ReactNode;
+    options: {label: string; value: string}[];
+    onConfirm?: (value: string) => Promise<string>;
+  }): DialogResult<string> {
+    return Dialog.show<string>({
+      ...rest,
+      defaultValue: '',
+      onValidate: (value) => (value === '' ? 'Please select an option' : ''),
+      children: (value, onChange) => (
+        <Layout.Container gap style={{maxHeight: '50vh', overflow: 'auto'}}>
+          <Typography.Text>{message}</Typography.Text>
+          <Radio.Group
+            value={value}
+            onChange={(e) => {
+              onChange(e.target.value);
+            }}>
+            <Space direction="vertical">
+              {options.map((o) => (
+                <Radio value={o.value} key={o.value}>
+                  {o.label}
+                </Radio>
+              ))}
+            </Space>
+          </Radio.Group>
+        </Layout.Container>
+      ),
+      onConfirm,
     });
   },
 
@@ -177,20 +243,3 @@ export const Dialog = {
     );
   },
 };
-
-function PromptInput({inputValue}: {inputValue: Atom<string>}) {
-  const currentValue = useValue(inputValue);
-  return (
-    <Input
-      value={currentValue}
-      onChange={(e) => {
-        inputValue.set(e.target.value);
-      }}
-    />
-  );
-}
-
-function SubmissionError({submissionError}: {submissionError: Atom<string>}) {
-  const currentError = useValue(submissionError);
-  return currentError ? <Alert type="error" message={currentError} /> : null;
-}
