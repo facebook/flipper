@@ -1,0 +1,194 @@
+---
+id: linters
+title: Linters
+sidebar_label: Linters
+---
+
+Flipper Desktop comes with a variety of ESLint checks pre-enabled. This allows us
+to enforce sustainable coding practices and skip over discussions in code reviews.
+
+## Specific Linters
+
+A short and incomplete list of unusual linters we deploy, why we do it and how to fix them.
+
+### `promise/no-nesting`
+
+- **Summary:** Avoid nested then() or catch() statements. [More details.](https://github.com/xjamundx/eslint-plugin-promise/blob/development/docs/rules/no-nesting.md)
+- **Why:** Nested promise chains can be difficult to read and reason about. Often, you can
+    achieve the same by either returning the promise and handling them on a higher level
+    or converting them to an async function.
+
+**Example**
+
+*Before*
+```js
+private pushFileToiOSDevice(
+  udid: string,
+  bundleId: string,
+  destination: string,
+  filename: string,
+  contents: string,
+): Promise<void> {
+  return tmpDir({unsafeCleanup: true}).then((dir) => {
+    const filePath = path.resolve(dir, filename);
+    promisify(fs.writeFile)(filePath, contents).then(() =>
+      iosUtil.push(
+        udid,
+        filePath,
+        bundleId,
+        destination,
+        this.config.idbPath,
+      ),
+    );
+  });
+}
+```
+
+*After*
+
+```js
+async pushFileToiOSDevice(
+  udid: string,
+  bundleId: string,
+  destination: string,
+  filename: string,
+  contents: string,
+): Promise<void> {
+  const dir = await tmpDir({unsafeCleanup: true});
+  const filePath = path.resolve(dir, filename);
+  await fs.writeFile(filePath, contents);
+  return iosUtil.push(
+    udid,
+    filePath,
+    bundleId,
+    destination,
+    this.config.idbPath,
+  );
+}
+```
+
+In addition to less indentation, you also maintain the promise chain
+here, meaning that you can handle potential errors on the call-side.
+
+### `flipper/no-console-error-without-context`
+
+- **Summary:** Avoid "Naked" console.error calls. Prefer `console.error("Failed to connect open iOS connection socket", e)` to `console.error(e)`.
+- **Why:** We create error tasks internally for every `console.error` call. It can be hard
+    to find the origin of the error without context.
+
+**Example**
+
+*Before*
+```js
+try {
+    // ...
+} catch (e) {
+    console.error(e);
+}
+```
+
+*After*
+
+```js
+try {
+    // ...
+} catch (e) {
+    console.error(`Failed to connect to paste host ${hostname}`, e);
+}
+```
+
+### `promise/catch-or-return`
+
+- **Summary:** Ensure that each time a `then()` is applied to a promise, a
+    `catch()` is applied as well. Exceptions are made if you are returning that
+    promise. [More
+    details.](https://github.com/xjamundx/eslint-plugin-promise/blob/development/docs/rules/catch-or-return.md)
+- **Why:** Unhandled exceptions have no stack trace and will just show up as
+    "Unhandled promise rejection", making them very hard to triage and reproduce. By
+    always ensuring that promises are returned (ensuring they are a chain) or
+    explicitly catching errors, we can improve the user experience by acting more
+    quickly on errors.
+
+**Example**
+
+*Before*
+```js
+function request() {
+    // If fetch() fails, the exception will bubble to the top.
+    fetch("https://example.com").then(res => {
+        doSomethingWith(res);
+    });
+}
+```
+
+*After*
+```js
+// Option 1
+function request() {
+    fetch("https://example.com").then(res => {
+        doSomethingWith(res);
+    }).catch((e) => {
+        console.error("Failed to fetch from example.com", e);
+    });
+}
+
+// Option 2
+function request() {
+    // Allow the call-site to handle the error.
+    return fetch("https://example.com").then(res => {
+        doSomethingWith(res);
+    });
+}
+```
+
+### `communist-spelling/communist-spelling`
+
+- **Summary**: We try to avoid using British spellings for identifiers.
+- **Why**: This is clearly controversial, but it's very inconvenient when you have to
+    bridge American and British APIs. `const greyColour = COLORS.GRAY;` is something
+    nobody should have to read or write.
+
+*Before*
+```js
+const GreyedOutOverlay = initialiseComponent();
+```
+
+*After*
+
+```js
+const GrayedOutOverlay = initializeComponent();
+```
+
+### `no-restricted-properties`
+
+- **Summary**: Why try to avoid using `electron.remote` directly.
+- **Why**: Using [`electron.remote`](https://nornagon.medium.com/electrons-remote-module-considered-harmful-70d69500f31) is considered harmful.
+    Not only is accessing it slow, but it also makes it harder to abstract away from Electron which we're planning to do.
+- **How to fix it**: For now, the best way is to use utilities whereever possible which cache the access. This is not always possible. Adding ignores for legitimate accesses is fine.
+
+*Before*
+```js
+import electron from 'electron';
+const portforwardingClient =
+  path.join(
+    electron.remote.app.getAppPath()
+    'PortForwardingMacApp.app',
+    'Contents',
+    'MacOS',
+    'PortForwardingMacApp'
+  );
+```
+
+*After*
+
+```js
+import {getStaticPath} from './utils/pathUtils';
+const portforwardingClient = getStaticPath(
+  path.join(
+    'PortForwardingMacApp.app',
+    'Contents',
+    'MacOS',
+    'PortForwardingMacApp',
+  ),
+);
+```
