@@ -117,6 +117,12 @@ We first install two NDK versions that are required by our dependencies. To publ
 only requirement about the key itself is, that it needs to be exported to a Keyserver. Ours
 is published [to the Ubuntu Keyserver](https://keyserver.ubuntu.com/pks/lookup?search=Flipper+Bot+%28I+sign+Flipper+releases%29+%3Crealpassy%40fb.com%3E&fingerprint=on&op=index).
 
+To publish your own key, run
+
+```bash
+gpg --send-keys --keyserver keyserver.ubuntu.com <KEY_ID>
+```
+
 For the initial setup, the secret keyring was exported as `gpg2 --export-secret-keys <secret_key_id> | base64` and stored
 as secret on GitHub with the name `GPG_KEY_CONTENTS`. As part of the workflow, it is written to disk after reversing the base64 encoding.
 The key id and key password are subsequently stored in the `gradle.properties` along with the path to the key. Paths here need to be

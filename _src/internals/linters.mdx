@@ -192,3 +192,43 @@ const portforwardingClient = getStaticPath(
   ),
 );
 ```
+
+### `node/no-sync`
+
+- **Summary**: Use asynchronous methods whereever possible. [More details.](https://github.com/mysticatea/eslint-plugin-node/blob/master/docs/rules/no-sync.md)
+- **Why**: Synchronous method calls block the event loop. Even innocous calls like `fs.existsSync()` can cause
+    frame drops for users or even long stalls.
+- **How to fix it**: We have `fs-extra` as a dependency, which provides Promise-based alternatives for all `fs` functions.
+    Most often, replacing a sync call with an async call and adding an `await` is all that's needed.
+
+*Before*
+```js
+import fs from 'fs';
+function ensureCertsExist() {
+    if (
+        !(
+        fs.existsSync(serverKey) &&
+        fs.existsSync(serverCert) &&
+        fs.existsSync(caCert)
+        )
+    ) {
+        return generateServerCertificate();
+    }
+}
+```
+
+*After*
+
+```js
+import fsExtra from 'fs-extra';
+async function ensureCertsExist() {
+    const allExist = Promise.all([
+        fsExtra.exists(serverKey),
+        fsExtra.exists(serverCert),
+        fsExtra.exists(caCert),
+        ]).then((exist) => exist.every(Boolean));
+    if (!allExist) {
+      return this.generateServerCertificate();
+    }
+}
+```
