@@ -32,15 +32,10 @@
   "dependencies": {},
   "resolutions": {
     "kind-of": "6.0.3",
-    "serialize-javascript": "^3.1.0",
-    "ssri": "8.0.1",
-    "is-svg": "4.2.2",
-    "lodash": "4.17.21",
-    "ua-parser-js": "0.7.24",
-    "trim": "0.0.3",
-    "browserslist": "^4.16.5",
+    "chokidar": "^3.1.5",
     "dns-packet": "^5.2.2",
-    "ws": "7.4.6",
-    "chokidar": "^3.1.5"
+    "browserslist": "^4.16.5",
+    "ws": "8.2.0",
+    "trim": "1.0.1"
   }
 }
