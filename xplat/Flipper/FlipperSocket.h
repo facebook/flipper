@@ -8,7 +8,6 @@
 #pragma once
 
 #include <folly/dynamic.h>
-#include <rsocket/RSocket.h>
 #include <future>
 #include <memory>
 #include "FlipperTransportTypes.h"
@@ -26,12 +25,17 @@ class FlipperSocket {
     changes.
     @param eventHandler Observer to be notified of state changes.
   */
-  virtual void setEventHandler(SocketEventHandler eventHandler) = 0;
+  virtual void setEventHandler(SocketEventHandler eventHandler) {}
   /**
     Sets the socket message handler. Used to handle received messages.
+    @discussion Message handler is only ever used for WebSocket connections.
+    RSocket uses a different approach whereas a responder is used instead. We
+    could create an RSocket responder that uses a message handler as well. For
+    simplicity, and given that RSocket will be removed in future releases, it
+    was decided not to follow that path.
     @param messageHandler Received messages handler.
   */
-  virtual void setMessageHandler(SocketMessageHandler messageHandler) = 0;
+  virtual void setMessageHandler(SocketMessageHandler messageHandler) {}
   /**
     Connect the socket to the specified endpoint. This is a blocking call
     meaning that it will return once the socket is connected and ready to be

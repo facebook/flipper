@@ -15,8 +15,8 @@
 #include <thread>
 #include "ConnectionContextStore.h"
 #include "FireAndForgetBasedFlipperResponder.h"
-#include "FlipperRSocket.h"
 #include "FlipperResponderImpl.h"
+#include "FlipperSocketProvider.h"
 #include "FlipperStep.h"
 #include "Log.h"
 #include "yarpl/Single.h"
@@ -205,7 +205,7 @@ bool FlipperConnectionManagerImpl::connectAndExchangeCertificate() {
   payload->sdk_version = sdkVersion;
   payload->medium = medium;
 
-  auto newClient = std::make_unique<FlipperRSocket>(
+  auto newClient = FlipperSocketProvider::socketCreate(
       endpoint, std::move(payload), connectionEventBase_);
   newClient->setEventHandler(ConnectionEvents(implWrapper_));
 
@@ -251,9 +251,26 @@ bool FlipperConnectionManagerImpl::connectSecurely() {
   payload->csr = contextStore_->getCertificateSigningRequest().c_str();
   payload->csr_path = contextStore_->getCertificateDirectoryPath().c_str();
 
-  auto newClient = std::make_unique<FlipperRSocket>(
+  auto newClient = FlipperSocketProvider::socketCreate(
       endpoint, std::move(payload), connectionEventBase_, contextStore_.get());
   newClient->setEventHandler(ConnectionEvents(implWrapper_));
+  /**
+   Message handler is only ever used for WebSocket connections. RSocket uses a
+   different approach whereas a responder is used instead.
+   */
+  newClient->setMessageHandler([this](const std::string& msg) {
+    std::unique_ptr<FireAndForgetBasedFlipperResponder> responder;
+    auto message = folly::parseJson(msg);
+    auto idItr = message.find("id");
+    if (idItr == message.items().end()) {
+      responder = std::make_unique<FireAndForgetBasedFlipperResponder>(this);
+    } else {
+      responder = std::make_unique<FireAndForgetBasedFlipperResponder>(
+          this, idItr->second.getInt());
+    }
+
+    this->onMessageReceived(folly::parseJson(msg), std::move(responder));
+  });
 
   auto connectingSecurely = flipperState_->start("Connect securely");
   connectionIsTrusted_ = true;
