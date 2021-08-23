@@ -11,8 +11,7 @@ import {Logger} from '../../fb-interfaces/Logger';
 import {internGraphPOSTAPIRequest} from '../../fb-stubs/user';
 import ServerController from '../comms/ServerController';
 import {promisify} from 'util';
-import fs from 'fs';
-import fsExtra from 'fs-extra';
+import fs from 'fs-extra';
 
 import {
   openssl,
@@ -120,7 +119,7 @@ export default class CertificateProvider {
     zipPath: string,
     deviceID: string,
   ): Promise<void> => {
-    const buff = await fsExtra.readFile(zipPath);
+    const buff = await fs.readFile(zipPath);
     const file = new File([buff], 'certs.zip');
     return reportPlatformFailures(
       timeout(
@@ -187,7 +186,7 @@ export default class CertificateProvider {
       .then(async (deviceId) => {
         if (medium === 'WWW') {
           const zipPromise = new Promise((resolve, reject) => {
-            const output = fsExtra.createWriteStream(certsZipPath);
+            const output = fs.createWriteStream(certsZipPath);
             const archive = archiver('zip', {
               zlib: {level: 9}, // Sets the compression level.
             });
@@ -242,15 +241,7 @@ export default class CertificateProvider {
   }
 
   private getCACertificate(): Promise<string> {
-    return new Promise((resolve, reject) => {
-      fs.readFile(caCert, (err, data) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(data.toString());
-        }
-      });
-    });
+    return fs.readFile(caCert, 'utf-8');
   }
 
   private generateClientCertificate(csr: string): Promise<string> {
@@ -288,11 +279,11 @@ export default class CertificateProvider {
     const appNamePromise = this.extractAppNameFromCSR(csr);
 
     if (medium === 'WWW') {
-      const certPathExists = await fsExtra.pathExists(certFolder);
+      const certPathExists = await fs.pathExists(certFolder);
       if (!certPathExists) {
-        await fsExtra.mkdir(certFolder);
+        await fs.mkdir(certFolder);
       }
-      return fsExtra.writeFile(certFolder + filename, contents).catch((e) => {
+      return fs.writeFile(certFolder + filename, contents).catch((e) => {
         throw new Error(
           `Failed to write ${filename} to temporary folder. Error: ${e}`,
         );
@@ -315,7 +306,7 @@ export default class CertificateProvider {
       );
     }
     if (os === 'iOS' || os === 'windows' || os == 'MacOS') {
-      return fsExtra
+      return fs
         .writeFile(destination + filename, contents)
         .catch(async (err) => {
           if (os === 'iOS') {
@@ -354,7 +345,7 @@ export default class CertificateProvider {
   ): Promise<void> {
     const dir = await tmpDir({unsafeCleanup: true});
     const filePath = path.resolve(dir, filename);
-    await fsExtra.writeFile(filePath, contents);
+    await fs.writeFile(filePath, contents);
     return await iosUtil.push(
       udid,
       filePath,
@@ -508,7 +499,7 @@ export default class CertificateProvider {
           .then(() => dir);
       })
       .then((dir) => {
-        return fsExtra
+        return fs
           .readdir(dir)
           .then((items) => {
             if (items.length > 1) {
@@ -521,7 +512,7 @@ export default class CertificateProvider {
           })
           .then((fileName) => {
             const copiedFile = path.resolve(dir, fileName);
-            return fsExtra
+            return fs
               .readFile(copiedFile)
               .then((data) => this.santitizeString(data.toString()));
           });
@@ -546,16 +537,9 @@ export default class CertificateProvider {
           return [path, subject];
         }),
       )
-      .then(([path, subject]) => {
-        return new Promise<string>(function (resolve, reject) {
-          fs.unlink(path, (err) => {
-            if (err) {
-              reject(err);
-            } else {
-              resolve(subject);
-            }
-          });
-        });
+      .then(async ([path, subject]) => {
+        await fs.unlink(path);
+        return subject;
       })
       .then((subject) => {
         const matches = subject.trim().match(x509SubjectCNRegex);
@@ -577,16 +561,16 @@ export default class CertificateProvider {
   async loadSecureServerConfig(): Promise<SecureServerConfig> {
     await this.certificateSetup;
     return {
-      key: await fsExtra.readFile(serverKey),
-      cert: await fsExtra.readFile(serverCert),
-      ca: await fsExtra.readFile(caCert),
+      key: await fs.readFile(serverKey),
+      cert: await fs.readFile(serverCert),
+      ca: await fs.readFile(caCert),
       requestCert: true,
       rejectUnauthorized: true, // can be false if necessary as we don't strictly need to verify the client
     };
   }
 
   async ensureCertificateAuthorityExists(): Promise<void> {
-    if (!(await fsExtra.pathExists(caKey))) {
+    if (!(await fs.pathExists(caKey))) {
       return this.generateCertificateAuthority();
     }
     return this.checkCertIsValid(caCert).catch(() =>
@@ -595,7 +579,7 @@ export default class CertificateProvider {
   }
 
   private async checkCertIsValid(filename: string): Promise<void> {
-    if (!(await fsExtra.pathExists(filename))) {
+    if (!(await fs.pathExists(filename))) {
       return Promise.reject(new Error(`${filename} does not exist`));
     }
     // openssl checkend is a nice feature but it only checks for certificates
@@ -652,8 +636,8 @@ export default class CertificateProvider {
   }
 
   private async generateCertificateAuthority(): Promise<void> {
-    if (!(await fsExtra.pathExists(getFilePath('')))) {
-      await fsExtra.mkdir(getFilePath(''));
+    if (!(await fs.pathExists(getFilePath('')))) {
+      await fs.mkdir(getFilePath(''));
     }
     console.log('Generating new CA', logTag);
     return openssl('genrsa', {out: caKey, '2048': false})
@@ -671,9 +655,9 @@ export default class CertificateProvider {
 
   private async ensureServerCertExists(): Promise<void> {
     const allExist = Promise.all([
-      fsExtra.existsSync(serverKey),
-      fsExtra.existsSync(serverCert),
-      fsExtra.existsSync(caCert),
+      fs.pathExists(serverKey),
+      fs.pathExists(serverCert),
+      fs.pathExists(caCert),
     ]).then((exist) => exist.every(Boolean));
     if (!allExist) {
       return this.generateServerCertificate();
@@ -714,7 +698,7 @@ export default class CertificateProvider {
 
   private writeToTempFile(content: string): Promise<string> {
     return tmpFile().then((path) =>
-      fsExtra.writeFile(path, content).then((_) => path),
+      fs.writeFile(path, content).then((_) => path),
     );
   }
 }
