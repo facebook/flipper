@@ -27,7 +27,7 @@
     "@types/fs-extra": "^9.0.11",
     "@types/node": "^16.4.13",
     "fs-extra": "^10.0.0",
-    "tslib": "^2.3.0"
+    "tslib": "^2.3.1"
   },
   "devDependencies": {
     "@types/jest": "26.0.24",
