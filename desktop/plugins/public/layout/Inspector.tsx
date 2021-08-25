@@ -299,7 +299,8 @@ export default class Inspector extends Component<Props, State> {
       await this.getNodes([id], options);
     }
     this.updateElement(id, {expanded: true});
-    return this.getNodes(this.elements()[id].children, options);
+    const element: Element | undefined = this.elements()[id];
+    return this.getNodes((element && element.children) || [], options);
   }
 
   async getNodes(
