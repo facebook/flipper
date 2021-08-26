@@ -10,6 +10,12 @@
 import React from 'react';
 import {NoDevices} from '../NoDevices';
 
-export function TroubleshootingGuide(_props: {showGuide: boolean}) {
-  return <NoDevices />;
+export function TroubleshootingGuide(_props: {
+  showGuide: boolean;
+  devicesDetected: number;
+}) {
+  if (_props.devicesDetected == 0) return <NoDevices />;
+  else {
+    return <></>;
+  }
 }

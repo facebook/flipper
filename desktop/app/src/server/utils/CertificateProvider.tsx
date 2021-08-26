@@ -489,13 +489,7 @@ export default class CertificateProvider {
     return tmpDir({unsafeCleanup: true})
       .then((dir) => {
         return iosUtil
-          .pull(
-            deviceId,
-            originalFile,
-            bundleId,
-            path.join(dir, csrFileName),
-            this.config.idbPath,
-          )
+          .pull(deviceId, originalFile, bundleId, dir, this.config.idbPath)
           .then(() => dir);
       })
       .then((dir) => {
@@ -512,6 +506,7 @@ export default class CertificateProvider {
           })
           .then((fileName) => {
             const copiedFile = path.resolve(dir, fileName);
+            console.debug('Trying to read CSR from', copiedFile);
             return fs
               .readFile(copiedFile)
               .then((data) => this.santitizeString(data.toString()));

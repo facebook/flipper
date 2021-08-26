@@ -29,7 +29,8 @@ test('Idler should interrupt', async () => {
   }
 });
 
-test('Idler should want to idle', async () => {
+// TODO(T98901996): Re-enable with flakiness fixed.
+test.skip('Idler should want to idle', async () => {
   const idler = new IdlerImpl(100);
   expect(idler.shouldIdle()).toBe(false);
   await sleep(10);
