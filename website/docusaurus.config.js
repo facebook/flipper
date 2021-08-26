@@ -179,10 +179,18 @@ const siteConfig = {
         theme: {
           customCss: require.resolve('./static/css/custom.css'),
         },
+        staticDocsProject: 'flipper',
+        trackingFile: 'xplat/staticdocs/WATCHED_FILES',
+        'remark-code-snippets': {
+          baseDir: '..',
+        },
         enableEditor: true,
       },
     ],
   ],
+  customFields: {
+    fbRepoName: 'fbsource',
+  },
   // end_config_example
   plugins: [
     './src/plugins/support-symlinks',

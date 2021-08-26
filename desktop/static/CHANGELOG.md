@@ -1,3 +1,10 @@
+# 0.104.0 (25/8/2021)
+
+ * [D30410441](https://github.com/facebook/flipper/search?q=D30410441&type=Commits) -  [Internal]
+ * [D30407205](https://github.com/facebook/flipper/search?q=D30407205&type=Commits) -  [Internal]
+ * [D30423809](https://github.com/facebook/flipper/search?q=D30423809&type=Commits) -  Flipper now supports a richer protocol for opening deeplinks: https://fbflipper.com/docs/extending/deeplinks#open-plugin
+
+
 # 0.103.0 (18/8/2021)
 
  * [D30337820](https://github.com/facebook/flipper/search?q=D30337820&type=Commits) -  Network requests with duplicate IDs are filtered out

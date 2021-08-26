@@ -119,24 +119,6 @@ function parseIdbTargets(lines: string): Array<DeviceTarget> {
     }));
 }
 
-export async function idbDescribeTargets(
-  idbPath: string,
-  safeExecFunc: (
-    command: string,
-  ) => Promise<{stdout: string; stderr: string} | Output> = safeExec,
-): Promise<Array<DeviceTarget>> {
-  return safeExecFunc(`${idbPath} describe --json`)
-    .then(({stdout}) => parseIdbTargets(stdout!.toString()))
-    .catch((e: Error) => {
-      // idb describe doesn't work when multiple devices are available.
-      // That's expected behavior and we can skip the log.
-      if (!e.message.includes('multiple companions')) {
-        console.warn('Failed to query idb for targets:', e);
-      }
-      return [];
-    });
-}
-
 export async function idbListTargets(
   idbPath: string,
   safeExecFunc: (
@@ -184,10 +166,7 @@ async function targets(
   // when installed, use it.
   // TODO: Move idb availability check up.
   if (await memoize(isAvailable)(idbPath)) {
-    // We want to get both `idb describe` and `idb list-targets` outputs
-    // as in certain setups devices may not show up on one but the other.
-    const targets = await idbDescribeTargets(idbPath);
-    return targets.concat(await idbListTargets(idbPath));
+    return await idbListTargets(idbPath);
   } else {
     await killOrphanedInstrumentsProcesses();
     return safeExec('instruments -s devices')

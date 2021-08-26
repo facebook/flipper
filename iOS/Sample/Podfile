@@ -22,4 +22,6 @@ target 'Sample' do
   pod 'OpenSSL-Universal', :configuration => 'Debug'
   pod 'CocoaAsyncSocket', :configuration => 'Debug'
   pod 'ComponentKit', '~> 0.31'
+  pod 'SocketRocket', '~> 0.6.0'
+  
 end
