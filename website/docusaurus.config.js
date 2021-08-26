@@ -188,6 +188,9 @@ const siteConfig = {
       },
     ],
   ],
+  customFields: {
+    fbRepoName: 'fbsource',
+  },
   // end_config_example
   plugins: [
     './src/plugins/support-symlinks',
