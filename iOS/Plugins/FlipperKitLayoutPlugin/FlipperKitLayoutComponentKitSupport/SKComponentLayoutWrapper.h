@@ -18,7 +18,7 @@
 @class SKComponentLayoutWrapper;
 @class SKComponentMountedView;
 
-// CK::Variant does not support Objective-C types unless they are boxed:
+// RC::Variant does not support Objective-C types unless they are boxed:
 struct SKLeafViewChild {
   UIView* view;
 };
