@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#ifdef FB_SONARKIT_ENABLED
+
 #import <Flipper/FlipperTransportTypes.h>
 #import <Foundation/Foundation.h>
 
@@ -47,3 +49,5 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 NS_ASSUME_NONNULL_END
+
+#endif

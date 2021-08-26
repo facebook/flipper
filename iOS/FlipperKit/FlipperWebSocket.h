@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#ifdef FB_SONARKIT_ENABLED
+
 #pragma once
 
 #import <Flipper/FlipperSocket.h>
@@ -87,3 +89,5 @@ class FlipperWebSocketProvider : public FlipperSocketProvider {
 
 } // namespace flipper
 } // namespace facebook
+
+#endif

@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#ifdef FB_SONARKIT_ENABLED
+
 #import "FlipperWebSocket.h"
 #import <Flipper/ConnectionContextStore.h>
 #import <Flipper/FlipperTransportTypes.h>
@@ -240,3 +242,5 @@ void FlipperWebSocket::sendExpectResponse(
 
 } // namespace flipper
 } // namespace facebook
+
+#endif

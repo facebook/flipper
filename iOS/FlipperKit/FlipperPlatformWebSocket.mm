@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#ifdef FB_SONARKIT_ENABLED
+
 #import "FlipperPlatformWebSocket.h"
 #import <Flipper/Log.h>
 #import <SocketRocket/SocketRocket.h>
@@ -213,3 +215,5 @@ static constexpr int connectionKeepaliveSeconds = 10;
 }
 
 @end
+
+#endif
