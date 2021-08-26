@@ -179,6 +179,11 @@ const siteConfig = {
         theme: {
           customCss: require.resolve('./static/css/custom.css'),
         },
+        staticDocsProject: 'flipper',
+        trackingFile: 'xplat/staticdocs/WATCHED_FILES',
+        'remark-code-snippets': {
+          baseDir: '..',
+        },
         enableEditor: true,
       },
     ],
