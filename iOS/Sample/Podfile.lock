@@ -28,7 +28,6 @@ PODS:
     - FlipperKit/FBCxxFollyDynamicConvert
     - FlipperKit/FBDefines
     - FlipperKit/FKPortForwarding
-    - SocketRocket (~> 0.6.0)
   - FlipperKit/CppBridge (0.104.0):
     - Flipper (~> 0.104.0)
   - FlipperKit/FBCxxFollyDynamicConvert (0.104.0):
@@ -77,7 +76,6 @@ PODS:
   - libevent (2.1.12)
   - OpenSSL-Universal (1.1.1100)
   - RenderCore (0.31)
-  - SocketRocket (0.6.0)
   - Yoga (1.14.0)
   - YogaKit (1.18.1):
     - Yoga (~> 1.14)
@@ -99,7 +97,6 @@ DEPENDENCIES:
   - FlipperKit/SKIOSNetworkPlugin (from `../../FlipperKit.podspec`)
   - libevent
   - OpenSSL-Universal
-  - SocketRocket (~> 0.6.0)
 
 SPEC REPOS:
   https://github.com/CocoaPods/Specs:
@@ -115,7 +112,6 @@ SPEC REPOS:
     - libevent
     - OpenSSL-Universal
     - RenderCore
-    - SocketRocket
     - Yoga
     - YogaKit
 
@@ -136,14 +132,13 @@ SPEC CHECKSUMS:
   Flipper-Glog: 05579840e2750ec907ee2f81544f41ad76a7cae4
   Flipper-PeerTalk: 116d8f857dc6ef55c7a5a75ea3ceaafe878aadc9
   Flipper-RSocket: d9d9ade67cbecf6ac10730304bf5607266dd2541
-  FlipperKit: fd70e8414049b3704be99710cbdb79fce8f39200
+  FlipperKit: 9d78475d353d45f915523494908381afef1cf0c3
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
   RenderCore: 090beb17b5bff80b86929a7ceb49df789923d23a
-  SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
   Yoga: cff67a400f6b74dc38eb0bad4f156673d9aa980c
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 8f7b8c1a8e7cee47eaef4736990315bfc090e2af
+PODFILE CHECKSUM: 154af3b1cdd6d65b1141c1215a3789297116c992
 
 COCOAPODS: 1.10.2
