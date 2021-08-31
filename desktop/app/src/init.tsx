@@ -49,7 +49,7 @@ import styled from '@emotion/styled';
 import {CopyOutlined} from '@ant-design/icons';
 import {getVersionString} from './utils/versionString';
 import {PersistGate} from 'redux-persist/integration/react';
-import {ipcRenderer} from 'electron';
+import {ipcRenderer, remote} from 'electron';
 
 if (process.env.NODE_ENV === 'development' && os.platform() === 'darwin') {
   // By default Node.JS has its internal certificate storage and doesn't use
@@ -213,9 +213,20 @@ function init() {
   sideEffect(
     store,
     {name: 'loadTheme', fireImmediately: false, throttleMs: 500},
-    (state) => ({
-      dark: state.settingsState.darkMode,
-    }),
+    (state) => {
+      const darkMode = state.settingsState.darkMode;
+      let shouldUseDarkMode = remote.systemPreferences.isDarkMode();
+      if (darkMode === 'dark') {
+        shouldUseDarkMode = true;
+      } else if (darkMode === 'light') {
+        shouldUseDarkMode =  false;
+      } else if (darkMode === 'auto') {
+        shouldUseDarkMode = remote.systemPreferences.isDarkMode();
+      }
+      return {
+        dark: shouldUseDarkMode
+      }
+    },
     (theme) => {
       (
         document.getElementById('flipper-theme-import') as HTMLLinkElement
