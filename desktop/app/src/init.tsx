@@ -219,13 +219,13 @@ function init() {
       if (darkMode === 'dark') {
         shouldUseDarkMode = true;
       } else if (darkMode === 'light') {
-        shouldUseDarkMode =  false;
+        shouldUseDarkMode = false;
       } else if (darkMode === 'auto') {
         shouldUseDarkMode = remote.systemPreferences.isDarkMode();
       }
       return {
-        dark: shouldUseDarkMode
-      }
+        dark: shouldUseDarkMode,
+      };
     },
     (theme) => {
       (
