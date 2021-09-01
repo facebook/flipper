@@ -57,7 +57,7 @@ class ServerWebSocketBrowser extends ServerWebSocketBase {
       device_id: deviceId,
       device,
       app: device,
-      os: 'JSWebApp',
+      os: 'MacOS', // TODO: not hardcoded! Use host device?
     };
 
     this.listener.onConnectionAttempt(clientQuery);

@@ -27,7 +27,7 @@ export type DeviceShell = {
   stdin: stream.Writable;
 };
 
-export type OS = PluginOS | 'Windows' | 'MacOS' | 'JSWebApp';
+export type OS = PluginOS | 'Windows' | 'MacOS';
 
 type PluginDefinition = _SandyPluginDefinition;
 type PluginMap = Map<string, PluginDefinition>;

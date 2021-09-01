@@ -171,8 +171,7 @@ class ServerWebSocket extends ServerWebSocketBase {
       str === 'Android' ||
       str === 'Metro' ||
       str === 'Windows' ||
-      str === 'MacOS' ||
-      str === 'JSWebApp'
+      str === 'MacOS'
     );
   }
 

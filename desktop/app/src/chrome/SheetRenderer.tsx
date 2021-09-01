@@ -12,7 +12,6 @@ import ShareSheetExportUrl from './ShareSheetExportUrl';
 import SignInSheet from './fb-stubs/SignInSheet';
 import ExportDataPluginSheet from './ExportDataPluginSheet';
 import ShareSheetExportFile from './ShareSheetExportFile';
-import JSEmulatorLauncherSheet from './JSEmulatorLauncherSheet';
 import Sheet from './Sheet';
 import {
   ACTIVE_SHEET_PLUGINS,
@@ -23,7 +22,6 @@ import {
   ACTIVE_SHEET_SHARE_DATA_IN_FILE,
   ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT,
   ACTIVE_SHEET_PLUGIN_SHEET,
-  ACTIVE_SHEET_JS_EMULATOR_LAUNCHER,
   ACTIVE_SHEET_CHANGELOG,
   ACTIVE_SHEET_CHANGELOG_RECENT_ONLY,
 } from '../reducers/application';
@@ -80,8 +78,6 @@ export function SheetRenderer({logger}: {logger: Logger}) {
         case ACTIVE_SHEET_PLUGIN_SHEET:
           // Currently unused.
           return null;
-        case ACTIVE_SHEET_JS_EMULATOR_LAUNCHER:
-          return <JSEmulatorLauncherSheet onHide={onHide} />;
         default:
           return null;
       }

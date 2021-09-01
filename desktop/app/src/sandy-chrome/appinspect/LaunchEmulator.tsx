@@ -24,8 +24,6 @@ import {
   launchSimulator, // TODO: move to iOSDeviceManager
   IOSDeviceParams,
 } from '../../server/devices/ios/iOSDeviceManager';
-import GK from '../../fb-stubs/GK';
-import {JSEmulatorLauncherSheetSandy} from '../../chrome/JSEmulatorLauncherSheet';
 
 const COLD_BOOT = 'cold-boot';
 
@@ -143,7 +141,7 @@ export const LaunchEmulatorDialog = withTrackingScope(
           onClick={() =>
             launchSimulator(device.udid)
               .catch((e) => {
-                console.error(e);
+                console.error('Failed to start simulator: ', e);
                 message.error('Failed to start simulator: ' + e);
               })
               .then(onClose)
@@ -152,15 +150,6 @@ export const LaunchEmulatorDialog = withTrackingScope(
         </Button>
       )),
     ];
-    // Launch JS emulator
-    if (GK.get('flipper_js_client_emulator')) {
-      items.push(
-        <JSEmulatorLauncherSheetSandy
-          key="js-emulator-launcher"
-          onClose={onClose}
-        />,
-      );
-    }
 
     return (
       <Modal

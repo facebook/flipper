@@ -19,9 +19,7 @@ import {reportPlatformFailures} from '../../utils/metrics';
 import {EventEmitter} from 'events';
 import invariant from 'invariant';
 import GK from '../../fb-stubs/GK';
-import {initJsEmulatorIPC} from '../devices/webapp/jsServerUtils';
 import {buildClientId} from '../../utils/clientUtils';
-import JSDevice from '../devices/webapp/JSDevice';
 import DummyDevice from '../../server/devices/DummyDevice';
 import BaseDevice from '../../server/devices/BaseDevice';
 import {sideEffect} from '../../utils/sideEffect';
@@ -130,10 +128,6 @@ class ServerController extends EventEmitter implements ServerEventsListener {
 
     reportPlatformFailures(this.initialized, 'initializeServer');
 
-    if (GK.get('flipper_js_client_emulator')) {
-      initJsEmulatorIPC(this.flipperServer, this.connections);
-    }
-
     return this.initialized;
   }
 
@@ -212,13 +206,6 @@ class ServerController extends EventEmitter implements ServerEventsListener {
       appName: appNameWithUpdateHint(clientQuery),
     };
     this.emit('start-client-setup', client);
-
-    if (clientQuery.os === 'JSWebApp') {
-      this.store.dispatch({
-        type: 'REGISTER_DEVICE',
-        payload: new JSDevice(clientQuery.device_id, clientQuery.app, 1),
-      });
-    }
   }
 
   onProcessCSR(
