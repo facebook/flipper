@@ -10,10 +10,6 @@
 import {useStore} from './useStore';
 import {remote} from 'electron';
 
-remote.nativeTheme.on('updated', (theme: any) =>{
-  
-});
-
 /**
  * This hook returns whether dark mode is currently being used.
  * Generally should be avoided in favor of using the above theme object,
@@ -29,6 +25,6 @@ export function useIsDarkMode(): boolean {
     } else if (darkMode === 'system') {
       return remote.nativeTheme.shouldUseDarkColors;
     }
-    return remote.nativeTheme.shouldUseDarkColors;
+    return false;
   });
 }
