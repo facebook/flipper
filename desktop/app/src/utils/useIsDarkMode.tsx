@@ -23,8 +23,8 @@ export function useIsDarkMode(): boolean {
     } else if (darkMode === 'light') {
       return false;
     } else if (darkMode === 'auto') {
-      return remote.systemPreferences.isDarkMode();
+      return remote.nativeTheme.shouldUseDarkColors;
     }
-    return remote.systemPreferences.isDarkMode();
+    return remote.nativeTheme.shouldUseDarkColors;
   });
 }
