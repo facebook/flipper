@@ -60,7 +60,7 @@
     "react-redux": "^7.2.4",
     "react-test-renderer": "^17.0.1",
     "react-transition-group": "^4.4.2",
-    "react-virtualized-auto-sizer": "^1.0.5",
+    "react-virtualized-auto-sizer": "^1.0.6",
     "react-window": "^1.8.6",
     "recursive-readdir": "^2.2.2",
     "redux": "^4.1.1",
@@ -82,14 +82,14 @@
     "7zip-bin-mac": "^1.0.1"
   },
   "devDependencies": {
-    "@testing-library/dom": "^8.1.1",
+    "@testing-library/dom": "^8.2.0",
     "@testing-library/react": "^12.0.0",
     "@types/lodash.memoize": "^4.1.6",
     "@types/split2": "^3.2.1",
     "flipper-test-utils": "0.0.0",
     "metro-runtime": "^0.66.2",
     "mock-fs": "^5.0.0",
-    "pretty-format": "^27.0.6",
+    "pretty-format": "^27.1.0",
     "react-refresh": "^0.10.0",
     "redux-mock-store": "^1.0.1",
     "ts-jest": "^26.5.6"

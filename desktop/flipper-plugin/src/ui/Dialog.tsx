@@ -67,7 +67,7 @@ export const Dialog = {
                   onHide();
                   resolve(value);
                 } catch (e) {
-                  submissionError.set(e.toString());
+                  submissionError.set((e as Error).toString());
                 }
               }}
               okButtonProps={{

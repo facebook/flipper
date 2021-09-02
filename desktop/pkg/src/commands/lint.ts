@@ -41,7 +41,7 @@ export default class Lint extends Command {
         );
       }
     } catch (error) {
-      this.error(error);
+      this.error(error as Error);
     }
     console.log('✅  Plugin package definition is valid');
   }
