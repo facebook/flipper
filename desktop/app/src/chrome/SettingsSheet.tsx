@@ -260,7 +260,7 @@ class SettingsSheet extends Component<Props, State> {
             }}>
             <Radio.Button value="dark">Dark</Radio.Button>
             <Radio.Button value="light">Light</Radio.Button>
-            <Radio.Button value="auto">Use System Seeting</Radio.Button>
+            <Radio.Button value="system">Use System Setting</Radio.Button>
           </Radio.Group>
         </FlexColumn>
         <ToggledSection
