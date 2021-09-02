@@ -214,24 +214,25 @@ function init() {
     store,
     {name: 'loadTheme', fireImmediately: false, throttleMs: 500},
     (state) => {
-      const darkMode = state.settingsState.darkMode;
-      let shouldUseDarkMode = remote.systemPreferences.isDarkMode();
-      if (darkMode === 'dark') {
+      const theme = state.settingsState.darkMode;
+      let shouldUseDarkMode = remote.nativeTheme.shouldUseDarkColors;
+      if (theme === 'dark') {
         shouldUseDarkMode = true;
-      } else if (darkMode === 'light') {
+      } else if (theme === 'light') {
         shouldUseDarkMode = false;
-      } else if (darkMode === 'auto') {
-        shouldUseDarkMode = remote.systemPreferences.isDarkMode();
+      } else if (theme === 'system') {
+        shouldUseDarkMode = remote.nativeTheme.shouldUseDarkColors;
       }
       return {
-        dark: shouldUseDarkMode,
+        shouldUseDarkMode: shouldUseDarkMode,
+        theme: theme
       };
     },
-    (theme) => {
+    (result) => {
       (
         document.getElementById('flipper-theme-import') as HTMLLinkElement
-      ).href = `themes/${theme.dark ? 'dark' : 'light'}.css`;
-      ipcRenderer.send('setTheme', theme.dark ? 'dark' : 'light');
+      ).href = `themes/${result.shouldUseDarkMode ? 'dark' : 'light'}.css`;
+      ipcRenderer.send('setTheme', result.theme);
     },
   );
 }
