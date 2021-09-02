@@ -7,13 +7,12 @@
  * @format
  */
 
-import {Alert, Input, Modal, Radio, Space, Typography} from 'antd';
+import {Alert, ButtonProps, Input, Modal, Radio, Space, Typography} from 'antd';
 import {createState, useValue} from '../state/atom';
 import React from 'react';
 import {renderReactRoot} from '../utils/renderReactRoot';
 import {Layout} from './Layout';
 import {Spinner} from './Spinner';
-
 type DialogResult<T> = Promise<false | T> & {close: () => void};
 
 type BaseDialogOptions = {
@@ -21,6 +20,8 @@ type BaseDialogOptions = {
   okText?: string;
   cancelText?: string;
   width?: number;
+  okButtonProps?: ButtonProps;
+  cancelButtonProps?: ButtonProps;
 };
 
 const defaultWidth = 400;
@@ -74,7 +75,9 @@ export const Dialog = {
                 disabled: opts.onValidate
                   ? !!opts.onValidate(currentValue) // non-falsy value means validation error
                   : false,
+                ...opts.okButtonProps,
               }}
+              cancelButtonProps={opts.cancelButtonProps}
               onCancel={cancel}
               width={opts.width ?? defaultWidth}>
               <Layout.Container gap>

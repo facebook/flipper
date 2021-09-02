@@ -26,7 +26,6 @@ import isProduction, {isTest} from '../utils/isProduction';
 import restart from '../utils/restartFlipper';
 import BaseDevice from '../server/devices/BaseDevice';
 import Client from '../Client';
-import {Button} from 'antd';
 import {RocketOutlined} from '@ant-design/icons';
 import {showEmulatorLauncher} from '../sandy-chrome/appinspect/LaunchEmulator';
 
@@ -491,41 +490,42 @@ async function launchDeviceDialog(
   title: string,
 ) {
   return new Promise<boolean>((resolve) => {
-    const dialog = Dialog.alert({
+    const currentDevices = store.getState().connections.devices;
+    const waitForNewDevice = async () =>
+      await waitFor(
+        store,
+        (state) => state.connections.devices !== currentDevices,
+      );
+    const dialog = Dialog.confirm({
       title,
-      type: 'warning',
       message: (
         <p>
           To open the current deeplink for plugin {params.pluginId} a device{' '}
           {params.devices.length ? ' of type ' + params.devices.join(', ') : ''}{' '}
           should be up and running. No device was found. Please connect a device
-          or launch an emulator / simulator{' '}
-          <Button
-            icon={<RocketOutlined />}
-            title="Start Emulator / Simulator"
-            onClick={() => {
-              showEmulatorLauncher(store);
-            }}
-            size="small"
-          />
-          .
+          or launch an emulator / simulator.
         </p>
       ),
-      okText: 'Cancel',
+      cancelText: 'Cancel',
+      okText: 'Launch Device',
+      onConfirm: async () => {
+        showEmulatorLauncher(store);
+        await waitForNewDevice();
+        return true;
+      },
+      okButtonProps: {
+        icon: <RocketOutlined />,
+      },
     });
     // eslint-disable-next-line promise/catch-or-return
     dialog.then(() => {
-      // dialog was canceled
+      // dialog was cancelled
       resolve(false);
     });
 
-    const currentDevices = store.getState().connections.devices;
     // new devices were found
     // eslint-disable-next-line promise/catch-or-return
-    waitFor(
-      store,
-      (state) => state.connections.devices !== currentDevices,
-    ).then(() => {
+    waitForNewDevice().then(() => {
       dialog.close();
       resolve(true);
     });
