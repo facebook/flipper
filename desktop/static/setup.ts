@@ -24,7 +24,7 @@ export type Config = {
   launcherMsg?: string | undefined;
   updaterEnabled?: boolean;
   launcherEnabled?: boolean;
-  darkMode: ('system' | 'light' | 'dark');
+  darkMode: 'system' | 'light' | 'dark';
 };
 
 export default function setup(argv: any) {
@@ -38,7 +38,7 @@ export default function setup(argv: any) {
   let config: Config = {
     pluginPaths: [],
     disabledPlugins: [],
-    darkMode: 'light'
+    darkMode: 'light',
   };
 
   try {

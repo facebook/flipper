@@ -225,7 +225,7 @@ function init() {
       }
       return {
         shouldUseDarkMode: shouldUseDarkMode,
-        theme: theme
+        theme: theme,
       };
     },
     (result) => {
