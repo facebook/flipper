@@ -92,6 +92,7 @@ This step is completed if the plugin follows the next `plugin` / `component` str
 Some abstractions that used to be (for example) static methods on `FlipperPlugin` are now exposed from the `client` object:
 
 | Old | New |
+| --- | --- |
 | `persistedState` | Use `createState` and set the `persist` option |
 | `persistedStateReducer` | Create message handlers and update the state objects directly |
 | `exportPersistedState` | Use the `client.onExport` hook |
