@@ -355,66 +355,62 @@ export default class CertificateProvider {
     );
   }
 
-  private getTargetAndroidDeviceId(
+  private async getTargetAndroidDeviceId(
     appName: string,
     deviceCsrFilePath: string,
     csr: string,
   ): Promise<string> {
-    return this.adb
-      .then((client) => client.listDevices())
-      .then((devices) => {
-        if (devices.length === 0) {
-          throw new Error('No Android devices found');
-        }
-        const deviceMatchList = devices.map((device) =>
-          this.androidDeviceHasMatchingCSR(
-            deviceCsrFilePath,
-            device.id,
-            appName,
-            csr,
-          )
-            .then((result) => {
-              return {id: device.id, ...result, error: null};
-            })
-            .catch((e) => {
-              console.warn(
-                `Unable to check for matching CSR in ${device.id}:${appName}`,
-                logTag,
-              );
-              return {id: device.id, isMatch: false, foundCsr: null, error: e};
-            }),
+    const devices = await this.adb.then((client) => client.listDevices());
+    if (devices.length === 0) {
+      throw new Error('No Android devices found');
+    }
+    const deviceMatchList = devices.map(async (device) => {
+      try {
+        const result = await this.androidDeviceHasMatchingCSR(
+          deviceCsrFilePath,
+          device.id,
+          appName,
+          csr,
         );
-        return Promise.all(deviceMatchList).then((devices) => {
-          const matchingIds = devices.filter((m) => m.isMatch).map((m) => m.id);
-          if (matchingIds.length == 0) {
-            const erroredDevice = devices.find((d) => d.error);
-            if (erroredDevice) {
-              throw erroredDevice.error;
-            }
-            const foundCsrs = devices
-              .filter((d) => d.foundCsr !== null)
-              .map((d) => (d.foundCsr ? encodeURI(d.foundCsr) : 'null'));
-            console.warn(`Looking for CSR (url encoded):
+        return {id: device.id, ...result, error: null};
+      } catch (e) {
+        console.warn(
+          `Unable to check for matching CSR in ${device.id}:${appName}`,
+          logTag,
+        );
+        return {id: device.id, isMatch: false, foundCsr: null, error: e};
+      }
+    });
+    return Promise.all(deviceMatchList).then((devices) => {
+      const matchingIds = devices.filter((m) => m.isMatch).map((m) => m.id);
+      if (matchingIds.length == 0) {
+        const erroredDevice = devices.find((d) => d.error);
+        if (erroredDevice) {
+          throw erroredDevice.error;
+        }
+        const foundCsrs = devices
+          .filter((d) => d.foundCsr !== null)
+          .map((d) => (d.foundCsr ? encodeURI(d.foundCsr) : 'null'));
+        console.warn(`Looking for CSR (url encoded):
 
             ${encodeURI(this.santitizeString(csr))}
 
             Found these:
 
             ${foundCsrs.join('\n\n')}`);
-            throw new Error(`No matching device found for app: ${appName}`);
-          }
-          if (matchingIds.length > 1) {
-            console.warn(
-              new Error('More than one matching device found for CSR'),
-              csr,
-            );
-          }
-          return matchingIds[0];
-        });
-      });
+        throw new Error(`No matching device found for app: ${appName}`);
+      }
+      if (matchingIds.length > 1) {
+        console.warn(
+          new Error('More than one matching device found for CSR'),
+          csr,
+        );
+      }
+      return matchingIds[0];
+    });
   }
 
-  private getTargetiOSDeviceId(
+  private async getTargetiOSDeviceId(
     appName: string,
     deviceCsrFilePath: string,
     csr: string,
@@ -424,30 +420,29 @@ export default class CertificateProvider {
       // It's a simulator, the deviceId is in the filepath.
       return Promise.resolve(matches[1]);
     }
-    return iosUtil
-      .targets(this.config.idbPath, this.config.enablePhysicalIOS)
-      .then((targets) => {
-        if (targets.length === 0) {
-          throw new Error('No iOS devices found');
-        }
-        const deviceMatchList = targets.map((target) =>
-          this.iOSDeviceHasMatchingCSR(
-            deviceCsrFilePath,
-            target.udid,
-            appName,
-            csr,
-          ).then((isMatch) => {
-            return {id: target.udid, isMatch};
-          }),
-        );
-        return Promise.all(deviceMatchList).then((devices) => {
-          const matchingIds = devices.filter((m) => m.isMatch).map((m) => m.id);
-          if (matchingIds.length == 0) {
-            throw new Error(`No matching device found for app: ${appName}`);
-          }
-          return matchingIds[0];
-        });
-      });
+    const targets = await iosUtil.targets(
+      this.config.idbPath,
+      this.config.enablePhysicalIOS,
+    );
+    if (targets.length === 0) {
+      throw new Error('No iOS devices found');
+    }
+    const deviceMatchList = targets.map(async (target) => {
+      const isMatch = await this.iOSDeviceHasMatchingCSR(
+        deviceCsrFilePath,
+        target.udid,
+        appName,
+        csr,
+      );
+      return {id: target.udid, isMatch};
+    });
+    return Promise.all(deviceMatchList).then((devices) => {
+      const matchingIds = devices.filter((m) => m.isMatch).map((m) => m.id);
+      if (matchingIds.length == 0) {
+        throw new Error(`No matching device found for app: ${appName}`);
+      }
+      return matchingIds[0];
+    });
   }
 
   private androidDeviceHasMatchingCSR(
@@ -477,7 +472,7 @@ export default class CertificateProvider {
       });
   }
 
-  private iOSDeviceHasMatchingCSR(
+  private async iOSDeviceHasMatchingCSR(
     directory: string,
     deviceId: string,
     bundleId: string,
@@ -486,71 +481,54 @@ export default class CertificateProvider {
     const originalFile = this.getRelativePathInAppContainer(
       path.resolve(directory, csrFileName),
     );
-    return tmpDir({unsafeCleanup: true})
-      .then((dir) => {
-        return iosUtil
-          .pull(deviceId, originalFile, bundleId, dir, this.config.idbPath)
-          .then(() => dir);
-      })
-      .then((dir) => {
-        return fs
-          .readdir(dir)
-          .then((items) => {
-            if (items.length > 1) {
-              throw new Error('Conflict in temp dir');
-            }
-            if (items.length === 0) {
-              throw new Error('Failed to pull CSR from device');
-            }
-            return items[0];
-          })
-          .then((fileName) => {
-            const copiedFile = path.resolve(dir, fileName);
-            console.debug('Trying to read CSR from', copiedFile);
-            return fs
-              .readFile(copiedFile)
-              .then((data) => this.santitizeString(data.toString()));
-          });
-      })
-      .then((csrFromDevice) => csrFromDevice === this.santitizeString(csr));
+    const dir = await tmpDir({unsafeCleanup: true});
+    await iosUtil.pull(
+      deviceId,
+      originalFile,
+      bundleId,
+      dir,
+      this.config.idbPath,
+    );
+    const items = await fs.readdir(dir);
+    if (items.length > 1) {
+      throw new Error('Conflict in temp dir');
+    }
+    if (items.length === 0) {
+      throw new Error('Failed to pull CSR from device');
+    }
+    const fileName = items[0];
+    const copiedFile = path.resolve(dir, fileName);
+    console.debug('Trying to read CSR from', copiedFile);
+    const data = await fs.readFile(copiedFile);
+    const csrFromDevice = this.santitizeString(data.toString());
+    return csrFromDevice === this.santitizeString(csr);
   }
 
   private santitizeString(csrString: string): string {
     return csrString.replace(/\r/g, '').trim();
   }
 
-  extractAppNameFromCSR(csr: string): Promise<string> {
-    return this.writeToTempFile(csr)
-      .then((path) =>
-        openssl('req', {
-          in: path,
-          noout: true,
-          subject: true,
-          nameopt: true,
-          RFC2253: false,
-        }).then((subject) => {
-          return [path, subject];
-        }),
-      )
-      .then(async ([path, subject]) => {
-        await fs.unlink(path);
-        return subject;
-      })
-      .then((subject) => {
-        const matches = subject.trim().match(x509SubjectCNRegex);
-        if (!matches || matches.length < 2) {
-          throw new Error(`Cannot extract CN from ${subject}`);
-        }
-        return matches[1];
-      })
-      .then((appName) => {
-        if (!appName.match(allowedAppNameRegex)) {
-          throw new Error(
-            `Disallowed app name in CSR: ${appName}. Only alphanumeric characters and '.' allowed.`,
-          );
-        }
-        return appName;
-      });
+  async extractAppNameFromCSR(csr: string): Promise<string> {
+    const path = await this.writeToTempFile(csr);
+    const subject = await openssl('req', {
+      in: path,
+      noout: true,
+      subject: true,
+      nameopt: true,
+      RFC2253: false,
+    });
+    await fs.unlink(path);
+    const matches = subject.trim().match(x509SubjectCNRegex);
+    if (!matches || matches.length < 2) {
+      throw new Error(`Cannot extract CN from ${subject}`);
+    }
+    const appName = matches[1];
+    if (!appName.match(allowedAppNameRegex)) {
+      throw new Error(
+        `Disallowed app name in CSR: ${appName}. Only alphanumeric characters and '.' allowed.`,
+      );
+    }
+    return appName;
   }
 
   async loadSecureServerConfig(): Promise<SecureServerConfig> {
@@ -691,10 +669,10 @@ export default class CertificateProvider {
       .then((_) => undefined);
   }
 
-  private writeToTempFile(content: string): Promise<string> {
-    return tmpFile().then((path) =>
-      fs.writeFile(path, content).then((_) => path),
-    );
+  private async writeToTempFile(content: string): Promise<string> {
+    const path = await tmpFile();
+    await fs.writeFile(path, content);
+    return path;
   }
 }
 
