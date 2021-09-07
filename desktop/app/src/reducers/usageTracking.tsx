@@ -8,6 +8,8 @@
  */
 
 import {produce} from 'immer';
+// Used for focus events which is fine.
+// eslint-disable-next-line flipper/no-electron-remote-imports
 import {remote} from 'electron';
 import {Actions} from './';
 import {SelectionInfo} from '../utils/info';

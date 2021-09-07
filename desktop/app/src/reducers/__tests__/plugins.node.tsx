@@ -45,7 +45,7 @@ test('add clientPlugin', () => {
       marketplacePlugins: [],
       uninstalledPluginNames: new Set(),
       installedPlugins: new Map(),
-      initialised: false,
+      initialized: false,
     },
     registerPlugins([testPlugin]),
   );
@@ -66,7 +66,7 @@ test('add devicePlugin', () => {
       marketplacePlugins: [],
       uninstalledPluginNames: new Set(),
       installedPlugins: new Map(),
-      initialised: false,
+      initialized: false,
     },
     registerPlugins([testDevicePlugin]),
   );
@@ -87,7 +87,7 @@ test('do not add plugin twice', () => {
       marketplacePlugins: [],
       uninstalledPluginNames: new Set(),
       installedPlugins: new Map(),
-      initialised: false,
+      initialized: false,
     },
     registerPlugins([testPlugin, testPlugin]),
   );
@@ -124,7 +124,7 @@ test('add gatekeeped plugin', () => {
       marketplacePlugins: [],
       installedPlugins: new Map(),
       uninstalledPluginNames: new Set(),
-      initialised: false,
+      initialized: false,
     },
     addGatekeepedPlugins(gatekeepedPlugins),
   );

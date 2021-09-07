@@ -41,7 +41,7 @@ type StateV1 = {
   marketplacePlugins: Array<MarketplacePluginDetails>;
   uninstalledPluginNames: Set<string>;
   installedPlugins: Map<string, InstalledPluginDetails>;
-  initialised: boolean;
+  initialized: boolean;
 };
 
 type StateV0 = Omit<StateV1, 'uninstalledPluginNames'> & {
@@ -112,7 +112,7 @@ export type Action =
       payload: PluginDefinition;
     }
   | {
-      type: 'PLUGINS_INITIALISED';
+      type: 'PLUGINS_INITIALIZED';
     };
 
 const INITIAL_STATE: State = {
@@ -127,7 +127,7 @@ const INITIAL_STATE: State = {
   marketplacePlugins: [],
   uninstalledPluginNames: new Set(),
   installedPlugins: new Map(),
-  initialised: false,
+  initialized: false,
 };
 
 export default function reducer(
@@ -219,9 +219,9 @@ export default function reducer(
       draft.uninstalledPluginNames.delete(plugin.details.name);
       draft.loadedPlugins.set(plugin.id, plugin.details);
     });
-  } else if (action.type === 'PLUGINS_INITIALISED') {
+  } else if (action.type === 'PLUGINS_INITIALIZED') {
     return produce(state, (draft) => {
-      draft.initialised = true;
+      draft.initialized = true;
     });
   } else {
     return state;
@@ -304,6 +304,6 @@ export const pluginLoaded = (payload: PluginDefinition): Action => ({
   payload,
 });
 
-export const pluginsInitialised = (): Action => ({
-  type: 'PLUGINS_INITIALISED',
+export const pluginsInitialized = (): Action => ({
+  type: 'PLUGINS_INITIALIZED',
 });

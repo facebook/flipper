@@ -22,7 +22,7 @@ import {
   registerBundledPlugins,
   registerMarketplacePlugins,
   MarketplacePluginDetails,
-  pluginsInitialised,
+  pluginsInitialized,
 } from '../reducers/plugins';
 import GK from '../fb-stubs/GK';
 import {FlipperBasePlugin} from '../plugin';
@@ -110,7 +110,7 @@ export default async (store: Store, logger: Logger) => {
   store.dispatch(addDisabledPlugins(disabledPlugins));
   store.dispatch(addFailedPlugins(failedPlugins));
   store.dispatch(registerPlugins(initialPlugins));
-  store.dispatch(pluginsInitialised());
+  store.dispatch(pluginsInitialized());
 
   sideEffect(
     store,

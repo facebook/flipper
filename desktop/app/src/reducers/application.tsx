@@ -7,6 +7,8 @@
  * @format
  */
 
+// This is fine, we're using a focus event.
+// eslint-disable-next-line flipper/no-electron-remote-imports
 import {remote} from 'electron';
 import {v1 as uuidv1} from 'uuid';
 import {ReactElement} from 'react';
