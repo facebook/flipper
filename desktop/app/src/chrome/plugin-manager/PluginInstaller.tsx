@@ -143,7 +143,10 @@ function InstallButton(props: {
       try {
         await fn();
       } catch (err) {
-        console.error(err);
+        console.error(
+          `Installation process of kind ${actionKind} failed with:`,
+          err,
+        );
         setAction({kind: actionKind, error: err.toString()});
       }
     };
@@ -293,18 +296,18 @@ function useNPMSearch(
 
   useEffect(() => {
     (async () => {
-      let cancelled = false;
+      let canceled = false;
       const updatablePlugins = await reportPlatformFailures(
         getUpdatablePlugins(query),
         `${TAG}:queryIndex`,
       );
-      if (cancelled) {
+      if (canceled) {
         return;
       }
       setSearchResults(updatablePlugins);
       // Clean up: if query changes while we're searching, abandon results.
       return () => {
-        cancelled = true;
+        canceled = true;
       };
     })();
   }, [query, installedPlugins]);
@@ -320,10 +323,9 @@ export default connect<PropsFromState, DispatchFromProps, OwnProps, AppState>(
     installedPlugins,
   }),
   (dispatch: Dispatch<Action<any>>) => ({
-    refreshInstalledPlugins: () => {
-      getInstalledPlugins().then((plugins) =>
-        dispatch(registerInstalledPlugins(plugins)),
-      );
+    refreshInstalledPlugins: async () => {
+      const plugins = await getInstalledPlugins();
+      dispatch(registerInstalledPlugins(plugins));
     },
   }),
 )(PluginInstaller);

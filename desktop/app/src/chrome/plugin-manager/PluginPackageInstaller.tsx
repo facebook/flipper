@@ -56,7 +56,7 @@ export default function PluginPackageInstaller({
       await onInstall();
     } catch (e) {
       setError(e);
-      console.error(e);
+      console.error('PluginPackageInstaller install error:', e);
     } finally {
       setInProgress(false);
     }

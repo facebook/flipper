@@ -15,7 +15,7 @@ const IndentedSection = styled(FlexColumn)({
   paddingLeft: 50,
   paddingBottom: 10,
 });
-const GreyedOutOverlay = styled.div({
+const GrayedOutOverlay = styled.div({
   background: theme.backgroundDefault,
   borderRadius: 4,
   opacity: 0.6,
@@ -41,11 +41,11 @@ export default function ToggledSection(props: {
           onClick={() => props.onChange && props.onChange(!props.toggled)}
           toggled={props.toggled}
         />
-        {props.frozen && <GreyedOutOverlay />}
+        {props.frozen && <GrayedOutOverlay />}
       </FlexRow>
       <IndentedSection>
         {props.children}
-        {props.toggled || props.frozen ? null : <GreyedOutOverlay />}
+        {props.toggled || props.frozen ? null : <GrayedOutOverlay />}
       </IndentedSection>
     </FlexColumn>
   );

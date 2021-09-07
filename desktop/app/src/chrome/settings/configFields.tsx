@@ -19,6 +19,8 @@ import {
 } from '../../ui';
 import React, {useState} from 'react';
 import {promises as fs} from 'fs';
+// Used for dialogs.
+// eslint-disable-next-line flipper/no-electron-remote-imports
 import {remote} from 'electron';
 import path from 'path';
 
@@ -49,7 +51,7 @@ const CenteredGlyph = styled(Glyph)({
   marginLeft: 10,
 });
 
-const GreyedOutOverlay = styled.div({
+const GrayedOutOverlay = styled.div({
   backgroundColor: '#EFEEEF',
   borderRadius: 4,
   opacity: 0.6,
@@ -129,7 +131,7 @@ export function FilePathConfigField(props: {
       {isValid ? null : (
         <CenteredGlyph name="caution-triangle" color={colors.yellow} />
       )}
-      {props.frozen && <GreyedOutOverlay />}
+      {props.frozen && <GrayedOutOverlay />}
     </ConfigFieldContainer>
   );
 }
@@ -138,7 +140,7 @@ export function ConfigText(props: {content: string; frozen?: boolean}) {
   return (
     <ConfigFieldContainer>
       <InfoText>{props.content}</InfoText>
-      {props.frozen && <GreyedOutOverlay />}
+      {props.frozen && <GrayedOutOverlay />}
     </ConfigFieldContainer>
   );
 }
