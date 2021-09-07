@@ -7,6 +7,9 @@
  * @format
  */
 
+// We're using `deviceSync` here on purpose which is triggering a lot of warnings.
+/* eslint-disable node/no-sync */
+
 import {PluginDefinition} from './plugin';
 import BaseDevice, {OS} from './server/devices/BaseDevice';
 import {Logger} from './fb-interfaces/Logger';

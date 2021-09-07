@@ -32,6 +32,7 @@ import {Popover, Rate} from 'antd';
 import {useStore} from '../utils/useStore';
 import {isLoggedIn} from '../fb-stubs/user';
 import {useValue} from 'flipper-plugin';
+import {reportPlatformFailures} from '../utils/metrics';
 
 type NextAction = 'select-rating' | 'leave-comment' | 'finished';
 
@@ -281,9 +282,14 @@ export function SandyRatingButton() {
 
   useEffect(() => {
     if (GK.get('flipper_enable_star_ratiings') && !hasTriggered && loggedIn) {
-      UserFeedback.getPrompt().then((prompt) => {
-        setPromptData(prompt);
-        setTimeout(triggerPopover, 30000);
+      reportPlatformFailures(
+        UserFeedback.getPrompt().then((prompt) => {
+          setPromptData(prompt);
+          setTimeout(triggerPopover, 30000);
+        }),
+        'RatingButton:getPrompt',
+      ).catch((e) => {
+        console.warn('Failed to load ratings prompt:', e);
       });
     }
   }, [triggerPopover, hasTriggered, loggedIn]);

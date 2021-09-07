@@ -52,28 +52,26 @@ export default function ScreenCaptureButtons() {
   const [isRecording, setIsRecording] = useState(false);
 
   useEffect(() => {
-    let cancelled = false;
+    let canceled = false;
     selectedDevice?.screenCaptureAvailable().then((result) => {
-      if (!cancelled) {
+      if (!canceled) {
         setIsRecordingAvailable(result);
       }
     });
     return () => {
-      cancelled = true;
+      canceled = true;
     };
   }, [selectedDevice]);
 
   const handleScreenshot = useCallback(() => {
     setIsTakingScreenshot(true);
-    const p = capture(selectedDevice!).then(openFile);
-
-    p.catch((e) => {
-      console.error('Taking screenshot failed:', e);
-      message.error('Taking screenshot failed:' + e);
-    }).finally(() => {
-      setIsTakingScreenshot(false);
-    });
-    return p;
+    return capture(selectedDevice!)
+      .then(openFile)
+      .catch((e) => {
+        console.error('Taking screenshot failed:', e);
+        message.error('Taking screenshot failed:' + e);
+      })
+      .finally(() => {});
   }, [selectedDevice]);
   const handleRecording = useCallback(() => {
     if (!selectedDevice) {

@@ -7,7 +7,7 @@
  * @format
  */
 
-import {FlexColumn, Button} from '../ui';
+import {Button} from '../ui';
 import React, {Component, useContext} from 'react';
 import {updateSettings, Action} from '../reducers/settings';
 import {
@@ -70,7 +70,7 @@ class SettingsSheet extends Component<Props, State> {
     this.props.updateSettings(this.state.updatedSettings);
     this.props.updateLauncherSettings(this.state.updatedLauncherSettings);
     this.props.onHide();
-    flush().then(() => {
+    return flush().then(() => {
       restartFlipper(true);
     });
   };

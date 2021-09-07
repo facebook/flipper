@@ -201,7 +201,7 @@ Error: ${e.message}`;
       }
     });
 
-    client.on('close', (data: any) => {
+    client.on('close', (_data: any) => {
       //// LoadingView.hide();
       console.log('Loading end');
       setHMRUnavailableReason('Disconnected from the Metro server.');
