@@ -39,7 +39,7 @@
     "flipper-plugin": "0.0.0",
     "flipper-plugin-lib": "0.0.0",
     "fs-extra": "^10.0.0",
-    "immer": "^9.0.5",
+    "immer": "^9.0.6",
     "invariant": "^2.2.2",
     "lodash": "^4.17.21",
     "lodash.memoize": "^4.1.2",
