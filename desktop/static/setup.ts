@@ -56,6 +56,12 @@ export default function setup(argv: any) {
   // Non-persistent CLI arguments.
   config = {
     ...config,
+    darkMode:
+      typeof config.darkMode === 'boolean'
+        ? config.darkMode // normalise darkmode from old format
+          ? 'dark'
+          : 'light'
+        : config.darkMode,
     updaterEnabled: argv.updater,
     launcherEnabled: argv.launcher,
     launcherMsg: argv.launcherMsg,
