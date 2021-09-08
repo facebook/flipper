@@ -11,6 +11,8 @@ import {Client} from 'fb-watchman';
 import {v4 as uuid} from 'uuid';
 import path from 'path';
 
+const watchmanTimeout = 60 * 1000;
+
 export default class Watchman {
   constructor(private rootDir: string) {}
 
@@ -31,6 +33,11 @@ export default class Watchman {
         this.client!.end();
         delete this.client;
       };
+
+      const timeouthandle = setTimeout(() => {
+        onError(new Error('Timeout when trying to start Watchman'));
+      }, watchmanTimeout);
+
       this.client!.once('error', onError);
       this.client!.capabilityCheck(
         {optional: [], required: ['relative_root']},
@@ -51,6 +58,7 @@ export default class Watchman {
               }
               this.watch = resp.watch;
               this.relativeRoot = resp.relative_path;
+              clearTimeout(timeouthandle);
               resolve();
             },
           );
