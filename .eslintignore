@@ -1,9 +1,0 @@
-*.d.ts
-node_modules
-lib
-!.eslintrc.js
-dist
-website/build
-react-native/ReactNativeFlipperExample
-scripts/generate-changelog.js
-scripts/facebook/templates/tsx
