@@ -109,7 +109,13 @@ class ServerWebSocketBrowser extends ServerWebSocketBase {
             extendedClientQuery,
             clientConnection,
           );
-          client.then((client) => (resolvedClient = client)).catch((_) => {});
+          client
+            .then((client) => {
+              resolvedClient = client;
+            })
+            .catch((e) => {
+              console.error('Failed to connect client over webSocket', e);
+            });
 
           clients[app] = client;
 

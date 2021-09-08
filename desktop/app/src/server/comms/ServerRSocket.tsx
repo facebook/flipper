@@ -166,7 +166,13 @@ class ServerRSocket extends ServerAdapter {
       clientQuery,
       clientConnection,
     );
-    client.then((client) => (resolvedClient = client)).catch((_) => {});
+    client
+      .then((client) => {
+        resolvedClient = client;
+      })
+      .catch((e) => {
+        console.error('Failed to resolve new client', e);
+      });
 
     return {
       fireAndForget: (payload: {data: string}) => {
