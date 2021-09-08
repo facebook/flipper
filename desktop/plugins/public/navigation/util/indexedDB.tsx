@@ -41,7 +41,9 @@ const openNavigationPluginDB: () => Promise<IDBDatabase> = () => {
     );
     openRequest.onupgradeneeded = () => {
       const db = openRequest.result;
-      initializeNavigationPluginDB(db).then(() => resolve(db));
+      initializeNavigationPluginDB(db)
+        .then(() => resolve(db))
+        .catch(reject);
     };
     openRequest.onerror = () => reject(openRequest.error);
     openRequest.onsuccess = () => resolve(openRequest.result);

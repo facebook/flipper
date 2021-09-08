@@ -8,19 +8,20 @@
   },
   "devDependencies": {
     "fs-extra": "^9.0.1",
-    "p-map": "^4.0.0"
+    "p-map": "^4.0.0",
+    "promisify-child-process": "^4.1.1"
   },
   "peerDependencies": {
-    "flipper": "*",
-    "flipper-plugin": "*",
-    "antd": "*",
-    "react": "*",
-    "react-dom": "*",
-    "@emotion/styled": "*",
     "@ant-design/icons": "*",
+    "@emotion/styled": "*",
+    "@types/node": "*",
     "@types/react": "*",
     "@types/react-dom": "*",
-    "@types/node": "*"
+    "antd": "*",
+    "flipper": "*",
+    "flipper-plugin": "*",
+    "react": "*",
+    "react-dom": "*"
   },
   "scripts": {
     "postinstall": "../ts-node ./postinstall.ts"

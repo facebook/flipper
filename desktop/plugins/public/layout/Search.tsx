@@ -101,7 +101,8 @@ export default class Search extends Component<Props, State> {
         .call('getSearchResults', {query, axEnabled: this.props.inAXMode})
         .then((response) =>
           this.displaySearchResults(response, this.props.inAXMode),
-        );
+        )
+        .catch((e) => console.log('[layout] getSearchResults failed:', e));
     }
   }
 

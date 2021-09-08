@@ -162,7 +162,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
         });
         imageDataList.push(imageData);
       } catch (e) {
-        console.error(e);
+        console.error('[fresco] getImage failed:', e);
       }
     }
 
@@ -232,10 +232,13 @@ export function plugin(client: PluginClient<Events, Methods>) {
       return;
     }
     debugLog('<- getImage requested for ' + imageId);
-    client.send('getImage', {imageId}).then((image: ImageData) => {
-      debugLog('-> getImage ' + imageId + ' returned');
-      imagePool.get()?._fetchCompleted(image);
-    });
+    client
+      .send('getImage', {imageId})
+      .then((image: ImageData) => {
+        debugLog('-> getImage ' + imageId + ' returned');
+        imagePool.get()?._fetchCompleted(image);
+      })
+      .catch((e) => console.error('[fresco] getImage failed:', e));
   }
 
   function onImageSelected(selectedImage: ImageId) {
@@ -357,7 +360,8 @@ export function plugin(client: PluginClient<Events, Methods>) {
           selectedSurfaces.get(),
           coldStartFilter.get(),
         );
-      });
+      })
+      .catch((e) => console.error('[fresco] listImages failed:', e));
   }
 
   return {

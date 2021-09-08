@@ -218,9 +218,12 @@ export default class LayoutPlugin extends FlipperPlugin<
     if (this.client.isConnected) {
       // persist searchActive state when moving between plugins to prevent multiple
       // TouchOverlayViews since we can't edit the view heirarchy in onDisconnect
-      this.client.call('isSearchActive').then(({isSearchActive}) => {
-        this.setState({inTargetMode: isSearchActive});
-      });
+      this.client
+        .call('isSearchActive')
+        .then(({isSearchActive}) => {
+          this.setState({inTargetMode: isSearchActive});
+        })
+        .catch((e) => console.error('[layout] isSearchActive call failed:', e));
 
       // disable target mode after
       this.client.subscribe('select', () => {

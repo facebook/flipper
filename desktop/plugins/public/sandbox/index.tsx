@@ -7,9 +7,14 @@
  * @format
  */
 
-import {FlipperPlugin} from 'flipper';
-import {FlexColumn} from 'flipper';
-import {ButtonGroup, Button, styled, colors} from 'flipper';
+import {
+  FlipperPlugin,
+  FlexColumn,
+  ButtonGroup,
+  Button,
+  styled,
+  colors,
+} from 'flipper';
 import React, {ChangeEvent} from 'react';
 
 export type Sandbox = {
@@ -75,9 +80,12 @@ export default class SandboxView extends FlipperPlugin<
     if (!this.client.isConnected) {
       return;
     }
-    this.client.call('getSandbox', {}).then((results: Array<Sandbox>) => {
-      this.setState({sandboxes: results});
-    });
+    this.client
+      .call('getSandbox', {})
+      .then((results: Array<Sandbox>) => {
+        this.setState({sandboxes: results});
+      })
+      .catch((e) => console.error('[sandbox] getSandbox call failed:', e));
   }
 
   onSendSandboxEnvironment = (sandbox: string) => {
@@ -90,7 +98,8 @@ export default class SandboxView extends FlipperPlugin<
           this.setState({showFeedback: false});
         }, 3000);
         this.setState({showFeedback: result.result});
-      });
+      })
+      .catch((e) => console.error('[sandbox] setSandbox call failed:', e));
   };
 
   onChangeSandbox = (e: ChangeEvent<HTMLInputElement>) => {

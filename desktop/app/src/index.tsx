@@ -96,6 +96,7 @@ export {default as StatusIndicator} from './ui/components/StatusIndicator';
 export {default as HorizontalRule} from './ui/components/HorizontalRule';
 export {default as Label} from './ui/components/Label';
 export {default as Heading} from './ui/components/Heading';
+export * from './utils/pathUtils';
 export {Filter} from './ui/components/filter/types';
 export {default as StackTrace} from './ui/components/StackTrace';
 export {

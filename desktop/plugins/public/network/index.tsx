@@ -236,20 +236,23 @@ export function plugin(client: PluginClient<Events, Methods>) {
   }
 
   function init() {
-    supportsMocks(client.device).then((result) => {
-      const newRoutes = JSON.parse(
-        localStorage.getItem(LOCALSTORAGE_MOCK_ROUTE_LIST_KEY + client.appId) ||
-          '{}',
-      );
-      batch(() => {
-        routes.set(newRoutes);
-        isMockResponseSupported.set(result);
-        showMockResponseDialog.set(false);
-        nextRouteId.set(Object.keys(routes.get()).length);
-      });
+    supportsMocks(client.device)
+      .then((result) => {
+        const newRoutes = JSON.parse(
+          localStorage.getItem(
+            LOCALSTORAGE_MOCK_ROUTE_LIST_KEY + client.appId,
+          ) || '{}',
+        );
+        batch(() => {
+          routes.set(newRoutes);
+          isMockResponseSupported.set(result);
+          showMockResponseDialog.set(false);
+          nextRouteId.set(Object.keys(routes.get()).length);
+        });
 
-      informClientMockChange(routes.get());
-    });
+        informClientMockChange(routes.get());
+      })
+      .catch((e) => console.error('[network] Failed to init mocks:', e));
 
     // declare new variable to be called inside the interface
     networkRouteManager.set(

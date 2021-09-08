@@ -13,7 +13,6 @@ import electron, {OpenDialogOptions, remote} from 'electron';
 import {Atom, DataTableManager} from 'flipper-plugin';
 import {createContext} from 'react';
 import {Header, Request} from '../types';
-import {bodyAsString, decodeBody} from '../utils';
 import {message} from 'antd';
 
 export type Route = {
@@ -142,35 +141,40 @@ export function createNetworkManager(
         properties: ['openFile'],
         filters: [{extensions: ['json'], name: 'Flipper Route Files'}],
       };
-      remote.dialog.showOpenDialog(options).then((result) => {
-        const filePaths = result.filePaths;
-        if (filePaths.length > 0) {
-          fs.readFile(filePaths[0], 'utf8', (err, data) => {
-            if (err) {
-              message.error('Unable to import file');
-              return;
-            }
-            const importedRoutes = JSON.parse(data);
-            importedRoutes?.forEach((importedRoute: Route) => {
-              if (importedRoute != null) {
-                const newNextRouteId = nextRouteId.get();
-                routes.update((draft) => {
-                  draft[newNextRouteId.toString()] = {
-                    requestUrl: importedRoute.requestUrl,
-                    requestMethod: importedRoute.requestMethod,
-                    responseData: importedRoute.responseData as string,
-                    responseHeaders: importedRoute.responseHeaders,
-                    responseStatus: importedRoute.responseStatus,
-                    enabled: true,
-                  };
-                });
-                nextRouteId.set(newNextRouteId + 1);
+      remote.dialog
+        .showOpenDialog(options)
+        .then((result) => {
+          const filePaths = result.filePaths;
+          if (filePaths.length > 0) {
+            fs.readFile(filePaths[0], 'utf8', (err, data) => {
+              if (err) {
+                message.error('Unable to import file');
+                return;
               }
+              const importedRoutes = JSON.parse(data);
+              importedRoutes?.forEach((importedRoute: Route) => {
+                if (importedRoute != null) {
+                  const newNextRouteId = nextRouteId.get();
+                  routes.update((draft) => {
+                    draft[newNextRouteId.toString()] = {
+                      requestUrl: importedRoute.requestUrl,
+                      requestMethod: importedRoute.requestMethod,
+                      responseData: importedRoute.responseData as string,
+                      responseHeaders: importedRoute.responseHeaders,
+                      responseStatus: importedRoute.responseStatus,
+                      enabled: true,
+                    };
+                  });
+                  nextRouteId.set(newNextRouteId + 1);
+                }
+              });
+              informClientMockChange(routes.get());
             });
-            informClientMockChange(routes.get());
-          });
-        }
-      });
+          }
+        })
+        .catch((e) =>
+          console.error('[network] importRoutes dialogue failed:', e),
+        );
     },
     exportRoutes() {
       remote.dialog
@@ -199,7 +203,10 @@ export function createNetworkManager(
               }
             },
           );
-        });
+        })
+        .catch((e) =>
+          console.error('[network] exportRoutes saving failed:', e),
+        );
     },
     clearRoutes() {
       routes.set({});

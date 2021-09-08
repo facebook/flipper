@@ -7,6 +7,9 @@
  * @format
  */
 
+// We use sync access once per startup.
+/* eslint-disable node/no-sync */
+
 import path from 'path';
 import fs from 'fs';
 // In utils this is fine when used with caching.

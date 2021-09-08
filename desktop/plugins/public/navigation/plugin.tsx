@@ -94,9 +94,11 @@ export function plugin(client: PluginClient<Events, Methods>) {
       console.error('[Navigation] Failed to find appMatchPatterns', e);
     });
 
-  readBookmarksFromDB().then((bookmarksData) => {
-    bookmarks.set(bookmarksData);
-  });
+  readBookmarksFromDB()
+    .then((bookmarksData) => {
+      bookmarks.set(bookmarksData);
+    })
+    .catch((e) => console.error('[navigation] readBookmarksFromDB failed:', e));
 
   function navigateTo(query: string) {
     const filteredQuery = filterOptionalParameters(query);

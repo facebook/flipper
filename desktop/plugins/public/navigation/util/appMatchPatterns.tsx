@@ -9,15 +9,13 @@
 
 import fs from 'fs';
 import path from 'path';
-import {BaseDevice, AndroidDevice, IOSDevice} from 'flipper';
+import {BaseDevice, AndroidDevice, IOSDevice, getAppPath} from 'flipper';
 import {AppMatchPattern} from '../types';
-import {remote} from 'electron';
 
 let patternsPath: string | undefined;
 
 function getPatternsBasePath() {
-  return (patternsPath =
-    patternsPath ?? path.join(remote.app.getAppPath(), 'facebook'));
+  return (patternsPath = patternsPath ?? path.join(getAppPath(), 'facebook'));
 }
 
 const extractAppNameFromSelectedApp = (selectedApp: string | null) => {

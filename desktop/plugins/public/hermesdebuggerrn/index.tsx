@@ -92,50 +92,48 @@ export default class extends FlipperDevicePlugin<State, any, any> {
   checkDebugTargets = () => {
     fetch(`${METRO_URL.toString()}json`)
       .then((res) => res.json())
-      .then(
-        (result) => {
-          // We only want to use the Chrome Reload targets.
-          const targets = result.filter(
-            (target: any) =>
-              target.title ===
-              'React Native Experimental (Improved Chrome Reloads)',
-          );
+      .then((result) => {
+        // We only want to use the Chrome Reload targets.
+        const targets = result.filter(
+          (target: any) =>
+            target.title ===
+            'React Native Experimental (Improved Chrome Reloads)',
+        );
 
-          // Find the currently selected target.
-          // If the current selectedTarget isn't returned, clear it.
-          let currentlySelected = null;
-          if (this.state.selectedTarget != null) {
-            for (const target of result) {
-              if (
-                this.state.selectedTarget?.webSocketDebuggerUrl ===
-                target.webSocketDebuggerUrl
-              ) {
-                currentlySelected = this.state.selectedTarget;
-              }
+        // Find the currently selected target.
+        // If the current selectedTarget isn't returned, clear it.
+        let currentlySelected = null;
+        if (this.state.selectedTarget != null) {
+          for (const target of result) {
+            if (
+              this.state.selectedTarget?.webSocketDebuggerUrl ===
+              target.webSocketDebuggerUrl
+            ) {
+              currentlySelected = this.state.selectedTarget;
             }
           }
+        }
 
-          // Auto-select the first target if there is one,
-          // but don't change the one that's already selected.
-          const selectedTarget =
-            currentlySelected == null && targets.length === 1
-              ? targets[0]
-              : currentlySelected;
+        // Auto-select the first target if there is one,
+        // but don't change the one that's already selected.
+        const selectedTarget =
+          currentlySelected == null && targets.length === 1
+            ? targets[0]
+            : currentlySelected;
 
-          this.setState({
-            error: null,
-            targets,
-            selectedTarget,
-          });
-        },
-        (error) => {
-          this.setState({
-            targets: null,
-            selectedTarget: null,
-            error,
-          });
-        },
-      );
+        this.setState({
+          error: null,
+          targets,
+          selectedTarget,
+        });
+      })
+      .catch((error) => {
+        this.setState({
+          targets: null,
+          selectedTarget: null,
+          error,
+        });
+      });
   };
 
   handleSelect = (selectedTarget: Target) => this.setState({selectedTarget});

@@ -119,13 +119,16 @@ export default class Inspector extends Component<Props, State> {
     if (!this.props.client.isConnected) {
       return;
     }
-    this.props.client.call(this.call().GET_ROOT).then((root: Element) => {
-      this.props.setPersistedState({
-        [this.props.ax ? 'rootAXElement' : 'rootElement']: root.id,
-      });
-      this.updateElement(root.id, {...root, expanded: true});
-      this.performInitialExpand(root);
-    });
+    this.props.client
+      .call(this.call().GET_ROOT)
+      .then((root: Element) => {
+        this.props.setPersistedState({
+          [this.props.ax ? 'rootAXElement' : 'rootElement']: root.id,
+        });
+        this.updateElement(root.id, {...root, expanded: true});
+        this.performInitialExpand(root);
+      })
+      .catch((e) => console.error('[layout] GET_ROOT failed:', e));
 
     this.props.client.subscribe(
       this.call().INVALIDATE,
@@ -419,13 +422,15 @@ export default class Inspector extends Component<Props, State> {
     if (shouldExpand) {
       this.updateElement(id, {expanded: shouldExpand});
     }
-    this.getChildren(id, {}).then((children) => {
-      if (deep) {
-        children.forEach((child) =>
-          this.onElementExpanded(child.id, deep, shouldExpand),
-        );
-      }
-    });
+    this.getChildren(id, {})
+      .then((children) => {
+        if (deep) {
+          children.forEach((child) =>
+            this.onElementExpanded(child.id, deep, shouldExpand),
+          );
+        }
+      })
+      .catch((e) => console.error('[layout] getChildren failed:', e));
     if (!shouldExpand) {
       this.updateElement(id, {expanded: shouldExpand});
     }

@@ -265,11 +265,15 @@ export function devicePlugin(client: PluginClient<{}, {}>) {
     });
 
     for (let i = 0; i < cpuState.get().cpuCount; ++i) {
-      readAvailableGovernors(i).then((output) => {
-        cpuState.update((draft) => {
-          draft.cpuFreq[i].scaling_available_governors = output;
+      readAvailableGovernors(i)
+        .then((output) => {
+          cpuState.update((draft) => {
+            draft.cpuFreq[i].scaling_available_governors = output;
+          });
+        })
+        .catch((e) => {
+          console.error('Failed to read CPU governors:', e);
         });
-      });
     }
 
     const update = async () => {
@@ -330,34 +334,38 @@ export function devicePlugin(client: PluginClient<{}, {}>) {
   };
 
   // check how many cores we have on this device
-  executeShell('cat /sys/devices/system/cpu/possible').then((output) => {
-    const idx = output.indexOf('-');
-    const cpuFreq = [];
-    const count = parseInt(output.substring(idx + 1), 10) + 1;
-    for (let i = 0; i < count; ++i) {
-      cpuFreq[i] = {
-        cpu_id: i,
-        scaling_cur_freq: -1,
-        scaling_min_freq: -1,
-        scaling_max_freq: -1,
-        cpuinfo_min_freq: -1,
-        cpuinfo_max_freq: -1,
-        scaling_available_freqs: [],
-        scaling_governor: 'N/A',
-        scaling_available_governors: [],
-      };
-    }
-    cpuState.set({
-      cpuCount: count,
-      cpuFreq: cpuFreq,
-      monitoring: false,
-      hardwareInfo: '',
-      temperatureMap: {},
-      thermalAccessible: true,
-      displayThermalInfo: false,
-      displayCPUDetail: true,
+  executeShell('cat /sys/devices/system/cpu/possible')
+    .then((output) => {
+      const idx = output.indexOf('-');
+      const cpuFreq = [];
+      const count = parseInt(output.substring(idx + 1), 10) + 1;
+      for (let i = 0; i < count; ++i) {
+        cpuFreq[i] = {
+          cpu_id: i,
+          scaling_cur_freq: -1,
+          scaling_min_freq: -1,
+          scaling_max_freq: -1,
+          cpuinfo_min_freq: -1,
+          cpuinfo_max_freq: -1,
+          scaling_available_freqs: [],
+          scaling_governor: 'N/A',
+          scaling_available_governors: [],
+        };
+      }
+      cpuState.set({
+        cpuCount: count,
+        cpuFreq: cpuFreq,
+        monitoring: false,
+        hardwareInfo: '',
+        temperatureMap: {},
+        thermalAccessible: true,
+        displayThermalInfo: false,
+        displayCPUDetail: true,
+      });
+    })
+    .catch((e) => {
+      console.error('Failed to read CPU cores:', e);
     });
-  });
 
   client.onDeactivate(() => cleanup());
   client.onActivate(() => {

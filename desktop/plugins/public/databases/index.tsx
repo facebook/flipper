@@ -468,21 +468,27 @@ export function plugin(client: PluginClient<Events, Methods>) {
         !previousState.outdatedDatabaseList &&
         newState.outdatedDatabaseList
       ) {
-        client.send('databaseList', {}).then((databases) => {
-          updateDatabases({
-            databases,
-          });
-        });
+        client
+          .send('databaseList', {})
+          .then((databases) => {
+            updateDatabases({
+              databases,
+            });
+          })
+          .catch((e) => console.error('databaseList request failed:', e));
       }
     },
   );
 
   client.onConnect(() => {
-    client.send('databaseList', {}).then((databases) => {
-      updateDatabases({
-        databases,
-      });
-    });
+    client
+      .send('databaseList', {})
+      .then((databases) => {
+        updateDatabases({
+          databases,
+        });
+      })
+      .catch((e) => console.error('initial databaseList request failed:', e));
     const loadedFavoritesJson = localStorage.getItem(
       FAVORITES_LOCAL_STORAGE_KEY,
     );

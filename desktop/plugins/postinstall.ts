@@ -7,7 +7,9 @@
  * @format
  */
 
-import {execSync} from 'child_process';
+/* eslint-disable flipper/no-console-error-without-context */
+
+import {exec} from 'promisify-child-process';
 import path from 'path';
 import fs from 'fs-extra';
 import pmap from 'p-map';
@@ -90,14 +92,12 @@ async function postinstall(): Promise<number> {
     }
     return 1;
   }
-  execSync('yarn install --mutex network:30330', {
+  await exec('yarn install --mutex network:30330', {
     cwd: publicPluginsDir,
-    stdio: 'inherit',
   });
   if (await fs.pathExists(fbPluginsDir)) {
-    execSync('yarn install --mutex network:30330', {
+    await exec('yarn install --mutex network:30330', {
       cwd: fbPluginsDir,
-      stdio: 'inherit',
     });
   }
   const peerDependenciesArray = Object.keys(peerDependencies);

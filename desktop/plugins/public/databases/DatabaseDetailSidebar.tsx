@@ -39,15 +39,6 @@ type DatabaseDetailSidebarProps = {
   onSave?: ((changes: {[key: string]: string | null}) => void) | undefined;
 };
 
-const EditTriggerSection = styled.div({
-  display: 'flex',
-  justifyContent: 'flex-end',
-  width: '100%',
-  paddingTop: '3px',
-  paddingBottom: '3px',
-  paddingRight: '10px',
-});
-
 const TableDetailRow = styled.div({
   borderBottom: `1px solid ${theme.dividerColor}`,
   padding: 8,

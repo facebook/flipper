@@ -8,10 +8,9 @@
  */
 
 import type {CrashLog} from './index';
-import fs from 'fs';
+import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
-import {promisify} from 'util';
 import {UNKNOWN_CRASH_REASON} from './crash-utils';
 
 export function parseIosCrash(content: string) {
@@ -64,35 +63,34 @@ export function parsePath(content: string): string | null {
   return path.trim();
 }
 
-export function addFileWatcherForiOSCrashLogs(
+export async function addFileWatcherForiOSCrashLogs(
   serial: string,
   reportCrash: (payload: CrashLog) => void,
 ) {
   const dir = path.join(os.homedir(), 'Library', 'Logs', 'DiagnosticReports');
-  if (!fs.existsSync(dir)) {
+  if (!(await fs.pathExists(dir))) {
     // Directory doesn't exist
     return;
   }
-  return fs.watch(dir, (_eventType, filename) => {
+  return fs.watch(dir, async (_eventType, filename) => {
     // We just parse the crash logs with extension `.crash`
     const checkFileExtension = /.crash$/.exec(filename);
     if (!filename || !checkFileExtension) {
       return;
     }
     const filepath = path.join(dir, filename);
-    promisify(fs.exists)(filepath).then((exists) => {
-      if (!exists) {
+    const exists = await fs.pathExists(filepath);
+    if (!exists) {
+      return;
+    }
+    fs.readFile(filepath, 'utf8', function (err, data) {
+      if (err) {
+        console.warn('Failed to read crash file', err);
         return;
       }
-      fs.readFile(filepath, 'utf8', function (err, data) {
-        if (err) {
-          console.warn('Failed to read crash file', err);
-          return;
-        }
-        if (shouldShowiOSCrashNotification(serial, data)) {
-          reportCrash(parseIosCrash(data));
-        }
-      });
+      if (shouldShowiOSCrashNotification(serial, data)) {
+        reportCrash(parseIosCrash(data));
+      }
     });
   });
 }
