@@ -103,25 +103,27 @@ export function SandyApp() {
 
   useEffect(() => {
     if (fbConfig.warnFBEmployees && isProduction()) {
-      isFBEmployee().then((isEmployee) => {
-        if (isEmployee) {
-          notification.warning({
-            placement: 'bottomLeft',
-            message: 'Please use Flipper@FB',
-            description: (
-              <>
-                You are using the open-source version of Flipper. Install the
-                internal build from{' '}
-                <Link href="munki://detail-Flipper">
-                  Managed Software Center
-                </Link>{' '}
-                to get access to more plugins.
-              </>
-            ),
-            duration: null,
-          });
-        }
-      });
+      isFBEmployee()
+        .then((isEmployee) => {
+          if (isEmployee) {
+            notification.warning({
+              placement: 'bottomLeft',
+              message: 'Please use Flipper@FB',
+              description: (
+                <>
+                  You are using the open-source version of Flipper. Install the
+                  internal build from{' '}
+                  <Link href="munki://detail-Flipper">
+                    Managed Software Center
+                  </Link>{' '}
+                  to get access to more plugins.
+                </>
+              ),
+              duration: null,
+            });
+          }
+        })
+        .catch((e) => console.error('isEmployee check failed:', e));
     }
   }, []);
 
