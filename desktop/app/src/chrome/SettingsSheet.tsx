@@ -7,8 +7,9 @@
  * @format
  */
 
-import {Button} from '../ui';
+import {Button, FlexColumn} from '../ui';
 import React, {Component, useContext} from 'react';
+import {Radio} from 'antd';
 import {updateSettings, Action} from '../reducers/settings';
 import {
   Action as LauncherAction,
@@ -245,18 +246,23 @@ class SettingsSheet extends Component<Props, State> {
             }));
           }}
         />
-        <ToggledSection
-          label="Enable dark theme"
-          toggled={darkMode}
-          onChange={(enabled) => {
-            this.setState((prevState) => ({
-              updatedSettings: {
-                ...prevState.updatedSettings,
-                darkMode: enabled,
-              },
-            }));
-          }}
-        />
+        <FlexColumn style={{paddingLeft: 15, paddingBottom: 10}}>
+          Theme Selection
+          <Radio.Group
+            value={darkMode}
+            onChange={(event) => {
+              this.setState((prevState) => ({
+                updatedSettings: {
+                  ...prevState.updatedSettings,
+                  darkMode: event.target.value,
+                },
+              }));
+            }}>
+            <Radio.Button value="dark">Dark</Radio.Button>
+            <Radio.Button value="light">Light</Radio.Button>
+            <Radio.Button value="system">Use System Setting</Radio.Button>
+          </Radio.Group>
+        </FlexColumn>
         <ToggledSection
           label="React Native keyboard shortcuts"
           toggled={reactNative.shortcuts.enabled}

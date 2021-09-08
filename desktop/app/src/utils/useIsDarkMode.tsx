@@ -8,6 +8,7 @@
  */
 
 import {useStore} from './useStore';
+import {remote} from 'electron';
 
 /**
  * This hook returns whether dark mode is currently being used.
@@ -15,5 +16,15 @@ import {useStore} from './useStore';
  * which will provide colors that reflect the theme
  */
 export function useIsDarkMode(): boolean {
-  return useStore((state) => state.settingsState.darkMode);
+  return useStore((state) => {
+    const darkMode = state.settingsState.darkMode;
+    if (darkMode === 'dark') {
+      return true;
+    } else if (darkMode === 'light') {
+      return false;
+    } else if (darkMode === 'system') {
+      return remote.nativeTheme.shouldUseDarkColors;
+    }
+    return false;
+  });
 }

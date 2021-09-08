@@ -49,7 +49,7 @@ import styled from '@emotion/styled';
 import {CopyOutlined} from '@ant-design/icons';
 import {getVersionString} from './utils/versionString';
 import {PersistGate} from 'redux-persist/integration/react';
-import {ipcRenderer} from 'electron';
+import {ipcRenderer, remote} from 'electron';
 
 if (process.env.NODE_ENV === 'development' && os.platform() === 'darwin') {
   // By default Node.JS has its internal certificate storage and doesn't use
@@ -213,14 +213,26 @@ function init() {
   sideEffect(
     store,
     {name: 'loadTheme', fireImmediately: false, throttleMs: 500},
-    (state) => ({
-      dark: state.settingsState.darkMode,
-    }),
-    (theme) => {
+    (state) => {
+      const theme = state.settingsState.darkMode;
+      let shouldUseDarkMode = remote.nativeTheme.shouldUseDarkColors;
+      if (theme === 'dark') {
+        shouldUseDarkMode = true;
+      } else if (theme === 'light') {
+        shouldUseDarkMode = false;
+      } else if (theme === 'system') {
+        shouldUseDarkMode = remote.nativeTheme.shouldUseDarkColors;
+      }
+      return {
+        shouldUseDarkMode: shouldUseDarkMode,
+        theme: theme,
+      };
+    },
+    (result) => {
       (
         document.getElementById('flipper-theme-import') as HTMLLinkElement
-      ).href = `themes/${theme.dark ? 'dark' : 'light'}.css`;
-      ipcRenderer.send('setTheme', theme.dark ? 'dark' : 'light');
+      ).href = `themes/${result.shouldUseDarkMode ? 'dark' : 'light'}.css`;
+      ipcRenderer.send('setTheme', result.theme);
     },
   );
 }
