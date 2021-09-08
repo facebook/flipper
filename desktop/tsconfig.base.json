@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "lib": [
-      "es7",
-      "dom",
-      "es2019"
-    ],
+    "lib": ["es7", "dom", "es2019"],
     "esModuleInterop": true,
     "target": "ES2019",
     "removeComments": true,
@@ -17,33 +13,19 @@
     "moduleResolution": "node",
     "skipLibCheck": true,
     "strict": true,
+    "useUnknownInCatchVariables": false,
     "composite": true,
     "incremental": true,
     "baseUrl": ".",
     "allowJs": true,
     "rootDir": ".",
     "paths": {
-      "flipper": [
-        "./app/src"
-      ],
-      "flipper-plugin": [
-        "./flipper-plugin/src"
-      ],
-      "eslint-plugin-flipper": [
-        "./eslint-plugin-flipper/src"
-      ],
-      "flipper-*": [
-        "./*/src"
-      ],
-      "@js-shared/*": [
-        "../../js-shared/*"
-      ]
+      "flipper": ["./app/src"],
+      "flipper-plugin": ["./flipper-plugin/src"],
+      "eslint-plugin-flipper": ["./eslint-plugin-flipper/src"],
+      "flipper-*": ["./*/src"],
+      "@js-shared/*": ["../../js-shared/*"]
     }
   },
-  "exclude": [
-    "**/lib/",
-    "**/dist/",
-    "**/node_modules/",
-    "**/__tests__/"
-  ]
+  "exclude": ["**/lib/", "**/dist/", "**/node_modules/", "**/__tests__/"]
 }
