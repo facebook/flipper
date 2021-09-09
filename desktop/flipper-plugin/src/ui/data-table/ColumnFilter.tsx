@@ -58,7 +58,7 @@ export function FilterIcon({
       onMouseDown={(e) => {
         e.stopPropagation(); // prevents interaction accidentally with the Interactive component organizing resizng
       }}>
-      <Menu.Item>
+      <Menu.Item key="addFilter">
         <Layout.Right gap>
           <Input
             placeholder="Filter by value"
@@ -116,14 +116,14 @@ export function FilterIcon({
           </Menu.Item>
         ))
       ) : (
-        <Menu.Item disabled>
+        <Menu.Item disabled key="nofilters">
           <Text type="secondary" style={{margin: 12}}>
             No active filters
           </Text>
         </Menu.Item>
       )}
       <Menu.Divider />
-      <Menu.Item>
+      <Menu.Item key="inverse">
         <Layout.Horizontal
           gap
           center
@@ -146,7 +146,7 @@ export function FilterIcon({
         </Layout.Horizontal>
       </Menu.Item>
       <Menu.Divider />
-      <Menu.Item disabled>
+      <Menu.Item disabled key="fromselection">
         <div style={{textAlign: 'right'}}>
           <Button
             type="link"
