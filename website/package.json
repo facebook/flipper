@@ -11,23 +11,23 @@
     "generate-plugin-docs": "ts-node ./generate-plugin-docs.ts"
   },
   "devDependencies": {
-    "@babel/parser": "^7.14.5",
-    "@docusaurus/core": "^2.0.0-beta.0",
-    "@docusaurus/plugin-client-redirects": "2.0.0-beta.4",
-    "@docusaurus/preset-classic": "^2.0.0-beta.0",
+    "@babel/parser": "^7.15.5",
+    "@docusaurus/core": "^2.0.0-beta.6",
+    "@docusaurus/plugin-client-redirects": "2.0.0-beta.6",
+    "@docusaurus/preset-classic": "^2.0.0-beta.6",
     "@types/fs-extra": "^9.0.11",
     "classnames": "^2.3.1",
     "docblock-parser": "^1.0.0",
-    "docusaurus-plugin-internaldocs-fb": "^0.9.7",
+    "docusaurus-plugin-internaldocs-fb": "^0.9.8",
     "file-cli": "^1.2.0",
     "fs-extra": "^10.0.0",
     "glob": "^7.1.7",
-    "mermaid": "^8.11.5",
+    "mermaid": "^8.12.1",
     "react": "^17.0.2",
     "react-docgen": "^5.4.0",
     "react-dom": "^17.0.2",
     "ts-node": "^10.2.1",
-    "typescript": "^4.3.4"
+    "typescript": "^4.4.2"
   },
   "dependencies": {},
   "resolutions": {
@@ -36,6 +36,7 @@
     "dns-packet": "^5.2.2",
     "browserslist": "^4.16.5",
     "ws": "8.2.0",
-    "trim": "1.0.1"
+    "trim": "1.0.1",
+    "immer": "^9.0.6"
   }
 }
