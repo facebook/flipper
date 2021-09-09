@@ -12,7 +12,7 @@ set(glog_DIR ${third_party_ndk}/glog)
 set(BOOST_DIR ${third_party_ndk}/boost/boost_1_63_0/)
 set(LIBEVENT_DIR ${third_party_ndk}/LibEvent/libevent-2.1.11-stable/)
 set(DOUBLECONVERSION_DIR ${third_party_ndk}/double-conversion/double-conversion-3.0.0/)
-set(OPENSSL_DIR ${third_party_ndk}/OpenSSL/openssl-1.1.0h/)
+set(OPENSSL_DIR ${third_party_ndk}/OpenSSL/openssl-1.1.1k/)
 
 set(RSOCKET_ROOT_DIR  ${PROJECT_SOURCE_DIR}/rsocket-cpp-${RSOCKET_VERSION})
 set(RSOCKET_DIR  ${PROJECT_SOURCE_DIR}/rsocket-cpp-${RSOCKET_VERSION}/rsocket)

@@ -11,7 +11,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.2.1'
+        classpath 'com.android.tools.build:gradle:4.2.2'
         classpath 'com.vanniktech:gradle-maven-publish-plugin:0.17.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$KOTLIN_VERSION"
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:1.5.0"
@@ -49,7 +49,7 @@ ext {
     targetSdkVersion = 30
     compileSdkVersion = 30
     buildToolsVersion = '30.0.2'
-    ndkVersion = '21.3.6528147'
+    ndkVersion = '23.0.7599858'
 }
 
 ext.deps = [

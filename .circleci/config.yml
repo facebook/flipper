@@ -2,7 +2,7 @@ version: 2.1
 executors:
   default-executor:
     docker:
-      - image: circleci/android:api-29-ndk
+      - image: circleci/android:api-30-ndk
     resource_class: large
 
     environment:
