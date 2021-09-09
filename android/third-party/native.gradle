@@ -11,7 +11,7 @@ import org.apache.tools.ant.filters.ReplaceTokens
 // Increment this when making changes to any of the native
 // dependencies.
 // !!!
-final def CACHE_REVISION = 30
+final def CACHE_REVISION = 31
 
 final def externalDir = new File("$projectDir/external")
 final def downloadsDir = new File("$externalDir/downloads")
@@ -195,7 +195,7 @@ task finalizeLibEvent(dependsOn: [prepareLibEvent2], type: Copy) {
 
 task downloadOpenSSLSource(dependsOn: [], type: Download) {
     onlyIf { isCacheOutOfDate(CACHE_REVISION) }
-    src 'https://github.com/passy/openssl-android/releases/download/1.1.0h/openssl-1.1.0h.tar.gz'
+    src 'https://github.com/passy/openssl-android/releases/download/1.1.1k/openssl-1.1.1k.tar.gz'
     onlyIfNewer true
     overwrite false
     dest new File(downloadsDir, getDownloadFileName(src))
@@ -203,7 +203,7 @@ task downloadOpenSSLSource(dependsOn: [], type: Download) {
 
 task downloadOpenSSLLibs(dependsOn: [], type: Download) {
     onlyIf { isCacheOutOfDate(CACHE_REVISION) }
-    src 'https://github.com/passy/openssl-android/releases/download/1.1.0h-r2/openssl-1.1.0h-r2-prebuilt.tar.gz'
+    src 'https://github.com/passy/openssl-android/releases/download/1.1.1k/openssl-1.1.1k-prebuilt.tar.gz'
     onlyIfNewer true
     overwrite false
     dest new File(downloadsDir, getDownloadFileName(src))
