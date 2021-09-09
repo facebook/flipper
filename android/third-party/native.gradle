@@ -214,7 +214,7 @@ task prepareOpenSSL(dependsOn: [downloadOpenSSLSource, downloadOpenSSLLibs], typ
     from tarTree(downloadOpenSSLSource.dest)
     from tarTree(downloadOpenSSLLibs.dest)
     from './overrides/OpenSSL/'
-    include 'openssl-1.1.0h/**/*'
+    include 'openssl-1.1.1k/**/*'
     include 'libs/**/*'
     includeEmptyDirs = false
     into "$externalDir/OpenSSL/"
@@ -222,17 +222,17 @@ task prepareOpenSSL(dependsOn: [downloadOpenSSLSource, downloadOpenSSLLibs], typ
 
 task configureOpenSSL(dependsOn: [prepareOpenSSL], type: Exec) {
     onlyIf { isCacheOutOfDate(CACHE_REVISION) }
-    workingDir "$externalDir/OpenSSL/openssl-1.1.0h/"
+    workingDir "$externalDir/OpenSSL/openssl-1.1.1k/"
     // This is only to generate a buildconfig.h in the next step. I **believe**
     // that the options here don't really matter for that file.
-    commandLine './Configure', 'dist'
+    commandLine './Configure', 'linux-generic64'
 }
 
 task finalizeOpenSSL(dependsOn: [configureOpenSSL], type: Exec) {
     onlyIf { isCacheOutOfDate(CACHE_REVISION) }
-    workingDir "$externalDir/OpenSSL/openssl-1.1.0h/"
+    workingDir "$externalDir/OpenSSL/openssl-1.1.1k/"
     commandLine 'make', 'build_generated'
-    onlyIf { !file("$externalDir/OpenSSL/openssl-1.1.0h/include/openssl/opensslconf.h").exists() }
+    onlyIf { !file("$externalDir/OpenSSL/openssl-1.1.1k/include/openssl/opensslconf.h").exists() }
 }
 
 task downloadRSocket(dependsOn: [], type: Download) {
