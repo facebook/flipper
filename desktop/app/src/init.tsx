@@ -197,7 +197,7 @@ function init() {
     logger.track('usage', 'interaction', r);
     if (!isProduction()) {
       const msg = `[interaction] ${r.scope}:${r.action} in ${r.duration}ms`;
-      if (r.success) console.log(msg);
+      if (r.success) console.debug(msg);
       else console.warn(msg, r.error);
     }
   });
