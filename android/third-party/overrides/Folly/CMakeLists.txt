@@ -16,7 +16,7 @@ list(APPEND dir_list ${FOLLY_DIR}/memory/detail)
 
 set(BOOST_DIR ../boost/boost_1_63_0/)
 set(GLOG_DIR ../glog/)
-set(OPENSSL_DIR ../OpenSSL/openssl-1.1.0h/)
+set(OPENSSL_DIR ../OpenSSL/openssl-1.1.1k/)
 set(LIBEVENT_DIR ../LibEvent/libevent-2.1.11-stable/)
 set(DOUBLECONVERSION_DIR ../double-conversion/double-conversion-3.0.0/)
 
