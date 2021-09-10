@@ -94,4 +94,20 @@ export default (store: Store, _logger: Logger) => {
       );
     }
   }
+
+  if (process.env.FLIPPER_ALT_PORTS) {
+    const portOverrides = parseFlipperPorts(process.env.FLIPPER_ALT_PORTS);
+    if (portOverrides) {
+      store.dispatch({
+        type: 'SET_ALT_SERVER_PORTS',
+        payload: portOverrides,
+      });
+    } else {
+      console.error(
+        `Ignoring malformed FLIPPER_ALT_PORTS env variable:
+        "${process.env.FLIPPER_ALT_PORTS || ''}".
+        Example expected format: "1111,2222".`,
+      );
+    }
+  }
 };

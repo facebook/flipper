@@ -7,24 +7,15 @@
  * @format
  */
 
-import GK from '../../fb-stubs/GK';
 import {SecureServerConfig} from '../utils/CertificateProvider';
 import ServerAdapter, {ServerEventsListener} from './ServerAdapter';
 import ServerRSocket from './ServerRSocket';
 import ServerWebSocket from './ServerWebSocket';
 import ServerWebSocketBrowser from './ServerWebSocketBrowser';
 
-function _createServer(listener: ServerEventsListener) {
-  /**
-   * GK could be setup or queried to determine whether to use RSocket or
-   * WebSocket. Default is RSocket, but the stage is set for different type
-   * of communication channels.
-   */
-  if (GK.get('flipper_websocket_server')) {
-    return new ServerWebSocket(listener);
-  }
-
-  return new ServerRSocket(listener);
+export enum TransportType {
+  RSocket,
+  WebSocket,
 }
 
 /**
@@ -38,9 +29,13 @@ export function createServer(
   port: number,
   listener: ServerEventsListener,
   sslConfig?: SecureServerConfig,
+  transportType: TransportType = TransportType.RSocket,
 ): Promise<ServerAdapter> {
   return new Promise((resolve, reject) => {
-    const server = _createServer(listener);
+    const server =
+      transportType === TransportType.RSocket
+        ? new ServerRSocket(listener)
+        : new ServerWebSocket(listener);
     server
       .start(port, sslConfig)
       .then((started) => {

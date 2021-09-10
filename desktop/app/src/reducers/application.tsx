@@ -83,6 +83,7 @@ export type State = {
   share: ShareType | null;
   sessionId: string | null;
   serverPorts: ServerPorts;
+  altServerPorts: ServerPorts;
   launcherMsg: LauncherMsg;
   statusMessages: Array<string>;
   pastedToken?: string;
@@ -116,6 +117,13 @@ export type Action =
     }
   | {
       type: 'SET_SERVER_PORTS';
+      payload: {
+        insecure: number;
+        secure: number;
+      };
+    }
+  | {
+      type: 'SET_ALT_SERVER_PORTS';
       payload: {
         insecure: number;
         secure: number;
@@ -163,6 +171,10 @@ export const initialState: () => State = () => ({
   serverPorts: {
     insecure: 8089,
     secure: 8088,
+  },
+  altServerPorts: {
+    insecure: 9089,
+    secure: 9088,
   },
   launcherMsg: {
     severity: 'warning',
@@ -237,6 +249,11 @@ export default function reducer(
     return {
       ...state,
       serverPorts: action.payload,
+    };
+  } else if (action.type === 'SET_ALT_SERVER_PORTS') {
+    return {
+      ...state,
+      altServerPorts: action.payload,
     };
   } else if (action.type === 'LAUNCHER_MSG') {
     return {

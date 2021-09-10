@@ -31,7 +31,11 @@ import ServerAdapter, {
   SecureClientQuery,
   ServerEventsListener,
 } from './ServerAdapter';
-import {createBrowserServer, createServer} from './ServerFactory';
+import {
+  createBrowserServer,
+  createServer,
+  TransportType,
+} from './ServerFactory';
 import {FlipperServer} from '../FlipperServer';
 import {isTest} from '../../utils/isProduction';
 import {timeout} from 'flipper-plugin';
@@ -66,6 +70,8 @@ class ServerController extends EventEmitter implements ServerEventsListener {
   initialized: Promise<void> | null;
   secureServer: Promise<ServerAdapter> | null;
   insecureServer: Promise<ServerAdapter> | null;
+  altSecureServer: Promise<ServerAdapter> | null;
+  altInsecureServer: Promise<ServerAdapter> | null;
   browserServer: Promise<ServerAdapter> | null;
 
   certificateProvider: CertificateProvider;
@@ -87,6 +93,8 @@ class ServerController extends EventEmitter implements ServerEventsListener {
     this.connectionTracker = new ConnectionTracker(this.logger);
     this.secureServer = null;
     this.insecureServer = null;
+    this.altSecureServer = null;
+    this.altInsecureServer = null;
     this.browserServer = null;
     this.initialized = null;
     this.timeHandler = undefined;
@@ -113,13 +121,34 @@ class ServerController extends EventEmitter implements ServerEventsListener {
       throw new Error('Spawing new server is not supported in test');
     }
     const {insecure, secure} = this.store.getState().application.serverPorts;
+
     this.initialized = this.certificateProvider
       .loadSecureServerConfig()
-      .then(
-        (options) => (this.secureServer = createServer(secure, this, options)),
-      )
+      .then((options) => {
+        this.secureServer = createServer(secure, this, options);
+        if (GK.get('flipper_websocket_server')) {
+          const {secure: altSecure} =
+            this.store.getState().application.altServerPorts;
+          this.altSecureServer = createServer(
+            altSecure,
+            this,
+            options,
+            TransportType.WebSocket,
+          );
+        }
+      })
       .then(() => {
         this.insecureServer = createServer(insecure, this);
+        if (GK.get('flipper_websocket_server')) {
+          const {insecure: altInsecure} =
+            this.store.getState().application.altServerPorts;
+          this.altInsecureServer = createServer(
+            altInsecure,
+            this,
+            undefined,
+            TransportType.WebSocket,
+          );
+        }
         return;
       });
 
@@ -140,6 +169,8 @@ class ServerController extends EventEmitter implements ServerEventsListener {
       await Promise.all([
         this.insecureServer && (await this.insecureServer).stop(),
         this.secureServer && (await this.secureServer).stop(),
+        this.altInsecureServer && (await this.altInsecureServer).stop(),
+        this.altSecureServer && (await this.altSecureServer).stop(),
         this.browserServer && (await this.browserServer).stop(),
       ]);
     }
