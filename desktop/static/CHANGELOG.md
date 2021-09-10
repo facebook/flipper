@@ -1,3 +1,10 @@
+# 0.108.0 (10/9/2021)
+
+ * [D30838947](https://github.com/facebook/flipper/search?q=D30838947&type=Commits) -  Improved handling of edge cases in certificate exchange, which should address cases where a Flipper connection wouldn't come up when connection to Android / IOS. Added explicit logging around connection negation.
+ * [D30866301](https://github.com/facebook/flipper/search?q=D30866301&type=Commits) -  Fixed an issue where Kite / Unity apps didn't connect anymore
+ * [D30866648](https://github.com/facebook/flipper/search?q=D30866648&type=Commits) -  Fixed startup error when loading default theme
+
+
 # 0.104.0 (25/8/2021)
 
  * [D30410441](https://github.com/facebook/flipper/search?q=D30410441&type=Commits) -  [Internal]
