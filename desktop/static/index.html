@@ -15,9 +15,9 @@
       global.electronRequire = window.require;
     </script>
     <script>
-      // load correct theme
+      // load correct theme (n.b. this doesn't handle system value specifically, will assume light in such cases)
       try {
-        if (JSON.parse(window.process.env.CONFIG).darkMode) {
+        if (JSON.parse(window.process.env.CONFIG).darkMode === 'dark') {
           document.getElementById('flipper-theme-import').href="themes/dark.css";
         } else {
           document.getElementById('flipper-theme-import').href="themes/light.css";

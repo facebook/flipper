@@ -215,7 +215,7 @@ function init() {
     {name: 'loadTheme', fireImmediately: false, throttleMs: 500},
     (state) => {
       const theme = state.settingsState.darkMode;
-      let shouldUseDarkMode = remote.nativeTheme.shouldUseDarkColors;
+      let shouldUseDarkMode = false;
       if (theme === 'dark') {
         shouldUseDarkMode = true;
       } else if (theme === 'light') {

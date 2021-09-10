@@ -109,7 +109,9 @@ if (argv['disable-gpu'] || process.env.FLIPPER_DISABLE_GPU === '1') {
 }
 
 process.env.CONFIG = JSON.stringify(config);
-nativeTheme.themeSource = config.darkMode || 'light';
+nativeTheme.themeSource = ['light', 'dark', 'system'].includes(config.darkMode)
+  ? config.darkMode
+  : 'light';
 
 // possible reference to main app window
 let win: BrowserWindow;

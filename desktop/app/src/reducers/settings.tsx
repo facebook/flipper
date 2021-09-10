@@ -43,7 +43,7 @@ export type Settings = {
       openDevMenu: string;
     };
   };
-  darkMode: string;
+  darkMode: 'dark' | 'light' | 'system';
   showWelcomeAtStartup: boolean;
   suppressPluginErrors: boolean;
 };
@@ -78,7 +78,7 @@ const initialState: Settings = {
       openDevMenu: 'Alt+Shift+D',
     },
   },
-  darkMode: 'auto',
+  darkMode: 'light',
   showWelcomeAtStartup: true,
   suppressPluginErrors: false,
 };
