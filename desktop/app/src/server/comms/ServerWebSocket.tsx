@@ -51,11 +51,16 @@ class ServerWebSocket extends ServerWebSocketBase {
     const query = querystring.decode(message.url.split('?')[1]);
     const clientQuery = this._parseClientQuery(query);
     if (!clientQuery) {
-      console.warn('Unable to extract the client query from the request URL.');
+      console.warn(
+        '[conn] Unable to extract the client query from the request URL.',
+      );
       ws.close();
       return;
     }
 
+    console.log(
+      `[conn] Insecure websocket connection attempt: ${clientQuery.app} on ${clientQuery.device_id}.`,
+    );
     this.listener.onConnectionAttempt(clientQuery);
 
     ws.on('message', async (message: any) => {
@@ -78,10 +83,15 @@ class ServerWebSocket extends ServerWebSocketBase {
     const query = querystring.decode(message.url.split('?')[1]);
     const clientQuery = this._parseSecureClientQuery(query);
     if (!clientQuery) {
-      console.warn('Unable to extract the client query from the request URL.');
+      console.warn(
+        '[conn] Unable to extract the client query from the request URL.',
+      );
       ws.close();
       return;
     }
+    console.log(
+      `[conn] Secure websocket connection attempt: ${clientQuery.app} on ${clientQuery.device_id}. Medium ${clientQuery.medium}. CSR: ${clientQuery.csr_path}`,
+    );
     this.listener.onSecureConnectionAttempt(clientQuery);
 
     const pendingRequests: Map<
@@ -116,7 +126,14 @@ class ServerWebSocket extends ServerWebSocketBase {
       clientQuery,
       clientConnection,
     );
-    client.then((client) => (resolvedClient = client)).catch((_) => {});
+    client
+      .then((client) => (resolvedClient = client))
+      .catch((e) => {
+        console.error(
+          `[conn] Failed to resolve client ${clientQuery.app} on ${clientQuery.device_id} medium ${clientQuery.medium}`,
+          e,
+        );
+      });
 
     ws.on('message', (message: any) => {
       let json: any | undefined;

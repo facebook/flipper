@@ -109,6 +109,9 @@ class ServerRSocket extends ServerAdapter {
 
     const clientQuery: SecureClientQuery = JSON.parse(payload.data);
     this.listener.onSecureConnectionAttempt(clientQuery);
+    console.log(
+      `[conn] Secure rsocket connection attempt: ${clientQuery.app} on ${clientQuery.device_id}. Medium ${clientQuery.medium}. CSR: ${clientQuery.csr_path}`,
+    );
 
     const clientConnection: ClientConnection = {
       subscribeToEvents(subscriber: ConnectionStatusChange): void {
@@ -168,10 +171,13 @@ class ServerRSocket extends ServerAdapter {
     );
     client
       .then((client) => {
+        console.log(
+          `[conn] Client created: ${clientQuery.app} on ${clientQuery.device_id}. Medium ${clientQuery.medium}. CSR: ${clientQuery.csr_path}`,
+        );
         resolvedClient = client;
       })
       .catch((e) => {
-        console.error('Failed to resolve new client', e);
+        console.error('[conn] Failed to resolve new client', e);
       });
 
     return {
@@ -184,7 +190,9 @@ class ServerRSocket extends ServerAdapter {
               .then((client) => {
                 client.onMessage(payload.data);
               })
-              .catch((_) => {});
+              .catch((e) => {
+                console.error('Could not deliver message: ', e);
+              });
         }
       },
     };
@@ -221,7 +229,7 @@ class ServerRSocket extends ServerAdapter {
           rawData = JSON.parse(payload.data);
         } catch (err) {
           console.error(
-            `Invalid JSON: ${payload.data}`,
+            `[conn] Invalid JSON: ${payload.data}`,
             'clientMessage',
             'server',
           );
@@ -263,7 +271,10 @@ class ServerRSocket extends ServerAdapter {
           this._onHandleUntrustedMessage(clientQuery, rawData)
             .then((_) => {})
             .catch((err) => {
-              console.error('Unable to process CSR, failed with error.', err);
+              console.error(
+                '[conn] Unable to process CSR, failed with error.',
+                err,
+              );
             });
         }
       },

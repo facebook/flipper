@@ -72,7 +72,7 @@ abstract class ServerWebSocketBase extends ServerAdapter {
         handleRequest.apply(self, [ws, message]);
       });
       rawServer.on('error', (_ws: WebSocket, error: any) => {
-        console.warn('Server found connection error: ' + error);
+        console.warn('[conn] Server found connection error: ' + error);
         reject(error);
       });
 

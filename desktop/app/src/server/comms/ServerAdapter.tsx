@@ -138,10 +138,11 @@ abstract class ServerAdapter {
   async _onHandleUntrustedMessage(
     clientQuery: ClientQuery,
     rawData: any,
-  ): Promise<any> {
+  ): Promise<string | undefined> {
     // OSS's older Client SDK might not send medium information.
     // This is not an issue for internal FB users, as Flipper release
     // is insync with client SDK through launcher.
+
     const message: {
       method: 'signCertificate';
       csr: string;
@@ -149,16 +150,29 @@ abstract class ServerAdapter {
       medium: number | undefined;
     } = rawData;
 
+    console.log(
+      `[conn] Connection attempt: ${clientQuery.app} on ${clientQuery.device}, medium: ${message.medium}, cert: ${message.destination}`,
+      clientQuery,
+      rawData,
+    );
+
     if (message.method === 'signCertificate') {
       console.debug('CSR received from device', 'server');
 
       const {csr, destination, medium} = message;
 
+      console.log(
+        `[conn] Starting certificate exchange: ${clientQuery.app} on ${clientQuery.device}`,
+      );
       const result = await this.listener.onProcessCSR(
         csr,
         clientQuery,
         destination,
         transformCertificateExchangeMediumToType(medium),
+      );
+
+      console.log(
+        `[conn] Exchanged certificate: ${clientQuery.app} on ${clientQuery.device_id}`,
       );
       const response = JSON.stringify({
         deviceId: result.deviceId,
@@ -166,7 +180,7 @@ abstract class ServerAdapter {
       return response;
     }
 
-    return Promise.resolve();
+    return undefined;
   }
 }
 

@@ -151,6 +151,9 @@ class ServerController extends EventEmitter implements ServerEventsListener {
     const {app, os, device, device_id, sdk_version, csr, csr_path, medium} =
       clientQuery;
     const transformedMedium = transformCertificateExchangeMediumToType(medium);
+    console.log(
+      `[conn] Connection established: ${app} on ${device_id}. Medium ${medium}. CSR: ${csr_path}`,
+    );
     return this.addConnection(
       clientConnection,
       {
@@ -293,6 +296,9 @@ class ServerController extends EventEmitter implements ServerEventsListener {
         csr_path,
         csr,
       );
+      console.log(
+        `[conn] Detected ${app_name} on ${query.device_id} in certificate`,
+      );
     }
 
     query.app = appNameWithUpdateHint(query);
@@ -303,8 +309,9 @@ class ServerController extends EventEmitter implements ServerEventsListener {
       device: query.device,
       device_id: query.device_id,
     });
-    console.debug(`Device connected: ${id}`, 'server');
-
+    console.log(
+      `[conn] Matching device for ${query.app} on ${query.device_id}...`,
+    );
     const device =
       getDeviceBySerial(this.store.getState(), query.device_id) ??
       (await findDeviceForConnection(this.store, query.app, query.device_id));
@@ -324,6 +331,10 @@ class ServerController extends EventEmitter implements ServerEventsListener {
       connection: connection,
     };
 
+    console.log(
+      `[conn] Initializing client ${query.app} on ${query.device_id}...`,
+    );
+
     await client.init();
 
     connection.subscribeToEvents((status: ConnectionStatus) => {
@@ -336,7 +347,7 @@ class ServerController extends EventEmitter implements ServerEventsListener {
     });
 
     console.debug(
-      `Device client initialized: ${id}. Supported plugins: ${Array.from(
+      `[conn] Device client initialized: ${id}. Supported plugins: ${Array.from(
         client.plugins,
       ).join(', ')}`,
       'server',
@@ -382,6 +393,9 @@ class ServerController extends EventEmitter implements ServerEventsListener {
   removeConnection(id: string) {
     const info = this.connections.get(id);
     if (info) {
+      console.log(
+        `[conn] Disconnected: ${info.client.query.app} on ${info.client.query.device_id}.`,
+      );
       info.client.disconnect();
       this.connections.delete(id);
       this.emit('clients-change');
@@ -412,7 +426,7 @@ class ConnectionTracker {
     this.connectionAttempts.set(key, entry);
     if (entry.length >= this.connectionProblemThreshold) {
       console.error(
-        `Connection loop detected with ${key}. Connected ${
+        `[conn] Connection loop detected with ${key}. Connected ${
           this.connectionProblemThreshold
         } times within ${this.timeWindowMillis / 1000}s.`,
         'server',
@@ -444,7 +458,10 @@ async function findDeviceForConnection(
       const timeout = setTimeout(() => {
         unsubscribe();
         const error = `Timed out waiting for device ${serial} for client ${clientId}`;
-        console.error('Unable to find device for connection. Error:', error);
+        console.error(
+          '[conn] Unable to find device for connection. Error:',
+          error,
+        );
         reject(error);
       }, 15000);
       unsubscribe = sideEffect(
@@ -460,6 +477,7 @@ async function findDeviceForConnection(
             (device) => device.serial === serial,
           );
           if (matchingDevice) {
+            console.log(`[conn] Found device for: ${clientId} on ${serial}.`);
             clearTimeout(timeout);
             resolve(matchingDevice);
             unsubscribe();

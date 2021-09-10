@@ -27,9 +27,15 @@ class ServerWebSocketBrowser extends ServerWebSocketBase {
 
   verifyClient(): ws.VerifyClientCallbackSync {
     return (info: {origin: string; req: IncomingMessage; secure: boolean}) => {
-      return constants.VALID_WEB_SOCKET_REQUEST_ORIGIN_PREFIXES.some(
+      const ok = constants.VALID_WEB_SOCKET_REQUEST_ORIGIN_PREFIXES.some(
         (validPrefix) => info.origin.startsWith(validPrefix),
       );
+      if (!ok) {
+        console.warn(
+          `[conn] Refused webSocket connection from ${info.origin} (secure: ${info.secure})`,
+        );
+      }
+      return ok;
     };
   }
 
@@ -60,6 +66,9 @@ class ServerWebSocketBrowser extends ServerWebSocketBase {
       os: 'MacOS', // TODO: not hardcoded! Use host device?
     };
 
+    console.log(
+      `[conn] Local websocket connection attempt: ${clientQuery.app} on ${clientQuery.device_id}.`,
+    );
     this.listener.onConnectionAttempt(clientQuery);
 
     const cleanup = () => {
@@ -104,6 +113,10 @@ class ServerWebSocketBrowser extends ServerWebSocketBase {
           const extendedClientQuery = {...clientQuery, medium: 1};
           extendedClientQuery.sdk_version = plugins == null ? 4 : 1;
 
+          console.log(
+            `[conn] Local websocket connection established: ${clientQuery.app} on ${clientQuery.device_id}.`,
+          );
+
           let resolvedClient: Client | null = null;
           const client: Promise<Client> = this.listener.onConnectionCreated(
             extendedClientQuery,
@@ -111,10 +124,16 @@ class ServerWebSocketBrowser extends ServerWebSocketBase {
           );
           client
             .then((client) => {
+              console.log(
+                `[conn] Client created: ${clientQuery.app} on ${clientQuery.device_id}.`,
+              );
               resolvedClient = client;
             })
             .catch((e) => {
-              console.error('Failed to connect client over webSocket', e);
+              console.error(
+                '[conn] Failed to connect client over webSocket',
+                e,
+              );
             });
 
           clients[app] = client;
@@ -125,7 +144,7 @@ class ServerWebSocketBrowser extends ServerWebSocketBase {
               parsed = JSON.parse(m.toString());
             } catch (error) {
               // Throws a SyntaxError exception if the string to parse is not valid JSON.
-              console.log('Received message is not valid.', error);
+              console.log('[conn] Received message is not valid.', error);
               return;
             }
             // non-null payload id means response to prev request, it's handled in connection
@@ -159,7 +178,7 @@ class ServerWebSocketBrowser extends ServerWebSocketBase {
     });
     /** Error event from the existing client connection. */
     ws.on('error', (error) => {
-      console.warn('Server found connection error: ' + error);
+      console.warn('[conn] Server found connection error: ' + error);
       cleanup();
     });
   }

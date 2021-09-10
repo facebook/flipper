@@ -30,7 +30,7 @@ export type CrashLog = {
 
 export function devicePlugin(client: DevicePluginClient) {
   let notificationID = -1;
-  let watcher: Promise<FSWatcher | undefined>;
+  let watcher: Promise<FSWatcher | undefined> | undefined = undefined;
 
   const crashes = createState<Crash[]>([], {persist: 'crashes'});
   const selectedCrash = createState<string | undefined>();
@@ -71,7 +71,7 @@ export function devicePlugin(client: DevicePluginClient) {
 
   client.onDestroy(() => {
     watcher
-      .then((watcher) => watcher?.close())
+      ?.then((watcher) => watcher?.close())
       .catch((e) =>
         console.error(
           '[crash_reporter] FSWatcher failed resoving on destroy:',

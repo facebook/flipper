@@ -110,6 +110,10 @@ export default class CertificateProvider {
         this.ensureServerCertExists(),
         'ensureServerCertExists',
       );
+      // make sure initialization failure is already logged
+      this.certificateSetup.catch((e) => {
+        console.error('Failed to find or generate certificates', e);
+      });
     }
     this.config = config;
     this.server = server;
@@ -128,10 +132,10 @@ export default class CertificateProvider {
           certificate_zip: file,
           device_id: deviceID,
         }),
-        'Timed out uploading Flipper export.',
+        'Timed out uploading Flipper certificates to WWW.',
       ),
       'uploadCertificates',
-    ).catch((e) => console.error(`Failed to upload certificates due to ${e}`));
+    );
   };
 
   async processCertificateSigningRequest(
@@ -148,71 +152,60 @@ export default class CertificateProvider {
     const rootFolder = await promisify(tmp.dir)();
     const certFolder = rootFolder + '/FlipperCerts/';
     const certsZipPath = rootFolder + '/certs.zip';
-    return this.certificateSetup
-      .then((_) => this.getCACertificate())
-      .then((caCert) =>
-        this.deployOrStageFileForMobileApp(
-          appDirectory,
-          deviceCAcertFile,
-          caCert,
-          csr,
-          os,
-          medium,
-          certFolder,
-        ),
-      )
-      .then((_) => this.generateClientCertificate(csr))
-      .then((clientCert) =>
-        this.deployOrStageFileForMobileApp(
-          appDirectory,
-          deviceClientCertFile,
-          clientCert,
-          csr,
-          os,
-          medium,
-          certFolder,
-        ),
-      )
-      .then((_) => {
-        return this.extractAppNameFromCSR(csr);
-      })
-      .then((appName) => {
-        if (medium === 'FS_ACCESS') {
-          return this.getTargetDeviceId(os, appName, appDirectory, csr);
-        } else {
-          return uuid();
-        }
-      })
-      .then(async (deviceId) => {
-        if (medium === 'WWW') {
-          const zipPromise = new Promise((resolve, reject) => {
-            const output = fs.createWriteStream(certsZipPath);
-            const archive = archiver('zip', {
-              zlib: {level: 9}, // Sets the compression level.
-            });
-            archive.directory(certFolder, false);
-            output.on('close', function () {
-              resolve(certsZipPath);
-            });
-            archive.on('warning', reject);
-            archive.on('error', reject);
-            archive.pipe(output);
-            archive.finalize();
-          });
-
-          await reportPlatformFailures(
-            zipPromise,
-            'www-certs-exchange-zipping-certs',
-          );
-          await reportPlatformFailures(
-            this.uploadFiles(certsZipPath, deviceId),
-            'www-certs-exchange-uploading-certs',
-          );
-        }
-        return {
-          deviceId,
-        };
+    await this.certificateSetup;
+    const caCert = await this.getCACertificate();
+    await this.deployOrStageFileForMobileApp(
+      appDirectory,
+      deviceCAcertFile,
+      caCert,
+      csr,
+      os,
+      medium,
+      certFolder,
+    );
+    const clientCert = await this.generateClientCertificate(csr);
+    await this.deployOrStageFileForMobileApp(
+      appDirectory,
+      deviceClientCertFile,
+      clientCert,
+      csr,
+      os,
+      medium,
+      certFolder,
+    );
+    const appName = await this.extractAppNameFromCSR(csr);
+    const deviceId =
+      medium === 'FS_ACCESS'
+        ? await this.getTargetDeviceId(os, appName, appDirectory, csr)
+        : uuid();
+    if (medium === 'WWW') {
+      const zipPromise = new Promise((resolve, reject) => {
+        const output = fs.createWriteStream(certsZipPath);
+        const archive = archiver('zip', {
+          zlib: {level: 9}, // Sets the compression level.
+        });
+        archive.directory(certFolder, false);
+        output.on('close', function () {
+          resolve(certsZipPath);
+        });
+        archive.on('warning', reject);
+        archive.on('error', reject);
+        archive.pipe(output);
+        archive.finalize();
       });
+
+      await reportPlatformFailures(
+        zipPromise,
+        'www-certs-exchange-zipping-certs',
+      );
+      await reportPlatformFailures(
+        this.uploadFiles(certsZipPath, deviceId),
+        'www-certs-exchange-uploading-certs',
+      );
+    }
+    return {
+      deviceId,
+    };
   }
 
   getTargetDeviceId(
@@ -276,64 +269,56 @@ export default class CertificateProvider {
     medium: CertificateExchangeMedium,
     certFolder: string,
   ): Promise<void> {
-    const appNamePromise = this.extractAppNameFromCSR(csr);
-
     if (medium === 'WWW') {
       const certPathExists = await fs.pathExists(certFolder);
       if (!certPathExists) {
         await fs.mkdir(certFolder);
       }
-      return fs.writeFile(certFolder + filename, contents).catch((e) => {
+      try {
+        await fs.writeFile(certFolder + filename, contents);
+        return;
+      } catch (e) {
         throw new Error(
           `Failed to write ${filename} to temporary folder. Error: ${e}`,
         );
-      });
+      }
     }
 
+    const appName = await this.extractAppNameFromCSR(csr);
+
     if (os === 'Android') {
-      const deviceIdPromise = appNamePromise.then((app) =>
-        this.getTargetAndroidDeviceId(app, destination, csr),
+      const deviceId = await this.getTargetAndroidDeviceId(
+        appName,
+        destination,
+        csr,
       );
-      return Promise.all([deviceIdPromise, appNamePromise, this.adb]).then(
-        ([deviceId, appName, adbClient]) =>
-          androidUtil.push(
-            adbClient,
-            deviceId,
-            appName,
-            destination + filename,
-            contents,
-          ),
+      const adbClient = await this.adb;
+      await androidUtil.push(
+        adbClient,
+        deviceId,
+        appName,
+        destination + filename,
+        contents,
       );
+    } else if (os === 'iOS') {
+      try {
+        await fs.writeFile(destination + filename, contents);
+      } catch (err) {
+        // Writing directly to FS failed. It's probably a physical device.
+        const relativePathInsideApp =
+          this.getRelativePathInAppContainer(destination);
+        const udid = await this.getTargetiOSDeviceId(appName, destination, csr);
+        await this.pushFileToiOSDevice(
+          udid,
+          appName,
+          relativePathInsideApp,
+          filename,
+          contents,
+        );
+      }
+    } else {
+      throw new Error(`Unsupported device OS for Certificate Exchange: ${os}`);
     }
-    if (os === 'iOS' || os === 'windows' || os == 'MacOS') {
-      return fs
-        .writeFile(destination + filename, contents)
-        .catch(async (err) => {
-          if (os === 'iOS') {
-            // Writing directly to FS failed. It's probably a physical device.
-            const relativePathInsideApp =
-              this.getRelativePathInAppContainer(destination);
-            const appName = await appNamePromise;
-            const udid = await this.getTargetiOSDeviceId(
-              appName,
-              destination,
-              csr,
-            );
-            return await this.pushFileToiOSDevice(
-              udid,
-              appName,
-              relativePathInsideApp,
-              filename,
-              contents,
-            );
-          }
-          throw new Error(
-            `Invalid appDirectory recieved from ${os} device: ${destination}: ` +
-              err.toString(),
-          );
-        });
-    }
-    return Promise.reject(new Error(`Unsupported device os: ${os}`));
   }
 
   private async pushFileToiOSDevice(
@@ -346,7 +331,7 @@ export default class CertificateProvider {
     const dir = await tmpDir({unsafeCleanup: true});
     const filePath = path.resolve(dir, filename);
     await fs.writeFile(filePath, contents);
-    return await iosUtil.push(
+    await iosUtil.push(
       udid,
       filePath,
       bundleId,
@@ -360,11 +345,11 @@ export default class CertificateProvider {
     deviceCsrFilePath: string,
     csr: string,
   ): Promise<string> {
-    const devices = await this.adb.then((client) => client.listDevices());
-    if (devices.length === 0) {
+    const devicesInAdb = await this.adb.then((client) => client.listDevices());
+    if (devicesInAdb.length === 0) {
       throw new Error('No Android devices found');
     }
-    const deviceMatchList = devices.map(async (device) => {
+    const deviceMatchList = devicesInAdb.map(async (device) => {
       try {
         const result = await this.androidDeviceHasMatchingCSR(
           deviceCsrFilePath,
@@ -381,33 +366,32 @@ export default class CertificateProvider {
         return {id: device.id, isMatch: false, foundCsr: null, error: e};
       }
     });
-    return Promise.all(deviceMatchList).then((devices) => {
-      const matchingIds = devices.filter((m) => m.isMatch).map((m) => m.id);
-      if (matchingIds.length == 0) {
-        const erroredDevice = devices.find((d) => d.error);
-        if (erroredDevice) {
-          throw erroredDevice.error;
-        }
-        const foundCsrs = devices
-          .filter((d) => d.foundCsr !== null)
-          .map((d) => (d.foundCsr ? encodeURI(d.foundCsr) : 'null'));
-        console.warn(`Looking for CSR (url encoded):
+    const devices = await Promise.all(deviceMatchList);
+    const matchingIds = devices.filter((m) => m.isMatch).map((m) => m.id);
+    if (matchingIds.length == 0) {
+      const erroredDevice = devices.find((d) => d.error);
+      if (erroredDevice) {
+        throw erroredDevice.error;
+      }
+      const foundCsrs = devices
+        .filter((d) => d.foundCsr !== null)
+        .map((d) => (d.foundCsr ? encodeURI(d.foundCsr) : 'null'));
+      console.warn(`Looking for CSR (url encoded):
 
             ${encodeURI(this.santitizeString(csr))}
 
             Found these:
 
             ${foundCsrs.join('\n\n')}`);
-        throw new Error(`No matching device found for app: ${appName}`);
-      }
-      if (matchingIds.length > 1) {
-        console.warn(
-          new Error('More than one matching device found for CSR'),
-          csr,
-        );
-      }
-      return matchingIds[0];
-    });
+      throw new Error(`No matching device found for app: ${appName}`);
+    }
+    if (matchingIds.length > 1) {
+      console.warn(
+        new Error('[conn] More than one matching device found for CSR'),
+        csr,
+      );
+    }
+    return matchingIds[0];
   }
 
   private async getTargetiOSDeviceId(
@@ -418,7 +402,7 @@ export default class CertificateProvider {
     const matches = /\/Devices\/([^/]+)\//.exec(deviceCsrFilePath);
     if (matches && matches.length == 2) {
       // It's a simulator, the deviceId is in the filepath.
-      return Promise.resolve(matches[1]);
+      return matches[1];
     }
     const targets = await iosUtil.targets(
       this.config.idbPath,
@@ -436,40 +420,38 @@ export default class CertificateProvider {
       );
       return {id: target.udid, isMatch};
     });
-    return Promise.all(deviceMatchList).then((devices) => {
-      const matchingIds = devices.filter((m) => m.isMatch).map((m) => m.id);
-      if (matchingIds.length == 0) {
-        throw new Error(`No matching device found for app: ${appName}`);
-      }
-      return matchingIds[0];
-    });
+    const devices = await Promise.all(deviceMatchList);
+    const matchingIds = devices.filter((m) => m.isMatch).map((m) => m.id);
+    if (matchingIds.length == 0) {
+      throw new Error(`No matching device found for app: ${appName}`);
+    }
+    if (matchingIds.length > 1) {
+      console.warn(`Multiple devices found for app: ${appName}`);
+    }
+    return matchingIds[0];
   }
 
-  private androidDeviceHasMatchingCSR(
+  private async androidDeviceHasMatchingCSR(
     directory: string,
     deviceId: string,
     processName: string,
     csr: string,
   ): Promise<{isMatch: boolean; foundCsr: string}> {
-    return this.adb
-      .then((adbClient) =>
-        androidUtil.pull(
-          adbClient,
-          deviceId,
-          processName,
-          directory + csrFileName,
-        ),
-      )
-      .then((deviceCsr) => {
-        // Santitize both of the string before comparation
-        // The csr string extraction on client side return string in both way
-        const [sanitizedDeviceCsr, sanitizedClientCsr] = [
-          deviceCsr.toString(),
-          csr,
-        ].map((s) => this.santitizeString(s));
-        const isMatch = sanitizedDeviceCsr === sanitizedClientCsr;
-        return {isMatch: isMatch, foundCsr: sanitizedDeviceCsr};
-      });
+    const adbClient = await this.adb;
+    const deviceCsr = await androidUtil.pull(
+      adbClient,
+      deviceId,
+      processName,
+      directory + csrFileName,
+    );
+    // Santitize both of the string before comparation
+    // The csr string extraction on client side return string in both way
+    const [sanitizedDeviceCsr, sanitizedClientCsr] = [
+      deviceCsr.toString(),
+      csr,
+    ].map((s) => this.santitizeString(s));
+    const isMatch = sanitizedDeviceCsr === sanitizedClientCsr;
+    return {isMatch: isMatch, foundCsr: sanitizedDeviceCsr};
   }
 
   private async iOSDeviceHasMatchingCSR(
@@ -553,59 +535,57 @@ export default class CertificateProvider {
 
   private async checkCertIsValid(filename: string): Promise<void> {
     if (!(await fs.pathExists(filename))) {
-      return Promise.reject(new Error(`${filename} does not exist`));
+      throw new Error(`${filename} does not exist`);
     }
     // openssl checkend is a nice feature but it only checks for certificates
     // expiring in the future, not those that have already expired.
     // So we need a separate check for certificates that have already expired
     // but since this involves parsing date outputs from openssl, which is less
     // reliable, keeping both checks for safety.
-    return openssl('x509', {
-      checkend: minCertExpiryWindowSeconds,
-      in: filename,
-    })
-      .then(() => undefined)
-      .catch((e) => {
-        console.warn(`Certificate will expire soon: ${filename}`, logTag);
-        throw e;
-      })
-      .then((_) =>
-        openssl('x509', {
-          enddate: true,
-          in: filename,
-          noout: true,
-        }),
-      )
-      .then((endDateOutput) => {
-        const dateString = endDateOutput.trim().split('=')[1].trim();
-        const expiryDate = Date.parse(dateString);
-        if (isNaN(expiryDate)) {
-          console.error(
-            'Unable to parse certificate expiry date: ' + endDateOutput,
-          );
-          throw new Error(
-            'Cannot parse certificate expiry date. Assuming it has expired.',
-          );
-        }
-        if (expiryDate <= Date.now() + minCertExpiryWindowSeconds * 1000) {
-          throw new Error('Certificate has expired or will expire soon.');
-        }
+    try {
+      await openssl('x509', {
+        checkend: minCertExpiryWindowSeconds,
+        in: filename,
       });
+    } catch (e) {
+      console.warn(
+        `Checking if certificate expire soon: ${filename}`,
+        logTag,
+        e,
+      );
+      const endDateOutput = await openssl('x509', {
+        enddate: true,
+        in: filename,
+        noout: true,
+      });
+      const dateString = endDateOutput.trim().split('=')[1].trim();
+      const expiryDate = Date.parse(dateString);
+      if (isNaN(expiryDate)) {
+        console.error(
+          'Unable to parse certificate expiry date: ' + endDateOutput,
+        );
+        throw new Error(
+          'Cannot parse certificate expiry date. Assuming it has expired.',
+        );
+      }
+      if (expiryDate <= Date.now() + minCertExpiryWindowSeconds * 1000) {
+        throw new Error('Certificate has expired or will expire soon.');
+      }
+    }
   }
 
-  private verifyServerCertWasIssuedByCA() {
+  private async verifyServerCertWasIssuedByCA() {
     const options: {
       [key: string]: any;
     } = {CAfile: caCert};
     options[serverCert] = false;
-    return openssl('verify', options).then((output) => {
-      const verified = output.match(/[^:]+: OK/);
-      if (!verified) {
-        // This should never happen, but if it does, we need to notice so we can
-        // generate a valid one, or no clients will trust our server.
-        throw new Error('Current server cert was not issued by current CA');
-      }
-    });
+    const output = await openssl('verify', options);
+    const verified = output.match(/[^:]+: OK/);
+    if (!verified) {
+      // This should never happen, but if it does, we need to notice so we can
+      // generate a valid one, or no clients will trust our server.
+      throw new Error('Current server cert was not issued by current CA');
+    }
   }
 
   private async generateCertificateAuthority(): Promise<void> {
@@ -613,21 +593,18 @@ export default class CertificateProvider {
       await fs.mkdir(getFilePath(''));
     }
     console.log('Generating new CA', logTag);
-    return openssl('genrsa', {out: caKey, '2048': false})
-      .then((_) =>
-        openssl('req', {
-          new: true,
-          x509: true,
-          subj: caSubject,
-          key: caKey,
-          out: caCert,
-        }),
-      )
-      .then((_) => undefined);
+    await openssl('genrsa', {out: caKey, '2048': false});
+    await openssl('req', {
+      new: true,
+      x509: true,
+      subj: caSubject,
+      key: caKey,
+      out: caCert,
+    });
   }
 
   private async ensureServerCertExists(): Promise<void> {
-    const allExist = Promise.all([
+    const allExist = await Promise.all([
       fs.pathExists(serverKey),
       fs.pathExists(serverCert),
       fs.pathExists(caCert),
@@ -636,37 +613,34 @@ export default class CertificateProvider {
       return this.generateServerCertificate();
     }
 
-    return this.checkCertIsValid(serverCert)
-      .then(() => this.verifyServerCertWasIssuedByCA())
-      .catch(() => this.generateServerCertificate());
+    try {
+      await this.checkCertIsValid(serverCert);
+      await this.verifyServerCertWasIssuedByCA();
+    } catch (e) {
+      console.warn('Not all certs are valid, generating new ones', e);
+      await this.generateServerCertificate();
+    }
   }
 
-  private generateServerCertificate(): Promise<void> {
-    return this.ensureCertificateAuthorityExists()
-      .then((_) => {
-        console.warn('Creating new server cert', logTag);
-      })
-      .then((_) => openssl('genrsa', {out: serverKey, '2048': false}))
-      .then((_) =>
-        openssl('req', {
-          new: true,
-          key: serverKey,
-          out: serverCsr,
-          subj: serverSubject,
-        }),
-      )
-      .then((_) =>
-        openssl('x509', {
-          req: true,
-          in: serverCsr,
-          CA: caCert,
-          CAkey: caKey,
-          CAcreateserial: true,
-          CAserial: serverSrl,
-          out: serverCert,
-        }),
-      )
-      .then((_) => undefined);
+  private async generateServerCertificate(): Promise<void> {
+    await this.ensureCertificateAuthorityExists();
+    console.warn('Creating new server cert', logTag);
+    await openssl('genrsa', {out: serverKey, '2048': false});
+    await openssl('req', {
+      new: true,
+      key: serverKey,
+      out: serverCsr,
+      subj: serverSubject,
+    });
+    await openssl('x509', {
+      req: true,
+      in: serverCsr,
+      CA: caCert,
+      CAkey: caKey,
+      CAcreateserial: true,
+      CAserial: serverSrl,
+      out: serverCert,
+    });
   }
 
   private async writeToTempFile(content: string): Promise<string> {
