@@ -281,8 +281,10 @@ class ServerWebSocket extends ServerWebSocketBase {
     if (typeof query.medium === 'string') {
       medium = parseInt(query.medium, 10);
     }
-
-    return {...clientQuery, csr, csr_path, medium};
+    if (medium !== undefined && (medium < 1 || medium > 3)) {
+      throw new Error('Unsupported exchange medium: ' + medium);
+    }
+    return {...clientQuery, csr, csr_path, medium: medium as any};
   }
 }
 

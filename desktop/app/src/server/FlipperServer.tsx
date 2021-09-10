@@ -114,16 +114,6 @@ export class FlipperServer {
     });
 
     server.addListener(
-      'finish-client-setup',
-      (payload: {client: UninitializedClient; deviceId: string}) => {
-        this.store.dispatch({
-          type: 'FINISH_CLIENT_SETUP',
-          payload: payload,
-        });
-      },
-    );
-
-    server.addListener(
       'client-setup-error',
       ({client, error}: {client: UninitializedClient; error: Error}) => {
         this.store.dispatch(

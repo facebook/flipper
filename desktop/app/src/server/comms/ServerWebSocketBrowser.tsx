@@ -110,7 +110,7 @@ class ServerWebSocketBrowser extends ServerWebSocketBase {
             plugins,
           );
 
-          const extendedClientQuery = {...clientQuery, medium: 1};
+          const extendedClientQuery = {...clientQuery, medium: 3 as const};
           extendedClientQuery.sdk_version = plugins == null ? 4 : 1;
 
           console.log(
@@ -118,6 +118,7 @@ class ServerWebSocketBrowser extends ServerWebSocketBase {
           );
 
           let resolvedClient: Client | null = null;
+          this.listener.onSecureConnectionAttempt(extendedClientQuery);
           const client: Promise<Client> = this.listener.onConnectionCreated(
             extendedClientQuery,
             clientConnection,

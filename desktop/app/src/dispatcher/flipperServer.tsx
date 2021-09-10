@@ -70,7 +70,7 @@ export default async (store: Store, logger: Logger) => {
 
   server.on('device-connected', (device) => {
     logger.track('usage', 'register-device', {
-      os: 'Android',
+      os: device.os,
       name: device.title,
       serial: device.serial,
     });

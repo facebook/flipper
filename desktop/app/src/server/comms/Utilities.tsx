@@ -18,12 +18,16 @@ import {ClientQuery} from '../../Client';
 export function transformCertificateExchangeMediumToType(
   medium: number | undefined,
 ): CertificateExchangeMedium {
-  if (medium == 1) {
-    return 'FS_ACCESS';
-  } else if (medium == 2) {
-    return 'WWW';
-  } else {
-    return 'FS_ACCESS';
+  switch (medium) {
+    case undefined:
+    case 1:
+      return 'FS_ACCESS';
+    case 2:
+      return 'WWW';
+    case 3:
+      return 'NONE';
+    default:
+      throw new Error('Unknown Certificate exchange medium: ' + medium);
   }
 }
 

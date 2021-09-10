@@ -14,7 +14,6 @@ import type BaseDevice from '../server/devices/BaseDevice';
 import MacDevice from '../server/devices/desktop/MacDevice';
 import type Client from '../Client';
 import type {UninitializedClient} from '../server/UninitializedClient';
-import {isEqual} from 'lodash';
 import {performance} from 'perf_hooks';
 import type {Actions, Store} from '.';
 import {WelcomeScreenStaticView} from '../sandy-chrome/WelcomeScreen';
@@ -73,11 +72,7 @@ type StateV2 = {
   enabledPlugins: {[client: string]: string[]};
   enabledDevicePlugins: Set<string>;
   clients: Array<Client>;
-  uninitializedClients: Array<{
-    client: UninitializedClient;
-    deviceId?: string;
-    errorMessage?: string;
-  }>;
+  uninitializedClients: UninitializedClient[];
   deepLinkPayload: unknown;
   staticView: StaticView;
   selectedAppPluginListRevision: number;
@@ -136,10 +131,6 @@ export type Action =
   | {
       type: 'START_CLIENT_SETUP';
       payload: UninitializedClient;
-    }
-  | {
-      type: 'FINISH_CLIENT_SETUP';
-      payload: {client: UninitializedClient; deviceId: string};
     }
   | {
       type: 'SET_STATIC_VIEW';
@@ -366,8 +357,8 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
         clients: newClients,
         uninitializedClients: state.uninitializedClients.filter((c) => {
           return (
-            c.deviceId !== payload.query.device_id ||
-            c.client.appName !== payload.query.app
+            c.deviceName !== payload.query.device ||
+            c.appName !== payload.query.app
           );
         }),
       });
@@ -402,23 +393,7 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
       const {payload} = action;
       return {
         ...state,
-        uninitializedClients: state.uninitializedClients
-          .filter((entry) => !isEqual(entry.client, payload))
-          .concat([{client: payload}])
-          .sort((a, b) => a.client.appName.localeCompare(b.client.appName)),
-      };
-    }
-    case 'FINISH_CLIENT_SETUP': {
-      const {payload} = action;
-      return {
-        ...state,
-        uninitializedClients: state.uninitializedClients
-          .map((c) =>
-            isEqual(c.client, payload.client)
-              ? {...c, deviceId: payload.deviceId}
-              : c,
-          )
-          .sort((a, b) => a.client.appName.localeCompare(b.client.appName)),
+        uninitializedClients: [...state.uninitializedClients, payload],
       };
     }
     case 'REGISTER_PLUGINS': {

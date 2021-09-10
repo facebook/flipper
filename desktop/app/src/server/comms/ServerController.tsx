@@ -34,6 +34,7 @@ import ServerAdapter, {
 import {createBrowserServer, createServer} from './ServerFactory';
 import {FlipperServer} from '../FlipperServer';
 import {isTest} from '../../utils/isProduction';
+import {timeout} from 'flipper-plugin';
 
 type ClientInfo = {
   connection: ClientConnection | null | undefined;
@@ -187,15 +188,15 @@ class ServerController extends EventEmitter implements ServerEventsListener {
     const transformedMedium = transformCertificateExchangeMediumToType(
       clientQuery.medium,
     );
-    if (transformedMedium === 'WWW') {
-      this.store.dispatch({
-        type: 'REGISTER_DEVICE',
-        payload: new DummyDevice(
+    if (transformedMedium === 'WWW' || transformedMedium === 'NONE') {
+      this.flipperServer.registerDevice(
+        new DummyDevice(
           clientQuery.device_id,
-          clientQuery.app + ' Server Exchanged',
+          clientQuery.app +
+            (transformedMedium === 'WWW' ? ' Server Exchanged' : ''),
           clientQuery.os,
         ),
-      });
+      );
     }
   }
 
@@ -247,11 +248,6 @@ class ServerController extends EventEmitter implements ServerEventsListener {
             });
           }, 30 * 1000);
 
-          this.emit('finish-client-setup', {
-            client,
-            deviceId: response.deviceId,
-          });
-
           resolve(response);
         })
         .catch((error) => {
@@ -285,8 +281,8 @@ class ServerController extends EventEmitter implements ServerEventsListener {
     // otherwise, use given device_id
     const {csr_path, csr} = csrQuery;
 
-    // For iOS we do not need to confirm the device id, as it never changes unlike android.
-    if (csr_path && csr && query.os != 'iOS') {
+    // For Android, device id might change
+    if (csr_path && csr && query.os === 'Android') {
       const app_name = await this.certificateProvider.extractAppNameFromCSR(
         csr,
       );
@@ -312,6 +308,7 @@ class ServerController extends EventEmitter implements ServerEventsListener {
     console.log(
       `[conn] Matching device for ${query.app} on ${query.device_id}...`,
     );
+    // TODO: grab device from flipperServer.devices instead of store
     const device =
       getDeviceBySerial(this.store.getState(), query.device_id) ??
       (await findDeviceForConnection(this.store, query.app, query.device_id));
@@ -335,7 +332,11 @@ class ServerController extends EventEmitter implements ServerEventsListener {
       `[conn] Initializing client ${query.app} on ${query.device_id}...`,
     );
 
-    await client.init();
+    await timeout(
+      30 * 1000,
+      client.init(),
+      `[conn] Failed to initialize client ${query.app} on ${query.device_id} in a timely manner`,
+    );
 
     connection.subscribeToEvents((status: ConnectionStatus) => {
       if (

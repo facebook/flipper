@@ -26,7 +26,12 @@ import {processMessagesLater} from './utils/messageQueue';
 import {emitBytesReceived} from './dispatcher/tracking';
 import {debounce} from 'lodash';
 import {batch} from 'react-redux';
-import {createState, _SandyPluginInstance, getFlipperLib} from 'flipper-plugin';
+import {
+  createState,
+  _SandyPluginInstance,
+  getFlipperLib,
+  timeout,
+} from 'flipper-plugin';
 import {freeze} from 'immer';
 import GK from './fb-stubs/GK';
 import {message} from 'antd';
@@ -230,9 +235,10 @@ export default class Client extends EventEmitter {
 
   // get the supported plugins
   async loadPlugins(): Promise<Plugins> {
-    const {plugins} = await this.rawCall<{plugins: Plugins}>(
-      'getPlugins',
-      false,
+    const {plugins} = await timeout(
+      30 * 1000,
+      this.rawCall<{plugins: Plugins}>('getPlugins', false),
+      'Fetch plugin timeout for ' + this.id,
     );
     this.plugins = new Set(plugins);
     return plugins;
@@ -307,10 +313,12 @@ export default class Client extends EventEmitter {
     if (this.sdkVersion < 4) {
       return [];
     }
-    return this.rawCall<{plugins: PluginsArr}>(
-      'getBackgroundPlugins',
-      false,
-    ).then((data) => data.plugins);
+    const data = await timeout(
+      30 * 1000,
+      this.rawCall<{plugins: PluginsArr}>('getBackgroundPlugins', false),
+      'Fetch background plugins timeout for ' + this.id,
+    );
+    return data.plugins;
   }
 
   // get the plugins, and update the UI

@@ -29,7 +29,7 @@ export type ClientCsrQuery = {
  * ClientCsrQuery. It also adds medium information.
  */
 export type SecureClientQuery = ClientQuery &
-  ClientCsrQuery & {medium: number | undefined};
+  ClientCsrQuery & {medium: 1 /*FS*/ | 2 /*WWW*/ | 3 /*NONE*/ | undefined};
 
 /**
  * Defines an interface for events triggered by a running server interacting

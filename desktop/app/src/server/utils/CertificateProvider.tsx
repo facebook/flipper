@@ -30,7 +30,7 @@ import {timeout} from 'flipper-plugin';
 import {v4 as uuid} from 'uuid';
 import {isTest} from '../../utils/isProduction';
 
-export type CertificateExchangeMedium = 'FS_ACCESS' | 'WWW';
+export type CertificateExchangeMedium = 'FS_ACCESS' | 'WWW' | 'NONE';
 
 const tmpFile = promisify(tmp.file) as (
   options?: FileOptions,
