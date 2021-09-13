@@ -10,12 +10,14 @@
 #import "FlipperClient.h"
 #import <Flipper/FlipperCertificateProvider.h>
 #import <Flipper/FlipperClient.h>
+#import <Flipper/FlipperSocketProvider.h>
 #include <folly/io/async/EventBase.h>
 #include <folly/io/async/ScopedEventBaseThread.h>
 #include <memory>
 #import "FlipperClient+Testing.h"
 #import "FlipperCppWrapperPlugin.h"
 #import "FlipperKitCertificateProvider.h"
+#import "FlipperWebSocket.h"
 #import "SKEnvironmentVariables.h"
 #include "SKStateUpdateCPPWrapper.h"
 
@@ -101,6 +103,11 @@ using WrapperPlugin = facebook::flipper::FlipperCppWrapperPlugin;
            [SKEnvironmentVariables getInsecurePort],
            [SKEnvironmentVariables getSecurePort]});
       _cppClient = facebook::flipper::FlipperClient::instance();
+
+      // To switch to a websocket provider, uncomment the line below.
+      // facebook::flipper::FlipperSocketProvider::setDefaultProvider(
+      //     std::make_unique<facebook::flipper::FlipperWebSocketProvider>());
+
     } catch (const std::system_error& e) {
       // Probably ran out of disk space.
       return nil;
