@@ -318,6 +318,9 @@ export default class Inspector extends Component<Props, State> {
           forAccessibilityEvent,
           selected: false,
         });
+      if (!elements) {
+        return [];
+      }
       elements.forEach((e) => this.updateElement(e.id, e));
       return elements;
     } else {
