@@ -7,6 +7,8 @@
  * @format
  */
 
+// Used to register a shortcut. Don't have an alternative for that.
+// eslint-disable-next-line flipper/no-electron-remote-imports
 import {remote} from 'electron';
 import MetroDevice from '../server/devices/metro/MetroDevice';
 import {Store} from '../reducers';

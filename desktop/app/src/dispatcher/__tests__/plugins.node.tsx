@@ -18,8 +18,9 @@ import dispatcher, {
 } from '../plugins';
 import {BundledPluginDetails, InstalledPluginDetails} from 'flipper-plugin-lib';
 import path from 'path';
+// Allowed in a test.
+// eslint-disable-next-line flipper/no-electron-remote-imports
 import {remote} from 'electron';
-import {FlipperPlugin} from '../../plugin';
 import {createRootReducer, State} from '../../reducers/index';
 import {getInstance} from '../../fb-stubs/Logger';
 import configureStore from 'redux-mock-store';

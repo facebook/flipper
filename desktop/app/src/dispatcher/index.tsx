@@ -7,6 +7,8 @@
  * @format
  */
 
+// Used responsibly.
+// eslint-disable-next-line flipper/no-electron-remote-imports
 import {remote} from 'electron';
 import flipperServer from './flipperServer';
 import application from './application';

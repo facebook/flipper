@@ -86,10 +86,8 @@ async function handlePluginDownload(
   const tmpFile = path.join(tmpDir, `${name}-${version}.tgz`);
   let installedPlugin: InstalledPluginDetails | undefined;
   try {
-    const cancellationSource = axios.CancelToken.source();
-    dispatch(
-      pluginDownloadStarted({plugin, cancel: cancellationSource.cancel}),
-    );
+    const cancelationSource = axios.CancelToken.source();
+    dispatch(pluginDownloadStarted({plugin, cancel: cancelationSource.cancel}));
     if (await fs.pathExists(installationDir)) {
       console.log(
         `Using existing files instead of downloading plugin "${title}" v${version} from "${downloadUrl}" to "${installationDir}"`,
@@ -100,7 +98,7 @@ async function handlePluginDownload(
       let percentCompleted = 0;
       const response = await axios.get(plugin.downloadUrl, {
         adapter: axiosHttpAdapter,
-        cancelToken: cancellationSource.token,
+        cancelToken: cancelationSource.token,
         responseType: 'stream',
         headers: {
           'Sec-Fetch-Site': 'none',

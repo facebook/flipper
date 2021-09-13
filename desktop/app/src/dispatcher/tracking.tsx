@@ -7,6 +7,8 @@
  * @format
  */
 
+// Used for PID tracking.
+// eslint-disable-next-line flipper/no-electron-remote-imports
 import {ipcRenderer, remote} from 'electron';
 import {performance} from 'perf_hooks';
 import {EventEmitter} from 'events';

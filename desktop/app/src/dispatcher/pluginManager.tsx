@@ -51,13 +51,11 @@ import {getPluginKey} from '../utils/pluginKey';
 
 const maxInstalledPluginVersionsToKeep = 2;
 
-function refreshInstalledPlugins(store: Store) {
-  removePlugins(store.getState().plugins.uninstalledPluginNames.values())
-    .then(() =>
-      cleanupOldInstalledPluginVersions(maxInstalledPluginVersionsToKeep),
-    )
-    .then(() => getInstalledPlugins())
-    .then((plugins) => store.dispatch(registerInstalledPlugins(plugins)));
+async function refreshInstalledPlugins(store: Store) {
+  await removePlugins(store.getState().plugins.uninstalledPluginNames.values());
+  await cleanupOldInstalledPluginVersions(maxInstalledPluginVersionsToKeep);
+  const plugins = await getInstalledPlugins();
+  return store.dispatch(registerInstalledPlugins(plugins));
 }
 
 export default (
@@ -70,7 +68,9 @@ export default (
   // This needn't happen immediately and is (light) I/O work.
   if (window.requestIdleCallback) {
     window.requestIdleCallback(() => {
-      refreshInstalledPlugins(store);
+      refreshInstalledPlugins(store).catch((err) =>
+        console.error('Failed to refresh installed plugins:', err),
+      );
     });
   }
 

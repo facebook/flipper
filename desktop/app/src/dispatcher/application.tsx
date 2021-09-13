@@ -7,6 +7,8 @@
  * @format
  */
 
+// Fine for app startup.
+// eslint-disable-next-line flipper/no-electron-remote-imports
 import {remote, ipcRenderer, IpcRendererEvent} from 'electron';
 import {Store} from '../reducers/index';
 import {Logger} from '../fb-interfaces/Logger';
