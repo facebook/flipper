@@ -15,6 +15,7 @@ import {runBuild, computePackageChecksum} from 'flipper-pkg-lib';
 import yargs from 'yargs';
 import tmp from 'tmp';
 import {execSync} from 'child_process';
+import {promisify} from 'util';
 
 const argv = yargs
   .usage('yarn build-plugin [args]')
@@ -89,7 +90,7 @@ async function buildPlugin() {
       : path.join(distDir, 'plugins', path.relative(pluginsDir, pluginDir));
     await fs.ensureDir(path.dirname(outputFile));
     await fs.remove(outputFile);
-    const {name: tmpDir} = tmp.dirSync();
+    const tmpDir = await promisify(tmp.dir)();
     const packageJsonBackupPath = path.join(tmpDir, 'package.json');
     await fs.copy(packageJsonPath, packageJsonBackupPath, {overwrite: true});
     try {

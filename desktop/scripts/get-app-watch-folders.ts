@@ -35,5 +35,5 @@ export default async function getAppWatchFolders() {
   }
   return watchFolders
     .filter((value, index, self) => self.indexOf(value) === index)
-    .filter(fs.pathExistsSync);
+    .filter(async (f) => fs.pathExists(f));
 }

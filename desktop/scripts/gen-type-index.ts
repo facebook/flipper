@@ -6,6 +6,7 @@
  *
  * @format
  */
+/* eslint-disable flipper/no-console-error-without-context */
 
 import {rootDir} from './paths';
 import path from 'path';

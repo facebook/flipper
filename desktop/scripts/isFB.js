@@ -11,6 +11,8 @@
 const fs = require('fs-extra');
 const path = require('path');
 
+// Only used once at startup.
+// eslint-disable-next-line node/no-sync
 const isFB = fs.pathExistsSync(path.resolve(__dirname, '..', 'static', 'fb'));
 
 module.exports = isFB;

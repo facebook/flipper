@@ -7,6 +7,8 @@
  * @format
  */
 
+/* eslint-disable flipper/no-console-error-without-context */
+
 import {publishPackages} from './workspaces';
 import yargs from 'yargs';
 

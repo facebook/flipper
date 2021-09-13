@@ -7,6 +7,8 @@
  * @format
  */
 
+/* eslint-disable flipper/no-console-error-without-context */
+
 import {prepareDefaultPlugins} from './build-utils';
 
 prepareDefaultPlugins().catch((err) => {

@@ -7,6 +7,8 @@
  * @format
  */
 
+/* eslint-disable flipper/no-console-error-without-context */
+
 import {resolvePluginDir} from './workspaces';
 
 resolvePluginDir(process.argv[2])

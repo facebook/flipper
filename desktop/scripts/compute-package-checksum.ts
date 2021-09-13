@@ -7,6 +7,8 @@
  * @format
  */
 
+/* eslint-disable flipper/no-console-error-without-context */
+
 import {computePackageChecksum} from 'flipper-pkg-lib';
 import yargs from 'yargs';
 

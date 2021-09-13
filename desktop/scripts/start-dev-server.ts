@@ -383,6 +383,8 @@ function buildErrorScreen() {
       lines.push(err.message);
       lines.push(
         codeFrame(
+          // Part of a script, not blocking the UI loop.
+          // eslint-disable-next-line node/no-sync
           fs.readFileSync(err.filename, 'utf8'),
           err.lineNumber,
           err.column,
