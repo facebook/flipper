@@ -27,7 +27,7 @@
     "adbkit-logcat": "^2.0.1",
     "antd": "4.16.8",
     "archiver": "^5.0.2",
-    "async-mutex": "^0.3.1",
+    "async-mutex": "^0.3.2",
     "axios": "^0.21.2",
     "cbuffer": "^2.2.0",
     "console-feed": "^3.2.2",
