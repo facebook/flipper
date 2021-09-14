@@ -65,6 +65,8 @@ export async function checkForUpdate(
             console.log('Skipping version check on non-authenticated network.');
             return {kind: 'up-to-date'};
           }
+          // Good use of nesting.
+          // eslint-disable-next-line promise/no-nesting
           return res.json().then(parseResponse);
         default:
           const msg = `Server responded with ${res.statusText}.`;

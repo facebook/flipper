@@ -285,6 +285,7 @@ export class FlipperPlugin<
   }
 
   get device() {
+    // eslint-disable-next-line node/no-sync
     return this.realClient.deviceSync;
   }
 
