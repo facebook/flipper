@@ -10,8 +10,7 @@
 import fs from 'fs-extra';
 import path from 'path';
 import {getWatchFolders} from 'flipper-pkg-lib';
-import {appDir, publicPluginsDir, fbPluginsDir, jsSharedDir} from './paths';
-import isFB from './isFB';
+import {appDir, publicPluginsDir, fbPluginsDir} from './paths';
 
 /**
  * Flipper references code from below plugins directly. Such directly referenced plugins
@@ -30,9 +29,6 @@ export default async function getAppWatchFolders() {
     ),
   );
   const watchFolders = ([] as string[]).concat(...getWatchFoldersResults);
-  if (isFB) {
-    watchFolders.push(jsSharedDir);
-  }
   return watchFolders
     .filter((value, index, self) => self.indexOf(value) === index)
     .filter(async (f) => fs.pathExists(f));

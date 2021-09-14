@@ -32,7 +32,6 @@ import {hasNewChangesToShow} from '../chrome/ChangelogSheet';
 import {getVersionString} from '../utils/versionString';
 import config from '../fb-stubs/config';
 import {WelcomeScreenStaticView} from './WelcomeScreen';
-import QPL, {QuickLogActionType, FLIPPER_QPL_EVENTS} from '../fb-stubs/QPL';
 import fbConfig from '../fb-stubs/config';
 import {isFBEmployee} from '../utils/fbEmployee';
 import {notification} from 'antd';
@@ -213,14 +212,6 @@ function registerStartupTime(logger: Logger) {
   const launchEndTime = s * 1e3 + ns / 1e6;
   ipcRenderer.on('getLaunchTime', (_: any, launchStartTime: number) => {
     logger.track('performance', 'launchTime', launchEndTime - launchStartTime);
-
-    QPL.markerStart(FLIPPER_QPL_EVENTS.STARTUP, 0, launchStartTime);
-    QPL.markerEnd(
-      FLIPPER_QPL_EVENTS.STARTUP,
-      QuickLogActionType.SUCCESS,
-      0,
-      launchEndTime,
-    );
   });
 
   ipcRenderer.send('getLaunchTime');

@@ -23,8 +23,7 @@
       "flipper": ["./app/src"],
       "flipper-plugin": ["./flipper-plugin/src"],
       "eslint-plugin-flipper": ["./eslint-plugin-flipper/src"],
-      "flipper-*": ["./*/src"],
-      "@js-shared/*": ["../../js-shared/*"]
+      "flipper-*": ["./*/src"]
     }
   },
   "exclude": ["**/lib/", "**/dist/", "**/node_modules/", "**/__tests__/"]
