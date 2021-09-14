@@ -34,6 +34,8 @@ import {promisify} from 'util';
 
 const VERSION: string = (global as any).__VERSION__;
 
+const validThemes = ['light', 'dark', 'system'];
+
 // Adds system PATH folders to process.env.PATH for MacOS production bundles.
 fixPath();
 
@@ -109,7 +111,7 @@ if (argv['disable-gpu'] || process.env.FLIPPER_DISABLE_GPU === '1') {
 }
 
 process.env.CONFIG = JSON.stringify(config);
-nativeTheme.themeSource = ['light', 'dark', 'system'].includes(config.darkMode)
+nativeTheme.themeSource = validThemes.includes(config.darkMode)
   ? config.darkMode
   : 'light';
 
@@ -291,7 +293,11 @@ ipcMain.on('getLaunchTime', (event) => {
 });
 
 ipcMain.on('setTheme', (_e, mode: 'light' | 'dark' | 'system') => {
-  nativeTheme.themeSource = mode;
+  if (validThemes.includes(mode)) {
+    nativeTheme.themeSource = mode;
+  } else {
+    console.warn('Received invalid theme: ' + mode);
+  }
 });
 
 ipcMain.on(
