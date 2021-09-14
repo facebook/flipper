@@ -13,7 +13,13 @@ Each of these can be overridden by setting an environment variable, with the for
 To run the desktop app using custom ports:
 
 ```
-FLIPPER_PORTS=1111,2222 ./flipper
+env FLIPPER_PORTS=1111,2222 ./flipper
+```
+
+or with a dev build:
+
+```
+env FLIPPER_PORTS=1111,2222 yarn start
 ```
 
 To configure the Android SDK for custom ports, set the `flipper.ports` prop to your chosen ports `1111,2222` like so, and then launch the Android app:
@@ -22,7 +28,11 @@ To configure the Android SDK for custom ports, set the `flipper.ports` prop to y
 adb shell su 0 setprop flipper.ports 1111,2222
 ```
 
-To configure the iOS SDK for custom ports, set the FLIPPER_PORTS environment variable in your app launch script.
+To configure the iOS SDK for custom ports, set the FLIPPER_PORTS environment variable in your app launch script or set it system-wide through User Defaults:
+
+```
+xcrun simctl spawn booted defaults write "Apple Global Domain" "com.facebook.flipper.ports" -string "1111,2222"
+```
 
 ## METRO SERVER PORTS
 
