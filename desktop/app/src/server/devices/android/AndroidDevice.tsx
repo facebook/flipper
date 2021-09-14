@@ -130,15 +130,20 @@ export default class AndroidDevice extends BaseDevice {
       return Buffer.from([]);
     }
     return new Promise((resolve, reject) => {
-      this.adb.screencap(this.serial).then((stream) => {
-        const chunks: Array<Buffer> = [];
-        stream
-          .on('data', (chunk: Buffer) => chunks.push(chunk))
-          .once('end', () => {
-            resolve(Buffer.concat(chunks));
-          })
-          .once('error', reject);
-      });
+      this.adb
+        .screencap(this.serial)
+        .then((stream) => {
+          const chunks: Array<Buffer> = [];
+          stream
+            .on('data', (chunk: Buffer) => chunks.push(chunk))
+            .once('end', () => {
+              resolve(Buffer.concat(chunks));
+            })
+            .once('error', reject);
+        })
+        .catch((e) => {
+          reject(e);
+        });
     });
   }
 
@@ -224,13 +229,15 @@ export default class AndroidDevice extends BaseDevice {
       })
       .then(
         (_) =>
-          new Promise((resolve, reject) => {
-            this.adb.pull(this.serial, recordingLocation).then((stream) => {
-              stream.on('end', resolve as () => void);
-              stream.on('error', reject);
-              stream.pipe(createWriteStream(destination, {autoClose: true}), {
-                end: true,
-              });
+          new Promise(async (resolve, reject) => {
+            const stream: PullTransfer = await this.adb.pull(
+              this.serial,
+              recordingLocation,
+            );
+            stream.on('end', resolve as () => void);
+            stream.on('error', reject);
+            stream.pipe(createWriteStream(destination, {autoClose: true}), {
+              end: true,
             });
           }),
       )

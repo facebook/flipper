@@ -17,7 +17,6 @@ import {FlipperServer} from '../../../FlipperServer';
 const mockStore = configureStore<State, {}>([])(
   createRootReducer()(undefined, {type: 'INIT'}),
 );
-const logger = getInstance();
 
 const standardCoresimulatorLog =
   'username            1264   0.0  0.1  5989740  41648   ??  Ss    2:23PM   0:12.92 /Applications/Xcode_12.4.0_fb.app/Contents/Developer/Platforms/iPhoneOS.platform/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS.simruntime/Contents/Resources/RuntimeRoot/usr/libexec/mobileassetd';

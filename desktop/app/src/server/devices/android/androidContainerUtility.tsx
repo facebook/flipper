@@ -16,31 +16,26 @@ import {
 } from './androidContainerUtilityInternal';
 import {Client} from 'adbkit';
 
-export function push(
+export async function push(
   client: Client,
   deviceId: string,
   app: string,
   filepath: string,
   contents: string,
 ): Promise<void> {
-  return validateAppName(app).then((validApp) =>
-    validateFilePath(filepath).then((validFilepath) =>
-      validateFileContent(contents).then((validContent) =>
-        _push(client, deviceId, validApp, validFilepath, validContent),
-      ),
-    ),
-  );
+  const validApp = await validateAppName(app);
+  const validFilepath = await validateFilePath(filepath);
+  const validContent = await validateFileContent(contents);
+  return await _push(client, deviceId, validApp, validFilepath, validContent);
 }
 
-export function pull(
+export async function pull(
   client: Client,
   deviceId: string,
   app: string,
   path: string,
 ): Promise<string> {
-  return validateAppName(app).then((validApp) =>
-    validateFilePath(path).then((validPath) =>
-      _pull(client, deviceId, validApp, validPath),
-    ),
-  );
+  const validApp = await validateAppName(app);
+  const validPath = await validateFilePath(path);
+  return await _pull(client, deviceId, validApp, validPath);
 }

@@ -31,15 +31,17 @@ export function getAdbClient(config: Config): Promise<Client> {
 /* Adbkit will attempt to start the adb server if it's not already running,
    however, it sometimes fails with ENOENT errors. So instead, we start it
    manually before requesting a client. */
-function createClient(config: Config): Promise<Client> {
+async function createClient(config: Config): Promise<Client> {
   const androidHome = config.androidHome;
   const adbPath = path.resolve(androidHome, 'platform-tools/adb');
-  return reportPlatformFailures<Client>(
-    execFile(adbPath, ['start-server']).then(() =>
-      adbkit.createClient(adbConfig()),
-    ),
-    'createADBClient.shell',
-  ).catch((err) => {
+  try {
+    return reportPlatformFailures<Client>(
+      execFile(adbPath, ['start-server']).then(() =>
+        adbkit.createClient(adbConfig()),
+      ),
+      'createADBClient.shell',
+    );
+  } catch (err) {
     console.log(
       'Failed to create adb client using shell adb command. Trying with adbkit.\n' +
         err.toString(),
@@ -48,23 +50,19 @@ function createClient(config: Config): Promise<Client> {
     /* In the event that starting adb with the above method fails, fallback
          to using adbkit, though its known to be unreliable. */
     const unsafeClient: Client = adbkit.createClient(adbConfig());
-    return reportPlatformFailures<Client>(
+    return await reportPlatformFailures<Client>(
       promiseRetry<Client>(
-        (retry, attempt): Promise<Client> => {
-          return unsafeClient
-            .listDevices()
-            .then(() => {
-              return unsafeClient;
-            })
-            .catch((e: Error) => {
-              console.warn(
-                `Failed to start adb client. Retrying. ${e.message}`,
-              );
-              if (attempt <= MAX_RETRIES) {
-                retry(e);
-              }
-              throw e;
-            });
+        async (retry, attempt): Promise<Client> => {
+          try {
+            await unsafeClient.listDevices();
+            return unsafeClient;
+          } catch (e) {
+            console.warn(`Failed to start adb client. Retrying. ${e.message}`);
+            if (attempt <= MAX_RETRIES) {
+              retry(e);
+            }
+            throw e;
+          }
         },
         {
           minTimeout: 200,
@@ -73,5 +71,5 @@ function createClient(config: Config): Promise<Client> {
       ),
       'createADBClient.adbkit',
     );
-  });
+  }
 }

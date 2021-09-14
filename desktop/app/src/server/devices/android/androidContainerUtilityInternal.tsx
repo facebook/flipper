@@ -78,12 +78,8 @@ export function _push(
     .catch((error) => {
       if (error instanceof RunAsError) {
         // Fall back to running the command directly. This will work if adb is running as root.
-        return executeCommandWithSu(client, deviceId, app, command)
-          .then((_) => undefined)
-          .catch((e) => {
-            console.debug(e);
-            throw error;
-          });
+        executeCommandWithSu(client, deviceId, app, command, error);
+        return undefined;
       }
       throw error;
     });
@@ -99,11 +95,7 @@ export function _pull(
   return executeCommandAsApp(client, deviceId, app, command).catch((error) => {
     if (error instanceof RunAsError) {
       // Fall back to running the command directly. This will work if adb is running as root.
-      return executeCommandWithSu(client, deviceId, app, command).catch((e) => {
-        // Throw the original error.
-        console.debug(e);
-        throw error;
-      });
+      return executeCommandWithSu(client, deviceId, app, command, error);
     }
     throw error;
   });
@@ -125,13 +117,19 @@ function executeCommandAsApp(
   );
 }
 
-function executeCommandWithSu(
+async function executeCommandWithSu(
   client: Client,
   deviceId: string,
   app: string,
   command: string,
+  originalErrorToThrow: RunAsError,
 ): Promise<string> {
-  return _executeCommandWithRunner(client, deviceId, app, command, 'su');
+  try {
+    return _executeCommandWithRunner(client, deviceId, app, command, 'su');
+  } catch (e) {
+    console.debug(e);
+    throw originalErrorToThrow;
+  }
 }
 
 function _executeCommandWithRunner(
