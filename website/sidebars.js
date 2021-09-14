@@ -110,15 +110,7 @@ module.exports = {
         {
           'QPL linting': ['fb/building-a-linter', 'fb/active-linters'],
         },
-      ]),
-      {
-        'Deprecated APIs': [
-          'extending/ui-components',
-          'extending/js-plugin-api',
-          'extending/create-table-plugin',
-          'extending/search-and-filter',
-        ],
-      },
+      ]),      
     ],
     'Client plugin APIs': [
       'extending/create-plugin',
