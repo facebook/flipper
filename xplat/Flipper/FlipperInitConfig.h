@@ -41,6 +41,8 @@ struct FlipperInitConfig {
 
   int insecurePort = 8089;
   int securePort = 8088;
+  int altInsecurePort = 9089;
+  int altSecurePort = 9088;
 };
 
 } // namespace flipper

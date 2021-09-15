@@ -125,10 +125,15 @@ class ServerController extends EventEmitter implements ServerEventsListener {
     this.initialized = this.certificateProvider
       .loadSecureServerConfig()
       .then((options) => {
+        console.log('[conn] secure server listening at port: ', secure);
         this.secureServer = createServer(secure, this, options);
         if (GK.get('flipper_websocket_server')) {
           const {secure: altSecure} =
             this.store.getState().application.altServerPorts;
+          console.log(
+            '[conn] secure server (ws) listening at port: ',
+            altSecure,
+          );
           this.altSecureServer = createServer(
             altSecure,
             this,
@@ -138,10 +143,15 @@ class ServerController extends EventEmitter implements ServerEventsListener {
         }
       })
       .then(() => {
+        console.log('[conn] insecure server listening at port: ', insecure);
         this.insecureServer = createServer(insecure, this);
         if (GK.get('flipper_websocket_server')) {
           const {insecure: altInsecure} =
             this.store.getState().application.altServerPorts;
+          console.log(
+            '[conn] insecure server (ws) listening at port: ',
+            altInsecure,
+          );
           this.altInsecureServer = createServer(
             altInsecure,
             this,

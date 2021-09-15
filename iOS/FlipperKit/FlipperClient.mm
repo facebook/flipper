@@ -101,7 +101,9 @@ using WrapperPlugin = facebook::flipper::FlipperCppWrapperPlugin;
            sonarThread.getEventBase(),
            connectionThread.getEventBase(),
            [SKEnvironmentVariables getInsecurePort],
-           [SKEnvironmentVariables getSecurePort]});
+           [SKEnvironmentVariables getSecurePort],
+           [SKEnvironmentVariables getAltInsecurePort],
+           [SKEnvironmentVariables getAltSecurePort]});
       _cppClient = facebook::flipper::FlipperClient::instance();
 
       // To switch to a websocket provider, uncomment the line below.
