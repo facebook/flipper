@@ -25,6 +25,7 @@ import type {RegisterPluginAction} from './plugins';
 import MetroDevice from '../server/devices/metro/MetroDevice';
 import {Logger} from 'flipper-plugin';
 import {FlipperServer} from '../server/FlipperServer';
+import {shallowEqual} from 'react-redux';
 
 export type StaticViewProps = {logger: Logger};
 
@@ -393,7 +394,12 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
       const {payload} = action;
       return {
         ...state,
-        uninitializedClients: [...state.uninitializedClients, payload],
+        uninitializedClients: [
+          ...state.uninitializedClients.filter(
+            (existing) => !shallowEqual(existing, payload),
+          ),
+          payload,
+        ],
       };
     }
     case 'REGISTER_PLUGINS': {
