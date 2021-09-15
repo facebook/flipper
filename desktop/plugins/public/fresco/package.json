@@ -16,5 +16,8 @@
   },
   "peerDependencies": {
     "flipper-plugin": "*"
+  },
+  "dependencies": {
+    "react-vis": "^1.11.7"
   }
 }

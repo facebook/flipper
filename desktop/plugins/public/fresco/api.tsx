@@ -42,6 +42,8 @@ export type ImageData = {
   surface?: string;
 };
 
+export type ImagesMap = {[imageId in ImageId]: ImageData};
+
 // getImage({imageId: string}) -> ImageData
 
 // Subscribing to image events (requests and prefetches)

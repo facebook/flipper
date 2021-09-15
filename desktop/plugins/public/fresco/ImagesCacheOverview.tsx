@@ -7,7 +7,7 @@
  * @format
  */
 
-import {CacheInfo, ImageId, ImageData, ImagesList} from './api';
+import {CacheInfo, ImageId, ImageData, ImagesList, ImagesMap} from './api';
 import {ImageEventWithId} from './index';
 
 import {styled, Layout, Toolbar, theme} from 'flipper-plugin';
@@ -23,15 +23,22 @@ import {
   Badge,
 } from 'antd';
 import MultipleSelect from './MultipleSelect';
-import {ImagesMap} from './ImagePool';
 import React, {PureComponent} from 'react';
 import {DeleteFilled} from '@ant-design/icons';
 
-function formatMB(bytes: number) {
-  return Math.floor(bytes / (1024 * 1024)) + 'MB';
+function toMB(bytes: number) {
+  return Math.floor(bytes / (1024 * 1024));
 }
 
-function formatKB(bytes: number) {
+export function toKB(bytes: number) {
+  return Math.floor(bytes / 1024);
+}
+
+export function formatMB(bytes: number) {
+  return toMB(bytes) + 'MB';
+}
+
+export function formatKB(bytes: number) {
   return Math.floor(bytes / 1024) + 'KB';
 }
 
@@ -148,7 +155,7 @@ export default class ImagesCacheOverview extends PureComponent<
       ) > 0;
 
     return (
-      <Layout.Top>
+      <Layout.ScrollContainer>
         <Toolbar>
           <Button
             icon={<DeleteFilled></DeleteFilled>}
@@ -219,7 +226,7 @@ export default class ImagesCacheOverview extends PureComponent<
             })}
           </Layout.ScrollContainer>
         )}
-      </Layout.Top>
+      </Layout.ScrollContainer>
     );
   }
 }

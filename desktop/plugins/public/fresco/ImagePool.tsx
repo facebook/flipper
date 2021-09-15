@@ -7,9 +7,7 @@
  * @format
  */
 
-import {ImageId, ImageData} from './api';
-
-export type ImagesMap = {[imageId in ImageId]: ImageData};
+import {ImageId, ImageData, ImagesMap} from './api';
 
 const maxInflightRequests = 10;
 

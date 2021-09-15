@@ -16,8 +16,9 @@ import {
   FrescoDebugOverlayEvent,
   AndroidCloseableReferenceLeakEvent,
   CacheInfo,
+  ImagesMap,
 } from './api';
-import {ImagesMap} from './ImagePool';
+
 import {
   PluginClient,
   createState,
@@ -25,9 +26,12 @@ import {
   useValue,
   DetailSidebar,
   Layout,
+  Tabs,
+  Tab,
 } from 'flipper-plugin';
 import React from 'react';
 import ImagesCacheOverview from './ImagesCacheOverview';
+import ImagesMemoryOverview from './ImagesMemoryOverview';
 import {isProduction} from 'flipper';
 
 import {Typography} from 'antd';
@@ -419,34 +423,39 @@ export function Component() {
   }
 
   return (
-    <React.Fragment>
-      <ImagesCacheOverview
-        allSurfacesOption={surfaceDefaultText}
-        surfaceOptions={new Set(options)}
-        selectedSurfaces={selectedSurfaces}
-        onChangeSurface={instance.onSurfaceChange}
-        coldStartFilter={coldStartFilter}
-        onColdStartChange={instance.onColdStartChange}
-        images={images}
-        onClear={instance.onClear}
-        onTrimMemory={instance.onTrimMemory}
-        onRefresh={() => instance.updateCaches('refresh')}
-        onEnableDebugOverlay={instance.onEnableDebugOverlay}
-        onEnableAutoRefresh={instance.onEnableAutoRefresh}
-        isDebugOverlayEnabled={isDebugOverlayEnabled}
-        isAutoRefreshEnabled={isAutoRefreshEnabled}
-        onImageSelected={instance.onImageSelected}
-        imagesMap={imagesMap}
-        events={events}
-        isLeakTrackingEnabled={isLeakTrackingEnabled}
-        onTrackLeaks={instance.onTrackLeaks}
-        showDiskImages={showDiskImages}
-        onShowDiskImages={instance.onShowDiskImages}
-      />
-      <DetailSidebar>
-        <Sidebar />
-      </DetailSidebar>
-    </React.Fragment>
+    <Tabs defaultActiveKey="images" grow>
+      <Tab tab="Images" key="images">
+        <ImagesCacheOverview
+          allSurfacesOption={surfaceDefaultText}
+          surfaceOptions={new Set(options)}
+          selectedSurfaces={selectedSurfaces}
+          onChangeSurface={instance.onSurfaceChange}
+          coldStartFilter={coldStartFilter}
+          onColdStartChange={instance.onColdStartChange}
+          images={images}
+          onClear={instance.onClear}
+          onTrimMemory={instance.onTrimMemory}
+          onRefresh={() => instance.updateCaches('refresh')}
+          onEnableDebugOverlay={instance.onEnableDebugOverlay}
+          onEnableAutoRefresh={instance.onEnableAutoRefresh}
+          isDebugOverlayEnabled={isDebugOverlayEnabled}
+          isAutoRefreshEnabled={isAutoRefreshEnabled}
+          onImageSelected={instance.onImageSelected}
+          imagesMap={imagesMap}
+          events={events}
+          isLeakTrackingEnabled={isLeakTrackingEnabled}
+          onTrackLeaks={instance.onTrackLeaks}
+          showDiskImages={showDiskImages}
+          onShowDiskImages={instance.onShowDiskImages}
+        />
+        <DetailSidebar>
+          <Sidebar />
+        </DetailSidebar>
+      </Tab>
+      <Tab tab="Memory" key="memory">
+        <ImagesMemoryOverview images={images} imagesMap={imagesMap} />
+      </Tab>
+    </Tabs>
   );
 }
 
