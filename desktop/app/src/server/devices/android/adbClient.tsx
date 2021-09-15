@@ -34,42 +34,10 @@ export function getAdbClient(config: Config): Promise<Client> {
 async function createClient(config: Config): Promise<Client> {
   const androidHome = config.androidHome;
   const adbPath = path.resolve(androidHome, 'platform-tools/adb');
-  try {
-    return reportPlatformFailures<Client>(
-      execFile(adbPath, ['start-server']).then(() =>
-        adbkit.createClient(adbConfig()),
-      ),
-      'createADBClient.shell',
-    );
-  } catch (err) {
-    console.log(
-      'Failed to create adb client using shell adb command. Trying with adbkit.\n' +
-        err.toString(),
-    );
-
-    /* In the event that starting adb with the above method fails, fallback
-         to using adbkit, though its known to be unreliable. */
-    const unsafeClient: Client = adbkit.createClient(adbConfig());
-    return await reportPlatformFailures<Client>(
-      promiseRetry<Client>(
-        async (retry, attempt): Promise<Client> => {
-          try {
-            await unsafeClient.listDevices();
-            return unsafeClient;
-          } catch (e) {
-            console.warn(`Failed to start adb client. Retrying. ${e.message}`);
-            if (attempt <= MAX_RETRIES) {
-              retry(e);
-            }
-            throw e;
-          }
-        },
-        {
-          minTimeout: 200,
-          retries: MAX_RETRIES,
-        },
-      ),
-      'createADBClient.adbkit',
-    );
-  }
+  return reportPlatformFailures<Client>(
+    execFile(adbPath, ['start-server']).then(() =>
+      adbkit.createClient(adbConfig()),
+    ),
+    'createADBClient.shell',
+  );
 }

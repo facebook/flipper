@@ -29,6 +29,7 @@ import archiver from 'archiver';
 import {timeout} from 'flipper-plugin';
 import {v4 as uuid} from 'uuid';
 import {isTest} from '../../utils/isProduction';
+import {message} from 'antd';
 
 export type CertificateExchangeMedium = 'FS_ACCESS' | 'WWW' | 'NONE';
 
@@ -100,7 +101,18 @@ export default class CertificateProvider {
     config: CertificateProviderConfig,
   ) {
     this.logger = logger;
-    this.adb = getAdbClient(config);
+    // TODO: refactor this code to create promise lazily
+    this.adb = getAdbClient(config).catch((e) => {
+      // make sure initialization failure is already logged
+      message.error({
+        duration: null,
+        content:
+          'Failed to initialise ADB. Please check your Android settings, ANDROID_HOME and run the Setup Doctor. ' +
+          e,
+      });
+      console.error('Failed to initialise ADB', e);
+      this.adb = Promise.reject(e);
+    }) as Promise<ADBClient>;
     if (isTest()) {
       this.certificateSetup = Promise.reject(
         new Error('Server certificates not available in test'),
