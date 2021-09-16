@@ -193,6 +193,10 @@ export class AndroidDeviceManager {
           tracker.on('add', async (device) => {
             if (device.type !== 'offline') {
               this.registerDevice(client, device);
+            } else {
+              console.warn(
+                `[conn] Found device ${device.id}, but it has status offline. If this concerns an emulator and the problem persists, try these solutins: https://stackoverflow.com/a/21330228/1983583, https://stackoverflow.com/a/56053223/1983583`,
+              );
             }
           });
 
