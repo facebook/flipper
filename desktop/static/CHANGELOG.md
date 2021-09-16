@@ -1,3 +1,10 @@
+# 0.109.0 (16/9/2021)
+
+ * [D30928768](https://github.com/facebook/flipper/search?q=D30928768&type=Commits) -  Fixed JavaScript exception on main thread occurring after loading Flipper
+ * [D30957220](https://github.com/facebook/flipper/search?q=D30957220&type=Commits) -  Handle the absence of ADB better
+ * [D30957786](https://github.com/facebook/flipper/search?q=D30957786&type=Commits) -  Added warning about offline emulators in ADB
+
+
 # 0.108.0 (10/9/2021)
 
  * [D30838947](https://github.com/facebook/flipper/search?q=D30838947&type=Commits) -  Improved handling of edge cases in certificate exchange, which should address cases where a Flipper connection wouldn't come up when connection to Android / IOS. Added explicit logging around connection negation.
