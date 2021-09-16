@@ -105,7 +105,7 @@ export default class CertificateProvider {
     this.adb = getAdbClient(config).catch((e) => {
       // make sure initialization failure is already logged
       message.error({
-        duration: null,
+        duration: 10,
         content:
           'Failed to initialise ADB. Please check your Android settings, ANDROID_HOME and run the Setup Doctor. ' +
           e,
