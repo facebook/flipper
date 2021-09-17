@@ -378,6 +378,7 @@ export default class CertificateProvider {
         console.warn(
           `Unable to check for matching CSR in ${device.id}:${appName}`,
           logTag,
+          e,
         );
         return {id: device.id, isMatch: false, foundCsr: null, error: e};
       }
