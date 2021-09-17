@@ -68,6 +68,8 @@ class FlipperConnectionManagerImpl : public FlipperConnectionManager {
   std::unique_ptr<FlipperSocket> client_;
 
   bool connectionIsTrusted_;
+  bool certificateExchangeCompleted_ = false;
+
   int failedConnectionAttempts_ = 0;
   std::shared_ptr<ConnectionContextStore> contextStore_;
   std::shared_ptr<FlipperConnectionManagerWrapper> implWrapper_;

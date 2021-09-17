@@ -366,12 +366,13 @@ void FlipperConnectionManagerImpl::requestSignedCertFromFlipper() {
       "destination",
       contextStore_->getCertificateDirectoryPath().c_str())("medium", medium);
   auto gettingCert = flipperState_->start("Getting cert from desktop");
-  bool handled = false;
 
-  flipperEventBase_->add([this, &handled, message, gettingCert]() {
+  certificateExchangeCompleted_ = false;
+
+  flipperEventBase_->add([this, message, gettingCert]() {
     client_->sendExpectResponse(
         folly::toJson(message),
-        [this, &handled, message, gettingCert](
+        [this, message, gettingCert](
             const std::string& response, bool isError) {
           /**
             Need to keep track of whether the response has been handled.
@@ -382,9 +383,9 @@ void FlipperConnectionManagerImpl::requestSignedCertFromFlipper() {
             interrupted because we are effectively still handing the response
             read. So, if already handled, ignore and return;
           */
-          if (handled)
+          if (certificateExchangeCompleted_)
             return;
-          handled = true;
+          certificateExchangeCompleted_ = true;
           if (isError) {
             if (response.compare("not implemented")) {
               auto error =
