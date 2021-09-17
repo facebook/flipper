@@ -14,7 +14,7 @@ import {Empty} from 'antd';
 
 import React, {PureComponent} from 'react';
 
-import {Treemap} from 'react-vis';
+import {Treemap, TreemapPoint} from 'react-vis';
 
 import {toKB, formatMB, formatKB} from './ImagesCacheOverview';
 
@@ -130,8 +130,8 @@ export default class ImagesMemoryOverview extends PureComponent<ImagesMemoryOver
               width: 900,
               margin: 15,
               hideRootNode: true,
-              getSize: (d) => d.value,
-              getColor: (d) => d.hex,
+              getSize: (d: TreemapPoint) => d.value,
+              getColor: (d: TreemapPoint) => d.hex,
               style: STYLE,
             }}
           />
