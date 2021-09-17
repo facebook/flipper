@@ -13,7 +13,7 @@ import child_process from 'child_process';
 import {getAdbClient} from './adbClient';
 import which from 'which';
 import {promisify} from 'util';
-import {Client as ADBClient} from 'adbkit';
+import {Client as ADBClient, Device} from 'adbkit';
 import {join} from 'path';
 import {FlipperServer} from '../../FlipperServer';
 import {notNull} from '../../utils/typeUtils';
@@ -26,7 +26,7 @@ export class AndroidDeviceManager {
 
   private createDevice(
     adbClient: ADBClient,
-    device: any,
+    device: Device,
   ): Promise<AndroidDevice | undefined> {
     return new Promise(async (resolve, reject) => {
       const type =
@@ -224,7 +224,7 @@ export class AndroidDeviceManager {
     }
   }
 
-  private async registerDevice(adbClient: ADBClient, deviceData: any) {
+  private async registerDevice(adbClient: ADBClient, deviceData: Device) {
     const androidDevice = await this.createDevice(adbClient, deviceData);
     if (!androidDevice) {
       return;

@@ -8,7 +8,7 @@
  */
 
 import BaseDevice from '../BaseDevice';
-import adb, {Client as ADBClient} from 'adbkit';
+import adb, {Client as ADBClient, PullTransfer} from 'adbkit';
 import {Priority, Reader} from 'adbkit-logcat';
 import {createWriteStream} from 'fs';
 import type {LogLevel, DeviceType} from 'flipper-plugin';

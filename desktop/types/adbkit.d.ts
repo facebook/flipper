@@ -7,44 +7,43 @@
  * @format
  */
 
-interface Device {
-  id: string;
-  type: 'emulator' | 'device' | 'offline';
-}
-
-interface Util {
-  readAll: (stream: NodeJS.ReadStream) => Promise<Buffer>;
-}
-
-// https://github.com/openstf/adbkit#pulltransfer
-interface PullTransfer extends NodeJS.WriteStream {
-  cancel: () => this;
-  on(
-    event: 'progress',
-    listener: (stats: {bytesTransferred: number}) => void,
-  ): this;
-  on(event: 'error', listener: (err: Error) => void): this;
-  on(event: 'end', listener: () => void): this;
-  on(event: 'resize', listener: () => void): this;
-}
-
-interface DeviceTracker extends NodeJS.EventEmitter {
-  on(event: 'add', listener: (device: Device) => void): this;
-  on(event: 'remove', listener: (device: Device) => void): this;
-  on(event: 'change', listener: (device: Device) => void): this;
-  on(
-    event: 'changeSet',
-    listener: (changes: {
-      added: Device[];
-      removed: Device[];
-      changed: Device[];
-    }) => void,
-  ): this;
-  on(event: 'error', listener: (err: Error) => void): this;
-  on(event: 'end', listener: () => void): this;
-}
-
 declare module 'adbkit' {
+  export interface Device {
+    id: string;
+    type: 'emulator' | 'device' | 'offline';
+  }
+
+  interface Util {
+    readAll: (stream: NodeJS.ReadStream) => Promise<Buffer>;
+  }
+
+  // https://github.com/openstf/adbkit#pulltransfer
+  export interface PullTransfer extends NodeJS.WriteStream {
+    cancel: () => this;
+    on(
+      event: 'progress',
+      listener: (stats: {bytesTransferred: number}) => void,
+    ): this;
+    on(event: 'error', listener: (err: Error) => void): this;
+    on(event: 'end', listener: () => void): this;
+    on(event: 'resize', listener: () => void): this;
+  }
+
+  interface DeviceTracker extends NodeJS.EventEmitter {
+    on(event: 'add', listener: (device: Device) => void): this;
+    on(event: 'remove', listener: (device: Device) => void): this;
+    on(event: 'change', listener: (device: Device) => void): this;
+    on(
+      event: 'changeSet',
+      listener: (changes: {
+        added: Device[];
+        removed: Device[];
+        changed: Device[];
+      }) => void,
+    ): this;
+    on(event: 'error', listener: (err: Error) => void): this;
+    on(event: 'end', listener: () => void): this;
+  }
   const util: Util;
   const adbkit: any;
   export interface Client {
