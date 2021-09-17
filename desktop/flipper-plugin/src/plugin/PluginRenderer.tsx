@@ -35,7 +35,9 @@ export const SandyPluginRenderer = memo(({plugin}: Props) => {
   return (
     <TrackingScope scope={'plugin:' + plugin.definition.id}>
       <SandyPluginContext.Provider value={plugin}>
-        {createElement(plugin.definition.module.Component)}
+        {createElement(plugin.definition.module.Component, {
+          key: plugin.instanceId,
+        })}
       </SandyPluginContext.Provider>
     </TrackingScope>
   );

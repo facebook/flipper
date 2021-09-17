@@ -147,6 +147,8 @@ export function registerStorageAtom(
   }
 }
 
+let staticInstanceId = 1;
+
 export abstract class BasePluginInstance {
   /** generally available Flipper APIs */
   readonly flipperLib: FlipperLib;
@@ -178,6 +180,8 @@ export abstract class BasePluginInstance {
 
   menuEntries: NormalizedMenuEntry[] = [];
   logListeners: Symbol[] = [];
+
+  readonly instanceId = ++staticInstanceId;
 
   constructor(
     flipperLib: FlipperLib,
