@@ -143,7 +143,7 @@ export class IOSDeviceManager {
 
   private processDevices(
     activeDevices: IOSDeviceParams[],
-    type: 'physical' | 'emulator',
+    targetType: 'physical' | 'emulator',
   ) {
     if (!this.iosBridge) {
       throw new Error('iOS bridge not yet initialized');
@@ -152,10 +152,7 @@ export class IOSDeviceManager {
       this.flipperServer
         .getDevices()
         .filter(
-          (device) =>
-            device instanceof IOSDevice &&
-            device.deviceType === type &&
-            device.connected.get(),
+          (device) => device.os === 'iOS' && device.deviceType === targetType,
         )
         .map((device) => device.serial),
     );
@@ -163,13 +160,17 @@ export class IOSDeviceManager {
     for (const {udid, type, name} of activeDevices) {
       if (currentDeviceIDs.has(udid)) {
         currentDeviceIDs.delete(udid);
-      } else {
+      } else if (targetType === type) {
+        console.log(`[conn] detected new iOS device ${targetType} ${udid}`);
         const iOSDevice = new IOSDevice(this.iosBridge, udid, type, name);
         this.flipperServer.registerDevice(iOSDevice);
       }
     }
 
     currentDeviceIDs.forEach((id) => {
+      console.log(
+        `[conn] Could no longer find ${targetType} ${id}, removing...`,
+      );
       this.flipperServer.unregisterDevice(id);
     });
   }
