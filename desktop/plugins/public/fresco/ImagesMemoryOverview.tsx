@@ -14,6 +14,7 @@ import {Empty} from 'antd';
 
 import React, {PureComponent} from 'react';
 
+// @ts-ignore
 import {Treemap, TreemapPoint} from 'react-vis';
 
 import {toKB, formatMB, formatKB} from './ImagesCacheOverview';
