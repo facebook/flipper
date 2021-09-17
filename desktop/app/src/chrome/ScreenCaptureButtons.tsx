@@ -71,8 +71,11 @@ export default function ScreenCaptureButtons() {
         console.error('Taking screenshot failed:', e);
         message.error('Taking screenshot failed:' + e);
       })
-      .finally(() => {});
+      .finally(() => {
+        setIsTakingScreenshot(false);
+      });
   }, [selectedDevice]);
+
   const handleRecording = useCallback(() => {
     if (!selectedDevice) {
       return;
