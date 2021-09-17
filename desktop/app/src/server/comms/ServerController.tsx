@@ -79,7 +79,7 @@ class ServerController extends EventEmitter implements ServerEventsListener {
 
   flipperServer: FlipperServer;
 
-  timeHandler: NodeJS.Timeout | undefined;
+  timeHandlers: Map<string, NodeJS.Timeout> = new Map();
 
   constructor(flipperServer: FlipperServer) {
     super();
@@ -97,7 +97,6 @@ class ServerController extends EventEmitter implements ServerEventsListener {
     this.altInsecureServer = null;
     this.browserServer = null;
     this.initialized = null;
-    this.timeHandler = undefined;
   }
 
   get logger(): Logger {
@@ -222,8 +221,8 @@ class ServerController extends EventEmitter implements ServerEventsListener {
     this.logger.track('usage', 'trusted-request-handler-called', clientQuery);
     this.connectionTracker.logConnectionAttempt(clientQuery);
 
-    if (this.timeHandler) {
-      clearTimeout(this.timeHandler);
+    if (this.timeHandlers.get(clientQueryToKey(clientQuery))) {
+      clearTimeout(this.timeHandlers.get(clientQueryToKey(clientQuery))!);
     }
 
     const transformedMedium = transformCertificateExchangeMediumToType(
@@ -281,13 +280,16 @@ class ServerController extends EventEmitter implements ServerEventsListener {
           // by client B. Client B timeHandler will override client A, thus, if
           // client A takes longer, then the unresponsive timeout will not be called
           // for it.
-          this.timeHandler = setTimeout(() => {
-            this.emit('client-unresponsive-error', {
-              client,
-              medium,
-              deviceID: response.deviceId,
-            });
-          }, 30 * 1000);
+          this.timeHandlers.set(
+            clientQueryToKey(clientQuery),
+            setTimeout(() => {
+              this.emit('client-unresponsive-error', {
+                client,
+                medium,
+                deviceID: response.deviceId,
+              });
+            }, 30 * 1000),
+          );
 
           resolve(response);
         })
@@ -532,3 +534,7 @@ async function findDeviceForConnection(
 }
 
 export default ServerController;
+
+function clientQueryToKey(clientQuery: ClientQuery): string {
+  return `${clientQuery.app}/${clientQuery.os}/${clientQuery.device}/${clientQuery.device_id}`;
+}
