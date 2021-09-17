@@ -163,20 +163,29 @@ abstract class ServerAdapter {
       console.log(
         `[conn] Starting certificate exchange: ${clientQuery.app} on ${clientQuery.device}`,
       );
-      const result = await this.listener.onProcessCSR(
-        csr,
-        clientQuery,
-        destination,
-        transformCertificateExchangeMediumToType(medium),
-      );
+      try {
+        const result = await this.listener.onProcessCSR(
+          csr,
+          clientQuery,
+          destination,
+          transformCertificateExchangeMediumToType(medium),
+        );
 
-      console.log(
-        `[conn] Exchanged certificate: ${clientQuery.app} on ${result.deviceId}`,
-      );
-      const response = JSON.stringify({
-        deviceId: result.deviceId,
-      });
-      return response;
+        console.log(
+          `[conn] Exchanged certificate: ${clientQuery.app} on ${result.deviceId}`,
+        );
+        const response = JSON.stringify({
+          deviceId: result.deviceId,
+        });
+        return response;
+      } catch (e) {
+        console.error(
+          `[conn] Failed to exchange certificate with ${clientQuery.app} on ${
+            clientQuery.device || clientQuery.device_id
+          }`,
+          e,
+        );
+      }
     }
 
     return undefined;
