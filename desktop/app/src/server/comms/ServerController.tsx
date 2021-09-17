@@ -219,6 +219,22 @@ class ServerController extends EventEmitter implements ServerEventsListener {
 
   onSecureConnectionAttempt(clientQuery: SecureClientQuery): void {
     this.logger.track('usage', 'trusted-request-handler-called', clientQuery);
+
+    const {os, app, device_id} = clientQuery;
+    // without these checks, the user might see a connection timeout error instead, which would be much harder to track down
+    if (os === 'iOS' && !this.flipperServer.config.enableIOS) {
+      console.error(
+        `Refusing connection from ${app} on ${device_id}, since iOS support is disabled in settings`,
+      );
+      return;
+    }
+    if (os === 'Android' && !this.flipperServer.config.enableAndroid) {
+      console.error(
+        `Refusing connection from ${app} on ${device_id}, since Android support is disabled in settings`,
+      );
+      return;
+    }
+
     this.connectionTracker.logConnectionAttempt(clientQuery);
 
     if (this.timeHandlers.get(clientQueryToKey(clientQuery))) {

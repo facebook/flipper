@@ -73,6 +73,8 @@ export type SecureServerConfig = {
 
 type CertificateProviderConfig = {
   idbPath: string;
+  enableAndroid: boolean;
+  enableIOS: boolean;
   androidHome: string;
   enablePhysicalIOS: boolean;
 };
@@ -90,10 +92,17 @@ type CertificateProviderConfig = {
  */
 export default class CertificateProvider {
   logger: Logger;
-  adb: Promise<ADBClient>;
+  _adb: Promise<ADBClient> | undefined;
   certificateSetup: Promise<void>;
   config: CertificateProviderConfig;
   server: ServerController;
+
+  get adb(): Promise<ADBClient> {
+    if (this.config.enableAndroid) {
+      return this._adb!;
+    }
+    throw new Error('Android is not enabled in settings');
+  }
 
   constructor(
     server: ServerController,
@@ -102,17 +111,19 @@ export default class CertificateProvider {
   ) {
     this.logger = logger;
     // TODO: refactor this code to create promise lazily
-    this.adb = getAdbClient(config).catch((e) => {
-      // make sure initialization failure is already logged
-      message.error({
-        duration: 10,
-        content:
-          'Failed to initialise ADB. Please check your Android settings, ANDROID_HOME and run the Setup Doctor. ' +
-          e,
-      });
-      console.error('Failed to initialise ADB', e);
-      this.adb = Promise.reject(e);
-    }) as Promise<ADBClient>;
+    this._adb = config.enableAndroid
+      ? (getAdbClient(config).catch((e) => {
+          // make sure initialization failure is already logged
+          message.error({
+            duration: 10,
+            content:
+              'Failed to initialise ADB. Please check your Android settings, ANDROID_HOME and run the Setup Doctor. ' +
+              e,
+          });
+          console.error('Failed to initialise ADB', e);
+          this._adb = Promise.reject(e);
+        }) as Promise<ADBClient>)
+      : undefined;
     if (isTest()) {
       this.certificateSetup = Promise.reject(
         new Error('Server certificates not available in test'),
