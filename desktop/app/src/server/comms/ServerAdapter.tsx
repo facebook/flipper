@@ -153,7 +153,6 @@ abstract class ServerAdapter {
     console.log(
       `[conn] Connection attempt: ${clientQuery.app} on ${clientQuery.device}, medium: ${message.medium}, cert: ${message.destination}`,
       clientQuery,
-      rawData,
     );
 
     if (message.method === 'signCertificate') {
@@ -172,7 +171,7 @@ abstract class ServerAdapter {
       );
 
       console.log(
-        `[conn] Exchanged certificate: ${clientQuery.app} on ${clientQuery.device_id}`,
+        `[conn] Exchanged certificate: ${clientQuery.app} on ${result.deviceId}`,
       );
       const response = JSON.stringify({
         deviceId: result.deviceId,
