@@ -1,3 +1,10 @@
+# 0.110.0 (17/9/2021)
+
+ * [D30992087](https://github.com/facebook/flipper/search?q=D30992087&type=Commits) -  Fixed skyline no longer connecting to Flipper
+ * [D31019099](https://github.com/facebook/flipper/search?q=D31019099&type=Commits) -  Fix: made sure that the "Android disabled" setting is respected.
+ * [D31017592](https://github.com/facebook/flipper/search?q=D31017592&type=Commits) -  Fixed an issue where clients would randomly not connect to Flipper. Please update FlipperKit to 0.110.0 to apply the fix: https://fbflipper.com/docs/getting-started/react-native#using-the-latest-flipper-sdk
+
+
 # 0.109.0 (16/9/2021)
 
  * [D30928768](https://github.com/facebook/flipper/search?q=D30928768&type=Commits) -  Fixed JavaScript exception on main thread occurring after loading Flipper
