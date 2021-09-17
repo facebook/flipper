@@ -312,7 +312,11 @@ export default class CertificateProvider {
         destination + filename,
         contents,
       );
-    } else if (os === 'iOS') {
+    } else if (
+      os === 'iOS' ||
+      os === 'windows' ||
+      os == 'MacOS' /* Used by Spark AR?! */
+    ) {
       try {
         await fs.writeFile(destination + filename, contents);
       } catch (err) {
