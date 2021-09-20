@@ -5279,9 +5279,9 @@ cssstyle@^2.3.0:
     cssom "~0.3.6"
 
 csstype@^2.5.7, csstype@^2.6.7, csstype@^3.0.2, csstype@^3.0.5:
-  version "3.0.8"
-  resolved "https://registry.yarnpkg.com/csstype/-/csstype-3.0.8.tgz#d2266a792729fb227cd216fb572f43728e1ad340"
-  integrity sha512-jXKhWqXPmlUeoQnF/EhTtTl4C9SnrxSH/jZUih3jmO6lBKr99rP3/+FmrMj4EFpOXzMtXHAZkd3x0E6h6Fgflw==
+  version "3.0.9"
+  resolved "https://registry.yarnpkg.com/csstype/-/csstype-3.0.9.tgz#6410af31b26bd0520933d02cbc64fce9ce3fbf0b"
+  integrity sha512-rpw6JPxK6Rfg1zLOYCSwle2GFOOsnjmDYDaBwEcwoOg4qlsIVCN789VkBZDJAGi4T07gI4YSutR43t9Zz4Lzuw==
 
 d3-array@2, d3-array@2.3.3, d3-array@^2.3.0:
   version "2.3.3"
@@ -7445,10 +7445,10 @@ inline-style-parser@0.1.1:
   resolved "https://registry.yarnpkg.com/inline-style-parser/-/inline-style-parser-0.1.1.tgz#ec8a3b429274e9c0a1f1c4ffa9453a7fef72cea1"
   integrity sha512-7NXolsK4CAS5+xvdj5OMMbI962hU/wvwoxk+LWR9Ek9bVtyuuYScDN6eS0rUm6TxApFpw7CX1o4uJzcd4AyD3Q==
 
-inquirer@^8.1.2:
-  version "8.1.2"
-  resolved "https://registry.yarnpkg.com/inquirer/-/inquirer-8.1.2.tgz#65b204d2cd7fb63400edd925dfe428bafd422e3d"
-  integrity sha512-DHLKJwLPNgkfwNmsuEUKSejJFbkv0FMO9SMiQbjI3n5NQuCrSIBqP66ggqyz2a6t2qEolKrMjhQ3+W/xXgUQ+Q==
+inquirer@^8.1.5:
+  version "8.1.5"
+  resolved "https://registry.yarnpkg.com/inquirer/-/inquirer-8.1.5.tgz#2dc5159203c826d654915b5fe6990fd17f54a150"
+  integrity sha512-G6/9xUqmt/r+UvufSyrPpt84NYwhKZ9jLsgMbQzlx804XErNupor8WQdBnBRrXmBfTPpuwf1sV+ss2ovjgdXIg==
   dependencies:
     ansi-escapes "^4.2.1"
     chalk "^4.1.1"
@@ -7458,7 +7458,7 @@ inquirer@^8.1.2:
     figures "^3.0.0"
     lodash "^4.17.21"
     mute-stream "0.0.8"
-    ora "^5.3.0"
+    ora "^5.4.1"
     run-async "^2.4.0"
     rxjs "^7.2.0"
     string-width "^4.1.0"
@@ -10171,10 +10171,10 @@ options@>=0.0.5:
   resolved "https://registry.yarnpkg.com/options/-/options-0.0.6.tgz#ec22d312806bb53e731773e7cdaefcf1c643128f"
   integrity sha1-7CLTEoBrtT5zF3Pnza788cZDEo8=
 
-ora@^5.3.0:
-  version "5.4.0"
-  resolved "https://registry.yarnpkg.com/ora/-/ora-5.4.0.tgz#42eda4855835b9cd14d33864c97a3c95a3f56bf4"
-  integrity sha512-1StwyXQGoU6gdjYkyVcqOLnVlbKj+6yPNNOxJVgpt9t4eksKjiriiHuxktLYkgllwk+D6MbC4ihH84L1udRXPg==
+ora@^5.4.1:
+  version "5.4.1"
+  resolved "https://registry.yarnpkg.com/ora/-/ora-5.4.1.tgz#1b2678426af4ac4a509008e5e4ac9e9959db9e18"
+  integrity sha512-5b6Y85tPxZZ7QytO+BQzysW31HJku27cRIlkbAXaNx+BdcVi+LlRFmVXzeF6a7JCwJpyw5c4b+YSVImQIrBpuQ==
   dependencies:
     bl "^4.1.0"
     chalk "^4.1.0"
@@ -13652,6 +13652,7 @@ xmlchars@^2.2.0:
 
 xmldom@^0.5.0, "xmldom@github:xmldom/xmldom#0.7.0":
   version "0.7.0"
+  uid c568938641cc1f121cef5b4df80fcfda1e489b6e
   resolved "https://codeload.github.com/xmldom/xmldom/tar.gz/c568938641cc1f121cef5b4df80fcfda1e489b6e"
 
 xtend@^4.0.0, xtend@~4.0.1:
