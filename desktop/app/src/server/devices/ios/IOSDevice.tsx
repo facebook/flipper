@@ -53,8 +53,13 @@ export default class IOSDevice extends ServerDevice {
     deviceType: DeviceType,
     title: string,
   ) {
-    super(flipperServer, {serial, deviceType, title, os: 'iOS'});
-    // TODO: this.icon = 'mobile';
+    super(flipperServer, {
+      serial,
+      deviceType,
+      title,
+      os: 'iOS',
+      icon: 'mobile',
+    });
     this.buffer = '';
     this.iOSBridge = iOSBridge;
   }

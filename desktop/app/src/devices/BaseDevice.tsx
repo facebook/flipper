@@ -79,7 +79,9 @@ export default class BaseDevice {
   }
 
   // possible src of icon to display next to the device title
-  icon: string | null | undefined;
+  get icon() {
+    return this.description.icon;
+  }
 
   logListeners: Map<Symbol, DeviceLogListener> = new Map();
 

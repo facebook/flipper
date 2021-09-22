@@ -41,12 +41,12 @@ export default class AndroidDevice extends ServerDevice {
       deviceType,
       title,
       os: 'Android',
+      icon: 'mobile',
       specs,
       abiList,
       sdkVersion,
     });
     this.adb = adb;
-    // TODO: this.icon = 'mobile';
   }
 
   startLogging() {

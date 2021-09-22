@@ -33,6 +33,7 @@ export type DeviceDescription = {
   readonly title: string;
   readonly deviceType: DeviceType;
   readonly serial: string;
+  readonly icon?: string;
   // Android specific information
   readonly specs?: DeviceSpec[];
   readonly abiList?: string[];

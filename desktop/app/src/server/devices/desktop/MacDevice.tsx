@@ -17,7 +17,7 @@ export default class MacDevice extends ServerDevice {
       deviceType: 'physical',
       title: 'Mac',
       os: 'MacOS',
+      icon: 'app-apple',
     });
-    // TODO: this.icon = 'app-apple';
   }
 }

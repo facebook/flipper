@@ -44,9 +44,9 @@ export default class ArchivedDevice extends BaseDevice {
         title: options.title,
         os: options.os,
         serial: options.serial,
+        icon: 'box',
       },
     );
-    this.icon = 'box';
     this.connected.set(false);
     this.source = options.source || '';
     this.supportRequestDetails = options.supportRequestDetails;

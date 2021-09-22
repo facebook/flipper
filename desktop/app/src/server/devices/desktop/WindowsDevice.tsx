@@ -17,7 +17,7 @@ export default class WindowsDevice extends ServerDevice {
       deviceType: 'physical',
       title: 'Windows',
       os: 'Windows',
+      icon: 'app-microsoft-windows',
     });
-    // TODO:    this.icon = 'app-microsoft-windows';
   }
 }
