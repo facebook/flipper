@@ -8,10 +8,10 @@
  */
 
 import {createStore} from 'redux';
-import BaseDevice, {OS} from '../server/devices/BaseDevice';
+import BaseDevice from '../server/devices/BaseDevice';
 import {createRootReducer} from '../reducers';
 import {Store} from '../reducers/index';
-import Client, {ClientQuery} from '../Client';
+import Client from '../Client';
 import {
   ClientConnection,
   ConnectionStatusChange,
@@ -25,6 +25,7 @@ import {initializeFlipperLibImplementation} from '../utils/flipperLibImplementat
 import pluginManager from '../dispatcher/pluginManager';
 import {PluginDetails} from 'flipper-plugin-lib';
 import ArchivedDevice from '../server/devices/ArchivedDevice';
+import {ClientQuery, DeviceOS} from 'flipper-plugin';
 
 export interface AppOptions {
   plugins?: PluginDefinition[];
@@ -43,7 +44,7 @@ export interface DeviceOptions {
   serial?: string;
   isSupportedByPlugin?: (p: PluginDetails) => boolean;
   archived?: boolean;
-  os?: OS;
+  os?: DeviceOS;
 }
 
 export default class MockFlipper {

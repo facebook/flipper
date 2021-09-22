@@ -9,7 +9,7 @@
 
 import {CertificateExchangeMedium} from '../utils/CertificateProvider';
 import {Logger} from '../../fb-interfaces/Logger';
-import {ClientQuery} from '../../Client';
+import {ClientQuery} from 'flipper-plugin';
 import {Store, State} from '../../reducers/index';
 import CertificateProvider from '../utils/CertificateProvider';
 import Client from '../../Client';
@@ -345,18 +345,21 @@ class ServerController extends EventEmitter implements ServerEventsListener {
       const app_name = await this.certificateProvider.extractAppNameFromCSR(
         csr,
       );
-      query.device_id = await this.certificateProvider.getTargetDeviceId(
-        query.os,
-        app_name,
-        csr_path,
-        csr,
-      );
+      // TODO: allocate new object, kept now as is to keep changes minimal
+      (query as any).device_id =
+        await this.certificateProvider.getTargetDeviceId(
+          query.os,
+          app_name,
+          csr_path,
+          csr,
+        );
       console.log(
         `[conn] Detected ${app_name} on ${query.device_id} in certificate`,
       );
     }
 
-    query.app = appNameWithUpdateHint(query);
+    // TODO: allocate new object, kept now as is to keep changes minimal
+    (query as any).app = appNameWithUpdateHint(query);
 
     const id = buildClientId({
       app: query.app,

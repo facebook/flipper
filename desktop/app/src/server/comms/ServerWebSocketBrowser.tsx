@@ -10,12 +10,13 @@
 import ServerWebSocketBase from './ServerWebSocketBase';
 import WebSocket from 'ws';
 import querystring from 'querystring';
-import Client, {ClientQuery} from '../../Client';
+import Client from '../../Client';
 import {BrowserClientFlipperConnection} from './BrowserClientFlipperConnection';
 import {ServerEventsListener} from './ServerAdapter';
 import constants from '../../fb-stubs/constants';
 import ws from 'ws';
 import {IncomingMessage} from 'http';
+import {ClientQuery} from 'flipper-plugin';
 
 /**
  * WebSocket-based server which uses a connect/disconnect handshake over an insecure channel.

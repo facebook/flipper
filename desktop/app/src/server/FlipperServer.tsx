@@ -28,19 +28,7 @@ import {IOSDeviceManager} from './devices/ios/iOSDeviceManager';
 import metroDevice from './devices/metro/metroDeviceManager';
 import desktopDevice from './devices/desktop/desktopDeviceManager';
 import BaseDevice from './devices/BaseDevice';
-
-type FlipperServerEvents = {
-  'server-state': {state: ServerState; error?: Error};
-  'server-error': any;
-  notification: {
-    type: 'error';
-    title: string;
-    description: string;
-  };
-  'device-connected': BaseDevice;
-  'device-disconnected': BaseDevice;
-  'client-connected': Client;
-};
+import {FlipperServerEvents, FlipperServerState} from 'flipper-plugin';
 
 export interface FlipperServerConfig {
   enableAndroid: boolean;
@@ -50,8 +38,6 @@ export interface FlipperServerConfig {
   enablePhysicalIOS: boolean;
   serverPorts: ServerPorts;
 }
-
-type ServerState = 'pending' | 'starting' | 'started' | 'error' | 'closed';
 
 // defaultConfig should be used for testing only, and disables by default all features
 const defaultConfig: FlipperServerConfig = {
@@ -82,7 +68,7 @@ export class FlipperServer {
   readonly server: ServerController;
   readonly disposers: ((() => void) | void)[] = [];
   private readonly devices = new Map<string, BaseDevice>();
-  state: ServerState = 'pending';
+  state: FlipperServerState = 'pending';
   android: AndroidDeviceManager;
   ios: IOSDeviceManager;
 
@@ -171,7 +157,7 @@ export class FlipperServer {
     );
   }
 
-  setServerState(state: ServerState, error?: Error) {
+  setServerState(state: FlipperServerState, error?: Error) {
     this.state = state;
     this.emit('server-state', {state, error});
   }

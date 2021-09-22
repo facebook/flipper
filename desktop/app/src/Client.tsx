@@ -11,7 +11,7 @@
 /* eslint-disable node/no-sync */
 
 import {PluginDefinition} from './plugin';
-import BaseDevice, {OS} from './server/devices/BaseDevice';
+import BaseDevice from './server/devices/BaseDevice';
 import {Logger} from './fb-interfaces/Logger';
 import {Store} from './reducers/index';
 import {performance} from 'perf_hooks';
@@ -31,6 +31,7 @@ import {
   _SandyPluginInstance,
   getFlipperLib,
   timeout,
+  ClientQuery,
 } from 'flipper-plugin';
 import {freeze} from 'immer';
 import GK from './fb-stubs/GK';
@@ -47,14 +48,6 @@ import {
 
 type Plugins = Set<string>;
 type PluginsArr = Array<string>;
-
-export type ClientQuery = {
-  app: string;
-  os: OS;
-  device: string;
-  device_id: string;
-  sdk_version?: number;
-};
 
 export type ClientExport = {
   id: string;

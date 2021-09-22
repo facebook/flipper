@@ -14,6 +14,7 @@ import {FlipperServer} from '../server/FlipperServer';
 import {selectClient, selectDevice} from '../reducers/connections';
 import Client from '../Client';
 import {notification} from 'antd';
+import BaseDevice from '../server/devices/BaseDevice';
 
 export default async (store: Store, logger: Logger) => {
   const {enableAndroid, androidHome, idbPath, enableIOS, enablePhysicalIOS} =
@@ -75,14 +76,16 @@ export default async (store: Store, logger: Logger) => {
       serial: device.serial,
     });
 
-    device.loadDevicePlugins(
+    // TODO: fixed later in this stack
+    (device as BaseDevice).loadDevicePlugins(
       store.getState().plugins.devicePlugins,
       store.getState().connections.enabledDevicePlugins,
     );
 
     store.dispatch({
       type: 'REGISTER_DEVICE',
-      payload: device,
+      // TODO: fixed later in this stack
+      payload: device as any,
     });
   });
 
@@ -95,7 +98,8 @@ export default async (store: Store, logger: Logger) => {
   });
 
   server.on('client-connected', (payload) =>
-    handleClientConnected(store, payload),
+    // TODO: fixed later in this stack
+    handleClientConnected(store, payload as any),
   );
 
   if (typeof window !== 'undefined') {

@@ -17,8 +17,9 @@ import {
   Idler,
   createState,
   getFlipperLib,
+  DeviceOS,
 } from 'flipper-plugin';
-import {DeviceSpec, OS as PluginOS, PluginDetails} from 'flipper-plugin-lib';
+import {DeviceSpec, PluginDetails} from 'flipper-plugin-lib';
 import {getPluginKey} from '../../utils/pluginKey';
 
 export type DeviceShell = {
@@ -27,13 +28,11 @@ export type DeviceShell = {
   stdin: stream.Writable;
 };
 
-export type OS = PluginOS | 'Windows' | 'MacOS';
-
 type PluginDefinition = _SandyPluginDefinition;
 type PluginMap = Map<string, PluginDefinition>;
 
 export type DeviceExport = {
-  os: OS;
+  os: DeviceOS;
   title: string;
   deviceType: DeviceType;
   serial: string;
@@ -48,7 +47,7 @@ export default class BaseDevice {
     serial: string,
     deviceType: DeviceType,
     title: string,
-    os: OS,
+    os: DeviceOS,
     specs: DeviceSpec[] = [],
   ) {
     this.serial = serial;
@@ -59,7 +58,7 @@ export default class BaseDevice {
   }
 
   // operating system of this device
-  os: OS;
+  os: DeviceOS;
 
   // human readable name for this device
   title: string;
@@ -89,7 +88,7 @@ export default class BaseDevice {
     _SandyDevicePluginInstance
   >();
 
-  supportsOS(os: OS) {
+  supportsOS(os: DeviceOS) {
     return os.toLowerCase() === this.os.toLowerCase();
   }
 

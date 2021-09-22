@@ -7,13 +7,14 @@
  * @format
  */
 
-import BaseDevice, {OS} from './BaseDevice';
+import {DeviceOS} from 'flipper-plugin';
+import BaseDevice from './BaseDevice';
 
 /**
  * Use this device when you do not have the actual uuid of the device. For example, it is currently used in the case when, we do certificate exchange through WWW mode. In this mode we do not know the device id of the app and we generate a fake one.
  */
 export default class DummyDevice extends BaseDevice {
-  constructor(serial: string, title: string, os: OS) {
+  constructor(serial: string, title: string, os: DeviceOS) {
     super(serial, 'dummy', title, os);
   }
 }

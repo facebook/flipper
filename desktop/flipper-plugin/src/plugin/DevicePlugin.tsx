@@ -10,8 +10,8 @@
 import {SandyPluginDefinition} from './SandyPluginDefinition';
 import {BasePluginInstance, BasePluginClient} from './PluginBase';
 import {FlipperLib} from './FlipperLib';
-import {DeviceType as PluginDeviceType} from 'flipper-plugin-lib';
 import {Atom, ReadOnlyAtom} from '../state/atom';
+import {DeviceOS, DeviceType} from '../types/server-types';
 
 export type DeviceLogListener = (entry: DeviceLogEntry) => void;
 
@@ -38,13 +38,11 @@ export interface Device {
   readonly realDevice: any; // TODO: temporarily, clean up T70688226
   readonly isArchived: boolean;
   readonly isConnected: boolean;
-  readonly os: string;
+  readonly os: DeviceOS;
   readonly serial: string;
   readonly deviceType: DeviceType;
   onLogEntry(cb: DeviceLogListener): () => void;
 }
-
-export type DeviceType = PluginDeviceType;
 
 export type DevicePluginPredicate = (device: Device) => boolean;
 
@@ -64,7 +62,7 @@ export interface DevicePluginClient extends BasePluginClient {
  * Wrapper interface around BaseDevice in Flipper
  */
 export interface RealFlipperDevice {
-  os: string;
+  os: DeviceOS;
   serial: string;
   isArchived: boolean;
   connected: Atom<boolean>;

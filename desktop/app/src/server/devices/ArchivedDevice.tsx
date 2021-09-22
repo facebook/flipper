@@ -8,8 +8,8 @@
  */
 
 import BaseDevice from './BaseDevice';
-import type {DeviceType} from 'flipper-plugin';
-import {OS, DeviceShell} from './BaseDevice';
+import type {DeviceOS, DeviceType} from 'flipper-plugin';
+import {DeviceShell} from './BaseDevice';
 import {SupportFormRequestDetailsState} from '../../reducers/supportForm';
 
 export default class ArchivedDevice extends BaseDevice {
@@ -19,7 +19,7 @@ export default class ArchivedDevice extends BaseDevice {
     serial: string;
     deviceType: DeviceType;
     title: string;
-    os: OS;
+    os: DeviceOS;
     screenshotHandle?: string | null;
     source?: string;
     supportRequestDetails?: SupportFormRequestDetailsState;

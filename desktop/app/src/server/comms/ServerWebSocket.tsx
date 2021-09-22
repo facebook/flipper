@@ -12,8 +12,7 @@ import WebSocket from 'ws';
 import ws from 'ws';
 import {SecureClientQuery, ServerEventsListener} from './ServerAdapter';
 import querystring from 'querystring';
-import Client, {ClientQuery} from '../../Client';
-import {OS} from '../devices/BaseDevice';
+import Client from '../../Client';
 import {
   ClientConnection,
   ConnectionStatus,
@@ -21,6 +20,7 @@ import {
   ErrorType,
 } from './ClientConnection';
 import {IncomingMessage} from 'http';
+import {ClientQuery, DeviceOS} from 'flipper-plugin';
 
 /**
  * WebSocket-based server.
@@ -182,7 +182,7 @@ class ServerWebSocket extends ServerWebSocketBase {
    * Validates a string as being one of those defined as valid OS.
    * @param str An input string.
    */
-  private isOS(str: string): str is OS {
+  private isOS(str: string): str is DeviceOS {
     return (
       str === 'iOS' ||
       str === 'Android' ||
@@ -224,7 +224,7 @@ class ServerWebSocket extends ServerWebSocketBase {
       return;
     }
 
-    let os: OS | undefined;
+    let os: DeviceOS | undefined;
     if (typeof query.os === 'string' && this.isOS(query.os)) {
       os = query.os;
     } else {
@@ -241,7 +241,8 @@ class ServerWebSocket extends ServerWebSocketBase {
     if (typeof query.sdk_version === 'string') {
       const sdk_version = parseInt(query.sdk_version, 10);
       if (sdk_version) {
-        clientQuery.sdk_version = sdk_version;
+        // TODO: allocate new object, kept now as is to keep changes minimal
+        (clientQuery as any).sdk_version = sdk_version;
       }
     }
 

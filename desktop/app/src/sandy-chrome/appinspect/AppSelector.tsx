@@ -16,7 +16,7 @@ import {
   CaretDownOutlined,
 } from '@ant-design/icons';
 import {Glyph, Layout, styled} from '../../ui';
-import {theme, useTrackedCallback, useValue} from 'flipper-plugin';
+import {DeviceOS, theme, useTrackedCallback, useValue} from 'flipper-plugin';
 import {batch} from 'react-redux';
 import {useDispatch, useStore} from '../../utils/useStore';
 import {
@@ -25,7 +25,7 @@ import {
   selectClient,
   selectDevice,
 } from '../../reducers/connections';
-import BaseDevice, {OS} from '../../server/devices/BaseDevice';
+import BaseDevice from '../../server/devices/BaseDevice';
 import Client from '../../Client';
 import {State} from '../../reducers';
 import {brandColors, brandIcons, colors} from '../../ui/components/colors';
@@ -34,7 +34,7 @@ import GK from '../../fb-stubs/GK';
 
 const {Text} = Typography;
 
-function getOsIcon(os?: OS) {
+function getOsIcon(os?: DeviceOS) {
   switch (os) {
     case 'iOS':
       return <AppleOutlined />;

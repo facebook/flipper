@@ -42,7 +42,7 @@ export {default as AndroidDevice} from './server/devices/android/AndroidDevice';
 export {default as ArchivedDevice} from './server/devices/ArchivedDevice';
 export {default as IOSDevice} from './server/devices/ios/IOSDevice';
 export {default as KaiOSDevice} from './server/devices/android/KaiOSDevice';
-export {OS} from './server/devices/BaseDevice';
+export {DeviceOS as OS} from 'flipper-plugin';
 export {default as Button} from './ui/components/Button';
 export {default as ToggleButton} from './ui/components/ToggleSwitch';
 export {default as ButtonGroup} from './ui/components/ButtonGroup';
