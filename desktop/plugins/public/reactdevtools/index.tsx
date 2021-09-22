@@ -30,8 +30,7 @@ const CONNECTED = 'DevTools connected';
 const DEV_TOOLS_PORT = 8097; // hardcoded in RN
 
 interface MetroDevice {
-  ws?: WebSocket;
-  sendCommand(command: string, params?: any): void;
+  sendMetroCommand(command: string, params?: any): void;
 }
 
 function findGlobalDevTools(): Promise<string | undefined> {
@@ -66,7 +65,7 @@ enum ConnectionStatus {
 
 export function devicePlugin(client: DevicePluginClient) {
   const metroDevice: MetroDevice = client.device.realDevice;
-  if (!metroDevice.sendCommand || !('ws' in metroDevice)) {
+  if (!metroDevice.sendMetroCommand) {
     throw new Error('Invalid metroDevice');
   }
 
@@ -196,12 +195,12 @@ export function devicePlugin(client: DevicePluginClient) {
           return;
         // Waiting for connection, but we do have an active Metro connection, lets force a reload to enter Dev Mode on app
         // prettier-ignore
-        case connectionStatus.get() === ConnectionStatus.Initializing && !!metroDevice?.ws:
+        case connectionStatus.get() === ConnectionStatus.Initializing:
           setStatus(
             ConnectionStatus.WaitingForReload,
             "Sending 'reload' to Metro to force the DevTools to connect...",
           );
-          metroDevice!.sendCommand('reload');
+          metroDevice!.sendMetroCommand('reload');
           startPollForConnection(2000);
           return;
         // Waiting for initial connection, but no WS bridge available
@@ -295,12 +294,12 @@ export function Component() {
             <Typography.Text type="secondary">{statusMessage}</Typography.Text>
           ) : null}
           {(connectionStatus === ConnectionStatus.WaitingForReload &&
-            instance.metroDevice?.ws) ||
+            instance.metroDevice) ||
           connectionStatus === ConnectionStatus.Error ? (
             <Button
               size="small"
               onClick={() => {
-                instance.metroDevice?.sendCommand('reload');
+                instance.metroDevice?.sendMetroCommand('reload');
                 instance.bootDevTools();
               }}>
               Retry

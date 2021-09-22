@@ -14,6 +14,7 @@ import {
   createState,
   DevicePluginClient,
   PluginClient,
+  sleep,
 } from 'flipper-plugin';
 import {handleClientConnected} from '../dispatcher/flipperServer';
 import {TestDevice} from '../test-utils/TestDevice';
@@ -89,9 +90,7 @@ test('New device with same serial removes & cleans the old one', async () => {
       },
     },
   );
-  const {device, store, logger} = await createMockFlipperWithPlugin(
-    deviceplugin,
-  );
+  const {device, store} = await createMockFlipperWithPlugin(deviceplugin);
 
   const instance = device.sandyPluginStates.get(deviceplugin.id)!;
 
@@ -116,6 +115,7 @@ test('New device with same serial removes & cleans the old one', async () => {
     store.getState().connections.enabledDevicePlugins,
   );
 
+  await sleep(100);
   expect(device.isArchived).toBe(false);
   expect(device.connected.get()).toBe(false);
   expect(instance.instanceApi.destroy).toBeCalledTimes(1);

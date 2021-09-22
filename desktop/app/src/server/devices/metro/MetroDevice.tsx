@@ -8,7 +8,6 @@
  */
 
 import {LogLevel} from 'flipper-plugin';
-import {EventEmitter} from 'events';
 import util from 'util';
 import {FlipperServerImpl} from '../../FlipperServerImpl';
 import {ServerDevice} from '../ServerDevice';
@@ -142,7 +141,6 @@ function getLoglevelFromMessageType(
 
 export default class MetroDevice extends ServerDevice {
   ws?: WebSocket;
-  metroEventEmitter = new EventEmitter();
 
   constructor(
     flipperServer: FlipperServerImpl,
@@ -190,7 +188,6 @@ export default class MetroDevice extends ServerDevice {
         });
       }
     }
-    this.metroEventEmitter.emit('event', message);
   };
 
   sendCommand(command: string, params?: any) {

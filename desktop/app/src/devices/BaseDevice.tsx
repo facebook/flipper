@@ -229,6 +229,10 @@ export default class BaseDevice {
     return this.flipperServer.exec('device-shell-exec', this.serial, command);
   }
 
+  async sendMetroCommand(command: string): Promise<void> {
+    return this.flipperServer.exec('metro-command', this.serial, command);
+  }
+
   supportsPlugin(plugin: PluginDefinition | PluginDetails) {
     let pluginDetails: PluginDetails;
     if (plugin instanceof _SandyPluginDefinition) {

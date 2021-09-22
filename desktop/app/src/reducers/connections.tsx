@@ -250,7 +250,9 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
             `Tried to replace still connected device '${d.serial}' with a new instance`,
           );
         }
-        d.destroy();
+        setImmediate(() => {
+          d.destroy();
+        });
         newDevices[existing] = payload;
       } else {
         newDevices.push(payload);
