@@ -258,6 +258,8 @@ export class FlipperServerImpl implements FlipperServer {
       }
       device.sendCommand(command);
     },
+    'device-forward-port': async (serial, local, remote) =>
+      this.getDevice(serial).forwardPort(local, remote),
   };
 
   registerDevice(device: ServerDevice) {

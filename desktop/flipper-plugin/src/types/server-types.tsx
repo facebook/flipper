@@ -83,6 +83,11 @@ export type FlipperServerCommands = {
   ) => Promise<void>;
   'device-stop-screencapture': (serial: string) => Promise<string>; // file path
   'device-shell-exec': (serial: string, command: string) => Promise<string>;
+  'device-forward-port': (
+    serial: string,
+    local: string,
+    remote: string,
+  ) => Promise<void>;
   'metro-command': (serial: string, command: string) => Promise<void>;
 };
 

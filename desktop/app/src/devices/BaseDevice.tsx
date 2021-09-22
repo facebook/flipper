@@ -233,6 +233,15 @@ export default class BaseDevice {
     return this.flipperServer.exec('metro-command', this.serial, command);
   }
 
+  async forwardPort(local: string, remote: string): Promise<void> {
+    return this.flipperServer.exec(
+      'device-forward-port',
+      this.serial,
+      local,
+      remote,
+    );
+  }
+
   supportsPlugin(plugin: PluginDefinition | PluginDetails) {
     let pluginDetails: PluginDetails;
     if (plugin instanceof _SandyPluginDefinition) {

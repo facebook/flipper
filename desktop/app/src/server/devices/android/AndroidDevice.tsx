@@ -264,6 +264,10 @@ export default class AndroidDevice extends ServerDevice {
     return destination;
   }
 
+  async forwardPort(local: string, remote: string): Promise<void> {
+    return this.adb.forward(this.serial, local, remote);
+  }
+
   disconnect() {
     if (this.recordingProcess) {
       this.stopScreenCapture();

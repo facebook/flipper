@@ -69,4 +69,8 @@ export abstract class ServerDevice {
   async executeShell(_command: string): Promise<string> {
     throw new Error('executeShell not implemented on BaseDevice');
   }
+
+  async forwardPort(_local: string, _remote: string): Promise<void> {
+    throw new Error('forwardPort not implemented on BaseDevice');
+  }
 }
