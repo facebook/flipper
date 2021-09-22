@@ -42,6 +42,7 @@ export interface Device {
   readonly serial: string;
   readonly deviceType: DeviceType;
   onLogEntry(cb: DeviceLogListener): () => void;
+  executeShell(command: string): Promise<string>;
 }
 
 export type DevicePluginPredicate = (device: Device) => boolean;
@@ -69,6 +70,7 @@ export interface RealFlipperDevice {
   deviceType: DeviceType;
   addLogListener(callback: DeviceLogListener): Symbol;
   removeLogListener(id: Symbol): void;
+  executeShell(command: string): Promise<string>;
 }
 
 export class SandyDevicePluginInstance extends BasePluginInstance {

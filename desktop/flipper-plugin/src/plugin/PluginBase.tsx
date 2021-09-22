@@ -216,6 +216,9 @@ export abstract class BasePluginInstance {
           realDevice.removeLogListener(handle);
         };
       },
+      executeShell(command: string): Promise<string> {
+        return realDevice.executeShell(command);
+      },
     };
   }
 

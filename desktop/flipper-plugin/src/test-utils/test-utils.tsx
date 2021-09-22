@@ -506,6 +506,7 @@ function createMockDevice(options?: StartPluginOptions): RealFlipperDevice & {
     addLogEntry(entry: DeviceLogEntry) {
       logListeners.forEach((f) => f?.(entry));
     },
+    executeShell: jest.fn(),
   };
 }
 
