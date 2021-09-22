@@ -486,7 +486,9 @@ export function createMockBundledPluginDetails(
   };
 }
 
-function createMockDevice(options?: StartPluginOptions): RealFlipperDevice {
+function createMockDevice(options?: StartPluginOptions): RealFlipperDevice & {
+  addLogEntry(entry: DeviceLogEntry): void;
+} {
   const logListeners: (undefined | DeviceLogListener)[] = [];
   return {
     os: 'Android',

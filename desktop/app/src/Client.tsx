@@ -11,7 +11,7 @@
 /* eslint-disable node/no-sync */
 
 import {PluginDefinition} from './plugin';
-import BaseDevice from './server/devices/BaseDevice';
+import BaseDevice from './devices/BaseDevice';
 import {Logger} from './fb-interfaces/Logger';
 import {Store} from './reducers/index';
 import {performance} from 'perf_hooks';

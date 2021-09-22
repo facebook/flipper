@@ -9,7 +9,7 @@
 
 import fs from 'fs';
 import path from 'path';
-import BaseDevice from '../server/devices/BaseDevice';
+import BaseDevice from '../devices/BaseDevice';
 import {reportPlatformFailures} from './metrics';
 import expandTilde from 'expand-tilde';
 import {remote} from 'electron';

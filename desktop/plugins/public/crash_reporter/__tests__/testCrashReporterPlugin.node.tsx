@@ -7,7 +7,7 @@
  * @format
  */
 
-import {BaseDevice} from 'flipper';
+import {TestDevice} from 'flipper';
 import {Crash, CrashLog} from '../index';
 import {TestUtils} from 'flipper-plugin';
 import {getPluginKey} from 'flipper';
@@ -121,7 +121,7 @@ test('test the parsing of the Android crash log with os being iOS', () => {
   expect(crash.name).toEqual('Cannot figure out the cause');
 });
 test('test the getter of pluginKey with proper input', () => {
-  const device = new BaseDevice('serial', 'emulator', 'test device', 'iOS');
+  const device = new TestDevice('serial', 'emulator', 'test device', 'iOS');
   const pluginKey = getPluginKey(null, device, 'CrashReporter');
   expect(pluginKey).toEqual('serial#CrashReporter');
 });
@@ -134,7 +134,7 @@ test('test the getter of pluginKey with defined selected app', () => {
   expect(pluginKey).toEqual('selectedApp#CrashReporter');
 });
 test('test the getter of pluginKey with defined selected app and defined base device', () => {
-  const device = new BaseDevice('serial', 'emulator', 'test device', 'iOS');
+  const device = new TestDevice('serial', 'emulator', 'test device', 'iOS');
   const pluginKey = getPluginKey('selectedApp', device, 'CrashReporter');
   expect(pluginKey).toEqual('selectedApp#CrashReporter');
 });
@@ -216,7 +216,7 @@ test('test parsing of path when a regex is not present', () => {
 });
 
 test('test shouldShowCrashNotification function for all correct inputs', () => {
-  const device = new BaseDevice(
+  const device = new TestDevice(
     'TH1S-15DEV1CE-1D',
     'emulator',
     'test device',
@@ -231,7 +231,7 @@ test('test shouldShowCrashNotification function for all correct inputs', () => {
   expect(shouldShowNotification).toEqual(true);
 });
 test('test shouldShowiOSCrashNotification function for all correct inputs but incorrect id', () => {
-  const device = new BaseDevice(
+  const device = new TestDevice(
     'TH1S-15DEV1CE-1D',
     'emulator',
     'test device',

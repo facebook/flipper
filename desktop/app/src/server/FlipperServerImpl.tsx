@@ -14,7 +14,7 @@ import {Logger} from '../fb-interfaces/Logger';
 import ServerController from './comms/ServerController';
 import {UninitializedClient} from './UninitializedClient';
 import {addErrorNotification} from '../reducers/notifications';
-import {CertificateExchangeMedium} from '../server/utils/CertificateProvider';
+import {CertificateExchangeMedium} from './utils/CertificateProvider';
 import {isLoggedIn} from '../fb-stubs/user';
 import React from 'react';
 import {Typography} from 'antd';
@@ -27,8 +27,15 @@ import {AndroidDeviceManager} from './devices/android/androidDeviceManager';
 import {IOSDeviceManager} from './devices/ios/iOSDeviceManager';
 import metroDevice from './devices/metro/metroDeviceManager';
 import desktopDevice from './devices/desktop/desktopDeviceManager';
-import BaseDevice from './devices/BaseDevice';
-import {FlipperServerEvents, FlipperServerState} from 'flipper-plugin';
+import {
+  FlipperServerEvents,
+  FlipperServerState,
+  FlipperServerCommands,
+  FlipperServer,
+} from 'flipper-plugin';
+import {ServerDevice} from './devices/ServerDevice';
+import {Base64} from 'js-base64';
+import MetroDevice from './devices/metro/MetroDevice';
 
 export interface FlipperServerConfig {
   enableAndroid: boolean;
@@ -60,14 +67,14 @@ const defaultConfig: FlipperServerConfig = {
  * The server should be largely treated as event emitter, by listening to the relevant events
  * using '.on'. All events are strongly typed.
  */
-export class FlipperServer {
+export class FlipperServerImpl implements FlipperServer {
   public config: FlipperServerConfig;
 
   private readonly events = new EventEmitter();
   // server handles the incoming RSocket / WebSocket connections from Flipper clients
   readonly server: ServerController;
   readonly disposers: ((() => void) | void)[] = [];
-  private readonly devices = new Map<string, BaseDevice>();
+  private readonly devices = new Map<string, ServerDevice>();
   state: FlipperServerState = 'pending';
   android: AndroidDeviceManager;
   ios: IOSDeviceManager;
@@ -197,6 +204,13 @@ export class FlipperServer {
     this.events.on(event, callback);
   }
 
+  off<Event extends keyof FlipperServerEvents>(
+    event: Event,
+    callback: (payload: FlipperServerEvents[Event]) => void,
+  ): void {
+    this.events.off(event, callback);
+  }
+
   /**
    * @internal
    */
@@ -207,31 +221,64 @@ export class FlipperServer {
     this.events.emit(event, payload);
   }
 
-  registerDevice(device: BaseDevice) {
+  exec<Event extends keyof FlipperServerCommands>(
+    event: Event,
+    ...args: Parameters<FlipperServerCommands[Event]>
+  ): ReturnType<FlipperServerCommands[Event]> {
+    console.debug(`[FlipperServer] command ${event}: `, args);
+    const handler: (...args: any[]) => Promise<any> =
+      this.commandHandler[event];
+    if (!handler) {
+      throw new Error(`Unimplemented server command: ${event}`);
+    }
+    return handler(...args) as any;
+  }
+
+  private commandHandler: FlipperServerCommands = {
+    'device-start-logging': async (serial: string) =>
+      this.getDevice(serial).startLogging(),
+    'device-stop-logging': async (serial: string) =>
+      this.getDevice(serial).stopLogging(),
+    'device-supports-screenshot': async (serial: string) =>
+      this.getDevice(serial).screenshotAvailable(),
+    'device-supports-screencapture': async (serial: string) =>
+      this.getDevice(serial).screenCaptureAvailable(),
+    'device-take-screenshot': async (serial: string) =>
+      Base64.fromUint8Array(await this.getDevice(serial).screenshot()),
+    'device-start-screencapture': async (serial, destination) =>
+      this.getDevice(serial).startScreenCapture(destination),
+    'device-stop-screencapture': async (serial: string) =>
+      this.getDevice(serial).stopScreenCapture(),
+    'device-shell-exec': async (serial: string, command: string) =>
+      this.getDevice(serial).executeShell(command),
+    'metro-command': async (serial: string, command: string) => {
+      const device = this.getDevice(serial);
+      if (!(device instanceof MetroDevice)) {
+        throw new Error('Not a Metro device: ' + serial);
+      }
+      device.sendCommand(command);
+    },
+  };
+
+  registerDevice(device: ServerDevice) {
     // destroy existing device
-    const existing = this.devices.get(device.serial);
+    const {serial} = device.info;
+    const existing = this.devices.get(serial);
     if (existing) {
       // assert different kind of devices aren't accidentally reusing the same serial
       if (Object.getPrototypeOf(existing) !== Object.getPrototypeOf(device)) {
         throw new Error(
-          `Tried to register a new device type for existing serial '${
-            device.serial
-          }': Trying to replace existing '${
+          `Tried to register a new device type for existing serial '${serial}': Trying to replace existing '${
             Object.getPrototypeOf(existing).constructor.name
           }' with a new '${Object.getPrototypeOf(device).constructor.name}`,
         );
       }
-      // devices should be recycled, unless they have lost connection
-      if (existing.connected.get()) {
-        throw new Error(
-          `Tried to replace still connected device '${device.serial}' with a new instance`,
-        );
-      }
-      existing.destroy();
+      // clean up connection
+      existing.disconnect();
     }
     // register new device
-    this.devices.set(device.serial, device);
-    this.emit('device-connected', device);
+    this.devices.set(device.info.serial, device);
+    this.emit('device-connected', device.info);
   }
 
   unregisterDevice(serial: string) {
@@ -240,10 +287,10 @@ export class FlipperServer {
       return;
     }
     device.disconnect(); // we'll only destroy upon replacement
-    this.emit('device-disconnected', device);
+    this.emit('device-disconnected', device.info);
   }
 
-  getDevice(serial: string): BaseDevice {
+  getDevice(serial: string): ServerDevice {
     const device = this.devices.get(serial);
     if (!device) {
       throw new Error('No device with serial: ' + serial);
@@ -255,14 +302,14 @@ export class FlipperServer {
     return Array.from(this.devices.keys());
   }
 
-  getDevices(): BaseDevice[] {
+  getDevices(): ServerDevice[] {
     return Array.from(this.devices.values());
   }
 
   public async close() {
     this.server.close();
     for (const device of this.devices.values()) {
-      device.destroy();
+      device.disconnect();
     }
     this.disposers.forEach((f) => f?.());
     this.setServerState('closed');

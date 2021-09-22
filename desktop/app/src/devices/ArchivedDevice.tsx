@@ -10,7 +10,7 @@
 import BaseDevice from './BaseDevice';
 import type {DeviceOS, DeviceType} from 'flipper-plugin';
 import {DeviceShell} from './BaseDevice';
-import {SupportFormRequestDetailsState} from '../../reducers/supportForm';
+import {SupportFormRequestDetailsState} from '../reducers/supportForm';
 
 export default class ArchivedDevice extends BaseDevice {
   isArchived = true;
@@ -24,7 +24,28 @@ export default class ArchivedDevice extends BaseDevice {
     source?: string;
     supportRequestDetails?: SupportFormRequestDetailsState;
   }) {
-    super(options.serial, options.deviceType, options.title, options.os);
+    super(
+      {
+        close() {},
+        exec(command, ..._args: any[]) {
+          throw new Error(
+            `[Archived device] Cannot invoke command ${command} on an archived device`,
+          );
+        },
+        on(event) {
+          console.warn(
+            `Cannot subscribe to server events from an Archived device: ${event}`,
+          );
+        },
+        off() {},
+      },
+      {
+        deviceType: options.deviceType,
+        title: options.title,
+        os: options.os,
+        serial: options.serial,
+      },
+    );
     this.icon = 'box';
     this.connected.set(false);
     this.source = options.source || '';

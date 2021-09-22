@@ -7,13 +7,17 @@
  * @format
  */
 
-import BaseDevice from '../BaseDevice';
+import {FlipperServerImpl} from '../../FlipperServerImpl';
+import {ServerDevice} from '../ServerDevice';
 
-export default class MacDevice extends BaseDevice {
-  constructor() {
-    super('', 'physical', 'Mac', 'MacOS');
-    this.icon = 'app-apple';
+export default class MacDevice extends ServerDevice {
+  constructor(flipperServer: FlipperServerImpl) {
+    super(flipperServer, {
+      serial: '',
+      deviceType: 'physical',
+      title: 'Mac',
+      os: 'MacOS',
+    });
+    // TODO: this.icon = 'app-apple';
   }
-
-  teardown() {}
 }

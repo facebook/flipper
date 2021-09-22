@@ -13,7 +13,7 @@ import {
 } from '../../../test-utils/createMockFlipperWithPlugin';
 import {FlipperPlugin} from '../../../plugin';
 import MetroDevice from '../../../server/devices/metro/MetroDevice';
-import BaseDevice from '../../../server/devices/BaseDevice';
+import BaseDevice from '../../../devices/BaseDevice';
 import {_SandyPluginDefinition} from 'flipper-plugin';
 import {TestUtils} from 'flipper-plugin';
 import {selectPlugin} from '../../../reducers/connections';
@@ -33,6 +33,7 @@ import {
   getMetroDevice,
   getPluginLists,
 } from '../../../selectors/connections';
+import {TestDevice} from '../../../test-utils/TestDevice';
 
 const createMockPluginDetails = TestUtils.createMockPluginDetails;
 
@@ -67,7 +68,7 @@ describe('basic getActiveDevice', () => {
 
 describe('basic getActiveDevice with metro present', () => {
   let flipper: MockFlipperResult;
-  let metro: MetroDevice;
+  let metro: BaseDevice;
   let testDevice: BaseDevice;
 
   beforeEach(async () => {
@@ -79,7 +80,12 @@ describe('basic getActiveDevice with metro present', () => {
     // flipper.store.dispatch(registerPlugins([LogsPlugin]))
     flipper.store.dispatch({
       type: 'REGISTER_DEVICE',
-      payload: new MetroDevice('http://localhost:8081', undefined),
+      payload: new TestDevice(
+        'http://localhost:8081',
+        'physical',
+        'metro',
+        'Metro',
+      ),
     });
     metro = getMetroDevice(flipper.store.getState())!;
     metro.supportsPlugin = (p) => {
@@ -88,7 +94,7 @@ describe('basic getActiveDevice with metro present', () => {
   });
 
   test('findMetroDevice', () => {
-    expect(metro).toBeInstanceOf(MetroDevice);
+    expect(metro.os).toBe('Metro');
   });
 
   test('correct base selection state', () => {

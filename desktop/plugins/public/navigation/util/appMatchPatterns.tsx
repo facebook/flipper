@@ -9,7 +9,7 @@
 
 import fs from 'fs';
 import path from 'path';
-import {BaseDevice, AndroidDevice, IOSDevice, getAppPath} from 'flipper';
+import {BaseDevice, getAppPath} from 'flipper';
 import {AppMatchPattern} from '../types';
 
 let patternsPath: string | undefined;
@@ -34,9 +34,9 @@ export const getAppMatchPatterns = (
     const appName = extractAppNameFromSelectedApp(selectedApp);
     if (appName === 'Facebook') {
       let filename: string;
-      if (device instanceof AndroidDevice) {
+      if (device.os === 'Android') {
         filename = 'facebook-match-patterns-android.json';
-      } else if (device instanceof IOSDevice) {
+      } else if (device.os === 'iOS') {
         filename = 'facebook-match-patterns-ios.json';
       } else {
         return;

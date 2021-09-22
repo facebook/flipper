@@ -8,9 +8,11 @@
  */
 
 import {
+  DeviceSpec,
   DeviceType as PluginDeviceType,
   OS as PluginOS,
 } from 'flipper-plugin-lib';
+import {DeviceLogEntry} from '../plugin/DevicePlugin';
 
 // In the future, this file would deserve it's own package, as it doesn't really relate to plugins.
 // Since flipper-plugin however is currently shared among server, client and defines a lot of base types, leaving it here for now.
@@ -31,6 +33,10 @@ export type DeviceDescription = {
   readonly title: string;
   readonly deviceType: DeviceType;
   readonly serial: string;
+  // Android specific information
+  readonly specs?: DeviceSpec[];
+  readonly abiList?: string[];
+  readonly sdkVersion?: string;
 };
 
 export type ClientQuery = {
@@ -58,8 +64,39 @@ export type FlipperServerEvents = {
   'device-connected': DeviceDescription;
   'device-disconnected': DeviceDescription;
   'client-connected': ClientDescription;
+  'device-log': {
+    serial: string;
+    entry: DeviceLogEntry;
+  };
 };
 
 export type FlipperServerCommands = {
-  // TODO
+  'device-start-logging': (serial: string) => Promise<void>;
+  'device-stop-logging': (serial: string) => Promise<void>;
+  'device-supports-screenshot': (serial: string) => Promise<boolean>;
+  'device-supports-screencapture': (serial: string) => Promise<boolean>;
+  'device-take-screenshot': (serial: string) => Promise<string>; // base64 encoded buffer
+  'device-start-screencapture': (
+    serial: string,
+    destination: string,
+  ) => Promise<void>;
+  'device-stop-screencapture': (serial: string) => Promise<string>; // file path
+  'device-shell-exec': (serial: string, command: string) => Promise<string>;
+  'metro-command': (serial: string, command: string) => Promise<void>;
 };
+
+export interface FlipperServer {
+  on<Event extends keyof FlipperServerEvents>(
+    event: Event,
+    callback: (payload: FlipperServerEvents[Event]) => void,
+  ): void;
+  off<Event extends keyof FlipperServerEvents>(
+    event: Event,
+    callback: (payload: FlipperServerEvents[Event]) => void,
+  ): void;
+  exec<Event extends keyof FlipperServerCommands>(
+    event: Event,
+    ...args: Parameters<FlipperServerCommands[Event]>
+  ): ReturnType<FlipperServerCommands[Event]>;
+  close(): void;
+}

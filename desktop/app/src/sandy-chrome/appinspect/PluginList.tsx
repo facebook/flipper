@@ -23,9 +23,8 @@ import {useDispatch, useStore} from '../../utils/useStore';
 import {getPluginTitle, getPluginTooltip} from '../../utils/pluginUtils';
 import {selectPlugin} from '../../reducers/connections';
 import Client from '../../Client';
-import BaseDevice from '../../server/devices/BaseDevice';
+import BaseDevice from '../../devices/BaseDevice';
 import {DownloadablePluginDetails} from 'flipper-plugin-lib';
-import MetroDevice from '../../server/devices/metro/MetroDevice';
 import {
   DownloadablePluginState,
   PluginDownloadStatus,
@@ -52,7 +51,7 @@ export const PluginList = memo(function PluginList({
 }: {
   client: Client | null;
   activeDevice: BaseDevice | null;
-  metroDevice: MetroDevice | null;
+  metroDevice: BaseDevice | null;
 }) {
   const dispatch = useDispatch();
   const connections = useStore((state) => state.connections);

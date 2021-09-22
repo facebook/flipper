@@ -7,7 +7,6 @@
  * @format
  */
 
-import BaseDevice from '../BaseDevice';
 import adb, {Client as ADBClient, PullTransfer} from 'adbkit';
 import {Priority, Reader} from 'adbkit-logcat';
 import {createWriteStream} from 'fs';
@@ -16,18 +15,19 @@ import which from 'which';
 import {spawn} from 'child_process';
 import {dirname, join} from 'path';
 import {DeviceSpec} from 'flipper-plugin-lib';
+import {ServerDevice} from '../ServerDevice';
+import {FlipperServerImpl} from '../../FlipperServerImpl';
 
 const DEVICE_RECORDING_DIR = '/sdcard/flipper_recorder';
 
-export default class AndroidDevice extends BaseDevice {
+export default class AndroidDevice extends ServerDevice {
   adb: ADBClient;
-  abiList: Array<string> = [];
-  sdkVersion: string | undefined = undefined;
   pidAppMapping: {[key: number]: string} = {};
   private recordingProcess?: Promise<string>;
   reader?: Reader;
 
   constructor(
+    flipperServer: FlipperServerImpl,
     serial: string,
     deviceType: DeviceType,
     title: string,
@@ -36,11 +36,17 @@ export default class AndroidDevice extends BaseDevice {
     sdkVersion: string,
     specs: DeviceSpec[] = [],
   ) {
-    super(serial, deviceType, title, 'Android', specs);
+    super(flipperServer, {
+      serial,
+      deviceType,
+      title,
+      os: 'Android',
+      specs,
+      abiList,
+      sdkVersion,
+    });
     this.adb = adb;
-    this.icon = 'mobile';
-    this.abiList = abiList;
-    this.sdkVersion = sdkVersion;
+    // TODO: this.icon = 'mobile';
   }
 
   startLogging() {
@@ -117,7 +123,7 @@ export default class AndroidDevice extends BaseDevice {
   }
 
   clearLogs(): Promise<void> {
-    return this.executeShell(['logcat', '-c']);
+    return this.executeShellOrDie(['logcat', '-c']);
   }
 
   navigateToLocation(location: string) {
@@ -126,9 +132,6 @@ export default class AndroidDevice extends BaseDevice {
   }
 
   async screenshot(): Promise<Buffer> {
-    if (this.isArchived) {
-      return Buffer.from([]);
-    }
     return new Promise((resolve, reject) => {
       this.adb
         .screencap(this.serial)
@@ -148,11 +151,8 @@ export default class AndroidDevice extends BaseDevice {
   }
 
   async screenCaptureAvailable(): Promise<boolean> {
-    if (this.isArchived) {
-      return false;
-    }
     try {
-      await this.executeShell(
+      await this.executeShellOrDie(
         `[ ! -f /system/bin/screenrecord ] && echo "File does not exist"`,
       );
       return true;
@@ -161,7 +161,14 @@ export default class AndroidDevice extends BaseDevice {
     }
   }
 
-  private async executeShell(command: string | string[]): Promise<void> {
+  async executeShell(command: string): Promise<string> {
+    return await this.adb
+      .shell(this.serial, command)
+      .then(adb.util.readAll)
+      .then((output: Buffer) => output.toString().trim());
+  }
+
+  private async executeShellOrDie(command: string | string[]): Promise<void> {
     const output = await this.adb
       .shell(this.serial, command)
       .then(adb.util.readAll)
@@ -191,7 +198,7 @@ export default class AndroidDevice extends BaseDevice {
   }
 
   async startScreenCapture(destination: string) {
-    await this.executeShell(
+    await this.executeShellOrDie(
       `mkdir -p "${DEVICE_RECORDING_DIR}" && echo -n > "${DEVICE_RECORDING_DIR}/.nomedia"`,
     );
     const recordingLocation = `${DEVICE_RECORDING_DIR}/video.mp4`;

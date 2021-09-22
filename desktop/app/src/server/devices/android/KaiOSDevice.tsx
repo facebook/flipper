@@ -10,9 +10,11 @@
 import {DeviceType} from 'flipper-plugin-lib';
 import AndroidDevice from './AndroidDevice';
 import {Client as ADBClient} from 'adbkit';
+import {FlipperServerImpl} from '../../FlipperServerImpl';
 
 export default class KaiOSDevice extends AndroidDevice {
   constructor(
+    flipperServer: FlipperServerImpl,
     serial: string,
     deviceType: DeviceType,
     title: string,
@@ -20,7 +22,9 @@ export default class KaiOSDevice extends AndroidDevice {
     abiList: Array<string>,
     sdkVersion: string,
   ) {
-    super(serial, deviceType, title, adb, abiList, sdkVersion, ['KaiOS']);
+    super(flipperServer, serial, deviceType, title, adb, abiList, sdkVersion, [
+      'KaiOS',
+    ]);
   }
 
   async screenCaptureAvailable() {

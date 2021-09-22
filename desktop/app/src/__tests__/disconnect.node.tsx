@@ -7,7 +7,6 @@
  * @format
  */
 
-import {default as BaseDevice} from '../server/devices/BaseDevice';
 import {createMockFlipperWithPlugin} from '../test-utils/createMockFlipperWithPlugin';
 import {
   TestUtils,
@@ -17,7 +16,7 @@ import {
   PluginClient,
 } from 'flipper-plugin';
 import {handleClientConnected} from '../dispatcher/flipperServer';
-import {destroyDevice} from '../reducers/connections';
+import {TestDevice} from '../test-utils/TestDevice';
 
 test('Devices can disconnect', async () => {
   const deviceplugin = new _SandyPluginDefinition(
@@ -101,12 +100,8 @@ test('New device with same serial removes & cleans the old one', async () => {
   expect(instance.instanceApi.destroy).toBeCalledTimes(0);
   expect(store.getState().connections.devices).toEqual([device]);
 
-  // calling destroy explicitly defeats the point of this test a bit,
-  // but we now print an error rather than proactively destroying the device,
-  // see https://github.com/facebook/flipper/issues/1989
-  destroyDevice(store, logger, device.serial);
   // submit a new device with same serial
-  const device2 = new BaseDevice(
+  const device2 = new TestDevice(
     device.serial,
     'physical',
     'MockAndroidDevice',

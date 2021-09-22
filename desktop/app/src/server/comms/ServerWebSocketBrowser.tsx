@@ -76,11 +76,6 @@ class ServerWebSocketBrowser extends ServerWebSocketBase {
       Object.values(clients).map((p) =>
         p.then((c) => this.listener.onConnectionClosed(c.id)),
       );
-      // TODO: destroy device.
-      // This seems to be the only case in which a device gets destroyed when there's a disconnection
-      // or error on the transport layer.
-      //
-      // destroyDevice(this.store, this.logger, deviceId);
     };
 
     /**

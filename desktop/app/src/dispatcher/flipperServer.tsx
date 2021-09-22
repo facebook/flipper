@@ -10,16 +10,16 @@
 import React from 'react';
 import {Store} from '../reducers/index';
 import {Logger} from '../fb-interfaces/Logger';
-import {FlipperServer} from '../server/FlipperServer';
+import {FlipperServerImpl} from '../server/FlipperServerImpl';
 import {selectClient, selectDevice} from '../reducers/connections';
 import Client from '../Client';
 import {notification} from 'antd';
-import BaseDevice from '../server/devices/BaseDevice';
+import BaseDevice from '../devices/BaseDevice';
 
 export default async (store: Store, logger: Logger) => {
   const {enableAndroid, androidHome, idbPath, enableIOS, enablePhysicalIOS} =
     store.getState().settingsState;
-  const server = new FlipperServer(
+  const server = new FlipperServerImpl(
     {
       enableAndroid,
       androidHome,
@@ -69,23 +69,22 @@ export default async (store: Store, logger: Logger) => {
     });
   });
 
-  server.on('device-connected', (device) => {
+  server.on('device-connected', (deviceInfo) => {
     logger.track('usage', 'register-device', {
-      os: device.os,
-      name: device.title,
-      serial: device.serial,
+      os: deviceInfo.os,
+      name: deviceInfo.title,
+      serial: deviceInfo.serial,
     });
 
-    // TODO: fixed later in this stack
-    (device as BaseDevice).loadDevicePlugins(
+    const device = new BaseDevice(server, deviceInfo);
+    device.loadDevicePlugins(
       store.getState().plugins.devicePlugins,
       store.getState().connections.enabledDevicePlugins,
     );
 
     store.dispatch({
       type: 'REGISTER_DEVICE',
-      // TODO: fixed later in this stack
-      payload: device as any,
+      payload: device,
     });
   });
 

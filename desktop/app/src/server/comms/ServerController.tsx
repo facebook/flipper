@@ -21,7 +21,7 @@ import invariant from 'invariant';
 import GK from '../../fb-stubs/GK';
 import {buildClientId} from '../../utils/clientUtils';
 import DummyDevice from '../../server/devices/DummyDevice';
-import BaseDevice from '../../server/devices/BaseDevice';
+import BaseDevice from '../../devices/BaseDevice';
 import {sideEffect} from '../../utils/sideEffect';
 import {
   appNameWithUpdateHint,
@@ -36,7 +36,7 @@ import {
   createServer,
   TransportType,
 } from './ServerFactory';
-import {FlipperServer} from '../FlipperServer';
+import {FlipperServerImpl} from '../FlipperServerImpl';
 import {isTest} from '../../utils/isProduction';
 import {timeout} from 'flipper-plugin';
 
@@ -77,11 +77,11 @@ class ServerController extends EventEmitter implements ServerEventsListener {
   certificateProvider: CertificateProvider;
   connectionTracker: ConnectionTracker;
 
-  flipperServer: FlipperServer;
+  flipperServer: FlipperServerImpl;
 
   timeHandlers: Map<string, NodeJS.Timeout> = new Map();
 
-  constructor(flipperServer: FlipperServer) {
+  constructor(flipperServer: FlipperServerImpl) {
     super();
     this.flipperServer = flipperServer;
     this.connections = new Map();
@@ -247,6 +247,7 @@ class ServerController extends EventEmitter implements ServerEventsListener {
     if (transformedMedium === 'WWW' || transformedMedium === 'NONE') {
       this.flipperServer.registerDevice(
         new DummyDevice(
+          this.flipperServer,
           clientQuery.device_id,
           clientQuery.app +
             (transformedMedium === 'WWW' ? ' Server Exchanged' : ''),

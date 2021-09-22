@@ -75,6 +75,7 @@ export function devicePlugin(client: PluginClient<{}, {}>) {
   const device = client.device;
 
   const executeShell = async (command: string) => {
+    // TODO: fix
     return new Promise<string>((resolve, reject) => {
       (device.realDevice as any).adb
         .shell(device.serial, command)

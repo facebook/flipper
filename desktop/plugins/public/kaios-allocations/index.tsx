@@ -8,7 +8,7 @@
  */
 
 import React from 'react';
-import {FlipperDevicePlugin, Device, KaiOSDevice} from 'flipper';
+import {FlipperDevicePlugin, Device} from 'flipper';
 
 import {
   Button,
@@ -186,7 +186,7 @@ export default class AllocationsPlugin extends FlipperDevicePlugin<
   };
 
   static supportsDevice(device: Device) {
-    return device instanceof KaiOSDevice;
+    return device.description.specs?.includes('KaiOS') ?? false;
   }
 
   onStartMonitor = async () => {

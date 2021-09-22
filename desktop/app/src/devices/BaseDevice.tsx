@@ -18,9 +18,12 @@ import {
   createState,
   getFlipperLib,
   DeviceOS,
+  DeviceDescription,
+  FlipperServer,
 } from 'flipper-plugin';
 import {DeviceSpec, PluginDetails} from 'flipper-plugin-lib';
-import {getPluginKey} from '../../utils/pluginKey';
+import {getPluginKey} from '../utils/pluginKey';
+import {Base64} from 'js-base64';
 
 export type DeviceShell = {
   stdout: stream.Readable;
@@ -40,37 +43,40 @@ export type DeviceExport = {
 };
 
 export default class BaseDevice {
+  description: DeviceDescription;
+  flipperServer: FlipperServer;
   isArchived = false;
   hasDevicePlugins = false; // true if there are device plugins for this device (not necessarily enabled)
 
-  constructor(
-    serial: string,
-    deviceType: DeviceType,
-    title: string,
-    os: DeviceOS,
-    specs: DeviceSpec[] = [],
-  ) {
-    this.serial = serial;
-    this.title = title;
-    this.deviceType = deviceType;
-    this.os = os;
-    this.specs = specs;
+  constructor(flipperServer: FlipperServer, description: DeviceDescription) {
+    this.flipperServer = flipperServer;
+    this.description = description;
   }
 
   // operating system of this device
-  os: DeviceOS;
+  get os() {
+    return this.description.os;
+  }
 
   // human readable name for this device
-  title: string;
+  get title(): string {
+    return this.description.title;
+  }
 
   // type of this device
-  deviceType: DeviceType;
+  get deviceType() {
+    return this.description.deviceType;
+  }
 
   // serial number for this device
-  serial: string;
+  get serial() {
+    return this.description.serial;
+  }
 
   // additional device specs used for plugin compatibility checks
-  specs: DeviceSpec[];
+  get specs(): DeviceSpec[] {
+    return this.description.specs ?? [];
+  }
 
   // possible src of icon to display next to the device title
   icon: string | null | undefined;
@@ -127,12 +133,34 @@ export default class BaseDevice {
     };
   }
 
-  startLogging() {
-    // to be subclassed
+  private deviceLogEventHandler = (payload: {
+    serial: string;
+    entry: DeviceLogEntry;
+  }) => {
+    if (payload.serial === this.serial && this.logListeners.size > 0) {
+      this.addLogEntry(payload.entry);
+    }
+  };
+
+  addLogEntry(entry: DeviceLogEntry) {
+    this.logListeners.forEach((listener) => {
+      // prevent breaking other listeners, if one listener doesn't work.
+      try {
+        listener(entry);
+      } catch (e) {
+        console.error(`Log listener exception:`, e);
+      }
+    });
+  }
+
+  async startLogging() {
+    await this.flipperServer.exec('device-start-logging', this.serial);
+    this.flipperServer.on('device-log', this.deviceLogEventHandler);
   }
 
   stopLogging() {
-    // to be subclassed
+    this.flipperServer.off('device-log', this.deviceLogEventHandler);
+    return this.flipperServer.exec('device-stop-logging', this.serial);
   }
 
   addLogListener(callback: DeviceLogListener): Symbol {
@@ -142,23 +170,6 @@ export default class BaseDevice {
     const id = Symbol();
     this.logListeners.set(id, callback);
     return id;
-  }
-
-  _notifyLogListeners(entry: DeviceLogEntry) {
-    if (this.logListeners.size > 0) {
-      this.logListeners.forEach((listener) => {
-        // prevent breaking other listeners, if one listener doesn't work.
-        try {
-          listener(entry);
-        } catch (e) {
-          console.error(`Log listener exception:`, e);
-        }
-      });
-    }
-  }
-
-  addLogEntry(entry: DeviceLogEntry) {
-    this._notifyLogListeners(entry);
   }
 
   removeLogListener(id: Symbol) {
@@ -172,22 +183,48 @@ export default class BaseDevice {
     throw new Error('unimplemented');
   }
 
-  screenshot(): Promise<Buffer> {
-    return Promise.reject(
-      new Error('No screenshot support for current device'),
+  async screenshotAvailable(): Promise<boolean> {
+    if (this.isArchived) {
+      return false;
+    }
+    return this.flipperServer.exec('device-supports-screenshot', this.serial);
+  }
+
+  async screenshot(): Promise<Buffer> {
+    if (this.isArchived) {
+      return Buffer.from([]);
+    }
+    return Buffer.from(
+      Base64.toUint8Array(
+        await this.flipperServer.exec('device-take-screenshot', this.serial),
+      ),
     );
   }
 
   async screenCaptureAvailable(): Promise<boolean> {
-    return false;
+    if (this.isArchived) {
+      return false;
+    }
+    return this.flipperServer.exec(
+      'device-supports-screencapture',
+      this.serial,
+    );
   }
 
-  async startScreenCapture(_destination: string): Promise<void> {
-    throw new Error('startScreenCapture not implemented on BaseDevice ');
+  async startScreenCapture(destination: string): Promise<void> {
+    return this.flipperServer.exec(
+      'device-start-screencapture',
+      this.serial,
+      destination,
+    );
   }
 
   async stopScreenCapture(): Promise<string | null> {
-    return null;
+    return this.flipperServer.exec('device-stop-screencapture', this.serial);
+  }
+
+  async executeShell(command: string): Promise<string> {
+    return this.flipperServer.exec('device-shell-exec', this.serial, command);
   }
 
   supportsPlugin(plugin: PluginDefinition | PluginDetails) {

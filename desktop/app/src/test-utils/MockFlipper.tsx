@@ -8,7 +8,7 @@
  */
 
 import {createStore} from 'redux';
-import BaseDevice from '../server/devices/BaseDevice';
+import BaseDevice from '../devices/BaseDevice';
 import {createRootReducer} from '../reducers';
 import {Store} from '../reducers/index';
 import Client from '../Client';
@@ -24,8 +24,9 @@ import {getInstance} from '../fb-stubs/Logger';
 import {initializeFlipperLibImplementation} from '../utils/flipperLibImplementation';
 import pluginManager from '../dispatcher/pluginManager';
 import {PluginDetails} from 'flipper-plugin-lib';
-import ArchivedDevice from '../server/devices/ArchivedDevice';
+import ArchivedDevice from '../devices/ArchivedDevice';
 import {ClientQuery, DeviceOS} from 'flipper-plugin';
+import {TestDevice} from './TestDevice';
 
 export interface AppOptions {
   plugins?: PluginDefinition[];
@@ -129,7 +130,7 @@ export default class MockFlipper {
           title: 'archived device',
           os: 'Android',
         })
-      : new BaseDevice(s, 'physical', 'MockAndroidDevice', os ?? 'Android');
+      : new TestDevice(s, 'physical', 'MockAndroidDevice', os ?? 'Android');
     device.supportsPlugin = !isSupportedByPlugin
       ? () => true
       : isSupportedByPlugin;

@@ -69,7 +69,6 @@ export interface RealFlipperDevice {
   deviceType: DeviceType;
   addLogListener(callback: DeviceLogListener): Symbol;
   removeLogListener(id: Symbol): void;
-  addLogEntry(entry: DeviceLogEntry): void;
 }
 
 export class SandyDevicePluginInstance extends BasePluginInstance {

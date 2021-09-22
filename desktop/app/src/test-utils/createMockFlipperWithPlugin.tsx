@@ -21,7 +21,7 @@ import {
   selectDevice,
   selectClient,
 } from '../reducers/connections';
-import BaseDevice from '../server/devices/BaseDevice';
+import BaseDevice from '../devices/BaseDevice';
 
 import {Store} from '../reducers/index';
 import Client from '../Client';
