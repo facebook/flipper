@@ -30,7 +30,7 @@ export function devicePlugin(client: DevicePluginClient) {
     },
   );
 
-  client.device.onLogEntry((entry) => {
+  client.onDeviceLogEntry((entry) => {
     state.update((d) => {
       d.count++;
     });

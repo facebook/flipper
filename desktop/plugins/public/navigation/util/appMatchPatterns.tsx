@@ -9,8 +9,9 @@
 
 import fs from 'fs';
 import path from 'path';
-import {BaseDevice, getAppPath} from 'flipper';
+import {getAppPath} from 'flipper';
 import {AppMatchPattern} from '../types';
+import {Device} from 'flipper-plugin';
 
 let patternsPath: string | undefined;
 
@@ -28,7 +29,7 @@ const extractAppNameFromSelectedApp = (selectedApp: string | null) => {
 
 export const getAppMatchPatterns = (
   selectedApp: string | null,
-  device: BaseDevice,
+  device: Device,
 ) => {
   return new Promise<Array<AppMatchPattern>>((resolve, reject) => {
     const appName = extractAppNameFromSelectedApp(selectedApp);

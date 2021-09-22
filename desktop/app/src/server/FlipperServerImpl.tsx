@@ -251,6 +251,11 @@ export class FlipperServerImpl implements FlipperServer {
       this.getDevice(serial).stopScreenCapture(),
     'device-shell-exec': async (serial: string, command: string) =>
       this.getDevice(serial).executeShell(command),
+    'device-forward-port': async (serial, local, remote) =>
+      this.getDevice(serial).forwardPort(local, remote),
+    'device-clear-logs': async (serial) => this.getDevice(serial).clearLogs(),
+    'device-navigate': async (serial, loc) =>
+      this.getDevice(serial).navigateToLocation(loc),
     'metro-command': async (serial: string, command: string) => {
       const device = this.getDevice(serial);
       if (!(device instanceof MetroDevice)) {
@@ -258,8 +263,6 @@ export class FlipperServerImpl implements FlipperServer {
       }
       device.sendCommand(command);
     },
-    'device-forward-port': async (serial, local, remote) =>
-      this.getDevice(serial).forwardPort(local, remote),
   };
 
   registerDevice(device: ServerDevice) {

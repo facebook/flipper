@@ -126,7 +126,7 @@ export default class AndroidDevice extends ServerDevice {
     return this.executeShellOrDie(['logcat', '-c']);
   }
 
-  navigateToLocation(location: string) {
+  async navigateToLocation(location: string) {
     const shellCommand = `am start ${encodeURI(location)}`;
     this.adb.shell(this.serial, shellCommand);
   }
@@ -264,7 +264,7 @@ export default class AndroidDevice extends ServerDevice {
     return destination;
   }
 
-  async forwardPort(local: string, remote: string): Promise<void> {
+  async forwardPort(local: string, remote: string): Promise<boolean> {
     return this.adb.forward(this.serial, local, remote);
   }
 

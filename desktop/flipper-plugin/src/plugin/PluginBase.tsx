@@ -12,7 +12,7 @@ import {EventEmitter} from 'events';
 import {SandyPluginDefinition} from './SandyPluginDefinition';
 import {MenuEntry, NormalizedMenuEntry, normalizeMenuEntry} from './MenuEntry';
 import {FlipperLib} from './FlipperLib';
-import {Device, RealFlipperDevice} from './DevicePlugin';
+import {Device, DeviceLogListener} from './DevicePlugin';
 import {batched} from '../state/batch';
 import {Idler} from '../utils/Idler';
 import {Notification} from './Notification';
@@ -77,6 +77,12 @@ export interface BasePluginClient {
    * Register menu entries in the Flipper toolbar
    */
   addMenuEntry(...entry: MenuEntry[]): void;
+
+  /**
+   * Listener that is triggered if the underlying device emits a log message.
+   * Listeners established with this mechanism will automatically be cleaned up during destroy
+   */
+  onDeviceLogEntry(cb: DeviceLogListener): () => void;
 
   /**
    * Creates a Paste (similar to a Github Gist).
@@ -186,7 +192,7 @@ export abstract class BasePluginInstance {
   constructor(
     flipperLib: FlipperLib,
     definition: SandyPluginDefinition,
-    realDevice: RealFlipperDevice,
+    device: Device,
     pluginKey: string,
     initialStates?: Record<string, any>,
   ) {
@@ -194,32 +200,10 @@ export abstract class BasePluginInstance {
     this.definition = definition;
     this.initialStates = initialStates;
     this.pluginKey = pluginKey;
-    if (!realDevice) {
+    if (!device) {
       throw new Error('Illegal State: Device has not yet been loaded');
     }
-    this.device = {
-      realDevice, // TODO: temporarily, clean up T70688226
-      // N.B. we model OS as string, not as enum, to make custom device types possible in the future
-      os: realDevice.os,
-      serial: realDevice.serial,
-      get isArchived() {
-        return realDevice.isArchived;
-      },
-      get isConnected() {
-        return realDevice.connected.get();
-      },
-      deviceType: realDevice.deviceType,
-      onLogEntry: (cb) => {
-        const handle = realDevice.addLogListener(cb);
-        this.logListeners.push(handle);
-        return () => {
-          realDevice.removeLogListener(handle);
-        };
-      },
-      executeShell(command: string): Promise<string> {
-        return realDevice.executeShell(command);
-      },
-    };
+    this.device = device;
   }
 
   protected initializePlugin(factory: () => any) {
@@ -325,6 +309,13 @@ export abstract class BasePluginInstance {
           }
         }
       },
+      onDeviceLogEntry: (cb: DeviceLogListener): (() => void) => {
+        const handle = this.device.addLogListener(cb);
+        this.logListeners.push(handle);
+        return () => {
+          this.device.removeLogListener(handle);
+        };
+      },
       writeTextToClipboard: this.flipperLib.writeTextToClipboard,
       createPaste: this.flipperLib.createPaste,
       isFB: this.flipperLib.isFB,
@@ -364,7 +355,7 @@ export abstract class BasePluginInstance {
     this.assertNotDestroyed();
     this.deactivate();
     this.logListeners.splice(0).forEach((handle) => {
-      this.device.realDevice.removeLogListener(handle);
+      this.device.removeLogListener(handle);
     });
     this.events.emit('destroy');
     this.destroyed = true;

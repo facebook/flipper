@@ -20,6 +20,7 @@ import {
   DeviceOS,
   DeviceDescription,
   FlipperServer,
+  Device,
 } from 'flipper-plugin';
 import {DeviceSpec, PluginDetails} from 'flipper-plugin-lib';
 import {getPluginKey} from '../utils/pluginKey';
@@ -42,7 +43,7 @@ export type DeviceExport = {
   pluginStates: Record<string, any>;
 };
 
-export default class BaseDevice {
+export default class BaseDevice implements Device {
   description: DeviceDescription;
   flipperServer: FlipperServer;
   isArchived = false;
@@ -51,6 +52,10 @@ export default class BaseDevice {
   constructor(flipperServer: FlipperServer, description: DeviceDescription) {
     this.flipperServer = flipperServer;
     this.description = description;
+  }
+
+  get isConnected(): boolean {
+    return this.connected.get();
   }
 
   // operating system of this device
@@ -181,8 +186,8 @@ export default class BaseDevice {
     }
   }
 
-  navigateToLocation(_location: string) {
-    throw new Error('unimplemented');
+  async navigateToLocation(location: string) {
+    return this.flipperServer.exec('device-navigate', this.serial, location);
   }
 
   async screenshotAvailable(): Promise<boolean> {
@@ -233,13 +238,17 @@ export default class BaseDevice {
     return this.flipperServer.exec('metro-command', this.serial, command);
   }
 
-  async forwardPort(local: string, remote: string): Promise<void> {
+  async forwardPort(local: string, remote: string): Promise<boolean> {
     return this.flipperServer.exec(
       'device-forward-port',
       this.serial,
       local,
       remote,
     );
+  }
+
+  async clearLogs() {
+    return this.flipperServer.exec('device-clear-logs', this.serial);
   }
 
   supportsPlugin(plugin: PluginDefinition | PluginDetails) {

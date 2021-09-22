@@ -70,7 +70,15 @@ export abstract class ServerDevice {
     throw new Error('executeShell not implemented on BaseDevice');
   }
 
-  async forwardPort(_local: string, _remote: string): Promise<void> {
+  async forwardPort(_local: string, _remote: string): Promise<boolean> {
     throw new Error('forwardPort not implemented on BaseDevice');
+  }
+
+  async clearLogs(): Promise<void> {
+    // no-op on most devices
+  }
+
+  async navigateToLocation(_location: string) {
+    throw new Error('navigateLocation not implemented on BaseDevice');
   }
 }

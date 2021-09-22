@@ -73,7 +73,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
       draft.unshift(navigationEvent);
     });
 
-    const screenshot: Buffer = await client.device.realDevice.screenshot();
+    const screenshot: Buffer = await client.device.screenshot();
     const blobURL = URL.createObjectURL(bufferToBlob(screenshot));
     // this process is async, make sure we update the correct one..
     const navigationEventIndex = navigationEvents
@@ -86,7 +86,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
     }
   });
 
-  getAppMatchPatterns(client.appId, client.device.realDevice)
+  getAppMatchPatterns(client.appId, client.device)
     .then((patterns) => {
       appMatchPatterns.set(patterns);
     })
@@ -111,7 +111,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
           url: filterOptionalParameters(filteredQuery),
         });
       } else {
-        client.device.realDevice.navigateToLocation(
+        client.device.navigateToLocation(
           filterOptionalParameters(filteredQuery),
         );
       }

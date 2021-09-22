@@ -87,7 +87,9 @@ export type FlipperServerCommands = {
     serial: string,
     local: string,
     remote: string,
-  ) => Promise<void>;
+  ) => Promise<boolean>;
+  'device-clear-logs': (serial: string) => Promise<void>;
+  'device-navigate': (serial: string, location: string) => Promise<void>;
   'metro-command': (serial: string, command: string) => Promise<void>;
 };
 

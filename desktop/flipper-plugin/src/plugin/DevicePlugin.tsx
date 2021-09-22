@@ -35,14 +35,21 @@ export type LogLevel =
   | 'fatal';
 
 export interface Device {
-  readonly realDevice: any; // TODO: temporarily, clean up T70688226
   readonly isArchived: boolean;
   readonly isConnected: boolean;
   readonly os: DeviceOS;
   readonly serial: string;
   readonly deviceType: DeviceType;
-  onLogEntry(cb: DeviceLogListener): () => void;
+  readonly connected: Atom<boolean>;
   executeShell(command: string): Promise<string>;
+  addLogListener(callback: DeviceLogListener): Symbol;
+  removeLogListener(id: Symbol): void;
+  executeShell(command: string): Promise<string>;
+  forwardPort(local: string, remote: string): Promise<boolean>;
+  clearLogs(): Promise<void>;
+  sendMetroCommand(command: string): Promise<void>;
+  navigateToLocation(location: string): Promise<void>;
+  screenshot(): Promise<Buffer>;
 }
 
 export type DevicePluginPredicate = (device: Device) => boolean;
@@ -59,20 +66,6 @@ export interface DevicePluginClient extends BasePluginClient {
   readonly connected: ReadOnlyAtom<boolean>;
 }
 
-/**
- * Wrapper interface around BaseDevice in Flipper
- */
-export interface RealFlipperDevice {
-  os: DeviceOS;
-  serial: string;
-  isArchived: boolean;
-  connected: Atom<boolean>;
-  deviceType: DeviceType;
-  addLogListener(callback: DeviceLogListener): Symbol;
-  removeLogListener(id: Symbol): void;
-  executeShell(command: string): Promise<string>;
-}
-
 export class SandyDevicePluginInstance extends BasePluginInstance {
   static is(thing: any): thing is SandyDevicePluginInstance {
     return thing instanceof SandyDevicePluginInstance;
@@ -84,20 +77,20 @@ export class SandyDevicePluginInstance extends BasePluginInstance {
   constructor(
     flipperLib: FlipperLib,
     definition: SandyPluginDefinition,
-    realDevice: RealFlipperDevice,
+    device: Device,
     pluginKey: string,
     initialStates?: Record<string, any>,
   ) {
-    super(flipperLib, definition, realDevice, pluginKey, initialStates);
+    super(flipperLib, definition, device, pluginKey, initialStates);
     this.client = {
       ...this.createBasePluginClient(),
       selectPlugin(pluginId: string, deeplink?: unknown) {
-        flipperLib.selectPlugin(realDevice, null, pluginId, deeplink);
+        flipperLib.selectPlugin(device, null, pluginId, deeplink);
       },
       get isConnected() {
-        return realDevice.connected.get();
+        return device.connected.get();
       },
-      connected: realDevice.connected,
+      connected: device.connected,
     };
     this.initializePlugin(() =>
       definition.asDevicePluginModule().devicePlugin(this.client),

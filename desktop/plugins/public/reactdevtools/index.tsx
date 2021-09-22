@@ -29,10 +29,6 @@ const DEV_TOOLS_NODE_ID = 'reactdevtools-out-of-react-node';
 const CONNECTED = 'DevTools connected';
 const DEV_TOOLS_PORT = 8097; // hardcoded in RN
 
-interface MetroDevice {
-  sendMetroCommand(command: string, params?: any): void;
-}
-
 function findGlobalDevTools(): Promise<string | undefined> {
   return new Promise((resolve) => {
     child_process.exec('npm root -g', (error, basePath) => {
@@ -64,10 +60,7 @@ enum ConnectionStatus {
 }
 
 export function devicePlugin(client: DevicePluginClient) {
-  const metroDevice: MetroDevice = client.device.realDevice;
-  if (!metroDevice.sendMetroCommand) {
-    throw new Error('Invalid metroDevice');
-  }
+  const metroDevice = client.device;
 
   const statusMessage = createState('initializing');
   const connectionStatus = createState<ConnectionStatus>(

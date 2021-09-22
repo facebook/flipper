@@ -71,7 +71,7 @@ export default class IOSDevice extends ServerDevice {
     return await this.iOSBridge.screenshot(this.serial);
   }
 
-  navigateToLocation(location: string) {
+  async navigateToLocation(location: string) {
     return this.iOSBridge.navigate(this.serial, location).catch((err) => {
       console.warn(`Failed to navigate to location ${location}:`, err);
       return err;

@@ -1333,7 +1333,7 @@ const sandyDeviceTestPlugin = new _SandyPluginDefinition(
       const _somethingElse = createState(0);
       const anotherState = createState({testCount: 0}, {persist: 'otherState'});
 
-      client.device.onLogEntry(() => {
+      client.onDeviceLogEntry(() => {
         counter.set(counter.get() + 1);
         anotherState.update((draft) => {
           draft.testCount -= 1;

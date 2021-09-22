@@ -197,7 +197,7 @@ test('log listeners are resumed and suspended automatically - 1', async () => {
       let disposer: any;
 
       function start() {
-        disposer = client.device.onLogEntry((entry) => {
+        disposer = client.onDeviceLogEntry((entry) => {
           entries.push(entry);
         });
       }
@@ -258,7 +258,7 @@ test('log listeners are resumed and suspended automatically - 2', async () => {
 
   const DevicePlugin = TestUtils.createTestDevicePlugin({
     devicePlugin(client) {
-      client.device.onLogEntry((entry) => {
+      client.onDeviceLogEntry((entry) => {
         entries.push(entry);
       });
       return {};
@@ -268,7 +268,7 @@ test('log listeners are resumed and suspended automatically - 2', async () => {
   const Plugin = TestUtils.createTestPlugin(
     {
       plugin(client) {
-        client.device.onLogEntry((entry) => {
+        client.onDeviceLogEntry((entry) => {
           entries.push(entry);
         });
         return {};
