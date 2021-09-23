@@ -306,17 +306,21 @@ export default class BaseDevice implements Device {
     }
     this.hasDevicePlugins = true;
     if (plugin instanceof _SandyPluginDefinition) {
-      this.sandyPluginStates.set(
-        plugin.id,
-        new _SandyDevicePluginInstance(
-          getFlipperLib(),
-          plugin,
-          this,
-          // break circular dep, one of those days again...
-          getPluginKey(undefined, {serial: this.serial}, plugin.id),
-          initialState,
-        ),
-      );
+      try {
+        this.sandyPluginStates.set(
+          plugin.id,
+          new _SandyDevicePluginInstance(
+            getFlipperLib(),
+            plugin,
+            this,
+            // break circular dep, one of those days again...
+            getPluginKey(undefined, {serial: this.serial}, plugin.id),
+            initialState,
+          ),
+        );
+      } catch (e) {
+        console.error(`Failed to start device plugin '${plugin.id}': `, e);
+      }
     }
   }
 
