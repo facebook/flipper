@@ -24,6 +24,8 @@ jobs:
         java-version: 1.8
     - name: Write GPG Sec Ring
       run: echo '${{ secrets.GPG_KEY_CONTENTS }}' | base64 -d > /tmp/secring.gpg
+    - name: FAIL
+      run: exit 1
     - name: Update gradle.properties
       run: echo -e "signing.secretKeyRingFile=/tmp/secring.gpg\nsigning.keyId=${{ secrets.SIGNING_KEY_ID }}\nsigning.password=${{ secrets.SIGNING_PASSWORD }}\nmavenCentralPassword=${{ secrets.SONATYPE_NEXUS_PASSWORD }}\nmavenCentralUsername=${{ secrets.SONATYPE_NEXUS_USERNAME }}" >> gradle.properties
     - name: Compute build cache
@@ -54,3 +56,12 @@ jobs:
       with:
         created_tag: ${{ github.event.inputs.tag }}
         args: 'SampleApp-android.apk'
+    - name: Open issue on failure
+      if: failure()
+      uses: JasonEtco/create-an-issue@v2.4.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        REPOSITORY: ${{ github.repository }}
+        RUN_ID: ${{ github.run_id }}
+      with:
+        filename: .github/action-failure-template.md
