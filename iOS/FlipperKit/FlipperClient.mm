@@ -107,8 +107,8 @@ using WrapperPlugin = facebook::flipper::FlipperCppWrapperPlugin;
       _cppClient = facebook::flipper::FlipperClient::instance();
 
       // To switch to a websocket provider, uncomment the line below.
-      // facebook::flipper::FlipperSocketProvider::setDefaultProvider(
-      //     std::make_unique<facebook::flipper::FlipperWebSocketProvider>());
+      facebook::flipper::FlipperSocketProvider::setDefaultProvider(
+          std::make_unique<facebook::flipper::FlipperWebSocketProvider>());
 
     } catch (const std::system_error& e) {
       // Probably ran out of disk space.
