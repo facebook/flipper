@@ -84,7 +84,7 @@
   },
   "devDependencies": {
     "@testing-library/dom": "^8.2.0",
-    "@testing-library/react": "^12.0.0",
+    "@testing-library/react": "^12.1.0",
     "@types/lodash.memoize": "^4.1.6",
     "@types/split2": "^3.2.1",
     "flipper-test-utils": "0.0.0",
