@@ -61,6 +61,8 @@ class FlipperConnectionManagerImpl : public FlipperConnectionManager {
   std::shared_ptr<FlipperState> flipperState_;
   int insecurePort;
   int securePort;
+  int altInsecurePort;
+  int altSecurePort;
 
   folly::EventBase* flipperEventBase_;
   folly::EventBase* connectionEventBase_;
@@ -71,6 +73,14 @@ class FlipperConnectionManagerImpl : public FlipperConnectionManager {
   bool certificateExchangeCompleted_ = false;
 
   int failedConnectionAttempts_ = 0;
+  int failedSocketConnectionAttempts = 0;
+
+#ifdef __APPLE__
+  bool useLegacySocketProvider = false;
+#else
+  bool useLegacySocketProvider = true;
+#endif
+
   std::shared_ptr<ConnectionContextStore> contextStore_;
   std::shared_ptr<FlipperConnectionManagerWrapper> implWrapper_;
 
@@ -81,6 +91,7 @@ class FlipperConnectionManagerImpl : public FlipperConnectionManager {
   void requestSignedCertFromFlipper();
   bool isRunningInOwnThread();
   void sendLegacyCertificateRequest(folly::dynamic message);
+  void reevaluateSocketProvider();
   std::string getDeviceId();
 };
 

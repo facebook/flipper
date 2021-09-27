@@ -66,8 +66,19 @@ class FlipperSocketProvider {
   static void setDefaultProvider(
       std::unique_ptr<FlipperSocketProvider> provider);
 
+  /**
+    Shelves the current default socket provider and promotes the internal
+    socket provider as default.
+   */
+  static void shelveDefault();
+  /**
+    Restores a previously shelved socket provider.
+   */
+  static void unshelveDefault();
+
  private:
   static std::unique_ptr<FlipperSocketProvider> provider_;
+  static std::unique_ptr<FlipperSocketProvider> shelvedProvider_;
 };
 
 } // namespace flipper

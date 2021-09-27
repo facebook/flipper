@@ -195,7 +195,16 @@ static constexpr int connectionKeepaliveSeconds = 10;
 }
 
 - (void)webSocket:(SRWebSocket*)webSocket didFailWithError:(NSError*)error {
-  _eventHandler(facebook::flipper::SocketEvent::ERROR);
+  /** Check for the error domain and code. Need to filter out SSL handshake
+    errors and dispatch them accordingly. CFNetwork SSLHandshake failed:
+    - Domain: NSOSStatusErrorDomain
+    - Code: -9806
+   */
+  if ([[error domain] isEqual:NSOSStatusErrorDomain] && [error code] == -9806) {
+    _eventHandler(facebook::flipper::SocketEvent::SSL_ERROR);
+  } else {
+    _eventHandler(facebook::flipper::SocketEvent::ERROR);
+  }
   _socket = nil;
 }
 
