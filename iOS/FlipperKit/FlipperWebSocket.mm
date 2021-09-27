@@ -169,7 +169,8 @@ bool FlipperWebSocket::connect(FlipperConnectionManager* manager) {
         promise.set_value(false);
       }
     }
-    eventHandler(event);
+    eventBase_->runInEventBaseThread(
+        [eventHandler, event]() { eventHandler(event); });
   };
   socket_.messageHandler = ^(const std::string& message) {
     this->messageHandler_(message);
@@ -187,7 +188,7 @@ bool FlipperWebSocket::connect(FlipperConnectionManager* manager) {
     };
   }
 
-  eventBase_->runInEventBaseThread([this]() { [socket_ connect]; });
+  [socket_ connect];
 
   auto state = connected.wait_for(std::chrono::seconds(10));
   if (state == std::future_status::ready) {
@@ -199,10 +200,8 @@ bool FlipperWebSocket::connect(FlipperConnectionManager* manager) {
 }
 
 void FlipperWebSocket::disconnect() {
-  eventBase_->runInEventBaseThread([this]() {
-    [socket_ disconnect];
-    socket_ = NULL;
-  });
+  [socket_ disconnect];
+  socket_ = NULL;
 }
 
 void FlipperWebSocket::send(
