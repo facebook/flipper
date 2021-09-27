@@ -76,6 +76,21 @@ export default async (store: Store, logger: Logger) => {
       serial: deviceInfo.serial,
     });
 
+    const existing = store
+      .getState()
+      .connections.devices.find(
+        (device) => device.serial === deviceInfo.serial,
+      );
+    // handled outside reducer, as it might emit new redux actions...
+    if (existing) {
+      if (existing.connected.get()) {
+        console.warn(
+          `Tried to replace still connected device '${existing.serial}' with a new instance.`,
+        );
+      }
+      existing.destroy();
+    }
+
     const device = new BaseDevice(server, deviceInfo);
     device.loadDevicePlugins(
       store.getState().plugins.devicePlugins,
