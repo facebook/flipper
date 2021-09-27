@@ -68,4 +68,18 @@ export default class ArchivedDevice extends BaseDevice {
   getArchivedScreenshotHandle(): string | null {
     return this.archivedScreenshotHandle;
   }
+
+  /**
+   * @override
+   */
+  async startLogging() {
+    // No-op
+  }
+
+  /**
+   * @override
+   */
+  async stopLogging() {
+    // No-op
+  }
 }

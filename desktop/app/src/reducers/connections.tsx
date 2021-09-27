@@ -246,13 +246,8 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
       if (existing !== -1) {
         const d = newDevices[existing];
         if (d.connected.get()) {
-          console.warn(
-            `Tried to replace still connected device '${d.serial}' with a new instance`,
-          );
+          throw new Error(`Cannot register, '${d.serial}' is still connected`);
         }
-        setImmediate(() => {
-          d.destroy();
-        });
         newDevices[existing] = payload;
       } else {
         newDevices.push(payload);

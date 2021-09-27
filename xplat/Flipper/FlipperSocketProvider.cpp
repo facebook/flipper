@@ -38,8 +38,10 @@ class FlipperDefaultSocketProvider : public FlipperSocketProvider {
 std::unique_ptr<FlipperSocketProvider> FlipperSocketProvider::provider_ =
     std::make_unique<FlipperDefaultSocketProvider>();
 
-std::unique_ptr<FlipperSocket> FlipperSocketProvider::socketCreate(
+std::unique_ptr<FlipperSocketProvider> FlipperSocketProvider::shelvedProvider_ =
+    nullptr;
 
+std::unique_ptr<FlipperSocket> FlipperSocketProvider::socketCreate(
     FlipperConnectionEndpoint endpoint,
     std::unique_ptr<FlipperSocketBasePayload> payload,
     folly::EventBase* eventBase) {
@@ -61,6 +63,15 @@ std::unique_ptr<FlipperSocket> FlipperSocketProvider::socketCreate(
 void FlipperSocketProvider::setDefaultProvider(
     std::unique_ptr<FlipperSocketProvider> provider) {
   provider_ = std::move(provider);
+}
+
+void FlipperSocketProvider::shelveDefault() {
+  shelvedProvider_ = std::move(provider_);
+  provider_ = std::make_unique<FlipperDefaultSocketProvider>();
+}
+
+void FlipperSocketProvider::unshelveDefault() {
+  provider_ = std::move(shelvedProvider_);
 }
 
 } // namespace flipper
