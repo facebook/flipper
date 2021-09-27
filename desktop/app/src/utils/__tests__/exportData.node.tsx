@@ -31,6 +31,7 @@ import {
   PluginClient,
   DevicePluginClient,
   sleep,
+  Device,
 } from 'flipper-plugin';
 import {selectPlugin} from '../../reducers/connections';
 import {TestIdler} from '../Idler';
@@ -71,7 +72,7 @@ function generateNotifications(
   return {id, title, message, severity};
 }
 
-function generateClientIdentifier(device: TestDevice, app: string): string {
+function generateClientIdentifier(device: Device, app: string): string {
   const {os, deviceType, serial} = device;
   const identifier = `${app}#${os}#${deviceType}#${serial}`;
   return identifier;
@@ -97,10 +98,8 @@ function generateClientFromClientWithSalt(
     query: {app, os, device, device_id: salt + '-' + device_id},
   };
 }
-function generateClientFromDevice(
-  device: TestDevice,
-  app: string,
-): ClientExport {
+
+function generateClientFromDevice(device: Device, app: string): ClientExport {
   const {os, deviceType, serial} = device;
   const identifier = generateClientIdentifier(device, app);
   return {
