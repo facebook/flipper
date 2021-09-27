@@ -10,21 +10,19 @@
 import {ComponentType} from 'react';
 import {produce} from 'immer';
 
-import type BaseDevice from '../server/devices/BaseDevice';
-import MacDevice from '../server/devices/desktop/MacDevice';
+import type BaseDevice from '../devices/BaseDevice';
 import type Client from '../Client';
 import type {UninitializedClient} from '../server/UninitializedClient';
 import {performance} from 'perf_hooks';
-import type {Actions, Store} from '.';
+import type {Actions} from '.';
 import {WelcomeScreenStaticView} from '../sandy-chrome/WelcomeScreen';
 import {isDevicePluginDefinition} from '../utils/pluginUtils';
 import {getPluginKey} from '../utils/pluginKey';
 
 import {deconstructClientId} from '../utils/clientUtils';
 import type {RegisterPluginAction} from './plugins';
-import MetroDevice from '../server/devices/metro/MetroDevice';
-import {Logger} from 'flipper-plugin';
-import {FlipperServer} from '../server/FlipperServer';
+import {DeviceOS, Logger} from 'flipper-plugin';
+import {FlipperServerImpl} from '../server/FlipperServerImpl';
 import {shallowEqual} from 'react-redux';
 
 export type StaticViewProps = {logger: Logger};
@@ -77,7 +75,7 @@ type StateV2 = {
   deepLinkPayload: unknown;
   staticView: StaticView;
   selectedAppPluginListRevision: number;
-  flipperServer: FlipperServer | undefined;
+  flipperServer: FlipperServerImpl | undefined;
 };
 
 type StateV1 = Omit<StateV2, 'enabledPlugins' | 'enabledDevicePlugins'> & {
@@ -91,10 +89,6 @@ type StateV0 = Omit<StateV1, 'enabledPlugins' | 'enabledDevicePlugins'> & {
 };
 
 export type Action =
-  | {
-      type: 'UNREGISTER_DEVICES';
-      payload: Set<string>;
-    }
   | {
       type: 'REGISTER_DEVICE';
       payload: BaseDevice;
@@ -173,12 +167,12 @@ export type Action =
     }
   | {
       type: 'SET_FLIPPER_SERVER';
-      payload: FlipperServer;
+      payload: FlipperServerImpl;
     }
   | RegisterPluginAction;
 
 const DEFAULT_PLUGIN = 'DeviceLogs';
-const DEFAULT_DEVICE_BLACKLIST = [MacDevice, MetroDevice];
+const DEFAULT_DEVICE_BLACKLIST: DeviceOS[] = ['MacOS', 'Metro', 'Windows'];
 const INITAL_STATE: State = {
   devices: [],
   selectedDevice: null,
@@ -250,7 +244,10 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
         (device) => device.serial === payload.serial,
       );
       if (existing !== -1) {
-        newDevices[existing].destroy();
+        const d = newDevices[existing];
+        if (d.connected.get()) {
+          throw new Error(`Cannot register, '${d.serial}' is still connected`);
+        }
         newDevices[existing] = payload;
       } else {
         newDevices.push(payload);
@@ -260,28 +257,6 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
         ...state,
         devices: newDevices,
       });
-    }
-
-    // TODO: remove
-    case 'UNREGISTER_DEVICES': {
-      const deviceSerials = action.payload;
-
-      return updateSelection(
-        produce(state, (draft) => {
-          draft.devices = draft.devices.filter((device) => {
-            if (!deviceSerials.has(device.serial)) {
-              return true;
-            } else {
-              if (device.connected.get()) {
-                console.warn(
-                  'Tried to unregister a device before it was destroyed',
-                );
-              }
-              return false;
-            }
-          });
-        }),
-      );
     }
 
     case 'SELECT_PLUGIN': {
@@ -581,9 +556,7 @@ export function getClientById(
 }
 
 export function canBeDefaultDevice(device: BaseDevice) {
-  return !DEFAULT_DEVICE_BLACKLIST.some(
-    (blacklistedDevice) => device instanceof blacklistedDevice,
-  );
+  return !DEFAULT_DEVICE_BLACKLIST.includes(device.os);
 }
 
 /**
@@ -668,22 +641,4 @@ export function isPluginEnabled(
   const appInfo = deconstructClientId(app);
   const enabledAppPlugins = enabledPlugins[appInfo.app];
   return enabledAppPlugins && enabledAppPlugins.indexOf(pluginId) > -1;
-}
-
-// TODO: remove!
-export function destroyDevice(store: Store, logger: Logger, serial: string) {
-  const device = store
-    .getState()
-    .connections.devices.find((device) => device.serial === serial);
-  if (device) {
-    device.destroy();
-    logger.track('usage', 'unregister-device', {
-      os: device.os,
-      serial,
-    });
-    store.dispatch({
-      type: 'UNREGISTER_DEVICES',
-      payload: new Set([serial]),
-    });
-  }
 }

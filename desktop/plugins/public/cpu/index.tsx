@@ -74,17 +74,7 @@ function formatFrequency(freq: number) {
 export function devicePlugin(client: PluginClient<{}, {}>) {
   const device = client.device;
 
-  const executeShell = async (command: string) => {
-    return new Promise<string>((resolve, reject) => {
-      (device.realDevice as any).adb
-        .shell(device.serial, command)
-        .then(adb.util.readAll)
-        .then(function (output: {toString: () => {trim: () => string}}) {
-          resolve(output.toString().trim());
-        })
-        .catch((e: unknown) => reject(e));
-    });
-  };
+  const executeShell = async (command: string) => device.executeShell(command);
 
   let intervalID: NodeJS.Timer | null = null;
   const cpuState = createState<CPUState>({

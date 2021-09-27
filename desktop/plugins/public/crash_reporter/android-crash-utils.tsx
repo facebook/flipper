@@ -59,7 +59,7 @@ export function startAndroidCrashWatcher(
   let androidLog: string = '';
   let androidLogUnderProcess = false;
   let timer: null | NodeJS.Timeout = null;
-  client.device.onLogEntry((entry: DeviceLogEntry) => {
+  client.onDeviceLogEntry((entry: DeviceLogEntry) => {
     if (shouldParseAndroidLog(entry, referenceDate)) {
       if (androidLogUnderProcess) {
         androidLog += '\n' + entry.message;

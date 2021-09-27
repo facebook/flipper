@@ -154,6 +154,17 @@ bool FlipperWebSocket::connect(FlipperConnectionManager* manager) {
       fullfilled = true;
       if (event == SocketEvent::OPEN) {
         promise.set_value(true);
+      } else if (event == SocketEvent::SSL_ERROR) {
+        try {
+          promise.set_exception(
+              std::make_exception_ptr(folly::AsyncSocketException(
+                  folly::AsyncSocketException::SSL_ERROR,
+                  "SSL handshake failed")));
+        } catch (...) {
+          // set_exception() may throw an exception
+          // In that case, just set the value to false.
+          promise.set_value(false);
+        }
       } else {
         promise.set_value(false);
       }

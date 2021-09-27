@@ -28,6 +28,7 @@ import {useStore} from './useStore';
 import {setStaticView, StaticView} from '../reducers/connections';
 import {getStore} from '../store';
 import {setActiveNotifications} from '../reducers/notifications';
+import BaseDevice from '../devices/BaseDevice';
 
 export type SandyPluginModule = ConstructorParameters<
   typeof _SandyPluginDefinition
@@ -159,7 +160,7 @@ export function createSandyPluginWrapper<S, A extends BaseAction, P>(
 
     return {
       instanceRef,
-      device: client.device.realDevice,
+      device: client.device,
       persistedState,
       deeplink,
       selectPlugin: client.selectPlugin,
@@ -189,7 +190,8 @@ export function createSandyPluginWrapper<S, A extends BaseAction, P>(
     const settingsState = useStore((state) => state.settingsState);
 
     const target = isDevicePlugin
-      ? instance.device
+      ? // in the client, all Device's are BaseDevice, so this is safe..
+        (instance.device as BaseDevice)
       : // eslint-disable-next-line
           useStore((state) =>
           state.connections.clients.find((c) => c.id === instance.appId),

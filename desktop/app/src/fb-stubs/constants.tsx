@@ -7,7 +7,7 @@
  * @format
  */
 
-import {OS} from '../server/devices/BaseDevice';
+import {DeviceOS} from 'flipper-plugin';
 
 export default Object.freeze({
   GRAPH_APP_ID: '',
@@ -36,7 +36,7 @@ export default Object.freeze({
     workplaceGroupID: 0,
     requiredPlugins: ['Inspector'],
     defaultPlugins: ['DeviceLogs'],
-    supportedOS: ['Android'] as Array<OS>,
+    supportedOS: ['Android'] as Array<DeviceOS>,
     deeplinkSuffix: 'default',
     papercuts: '',
   },

@@ -31,6 +31,10 @@ static constexpr int reconnectIntervalSeconds = 2;
 // To be bumped for every core platform interface change.
 static constexpr int sdkVersion = 4;
 
+#ifdef __APPLE__
+static constexpr int maxFailedSocketConnectionAttempts = 3;
+#endif
+
 using namespace folly;
 
 namespace facebook {
@@ -64,6 +68,10 @@ class ConnectionEvents {
             impl->callbacks_->onConnected();
           }
           break;
+        case SocketEvent::SSL_ERROR:
+          // SSL errors are not handled as a connection event
+          // on this handler.
+          break;
         case SocketEvent::CLOSE:
         case SocketEvent::ERROR:
           if (!impl->isOpen_)
@@ -91,6 +99,8 @@ FlipperConnectionManagerImpl::FlipperConnectionManagerImpl(
       flipperState_(state),
       insecurePort(config.insecurePort),
       securePort(config.securePort),
+      altInsecurePort(config.altInsecurePort),
+      altSecurePort(config.altSecurePort),
       flipperEventBase_(config.callbackWorker),
       connectionEventBase_(config.connectionWorker),
       contextStore_(contextStore),
@@ -190,8 +200,8 @@ void FlipperConnectionManagerImpl::startSync() {
 }
 
 bool FlipperConnectionManagerImpl::connectAndExchangeCertificate() {
-  auto endpoint =
-      FlipperConnectionEndpoint(deviceData_.host, insecurePort, false);
+  auto port = useLegacySocketProvider ? insecurePort : altInsecurePort;
+  auto endpoint = FlipperConnectionEndpoint(deviceData_.host, port, false);
 
   int medium = certProvider_ != nullptr
       ? certProvider_->getCertificateExchangeMedium()
@@ -213,6 +223,7 @@ bool FlipperConnectionManagerImpl::connectAndExchangeCertificate() {
   connectionIsTrusted_ = false;
 
   if (!newClient->connect(this)) {
+    reevaluateSocketProvider();
     connectingInsecurely->fail("Failed to connect");
     return false;
   }
@@ -229,7 +240,8 @@ bool FlipperConnectionManagerImpl::connectAndExchangeCertificate() {
 }
 
 bool FlipperConnectionManagerImpl::connectSecurely() {
-  auto endpoint = FlipperConnectionEndpoint(deviceData_.host, securePort, true);
+  auto port = useLegacySocketProvider ? securePort : altSecurePort;
+  auto endpoint = FlipperConnectionEndpoint(deviceData_.host, port, true);
 
   int medium = certProvider_ != nullptr
       ? certProvider_->getCertificateExchangeMedium()
@@ -276,6 +288,7 @@ bool FlipperConnectionManagerImpl::connectSecurely() {
   connectionIsTrusted_ = true;
 
   if (!newClient->connect(this)) {
+    reevaluateSocketProvider();
     connectingSecurely->fail("Failed to connect");
     return false;
   }
@@ -454,6 +467,33 @@ void FlipperConnectionManagerImpl::sendLegacyCertificateRequest(
     contextStore_->storeConnectionConfig(config);
     client_ = nullptr;
   });
+}
+
+/**
+    Check for the maximum number of failed socket connection attempts.
+    If exceeded, then swap the default socket provider. If the maximum
+    number of failed attempts is reached again, swap again the socket provider.
+
+    WebSocket -> RSocket -> WebSocket -> ...
+ */
+void FlipperConnectionManagerImpl::reevaluateSocketProvider() {
+#ifdef __APPLE__
+  if (failedSocketConnectionAttempts < maxFailedSocketConnectionAttempts) {
+    ++failedSocketConnectionAttempts;
+  } else {
+    log("Failed to connect with the current socket provider");
+    failedSocketConnectionAttempts = 0;
+    useLegacySocketProvider = !useLegacySocketProvider;
+
+    if (useLegacySocketProvider) {
+      log("Use legacy socket provider");
+      FlipperSocketProvider::shelveDefault();
+    } else {
+      log("Use websocket provider");
+      FlipperSocketProvider::unshelveDefault();
+    }
+  }
+#endif
 }
 
 bool FlipperConnectionManagerImpl::isRunningInOwnThread() {

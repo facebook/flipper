@@ -8,24 +8,23 @@
  */
 
 import React, {useCallback, useEffect, useState} from 'react';
-import MetroDevice, {
-  MetroReportableEvent,
-} from '../server/devices/metro/MetroDevice';
+import {MetroReportableEvent} from '../server/devices/metro/MetroDevice';
 import {useStore} from '../utils/useStore';
 import {Button as AntButton} from 'antd';
 import {MenuOutlined, ReloadOutlined} from '@ant-design/icons';
 import {theme} from 'flipper-plugin';
+import BaseDevice from '../devices/BaseDevice';
 
 export default function MetroButton() {
   const device = useStore((state) =>
     state.connections.devices.find(
       (device) => device.os === 'Metro' && device.connected.get(),
     ),
-  ) as MetroDevice | undefined;
+  ) as BaseDevice | undefined;
 
   const sendCommand = useCallback(
     (command: string) => {
-      device?.sendCommand(command);
+      device?.sendMetroCommand(command);
     },
     [device],
   );
@@ -50,9 +49,19 @@ export default function MetroButton() {
         setProgress(event.transformedFileCount / event.totalFileCount);
       }
     }
-    device.metroEventEmitter.on('event', metroEventListener);
+
+    const handle = device.addLogListener((l) => {
+      if (l.tag !== 'client_log') {
+        try {
+          metroEventListener(JSON.parse(l.message));
+        } catch (e) {
+          console.warn('Failed to parse metro message: ', l, e);
+        }
+      }
+    });
+
     return () => {
-      device.metroEventEmitter.off('event', metroEventListener);
+      device.removeLogListener(handle);
     };
   }, [device]);
 

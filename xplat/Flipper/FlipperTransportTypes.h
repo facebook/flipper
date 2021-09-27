@@ -15,11 +15,7 @@ namespace flipper {
 /**
   SocketEvent defines the socket states used by Flipper.
  */
-enum class SocketEvent : int {
-  OPEN,
-  CLOSE,
-  ERROR,
-};
+enum class SocketEvent : int { OPEN, CLOSE, ERROR, SSL_ERROR };
 
 /**
  Defines a socket event handler. Used to notify changes in socket state.

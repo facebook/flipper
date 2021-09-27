@@ -32,7 +32,7 @@ import {act} from '@testing-library/react';
 import {
   DeviceLogEntry,
   SandyDevicePluginInstance,
-  RealFlipperDevice,
+  Device,
   DeviceLogListener,
 } from '../plugin/DevicePlugin';
 import {BasePluginInstance} from '../plugin/PluginBase';
@@ -486,7 +486,9 @@ export function createMockBundledPluginDetails(
   };
 }
 
-function createMockDevice(options?: StartPluginOptions): RealFlipperDevice {
+function createMockDevice(options?: StartPluginOptions): Device & {
+  addLogEntry(entry: DeviceLogEntry): void;
+} {
   const logListeners: (undefined | DeviceLogListener)[] = [];
   return {
     os: 'Android',
@@ -504,6 +506,15 @@ function createMockDevice(options?: StartPluginOptions): RealFlipperDevice {
     addLogEntry(entry: DeviceLogEntry) {
       logListeners.forEach((f) => f?.(entry));
     },
+    executeShell: jest.fn(),
+    clearLogs: jest.fn(),
+    forwardPort: jest.fn(),
+    get isConnected() {
+      return this.connected.get();
+    },
+    navigateToLocation: jest.fn(),
+    screenshot: jest.fn(),
+    sendMetroCommand: jest.fn(),
   };
 }
 

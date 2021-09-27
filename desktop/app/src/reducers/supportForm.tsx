@@ -18,8 +18,8 @@ import constants from '../fb-stubs/constants';
 import {getInstance} from '../fb-stubs/Logger';
 import {logPlatformSuccessRate} from '../utils/metrics';
 export const SUPPORT_FORM_PREFIX = 'support-form-v2';
-import {OS} from '../server/devices/BaseDevice';
 import {getExportablePlugins} from '../selectors/connections';
+import {DeviceOS} from 'flipper-plugin';
 
 const {DEFAULT_SUPPORT_GROUP} = constants;
 
@@ -42,7 +42,7 @@ export class Group {
     workplaceGroupID: number,
     requiredPlugins: Array<string>,
     defaultPlugins: Array<string>,
-    supportedOS: Array<OS>,
+    supportedOS: Array<DeviceOS>,
     deeplinkSuffix: string,
     papercuts?: string,
   ) {
@@ -58,7 +58,7 @@ export class Group {
   requiredPlugins: Array<string>;
   defaultPlugins: Array<string>;
   workplaceGroupID: number;
-  supportedOS: Array<OS>;
+  supportedOS: Array<DeviceOS>;
   deeplinkSuffix: string;
   papercuts?: string;
 
@@ -70,7 +70,7 @@ export class Group {
 
   getValidationMessage(
     selectedPlugins: Array<string>,
-    selectedOS: OS | null,
+    selectedOS: DeviceOS | null,
   ): GroupValidationErrors {
     const nonSelectedPlugin: Array<string> = [];
     for (const plugin of this.requiredPlugins) {

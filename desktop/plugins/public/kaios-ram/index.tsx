@@ -9,7 +9,7 @@
 
 import React from 'react';
 
-import {FlipperDevicePlugin, Device, KaiOSDevice, sleep} from 'flipper';
+import {FlipperDevicePlugin, Device, sleep} from 'flipper';
 
 import {FlexColumn, Button, Toolbar, Panel} from 'flipper';
 
@@ -76,7 +76,7 @@ export default class KaiOSGraphs extends FlipperDevicePlugin<State, any, any> {
   };
 
   static supportsDevice(device: Device) {
-    return device instanceof KaiOSDevice;
+    return device.description.specs?.includes('KaiOS') ?? false;
   }
 
   async init() {
@@ -116,13 +116,8 @@ export default class KaiOSGraphs extends FlipperDevicePlugin<State, any, any> {
     }
   };
 
-  executeShell = (command: string) => {
-    return (this.device as KaiOSDevice).adb
-      .shell(this.device.serial, command)
-      .then(adb.util.readAll)
-      .then((output) => {
-        return output.toString().trim();
-      });
+  executeShell = async (command: string): Promise<string> => {
+    return this.device.executeShell(command);
   };
 
   getMemory = () => {

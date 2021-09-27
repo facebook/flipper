@@ -8,9 +8,9 @@
  */
 
 import {LogLevel} from 'flipper-plugin';
-import BaseDevice from '../BaseDevice';
-import {EventEmitter} from 'events';
 import util from 'util';
+import {FlipperServerImpl} from '../../FlipperServerImpl';
+import {ServerDevice} from '../ServerDevice';
 
 // From xplat/js/metro/packages/metro/src/lib/reporting.js
 export type BundleDetails = {
@@ -139,12 +139,20 @@ function getLoglevelFromMessageType(
   }
 }
 
-export default class MetroDevice extends BaseDevice {
+export default class MetroDevice extends ServerDevice {
   ws?: WebSocket;
-  metroEventEmitter = new EventEmitter();
 
-  constructor(serial: string, ws: WebSocket | undefined) {
-    super(serial, 'emulator', 'React Native', 'Metro');
+  constructor(
+    flipperServer: FlipperServerImpl,
+    serial: string,
+    ws: WebSocket | undefined,
+  ) {
+    super(flipperServer, {
+      serial,
+      deviceType: 'emulator',
+      title: 'React Native',
+      os: 'Metro',
+    });
     if (ws) {
       this.ws = ws;
       ws.onmessage = this._handleWSMessage;
@@ -180,7 +188,6 @@ export default class MetroDevice extends BaseDevice {
         });
       }
     }
-    this.metroEventEmitter.emit('event', message);
   };
 
   sendCommand(command: string, params?: any) {

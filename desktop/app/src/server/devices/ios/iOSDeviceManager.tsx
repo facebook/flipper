@@ -21,7 +21,7 @@ import {
   IOSBridge,
   makeIOSBridge,
 } from './IOSBridge';
-import {FlipperServer} from '../../FlipperServer';
+import {FlipperServerImpl} from '../../FlipperServerImpl';
 
 type iOSSimulatorDevice = {
   state: 'Booted' | 'Shutdown' | 'Shutting Down';
@@ -67,7 +67,7 @@ export class IOSDeviceManager {
   private xcodeVersionMismatchFound = false;
   public xcodeCommandLineToolsDetected = false;
 
-  constructor(private flipperServer: FlipperServer) {
+  constructor(private flipperServer: FlipperServerImpl) {
     if (typeof window !== 'undefined') {
       window.addEventListener('beforeunload', () => {
         this.portForwarders.forEach((process) => process.kill());
@@ -152,7 +152,8 @@ export class IOSDeviceManager {
       this.flipperServer
         .getDevices()
         .filter(
-          (device) => device.os === 'iOS' && device.deviceType === targetType,
+          (device) =>
+            device.info.os === 'iOS' && device.info.deviceType === targetType,
         )
         .map((device) => device.serial),
     );
@@ -162,7 +163,13 @@ export class IOSDeviceManager {
         currentDeviceIDs.delete(udid);
       } else if (targetType === type) {
         console.log(`[conn] detected new iOS device ${targetType} ${udid}`);
-        const iOSDevice = new IOSDevice(this.iosBridge, udid, type, name);
+        const iOSDevice = new IOSDevice(
+          this.flipperServer,
+          this.iosBridge,
+          udid,
+          type,
+          name,
+        );
         this.flipperServer.registerDevice(iOSDevice);
       }
     }

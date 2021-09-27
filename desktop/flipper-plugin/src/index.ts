@@ -25,7 +25,6 @@ export {
   DevicePluginClient,
   LogLevel,
   SandyDevicePluginInstance as _SandyDevicePluginInstance,
-  DeviceType,
 } from './plugin/DevicePlugin';
 export {SandyPluginDefinition as _SandyPluginDefinition} from './plugin/SandyPluginDefinition';
 export {SandyPluginRenderer as _SandyPluginRenderer} from './plugin/PluginRenderer';
@@ -142,3 +141,5 @@ export {textContent} from './utils/textContent';
 // Probably we should make sure that testing-library doesn't end up in our final Flipper bundle (which packages flipper-plugin)
 // T69106962
 export const TestUtils = TestUtilites;
+
+export * from './types/server-types';

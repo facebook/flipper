@@ -9,7 +9,7 @@
 
 import {CertificateExchangeMedium} from '../utils/CertificateProvider';
 import {Logger} from '../../fb-interfaces/Logger';
-import {ClientQuery} from '../../Client';
+import {ClientQuery} from 'flipper-plugin';
 import {Store, State} from '../../reducers/index';
 import CertificateProvider from '../utils/CertificateProvider';
 import Client from '../../Client';
@@ -21,7 +21,7 @@ import invariant from 'invariant';
 import GK from '../../fb-stubs/GK';
 import {buildClientId} from '../../utils/clientUtils';
 import DummyDevice from '../../server/devices/DummyDevice';
-import BaseDevice from '../../server/devices/BaseDevice';
+import BaseDevice from '../../devices/BaseDevice';
 import {sideEffect} from '../../utils/sideEffect';
 import {
   appNameWithUpdateHint,
@@ -36,7 +36,7 @@ import {
   createServer,
   TransportType,
 } from './ServerFactory';
-import {FlipperServer} from '../FlipperServer';
+import {FlipperServerImpl} from '../FlipperServerImpl';
 import {isTest} from '../../utils/isProduction';
 import {timeout} from 'flipper-plugin';
 
@@ -77,11 +77,11 @@ class ServerController extends EventEmitter implements ServerEventsListener {
   certificateProvider: CertificateProvider;
   connectionTracker: ConnectionTracker;
 
-  flipperServer: FlipperServer;
+  flipperServer: FlipperServerImpl;
 
   timeHandlers: Map<string, NodeJS.Timeout> = new Map();
 
-  constructor(flipperServer: FlipperServer) {
+  constructor(flipperServer: FlipperServerImpl) {
     super();
     this.flipperServer = flipperServer;
     this.connections = new Map();
@@ -247,6 +247,7 @@ class ServerController extends EventEmitter implements ServerEventsListener {
     if (transformedMedium === 'WWW' || transformedMedium === 'NONE') {
       this.flipperServer.registerDevice(
         new DummyDevice(
+          this.flipperServer,
           clientQuery.device_id,
           clientQuery.app +
             (transformedMedium === 'WWW' ? ' Server Exchanged' : ''),
@@ -345,18 +346,21 @@ class ServerController extends EventEmitter implements ServerEventsListener {
       const app_name = await this.certificateProvider.extractAppNameFromCSR(
         csr,
       );
-      query.device_id = await this.certificateProvider.getTargetDeviceId(
-        query.os,
-        app_name,
-        csr_path,
-        csr,
-      );
+      // TODO: allocate new object, kept now as is to keep changes minimal
+      (query as any).device_id =
+        await this.certificateProvider.getTargetDeviceId(
+          query.os,
+          app_name,
+          csr_path,
+          csr,
+        );
       console.log(
         `[conn] Detected ${app_name} on ${query.device_id} in certificate`,
       );
     }
 
-    query.app = appNameWithUpdateHint(query);
+    // TODO: allocate new object, kept now as is to keep changes minimal
+    (query as any).app = appNameWithUpdateHint(query);
 
     const id = buildClientId({
       app: query.app,

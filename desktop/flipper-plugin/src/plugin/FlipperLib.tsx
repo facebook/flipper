@@ -8,7 +8,7 @@
  */
 
 import {Logger} from '../utils/Logger';
-import {RealFlipperDevice} from './DevicePlugin';
+import {Device} from './DevicePlugin';
 import {NormalizedMenuEntry} from './MenuEntry';
 import {RealFlipperClient} from './Plugin';
 import {Notification} from './Notification';
@@ -24,7 +24,7 @@ export interface FlipperLib {
   createPaste(input: string): Promise<string | undefined>;
   GK(gatekeeper: string): boolean;
   selectPlugin(
-    device: RealFlipperDevice,
+    device: Device,
     client: RealFlipperClient | null,
     pluginId: string,
     deeplink: unknown,

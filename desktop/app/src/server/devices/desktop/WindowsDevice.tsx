@@ -7,13 +7,17 @@
  * @format
  */
 
-import BaseDevice from '../BaseDevice';
+import {FlipperServerImpl} from '../../FlipperServerImpl';
+import {ServerDevice} from '../ServerDevice';
 
-export default class WindowsDevice extends BaseDevice {
-  constructor() {
-    super('', 'physical', 'Windows', 'Windows');
-    this.icon = 'app-microsoft-windows';
+export default class WindowsDevice extends ServerDevice {
+  constructor(flipperServer: FlipperServerImpl) {
+    super(flipperServer, {
+      serial: '',
+      deviceType: 'physical',
+      title: 'Windows',
+      os: 'Windows',
+      icon: 'app-microsoft-windows',
+    });
   }
-
-  teardown() {}
 }

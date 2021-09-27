@@ -27,7 +27,7 @@ import {
   selectionChanged,
 } from '../reducers/usageTracking';
 import produce from 'immer';
-import BaseDevice from '../server/devices/BaseDevice';
+import BaseDevice from '../devices/BaseDevice';
 import {deconstructClientId} from '../utils/clientUtils';
 import {getCPUUsage} from 'process';
 import {sideEffect} from '../utils/sideEffect';

@@ -10,15 +10,16 @@
 import React from 'react';
 import {Store} from '../reducers/index';
 import {Logger} from '../fb-interfaces/Logger';
-import {FlipperServer} from '../server/FlipperServer';
+import {FlipperServerImpl} from '../server/FlipperServerImpl';
 import {selectClient, selectDevice} from '../reducers/connections';
 import Client from '../Client';
 import {notification} from 'antd';
+import BaseDevice from '../devices/BaseDevice';
 
 export default async (store: Store, logger: Logger) => {
   const {enableAndroid, androidHome, idbPath, enableIOS, enablePhysicalIOS} =
     store.getState().settingsState;
-  const server = new FlipperServer(
+  const server = new FlipperServerImpl(
     {
       enableAndroid,
       androidHome,
@@ -68,13 +69,29 @@ export default async (store: Store, logger: Logger) => {
     });
   });
 
-  server.on('device-connected', (device) => {
+  server.on('device-connected', (deviceInfo) => {
     logger.track('usage', 'register-device', {
-      os: device.os,
-      name: device.title,
-      serial: device.serial,
+      os: deviceInfo.os,
+      name: deviceInfo.title,
+      serial: deviceInfo.serial,
     });
 
+    const existing = store
+      .getState()
+      .connections.devices.find(
+        (device) => device.serial === deviceInfo.serial,
+      );
+    // handled outside reducer, as it might emit new redux actions...
+    if (existing) {
+      if (existing.connected.get()) {
+        console.warn(
+          `Tried to replace still connected device '${existing.serial}' with a new instance.`,
+        );
+      }
+      existing.destroy();
+    }
+
+    const device = new BaseDevice(server, deviceInfo);
     device.loadDevicePlugins(
       store.getState().plugins.devicePlugins,
       store.getState().connections.enabledDevicePlugins,
@@ -95,7 +112,8 @@ export default async (store: Store, logger: Logger) => {
   });
 
   server.on('client-connected', (payload) =>
-    handleClientConnected(store, payload),
+    // TODO: fixed later in this stack
+    handleClientConnected(store, payload as any),
   );
 
   if (typeof window !== 'undefined') {

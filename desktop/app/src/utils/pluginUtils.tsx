@@ -10,7 +10,7 @@
 import type {PluginDefinition} from '../plugin';
 import type {State, Store} from '../reducers';
 import type {State as PluginsState} from '../reducers/plugins';
-import type BaseDevice from '../server/devices/BaseDevice';
+import type BaseDevice from '../devices/BaseDevice';
 import type Client from '../Client';
 import type {
   ActivatablePluginDetails,

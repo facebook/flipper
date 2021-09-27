@@ -18,7 +18,7 @@ import ScreenCaptureButtons from '../../chrome/ScreenCaptureButtons';
 import MetroButton from '../../chrome/MetroButton';
 import {BookmarkSection} from './BookmarkSection';
 import Client from '../../Client';
-import BaseDevice from '../../server/devices/BaseDevice';
+import BaseDevice from '../../devices/BaseDevice';
 import {ExclamationCircleOutlined, FieldTimeOutlined} from '@ant-design/icons';
 import {useSelector} from 'react-redux';
 import {
