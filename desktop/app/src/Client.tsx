@@ -11,7 +11,7 @@
 /* eslint-disable node/no-sync */
 
 import {PluginDefinition} from './plugin';
-import BaseDevice, {OS} from './server/devices/BaseDevice';
+import BaseDevice from './devices/BaseDevice';
 import {Logger} from './fb-interfaces/Logger';
 import {Store} from './reducers/index';
 import {performance} from 'perf_hooks';
@@ -31,6 +31,8 @@ import {
   _SandyPluginInstance,
   getFlipperLib,
   timeout,
+  ClientQuery,
+  _SandyPluginDefinition,
 } from 'flipper-plugin';
 import {freeze} from 'immer';
 import GK from './fb-stubs/GK';
@@ -47,14 +49,6 @@ import {
 
 type Plugins = Set<string>;
 type PluginsArr = Array<string>;
-
-export type ClientQuery = {
-  app: string;
-  os: OS;
-  device: string;
-  device_id: string;
-  sdk_version?: number;
-};
 
 export type ClientExport = {
   id: string;
@@ -217,17 +211,7 @@ export default class Client extends EventEmitter {
     this.plugins.forEach((pluginId) => {
       const plugin = this.getPlugin(pluginId);
       if (plugin) {
-        // TODO: needs to be wrapped in error tracking T68955280
-        this.sandyPluginStates.set(
-          plugin.id,
-          new _SandyPluginInstance(
-            getFlipperLib(),
-            plugin,
-            this,
-            getPluginKey(this.id, {serial: this.query.device_id}, plugin.id),
-            initialStates[pluginId],
-          ),
-        );
+        this.loadPlugin(plugin, initialStates[pluginId]);
       }
     });
     return this;
@@ -244,6 +228,26 @@ export default class Client extends EventEmitter {
     return plugins;
   }
 
+  loadPlugin(
+    plugin: _SandyPluginDefinition,
+    initialState?: Record<string, any>,
+  ) {
+    try {
+      this.sandyPluginStates.set(
+        plugin.id,
+        new _SandyPluginInstance(
+          getFlipperLib(),
+          plugin,
+          this,
+          getPluginKey(this.id, {serial: this.query.device_id}, plugin.id),
+          initialState,
+        ),
+      );
+    } catch (e) {
+      console.error(`Failed to start plugin '${plugin.id}': `, e);
+    }
+  }
+
   startPluginIfNeeded(
     plugin: PluginDefinition | undefined,
     isEnabled = plugin ? this.isEnabledPlugin(plugin.id) : false,
@@ -254,16 +258,7 @@ export default class Client extends EventEmitter {
       (isEnabled || defaultEnabledBackgroundPlugins.includes(plugin.id)) &&
       !this.sandyPluginStates.has(plugin.id)
     ) {
-      // TODO: needs to be wrapped in error tracking T68955280
-      this.sandyPluginStates.set(
-        plugin.id,
-        new _SandyPluginInstance(
-          getFlipperLib(),
-          plugin,
-          this,
-          getPluginKey(this.id, {serial: this.query.device_id}, plugin.id),
-        ),
-      );
+      this.loadPlugin(plugin);
     }
   }
 

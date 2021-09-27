@@ -9,14 +9,14 @@
 
 import MacDevice from './MacDevice';
 import WindowsDevice from './WindowsDevice';
-import {FlipperServer} from '../../FlipperServer';
+import {FlipperServerImpl} from '../../FlipperServerImpl';
 
-export default (flipperServer: FlipperServer) => {
+export default (flipperServer: FlipperServerImpl) => {
   let device;
   if (process.platform === 'darwin') {
-    device = new MacDevice();
+    device = new MacDevice(flipperServer);
   } else if (process.platform === 'win32') {
-    device = new WindowsDevice();
+    device = new WindowsDevice(flipperServer);
   } else {
     return;
   }

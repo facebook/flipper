@@ -687,7 +687,7 @@ test('PluginContainer can render Sandy device plugins', async () => {
     const deactivatedStub = jest.fn();
     client.onActivate(activatedStub);
     client.onDeactivate(deactivatedStub);
-    client.device.onLogEntry((e) => {
+    client.onDeviceLogEntry((e) => {
       lastLogMessage.set(e);
     });
     return {activatedStub, deactivatedStub, lastLogMessage};

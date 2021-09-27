@@ -10,12 +10,13 @@
 import ServerWebSocketBase from './ServerWebSocketBase';
 import WebSocket from 'ws';
 import querystring from 'querystring';
-import Client, {ClientQuery} from '../../Client';
+import Client from '../../Client';
 import {BrowserClientFlipperConnection} from './BrowserClientFlipperConnection';
 import {ServerEventsListener} from './ServerAdapter';
 import constants from '../../fb-stubs/constants';
 import ws from 'ws';
 import {IncomingMessage} from 'http';
+import {ClientQuery} from 'flipper-plugin';
 
 /**
  * WebSocket-based server which uses a connect/disconnect handshake over an insecure channel.
@@ -75,11 +76,6 @@ class ServerWebSocketBrowser extends ServerWebSocketBase {
       Object.values(clients).map((p) =>
         p.then((c) => this.listener.onConnectionClosed(c.id)),
       );
-      // TODO: destroy device.
-      // This seems to be the only case in which a device gets destroyed when there's a disconnection
-      // or error on the transport layer.
-      //
-      // destroyDevice(this.store, this.logger, deviceId);
     };
 
     /**

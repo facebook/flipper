@@ -10,7 +10,7 @@
 import MetroDevice from './MetroDevice';
 import http from 'http';
 import {parseEnvironmentVariableAsNumber} from '../../utils/environmentVariables';
-import {FlipperServer} from '../../FlipperServer';
+import {FlipperServerImpl} from '../../FlipperServerImpl';
 
 const METRO_HOST = 'localhost';
 const METRO_PORT = parseEnvironmentVariableAsNumber('METRO_SERVER_PORT', 8081);
@@ -46,13 +46,13 @@ async function isMetroRunning(): Promise<boolean> {
 
 async function registerMetroDevice(
   ws: WebSocket | undefined,
-  flipperServer: FlipperServer,
+  flipperServer: FlipperServerImpl,
 ) {
-  const metroDevice = new MetroDevice(METRO_URL, ws);
+  const metroDevice = new MetroDevice(flipperServer, METRO_URL, ws);
   flipperServer.registerDevice(metroDevice);
 }
 
-export default (flipperServer: FlipperServer) => {
+export default (flipperServer: FlipperServerImpl) => {
   let timeoutHandle: NodeJS.Timeout;
   let ws: WebSocket | undefined;
   let unregistered = false;

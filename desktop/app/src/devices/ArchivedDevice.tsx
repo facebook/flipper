@@ -8,9 +8,9 @@
  */
 
 import BaseDevice from './BaseDevice';
-import type {DeviceType} from 'flipper-plugin';
-import {OS, DeviceShell} from './BaseDevice';
-import {SupportFormRequestDetailsState} from '../../reducers/supportForm';
+import type {DeviceOS, DeviceType} from 'flipper-plugin';
+import {DeviceShell} from './BaseDevice';
+import {SupportFormRequestDetailsState} from '../reducers/supportForm';
 
 export default class ArchivedDevice extends BaseDevice {
   isArchived = true;
@@ -19,13 +19,34 @@ export default class ArchivedDevice extends BaseDevice {
     serial: string;
     deviceType: DeviceType;
     title: string;
-    os: OS;
+    os: DeviceOS;
     screenshotHandle?: string | null;
     source?: string;
     supportRequestDetails?: SupportFormRequestDetailsState;
   }) {
-    super(options.serial, options.deviceType, options.title, options.os);
-    this.icon = 'box';
+    super(
+      {
+        close() {},
+        exec(command, ..._args: any[]) {
+          throw new Error(
+            `[Archived device] Cannot invoke command ${command} on an archived device`,
+          );
+        },
+        on(event) {
+          console.warn(
+            `Cannot subscribe to server events from an Archived device: ${event}`,
+          );
+        },
+        off() {},
+      },
+      {
+        deviceType: options.deviceType,
+        title: options.title,
+        os: options.os,
+        serial: options.serial,
+        icon: 'box',
+      },
+    );
     this.connected.set(false);
     this.source = options.source || '';
     this.supportRequestDetails = options.supportRequestDetails;
@@ -46,5 +67,19 @@ export default class ArchivedDevice extends BaseDevice {
 
   getArchivedScreenshotHandle(): string | null {
     return this.archivedScreenshotHandle;
+  }
+
+  /**
+   * @override
+   */
+  async startLogging() {
+    // No-op
+  }
+
+  /**
+   * @override
+   */
+  async stopLogging() {
+    // No-op
   }
 }

@@ -9,10 +9,9 @@
 
 import reducer from '../connections';
 import {State, selectPlugin} from '../connections';
-import BaseDevice from '../../server/devices/BaseDevice';
-import MetroDevice from '../../server/devices/metro/MetroDevice';
 import {_setFlipperLibImplementation} from 'flipper-plugin';
 import {createMockFlipperLib} from 'flipper-plugin/src/test-utils/test-utils';
+import {TestDevice} from '../../test-utils/TestDevice';
 
 beforeEach(() => {
   _setFlipperLibImplementation(createMockFlipperLib());
@@ -22,9 +21,9 @@ afterEach(() => {
   _setFlipperLibImplementation(undefined);
 });
 
-test('doing a double REGISTER_DEVICE keeps the last', () => {
-  const device1 = new BaseDevice('serial', 'physical', 'title', 'Android');
-  const device2 = new BaseDevice('serial', 'physical', 'title2', 'Android');
+test('doing a double REGISTER_DEVICE fails', () => {
+  const device1 = new TestDevice('serial', 'physical', 'title', 'Android');
+  const device2 = new TestDevice('serial', 'physical', 'title2', 'Android');
   const initialState: State = reducer(undefined, {
     type: 'REGISTER_DEVICE',
     payload: device1,
@@ -32,16 +31,21 @@ test('doing a double REGISTER_DEVICE keeps the last', () => {
   expect(initialState.devices.length).toBe(1);
   expect(initialState.devices[0]).toBe(device1);
 
-  const endState = reducer(initialState, {
-    type: 'REGISTER_DEVICE',
-    payload: device2,
-  });
-  expect(endState.devices.length).toBe(1);
-  expect(endState.devices[0]).toBe(device2);
+  expect(() => {
+    reducer(initialState, {
+      type: 'REGISTER_DEVICE',
+      payload: device2,
+    });
+  }).toThrow('still connected');
 });
 
 test('register, remove, re-register a metro device works correctly', () => {
-  const device1 = new MetroDevice('http://localhost:8081', undefined);
+  const device1 = new TestDevice(
+    'http://localhost:8081',
+    'emulator',
+    'React Native',
+    'Metro',
+  );
   let state: State = reducer(undefined, {
     type: 'REGISTER_DEVICE',
     payload: device1,
@@ -56,7 +60,12 @@ test('register, remove, re-register a metro device works correctly', () => {
 
   state = reducer(state, {
     type: 'REGISTER_DEVICE',
-    payload: new MetroDevice('http://localhost:8081', undefined),
+    payload: new TestDevice(
+      'http://localhost:8081',
+      'emulator',
+      'React Native',
+      'Metro',
+    ),
   });
   expect(state.devices.length).toBe(1);
   expect(state.devices[0].displayTitle()).toBe('React Native');
@@ -69,20 +78,4 @@ test('selectPlugin sets deepLinkPayload correctly', () => {
     selectPlugin({selectedPlugin: 'myPlugin', deepLinkPayload: 'myPayload'}),
   );
   expect(state.deepLinkPayload).toBe('myPayload');
-});
-
-test('UNREGISTER_DEVICE removes device', () => {
-  const device = new BaseDevice('serial', 'physical', 'title', 'Android');
-  const initialState: State = reducer(undefined, {
-    type: 'REGISTER_DEVICE',
-    payload: new BaseDevice('serial', 'physical', 'title', 'Android'),
-  });
-
-  expect(initialState.devices).toEqual([device]);
-  const endState = reducer(initialState, {
-    type: 'UNREGISTER_DEVICES',
-    payload: new Set(['serial']),
-  });
-
-  expect(endState.devices).toEqual([]);
 });

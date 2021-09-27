@@ -7,7 +7,6 @@
  * @format
  */
 
-import MetroDevice from '../server/devices/metro/MetroDevice';
 import {State} from '../reducers';
 import {
   computePluginLists,
@@ -36,9 +35,8 @@ export const getActiveClient = createSelector(
 
 export const getMetroDevice = createSelector(getDevices, (devices) => {
   return (
-    (devices.find((device) => device.os === 'Metro' && !device.isArchived) as
-      | MetroDevice
-      | undefined) ?? null
+    devices.find((device) => device.os === 'Metro' && !device.isArchived) ??
+    null
   );
 });
 

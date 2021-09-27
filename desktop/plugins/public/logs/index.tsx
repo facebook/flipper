@@ -156,7 +156,7 @@ export function devicePlugin(client: DevicePluginClient) {
     if (isPaused.get() && client.device.isConnected) {
       // start listening to the logs
       isPaused.set(false);
-      logDisposer = client.device.onLogEntry((entry: DeviceLogEntry) => {
+      logDisposer = client.onDeviceLogEntry((entry: DeviceLogEntry) => {
         const lastIndex = rows.size - 1;
         const previousRow = rows.get(lastIndex);
         if (
@@ -182,9 +182,8 @@ export function devicePlugin(client: DevicePluginClient) {
     }
   }
 
-  function clearLogs() {
-    // Non public Android specific api
-    (client.device.realDevice as any)?.clearLogs?.();
+  async function clearLogs() {
+    await client.device.clearLogs();
     rows.clear();
     tableManagerRef.current?.clearSelection();
   }

@@ -9,7 +9,7 @@
 
 import {createMockFlipperWithPlugin} from '../../test-utils/createMockFlipperWithPlugin';
 import {Store} from '../../';
-import {destroyDevice, selectPlugin} from '../../reducers/connections';
+import {selectPlugin} from '../../reducers/connections';
 import {
   _SandyPluginDefinition,
   _SandyDevicePluginInstance,
@@ -85,16 +85,4 @@ test('it should initialize device sandy plugins', async () => {
   device.sandyPluginStates.get(TestPlugin.id)!.deactivate();
   expect(instanceApi.deactivateStub).toBeCalledTimes(1);
   expect(instanceApi.destroyStub).toBeCalledTimes(0);
-});
-
-test('it should cleanup if device is removed', async () => {
-  const {device, store, logger} = await createMockFlipperWithPlugin(TestPlugin);
-  const pluginInstance = device.sandyPluginStates.get(TestPlugin.id)!;
-  expect(pluginInstance.instanceApi.destroyStub).toHaveBeenCalledTimes(0);
-
-  // close device
-  destroyDevice(store, logger, device.serial);
-  expect(
-    (pluginInstance.instanceApi as PluginApi).destroyStub,
-  ).toHaveBeenCalledTimes(1);
 });

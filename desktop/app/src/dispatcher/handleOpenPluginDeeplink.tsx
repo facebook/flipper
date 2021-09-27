@@ -24,7 +24,7 @@ import {loadPlugin, switchPlugin} from '../reducers/pluginManager';
 import {startPluginDownload} from '../reducers/pluginDownloads';
 import isProduction, {isTest} from '../utils/isProduction';
 import restart from '../utils/restartFlipper';
-import BaseDevice from '../server/devices/BaseDevice';
+import BaseDevice from '../devices/BaseDevice';
 import Client from '../Client';
 import {RocketOutlined} from '@ant-design/icons';
 import {showEmulatorLauncher} from '../sandy-chrome/appinspect/LaunchEmulator';

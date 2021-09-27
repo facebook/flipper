@@ -9,11 +9,12 @@
 
 import {LogLevel, DeviceLogEntry, DeviceType, timeout} from 'flipper-plugin';
 import child_process, {ChildProcess} from 'child_process';
-import BaseDevice from '../BaseDevice';
 import JSONStream from 'JSONStream';
 import {Transform} from 'stream';
 import {ERR_PHYSICAL_DEVICE_LOGS_WITHOUT_IDB, IOSBridge} from './IOSBridge';
 import split2 from 'split2';
+import {ServerDevice} from '../ServerDevice';
+import {FlipperServerImpl} from '../../FlipperServerImpl';
 
 type IOSLogLevel = 'Default' | 'Info' | 'Debug' | 'Error' | 'Fault';
 
@@ -38,7 +39,7 @@ type RawLogEntry = {
 // Mar 25 17:06:38 iPhone symptomsd(SymptomEvaluator)[125] <Notice>: Stuff
 const logRegex = /(^.{15}) ([^ ]+?) ([^\[]+?)\[(\d+?)\] <(\w+?)>: (.*)$/s;
 
-export default class IOSDevice extends BaseDevice {
+export default class IOSDevice extends ServerDevice {
   log?: child_process.ChildProcessWithoutNullStreams;
   buffer: string;
   private recordingProcess?: ChildProcess;
@@ -46,13 +47,19 @@ export default class IOSDevice extends BaseDevice {
   private iOSBridge: IOSBridge;
 
   constructor(
+    flipperServer: FlipperServerImpl,
     iOSBridge: IOSBridge,
     serial: string,
     deviceType: DeviceType,
     title: string,
   ) {
-    super(serial, deviceType, title, 'iOS');
-    this.icon = 'mobile';
+    super(flipperServer, {
+      serial,
+      deviceType,
+      title,
+      os: 'iOS',
+      icon: 'mobile',
+    });
     this.buffer = '';
     this.iOSBridge = iOSBridge;
   }
@@ -64,7 +71,7 @@ export default class IOSDevice extends BaseDevice {
     return await this.iOSBridge.screenshot(this.serial);
   }
 
-  navigateToLocation(location: string) {
+  async navigateToLocation(location: string) {
     return this.iOSBridge.navigate(this.serial, location).catch((err) => {
       console.warn(`Failed to navigate to location ${location}:`, err);
       return err;
@@ -87,7 +94,10 @@ export default class IOSDevice extends BaseDevice {
 
     if (!this.log) {
       try {
-        this.log = iOSBridge.startLogListener(this.serial, this.deviceType);
+        this.log = iOSBridge.startLogListener(
+          this.serial,
+          this.info.deviceType,
+        );
       } catch (e) {
         if (e.message === ERR_PHYSICAL_DEVICE_LOGS_WITHOUT_IDB) {
           console.warn(e);
@@ -110,7 +120,7 @@ export default class IOSDevice extends BaseDevice {
       });
 
       try {
-        if (this.deviceType === 'physical') {
+        if (this.info.deviceType === 'physical') {
           this.log.stdout.pipe(split2('\0')).on('data', (line: string) => {
             const parsed = IOSDevice.parseLogLine(line);
             if (parsed) {
@@ -205,7 +215,7 @@ export default class IOSDevice extends BaseDevice {
   }
 
   async screenCaptureAvailable() {
-    return this.deviceType === 'emulator' && this.connected.get();
+    return this.info.deviceType === 'emulator' && this.connected.get();
   }
 
   async startScreenCapture(destination: string) {
@@ -216,7 +226,7 @@ export default class IOSDevice extends BaseDevice {
     this.recordingLocation = destination;
   }
 
-  async stopScreenCapture(): Promise<string | null> {
+  async stopScreenCapture(): Promise<string> {
     if (this.recordingProcess && this.recordingLocation) {
       const prom = new Promise<void>((resolve, _reject) => {
         this.recordingProcess!.on(
@@ -228,7 +238,7 @@ export default class IOSDevice extends BaseDevice {
         this.recordingProcess!.kill('SIGINT');
       });
 
-      const output: string | null = await timeout<void>(
+      const output: string = await timeout<void>(
         5000,
         prom,
         'Timed out to stop a screen capture.',
@@ -241,15 +251,17 @@ export default class IOSDevice extends BaseDevice {
         .catch((e) => {
           this.recordingLocation = undefined;
           console.warn('Failed to terminate iOS screen recording:', e);
-          return null;
+          throw e;
         });
       return output;
     }
-    return null;
+    throw new Error('No recording in progress');
   }
 
   disconnect() {
-    this.stopScreenCapture();
+    if (this.recordingProcess && this.recordingLocation) {
+      this.stopScreenCapture();
+    }
     super.disconnect();
   }
 }

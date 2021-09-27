@@ -16,7 +16,7 @@ import {
   CaretDownOutlined,
 } from '@ant-design/icons';
 import {Glyph, Layout, styled} from '../../ui';
-import {theme, useTrackedCallback, useValue} from 'flipper-plugin';
+import {DeviceOS, theme, useTrackedCallback, useValue} from 'flipper-plugin';
 import {batch} from 'react-redux';
 import {useDispatch, useStore} from '../../utils/useStore';
 import {
@@ -25,7 +25,7 @@ import {
   selectClient,
   selectDevice,
 } from '../../reducers/connections';
-import BaseDevice, {OS} from '../../server/devices/BaseDevice';
+import BaseDevice from '../../devices/BaseDevice';
 import Client from '../../Client';
 import {State} from '../../reducers';
 import {brandColors, brandIcons, colors} from '../../ui/components/colors';
@@ -34,7 +34,7 @@ import GK from '../../fb-stubs/GK';
 
 const {Text} = Typography;
 
-function getOsIcon(os?: OS) {
+function getOsIcon(os?: DeviceOS) {
   switch (os) {
     case 'iOS':
       return <AppleOutlined />;
@@ -85,32 +85,36 @@ export function AppSelector() {
 
   return (
     <>
-      <Radio.Group
-        value={selectedApp}
-        size="small"
-        style={{
-          display: 'flex',
-          flex: 1,
-        }}>
-        <Dropdown
-          trigger={['click']}
-          overlay={
-            <Menu selectedKeys={selectedApp ? [selectedApp] : []}>
-              {entries}
-            </Menu>
-          }>
-          <AppInspectButton title="Select the device / app to inspect">
-            <Layout.Horizontal gap center>
-              <AppIcon appname={client?.query.app} device={selectedDevice} />
-              <Layout.Container grow shrink>
-                <Text strong>{client?.query.app ?? ''}</Text>
-                <Text>{selectedDevice?.title || 'Available devices'}</Text>
-              </Layout.Container>
-              <CaretDownOutlined />
-            </Layout.Horizontal>
-          </AppInspectButton>
-        </Dropdown>
-      </Radio.Group>
+      {entries.length ? (
+        <Radio.Group
+          value={selectedApp}
+          size="small"
+          style={{
+            display: 'flex',
+            flex: 1,
+          }}>
+          <Dropdown
+            trigger={['click']}
+            overlay={
+              <Menu selectedKeys={selectedApp ? [selectedApp] : []}>
+                {entries}
+              </Menu>
+            }>
+            <AppInspectButton title="Select the device / app to inspect">
+              <Layout.Horizontal gap center>
+                <AppIcon appname={client?.query.app} device={selectedDevice} />
+                <Layout.Container grow shrink>
+                  <Text strong>{client?.query.app ?? ''}</Text>
+                  <Text>{selectedDevice?.title || 'Available devices'}</Text>
+                </Layout.Container>
+                <CaretDownOutlined />
+              </Layout.Horizontal>
+            </AppInspectButton>
+          </Dropdown>
+        </Radio.Group>
+      ) : (
+        <Text>{'No devices available'}</Text>
+      )}
       <TroubleshootingGuide
         showGuide={GK.get('flipper_self_sufficiency')}
         devicesDetected={entries.length}

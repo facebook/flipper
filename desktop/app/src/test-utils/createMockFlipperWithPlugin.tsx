@@ -21,10 +21,10 @@ import {
   selectDevice,
   selectClient,
 } from '../reducers/connections';
-import BaseDevice from '../server/devices/BaseDevice';
+import BaseDevice from '../devices/BaseDevice';
 
 import {Store} from '../reducers/index';
-import Client, {ClientQuery} from '../Client';
+import Client from '../Client';
 
 import {Logger} from '../fb-interfaces/Logger';
 import {FlipperDevicePlugin, FlipperPlugin, PluginDefinition} from '../plugin';
@@ -36,7 +36,7 @@ import MockFlipper from './MockFlipper';
 import {switchPlugin} from '../reducers/pluginManager';
 import {createSandyPluginFromClassicPlugin} from '../dispatcher/plugins';
 import {createMockActivatablePluginDetails} from '../utils/testUtils';
-import {_SandyPluginDefinition} from 'flipper-plugin';
+import {ClientQuery, _SandyPluginDefinition} from 'flipper-plugin';
 
 export type MockFlipperResult = {
   client: Client;

@@ -69,6 +69,11 @@ declare module 'adbkit' {
     getProperties: (serial: string) => Promise<{[key: string]: string}>;
     trackDevices: () => Promise<DeviceTracker>;
     kill: () => Promise<boolean>;
+    forward: (
+      serial: string,
+      local: string,
+      remote: string,
+    ) => Promise<boolean>; // TODO: verify correctness of signature
   }
   export function createClient(config: {port: number; host: string}): Client;
 }

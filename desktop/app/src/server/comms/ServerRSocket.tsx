@@ -17,7 +17,7 @@ import net, {Socket} from 'net';
 import {RSocketServer} from 'rsocket-core';
 import RSocketTCPServer from 'rsocket-tcp-server';
 import {Payload, ReactiveSocket, Responder} from 'rsocket-types';
-import Client, {ClientQuery} from '../../Client';
+import Client from '../../Client';
 import {Single} from 'rsocket-flowable';
 import {
   ClientConnection,
@@ -25,6 +25,7 @@ import {
   ConnectionStatus,
   ResponseType,
 } from './ClientConnection';
+import {ClientQuery} from 'flipper-plugin';
 
 /**
  * RSocket based server. RSocket uses its own protocol for communication between

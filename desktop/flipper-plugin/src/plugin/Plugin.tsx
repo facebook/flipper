@@ -10,7 +10,7 @@
 import {SandyPluginDefinition} from './SandyPluginDefinition';
 import {BasePluginInstance, BasePluginClient} from './PluginBase';
 import {FlipperLib} from './FlipperLib';
-import {RealFlipperDevice} from './DevicePlugin';
+import {Device} from './DevicePlugin';
 import {batched} from '../state/batch';
 import {Atom, createState, ReadOnlyAtom} from '../state/atom';
 
@@ -107,7 +107,7 @@ export interface RealFlipperClient {
     device: string;
     device_id: string;
   };
-  deviceSync: RealFlipperDevice;
+  deviceSync: Device;
   plugins: Set<string>;
   isBackgroundPlugin(pluginId: string): boolean;
   initPlugin(pluginId: string): void;

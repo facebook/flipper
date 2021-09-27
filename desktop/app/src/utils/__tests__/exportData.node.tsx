@@ -9,8 +9,7 @@
 
 import {State} from '../../reducers/index';
 import configureStore from 'redux-mock-store';
-import {default as BaseDevice} from '../../server/devices/BaseDevice';
-import {default as ArchivedDevice} from '../../server/devices/ArchivedDevice';
+import {default as ArchivedDevice} from '../../devices/ArchivedDevice';
 import {
   processStore,
   determinePluginsToProcess,
@@ -32,9 +31,11 @@ import {
   PluginClient,
   DevicePluginClient,
   sleep,
+  Device,
 } from 'flipper-plugin';
 import {selectPlugin} from '../../reducers/connections';
 import {TestIdler} from '../Idler';
+import {TestDevice} from '../..';
 
 const testIdler = new TestIdler();
 
@@ -71,7 +72,7 @@ function generateNotifications(
   return {id, title, message, severity};
 }
 
-function generateClientIdentifier(device: BaseDevice, app: string): string {
+function generateClientIdentifier(device: Device, app: string): string {
   const {os, deviceType, serial} = device;
   const identifier = `${app}#${os}#${deviceType}#${serial}`;
   return identifier;
@@ -97,10 +98,8 @@ function generateClientFromClientWithSalt(
     query: {app, os, device, device_id: salt + '-' + device_id},
   };
 }
-function generateClientFromDevice(
-  device: BaseDevice,
-  app: string,
-): ClientExport {
+
+function generateClientFromDevice(device: Device, app: string): ClientExport {
   const {os, deviceType, serial} = device;
   const identifier = generateClientIdentifier(device, app);
   return {
@@ -710,7 +709,7 @@ test('test processStore function for no selected plugins', async () => {
 });
 
 test('test determinePluginsToProcess for mutilple clients having plugins present', async () => {
-  const device1 = new BaseDevice('serial1', 'emulator', 'TestiPhone', 'iOS');
+  const device1 = new TestDevice('serial1', 'emulator', 'TestiPhone', 'iOS');
   const client1 = new Client(
     generateClientIdentifier(device1, 'app'),
     {
@@ -797,7 +796,7 @@ test('test determinePluginsToProcess for mutilple clients having plugins present
 });
 
 test('test determinePluginsToProcess for no selected plugin present in any clients', async () => {
-  const device1 = new BaseDevice('serial1', 'emulator', 'TestiPhone', 'iOS');
+  const device1 = new TestDevice('serial1', 'emulator', 'TestiPhone', 'iOS');
   const client1 = new Client(
     generateClientIdentifier(device1, 'app'),
     {
@@ -853,7 +852,7 @@ test('test determinePluginsToProcess for no selected plugin present in any clien
 });
 
 test('test determinePluginsToProcess for multiple clients on same device', async () => {
-  const device1 = new BaseDevice('serial1', 'emulator', 'TestiPhone', 'iOS');
+  const device1 = new TestDevice('serial1', 'emulator', 'TestiPhone', 'iOS');
   const client1 = new Client(
     generateClientIdentifier(device1, 'app'),
     {
@@ -913,8 +912,8 @@ test('test determinePluginsToProcess for multiple clients on same device', async
 });
 
 test('test determinePluginsToProcess for multiple clients on different device', async () => {
-  const device1 = new BaseDevice('serial1', 'emulator', 'TestiPhone', 'iOS');
-  const device2 = new BaseDevice('serial2', 'emulator', 'TestiPhone', 'iOS');
+  const device1 = new TestDevice('serial1', 'emulator', 'TestiPhone', 'iOS');
+  const device2 = new TestDevice('serial2', 'emulator', 'TestiPhone', 'iOS');
   const client1Device1 = new Client(
     generateClientIdentifier(device1, 'app'),
     {
@@ -1006,7 +1005,7 @@ test('test determinePluginsToProcess for multiple clients on different device', 
 });
 
 test('test determinePluginsToProcess to ignore archived clients', async () => {
-  const selectedDevice = new BaseDevice(
+  const selectedDevice = new TestDevice(
     'serial',
     'emulator',
     'TestiPhone',
@@ -1333,7 +1332,7 @@ const sandyDeviceTestPlugin = new _SandyPluginDefinition(
       const _somethingElse = createState(0);
       const anotherState = createState({testCount: 0}, {persist: 'otherState'});
 
-      client.device.onLogEntry(() => {
+      client.onDeviceLogEntry(() => {
         counter.set(counter.get() + 1);
         anotherState.update((draft) => {
           draft.testCount -= 1;

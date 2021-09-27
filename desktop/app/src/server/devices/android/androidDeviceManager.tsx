@@ -15,14 +15,14 @@ import which from 'which';
 import {promisify} from 'util';
 import {Client as ADBClient, Device} from 'adbkit';
 import {join} from 'path';
-import {FlipperServer} from '../../FlipperServer';
+import {FlipperServerImpl} from '../../FlipperServerImpl';
 import {notNull} from '../../utils/typeUtils';
 
 export class AndroidDeviceManager {
   // cache emulator path
   private emulatorPath: string | undefined;
 
-  constructor(public flipperServer: FlipperServer) {}
+  constructor(public flipperServer: FlipperServerImpl) {}
 
   private createDevice(
     adbClient: ADBClient,
@@ -49,7 +49,15 @@ export class AndroidDeviceManager {
           );
           const androidLikeDevice = new (
             isKaiOSDevice ? KaiOSDevice : AndroidDevice
-          )(device.id, type, name, adbClient, abiList, sdkVersion);
+          )(
+            this.flipperServer,
+            device.id,
+            type,
+            name,
+            adbClient,
+            abiList,
+            sdkVersion,
+          );
           if (this.flipperServer.config.serverPorts) {
             await androidLikeDevice
               .reverse([

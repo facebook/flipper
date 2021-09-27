@@ -11,7 +11,7 @@ import {KeyboardActions} from './MenuBar';
 import {Logger} from './fb-interfaces/Logger';
 import Client from './Client';
 import {Component} from 'react';
-import BaseDevice from './server/devices/BaseDevice';
+import BaseDevice from './devices/BaseDevice';
 import {StaticView} from './reducers/connections';
 import {State as ReduxState} from './reducers';
 import {DEFAULT_MAX_QUEUE_SIZE} from './reducers/pluginMessageQueue';

@@ -9,8 +9,9 @@
 
 import fs from 'fs';
 import path from 'path';
-import {BaseDevice, AndroidDevice, IOSDevice, getAppPath} from 'flipper';
+import {getAppPath} from 'flipper';
 import {AppMatchPattern} from '../types';
+import {Device} from 'flipper-plugin';
 
 let patternsPath: string | undefined;
 
@@ -28,15 +29,15 @@ const extractAppNameFromSelectedApp = (selectedApp: string | null) => {
 
 export const getAppMatchPatterns = (
   selectedApp: string | null,
-  device: BaseDevice,
+  device: Device,
 ) => {
   return new Promise<Array<AppMatchPattern>>((resolve, reject) => {
     const appName = extractAppNameFromSelectedApp(selectedApp);
     if (appName === 'Facebook') {
       let filename: string;
-      if (device instanceof AndroidDevice) {
+      if (device.os === 'Android') {
         filename = 'facebook-match-patterns-android.json';
-      } else if (device instanceof IOSDevice) {
+      } else if (device.os === 'iOS') {
         filename = 'facebook-match-patterns-ios.json';
       } else {
         return;

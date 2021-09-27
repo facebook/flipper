@@ -7,12 +7,11 @@
  * @format
  */
 
-import BaseDevice from '../BaseDevice';
 import * as DeviceTestPluginModule from '../../../test-utils/DeviceTestPlugin';
 import {TestUtils, _SandyPluginDefinition} from 'flipper-plugin';
-import ArchivedDevice from '../ArchivedDevice';
-import DummyDevice from '../DummyDevice';
 import {createMockFlipperWithPlugin} from '../../../test-utils/createMockFlipperWithPlugin';
+import {TestDevice} from '../../../test-utils/TestDevice';
+import ArchivedDevice from '../../../devices/ArchivedDevice';
 
 const physicalDevicePluginDetails = TestUtils.createMockPluginDetails({
   id: 'physicalDevicePlugin',
@@ -122,7 +121,7 @@ const androidOnlyDevicePlugin = new _SandyPluginDefinition(
 );
 
 test('ios physical device compatibility', () => {
-  const device = new BaseDevice('serial', 'physical', 'test device', 'iOS');
+  const device = new TestDevice('serial', 'physical', 'test device', 'iOS');
   expect(device.supportsPlugin(physicalDevicePlugin)).toBeTruthy();
   expect(device.supportsPlugin(iosPhysicalDevicePlugin)).toBeTruthy();
   expect(device.supportsPlugin(iosEmulatorDevicePlugin)).toBeFalsy();
@@ -146,7 +145,7 @@ test('archived device compatibility', () => {
 });
 
 test('android emulator device compatibility', () => {
-  const device = new BaseDevice('serial', 'emulator', 'test device', 'Android');
+  const device = new TestDevice('serial', 'emulator', 'test device', 'Android');
   expect(device.supportsPlugin(physicalDevicePlugin)).toBeFalsy();
   expect(device.supportsPlugin(iosPhysicalDevicePlugin)).toBeFalsy();
   expect(device.supportsPlugin(iosEmulatorDevicePlugin)).toBeFalsy();
@@ -155,7 +154,7 @@ test('android emulator device compatibility', () => {
 });
 
 test('android KaiOS device compatibility', () => {
-  const device = new BaseDevice(
+  const device = new TestDevice(
     'serial',
     'physical',
     'test device',
@@ -170,7 +169,7 @@ test('android KaiOS device compatibility', () => {
 });
 
 test('android dummy device compatibility', () => {
-  const device = new DummyDevice('serial', 'test device', 'Android');
+  const device = new TestDevice('serial', 'dummy', 'test device', 'Android');
   expect(device.supportsPlugin(physicalDevicePlugin)).toBeFalsy();
   expect(device.supportsPlugin(iosPhysicalDevicePlugin)).toBeFalsy();
   expect(device.supportsPlugin(iosEmulatorDevicePlugin)).toBeFalsy();
@@ -188,7 +187,7 @@ test('log listeners are resumed and suspended automatically - 1', async () => {
     type: 'info',
     tag: 'tag',
   } as const;
-  const device = new BaseDevice('serial', 'physical', 'test device', 'Android');
+  const device = new TestDevice('serial', 'physical', 'test device', 'Android');
   device.startLogging = jest.fn();
   device.stopLogging = jest.fn();
 
@@ -198,7 +197,7 @@ test('log listeners are resumed and suspended automatically - 1', async () => {
       let disposer: any;
 
       function start() {
-        disposer = client.device.onLogEntry((entry) => {
+        disposer = client.onDeviceLogEntry((entry) => {
           entries.push(entry);
         });
       }
@@ -251,7 +250,7 @@ test('log listeners are resumed and suspended automatically - 2', async () => {
     type: 'info',
     tag: 'tag',
   } as const;
-  const device = new BaseDevice('serial', 'physical', 'test device', 'Android');
+  const device = new TestDevice('serial', 'physical', 'test device', 'Android');
   device.startLogging = jest.fn();
   device.stopLogging = jest.fn();
 
@@ -259,7 +258,7 @@ test('log listeners are resumed and suspended automatically - 2', async () => {
 
   const DevicePlugin = TestUtils.createTestDevicePlugin({
     devicePlugin(client) {
-      client.device.onLogEntry((entry) => {
+      client.onDeviceLogEntry((entry) => {
         entries.push(entry);
       });
       return {};
@@ -269,7 +268,7 @@ test('log listeners are resumed and suspended automatically - 2', async () => {
   const Plugin = TestUtils.createTestPlugin(
     {
       plugin(client) {
-        client.device.onLogEntry((entry) => {
+        client.onDeviceLogEntry((entry) => {
           entries.push(entry);
         });
         return {};
