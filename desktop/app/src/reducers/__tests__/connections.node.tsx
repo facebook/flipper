@@ -9,15 +9,23 @@
 
 import reducer from '../connections';
 import {State, selectPlugin} from '../connections';
-import {_setFlipperLibImplementation} from 'flipper-plugin';
-import {createMockFlipperLib} from 'flipper-plugin/src/test-utils/test-utils';
+import {
+  _SandyPluginDefinition,
+  _setFlipperLibImplementation,
+  TestUtils,
+  MockedConsole,
+} from 'flipper-plugin';
 import {TestDevice} from '../../test-utils/TestDevice';
+import {createMockFlipperWithPlugin} from '../../test-utils/createMockFlipperWithPlugin';
 
+let mockedConsole: MockedConsole;
 beforeEach(() => {
-  _setFlipperLibImplementation(createMockFlipperLib());
+  mockedConsole = TestUtils.mockConsole();
+  _setFlipperLibImplementation(TestUtils.createMockFlipperLib());
 });
 
 afterEach(() => {
+  mockedConsole.unmock();
   _setFlipperLibImplementation(undefined);
 });
 
@@ -78,4 +86,89 @@ test('selectPlugin sets deepLinkPayload correctly', () => {
     selectPlugin({selectedPlugin: 'myPlugin', deepLinkPayload: 'myPayload'}),
   );
   expect(state.deepLinkPayload).toBe('myPayload');
+});
+
+test('can handle plugins that throw at start', async () => {
+  const TestPlugin = new _SandyPluginDefinition(
+    TestUtils.createMockPluginDetails(),
+    {
+      Component() {
+        return null;
+      },
+      plugin() {
+        throw new Error('Broken plugin');
+      },
+    },
+  );
+
+  const {client, store, createClient, createDevice} =
+    await createMockFlipperWithPlugin(TestPlugin);
+
+  // not initialized
+  expect(client.sandyPluginStates.get(TestPlugin.id)).toBe(undefined);
+
+  expect(store.getState().connections.clients.length).toBe(1);
+  expect(client.connected.get()).toBe(true);
+
+  expect((console.error as any).mock.calls[0]).toMatchInlineSnapshot(`
+    Array [
+      "Failed to start plugin 'TestPlugin': ",
+      [Error: Broken plugin],
+    ]
+  `);
+
+  const device2 = await createDevice({});
+  const client2 = await createClient(device2, client.query.app);
+
+  expect((console.error as any).mock.calls[1]).toMatchInlineSnapshot(`
+    Array [
+      "Failed to start plugin 'TestPlugin': ",
+      [Error: Broken plugin],
+    ]
+  `);
+  expect(store.getState().connections.clients.length).toBe(2);
+  expect(client2.connected.get()).toBe(true);
+  expect(client2.sandyPluginStates.size).toBe(0);
+});
+
+test('can handle device plugins that throw at start', async () => {
+  const TestPlugin = new _SandyPluginDefinition(
+    TestUtils.createMockPluginDetails(),
+    {
+      Component() {
+        return null;
+      },
+      devicePlugin() {
+        throw new Error('Broken device plugin');
+      },
+    },
+  );
+
+  const {device, store, createDevice} = await createMockFlipperWithPlugin(
+    TestPlugin,
+  );
+
+  expect(mockedConsole.errorCalls[0]).toMatchInlineSnapshot(`
+    Array [
+      "Failed to start device plugin 'TestPlugin': ",
+      [Error: Broken device plugin],
+    ]
+  `);
+
+  // not initialized
+  expect(device.sandyPluginStates.get(TestPlugin.id)).toBe(undefined);
+
+  expect(store.getState().connections.devices.length).toBe(1);
+  expect(device.connected.get()).toBe(true);
+
+  const device2 = await createDevice({});
+  expect(store.getState().connections.devices.length).toBe(2);
+  expect(device2.connected.get()).toBe(true);
+  expect(mockedConsole.errorCalls[1]).toMatchInlineSnapshot(`
+    Array [
+      "Failed to start device plugin 'TestPlugin': ",
+      [Error: Broken device plugin],
+    ]
+  `);
+  expect(device2.sandyPluginStates.size).toBe(0);
 });

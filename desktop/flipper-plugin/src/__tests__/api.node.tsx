@@ -102,6 +102,7 @@ test('Correct top level API exposed', () => {
       "LogTypes",
       "Logger",
       "MenuEntry",
+      "MockedConsole",
       "NormalizedMenuEntry",
       "Notification",
       "PluginClient",

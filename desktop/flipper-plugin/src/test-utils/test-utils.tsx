@@ -40,6 +40,7 @@ import {FlipperLib} from '../plugin/FlipperLib';
 import {stubLogger} from '../utils/Logger';
 import {Idler} from '../utils/Idler';
 import {createState} from '../state/atom';
+import baseMockConsole from 'jest-mock-console';
 
 type Renderer = RenderResult<typeof queries>;
 
@@ -532,3 +533,42 @@ function createStubIdler(): Idler {
     },
   };
 }
+
+/**
+ * Mockes the current console. Inspect results through e.g.
+ * console.errorCalls etc.
+ *
+ * Or, alternatively, expect(mockedConsole.error).toBeCalledWith...
+ *
+ * Don't forgot to call .unmock when done!
+ */
+export function mockConsole() {
+  const restoreConsole = baseMockConsole();
+  // The mocked console methods, make sure they remain available after unmocking
+  const {log, error, warn} = console as any;
+  return {
+    get logCalls(): any[][] {
+      return log.mock.calls;
+    },
+    get errorCalls(): any[][] {
+      return error.mock.calls;
+    },
+    get warnCalls(): any[][] {
+      return warn.mock.calls;
+    },
+    get log(): jest.Mock<any, any> {
+      return log as any;
+    },
+    get warn(): jest.Mock<any, any> {
+      return warn as any;
+    },
+    get error(): jest.Mock<any, any> {
+      return error as any;
+    },
+    unmock() {
+      restoreConsole();
+    },
+  };
+}
+
+export type MockedConsole = ReturnType<typeof mockConsole>;
