@@ -10,7 +10,6 @@
 import React from 'react';
 import {Mutex} from 'async-mutex';
 import {exec as unsafeExec, Output} from 'promisify-child-process';
-import {killOrphanedInstrumentsProcesses} from '../../utils/processCleanup';
 import {reportPlatformFailures} from '../../../utils/metrics';
 import {promises, constants} from 'fs';
 import memoize from 'lodash.memoize';
@@ -162,14 +161,14 @@ async function targets(
 
   // Not all users have idb installed because you can still use
   // Flipper with Simulators without it.
-  // But idb is MUCH more CPU efficient than instruments, so
-  // when installed, use it.
+  // But idb is MUCH more CPU efficient than xcrun, so
+  // when installed, use it. This still holds true
+  // with the move from instruments to xcrun.
   // TODO: Move idb availability check up.
   if (await memoize(isAvailable)(idbPath)) {
     return await idbListTargets(idbPath);
   } else {
-    await killOrphanedInstrumentsProcesses();
-    return safeExec('instruments -s devices')
+    return safeExec('xcrun xctrace list devices')
       .then(({stdout}) =>
         stdout!
           .toString()
@@ -184,7 +183,7 @@ async function targets(
           }),
       )
       .catch((e) => {
-        console.warn('Failed to query instruments:', e);
+        console.warn('Failed to query for devices using xctrace:', e);
         return [];
       });
   }
