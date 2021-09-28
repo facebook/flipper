@@ -236,15 +236,17 @@ export function getHealthchecks(): Healthchecks {
                 },
               },
               {
-                key: 'ios.instruments',
-                label: 'Instruments exists',
+                key: 'ios.xctrace',
+                label: 'xctrace exists',
                 isRequired: true,
                 run: async (_: EnvironmentInfo) => {
-                  const result = await tryExecuteCommand('which instruments');
+                  const result = await tryExecuteCommand(
+                    'xcrun xctrace version',
+                  );
                   const hasProblem = result.hasProblem;
                   const message = hasProblem
-                    ? `Instruments not found. Please try to re-install Xcode (https://developer.apple.com/xcode/). ${result.message}.`
-                    : `Instruments are installed. ${result.message}.`;
+                    ? `xctrace is not available. Please ensure you have Xcode installed and are running a recent version (https://developer.apple.com/xcode/). ${result.message}.`
+                    : `xctrace is available. ${result.message}.`;
                   return {
                     hasProblem,
                     message,
