@@ -14,6 +14,7 @@ import {
   AndroidOutlined,
   WindowsOutlined,
   CaretDownOutlined,
+  ExclamationCircleOutlined,
 } from '@ant-design/icons';
 import {Glyph, Layout, styled} from '../../ui';
 import {DeviceOS, theme, useTrackedCallback, useValue} from 'flipper-plugin';
@@ -113,7 +114,18 @@ export function AppSelector() {
           </Dropdown>
         </Radio.Group>
       ) : (
-        <Text>{'No devices available'}</Text>
+        <Layout.Horizontal gap center>
+          <ExclamationCircleOutlined style={{color: theme.warningColor}} />
+          <Text
+            type="secondary"
+            style={{
+              textTransform: 'uppercase',
+              fontSize: '0.8em',
+              color: theme.errorColor,
+            }}>
+            No devices found
+          </Text>
+        </Layout.Horizontal>
       )}
       <TroubleshootingGuide
         showGuide={GK.get('flipper_self_sufficiency')}
