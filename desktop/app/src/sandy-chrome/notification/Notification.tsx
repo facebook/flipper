@@ -217,8 +217,7 @@ export function Notification() {
       activeNotifications.map((noti) => {
         const client = getClientById(store, noti.client);
         const device = client
-          ? // eslint-disable-next-line node/no-sync
-            client.deviceSync
+          ? client.device
           : getDeviceById(store, noti.client);
         const plugin = getPlugin(noti.pluginId);
         return {
@@ -312,8 +311,7 @@ export function openNotification(store: Store, noti: PluginNotificationOrig) {
       selectPlugin({
         selectedPlugin: noti.pluginId,
         selectedApp: noti.client,
-        // eslint-disable-next-line node/no-sync
-        selectedDevice: client.deviceSync,
+        selectedDevice: client.device,
         deepLinkPayload: noti.notification.action,
       }),
     );

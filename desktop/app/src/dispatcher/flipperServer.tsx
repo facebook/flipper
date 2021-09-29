@@ -173,8 +173,7 @@ export async function handleClientConnected(store: Store, client: Client) {
     payload: client,
   });
 
-  // eslint-disable-next-line node/no-sync
-  const device = client.deviceSync;
+  const device = client.device;
   if (device) {
     store.dispatch(selectDevice(device));
     store.dispatch(selectClient(client.id));

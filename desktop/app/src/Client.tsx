@@ -103,12 +103,7 @@ export default class Client extends EventEmitter {
   store: Store;
   activePlugins: Set<string>;
 
-  /**
-   * @deprecated
-   * use plugin.deviceSync instead
-   */
-  device: Promise<BaseDevice>;
-  deviceSync: BaseDevice;
+  device: BaseDevice;
   logger: Logger;
   broadcastCallbacks: Map<string, Map<string, Set<Function>>>;
   messageBuffer: Record<
@@ -119,16 +114,6 @@ export default class Client extends EventEmitter {
     }
   > = {};
   sandyPluginStates = new Map<string /*pluginID*/, _SandyPluginInstance>();
-
-  requestCallbacks: Map<
-    number,
-    {
-      resolve: (data: any) => void;
-      reject: (err: Error) => void;
-      metadata: RequestMetadata;
-      // eslint-disable-next-line prettier/prettier
-    }
-  >;
 
   constructor(
     id: string,
@@ -151,11 +136,8 @@ export default class Client extends EventEmitter {
     this.logger = logger;
     this.store = store;
     this.broadcastCallbacks = new Map();
-    this.requestCallbacks = new Map();
     this.activePlugins = new Set();
-
-    this.device = Promise.resolve(device);
-    this.deviceSync = device;
+    this.device = device;
 
     const client = this;
     if (conn) {
@@ -345,14 +327,6 @@ export default class Client extends EventEmitter {
     this.emit('plugins-change');
   }
 
-  /**
-   * @deprecated
-   * use deviceSync.serial
-   */
-  async deviceSerial(): Promise<string> {
-    return this.deviceSync.serial;
-  }
-
   onMessage(msg: string) {
     if (typeof msg !== 'string') {
       return;
@@ -379,7 +353,7 @@ export default class Client extends EventEmitter {
 
       if (isFlipperMessageDebuggingEnabled()) {
         registerFlipperDebugMessage({
-          device: this.deviceSync?.displayTitle(),
+          device: this.device?.displayTitle(),
           app: this.query.app,
           flipperInternalMethod: method,
           plugin: data.params?.api,
@@ -398,7 +372,7 @@ export default class Client extends EventEmitter {
             }: ${error.message} + \nDevice Stack Trace: ${error.stacktrace}`,
             'deviceError',
           );
-          handleError(this.store, this.deviceSync, error);
+          handleError(this.store, this.device, error);
         } else if (method === 'refreshPlugins') {
           this.refreshPlugins();
         } else if (method === 'execute') {
@@ -458,16 +432,6 @@ export default class Client extends EventEmitter {
         }
         return; // method === 'execute'
       }
-
-      if (this.sdkVersion < 1) {
-        const callbacks = this.requestCallbacks.get(id);
-        if (!callbacks) {
-          return;
-        }
-        this.requestCallbacks.delete(id);
-        this.finishTimingRequestResponse(callbacks.metadata);
-        this.onResponse(data, callbacks.resolve, callbacks.reject);
-      }
     });
   }
 
@@ -485,7 +449,7 @@ export default class Client extends EventEmitter {
       reject(data.error);
       const {error} = data;
       if (error) {
-        handleError(this.store, this.deviceSync, error);
+        handleError(this.store, this.device, error);
       }
     } else {
       // ???
@@ -533,10 +497,6 @@ export default class Client extends EventEmitter {
         params,
       };
 
-      if (this.sdkVersion < 1) {
-        this.requestCallbacks.set(id, {reject, resolve, metadata});
-      }
-
       const data = {
         id,
         method,
@@ -546,14 +506,6 @@ export default class Client extends EventEmitter {
       const plugin = params ? params.api : undefined;
 
       console.debug(data, 'message:call');
-
-      if (this.sdkVersion < 1) {
-        this.startTimingRequestResponse({method, id, params});
-        if (this.connection) {
-          this.connection.send(data);
-        }
-        return;
-      }
 
       const mark = this.getPerformanceMark(metadata);
       performance.mark(mark);
@@ -578,7 +530,7 @@ export default class Client extends EventEmitter {
 
             if (isFlipperMessageDebuggingEnabled()) {
               registerFlipperDebugMessage({
-                device: this.deviceSync?.displayTitle(),
+                device: this.device?.displayTitle(),
                 app: this.query.app,
                 flipperInternalMethod: method,
                 payload: response,
@@ -604,7 +556,7 @@ export default class Client extends EventEmitter {
 
       if (isFlipperMessageDebuggingEnabled()) {
         registerFlipperDebugMessage({
-          device: this.deviceSync?.displayTitle(),
+          device: this.device?.displayTitle(),
           app: this.query.app,
           flipperInternalMethod: method,
           plugin: params?.api,
@@ -690,7 +642,7 @@ export default class Client extends EventEmitter {
 
     if (isFlipperMessageDebuggingEnabled()) {
       registerFlipperDebugMessage({
-        device: this.deviceSync?.displayTitle(),
+        device: this.device?.displayTitle(),
         app: this.query.app,
         flipperInternalMethod: method,
         payload: params,
@@ -749,9 +701,6 @@ export default class Client extends EventEmitter {
   }
 
   async supportsMethod(api: string, method: string): Promise<boolean> {
-    if (this.sdkVersion < 2) {
-      return Promise.resolve(false);
-    }
     const response = await this.rawCall<{
       isSupported: boolean;
     }>('isMethodSupported', true, {

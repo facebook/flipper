@@ -202,9 +202,7 @@ function computeEntries(
         // hide non default devices, unless they have a connected client or plugins
         canBeDefaultDevice(device) ||
         device.hasDevicePlugins ||
-        // Deliberate use of Sync.
-        // eslint-disable-next-line node/no-sync
-        clients.some((c) => c.deviceSync === device),
+        clients.some((c) => c.device === device),
     )
     .map((device) => {
       const deviceEntry = (

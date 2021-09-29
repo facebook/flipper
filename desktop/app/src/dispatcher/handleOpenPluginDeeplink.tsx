@@ -85,7 +85,7 @@ export async function handleOpenPluginDeeplink(store: Store, query: string) {
     : (deviceOrClient as Client);
   const device: BaseDevice = isDevicePlugin
     ? (deviceOrClient as BaseDevice)
-    : (deviceOrClient as Client).deviceSync;
+    : (deviceOrClient as Client).device;
 
   // verify plugin supported by selected device / client
   if (isDevicePlugin && !device.supportsPlugin(pluginDefinition)) {
@@ -442,7 +442,7 @@ async function selectDevicesAndClient(
             : c.plugins.has(params.pluginId),
       )
       .filter((c) => c.connected.get())
-      .filter((c) => availableDevices.includes(c.deviceSync));
+      .filter((c) => availableDevices.includes(c.device));
 
     if (validClients.length === 1) {
       return validClients[0];
@@ -558,7 +558,7 @@ async function selectClientDialog(
       'Multiple applications running this plugin were found, please select one:',
     options: clients.map((c) => ({
       value: c.id,
-      label: `${c.query.app} on ${c.deviceSync.displayTitle()}`,
+      label: `${c.query.app} on ${c.device.displayTitle()}`,
     })),
   });
   // might find nothing if id === false

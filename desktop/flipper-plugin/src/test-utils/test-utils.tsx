@@ -204,7 +204,7 @@ export function startPlugin<Module extends FlipperPluginModule<any>>(
       device_id: testDevice.serial,
       os: testDevice.serial,
     },
-    deviceSync: testDevice,
+    device: testDevice,
     isBackgroundPlugin(_pluginId: string) {
       return !!options?.isBackgroundPlugin;
     },

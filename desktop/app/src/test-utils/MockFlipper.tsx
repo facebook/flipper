@@ -192,12 +192,6 @@ export default class MockFlipper {
       new Set(supportedPlugins),
       device,
     );
-    // yikes
-    client.device = {
-      then() {
-        return device;
-      },
-    } as any;
     client.rawCall = async (
       method: string,
       _fromPlugin: boolean,

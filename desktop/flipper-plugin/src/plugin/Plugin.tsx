@@ -107,7 +107,7 @@ export interface RealFlipperClient {
     device: string;
     device_id: string;
   };
-  deviceSync: Device;
+  device: Device;
   plugins: Set<string>;
   isBackgroundPlugin(pluginId: string): boolean;
   initPlugin(pluginId: string): void;
@@ -147,13 +147,7 @@ export class SandyPluginInstance extends BasePluginInstance {
     pluginKey: string,
     initialStates?: Record<string, any>,
   ) {
-    super(
-      flipperLib,
-      definition,
-      realClient.deviceSync,
-      pluginKey,
-      initialStates,
-    );
+    super(flipperLib, definition, realClient.device, pluginKey, initialStates);
     this.realClient = realClient;
     this.definition = definition;
     const self = this;
@@ -199,7 +193,7 @@ export class SandyPluginInstance extends BasePluginInstance {
       },
       selectPlugin(pluginId: string, deeplink?: unknown) {
         flipperLib.selectPlugin(
-          realClient.deviceSync,
+          realClient.device,
           realClient,
           pluginId,
           deeplink,

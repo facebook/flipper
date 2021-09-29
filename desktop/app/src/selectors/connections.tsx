@@ -53,7 +53,7 @@ export const getActiveDevice = createSelector(
     }
     // if there is an active app, use device owning the app
     if (client) {
-      return client.deviceSync;
+      return client.device;
     }
     // if no active app, use the preferred device
     if (userPreferredDevice) {
