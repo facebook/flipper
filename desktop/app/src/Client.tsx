@@ -35,7 +35,6 @@ import {
   _SandyPluginDefinition,
 } from 'flipper-plugin';
 import {freeze} from 'immer';
-import GK from './fb-stubs/GK';
 import {message} from 'antd';
 import {
   isFlipperMessageDebuggingEnabled,
@@ -103,7 +102,6 @@ export default class Client extends EventEmitter {
   connection: ClientConnection | null | undefined;
   store: Store;
   activePlugins: Set<string>;
-  freezeData = GK.get('flipper_frozen_data');
 
   /**
    * @deprecated
@@ -363,10 +361,7 @@ export default class Client extends EventEmitter {
     batch(() => {
       let rawData;
       try {
-        rawData = JSON.parse(msg);
-        if (this.freezeData) {
-          rawData = freeze(rawData, true);
-        }
+        rawData = freeze(JSON.parse(msg), true);
       } catch (err) {
         console.error(`Invalid JSON: ${msg}`, 'clientMessage');
         return;
