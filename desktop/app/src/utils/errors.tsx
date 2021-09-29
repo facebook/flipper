@@ -20,7 +20,11 @@ export function isAuthError(
 export function isConnectivityOrAuthError(
   err: any,
 ): err is ConnectivityError | UserNotSignedInError | UserUnauthorizedError {
-  return err instanceof ConnectivityError || isAuthError(err);
+  return (
+    err instanceof ConnectivityError ||
+    isAuthError(err) ||
+    String(err).startsWith('Failed to fetch')
+  );
 }
 
 export class CancelledPromiseError extends Error {
