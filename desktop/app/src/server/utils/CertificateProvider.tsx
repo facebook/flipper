@@ -99,7 +99,10 @@ export default class CertificateProvider {
 
   get adb(): Promise<ADBClient> {
     if (this.config.enableAndroid) {
-      return this._adb!;
+      if (this._adb) {
+        return this._adb;
+      }
+      throw new Error(`ADB initialisation was not not successful`);
     }
     throw new Error('Android is not enabled in settings');
   }
@@ -114,14 +117,15 @@ export default class CertificateProvider {
     this._adb = config.enableAndroid
       ? (getAdbClient(config).catch((e) => {
           // make sure initialization failure is already logged
+          const msg =
+            'Failed to initialise ADB. Please disabled Android supportin settings, or configure a correct path';
           message.error({
             duration: 10,
-            content:
-              'Failed to initialise ADB. Please check your Android settings, ANDROID_HOME and run the Setup Doctor. ' +
-              e,
+            content: msg + e,
           });
-          console.error('Failed to initialise ADB', e);
-          this._adb = Promise.reject(e);
+          // eslint-disable-next-line flipper/no-console-error-without-context
+          console.error(msg, e);
+          this._adb = undefined; // no adb client available
         }) as Promise<ADBClient>)
       : undefined;
     if (isTest()) {
