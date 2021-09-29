@@ -28,15 +28,13 @@ class FlipperWebSocket : public FlipperSocket {
  public:
   FlipperWebSocket(
       FlipperConnectionEndpoint endpoint,
-      std::unique_ptr<FlipperSocketBasePayload> payload,
-      folly::EventBase* eventBase);
+      std::unique_ptr<FlipperSocketBasePayload> payload);
   FlipperWebSocket(
       FlipperConnectionEndpoint endpoint,
       std::unique_ptr<FlipperSocketBasePayload> payload,
-      folly::EventBase* eventBase,
       ConnectionContextStore* connectionContextStore);
 
-  virtual ~FlipperWebSocket() {}
+  virtual ~FlipperWebSocket();
 
   virtual void setEventHandler(SocketEventHandler eventHandler) override;
   virtual void setMessageHandler(SocketMessageHandler messageHandler) override;
@@ -55,13 +53,12 @@ class FlipperWebSocket : public FlipperSocket {
  private:
   FlipperConnectionEndpoint endpoint_;
   std::unique_ptr<FlipperSocketBasePayload> payload_;
-  folly::EventBase* eventBase_;
   ConnectionContextStore* connectionContextStore_;
-
-  FlipperPlatformWebSocket* socket_;
 
   SocketEventHandler eventHandler_;
   SocketMessageHandler messageHandler_;
+
+  FlipperPlatformWebSocket* socket_;
 };
 
 class FlipperWebSocketProvider : public FlipperSocketProvider {
@@ -72,7 +69,7 @@ class FlipperWebSocketProvider : public FlipperSocketProvider {
       std::unique_ptr<FlipperSocketBasePayload> payload,
       folly::EventBase* eventBase) override {
     return std::make_unique<FlipperWebSocket>(
-        std::move(endpoint), std::move(payload), eventBase);
+        std::move(endpoint), std::move(payload));
   }
   virtual std::unique_ptr<FlipperSocket> create(
       FlipperConnectionEndpoint endpoint,
@@ -80,10 +77,7 @@ class FlipperWebSocketProvider : public FlipperSocketProvider {
       folly::EventBase* eventBase,
       ConnectionContextStore* connectionContextStore) override {
     return std::make_unique<FlipperWebSocket>(
-        std::move(endpoint),
-        std::move(payload),
-        eventBase,
-        connectionContextStore);
+        std::move(endpoint), std::move(payload), connectionContextStore);
   }
 };
 

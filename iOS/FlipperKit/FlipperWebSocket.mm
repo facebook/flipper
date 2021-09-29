@@ -92,21 +92,20 @@ class WebSocketSerializer : public FlipperPayloadSerializer {
 
 FlipperWebSocket::FlipperWebSocket(
     FlipperConnectionEndpoint endpoint,
-    std::unique_ptr<FlipperSocketBasePayload> payload,
-    folly::EventBase* eventBase)
-    : endpoint_(std::move(endpoint)),
-      payload_(std::move(payload)),
-      eventBase_(eventBase) {}
+    std::unique_ptr<FlipperSocketBasePayload> payload)
+    : endpoint_(std::move(endpoint)), payload_(std::move(payload)) {}
 
 FlipperWebSocket::FlipperWebSocket(
     FlipperConnectionEndpoint endpoint,
     std::unique_ptr<FlipperSocketBasePayload> payload,
-    folly::EventBase* eventBase,
     ConnectionContextStore* connectionContextStore)
     : endpoint_(std::move(endpoint)),
       payload_(std::move(payload)),
-      eventBase_(eventBase),
       connectionContextStore_(connectionContextStore) {}
+
+FlipperWebSocket::~FlipperWebSocket() {
+  disconnect();
+}
 
 void FlipperWebSocket::setEventHandler(SocketEventHandler eventHandler) {
   eventHandler_ = std::move(eventHandler);
@@ -169,8 +168,7 @@ bool FlipperWebSocket::connect(FlipperConnectionManager* manager) {
         promise.set_value(false);
       }
     }
-    eventBase_->runInEventBaseThread(
-        [eventHandler, event]() { eventHandler(event); });
+    eventHandler(event);
   };
   socket_.messageHandler = ^(const std::string& message) {
     this->messageHandler_(message);
@@ -240,7 +238,6 @@ void FlipperWebSocket::sendExpectResponse(
 
   [socket_ setMessageHandler:^(const std::string& msg) {
     completion(msg, false);
-    [socket_ setMessageHandler:NULL];
   }];
   NSError* error = NULL;
   [socket_ send:messageObjc error:&error];
