@@ -2470,10 +2470,10 @@
   resolved "https://registry.yarnpkg.com/@tanishiking/aho-corasick/-/aho-corasick-0.0.1.tgz#013180c33d4d8432fbd83d7db51f5d5f79f944e1"
   integrity sha512-70Fy5dKDfoaKq9CaWVaSvheCmQ/M7BxNAlQJfL1qUqX5/cyUZpQvK8nGkGSAUtHs7yokOOlOR6+WlIr6GVJrjw==
 
-"@testing-library/dom@^8.0.0", "@testing-library/dom@^8.2.0":
-  version "8.2.0"
-  resolved "https://registry.yarnpkg.com/@testing-library/dom/-/dom-8.2.0.tgz#ac46a1b9d7c81f0d341ae38fb5424b64c27d151e"
-  integrity sha512-U8cTWENQPHO3QHvxBdfltJ+wC78ytMdg69ASvIdkGdQ/XRg4M9H2vvM3mHddxl+w/fM6NNqzGMwpQoh82v9VIA==
+"@testing-library/dom@^8.0.0", "@testing-library/dom@^8.7.0":
+  version "8.7.0"
+  resolved "https://registry.yarnpkg.com/@testing-library/dom/-/dom-8.7.0.tgz#9fdcc1bf34dfa49b63815a3f76491330cf115724"
+  integrity sha512-8oOfBG51v8aN9D8eehwzgnEETf9Lxv/3dZyPZuar1JAp9OK0I9d7Y2MR6TEQyj/E/iN1kCIeYaCI445s5C9RDg==
   dependencies:
     "@babel/code-frame" "^7.10.4"
     "@babel/runtime" "^7.12.5"
@@ -13926,6 +13926,7 @@ xmlchars@^2.2.0:
 
 xmldom@^0.5.0, "xmldom@github:xmldom/xmldom#0.7.0":
   version "0.7.0"
+  uid c568938641cc1f121cef5b4df80fcfda1e489b6e
   resolved "https://codeload.github.com/xmldom/xmldom/tar.gz/c568938641cc1f121cef5b4df80fcfda1e489b6e"
 
 xtend@^4.0.0, xtend@~4.0.1:
