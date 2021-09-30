@@ -22,7 +22,7 @@ import {DeleteOutlined} from '@ant-design/icons';
 
 const MAX_LOG_ITEMS = 1000;
 
-const logsAtom = createState<any[]>([]);
+export const logsAtom = createState<any[]>([]);
 export const errorCounterAtom = createState(0);
 
 export function enableConsoleHook() {
