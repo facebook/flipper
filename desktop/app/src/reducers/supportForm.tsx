@@ -240,7 +240,7 @@ export class Group {
   }
 }
 
-const DEFAULT_GROUP = new Group(
+export const DEFAULT_GROUP = new Group(
   DEFAULT_SUPPORT_GROUP.name,
   DEFAULT_SUPPORT_GROUP.workplaceGroupID,
   DEFAULT_SUPPORT_GROUP.requiredPlugins,
