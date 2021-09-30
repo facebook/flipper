@@ -603,6 +603,7 @@ public final class AccessibilityUtil {
         .put("long-clickable", nodeInfo.isLongClickable())
         .put("multiline", nodeInfo.isMultiLine())
         .put("password", nodeInfo.isPassword())
+        .put("screenreader-focusable", nodeInfo.isScreenReaderFocusable())
         .put("scrollable", nodeInfo.isScrollable())
         .put("selected", nodeInfo.isSelected())
         .put("text", nodeInfo.getText())
