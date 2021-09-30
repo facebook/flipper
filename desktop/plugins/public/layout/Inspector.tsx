@@ -312,11 +312,15 @@ export default class Inspector extends Component<Props, State> {
   ): Promise<Array<Element>> {
     if (ids.length > 0 && this.props.client.isConnected) {
       const {forAccessibilityEvent} = options;
-      const {elements}: {elements: Array<Element>} =
-        await this.props.client.call(this.call().GET_NODES, {
+      const {elements}: {elements: Array<Element>} = await this.props.client
+        .call(this.call().GET_NODES, {
           ids,
           forAccessibilityEvent,
           selected: false,
+        })
+        .catch((e) => {
+          console.error(`[Layout] Failed to fetch nodes from app:`, e);
+          return {elements: []};
         });
       if (!elements) {
         return [];

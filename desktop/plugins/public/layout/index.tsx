@@ -110,7 +110,12 @@ export default class LayoutPlugin extends FlipperPlugin<
         callClient,
         'getNodes',
         supportsMethod,
-      );
+      ).catch((e) => {
+        console.error(
+          `[Layout] Failed to fetch Nodes from app while creating export`,
+          e,
+        );
+      });
     }
     const AXelements: ElementMap = {};
     if (rootAXElement) {
