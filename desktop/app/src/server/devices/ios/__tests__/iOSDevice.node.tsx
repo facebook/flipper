@@ -61,13 +61,39 @@ test('test parseXcodeFromCoreSimPath from standard locations', () => {
 test('test getAllPromisesForQueryingDevices when xcode detected', () => {
   const flipperServer = new FlipperServerImpl({}, mockStore, getInstance());
   flipperServer.ios.iosBridge = {} as IOSBridge;
-  const promises = flipperServer.ios.getAllPromisesForQueryingDevices(true);
-  expect(promises.length).toEqual(3);
+  const promises = flipperServer.ios.getAllPromisesForQueryingDevices(
+    true,
+    false,
+  );
+  expect(promises.length).toEqual(2);
 });
 
 test('test getAllPromisesForQueryingDevices when xcode is not detected', () => {
   const flipperServer = new FlipperServerImpl({}, mockStore, getInstance());
   flipperServer.ios.iosBridge = {} as IOSBridge;
-  const promises = flipperServer.ios.getAllPromisesForQueryingDevices(false);
+  const promises = flipperServer.ios.getAllPromisesForQueryingDevices(
+    false,
+    true,
+  );
   expect(promises.length).toEqual(1);
+});
+
+test('test getAllPromisesForQueryingDevices when xcode and idb are both unavailable', () => {
+  const flipperServer = new FlipperServerImpl({}, mockStore, getInstance());
+  flipperServer.ios.iosBridge = {} as IOSBridge;
+  const promises = flipperServer.ios.getAllPromisesForQueryingDevices(
+    false,
+    false,
+  );
+  expect(promises.length).toEqual(0);
+});
+
+test('test getAllPromisesForQueryingDevices when both idb and xcode are available', () => {
+  const flipperServer = new FlipperServerImpl({}, mockStore, getInstance());
+  flipperServer.ios.iosBridge = {} as IOSBridge;
+  const promises = flipperServer.ios.getAllPromisesForQueryingDevices(
+    true,
+    true,
+  );
+  expect(promises.length).toEqual(2);
 });

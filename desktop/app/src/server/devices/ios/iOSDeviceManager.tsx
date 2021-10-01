@@ -22,6 +22,7 @@ import {
   makeIOSBridge,
 } from './IOSBridge';
 import {FlipperServerImpl} from '../../FlipperServerImpl';
+import {notNull} from '../../utils/typeUtils';
 
 type iOSSimulatorDevice = {
   state: 'Booted' | 'Shutdown' | 'Shutting Down';
@@ -114,55 +115,51 @@ export class IOSDeviceManager {
 
   getAllPromisesForQueryingDevices(
     isXcodeDetected: boolean,
+    isIdbAvailable: boolean,
   ): Array<Promise<any>> {
     const {config} = this.flipperServer;
-    const promArray = [
-      getActiveDevices(config.idbPath, config.enablePhysicalIOS).then(
-        (devices: IOSDeviceParams[]) => {
-          this.processDevices(devices, 'physical');
-        },
-      ),
-    ];
-    if (isXcodeDetected) {
-      promArray.push(
-        ...[
-          this.checkXcodeVersionMismatch(),
-          this.getSimulators(true).then((devices) => {
-            this.processDevices(devices, 'emulator');
-          }),
-        ],
-      );
-    }
-    return promArray;
+    return [
+      isIdbAvailable
+        ? getActiveDevices(config.idbPath, config.enablePhysicalIOS).then(
+            (devices: IOSDeviceParams[]) => {
+              this.processDevices(devices);
+            },
+          )
+        : null,
+      !isIdbAvailable && isXcodeDetected
+        ? this.getSimulators(true).then((devices) =>
+            this.processDevices(devices),
+          )
+        : null,
+      isXcodeDetected ? this.checkXcodeVersionMismatch() : null,
+    ].filter(notNull);
   }
 
   private async queryDevices(): Promise<any> {
+    const {config} = this.flipperServer;
     const isXcodeInstalled = await iosUtil.isXcodeDetected();
-    return Promise.all(this.getAllPromisesForQueryingDevices(isXcodeInstalled));
+    const isIdbAvailable = await iosUtil.isAvailable(config.idbPath);
+    return Promise.all(
+      this.getAllPromisesForQueryingDevices(isXcodeInstalled, isIdbAvailable),
+    );
   }
 
-  private processDevices(
-    activeDevices: IOSDeviceParams[],
-    targetType: 'physical' | 'emulator',
-  ) {
+  private processDevices(activeDevices: IOSDeviceParams[]) {
     if (!this.iosBridge) {
       throw new Error('iOS bridge not yet initialized');
     }
     const currentDeviceIDs = new Set(
       this.flipperServer
         .getDevices()
-        .filter(
-          (device) =>
-            device.info.os === 'iOS' && device.info.deviceType === targetType,
-        )
+        .filter((device) => device.info.os === 'iOS')
         .map((device) => device.serial),
     );
 
     for (const {udid, type, name} of activeDevices) {
       if (currentDeviceIDs.has(udid)) {
         currentDeviceIDs.delete(udid);
-      } else if (targetType === type) {
-        console.log(`[conn] detected new iOS device ${targetType} ${udid}`);
+      } else {
+        console.log(`[conn] detected new iOS device ${udid}`);
         const iOSDevice = new IOSDevice(
           this.flipperServer,
           this.iosBridge,
@@ -175,9 +172,7 @@ export class IOSDeviceManager {
     }
 
     currentDeviceIDs.forEach((id) => {
-      console.log(
-        `[conn] Could no longer find ${targetType} ${id}, removing...`,
-      );
+      console.log(`[conn] Could no longer find ${id}, removing...`);
       this.flipperServer.unregisterDevice(id);
     });
   }
