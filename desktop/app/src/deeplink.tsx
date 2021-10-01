@@ -21,6 +21,22 @@ import {Dialog} from 'flipper-plugin';
 import {handleOpenPluginDeeplink} from './dispatcher/handleOpenPluginDeeplink';
 import {message} from 'antd';
 
+type DeeplinkInteraction = {
+  state: 'INIT' | 'ERROR';
+  errorMessage?: string;
+};
+
+function track(
+  logger: Logger,
+  query: string,
+  interaction: DeeplinkInteraction,
+) {
+  logger.track('usage', 'deeplink', {
+    ...interaction,
+    query,
+  });
+}
+
 const UNKNOWN = 'Unknown deeplink';
 /**
  * Handle a flipper:// deeplink. Will throw if the URL pattern couldn't be recognised
@@ -30,9 +46,21 @@ export async function handleDeeplink(
   logger: Logger,
   query: string,
 ): Promise<void> {
-  const uri = new URL(query);
-  if (uri.protocol !== 'flipper:') {
+  const trackInteraction = track.bind(null, logger, query);
+  const unknownError = () => {
+    trackInteraction({
+      state: 'ERROR',
+      errorMessage: UNKNOWN,
+    });
     throw new Error(UNKNOWN);
+  };
+  const uri = new URL(query);
+
+  trackInteraction({
+    state: 'INIT',
+  });
+  if (uri.protocol !== 'flipper:') {
+    throw unknownError();
   }
   if (uri.href.startsWith('flipper://open-plugin')) {
     return handleOpenPluginDeeplink(store, query);
@@ -57,7 +85,7 @@ export async function handleDeeplink(
           handle.close();
         });
     }
-    throw new Error(UNKNOWN);
+    throw unknownError();
   } else if (uri.pathname.match(/^\/*support-form\/*$/)) {
     const formParam = uri.searchParams.get('form');
     const grp = deeplinkFormParamToGroups(formParam);
@@ -65,7 +93,7 @@ export async function handleDeeplink(
       grp.handleSupportFormDeeplinks(store);
       return;
     }
-    throw new Error(UNKNOWN);
+    throw unknownError();
   } else if (uri.pathname.match(/^\/*login\/*$/)) {
     const token = uri.searchParams.get('token');
     store.dispatch(setPastedToken(token ?? undefined));
@@ -93,7 +121,7 @@ export async function handleDeeplink(
     );
     return;
   } else {
-    throw new Error(UNKNOWN);
+    throw unknownError();
   }
 }
 

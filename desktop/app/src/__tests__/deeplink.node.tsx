@@ -97,4 +97,54 @@ test('Will throw error on invalid deeplinks', async () => {
   expect(() =>
     handleDeeplink(undefined as any, logger, `flipper://test`),
   ).rejects.toThrowErrorMatchingInlineSnapshot(`"Unknown deeplink"`);
+
+  expect(logger.track).toHaveBeenCalledTimes(2);
+  expect(logger.track).toHaveBeenLastCalledWith('usage', 'deeplink', {
+    query: 'flipper://test',
+    state: 'ERROR',
+    errorMessage: 'Unknown deeplink',
+  });
+});
+
+test('Will throw error on invalid protocol', async () => {
+  const logger: Logger = {
+    track: jest.fn(),
+  } as any;
+
+  expect(() =>
+    handleDeeplink(undefined as any, logger, `notflipper://test`),
+  ).rejects.toThrowErrorMatchingInlineSnapshot(`"Unknown deeplink"`);
+
+  expect(logger.track).toHaveBeenCalledTimes(2);
+  expect(logger.track).toHaveBeenLastCalledWith('usage', 'deeplink', {
+    query: 'notflipper://test',
+    state: 'ERROR',
+    errorMessage: 'Unknown deeplink',
+  });
+});
+
+test('Will track deeplinks', async () => {
+  const definition = new _SandyPluginDefinition(
+    TestUtils.createMockPluginDetails(),
+    {
+      plugin: () => {},
+      Component() {
+        return <h1>{'world'}</h1>;
+      },
+    },
+  );
+  const {store, logger} = await renderMockFlipperWithPlugin(definition);
+  logger.track = jest.fn();
+
+  await handleDeeplink(
+    store,
+    logger,
+    'flipper://open-plugin?plugin-id=TestPlugin&client=TestApp&payload=universe',
+  );
+
+  expect(logger.track).toHaveBeenCalledWith('usage', 'deeplink', {
+    query:
+      'flipper://open-plugin?plugin-id=TestPlugin&client=TestApp&payload=universe',
+    state: 'INIT',
+  });
 });
