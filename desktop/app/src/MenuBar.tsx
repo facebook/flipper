@@ -7,6 +7,9 @@
  * @format
  */
 
+// Deliberate use of remote in this context.
+/* eslint-disable no-restricted-properties */
+
 import {FlipperPlugin, FlipperDevicePlugin, PluginDefinition} from './plugin';
 import {
   showOpenDialog,
