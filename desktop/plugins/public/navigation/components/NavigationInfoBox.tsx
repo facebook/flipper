@@ -37,7 +37,7 @@ const ScreenshotContainer = styled.div({
   width: 200,
   minWidth: 200,
   overflow: 'hidden',
-  borderLeft: `1px ${colors.blueGreyTint90} solid`,
+  borderLeft: `1px ${colors.blueGrayTint90} solid`,
   position: 'relative',
   height: '100%',
   borderRadius: 10,
@@ -61,7 +61,7 @@ const NavigationDataContainer = styled.div({
 const Footer = styled.div({
   width: '100%',
   padding: '10px',
-  borderTop: `1px ${colors.blueGreyTint90} solid`,
+  borderTop: `1px ${colors.blueGrayTint90} solid`,
   display: 'flex',
   alignItems: 'center',
 });
@@ -92,7 +92,7 @@ const Header = styled.div({
   userSelect: 'text',
   cursor: 'text',
   padding: 10,
-  borderBottom: `1px ${colors.blueGreyTint90} solid`,
+  borderBottom: `1px ${colors.blueGrayTint90} solid`,
   display: 'flex',
 });
 

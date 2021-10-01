@@ -27,7 +27,7 @@ export const presetColors = Object.values({
   blue: '#4267b2', // Blue - Active-state nav glyphs, nav bars, links, buttons
   green: '#42b72a', // Green - Confirmation, success, commerce and status
   red: '#FC3A4B', // Red - Badges, error states
-  blueGrey: '#5f6673', // Blue Grey
+  blueGray: '#5f6673', // Blue Grey
   slate: '#b9cad2', // Slate
   aluminum: '#a3cedf', // Aluminum
   seaFoam: '#54c7ec', // Sea Foam

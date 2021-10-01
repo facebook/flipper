@@ -87,15 +87,15 @@ export const colors = {
   dark90: '#191919', // Dark 90 – Nav Bar, Tab Bar, Cards - Nav bar, tab bar, cards
   dark95: '#0d0d0d', // Dark 95 – Background Wash - Background Wash
   // FIG Spectrum
-  blueGrey: '#5f6673', // Blue Grey
-  blueGreyDark3: '#23272f', // Blue Grey - Dark 3
-  blueGreyDark2: '#303846', // Blue Grey - Dark 2
-  blueGreyDark1: '#4f5766', // Blue Grey - Dark 1
-  blueGreyTint15: '#777d88', // Blue Grey - Tint 15
-  blueGreyTint30: '#8f949d', // Blue Grey - Tint 30
-  blueGreyTint50: '#afb3b9', // Blue Grey - Tint 50
-  blueGreyTint70: '#cfd1d5', // Blue Grey - Tint 70
-  blueGreyTint90: '#eff0f1', // Blue Grey - Tint 90
+  blueGray: '#5f6673', // Blue Grey
+  blueGrayDark3: '#23272f', // Blue Grey - Dark 3
+  blueGrayDark2: '#303846', // Blue Grey - Dark 2
+  blueGrayDark1: '#4f5766', // Blue Grey - Dark 1
+  blueGrayTint15: '#777d88', // Blue Grey - Tint 15
+  blueGrayTint30: '#8f949d', // Blue Grey - Tint 30
+  blueGrayTint50: '#afb3b9', // Blue Grey - Tint 50
+  blueGrayTint70: '#cfd1d5', // Blue Grey - Tint 70
+  blueGrayTint90: '#eff0f1', // Blue Grey - Tint 90
   slate: '#b9cad2', // Slate
   slateDark3: '#688694', // Slate - Dark 3
   slateDark2: '#89a1ac', // Slate - Dark 2

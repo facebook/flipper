@@ -7,6 +7,8 @@
  * @format
  */
 
+/* eslint-disable promise/catch-or-return */
+
 import {render, fireEvent} from '@testing-library/react';
 import {TestUtils} from '../../';
 import {sleep} from '../../utils/sleep';
