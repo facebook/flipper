@@ -13,6 +13,7 @@ import {
   setPastedToken,
 } from './reducers/application';
 import {Group, SUPPORTED_GROUPS} from './reducers/supportForm';
+import {Logger} from './fb-interfaces/Logger';
 import {Store} from './reducers/index';
 import {importDataToStore} from './utils/exportData';
 import {selectPlugin} from './reducers/connections';
@@ -26,6 +27,7 @@ const UNKNOWN = 'Unknown deeplink';
  */
 export async function handleDeeplink(
   store: Store,
+  logger: Logger,
   query: string,
 ): Promise<void> {
   const uri = new URL(query);
@@ -119,13 +121,13 @@ export const uriComponents = (url: string): Array<string> => {
   return [];
 };
 
-export function openDeeplinkDialog(store: Store) {
+export function openDeeplinkDialog(store: Store, logger: Logger) {
   Dialog.prompt({
     title: 'Open deeplink',
     message: 'Enter a deeplink:',
     defaultValue: 'flipper://',
     onConfirm: async (deeplink) => {
-      await handleDeeplink(store, deeplink);
+      await handleDeeplink(store, logger, deeplink);
       return deeplink;
     },
   });

@@ -21,7 +21,7 @@ import {tryCatchReportPlatformFailures} from '../utils/metrics';
 import {handleDeeplink} from '../deeplink';
 import {Dialog} from 'flipper-plugin';
 
-export default (store: Store, _logger: Logger) => {
+export default (store: Store, logger: Logger) => {
   const currentWindow = remote.getCurrentWindow();
   const onFocus = () => {
     setImmediate(() => {
@@ -59,7 +59,7 @@ export default (store: Store, _logger: Logger) => {
   ipcRenderer.on(
     'flipper-protocol-handler',
     (_event: IpcRendererEvent, query: string) => {
-      handleDeeplink(store, query).catch((e) => {
+      handleDeeplink(store, logger, query).catch((e) => {
         console.warn('Failed to handle deeplink', query, e);
         Dialog.alert({
           title: 'Failed to open deeplink',

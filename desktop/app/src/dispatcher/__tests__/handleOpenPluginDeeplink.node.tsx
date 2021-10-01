@@ -80,7 +80,7 @@ test('Triggering a deeplink will work', async () => {
       },
     },
   );
-  const {renderer, client, store} = await renderMockFlipperWithPlugin(
+  const {renderer, client, store, logger} = await renderMockFlipperWithPlugin(
     definition,
   );
 
@@ -88,6 +88,7 @@ test('Triggering a deeplink will work', async () => {
 
   await handleDeeplink(
     store,
+    logger,
     `flipper://open-plugin?plugin-id=${definition.id}&client=${client.query.app}&payload=universe`,
   );
 
@@ -138,9 +139,8 @@ test('triggering a deeplink without applicable device can wait for a device', as
       supportedDevices: [{os: 'iOS'}],
     },
   );
-  const {renderer, store, createDevice} = await renderMockFlipperWithPlugin(
-    definition,
-  );
+  const {renderer, store, logger, createDevice} =
+    await renderMockFlipperWithPlugin(definition);
 
   store.dispatch(
     selectPlugin({selectedPlugin: 'nonexisting', deepLinkPayload: null}),
@@ -153,6 +153,7 @@ test('triggering a deeplink without applicable device can wait for a device', as
 
   const handlePromise = handleDeeplink(
     store,
+    logger,
     `flipper://open-plugin?plugin-id=${definition.id}&devices=iOS`,
   );
 
@@ -214,7 +215,7 @@ test('triggering a deeplink without applicable client can wait for a device', as
       id: 'pluggy',
     },
   );
-  const {renderer, store, createClient, device} =
+  const {renderer, store, createClient, device, logger} =
     await renderMockFlipperWithPlugin(definition);
 
   store.dispatch(
@@ -228,6 +229,7 @@ test('triggering a deeplink without applicable client can wait for a device', as
 
   const handlePromise = handleDeeplink(
     store,
+    logger,
     `flipper://open-plugin?plugin-id=${definition.id}&client=clienty`,
   );
 

@@ -368,7 +368,7 @@ function getTemplate(
     {
       label: 'Trigger deeplink...',
       click() {
-        openDeeplinkDialog(store);
+        openDeeplinkDialog(store, logger);
       },
     },
     {

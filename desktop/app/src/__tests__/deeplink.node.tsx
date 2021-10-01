@@ -20,6 +20,7 @@ import {
   useValue,
 } from 'flipper-plugin';
 import {handleDeeplink} from '../deeplink';
+import {Logger} from '../fb-interfaces/Logger';
 
 test('Triggering a deeplink will work', async () => {
   const linksSeen: any[] = [];
@@ -46,7 +47,7 @@ test('Triggering a deeplink will work', async () => {
       },
     },
   );
-  const {renderer, client, store} = await renderMockFlipperWithPlugin(
+  const {renderer, client, store, logger} = await renderMockFlipperWithPlugin(
     definition,
   );
 
@@ -54,6 +55,7 @@ test('Triggering a deeplink will work', async () => {
 
   await handleDeeplink(
     store,
+    logger,
     `flipper://${client.query.app}/${definition.id}/universe`,
   );
 
@@ -88,8 +90,11 @@ test('Triggering a deeplink will work', async () => {
 });
 
 test('Will throw error on invalid deeplinks', async () => {
-  // flipper:///support-form/?form=litho
+  const logger: Logger = {
+    track: jest.fn(),
+  } as any;
+
   expect(() =>
-    handleDeeplink(undefined as any, `flipper://test`),
+    handleDeeplink(undefined as any, logger, `flipper://test`),
   ).rejects.toThrowErrorMatchingInlineSnapshot(`"Unknown deeplink"`);
 });
