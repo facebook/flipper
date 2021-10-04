@@ -94,7 +94,6 @@ const Horizontal = styled(Container)({
 });
 
 const ScrollParent = styled.div<{axis?: ScrollAxis}>(({axis}) => ({
-  flex: `1 1 0`,
   boxSizing: 'border-box',
   position: 'relative',
   overflowX: axis === 'y' ? 'hidden' : 'auto',
@@ -102,7 +101,6 @@ const ScrollParent = styled.div<{axis?: ScrollAxis}>(({axis}) => ({
 }));
 
 const ScrollChild = styled(Container)<{axis?: ScrollAxis}>(({axis}) => ({
-  position: 'absolute',
   minHeight: '100%',
   minWidth: '100%',
   maxWidth: axis === 'y' ? '100%' : undefined,
