@@ -28,6 +28,7 @@ import BaseDevice from '../devices/BaseDevice';
 import Client from '../Client';
 import {RocketOutlined} from '@ant-design/icons';
 import {showEmulatorLauncher} from '../sandy-chrome/appinspect/LaunchEmulator';
+import {getAllClients} from '../reducers/connections';
 
 type OpenPluginParams = {
   pluginId: string;
@@ -432,9 +433,8 @@ async function selectDevicesAndClient(
 
   // wait for valid client
   while (true) {
-    const validClients = store
-      .getState()
-      .connections.clients.filter(
+    const validClients = getAllClients(store.getState().connections)
+      .filter(
         // correct app name, or, if not set, an app that at least supports this plugin
         (c) =>
           params.client

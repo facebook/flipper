@@ -2,8 +2,8 @@
 
 exports[`can create a Fake flipper with legacy wrapper 1`] = `
 Object {
-  "clients": Array [
-    Object {
+  "clients": Map {
+    "TestApp#Android#MockAndroidDevice#serial" => Object {
       "id": "TestApp#Android#MockAndroidDevice#serial",
       "query": Object {
         "app": "TestApp",
@@ -13,7 +13,7 @@ Object {
         "sdk_version": 4,
       },
     },
-  ],
+  },
   "deepLinkPayload": null,
   "devices": Array [
     Object {

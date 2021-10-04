@@ -40,6 +40,8 @@ import {
   setDevicePluginDisabled,
   setPluginEnabled,
   setPluginDisabled,
+  getClientsByAppName,
+  getAllClients,
 } from '../reducers/connections';
 import {deconstructClientId} from '../utils/clientUtils';
 import {clearMessageQueue} from '../reducers/pluginMessageQueue';
@@ -195,9 +197,7 @@ function switchClientPlugin(
     return;
   }
   const {connections} = store.getState();
-  const clients = connections.clients.filter(
-    (client) => client.query.app === selectedApp,
-  );
+  const clients = getClientsByAppName(connections.clients, selectedApp);
   if (connections.enabledPlugins[selectedApp]?.includes(plugin.id)) {
     clients.forEach((client) => {
       stopPlugin(client, plugin.id);
@@ -240,7 +240,7 @@ function updateClientPlugin(
   plugin: PluginDefinition,
   enable: boolean,
 ) {
-  const clients = store.getState().connections.clients;
+  const clients = getAllClients(store.getState().connections);
   if (enable) {
     const selectedApp = getSelectedAppName(store);
     if (selectedApp) {

@@ -41,7 +41,7 @@ type StateFromProps = {
   gatekeepedPlugins: Array<PluginDetails>;
   disabledPlugins: Array<PluginDetails>;
   failedPlugins: Array<[PluginDetails, string]>;
-  clients: Array<Client>;
+  clients: Map<string, Client>;
   selectedDevice: string | null | undefined;
   devicePlugins: PluginDefinition[];
   clientPlugins: PluginDefinition[];
@@ -126,7 +126,7 @@ class PluginDebugger extends Component<Props> {
   }
 
   getSupportedClients(id: string): string {
-    return this.props.clients
+    return Array.from(this.props.clients.values())
       .reduce((acc: Array<string>, cv: Client) => {
         if (cv.plugins.has(id)) {
           acc.push(cv.query.app);

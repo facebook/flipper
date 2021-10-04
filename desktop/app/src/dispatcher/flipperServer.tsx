@@ -144,7 +144,7 @@ export default async (store: Store, logger: Logger) => {
 
 export async function handleClientConnected(store: Store, client: Client) {
   const {connections} = store.getState();
-  const existingClient = connections.clients.find((c) => c.id === client.id);
+  const existingClient = connections.clients.get(client.id);
 
   if (existingClient) {
     existingClient.destroy();

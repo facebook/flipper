@@ -70,7 +70,7 @@ type StateV2 = {
   userPreferredApp: null | string; // The name of the preferred app, e.g. Facebook
   enabledPlugins: {[client: string]: string[]};
   enabledDevicePlugins: Set<string>;
-  clients: Array<Client>;
+  clients: Map<string, Client>;
   uninitializedClients: UninitializedClient[];
   deepLinkPayload: unknown;
   staticView: StaticView;
@@ -181,7 +181,7 @@ const INITAL_STATE: State = {
     'Hermesdebuggerrn',
     'React',
   ]),
-  clients: [],
+  clients: new Map(),
   uninitializedClients: [],
   deepLinkPayload: null,
   staticView: WelcomeScreenStaticView,
@@ -253,14 +253,14 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
       if (selectNewDevice) {
         // need to select a different app
         selectedAppId =
-          state.clients.find(
+          getAllClients(state).find(
             (c) =>
               c.device === payload && c.query.app === state.userPreferredApp,
           )?.id ?? null;
         // nothing found, try first app if any
         if (!selectedAppId) {
           selectedAppId =
-            state.clients.find((c) => c.device === payload)?.id ?? null;
+            getAllClients(state).find((c) => c.device === payload)?.id ?? null;
         }
       }
 
@@ -279,7 +279,7 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
         performance.mark(`activePlugin-${selectedPlugin}`);
       }
 
-      const client = state.clients.find((c) => c.id === selectedAppId);
+      const client = state.clients.get(selectedAppId!);
       const device = action.payload.selectedDevice ?? client?.device;
 
       if (!device) {
@@ -298,7 +298,7 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
           : state.userPreferredDevice,
         selectedAppId: selectedAppId ?? null,
         userPreferredApp:
-          state.clients.find((c) => c.id === selectedAppId)?.query.app ??
+          state.clients.get(selectedAppId!)?.query.app ??
           state.userPreferredApp,
         selectedPlugin,
         userPreferredPlugin: selectedPlugin,
@@ -309,42 +309,38 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
     case 'NEW_CLIENT': {
       const {payload} = action;
 
-      const newClients = state.clients.filter((client) => {
-        if (client.id === payload.id) {
+      return produce(state, (draft) => {
+        if (draft.clients.has(payload.id)) {
           console.error(
-            `Received a new connection for client ${client.id}, but the old connection was not cleaned up`,
+            `Received a new connection for client ${payload.id}, but the old connection was not cleaned up`,
           );
-          return false;
         }
-        return true;
+        draft.clients.set(payload.id, payload);
+
+        // select new client if nothing select, this one is preferred, or the old one is offline
+        const selectNewClient =
+          !draft.selectedAppId ||
+          draft.userPreferredApp === payload.query.app ||
+          draft.clients.get(draft.selectedAppId!)?.connected.get() === false;
+
+        if (selectNewClient) {
+          draft.selectedAppId = payload.id;
+          draft.selectedDevice = payload.device;
+        }
+
+        const unitialisedIndex = draft.uninitializedClients.findIndex(
+          (c) =>
+            c.deviceName === payload.query.device ||
+            c.appName === payload.query.app,
+        );
+        if (unitialisedIndex !== -1)
+          draft.uninitializedClients.splice(unitialisedIndex, 1);
       });
-      newClients.push(payload);
-
-      // select new client if nothing select, this one is preferred, or the old one is offline
-      const selectNewClient =
-        !state.selectedAppId ||
-        state.userPreferredApp === payload.query.app ||
-        state.clients
-          .find((c) => c.id === state.selectedAppId)
-          ?.connected.get() === false;
-
-      return {
-        ...state,
-        selectedAppId: selectNewClient ? payload.id : state.selectedAppId,
-        selectedDevice: selectNewClient ? payload.device : state.selectedDevice,
-        clients: newClients,
-        uninitializedClients: state.uninitializedClients.filter((c) => {
-          return (
-            c.deviceName !== payload.query.device ||
-            c.appName !== payload.query.app
-          );
-        }),
-      };
     }
 
     case 'SELECT_CLIENT': {
       const {payload} = action;
-      const client = state.clients.find((c) => c.id === payload);
+      const client = state.clients.get(payload);
 
       if (!client) {
         return state;
@@ -369,15 +365,12 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
     case 'CLIENT_REMOVED': {
       const {payload} = action;
 
-      const newClients = state.clients.filter(
-        (client) => client.id !== payload,
-      );
-      return {
-        ...state,
-        selectedAppId:
-          state.selectedAppId === payload ? null : state.selectedAppId,
-        clients: newClients,
-      };
+      return produce(state, (draft) => {
+        draft.clients.delete(payload);
+        if (draft.selectedAppId === payload) {
+          draft.selectedAppId = null;
+        }
+      });
     }
 
     case 'START_CLIENT_SETUP': {
@@ -522,31 +515,25 @@ export const appPluginListChanged = (): Action => ({
   type: 'APP_PLUGIN_LIST_CHANGED',
 });
 
-export function getAvailableClients(
+export function getClientsByDevice(
   device: null | undefined | BaseDevice,
-  clients: Client[],
+  clients: Map<string, Client>,
 ): Client[] {
   if (!device) {
     return [];
   }
-  return clients
-    .filter(
-      (client: Client) =>
-        (device &&
-          device.supportsOS(client.query.os) &&
-          client.query.device_id === device.serial) ||
-        // Old android sdk versions don't know their device_id
-        // Display their plugins under all selected devices until they die out
-        client.query.device_id === 'unknown',
-    )
+  return Array.from(clients.values())
+    .filter((client: Client) => client.query.device_id === device.serial)
     .sort((a, b) => (a.query.app || '').localeCompare(b.query.app));
 }
 
-export function getClientByAppName(
-  clients: Client[],
+export function getClientsByAppName(
+  clients: Map<string, Client>,
   appName: string | null | undefined,
-): Client | undefined {
-  return clients.find((client) => client.query.app === appName);
+): Client[] {
+  return Array.from(clients.values()).filter(
+    (client) => client.query.app === appName,
+  );
 }
 
 export function getClientById(
@@ -585,4 +572,8 @@ export function isPluginEnabled(
   const appInfo = deconstructClientId(app);
   const enabledAppPlugins = enabledPlugins[appInfo.app];
   return enabledAppPlugins && enabledAppPlugins.indexOf(pluginId) > -1;
+}
+
+export function getAllClients(state: State): readonly Client[] {
+  return Array.from(state.clients.values());
 }

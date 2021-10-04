@@ -128,7 +128,7 @@ test('can handle plugins that throw at start', async () => {
   // not initialized
   expect(client.sandyPluginStates.get(TestPlugin.id)).toBe(undefined);
 
-  expect(store.getState().connections.clients.length).toBe(1);
+  expect(store.getState().connections.clients.size).toBe(1);
   expect(client.connected.get()).toBe(true);
 
   expect((console.error as any).mock.calls[0]).toMatchInlineSnapshot(`
@@ -147,7 +147,7 @@ test('can handle plugins that throw at start', async () => {
       [Error: Broken plugin],
     ]
   `);
-  expect(store.getState().connections.clients.length).toBe(2);
+  expect(store.getState().connections.clients.size).toBe(2);
   expect(client2.connected.get()).toBe(true);
   expect(client2.sandyPluginStates.size).toBe(0);
 });

@@ -116,13 +116,13 @@ export class Group {
     store.dispatch(
       setStaticView(require('../fb-stubs/SupportRequestFormV2').default),
     );
-    const selectedApp = store.getState().connections.selectedAppId;
-    const selectedClient = store.getState().connections.clients.find((o) => {
-      return o.id === store.getState().connections.selectedAppId;
-    });
+    const selectedAppId = store.getState().connections.selectedAppId;
+    const selectedClient = store
+      .getState()
+      .connections.clients.get(selectedAppId!);
     let errorMessage: string | undefined = undefined;
-    if (selectedApp) {
-      const {app} = deconstructClientId(selectedApp);
+    if (selectedAppId) {
+      const {app} = deconstructClientId(selectedAppId);
       const enabledPlugins: Array<string> | null =
         store.getState().connections.enabledPlugins[app];
       const unsupportedPlugins = [];

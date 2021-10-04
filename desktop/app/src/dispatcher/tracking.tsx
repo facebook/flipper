@@ -15,7 +15,6 @@ import {EventEmitter} from 'events';
 
 import {State, Store} from '../reducers/index';
 import {Logger} from '../fb-interfaces/Logger';
-import Client from '../Client';
 import {
   getPluginBackgroundStats,
   resetPluginBackgroundStatsDelta,
@@ -225,7 +224,7 @@ export default (store: Store, logger: Logger) => {
     let sdkVersion: number | null = null;
 
     if (selectedAppId) {
-      const client = clients.find((c: Client) => c.id === selectedAppId);
+      const client = clients.get(selectedAppId);
       if (client) {
         app = client.query.app;
         sdkVersion = client.query.sdk_version || 0;

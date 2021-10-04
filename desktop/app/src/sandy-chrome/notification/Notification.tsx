@@ -330,7 +330,7 @@ export function openNotification(store: Store, noti: PluginNotificationOrig) {
 }
 
 function getClientById(store: Store, identifier: string | null) {
-  return store.getState().connections.clients.find((c) => c.id === identifier);
+  return store.getState().connections.clients.get(identifier!);
 }
 
 function getDeviceById(store: Store, identifier: string | null) {

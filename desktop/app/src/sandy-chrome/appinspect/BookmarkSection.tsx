@@ -142,7 +142,7 @@ const NAVIGATION_PLUGIN_ID = 'Navigation';
 function navPluginStateSelector(state: State) {
   const {selectedAppId, clients} = state.connections;
   if (!selectedAppId) return undefined;
-  const client = clients.find((client) => client.id === selectedAppId);
+  const client = clients.get(selectedAppId);
   if (!client) return undefined;
   return client.sandyPluginStates.get(NAVIGATION_PLUGIN_ID)?.instanceApi as
     | undefined

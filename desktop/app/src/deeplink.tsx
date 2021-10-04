@@ -16,7 +16,7 @@ import {Group, SUPPORTED_GROUPS} from './reducers/supportForm';
 import {Logger} from './fb-interfaces/Logger';
 import {Store} from './reducers/index';
 import {importDataToStore} from './utils/exportData';
-import {selectPlugin} from './reducers/connections';
+import {selectPlugin, getAllClients} from './reducers/connections';
 import {Dialog} from 'flipper-plugin';
 import {handleOpenPluginDeeplink} from './dispatcher/handleOpenPluginDeeplink';
 import {message} from 'antd';
@@ -124,13 +124,11 @@ export async function handleDeeplink(
       : undefined;
 
     // if a client is specified, find it, withing the device if applicable
-    const selectedClient = store
-      .getState()
-      .connections.clients.find(
-        (c) =>
-          c.query.app === match[0] &&
-          (selectedDevice == null || c.device === selectedDevice),
-      );
+    const selectedClient = getAllClients(store.getState().connections).find(
+      (c) =>
+        c.query.app === match[0] &&
+        (selectedDevice == null || c.device === selectedDevice),
+    );
 
     store.dispatch(
       selectPlugin({

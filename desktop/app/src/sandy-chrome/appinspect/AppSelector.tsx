@@ -22,7 +22,7 @@ import {batch} from 'react-redux';
 import {useDispatch, useStore} from '../../utils/useStore';
 import {
   canBeDefaultDevice,
-  getAvailableClients,
+  getClientsByDevice,
   selectClient,
   selectDevice,
 } from '../../reducers/connections';
@@ -85,7 +85,7 @@ export function AppSelector() {
     onSelectDevice,
     onSelectApp,
   );
-  const client = clients.find((client) => client.id === selectedAppId);
+  const client = clients.get(selectedAppId!);
 
   return (
     <>
@@ -194,7 +194,7 @@ const AppIconContainer = styled.div({
 
 function computeEntries(
   devices: BaseDevice[],
-  clients: Client[],
+  clients: Map<string, Client>,
   uninitializedClients: State['connections']['uninitializedClients'],
   onSelectDevice: (device: BaseDevice) => void,
   onSelectApp: (device: BaseDevice, client: Client) => void,
@@ -205,7 +205,7 @@ function computeEntries(
         // hide non default devices, unless they have a connected client or plugins
         canBeDefaultDevice(device) ||
         device.hasDevicePlugins ||
-        clients.some((c) => c.device === device),
+        getClientsByDevice(device, clients).length > 0,
     )
     .map((device) => {
       const deviceEntry = (
@@ -219,7 +219,7 @@ function computeEntries(
           <DeviceTitle device={device} />
         </Menu.Item>
       );
-      const clientEntries = getAvailableClients(device, clients).map(
+      const clientEntries = getClientsByDevice(device, clients).map(
         (client) => (
           <Menu.Item
             key={client.id}

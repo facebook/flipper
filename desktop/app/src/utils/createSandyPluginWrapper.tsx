@@ -194,7 +194,7 @@ export function createSandyPluginWrapper<S, A extends BaseAction, P>(
         (instance.device as BaseDevice)
       : // eslint-disable-next-line
           useStore((state) =>
-          state.connections.clients.find((c) => c.id === instance.appId),
+          state.connections.clients.get(instance.appId!),
         );
     if (!target) {
       throw new Error('Illegal state: missing target');

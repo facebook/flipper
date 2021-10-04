@@ -420,7 +420,7 @@ async function getStoreExport(
   let state = store.getState();
   const {clients, selectedAppId, selectedDevice} = state.connections;
   const pluginsToProcess = determinePluginsToProcess(
-    clients,
+    Array.from(clients.values()),
     selectedDevice,
     state.plugins,
   );
@@ -433,7 +433,7 @@ async function getStoreExport(
   const fetchMetaDataMarker = `${EXPORT_FLIPPER_TRACE_EVENT}:fetch-meta-data`;
   performance.mark(fetchMetaDataMarker);
 
-  const client = clients.find((client) => client.id === selectedAppId);
+  const client = clients.get(selectedAppId!);
 
   const pluginStates2 = pluginsToProcess
     ? await exportSandyPluginStates(pluginsToProcess, idler, statusUpdate)

@@ -16,19 +16,13 @@ import {
 import createSelector from './createSelector';
 
 const getSelectedPluginId = (state: State) => state.connections.selectedPlugin;
-const getSelectedAppId = (state: State) => state.connections.selectedAppId;
 const getSelectedDevice = (state: State) => state.connections.selectedDevice;
-const getClients = (state: State) => state.connections.clients;
 const getDevices = (state: State) => state.connections.devices;
 const getPluginDownloads = (state: State) => state.pluginDownloads;
 
-export const getActiveClient = createSelector(
-  getSelectedAppId,
-  getClients,
-  (selectedApp, clients) => {
-    return clients.find((c) => c.id === selectedApp) || null;
-  },
-);
+// N.B. no useSelector, It can't memoise on maps :-/
+export const getActiveClient = (state: State) =>
+  state.connections.clients.get(state.connections.selectedAppId!) ?? null;
 
 export const getMetroDevice = createSelector(getDevices, (devices) => {
   return (
