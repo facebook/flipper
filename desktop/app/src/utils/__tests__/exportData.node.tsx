@@ -1137,7 +1137,7 @@ test('Sandy plugins are exported properly', async () => {
   store.dispatch(
     selectPlugin({
       selectedPlugin: 'DeviceLogs',
-      selectedApp: null,
+      selectedAppId: null,
       selectedDevice: device,
       deepLinkPayload: null,
     }),
@@ -1195,7 +1195,7 @@ test('Non sandy plugins are exported properly if they are still queued', async (
   store.dispatch(
     selectPlugin({
       selectedPlugin: 'DeviceLogs',
-      selectedApp: null,
+      selectedAppId: null,
       selectedDevice: device,
       deepLinkPayload: null,
     }),
@@ -1229,7 +1229,7 @@ test('Sandy plugins with custom export are exported properly', async () => {
   store.dispatch(
     selectPlugin({
       selectedPlugin: 'DeviceLogs',
-      selectedApp: client.id,
+      selectedAppId: client.id,
       deepLinkPayload: null,
     }),
   );

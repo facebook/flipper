@@ -166,12 +166,12 @@ function updatePlugin(store: Store, payload: UpdatePluginActionPayload) {
   }
 }
 
-function getSelectedAppId(store: Store) {
+function getSelectedAppName(store: Store) {
   const {connections} = store.getState();
-  const selectedApp = connections.selectedApp
-    ? deconstructClientId(connections.selectedApp).app
+  const selectedAppId = connections.selectedAppId
+    ? deconstructClientId(connections.selectedAppId).app
     : undefined;
-  return selectedApp;
+  return selectedAppId;
 }
 
 function switchPlugin(
@@ -190,7 +190,7 @@ function switchClientPlugin(
   plugin: PluginDefinition,
   selectedApp: string | undefined,
 ) {
-  selectedApp = selectedApp ?? getSelectedAppId(store);
+  selectedApp = selectedApp ?? getSelectedAppName(store);
   if (!selectedApp) {
     return;
   }
@@ -242,7 +242,7 @@ function updateClientPlugin(
 ) {
   const clients = store.getState().connections.clients;
   if (enable) {
-    const selectedApp = getSelectedAppId(store);
+    const selectedApp = getSelectedAppName(store);
     if (selectedApp) {
       store.dispatch(setPluginEnabled(plugin.id, selectedApp));
     }

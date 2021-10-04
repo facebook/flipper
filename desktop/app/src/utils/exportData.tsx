@@ -418,7 +418,7 @@ async function getStoreExport(
   fetchMetaDataErrors: {[plugin: string]: Error} | null;
 }> {
   let state = store.getState();
-  const {clients, selectedApp, selectedDevice} = state.connections;
+  const {clients, selectedAppId, selectedDevice} = state.connections;
   const pluginsToProcess = determinePluginsToProcess(
     clients,
     selectedDevice,
@@ -433,7 +433,7 @@ async function getStoreExport(
   const fetchMetaDataMarker = `${EXPORT_FLIPPER_TRACE_EVENT}:fetch-meta-data`;
   performance.mark(fetchMetaDataMarker);
 
-  const client = clients.find((client) => client.id === selectedApp);
+  const client = clients.find((client) => client.id === selectedAppId);
 
   const pluginStates2 = pluginsToProcess
     ? await exportSandyPluginStates(pluginsToProcess, idler, statusUpdate)
@@ -487,9 +487,9 @@ export async function exportStore(
     exportData.supportRequestDetails = {
       ...state.supportForm?.supportFormV2,
       appName:
-        state.connections.selectedApp == null
+        state.connections.selectedAppId == null
           ? ''
-          : deconstructClientId(state.connections.selectedApp).app,
+          : deconstructClientId(state.connections.selectedAppId).app,
     };
   }
 

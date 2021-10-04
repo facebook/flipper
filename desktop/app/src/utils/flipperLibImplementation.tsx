@@ -41,7 +41,7 @@ export function initializeFlipperLibImplementation(
         payload: {
           selectedPlugin: pluginId,
           selectedDevice: device as BaseDevice,
-          selectedApp: client ? client.id : null,
+          selectedAppId: client ? client.id : null,
           deepLinkPayload: deeplink,
           time: Date.now(),
         },

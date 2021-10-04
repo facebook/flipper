@@ -249,6 +249,7 @@ test('PluginContainer can render Sandy plugins', async () => {
   act(() => {
     store.dispatch(
       selectPlugin({
+        selectedAppId: client.id,
         selectedPlugin: 'Logs',
         deepLinkPayload: null,
       }),
@@ -279,6 +280,7 @@ test('PluginContainer can render Sandy plugins', async () => {
   act(() => {
     store.dispatch(
       selectPlugin({
+        selectedAppId: client.id,
         selectedPlugin: definition.id,
         deepLinkPayload: null,
       }),
@@ -405,6 +407,8 @@ test('PluginContainer triggers correct lifecycles for background plugin', async 
   act(() => {
     store.dispatch(
       selectPlugin({
+        selectedAppId: client.id,
+
         selectedPlugin: 'Logs',
         deepLinkPayload: null,
       }),
@@ -422,6 +426,8 @@ test('PluginContainer triggers correct lifecycles for background plugin', async 
   act(() => {
     store.dispatch(
       selectPlugin({
+        selectedAppId: client.id,
+
         selectedPlugin: definition.id,
         deepLinkPayload: null,
       }),
@@ -454,6 +460,8 @@ test('PluginContainer triggers correct lifecycles for background plugin', async 
   act(() => {
     store.dispatch(
       selectPlugin({
+        selectedAppId: client.id,
+
         selectedPlugin: 'Logs',
         deepLinkPayload: null,
       }),
@@ -487,6 +495,7 @@ test('PluginContainer triggers correct lifecycles for background plugin', async 
   act(() => {
     store.dispatch(
       selectPlugin({
+        selectedAppId: client.id,
         selectedPlugin: definition.id,
         deepLinkPayload: null,
       }),
@@ -566,7 +575,7 @@ test('PluginContainer + Sandy plugin supports deeplink', async () => {
       selectPlugin({
         selectedPlugin: definition.id,
         deepLinkPayload: 'universe!',
-        selectedApp: client.query.app,
+        selectedAppId: client.id,
       }),
     );
   });
@@ -607,7 +616,7 @@ test('PluginContainer + Sandy plugin supports deeplink', async () => {
       selectPlugin({
         selectedPlugin: definition.id,
         deepLinkPayload: 'universe!',
-        selectedApp: client.query.app,
+        selectedAppId: client.id,
       }),
     );
   });
@@ -630,7 +639,7 @@ test('PluginContainer + Sandy plugin supports deeplink', async () => {
       selectPlugin({
         selectedPlugin: definition.id,
         deepLinkPayload: 'london!',
-        selectedApp: client.query.app,
+        selectedAppId: client.id,
       }),
     );
   });
@@ -643,7 +652,7 @@ test('PluginContainer + Sandy plugin supports deeplink', async () => {
       selectPlugin({
         selectedPlugin: 'Logs',
         deepLinkPayload: 'london!',
-        selectedApp: client.query.app,
+        selectedAppId: client.id,
       }),
     );
   });
@@ -652,7 +661,7 @@ test('PluginContainer + Sandy plugin supports deeplink', async () => {
       selectPlugin({
         selectedPlugin: definition.id,
         deepLinkPayload: 'london!',
-        selectedApp: client.query.app,
+        selectedAppId: client.id,
       }),
     );
   });
@@ -783,6 +792,7 @@ test('PluginContainer can render Sandy device plugins', async () => {
   act(() => {
     store.dispatch(
       selectPlugin({
+        selectedDevice: device,
         selectedPlugin: 'Logs',
         deepLinkPayload: null,
       }),
@@ -801,6 +811,7 @@ test('PluginContainer can render Sandy device plugins', async () => {
   act(() => {
     store.dispatch(
       selectPlugin({
+        selectedDevice: device,
         selectedPlugin: definition.id,
         deepLinkPayload: null,
       }),
@@ -836,7 +847,9 @@ test('PluginContainer + Sandy device plugin supports deeplink', async () => {
       },
     },
   );
-  const {renderer, act, store} = await renderMockFlipperWithPlugin(definition);
+  const {renderer, act, store, device} = await renderMockFlipperWithPlugin(
+    definition,
+  );
 
   const theUniverse = {
     thisIs: 'theUniverse',
@@ -877,9 +890,10 @@ test('PluginContainer + Sandy device plugin supports deeplink', async () => {
   act(() => {
     store.dispatch(
       selectPlugin({
+        selectedDevice: device,
         selectedPlugin: definition.id,
         deepLinkPayload: theUniverse,
-        selectedApp: null,
+        selectedAppId: null,
       }),
     );
   });
@@ -918,9 +932,10 @@ test('PluginContainer + Sandy device plugin supports deeplink', async () => {
   act(() => {
     store.dispatch(
       selectPlugin({
+        selectedDevice: device,
         selectedPlugin: definition.id,
         deepLinkPayload: theUniverse,
-        selectedApp: null,
+        selectedAppId: null,
       }),
     );
   });
@@ -941,9 +956,10 @@ test('PluginContainer + Sandy device plugin supports deeplink', async () => {
   act(() => {
     store.dispatch(
       selectPlugin({
+        selectedDevice: device,
         selectedPlugin: definition.id,
         deepLinkPayload: 'london!',
-        selectedApp: null,
+        selectedAppId: null,
       }),
     );
   });
@@ -954,18 +970,20 @@ test('PluginContainer + Sandy device plugin supports deeplink', async () => {
   act(() => {
     store.dispatch(
       selectPlugin({
+        selectedDevice: device,
         selectedPlugin: 'Logs',
         deepLinkPayload: 'london!',
-        selectedApp: null,
+        selectedAppId: null,
       }),
     );
   });
   act(() => {
     store.dispatch(
       selectPlugin({
+        selectedDevice: device,
         selectedPlugin: definition.id,
         deepLinkPayload: 'london!',
-        selectedApp: null,
+        selectedAppId: null,
       }),
     );
   });
@@ -1203,6 +1221,7 @@ test('PluginContainer can render Sandy plugins for archived devices', async () =
   act(() => {
     store.dispatch(
       selectPlugin({
+        selectedAppId: client.id,
         selectedPlugin: 'Logs',
         deepLinkPayload: null,
       }),
@@ -1225,6 +1244,8 @@ test('PluginContainer can render Sandy plugins for archived devices', async () =
   act(() => {
     store.dispatch(
       selectPlugin({
+        selectedAppId: client.id,
+
         selectedPlugin: definition.id,
         deepLinkPayload: null,
       }),
@@ -1315,6 +1336,8 @@ test('PluginContainer triggers correct lifecycles for background plugin', async 
   act(() => {
     store.dispatch(
       selectPlugin({
+        selectedAppId: client.id,
+
         selectedPlugin: 'Logs',
         deepLinkPayload: null,
       }),
@@ -1331,6 +1354,8 @@ test('PluginContainer triggers correct lifecycles for background plugin', async 
   act(() => {
     store.dispatch(
       selectPlugin({
+        selectedAppId: client.id,
+
         selectedPlugin: definition.id,
         deepLinkPayload: null,
       }),
@@ -1346,6 +1371,7 @@ test('PluginContainer triggers correct lifecycles for background plugin', async 
   act(() => {
     store.dispatch(
       selectPlugin({
+        selectedAppId: client.id,
         selectedPlugin: 'Logs',
         deepLinkPayload: null,
       }),
@@ -1355,6 +1381,7 @@ test('PluginContainer triggers correct lifecycles for background plugin', async 
   act(() => {
     store.dispatch(
       selectPlugin({
+        selectedAppId: client.id,
         selectedPlugin: definition.id,
         deepLinkPayload: null,
       }),

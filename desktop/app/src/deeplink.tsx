@@ -112,11 +112,32 @@ export async function handleDeeplink(
         match[1]
       }&client=${match[0]}&payload=${encodeURIComponent(match[2])}' instead.`,
     );
+    const deepLinkPayload = match[2];
+    const deepLinkParams = new URLSearchParams(deepLinkPayload);
+    const deviceParam = deepLinkParams.get('device');
+
+    // if there is a device Param, find a matching device
+    const selectedDevice = deviceParam
+      ? store
+          .getState()
+          .connections.devices.find((v) => v.title === deviceParam)
+      : undefined;
+
+    // if a client is specified, find it, withing the device if applicable
+    const selectedClient = store
+      .getState()
+      .connections.clients.find(
+        (c) =>
+          c.query.app === match[0] &&
+          (selectedDevice == null || c.device === selectedDevice),
+      );
+
     store.dispatch(
       selectPlugin({
-        selectedApp: match[0],
+        selectedAppId: selectedClient?.id,
+        selectedDevice: selectedClient ? selectedClient.device : selectedDevice,
         selectedPlugin: match[1],
-        deepLinkPayload: match[2],
+        deepLinkPayload,
       }),
     );
     return;

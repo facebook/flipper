@@ -121,7 +121,7 @@ export async function handleOpenPluginDeeplink(store: Store, query: string) {
     store.dispatch(
       selectPlugin({
         selectedPlugin: params.pluginId,
-        selectedApp: null,
+        selectedAppId: null,
         selectedDevice: device,
         deepLinkPayload: params.payload,
       }),
@@ -130,7 +130,7 @@ export async function handleOpenPluginDeeplink(store: Store, query: string) {
     store.dispatch(
       selectPlugin({
         selectedPlugin: params.pluginId,
-        selectedApp: client!.query.app,
+        selectedAppId: client!.id,
         selectedDevice: device,
         deepLinkPayload: params.payload,
       }),

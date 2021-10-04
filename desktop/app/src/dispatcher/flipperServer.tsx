@@ -173,11 +173,6 @@ export async function handleClientConnected(store: Store, client: Client) {
     payload: client,
   });
 
-  const device = client.device;
-  if (device) {
-    store.dispatch(selectDevice(device));
-    store.dispatch(selectClient(client.id));
-  }
-
+  store.dispatch(selectClient(client.id));
   client.emit('plugins-change');
 }

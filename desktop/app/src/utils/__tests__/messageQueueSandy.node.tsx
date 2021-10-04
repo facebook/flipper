@@ -77,7 +77,7 @@ function selectDeviceLogs(store: Store) {
   store.dispatch(
     selectPlugin({
       selectedPlugin: 'DeviceLogs',
-      selectedApp: null,
+      selectedAppId: null,
       deepLinkPayload: null,
       selectedDevice: store.getState().connections.selectedDevice!,
     }),
@@ -88,7 +88,7 @@ function selectTestPlugin(store: Store, client: Client) {
   store.dispatch(
     selectPlugin({
       selectedPlugin: TestPlugin.id,
-      selectedApp: client.query.app,
+      selectedAppId: client.id,
       deepLinkPayload: null,
       selectedDevice: store.getState().connections.selectedDevice!,
     }),
@@ -408,7 +408,7 @@ test('queue - messages that arrive during processing will be queued', async () =
   store.dispatch(
     selectPlugin({
       selectedPlugin: TestPlugin.id,
-      selectedApp: client.id,
+      selectedAppId: client.id,
       deepLinkPayload: null,
       selectedDevice: device,
     }),

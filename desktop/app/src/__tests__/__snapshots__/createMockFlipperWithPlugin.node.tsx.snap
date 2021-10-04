@@ -36,7 +36,7 @@ Object {
     ],
   },
   "flipperServer": undefined,
-  "selectedApp": "TestApp#Android#MockAndroidDevice#serial",
+  "selectedAppId": "TestApp#Android#MockAndroidDevice#serial",
   "selectedAppPluginListRevision": 0,
   "selectedDevice": Object {
     "deviceType": "physical",
@@ -47,7 +47,7 @@ Object {
   "selectedPlugin": "TestPlugin",
   "staticView": null,
   "uninitializedClients": Array [],
-  "userPreferredApp": "TestApp#Android#MockAndroidDevice#serial",
+  "userPreferredApp": "TestApp",
   "userPreferredDevice": "MockAndroidDevice",
   "userPreferredPlugin": "TestPlugin",
 }

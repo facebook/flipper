@@ -17,13 +17,13 @@ export const GLOBAL_NOTIFICATION_PLUGIN_ID = 'Flipper';
 export type PluginNotification = {
   notification: Notification;
   pluginId: string;
-  client: null | string;
+  client: null | string; // id
 };
 
 export type PluginNotificationReference = {
   notificationId: string;
   pluginId: string;
-  client: null | string;
+  client: null | string; // id
 };
 
 export type State = {

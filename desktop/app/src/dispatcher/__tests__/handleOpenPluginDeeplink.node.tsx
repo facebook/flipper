@@ -139,11 +139,15 @@ test('triggering a deeplink without applicable device can wait for a device', as
       supportedDevices: [{os: 'iOS'}],
     },
   );
-  const {renderer, store, logger, createDevice} =
+  const {renderer, store, logger, createDevice, device} =
     await renderMockFlipperWithPlugin(definition);
 
   store.dispatch(
-    selectPlugin({selectedPlugin: 'nonexisting', deepLinkPayload: null}),
+    selectPlugin({
+      selectedPlugin: 'nonexisting',
+      deepLinkPayload: null,
+      selectedDevice: device,
+    }),
   );
   expect(renderer.baseElement).toMatchInlineSnapshot(`
     <body>
@@ -219,7 +223,11 @@ test('triggering a deeplink without applicable client can wait for a device', as
     await renderMockFlipperWithPlugin(definition);
 
   store.dispatch(
-    selectPlugin({selectedPlugin: 'nonexisting', deepLinkPayload: null}),
+    selectPlugin({
+      selectedPlugin: 'nonexisting',
+      deepLinkPayload: null,
+      selectedDevice: device,
+    }),
   );
   expect(renderer.baseElement).toMatchInlineSnapshot(`
     <body>

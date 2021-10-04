@@ -108,12 +108,12 @@ export default (store: Store, logger: Logger) => {
       timeSinceLastStartup,
     });
     // create fresh exit data
-    const {selectedDevice, selectedApp, selectedPlugin} =
+    const {selectedDevice, selectedAppId, selectedPlugin} =
       store.getState().connections;
     persistExitData(
       {
         selectedDevice,
-        selectedApp,
+        selectedAppId,
         selectedPlugin,
       },
       false,
@@ -158,11 +158,11 @@ export default (store: Store, logger: Logger) => {
       );
       return;
     }
-    const {selectedDevice, selectedPlugin, selectedApp, clients} =
+    const {selectedDevice, selectedPlugin, selectedAppId, clients} =
       state.connections;
 
     persistExitData(
-      {selectedDevice, selectedPlugin, selectedApp},
+      {selectedDevice, selectedPlugin, selectedAppId},
       args[0] === 'exit',
     );
 
@@ -224,8 +224,8 @@ export default (store: Store, logger: Logger) => {
     let app: string | null = null;
     let sdkVersion: number | null = null;
 
-    if (selectedApp) {
-      const client = clients.find((c: Client) => c.id === selectedApp);
+    if (selectedAppId) {
+      const client = clients.find((c: Client) => c.id === selectedAppId);
       if (client) {
         app = client.query.app;
         sdkVersion = client.query.sdk_version || 0;
@@ -357,7 +357,7 @@ export function persistExitData(
   state: {
     selectedDevice: BaseDevice | null;
     selectedPlugin: string | null;
-    selectedApp: string | null;
+    selectedAppId: string | null;
   },
   cleanExit: boolean,
 ) {
@@ -370,7 +370,9 @@ export function persistExitData(
     deviceType: state.selectedDevice ? state.selectedDevice.deviceType : '',
     deviceTitle: state.selectedDevice ? state.selectedDevice.title : '',
     plugin: state.selectedPlugin || '',
-    app: state.selectedApp ? deconstructClientId(state.selectedApp).app : '',
+    app: state.selectedAppId
+      ? deconstructClientId(state.selectedAppId).app
+      : '',
     cleanExit,
     pid: remote.process.pid,
   };

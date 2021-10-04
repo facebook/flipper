@@ -52,11 +52,7 @@ type StateFromProps = {
 };
 
 type DispatchFromProps = {
-  selectPlugin: (payload: {
-    selectedPlugin: string | null;
-    selectedApp: string | null;
-    deepLinkPayload: unknown;
-  }) => any;
+  selectPlugin: typeof selectPlugin;
   updatePluginBlocklist: (blocklist: Array<string>) => any;
   updateCategoryBlocklist: (blocklist: Array<string>) => any;
 };
@@ -410,11 +406,7 @@ type ItemProps = {
   onClear?: () => any;
   isSelected?: boolean;
   inactive?: boolean;
-  selectPlugin?: (payload: {
-    selectedPlugin: string | null;
-    selectedApp: string | null;
-    deepLinkPayload: unknown;
-  }) => any;
+  selectPlugin?: typeof selectPlugin;
   logger?: Logger;
   plugin: PluginDefinition | null | undefined;
 };
@@ -477,7 +469,7 @@ class NotificationItem extends Component<
     if (this.props.selectPlugin && notification.action) {
       this.props.selectPlugin({
         selectedPlugin: pluginId,
-        selectedApp: client,
+        selectedAppId: client,
         deepLinkPayload: notification.action,
       });
     }

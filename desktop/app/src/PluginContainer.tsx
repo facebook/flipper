@@ -101,11 +101,7 @@ type StateFromProps = {
 };
 
 type DispatchFromProps = {
-  selectPlugin: (payload: {
-    selectedPlugin: string | null;
-    selectedApp?: string | null;
-    deepLinkPayload: unknown;
-  }) => any;
+  selectPlugin: typeof selectPlugin;
   setStaticView: (payload: StaticView) => void;
   enablePlugin: typeof switchPlugin;
   loadPlugin: typeof loadPlugin;

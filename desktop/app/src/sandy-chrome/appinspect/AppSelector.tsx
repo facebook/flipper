@@ -50,8 +50,13 @@ function getOsIcon(os?: DeviceOS) {
 
 export function AppSelector() {
   const dispatch = useDispatch();
-  const {devices, selectedDevice, clients, uninitializedClients, selectedApp} =
-    useStore((state) => state.connections);
+  const {
+    devices,
+    selectedDevice,
+    clients,
+    uninitializedClients,
+    selectedAppId,
+  } = useStore((state) => state.connections);
   useValue(selectedDevice?.connected, false); // subscribe to future archived state changes
 
   const onSelectDevice = useTrackedCallback(
@@ -59,16 +64,14 @@ export function AppSelector() {
     (device: BaseDevice) => {
       batch(() => {
         dispatch(selectDevice(device));
-        dispatch(selectClient(null));
       });
     },
     [],
   );
   const onSelectApp = useTrackedCallback(
     'select-app',
-    (device: BaseDevice, client: Client) => {
+    (_device: BaseDevice, client: Client) => {
       batch(() => {
-        dispatch(selectDevice(device));
         dispatch(selectClient(client.id));
       });
     },
@@ -82,13 +85,13 @@ export function AppSelector() {
     onSelectDevice,
     onSelectApp,
   );
-  const client = clients.find((client) => client.id === selectedApp);
+  const client = clients.find((client) => client.id === selectedAppId);
 
   return (
     <>
       {entries.length ? (
         <Radio.Group
-          value={selectedApp}
+          value={selectedAppId}
           size="small"
           style={{
             display: 'flex',
@@ -97,7 +100,7 @@ export function AppSelector() {
           <Dropdown
             trigger={['click']}
             overlay={
-              <Menu selectedKeys={selectedApp ? [selectedApp] : []}>
+              <Menu selectedKeys={selectedAppId ? [selectedAppId] : []}>
                 {entries}
               </Menu>
             }>

@@ -310,7 +310,7 @@ export function openNotification(store: Store, noti: PluginNotificationOrig) {
     store.dispatch(
       selectPlugin({
         selectedPlugin: noti.pluginId,
-        selectedApp: noti.client,
+        selectedAppId: client.id,
         selectedDevice: client.device,
         deepLinkPayload: noti.notification.action,
       }),

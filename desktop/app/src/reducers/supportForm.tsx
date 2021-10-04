@@ -116,9 +116,9 @@ export class Group {
     store.dispatch(
       setStaticView(require('../fb-stubs/SupportRequestFormV2').default),
     );
-    const selectedApp = store.getState().connections.selectedApp;
+    const selectedApp = store.getState().connections.selectedAppId;
     const selectedClient = store.getState().connections.clients.find((o) => {
-      return o.id === store.getState().connections.selectedApp;
+      return o.id === store.getState().connections.selectedAppId;
     });
     let errorMessage: string | undefined = undefined;
     if (selectedApp) {

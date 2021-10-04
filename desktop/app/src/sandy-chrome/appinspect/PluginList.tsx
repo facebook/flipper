@@ -99,26 +99,26 @@ export const PluginList = memo(function PluginList({
       dispatch(
         selectPlugin({
           selectedPlugin: pluginId,
-          selectedApp: connections.selectedApp,
+          selectedAppId: connections.selectedAppId,
           deepLinkPayload: null,
           selectedDevice: activeDevice,
         }),
       );
     },
-    [dispatch, activeDevice, connections.selectedApp],
+    [dispatch, activeDevice, connections.selectedAppId],
   );
   const handleMetroPluginClick = useCallback(
     (pluginId) => {
       dispatch(
         selectPlugin({
           selectedPlugin: pluginId,
-          selectedApp: connections.selectedApp,
+          selectedAppId: connections.selectedAppId,
           deepLinkPayload: null,
           selectedDevice: metroDevice,
         }),
       );
     },
-    [dispatch, metroDevice, connections.selectedApp],
+    [dispatch, metroDevice, connections.selectedAppId],
   );
   const handleEnablePlugin = useCallback(
     (id: string) => {
