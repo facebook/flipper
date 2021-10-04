@@ -288,7 +288,7 @@ PODS:
     - React-jsi (= 0.65.1)
     - React-perflogger (= 0.65.1)
   - React-jsinspector (0.65.1)
-  - react-native-flipper (0.111.0):
+  - react-native-flipper (0.113.0):
     - React-Core
   - React-perflogger (0.65.1)
   - React-RCTActionSheet (0.65.1):
@@ -530,7 +530,7 @@ SPEC CHECKSUMS:
   React-jsi: 12913c841713a15f64eabf5c9ad98592c0ec5940
   React-jsiexecutor: 43f2542aed3c26e42175b339f8d37fe3dd683765
   React-jsinspector: 41e58e5b8e3e0bf061fdf725b03f2144014a8fb0
-  react-native-flipper: c388766d1414066f00de1d1611d8abe5afc06fa0
+  react-native-flipper: 2a212eb0fead9ae9b42d1eb75604757cdf36f2bb
   React-perflogger: fd28ee1f2b5b150b00043f0301d96bd417fdc339
   React-RCTActionSheet: 7f3fa0855c346aa5d7c60f9ced16e067db6d29fa
   React-RCTAnimation: 2119a18ee26159004b001bc56404ca5dbaae6077
@@ -549,4 +549,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 898f451f2b81b16f90d9ca84941e2d22d8977610
 
-COCOAPODS: 1.11.2
+COCOAPODS: 1.10.1
