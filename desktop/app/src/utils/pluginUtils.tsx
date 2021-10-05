@@ -402,19 +402,18 @@ export function computeActivePluginList({
   return pluginList;
 }
 
+export type PluginStatus =
+  | 'ready'
+  | 'unknown'
+  | 'failed'
+  | 'gatekeeped'
+  | 'bundle_installable'
+  | 'marketplace_installable';
+
 export function getPluginStatus(
   store: Store,
   id: string,
-): [
-  state:
-    | 'ready'
-    | 'unknown'
-    | 'failed'
-    | 'gatekeeped'
-    | 'bundle_installable'
-    | 'marketplace_installable',
-  reason?: string,
-] {
+): [state: PluginStatus, reason?: string] {
   const state: PluginsState = store.getState().plugins;
   if (state.devicePlugins.has(id) || state.clientPlugins.has(id)) {
     return ['ready'];

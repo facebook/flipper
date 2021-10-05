@@ -18,7 +18,7 @@ import {UserNotSignedInError} from '../utils/errors';
 import {selectPlugin, setPluginEnabled} from '../reducers/connections';
 import {getUpdateAvailableMessage} from '../chrome/UpdateIndicator';
 import {Typography} from 'antd';
-import {getPluginStatus} from '../utils/pluginUtils';
+import {getPluginStatus, PluginStatus} from '../utils/pluginUtils';
 import {loadPluginsFromMarketplace} from './fb-stubs/pluginMarketplace';
 import {loadPlugin, switchPlugin} from '../reducers/pluginManager';
 import {startPluginDownload} from '../reducers/pluginDownloads';
@@ -29,13 +29,7 @@ import Client from '../Client';
 import {RocketOutlined} from '@ant-design/icons';
 import {showEmulatorLauncher} from '../sandy-chrome/appinspect/LaunchEmulator';
 import {getAllClients} from '../reducers/connections';
-
-type OpenPluginParams = {
-  pluginId: string;
-  client: string | undefined;
-  devices: string[];
-  payload: string | undefined;
-};
+import {DeeplinkInteraction, OpenPluginParams} from '../deeplinkTracking';
 
 export function parseOpenPluginParams(query: string): OpenPluginParams {
   // 'flipper://open-plugin?plugin-id=graphql&client=facebook&devices=android,ios&chrome=1&payload='
@@ -54,15 +48,33 @@ export function parseOpenPluginParams(query: string): OpenPluginParams {
   };
 }
 
-export async function handleOpenPluginDeeplink(store: Store, query: string) {
+export async function handleOpenPluginDeeplink(
+  store: Store,
+  query: string,
+  trackInteraction: (interaction: DeeplinkInteraction) => void,
+) {
   const params = parseOpenPluginParams(query);
   const title = `Opening plugin ${params.pluginId}…`;
 
   if (!(await verifyLighthouseAndUserLoggedIn(store, title))) {
+    trackInteraction({
+      state: 'PLUGIN_LIGHTHOUSE_BAIL',
+      plugin: params,
+    });
     return;
   }
   await verifyFlipperIsUpToDate(title);
-  if (!(await verifyPluginStatus(store, params.pluginId, title))) {
+  const [pluginStatusResult, pluginStatus] = await verifyPluginStatus(
+    store,
+    params.pluginId,
+    title,
+  );
+  if (!pluginStatusResult) {
+    trackInteraction({
+      state: 'PLUGIN_STATUS_BAIL',
+      plugin: params,
+      extra: {pluginStatus},
+    });
     return;
   }
 
@@ -79,6 +91,10 @@ export async function handleOpenPluginDeeplink(store: Store, query: string) {
     isDevicePlugin,
   );
   if (deviceOrClient === false) {
+    trackInteraction({
+      state: 'PLUGIN_DEVICE_BAIL',
+      plugin: params,
+    });
     return;
   }
   const client: Client | undefined = isDevicePlugin
@@ -95,6 +111,11 @@ export async function handleOpenPluginDeeplink(store: Store, query: string) {
       type: 'error',
       message: `This plugin is not supported by device ${device.displayTitle()}`,
     });
+    trackInteraction({
+      state: 'PLUGIN_DEVICE_UNSUPPORTED',
+      plugin: params,
+      extra: {device: device.displayTitle()},
+    });
     return;
   }
   if (!isDevicePlugin && !client!.plugins.has(params.pluginId)) {
@@ -103,6 +124,12 @@ export async function handleOpenPluginDeeplink(store: Store, query: string) {
       type: 'error',
       message: `This plugin is not supported by client ${client!.query.app}`,
     });
+    trackInteraction({
+      state: 'PLUGIN_CLIENT_UNSUPPORTED',
+      plugin: params,
+      extra: {client: client!.query.app},
+    });
+    return;
   }
 
   // verify plugin enabled
@@ -137,6 +164,10 @@ export async function handleOpenPluginDeeplink(store: Store, query: string) {
       }),
     );
   }
+  trackInteraction({
+    state: 'PLUGIN_OPEN_SUCCESS',
+    plugin: params,
+  });
 }
 
 // check if user is connected to VPN and logged in. Returns true if OK, or false if aborted
@@ -269,7 +300,7 @@ async function verifyPluginStatus(
   store: Store,
   pluginId: string,
   title: string,
-): Promise<boolean> {
+): Promise<[boolean, PluginStatus]> {
   // make sure we have marketplace plugin data present
   if (!isTest() && !store.getState().plugins.marketplacePlugins.length) {
     // plugins not yet fetched
@@ -281,21 +312,21 @@ async function verifyPluginStatus(
     const [status, reason] = getPluginStatus(store, pluginId);
     switch (status) {
       case 'ready':
-        return true;
+        return [true, status];
       case 'unknown':
         await Dialog.alert({
           type: 'warning',
           title,
           message: `No plugin with id '${pluginId}' is known to Flipper. Please correct the deeplink, or install the plugin from NPM using the plugin manager.`,
         });
-        return false;
+        return [false, status];
       case 'failed':
         await Dialog.alert({
           type: 'error',
           title,
           message: `We found plugin '${pluginId}', but failed to load it: ${reason}. Please check the logs for more details`,
         });
-        return false;
+        return [false, status];
       case 'gatekeeped':
         if (
           !(await Dialog.confirm({
@@ -318,7 +349,7 @@ async function verifyPluginStatus(
             },
           }))
         ) {
-          return false;
+          return [false, status];
         }
         break;
       case 'bundle_installable': {
@@ -328,7 +359,7 @@ async function verifyPluginStatus(
       }
       case 'marketplace_installable': {
         if (!(await installMarketPlacePlugin(store, pluginId, title))) {
-          return false;
+          return [false, status];
         }
         break;
       }

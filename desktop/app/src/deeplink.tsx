@@ -20,22 +20,7 @@ import {selectPlugin, getAllClients} from './reducers/connections';
 import {Dialog} from 'flipper-plugin';
 import {handleOpenPluginDeeplink} from './dispatcher/handleOpenPluginDeeplink';
 import {message} from 'antd';
-
-type DeeplinkInteraction = {
-  state: 'INIT' | 'ERROR';
-  errorMessage?: string;
-};
-
-function track(
-  logger: Logger,
-  query: string,
-  interaction: DeeplinkInteraction,
-) {
-  logger.track('usage', 'deeplink', {
-    ...interaction,
-    query,
-  });
-}
+import {track} from './deeplinkTracking';
 
 const UNKNOWN = 'Unknown deeplink';
 /**
@@ -63,7 +48,7 @@ export async function handleDeeplink(
     throw unknownError();
   }
   if (uri.href.startsWith('flipper://open-plugin')) {
-    return handleOpenPluginDeeplink(store, query);
+    return handleOpenPluginDeeplink(store, query, trackInteraction);
   }
   if (uri.pathname.match(/^\/*import\/*$/)) {
     const url = uri.searchParams.get('url');

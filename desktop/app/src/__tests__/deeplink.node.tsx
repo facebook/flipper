@@ -99,11 +99,16 @@ test('Will throw error on invalid deeplinks', async () => {
   ).rejects.toThrowErrorMatchingInlineSnapshot(`"Unknown deeplink"`);
 
   expect(logger.track).toHaveBeenCalledTimes(2);
-  expect(logger.track).toHaveBeenLastCalledWith('usage', 'deeplink', {
-    query: 'flipper://test',
-    state: 'ERROR',
-    errorMessage: 'Unknown deeplink',
-  });
+  expect(logger.track).toHaveBeenLastCalledWith(
+    'usage',
+    'deeplink',
+    {
+      query: 'flipper://test',
+      state: 'ERROR',
+      errorMessage: 'Unknown deeplink',
+    },
+    undefined,
+  );
 });
 
 test('Will throw error on invalid protocol', async () => {
@@ -116,11 +121,16 @@ test('Will throw error on invalid protocol', async () => {
   ).rejects.toThrowErrorMatchingInlineSnapshot(`"Unknown deeplink"`);
 
   expect(logger.track).toHaveBeenCalledTimes(2);
-  expect(logger.track).toHaveBeenLastCalledWith('usage', 'deeplink', {
-    query: 'notflipper://test',
-    state: 'ERROR',
-    errorMessage: 'Unknown deeplink',
-  });
+  expect(logger.track).toHaveBeenLastCalledWith(
+    'usage',
+    'deeplink',
+    {
+      query: 'notflipper://test',
+      state: 'ERROR',
+      errorMessage: 'Unknown deeplink',
+    },
+    undefined,
+  );
 });
 
 test('Will track deeplinks', async () => {
@@ -142,9 +152,14 @@ test('Will track deeplinks', async () => {
     'flipper://open-plugin?plugin-id=TestPlugin&client=TestApp&payload=universe',
   );
 
-  expect(logger.track).toHaveBeenCalledWith('usage', 'deeplink', {
-    query:
-      'flipper://open-plugin?plugin-id=TestPlugin&client=TestApp&payload=universe',
-    state: 'INIT',
-  });
+  expect(logger.track).toHaveBeenCalledWith(
+    'usage',
+    'deeplink',
+    {
+      query:
+        'flipper://open-plugin?plugin-id=TestPlugin&client=TestApp&payload=universe',
+      state: 'INIT',
+    },
+    undefined,
+  );
 });
