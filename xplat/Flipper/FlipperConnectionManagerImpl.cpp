@@ -481,15 +481,12 @@ void FlipperConnectionManagerImpl::reevaluateSocketProvider() {
   if (failedSocketConnectionAttempts < maxFailedSocketConnectionAttempts) {
     ++failedSocketConnectionAttempts;
   } else {
-    log("Failed to connect with the current socket provider");
     failedSocketConnectionAttempts = 0;
     useLegacySocketProvider = !useLegacySocketProvider;
 
     if (useLegacySocketProvider) {
-      log("Use legacy socket provider");
       FlipperSocketProvider::shelveDefault();
     } else {
-      log("Use websocket provider");
       FlipperSocketProvider::unshelveDefault();
     }
   }
