@@ -8,9 +8,10 @@
  */
 
 import {PluginDetails} from 'flipper-plugin-lib';
+import {Layout} from 'flipper-plugin';
 import Client from '../../Client';
 import {TableBodyRow} from '../../ui/components/table/types';
-import React, {Component, Fragment} from 'react';
+import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {Text, ManagedTable, styled, colors} from '../../ui';
 import StatusIndicator from '../../ui/components/StatusIndicator';
@@ -211,7 +212,7 @@ class PluginDebugger extends Component<Props> {
 
   render() {
     return (
-      <Fragment>
+      <Layout.Container pad>
         <InfoText>The table lists all plugins known to Flipper.</InfoText>
         <TableContainer>
           <ManagedTable
@@ -221,7 +222,7 @@ class PluginDebugger extends Component<Props> {
             columnSizes={COLUMNS_SIZES}
           />
         </TableContainer>
-      </Fragment>
+      </Layout.Container>
     );
   }
 }

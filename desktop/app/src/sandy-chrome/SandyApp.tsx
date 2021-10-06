@@ -30,7 +30,6 @@ import {AppInspect} from './appinspect/AppInspect';
 import PluginContainer from '../PluginContainer';
 import {ContentContainer} from './ContentContainer';
 import {Notification} from './notification/Notification';
-import {SheetRenderer} from '../chrome/SheetRenderer';
 import ChangelogSheet, {hasNewChangesToShow} from '../chrome/ChangelogSheet';
 import {getVersionString} from '../utils/versionString';
 import config from '../fb-stubs/config';
@@ -179,7 +178,6 @@ export function SandyApp() {
           {outOfContentsContainer}
         </MainContainer>
       </Layout.Left>
-      <SheetRenderer logger={logger} />
       <_PortalsManager />
     </Layout.Container>
   );

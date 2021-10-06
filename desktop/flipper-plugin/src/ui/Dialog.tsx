@@ -237,6 +237,27 @@ export const Dialog = {
     });
   },
 
+  select<T>({
+    defaultValue,
+    renderer,
+    ...rest
+  }: {
+    defaultValue: T;
+    renderer: (
+      value: T,
+      onChange: (newValue: T) => void,
+      onCancel: () => void,
+    ) => React.ReactElement;
+  } & BaseDialogOptions): DialogResult<false | T> {
+    const handle = Dialog.show<T>({
+      ...rest,
+      defaultValue,
+      children: (currentValue, setValue): React.ReactElement =>
+        renderer(currentValue, setValue, () => handle.close()),
+    });
+    return handle;
+  },
+
   loading({
     title,
     message,
