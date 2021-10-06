@@ -7,17 +7,7 @@
  * @format
  */
 
-export type ErrorType = {
-  message: string;
-  stacktrace: string;
-  name: string;
-};
-
-export type ResponseType = {
-  success?: Object;
-  error?: ErrorType;
-  length: number;
-};
+import {ClientResponseType} from 'flipper-plugin';
 
 export enum ConnectionStatus {
   ERROR = 'error',
@@ -33,5 +23,5 @@ export interface ClientConnection {
   subscribeToEvents(subscriber: ConnectionStatusChange): void;
   close(): void;
   send(data: any): void;
-  sendExpectResponse(data: any): Promise<ResponseType>;
+  sendExpectResponse(data: any): Promise<ClientResponseType>;
 }

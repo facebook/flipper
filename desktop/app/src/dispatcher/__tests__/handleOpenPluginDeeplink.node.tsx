@@ -193,9 +193,11 @@ test('triggering a deeplink without applicable device can wait for a device', as
   );
   expect(renderer.baseElement).toMatchInlineSnapshot(`
     <body>
-      <div />
+      <div>
+        No plugin selected
+      </div>
     </body>
-    `);
+  `);
 
   const handlePromise = handleDeeplink(
     store,
@@ -207,9 +209,11 @@ test('triggering a deeplink without applicable device can wait for a device', as
 
   // No device yet available (dialogs are not renderable atm)
   expect(renderer.baseElement).toMatchInlineSnapshot(`
-      <body>
-        <div />
-      </body>
+    <body>
+      <div>
+        No plugin selected
+      </div>
+    </body>
   `);
 
   // create a new device
@@ -273,9 +277,11 @@ test('triggering a deeplink without applicable client can wait for a device', as
   );
   expect(renderer.baseElement).toMatchInlineSnapshot(`
     <body>
-      <div />
+      <div>
+        No plugin selected
+      </div>
     </body>
-    `);
+  `);
 
   const handlePromise = handleDeeplink(
     store,
@@ -288,7 +294,9 @@ test('triggering a deeplink without applicable client can wait for a device', as
   // No device yet available (dialogs are not renderable atm)
   expect(renderer.baseElement).toMatchInlineSnapshot(`
     <body>
-      <div />
+      <div>
+        No plugin selected
+      </div>
     </body>
   `);
 

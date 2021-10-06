@@ -260,7 +260,9 @@ test('PluginContainer can render Sandy plugins', async () => {
 
   expect(renderer.baseElement).toMatchInlineSnapshot(`
     <body>
-      <div />
+      <div>
+        No plugin selected
+      </div>
     </body>
   `);
   expect(pluginInstance.connectedStub).toBeCalledTimes(1);
@@ -801,7 +803,9 @@ test('PluginContainer can render Sandy device plugins', async () => {
 
   expect(renderer.baseElement).toMatchInlineSnapshot(`
     <body>
-      <div />
+      <div>
+        No plugin selected
+      </div>
     </body>
   `);
   expect(pluginInstance.activatedStub).toBeCalledTimes(1);
@@ -1232,7 +1236,9 @@ test('PluginContainer can render Sandy plugins for archived devices', async () =
 
   expect(renderer.baseElement).toMatchInlineSnapshot(`
     <body>
-      <div />
+      <div>
+        No plugin selected
+      </div>
     </body>
   `);
   expect(pluginInstance.connectedStub).toBeCalledTimes(0);

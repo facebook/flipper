@@ -51,7 +51,18 @@ export type ClientQuery = {
 export type ClientDescription = {
   readonly id: string;
   readonly query: ClientQuery;
-  readonly sdkVersion: number;
+};
+
+export type ClientErrorType = {
+  message: string;
+  stacktrace: string;
+  name: string;
+};
+
+export type ClientResponseType = {
+  success?: Object;
+  error?: ClientErrorType;
+  length: number;
 };
 
 export type FlipperServerEvents = {
@@ -64,10 +75,15 @@ export type FlipperServerEvents = {
   };
   'device-connected': DeviceDescription;
   'device-disconnected': DeviceDescription;
-  'client-connected': ClientDescription;
   'device-log': {
     serial: string;
     entry: DeviceLogEntry;
+  };
+  'client-connected': ClientDescription;
+  'client-disconnected': {id: string};
+  'client-message': {
+    id: string;
+    message: string;
   };
 };
 
@@ -91,6 +107,11 @@ export type FlipperServerCommands = {
   'device-clear-logs': (serial: string) => Promise<void>;
   'device-navigate': (serial: string, location: string) => Promise<void>;
   'metro-command': (serial: string, command: string) => Promise<void>;
+  'client-request': (clientId: string, payload: any) => Promise<void>;
+  'client-request-response': (
+    clientId: string,
+    payload: any,
+  ) => Promise<ClientResponseType>;
 };
 
 export interface FlipperServer {

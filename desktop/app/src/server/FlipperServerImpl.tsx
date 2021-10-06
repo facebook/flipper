@@ -8,7 +8,6 @@
  */
 
 import EventEmitter from 'events';
-import Client from '../Client';
 import {Store} from '../reducers/index';
 import {Logger} from '../fb-interfaces/Logger';
 import ServerController from './comms/ServerController';
@@ -90,10 +89,6 @@ export class FlipperServerImpl implements FlipperServer {
     const server = (this.server = new ServerController(this));
     this.android = new AndroidDeviceManager(this);
     this.ios = new IOSDeviceManager(this);
-
-    server.addListener('new-client', (client: Client) => {
-      this.emit('client-connected', client);
-    });
 
     server.addListener('error', (err) => {
       this.emit('server-error', err);
@@ -262,6 +257,25 @@ export class FlipperServerImpl implements FlipperServer {
         throw new Error('Not a Metro device: ' + serial);
       }
       device.sendCommand(command);
+    },
+    'client-request': async (clientId, payload) => {
+      this.server.connections.get(clientId)?.connection?.send(payload);
+    },
+    'client-request-response': async (clientId, payload) => {
+      const client = this.server.connections.get(clientId);
+      if (client && client.connection) {
+        return await client.connection.sendExpectResponse(payload);
+      }
+      return {
+        length: 0,
+        error: {
+          message: `Client '${clientId} is no longer connected, failed to deliver: ${JSON.stringify(
+            payload,
+          )}`,
+          name: 'CLIENT_DISCONNECTED',
+          stacktrace: '',
+        },
+      };
     },
   };
 
