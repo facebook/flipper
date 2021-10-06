@@ -108,7 +108,6 @@ export {SearchableProps} from './components/searchable/Searchable';
 export {InspectorSidebar} from './components/elements-inspector/sidebar';
 export {VisualizerPortal} from './components/elements-inspector/Visualizer';
 
-export {default as Sheet} from './components/Sheet';
 export {Markdown} from './components/Markdown';
 
 export {default as VBox} from './components/VBox';

@@ -7,7 +7,8 @@
  * @format
  */
 
-import {Button, FlexColumn, Input, Sheet, styled} from 'flipper';
+import {Modal} from 'antd';
+import {Button, FlexColumn, Input, styled} from 'flipper';
 import React, {useState} from 'react';
 import {Bookmark, URI} from '../types';
 
@@ -55,7 +56,7 @@ export function SaveBookmarkDialog(props: Props) {
     return null;
   } else {
     return (
-      <Sheet onHideSheet={onHide}>
+      <Modal visible footer={null} onCancel={onHide}>
         {(onHide: () => void) => {
           return (
             <Container>
@@ -111,7 +112,7 @@ export function SaveBookmarkDialog(props: Props) {
             </Container>
           );
         }}
-      </Sheet>
+      </Modal>
     );
   }
 }

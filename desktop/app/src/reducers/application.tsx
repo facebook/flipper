@@ -15,7 +15,6 @@ import {ReactElement} from 'react';
 import CancellableExportStatus from '../chrome/CancellableExportStatus';
 import {Actions} from './';
 import produce from 'immer';
-export const ACTIVE_SHEET_PLUGIN_SHEET: 'PLUGIN_SHEET' = 'PLUGIN_SHEET';
 export const ACTIVE_SHEET_PLUGINS: 'PLUGINS' = 'PLUGINS';
 export const ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT: 'SELECT_PLUGINS_TO_EXPORT' =
   'SELECT_PLUGINS_TO_EXPORT';
@@ -33,7 +32,6 @@ export const ACTIVE_SHEET_CHANGELOG_RECENT_ONLY =
   'ACTIVE_SHEET_CHANGELOG_RECENT_ONLY';
 
 export type ActiveSheet =
-  | typeof ACTIVE_SHEET_PLUGIN_SHEET
   | typeof ACTIVE_SHEET_PLUGINS
   | typeof ACTIVE_SHEET_SHARE_DATA
   | typeof ACTIVE_SHEET_SIGN_IN

@@ -21,7 +21,6 @@ import {
   ACTIVE_SHEET_DOCTOR,
   ACTIVE_SHEET_SHARE_DATA_IN_FILE,
   ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT,
-  ACTIVE_SHEET_PLUGIN_SHEET,
   ACTIVE_SHEET_CHANGELOG,
   ACTIVE_SHEET_CHANGELOG_RECENT_ONLY,
 } from '../reducers/application';
@@ -75,9 +74,6 @@ export function SheetRenderer({logger}: {logger: Logger}) {
               return null;
             })()
           );
-        case ACTIVE_SHEET_PLUGIN_SHEET:
-          // Currently unused.
-          return null;
         default:
           return null;
       }
