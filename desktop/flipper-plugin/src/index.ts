@@ -61,7 +61,7 @@ export {Toolbar} from './ui/Toolbar';
 export {MasterDetail} from './ui/MasterDetail';
 export {CodeBlock} from './ui/CodeBlock';
 
-export {renderReactRoot} from './utils/renderReactRoot';
+export {renderReactRoot, _PortalsManager} from './utils/renderReactRoot';
 export {
   Tracked,
   TrackingScope,
@@ -115,7 +115,7 @@ export {
 } from './ui/data-inspector/DataDescription';
 export {MarkerTimeline} from './ui/MarkerTimeline';
 export {DataInspector} from './ui/data-inspector/DataInspector';
-export {Dialog} from './ui/Dialog';
+export {Dialog, DialogResult} from './ui/Dialog';
 export {
   ElementsInspector,
   Element as ElementsInspectorElement,

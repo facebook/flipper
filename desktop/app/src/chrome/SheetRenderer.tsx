@@ -9,26 +9,15 @@
 
 import React, {useCallback} from 'react';
 import ShareSheetExportUrl from './ShareSheetExportUrl';
-import SignInSheet from './fb-stubs/SignInSheet';
 import ExportDataPluginSheet from './ExportDataPluginSheet';
 import ShareSheetExportFile from './ShareSheetExportFile';
 import Sheet from './Sheet';
 import {
-  ACTIVE_SHEET_PLUGINS,
   ACTIVE_SHEET_SHARE_DATA,
-  ACTIVE_SHEET_SIGN_IN,
-  ACTIVE_SHEET_SETTINGS,
-  ACTIVE_SHEET_DOCTOR,
   ACTIVE_SHEET_SHARE_DATA_IN_FILE,
   ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT,
-  ACTIVE_SHEET_CHANGELOG,
-  ACTIVE_SHEET_CHANGELOG_RECENT_ONLY,
 } from '../reducers/application';
 import {Logger} from '../fb-interfaces/Logger';
-import PluginManager from './plugin-manager/PluginManager';
-import SettingsSheet from './SettingsSheet';
-import DoctorSheet from './DoctorSheet';
-import ChangelogSheet from './ChangelogSheet';
 import {useStore} from '../utils/useStore';
 
 export function SheetRenderer({logger}: {logger: Logger}) {
@@ -39,18 +28,6 @@ export function SheetRenderer({logger}: {logger: Logger}) {
   const renderSheet = useCallback(
     (onHide: () => any) => {
       switch (activeSheet) {
-        case ACTIVE_SHEET_PLUGINS:
-          return <PluginManager onHide={onHide} />;
-        case ACTIVE_SHEET_SIGN_IN:
-          return <SignInSheet onHide={onHide} />;
-        case ACTIVE_SHEET_SETTINGS:
-          return <SettingsSheet platform={process.platform} onHide={onHide} />;
-        case ACTIVE_SHEET_DOCTOR:
-          return <DoctorSheet onHide={onHide} />;
-        case ACTIVE_SHEET_CHANGELOG:
-          return <ChangelogSheet onHide={onHide} />;
-        case ACTIVE_SHEET_CHANGELOG_RECENT_ONLY:
-          return <ChangelogSheet onHide={onHide} recent />;
         case ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT:
           return <ExportDataPluginSheet onHide={onHide} />;
         case ACTIVE_SHEET_SHARE_DATA:

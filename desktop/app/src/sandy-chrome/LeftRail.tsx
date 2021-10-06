@@ -24,13 +24,10 @@ import {
 import {SidebarLeft, SidebarRight} from './SandyIcons';
 import {useDispatch, useStore} from '../utils/useStore';
 import {
-  ACTIVE_SHEET_PLUGINS,
-  ACTIVE_SHEET_SIGN_IN,
-  setActiveSheet,
   toggleLeftSidebarVisible,
   toggleRightSidebarVisible,
 } from '../reducers/application';
-import {theme, Layout, withTrackingScope} from 'flipper-plugin';
+import {theme, Layout, withTrackingScope, Dialog} from 'flipper-plugin';
 import SetupDoctorScreen, {checkHasNewProblem} from './SetupDoctorScreen';
 import SettingsSheet from '../chrome/SettingsSheet';
 import WelcomeScreen from './WelcomeScreen';
@@ -51,6 +48,8 @@ import isProduction from '../utils/isProduction';
 import NetworkGraph from '../chrome/NetworkGraph';
 import FpsGraph from '../chrome/FpsGraph';
 import UpdateIndicator from '../chrome/UpdateIndicator';
+import PluginManager from '../chrome/plugin-manager/PluginManager';
+import {showLoginDialog} from '../chrome/fb-stubs/SignInSheet';
 
 const LeftRailButtonElem = styled(Button)<{kind?: 'small'}>(({kind}) => ({
   width: kind === 'small' ? 32 : 36,
@@ -119,7 +118,6 @@ export const LeftRail = withTrackingScope(function LeftRail({
   toplevelSelection,
   setToplevelSelection,
 }: ToplevelProps) {
-  const dispatch = useDispatch();
   return (
     <Layout.Container borderRight padv={12} width={48}>
       <Layout.Bottom style={{overflow: 'visible'}}>
@@ -136,7 +134,7 @@ export const LeftRail = withTrackingScope(function LeftRail({
             icon={<AppstoreOutlined />}
             title="Plugin Manager"
             onClick={() => {
-              dispatch(setActiveSheet(ACTIVE_SHEET_PLUGINS));
+              Dialog.showModal((onHide) => <PluginManager onHide={onHide} />);
             }}
           />
           <NotificationButton
@@ -362,9 +360,6 @@ function LoginButton() {
   const user = useStore((state) => state.user);
   const login = (user?.id ?? null) !== null;
   const profileUrl = user?.profile_picture?.uri;
-  const showLogin = useCallback(() => {
-    dispatch(setActiveSheet(ACTIVE_SHEET_SIGN_IN));
-  }, [dispatch]);
   const [showLogout, setShowLogout] = useState(false);
   const onHandleVisibleChange = useCallback(
     (visible) => setShowLogout(visible),
@@ -398,7 +393,7 @@ function LoginButton() {
       <LeftRailButton
         icon={<LoginOutlined />}
         title="Log In"
-        onClick={showLogin}
+        onClick={() => showLoginDialog()}
       />
     </>
   );

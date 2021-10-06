@@ -13,7 +13,6 @@ import {getUser} from '../fb-stubs/user';
 import {State, Store} from '../reducers/index';
 import {checkForUpdate} from '../fb-stubs/checkForUpdate';
 import {getAppVersion} from '../utils/info';
-import {ACTIVE_SHEET_SIGN_IN, setActiveSheet} from '../reducers/application';
 import {UserNotSignedInError} from '../utils/errors';
 import {selectPlugin, setPluginEnabled} from '../reducers/connections';
 import {getUpdateAvailableMessage} from '../chrome/UpdateIndicator';
@@ -29,6 +28,7 @@ import Client from '../Client';
 import {RocketOutlined} from '@ant-design/icons';
 import {showEmulatorLauncher} from '../sandy-chrome/appinspect/LaunchEmulator';
 import {getAllClients} from '../reducers/connections';
+import {showLoginDialog} from '../chrome/fb-stubs/SignInSheet';
 import {DeeplinkInteraction, OpenPluginParams} from '../deeplinkTracking';
 
 export function parseOpenPluginParams(query: string): OpenPluginParams {
@@ -233,7 +233,7 @@ async function showPleaseLoginDialog(
     return false;
   }
 
-  store.dispatch(setActiveSheet(ACTIVE_SHEET_SIGN_IN));
+  await showLoginDialog();
   // wait until login succeeded
   await waitForLogin(store);
   return true;

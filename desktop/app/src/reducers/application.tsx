@@ -14,7 +14,6 @@ import {v1 as uuidv1} from 'uuid';
 import {ReactElement} from 'react';
 import CancellableExportStatus from '../chrome/CancellableExportStatus';
 import {Actions} from './';
-import produce from 'immer';
 export const ACTIVE_SHEET_PLUGINS: 'PLUGINS' = 'PLUGINS';
 export const ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT: 'SELECT_PLUGINS_TO_EXPORT' =
   'SELECT_PLUGINS_TO_EXPORT';
@@ -31,16 +30,13 @@ export const ACTIVE_SHEET_CHANGELOG = 'ACTIVE_SHEET_CHANGELOG';
 export const ACTIVE_SHEET_CHANGELOG_RECENT_ONLY =
   'ACTIVE_SHEET_CHANGELOG_RECENT_ONLY';
 
+/**
+ * @deprecated this is a weird mechanism, and using imperative dialogs will be simpler
+ */
 export type ActiveSheet =
-  | typeof ACTIVE_SHEET_PLUGINS
   | typeof ACTIVE_SHEET_SHARE_DATA
-  | typeof ACTIVE_SHEET_SIGN_IN
-  | typeof ACTIVE_SHEET_SETTINGS
-  | typeof ACTIVE_SHEET_DOCTOR
   | typeof ACTIVE_SHEET_SHARE_DATA_IN_FILE
   | typeof ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT
-  | typeof ACTIVE_SHEET_CHANGELOG
-  | typeof ACTIVE_SHEET_CHANGELOG_RECENT_ONLY
   | null;
 
 export type LauncherMsg = {
@@ -84,7 +80,6 @@ export type State = {
   altServerPorts: ServerPorts;
   launcherMsg: LauncherMsg;
   statusMessages: Array<string>;
-  pastedToken?: string;
 };
 
 type BooleanActionType =
@@ -152,10 +147,6 @@ export type Action =
   | {
       type: 'REMOVE_STATUS_MSG';
       payload: {msg: string; sender: string};
-    }
-  | {
-      type: 'SET_PASTED_TOKEN';
-      payload?: string;
     };
 
 export const initialState: () => State = () => ({
@@ -294,10 +285,6 @@ export default function reducer(
       return {...state, statusMessages};
     }
     return state;
-  } else if (action.type === 'SET_PASTED_TOKEN') {
-    return produce(state, (draft) => {
-      draft.pastedToken = action.payload;
-    });
   } else {
     return state;
   }
@@ -370,9 +357,4 @@ export const addStatusMessage = (payload: StatusMessageType): Action => ({
 export const removeStatusMessage = (payload: StatusMessageType): Action => ({
   type: 'REMOVE_STATUS_MSG',
   payload,
-});
-
-export const setPastedToken = (pastedToken?: string): Action => ({
-  type: 'SET_PASTED_TOKEN',
-  payload: pastedToken,
 });

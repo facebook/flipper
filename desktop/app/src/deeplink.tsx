@@ -7,11 +7,6 @@
  * @format
  */
 
-import {
-  ACTIVE_SHEET_SIGN_IN,
-  setActiveSheet,
-  setPastedToken,
-} from './reducers/application';
 import {Group, SUPPORTED_GROUPS} from './reducers/supportForm';
 import {Logger} from './fb-interfaces/Logger';
 import {Store} from './reducers/index';
@@ -20,6 +15,7 @@ import {selectPlugin, getAllClients} from './reducers/connections';
 import {Dialog} from 'flipper-plugin';
 import {handleOpenPluginDeeplink} from './dispatcher/handleOpenPluginDeeplink';
 import {message} from 'antd';
+import {showLoginDialog} from './chrome/fb-stubs/SignInSheet';
 import {track} from './deeplinkTracking';
 
 const UNKNOWN = 'Unknown deeplink';
@@ -81,10 +77,7 @@ export async function handleDeeplink(
     throw unknownError();
   } else if (uri.pathname.match(/^\/*login\/*$/)) {
     const token = uri.searchParams.get('token');
-    store.dispatch(setPastedToken(token ?? undefined));
-    if (store.getState().application.activeSheet !== ACTIVE_SHEET_SIGN_IN) {
-      store.dispatch(setActiveSheet(ACTIVE_SHEET_SIGN_IN));
-    }
+    showLoginDialog(token ?? '');
     return;
   }
   const match = uriComponents(query);

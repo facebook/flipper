@@ -85,6 +85,7 @@ test('Correct top level API exposed', () => {
       "DeviceLogEntry",
       "DeviceLogListener",
       "DevicePluginClient",
+      "DialogResult",
       "Draft",
       "ElementAttribute",
       "ElementData",

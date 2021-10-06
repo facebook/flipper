@@ -16,12 +16,6 @@ import {
   startFileExport,
   startLinkExport,
 } from './utils/exportData';
-import {
-  setActiveSheet,
-  ACTIVE_SHEET_PLUGINS,
-  ACTIVE_SHEET_SETTINGS,
-  ACTIVE_SHEET_CHANGELOG,
-} from './reducers/application';
 import {setStaticView} from './reducers/connections';
 import {Store} from './reducers/';
 import electron, {MenuItemConstructorOptions} from 'electron';
@@ -33,11 +27,16 @@ import {
   _buildInMenuEntries,
   _wrapInteractionHandler,
   getFlipperLib,
+  Dialog,
 } from 'flipper-plugin';
 import {StyleGuide} from './sandy-chrome/StyleGuide';
 import {showEmulatorLauncher} from './sandy-chrome/appinspect/LaunchEmulator';
 import {webFrame} from 'electron';
 import {openDeeplinkDialog} from './deeplink';
+import React from 'react';
+import ChangelogSheet from './chrome/ChangelogSheet';
+import PluginManager from './chrome/plugin-manager/PluginManager';
+import SettingsSheet from './chrome/SettingsSheet';
 
 export type DefaultKeyboardAction = keyof typeof _buildInMenuEntries;
 export type TopLevelMenu = 'Edit' | 'View' | 'Window' | 'Help';
@@ -253,7 +252,11 @@ function getTemplate(
     {
       label: 'Preferences',
       accelerator: 'Cmd+,',
-      click: () => store.dispatch(setActiveSheet(ACTIVE_SHEET_SETTINGS)),
+      click: () => {
+        Dialog.showModal((onHide) => (
+          <SettingsSheet platform={process.platform} onHide={onHide} />
+        ));
+      },
     },
     {
       label: 'Import Flipper File...',
@@ -343,8 +346,11 @@ function getTemplate(
     {
       label: 'Manage Plugins...',
       click: function () {
-        store.dispatch(setActiveSheet(ACTIVE_SHEET_PLUGINS));
+        Dialog.showModal((onHide) => <PluginManager onHide={onHide} />);
       },
+    },
+    {
+      type: 'separator',
     },
     {
       label: 'Flipper style guide',
@@ -404,7 +410,7 @@ function getTemplate(
     {
       label: 'Changelog',
       click() {
-        store.dispatch(setActiveSheet(ACTIVE_SHEET_CHANGELOG));
+        Dialog.showModal((onHide) => <ChangelogSheet onHide={onHide} />);
       },
     },
   ];

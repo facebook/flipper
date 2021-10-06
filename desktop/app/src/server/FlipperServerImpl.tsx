@@ -17,11 +17,7 @@ import {CertificateExchangeMedium} from './utils/CertificateProvider';
 import {isLoggedIn} from '../fb-stubs/user';
 import React from 'react';
 import {Typography} from 'antd';
-import {
-  ACTIVE_SHEET_SIGN_IN,
-  ServerPorts,
-  setActiveSheet,
-} from '../reducers/application';
+import {ServerPorts} from '../reducers/application';
 import {AndroidDeviceManager} from './devices/android/androidDeviceManager';
 import {IOSDeviceManager} from './devices/ios/iOSDeviceManager';
 import metroDevice from './devices/metro/metroDeviceManager';
@@ -35,6 +31,7 @@ import {
 import {ServerDevice} from './devices/ServerDevice';
 import {Base64} from 'js-base64';
 import MetroDevice from './devices/metro/MetroDevice';
+import {showLoginDialog} from '../chrome/fb-stubs/SignInSheet';
 
 export interface FlipperServerConfig {
   enableAndroid: boolean;
@@ -135,11 +132,9 @@ export class FlipperServerImpl implements FlipperServer {
                   <>
                     and{' '}
                     <Typography.Link
-                      onClick={() =>
-                        this.store.dispatch(
-                          setActiveSheet(ACTIVE_SHEET_SIGN_IN),
-                        )
-                      }>
+                      onClick={() => {
+                        showLoginDialog();
+                      }}>
                       log in to Facebook Intern
                     </Typography.Link>
                   </>

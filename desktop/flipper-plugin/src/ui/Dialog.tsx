@@ -13,7 +13,8 @@ import React from 'react';
 import {renderReactRoot} from '../utils/renderReactRoot';
 import {Layout} from './Layout';
 import {Spinner} from './Spinner';
-type DialogResult<T> = Promise<false | T> & {close: () => void};
+
+export type DialogResult<T> = Promise<false | T> & {close: () => void};
 
 type BaseDialogOptions = {
   title: string;
@@ -94,6 +95,36 @@ export const Dialog = {
             resolve(false);
           };
           return <DialogComponent onHide={hide} />;
+        });
+      }),
+      {
+        close() {
+          cancel();
+        },
+      },
+    );
+  },
+
+  /**
+   * Shows an item in the modal stack, but without providing any further UI, like .show does.
+   */
+  showModal<T = void>(
+    fn: (hide: (result?: T) => void) => React.ReactElement,
+  ): DialogResult<T> {
+    let cancel: () => void;
+
+    return Object.assign(
+      new Promise<false | T>((resolve) => {
+        renderReactRoot((hide) => {
+          cancel = () => {
+            hide();
+            resolve(false);
+          };
+
+          return fn((result?: T) => {
+            hide();
+            resolve(result ?? false);
+          });
         });
       }),
       {
