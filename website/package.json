@@ -13,15 +13,15 @@
     "@docusaurus/core": "^2.0.0-beta.6",
     "@docusaurus/plugin-client-redirects": "2.0.0-beta.6",
     "@docusaurus/preset-classic": "^2.0.0-beta.6",
-    "@types/fs-extra": "^9.0.11",
-    "docusaurus-plugin-internaldocs-fb": "^0.9.8",
+    "@types/fs-extra": "^9.0.13",
+    "docusaurus-plugin-internaldocs-fb": "^0.9.9",
     "file-cli": "^1.2.0",
     "fs-extra": "^10.0.0",
-    "mermaid": "^8.12.1",
+    "mermaid": "^8.13.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "ts-node": "^10.2.1",
-    "typescript": "^4.4.2"
+    "typescript": "^4.4.3"
   },
   "dependencies": {},
   "resolutions": {
