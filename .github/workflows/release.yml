@@ -168,7 +168,7 @@ jobs:
         path: 'Flipper-win.zip'
     - name: GitHub Upload Release Artifacts
       if: ${{ needs.release.outputs.tag != '' }}
-      uses: passy/github-upload-release-artifacts-action@v2.1.1
+      uses: passy/github-upload-release-artifacts-action@v2.1.2
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
