@@ -118,13 +118,12 @@ export default class CertificateProvider {
       ? (getAdbClient(config).catch((e) => {
           // make sure initialization failure is already logged
           const msg =
-            'Failed to initialise ADB. Please disabled Android supportin settings, or configure a correct path';
+            'Failed to initialize ADB. Please disabled Android support in the settings, or configure a correct path';
           message.error({
             duration: 10,
             content: msg + e,
           });
-          // eslint-disable-next-line flipper/no-console-error-without-context
-          console.error(msg, e);
+          console.warn(msg, e);
           this._adb = undefined; // no adb client available
         }) as Promise<ADBClient>)
       : undefined;
