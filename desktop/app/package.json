@@ -38,6 +38,8 @@
     "flipper-doctor": "0.0.0",
     "flipper-plugin": "0.0.0",
     "flipper-plugin-lib": "0.0.0",
+    "flipper-server-core": "0.0.0",
+    "flipper-ui-core": "0.0.0",
     "fs-extra": "^10.0.0",
     "immer": "^9.0.6",
     "invariant": "^2.2.2",

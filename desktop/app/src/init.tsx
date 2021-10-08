@@ -51,6 +51,9 @@ import {getVersionString} from './utils/versionString';
 import {PersistGate} from 'redux-persist/integration/react';
 // eslint-disable-next-line flipper/no-electron-remote-imports
 import {ipcRenderer, remote} from 'electron';
+import {helloWorld} from 'flipper-server-core';
+
+helloWorld();
 
 if (process.env.NODE_ENV === 'development' && os.platform() === 'darwin') {
   // By default Node.JS has its internal certificate storage and doesn't use

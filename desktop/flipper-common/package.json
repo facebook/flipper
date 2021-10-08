@@ -1,0 +1,27 @@
+{
+  "name": "flipper-common",
+  "version": "0.0.0",
+  "description": "Server & UI shared Flipper utilities",
+  "repository": "facebook/flipper",
+  "main": "lib/index.js",
+  "flipperBundlerEntry": "src",
+  "types": "lib/index.d.ts",
+  "license": "MIT",
+  "bugs": "https://github.com/facebook/flipper/issues",
+  "dependencies": {},
+  "devDependencies": {},
+  "peerDependencies": {},
+  "scripts": {
+    "reset": "rimraf lib *.tsbuildinfo",
+    "build": "tsc -b",
+    "prepack": "yarn reset && yarn build"
+  },
+  "files": [
+    "lib/**/*"
+  ],
+  "homepage": "https://github.com/facebook/flipper",
+  "keywords": [
+    "Flipper"
+  ],
+  "author": "Facebook, Inc"
+}

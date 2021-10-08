@@ -11,7 +11,16 @@
       "path": "../doctor"
     },
     {
+      "path": "../flipper-common"
+    },
+    {
       "path": "../flipper-plugin"
+    },
+    {
+      "path": "../flipper-server-core"
+    },
+    {
+      "path": "../flipper-ui-core"
     },
     {
       "path": "../plugin-lib"
@@ -23,9 +32,5 @@
       "path": "../plugins/public/navigation"
     }
   ],
-  "exclude": [
-    "**/node_modules/",
-    "**/__tests__/",
-    "**/lib/"
-  ]
+  "exclude": ["**/node_modules/", "**/__tests__/", "**/lib/"]
 }

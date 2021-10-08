@@ -6,10 +6,7 @@
   },
   "references": [
     {
-      "path": "../plugin-lib"
-    },
-    {
-      "path": "../flipper-common"
+      "path": "../flipper-server-core"
     }
   ]
 }
