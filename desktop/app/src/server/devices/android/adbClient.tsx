@@ -31,7 +31,7 @@ export function getAdbClient(config: Config): Promise<Client> {
    manually before requesting a client. */
 async function createClient(config: Config): Promise<Client> {
   const androidHome = config.androidHome;
-  const adbPath = path.resolve(androidHome, 'platform-tools/adb');
+  const adbPath = path.resolve(androidHome, 'platform-tools', 'adb');
   return reportPlatformFailures<Client>(
     execFile(adbPath, ['start-server']).then(() =>
       adbkit.createClient(adbConfig()),
