@@ -57,10 +57,10 @@ This repository includes all parts of Flipper. This includes:
 * native Flipper SDKs for iOS (`/iOS`)
 * native Flipper SDKs for Android (`/android`)
 * Plugins:
-  * Logs (`/desktop/src/device-plugins/logs`)
-  * Layout inspector (`/desktop/plugins/layout`)
-  * Network inspector (`/desktop/plugins/network`)
-  * Shared Preferences/NSUserDefaults inspector (`/desktop/plugins/shared_preferences`)
+  * Logs (`/desktop/plugins/public/logs`)
+  * Layout inspector (`/desktop/plugins/public/layout`)
+  * Network inspector (`/desktop/plugins/public/network`)
+  * Shared Preferences/NSUserDefaults inspector (`/desktop/plugins/public/shared_preferences`)
 * website and documentation (`/website` / `/docs`)
 
 # Getting started
