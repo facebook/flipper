@@ -7,6 +7,8 @@
  * @format
  */
 
-export default function SignInSheetFunc(_: {onHide: () => any}) {
-  return null;
+export async function showLoginDialog(
+  _initialToken: string = '',
+): Promise<boolean> {
+  return false;
 }

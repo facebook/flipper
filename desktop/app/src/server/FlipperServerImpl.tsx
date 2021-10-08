@@ -8,7 +8,6 @@
  */
 
 import EventEmitter from 'events';
-import Client from '../Client';
 import {Store} from '../reducers/index';
 import {Logger} from '../fb-interfaces/Logger';
 import ServerController from './comms/ServerController';
@@ -18,11 +17,7 @@ import {CertificateExchangeMedium} from './utils/CertificateProvider';
 import {isLoggedIn} from '../fb-stubs/user';
 import React from 'react';
 import {Typography} from 'antd';
-import {
-  ACTIVE_SHEET_SIGN_IN,
-  ServerPorts,
-  setActiveSheet,
-} from '../reducers/application';
+import {ServerPorts} from '../reducers/application';
 import {AndroidDeviceManager} from './devices/android/androidDeviceManager';
 import {IOSDeviceManager} from './devices/ios/iOSDeviceManager';
 import metroDevice from './devices/metro/metroDeviceManager';
@@ -36,6 +31,7 @@ import {
 import {ServerDevice} from './devices/ServerDevice';
 import {Base64} from 'js-base64';
 import MetroDevice from './devices/metro/MetroDevice';
+import {showLoginDialog} from '../chrome/fb-stubs/SignInSheet';
 
 export interface FlipperServerConfig {
   enableAndroid: boolean;
@@ -91,10 +87,6 @@ export class FlipperServerImpl implements FlipperServer {
     this.android = new AndroidDeviceManager(this);
     this.ios = new IOSDeviceManager(this);
 
-    server.addListener('new-client', (client: Client) => {
-      this.emit('client-connected', client);
-    });
-
     server.addListener('error', (err) => {
       this.emit('server-error', err);
     });
@@ -140,11 +132,9 @@ export class FlipperServerImpl implements FlipperServer {
                   <>
                     and{' '}
                     <Typography.Link
-                      onClick={() =>
-                        this.store.dispatch(
-                          setActiveSheet(ACTIVE_SHEET_SIGN_IN),
-                        )
-                      }>
+                      onClick={() => {
+                        showLoginDialog();
+                      }}>
                       log in to Facebook Intern
                     </Typography.Link>
                   </>
@@ -262,6 +252,25 @@ export class FlipperServerImpl implements FlipperServer {
         throw new Error('Not a Metro device: ' + serial);
       }
       device.sendCommand(command);
+    },
+    'client-request': async (clientId, payload) => {
+      this.server.connections.get(clientId)?.connection?.send(payload);
+    },
+    'client-request-response': async (clientId, payload) => {
+      const client = this.server.connections.get(clientId);
+      if (client && client.connection) {
+        return await client.connection.sendExpectResponse(payload);
+      }
+      return {
+        length: 0,
+        error: {
+          message: `Client '${clientId} is no longer connected, failed to deliver: ${JSON.stringify(
+            payload,
+          )}`,
+          name: 'CLIENT_DISCONNECTED',
+          stacktrace: '',
+        },
+      };
     },
   };
 

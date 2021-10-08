@@ -10,6 +10,7 @@
 import {createMockFlipperWithPlugin} from '../test-utils/createMockFlipperWithPlugin';
 import {FlipperPlugin} from '../plugin';
 import {TestIdler} from '../utils/Idler';
+import {getAllClients} from '../reducers/connections';
 
 interface PersistedState {
   count: 1;
@@ -60,8 +61,8 @@ test('can create a Fake flipper with legacy wrapper', async () => {
   expect(state.plugins).toMatchSnapshot();
   sendMessage('inc', {});
   expect(
-    await state.connections.clients[0].sandyPluginStates
-      .get(TestPlugin.id)!
+    await getAllClients(state.connections)[0]
+      .sandyPluginStates.get(TestPlugin.id)!
       .exportState(testIdler, testOnStatusMessage),
   ).toMatchInlineSnapshot(`"{\\"count\\":1}"`);
 });

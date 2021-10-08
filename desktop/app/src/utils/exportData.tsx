@@ -7,13 +7,14 @@
  * @format
  */
 
+import * as React from 'react';
 import os from 'os';
 import path from 'path';
 import electron from 'electron';
-import {getInstance as getLogger} from '../fb-stubs/Logger';
+import {getInstance, getInstance as getLogger} from '../fb-stubs/Logger';
 import {Store, MiddlewareAPI} from '../reducers';
 import {DeviceExport} from '../devices/BaseDevice';
-import {State as PluginsState} from '../reducers/plugins';
+import {selectedPlugins, State as PluginsState} from '../reducers/plugins';
 import {PluginNotification} from '../reducers/notifications';
 import Client, {ClientExport} from '../Client';
 import {getAppVersion} from './info';
@@ -33,14 +34,16 @@ import {
   resetSupportFormV2State,
   SupportFormRequestDetailsState,
 } from '../reducers/supportForm';
-import {setSelectPluginsToExportActiveSheet} from '../reducers/application';
 import {deconstructClientId} from '../utils/clientUtils';
 import {performance} from 'perf_hooks';
 import {processMessageQueue} from './messageQueue';
 import {getPluginTitle} from './pluginUtils';
 import {capture} from './screenshot';
 import {uploadFlipperMedia} from '../fb-stubs/user';
-import {ClientQuery, Idler} from 'flipper-plugin';
+import {ClientQuery, Dialog, Idler} from 'flipper-plugin';
+import ShareSheetExportUrl from '../chrome/ShareSheetExportUrl';
+import ShareSheetExportFile from '../chrome/ShareSheetExportFile';
+import ExportDataPluginSheet from '../chrome/ExportDataPluginSheet';
 
 export const IMPORT_FLIPPER_TRACE_EVENT = 'import-flipper-trace';
 export const EXPORT_FLIPPER_TRACE_EVENT = 'export-flipper-trace';
@@ -418,9 +421,9 @@ async function getStoreExport(
   fetchMetaDataErrors: {[plugin: string]: Error} | null;
 }> {
   let state = store.getState();
-  const {clients, selectedApp, selectedDevice} = state.connections;
+  const {clients, selectedAppId, selectedDevice} = state.connections;
   const pluginsToProcess = determinePluginsToProcess(
-    clients,
+    Array.from(clients.values()),
     selectedDevice,
     state.plugins,
   );
@@ -433,7 +436,7 @@ async function getStoreExport(
   const fetchMetaDataMarker = `${EXPORT_FLIPPER_TRACE_EVENT}:fetch-meta-data`;
   performance.mark(fetchMetaDataMarker);
 
-  const client = clients.find((client) => client.id === selectedApp);
+  const client = clients.get(selectedAppId!);
 
   const pluginStates2 = pluginsToProcess
     ? await exportSandyPluginStates(pluginsToProcess, idler, statusUpdate)
@@ -487,9 +490,9 @@ export async function exportStore(
     exportData.supportRequestDetails = {
       ...state.supportForm?.supportFormV2,
       appName:
-        state.connections.selectedApp == null
+        state.connections.selectedAppId == null
           ? ''
-          : deconstructClientId(state.connections.selectedApp).app,
+          : deconstructClientId(state.connections.selectedAppId).app,
     };
   }
 
@@ -612,36 +615,54 @@ export function showOpenDialog(store: Store) {
   });
 }
 
-export function startFileExport(dispatch: Store['dispatch']) {
-  electron.remote.dialog
-    .showSaveDialog(
-      // @ts-ignore This appears to work but isn't allowed by the types
-      null,
-      {
-        title: 'FlipperExport',
-        defaultPath: path.join(os.homedir(), 'FlipperExport.flipper'),
-      },
-    )
-    .then(async (result: electron.SaveDialogReturnValue) => {
-      const file = result.filePath;
-      if (!file) {
-        return;
-      }
-      dispatch(
-        setSelectPluginsToExportActiveSheet({
-          type: 'file',
-          file: file,
-          closeOnFinish: false,
-        }),
-      );
-    });
+export async function startFileExport(dispatch: Store['dispatch']) {
+  const result = await electron.remote.dialog.showSaveDialog(
+    // @ts-ignore This appears to work but isn't allowed by the types
+    null,
+    {
+      title: 'FlipperExport',
+      defaultPath: path.join(os.homedir(), 'FlipperExport.flipper'),
+    },
+  );
+  const file = result.filePath;
+  if (!file) {
+    return;
+  }
+  const plugins = await selectPlugins();
+  if (plugins === false) {
+    return; // cancelled
+  }
+  // TODO: no need to put this in the store,
+  // need to be cleaned up later in combination with SupportForm
+  dispatch(selectedPlugins(plugins));
+  Dialog.showModal((onHide) => (
+    <ShareSheetExportFile onHide={onHide} file={file} logger={getInstance()} />
+  ));
 }
 
-export function startLinkExport(dispatch: Store['dispatch']) {
-  dispatch(
-    setSelectPluginsToExportActiveSheet({
-      type: 'link',
-      closeOnFinish: false,
-    }),
-  );
+export async function startLinkExport(dispatch: Store['dispatch']) {
+  const plugins = await selectPlugins();
+  if (plugins === false) {
+    return; // cancelled
+  }
+  // TODO: no need to put this in the store,
+  // need to be cleaned up later in combination with SupportForm
+  dispatch(selectedPlugins(plugins));
+  Dialog.showModal((onHide) => (
+    <ShareSheetExportUrl onHide={onHide} logger={getInstance()} />
+  ));
+}
+
+async function selectPlugins() {
+  return await Dialog.select<string[]>({
+    title: 'Select plugins to export',
+    defaultValue: [],
+    renderer: (value, onChange, onCancel) => (
+      <ExportDataPluginSheet
+        onHide={onCancel}
+        selectedPlugins={value}
+        setSelectedPlugins={onChange}
+      />
+    ),
+  });
 }

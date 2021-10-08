@@ -23,7 +23,7 @@ export default (store: Store, _logger: Logger) => {
 
   sideEffect(
     store,
-    {name: 'pluginsChangeListener', throttleMs: 100, fireImmediately: true},
+    {name: 'pluginsChangeListener', throttleMs: 10, fireImmediately: true},
     getActiveClient,
     (activeClient, _store) => {
       if (activeClient !== prevClient) {
@@ -33,6 +33,7 @@ export default (store: Store, _logger: Logger) => {
         prevClient = activeClient;
         if (prevClient) {
           prevClient.on('plugins-change', onActiveAppPluginListChanged);
+          store.dispatch(appPluginListChanged()); // force refresh
         }
       }
     },

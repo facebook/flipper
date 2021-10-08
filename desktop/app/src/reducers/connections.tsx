@@ -64,13 +64,13 @@ type StateV2 = {
   devices: Array<BaseDevice>;
   selectedDevice: null | BaseDevice;
   selectedPlugin: null | string;
-  selectedApp: null | string;
+  selectedAppId: null | string; // Full quantified identifier of the app
   userPreferredDevice: null | string;
   userPreferredPlugin: null | string;
-  userPreferredApp: null | string;
+  userPreferredApp: null | string; // The name of the preferred app, e.g. Facebook
   enabledPlugins: {[client: string]: string[]};
   enabledDevicePlugins: Set<string>;
-  clients: Array<Client>;
+  clients: Map<string, Client>;
   uninitializedClients: UninitializedClient[];
   deepLinkPayload: unknown;
   staticView: StaticView;
@@ -100,16 +100,12 @@ export type Action =
   | {
       type: 'SELECT_PLUGIN';
       payload: {
-        selectedPlugin: null | string;
-        selectedApp?: null | string;
-        deepLinkPayload: unknown;
-        selectedDevice?: null | BaseDevice;
+        selectedPlugin: string;
+        selectedAppId?: null | string; // not set for device plugins
+        deepLinkPayload?: unknown;
+        selectedDevice?: BaseDevice | null;
         time: number;
       };
-    }
-  | {
-      type: 'SELECT_USER_PREFERRED_PLUGIN';
-      payload: string;
     }
   | {
       type: 'NEW_CLIENT';
@@ -117,10 +113,6 @@ export type Action =
     }
   | {
       type: 'CLIENT_REMOVED';
-      payload: string;
-    }
-  | {
-      type: 'PREFER_DEVICE';
       payload: string;
     }
   | {
@@ -160,7 +152,7 @@ export type Action =
     }
   | {
       type: 'SELECT_CLIENT';
-      payload: string | null;
+      payload: string; // App ID
     }
   | {
       type: 'APP_PLUGIN_LIST_CHANGED';
@@ -176,7 +168,7 @@ const DEFAULT_DEVICE_BLACKLIST: DeviceOS[] = ['MacOS', 'Metro', 'Windows'];
 const INITAL_STATE: State = {
   devices: [],
   selectedDevice: null,
-  selectedApp: null,
+  selectedAppId: null,
   selectedPlugin: DEFAULT_PLUGIN,
   userPreferredDevice: null,
   userPreferredPlugin: null,
@@ -189,7 +181,7 @@ const INITAL_STATE: State = {
     'Hermesdebuggerrn',
     'React',
   ]),
-  clients: [],
+  clients: new Map(),
   uninitializedClients: [],
   deepLinkPayload: null,
   staticView: WelcomeScreenStaticView,
@@ -208,32 +200,31 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
 
     case 'SET_STATIC_VIEW': {
       const {payload, deepLinkPayload} = action;
-      const {selectedPlugin} = state;
       return {
         ...state,
         staticView: payload,
-        selectedPlugin: payload != null ? null : selectedPlugin,
         deepLinkPayload: deepLinkPayload ?? null,
       };
     }
 
     case 'RESET_SUPPORT_FORM_V2_STATE': {
-      return updateSelection({
+      return {
         ...state,
         staticView: null,
-      });
+      };
     }
 
     case 'SELECT_DEVICE': {
       const {payload} = action;
-      return updateSelection({
+      return {
         ...state,
         staticView: null,
         selectedDevice: payload,
+        selectedAppId: null,
         userPreferredDevice: payload
           ? payload.title
           : state.userPreferredDevice,
-      });
+      };
     }
 
     case 'REGISTER_DEVICE': {
@@ -253,118 +244,135 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
         newDevices.push(payload);
       }
 
-      return updateSelection({
+      const selectNewDevice =
+        !state.selectedDevice ||
+        !state.selectedDevice.isConnected ||
+        state.userPreferredDevice === payload.title;
+      let selectedAppId = state.selectedAppId;
+
+      if (selectNewDevice) {
+        // need to select a different app
+        selectedAppId =
+          getAllClients(state).find(
+            (c) =>
+              c.device === payload && c.query.app === state.userPreferredApp,
+          )?.id ?? null;
+        // nothing found, try first app if any
+        if (!selectedAppId) {
+          selectedAppId =
+            getAllClients(state).find((c) => c.device === payload)?.id ?? null;
+        }
+      }
+
+      return {
         ...state,
         devices: newDevices,
-      });
+        selectedDevice: selectNewDevice ? payload : state.selectedDevice,
+        selectedAppId,
+      };
     }
 
     case 'SELECT_PLUGIN': {
-      const {payload} = action;
-      const {selectedPlugin, selectedApp, deepLinkPayload} = payload;
-      let selectedDevice = payload.selectedDevice;
-      if (typeof deepLinkPayload === 'string') {
-        const deepLinkParams = new URLSearchParams(deepLinkPayload);
-        const deviceParam = deepLinkParams.get('device');
-        if (deviceParam) {
-          const deviceMatch = state.devices.find(
-            (v) => v.title === deviceParam,
-          );
-          if (deviceMatch) {
-            selectedDevice = deviceMatch;
-          } else {
-            console.warn(
-              `Could not find matching device "${deviceParam}" requested through deep-link.`,
-            );
-          }
-        }
-      }
-      if (!selectedDevice && selectedPlugin) {
-        const selectedClient = state.clients.find((c) =>
-          c.supportsPlugin(selectedPlugin),
-        );
-        selectedDevice = state.devices.find(
-          (v) => v.serial === selectedClient?.query.device_id,
-        );
-      }
-      if (!selectedDevice) {
-        console.warn('Trying to select a plugin before a device was selected!');
-      }
+      const {selectedPlugin, selectedAppId, deepLinkPayload} = action.payload;
+
       if (selectedPlugin) {
         performance.mark(`activePlugin-${selectedPlugin}`);
       }
 
-      return updateSelection({
+      const client = state.clients.get(selectedAppId!);
+      const device = action.payload.selectedDevice ?? client?.device;
+
+      if (!device) {
+        console.warn(
+          'No valid device / client provided when calling SELECT_PLUGIN',
+        );
+        return state;
+      }
+
+      return {
         ...state,
         staticView: null,
-        selectedApp: selectedApp || null,
+        selectedDevice: device,
+        userPreferredDevice: canBeDefaultDevice(device)
+          ? device.title
+          : state.userPreferredDevice,
+        selectedAppId: selectedAppId ?? null,
+        userPreferredApp:
+          state.clients.get(selectedAppId!)?.query.app ??
+          state.userPreferredApp,
         selectedPlugin,
-        userPreferredPlugin: selectedPlugin || state.userPreferredPlugin,
-        selectedDevice: selectedDevice!,
-        userPreferredDevice:
-          selectedDevice && canBeDefaultDevice(selectedDevice)
-            ? selectedDevice.title
-            : state.userPreferredDevice,
+        userPreferredPlugin: selectedPlugin,
         deepLinkPayload: deepLinkPayload,
-      });
-    }
-
-    case 'SELECT_USER_PREFERRED_PLUGIN': {
-      const {payload} = action;
-      return {...state, userPreferredPlugin: payload};
+      };
     }
 
     case 'NEW_CLIENT': {
       const {payload} = action;
 
-      const newClients = state.clients.filter((client) => {
-        if (client.id === payload.id) {
+      return produce(state, (draft) => {
+        if (draft.clients.has(payload.id)) {
           console.error(
-            `Received a new connection for client ${client.id}, but the old connection was not cleaned up`,
+            `Received a new connection for client ${payload.id}, but the old connection was not cleaned up`,
           );
-          return false;
         }
-        return true;
-      });
-      newClients.push(payload);
+        draft.clients.set(payload.id, payload);
 
-      return updateSelection({
-        ...state,
-        clients: newClients,
-        uninitializedClients: state.uninitializedClients.filter((c) => {
-          return (
-            c.deviceName !== payload.query.device ||
-            c.appName !== payload.query.app
-          );
-        }),
+        // select new client if nothing select, this one is preferred, or the old one is offline
+        const selectNewClient =
+          !draft.selectedAppId ||
+          draft.userPreferredApp === payload.query.app ||
+          draft.clients.get(draft.selectedAppId!)?.connected.get() === false;
+
+        if (selectNewClient) {
+          draft.selectedAppId = payload.id;
+          draft.selectedDevice = payload.device;
+        }
+
+        const unitialisedIndex = draft.uninitializedClients.findIndex(
+          (c) =>
+            c.deviceName === payload.query.device ||
+            c.appName === payload.query.app,
+        );
+        if (unitialisedIndex !== -1)
+          draft.uninitializedClients.splice(unitialisedIndex, 1);
       });
     }
 
     case 'SELECT_CLIENT': {
       const {payload} = action;
-      return updateSelection({
+      const client = state.clients.get(payload);
+
+      if (!client) {
+        return state;
+      }
+
+      return {
         ...state,
-        selectedApp: payload,
-        userPreferredApp: payload || state.userPreferredApp,
-      });
+        selectedAppId: payload,
+        selectedDevice: client.device,
+        userPreferredDevice: client.device.title,
+        userPreferredApp: client.query.app,
+        selectedPlugin:
+          state.selectedPlugin && client.supportsPlugin(state.selectedPlugin)
+            ? state.selectedPlugin
+            : state.userPreferredPlugin &&
+              client.supportsPlugin(state.userPreferredPlugin)
+            ? state.userPreferredPlugin
+            : null,
+      };
     }
 
     case 'CLIENT_REMOVED': {
       const {payload} = action;
 
-      const newClients = state.clients.filter(
-        (client) => client.id !== payload,
-      );
-      return updateSelection({
-        ...state,
-        clients: newClients,
+      return produce(state, (draft) => {
+        draft.clients.delete(payload);
+        if (draft.selectedAppId === payload) {
+          draft.selectedAppId = null;
+        }
       });
     }
 
-    case 'PREFER_DEVICE': {
-      const {payload: userPreferredDevice} = action;
-      return {...state, userPreferredDevice};
-    }
     case 'START_CLIENT_SETUP': {
       const {payload} = action;
       return {
@@ -457,23 +465,18 @@ export const setStaticView = (
   };
 };
 
-export const preferDevice = (payload: string): Action => ({
-  type: 'PREFER_DEVICE',
-  payload,
-});
-
 export const selectPlugin = (payload: {
-  selectedPlugin: null | string;
-  selectedApp?: null | string;
-  selectedDevice?: BaseDevice | null;
-  deepLinkPayload: unknown;
+  selectedPlugin: string;
+  selectedAppId?: null | string;
+  selectedDevice?: null | BaseDevice;
+  deepLinkPayload?: unknown;
   time?: number;
 }): Action => ({
   type: 'SELECT_PLUGIN',
   payload: {...payload, time: payload.time ?? Date.now()},
 });
 
-export const selectClient = (clientId: string | null): Action => ({
+export const selectClient = (clientId: string): Action => ({
   type: 'SELECT_CLIENT',
   payload: clientId,
 });
@@ -512,39 +515,24 @@ export const appPluginListChanged = (): Action => ({
   type: 'APP_PLUGIN_LIST_CHANGED',
 });
 
-export function getAvailableClients(
+export function getClientsByDevice(
   device: null | undefined | BaseDevice,
-  clients: Client[],
+  clients: Map<string, Client>,
 ): Client[] {
   if (!device) {
     return [];
   }
-  return clients
-    .filter(
-      (client: Client) =>
-        (device &&
-          device.supportsOS(client.query.os) &&
-          client.query.device_id === device.serial) ||
-        // Old android sdk versions don't know their device_id
-        // Display their plugins under all selected devices until they die out
-        client.query.device_id === 'unknown',
-    )
+  return Array.from(clients.values())
+    .filter((client: Client) => client.query.device_id === device.serial)
     .sort((a, b) => (a.query.app || '').localeCompare(b.query.app));
 }
 
-function getBestAvailableClient(
-  device: BaseDevice | null | undefined,
-  clients: Client[],
-  preferredClient: string | null,
-): Client | null {
-  const availableClients = getAvailableClients(device, clients);
-  if (availableClients.length === 0) {
-    return null;
-  }
-  return (
-    getClientById(availableClients, preferredClient) ||
-    availableClients[0] ||
-    null
+export function getClientsByAppName(
+  clients: Map<string, Client>,
+  appName: string | null | undefined,
+): Client[] {
+  return Array.from(clients.values()).filter(
+    (client) => client.query.app === appName,
   );
 }
 
@@ -559,67 +547,10 @@ export function canBeDefaultDevice(device: BaseDevice) {
   return !DEFAULT_DEVICE_BLACKLIST.includes(device.os);
 }
 
-/**
- * This function, given the current state, tries to build to build the best
- * selection possible, preselection device if there is non, plugins based on preferences, etc
- * @param state
- */
-function updateSelection(state: Readonly<State>): State {
-  if (state.staticView && state.staticView !== WelcomeScreenStaticView) {
-    return state;
-  }
-
-  const updates: Partial<State> = {
-    staticView: null,
-  };
-  // Find the selected device if it still exists
-  let device: BaseDevice | null =
-    state.selectedDevice && state.devices.includes(state.selectedDevice)
-      ? state.selectedDevice
-      : null;
-  if (!device) {
-    device =
-      state.devices.find(
-        (device) => device.title === state.userPreferredDevice,
-      ) ||
-      state.devices.find((device) => canBeDefaultDevice(device)) ||
-      null;
-  }
-  updates.selectedDevice = device;
-  if (!device) {
-    updates.staticView = WelcomeScreenStaticView;
-  }
-
-  // Select client based on device
-  const client = getBestAvailableClient(
-    device,
-    state.clients,
-    state.selectedApp || state.userPreferredApp,
-  );
-  updates.selectedApp = client ? client.id : null;
-
-  if (
-    // Try the preferred plugin first
-    state.userPreferredPlugin &&
-    state.userPreferredPlugin !== state.selectedPlugin
-  ) {
-    updates.selectedPlugin = state.userPreferredPlugin;
-  } else if (
-    !state.selectedPlugin &&
-    state.enabledDevicePlugins.has(DEFAULT_PLUGIN)
-  ) {
-    // currently selected plugin is not available in this state,
-    // fall back to the default
-    updates.selectedPlugin = DEFAULT_PLUGIN;
-  }
-
-  return {...state, ...updates};
-}
-
 export function getSelectedPluginKey(state: State): string | undefined {
   return state.selectedPlugin
     ? getPluginKey(
-        state.selectedApp,
+        state.selectedAppId,
         state.selectedDevice,
         state.selectedPlugin,
       )
@@ -641,4 +572,8 @@ export function isPluginEnabled(
   const appInfo = deconstructClientId(app);
   const enabledAppPlugins = enabledPlugins[appInfo.app];
   return enabledAppPlugins && enabledAppPlugins.indexOf(pluginId) > -1;
+}
+
+export function getAllClients(state: State): readonly Client[] {
+  return Array.from(state.clients.values());
 }

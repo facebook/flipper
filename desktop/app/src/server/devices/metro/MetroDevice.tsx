@@ -152,6 +152,7 @@ export default class MetroDevice extends ServerDevice {
       deviceType: 'emulator',
       title: 'React Native',
       os: 'Metro',
+      icon: 'mobile',
     });
     if (ws) {
       this.ws = ws;

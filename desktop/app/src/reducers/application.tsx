@@ -11,39 +11,7 @@
 // eslint-disable-next-line flipper/no-electron-remote-imports
 import {remote} from 'electron';
 import {v1 as uuidv1} from 'uuid';
-import {ReactElement} from 'react';
-import CancellableExportStatus from '../chrome/CancellableExportStatus';
 import {Actions} from './';
-import produce from 'immer';
-export const ACTIVE_SHEET_PLUGIN_SHEET: 'PLUGIN_SHEET' = 'PLUGIN_SHEET';
-export const ACTIVE_SHEET_PLUGINS: 'PLUGINS' = 'PLUGINS';
-export const ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT: 'SELECT_PLUGINS_TO_EXPORT' =
-  'SELECT_PLUGINS_TO_EXPORT';
-export const ACTIVE_SHEET_SHARE_DATA: 'SHARE_DATA' = 'SHARE_DATA';
-export const ACTIVE_SHEET_SIGN_IN: 'SIGN_IN' = 'SIGN_IN';
-export const ACTIVE_SHEET_SETTINGS: 'SETTINGS' = 'SETTINGS';
-export const ACTIVE_SHEET_DOCTOR: 'DOCTOR' = 'DOCTOR';
-export const ACTIVE_SHEET_SHARE_DATA_IN_FILE: 'SHARE_DATA_IN_FILE' =
-  'SHARE_DATA_IN_FILE';
-export const SET_EXPORT_STATUS_MESSAGE: 'SET_EXPORT_STATUS_MESSAGE' =
-  'SET_EXPORT_STATUS_MESSAGE';
-export const UNSET_SHARE: 'UNSET_SHARE' = 'UNSET_SHARE';
-export const ACTIVE_SHEET_CHANGELOG = 'ACTIVE_SHEET_CHANGELOG';
-export const ACTIVE_SHEET_CHANGELOG_RECENT_ONLY =
-  'ACTIVE_SHEET_CHANGELOG_RECENT_ONLY';
-
-export type ActiveSheet =
-  | typeof ACTIVE_SHEET_PLUGIN_SHEET
-  | typeof ACTIVE_SHEET_PLUGINS
-  | typeof ACTIVE_SHEET_SHARE_DATA
-  | typeof ACTIVE_SHEET_SIGN_IN
-  | typeof ACTIVE_SHEET_SETTINGS
-  | typeof ACTIVE_SHEET_DOCTOR
-  | typeof ACTIVE_SHEET_SHARE_DATA_IN_FILE
-  | typeof ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT
-  | typeof ACTIVE_SHEET_CHANGELOG
-  | typeof ACTIVE_SHEET_CHANGELOG_RECENT_ONLY
-  | null;
 
 export type LauncherMsg = {
   message: string;
@@ -79,14 +47,12 @@ export type State = {
   rightSidebarVisible: boolean;
   rightSidebarAvailable: boolean;
   windowIsFocused: boolean;
-  activeSheet: ActiveSheet;
   share: ShareType | null;
   sessionId: string | null;
   serverPorts: ServerPorts;
   altServerPorts: ServerPorts;
   launcherMsg: LauncherMsg;
   statusMessages: Array<string>;
-  pastedToken?: string;
 };
 
 type BooleanActionType =
@@ -102,18 +68,6 @@ export type Action =
   | {
       type: 'windowIsFocused';
       payload: {isFocused: boolean; time: number};
-    }
-  | {
-      type: 'SET_ACTIVE_SHEET';
-      payload: ActiveSheet;
-    }
-  | {
-      type: typeof ACTIVE_SHEET_SHARE_DATA_IN_FILE;
-      payload: {file: string; closeOnFinish: boolean};
-    }
-  | {
-      type: typeof ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT;
-      payload: ShareType;
     }
   | {
       type: 'SET_SERVER_PORTS';
@@ -137,27 +91,12 @@ export type Action =
       };
     }
   | {
-      type: 'UNSET_SHARE';
-    }
-  | {
-      type: 'SET_EXPORT_STATUS_MESSAGE';
-      payload: React.ReactNode;
-    }
-  | {
-      type: 'SET_EXPORT_URL';
-      payload: string;
-    }
-  | {
       type: 'ADD_STATUS_MSG';
       payload: {msg: string; sender: string};
     }
   | {
       type: 'REMOVE_STATUS_MSG';
       payload: {msg: string; sender: string};
-    }
-  | {
-      type: 'SET_PASTED_TOKEN';
-      payload?: string;
     };
 
 export const initialState: () => State = () => ({
@@ -224,27 +163,6 @@ export default function reducer(
       ...state,
       windowIsFocused: action.payload.isFocused,
     };
-  } else if (action.type === 'SET_ACTIVE_SHEET') {
-    return {
-      ...state,
-      activeSheet: action.payload,
-    };
-  } else if (action.type === ACTIVE_SHEET_SHARE_DATA_IN_FILE) {
-    return {
-      ...state,
-      activeSheet: ACTIVE_SHEET_SHARE_DATA_IN_FILE,
-      share: {
-        type: 'file',
-        file: action.payload.file,
-        closeOnFinish: action.payload.closeOnFinish,
-      },
-    };
-  } else if (action.type === ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT) {
-    return {
-      ...state,
-      activeSheet: ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT,
-      share: action.payload,
-    };
   } else if (action.type === 'SET_SERVER_PORTS') {
     return {
       ...state,
@@ -260,23 +178,6 @@ export default function reducer(
       ...state,
       launcherMsg: action.payload,
     };
-  } else if (action.type === 'SET_EXPORT_STATUS_MESSAGE') {
-    if (state.share) {
-      const {share} = state;
-      return {
-        ...state,
-        share: {...share, statusComponent: action.payload},
-      };
-    }
-    return state;
-  } else if (action.type === 'UNSET_SHARE') {
-    return {...state, share: null};
-  } else if (action.type === 'SET_EXPORT_URL') {
-    const share = state.share;
-    if (share && share.type === 'link') {
-      return {...state, share: {...share, url: action.payload}};
-    }
-    return state;
   } else if (action.type === 'ADD_STATUS_MSG') {
     const {sender, msg} = action.payload;
     const statusMsg = statusMessage(sender, msg);
@@ -296,10 +197,6 @@ export default function reducer(
       return {...state, statusMessages};
     }
     return state;
-  } else if (action.type === 'SET_PASTED_TOKEN') {
-    return produce(state, (draft) => {
-      draft.pastedToken = action.payload;
-    });
   } else {
     return state;
   }
@@ -310,37 +207,6 @@ export const toggleAction = (
   payload?: boolean,
 ): Action => ({
   type,
-  payload,
-});
-
-export const unsetShare = (): Action => ({
-  type: UNSET_SHARE,
-});
-
-export const setExportStatusComponent = (
-  payload: ReactElement<typeof CancellableExportStatus>,
-): Action => ({
-  type: SET_EXPORT_STATUS_MESSAGE,
-  payload,
-});
-
-export const setSelectPluginsToExportActiveSheet = (
-  payload: ShareType,
-): Action => ({
-  type: ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT,
-  payload,
-});
-
-export const setExportDataToFileActiveSheet = (payload: {
-  file: string;
-  closeOnFinish: boolean;
-}): Action => ({
-  type: ACTIVE_SHEET_SHARE_DATA_IN_FILE,
-  payload: payload,
-});
-
-export const setActiveSheet = (payload: ActiveSheet): Action => ({
-  type: 'SET_ACTIVE_SHEET',
   payload,
 });
 
@@ -359,11 +225,6 @@ export const toggleRightSidebarAvailable = (payload?: boolean): Action => ({
   payload,
 });
 
-export const setExportURL = (result: string): Action => ({
-  type: 'SET_EXPORT_URL',
-  payload: result,
-});
-
 export const addStatusMessage = (payload: StatusMessageType): Action => ({
   type: 'ADD_STATUS_MSG',
   payload,
@@ -372,9 +233,4 @@ export const addStatusMessage = (payload: StatusMessageType): Action => ({
 export const removeStatusMessage = (payload: StatusMessageType): Action => ({
   type: 'REMOVE_STATUS_MSG',
   payload,
-});
-
-export const setPastedToken = (pastedToken?: string): Action => ({
-  type: 'SET_PASTED_TOKEN',
-  payload: pastedToken,
 });

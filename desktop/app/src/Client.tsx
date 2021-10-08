@@ -33,6 +33,8 @@ import {
   timeout,
   ClientQuery,
   _SandyPluginDefinition,
+  ClientResponseType,
+  ClientErrorType,
 } from 'flipper-plugin';
 import {freeze} from 'immer';
 import {message} from 'antd';
@@ -40,11 +42,6 @@ import {
   isFlipperMessageDebuggingEnabled,
   registerFlipperDebugMessage,
 } from './chrome/FlipperMessages';
-import {
-  ConnectionStatus,
-  ErrorType,
-  ClientConnection,
-} from './server/comms/ClientConnection';
 
 type Plugins = Set<string>;
 type PluginsArr = Array<string>;
@@ -65,7 +62,11 @@ export type RequestMetadata = {
   params: Params | undefined;
 };
 
-const handleError = (store: Store, device: BaseDevice, error: ErrorType) => {
+const handleError = (
+  store: Store,
+  device: BaseDevice,
+  error: ClientErrorType,
+) => {
   if (store.getState().settingsState.suppressPluginErrors) {
     return;
   }
@@ -91,13 +92,18 @@ const handleError = (store: Store, device: BaseDevice, error: ErrorType) => {
   crashReporterPlugin.instanceApi.reportCrash(payload);
 };
 
+interface ClientConnection {
+  send(data: any): void;
+  sendExpectResponse(data: any): Promise<ClientResponseType>;
+}
+
 export default class Client extends EventEmitter {
   connected = createState(false);
   id: string;
   query: ClientQuery;
   sdkVersion: number;
   messageIdCounter: number;
-  plugins: Plugins;
+  plugins: Plugins; // TODO: turn into atom, and remove eventEmitter
   backgroundPlugins: Plugins;
   connection: ClientConnection | null | undefined;
   store: Store;
@@ -138,18 +144,6 @@ export default class Client extends EventEmitter {
     this.broadcastCallbacks = new Map();
     this.activePlugins = new Set();
     this.device = device;
-
-    const client = this;
-    if (conn) {
-      conn.subscribeToEvents((status) => {
-        if (
-          status === ConnectionStatus.CLOSED ||
-          status === ConnectionStatus.ERROR
-        ) {
-          client.connected.set(false);
-        }
-      });
-    }
   }
 
   supportsPlugin(pluginId: string): boolean {
@@ -185,6 +179,7 @@ export default class Client extends EventEmitter {
         this.initPlugin(plugin);
       }
     });
+    this.emit('plugins-change');
   }
 
   initFromImport(initialStates: Record<string, Record<string, any>>): this {
@@ -194,6 +189,7 @@ export default class Client extends EventEmitter {
         this.loadPlugin(plugin, initialStates[pluginId]);
       }
     });
+    this.emit('plugins-change');
     return this;
   }
 
@@ -266,7 +262,6 @@ export default class Client extends EventEmitter {
     });
     this.emit('close');
     this.connected.set(false);
-    this.connection = undefined;
   }
 
   // clean up this client
@@ -346,7 +341,7 @@ export default class Client extends EventEmitter {
         method?: string;
         params?: Params;
         success?: Object;
-        error?: ErrorType;
+        error?: ClientErrorType;
       } = rawData;
 
       const {id, method} = data;
@@ -438,10 +433,10 @@ export default class Client extends EventEmitter {
   onResponse(
     data: {
       success?: Object;
-      error?: ErrorType;
+      error?: ClientErrorType;
     },
     resolve: ((a: any) => any) | undefined,
-    reject: (error: ErrorType) => any,
+    reject: (error: ClientErrorType) => any,
   ) {
     if (data.success) {
       resolve && resolve(data.success);

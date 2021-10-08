@@ -310,7 +310,7 @@ export function openNotification(store: Store, noti: PluginNotificationOrig) {
     store.dispatch(
       selectPlugin({
         selectedPlugin: noti.pluginId,
-        selectedApp: noti.client,
+        selectedAppId: client.id,
         selectedDevice: client.device,
         deepLinkPayload: noti.notification.action,
       }),
@@ -330,7 +330,7 @@ export function openNotification(store: Store, noti: PluginNotificationOrig) {
 }
 
 function getClientById(store: Store, identifier: string | null) {
-  return store.getState().connections.clients.find((c) => c.id === identifier);
+  return store.getState().connections.clients.get(identifier!);
 }
 
 function getDeviceById(store: Store, identifier: string | null) {

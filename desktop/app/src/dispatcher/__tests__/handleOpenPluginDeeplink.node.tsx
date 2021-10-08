@@ -19,10 +19,24 @@ import {
   createState,
   useValue,
   DevicePluginClient,
+  Dialog,
 } from 'flipper-plugin';
 import {parseOpenPluginParams} from '../handleOpenPluginDeeplink';
 import {handleDeeplink} from '../../deeplink';
 import {selectPlugin} from '../../reducers/connections';
+
+let origAlertImpl: any;
+let origConfirmImpl: any;
+
+beforeEach(() => {
+  origAlertImpl = Dialog.alert;
+  origConfirmImpl = Dialog.confirm;
+});
+
+afterEach(() => {
+  Dialog.alert = origAlertImpl;
+  Dialog.confirm = origConfirmImpl;
+});
 
 test('open-plugin deeplink parsing', () => {
   const testpayload = 'http://www.google/?test=c o%20o+l';
@@ -80,14 +94,16 @@ test('Triggering a deeplink will work', async () => {
       },
     },
   );
-  const {renderer, client, store} = await renderMockFlipperWithPlugin(
+  const {renderer, client, store, logger} = await renderMockFlipperWithPlugin(
     definition,
   );
+  logger.track = jest.fn();
 
   expect(linksSeen).toEqual([]);
 
   await handleDeeplink(
     store,
+    logger,
     `flipper://open-plugin?plugin-id=${definition.id}&client=${client.query.app}&payload=universe`,
   );
 
@@ -119,6 +135,33 @@ test('Triggering a deeplink will work', async () => {
       </div>
     </body>
   `);
+  expect(logger.track).toHaveBeenCalledTimes(2);
+  expect(logger.track).toHaveBeenCalledWith(
+    'usage',
+    'deeplink',
+    {
+      query:
+        'flipper://open-plugin?plugin-id=TestPlugin&client=TestApp&payload=universe',
+      state: 'INIT',
+    },
+    undefined,
+  );
+  expect(logger.track).toHaveBeenCalledWith(
+    'usage',
+    'deeplink',
+    {
+      query:
+        'flipper://open-plugin?plugin-id=TestPlugin&client=TestApp&payload=universe',
+      state: 'PLUGIN_OPEN_SUCCESS',
+      plugin: {
+        client: 'TestApp',
+        devices: [],
+        payload: 'universe',
+        pluginId: 'TestPlugin',
+      },
+    },
+    'TestPlugin',
+  );
 });
 
 test('triggering a deeplink without applicable device can wait for a device', async () => {
@@ -138,21 +181,27 @@ test('triggering a deeplink without applicable device can wait for a device', as
       supportedDevices: [{os: 'iOS'}],
     },
   );
-  const {renderer, store, createDevice} = await renderMockFlipperWithPlugin(
-    definition,
-  );
+  const {renderer, store, logger, createDevice, device} =
+    await renderMockFlipperWithPlugin(definition);
 
   store.dispatch(
-    selectPlugin({selectedPlugin: 'nonexisting', deepLinkPayload: null}),
+    selectPlugin({
+      selectedPlugin: 'nonexisting',
+      deepLinkPayload: null,
+      selectedDevice: device,
+    }),
   );
   expect(renderer.baseElement).toMatchInlineSnapshot(`
     <body>
-      <div />
+      <div>
+        No plugin selected
+      </div>
     </body>
-    `);
+  `);
 
   const handlePromise = handleDeeplink(
     store,
+    logger,
     `flipper://open-plugin?plugin-id=${definition.id}&devices=iOS`,
   );
 
@@ -160,9 +209,11 @@ test('triggering a deeplink without applicable device can wait for a device', as
 
   // No device yet available (dialogs are not renderable atm)
   expect(renderer.baseElement).toMatchInlineSnapshot(`
-      <body>
-        <div />
-      </body>
+    <body>
+      <div>
+        No plugin selected
+      </div>
+    </body>
   `);
 
   // create a new device
@@ -214,20 +265,27 @@ test('triggering a deeplink without applicable client can wait for a device', as
       id: 'pluggy',
     },
   );
-  const {renderer, store, createClient, device} =
+  const {renderer, store, createClient, device, logger} =
     await renderMockFlipperWithPlugin(definition);
 
   store.dispatch(
-    selectPlugin({selectedPlugin: 'nonexisting', deepLinkPayload: null}),
+    selectPlugin({
+      selectedPlugin: 'nonexisting',
+      deepLinkPayload: null,
+      selectedDevice: device,
+    }),
   );
   expect(renderer.baseElement).toMatchInlineSnapshot(`
     <body>
-      <div />
+      <div>
+        No plugin selected
+      </div>
     </body>
-    `);
+  `);
 
   const handlePromise = handleDeeplink(
     store,
+    logger,
     `flipper://open-plugin?plugin-id=${definition.id}&client=clienty`,
   );
 
@@ -236,7 +294,9 @@ test('triggering a deeplink without applicable client can wait for a device', as
   // No device yet available (dialogs are not renderable atm)
   expect(renderer.baseElement).toMatchInlineSnapshot(`
     <body>
-      <div />
+      <div>
+        No plugin selected
+      </div>
     </body>
   `);
 
@@ -272,4 +332,64 @@ test('triggering a deeplink without applicable client can wait for a device', as
       <div />
     </body>
   `);
+});
+
+test('triggering a deeplink with incompatible device will cause bail', async () => {
+  const definition = TestUtils.createTestDevicePlugin(
+    {
+      Component() {
+        return <p>Hello</p>;
+      },
+      devicePlugin() {
+        return {};
+      },
+    },
+    {
+      id: 'DevicePlugin',
+      supportedDevices: [{os: 'iOS'}],
+    },
+  );
+  const {store, logger, createDevice} = await renderMockFlipperWithPlugin(
+    definition,
+  );
+  logger.track = jest.fn();
+
+  // Skipping user interactions.
+  Dialog.alert = (async () => {}) as any;
+  Dialog.confirm = (async () => {}) as any;
+
+  store.dispatch(
+    selectPlugin({selectedPlugin: 'nonexisting', deepLinkPayload: null}),
+  );
+
+  const handlePromise = handleDeeplink(
+    store,
+    logger,
+    `flipper://open-plugin?plugin-id=${definition.id}&devices=iOS`,
+  );
+
+  jest.runAllTimers();
+
+  // create a new device that doesn't match spec
+  createDevice({serial: 'device2', os: 'Android'});
+
+  // wait for dialogues
+  await handlePromise;
+
+  expect(logger.track).toHaveBeenCalledTimes(2);
+  expect(logger.track).toHaveBeenCalledWith(
+    'usage',
+    'deeplink',
+    {
+      plugin: {
+        client: undefined,
+        devices: ['iOS'],
+        payload: undefined,
+        pluginId: 'DevicePlugin',
+      },
+      query: 'flipper://open-plugin?plugin-id=DevicePlugin&devices=iOS',
+      state: 'PLUGIN_DEVICE_BAIL',
+    },
+    'DevicePlugin',
+  );
 });

@@ -1,3 +1,8 @@
+# 0.114.0 (6/10/2021)
+
+ * [D31305180](https://github.com/facebook/flipper/search?q=D31305180&type=Commits) -  Improved plugin / device / app selection handing.
+
+
 # 0.110.0 (17/9/2021)
 
  * [D30992087](https://github.com/facebook/flipper/search?q=D30992087&type=Commits) -  Fixed skyline no longer connecting to Flipper

@@ -9,10 +9,9 @@
 
 import {CertificateExchangeMedium} from '../utils/CertificateProvider';
 import {Logger} from '../../fb-interfaces/Logger';
-import {ClientQuery} from 'flipper-plugin';
-import {Store, State} from '../../reducers/index';
+import {ClientDescription, ClientQuery} from 'flipper-plugin';
+import {Store} from '../../reducers/index';
 import CertificateProvider from '../utils/CertificateProvider';
-import Client from '../../Client';
 import {ClientConnection, ConnectionStatus} from './ClientConnection';
 import {UninitializedClient} from '../UninitializedClient';
 import {reportPlatformFailures} from '../../utils/metrics';
@@ -21,8 +20,6 @@ import invariant from 'invariant';
 import GK from '../../fb-stubs/GK';
 import {buildClientId} from '../../utils/clientUtils';
 import DummyDevice from '../../server/devices/DummyDevice';
-import BaseDevice from '../../devices/BaseDevice';
-import {sideEffect} from '../../utils/sideEffect';
 import {
   appNameWithUpdateHint,
   transformCertificateExchangeMediumToType,
@@ -38,11 +35,10 @@ import {
 } from './ServerFactory';
 import {FlipperServerImpl} from '../FlipperServerImpl';
 import {isTest} from '../../utils/isProduction';
-import {timeout} from 'flipper-plugin';
 
 type ClientInfo = {
   connection: ClientConnection | null | undefined;
-  client: Client;
+  client: ClientDescription;
 };
 
 type ClientCsrQuery = {
@@ -51,9 +47,7 @@ type ClientCsrQuery = {
 };
 
 declare interface ServerController {
-  on(event: 'new-client', callback: (client: Client) => void): this;
   on(event: 'error', callback: (err: Error) => void): this;
-  on(event: 'clients-change', callback: () => void): this;
 }
 
 /**
@@ -97,6 +91,13 @@ class ServerController extends EventEmitter implements ServerEventsListener {
     this.altInsecureServer = null;
     this.browserServer = null;
     this.initialized = null;
+  }
+
+  onClientMessage(clientId: string, payload: string): void {
+    this.flipperServer.emit('client-message', {
+      id: clientId,
+      message: payload,
+    });
   }
 
   get logger(): Logger {
@@ -188,7 +189,7 @@ class ServerController extends EventEmitter implements ServerEventsListener {
   onConnectionCreated(
     clientQuery: SecureClientQuery,
     clientConnection: ClientConnection,
-  ): Promise<Client> {
+  ): Promise<ClientDescription> {
     const {app, os, device, device_id, sdk_version, csr, csr_path, medium} =
       clientQuery;
     const transformedMedium = transformCertificateExchangeMediumToType(medium);
@@ -334,7 +335,7 @@ class ServerController extends EventEmitter implements ServerEventsListener {
     connection: ClientConnection,
     query: ClientQuery & {medium: CertificateExchangeMedium},
     csrQuery: ClientCsrQuery,
-  ): Promise<Client> {
+  ): Promise<ClientDescription> {
     invariant(query, 'expected query');
 
     // try to get id by comparing giving `csr` to file from `csr_path`
@@ -371,20 +372,11 @@ class ServerController extends EventEmitter implements ServerEventsListener {
     console.log(
       `[conn] Matching device for ${query.app} on ${query.device_id}...`,
     );
-    // TODO: grab device from flipperServer.devices instead of store
-    const device =
-      getDeviceBySerial(this.store.getState(), query.device_id) ??
-      (await findDeviceForConnection(this.store, query.app, query.device_id));
 
-    const client = new Client(
+    const client: ClientDescription = {
       id,
       query,
-      connection,
-      this.logger,
-      this.store,
-      undefined,
-      device,
-    );
+    };
 
     const info = {
       client,
@@ -393,12 +385,6 @@ class ServerController extends EventEmitter implements ServerEventsListener {
 
     console.log(
       `[conn] Initializing client ${query.app} on ${query.device_id}...`,
-    );
-
-    await timeout(
-      30 * 1000,
-      client.init(),
-      `[conn] Failed to initialize client ${query.app} on ${query.device_id} in a timely manner`,
     );
 
     connection.subscribeToEvents((status: ConnectionStatus) => {
@@ -410,12 +396,7 @@ class ServerController extends EventEmitter implements ServerEventsListener {
       }
     });
 
-    console.debug(
-      `[conn] Device client initialized: ${id}. Supported plugins: ${Array.from(
-        client.plugins,
-      ).join(', ')}`,
-      'server',
-    );
+    console.debug(`[conn] Device client initialized: ${id}.`, 'server');
 
     /* If a device gets disconnected without being cleaned up properly,
      * Flipper won't be aware until it attempts to reconnect.
@@ -435,14 +416,12 @@ class ServerController extends EventEmitter implements ServerEventsListener {
     }
 
     this.connections.set(id, info);
-    this.emit('new-client', client);
-    this.emit('clients-change');
-    client.emit('plugins-change');
+    this.flipperServer.emit('client-connected', client);
 
     return client;
   }
 
-  attachFakeClient(client: Client) {
+  attachFakeClient(client: ClientDescription) {
     this.connections.set(client.id, {
       client,
       connection: null,
@@ -460,10 +439,8 @@ class ServerController extends EventEmitter implements ServerEventsListener {
       console.log(
         `[conn] Disconnected: ${info.client.query.app} on ${info.client.query.device_id}.`,
       );
-      info.client.disconnect();
+      this.flipperServer.emit('client-disconnected', {id});
       this.connections.delete(id);
-      this.emit('clients-change');
-      this.emit('removed-client', id);
     }
   }
 }
@@ -497,60 +474,6 @@ class ConnectionTracker {
       );
     }
   }
-}
-
-function getDeviceBySerial(
-  state: State,
-  serial: string,
-): BaseDevice | undefined {
-  return state.connections.devices.find((device) => device.serial === serial);
-}
-
-async function findDeviceForConnection(
-  store: Store,
-  clientId: string,
-  serial: string,
-): Promise<BaseDevice> {
-  let lastSeenDeviceList: BaseDevice[] = [];
-  /* All clients should have a corresponding Device in the store.
-     However, clients can connect before a device is registered, so wait a
-     while for the device to be registered if it isn't already. */
-  return reportPlatformFailures(
-    new Promise<BaseDevice>((resolve, reject) => {
-      let unsubscribe: () => void = () => {};
-
-      const timeout = setTimeout(() => {
-        unsubscribe();
-        const error = `Timed out waiting for device ${serial} for client ${clientId}`;
-        console.error(
-          '[conn] Unable to find device for connection. Error:',
-          error,
-        );
-        reject(error);
-      }, 15000);
-      unsubscribe = sideEffect(
-        store,
-        {name: 'waitForDevice', throttleMs: 100},
-        (state) => state.connections.devices,
-        (newDeviceList) => {
-          if (newDeviceList === lastSeenDeviceList) {
-            return;
-          }
-          lastSeenDeviceList = newDeviceList;
-          const matchingDevice = newDeviceList.find(
-            (device) => device.serial === serial,
-          );
-          if (matchingDevice) {
-            console.log(`[conn] Found device for: ${clientId} on ${serial}.`);
-            clearTimeout(timeout);
-            resolve(matchingDevice);
-            unsubscribe();
-          }
-        },
-      );
-    }),
-    'client-setMatchingDevice',
-  );
 }
 
 export default ServerController;

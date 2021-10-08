@@ -30,6 +30,7 @@ import {reportPlatformFailures, reportUsage} from '../utils/metrics';
 import {loadPlugin} from '../reducers/pluginManager';
 import {showErrorNotification} from '../utils/notifications';
 import {pluginInstalled} from '../reducers/plugins';
+import {getAllClients} from '../reducers/connections';
 
 // Adapter which forces node.js implementation for axios instead of browser implementation
 // used by default in Electron. Node.js implementation is better, because it
@@ -167,7 +168,7 @@ function pluginIsDisabledForAllConnectedClients(
 ) {
   return (
     !state.plugins.clientPlugins.has(plugin.id) ||
-    !state.connections.clients.some((c) =>
+    !getAllClients(state.connections).some((c) =>
       state.connections.enabledPlugins[c.query.app]?.includes(plugin.id),
     )
   );

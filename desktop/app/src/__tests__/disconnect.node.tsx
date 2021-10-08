@@ -213,7 +213,7 @@ test('new clients replace old ones', async () => {
       },
     },
   );
-  const {client, store, device, createClient} =
+  const {client, store, device, createClient, logger} =
     await createMockFlipperWithPlugin(plugin, {
       asBackgroundPlugin: true,
     });
@@ -225,7 +225,7 @@ test('new clients replace old ones', async () => {
   expect(instance.instanceApi.disconnect).toBeCalledTimes(0);
 
   const client2 = await createClient(device, 'AnotherApp', client.query, true);
-  handleClientConnected(store, client2);
+  handleClientConnected(null as any, store, logger, client2);
 
   expect(client2.connected.get()).toBe(true);
   const instance2 = client2.sandyPluginStates.get(plugin.id)!;

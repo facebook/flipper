@@ -170,8 +170,9 @@ bool FlipperWebSocket::connect(FlipperConnectionManager* manager) {
     }
     eventHandler(event);
   };
+  auto messageHandler = messageHandler_;
   socket_.messageHandler = ^(const std::string& message) {
-    this->messageHandler_(message);
+    messageHandler(message);
   };
 
   if (endpoint_.secure) {

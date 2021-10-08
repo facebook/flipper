@@ -12,7 +12,6 @@ import {
   MockFlipperResult,
 } from '../../../test-utils/createMockFlipperWithPlugin';
 import {FlipperPlugin} from '../../../plugin';
-import MetroDevice from '../../../server/devices/metro/MetroDevice';
 import BaseDevice from '../../../devices/BaseDevice';
 import {_SandyPluginDefinition} from 'flipper-plugin';
 import {TestUtils} from 'flipper-plugin';
@@ -106,7 +105,7 @@ describe('basic getActiveDevice with metro present', () => {
       selectedPlugin: 'DeviceLogs',
       userPreferredDevice: 'MockAndroidDevice',
       userPreferredPlugin: 'DeviceLogs',
-      userPreferredApp: 'TestApp#Android#MockAndroidDevice#serial',
+      userPreferredApp: 'TestApp',
     });
     expect(getActiveClient(state)).toBe(flipper.client);
   });
@@ -116,19 +115,19 @@ describe('basic getActiveDevice with metro present', () => {
     flipper.store.dispatch(
       selectPlugin({
         selectedPlugin: logsPlugin.id,
-        selectedApp: null,
+        selectedAppId: flipper.client.id,
         selectedDevice: metro,
         deepLinkPayload: null,
       }),
     );
     expect(flipper.store.getState().connections).toMatchObject({
       devices: [testDevice, metro],
-      selectedApp: null,
+      selectedAppId: 'TestApp#Android#MockAndroidDevice#serial',
       selectedDevice: metro,
       selectedPlugin: 'DeviceLogs',
       userPreferredDevice: 'MockAndroidDevice', // Not metro!
       userPreferredPlugin: 'DeviceLogs',
-      userPreferredApp: 'TestApp#Android#MockAndroidDevice#serial',
+      userPreferredApp: 'TestApp',
     });
     const state = flipper.store.getState();
     // find best device is still metro

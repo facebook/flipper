@@ -20,7 +20,6 @@ test('ShareSheetPendingDialog is rendered with status update', () => {
     <Provider store={mockStore}>
       <ShareSheetPendingDialog
         onCancel={() => {}}
-        onRunInBackground={() => {}}
         statusMessage="wubba lubba dub dub"
         statusUpdate="Update"
       />
@@ -35,7 +34,6 @@ test('ShareSheetPendingDialog is rendered without status update', () => {
     <Provider store={mockStore}>
       <ShareSheetPendingDialog
         onCancel={() => {}}
-        onRunInBackground={() => {}}
         statusMessage="wubba lubba dub dub"
         statusUpdate={null}
       />

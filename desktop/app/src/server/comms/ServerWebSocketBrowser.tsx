@@ -10,13 +10,12 @@
 import ServerWebSocketBase from './ServerWebSocketBase';
 import WebSocket from 'ws';
 import querystring from 'querystring';
-import Client from '../../Client';
 import {BrowserClientFlipperConnection} from './BrowserClientFlipperConnection';
 import {ServerEventsListener} from './ServerAdapter';
 import constants from '../../fb-stubs/constants';
 import ws from 'ws';
 import {IncomingMessage} from 'http';
-import {ClientQuery} from 'flipper-plugin';
+import {ClientDescription, ClientQuery} from 'flipper-plugin';
 
 /**
  * WebSocket-based server which uses a connect/disconnect handshake over an insecure channel.
@@ -47,7 +46,7 @@ class ServerWebSocketBrowser extends ServerWebSocketBase {
    */
   onConnection(ws: WebSocket, message: any): void {
     const clients: {
-      [app: string]: Promise<Client>;
+      [app: string]: Promise<ClientDescription>;
     } = {};
 
     /**
@@ -113,12 +112,13 @@ class ServerWebSocketBrowser extends ServerWebSocketBase {
             `[conn] Local websocket connection established: ${clientQuery.app} on ${clientQuery.device_id}.`,
           );
 
-          let resolvedClient: Client | null = null;
+          let resolvedClient: ClientDescription | null = null;
           this.listener.onSecureConnectionAttempt(extendedClientQuery);
-          const client: Promise<Client> = this.listener.onConnectionCreated(
-            extendedClientQuery,
-            clientConnection,
-          );
+          const client: Promise<ClientDescription> =
+            this.listener.onConnectionCreated(
+              extendedClientQuery,
+              clientConnection,
+            );
           client
             .then((client) => {
               console.log(
@@ -148,9 +148,17 @@ class ServerWebSocketBrowser extends ServerWebSocketBase {
             if (parsed.app === app && parsed.payload?.id == null) {
               const message = JSON.stringify(parsed.payload);
               if (resolvedClient) {
-                resolvedClient.onMessage(message);
+                this.listener.onClientMessage(resolvedClient.id, message);
               } else {
-                client.then((c) => c.onMessage(message)).catch((_) => {});
+                client
+                  .then((c) => this.listener.onClientMessage(c.id, message))
+                  .catch((e) => {
+                    console.warn(
+                      'Could not deliver message, client did not resolve: ' +
+                        app,
+                      e,
+                    );
+                  });
               }
             }
           });

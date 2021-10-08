@@ -72,7 +72,7 @@ export type Props<T> = {
   deepLinkPayload: unknown;
   selectPlugin: (pluginID: string, deepLinkPayload: unknown) => void;
   isArchivedDevice: boolean;
-  selectedApp: string | null;
+  selectedApp: string | null; // name
   setStaticView: (payload: StaticView) => void;
   settingsState: Settings;
 };

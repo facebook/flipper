@@ -49,6 +49,7 @@ import {produce} from 'immer';
 import {reportUsage} from './utils/metrics';
 import {PluginInfo} from './chrome/fb-stubs/PluginInfo';
 import {getActiveClient, getActivePlugin} from './selectors/connections';
+import {isTest} from './utils/isProduction';
 
 const {Text, Link} = Typography;
 
@@ -101,11 +102,7 @@ type StateFromProps = {
 };
 
 type DispatchFromProps = {
-  selectPlugin: (payload: {
-    selectedPlugin: string | null;
-    selectedApp?: string | null;
-    deepLinkPayload: unknown;
-  }) => any;
+  selectPlugin: typeof selectPlugin;
   setStaticView: (payload: StaticView) => void;
   enablePlugin: typeof switchPlugin;
   loadPlugin: typeof loadPlugin;
@@ -254,7 +251,7 @@ class PluginContainer extends PureComponent<Props, State> {
   render() {
     const {activePlugin, pluginKey, target, pendingMessages} = this.props;
     if (!activePlugin || !target || !pluginKey) {
-      return null;
+      return this.renderNoPluginActive();
     }
     if (activePlugin.status !== 'enabled') {
       return this.renderPluginInfo();
@@ -298,6 +295,9 @@ class PluginContainer extends PureComponent<Props, State> {
   }
 
   renderNoPluginActive() {
+    if (isTest()) {
+      return <>No plugin selected</>; // to keep 'nothing' clearly recognisable in unit tests
+    }
     return (
       <View grow>
         <Waiting>

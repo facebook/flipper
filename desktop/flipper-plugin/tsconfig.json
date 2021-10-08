@@ -7,6 +7,9 @@
   "references": [
     {
       "path": "../plugin-lib"
+    },
+    {
+      "path": "../flipper-common"
     }
   ]
 }

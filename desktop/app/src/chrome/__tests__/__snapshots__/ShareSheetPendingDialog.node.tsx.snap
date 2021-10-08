@@ -2,49 +2,65 @@
 
 exports[`ShareSheetPendingDialog is rendered with status update 1`] = `
 <div
-  className="css-1lvu114-View-FlexBox-FlexColumn"
+  className="css-gzchr8-Container e1hsqii15"
   style={
     Object {
+      "textAlign": "center",
       "width": undefined,
     }
   }
 >
   <div
-    className="css-1tg2qwm-View-FlexBox-FlexColumn"
+    className="ant-spin ant-spin-spinning"
   >
-    <div
-      className="css-hs91vy-LoadingIndicator eq9prj20"
-      size={30}
-    />
     <span
-      className="css-137ad86-Text"
-      color="#6f6f6f"
+      aria-label="loading"
+      className="anticon anticon-loading anticon-spin ant-spin-dot"
+      role="img"
+      style={
+        Object {
+          "fontSize": 30,
+        }
+      }
     >
-      Update
+      <svg
+        aria-hidden="true"
+        data-icon="loading"
+        fill="currentColor"
+        focusable="false"
+        height="1em"
+        viewBox="0 0 1024 1024"
+        width="1em"
+      >
+        <path
+          d="M988 548c-19.9 0-36-16.1-36-36 0-59.4-11.6-117-34.6-171.3a440.45 440.45 0 00-94.3-139.9 437.71 437.71 0 00-139.9-94.3C629 83.6 571.4 72 512 72c-19.9 0-36-16.1-36-36s16.1-36 36-36c69.1 0 136.2 13.5 199.3 40.3C772.3 66 827 103 874 150c47 47 83.9 101.8 109.7 162.7 26.7 63.1 40.2 130.2 40.2 199.3.1 19.9-16 36-35.9 36z"
+        />
+      </svg>
     </span>
   </div>
-  <div
-    className="css-wospjg-View-FlexBox-FlexRow epz0qe20"
+  <span
+    className="ant-typography"
+    style={
+      Object {
+        "WebkitLineClamp": undefined,
+      }
+    }
   >
-    <div
-      className="css-t4wmtk-View-FlexBox-Spacer e13mj6h80"
-    />
+    <strong>
+      Update
+    </strong>
+  </span>
+  <div
+    className="css-1knrt0j-SandySplitContainer e1hsqii10"
+  >
+    <div />
     <button
-      className="ant-btn ant-btn-default"
+      className="ant-btn"
       onClick={[Function]}
       type="button"
     >
       <span>
         Cancel
-      </span>
-    </button>
-    <button
-      className="ant-btn ant-btn-primary"
-      onClick={[Function]}
-      type="button"
-    >
-      <span>
-        Run In Background
       </span>
     </button>
   </div>
@@ -53,49 +69,65 @@ exports[`ShareSheetPendingDialog is rendered with status update 1`] = `
 
 exports[`ShareSheetPendingDialog is rendered without status update 1`] = `
 <div
-  className="css-1lvu114-View-FlexBox-FlexColumn"
+  className="css-gzchr8-Container e1hsqii15"
   style={
     Object {
+      "textAlign": "center",
       "width": undefined,
     }
   }
 >
   <div
-    className="css-1tg2qwm-View-FlexBox-FlexColumn"
+    className="ant-spin ant-spin-spinning"
   >
-    <div
-      className="css-hs91vy-LoadingIndicator eq9prj20"
-      size={30}
-    />
     <span
-      className="css-137ad86-Text"
-      color="#6f6f6f"
+      aria-label="loading"
+      className="anticon anticon-loading anticon-spin ant-spin-dot"
+      role="img"
+      style={
+        Object {
+          "fontSize": 30,
+        }
+      }
     >
-      wubba lubba dub dub
+      <svg
+        aria-hidden="true"
+        data-icon="loading"
+        fill="currentColor"
+        focusable="false"
+        height="1em"
+        viewBox="0 0 1024 1024"
+        width="1em"
+      >
+        <path
+          d="M988 548c-19.9 0-36-16.1-36-36 0-59.4-11.6-117-34.6-171.3a440.45 440.45 0 00-94.3-139.9 437.71 437.71 0 00-139.9-94.3C629 83.6 571.4 72 512 72c-19.9 0-36-16.1-36-36s16.1-36 36-36c69.1 0 136.2 13.5 199.3 40.3C772.3 66 827 103 874 150c47 47 83.9 101.8 109.7 162.7 26.7 63.1 40.2 130.2 40.2 199.3.1 19.9-16 36-35.9 36z"
+        />
+      </svg>
     </span>
   </div>
-  <div
-    className="css-wospjg-View-FlexBox-FlexRow epz0qe20"
+  <span
+    className="ant-typography"
+    style={
+      Object {
+        "WebkitLineClamp": undefined,
+      }
+    }
   >
-    <div
-      className="css-t4wmtk-View-FlexBox-Spacer e13mj6h80"
-    />
+    <strong>
+      wubba lubba dub dub
+    </strong>
+  </span>
+  <div
+    className="css-1knrt0j-SandySplitContainer e1hsqii10"
+  >
+    <div />
     <button
-      className="ant-btn ant-btn-default"
+      className="ant-btn"
       onClick={[Function]}
       type="button"
     >
       <span>
         Cancel
-      </span>
-    </button>
-    <button
-      className="ant-btn ant-btn-primary"
-      onClick={[Function]}
-      type="button"
-    >
-      <span>
-        Run In Background
       </span>
     </button>
   </div>

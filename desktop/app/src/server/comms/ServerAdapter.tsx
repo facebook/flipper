@@ -11,10 +11,9 @@ import {
   CertificateExchangeMedium,
   SecureServerConfig,
 } from '../utils/CertificateProvider';
-import Client from '../../Client';
 import {ClientConnection} from './ClientConnection';
 import {transformCertificateExchangeMediumToType} from './Utilities';
-import {ClientQuery} from 'flipper-plugin';
+import {ClientDescription, ClientQuery} from 'flipper-plugin';
 
 /**
  * ClientCsrQuery defines a client query with CSR
@@ -87,7 +86,7 @@ export interface ServerEventsListener {
   onConnectionCreated(
     clientQuery: SecureClientQuery,
     clientConnection: ClientConnection,
-  ): Promise<Client>;
+  ): Promise<ClientDescription>;
   /**
    * A connection with a client has been closed.
    * @param id The client identifier.
@@ -98,6 +97,11 @@ export interface ServerEventsListener {
    * @param error An Error instance.
    */
   onError(error: Error): void;
+  /**
+   * A message was received for a specif client
+   * // TODO: payload should become JSON
+   */
+  onClientMessage(clientId: string, payload: string): void;
 }
 
 /**

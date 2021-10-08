@@ -33,7 +33,7 @@ import {
   sleep,
   Device,
 } from 'flipper-plugin';
-import {selectPlugin} from '../../reducers/connections';
+import {selectPlugin, getAllClients} from '../../reducers/connections';
 import {TestIdler} from '../Idler';
 import {TestDevice} from '../..';
 
@@ -1137,7 +1137,7 @@ test('Sandy plugins are exported properly', async () => {
   store.dispatch(
     selectPlugin({
       selectedPlugin: 'DeviceLogs',
-      selectedApp: null,
+      selectedAppId: null,
       selectedDevice: device,
       deepLinkPayload: null,
     }),
@@ -1195,7 +1195,7 @@ test('Non sandy plugins are exported properly if they are still queued', async (
   store.dispatch(
     selectPlugin({
       selectedPlugin: 'DeviceLogs',
-      selectedApp: null,
+      selectedAppId: null,
       selectedDevice: device,
       deepLinkPayload: null,
     }),
@@ -1229,7 +1229,7 @@ test('Sandy plugins with custom export are exported properly', async () => {
   store.dispatch(
     selectPlugin({
       selectedPlugin: 'DeviceLogs',
-      selectedApp: client.id,
+      selectedAppId: client.id,
       deepLinkPayload: null,
     }),
   );
@@ -1298,7 +1298,7 @@ test('Sandy plugins are imported properly', async () => {
 
   await importDataToStore('unittest.json', JSON.stringify(data), store);
 
-  const client2 = store.getState().connections.clients[1];
+  const client2 = getAllClients(store.getState().connections)[1];
   expect(client2).not.toBeFalsy();
   expect(client2).not.toBe(client);
   expect(Array.from(client2.plugins)).toEqual([TestPlugin.id]);
@@ -1511,15 +1511,13 @@ test('Sandy plugin with custom import', async () => {
   await importDataToStore('unittest.json', JSON.stringify(data), store);
 
   expect(
-    store
-      .getState()
-      .connections.clients[0].sandyPluginStates.get(plugin.id)
+    getAllClients(store.getState().connections)[0]
+      .sandyPluginStates.get(plugin.id)
       ?.instanceApi.counter.get(),
   ).toBe(0);
   expect(
-    store
-      .getState()
-      .connections.clients[1].sandyPluginStates.get(plugin.id)
+    getAllClients(store.getState().connections)[1]
+      .sandyPluginStates.get(plugin.id)
       ?.instanceApi.counter.get(),
   ).toBe(4);
 });
@@ -1635,9 +1633,9 @@ test('Sandy plugins with complex data are imported  / exported correctly', async
   ]);
 
   await importDataToStore('unittest.json', data.serializedString, store);
-  const api = store
-    .getState()
-    .connections.clients[1].sandyPluginStates.get(plugin.id)?.instanceApi;
+  const api = getAllClients(
+    store.getState().connections,
+  )[1].sandyPluginStates.get(plugin.id)?.instanceApi;
   expect(api.m.get()).toMatchInlineSnapshot(`
     Map {
       "a" => 1,

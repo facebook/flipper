@@ -172,6 +172,7 @@ export function wrapInteractionHandler<T extends Function>(
     const initialEnd = Date.now();
     if (typeof res?.then === 'function' && typeof res?.catch === 'function') {
       // async / promise
+      // eslint-disable-next-line promise/catch-or-return
       res.then(
         () => r(initialEnd),
         (error: any) => r(initialEnd, error),

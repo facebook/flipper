@@ -56,7 +56,7 @@ function selectTestPlugin(store: Store) {
   store.dispatch(
     selectPlugin({
       selectedPlugin: TestPlugin.id,
-      selectedApp: null,
+      selectedAppId: null,
       deepLinkPayload: null,
       selectedDevice: store.getState().connections.selectedDevice!,
     }),

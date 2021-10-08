@@ -7,7 +7,6 @@
  * @format
  */
 
-import {Button, FlexColumn} from '../ui';
 import React, {Component, useContext} from 'react';
 import {Radio} from 'antd';
 import {updateSettings, Action} from '../reducers/settings';
@@ -27,13 +26,13 @@ import {isEqual, isMatch, isEmpty} from 'lodash';
 import restartFlipper from '../utils/restartFlipper';
 import LauncherSettingsPanel from '../fb-stubs/LauncherSettingsPanel';
 import {reportUsage} from '../utils/metrics';
-import {Modal, message} from 'antd';
+import {Modal, message, Button} from 'antd';
 import {Layout, withTrackingScope, _NuxManagerContext} from 'flipper-plugin';
 
 type OwnProps = {
   onHide: () => void;
   platform: NodeJS.Platform;
-  noModal?: boolean;
+  noModal?: boolean; // used for testing
 };
 
 type StateFromProps = {
@@ -246,7 +245,7 @@ class SettingsSheet extends Component<Props, State> {
             }));
           }}
         />
-        <FlexColumn style={{paddingLeft: 15, paddingBottom: 10}}>
+        <Layout.Container style={{paddingLeft: 15, paddingBottom: 10}}>
           Theme Selection
           <Radio.Group
             value={darkMode}
@@ -262,7 +261,7 @@ class SettingsSheet extends Component<Props, State> {
             <Radio.Button value="light">Light</Radio.Button>
             <Radio.Button value="system">Use System Setting</Radio.Button>
           </Radio.Group>
-        </FlexColumn>
+        </Layout.Container>
         <ToggledSection
           label="React Native keyboard shortcuts"
           toggled={reactNative.shortcuts.enabled}
@@ -330,21 +329,15 @@ class SettingsSheet extends Component<Props, State> {
 
     const footer = (
       <>
-        <Button compact padded onClick={this.props.onHide}>
-          Cancel
-        </Button>
+        <Button onClick={this.props.onHide}>Cancel</Button>
         <Button
           disabled={settingsPristine || forcedRestart}
-          compact
-          padded
           onClick={this.applyChangesWithoutRestart}>
           Apply
         </Button>
         <Button
           disabled={settingsPristine}
           type="primary"
-          compact
-          padded
           onClick={this.applyChanges}>
           Apply and Restart
         </Button>
@@ -388,7 +381,7 @@ function ResetTooltips() {
 function ResetLocalState() {
   return (
     <Button
-      type="danger"
+      danger
       onClick={() => {
         window.localStorage.clear();
         message.success('Local storage state cleared');

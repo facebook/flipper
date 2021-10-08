@@ -14,7 +14,7 @@ import {Property} from 'csstype';
 import React from 'react';
 
 const defaultOptions = {
-  backgroundColor: colors.blueGrey,
+  backgroundColor: colors.blueGray,
   position: 'below',
   color: colors.white,
   showTail: true,

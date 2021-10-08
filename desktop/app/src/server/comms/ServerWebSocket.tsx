@@ -12,15 +12,18 @@ import WebSocket from 'ws';
 import ws from 'ws';
 import {SecureClientQuery, ServerEventsListener} from './ServerAdapter';
 import querystring from 'querystring';
-import Client from '../../Client';
 import {
   ClientConnection,
   ConnectionStatus,
   ConnectionStatusChange,
-  ErrorType,
 } from './ClientConnection';
 import {IncomingMessage} from 'http';
-import {ClientQuery, DeviceOS} from 'flipper-plugin';
+import {
+  ClientDescription,
+  ClientErrorType,
+  ClientQuery,
+  DeviceOS,
+} from 'flipper-plugin';
 
 /**
  * WebSocket-based server.
@@ -121,11 +124,9 @@ class ServerWebSocket extends ServerWebSocketBase {
       },
     };
 
-    let resolvedClient: Client | undefined;
-    const client: Promise<Client> = this.listener.onConnectionCreated(
-      clientQuery,
-      clientConnection,
-    );
+    let resolvedClient: ClientDescription | undefined;
+    const client: Promise<ClientDescription> =
+      this.listener.onConnectionCreated(clientQuery, clientConnection);
     client
       .then((client) => (resolvedClient = client))
       .catch((e) => {
@@ -147,7 +148,7 @@ class ServerWebSocket extends ServerWebSocketBase {
       const data: {
         id?: number;
         success?: Object | undefined;
-        error?: ErrorType | undefined;
+        error?: ClientErrorType | undefined;
       } = json;
 
       if (data.hasOwnProperty('id') && data.id !== undefined) {
@@ -165,14 +166,19 @@ class ServerWebSocket extends ServerWebSocketBase {
         }
       } else {
         if (resolvedClient) {
-          resolvedClient.onMessage(message);
+          this.listener.onClientMessage(resolvedClient.id, message);
         } else {
           client &&
             client
               .then((client) => {
-                client.onMessage(message);
+                this.listener.onClientMessage(client.id, message);
               })
-              .catch((_) => {});
+              .catch((e) => {
+                console.warn(
+                  'Could not deliver message, client did not resolve. ',
+                  e,
+                );
+              });
         }
       }
     });

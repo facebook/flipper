@@ -191,7 +191,7 @@ export async function createMockFlipperWithPlugin(
     store.dispatch(
       selectPlugin({
         selectedPlugin: id,
-        selectedApp: theClient.query.app,
+        selectedAppId: theClient.id,
         deepLinkPayload,
         selectedDevice: theDevice,
       }),
@@ -268,13 +268,13 @@ export async function renderMockFlipperWithPlugin(
         isDevicePluginDefinition(pluginClazz)
           ? {
               selectedPlugin: pluginClazz.id,
-              selectedApp: null,
+              selectedAppId: null,
               deepLinkPayload: null,
               selectedDevice: store.getState().connections.selectedDevice!,
             }
           : {
               selectedPlugin: pluginClazz.id,
-              selectedApp: client.query.app,
+              selectedAppId: client.id,
               deepLinkPayload: null,
               selectedDevice: store.getState().connections.selectedDevice!,
             },

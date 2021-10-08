@@ -72,7 +72,7 @@ describe('info', () => {
     store.dispatch(
       selectPlugin({
         selectedPlugin: inspectorPlugin.id,
-        selectedApp: client.query.app,
+        selectedAppId: client.id,
         selectedDevice: device,
         deepLinkPayload: null,
       }),

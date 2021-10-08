@@ -40,6 +40,8 @@ import {
   setDevicePluginDisabled,
   setPluginEnabled,
   setPluginDisabled,
+  getClientsByAppName,
+  getAllClients,
 } from '../reducers/connections';
 import {deconstructClientId} from '../utils/clientUtils';
 import {clearMessageQueue} from '../reducers/pluginMessageQueue';
@@ -166,12 +168,12 @@ function updatePlugin(store: Store, payload: UpdatePluginActionPayload) {
   }
 }
 
-function getSelectedAppId(store: Store) {
+function getSelectedAppName(store: Store) {
   const {connections} = store.getState();
-  const selectedApp = connections.selectedApp
-    ? deconstructClientId(connections.selectedApp).app
+  const selectedAppId = connections.selectedAppId
+    ? deconstructClientId(connections.selectedAppId).app
     : undefined;
-  return selectedApp;
+  return selectedAppId;
 }
 
 function switchPlugin(
@@ -190,14 +192,12 @@ function switchClientPlugin(
   plugin: PluginDefinition,
   selectedApp: string | undefined,
 ) {
-  selectedApp = selectedApp ?? getSelectedAppId(store);
+  selectedApp = selectedApp ?? getSelectedAppName(store);
   if (!selectedApp) {
     return;
   }
   const {connections} = store.getState();
-  const clients = connections.clients.filter(
-    (client) => client.query.app === selectedApp,
-  );
+  const clients = getClientsByAppName(connections.clients, selectedApp);
   if (connections.enabledPlugins[selectedApp]?.includes(plugin.id)) {
     clients.forEach((client) => {
       stopPlugin(client, plugin.id);
@@ -240,9 +240,9 @@ function updateClientPlugin(
   plugin: PluginDefinition,
   enable: boolean,
 ) {
-  const clients = store.getState().connections.clients;
+  const clients = getAllClients(store.getState().connections);
   if (enable) {
-    const selectedApp = getSelectedAppId(store);
+    const selectedApp = getSelectedAppName(store);
     if (selectedApp) {
       store.dispatch(setPluginEnabled(plugin.id, selectedApp));
     }

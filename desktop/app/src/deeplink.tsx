@@ -7,18 +7,16 @@
  * @format
  */
 
-import {
-  ACTIVE_SHEET_SIGN_IN,
-  setActiveSheet,
-  setPastedToken,
-} from './reducers/application';
 import {Group, SUPPORTED_GROUPS} from './reducers/supportForm';
+import {Logger} from './fb-interfaces/Logger';
 import {Store} from './reducers/index';
 import {importDataToStore} from './utils/exportData';
-import {selectPlugin} from './reducers/connections';
+import {selectPlugin, getAllClients} from './reducers/connections';
 import {Dialog} from 'flipper-plugin';
 import {handleOpenPluginDeeplink} from './dispatcher/handleOpenPluginDeeplink';
 import {message} from 'antd';
+import {showLoginDialog} from './chrome/fb-stubs/SignInSheet';
+import {track} from './deeplinkTracking';
 
 const UNKNOWN = 'Unknown deeplink';
 /**
@@ -26,14 +24,27 @@ const UNKNOWN = 'Unknown deeplink';
  */
 export async function handleDeeplink(
   store: Store,
+  logger: Logger,
   query: string,
 ): Promise<void> {
-  const uri = new URL(query);
-  if (uri.protocol !== 'flipper:') {
+  const trackInteraction = track.bind(null, logger, query);
+  const unknownError = () => {
+    trackInteraction({
+      state: 'ERROR',
+      errorMessage: UNKNOWN,
+    });
     throw new Error(UNKNOWN);
+  };
+  const uri = new URL(query);
+
+  trackInteraction({
+    state: 'INIT',
+  });
+  if (uri.protocol !== 'flipper:') {
+    throw unknownError();
   }
   if (uri.href.startsWith('flipper://open-plugin')) {
-    return handleOpenPluginDeeplink(store, query);
+    return handleOpenPluginDeeplink(store, query, trackInteraction);
   }
   if (uri.pathname.match(/^\/*import\/*$/)) {
     const url = uri.searchParams.get('url');
@@ -55,7 +66,7 @@ export async function handleDeeplink(
           handle.close();
         });
     }
-    throw new Error(UNKNOWN);
+    throw unknownError();
   } else if (uri.pathname.match(/^\/*support-form\/*$/)) {
     const formParam = uri.searchParams.get('form');
     const grp = deeplinkFormParamToGroups(formParam);
@@ -63,13 +74,10 @@ export async function handleDeeplink(
       grp.handleSupportFormDeeplinks(store);
       return;
     }
-    throw new Error(UNKNOWN);
+    throw unknownError();
   } else if (uri.pathname.match(/^\/*login\/*$/)) {
     const token = uri.searchParams.get('token');
-    store.dispatch(setPastedToken(token ?? undefined));
-    if (store.getState().application.activeSheet !== ACTIVE_SHEET_SIGN_IN) {
-      store.dispatch(setActiveSheet(ACTIVE_SHEET_SIGN_IN));
-    }
+    showLoginDialog(token ?? '');
     return;
   }
   const match = uriComponents(query);
@@ -82,16 +90,35 @@ export async function handleDeeplink(
         match[1]
       }&client=${match[0]}&payload=${encodeURIComponent(match[2])}' instead.`,
     );
+    const deepLinkPayload = match[2];
+    const deepLinkParams = new URLSearchParams(deepLinkPayload);
+    const deviceParam = deepLinkParams.get('device');
+
+    // if there is a device Param, find a matching device
+    const selectedDevice = deviceParam
+      ? store
+          .getState()
+          .connections.devices.find((v) => v.title === deviceParam)
+      : undefined;
+
+    // if a client is specified, find it, withing the device if applicable
+    const selectedClient = getAllClients(store.getState().connections).find(
+      (c) =>
+        c.query.app === match[0] &&
+        (selectedDevice == null || c.device === selectedDevice),
+    );
+
     store.dispatch(
       selectPlugin({
-        selectedApp: match[0],
+        selectedAppId: selectedClient?.id,
+        selectedDevice: selectedClient ? selectedClient.device : selectedDevice,
         selectedPlugin: match[1],
-        deepLinkPayload: match[2],
+        deepLinkPayload,
       }),
     );
     return;
   } else {
-    throw new Error(UNKNOWN);
+    throw unknownError();
   }
 }
 
@@ -119,13 +146,13 @@ export const uriComponents = (url: string): Array<string> => {
   return [];
 };
 
-export function openDeeplinkDialog(store: Store) {
+export function openDeeplinkDialog(store: Store, logger: Logger) {
   Dialog.prompt({
     title: 'Open deeplink',
     message: 'Enter a deeplink:',
     defaultValue: 'flipper://',
     onConfirm: async (deeplink) => {
-      await handleDeeplink(store, deeplink);
+      await handleDeeplink(store, logger, deeplink);
       return deeplink;
     },
   });

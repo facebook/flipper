@@ -23,6 +23,9 @@
       "flipper": ["./app/src"],
       "flipper-plugin": ["./flipper-plugin/src"],
       "eslint-plugin-flipper": ["./eslint-plugin-flipper/src"],
+      "flipper-server-core": ["./flipper-server-core/src"],
+      "flipper-server-ui": ["./flipper-server-ui/src"],
+      "flipper-common": ["./flipper-common/src"],
       "flipper-*": ["./*/src"]
     }
   },

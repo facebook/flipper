@@ -156,7 +156,9 @@ static constexpr int connectionKeepaliveSeconds = 10;
     // not notify the delegate. SocketRocket only triggers the close event
     // when the connection is closed from the server.
     _eventHandler(facebook::flipper::SocketEvent::CLOSE);
-
+    // Clear the socket delegate before close. Ensures that we won't get
+    // any messages after the disconnect takes place.
+    _socket.delegate = nil;
     [_socket close];
     _socket = nil;
   }

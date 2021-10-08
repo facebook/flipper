@@ -129,14 +129,16 @@ export function stringifyInfo(info: Info): string {
 export function getSelectionInfo({
   plugins: {clientPlugins, devicePlugins, loadedPlugins},
   connections: {
-    selectedApp,
+    selectedAppId,
     selectedPlugin,
     enabledDevicePlugins,
     enabledPlugins,
     selectedDevice,
   },
 }: State): SelectionInfo {
-  const clientIdParts = selectedApp ? deconstructClientId(selectedApp) : null;
+  const clientIdParts = selectedAppId
+    ? deconstructClientId(selectedAppId)
+    : null;
   const loadedPlugin = selectedPlugin
     ? loadedPlugins.get(selectedPlugin)
     : null;

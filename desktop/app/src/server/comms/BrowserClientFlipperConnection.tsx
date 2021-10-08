@@ -7,12 +7,12 @@
  * @format
  */
 
+import {ClientResponseType} from 'flipper-plugin';
 import WebSocket from 'ws';
 import {
   ConnectionStatusChange,
   ConnectionStatus,
   ClientConnection,
-  ResponseType,
 } from './ClientConnection';
 
 export class BrowserClientFlipperConnection implements ClientConnection {
@@ -40,7 +40,7 @@ export class BrowserClientFlipperConnection implements ClientConnection {
       }),
     );
   }
-  sendExpectResponse(data: any): Promise<ResponseType> {
+  sendExpectResponse(data: any): Promise<ClientResponseType> {
     return new Promise((resolve, reject) => {
       const {id: callId = undefined, method = undefined} =
         data != null ? data : {};

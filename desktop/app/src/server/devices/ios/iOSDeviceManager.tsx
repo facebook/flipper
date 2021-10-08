@@ -9,10 +9,9 @@
 
 import {ChildProcess} from 'child_process';
 import type {DeviceType} from 'flipper-plugin';
-import {promisify} from 'util';
 import path from 'path';
-import child_process from 'child_process';
-const execFile = child_process.execFile;
+import childProcess from 'child_process';
+import {exec, execFile} from 'promisify-child-process';
 import iosUtil from './iOSContainerUtility';
 import IOSDevice from './IOSDevice';
 import {getStaticPath} from '../../../utils/pathUtils';
@@ -22,6 +21,7 @@ import {
   makeIOSBridge,
 } from './IOSBridge';
 import {FlipperServerImpl} from '../../FlipperServerImpl';
+import {notNull} from '../../utils/typeUtils';
 
 type iOSSimulatorDevice = {
   state: 'Booted' | 'Shutdown' | 'Shutting Down';
@@ -38,8 +38,6 @@ export type IOSDeviceParams = {
   deviceTypeIdentifier?: string;
   state?: string;
 };
-
-const exec = promisify(child_process.exec);
 
 function isAvailable(simulator: iOSSimulatorDevice): boolean {
   // For some users "availability" is set, for others it's "isAvailable"
@@ -76,7 +74,7 @@ export class IOSDeviceManager {
   }
 
   private forwardPort(port: number, multiplexChannelPort: number) {
-    const childProcess = execFile(
+    const child = childProcess.execFile(
       this.portforwardingClient,
       [`-portForward=${port}`, `-multiplexChannelPort=${multiplexChannelPort}`],
       (err, stdout, stderr) => {
@@ -90,13 +88,13 @@ export class IOSDeviceManager {
       },
     );
     console.log('Port forwarding app started', childProcess);
-    childProcess.addListener('error', (err) =>
+    child.addListener('error', (err) =>
       console.warn('Port forwarding app error', err),
     );
-    childProcess.addListener('exit', (code) =>
+    child.addListener('exit', (code) =>
       console.log(`Port forwarding app exited with code ${code}`),
     );
-    return childProcess;
+    return child;
   }
 
   private startDevicePortForwarders(): void {
@@ -114,55 +112,51 @@ export class IOSDeviceManager {
 
   getAllPromisesForQueryingDevices(
     isXcodeDetected: boolean,
+    isIdbAvailable: boolean,
   ): Array<Promise<any>> {
     const {config} = this.flipperServer;
-    const promArray = [
-      getActiveDevices(config.idbPath, config.enablePhysicalIOS).then(
-        (devices: IOSDeviceParams[]) => {
-          this.processDevices(devices, 'physical');
-        },
-      ),
-    ];
-    if (isXcodeDetected) {
-      promArray.push(
-        ...[
-          this.checkXcodeVersionMismatch(),
-          this.getSimulators(true).then((devices) => {
-            this.processDevices(devices, 'emulator');
-          }),
-        ],
-      );
-    }
-    return promArray;
+    return [
+      isIdbAvailable
+        ? getActiveDevices(config.idbPath, config.enablePhysicalIOS).then(
+            (devices: IOSDeviceParams[]) => {
+              this.processDevices(devices);
+            },
+          )
+        : null,
+      !isIdbAvailable && isXcodeDetected
+        ? this.getSimulators(true).then((devices) =>
+            this.processDevices(devices),
+          )
+        : null,
+      isXcodeDetected ? this.checkXcodeVersionMismatch() : null,
+    ].filter(notNull);
   }
 
   private async queryDevices(): Promise<any> {
+    const {config} = this.flipperServer;
     const isXcodeInstalled = await iosUtil.isXcodeDetected();
-    return Promise.all(this.getAllPromisesForQueryingDevices(isXcodeInstalled));
+    const isIdbAvailable = await iosUtil.isAvailable(config.idbPath);
+    return Promise.all(
+      this.getAllPromisesForQueryingDevices(isXcodeInstalled, isIdbAvailable),
+    );
   }
 
-  private processDevices(
-    activeDevices: IOSDeviceParams[],
-    targetType: 'physical' | 'emulator',
-  ) {
+  private processDevices(activeDevices: IOSDeviceParams[]) {
     if (!this.iosBridge) {
       throw new Error('iOS bridge not yet initialized');
     }
     const currentDeviceIDs = new Set(
       this.flipperServer
         .getDevices()
-        .filter(
-          (device) =>
-            device.info.os === 'iOS' && device.info.deviceType === targetType,
-        )
+        .filter((device) => device.info.os === 'iOS')
         .map((device) => device.serial),
     );
 
     for (const {udid, type, name} of activeDevices) {
       if (currentDeviceIDs.has(udid)) {
         currentDeviceIDs.delete(udid);
-      } else if (targetType === type) {
-        console.log(`[conn] detected new iOS device ${targetType} ${udid}`);
+      } else {
+        console.log(`[conn] detected new iOS device ${udid}`);
         const iOSDevice = new IOSDevice(
           this.flipperServer,
           this.iosBridge,
@@ -175,9 +169,7 @@ export class IOSDeviceManager {
     }
 
     currentDeviceIDs.forEach((id) => {
-      console.log(
-        `[conn] Could no longer find ${targetType} ${id}, removing...`,
-      );
+      console.log(`[conn] Could no longer find ${id}, removing...`);
       this.flipperServer.unregisterDevice(id);
     });
   }
@@ -217,14 +209,14 @@ export class IOSDeviceManager {
   }
 
   getSimulators(bootedOnly: boolean): Promise<Array<IOSDeviceParams>> {
-    return promisify(execFile)(
-      'xcrun',
-      ['simctl', ...getDeviceSetPath(), 'list', 'devices', '--json'],
-      {
-        encoding: 'utf8',
-      },
-    )
-      .then(({stdout}) => JSON.parse(stdout).devices)
+    return execFile('xcrun', [
+      'simctl',
+      ...getDeviceSetPath(),
+      'list',
+      'devices',
+      '--json',
+    ])
+      .then(({stdout}) => JSON.parse(stdout!.toString()).devices)
       .then((simulatorDevices: Array<iOSSimulatorDevice>) => {
         const simulators = Object.values(simulatorDevices).flat();
         return simulators
@@ -272,9 +264,9 @@ export class IOSDeviceManager {
     }
     try {
       let {stdout: xcodeCLIVersion} = await exec('xcode-select -p');
-      xcodeCLIVersion = xcodeCLIVersion.trim();
+      xcodeCLIVersion = xcodeCLIVersion!.toString().trim();
       const {stdout} = await exec('ps aux | grep CoreSimulator');
-      for (const line of stdout.split('\n')) {
+      for (const line of stdout!.toString().split('\n')) {
         const match = parseXcodeFromCoreSimPath(line);
         const runningVersion =
           match && match.length > 0 ? match[0].trim() : null;
@@ -302,12 +294,8 @@ function getDeviceSetPath() {
 }
 
 export async function launchSimulator(udid: string): Promise<any> {
-  await promisify(execFile)(
-    'xcrun',
-    ['simctl', ...getDeviceSetPath(), 'boot', udid],
-    {encoding: 'utf8'},
-  );
-  await promisify(execFile)('open', ['-a', 'simulator']);
+  await execFile('xcrun', ['simctl', ...getDeviceSetPath(), 'boot', udid]);
+  await execFile('open', ['-a', 'simulator']);
 }
 
 function getActiveDevices(

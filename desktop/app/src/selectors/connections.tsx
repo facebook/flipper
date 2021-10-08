@@ -16,22 +16,13 @@ import {
 import createSelector from './createSelector';
 
 const getSelectedPluginId = (state: State) => state.connections.selectedPlugin;
-const getSelectedApp = (state: State) =>
-  state.connections.selectedApp || state.connections.userPreferredApp;
 const getSelectedDevice = (state: State) => state.connections.selectedDevice;
-const getUserPreferredDevice = (state: State) =>
-  state.connections.userPreferredDevice;
-const getClients = (state: State) => state.connections.clients;
 const getDevices = (state: State) => state.connections.devices;
 const getPluginDownloads = (state: State) => state.pluginDownloads;
 
-export const getActiveClient = createSelector(
-  getSelectedApp,
-  getClients,
-  (selectedApp, clients) => {
-    return clients.find((c) => c.id === selectedApp) || null;
-  },
-);
+// N.B. no useSelector, It can't memoise on maps :-/
+export const getActiveClient = (state: State) =>
+  state.connections.clients.get(state.connections.selectedAppId!) ?? null;
 
 export const getMetroDevice = createSelector(getDevices, (devices) => {
   return (
@@ -42,11 +33,9 @@ export const getMetroDevice = createSelector(getDevices, (devices) => {
 
 export const getActiveDevice = createSelector(
   getSelectedDevice,
-  getUserPreferredDevice,
-  getDevices,
   getActiveClient,
   getMetroDevice,
-  (selectedDevice, userPreferredDevice, devices, client, metroDevice) => {
+  (selectedDevice, client, metroDevice) => {
     // if not Metro device, use the selected device as metro device
     if (selectedDevice !== metroDevice) {
       return selectedDevice;
@@ -54,13 +43,6 @@ export const getActiveDevice = createSelector(
     // if there is an active app, use device owning the app
     if (client) {
       return client.device;
-    }
-    // if no active app, use the preferred device
-    if (userPreferredDevice) {
-      return (
-        devices.find((device) => device.title === userPreferredDevice) ??
-        selectedDevice
-      );
     }
     return selectedDevice;
   },

@@ -22,7 +22,7 @@ import {batch} from 'react-redux';
 import {useDispatch, useStore} from '../../utils/useStore';
 import {
   canBeDefaultDevice,
-  getAvailableClients,
+  getClientsByDevice,
   selectClient,
   selectDevice,
 } from '../../reducers/connections';
@@ -50,8 +50,13 @@ function getOsIcon(os?: DeviceOS) {
 
 export function AppSelector() {
   const dispatch = useDispatch();
-  const {devices, selectedDevice, clients, uninitializedClients, selectedApp} =
-    useStore((state) => state.connections);
+  const {
+    devices,
+    selectedDevice,
+    clients,
+    uninitializedClients,
+    selectedAppId,
+  } = useStore((state) => state.connections);
   useValue(selectedDevice?.connected, false); // subscribe to future archived state changes
 
   const onSelectDevice = useTrackedCallback(
@@ -59,16 +64,14 @@ export function AppSelector() {
     (device: BaseDevice) => {
       batch(() => {
         dispatch(selectDevice(device));
-        dispatch(selectClient(null));
       });
     },
     [],
   );
   const onSelectApp = useTrackedCallback(
     'select-app',
-    (device: BaseDevice, client: Client) => {
+    (_device: BaseDevice, client: Client) => {
       batch(() => {
-        dispatch(selectDevice(device));
         dispatch(selectClient(client.id));
       });
     },
@@ -82,13 +85,13 @@ export function AppSelector() {
     onSelectDevice,
     onSelectApp,
   );
-  const client = clients.find((client) => client.id === selectedApp);
+  const client = clients.get(selectedAppId!);
 
   return (
     <>
       {entries.length ? (
         <Radio.Group
-          value={selectedApp}
+          value={selectedAppId}
           size="small"
           style={{
             display: 'flex',
@@ -97,7 +100,7 @@ export function AppSelector() {
           <Dropdown
             trigger={['click']}
             overlay={
-              <Menu selectedKeys={selectedApp ? [selectedApp] : []}>
+              <Menu selectedKeys={selectedAppId ? [selectedAppId] : []}>
                 {entries}
               </Menu>
             }>
@@ -191,7 +194,7 @@ const AppIconContainer = styled.div({
 
 function computeEntries(
   devices: BaseDevice[],
-  clients: Client[],
+  clients: Map<string, Client>,
   uninitializedClients: State['connections']['uninitializedClients'],
   onSelectDevice: (device: BaseDevice) => void,
   onSelectApp: (device: BaseDevice, client: Client) => void,
@@ -202,7 +205,7 @@ function computeEntries(
         // hide non default devices, unless they have a connected client or plugins
         canBeDefaultDevice(device) ||
         device.hasDevicePlugins ||
-        clients.some((c) => c.device === device),
+        getClientsByDevice(device, clients).length > 0,
     )
     .map((device) => {
       const deviceEntry = (
@@ -216,7 +219,7 @@ function computeEntries(
           <DeviceTitle device={device} />
         </Menu.Item>
       );
-      const clientEntries = getAvailableClients(device, clients).map(
+      const clientEntries = getClientsByDevice(device, clients).map(
         (client) => (
           <Menu.Item
             key={client.id}

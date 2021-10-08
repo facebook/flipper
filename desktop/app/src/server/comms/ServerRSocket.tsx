@@ -17,15 +17,17 @@ import net, {Socket} from 'net';
 import {RSocketServer} from 'rsocket-core';
 import RSocketTCPServer from 'rsocket-tcp-server';
 import {Payload, ReactiveSocket, Responder} from 'rsocket-types';
-import Client from '../../Client';
 import {Single} from 'rsocket-flowable';
 import {
   ClientConnection,
   ConnectionStatusChange,
   ConnectionStatus,
-  ResponseType,
 } from './ClientConnection';
-import {ClientQuery} from 'flipper-plugin';
+import {
+  ClientDescription,
+  ClientQuery,
+  ClientResponseType,
+} from 'flipper-plugin';
 
 /**
  * RSocket based server. RSocket uses its own protocol for communication between
@@ -153,7 +155,7 @@ class ServerRSocket extends ServerAdapter {
             })
             .subscribe({
               onComplete: (payload: Payload<any, any>) => {
-                const response: ResponseType = JSON.parse(payload.data);
+                const response: ClientResponseType = JSON.parse(payload.data);
                 response.length = payload.data.length;
                 resolve(response);
               },
@@ -165,11 +167,9 @@ class ServerRSocket extends ServerAdapter {
       },
     };
 
-    let resolvedClient: Client | undefined;
-    const client: Promise<Client> = this.listener.onConnectionCreated(
-      clientQuery,
-      clientConnection,
-    );
+    let resolvedClient: ClientDescription | undefined;
+    const client: Promise<ClientDescription> =
+      this.listener.onConnectionCreated(clientQuery, clientConnection);
     client
       .then((client) => {
         console.log(
@@ -184,12 +184,12 @@ class ServerRSocket extends ServerAdapter {
     return {
       fireAndForget: (payload: {data: string}) => {
         if (resolvedClient) {
-          resolvedClient.onMessage(payload.data);
+          this.listener.onClientMessage(resolvedClient.id, payload.data);
         } else {
           client &&
             client
               .then((client) => {
-                client.onMessage(payload.data);
+                this.listener.onClientMessage(client.id, payload.data);
               })
               .catch((e) => {
                 console.error('Could not deliver message: ', e);

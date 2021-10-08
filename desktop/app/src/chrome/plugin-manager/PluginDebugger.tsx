@@ -8,9 +8,10 @@
  */
 
 import {PluginDetails} from 'flipper-plugin-lib';
+import {Layout} from 'flipper-plugin';
 import Client from '../../Client';
 import {TableBodyRow} from '../../ui/components/table/types';
-import React, {Component, Fragment} from 'react';
+import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {Text, ManagedTable, styled, colors} from '../../ui';
 import StatusIndicator from '../../ui/components/StatusIndicator';
@@ -41,7 +42,7 @@ type StateFromProps = {
   gatekeepedPlugins: Array<PluginDetails>;
   disabledPlugins: Array<PluginDetails>;
   failedPlugins: Array<[PluginDetails, string]>;
-  clients: Array<Client>;
+  clients: Map<string, Client>;
   selectedDevice: string | null | undefined;
   devicePlugins: PluginDefinition[];
   clientPlugins: PluginDefinition[];
@@ -126,7 +127,7 @@ class PluginDebugger extends Component<Props> {
   }
 
   getSupportedClients(id: string): string {
-    return this.props.clients
+    return Array.from(this.props.clients.values())
       .reduce((acc: Array<string>, cv: Client) => {
         if (cv.plugins.has(id)) {
           acc.push(cv.query.app);
@@ -211,7 +212,7 @@ class PluginDebugger extends Component<Props> {
 
   render() {
     return (
-      <Fragment>
+      <Layout.Container pad>
         <InfoText>The table lists all plugins known to Flipper.</InfoText>
         <TableContainer>
           <ManagedTable
@@ -221,7 +222,7 @@ class PluginDebugger extends Component<Props> {
             columnSizes={COLUMNS_SIZES}
           />
         </TableContainer>
-      </Fragment>
+      </Layout.Container>
     );
   }
 }

@@ -8,7 +8,14 @@
  */
 
 import React, {useEffect, useState, useCallback} from 'react';
-import {TrackingScope, useLogger, _Sidebar, Layout} from 'flipper-plugin';
+import {
+  TrackingScope,
+  useLogger,
+  _Sidebar,
+  Layout,
+  Dialog,
+  _PortalsManager,
+} from 'flipper-plugin';
 import {Link, styled} from '../ui';
 import {theme} from 'flipper-plugin';
 import {ipcRenderer} from 'electron';
@@ -18,17 +25,12 @@ import {LeftRail} from './LeftRail';
 import {useStore, useDispatch} from '../utils/useStore';
 import {FlipperDevTools} from '../chrome/FlipperDevTools';
 import {setStaticView} from '../reducers/connections';
-import {
-  ACTIVE_SHEET_CHANGELOG_RECENT_ONLY,
-  setActiveSheet,
-  toggleLeftSidebarVisible,
-} from '../reducers/application';
+import {toggleLeftSidebarVisible} from '../reducers/application';
 import {AppInspect} from './appinspect/AppInspect';
 import PluginContainer from '../PluginContainer';
 import {ContentContainer} from './ContentContainer';
 import {Notification} from './notification/Notification';
-import {SheetRenderer} from '../chrome/SheetRenderer';
-import {hasNewChangesToShow} from '../chrome/ChangelogSheet';
+import ChangelogSheet, {hasNewChangesToShow} from '../chrome/ChangelogSheet';
 import {getVersionString} from '../utils/versionString';
 import config from '../fb-stubs/config';
 import {WelcomeScreenStaticView} from './WelcomeScreen';
@@ -94,7 +96,7 @@ export function SandyApp() {
 
     registerStartupTime(logger);
     if (hasNewChangesToShow(window.localStorage)) {
-      dispatch(setActiveSheet(ACTIVE_SHEET_CHANGELOG_RECENT_ONLY));
+      Dialog.showModal((onHide) => <ChangelogSheet onHide={onHide} recent />);
     }
     // don't warn about logger, even with a new logger we don't want to re-register
     // eslint-disable-next-line
@@ -122,7 +124,9 @@ export function SandyApp() {
             });
           }
         })
-        .catch((e) => console.error('isEmployee check failed:', e));
+        .catch((e) => {
+          console.warn('Failed to check if user is employee', e);
+        });
     }
   }, []);
 
@@ -134,8 +138,7 @@ export function SandyApp() {
   ) : null;
 
   return (
-    <Layout.Top>
-      <SheetRenderer logger={logger} />
+    <Layout.Container grow>
       <Layout.Left>
         <Layout.Horizontal>
           <LeftRail
@@ -175,7 +178,8 @@ export function SandyApp() {
           {outOfContentsContainer}
         </MainContainer>
       </Layout.Left>
-    </Layout.Top>
+      <_PortalsManager />
+    </Layout.Container>
   );
 }
 
