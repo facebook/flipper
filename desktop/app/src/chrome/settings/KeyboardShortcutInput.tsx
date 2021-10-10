@@ -39,42 +39,43 @@ const Container = styled(FlexRow)({
   paddingTop: 5,
   paddingLeft: 10,
   paddingRight: 10,
-  width: 343,
 });
 
 const Label = styled(Text)({
+  flex: 1,
   alignSelf: 'center',
-  width: 140,
 });
 
 const ShortcutKeysContainer = styled(FlexRow)<{invalid: boolean}>(
   {
-    backgroundColor: colors.white,
-    borderWidth: 1,
-    borderStyle: 'solid',
+    flex: 1,
+    backgroundColor: theme.backgroundDefault,
+    border: '1px solid',
     borderRadius: 4,
     display: 'flex',
     height: 28,
-    flexGrow: 1,
     padding: 2,
   },
-  (props) => ({borderColor: props.invalid ? colors.red : colors.light15}),
+  (props) => ({
+    borderColor: props.invalid ? theme.errorColor : theme.dividerColor,
+  }),
 );
 
 const ShortcutKeyContainer = styled.div({
-  border: `1px solid ${colors.light20}`,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  border: `1px solid ${theme.dividerColor}`,
   backgroundColor: theme.backgroundWash,
   padding: 3,
   margin: '0 1px',
   borderRadius: 3,
   width: 23,
   textAlign: 'center',
-  boxShadow: `inset 0 -1px 0 ${colors.light20}`,
 });
 
 const ShortcutKey = styled.span({
-  color: colors.dark70,
-  verticalAlign: 'middle',
+  color: theme.textColorPrimary,
 });
 
 const HiddenInput = styled.input({
@@ -137,7 +138,7 @@ const KeyboardShortcutInput = (props: {
     if (typeof props.onChange === 'function') {
       props.onChange(accelerator.join('+'));
     }
-  }, [isShortcutValid]);
+  }, [isShortcutValid, pressedKeys, props]);
 
   const inputRef = useRef<HTMLInputElement>(null);
   let typingTimeout: NodeJS.Timeout;
@@ -228,22 +229,32 @@ const KeyboardShortcutInput = (props: {
         />
       </ShortcutKeysContainer>
 
-      <FlexColumn onClick={() => handleUpdatePressedKeys(initialPressedKeys)}>
-        <CenteredGlyph name="undo" variant="outline" />
-      </FlexColumn>
+      <FlexRow>
+        <FlexColumn onClick={() => handleUpdatePressedKeys(initialPressedKeys)}>
+          <CenteredGlyph
+            color={theme.primaryColor}
+            name="undo"
+            variant="outline"
+          />
+        </FlexColumn>
 
-      <FlexColumn
-        onClick={() =>
-          handleUpdatePressedKeys({
-            metaKey: false,
-            altKey: false,
-            ctrlKey: false,
-            shiftKey: false,
-            character: '',
-          })
-        }>
-        <CenteredGlyph name="cross" variant="outline" />
-      </FlexColumn>
+        <FlexColumn
+          onClick={() =>
+            handleUpdatePressedKeys({
+              metaKey: false,
+              altKey: false,
+              ctrlKey: false,
+              shiftKey: false,
+              character: '',
+            })
+          }>
+          <CenteredGlyph
+            color={theme.errorColor}
+            name="cross"
+            variant="outline"
+          />
+        </FlexColumn>
+      </FlexRow>
     </Container>
   );
 };
