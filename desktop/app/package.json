@@ -28,7 +28,7 @@
     "antd": "4.16.8",
     "archiver": "^5.0.2",
     "async-mutex": "^0.3.2",
-    "axios": "^0.21.2",
+    "axios": "^0.22.0",
     "cbuffer": "^2.2.0",
     "console-feed": "^3.2.2",
     "crc32": "^0.2.2",
