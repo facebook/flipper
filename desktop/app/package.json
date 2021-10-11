@@ -84,14 +84,14 @@
     "7zip-bin-mac": "^1.0.1"
   },
   "devDependencies": {
-    "@testing-library/dom": "^8.6.0",
-    "@testing-library/react": "^12.1.1",
+    "@testing-library/dom": "^8.7.2",
+    "@testing-library/react": "^12.1.2",
     "@types/lodash.memoize": "^4.1.6",
     "@types/split2": "^3.2.1",
     "flipper-test-utils": "0.0.0",
     "metro-runtime": "^0.66.2",
     "mock-fs": "^5.0.0",
-    "pretty-format": "^27.2.0",
+    "pretty-format": "^27.2.5",
     "react-refresh": "^0.10.0",
     "redux-mock-store": "^1.0.1",
     "ts-jest": "^26.5.6"
