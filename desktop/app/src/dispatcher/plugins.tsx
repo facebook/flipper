@@ -104,6 +104,20 @@ export default async (store: Store, logger: Logger) => {
     .map(createRequirePluginFunction(failedPlugins))
     .filter(notNull);
 
+  const classicPlugins = initialPlugins.filter(
+    (p) => !isSandyPlugin(p.details),
+  );
+  if (process.env.NODE_ENV !== 'test' && classicPlugins.length) {
+    console.warn(
+      `${
+        classicPlugins.length
+      } plugin(s) were loaded in legacy mode. Please visit https://fbflipper.com/docs/extending/sandy-migration to learn how to migrate these plugins to the new Sandy architecture: \n${classicPlugins
+        .map((p) => `${p.title} (id: ${p.id})`)
+        .sort()
+        .join('\n')}`,
+    );
+  }
+
   store.dispatch(registerBundledPlugins(bundledPlugins));
   store.dispatch(registerLoadedPlugins(loadedPlugins));
   store.dispatch(addGatekeepedPlugins(gatekeepedPlugins));
@@ -282,6 +296,10 @@ export const requirePlugin = (
   );
 };
 
+const isSandyPlugin = (pluginDetails: ActivatablePluginDetails) => {
+  return !!pluginDetails.flipperSDKVersion;
+};
+
 const requirePluginInternal = (
   pluginDetails: ActivatablePluginDetails,
   reqFn: Function = global.electronRequire,
@@ -289,7 +307,7 @@ const requirePluginInternal = (
   let plugin = pluginDetails.isBundled
     ? defaultPluginsIndex[pluginDetails.name]
     : reqFn(pluginDetails.entry);
-  if (pluginDetails.flipperSDKVersion) {
+  if (isSandyPlugin(pluginDetails)) {
     // Sandy plugin
     return new _SandyPluginDefinition(pluginDetails, plugin);
   } else {
