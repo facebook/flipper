@@ -8,5 +8,8 @@
     {
       "path": "../flipper-server-core"
     }
-  ]
+  ],
+  "ts-node": {
+    "transpileOnly": true
+  }
 }

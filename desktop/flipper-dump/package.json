@@ -9,10 +9,16 @@
   "types": "lib/index.d.ts",
   "license": "MIT",
   "bugs": "https://github.com/facebook/flipper/issues",
-  "dependencies": {},
+  "dependencies": {
+    "flipper-common": "0.0.0",
+    "flipper-server-core": "0.0.0",
+    "ts-node": "^10.2.1",
+    "yargs": "^17.2.1"
+  },
   "devDependencies": {},
   "peerDependencies": {},
   "scripts": {
+    "start": "ts-node src/index.tsx",
     "reset": "rimraf lib *.tsbuildinfo",
     "build": "tsc -b",
     "prepack": "yarn reset && yarn build"

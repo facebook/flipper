@@ -36,13 +36,13 @@ export interface Logger {
     data?: any,
   ): void;
 
-  info(data: any, category: string): void;
+  info(...args: any[]): void;
 
-  warn(data: any, category: string): void;
+  warn(...args: any[]): void;
 
-  error(data: any, category: string): void;
+  error(...args: any[]): void;
 
-  debug(data: any, category: string): void;
+  debug(...args: any[]): void;
 }
 
 let instance: Logger | null = null;

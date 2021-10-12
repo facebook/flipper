@@ -7,6 +7,239 @@
  * @format
  */
 
-export function helloWorld() {
-  return true;
+import fs from 'fs';
+import os from 'os';
+import yargs from 'yargs';
+import {FlipperServerImpl, setFlipperServerConfig} from 'flipper-server-core';
+import {
+  ClientDescription,
+  Logger,
+  DeviceDescription,
+  setLoggerInstance,
+} from 'flipper-common';
+import path from 'path';
+import {stdout} from 'process';
+
+// eslint-disable-next-line
+const packageJson = JSON.parse(fs.readFileSync('../package.json', 'utf-8'));
+
+const argv = yargs
+  .usage('$0 [args]')
+  .options({
+    device: {
+      describe: 'The device name to listen to',
+      type: 'string',
+    },
+    client: {
+      describe: 'The application name to listen to',
+      type: 'string',
+    },
+    plugin: {
+      describe: 'Plugin id to listen to',
+      type: 'string',
+    },
+    // TODO: support filtering events
+    // TODO: support verbose mode
+    // TODO: support post processing messages
+  })
+  .version(packageJson.version)
+  .help()
+  // .strict()
+  .parse(process.argv.slice(1));
+
+async function start(deviceTitle: string, appName: string, pluginId: string) {
+  return new Promise((_resolve, reject) => {
+    let device: DeviceDescription | undefined;
+    let deviceResolver: () => void;
+    const devicePromise: Promise<void> = new Promise((resolve) => {
+      deviceResolver = resolve;
+    });
+    let client: ClientDescription | undefined;
+
+    const logger = createLogger();
+    setLoggerInstance(logger);
+    // avoid logging to STDOUT!
+    console.log = console.error;
+    console.debug = () => {};
+    console.info = console.error;
+
+    // TODO: make these better overridable
+    setFlipperServerConfig({
+      enableAndroid: true,
+      androidHome: process.env.ANDROID_HOME || '/opt/android_sdk',
+      idbPath: '/usr/local/bin/idb',
+      enableIOS: true,
+      enablePhysicalIOS: true,
+      staticPath: path.resolve(__dirname, '..', '..', 'static'),
+      tmpPath: os.tmpdir(),
+      validWebSocketOrigins: [],
+    });
+    // TODO: initialise FB user manager to be able to do certificate exchange
+
+    const server = new FlipperServerImpl(logger);
+
+    logger.info(
+      `Waiting for device '${deviceTitle}' client '${appName}' plugin '${pluginId}' ...`,
+    );
+
+    server.on('notification', ({type, title, description}) => {
+      if (type === 'error') {
+        reject(new Error(`${title}: ${description}`));
+      }
+    });
+
+    server.on('server-error', reject);
+
+    server.on('device-connected', (deviceInfo) => {
+      logger.info(
+        `Detected device [${deviceInfo.os}] ${deviceInfo.title} ${deviceInfo.serial}`,
+      );
+      if (deviceInfo.title === deviceTitle) {
+        logger.info('Device matched');
+        device = deviceInfo;
+        deviceResolver();
+      }
+    });
+
+    server.on('device-disconnected', (deviceInfo) => {
+      if (device && deviceInfo.serial === device.serial) {
+        reject(new Error('Device disconnected: ' + deviceInfo.serial));
+      }
+    });
+
+    server.on('client-setup', (client) => {
+      logger.info(
+        `Connection attempt: ${client.appName} on ${client.deviceName}`,
+      );
+    });
+
+    server.on(
+      'client-connected',
+      async (clientDescription: ClientDescription) => {
+        // device matching is promisified, as we clients can arrive before device is detected
+        await devicePromise;
+        if (clientDescription.query.app === appName) {
+          if (clientDescription.query.device_id === device!.serial) {
+            logger.info(`Client matched: ${clientDescription.id}`);
+            client = clientDescription;
+            try {
+              // fetch plugins
+              const response = await server.exec(
+                'client-request-response',
+                client.id,
+                {
+                  method: 'getPlugins',
+                },
+              );
+              logger.info(JSON.stringify(response));
+              if (response.error) {
+                reject(response.error);
+                return;
+              }
+              const plugins: string[] = (response.success as any).plugins;
+              logger.info('Detected plugins ' + plugins.join(','));
+              if (!plugins.includes(pluginId)) {
+                // TODO: what if it only registers later?
+                throw new Error(
+                  `Plugin ${pluginId} was not registered on client ${client.id}`,
+                );
+              }
+              logger.info(`Starting plugin ` + pluginId);
+              const response2 = await server.exec(
+                'client-request-response',
+                client.id,
+                {
+                  method: 'init',
+                  params: {plugin: pluginId},
+                },
+              );
+              if (response2.error) {
+                reject(response2.error);
+              }
+              logger.info('Plugin initialised');
+            } catch (e) {
+              reject(e);
+            }
+          }
+        }
+      },
+    );
+
+    server.on('client-disconnected', ({id}) => {
+      if (id === client?.id) {
+        reject(new Error('Application disconnected'));
+      }
+    });
+
+    server.on('client-message', ({id, message}) => {
+      if (id === client?.id) {
+        const parsed = JSON.parse(message);
+        if (parsed.method === 'execute') {
+          if (parsed.params.api === pluginId) {
+            // TODO: customizable format
+            stdout.write(
+              `\n\n\n[${parsed.params.method}]\n${JSON.stringify(
+                parsed.params.params,
+                null,
+                2,
+              )}\n`,
+            );
+          }
+        } else {
+          logger.warn('Dropping message ', message);
+        }
+      }
+    });
+
+    server
+      .start()
+      .then(() => {
+        logger.info(
+          'Flipper server started and accepting device / client connections',
+        );
+      })
+      .catch(reject);
+  });
 }
+
+function createLogger(): Logger {
+  return {
+    track() {
+      // no-op
+    },
+    trackTimeSince() {
+      // no-op
+    },
+    debug() {
+      // TODO: support this with a --verbose flag
+    },
+    error(...args: any[]) {
+      console.error(...args);
+    },
+    warn(...args: any[]) {
+      console.warn(...args);
+    },
+    info(...args: any[]) {
+      // we want to redirect info level logging to STDERR! So that STDOUT is used merely for plugin output
+      console.error(...args);
+    },
+  };
+}
+
+if (!argv.device) {
+  console.error('--device not specified');
+  process.exit(1);
+}
+if (!argv.client) {
+  console.error('--client not specified');
+  process.exit(1);
+}
+if (!argv.plugin) {
+  console.error('--plugin not specified');
+  process.exit(1);
+}
+start(argv.device!, argv.client!, argv.plugin!).catch((e) => {
+  // eslint-disable-next-line
+  console.error(e);
+  process.exit(1);
+});
