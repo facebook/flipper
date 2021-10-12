@@ -210,7 +210,7 @@ public class FlipperObject {
       return put(name, v.toFlipperObject());
     }
 
-    public Builder put(String name, FlipperArray a) {
+    public Builder put(String name, @Nullable FlipperArray a) {
       try {
         mJson.put(name, a == null ? null : a.mJson);
       } catch (JSONException e) {
@@ -223,7 +223,7 @@ public class FlipperObject {
       return put(name, b.build());
     }
 
-    public Builder put(String name, FlipperObject o) {
+    public Builder put(String name, @Nullable FlipperObject o) {
       try {
         mJson.put(name, o == null ? null : o.mJson);
       } catch (JSONException e) {

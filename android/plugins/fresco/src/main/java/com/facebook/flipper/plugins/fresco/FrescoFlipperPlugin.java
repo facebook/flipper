@@ -16,6 +16,7 @@ import com.facebook.cache.common.CacheKey;
 import com.facebook.cache.common.SimpleCacheKey;
 import com.facebook.cache.disk.DiskStorage;
 import com.facebook.common.internal.ByteStreams;
+import com.facebook.common.internal.Preconditions;
 import com.facebook.common.internal.Predicate;
 import com.facebook.common.memory.PooledByteBuffer;
 import com.facebook.common.memory.PooledByteBufferInputStream;
@@ -50,6 +51,7 @@ import com.facebook.imagepipeline.image.EncodedImage;
 import com.facebook.imageutils.BitmapUtil;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -214,16 +216,16 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin
             final ImagePipelineFactory imagePipelineFactory = Fresco.getImagePipelineFactory();
 
             // try to load from bitmap cache
-            CloseableReference<CloseableImage> ref =
-                imagePipelineFactory.getBitmapCountingMemoryCache().get(cacheKey);
-            try {
-              if (ref != null) {
-                loadFromBitmapCache(ref, imageId, cacheKey, responder);
+            @Nullable
+            CloseableImage closeableImage =
+                imagePipelineFactory.getBitmapCountingMemoryCache().inspect(cacheKey);
+            if (closeableImage instanceof CloseableBitmap) {
+              @Nullable Bitmap bitmap = ((CloseableBitmap) closeableImage).getUnderlyingBitmap();
+              if (bitmap != null) {
+                loadFromBitmapCache(bitmap, imageId, cacheKey, responder);
                 mPerfLogger.endMarker("Sonar.Fresco.getImage");
                 return;
               }
-            } finally {
-              CloseableReference.closeSafely(ref);
             }
 
             // try to load from encoded cache
@@ -244,28 +246,19 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin
           }
 
           private void loadFromBitmapCache(
-              final CloseableReference<CloseableImage> ref,
+              final Bitmap bitmap,
               final String imageId,
               final CacheKey cacheKey,
               final FlipperResponder responder) {
-            if (ref.get() instanceof CloseableBitmap) {
-              final CloseableBitmap bitmap = (CloseableBitmap) ref.get();
-              String encodedBitmap =
-                  bitmapToBase64Preview(bitmap.getUnderlyingBitmap(), mPlatformBitmapFactory);
-
-              responder.success(
-                  getImageData(
-                      imageId,
-                      mFlipperImageTracker.getUriString(cacheKey),
-                      bitmap.getWidth(),
-                      bitmap.getHeight(),
-                      bitmap.getSizeInBytes(),
-                      encodedBitmap));
-            } else {
-              // TODO: T48376327, it might happened that ref.get() may not be casted to
-              // CloseableBitmap, this issue is tracked in the before mentioned task
-              responder.success();
-            }
+            String encodedBitmap = bitmapToBase64Preview(bitmap, mPlatformBitmapFactory);
+            responder.success(
+                getImageData(
+                    imageId,
+                    mFlipperImageTracker.getUriString(cacheKey),
+                    bitmap.getWidth(),
+                    bitmap.getHeight(),
+                    BitmapUtil.getSizeInBytes(bitmap),
+                    encodedBitmap));
           }
 
           private void loadFromEncodedCache(
@@ -307,14 +300,17 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin
                       mPerfLogger.cancelMarker("Sonar.Fresco.getImage");
                       return null;
                     }
+                    Preconditions.checkNotNull(task);
                     final EncodedImage image = task.getResult();
                     try {
-                      byte[] encodedArray = ByteStreams.toByteArray(image.getInputStream());
+                      InputStream stream = Preconditions.checkNotNull(image.getInputStream());
+                      byte[] encodedArray = ByteStreams.toByteArray(stream);
 
                       responder.success(
                           getImageData(
                               imageId,
-                              mFlipperImageTracker.getLocalPath(cacheKey),
+                              Preconditions.checkNotNull(
+                                  mFlipperImageTracker.getLocalPath(cacheKey)),
                               image.getWidth(),
                               image.getHeight(),
                               encodedArray.length,
@@ -640,10 +636,12 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin
   @Override
   public void onCloseableReferenceLeak(
       SharedReference<Object> reference, @Nullable Throwable stacktrace) {
+    Object object = reference.get();
+    Preconditions.checkNotNull(object);
     final FlipperObject.Builder builder =
         new FlipperObject.Builder()
             .put("identityHashCode", System.identityHashCode(reference))
-            .put("className", reference.get().getClass().getName());
+            .put("className", object.getClass().getName());
     if (stacktrace != null) {
       builder.put("stacktrace", getStackTraceString(stacktrace));
     }
