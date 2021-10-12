@@ -17,7 +17,7 @@ import {
   importFileToStore,
   IMPORT_FLIPPER_TRACE_EVENT,
 } from '../utils/exportData';
-import {tryCatchReportPlatformFailures} from '../utils/metrics';
+import {tryCatchReportPlatformFailures} from 'flipper-common';
 import {handleDeeplink} from '../deeplink';
 import {Dialog} from 'flipper-plugin';
 

@@ -20,3 +20,24 @@ export * from './server-types';
 export {sleep} from './utils/sleep';
 export {timeout} from './utils/timeout';
 export {isTest} from './utils/isTest';
+export {
+  logPlatformSuccessRate,
+  reportPlatformFailures,
+  reportUsage,
+  reportPluginFailures,
+  tryCatchReportPlatformFailures,
+  tryCatchReportPluginFailures,
+  UnsupportedError,
+} from './utils/metrics';
+export {
+  ConnectivityError,
+  CancelledPromiseError,
+  UserUnauthorizedError,
+  UserNotSignedInError,
+  isConnectivityOrAuthError,
+  isError,
+  isAuthError,
+  getStringFromErrorLike,
+  getErrorFromErrorLike,
+} from './utils/errors';
+export * from './user-session';

@@ -10,7 +10,7 @@
 import {Layout, theme} from 'flipper-plugin';
 import {LoadingIndicator, TableRows, ManagedTable, Glyph} from '../../ui';
 import React, {useCallback, useState, useEffect} from 'react';
-import {reportPlatformFailures, reportUsage} from '../../utils/metrics';
+import {reportPlatformFailures, reportUsage} from 'flipper-common';
 import reloadFlipper from '../../utils/reloadFlipper';
 import {registerInstalledPlugins} from '../../reducers/plugins';
 import {

@@ -7,7 +7,7 @@
  * @format
  */
 
-import {UnsupportedError} from '../../../utils/metrics';
+import {UnsupportedError} from 'flipper-common';
 import adbkit, {Client} from 'adbkit';
 
 const allowedAppNameRegex = /^[\w.-]+$/;

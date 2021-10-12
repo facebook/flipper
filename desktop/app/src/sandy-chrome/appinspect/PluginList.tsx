@@ -36,7 +36,7 @@ import {
   uninstallPlugin,
 } from '../../reducers/pluginManager';
 import {BundledPluginDetails} from 'flipper-plugin-lib';
-import {reportUsage} from '../../utils/metrics';
+import {reportUsage} from 'flipper-common';
 import ConnectivityStatus from './fb-stubs/ConnectivityStatus';
 import {useSelector} from 'react-redux';
 import {getPluginLists} from '../../selectors/connections';

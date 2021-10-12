@@ -9,7 +9,7 @@
 
 import {HealthcheckResult} from '../reducers/healthchecks';
 import {getHealthchecks, getEnvInfo, Healthchecks} from 'flipper-doctor';
-import {logPlatformSuccessRate, reportPlatformFailures} from '../utils/metrics';
+import {logPlatformSuccessRate, reportPlatformFailures} from 'flipper-common';
 
 let healthcheckIsRunning: boolean;
 let runningHealthcheck: Promise<void>;

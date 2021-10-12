@@ -19,7 +19,7 @@ import Client from '../Client';
 import {notification} from 'antd';
 import BaseDevice from '../devices/BaseDevice';
 import {ClientDescription, timeout} from 'flipper-common';
-import {reportPlatformFailures} from '../utils/metrics';
+import {reportPlatformFailures} from 'flipper-common';
 import {sideEffect} from '../utils/sideEffect';
 
 export default async (store: Store, logger: Logger) => {

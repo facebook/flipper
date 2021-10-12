@@ -10,7 +10,7 @@
 import React from 'react';
 import {Mutex} from 'async-mutex';
 import {exec as unsafeExec, Output} from 'promisify-child-process';
-import {reportPlatformFailures} from '../../../utils/metrics';
+import {reportPlatformFailures} from 'flipper-common';
 import {promises, constants} from 'fs';
 import memoize from 'lodash.memoize';
 import {notNull} from '../../utils/typeUtils';

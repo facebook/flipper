@@ -23,7 +23,7 @@ import {
   displayFetchMetadataErrors,
 } from '../utils/exportData';
 import ShareSheetErrorList from './ShareSheetErrorList';
-import {reportPlatformFailures} from '../utils/metrics';
+import {reportPlatformFailures} from 'flipper-common';
 import {performance} from 'perf_hooks';
 import ShareSheetPendingDialog from './ShareSheetPendingDialog';
 import {getLogger} from 'flipper-common';

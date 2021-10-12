@@ -15,7 +15,7 @@ import BaseDevice from './devices/BaseDevice';
 import {Logger} from 'flipper-common';
 import {Store} from './reducers/index';
 import {performance} from 'perf_hooks';
-import {reportPluginFailures} from './utils/metrics';
+import {reportPluginFailures} from 'flipper-common';
 import {default as isProduction} from './utils/isProduction';
 import {EventEmitter} from 'events';
 import invariant from 'invariant';

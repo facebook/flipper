@@ -7,8 +7,8 @@
  * @format
  */
 
-import {getLogger} from 'flipper-common';
 import {CancelledPromiseError, isError} from './errors';
+import {getLogger} from './Logger';
 
 type Result =
   | {kind: 'success'}

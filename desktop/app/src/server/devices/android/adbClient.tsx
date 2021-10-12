@@ -7,7 +7,7 @@
  * @format
  */
 
-import {reportPlatformFailures} from '../../../utils/metrics';
+import {reportPlatformFailures} from 'flipper-common';
 import {execFile} from 'promisify-child-process';
 import adbConfig from './adbConfig';
 import adbkit, {Client} from 'adbkit';

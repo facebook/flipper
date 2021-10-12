@@ -16,7 +16,7 @@ import {selectedPlugins as setSelectedPlugins} from './plugins';
 import {addStatusMessage, removeStatusMessage} from './application';
 import constants from '../fb-stubs/constants';
 import {getLogger} from 'flipper-common';
-import {logPlatformSuccessRate} from '../utils/metrics';
+import {logPlatformSuccessRate} from 'flipper-common';
 export const SUPPORT_FORM_PREFIX = 'support-form-v2';
 import {getExportablePlugins} from '../selectors/connections';
 import {DeviceOS} from 'flipper-plugin';

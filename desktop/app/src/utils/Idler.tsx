@@ -7,7 +7,7 @@
  * @format
  */
 
-import {CancelledPromiseError} from './errors';
+import {CancelledPromiseError} from 'flipper-common';
 import {Idler, sleep} from 'flipper-plugin';
 
 export class IdlerImpl implements Idler {

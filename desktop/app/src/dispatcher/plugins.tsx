@@ -37,7 +37,7 @@ import {
   BundledPluginDetails,
   ConcretePluginDetails,
 } from 'flipper-plugin-lib';
-import {tryCatchReportPluginFailures, reportUsage} from '../utils/metrics';
+import {tryCatchReportPluginFailures, reportUsage} from 'flipper-common';
 import * as FlipperPluginSDK from 'flipper-plugin';
 import {_SandyPluginDefinition} from 'flipper-plugin';
 import loadDynamicPlugins from '../utils/loadDynamicPlugins';

@@ -8,10 +8,7 @@
  */
 
 import {Store} from '../../reducers/index';
-import {
-  getErrorFromErrorLike,
-  getStringFromErrorLike,
-} from '../../utils/errors';
+import {getErrorFromErrorLike, getStringFromErrorLike} from 'flipper-common';
 import {LoggerArgs, Logger} from 'flipper-common';
 
 const instance = {

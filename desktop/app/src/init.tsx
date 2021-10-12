@@ -52,7 +52,8 @@ import {PersistGate} from 'redux-persist/integration/react';
 // eslint-disable-next-line flipper/no-electron-remote-imports
 import {ipcRenderer, remote} from 'electron';
 import {helloWorld} from 'flipper-server-core';
-import {setLoggerInstance} from 'flipper-common';
+import {setLoggerInstance, setUserSessionManagerInstance} from 'flipper-common';
+import {internGraphPOSTAPIRequest} from './fb-stubs/user';
 
 helloWorld();
 
@@ -207,6 +208,10 @@ function init() {
       else console.warn(msg, r.error);
     }
   });
+  setUserSessionManagerInstance({
+    internGraphPOSTAPIRequest,
+  });
+
   ReactDOM.render(
     <AppFrame logger={logger} persistor={persistor} />,
     document.getElementById('root'),

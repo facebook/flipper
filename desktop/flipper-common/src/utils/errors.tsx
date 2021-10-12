@@ -7,8 +7,6 @@
  * @format
  */
 
-import {InteractionReport} from 'flipper-plugin';
-
 export function isAuthError(
   err: any,
 ): err is UserNotSignedInError | UserUnauthorizedError {
@@ -61,7 +59,7 @@ export class UserNotSignedInError extends Error {
 
 declare global {
   interface Error {
-    interaction?: InteractionReport;
+    interaction?: unknown;
   }
 }
 

@@ -26,7 +26,7 @@ import fs from 'fs';
 import {v4 as uuidv4} from 'uuid';
 import {remote, OpenDialogOptions} from 'electron';
 import {readCurrentRevision} from './packageMetadata';
-import {tryCatchReportPlatformFailures} from './metrics';
+import {tryCatchReportPlatformFailures} from 'flipper-common';
 import {promisify} from 'util';
 import {TestIdler} from './Idler';
 import {setStaticView} from '../reducers/connections';

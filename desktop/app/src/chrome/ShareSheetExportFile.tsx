@@ -9,7 +9,7 @@
 
 import {FlexColumn, Button, styled, Text, FlexRow, Spacer} from '../ui';
 import React, {Component} from 'react';
-import {reportPlatformFailures} from '../utils/metrics';
+import {reportPlatformFailures} from 'flipper-common';
 import {performance} from 'perf_hooks';
 import {Logger} from 'flipper-common';
 import {IdlerImpl} from '../utils/Idler';

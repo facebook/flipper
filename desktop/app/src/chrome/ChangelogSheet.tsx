@@ -11,7 +11,7 @@ import {Markdown} from '../ui';
 import {readFileSync} from 'fs';
 import React, {Component} from 'react';
 import path from 'path';
-import {reportUsage} from '../utils/metrics';
+import {reportUsage} from 'flipper-common';
 import {getChangelogPath} from '../utils/pathUtils';
 import {Modal} from 'antd';
 import {theme} from 'flipper-plugin';

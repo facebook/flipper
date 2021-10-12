@@ -8,7 +8,7 @@
  */
 
 import {Logger} from 'flipper-common';
-import {internGraphPOSTAPIRequest} from '../../fb-stubs/user';
+import {internGraphPOSTAPIRequest} from 'flipper-common';
 import ServerController from '../comms/ServerController';
 import {promisify} from 'util';
 import fs from 'fs-extra';
@@ -20,7 +20,7 @@ import {
 import path from 'path';
 import tmp, {DirOptions, FileOptions} from 'tmp';
 import iosUtil from '../devices/ios/iOSContainerUtility';
-import {reportPlatformFailures} from '../../utils/metrics';
+import {reportPlatformFailures} from 'flipper-common';
 import {getAdbClient} from '../devices/android/adbClient';
 import * as androidUtil from '../devices/android/androidContainerUtility';
 import os from 'os';
@@ -113,7 +113,7 @@ export default class CertificateProvider {
     this.logger = logger;
     // TODO: refactor this code to create promise lazily
     this._adb = config.enableAndroid
-      ? (getAdbClient(config).catch((e) => {
+      ? (getAdbClient(config).catch((_e) => {
           // make sure initialization failure is already logged
           const msg =
             'Failed to initialize ADB. Please disable Android support in settings, or configure a correct path';

@@ -46,7 +46,7 @@ import {InstalledPluginDetails} from 'flipper-plugin-lib';
 import semver from 'semver';
 import {loadPlugin} from './reducers/pluginManager';
 import {produce} from 'immer';
-import {reportUsage} from './utils/metrics';
+import {reportUsage} from 'flipper-common';
 import {PluginInfo} from './chrome/fb-stubs/PluginInfo';
 import {getActiveClient, getActivePlugin} from './selectors/connections';
 import {AnyAction} from 'redux';

@@ -9,7 +9,7 @@
 
 import {notification, Typography} from 'antd';
 import isProduction from '../utils/isProduction';
-import {reportPlatformFailures} from '../utils/metrics';
+import {reportPlatformFailures} from 'flipper-common';
 import React, {useEffect, useState} from 'react';
 import fbConfig from '../fb-stubs/config';
 import {useStore} from '../utils/useStore';

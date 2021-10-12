@@ -14,7 +14,7 @@ import {getUser} from '../fb-stubs/user';
 import {State, Store} from '../reducers/index';
 import {checkForUpdate} from '../fb-stubs/checkForUpdate';
 import {getAppVersion} from '../utils/info';
-import {UserNotSignedInError} from '../utils/errors';
+import {UserNotSignedInError} from 'flipper-common';
 import {selectPlugin, setPluginEnabled} from '../reducers/connections';
 import {getUpdateAvailableMessage} from '../chrome/UpdateIndicator';
 import {Typography} from 'antd';

@@ -13,7 +13,7 @@ import {ClientDescription, ClientQuery, isTest} from 'flipper-common';
 import CertificateProvider from '../utils/CertificateProvider';
 import {ClientConnection, ConnectionStatus} from './ClientConnection';
 import {UninitializedClient} from 'flipper-common';
-import {reportPlatformFailures} from '../../utils/metrics';
+import {reportPlatformFailures} from 'flipper-common';
 import {EventEmitter} from 'events';
 import invariant from 'invariant';
 import GK from '../../fb-stubs/GK';

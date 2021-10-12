@@ -32,7 +32,7 @@ import {Popover, Rate} from 'antd';
 import {useStore} from '../utils/useStore';
 import {isLoggedIn} from '../fb-stubs/user';
 import {useValue} from 'flipper-plugin';
-import {reportPlatformFailures} from '../utils/metrics';
+import {reportPlatformFailures} from 'flipper-common';
 
 type NextAction = 'select-rating' | 'leave-comment' | 'finished';
 

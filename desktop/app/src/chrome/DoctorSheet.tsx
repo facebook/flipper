@@ -38,7 +38,7 @@ import runHealthchecks, {
   HealthcheckEventsHandler,
 } from '../utils/runHealthchecks';
 import {getFlipperLib} from 'flipper-plugin';
-import {reportUsage} from '../utils/metrics';
+import {reportUsage} from 'flipper-common';
 
 type StateFromProps = {
   healthcheckReport: HealthcheckReport;

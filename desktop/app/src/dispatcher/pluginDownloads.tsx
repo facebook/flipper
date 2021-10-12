@@ -26,7 +26,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import tmp from 'tmp';
 import {promisify} from 'util';
-import {reportPlatformFailures, reportUsage} from '../utils/metrics';
+import {reportPlatformFailures, reportUsage} from 'flipper-common';
 import {loadPlugin} from '../reducers/pluginManager';
 import {showErrorNotification} from '../utils/notifications';
 import {pluginInstalled} from '../reducers/plugins';

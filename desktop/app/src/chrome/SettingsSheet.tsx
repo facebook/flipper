@@ -25,7 +25,7 @@ import KeyboardShortcutInput from './settings/KeyboardShortcutInput';
 import {isEqual, isMatch, isEmpty} from 'lodash';
 import restartFlipper from '../utils/restartFlipper';
 import LauncherSettingsPanel from '../fb-stubs/LauncherSettingsPanel';
-import {reportUsage} from '../utils/metrics';
+import {reportUsage} from 'flipper-common';
 import {Modal, message, Button} from 'antd';
 import {Layout, withTrackingScope, _NuxManagerContext} from 'flipper-plugin';
 

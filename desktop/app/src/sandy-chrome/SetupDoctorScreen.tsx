@@ -34,7 +34,7 @@ import {
 } from '../reducers/healthchecks';
 import runHealthchecks from '../utils/runHealthchecks';
 import {Healthchecks} from 'flipper-doctor';
-import {reportUsage} from '../utils/metrics';
+import {reportUsage} from 'flipper-common';
 
 const {Title, Paragraph, Text} = Typography;
 
