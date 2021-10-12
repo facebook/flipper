@@ -155,7 +155,7 @@ abstract class ServerAdapter {
       medium: number | undefined;
     } = rawData;
 
-    console.log(
+    console.info(
       `[conn] Connection attempt: ${clientQuery.app} on ${clientQuery.device}, medium: ${message.medium}, cert: ${message.destination}`,
       clientQuery,
     );
@@ -165,7 +165,7 @@ abstract class ServerAdapter {
 
       const {csr, destination, medium} = message;
 
-      console.log(
+      console.info(
         `[conn] Starting certificate exchange: ${clientQuery.app} on ${clientQuery.device}`,
       );
       try {
@@ -176,7 +176,7 @@ abstract class ServerAdapter {
           transformCertificateExchangeMediumToType(medium),
         );
 
-        console.log(
+        console.info(
           `[conn] Exchanged certificate: ${clientQuery.app} on ${result.deviceId}`,
         );
         const response = JSON.stringify({

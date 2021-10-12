@@ -66,7 +66,7 @@ class ServerWebSocketBrowser extends ServerWebSocketBase {
       os: 'MacOS', // TODO: not hardcoded! Use host device?
     };
 
-    console.log(
+    console.info(
       `[conn] Local websocket connection attempt: ${clientQuery.app} on ${clientQuery.device_id}.`,
     );
     this.listener.onConnectionAttempt(clientQuery);
@@ -108,7 +108,7 @@ class ServerWebSocketBrowser extends ServerWebSocketBase {
           const extendedClientQuery = {...clientQuery, medium: 3 as const};
           extendedClientQuery.sdk_version = plugins == null ? 4 : 1;
 
-          console.log(
+          console.info(
             `[conn] Local websocket connection established: ${clientQuery.app} on ${clientQuery.device_id}.`,
           );
 
@@ -121,7 +121,7 @@ class ServerWebSocketBrowser extends ServerWebSocketBase {
             );
           client
             .then((client) => {
-              console.log(
+              console.info(
                 `[conn] Client created: ${clientQuery.app} on ${clientQuery.device_id}.`,
               );
               resolvedClient = client;
@@ -141,7 +141,7 @@ class ServerWebSocketBrowser extends ServerWebSocketBase {
               parsed = JSON.parse(m.toString());
             } catch (error) {
               // Throws a SyntaxError exception if the string to parse is not valid JSON.
-              console.log('[conn] Received message is not valid.', error);
+              console.info('[conn] Received message is not valid.', error);
               return;
             }
             // non-null payload id means response to prev request, it's handled in connection

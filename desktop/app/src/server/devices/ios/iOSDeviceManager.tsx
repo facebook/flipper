@@ -152,11 +152,12 @@ export class IOSDeviceManager {
         .map((device) => device.serial),
     );
 
-    for (const {udid, type, name} of activeDevices) {
+    for (const activeDevice of activeDevices) {
+      const {udid, type, name} = activeDevice;
       if (currentDeviceIDs.has(udid)) {
         currentDeviceIDs.delete(udid);
       } else {
-        console.log(`[conn] detected new iOS device ${udid}`);
+        console.info(`[conn] detected new iOS device ${udid}`, activeDevice);
         const iOSDevice = new IOSDevice(
           this.flipperServer,
           this.iosBridge,
@@ -169,7 +170,7 @@ export class IOSDeviceManager {
     }
 
     currentDeviceIDs.forEach((id) => {
-      console.log(`[conn] Could no longer find ${id}, removing...`);
+      console.info(`[conn] Could no longer find ${id}, removing...`);
       this.flipperServer.unregisterDevice(id);
     });
   }

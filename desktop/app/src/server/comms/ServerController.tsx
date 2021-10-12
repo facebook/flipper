@@ -125,12 +125,12 @@ class ServerController extends EventEmitter implements ServerEventsListener {
     this.initialized = this.certificateProvider
       .loadSecureServerConfig()
       .then((options) => {
-        console.log('[conn] secure server listening at port: ', secure);
+        console.info('[conn] secure server listening at port: ', secure);
         this.secureServer = createServer(secure, this, options);
         if (GK.get('flipper_websocket_server')) {
           const {secure: altSecure} =
             this.store.getState().application.altServerPorts;
-          console.log(
+          console.info(
             '[conn] secure server (ws) listening at port: ',
             altSecure,
           );
@@ -143,12 +143,12 @@ class ServerController extends EventEmitter implements ServerEventsListener {
         }
       })
       .then(() => {
-        console.log('[conn] insecure server listening at port: ', insecure);
+        console.info('[conn] insecure server listening at port: ', insecure);
         this.insecureServer = createServer(insecure, this);
         if (GK.get('flipper_websocket_server')) {
           const {insecure: altInsecure} =
             this.store.getState().application.altServerPorts;
-          console.log(
+          console.info(
             '[conn] insecure server (ws) listening at port: ',
             altInsecure,
           );
@@ -193,8 +193,9 @@ class ServerController extends EventEmitter implements ServerEventsListener {
     const {app, os, device, device_id, sdk_version, csr, csr_path, medium} =
       clientQuery;
     const transformedMedium = transformCertificateExchangeMediumToType(medium);
-    console.log(
+    console.info(
       `[conn] Connection established: ${app} on ${device_id}. Medium ${medium}. CSR: ${csr_path}`,
+      clientQuery,
     );
     return this.addConnection(
       clientConnection,
@@ -355,8 +356,10 @@ class ServerController extends EventEmitter implements ServerEventsListener {
           csr_path,
           csr,
         );
-      console.log(
+      console.info(
         `[conn] Detected ${app_name} on ${query.device_id} in certificate`,
+        query,
+        csrQuery,
       );
     }
 
@@ -369,8 +372,10 @@ class ServerController extends EventEmitter implements ServerEventsListener {
       device: query.device,
       device_id: query.device_id,
     });
-    console.log(
+    console.info(
       `[conn] Matching device for ${query.app} on ${query.device_id}...`,
+      query,
+      csrQuery,
     );
 
     const client: ClientDescription = {
@@ -383,8 +388,10 @@ class ServerController extends EventEmitter implements ServerEventsListener {
       connection: connection,
     };
 
-    console.log(
+    console.info(
       `[conn] Initializing client ${query.app} on ${query.device_id}...`,
+      query,
+      csrQuery,
     );
 
     connection.subscribeToEvents((status: ConnectionStatus) => {
@@ -396,7 +403,12 @@ class ServerController extends EventEmitter implements ServerEventsListener {
       }
     });
 
-    console.debug(`[conn] Device client initialized: ${id}.`, 'server');
+    console.debug(
+      `[conn] Device client initialized: ${id}.`,
+      'server',
+      query,
+      csrQuery,
+    );
 
     /* If a device gets disconnected without being cleaned up properly,
      * Flipper won't be aware until it attempts to reconnect.
@@ -436,8 +448,9 @@ class ServerController extends EventEmitter implements ServerEventsListener {
   removeConnection(id: string) {
     const info = this.connections.get(id);
     if (info) {
-      console.log(
+      console.info(
         `[conn] Disconnected: ${info.client.query.app} on ${info.client.query.device_id}.`,
+        info.client.query,
       );
       this.flipperServer.emit('client-disconnected', {id});
       this.connections.delete(id);
@@ -471,6 +484,7 @@ class ConnectionTracker {
           this.connectionProblemThreshold
         } times within ${this.timeWindowMillis / 1000}s.`,
         'server',
+        client,
       );
     }
   }

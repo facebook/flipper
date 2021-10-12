@@ -61,8 +61,9 @@ class ServerWebSocket extends ServerWebSocketBase {
       return;
     }
 
-    console.log(
+    console.info(
       `[conn] Insecure websocket connection attempt: ${clientQuery.app} on ${clientQuery.device_id}.`,
+      clientQuery,
     );
     this.listener.onConnectionAttempt(clientQuery);
 
@@ -92,8 +93,9 @@ class ServerWebSocket extends ServerWebSocketBase {
       ws.close();
       return;
     }
-    console.log(
+    console.info(
       `[conn] Secure websocket connection attempt: ${clientQuery.app} on ${clientQuery.device_id}. Medium ${clientQuery.medium}. CSR: ${clientQuery.csr_path}`,
+      clientQuery,
     );
     this.listener.onSecureConnectionAttempt(clientQuery);
 

@@ -112,7 +112,7 @@ class ServerRSocket extends ServerAdapter {
 
     const clientQuery: SecureClientQuery = JSON.parse(payload.data);
     this.listener.onSecureConnectionAttempt(clientQuery);
-    console.log(
+    console.info(
       `[conn] Secure rsocket connection attempt: ${clientQuery.app} on ${clientQuery.device_id}. Medium ${clientQuery.medium}. CSR: ${clientQuery.csr_path}`,
     );
 
@@ -172,7 +172,7 @@ class ServerRSocket extends ServerAdapter {
       this.listener.onConnectionCreated(clientQuery, clientConnection);
     client
       .then((client) => {
-        console.log(
+        console.info(
           `[conn] Client created: ${clientQuery.app} on ${clientQuery.device_id}. Medium ${clientQuery.medium}. CSR: ${clientQuery.csr_path}`,
         );
         resolvedClient = client;
