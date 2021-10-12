@@ -26,7 +26,7 @@ import {
 import {StaticView, setStaticView} from './reducers/connections';
 import {switchPlugin} from './reducers/pluginManager';
 import React, {PureComponent} from 'react';
-import {connect, ReactReduxContext} from 'react-redux';
+import {connect, ReactReduxContext, ReactReduxContextValue} from 'react-redux';
 import {selectPlugin} from './reducers/connections';
 import {State as Store, MiddlewareAPI} from './reducers/index';
 import {activateMenuItems} from './MenuBar';
@@ -50,6 +50,7 @@ import {reportUsage} from './utils/metrics';
 import {PluginInfo} from './chrome/fb-stubs/PluginInfo';
 import {getActiveClient, getActivePlugin} from './selectors/connections';
 import {isTest} from './utils/isProduction';
+import {AnyAction} from 'redux';
 
 const {Text, Link} = Typography;
 
@@ -116,7 +117,8 @@ type State = {
 };
 
 class PluginContainer extends PureComponent<Props, State> {
-  static contextType = ReactReduxContext;
+  static contextType: React.Context<ReactReduxContextValue<any, AnyAction>> =
+    ReactReduxContext;
 
   constructor(props: Props) {
     super(props);
@@ -249,8 +251,8 @@ class PluginContainer extends PureComponent<Props, State> {
   }
 
   render() {
-    const {activePlugin, pluginKey, target, pendingMessages} = this.props;
-    if (!activePlugin || !target || !pluginKey) {
+    const {activePlugin, pendingMessages} = this.props;
+    if (!activePlugin) {
       return this.renderNoPluginActive();
     }
     if (activePlugin.status !== 'enabled') {

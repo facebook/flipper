@@ -229,6 +229,15 @@ export function computePluginLists(
         downloadablePlugins.push(plugin);
       }
     }
+  } else {
+    for (const p of plugins.devicePlugins.values()) {
+      unavailablePlugins.push([
+        p.details,
+        `Device plugin '${getPluginTitle(
+          p.details,
+        )}' is not available because no device is currently selected`,
+      ]);
+    }
   }
 
   // process problematic plugins
@@ -251,11 +260,12 @@ export function computePluginLists(
     ]);
   });
 
+  const clientPlugins = Array.from(plugins.clientPlugins.values()).sort(
+    sortPluginsByName,
+  );
+
   // process all client plugins
   if (device && client) {
-    const clientPlugins = Array.from(plugins.clientPlugins.values()).sort(
-      sortPluginsByName,
-    );
     const favoritePlugins = getFavoritePlugins(
       device,
       client,
@@ -283,6 +293,15 @@ export function computePluginLists(
       if (plugin.pluginType !== 'device' && client.supportsPlugin(plugin.id)) {
         downloadablePlugins.push(plugin);
       }
+    });
+  } else {
+    clientPlugins.forEach((plugin) => {
+      unavailablePlugins.push([
+        plugin.details,
+        `Plugin '${getPluginTitle(
+          plugin.details,
+        )}' is not available because no application is currently selected`,
+      ]);
     });
   }
   const downloadablePluginSet = new Set<string>(
