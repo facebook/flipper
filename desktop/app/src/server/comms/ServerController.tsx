@@ -10,10 +10,9 @@
 import {CertificateExchangeMedium} from '../utils/CertificateProvider';
 import {Logger} from '../../fb-interfaces/Logger';
 import {ClientDescription, ClientQuery} from 'flipper-plugin';
-import {Store} from '../../reducers/index';
 import CertificateProvider from '../utils/CertificateProvider';
 import {ClientConnection, ConnectionStatus} from './ClientConnection';
-import {UninitializedClient} from '../UninitializedClient';
+import {UninitializedClient} from 'flipper-plugin';
 import {reportPlatformFailures} from '../../utils/metrics';
 import {EventEmitter} from 'events';
 import invariant from 'invariant';
@@ -82,7 +81,7 @@ class ServerController extends EventEmitter implements ServerEventsListener {
     this.certificateProvider = new CertificateProvider(
       this,
       this.logger,
-      this.store.getState().settingsState,
+      this.flipperServer.config,
     );
     this.connectionTracker = new ConnectionTracker(this.logger);
     this.secureServer = null;
@@ -105,13 +104,6 @@ class ServerController extends EventEmitter implements ServerEventsListener {
   }
 
   /**
-   * @deprecated
-   */
-  get store(): Store {
-    return this.flipperServer.store;
-  }
-
-  /**
    * Loads the secure server configuration and starts any necessary servers.
    * Initialisation is complete once the initialized promise is fullfilled at
    * which point Flipper is accepting connections.
@@ -120,7 +112,7 @@ class ServerController extends EventEmitter implements ServerEventsListener {
     if (isTest()) {
       throw new Error('Spawing new server is not supported in test');
     }
-    const {insecure, secure} = this.store.getState().application.serverPorts;
+    const {insecure, secure} = this.flipperServer.config.serverPorts;
 
     this.initialized = this.certificateProvider
       .loadSecureServerConfig()
@@ -128,8 +120,7 @@ class ServerController extends EventEmitter implements ServerEventsListener {
         console.info('[conn] secure server listening at port: ', secure);
         this.secureServer = createServer(secure, this, options);
         if (GK.get('flipper_websocket_server')) {
-          const {secure: altSecure} =
-            this.store.getState().application.altServerPorts;
+          const {secure: altSecure} = this.flipperServer.config.altServerPorts;
           console.info(
             '[conn] secure server (ws) listening at port: ',
             altSecure,
@@ -147,7 +138,7 @@ class ServerController extends EventEmitter implements ServerEventsListener {
         this.insecureServer = createServer(insecure, this);
         if (GK.get('flipper_websocket_server')) {
           const {insecure: altInsecure} =
-            this.store.getState().application.altServerPorts;
+            this.flipperServer.config.altServerPorts;
           console.info(
             '[conn] insecure server (ws) listening at port: ',
             altInsecure,

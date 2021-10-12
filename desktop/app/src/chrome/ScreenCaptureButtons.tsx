@@ -34,6 +34,7 @@ async function openFile(path: string | null) {
   if (fileStat.size <= 8) {
     message.error(
       'Screencap file retrieved from device appears to be corrupt. Your device may not support screen recording. Sometimes restarting your device can help.',
+      0,
     );
     return;
   }

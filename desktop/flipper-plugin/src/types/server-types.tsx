@@ -40,6 +40,12 @@ export type DeviceDescription = {
   readonly sdkVersion?: string;
 };
 
+export type UninitializedClient = {
+  os: string;
+  deviceName: string;
+  appName: string;
+};
+
 export type ClientQuery = {
   readonly app: string;
   readonly os: DeviceOS;
@@ -79,6 +85,7 @@ export type FlipperServerEvents = {
     serial: string;
     entry: DeviceLogEntry;
   };
+  'client-setup': UninitializedClient;
   'client-connected': ClientDescription;
   'client-disconnected': {id: string};
   'client-message': {

@@ -10,10 +10,13 @@
 import React from 'react';
 import {State, Store} from '../reducers/index';
 import {Logger} from '../fb-interfaces/Logger';
-import {FlipperServerImpl} from '../server/FlipperServerImpl';
-import {selectClient, selectDevice} from '../reducers/connections';
+import {
+  FlipperServerConfig,
+  FlipperServerImpl,
+} from '../server/FlipperServerImpl';
+import {selectClient} from '../reducers/connections';
 import Client from '../Client';
-import {notification} from 'antd';
+import {message, notification} from 'antd';
 import BaseDevice from '../devices/BaseDevice';
 import {ClientDescription, timeout} from 'flipper-plugin';
 import {reportPlatformFailures} from '../utils/metrics';
@@ -30,8 +33,8 @@ export default async (store: Store, logger: Logger) => {
       enableIOS,
       enablePhysicalIOS,
       serverPorts: store.getState().application.serverPorts,
-    },
-    store,
+      altServerPorts: store.getState().application.altServerPorts,
+    } as FlipperServerConfig,
     logger,
   );
 
@@ -40,11 +43,13 @@ export default async (store: Store, logger: Logger) => {
     payload: server,
   });
 
-  server.on('notification', (notif) => {
+  server.on('notification', ({type, title, description}) => {
+    console.warn(`[$type] ${title}: ${description}`);
     notification.open({
-      message: notif.title,
-      description: notif.description,
-      type: notif.type,
+      message: title,
+      description: description,
+      type: type,
+      duration: 0,
     });
   });
 
@@ -114,6 +119,13 @@ export default async (store: Store, logger: Logger) => {
     // N.B.: note that we don't remove the device, we keep it in offline
   });
 
+  server.on('client-setup', (client) => {
+    store.dispatch({
+      type: 'START_CLIENT_SETUP',
+      payload: client,
+    });
+  });
+
   server.on('client-connected', (payload: ClientDescription) =>
     handleClientConnected(server, store, logger, payload),
   );
@@ -178,9 +190,28 @@ export async function handleClientConnected(
     });
   }
 
+  console.log(
+    `[conn] Searching matching device ${query.device_id} for client ${query.app}...`,
+  );
   const device =
     getDeviceBySerial(store.getState(), query.device_id) ??
-    (await findDeviceForConnection(store, query.app, query.device_id));
+    (await findDeviceForConnection(store, query.app, query.device_id).catch(
+      (e) => {
+        console.error(
+          `[conn] Failed to find device '${query.device_id}' while connection app '${query.app}'`,
+          e,
+        );
+        notification.error({
+          message: 'Connection failed',
+          description: `Failed to find device '${query.device_id}' while trying to connect app '${query.app}'`,
+          duration: 0,
+        });
+      },
+    ));
+
+  if (!device) {
+    return;
+  }
 
   const client = new Client(
     id,
@@ -218,6 +249,7 @@ export async function handleClientConnected(
     client.init(),
     `[conn] Failed to initialize client ${query.app} on ${query.device_id} in a timely manner`,
   );
+  console.log(`[conn] ${query.app} on ${query.device_id} connected and ready.`);
 }
 
 function getDeviceBySerial(
@@ -242,12 +274,11 @@ async function findDeviceForConnection(
 
       const timeout = setTimeout(() => {
         unsubscribe();
-        const error = `Timed out waiting for device ${serial} for client ${clientId}`;
-        console.error(
-          '[conn] Unable to find device for connection. Error:',
-          error,
+        reject(
+          new Error(
+            `Timed out waiting for device ${serial} for client ${clientId}`,
+          ),
         );
-        reject(error);
       }, 15000);
       unsubscribe = sideEffect(
         store,

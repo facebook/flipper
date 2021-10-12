@@ -122,7 +122,7 @@ class ServerWebSocketBrowser extends ServerWebSocketBase {
           client
             .then((client) => {
               console.info(
-                `[conn] Client created: ${clientQuery.app} on ${clientQuery.device_id}.`,
+                `[conn] Client connected: ${clientQuery.app} on ${clientQuery.device_id}.`,
               );
               resolvedClient = client;
             })

@@ -118,12 +118,12 @@ export default class CertificateProvider {
       ? (getAdbClient(config).catch((e) => {
           // make sure initialization failure is already logged
           const msg =
-            'Failed to initialize ADB. Please disabled Android support in the settings, or configure a correct path';
-          message.error({
-            duration: 10,
-            content: msg + e,
+            'Failed to initialize ADB. Please disable Android support in settings, or configure a correct path';
+          server.flipperServer.emit('notification', {
+            type: 'error',
+            title: 'Failed to initialise ADB',
+            description: msg,
           });
-          console.warn(msg, e);
           this._adb = undefined; // no adb client available
         }) as Promise<ADBClient>)
       : undefined;

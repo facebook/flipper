@@ -8,15 +8,9 @@
  */
 
 import EventEmitter from 'events';
-import {Store} from '../reducers/index';
 import {Logger} from '../fb-interfaces/Logger';
 import ServerController from './comms/ServerController';
-import {UninitializedClient} from './UninitializedClient';
-import {addErrorNotification} from '../reducers/notifications';
 import {CertificateExchangeMedium} from './utils/CertificateProvider';
-import {isLoggedIn} from '../fb-stubs/user';
-import React from 'react';
-import {Typography} from 'antd';
 import {ServerPorts} from '../reducers/application';
 import {AndroidDeviceManager} from './devices/android/androidDeviceManager';
 import {IOSDeviceManager} from './devices/ios/iOSDeviceManager';
@@ -27,11 +21,11 @@ import {
   FlipperServerState,
   FlipperServerCommands,
   FlipperServer,
+  UninitializedClient,
 } from 'flipper-plugin';
 import {ServerDevice} from './devices/ServerDevice';
 import {Base64} from 'js-base64';
 import MetroDevice from './devices/metro/MetroDevice';
-import {showLoginDialog} from '../chrome/fb-stubs/SignInSheet';
 
 export interface FlipperServerConfig {
   enableAndroid: boolean;
@@ -40,6 +34,7 @@ export interface FlipperServerConfig {
   idbPath: string;
   enablePhysicalIOS: boolean;
   serverPorts: ServerPorts;
+  altServerPorts: ServerPorts;
 }
 
 // defaultConfig should be used for testing only, and disables by default all features
@@ -50,6 +45,10 @@ const defaultConfig: FlipperServerConfig = {
   enablePhysicalIOS: false,
   idbPath: '',
   serverPorts: {
+    insecure: -1,
+    secure: -1,
+  },
+  altServerPorts: {
     insecure: -1,
     secure: -1,
   },
@@ -75,13 +74,7 @@ export class FlipperServerImpl implements FlipperServer {
   android: AndroidDeviceManager;
   ios: IOSDeviceManager;
 
-  // TODO: remove store argument
-  constructor(
-    config: Partial<FlipperServerConfig>,
-    /** @deprecated remove! */
-    public store: Store,
-    public logger: Logger,
-  ) {
+  constructor(config: Partial<FlipperServerConfig>, public logger: Logger) {
     this.config = {...defaultConfig, ...config};
     const server = (this.server = new ServerController(this));
     this.android = new AndroidDeviceManager(this);
@@ -92,22 +85,17 @@ export class FlipperServerImpl implements FlipperServer {
     });
 
     server.addListener('start-client-setup', (client: UninitializedClient) => {
-      this.store.dispatch({
-        type: 'START_CLIENT_SETUP',
-        payload: client,
-      });
+      this.emit('client-setup', client);
     });
 
     server.addListener(
       'client-setup-error',
       ({client, error}: {client: UninitializedClient; error: Error}) => {
-        this.store.dispatch(
-          addErrorNotification(
-            `Connection to '${client.appName}' on '${client.deviceName}' failed`,
-            'Failed to start client connection',
-            error,
-          ),
-        );
+        this.emit('notification', {
+          title: `Connection to '${client.appName}' on '${client.deviceName}' failed`,
+          description: `Failed to start client connection: ${error}`,
+          type: 'error',
+        });
       },
     );
 
@@ -121,35 +109,14 @@ export class FlipperServerImpl implements FlipperServer {
         medium: CertificateExchangeMedium;
         deviceID: string;
       }) => {
-        this.store.dispatch(
-          addErrorNotification(
-            `Timed out establishing connection with "${client.appName}" on "${client.deviceName}".`,
-            medium === 'WWW' ? (
-              <>
-                Verify that both your computer and mobile device are on
-                Lighthouse/VPN{' '}
-                {!isLoggedIn().get() && (
-                  <>
-                    and{' '}
-                    <Typography.Link
-                      onClick={() => {
-                        showLoginDialog();
-                      }}>
-                      log in to Facebook Intern
-                    </Typography.Link>
-                  </>
-                )}{' '}
-                so they can exchange certificates.{' '}
-                <Typography.Link href="https://www.internalfb.com/intern/wiki/Ops/Network/Enterprise_Network_Engineering/ene_wlra/VPN_Help/Vpn/mobile/">
-                  Check this link
-                </Typography.Link>{' '}
-                on how to enable VPN on mobile device.
-              </>
-            ) : (
-              'Verify that your client is connected to Flipper and that there is no error related to idb.'
-            ),
-          ),
-        );
+        this.emit('notification', {
+          type: 'error',
+          title: `Timed out establishing connection with "${client.appName}" on "${client.deviceName}".`,
+          description:
+            medium === 'WWW'
+              ? `Verify that both your computer and mobile device are on Lighthouse/VPN that you are logged in to Facebook Intern so that certificates can be exhanged. See: https://www.internalfb.com/intern/wiki/Ops/Network/Enterprise_Network_Engineering/ene_wlra/VPN_Help/Vpn/mobile/`
+              : 'Verify that your client is connected to Flipper and that there is no error related to idb.',
+        });
       },
     );
   }

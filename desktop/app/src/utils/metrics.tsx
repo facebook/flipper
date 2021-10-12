@@ -32,26 +32,27 @@ export function reportPlatformFailures<T>(
   promise: Promise<T>,
   name: string,
 ): Promise<T> {
-  return promise.then(
-    (fulfilledValue) => {
-      logPlatformSuccessRate(name, {kind: 'success'});
-      return fulfilledValue;
-    },
-    (rejectionReason) => {
-      if (rejectionReason instanceof CancelledPromiseError) {
-        logPlatformSuccessRate(name, {
-          kind: 'cancelled',
-        });
-      } else {
-        logPlatformSuccessRate(name, {
-          kind: 'failure',
-          supportedOperation: !(rejectionReason instanceof UnsupportedError),
-          error: rejectionReason,
-        });
-      }
-      return Promise.reject(rejectionReason);
-    },
-  );
+  return new Promise<T>((resolve, reject) => {
+    promise
+      .then((fulfilledValue) => {
+        logPlatformSuccessRate(name, {kind: 'success'});
+        resolve(fulfilledValue);
+      })
+      .catch((rejectionReason) => {
+        if (rejectionReason instanceof CancelledPromiseError) {
+          logPlatformSuccessRate(name, {
+            kind: 'cancelled',
+          });
+        } else {
+          logPlatformSuccessRate(name, {
+            kind: 'failure',
+            supportedOperation: !(rejectionReason instanceof UnsupportedError),
+            error: rejectionReason,
+          });
+        }
+        reject(rejectionReason);
+      });
+  });
 }
 
 /*

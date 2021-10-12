@@ -12,7 +12,7 @@ import {produce} from 'immer';
 
 import type BaseDevice from '../devices/BaseDevice';
 import type Client from '../Client';
-import type {UninitializedClient} from '../server/UninitializedClient';
+import type {UninitializedClient} from 'flipper-plugin';
 import {performance} from 'perf_hooks';
 import type {Actions} from '.';
 import {WelcomeScreenStaticView} from '../sandy-chrome/WelcomeScreen';

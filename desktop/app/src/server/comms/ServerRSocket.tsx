@@ -173,7 +173,7 @@ class ServerRSocket extends ServerAdapter {
     client
       .then((client) => {
         console.info(
-          `[conn] Client created: ${clientQuery.app} on ${clientQuery.device_id}. Medium ${clientQuery.medium}. CSR: ${clientQuery.csr_path}`,
+          `[conn] Client connected: ${clientQuery.app} on ${clientQuery.device_id}. Medium ${clientQuery.medium}. CSR: ${clientQuery.csr_path}`,
         );
         resolvedClient = client;
       })
