@@ -12,7 +12,11 @@ export {
   LoggerTrackType,
   LoggerTypes,
   LoggerArgs,
-} from './fb-interfaces/Logger';
+  getLogger,
+  setLoggerInstance,
+  NoopLogger,
+} from './utils/Logger';
 export * from './server-types';
 export {sleep} from './utils/sleep';
 export {timeout} from './utils/timeout';
+export {isTest} from './utils/isTest';

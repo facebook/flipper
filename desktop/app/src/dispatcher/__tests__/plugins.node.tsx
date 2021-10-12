@@ -22,7 +22,7 @@ import path from 'path';
 // eslint-disable-next-line flipper/no-electron-remote-imports
 import {remote} from 'electron';
 import {createRootReducer, State} from '../../reducers/index';
-import {getInstance} from '../../fb-stubs/Logger';
+import {getLogger} from 'flipper-common';
 import configureStore from 'redux-mock-store';
 import {TEST_PASSING_GK, TEST_FAILING_GK} from '../../fb-stubs/GK';
 import TestPlugin from './TestPlugin';
@@ -36,7 +36,7 @@ const loadDynamicPluginsMock = mocked(loadDynamicPlugins);
 const mockStore = configureStore<State, {}>([])(
   createRootReducer()(undefined, {type: 'INIT'}),
 );
-const logger = getInstance();
+const logger = getLogger();
 
 const sampleInstalledPluginDetails: InstalledPluginDetails = {
   name: 'other Name',

@@ -13,7 +13,7 @@ import {createRootReducer} from '../../reducers';
 import initialize, {getInfo} from '../info';
 import {registerLoadedPlugins} from '../../reducers/plugins';
 import {TestUtils} from 'flipper-plugin';
-import {getInstance} from '../../fb-stubs/Logger';
+import {getLogger} from 'flipper-common';
 import {selectPlugin} from '../../reducers/connections';
 import {renderMockFlipperWithPlugin} from '../../test-utils/createMockFlipperWithPlugin';
 
@@ -64,7 +64,7 @@ describe('info', () => {
         additionalPlugins: [inspectorPlugin],
       },
     );
-    initialize(store, getInstance());
+    initialize(store, getLogger());
     store.dispatch(
       registerLoadedPlugins([networkPluginDetails, inspectorPluginDetails]),
     );

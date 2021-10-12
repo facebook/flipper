@@ -9,7 +9,9 @@
   "license": "MIT",
   "bugs": "https://github.com/facebook/flipper/issues",
   "dependencies": {},
-  "devDependencies": {},
+  "devDependencies": {
+    "flipper-plugin-lib": "0.0.0"
+  },
   "peerDependencies": {},
   "scripts": {
     "reset": "rimraf lib *.tsbuildinfo",

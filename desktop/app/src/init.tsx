@@ -52,6 +52,7 @@ import {PersistGate} from 'redux-persist/integration/react';
 // eslint-disable-next-line flipper/no-electron-remote-imports
 import {ipcRenderer, remote} from 'electron';
 import {helloWorld} from 'flipper-server-core';
+import {setLoggerInstance} from 'flipper-common';
 
 helloWorld();
 
@@ -186,6 +187,7 @@ function setProcessState(store: Store) {
 function init() {
   const store = getStore();
   const logger = initLogger(store);
+  setLoggerInstance(logger);
 
   // rehydrate app state before exposing init
   const persistor = persistStore(store, undefined, () => {

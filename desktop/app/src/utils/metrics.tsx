@@ -7,7 +7,7 @@
  * @format
  */
 
-import {getInstance} from '../fb-stubs/Logger';
+import {getLogger} from 'flipper-common';
 import {CancelledPromiseError, isError} from './errors';
 
 type Result =
@@ -144,16 +144,16 @@ export function reportUsage(
   data?: {[key: string]: string},
   plugin?: string,
 ) {
-  getInstance().track('usage', action, data, plugin);
+  getLogger().track('usage', action, data, plugin);
 }
 
 export function logPlatformSuccessRate(name: string, result: Result) {
   if (result.kind === 'success') {
-    getInstance().track('success-rate', name, {value: 1});
+    getLogger().track('success-rate', name, {value: 1});
   } else if (result.kind === 'cancelled') {
-    getInstance().track('operation-cancelled', name);
+    getLogger().track('operation-cancelled', name);
   } else {
-    getInstance().track('success-rate', name, {
+    getLogger().track('success-rate', name, {
       value: 0,
       supportedOperation: result.supportedOperation ? 1 : 0,
       error: extractMessage(result.error),
@@ -163,11 +163,11 @@ export function logPlatformSuccessRate(name: string, result: Result) {
 
 function logPluginSuccessRate(name: string, plugin: string, result: Result) {
   if (result.kind === 'success') {
-    getInstance().track('success-rate', name, {value: 1}, plugin);
+    getLogger().track('success-rate', name, {value: 1}, plugin);
   } else if (result.kind === 'cancelled') {
-    getInstance().track('operation-cancelled', name, undefined, plugin);
+    getLogger().track('operation-cancelled', name, undefined, plugin);
   } else {
-    getInstance().track(
+    getLogger().track(
       'success-rate',
       name,
       {

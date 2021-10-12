@@ -40,7 +40,7 @@ import styled from '@emotion/styled';
 import {showEmulatorLauncher} from './appinspect/LaunchEmulator';
 import SupportRequestFormV2 from '../fb-stubs/SupportRequestFormV2';
 import {setStaticView, StaticView} from '../reducers/connections';
-import {getInstance} from '../fb-stubs/Logger';
+import {getLogger} from 'flipper-common';
 import {SandyRatingButton} from '../chrome/RatingButton';
 import {filterNotifications} from './notification/notificationUtils';
 import {useMemoize} from 'flipper-plugin';
@@ -316,7 +316,7 @@ function SupportFormButton() {
       title="Feedback / Bug Reporter"
       selected={isStaticViewActive(staticView, SupportRequestFormV2)}
       onClick={() => {
-        getInstance().track('usage', 'support-form-source', {
+        getLogger().track('usage', 'support-form-source', {
           source: 'sidebar',
           group: undefined,
         });

@@ -9,7 +9,7 @@
 
 import {CertificateExchangeMedium} from '../utils/CertificateProvider';
 import {Logger} from 'flipper-common';
-import {ClientDescription, ClientQuery} from 'flipper-common';
+import {ClientDescription, ClientQuery, isTest} from 'flipper-common';
 import CertificateProvider from '../utils/CertificateProvider';
 import {ClientConnection, ConnectionStatus} from './ClientConnection';
 import {UninitializedClient} from 'flipper-common';
@@ -33,7 +33,6 @@ import {
   TransportType,
 } from './ServerFactory';
 import {FlipperServerImpl} from '../FlipperServerImpl';
-import {isTest} from '../../utils/isProduction';
 
 type ClientInfo = {
   connection: ClientConnection | null | undefined;

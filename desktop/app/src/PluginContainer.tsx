@@ -8,7 +8,7 @@
  */
 
 import {FlipperPlugin, FlipperDevicePlugin} from './plugin';
-import {Logger} from 'flipper-common';
+import {Logger, isTest} from 'flipper-common';
 import BaseDevice from './devices/BaseDevice';
 import {pluginKey as getPluginKey} from './utils/pluginKey';
 import Client from './Client';
@@ -49,7 +49,6 @@ import {produce} from 'immer';
 import {reportUsage} from './utils/metrics';
 import {PluginInfo} from './chrome/fb-stubs/PluginInfo';
 import {getActiveClient, getActivePlugin} from './selectors/connections';
-import {isTest} from './utils/isProduction';
 import {AnyAction} from 'redux';
 
 const {Text, Link} = Typography;

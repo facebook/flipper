@@ -20,7 +20,7 @@ import {buildClientId} from '../utils/clientUtils';
 import {Logger} from 'flipper-common';
 import {PluginDefinition} from '../plugin';
 import {registerPlugins} from '../reducers/plugins';
-import {getInstance} from '../fb-stubs/Logger';
+import {getLogger} from 'flipper-common';
 import {initializeFlipperLibImplementation} from '../utils/flipperLibImplementation';
 import pluginManager from '../dispatcher/pluginManager';
 import {PluginDetails} from 'flipper-plugin-lib';
@@ -83,7 +83,7 @@ export default class MockFlipper {
 
   public async init({plugins}: AppOptions = {}) {
     this._store = createStore(createRootReducer());
-    this._logger = getInstance();
+    this._logger = getLogger();
     this.unsubscribePluginManager = pluginManager(this._store, this._logger, {
       runSideEffectsSynchronously: true,
     });

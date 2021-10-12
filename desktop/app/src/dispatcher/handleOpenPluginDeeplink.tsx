@@ -9,6 +9,7 @@
 
 import React from 'react';
 import {Dialog, getFlipperLib} from 'flipper-plugin';
+import {isTest} from 'flipper-common';
 import {getUser} from '../fb-stubs/user';
 import {State, Store} from '../reducers/index';
 import {checkForUpdate} from '../fb-stubs/checkForUpdate';
@@ -21,7 +22,7 @@ import {getPluginStatus, PluginStatus} from '../utils/pluginUtils';
 import {loadPluginsFromMarketplace} from './fb-stubs/pluginMarketplace';
 import {loadPlugin, switchPlugin} from '../reducers/pluginManager';
 import {startPluginDownload} from '../reducers/pluginDownloads';
-import isProduction, {isTest} from '../utils/isProduction';
+import isProduction from '../utils/isProduction';
 import restart from '../utils/restartFlipper';
 import BaseDevice from '../devices/BaseDevice';
 import Client from '../Client';

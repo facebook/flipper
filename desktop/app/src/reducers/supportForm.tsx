@@ -15,7 +15,7 @@ import {showStatusUpdatesForDuration} from '../utils/promiseTimeout';
 import {selectedPlugins as setSelectedPlugins} from './plugins';
 import {addStatusMessage, removeStatusMessage} from './application';
 import constants from '../fb-stubs/constants';
-import {getInstance} from '../fb-stubs/Logger';
+import {getLogger} from 'flipper-common';
 import {logPlatformSuccessRate} from '../utils/metrics';
 export const SUPPORT_FORM_PREFIX = 'support-form-v2';
 import {getExportablePlugins} from '../selectors/connections';
@@ -109,7 +109,7 @@ export class Group {
   }
 
   handleSupportFormDeeplinks(store: Store) {
-    getInstance().track('usage', 'support-form-source', {
+    getLogger().track('usage', 'support-form-source', {
       source: 'deeplink',
       group: this.name,
     });

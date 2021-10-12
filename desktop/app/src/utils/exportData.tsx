@@ -11,7 +11,7 @@ import * as React from 'react';
 import os from 'os';
 import path from 'path';
 import electron from 'electron';
-import {getInstance, getInstance as getLogger} from '../fb-stubs/Logger';
+import {getLogger} from 'flipper-common';
 import {Store, MiddlewareAPI} from '../reducers';
 import {DeviceExport} from '../devices/BaseDevice';
 import {selectedPlugins, State as PluginsState} from '../reducers/plugins';
@@ -637,7 +637,7 @@ export async function startFileExport(dispatch: Store['dispatch']) {
   // need to be cleaned up later in combination with SupportForm
   dispatch(selectedPlugins(plugins));
   Dialog.showModal((onHide) => (
-    <ShareSheetExportFile onHide={onHide} file={file} logger={getInstance()} />
+    <ShareSheetExportFile onHide={onHide} file={file} logger={getLogger()} />
   ));
 }
 
@@ -650,7 +650,7 @@ export async function startLinkExport(dispatch: Store['dispatch']) {
   // need to be cleaned up later in combination with SupportForm
   dispatch(selectedPlugins(plugins));
   Dialog.showModal((onHide) => (
-    <ShareSheetExportUrl onHide={onHide} logger={getInstance()} />
+    <ShareSheetExportUrl onHide={onHide} logger={getLogger()} />
   ));
 }
 

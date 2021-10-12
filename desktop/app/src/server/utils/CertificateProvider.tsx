@@ -26,10 +26,8 @@ import * as androidUtil from '../devices/android/androidContainerUtility';
 import os from 'os';
 import {Client as ADBClient} from 'adbkit';
 import archiver from 'archiver';
-import {timeout} from 'flipper-common';
+import {timeout, isTest} from 'flipper-common';
 import {v4 as uuid} from 'uuid';
-import {isTest} from '../../utils/isProduction';
-import {message} from 'antd';
 
 export type CertificateExchangeMedium = 'FS_ACCESS' | 'WWW' | 'NONE';
 

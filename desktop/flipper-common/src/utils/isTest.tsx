@@ -7,9 +7,8 @@
  * @format
  */
 
-import {Logger, LoggerArgs, NoopLogger} from 'flipper-common';
-import {Store} from '../reducers/index';
+const _isTest = !!process.env.JEST_WORKER_ID;
 
-export function init(_store: Store, _args?: LoggerArgs): Logger {
-  return new NoopLogger();
+export function isTest(): boolean {
+  return _isTest;
 }

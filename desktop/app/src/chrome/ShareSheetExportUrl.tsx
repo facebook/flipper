@@ -26,7 +26,7 @@ import ShareSheetErrorList from './ShareSheetErrorList';
 import {reportPlatformFailures} from '../utils/metrics';
 import {performance} from 'perf_hooks';
 import ShareSheetPendingDialog from './ShareSheetPendingDialog';
-import {getInstance as getLogger} from '../fb-stubs/Logger';
+import {getLogger} from 'flipper-common';
 import {resetSupportFormV2State} from '../reducers/supportForm';
 import {MiddlewareAPI} from '../reducers/index';
 import {getFlipperLib, Layout} from 'flipper-plugin';

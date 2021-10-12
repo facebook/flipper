@@ -124,7 +124,7 @@ export {KeyboardActions} from './MenuBar';
 export {getFlipperMediaCDN, appendAccessTokenToUrl} from './fb-stubs/user';
 export {Rect} from './utils/geometry';
 export {Logger} from 'flipper-common';
-export {getInstance as getLogger} from './fb-stubs/Logger';
+export {getLogger} from 'flipper-common';
 export {callVSCode} from './utils/vscodeUtils';
 export {checkIdbIsInstalled} from './server/devices/ios/iOSContainerUtility';
 export {IDEFileResolver, IDEType} from './fb-stubs/IDEFileResolver';
