@@ -7,7 +7,6 @@
  * @format
  */
 
-import React from 'react';
 import {Mutex} from 'async-mutex';
 import {exec as unsafeExec, Output} from 'promisify-child-process';
 import {reportPlatformFailures} from 'flipper-common';
@@ -18,8 +17,6 @@ import {promisify} from 'util';
 import child_process from 'child_process';
 import fs from 'fs-extra';
 import path from 'path';
-import fbConfig from '../../../fb-stubs/config';
-import {notification, Typography} from 'antd';
 const exec = promisify(child_process.exec);
 
 // Use debug to get helpful logs when idb fails
@@ -251,14 +248,9 @@ function handleMissingIdb(e: Error, idbPath: string): void {
     e.message.includes('sudo: no tty present and no askpass program specified')
   ) {
     console.warn(e);
-    const message = `idb doesn't appear to be installed. Run "${idbPath} list-targets" to fix this.`;
-    notification.error({
-      message: 'Cannot connect to idb',
-      duration: null,
-      description: message,
-      key: 'idb_connection_failed',
-    });
-    return;
+    throw new Error(
+      `idb doesn't appear to be installed. Run "${idbPath} list-targets" to fix this.`,
+    );
   }
   throw e;
 }
@@ -271,24 +263,11 @@ function handleMissingPermissions(e: Error): void {
     e.message.includes('sonar/app.csr')
   ) {
     console.warn(e);
-    const message = fbConfig.isFBBuild ? (
-      <>
-        Idb lacks permissions to exchange certificates. Did you install a source
-        build or a debug build with certificate exchange enabled?{' '}
-        <Typography.Link href="https://www.internalfb.com/intern/staticdocs/flipper/docs/getting-started/fb/connecting-to-flipper#app-on-physical-ios-device">
-          How To
-        </Typography.Link>
-      </>
-    ) : (
-      'Idb lacks permissions to exchange certificates. Did you install a source build?'
+    throw new Error(
+      'Cannot connect to iOS application. idb_certificate_pull_failed' +
+        'Idb lacks permissions to exchange certificates. Did you install a source build ([FB] or enable certificate exchange)? ' +
+        e,
     );
-    notification.error({
-      message: 'Cannot connect to iOS application',
-      duration: null,
-      description: message,
-      key: 'idb_certificate_pull_failed',
-    });
-    return;
   }
   throw e;
 }

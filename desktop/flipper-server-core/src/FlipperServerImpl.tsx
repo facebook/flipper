@@ -11,9 +11,11 @@ import EventEmitter from 'events';
 import {Logger} from 'flipper-common';
 import ServerController from './comms/ServerController';
 import {CertificateExchangeMedium} from './utils/CertificateProvider';
-import {ServerPorts} from '../reducers/application';
 import {AndroidDeviceManager} from './devices/android/androidDeviceManager';
-import {IOSDeviceManager} from './devices/ios/iOSDeviceManager';
+import {
+  IOSDeviceManager,
+  launchSimulator,
+} from './devices/ios/iOSDeviceManager';
 import metroDevice from './devices/metro/metroDeviceManager';
 import desktopDevice from './devices/desktop/desktopDeviceManager';
 import {
@@ -26,33 +28,8 @@ import {
 import {ServerDevice} from './devices/ServerDevice';
 import {Base64} from 'js-base64';
 import MetroDevice from './devices/metro/MetroDevice';
-
-export interface FlipperServerConfig {
-  enableAndroid: boolean;
-  androidHome: string;
-  enableIOS: boolean;
-  idbPath: string;
-  enablePhysicalIOS: boolean;
-  serverPorts: ServerPorts;
-  altServerPorts: ServerPorts;
-}
-
-// defaultConfig should be used for testing only, and disables by default all features
-const defaultConfig: FlipperServerConfig = {
-  androidHome: '',
-  enableAndroid: false,
-  enableIOS: false,
-  enablePhysicalIOS: false,
-  idbPath: '',
-  serverPorts: {
-    insecure: -1,
-    secure: -1,
-  },
-  altServerPorts: {
-    insecure: -1,
-    secure: -1,
-  },
-};
+import {launchEmulator} from './devices/android/AndroidDevice';
+import {getFlipperServerConfig} from './FlipperServerConfig';
 
 /**
  * FlipperServer takes care of all incoming device & client connections.
@@ -63,8 +40,6 @@ const defaultConfig: FlipperServerConfig = {
  * using '.on'. All events are strongly typed.
  */
 export class FlipperServerImpl implements FlipperServer {
-  public config: FlipperServerConfig;
-
   private readonly events = new EventEmitter();
   // server handles the incoming RSocket / WebSocket connections from Flipper clients
   readonly server: ServerController;
@@ -74,8 +49,8 @@ export class FlipperServerImpl implements FlipperServer {
   android: AndroidDeviceManager;
   ios: IOSDeviceManager;
 
-  constructor(config: Partial<FlipperServerConfig>, public logger: Logger) {
-    this.config = {...defaultConfig, ...config};
+  constructor(public logger: Logger) {
+    getFlipperServerConfig(); // Config should be available at this point!
     const server = (this.server = new ServerController(this));
     this.android = new AndroidDeviceManager(this);
     this.ios = new IOSDeviceManager(this);
@@ -239,6 +214,12 @@ export class FlipperServerImpl implements FlipperServer {
         },
       };
     },
+    'android-get-emulators': async () => this.android.getAndroidEmulators(),
+    'android-launch-emulator': async (name, coldBoot) =>
+      launchEmulator(name, coldBoot),
+    'ios-get-simulators': async (bootedOnly) =>
+      this.ios.getSimulators(bootedOnly),
+    'ios-launch-simulator': async (udid) => launchSimulator(udid),
   };
 
   registerDevice(device: ServerDevice) {

@@ -17,6 +17,10 @@ import {Client as ADBClient, Device} from 'adbkit';
 import {join} from 'path';
 import {FlipperServerImpl} from '../../FlipperServerImpl';
 import {notNull} from '../../utils/typeUtils';
+import {
+  getServerPortsConfig,
+  getFlipperServerConfig,
+} from '../../FlipperServerConfig';
 
 export class AndroidDeviceManager {
   // cache emulator path
@@ -58,12 +62,10 @@ export class AndroidDeviceManager {
             abiList,
             sdkVersion,
           );
-          if (this.flipperServer.config.serverPorts) {
+          const ports = getServerPortsConfig();
+          if (ports.serverPorts) {
             await androidLikeDevice
-              .reverse([
-                this.flipperServer.config.serverPorts.secure,
-                this.flipperServer.config.serverPorts.insecure,
-              ])
+              .reverse([ports.serverPorts.secure, ports.serverPorts.insecure])
               // We may not be able to establish a reverse connection, e.g. for old Android SDKs.
               // This is *generally* fine, because we hard-code the ports on the SDK side.
               .catch((e) => {
@@ -177,7 +179,7 @@ export class AndroidDeviceManager {
 
   async watchAndroidDevices() {
     try {
-      const client = await getAdbClient(this.flipperServer.config);
+      const client = await getAdbClient(getFlipperServerConfig());
       client
         .trackDevices()
         .then((tracker) => {

@@ -112,6 +112,14 @@ export type FlipperServerEvents = {
   };
 };
 
+export type IOSDeviceParams = {
+  udid: string;
+  type: DeviceType;
+  name: string;
+  deviceTypeIdentifier?: string;
+  state?: string;
+};
+
 export type FlipperServerCommands = {
   'device-start-logging': (serial: string) => Promise<void>;
   'device-stop-logging': (serial: string) => Promise<void>;
@@ -137,6 +145,10 @@ export type FlipperServerCommands = {
     clientId: string,
     payload: any,
   ) => Promise<ClientResponseType>;
+  'android-get-emulators': () => Promise<string[]>;
+  'android-launch-emulator': (name: string, coldboot: boolean) => Promise<void>;
+  'ios-get-simulators': (bootedOnly: boolean) => Promise<IOSDeviceParams[]>;
+  'ios-launch-simulator': (udid: string) => Promise<void>;
 };
 
 export interface FlipperServer {
@@ -154,3 +166,95 @@ export interface FlipperServer {
   ): ReturnType<FlipperServerCommands[Event]>;
   close(): void;
 }
+
+// From xplat/js/metro/packages/metro/src/lib/reporting.js
+export type MetroBundleDetails = {
+  entryFile: string;
+  platform?: string;
+  dev: boolean;
+  minify: boolean;
+  bundleType: string;
+};
+
+// From xplat/js/metro/packages/metro/src/lib/reporting.js
+export type MetroGlobalCacheDisabledReason =
+  | 'too_many_errors'
+  | 'too_many_misses';
+
+/**
+ * A tagged union of all the actions that may happen and we may want to
+ * report to the tool user.
+ *
+ * Based on xplat/js/metro/packages/metro/src/lib/TerminalReporter.js
+ */
+export type MetroReportableEvent =
+  | {
+      port: number;
+      projectRoots: ReadonlyArray<string>;
+      type: 'initialize_started';
+    }
+  | {type: 'initialize_done'}
+  | {
+      type: 'initialize_failed';
+      port: number;
+      error: Error;
+    }
+  | {
+      buildID: string;
+      type: 'bundle_build_done';
+    }
+  | {
+      buildID: string;
+      type: 'bundle_build_failed';
+    }
+  | {
+      buildID: string;
+      bundleDetails: MetroBundleDetails;
+      type: 'bundle_build_started';
+    }
+  | {
+      error: Error;
+      type: 'bundling_error';
+    }
+  | {type: 'dep_graph_loading'}
+  | {type: 'dep_graph_loaded'}
+  | {
+      buildID: string;
+      type: 'bundle_transform_progressed';
+      transformedFileCount: number;
+      totalFileCount: number;
+    }
+  | {
+      type: 'global_cache_error';
+      error: Error;
+    }
+  | {
+      type: 'global_cache_disabled';
+      reason: MetroGlobalCacheDisabledReason;
+    }
+  | {type: 'transform_cache_reset'}
+  | {
+      type: 'worker_stdout_chunk';
+      chunk: string;
+    }
+  | {
+      type: 'worker_stderr_chunk';
+      chunk: string;
+    }
+  | {
+      type: 'hmr_client_error';
+      error: Error;
+    }
+  | {
+      type: 'client_log';
+      level:
+        | 'trace'
+        | 'info'
+        | 'warn'
+        | 'log'
+        | 'group'
+        | 'groupCollapsed'
+        | 'groupEnd'
+        | 'debug';
+      data: Array<any>;
+    };

@@ -17,10 +17,6 @@ export type LauncherMsg = {
   message: string;
   severity: 'warning' | 'error';
 };
-export type ServerPorts = {
-  insecure: number;
-  secure: number;
-};
 
 export type StatusMessageType = {
   msg: string;
@@ -49,8 +45,6 @@ export type State = {
   windowIsFocused: boolean;
   share: ShareType | null;
   sessionId: string | null;
-  serverPorts: ServerPorts;
-  altServerPorts: ServerPorts;
   launcherMsg: LauncherMsg;
   statusMessages: Array<string>;
 };
@@ -68,20 +62,6 @@ export type Action =
   | {
       type: 'windowIsFocused';
       payload: {isFocused: boolean; time: number};
-    }
-  | {
-      type: 'SET_SERVER_PORTS';
-      payload: {
-        insecure: number;
-        secure: number;
-      };
-    }
-  | {
-      type: 'SET_ALT_SERVER_PORTS';
-      payload: {
-        insecure: number;
-        secure: number;
-      };
     }
   | {
       type: 'LAUNCHER_MSG';
@@ -107,14 +87,6 @@ export const initialState: () => State = () => ({
   activeSheet: null,
   share: null,
   sessionId: uuidv1(),
-  serverPorts: {
-    insecure: 8089,
-    secure: 8088,
-  },
-  altServerPorts: {
-    insecure: 9089,
-    secure: 9088,
-  },
   launcherMsg: {
     severity: 'warning',
     message: '',
@@ -162,16 +134,6 @@ export default function reducer(
     return {
       ...state,
       windowIsFocused: action.payload.isFocused,
-    };
-  } else if (action.type === 'SET_SERVER_PORTS') {
-    return {
-      ...state,
-      serverPorts: action.payload,
-    };
-  } else if (action.type === 'SET_ALT_SERVER_PORTS') {
-    return {
-      ...state,
-      altServerPorts: action.payload,
     };
   } else if (action.type === 'LAUNCHER_MSG') {
     return {

@@ -34,7 +34,7 @@ import {
   resetSupportFormV2State,
   SupportFormRequestDetailsState,
 } from '../reducers/supportForm';
-import {deconstructClientId} from '../utils/clientUtils';
+import {deconstructClientId} from 'flipper-common';
 import {performance} from 'perf_hooks';
 import {processMessageQueue} from './messageQueue';
 import {getPluginTitle} from './pluginUtils';

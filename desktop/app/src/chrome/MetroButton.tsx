@@ -8,7 +8,7 @@
  */
 
 import React, {useCallback, useEffect, useState} from 'react';
-import {MetroReportableEvent} from '../server/devices/metro/MetroDevice';
+import {MetroReportableEvent} from 'flipper-common';
 import {useStore} from '../utils/useStore';
 import {Button as AntButton} from 'antd';
 import {MenuOutlined, ReloadOutlined} from '@ant-design/icons';

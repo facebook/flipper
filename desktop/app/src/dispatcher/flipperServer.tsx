@@ -10,10 +10,7 @@
 import React from 'react';
 import {State, Store} from '../reducers/index';
 import {Logger} from 'flipper-common';
-import {
-  FlipperServerConfig,
-  FlipperServerImpl,
-} from '../server/FlipperServerImpl';
+import {FlipperServerImpl, setFlipperServerConfig} from 'flipper-server-core';
 import {selectClient} from '../reducers/connections';
 import Client from '../Client';
 import {notification} from 'antd';
@@ -21,22 +18,23 @@ import BaseDevice from '../devices/BaseDevice';
 import {ClientDescription, timeout} from 'flipper-common';
 import {reportPlatformFailures} from 'flipper-common';
 import {sideEffect} from '../utils/sideEffect';
+import {getAppTempPath, getStaticPath} from '../utils/pathUtils';
+import constants from '../fb-stubs/constants';
 
 export default async (store: Store, logger: Logger) => {
   const {enableAndroid, androidHome, idbPath, enableIOS, enablePhysicalIOS} =
     store.getState().settingsState;
-  const server = new FlipperServerImpl(
-    {
-      enableAndroid,
-      androidHome,
-      idbPath,
-      enableIOS,
-      enablePhysicalIOS,
-      serverPorts: store.getState().application.serverPorts,
-      altServerPorts: store.getState().application.altServerPorts,
-    } as FlipperServerConfig,
-    logger,
-  );
+  setFlipperServerConfig({
+    enableAndroid,
+    androidHome,
+    idbPath,
+    enableIOS,
+    enablePhysicalIOS,
+    staticPath: getStaticPath(),
+    tmpPath: getAppTempPath(),
+    validWebSocketOrigins: constants.VALID_WEB_SOCKET_REQUEST_ORIGIN_PREFIXES,
+  });
+  const server = new FlipperServerImpl(logger);
 
   store.dispatch({
     type: 'SET_FLIPPER_SERVER',

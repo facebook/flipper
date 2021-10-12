@@ -17,7 +17,7 @@ import {
 } from '../reducers/pluginMessageQueue';
 import {IdlerImpl} from './Idler';
 import {isPluginEnabled, getSelectedPluginKey} from '../reducers/connections';
-import {deconstructPluginKey} from './clientUtils';
+import {deconstructPluginKey} from 'flipper-common';
 import {defaultEnabledBackgroundPlugins} from './pluginUtils';
 import {batch, Idler, _SandyPluginInstance} from 'flipper-plugin';
 import {addBackgroundStat} from './pluginStats';

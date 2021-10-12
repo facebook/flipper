@@ -94,7 +94,7 @@ const handleError = (
   crashReporterPlugin.instanceApi.reportCrash(payload);
 };
 
-interface ClientConnection {
+export interface ClientConnection {
   send(data: any): void;
   sendExpectResponse(data: any): Promise<ClientResponseType>;
 }

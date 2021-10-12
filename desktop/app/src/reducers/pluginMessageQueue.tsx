@@ -8,7 +8,7 @@
  */
 
 import produce from 'immer';
-import {deconstructPluginKey} from '../utils/clientUtils';
+import {deconstructPluginKey} from 'flipper-common';
 
 export const DEFAULT_MAX_QUEUE_SIZE = 10000;
 

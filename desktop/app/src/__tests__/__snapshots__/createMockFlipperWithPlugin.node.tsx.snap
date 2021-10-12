@@ -35,7 +35,12 @@ Object {
       "TestPlugin",
     ],
   },
-  "flipperServer": undefined,
+  "flipperServer": Object {
+    "close": [MockFunction],
+    "exec": [MockFunction],
+    "off": [MockFunction],
+    "on": [MockFunction],
+  },
   "selectedAppId": "TestApp#Android#MockAndroidDevice#serial",
   "selectedAppPluginListRevision": 0,
   "selectedDevice": Object {

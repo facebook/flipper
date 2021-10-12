@@ -12,7 +12,6 @@
 import {remote, ipcRenderer, IpcRendererEvent} from 'electron';
 import {Store} from '../reducers/index';
 import {Logger} from 'flipper-common';
-import {parseFlipperPorts} from '../server/utils/environmentVariables';
 import {
   importFileToStore,
   IMPORT_FLIPPER_TRACE_EVENT,
@@ -80,36 +79,4 @@ export default (store: Store, logger: Logger) => {
       }, `${IMPORT_FLIPPER_TRACE_EVENT}:Deeplink`);
     },
   );
-
-  if (process.env.FLIPPER_PORTS) {
-    const portOverrides = parseFlipperPorts(process.env.FLIPPER_PORTS);
-    if (portOverrides) {
-      store.dispatch({
-        type: 'SET_SERVER_PORTS',
-        payload: portOverrides,
-      });
-    } else {
-      console.error(
-        `Ignoring malformed FLIPPER_PORTS env variable:
-        "${process.env.FLIPPER_PORTS || ''}".
-        Example expected format: "1111,2222".`,
-      );
-    }
-  }
-
-  if (process.env.FLIPPER_ALT_PORTS) {
-    const portOverrides = parseFlipperPorts(process.env.FLIPPER_ALT_PORTS);
-    if (portOverrides) {
-      store.dispatch({
-        type: 'SET_ALT_SERVER_PORTS',
-        payload: portOverrides,
-      });
-    } else {
-      console.error(
-        `Ignoring malformed FLIPPER_ALT_PORTS env variable:
-        "${process.env.FLIPPER_ALT_PORTS || ''}".
-        Example expected format: "1111,2222".`,
-      );
-    }
-  }
 };

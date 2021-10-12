@@ -11,13 +11,8 @@ import {createStore} from 'redux';
 import BaseDevice from '../devices/BaseDevice';
 import {createRootReducer} from '../reducers';
 import {Store} from '../reducers/index';
-import Client from '../Client';
-import {
-  ClientConnection,
-  ConnectionStatusChange,
-} from '../server/comms/ClientConnection';
-import {buildClientId} from '../utils/clientUtils';
-import {Logger} from 'flipper-common';
+import Client, {ClientConnection} from '../Client';
+import {Logger, buildClientId, FlipperServer} from 'flipper-common';
 import {PluginDefinition} from '../plugin';
 import {registerPlugins} from '../reducers/plugins';
 import {getLogger} from 'flipper-common';
@@ -27,6 +22,7 @@ import {PluginDetails} from 'flipper-plugin-lib';
 import ArchivedDevice from '../devices/ArchivedDevice';
 import {ClientQuery, DeviceOS} from 'flipper-common';
 import {TestDevice} from './TestDevice';
+import {createFlipperServerMock} from './createFlipperServerMock';
 
 export interface AppOptions {
   plugins?: PluginDefinition[];
@@ -56,6 +52,7 @@ export default class MockFlipper {
   private _clients: Client[] = [];
   private _deviceCounter: number = 0;
   private _clientCounter: number = 0;
+  private _flipperServer: FlipperServer = createFlipperServerMock();
 
   public get store(): Store {
     return this._store;
@@ -89,6 +86,10 @@ export default class MockFlipper {
     });
     initializeFlipperLibImplementation(this._store, this._logger);
     this._store.dispatch(registerPlugins(plugins ?? []));
+    this._store.dispatch({
+      type: 'SET_FLIPPER_SERVER',
+      payload: this._flipperServer,
+    });
   }
 
   public async initWithDeviceAndClient(
@@ -237,12 +238,9 @@ export default class MockFlipper {
     return client;
   }
 }
-function createStubConnection(): ClientConnection | null | undefined {
+
+function createStubConnection(): ClientConnection {
   return {
-    subscribeToEvents(_: ConnectionStatusChange) {},
-    close() {
-      throw new Error('Should not be called in test');
-    },
     send(_: any) {
       throw new Error('Should not be called in test');
     },

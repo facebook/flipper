@@ -126,7 +126,6 @@ export {Rect} from './utils/geometry';
 export {Logger} from 'flipper-common';
 export {getLogger} from 'flipper-common';
 export {callVSCode} from './utils/vscodeUtils';
-export {checkIdbIsInstalled} from './server/devices/ios/iOSContainerUtility';
 export {IDEFileResolver, IDEType} from './fb-stubs/IDEFileResolver';
 export {renderMockFlipperWithPlugin} from './test-utils/createMockFlipperWithPlugin';
 export {Tracked} from 'flipper-plugin'; // To be able to use it in legacy plugins

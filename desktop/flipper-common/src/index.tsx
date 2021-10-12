@@ -41,3 +41,5 @@ export {
   getErrorFromErrorLike,
 } from './utils/errors';
 export * from './user-session';
+export * from './GK';
+export * from './clientUtils';

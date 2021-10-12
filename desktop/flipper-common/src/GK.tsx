@@ -7,10 +7,8 @@
  * @format
  */
 
-export {
-  FlipperServerConfig,
-  getFlipperServerConfig,
-  setFlipperServerConfig,
-} from './FlipperServerConfig';
-
-export {FlipperServerImpl} from './FlipperServerImpl';
+export const GK = {
+  get(_name: string): boolean {
+    return false;
+  },
+};

@@ -16,7 +16,7 @@ import type BaseDevice from '../devices/BaseDevice';
 import {clipboard, shell} from 'electron';
 import constants from '../fb-stubs/constants';
 import {addNotification} from '../reducers/notifications';
-import {deconstructPluginKey} from './clientUtils';
+import {deconstructPluginKey} from 'flipper-common';
 import {DetailSidebarImpl} from '../sandy-chrome/DetailSidebarImpl';
 
 export function initializeFlipperLibImplementation(

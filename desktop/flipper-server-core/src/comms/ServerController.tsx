@@ -9,16 +9,20 @@
 
 import {CertificateExchangeMedium} from '../utils/CertificateProvider';
 import {Logger} from 'flipper-common';
-import {ClientDescription, ClientQuery, isTest} from 'flipper-common';
+import {
+  ClientDescription,
+  ClientQuery,
+  isTest,
+  GK,
+  buildClientId,
+} from 'flipper-common';
 import CertificateProvider from '../utils/CertificateProvider';
 import {ClientConnection, ConnectionStatus} from './ClientConnection';
 import {UninitializedClient} from 'flipper-common';
 import {reportPlatformFailures} from 'flipper-common';
 import {EventEmitter} from 'events';
 import invariant from 'invariant';
-import GK from '../../fb-stubs/GK';
-import {buildClientId} from '../../utils/clientUtils';
-import DummyDevice from '../../server/devices/DummyDevice';
+import DummyDevice from '../devices/DummyDevice';
 import {
   appNameWithUpdateHint,
   transformCertificateExchangeMediumToType,
@@ -33,6 +37,10 @@ import {
   TransportType,
 } from './ServerFactory';
 import {FlipperServerImpl} from '../FlipperServerImpl';
+import {
+  getServerPortsConfig,
+  getFlipperServerConfig,
+} from '../FlipperServerConfig';
 
 type ClientInfo = {
   connection: ClientConnection | null | undefined;
@@ -80,7 +88,7 @@ class ServerController extends EventEmitter implements ServerEventsListener {
     this.certificateProvider = new CertificateProvider(
       this,
       this.logger,
-      this.flipperServer.config,
+      getFlipperServerConfig(),
     );
     this.connectionTracker = new ConnectionTracker(this.logger);
     this.secureServer = null;
@@ -111,7 +119,7 @@ class ServerController extends EventEmitter implements ServerEventsListener {
     if (isTest()) {
       throw new Error('Spawing new server is not supported in test');
     }
-    const {insecure, secure} = this.flipperServer.config.serverPorts;
+    const {insecure, secure} = getServerPortsConfig().serverPorts;
 
     this.initialized = this.certificateProvider
       .loadSecureServerConfig()
@@ -119,7 +127,7 @@ class ServerController extends EventEmitter implements ServerEventsListener {
         console.info('[conn] secure server listening at port: ', secure);
         this.secureServer = createServer(secure, this, options);
         if (GK.get('flipper_websocket_server')) {
-          const {secure: altSecure} = this.flipperServer.config.altServerPorts;
+          const {secure: altSecure} = getServerPortsConfig().altServerPorts;
           console.info(
             '[conn] secure server (ws) listening at port: ',
             altSecure,
@@ -136,8 +144,7 @@ class ServerController extends EventEmitter implements ServerEventsListener {
         console.info('[conn] insecure server listening at port: ', insecure);
         this.insecureServer = createServer(insecure, this);
         if (GK.get('flipper_websocket_server')) {
-          const {insecure: altInsecure} =
-            this.flipperServer.config.altServerPorts;
+          const {insecure: altInsecure} = getServerPortsConfig().altServerPorts;
           console.info(
             '[conn] insecure server (ws) listening at port: ',
             altInsecure,
@@ -214,13 +221,13 @@ class ServerController extends EventEmitter implements ServerEventsListener {
 
     const {os, app, device_id} = clientQuery;
     // without these checks, the user might see a connection timeout error instead, which would be much harder to track down
-    if (os === 'iOS' && !this.flipperServer.config.enableIOS) {
+    if (os === 'iOS' && !getFlipperServerConfig().enableIOS) {
       console.error(
         `Refusing connection from ${app} on ${device_id}, since iOS support is disabled in settings`,
       );
       return;
     }
-    if (os === 'Android' && !this.flipperServer.config.enableAndroid) {
+    if (os === 'Android' && !getFlipperServerConfig().enableAndroid) {
       console.error(
         `Refusing connection from ${app} on ${device_id}, since Android support is disabled in settings`,
       );

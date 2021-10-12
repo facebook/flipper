@@ -12,9 +12,8 @@ import isProduction from './isProduction';
 import fs from 'fs-extra';
 import {getStaticPath} from './pathUtils';
 import type {State, Store} from '../reducers/index';
-import {deconstructClientId} from './clientUtils';
 import {sideEffect} from './sideEffect';
-import {Logger, isTest} from 'flipper-common';
+import {Logger, isTest, deconstructClientId} from 'flipper-common';
 
 type PlatformInfo = {
   arch: string;

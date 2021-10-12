@@ -12,16 +12,20 @@ import {produce} from 'immer';
 
 import type BaseDevice from '../devices/BaseDevice';
 import type Client from '../Client';
-import type {UninitializedClient, DeviceOS, Logger} from 'flipper-common';
+import type {
+  UninitializedClient,
+  DeviceOS,
+  Logger,
+  FlipperServer,
+} from 'flipper-common';
 import {performance} from 'perf_hooks';
 import type {Actions} from '.';
 import {WelcomeScreenStaticView} from '../sandy-chrome/WelcomeScreen';
 import {isDevicePluginDefinition} from '../utils/pluginUtils';
 import {getPluginKey} from '../utils/pluginKey';
 
-import {deconstructClientId} from '../utils/clientUtils';
+import {deconstructClientId} from 'flipper-common';
 import type {RegisterPluginAction} from './plugins';
-import {FlipperServerImpl} from '../server/FlipperServerImpl';
 import {shallowEqual} from 'react-redux';
 
 export type StaticViewProps = {logger: Logger};
@@ -74,7 +78,7 @@ type StateV2 = {
   deepLinkPayload: unknown;
   staticView: StaticView;
   selectedAppPluginListRevision: number;
-  flipperServer: FlipperServerImpl | undefined;
+  flipperServer: FlipperServer | undefined;
 };
 
 type StateV1 = Omit<StateV2, 'enabledPlugins' | 'enabledDevicePlugins'> & {
@@ -158,7 +162,7 @@ export type Action =
     }
   | {
       type: 'SET_FLIPPER_SERVER';
-      payload: FlipperServerImpl;
+      payload: FlipperServer;
     }
   | RegisterPluginAction;
 

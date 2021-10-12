@@ -43,7 +43,7 @@ import {
   getClientsByAppName,
   getAllClients,
 } from '../reducers/connections';
-import {deconstructClientId} from '../utils/clientUtils';
+import {deconstructClientId} from 'flipper-common';
 import {clearMessageQueue} from '../reducers/pluginMessageQueue';
 import {
   isDevicePluginDefinition,

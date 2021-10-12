@@ -15,23 +15,23 @@ import {LaunchEmulatorDialog} from '../LaunchEmulator';
 
 import {createRootReducer} from '../../../reducers';
 import {sleep} from 'flipper-plugin';
-
-import {launchEmulator} from '../../../server/devices/android/AndroidDevice';
-jest.mock('../../../server/devices/android/AndroidDevice', () => ({
-  launchEmulator: jest.fn(() => Promise.resolve([])),
-}));
+import {createFlipperServerMock} from '../../../test-utils/createFlipperServerMock';
 
 test('Can render and launch android apps - empty', async () => {
   const store = createStore(createRootReducer());
+  const mockServer = createFlipperServerMock({
+    'ios-get-simulators': () => Promise.resolve([]),
+    'android-get-emulators': () => Promise.resolve([]),
+  });
+  store.dispatch({
+    type: 'SET_FLIPPER_SERVER',
+    payload: mockServer,
+  });
   const onClose = jest.fn();
 
   const renderer = render(
     <Provider store={store}>
-      <LaunchEmulatorDialog
-        onClose={onClose}
-        getSimulators={() => Promise.resolve([])}
-        getEmulators={() => Promise.resolve([])}
-      />
+      <LaunchEmulatorDialog onClose={onClose} />
     </Provider>,
   );
 
@@ -45,7 +45,21 @@ test('Can render and launch android apps - empty', async () => {
 });
 
 test('Can render and launch android apps', async () => {
+  let p: Promise<any> | undefined = undefined;
+
   const store = createStore(createRootReducer());
+  const launch = jest.fn().mockImplementation(() => Promise.resolve());
+  const mockServer = createFlipperServerMock({
+    'ios-get-simulators': () => Promise.resolve([]),
+    'android-get-emulators': () =>
+      (p = Promise.resolve(['emulator1', 'emulator2'])),
+    'android-launch-emulator': launch,
+  });
+  store.dispatch({
+    type: 'SET_FLIPPER_SERVER',
+    payload: mockServer,
+  });
+
   store.dispatch({
     type: 'UPDATE_SETTINGS',
     payload: {
@@ -55,15 +69,9 @@ test('Can render and launch android apps', async () => {
   });
   const onClose = jest.fn();
 
-  let p: Promise<any> | undefined = undefined;
-
   const renderer = render(
     <Provider store={store}>
-      <LaunchEmulatorDialog
-        onClose={onClose}
-        getSimulators={() => Promise.resolve([])}
-        getEmulators={() => (p = Promise.resolve(['emulator1', 'emulator2']))}
-      />
+      <LaunchEmulatorDialog onClose={onClose} />
     </Provider>,
   );
 
@@ -84,5 +92,5 @@ test('Can render and launch android apps', async () => {
   fireEvent.click(renderer.getByText('emulator2'));
   await sleep(1000);
   expect(onClose).toBeCalled();
-  expect(launchEmulator).toBeCalledWith('emulator2', false);
+  expect(launch).toBeCalledWith('emulator2', false);
 });

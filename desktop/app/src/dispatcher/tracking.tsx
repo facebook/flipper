@@ -27,7 +27,7 @@ import {
 } from '../reducers/usageTracking';
 import produce from 'immer';
 import BaseDevice from '../devices/BaseDevice';
-import {deconstructClientId} from '../utils/clientUtils';
+import {deconstructClientId} from 'flipper-common';
 import {getCPUUsage} from 'process';
 import {sideEffect} from '../utils/sideEffect';
 import {getSelectionInfo} from '../utils/info';

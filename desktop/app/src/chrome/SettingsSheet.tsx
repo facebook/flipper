@@ -38,7 +38,6 @@ type OwnProps = {
 type StateFromProps = {
   settings: Settings;
   launcherSettings: LauncherSettings;
-  isXcodeDetected: boolean;
 };
 
 type DispatchFromProps = {
@@ -356,11 +355,9 @@ class SettingsSheet extends Component<Props, State> {
 }
 
 export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
-  ({settingsState, launcherSettingsState, connections}) => ({
+  ({settingsState, launcherSettingsState}) => ({
     settings: settingsState,
     launcherSettings: launcherSettingsState,
-    isXcodeDetected:
-      connections.flipperServer?.ios.xcodeCommandLineToolsDetected ?? false,
   }),
   {updateSettings, updateLauncherSettings},
 )(withTrackingScope(SettingsSheet));

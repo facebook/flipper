@@ -8,13 +8,12 @@
  */
 
 import {ChildProcess} from 'child_process';
-import type {DeviceType} from 'flipper-common';
+import type {IOSDeviceParams} from 'flipper-common';
 import path from 'path';
 import childProcess from 'child_process';
 import {exec, execFile} from 'promisify-child-process';
 import iosUtil from './iOSContainerUtility';
 import IOSDevice from './IOSDevice';
-import {getStaticPath} from '../../../utils/pathUtils';
 import {
   ERR_NO_IDB_OR_XCODE_AVAILABLE,
   IOSBridge,
@@ -22,6 +21,7 @@ import {
 } from './IOSBridge';
 import {FlipperServerImpl} from '../../FlipperServerImpl';
 import {notNull} from '../../utils/typeUtils';
+import {getFlipperServerConfig} from '../../FlipperServerConfig';
 
 type iOSSimulatorDevice = {
   state: 'Booted' | 'Shutdown' | 'Shutting Down';
@@ -29,14 +29,6 @@ type iOSSimulatorDevice = {
   isAvailable?: 'YES' | 'NO' | true | false;
   name: string;
   udid: string;
-};
-
-export type IOSDeviceParams = {
-  udid: string;
-  type: DeviceType;
-  name: string;
-  deviceTypeIdentifier?: string;
-  state?: string;
 };
 
 function isAvailable(simulator: iOSSimulatorDevice): boolean {
@@ -53,13 +45,12 @@ function isAvailable(simulator: iOSSimulatorDevice): boolean {
 export class IOSDeviceManager {
   private portForwarders: Array<ChildProcess> = [];
 
-  private portforwardingClient = getStaticPath(
-    path.join(
-      'PortForwardingMacApp.app',
-      'Contents',
-      'MacOS',
-      'PortForwardingMacApp',
-    ),
+  private portforwardingClient = path.join(
+    getFlipperServerConfig().staticPath,
+    'PortForwardingMacApp.app',
+    'Contents',
+    'MacOS',
+    'PortForwardingMacApp',
   );
   iosBridge: IOSBridge | undefined;
   private xcodeVersionMismatchFound = false;
@@ -114,7 +105,7 @@ export class IOSDeviceManager {
     isXcodeDetected: boolean,
     isIdbAvailable: boolean,
   ): Array<Promise<any>> {
-    const {config} = this.flipperServer;
+    const config = getFlipperServerConfig();
     return [
       isIdbAvailable
         ? getActiveDevices(config.idbPath, config.enablePhysicalIOS).then(
@@ -133,7 +124,7 @@ export class IOSDeviceManager {
   }
 
   private async queryDevices(): Promise<any> {
-    const {config} = this.flipperServer;
+    const config = getFlipperServerConfig();
     const isXcodeInstalled = await iosUtil.isXcodeDetected();
     const isIdbAvailable = await iosUtil.isAvailable(config.idbPath);
     return Promise.all(
@@ -177,19 +168,19 @@ export class IOSDeviceManager {
 
   public async watchIOSDevices() {
     // TODO: pull this condition up
-    if (!this.flipperServer.config.enableIOS) {
+    if (!getFlipperServerConfig().enableIOS) {
       return;
     }
     try {
       const isDetected = await iosUtil.isXcodeDetected();
       this.xcodeCommandLineToolsDetected = isDetected;
-      if (this.flipperServer.config.enablePhysicalIOS) {
+      if (getFlipperServerConfig().enablePhysicalIOS) {
         this.startDevicePortForwarders();
       }
       try {
         // Awaiting the promise here to trigger immediate error handling.
         this.iosBridge = await makeIOSBridge(
-          this.flipperServer.config.idbPath,
+          getFlipperServerConfig().idbPath,
           isDetected,
         );
         this.queryDevicesForever();

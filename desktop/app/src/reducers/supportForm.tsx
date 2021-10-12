@@ -9,7 +9,7 @@
 
 import {Actions, Store} from './';
 import {setStaticView} from './connections';
-import {deconstructClientId} from '../utils/clientUtils';
+import {deconstructClientId} from 'flipper-common';
 import {switchPlugin} from './pluginManager';
 import {showStatusUpdatesForDuration} from '../utils/promiseTimeout';
 import {selectedPlugins as setSelectedPlugins} from './plugins';

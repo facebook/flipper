@@ -12,10 +12,10 @@ import WebSocket from 'ws';
 import querystring from 'querystring';
 import {BrowserClientFlipperConnection} from './BrowserClientFlipperConnection';
 import {ServerEventsListener} from './ServerAdapter';
-import constants from '../../fb-stubs/constants';
 import ws from 'ws';
 import {IncomingMessage} from 'http';
 import {ClientDescription, ClientQuery} from 'flipper-common';
+import {getFlipperServerConfig} from '../FlipperServerConfig';
 
 /**
  * WebSocket-based server which uses a connect/disconnect handshake over an insecure channel.
@@ -27,7 +27,7 @@ class ServerWebSocketBrowser extends ServerWebSocketBase {
 
   verifyClient(): ws.VerifyClientCallbackSync {
     return (info: {origin: string; req: IncomingMessage; secure: boolean}) => {
-      const ok = constants.VALID_WEB_SOCKET_REQUEST_ORIGIN_PREFIXES.some(
+      const ok = getFlipperServerConfig().validWebSocketOrigins.some(
         (validPrefix) => info.origin.startsWith(validPrefix),
       );
       if (!ok) {

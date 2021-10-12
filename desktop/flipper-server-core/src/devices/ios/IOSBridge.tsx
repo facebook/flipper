@@ -13,7 +13,7 @@ import {DeviceType} from 'flipper-plugin-lib';
 import {v1 as uuid} from 'uuid';
 import path from 'path';
 import {exec} from 'promisify-child-process';
-import {getAppTempPath} from '../../../utils/pathUtils';
+import {getFlipperServerConfig} from '../../FlipperServerConfig';
 
 export const ERR_NO_IDB_OR_XCODE_AVAILABLE =
   'Neither Xcode nor idb available. Cannot provide iOS device functionality.';
@@ -98,8 +98,7 @@ export function xcrunStartLogListener(udid: string, deviceType: DeviceType) {
 
 function makeTempScreenshotFilePath() {
   const imageName = uuid() + '.png';
-  const directory = getAppTempPath();
-  return path.join(directory, imageName);
+  return path.join(getFlipperServerConfig().tmpPath, imageName);
 }
 
 async function runScreenshotCommand(
