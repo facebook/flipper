@@ -7,13 +7,18 @@
  * @format
  */
 
-import {Logger, Args, TrackType} from '../fb-interfaces/Logger';
+import {Logger, LoggerTrackType, LoggerArgs} from 'flipper-common';
 import {Store} from '../reducers/index';
 
 export default class StubLogger implements Logger {
-  constructor(_store: Store, _args?: Args) {}
+  constructor(_store: Store, _args?: LoggerArgs) {}
 
-  track(_type: TrackType, _event: string, _data?: any, _plugin?: string) {}
+  track(
+    _type: LoggerTrackType,
+    _event: string,
+    _data?: any,
+    _plugin?: string,
+  ) {}
 
   trackTimeSince(_mark: string, _eventName?: string) {}
 

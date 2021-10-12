@@ -7,7 +7,7 @@
  * @format
  */
 
-import {ClientQuery} from 'flipper-plugin';
+import {ClientQuery} from 'flipper-common';
 import {CertificateExchangeMedium} from '../utils/CertificateProvider';
 
 /**

@@ -7,12 +7,12 @@
  * @format
  */
 
-import {DeviceLogEntry, LogLevel} from 'flipper-plugin';
+import {DeviceLogEntry, DeviceLogLevel} from 'flipper-plugin';
 import {shouldParseAndroidLog} from '../android-crash-utils';
 
 function getAndroidLog(
   date: Date,
-  type: LogLevel,
+  type: DeviceLogLevel,
   tag: string,
   message: string,
 ): DeviceLogEntry {

@@ -9,19 +9,21 @@
 
 import stream from 'stream';
 import {
-  DeviceLogEntry,
+  Device,
   _SandyDevicePluginInstance,
   _SandyPluginDefinition,
-  DeviceType,
   DeviceLogListener,
   Idler,
   createState,
   getFlipperLib,
+} from 'flipper-plugin';
+import {
+  DeviceLogEntry,
   DeviceOS,
+  DeviceType,
   DeviceDescription,
   FlipperServer,
-  Device,
-} from 'flipper-plugin';
+} from 'flipper-common';
 import {DeviceSpec, PluginDetails} from 'flipper-plugin-lib';
 import {getPluginKey} from '../utils/pluginKey';
 import {Base64} from 'js-base64';

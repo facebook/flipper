@@ -34,6 +34,7 @@
     "crc32": "^0.2.2",
     "deep-equal": "^2.0.5",
     "expand-tilde": "^2.0.2",
+    "flipper-common": "0.0.0",
     "flipper-client-sdk": "^0.0.3",
     "flipper-doctor": "0.0.0",
     "flipper-plugin": "0.0.0",

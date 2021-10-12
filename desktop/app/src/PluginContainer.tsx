@@ -8,7 +8,7 @@
  */
 
 import {FlipperPlugin, FlipperDevicePlugin} from './plugin';
-import {Logger} from './fb-interfaces/Logger';
+import {Logger} from 'flipper-common';
 import BaseDevice from './devices/BaseDevice';
 import {pluginKey as getPluginKey} from './utils/pluginKey';
 import Client from './Client';

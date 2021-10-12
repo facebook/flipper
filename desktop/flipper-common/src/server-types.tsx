@@ -12,7 +12,6 @@ import {
   DeviceType as PluginDeviceType,
   OS as PluginOS,
 } from 'flipper-plugin-lib';
-import {DeviceLogEntry} from '../plugin/DevicePlugin';
 
 // In the future, this file would deserve it's own package, as it doesn't really relate to plugins.
 // Since flipper-plugin however is currently shared among server, client and defines a lot of base types, leaving it here for now.
@@ -39,6 +38,25 @@ export type DeviceDescription = {
   readonly abiList?: string[];
   readonly sdkVersion?: string;
 };
+
+export type DeviceLogEntry = {
+  readonly date: Date;
+  readonly type: DeviceLogLevel;
+  readonly message: string;
+  readonly pid: number;
+  readonly tid: number;
+  readonly app?: string;
+  readonly tag: string;
+};
+
+export type DeviceLogLevel =
+  | 'unknown'
+  | 'verbose'
+  | 'debug'
+  | 'info'
+  | 'warn'
+  | 'error'
+  | 'fatal';
 
 export type UninitializedClient = {
   os: string;

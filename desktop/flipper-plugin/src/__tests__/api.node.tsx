@@ -83,8 +83,11 @@ test('Correct top level API exposed', () => {
       "DefaultKeyboardAction",
       "Device",
       "DeviceLogEntry",
+      "DeviceLogLevel",
       "DeviceLogListener",
+      "DeviceOS",
       "DevicePluginClient",
+      "DeviceType",
       "DialogResult",
       "Draft",
       "ElementAttribute",
@@ -99,15 +102,12 @@ test('Correct top level API exposed', () => {
       "Idler",
       "InteractionReport",
       "InteractionReporter",
-      "LogLevel",
-      "LogTypes",
       "Logger",
       "MenuEntry",
       "MockedConsole",
       "NormalizedMenuEntry",
       "Notification",
       "PluginClient",
-      "TrackType",
     ]
   `);
 });

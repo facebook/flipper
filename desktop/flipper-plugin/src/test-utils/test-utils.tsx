@@ -30,7 +30,6 @@ import {
 import {SandyPluginRenderer} from '../plugin/PluginRenderer';
 import {act} from '@testing-library/react';
 import {
-  DeviceLogEntry,
   SandyDevicePluginInstance,
   Device,
   DeviceLogListener,
@@ -41,6 +40,7 @@ import {stubLogger} from '../utils/Logger';
 import {Idler} from '../utils/Idler';
 import {createState} from '../state/atom';
 import baseMockConsole from 'jest-mock-console';
+import {DeviceLogEntry} from 'flipper-common';
 
 type Renderer = RenderResult<typeof queries>;
 

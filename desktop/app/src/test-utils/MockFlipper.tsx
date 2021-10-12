@@ -17,7 +17,7 @@ import {
   ConnectionStatusChange,
 } from '../server/comms/ClientConnection';
 import {buildClientId} from '../utils/clientUtils';
-import {Logger} from '../fb-interfaces/Logger';
+import {Logger} from 'flipper-common';
 import {PluginDefinition} from '../plugin';
 import {registerPlugins} from '../reducers/plugins';
 import {getInstance} from '../fb-stubs/Logger';
@@ -25,7 +25,7 @@ import {initializeFlipperLibImplementation} from '../utils/flipperLibImplementat
 import pluginManager from '../dispatcher/pluginManager';
 import {PluginDetails} from 'flipper-plugin-lib';
 import ArchivedDevice from '../devices/ArchivedDevice';
-import {ClientQuery, DeviceOS} from 'flipper-plugin';
+import {ClientQuery, DeviceOS} from 'flipper-common';
 import {TestDevice} from './TestDevice';
 
 export interface AppOptions {

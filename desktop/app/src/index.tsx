@@ -123,7 +123,7 @@ export {default as FileSelector} from './ui/components/FileSelector';
 export {KeyboardActions} from './MenuBar';
 export {getFlipperMediaCDN, appendAccessTokenToUrl} from './fb-stubs/user';
 export {Rect} from './utils/geometry';
-export {Logger} from './fb-interfaces/Logger';
+export {Logger} from 'flipper-common';
 export {getInstance as getLogger} from './fb-stubs/Logger';
 export {callVSCode} from './utils/vscodeUtils';
 export {checkIdbIsInstalled} from './server/devices/ios/iOSContainerUtility';

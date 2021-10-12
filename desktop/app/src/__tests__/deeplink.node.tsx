@@ -20,7 +20,7 @@ import {
   useValue,
 } from 'flipper-plugin';
 import {handleDeeplink} from '../deeplink';
-import {Logger} from '../fb-interfaces/Logger';
+import {Logger} from 'flipper-common';
 
 test('Triggering a deeplink will work', async () => {
   const linksSeen: any[] = [];

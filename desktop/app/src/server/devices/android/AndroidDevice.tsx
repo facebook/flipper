@@ -10,7 +10,7 @@
 import adb, {Client as ADBClient, PullTransfer} from 'adbkit';
 import {Priority, Reader} from 'adbkit-logcat';
 import {createWriteStream} from 'fs';
-import type {LogLevel, DeviceType} from 'flipper-plugin';
+import type {DeviceLogLevel, DeviceType} from 'flipper-common';
 import which from 'which';
 import {spawn} from 'child_process';
 import {dirname, join} from 'path';
@@ -56,7 +56,7 @@ export default class AndroidDevice extends ServerDevice {
         this.reader = reader;
         reader
           .on('entry', (entry) => {
-            let type: LogLevel = 'unknown';
+            let type: DeviceLogLevel = 'unknown';
             if (entry.priority === Priority.VERBOSE) {
               type = 'verbose';
             }
@@ -89,7 +89,7 @@ export default class AndroidDevice extends ServerDevice {
             if (this.reader) {
               // logs didn't stop gracefully
               setTimeout(() => {
-                if (this.connected.get()) {
+                if (this.connected) {
                   console.warn(
                     `Log stream broken: ${this.serial} - restarting`,
                   );

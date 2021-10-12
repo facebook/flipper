@@ -7,7 +7,7 @@
  * @format
  */
 
-import {ClientResponseType} from 'flipper-plugin';
+import {ClientResponseType} from 'flipper-common';
 
 export enum ConnectionStatus {
   ERROR = 'error',

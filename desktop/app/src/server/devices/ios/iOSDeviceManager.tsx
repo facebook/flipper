@@ -8,7 +8,7 @@
  */
 
 import {ChildProcess} from 'child_process';
-import type {DeviceType} from 'flipper-plugin';
+import type {DeviceType} from 'flipper-common';
 import path from 'path';
 import childProcess from 'child_process';
 import {exec, execFile} from 'promisify-child-process';

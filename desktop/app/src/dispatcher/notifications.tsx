@@ -8,7 +8,7 @@
  */
 
 import {Store} from '../reducers/index';
-import {Logger} from '../fb-interfaces/Logger';
+import {Logger} from 'flipper-common';
 import {PluginNotification} from '../reducers/notifications';
 import {ipcRenderer, IpcRendererEvent} from 'electron';
 import {

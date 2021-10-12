@@ -21,7 +21,7 @@ import {Store} from './reducers/';
 import electron, {MenuItemConstructorOptions} from 'electron';
 import {notNull} from './utils/typeUtils';
 import constants from './fb-stubs/constants';
-import {Logger} from './fb-interfaces/Logger';
+import {Logger} from 'flipper-common';
 import {
   NormalizedMenuEntry,
   _buildInMenuEntries,

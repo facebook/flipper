@@ -7,7 +7,12 @@
  * @format
  */
 
-import {LogLevel, DeviceLogEntry, DeviceType, timeout} from 'flipper-plugin';
+import {
+  DeviceLogLevel,
+  DeviceLogEntry,
+  DeviceType,
+  timeout,
+} from 'flipper-common';
 import child_process, {ChildProcess} from 'child_process';
 import JSONStream from 'JSONStream';
 import {Transform} from 'stream';
@@ -65,7 +70,7 @@ export default class IOSDevice extends ServerDevice {
   }
 
   async screenshot(): Promise<Buffer> {
-    if (!this.connected.get()) {
+    if (!this.connected) {
       return Buffer.from([]);
     }
     return await this.iOSBridge.screenshot(this.serial);
@@ -148,7 +153,7 @@ export default class IOSDevice extends ServerDevice {
     }
   }
 
-  static getLogLevel(level: string): LogLevel {
+  static getLogLevel(level: string): DeviceLogLevel {
     switch (level) {
       case 'Default':
         return 'debug';
@@ -183,7 +188,7 @@ export default class IOSDevice extends ServerDevice {
   }
 
   static parseJsonLogEntry(entry: RawLogEntry): DeviceLogEntry {
-    let type: LogLevel = IOSDevice.getLogLevel(entry.messageType);
+    let type: DeviceLogLevel = IOSDevice.getLogLevel(entry.messageType);
 
     // when Apple log levels are not used, log messages can be prefixed with
     // their loglevel.
@@ -215,7 +220,7 @@ export default class IOSDevice extends ServerDevice {
   }
 
   async screenCaptureAvailable() {
-    return this.info.deviceType === 'emulator' && this.connected.get();
+    return this.info.deviceType === 'emulator' && this.connected;
   }
 
   async startScreenCapture(destination: string) {

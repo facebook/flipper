@@ -8,7 +8,7 @@
  */
 
 import {Store} from '../reducers/index';
-import {Logger} from '../fb-interfaces/Logger';
+import {Logger} from 'flipper-common';
 
 export type Dispatcher = (
   store: Store,

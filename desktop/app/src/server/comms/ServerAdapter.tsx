@@ -13,7 +13,7 @@ import {
 } from '../utils/CertificateProvider';
 import {ClientConnection} from './ClientConnection';
 import {transformCertificateExchangeMediumToType} from './Utilities';
-import {ClientDescription, ClientQuery} from 'flipper-plugin';
+import {ClientDescription, ClientQuery} from 'flipper-common';
 
 /**
  * ClientCsrQuery defines a client query with CSR

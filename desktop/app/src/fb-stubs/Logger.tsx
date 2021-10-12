@@ -7,17 +7,17 @@
  * @format
  */
 
-import {Logger, Args} from '../fb-interfaces/Logger';
+import {Logger, LoggerArgs} from 'flipper-common';
 import StubLogger from '../utils/StubLogger';
 import {Store} from '../reducers/index';
 
 let instance: StubLogger | null = null;
 
-export function init(store: Store, _args?: Args): Logger {
+export function init(store: Store, _args?: LoggerArgs): Logger {
   if (instance) {
     throw new Error('Attempted to initialize Logger when already initialized');
   }
-  instance = new StubLogger(store);
+  instance = new StubLogger(store, _args);
   return instance;
 }
 

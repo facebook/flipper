@@ -9,16 +9,16 @@
 
 import React from 'react';
 import {State, Store} from '../reducers/index';
-import {Logger} from '../fb-interfaces/Logger';
+import {Logger} from 'flipper-common';
 import {
   FlipperServerConfig,
   FlipperServerImpl,
 } from '../server/FlipperServerImpl';
 import {selectClient} from '../reducers/connections';
 import Client from '../Client';
-import {message, notification} from 'antd';
+import {notification} from 'antd';
 import BaseDevice from '../devices/BaseDevice';
-import {ClientDescription, timeout} from 'flipper-plugin';
+import {ClientDescription, timeout} from 'flipper-common';
 import {reportPlatformFailures} from '../utils/metrics';
 import {sideEffect} from '../utils/sideEffect';
 

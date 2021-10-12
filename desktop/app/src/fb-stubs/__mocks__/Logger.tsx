@@ -12,7 +12,7 @@ import {
   getErrorFromErrorLike,
   getStringFromErrorLike,
 } from '../../utils/errors';
-import {Args, Logger} from '../../fb-interfaces/Logger';
+import {LoggerArgs, Logger} from 'flipper-common';
 
 const instance = {
   track: jest.fn(),
@@ -35,7 +35,7 @@ export function extractError(...data: Array<any>): {
   };
 }
 
-export function init(_store: Store, _args?: Args): Logger {
+export function init(_store: Store, _args?: LoggerArgs): Logger {
   return instance;
 }
 

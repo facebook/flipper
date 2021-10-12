@@ -4,5 +4,9 @@
     "outDir": "lib",
     "rootDir": "src"
   },
-  "references": []
+  "references": [
+    {
+      "path": "../plugin-lib"
+    }
+  ]
 }

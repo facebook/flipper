@@ -8,7 +8,7 @@
  */
 
 import {SearchableProps} from './ui';
-import {Logger} from './fb-interfaces/Logger';
+import {Logger} from 'flipper-common';
 import {
   Searchable,
   Button,

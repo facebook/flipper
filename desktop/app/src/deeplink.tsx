@@ -8,7 +8,7 @@
  */
 
 import {Group, SUPPORTED_GROUPS} from './reducers/supportForm';
-import {Logger} from './fb-interfaces/Logger';
+import {Logger} from 'flipper-common';
 import {Store} from './reducers/index';
 import {importDataToStore} from './utils/exportData';
 import {selectPlugin, getAllClients} from './reducers/connections';

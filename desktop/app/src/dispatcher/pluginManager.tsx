@@ -8,7 +8,7 @@
  */
 
 import type {Store} from '../reducers/index';
-import type {Logger} from '../fb-interfaces/Logger';
+import type {Logger} from 'flipper-common';
 import {
   LoadPluginActionPayload,
   UninstallPluginActionPayload,

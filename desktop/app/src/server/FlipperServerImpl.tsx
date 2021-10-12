@@ -8,7 +8,7 @@
  */
 
 import EventEmitter from 'events';
-import {Logger} from '../fb-interfaces/Logger';
+import {Logger} from 'flipper-common';
 import ServerController from './comms/ServerController';
 import {CertificateExchangeMedium} from './utils/CertificateProvider';
 import {ServerPorts} from '../reducers/application';
@@ -22,7 +22,7 @@ import {
   FlipperServerCommands,
   FlipperServer,
   UninitializedClient,
-} from 'flipper-plugin';
+} from 'flipper-common';
 import {ServerDevice} from './devices/ServerDevice';
 import {Base64} from 'js-base64';
 import MetroDevice from './devices/metro/MetroDevice';

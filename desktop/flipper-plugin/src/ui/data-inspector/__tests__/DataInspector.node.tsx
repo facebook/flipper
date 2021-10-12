@@ -11,7 +11,7 @@ import * as React from 'react';
 import {render, fireEvent, waitFor, act} from '@testing-library/react';
 
 import {DataInspector} from '../DataInspector';
-import {sleep} from '../../../utils/sleep';
+import {sleep} from 'flipper-common';
 
 const json = {
   data: {

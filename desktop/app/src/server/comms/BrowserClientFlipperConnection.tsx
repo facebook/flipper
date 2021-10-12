@@ -7,7 +7,7 @@
  * @format
  */
 
-import {ClientResponseType} from 'flipper-plugin';
+import {ClientResponseType} from 'flipper-common';
 import WebSocket from 'ws';
 import {
   ConnectionStatusChange,

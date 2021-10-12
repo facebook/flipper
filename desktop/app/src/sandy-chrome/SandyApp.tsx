@@ -19,7 +19,7 @@ import {
 import {Link, styled} from '../ui';
 import {theme} from 'flipper-plugin';
 import {ipcRenderer} from 'electron';
-import {Logger} from '../fb-interfaces/Logger';
+import {Logger} from 'flipper-common';
 
 import {LeftRail} from './LeftRail';
 import {useStore, useDispatch} from '../utils/useStore';

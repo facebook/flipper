@@ -21,10 +21,8 @@ export {
 } from './plugin/Plugin';
 export {
   Device,
-  DeviceLogEntry,
   DeviceLogListener,
   DevicePluginClient,
-  LogLevel,
   SandyDevicePluginInstance as _SandyDevicePluginInstance,
 } from './plugin/DevicePlugin';
 export {SandyPluginDefinition as _SandyPluginDefinition} from './plugin/SandyPluginDefinition';
@@ -75,16 +73,8 @@ export {
 
 export {DataFormatter} from './ui/DataFormatter';
 
-export {sleep} from './utils/sleep';
-export {timeout} from './utils/timeout';
+export {useLogger, _LoggerContext} from './utils/useLogger';
 
-export {
-  LogTypes,
-  TrackType,
-  Logger,
-  useLogger,
-  _LoggerContext,
-} from './utils/Logger';
 export {Idler} from './utils/Idler';
 
 // Import from the index file directly, to make sure package.json's main field is skipped.
@@ -143,4 +133,12 @@ export {textContent} from './utils/textContent';
 // T69106962
 export const TestUtils = TestUtilites;
 
-export * from './types/server-types';
+export {
+  sleep,
+  timeout,
+  DeviceOS,
+  DeviceType,
+  DeviceLogEntry,
+  DeviceLogLevel,
+  Logger,
+} from 'flipper-common';

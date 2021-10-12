@@ -8,7 +8,7 @@
  */
 
 import {_setFlipperLibImplementation} from 'flipper-plugin';
-import type {Logger} from '../fb-interfaces/Logger';
+import type {Logger} from 'flipper-common';
 import type {Store} from '../reducers';
 import createPaste from '../fb-stubs/createPaste';
 import GK from '../fb-stubs/GK';

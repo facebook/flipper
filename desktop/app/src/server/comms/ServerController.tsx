@@ -8,11 +8,11 @@
  */
 
 import {CertificateExchangeMedium} from '../utils/CertificateProvider';
-import {Logger} from '../../fb-interfaces/Logger';
-import {ClientDescription, ClientQuery} from 'flipper-plugin';
+import {Logger} from 'flipper-common';
+import {ClientDescription, ClientQuery} from 'flipper-common';
 import CertificateProvider from '../utils/CertificateProvider';
 import {ClientConnection, ConnectionStatus} from './ClientConnection';
-import {UninitializedClient} from 'flipper-plugin';
+import {UninitializedClient} from 'flipper-common';
 import {reportPlatformFailures} from '../../utils/metrics';
 import {EventEmitter} from 'events';
 import invariant from 'invariant';

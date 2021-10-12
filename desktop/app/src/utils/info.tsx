@@ -14,7 +14,7 @@ import {getStaticPath} from './pathUtils';
 import type {State, Store} from '../reducers/index';
 import {deconstructClientId} from './clientUtils';
 import {sideEffect} from './sideEffect';
-import {Logger} from '../fb-interfaces/Logger';
+import {Logger} from 'flipper-common';
 
 type PlatformInfo = {
   arch: string;

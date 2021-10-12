@@ -7,7 +7,7 @@
  * @format
  */
 
-import {LogLevel} from 'flipper-plugin';
+import {DeviceLogLevel} from 'flipper-common';
 import util from 'util';
 import {FlipperServerImpl} from '../../FlipperServerImpl';
 import {ServerDevice} from '../ServerDevice';
@@ -102,7 +102,7 @@ export type MetroReportableEvent =
       data: Array<any>;
     };
 
-const metroLogLevelMapping: {[key: string]: LogLevel} = {
+const metroLogLevelMapping: {[key: string]: DeviceLogLevel} = {
   trace: 'verbose',
   info: 'info',
   warn: 'warn',
@@ -116,7 +116,7 @@ const metroLogLevelMapping: {[key: string]: LogLevel} = {
 
 function getLoglevelFromMessageType(
   type: MetroReportableEvent['type'],
-): LogLevel | null {
+): DeviceLogLevel | null {
   switch (type) {
     case 'bundle_build_done':
     case 'bundle_build_started':
@@ -163,7 +163,8 @@ export default class MetroDevice extends ServerDevice {
   private _handleWSMessage = ({data}: any) => {
     const message: MetroReportableEvent = JSON.parse(data);
     if (message.type === 'client_log') {
-      const type: LogLevel = metroLogLevelMapping[message.level] || 'unknown';
+      const type: DeviceLogLevel =
+        metroLogLevelMapping[message.level] || 'unknown';
       this.addLogEntry({
         date: new Date(),
         pid: 0,

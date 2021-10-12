@@ -27,7 +27,7 @@ import {
   ClientDescription,
   ClientQuery,
   ClientResponseType,
-} from 'flipper-plugin';
+} from 'flipper-common';
 
 /**
  * RSocket based server. RSocket uses its own protocol for communication between

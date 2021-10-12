@@ -7,13 +7,13 @@
  * @format
  */
 
-import {createState, DeviceDescription, DeviceLogEntry} from 'flipper-plugin';
+import {DeviceDescription, DeviceLogEntry} from 'flipper-common';
 import {FlipperServerImpl} from '../FlipperServerImpl';
 
 export abstract class ServerDevice {
   readonly info: DeviceDescription;
-  readonly connected = createState(true);
   readonly flipperServer: FlipperServerImpl;
+  connected = true;
 
   constructor(flipperServer: FlipperServerImpl, info: DeviceDescription) {
     this.flipperServer = flipperServer;
@@ -34,7 +34,9 @@ export abstract class ServerDevice {
   /**
    * The device might have no active connection
    */
-  disconnect(): void {}
+  disconnect(): void {
+    this.connected = false;
+  }
 
   startLogging() {
     // to be subclassed

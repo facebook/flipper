@@ -15,7 +15,7 @@ import {ServerEventsListener} from './ServerAdapter';
 import constants from '../../fb-stubs/constants';
 import ws from 'ws';
 import {IncomingMessage} from 'http';
-import {ClientDescription, ClientQuery} from 'flipper-plugin';
+import {ClientDescription, ClientQuery} from 'flipper-common';
 
 /**
  * WebSocket-based server which uses a connect/disconnect handshake over an insecure channel.

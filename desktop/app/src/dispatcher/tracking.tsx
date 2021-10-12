@@ -14,7 +14,7 @@ import {performance} from 'perf_hooks';
 import {EventEmitter} from 'events';
 
 import {State, Store} from '../reducers/index';
-import {Logger} from '../fb-interfaces/Logger';
+import {Logger} from 'flipper-common';
 import {
   getPluginBackgroundStats,
   resetPluginBackgroundStatsDelta,

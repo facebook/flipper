@@ -11,28 +11,9 @@ import {SandyPluginDefinition} from './SandyPluginDefinition';
 import {BasePluginInstance, BasePluginClient} from './PluginBase';
 import {FlipperLib} from './FlipperLib';
 import {Atom, ReadOnlyAtom} from '../state/atom';
-import {DeviceOS, DeviceType} from '../types/server-types';
+import {DeviceOS, DeviceType, DeviceLogEntry} from 'flipper-common';
 
 export type DeviceLogListener = (entry: DeviceLogEntry) => void;
-
-export type DeviceLogEntry = {
-  readonly date: Date;
-  readonly type: LogLevel;
-  readonly message: string;
-  readonly pid: number;
-  readonly tid: number;
-  readonly app?: string;
-  readonly tag: string;
-};
-
-export type LogLevel =
-  | 'unknown'
-  | 'verbose'
-  | 'debug'
-  | 'info'
-  | 'warn'
-  | 'error'
-  | 'fatal';
 
 export interface Device {
   readonly isArchived: boolean;

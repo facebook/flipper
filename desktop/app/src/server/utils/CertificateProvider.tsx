@@ -7,7 +7,7 @@
  * @format
  */
 
-import {Logger} from '../../fb-interfaces/Logger';
+import {Logger} from 'flipper-common';
 import {internGraphPOSTAPIRequest} from '../../fb-stubs/user';
 import ServerController from '../comms/ServerController';
 import {promisify} from 'util';
@@ -26,7 +26,7 @@ import * as androidUtil from '../devices/android/androidContainerUtility';
 import os from 'os';
 import {Client as ADBClient} from 'adbkit';
 import archiver from 'archiver';
-import {timeout} from 'flipper-plugin';
+import {timeout} from 'flipper-common';
 import {v4 as uuid} from 'uuid';
 import {isTest} from '../../utils/isProduction';
 import {message} from 'antd';

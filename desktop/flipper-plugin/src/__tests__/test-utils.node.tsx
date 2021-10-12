@@ -13,7 +13,7 @@ import {createState} from '../state/atom';
 import {PluginClient} from '../plugin/Plugin';
 import {DevicePluginClient} from '../plugin/DevicePlugin';
 import mockConsole from 'jest-mock-console';
-import {sleep} from '../utils/sleep';
+import {sleep} from 'flipper-common';
 import {createDataSource} from '../state/createDataSource';
 
 test('it can start a plugin and lifecycle events', () => {

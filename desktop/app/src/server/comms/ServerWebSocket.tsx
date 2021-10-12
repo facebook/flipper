@@ -23,7 +23,7 @@ import {
   ClientErrorType,
   ClientQuery,
   DeviceOS,
-} from 'flipper-plugin';
+} from 'flipper-common';
 
 /**
  * WebSocket-based server.

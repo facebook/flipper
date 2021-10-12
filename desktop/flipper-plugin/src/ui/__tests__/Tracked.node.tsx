@@ -11,7 +11,7 @@
 
 import {render, fireEvent} from '@testing-library/react';
 import {TestUtils} from '../../';
-import {sleep} from '../../utils/sleep';
+import {sleep} from 'flipper-common';
 import React, {Component} from 'react';
 import {
   setGlobalInteractionReporter,

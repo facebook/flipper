@@ -10,7 +10,7 @@
 import {FlexColumn, styled, Text, FlexRow, Spacer, Input} from '../ui';
 import React, {Component} from 'react';
 import {ReactReduxContext} from 'react-redux';
-import {Logger} from '../fb-interfaces/Logger';
+import {Logger} from 'flipper-common';
 import {IdlerImpl} from '../utils/Idler';
 import {
   shareFlipperData,

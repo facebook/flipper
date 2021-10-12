@@ -8,7 +8,7 @@
  */
 
 import {KeyboardActions} from './MenuBar';
-import {Logger} from './fb-interfaces/Logger';
+import {Logger} from 'flipper-common';
 import Client from './Client';
 import {Component} from 'react';
 import BaseDevice from './devices/BaseDevice';

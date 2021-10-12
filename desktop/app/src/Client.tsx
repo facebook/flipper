@@ -12,7 +12,7 @@
 
 import {PluginDefinition} from './plugin';
 import BaseDevice from './devices/BaseDevice';
-import {Logger} from './fb-interfaces/Logger';
+import {Logger} from 'flipper-common';
 import {Store} from './reducers/index';
 import {performance} from 'perf_hooks';
 import {reportPluginFailures} from './utils/metrics';
@@ -27,14 +27,16 @@ import {emitBytesReceived} from './dispatcher/tracking';
 import {debounce} from 'lodash';
 import {batch} from 'react-redux';
 import {
+  timeout,
+  ClientQuery,
+  ClientResponseType,
+  ClientErrorType,
+} from 'flipper-common';
+import {
   createState,
   _SandyPluginInstance,
   getFlipperLib,
-  timeout,
-  ClientQuery,
   _SandyPluginDefinition,
-  ClientResponseType,
-  ClientErrorType,
 } from 'flipper-plugin';
 import {freeze} from 'immer';
 import {message} from 'antd';

@@ -12,7 +12,7 @@ import {produce} from 'immer';
 
 import type BaseDevice from '../devices/BaseDevice';
 import type Client from '../Client';
-import type {UninitializedClient} from 'flipper-plugin';
+import type {UninitializedClient, DeviceOS, Logger} from 'flipper-common';
 import {performance} from 'perf_hooks';
 import type {Actions} from '.';
 import {WelcomeScreenStaticView} from '../sandy-chrome/WelcomeScreen';
@@ -21,7 +21,6 @@ import {getPluginKey} from '../utils/pluginKey';
 
 import {deconstructClientId} from '../utils/clientUtils';
 import type {RegisterPluginAction} from './plugins';
-import {DeviceOS, Logger} from 'flipper-plugin';
 import {FlipperServerImpl} from '../server/FlipperServerImpl';
 import {shallowEqual} from 'react-redux';
 

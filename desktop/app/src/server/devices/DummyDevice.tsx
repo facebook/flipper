@@ -7,7 +7,7 @@
  * @format
  */
 
-import {DeviceOS} from 'flipper-plugin';
+import {DeviceOS} from 'flipper-common';
 import {FlipperServerImpl} from '../FlipperServerImpl';
 import {ServerDevice} from './ServerDevice';
 

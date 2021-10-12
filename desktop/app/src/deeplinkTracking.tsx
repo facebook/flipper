@@ -7,7 +7,7 @@
  * @format
  */
 
-import {Logger} from './fb-interfaces/Logger';
+import {Logger} from 'flipper-common';
 
 export type OpenPluginParams = {
   pluginId: string;

@@ -8,7 +8,7 @@
  */
 
 import Client from '../Client';
-import {Logger} from '../fb-interfaces/Logger';
+import {Logger} from 'flipper-common';
 import {Store} from '../reducers';
 import {appPluginListChanged} from '../reducers/connections';
 import {getActiveClient} from '../selectors/connections';

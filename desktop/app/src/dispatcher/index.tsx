@@ -23,7 +23,7 @@ import pluginDownloads from './pluginDownloads';
 import info from '../utils/info';
 import pluginChangeListener from './pluginsChangeListener';
 
-import {Logger} from '../fb-interfaces/Logger';
+import {Logger} from 'flipper-common';
 import {Store} from '../reducers/index';
 import {Dispatcher} from './types';
 import {notNull} from '../utils/typeUtils';
