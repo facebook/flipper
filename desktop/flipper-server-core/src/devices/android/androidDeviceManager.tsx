@@ -65,7 +65,12 @@ export class AndroidDeviceManager {
           const ports = getServerPortsConfig();
           if (ports.serverPorts) {
             await androidLikeDevice
-              .reverse([ports.serverPorts.secure, ports.serverPorts.insecure])
+              .reverse([
+                ports.serverPorts.secure,
+                ports.serverPorts.insecure,
+                ports.altServerPorts.secure,
+                ports.altServerPorts.insecure,
+              ])
               // We may not be able to establish a reverse connection, e.g. for old Android SDKs.
               // This is *generally* fine, because we hard-code the ports on the SDK side.
               .catch((e) => {
