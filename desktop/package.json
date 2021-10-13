@@ -125,8 +125,8 @@
     "@types/yazl": "^2.4.2",
     "@typescript-eslint/eslint-plugin": "^4.31.0",
     "@typescript-eslint/parser": "^4.30.0",
-    "app-builder-lib": "22.14.4",
     "ansi-to-html": "^0.7.2",
+    "app-builder-lib": "22.14.4",
     "babel-eslint": "^10.1.0",
     "chalk": "^4.1.2",
     "cross-env": "^7.0.3",
@@ -260,7 +260,7 @@
     "tsc-plugins": "./ts-node scripts/tsc-plugins.ts",
     "watch": "cross-env TZ=Pacific/Pohnpei node --expose-gc --stack-trace-limit=40 ./node_modules/.bin/jest --watch"
   },
-  "version": "0.114.1",
+  "version": "0.115.0",
   "workspaces": {
     "packages": [
       "app",
