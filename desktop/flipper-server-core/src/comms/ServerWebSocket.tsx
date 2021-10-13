@@ -24,6 +24,7 @@ import {
   ClientQuery,
   DeviceOS,
 } from 'flipper-common';
+import {cloneClientQuerySafeForLogging} from './Utilities';
 
 /**
  * WebSocket-based server.
@@ -95,7 +96,7 @@ class ServerWebSocket extends ServerWebSocketBase {
     }
     console.info(
       `[conn] Secure websocket connection attempt: ${clientQuery.app} on ${clientQuery.device_id}. Medium ${clientQuery.medium}. CSR: ${clientQuery.csr_path}`,
-      clientQuery,
+      cloneClientQuerySafeForLogging(clientQuery),
     );
     this.listener.onSecureConnectionAttempt(clientQuery);
 

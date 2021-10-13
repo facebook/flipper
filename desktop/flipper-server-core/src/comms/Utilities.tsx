@@ -9,6 +9,7 @@
 
 import {ClientQuery} from 'flipper-common';
 import {CertificateExchangeMedium} from '../utils/CertificateProvider';
+import {SecureClientQuery} from './ServerAdapter';
 
 /**
  * Transforms the certificate exchange medium type as number to the
@@ -47,4 +48,8 @@ export function appNameWithUpdateHint(query: ClientQuery): string {
     return query.app + ' (Outdated SDK)';
   }
   return query.app;
+}
+
+export function cloneClientQuerySafeForLogging(clientQuery: SecureClientQuery) {
+  return {...clientQuery, csr: !clientQuery.csr ? clientQuery.csr : '<hidden>'};
 }

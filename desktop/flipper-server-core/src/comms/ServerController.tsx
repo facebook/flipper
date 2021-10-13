@@ -25,6 +25,7 @@ import invariant from 'invariant';
 import DummyDevice from '../devices/DummyDevice';
 import {
   appNameWithUpdateHint,
+  cloneClientQuerySafeForLogging,
   transformCertificateExchangeMediumToType,
 } from './Utilities';
 import ServerAdapter, {
@@ -192,7 +193,7 @@ class ServerController extends EventEmitter implements ServerEventsListener {
     const transformedMedium = transformCertificateExchangeMediumToType(medium);
     console.info(
       `[conn] Connection established: ${app} on ${device_id}. Medium ${medium}. CSR: ${csr_path}`,
-      clientQuery,
+      cloneClientQuerySafeForLogging(clientQuery),
     );
     return this.addConnection(
       clientConnection,
@@ -356,7 +357,6 @@ class ServerController extends EventEmitter implements ServerEventsListener {
       console.info(
         `[conn] Detected ${app_name} on ${query.device_id} in certificate`,
         query,
-        csrQuery,
       );
     }
 
@@ -372,7 +372,6 @@ class ServerController extends EventEmitter implements ServerEventsListener {
     console.info(
       `[conn] Matching device for ${query.app} on ${query.device_id}...`,
       query,
-      csrQuery,
     );
 
     const client: ClientDescription = {
@@ -388,7 +387,6 @@ class ServerController extends EventEmitter implements ServerEventsListener {
     console.info(
       `[conn] Initializing client ${query.app} on ${query.device_id}...`,
       query,
-      csrQuery,
     );
 
     connection.subscribeToEvents((status: ConnectionStatus) => {
@@ -400,12 +398,7 @@ class ServerController extends EventEmitter implements ServerEventsListener {
       }
     });
 
-    console.debug(
-      `[conn] Device client initialized: ${id}.`,
-      'server',
-      query,
-      csrQuery,
-    );
+    console.debug(`[conn] Device client initialized: ${id}.`, 'server', query);
 
     /* If a device gets disconnected without being cleaned up properly,
      * Flipper won't be aware until it attempts to reconnect.
