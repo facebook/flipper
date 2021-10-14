@@ -138,7 +138,7 @@ export function SandyApp() {
   ) : null;
 
   return (
-    <Layout.Container grow>
+    <Layout.Bottom>
       <Layout.Left>
         <Layout.Horizontal>
           <LeftRail
@@ -179,7 +179,7 @@ export function SandyApp() {
         </MainContainer>
       </Layout.Left>
       <_PortalsManager />
-    </Layout.Container>
+    </Layout.Bottom>
   );
 }
 
