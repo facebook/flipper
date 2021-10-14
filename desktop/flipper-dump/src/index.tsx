@@ -10,7 +10,7 @@
 import fs from 'fs';
 import os from 'os';
 import yargs from 'yargs';
-import {FlipperServerImpl, setFlipperServerConfig} from 'flipper-server-core';
+import {FlipperServerImpl} from 'flipper-server-core';
 import {
   ClientDescription,
   Logger,
@@ -63,20 +63,22 @@ async function start(deviceTitle: string, appName: string, pluginId: string) {
     console.debug = () => {};
     console.info = console.error;
 
-    // TODO: make these better overridable
-    setFlipperServerConfig({
-      enableAndroid: true,
-      androidHome: process.env.ANDROID_HOME || '/opt/android_sdk',
-      idbPath: '/usr/local/bin/idb',
-      enableIOS: true,
-      enablePhysicalIOS: true,
-      staticPath: path.resolve(__dirname, '..', '..', 'static'),
-      tmpPath: os.tmpdir(),
-      validWebSocketOrigins: [],
-    });
     // TODO: initialise FB user manager to be able to do certificate exchange
 
-    const server = new FlipperServerImpl(logger);
+    const server = new FlipperServerImpl(
+      {
+        // TODO: make these better overridable
+        enableAndroid: true,
+        androidHome: process.env.ANDROID_HOME || '/opt/android_sdk',
+        idbPath: '/usr/local/bin/idb',
+        enableIOS: true,
+        enablePhysicalIOS: true,
+        staticPath: path.resolve(__dirname, '..', '..', 'static'),
+        tmpPath: os.tmpdir(),
+        validWebSocketOrigins: [],
+      },
+      logger,
+    );
 
     logger.info(
       `Waiting for device '${deviceTitle}' client '${appName}' plugin '${pluginId}' ...`,

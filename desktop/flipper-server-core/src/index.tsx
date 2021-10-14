@@ -7,10 +7,4 @@
  * @format
  */
 
-export {
-  FlipperServerConfig,
-  getFlipperServerConfig,
-  setFlipperServerConfig,
-} from './FlipperServerConfig';
-
 export {FlipperServerImpl} from './FlipperServerImpl';

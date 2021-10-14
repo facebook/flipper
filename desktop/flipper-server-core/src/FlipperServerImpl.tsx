@@ -29,7 +29,10 @@ import {ServerDevice} from './devices/ServerDevice';
 import {Base64} from 'js-base64';
 import MetroDevice from './devices/metro/MetroDevice';
 import {launchEmulator} from './devices/android/AndroidDevice';
-import {getFlipperServerConfig} from './FlipperServerConfig';
+import {
+  FlipperServerConfig,
+  setFlipperServerConfig,
+} from './FlipperServerConfig';
 
 /**
  * FlipperServer takes care of all incoming device & client connections.
@@ -49,8 +52,8 @@ export class FlipperServerImpl implements FlipperServer {
   android: AndroidDeviceManager;
   ios: IOSDeviceManager;
 
-  constructor(public logger: Logger) {
-    getFlipperServerConfig(); // Config should be available at this point!
+  constructor(config: FlipperServerConfig, public logger: Logger) {
+    setFlipperServerConfig(config);
     const server = (this.server = new ServerController(this));
     this.android = new AndroidDeviceManager(this);
     this.ios = new IOSDeviceManager(this);
@@ -89,7 +92,7 @@ export class FlipperServerImpl implements FlipperServer {
           title: `Timed out establishing connection with "${client.appName}" on "${client.deviceName}".`,
           description:
             medium === 'WWW'
-              ? `Verify that both your computer and mobile device are on Lighthouse/VPN that you are logged in to Facebook Intern so that certificates can be exhanged. See: https://www.internalfb.com/intern/wiki/Ops/Network/Enterprise_Network_Engineering/ene_wlra/VPN_Help/Vpn/mobile/`
+              ? `Verify that both your computer and mobile device are on Lighthouse/VPN that you are logged in to Facebook Intern so that certificates can be exhanged. See: https://fburl.com/flippervpn`
               : 'Verify that your client is connected to Flipper and that there is no error related to idb.',
         });
       },
