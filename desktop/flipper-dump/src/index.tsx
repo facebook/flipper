@@ -169,7 +169,9 @@ async function start(deviceTitle: string, appName: string, pluginId: string) {
 
     server.on('client-disconnected', ({id}) => {
       if (id === client?.id) {
-        reject(new Error('Application disconnected'));
+        // TODO: maybe we need a flag to signal that this might be undesired?
+        logger.info('Target application disconnected, exiting...');
+        process.exit(0);
       }
     });
 
