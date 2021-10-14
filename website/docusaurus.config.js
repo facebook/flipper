@@ -56,6 +56,7 @@ const siteConfig = {
           label: 'Under the Hood',
           position: 'right',
         },
+        {to: 'blog', label: 'Blog', position: 'right'},
         {
           href: repoUrl,
           position: 'right',
