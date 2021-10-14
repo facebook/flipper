@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>https://fbflipper.com/blog</id>
+    <title>Flipper Blog</title>
+    <updated>2021-10-14T00:00:00.000Z</updated>
+    <generator>https://github.com/jpmonette/feed</generator>
+    <link rel="alternate" href="https://fbflipper.com/blog"/>
+    <subtitle>Flipper Blog</subtitle>
+    <icon>https://fbflipper.com/img/icon.png</icon>
+    <entry>
+        <title type="html"><![CDATA[Flipper 2021 Roadmap Update]]></title>
+        <id>Flipper 2021 Roadmap Update</id>
+        <link href="https://fbflipper.com/blog/2021/10/14/roadmap"/>
+        <updated>2021-10-14T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[What is next for Flipper?]]></summary>
+        <author>
+            <name>Michel Weststrate</name>
+            <uri>https://github.com/mweststrate</uri>
+        </author>
+    </entry>
+</feed>
