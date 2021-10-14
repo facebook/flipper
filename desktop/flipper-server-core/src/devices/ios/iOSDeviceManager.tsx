@@ -71,20 +71,26 @@ export class IOSDeviceManager {
       (err, stdout, stderr) => {
         // This happens on app reloads and doesn't need to be treated as an error.
         console.warn(
-          'Port forwarding app failed to start',
+          '[conn] Port forwarding app failed to start',
           err,
           stdout,
           stderr,
         );
       },
     );
-    console.log('Port forwarding app started', childProcess);
+    console.info(
+      `[conn] Port forwarding app started (portForward: ${port}, multiplexChannelPort: ${multiplexChannelPort})`,
+    );
     child.addListener('error', (err) =>
-      console.warn('Port forwarding app error', err),
+      console.warn('[conn] Port forwarding app error', err),
     );
-    child.addListener('exit', (code) =>
-      console.log(`Port forwarding app exited with code ${code}`),
-    );
+    child.addListener('exit', (code) => {
+      if (code != 0) {
+        console.warn(`[conn] Port forwarding app exited with code ${code}`);
+      } else {
+        console.log(`[conn] Port forwarding app exited gracefully`);
+      }
+    });
     return child;
   }
 
