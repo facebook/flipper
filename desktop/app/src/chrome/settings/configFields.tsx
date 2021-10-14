@@ -23,6 +23,7 @@ import {promises as fs} from 'fs';
 // eslint-disable-next-line flipper/no-electron-remote-imports
 import {remote} from 'electron';
 import path from 'path';
+import {theme} from 'flipper-plugin';
 
 export const ConfigFieldContainer = styled(FlexRow)({
   paddingLeft: 10,
@@ -116,7 +117,11 @@ export function FilePathConfigField(props: {
               }
             })
         }>
-        <CenteredGlyph name="dots-3-circle" variant="outline" />
+        <CenteredGlyph
+          color={theme.primaryColor}
+          name="dots-3-circle"
+          variant="outline"
+        />
       </FlexColumn>
       {props.resetValue && (
         <FlexColumn
@@ -125,7 +130,11 @@ export function FilePathConfigField(props: {
             setValue(props.resetValue!);
             props.onChange(props.resetValue!);
           }}>
-          <CenteredGlyph name="undo" variant="outline" />
+          <CenteredGlyph
+            color={theme.primaryColor}
+            name="undo"
+            variant="outline"
+          />
         </FlexColumn>
       )}
       {isValid ? null : (
