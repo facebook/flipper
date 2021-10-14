@@ -9,6 +9,7 @@
 
 #import "FlipperWebSocket.h"
 #import <Flipper/ConnectionContextStore.h>
+#import <Flipper/FlipperBase64.h>
 #import <Flipper/FlipperTransportTypes.h>
 #import <Flipper/Log.h>
 #import <folly/String.h>
@@ -71,11 +72,7 @@ class WebSocketSerializer : public FlipperPayloadSerializer {
       query += key;
       query += "=";
       if (key == "csr") {
-        NSString* csr = [NSString stringWithUTF8String:value.c_str()];
-        NSData* data = [csr dataUsingEncoding:NSUTF8StringEncoding];
-        NSString* base64 = [data base64EncodedStringWithOptions:0];
-
-        query += base64.UTF8String;
+        query += Base64::encode(value);
       } else {
         query += url_encode(value);
       }
