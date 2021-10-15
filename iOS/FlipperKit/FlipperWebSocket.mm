@@ -9,8 +9,8 @@
 
 #import "FlipperWebSocket.h"
 #import <Flipper/ConnectionContextStore.h>
-#import <Flipper/FlipperBase64.h>
 #import <Flipper/FlipperTransportTypes.h>
+#import <Flipper/FlipperURLSerializer.h>
 #import <Flipper/Log.h>
 #import <folly/String.h>
 #import <folly/futures/Future.h>
@@ -27,65 +27,6 @@
 
 namespace facebook {
 namespace flipper {
-
-class WebSocketSerializer : public FlipperPayloadSerializer {
- public:
-  void put(std::string key, std::string value) override {
-    object_[key] = value;
-  }
-  void put(std::string key, int value) override {
-    object_[key] = value;
-  }
-  std::string url_encode(const std::string& value) {
-    std::ostringstream escaped;
-    escaped.fill('0');
-    escaped << std::hex;
-
-    for (std::string::const_iterator i = value.begin(), n = value.end(); i != n;
-         ++i) {
-      std::string::value_type c = (*i);
-
-      // Keep alphanumeric and other accepted characters intact
-      if (std::isalnum(c) || c == '-' || c == '_' || c == '.' || c == '~') {
-        escaped << c;
-        continue;
-      }
-
-      // Any other characters are percent-encoded
-      escaped << std::uppercase;
-      escaped << '%' << std::setw(2) << int((unsigned char)c);
-      escaped << std::nouppercase;
-    }
-
-    return escaped.str();
-  }
-  std::string serialize() override {
-    std::string query = "";
-    bool append = false;
-
-    for (auto& pair : object_.items()) {
-      auto key = pair.first.asString();
-      auto value = pair.second.asString();
-      if (append) {
-        query += "&";
-      }
-      query += key;
-      query += "=";
-      if (key == "csr") {
-        query += Base64::encode(value);
-      } else {
-        query += url_encode(value);
-      }
-      append = true;
-    }
-
-    return query;
-  }
-  ~WebSocketSerializer() {}
-
- private:
-  folly::dynamic object_ = folly::dynamic::object();
-};
 
 FlipperWebSocket::FlipperWebSocket(
     FlipperConnectionEndpoint endpoint,
@@ -122,7 +63,7 @@ bool FlipperWebSocket::connect(FlipperConnectionManager* manager) {
   connectionURL += ":";
   connectionURL += std::to_string(endpoint_.port);
 
-  auto serializer = WebSocketSerializer{};
+  auto serializer = URLSerializer{};
   payload_->serialize(serializer);
   auto payload = serializer.serialize();
 
