@@ -47,7 +47,7 @@ export function devicePlugin(client: DevicePluginClient) {
       callstack: payload.callstack,
       name: payload.name,
       reason: payload.reason,
-      date: payload.date ?? Date.now(),
+      date: payload.date || Date.now(),
     };
 
     crashes.update((draft) => {
