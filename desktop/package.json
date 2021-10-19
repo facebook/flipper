@@ -173,7 +173,7 @@
     "p-map": "^4.0.0",
     "patch-package": "^6.4.7",
     "prettier": "^2.4.1",
-    "pretty-format": "^27.2.5",
+    "pretty-format": "^27.3.1",
     "promisify-child-process": "^4.1.0",
     "react-async": "^10.0.0",
     "react-refresh": "^0.10.0",
