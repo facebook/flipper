@@ -8668,10 +8668,10 @@ jest-message-util@^26.6.2:
     slash "^3.0.0"
     stack-utils "^2.0.2"
 
-jest-mock-console@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/jest-mock-console/-/jest-mock-console-1.1.0.tgz#81e283688d3161c5c1f4fd3f61a6dd17122c3e87"
-  integrity sha512-9/6a0nXw+Iqq8U0LPpR5GrzpkGYFasD4TPNItKuNP36fUN6/rqcUtcNvzFiq2AssfR0PtSTIzrIHdKOipUxe3Q==
+jest-mock-console@^1.2.3:
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/jest-mock-console/-/jest-mock-console-1.2.3.tgz#4e725cd2c26d17051c35ce2c378129d52c2b4f61"
+  integrity sha512-q4jfuHW3V3tYzwtKTF6nxjRNriUC2/D2SVfxW88lNeG1qO1mVarBUqgOAvZjTEmxuTsjzGlHQsDIgvlOZaLccg==
 
 jest-mock@^25.0.0, jest-mock@^25.1.0, jest-mock@^25.5.0:
   version "25.5.0"
@@ -14017,6 +14017,7 @@ xmlchars@^2.2.0:
 
 xmldom@^0.5.0, "xmldom@github:xmldom/xmldom#0.7.0":
   version "0.7.0"
+  uid c568938641cc1f121cef5b4df80fcfda1e489b6e
   resolved "https://codeload.github.com/xmldom/xmldom/tar.gz/c568938641cc1f121cef5b4df80fcfda1e489b6e"
 
 xtend@^4.0.0, xtend@~4.0.1:
