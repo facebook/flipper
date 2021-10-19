@@ -133,7 +133,7 @@ function HealthcheckIcon(props: {checkResult: HealthcheckResult}) {
         <Glyph
           size={16}
           name={'question'}
-          color={colors.grey}
+          color={colors.gray}
           title={props.checkResult.message}
         />
       );

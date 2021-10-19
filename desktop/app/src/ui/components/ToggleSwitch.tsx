@@ -17,7 +17,7 @@ export const StyledButton = styled.div<{toggled: boolean; large: boolean}>(
   ({large, toggled}) => ({
     width: large ? 60 : 30,
     height: large ? 32 : 16,
-    background: toggled ? colors.green : colors.grey,
+    background: toggled ? colors.green : colors.gray,
     display: 'block',
     borderRadius: '100px',
     position: 'relative',
