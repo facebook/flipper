@@ -11,6 +11,14 @@ import path from 'path';
 import os from 'os';
 import fs from 'fs';
 
+const flipperHomeDir = path.join(os.homedir(), '.flipper');
+export const configPath = path.join(flipperHomeDir, 'config.json');
+export const defaultConfig: Config = {
+  pluginPaths: [],
+  disabledPlugins: [],
+  darkMode: 'light',
+};
+
 export type Config = {
   pluginPaths?: string[];
   disabledPlugins?: string[];
@@ -27,31 +35,41 @@ export type Config = {
   darkMode: 'system' | 'light' | 'dark';
 };
 
-export default function setup(argv: any) {
-  // ensure .flipper folder and config exist
-  const flipperDir = path.join(os.homedir(), '.flipper');
-  if (!fs.existsSync(flipperDir)) {
-    fs.mkdirSync(flipperDir);
+const ensureConfigDirExists = async (path: fs.PathLike) => {
+  try {
+    await fs.promises.access(path);
+  } catch (e) {
+    console.warn('Config directory not found, creating config directory.');
+    try {
+      await fs.promises.mkdir(path);
+    } catch (e) {
+      console.error('Failed to create config directory', e);
+    }
   }
+};
 
-  const configPath = path.join(flipperDir, 'config.json');
-  let config: Config = {
-    pluginPaths: [],
-    disabledPlugins: [],
-    darkMode: 'light',
-  };
+const readConfigFile = async (configPath: fs.PathLike) => {
+  let config = defaultConfig;
 
   try {
     config = {
       ...config,
-      ...JSON.parse(fs.readFileSync(configPath).toString()),
+      ...JSON.parse((await fs.promises.readFile(configPath)).toString()),
     };
   } catch (e) {
     // file not readable or not parsable, overwrite it with the new config
     console.warn(`Failed to read ${configPath}: ${e}`);
     console.info('Writing new default config.');
-    fs.writeFileSync(configPath, JSON.stringify(config));
+    await fs.promises.writeFile(configPath, JSON.stringify(config));
   }
+  return config;
+};
+
+export default async function setup(argv: any) {
+  // ensure .flipper folder and config exist
+  await ensureConfigDirExists(flipperHomeDir);
+
+  let config = await readConfigFile(configPath);
 
   // Non-persistent CLI arguments.
   config = {
@@ -67,5 +85,5 @@ export default function setup(argv: any) {
     launcherMsg: argv.launcherMsg,
   };
 
-  return {config, configPath};
+  return config;
 }

@@ -10,7 +10,6 @@
 import os from 'os';
 import fs from 'fs';
 import path from 'path';
-import {promisify} from 'util';
 import {spawn} from 'child_process';
 import xdg from 'xdg-basedir';
 import mkdirp from 'mkdirp';
@@ -18,14 +17,19 @@ import mkdirp from 'mkdirp';
 const isProduction = () =>
   !/node_modules[\\/]electron[\\/]/.test(process.execPath);
 
-const isLauncherInstalled = () => {
+const isLauncherInstalled = async () => {
   if (os.type() == 'Darwin') {
     const receipt = 'com.facebook.flipper.launcher';
     const plistLocation = '/Applications/Flipper.app/Contents/Info.plist';
-    return (
-      fs.existsSync(plistLocation) &&
-      fs.readFileSync(plistLocation).indexOf(receipt) > 0
-    );
+    try {
+      return (
+        (await fs.promises.stat(plistLocation)) &&
+        (await fs.promises.readFile(plistLocation)).indexOf(receipt) > 0
+      );
+    } catch (e) {
+      console.error('Error while reading Info.plist', e);
+      return false;
+    }
   }
 
   return false;
@@ -54,17 +58,14 @@ const checkIsCycle = async () => {
 
   let backThen;
   try {
-    backThen = parseInt(
-      (await promisify(fs.readFile)(filePath)).toString(),
-      10,
-    );
+    backThen = parseInt((await fs.promises.readFile(filePath)).toString(), 10);
   } catch (e) {
     backThen = 0;
   }
 
   const delta = rightNow - backThen;
   await mkdirp(dir);
-  await promisify(fs.writeFile)(filePath, '' + rightNow);
+  await fs.promises.writeFile(filePath, '' + rightNow);
 
   // If the last startup was less than 5s ago, something's not okay.
   return Math.abs(delta) < 5000;
@@ -79,7 +80,7 @@ export default async function delegateToLauncher(argv: {
   file?: string;
   url?: string;
 }) {
-  if (argv.launcher && isProduction() && isLauncherInstalled()) {
+  if (argv.launcher && isProduction() && (await isLauncherInstalled())) {
     if (await checkIsCycle()) {
       console.error(
         'Launcher cycle detected. Not delegating even though I usually would.',
