@@ -38,7 +38,7 @@ declare namespace Flipper {
     /**
      * Returns true if the plugin is meant to be run in background too, otherwise it returns false.
      */
-    runInBackground(): boolean;
+    runInBackground?(): boolean;
   }
 
   export interface FlipperResponder {
