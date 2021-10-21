@@ -15,6 +15,7 @@ import {assert, detectDevice, detectOS} from './util';
 import {RECONNECT_TIMEOUT} from './consts';
 
 // TODO: Share with flipper-server-core
+// Borrowed from https://github.com/strong-roots-capital/websocket-close-codes
 /**
  * IANA WebSocket close code definitions.
  *
@@ -123,25 +124,33 @@ export interface FlipperWebSocket {
   readyState: number;
 }
 
+interface FlipperClientOptions {
+  // Make the client connect to a different URL
+  urlBase?: string;
+  // Override WebSocket implementation (Node.js folks, it is for you!)
+  websocketFactory?: (url: string) => FlipperWebSocket;
+  // Override how errors are handled (it is simple `console.error` by default)
+  onError?: (e: unknown) => void;
+  // Timeout after which client tries to reconnect to Flipper
+  reconnectTimeout?: number;
+}
+
 export class FlipperClient {
-  protected plugins: Map<string, FlipperPlugin> = new Map();
-  protected connections: Map<string, FlipperConnection> = new Map();
+  private readonly plugins: Map<string, FlipperPlugin> = new Map();
+  private readonly connections: Map<string, FlipperConnection> = new Map();
   private ws?: FlipperWebSocket;
-  private devicePseudoId = `${Date.now()}.${Math.random()}`;
-  private os = detectOS();
-  private device = detectDevice();
-  private _appName = 'JS App';
+  private readonly devicePseudoId = `${Date.now()}.${Math.random()}`;
+  private readonly os = detectOS();
+  private readonly device = detectDevice();
   private reconnectionTimer?: NodeJS.Timeout;
   private resolveStartPromise?: () => void;
+  private urlBase!: string;
+  private websocketFactory!: (url: string) => FlipperWebSocket;
+  private onError!: (e: unknown) => void;
+  private reconnectTimeout!: number;
+  private appName!: string;
 
-  public urlBase = `localhost:8333`;
-
-  public websocketFactory: (url: string) => FlipperWebSocket = (url) =>
-    new WebSocket(url) as FlipperWebSocket;
-  public onError: (e: unknown) => void = (e: unknown) =>
-    console.error('WebSocket error', e);
-
-  constructor(public readonly reconnectTimeout = RECONNECT_TIMEOUT) {}
+  constructor() {}
 
   addPlugin(plugin: FlipperPlugin) {
     this.plugins.set(plugin.getId(), plugin);
@@ -155,10 +164,24 @@ export class FlipperClient {
     return this.plugins.get(id);
   }
 
-  async start(): Promise<void> {
+  async start(
+    appName: string,
+    {
+      urlBase = 'localhost:8333',
+      websocketFactory = (url) => new WebSocket(url) as FlipperWebSocket,
+      onError = (e) => console.error('WebSocket error', e),
+      reconnectTimeout = RECONNECT_TIMEOUT,
+    }: FlipperClientOptions = {},
+  ): Promise<void> {
     if (this.ws) {
       return;
     }
+
+    this.appName = appName;
+    this.onError = onError;
+    this.urlBase = urlBase;
+    this.websocketFactory = websocketFactory;
+    this.reconnectTimeout = reconnectTimeout;
 
     return new Promise<void>((resolve) => {
       this.resolveStartPromise = resolve;
@@ -189,17 +212,6 @@ export class FlipperClient {
     return !!this.ws && this.ws.readyState === 1;
   }
 
-  get appName() {
-    return this._appName;
-  }
-
-  set appName(newAppName: string) {
-    this._appName = newAppName;
-
-    this.ws?.close(WSCloseCode.NormalClosure);
-    this.reconnect(true);
-  }
-
   private connectToFlipper() {
     const url = `ws://${this.urlBase}?device_id=${this.device}${this.devicePseudoId}&device=${this.device}&app=${this.appName}&os=${this.os}`;
 
@@ -211,7 +223,7 @@ export class FlipperClient {
     this.ws.onclose = ({code}) => {
       // Some WS implementations do not properly set `wasClean`
       if (code !== WSCloseCode.NormalClosure) {
-        this.reconnect(false);
+        this.reconnect();
       }
     };
 
@@ -235,7 +247,7 @@ export class FlipperClient {
   }
 
   // TODO: Reconnect in a loop with an exponential backoff
-  private reconnect(now?: boolean) {
+  private reconnect() {
     this.ws = undefined;
 
     if (this.reconnectionTimer) {
@@ -243,12 +255,9 @@ export class FlipperClient {
       this.reconnectionTimer = undefined;
     }
 
-    this.reconnectionTimer = setTimeout(
-      () => {
-        this.connectToFlipper();
-      },
-      now ? 0 : this.reconnectTimeout,
-    );
+    this.reconnectionTimer = setTimeout(() => {
+      this.connectToFlipper();
+    }, this.reconnectTimeout);
   }
 
   private onMessageReceived(message: {

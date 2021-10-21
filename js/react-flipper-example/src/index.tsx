@@ -7,9 +7,14 @@
  * @format
  */
 
-import {FlipperClient} from './client';
+import React from 'react';
+import ReactDOM from 'react-dom';
 
-export * from './client';
-export * from './plugin';
+import App from './App';
 
-export const flipperClient = new FlipperClient();
+ReactDOM.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+  document.getElementById('root')
+);

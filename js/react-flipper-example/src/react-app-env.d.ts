@@ -7,9 +7,4 @@
  * @format
  */
 
-import {FlipperClient} from './client';
-
-export * from './client';
-export * from './plugin';
-
-export const flipperClient = new FlipperClient();
+/// <reference types="react-scripts" />

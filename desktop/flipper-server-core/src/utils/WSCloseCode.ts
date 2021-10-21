@@ -7,6 +7,7 @@
  * @format
  */
 
+// Borrowed from https://github.com/strong-roots-capital/websocket-close-codes
 export enum WSCloseCode {
   /**
    * Normal closure; the connection successfully completed whatever

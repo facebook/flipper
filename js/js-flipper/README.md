@@ -23,11 +23,21 @@ parameter, that registers a client plugin and will fire the relevant callbacks
 if the corresponding desktop plugin is selected in the Flipper Desktop. The full
 plugin API is documented
 [here](https://fbflipper.com/docs/extending/create-plugin).
-- `start` method. It starts the client.
-- `appName` setter to set the app name displayed in Flipper
-- `onError` setter to override how errors are handled (it is simple `console.error` by default)
-- `websocketFactory` setter to override WebSocket implementation (Node.js folks, it is for you!)
-- `urlBase` setter to make the client connect to a different URL
+- `start` method. It starts the client. It has two arguments:
+   - `appName` - (required) the name dsplayed in Flipper
+   - `options` which conforms to the infterface
+      ```ts
+      interface FlipperClientOptions {
+        // Make the client connect to a different URL
+        urlBase?: string;
+        // Override WebSocket implementation (Node.js folks, it is for you!)
+        websocketFactory?: (url: string) => FlipperWebSocket;
+        // Override how errors are handled (it is simple `console.error` by default)
+        onError?: (e: unknown) => void;
+        // Timeout after which client tries to reconnect to Flipper
+        reconnectTimeout?: number;
+      }
+      ```
 
 ## Example (web)
 
@@ -49,18 +59,15 @@ interface of the
 [web version](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket).
 
 ```ts
-import {setWebSocketImplementation, start} from 'js-flipper';
+import flipperClient from 'js-flipper';
 // Say, you decided to go with 'ws'
 // https://github.com/websockets/ws
 import WebSocket from 'ws';
 
-// You need to let the flipper client know about it.
-setWebSocketImplementation(url => new WebSocket(url, {origin: 'localhost:'}));
+// Start the client and pass some options
 // You might ask yourself why there is the second argument `{ origin: 'localhost:' }`
 // Flipper Desktop verifies the `Origin` header for every WS connection. You need to set it to one of the whitelisted values (see `VALID_WEB_SOCKET_REQUEST_ORIGIN_PREFIXES`).
-
-// Now, the last bit. You need to start the client.
-start();
+flipperClient.start('My cool nodejs app', { websocketFactory: url => new WebSocket(url, {origin: 'localhost:'}) });
 ```
 
 An example plugin should be somewhat similar to

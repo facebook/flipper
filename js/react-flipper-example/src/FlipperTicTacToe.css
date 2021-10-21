@@ -1,0 +1,27 @@
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ */
+
+.grid {
+    display: grid;
+    grid-template-rows: repeat(3, 40px);
+    grid-template-columns: repeat(3, 40px);
+}
+
+.cell {
+    line-height: 40px;
+    text-align: center;
+}
+
+.cell:disabled {
+    color: black;
+}
+
+.cell:hover:not(:disabled), .cell:focus:not(:disabled) {
+    background-color: blue;
+}
