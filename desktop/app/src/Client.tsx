@@ -433,10 +433,7 @@ export default class Client extends EventEmitter {
   }
 
   onResponse(
-    data: {
-      success?: Object;
-      error?: ClientErrorType;
-    },
+    data: ClientResponseType,
     resolve: ((a: any) => any) | undefined,
     reject: (error: ClientErrorType) => any,
   ) {

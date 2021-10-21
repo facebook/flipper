@@ -4855,9 +4855,9 @@ camelcase@^6.0.0, camelcase@^6.2.0:
   integrity sha512-c7wVvbw3f37nuobQNtgsgG9POC9qMbNuMQmTCqZv23b6MIz0fcYpBiOlv9gEN/hdLdnZTDQhg6e9Dq5M1vKvfg==
 
 caniuse-lite@^1.0.30001265:
-  version "1.0.30001269"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001269.tgz#3a71bee03df627364418f9fd31adfc7aa1cc2d56"
-  integrity sha512-UOy8okEVs48MyHYgV+RdW1Oiudl1H6KolybD6ZquD0VcrPSgj25omXO1S7rDydjpqaISCwA8Pyx+jUQKZwWO5w==
+  version "1.0.30001267"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001267.tgz#b1cf2937175afc0570e4615fc2d2f9069fa0ed30"
+  integrity sha512-r1mjTzAuJ9W8cPBGbbus8E0SKcUP7gn03R14Wk8FlAlqhH9hroy9nLqmpuXlfKEw/oILW+FGz47ipXV2O7x8lg==
 
 capture-exit@^2.0.0:
   version "2.0.0"
@@ -6063,9 +6063,9 @@ electron-publish@22.14.5:
     mime "^2.5.2"
 
 electron-to-chromium@^1.3.867:
-  version "1.3.871"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.871.tgz#6e87365fd72037a6c898fb46050ad4be3ac9ef62"
-  integrity sha512-qcLvDUPf8DSIMWarHT2ptgcqrYg62n3vPA7vhrOF24d8UNzbUBaHu2CySiENR3nEDzYgaN60071t0F6KLYMQ7Q==
+  version "1.3.870"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.870.tgz#c15c921e66a46985181b261f8093b91c2abb6604"
+  integrity sha512-PiJMshfq6PL+i1V+nKLwhHbCKeD8eAz8rvO9Cwk/7cChOHJBtufmjajLyYLsSRHguRFiOCVx3XzJLeZsIAYfSA==
 
 electron@11.2.3:
   version "11.2.3"
@@ -9189,7 +9189,15 @@ jsonparse@^1.2.0:
   resolved "https://registry.yarnpkg.com/jsonparse/-/jsonparse-1.3.1.tgz#3f4dae4a91fac315f71062f8521cc239f1366280"
   integrity sha1-P02uSpH6wxX3EGL4UhzCOfE2YoA=
 
-"jsx-ast-utils@^2.4.1 || ^3.0.0", jsx-ast-utils@^3.1.0:
+"jsx-ast-utils@^2.4.1 || ^3.0.0":
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/jsx-ast-utils/-/jsx-ast-utils-3.2.1.tgz#720b97bfe7d901b927d87c3773637ae8ea48781b"
+  integrity sha512-uP5vu8xfy2F9A6LGC22KO7e2/vGTS1MhP+18f++ZNlf0Ohaxbc9nIEwHAsejlJKyzfZzU5UIhe5ItYkitcZnZA==
+  dependencies:
+    array-includes "^3.1.3"
+    object.assign "^4.1.2"
+
+jsx-ast-utils@^3.1.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/jsx-ast-utils/-/jsx-ast-utils-3.2.0.tgz#41108d2cec408c3453c1bbe8a4aae9e1e2bd8f82"
   integrity sha512-EIsmt3O3ljsU6sot/J4E1zDRxfBNrhjyf/OKjlydwgEimQuznlM4Wv7U+ueONJMyEn1WRE0K8dhi3dVAXYT24Q==
@@ -12424,6 +12432,13 @@ serialize-error@^5.0.0:
   integrity sha512-/VtpuyzYf82mHYTtI4QKtwHa79vAdU5OQpNPAmE/0UDdlGT0ZxHwC+J6gXkw29wwoVI8fMPsfcVHOwXtUQYYQA==
   dependencies:
     type-fest "^0.8.0"
+
+serialize-error@^8.1.0:
+  version "8.1.0"
+  resolved "https://registry.yarnpkg.com/serialize-error/-/serialize-error-8.1.0.tgz#3a069970c712f78634942ddd50fbbc0eaebe2f67"
+  integrity sha512-3NnuWfM6vBYoy5gZFvHiYsVbafvI9vZv/+jlIigFn4oP4zjNPK3LhcY0xSCgeb1a5L8jO71Mit9LlNoi2UfDDQ==
+  dependencies:
+    type-fest "^0.20.2"
 
 serve-static@1.14.1:
   version "1.14.1"

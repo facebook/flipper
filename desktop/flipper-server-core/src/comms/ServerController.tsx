@@ -8,18 +8,18 @@
  */
 
 import {CertificateExchangeMedium} from '../utils/CertificateProvider';
-import {Logger} from 'flipper-common';
 import {
   ClientDescription,
   ClientQuery,
   isTest,
   GK,
   buildClientId,
+  Logger,
+  UninitializedClient,
+  reportPlatformFailures,
 } from 'flipper-common';
 import CertificateProvider from '../utils/CertificateProvider';
 import {ClientConnection, ConnectionStatus} from './ClientConnection';
-import {UninitializedClient} from 'flipper-common';
-import {reportPlatformFailures} from 'flipper-common';
 import {EventEmitter} from 'events';
 import invariant from 'invariant';
 import DummyDevice from '../devices/DummyDevice';
@@ -161,6 +161,7 @@ class ServerController extends EventEmitter implements ServerEventsListener {
       });
 
     if (GK.get('comet_enable_flipper_connection')) {
+      console.info('[conn] Browser server (ws) listening at port: ', 8333);
       this.browserServer = createBrowserServer(8333, this);
     }
 
@@ -187,6 +188,7 @@ class ServerController extends EventEmitter implements ServerEventsListener {
   onConnectionCreated(
     clientQuery: SecureClientQuery,
     clientConnection: ClientConnection,
+    downgrade: boolean,
   ): Promise<ClientDescription> {
     const {app, os, device, device_id, sdk_version, csr, csr_path, medium} =
       clientQuery;
@@ -206,6 +208,7 @@ class ServerController extends EventEmitter implements ServerEventsListener {
         medium: transformedMedium,
       },
       {csr, csr_path},
+      downgrade,
     );
   }
 
@@ -334,6 +337,7 @@ class ServerController extends EventEmitter implements ServerEventsListener {
     connection: ClientConnection,
     query: ClientQuery & {medium: CertificateExchangeMedium},
     csrQuery: ClientCsrQuery,
+    silentReplace?: boolean,
   ): Promise<ClientDescription> {
     invariant(query, 'expected query');
 
@@ -411,7 +415,9 @@ class ServerController extends EventEmitter implements ServerEventsListener {
           connectionInfo.connection &&
           connectionInfo.connection !== connection
         ) {
-          connectionInfo.connection.close();
+          if (!silentReplace) {
+            connectionInfo.connection.close();
+          }
           this.removeConnection(id);
         }
       }
