@@ -192,20 +192,11 @@ app.on('ready', async () => {
         const {
           default: installExtension,
           REACT_DEVELOPER_TOOLS,
-          REDUX_DEVTOOLS,
         } = require('electron-devtools-installer');
         // if set, try to download a newever version of the dev tools
         const forceDownload = process.env.FLIPPER_UPDATE_DEV_TOOLS === 'true';
         if (forceDownload) {
           console.log('Force updating DevTools');
-        }
-        // Redux
-        try {
-          await installExtension(REDUX_DEVTOOLS.id, {
-            loadExtensionOptions: {allowFileAccess: true, forceDownload},
-          });
-        } catch (e) {
-          console.error('Failed to install Redux devtools extension', e);
         }
         // React
         // Fix for extension loading (see D27685981)
