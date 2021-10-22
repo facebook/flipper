@@ -41,6 +41,8 @@ export interface FlipperPluginConnection {
    */
   receive(method: string, receiver: FlipperPluginReceiver): void;
 }
+
+// DOCS_FLIPPER_PLUGIN_START
 export interface FlipperPlugin {
   /**
    * @return The id of this plugin. This is the namespace which Flipper desktop plugins will call
@@ -66,3 +68,4 @@ export interface FlipperPlugin {
    */
   runInBackground?(): boolean;
 }
+// DOCS_FLIPPER_PLUGIN_END
