@@ -8,11 +8,9 @@
  */
 
 import {produce} from 'immer';
-// Used for focus events which is fine.
-// eslint-disable-next-line flipper/no-electron-remote-imports
-import {remote} from 'electron';
 import {Actions} from './';
 import {SelectionInfo} from '../utils/info';
+import {getRenderHostInstance} from '../RenderHost';
 
 export type TrackingEvent =
   | {
@@ -31,15 +29,15 @@ export type TrackingEvent =
 export type State = {
   timeline: TrackingEvent[];
 };
-const INITAL_STATE: State = {
+const INITAL_STATE: () => State = () => ({
   timeline: [
     {
       type: 'TIMELINE_START',
       time: Date.now(),
-      isFocused: remote.getCurrentWindow().isFocused(),
+      isFocused: getRenderHostInstance().hasFocus(),
     },
   ],
-};
+});
 
 export type Action =
   | {
@@ -53,7 +51,7 @@ export type Action =
     };
 
 export default function reducer(
-  state: State = INITAL_STATE,
+  state: State = INITAL_STATE(),
   action: Actions,
 ): State {
   if (action.type === 'CLEAR_TIMELINE') {
@@ -94,7 +92,7 @@ export function clearTimeline(time: number): Action {
     type: 'CLEAR_TIMELINE',
     payload: {
       time,
-      isFocused: remote.getCurrentWindow().isFocused(),
+      isFocused: getRenderHostInstance().hasFocus(),
     },
   };
 }

@@ -7,10 +7,8 @@
  * @format
  */
 
-// Used to register a shortcut. Don't have an alternative for that.
-// eslint-disable-next-line flipper/no-electron-remote-imports
-import {remote} from 'electron';
 import {Store} from '../reducers';
+import {getRenderHostInstance} from '../RenderHost';
 
 type ShortcutEventCommand =
   | {
@@ -21,6 +19,7 @@ type ShortcutEventCommand =
 
 export default (store: Store) => {
   const settings = store.getState().settingsState.reactNative;
+  const renderHost = getRenderHostInstance();
 
   if (!settings.shortcuts.enabled) {
     return;
@@ -41,7 +40,7 @@ export default (store: Store) => {
     (shortcut: ShortcutEventCommand) =>
       shortcut &&
       shortcut.shortcut &&
-      remote.globalShortcut.register(shortcut.shortcut, () => {
+      renderHost.registerShortcut(shortcut.shortcut, () => {
         const devices = store
           .getState()
           .connections.devices.filter(

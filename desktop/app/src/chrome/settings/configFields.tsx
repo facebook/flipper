@@ -7,7 +7,6 @@
  * @format
  */
 
-import electron from 'electron';
 import {
   FlexColumn,
   styled,
@@ -19,11 +18,8 @@ import {
 } from '../../ui';
 import React, {useState} from 'react';
 import {promises as fs} from 'fs';
-// Used for dialogs.
-// eslint-disable-next-line flipper/no-electron-remote-imports
-import {remote} from 'electron';
-import path from 'path';
 import {theme} from 'flipper-plugin';
+import {getRenderHostInstance} from '../../RenderHost';
 
 export const ConfigFieldContainer = styled(FlexRow)({
   paddingLeft: 10,
@@ -71,6 +67,7 @@ export function FilePathConfigField(props: {
   // Defaults to allowing directories only, this changes to expect regular files.
   isRegularFile?: boolean;
 }) {
+  const renderHost = getRenderHostInstance();
   const [value, setValue] = useState(props.defaultValue);
   const [isValid, setIsValid] = useState(true);
   fs.stat(value)
@@ -102,27 +99,28 @@ export function FilePathConfigField(props: {
             .catch((_) => setIsValid(false));
         }}
       />
-      <FlexColumn
-        onClick={() =>
-          remote.dialog
-            .showOpenDialog({
-              properties: ['openDirectory', 'showHiddenFiles'],
-              defaultPath: path.resolve('/'),
-            })
-            .then((result: electron.SaveDialogReturnValue) => {
-              if (result.filePath) {
-                const path: string = result.filePath.toString();
-                setValue(path);
-                props.onChange(path);
-              }
-            })
-        }>
-        <CenteredGlyph
-          color={theme.primaryColor}
-          name="dots-3-circle"
-          variant="outline"
-        />
-      </FlexColumn>
+      {renderHost.selectDirectory && (
+        <FlexColumn
+          onClick={() => {
+            renderHost
+              .selectDirectory?.()
+              .then((path) => {
+                if (path) {
+                  setValue(path);
+                  props.onChange(path);
+                }
+              })
+              .catch((e) => {
+                console.warn('Failed to select dir', e);
+              });
+          }}>
+          <CenteredGlyph
+            color={theme.primaryColor}
+            name="dots-3-circle"
+            variant="outline"
+          />
+        </FlexColumn>
+      )}
       {props.resetValue && (
         <FlexColumn
           title={`Reset to default path ${props.resetValue}`}

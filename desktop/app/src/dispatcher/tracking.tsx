@@ -9,7 +9,7 @@
 
 // Used for PID tracking.
 // eslint-disable-next-line flipper/no-electron-remote-imports
-import {ipcRenderer, remote} from 'electron';
+import {ipcRenderer} from 'electron';
 import {performance} from 'perf_hooks';
 import {EventEmitter} from 'events';
 
@@ -32,6 +32,7 @@ import {getCPUUsage} from 'process';
 import {sideEffect} from '../utils/sideEffect';
 import {getSelectionInfo} from '../utils/info';
 import type {SelectionInfo} from '../utils/info';
+import {getRenderHostInstance} from '../RenderHost';
 
 const TIME_SPENT_EVENT = 'time-spent';
 
@@ -77,6 +78,7 @@ export function emitBytesReceived(plugin: string, bytes: number) {
 }
 
 export default (store: Store, logger: Logger) => {
+  const renderHost = getRenderHostInstance();
   sideEffect(
     store,
     {
@@ -97,7 +99,7 @@ export default (store: Store, logger: Logger) => {
 
   const oldExitData = loadExitData();
   if (oldExitData) {
-    const isReload = remote.process.pid === oldExitData.pid;
+    const isReload = renderHost.processId === oldExitData.pid;
     const timeSinceLastStartup =
       Date.now() - parseInt(oldExitData.lastSeen, 10);
     // console.log(isReload ? 'reload' : 'restart', oldExitData);
@@ -373,7 +375,7 @@ export function persistExitData(
       ? deconstructClientId(state.selectedAppId).app
       : '',
     cleanExit,
-    pid: remote.process.pid,
+    pid: getRenderHostInstance().processId,
   };
   window.localStorage.setItem(
     flipperExitDataKey,
