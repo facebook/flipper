@@ -10,7 +10,7 @@
 import {Store} from '../reducers/index';
 import {Logger} from 'flipper-common';
 import {PluginNotification} from '../reducers/notifications';
-import {ipcRenderer} from 'electron';
+import reactElementToJSXString from 'react-element-to-jsx-string';
 import {
   updatePluginBlocklist,
   updateCategoryBlocklist,
@@ -123,10 +123,10 @@ export default (store: Store, logger: Logger) => {
               return;
             }
             const plugin = getPlugin(n.pluginId);
-            ipcRenderer.send('sendNotification', {
+            getRenderHostInstance().sendIpcEvent('sendNotification', {
               payload: {
                 title: n.notification.title,
-                body: n.notification.message,
+                body: reactElementToJSXString(n.notification.message),
                 actions: [
                   {
                     type: 'button',

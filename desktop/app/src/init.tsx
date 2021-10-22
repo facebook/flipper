@@ -57,7 +57,7 @@ import {
   GK as flipperCommonGK,
 } from 'flipper-common';
 import {internGraphPOSTAPIRequest} from './fb-stubs/user';
-import {setRenderHostInstance} from './RenderHost';
+import {getRenderHostInstance, setRenderHostInstance} from './RenderHost';
 import {clipboard} from 'electron';
 
 if (process.env.NODE_ENV === 'development' && os.platform() === 'darwin') {
@@ -249,7 +249,7 @@ function init() {
       (
         document.getElementById('flipper-theme-import') as HTMLLinkElement
       ).href = `themes/${result.shouldUseDarkMode ? 'dark' : 'light'}.css`;
-      ipcRenderer.send('setTheme', result.theme);
+      getRenderHostInstance().sendIpcEvent('setTheme', result.theme);
     },
   );
 }
@@ -301,6 +301,9 @@ function initializeFlipperForElectron() {
       ipcRenderer.on(event, (_ev, ...args: any[]) => {
         callback(...(args as any));
       });
+    },
+    sendIpcEvent(event, ...args: any[]) {
+      ipcRenderer.send(event, ...args);
     },
   });
 }

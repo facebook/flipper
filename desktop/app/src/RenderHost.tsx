@@ -9,6 +9,7 @@
 
 import {NotificationEvents} from './dispatcher/notifications';
 import {PluginNotification} from './reducers/notifications';
+import type {NotificationConstructorOptions} from 'electron';
 
 // Events that are emitted from the main.ts ovr the IPC process bridge in Electron
 type MainProcessEvents = {
@@ -23,6 +24,20 @@ type MainProcessEvents = {
   getLaunchTime: [launchStartTime: number];
 };
 
+// Events that are emitted by the child process, to the main process
+type ChildProcessEvents = {
+  setTheme: [theme: 'dark' | 'light' | 'system'];
+  sendNotification: [
+    {
+      payload: NotificationConstructorOptions;
+      pluginNotification: PluginNotification;
+      closeAfter?: number;
+    },
+  ];
+  getLaunchTime: [];
+  componentDidMount: [];
+};
+
 /**
  * Utilities provided by the render host, e.g. Electron, the Browser, etc
  */
@@ -35,6 +50,10 @@ export interface RenderHost {
   onIpcEvent<Event extends keyof MainProcessEvents>(
     event: Event,
     callback: (...arg: MainProcessEvents[Event]) => void,
+  ): void;
+  sendIpcEvent<Event extends keyof ChildProcessEvents>(
+    event: Event,
+    ...args: ChildProcessEvents[Event]
   ): void;
 }
 
@@ -62,5 +81,6 @@ if (process.env.NODE_ENV === 'test') {
       return true;
     },
     onIpcEvent() {},
+    sendIpcEvent() {},
   });
 }

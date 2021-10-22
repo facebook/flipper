@@ -18,7 +18,6 @@ import {
 } from 'flipper-plugin';
 import {Link, styled} from '../ui';
 import {theme} from 'flipper-plugin';
-import {ipcRenderer} from 'electron';
 import {Logger} from 'flipper-common';
 
 import {LeftRail} from './LeftRail';
@@ -215,17 +214,11 @@ function registerStartupTime(logger: Logger) {
   // track time since launch
   const [s, ns] = process.hrtime();
   const launchEndTime = s * 1e3 + ns / 1e6;
-  getRenderHostInstance().onIpcEvent(
-    'getLaunchTime',
-    (launchStartTime: number) => {
-      logger.track(
-        'performance',
-        'launchTime',
-        launchEndTime - launchStartTime,
-      );
-    },
-  );
+  const renderHost = getRenderHostInstance();
+  renderHost.onIpcEvent('getLaunchTime', (launchStartTime: number) => {
+    logger.track('performance', 'launchTime', launchEndTime - launchStartTime);
+  });
 
-  ipcRenderer.send('getLaunchTime');
-  ipcRenderer.send('componentDidMount');
+  renderHost.sendIpcEvent('getLaunchTime');
+  renderHost.sendIpcEvent('componentDidMount');
 }
