@@ -9,7 +9,7 @@
 
 // Fine for app startup.
 // eslint-disable-next-line flipper/no-electron-remote-imports
-import {remote, ipcRenderer, IpcRendererEvent} from 'electron';
+import {remote} from 'electron';
 import {Store} from '../reducers/index';
 import {Logger} from 'flipper-common';
 import {
@@ -19,9 +19,12 @@ import {
 import {tryCatchReportPlatformFailures} from 'flipper-common';
 import {handleDeeplink} from '../deeplink';
 import {Dialog} from 'flipper-plugin';
+import {getRenderHostInstance} from '../RenderHost';
 
 export default (store: Store, logger: Logger) => {
   const currentWindow = remote.getCurrentWindow();
+  const renderHost = getRenderHostInstance();
+
   const onFocus = () => {
     setImmediate(() => {
       store.dispatch({
@@ -55,28 +58,22 @@ export default (store: Store, logger: Logger) => {
     });
   });
 
-  ipcRenderer.on(
-    'flipper-protocol-handler',
-    (_event: IpcRendererEvent, query: string) => {
-      handleDeeplink(store, logger, query).catch((e) => {
-        console.warn('Failed to handle deeplink', query, e);
-        Dialog.alert({
-          title: 'Failed to open deeplink',
-          type: 'error',
-          message: `Failed to handle deeplink '${query}': ${
-            e.message ?? e.toString()
-          }`,
-        });
+  renderHost.onIpcEvent('flipper-protocol-handler', (query: string) => {
+    handleDeeplink(store, logger, query).catch((e) => {
+      console.warn('Failed to handle deeplink', query, e);
+      Dialog.alert({
+        title: 'Failed to open deeplink',
+        type: 'error',
+        message: `Failed to handle deeplink '${query}': ${
+          e.message ?? e.toString()
+        }`,
       });
-    },
-  );
+    });
+  });
 
-  ipcRenderer.on(
-    'open-flipper-file',
-    (_event: IpcRendererEvent, url: string) => {
-      tryCatchReportPlatformFailures(() => {
-        return importFileToStore(url, store);
-      }, `${IMPORT_FLIPPER_TRACE_EVENT}:Deeplink`);
-    },
-  );
+  renderHost.onIpcEvent('open-flipper-file', (url: string) => {
+    tryCatchReportPlatformFailures(() => {
+      return importFileToStore(url, store);
+    }, `${IMPORT_FLIPPER_TRACE_EVENT}:Deeplink`);
+  });
 };

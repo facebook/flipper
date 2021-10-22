@@ -297,5 +297,10 @@ function initializeFlipperForElectron() {
     hasFocus() {
       return remote.getCurrentWindow().isFocused();
     },
+    onIpcEvent(event, callback) {
+      ipcRenderer.on(event, (_ev, ...args: any[]) => {
+        callback(...(args as any));
+      });
+    },
   });
 }

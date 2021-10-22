@@ -7,6 +7,22 @@
  * @format
  */
 
+import {NotificationEvents} from './dispatcher/notifications';
+import {PluginNotification} from './reducers/notifications';
+
+// Events that are emitted from the main.ts ovr the IPC process bridge in Electron
+type MainProcessEvents = {
+  'flipper-protocol-handler': [query: string];
+  'open-flipper-file': [url: string];
+  notificationEvent: [
+    eventName: NotificationEvents,
+    pluginNotification: PluginNotification,
+    arg: null | string | number,
+  ];
+  trackUsage: any[];
+  getLaunchTime: [launchStartTime: number];
+};
+
 /**
  * Utilities provided by the render host, e.g. Electron, the Browser, etc
  */
@@ -16,6 +32,10 @@ export interface RenderHost {
   selectDirectory?(defaultPath?: string): Promise<string | undefined>;
   registerShortcut(shortCut: string, callback: () => void): void;
   hasFocus(): boolean;
+  onIpcEvent<Event extends keyof MainProcessEvents>(
+    event: Event,
+    callback: (...arg: MainProcessEvents[Event]) => void,
+  ): void;
 }
 
 let renderHostInstance: RenderHost | undefined;
@@ -41,5 +61,6 @@ if (process.env.NODE_ENV === 'test') {
     hasFocus() {
       return true;
     },
+    onIpcEvent() {},
   });
 }

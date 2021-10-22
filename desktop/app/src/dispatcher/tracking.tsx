@@ -7,9 +7,6 @@
  * @format
  */
 
-// Used for PID tracking.
-// eslint-disable-next-line flipper/no-electron-remote-imports
-import {ipcRenderer} from 'electron';
 import {performance} from 'perf_hooks';
 import {EventEmitter} from 'events';
 
@@ -146,16 +143,15 @@ export default (store: Store, logger: Logger) => {
     );
   }
 
-  ipcRenderer.on('trackUsage', (event, ...args: any[]) => {
+  renderHost.onIpcEvent('trackUsage', (...args: any[]) => {
     let state: State;
     try {
       state = store.getState();
     } catch (e) {
       // if trackUsage is called (indirectly) through a reducer, this will utterly die Flipper. Let's prevent that and log an error instead
       console.error(
-        'trackUsage triggered indirectly as side effect of a reducer. Event: ',
-        event.type,
-        event,
+        'trackUsage triggered indirectly as side effect of a reducer',
+        e,
       );
       return;
     }

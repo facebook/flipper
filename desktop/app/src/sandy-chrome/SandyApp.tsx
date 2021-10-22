@@ -38,6 +38,7 @@ import fbConfig from '../fb-stubs/config';
 import {isFBEmployee} from '../utils/fbEmployee';
 import {notification} from 'antd';
 import isProduction from '../utils/isProduction';
+import {getRenderHostInstance} from '../RenderHost';
 
 export type ToplevelNavItem =
   | 'appinspect'
@@ -214,9 +215,16 @@ function registerStartupTime(logger: Logger) {
   // track time since launch
   const [s, ns] = process.hrtime();
   const launchEndTime = s * 1e3 + ns / 1e6;
-  ipcRenderer.on('getLaunchTime', (_: any, launchStartTime: number) => {
-    logger.track('performance', 'launchTime', launchEndTime - launchStartTime);
-  });
+  getRenderHostInstance().onIpcEvent(
+    'getLaunchTime',
+    (launchStartTime: number) => {
+      logger.track(
+        'performance',
+        'launchTime',
+        launchEndTime - launchStartTime,
+      );
+    },
+  );
 
   ipcRenderer.send('getLaunchTime');
   ipcRenderer.send('componentDidMount');
