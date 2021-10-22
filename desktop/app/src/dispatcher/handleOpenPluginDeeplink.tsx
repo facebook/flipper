@@ -452,12 +452,17 @@ async function selectDevicesAndClient(
 ): Promise<false | BaseDevice | Client> {
   function findValidDevices() {
     // find connected devices with the right OS.
-    return store
-      .getState()
-      .connections.devices.filter((d) => d.connected.get())
-      .filter(
-        (d) => params.devices.length === 0 || params.devices.includes(d.os),
-      );
+    return (
+      store
+        .getState()
+        .connections.devices.filter((d) => d.connected.get())
+        .filter(
+          (d) => params.devices.length === 0 || params.devices.includes(d.os),
+        )
+        // This filters out OS-level devices which are causing more confusion than good
+        // when used with deeplinks.
+        .filter(canBeDefaultDevice)
+    );
   }
 
   // loop until we have devices (or abort)
