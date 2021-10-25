@@ -28,7 +28,6 @@ export {PluginClient, Props} from './plugin';
 export {default as Client} from './Client';
 export {reportUsage} from 'flipper-common';
 export {default as promiseTimeout} from './utils/promiseTimeout';
-export {clipboard, remote, OpenDialogOptions} from 'electron';
 export {bufferToBlob} from './utils/screenshot';
 export {getPluginKey} from './utils/pluginKey';
 export {Notification, Idler} from 'flipper-plugin';
