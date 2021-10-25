@@ -34,7 +34,11 @@ import {RocketOutlined} from '@ant-design/icons';
 import {showEmulatorLauncher} from '../sandy-chrome/appinspect/LaunchEmulator';
 import {getAllClients} from '../reducers/connections';
 import {showLoginDialog} from '../chrome/fb-stubs/SignInSheet';
-import {DeeplinkInteraction, OpenPluginParams} from '../deeplinkTracking';
+import {
+  DeeplinkInteraction,
+  DeeplinkInteractionState,
+  OpenPluginParams,
+} from '../deeplinkTracking';
 
 export function parseOpenPluginParams(query: string): OpenPluginParams {
   // 'flipper://open-plugin?plugin-id=graphql&client=facebook&devices=android,ios&chrome=1&payload='
@@ -100,9 +104,9 @@ export async function handleOpenPluginDeeplink(
     isDevicePlugin,
   );
   console.debug('[deeplink] Selected device and client:', deviceOrClient);
-  if (deviceOrClient === false) {
+  if ('errorState' in deviceOrClient) {
     trackInteraction({
-      state: 'PLUGIN_DEVICE_BAIL',
+      state: deviceOrClient.errorState,
       plugin: params,
     });
     return;
@@ -444,12 +448,16 @@ async function installMarketPlacePlugin(
   return true;
 }
 
+type DeeplinkError = {
+  errorState: DeeplinkInteractionState;
+};
+
 async function selectDevicesAndClient(
   store: Store,
   params: OpenPluginParams,
   title: string,
   isDevicePlugin: boolean,
-): Promise<false | BaseDevice | Client> {
+): Promise<DeeplinkError | BaseDevice | Client> {
   function findValidDevices() {
     // find connected devices with the right OS.
     return (
@@ -468,7 +476,7 @@ async function selectDevicesAndClient(
   // loop until we have devices (or abort)
   while (!findValidDevices().length) {
     if (!(await launchDeviceDialog(store, params, title))) {
-      return false;
+      return {errorState: 'PLUGIN_DEVICE_BAIL'};
     }
   }
 
@@ -483,12 +491,17 @@ async function selectDevicesAndClient(
     if (availableDevices.length === 1) {
       return availableDevices[0];
     }
-    return (await selectDeviceDialog(availableDevices, title)) ?? false;
+    const selectedDevice = await selectDeviceDialog(availableDevices, title);
+    if (!selectedDevice) {
+      return {errorState: 'PLUGIN_DEVICE_SELECTION_BAIL'};
+    }
+    return selectedDevice;
   }
 
   console.debug('[deeplink] Not a device plugin. Waiting for valid client.');
   // wait for valid client
   while (true) {
+    const origClients = store.getState().connections.clients;
     const validClients = getAllClients(store.getState().connections)
       .filter(
         // correct app name, or, if not set, an app that at least supports this plugin
@@ -504,7 +517,11 @@ async function selectDevicesAndClient(
       return validClients[0];
     }
     if (validClients.length > 1) {
-      return (await selectClientDialog(validClients, title)) ?? false;
+      const selectedClient = await selectClientDialog(validClients, title);
+      if (!selectedClient) {
+        return {errorState: 'PLUGIN_CLIENT_SELECTION_BAIL'};
+      }
+      return selectedClient;
     }
 
     // no valid client yet
@@ -520,7 +537,6 @@ async function selectDevicesAndClient(
       // eslint-disable-next-line promise/catch-or-return
       dialog.then(() => resolve(false));
 
-      const origClients = store.getState().connections.clients;
       // eslint-disable-next-line promise/catch-or-return
       waitFor(store, (state) => state.connections.clients !== origClients).then(
         () => {
@@ -539,7 +555,7 @@ async function selectDevicesAndClient(
     });
 
     if (!result) {
-      return false; // User cancelled
+      return {errorState: 'PLUGIN_CLIENT_BAIL'}; // User cancelled
     }
   }
 }
