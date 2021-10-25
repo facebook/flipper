@@ -38,6 +38,9 @@ yarn --cwd "$DESKTOP_DIR" version --new-version "$VERSION"
 # Update react-native-flipper to the very same version
 yarn --cwd "$SONAR_DIR"/react-native/react-native-flipper version --new-version "$VERSION" --no-git-tag-version
 
+# Update js-flipper to the very same version
+yarn --cwd "$SONAR_DIR"/js/js-flipper version --new-version "$VERSION" --no-git-tag-version
+
 # This could be one expression with GNU sed, but I guess we want to support the BSD crap, too.
 SNAPSHOT_MINOR_VERSION=$(echo "$VERSION" | sed -Ee 's/([0-9]+)\.([0-9]+)\.([0-9]+)/\3 + 1/' | bc)
 SNAPSHOT_VERSION="$(echo "$VERSION" | sed -Ee 's/([0-9]+)\.([0-9]+)\.([0-9]+)/\1.\2./')""$SNAPSHOT_MINOR_VERSION""-SNAPSHOT"

@@ -1,4 +1,4 @@
-# flipper-sdk-api
+# js-flipper
 
 This package exposes JavaScript bindings to talk from web / Node.js directly to
 flipper.
