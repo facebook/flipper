@@ -72,7 +72,7 @@ export const Tab: React.FC<
 > = function Tab({pad, gap, children, ...baseProps}) {
   return (
     <AntdTabs.TabPane {...baseProps}>
-      <Layout.Container gap={gap} pad={pad} grow>
+      <Layout.Container gap={gap} pad={pad} grow style={{maxWidth: '100%'}}>
         {children}
       </Layout.Container>
     </AntdTabs.TabPane>
