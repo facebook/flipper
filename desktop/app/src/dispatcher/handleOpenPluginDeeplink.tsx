@@ -528,6 +528,14 @@ async function selectDevicesAndClient(
           resolve(true);
         },
       );
+
+      // We also want to react to changes in the available plugins and refresh.
+      origClients.forEach((c) =>
+        c.on('plugins-change', () => {
+          dialog.close();
+          resolve(true);
+        }),
+      );
     });
 
     if (!result) {
