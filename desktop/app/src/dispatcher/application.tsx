@@ -7,9 +7,6 @@
  * @format
  */
 
-// Fine for app startup.
-// eslint-disable-next-line flipper/no-electron-remote-imports
-import {remote} from 'electron';
 import {Store} from '../reducers/index';
 import {Logger} from 'flipper-common';
 import {
@@ -22,7 +19,6 @@ import {Dialog} from 'flipper-plugin';
 import {getRenderHostInstance} from '../RenderHost';
 
 export default (store: Store, logger: Logger) => {
-  const currentWindow = remote.getCurrentWindow();
   const renderHost = getRenderHostInstance();
 
   const onFocus = () => {
@@ -41,17 +37,17 @@ export default (store: Store, logger: Logger) => {
       });
     });
   };
-  currentWindow.on('focus', onFocus);
-  currentWindow.on('blur', onBlur);
+  window.addEventListener('focus', onFocus);
+  window.addEventListener('blur', onBlur);
   window.addEventListener('beforeunload', () => {
-    currentWindow.removeListener('focus', onFocus);
-    currentWindow.removeListener('blur', onBlur);
+    window.removeEventListener('focus', onFocus);
+    window.removeEventListener('blur', onBlur);
   });
 
   // windowIsFocussed is initialized in the store before the app is fully ready.
   // So wait until everything is up and running and then check and set the isFocussed state.
   window.addEventListener('flipper-store-ready', () => {
-    const isFocused = remote.getCurrentWindow().isFocused();
+    const isFocused = renderHost.hasFocus();
     store.dispatch({
       type: 'windowIsFocused',
       payload: {isFocused: isFocused, time: Date.now()},
