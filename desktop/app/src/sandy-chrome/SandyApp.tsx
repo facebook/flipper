@@ -30,6 +30,9 @@ import PluginContainer from '../PluginContainer';
 import {ContentContainer} from './ContentContainer';
 import {Notification} from './notification/Notification';
 import ChangelogSheet, {hasNewChangesToShow} from '../chrome/ChangelogSheet';
+import PlatformSelectWizard, {
+  hasPlatformWizardBeenDone,
+} from '../chrome/PlatformSelectWizard';
 import {getVersionString} from '../utils/versionString';
 import config from '../fb-stubs/config';
 import {WelcomeScreenStaticView} from './WelcomeScreen';
@@ -98,6 +101,13 @@ export function SandyApp() {
     if (hasNewChangesToShow(window.localStorage)) {
       Dialog.showModal((onHide) => <ChangelogSheet onHide={onHide} recent />);
     }
+
+    if (hasPlatformWizardBeenDone(window.localStorage)) {
+      Dialog.showModal((onHide) => (
+        <PlatformSelectWizard onHide={onHide} platform={process.platform} />
+      ));
+    }
+
     // don't warn about logger, even with a new logger we don't want to re-register
     // eslint-disable-next-line
   }, []);
