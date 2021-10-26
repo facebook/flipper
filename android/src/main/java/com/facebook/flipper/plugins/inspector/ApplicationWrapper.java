@@ -27,11 +27,16 @@ public class ApplicationWrapper implements Application.ActivityLifecycleCallback
     void onActivityStackChanged(List<Activity> stack);
   }
 
+  public interface ActivityDestroyedListener {
+    void onActivityDestroyed(Activity activity);
+  }
+
   private final Application mApplication;
   private final AndroidRootResolver mAndroidRootsResolver;
   private final List<WeakReference<Activity>> mActivities;
   private final Handler mHandler;
   private ActivityStackChangedListener mListener;
+  private ActivityDestroyedListener mActivityDestroyedListener;
 
   public ApplicationWrapper(Application application) {
     mApplication = application;
@@ -66,6 +71,10 @@ public class ApplicationWrapper implements Application.ActivityLifecycleCallback
   public void onActivityDestroyed(Activity activity) {
     final Iterator<WeakReference<Activity>> activityIterator = mActivities.iterator();
 
+    if (mActivityDestroyedListener != null) {
+      mActivityDestroyedListener.onActivityDestroyed(activity);
+    }
+
     while (activityIterator.hasNext()) {
       if (activityIterator.next().get() == activity) {
         activityIterator.remove();
@@ -82,6 +91,10 @@ public class ApplicationWrapper implements Application.ActivityLifecycleCallback
 
   public void setListener(ActivityStackChangedListener listener) {
     mListener = listener;
+  }
+
+  public void setActivityDestroyedListener(ActivityDestroyedListener listener) {
+    mActivityDestroyedListener = listener;
   }
 
   public Application getApplication() {
