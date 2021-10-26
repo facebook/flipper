@@ -205,7 +205,7 @@ function init() {
 
   setPersistor(persistor);
 
-  initializeFlipperLibImplementation(store, logger);
+  initializeFlipperLibImplementation(getRenderHostInstance(), store, logger);
   _setGlobalInteractionReporter((r) => {
     logger.track('usage', 'interaction', r);
     if (!isProduction()) {
@@ -230,26 +230,20 @@ function init() {
   sideEffect(
     store,
     {name: 'loadTheme', fireImmediately: false, throttleMs: 500},
-    (state) => {
-      const theme = state.settingsState.darkMode;
+    (state) => state.settingsState.darkMode,
+    (theme) => {
       let shouldUseDarkMode = false;
       if (theme === 'dark') {
         shouldUseDarkMode = true;
       } else if (theme === 'light') {
         shouldUseDarkMode = false;
       } else if (theme === 'system') {
-        shouldUseDarkMode = remote.nativeTheme.shouldUseDarkColors;
+        shouldUseDarkMode = getRenderHostInstance().shouldUseDarkColors();
       }
-      return {
-        shouldUseDarkMode: shouldUseDarkMode,
-        theme: theme,
-      };
-    },
-    (result) => {
       (
         document.getElementById('flipper-theme-import') as HTMLLinkElement
-      ).href = `themes/${result.shouldUseDarkMode ? 'dark' : 'light'}.css`;
-      getRenderHostInstance().sendIpcEvent('setTheme', result.theme);
+      ).href = `themes/${shouldUseDarkMode ? 'dark' : 'light'}.css`;
+      getRenderHostInstance().sendIpcEvent('setTheme', theme);
     },
   );
 }
@@ -272,10 +266,21 @@ function initializeFlipperForElectron() {
     readTextFromClipboard() {
       return clipboard.readText();
     },
-    selectDirectory(defaultPath = path.resolve('/')) {
+    async showSaveDialog(options) {
+      return (await remote.dialog.showSaveDialog(options))?.filePath;
+    },
+    async showOpenDialog({filter, defaultPath}) {
+      const result = await remote.dialog.showOpenDialog({
+        defaultPath,
+        properties: ['openFile'],
+        filters: filter ? [filter] : undefined,
+      });
+      return result.filePaths?.[0];
+    },
+    showSelectDirectoryDialog(defaultPath = path.resolve('/')) {
       return remote.dialog
         .showOpenDialog({
-          properties: ['openDirectory', 'showHiddenFiles'],
+          properties: ['openDirectory'],
           defaultPath,
         })
         .then((result: SaveDialogReturnValue & {filePaths: string[]}) => {
@@ -304,6 +309,9 @@ function initializeFlipperForElectron() {
     },
     sendIpcEvent(event, ...args: any[]) {
       ipcRenderer.send(event, ...args);
+    },
+    shouldUseDarkColors() {
+      return remote.nativeTheme.shouldUseDarkColors;
     },
   });
 }

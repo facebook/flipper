@@ -37,6 +37,7 @@ import React from 'react';
 import ChangelogSheet from './chrome/ChangelogSheet';
 import PluginManager from './chrome/plugin-manager/PluginManager';
 import SettingsSheet from './chrome/SettingsSheet';
+import reloadFlipper from './utils/reloadFlipper';
 
 export type DefaultKeyboardAction = keyof typeof _buildInMenuEntries;
 export type TopLevelMenu = 'Edit' | 'View' | 'Window' | 'Help';
@@ -294,11 +295,9 @@ function getTemplate(
     {
       label: 'Reload',
       accelerator: 'CmdOrCtrl+R',
-      click: function (_, focusedWindow: electron.BrowserWindow | undefined) {
-        if (focusedWindow) {
-          logger.track('usage', 'reload');
-          focusedWindow.reload();
-        }
+      click: function (_, _focusedWindow: electron.BrowserWindow | undefined) {
+        logger.track('usage', 'reload');
+        reloadFlipper();
       },
     },
     {

@@ -10,7 +10,6 @@
 import * as React from 'react';
 import os from 'os';
 import path from 'path';
-import electron from 'electron';
 import {getLogger} from 'flipper-common';
 import {Store, MiddlewareAPI} from '../reducers';
 import {DeviceExport} from '../devices/BaseDevice';
@@ -24,7 +23,6 @@ import {default as BaseDevice} from '../devices/BaseDevice';
 import {default as ArchivedDevice} from '../devices/ArchivedDevice';
 import fs from 'fs';
 import {v4 as uuidv4} from 'uuid';
-import {remote, OpenDialogOptions} from 'electron';
 import {readCurrentRevision} from './packageMetadata';
 import {tryCatchReportPlatformFailures} from 'flipper-common';
 import {promisify} from 'util';
@@ -45,6 +43,7 @@ import {ClientQuery} from 'flipper-common';
 import ShareSheetExportUrl from '../chrome/ShareSheetExportUrl';
 import ShareSheetExportFile from '../chrome/ShareSheetExportFile';
 import ExportDataPluginSheet from '../chrome/ExportDataPluginSheet';
+import {getRenderHostInstance} from '../RenderHost';
 
 export const IMPORT_FLIPPER_TRACE_EVENT = 'import-flipper-trace';
 export const EXPORT_FLIPPER_TRACE_EVENT = 'export-flipper-trace';
@@ -602,30 +601,24 @@ export const importFileToStore = (file: string, store: Store) => {
 };
 
 export function showOpenDialog(store: Store) {
-  const options: OpenDialogOptions = {
-    properties: ['openFile'],
-    filters: [{extensions: ['flipper', 'json', 'txt'], name: 'Flipper files'}],
-  };
-  remote.dialog.showOpenDialog(options).then((result) => {
-    const filePaths = result.filePaths;
-    if (filePaths.length > 0) {
-      tryCatchReportPlatformFailures(() => {
-        importFileToStore(filePaths[0], store);
-      }, `${IMPORT_FLIPPER_TRACE_EVENT}:UI`);
-    }
-  });
+  return getRenderHostInstance()
+    .showOpenDialog?.({
+      filter: {extensions: ['flipper', 'json', 'txt'], name: 'Flipper files'},
+    })
+    .then((filePath) => {
+      if (filePath) {
+        tryCatchReportPlatformFailures(() => {
+          importFileToStore(filePath, store);
+        }, `${IMPORT_FLIPPER_TRACE_EVENT}:UI`);
+      }
+    });
 }
 
 export async function startFileExport(dispatch: Store['dispatch']) {
-  const result = await electron.remote.dialog.showSaveDialog(
-    // @ts-ignore This appears to work but isn't allowed by the types
-    null,
-    {
-      title: 'FlipperExport',
-      defaultPath: path.join(os.homedir(), 'FlipperExport.flipper'),
-    },
-  );
-  const file = result.filePath;
+  const file = await getRenderHostInstance().showSaveDialog?.({
+    title: 'FlipperExport',
+    defaultPath: path.join(os.homedir(), 'FlipperExport.flipper'),
+  });
   if (!file) {
     return;
   }
