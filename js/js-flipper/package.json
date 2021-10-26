@@ -1,24 +1,33 @@
 {
-  "name": "flipper-client-sdk",
-  "version": "0.0.3",
+  "name": "js-flipper",
+  "title": "JS Flipper Bindings for Web-Socket based clients",
+  "version": "0.116.0",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "title": "Flipper SDK API",
+  "description": "Flipper bindings for Node.js and web",
   "scripts": {
-    "reset": "rimraf lib *.tsbuildinfo",
+    "reset": "rimraf index.js *.tsbuildinfo",
     "build": "tsc -b",
     "fix": "eslint . --fix --ext .js,.ts,.tsx",
     "lint:tsc": "tsc --noemit",
     "lint:eslint": "eslint . --ext .js,.ts,.tsx",
-    "lint": "yarn lint:eslint && yarn lint:tsc"
+    "lint": "yarn lint:eslint && yarn lint:tsc",
+    "test": "cross-env TZ=Pacific/Pohnpei jest"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/facebook/flipper.git",
-    "baseUrl": "https://github.com/facebook/flipper/tree/main/flipper-js-client-sdk"
+    "baseUrl": "https://github.com/facebook/flipper/tree/main/js/js-flipper"
   },
   "keywords": [
-    "flipper"
+    "flipper",
+    "javascript",
+    "browser",
+    "node",
+    "react",
+    "angular",
+    "sdk",
+    "client"
   ],
   "author": {
     "name": "Facebook Inc"
@@ -27,10 +36,14 @@
   "licenseFilename": "LICENSE",
   "readmeFilename": "README.md",
   "devDependencies": {
+    "@types/jest": "^27.0.2",
+    "@types/node": "^16.10.9",
+    "@types/ws": "^8.2.0",
     "@typescript-eslint/eslint-plugin": "^4.30.0",
     "@typescript-eslint/parser": "^4.30.0",
     "ansi-to-html": "^0.7.2",
     "babel-eslint": "^10.0.1",
+    "cross-env": "^7.0.3",
     "eslint": "^7.32.0",
     "eslint-config-fbjs": "^3.1.1",
     "eslint-config-prettier": "^8.3.0",
@@ -44,7 +57,11 @@
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-react": "^7.26.1",
     "eslint-plugin-react-hooks": "^4.2.0",
+    "jest": "^27.3.1",
     "prettier": "^2.4.1",
-    "typescript": "^4.4.2"
-  }
+    "ts-jest": "^27.0.7",
+    "typescript": "^4.4.2",
+    "ws": "^8.2.3"
+  },
+  "dependencies": {}
 }

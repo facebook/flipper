@@ -26,7 +26,7 @@ import url from 'url';
 import fs from 'fs';
 import fixPath from 'fix-path';
 import {exec} from 'child_process';
-import setup from './setup';
+import setup, {Config, configPath} from './setup';
 import isFB from './fb-stubs/isFB';
 import delegateToLauncher from './launcher';
 import yargs from 'yargs';
@@ -99,8 +99,6 @@ const argv = yargs
   .help()
   .parse(process.argv.slice(1));
 
-const {config, configPath} = setup(argv);
-
 if (isFB && process.env.FLIPPER_FB === undefined) {
   process.env.FLIPPER_FB = 'true';
 }
@@ -109,11 +107,6 @@ if (argv['disable-gpu'] || process.env.FLIPPER_DISABLE_GPU === '1') {
   console.warn('Hardware acceleration disabled');
   app.disableHardwareAcceleration();
 }
-
-process.env.CONFIG = JSON.stringify(config);
-nativeTheme.themeSource = validThemes.includes(config.darkMode)
-  ? config.darkMode
-  : 'light';
 
 // possible reference to main app window
 let win: BrowserWindow;
@@ -178,61 +171,62 @@ app.on('will-finish-launching', () => {
   });
 });
 
-app.on('ready', () => {
+app.on('ready', async () => {
+  const config = await setup(argv);
+  processConfig(config);
+
   // If we delegate to the launcher, shut down this instance of the app.
-  delegateToLauncher(argv).then(async (hasLauncherInvoked: boolean) => {
-    if (hasLauncherInvoked) {
-      app.quit();
-      return;
-    }
-    appReady = true;
-    app.commandLine.appendSwitch('scroll-bounce');
-    configureSession();
-    createWindow();
-    // if in development install the react devtools extension
-    if (process.env.NODE_ENV === 'development') {
-      const {
-        default: installExtension,
-        REACT_DEVELOPER_TOOLS,
-        REDUX_DEVTOOLS,
-      } = require('electron-devtools-installer');
-      // if set, try to download a newever version of the dev tools
-      const forceDownload = process.env.FLIPPER_UPDATE_DEV_TOOLS === 'true';
-      if (forceDownload) {
-        console.log('Force updating DevTools');
+  delegateToLauncher(argv)
+    .then(async (hasLauncherInvoked: boolean) => {
+      if (hasLauncherInvoked) {
+        app.quit();
+        return;
       }
-      // Redux
-      await installExtension(REDUX_DEVTOOLS.id, {
-        loadExtensionOptions: {allowFileAccess: true, forceDownload},
-      }).catch((e: any) => {
-        console.error('Failed to install Redux devtools extension', e);
-      });
-      // React
-      // Fix for extension loading (see D27685981)
-      // Work around per https://github.com/electron/electron/issues/23662#issuecomment-787420799
-      const reactDevToolsPath = `${os.homedir()}/Library/Application Support/Electron/extensions/${
-        REACT_DEVELOPER_TOOLS.id
-      }`;
-      if (await promisify(fs.exists)(reactDevToolsPath)) {
-        console.log('Loading React devtools from disk ' + reactDevToolsPath);
-        await session.defaultSession
-          .loadExtension(
-            reactDevToolsPath,
-            // @ts-ignore only supported (and needed) in Electron 12
-            {allowFileAccess: true},
-          )
-          .catch((e) => {
+      appReady = true;
+      app.commandLine.appendSwitch('scroll-bounce');
+      configureSession();
+      createWindow(config);
+
+      // if in development install the react devtools extension
+      if (process.env.NODE_ENV === 'development') {
+        const {
+          default: installExtension,
+          REACT_DEVELOPER_TOOLS,
+        } = require('electron-devtools-installer');
+        // if set, try to download a newever version of the dev tools
+        const forceDownload = process.env.FLIPPER_UPDATE_DEV_TOOLS === 'true';
+        if (forceDownload) {
+          console.log('Force updating DevTools');
+        }
+        // React
+        // Fix for extension loading (see D27685981)
+        // Work around per https://github.com/electron/electron/issues/23662#issuecomment-787420799
+        const reactDevToolsPath = `${os.homedir()}/Library/Application Support/Electron/extensions/${
+          REACT_DEVELOPER_TOOLS.id
+        }`;
+        if (await promisify(fs.exists)(reactDevToolsPath)) {
+          console.log('Loading React devtools from disk ' + reactDevToolsPath);
+          try {
+            await session.defaultSession.loadExtension(
+              reactDevToolsPath,
+              // @ts-ignore only supported (and needed) in Electron 12
+              {allowFileAccess: true},
+            );
+          } catch (e) {
             console.error('Failed to loa React devtools from disk: ', e);
-          });
-      } else {
-        await installExtension(REACT_DEVELOPER_TOOLS.id, {
-          loadExtensionOptions: {allowFileAccess: true, forceDownload},
-        }).catch((e: any) => {
-          console.error('Failed to install React devtools extension', e);
-        });
+          }
+        } else {
+          try {
+            await installExtension(REACT_DEVELOPER_TOOLS.id, {
+              loadExtensionOptions: {allowFileAccess: true, forceDownload},
+            });
+          } catch (e) {
+            console.error('Failed to install React devtools extension', e);
+          }
+        }
       }
-    }
-  });
+    })
+    .catch((e: any) => console.error('Error while delegating app launch', e));
 });
 
 app.on('web-contents-created', (_event, contents) => {
@@ -340,7 +334,7 @@ app.setAsDefaultProtocolClient('flipper');
 // is workaround suggested in the issue
 app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
 
-function createWindow() {
+function createWindow(config: Config) {
   win = new BrowserWindow({
     show: false,
     title: 'Flipper',
@@ -384,7 +378,8 @@ function createWindow() {
     const [x, y] = win.getPosition();
     const [width, height] = win.getSize();
     // save window position and size
-    fs.writeFileSync(
+
+    fs.writeFile(
       configPath,
       JSON.stringify({
         ...config,
@@ -396,6 +391,11 @@ function createWindow() {
           height,
         },
       }),
+      (err) => {
+        if (err) {
+          console.error('Error while saving window position/size', err);
+        }
+      },
     );
   });
   if (
@@ -413,4 +413,11 @@ function createWindow() {
       slashes: true,
     });
   win.loadURL(entryUrl);
+}
+
+function processConfig(config: Config) {
+  process.env.CONFIG = JSON.stringify(config);
+  nativeTheme.themeSource = validThemes.includes(config.darkMode)
+    ? config.darkMode
+    : 'light';
 }

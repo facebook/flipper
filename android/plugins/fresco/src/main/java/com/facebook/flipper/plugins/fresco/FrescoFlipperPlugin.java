@@ -229,16 +229,12 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin
             }
 
             // try to load from encoded cache
-            CloseableReference<PooledByteBuffer> encodedRef =
-                imagePipelineFactory.getEncodedCountingMemoryCache().get(cacheKey);
-            try {
-              if (encodedRef != null) {
-                loadFromEncodedCache(encodedRef, imageId, cacheKey, responder);
-                mPerfLogger.endMarker("Sonar.Fresco.getImage");
-                return;
-              }
-            } finally {
-              CloseableReference.closeSafely(encodedRef);
+            PooledByteBuffer encoded =
+                imagePipelineFactory.getEncodedCountingMemoryCache().inspect(cacheKey);
+            if (encoded != null) {
+              loadFromEncodedCache(encoded, imageId, cacheKey, responder);
+              mPerfLogger.endMarker("Sonar.Fresco.getImage");
+              return;
             }
 
             // try to load from disk
@@ -262,13 +258,12 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin
           }
 
           private void loadFromEncodedCache(
-              final CloseableReference<PooledByteBuffer> encodedRef,
+              final PooledByteBuffer encoded,
               final String imageId,
               final CacheKey cacheKey,
               final FlipperResponder responder)
               throws Exception {
-            byte[] encodedArray =
-                ByteStreams.toByteArray(new PooledByteBufferInputStream(encodedRef.get()));
+            byte[] encodedArray = ByteStreams.toByteArray(new PooledByteBufferInputStream(encoded));
             Pair<Integer, Integer> dimensions = BitmapUtil.decodeDimensions(encodedArray);
             if (dimensions == null) {
               respondError(responder, "can not get dimensions withId=" + imageId);

@@ -17,7 +17,7 @@ import React from 'react';
 import FilterRow from '../filter/FilterRow';
 import styled from '@emotion/styled';
 import FlexRow from '../FlexRow';
-import {normaliseColumnWidth} from './utils';
+import {normalizeColumnWidth} from './utils';
 import {DEFAULT_ROW_HEIGHT} from './types';
 import {Property} from 'csstype';
 import {theme} from 'flipper-plugin';
@@ -163,7 +163,7 @@ export default class TableRow extends React.PureComponent<Props> {
               title={title}
               multiline={multiline}
               justifyContent={col && col.align ? col.align : 'flex-start'}
-              width={normaliseColumnWidth(columnSizes[key])}>
+              width={normalizeColumnWidth(columnSizes[key])}>
               {isFilterable && onAddFilter != null ? (
                 <FilterRow addFilter={onAddFilter} filterKey={key}>
                   {value}

@@ -93,7 +93,7 @@ export class FlipperServerImpl implements FlipperServer {
           description:
             medium === 'WWW'
               ? `Verify that both your computer and mobile device are on Lighthouse/VPN that you are logged in to Facebook Intern so that certificates can be exhanged. See: https://fburl.com/flippervpn`
-              : 'Verify that your client is connected to Flipper and that there is no error related to idb.',
+              : 'Verify that your client is connected to Flipper and that there is no error related to idb or adb.',
         });
       },
     );

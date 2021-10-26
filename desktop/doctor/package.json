@@ -20,7 +20,7 @@
     "prettier": "^2.4.1",
     "ts-jest": "^26.5.6",
     "tslint-config-prettier": "^1.18.0",
-    "typescript": "^4.4.3"
+    "typescript": "^4.4.4"
   },
   "scripts": {
     "reset": "rimraf lib *.tsbuildinfo",
@@ -37,7 +37,7 @@
   ],
   "author": "Facebook, Inc",
   "dependencies": {
-    "@types/node": "^16.10.3",
+    "@types/node": "^16.11.0",
     "envinfo": "^7.8.1",
     "fb-watchman": "^2.0.1"
   }

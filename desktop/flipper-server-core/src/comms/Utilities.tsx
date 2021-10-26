@@ -7,7 +7,8 @@
  * @format
  */
 
-import {ClientQuery} from 'flipper-common';
+import {ClientQuery, DeviceOS, ResponseMessage} from 'flipper-common';
+import {ParsedUrlQuery} from 'querystring';
 import {CertificateExchangeMedium} from '../utils/CertificateProvider';
 import {SecureClientQuery} from './ServerAdapter';
 
@@ -50,6 +51,150 @@ export function appNameWithUpdateHint(query: ClientQuery): string {
   return query.app;
 }
 
+export function parseMessageToJson<T extends object = object>(
+  message: any,
+): T | undefined {
+  try {
+    return JSON.parse(message.toString());
+  } catch (err) {
+    console.warn(`Invalid JSON: ${message}`, 'clientMessage');
+    return;
+  }
+}
+export function isWsResponseMessage(
+  message: object,
+): message is ResponseMessage {
+  return typeof (message as ResponseMessage).id === 'number';
+}
+
+const certExchangeSupportedOSes = new Set<DeviceOS>([
+  'Android',
+  'iOS',
+  'MacOS',
+  'Metro',
+  'Windows',
+]);
+/**
+ * Validates a string as being one of those defined as valid OS.
+ * @param str An input string.
+ */
+export function verifyClientQueryComesFromCertExchangeSupportedOS(
+  query: ClientQuery | undefined,
+): ClientQuery | undefined {
+  if (!query || !certExchangeSupportedOSes.has(query.os)) {
+    return;
+  }
+  return query;
+}
+
+/**
+ * Parse and extract a ClientQuery instance from a message. The ClientQuery
+ * data will be contained in the message url query string.
+ * @param message An incoming web socket message.
+ */
+export function parseClientQuery(
+  query: ParsedUrlQuery,
+): ClientQuery | undefined {
+  /** Any required arguments to construct a ClientQuery come
+   * embedded in the query string.
+   */
+  let device_id: string | undefined;
+  if (typeof query.device_id === 'string') {
+    device_id = query.device_id;
+  } else {
+    return;
+  }
+
+  let device: string | undefined;
+  if (typeof query.device === 'string') {
+    device = query.device;
+  } else {
+    return;
+  }
+
+  let app: string | undefined;
+  if (typeof query.app === 'string') {
+    app = query.app;
+  } else {
+    return;
+  }
+
+  let os: DeviceOS | undefined;
+  if (typeof query.os === 'string') {
+    os = query.os as DeviceOS;
+  } else {
+    return;
+  }
+
+  const clientQuery: ClientQuery = {
+    device_id,
+    device,
+    app,
+    os,
+  };
+
+  if (typeof query.sdk_version === 'string') {
+    const sdk_version = parseInt(query.sdk_version, 10);
+    if (sdk_version) {
+      // TODO: allocate new object, kept now as is to keep changes minimal
+      (clientQuery as any).sdk_version = sdk_version;
+    }
+  }
+
+  return clientQuery;
+}
+
+/**
+ * Parse and extract a SecureClientQuery instance from a message. The ClientQuery
+ * data will be contained in the message url query string.
+ * @param message An incoming web socket message.
+ */
+export function parseSecureClientQuery(
+  query: ParsedUrlQuery,
+): SecureClientQuery | undefined {
+  /** Any required arguments to construct a SecureClientQuery come
+   * embedded in the query string.
+   */
+  const clientQuery = verifyClientQueryComesFromCertExchangeSupportedOS(
+    parseClientQuery(query),
+  );
+  if (!clientQuery) {
+    return;
+  }
+
+  let csr: string | undefined;
+  if (typeof query.csr === 'string') {
+    const buffer = Buffer.from(query.csr, 'base64');
+    if (buffer) {
+      csr = buffer.toString('ascii');
+    }
+  }
+
+  let csr_path: string | undefined;
+  if (typeof query.csr_path === 'string') {
+    csr_path = query.csr_path;
+  }
+
+  let medium: number | undefined;
+  if (typeof query.medium === 'string') {
+    medium = parseInt(query.medium, 10);
+  }
+  if (medium !== undefined && (medium < 1 || medium > 3)) {
+    throw new Error('Unsupported exchange medium: ' + medium);
+  }
+  return {...clientQuery, csr, csr_path, medium: medium as any};
+}
+
 export function cloneClientQuerySafeForLogging(clientQuery: SecureClientQuery) {
   return {...clientQuery, csr: !clientQuery.csr ? clientQuery.csr : '<hidden>'};
+}
+
+// TODO: Merge with the same fn in desktop/app/src/utils
+export function assertNotNull<T extends any>(
+  value: T,
+  message: string = 'Unexpected null/undefined value found',
+): asserts value is Exclude<T, undefined | null> {
+  if (value === null || value === undefined) {
+    throw new Error(message);
+  }
 }

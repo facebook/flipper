@@ -7,8 +7,10 @@
 
 package com.facebook.flipper.plugins.inspector;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
@@ -29,6 +31,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 public class InspectorFlipperPlugin implements FlipperPlugin {
+  private static final String TAG = "ContextDescriptor";
 
   private ApplicationWrapper mApplication;
   private DescriptorMapping mDescriptorMapping;
@@ -91,7 +94,7 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
   // Package visible for testing
   InspectorFlipperPlugin(
       ApplicationWrapper wrapper,
-      DescriptorMapping descriptorMapping,
+      final DescriptorMapping descriptorMapping,
       @Nullable List<ExtensionCommand> extensions) {
     mDescriptorMapping = descriptorMapping;
 
@@ -99,6 +102,29 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
     mApplication = wrapper;
     mExtensionCommands = extensions;
     mShowLithoAccessibilitySettings = false;
+
+    mApplication.setActivityDestroyedListener(
+        new ApplicationWrapper.ActivityDestroyedListener() {
+          private final DescriptorMapping mCallbackDescriptorMapping = mDescriptorMapping;
+          private final ObjectTracker mCallbackObjectTracker = mObjectTracker;
+
+          @Override
+          public void onActivityDestroyed(Activity activity) {
+            try {
+              final NodeDescriptor<Activity> activityDescriptor =
+                  (NodeDescriptor<Activity>)
+                      mCallbackDescriptorMapping.descriptorForClass(Activity.class);
+              if (activityDescriptor == null || mCallbackObjectTracker == null) {
+                return;
+              }
+              String activityId = activityDescriptor.getId(activity);
+              mCallbackObjectTracker.remove(activityId);
+            } catch (Exception e) {
+              // Ignore if there is an error
+              Log.d(TAG, "Cannot remove activity from ObjectTracker: " + e.getMessage());
+            }
+          }
+        });
   }
 
   @Override

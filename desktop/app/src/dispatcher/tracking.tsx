@@ -7,9 +7,6 @@
  * @format
  */
 
-// Used for PID tracking.
-// eslint-disable-next-line flipper/no-electron-remote-imports
-import {ipcRenderer, remote} from 'electron';
 import {performance} from 'perf_hooks';
 import {EventEmitter} from 'events';
 
@@ -32,6 +29,7 @@ import {getCPUUsage} from 'process';
 import {sideEffect} from '../utils/sideEffect';
 import {getSelectionInfo} from '../utils/info';
 import type {SelectionInfo} from '../utils/info';
+import {getRenderHostInstance} from '../RenderHost';
 
 const TIME_SPENT_EVENT = 'time-spent';
 
@@ -77,6 +75,7 @@ export function emitBytesReceived(plugin: string, bytes: number) {
 }
 
 export default (store: Store, logger: Logger) => {
+  const renderHost = getRenderHostInstance();
   sideEffect(
     store,
     {
@@ -97,7 +96,7 @@ export default (store: Store, logger: Logger) => {
 
   const oldExitData = loadExitData();
   if (oldExitData) {
-    const isReload = remote.process.pid === oldExitData.pid;
+    const isReload = renderHost.processId === oldExitData.pid;
     const timeSinceLastStartup =
       Date.now() - parseInt(oldExitData.lastSeen, 10);
     // console.log(isReload ? 'reload' : 'restart', oldExitData);
@@ -144,16 +143,15 @@ export default (store: Store, logger: Logger) => {
     );
   }
 
-  ipcRenderer.on('trackUsage', (event, ...args: any[]) => {
+  renderHost.onIpcEvent('trackUsage', (...args: any[]) => {
     let state: State;
     try {
       state = store.getState();
     } catch (e) {
       // if trackUsage is called (indirectly) through a reducer, this will utterly die Flipper. Let's prevent that and log an error instead
       console.error(
-        'trackUsage triggered indirectly as side effect of a reducer. Event: ',
-        event.type,
-        event,
+        'trackUsage triggered indirectly as side effect of a reducer',
+        e,
       );
       return;
     }
@@ -373,7 +371,7 @@ export function persistExitData(
       ? deconstructClientId(state.selectedAppId).app
       : '',
     cleanExit,
-    pid: remote.process.pid,
+    pid: getRenderHostInstance().processId,
   };
   window.localStorage.setItem(
     flipperExitDataKey,

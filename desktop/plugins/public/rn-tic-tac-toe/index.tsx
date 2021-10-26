@@ -183,6 +183,6 @@ const Cell = styled('button')({
   backgroundColor: colors.highlight,
   color: 'white',
   ':disabled': {
-    backgroundColor: colors.greyTint2,
+    backgroundColor: colors.grayTint2,
   },
 });

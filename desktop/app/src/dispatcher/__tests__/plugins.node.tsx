@@ -18,9 +18,6 @@ import dispatcher, {
 } from '../plugins';
 import {BundledPluginDetails, InstalledPluginDetails} from 'flipper-plugin-lib';
 import path from 'path';
-// Allowed in a test.
-// eslint-disable-next-line flipper/no-electron-remote-imports
-import {remote} from 'electron';
 import {createRootReducer, State} from '../../reducers/index';
 import {getLogger} from 'flipper-common';
 import configureStore from 'redux-mock-store';
@@ -84,24 +81,29 @@ test('getDynamicPlugins returns empty array on errors', async () => {
 test('checkDisabled', () => {
   const disabledPlugin = 'pluginName';
   const config = {disabledPlugins: [disabledPlugin]};
-  remote.process.env.CONFIG = JSON.stringify(config);
-  const disabled = checkDisabled([]);
+  const orig = process.env.CONFIG;
+  try {
+    process.env.CONFIG = JSON.stringify(config);
+    const disabled = checkDisabled([]);
 
-  expect(
-    disabled({
-      ...sampleBundledPluginDetails,
-      name: 'other Name',
-      version: '1.0.0',
-    }),
-  ).toBeTruthy();
+    expect(
+      disabled({
+        ...sampleBundledPluginDetails,
+        name: 'other Name',
+        version: '1.0.0',
+      }),
+    ).toBeTruthy();
 
-  expect(
-    disabled({
-      ...sampleBundledPluginDetails,
-      name: disabledPlugin,
-      version: '1.0.0',
-    }),
-  ).toBeFalsy();
+    expect(
+      disabled({
+        ...sampleBundledPluginDetails,
+        name: disabledPlugin,
+        version: '1.0.0',
+      }),
+    ).toBeFalsy();
+  } finally {
+    process.env.CONFIG = orig;
+  }
 });
 
 test('checkGK for plugin without GK', () => {

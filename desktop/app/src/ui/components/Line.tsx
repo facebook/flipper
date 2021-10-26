@@ -12,7 +12,7 @@ import View from './View';
 import {colors} from './colors';
 
 const Line = styled(View)<{color?: string}>(({color}) => ({
-  backgroundColor: color ? color : colors.greyTint2,
+  backgroundColor: color ? color : colors.grayTint2,
   height: 1,
   width: 'auto',
   flexShrink: 0,

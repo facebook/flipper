@@ -15,7 +15,7 @@ import {
   TableOnSort,
   TableRowSortOrder,
 } from './types';
-import {normaliseColumnWidth, isPercentage} from './utils';
+import {normalizeColumnWidth, isPercentage} from './utils';
 import {PureComponent} from 'react';
 import ContextMenu from '../ContextMenu';
 import {theme, _Interactive, _InteractiveProps} from 'flipper-plugin';
@@ -287,7 +287,7 @@ export default class TableHead extends PureComponent<{
         );
       }
 
-      const width = normaliseColumnWidth(columnSizes[key]);
+      const width = normalizeColumnWidth(columnSizes[key]);
       const isResizable = col.resizable !== false;
 
       const elem = (

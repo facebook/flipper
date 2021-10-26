@@ -10,7 +10,7 @@
 import {Store} from '../reducers/index';
 import {Logger} from 'flipper-common';
 import {PluginNotification} from '../reducers/notifications';
-import {ipcRenderer, IpcRendererEvent} from 'electron';
+import reactElementToJSXString from 'react-element-to-jsx-string';
 import {
   updatePluginBlocklist,
   updateCategoryBlocklist,
@@ -19,18 +19,24 @@ import {textContent} from 'flipper-plugin';
 import {getPluginTitle} from '../utils/pluginUtils';
 import {sideEffect} from '../utils/sideEffect';
 import {openNotification} from '../sandy-chrome/notification/Notification';
+import {getRenderHostInstance} from '../RenderHost';
 
-type NotificationEvents = 'show' | 'click' | 'close' | 'reply' | 'action';
+export type NotificationEvents =
+  | 'show'
+  | 'click'
+  | 'close'
+  | 'reply'
+  | 'action';
+
 const NOTIFICATION_THROTTLE = 5 * 1000; // in milliseconds
 
 export default (store: Store, logger: Logger) => {
   const knownNotifications: Set<string> = new Set();
   const lastNotificationTime: Map<string, number> = new Map();
 
-  ipcRenderer.on(
+  getRenderHostInstance().onIpcEvent(
     'notificationEvent',
     (
-      _event: IpcRendererEvent,
       eventName: NotificationEvents,
       pluginNotification: PluginNotification,
       arg: null | string | number,
@@ -117,10 +123,10 @@ export default (store: Store, logger: Logger) => {
               return;
             }
             const plugin = getPlugin(n.pluginId);
-            ipcRenderer.send('sendNotification', {
+            getRenderHostInstance().sendIpcEvent('sendNotification', {
               payload: {
                 title: n.notification.title,
-                body: n.notification.message,
+                body: reactElementToJSXString(n.notification.message),
                 actions: [
                   {
                     type: 'button',

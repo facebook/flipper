@@ -10,8 +10,9 @@
 import {SecureServerConfig} from '../utils/CertificateProvider';
 import ServerAdapter, {ServerEventsListener} from './ServerAdapter';
 import ServerRSocket from './ServerRSocket';
+import SecureServerWebSocket from './SecureServerWebSocket';
+import BrowserServerWebSocket from './BrowserServerWebSocket';
 import ServerWebSocket from './ServerWebSocket';
-import ServerWebSocketBrowser from './ServerWebSocketBrowser';
 
 export enum TransportType {
   RSocket,
@@ -25,33 +26,22 @@ export enum TransportType {
  * @param listener An object implementing the ServerEventsListener interface.
  * @param sslConfig An SSL configuration for TLS servers.
  */
-export function createServer(
+export async function createServer(
   port: number,
   listener: ServerEventsListener,
   sslConfig?: SecureServerConfig,
   transportType: TransportType = TransportType.RSocket,
 ): Promise<ServerAdapter> {
-  return new Promise((resolve, reject) => {
-    const server =
-      transportType === TransportType.RSocket
-        ? new ServerRSocket(listener)
-        : new ServerWebSocket(listener);
-    server
-      .start(port, sslConfig)
-      .then((started) => {
-        if (started) {
-          resolve(server);
-        } else {
-          reject(
-            new Error(`An error occurred whilst trying
-                     to start the server listening at port ${port}`),
-          );
-        }
-      })
-      .catch((error: any) => {
-        reject(error);
-      });
-  });
+  let server: ServerAdapter;
+  if (transportType === TransportType.RSocket) {
+    server = new ServerRSocket(listener);
+  } else if (sslConfig) {
+    server = new SecureServerWebSocket(listener);
+  } else {
+    server = new ServerWebSocket(listener);
+  }
+  await server.start(port, sslConfig);
+  return server;
 }
 
 /**
@@ -63,26 +53,11 @@ export function createServer(
  * @param listener An object implementing the ServerEventsListener interface.
  * @returns
  */
-export function createBrowserServer(
+export async function createBrowserServer(
   port: number,
   listener: ServerEventsListener,
 ): Promise<ServerAdapter> {
-  return new Promise((resolve, reject) => {
-    const server = new ServerWebSocketBrowser(listener);
-    server
-      .start(port)
-      .then((started) => {
-        if (started) {
-          resolve(server);
-        } else {
-          reject(
-            new Error(`An error occurred whilst trying
-                     to start the server listening at port ${port}`),
-          );
-        }
-      })
-      .catch((error: any) => {
-        reject(error);
-      });
-  });
+  const server = new BrowserServerWebSocket(listener);
+  await server.start(port);
+  return server;
 }

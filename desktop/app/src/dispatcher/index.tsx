@@ -8,8 +8,6 @@
  */
 
 // Used responsibly.
-// eslint-disable-next-line flipper/no-electron-remote-imports
-import {remote} from 'electron';
 import flipperServer from './flipperServer';
 import application from './application';
 import tracking from './tracking';
@@ -31,9 +29,6 @@ import {notNull} from '../utils/typeUtils';
 export default function (store: Store, logger: Logger): () => Promise<void> {
   // This only runs in development as when the reload
   // kicks in it doesn't unregister the shortcuts
-  if (process.env.NODE_ENV === 'development') {
-    remote.globalShortcut.unregisterAll();
-  }
   const dispatchers: Array<Dispatcher> = [
     application,
     tracking,

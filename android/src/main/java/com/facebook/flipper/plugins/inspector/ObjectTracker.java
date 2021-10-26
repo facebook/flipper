@@ -40,6 +40,10 @@ public class ObjectTracker {
     mObjects.clear();
   }
 
+  public void remove(String id) {
+    mObjects.remove(id);
+  }
+
   public boolean contains(String id) {
     return mObjects.containsKey(id);
   }

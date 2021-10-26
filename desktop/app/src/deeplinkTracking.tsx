@@ -16,16 +16,21 @@ export type OpenPluginParams = {
   payload: string | undefined;
 };
 
+export type DeeplinkInteractionState =
+  | 'INIT'
+  | 'ERROR'
+  | 'PLUGIN_LIGHTHOUSE_BAIL'
+  | 'PLUGIN_STATUS_BAIL'
+  | 'PLUGIN_DEVICE_BAIL'
+  | 'PLUGIN_CLIENT_BAIL'
+  | 'PLUGIN_DEVICE_SELECTION_BAIL'
+  | 'PLUGIN_CLIENT_SELECTION_BAIL'
+  | 'PLUGIN_DEVICE_UNSUPPORTED'
+  | 'PLUGIN_CLIENT_UNSUPPORTED'
+  | 'PLUGIN_OPEN_SUCCESS';
+
 export type DeeplinkInteraction = {
-  state:
-    | 'INIT'
-    | 'ERROR'
-    | 'PLUGIN_LIGHTHOUSE_BAIL'
-    | 'PLUGIN_STATUS_BAIL'
-    | 'PLUGIN_DEVICE_BAIL'
-    | 'PLUGIN_DEVICE_UNSUPPORTED'
-    | 'PLUGIN_CLIENT_UNSUPPORTED'
-    | 'PLUGIN_OPEN_SUCCESS';
+  state: DeeplinkInteractionState;
   errorMessage?: string;
   plugin?: OpenPluginParams;
   extra?: object;

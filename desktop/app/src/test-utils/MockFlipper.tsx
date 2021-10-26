@@ -12,7 +12,12 @@ import BaseDevice from '../devices/BaseDevice';
 import {createRootReducer} from '../reducers';
 import {Store} from '../reducers/index';
 import Client, {ClientConnection} from '../Client';
-import {Logger, buildClientId, FlipperServer} from 'flipper-common';
+import {
+  Logger,
+  buildClientId,
+  FlipperServer,
+  ClientResponseType,
+} from 'flipper-common';
 import {PluginDefinition} from '../plugin';
 import {registerPlugins} from '../reducers/plugins';
 import {getLogger} from 'flipper-common';
@@ -244,7 +249,7 @@ function createStubConnection(): ClientConnection {
     send(_: any) {
       throw new Error('Should not be called in test');
     },
-    sendExpectResponse(_: any): Promise<ResponseType> {
+    sendExpectResponse(_: any): Promise<ClientResponseType> {
       throw new Error('Should not be called in test');
     },
   };
