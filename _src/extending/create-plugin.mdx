@@ -15,7 +15,7 @@ To build a client plugin, implement the `FlipperPlugin` interface.
 The ID that is returned from your implementation needs to match the `name` defined in your JavaScript counterpart's `package.json`.
 
 
-<Tabs defaultValue="android" values={[{label: 'Android', value: 'android'}, { label: 'iOS', value: 'ios'}, { label: 'C++', value: 'cpp'}, { label: 'React Native (JS)', value: 'rn' }]}>
+<Tabs defaultValue="android" values={[{label: 'Android', value: 'android'}, { label: 'iOS', value: 'ios'}, { label: 'C++', value: 'cpp'}, { label: 'React Native (JS)', value: 'rn' }, { label: 'React (JS)', value: 'js' }]}>
 <TabItem value="android">
 
 ```java
@@ -91,15 +91,54 @@ addPlugin({
     return 'MyFlipperPlugin';
   },
   onConnect(connection) {
-    console.log("connected");
+    console.log('connected');
   },
   onDisconnect() {
-    console.log("disconnected");
+    console.log('disconnected');
   },
   runInBackground() {
     return false;
-  }
-})
+  },
+});
+```
+</TabItem>
+<TabItem value="js">
+
+<div class="warning">
+
+Please note that using Flipper from JavaScript in your browser requires the package [`js-flipper`](https://www.npmjs.com/package/js-flipper) to be installed in the hosting application.
+
+</div>
+
+```javascript
+import {flipperClient} from 'js-flipper';
+
+// We want to import and start flipper client only in development and test modes
+// We want to exclude it from our production build
+let flipperClientPromise;
+if (process.env.NODE_ENV !== 'production') {
+  flipperClientPromise = import('js-flipper').then(({flipperClient}) => {
+    flipperClient.start('React Tic-Tac-Toe');
+    return flipperClient;
+  });
+}
+
+flipperClientPromise?.then((flipperClient) => {
+  flipperClient.addPlugin({
+    getId() {
+      return 'MyFlipperPlugin';
+    },
+    onConnect(connection) {
+      console.log('connected');
+    },
+    onDisconnect() {
+      console.log('disconnected');
+    },
+    runInBackground() {
+      return false;
+    },
+  });
+});
 ```
 </TabItem>
 </Tabs>
@@ -109,7 +148,7 @@ addPlugin({
 
 `onConnect` will be called when your plugin becomes active. This will provide a `FlipperConnection` allowing you to register receivers for desktop method calls and respond with data.
 
-<Tabs defaultValue="android" values={[{label: 'Android', value: 'android'}, { label: 'iOS', value: 'ios'}, { label: 'C++', value: 'cpp'}, { label: 'React Native (JS)', value: 'rn' }]}>
+<Tabs defaultValue="android" values={[{label: 'Android', value: 'android'}, { label: 'iOS', value: 'ios'}, { label: 'C++', value: 'cpp'}, { label: 'React Native (JS)', value: 'rn' }, { label: 'React (JS)', value: 'js' }]}>
 <TabItem value="android">
 
 ```java
@@ -171,17 +210,61 @@ addPlugin({
     return 'MyFlipperPlugin';
   },
   onConnect(connection) {
-    console.log("connected");
-    connection.receive("getData", (data, responder) => {
-      console.log("incoming data", data);
+    console.log('connected');
+    connection.receive('getData', (data, responder) => {
+      console.log('incoming data', data);
       // respond with some data
       responder.success({
-        ack: true
+        ack: true,
       });
     });
   },
   // ...as-is
-})
+});
+```
+
+</TabItem>
+<TabItem value="js">
+
+```javascript
+flipperClient.addPlugin({
+  getId() {
+    return 'MyFlipperPlugin';
+  },
+  onConnect(connection) {
+    console.log('connected');
+    connection.receive('getData', (data) => {
+      console.log('incoming data', data);
+      // return data to send it as a response
+      return {
+        ack: true,
+      };
+    });
+    // Flipper client can also send the data you return from your async functions
+    connection.receive('getDataAsync', async (data) => {
+      console.log('incoming data', data);
+      const myAsyncData = await doAsyncStuff();
+      // return data to send it as a response
+      return {
+        data: myAsyncData,
+      };
+    });
+    // Flipper client catches your exceptions and sends them as an error response to the desktop
+    connection.receive('getErrorData', (data) => {
+      console.log('incoming data', data);
+      throw new Error('Ooops');
+    });
+    // It catches the execptions in your async functions as well
+    connection.receive('getErrorDataAsync', async (data) => {
+      console.log('incoming data', data);
+      const myAsyncData = await doAsyncStuff();
+      if (!myAsyncData) {
+        throw new Error('Ooops! Async data is not there!!!');
+      }
+    });
+  },
+  // ...as-is
+});
 ```
 
 </TabItem>
@@ -191,7 +274,7 @@ addPlugin({
 
 You don't have to wait for the desktop to request data though, you can also push data directly to the desktop. If the JS plugin subscribes to the same method, it will receive the data.
 
-<Tabs defaultValue="android" values={[{label: 'Android', value: 'android'}, { label: 'iOS', value: 'ios'}, { label: 'C++', value: 'cpp'}, { label: 'React Native (JS)', value: 'rn' }]}>
+<Tabs defaultValue="android" values={[{label: 'Android', value: 'android'}, { label: 'iOS', value: 'ios'}, { label: 'C++', value: 'cpp'}, { label: 'React Native (JS)', value: 'rn' }, { label: 'React (JS)', value: 'js' }]}>
 <TabItem value="android">
 
 ```java
@@ -227,11 +310,27 @@ addPlugin({
     return 'MyFlipperPlugin';
   },
   onConnect(connection) {
-    console.log("connected");
-    connection.send("newRow", { message: "Hello" });
+    console.log('connected');
+    connection.send('newRow', {message: 'Hello'});
   },
   // ...as-is
-})
+});
+```
+
+</TabItem>
+<TabItem value="js">
+
+```javascript
+flipperClient.addPlugin({
+  getId() {
+    return 'MyFlipperPlugin';
+  },
+  onConnect(connection) {
+    console.log('connected');
+    connection.send('newRow', {message: 'Hello'});
+  },
+  // ...as-is
+});
 ```
 
 </TabItem>
@@ -299,10 +398,16 @@ Here, `sendData` is an example of a method that might be implemented by the Flip
 
 ### Bi-directional communication demo
 
-An minimal communication demo can be found in our [Sample project]:
+An minimal communication demo for Android and iOS can be found in our Sample project:
 
 * [Desktop implementation](https://github.com/facebook/flipper/blob/main/desktop/plugins/public/example/index.tsx)
-* [Android implementation](https://github.com/facebook/flipper/blob/main/android/sample/src/debug/java/com/facebook/flipper/plugins/example/ExampleFlipperPlugin.java) / [iOS implementation](https://github.com/facebook/flipper/tree/7bd4f80c2570bebb52af3cf49e45fc6130d6a473/iOS/Plugins/FlipperKitExamplePlugin/FlipperKitExamplePlugin)
+* [Android](https://github.com/facebook/flipper/blob/main/android/sample/src/debug/java/com/facebook/flipper/plugins/example/ExampleFlipperPlugin.java) / [iOS](https://github.com/facebook/flipper/tree/7bd4f80c2570bebb52af3cf49e45fc6130d6a473/iOS/Plugins/FlipperKitExamplePlugin/FlipperKitExamplePlugin)
+
+For React Native and JavaScript we have a simple game of Tic Tac Toe:
+
+* [Desktop implementation](https://github.com/facebook/flipper/blob/main/desktop/plugins/public/rn-tic-tac-toe/index.tsx)
+* [React Native implementation](https://github.com/facebook/flipper/tree/main/react-native/ReactNativeFlipperExample) / [JavaScript (React) implementation](https://github.com/facebook/flipper/tree/main/js/react-flipper-example)
+
 
 ## Background Plugins
 
