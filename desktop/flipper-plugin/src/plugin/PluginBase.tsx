@@ -69,7 +69,7 @@ export interface BasePluginClient {
   /**
    * The `onReady` event is triggered immediately after a plugin has been initialized and any pending state was restored.
    * This event fires after `onImport` / the interpretation of any `persist` flags and indicates that the initialization process has finished.
-   * This event does not signal that the plugin is loaded in the UI yet (see `onActivated`) and does fire before deeplinks (see `onDeeplink`) are handled.
+   * This event does not signal that the plugin is loaded in the UI yet (see `onActivated`) and does fire before deeplinks (see `onDeepLink`) are handled.
    */
   onReady(handler: () => void): void;
 
