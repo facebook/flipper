@@ -50,7 +50,7 @@ async function entryPointForPluginFolder(
   pluginsDir: string,
 ): Promise<{[key: string]: InstalledPluginDetails}> {
   pluginsDir = expandTilde(pluginsDir);
-  if (!fs.existsSync(pluginsDir)) {
+  if (!(await fs.pathExists(pluginsDir))) {
     return {};
   }
   return await fs
