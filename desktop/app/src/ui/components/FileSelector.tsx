@@ -11,12 +11,11 @@ import React, {useState} from 'react';
 import FlexRow from './FlexRow';
 import Glyph from './Glyph';
 import Input from './Input';
-import electron from 'electron';
 import styled from '@emotion/styled';
 import {colors} from './colors';
-import Electron from 'electron';
 import fs from 'fs';
 import {Tooltip} from '..';
+import {getFlipperLib} from 'flipper-plugin';
 
 const CenteredGlyph = styled(Glyph)({
   margin: 'auto',
@@ -41,40 +40,25 @@ const FileInputBox = styled(Input)<{isValid: boolean}>(({isValid}) => ({
   },
 }));
 
-function strToArr<T extends string>(item: T): T[] {
-  return [item];
-}
-
 export interface Props {
   onPathChanged: (evtArgs: {path: string; isValid: boolean}) => void;
   placeholderText: string;
   defaultPath: string;
-  showHiddenFiles: boolean;
 }
 
 const defaultProps: Props = {
   onPathChanged: (_) => {},
   placeholderText: '',
   defaultPath: '/',
-  showHiddenFiles: false,
 };
 
 export default function FileSelector({
   onPathChanged,
   placeholderText,
-
   defaultPath,
-  showHiddenFiles,
 }: Props) {
   const [value, setValue] = useState('');
   const [isValid, setIsValid] = useState(false);
-  const options: Electron.OpenDialogOptions = {
-    properties: [
-      'openFile',
-      ...(showHiddenFiles ? strToArr('showHiddenFiles') : []),
-    ],
-    defaultPath,
-  };
   const onChange = (path: string) => {
     setValue(path);
     let isNewPathValid = false;
@@ -103,11 +87,11 @@ export default function FileSelector({
       />
       <GlyphContainer
         onClick={() =>
-          electron.remote.dialog
-            .showOpenDialog(options)
-            .then((result: electron.OpenDialogReturnValue) => {
-              if (result && !result.canceled && result.filePaths.length) {
-                onChange(result.filePaths[0]);
+          getFlipperLib()
+            .showOpenDialog?.({defaultPath})
+            .then((path) => {
+              if (path) {
+                onChange(path);
               }
             })
         }>

@@ -10,6 +10,7 @@
 import {NotificationEvents} from './dispatcher/notifications';
 import {PluginNotification} from './reducers/notifications';
 import type {NotificationConstructorOptions} from 'electron';
+import {FlipperLib} from 'flipper-plugin';
 
 // Events that are emitted from the main.ts ovr the IPC process bridge in Electron
 type MainProcessEvents = {
@@ -44,7 +45,9 @@ type ChildProcessEvents = {
 export interface RenderHost {
   readonly processId: number;
   readTextFromClipboard(): string | undefined;
-  selectDirectory?(defaultPath?: string): Promise<string | undefined>;
+  showSaveDialog?: FlipperLib['showSaveDialog'];
+  showOpenDialog?: FlipperLib['showOpenDialog'];
+  showSelectDirectoryDialog?(defaultPath?: string): Promise<string | undefined>;
   registerShortcut(shortCut: string, callback: () => void): void;
   hasFocus(): boolean;
   onIpcEvent<Event extends keyof MainProcessEvents>(
@@ -55,6 +58,7 @@ export interface RenderHost {
     event: Event,
     ...args: ChildProcessEvents[Event]
   ): void;
+  shouldUseDarkColors(): boolean;
 }
 
 let renderHostInstance: RenderHost | undefined;
@@ -82,5 +86,8 @@ if (process.env.NODE_ENV === 'test') {
     },
     onIpcEvent() {},
     sendIpcEvent() {},
+    shouldUseDarkColors() {
+      return false;
+    },
   });
 }

@@ -35,6 +35,19 @@ export interface FlipperLib {
   DetailsSidebarImplementation?(
     props: DetailSidebarProps,
   ): React.ReactElement | null;
+  showSaveDialog?(options: {
+    defaultPath?: string;
+    message?: string;
+    title?: string;
+  }): Promise<string | undefined>;
+  showOpenDialog?(options: {
+    defaultPath?: string;
+    filter?: {
+      extensions: string[];
+      name: string;
+    };
+  }): Promise<string | undefined>;
+  showSelectDirectoryDialog?(defaultPath?: string): Promise<string | undefined>;
 }
 
 export let flipperLibInstance: FlipperLib | undefined;

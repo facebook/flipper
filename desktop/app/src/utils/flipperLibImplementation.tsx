@@ -18,8 +18,10 @@ import constants from '../fb-stubs/constants';
 import {addNotification} from '../reducers/notifications';
 import {deconstructPluginKey} from 'flipper-common';
 import {DetailSidebarImpl} from '../sandy-chrome/DetailSidebarImpl';
+import {RenderHost} from '../RenderHost';
 
 export function initializeFlipperLibImplementation(
+  renderHost: RenderHost,
   store: Store,
   logger: Logger,
 ) {
@@ -64,5 +66,8 @@ export function initializeFlipperLibImplementation(
       );
     },
     DetailsSidebarImplementation: DetailSidebarImpl,
+    showSaveDialog: renderHost.showSaveDialog,
+    showOpenDialog: renderHost.showOpenDialog,
+    showSelectDirectoryDialog: renderHost.showSelectDirectoryDialog,
   });
 }

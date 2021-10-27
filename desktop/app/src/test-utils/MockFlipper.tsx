@@ -28,6 +28,7 @@ import ArchivedDevice from '../devices/ArchivedDevice';
 import {ClientQuery, DeviceOS} from 'flipper-common';
 import {TestDevice} from './TestDevice';
 import {createFlipperServerMock} from './createFlipperServerMock';
+import {getRenderHostInstance} from '../RenderHost';
 
 export interface AppOptions {
   plugins?: PluginDefinition[];
@@ -89,7 +90,11 @@ export default class MockFlipper {
     this.unsubscribePluginManager = pluginManager(this._store, this._logger, {
       runSideEffectsSynchronously: true,
     });
-    initializeFlipperLibImplementation(this._store, this._logger);
+    initializeFlipperLibImplementation(
+      getRenderHostInstance(),
+      this._store,
+      this._logger,
+    );
     this._store.dispatch(registerPlugins(plugins ?? []));
     this._store.dispatch({
       type: 'SET_FLIPPER_SERVER',

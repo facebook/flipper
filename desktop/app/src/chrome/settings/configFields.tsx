@@ -99,11 +99,11 @@ export function FilePathConfigField(props: {
             .catch((_) => setIsValid(false));
         }}
       />
-      {renderHost.selectDirectory && (
+      {renderHost.showSelectDirectoryDialog && (
         <FlexColumn
           onClick={() => {
             renderHost
-              .selectDirectory?.()
+              .showSelectDirectoryDialog?.()
               .then((path) => {
                 if (path) {
                   setValue(path);
