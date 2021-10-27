@@ -9,6 +9,7 @@
 
 import fs from 'fs';
 import path from 'path';
+// eslint-disable-next-line flipper/no-electron-remote-imports
 import {remote} from 'electron';
 import {getStaticPath} from './pathUtils';
 

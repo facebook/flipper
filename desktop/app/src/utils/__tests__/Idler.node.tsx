@@ -7,6 +7,8 @@
  * @format
  */
 
+/* eslint-disable promise/catch-or-return */
+
 import {IdlerImpl, TestIdler} from '../Idler';
 import {sleep} from 'flipper-plugin';
 

@@ -7,6 +7,8 @@
  * @format
  */
 
+/* eslint-disable node/no-sync */
+
 import JsonFileStorage from '../jsonFileReduxPersistStorage';
 import fs from 'fs';
 
