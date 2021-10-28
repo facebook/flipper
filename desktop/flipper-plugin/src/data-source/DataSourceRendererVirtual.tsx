@@ -39,7 +39,7 @@ type DataSourceProps<T extends object, C> = {
   /**
    * The data source to render
    */
-  dataSource: DataSource<T>;
+  dataSource: DataSource<T, T[keyof T]>;
   /**
    * Automatically scroll if the user is near the end?
    */
@@ -66,7 +66,9 @@ type DataSourceProps<T extends object, C> = {
     offset: number,
   ): void;
   onUpdateAutoScroll?(autoScroll: boolean): void;
-  emptyRenderer?: null | ((dataSource: DataSource<T>) => React.ReactElement);
+  emptyRenderer?:
+    | null
+    | ((dataSource: DataSource<T, T[keyof T]>) => React.ReactElement);
 };
 
 /**

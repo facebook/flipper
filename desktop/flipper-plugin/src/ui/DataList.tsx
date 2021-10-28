@@ -47,7 +47,7 @@ type DataListBaseProps<Item> = {
   /**
    * Items to display. Per item at least a title and unique id should be provided
    */
-  items: DataSource<Item> | readonly Item[];
+  items: DataSource<Item, Item[keyof Item]> | readonly Item[];
   /**
    * Custom render function. By default the component will render the `title` in bold and description (if any) below it
    */
@@ -75,10 +75,12 @@ export type DataListProps<Item> = DataListBaseProps<Item> &
   // Some table props are set by DataList instead, so override them
   Omit<DataTableProps<Item>, 'records' | 'dataSource' | 'columns' | 'onSelect'>;
 
-export const DataList: (<T>(props: DataListProps<T>) => React.ReactElement) & {
+export const DataList: (<T extends object>(
+  props: DataListProps<T>,
+) => React.ReactElement) & {
   Item: React.FC<DataListItemProps>;
 } = Object.assign(
-  function <T>({
+  function <T extends object>({
     onSelect: baseOnSelect,
     selection,
     className,
@@ -151,7 +153,7 @@ export const DataList: (<T>(props: DataListProps<T>) => React.ReactElement) & {
 
     return (
       <Layout.Container style={style} className={className} grow>
-        <DataTable<any>
+        <DataTable<T>
           {...tableProps}
           tableManagerRef={tableManagerRef}
           records={Array.isArray(items) ? items : undefined!}

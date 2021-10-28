@@ -26,7 +26,7 @@ import {textContent} from '../../utils/textContent';
 const {Item, SubMenu} = Menu;
 
 export function tableContextMenuFactory<T>(
-  datasource: DataSource<T>,
+  datasource: DataSource<T, T[keyof T]>,
   dispatch: DataTableDispatch<T>,
   selection: Selection,
   columns: DataTableColumn<T>[],

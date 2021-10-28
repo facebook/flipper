@@ -32,7 +32,7 @@ function generateTodos(amount: number): Todo[] {
 
 const defaultFilter = (t: Todo) => !t.done;
 
-type DataSourceish = DataSource<Todo> | FakeDataSource<Todo>;
+type DataSourceish = DataSource<Todo, Todo[keyof Todo]> | FakeDataSource<Todo>;
 
 // NOTE: this run in jest, which is not optimal for perf, but should give some idea
 // make sure to use the `yarn watch` script in desktop root, so that the garbage collector is exposed

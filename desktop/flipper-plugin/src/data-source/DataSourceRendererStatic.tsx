@@ -16,7 +16,7 @@ type DataSourceProps<T extends object, C> = {
   /**
    * The data source to render
    */
-  dataSource: DataSource<T>;
+  dataSource: DataSource<T, T[keyof T]>;
   /**
    * additional context that will be passed verbatim to the itemRenderer, so that it can be easily memoized
    */
@@ -32,7 +32,9 @@ type DataSourceProps<T extends object, C> = {
   defaultRowHeight: number;
   onKeyDown?: React.KeyboardEventHandler<HTMLDivElement>;
   onUpdateAutoScroll?(autoScroll: boolean): void;
-  emptyRenderer?: null | ((dataSource: DataSource<T>) => React.ReactElement);
+  emptyRenderer?:
+    | null
+    | ((dataSource: DataSource<T, T[keyof T]>) => React.ReactElement);
 };
 
 /**

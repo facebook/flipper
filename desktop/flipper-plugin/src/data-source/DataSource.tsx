@@ -77,12 +77,14 @@ type OutputChange =
       newCount: number;
     };
 
-export type DataSourceOptions<T, K extends keyof T> = {
+export type DataSourceOptionKey<K extends PropertyKey> = {
   /**
    * If a key is set, the given field of the records is assumed to be unique,
    * and it's value can be used to perform lookups and upserts.
    */
   key?: K;
+};
+export type DataSourceOptions = {
   /**
    * The maximum amount of records that this DataSource will store.
    * If the limit is exceeded, the oldest records will automatically be dropped to make place for the new ones
@@ -90,16 +92,19 @@ export type DataSourceOptions<T, K extends keyof T> = {
   limit?: number;
 };
 
-export function createDataSource<T, KEY extends keyof T = any>(
+export function createDataSource<T, Key extends keyof T>(
   initialSet: readonly T[],
-  options?: DataSourceOptions<T, KEY>,
-): DataSource<T>;
-export function createDataSource<T>(initialSet?: readonly T[]): DataSource<T>;
-export function createDataSource<T, KEY extends keyof T>(
+  options: DataSourceOptions & DataSourceOptionKey<Key>,
+): DataSource<T, T[Key] extends string | number ? T[Key] : never>;
+export function createDataSource<T>(
+  initialSet?: readonly T[],
+  options?: DataSourceOptions,
+): DataSource<T, never>;
+export function createDataSource<T, Key extends keyof T>(
   initialSet: readonly T[] = [],
-  options?: DataSourceOptions<T, KEY>,
-): DataSource<T> {
-  const ds = new DataSource<T>(options?.key);
+  options?: DataSourceOptions & DataSourceOptionKey<Key>,
+): DataSource<T, Key> {
+  const ds = new DataSource<T, Key>(options?.key);
   if (options?.limit !== undefined) {
     ds.limit = options.limit;
   }
@@ -107,15 +112,15 @@ export function createDataSource<T, KEY extends keyof T>(
   return ds as any;
 }
 
-export class DataSource<T> {
+export class DataSource<T extends any, KeyType = never> {
   private nextId = 0;
   private _records: Entry<T>[] = [];
-  private _recordsById: Map<string, T> = new Map();
+  private _recordsById: Map<KeyType, T> = new Map();
   /**
    * @readonly
    */
   public keyAttribute: keyof T | undefined;
-  private idToIndex: Map<string, number> = new Map();
+  private idToIndex: Map<KeyType, number> = new Map();
 
   // if we shift the window, we increase shiftOffset to correct idToIndex results, rather than remapping all values
   private shiftOffset = 0;
@@ -131,11 +136,11 @@ export class DataSource<T> {
    *
    * Additional views can created through the fork method.
    */
-  public readonly view: DataSourceView<T>;
+  public readonly view: DataSourceView<T, KeyType>;
 
   constructor(keyAttribute: keyof T | undefined) {
     this.keyAttribute = keyAttribute;
-    this.view = new DataSourceView<T>(this);
+    this.view = new DataSourceView<T, KeyType>(this);
   }
 
   public get size() {
@@ -154,22 +159,22 @@ export class DataSource<T> {
     return unwrap(this._records[index]);
   }
 
-  public has(key: string) {
+  public has(key: KeyType) {
     this.assertKeySet();
     return this._recordsById.has(key);
   }
 
-  public getById(key: string): T | undefined {
+  public getById(key: KeyType): T | undefined {
     this.assertKeySet();
     return this._recordsById.get(key);
   }
 
-  public keys(): IterableIterator<string> {
+  public keys(): IterableIterator<KeyType> {
     this.assertKeySet();
     return this._recordsById.keys();
   }
 
-  public entries(): IterableIterator<[string, T]> {
+  public entries(): IterableIterator<[KeyType, T]> {
     this.assertKeySet();
     return this._recordsById.entries();
   }
@@ -198,7 +203,7 @@ export class DataSource<T> {
    * Returns the index of a specific key in the *records* set.
    * Returns -1 if the record wansn't found
    */
-  public getIndexOfKey(key: string): number {
+  public getIndexOfKey(key: KeyType): number {
     this.assertKeySet();
     const stored = this.idToIndex.get(key);
     return stored === undefined ? -1 : stored + this.shiftOffset;
@@ -328,7 +333,7 @@ export class DataSource<T> {
    *
    * Warning: this operation can be O(n) if a key is set
    */
-  public deleteByKey(keyValue: string): boolean {
+  public deleteByKey(keyValue: KeyType): boolean {
     this.assertKeySet();
     const index = this.getIndexOfKey(keyValue);
     if (index === -1) {
@@ -394,7 +399,7 @@ export class DataSource<T> {
    * Returns a fork of this dataSource, that shares the source data with this dataSource,
    * but has it's own FSRW pipeline, to allow multiple views on the same data
    */
-  public fork(): DataSourceView<T> {
+  public fork(): DataSourceView<T, KeyType> {
     throw new Error(
       'Not implemented. Please contact oncall if this feature is needed',
     );
@@ -408,7 +413,7 @@ export class DataSource<T> {
     }
   }
 
-  private getKey(value: T): string;
+  private getKey(value: T): KeyType;
   private getKey(value: any): any {
     this.assertKeySet();
     const key = value[this.keyAttribute!];
@@ -418,7 +423,7 @@ export class DataSource<T> {
     throw new Error(`Invalid key value: '${key}'`);
   }
 
-  private storeIndexOfKey(key: string, index: number) {
+  private storeIndexOfKey(key: KeyType, index: number) {
     // de-normalize the index, so that on  later look ups its corrected again
     this.idToIndex.set(key, index - this.shiftOffset);
   }
@@ -452,8 +457,8 @@ function unwrap<T>(entry: Entry<T>): T {
   return entry?.value;
 }
 
-class DataSourceView<T> {
-  public readonly datasource: DataSource<T>;
+class DataSourceView<T, KeyType> {
+  public readonly datasource: DataSource<T, KeyType>;
   private sortBy: undefined | ((a: T) => Primitive) = undefined;
   private reverse: boolean = false;
   private filter?: (value: T) => boolean = undefined;
@@ -474,7 +479,7 @@ class DataSourceView<T> {
    */
   private _output: Entry<T>[] = [];
 
-  constructor(datasource: DataSource<T>) {
+  constructor(datasource: DataSource<T, KeyType>) {
     this.datasource = datasource;
   }
 
