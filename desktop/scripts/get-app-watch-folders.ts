@@ -8,6 +8,7 @@
  */
 
 import fs from 'fs-extra';
+import pFilter from 'p-filter';
 import path from 'path';
 import {getWatchFolders} from 'flipper-pkg-lib';
 import {appDir, publicPluginsDir, fbPluginsDir} from './paths';
@@ -29,7 +30,8 @@ export default async function getAppWatchFolders() {
     ),
   );
   const watchFolders = ([] as string[]).concat(...getWatchFoldersResults);
-  return watchFolders
-    .filter((value, index, self) => self.indexOf(value) === index)
-    .filter(async (f) => fs.pathExists(f));
+  return pFilter(
+    watchFolders.filter((value, index, self) => self.indexOf(value) === index),
+    (f) => fs.pathExists(f),
+  );
 }
