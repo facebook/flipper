@@ -60,7 +60,6 @@ export {default as Orderable} from './components/Orderable';
 export {Component, PureComponent} from 'react';
 
 // context menus and dropdowns
-export {default as ContextMenuProvider} from './components/ContextMenuProvider';
 export {default as ContextMenu} from './components/ContextMenu';
 
 // file

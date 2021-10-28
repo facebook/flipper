@@ -11,24 +11,22 @@ import {Filter} from '../filter/types';
 import {PureComponent} from 'react';
 import Text from '../Text';
 import styled from '@emotion/styled';
-import electron, {MenuItemConstructorOptions} from 'electron';
 import React from 'react';
 import {Property} from 'csstype';
 import {theme} from 'flipper-plugin';
+import {ContextMenuItem, createContextMenu} from '../ContextMenu';
+import {Dropdown} from 'antd';
 
 const Token = styled(Text)<{focused?: boolean; color?: Property.Color}>(
   (props) => ({
     display: 'inline-flex',
     alignItems: 'center',
-    backgroundColor: props.focused
-      ? theme.textColorActive
-      : props.color || theme.buttonDefaultBackground,
+    backgroundColor: props.color || theme.buttonDefaultBackground,
     borderRadius: 4,
     marginRight: 4,
     padding: 4,
     paddingLeft: 6,
     height: 21,
-    color: props.focused ? 'white' : 'inherit',
     '&:active': {
       backgroundColor: theme.textColorActive,
       color: theme.textColorPrimary,
@@ -103,8 +101,6 @@ type Props = {
 };
 
 export default class FilterToken extends PureComponent<Props> {
-  _ref?: Element | null;
-
   onMouseDown = () => {
     if (
       this.props.filter.type !== 'enum' ||
@@ -117,7 +113,7 @@ export default class FilterToken extends PureComponent<Props> {
   };
 
   showDetails = () => {
-    const menuTemplate: Array<MenuItemConstructorOptions> = [];
+    const menuTemplate: Array<ContextMenuItem> = [];
 
     if (this.props.filter.type === 'enum') {
       menuTemplate.push(
@@ -155,19 +151,7 @@ export default class FilterToken extends PureComponent<Props> {
         },
       );
     }
-    const menu = electron.remote.Menu.buildFromTemplate(menuTemplate);
-    if (this._ref) {
-      const {bottom, left} = this._ref.getBoundingClientRect();
-
-      menu.popup({
-        window: electron.remote.getCurrentWindow(),
-        // @ts-ignore: async is private API
-        async: true,
-        // Note: Electron requires the x/y parameters to be integer values for marshalling
-        x: Math.round(left),
-        y: Math.round(bottom + 8),
-      });
-    }
+    return createContextMenu(menuTemplate);
   };
 
   toggleFilter = () => {
@@ -202,10 +186,6 @@ export default class FilterToken extends PureComponent<Props> {
     }
   };
 
-  setRef = (ref: HTMLSpanElement | null) => {
-    this._ref = ref;
-  };
-
   render() {
     const {filter} = this.props;
     let color;
@@ -231,21 +211,24 @@ export default class FilterToken extends PureComponent<Props> {
     }
 
     return (
-      <Token
-        key={`${filter.key}:${value}=${filter.type}`}
-        tabIndex={-1}
-        onMouseDown={this.onMouseDown}
-        focused={this.props.focused}
-        color={color}
-        ref={this.setRef}>
-        <Key type={this.props.filter.type} focused={this.props.focused}>
-          {filter.key}
-        </Key>
-        <Value>{value}</Value>
-        <Chevron tabIndex={-1} focused={this.props.focused}>
-          &#8964;
-        </Chevron>
-      </Token>
+      <Dropdown trigger={dropdownTrigger} overlay={this.showDetails}>
+        <Token
+          key={`${filter.key}:${value}=${filter.type}`}
+          tabIndex={-1}
+          onMouseDown={this.onMouseDown}
+          focused={this.props.focused}
+          color={color}>
+          <Key type={this.props.filter.type} focused={this.props.focused}>
+            {filter.key}
+          </Key>
+          <Value>{value}</Value>
+          <Chevron tabIndex={-1} focused={this.props.focused}>
+            &#8964;
+          </Chevron>
+        </Token>
+      </Dropdown>
     );
   }
 }
+
+const dropdownTrigger = ['click' as const];

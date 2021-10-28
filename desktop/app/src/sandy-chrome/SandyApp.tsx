@@ -148,48 +148,50 @@ export function SandyApp() {
   ) : null;
 
   return (
-    <Layout.Bottom>
-      <Layout.Left>
-        <Layout.Horizontal>
-          <LeftRail
-            toplevelSelection={toplevelSelection}
-            setToplevelSelection={setToplevelSelection}
-          />
-          <_Sidebar width={250} minWidth={220} maxWidth={800} gutter>
-            {leftMenuContent && (
-              <TrackingScope scope={toplevelSelection!}>
-                {leftMenuContent}
-              </TrackingScope>
-            )}
-          </_Sidebar>
-        </Layout.Horizontal>
-        <MainContainer>
-          {staticView ? (
-            <TrackingScope
-              scope={
-                (staticView as any).displayName ??
-                staticView.name ??
-                staticView.constructor?.name ??
-                'unknown static view'
-              }>
-              {staticView === WelcomeScreenStaticView ? (
-                React.createElement(staticView) /* avoid shadow */
-              ) : (
-                <ContentContainer>
-                  {React.createElement(staticView, {
-                    logger: logger,
-                  })}
-                </ContentContainer>
+    <RootElement>
+      <Layout.Bottom>
+        <Layout.Left>
+          <Layout.Horizontal>
+            <LeftRail
+              toplevelSelection={toplevelSelection}
+              setToplevelSelection={setToplevelSelection}
+            />
+            <_Sidebar width={250} minWidth={220} maxWidth={800} gutter>
+              {leftMenuContent && (
+                <TrackingScope scope={toplevelSelection!}>
+                  {leftMenuContent}
+                </TrackingScope>
               )}
-            </TrackingScope>
-          ) : (
-            <PluginContainer logger={logger} />
-          )}
-          {outOfContentsContainer}
-        </MainContainer>
-      </Layout.Left>
-      <_PortalsManager />
-    </Layout.Bottom>
+            </_Sidebar>
+          </Layout.Horizontal>
+          <MainContainer>
+            {staticView ? (
+              <TrackingScope
+                scope={
+                  (staticView as any).displayName ??
+                  staticView.name ??
+                  staticView.constructor?.name ??
+                  'unknown static view'
+                }>
+                {staticView === WelcomeScreenStaticView ? (
+                  React.createElement(staticView) /* avoid shadow */
+                ) : (
+                  <ContentContainer>
+                    {React.createElement(staticView, {
+                      logger: logger,
+                    })}
+                  </ContentContainer>
+                )}
+              </TrackingScope>
+            ) : (
+              <PluginContainer logger={logger} />
+            )}
+            {outOfContentsContainer}
+          </MainContainer>
+        </Layout.Left>
+        <_PortalsManager />
+      </Layout.Bottom>
+    </RootElement>
   );
 }
 
@@ -219,6 +221,12 @@ const MainContainer = styled(Layout.Container)({
   background: theme.backgroundWash,
   padding: `${theme.space.large}px ${theme.space.large}px ${theme.space.large}px 0`,
 });
+
+const RootElement = styled.div({
+  display: 'flex',
+  height: '100%',
+});
+RootElement.displayName = 'SandyAppRootElement';
 
 function registerStartupTime(logger: Logger) {
   // track time since launch

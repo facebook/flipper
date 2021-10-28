@@ -10,7 +10,6 @@
 import {Provider} from 'react-redux';
 import ReactDOM from 'react-dom';
 
-import ContextMenuProvider from './ui/components/ContextMenuProvider';
 import GK from './fb-stubs/GK';
 import {init as initLogger} from './fb-stubs/Logger';
 import {SandyApp} from './sandy-chrome/SandyApp';
@@ -137,11 +136,9 @@ class AppFrame extends React.Component<
           <PersistGate persistor={persistor}>
             <CacheProvider value={cache}>
               <TooltipProvider>
-                <ContextMenuProvider>
-                  <_NuxManagerContext.Provider value={_createNuxManager()}>
-                    <SandyApp />
-                  </_NuxManagerContext.Provider>
-                </ContextMenuProvider>
+                <_NuxManagerContext.Provider value={_createNuxManager()}>
+                  <SandyApp />
+                </_NuxManagerContext.Provider>
               </TooltipProvider>
             </CacheProvider>
           </PersistGate>

@@ -8,8 +8,6 @@
  */
 
 import fs from 'fs';
-// eslint-disable-next-line
-import electron, {OpenDialogOptions, remote} from 'electron';
 import {Atom, DataTableManager, getFlipperLib} from 'flipper-plugin';
 import {createContext} from 'react';
 import {Header, Request} from '../types';

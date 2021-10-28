@@ -17,13 +17,12 @@ import {
 } from './types';
 import {normalizeColumnWidth, isPercentage} from './utils';
 import {PureComponent} from 'react';
-import ContextMenu from '../ContextMenu';
+import ContextMenu, {ContextMenuItem} from '../ContextMenu';
 import {theme, _Interactive, _InteractiveProps} from 'flipper-plugin';
 import styled from '@emotion/styled';
 import {colors} from '../colors';
 import FlexRow from '../FlexRow';
 import invariant from 'invariant';
-import {MenuItemConstructorOptions} from 'electron';
 import React from 'react';
 
 const TableHeaderArrow = styled.span({
@@ -208,7 +207,7 @@ export default class TableHead extends PureComponent<{
   onColumnResize?: TableOnColumnResize;
   horizontallyScrollable?: boolean;
 }> {
-  buildContextMenu = (): MenuItemConstructorOptions[] => {
+  buildContextMenu = (): ContextMenuItem[] => {
     const visibles = this.props.columnOrder
       .map((c) => (c.visible ? c.key : null))
       .filter(Boolean)

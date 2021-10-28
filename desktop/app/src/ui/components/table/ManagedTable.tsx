@@ -17,12 +17,11 @@ import {
   TableBodyRow,
   TableOnAddFilter,
 } from './types';
-import {MenuTemplate} from '../ContextMenu';
+import {ContextMenuItem, MenuTemplate} from '../ContextMenu';
 import React from 'react';
 import styled from '@emotion/styled';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import {VariableSizeList as List} from 'react-window';
-import {MenuItemConstructorOptions} from 'electron';
 import TableHead from './TableHead';
 import TableRow from './TableRow';
 import ContextMenu from '../ContextMenu';
@@ -523,7 +522,7 @@ export class ManagedTable extends React.Component<
     getFlipperLib().writeTextToClipboard(cellText);
   };
 
-  buildContextMenuItems: () => Array<MenuItemConstructorOptions> = () => {
+  buildContextMenuItems: () => Array<ContextMenuItem> = () => {
     const {highlightedRows} = this.state;
     if (highlightedRows.size === 0) {
       return [];
