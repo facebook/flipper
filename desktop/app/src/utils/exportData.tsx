@@ -589,7 +589,10 @@ export function importDataToStore(source: string, data: string, store: Store) {
 export const importFileToStore = (file: string, store: Store) => {
   fs.readFile(file, 'utf8', (err, data) => {
     if (err) {
-      console.error(`[exportData] Failed to write to file ${file}: `, err);
+      console.error(
+        `[exportData] importFileToStore for file ${file} failed:`,
+        err,
+      );
       return;
     }
     importDataToStore(file, data, store);

@@ -7,6 +7,7 @@
  * @format
  */
 
+// eslint-disable-next-line flipper/no-electron-remote-imports
 import {remote} from 'electron';
 import isProduction from './isProduction';
 

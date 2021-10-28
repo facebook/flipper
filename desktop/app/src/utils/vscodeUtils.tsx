@@ -13,7 +13,7 @@ import {getPreferredEditorUriScheme} from '../fb-stubs/user';
 let preferredEditorUriScheme: string | undefined = undefined;
 
 export function callVSCode(plugin: string, command: string, params?: string) {
-  getVSCodeUrl(plugin, command, params).then((url) =>
+  return getVSCodeUrl(plugin, command, params).then((url) =>
     getFlipperLib().openLink(url),
   );
 }
