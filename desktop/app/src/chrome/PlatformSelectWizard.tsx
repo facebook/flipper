@@ -15,10 +15,10 @@ import {Settings} from '../reducers/settings';
 import {flush} from '../utils/persistor';
 import ToggledSection from './settings/ToggledSection';
 import {isEqual} from 'lodash';
-import restartFlipper from '../utils/restartFlipper';
 import {reportUsage} from 'flipper-common';
 import {Modal, Button} from 'antd';
 import {Layout, withTrackingScope, _NuxManagerContext} from 'flipper-plugin';
+import {getRenderHostInstance} from '../RenderHost';
 
 const WIZARD_FINISHED_LOCAL_STORAGE_KEY = 'platformSelectWizardFinished';
 
@@ -65,7 +65,7 @@ class PlatformSelectWizard extends Component<Props, State> {
     return flush().then(() => {
       if (!settingsPristine) {
         reportUsage('platformwizard:action:changed');
-        restartFlipper(true);
+        getRenderHostInstance().restartFlipper();
       } else {
         reportUsage('platformwizard:action:noop');
       }

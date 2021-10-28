@@ -27,7 +27,6 @@ import {loadPluginsFromMarketplace} from './fb-stubs/pluginMarketplace';
 import {loadPlugin, switchPlugin} from '../reducers/pluginManager';
 import {startPluginDownload} from '../reducers/pluginDownloads';
 import isProduction from '../utils/isProduction';
-import restart from '../utils/restartFlipper';
 import BaseDevice from '../devices/BaseDevice';
 import Client from '../Client';
 import {RocketOutlined} from '@ant-design/icons';
@@ -39,6 +38,7 @@ import {
   DeeplinkInteractionState,
   OpenPluginParams,
 } from '../deeplinkTracking';
+import {getRenderHostInstance} from '../RenderHost';
 
 export function parseOpenPluginParams(query: string): OpenPluginParams {
   // 'flipper://open-plugin?plugin-id=graphql&client=facebook&devices=android,ios&chrome=1&payload='
@@ -362,7 +362,7 @@ async function verifyPluginStatus(
             ),
             okText: 'Restart',
             onConfirm: async () => {
-              restart();
+              getRenderHostInstance().restartFlipper();
               // intentionally forever pending, we're restarting...
               return new Promise(() => {});
             },
