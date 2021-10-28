@@ -16,5 +16,7 @@
     NSDictionary<NSString*, SonarReceiver>* receivers;
 @property(nonatomic, readonly)
     NSDictionary<NSString*, NSArray<NSDictionary*>*>* sent;
+@property(nonatomic, readonly)
+    NSDictionary<NSString*, NSArray<NSArray*>*>* sentWithArray;
 
 @end
