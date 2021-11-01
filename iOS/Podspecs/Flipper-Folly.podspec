@@ -5,7 +5,7 @@
 
 Pod::Spec.new do |spec|
   spec.name = 'Flipper-Folly'
-  spec.version = '2.6.9'
+  spec.version = '2.6.10'
   spec.license = { :type => 'Apache License, Version 2.0' }
   spec.homepage = 'https://github.com/facebook/folly'
   spec.summary = 'An open-source C++ library developed and used at Facebook.'
@@ -154,7 +154,7 @@ Pod::Spec.new do |spec|
   spec.exclude_files = "folly/synchronization/Rcu.cpp", "folly/synchronization/Rcu.h"
   spec.header_mappings_dir = 'folly'
   spec.header_dir          = 'folly'
-  spec.libraries           = "stdc++"
+  spec.libraries           = "stdc++", "c++abi"
 
   spec.public_header_files =  "folly/**/*.h"
 
