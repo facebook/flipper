@@ -11,13 +11,11 @@ import {
   DataSource,
   createDataSource as baseCreateDataSource,
   DataSourceOptions as BaseDataSourceOptions,
+  DataSourceOptionKey as BaseDataSourceOptionKey,
 } from '../data-source/index';
 import {registerStorageAtom} from '../plugin/PluginBase';
 
-type CreateDataSourceOptions<T, K extends keyof T> = BaseDataSourceOptions<
-  T,
-  K
-> & {
+type DataSourceOptions = BaseDataSourceOptions & {
   /**
    * Should this state persist when exporting a plugin?
    * If set, the dataSource will be saved / loaded under the key provided
@@ -25,16 +23,21 @@ type CreateDataSourceOptions<T, K extends keyof T> = BaseDataSourceOptions<
   persist?: string;
 };
 
-export function createDataSource<T, KEY extends keyof T = any>(
+export function createDataSource<T, Key extends keyof T>(
   initialSet: readonly T[],
-  options: CreateDataSourceOptions<T, KEY>,
-): DataSource<T>;
-export function createDataSource<T>(initialSet?: readonly T[]): DataSource<T>;
-export function createDataSource<T, KEY extends keyof T>(
+  options: DataSourceOptions & BaseDataSourceOptionKey<Key>,
+): DataSource<T, T[Key] extends string | number ? T[Key] : never>;
+export function createDataSource<T>(
+  initialSet?: readonly T[],
+  options?: DataSourceOptions,
+): DataSource<T, never>;
+export function createDataSource<T, Key extends keyof T>(
   initialSet: readonly T[] = [],
-  options?: CreateDataSourceOptions<T, KEY>,
-): DataSource<T> {
-  const ds = baseCreateDataSource(initialSet, options);
+  options?: DataSourceOptions & BaseDataSourceOptionKey<Key>,
+): DataSource<T, T[Key] extends string | number ? T[Key] : never> {
+  const ds = options
+    ? baseCreateDataSource(initialSet, options)
+    : baseCreateDataSource(initialSet);
   registerStorageAtom(options?.persist, ds);
   return ds;
 }

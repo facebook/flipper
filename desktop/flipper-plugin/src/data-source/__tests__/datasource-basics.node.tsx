@@ -34,7 +34,7 @@ function unwrap<T>(array: readonly {value: T}[]): readonly T[] {
   return array.map((entry) => entry.value);
 }
 
-function rawOutput<T>(ds: DataSource<T>): readonly T[] {
+function rawOutput<T>(ds: DataSource<T, T[keyof T]>): readonly T[] {
   // @ts-ignore
   const output = ds.view._output;
   return unwrap(output);
@@ -60,7 +60,7 @@ test('can create a datasource', () => {
 });
 
 test('can create a keyed datasource', () => {
-  const ds = createDataSource<Todo>([eatCookie], {key: 'id'});
+  const ds = createDataSource<Todo, 'id'>([eatCookie], {key: 'id'});
   expect(ds.records()).toEqual([eatCookie]);
 
   ds.append(drinkCoffee);
@@ -110,7 +110,7 @@ test('can create a keyed datasource', () => {
 });
 
 test('throws on invalid keys', () => {
-  const ds = createDataSource<Todo>([eatCookie], {key: 'id'});
+  const ds = createDataSource<Todo, 'id'>([eatCookie], {key: 'id'});
   expect(() => {
     ds.append({id: '', title: 'test'});
   }).toThrow(`Invalid key value: ''`);
@@ -120,7 +120,7 @@ test('throws on invalid keys', () => {
 });
 
 test('throws on update causing duplicate key', () => {
-  const ds = createDataSource<Todo>([eatCookie, submitBug], {key: 'id'});
+  const ds = createDataSource<Todo, 'id'>([eatCookie, submitBug], {key: 'id'});
   expect(() => {
     ds.update(0, {id: 'bug', title: 'oops'});
   }).toThrow(
@@ -129,7 +129,7 @@ test('throws on update causing duplicate key', () => {
 });
 
 test('removing invalid keys', () => {
-  const ds = createDataSource<Todo>([eatCookie], {key: 'id'});
+  const ds = createDataSource<Todo, 'id'>([eatCookie], {key: 'id'});
   expect(ds.deleteByKey('trash')).toBe(false);
   expect(() => {
     ds.delete(1);
@@ -263,7 +263,7 @@ test('filter + sort', () => {
 });
 
 test('filter + sort + index', () => {
-  const ds = createDataSource<Todo>([eatCookie, drinkCoffee, submitBug], {
+  const ds = createDataSource<Todo, 'id'>([eatCookie, drinkCoffee, submitBug], {
     key: 'id',
   });
 
@@ -315,7 +315,7 @@ test('filter + sort + index', () => {
 });
 
 test('filter', () => {
-  const ds = createDataSource<Todo>([eatCookie, drinkCoffee, submitBug], {
+  const ds = createDataSource<Todo, 'id'>([eatCookie, drinkCoffee, submitBug], {
     key: 'id',
   });
 
@@ -448,7 +448,7 @@ test('reverse with sorting', () => {
 });
 
 test('reset', () => {
-  const ds = createDataSource<Todo>([submitBug, drinkCoffee, eatCookie], {
+  const ds = createDataSource<Todo, 'id'>([submitBug, drinkCoffee, eatCookie], {
     key: 'id',
   });
   ds.view.setSortBy('title');
@@ -462,7 +462,7 @@ test('reset', () => {
 });
 
 test('clear', () => {
-  const ds = createDataSource<Todo>([submitBug, drinkCoffee, eatCookie], {
+  const ds = createDataSource<Todo, 'id'>([submitBug, drinkCoffee, eatCookie], {
     key: 'id',
   });
   ds.view.setSortBy('title');
@@ -484,10 +484,10 @@ test('clear', () => {
 
 function testEvents<T>(
   initial: T[],
-  op: (ds: DataSource<T>) => void,
+  op: (ds: DataSource<T, T[keyof T]>) => void,
   key?: keyof T,
 ): any[] {
-  const ds = createDataSource<T>(initial, {key});
+  const ds = createDataSource<T, keyof T>(initial, {key});
   const events: any[] = [];
   ds.view.setListener((e) => events.push(e));
   op(ds);

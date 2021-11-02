@@ -59,6 +59,7 @@ export interface RenderHost {
     ...args: ChildProcessEvents[Event]
   ): void;
   shouldUseDarkColors(): boolean;
+  restartFlipper(update?: boolean): void;
 }
 
 let renderHostInstance: RenderHost | undefined;
@@ -89,5 +90,6 @@ if (process.env.NODE_ENV === 'test') {
     shouldUseDarkColors() {
       return false;
     },
+    restartFlipper() {},
   });
 }

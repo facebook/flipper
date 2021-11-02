@@ -7,6 +7,9 @@
  * @format
  */
 
+// Heavy use of nested promises but without sacrificing error propagation.
+/* eslint-disable promise/no-nesting */
+
 import path from 'path';
 import fs from 'fs-extra';
 import {promisify} from 'util';
@@ -205,7 +208,7 @@ export async function moveInstalledPluginsFromLegacyDir() {
               `Failed to load plugin from ${dir} on moving legacy plugins. Removing it.`,
               err,
             );
-            fs.remove(dir);
+            await fs.remove(dir);
             return null;
           }),
         ),

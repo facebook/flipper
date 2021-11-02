@@ -14,21 +14,32 @@
     _connected = YES;
     _receivers = @{};
     _sent = @{};
+    _sentWithArray = @{};
   }
   return self;
 }
 
-- (void)send:(NSString*)method withParams:(NSDictionary*)params {
+- (void)sendInternal:(NSString*)method
+          withParams:(id)params
+            loggedTo:(NSDictionary* __strong*)sentLog {
   if (_connected) {
-    NSMutableDictionary* newSent = [NSMutableDictionary new];
-    [newSent addEntriesFromDictionary:_sent];
-    if (newSent[method]) {
-      newSent[method] = [_sent[method] arrayByAddingObject:params];
+    NSMutableDictionary* newSentLog = [NSMutableDictionary new];
+    [newSentLog addEntriesFromDictionary:*sentLog];
+    if (newSentLog[method]) {
+      newSentLog[method] = [(*sentLog)[method] arrayByAddingObject:params];
     } else {
-      newSent[method] = @[ params ];
+      newSentLog[method] = @[ params ];
     }
-    _sent = newSent;
+    *sentLog = newSentLog;
   }
+}
+
+- (void)send:(NSString*)method withParams:(NSDictionary*)params {
+  [self sendInternal:method withParams:params loggedTo:&_sent];
+}
+
+- (void)send:(NSString*)method withArrayParams:(NSArray*)params {
+  [self sendInternal:method withParams:params loggedTo:&_sentWithArray];
 }
 
 - (void)receive:(NSString*)method withBlock:(SonarReceiver)receiver {

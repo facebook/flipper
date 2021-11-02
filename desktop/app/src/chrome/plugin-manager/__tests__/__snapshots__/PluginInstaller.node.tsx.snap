@@ -57,7 +57,7 @@ exports[`load PluginInstaller list 1`] = `
       tabindex="0"
     >
       <div
-        class="css-18abd42-View-FlexBox-FlexColumn ecr18to0"
+        class="ant-dropdown-trigger css-18abd42-View-FlexBox-FlexColumn ecr18to0"
       >
         <div
           class="css-1otvu18-View-FlexBox-FlexRow-TableHeadContainer ejga3101"
@@ -132,7 +132,7 @@ exports[`load PluginInstaller list 1`] = `
         class="css-p5h61d-View-FlexBox-FlexColumn-Container esta8x30"
       >
         <div
-          class="css-18abd42-View-FlexBox-FlexColumn ecr18to0"
+          class="ant-dropdown-trigger css-18abd42-View-FlexBox-FlexColumn ecr18to0"
         >
           <div
             class="css-hg3ptm-View-FlexBox-FlexRow-TableBodyRowContainer ehuguum1"
@@ -391,7 +391,7 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
       tabindex="0"
     >
       <div
-        class="css-18abd42-View-FlexBox-FlexColumn ecr18to0"
+        class="ant-dropdown-trigger css-18abd42-View-FlexBox-FlexColumn ecr18to0"
       >
         <div
           class="css-1otvu18-View-FlexBox-FlexRow-TableHeadContainer ejga3101"
@@ -466,7 +466,7 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
         class="css-p5h61d-View-FlexBox-FlexColumn-Container esta8x30"
       >
         <div
-          class="css-18abd42-View-FlexBox-FlexColumn ecr18to0"
+          class="ant-dropdown-trigger css-18abd42-View-FlexBox-FlexColumn ecr18to0"
         >
           <div
             class="css-hg3ptm-View-FlexBox-FlexRow-TableBodyRowContainer ehuguum1"

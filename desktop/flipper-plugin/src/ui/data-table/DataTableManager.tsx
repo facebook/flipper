@@ -93,7 +93,7 @@ type DataManagerActions<T> =
   | Action<'setAutoScroll', {autoScroll: boolean}>;
 
 type DataManagerConfig<T> = {
-  dataSource: DataSource<T>;
+  dataSource: DataSource<T, T[keyof T]>;
   defaultColumns: DataTableColumn<T>[];
   scope: string;
   onSelect: undefined | ((item: T | undefined, items: T[]) => void);
@@ -279,11 +279,11 @@ export type DataTableManager<T> = {
   toggleColumnVisibility(column: keyof T): void;
   sortColumn(column: keyof T, direction?: SortDirection): void;
   setSearchValue(value: string): void;
-  dataSource: DataSource<T>;
+  dataSource: DataSource<T, T[keyof T]>;
 };
 
 export function createDataTableManager<T>(
-  dataSource: DataSource<T>,
+  dataSource: DataSource<T, T[keyof T]>,
   dispatch: DataTableDispatch<T>,
   stateRef: MutableRefObject<DataManagerState<T>>,
 ): DataTableManager<T> {
@@ -400,7 +400,7 @@ function addColumnFilter<T>(
 }
 
 export function getSelectedItem<T>(
-  dataSource: DataSource<T>,
+  dataSource: DataSource<T, T[keyof T]>,
   selection: Selection,
 ): T | undefined {
   return selection.current < 0
@@ -409,7 +409,7 @@ export function getSelectedItem<T>(
 }
 
 export function getSelectedItems<T>(
-  dataSource: DataSource<T>,
+  dataSource: DataSource<T, T[keyof T]>,
   selection: Selection,
 ): T[] {
   return [...selection.items]

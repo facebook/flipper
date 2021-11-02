@@ -12,6 +12,7 @@ import path from 'path';
 import BaseDevice from '../devices/BaseDevice';
 import {reportPlatformFailures} from 'flipper-common';
 import expandTilde from 'expand-tilde';
+// eslint-disable-next-line flipper/no-electron-remote-imports
 import {remote} from 'electron';
 import config from '../utils/processConfig';
 

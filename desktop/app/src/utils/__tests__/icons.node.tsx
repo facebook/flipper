@@ -7,7 +7,7 @@
  * @format
  */
 
-import {buildLocalIconPath, buildIconURL} from '../icons';
+import {buildLocalIconPath, buildIconURLSync} from '../icons';
 import * as path from 'path';
 
 test('filled icons get correct local path', () => {
@@ -21,14 +21,14 @@ test('outline icons get correct local path', () => {
 });
 
 test('filled icons get correct URL', () => {
-  const iconUrl = buildIconURL('star', 12, 2);
+  const iconUrl = buildIconURLSync('star', 12, 2);
   expect(iconUrl).toBe(
     'https://facebook.com/assets/?name=star&variant=filled&size=12&set=facebook_icons&density=2x',
   );
 });
 
 test('outline icons get correct URL', () => {
-  const iconUrl = buildIconURL('star-outline', 12, 2);
+  const iconUrl = buildIconURLSync('star-outline', 12, 2);
   expect(iconUrl).toBe(
     'https://facebook.com/assets/?name=star&variant=outline&size=12&set=facebook_icons&density=2x',
   );

@@ -21,11 +21,10 @@ import {pluginKey} from '../utils/pluginKey';
 import {DevicePluginMap, ClientPluginMap} from '../plugin';
 import {default as BaseDevice} from '../devices/BaseDevice';
 import {default as ArchivedDevice} from '../devices/ArchivedDevice';
-import fs from 'fs';
+import fs from 'fs-extra';
 import {v4 as uuidv4} from 'uuid';
 import {readCurrentRevision} from './packageMetadata';
 import {tryCatchReportPlatformFailures} from 'flipper-common';
-import {promisify} from 'util';
 import {TestIdler} from './Idler';
 import {setStaticView} from '../reducers/connections';
 import {
@@ -523,13 +522,10 @@ export const exportStoreToFile = (
   } | null;
 }> => {
   return exportStore(store, includeSupportDetails, idler, statusUpdate).then(
-    ({serializedString, fetchMetaDataErrors}) => {
-      return promisify(fs.writeFile)(exportFilePath, serializedString).then(
-        () => {
-          store.dispatch(resetSupportFormV2State());
-          return {fetchMetaDataErrors};
-        },
-      );
+    async ({serializedString, fetchMetaDataErrors}) => {
+      await fs.writeFile(exportFilePath, serializedString);
+      store.dispatch(resetSupportFormV2State());
+      return {fetchMetaDataErrors};
     },
   );
 };
@@ -593,7 +589,10 @@ export function importDataToStore(source: string, data: string, store: Store) {
 export const importFileToStore = (file: string, store: Store) => {
   fs.readFile(file, 'utf8', (err, data) => {
     if (err) {
-      console.error(err);
+      console.error(
+        `[exportData] importFileToStore for file ${file} failed:`,
+        err,
+      );
       return;
     }
     importDataToStore(file, data, store);

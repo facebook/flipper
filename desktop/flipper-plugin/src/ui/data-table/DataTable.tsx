@@ -69,7 +69,9 @@ interface DataTableBaseProps<T = any> {
   tableManagerRef?: RefObject<DataTableManager<T> | undefined>; // Actually we want a MutableRefObject, but that is not what React.createRef() returns, and we don't want to put the burden on the plugin dev to cast it...
   onCopyRows?(records: T[]): string;
   onContextMenu?: (selection: undefined | T) => React.ReactElement;
-  onRenderEmpty?: null | ((dataSource?: DataSource<T>) => React.ReactElement);
+  onRenderEmpty?:
+    | null
+    | ((dataSource?: DataSource<T, T[keyof T]>) => React.ReactElement);
 }
 
 export type ItemRenderer<T> = (
@@ -80,7 +82,7 @@ export type ItemRenderer<T> = (
 
 type DataTableInput<T = any> =
   | {
-      dataSource: DataSource<T>;
+      dataSource: DataSource<T, T[keyof T]>;
       records?: undefined;
       recordsKey?: undefined;
     }
@@ -558,7 +560,9 @@ DataTable.defaultProps = {
 } as Partial<DataTableProps<any>>;
 
 /* eslint-disable react-hooks/rules-of-hooks */
-function normalizeDataSourceInput<T>(props: DataTableInput<T>): DataSource<T> {
+function normalizeDataSourceInput<T>(
+  props: DataTableInput<T>,
+): DataSource<T, T[keyof T] | never> {
   if (props.dataSource) {
     return props.dataSource;
   }
@@ -578,7 +582,10 @@ function normalizeDataSourceInput<T>(props: DataTableInput<T>): DataSource<T> {
 }
 /* eslint-enable */
 
-function syncRecordsToDataSource<T>(ds: DataSource<T>, records: readonly T[]) {
+function syncRecordsToDataSource<T>(
+  ds: DataSource<T, T[keyof T] | never>,
+  records: readonly T[],
+) {
   const startTime = Date.now();
   ds.clear();
   // TODO: optimize in the case we're only dealing with appends or replacements

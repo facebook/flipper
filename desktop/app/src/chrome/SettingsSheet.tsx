@@ -23,11 +23,11 @@ import ToggledSection from './settings/ToggledSection';
 import {FilePathConfigField, ConfigText} from './settings/configFields';
 import KeyboardShortcutInput from './settings/KeyboardShortcutInput';
 import {isEqual, isMatch, isEmpty} from 'lodash';
-import restartFlipper from '../utils/restartFlipper';
 import LauncherSettingsPanel from '../fb-stubs/LauncherSettingsPanel';
 import {reportUsage} from 'flipper-common';
 import {Modal, message, Button} from 'antd';
 import {Layout, withTrackingScope, _NuxManagerContext} from 'flipper-plugin';
+import {getRenderHostInstance} from '../RenderHost';
 
 type OwnProps = {
   onHide: () => void;
@@ -70,7 +70,7 @@ class SettingsSheet extends Component<Props, State> {
     this.props.updateLauncherSettings(this.state.updatedLauncherSettings);
     this.props.onHide();
     return flush().then(() => {
-      restartFlipper(true);
+      getRenderHostInstance().restartFlipper(true);
     });
   };
 

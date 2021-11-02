@@ -9,7 +9,7 @@
 
 import React from 'react';
 import styled from '@emotion/styled';
-import {getIconURL} from '../../utils/icons';
+import {getIconURLSync} from '../../utils/icons';
 
 export type IconSize = 8 | 10 | 12 | 16 | 18 | 20 | 24 | 32;
 
@@ -121,7 +121,7 @@ export default class Glyph extends React.PureComponent<{
         color={color}
         size={size}
         title={title}
-        src={getIconURL(
+        src={getIconURLSync(
           variant === 'outline' ? `${name}-outline` : name,
           size,
           typeof window !== 'undefined' ? window.devicePixelRatio : 1,

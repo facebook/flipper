@@ -7,19 +7,30 @@
  * @format
  */
 
-import {
-  createElement,
-  useContext,
-  useCallback,
-  forwardRef,
-  Ref,
-  ReactElement,
-} from 'react';
-import {ContextMenuContext} from './ContextMenuProvider';
+import * as React from 'react';
+import {Menu, Dropdown} from 'antd';
+import {createElement, useCallback, forwardRef, Ref, ReactElement} from 'react';
 import FlexColumn from './FlexColumn';
-import {MenuItemConstructorOptions} from 'electron';
+import {CheckOutlined} from '@ant-design/icons';
 
-export type MenuTemplate = Array<MenuItemConstructorOptions>;
+export type ContextMenuItem =
+  | {
+      readonly label: string;
+      readonly click?: () => void;
+      readonly role?: string;
+      readonly enabled?: boolean;
+      readonly type?: 'normal' | 'checkbox';
+      readonly checked?: boolean;
+    }
+  | {
+      readonly type: 'separator';
+    }
+  | {
+      readonly label: string;
+      readonly submenu: MenuTemplate;
+    };
+
+export type MenuTemplate = ReadonlyArray<ContextMenuItem>;
 
 type Props<C> = {
   /** List of items in the context menu. Used for static menus. */
@@ -33,6 +44,8 @@ type Props<C> = {
   onMouseDown?: (e: React.MouseEvent) => any;
 } & C;
 
+const contextMenuTrigger = ['contextMenu' as const];
+
 /**
  * Native context menu that is shown on secondary click.
  * Uses [Electron's context menu API](https://electronjs.org/docs/api/menu-item)
@@ -45,21 +58,53 @@ export default forwardRef(function ContextMenu<C>(
   {items, buildItems, component, children, ...otherProps}: Props<C>,
   ref: Ref<any> | null,
 ) {
-  const contextMenuManager = useContext(ContextMenuContext);
   const onContextMenu = useCallback(() => {
-    if (items != null) {
-      contextMenuManager?.appendToContextMenu(items);
-    } else if (buildItems != null) {
-      contextMenuManager?.appendToContextMenu(buildItems());
-    }
+    return createContextMenu(items ?? buildItems?.() ?? []);
   }, [items, buildItems]);
-  return createElement(
-    component || FlexColumn,
-    {
-      ref,
-      onContextMenu,
-      ...otherProps,
-    },
-    children,
+
+  return (
+    <Dropdown overlay={onContextMenu} trigger={contextMenuTrigger}>
+      {createElement(
+        component || FlexColumn,
+        {
+          ref,
+          ...otherProps,
+        },
+        children,
+      )}
+    </Dropdown>
   );
 }) as <T>(p: Props<T> & {ref?: Ref<any>}) => ReactElement;
+
+export function createContextMenu(items: MenuTemplate) {
+  return <Menu>{items.map(createMenuItem)}</Menu>;
+}
+
+function createMenuItem(item: ContextMenuItem, idx: number) {
+  if ('type' in item && item.type === 'separator') {
+    return <Menu.Divider key={idx} />;
+  } else if ('submenu' in item) {
+    return (
+      <Menu.SubMenu key={idx} title={item.label}>
+        {item.submenu.map(createMenuItem)}
+      </Menu.SubMenu>
+    );
+  } else if ('label' in item) {
+    return (
+      <Menu.Item
+        key={idx}
+        onClick={item.click}
+        disabled={item.enabled === false}
+        role={item.role}
+        icon={
+          item.type === 'checkbox' ? (
+            <CheckOutlined
+              style={{visibility: item.checked ? 'visible' : 'hidden'}}
+            />
+          ) : undefined
+        }>
+        {item.label}
+      </Menu.Item>
+    );
+  }
+}

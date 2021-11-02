@@ -7,7 +7,7 @@
  * @format
  */
 
-import fs from 'fs';
+import fs from 'fs-extra';
 import path from 'path';
 import TOML, {JsonMap} from '@iarna/toml';
 import {Storage} from 'redux-persist/es/types';
@@ -36,7 +36,7 @@ export default class LauncherSettingsStorage implements Storage {
 
   private async parseFile(): Promise<LauncherSettings> {
     try {
-      const content = fs.readFileSync(this.filepath).toString();
+      const content = fs.readFile(this.filepath).toString();
       return deserialize(content);
     } catch (e) {
       console.warn(
@@ -50,12 +50,15 @@ export default class LauncherSettingsStorage implements Storage {
   private async writeFile(value: LauncherSettings): Promise<void> {
     this.ensureDirExists();
     const content = serialize(value);
-    fs.writeFileSync(this.filepath, content);
+    return fs.writeFile(this.filepath, content);
   }
 
-  private ensureDirExists(): void {
+  private async ensureDirExists(): Promise<void> {
     const dir = path.dirname(this.filepath);
-    fs.existsSync(dir) || fs.mkdirSync(dir, {recursive: true});
+    const exists = await fs.pathExists(dir);
+    if (!exists) {
+      await fs.mkdir(dir, {recursive: true});
+    }
   }
 }
 

@@ -7,8 +7,9 @@
  * @format
  */
 
+// eslint-disable-next-line flipper/no-electron-remote-imports
 import {remote} from 'electron';
-import isProduction from './isProduction';
+import isProduction from '../utils/isProduction';
 
 export default function restart(update: boolean = false) {
   if (isProduction()) {
