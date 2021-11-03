@@ -133,12 +133,16 @@ export class IOSDeviceManager {
     const config = getFlipperServerConfig();
     const isXcodeInstalled = await iosUtil.isXcodeDetected();
     const isIdbAvailable = await iosUtil.isAvailable(config.idbPath);
+    console.debug(
+      `[conn] queryDevices. isXcodeInstalled ${isXcodeInstalled}, isIdbAvailable ${isIdbAvailable}`,
+    );
     return Promise.all(
       this.getAllPromisesForQueryingDevices(isXcodeInstalled, isIdbAvailable),
     );
   }
 
   private processDevices(activeDevices: IOSDeviceParams[]) {
+    console.debug('[conn] processDevices', activeDevices);
     if (!this.iosBridge) {
       throw new Error('iOS bridge not yet initialized');
     }
@@ -147,6 +151,10 @@ export class IOSDeviceManager {
         .getDevices()
         .filter((device) => device.info.os === 'iOS')
         .map((device) => device.serial),
+    );
+    console.debug(
+      '[conn] processDevices -> currentDeviceIDs',
+      currentDeviceIDs,
     );
 
     for (const activeDevice of activeDevices) {

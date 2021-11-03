@@ -97,7 +97,7 @@ export async function queryTargetsWithoutXcodeDependency(
 }
 
 function parseIdbTargets(lines: string): Array<DeviceTarget> {
-  return lines
+  const parsedIdbTargets = lines
     .trim()
     .split('\n')
     .map((line) => line.trim())
@@ -113,6 +113,15 @@ function parseIdbTargets(lines: string): Array<DeviceTarget> {
       type: target.type as DeviceType,
       name: target.name,
     }));
+
+  // For some reason, idb can return duplicates
+  // TODO: Raise the issue with idb
+  const dedupedIdbTargets: Record<string, DeviceTarget> = {};
+  for (const idbTarget of parsedIdbTargets) {
+    dedupedIdbTargets[idbTarget.udid] =
+      dedupedIdbTargets[idbTarget.udid] ?? idbTarget;
+  }
+  return Object.values(dedupedIdbTargets);
 }
 
 export async function idbListTargets(
