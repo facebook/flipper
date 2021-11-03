@@ -8,7 +8,7 @@
  */
 
 import {exec as opensslWithCallback, Action} from 'openssl-wrapper';
-import child_process from 'child_process';
+import {spawn} from 'promisify-child-process';
 
 export function openssl(action: Action, options: {}): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -22,6 +22,11 @@ export function openssl(action: Action, options: {}): Promise<string> {
   });
 }
 
-export function isInstalled(): boolean {
-  return !child_process.spawnSync('openssl', ['version']).error;
+export async function isInstalled(): Promise<boolean> {
+  try {
+    const result = await spawn('openssl', ['version']);
+    return result.code === 0;
+  } catch (_e) {
+    return false;
+  }
 }

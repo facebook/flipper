@@ -173,7 +173,7 @@ export default class CertificateProvider {
     if (csr === '') {
       return Promise.reject(new Error(`Received empty CSR from ${os} device`));
     }
-    this.ensureOpenSSLIsAvailable();
+    await this.ensureOpenSSLIsAvailable();
     const rootFolder = await promisify(tmp.dir)();
     const certFolder = rootFolder + '/FlipperCerts/';
     const certsZipPath = rootFolder + '/certs.zip';
@@ -249,8 +249,8 @@ export default class CertificateProvider {
     return Promise.resolve('unknown');
   }
 
-  private ensureOpenSSLIsAvailable(): void {
-    if (!opensslInstalled()) {
+  private async ensureOpenSSLIsAvailable(): Promise<void> {
+    if (!(await opensslInstalled())) {
       const e = Error(
         "It looks like you don't have OpenSSL installed. Please install it to continue.",
       );
