@@ -9,14 +9,14 @@
 
 import fs from 'fs';
 import path from 'path';
-import {getAppPath} from 'flipper';
 import {AppMatchPattern} from '../types';
-import {Device} from 'flipper-plugin';
+import {Device, getFlipperLib} from 'flipper-plugin';
 
 let patternsPath: string | undefined;
 
 function getPatternsBasePath() {
-  return (patternsPath = patternsPath ?? path.join(getAppPath(), 'facebook'));
+  return (patternsPath =
+    patternsPath ?? path.join(getFlipperLib().paths.appPath, 'facebook'));
 }
 
 const extractAppNameFromSelectedApp = (selectedApp: string | null) => {

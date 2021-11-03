@@ -13,8 +13,7 @@
 
 import fs from 'fs';
 import path from 'path';
-// eslint-disable-next-line flipper/no-electron-remote-imports
-import {remote} from 'electron';
+import {getRenderHostInstance} from '../RenderHost';
 import {getStaticPath} from './pathUtils';
 
 const AVAILABLE_SIZES = [8, 10, 12, 16, 18, 20, 24, 32];
@@ -85,7 +84,7 @@ export function buildIconURLSync(name: string, size: number, density: number) {
   ) {
     // From utils/isProduction
     const isProduction = !/node_modules[\\/]electron[\\/]/.test(
-      process.execPath || remote.process.execPath,
+      getRenderHostInstance().paths.execPath,
     );
 
     if (!isProduction) {
@@ -126,7 +125,12 @@ export function buildIconURLSync(name: string, size: number, density: number) {
   return url;
 }
 
-export function getIconURLSync(name: string, size: number, density: number) {
+export function getIconURLSync(
+  name: string,
+  size: number,
+  density: number,
+  basePath: string = getRenderHostInstance().paths.appPath,
+) {
   if (name.indexOf('/') > -1) {
     return name;
   }
@@ -161,15 +165,8 @@ export function getIconURLSync(name: string, size: number, density: number) {
   }
 
   // resolve icon locally if possible
-  if (
-    remote &&
-    fs.existsSync(
-      path.join(
-        remote.app.getAppPath(),
-        buildLocalIconPath(name, size, density),
-      ),
-    )
-  ) {
+  const iconPath = path.join(basePath, buildLocalIconPath(name, size, density));
+  if (fs.existsSync(iconPath)) {
     return buildLocalIconURL(name, size, density);
   }
   return buildIconURLSync(name, requestedSize, density);

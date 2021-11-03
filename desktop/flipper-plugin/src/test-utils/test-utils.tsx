@@ -379,6 +379,10 @@ export function createMockFlipperLib(options?: StartPluginOptions): FlipperLib {
     writeTextToClipboard: jest.fn(),
     openLink: jest.fn(),
     showNotification: jest.fn(),
+    paths: {
+      appPath: process.cwd(),
+      homePath: `/dev/null`,
+    },
   };
 }
 

@@ -15,16 +15,26 @@ import {
   _LoggerContext,
 } from 'flipper-plugin';
 // eslint-disable-next-line flipper/no-electron-remote-imports
-import {ipcRenderer, remote, SaveDialogReturnValue} from 'electron';
-import {setRenderHostInstance} from '../RenderHost';
-import {clipboard} from 'electron';
-import restart from './restartFlipper';
+import {
+  ipcRenderer,
+  remote,
+  SaveDialogReturnValue,
+  clipboard,
+  shell,
+} from 'electron';
+import {getRenderHostInstance, setRenderHostInstance} from '../RenderHost';
+import isProduction from '../utils/isProduction';
+import fs from 'fs';
 
 export function initializeElectron() {
+  const app = remote.app;
   setRenderHostInstance({
     processId: remote.process.pid,
     readTextFromClipboard() {
       return clipboard.readText();
+    },
+    writeTextToClipboard(text: string) {
+      clipboard.writeText(text);
     },
     async showSaveDialog(options) {
       return (await remote.dialog.showSaveDialog(options))?.filePath;
@@ -56,6 +66,9 @@ export function initializeElectron() {
           return undefined;
         });
     },
+    openLink(url: string) {
+      shell.openExternal(url);
+    },
     registerShortcut(shortcut, callback) {
       remote.globalShortcut.register(shortcut, callback);
     },
@@ -76,5 +89,50 @@ export function initializeElectron() {
     restartFlipper() {
       restart();
     },
+    env: process.env,
+    paths: {
+      appPath: app.getAppPath(),
+      homePath: app.getPath('home'),
+      execPath: process.execPath || remote.process.execPath,
+      staticPath: getStaticDir(),
+      tempPath: app.getPath('temp'),
+      desktopPath: app.getPath('desktop'),
+    },
   });
+}
+
+function getStaticDir() {
+  let _staticPath = path.resolve(__dirname, '..', '..', '..', 'static');
+  if (fs.existsSync(_staticPath)) {
+    return _staticPath;
+  }
+  if (remote && fs.existsSync(remote.app.getAppPath())) {
+    _staticPath = path.join(remote.app.getAppPath());
+  }
+  if (!fs.existsSync(_staticPath)) {
+    throw new Error('Static path does not exist: ' + _staticPath);
+  }
+  return _staticPath;
+}
+
+function restart(update: boolean = false) {
+  if (isProduction()) {
+    if (update) {
+      const options = {
+        args: process.argv
+          .splice(0, 1)
+          .filter((arg) => arg !== '--no-launcher' && arg !== '--no-updater'),
+      };
+      remote.app.relaunch(options);
+    } else {
+      remote.app.relaunch();
+    }
+    remote.app.exit();
+  } else {
+    // Relaunching the process with the standard way doesn't work in dev mode.
+    // So instead we're sending a signal to dev server to kill the current instance of electron and launch new.
+    fetch(`${getRenderHostInstance().env.DEV_SERVER_URL}/_restartElectron`, {
+      method: 'POST',
+    });
+  }
 }

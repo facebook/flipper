@@ -10,8 +10,6 @@
 import React from 'react';
 import {styled, colors, FlexColumn} from 'flipper';
 
-import electron from 'electron';
-
 const devToolsNodeId = (url: string) =>
   `hermes-chromedevtools-out-of-react-node-${url.replace(/\W+/g, '-')}`;
 
@@ -28,10 +26,16 @@ function createDevToolsNode(
     return existing;
   }
 
-  // It is necessary to activate chrome devtools in electron
-  electron.remote.getCurrentWindow().webContents.toggleDevTools();
-  electron.remote.getCurrentWindow().webContents.closeDevTools();
-
+  // It is necessary to deactivate chrome devtools in electron
+  try {
+    const electron = require('electron');
+    if (electron.default) {
+      electron.default.remote.getCurrentWindow().webContents.toggleDevTools();
+      electron.default.remote.getCurrentWindow().webContents.closeDevTools();
+    }
+  } catch (e) {
+    console.warn('Failed to close Electron devtools: ', e);
+  }
   const wrapper = document.createElement('div');
   wrapper.id = devToolsNodeId(url);
   wrapper.style.height = '100%';

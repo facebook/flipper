@@ -12,14 +12,14 @@ import path from 'path';
 import BaseDevice from '../devices/BaseDevice';
 import {reportPlatformFailures} from 'flipper-common';
 import expandTilde from 'expand-tilde';
-// eslint-disable-next-line flipper/no-electron-remote-imports
-import {remote} from 'electron';
 import config from '../utils/processConfig';
+import {getRenderHostInstance} from '../RenderHost';
 
-// TODO: refactor so this doesn't need to be exported
-export const CAPTURE_LOCATION = expandTilde(
-  config().screenCapturePath || remote.app.getPath('desktop'),
-);
+export function getCaptureLocation() {
+  return expandTilde(
+    config().screenCapturePath || getRenderHostInstance().paths.desktopPath,
+  );
+}
 
 // TODO: refactor so this doesn't need to be exported
 export function getFileName(extension: 'png' | 'mp4'): string {
@@ -32,7 +32,7 @@ export async function capture(device: BaseDevice): Promise<string> {
     console.log('Skipping screenshot for disconnected device');
     return '';
   }
-  const pngPath = path.join(CAPTURE_LOCATION, getFileName('png'));
+  const pngPath = path.join(getCaptureLocation(), getFileName('png'));
   return reportPlatformFailures(
     device.screenshot().then((buffer) => writeBufferToFile(pngPath, buffer)),
     'captureScreenshot',

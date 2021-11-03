@@ -7,14 +7,15 @@
  * @format
  */
 
-import electron from 'electron';
+import {getRenderHostInstance} from '../RenderHost';
 
-const _isProduction = !/node_modules[\\/]electron[\\/]/.test(
-  // We only run this once and cache the output so this slow access is okay.
-  // eslint-disable-next-line no-restricted-properties
-  process.execPath || electron.remote.process.execPath,
-);
+let _isProduction: boolean | undefined;
 
 export default function isProduction(): boolean {
+  if (_isProduction === undefined) {
+    _isProduction = !/node_modules[\\/]electron[\\/]/.test(
+      getRenderHostInstance().paths.execPath,
+    );
+  }
   return _isProduction;
 }

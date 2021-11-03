@@ -18,8 +18,9 @@ import BaseDevice from '../devices/BaseDevice';
 import {ClientDescription, timeout} from 'flipper-common';
 import {reportPlatformFailures} from 'flipper-common';
 import {sideEffect} from '../utils/sideEffect';
-import {getAppTempPath, getStaticPath} from '../utils/pathUtils';
+import {getStaticPath} from '../utils/pathUtils';
 import constants from '../fb-stubs/constants';
+import {getRenderHostInstance} from '../RenderHost';
 
 export default async (store: Store, logger: Logger) => {
   const {enableAndroid, androidHome, idbPath, enableIOS, enablePhysicalIOS} =
@@ -33,7 +34,7 @@ export default async (store: Store, logger: Logger) => {
       enableIOS,
       enablePhysicalIOS,
       staticPath: getStaticPath(),
-      tmpPath: getAppTempPath(),
+      tmpPath: getRenderHostInstance().paths.tempPath,
       validWebSocketOrigins: constants.VALID_WEB_SOCKET_REQUEST_ORIGIN_PREFIXES,
     },
     logger,

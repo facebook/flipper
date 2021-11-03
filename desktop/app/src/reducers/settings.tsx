@@ -9,7 +9,7 @@
 
 import {Actions} from './index';
 import os from 'os';
-import electron from 'electron';
+import {getRenderHostInstance} from '../RenderHost';
 
 export enum Tristate {
   True,
@@ -105,6 +105,7 @@ function getDefaultAndroidSdkPath() {
 }
 
 function getWindowsSdkPath() {
-  const app = electron.app || electron.remote.app;
-  return `${app.getPath('home')}\\AppData\\Local\\android\\sdk`;
+  return `${
+    getRenderHostInstance().paths.homePath
+  }\\AppData\\Local\\android\\sdk`;
 }

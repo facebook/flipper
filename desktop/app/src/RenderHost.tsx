@@ -7,10 +7,20 @@
  * @format
  */
 
-import {NotificationEvents} from './dispatcher/notifications';
-import {PluginNotification} from './reducers/notifications';
+import type {NotificationEvents} from './dispatcher/notifications';
+import type {PluginNotification} from './reducers/notifications';
 import type {NotificationConstructorOptions} from 'electron';
-import {FlipperLib} from 'flipper-plugin';
+import type {FlipperLib} from 'flipper-plugin';
+import path from 'path';
+
+type ENVIRONMENT_VARIABLES = 'NODE_ENV' | 'DEV_SERVER_URL' | 'CONFIG';
+type ENVIRONMENT_PATHS =
+  | 'appPath'
+  | 'homePath'
+  | 'execPath'
+  | 'staticPath'
+  | 'tempPath'
+  | 'desktopPath';
 
 // Events that are emitted from the main.ts ovr the IPC process bridge in Electron
 type MainProcessEvents = {
@@ -45,6 +55,7 @@ type ChildProcessEvents = {
 export interface RenderHost {
   readonly processId: number;
   readTextFromClipboard(): string | undefined;
+  writeTextToClipboard(text: string): void;
   showSaveDialog?: FlipperLib['showSaveDialog'];
   showOpenDialog?: FlipperLib['showOpenDialog'];
   showSelectDirectoryDialog?(defaultPath?: string): Promise<string | undefined>;
@@ -60,6 +71,9 @@ export interface RenderHost {
   ): void;
   shouldUseDarkColors(): boolean;
   restartFlipper(update?: boolean): void;
+  env: Partial<Record<ENVIRONMENT_VARIABLES, string>>;
+  paths: Record<ENVIRONMENT_PATHS, string>;
+  openLink(url: string): void;
 }
 
 let renderHostInstance: RenderHost | undefined;
@@ -81,6 +95,7 @@ if (process.env.NODE_ENV === 'test') {
     readTextFromClipboard() {
       return '';
     },
+    writeTextToClipboard() {},
     registerShortcut() {},
     hasFocus() {
       return true;
@@ -91,5 +106,15 @@ if (process.env.NODE_ENV === 'test') {
       return false;
     },
     restartFlipper() {},
+    openLink() {},
+    env: process.env,
+    paths: {
+      appPath: process.cwd(),
+      homePath: `/dev/null`,
+      desktopPath: `/dev/null`,
+      execPath: process.cwd(),
+      staticPath: path.join(process.cwd(), 'static'),
+      tempPath: `/tmp/`,
+    },
   });
 }

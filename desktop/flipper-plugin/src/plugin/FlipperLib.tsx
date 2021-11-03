@@ -48,6 +48,10 @@ export interface FlipperLib {
     };
   }): Promise<string | undefined>;
   showSelectDirectoryDialog?(defaultPath?: string): Promise<string | undefined>;
+  paths: {
+    homePath: string;
+    appPath: string;
+  };
 }
 
 export let flipperLibInstance: FlipperLib | undefined;
