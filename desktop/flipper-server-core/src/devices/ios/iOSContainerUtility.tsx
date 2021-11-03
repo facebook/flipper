@@ -206,7 +206,7 @@ async function push(
   return wrapWithErrorMessage(
     reportPlatformFailures(
       safeExec(
-        `${idbPath} --log ${idbLogLevel} file push --udid ${udid} --bundle-id ${bundleId} '${src}' '${dst}'`,
+        `${idbPath} file push --log ${idbLogLevel} --udid ${udid} --bundle-id ${bundleId} '${src}' '${dst}'`,
       )
         .then(() => {
           return;
@@ -228,7 +228,7 @@ async function pull(
   return wrapWithErrorMessage(
     reportPlatformFailures(
       safeExec(
-        `${idbPath} --log ${idbLogLevel} file pull --udid ${udid} --bundle-id ${bundleId} '${src}' '${dst}'`,
+        `${idbPath} file pull --log ${idbLogLevel} --udid ${udid} --bundle-id ${bundleId} '${src}' '${dst}'`,
       )
         .then(() => {
           return;
