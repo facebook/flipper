@@ -334,8 +334,10 @@ export function startDevicePlugin<Module extends FlipperDevicePluginModule>(
     },
   };
   (res as any)._backingInstance = pluginInstance;
-  // we start connected
-  pluginInstance.activate();
+  if (!options?.startUnactivated) {
+    // we start connected
+    pluginInstance.activate();
+  }
   return res;
 }
 

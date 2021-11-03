@@ -26,7 +26,7 @@ import BaseDevice from '../devices/BaseDevice';
 import {Store} from '../reducers/index';
 import Client from '../Client';
 
-import {ClientQuery, Logger} from 'flipper-common';
+import {ClientQuery, FlipperServer, Logger} from 'flipper-common';
 import {FlipperDevicePlugin, FlipperPlugin, PluginDefinition} from '../plugin';
 import PluginContainer from '../PluginContainer';
 import {isDevicePluginDefinition} from '../utils/pluginUtils';
@@ -42,6 +42,7 @@ export type MockFlipperResult = {
   client: Client;
   device: BaseDevice;
   store: Store;
+  server: FlipperServer;
   pluginKey: string;
   sendError(error: any, client?: Client): void;
   sendMessage(method: string, params: any, client?: Client): void;
@@ -126,6 +127,7 @@ export async function createMockFlipperWithPlugin(
   });
   const logger = mockFlipper.logger;
   const store = mockFlipper.store;
+  const server = mockFlipper.flipperServer;
 
   const createDevice = (options: Parameters<MockFlipper['createDevice']>[0]) =>
     mockFlipper.createDevice(options);
@@ -206,6 +208,7 @@ export async function createMockFlipperWithPlugin(
     client,
     device: device as any,
     store,
+    server,
     selectPlugin: selectPluginImpl,
     sendError(error: any, actualClient = client) {
       actualClient.onMessage(

@@ -225,7 +225,18 @@ test('new clients replace old ones', async () => {
   expect(instance.instanceApi.disconnect).toBeCalledTimes(0);
 
   const client2 = await createClient(device, 'AnotherApp', client.query, true);
-  handleClientConnected(null as any, store, logger, client2);
+  await handleClientConnected(
+    {
+      exec: (async () => {
+        return {
+          success: {}, // {plugins: []},
+        };
+      }) as any,
+    },
+    store,
+    logger,
+    client2,
+  );
 
   expect(client2.connected.get()).toBe(true);
   const instance2 = client2.sandyPluginStates.get(plugin.id)!;

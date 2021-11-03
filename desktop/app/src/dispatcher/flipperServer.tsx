@@ -9,7 +9,7 @@
 
 import React from 'react';
 import {State, Store} from '../reducers/index';
-import {Logger} from 'flipper-common';
+import {FlipperServer, Logger} from 'flipper-common';
 import {FlipperServerImpl} from 'flipper-server-core';
 import {selectClient} from '../reducers/connections';
 import Client from '../Client';
@@ -168,7 +168,7 @@ export default async (store: Store, logger: Logger) => {
 };
 
 export async function handleClientConnected(
-  server: FlipperServerImpl,
+  server: Pick<FlipperServer, 'exec'>,
   store: Store,
   logger: Logger,
   {id, query}: ClientDescription,

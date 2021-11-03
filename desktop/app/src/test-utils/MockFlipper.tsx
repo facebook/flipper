@@ -58,7 +58,7 @@ export default class MockFlipper {
   private _clients: Client[] = [];
   private _deviceCounter: number = 0;
   private _clientCounter: number = 0;
-  private _flipperServer: FlipperServer = createFlipperServerMock();
+  flipperServer: FlipperServer = createFlipperServerMock();
 
   public get store(): Store {
     return this._store;
@@ -98,7 +98,7 @@ export default class MockFlipper {
     this._store.dispatch(registerPlugins(plugins ?? []));
     this._store.dispatch({
       type: 'SET_FLIPPER_SERVER',
-      payload: this._flipperServer,
+      payload: this.flipperServer,
     });
   }
 

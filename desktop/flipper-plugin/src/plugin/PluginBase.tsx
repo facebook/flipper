@@ -333,7 +333,11 @@ export abstract class BasePluginInstance {
     if (!this.activated) {
       this.flipperLib.enableMenuEntries(this.menuEntries);
       this.activated = true;
-      this.events.emit('activate');
+      try {
+        this.events.emit('activate');
+      } catch (e) {
+        console.error(`Failed to activate plugin: ${this.definition.id}`, e);
+      }
       this.flipperLib.logger.trackTimeSince(
         `activePlugin-${this.definition.id}`,
       );
@@ -347,7 +351,11 @@ export abstract class BasePluginInstance {
     if (this.activated) {
       this.activated = false;
       this.lastDeeplink = undefined;
-      this.events.emit('deactivate');
+      try {
+        this.events.emit('deactivate');
+      } catch (e) {
+        console.error(`Failed to deactivate plugin: ${this.definition.id}`, e);
+      }
     }
   }
 

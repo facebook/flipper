@@ -89,11 +89,11 @@ type CertificateProviderConfig = {
  * Flipper CA.
  */
 export default class CertificateProvider {
-  logger: Logger;
-  _adb: Promise<ADBClient> | undefined;
-  certificateSetup: Promise<void>;
-  config: CertificateProviderConfig;
-  server: ServerController;
+  private logger: Logger;
+  private _adb: Promise<ADBClient> | undefined;
+  private didCertificateSetup = false;
+  private config: CertificateProviderConfig;
+  private server: ServerController;
 
   get adb(): Promise<ADBClient> {
     if (this.config.enableAndroid) {
@@ -125,20 +125,6 @@ export default class CertificateProvider {
           this._adb = undefined; // no adb client available
         }) as Promise<ADBClient>)
       : undefined;
-    if (isTest()) {
-      this.certificateSetup = Promise.reject(
-        new Error('Server certificates not available in test'),
-      );
-    } else {
-      this.certificateSetup = reportPlatformFailures(
-        this.ensureServerCertExists(),
-        'ensureServerCertExists',
-      );
-      // make sure initialization failure is already logged
-      this.certificateSetup.catch((e) => {
-        console.error('Failed to find or generate certificates', e);
-      });
-    }
     this.config = config;
     this.server = server;
   }
@@ -162,6 +148,21 @@ export default class CertificateProvider {
     );
   };
 
+  async certificateSetup() {
+    if (this.didCertificateSetup) {
+      return;
+    }
+    if (isTest()) {
+      throw new Error('Server certificates not available in test');
+    } else {
+      await reportPlatformFailures(
+        this.ensureServerCertExists(),
+        'ensureServerCertExists',
+      );
+    }
+    this.didCertificateSetup = true;
+  }
+
   async processCertificateSigningRequest(
     unsanitizedCsr: string,
     os: string,
@@ -176,7 +177,7 @@ export default class CertificateProvider {
     const rootFolder = await promisify(tmp.dir)();
     const certFolder = rootFolder + '/FlipperCerts/';
     const certsZipPath = rootFolder + '/certs.zip';
-    await this.certificateSetup;
+    await this.certificateSetup();
     const caCert = await this.getCACertificate();
     await this.deployOrStageFileForMobileApp(
       appDirectory,
