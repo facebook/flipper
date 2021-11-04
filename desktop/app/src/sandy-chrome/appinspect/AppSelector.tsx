@@ -18,10 +18,9 @@ import {
 } from '@ant-design/icons';
 import {Glyph, Layout, styled} from '../../ui';
 import {DeviceOS, theme, useTrackedCallback, useValue} from 'flipper-plugin';
-import {batch} from 'react-redux';
+import {batch, useSelector} from 'react-redux';
 import {useDispatch, useStore} from '../../utils/useStore';
 import {
-  canBeDefaultDevice,
   getClientsByDevice,
   selectClient,
   selectDevice,
@@ -32,6 +31,7 @@ import {State} from '../../reducers';
 import {brandColors, brandIcons, colors} from '../../ui/components/colors';
 import {TroubleshootingGuide} from './fb-stubs/TroubleshootingGuide';
 import GK from '../../fb-stubs/GK';
+import {getSelectableDevices} from '../../selectors/connections';
 
 const {Text} = Typography;
 
@@ -50,13 +50,9 @@ function getOsIcon(os?: DeviceOS) {
 
 export function AppSelector() {
   const dispatch = useDispatch();
-  const {
-    devices,
-    selectedDevice,
-    clients,
-    uninitializedClients,
-    selectedAppId,
-  } = useStore((state) => state.connections);
+  const selectableDevices = useSelector(getSelectableDevices);
+  const {selectedDevice, clients, uninitializedClients, selectedAppId} =
+    useStore((state) => state.connections);
   useValue(selectedDevice?.connected, false); // subscribe to future archived state changes
 
   const onSelectDevice = useTrackedCallback(
@@ -79,7 +75,7 @@ export function AppSelector() {
   );
 
   const entries = computeEntries(
-    devices,
+    selectableDevices,
     clients,
     uninitializedClients,
     onSelectDevice,
@@ -193,47 +189,37 @@ const AppIconContainer = styled.div({
 });
 
 function computeEntries(
-  devices: BaseDevice[],
+  selectableDevices: BaseDevice[],
   clients: Map<string, Client>,
   uninitializedClients: State['connections']['uninitializedClients'],
   onSelectDevice: (device: BaseDevice) => void,
   onSelectApp: (device: BaseDevice, client: Client) => void,
 ) {
-  const entries = devices
-    .filter(
-      (device) =>
-        // hide non default devices, unless they have a connected client or plugins
-        canBeDefaultDevice(device) ||
-        device.hasDevicePlugins ||
-        getClientsByDevice(device, clients).length > 0,
-    )
-    .map((device) => {
-      const deviceEntry = (
-        <Menu.Item
-          icon={getOsIcon(device.os)}
-          key={device.serial}
-          style={{fontWeight: 'bold'}}
-          onClick={() => {
-            onSelectDevice(device);
-          }}>
-          <DeviceTitle device={device} />
-        </Menu.Item>
-      );
-      const clientEntries = getClientsByDevice(device, clients).map(
-        (client) => (
-          <Menu.Item
-            key={client.id}
-            onClick={() => {
-              onSelectApp(device, client);
-            }}>
-            <Radio value={client.id}>
-              <ClientTitle client={client} />
-            </Radio>
-          </Menu.Item>
-        ),
-      );
-      return [deviceEntry, ...clientEntries];
-    });
+  const entries = selectableDevices.map((device) => {
+    const deviceEntry = (
+      <Menu.Item
+        icon={getOsIcon(device.os)}
+        key={device.serial}
+        style={{fontWeight: 'bold'}}
+        onClick={() => {
+          onSelectDevice(device);
+        }}>
+        <DeviceTitle device={device} />
+      </Menu.Item>
+    );
+    const clientEntries = getClientsByDevice(device, clients).map((client) => (
+      <Menu.Item
+        key={client.id}
+        onClick={() => {
+          onSelectApp(device, client);
+        }}>
+        <Radio value={client.id}>
+          <ClientTitle client={client} />
+        </Radio>
+      </Menu.Item>
+    ));
+    return [deviceEntry, ...clientEntries];
+  });
   if (uninitializedClients.length) {
     entries.push([
       <Menu.Item key="connecting" style={{fontWeight: 'bold'}}>

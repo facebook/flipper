@@ -14,10 +14,12 @@ import {
   computeActivePluginList,
 } from '../utils/pluginUtils';
 import createSelector from './createSelector';
+import {canBeDefaultDevice, getClientsByDevice} from '../reducers/connections';
 
 const getSelectedPluginId = (state: State) => state.connections.selectedPlugin;
 const getSelectedDevice = (state: State) => state.connections.selectedDevice;
 const getDevices = (state: State) => state.connections.devices;
+const getClients = (state: State) => state.connections.clients;
 const getPluginDownloads = (state: State) => state.pluginDownloads;
 
 // N.B. no useSelector, It can't memoise on maps :-/
@@ -30,6 +32,25 @@ export const getMetroDevice = createSelector(getDevices, (devices) => {
     null
   );
 });
+
+export const getSelectableDevices = createSelector(
+  getDevices,
+  getClients,
+  (devices, clients) => {
+    return devices.filter(
+      (device) =>
+        // hide non default devices, unless they have a connected client or plugins
+        canBeDefaultDevice(device) ||
+        device.hasDevicePlugins ||
+        getClientsByDevice(device, clients).length > 0,
+    );
+  },
+);
+
+export const hasSelectableDevices = createSelector(
+  getSelectableDevices,
+  (selectableDevices) => selectableDevices.length > 0,
+);
 
 export const getActiveDevice = createSelector(
   getSelectedDevice,

@@ -26,6 +26,7 @@ import {
   getActiveDevice,
   getMetroDevice,
 } from '../../selectors/connections';
+import * as connections from '../../selectors/connections';
 
 const {Text} = Typography;
 
@@ -46,6 +47,7 @@ export function AppInspect() {
   const activeDevice = useSelector(getActiveDevice);
   const isDeviceConnected = useValue(activeDevice?.connected, false);
   const isAppConnected = useValue(client?.connected, false);
+  const hasSelectableDevices = useSelector(connections.hasSelectableDevices);
 
   return (
     <LeftSidebar>
@@ -61,6 +63,7 @@ export function AppInspect() {
               activeDevice,
               client,
               isAppConnected,
+              hasSelectableDevices,
             )}
             {isDeviceConnected && isAppConnected && <BookmarkSection />}
             {isDeviceConnected && activeDevice && (
@@ -96,6 +99,7 @@ function renderStatusMessage(
   activeDevice: BaseDevice | null,
   client: Client | null,
   isAppConnected: boolean,
+  hasSelectableDevices: boolean,
 ): React.ReactNode {
   if (!activeDevice) {
     return;
@@ -142,7 +146,7 @@ function renderStatusMessage(
         </Text>
       </Layout.Horizontal>
     )
-  ) : (
+  ) : hasSelectableDevices ? (
     <Layout.Horizontal gap center>
       <ExclamationCircleOutlined style={{color: theme.warningColor}} />
       <Text
@@ -155,5 +159,5 @@ function renderStatusMessage(
         No application selected
       </Text>
     </Layout.Horizontal>
-  );
+  ) : null /* no selectable devices */;
 }
