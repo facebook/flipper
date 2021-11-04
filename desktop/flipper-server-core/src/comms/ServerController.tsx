@@ -294,14 +294,14 @@ class ServerController extends EventEmitter implements ServerEventsListener {
             deviceName: clientQuery.device,
             appName: appNameWithUpdateHint(clientQuery),
           };
-          // TODO: if multiple clients are establishing a connection
-          // at the same time, then this unresponsive timeout can potentially
-          // lead to errors. For example, client A starts connectiving followed
-          // by client B. Client B timeHandler will override client A, thus, if
-          // client A takes longer, then the unresponsive timeout will not be called
-          // for it.
+
           this.timeHandlers.set(
-            clientQueryToKey(clientQuery),
+            // In the original insecure connection request, `device_id` is set to "unknown".
+            // Flipper queries adb/idb to learn the device ID and provides it back to the app.
+            // Once app knows it, it starts using the correct device ID for its subsequent secure connections.
+            // When the app re-connects securely after the cert exchange process, we need to cancel this timeout.
+            // Since the original clientQuery has `device_id` set to "unknown", we update it here with the correct `device_id` to find it and cancel it later.
+            clientQueryToKey({...clientQuery, device_id: response.deviceId}),
             setTimeout(() => {
               this.emit('client-unresponsive-error', {
                 client,
