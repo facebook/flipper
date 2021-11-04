@@ -138,6 +138,16 @@ jobs:
       with:
         name: 'Flipper-win.zip'
         path: 'dist/Flipper-win.zip'
+    - name: Open issue on failure
+      if: failure()
+      uses: JasonEtco/create-an-issue@v2.4.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        REPOSITORY: ${{ github.repository }}
+        RUN_ID: ${{ github.run_id }}
+        WORKFLOW_NAME: "Release"
+      with:
+        filename: .github/action-failure-template.md
 
   publish:
     needs:
