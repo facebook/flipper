@@ -21,8 +21,10 @@ import {Layout, theme, Tracked, TrackingScope} from 'flipper-plugin';
 const {Text, Title} = Typography;
 
 import constants from '../fb-stubs/constants';
+import config from '../fb-stubs/config';
 import isProduction from '../utils/isProduction';
 import {getAppVersion} from '../utils/info';
+import ReleaseChannel from '../ReleaseChannel';
 import {getFlipperLib} from 'flipper-plugin';
 
 const RowContainer = styled(FlexRow)({
@@ -136,14 +138,41 @@ export function WelcomeScreenStaticView() {
 }
 
 function WelcomeScreenContent() {
+  function isInsidersChannel() {
+    return config.getReleaseChannel() === ReleaseChannel.INSIDERS;
+  }
+
   return (
     <TrackingScope scope="welcomescreen">
       <Space
         direction="vertical"
         size="middle"
         style={{width: '100%', padding: '0 32px 32px', alignItems: 'center'}}>
-        <Image width={125} height={125} src="./icon.png" preview={false} />
+        <Image
+          style={{
+            filter: isInsidersChannel() ? 'hue-rotate(230deg)' : 'none',
+          }}
+          width={125}
+          height={125}
+          src="./icon.png"
+          preview={false}
+        />
         <Title level={1}>Welcome to Flipper</Title>
+        <Text>
+          Using release channel{' '}
+          <code
+            style={{
+              margin: 0,
+              padding: 0,
+              border: 'none',
+              background: 'none',
+              color: isInsidersChannel() ? 'rgb(62, 124, 66)' : '#000',
+              textTransform: 'capitalize',
+              fontWeight: isInsidersChannel() ? 'bold' : 'normal',
+            }}>
+            {config.getReleaseChannel()}
+          </code>
+        </Text>
         <Text style={{color: theme.textColorPlaceholder}}>
           {isProduction() ? `Version ${getAppVersion()}` : 'Development Mode'}
         </Text>
