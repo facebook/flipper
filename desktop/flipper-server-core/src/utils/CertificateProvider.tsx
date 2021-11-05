@@ -586,7 +586,7 @@ export default class CertificateProvider {
   }
 
   async loadSecureServerConfig(): Promise<SecureServerConfig> {
-    await this.certificateSetup;
+    await this.certificateSetup();
     return {
       key: await fs.readFile(serverKey),
       cert: await fs.readFile(serverCert),
