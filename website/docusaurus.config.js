@@ -191,6 +191,7 @@ const siteConfig = {
   ],
   customFields: {
     fbRepoName: 'fbsource',
+    ossRepoPath: 'xplat/sonar',
   },
   // end_config_example
   plugins: [
