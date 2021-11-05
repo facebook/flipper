@@ -19,15 +19,15 @@ export type OpenPluginParams = {
 export type DeeplinkInteractionState =
   | 'INIT'
   | 'ERROR'
-  | 'PLUGIN_LIGHTHOUSE_BAIL'
-  | 'PLUGIN_STATUS_BAIL'
-  | 'PLUGIN_DEVICE_BAIL'
-  | 'PLUGIN_CLIENT_BAIL'
-  | 'PLUGIN_DEVICE_SELECTION_BAIL'
-  | 'PLUGIN_CLIENT_SELECTION_BAIL'
-  | 'PLUGIN_DEVICE_UNSUPPORTED'
-  | 'PLUGIN_CLIENT_UNSUPPORTED'
-  | 'PLUGIN_OPEN_SUCCESS';
+  | 'PLUGIN_LIGHTHOUSE_BAIL' // User did not connect to VPN/Lighthouse when asked
+  | 'PLUGIN_STATUS_BAIL' // User did not install the plugin (has `extra` attribute with more information)
+  | 'PLUGIN_DEVICE_BAIL' // User did not launch a new device
+  | 'PLUGIN_CLIENT_BAIL' // User did not launch a supported app
+  | 'PLUGIN_DEVICE_SELECTION_BAIL' // User closed dialogue asking to select one of many devices
+  | 'PLUGIN_CLIENT_SELECTION_BAIL' // User closed dialogue asking to select one of many apps
+  | 'PLUGIN_DEVICE_UNSUPPORTED' // The device did not match the requirements specified in the deeplink URL
+  | 'PLUGIN_CLIENT_UNSUPPORTED' // The already opened app did not match the requirements specified in the deeplink URL
+  | 'PLUGIN_OPEN_SUCCESS'; // Everything is awesome
 
 export type DeeplinkInteraction = {
   state: DeeplinkInteractionState;
