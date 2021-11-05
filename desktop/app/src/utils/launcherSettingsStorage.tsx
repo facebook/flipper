@@ -36,7 +36,7 @@ export default class LauncherSettingsStorage implements Storage {
 
   private async parseFile(): Promise<LauncherSettings> {
     try {
-      const content = fs.readFile(this.filepath).toString();
+      const content = (await fs.readFile(this.filepath)).toString();
       return deserialize(content);
     } catch (e) {
       console.warn(
