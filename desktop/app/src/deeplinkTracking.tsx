@@ -17,8 +17,8 @@ export type OpenPluginParams = {
 };
 
 export type DeeplinkInteractionState =
-  | 'INIT'
-  | 'ERROR'
+  | 'INIT' // Sent every time a user enters a deeplink flow
+  | 'ERROR' // Something went wrong (parsing, etc.) comes with more metadata attached
   | 'PLUGIN_LIGHTHOUSE_BAIL' // User did not connect to VPN/Lighthouse when asked
   | 'PLUGIN_STATUS_BAIL' // User did not install the plugin (has `extra` attribute with more information)
   | 'PLUGIN_DEVICE_BAIL' // User did not launch a new device
