@@ -29,5 +29,8 @@ jobs:
         run: yarn publish
         working-directory: react-native/react-native-flipper
       - name: Publish JS Flipper
-        run: yarn publish
         working-directory: js/js-flipper
+        run: |
+          yarn
+          yarn build
+          yarn publish
