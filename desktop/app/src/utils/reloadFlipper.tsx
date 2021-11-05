@@ -7,5 +7,4 @@
  * @format
  */
 
-import {remote} from 'electron';
-export default () => remote.getCurrentWindow().reload();
+export default () => window.location.reload();

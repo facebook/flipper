@@ -29,11 +29,12 @@ export default class JsonFileStorage {
     return readFile(this.filepath)
       .then((buffer) => buffer.toString())
       .then(this.deserializeValue)
-      .catch((e) => {
+      .catch(async (e) => {
         console.warn(
           `Failed to read settings file: "${this.filepath}". ${e}. Replacing file with default settings.`,
         );
-        return this.writeContents(prettyStringify({})).then(() => ({}));
+        await this.writeContents(prettyStringify({}));
+        return {};
       });
   }
 

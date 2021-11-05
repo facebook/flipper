@@ -9,6 +9,11 @@
 
 import {ClientResponseType} from 'flipper-common';
 
+export interface PendingRequestResolvers {
+  resolve: (data: ClientResponseType) => void;
+  reject: (err: Error) => void;
+}
+
 export enum ConnectionStatus {
   ERROR = 'error',
   CLOSED = 'closed',
@@ -22,6 +27,6 @@ export type ConnectionStatusChange = (status: ConnectionStatus) => void;
 export interface ClientConnection {
   subscribeToEvents(subscriber: ConnectionStatusChange): void;
   close(): void;
-  send(data: any): void;
-  sendExpectResponse(data: any): Promise<ClientResponseType>;
+  send(data: object): void;
+  sendExpectResponse(data: object): Promise<ClientResponseType>;
 }

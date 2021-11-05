@@ -7,10 +7,8 @@
  * @format
  */
 
-// This is fine, we're using a focus event.
-// eslint-disable-next-line flipper/no-electron-remote-imports
-import {remote} from 'electron';
 import {v1 as uuidv1} from 'uuid';
+import {getRenderHostInstance} from '../RenderHost';
 import {Actions} from './';
 
 export type LauncherMsg = {
@@ -83,7 +81,7 @@ export const initialState: () => State = () => ({
   leftSidebarVisible: true,
   rightSidebarVisible: true,
   rightSidebarAvailable: false,
-  windowIsFocused: remote.getCurrentWindow().isFocused(),
+  windowIsFocused: getRenderHostInstance().hasFocus(),
   activeSheet: null,
   share: null,
   sessionId: uuidv1(),

@@ -230,42 +230,50 @@ const GutterWrapper = ({
         </Layout.Right>
       );
     case 'bottom':
-      // TODO: needs rotated styling
       return (
         <Layout.Top>
-          <VerticalGutter enabled={!!children} />
+          <VerticalGutter enabled={!!children} rotateStyling />
           {children}
         </Layout.Top>
       );
     case 'top':
-      // TODO: needs rotated styling
       return (
         <Layout.Bottom>
           {children}
-          <VerticalGutter enabled={!!children} />
+          <VerticalGutter enabled={!!children} rotateStyling />
         </Layout.Bottom>
       );
   }
 };
 
-const VerticalGutterContainer = styled('div')<{enabled: boolean}>(
-  ({enabled}) => ({
-    width: theme.space.large,
-    minWidth: theme.space.large,
-    cursor: enabled ? undefined : 'default', // hide cursor from interactive container
-    color: enabled ? theme.textColorPlaceholder : theme.backgroundWash,
-    fontSize: '16px',
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    background: theme.backgroundWash,
-    ':hover': {
-      background: enabled ? theme.dividerColor : undefined,
-    },
-  }),
-);
-const VerticalGutter = ({enabled}: {enabled: boolean}) => (
-  <VerticalGutterContainer enabled={enabled}>
+const VerticalGutterContainer = styled('div')<{
+  enabled: boolean;
+  rotateStyling?: boolean;
+}>(({enabled, rotateStyling}) => ({
+  width: rotateStyling ? '100%' : theme.space.large,
+  minWidth: rotateStyling ? '100%' : theme.space.large,
+  cursor: enabled ? undefined : 'default', // hide cursor from interactive container
+  color: enabled ? theme.textColorPlaceholder : theme.backgroundWash,
+  fontSize: '16px',
+  display: 'flex',
+  flexDirection: rotateStyling ? 'column' : 'row',
+  alignItems: 'center',
+  background: theme.backgroundWash,
+  ':hover': {
+    background: enabled ? theme.dividerColor : undefined,
+  },
+  '& svg': {
+    transform: rotateStyling ? 'rotate(90deg)' : undefined,
+  },
+}));
+const VerticalGutter = ({
+  enabled,
+  rotateStyling,
+}: {
+  enabled: boolean;
+  rotateStyling?: boolean;
+}) => (
+  <VerticalGutterContainer enabled={enabled} rotateStyling={rotateStyling}>
     <MoreOutlined />
   </VerticalGutterContainer>
 );

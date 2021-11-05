@@ -25,7 +25,7 @@ export type FlipperServerState =
 
 export type DeviceType = PluginDeviceType;
 
-export type DeviceOS = PluginOS | 'Windows' | 'MacOS';
+export type DeviceOS = PluginOS | 'Windows' | 'MacOS' | 'Browser' | 'Linux';
 
 export type DeviceDescription = {
   readonly os: DeviceOS;
@@ -83,11 +83,13 @@ export type ClientErrorType = {
   name: string;
 };
 
-export type ClientResponseType = {
-  success?: Object;
-  error?: ClientErrorType;
-  length: number;
-};
+export type ClientResponseType =
+  | {
+      success: object | string | number | boolean | null;
+      error?: never;
+      length: number;
+    }
+  | {success?: never; error: ClientErrorType; length: number};
 
 export type FlipperServerEvents = {
   'server-state': {state: FlipperServerState; error?: Error};
@@ -257,4 +259,39 @@ export type MetroReportableEvent =
         | 'groupEnd'
         | 'debug';
       data: Array<any>;
+    };
+
+// TODO: Complete message list
+export type SignCertificateMessage = {
+  method: 'signCertificate';
+  csr: string;
+  destination: string;
+  medium: number | undefined;
+};
+export type GetPluginsMessage = {
+  id: number;
+  method: 'getPlugins';
+};
+export type GetBackgroundPluginsMessage = {
+  id: number;
+  method: 'getBackgroundPlugins';
+};
+export type ExecuteMessage = {
+  method: 'execute';
+  params: {
+    method: string;
+    api: string;
+    params?: unknown;
+  };
+};
+export type ResponseMessage =
+  | {
+      id: number;
+      success: object | string | number | boolean | null;
+      error?: never;
+    }
+  | {
+      id: number;
+      success?: never;
+      error: ClientErrorType;
     };

@@ -35,6 +35,7 @@ import {textContent} from 'flipper-plugin';
 import createPaste from './fb-stubs/createPaste';
 import {getPluginTitle} from './utils/pluginUtils';
 import {getFlipperLib} from 'flipper-plugin';
+import {ContextMenuItem} from './ui/components/ContextMenu';
 
 type OwnProps = {
   onClear: () => void;
@@ -421,7 +422,7 @@ class NotificationItem extends Component<
 > {
   constructor(props: ItemProps & PluginNotification) {
     super(props);
-    const items: Array<Electron.MenuItemConstructorOptions> = [];
+    const items: Array<ContextMenuItem> = [];
     if (props.onHidePlugin && props.plugin) {
       items.push({
         label: `Hide ${getPluginTitle(props.plugin)} plugin`,
@@ -444,7 +445,7 @@ class NotificationItem extends Component<
   }
 
   state = {reportedNotHelpful: false};
-  contextMenuItems: Array<Electron.MenuItemConstructorOptions>;
+  contextMenuItems: Array<ContextMenuItem>;
   deepLinkButton = React.createRef();
 
   createPaste = () => {

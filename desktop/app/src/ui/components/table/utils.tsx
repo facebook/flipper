@@ -7,7 +7,7 @@
  * @format
  */
 
-export function normaliseColumnWidth(
+export function normalizeColumnWidth(
   width: string | number | null | undefined,
 ): number | string {
   if (width == null || width === 'flex') {

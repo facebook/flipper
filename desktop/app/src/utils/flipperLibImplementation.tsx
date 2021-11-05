@@ -13,13 +13,14 @@ import type {Store} from '../reducers';
 import createPaste from '../fb-stubs/createPaste';
 import GK from '../fb-stubs/GK';
 import type BaseDevice from '../devices/BaseDevice';
-import {clipboard, shell} from 'electron';
 import constants from '../fb-stubs/constants';
 import {addNotification} from '../reducers/notifications';
 import {deconstructPluginKey} from 'flipper-common';
 import {DetailSidebarImpl} from '../sandy-chrome/DetailSidebarImpl';
+import {RenderHost} from '../RenderHost';
 
 export function initializeFlipperLibImplementation(
+  renderHost: RenderHost,
   store: Store,
   logger: Logger,
 ) {
@@ -47,12 +48,8 @@ export function initializeFlipperLibImplementation(
         },
       });
     },
-    writeTextToClipboard(text: string) {
-      clipboard.writeText(text);
-    },
-    openLink(url: string) {
-      shell.openExternal(url);
-    },
+    writeTextToClipboard: renderHost.writeTextToClipboard,
+    openLink: renderHost.openLink,
     showNotification(pluginId, notification) {
       const parts = deconstructPluginKey(pluginId);
       store.dispatch(
@@ -64,5 +61,12 @@ export function initializeFlipperLibImplementation(
       );
     },
     DetailsSidebarImplementation: DetailSidebarImpl,
+    showSaveDialog: renderHost.showSaveDialog,
+    showOpenDialog: renderHost.showOpenDialog,
+    showSelectDirectoryDialog: renderHost.showSelectDirectoryDialog,
+    paths: {
+      appPath: renderHost.paths.appPath,
+      homePath: renderHost.paths.homePath,
+    },
   });
 }

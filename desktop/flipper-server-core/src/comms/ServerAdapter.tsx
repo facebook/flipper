@@ -13,7 +13,11 @@ import {
 } from '../utils/CertificateProvider';
 import {ClientConnection} from './ClientConnection';
 import {transformCertificateExchangeMediumToType} from './Utilities';
-import {ClientDescription, ClientQuery} from 'flipper-common';
+import {
+  ClientDescription,
+  ClientQuery,
+  SignCertificateMessage,
+} from 'flipper-common';
 
 /**
  * ClientCsrQuery defines a client query with CSR
@@ -86,6 +90,7 @@ export interface ServerEventsListener {
   onConnectionCreated(
     clientQuery: SecureClientQuery,
     clientConnection: ClientConnection,
+    downgrade?: boolean,
   ): Promise<ClientDescription>;
   /**
    * A connection with a client has been closed.
@@ -109,22 +114,18 @@ export interface ServerEventsListener {
  * RSocket, WebSocket, etc.
  */
 abstract class ServerAdapter {
-  listener: ServerEventsListener;
-
-  constructor(listener: ServerEventsListener) {
-    this.listener = listener;
-  }
+  constructor(protected listener: ServerEventsListener) {}
 
   /**
    * Start and bind server to the specified port.
-   * @param port A port number.
+   * @param port A port number. Pass 0 to get a random free port.
+   * https://stackoverflow.com/a/28050404
    * @param sslConfig An optional SSL configuration to be used for
    * TLS servers.
+   *
+   * @returns An assigned port number
    */
-  abstract start(
-    port: number,
-    sslConfig?: SecureServerConfig,
-  ): Promise<boolean>;
+  abstract start(port: number, sslConfig?: SecureServerConfig): Promise<number>;
   /**
    * Stop the server.
    */
@@ -140,7 +141,7 @@ abstract class ServerAdapter {
    * request is to sign a certificate and no errors were found, the response
    * should contain the device identifier to use by the client.
    */
-  async _onHandleUntrustedMessage(
+  protected async _onHandleUntrustedMessage(
     clientQuery: ClientQuery,
     rawData: any,
   ): Promise<string | undefined> {
@@ -148,12 +149,7 @@ abstract class ServerAdapter {
     // This is not an issue for internal FB users, as Flipper release
     // is insync with client SDK through launcher.
 
-    const message: {
-      method: 'signCertificate';
-      csr: string;
-      destination: string;
-      medium: number | undefined;
-    } = rawData;
+    const message: SignCertificateMessage = rawData;
 
     console.info(
       `[conn] Connection attempt: ${clientQuery.app} on ${clientQuery.device}, medium: ${message.medium}, cert: ${message.destination}`,

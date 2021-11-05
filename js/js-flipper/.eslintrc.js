@@ -8,22 +8,9 @@
  */
 
 const fbjs = require('eslint-config-fbjs');
+const prettierConfig = require('./prettierrc.json')
 
-// enforces copyright header and @format directive to be present in every file
 const pattern = /^\*\r?\n[\S\s]*Facebook[\S\s]* \* @format\r?\n/;
-
-const prettierConfig = {
-  // arrowParens=always is the default for Prettier 2.0, but other configs
-  // at Facebook appear to be leaking into this file, which is still on
-  // Prettier 1.x at the moment, so it is best to be explicit.
-  arrowParens: 'always',
-  requirePragma: true,
-  singleQuote: true,
-  trailingComma: 'all',
-  bracketSpacing: false,
-  jsxBracketSameLine: true,
-  parser: '',
-};
 
 module.exports = {
   parser: 'babel-eslint',
@@ -74,6 +61,8 @@ module.exports = {
       parser: '@typescript-eslint/parser',
       rules: {
         'prettier/prettier': [2, {...prettierConfig, parser: 'typescript'}],
+        // following rules are disabled because TS already handles it
+        'no-undef': 0,
         '@typescript-eslint/no-unused-vars': [
           1,
           {

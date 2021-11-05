@@ -43,6 +43,10 @@ export async function handleDeeplink(
   if (uri.protocol !== 'flipper:') {
     throw unknownError();
   }
+  if (uri.href === 'flipper://') {
+    // We support an empty protocol for just opening Flipper from anywhere.
+    return;
+  }
   if (uri.href.startsWith('flipper://open-plugin')) {
     return handleOpenPluginDeeplink(store, query, trackInteraction);
   }

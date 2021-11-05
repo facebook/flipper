@@ -7,6 +7,9 @@
  * @format
  */
 
+// Use of sync methods is cached.
+/* eslint-disable node/no-sync */
+
 import os from 'os';
 import isProduction from './isProduction';
 import fs from 'fs-extra';

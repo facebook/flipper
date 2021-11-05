@@ -12,7 +12,7 @@ import React, {useState, useEffect, useCallback} from 'react';
 import path from 'path';
 import fs from 'fs-extra';
 import open from 'open';
-import {capture, CAPTURE_LOCATION, getFileName} from '../utils/screenshot';
+import {capture, getCaptureLocation, getFileName} from '../utils/screenshot';
 import {CameraOutlined, VideoCameraOutlined} from '@ant-design/icons';
 import {useStore} from '../utils/useStore';
 
@@ -83,7 +83,7 @@ export default function ScreenCaptureButtons() {
     }
     if (!isRecording) {
       setIsRecording(true);
-      const videoPath = path.join(CAPTURE_LOCATION, getFileName('mp4'));
+      const videoPath = path.join(getCaptureLocation(), getFileName('mp4'));
       return selectedDevice.startScreenCapture(videoPath).catch((e) => {
         console.error('Failed to start recording', e);
         message.error('Failed to start recording' + e);

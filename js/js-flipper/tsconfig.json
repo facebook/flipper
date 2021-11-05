@@ -1,9 +1,8 @@
 {
   "compilerOptions": {
     "outDir": "lib",
-    "rootDir": "src",
     "esModuleInterop": true,
-    "target": "ES2017",
+    "target": "ES5",
     "removeComments": true,
     "preserveConstEnums": true,
     "sourceMap": true,
@@ -11,15 +10,10 @@
     "moduleResolution": "node",
     "skipLibCheck": true,
     "strict": true,
+    "strictFunctionTypes": false,
     "downlevelIteration": true,
     "module": "commonjs",
-    "lib": [
-      "es7",
-      "dom",
-      "es2017"
-    ],
-    "baseUrl": ".",
-    "allowJs": true
+    "baseUrl": "."
   },
   "include": [
     "src"

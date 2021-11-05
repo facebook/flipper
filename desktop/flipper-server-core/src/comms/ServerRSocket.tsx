@@ -13,7 +13,7 @@ import ServerAdapter, {
   ServerEventsListener,
 } from './ServerAdapter';
 import tls from 'tls';
-import net, {Socket} from 'net';
+import net, {AddressInfo, Socket} from 'net';
 import {RSocketServer} from 'rsocket-core';
 import RSocketTCPServer from 'rsocket-tcp-server';
 import {Payload, ReactiveSocket, Responder} from 'rsocket-types';
@@ -45,7 +45,7 @@ class ServerRSocket extends ServerAdapter {
    * the RSocket server factory and request handler based on the optional
    * sslConfig argument.
    */
-  start(port: number, sslConfig?: SecureServerConfig): Promise<boolean> {
+  start(port: number, sslConfig?: SecureServerConfig): Promise<number> {
     const self = this;
     return new Promise((resolve, reject) => {
       // eslint-disable-next-line prefer-const
@@ -71,7 +71,7 @@ class ServerRSocket extends ServerAdapter {
             );
             self.listener.onListening(port);
             self.rawServer_ = rawServer;
-            resolve(true);
+            resolve((transportServer.address() as AddressInfo).port);
           });
         return transportServer;
       };
@@ -84,7 +84,7 @@ class ServerRSocket extends ServerAdapter {
           serverFactory: serverFactory,
         }),
       });
-      rawServer && rawServer.start();
+      rawServer.start();
     });
   }
 

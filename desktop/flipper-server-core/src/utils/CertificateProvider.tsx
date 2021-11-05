@@ -89,11 +89,11 @@ type CertificateProviderConfig = {
  * Flipper CA.
  */
 export default class CertificateProvider {
-  logger: Logger;
-  _adb: Promise<ADBClient> | undefined;
-  certificateSetup: Promise<void>;
-  config: CertificateProviderConfig;
-  server: ServerController;
+  private logger: Logger;
+  private _adb: Promise<ADBClient> | undefined;
+  private didCertificateSetup = false;
+  private config: CertificateProviderConfig;
+  private server: ServerController;
 
   get adb(): Promise<ADBClient> {
     if (this.config.enableAndroid) {
@@ -125,20 +125,6 @@ export default class CertificateProvider {
           this._adb = undefined; // no adb client available
         }) as Promise<ADBClient>)
       : undefined;
-    if (isTest()) {
-      this.certificateSetup = Promise.reject(
-        new Error('Server certificates not available in test'),
-      );
-    } else {
-      this.certificateSetup = reportPlatformFailures(
-        this.ensureServerCertExists(),
-        'ensureServerCertExists',
-      );
-      // make sure initialization failure is already logged
-      this.certificateSetup.catch((e) => {
-        console.error('Failed to find or generate certificates', e);
-      });
-    }
     this.config = config;
     this.server = server;
   }
@@ -162,6 +148,21 @@ export default class CertificateProvider {
     );
   };
 
+  async certificateSetup() {
+    if (this.didCertificateSetup) {
+      return;
+    }
+    if (isTest()) {
+      throw new Error('Server certificates not available in test');
+    } else {
+      await reportPlatformFailures(
+        this.ensureServerCertExists(),
+        'ensureServerCertExists',
+      );
+    }
+    this.didCertificateSetup = true;
+  }
+
   async processCertificateSigningRequest(
     unsanitizedCsr: string,
     os: string,
@@ -172,11 +173,11 @@ export default class CertificateProvider {
     if (csr === '') {
       return Promise.reject(new Error(`Received empty CSR from ${os} device`));
     }
-    this.ensureOpenSSLIsAvailable();
+    await this.ensureOpenSSLIsAvailable();
     const rootFolder = await promisify(tmp.dir)();
     const certFolder = rootFolder + '/FlipperCerts/';
     const certsZipPath = rootFolder + '/certs.zip';
-    await this.certificateSetup;
+    await this.certificateSetup();
     const caCert = await this.getCACertificate();
     await this.deployOrStageFileForMobileApp(
       appDirectory,
@@ -248,8 +249,8 @@ export default class CertificateProvider {
     return Promise.resolve('unknown');
   }
 
-  private ensureOpenSSLIsAvailable(): void {
-    if (!opensslInstalled()) {
+  private async ensureOpenSSLIsAvailable(): Promise<void> {
+    if (!(await opensslInstalled())) {
       const e = Error(
         "It looks like you don't have OpenSSL installed. Please install it to continue.",
       );
@@ -359,6 +360,7 @@ export default class CertificateProvider {
     const dir = await tmpDir({unsafeCleanup: true});
     const filePath = path.resolve(dir, filename);
     await fs.writeFile(filePath, contents);
+
     await iosUtil.push(
       udid,
       filePath,
@@ -493,13 +495,54 @@ export default class CertificateProvider {
       path.resolve(directory, csrFileName),
     );
     const dir = await tmpDir({unsafeCleanup: true});
-    await iosUtil.pull(
-      deviceId,
-      originalFile,
-      bundleId,
-      dir,
-      this.config.idbPath,
-    );
+
+    // Workaround for idb weirdness
+    // Originally started at D27590885
+    // Re-appared at https://github.com/facebook/flipper/issues/3009
+    //
+    // People reported various workarounds. None of them worked consistently for everyone.
+    // Usually, the workarounds included re-building idb from source or re-installing it.
+    //
+    // The only more or less reasonable explanation I was able to find is that the final behavior depends on whether the idb_companion is local or not.
+    //
+    // This is how idb_companion sets its locality
+    // https://github.com/facebook/idb/blob/main/idb_companion/Server/FBIDBServiceHandler.mm#L1507
+    // idb sends a connection request and provides a file path to a temporary file. idb_companion checks if it can access that file.
+    //
+    // So when it is "local", the pulled filed is written directly to the destination path
+    // https://github.com/facebook/idb/blob/main/idb/grpc/client.py#L698
+    // So it is expected that the destination path ends with a file to write to.
+    // However, if the companion is remote,  then we seem to get here https://github.com/facebook/idb/blob/71791652efa2d5e6f692cb8985ff0d26b69bf08f/idb/common/tar.py#L232
+    // Where we create a tree of directories and write the file stream there.
+    //
+    // So the only explanation I could come up with is that somehow, by re-installing idb and playing with the env, people could affect the locality of the idb_companion.
+    //
+    // The ultimate workaround is to try pulling the cert file without the cert name attached first, if it fails, try to append it.
+    try {
+      await iosUtil.pull(
+        deviceId,
+        originalFile,
+        bundleId,
+        dir,
+        this.config.idbPath,
+      );
+    } catch (e) {
+      console.warn(
+        'Original idb pull failed. Most likely it is a physical device that requires us to handle the dest path dirrently. Forcing a re-try with the updated dest path. See D32106952 for details. Original error:',
+        e,
+      );
+      await iosUtil.pull(
+        deviceId,
+        originalFile,
+        bundleId,
+        path.join(dir, csrFileName),
+        this.config.idbPath,
+      );
+      console.info(
+        'Subsequent idb pull succeeded. Nevermind previous wranings.',
+      );
+    }
+
     const items = await fs.readdir(dir);
     if (items.length > 1) {
       throw new Error('Conflict in temp dir');

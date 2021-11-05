@@ -33,7 +33,7 @@ export interface Request {
   insights?: Insights;
 }
 
-export type Requests = DataSource<Request>;
+export type Requests = DataSource<Request, never>;
 
 export type SerializedRequest = Omit<
   Request,

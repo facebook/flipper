@@ -54,6 +54,7 @@ module.exports = {
               'getting-started/react-native-ios',
             ],
           },
+          'getting-started/javascript'
         ],
       },
       ...fbInternalOnly(['getting-started/fb/connecting-to-flipper']),
@@ -84,6 +85,7 @@ module.exports = {
       'tutorial/ios',
       'tutorial/android',
       'tutorial/react-native',
+      'tutorial/javascript',
       'tutorial/js-setup',
       'tutorial/js-table',
       'tutorial/js-custom',

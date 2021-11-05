@@ -12,35 +12,15 @@
 
 import path from 'path';
 import fs from 'fs';
-// In utils this is fine when used with caching.
-// eslint-disable-next-line flipper/no-electron-remote-imports
-import {default as electron, remote} from 'electron';
+
 import config from '../fb-stubs/config';
-
-let _staticPath = '';
-
-function getStaticDir() {
-  if (_staticPath) {
-    return _staticPath;
-  }
-  _staticPath = path.resolve(__dirname, '..', '..', '..', 'static');
-  if (fs.existsSync(_staticPath)) {
-    return _staticPath;
-  }
-  if (remote && fs.existsSync(remote.app.getAppPath())) {
-    _staticPath = path.join(remote.app.getAppPath());
-  }
-  if (!fs.existsSync(_staticPath)) {
-    throw new Error('Static path does not exist: ' + _staticPath);
-  }
-  return _staticPath;
-}
+import {getRenderHostInstance} from '../RenderHost';
 
 export function getStaticPath(
   relativePath: string = '.',
   {asarUnpacked}: {asarUnpacked: boolean} = {asarUnpacked: false},
 ) {
-  const staticDir = getStaticDir();
+  const staticDir = getRenderHostInstance().paths.staticPath;
   const absolutePath = path.resolve(staticDir, relativePath);
   // Unfortunately, path.resolve, fs.pathExists, fs.read etc do not automatically work with asarUnpacked files.
   // All these functions still look for files in "app.asar" even if they are unpacked.
@@ -49,26 +29,6 @@ export function getStaticPath(
   return asarUnpacked
     ? absolutePath.replace('app.asar', 'app.asar.unpacked')
     : absolutePath;
-}
-
-let _appPath: string | undefined = undefined;
-export function getAppPath() {
-  if (!_appPath) {
-    _appPath = getStaticPath('..');
-  }
-
-  return _appPath;
-}
-
-let _tempPath: string | undefined = undefined;
-export function getAppTempPath() {
-  if (!_tempPath) {
-    // We cache this.
-    // eslint-disable-next-line no-restricted-properties
-    _tempPath = (electron.app || electron.remote.app).getPath('temp');
-  }
-
-  return _tempPath;
 }
 
 export function getChangelogPath() {

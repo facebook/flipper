@@ -12,7 +12,12 @@ import BaseDevice from '../devices/BaseDevice';
 import {createRootReducer} from '../reducers';
 import {Store} from '../reducers/index';
 import Client, {ClientConnection} from '../Client';
-import {Logger, buildClientId, FlipperServer} from 'flipper-common';
+import {
+  Logger,
+  buildClientId,
+  FlipperServer,
+  ClientResponseType,
+} from 'flipper-common';
 import {PluginDefinition} from '../plugin';
 import {registerPlugins} from '../reducers/plugins';
 import {getLogger} from 'flipper-common';
@@ -23,6 +28,7 @@ import ArchivedDevice from '../devices/ArchivedDevice';
 import {ClientQuery, DeviceOS} from 'flipper-common';
 import {TestDevice} from './TestDevice';
 import {createFlipperServerMock} from './createFlipperServerMock';
+import {getRenderHostInstance} from '../RenderHost';
 
 export interface AppOptions {
   plugins?: PluginDefinition[];
@@ -52,7 +58,7 @@ export default class MockFlipper {
   private _clients: Client[] = [];
   private _deviceCounter: number = 0;
   private _clientCounter: number = 0;
-  private _flipperServer: FlipperServer = createFlipperServerMock();
+  flipperServer: FlipperServer = createFlipperServerMock();
 
   public get store(): Store {
     return this._store;
@@ -84,11 +90,15 @@ export default class MockFlipper {
     this.unsubscribePluginManager = pluginManager(this._store, this._logger, {
       runSideEffectsSynchronously: true,
     });
-    initializeFlipperLibImplementation(this._store, this._logger);
+    initializeFlipperLibImplementation(
+      getRenderHostInstance(),
+      this._store,
+      this._logger,
+    );
     this._store.dispatch(registerPlugins(plugins ?? []));
     this._store.dispatch({
       type: 'SET_FLIPPER_SERVER',
-      payload: this._flipperServer,
+      payload: this.flipperServer,
     });
   }
 
@@ -244,7 +254,7 @@ function createStubConnection(): ClientConnection {
     send(_: any) {
       throw new Error('Should not be called in test');
     },
-    sendExpectResponse(_: any): Promise<ResponseType> {
+    sendExpectResponse(_: any): Promise<ClientResponseType> {
       throw new Error('Should not be called in test');
     },
   };

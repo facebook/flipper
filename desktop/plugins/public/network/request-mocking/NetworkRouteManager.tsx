@@ -8,9 +8,7 @@
  */
 
 import fs from 'fs';
-// eslint-disable-next-line
-import electron, {OpenDialogOptions, remote} from 'electron';
-import {Atom, DataTableManager} from 'flipper-plugin';
+import {Atom, DataTableManager, getFlipperLib} from 'flipper-plugin';
 import {createContext} from 'react';
 import {Header, Request} from '../types';
 import {message} from 'antd';
@@ -137,16 +135,13 @@ export function createNetworkManager(
       informClientMockChange(routes.get());
     },
     importRoutes() {
-      const options: OpenDialogOptions = {
-        properties: ['openFile'],
-        filters: [{extensions: ['json'], name: 'Flipper Route Files'}],
-      };
-      remote.dialog
-        .showOpenDialog(options)
-        .then((result) => {
-          const filePaths = result.filePaths;
-          if (filePaths.length > 0) {
-            fs.readFile(filePaths[0], 'utf8', (err, data) => {
+      getFlipperLib()
+        .showOpenDialog?.({
+          filter: {extensions: ['json'], name: 'Flipper Route Files'},
+        })
+        .then((filePath) => {
+          if (filePath) {
+            fs.readFile(filePath, 'utf8', (err, data) => {
               if (err) {
                 message.error('Unable to import file');
                 return;
@@ -177,17 +172,12 @@ export function createNetworkManager(
         );
     },
     exportRoutes() {
-      remote.dialog
-        .showSaveDialog(
-          // @ts-ignore This appears to work but isn't allowed by the types
-          null,
-          {
-            title: 'Export Routes',
-            defaultPath: 'NetworkPluginRoutesExport.json',
-          },
-        )
-        .then((result: electron.SaveDialogReturnValue) => {
-          const file = result.filePath;
+      getFlipperLib()
+        .showSaveDialog?.({
+          title: 'Export Routes',
+          defaultPath: 'NetworkPluginRoutesExport.json',
+        })
+        .then((file) => {
           if (!file) {
             return;
           }

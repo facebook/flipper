@@ -7,9 +7,13 @@
  * @format
  */
 
+// We should get rid of sync use entirely but until then the
+// methods are marked as such.
+/* eslint-disable node/no-sync */
+
 import fs from 'fs';
 import path from 'path';
-import {remote} from 'electron';
+import {getRenderHostInstance} from '../RenderHost';
 import {getStaticPath} from './pathUtils';
 
 const AVAILABLE_SIZES = [8, 10, 12, 16, 18, 20, 24, 32];
@@ -25,7 +29,7 @@ export type Icons = {
 
 let _icons: Icons | undefined;
 
-export function getIcons(): Icons {
+export function getIconsSync(): Icons {
   return (
     _icons! ??
     (_icons = JSON.parse(fs.readFileSync(getIconsPath(), {encoding: 'utf8'})))
@@ -66,7 +70,7 @@ export function buildLocalIconURL(name: string, size: number, density: number) {
   return `icons/${getIconFileName(icon, size, density)}`;
 }
 
-export function buildIconURL(name: string, size: number, density: number) {
+export function buildIconURLSync(name: string, size: number, density: number) {
   const icon = getIconPartsFromName(name);
   // eslint-disable-next-line prettier/prettier
   const url = `https://facebook.com/assets/?name=${
@@ -76,15 +80,15 @@ export function buildIconURL(name: string, size: number, density: number) {
     }&size=${size}&set=facebook_icons&density=${density}x`;
   if (
     typeof window !== 'undefined' &&
-    (!getIcons()[name] || !getIcons()[name].includes(size))
+    (!getIconsSync()[name] || !getIconsSync()[name].includes(size))
   ) {
     // From utils/isProduction
     const isProduction = !/node_modules[\\/]electron[\\/]/.test(
-      process.execPath || remote.process.execPath,
+      getRenderHostInstance().paths.execPath,
     );
 
     if (!isProduction) {
-      const existing = getIcons()[name] || (getIcons()[name] = []);
+      const existing = getIconsSync()[name] || (getIconsSync()[name] = []);
       if (!existing.includes(size)) {
         // Check if that icon actually exists!
         fetch(url)
@@ -95,7 +99,7 @@ export function buildIconURL(name: string, size: number, density: number) {
               existing.sort();
               fs.writeFileSync(
                 getIconsPath(),
-                JSON.stringify(getIcons(), null, 2),
+                JSON.stringify(getIconsSync(), null, 2),
                 'utf8',
               );
               console.warn(
@@ -121,7 +125,12 @@ export function buildIconURL(name: string, size: number, density: number) {
   return url;
 }
 
-export function getIconURL(name: string, size: number, density: number) {
+export function getIconURLSync(
+  name: string,
+  size: number,
+  density: number,
+  basePath: string = getRenderHostInstance().paths.appPath,
+) {
   if (name.indexOf('/') > -1) {
     return name;
   }
@@ -156,16 +165,9 @@ export function getIconURL(name: string, size: number, density: number) {
   }
 
   // resolve icon locally if possible
-  if (
-    remote &&
-    fs.existsSync(
-      path.join(
-        remote.app.getAppPath(),
-        buildLocalIconPath(name, size, density),
-      ),
-    )
-  ) {
+  const iconPath = path.join(basePath, buildLocalIconPath(name, size, density));
+  if (fs.existsSync(iconPath)) {
     return buildLocalIconURL(name, size, density);
   }
-  return buildIconURL(name, requestedSize, density);
+  return buildIconURLSync(name, requestedSize, density);
 }

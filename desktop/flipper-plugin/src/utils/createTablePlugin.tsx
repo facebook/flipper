@@ -19,7 +19,7 @@ import {createDataSource} from '../state/createDataSource';
 
 type PluginResult<Raw, Row> = {
   plugin(client: PluginClient<Record<string, Raw | {}>>): {
-    rows: DataSource<Row>;
+    rows: DataSource<Row, Row[keyof Row]>;
   };
   Component(): React.ReactElement;
 };
@@ -75,9 +75,9 @@ export function createTablePlugin<
   function plugin(
     client: PluginClient<Record<Method, Raw> & Record<ResetMethod, {}>, {}>,
   ) {
-    const rows = createDataSource<Row>([], {
+    const rows = createDataSource<Row, keyof Row>([], {
       persist: 'rows',
-      key: props.key,
+      key: props.key as keyof Row | undefined,
     });
     const selection = createState<undefined | Row>(undefined);
     const isPaused = createState(false);

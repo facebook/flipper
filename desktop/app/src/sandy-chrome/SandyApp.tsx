@@ -18,7 +18,6 @@ import {
 } from 'flipper-plugin';
 import {Link, styled} from '../ui';
 import {theme} from 'flipper-plugin';
-import {ipcRenderer} from 'electron';
 import {Logger} from 'flipper-common';
 
 import {LeftRail} from './LeftRail';
@@ -31,6 +30,9 @@ import PluginContainer from '../PluginContainer';
 import {ContentContainer} from './ContentContainer';
 import {Notification} from './notification/Notification';
 import ChangelogSheet, {hasNewChangesToShow} from '../chrome/ChangelogSheet';
+import PlatformSelectWizard, {
+  hasPlatformWizardBeenDone,
+} from '../chrome/PlatformSelectWizard';
 import {getVersionString} from '../utils/versionString';
 import config from '../fb-stubs/config';
 import {WelcomeScreenStaticView} from './WelcomeScreen';
@@ -38,6 +40,7 @@ import fbConfig from '../fb-stubs/config';
 import {isFBEmployee} from '../utils/fbEmployee';
 import {notification} from 'antd';
 import isProduction from '../utils/isProduction';
+import {getRenderHostInstance} from '../RenderHost';
 
 export type ToplevelNavItem =
   | 'appinspect'
@@ -98,6 +101,13 @@ export function SandyApp() {
     if (hasNewChangesToShow(window.localStorage)) {
       Dialog.showModal((onHide) => <ChangelogSheet onHide={onHide} recent />);
     }
+
+    if (hasPlatformWizardBeenDone(window.localStorage)) {
+      Dialog.showModal((onHide) => (
+        <PlatformSelectWizard onHide={onHide} platform={process.platform} />
+      ));
+    }
+
     // don't warn about logger, even with a new logger we don't want to re-register
     // eslint-disable-next-line
   }, []);
@@ -138,48 +148,50 @@ export function SandyApp() {
   ) : null;
 
   return (
-    <Layout.Bottom>
-      <Layout.Left>
-        <Layout.Horizontal>
-          <LeftRail
-            toplevelSelection={toplevelSelection}
-            setToplevelSelection={setToplevelSelection}
-          />
-          <_Sidebar width={250} minWidth={220} maxWidth={800} gutter>
-            {leftMenuContent && (
-              <TrackingScope scope={toplevelSelection!}>
-                {leftMenuContent}
-              </TrackingScope>
-            )}
-          </_Sidebar>
-        </Layout.Horizontal>
-        <MainContainer>
-          {staticView ? (
-            <TrackingScope
-              scope={
-                (staticView as any).displayName ??
-                staticView.name ??
-                staticView.constructor?.name ??
-                'unknown static view'
-              }>
-              {staticView === WelcomeScreenStaticView ? (
-                React.createElement(staticView) /* avoid shadow */
-              ) : (
-                <ContentContainer>
-                  {React.createElement(staticView, {
-                    logger: logger,
-                  })}
-                </ContentContainer>
+    <RootElement>
+      <Layout.Bottom>
+        <Layout.Left>
+          <Layout.Horizontal>
+            <LeftRail
+              toplevelSelection={toplevelSelection}
+              setToplevelSelection={setToplevelSelection}
+            />
+            <_Sidebar width={250} minWidth={220} maxWidth={800} gutter>
+              {leftMenuContent && (
+                <TrackingScope scope={toplevelSelection!}>
+                  {leftMenuContent}
+                </TrackingScope>
               )}
-            </TrackingScope>
-          ) : (
-            <PluginContainer logger={logger} />
-          )}
-          {outOfContentsContainer}
-        </MainContainer>
-      </Layout.Left>
-      <_PortalsManager />
-    </Layout.Bottom>
+            </_Sidebar>
+          </Layout.Horizontal>
+          <MainContainer>
+            {staticView ? (
+              <TrackingScope
+                scope={
+                  (staticView as any).displayName ??
+                  staticView.name ??
+                  staticView.constructor?.name ??
+                  'unknown static view'
+                }>
+                {staticView === WelcomeScreenStaticView ? (
+                  React.createElement(staticView) /* avoid shadow */
+                ) : (
+                  <ContentContainer>
+                    {React.createElement(staticView, {
+                      logger: logger,
+                    })}
+                  </ContentContainer>
+                )}
+              </TrackingScope>
+            ) : (
+              <PluginContainer logger={logger} />
+            )}
+            {outOfContentsContainer}
+          </MainContainer>
+        </Layout.Left>
+        <_PortalsManager />
+      </Layout.Bottom>
+    </RootElement>
   );
 }
 
@@ -210,14 +222,21 @@ const MainContainer = styled(Layout.Container)({
   padding: `${theme.space.large}px ${theme.space.large}px ${theme.space.large}px 0`,
 });
 
+const RootElement = styled.div({
+  display: 'flex',
+  height: '100%',
+});
+RootElement.displayName = 'SandyAppRootElement';
+
 function registerStartupTime(logger: Logger) {
   // track time since launch
   const [s, ns] = process.hrtime();
   const launchEndTime = s * 1e3 + ns / 1e6;
-  ipcRenderer.on('getLaunchTime', (_: any, launchStartTime: number) => {
+  const renderHost = getRenderHostInstance();
+  renderHost.onIpcEvent('getLaunchTime', (launchStartTime: number) => {
     logger.track('performance', 'launchTime', launchEndTime - launchStartTime);
   });
 
-  ipcRenderer.send('getLaunchTime');
-  ipcRenderer.send('componentDidMount');
+  renderHost.sendIpcEvent('getLaunchTime');
+  renderHost.sendIpcEvent('componentDidMount');
 }

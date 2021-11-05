@@ -8,18 +8,18 @@
  */
 
 import {CertificateExchangeMedium} from '../utils/CertificateProvider';
-import {Logger} from 'flipper-common';
 import {
   ClientDescription,
   ClientQuery,
   isTest,
   GK,
   buildClientId,
+  Logger,
+  UninitializedClient,
+  reportPlatformFailures,
 } from 'flipper-common';
 import CertificateProvider from '../utils/CertificateProvider';
 import {ClientConnection, ConnectionStatus} from './ClientConnection';
-import {UninitializedClient} from 'flipper-common';
-import {reportPlatformFailures} from 'flipper-common';
 import {EventEmitter} from 'events';
 import invariant from 'invariant';
 import DummyDevice from '../devices/DummyDevice';
@@ -161,6 +161,7 @@ class ServerController extends EventEmitter implements ServerEventsListener {
       });
 
     if (GK.get('comet_enable_flipper_connection')) {
+      console.info('[conn] Browser server (ws) listening at port: ', 8333);
       this.browserServer = createBrowserServer(8333, this);
     }
 
@@ -187,6 +188,7 @@ class ServerController extends EventEmitter implements ServerEventsListener {
   onConnectionCreated(
     clientQuery: SecureClientQuery,
     clientConnection: ClientConnection,
+    downgrade: boolean,
   ): Promise<ClientDescription> {
     const {app, os, device, device_id, sdk_version, csr, csr_path, medium} =
       clientQuery;
@@ -206,6 +208,7 @@ class ServerController extends EventEmitter implements ServerEventsListener {
         medium: transformedMedium,
       },
       {csr, csr_path},
+      downgrade,
     );
   }
 
@@ -291,14 +294,14 @@ class ServerController extends EventEmitter implements ServerEventsListener {
             deviceName: clientQuery.device,
             appName: appNameWithUpdateHint(clientQuery),
           };
-          // TODO: if multiple clients are establishing a connection
-          // at the same time, then this unresponsive timeout can potentially
-          // lead to errors. For example, client A starts connectiving followed
-          // by client B. Client B timeHandler will override client A, thus, if
-          // client A takes longer, then the unresponsive timeout will not be called
-          // for it.
+
           this.timeHandlers.set(
-            clientQueryToKey(clientQuery),
+            // In the original insecure connection request, `device_id` is set to "unknown".
+            // Flipper queries adb/idb to learn the device ID and provides it back to the app.
+            // Once app knows it, it starts using the correct device ID for its subsequent secure connections.
+            // When the app re-connects securely after the cert exchange process, we need to cancel this timeout.
+            // Since the original clientQuery has `device_id` set to "unknown", we update it here with the correct `device_id` to find it and cancel it later.
+            clientQueryToKey({...clientQuery, device_id: response.deviceId}),
             setTimeout(() => {
               this.emit('client-unresponsive-error', {
                 client,
@@ -334,6 +337,7 @@ class ServerController extends EventEmitter implements ServerEventsListener {
     connection: ClientConnection,
     query: ClientQuery & {medium: CertificateExchangeMedium},
     csrQuery: ClientCsrQuery,
+    silentReplace?: boolean,
   ): Promise<ClientDescription> {
     invariant(query, 'expected query');
 
@@ -411,7 +415,9 @@ class ServerController extends EventEmitter implements ServerEventsListener {
           connectionInfo.connection &&
           connectionInfo.connection !== connection
         ) {
-          connectionInfo.connection.close();
+          if (!silentReplace) {
+            connectionInfo.connection.close();
+          }
           this.removeConnection(id);
         }
       }

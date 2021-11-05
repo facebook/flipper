@@ -33,8 +33,8 @@
     "crc32": "^0.2.2",
     "deep-equal": "^2.0.5",
     "expand-tilde": "^2.0.2",
-    "flipper-common": "0.0.0",
     "flipper-client-sdk": "^0.0.3",
+    "flipper-common": "0.0.0",
     "flipper-doctor": "0.0.0",
     "flipper-plugin": "0.0.0",
     "flipper-plugin-lib": "0.0.0",
@@ -72,14 +72,14 @@
     "tmp": "^0.2.1",
     "uuid": "^8.3.2",
     "which": "^2.0.1",
-    "ws": "^8.2.1",
+    "ws": "^8.2.3",
     "xdg-basedir": "^4.0.0"
   },
   "optionalDependencies": {
     "7zip-bin-mac": "^1.0.1"
   },
   "devDependencies": {
-    "@testing-library/dom": "^8.7.2",
+    "@testing-library/dom": "^8.9.1",
     "@testing-library/react": "^12.1.2",
     "@types/lodash.memoize": "^4.1.6",
     "@types/split2": "^3.2.1",

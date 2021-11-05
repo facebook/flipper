@@ -7,18 +7,14 @@
  * @format
  */
 
-import electron from 'electron';
 import lodash from 'lodash';
-import isProduction from './isProduction';
 import path from 'path';
 import fs from 'fs';
 import {promisify} from 'util';
+import {getRenderHostInstance} from '../RenderHost';
 
 const getPackageJSON = async () => {
-  const base =
-    isProduction() && electron.remote
-      ? electron.remote.app.getAppPath()
-      : process.cwd();
+  const base = getRenderHostInstance().paths.appPath;
   const content = await promisify(fs.readFile)(
     path.join(base, 'package.json'),
     'utf-8',

@@ -29,7 +29,12 @@ import {
   moveSourceMaps,
 } from './build-utils';
 import fetch from '@adobe/node-fetch-retry';
-import {getIcons, buildLocalIconPath, getIconURL} from '../app/src/utils/icons';
+import {
+  getIconsSync,
+  buildLocalIconPath,
+  getIconURLSync,
+  Icons,
+} from '../app/src/utils/icons';
 import isFB from './isFB';
 import copyPackageWithDependencies from './copy-package-with-dependencies';
 import {staticDir, distDir} from './paths';
@@ -305,7 +310,12 @@ async function copyStaticFolder(buildFolder: string) {
 }
 
 function downloadIcons(buildFolder: string) {
-  const iconURLs = Object.entries(getIcons()).reduce<
+  const icons: Icons = JSON.parse(
+    fs.readFileSync(path.join(buildFolder, 'icons.json'), {
+      encoding: 'utf8',
+    }),
+  );
+  const iconURLs = Object.entries(icons).reduce<
     {
       name: string;
       size: number;
@@ -322,7 +332,7 @@ function downloadIcons(buildFolder: string) {
 
   return Promise.all(
     iconURLs.map(({name, size, density}) => {
-      const url = getIconURL(name, size, density);
+      const url = getIconURLSync(name, size, density, buildFolder);
       return fetch(url, {
         retryOptions: {
           // Be default, only 5xx are retried but we're getting the odd 404

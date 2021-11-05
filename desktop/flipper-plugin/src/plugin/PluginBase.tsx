@@ -69,7 +69,7 @@ export interface BasePluginClient {
   /**
    * The `onReady` event is triggered immediately after a plugin has been initialized and any pending state was restored.
    * This event fires after `onImport` / the interpretation of any `persist` flags and indicates that the initialization process has finished.
-   * This event does not signal that the plugin is loaded in the UI yet (see `onActivated`) and does fire before deeplinks (see `onDeeplink`) are handled.
+   * This event does not signal that the plugin is loaded in the UI yet (see `onActivated`) and does fire before deeplinks (see `onDeepLink`) are handled.
    */
   onReady(handler: () => void): void;
 
@@ -333,7 +333,11 @@ export abstract class BasePluginInstance {
     if (!this.activated) {
       this.flipperLib.enableMenuEntries(this.menuEntries);
       this.activated = true;
-      this.events.emit('activate');
+      try {
+        this.events.emit('activate');
+      } catch (e) {
+        console.error(`Failed to activate plugin: ${this.definition.id}`, e);
+      }
       this.flipperLib.logger.trackTimeSince(
         `activePlugin-${this.definition.id}`,
       );
@@ -347,7 +351,11 @@ export abstract class BasePluginInstance {
     if (this.activated) {
       this.activated = false;
       this.lastDeeplink = undefined;
-      this.events.emit('deactivate');
+      try {
+        this.events.emit('deactivate');
+      } catch (e) {
+        console.error(`Failed to deactivate plugin: ${this.definition.id}`, e);
+      }
     }
   }
 

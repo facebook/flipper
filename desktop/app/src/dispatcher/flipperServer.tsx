@@ -9,7 +9,7 @@
 
 import React from 'react';
 import {State, Store} from '../reducers/index';
-import {Logger} from 'flipper-common';
+import {FlipperServer, Logger} from 'flipper-common';
 import {FlipperServerImpl} from 'flipper-server-core';
 import {selectClient} from '../reducers/connections';
 import Client from '../Client';
@@ -18,8 +18,9 @@ import BaseDevice from '../devices/BaseDevice';
 import {ClientDescription, timeout} from 'flipper-common';
 import {reportPlatformFailures} from 'flipper-common';
 import {sideEffect} from '../utils/sideEffect';
-import {getAppTempPath, getStaticPath} from '../utils/pathUtils';
+import {getStaticPath} from '../utils/pathUtils';
 import constants from '../fb-stubs/constants';
+import {getRenderHostInstance} from '../RenderHost';
 
 export default async (store: Store, logger: Logger) => {
   const {enableAndroid, androidHome, idbPath, enableIOS, enablePhysicalIOS} =
@@ -33,7 +34,7 @@ export default async (store: Store, logger: Logger) => {
       enableIOS,
       enablePhysicalIOS,
       staticPath: getStaticPath(),
-      tmpPath: getAppTempPath(),
+      tmpPath: getRenderHostInstance().paths.tempPath,
       validWebSocketOrigins: constants.VALID_WEB_SOCKET_REQUEST_ORIGIN_PREFIXES,
     },
     logger,
@@ -168,7 +169,7 @@ export default async (store: Store, logger: Logger) => {
 };
 
 export async function handleClientConnected(
-  server: FlipperServerImpl,
+  server: Pick<FlipperServer, 'exec'>,
   store: Store,
   logger: Logger,
   {id, query}: ClientDescription,

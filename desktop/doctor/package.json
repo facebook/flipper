@@ -9,7 +9,7 @@
   "devDependencies": {
     "@types/fb-watchman": "2.0.1",
     "@types/jest": "^26.0.24",
-    "@typescript-eslint/eslint-plugin": "^4.31.0",
+    "@typescript-eslint/eslint-plugin": "^4.33.0",
     "eslint": "^7.32.0",
     "eslint-plugin-babel": "^5.3.1",
     "eslint-plugin-header": "^3.1.1",
@@ -20,7 +20,7 @@
     "prettier": "^2.4.1",
     "ts-jest": "^26.5.6",
     "tslint-config-prettier": "^1.18.0",
-    "typescript": "^4.4.3"
+    "typescript": "^4.4.4"
   },
   "scripts": {
     "reset": "rimraf lib *.tsbuildinfo",
@@ -37,7 +37,7 @@
   ],
   "author": "Facebook, Inc",
   "dependencies": {
-    "@types/node": "^16.10.3",
+    "@types/node": "^16.11.0",
     "envinfo": "^7.8.1",
     "fb-watchman": "^2.0.1"
   }

@@ -7,7 +7,7 @@
  * @format
  */
 
-import {remote} from 'electron';
+import {getRenderHostInstance} from '../RenderHost';
 
 export type ProcessConfig = {
   disabledPlugins: Set<string>;
@@ -26,9 +26,7 @@ export type ProcessConfig = {
 let configObj: ProcessConfig | null = null;
 export default function config(): ProcessConfig {
   if (configObj === null) {
-    const json = JSON.parse(
-      (remote && remote.process.env.CONFIG) || process.env.CONFIG || '{}',
-    );
+    const json = JSON.parse(getRenderHostInstance().env.CONFIG || '{}');
     configObj = {
       disabledPlugins: new Set(json.disabledPlugins || []),
       lastWindowPosition: json.lastWindowPosition,
