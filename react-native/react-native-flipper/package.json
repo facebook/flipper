@@ -29,7 +29,7 @@
   },
   "devDependencies": {
     "react": "^17.0.2",
-    "react-native": "^0.64.0"
+    "react-native": "^0.66.1"
   },
   "resolutions": {
     "logkitty": "0.7.1",
