@@ -78,6 +78,16 @@ public class FlipperModule extends ReactContextBaseJavaModule {
     mManager.respondError(responderId, data);
   }
 
+  @ReactMethod
+  public void addListener(String eventName) {
+    // Set up any upstream listeners or background tasks as necessary
+  }
+  
+  @ReactMethod
+  public void removeListeners(Integer count) {
+    // Remove upstream listeners, stop unnecessary background tasks
+  }
+
   void sendJSEvent(String eventName, WritableMap params) {
     final ReactApplicationContext context = getReactApplicationContextIfActiveOrWarn();
     if (context != null) {
