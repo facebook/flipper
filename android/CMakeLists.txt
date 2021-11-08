@@ -41,6 +41,7 @@ set(external_DIR ${PROJECT_SOURCE_DIR}/third-party/external)
 set(libfolly_DIR ${external_DIR}/folly/)
 set(glog_DIR ${external_DIR}/glog)
 set(BOOST_DIR ${external_DIR}/boost/boost_1_63_0/)
+set(OPENSSL_DIR ${external_DIR}/OpenSSL/openssl-1.1.1k/)
 set(LIBEVENT_DIR ${external_DIR}/LibEvent/libevent-2.1.11-stable/)
 
 set(build_DIR ${CMAKE_SOURCE_DIR}/build)
@@ -52,7 +53,6 @@ file(MAKE_DIRECTORY ${build_DIR})
 find_package(fbjni REQUIRED CONFIG)
 
 add_subdirectory(${libflipper_DIR} ${libflipper_build_DIR})
-
 target_include_directories(${PACKAGE_NAME} PRIVATE
     ${libjnihack_DIR}
     ${libflipper_DIR}
@@ -65,6 +65,7 @@ target_include_directories(${PACKAGE_NAME} PRIVATE
     ${LIBEVENT_DIR}/
     ${LIBEVENT_DIR}/include/
     ${LIBEVENT_DIR}/include/event2
+    ${OPENSSL_DIR}/include
     )
 
 target_link_libraries(${PACKAGE_NAME} fbjni::fbjni flippercpp)

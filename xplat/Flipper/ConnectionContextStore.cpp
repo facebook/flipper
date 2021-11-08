@@ -123,6 +123,10 @@ std::string ConnectionContextStore::getCertificateDirectoryPath() {
   return absoluteFilePath("");
 }
 
+std::string ConnectionContextStore::getCACertificatePath() {
+  return absoluteFilePath(FLIPPER_CA_FILE_NAME);
+}
+
 bool ConnectionContextStore::resetState() {
   // Clear in-memory state
   csr = "";

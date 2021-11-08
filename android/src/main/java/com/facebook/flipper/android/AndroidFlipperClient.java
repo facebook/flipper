@@ -44,6 +44,8 @@ public final class AndroidFlipperClient {
           sConnectionThread.getEventBase(),
           FlipperProps.getInsecurePort(),
           FlipperProps.getSecurePort(),
+          FlipperProps.getAltInsecurePort(),
+          FlipperProps.getAltSecurePort(),
           getServerHost(app),
           "Android",
           getFriendlyDeviceName(),
