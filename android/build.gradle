@@ -67,6 +67,7 @@ android {
         implementation deps.jsr305
         implementation deps.supportAppCompat
         implementation deps.supportSqlite
+        implementation deps.websocket
 
         testImplementation deps.mockito
         testImplementation deps.robolectric

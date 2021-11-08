@@ -39,6 +39,8 @@ class FlipperClientImpl implements FlipperClient {
       EventBase connectionWorker,
       int insecurePort,
       int securePort,
+      int altInsecurePort,
+      int altSecurePort,
       String host,
       String os,
       String device,

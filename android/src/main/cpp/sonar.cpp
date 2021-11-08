@@ -13,16 +13,23 @@
 #include <fb/fbjni.h>
 #endif
 
+#include <folly/io/async/AsyncSocketException.h>
 #include <folly/io/async/EventBase.h>
 #include <folly/io/async/EventBaseManager.h>
+
 #include <folly/json.h>
 
+#include <Flipper/ConnectionContextStore.h>
 #include <Flipper/FlipperClient.h>
 #include <Flipper/FlipperConnection.h>
 #include <Flipper/FlipperConnectionManager.h>
 #include <Flipper/FlipperResponder.h>
+#include <Flipper/FlipperSocket.h>
+#include <Flipper/FlipperSocketProvider.h>
 #include <Flipper/FlipperState.h>
 #include <Flipper/FlipperStateUpdateListener.h>
+#include <Flipper/FlipperTransportTypes.h>
+#include <Flipper/FlipperURLSerializer.h>
 
 using namespace facebook;
 using namespace facebook::flipper;
@@ -97,6 +104,321 @@ class JFlipperArray : public jni::JavaClass<JFlipperArray> {
     static const auto method =
         javaClassStatic()->getMethod<std::string()>("toJsonString");
     return method(self())->toStdString();
+  }
+};
+
+class JFlipperSocketEventHandler
+    : public jni::JavaClass<JFlipperSocketEventHandler> {
+ public:
+  constexpr static auto kJavaDescriptor =
+      "Lcom/facebook/flipper/core/FlipperSocketEventHandler;";
+};
+
+class JFlipperWebSocket;
+class JFlipperSocketEventHandlerImpl : public jni::HybridClass<
+                                           JFlipperSocketEventHandlerImpl,
+                                           JFlipperSocketEventHandler> {
+ public:
+  constexpr static auto kJavaDescriptor =
+      "Lcom/facebook/flipper/android/FlipperSocketEventHandlerImpl;";
+
+  static void registerNatives() {
+    registerHybrid({
+        makeNativeMethod(
+            "reportConnectionEvent",
+            JFlipperSocketEventHandlerImpl::reportConnectionEvent),
+        makeNativeMethod(
+            "reportMessageReceived",
+            JFlipperSocketEventHandlerImpl::reportMessageReceived),
+        makeNativeMethod(
+            "reportAuthenticationChallengeReceived",
+            JFlipperSocketEventHandlerImpl::
+                reportAuthenticationChallengeReceived),
+    });
+  }
+
+  void reportConnectionEvent(int code) {
+    _eventHandler((SocketEvent)code);
+  }
+
+  void reportMessageReceived(const std::string& message) {
+    _messageHandler(message);
+  }
+
+  jni::global_ref<JFlipperObject> reportAuthenticationChallengeReceived() {
+    auto object = _certificateProvider();
+    return make_global(object);
+  }
+
+ private:
+  friend HybridBase;
+  SocketEventHandler _eventHandler;
+  SocketMessageHandler _messageHandler;
+  using CustomProvider = std::function<jni::local_ref<JFlipperObject>()>;
+  CustomProvider _certificateProvider;
+
+  JFlipperSocketEventHandlerImpl(
+      SocketEventHandler eventHandler,
+      SocketMessageHandler messageHandler,
+      CustomProvider certificateProvider)
+      : _eventHandler(std::move(eventHandler)),
+        _messageHandler(std::move(messageHandler)),
+        _certificateProvider(std::move(certificateProvider)) {}
+};
+
+class JFlipperSocket : public jni::JavaClass<JFlipperSocket> {};
+
+class JFlipperSocketImpl
+    : public jni::JavaClass<JFlipperSocketImpl, JFlipperSocket> {
+ public:
+  constexpr static auto kJavaDescriptor =
+      "Lcom/facebook/flipper/android/FlipperSocketImpl;";
+
+  static jni::local_ref<JFlipperSocketImpl> create(const std::string& url) {
+    return newInstance(url);
+  }
+
+  void connect() {
+    static const auto method = getClass()->getMethod<void()>("flipperConnect");
+    try {
+      method(self());
+    } catch (const std::exception& e) {
+      handleException(e);
+    } catch (const std::exception* e) {
+      if (e) {
+        handleException(*e);
+      }
+    }
+  }
+
+  void disconnect() {
+    static const auto method =
+        getClass()->getMethod<void()>("flipperDisconnect");
+    try {
+      method(self());
+    } catch (const std::exception& e) {
+      handleException(e);
+    } catch (const std::exception* e) {
+      if (e) {
+        handleException(*e);
+      }
+    }
+  }
+
+  void send(const std::string& message) {
+    static const auto method =
+        getClass()->getMethod<void(std::string)>("flipperSend");
+    try {
+      method(self(), message);
+    } catch (const std::exception& e) {
+      handleException(e);
+    } catch (const std::exception* e) {
+      if (e) {
+        handleException(*e);
+      }
+    }
+  }
+
+  void setEventHandler(
+      jni::alias_ref<JFlipperSocketEventHandler> eventHandler) {
+    static const auto method =
+        getClass()->getMethod<void(jni::alias_ref<JFlipperSocketEventHandler>)>(
+            "flipperSetEventHandler");
+    try {
+      method(self(), eventHandler);
+    } catch (const std::exception& e) {
+      handleException(e);
+    } catch (const std::exception* e) {
+      if (e) {
+        handleException(*e);
+      }
+    }
+  }
+};
+
+class JFlipperWebSocket : public facebook::flipper::FlipperSocket {
+ public:
+  JFlipperWebSocket(
+      facebook::flipper::FlipperConnectionEndpoint endpoint,
+      std::unique_ptr<facebook::flipper::FlipperSocketBasePayload> payload)
+      : endpoint_(std::move(endpoint)), payload_(std::move(payload)) {}
+  JFlipperWebSocket(
+      facebook::flipper::FlipperConnectionEndpoint endpoint,
+      std::unique_ptr<facebook::flipper::FlipperSocketBasePayload> payload,
+      facebook::flipper::ConnectionContextStore* connectionContextStore)
+      : endpoint_(std::move(endpoint)),
+        payload_(std::move(payload)),
+        connectionContextStore_(connectionContextStore) {}
+
+  virtual ~JFlipperWebSocket() {
+    disconnect();
+  }
+
+  virtual void setEventHandler(SocketEventHandler eventHandler) override {
+    eventHandler_ = std::move(eventHandler);
+  }
+  virtual void setMessageHandler(SocketMessageHandler messageHandler) override {
+    messageHandler_ = std::move(messageHandler);
+  }
+
+  virtual bool connect(FlipperConnectionManager* manager) override {
+    if (socket_ != nullptr) {
+      return true;
+    }
+
+    std::string connectionURL = endpoint_.secure ? "wss://" : "ws://";
+    connectionURL += endpoint_.host;
+    connectionURL += ":";
+    connectionURL += std::to_string(endpoint_.port);
+
+    auto serializer = facebook::flipper::URLSerializer{};
+    payload_->serialize(serializer);
+    auto payload = serializer.serialize();
+
+    if (payload.size()) {
+      connectionURL += "?";
+      connectionURL += payload;
+    }
+
+    auto secure = endpoint_.secure;
+
+    bool fullfilled = false;
+    std::promise<bool> promise;
+    auto connected = promise.get_future();
+
+    socket_ = make_global(JFlipperSocketImpl::create(connectionURL));
+    socket_->setEventHandler(JFlipperSocketEventHandlerImpl::newObjectCxxArgs(
+        [&fullfilled, &promise, eventHandler = eventHandler_](
+            SocketEvent event) {
+          /**
+             Only fulfill the promise the first time the event handler is used.
+             If the open event is received, then set the promise value to true.
+             For any other event, consider a failure and set to false.
+           */
+          if (!fullfilled) {
+            fullfilled = true;
+            if (event == SocketEvent::OPEN) {
+              promise.set_value(true);
+            } else if (event == SocketEvent::SSL_ERROR) {
+              try {
+                promise.set_exception(
+                    std::make_exception_ptr(folly::AsyncSocketException(
+                        folly::AsyncSocketException::SSL_ERROR,
+                        "SSL handshake failed")));
+              } catch (...) {
+                // set_exception() may throw an exception
+                // In that case, just set the value to false.
+                promise.set_value(false);
+              }
+            } else {
+              promise.set_value(false);
+            }
+          }
+          eventHandler(event);
+        },
+        [messageHandler = messageHandler_](const std::string& message) {
+          messageHandler(message);
+        },
+        [secure, store = connectionContextStore_]() {
+          folly::dynamic object_ = folly::dynamic::object();
+          if (secure) {
+            auto certificate = store->getCertificate();
+            if (certificate.first.length() == 0) {
+              return JFlipperObject::create(nullptr);
+            }
+            object_["certificates_client_path"] = certificate.first;
+            object_["certificates_client_pass"] = certificate.second;
+            object_["certificates_ca_path"] = store->getCACertificatePath();
+          }
+          return JFlipperObject::create(std::move(object_));
+        }));
+    socket_->connect();
+
+    auto state = connected.wait_for(std::chrono::seconds(10));
+    if (state == std::future_status::ready) {
+      return connected.get();
+    }
+    disconnect();
+    return false;
+  }
+
+  virtual void disconnect() override {
+    if (socket_ == nullptr) {
+      return;
+    }
+    socket_->disconnect();
+    socket_ = nullptr;
+  }
+
+  virtual void send(const folly::dynamic& message, SocketSendHandler completion)
+      override {
+    if (socket_ == nullptr) {
+      return;
+    }
+    std::string json = folly::toJson(message);
+    send(json, std::move(completion));
+  }
+
+  virtual void send(const std::string& message, SocketSendHandler completion)
+      override {
+    if (socket_ == nullptr) {
+      return;
+    }
+    socket_->send(message);
+    completion();
+  }
+
+  virtual void sendExpectResponse(
+      const std::string& message,
+      SocketSendExpectResponseHandler completion) override {
+    if (socket_ == nullptr) {
+      return;
+    }
+
+    socket_->setEventHandler(JFlipperSocketEventHandlerImpl::newObjectCxxArgs(
+        [eventHandler = eventHandler_](SocketEvent event) {
+          eventHandler(event);
+        },
+        [completion, message](const std::string& msg) {
+          completion(msg, false);
+        },
+        []() {
+          folly::dynamic object_ = folly::dynamic::object();
+          return JFlipperObject::create(std::move(object_));
+        }));
+
+    socket_->send(message);
+  }
+
+ private:
+  facebook::flipper::FlipperConnectionEndpoint endpoint_;
+  std::unique_ptr<facebook::flipper::FlipperSocketBasePayload> payload_;
+  facebook::flipper::ConnectionContextStore* connectionContextStore_;
+
+  facebook::flipper::SocketEventHandler eventHandler_;
+  facebook::flipper::SocketMessageHandler messageHandler_;
+
+  jni::global_ref<JFlipperSocketImpl> socket_;
+};
+
+class JFlipperSocketProvider : public facebook::flipper::FlipperSocketProvider {
+ public:
+  JFlipperSocketProvider() {}
+  virtual std::unique_ptr<facebook::flipper::FlipperSocket> create(
+      facebook::flipper::FlipperConnectionEndpoint endpoint,
+      std::unique_ptr<facebook::flipper::FlipperSocketBasePayload> payload,
+      folly::EventBase* eventBase) override {
+    return std::make_unique<JFlipperWebSocket>(
+        std::move(endpoint), std::move(payload));
+    ;
+  }
+  virtual std::unique_ptr<facebook::flipper::FlipperSocket> create(
+      FlipperConnectionEndpoint endpoint,
+      std::unique_ptr<FlipperSocketBasePayload> payload,
+      folly::EventBase* eventBase,
+      ConnectionContextStore* connectionContextStore) override {
+    return std::make_unique<JFlipperWebSocket>(
+        std::move(endpoint), std::move(payload), connectionContextStore);
   }
 };
 
@@ -603,6 +925,8 @@ class JFlipperClient : public jni::HybridClass<JFlipperClient> {
       JEventBase* connectionWorker,
       int insecurePort,
       int securePort,
+      int altInsecurePort,
+      int altSecurePort,
       const std::string host,
       const std::string os,
       const std::string device,
@@ -621,7 +945,12 @@ class JFlipperClient : public jni::HybridClass<JFlipperClient> {
          callbackWorker->eventBase(),
          connectionWorker->eventBase(),
          insecurePort,
-         securePort});
+         securePort,
+         altInsecurePort,
+         altSecurePort});
+    // To switch to a WebSocket provider, uncomment the line below.
+    //    facebook::flipper::FlipperSocketProvider::setDefaultProvider(
+    //        std::make_unique<JFlipperSocketProvider>());
   }
 
  private:
@@ -638,6 +967,7 @@ jint JNI_OnLoad(JavaVM* vm, void*) {
     JFlipperConnectionImpl::registerNatives();
     JFlipperResponderImpl::registerNatives();
     JEventBase::registerNatives();
+    JFlipperSocketEventHandlerImpl::registerNatives();
   });
 }
 

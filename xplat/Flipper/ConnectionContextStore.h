@@ -22,6 +22,7 @@ class ConnectionContextStore {
   std::string getCertificateSigningRequest();
   std::shared_ptr<folly::SSLContext> getSSLContext();
   std::string getCertificateDirectoryPath();
+  std::string getCACertificatePath();
   std::string getDeviceId();
   void storeConnectionConfig(folly::dynamic& config);
   bool resetState();
