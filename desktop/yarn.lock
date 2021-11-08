@@ -12,10 +12,10 @@
   resolved "https://registry.yarnpkg.com/7zip-bin/-/7zip-bin-5.1.1.tgz#9274ec7460652f9c632c59addf24efb1684ef876"
   integrity sha512-sAP4LldeWNz0lNzmTird3uWfFDWWTeg6V/MsmyyLR9X1idwKBWIgt/ZvinqQldJm3LecKEs1emkbquO6PCiLVQ==
 
-"@adobe/node-fetch-retry@^1.1.2":
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/@adobe/node-fetch-retry/-/node-fetch-retry-1.1.2.tgz#bf410dc82fe2f02d475dbfc6f3b9412314244249"
-  integrity sha512-Fg57i/0otfuuL5wciBKMEd1NR6tz0sGSOx6nsF5+6QX6zI5kCOqnadj5i/28xWC4Y04Iby/yQ+AAFqtaGyBGwg==
+"@adobe/node-fetch-retry@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@adobe/node-fetch-retry/-/node-fetch-retry-2.0.0.tgz#760a042580f06c776442735c6d459c7feae5aaf7"
+  integrity sha512-yqyY8yfHtVRMhy9JHiu9gVhnHVZfZRRTEWWinBGnSCLijLggslWdXsflOf80odzjRueQOzJl3/wbfzFeXpsNwA==
   dependencies:
     abort-controller "^3.0.0"
     node-fetch "^2.6.1"
