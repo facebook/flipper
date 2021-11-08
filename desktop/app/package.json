@@ -60,7 +60,7 @@
     "react-element-to-jsx-string": "^14.3.1",
     "react-markdown": "^6.0.3",
     "react-player": "^2.9.0",
-    "react-redux": "^7.2.4",
+    "react-redux": "^7.2.6",
     "react-test-renderer": "^17.0.1",
     "react-virtualized-auto-sizer": "^1.0.6",
     "react-window": "^1.8.6",
