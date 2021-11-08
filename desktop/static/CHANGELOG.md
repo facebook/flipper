@@ -1,3 +1,9 @@
+# 0.118.1 (5/11/2021)
+
+ * [D32201978](https://github.com/facebook/flipper/search?q=D32201978&type=Commits) -  Fix js-flipper package being published empty
+ * [D32203132](https://github.com/facebook/flipper/search?q=D32203132&type=Commits) -  Fix server certificates not being generated for first time users.
+
+
 # 0.114.0 (6/10/2021)
 
  * [D31305180](https://github.com/facebook/flipper/search?q=D31305180&type=Commits) -  Improved plugin / device / app selection handing.
