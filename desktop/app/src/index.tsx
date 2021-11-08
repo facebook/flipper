@@ -130,3 +130,4 @@ export {renderMockFlipperWithPlugin} from './test-utils/createMockFlipperWithPlu
 export {Tracked} from 'flipper-plugin'; // To be able to use it in legacy plugins
 export {RequireLogin} from './ui/components/RequireLogin';
 export {TestDevice} from './test-utils/TestDevice';
+export {connect} from 'react-redux';
