@@ -127,36 +127,32 @@ class ServerController extends EventEmitter implements ServerEventsListener {
       .then((options) => {
         console.info('[conn] secure server listening at port: ', secure);
         this.secureServer = createServer(secure, this, options);
-        if (GK.get('flipper_websocket_server')) {
-          const {secure: altSecure} = getServerPortsConfig().altServerPorts;
-          console.info(
-            '[conn] secure server (ws) listening at port: ',
-            altSecure,
-          );
-          this.altSecureServer = createServer(
-            altSecure,
-            this,
-            options,
-            TransportType.WebSocket,
-          );
-        }
+        const {secure: altSecure} = getServerPortsConfig().altServerPorts;
+        console.info(
+          '[conn] secure server (ws) listening at port: ',
+          altSecure,
+        );
+        this.altSecureServer = createServer(
+          altSecure,
+          this,
+          options,
+          TransportType.WebSocket,
+        );
       })
       .then(() => {
         console.info('[conn] insecure server listening at port: ', insecure);
         this.insecureServer = createServer(insecure, this);
-        if (GK.get('flipper_websocket_server')) {
-          const {insecure: altInsecure} = getServerPortsConfig().altServerPorts;
-          console.info(
-            '[conn] insecure server (ws) listening at port: ',
-            altInsecure,
-          );
-          this.altInsecureServer = createServer(
-            altInsecure,
-            this,
-            undefined,
-            TransportType.WebSocket,
-          );
-        }
+        const {insecure: altInsecure} = getServerPortsConfig().altServerPorts;
+        console.info(
+          '[conn] insecure server (ws) listening at port: ',
+          altInsecure,
+        );
+        this.altInsecureServer = createServer(
+          altInsecure,
+          this,
+          undefined,
+          TransportType.WebSocket,
+        );
         return;
       });
 
