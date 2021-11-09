@@ -7,7 +7,6 @@
 
 package com.facebook.flipper.plugins.inspector;
 
-import static com.facebook.flipper.plugins.inspector.ThrowableMessageMatcher.hasThrowableWithMessage;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -31,7 +30,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
-import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -325,7 +323,7 @@ public class InspectorFlipperPluginTest {
   }
 
   @Test
-  public void testNullChildThrows() throws Exception {
+  public void testNullChildNotThrows() throws Exception {
     final InspectorFlipperPlugin plugin =
         new InspectorFlipperPlugin(mApp, mDescriptorMapping, null);
     final FlipperResponderMock responder = new FlipperResponderMock();
@@ -344,11 +342,7 @@ public class InspectorFlipperPluginTest {
         new FlipperObject.Builder().put("ids", new FlipperArray.Builder().put("test")).build(),
         responder);
 
-    assertThat(connection.errors.size(), equalTo(1));
-    assertThat(
-        connection.errors,
-        CoreMatchers.hasItem(
-            hasThrowableWithMessage("java.lang.RuntimeException: Unexpected null value")));
+    assertThat(connection.errors.size(), equalTo(0));
   }
 
   private class TestNode {

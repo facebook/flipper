@@ -592,7 +592,11 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
       @Override
       protected void runOrThrow() throws Exception {
         for (int i = 0, count = descriptor.getChildCount(obj); i < count; i++) {
-          final Object child = assertNotNull(descriptor.getChildAt(obj, i));
+          final Object child = descriptor.getChildAt(obj, i);
+          if (child == null) {
+            Log.w(TAG, "Failed to get child at index: " + i);
+            break;
+          }
           children.put(trackObject(child));
         }
       }
