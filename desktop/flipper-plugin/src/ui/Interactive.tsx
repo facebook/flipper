@@ -406,9 +406,12 @@ export class Interactive extends React.Component<
   calculateResize(event: MouseEvent) {
     const {resizingInitialCursor, resizingInitialRect, resizingSides} =
       this.state;
+    if (!resizingSides || !resizingInitialCursor) {
+      return;
+    }
 
-    const deltaLeft = resizingInitialCursor!.left - event.clientX;
-    const deltaTop = resizingInitialCursor!.top - event.clientY;
+    const deltaLeft = resizingInitialCursor.left - event.clientX;
+    const deltaTop = resizingInitialCursor.top - event.clientY;
 
     let newLeft = resizingInitialRect!.left;
     let newTop = resizingInitialRect!.top;
@@ -417,19 +420,19 @@ export class Interactive extends React.Component<
     let newHeight = resizingInitialRect!.height;
 
     // right
-    if (resizingSides!.right === true) {
+    if (resizingSides.right === true) {
       newWidth -= deltaLeft;
     }
 
     // bottom
-    if (resizingSides!.bottom === true) {
+    if (resizingSides.bottom === true) {
       newHeight -= deltaTop;
     }
 
     const rect = this.getRect();
 
     // left
-    if (resizingSides!.left === true) {
+    if (resizingSides.left === true) {
       newLeft -= deltaLeft;
       newWidth += deltaLeft;
 
@@ -446,7 +449,7 @@ export class Interactive extends React.Component<
     }
 
     // top
-    if (resizingSides!.top === true) {
+    if (resizingSides.top === true) {
       newTop -= deltaTop;
       newHeight += deltaTop;
 
@@ -465,23 +468,23 @@ export class Interactive extends React.Component<
     if (event.altKey) {
       const windows = this.getPossibleTargetWindows(rect);
 
-      if (resizingSides!.left === true) {
+      if (resizingSides.left === true) {
         const newLeft2 = maybeSnapLeft(rect, windows, newLeft);
         newWidth += newLeft - newLeft2;
         newLeft = newLeft2;
       }
 
-      if (resizingSides!.top === true) {
+      if (resizingSides.top === true) {
         const newTop2 = maybeSnapTop(rect, windows, newTop);
         newHeight += newTop - newTop2;
         newTop = newTop2;
       }
 
-      if (resizingSides!.bottom === true) {
+      if (resizingSides.bottom === true) {
         newHeight = maybeSnapTop(rect, windows, newTop + newHeight) - newTop;
       }
 
-      if (resizingSides!.right === true) {
+      if (resizingSides.right === true) {
         newWidth = maybeSnapLeft(rect, windows, newLeft + newWidth) - newLeft;
       }
     }
