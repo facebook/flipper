@@ -67,7 +67,7 @@
   "category": "facebook-intern",
   "description": "Mobile development tool",
   "devDependencies": {
-    "@adobe/node-fetch-retry": "^1.1.2",
+    "@adobe/node-fetch-retry": "^2.0.0",
     "@babel/code-frame": "^7.15.8",
     "@babel/eslint-parser": "^7.15.8",
     "@jest-runner/electron": "^3.0.1",
