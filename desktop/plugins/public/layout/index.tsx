@@ -331,10 +331,14 @@ export default class LayoutPlugin extends FlipperPlugin<
   onToggleAlignmentMode = () => {
     if (this.state.selectedElement) {
       if (this.client.isConnected) {
-        this.client.send('setHighlighted', {
-          id: this.state.selectedElement,
-          inAlignmentMode: !this.state.inAlignmentMode,
-        });
+        this.client
+          .call('setHighlighted', {
+            id: this.state.selectedElement,
+            inAlignmentMode: !this.state.inAlignmentMode,
+          })
+          .catch((e) => {
+            console.warn('[layout] Failed to set highlighted node', e);
+          });
         this.setState({inAlignmentMode: !this.state.inAlignmentMode});
       }
     }
