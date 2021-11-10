@@ -21,6 +21,7 @@ import java.util.Map;
 public final class ContextDescriptorUtils {
   private static String TAG = "ContextDescriptor";
 
+  private static boolean doneFieldDiscovery = false;
   private static Field sThemeImplField;
   private static Field sThemeImplThemeKeyField;
   private static Field sThemeImplAssetManagerField;
@@ -47,30 +48,61 @@ public final class ContextDescriptorUtils {
       final Object themeKey;
 
       // Nasty reflection to get a list of theme attributes that apply to this context.
-      if (sThemeImplField == null
-          || sThemeImplThemeKeyField == null
-          || sThemeKeyResIdField == null
-          || sThemeImplAssetManagerField == null) {
-        sThemeImplField = theme.getClass().getDeclaredField("mThemeImpl");
-        sThemeImplField.setAccessible(true);
+      if (!doneFieldDiscovery) {
+        doneFieldDiscovery = true; // even if it fails, we don't want to retry
+        try {
+          sThemeImplField = theme.getClass().getDeclaredField("mThemeImpl");
+          sThemeImplField.setAccessible(true);
+        } catch (NoSuchFieldException e) {
+          // hardening against #1736
+          return builderMap;
+        }
 
         themeImpl = sThemeImplField.get(theme);
-        sThemeImplThemeKeyField = themeImpl.getClass().getDeclaredField("mKey");
-        sThemeImplThemeKeyField.setAccessible(true);
+        try {
+          sThemeImplThemeKeyField = themeImpl.getClass().getDeclaredField("mKey");
+          sThemeImplThemeKeyField.setAccessible(true);
+        } catch (NoSuchFieldException e) {
+          // hardening against #1736
+          return builderMap;
+        }
 
-        sThemeImplAssetManagerField = themeImpl.getClass().getDeclaredField("mAssets");
-        sThemeImplAssetManagerField.setAccessible(true);
+        try {
+          sThemeImplAssetManagerField = themeImpl.getClass().getDeclaredField("mAssets");
+          sThemeImplAssetManagerField.setAccessible(true);
+        } catch (NoSuchFieldException e) {
+          // hardening against #1736
+          return builderMap;
+        }
 
-        sAssetManagerGetStyleAttributesMethod =
-            assetManager.getClass().getDeclaredMethod("getStyleAttributes", int.class);
-        sAssetManagerGetStyleAttributesMethod.setAccessible(true);
+        try {
+          sAssetManagerGetStyleAttributesMethod =
+              assetManager.getClass().getDeclaredMethod("getStyleAttributes", int.class);
+          sAssetManagerGetStyleAttributesMethod.setAccessible(true);
+        } catch (NoSuchMethodException e) {
+          // hardening against #1736
+          return builderMap;
+        }
 
         themeKey = sThemeImplThemeKeyField.get(themeImpl);
-        sThemeKeyResIdField = themeKey.getClass().getDeclaredField("mResId");
-        sThemeKeyResIdField.setAccessible(true);
+        try {
+          sThemeKeyResIdField = themeKey.getClass().getDeclaredField("mResId");
+          sThemeKeyResIdField.setAccessible(true);
+        } catch (NoSuchFieldException e) {
+          // hardening against #1736
+          return builderMap;
+        }
+      } else if (sThemeImplField != null && sThemeImplThemeKeyField != null) {
+        themeImpl = sThemeImplField.get(theme);
+        themeKey = sThemeImplThemeKeyField.get(themeImpl);
       } else {
-        themeImpl = sThemeImplField.get(theme);
-        themeKey = sThemeImplThemeKeyField.get(themeImpl);
+        themeKey = null;
+      }
+
+      if (sThemeKeyResIdField == null
+          || sAssetManagerGetStyleAttributesMethod == null
+          || themeKey == null) {
+        return builderMap;
       }
 
       int[] appliedThemeResIds = (int[]) sThemeKeyResIdField.get(themeKey);
