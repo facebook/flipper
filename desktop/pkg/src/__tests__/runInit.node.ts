@@ -80,12 +80,16 @@ test('It generates the correct files for client plugin', async () => {
         \\"test\\": \\"jest --no-watchman\\"
       },
       \\"peerDependencies\\": {
+        \\"@emotion/styled\\": \\"latest\\",
         \\"flipper-plugin\\": \\"^0.0.0\\",
-        \\"antd\\": \\"latest\\"
+        \\"antd\\": \\"latest\\",
+        \\"react\\": \\"latest\\",
+        \\"react-dom\\": \\"latest\\"
       },
       \\"devDependencies\\": {
         \\"@babel/preset-react\\": \\"latest\\",
         \\"@babel/preset-typescript\\": \\"latest\\",
+        \\"@emotion/styled\\": \\"latest\\",
         \\"@testing-library/react\\": \\"latest\\",
         \\"@types/jest\\": \\"latest\\",
         \\"@types/react\\": \\"latest\\",
@@ -94,7 +98,13 @@ test('It generates the correct files for client plugin', async () => {
         \\"flipper-plugin\\": \\"latest\\",
         \\"flipper-pkg\\": \\"latest\\",
         \\"jest\\": \\"latest\\",
+        \\"jest-mock-console\\": \\"latest\\",
+        \\"react\\": \\"latest\\",
+        \\"react-dom\\": \\"latest\\",
         \\"typescript\\": \\"latest\\"
+      },
+      \\"jest\\": {
+        \\"testEnvironment\\": \\"jsdom\\"
       }
     }
     ",
