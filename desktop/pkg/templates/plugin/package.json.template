@@ -42,5 +42,8 @@
     "react": "latest",
     "react-dom": "latest",
     "typescript": "latest"
+  },
+  "jest": {
+    "testEnvironment": "jsdom"
   }
 }
