@@ -1,11 +1,12 @@
 #!/usr/bin/env stack
--- stack --resolver lts-14.3 --install-ghc runghc --package turtle --package system-filepath --package foldl --package typed-process --package bytestring
 {-
-Copyright (c) Facebook, Inc. and its affiliates.
+  Copyright (c) Facebook, Inc. and its affiliates.
 
-This source code is licensed under the MIT license found in the LICENSE file
-in the root directory of this source tree.
+  This source code is licensed under the MIT license found in the
+  LICENSE file in the root directory of this source tree.
 -}
+
+-- stack --resolver lts-14.3 --install-ghc runghc --package turtle --package system-filepath --package foldl --package typed-process --package bytestring
 
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
