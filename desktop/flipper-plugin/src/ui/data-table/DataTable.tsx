@@ -536,7 +536,7 @@ export function DataTable<T extends object>(
         <AutoScroller>
           <PushpinFilled
             style={{
-              color: tableState.autoScroll ? theme.textColorActive : undefined,
+              color: tableState.autoScroll ? theme.successColor : undefined,
             }}
             onClick={() => {
               dispatch({type: 'toggleAutoScroll'});
