@@ -51,7 +51,7 @@ import {Formatter} from '../DataFormatter';
 import {usePluginInstanceMaybe} from '../../plugin/PluginContext';
 import {debounce} from 'lodash';
 import {useInUnitTest} from '../../utils/useInUnitTest';
-import {createDataSource} from 'flipper-plugin/src/state/createDataSource';
+import {createDataSource} from '../../state/createDataSource';
 
 interface DataTableBaseProps<T = any> {
   columns: DataTableColumn<T>[];
