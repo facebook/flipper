@@ -149,7 +149,7 @@ export class AndroidDeviceManager {
             return;
           }
           const devices = data
-            .split('\n')
+            .split(/\r?\n/)
             .filter(notNull)
             .filter((l) => l !== '');
           resolve(devices);
