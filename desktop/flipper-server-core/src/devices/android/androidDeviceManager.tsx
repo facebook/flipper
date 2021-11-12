@@ -129,7 +129,7 @@ export class AndroidDeviceManager {
     } catch (_e) {
       this.emulatorPath = join(
         process.env.ANDROID_HOME || process.env.ANDROID_SDK_ROOT || '',
-        'tools',
+        'emulator',
         'emulator',
       );
     }
