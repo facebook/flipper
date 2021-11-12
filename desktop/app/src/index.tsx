@@ -24,7 +24,7 @@ export {
   getUser,
 } from './fb-stubs/user';
 export {FlipperPlugin, FlipperDevicePlugin, BaseAction} from './plugin';
-export {PluginClient, Props} from './plugin';
+export {PluginClient, Props, KeyboardActions} from './plugin';
 export {default as Client} from './Client';
 export {reportUsage} from 'flipper-common';
 export {default as promiseTimeout} from './utils/promiseTimeout';
@@ -119,7 +119,6 @@ export {
 export {ElementFramework} from './ui/components/elements-inspector/ElementFramework';
 export {InspectorSidebar} from './ui/components/elements-inspector/sidebar';
 export {default as FileSelector} from './ui/components/FileSelector';
-export {KeyboardActions} from './MenuBar';
 export {getFlipperMediaCDN, appendAccessTokenToUrl} from './fb-stubs/user';
 export {Rect} from './utils/geometry';
 export {Logger} from 'flipper-common';

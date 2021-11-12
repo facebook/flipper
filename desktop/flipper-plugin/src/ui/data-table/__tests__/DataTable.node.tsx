@@ -13,6 +13,7 @@ import {render, act} from '@testing-library/react';
 import {createDataSource} from '../../../state/createDataSource';
 import {computeDataTableFilter, DataTableManager} from '../DataTableManager';
 import {Button} from 'antd';
+import {sleep} from 'flipper-common';
 
 type Todo = {
   title: string;
@@ -272,7 +273,13 @@ test('search', async () => {
     act(() => {
       ref.current?.reset();
     });
+    await sleep(100); // Needed due to internal scheduling change in react-virtual
     const elem = await rendering.findAllByText(/item/);
+    expect(elem.map((e) => e.textContent)).toEqual([
+      'item abc',
+      'item x',
+      'item b',
+    ]);
     expect(elem.length).toBe(3);
   }
 });

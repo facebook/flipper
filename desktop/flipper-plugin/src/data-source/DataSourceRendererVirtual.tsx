@@ -107,6 +107,7 @@ export const DataSourceRendererVirtual: <T extends object, C>(
     useObserver: isUnitTest ? () => ({height: 500, width: 1000}) : undefined,
     // eslint-disable-next-line
       estimateSize: useCallback(() => defaultRowHeight, [forceHeightRecalculation.current, defaultRowHeight]),
+    // TODO: optimise by using setting a keyExtractor if DataSource is keyed
     overscan: 0,
   });
   if (virtualizerRef) {

@@ -38,7 +38,6 @@ export function plugin(client: PluginClient<Events, {}>) {
   client.addMenuEntry(
     {
       label: 'Reset Selection',
-      topLevelMenu: 'Edit',
       handler: () => {
         selectedID.set(null);
       },

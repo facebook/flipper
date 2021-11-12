@@ -25,6 +25,7 @@ import {
 import {getRenderHostInstance, setRenderHostInstance} from '../RenderHost';
 import isProduction from '../utils/isProduction';
 import fs from 'fs';
+import {setupMenuBar} from './setupMenuBar';
 
 export function initializeElectron() {
   const app = remote.app;
@@ -71,6 +72,7 @@ export function initializeElectron() {
     },
     registerShortcut(shortcut, callback) {
       remote.globalShortcut.register(shortcut, callback);
+      return () => remote.globalShortcut.unregister(shortcut);
     },
     hasFocus() {
       return remote.getCurrentWindow().isFocused();
@@ -99,6 +101,8 @@ export function initializeElectron() {
       desktopPath: app.getPath('desktop'),
     },
   });
+
+  setupMenuBar();
 }
 
 function getStaticDir() {

@@ -8,16 +8,14 @@
  */
 
 import React, {cloneElement, useState, useCallback, useMemo} from 'react';
-import {Button, Divider, Badge, Tooltip, Avatar, Popover} from 'antd';
+import {Button, Divider, Badge, Tooltip, Avatar, Popover, Menu} from 'antd';
 import {
   MobileFilled,
   AppstoreOutlined,
   BellOutlined,
   FileExclamationOutlined,
   LoginOutlined,
-  BugOutlined,
   SettingOutlined,
-  QuestionCircleOutlined,
   MedicineBoxOutlined,
   RocketOutlined,
 } from '@ant-design/icons';
@@ -27,7 +25,14 @@ import {
   toggleLeftSidebarVisible,
   toggleRightSidebarVisible,
 } from '../reducers/application';
-import {theme, Layout, withTrackingScope, Dialog} from 'flipper-plugin';
+import {
+  theme,
+  Layout,
+  withTrackingScope,
+  Dialog,
+  useTrackedCallback,
+  NUX,
+} from 'flipper-plugin';
 import SetupDoctorScreen, {checkHasNewProblem} from './SetupDoctorScreen';
 import SettingsSheet from '../chrome/SettingsSheet';
 import WelcomeScreen from './WelcomeScreen';
@@ -39,7 +44,7 @@ import config from '../fb-stubs/config';
 import styled from '@emotion/styled';
 import {showEmulatorLauncher} from './appinspect/LaunchEmulator';
 import SupportRequestFormV2 from '../fb-stubs/SupportRequestFormV2';
-import {setStaticView, StaticView} from '../reducers/connections';
+import {setStaticView} from '../reducers/connections';
 import {getLogger} from 'flipper-common';
 import {SandyRatingButton} from '../chrome/RatingButton';
 import {filterNotifications} from './notification/notificationUtils';
@@ -50,6 +55,17 @@ import FpsGraph from '../chrome/FpsGraph';
 import UpdateIndicator from '../chrome/UpdateIndicator';
 import PluginManager from '../chrome/plugin-manager/PluginManager';
 import {showLoginDialog} from '../chrome/fb-stubs/SignInSheet';
+import SubMenu from 'antd/lib/menu/SubMenu';
+import constants from '../fb-stubs/constants';
+import {
+  canFileExport,
+  canOpenDialog,
+  showOpenDialog,
+  startFileExport,
+  startLinkExport,
+} from '../utils/exportData';
+import {openDeeplinkDialog} from '../deeplink';
+import {css} from '@emotion/css';
 
 const LeftRailButtonElem = styled(Button)<{kind?: 'small'}>(({kind}) => ({
   width: kind === 'small' ? 32 : 36,
@@ -76,7 +92,7 @@ export function LeftRailButton({
   selected?: boolean;
   disabled?: boolean;
   count?: number | true;
-  title: string;
+  title?: string;
   onClick?: React.MouseEventHandler<HTMLElement>;
 }) {
   let iconElement =
@@ -89,22 +105,31 @@ export function LeftRailButton({
         <Badge count={count}>{iconElement}</Badge>
       );
   }
-  return (
-    <Tooltip title={title} placement="right">
-      <LeftRailButtonElem
-        title={title}
-        kind={small ? 'small' : undefined}
-        type={selected ? 'primary' : 'ghost'}
-        icon={iconElement}
-        onClick={onClick}
-        disabled={disabled}
-        style={{
-          color: toggled ? theme.primaryColor : undefined,
-          background: toggled ? theme.backgroundWash : undefined,
-        }}
-      />
-    </Tooltip>
+
+  let res = (
+    <LeftRailButtonElem
+      title={title}
+      kind={small ? 'small' : undefined}
+      type={selected ? 'primary' : 'ghost'}
+      icon={iconElement}
+      onClick={onClick}
+      disabled={disabled}
+      style={{
+        color: toggled ? theme.primaryColor : undefined,
+        background: toggled ? theme.backgroundWash : undefined,
+      }}
+    />
   );
+
+  if (title) {
+    res = (
+      <Tooltip title={title} placement="right">
+        {res}
+      </Tooltip>
+    );
+  }
+
+  return res;
 }
 
 const LeftRailDivider = styled(Divider)({
@@ -158,17 +183,139 @@ export const LeftRail = withTrackingScope(function LeftRail({
           <SandyRatingButton />
           <LaunchEmulatorButton />
           <SetupDoctorButton />
-          <WelcomeScreenButton />
-          <ShowSettingsButton />
-          <SupportFormButton />
           <RightSidebarToggleButton />
           <LeftSidebarToggleButton />
+          <ExtrasMenu />
           {config.showLogin && <LoginButton />}
         </Layout.Container>
       </Layout.Bottom>
     </Layout.Container>
   );
 });
+
+const menu = css`
+  border: none;
+`;
+const submenu = css`
+  .ant-menu-submenu-title {
+    width: 32px;
+    height: 32px !important;
+    line-height: 32px !important;
+    padding: 0;
+    margin: 0;
+  }
+  .ant-menu-submenu-arrow {
+    display: none;
+  }
+`;
+
+const MenuDividerPadded = styled(Menu.Divider)({
+  marginBottom: '8px !important',
+});
+
+function ExtrasMenu() {
+  const store = useStore();
+
+  const startFileExportTracked = useTrackedCallback(
+    'File export',
+    () => startFileExport(store.dispatch),
+    [store.dispatch],
+  );
+  const startLinkExportTracked = useTrackedCallback(
+    'Link export',
+    () => startLinkExport(store.dispatch),
+    [store.dispatch],
+  );
+  const startImportTracked = useTrackedCallback(
+    'File import',
+    () => showOpenDialog(store),
+    [store],
+  );
+
+  const [showSettings, setShowSettings] = useState(false);
+  const onSettingsClose = useCallback(() => setShowSettings(false), []);
+
+  const settings = useStore((state) => state.settingsState);
+  const {showWelcomeAtStartup} = settings;
+  const [welcomeVisible, setWelcomeVisible] = useState(showWelcomeAtStartup);
+
+  return (
+    <>
+      <NUX
+        title="Find import, export, deeplink, feedback, settings, and help (welcome) here"
+        placement="right">
+        <Menu mode="vertical" className={menu} selectable={false}>
+          <SubMenu
+            popupOffset={[10, 0]}
+            key="extras"
+            title={<LeftRailButton icon={<SettingOutlined />} small />}
+            className={submenu}>
+            {canOpenDialog() ? (
+              <Menu.Item key="importFlipperFile" onClick={startImportTracked}>
+                Import Flipper file
+              </Menu.Item>
+            ) : null}
+            {canFileExport() ? (
+              <Menu.Item key="exportFile" onClick={startFileExportTracked}>
+                Export Flipper file
+              </Menu.Item>
+            ) : null}
+            {constants.ENABLE_SHAREABLE_LINK ? (
+              <Menu.Item
+                key="exportShareableLink"
+                onClick={startLinkExportTracked}>
+                Export shareable link
+              </Menu.Item>
+            ) : null}
+            <Menu.Item
+              key="triggerDeeplink"
+              onClick={() => openDeeplinkDialog(store)}>
+              Trigger deeplink
+            </Menu.Item>
+            {config.isFBBuild ? (
+              <>
+                <MenuDividerPadded />
+                <Menu.Item
+                  key="feedback"
+                  onClick={() => {
+                    getLogger().track('usage', 'support-form-source', {
+                      source: 'sidebar',
+                      group: undefined,
+                    });
+                    store.dispatch(setStaticView(SupportRequestFormV2));
+                  }}>
+                  Feedback
+                </Menu.Item>
+              </>
+            ) : null}
+            <MenuDividerPadded />
+            <Menu.Item key="settings" onClick={() => setShowSettings(true)}>
+              Settings
+            </Menu.Item>
+            <Menu.Divider />
+            <Menu.Item key="help" onClick={() => setWelcomeVisible(true)}>
+              Help
+            </Menu.Item>
+          </SubMenu>
+        </Menu>
+      </NUX>
+      {showSettings && (
+        <SettingsSheet platform={process.platform} onHide={onSettingsClose} />
+      )}
+      <WelcomeScreen
+        visible={welcomeVisible}
+        onClose={() => setWelcomeVisible(false)}
+        showAtStartup={showWelcomeAtStartup}
+        onCheck={(value) =>
+          store.dispatch({
+            type: 'UPDATE_SETTINGS',
+            payload: {...settings, showWelcomeAtStartup: value},
+          })
+        }
+      />
+    </>
+  );
+}
 
 function LeftSidebarToggleButton() {
   const dispatch = useDispatch();
@@ -287,74 +434,6 @@ function SetupDoctorButton() {
   );
 }
 
-function ShowSettingsButton() {
-  const [showSettings, setShowSettings] = useState(false);
-  const onClose = useCallback(() => setShowSettings(false), []);
-  return (
-    <>
-      <LeftRailButton
-        icon={<SettingOutlined />}
-        small
-        title="Settings"
-        onClick={() => setShowSettings(true)}
-        selected={showSettings}
-      />
-      {showSettings && (
-        <SettingsSheet platform={process.platform} onHide={onClose} />
-      )}
-    </>
-  );
-}
-
-function SupportFormButton() {
-  const dispatch = useDispatch();
-  const staticView = useStore((state) => state.connections.staticView);
-  return config.isFBBuild ? (
-    <LeftRailButton
-      icon={<BugOutlined />}
-      small
-      title="Feedback / Bug Reporter"
-      selected={isStaticViewActive(staticView, SupportRequestFormV2)}
-      onClick={() => {
-        getLogger().track('usage', 'support-form-source', {
-          source: 'sidebar',
-          group: undefined,
-        });
-        dispatch(setStaticView(SupportRequestFormV2));
-      }}
-    />
-  ) : null;
-}
-
-function WelcomeScreenButton() {
-  const settings = useStore((state) => state.settingsState);
-  const {showWelcomeAtStartup} = settings;
-  const dispatch = useDispatch();
-  const [visible, setVisible] = useState(showWelcomeAtStartup);
-
-  return (
-    <>
-      <LeftRailButton
-        icon={<QuestionCircleOutlined />}
-        small
-        title="Help / Start Screen"
-        onClick={() => setVisible(true)}
-      />
-      <WelcomeScreen
-        visible={visible}
-        onClose={() => setVisible(false)}
-        showAtStartup={showWelcomeAtStartup}
-        onCheck={(value) =>
-          dispatch({
-            type: 'UPDATE_SETTINGS',
-            payload: {...settings, showWelcomeAtStartup: value},
-          })
-        }
-      />
-    </>
-  );
-}
-
 function LoginButton() {
   const dispatch = useDispatch();
   const user = useStore((state) => state.user);
@@ -397,11 +476,4 @@ function LoginButton() {
       />
     </>
   );
-}
-
-function isStaticViewActive(
-  current: StaticView,
-  selected: StaticView,
-): boolean {
-  return Boolean(current && selected && current === selected);
 }

@@ -59,7 +59,11 @@ export interface RenderHost {
   showSaveDialog?: FlipperLib['showSaveDialog'];
   showOpenDialog?: FlipperLib['showOpenDialog'];
   showSelectDirectoryDialog?(defaultPath?: string): Promise<string | undefined>;
-  registerShortcut(shortCut: string, callback: () => void): void;
+  /**
+   * @returns
+   * A callback to unregister the shortcut
+   */
+  registerShortcut(shortCut: string, callback: () => void): () => void;
   hasFocus(): boolean;
   onIpcEvent<Event extends keyof MainProcessEvents>(
     event: Event,
@@ -96,7 +100,9 @@ if (process.env.NODE_ENV === 'test') {
       return '';
     },
     writeTextToClipboard() {},
-    registerShortcut() {},
+    registerShortcut() {
+      return () => undefined;
+    },
     hasFocus() {
       return true;
     },
