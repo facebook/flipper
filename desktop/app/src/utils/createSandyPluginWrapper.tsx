@@ -115,11 +115,10 @@ export function createSandyPluginWrapper<S, A extends BaseAction, P>(
               },
             };
           } else {
-            const {action, label, accelerator, topLevelMenu} = def;
+            const {action, label, accelerator} = def;
             return {
               label,
               accelerator,
-              topLevelMenu,
               handler() {
                 executeKeyboardAction(action);
               },

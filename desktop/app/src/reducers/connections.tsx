@@ -27,6 +27,7 @@ import {getPluginKey} from '../utils/pluginKey';
 import {deconstructClientId} from 'flipper-common';
 import type {RegisterPluginAction} from './plugins';
 import {shallowEqual} from 'react-redux';
+import {NormalizedMenuEntry} from 'flipper-plugin';
 
 export type StaticViewProps = {logger: Logger};
 
@@ -68,6 +69,7 @@ type StateV2 = {
   selectedDevice: null | BaseDevice;
   selectedPlugin: null | string;
   selectedAppId: null | string; // Full quantified identifier of the app
+  pluginMenuEntries: NormalizedMenuEntry[];
   userPreferredDevice: null | string;
   userPreferredPlugin: null | string;
   userPreferredApp: null | string; // The name of the preferred app, e.g. Facebook
@@ -109,6 +111,10 @@ export type Action =
         selectedDevice?: BaseDevice | null;
         time: number;
       };
+    }
+  | {
+      type: 'SET_MENU_ENTRIES';
+      payload: NormalizedMenuEntry[];
     }
   | {
       type: 'NEW_CLIENT';
@@ -173,6 +179,7 @@ const INITAL_STATE: State = {
   selectedDevice: null,
   selectedAppId: null,
   selectedPlugin: DEFAULT_PLUGIN,
+  pluginMenuEntries: [],
   userPreferredDevice: null,
   userPreferredPlugin: null,
   userPreferredApp: null,
@@ -228,6 +235,10 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
           ? payload.title
           : state.userPreferredDevice,
       };
+    }
+
+    case 'SET_MENU_ENTRIES': {
+      return {...state, pluginMenuEntries: action.payload};
     }
 
     case 'REGISTER_DEVICE': {
@@ -477,6 +488,11 @@ export const selectPlugin = (payload: {
 }): Action => ({
   type: 'SELECT_PLUGIN',
   payload: {...payload, time: payload.time ?? Date.now()},
+});
+
+export const setMenuEntries = (menuEntries: NormalizedMenuEntry[]): Action => ({
+  type: 'SET_MENU_ENTRIES',
+  payload: menuEntries,
 });
 
 export const selectClient = (clientId: string): Action => ({

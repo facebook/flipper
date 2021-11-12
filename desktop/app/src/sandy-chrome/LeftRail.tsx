@@ -188,9 +188,9 @@ export const LeftRail = withTrackingScope(function LeftRail({
           <WelcomeScreenButton />
           <ShowSettingsButton />
           <SupportFormButton />
+          <ImportExportButton />
           <RightSidebarToggleButton />
           <LeftSidebarToggleButton />
-          <ImportExportButton />
           {config.showLogin && <LoginButton />}
         </Layout.Container>
       </Layout.Bottom>
@@ -233,7 +233,7 @@ function ImportExportButton() {
   );
 
   return (
-    <Menu mode="vertical" className={menu}>
+    <Menu mode="vertical" className={menu} selectable={false}>
       <SubMenu
         popupOffset={[10, 0]}
         key="importexport"

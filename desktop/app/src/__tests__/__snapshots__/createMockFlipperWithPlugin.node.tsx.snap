@@ -41,6 +41,7 @@ Object {
     "off": [MockFunction],
     "on": [MockFunction],
   },
+  "pluginMenuEntries": Array [],
   "selectedAppId": "TestApp#Android#MockAndroidDevice#serial",
   "selectedAppPluginListRevision": 0,
   "selectedDevice": Object {

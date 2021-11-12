@@ -18,19 +18,18 @@ import {addNotification} from '../reducers/notifications';
 import {deconstructPluginKey} from 'flipper-common';
 import {DetailSidebarImpl} from '../sandy-chrome/DetailSidebarImpl';
 import {RenderHost} from '../RenderHost';
+import {setMenuEntries} from '../reducers/connections';
 
 export function initializeFlipperLibImplementation(
   renderHost: RenderHost,
   store: Store,
   logger: Logger,
 ) {
-  // late require to avoid cyclic dependency
-  const {addSandyPluginEntries} = require('../MenuBar');
   _setFlipperLibImplementation({
     isFB: !constants.IS_PUBLIC_BUILD,
     logger,
     enableMenuEntries(entries) {
-      addSandyPluginEntries(entries);
+      store.dispatch(setMenuEntries(entries));
     },
     createPaste,
     GK(gatekeeper: string) {

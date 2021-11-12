@@ -467,7 +467,6 @@ test('plugins can register menu entries', async () => {
         },
         {
           label: 'Custom Action',
-          topLevelMenu: 'Edit',
           handler() {
             counter.set(counter.get() + 3);
           },

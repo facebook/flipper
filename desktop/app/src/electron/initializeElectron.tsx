@@ -71,6 +71,7 @@ export function initializeElectron() {
     },
     registerShortcut(shortcut, callback) {
       remote.globalShortcut.register(shortcut, callback);
+      return () => remote.globalShortcut.unregister(shortcut);
     },
     hasFocus() {
       return remote.getCurrentWindow().isFocused();

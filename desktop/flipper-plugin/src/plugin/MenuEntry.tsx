@@ -7,15 +7,12 @@
  * @format
  */
 
-export type TopLevelMenu = 'Edit' | 'View' | 'Window' | 'Help';
-
 export type MenuEntry = BuiltInMenuEntry | CustomMenuEntry;
 export type DefaultKeyboardAction = keyof typeof buildInMenuEntries;
 
 export type NormalizedMenuEntry = {
   label: string;
   accelerator?: string;
-  topLevelMenu: TopLevelMenu;
   handler: () => void;
   action: string;
 };
@@ -23,7 +20,6 @@ export type NormalizedMenuEntry = {
 export type CustomMenuEntry = {
   label: string;
   accelerator?: string;
-  topLevelMenu: TopLevelMenu;
   handler: () => void;
 };
 
@@ -36,18 +32,15 @@ export const buildInMenuEntries = {
   clear: {
     label: 'Clear',
     accelerator: 'CmdOrCtrl+K',
-    topLevelMenu: 'View',
     action: 'clear',
   },
   goToBottom: {
     label: 'Go To Bottom',
     accelerator: 'CmdOrCtrl+B',
-    topLevelMenu: 'View',
     action: 'goToBottom',
   },
   createPaste: {
     label: 'Create Paste',
-    topLevelMenu: 'Edit',
     action: 'createPaste',
   },
 } as const;

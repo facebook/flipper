@@ -27,6 +27,7 @@ import {
   getMetroDevice,
 } from '../../selectors/connections';
 import * as connections from '../../selectors/connections';
+import {PluginActionsMenu} from '../../chrome/PluginActionsMenu';
 
 const {Text} = Typography;
 
@@ -70,6 +71,8 @@ export function AppInspect() {
               <Toolbar gap>
                 <MetroButton />
                 <ScreenCaptureButtons />
+                <div style={{flex: 1}} />
+                <PluginActionsMenu />
               </Toolbar>
             )}
           </Layout.Container>

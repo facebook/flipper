@@ -19,11 +19,9 @@ import {
 import {setStaticView} from './reducers/connections';
 import {Store} from './reducers/';
 import electron, {MenuItemConstructorOptions} from 'electron';
-import {notNull} from './utils/typeUtils';
 import constants from './fb-stubs/constants';
 import {Logger} from 'flipper-common';
 import {
-  NormalizedMenuEntry,
   _buildInMenuEntries,
   _wrapInteractionHandler,
   getFlipperLib,
@@ -46,7 +44,6 @@ export type KeyboardAction = {
   action: string;
   label: string;
   accelerator?: string;
-  topLevelMenu: TopLevelMenu;
 };
 
 export type KeyboardActions = Array<DefaultKeyboardAction | KeyboardAction>;
@@ -73,50 +70,12 @@ export function setupMenuBar(
     store,
     logger,
   );
-  // collect all keyboard actions from all plugins
-  const registeredActions = new Set(
-    plugins
-      .map((plugin) => plugin.keyboardActions || [])
-      .flat()
-      .map((action: DefaultKeyboardAction | KeyboardAction) =>
-        typeof action === 'string' ? _buildInMenuEntries[action] : action,
-      )
-      .filter(notNull),
-  );
-
-  // add keyboard actions to
-  registeredActions.forEach((keyboardAction) => {
-    if (keyboardAction != null) {
-      appendMenuItem(template, keyboardAction);
-    }
-  });
 
   // create actual menu instance
   const applicationMenu = electron.remote.Menu.buildFromTemplate(template);
 
   // update menubar
   electron.remote.Menu.setApplicationMenu(applicationMenu);
-}
-
-function appendMenuItem(
-  template: Array<MenuItemConstructorOptions>,
-  item: KeyboardAction,
-) {
-  const keyboardAction = item;
-  if (keyboardAction == null) {
-    return;
-  }
-  const itemIndex = template.findIndex(
-    (menu) => menu.label === keyboardAction.topLevelMenu,
-  );
-  if (itemIndex > -1 && template[itemIndex].submenu != null) {
-    (template[itemIndex].submenu as MenuItemConstructorOptions[]).push({
-      click: () => actionHandler(keyboardAction.action),
-      label: keyboardAction.label,
-      accelerator: keyboardAction.accelerator,
-      enabled: false,
-    });
-  }
 }
 
 export function activateMenuItems(
@@ -154,57 +113,6 @@ export function activateMenuItems(
   electron.remote.Menu?.setApplicationMenu(
     electron.remote.Menu.getApplicationMenu(),
   );
-}
-
-export function addSandyPluginEntries(entries: NormalizedMenuEntry[]) {
-  if (!electron.remote.Menu) {
-    return;
-  }
-
-  // disable all keyboard actions
-  for (const item of menuItems) {
-    item[1].enabled = false;
-  }
-
-  pluginActionHandler = (action: string) => {
-    entries.find((e) => e.action === action)?.handler();
-  };
-
-  let changedItems = false;
-  const currentMenu = electron.remote.Menu.getApplicationMenu();
-  for (const entry of entries) {
-    const item = menuItems.get(entry.action!);
-    if (item) {
-      item.enabled = true;
-      item.accelerator = entry.accelerator;
-    } else {
-      const parent = currentMenu?.items.find(
-        (i) => i.label === entry.topLevelMenu,
-      );
-      if (parent) {
-        const item = new electron.remote.MenuItem({
-          enabled: true,
-          click: _wrapInteractionHandler(
-            () => pluginActionHandler?.(entry.action!),
-            'MenuItem',
-            'onClick',
-            'flipper:menu:' + entry.topLevelMenu,
-            entry.label,
-          ),
-          label: entry.label,
-          accelerator: entry.accelerator,
-        });
-        parent.submenu!.append(item);
-        menuItems.set(entry.action!, item);
-        changedItems = true;
-      } else {
-        console.warn('Invalid top level menu: ' + entry.topLevelMenu);
-      }
-    }
-  }
-  if (changedItems) {
-    electron.remote.Menu.setApplicationMenu(currentMenu);
-  }
 }
 
 function trackMenuItems(menu: string, items: MenuItemConstructorOptions[]) {
