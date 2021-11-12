@@ -29,7 +29,6 @@ import React, {PureComponent} from 'react';
 import {connect, ReactReduxContext, ReactReduxContextValue} from 'react-redux';
 import {selectPlugin} from './reducers/connections';
 import {State as Store, MiddlewareAPI} from './reducers/index';
-import {activateMenuItems} from './MenuBar';
 import {Message} from './reducers/pluginMessageQueue';
 import {IdlerImpl} from './utils/Idler';
 import {processMessageQueue} from './utils/messageQueue';
@@ -129,26 +128,6 @@ class PluginContainer extends PureComponent<Props, State> {
     | FlipperDevicePlugin<any, any, any>
     | null
     | undefined;
-
-  refChanged = (
-    ref:
-      | FlipperPlugin<any, any, any>
-      | FlipperDevicePlugin<any, any, any>
-      | null
-      | undefined,
-  ) => {
-    // N.B. for Sandy plugins this lifecycle is managed by PluginRenderer
-    if (this.plugin) {
-      this.plugin._teardown();
-      this.plugin = null;
-    }
-    if (ref && this.props.target) {
-      activateMenuItems(ref);
-      ref._init();
-      this.props.logger.trackTimeSince(`activePlugin-${ref.constructor.id}`);
-      this.plugin = ref;
-    }
-  };
 
   idler?: IdlerImpl;
   pluginBeingProcessed: string | null = null;

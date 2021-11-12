@@ -17,7 +17,14 @@ import {
   BugOutlined,
   HistoryOutlined,
 } from '@ant-design/icons';
-import {Dialog, Layout, theme, Tracked, TrackingScope} from 'flipper-plugin';
+import {
+  Dialog,
+  Layout,
+  NUX,
+  theme,
+  Tracked,
+  TrackingScope,
+} from 'flipper-plugin';
 
 const {Text, Title} = Typography;
 
@@ -180,14 +187,18 @@ function WelcomeScreenContent() {
             {isProduction() ? `Version ${getAppVersion()}` : 'Development Mode'}
           </Text>
           <Tooltip title="Changelog" placement="bottom">
-            <Button
-              size="small"
-              icon={<HistoryOutlined />}
-              title="Changelog"
-              onClick={() =>
-                Dialog.showModal((onHide) => <ChangelogSheet onHide={onHide} />)
-              }
-            />
+            <NUX title="See Flipper changelog" placement="top">
+              <Button
+                size="small"
+                icon={<HistoryOutlined />}
+                title="Changelog"
+                onClick={() =>
+                  Dialog.showModal((onHide) => (
+                    <ChangelogSheet onHide={onHide} />
+                  ))
+                }
+              />
+            </NUX>
           </Tooltip>
         </Space>
       </Space>

@@ -7,7 +7,6 @@
  * @format
  */
 
-import {KeyboardActions} from './MenuBar';
 import {Logger} from 'flipper-common';
 import Client from './Client';
 import {Component} from 'react';
@@ -23,7 +22,18 @@ import {
   _SandyPluginDefinition,
   _makeShallowSerializable,
   _deserializeShallowObject,
+  _buildInMenuEntries,
 } from 'flipper-plugin';
+
+export type DefaultKeyboardAction = keyof typeof _buildInMenuEntries;
+
+export type KeyboardAction = {
+  action: string;
+  label: string;
+  accelerator?: string;
+};
+
+export type KeyboardActions = Array<DefaultKeyboardAction | KeyboardAction>;
 
 type Parameters = {[key: string]: any};
 

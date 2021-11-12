@@ -31,6 +31,7 @@ import {
   withTrackingScope,
   Dialog,
   useTrackedCallback,
+  NUX,
 } from 'flipper-plugin';
 import SetupDoctorScreen, {checkHasNewProblem} from './SetupDoctorScreen';
 import SettingsSheet from '../chrome/SettingsSheet';
@@ -43,7 +44,7 @@ import config from '../fb-stubs/config';
 import styled from '@emotion/styled';
 import {showEmulatorLauncher} from './appinspect/LaunchEmulator';
 import SupportRequestFormV2 from '../fb-stubs/SupportRequestFormV2';
-import {setStaticView, StaticView} from '../reducers/connections';
+import {setStaticView} from '../reducers/connections';
 import {getLogger} from 'flipper-common';
 import {SandyRatingButton} from '../chrome/RatingButton';
 import {filterNotifications} from './notification/notificationUtils';
@@ -207,6 +208,11 @@ const submenu = css`
     display: none;
   }
 `;
+
+const MenuDividerPadded = styled(Menu.Divider)({
+  marginBottom: '8px !important',
+});
+
 function ExtrasMenu() {
   const store = useStore();
 
@@ -235,60 +241,64 @@ function ExtrasMenu() {
 
   return (
     <>
-      <Menu mode="vertical" className={menu} selectable={false}>
-        <SubMenu
-          popupOffset={[10, 0]}
-          key="extras"
-          title={<LeftRailButton icon={<SettingOutlined />} small />}
-          className={submenu}>
-          {canOpenDialog() ? (
-            <Menu.Item key="importFlipperFile" onClick={startImportTracked}>
-              Import Flipper file
-            </Menu.Item>
-          ) : null}
-          {canFileExport() ? (
-            <Menu.Item key="exportFile" onClick={startFileExportTracked}>
-              Export Flipper file
-            </Menu.Item>
-          ) : null}
-          {constants.ENABLE_SHAREABLE_LINK ? (
-            <Menu.Item
-              key="exportShareableLink"
-              onClick={startLinkExportTracked}>
-              Export shareable link
-            </Menu.Item>
-          ) : null}
-          <Menu.Item
-            key="triggerDeeplink"
-            onClick={() => openDeeplinkDialog(store)}>
-            Trigger deeplink
-          </Menu.Item>
-          {config.isFBBuild ? (
-            <>
-              <Menu.Divider />
-              <Menu.Item
-                key="feedback"
-                onClick={() => {
-                  getLogger().track('usage', 'support-form-source', {
-                    source: 'sidebar',
-                    group: undefined,
-                  });
-                  store.dispatch(setStaticView(SupportRequestFormV2));
-                }}>
-                Feedback
+      <NUX
+        title="Find import, export, deeplink, feedback, settings, and help (welcome) here"
+        placement="right">
+        <Menu mode="vertical" className={menu} selectable={false}>
+          <SubMenu
+            popupOffset={[10, 0]}
+            key="extras"
+            title={<LeftRailButton icon={<SettingOutlined />} small />}
+            className={submenu}>
+            {canOpenDialog() ? (
+              <Menu.Item key="importFlipperFile" onClick={startImportTracked}>
+                Import Flipper file
               </Menu.Item>
-            </>
-          ) : null}
-          <Menu.Divider />
-          <Menu.Item key="settings" onClick={() => setShowSettings(true)}>
-            Settings
-          </Menu.Item>
-          <Menu.Divider />
-          <Menu.Item key="help" onClick={() => setWelcomeVisible(true)}>
-            Help
-          </Menu.Item>
-        </SubMenu>
-      </Menu>
+            ) : null}
+            {canFileExport() ? (
+              <Menu.Item key="exportFile" onClick={startFileExportTracked}>
+                Export Flipper file
+              </Menu.Item>
+            ) : null}
+            {constants.ENABLE_SHAREABLE_LINK ? (
+              <Menu.Item
+                key="exportShareableLink"
+                onClick={startLinkExportTracked}>
+                Export shareable link
+              </Menu.Item>
+            ) : null}
+            <Menu.Item
+              key="triggerDeeplink"
+              onClick={() => openDeeplinkDialog(store)}>
+              Trigger deeplink
+            </Menu.Item>
+            {config.isFBBuild ? (
+              <>
+                <MenuDividerPadded />
+                <Menu.Item
+                  key="feedback"
+                  onClick={() => {
+                    getLogger().track('usage', 'support-form-source', {
+                      source: 'sidebar',
+                      group: undefined,
+                    });
+                    store.dispatch(setStaticView(SupportRequestFormV2));
+                  }}>
+                  Feedback
+                </Menu.Item>
+              </>
+            ) : null}
+            <MenuDividerPadded />
+            <Menu.Item key="settings" onClick={() => setShowSettings(true)}>
+              Settings
+            </Menu.Item>
+            <Menu.Divider />
+            <Menu.Item key="help" onClick={() => setWelcomeVisible(true)}>
+              Help
+            </Menu.Item>
+          </SubMenu>
+        </Menu>
+      </NUX>
       {showSettings && (
         <SettingsSheet platform={process.platform} onHide={onSettingsClose} />
       )}

@@ -26,12 +26,10 @@ import {
 } from '../reducers/plugins';
 import GK from '../fb-stubs/GK';
 import {FlipperBasePlugin} from '../plugin';
-import {setupMenuBar} from '../MenuBar';
 import fs from 'fs-extra';
 import path from 'path';
 import {default as config} from '../utils/processConfig';
 import {notNull} from '../utils/typeUtils';
-import {sideEffect} from '../utils/sideEffect';
 import {
   ActivatablePluginDetails,
   BundledPluginDetails,
@@ -57,7 +55,7 @@ import {getStaticPath} from '../utils/pathUtils';
 import {createSandyPluginWrapper} from '../utils/createSandyPluginWrapper';
 let defaultPluginsIndex: any = null;
 
-export default async (store: Store, logger: Logger) => {
+export default async (store: Store, _logger: Logger) => {
   // expose Flipper and exact globally for dynamically loaded plugins
   const globalObject: any = typeof window === 'undefined' ? global : window;
 
@@ -125,19 +123,6 @@ export default async (store: Store, logger: Logger) => {
   store.dispatch(addFailedPlugins(failedPlugins));
   store.dispatch(registerPlugins(initialPlugins));
   store.dispatch(pluginsInitialized());
-
-  sideEffect(
-    store,
-    {name: 'setupMenuBar', throttleMs: 1000, fireImmediately: true},
-    (state) => state.plugins,
-    (plugins, store) => {
-      setupMenuBar(
-        [...plugins.devicePlugins.values(), ...plugins.clientPlugins.values()],
-        store,
-        logger,
-      );
-    },
-  );
 };
 
 function reportVersion(pluginDetails: ActivatablePluginDetails) {

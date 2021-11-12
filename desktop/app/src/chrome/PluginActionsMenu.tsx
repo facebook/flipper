@@ -7,11 +7,12 @@
  * @format
  */
 
-import Icon from '@ant-design/icons';
+import Icon, {MacCommandOutlined} from '@ant-design/icons';
 import {css} from '@emotion/css';
-import {Button, Menu, MenuItemProps} from 'antd';
+import {Button, Menu, MenuItemProps, Row, Tooltip} from 'antd';
 import {
   NormalizedMenuEntry,
+  NUX,
   TrackingScope,
   useTrackedCallback,
 } from 'flipper-plugin';
@@ -108,7 +109,14 @@ function PluginActionMenuItem({
 
   return (
     <Menu.Item onClick={trackedHandler} {...antdProps}>
-      {label}
+      <Row justify="space-between" align="middle">
+        {label}
+        {accelerator ? (
+          <Tooltip title={accelerator} placement="right">
+            <MacCommandOutlined />
+          </Tooltip>
+        ) : null}
+      </Row>
     </Menu.Item>
   );
 }
@@ -122,23 +130,25 @@ export function PluginActionsMenu() {
 
   return (
     <TrackingScope scope={`PluginActionsButton:${activePlugin.details.id}`}>
-      <Menu mode="vertical" className={menu} selectable={false}>
-        <Menu.SubMenu
-          popupOffset={[15, 0]}
-          key="pluginActions"
-          title={
-            <Button
-              icon={<Icon component={MagicIcon} />}
-              title="Plugin actions"
-              type="ghost"
-            />
-          }
-          className={submenu}>
-          {menuEntries.map((entry) => (
-            <PluginActionMenuItem key={entry.action} {...entry} />
-          ))}
-        </Menu.SubMenu>
-      </Menu>
+      <NUX title="Use custom plugin actions and shortcuts" placement="right">
+        <Menu mode="vertical" className={menu} selectable={false}>
+          <Menu.SubMenu
+            popupOffset={[15, 0]}
+            key="pluginActions"
+            title={
+              <Button
+                icon={<Icon component={MagicIcon} />}
+                title="Plugin actions"
+                type="ghost"
+              />
+            }
+            className={submenu}>
+            {menuEntries.map((entry) => (
+              <PluginActionMenuItem key={entry.action} {...entry} />
+            ))}
+          </Menu.SubMenu>
+        </Menu>
+      </NUX>
     </TrackingScope>
   );
 }
