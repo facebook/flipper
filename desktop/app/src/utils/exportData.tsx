@@ -599,6 +599,10 @@ export const importFileToStore = (file: string, store: Store) => {
   });
 };
 
+export function canOpenDialog() {
+  return !!getRenderHostInstance().showOpenDialog;
+}
+
 export function showOpenDialog(store: Store) {
   return getRenderHostInstance()
     .showOpenDialog?.({
@@ -611,6 +615,10 @@ export function showOpenDialog(store: Store) {
         }, `${IMPORT_FLIPPER_TRACE_EVENT}:UI`);
       }
     });
+}
+
+export function canFileExport() {
+  return !!getRenderHostInstance().showSaveDialog;
 }
 
 export async function startFileExport(dispatch: Store['dispatch']) {

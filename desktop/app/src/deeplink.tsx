@@ -8,7 +8,7 @@
  */
 
 import {Group, SUPPORTED_GROUPS} from './reducers/supportForm';
-import {Logger} from 'flipper-common';
+import {getLogger, Logger} from 'flipper-common';
 import {Store} from './reducers/index';
 import {importDataToStore} from './utils/exportData';
 import {selectPlugin, getAllClients} from './reducers/connections';
@@ -150,13 +150,13 @@ export const uriComponents = (url: string): Array<string> => {
   return [];
 };
 
-export function openDeeplinkDialog(store: Store, logger: Logger) {
+export function openDeeplinkDialog(store: Store) {
   Dialog.prompt({
     title: 'Open deeplink',
     message: 'Enter a deeplink:',
     defaultValue: 'flipper://',
     onConfirm: async (deeplink) => {
-      await handleDeeplink(store, logger, deeplink);
+      await handleDeeplink(store, getLogger(), deeplink);
       return deeplink;
     },
   });

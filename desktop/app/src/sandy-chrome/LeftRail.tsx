@@ -8,7 +8,7 @@
  */
 
 import React, {cloneElement, useState, useCallback, useMemo} from 'react';
-import {Button, Divider, Badge, Tooltip, Avatar, Popover} from 'antd';
+import {Button, Divider, Badge, Tooltip, Avatar, Popover, Menu} from 'antd';
 import {
   MobileFilled,
   AppstoreOutlined,
@@ -20,6 +20,7 @@ import {
   QuestionCircleOutlined,
   MedicineBoxOutlined,
   RocketOutlined,
+  SwapOutlined,
 } from '@ant-design/icons';
 import {SidebarLeft, SidebarRight} from './SandyIcons';
 import {useDispatch, useStore} from '../utils/useStore';
@@ -27,7 +28,13 @@ import {
   toggleLeftSidebarVisible,
   toggleRightSidebarVisible,
 } from '../reducers/application';
-import {theme, Layout, withTrackingScope, Dialog} from 'flipper-plugin';
+import {
+  theme,
+  Layout,
+  withTrackingScope,
+  Dialog,
+  useTrackedCallback,
+} from 'flipper-plugin';
 import SetupDoctorScreen, {checkHasNewProblem} from './SetupDoctorScreen';
 import SettingsSheet from '../chrome/SettingsSheet';
 import WelcomeScreen from './WelcomeScreen';
@@ -50,6 +57,17 @@ import FpsGraph from '../chrome/FpsGraph';
 import UpdateIndicator from '../chrome/UpdateIndicator';
 import PluginManager from '../chrome/plugin-manager/PluginManager';
 import {showLoginDialog} from '../chrome/fb-stubs/SignInSheet';
+import SubMenu from 'antd/lib/menu/SubMenu';
+import constants from '../fb-stubs/constants';
+import {
+  canFileExport,
+  canOpenDialog,
+  showOpenDialog,
+  startFileExport,
+  startLinkExport,
+} from '../utils/exportData';
+import {openDeeplinkDialog} from '../deeplink';
+import {css} from '@emotion/css';
 
 const LeftRailButtonElem = styled(Button)<{kind?: 'small'}>(({kind}) => ({
   width: kind === 'small' ? 32 : 36,
@@ -76,7 +94,7 @@ export function LeftRailButton({
   selected?: boolean;
   disabled?: boolean;
   count?: number | true;
-  title: string;
+  title?: string;
   onClick?: React.MouseEventHandler<HTMLElement>;
 }) {
   let iconElement =
@@ -89,22 +107,31 @@ export function LeftRailButton({
         <Badge count={count}>{iconElement}</Badge>
       );
   }
-  return (
-    <Tooltip title={title} placement="right">
-      <LeftRailButtonElem
-        title={title}
-        kind={small ? 'small' : undefined}
-        type={selected ? 'primary' : 'ghost'}
-        icon={iconElement}
-        onClick={onClick}
-        disabled={disabled}
-        style={{
-          color: toggled ? theme.primaryColor : undefined,
-          background: toggled ? theme.backgroundWash : undefined,
-        }}
-      />
-    </Tooltip>
+
+  let res = (
+    <LeftRailButtonElem
+      title={title}
+      kind={small ? 'small' : undefined}
+      type={selected ? 'primary' : 'ghost'}
+      icon={iconElement}
+      onClick={onClick}
+      disabled={disabled}
+      style={{
+        color: toggled ? theme.primaryColor : undefined,
+        background: toggled ? theme.backgroundWash : undefined,
+      }}
+    />
   );
+
+  if (title) {
+    res = (
+      <Tooltip title={title} placement="right">
+        {res}
+      </Tooltip>
+    );
+  }
+
+  return res;
 }
 
 const LeftRailDivider = styled(Divider)({
@@ -163,12 +190,79 @@ export const LeftRail = withTrackingScope(function LeftRail({
           <SupportFormButton />
           <RightSidebarToggleButton />
           <LeftSidebarToggleButton />
+          <ImportExportButton />
           {config.showLogin && <LoginButton />}
         </Layout.Container>
       </Layout.Bottom>
     </Layout.Container>
   );
 });
+
+const menu = css`
+  border: none;
+`;
+const submenu = css`
+  .ant-menu-submenu-title {
+    width: 32px;
+    height: 32px !important;
+    line-height: 32px !important;
+    padding: 0;
+    margin: 0;
+  }
+  .ant-menu-submenu-arrow {
+    display: none;
+  }
+`;
+function ImportExportButton() {
+  const store = useStore();
+
+  const startFileExportTracked = useTrackedCallback(
+    'File export',
+    () => startFileExport(store.dispatch),
+    [store.dispatch],
+  );
+  const startLinkExportTracked = useTrackedCallback(
+    'Link export',
+    () => startLinkExport(store.dispatch),
+    [store.dispatch],
+  );
+  const startImportTracked = useTrackedCallback(
+    'File import',
+    () => showOpenDialog(store),
+    [store],
+  );
+
+  return (
+    <Menu mode="vertical" className={menu}>
+      <SubMenu
+        popupOffset={[10, 0]}
+        key="importexport"
+        title={<LeftRailButton icon={<SwapOutlined />} small />}
+        className={submenu}>
+        {canFileExport() ? (
+          <Menu.Item key="exportFile" onClick={startFileExportTracked}>
+            Export file
+          </Menu.Item>
+        ) : null}
+        {constants.ENABLE_SHAREABLE_LINK ? (
+          <Menu.Item key="exportShareableLink" onClick={startLinkExportTracked}>
+            Export shareable link
+          </Menu.Item>
+        ) : null}
+        {canOpenDialog() ? (
+          <Menu.Item key="importFlipperFile" onClick={startImportTracked}>
+            Import Flipper file
+          </Menu.Item>
+        ) : null}
+        <Menu.Item
+          key="triggerDeeplink"
+          onClick={() => openDeeplinkDialog(store)}>
+          Trigger deeplink
+        </Menu.Item>
+      </SubMenu>
+    </Menu>
+  );
+}
 
 function LeftSidebarToggleButton() {
   const dispatch = useDispatch();
