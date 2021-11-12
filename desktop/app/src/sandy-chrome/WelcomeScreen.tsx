@@ -9,14 +9,15 @@
 
 import React, {cloneElement} from 'react';
 import {styled, FlexRow, FlexColumn} from '../ui';
-import {Modal, Button, Image, Checkbox, Space, Typography} from 'antd';
+import {Modal, Button, Image, Checkbox, Space, Typography, Tooltip} from 'antd';
 import {
   RocketOutlined,
   AppstoreAddOutlined,
   CodeOutlined,
   BugOutlined,
+  HistoryOutlined,
 } from '@ant-design/icons';
-import {Layout, theme, Tracked, TrackingScope} from 'flipper-plugin';
+import {Dialog, Layout, theme, Tracked, TrackingScope} from 'flipper-plugin';
 
 const {Text, Title} = Typography;
 
@@ -26,6 +27,7 @@ import isProduction from '../utils/isProduction';
 import {getAppVersion} from '../utils/info';
 import ReleaseChannel from '../ReleaseChannel';
 import {getFlipperLib} from 'flipper-plugin';
+import ChangelogSheet from '../chrome/ChangelogSheet';
 
 const RowContainer = styled(FlexRow)({
   alignItems: 'flex-start',
@@ -173,9 +175,21 @@ function WelcomeScreenContent() {
             {config.getReleaseChannel()}
           </code>
         </Text>
-        <Text style={{color: theme.textColorPlaceholder}}>
-          {isProduction() ? `Version ${getAppVersion()}` : 'Development Mode'}
-        </Text>
+        <Space direction="horizontal" size="middle">
+          <Text style={{color: theme.textColorPlaceholder}}>
+            {isProduction() ? `Version ${getAppVersion()}` : 'Development Mode'}
+          </Text>
+          <Tooltip title="Changelog" placement="bottom">
+            <Button
+              size="small"
+              icon={<HistoryOutlined />}
+              title="Changelog"
+              onClick={() =>
+                Dialog.showModal((onHide) => <ChangelogSheet onHide={onHide} />)
+              }
+            />
+          </Tooltip>
+        </Space>
       </Space>
       <Space direction="vertical" size="large" style={{width: '100%'}}>
         <Row
