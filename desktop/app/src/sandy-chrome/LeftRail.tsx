@@ -15,12 +15,9 @@ import {
   BellOutlined,
   FileExclamationOutlined,
   LoginOutlined,
-  BugOutlined,
   SettingOutlined,
-  QuestionCircleOutlined,
   MedicineBoxOutlined,
   RocketOutlined,
-  SwapOutlined,
 } from '@ant-design/icons';
 import {SidebarLeft, SidebarRight} from './SandyIcons';
 import {useDispatch, useStore} from '../utils/useStore';
@@ -185,12 +182,9 @@ export const LeftRail = withTrackingScope(function LeftRail({
           <SandyRatingButton />
           <LaunchEmulatorButton />
           <SetupDoctorButton />
-          <WelcomeScreenButton />
-          <ShowSettingsButton />
-          <SupportFormButton />
-          <ImportExportButton />
           <RightSidebarToggleButton />
           <LeftSidebarToggleButton />
+          <ExtrasMenu />
           {config.showLogin && <LoginButton />}
         </Layout.Container>
       </Layout.Bottom>
@@ -213,7 +207,7 @@ const submenu = css`
     display: none;
   }
 `;
-function ImportExportButton() {
+function ExtrasMenu() {
   const store = useStore();
 
   const startFileExportTracked = useTrackedCallback(
@@ -232,35 +226,84 @@ function ImportExportButton() {
     [store],
   );
 
+  const [showSettings, setShowSettings] = useState(false);
+  const onSettingsClose = useCallback(() => setShowSettings(false), []);
+
+  const settings = useStore((state) => state.settingsState);
+  const {showWelcomeAtStartup} = settings;
+  const [welcomeVisible, setWelcomeVisible] = useState(showWelcomeAtStartup);
+
   return (
-    <Menu mode="vertical" className={menu} selectable={false}>
-      <SubMenu
-        popupOffset={[10, 0]}
-        key="importexport"
-        title={<LeftRailButton icon={<SwapOutlined />} small />}
-        className={submenu}>
-        {canFileExport() ? (
-          <Menu.Item key="exportFile" onClick={startFileExportTracked}>
-            Export file
+    <>
+      <Menu mode="vertical" className={menu} selectable={false}>
+        <SubMenu
+          popupOffset={[10, 0]}
+          key="extras"
+          title={<LeftRailButton icon={<SettingOutlined />} small />}
+          className={submenu}>
+          {canOpenDialog() ? (
+            <Menu.Item key="importFlipperFile" onClick={startImportTracked}>
+              Import Flipper file
+            </Menu.Item>
+          ) : null}
+          {canFileExport() ? (
+            <Menu.Item key="exportFile" onClick={startFileExportTracked}>
+              Export Flipper file
+            </Menu.Item>
+          ) : null}
+          {constants.ENABLE_SHAREABLE_LINK ? (
+            <Menu.Item
+              key="exportShareableLink"
+              onClick={startLinkExportTracked}>
+              Export shareable link
+            </Menu.Item>
+          ) : null}
+          <Menu.Item
+            key="triggerDeeplink"
+            onClick={() => openDeeplinkDialog(store)}>
+            Trigger deeplink
           </Menu.Item>
-        ) : null}
-        {constants.ENABLE_SHAREABLE_LINK ? (
-          <Menu.Item key="exportShareableLink" onClick={startLinkExportTracked}>
-            Export shareable link
+          {config.isFBBuild ? (
+            <>
+              <Menu.Divider />
+              <Menu.Item
+                key="feedback"
+                onClick={() => {
+                  getLogger().track('usage', 'support-form-source', {
+                    source: 'sidebar',
+                    group: undefined,
+                  });
+                  store.dispatch(setStaticView(SupportRequestFormV2));
+                }}>
+                Feedback
+              </Menu.Item>
+            </>
+          ) : null}
+          <Menu.Divider />
+          <Menu.Item key="settings" onClick={() => setShowSettings(true)}>
+            Settings
           </Menu.Item>
-        ) : null}
-        {canOpenDialog() ? (
-          <Menu.Item key="importFlipperFile" onClick={startImportTracked}>
-            Import Flipper file
+          <Menu.Divider />
+          <Menu.Item key="help" onClick={() => setWelcomeVisible(true)}>
+            Help
           </Menu.Item>
-        ) : null}
-        <Menu.Item
-          key="triggerDeeplink"
-          onClick={() => openDeeplinkDialog(store)}>
-          Trigger deeplink
-        </Menu.Item>
-      </SubMenu>
-    </Menu>
+        </SubMenu>
+      </Menu>
+      {showSettings && (
+        <SettingsSheet platform={process.platform} onHide={onSettingsClose} />
+      )}
+      <WelcomeScreen
+        visible={welcomeVisible}
+        onClose={() => setWelcomeVisible(false)}
+        showAtStartup={showWelcomeAtStartup}
+        onCheck={(value) =>
+          store.dispatch({
+            type: 'UPDATE_SETTINGS',
+            payload: {...settings, showWelcomeAtStartup: value},
+          })
+        }
+      />
+    </>
   );
 }
 
@@ -381,74 +424,6 @@ function SetupDoctorButton() {
   );
 }
 
-function ShowSettingsButton() {
-  const [showSettings, setShowSettings] = useState(false);
-  const onClose = useCallback(() => setShowSettings(false), []);
-  return (
-    <>
-      <LeftRailButton
-        icon={<SettingOutlined />}
-        small
-        title="Settings"
-        onClick={() => setShowSettings(true)}
-        selected={showSettings}
-      />
-      {showSettings && (
-        <SettingsSheet platform={process.platform} onHide={onClose} />
-      )}
-    </>
-  );
-}
-
-function SupportFormButton() {
-  const dispatch = useDispatch();
-  const staticView = useStore((state) => state.connections.staticView);
-  return config.isFBBuild ? (
-    <LeftRailButton
-      icon={<BugOutlined />}
-      small
-      title="Feedback / Bug Reporter"
-      selected={isStaticViewActive(staticView, SupportRequestFormV2)}
-      onClick={() => {
-        getLogger().track('usage', 'support-form-source', {
-          source: 'sidebar',
-          group: undefined,
-        });
-        dispatch(setStaticView(SupportRequestFormV2));
-      }}
-    />
-  ) : null;
-}
-
-function WelcomeScreenButton() {
-  const settings = useStore((state) => state.settingsState);
-  const {showWelcomeAtStartup} = settings;
-  const dispatch = useDispatch();
-  const [visible, setVisible] = useState(showWelcomeAtStartup);
-
-  return (
-    <>
-      <LeftRailButton
-        icon={<QuestionCircleOutlined />}
-        small
-        title="Help / Start Screen"
-        onClick={() => setVisible(true)}
-      />
-      <WelcomeScreen
-        visible={visible}
-        onClose={() => setVisible(false)}
-        showAtStartup={showWelcomeAtStartup}
-        onCheck={(value) =>
-          dispatch({
-            type: 'UPDATE_SETTINGS',
-            payload: {...settings, showWelcomeAtStartup: value},
-          })
-        }
-      />
-    </>
-  );
-}
-
 function LoginButton() {
   const dispatch = useDispatch();
   const user = useStore((state) => state.user);
@@ -491,11 +466,4 @@ function LoginButton() {
       />
     </>
   );
-}
-
-function isStaticViewActive(
-  current: StaticView,
-  selected: StaticView,
-): boolean {
-  return Boolean(current && selected && current === selected);
 }
