@@ -250,7 +250,6 @@ Example:
 ```typescript
 client.addMenuEntry({
     label: 'Reset Selection',
-    topLevelMenu: 'Edit',
     accelerator: 'CmdOrCtrl+R'
     handler: () => {
       // Event handling
@@ -258,9 +257,9 @@ client.addMenuEntry({
 }
 ```
 
-The `accelerator` argument is optional, but describes the keyboard shortcut. See the [Electron docs](https://www.electronjs.org/docs/api/accelerator) for their format. The `topLevelMenu` must be one of `"Edit"`, `"View"`, `"Window"` or `"Help"`.
+The `accelerator` argument is optional, but describes the keyboard shortcut. See the [Electron docs](https://www.electronjs.org/docs/api/accelerator) for their format.
 
-It is possible to leave out the `label`, `topLevelMenu` and `accelerator` fields if a pre-defined `action` is set, which configures all three of them.
+It is possible to leave out the `label`, and `accelerator` fields if a pre-defined `action` is set, which configures all three of them.
 The currently pre-defined actions are `"Clear"`, `"Go To Bottom"` and `"Create Paste"`.
 Example of using a pre-defined action:
 
