@@ -57,8 +57,8 @@ export const theme = {
     colorValue: antColors.cyan[5],
     booleanValue: antColors.magenta[5],
     numberValue: antColors.blue[5],
-    diffAddedBackground: antColors.lime[1],
-    diffRemovedBackground: antColors.volcano[1],
+    diffAddedBackground: 'var(--flipper-diff-added-background)',
+    diffRemovedBackground: 'var(--flipper-diff-removed-background)',
   },
 } as const;
 
