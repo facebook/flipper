@@ -149,7 +149,7 @@
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-promise": "^5.1.1",
     "eslint-plugin-react": "^7.26.1",
-    "eslint-plugin-react-hooks": "^4.2.0",
+    "eslint-plugin-react-hooks": "^4.3.0",
     "expand-tilde": "^2.0.2",
     "express": "^4.15.2",
     "fb-watchman": "^2.0.1",
