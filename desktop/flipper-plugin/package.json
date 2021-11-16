@@ -11,14 +11,14 @@
   "dependencies": {
     "@ant-design/colors": "^6.0.0",
     "@emotion/css": "^11.5.0",
-    "@emotion/react": "^11.5.0",
+    "@emotion/react": "^11.6.0",
     "@reach/observe-rect": "^1.2.0",
     "@types/uuid": "^8.3.1",
     "flipper-common": "0.0.0",
     "immer": "^9.0.6",
     "lodash": "^4.17.21",
     "react-color": "^2.19.3",
-    "react-element-to-jsx-string": "^14.3.2",
+    "react-element-to-jsx-string": "^14.3.4",
     "react-virtual": "^2.8.2",
     "string-natural-compare": "^3.0.0",
     "uuid": "^8.3.2"
