@@ -11,7 +11,7 @@
   "dependencies": {
     "@ant-design/colors": "^6.0.0",
     "@emotion/css": "^11.5.0",
-    "@emotion/react": "^11.5.0",
+    "@emotion/react": "^11.6.0",
     "@reach/observe-rect": "^1.2.0",
     "@types/uuid": "^8.3.1",
     "flipper-common": "0.0.0",
