@@ -22,15 +22,59 @@ import {
   clipboard,
   shell,
 } from 'electron';
-import {getRenderHostInstance, setRenderHostInstance} from '../RenderHost';
-import isProduction from '../utils/isProduction';
+import type {RenderHost} from 'flipper-ui-core';
 import fs from 'fs';
 import {setupMenuBar} from './setupMenuBar';
+import os from 'os';
+
+declare global {
+  interface Window {
+    FlipperRenderHostInstance: RenderHost;
+  }
+}
+
+if (process.env.NODE_ENV === 'development' && os.platform() === 'darwin') {
+  // By default Node.JS has its internal certificate storage and doesn't use
+  // the system store. Because of this, it's impossible to access ondemand / devserver
+  // which are signed using some internal self-issued FB certificates. These certificates
+  // are automatically installed to MacOS system store on FB machines, so here we're using
+  // this "mac-ca" library to load them into Node.JS.
+  global.electronRequire('mac-ca');
+}
 
 export function initializeElectron() {
   const app = remote.app;
-  setRenderHostInstance({
+  const execPath = process.execPath || remote.process.execPath;
+  const isProduction = !/node_modules[\\/]electron[\\/]/.test(execPath);
+
+  function restart(update: boolean = false) {
+    if (isProduction) {
+      if (update) {
+        const options = {
+          args: process.argv
+            .splice(0, 1)
+            .filter((arg) => arg !== '--no-launcher' && arg !== '--no-updater'),
+        };
+        remote.app.relaunch(options);
+      } else {
+        remote.app.relaunch();
+      }
+      remote.app.exit();
+    } else {
+      // Relaunching the process with the standard way doesn't work in dev mode.
+      // So instead we're sending a signal to dev server to kill the current instance of electron and launch new.
+      fetch(
+        `${window.FlipperRenderHostInstance.env.DEV_SERVER_URL}/_restartElectron`,
+        {
+          method: 'POST',
+        },
+      );
+    }
+  }
+
+  window.FlipperRenderHostInstance = {
     processId: remote.process.pid,
+    isProduction,
     readTextFromClipboard() {
       return clipboard.readText();
     },
@@ -95,14 +139,21 @@ export function initializeElectron() {
     paths: {
       appPath: app.getAppPath(),
       homePath: app.getPath('home'),
-      execPath: process.execPath || remote.process.execPath,
+      execPath,
       staticPath: getStaticDir(),
       tempPath: app.getPath('temp'),
       desktopPath: app.getPath('desktop'),
     },
-  });
+    loadDefaultPlugins: getDefaultPluginsIndex,
+  };
 
   setupMenuBar();
+}
+
+function getDefaultPluginsIndex() {
+  // eslint-disable-next-line import/no-unresolved
+  const index = require('../defaultPlugins');
+  return index.default || index;
 }
 
 function getStaticDir() {
@@ -117,26 +168,4 @@ function getStaticDir() {
     throw new Error('Static path does not exist: ' + _staticPath);
   }
   return _staticPath;
-}
-
-function restart(update: boolean = false) {
-  if (isProduction()) {
-    if (update) {
-      const options = {
-        args: process.argv
-          .splice(0, 1)
-          .filter((arg) => arg !== '--no-launcher' && arg !== '--no-updater'),
-      };
-      remote.app.relaunch(options);
-    } else {
-      remote.app.relaunch();
-    }
-    remote.app.exit();
-  } else {
-    // Relaunching the process with the standard way doesn't work in dev mode.
-    // So instead we're sending a signal to dev server to kill the current instance of electron and launch new.
-    fetch(`${getRenderHostInstance().env.DEV_SERVER_URL}/_restartElectron`, {
-      method: 'POST',
-    });
-  }
 }

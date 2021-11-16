@@ -7,5 +7,8 @@
  * @format
  */
 
-// Ideally we don't want to expose those, but this is for legacy compatibility
-export * from 'flipper-ui-core';
+import {getRenderHostInstance} from '../RenderHost';
+
+export default function isProduction() {
+  return getRenderHostInstance().isProduction;
+}

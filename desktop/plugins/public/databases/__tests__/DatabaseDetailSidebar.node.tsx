@@ -9,11 +9,6 @@
 
 import {render, fireEvent} from '@testing-library/react';
 import React from 'react';
-// TODO T71355623
-// eslint-disable-next-line flipper/no-relative-imports-across-packages
-import {Store, createRootReducer} from '../../../../app/src/reducers';
-import configureStore from 'redux-mock-store';
-import {Provider} from 'react-redux';
 
 import {Value} from '../TypeBasedValueRenderer';
 import DatabaseDetailSidebar from '../DatabaseDetailSidebar';
@@ -45,22 +40,9 @@ const values: Array<Value> = [
   {value: 'db_1_column9_value', type: 'string'},
 ];
 
-const mockStore: Store = configureStore([])(
-  createRootReducer()(undefined, {type: 'INIT'}),
-) as Store;
-
-beforeEach(() => {
-  mockStore.dispatch({type: 'rightSidebarAvailable', value: true});
-  mockStore.dispatch({type: 'rightSidebarVisible', value: true});
-});
-
 test('render and try to see if it renders properly', () => {
   const res = render(
-    <Provider store={mockStore}>
-      <div id="detailsSidebar">
-        <DatabaseDetailSidebar columnLabels={labels} columnValues={values} />
-      </div>
-    </Provider>,
+    <DatabaseDetailSidebar columnLabels={labels} columnValues={values} />,
   );
 
   for (const label of labels) {
@@ -82,15 +64,11 @@ test('render and try to see if it renders properly', () => {
 
 test('render edit, save, and close correctly when onSave provided', () => {
   const res = render(
-    <Provider store={mockStore}>
-      <div id="detailsSidebar">
-        <DatabaseDetailSidebar
-          columnLabels={labels}
-          columnValues={values}
-          onSave={() => {}}
-        />
-      </div>
-    </Provider>,
+    <DatabaseDetailSidebar
+      columnLabels={labels}
+      columnValues={values}
+      onSave={() => {}}
+    />,
   );
 
   // expect only Edit to show up
@@ -120,15 +98,11 @@ test('render edit, save, and close correctly when onSave provided', () => {
 test('editing some field after trigger Edit', async () => {
   const mockOnSave = jest.fn((_changes) => {});
   const res = render(
-    <Provider store={mockStore}>
-      <div id="detailsSidebar">
-        <DatabaseDetailSidebar
-          columnLabels={labels}
-          columnValues={values}
-          onSave={mockOnSave}
-        />
-      </div>
-    </Provider>,
+    <DatabaseDetailSidebar
+      columnLabels={labels}
+      columnValues={values}
+      onSave={mockOnSave}
+    />,
   );
 
   fireEvent.click(res.getByText('Edit'));

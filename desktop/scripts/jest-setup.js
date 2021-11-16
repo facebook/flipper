@@ -29,4 +29,6 @@ Date.prototype.toLocaleString = function (_locale, ...args) {
 
 require('immer').enableMapSet();
 
-require('../app/src/fb-stubs/Logger').init(undefined, {isTest: true});
+require('../flipper-ui-core/src/fb-stubs/Logger').init(undefined, {
+  isTest: true,
+});

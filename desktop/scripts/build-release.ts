@@ -34,7 +34,7 @@ import {
   buildLocalIconPath,
   getIconURLSync,
   Icons,
-} from '../app/src/utils/icons';
+} from '../flipper-ui-core/src/utils/icons';
 import isFB from './isFB';
 import copyPackageWithDependencies from './copy-package-with-dependencies';
 import {staticDir, distDir} from './paths';

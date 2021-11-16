@@ -7,6 +7,9 @@
  * @format
  */
 
-export function helloWorld() {
-  return true;
-}
+// TODO: should not be exported anymore, but still needed for 'import from 'flipper'' stuff
+export * from './deprecated-exports';
+
+export {RenderHost, getRenderHostInstance} from './RenderHost';
+
+export {startFlipperDesktop} from './startFlipperDesktop';

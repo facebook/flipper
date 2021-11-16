@@ -14,7 +14,6 @@ import electron, {MenuItemConstructorOptions} from 'electron';
 import {getLogger} from 'flipper-common';
 import {_buildInMenuEntries, _wrapInteractionHandler} from 'flipper-plugin';
 import {webFrame} from 'electron';
-import reloadFlipper from '../utils/reloadFlipper';
 
 export function setupMenuBar() {
   const template = getTemplate(electron.remote.app);
@@ -44,8 +43,13 @@ function getTemplate(app: electron.App): Array<MenuItemConstructorOptions> {
       label: 'Reload',
       accelerator: 'CmdOrCtrl+R',
       click: function (_, _focusedWindow: electron.BrowserWindow | undefined) {
-        getLogger().track('usage', 'reload');
-        reloadFlipper();
+        try {
+          getLogger().track('usage', 'reload');
+        } catch (e) {
+          // Ignore track failures (which can happen if we try to reload from a broken state)
+          console.warn('Could not track reload', e);
+        }
+        window.location.reload();
       },
     },
     {
