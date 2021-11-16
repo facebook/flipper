@@ -61,7 +61,7 @@
     "react-virtualized-auto-sizer": "^1.0.6",
     "react-window": "^1.8.6",
     "recursive-readdir": "^2.2.2",
-    "redux": "^4.1.1",
+    "redux": "^4.1.2",
     "redux-persist": "^6.0.0",
     "reselect": "^4.0.0",
     "semver": "^7.3.5",

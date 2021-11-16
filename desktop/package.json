@@ -178,7 +178,7 @@
     "react-async": "^10.0.0",
     "react-refresh": "^0.10.0",
     "recursive-readdir": "^2.2.2",
-    "redux": "^4.1.1",
+    "redux": "^4.1.2",
     "rimraf": "^3.0.2",
     "socket.io": "^4.3.1",
     "tmp": "^0.2.1",
