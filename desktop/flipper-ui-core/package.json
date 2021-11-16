@@ -75,7 +75,7 @@
     "7zip-bin-mac": "^1.0.1"
   },
   "devDependencies": {
-    "@testing-library/dom": "^8.10.1",
+    "@testing-library/dom": "^8.11.1",
     "@testing-library/react": "^12.1.2",
     "@types/lodash.memoize": "^4.1.6",
     "@types/split2": "^3.2.1",
