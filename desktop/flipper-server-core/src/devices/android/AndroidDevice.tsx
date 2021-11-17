@@ -283,7 +283,7 @@ export async function launchEmulator(name: string, coldBoot: boolean = false) {
     .catch(() =>
       join(
         process.env.ANDROID_HOME || process.env.ANDROID_SDK_ROOT || '',
-        'tools',
+        'emulator',
         'emulator',
       ),
     )
