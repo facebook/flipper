@@ -8,6 +8,7 @@
  */
 
 // jest-setup-after will run after Jest has been initialized, so that it can be adapted.
+import {cleanup} from '@testing-library/react';
 
 const test = global.test;
 if (!test) {
@@ -31,3 +32,5 @@ test.unix = function local() {
   // eslint-disable-next-line
   return fn.apply(null, arguments);
 };
+
+afterEach(cleanup);
