@@ -80,7 +80,7 @@ and determines the events available for `client.onMessage` (see below).
 In our example, only one event can occur, `newRow`, as defined at `(2)`.
 But typically there are more.
 The data provided by this `newRow` event is described with the `Row` type, as defined at `(3)`.
-The event names and data structures should correspond with the data that is send using [`connection.send`](../extending/create-plugin#push-data-to-the-desktop) from the client.
+The event names and data structures should correspond with the data that is send using [`connection.send`](../extending/create-plugin.mdx#push-data-to-the-desktop) from the client.
 
 From our `plugin` function, as shown at `(4)`, we have to return an object that captures the entire API we want to expose from our plugin to our UI components and unit tests.
 In this case, we return the state atoms `rows` and `selectedID`, and expose the `setSelection` method.
@@ -89,7 +89,7 @@ In this case, we return the state atoms `rows` and `selectedID`, and expose the 
 
 Since the `plugin` function will execute only once during the entire life-cycle of the plugin, we can use local variables in the function body to preserve state.
 In our example, we create two pieces of state, the set of rows available, `rows`, and the current selection: `selectionID`. See `(5)`.
-For larger data collections, we strongly recommend to leverage the better optimized [`createDataSource`](../extending/flipper-plugin#createdatasource), but in this simple example `createState` will suffice for the small data set.
+For larger data collections, we strongly recommend to leverage the better optimized [`createDataSource`](../extending/flipper-plugin.mdx#createdatasource), but in this simple example `createState` will suffice for the small data set.
 
 It is possible to store state directly in `let` declarations, but `createState` creates a storage container that gives us a few advantages.
 Most importantly, state created using `createState` can be subscribed to by our UI components using the `useValue` hook.

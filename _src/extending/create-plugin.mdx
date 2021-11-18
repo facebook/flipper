@@ -411,7 +411,7 @@ For React Native and JavaScript we have a simple game of Tic Tac Toe:
 
 ## Background Plugins
 
-In some cases you may want to provide data to Flipper even when your plugin is not currently active. Returning true in `runInBackground()` will result in `onConnect` being called as soon as Flipper connects, and allow you to use the connection at any time. See the [Client Plugin Lifecycle](client-plugin-lifecycle) for more details.
+In some cases you may want to provide data to Flipper even when your plugin is not currently active. Returning true in `runInBackground()` will result in `onConnect` being called as soon as Flipper connects, and allow you to use the connection at any time. See the [Client Plugin Lifecycle](client-plugin-lifecycle.mdx) for more details.
 
 The benefit is that the desktop plugin can process this data in the background and fire notifications. It also reduces the number of renders and time taken to display the data when the plugin becomes active.
 

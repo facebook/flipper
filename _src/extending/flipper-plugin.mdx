@@ -71,7 +71,7 @@ In contrast, `isConnected` returns a boolean that merely captures the current st
 
 Usage: `client.onMessage(event: string, callback: (params) => void)`
 
-This subscribes the plugin to a specific event that is fired from the client plugin (using [`connection.send`](../extending/create-plugin#push-data-to-the-desktop)).
+This subscribes the plugin to a specific event that is fired from the client plugin (using [`connection.send`](../extending/create-plugin.mdx#push-data-to-the-desktop)).
 Typically used to update some of the [state](#createstate).
 For background plugins that are currently not active in the UI, messages won't arrive immediately, but are queued until the user opens the plugin.
 
@@ -99,7 +99,7 @@ export function plugin(client: PluginClient<Events, {}>) {
 }
 ```
 
-The Flipper Sample application contains a plugin that demonstrates these API, see [bi-directional-communication-demo](create-plugin#bi-directional-communication-demo).
+The Flipper Sample application contains a plugin that demonstrates these API, see [bi-directional-communication-demo](create-plugin.mdx#bi-directional-communication-demo).
 
 #### `onUnhandledMessage`
 
@@ -128,7 +128,7 @@ Usage: `client.onConnect(callback: () => void)`
 
 Triggered once the connection with the plugin on the client is established, and for example [`send`](#send) can be called safely.
 Typically, this happens when the plugin is activated (opened) in the Flipper Desktop.
-However, for [background plugins](create-plugin#background-plugins), this happens immediately after the plugin has been instantiated.
+However, for [background plugins](create-plugin.mdx#background-plugins), this happens immediately after the plugin has been instantiated.
 For archived / imported devices, this lifecycle is never triggered.
 
 #### `onDisconnect`
@@ -137,7 +137,7 @@ Usage: `client.onDisconnect(callback: () => void)`
 
 Triggered once the connection with the plugin on the client has been lost.
 Typically, this happens when the user leaves the plugin in the Flipper Desktop, when the plugin is disabled, or when the app or device has disconnected.
-However, for [background plugins](create-plugin#background-plugins), this event won't fire when the user merely navigates somewhere else.
+However, for [background plugins](create-plugin.mdx#background-plugins), this event won't fire when the user merely navigates somewhere else.
 In that case, [`onDeactivate`](#ondeactivate) can be used instead.
 
 #### `onDestroy`
@@ -207,7 +207,7 @@ If a plugin has complex initialization logic it is recommended to put it in the 
 
 Usage: `client.send(method: string, params: object): Promise<object>`
 
-If the plugin is connected, `send` can be used to invoke a [method](create-plugin#[background-plugins#using-flipperconnection) on the client implementation of the plugin.
+If the plugin is connected, `send` can be used to invoke a [method](create-plugin.mdx#[background-plugins#using-flipperconnection) on the client implementation of the plugin.
 
 Note that if `client.isConnected` returns `false`, calling `client.send` will throw an exception. This is the case if for example the connection with the device or application was lost.
 Generally one should guard `client.send` calls with a check to `client.isConnected`.
@@ -237,7 +237,7 @@ export function plugin(client: PluginClient<{}, Methods>) {
 }
 ```
 
-The Flipper Sample application contains a plugin that demonstrates these API, see [bi-directional-communication-demo](create-plugin#bi-directional-communication-demo).
+The Flipper Sample application contains a plugin that demonstrates these API, see [bi-directional-communication-demo](create-plugin.mdx#bi-directional-communication-demo).
 
 #### `addMenuEntry`
 
@@ -414,7 +414,7 @@ See the similarly named method under [`PluginClient`](#pluginclient).
 ## Device
 
 `Device` captures the metadata of the device the plugin is currently connected to.
-Device objects are passed into the [`supportsDevice` method](../tutorial/js-custom#creating-a-device-plugin) of a device plugin, and available as `device` field on a [`DevicePluginClient`](#devicepluginclient).
+Device objects are passed into the [`supportsDevice` method](../tutorial/js-custom.mdx#creating-a-device-plugin) of a device plugin, and available as `device` field on a [`DevicePluginClient`](#devicepluginclient).
 
 ### Properties
 
@@ -737,14 +737,14 @@ Usage: `const instance = usePlugin(plugin)`
 Can be used by any component in the plugin, and gives the current `instance` that corresponds with the currently loaded plugin.
 The `plugin` parameter isn't actually used, but used to verify that a component is used correctly inside a mounted component, and helps with type inference.
 The returned `instance` method corresponds to the object that is returned from the `plugin` / `devicePlugin` definition.
-See the [tutorial](../tutorial/js-custom#building-an-user-interface-for-the-plugin) for how this hook is used in practice.
+See the [tutorial](../tutorial/js-custom.mdx#building-an-user-interface-for-the-plugin) for how this hook is used in practice.
 
 ### useValue
 
 Usage: `const currentValue = useValue(stateAtom)`
 
 Returns the current value of a state atom, and also subscribes the current component to future changes of the atom (in contrast to using `stateAtom.get()` directly).
-See the [tutorial](../tutorial/js-custom#building-an-user-interface-for-the-plugin) for how this hook is used in practice.
+See the [tutorial](../tutorial/js-custom.mdx#building-an-user-interface-for-the-plugin) for how this hook is used in practice.
 
 ### useLogger
 
@@ -1059,7 +1059,7 @@ Given a string or React element, returns a text representation of that element, 
 
 The object `TestUtils` as exposed from `flipper-plugin` exposes utilities to write unit tests for Sandy plugins.
 Different utilities are exposed depending on whether you want to test a client or device plugin, and whether or not the component should be rendered or only the logic itself is going to be tested.
-It is recommended to follow the [tutorial](../tutorial/js-custom) first, as it explains how unit tests should be setup.
+It is recommended to follow the [tutorial](../tutorial/js-custom.mdx) first, as it explains how unit tests should be setup.
 
 ### Starting a plugin
 
