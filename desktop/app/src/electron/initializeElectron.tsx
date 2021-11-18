@@ -111,6 +111,18 @@ export function initializeElectron() {
           return undefined;
         });
     },
+    async exportFile(data, {defaultPath} = {}) {
+      const {filePath} = await remote.dialog.showSaveDialog({
+        defaultPath,
+      });
+
+      if (!filePath) {
+        return;
+      }
+
+      await fs.promises.writeFile(filePath, data);
+      return filePath;
+    },
     openLink(url: string) {
       shell.openExternal(url);
     },

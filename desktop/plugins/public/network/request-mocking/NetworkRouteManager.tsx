@@ -173,26 +173,8 @@ export function createNetworkManager(
     },
     exportRoutes() {
       getFlipperLib()
-        .showSaveDialog?.({
-          title: 'Export Routes',
+        .exportFile(JSON.stringify(Object.values(routes.get()), null, 2), {
           defaultPath: 'NetworkPluginRoutesExport.json',
-        })
-        .then((file) => {
-          if (!file) {
-            return;
-          }
-          fs.writeFile(
-            file,
-            JSON.stringify(Object.values(routes.get()), null, 2),
-            'utf8',
-            (err) => {
-              if (err) {
-                message.error('Failed to store mock routes: ' + err);
-              } else {
-                message.info('Successfully exported mock routes');
-              }
-            },
-          );
         })
         .catch((e) =>
           console.error('[network] exportRoutes saving failed:', e),

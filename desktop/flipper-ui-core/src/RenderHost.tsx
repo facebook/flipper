@@ -57,9 +57,18 @@ export interface RenderHost {
   readonly isProduction: boolean;
   readTextFromClipboard(): string | undefined;
   writeTextToClipboard(text: string): void;
-  showSaveDialog?: FlipperLib['showSaveDialog'];
+  /**
+   * @deprecated
+   * TODO: Remove in favor of "exportFile"
+   */
+  showSaveDialog?(options: {
+    defaultPath?: string;
+    message?: string;
+    title?: string;
+  }): Promise<string | undefined>;
   showOpenDialog?: FlipperLib['showOpenDialog'];
   showSelectDirectoryDialog?(defaultPath?: string): Promise<string | undefined>;
+  exportFile: FlipperLib['exportFile'];
   /**
    * @returns
    * A callback to unregister the shortcut
@@ -97,6 +106,9 @@ if (process.env.NODE_ENV === 'test') {
       return '';
     },
     writeTextToClipboard() {},
+    async exportFile() {
+      return undefined;
+    },
     registerShortcut() {
       return () => undefined;
     },

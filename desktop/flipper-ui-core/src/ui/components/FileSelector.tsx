@@ -52,6 +52,8 @@ const defaultProps: Props = {
   defaultPath: '/',
 };
 
+// TODO: Should we render null in browsers for FileSelector?
+// Do we even need it after decapitation? Every plugin should be using FlipperLib.exportFile which shows a save dialog every time.
 export default function FileSelector({
   onPathChanged,
   placeholderText,

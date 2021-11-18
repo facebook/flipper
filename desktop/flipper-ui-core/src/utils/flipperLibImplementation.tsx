@@ -60,9 +60,8 @@ export function initializeFlipperLibImplementation(
       );
     },
     DetailsSidebarImplementation: DetailSidebarImpl,
-    showSaveDialog: renderHost.showSaveDialog,
+    exportFile: renderHost.exportFile,
     showOpenDialog: renderHost.showOpenDialog,
-    showSelectDirectoryDialog: renderHost.showSelectDirectoryDialog,
     paths: {
       appPath: renderHost.paths.appPath,
       homePath: renderHost.paths.homePath,
