@@ -25,9 +25,9 @@ target 'ReactNativeFlipperExample' do
   # Note that if you have use_frameworks! enabled, Flipper will not work and
   # you should disable these next few lines.
 
-  # Versions are explicitly pinned to be able to forcefully test against the latest versions. 
+  # Versions are explicitly pinned to be able to forcefully test against the latest versions.
   # use_flipper!() should work as well and pick the React Native defaults
-  use_flipper!({ 'Flipper' => flipperkit_version, 'Flipper-Folly' => '2.6.9', 'Flipper-RSocket' => '1.4.3', 'Flipper-DoubleConversion' => '3.1.7', 'Flipper-Glog' => '0.3.9', 'Flipper-PeerTalk' => '0.0.4' })
+  use_flipper!({ 'Flipper' => flipperkit_version, 'Flipper-Folly' => '2.6.10', 'Flipper-RSocket' => '1.4.3', 'Flipper-DoubleConversion' => '3.1.7', 'Flipper-Glog' => '0.3.9', 'Flipper-PeerTalk' => '0.0.4' })
 
   post_install do |installer|
     react_native_post_install(installer)
