@@ -11,7 +11,7 @@ import FbPluginReleases from './fb/desktop-plugin-releases.mdx'
 
 Flipper plugins are essentially standard npm packages. So you can publish them by executing `yarn publish` or `npm publish` in the plugin directory. The only requirements are:
 
-1. `package.json` and code [must follow the Flipper plugin specification](desktop-plugin-structure#plugin-definition)
+1. `package.json` and code [must follow the Flipper plugin specification](desktop-plugin-structure.mdx#plugin-definition)
 2. code must be bundled using "flipper-pkg" before packing or publishing. This can be done by executing `flipper-pkg bundle` on `prepack` step:
     ```json
     {

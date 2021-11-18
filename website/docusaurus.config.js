@@ -23,6 +23,7 @@ const siteConfig = {
     external: 'https://fbflipper.com/',
   }),
   baseUrl: '/',
+  trailingSlash: true,
   projectName: 'flipper',
   // TODO: T69061026 enable once sandy docs are complete: external_domain: 'fbflipper.com',
   themeConfig: {
