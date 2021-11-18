@@ -48,7 +48,7 @@ jobs:
       run: mv android/sample/build/outputs/apk/debug/sample-debug.apk SampleApp-android.apk
     - name: Attach sample APK to release
       if: ${{ github.event.inputs.tag != '' }}
-      uses: passy/github-upload-release-artifacts-action@v2.1.2
+      uses: passy/github-upload-release-artifacts-action@v2.2.0
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
