@@ -7,11 +7,9 @@
  * @format
  */
 
-import fs from 'fs';
 import {Atom, DataTableManager, getFlipperLib} from 'flipper-plugin';
 import {createContext} from 'react';
 import {Header, Request} from '../types';
-import {message} from 'antd';
 
 export type Route = {
   requestUrl: string;
@@ -136,35 +134,29 @@ export function createNetworkManager(
     },
     importRoutes() {
       getFlipperLib()
-        .showOpenDialog?.({
-          filter: {extensions: ['json'], name: 'Flipper Route Files'},
+        .importFile({
+          extensions: ['.json'],
         })
-        .then((filePath) => {
-          if (filePath) {
-            fs.readFile(filePath, 'utf8', (err, data) => {
-              if (err) {
-                message.error('Unable to import file');
-                return;
+        .then((res) => {
+          if (res) {
+            const importedRoutes = JSON.parse(res.data);
+            importedRoutes?.forEach((importedRoute: Route) => {
+              if (importedRoute != null) {
+                const newNextRouteId = nextRouteId.get();
+                routes.update((draft) => {
+                  draft[newNextRouteId.toString()] = {
+                    requestUrl: importedRoute.requestUrl,
+                    requestMethod: importedRoute.requestMethod,
+                    responseData: importedRoute.responseData as string,
+                    responseHeaders: importedRoute.responseHeaders,
+                    responseStatus: importedRoute.responseStatus,
+                    enabled: true,
+                  };
+                });
+                nextRouteId.set(newNextRouteId + 1);
               }
-              const importedRoutes = JSON.parse(data);
-              importedRoutes?.forEach((importedRoute: Route) => {
-                if (importedRoute != null) {
-                  const newNextRouteId = nextRouteId.get();
-                  routes.update((draft) => {
-                    draft[newNextRouteId.toString()] = {
-                      requestUrl: importedRoute.requestUrl,
-                      requestMethod: importedRoute.requestMethod,
-                      responseData: importedRoute.responseData as string,
-                      responseHeaders: importedRoute.responseHeaders,
-                      responseStatus: importedRoute.responseStatus,
-                      enabled: true,
-                    };
-                  });
-                  nextRouteId.set(newNextRouteId + 1);
-                }
-              });
-              informClientMockChange(routes.get());
             });
+            informClientMockChange(routes.get());
           }
         })
         .catch((e) =>

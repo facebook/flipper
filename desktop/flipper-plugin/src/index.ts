@@ -37,6 +37,7 @@ export {
   FlipperLib,
   getFlipperLib,
   setFlipperLibImplementation as _setFlipperLibImplementation,
+  FileDescriptor,
 } from './plugin/FlipperLib';
 export {
   MenuEntry,

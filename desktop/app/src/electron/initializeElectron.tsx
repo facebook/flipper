@@ -111,6 +111,26 @@ export function initializeElectron() {
           return undefined;
         });
     },
+    async importFile({defaultPath, extensions} = {}) {
+      const {filePaths} = await remote.dialog.showOpenDialog({
+        defaultPath,
+        properties: ['openFile'],
+        filters: extensions ? [{extensions, name: ''}] : undefined,
+      });
+
+      if (!filePaths.length) {
+        return;
+      }
+
+      const filePath = filePaths[0];
+      const fileName = path.basename(filePath);
+
+      const data = await fs.promises.readFile(filePath, {encoding: 'utf-8'});
+      return {
+        data,
+        name: fileName,
+      };
+    },
     async exportFile(data, {defaultPath} = {}) {
       const {filePath} = await remote.dialog.showSaveDialog({
         defaultPath,

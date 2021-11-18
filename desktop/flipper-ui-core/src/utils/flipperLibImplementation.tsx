@@ -60,6 +60,7 @@ export function initializeFlipperLibImplementation(
       );
     },
     DetailsSidebarImplementation: DetailSidebarImpl,
+    importFile: renderHost.importFile,
     exportFile: renderHost.exportFile,
     showOpenDialog: renderHost.showOpenDialog,
     paths: {

@@ -14,6 +14,11 @@ import {RealFlipperClient} from './Plugin';
 import {Notification} from './Notification';
 import {DetailSidebarProps} from '../ui/DetailSidebar';
 
+export interface FileDescriptor {
+  data: string;
+  name: string;
+}
+
 /**
  * This interface exposes all global methods for which an implementation will be provided by Flipper itself
  */
@@ -42,6 +47,20 @@ export interface FlipperLib {
       name: string;
     };
   }): Promise<string | undefined>;
+  /**
+   * @returns
+   * Imported file data.
+   * If user cancelled a file selection - undefined.
+   */
+  importFile(options: {
+    defaultPath?: string;
+    extensions?: string[];
+  }): Promise<FileDescriptor | undefined>;
+  /**
+   * @returns
+   * An exported file path (if available) or a file name.
+   * If user cancelled a file selection - undefined.
+   */
   exportFile(
     data: string,
     options?: {

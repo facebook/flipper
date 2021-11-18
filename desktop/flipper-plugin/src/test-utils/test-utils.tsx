@@ -380,6 +380,7 @@ export function createMockFlipperLib(options?: StartPluginOptions): FlipperLib {
     openLink: jest.fn(),
     showNotification: jest.fn(),
     exportFile: jest.fn(),
+    importFile: jest.fn(),
     paths: {
       appPath: process.cwd(),
       homePath: `/dev/null`,

@@ -66,8 +66,13 @@ export interface RenderHost {
     message?: string;
     title?: string;
   }): Promise<string | undefined>;
+  /**
+   * @deprecated
+   * TODO: Remove in favor of "importFile"
+   */
   showOpenDialog?: FlipperLib['showOpenDialog'];
   showSelectDirectoryDialog?(defaultPath?: string): Promise<string | undefined>;
+  importFile: FlipperLib['importFile'];
   exportFile: FlipperLib['exportFile'];
   /**
    * @returns
@@ -106,6 +111,9 @@ if (process.env.NODE_ENV === 'test') {
       return '';
     },
     writeTextToClipboard() {},
+    async importFile() {
+      return undefined;
+    },
     async exportFile() {
       return undefined;
     },
