@@ -46,12 +46,14 @@ export default async (store: Store, logger: Logger) => {
   });
 
   server.on('notification', ({type, title, description}) => {
-    console.warn(`[$type] ${title}: ${description}`);
+    const text = `[$type] ${title}: ${description}`;
+    console.warn(text);
     notification.open({
       message: title,
       description: description,
       type: type,
       duration: 0,
+      key: text,
     });
   });
 
