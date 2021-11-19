@@ -103,7 +103,14 @@ export async function handleOpenPluginDeeplink(
     title,
     isDevicePlugin,
   );
-  console.debug('[deeplink] Selected device and client:', deviceOrClient);
+  console.debug(
+    '[deeplink] Selected device and client:',
+    deviceOrClient instanceof BaseDevice
+      ? deviceOrClient.description
+      : deviceOrClient instanceof Client
+      ? deviceOrClient.query
+      : deviceOrClient,
+  );
   if ('errorState' in deviceOrClient) {
     trackInteraction({
       state: deviceOrClient.errorState,
@@ -117,8 +124,8 @@ export async function handleOpenPluginDeeplink(
   const device: BaseDevice = isDevicePlugin
     ? (deviceOrClient as BaseDevice)
     : (deviceOrClient as Client).device;
-  console.debug('[deeplink] Client: ', client);
-  console.debug('[deeplink] Device: ', device);
+  console.debug('[deeplink] Client: ', client?.query);
+  console.debug('[deeplink] Device: ', device?.description);
 
   // verify plugin supported by selected device / client
   if (isDevicePlugin && !device.supportsPlugin(pluginDefinition)) {
@@ -484,7 +491,7 @@ async function selectDevicesAndClient(
   const availableDevices = findValidDevices();
   console.debug(
     '[deeplink] selectDevicesAndClient found at least one more valid device:',
-    availableDevices,
+    availableDevices.map((d) => d.description),
   );
   // device plugin
   if (isDevicePlugin) {
