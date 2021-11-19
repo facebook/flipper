@@ -18,7 +18,7 @@ import {theme} from './theme';
 
 const SidebarInteractiveContainer = styled(Interactive)<InteractiveProps>({
   display: 'flex',
-  flex: 1,
+  flex: '0 1 1',
 });
 SidebarInteractiveContainer.displayName = 'Sidebar:SidebarInteractiveContainer';
 
