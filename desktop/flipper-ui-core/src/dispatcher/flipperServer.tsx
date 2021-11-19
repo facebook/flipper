@@ -244,8 +244,6 @@ export async function handleClientConnected(
     payload: client,
   });
 
-  store.dispatch(selectClient(client.id));
-
   await timeout(
     30 * 1000,
     client.init(),
