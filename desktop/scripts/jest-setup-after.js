@@ -34,3 +34,7 @@ test.unix = function local() {
 };
 
 afterEach(cleanup);
+
+console.debug = function () {
+  // Intentional noop, we don't want debug statements in Jest runs
+};
