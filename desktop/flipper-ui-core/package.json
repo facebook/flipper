@@ -63,7 +63,7 @@
     "recursive-readdir": "^2.2.2",
     "redux": "^4.1.2",
     "redux-persist": "^6.0.0",
-    "reselect": "^4.0.0",
+    "reselect": "^4.1.4",
     "semver": "^7.3.5",
     "tmp": "^0.2.1",
     "uuid": "^8.3.2",
