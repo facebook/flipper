@@ -183,7 +183,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         created_tag: ${{ needs.release.outputs.tag }}
-        args: Flipper-mac.dmg Flipper-linux.zip Flipper-win.zip
+        args: Flipper-mac.dmg/Flipper-mac.dmg Flipper-linux.zip/Flipper-linux.zip Flipper-win.zip/Flipper-win.zip
     - name: Open issue on failure
       if: failure()
       uses: JasonEtco/create-an-issue@v2.4.0
