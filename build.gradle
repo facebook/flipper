@@ -31,7 +31,6 @@ subprojects {
         google()
         mavenLocal()
         mavenCentral()
-        jcenter()
 
         if (isSnapshot()) {
             maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
