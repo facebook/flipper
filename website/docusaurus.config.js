@@ -129,7 +129,7 @@ const siteConfig = {
           ],
         },
       ],
-      copyright: 'Copyright © ' + new Date().getFullYear() + ' Facebook',
+      copyright: 'Copyright © ' + new Date().getFullYear() + ' Meta Platforms, Inc',
       logo: {
         alt: 'Flipper Mascot',
         src: 'img/mascot.png',
