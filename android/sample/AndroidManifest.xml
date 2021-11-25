@@ -8,9 +8,9 @@
   -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.facebook.flipper.sample">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.facebook.flipper.sample">
   <uses-permission android:name="android.permission.INTERNET" />
-  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
   <application
       android:name=".FlipperSampleApplication"
@@ -18,8 +18,10 @@
       android:icon="@drawable/ic_launcher"
       android:allowBackup="false"
       android:theme="@style/NoTitleBarWhiteBG"
-      android:debuggable="true">
-    <activity android:name=".MainActivity">
+      android:debuggable="true"
+      tools:ignore="HardcodedDebugMode">
+    <activity android:name=".MainActivity"
+        android:exported="true">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
         <category android:name="android.intent.category.LAUNCHER"/>
@@ -31,7 +33,8 @@
         <data android:scheme="flipper" android:host="demo_page" />
       </intent-filter>
     </activity>
-    <activity android:name=".DeepLinkActivity">
+    <activity android:name=".DeepLinkActivity"
+        android:exported="true">
       <intent-filter>
         <action android:name="android.intent.action.VIEW" />
         <category android:name="android.intent.category.DEFAULT" />
@@ -39,7 +42,8 @@
         <data android:scheme="flipper" android:host="deep_link_activity" />
       </intent-filter>
     </activity>
-    <activity android:name=".LayoutTestActivity">
+    <activity android:name=".LayoutTestActivity"
+        android:exported="true">
       <intent-filter>
         <action android:name="android.intent.action.VIEW" />
         <category android:name="android.intent.category.DEFAULT" />
@@ -47,7 +51,8 @@
         <data android:scheme="flipper" android:host="layout_test_activity" />
       </intent-filter>
     </activity>
-    <activity android:name=".FragmentTestActivity">
+    <activity android:name=".FragmentTestActivity"
+        android:exported="true">
       <intent-filter>
         <action android:name="android.intent.action.VIEW" />
         <category android:name="android.intent.category.DEFAULT" />

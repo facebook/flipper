@@ -20,7 +20,7 @@ import com.facebook.litho.fresco.FrescoImage
 @LayoutSpec
 object SingleImageComponentSpec {
 
-  @PropDefault val imageAspectRatio = 1f
+  @get:PropDefault val imageAspectRatio = 1f
 
   @OnCreateLayout
   fun onCreateLayout(

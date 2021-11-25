@@ -11,7 +11,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.2.2'
+        classpath 'com.android.tools.build:gradle:7.0.3'
         classpath 'com.vanniktech:gradle-maven-publish-plugin:0.18.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$KOTLIN_VERSION"
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:1.5.31"
@@ -31,7 +31,6 @@ subprojects {
         google()
         mavenLocal()
         mavenCentral()
-        jcenter()
 
         if (isSnapshot()) {
             maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
@@ -46,8 +45,8 @@ subprojects {
 
 ext {
     minSdkVersion = 15
-    targetSdkVersion = 30
-    compileSdkVersion = 30
+    targetSdkVersion = 31
+    compileSdkVersion = 31
     buildToolsVersion = '30.0.2'
     ndkVersion = '23.0.7599858'
 }

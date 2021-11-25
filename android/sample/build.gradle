@@ -72,6 +72,5 @@ dependencies {
     debugImplementation project(':fresco-plugin')
     debugImplementation project(':network-plugin')
     debugImplementation project(':litho-plugin')
-    debugImplementation project(':leakcanary-plugin')
     releaseImplementation project(':noop')
 }
