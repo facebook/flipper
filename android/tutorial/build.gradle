@@ -50,7 +50,6 @@ dependencies {
     implementation project(':fresco-plugin')
     implementation project(':network-plugin')
     implementation project(':litho-plugin')
-    implementation project(':leakcanary-plugin')
     implementation deps.soloader
 
     // Litho

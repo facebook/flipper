@@ -15,7 +15,7 @@ import com.facebook.flipper.plugins.example.ExampleFlipperPlugin;
 import com.facebook.flipper.plugins.fresco.FrescoFlipperPlugin;
 import com.facebook.flipper.plugins.inspector.DescriptorMapping;
 import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin;
-import com.facebook.flipper.plugins.leakcanary.LeakCanaryFlipperPlugin;
+import com.facebook.flipper.plugins.leakcanary2.LeakCanary2FlipperPlugin;
 import com.facebook.flipper.plugins.navigation.NavigationFlipperPlugin;
 import com.facebook.flipper.plugins.network.FlipperOkhttpInterceptor;
 import com.facebook.flipper.plugins.network.NetworkFlipperPlugin;
@@ -50,7 +50,7 @@ public final class FlipperInitializer {
             Arrays.asList(
                 new SharedPreferencesDescriptor("sample", Context.MODE_PRIVATE),
                 new SharedPreferencesDescriptor("other_sample", Context.MODE_PRIVATE))));
-    client.addPlugin(new LeakCanaryFlipperPlugin());
+    client.addPlugin(new LeakCanary2FlipperPlugin());
     client.addPlugin(new FrescoFlipperPlugin());
     client.addPlugin(new ExampleFlipperPlugin());
     client.addPlugin(CrashReporterPlugin.getInstance());
