@@ -53,7 +53,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         created_tag: ${{ github.event.inputs.tag }}
-        args: 'SampleApp-android.apk/SampleApp-android.apk'
+        args: 'SampleApp-android.apk'
     - name: Open issue on failure
       if: failure()
       uses: JasonEtco/create-an-issue@v2.4.0
