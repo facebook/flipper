@@ -2667,17 +2667,10 @@
   dependencies:
     form-data "*"
 
-"@types/fs-extra@^9.0.11", "@types/fs-extra@^9.0.13":
+"@types/fs-extra@^9.0.11", "@types/fs-extra@^9.0.12", "@types/fs-extra@^9.0.13":
   version "9.0.13"
   resolved "https://registry.yarnpkg.com/@types/fs-extra/-/fs-extra-9.0.13.tgz#7594fbae04fe7f1918ce8b3d213f74ff44ac1f45"
   integrity sha512-nEnwB++1u5lVDM2UI4c1+5R+FYaKfaAzS4OococimjVm3nQw3TuzH5UNsocrcTBbhnerblyHj4A49qXbIiZdpA==
-  dependencies:
-    "@types/node" "*"
-
-"@types/fs-extra@^9.0.12":
-  version "9.0.12"
-  resolved "https://registry.yarnpkg.com/@types/fs-extra/-/fs-extra-9.0.12.tgz#9b8f27973df8a7a3920e8461517ebf8a7d4fdfaf"
-  integrity sha512-I+bsBr67CurCGnSenZZ7v94gd3tc3+Aj2taxMT4yu4ABLuOgOjeFxX3dokG24ztSRg5tnT00sL8BszO7gSMoIw==
   dependencies:
     "@types/node" "*"
 
@@ -8997,10 +8990,10 @@ linkifyjs@^2.1.6:
   resolved "https://registry.yarnpkg.com/linkifyjs/-/linkifyjs-2.1.9.tgz#af06e45a2866ff06c4766582590d098a4d584702"
   integrity sha512-74ivurkK6WHvHFozVaGtQWV38FzBwSTGNmJolEgFp7QgR2bl6ArUWlvT4GcHKbPe1z3nWYi+VUdDZk16zDOVug==
 
-live-plugin-manager@^0.16.0:
-  version "0.16.0"
-  resolved "https://registry.yarnpkg.com/live-plugin-manager/-/live-plugin-manager-0.16.0.tgz#7cf11472065eda8159e72b98960bc29c609c63ce"
-  integrity sha512-5SBjoKFShEOmp+hi67ksbpM7KHyhY4T6VftNSLy6jjbykArCE1DWRPWfpTLG5u+L/m4l/x/CpVcFH1jzbHWkNA==
+live-plugin-manager@^0.17.0:
+  version "0.17.0"
+  resolved "https://registry.yarnpkg.com/live-plugin-manager/-/live-plugin-manager-0.17.0.tgz#c6ba93551ae1330784dd2bfdc5533a60f85ef5c4"
+  integrity sha512-78exdZiCDDbXZKeEtezaB1/VygpBe8JfZ34XmablcTOkALVoomI7Dd1DPCdQKvMKc96g1EfhlR1GrejkBFUW6g==
   dependencies:
     "@types/debug" "^4.1.7"
     "@types/fs-extra" "^9.0.12"
