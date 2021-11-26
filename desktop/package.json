@@ -126,7 +126,7 @@
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
     "ansi-to-html": "^0.7.2",
-    "app-builder-lib": "22.14.5",
+    "app-builder-lib": "22.14.7",
     "babel-eslint": "^10.1.0",
     "chalk": "^4.1.2",
     "cross-env": "^7.0.3",
