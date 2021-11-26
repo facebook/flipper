@@ -44,17 +44,6 @@ export interface FlipperLib {
     props: DetailSidebarProps,
   ): React.ReactElement | null;
   /**
-   * @deprecated
-   * Will be removed in subsequent commits
-   */
-  showOpenDialog?(options: {
-    defaultPath?: string;
-    filter?: {
-      extensions: string[];
-      name: string;
-    };
-  }): Promise<string | undefined>;
-  /**
    * @returns
    * Imported file data.
    * If user cancelled a file selection - undefined.

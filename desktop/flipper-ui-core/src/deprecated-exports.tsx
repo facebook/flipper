@@ -118,7 +118,6 @@ export {
 } from 'flipper-plugin';
 export {ElementFramework} from './ui/components/elements-inspector/ElementFramework';
 export {InspectorSidebar} from './ui/components/elements-inspector/sidebar';
-export {default as FileSelector} from './ui/components/FileSelector';
 export {getFlipperMediaCDN, appendAccessTokenToUrl} from './fb-stubs/user';
 export {Rect} from './utils/geometry';
 export {Logger} from 'flipper-common';
