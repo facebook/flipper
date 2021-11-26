@@ -14,9 +14,12 @@ import {RealFlipperClient} from './Plugin';
 import {Notification} from './Notification';
 import {DetailSidebarProps} from '../ui/DetailSidebar';
 
+export type FileEncoding = 'utf-8' | 'base64';
+
 export interface FileDescriptor {
   data: string;
   name: string;
+  path?: string;
 }
 
 /**
@@ -40,6 +43,10 @@ export interface FlipperLib {
   DetailsSidebarImplementation?(
     props: DetailSidebarProps,
   ): React.ReactElement | null;
+  /**
+   * @deprecated
+   * Will be removed in subsequent commits
+   */
   showOpenDialog?(options: {
     defaultPath?: string;
     filter?: {
@@ -52,19 +59,64 @@ export interface FlipperLib {
    * Imported file data.
    * If user cancelled a file selection - undefined.
    */
-  importFile(options: {
+  importFile(options?: {
+    /**
+     * Default directory to start the file selection from
+     */
+    defaultPath?: string;
+    /**
+     * List of allowed file extensions
+     */
+    extensions?: string[];
+    /**
+     * Open file dialog title
+     */
+    title?: string;
+    /**
+     * File encoding
+     */
+    encoding?: FileEncoding;
+    /**
+     * Allow selection of multiple files
+     */
+    multi?: false;
+  }): Promise<FileDescriptor | undefined>;
+  importFile(options?: {
     defaultPath?: string;
     extensions?: string[];
-  }): Promise<FileDescriptor | undefined>;
+    title?: string;
+    encoding?: FileEncoding;
+    multi: true;
+  }): Promise<FileDescriptor[] | undefined>;
+  importFile(options?: {
+    defaultPath?: string;
+    extensions?: string[];
+    title?: string;
+    encoding?: FileEncoding;
+    multi?: boolean;
+  }): Promise<FileDescriptor[] | FileDescriptor | undefined>;
+
   /**
    * @returns
    * An exported file path (if available) or a file name.
    * If user cancelled a file selection - undefined.
    */
   exportFile(
+    /**
+     * New file data
+     */
     data: string,
     options?: {
+      /**
+       * A file path suggestion for a new file.
+       * A dialog to save file will use it as a starting point.
+       * Either a complete path to the newly created file, a path to a directory containing the file, or the file name.
+       */
       defaultPath?: string;
+      /**
+       * File encoding
+       */
+      encoding?: FileEncoding;
     },
   ): Promise<string | undefined>;
   paths: {

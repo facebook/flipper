@@ -59,6 +59,9 @@ export interface RenderHost {
   writeTextToClipboard(text: string): void;
   /**
    * @deprecated
+   * WARNING!
+   * It is a low-level API call that might be removed in the future.
+   * It is not really deprecated yet, but we'll try to make it so.
    * TODO: Remove in favor of "exportFile"
    */
   showSaveDialog?(options: {
@@ -68,9 +71,18 @@ export interface RenderHost {
   }): Promise<string | undefined>;
   /**
    * @deprecated
+   * WARNING!
+   * It is a low-level API call that might be removed in the future.
+   * It is not really deprecated yet, but we'll try to make it so.
    * TODO: Remove in favor of "importFile"
    */
-  showOpenDialog?: FlipperLib['showOpenDialog'];
+  showOpenDialog?(options: {
+    defaultPath?: string;
+    filter?: {
+      extensions: string[];
+      name: string;
+    };
+  }): Promise<string | undefined>;
   showSelectDirectoryDialog?(defaultPath?: string): Promise<string | undefined>;
   importFile: FlipperLib['importFile'];
   exportFile: FlipperLib['exportFile'];

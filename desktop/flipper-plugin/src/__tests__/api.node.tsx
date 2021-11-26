@@ -98,6 +98,7 @@ test('Correct top level API exposed', () => {
       "ElementsInspectorElement",
       "ElementsInspectorProps",
       "FileDescriptor",
+      "FileEncoding",
       "FlipperLib",
       "HighlightManager",
       "Idler",

@@ -38,6 +38,7 @@ export {
   getFlipperLib,
   setFlipperLibImplementation as _setFlipperLibImplementation,
   FileDescriptor,
+  FileEncoding,
 } from './plugin/FlipperLib';
 export {
   MenuEntry,

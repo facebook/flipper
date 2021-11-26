@@ -111,27 +111,46 @@ export function initializeElectron() {
           return undefined;
         });
     },
-    async importFile({defaultPath, extensions} = {}) {
-      const {filePaths} = await remote.dialog.showOpenDialog({
+    importFile: (async ({
+      defaultPath,
+      extensions,
+      title,
+      encoding = 'utf-8',
+      multi,
+    } = {}) => {
+      let {filePaths} = await remote.dialog.showOpenDialog({
         defaultPath,
-        properties: ['openFile'],
+        properties: [
+          'openFile',
+          ...(multi ? (['multiSelections'] as const) : []),
+        ],
         filters: extensions ? [{extensions, name: ''}] : undefined,
+        title,
       });
 
       if (!filePaths.length) {
         return;
       }
 
-      const filePath = filePaths[0];
-      const fileName = path.basename(filePath);
+      if (!multi) {
+        filePaths = [filePaths[0]];
+      }
 
-      const data = await fs.promises.readFile(filePath, {encoding: 'utf-8'});
-      return {
-        data,
-        name: fileName,
-      };
-    },
-    async exportFile(data, {defaultPath} = {}) {
+      const descriptors = await Promise.all(
+        filePaths.map(async (filePath) => {
+          const fileName = path.basename(filePath);
+
+          const data = await fs.promises.readFile(filePath, {encoding});
+          return {
+            data,
+            name: fileName,
+          };
+        }),
+      );
+
+      return multi ? descriptors : descriptors[0];
+    }) as RenderHost['importFile'],
+    async exportFile(data, {defaultPath, encoding = 'utf-8'} = {}) {
       const {filePath} = await remote.dialog.showSaveDialog({
         defaultPath,
       });
@@ -140,7 +159,7 @@ export function initializeElectron() {
         return;
       }
 
-      await fs.promises.writeFile(filePath, data);
+      await fs.promises.writeFile(filePath, data, {encoding});
       return filePath;
     },
     openLink(url: string) {
