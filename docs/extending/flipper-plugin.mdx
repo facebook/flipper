@@ -935,6 +935,21 @@ Shows a loading spinner. Accept an optional `size` to make the spinner larger / 
 An element that can be used to provide a New User eXperience: Hints that give a one time introduction to new features to the current user.
 See `View > Flipper Style Guide` inside the Flipper application for more details.
 
+### FileSelector
+
+Enables file uploading. Shows an input with an upload button. User can select and upload files by clicking on the button, on the input, by pressing enter when the input is focued, and by dropping a file on the input. The input's value is a path to a file or its name if path is not available (in browsers).
+
+Exports `FileSelector` components with the following props:
+
+1. `label` -  placeholder text displayed in the input when it is empty
+1. `onChange` - callback called when new files are selected or when the exisitng selection is reset
+1. `multi` - *optional* allows selecting multiple files at once
+1. `extensions` - *optional* list of allowed file extentions
+1. `required` - *optional* boolean to mark the file selection input as required
+1. `encoding` - *optional* imported file encoding. Default: UTF-8.
+1. `className` - *optional* class name string
+1. `style` - *optional* CSS styles object
+
 ### DetailSidebar
 
 An element that can be passed children which will be shown in the right sidebar of Flipper.

@@ -96,6 +96,7 @@ export {Panel} from './ui/Panel';
 export {Tabs, Tab} from './ui/Tabs';
 export {useLocalStorageState} from './utils/useLocalStorageState';
 
+export {FileSelector} from './ui/FileSelector';
 export {HighlightManager} from './ui/Highlight';
 export {
   DataValueExtractor,

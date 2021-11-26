@@ -88,13 +88,6 @@ export interface FlipperLib {
     encoding?: FileEncoding;
     multi: true;
   }): Promise<FileDescriptor[] | undefined>;
-  importFile(options?: {
-    defaultPath?: string;
-    extensions?: string[];
-    title?: string;
-    encoding?: FileEncoding;
-    multi?: boolean;
-  }): Promise<FileDescriptor[] | FileDescriptor | undefined>;
 
   /**
    * @returns

@@ -38,6 +38,7 @@ test('Correct top level API exposed', () => {
       "DetailSidebar",
       "Dialog",
       "ElementsInspector",
+      "FileSelector",
       "Layout",
       "MarkerTimeline",
       "MasterDetail",
