@@ -21,7 +21,10 @@ export function isConnectivityOrAuthError(
   return (
     err instanceof ConnectivityError ||
     isAuthError(err) ||
-    String(err).startsWith('Failed to fetch')
+    String(err).startsWith('Failed to fetch') ||
+    // In cases where the error message is wrapped but the
+    // underlying core issue is still a fetch failure.
+    String(err).endsWith('Failed to fetch')
   );
 }
 
