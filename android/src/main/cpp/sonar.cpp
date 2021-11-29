@@ -251,7 +251,10 @@ class JFlipperWebSocket : public facebook::flipper::FlipperSocket {
         connectionContextStore_(connectionContextStore) {}
 
   virtual ~JFlipperWebSocket() {
-    disconnect();
+    if (socket_ != nullptr) {
+      socket_->disconnect();
+      socket_ = nullptr;
+    }
   }
 
   virtual void setEventHandler(SocketEventHandler eventHandler) override {
@@ -282,21 +285,21 @@ class JFlipperWebSocket : public facebook::flipper::FlipperSocket {
 
     auto secure = endpoint_.secure;
 
-    bool fullfilled = false;
     std::promise<bool> promise;
     auto connected = promise.get_future();
 
+    connecting_ = true;
+
     socket_ = make_global(JFlipperSocketImpl::create(connectionURL));
     socket_->setEventHandler(JFlipperSocketEventHandlerImpl::newObjectCxxArgs(
-        [&fullfilled, &promise, eventHandler = eventHandler_](
-            SocketEvent event) {
+        [this, &promise, eventHandler = eventHandler_](SocketEvent event) {
           /**
              Only fulfill the promise the first time the event handler is used.
              If the open event is received, then set the promise value to true.
              For any other event, consider a failure and set to false.
            */
-          if (!fullfilled) {
-            fullfilled = true;
+          if (this->connecting_) {
+            this->connecting_ = false;
             if (event == SocketEvent::OPEN) {
               promise.set_value(true);
             } else if (event == SocketEvent::SSL_ERROR) {
@@ -338,6 +341,7 @@ class JFlipperWebSocket : public facebook::flipper::FlipperSocket {
     if (state == std::future_status::ready) {
       return connected.get();
     }
+
     disconnect();
     return false;
   }
@@ -399,6 +403,7 @@ class JFlipperWebSocket : public facebook::flipper::FlipperSocket {
   facebook::flipper::SocketMessageHandler messageHandler_;
 
   jni::global_ref<JFlipperSocketImpl> socket_;
+  bool connecting_;
 };
 
 class JFlipperSocketProvider : public facebook::flipper::FlipperSocketProvider {

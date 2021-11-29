@@ -148,9 +148,7 @@ class FlipperSocketImpl extends WebSocketClient implements FlipperSocket {
 
   @Override
   public void flipperDisconnect() {
-    /**
-     * Set an event handler that does nothing, not interested in getting more socket event messages.
-     */
+    this.mEventHandler.onConnectionEvent(FlipperSocketEventHandler.SocketEvent.CLOSE);
     this.mEventHandler =
         new FlipperSocketEventHandler() {
           @Override
