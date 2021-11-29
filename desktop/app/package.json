@@ -23,6 +23,6 @@
   },
   "optionalDependencies": {},
   "devDependencies": {
-    "react-refresh": "^0.10.0"
+    "react-refresh": "^0.11.0"
   }
 }

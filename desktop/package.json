@@ -176,7 +176,7 @@
     "pretty-format": "^27.3.1",
     "promisify-child-process": "^4.1.0",
     "react-async": "^10.0.0",
-    "react-refresh": "^0.10.0",
+    "react-refresh": "^0.11.0",
     "recursive-readdir": "^2.2.2",
     "redux": "^4.1.2",
     "rimraf": "^3.0.2",
