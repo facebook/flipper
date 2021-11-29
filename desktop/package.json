@@ -180,7 +180,7 @@
     "recursive-readdir": "^2.2.2",
     "redux": "^4.1.2",
     "rimraf": "^3.0.2",
-    "socket.io": "^4.3.1",
+    "socket.io": "^4.4.0",
     "tmp": "^0.2.1",
     "ts-jest": "^26.5.6",
     "ts-node": "^9.1.1",
