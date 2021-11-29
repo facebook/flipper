@@ -3655,10 +3655,10 @@ app-builder-lib@22.11.7:
     semver "^7.3.5"
     temp-file "^3.4.0"
 
-app-builder-lib@22.14.7:
-  version "22.14.7"
-  resolved "https://registry.yarnpkg.com/app-builder-lib/-/app-builder-lib-22.14.7.tgz#25335c03df49b4efa871a59869dea43f2c3e8f3e"
-  integrity sha512-AY682h4CLECLxdMM4QXLF9hZyO+639hxhtgUDKK1rGW2QBLl7uoYoKfcwm7ca3IeBqGmCrYkbTdVKESGQZsWXQ==
+app-builder-lib@22.14.8:
+  version "22.14.8"
+  resolved "https://registry.yarnpkg.com/app-builder-lib/-/app-builder-lib-22.14.8.tgz#37137f45c5768d46a022d49b5577426264d3f19d"
+  integrity sha512-Lg3mvgR45LynhMVwVFIJgIfozaTBrcAJY3sGE3Mq5O7GVwYf0Ucdoi3mc6EqAhiyCerNznKfW9vCeL0E85vIog==
   dependencies:
     "7zip-bin" "~5.1.1"
     "@develar/schema-utils" "~2.6.5"
