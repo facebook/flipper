@@ -217,7 +217,11 @@ class ServerController extends EventEmitter implements ServerEventsListener {
   }
 
   onSecureConnectionAttempt(clientQuery: SecureClientQuery): void {
-    this.logger.track('usage', 'trusted-request-handler-called', clientQuery);
+    this.logger.track(
+      'usage',
+      'trusted-request-handler-called',
+      (({csr, ...o}) => o)(clientQuery),
+    );
 
     const {os, app, device_id} = clientQuery;
     // without these checks, the user might see a connection timeout error instead, which would be much harder to track down
