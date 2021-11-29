@@ -79,7 +79,10 @@ class BrowserServerWebSocket extends SecureServerWebSocket {
     // Remove this part once our current customers migrate to the new message structure
     if (isLegacyMessage(parsedMessage)) {
       if (parsedMessage.type === 'connect') {
-        // TODO: Show a user warning about legacy message structure and protocol. Provide them with clear instructions on how to upgrade.
+        // TODO: Add a link to a blog post when it is ready.
+        console.warn(
+          '[conn] Legacy WebSocket connection. Please, upgrade. See https://github.com/facebook/flipper/tree/main/js/js-flipper for references.',
+        );
 
         // Legacy protocol supported passing an optional list of plugins with a 'connect' message.
         // Clients that pass the list of plugins this way might not suport `getPlugins` call.
