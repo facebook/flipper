@@ -1,6 +1,6 @@
 # DataSource
 
-_Library to power streamig data visualisations as used in Facebook's Flipper_
+_Library to power streaming data visualisations as used in Facebook's Flipper_
 
 ## Installation
 
