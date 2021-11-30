@@ -8,6 +8,7 @@
 import React from 'react';
 import clsx from 'clsx';
 import LayoutProviders from '@theme/LayoutProviders';
+import Head from '@docusaurus/Head';
 import useKeyboardNavigation from '@theme/hooks/useKeyboardNavigation';
 import {ThemeClassNames} from '@docusaurus/theme-common';
 import './styles.css';
@@ -17,6 +18,9 @@ function EmbeddedLayout(props) {
   useKeyboardNavigation();
   return (
     <LayoutProviders>
+      <Head>
+        <meta name="robots" content="noindex" />
+      </Head>
       <div
         className={clsx(
           ThemeClassNames.wrapper.main,
