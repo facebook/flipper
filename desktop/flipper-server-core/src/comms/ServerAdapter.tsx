@@ -180,7 +180,7 @@ abstract class ServerAdapter {
         });
         return response;
       } catch (e) {
-        console.error(
+        console.warn(
           `[conn] Failed to exchange certificate with ${clientQuery.app} on ${
             clientQuery.device || clientQuery.device_id
           }`,
