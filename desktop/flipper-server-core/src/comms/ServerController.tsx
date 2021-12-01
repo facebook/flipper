@@ -508,7 +508,7 @@ class ConnectionTracker {
 
     this.connectionAttempts.set(key, entry);
     if (entry.length >= this.connectionProblemThreshold) {
-      console.error(
+      console.warn(
         `[conn] Connection loop detected with ${key}. Connected ${
           this.connectionProblemThreshold
         } times within ${this.timeWindowMillis / 1000}s.`,
