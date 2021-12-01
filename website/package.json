@@ -10,18 +10,18 @@
     "generate-plugin-docs": "ts-node ./generate-plugin-docs.ts"
   },
   "devDependencies": {
-    "@docusaurus/core": "^2.0.0-beta.8",
-    "@docusaurus/plugin-client-redirects": "2.0.0-beta.8",
-    "@docusaurus/preset-classic": "^2.0.0-beta.8",
+    "@docusaurus/core": "^2.0.0-beta.9",
+    "@docusaurus/plugin-client-redirects": "2.0.0-beta.9",
+    "@docusaurus/preset-classic": "^2.0.0-beta.9",
     "@types/fs-extra": "^9.0.13",
-    "docusaurus-plugin-internaldocs-fb": "^0.9.11",
+    "docusaurus-plugin-internaldocs-fb": "^0.10.0-alpha.3",
     "file-cli": "^1.2.0",
     "fs-extra": "^10.0.0",
-    "mermaid": "^8.13.3",
+    "mermaid": "^8.13.4",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "ts-node": "^10.4.0",
-    "typescript": "^4.4.4"
+    "typescript": "^4.5.2"
   },
   "dependencies": {},
   "resolutions": {
