@@ -7,10 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1F1BD819D86342C525D474B9 /* libPods-PortForwardingMacApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E30148EC56C48894221BF2EC /* libPods-PortForwardingMacApp.a */; };
 		3B3526C92757197400D803F9 /* FKPortForwardingClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B61AC1A2756C3D30017E050 /* FKPortForwardingClient.m */; };
 		3B3526CA2757197400D803F9 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B3FD2F527565B8000D731DB /* main.m */; };
-		3B3526CF275721B500D803F9 /* FBPortForwardingMacApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B0A99AA5350C20B2CFA072E3 /* FBPortForwardingMacApp.framework */; };
-		3B3526D0275721B500D803F9 /* FBPortForwardingMacApp.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B0A99AA5350C20B2CFA072E3 /* FBPortForwardingMacApp.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -20,7 +19,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				3B3526D0275721B500D803F9 /* FBPortForwardingMacApp.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -34,7 +32,7 @@
 		3B61AC192756C3D30017E050 /* FKPortForwardingClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FKPortForwardingClient.h; path = iOS/FlipperKit/FKPortForwarding/FKPortForwardingClient.h; sourceTree = SOURCE_ROOT; };
 		3B61AC1A2756C3D30017E050 /* FKPortForwardingClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FKPortForwardingClient.m; path = iOS/FlipperKit/FKPortForwarding/FKPortForwardingClient.m; sourceTree = SOURCE_ROOT; };
 		95395DC97D1F23A7B72F2FB8 /* Pods-PortForwardingMacApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PortForwardingMacApp.debug.xcconfig"; path = "Target Support Files/Pods-PortForwardingMacApp/Pods-PortForwardingMacApp.debug.xcconfig"; sourceTree = "<group>"; };
-		B0A99AA5350C20B2CFA072E3 /* FBPortForwardingMacApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = FBPortForwardingMacApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E30148EC56C48894221BF2EC /* libPods-PortForwardingMacApp.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-PortForwardingMacApp.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -42,7 +40,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3B3526CF275721B500D803F9 /* FBPortForwardingMacApp.framework in Frameworks */,
+				1F1BD819D86342C525D474B9 /* libPods-PortForwardingMacApp.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -88,7 +86,7 @@
 		3BDD19D5275661C600E99F80 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				B0A99AA5350C20B2CFA072E3 /* FBPortForwardingMacApp.framework */,
+				E30148EC56C48894221BF2EC /* libPods-PortForwardingMacApp.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -114,7 +112,6 @@
 				3B3526B5275718D700D803F9 /* Sources */,
 				3B3526B6275718D700D803F9 /* Frameworks */,
 				3B3526B7275718D700D803F9 /* Resources */,
-				846529FF0F8627F224344B8A /* [CP] Embed Pods Frameworks */,
 				3B3526D1275721B500D803F9 /* Embed Frameworks */,
 			);
 			buildRules = (
@@ -169,23 +166,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		846529FF0F8627F224344B8A /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-PortForwardingMacApp/Pods-PortForwardingMacApp-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-PortForwardingMacApp/Pods-PortForwardingMacApp-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-PortForwardingMacApp/Pods-PortForwardingMacApp-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		B95B3E164CB7F2CE4005C454 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -229,7 +209,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
-				CODE_SIGN_ENTITLEMENTS = PortForwardingMacApp/PortForwardingMacApp.entitlements;
+				CODE_SIGN_ENTITLEMENTS = "";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
@@ -242,7 +222,7 @@
 					"${SRCROOT}/iOS/FlipperKit/**",
 				);
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2013-present Facebook. All rights reserved.";
 				INFOPLIST_KEY_NSMainNibFile = MainMenu;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -262,7 +242,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
-				CODE_SIGN_ENTITLEMENTS = PortForwardingMacApp/PortForwardingMacApp.entitlements;
+				CODE_SIGN_ENTITLEMENTS = "";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
@@ -275,7 +255,7 @@
 					"${SRCROOT}/iOS/FlipperKit/**",
 				);
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2013-present Facebook. All rights reserved.";
 				INFOPLIST_KEY_NSMainNibFile = MainMenu;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
 				LD_RUNPATH_SEARCH_PATHS = (
