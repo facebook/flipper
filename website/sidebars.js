@@ -58,6 +58,7 @@ module.exports = {
         ],
       },
       ...fbInternalOnly(['getting-started/fb/connecting-to-flipper']),
+      ...fbInternalOnly(['getting-started/fb/flipper-on-demand']),
       'troubleshooting',
       {
         'Other Platforms': [
