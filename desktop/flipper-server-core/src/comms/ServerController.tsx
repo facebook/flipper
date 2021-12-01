@@ -43,6 +43,11 @@ import {
   getFlipperServerConfig,
 } from '../FlipperServerConfig';
 
+type ClientTimestampTracker = {
+  insecureStart?: number;
+  secureStart?: number;
+};
+
 type ClientInfo = {
   connection: ClientConnection | null | undefined;
   client: ClientDescription;
@@ -67,6 +72,7 @@ declare interface ServerController {
  */
 class ServerController extends EventEmitter implements ServerEventsListener {
   connections: Map<string, ClientInfo>;
+  timestamps: Map<string, ClientTimestampTracker>;
 
   initialized: Promise<void> | null;
   secureServer: Promise<ServerAdapter> | null;
@@ -86,6 +92,7 @@ class ServerController extends EventEmitter implements ServerEventsListener {
     super();
     this.flipperServer = flipperServer;
     this.connections = new Map();
+    this.timestamps = new Map();
     this.certificateProvider = new CertificateProvider(
       this,
       this.logger,
@@ -217,6 +224,18 @@ class ServerController extends EventEmitter implements ServerEventsListener {
   }
 
   onSecureConnectionAttempt(clientQuery: SecureClientQuery): void {
+    const strippedClientQuery = (({device_id, ...o}) => o)(clientQuery);
+    let id = buildClientId({device_id: 'unknown', ...strippedClientQuery});
+    const tracker = this.timestamps.get(id);
+    if (tracker) {
+      this.timestamps.delete(id);
+    }
+    id = buildClientId(clientQuery);
+    this.timestamps.set(id, {
+      secureStart: performance.now(),
+      ...tracker,
+    });
+
     this.logger.track(
       'usage',
       'trusted-request-handler-called',
@@ -261,6 +280,11 @@ class ServerController extends EventEmitter implements ServerEventsListener {
   }
 
   onConnectionAttempt(clientQuery: ClientQuery): void {
+    const strippedClientQuery = (({device_id, ...o}) => o)(clientQuery);
+    const id = buildClientId({device_id: 'unknown', ...strippedClientQuery});
+    this.timestamps.set(id, {
+      insecureStart: performance.now(),
+    });
     this.logger.track('usage', 'untrusted-request-handler-called', clientQuery);
     this.connectionTracker.logConnectionAttempt(clientQuery);
 
@@ -367,12 +391,7 @@ class ServerController extends EventEmitter implements ServerEventsListener {
     // TODO: allocate new object, kept now as is to keep changes minimal
     (query as any).app = appNameWithUpdateHint(query);
 
-    const id = buildClientId({
-      app: query.app,
-      os: query.os,
-      device: query.device,
-      device_id: query.device_id,
-    });
+    const id = buildClientId(query);
     console.info(
       `[conn] Matching device for ${query.app} on ${query.device_id}...`,
       query,
@@ -425,6 +444,20 @@ class ServerController extends EventEmitter implements ServerEventsListener {
 
     this.connections.set(id, info);
     this.flipperServer.emit('client-connected', client);
+
+    const tracker = this.timestamps.get(id);
+    if (tracker) {
+      const end = performance.now();
+      const start = tracker.insecureStart
+        ? tracker.insecureStart
+        : tracker.secureStart;
+      const elapsed = Math.round(end - start!);
+      this.logger.track('performance', 'client-connection-tracker', {
+        'time-to-connection': elapsed,
+        ...query,
+      });
+      this.timestamps.delete(id);
+    }
 
     return client;
   }
