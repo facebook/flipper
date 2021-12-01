@@ -20,7 +20,7 @@ target 'FlipperKit' do
 
 end
 target 'PortForwardingMacApp' do
-  use_frameworks!
+  #use_frameworks!
   platform :osx, '11'
   workspace 'FlipperKit.xcworkspace'
   project '../PortForwardingMacApp.xcodeproj'
