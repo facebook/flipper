@@ -14,10 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "53D19A0420A4BA3600A371E3"
-               BuildableName = "FlipperKit.framework"
-               BlueprintName = "FlipperKit"
-               ReferencedContainer = "container:FlipperKit.xcodeproj">
+               BlueprintIdentifier = "3B3526B8275718D700D803F9"
+               BuildableName = "PortForwardingMacApp.app"
+               BlueprintName = "PortForwardingMacApp"
+               ReferencedContainer = "container:PortForwardingMacApp.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -40,6 +40,16 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "3B3526B8275718D700D803F9"
+            BuildableName = "PortForwardingMacApp.app"
+            BlueprintName = "PortForwardingMacApp"
+            ReferencedContainer = "container:PortForwardingMacApp.xcodeproj">
+         </BuildableReference>
+      </BuildableProductRunnable>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -50,10 +60,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "53D19A0420A4BA3600A371E3"
-            BuildableName = "FlipperKit.framework"
-            BlueprintName = "FlipperKit"
-            ReferencedContainer = "container:FlipperKit.xcodeproj">
+            BlueprintIdentifier = "3B3526B8275718D700D803F9"
+            BuildableName = "PortForwardingMacApp.app"
+            BlueprintName = "PortForwardingMacApp"
+            ReferencedContainer = "container:PortForwardingMacApp.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </ProfileAction>

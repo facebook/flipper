@@ -1,0 +1,431 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 55;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		3B3526C92757197400D803F9 /* FKPortForwardingClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B61AC1A2756C3D30017E050 /* FKPortForwardingClient.m */; };
+		3B3526CA2757197400D803F9 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B3FD2F527565B8000D731DB /* main.m */; };
+		3B3526CF275721B500D803F9 /* FBPortForwardingMacApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B0A99AA5350C20B2CFA072E3 /* FBPortForwardingMacApp.framework */; };
+		3B3526D0275721B500D803F9 /* FBPortForwardingMacApp.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B0A99AA5350C20B2CFA072E3 /* FBPortForwardingMacApp.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		DD70E965C8E9DA3F84AA1D50 /* Pods_PortForwardingMacApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DDD6EC26D1A76E79F462E573 /* Pods_PortForwardingMacApp.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		3B3526D1275721B500D803F9 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				3B3526D0275721B500D803F9 /* FBPortForwardingMacApp.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		339253FD0D50C9D90FA019FF /* Pods-PortForwardingMacApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PortForwardingMacApp.release.xcconfig"; path = "Target Support Files/Pods-PortForwardingMacApp/Pods-PortForwardingMacApp.release.xcconfig"; sourceTree = "<group>"; };
+		3B3526B9275718D700D803F9 /* PortForwardingMacApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PortForwardingMacApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3B3FD2F527565B8000D731DB /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		3B61AC192756C3D30017E050 /* FKPortForwardingClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FKPortForwardingClient.h; path = iOS/FlipperKit/FKPortForwarding/FKPortForwardingClient.h; sourceTree = SOURCE_ROOT; };
+		3B61AC1A2756C3D30017E050 /* FKPortForwardingClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FKPortForwardingClient.m; path = iOS/FlipperKit/FKPortForwarding/FKPortForwardingClient.m; sourceTree = SOURCE_ROOT; };
+		95395DC97D1F23A7B72F2FB8 /* Pods-PortForwardingMacApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PortForwardingMacApp.debug.xcconfig"; path = "Target Support Files/Pods-PortForwardingMacApp/Pods-PortForwardingMacApp.debug.xcconfig"; sourceTree = "<group>"; };
+		B0A99AA5350C20B2CFA072E3 /* FBPortForwardingMacApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = FBPortForwardingMacApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		DDD6EC26D1A76E79F462E573 /* Pods_PortForwardingMacApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PortForwardingMacApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		3B3526B6275718D700D803F9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3B3526CF275721B500D803F9 /* FBPortForwardingMacApp.framework in Frameworks */,
+				DD70E965C8E9DA3F84AA1D50 /* Pods_PortForwardingMacApp.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		3B3FD2E927565B8000D731DB = {
+			isa = PBXGroup;
+			children = (
+				3B3FD2F427565B8000D731DB /* PortForwardingMacApp */,
+				3B3FD2F327565B8000D731DB /* Products */,
+				3BDD19D5275661C600E99F80 /* Frameworks */,
+				FE7B3BC513417A34A3909022 /* Pods */,
+			);
+			sourceTree = "<group>";
+		};
+		3B3FD2F327565B8000D731DB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				3B3526B9275718D700D803F9 /* PortForwardingMacApp.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		3B3FD2F427565B8000D731DB /* PortForwardingMacApp */ = {
+			isa = PBXGroup;
+			children = (
+				3B61AC182756C3AF0017E050 /* PortForwarding */,
+				3B3FD2F527565B8000D731DB /* main.m */,
+			);
+			path = PortForwardingMacApp;
+			sourceTree = "<group>";
+		};
+		3B61AC182756C3AF0017E050 /* PortForwarding */ = {
+			isa = PBXGroup;
+			children = (
+				3B61AC192756C3D30017E050 /* FKPortForwardingClient.h */,
+				3B61AC1A2756C3D30017E050 /* FKPortForwardingClient.m */,
+			);
+			path = PortForwarding;
+			sourceTree = "<group>";
+		};
+		3BDD19D5275661C600E99F80 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B0A99AA5350C20B2CFA072E3 /* FBPortForwardingMacApp.framework */,
+				DDD6EC26D1A76E79F462E573 /* Pods_PortForwardingMacApp.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		FE7B3BC513417A34A3909022 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				95395DC97D1F23A7B72F2FB8 /* Pods-PortForwardingMacApp.debug.xcconfig */,
+				339253FD0D50C9D90FA019FF /* Pods-PortForwardingMacApp.release.xcconfig */,
+			);
+			name = Pods;
+			path = iOS/Pods;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		3B3526B8275718D700D803F9 /* PortForwardingMacApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3B3526C6275718D800D803F9 /* Build configuration list for PBXNativeTarget "PortForwardingMacApp" */;
+			buildPhases = (
+				B95B3E164CB7F2CE4005C454 /* [CP] Check Pods Manifest.lock */,
+				3B3526B5275718D700D803F9 /* Sources */,
+				3B3526B6275718D700D803F9 /* Frameworks */,
+				3B3526B7275718D700D803F9 /* Resources */,
+				846529FF0F8627F224344B8A /* [CP] Embed Pods Frameworks */,
+				3B3526D1275721B500D803F9 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PortForwardingMacApp;
+			productName = PortForwardingMacApp;
+			productReference = 3B3526B9275718D700D803F9 /* PortForwardingMacApp.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		3B3FD2EA27565B8000D731DB /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 1310;
+				TargetAttributes = {
+					3B3526B8275718D700D803F9 = {
+						CreatedOnToolsVersion = 13.1;
+					};
+				};
+			};
+			buildConfigurationList = 3B3FD2ED27565B8000D731DB /* Build configuration list for PBXProject "PortForwardingMacApp" */;
+			compatibilityVersion = "Xcode 13.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 3B3FD2E927565B8000D731DB;
+			productRefGroup = 3B3FD2F327565B8000D731DB /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				3B3526B8275718D700D803F9 /* PortForwardingMacApp */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		3B3526B7275718D700D803F9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		846529FF0F8627F224344B8A /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-PortForwardingMacApp/Pods-PortForwardingMacApp-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-PortForwardingMacApp/Pods-PortForwardingMacApp-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-PortForwardingMacApp/Pods-PortForwardingMacApp-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		B95B3E164CB7F2CE4005C454 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-PortForwardingMacApp-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		3B3526B5275718D700D803F9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3B3526C92757197400D803F9 /* FKPortForwardingClient.m in Sources */,
+				3B3526CA2757197400D803F9 /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		3B3526C7275718D800D803F9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 95395DC97D1F23A7B72F2FB8 /* Pods-PortForwardingMacApp.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CODE_SIGN_ENTITLEMENTS = PortForwardingMacApp/PortForwardingMacApp.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"${PODS_ROOT}/Headers/Public\"",
+					"\"${PODS_ROOT}/Headers/Public/CocoaAsyncSocket\"",
+					"\"${PODS_ROOT}/Headers/Public/Flipper-PeerTalk\"",
+					"${SRCROOT}/iOS/FlipperKit/**",
+				);
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMainNibFile = MainMenu;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.PortForwardingMacApp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+			};
+			name = Debug;
+		};
+		3B3526C8275718D800D803F9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 339253FD0D50C9D90FA019FF /* Pods-PortForwardingMacApp.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CODE_SIGN_ENTITLEMENTS = PortForwardingMacApp/PortForwardingMacApp.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"${PODS_ROOT}/Headers/Public\"",
+					"\"${PODS_ROOT}/Headers/Public/CocoaAsyncSocket\"",
+					"\"${PODS_ROOT}/Headers/Public/Flipper-PeerTalk\"",
+					"${SRCROOT}/iOS/FlipperKit/**",
+				);
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMainNibFile = MainMenu;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.PortForwardingMacApp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+			};
+			name = Release;
+		};
+		3B3FD2F727565B8000D731DB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		3B3FD2F827565B8000D731DB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		3B3526C6275718D800D803F9 /* Build configuration list for PBXNativeTarget "PortForwardingMacApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3B3526C7275718D800D803F9 /* Debug */,
+				3B3526C8275718D800D803F9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3B3FD2ED27565B8000D731DB /* Build configuration list for PBXProject "PortForwardingMacApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3B3FD2F727565B8000D731DB /* Debug */,
+				3B3FD2F827565B8000D731DB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 3B3FD2EA27565B8000D731DB /* Project object */;
+}
