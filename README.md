@@ -148,7 +148,9 @@ Note that the first 2 steps need to be done only once.
 
 Alternatively, the app can be started on `iOS` by running `yarn ios`.
 
-If this is the first time running, you will also need to run `pod install --repo-update` from the `react-native/ReactNativeFlipperExample/ios` folder.
+If this is the first time running, you will also need to run
+`pod install --repo-update` from the
+`react-native/ReactNativeFlipperExample/ios` folder.
 
 ## JS SDK + Sample React app
 

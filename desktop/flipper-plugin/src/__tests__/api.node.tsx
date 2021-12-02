@@ -56,6 +56,7 @@ test('Correct top level API exposed', () => {
       "createState",
       "createTablePlugin",
       "getFlipperLib",
+      "path",
       "produce",
       "renderReactRoot",
       "sleep",

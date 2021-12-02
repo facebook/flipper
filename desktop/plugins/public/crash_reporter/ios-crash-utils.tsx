@@ -10,7 +10,7 @@
 import type {CrashLog} from './index';
 import fs from 'fs-extra';
 import os from 'os';
-import path from 'path';
+import {path} from 'flipper-plugin';
 import {UNKNOWN_CRASH_REASON} from './crash-utils';
 
 export function parseIosCrash(content: string) {

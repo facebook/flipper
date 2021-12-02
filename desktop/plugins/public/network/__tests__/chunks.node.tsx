@@ -8,10 +8,9 @@
  */
 
 import {combineBase64Chunks} from '../chunks';
-import {TestUtils} from 'flipper-plugin';
+import {TestUtils, path} from 'flipper-plugin';
 import * as NetworkPlugin from '../index';
 import {assembleChunksIfResponseIsComplete} from '../chunks';
-import path from 'path';
 import {Base64} from 'js-base64';
 import * as fs from 'fs';
 import {promisify} from 'util';

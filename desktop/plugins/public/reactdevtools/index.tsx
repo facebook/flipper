@@ -16,13 +16,13 @@ import {
   useValue,
   sleep,
   Toolbar,
+  path,
 } from 'flipper-plugin';
 import React from 'react';
 import getPort from 'get-port';
 import {Button, message, Switch, Typography} from 'antd';
 import child_process from 'child_process';
 import fs from 'fs';
-import path from 'path';
 import {DevToolsEmbedder} from './DevToolsEmbedder';
 
 const DEV_TOOLS_NODE_ID = 'reactdevtools-out-of-react-node';

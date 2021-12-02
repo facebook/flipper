@@ -8,7 +8,7 @@
  */
 
 import fs from 'fs';
-import path from 'path';
+import {path} from 'flipper-plugin';
 import {AppMatchPattern} from '../types';
 import {Device, getFlipperLib} from 'flipper-plugin';
 

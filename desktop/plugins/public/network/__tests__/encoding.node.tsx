@@ -8,12 +8,11 @@
  */
 
 import {readFile} from 'fs';
-import path from 'path';
 import {decodeBody, isTextual} from '../utils';
 import {ResponseInfo} from '../types';
 import {promisify} from 'util';
 import {readFileSync} from 'fs';
-import {TestUtils} from 'flipper-plugin';
+import {TestUtils, path} from 'flipper-plugin';
 import * as NetworkPlugin from '../index';
 
 async function createMockResponse(
