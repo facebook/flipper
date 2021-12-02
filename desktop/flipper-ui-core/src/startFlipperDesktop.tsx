@@ -53,6 +53,7 @@ import {
 } from 'flipper-common';
 import {internGraphPOSTAPIRequest} from './fb-stubs/user';
 import {getRenderHostInstance} from './RenderHost';
+import {startGlobalErrorHandling} from './utils/globalErrorHandling';
 
 class AppFrame extends React.Component<
   {logger: Logger; persistor: Persistor},
@@ -175,6 +176,8 @@ function init() {
   const store = getStore();
   const logger = initLogger(store);
   setLoggerInstance(logger);
+
+  startGlobalErrorHandling();
 
   // rehydrate app state before exposing init
   const persistor = persistStore(store, undefined, () => {
