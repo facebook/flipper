@@ -953,9 +953,8 @@ class JFlipperClient : public jni::HybridClass<JFlipperClient> {
          securePort,
          altInsecurePort,
          altSecurePort});
-    // To switch to a WebSocket provider, uncomment the line below.
-    //    facebook::flipper::FlipperSocketProvider::setDefaultProvider(
-    //        std::make_unique<JFlipperSocketProvider>());
+    facebook::flipper::FlipperSocketProvider::setDefaultProvider(
+        std::make_unique<JFlipperSocketProvider>());
   }
 
  private:

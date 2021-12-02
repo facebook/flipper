@@ -31,9 +31,7 @@ static constexpr int reconnectIntervalSeconds = 2;
 // To be bumped for every core platform interface change.
 static constexpr int sdkVersion = 4;
 
-#ifdef __APPLE__
 static constexpr int maxFailedSocketConnectionAttempts = 3;
-#endif
 
 using namespace folly;
 
@@ -477,7 +475,6 @@ void FlipperConnectionManagerImpl::sendLegacyCertificateRequest(
     WebSocket -> RSocket -> WebSocket -> ...
  */
 void FlipperConnectionManagerImpl::reevaluateSocketProvider() {
-#ifdef __APPLE__
   if (failedSocketConnectionAttempts < maxFailedSocketConnectionAttempts) {
     ++failedSocketConnectionAttempts;
   } else {
@@ -490,7 +487,6 @@ void FlipperConnectionManagerImpl::reevaluateSocketProvider() {
       FlipperSocketProvider::unshelveDefault();
     }
   }
-#endif
 }
 
 bool FlipperConnectionManagerImpl::isRunningInOwnThread() {
