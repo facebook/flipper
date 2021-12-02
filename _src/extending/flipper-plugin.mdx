@@ -1052,23 +1052,113 @@ renderReactRoot((unmount) => (
 ));
 ```
 
-## sleep
+### sleep
 
 Usage: `await sleep(1000)`
 
 Creates a promise that automatically resolves after the specified amount of milliseconds.
 
-## timeout
+### timeout
 
 Usage `await timeout(1000, promise, message?)`
 
-## styled
+### styled
 
 A convenience re-export of `styled` from [emotion](https://emotion.sh/docs/styled).
 
-## textContent
+### textContent
 
 Given a string or React element, returns a text representation of that element, that is suitable as plain text.
+
+### path
+
+A set of utilizities to handle file paths. A subset of Node.js' [path](https://nodejs.org/api/path.html). 
+
+<!-- Docs copied from https://github.com/nodejs/node/blob/master/doc/api/path.md -->
+#### `path.basename(path[, ext])`
+
+* `path` {string}
+* `ext` {string} An optional file extension
+* Returns: {string}
+
+The `path.basename()` method returns the last portion of a `path`, similar to
+the Unix `basename` command. Trailing directory separators are ignored.
+
+```js
+path.basename('/foo/bar/baz/asdf/quux.html');
+// Returns: 'quux.html'
+
+path.basename('/foo/bar/baz/asdf/quux.html', '.html');
+// Returns: 'quux'
+```
+
+#### `path.extname(path)`
+
+* `path` {string}
+* Returns: {string}
+
+The `path.extname()` method returns the extension of the `path`, from the last
+occurrence of the `.` (period) character to end of string in the last portion of
+the `path`. If there is no `.` in the last portion of the `path`, or if
+there are no `.` characters other than the first character of
+the basename of `path` (see `path.basename()`) , an empty string is returned.
+
+```js
+path.extname('index.html');
+// Returns: '.html'
+
+path.extname('index.coffee.md');
+// Returns: '.md'
+
+path.extname('index.');
+// Returns: '.'
+
+path.extname('index');
+// Returns: ''
+
+path.extname('.index');
+// Returns: ''
+
+path.extname('.index.md');
+// Returns: '.md'
+```
+
+#### `path.join([...paths])`
+
+* `...paths` {string} A sequence of path segments
+* Returns: {string}
+
+The `path.join()` method joins all given `path` segments together using the
+platform-specific separator as a delimiter, then normalizes the resulting path.
+
+Zero-length `path` segments are ignored. If the joined path string is a
+zero-length string then `'.'` will be returned, representing the current
+working directory.
+
+```js
+path.join('/foo', 'bar', 'baz/asdf', 'quux', '..');
+// Returns: '/foo/bar/baz/asdf'
+```
+
+#### `path.normalize(path)`
+
+* `path` {string}
+* Returns: {string}
+
+The `path.normalize()` method normalizes the given `path`, resolving `'..'` and
+`'.'` segments.
+
+When multiple, sequential path segment separation characters are found (e.g.
+`/`), they are replaced by a single
+instance of `/`. Trailing separators are preserved.
+
+If the `path` is a zero-length string, `'.'` is returned, representing the
+current working directory.
+
+```js
+path.normalize('/foo/bar//baz/asdf/quux/..');
+// Returns: '/foo/bar/baz/asdf'
+```
 
 ## TestUtils
 
