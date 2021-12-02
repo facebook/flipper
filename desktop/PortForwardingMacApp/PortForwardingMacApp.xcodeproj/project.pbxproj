@@ -8,8 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		1F1BD819D86342C525D474B9 /* libPods-PortForwardingMacApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E30148EC56C48894221BF2EC /* libPods-PortForwardingMacApp.a */; };
-		3B3526C92757197400D803F9 /* FKPortForwardingClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B61AC1A2756C3D30017E050 /* FKPortForwardingClient.m */; };
-		3B3526CA2757197400D803F9 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B3FD2F527565B8000D731DB /* main.m */; };
+		3B2385EB275850F100789041 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B3FD2F527565B8000D731DB /* main.m */; };
+		3BB803012758545200A82E32 /* FKPortForwardingClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 3BB803002758545200A82E32 /* FKPortForwardingClient.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,12 +26,13 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		339253FD0D50C9D90FA019FF /* Pods-PortForwardingMacApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PortForwardingMacApp.release.xcconfig"; path = "Target Support Files/Pods-PortForwardingMacApp/Pods-PortForwardingMacApp.release.xcconfig"; sourceTree = "<group>"; };
+		339253FD0D50C9D90FA019FF /* Pods-PortForwardingMacApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PortForwardingMacApp.release.xcconfig"; path = "../../Pods/Target Support Files/Pods-PortForwardingMacApp/Pods-PortForwardingMacApp.release.xcconfig"; sourceTree = "<group>"; };
 		3B3526B9275718D700D803F9 /* PortForwardingMacApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PortForwardingMacApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3B3FD2F527565B8000D731DB /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		3B61AC192756C3D30017E050 /* FKPortForwardingClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FKPortForwardingClient.h; path = iOS/FlipperKit/FKPortForwarding/FKPortForwardingClient.h; sourceTree = SOURCE_ROOT; };
-		3B61AC1A2756C3D30017E050 /* FKPortForwardingClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FKPortForwardingClient.m; path = iOS/FlipperKit/FKPortForwarding/FKPortForwardingClient.m; sourceTree = SOURCE_ROOT; };
-		95395DC97D1F23A7B72F2FB8 /* Pods-PortForwardingMacApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PortForwardingMacApp.debug.xcconfig"; path = "Target Support Files/Pods-PortForwardingMacApp/Pods-PortForwardingMacApp.debug.xcconfig"; sourceTree = "<group>"; };
+		3BB802FE2758545200A82E32 /* FKPortForwardingCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FKPortForwardingCommon.h; path = PortForwardingMacApp/FKPortForwarding/FKPortForwardingCommon.h; sourceTree = "<group>"; };
+		3BB802FF2758545200A82E32 /* FKPortForwardingClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FKPortForwardingClient.h; path = PortForwardingMacApp/FKPortForwarding/FKPortForwardingClient.h; sourceTree = "<group>"; };
+		3BB803002758545200A82E32 /* FKPortForwardingClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FKPortForwardingClient.m; path = PortForwardingMacApp/FKPortForwarding/FKPortForwardingClient.m; sourceTree = "<group>"; };
+		95395DC97D1F23A7B72F2FB8 /* Pods-PortForwardingMacApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PortForwardingMacApp.debug.xcconfig"; path = "../../Pods/Target Support Files/Pods-PortForwardingMacApp/Pods-PortForwardingMacApp.debug.xcconfig"; sourceTree = "<group>"; };
 		E30148EC56C48894221BF2EC /* libPods-PortForwardingMacApp.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-PortForwardingMacApp.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -68,19 +69,21 @@
 		3B3FD2F427565B8000D731DB /* PortForwardingMacApp */ = {
 			isa = PBXGroup;
 			children = (
-				3B61AC182756C3AF0017E050 /* PortForwarding */,
+				3BB802F8275852CD00A82E32 /* FKPortForwarding */,
 				3B3FD2F527565B8000D731DB /* main.m */,
 			);
 			path = PortForwardingMacApp;
 			sourceTree = "<group>";
 		};
-		3B61AC182756C3AF0017E050 /* PortForwarding */ = {
+		3BB802F8275852CD00A82E32 /* FKPortForwarding */ = {
 			isa = PBXGroup;
 			children = (
-				3B61AC192756C3D30017E050 /* FKPortForwardingClient.h */,
-				3B61AC1A2756C3D30017E050 /* FKPortForwardingClient.m */,
+				3BB802FF2758545200A82E32 /* FKPortForwardingClient.h */,
+				3BB803002758545200A82E32 /* FKPortForwardingClient.m */,
+				3BB802FE2758545200A82E32 /* FKPortForwardingCommon.h */,
 			);
-			path = PortForwarding;
+			name = FKPortForwarding;
+			path = ..;
 			sourceTree = "<group>";
 		};
 		3BDD19D5275661C600E99F80 /* Frameworks */ = {
@@ -195,8 +198,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3B3526C92757197400D803F9 /* FKPortForwardingClient.m in Sources */,
-				3B3526CA2757197400D803F9 /* main.m in Sources */,
+				3B2385EB275850F100789041 /* main.m in Sources */,
+				3BB803012758545200A82E32 /* FKPortForwardingClient.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -207,9 +210,11 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 95395DC97D1F23A7B72F2FB8 /* Pods-PortForwardingMacApp.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
 				CODE_SIGN_ENTITLEMENTS = "";
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
@@ -219,7 +224,7 @@
 					"\"${PODS_ROOT}/Headers/Public\"",
 					"\"${PODS_ROOT}/Headers/Public/CocoaAsyncSocket\"",
 					"\"${PODS_ROOT}/Headers/Public/Flipper-PeerTalk\"",
-					"${SRCROOT}/iOS/FlipperKit/**",
+					"${SRCROOT}/**",
 				);
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2013-present Facebook. All rights reserved.";
@@ -240,9 +245,11 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 339253FD0D50C9D90FA019FF /* Pods-PortForwardingMacApp.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
 				CODE_SIGN_ENTITLEMENTS = "";
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
@@ -252,7 +259,7 @@
 					"\"${PODS_ROOT}/Headers/Public\"",
 					"\"${PODS_ROOT}/Headers/Public/CocoaAsyncSocket\"",
 					"\"${PODS_ROOT}/Headers/Public/Flipper-PeerTalk\"",
-					"${SRCROOT}/iOS/FlipperKit/**",
+					"${SRCROOT}/**",
 				);
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2013-present Facebook. All rights reserved.";
