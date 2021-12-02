@@ -63,7 +63,9 @@
 		53915CC92152E31C0090EEA6 /* Plugins */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Plugins; sourceTree = SOURCE_ROOT; };
 		53D19A0520A4BA3600A371E3 /* FlipperKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = FlipperKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		53D4C51120A5B89900613A96 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		5B3C0104984F1A2F624E5394 /* Pods-SonarKit.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SonarKit.release.xcconfig"; path = "Pods/Target Support Files/Pods-SonarKit/Pods-SonarKit.release.xcconfig"; sourceTree = "<group>"; };
 		AF8587A796104EAC5B080F7D /* Pods-FlipperKit.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlipperKit.release.xcconfig"; path = "Pods/Target Support Files/Pods-FlipperKit/Pods-FlipperKit.release.xcconfig"; sourceTree = "<group>"; };
+		C6253FA5661121EDD200B8A9 /* Pods-SonarKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SonarKit.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SonarKit/Pods-SonarKit.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,6 +84,8 @@
 		256B672257477FB71D3FAD20 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
+				C6253FA5661121EDD200B8A9 /* Pods-SonarKit.debug.xcconfig */,
+				5B3C0104984F1A2F624E5394 /* Pods-SonarKit.release.xcconfig */,
 				22B8670D786EA50E30082023 /* Pods-FlipperKit.debug.xcconfig */,
 				AF8587A796104EAC5B080F7D /* Pods-FlipperKit.release.xcconfig */,
 			);
@@ -230,7 +234,7 @@
 		53D199FC20A4BA3600A371E3 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1310;
+				LastUpgradeCheck = 0940;
 				ORGANIZATIONNAME = Facebook;
 				TargetAttributes = {
 					53D19A0420A4BA3600A371E3 = {
@@ -246,7 +250,6 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
-				Base,
 			);
 			mainGroup = 53D199FB20A4BA3600A371E3;
 			productRefGroup = 53D19A0620A4BA3600A371E3 /* Products */;
@@ -335,7 +338,6 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -362,7 +364,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -397,7 +399,6 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -418,7 +419,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
@@ -457,13 +458,12 @@
 					"${PODS_ROOT}/Headers/Public/glog",
 					"${PODS_ROOT}/Headers/Public/CocoaAsyncSocket",
 					/usr/local/Cellar/openssl/1.0.2o_1/include,
-					/opt/homebrew/Cellar/boost/1.76.0/include,
 					"${SRCROOT}",
 					"${SRCROOT}/Plugins/**",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/FlipperKit/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
@@ -540,7 +540,7 @@
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/FlipperKit/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
