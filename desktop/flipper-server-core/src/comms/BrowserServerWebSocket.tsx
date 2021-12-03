@@ -97,6 +97,11 @@ class BrowserServerWebSocket extends SecureServerWebSocket {
           // Upon initialization it sent a `getPlugins` request.
           // We find that request and resolve it with the list of plugins we received from the `connect` message
           const getPluginsCallbacks = clientConnection.matchPendingRequest(0);
+
+          if (!getPluginsCallbacks) {
+            return;
+          }
+
           getPluginsCallbacks.resolve({
             success: {plugins},
             length: rawMessage.length,

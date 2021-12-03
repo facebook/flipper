@@ -86,6 +86,10 @@ class SecureServerWebSocket extends ServerWebSocket {
     if (isWsResponseMessage(parsedMessage)) {
       const callbacks = clientConnection.matchPendingRequest(parsedMessage.id);
 
+      if (!callbacks) {
+        return;
+      }
+
       if (parsedMessage.success !== undefined) {
         callbacks.resolve({
           ...parsedMessage,
