@@ -41,7 +41,7 @@ export default class WebSocketClientConnection implements ClientConnection {
     const callbacks = this.pendingRequests.get(id);
 
     if (!callbacks) {
-      throw new Error(`Pending request ${id} is not found`);
+      throw new Error('Pending request was not found');
     }
 
     this.pendingRequests.delete(id);
