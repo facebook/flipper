@@ -15,7 +15,10 @@ import BaseDevice from './devices/BaseDevice';
 import {Logger} from 'flipper-common';
 import {Store} from './reducers/index';
 import {performance} from 'perf_hooks';
-import {reportPluginFailures} from 'flipper-common';
+import {
+  reportPluginFailures,
+  NoLongerConnectedToClientError,
+} from 'flipper-common';
 import {default as isProduction} from './utils/isProduction';
 import {EventEmitter} from 'events';
 import invariant from 'invariant';
@@ -509,7 +512,7 @@ export default class Client extends EventEmitter {
           key: 'appnotconnectedwarning',
           duration: 0.5,
         });
-        reject(new Error('Not connected to client'));
+        reject(new NoLongerConnectedToClientError());
         return;
       }
       if (!fromPlugin || this.isAcceptingMessagesFromPlugin(plugin)) {

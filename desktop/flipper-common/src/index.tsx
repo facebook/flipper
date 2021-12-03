@@ -34,6 +34,7 @@ export {
   CancelledPromiseError,
   UserUnauthorizedError,
   UserNotSignedInError,
+  NoLongerConnectedToClientError,
   isConnectivityOrAuthError,
   isError,
   isAuthError,

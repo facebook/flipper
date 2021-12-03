@@ -9,7 +9,11 @@
 
 import React from 'react';
 import {State, Store} from '../reducers/index';
-import {FlipperServer, Logger} from 'flipper-common';
+import {
+  FlipperServer,
+  Logger,
+  NoLongerConnectedToClientError,
+} from 'flipper-common';
 import {FlipperServerImpl} from 'flipper-server-core';
 import {selectClient} from '../reducers/connections';
 import Client from '../Client';
@@ -245,13 +249,24 @@ export async function handleClientConnected(
     type: 'NEW_CLIENT',
     payload: client,
   });
-
-  await timeout(
-    30 * 1000,
-    client.init(),
-    `[conn] Failed to initialize client ${query.app} on ${query.device_id} in a timely manner`,
-  );
-  console.log(`[conn] ${query.app} on ${query.device_id} connected and ready.`);
+  try {
+    await timeout(
+      30 * 1000,
+      client.init(),
+      `[conn] Failed to initialize client ${query.app} on ${query.device_id} in a timely manner`,
+    );
+    console.log(
+      `[conn] ${query.app} on ${query.device_id} connected and ready.`,
+    );
+  } catch (e) {
+    if (e instanceof NoLongerConnectedToClientError) {
+      console.warn(
+        `[conn] Client ${query.app} on ${query.device_id} disconnected while initialising`,
+      );
+      return;
+    }
+    throw e;
+  }
 }
 
 function getDeviceBySerial(

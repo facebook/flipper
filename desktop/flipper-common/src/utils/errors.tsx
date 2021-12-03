@@ -60,6 +60,14 @@ export class UserNotSignedInError extends Error {
   name: 'UserNotSignedInError';
 }
 
+export class NoLongerConnectedToClientError extends Error {
+  constructor(msg: string = 'No longer connected to client.') {
+    super(msg);
+    this.name = 'NoLongerConnectedToClientError';
+  }
+  name: 'NoLongerConnectedToClientError';
+}
+
 declare global {
   interface Error {
     interaction?: unknown;
