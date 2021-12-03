@@ -87,7 +87,9 @@ class FlipperSocketImpl extends WebSocketClient implements FlipperSocket {
         String cert_client_pass = authenticationObject.getString("certificates_client_pass");
         String cert_ca_path = authenticationObject.getString("certificates_ca_path");
 
-        ks.load(new FileInputStream(cert_client_path), cert_client_pass.toCharArray());
+        try (InputStream clientCertificateStream = new FileInputStream(cert_client_path)) {
+          ks.load(clientCertificateStream, cert_client_pass.toCharArray());
+        }
 
         KeyManagerFactory kmf =
             KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
