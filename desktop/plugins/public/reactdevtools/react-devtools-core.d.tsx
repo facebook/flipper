@@ -7,10 +7,24 @@
  * @format
  */
 
+type ServerOptions = {
+  key?: string;
+  cert?: string;
+};
+
+type LoggerOptions = {
+  surface?: string;
+};
+
 declare module 'react-devtools-core/standalone' {
   interface DevTools {
     setContentDOMNode(node: HTMLElement): this;
-    startServer(port: number): this;
+    startServer(
+      port?: number,
+      host?: string,
+      httpsOptions?: ServerOptions,
+      loggerOptions?: LoggerOptions,
+    ): {close: () => void};
     setStatusListener(listener: (message: string) => void): this;
   }
   const DevTools: DevTools;

@@ -237,7 +237,9 @@ export function devicePlugin(client: DevicePluginClient) {
           // TODO: since devToolsInstance is an instance, we are probably leaking memory here
           setStatus(ConnectionStatus.Initializing, status);
         })
-        .startServer(DEV_TOOLS_PORT) as any;
+        .startServer(DEV_TOOLS_PORT, 'localhost', undefined, {
+          surface: 'flipper',
+        });
       setStatus(ConnectionStatus.Initializing, 'Waiting for device...');
     } catch (e) {
       console.error('Failed to initalize React DevTools' + e);
