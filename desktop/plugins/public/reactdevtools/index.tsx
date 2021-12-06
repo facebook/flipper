@@ -7,7 +7,7 @@
  * @format
  */
 
-import ReactDevToolsStandaloneEmbedded from 'react-devtools-core/standalone';
+import type ReactDevToolsStandaloneType from 'react-devtools-core/standalone';
 import {
   Layout,
   usePlugin,
@@ -71,8 +71,8 @@ export function devicePlugin(client: DevicePluginClient) {
     persist: 'useGlobalDevTools',
     persistToLocalStorage: true,
   });
-  let devToolsInstance: typeof ReactDevToolsStandaloneEmbedded =
-    ReactDevToolsStandaloneEmbedded;
+
+  let devToolsInstance = getDefaultDevToolsModule();
 
   let startResult: {close(): void} | undefined = undefined;
 
@@ -81,11 +81,19 @@ export function devicePlugin(client: DevicePluginClient) {
   function getDevToolsModule() {
     // Load right library
     if (useGlobalDevTools.get()) {
-      console.log('Loading ' + globalDevToolsPath.get());
-      return global.electronRequire(globalDevToolsPath.get()!).default;
+      const module = global.electronRequire(globalDevToolsPath.get()!);
+      return module.default ?? module;
     } else {
-      return ReactDevToolsStandaloneEmbedded;
+      return getDefaultDevToolsModule();
     }
+  }
+
+  function getDefaultDevToolsModule(): ReactDevToolsStandaloneType {
+    return client.isFB
+      ? require('./fb/react-devtools-core/standalone').default ??
+          require('./fb/react-devtools-core/standalone')
+      : require('react-devtools-core/standalone').default ??
+          require('react-devtools-core/standalone');
   }
 
   async function toggleUseGlobalDevTools() {
@@ -148,7 +156,7 @@ export function devicePlugin(client: DevicePluginClient) {
       );
       startResult = devToolsInstance
         .setContentDOMNode(devToolsNode)
-        .setStatusListener((status) => {
+        .setStatusListener((status: string) => {
           // TODO: since devToolsInstance is an instance, we are probably leaking memory here
           setStatus(ConnectionStatus.Initializing, status);
         })
@@ -230,7 +238,6 @@ export function devicePlugin(client: DevicePluginClient) {
       // load it, if the flag is set
       devToolsInstance = getDevToolsModule();
     } else {
-      console.log('Found global React DevTools: ', path);
       useGlobalDevTools.set(false); // disable in case it was enabled
     }
   });
