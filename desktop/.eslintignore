@@ -1,5 +1,6 @@
 *.bundle.js
 plugins/fb/relaydevtools/relay-devtools/*
+plugins/public/reactdevtools/fb/*
 latest
 resources
 templates
