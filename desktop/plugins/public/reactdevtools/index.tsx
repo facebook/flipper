@@ -20,10 +20,11 @@ import {
 } from 'flipper-plugin';
 import React from 'react';
 import getPort from 'get-port';
-import {Button, message, Switch, Typography} from 'antd';
+import {Button, Select, message, Switch, Typography} from 'antd';
 import child_process from 'child_process';
 import fs from 'fs';
 import {DevToolsEmbedder} from './DevToolsEmbedder';
+import {getInternalDevToolsModule} from './fb-stubs/getInternalDevToolsModule';
 
 const DEV_TOOLS_NODE_ID = 'reactdevtools-out-of-react-node';
 const CONNECTED = 'DevTools connected';
@@ -55,9 +56,16 @@ function findGlobalDevTools(): Promise<string | undefined> {
 enum ConnectionStatus {
   Initializing = 'Initializing...',
   WaitingForReload = 'Waiting for connection from device...',
+  WaitingForMetroReload = 'Waiting for Metro to reload...',
   Connected = 'Connected',
   Error = 'Error',
 }
+
+type DevToolsInstanceType = 'global' | 'internal' | 'oss';
+type DevToolsInstance = {
+  type: DevToolsInstanceType;
+  module: ReactDevToolsStandaloneType;
+};
 
 export function devicePlugin(client: DevicePluginClient) {
   const metroDevice = client.device;
@@ -72,28 +80,86 @@ export function devicePlugin(client: DevicePluginClient) {
     persistToLocalStorage: true,
   });
 
-  let devToolsInstance = getDefaultDevToolsModule();
+  let devToolsInstance = getDefaultDevToolsInstance();
+  const selectedDevToolsInstanceType = createState<DevToolsInstanceType>(
+    devToolsInstance.type,
+  );
 
   let startResult: {close(): void} | undefined = undefined;
 
   let pollHandle: NodeJS.Timeout | undefined = undefined;
 
-  function getDevToolsModule() {
+  let metroReloadAttempts = 0;
+
+  function getGlobalDevToolsModule(): ReactDevToolsStandaloneType {
+    const required = global.electronRequire(globalDevToolsPath.get()!).default;
+    return required.default ?? required;
+  }
+
+  function getOSSDevToolsModule(): ReactDevToolsStandaloneType {
+    const required = require('react-devtools-core/standalone').default;
+    return required.default ?? required;
+  }
+
+  function getInitialDevToolsInstance(): DevToolsInstance {
     // Load right library
     if (useGlobalDevTools.get()) {
-      const module = global.electronRequire(globalDevToolsPath.get()!);
-      return module.default ?? module;
+      return {
+        type: 'global',
+        module: getGlobalDevToolsModule(),
+      };
     } else {
-      return getDefaultDevToolsModule();
+      return getDefaultDevToolsInstance();
     }
   }
 
-  function getDefaultDevToolsModule(): ReactDevToolsStandaloneType {
-    return client.isFB
-      ? require('./fb/react-devtools-core/standalone').default ??
-          require('./fb/react-devtools-core/standalone')
-      : require('react-devtools-core/standalone').default ??
-          require('react-devtools-core/standalone');
+  function getDefaultDevToolsInstance(): DevToolsInstance {
+    const type = client.isFB ? 'internal' : 'oss';
+    const module = client.isFB
+      ? getInternalDevToolsModule<ReactDevToolsStandaloneType>()
+      : getOSSDevToolsModule();
+    return {type, module};
+  }
+
+  function getDevToolsInstance(
+    instanceType: DevToolsInstanceType,
+  ): DevToolsInstance {
+    let module;
+    switch (instanceType) {
+      case 'global':
+        module = getGlobalDevToolsModule();
+        break;
+      case 'internal':
+        module = getInternalDevToolsModule<ReactDevToolsStandaloneType>();
+        break;
+      case 'oss':
+        module = getOSSDevToolsModule();
+        break;
+    }
+    return {
+      type: instanceType,
+      module,
+    };
+  }
+
+  async function setDevToolsInstance(instanceType: DevToolsInstanceType) {
+    selectedDevToolsInstanceType.set(instanceType);
+
+    if (instanceType === 'global') {
+      if (!globalDevToolsPath.get()) {
+        message.warn(
+          "No globally installed react-devtools package found. Run 'npm install -g react-devtools'.",
+        );
+        return;
+      }
+      useGlobalDevTools.set(true);
+    } else {
+      useGlobalDevTools.set(false);
+    }
+
+    devToolsInstance = getDevToolsInstance(instanceType);
+
+    await rebootDevTools();
   }
 
   async function toggleUseGlobalDevTools() {
@@ -103,18 +169,29 @@ export function devicePlugin(client: DevicePluginClient) {
       );
       return;
     }
+    selectedDevToolsInstanceType.update((prev: DevToolsInstanceType) => {
+      if (prev === 'global') {
+        devToolsInstance = getDefaultDevToolsInstance();
+        return devToolsInstance.type;
+      } else {
+        devToolsInstance = getDevToolsInstance('global');
+        return devToolsInstance.type;
+      }
+    });
     useGlobalDevTools.update((v) => !v);
 
-    devToolsInstance = getDevToolsModule();
+    await rebootDevTools();
+  }
 
-    statusMessage.set('Switching devTools');
-    connectionStatus.set(ConnectionStatus.Initializing);
+  async function rebootDevTools() {
+    metroReloadAttempts = 0;
+    setStatus(ConnectionStatus.Initializing, 'Loading DevTools...');
     // clean old instance
     if (pollHandle) {
       clearTimeout(pollHandle);
     }
     startResult?.close();
-    await sleep(1000); // wait for port to close
+    await sleep(5000); // wait for port to close
     startResult = undefined;
     await bootDevTools();
   }
@@ -152,16 +229,16 @@ export function devicePlugin(client: DevicePluginClient) {
       }
       setStatus(
         ConnectionStatus.Initializing,
-        'Starting DevTools server on ' + port,
+        'Starting DevTools server on ' + DEV_TOOLS_PORT,
       );
-      startResult = devToolsInstance
+      startResult = devToolsInstance.module
         .setContentDOMNode(devToolsNode)
         .setStatusListener((status: string) => {
           // TODO: since devToolsInstance is an instance, we are probably leaking memory here
           setStatus(ConnectionStatus.Initializing, status);
         })
-        .startServer(port) as any;
-      setStatus(ConnectionStatus.Initializing, 'Waiting for device');
+        .startServer(DEV_TOOLS_PORT) as any;
+      setStatus(ConnectionStatus.Initializing, 'Waiting for device...');
     } catch (e) {
       console.error('Failed to initalize React DevTools' + e);
       setStatus(ConnectionStatus.Error, 'Failed to initialize DevTools: ' + e);
@@ -169,7 +246,7 @@ export function devicePlugin(client: DevicePluginClient) {
 
     setStatus(
       ConnectionStatus.Initializing,
-      'DevTools have been initialized, waiting for connection...',
+      'DevTools initialized, waiting for connection...',
     );
     if (devtoolsHaveStarted()) {
       setStatus(ConnectionStatus.Connected, CONNECTED);
@@ -196,27 +273,33 @@ export function devicePlugin(client: DevicePluginClient) {
           return;
         // Waiting for connection, but we do have an active Metro connection, lets force a reload to enter Dev Mode on app
         // prettier-ignore
-        case connectionStatus.get() === ConnectionStatus.Initializing:
+        case connectionStatus.get() === ConnectionStatus.Initializing: {
+          if (metroDevice) {
+            const nextConnectionStatus = metroReloadAttempts === 0 ? ConnectionStatus.Initializing : ConnectionStatus.WaitingForMetroReload;
+            metroReloadAttempts++;
+            setStatus(
+              nextConnectionStatus,
+              "Sending 'reload' to Metro to force DevTools to connect...",
+            );
+            metroDevice.sendMetroCommand('reload');
+            startPollForConnection(3000);
+            return;
+          }
+
+          // Waiting for initial connection, but no WS bridge available
           setStatus(
             ConnectionStatus.WaitingForReload,
-            "Sending 'reload' to Metro to force the DevTools to connect...",
-          );
-          metroDevice!.sendMetroCommand('reload');
-          startPollForConnection(2000);
-          return;
-        // Waiting for initial connection, but no WS bridge available
-        case connectionStatus.get() === ConnectionStatus.Initializing:
-          setStatus(
-            ConnectionStatus.WaitingForReload,
-            "The DevTools didn't connect yet. Please trigger the DevMenu in the React Native app, or Reload it to connect.",
+            "DevTools is unable to connect yet. Please trigger the DevMenu in the RN app, or reload it to connect.",
           );
           startPollForConnection(10000);
           return;
+        }
         // Still nothing? Users might not have done manual action, or some other tools have picked it up?
         case connectionStatus.get() === ConnectionStatus.WaitingForReload:
+        case connectionStatus.get() === ConnectionStatus.WaitingForMetroReload:
           setStatus(
             ConnectionStatus.WaitingForReload,
-            "The DevTools didn't connect yet. Check if no other instances are running.",
+            'DevTools is unable to connect yet. Check for other instances, trigger the DevMenu in the RN app, or reload it to connect.',
           );
           startPollForConnection();
           return;
@@ -234,9 +317,10 @@ export function devicePlugin(client: DevicePluginClient) {
     const path = await findGlobalDevTools();
     if (path) {
       globalDevToolsPath.set(path + '/standalone');
+      selectedDevToolsInstanceType.set('global');
       console.log('Found global React DevTools: ', path);
       // load it, if the flag is set
-      devToolsInstance = getDevToolsModule();
+      devToolsInstance = getInitialDevToolsInstance();
     } else {
       useGlobalDevTools.set(false); // disable in case it was enabled
     }
@@ -257,57 +341,96 @@ export function devicePlugin(client: DevicePluginClient) {
   });
 
   return {
+    isFB: client.isFB,
     devtoolsHaveStarted,
     connectionStatus,
     statusMessage,
     bootDevTools,
+    rebootDevTools,
     metroDevice,
     globalDevToolsPath,
     useGlobalDevTools,
+    selectedDevToolsInstanceType,
+    setDevToolsInstance,
     toggleUseGlobalDevTools,
   };
 }
 
 export function Component() {
-  const instance = usePlugin(devicePlugin);
-  const connectionStatus = useValue(instance.connectionStatus);
-  const statusMessage = useValue(instance.statusMessage);
-  const globalDevToolsPath = useValue(instance.globalDevToolsPath);
-  const useGlobalDevTools = useValue(instance.useGlobalDevTools);
-
   return (
     <Layout.Container grow>
-      {globalDevToolsPath ? (
-        <Toolbar
-          right={
-            <>
-              <Switch
-                checked={useGlobalDevTools}
-                onChange={instance.toggleUseGlobalDevTools}
-                size="small"
-              />
-              Use globally installed DevTools
-            </>
-          }
-          wash>
-          {connectionStatus !== ConnectionStatus.Connected ? (
-            <Typography.Text type="secondary">{statusMessage}</Typography.Text>
-          ) : null}
-          {(connectionStatus === ConnectionStatus.WaitingForReload &&
-            instance.metroDevice) ||
-          connectionStatus === ConnectionStatus.Error ? (
-            <Button
-              size="small"
-              onClick={() => {
-                instance.metroDevice?.sendMetroCommand('reload');
-                instance.bootDevTools();
-              }}>
-              Retry
-            </Button>
-          ) : null}
-        </Toolbar>
-      ) : null}
+      <DevToolsInstanceToolbar />
       <DevToolsEmbedder offset={40} nodeId={DEV_TOOLS_NODE_ID} />
     </Layout.Container>
+  );
+}
+
+function DevToolsInstanceToolbar() {
+  const instance = usePlugin(devicePlugin);
+  const globalDevToolsPath = useValue(instance.globalDevToolsPath);
+  const connectionStatus = useValue(instance.connectionStatus);
+  const statusMessage = useValue(instance.statusMessage);
+  const useGlobalDevTools = useValue(instance.useGlobalDevTools);
+  const selectedDevToolsInstanceType = useValue(
+    instance.selectedDevToolsInstanceType,
+  );
+
+  if (!globalDevToolsPath && !instance.isFB) {
+    return null;
+  }
+
+  let selectionControl;
+  if (instance.isFB) {
+    const devToolsInstanceOptions = [{value: 'internal'}, {value: 'oss'}];
+    if (globalDevToolsPath) {
+      devToolsInstanceOptions.push({value: 'global'});
+    }
+    selectionControl = (
+      <>
+        Select preferred DevTools version:
+        <Select
+          options={devToolsInstanceOptions}
+          value={selectedDevToolsInstanceType}
+          onSelect={instance.setDevToolsInstance}
+          style={{width: 90}}
+          size="small"
+        />
+      </>
+    );
+  } else if (globalDevToolsPath) {
+    selectionControl = (
+      <>
+        <Switch
+          checked={useGlobalDevTools}
+          onChange={instance.toggleUseGlobalDevTools}
+          size="small"
+        />
+        Use globally installed DevTools
+      </>
+    );
+  } else {
+    throw new Error(
+      'Should not render Toolbar if not FB build or a global DevTools install not available.',
+    );
+  }
+
+  return (
+    <Toolbar right={selectionControl} wash>
+      {connectionStatus !== ConnectionStatus.Connected ? (
+        <Typography.Text type="secondary">{statusMessage}</Typography.Text>
+      ) : null}
+      {connectionStatus === ConnectionStatus.WaitingForReload ||
+      connectionStatus === ConnectionStatus.WaitingForMetroReload ||
+      connectionStatus === ConnectionStatus.Error ? (
+        <Button
+          size="small"
+          onClick={() => {
+            instance.metroDevice?.sendMetroCommand('reload');
+            instance.rebootDevTools();
+          }}>
+          Retry
+        </Button>
+      ) : null}
+    </Toolbar>
   );
 }
