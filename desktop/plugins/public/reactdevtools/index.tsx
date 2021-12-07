@@ -233,9 +233,35 @@ export function devicePlugin(client: DevicePluginClient) {
       );
       startResult = devToolsInstance.module
         .setContentDOMNode(devToolsNode)
-        .setStatusListener((status: string) => {
+        .setStatusListener((message: string, status: string) => {
           // TODO: since devToolsInstance is an instance, we are probably leaking memory here
-          setStatus(ConnectionStatus.Initializing, status);
+          if (typeof status === 'undefined') {
+            // Preserves old behavior in case DevTools doesn't provide status,
+            // which may happen if loading an older version of DevTools.
+            setStatus(ConnectionStatus.Initializing, message);
+            return;
+          }
+
+          switch (status) {
+            case 'server-connected': {
+              setStatus(ConnectionStatus.Initializing, message);
+              break;
+            }
+            case 'devtools-connected': {
+              if (pollHandle) {
+                clearTimeout(pollHandle);
+              }
+              setStatus(ConnectionStatus.Connected, message);
+              break;
+            }
+            case 'error': {
+              if (pollHandle) {
+                clearTimeout(pollHandle);
+              }
+              setStatus(ConnectionStatus.Error, message);
+              break;
+            }
+          }
         })
         .startServer(DEV_TOOLS_PORT, 'localhost', undefined, {
           surface: 'flipper',

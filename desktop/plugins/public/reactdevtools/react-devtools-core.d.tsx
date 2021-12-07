@@ -16,6 +16,9 @@ type LoggerOptions = {
   surface?: string;
 };
 
+type StatusTypes = 'server-connected' | 'devtools-connected' | 'error';
+type StatusListener = (message: string, status: StatusTypes) => void;
+
 declare module 'react-devtools-core/standalone' {
   interface DevTools {
     setContentDOMNode(node: HTMLElement): this;
@@ -25,7 +28,7 @@ declare module 'react-devtools-core/standalone' {
       httpsOptions?: ServerOptions,
       loggerOptions?: LoggerOptions,
     ): {close: () => void};
-    setStatusListener(listener: (message: string) => void): this;
+    setStatusListener(listener: StatusListener): this;
   }
   const DevTools: DevTools;
   export default DevTools;
