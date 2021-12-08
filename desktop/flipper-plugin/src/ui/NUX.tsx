@@ -7,7 +7,13 @@
  * @format
  */
 
-import React, {createContext, useCallback, useContext} from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import {Badge, Tooltip, Typography, Button} from 'antd';
 import styled from '@emotion/styled';
 import {keyframes} from '@emotion/css';
@@ -17,11 +23,11 @@ import {createState, useValue} from '../state/atom';
 import {SandyDevicePluginInstance} from '../plugin/DevicePlugin';
 import {Layout} from './Layout';
 import {BulbTwoTone} from '@ant-design/icons';
-import {createHash} from 'crypto';
 import type {TooltipPlacement} from 'antd/lib/tooltip';
 import {SandyPluginInstance} from '../plugin/Plugin';
 import {theme} from './theme';
 import {Tracked} from './Tracked';
+import {sha256} from '../utils/sha256';
 
 const {Text} = Typography;
 
@@ -29,13 +35,12 @@ type NuxManager = ReturnType<typeof createNuxManager>;
 
 const storageKey = `FLIPPER_NUX_STATE`;
 
-export function getNuxKey(
+export async function getNuxKey(
   elem: React.ReactNode,
   currentPlugin?: SandyPluginInstance | SandyDevicePluginInstance,
-) {
-  return `${currentPlugin?.definition.id ?? 'flipper'}:${createHash('sha256')
-    .update(reactElementToJSXString(elem))
-    .digest('base64')}`;
+): Promise<string> {
+  const hash = await sha256(reactElementToJSXString(elem));
+  return `${currentPlugin?.definition.id ?? 'flipper'}:${hash}`;
 }
 
 export function createNuxManager() {
@@ -52,18 +57,18 @@ export function createNuxManager() {
   }
 
   return {
-    markRead(
+    async markRead(
       elem: React.ReactNode,
       currentPlugin?: SandyPluginInstance | SandyDevicePluginInstance,
-    ): void {
-      readMap[getNuxKey(elem, currentPlugin)] = true;
+    ): Promise<void> {
+      readMap[await getNuxKey(elem, currentPlugin)] = true;
       save();
     },
-    isRead(
+    async isRead(
       elem: React.ReactNode,
       currentPlugin?: SandyPluginInstance | SandyDevicePluginInstance,
-    ): boolean {
-      return !!readMap[getNuxKey(elem, currentPlugin)];
+    ): Promise<boolean> {
+      return !!readMap[await getNuxKey(elem, currentPlugin)];
     },
     resetHints(): void {
       readMap = {};
@@ -74,8 +79,8 @@ export function createNuxManager() {
 }
 
 const stubManager: NuxManager = {
-  markRead() {},
-  isRead() {
+  async markRead() {},
+  async isRead() {
     return true;
   },
   resetHints() {},
@@ -100,7 +105,18 @@ export function NUX({
   const pluginInstance = useContext(SandyPluginContext);
   // changing the ticker will force `isRead` to be recomputed
   const _tick = useValue(manager.ticker);
-  const isRead = manager.isRead(title, pluginInstance);
+  // start with Read = true until proven otherwise, to avoid Nux glitches
+  const [isRead, setIsRead] = useState(true);
+
+  useEffect(() => {
+    manager
+      .isRead(title, pluginInstance)
+      .then(setIsRead)
+      .catch((e) => {
+        console.warn('Failed to read NUX status', e);
+      });
+  }, [manager, title, pluginInstance, _tick]);
+
   const dismiss = useCallback(() => {
     manager.markRead(title, pluginInstance);
   }, [title, manager, pluginInstance]);
