@@ -275,6 +275,7 @@ export class FlipperServerImpl implements FlipperServer {
     if (!device) {
       return;
     }
+    this.devices.delete(serial);
     device.disconnect(); // we'll only destroy upon replacement
     this.emit('device-disconnected', device.info);
   }
