@@ -7,6 +7,13 @@
  * @format
  */
 
-export function helloWorld() {
-  return true;
-}
+// TODO: currently flipper-server is only suitable for development,
+// needs to be come independently runnable, prebundled, distributed, etc!
+// in future require conditionally
+import {startWebServerDev} from './startWebServerDev';
+import chalk from 'chalk';
+
+startWebServerDev().catch((e) => {
+  console.error(chalk.red('Server error: '), e);
+  process.exit(1);
+});

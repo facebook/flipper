@@ -7,6 +7,4 @@
  * @format
  */
 
-export function helloWorld() {
-  return true;
-}
+document.getElementById('root')!.innerText = 'flipper-ui-browser started';

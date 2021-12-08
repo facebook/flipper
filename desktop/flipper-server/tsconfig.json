@@ -7,6 +7,9 @@
   "references": [
     {
       "path": "../flipper-server-core"
+    },
+    {
+      "path": "../pkg-lib"
     }
   ]
 }
