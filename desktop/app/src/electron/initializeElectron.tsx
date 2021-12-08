@@ -25,7 +25,6 @@ import {
 import type {RenderHost} from 'flipper-ui-core';
 import fs from 'fs';
 import {setupMenuBar} from './setupMenuBar';
-import os from 'os';
 import {FlipperServer, FlipperServerConfig} from 'flipper-common';
 
 declare global {
@@ -34,15 +33,6 @@ declare global {
     // before flipper-ui-core is loaded and needs those during module initialisation
     FlipperRenderHostInstance: RenderHost;
   }
-}
-
-if (process.env.NODE_ENV === 'development' && os.platform() === 'darwin') {
-  // By default Node.JS has its internal certificate storage and doesn't use
-  // the system store. Because of this, it's impossible to access ondemand / devserver
-  // which are signed using some internal self-issued FB certificates. These certificates
-  // are automatically installed to MacOS system store on FB machines, so here we're using
-  // this "mac-ca" library to load them into Node.JS.
-  global.electronRequire('mac-ca');
 }
 
 export function initializeElectron(

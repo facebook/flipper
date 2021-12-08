@@ -12,8 +12,11 @@
   "dependencies": {
     "chalk": "^4.1.2",
     "express": "^4.15.2",
+    "flipper-common": "0.0.0",
     "flipper-pkg-lib": "0.0.0",
+    "flipper-server-core": "0.0.0",
     "fs-extra": "^9.0.0",
+    "mac-ca": "^1.0.6",
     "p-filter": "^2.1.0",
     "socket.io": "^4.3.1"
   },

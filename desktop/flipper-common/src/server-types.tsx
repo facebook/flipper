@@ -160,7 +160,7 @@ export type FlipperServerCommands = {
   'keychain-unset': (service: string) => Promise<void>;
 };
 
-type ENVIRONMENT_VARIABLES =
+export type ENVIRONMENT_VARIABLES =
   | 'NODE_ENV'
   | 'DEV_SERVER_URL'
   | 'CONFIG'
