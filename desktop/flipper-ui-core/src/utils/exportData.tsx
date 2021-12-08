@@ -8,7 +8,6 @@
  */
 
 import * as React from 'react';
-import os from 'os';
 import path from 'path';
 import {getLogger} from 'flipper-common';
 import {Store, MiddlewareAPI} from '../reducers';
@@ -623,7 +622,10 @@ export function canFileExport() {
 export async function startFileExport(dispatch: Store['dispatch']) {
   const file = await getRenderHostInstance().showSaveDialog?.({
     title: 'FlipperExport',
-    defaultPath: path.join(os.homedir(), 'FlipperExport.flipper'),
+    defaultPath: path.join(
+      getRenderHostInstance().serverConfig.paths.homePath,
+      'FlipperExport.flipper',
+    ),
   });
   if (!file) {
     return;

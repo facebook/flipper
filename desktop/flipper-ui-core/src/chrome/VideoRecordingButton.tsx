@@ -11,7 +11,7 @@ import React, {Component} from 'react';
 import BaseDevice from '../devices/BaseDevice';
 import {Button, Glyph, colors} from '../ui';
 import path from 'path';
-import os from 'os';
+import {getRenderHostInstance} from '../RenderHost';
 
 type OwnProps = {
   recordingFinished: (path: string | null) => void;
@@ -41,7 +41,10 @@ export default class VideoRecordingButton extends Component<Props, State> {
       return;
     }
 
-    const flipperDirectory = path.join(os.homedir(), '.flipper');
+    const flipperDirectory = path.join(
+      getRenderHostInstance().serverConfig.paths.homePath,
+      '.flipper',
+    );
     const fileName = `screencap-${new Date()
       .toISOString()
       .replace(/:/g, '')}.mp4`;
