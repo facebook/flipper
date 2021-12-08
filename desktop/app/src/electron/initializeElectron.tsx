@@ -195,6 +195,13 @@ export function initializeElectron(
         !flipperServerConfig.environmentInfo.isProduction,
       );
     },
+    unloadModule(path: string) {
+      const resolvedPath = global.electronRequire.resolve(path);
+      if (!resolvedPath || !global.electronRequire.cache[resolvedPath]) {
+        return;
+      }
+      delete global.electronRequire.cache[resolvedPath];
+    },
   } as RenderHost;
 
   setupMenuBar();

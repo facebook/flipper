@@ -8,7 +8,6 @@
  */
 
 jest.mock('../plugins');
-jest.mock('../../utils/electronModuleCache');
 import {
   loadPlugin,
   switchPlugin,

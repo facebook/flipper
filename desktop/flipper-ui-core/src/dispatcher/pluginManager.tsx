@@ -22,7 +22,6 @@ import {requirePlugin} from './plugins';
 import {showErrorNotification} from '../utils/notifications';
 import {PluginDefinition} from '../plugin';
 import type Client from '../Client';
-import {unloadModule} from '../utils/electronModuleCache';
 import {
   pluginLoaded,
   pluginUninstalled,
@@ -373,5 +372,5 @@ function unloadPluginModule(plugin: ActivatablePluginDetails) {
     // We cannot unload bundled plugin.
     return;
   }
-  unloadModule(plugin.entry);
+  getRenderHostInstance().unloadModule?.(plugin.entry);
 }
