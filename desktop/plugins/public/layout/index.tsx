@@ -16,7 +16,6 @@ import {
   Toolbar,
   DetailSidebar,
   Button,
-  GK,
   Idler,
   ReduxState,
   ArchivedDevice,
@@ -36,6 +35,7 @@ import {
   IDEType,
 } from 'flipper';
 import {message} from 'antd';
+import {getFlipperLib} from 'flipper-plugin';
 
 type State = {
   init: boolean;
@@ -463,7 +463,9 @@ export default class LayoutPlugin extends FlipperPlugin<
       </Sidebar>
     ) : null;
 
-    const showAnalyzeYogaPerformanceButton = GK.get('flipper_yogaperformance');
+    const showAnalyzeYogaPerformanceButton = getFlipperLib().GK(
+      'flipper_yogaperformance',
+    );
 
     if (!this.state.init) {
       return null;

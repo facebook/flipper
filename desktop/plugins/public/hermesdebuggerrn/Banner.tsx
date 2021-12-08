@@ -8,8 +8,9 @@
  */
 
 import React from 'react';
-import {styled, colors, FlexRow, Text, GK} from 'flipper';
+import {styled, colors, FlexRow, Text} from 'flipper';
 import {Typography} from 'antd';
+import {getFlipperLib} from 'flipper-plugin';
 
 const BannerContainer = styled(FlexRow)({
   height: '30px',
@@ -51,11 +52,11 @@ function CustomLink(props: {
 }
 
 export const isBannerEnabled: () => boolean = function () {
-  return GK.get('flipper_plugin_hermes_debugger_survey');
+  return getFlipperLib().GK('flipper_plugin_hermes_debugger_survey');
 };
 
 export default function Banner() {
-  if (!GK.get('flipper_plugin_hermes_debugger_survey')) {
+  if (!getFlipperLib().GK('flipper_plugin_hermes_debugger_survey')) {
     return null;
   }
   return (

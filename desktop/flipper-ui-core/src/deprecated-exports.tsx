@@ -14,7 +14,6 @@ export {produce} from 'immer';
 export * from './ui/index';
 export {textContent, sleep} from 'flipper-plugin';
 export * from './utils/jsonTypes';
-export {default as GK, loadGKs, loadDistilleryGK} from './fb-stubs/GK';
 export {default as createPaste} from './fb-stubs/createPaste';
 export {
   internGraphGETAPIRequest,
