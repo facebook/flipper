@@ -77,7 +77,7 @@ export type EnvironmentInfo = {
   appVersion: string;
   os: {
     arch: string;
-    platform: string;
+    platform: NodeJS.Platform;
     unixname: string;
   };
   versions: {

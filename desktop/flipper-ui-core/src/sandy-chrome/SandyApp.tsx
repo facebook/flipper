@@ -104,7 +104,12 @@ export function SandyApp() {
 
     if (hasPlatformWizardBeenDone(window.localStorage)) {
       Dialog.showModal((onHide) => (
-        <PlatformSelectWizard onHide={onHide} platform={process.platform} />
+        <PlatformSelectWizard
+          onHide={onHide}
+          platform={
+            getRenderHostInstance().serverConfig.environmentInfo.os.platform
+          }
+        />
       ));
     }
 

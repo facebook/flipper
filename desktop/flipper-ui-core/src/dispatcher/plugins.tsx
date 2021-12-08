@@ -107,7 +107,10 @@ export default async (store: Store, _logger: Logger) => {
   const classicPlugins = initialPlugins.filter(
     (p) => !isSandyPlugin(p.details),
   );
-  if (process.env.NODE_ENV !== 'test' && classicPlugins.length) {
+  if (
+    getRenderHostInstance().serverConfig.env.NODE_ENV !== 'test' &&
+    classicPlugins.length
+  ) {
     console.warn(
       `${
         classicPlugins.length
@@ -154,7 +157,7 @@ export function getLatestCompatibleVersionOfEachPlugin<
 }
 
 async function getBundledPlugins(): Promise<Array<BundledPluginDetails>> {
-  if (process.env.NODE_ENV === 'test') {
+  if (getRenderHostInstance().serverConfig.env.NODE_ENV === 'test') {
     return [];
   }
   try {

@@ -207,6 +207,7 @@ const environmentVariables = {
   FLIPPER_NO_PLUGIN_MARKETPLACE: 1,
   HOME: 1,
   METRO_PORT_ENV_VAR: 1,
+  FLIPPER_PLUGIN_AUTO_UPDATE_POLLING_INTERVAL: 1,
 } as const;
 export type ENVIRONMENT_VARIABLES = keyof typeof environmentVariables;
 

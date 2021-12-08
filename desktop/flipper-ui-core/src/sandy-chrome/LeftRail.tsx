@@ -66,6 +66,7 @@ import {
 } from '../utils/exportData';
 import {openDeeplinkDialog} from '../deeplink';
 import {css} from '@emotion/css';
+import {getRenderHostInstance} from '../RenderHost';
 
 const LeftRailButtonElem = styled(Button)<{kind?: 'small'}>(({kind}) => ({
   width: kind === 'small' ? 32 : 36,
@@ -300,7 +301,12 @@ function ExtrasMenu() {
         </Menu>
       </NUX>
       {showSettings && (
-        <SettingsSheet platform={process.platform} onHide={onSettingsClose} />
+        <SettingsSheet
+          platform={
+            getRenderHostInstance().serverConfig.environmentInfo.os.platform
+          }
+          onHide={onSettingsClose}
+        />
       )}
       <WelcomeScreen
         visible={welcomeVisible}

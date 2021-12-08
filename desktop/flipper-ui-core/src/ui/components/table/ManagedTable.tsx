@@ -32,6 +32,7 @@ import {debounce} from 'lodash';
 import {DEFAULT_ROW_HEIGHT} from './types';
 import {notNull} from '../../../utils/typeUtils';
 import {getFlipperLib, textContent} from 'flipper-plugin';
+import {getRenderHostInstance} from '../../../RenderHost';
 
 const EMPTY_OBJECT = {};
 Object.freeze(EMPTY_OBJECT);
@@ -328,12 +329,13 @@ export class ManagedTable extends React.Component<
 
   onKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     const {highlightedRows} = this.state;
+    const {platform} = getRenderHostInstance().serverConfig.environmentInfo.os;
     if (highlightedRows.size === 0) {
       return;
     }
     if (
-      ((e.metaKey && process.platform === 'darwin') ||
-        (e.ctrlKey && process.platform !== 'darwin')) &&
+      ((e.metaKey && platform === 'darwin') ||
+        (e.ctrlKey && platform !== 'darwin')) &&
       e.keyCode === 67
     ) {
       e.stopPropagation();
@@ -421,6 +423,7 @@ export class ManagedTable extends React.Component<
     if (!this.props.highlightableRows) {
       return;
     }
+    const {platform} = getRenderHostInstance().serverConfig.environmentInfo.os;
 
     if (e.shiftKey) {
       // prevents text selection
@@ -430,8 +433,7 @@ export class ManagedTable extends React.Component<
     let {highlightedRows} = this.state;
 
     const contextClick =
-      e.button !== 0 ||
-      (process.platform === 'darwin' && e.button === 0 && e.ctrlKey);
+      e.button !== 0 || (platform === 'darwin' && e.button === 0 && e.ctrlKey);
 
     if (contextClick) {
       if (!highlightedRows.has(row.key)) {
@@ -445,8 +447,8 @@ export class ManagedTable extends React.Component<
     document.addEventListener('mouseup', this.onStopDragSelecting);
 
     if (
-      ((process.platform === 'darwin' && e.metaKey) ||
-        (process.platform !== 'darwin' && e.ctrlKey)) &&
+      ((platform === 'darwin' && e.metaKey) ||
+        (platform !== 'darwin' && e.ctrlKey)) &&
       this.props.multiHighlight
     ) {
       highlightedRows.add(row.key);
