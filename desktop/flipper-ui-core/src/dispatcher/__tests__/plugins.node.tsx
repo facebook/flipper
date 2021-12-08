@@ -77,7 +77,7 @@ test('checkDisabled', () => {
   try {
     hostConfig.processConfig = {
       ...orig,
-      disabledPlugins: new Set([disabledPlugin]),
+      disabledPlugins: [disabledPlugin],
     };
     const disabled = checkDisabled([]);
 

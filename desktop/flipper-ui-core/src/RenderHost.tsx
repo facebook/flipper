@@ -44,8 +44,6 @@ type ChildProcessEvents = {
  * Utilities provided by the render host, e.g. Electron, the Browser, etc
  */
 export interface RenderHost {
-  readonly processId: number;
-  readonly isProduction: boolean;
   readTextFromClipboard(): string | undefined;
   writeTextToClipboard(text: string): void;
   /**

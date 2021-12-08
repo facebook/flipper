@@ -210,7 +210,7 @@ export const checkDisabled = (
         config.env.FLIPPER_ENABLED_PLUGINS.split(','),
       );
     }
-    disabledList = config.processConfig.disabledPlugins;
+    disabledList = new Set(config.processConfig.disabledPlugins);
   } catch (e) {
     console.error('Failed to compute enabled/disabled plugins', e);
   }

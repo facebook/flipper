@@ -12,7 +12,7 @@ import {ProcessConfig} from 'flipper-common';
 export function loadProcessConfig(env: NodeJS.ProcessEnv): ProcessConfig {
   const json = JSON.parse(env.CONFIG || '{}');
   return {
-    disabledPlugins: new Set<string>(json.disabledPlugins || []),
+    disabledPlugins: json.disabledPlugins || [],
     lastWindowPosition: json.lastWindowPosition,
     launcherMsg: json.launcherMsg,
     screenCapturePath: json.screenCapturePath,

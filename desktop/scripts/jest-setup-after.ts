@@ -11,16 +11,19 @@
 
 import {cleanup} from '@testing-library/react';
 import {resolve} from 'path';
-import {tmpdir} from 'os';
+import os from 'os';
 
 window.FlipperRenderHostInstance = createStubRenderHost();
 
-require('../flipper-ui-core/src/fb-stubs/Logger').init(undefined, {
-  isTest: true,
-});
-
 import {TestUtils} from 'flipper-plugin';
-import {FlipperServerConfig, ReleaseChannel, Tristate} from 'flipper-common';
+import {
+  FlipperServerConfig,
+  ReleaseChannel,
+  Tristate,
+  parseEnvironmentVariables,
+} from 'flipper-common';
+
+// Only import the type!
 import type {RenderHost} from 'flipper-ui-core';
 
 const test = global.test;
@@ -92,12 +95,27 @@ Object.defineProperty(window, 'matchMedia', {
 function createStubRenderHost(): RenderHost {
   const rootPath = resolve(__dirname, '..');
   const stubConfig: FlipperServerConfig = {
-    env: {...process.env},
+    environmentInfo: {
+      processId: process.pid,
+      appVersion: '0.0.0',
+      isProduction: false,
+      releaseChannel: ReleaseChannel.DEFAULT,
+      flipperReleaseRevision: '000',
+      os: {
+        arch: process.arch,
+        platform: process.platform,
+        unixname: os.userInfo().username,
+      },
+      versions: {
+        node: process.versions.node,
+        platform: os.release(),
+      },
+    },
+    env: parseEnvironmentVariables(process.env),
     gatekeepers: {
       TEST_PASSING_GK: true,
       TEST_FAILING_GK: false,
     },
-    isProduction: false,
     launcherSettings: {
       ignoreLocalPin: false,
       releaseChannel: ReleaseChannel.DEFAULT,
@@ -108,10 +126,10 @@ function createStubRenderHost(): RenderHost {
       execPath: process.execPath,
       homePath: `/dev/null`,
       staticPath: resolve(rootPath, 'static'),
-      tempPath: tmpdir(),
+      tempPath: os.tmpdir(),
     },
     processConfig: {
-      disabledPlugins: new Set(),
+      disabledPlugins: [],
       lastWindowPosition: null,
       launcherEnabled: false,
       launcherMsg: null,
@@ -135,8 +153,6 @@ function createStubRenderHost(): RenderHost {
   };
 
   return {
-    processId: -1,
-    isProduction: false,
     readTextFromClipboard() {
       return '';
     },

@@ -1,0 +1,57 @@
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ */
+
+import os from 'os';
+import fs from 'fs-extra';
+import path from 'path';
+import {EnvironmentInfo, ReleaseChannel} from 'flipper-common';
+
+export async function getEnvironmentInfo(
+  staticPath: string,
+  isProduction: boolean,
+): Promise<EnvironmentInfo> {
+  const packageJson = await fs.readJSON(
+    path.resolve(staticPath, 'package.json'),
+  );
+
+  const releaseChannel: ReleaseChannel =
+    process.env.FLIPPER_RELEASE_CHANNEL === 'insiders'
+      ? ReleaseChannel.INSIDERS
+      : process.env.FLIPPER_RELEASE_CHANNEL === 'stable'
+      ? ReleaseChannel.STABLE
+      : packageJson.releaseChannel === 'insiders'
+      ? ReleaseChannel.INSIDERS
+      : ReleaseChannel.STABLE;
+
+  // This is provided as part of the bundling process for headless.
+  const flipperReleaseRevision =
+    (global as any).__REVISION__ ?? packageJson.revision;
+
+  const appVersion =
+    process.env.FLIPPER_FORCE_VERSION ??
+    (isProduction ? packageJson.version : '0.0.0');
+
+  return {
+    processId: process.pid,
+    isProduction,
+    releaseChannel,
+    flipperReleaseRevision,
+    appVersion,
+    os: {
+      arch: process.arch,
+      platform: process.platform,
+      unixname: os.userInfo().username,
+    },
+    versions: {
+      electron: process.versions.electron,
+      node: process.versions.node,
+      platform: os.release(),
+    },
+  };
+}

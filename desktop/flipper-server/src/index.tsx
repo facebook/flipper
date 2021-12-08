@@ -9,13 +9,13 @@
 
 import chalk from 'chalk';
 import path from 'path';
+import {startFlipperServer} from './startFlipperServer';
+import {startBaseServer} from './startBaseServer';
+import {startSocketServer} from './startSocketServer';
 // TODO: currently flipper-server is only suitable for development,
 // needs to be come independently runnable, prebundled, distributed, etc!
 // in future require conditionally
 import {startWebServerDev} from './startWebServerDev';
-import {startFlipperServer} from './startFlipperServer';
-import {startBaseServer} from './startBaseServer';
-import {startSocketServer} from './startSocketServer';
 
 const PORT = 52342;
 const rootDir = path.resolve(__dirname, '..', '..');

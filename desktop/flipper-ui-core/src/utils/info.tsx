@@ -10,13 +10,10 @@
 // Use of sync methods is cached.
 /* eslint-disable node/no-sync */
 
-import os from 'os';
-import isProduction from './isProduction';
-import fs from 'fs-extra';
-import {getStaticPath} from './pathUtils';
 import type {State, Store} from '../reducers/index';
 import {sideEffect} from './sideEffect';
-import {Logger, isTest, deconstructClientId} from 'flipper-common';
+import {Logger, deconstructClientId} from 'flipper-common';
+import {getRenderHostInstance} from '../RenderHost';
 
 type PlatformInfo = {
   arch: string;
@@ -83,15 +80,13 @@ export default (store: Store, _logger: Logger) => {
  */
 export function getInfo(): Info {
   if (!platformInfo) {
+    const envInfo = getRenderHostInstance().serverConfig.environmentInfo;
+
     platformInfo = {
-      arch: process.arch,
-      platform: process.platform,
-      unixname: os.userInfo().username,
-      versions: {
-        electron: process.versions.electron,
-        node: process.versions.node,
-        platform: os.release(),
-      },
+      arch: envInfo.os.arch,
+      platform: envInfo.os.platform,
+      unixname: envInfo.os.unixname,
+      versions: envInfo.versions,
     };
   }
   return {
@@ -100,18 +95,8 @@ export function getInfo(): Info {
   };
 }
 
-let APP_VERSION: string | undefined;
 export function getAppVersion(): string {
-  return (APP_VERSION =
-    APP_VERSION ??
-    process.env.FLIPPER_FORCE_VERSION ??
-    (isTest()
-      ? '0.0.0'
-      : (isProduction()
-          ? fs.readJsonSync(getStaticPath('package.json'), {
-              throws: false,
-            })?.version
-          : require('../../package.json').version) ?? '0.0.0'));
+  return getRenderHostInstance().serverConfig.environmentInfo.appVersion;
 }
 
 export function stringifyInfo(info: Info): string {

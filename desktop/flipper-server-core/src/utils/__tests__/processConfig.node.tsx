@@ -21,7 +21,7 @@ test('config is decoded from env', () => {
   });
 
   expect(config).toEqual({
-    disabledPlugins: new Set(['pluginA', 'pluginB', 'pluginC']),
+    disabledPlugins: ['pluginA', 'pluginB', 'pluginC'],
     lastWindowPosition: {x: 4, y: 8, width: 15, height: 16},
     launcherMsg: 'wubba lubba dub dub',
     screenCapturePath: '/my/screenshot/path',
@@ -31,7 +31,7 @@ test('config is decoded from env', () => {
 
 test('config is decoded from env with defaults', () => {
   expect(loadProcessConfig({CONFIG: '{}'})).toEqual({
-    disabledPlugins: new Set([]),
+    disabledPlugins: [],
     lastWindowPosition: undefined,
     launcherMsg: undefined,
     screenCapturePath: undefined,

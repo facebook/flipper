@@ -12,6 +12,7 @@ import os from 'os';
 import yargs from 'yargs';
 import {
   FlipperServerImpl,
+  getEnvironmentInfo,
   loadLauncherSettings,
   loadProcessConfig,
   loadSettings,
@@ -21,6 +22,7 @@ import {
   Logger,
   DeviceDescription,
   setLoggerInstance,
+  parseEnvironmentVariables,
 } from 'flipper-common';
 import path from 'path';
 import {stdout} from 'process';
@@ -54,6 +56,7 @@ const argv = yargs
 
 async function start(deviceTitle: string, appName: string, pluginId: string) {
   return new Promise(async (_resolve, reject) => {
+    const staticPath = path.resolve(__dirname, '..', '..', 'static');
     let device: DeviceDescription | undefined;
     let deviceResolver: () => void;
     const devicePromise: Promise<void> = new Promise((resolve) => {
@@ -68,15 +71,16 @@ async function start(deviceTitle: string, appName: string, pluginId: string) {
     console.debug = () => {};
     console.info = console.error;
 
+    const environmentInfo = await getEnvironmentInfo(staticPath, false);
     // TODO: initialise FB user manager to be able to do certificate exchange
 
     const server = new FlipperServerImpl(
       {
-        env: process.env,
+        environmentInfo,
+        env: parseEnvironmentVariables(process.env),
         gatekeepers: {},
-        isProduction: false,
         paths: {
-          staticPath: path.resolve(__dirname, '..', '..', 'static'),
+          staticPath,
           tempPath: os.tmpdir(),
           appPath: `/dev/null`,
           homePath: `/dev/null`,

@@ -56,7 +56,7 @@ export type LauncherSettings = {
 // Settings that primarily only apply to Eelectron atm
 // TODO: further separte between flipper-ui config and Electron config
 export type ProcessConfig = {
-  disabledPlugins: Set<string>;
+  disabledPlugins: string[];
   lastWindowPosition: {
     x: number;
     y: number;
@@ -67,4 +67,22 @@ export type ProcessConfig = {
   launcherMsg: string | null;
   // Controls whether to delegate to the launcher if present.
   launcherEnabled: boolean;
+};
+
+export type EnvironmentInfo = {
+  processId: number;
+  isProduction: boolean;
+  releaseChannel: ReleaseChannel;
+  flipperReleaseRevision?: string;
+  appVersion: string;
+  os: {
+    arch: string;
+    platform: string;
+    unixname: string;
+  };
+  versions: {
+    electron?: string;
+    node: string;
+    platform: string;
+  };
 };

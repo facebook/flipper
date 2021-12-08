@@ -30,7 +30,7 @@ export function loadDistilleryGK(
 }
 
 export default class GK {
-  static init() {}
+  static init(_username: string) {}
 
   static get(id: GKID): boolean {
     if (process.env.NODE_ENV === 'test' && id === TEST_PASSING_GK) {

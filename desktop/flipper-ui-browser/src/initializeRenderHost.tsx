@@ -8,15 +8,13 @@
  */
 
 import {FlipperServer, FlipperServerConfig} from 'flipper-common';
-import {getRenderHostInstance} from 'flipper-ui-core';
+import {getRenderHostInstance, RenderHost} from 'flipper-ui-core';
 
 export function initializeRenderHost(
   flipperServer: FlipperServer,
   flipperServerConfig: FlipperServerConfig,
 ) {
   window.FlipperRenderHostInstance = {
-    processId: 0,
-    isProduction: window.flipperConfig.debug !== true,
     readTextFromClipboard() {
       // TODO:
       return undefined;
@@ -72,7 +70,7 @@ export function initializeRenderHost(
       // eslint-disable-next-line no-eval
       return eval(source);
     },
-  };
+  } as RenderHost;
 }
 
 function getDefaultPluginsIndex() {

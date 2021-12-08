@@ -14,9 +14,10 @@ import {
   loadLauncherSettings,
   loadProcessConfig,
   loadSettings,
+  getEnvironmentInfo,
 } from 'flipper-server-core';
 import {
-  ENVIRONMENT_VARIABLES,
+  parseEnvironmentVariables,
   isTest,
   Logger,
   setLoggerInstance,
@@ -26,7 +27,7 @@ import fs from 'fs';
 
 export async function startFlipperServer(
   rootDir: string,
-  staticDir: string,
+  staticPath: string,
 ): Promise<FlipperServerImpl> {
   if (os.platform() === 'darwin') {
     // By default Node.JS has its internal certificate storage and doesn't use
@@ -57,7 +58,7 @@ export async function startFlipperServer(
   try {
     if (!isTest()) {
       keytar = require(path.join(
-        staticDir,
+        staticPath,
         'native-modules',
         `keytar-${process.platform}.node`,
       ));
@@ -66,20 +67,19 @@ export async function startFlipperServer(
     console.error('Failed to load keytar:', e);
   }
 
-  const envVars: Partial<Record<ENVIRONMENT_VARIABLES, string | undefined>> =
-    Object.fromEntries(
-      ([] as ENVIRONMENT_VARIABLES[]).map((v) => [v, process.env[v]] as const),
-    );
+  const environmentInfo = await getEnvironmentInfo(staticPath, isProduction);
+
   const flipperServer = new FlipperServerImpl(
     {
-      env: envVars,
-      gatekeepers: getGatekeepers(),
-      isProduction,
+      environmentInfo,
+      env: parseEnvironmentVariables(process.env),
+      // TODO: make userame parameterizable
+      gatekeepers: getGatekeepers(environmentInfo.os.unixname),
       paths: {
         appPath,
         homePath: os.homedir(),
         execPath,
-        staticPath: staticDir,
+        staticPath: staticPath,
         tempPath: os.tmpdir(),
         desktopPath: desktopPath,
       },

@@ -20,6 +20,7 @@ import type {RenderHost} from 'flipper-ui-core';
 import os from 'os';
 import {
   FlipperServerImpl,
+  getEnvironmentInfo,
   getGatekeepers,
   loadLauncherSettings,
   loadProcessConfig,
@@ -30,6 +31,7 @@ import {
   getLogger,
   isTest,
   Logger,
+  parseEnvironmentVariables,
   setLoggerInstance,
   Settings,
 } from 'flipper-common';
@@ -61,9 +63,10 @@ async function start() {
   const app = remote.app;
   const execPath = process.execPath || remote.process.execPath;
   const appPath = app.getAppPath();
+  const staticPath = getStaticDir();
   const isProduction = !/node_modules[\\/]electron[\\/]/.test(execPath);
   const env = process.env;
-
+  const environmentInfo = await getEnvironmentInfo(staticPath, isProduction);
   const logger = createDelegatedLogger();
   setLoggerInstance(logger);
 
@@ -80,14 +83,15 @@ async function start() {
 
   const flipperServer = new FlipperServerImpl(
     {
-      env,
-      gatekeepers: getGatekeepers(),
-      isProduction,
+      environmentInfo,
+      env: parseEnvironmentVariables(env),
+      // TODO: make userame parameterizable
+      gatekeepers: getGatekeepers(environmentInfo.os.unixname),
       paths: {
         appPath,
         homePath: app.getPath('home'),
         execPath,
-        staticPath: getStaticDir(),
+        staticPath,
         tempPath: app.getPath('temp'),
         desktopPath: app.getPath('desktop'),
       },

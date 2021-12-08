@@ -23,7 +23,6 @@ import {default as BaseDevice} from '../devices/BaseDevice';
 import {default as ArchivedDevice} from '../devices/ArchivedDevice';
 import fs from 'fs-extra';
 import {v4 as uuidv4} from 'uuid';
-import {readCurrentRevision} from './packageMetadata';
 import {tryCatchReportPlatformFailures} from 'flipper-common';
 import {TestIdler} from './Idler';
 import {setStaticView} from '../reducers/connections';
@@ -243,7 +242,8 @@ async function addSaltToDeviceSerial({
     }
     return {...notif, client: notif.client.replace(serial, newSerial)};
   });
-  const revision: string | undefined = await readCurrentRevision();
+  const revision: string | undefined =
+    getRenderHostInstance().serverConfig.environmentInfo.flipperReleaseRevision;
   return {
     fileVersion: getAppVersion() || 'unknown',
     flipperReleaseRevision: revision,

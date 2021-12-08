@@ -16,7 +16,12 @@ import {
   OS as PluginOS,
   UpdatablePluginDetails,
 } from './PluginDetails';
-import {LauncherSettings, ProcessConfig, Settings} from './settings';
+import {
+  EnvironmentInfo,
+  LauncherSettings,
+  ProcessConfig,
+  Settings,
+} from './settings';
 
 // In the future, this file would deserve it's own package, as it doesn't really relate to plugins.
 // Since flipper-plugin however is currently shared among server, client and defines a lot of base types, leaving it here for now.
@@ -177,13 +182,38 @@ export type FlipperServerCommands = {
   'plugins-remove-plugins': (names: string[]) => Promise<void>;
 };
 
-export type ENVIRONMENT_VARIABLES =
-  | 'NODE_ENV'
-  | 'DEV_SERVER_URL'
-  | 'CONFIG'
-  | 'FLIPPER_ENABLED_PLUGINS'
-  | 'FB_ONDEMAND'
-  | 'FLIPPER_INTERNGRAPH_URL';
+/**
+ * White listed environment variables that can be used in Flipper UI / plugins
+ */
+const environmentVariables = {
+  NODE_ENV: 1,
+  DEV_SERVER_URL: 1,
+  CONFIG: 1,
+  FLIPPER_ENABLED_PLUGINS: 1,
+  FB_ONDEMAND: 1,
+  FLIPPER_INTERNGRAPH_URL: 1,
+  JEST_WORKER_ID: 1,
+  FLIPPER_DOCS_BASE_URL: 1,
+  FLIPPER_NO_PLUGIN_AUTO_UPDATE: 1,
+  FLIPPER_NO_PLUGIN_MARKETPLACE: 1,
+  HOME: 1,
+  METRO_PORT_ENV_VAR: 1,
+} as const;
+export type ENVIRONMENT_VARIABLES = keyof typeof environmentVariables;
+
+/**
+ * Grab all environment variables from a process.env object, without leaking variables which usage isn't declared in ENVIRONMENT_VARIABLES
+ */
+export function parseEnvironmentVariables(
+  baseEnv: any,
+): Partial<Record<ENVIRONMENT_VARIABLES, string>> {
+  const result: any = {};
+  Object.keys(environmentVariables).forEach((k) => {
+    result[k] = baseEnv[k];
+  });
+
+  return result;
+}
 
 type ENVIRONMENT_PATHS =
   | 'appPath'
@@ -194,7 +224,6 @@ type ENVIRONMENT_PATHS =
   | 'desktopPath';
 
 export type FlipperServerConfig = {
-  isProduction: boolean;
   gatekeepers: Record<string, boolean>;
   env: Partial<Record<ENVIRONMENT_VARIABLES, string>>;
   paths: Record<ENVIRONMENT_PATHS, string>;
@@ -202,6 +231,7 @@ export type FlipperServerConfig = {
   launcherSettings: LauncherSettings;
   processConfig: ProcessConfig;
   validWebSocketOrigins: string[];
+  environmentInfo: EnvironmentInfo;
 };
 
 export interface FlipperServer {

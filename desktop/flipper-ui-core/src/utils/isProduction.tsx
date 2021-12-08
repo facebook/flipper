@@ -10,5 +10,5 @@
 import {getRenderHostInstance} from '../RenderHost';
 
 export default function isProduction() {
-  return getRenderHostInstance().isProduction;
+  return getRenderHostInstance().serverConfig.environmentInfo.isProduction;
 }

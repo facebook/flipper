@@ -95,7 +95,8 @@ export default (store: Store, logger: Logger) => {
 
   const oldExitData = loadExitData();
   if (oldExitData) {
-    const isReload = renderHost.processId === oldExitData.pid;
+    const isReload =
+      renderHost.serverConfig.environmentInfo.processId === oldExitData.pid;
     const timeSinceLastStartup =
       Date.now() - parseInt(oldExitData.lastSeen, 10);
     // console.log(isReload ? 'reload' : 'restart', oldExitData);
@@ -370,7 +371,7 @@ export function persistExitData(
       ? deconstructClientId(state.selectedAppId).app
       : '',
     cleanExit,
-    pid: getRenderHostInstance().processId,
+    pid: getRenderHostInstance().serverConfig.environmentInfo.processId,
   };
   window.localStorage.setItem(
     flipperExitDataKey,
