@@ -8,7 +8,11 @@
  */
 
 import type {Store} from '../reducers/index';
-import type {InstalledPluginDetails, Logger} from 'flipper-common';
+import {
+  InstalledPluginDetails,
+  Logger,
+  tryCatchReportPluginFailuresAsync,
+} from 'flipper-common';
 import {PluginDefinition} from '../plugin';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -31,7 +35,7 @@ import {
   BundledPluginDetails,
   ConcretePluginDetails,
 } from 'flipper-common';
-import {tryCatchReportPluginFailures, reportUsage} from 'flipper-common';
+import {reportUsage} from 'flipper-common';
 import * as FlipperPluginSDK from 'flipper-plugin';
 import {_SandyPluginDefinition} from 'flipper-plugin';
 import * as Immer from 'immer';
@@ -46,6 +50,8 @@ import isPluginCompatible from '../utils/isPluginCompatible';
 import isPluginVersionMoreRecent from '../utils/isPluginVersionMoreRecent';
 import {createSandyPluginWrapper} from '../utils/createSandyPluginWrapper';
 import {getRenderHostInstance} from '../RenderHost';
+import pMap from 'p-map';
+
 let defaultPluginsIndex: any = null;
 
 export default async (store: Store, _logger: Logger) => {
@@ -88,12 +94,15 @@ export default async (store: Store, _logger: Logger) => {
   const loadedPlugins =
     getLatestCompatibleVersionOfEachPlugin(allLocalVersions);
 
-  const initialPlugins: PluginDefinition[] = loadedPlugins
+  const pluginsToLoad = loadedPlugins
     .map(reportVersion)
     .filter(checkDisabled(disabledPlugins))
-    .filter(checkGK(gatekeepedPlugins))
-    .map(createRequirePluginFunction(failedPlugins))
-    .filter(notNull);
+    .filter(checkGK(gatekeepedPlugins));
+  const loader = createRequirePluginFunction(failedPlugins);
+
+  const initialPlugins: PluginDefinition[] = (
+    await pMap(pluginsToLoad, loader)
+  ).filter(notNull);
 
   const classicPlugins = initialPlugins.filter(
     (p) => !isSandyPlugin(p.details),
@@ -235,11 +244,12 @@ export const checkDisabled = (
 
 export const createRequirePluginFunction = (
   failedPlugins: Array<[ActivatablePluginDetails, string]>,
-  reqFn: Function = global.electronRequire,
 ) => {
-  return (pluginDetails: ActivatablePluginDetails): PluginDefinition | null => {
+  return async (
+    pluginDetails: ActivatablePluginDetails,
+  ): Promise<PluginDefinition | null> => {
     try {
-      const pluginDefinition = requirePlugin(pluginDetails, reqFn);
+      const pluginDefinition = await requirePlugin(pluginDetails);
       if (
         pluginDefinition &&
         isDevicePluginDefinition(pluginDefinition) &&
@@ -260,8 +270,7 @@ export const createRequirePluginFunction = (
 
 export const requirePlugin = (
   pluginDetails: ActivatablePluginDetails,
-  reqFn: Function = global.electronRequire,
-): PluginDefinition => {
+): Promise<PluginDefinition> => {
   reportUsage(
     'plugin:load',
     {
@@ -269,8 +278,8 @@ export const requirePlugin = (
     },
     pluginDetails.id,
   );
-  return tryCatchReportPluginFailures(
-    () => requirePluginInternal(pluginDetails, reqFn),
+  return tryCatchReportPluginFailuresAsync(
+    () => requirePluginInternal(pluginDetails),
     'plugin:load',
     pluginDetails.id,
   );
@@ -280,13 +289,12 @@ const isSandyPlugin = (pluginDetails: ActivatablePluginDetails) => {
   return !!pluginDetails.flipperSDKVersion;
 };
 
-const requirePluginInternal = (
+const requirePluginInternal = async (
   pluginDetails: ActivatablePluginDetails,
-  reqFn: Function = global.electronRequire,
-): PluginDefinition => {
+): Promise<PluginDefinition> => {
   let plugin = pluginDetails.isBundled
     ? defaultPluginsIndex[pluginDetails.name]
-    : reqFn(pluginDetails.entry);
+    : await getRenderHostInstance().requirePlugin(pluginDetails.entry);
   if (isSandyPlugin(pluginDetails)) {
     // Sandy plugin
     return new _SandyPluginDefinition(pluginDetails, plugin);

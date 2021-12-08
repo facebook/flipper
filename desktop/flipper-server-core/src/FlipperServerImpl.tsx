@@ -268,6 +268,7 @@ export class FlipperServerImpl implements FlipperServer {
       this.pluginManager.installPluginFromFile(path),
     'plugins-install-from-npm': (name) =>
       this.pluginManager.installPluginFromNpm(name),
+    'plugin-source': (path) => this.pluginManager.loadSource(path),
   };
 
   registerDevice(device: ServerDevice) {

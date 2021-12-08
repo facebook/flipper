@@ -75,6 +75,7 @@ export default (
     });
   }
 
+  let running = false;
   const unsubscribeHandlePluginCommands = sideEffect(
     store,
     {
@@ -85,14 +86,49 @@ export default (
       noTimeBudgetWarns: true, // These side effects are critical, so we're doing them with zero throttling and want to avoid unnecessary warns
     },
     (state) => state.pluginManager.pluginCommandsQueue,
-    processPluginCommandsQueue,
+    async (_queue: PluginCommand[], store: Store) => {
+      // To make sure all commands are running in order, and not kicking off parallel command
+      // processing when new commands arrive (sideEffect doesn't await)
+      // we keep the 'running' flag, and keep running in a loop until the commandQueue is empty,
+      // to make sure any commands that have arrived during execution are executed
+      if (running) {
+        return; // will be picked up in while(true) loop
+      }
+      running = true;
+      try {
+        while (true) {
+          const remaining = store.getState().pluginManager.pluginCommandsQueue;
+          if (!remaining.length) {
+            return; // done
+          }
+          await processPluginCommandsQueue(remaining, store);
+          store.dispatch(pluginCommandsProcessed(remaining.length));
+        }
+      } finally {
+        running = false;
+      }
+    },
   );
   return async () => {
     unsubscribeHandlePluginCommands();
   };
 };
 
-export function processPluginCommandsQueue(
+export async function awaitPluginCommandQueueEmpty(store: Store) {
+  if (store.getState().pluginManager.pluginCommandsQueue.length === 0) {
+    return;
+  }
+  return new Promise<void>((resolve) => {
+    const unsubscribe = store.subscribe(() => {
+      if (store.getState().pluginManager.pluginCommandsQueue.length === 0) {
+        unsubscribe();
+        resolve();
+      }
+    });
+  });
+}
+
+async function processPluginCommandsQueue(
   queue: PluginCommand[],
   store: Store,
 ) {
@@ -100,7 +136,7 @@ export function processPluginCommandsQueue(
     try {
       switch (command.type) {
         case 'LOAD_PLUGIN':
-          loadPlugin(store, command.payload);
+          await loadPlugin(store, command.payload);
           break;
         case 'UNINSTALL_PLUGIN':
           uninstallPlugin(store, command.payload);
@@ -121,12 +157,11 @@ export function processPluginCommandsQueue(
       console.error('Failed to process command', command);
     }
   }
-  store.dispatch(pluginCommandsProcessed(queue.length));
 }
 
-function loadPlugin(store: Store, payload: LoadPluginActionPayload) {
+async function loadPlugin(store: Store, payload: LoadPluginActionPayload) {
   try {
-    const plugin = requirePlugin(payload.plugin);
+    const plugin = await requirePlugin(payload.plugin);
     const enablePlugin = payload.enable;
     updatePlugin(store, {plugin, enablePlugin});
   } catch (err) {

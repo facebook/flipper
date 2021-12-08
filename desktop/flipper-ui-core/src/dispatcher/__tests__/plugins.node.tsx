@@ -135,9 +135,9 @@ test('checkGK for failing plugin', () => {
   expect(gatekeepedPlugins[0].name).toEqual(name);
 });
 
-test('requirePlugin returns null for invalid requires', () => {
-  const requireFn = createRequirePluginFunction([], require);
-  const plugin = requireFn({
+test('requirePlugin returns null for invalid requires', async () => {
+  const requireFn = createRequirePluginFunction([]);
+  const plugin = await requireFn({
     ...sampleInstalledPluginDetails,
     name: 'pluginID',
     dir: '/Users/mock/.flipper/thirdparty/flipper-plugin-sample',
@@ -148,10 +148,10 @@ test('requirePlugin returns null for invalid requires', () => {
   expect(plugin).toBeNull();
 });
 
-test('requirePlugin loads plugin', () => {
+test('requirePlugin loads plugin', async () => {
   const name = 'pluginID';
-  const requireFn = createRequirePluginFunction([], require);
-  const plugin = requireFn({
+  const requireFn = createRequirePluginFunction([]);
+  const plugin = await requireFn({
     ...sampleInstalledPluginDetails,
     name,
     dir: '/Users/mock/.flipper/thirdparty/flipper-plugin-sample',
@@ -224,10 +224,10 @@ test('newest version of each plugin is used', () => {
   });
 });
 
-test('requirePlugin loads valid Sandy plugin', () => {
+test('requirePlugin loads valid Sandy plugin', async () => {
   const name = 'pluginID';
-  const requireFn = createRequirePluginFunction([], require);
-  const plugin = requireFn({
+  const requireFn = createRequirePluginFunction([]);
+  const plugin = (await requireFn({
     ...sampleInstalledPluginDetails,
     name,
     dir: path.join(
@@ -240,7 +240,7 @@ test('requirePlugin loads valid Sandy plugin', () => {
     ),
     version: '1.0.0',
     flipperSDKVersion: '0.0.0',
-  }) as _SandyPluginDefinition;
+  })) as _SandyPluginDefinition;
   expect(plugin).not.toBeNull();
   expect(plugin).toBeInstanceOf(_SandyPluginDefinition);
   expect(plugin.id).toBe('Sample');
@@ -261,11 +261,11 @@ test('requirePlugin loads valid Sandy plugin', () => {
   expect(typeof plugin.asPluginModule().plugin).toBe('function');
 });
 
-test('requirePlugin errors on invalid Sandy plugin', () => {
+test('requirePlugin errors on invalid Sandy plugin', async () => {
   const name = 'pluginID';
   const failedPlugins: any[] = [];
-  const requireFn = createRequirePluginFunction(failedPlugins, require);
-  requireFn({
+  const requireFn = createRequirePluginFunction(failedPlugins);
+  await requireFn({
     ...sampleInstalledPluginDetails,
     name,
     // Intentionally the wrong file:
@@ -279,10 +279,10 @@ test('requirePlugin errors on invalid Sandy plugin', () => {
   );
 });
 
-test('requirePlugin loads valid Sandy Device plugin', () => {
+test('requirePlugin loads valid Sandy Device plugin', async () => {
   const name = 'pluginID';
-  const requireFn = createRequirePluginFunction([], require);
-  const plugin = requireFn({
+  const requireFn = createRequirePluginFunction([]);
+  const plugin = (await requireFn({
     ...sampleInstalledPluginDetails,
     pluginType: 'device',
     name,
@@ -296,7 +296,7 @@ test('requirePlugin loads valid Sandy Device plugin', () => {
     ),
     version: '1.0.0',
     flipperSDKVersion: '0.0.0',
-  }) as _SandyPluginDefinition;
+  })) as _SandyPluginDefinition;
   expect(plugin).not.toBeNull();
   expect(plugin).toBeInstanceOf(_SandyPluginDefinition);
   expect(plugin.id).toBe('Sample');

@@ -18,6 +18,7 @@ import {
   TestUtils,
 } from 'flipper-plugin';
 import {switchPlugin} from '../pluginManager';
+import {awaitPluginCommandQueueEmpty} from '../../dispatcher/pluginManager';
 
 const pluginDetails = TestUtils.createMockPluginDetails();
 
@@ -183,6 +184,8 @@ test('it should not initialize a sandy plugin if not enabled', async () => {
       selectedApp: client.query.app,
     }),
   );
+
+  await awaitPluginCommandQueueEmpty(store);
 
   expect(client.sandyPluginStates.get(Plugin2.id)).toBeUndefined();
   expect(instance.connectStub).toHaveBeenCalledTimes(0);

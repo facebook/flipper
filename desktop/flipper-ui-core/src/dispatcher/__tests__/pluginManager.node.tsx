@@ -23,6 +23,7 @@ import MockFlipper from '../../test-utils/MockFlipper';
 import Client from '../../Client';
 import React from 'react';
 import BaseDevice from '../../devices/BaseDevice';
+import {awaitPluginCommandQueueEmpty} from '../pluginManager';
 
 const pluginDetails1 = TestUtils.createMockPluginDetails({
   id: 'plugin1',
@@ -71,7 +72,7 @@ let mockDevice: BaseDevice;
 
 beforeEach(async () => {
   mockedRequirePlugin.mockImplementation(
-    (details) =>
+    async (details) =>
       (details === pluginDetails1
         ? pluginDefinition1
         : details === pluginDetails2
@@ -99,6 +100,8 @@ test('load plugin when no other version loaded', async () => {
   mockFlipper.dispatch(
     loadPlugin({plugin: pluginDetails1, enable: false, notifyIfFailed: false}),
   );
+
+  await awaitPluginCommandQueueEmpty(mockFlipper.store);
   expect(mockFlipper.getState().plugins.clientPlugins.get('plugin1')).toBe(
     pluginDefinition1,
   );
@@ -119,6 +122,8 @@ test('load plugin when other version loaded', async () => {
       notifyIfFailed: false,
     }),
   );
+
+  await awaitPluginCommandQueueEmpty(mockFlipper.store);
   expect(mockFlipper.getState().plugins.clientPlugins.get('plugin1')).toBe(
     pluginDefinition1V2,
   );
@@ -132,6 +137,8 @@ test('load and enable Sandy plugin', async () => {
   mockFlipper.dispatch(
     loadPlugin({plugin: pluginDetails1, enable: true, notifyIfFailed: false}),
   );
+
+  await awaitPluginCommandQueueEmpty(mockFlipper.store);
   expect(mockFlipper.getState().plugins.clientPlugins.get('plugin1')).toBe(
     pluginDefinition1,
   );
@@ -146,6 +153,8 @@ test('uninstall plugin', async () => {
     loadPlugin({plugin: pluginDetails1, enable: true, notifyIfFailed: false}),
   );
   mockFlipper.dispatch(uninstallPlugin({plugin: pluginDefinition1}));
+
+  await awaitPluginCommandQueueEmpty(mockFlipper.store);
   expect(
     mockFlipper.getState().plugins.clientPlugins.has('plugin1'),
   ).toBeFalsy();
@@ -167,11 +176,13 @@ test('uninstall bundled plugin', async () => {
     version: '0.43.0',
   });
   const pluginDefinition = new SandyPluginDefinition(pluginDetails, TestPlugin);
-  mockedRequirePlugin.mockReturnValue(pluginDefinition);
+  mockedRequirePlugin.mockReturnValue(Promise.resolve(pluginDefinition));
   mockFlipper.dispatch(
     loadPlugin({plugin: pluginDetails, enable: true, notifyIfFailed: false}),
   );
   mockFlipper.dispatch(uninstallPlugin({plugin: pluginDefinition}));
+
+  await awaitPluginCommandQueueEmpty(mockFlipper.store);
   expect(
     mockFlipper.getState().plugins.clientPlugins.has('bundled-plugin'),
   ).toBeFalsy();
@@ -196,6 +207,8 @@ test('star plugin', async () => {
       selectedApp: mockClient.query.app,
     }),
   );
+
+  await awaitPluginCommandQueueEmpty(mockFlipper.store);
   expect(
     mockFlipper.getState().connections.enabledPlugins[mockClient.query.app],
   ).toContain('plugin1');
@@ -218,6 +231,8 @@ test('disable plugin', async () => {
       selectedApp: mockClient.query.app,
     }),
   );
+
+  await awaitPluginCommandQueueEmpty(mockFlipper.store);
   expect(
     mockFlipper.getState().connections.enabledPlugins[mockClient.query.app],
   ).not.toContain('plugin1');
@@ -237,6 +252,8 @@ test('star device plugin', async () => {
       plugin: devicePluginDefinition,
     }),
   );
+
+  await awaitPluginCommandQueueEmpty(mockFlipper.store);
   expect(
     mockFlipper.getState().connections.enabledDevicePlugins.has('device'),
   ).toBeTruthy();
@@ -261,6 +278,8 @@ test('disable device plugin', async () => {
       plugin: devicePluginDefinition,
     }),
   );
+
+  await awaitPluginCommandQueueEmpty(mockFlipper.store);
   expect(
     mockFlipper.getState().connections.enabledDevicePlugins.has('device'),
   ).toBeFalsy();

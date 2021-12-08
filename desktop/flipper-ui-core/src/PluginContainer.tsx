@@ -242,6 +242,10 @@ class PluginContainer extends PureComponent<Props, State> {
   }
 
   renderPluginInfo() {
+    if (isTest()) {
+      // Plugin info uses Antd animations, generating a gazillion warnings
+      return 'Stubbed plugin info';
+    }
     return <PluginInfo />;
   }
 

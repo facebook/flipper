@@ -7,7 +7,7 @@
  * @format
  */
 
-jest.useFakeTimers();
+// jest.useFakeTimers();
 
 import React from 'react';
 import produce from 'immer';
@@ -22,10 +22,12 @@ import {
   DevicePluginClient,
   DeviceLogEntry,
   useValue,
+  sleep,
 } from 'flipper-plugin';
 import {selectPlugin} from '../reducers/connections';
 import {updateSettings} from '../reducers/settings';
 import {switchPlugin} from '../reducers/pluginManager';
+import {awaitPluginCommandQueueEmpty} from '../dispatcher/pluginManager';
 
 interface PersistedState {
   count: 1;
@@ -57,7 +59,7 @@ class TestPlugin extends FlipperPlugin<any, any, any> {
   render() {
     return (
       <h1>
-        Hello:{' '}
+        <span>Hello</span>
         <span data-testid="counter">{this.props.persistedState.count}</span>
       </h1>
     );
@@ -82,8 +84,9 @@ test('Plugin container can render plugin and receive updates', async () => {
               class="css-1woty6b-Container"
             >
               <h1>
-                Hello:
-                 
+                <span>
+                  Hello
+                </span>
                 <span
                   data-testid="counter"
                 >
@@ -348,19 +351,21 @@ test('PluginContainer can render Sandy plugins', async () => {
       }),
     );
   });
+
   // note: this is the old pluginInstance, so that one is not reconnected!
   expect(pluginInstance.connectedStub).toBeCalledTimes(2);
   expect(pluginInstance.disconnectedStub).toBeCalledTimes(2);
   expect(pluginInstance.activatedStub).toBeCalledTimes(2);
   expect(pluginInstance.deactivatedStub).toBeCalledTimes(2);
 
-  expect(
-    client.sandyPluginStates.get('TestPlugin')!.instanceApi.connectedStub,
-  ).toBeCalledTimes(1);
+  await awaitPluginCommandQueueEmpty(store);
+  await sleep(10);
+  const newPluginInstance =
+    client.sandyPluginStates.get('TestPlugin')!.instanceApi;
+  expect(newPluginInstance).not.toBe(pluginInstance);
+  expect(newPluginInstance.connectedStub).toBeCalledTimes(1);
   expect(client.rawSend).toBeCalledWith('init', {plugin: 'TestPlugin'});
-  expect(
-    client.sandyPluginStates.get('TestPlugin')!.instanceApi.count.get(),
-  ).toBe(0);
+  expect(newPluginInstance.count.get()).toBe(0);
 });
 
 test('PluginContainer triggers correct lifecycles for background plugin', async () => {
@@ -478,6 +483,9 @@ test('PluginContainer triggers correct lifecycles for background plugin', async 
       }),
     );
   });
+
+  await awaitPluginCommandQueueEmpty(store);
+
   // note: this is the old pluginInstance, so that one is not reconnected!
   expect(pluginInstance.connectedStub).toBeCalledTimes(1);
   expect(pluginInstance.disconnectedStub).toBeCalledTimes(1);
@@ -533,7 +541,12 @@ test('PluginContainer + Sandy plugin supports deeplink', async () => {
       Component() {
         const instance = usePlugin(plugin);
         const linkState = useValue(instance.linkState);
-        return <h1>hello {linkState || 'world'}</h1>;
+        return (
+          <h1>
+            <span>hello</span>
+            <span>{linkState || 'world'}</span>
+          </h1>
+        );
       },
     },
   );
@@ -558,8 +571,12 @@ test('PluginContainer + Sandy plugin supports deeplink', async () => {
               class="css-1woty6b-Container"
             >
               <h1>
-                hello 
-                world
+                <span>
+                  hello
+                </span>
+                <span>
+                  world
+                </span>
               </h1>
             </div>
             <div
@@ -582,7 +599,7 @@ test('PluginContainer + Sandy plugin supports deeplink', async () => {
     );
   });
 
-  jest.runAllTimers();
+  await sleep(100);
   expect(linksSeen).toEqual(['universe!']);
   expect(renderer.baseElement).toMatchInlineSnapshot(`
     <body>
@@ -598,8 +615,12 @@ test('PluginContainer + Sandy plugin supports deeplink', async () => {
               class="css-1woty6b-Container"
             >
               <h1>
-                hello 
-                universe!
+                <span>
+                  hello
+                </span>
+                <span>
+                  universe!
+                </span>
               </h1>
             </div>
             <div
@@ -622,7 +643,7 @@ test('PluginContainer + Sandy plugin supports deeplink', async () => {
       }),
     );
   });
-  jest.runAllTimers();
+  await awaitPluginCommandQueueEmpty(store);
   expect(linksSeen).toEqual(['universe!']);
 
   // ...nor does a random other store update that does trigger a plugin container render
@@ -645,7 +666,8 @@ test('PluginContainer + Sandy plugin supports deeplink', async () => {
       }),
     );
   });
-  jest.runAllTimers();
+  await awaitPluginCommandQueueEmpty(store);
+  await sleep(10);
   expect(linksSeen).toEqual(['universe!', 'london!']);
 
   // and same link does trigger if something else was selected in the mean time
@@ -667,7 +689,8 @@ test('PluginContainer + Sandy plugin supports deeplink', async () => {
       }),
     );
   });
-  jest.runAllTimers();
+  await awaitPluginCommandQueueEmpty(store);
+  await sleep(10);
   expect(linksSeen).toEqual(['universe!', 'london!', 'london!']);
 });
 
@@ -689,7 +712,12 @@ test('PluginContainer can render Sandy device plugins', async () => {
       });
     }).toThrowError(/didn't match the type of the requested plugin/);
     const lastLogMessage = useValue(sandyApi.lastLogMessage);
-    return <div>Hello from Sandy: {lastLogMessage?.message}</div>;
+    return (
+      <div>
+        <span>Hello from Sandy:</span>
+        <span>{lastLogMessage?.message}</span>
+      </div>
+    );
   }
 
   const devicePlugin = (client: DevicePluginClient) => {
@@ -730,7 +758,10 @@ test('PluginContainer can render Sandy device plugins', async () => {
               class="css-1woty6b-Container"
             >
               <div>
-                Hello from Sandy: 
+                <span>
+                  Hello from Sandy:
+                </span>
+                <span />
               </div>
             </div>
             <div
@@ -754,6 +785,8 @@ test('PluginContainer can render Sandy device plugins', async () => {
       tag: 'test',
     });
   });
+  await sleep(10); // links are handled async
+
   expect(renders).toBe(2);
 
   expect(renderer.baseElement).toMatchInlineSnapshot(`
@@ -770,8 +803,12 @@ test('PluginContainer can render Sandy device plugins', async () => {
               class="css-1woty6b-Container"
             >
               <div>
-                Hello from Sandy: 
-                helleuh
+                <span>
+                  Hello from Sandy:
+                </span>
+                <span>
+                  helleuh
+                </span>
               </div>
             </div>
             <div
@@ -847,7 +884,12 @@ test('PluginContainer + Sandy device plugin supports deeplink', async () => {
       Component() {
         const instance = usePlugin(devicePlugin);
         const linkState = useValue(instance.linkState);
-        return <h1>hello {linkState || 'world'}</h1>;
+        return (
+          <h1>
+            <span>hello</span>
+            <span>{linkState || 'world'}</span>
+          </h1>
+        );
       },
     },
   );
@@ -877,8 +919,12 @@ test('PluginContainer + Sandy device plugin supports deeplink', async () => {
               class="css-1woty6b-Container"
             >
               <h1>
-                hello 
-                world
+                <span>
+                  hello
+                </span>
+                <span>
+                  world
+                </span>
               </h1>
             </div>
             <div
@@ -902,7 +948,8 @@ test('PluginContainer + Sandy device plugin supports deeplink', async () => {
     );
   });
 
-  jest.runAllTimers();
+  await awaitPluginCommandQueueEmpty(store);
+  await sleep(10); // links are handled async
   expect(linksSeen).toEqual([theUniverse]);
   expect(renderer.baseElement).toMatchInlineSnapshot(`
     <body>
@@ -918,8 +965,12 @@ test('PluginContainer + Sandy device plugin supports deeplink', async () => {
               class="css-1woty6b-Container"
             >
               <h1>
-                hello 
-                {"thisIs":"theUniverse"}
+                <span>
+                  hello
+                </span>
+                <span>
+                  {"thisIs":"theUniverse"}
+                </span>
               </h1>
             </div>
             <div
@@ -943,7 +994,7 @@ test('PluginContainer + Sandy device plugin supports deeplink', async () => {
       }),
     );
   });
-  jest.runAllTimers();
+  await awaitPluginCommandQueueEmpty(store);
   expect(linksSeen).toEqual([theUniverse]);
 
   // ...nor does a random other store update that does trigger a plugin container render
@@ -967,7 +1018,8 @@ test('PluginContainer + Sandy device plugin supports deeplink', async () => {
       }),
     );
   });
-  jest.runAllTimers();
+  await awaitPluginCommandQueueEmpty(store);
+  await sleep(10);
   expect(linksSeen).toEqual([theUniverse, 'london!']);
 
   // and same link does trigger if something else was selected in the mean time
@@ -991,7 +1043,8 @@ test('PluginContainer + Sandy device plugin supports deeplink', async () => {
       }),
     );
   });
-  jest.runAllTimers();
+  await awaitPluginCommandQueueEmpty(store);
+  await sleep(10);
   expect(linksSeen).toEqual([theUniverse, 'london!', 'london!']);
 });
 
@@ -1087,12 +1140,13 @@ test('Sandy plugins support isPluginSupported + selectPlugin', async () => {
   pluginInstance.selectPlugin(definition.id, 'data');
   expect(store.getState().connections.selectedPlugin).toBe(definition.id);
   expect(pluginInstance.activatedStub).toBeCalledTimes(2);
-  jest.runAllTimers();
+  await awaitPluginCommandQueueEmpty(store);
   expect(renderer.baseElement.querySelector('h1')).toMatchInlineSnapshot(`
     <h1>
       Plugin1
     </h1>
   `);
+  await sleep(10); // links are handled async
   expect(linksSeen).toEqual(['data']);
 
   // try to plugin 2 - it should be possible to select it even if it is not enabled
@@ -1137,7 +1191,12 @@ test('PluginContainer can render Sandy plugins for archived devices', async () =
         return {};
       });
     }).toThrowError(/didn't match the type of the requested plugin/);
-    return <div>Hello from Sandy{count}</div>;
+    return (
+      <div>
+        <span>Hello from Sandy</span>
+        <span>{count}</span>
+      </div>
+    );
   }
 
   type Events = {
@@ -1198,8 +1257,12 @@ test('PluginContainer can render Sandy plugins for archived devices', async () =
               class="css-1woty6b-Container"
             >
               <div>
-                Hello from Sandy
-                0
+                <span>
+                  Hello from Sandy
+                </span>
+                <span>
+                  0
+                </span>
               </div>
             </div>
             <div
@@ -1272,8 +1335,12 @@ test('PluginContainer can render Sandy plugins for archived devices', async () =
               class="css-1woty6b-Container"
             >
               <div>
-                Hello from Sandy
-                0
+                <span>
+                  Hello from Sandy
+                </span>
+                <span>
+                  0
+                </span>
               </div>
             </div>
             <div

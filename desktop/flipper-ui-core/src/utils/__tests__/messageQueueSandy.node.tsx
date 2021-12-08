@@ -36,6 +36,7 @@ import pluginMessageQueue, {
   State,
   queueMessages,
 } from '../../reducers/pluginMessageQueue';
+import {awaitPluginCommandQueueEmpty} from '../../dispatcher/pluginManager';
 
 type Events = {
   inc: {
@@ -67,13 +68,14 @@ const TestPlugin = new _SandyPluginDefinition(
   },
 );
 
-function switchTestPlugin(store: Store, client: Client) {
+async function switchTestPlugin(store: Store, client: Client) {
   store.dispatch(
     switchPlugin({
       plugin: TestPlugin,
       selectedApp: client.query.app,
     }),
   );
+  await awaitPluginCommandQueueEmpty(store);
 }
 
 function selectDeviceLogs(store: Store) {
@@ -190,7 +192,7 @@ test('queue - events are NOT processed immediately if plugin is NOT selected (bu
   });
 
   // disable. Messages don't arrive anymore
-  switchTestPlugin(store, client);
+  await switchTestPlugin(store, client);
   // weird state...
   selectTestPlugin(store, client);
   sendMessage('inc', {delta: 3});
@@ -206,7 +208,7 @@ test('queue - events are NOT processed immediately if plugin is NOT selected (bu
   expect(store.getState().pluginMessageQueue).toEqual({});
 
   // star again, plugin still not selected, message is queued
-  switchTestPlugin(store, client);
+  await switchTestPlugin(store, client);
   sendMessage('inc', {delta: 5});
   client.flushMessageBuffer();
 
@@ -699,14 +701,14 @@ test('queue - messages that have not yet flushed be lost when disabling the plug
   `);
 
   // disable
-  switchTestPlugin(store, client);
+  await switchTestPlugin(store, client);
   expect(client.messageBuffer).toMatchInlineSnapshot(`Object {}`);
   expect(store.getState().pluginMessageQueue).toMatchInlineSnapshot(
     `Object {}`,
   );
 
   // re-enable, no messages arrive
-  switchTestPlugin(store, client);
+  await switchTestPlugin(store, client);
   client.flushMessageBuffer();
   processMessageQueue(
     client.sandyPluginStates.get(TestPlugin.id)!,

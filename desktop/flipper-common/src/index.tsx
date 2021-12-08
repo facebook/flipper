@@ -25,6 +25,7 @@ export {
   reportPlatformFailures,
   reportUsage,
   reportPluginFailures,
+  tryCatchReportPluginFailuresAsync,
   tryCatchReportPlatformFailures,
   tryCatchReportPluginFailures,
   UnsupportedError,

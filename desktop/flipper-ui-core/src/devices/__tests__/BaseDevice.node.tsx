@@ -292,20 +292,20 @@ test('log listeners are resumed and suspended automatically - 2', async () => {
   expect(entries.length).toBe(2);
 
   // disable one plugin
-  flipper.togglePlugin(Plugin.id);
+  await flipper.togglePlugin(Plugin.id);
   expect(device.stopLogging).toBeCalledTimes(0);
   device.addLogEntry(message);
   expect(entries.length).toBe(3);
 
   // disable the other plugin
-  flipper.togglePlugin(DevicePlugin.id);
+  await flipper.togglePlugin(DevicePlugin.id);
 
   expect(device.stopLogging).toBeCalledTimes(1);
   device.addLogEntry(message);
   expect(entries.length).toBe(3);
 
   // re-enable plugn
-  flipper.togglePlugin(Plugin.id);
+  await flipper.togglePlugin(Plugin.id);
   expect(device.startLogging).toBeCalledTimes(2);
   device.addLogEntry(message);
   expect(entries.length).toBe(4);

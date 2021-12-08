@@ -134,6 +134,29 @@ export function tryCatchReportPluginFailures<T>(
   }
 }
 
+/*
+ * Wraps a closure, preserving it's functionality but logging the success or
+ failure state of it.
+ */
+export async function tryCatchReportPluginFailuresAsync<T>(
+  closure: () => Promise<T>,
+  name: string,
+  plugin: string,
+): Promise<T> {
+  try {
+    const result = await closure();
+    logPluginSuccessRate(name, plugin, {kind: 'success'});
+    return result;
+  } catch (e) {
+    logPluginSuccessRate(name, plugin, {
+      kind: 'failure',
+      supportedOperation: !(e instanceof UnsupportedError),
+      error: e,
+    });
+    throw e;
+  }
+}
+
 /**
  * Track usage of a feature.
  * @param action Unique name for the action performed. E.g. captureScreenshot

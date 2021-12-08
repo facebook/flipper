@@ -168,5 +168,8 @@ function createStubRenderHost(): RenderHost {
       return stubConfig.gatekeepers[gk] ?? false;
     },
     flipperServer: TestUtils.createFlipperServerMock(),
+    async requirePlugin(path: string) {
+      return require(path);
+    },
   };
 }

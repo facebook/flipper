@@ -37,6 +37,7 @@ import {switchPlugin} from '../reducers/pluginManager';
 import {createSandyPluginFromClassicPlugin} from '../dispatcher/plugins';
 import {createMockActivatablePluginDetails} from '../utils/testUtils';
 import {_SandyPluginDefinition} from 'flipper-plugin';
+import {awaitPluginCommandQueueEmpty} from '../dispatcher/pluginManager';
 
 export type MockFlipperResult = {
   client: Client;
@@ -54,7 +55,7 @@ export type MockFlipperResult = {
     skipRegister?: boolean,
   ): Promise<Client>;
   logger: Logger;
-  togglePlugin(plugin?: string): void;
+  togglePlugin(plugin?: string): Promise<void>;
   selectPlugin(
     id?: string,
     client?: Client,
@@ -168,6 +169,7 @@ export async function createMockFlipperWithPlugin(
         }
       });
     }
+    await awaitPluginCommandQueueEmpty(store);
     return client;
   };
 
@@ -233,7 +235,7 @@ export async function createMockFlipperWithPlugin(
     createClient,
     logger,
     pluginKey: getPluginKey(client.id, device, pluginClazz.id),
-    togglePlugin(id?: string) {
+    async togglePlugin(id?: string) {
       const plugin = id
         ? store.getState().plugins.clientPlugins.get(id) ??
           store.getState().plugins.devicePlugins.get(id)
@@ -247,6 +249,7 @@ export async function createMockFlipperWithPlugin(
           selectedApp: client.query.app,
         }),
       );
+      await awaitPluginCommandQueueEmpty(store);
     },
   };
 }

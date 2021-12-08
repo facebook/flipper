@@ -177,6 +177,9 @@ export function initializeElectron(
       return flipperServerConfig.gatekeepers[gatekeeper] ?? false;
     },
     flipperServer,
+    async requirePlugin(path) {
+      return (window as any).electronRequire(path);
+    },
   } as RenderHost;
 
   setupMenuBar();

@@ -28,4 +28,8 @@ export class TestDevice extends BaseDevice {
       specs,
     });
   }
+
+  async startLogging() {
+    // noop
+  }
 }

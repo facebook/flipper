@@ -98,6 +98,7 @@ export interface RenderHost {
   GK(gatekeeper: string): boolean;
   flipperServer: FlipperServer;
   serverConfig: FlipperServerConfig;
+  requirePlugin(path: string): Promise<any>;
 }
 
 export function getRenderHostInstance(): RenderHost {

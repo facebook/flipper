@@ -61,6 +61,10 @@ export class PluginManager {
   installPluginFromFile = installPluginFromFile;
   installPluginFromNpm = installPluginFromNpm;
 
+  async loadSource(path: string) {
+    return await fs.readFile(path, 'utf8');
+  }
+
   async getBundledPlugins(): Promise<Array<BundledPluginDetails>> {
     if (process.env.NODE_ENV === 'test') {
       return [];

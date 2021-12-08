@@ -169,6 +169,7 @@ export type FlipperServerCommands = {
   'plugin-start-download': (
     plugin: DownloadablePluginDetails,
   ) => Promise<InstalledPluginDetails>;
+  'plugin-source': (path: string) => Promise<string>;
   'plugins-install-from-npm': (name: string) => Promise<InstalledPluginDetails>;
   'plugins-install-from-file': (
     path: string,
