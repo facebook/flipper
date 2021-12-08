@@ -155,13 +155,19 @@ export type FlipperServerCommands = {
   'ios-launch-simulator': (udid: string) => Promise<void>;
   'persist-settings': (settings: Settings) => Promise<void>;
   'persist-launcher-settings': (settings: LauncherSettings) => Promise<void>;
+  'keychain-write': (service: string, token: string) => Promise<void>;
+  'keychain-read': (service: string) => Promise<string>;
+  'keychain-unset': (service: string) => Promise<void>;
 };
 
 type ENVIRONMENT_VARIABLES =
   | 'NODE_ENV'
   | 'DEV_SERVER_URL'
   | 'CONFIG'
-  | 'FLIPPER_ENABLED_PLUGINS';
+  | 'FLIPPER_ENABLED_PLUGINS'
+  | 'FB_ONDEMAND'
+  | 'FLIPPER_INTERNGRAPH_URL';
+
 type ENVIRONMENT_PATHS =
   | 'appPath'
   | 'homePath'

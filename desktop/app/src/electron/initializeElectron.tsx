@@ -26,7 +26,7 @@ import type {RenderHost} from 'flipper-ui-core';
 import fs from 'fs';
 import {setupMenuBar} from './setupMenuBar';
 import os from 'os';
-import {FlipperServerConfig} from 'flipper-common';
+import {FlipperServer, FlipperServerConfig} from 'flipper-common';
 
 declare global {
   interface Window {
@@ -45,7 +45,10 @@ if (process.env.NODE_ENV === 'development' && os.platform() === 'darwin') {
   global.electronRequire('mac-ca');
 }
 
-export function initializeElectron(flipperServerConfig: FlipperServerConfig) {
+export function initializeElectron(
+  flipperServer: FlipperServer,
+  flipperServerConfig: FlipperServerConfig,
+) {
   const execPath = process.execPath || remote.process.execPath;
   const isProduction = !/node_modules[\\/]electron[\\/]/.test(execPath);
 
@@ -191,6 +194,7 @@ export function initializeElectron(flipperServerConfig: FlipperServerConfig) {
     GK(gatekeeper) {
       return flipperServerConfig.gatekeepers[gatekeeper] ?? false;
     },
+    flipperServer,
   };
 
   setupMenuBar();

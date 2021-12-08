@@ -26,7 +26,7 @@ import {
   loadSettings,
   setupPrefetcher,
 } from 'flipper-server-core';
-import {getLogger, Logger, setLoggerInstance} from 'flipper-common';
+import {getLogger, isTest, Logger, setLoggerInstance} from 'flipper-common';
 import constants from './fb-stubs/constants';
 import {initializeElectron} from './electron/initializeElectron';
 import path from 'path';
@@ -54,11 +54,23 @@ if (process.env.NODE_ENV === 'development' && os.platform() === 'darwin') {
 async function start() {
   const app = remote.app;
   const execPath = process.execPath || remote.process.execPath;
+  const appPath = app.getAppPath();
   const isProduction = !/node_modules[\\/]electron[\\/]/.test(execPath);
   const env = process.env;
 
   const logger = createDelegatedLogger();
   setLoggerInstance(logger);
+
+  let keytar: any = undefined;
+  try {
+    if (!isTest()) {
+      keytar = (global.electronRequire || require)(
+        path.join(appPath, 'native-modules', `keytar-${process.platform}.node`),
+      );
+    }
+  } catch (e) {
+    console.error('Failed to load keytar:', e);
+  }
 
   const flipperServer = new FlipperServerImpl(
     {
@@ -66,7 +78,7 @@ async function start() {
       gatekeepers: getGatekeepers(),
       isProduction,
       paths: {
-        appPath: app.getAppPath(),
+        appPath,
         homePath: app.getPath('home'),
         execPath,
         staticPath: getStaticDir(),
@@ -79,12 +91,13 @@ async function start() {
       validWebSocketOrigins: constants.VALID_WEB_SOCKET_REQUEST_ORIGIN_PREFIXES,
     },
     logger,
+    keytar,
   );
 
   await flipperServer.connect();
   const flipperServerConfig = await flipperServer.exec('get-config');
 
-  initializeElectron(flipperServerConfig);
+  initializeElectron(flipperServer, flipperServerConfig);
 
   // By turning this in a require, we force the JS that the body of this module (init) has completed (initializeElectron),
   // before starting the rest of the Flipper process.

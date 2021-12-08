@@ -33,6 +33,7 @@ import {launchEmulator} from './devices/android/AndroidDevice';
 import {setFlipperServerConfig} from './FlipperServerConfig';
 import {saveSettings} from './utils/settings';
 import {saveLauncherSettings} from './utils/launcherSettings';
+import {KeytarManager} from './utils/keytar';
 
 /**
  * FlipperServer takes care of all incoming device & client connections.
@@ -51,12 +52,18 @@ export class FlipperServerImpl implements FlipperServer {
   state: FlipperServerState = 'pending';
   android: AndroidDeviceManager;
   ios: IOSDeviceManager;
+  keytarManager: KeytarManager;
 
-  constructor(public config: FlipperServerConfig, public logger: Logger) {
+  constructor(
+    public config: FlipperServerConfig,
+    public logger: Logger,
+    keytarModule?: any,
+  ) {
     setFlipperServerConfig(config);
     const server = (this.server = new ServerController(this));
     this.android = new AndroidDeviceManager(this);
     this.ios = new IOSDeviceManager(this);
+    this.keytarManager = new KeytarManager(keytarModule);
 
     server.addListener('error', (err) => {
       this.emit('server-error', err);
@@ -227,6 +234,10 @@ export class FlipperServerImpl implements FlipperServer {
     'persist-settings': async (settings) => saveSettings(settings),
     'persist-launcher-settings': async (settings) =>
       saveLauncherSettings(settings),
+    'keychain-read': (service) => this.keytarManager.retrieveToken(service),
+    'keychain-write': (service, password) =>
+      this.keytarManager.writeKeychain(service, password),
+    'keychain-unset': (service) => this.keytarManager.unsetKeychain(service),
   };
 
   registerDevice(device: ServerDevice) {

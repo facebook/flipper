@@ -11,7 +11,12 @@ import type {NotificationEvents} from './dispatcher/notifications';
 import type {PluginNotification} from './reducers/notifications';
 import type {NotificationConstructorOptions} from 'electron';
 import {FlipperLib} from 'flipper-plugin';
-import {FlipperServerConfig, ReleaseChannel, Tristate} from 'flipper-common';
+import {
+  FlipperServer,
+  FlipperServerConfig,
+  ReleaseChannel,
+  Tristate,
+} from 'flipper-common';
 // TODO: those imports are only used for testing, require conditionally?
 import {tmpdir} from 'os';
 import {resolve} from 'path';
@@ -99,6 +104,7 @@ export interface RenderHost {
   openLink(url: string): void;
   loadDefaultPlugins(): Record<string, any>;
   GK(gatekeeper: string): boolean;
+  flipperServer?: FlipperServer;
   serverConfig: FlipperServerConfig;
 }
 
