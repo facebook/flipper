@@ -21,6 +21,7 @@ export class KeytarManager {
     if (this.keytar == null) {
       throw new Error('Keytar is not available.');
     }
+
     await this.keytar.deletePassword(service, os.userInfo().username);
     await this.keytar.setPassword(service, os.userInfo().username, password);
   }
@@ -40,6 +41,7 @@ export class KeytarManager {
     if (!token) {
       throw new UserNotSignedInError();
     }
+
     return token;
   }
 }

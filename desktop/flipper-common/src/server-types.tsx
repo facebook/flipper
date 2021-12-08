@@ -191,6 +191,39 @@ export type FlipperServerCommands = {
     name: string,
   ) => Promise<FlipperDoctor.HealthcheckResult>;
   'open-file': (path: string) => Promise<void>;
+  'intern-graph-post': (
+    endpoint: string,
+    formFields: Record<string, any>,
+    fileFields: Record<string, GraphFileUpload>,
+    options: {
+      timeout?: number;
+      internGraphUrl?: string;
+    },
+  ) => Promise<GraphResponse>;
+  'intern-graph-get': (
+    endpoint: string,
+    params: Record<string, any>,
+    options: {
+      timeout?: number;
+      internGraphUrl?: string;
+    },
+  ) => Promise<GraphResponse>;
+  'intern-upload-scribe-logs': (
+    messages: {category: string; message: string}[],
+  ) => Promise<void>;
+};
+
+export type GraphResponse = {
+  status: number;
+  data: any;
+  headers: Record<string, any>;
+};
+
+export type GraphFileUpload = {
+  path?: string;
+  contents?: string;
+  filename?: string;
+  contentType?: string;
 };
 
 /**

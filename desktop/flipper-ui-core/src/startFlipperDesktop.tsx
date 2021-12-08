@@ -39,13 +39,7 @@ import styled from '@emotion/styled';
 import {CopyOutlined} from '@ant-design/icons';
 import {getVersionString} from './utils/versionString';
 import {PersistGate} from 'redux-persist/integration/react';
-import {
-  setLoggerInstance,
-  setUserSessionManagerInstance,
-  Settings,
-  FlipperServer,
-} from 'flipper-common';
-import {internGraphPOSTAPIRequest} from './fb-stubs/user';
+import {setLoggerInstance, FlipperServer} from 'flipper-common';
 import {getRenderHostInstance} from './RenderHost';
 import {startGlobalErrorHandling} from './utils/globalErrorHandling';
 import {loadTheme} from './utils/loadTheme';
@@ -167,9 +161,6 @@ function init(flipperServer: FlipperServer) {
       if (r.success) console.debug(msg);
       else console.warn(msg, r.error);
     }
-  });
-  setUserSessionManagerInstance({
-    internGraphPOSTAPIRequest,
   });
 
   ReactDOM.render(

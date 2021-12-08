@@ -33,13 +33,13 @@ import {deconstructClientId} from 'flipper-common';
 import {processMessageQueue} from './messageQueue';
 import {getPluginTitle} from './pluginUtils';
 import {capture} from './screenshot';
-import {uploadFlipperMedia} from '../fb-stubs/user';
 import {Dialog, Idler} from 'flipper-plugin';
 import {ClientQuery} from 'flipper-common';
 import ShareSheetExportUrl from '../chrome/ShareSheetExportUrl';
 import ShareSheetExportFile from '../chrome/ShareSheetExportFile';
 import ExportDataPluginSheet from '../chrome/ExportDataPluginSheet';
 import {getRenderHostInstance} from '../RenderHost';
+import {uploadFlipperMedia} from '../fb-stubs/user';
 
 export const IMPORT_FLIPPER_TRACE_EVENT = 'import-flipper-trace';
 export const EXPORT_FLIPPER_TRACE_EVENT = 'export-flipper-trace';

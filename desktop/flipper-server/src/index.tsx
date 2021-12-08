@@ -22,6 +22,11 @@ const rootDir = path.resolve(__dirname, '..', '..');
 const staticDir = path.join(rootDir, 'static');
 
 async function start() {
+  // supress debug messages by default. TODO: make CLI flag
+  console.debug = function () {
+    // Noop
+  };
+
   const {app, server, socket} = await startBaseServer({
     port: PORT,
     staticDir,

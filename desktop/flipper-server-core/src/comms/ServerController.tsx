@@ -95,7 +95,6 @@ class ServerController extends EventEmitter implements ServerEventsListener {
     this.timestamps = new Map();
     this.certificateProvider = new CertificateProvider(
       this,
-      this.logger,
       getFlipperServerConfig().settings,
     );
     this.connectionTracker = new ConnectionTracker(this.logger);

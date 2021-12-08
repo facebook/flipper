@@ -7,6 +7,7 @@
  * @format
  */
 
+import {GraphFileUpload} from 'flipper-common';
 import {Atom, createState} from 'flipper-plugin';
 import {User} from '../reducers/user';
 
@@ -19,7 +20,11 @@ export async function internGraphPOSTAPIRequest(
   _formFields: {
     [key: string]: any;
   } = {},
-  _internGraphUrl?: string,
+  _fileFields: Record<string, GraphFileUpload> = {},
+  _options: {
+    timeout?: number;
+    internGraphUrl?: string;
+  } = {},
 ): Promise<any> {
   throw new Error('Feature not implemented');
 }
@@ -29,7 +34,10 @@ export async function internGraphGETAPIRequest(
   _params: {
     [key: string]: any;
   } = {},
-  _internGraphUrl?: string,
+  _options: {
+    timeout?: number;
+    internGraphUrl?: string;
+  } = {},
 ): Promise<any> {
   throw new Error('Feature not implemented');
 }

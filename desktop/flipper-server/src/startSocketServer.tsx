@@ -27,7 +27,6 @@ export function startSocketServer(
     flipperServer.onAny(onServerEvent);
 
     client.on('exec', (id, command, args) => {
-      console.log(id, command, args);
       flipperServer
         .exec(command, ...args)
         .then((result: any) => {

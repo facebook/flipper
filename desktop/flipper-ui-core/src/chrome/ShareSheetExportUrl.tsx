@@ -13,9 +13,9 @@ import {ReactReduxContext, ReactReduxContextValue} from 'react-redux';
 import {Logger} from 'flipper-common';
 import {IdlerImpl} from '../utils/Idler';
 import {
-  shareFlipperData,
   DataExportResult,
   DataExportError,
+  shareFlipperData,
 } from '../fb-stubs/user';
 import {
   exportStore,

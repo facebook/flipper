@@ -38,6 +38,13 @@ import {PluginManager} from './plugins/PluginManager';
 import {runHealthcheck, getHealthChecks} from './utils/runHealthchecks';
 import {openFile} from './utils/openFile';
 import {getChangelog} from './utils/pathUtils';
+import {sendScribeLogs} from './fb-stubs/sendScribeLogs';
+import {
+  internGraphGETAPIRequest,
+  internGraphPOSTAPIRequest,
+} from './fb-stubs/internRequests';
+
+export const SERVICE_FLIPPER = 'flipper.oAuthToken';
 
 /**
  * FlipperServer takes care of all incoming device & client connections.
@@ -184,14 +191,24 @@ export class FlipperServerImpl implements FlipperServer {
   exec<Event extends keyof FlipperServerCommands>(
     event: Event,
     ...args: Parameters<FlipperServerCommands[Event]>
-  ): ReturnType<FlipperServerCommands[Event]> {
-    console.debug(`[FlipperServer] command ${event}: `, args);
-    const handler: (...args: any[]) => Promise<any> =
-      this.commandHandler[event];
-    if (!handler) {
-      throw new Error(`Unimplemented server command: ${event}`);
+  ): ReturnType<FlipperServerCommands[Event]>;
+  async exec<Event extends keyof FlipperServerCommands>(
+    event: Event,
+    ...args: any[]
+  ): Promise<any> {
+    try {
+      const handler: (...args: any[]) => Promise<any> =
+        this.commandHandler[event];
+      if (!handler) {
+        throw new Error(`Unimplemented server command: ${event}`);
+      }
+      const result = await handler(...args);
+      console.debug(`[FlipperServer] command '${event}' - OK`);
+      return result;
+    } catch (e) {
+      console.debug(`[FlipperServer] command '${event}' - ERROR: ${e} `);
+      throw e;
     }
-    return handler(...args) as any;
   }
 
   private commandHandler: FlipperServerCommands = {
@@ -276,6 +293,21 @@ export class FlipperServerImpl implements FlipperServer {
     'doctor-get-healthchecks': getHealthChecks,
     'doctor-run-healthcheck': runHealthcheck,
     'open-file': openFile,
+    'intern-graph-post': async (endpoint, formfields, filefields, options) => {
+      const token = await this.keytarManager.retrieveToken(SERVICE_FLIPPER);
+      return internGraphPOSTAPIRequest(
+        endpoint,
+        formfields,
+        filefields,
+        options,
+        token,
+      );
+    },
+    'intern-graph-get': async (endpoint, params, options) => {
+      const token = await this.keytarManager.retrieveToken(SERVICE_FLIPPER);
+      return internGraphGETAPIRequest(endpoint, params, options, token);
+    },
+    'intern-upload-scribe-logs': sendScribeLogs,
   };
 
   registerDevice(device: ServerDevice) {

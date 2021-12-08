@@ -7,8 +7,6 @@
  * @format
  */
 
-import {Logger} from 'flipper-common';
-import {internGraphPOSTAPIRequest} from 'flipper-common';
 import ServerController from '../comms/ServerController';
 import {promisify} from 'util';
 import fs from 'fs-extra';
@@ -28,6 +26,8 @@ import {Client as ADBClient} from 'adbkit';
 import archiver from 'archiver';
 import {timeout, isTest} from 'flipper-common';
 import {v4 as uuid} from 'uuid';
+import {internGraphPOSTAPIRequest} from '../fb-stubs/internRequests';
+import {SERVICE_FLIPPER} from '../FlipperServerImpl';
 
 export type CertificateExchangeMedium = 'FS_ACCESS' | 'WWW' | 'NONE';
 
@@ -89,7 +89,6 @@ type CertificateProviderConfig = {
  * Flipper CA.
  */
 export default class CertificateProvider {
-  private logger: Logger;
   private _adb: Promise<ADBClient> | undefined;
   private didCertificateSetup = false;
   private config: CertificateProviderConfig;
@@ -105,12 +104,7 @@ export default class CertificateProvider {
     throw new Error('Android is not enabled in settings');
   }
 
-  constructor(
-    server: ServerController,
-    logger: Logger,
-    config: CertificateProviderConfig,
-  ) {
-    this.logger = logger;
+  constructor(server: ServerController, config: CertificateProviderConfig) {
     // TODO: refactor this code to create promise lazily
     this._adb = config.enableAndroid
       ? (getAdbClient(config).catch((_e) => {
@@ -133,15 +127,25 @@ export default class CertificateProvider {
     zipPath: string,
     deviceID: string,
   ): Promise<void> => {
-    const buff = await fs.readFile(zipPath);
-    const file = new File([buff], 'certs.zip');
     return reportPlatformFailures(
       timeout(
         5 * 60 * 1000,
-        internGraphPOSTAPIRequest('flipper/certificates', {
-          certificate_zip: file,
-          device_id: deviceID,
-        }),
+        internGraphPOSTAPIRequest(
+          'flipper/certificates',
+          {
+            device_id: deviceID,
+          },
+          {
+            certificate_zip: {
+              path: zipPath,
+              filename: 'certs.zip',
+            },
+          },
+          {timeout: 5 * 60 * 1000},
+          await this.server.flipperServer.keytarManager.retrieveToken(
+            SERVICE_FLIPPER,
+          ),
+        ).then(() => {}),
         'Timed out uploading Flipper certificates to WWW.',
       ),
       'uploadCertificates',
