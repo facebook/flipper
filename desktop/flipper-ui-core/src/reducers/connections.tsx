@@ -18,7 +18,6 @@ import type {
   Logger,
   FlipperServer,
 } from 'flipper-common';
-import {performance} from 'perf_hooks';
 import type {Actions} from '.';
 import {WelcomeScreenStaticView} from '../sandy-chrome/WelcomeScreen';
 import {isDevicePluginDefinition} from '../utils/pluginUtils';

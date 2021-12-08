@@ -14,7 +14,6 @@ import {PluginDefinition} from './plugin';
 import BaseDevice from './devices/BaseDevice';
 import {Logger} from 'flipper-common';
 import {Store} from './reducers/index';
-import {performance} from 'perf_hooks';
 import {
   reportPluginFailures,
   NoLongerConnectedToClientError,

@@ -7,7 +7,6 @@
  * @format
  */
 
-import {performance} from 'perf_hooks';
 import EventEmitter from 'eventemitter3';
 
 import {State, Store} from '../reducers/index';

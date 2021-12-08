@@ -39,6 +39,23 @@ console.debug = function () {
   // Intentional noop, we don't want debug statements in Jest runs
 };
 
+// make perf tools available in Node (it is available in Browser / Electron just fine)
+const {PerformanceObserver, performance} = require('perf_hooks');
+Object.freeze(performance);
+Object.freeze(Object.getPrototypeOf(performance));
+// Something in our unit tests is messing with the performance global
+// This fixes that.....
+Object.defineProperty(global, 'performance', {
+  get() {
+    return performance;
+  },
+  set() {
+    throw new Error('Attempt to overwrite global.performance');
+  },
+});
+
+global.PerformanceObserver = PerformanceObserver;
+
 // https://jestjs.io/docs/manual-mocks#mocking-methods-which-are-not-implemented-in-jsdom
 Object.defineProperty(window, 'matchMedia', {
   writable: true,

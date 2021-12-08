@@ -32,7 +32,6 @@ import {
   SupportFormRequestDetailsState,
 } from '../reducers/supportForm';
 import {deconstructClientId} from 'flipper-common';
-import {performance} from 'perf_hooks';
 import {processMessageQueue} from './messageQueue';
 import {getPluginTitle} from './pluginUtils';
 import {capture} from './screenshot';
